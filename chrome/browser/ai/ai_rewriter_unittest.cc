@@ -14,10 +14,12 @@
 #include "chrome/browser/ai/ai_test_utils.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "components/optimization_guide/core/model_execution/test/mock_on_device_capability.h"
+#include "components/optimization_guide/core/model_execution/test/substitution_builder.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/writing_assistance_api.pb.h"
+#include "components/optimization_guide/proto/string_value.pb.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,11 +28,17 @@
 
 namespace {
 
-using ::base::test::EqualsProto;
 using ::blink::mojom::AILanguageCode;
 using ::blink::mojom::AILanguageCodePtr;
+using ::optimization_guide::FieldSubstitution;
+using ::optimization_guide::ForbidUnsafe;
+using ::optimization_guide::ProtoField;
+using ::optimization_guide::StringValueField;
+using ::optimization_guide::proto::WritingAssistanceApiRequest;
+using ::optimization_guide::proto::WritingAssistanceApiResponse;
 using ::testing::_;
-using ::testing::Return;
+using ::testing::ElementsAre;
+using ::testing::ElementsAreArray;
 
 constexpr char kSharedContextString[] = "test shared context";
 constexpr char kContextString[] = "test context";
@@ -63,26 +71,6 @@ class MockCreateRewriterClient
   mojo::Receiver<blink::mojom::AIManagerCreateRewriterClient> receiver_{this};
 };
 
-optimization_guide::OptimizationGuideModelStreamingExecutionResult
-CreateExecutionResult(std::string_view output, bool is_complete) {
-  optimization_guide::proto::WritingAssistanceApiResponse response;
-  *response.mutable_output() = output;
-  return optimization_guide::OptimizationGuideModelStreamingExecutionResult(
-      optimization_guide::StreamingResponse{
-          .response = optimization_guide::AnyWrapProto(response),
-          .is_complete = is_complete,
-      },
-      /*provided_by_on_device=*/true);
-}
-
-optimization_guide::OptimizationGuideModelStreamingExecutionResult
-CreateExecutionErrorResult(
-    optimization_guide::OptimizationGuideModelExecutionError error) {
-  return optimization_guide::OptimizationGuideModelStreamingExecutionResult(
-      base::unexpected(error),
-      /*provided_by_on_device=*/true);
-}
-
 blink::mojom::AIRewriterCreateOptionsPtr GetDefaultOptions() {
   return blink::mojom::AIRewriterCreateOptions::New(
       kSharedContextString, blink::mojom::AIRewriterTone::kAsIs,
@@ -93,21 +81,68 @@ blink::mojom::AIRewriterCreateOptionsPtr GetDefaultOptions() {
       /*output_language=*/AILanguageCode::New(""));
 }
 
-// Get a request proto matching that expected for ExecuteModel() calls.
-optimization_guide::proto::WritingAssistanceApiRequest GetExecuteRequest(
-    std::string_view context_string = kContextString,
-    std::string_view rewrite_text = kInputString) {
-  optimization_guide::proto::WritingAssistanceApiRequest request;
-  request.set_context(context_string);
-  request.set_allocated_options(
-      AIRewriter::ToProtoOptions(GetDefaultOptions()).release());
-  request.set_rewrite_text(rewrite_text);
-  request.set_shared_context(kSharedContextString);
-  return request;
+optimization_guide::proto::FeatureTextSafetyConfiguration CreateSafetyConfig() {
+  optimization_guide::proto::FeatureTextSafetyConfiguration safety_config;
+  safety_config.set_feature(optimization_guide::proto::
+                                MODEL_EXECUTION_FEATURE_WRITING_ASSISTANCE_API);
+  safety_config.mutable_safety_category_thresholds()->Add(ForbidUnsafe());
+  {
+    auto* check = safety_config.add_request_check();
+    check->mutable_input_template()->Add(FieldSubstitution(
+        "%s", ProtoField({WritingAssistanceApiRequest::kContextFieldNumber})));
+  }
+  {
+    auto* check = safety_config.add_request_check();
+    check->mutable_input_template()->Add(FieldSubstitution(
+        "%s",
+        ProtoField({WritingAssistanceApiRequest::kSharedContextFieldNumber})));
+  }
+  {
+    auto* check = safety_config.add_request_check();
+    check->mutable_input_template()->Add(FieldSubstitution(
+        "%s",
+        ProtoField({WritingAssistanceApiRequest::kRewriteTextFieldNumber})));
+  }
+
+  return safety_config;
 }
 
 class AIRewriterTest : public AITestUtils::AITestBase {
  protected:
+  optimization_guide::proto::OnDeviceModelExecutionFeatureConfig CreateConfig()
+      override {
+    optimization_guide::proto::OnDeviceModelExecutionFeatureConfig config;
+    config.set_can_skip_text_safety(true);
+    config.set_feature(optimization_guide::proto::ModelExecutionFeature::
+                           MODEL_EXECUTION_FEATURE_WRITING_ASSISTANCE_API);
+
+    auto& input_config = *config.mutable_input_config();
+    input_config.set_request_base_name(
+        WritingAssistanceApiRequest().GetTypeName());
+
+    *input_config.add_execute_substitutions() = FieldSubstitution(
+        "%s", ProtoField({WritingAssistanceApiRequest::kContextFieldNumber}));
+    *input_config.add_execute_substitutions() = FieldSubstitution(
+        "%s",
+        ProtoField({WritingAssistanceApiRequest::kSharedContextFieldNumber}));
+    *input_config.add_execute_substitutions() = FieldSubstitution(
+        "%s",
+        ProtoField({WritingAssistanceApiRequest::kRewriteTextFieldNumber}));
+
+    auto& output_config = *config.mutable_output_config();
+    output_config.set_proto_type(WritingAssistanceApiResponse().GetTypeName());
+    *output_config.mutable_proto_field() = StringValueField();
+
+    return config;
+  }
+
+  optimization_guide::proto::OnDeviceModelExecutionFeatureConfig
+  CreateSafeConfig() {
+    auto config = CreateConfig();
+    config.set_can_skip_text_safety(false);
+    return config;
+  }
+
   mojo::Remote<blink::mojom::AIRewriter> GetAIRewriterRemote() {
     mojo::Remote<blink::mojom::AIRewriter> rewriter_remote;
 
@@ -134,23 +169,13 @@ class AIRewriterTest : public AITestUtils::AITestBase {
   void RunSimpleRewriteTest(blink::mojom::AIRewriterTone tone,
                             blink::mojom::AIRewriterFormat format,
                             blink::mojom::AIRewriterLength length) {
-    auto expected = GetExecuteRequest();
+    fake_broker_->settings().set_execute_result({"Result text"});
+
     const auto options = blink::mojom::AIRewriterCreateOptions::New(
         kSharedContextString, tone, format, length,
         /*expected_input_languages=*/std::vector<AILanguageCodePtr>(),
         /*expected_context_languages=*/std::vector<AILanguageCodePtr>(),
         /*output_language=*/AILanguageCode::New(""));
-    expected.set_allocated_options(
-        AIRewriter::ToProtoOptions(options).release());
-    EXPECT_CALL(session_, ExecuteModel(_, _))
-        .WillOnce([&](const google::protobuf::MessageLite& request,
-                      optimization_guide::
-                          OptimizationGuideModelExecutionResultStreamingCallback
-                              callback) {
-          EXPECT_THAT(request, EqualsProto(expected));
-          callback.Run(CreateExecutionResult("Result text",
-                                             /*is_complete=*/true));
-        });
 
     mojo::Remote<blink::mojom::AIRewriter> rewriter_remote;
     {
@@ -171,21 +196,19 @@ class AIRewriterTest : public AITestUtils::AITestBase {
           options.Clone());
       run_loop.Run();
     }
-    AITestUtils::MockModelStreamingResponder mock_responder;
 
-    base::RunLoop run_loop;
-    EXPECT_CALL(mock_responder, OnStreaming(_))
-        .WillOnce(
-            [&](const std::string& text) { EXPECT_THAT(text, "Result text"); });
+    EXPECT_THAT(Rewrite(*rewriter_remote, kInputString, kContextString),
+                ElementsAreArray({"Result text"}));
+  }
 
-    EXPECT_CALL(mock_responder, OnCompletion(_))
-        .WillOnce([&](blink::mojom::ModelExecutionContextInfoPtr context_info) {
-          run_loop.Quit();
-        });
-
-    rewriter_remote->Rewrite(kInputString, kContextString,
-                             mock_responder.BindNewPipeAndPassRemote());
-    run_loop.Run();
+  std::vector<std::string> Rewrite(blink::mojom::AIRewriter& rewriter,
+                                   const std::string& input,
+                                   const std::string& context) {
+    AITestUtils::TestStreamingResponder responder;
+    rewriter.Rewrite(kInputString, kContextString, responder.BindRemote());
+    EXPECT_TRUE(responder.WaitForCompletion());
+    // Return Rewrite's response without the final empty string chunk.
+    return responder.responses_without_last();
   }
 };
 
@@ -210,26 +233,63 @@ TEST_F(AIRewriterTest, CreateRewriterNoService) {
   run_loop.Run();
 }
 
-TEST_F(AIRewriterTest, CreateRewriterModelNotEligible) {
-  SetupMockOptimizationGuideKeyedService();
-  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _, _))
-      .WillOnce(Return(nullptr));
+TEST_F(AIRewriterTest, CanCreateWaitsForEligibility) {
+  base::test::TestFuture<base::OnceCallback<void(
+      optimization_guide::OnDeviceModelEligibilityReason)>>
+      eligibility_future;
+
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
               GetOnDeviceModelEligibilityAsync(_, _, _))
-      .WillOnce([](auto feature, auto capabilities, auto callback) {
+      .WillOnce([&](auto feature, auto capabilities, auto callback) {
+        eligibility_future.SetValue(std::move(callback));
+      });
+
+  base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult>
+      result_future;
+  GetAIManagerInterface()->CanCreateRewriter(GetDefaultOptions(),
+                                             result_future.GetCallback());
+  // Session should not be ready until eligibility callback has run.
+  EXPECT_FALSE(result_future.IsReady());
+  eligibility_future.Take().Run(
+      optimization_guide::OnDeviceModelEligibilityReason::kSuccess);
+  EXPECT_EQ(result_future.Get(),
+            blink::mojom::ModelAvailabilityCheckResult::kAvailable);
+}
+
+TEST_F(AIRewriterTest, CanCreateUnavailableWhenAdaptationNotAvailable) {
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              GetOnDeviceModelEligibilityAsync(_, _, _))
+      .WillOnce([&](auto feature, auto capabilities, auto callback) {
         std::move(callback).Run(
             optimization_guide::OnDeviceModelEligibilityReason::
-                kModelNotEligible);
+                kModelAdaptationNotAvailable);
       });
+
+  base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult>
+      result_future;
+  GetAIManagerInterface()->CanCreateRewriter(GetDefaultOptions(),
+                                             result_future.GetCallback());
+  EXPECT_EQ(result_future.Get(), blink::mojom::ModelAvailabilityCheckResult::
+                                     kUnavailableModelAdaptationNotAvailable);
+}
+
+TEST_F(AIRewriterTest, CreateRewriterUnableToCalculateTokenSize) {
+  // Incorrect `request_base_name` cause session to fail constructing input
+  // string and checking token size.
+  auto config = CreateConfig();
+  auto& input_config = *config.mutable_input_config();
+  input_config.set_request_base_name("InvalidRequestBaseName");
+
+  optimization_guide::FakeAdaptationAsset fake_asset({.config = config});
+  fake_broker_->UpdateModelAdaptation(fake_asset);
 
   MockCreateRewriterClient mock_create_rewriter_client;
   base::RunLoop run_loop;
   EXPECT_CALL(mock_create_rewriter_client, OnError(_, _))
       .WillOnce([&](blink::mojom::AIManagerCreateClientError error,
                     blink::mojom::QuotaErrorInfoPtr quota_error_info) {
-        ASSERT_EQ(
-            error,
-            blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
+        ASSERT_EQ(error, blink::mojom::AIManagerCreateClientError::
+                             kUnableToCalculateTokenSize);
         run_loop.Quit();
       });
 
@@ -237,97 +297,12 @@ TEST_F(AIRewriterTest, CreateRewriterModelNotEligible) {
   ai_manager->CreateRewriter(
       mock_create_rewriter_client.BindNewPipeAndPassRemote(),
       GetDefaultOptions());
-  run_loop.Run();
-}
-
-TEST_F(AIRewriterTest, CreateRewriterRetryAfterConfigNotAvailableForFeature) {
-  SetupMockOptimizationGuideKeyedService();
-  // StartSession must be called twice.
-  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _, _))
-      .WillOnce(Return(nullptr))
-      .WillOnce(
-          [&](optimization_guide::ModelBasedCapabilityKey feature,
-              const optimization_guide::SessionConfigParams& config_params,
-              base::WeakPtr<OptimizationGuideLogger> logger) {
-            // Returns a MockSession for the second call.
-            return std::make_unique<
-                testing::NiceMock<optimization_guide::MockSession>>(&session_);
-          });
-
-  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
-              GetOnDeviceModelEligibilityAsync(_, _, _))
-      .WillOnce([](auto feature, auto capabilities, auto callback) {
-        // Returning kConfigNotAvailableForFeature should trigger retry.
-        std::move(callback).Run(
-            optimization_guide::OnDeviceModelEligibilityReason::
-                kConfigNotAvailableForFeature);
-      });
-
-  optimization_guide::OnDeviceModelAvailabilityObserver* availability_observer =
-      nullptr;
-  base::RunLoop run_loop_for_add_observer;
-  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
-              AddOnDeviceModelAvailabilityChangeObserver(_, _))
-      .WillOnce(
-          [&](optimization_guide::ModelBasedCapabilityKey feature,
-              optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
-            availability_observer = observer;
-            run_loop_for_add_observer.Quit();
-          });
-
-  EXPECT_CALL(session_, GetExecutionInputSizeInTokens(_, _))
-      .WillOnce(
-          [&](optimization_guide::MultimodalMessageReadView request_metadata,
-              optimization_guide::OptimizationGuideModelSizeInTokenCallback
-                  callback) {
-            std::move(callback).Run(
-                blink::mojom::kWritingAssistanceMaxInputTokenSize);
-          });
-
-  mojo::Remote<blink::mojom::AIRewriter> rewriter_remote;
-  MockCreateRewriterClient mock_create_rewriter_client;
-  base::RunLoop run_loop;
-  EXPECT_CALL(mock_create_rewriter_client, OnResult(_))
-      .WillOnce([&](mojo::PendingRemote<::blink::mojom::AIRewriter> rewriter) {
-        // Create rewriter should succeed.
-        EXPECT_TRUE(rewriter);
-        run_loop.Quit();
-      });
-
-  mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
-  ai_manager->CreateRewriter(
-      mock_create_rewriter_client.BindNewPipeAndPassRemote(),
-      GetDefaultOptions());
-
-  run_loop_for_add_observer.Run();
-  CHECK(availability_observer);
-  // Send `kConfigNotAvailableForFeature` first to the observer.
-  availability_observer->OnDeviceModelAvailabilityChanged(
-      optimization_guide::ModelBasedCapabilityKey::kWritingAssistanceApi,
-      optimization_guide::OnDeviceModelEligibilityReason::
-          kConfigNotAvailableForFeature);
-
-  // And then send `kConfigNotAvailableForFeature` to the observer.
-  availability_observer->OnDeviceModelAvailabilityChanged(
-      optimization_guide::ModelBasedCapabilityKey::kWritingAssistanceApi,
-      optimization_guide::OnDeviceModelEligibilityReason::kSuccess);
-
-  // OnResult() should be called.
   run_loop.Run();
 }
 
 TEST_F(AIRewriterTest, CreateRewriterContextLimitExceededError) {
-  SetupMockOptimizationGuideKeyedService();
-  SetupMockSession();
-
-  EXPECT_CALL(session_, GetExecutionInputSizeInTokens(_, _))
-      .WillOnce(
-          [](optimization_guide::MultimodalMessageReadView request_metadata,
-             optimization_guide::OptimizationGuideModelSizeInTokenCallback
-                 callback) {
-            std::move(callback).Run(
-                blink::mojom::kWritingAssistanceMaxInputTokenSize + 1);
-          });
+  fake_broker_->settings().set_size_in_tokens(
+      blink::mojom::kWritingAssistanceMaxInputTokenSize + 1);
 
   MockCreateRewriterClient mock_create_rewriter_client;
   base::RunLoop run_loop;
@@ -352,61 +327,7 @@ TEST_F(AIRewriterTest, CreateRewriterContextLimitExceededError) {
   run_loop.Run();
 }
 
-TEST_F(AIRewriterTest, CreateRewriterAbortAfterConfigNotAvailableForFeature) {
-  SetupMockOptimizationGuideKeyedService();
-
-  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _, _))
-      .WillOnce(Return(nullptr));
-
-  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
-              GetOnDeviceModelEligibilityAsync(_, _, _))
-      .WillOnce([](auto feature, auto capabilities, auto callback) {
-        // Returning kConfigNotAvailableForFeature should trigger retry.
-        std::move(callback).Run(
-            optimization_guide::OnDeviceModelEligibilityReason::
-                kConfigNotAvailableForFeature);
-      });
-
-  optimization_guide::OnDeviceModelAvailabilityObserver* availability_observer =
-      nullptr;
-  base::RunLoop run_loop_for_add_observer;
-  base::RunLoop run_loop_for_remove_observer;
-  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
-              AddOnDeviceModelAvailabilityChangeObserver(_, _))
-      .WillOnce(
-          [&](optimization_guide::ModelBasedCapabilityKey feature,
-              optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
-            availability_observer = observer;
-            run_loop_for_add_observer.Quit();
-          });
-  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
-              RemoveOnDeviceModelAvailabilityChangeObserver(_, _))
-      .WillOnce(
-          [&](optimization_guide::ModelBasedCapabilityKey feature,
-              optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
-            EXPECT_EQ(availability_observer, observer);
-            run_loop_for_remove_observer.Quit();
-          });
-
-  auto mock_create_rewriter_client =
-      std::make_unique<MockCreateRewriterClient>();
-  mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
-  ai_manager->CreateRewriter(
-      mock_create_rewriter_client->BindNewPipeAndPassRemote(),
-      GetDefaultOptions());
-
-  run_loop_for_add_observer.Run();
-  CHECK(availability_observer);
-
-  // Reset `mock_create_rewriter_client` to abort the task of CreateRewriter().
-  mock_create_rewriter_client.reset();
-
-  // RemoveOnDeviceModelAvailabilityChangeObserver should be called.
-  run_loop_for_remove_observer.Run();
-}
-
 TEST_F(AIRewriterTest, CanCreateDefaultOptions) {
-  SetupMockOptimizationGuideKeyedService();
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
               GetOnDeviceModelEligibilityAsync(_, _, _))
       .WillOnce([](auto feature, auto capabilities, auto callback) {
@@ -421,7 +342,6 @@ TEST_F(AIRewriterTest, CanCreateDefaultOptions) {
 }
 
 TEST_F(AIRewriterTest, CanCreateIsLanguagesSupported) {
-  SetupMockOptimizationGuideKeyedService();
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
               GetOnDeviceModelEligibilityAsync(_, _, _))
       .WillOnce([](auto feature, auto capabilities, auto callback) {
@@ -442,7 +362,6 @@ TEST_F(AIRewriterTest, CanCreateIsLanguagesSupported) {
 }
 
 TEST_F(AIRewriterTest, CanCreateUnIsLanguagesSupported) {
-  SetupMockOptimizationGuideKeyedService();
   auto options = GetDefaultOptions();
   options->output_language = AILanguageCode::New("es-ES");
   options->expected_input_languages =
@@ -472,16 +391,12 @@ TEST_F(AIRewriterTest, ToProtoOptionsLanguagesSupported) {
 }
 
 TEST_F(AIRewriterTest, RewriteDefault) {
-  SetupMockOptimizationGuideKeyedService();
-  SetupMockSession();
   RunSimpleRewriteTest(blink::mojom::AIRewriterTone::kAsIs,
                        blink::mojom::AIRewriterFormat::kAsIs,
                        blink::mojom::AIRewriterLength::kAsIs);
 }
 
 TEST_F(AIRewriterTest, RewriteWithOptions) {
-  SetupMockOptimizationGuideKeyedService();
-  SetupMockSession();
   blink::mojom::AIRewriterTone tones[]{
       blink::mojom::AIRewriterTone::kAsIs,
       blink::mojom::AIRewriterTone::kMoreFormal,
@@ -509,287 +424,236 @@ TEST_F(AIRewriterTest, RewriteWithOptions) {
 }
 
 TEST_F(AIRewriterTest, InputLimitExceededError) {
-  SetupMockOptimizationGuideKeyedService();
-  SetupMockSession();
   auto rewriter_remote = GetAIRewriterRemote();
 
-  EXPECT_CALL(session_, GetExecutionInputSizeInTokens(_, _))
-      .WillOnce(
-          [](optimization_guide::MultimodalMessageReadView request_metadata,
-             optimization_guide::OptimizationGuideModelSizeInTokenCallback
-                 callback) {
-            std::move(callback).Run(
-                blink::mojom::kWritingAssistanceMaxInputTokenSize + 1);
-          });
-  AITestUtils::MockModelStreamingResponder mock_responder;
-  base::RunLoop run_loop;
-  EXPECT_CALL(mock_responder, OnError(_, _))
-      .WillOnce([&](blink::mojom::ModelStreamingResponseStatus status,
-                    blink::mojom::QuotaErrorInfoPtr quota_error_info) {
-        EXPECT_EQ(
-            status,
+  fake_broker_->settings().set_size_in_tokens(
+      blink::mojom::kWritingAssistanceMaxInputTokenSize + 1);
+
+  AITestUtils::TestStreamingResponder responder;
+  rewriter_remote->Rewrite(kInputString, kContextString,
+                           responder.BindRemote());
+  EXPECT_FALSE(responder.WaitForCompletion());
+  EXPECT_EQ(responder.error_status(),
             blink::mojom::ModelStreamingResponseStatus::kErrorInputTooLarge);
-        ASSERT_TRUE(quota_error_info);
-        ASSERT_EQ(quota_error_info->requested,
-                  blink::mojom::kWritingAssistanceMaxInputTokenSize + 1);
-        ASSERT_EQ(quota_error_info->quota,
-                  blink::mojom::kWritingAssistanceMaxInputTokenSize);
-        run_loop.Quit();
-      });
-
-  rewriter_remote->Rewrite(kInputString, kContextString,
-                           mock_responder.BindNewPipeAndPassRemote());
-  run_loop.Run();
-}
-
-TEST_F(AIRewriterTest, ModelExecutionError) {
-  SetupMockOptimizationGuideKeyedService();
-  SetupMockSession();
-  EXPECT_CALL(session_, ExecuteModel(_, _))
-      .WillOnce([](const google::protobuf::MessageLite& request,
-                   optimization_guide::
-                       OptimizationGuideModelExecutionResultStreamingCallback
-                           callback) {
-        EXPECT_THAT(request, EqualsProto(GetExecuteRequest()));
-        callback.Run(CreateExecutionErrorResult(
-            optimization_guide::OptimizationGuideModelExecutionError::
-                FromModelExecutionError(
-                    optimization_guide::OptimizationGuideModelExecutionError::
-                        ModelExecutionError::kPermissionDenied)));
-      });
-
-  auto rewriter_remote = GetAIRewriterRemote();
-  AITestUtils::MockModelStreamingResponder mock_responder;
-  base::RunLoop run_loop;
-  EXPECT_CALL(mock_responder, OnError(_, _))
-      .WillOnce([&](blink::mojom::ModelStreamingResponseStatus status,
-                    blink::mojom::QuotaErrorInfoPtr quota_error_info) {
-        EXPECT_EQ(
-            status,
-            blink::mojom::ModelStreamingResponseStatus::kErrorPermissionDenied);
-        run_loop.Quit();
-      });
-
-  rewriter_remote->Rewrite(kInputString, kContextString,
-                           mock_responder.BindNewPipeAndPassRemote());
-  run_loop.Run();
+  ASSERT_EQ(responder.quota_error_info().requested,
+            blink::mojom::kWritingAssistanceMaxInputTokenSize + 1);
+  ASSERT_EQ(responder.quota_error_info().quota,
+            blink::mojom::kWritingAssistanceMaxInputTokenSize);
 }
 
 TEST_F(AIRewriterTest, RewriteMultipleResponse) {
-  SetupMockOptimizationGuideKeyedService();
-  SetupMockSession();
-  EXPECT_CALL(session_, ExecuteModel(_, _))
-      .WillOnce([](const google::protobuf::MessageLite& request,
-                   optimization_guide::
-                       OptimizationGuideModelExecutionResultStreamingCallback
-                           callback) {
-        EXPECT_THAT(request, EqualsProto(GetExecuteRequest()));
-        callback.Run(CreateExecutionResult("Result ", /*is_complete=*/false));
-        callback.Run(CreateExecutionResult("text",
-                                           /*is_complete=*/true));
-      });
-
   auto rewriter_remote = GetAIRewriterRemote();
-  AITestUtils::MockModelStreamingResponder mock_responder;
-  base::RunLoop run_loop;
-  EXPECT_CALL(mock_responder, OnStreaming(_))
-      .WillOnce([&](const std::string& text) { EXPECT_THAT(text, "Result "); })
-      .WillOnce([&](const std::string& text) { EXPECT_THAT(text, "text"); });
 
-  EXPECT_CALL(mock_responder, OnCompletion(_))
-      .WillOnce([&](blink::mojom::ModelExecutionContextInfoPtr context_info) {
-        run_loop.Quit();
-      });
-
-  rewriter_remote->Rewrite(kInputString, kContextString,
-                           mock_responder.BindNewPipeAndPassRemote());
-  run_loop.Run();
+  std::vector<std::string> result = {"Result ", "text"};
+  fake_broker_->settings().set_execute_result(result);
+  EXPECT_THAT(Rewrite(*rewriter_remote, kInputString, kContextString),
+              ElementsAreArray(result));
 }
 
 TEST_F(AIRewriterTest, MultipleRewrite) {
-  SetupMockOptimizationGuideKeyedService();
-  SetupMockSession();
-  EXPECT_CALL(session_, ExecuteModel(_, _))
-      .WillOnce([](const google::protobuf::MessageLite& request,
-                   optimization_guide::
-                       OptimizationGuideModelExecutionResultStreamingCallback
-                           callback) {
-        EXPECT_THAT(request, EqualsProto(GetExecuteRequest()));
-        callback.Run(CreateExecutionResult("Result text",
-                                           /*is_complete=*/true));
-      })
-      .WillOnce([](const google::protobuf::MessageLite& request,
-                   optimization_guide::
-                       OptimizationGuideModelExecutionResultStreamingCallback
-                           callback) {
-        auto expect = GetExecuteRequest("test context 2", "input string 2");
-        EXPECT_THAT(request, EqualsProto(expect));
-        callback.Run(CreateExecutionResult("Result text 2",
-                                           /*is_complete=*/true));
-      });
-
   auto rewriter_remote = GetAIRewriterRemote();
-  {
-    AITestUtils::MockModelStreamingResponder mock_responder;
-    base::RunLoop run_loop;
-    EXPECT_CALL(mock_responder, OnStreaming(_))
-        .WillOnce(
-            [&](const std::string& text) { EXPECT_THAT(text, "Result text"); });
 
-    EXPECT_CALL(mock_responder, OnCompletion(_))
-        .WillOnce([&](blink::mojom::ModelExecutionContextInfoPtr context_info) {
-          run_loop.Quit();
-        });
+  std::vector<std::string> result = {"Result ", "text"};
+  fake_broker_->settings().set_execute_result(result);
+  EXPECT_THAT(Rewrite(*rewriter_remote, kInputString, kContextString),
+              ElementsAreArray(result));
 
-    rewriter_remote->Rewrite(kInputString, kContextString,
-                             mock_responder.BindNewPipeAndPassRemote());
-    run_loop.Run();
-  }
-  {
-    AITestUtils::MockModelStreamingResponder mock_responder;
-    base::RunLoop run_loop;
-    EXPECT_CALL(mock_responder, OnStreaming(_))
-        .WillOnce([&](const std::string& text) {
-          EXPECT_THAT(text, "Result text 2");
-        });
-
-    EXPECT_CALL(mock_responder, OnCompletion(_))
-        .WillOnce([&](blink::mojom::ModelExecutionContextInfoPtr context_info) {
-          run_loop.Quit();
-        });
-
-    rewriter_remote->Rewrite("input string 2", "test context 2",
-                             mock_responder.BindNewPipeAndPassRemote());
-    run_loop.Run();
-  }
-}
-
-TEST_F(AIRewriterTest, ResponderDisconnected) {
-  SetupMockOptimizationGuideKeyedService();
-  SetupMockSession();
-  base::RunLoop run_loop_for_callback;
-  optimization_guide::OptimizationGuideModelExecutionResultStreamingCallback
-      streaming_callback;
-  EXPECT_CALL(session_, ExecuteModel(_, _))
-      .WillOnce([&](const google::protobuf::MessageLite& request,
-                    optimization_guide::
-                        OptimizationGuideModelExecutionResultStreamingCallback
-                            callback) {
-        EXPECT_THAT(request, EqualsProto(GetExecuteRequest()));
-        streaming_callback = std::move(callback);
-        run_loop_for_callback.Quit();
-      });
-
-  auto rewriter_remote = GetAIRewriterRemote();
-  std::unique_ptr<AITestUtils::MockModelStreamingResponder> mock_responder =
-      std::make_unique<AITestUtils::MockModelStreamingResponder>();
-  rewriter_remote->Rewrite(kInputString, kContextString,
-                           mock_responder->BindNewPipeAndPassRemote());
-  mock_responder.reset();
-  // Call RunUntilIdle() to disconnect the ModelStreamingResponder mojo remote
-  // interface in AIRewriter.
-  task_environment()->RunUntilIdle();
-
-  run_loop_for_callback.Run();
-  ASSERT_TRUE(streaming_callback);
-  streaming_callback.Run(CreateExecutionResult("Result text",
-                                               /*is_complete=*/true));
-  task_environment()->RunUntilIdle();
-}
-
-TEST_F(AIRewriterTest, RewriterDisconnected) {
-  SetupMockOptimizationGuideKeyedService();
-  SetupMockSession();
-  base::RunLoop run_loop_for_callback;
-  optimization_guide::OptimizationGuideModelExecutionResultStreamingCallback
-      streaming_callback;
-  EXPECT_CALL(session_, ExecuteModel(_, _))
-      .WillOnce([&](const google::protobuf::MessageLite& request,
-                    optimization_guide::
-                        OptimizationGuideModelExecutionResultStreamingCallback
-                            callback) {
-        EXPECT_THAT(request, EqualsProto(GetExecuteRequest()));
-        streaming_callback = std::move(callback);
-        run_loop_for_callback.Quit();
-      });
-
-  auto rewriter_remote = GetAIRewriterRemote();
-  AITestUtils::MockModelStreamingResponder mock_responder;
-  base::RunLoop run_loop_for_response;
-  EXPECT_CALL(mock_responder, OnError(_, _))
-      .WillOnce([&](blink::mojom::ModelStreamingResponseStatus status,
-                    blink::mojom::QuotaErrorInfoPtr quota_error_info) {
-        EXPECT_EQ(
-            status,
-            blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed);
-        run_loop_for_response.Quit();
-      });
-
-  rewriter_remote->Rewrite(kInputString, kContextString,
-                           mock_responder.BindNewPipeAndPassRemote());
-
-  run_loop_for_callback.Run();
-
-  // Disconnect the rewriter handle.
-  rewriter_remote.reset();
-
-  // Call RunUntilIdle() to destroy AIRewriter.
-  task_environment()->RunUntilIdle();
-
-  ASSERT_TRUE(streaming_callback);
-  streaming_callback.Run(CreateExecutionResult("Result text",
-                                               /*is_complete=*/true));
-  run_loop_for_response.Run();
+  std::vector<std::string> result2 = {"Result ", "text ", "2"};
+  fake_broker_->settings().set_execute_result(result2);
+  EXPECT_THAT(Rewrite(*rewriter_remote, "input string 2", "test context 2"),
+              ElementsAreArray(result2));
 }
 
 TEST_F(AIRewriterTest, MeasureUsage) {
-  uint64_t expected_usage = 100;
-  SetupMockOptimizationGuideKeyedService();
-  SetupMockSession();
   auto rewriter_remote = GetAIRewriterRemote();
 
-  EXPECT_CALL(session_, GetExecutionInputSizeInTokens(_, _))
-      .WillOnce(
-          [&](optimization_guide::MultimodalMessageReadView request_metadata,
-              optimization_guide::OptimizationGuideModelSizeInTokenCallback
-                  callback) { std::move(callback).Run(expected_usage); });
   base::test::TestFuture<std::optional<uint32_t>> future;
   rewriter_remote->MeasureUsage(kInputString, kContextString,
                                 future.GetCallback());
-  ASSERT_EQ(future.Get<0>(), expected_usage);
-}
 
-TEST_F(AIRewriterTest, MeasureUsageFails) {
-  SetupMockOptimizationGuideKeyedService();
-  SetupMockSession();
-  auto rewriter_remote = GetAIRewriterRemote();
-
-  EXPECT_CALL(session_, GetExecutionInputSizeInTokens(_, _))
-      .WillOnce(
-          [&](optimization_guide::MultimodalMessageReadView request_metadata,
-              optimization_guide::OptimizationGuideModelSizeInTokenCallback
-                  callback) { std::move(callback).Run(std::nullopt); });
-  base::test::TestFuture<std::optional<uint32_t>> future;
-  rewriter_remote->MeasureUsage(kInputString, kContextString,
-                                future.GetCallback());
-  ASSERT_EQ(future.Get<0>(), std::nullopt);
+  auto size = std::string(kSharedContextString).size() +
+              std::string(kContextString).size() +
+              std::string(kInputString).size();
+  EXPECT_EQ(future.Get(), size);
 }
 
 TEST_F(AIRewriterTest, Priority) {
-  SetupMockOptimizationGuideKeyedService();
-  SetupMockSession();
+  fake_broker_->settings().set_execute_result({"hi"});
+  auto rewriter_remote = GetAIRewriterRemote();
 
-  EXPECT_CALL(session_,
-              SetPriority(on_device_model::mojom::Priority::kForeground));
-  auto remote = GetAIRewriterRemote();
+  EXPECT_THAT(Rewrite(*rewriter_remote, kInputString, kContextString),
+              ElementsAre("hi"));
 
-  EXPECT_CALL(session_,
-              SetPriority(on_device_model::mojom::Priority::kBackground));
   main_rfh()->GetRenderWidgetHost()->GetView()->Hide();
+  EXPECT_THAT(Rewrite(*rewriter_remote, kInputString, kContextString),
+              ElementsAre("Priority: background", "hi"));
 
-  EXPECT_CALL(session_,
-              SetPriority(on_device_model::mojom::Priority::kForeground));
   main_rfh()->GetRenderWidgetHost()->GetView()->Show();
+  EXPECT_THAT(Rewrite(*rewriter_remote, kInputString, kContextString),
+              ElementsAre("hi"));
+}
+
+TEST_F(AIRewriterTest, TextSafetyInput) {
+  optimization_guide::FakeAdaptationAsset fake_asset(
+      {.config = CreateSafeConfig()});
+  fake_broker_->UpdateModelAdaptation(fake_asset);
+  optimization_guide::FakeSafetyModelAsset safety_asset(CreateSafetyConfig());
+  fake_broker_->UpdateSafetyModel(safety_asset);
+
+  fake_broker_->settings().set_execute_result({"hi"});
+  auto rewriter_remote = GetAIRewriterRemote();
+  EXPECT_THAT(Rewrite(*rewriter_remote, kInputString, kContextString),
+              ElementsAre("hi"));
+
+  AITestUtils::TestStreamingResponder responder;
+  rewriter_remote->Rewrite("unsafe", kContextString, responder.BindRemote());
+  EXPECT_FALSE(responder.WaitForCompletion());
+  EXPECT_EQ(responder.error_status(),
+            blink::mojom::ModelStreamingResponseStatus::kErrorFiltered);
+}
+
+TEST_F(AIRewriterTest, TextSafetyContext) {
+  optimization_guide::FakeAdaptationAsset fake_asset(
+      {.config = CreateSafeConfig()});
+  fake_broker_->UpdateModelAdaptation(fake_asset);
+  optimization_guide::FakeSafetyModelAsset safety_asset(CreateSafetyConfig());
+  fake_broker_->UpdateSafetyModel(safety_asset);
+
+  fake_broker_->settings().set_execute_result({"hi"});
+  auto rewriter_remote = GetAIRewriterRemote();
+  EXPECT_THAT(Rewrite(*rewriter_remote, kInputString, kContextString),
+              ElementsAre("hi"));
+
+  AITestUtils::TestStreamingResponder responder;
+  rewriter_remote->Rewrite(kInputString, "unsafe", responder.BindRemote());
+  EXPECT_FALSE(responder.WaitForCompletion());
+  EXPECT_EQ(responder.error_status(),
+            blink::mojom::ModelStreamingResponseStatus::kErrorFiltered);
+}
+
+TEST_F(AIRewriterTest, TextSafetySharedContext) {
+  optimization_guide::FakeAdaptationAsset fake_asset(
+      {.config = CreateSafeConfig()});
+  fake_broker_->UpdateModelAdaptation(fake_asset);
+  optimization_guide::FakeSafetyModelAsset safety_asset(CreateSafetyConfig());
+  fake_broker_->UpdateSafetyModel(safety_asset);
+
+  const auto options = blink::mojom::AIRewriterCreateOptions::New(
+      "unsafe", blink::mojom::AIRewriterTone::kAsIs,
+      blink::mojom::AIRewriterFormat::kAsIs,
+      blink::mojom::AIRewriterLength::kAsIs,
+      /*expected_input_languages=*/std::vector<AILanguageCodePtr>(),
+      /*expected_context_languages=*/std::vector<AILanguageCodePtr>(),
+      /*output_language=*/AILanguageCode::New(""));
+
+  mojo::Remote<blink::mojom::AIRewriter> rewriter_remote;
+  {
+    MockCreateRewriterClient mock_create_rewriter_client;
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock_create_rewriter_client, OnResult(_))
+        .WillOnce(
+            [&](mojo::PendingRemote<::blink::mojom::AIRewriter> rewriter) {
+              EXPECT_TRUE(rewriter);
+              rewriter_remote =
+                  mojo::Remote<blink::mojom::AIRewriter>(std::move(rewriter));
+              run_loop.Quit();
+            });
+
+    mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
+    ai_manager->CreateRewriter(
+        mock_create_rewriter_client.BindNewPipeAndPassRemote(),
+        options.Clone());
+    run_loop.Run();
+  }
+
+  AITestUtils::TestStreamingResponder responder;
+  rewriter_remote->Rewrite(kInputString, kContextString,
+                           responder.BindRemote());
+  EXPECT_FALSE(responder.WaitForCompletion());
+  EXPECT_EQ(responder.error_status(),
+            blink::mojom::ModelStreamingResponseStatus::kErrorFiltered);
+}
+
+TEST_F(AIRewriterTest, TextSafetyOutput) {
+  optimization_guide::FakeAdaptationAsset fake_asset(
+      {.config = CreateSafeConfig()});
+  fake_broker_->UpdateModelAdaptation(fake_asset);
+  optimization_guide::FakeSafetyModelAsset safety_asset([] {
+    auto safety_config = CreateSafetyConfig();
+    safety_config.mutable_partial_output_checks()->set_minimum_tokens(1000);
+    return safety_config;
+  }());
+  fake_broker_->UpdateSafetyModel(safety_asset);
+
+  // Fake text safety checker looks for the string "unsafe".
+  fake_broker_->settings().set_execute_result(
+      {"a", "b", "c", "d", "e", "f", "g", "unsafe", "h"});
+  auto rewriter_remote = GetAIRewriterRemote();
+  AITestUtils::TestStreamingResponder responder;
+  rewriter_remote->Rewrite(kInputString, kContextString,
+                           responder.BindRemote());
+  EXPECT_FALSE(responder.WaitForCompletion());
+  EXPECT_EQ(responder.error_status(),
+            blink::mojom::ModelStreamingResponseStatus::kErrorFiltered);
+  EXPECT_TRUE(responder.responses().empty());
+}
+
+TEST_F(AIRewriterTest, TextSafetyOutputPartial) {
+  optimization_guide::FakeAdaptationAsset fake_asset(
+      {.config = CreateSafeConfig()});
+  fake_broker_->UpdateModelAdaptation(fake_asset);
+  optimization_guide::FakeSafetyModelAsset safety_asset([] {
+    auto safety_config = CreateSafetyConfig();
+    safety_config.mutable_partial_output_checks()->set_minimum_tokens(3);
+    safety_config.mutable_partial_output_checks()->set_token_interval(2);
+    return safety_config;
+  }());
+  fake_broker_->UpdateSafetyModel(safety_asset);
+
+  // Fake text safety checker looks for the string "unsafe".
+  fake_broker_->settings().set_execute_result(
+      {"a", "b", "c", "d", "e", "f", "g", "unsafe", "h"});
+  auto rewriter_remote = GetAIRewriterRemote();
+  AITestUtils::TestStreamingResponder responder;
+  rewriter_remote->Rewrite(kInputString, kContextString,
+                           responder.BindRemote());
+  EXPECT_FALSE(responder.WaitForCompletion());
+  EXPECT_EQ(responder.error_status(),
+            blink::mojom::ModelStreamingResponseStatus::kErrorFiltered);
+  // Partial checks should still allow some output to stream.
+  EXPECT_THAT(responder.responses(), ElementsAre("abc", "de", "fg"));
+}
+
+TEST_F(AIRewriterTest, ServiceCrash) {
+  fake_broker_->settings().set_execute_result({"hi"});
+
+  auto rewriter_remote = GetAIRewriterRemote();
+  AITestUtils::TestStreamingResponder responder;
+  rewriter_remote->Rewrite(kInputString, kContextString,
+                           responder.BindRemote());
+  fake_broker_->CrashService();
+
+  EXPECT_FALSE(responder.WaitForCompletion());
+  EXPECT_EQ(responder.error_status(),
+            blink::mojom::ModelStreamingResponseStatus::kErrorGenericFailure);
+
+  rewriter_remote = GetAIRewriterRemote();
+  EXPECT_THAT(Rewrite(*rewriter_remote, kInputString, kContextString),
+              ElementsAre("hi"));
+}
+
+TEST_F(AIRewriterTest, CrashRecoveryMeasureInputUsage) {
+  auto rewriter_remote = GetAIRewriterRemote();
+  fake_broker_->CrashService();
+
+  base::test::TestFuture<std::optional<uint32_t>> measure_future;
+  rewriter_remote->MeasureUsage(kInputString, kContextString,
+                                measure_future.GetCallback());
+
+  auto size = std::string(kSharedContextString).size() +
+              std::string(kContextString).size() +
+              std::string(kInputString).size();
+  EXPECT_EQ(measure_future.Get(), size);
 }
 
 }  // namespace

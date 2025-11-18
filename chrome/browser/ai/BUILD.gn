@@ -13,7 +13,6 @@ source_set("ai") {
   sources = [
     "ai_context_bound_object.h",
     "ai_context_bound_object_set.h",
-    "ai_create_on_device_session_task.h",
     "ai_data_keyed_service.h",
     "ai_data_keyed_service_factory.h",
     "ai_language_model.h",
@@ -66,7 +65,6 @@ source_set("impl") {
   sources = [
     "ai_context_bound_object.cc",
     "ai_context_bound_object_set.cc",
-    "ai_create_on_device_session_task.cc",
     "ai_data_keyed_service.cc",
     "ai_data_keyed_service_factory.cc",
     "ai_language_model.cc",

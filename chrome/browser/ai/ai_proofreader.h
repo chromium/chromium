@@ -35,6 +35,9 @@ class AIProofreader : public AIContextBoundObject,
       mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
           pending_responder) override;
 
+  // AIContextBoundObject:
+  void SetPriority(on_device_model::mojom::Priority priority) override;
+
   ~AIProofreader() override;
 
   static std::unique_ptr<optimization_guide::proto::ProofreadOptions>

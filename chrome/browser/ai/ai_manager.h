@@ -152,7 +152,7 @@ class AIManager : public base::SupportsUserData::Data,
       AIContextBoundObjectSet& context_bound_object_set,
       CreateOptionsPtrType options,
       std::optional<optimization_guide::MultimodalMessage> initial_request,
-      mojo::Remote<ClientRemoteInterface> client_remote,
+      mojo::PendingRemote<ClientRemoteInterface> client,
       std::unique_ptr<optimization_guide::OnDeviceSession> session);
 
   // Eagerly initializes a broad set of features.
@@ -185,7 +185,8 @@ class AIManager : public base::SupportsUserData::Data,
   bool did_log_unsupported_language_error_ = false;
 
   // Features that have attempted initialization in this session.
-  base::flat_set<optimization_guide::ModelBasedCapabilityKey> tried_init_;
+  base::flat_set<optimization_guide::mojom::ModelBasedCapabilityKey>
+      tried_init_;
 
   base::WeakPtrFactory<AIManager> weak_factory_{this};
 };

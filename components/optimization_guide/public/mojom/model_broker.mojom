@@ -27,6 +27,7 @@ enum ModelBasedCapabilityKey {
   kZeroStateSuggestions = 24,
   kOnDeviceSpeechRecognition = 25,
   kIosSmartTabGrouping = 26,
+  kProofreaderApi = 27,
 };
 
 // Describes how a particular set of models can be used to implement a

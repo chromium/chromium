@@ -64,6 +64,12 @@ void AIProofreader::GetCorrectionType(
                  std::move(pending_responder));
 }
 
+void AIProofreader::SetPriority(on_device_model::mojom::Priority priority) {
+  if (session_) {
+    session_->SetPriority(priority);
+  }
+}
+
 void AIProofreader::StartExecution(
     const std::string& input,
     const std::string& corrected_input,

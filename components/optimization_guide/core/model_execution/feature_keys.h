@@ -215,6 +215,8 @@ inline ModelBasedCapabilityKey ToModelBasedCapabilityKey(
       return ModelBasedCapabilityKey::kOnDeviceSpeechRecognition;
     case mojom::ModelBasedCapabilityKey::kIosSmartTabGrouping:
       return ModelBasedCapabilityKey::kIosSmartTabGrouping;
+    case mojom::ModelBasedCapabilityKey::kProofreaderApi:
+      return ModelBasedCapabilityKey::kProofreaderApi;
   }
 }
 

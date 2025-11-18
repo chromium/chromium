@@ -151,6 +151,11 @@ void FakeOnDeviceSession::Generate(
 
 void FakeOnDeviceSession::GetSizeInTokens(mojom::InputPtr input,
                                           GetSizeInTokensCallback callback) {
+  if (settings_->size_in_tokens != 0) {
+    std::move(callback).Run(settings_->size_in_tokens);
+    return;
+  }
+
   std::move(callback).Run(
       OnDeviceInputToString(*input, params_->capabilities).size());
 }
