@@ -23,7 +23,8 @@
   /* All gradient rotation and background blur/border shrinking needs to be at
    * interval, otherwise border-radius due to border width
    * may not be at right size at right time. */
-  --glif-rotation-duration_: var(--search-animated-glif-rotation-duration, 1000ms);
+  --glif-rotation-duration_: var(--search-animated-glif-rotation-duration,
+      2000ms);
 
   --glow-stroke-width_: 2px;
 
