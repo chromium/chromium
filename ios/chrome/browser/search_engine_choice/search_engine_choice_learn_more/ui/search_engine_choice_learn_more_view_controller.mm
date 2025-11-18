@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/search_engine_choice/ui/search_engine_choice_constants.h"
 #import "ios/chrome/common/string_util.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/promo_style/utils.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
@@ -190,7 +191,7 @@ UITextView* SecondParagraph() {
 
   // Create a layout guide to constrain the width of the content, while still
   // allowing the scroll view to take the full screen width.
-  UILayoutGuide* widthLayoutGuide = AddPromoStyleWidthLayoutGuide(view);
+  UILayoutGuide* widthLayoutGuide = AddButtonStackContentWidthLayoutGuide(view);
   [NSLayoutConstraint activateConstraints:@[
     // Frame layout.
     [scrollView.frameLayoutGuide.topAnchor

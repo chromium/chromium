@@ -16,6 +16,8 @@
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_action_delegate.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_constants.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/highlight_button.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
@@ -25,7 +27,6 @@
 #import "ios/chrome/common/ui/util/chrome_button.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/device_util.h"
-#import "ios/chrome/common/ui/util/dynamic_type_util.h"
 #import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 #import "ios/chrome/common/ui/util/text_view_util.h"
@@ -94,8 +95,6 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   // Layout constraint for `titleLabel` top margin when there is no banner or
   // header.
   NSLayoutConstraint* _titleLabelNoHeaderTopMargin;
-  // The width layout guide for promo content under the banner.
-  UILayoutGuide* _widthLayoutGuide;
   // Layout guide for the margin between the subtitle and the screen-specific
   // content.
   UILayoutGuide* _subtitleMarginLayoutGuide;
@@ -135,7 +134,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
     _titleHorizontalMargin = kTitleHorizontalMargin;
     _subtitleBottomMargin = kDefaultSubtitleBottomMargin;
     _headerImageShadowInset = kHeaderImageShadowShadowInset;
-    _headerImageBottomMargin = kPromoStyleDefaultMargin;
+    _headerImageBottomMargin = kButtonStackMargin;
     _noBackgroundHeaderImageTopMarginPercentage =
         kNoBackgroundHeaderImageTopMarginPercentage;
     _primaryButtonEnabled = YES;
@@ -176,7 +175,6 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   [self setupLabels];
   [self setupContentViews];
   [self setupActionButtons];
-  [self updatePromoStyleWidth];
 
   UITextView* disclaimerView = self.disclaimerView;
   UIView* specificContentView = self.specificContentView;
@@ -184,7 +182,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
     [NSLayoutConstraint activateConstraints:@[
       [disclaimerView.topAnchor
           constraintEqualToAnchor:specificContentView.bottomAnchor
-                         constant:kPromoStyleDefaultMargin],
+                         constant:kButtonStackMargin],
       [disclaimerView.leadingAnchor
           constraintEqualToAnchor:self.contentView.leadingAnchor],
       [disclaimerView.trailingAnchor
@@ -232,7 +230,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
                                  constant:-2 * self.titleHorizontalMargin],
     [_subtitleLabel.topAnchor
         constraintEqualToAnchor:self.titleLabel.bottomAnchor
-                       constant:kPromoStyleDefaultMargin],
+                       constant:kButtonStackMargin],
     [_subtitleLabel.centerXAnchor
         constraintEqualToAnchor:self.contentView.centerXAnchor],
     [_subtitleLabel.widthAnchor
@@ -401,7 +399,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
           constraintEqualToAnchor:self.contentView.topAnchor],
       [_dismissButton.trailingAnchor
           constraintEqualToAnchor:view.trailingAnchor
-                         constant:-kPromoStyleDefaultMargin],
+                         constant:-kButtonStackMargin],
     ]];
 
     // Align learn more and dismiss buttons vertically if both exist.
@@ -847,22 +845,6 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   return subtitleLabel;
 }
 
-// Update the width of the content area and action buttons. Should be invoked
-// on `-viewDidLoad` to setup the initial width, and also when the horizontal
-// size class changes.
-- (void)updatePromoStyleWidth {
-  if (_widthLayoutGuide) {
-    [self.view removeLayoutGuide:_widthLayoutGuide];
-  }
-  _widthLayoutGuide = AddPromoStyleWidthLayoutGuide(self.view);
-  [NSLayoutConstraint activateConstraints:@[
-    [self.contentView.leadingAnchor
-        constraintEqualToAnchor:_widthLayoutGuide.leadingAnchor],
-    [self.contentView.trailingAnchor
-        constraintEqualToAnchor:_widthLayoutGuide.trailingAnchor],
-  ]];
-}
-
 // Updates banner constraints.
 - (void)setupBannerConstraints {
   if (self.contentView == nil) {
@@ -885,7 +867,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
       [self.bannerImageView.heightAnchor constraintEqualToConstant:0],
       [self.bannerImageView.topAnchor
           constraintEqualToAnchor:self.contentView.topAnchor
-                         constant:kPromoStyleDefaultMargin]
+                         constant:kButtonStackMargin]
     ]];
   } else if (self.shouldBannerFillTopSpace) {
     NSLayoutDimension* dimFromToOfViewToBottomOfBanner = [self.view.topAnchor
@@ -1272,7 +1254,6 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   dispatch_async(dispatch_get_main_queue(), ^{
     __strong __typeof(weakSelf) strongSelf = weakSelf;
     [strongSelf updateViewsOnScrollViewUpdate];
-    [strongSelf updatePromoStyleWidth];
     [strongSelf hideHeaderOnTallContentIfNeeded];
   });
 }

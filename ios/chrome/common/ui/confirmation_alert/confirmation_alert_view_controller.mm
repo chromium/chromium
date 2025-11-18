@@ -8,11 +8,11 @@
 #import "base/metrics/histogram_functions.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_action_delegate.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_constants.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
-#import "ios/chrome/common/ui/promo_style/utils.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/dynamic_type_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
@@ -53,7 +53,6 @@ const CGFloat kFaviconBadgeSideLength = 24;
 
 // References to the UI properties that need to be updated when the trait
 // collection changes.
-@property(nonatomic, strong) UILayoutGuide* widthLayoutGuide;
 @property(nonatomic, strong) UIStackView* stackView;
 @property(nonatomic, strong) UINavigationBar* navigationBar;
 @property(nonatomic, strong) UIImageView* imageView;
@@ -143,13 +142,8 @@ const CGFloat kFaviconBadgeSideLength = 24;
 
   self.view.preservesSuperviewLayoutMargins = YES;
 
-  // Constraint top/bottom of the stack view to the content view. This defines
-  // the content area. No need to contraint horizontally as we don't want
-  // horizontal scroll.
-  [NSLayoutConstraint activateConstraints:@[
-    [self.stackView.bottomAnchor
-        constraintEqualToAnchor:self.contentView.bottomAnchor]
-  ]];
+  // Constraint the stack view to the content view.
+  AddSameConstraints(self.stackView, self.contentView);
 
   CGFloat stackViewTopConstant = 0;
   if (!self.hasNavigationBar) {
@@ -192,8 +186,6 @@ const CGFloat kFaviconBadgeSideLength = 24;
                      multiplier:imageAspectRatio];
     self.imageViewAspectRatioConstraint.active = YES;
   }
-
-  [self updatePromoStyleWidth];
 
   NSArray<UITrait>* traits = @[
     UITraitPreferredContentSizeCategory.class, UITraitHorizontalSizeClass.class,
@@ -601,23 +593,6 @@ const CGFloat kFaviconBadgeSideLength = 24;
   return stackView;
 }
 
-// Update the width of the content area and action buttons to match
-// `PromoStyleViewController`. Should be invoked on `-viewDidLoad` to setup the
-// initial width, and also when the horizontal size class changes.
-- (void)updatePromoStyleWidth {
-  if (self.widthLayoutGuide) {
-    [self.view removeLayoutGuide:self.widthLayoutGuide];
-  }
-  self.widthLayoutGuide = AddPromoStyleWidthLayoutGuide(self.view);
-  [NSLayoutConstraint activateConstraints:@[
-    [self.stackView.leadingAnchor
-        constraintEqualToAnchor:self.widthLayoutGuide.leadingAnchor],
-    // Width Scroll View constraint for regular mode.
-    [self.stackView.trailingAnchor
-        constraintEqualToAnchor:self.widthLayoutGuide.trailingAnchor],
-  ]];
-}
-
 // Checks which trait has been changed and adapts the UI to reflect this new
 // environment.
 - (void)updateRegisteredTraits:(UITraitCollection*)previousTraitCollection {
@@ -630,7 +605,6 @@ const CGFloat kFaviconBadgeSideLength = 24;
 
   if (hasNewHorizontalSizeClass || hasNewVerticalSizeClass) {
     [self.view setNeedsUpdateConstraints];
-    [self updatePromoStyleWidth];
   }
 }
 

@@ -8,6 +8,7 @@
 #import "ios/chrome/common/ui/button_stack/button_stack_action_delegate.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_constants.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/button_util.h"
 #import "ios/chrome/common/ui/util/chrome_button.h"
@@ -18,8 +19,6 @@ namespace {
 
 // Spacing between buttons in the stack.
 const CGFloat kButtonSpacing = 8.0;
-// Horizontal margin for the button stack.
-const CGFloat kButtonStackHorizontalMargin = 16.0;
 
 // Default bottom margin for the button stack.
 const CGFloat kButtonStackBottomMargin = 20.0;
@@ -49,6 +48,7 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
 
 // Redefine properties as readwrite for internal use.
 @property(nonatomic, strong, readwrite) UIView* contentView;
+@property(nonatomic, strong, readwrite) UILayoutGuide* widthLayoutGuide;
 @property(nonatomic, strong, readwrite) ButtonStackConfiguration* configuration;
 @property(nonatomic, strong, readwrite) ChromeButton* primaryActionButton;
 @property(nonatomic, strong, readwrite) ChromeButton* secondaryActionButton;
@@ -459,9 +459,15 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
   AddSameConstraints(_scrollView, _scrollContainerView);
 
   // contentView view constraints.
-  AddSameConstraints(_scrollView, _contentView);
+  _widthLayoutGuide = AddButtonStackContentWidthLayoutGuide(self.view);
   [NSLayoutConstraint activateConstraints:@[
-    [_contentView.widthAnchor constraintEqualToAnchor:_scrollView.widthAnchor],
+    [_contentView.leadingAnchor
+        constraintEqualToAnchor:_widthLayoutGuide.leadingAnchor],
+    [_contentView.trailingAnchor
+        constraintEqualToAnchor:_widthLayoutGuide.trailingAnchor],
+    [_contentView.topAnchor constraintEqualToAnchor:_scrollView.topAnchor],
+    [_contentView.bottomAnchor
+        constraintEqualToAnchor:_scrollView.bottomAnchor],
   ]];
 
   // Ensures the content view either fills the scroll view (for short content)
@@ -484,11 +490,9 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
   // Action stack view constraints.
   [NSLayoutConstraint activateConstraints:@[
     [_actionStackView.leadingAnchor
-        constraintEqualToAnchor:safeAreaLayoutGuide.leadingAnchor
-                       constant:kButtonStackHorizontalMargin],
+        constraintEqualToAnchor:_widthLayoutGuide.leadingAnchor],
     [_actionStackView.trailingAnchor
-        constraintEqualToAnchor:safeAreaLayoutGuide.trailingAnchor
-                       constant:-kButtonStackHorizontalMargin],
+        constraintEqualToAnchor:_widthLayoutGuide.trailingAnchor],
     contentViewHeightConstraint,
     _actionStackBottomConstraint,
     _actionStackSafeAreaBottomConstraint,

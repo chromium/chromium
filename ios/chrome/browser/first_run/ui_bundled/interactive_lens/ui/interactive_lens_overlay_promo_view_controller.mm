@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_constants.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view.h"
 #import "ios/chrome/browser/first_run/ui_bundled/interactive_lens/ui/lens_overlay_promo_container_view_controller.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/gradient_view.h"
 #import "ios/chrome/common/ui/promo_style/utils.h"
@@ -221,7 +222,7 @@ const CGFloat kHUDViewTopMargin = 20.0;
 // Sets up the layout constraints for the view hierarchy.
 - (void)setUpConstraints {
   UIView* view = self.view;
-  UILayoutGuide* widthLayoutGuide = AddPromoStyleWidthLayoutGuide(view);
+  UILayoutGuide* widthLayoutGuide = AddButtonStackContentWidthLayoutGuide(view);
 
   [NSLayoutConstraint activateConstraints:@[
     [_textScrollView.topAnchor
@@ -252,7 +253,7 @@ const CGFloat kHUDViewTopMargin = 20.0;
   ]];
 
   UILayoutGuide* footerWidthLayoutGuide =
-      AddPromoStyleWidthLayoutGuide(_footerContainerView);
+      AddButtonStackContentWidthLayoutGuide(_footerContainerView);
   [NSLayoutConstraint activateConstraints:@[
     [_actionButton.leadingAnchor
         constraintEqualToAnchor:footerWidthLayoutGuide.leadingAnchor],

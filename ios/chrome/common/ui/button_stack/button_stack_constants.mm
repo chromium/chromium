@@ -12,3 +12,5 @@ NSString* const kButtonStackTertiaryActionAccessibilityIdentifier =
     @"kButtonStackTertiaryActionAccessibilityIdentifier";
 NSString* const kButtonStackCheckmarkSymbolAccessibilityIdentifier =
     @"kButtonStackCheckmarkSymbolAccessibilityIdentifier";
+
+const CGFloat kButtonStackMargin = 16.0;

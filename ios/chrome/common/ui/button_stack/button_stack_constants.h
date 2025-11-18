@@ -13,4 +13,7 @@ extern NSString* const kButtonStackSecondaryActionAccessibilityIdentifier;
 extern NSString* const kButtonStackTertiaryActionAccessibilityIdentifier;
 extern NSString* const kButtonStackCheckmarkSymbolAccessibilityIdentifier;
 
+// Default margin for the button stack.
+extern const CGFloat kButtonStackMargin;
+
 #endif  // IOS_CHROME_COMMON_UI_BUTTON_STACK_BUTTON_STACK_CONSTANTS_H_

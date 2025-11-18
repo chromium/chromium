@@ -54,6 +54,10 @@
 // custom content.
 @property(nonatomic, strong, readonly) UIView* contentView;
 
+// The width layout guide for the content. Subclasses can use this guide's
+// `layoutFrame` to get a reliable content width for height calculations.
+@property(nonatomic, strong, readonly) UILayoutGuide* widthLayoutGuide;
+
 // Set to NO to prevent the scroll view from scrolling. Default is YES.
 @property(nonatomic, assign) BOOL scrollEnabled;
 

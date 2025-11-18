@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/search_engine_choice/ui/snippet_search_engine_element.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
 #import "ios/chrome/common/ui/promo_style/utils.h"
@@ -422,7 +423,7 @@ CGFloat GetSubtitleMarginDistance() {
 
   // Create a layout guide to constrain the width of the content, while still
   // allowing the scroll view to take the full screen width.
-  UILayoutGuide* widthLayoutGuide = AddPromoStyleWidthLayoutGuide(view);
+  UILayoutGuide* widthLayoutGuide = AddButtonStackContentWidthLayoutGuide(view);
   // This is the layout guide to compute the bottom margin of the "Set as
   // Default" button in the float container.
   // And the height of this layout guide is applied to

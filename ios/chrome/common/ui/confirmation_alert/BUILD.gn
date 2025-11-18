@@ -16,6 +16,7 @@ source_set("confirmation_alert") {
     ":constants",
     "//base",
     "//ios/chrome/common/ui/button_stack",
+    "//ios/chrome/common/ui/button_stack:utils",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/elements",
     "//ios/chrome/common/ui/promo_style:utils",
