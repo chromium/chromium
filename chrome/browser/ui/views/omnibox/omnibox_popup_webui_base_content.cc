@@ -111,6 +111,7 @@ void OmniboxPopupWebUIBaseContent::ShowCustomContextMenu(
 void OmniboxPopupWebUIBaseContent::ResizeDueToAutoResize(
     content::WebContents* source,
     const gfx::Size& new_size) {
+  WebView::ResizeDueToAutoResize(source, new_size);
   if (GetVisible()) {
     popup_presenter_->SetWidgetContentHeight(new_size.height());
   }
