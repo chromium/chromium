@@ -4487,6 +4487,48 @@ Called by update_autofill_enums.py.-->
 
 <!-- LINT.ThenChange(/chrome/browser/webdata_services/web_data_service_factory.cc:AutofillAccountStorageResult) -->
 
+<!-- LINT.IfChange(YourSavedInfoDataCategory) -->
+
+<enum name="YourSavedInfoDataCategory">
+  <int value="0" label="Password Manager"/>
+  <int value="1" label="Payments"/>
+  <int value="2" label="Contact info"/>
+  <int value="3" label="Identity docs"/>
+  <int value="4" label="Travel"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/browser/resources/settings/metrics_browser_proxy.ts:YourSavedInfoDataCategory) -->
+
+<!-- LINT.IfChange(YourSavedInfoDataChip) -->
+
+<enum name="YourSavedInfoDataChip">
+  <int value="0" label="Passwords"/>
+  <int value="1" label="Passkeys"/>
+  <int value="2" label="Credit cards"/>
+  <int value="3" label="Pay over time"/>
+  <int value="4" label="IBANs"/>
+  <int value="5" label="Loyalty cards"/>
+  <int value="6" label="Addresses"/>
+  <int value="7" label="Driver's licenses"/>
+  <int value="8" label="National ID cards"/>
+  <int value="9" label="Passports"/>
+  <int value="10" label="Flight reservations"/>
+  <int value="11" label="Travel info"/>
+  <int value="12" label="Vehicles"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/browser/resources/settings/metrics_browser_proxy.ts:YourSavedInfoDataChip) -->
+
+<!-- LINT.IfChange(YourSavedInfoRelatedService) -->
+
+<enum name="YourSavedInfoRelatedService">
+  <int value="0" label="Google Password Manager"/>
+  <int value="1" label="Google Wallet"/>
+  <int value="2" label="Google Account"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/browser/resources/settings/metrics_browser_proxy.ts:YourSavedInfoRelatedService) -->
+
 </enums>
 
 </histogram-configuration>

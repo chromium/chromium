@@ -7,13 +7,14 @@ import 'chrome://settings/settings.js';
 import {AiEnterpriseFeaturePrefName, AutofillManagerImpl, PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs, ModelExecutionEnterprisePolicyValue} from 'chrome://settings/settings.js';
 import type {SettingsPrefsElement, SettingsYourSavedInfoPageElement} from 'chrome://settings/settings.js';
-import {loadTimeData, OpenWindowProxyImpl, PasswordManagerImpl, PasswordManagerPage, resetRouterForTesting, Router} from 'chrome://settings/settings.js';
+import {loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PasswordManagerImpl, PasswordManagerPage, resetRouterForTesting, Router, YourSavedInfoDataCategory, YourSavedInfoDataChip, YourSavedInfoRelatedService} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 
 import {createAddressEntry, createCreditCardEntry, createIbanEntry, createPayOverTimeIssuerEntry, TestAutofillManager, TestPaymentsManager} from './autofill_fake_data.js';
+import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 
 function setDefaultPrefs(objectToSetup: SettingsPrefsElement) {
@@ -30,6 +31,7 @@ suite('YourSavedInfoPage', function() {
   let autofillManager: TestAutofillManager;
   let passwordManager: TestPasswordManagerProxy;
   let paymentsManager: TestPaymentsManager;
+  let metricsBrowserProxy: TestMetricsBrowserProxy;
   let settingsPrefs: SettingsPrefsElement;
 
   suiteSetup(function() {
@@ -46,6 +48,8 @@ suite('YourSavedInfoPage', function() {
     PasswordManagerImpl.setInstance(passwordManager);
     paymentsManager = new TestPaymentsManager();
     PaymentsManagerImpl.setInstance(paymentsManager);
+    metricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
 
     await setupPage({
       enableYourSavedInfoSettingsPage: true,
@@ -127,6 +131,9 @@ suite('YourSavedInfoPage', function() {
 
     const page = await passwordManager.whenCalled('showPasswordManager');
     assertEquals(PasswordManagerPage.PASSWORDS, page);
+    const [category] = await metricsBrowserProxy.whenCalled(
+        'recordYourSavedInfoCategoryClick');
+    assertEquals(YourSavedInfoDataCategory.PASSWORD_MANAGER, category);
   });
 
   // Do not use route constants (like `routes.PAYMENTS`) as expectedRoute
@@ -134,12 +141,28 @@ suite('YourSavedInfoPage', function() {
   // `suiteSetup()` when the `yourSavedInfo` feature flag is disabled, which
   // results in some path values being undefined. Instead, use the literal
   // string path, e.g., use `'/payments'` instead of `routes.PAYMENTS`.
-  [{cardTitle: 'paymentsTitle', expectedRoute: '/payments'},
-   {cardTitle: 'contactInfoTitle', expectedRoute: '/addresses'},
-   {cardTitle: 'identityDocsCardTitle', expectedRoute: '/identityDocs'},
-   {cardTitle: 'travelCardTitle', expectedRoute: '/travel'},
-  ].forEach(({cardTitle, expectedRoute}) => {
-    test(`${cardTitle} card navigates to the correct route`, function() {
+  [{
+    cardTitle: 'paymentsTitle',
+    expectedRoute: '/payments',
+    expectedCategory: YourSavedInfoDataCategory.PAYMENTS,
+  },
+   {
+     cardTitle: 'contactInfoTitle',
+     expectedRoute: '/addresses',
+     expectedCategory: YourSavedInfoDataCategory.CONTACT_INFO,
+   },
+   {
+     cardTitle: 'identityDocsCardTitle',
+     expectedRoute: '/identityDocs',
+     expectedCategory: YourSavedInfoDataCategory.IDENTITY_DOCS,
+   },
+   {
+     cardTitle: 'travelCardTitle',
+     expectedRoute: '/travel',
+     expectedCategory: YourSavedInfoDataCategory.TRAVEL,
+   },
+  ].forEach(({cardTitle, expectedRoute, expectedCategory}) => {
+    test(`${cardTitle} card navigates to the correct route`, async function() {
       const card = yourSavedInfoPage.shadowRoot!.querySelector<HTMLElement>(
           `category-reference-card[card-title="${
               loadTimeData.getString(cardTitle)}"]`);
@@ -147,6 +170,9 @@ suite('YourSavedInfoPage', function() {
 
       card.shadowRoot!.querySelector('cr-link-row')!.click();
       assertEquals(expectedRoute, Router.getInstance().currentRoute.path);
+      const [category] = await metricsBrowserProxy.whenCalled(
+          'recordYourSavedInfoCategoryClick');
+      assertEquals(expectedCategory, category);
     });
   });
 
@@ -184,7 +210,7 @@ suite('YourSavedInfoPage', function() {
             loadTimeData.getString('autofillPayOverTimeSettingsLabel')));
   });
 
-  test('ClickOnChipNavigatesToLeafPage', function() {
+  test('ClickOnChipNavigatesToLeafPage', async function() {
     const card = yourSavedInfoPage.shadowRoot!.querySelector<HTMLElement>(
         `category-reference-card[card-title="${
             loadTimeData.getString('contactInfoTitle')}"]`);
@@ -199,6 +225,9 @@ suite('YourSavedInfoPage', function() {
 
     chip.click();
     assertEquals('/addresses', Router.getInstance().currentRoute.path);
+    const [metricChip] = await metricsBrowserProxy.whenCalled(
+        'recordYourSavedInfoDataChipClick');
+    assertEquals(YourSavedInfoDataChip.ADDRESSES, metricChip);
   });
 });
 
@@ -351,6 +380,7 @@ suite('RelatedServices', function() {
   let openWindowProxy: TestOpenWindowProxy;
   let passwordManager: TestPasswordManagerProxy;
   let settingsPrefs: SettingsPrefsElement;
+  let metricsBrowserProxy: TestMetricsBrowserProxy;
 
   suiteSetup(function() {
     settingsPrefs = document.createElement('settings-prefs');
@@ -366,6 +396,8 @@ suite('RelatedServices', function() {
     // Override the PasswordManagerImpl for testing.
     passwordManager = new TestPasswordManagerProxy();
     PasswordManagerImpl.setInstance(passwordManager);
+    metricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     yourSavedInfoPage = document.createElement('settings-your-saved-info-page');
@@ -414,13 +446,22 @@ suite('RelatedServices', function() {
     passwordManagerRow.click();
     const page = await passwordManager.whenCalled('showPasswordManager');
     assertEquals(PasswordManagerPage.PASSWORDS, page);
+    const [service] = await metricsBrowserProxy.whenCalled(
+        'recordYourSavedInfoRelatedServiceClick');
+    assertEquals(YourSavedInfoRelatedService.GOOGLE_PASSWORD_MANAGER, service);
   });
 
-  test('WalletRowOpensWallet', function() {
-    return testRowOpensUrl('#googleWalletButton', 'googleWalletUrl');
+  test('WalletRowOpensWallet', async function() {
+    await testRowOpensUrl('#googleWalletButton', 'googleWalletUrl');
+    const [service] = await metricsBrowserProxy.whenCalled(
+        'recordYourSavedInfoRelatedServiceClick');
+    assertEquals(YourSavedInfoRelatedService.GOOGLE_WALLET, service);
   });
 
-  test('ProfileRowOpensProfile', function() {
-    return testRowOpensUrl('#googleAccountButton', 'googleAccountUrl');
+  test('ProfileRowOpensProfile', async function() {
+    await testRowOpensUrl('#googleAccountButton', 'googleAccountUrl');
+    const [service] = await metricsBrowserProxy.whenCalled(
+        'recordYourSavedInfoRelatedServiceClick');
+    assertEquals(YourSavedInfoRelatedService.GOOGLE_ACCOUNT, service);
   });
 });

@@ -428,6 +428,68 @@ export enum AutofillSettingsReferrer {
 }
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:AutofillSettingsReferrer)
 
+/**
+ * These values are persisted to logs. Entries should not be renumbered and
+ * numeric values should never be reused.
+ *
+ * Must be kept in sync with the YourSavedInfoDataCategory enum in
+ * histograms/metadata/autofill/enums.xml
+ */
+// LINT.IfChange(YourSavedInfoDataCategory)
+export enum YourSavedInfoDataCategory {
+  PASSWORD_MANAGER = 0,
+  PAYMENTS = 1,
+  CONTACT_INFO = 2,
+  IDENTITY_DOCS = 3,
+  TRAVEL = 4,
+  MAX_VALUE = 5,
+}
+// LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:YourSavedInfoDataCategory)
+
+/**
+ * A specific kind of saved user's information.
+ *
+ * These values are persisted to logs. Entries should not be renumbered and
+ * numeric values should never be reused.
+ *
+ * Must be kept in sync with the YourSavedInfoDataChip enum in
+ * histograms/metadata/autofill/enums.xml
+ */
+// LINT.IfChange(YourSavedInfoDataChip)
+export enum YourSavedInfoDataChip {
+  PASSWORDS = 0,
+  PASSKEYS = 1,
+  CREDIT_CARDS = 2,
+  PAY_OVER_TIME = 3,
+  IBANS = 4,
+  LOYALTY_CARDS = 5,
+  ADDRESSES = 6,
+  DRIVERS_LICENSES = 7,
+  NATIONAL_ID_CARDS = 8,
+  PASSPORTS = 9,
+  FLIGHT_RESERVATIONS = 10,
+  TRAVEL_INFO = 11,
+  VEHICLES = 12,
+  MAX_VALUE = 13,
+}
+// LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:YourSavedInfoDataChip)
+
+/**
+ * These values are persisted to logs. Entries should not be renumbered and
+ * numeric values should never be reused.
+ *
+ * Must be kept in sync with the YourSavedInfoDataCategory enum in
+ * histograms/metadata/autofill/enums.xml
+ */
+// LINT.IfChange(YourSavedInfoRelatedService)
+export enum YourSavedInfoRelatedService {
+  GOOGLE_PASSWORD_MANAGER = 0,
+  GOOGLE_WALLET = 1,
+  GOOGLE_ACCOUNT = 2,
+  MAX_VALUE = 3,
+}
+// LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:YourSavedInfoRelatedService)
+
 export interface MetricsBrowserProxy {
   /**
    * Helper function that calls recordAction with one action from
@@ -524,8 +586,8 @@ export interface MetricsBrowserProxy {
    * Helper function that calls recordHistogram for the
    * Settings.PrivacyGuide.NextNavigation histogram
    */
-  recordPrivacyGuideNextNavigationHistogram(interaction:
-                                                PrivacyGuideInteractions): void;
+  recordPrivacyGuideNextNavigationHistogram(
+      interaction: PrivacyGuideInteractions): void;
 
   /**
    * Helper function that calls recordHistogram for the
@@ -620,6 +682,22 @@ export interface MetricsBrowserProxy {
    */
   recordAutofillSettingsReferrer(
       histogramName: string, referrer: AutofillSettingsReferrer): void;
+
+  /**
+   * Records a click on a category link on the Your saved info page.
+   */
+  recordYourSavedInfoCategoryClick(category: YourSavedInfoDataCategory): void;
+
+  /**
+   * Records a click on a data chip on the Your saved info page.
+   */
+  recordYourSavedInfoDataChipClick(chip: YourSavedInfoDataChip): void;
+
+  /**
+   * Records a click on a related service link on the Your saved info page.
+   */
+  recordYourSavedInfoRelatedServiceClick(service: YourSavedInfoRelatedService):
+      void;
 }
 
 export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
@@ -681,8 +759,8 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
     ]);
   }
 
-  recordSafetyHubNotificationPermissionsModuleListCountHistogram(suggestions:
-                                                                     number) {
+  recordSafetyHubNotificationPermissionsModuleListCountHistogram(
+      suggestions: number) {
     chrome.send('metricsHandler:recordInHistogram', [
       'Settings.SafetyHub.NotificationPermissionsModule.ListCount',
       suggestions,
@@ -708,8 +786,8 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
     ]);
   }
 
-  recordSafetyHubUnusedSitePermissionsModuleListCountHistogram(suggestions:
-                                                                   number) {
+  recordSafetyHubUnusedSitePermissionsModuleListCountHistogram(
+      suggestions: number) {
     chrome.send('metricsHandler:recordInHistogram', [
       'Settings.SafetyHub.UnusedSitePermissionsModule.ListCount',
       suggestions,
@@ -725,8 +803,8 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
     ]);
   }
 
-  recordSafeBrowsingInteractionHistogram(interaction:
-                                             SafeBrowsingInteractions) {
+  recordSafeBrowsingInteractionHistogram(
+      interaction: SafeBrowsingInteractions) {
     // TODO(crbug.com/40717279): Set the correct suffix for
     // SafeBrowsing.Settings.UserAction. Use the .Default suffix for now.
     chrome.send('metricsHandler:recordInHistogram', [
@@ -736,8 +814,8 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
     ]);
   }
 
-  recordPrivacyGuideNextNavigationHistogram(interaction:
-                                                PrivacyGuideInteractions) {
+  recordPrivacyGuideNextNavigationHistogram(
+      interaction: PrivacyGuideInteractions) {
     chrome.send('metricsHandler:recordInHistogram', [
       'Settings.PrivacyGuide.NextNavigation',
       interaction,
@@ -857,6 +935,30 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
     chrome.send(
         'metricsHandler:recordInHistogram',
         [histogramName, referrer, AutofillSettingsReferrer.MAX_VALUE]);
+  }
+
+  recordYourSavedInfoCategoryClick(category: YourSavedInfoDataCategory) {
+    chrome.send('metricsHandler:recordInHistogram', [
+      'Autofill.YourSavedInfoSettingsPage.CategoryLinkClick',
+      category,
+      YourSavedInfoDataCategory.MAX_VALUE,
+    ]);
+  }
+
+  recordYourSavedInfoDataChipClick(chip: YourSavedInfoDataChip) {
+    chrome.send('metricsHandler:recordInHistogram', [
+      'Autofill.YourSavedInfoSettingsPage.DataChipClick',
+      chip,
+      YourSavedInfoDataChip.MAX_VALUE,
+    ]);
+  }
+
+  recordYourSavedInfoRelatedServiceClick(service: YourSavedInfoRelatedService) {
+    chrome.send('metricsHandler:recordInHistogram', [
+      'Autofill.YourSavedInfoSettingsPage.RelatedServiceLinkClick',
+      service,
+      YourSavedInfoRelatedService.MAX_VALUE,
+    ]);
   }
 
   static getInstance(): MetricsBrowserProxy {

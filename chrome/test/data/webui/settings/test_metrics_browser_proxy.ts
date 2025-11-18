@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {AiPageCompareInteractions, AiPageComposeInteractions, AiPageHistorySearchInteractions, AiPageInteractions, AiPageTabOrganizationInteractions, AutofillSettingsReferrer, DeleteBrowsingDataAction, MetricsBrowserProxy, PrivacyElementInteractions, PrivacyGuideInteractions, PrivacyGuideSettingsStates, PrivacyGuideStepsEligibleAndReached, SafeBrowsingInteractions, SafetyCheckNotificationsModuleInteractions, SafetyCheckUnusedSitePermissionsModuleInteractions, SafetyHubCardState, SafetyHubEntryPoint, SafetyHubModuleType, SafetyHubSurfaces} from 'chrome://settings/settings.js';
+import type {AiPageCompareInteractions, AiPageComposeInteractions, AiPageHistorySearchInteractions, AiPageInteractions, AiPageTabOrganizationInteractions, AutofillSettingsReferrer, DeleteBrowsingDataAction, MetricsBrowserProxy, PrivacyElementInteractions, PrivacyGuideInteractions, PrivacyGuideSettingsStates, PrivacyGuideStepsEligibleAndReached, SafeBrowsingInteractions, SafetyCheckNotificationsModuleInteractions, SafetyCheckUnusedSitePermissionsModuleInteractions, SafetyHubCardState, SafetyHubEntryPoint, SafetyHubModuleType, SafetyHubSurfaces, YourSavedInfoDataCategory, YourSavedInfoDataChip, YourSavedInfoRelatedService} from 'chrome://settings/settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestMetricsBrowserProxy extends TestBrowserProxy implements
@@ -40,6 +40,9 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
       'recordAiPageComposeInteractions',
       'recordAiPageTabOrganizationInteractions',
       'recordAutofillSettingsReferrer',
+      'recordYourSavedInfoCategoryClick',
+      'recordYourSavedInfoDataChipClick',
+      'recordYourSavedInfoRelatedServiceClick',
     ]);
   }
 
@@ -61,13 +64,13 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
     this.methodCalled('recordSettingsPageHistogram', interaction);
   }
 
-  recordSafeBrowsingInteractionHistogram(interaction:
-                                             SafeBrowsingInteractions) {
+  recordSafeBrowsingInteractionHistogram(
+      interaction: SafeBrowsingInteractions) {
     this.methodCalled('recordSafeBrowsingInteractionHistogram', interaction);
   }
 
-  recordPrivacyGuideNextNavigationHistogram(interaction:
-                                                PrivacyGuideInteractions) {
+  recordPrivacyGuideNextNavigationHistogram(
+      interaction: PrivacyGuideInteractions) {
     this.methodCalled('recordPrivacyGuideNextNavigationHistogram', interaction);
   }
 
@@ -137,8 +140,8 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
         interaction);
   }
 
-  recordSafetyHubNotificationPermissionsModuleListCountHistogram(suggestions:
-                                                                     number) {
+  recordSafetyHubNotificationPermissionsModuleListCountHistogram(
+      suggestions: number) {
     this.methodCalled(
         'recordSafetyHubNotificationPermissionsModuleListCountHistogram',
         suggestions);
@@ -151,8 +154,8 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
         interaction);
   }
 
-  recordSafetyHubUnusedSitePermissionsModuleListCountHistogram(suggestions:
-                                                                   number) {
+  recordSafetyHubUnusedSitePermissionsModuleListCountHistogram(
+      suggestions: number) {
     this.methodCalled(
         'recordSafetyHubUnusedSitePermissionsModuleListCountHistogram',
         suggestions);
@@ -168,8 +171,8 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
     this.methodCalled('recordAiPageInteractions', interaction);
   }
 
-  recordAiPageHistorySearchInteractions(interaction:
-                                            AiPageHistorySearchInteractions) {
+  recordAiPageHistorySearchInteractions(
+      interaction: AiPageHistorySearchInteractions) {
     this.methodCalled('recordAiPageHistorySearchInteractions', interaction);
   }
 
@@ -184,5 +187,17 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
   recordAiPageTabOrganizationInteractions(
       interaction: AiPageTabOrganizationInteractions) {
     this.methodCalled('recordAiPageTabOrganizationInteractions', interaction);
+  }
+
+  recordYourSavedInfoCategoryClick(category: YourSavedInfoDataCategory) {
+    this.methodCalled('recordYourSavedInfoCategoryClick', [category]);
+  }
+
+  recordYourSavedInfoDataChipClick(chip: YourSavedInfoDataChip) {
+    this.methodCalled('recordYourSavedInfoDataChipClick', [chip]);
+  }
+
+  recordYourSavedInfoRelatedServiceClick(service: YourSavedInfoRelatedService) {
+    this.methodCalled('recordYourSavedInfoRelatedServiceClick', [service]);
   }
 }

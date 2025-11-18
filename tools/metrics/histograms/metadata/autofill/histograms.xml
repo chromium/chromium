@@ -9117,6 +9117,37 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <summary>The time taken to display suggestion.</summary>
 </histogram>
 
+<histogram name="Autofill.YourSavedInfoSettingsPage.CategoryLinkClick"
+    enum="YourSavedInfoDataCategory" expires_after="2026-10-28">
+  <owner>ireneuszszulc@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records clicks on data categories in the 'Your saved info' settings page.
+    Emitted on every click on such a data category. Recorded on Desktop only.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.YourSavedInfoSettingsPage.DataChipClick"
+    enum="YourSavedInfoDataChip" expires_after="2026-10-28">
+  <owner>ireneuszszulc@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records clicks on data chips in the 'Your saved info' settings page. Emitted
+    on every click on such a data chip. Recorded on Desktop only.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.YourSavedInfoSettingsPage.RelatedServiceLinkClick"
+    enum="YourSavedInfoRelatedService" expires_after="2026-10-28">
+  <owner>ireneuszszulc@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records clicks on Related Services links in the 'Your saved info' settings
+    page. Emitted on every click on such a Related Service link. Recorded on
+    Desktop only.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.YourSavedInfoSettingsPage.VisitReferrer"
     enum="AutofillSettingsReferrer" expires_after="2026-10-28">
   <owner>ireneuszszulc@google.com</owner>

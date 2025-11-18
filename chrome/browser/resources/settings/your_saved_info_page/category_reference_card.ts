@@ -15,8 +15,10 @@ import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import type {YourSavedInfoDataCategory, YourSavedInfoDataChip} from '../metrics_browser_proxy.js';
+
 import {getTemplate} from './category_reference_card.html.js';
-import type {DataChip, YourSavedInfoDataCategory, YourSavedInfoDataChip} from './your_saved_info_page.js';
+import type {DataChip} from './your_saved_info_page.js';
 
 export type DataChipClickEvent = CustomEvent<{
   chipId: YourSavedInfoDataChip,

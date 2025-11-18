@@ -28,6 +28,8 @@ import {PasswordManagerImpl, PasswordManagerPage} from '../autofill_page/passwor
 import {PaymentsManagerImpl} from '../autofill_page/payments_manager_proxy.js';
 import type {PaymentsManagerProxy} from '../autofill_page/payments_manager_proxy.js';
 import {loadTimeData} from '../i18n_setup.js';
+import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
+import {MetricsBrowserProxyImpl, YourSavedInfoDataCategory, YourSavedInfoDataChip, YourSavedInfoRelatedService} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
@@ -76,38 +78,6 @@ export interface DataChip {
   computeAvailability: () => boolean;
 }
 
-/**
- * Type ID for data categories
- * TODO(crbug.com/440984049): to be replaced by enum from metrics histograms
- */
-export enum YourSavedInfoDataCategory {
-  PASSWORD_MANAGER = 0,
-  PAYMENTS = 1,
-  CONTACT_INFO = 2,
-  IDENTITY_DOCS = 3,
-  TRAVEL = 4,
-}
-
-/**
- * Type ID for data chips
- * TODO(crbug.com/440984049): to be replaced by enum from metrics histograms
- */
-export enum YourSavedInfoDataChip {
-  PASSWORDS = 0,
-  PASSKEYS = 1,
-  CREDIT_CARDS = 2,
-  PAY_OVER_TIME = 3,
-  IBANS = 4,
-  LOYALTY_CARDS = 5,
-  ADDRESSES = 6,
-  DRIVERS_LICENSES = 7,
-  NATIONAL_ID_CARDS = 8,
-  PASSPORTS = 9,
-  FLIGHT_RESERVATIONS = 10,
-  TRAVEL_INFO = 11,
-  VEHICLES = 12,
-}
-
 const SettingsYourSavedInfoPageElementBase = WebUiListenerMixin(
     SettingsViewMixin(PrefsMixin(I18nMixin(PolymerElement))));
 
@@ -147,6 +117,8 @@ export class SettingsYourSavedInfoPageElement extends
       AutofillManagerImpl.getInstance();
   private autofillAiEntityManager_: EntityDataManagerProxy =
       EntityDataManagerProxyImpl.getInstance();
+  private metricsBrowserProxy_: MetricsBrowserProxy =
+      MetricsBrowserProxyImpl.getInstance();
   private setPersonalDataListener_: PersonalDataChangedListener|null = null;
   private onAutofillAiEntitiesChangedListener_: EntityInstancesChangedListener|
       null = null;
@@ -477,12 +449,14 @@ export class SettingsYourSavedInfoPageElement extends
 
   private onDataCategoryClick_(e: DataCategoryClickEvent) {
     const categoryId: YourSavedInfoDataCategory = e.detail.categoryId;
+    this.metricsBrowserProxy_.recordYourSavedInfoCategoryClick(categoryId);
     this.navigateToLeafPage_(categoryId);
   }
 
   private onDataChipClick_(e: DataChipClickEvent) {
     const chipId: YourSavedInfoDataChip = e.detail.chipId;
     const category: DataCategory = this.dataChipIdToCategory_.get(chipId)!;
+    this.metricsBrowserProxy_.recordYourSavedInfoDataChipClick(chipId);
     this.navigateToLeafPage_(category.id);
   }
 
@@ -515,6 +489,8 @@ export class SettingsYourSavedInfoPageElement extends
    * Opens Password Manager page on clicking a related service link.
    */
   private onPasswordManagerRelatedServiceClick_() {
+    this.metricsBrowserProxy_.recordYourSavedInfoRelatedServiceClick(
+        YourSavedInfoRelatedService.GOOGLE_PASSWORD_MANAGER);
     PasswordManagerImpl.getInstance().recordPasswordsPageAccessInSettings();
     PasswordManagerImpl.getInstance().showPasswordManager(
         PasswordManagerPage.PASSWORDS);
@@ -524,6 +500,8 @@ export class SettingsYourSavedInfoPageElement extends
    * Opens Wallet page in a new tab.
    */
   private onGoogleWalletRelatedServiceClick_() {
+    this.metricsBrowserProxy_.recordYourSavedInfoRelatedServiceClick(
+        YourSavedInfoRelatedService.GOOGLE_WALLET);
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('googleWalletUrl'));
   }
@@ -532,6 +510,8 @@ export class SettingsYourSavedInfoPageElement extends
    * Opens Google Account page in a new tab.
    */
   private onGoogleAccountRelatedServiceClick_() {
+    this.metricsBrowserProxy_.recordYourSavedInfoRelatedServiceClick(
+        YourSavedInfoRelatedService.GOOGLE_ACCOUNT);
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('googleAccountUrl'));
   }
