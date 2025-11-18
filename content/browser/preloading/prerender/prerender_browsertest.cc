@@ -6599,10 +6599,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   // unexpected interfaces. But its remote end is in renderer processes and
   // inaccessible, so the test code has to create another BrowserInterfaceBroker
   // pipe and rebind the receiver end so as to send the request from the remote.
-  mojo::Receiver<blink::mojom::BrowserInterfaceBroker>& bib =
-      main_render_frame_host->browser_interface_broker_receiver_for_testing();
-  auto broker_receiver_of_previous_document = bib.Unbind();
-  ASSERT_TRUE(broker_receiver_of_previous_document);
+  ASSERT_TRUE(
+      main_render_frame_host->ResetBrowserInterfaceBrokerReceiverForTesting());
   mojo::Remote<blink::mojom::BrowserInterfaceBroker> remote_broker;
   mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker> fake_receiver =
       remote_broker.BindNewPipeAndPassReceiver();

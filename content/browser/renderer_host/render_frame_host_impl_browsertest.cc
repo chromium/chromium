@@ -3044,11 +3044,6 @@ IN_PROC_BROWSER_TEST_F(
   injector.set_fake_receiver_for_next_commit(
       std::move(interface_broker_receiver_with_pending_receiver));
 
-  // Expect that by the time the interface request for FrameHostTestInterface is
-  // dispatched to the RenderFrameHost, WebContentsObserver::DidFinishNavigation
-  // will have already been invoked.
-  bool did_finish_navigation = false;
-
   // Start the same-process navigation.
   TestNavigationManager navigation_manager(web_contents(), second_url);
   shell()->LoadURL(second_url);
@@ -3057,18 +3052,20 @@ IN_PROC_BROWSER_TEST_F(
       NavigationRequest::From(navigation_manager.GetNavigationHandle())
           ->GetRenderFrameHost();
 
-  DidFinishNavigationObserver navigation_finish_observer(
-      committing_rfh,
-      base::BindLambdaForTesting([&did_finish_navigation](NavigationHandle*) {
-        did_finish_navigation = true;
-      }));
-
+  // The run loop will exit once WebContentsObserver::DidFinishNavigation is
+  // complete and the ScopedInterfaceRequestMonitor has had its interface
+  // request dispatched to the RenderFrameHost. Note that the
+  // ScopedInterfaceRequestMonitor is attached after the navigation is finished
+  // as the BrowserInterfaceBrokerReceiver instance may have changed during the
+  // navigation.
   base::RunLoop wait_until_interface_request_is_dispatched;
-  ScopedInterfaceRequestMonitor monitor(
-      committing_rfh, mojom::FrameHostTestInterface::Name_,
-      base::BindLambdaForTesting([&]() {
-        EXPECT_TRUE(did_finish_navigation);
-        wait_until_interface_request_is_dispatched.Quit();
+  std::optional<ScopedInterfaceRequestMonitor> monitor;
+  DidFinishNavigationObserver navigation_finish_observer(
+      committing_rfh, base::BindLambdaForTesting([&](NavigationHandle*) {
+        monitor.emplace(committing_rfh, mojom::FrameHostTestInterface::Name_,
+                        base::BindLambdaForTesting([&]() {
+                          wait_until_interface_request_is_dispatched.Quit();
+                        }));
       }));
 
   // Finish the navigation.

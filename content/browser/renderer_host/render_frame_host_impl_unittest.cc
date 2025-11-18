@@ -1641,6 +1641,49 @@ class RenderFrameHostImplThirdPartyStorageTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+class RenderFrameHostImplLazyBrowserInterfaceBrokerTest
+    : public RenderFrameHostImplTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  RenderFrameHostImplLazyBrowserInterfaceBrokerTest() {
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(features::kLazyBrowserInterfaceBroker);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          features::kLazyBrowserInterfaceBroker);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that kLazyBrowserInterfaceBroker controls whether the
+// RenderFrameHostImpl is constructed with a BrokerHolder. When the flag is
+// enabled the test also confirms that lazy initialization works correctly.
+TEST_P(RenderFrameHostImplLazyBrowserInterfaceBrokerTest,
+       LazyBrowserInterfaceBroker) {
+  scoped_refptr<SiteInstance> instance =
+      SiteInstance::Create(GetBrowserContext());
+  std::unique_ptr<TestWebContents> web_contents =
+      TestWebContents::Create(GetBrowserContext(), std::move(instance));
+  RenderFrameHostImpl* rfh = web_contents->GetPrimaryMainFrame();
+  if (GetParam()) {
+    EXPECT_FALSE(rfh->has_broker_holder_for_testing());
+    mojo::Remote<blink::mojom::BrowserInterfaceBroker> broker_remote;
+    mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
+        broker_receiver = broker_remote.BindNewPipeAndPassReceiver();
+    rfh->BindBrowserInterfaceBrokerReceiver(std::move(broker_receiver));
+    EXPECT_TRUE(rfh->has_broker_holder_for_testing());
+  } else {
+    EXPECT_TRUE(rfh->has_broker_holder_for_testing());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         RenderFrameHostImplLazyBrowserInterfaceBrokerTest,
+                         testing::Bool());
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     RenderFrameHostImplThirdPartyStorageTest,
