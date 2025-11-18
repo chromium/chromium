@@ -39,32 +39,32 @@ class ActorSelectToolBrowserTest : public ActorToolsTest {
 // shown, the UI thread is blocked. See `PopupMenuHelper::ShowPopupMenu()`.
 // Disable this test on Mac for now until there is a test-only PopupMenuHelper
 // that's not blocking.
-//
-// TODO(crbug.com/439317652): this is flaky on all platforms.
 IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest,
-                       DISABLED_SelectToolCloseDropDownMenu) {
+                       SelectToolCloseDropDownMenu) {
   const GURL url = embedded_test_server()->GetURL("/actor/select_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
-  SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents());
-
-  // Click on the dropdown menu.
   content::ShowPopupWidgetWaiter new_popup_waiter(
       web_contents(), web_contents()->GetPrimaryMainFrame());
-  content::SimulateMouseClickAt(
-      web_contents(), /*modifiers=*/0, blink::WebMouseEvent::Button::kLeft,
-      gfx::ToFlooredPoint(
-          GetCenterCoordinatesOfElementWithId(web_contents(), "plainSelect")));
+
+  // Click on the dropdown menu.
+  std::unique_ptr<ToolRequest> click_action = MakeClickRequest(
+      *active_tab(), gfx::ToFlooredPoint(GetCenterCoordinatesOfElementWithId(
+                         web_contents(), "plainSelect")));
+  ActResultFuture click_result;
+  actor_task().Act(ToRequestList(click_action), click_result.GetCallback());
+  ExpectOkResult(click_result);
+
   new_popup_waiter.Wait();
   ASSERT_FALSE(new_popup_waiter.last_initial_rect().IsEmpty());
 
   // Wait for the dropdown to close.
   const int32_t plain_select_dom_node_id =
       GetDOMNodeId(*main_frame(), "#plainSelect").value();
-  std::unique_ptr<ToolRequest> action =
+  std::unique_ptr<ToolRequest> select_action =
       MakeSelectRequest(*main_frame(), plain_select_dom_node_id, "beta");
-  ActResultFuture result;
-  actor_task().Act(ToRequestList(action), result.GetCallback());
-  ExpectOkResult(result);
+  ActResultFuture select_result;
+  actor_task().Act(ToRequestList(select_action), select_result.GetCallback());
+  ExpectOkResult(select_result);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return GetPopupWidgets(web_contents()).empty(); }));
 }
