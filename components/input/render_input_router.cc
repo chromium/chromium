@@ -310,7 +310,11 @@ gfx::Size RenderInputRouter::GetRootWidgetViewportSize() {
 }
 
 void RenderInputRouter::OnUnconfirmedTapConvertedToTap() {
-  render_input_router_client_->OnUnconfirmedTapConvertedToTap();
+  // TODO(crbug.com/461701945): Reset gesture timers on Viz as well where
+  // `render_input_router_client_` is null.
+  if (render_input_router_client_) {
+    render_input_router_client_->OnUnconfirmedTapConvertedToTap();
+  }
 }
 
 blink::mojom::InputEventResultState RenderInputRouter::FilterInputEvent(
