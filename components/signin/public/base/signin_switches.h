@@ -295,6 +295,11 @@ BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kProfileCreationDeclineSigninCTAExperiment);
 
+// Experimenting with removing steps in the profile creation flow to reduce
+// friction.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kProfileCreationFrictionReductionExperiment);
+
 // Enables variations of the profile picker text.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kProfilePickerTextVariations);
@@ -409,6 +414,18 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const base::FeatureParam<SeamlessSigninStringType>
     kSeamlessSigninStringType;
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// Experimenting with variations of flow change.
+enum class ProfileCreationFrictionReductionVariation {
+  kRemoveSigninStep = 0,
+  kPrefillNameRequirement = 1,
+  kSkipCustomizeProfileStep = 2,
+};
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+extern const base::FeatureParam<ProfileCreationFrictionReductionVariation>
+    kProfileCreationFrictionReductionVariation;
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 // keep-sorted end
 

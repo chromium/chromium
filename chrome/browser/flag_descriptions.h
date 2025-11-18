@@ -4054,6 +4054,12 @@ inline constexpr char kProfilePickerTextVariationsDescription[] =
     "As part of the Profile experiments, enables variations of the profile "
     "picker text.";
 
+inline constexpr char kProfileCreationFrictionReductionExperimentName[] =
+    "Profile Creation Friction Reduction";
+inline constexpr char kProfileCreationFrictionReductionExperimentDescription[] =
+    "As part of the Profile experiments, changes parts of the profile creation "
+    "flow to reduce friction.";
+
 inline constexpr char kShowProfilePickerToAllUsersExperimentName[] =
     "Show profile picker to all users";
 inline constexpr char kShowProfilePickerToAllUsersExperimentDescription[] =

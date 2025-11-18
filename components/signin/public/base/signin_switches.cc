@@ -350,6 +350,9 @@ BASE_FEATURE_PARAM(base::TimeDelta,
 BASE_FEATURE(kProfileCreationDeclineSigninCTAExperiment,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kProfileCreationFrictionReductionExperiment,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kProfilePickerTextVariations, base::FEATURE_DISABLED_BY_DEFAULT);
 constexpr base::FeatureParam<ProfilePickerVariation>::Option
     kProfilePickerVariations[] = {
@@ -463,6 +466,24 @@ BASE_FEATURE(kWebSigninLeadsToImplicitlySignedInState,
              // THIS IS A TEST-ONLY FLAG AND SHOULD NEVER BE ENABLED.
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+constexpr base::FeatureParam<ProfileCreationFrictionReductionVariation>::Option
+    kProfileCreationFrictionReductionVariations[] = {
+        {ProfileCreationFrictionReductionVariation::kRemoveSigninStep,
+         "remove-signin-step"},
+        {ProfileCreationFrictionReductionVariation::kPrefillNameRequirement,
+         "prefill-name-requirement"},
+        {ProfileCreationFrictionReductionVariation::kSkipCustomizeProfileStep,
+         "skip-customize-profile-step"},
+};
+constexpr base::FeatureParam<ProfileCreationFrictionReductionVariation>
+    kProfileCreationFrictionReductionVariation{
+        &kProfileCreationFrictionReductionExperiment,
+        "profile-creation-friction-reduction-variation",
+        ProfileCreationFrictionReductionVariation::kRemoveSigninStep,
+        &kProfileCreationFrictionReductionVariations};
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 // keep-sorted end
 

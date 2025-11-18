@@ -8160,6 +8160,8 @@ from previous Chrome versions.
   <int value="-2098150649" label="ForceListTabSwitcher:enabled"/>
   <int value="-2097906903" label="ArcNearbySharing:disabled"/>
   <int value="-2097895488" label="NotificationScrollBar:enabled"/>
+  <int value="-2097822155"
+      label="ProfileCreationFrictionReductionExperiment:enabled"/>
   <int value="-2097737027" label="SkiaGraphite:disabled"/>
   <int value="-2097515669" label="disable-cast"/>
   <int value="-2097013050" label="WaylandTextInputV3:disabled"/>
@@ -20233,6 +20235,8 @@ from previous Chrome versions.
   <int value="2117485960" label="SupportPepperVideoDecoderDevAPI:disabled"/>
   <int value="2118287149" label="HelpAppSearchServiceIntegration:enabled"/>
   <int value="2118374092" label="MessagesForAndroidReaderMode:disabled"/>
+  <int value="2119256759"
+      label="ProfileCreationFrictionReductionExperiment:disabled"/>
   <int value="2119575519" label="ComposeUiRefinement:enabled"/>
   <int value="2119964154" label="enable-download-resumption"/>
   <int value="2120179658" label="FeedHeaderRemoval:enabled"/>
