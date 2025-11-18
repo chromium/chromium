@@ -282,7 +282,7 @@ TEST_F(PasswordImporterTest, CSVImportWithNoteFromString) {
 }
 
 TEST_F(PasswordImporterTest, CSVImportLongNote) {
-  std::string long_note = std::string(1001, '*');
+  std::string long_note = std::string(constants::kMaxPasswordNoteLength + 1, '*');
   std::string kTestCSVInput = std::string("Url,Username,Password,Notes\n") +
                               "https://test.com,test@gmail.com,pwd," +
                               long_note + "\n";
@@ -810,7 +810,8 @@ TEST_F(PasswordImporterTest, CSVImportEmptyURLReported) {
 }
 
 TEST_F(PasswordImporterTest, CSVImportLongURLReported) {
-  std::string long_url = "https://" + std::string(2048, 'a') + ".com";
+  std::string long_url =
+      "https://" + std::string(constants::kMaxUrlLengthForImport, 'a') + ".com";
   std::string kTestCSVInput =
       "Url,Username,Password\n" + long_url + ",test@gmail.com,test1   \n";
 
@@ -840,7 +841,8 @@ TEST_F(PasswordImporterTest, CSVImportLongURLReported) {
 }
 
 TEST_F(PasswordImporterTest, CSVImportLongPassword) {
-  std::string long_password = "https://" + std::string(1001, '*') + ".com";
+  std::string long_password =
+      std::string(constants::kMaxPasswordLengthForImport + 1, '*');
   std::string kTestCSVInput = std::string("Url,Username,Password\n") +
                               "https://test.com,test@gmail.com," +
                               long_password + "\n";
@@ -870,7 +872,8 @@ TEST_F(PasswordImporterTest, CSVImportLongPassword) {
 }
 
 TEST_F(PasswordImporterTest, CSVImportLongUsername) {
-  std::string long_username = "https://" + std::string(1001, '*') + ".com";
+  std::string long_username =
+      std::string(constants::kMaxUsernameLengthForImport + 1, 'a');
   std::string kTestCSVInput = std::string("Url,Username,Password\n") +
                               "https://test.com," + long_username +
                               ",password\n";

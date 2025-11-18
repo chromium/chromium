@@ -22,6 +22,9 @@ inline constexpr char kAutocompleteOneTimePassword[] = "one-time-code";
 inline constexpr char kAutocompleteWebAuthn[] = "webauthn";
 
 inline constexpr int kMaxPasswordNoteLength = 1000;
+inline constexpr int kMaxPasswordLengthForImport = 1000;
+inline constexpr int kMaxUsernameLengthForImport = 1000;
+inline constexpr int kMaxUrlLengthForImport = 2048;
 inline constexpr int kMaxPasswordsPerCSVFile = 3000;
 
 inline constexpr base::TimeDelta kPasswordManagerAuthValidity =

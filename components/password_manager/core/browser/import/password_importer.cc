@@ -28,7 +28,6 @@
 #include "components/password_manager/core/common/password_manager_constants.h"
 #include "components/password_manager/services/csv_password/csv_password_parser_service.h"
 
-using password_manager::ImportEntry;
 namespace password_manager {
 
 IncomingPasswords::IncomingPasswords() = default;
@@ -159,15 +158,15 @@ CSVPasswordToCredentialUIEntry(const CSVPassword& csv_password,
   if (password.empty()) {
     return base::unexpected(with_status(ImportEntry::Status::MISSING_PASSWORD));
   }
-  if (password.length() > 1000) {
+  if (password.length() > constants::kMaxPasswordLengthForImport) {
     return base::unexpected(with_status(ImportEntry::Status::LONG_PASSWORD));
   }
 
-  if (csv_password.GetUsername().length() > 1000) {
+  if (csv_password.GetUsername().length() > constants::kMaxUsernameLengthForImport) {
     return base::unexpected(with_status(ImportEntry::Status::LONG_USERNAME));
   }
 
-  if (csv_password.GetNote().length() > 1000) {
+  if (csv_password.GetNote().length() > constants::kMaxPasswordNoteLength) {
     return base::unexpected(with_status(ImportEntry::Status::LONG_NOTE));
   }
 
@@ -176,7 +175,7 @@ CSVPasswordToCredentialUIEntry(const CSVPassword& csv_password,
         return with_status(error.empty() ? ImportEntry::Status::MISSING_URL
                                          : ImportEntry::Status::INVALID_URL);
       });
-  if (url.spec().length() > 2048) {
+  if (url.spec().length() > constants::kMaxUrlLengthForImport) {
     return base::unexpected(with_status(ImportEntry::Status::LONG_URL));
   }
   if (!IsValidPasswordURL(url)) {
