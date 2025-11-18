@@ -1280,6 +1280,35 @@ void BrowserActions::InitializeBrowserActions() {
                         vector_icons::kChatIcon,
                         kActionSidePanelShowContextualTasks, bwi, false)
             .Build());
+
+    if (contextual_tasks::kShowEntryPoint.Get() ==
+        contextual_tasks::EntryPointOption::kPageActionRevisit) {
+      actions::ActionItem::InvokeActionCallback contextual_task_callback =
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                if (!bwi) {
+                  return;
+                }
+                chrome::ShowContextualTasksSidePanel(bwi);
+              },
+              bwi);
+      root_action_item_->AddChild(
+          actions::ActionItem::Builder(contextual_task_callback)
+              .SetActionId(kActionContextualPanelPageActionChip)
+              .SetText(l10n_util::GetStringUTF16(
+                  IDS_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_TITLE))
+              .SetTooltipText(l10n_util::GetStringUTF16(
+                  IDS_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_TITLE))
+              .SetImage(ui::ImageModel::FromVectorIcon(vector_icons::kChatIcon,
+                                                       ui::kColorIcon))
+              .SetProperty(
+                  actions::kActionItemPinnableKey,
+                  static_cast<
+                      std::underlying_type_t<actions::ActionPinnableState>>(
+                      actions::ActionPinnableState::kPinnable))
+              .Build());
+    }
   }
 // TODO(crbug.com/454112198): Delete this after Multi Instance launches. This
 // is currently only used in the experimental single instance side panel.

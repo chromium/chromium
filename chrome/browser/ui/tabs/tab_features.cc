@@ -68,6 +68,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/commerce/discounts_page_action_view_controller.h"
 #include "chrome/browser/ui/views/commerce/price_insights_page_action_view_controller.h"
+#include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_page_action_controller.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_page_action_controller.h"
 #include "chrome/browser/ui/views/intent_picker/intent_picker_view_page_action_controller.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_page_action_controller.h"
@@ -83,6 +84,7 @@
 #include "chrome/browser/ui/views/zoom/zoom_view_controller.h"
 #include "chrome/browser/ui/web_applications/pwa_install_page_action.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "components/contextual_tasks/public/features.h"
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/wallet/chrome_walletable_pass_client.h"
@@ -231,6 +233,14 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
           GetUserDataFactory()
               .CreateInstance<LensOverlayHomeworkPageActionController>(
                   tab, tab, *profile, *page_action_controller_);
+    }
+
+    if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks) &&
+        (contextual_tasks::kShowEntryPoint.Get() ==
+         contextual_tasks::EntryPointOption::kPageActionRevisit)) {
+      contextual_tasks_page_action_controller_ =
+          GetUserDataFactory()
+              .CreateInstance<ContextualTasksPageActionController>(tab, &tab);
     }
   }
 

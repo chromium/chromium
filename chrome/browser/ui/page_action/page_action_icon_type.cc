@@ -71,6 +71,10 @@ const base::FeatureParam<bool>* GetPageActionsMigrationParam(
 }  // namespace
 
 bool IsPageActionMigrated(PageActionIconType page_action) {
+  if (page_action == PageActionIconType::kContextualSidePanel) {
+    return true;
+  }
+
   const auto* feature_param = GetPageActionsMigrationParam(page_action);
   if (feature_param == nullptr) {
     return false;

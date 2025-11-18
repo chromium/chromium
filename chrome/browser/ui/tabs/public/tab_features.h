@@ -15,6 +15,7 @@
 
 class AskBeforeHttpDialogController;
 class CollaborationMessagingPageActionController;
+class ContextualTasksPageActionController;
 class CookieControlsPageActionController;
 class FileSystemAccessPageActionController;
 class FromGWSNavigationAndKeepAliveRequestObserver;
@@ -415,6 +416,11 @@ class TabFeatures {
   // Contains the recent collaboration message for a shared tab.
   std::unique_ptr<tab_groups::CollaborationMessagingTabData>
       collaboration_messaging_tab_data_;
+
+  // Controller to trigger when the contextual task page action chip to
+  // show/hide.
+  std::unique_ptr<ContextualTasksPageActionController>
+      contextual_tasks_page_action_controller_;
 
   // Responsible for managing the "Show Collaboration History" page action.
   std::unique_ptr<CollaborationMessagingPageActionController>
