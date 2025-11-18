@@ -129,12 +129,20 @@ export class CrViewManagerElement extends CrLitElement {
   switchViews(
       newViewIds: string[], enterAnimation?: string,
       exitAnimation?: string): Promise<void> {
-    const previousViews = this.querySelectorAll<HTMLElement>('.active');
-    const newViews = newViewIds.length === 0 ?
-        [] :
-        this.querySelectorAll<HTMLElement>(
-            newViewIds.map(id => `#${id}`).join(','));
-    assert(newViews.length === newViewIds.length);
+    let previousViews = new Set(this.querySelectorAll<HTMLElement>('.active'));
+    let newViews = new Set(
+        newViewIds.length === 0 ?
+            [] :
+            this.querySelectorAll<HTMLElement>(
+                newViewIds.map(id => `#${id}`).join(',')));
+    assert(newViews.size === newViewIds.length);
+
+    // Calculate views that are already active, and remove them from both
+    // `previousViews` and `newViews` as they don't need to be exited/entered
+    // again.
+    const commonViews = previousViews.intersection(newViews);
+    previousViews = previousViews.difference(commonViews);
+    newViews = newViews.difference(commonViews);
 
     const promises = [];
 
@@ -145,7 +153,7 @@ export class CrViewManagerElement extends CrLitElement {
       promises.push(this.enter_(
           view,
           enterAnimation ||
-              (previousViews.length === 0 ? 'no-animation' : 'fade-out')));
+              (previousViews.size === 0 ? 'no-animation' : 'fade-out')));
     }
 
     return Promise.all(promises).then(() => {});

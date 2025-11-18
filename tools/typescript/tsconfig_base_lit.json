@@ -2,6 +2,6 @@
   "extends": "./tsconfig_base.json",
   "compilerOptions": {
     "target": "ES2024",
-    "lib": ["ES2024", "DOM", "DOM.Iterable"]
+    "lib": ["ESNext", "DOM", "DOM.Iterable"]
   }
 }

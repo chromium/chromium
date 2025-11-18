@@ -140,6 +140,14 @@ suite('CrElementsViewManagerTest', function() {
     verifyEventFiredAndBubbled('view-enter-start', true);
     verifyEventFiredAndBubbled('view-enter-finish', true);
 
+    // calling switchView() with an already active view should not result in the
+    // events being refired.
+    fired = new Set();
+    bubbled = new Set();
+    await viewManager.switchView('viewOne');
+    verifyEventFiredAndBubbled('view-enter-start', false);
+    verifyEventFiredAndBubbled('view-enter-finish', false);
+
     const exitPromises = viewManager.switchView('viewTwo');
     verifyEventFiredAndBubbled('view-exit-start', true);
     // view-exit-finish is waiting on the animation.
