@@ -58,6 +58,7 @@ class KeyboardAccessoryView extends LinearLayout {
     private @Nullable ViewPropertyAnimator mRunningAnimation;
     private boolean mShouldSkipClosingAnimation;
     private boolean mDisableAnimations;
+    private boolean mDisableAnimationsForced;
     private boolean mAllowClicksWhileObscured;
     private boolean mHasStickyLastItem;
     private int mMaxWidth;
@@ -332,6 +333,10 @@ class KeyboardAccessoryView extends LinearLayout {
      * elevation, rounded corners and wraps its content.
      */
     private void applyUndockedStyle(CoordinatorLayout.LayoutParams params, @Px int offset) {
+        // To provide an experience similar to desktop popup, animations are disabled.
+        mDisableAnimations =
+                ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING);
         params.gravity = Gravity.CENTER | Gravity.TOP;
         params.setMargins(params.leftMargin, offset, params.rightMargin, 0);
         params.width = ViewGroup.LayoutParams.WRAP_CONTENT;
@@ -357,6 +362,7 @@ class KeyboardAccessoryView extends LinearLayout {
      * the parent width and has no elevation.
      */
     private void applyDockedStyle(CoordinatorLayout.LayoutParams params, @Px int offset) {
+        mDisableAnimations = false;
         params.gravity = Gravity.BOTTOM;
         params.setMargins(params.leftMargin, 0, params.rightMargin, offset);
         params.width = ViewGroup.LayoutParams.MATCH_PARENT;
@@ -387,11 +393,15 @@ class KeyboardAccessoryView extends LinearLayout {
     }
 
     void disableAnimationsForTesting() {
-        mDisableAnimations = true;
+        mDisableAnimationsForced = true;
     }
 
+    /**
+     * Returns true if animations are disabled by the runtime logic or if the test forced animations
+     * to be disabled.
+     */
     boolean areAnimationsDisabled() {
-        return mDisableAnimations;
+        return mDisableAnimationsForced || mDisableAnimations;
     }
 
     void setAllowClicksWhileObscured(boolean allowClicksWhileObscured) {
