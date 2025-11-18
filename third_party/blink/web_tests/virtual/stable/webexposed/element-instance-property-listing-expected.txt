@@ -1574,14 +1574,18 @@ svg element a
     property getCTM
     property getScreenCTM
     property href
+    property hreflang
     property interestForElement
     property nearestViewportElement
+    property ping
+    property referrerPolicy
     property rel
     property relList
     property requiredExtensions
     property systemLanguage
     property target
     property transform
+    property type
 svg element animate
     property beginElement
     property beginElementAt
