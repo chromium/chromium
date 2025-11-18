@@ -70,9 +70,9 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/utils.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_item.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_mediator.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/tab_resumption_helper_delegate.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/tab_resumption_item.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/tab_resumption_mediator.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/coordinator/tab_resumption_mediator.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/coordinator/tab_resumption_mediator_delegate.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/ui/tab_resumption_item.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tips/coordinator/tips_magic_stack_mediator.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tips/ui/tips_module_state.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
@@ -127,7 +127,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
                                       ShopCardMediatorDelegate,
                                       SetUpListMediatorAudience,
                                       ShortcutsMediatorDelegate,
-                                      TabResumptionHelperDelegate,
+                                      TabResumptionMediatorDelegate,
                                       TipsMagicStackMediatorDelegate>
 // For testing-only
 @property(nonatomic, assign) BOOL hasReceivedMagicStackResponse;
@@ -380,9 +380,9 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
                          withCompletion:completion];
 }
 
-#pragma mark - TabResumptionHelperDelegate
+#pragma mark - TabResumptionMediatorDelegate
 
-- (void)tabResumptionHelperDidReceiveItem {
+- (void)tabResumptionMediatorDidReceiveItem {
   CHECK(IsTabResumptionEnabled());
   if (tab_resumption_prefs::IsTabResumptionDisabled(_prefService)) {
     return;
@@ -391,7 +391,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
   [self showTabResumptionWithItem:_tabResumptionMediator.itemConfig];
 }
 
-- (void)tabResumptionHelperDidReconfigureItem {
+- (void)tabResumptionMediatorDidReconfigureItem {
   if (tab_resumption_prefs::IsTabResumptionDisabled(_prefService)) {
     return;
   }

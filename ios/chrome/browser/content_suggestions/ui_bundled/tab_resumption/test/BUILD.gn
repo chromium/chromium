@@ -1,0 +1,36 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "tab_resumption_egtest.mm" ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/commerce/core:feature_list",
+    "//components/segmentation_platform/public",
+    "//components/sync/base:features",
+    "//components/url_formatter",
+    "//components/visited_url_ranking/public",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
+    "//ios/chrome/browser/content_suggestions/ui_bundled:constants",
+    "//ios/chrome/browser/content_suggestions/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack:constants",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/public:constants",
+    "//ios/chrome/browser/ntp_tiles/model/tab_resumption:tab_resumption_prefs",
+    "//ios/chrome/browser/recent_tabs/public:ui_constants",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/start_surface/ui_bundled:feature_flags",
+    "//ios/chrome/browser/tabs/ui_bundled/tests:eg_test_support+eg2",
+    "//ios/chrome/browser/tabs/ui_bundled/tests:fake_distant_tab",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net:test_support",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

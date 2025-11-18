@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/tab_resumption_mediator.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/coordinator/tab_resumption_mediator.h"
 
 #import <algorithm>
 
@@ -45,12 +45,12 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/impression_limits/model/impression_limit_service.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_data.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/tab_resumption_commands.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/tab_resumption_constants.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/tab_resumption_consumer.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/tab_resumption_consumer_source.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/tab_resumption_helper_delegate.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/tab_resumption_item.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/coordinator/tab_resumption_mediator_delegate.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/public/tab_resumption_constants.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/ui/tab_resumption_commands.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/ui/tab_resumption_consumer.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/ui/tab_resumption_consumer_source.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/ui/tab_resumption_item.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
@@ -389,7 +389,7 @@ class TabResumptionMediatorProxy {
   raw_ptr<bookmarks::BookmarkModel> _bookmarkModel;
   raw_ptr<PushNotificationService> _pushNotificationService;
   raw_ptr<AuthenticationService> _authenticationService;
-  // LINT.ThenChange(//ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/tab_resumption_mediator.mm:ClearDependencies)
+  // LINT.ThenChange(//ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/coordinator/tab_resumption_mediator.mm:ClearDependencies)
 
   // Observer bridge for mediator to listen to
   // StartSurfaceRecentTabObserverBridge.
@@ -501,7 +501,7 @@ class TabResumptionMediatorProxy {
   _bookmarkModel = nullptr;
   _pushNotificationService = nullptr;
   _authenticationService = nullptr;
-  // LINT.ThenChange(//ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/tab_resumption_mediator.mm:Dependencies)
+  // LINT.ThenChange(//ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/coordinator/tab_resumption_mediator.mm:Dependencies)
 }
 
 #pragma mark - Public methods
@@ -703,7 +703,7 @@ class TabResumptionMediatorProxy {
   tab_resumption_prefs::DisableTabResumption(_profilePrefs);
 }
 
-- (void)setDelegate:(id<TabResumptionHelperDelegate>)delegate {
+- (void)setDelegate:(id<TabResumptionMediatorDelegate>)delegate {
   _delegate = delegate;
   if (_delegate) {
     [self fetchLastTabResumptionItem];
@@ -1125,7 +1125,7 @@ class TabResumptionMediatorProxy {
   }
   if (!self.itemConfig) {
     self.itemConfig = item;
-    [self.delegate tabResumptionHelperDidReceiveItem];
+    [self.delegate tabResumptionMediatorDidReceiveItem];
     [self fetchPriceDropIfApplicable:item];
     return;
   }
@@ -1133,7 +1133,7 @@ class TabResumptionMediatorProxy {
   // The item is already used by some view, so it cannot be replaced.
   // Instead the existing config must be updated.
   [self.itemConfig reconfigureWithItem:item];
-  [self.delegate tabResumptionHelperDidReconfigureItem];
+  [self.delegate tabResumptionMediatorDidReconfigureItem];
   [self fetchPriceDropIfApplicable:item];
 }
 

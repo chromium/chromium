@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_TAB_RESUMPTION_TAB_RESUMPTION_ITEM_H_
-#define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_TAB_RESUMPTION_TAB_RESUMPTION_ITEM_H_
+#ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_TAB_RESUMPTION_UI_TAB_RESUMPTION_ITEM_H_
+#define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_TAB_RESUMPTION_UI_TAB_RESUMPTION_ITEM_H_
 
 #import <UIKit/UIKit.h>
 
@@ -13,15 +13,14 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_module.h"
 #import "ios/web/public/web_state.h"
 
-@protocol TabResumptionCommands;
-@protocol TabResumptionConsumerSource;
-@class ShopCardData;
-
 namespace base {
 class Time;
 }  // namespace base
 
 class GURL;
+@protocol TabResumptionCommands;
+@protocol TabResumptionConsumerSource;
+@class ShopCardData;
 
 // Tab resumption item types.
 enum TabResumptionItemType {
@@ -89,4 +88,4 @@ enum TabResumptionItemType {
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_TAB_RESUMPTION_TAB_RESUMPTION_ITEM_H_
+#endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_TAB_RESUMPTION_UI_TAB_RESUMPTION_ITEM_H_

@@ -51,9 +51,9 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/safety_check_magic_stack_mediator.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/set_up_list_mediator.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/utils.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/tab_resumption_helper_delegate.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/tab_resumption_item.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/tab_resumption_mediator.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/coordinator/tab_resumption_mediator.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/coordinator/tab_resumption_mediator_delegate.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/ui/tab_resumption_item.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tips/coordinator/tips_magic_stack_mediator.h"
 #import "ios/chrome/browser/default_browser/model/utils_test_support.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_cache_factory.h"
@@ -214,7 +214,7 @@ std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
 @interface MagicStackRankingModel (Testing) <
     SafetyCheckMagicStackMediatorDelegate,
     TipsMagicStackMediatorDelegate,
-    TabResumptionHelperDelegate>
+    TabResumptionMediatorDelegate>
 @property(nonatomic, assign, readonly) BOOL hasReceivedMagicStackResponse;
 @property(nonatomic, assign, readonly) BOOL hasReceivedEphemericalCardResponse;
 @end
@@ -578,7 +578,7 @@ TEST_F(MagicStackRankingModelTest, TestFeatureInsertCalls) {
         return [delegate_.rank count] > 0;
       }));
 
-  [_magicStackRankingModel tabResumptionHelperDidReceiveItem];
+  [_magicStackRankingModel tabResumptionMediatorDidReceiveItem];
   EXPECT_EQ(delegate_.lastInsertionIndex, 2u);
   EXPECT_EQ(delegate_.lastInsertedItem, _tabResumptionMediator.itemConfig);
 }

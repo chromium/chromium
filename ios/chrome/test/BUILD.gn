@@ -247,7 +247,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/content_suggestions/ui_bundled/price_tracking_promo/ui:unit_tests",
     "//ios/chrome/browser/content_suggestions/ui_bundled/safety_check:unit_tests",
     "//ios/chrome/browser/content_suggestions/ui_bundled/set_up_list:unit_tests",
-    "//ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption:unit_tests",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/ui:unit_tests",
     "//ios/chrome/browser/content_suggestions/ui_bundled/tips/coordinator:unit_tests",
     "//ios/chrome/browser/content_suggestions/ui_bundled/tips/test:unit_tests",
     "//ios/chrome/browser/context_menu/ui_bundled:unit_tests",
