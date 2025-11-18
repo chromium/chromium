@@ -21,7 +21,6 @@ void TestVotesUploader::UploadVote(
     base::TimeTicks initial_interaction_timestamp,
     base::TimeTicks submission_timestamp,
     bool observed_submission,
-    const std::u16string& last_unlocked_credit_card_cvc,
     const ukm::SourceId source_id) {
   submitted_form_signature_ = submitted_form->FormSignatureAsStr();
 
@@ -67,10 +66,10 @@ void TestVotesUploader::UploadVote(
     }
   }
 
-  VotesUploader::UploadVote(
-      std::move(submitted_form), std::move(upload_contents),
-      initial_interaction_timestamp, submission_timestamp, observed_submission,
-      last_unlocked_credit_card_cvc, source_id);
+  VotesUploader::UploadVote(std::move(submitted_form),
+                            std::move(upload_contents),
+                            initial_interaction_timestamp, submission_timestamp,
+                            observed_submission, source_id);
 }
 
 bool TestVotesUploader::MaybeStartVoteUploadProcess(

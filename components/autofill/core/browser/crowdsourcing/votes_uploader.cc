@@ -300,8 +300,7 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
       base::BindOnce(&VotesUploader::OnFieldTypesDetermined,
                      weak_ptr_factory_.GetWeakPtr(),
                      initial_interaction_timestamp, base::TimeTicks::Now(),
-                     observed_submission, last_unlocked_credit_card_cvc,
-                     ukm_source_id));
+                     observed_submission, ukm_source_id));
   return true;
 }
 
@@ -309,7 +308,6 @@ void VotesUploader::OnFieldTypesDetermined(
     base::TimeTicks initial_interaction_timestamp,
     base::TimeTicks submission_timestamp,
     bool observed_submission,
-    const std::u16string& last_unlocked_credit_card_cvc,
     ukm::SourceId ukm_source_id,
     std::pair<std::unique_ptr<FormStructure>,
               std::vector<AutofillUploadContents>> form_and_upload_contents) {
@@ -319,8 +317,7 @@ void VotesUploader::OnFieldTypesDetermined(
   if (observed_submission) {
     UploadVote(std::move(form), std::move(upload_contents),
                initial_interaction_timestamp, submission_timestamp,
-               observed_submission, last_unlocked_credit_card_cvc,
-               ukm_source_id);
+               observed_submission, ukm_source_id);
     FlushPendingVotesForFrame(frame);
   } else {
     FlushOldestPendingVotesIfNecessary();
@@ -331,8 +328,7 @@ void VotesUploader::OnFieldTypesDetermined(
              &VotesUploader::UploadVote, weak_ptr_factory_.GetWeakPtr(),
              std::move(form), std::move(upload_contents),
              initial_interaction_timestamp, submission_timestamp,
-             observed_submission, last_unlocked_credit_card_cvc,
-             ukm_source_id)});
+             observed_submission, ukm_source_id)});
   }
 }
 
@@ -356,7 +352,6 @@ void VotesUploader::UploadVote(
     base::TimeTicks initial_interaction_timestamp,
     base::TimeTicks submission_timestamp,
     bool observed_submission,
-    const std::u16string& last_unlocked_credit_card_cvc,
     ukm::SourceId ukm_source_id) {
   auto count_types = [&submitted_form](FormType type) {
     return std::ranges::count_if(

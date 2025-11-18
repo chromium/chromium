@@ -1479,6 +1479,7 @@ source_set("unit_tests") {
     "crowdsourcing/determine_possible_field_types_unittest.cc",
     "crowdsourcing/disambiguate_possible_field_types_unittest.cc",
     "crowdsourcing/randomized_encoder_unittest.cc",
+    "crowdsourcing/votes_uploader_unittest.cc",
     "data_manager/addresses/account_name_email_store_unittest.cc",
     "data_manager/addresses/account_name_email_strike_manager_unittests.cc",
     "data_manager/addresses/address_data_cleaner_unittest.cc",
