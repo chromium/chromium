@@ -60,6 +60,13 @@ void OmniboxAimPopupWebUIContent::ShowUI() {
 }
 
 void OmniboxAimPopupWebUIContent::CloseUI() {
+  // If the popup state is already kNone, don't take any action. Closing the UI
+  // multiple times can result in incorrect state transitions from OnClose.
+  if (controller()->popup_state_manager()->popup_state() ==
+      OmniboxPopupState::kNone) {
+    return;
+  }
+
   // Update the popup state manager that the aim popup is closing.
   // LocationBarView is subscribed to state changes and will close the widget.
   controller()->popup_state_manager()->SetPopupState(OmniboxPopupState::kNone);
