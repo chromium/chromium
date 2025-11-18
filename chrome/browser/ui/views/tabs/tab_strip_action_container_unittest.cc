@@ -7,6 +7,8 @@
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/glic/test_support/glic_test_environment.h"
+#include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -37,10 +39,7 @@
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/widget/widget.h"
 
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/test_support/glic_test_environment.h"
-#include "chrome/browser/glic/test_support/glic_test_util.h"
-#endif  // BUILDFLAG(ENABLE_GLIC)
+static_assert(BUILDFLAG(ENABLE_GLIC));
 
 // TODO(crbug.com/461140208): Re-enable failing tests on ChromeOS.
 #if BUILDFLAG(IS_CHROMEOS)
@@ -94,7 +93,6 @@ class TabStripActionContainerTest : public ChromeViewsTestBase,
   TabStripActionContainerTest()
       : animation_mode_reset_(gfx::AnimationTestApi::SetRichAnimationRenderMode(
             gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED)) {
-#if BUILDFLAG(ENABLE_GLIC)
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
         {features::kGlic, {}},
         {features::kTabstripComboButton, {}},
@@ -109,7 +107,6 @@ class TabStripActionContainerTest : public ChromeViewsTestBase,
     }
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                        disabled_features);
-#endif  // BUILDFLAG(ENABLE_GLIC)
   }
   TabStripActionContainerTest(const TabStripActionContainerTest&) = delete;
   TabStripActionContainerTest& operator=(const TabStripActionContainerTest&) =
@@ -123,9 +120,7 @@ class TabStripActionContainerTest : public ChromeViewsTestBase,
     ASSERT_TRUE(testing_profile_manager_->SetUp());
     TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
     profile_ = std::make_unique<TestingProfile>();
-#if BUILDFLAG(ENABLE_GLIC)
     glic_test_environment_.SetupProfile(profile_.get());
-#endif  // BUILDFLAG(ENABLE_GLIC)
     web_contents_ = content::WebContentsTester::CreateTestWebContents(
         profile_.get(), nullptr);
   }
@@ -188,9 +183,7 @@ class TabStripActionContainerTest : public ChromeViewsTestBase,
   }
 
  protected:
-#if BUILDFLAG(ENABLE_GLIC)
   glic::GlicUnitTestEnvironment glic_test_environment_;
-#endif
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
   std::unique_ptr<TabStrip> tab_strip_;
   std::unique_ptr<TabStripModel> tab_strip_model_;
@@ -226,7 +219,6 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
                          ::testing::Bool(),
                          &TabStripActionContainerTest::GetParamName);
 
-#if BUILDFLAG(ENABLE_GLIC)
 TEST_P(TabStripActionContainerTest, MAYBE(GlicButtonDrawing)) {
   BuildGlicContainer(/*use_otr_profile=*/false);
   EXPECT_TRUE(tab_strip_action_container_->GetGlicButton());
@@ -236,7 +228,6 @@ TEST_P(TabStripActionContainerTest, MAYBE(GlicButtonUnsupportedProfile)) {
   BuildGlicContainer(/*use_otr_profile=*/true);
   EXPECT_FALSE(tab_strip_action_container_->GetGlicButton());
 }
-#endif  // BUILDFLAG(ENABLE_GLIC)
 
 TEST_P(TabStripActionContainerTest,
        MAYBE(OrdersButtonsCorrectlyAtConstruction)) {
@@ -247,7 +238,6 @@ TEST_P(TabStripActionContainerTest,
   ASSERT_EQ(tab_strip_action_container_->auto_tab_group_button(),
             tab_strip_action_container_->children()[1]);
 
-#if BUILDFLAG(ENABLE_GLIC)
 // TODO(crbug.com/437141881): Fix flaky tests on Mac.
 // Mac doesn't have a separator, so the children sizes are different.
 #if !BUILDFLAG(IS_MAC)
@@ -266,13 +256,11 @@ TEST_P(TabStripActionContainerTest,
   ASSERT_EQ(tab_strip_action_container_->GetGlicButton(),
             tab_strip_action_container_->children()[3]);
 #endif  // !BUILDFLAG(IS_MAC)
-#endif  // BUILDFLAG(ENABLE_GLIC)
 }
 
 TEST_P(TabStripActionContainerTest, MAYBE(OrdersButtonsCorrectlyWhenShown)) {
   BuildGlicContainer(/*use_otr_profile=*/false);
 
-#if BUILDFLAG(ENABLE_GLIC)
 // TODO(crbug.com/437141881): Fix flaky tests on Mac.
 // Mac doesn't have a separator, so the children sizes are different.
 #if !BUILDFLAG(IS_MAC)
@@ -310,10 +298,8 @@ TEST_P(TabStripActionContainerTest, MAYBE(OrdersButtonsCorrectlyWhenShown)) {
                   ->children()[1]);
   }
 #endif  // !BUILDFLAG(IS_MAC)
-#endif  // BUILDFLAG(ENABLE_GLIC)
 }
 
-#if BUILDFLAG(ENABLE_GLIC)
 TEST_P(TabStripActionContainerTest, MAYBE(GlicButtonUpdateLabel)) {
   BuildGlicContainer(/*use_otr_profile=*/false);
   glic_nudge_controller_->UpdateNudgeLabel(
@@ -338,7 +324,6 @@ TEST_P(TabStripActionContainerTest, MAYBE(GlicButtonHideNudgeOnTabChange)) {
   ASSERT_FALSE(tab_strip_action_container_->GetIsShowingGlicNudge());
   ASSERT_EQ(tab_strip_action_container_->GetGlicButton()->GetText(), u"Gemini");
 }
-#endif  // BUILDFLAG(ENABLE_GLIC)
 
 class TabStripActionContainerTestWithProduct
     : public TabStripActionContainerTest {
@@ -369,7 +354,6 @@ TEST_P(TabStripActionContainerTestWithProduct, MAYBE(OrdersButtonsCorrectly)) {
   ASSERT_EQ(tab_strip_action_container_->GetProductSpecificationsButton(),
             tab_strip_action_container_->children()[2]);
 
-#if BUILDFLAG(ENABLE_GLIC)
 // TODO(crbug.com/437141881): Fix flaky tests on Mac.
 // Mac doesn't have a separator, so the children sizes are different.
 #if !BUILDFLAG(IS_MAC)
@@ -388,5 +372,4 @@ TEST_P(TabStripActionContainerTestWithProduct, MAYBE(OrdersButtonsCorrectly)) {
   ASSERT_EQ(tab_strip_action_container_->GetGlicButton(),
             tab_strip_action_container_->children()[4]);
 #endif  // !BUILDFLAG(IS_MAC)
-#endif  // BUILDFLAG(ENABLE_GLIC)
 }
