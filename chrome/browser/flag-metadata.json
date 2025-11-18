@@ -5701,7 +5701,7 @@
     "owners": [ "//chrome/browser/ui/hats/OWNERS" ],
     // A debugging and demo flag to allow UI/dev/testing team to always show the UI
     // components for the survey without being limited by the triggering mechanism.
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
     "name": "happy-eyeballs-v3",
@@ -5718,7 +5718,7 @@
     "owners": [
       "//chrome/browser/ui/hats/OWNERS"
     ],
-    "expiry_milestone": 126
+    "expiry_milestone": 150
   },
   {
     "name": "hdr-agtm",
