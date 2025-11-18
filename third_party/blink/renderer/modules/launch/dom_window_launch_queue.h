@@ -26,7 +26,7 @@ class DOMWindowLaunchQueue final
  public:
   static const unsigned kSupplementIndex;
 
-  explicit DOMWindowLaunchQueue(LocalDOMWindow& window);
+  explicit DOMWindowLaunchQueue();
 
   // IDL Interface.
   static LaunchQueue* launchQueue(LocalDOMWindow&);
@@ -45,7 +45,6 @@ class DOMWindowLaunchQueue final
  private:
   static DOMWindowLaunchQueue* FromState(LocalDOMWindow* window);
 
-  Member<LocalDOMWindow> local_dom_window_;
   Member<LaunchQueue> launch_queue_;
 };
 

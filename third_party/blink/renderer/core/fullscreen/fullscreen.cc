@@ -588,7 +588,7 @@ bool Fullscreen::IsInFullscreenElementStack(const Element& element) {
 }
 
 Fullscreen::Fullscreen(LocalDOMWindow& window)
-    : ExecutionContextLifecycleObserver(&window), local_dom_window_(window) {}
+    : ExecutionContextLifecycleObserver(&window) {}
 
 Fullscreen::~Fullscreen() = default;
 
@@ -1266,7 +1266,6 @@ bool Fullscreen::IsFullscreenFlagSetFor(const Element& element) {
 void Fullscreen::Trace(Visitor* visitor) const {
   visitor->Trace(pending_requests_);
   visitor->Trace(pending_exits_);
-  visitor->Trace(local_dom_window_);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 

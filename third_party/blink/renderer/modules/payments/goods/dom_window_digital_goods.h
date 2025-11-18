@@ -39,7 +39,6 @@ class DOMWindowDigitalGoods final
   void Trace(Visitor* visitor) const override;
 
  private:
-  Member<LocalDOMWindow> local_dom_window_;
   HeapMojoRemote<payments::mojom::blink::DigitalGoodsFactory> mojo_service_;
 
   static DOMWindowDigitalGoods* FromState(LocalDOMWindow*);

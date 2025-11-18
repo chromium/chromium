@@ -35,7 +35,6 @@ void CSSAnimationWorklet::ContextDestroyed() {
 
 void CSSAnimationWorklet::Trace(Visitor* visitor) const {
   visitor->Trace(animation_worklet_);
-  visitor->Trace(local_dom_window_);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
@@ -51,7 +50,6 @@ CSSAnimationWorklet& CSSAnimationWorklet::From(LocalDOMWindow& window) {
 
 CSSAnimationWorklet::CSSAnimationWorklet(LocalDOMWindow& window)
     : ExecutionContextLifecycleObserver(&window),
-      local_dom_window_(window),
       animation_worklet_(MakeGarbageCollected<AnimationWorklet>(window)) {
   DCHECK(GetExecutionContext());
 }

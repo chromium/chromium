@@ -57,7 +57,6 @@ class FontAccess final : public GarbageCollected<FontAccess>,
 
   void OnDisconnect();
 
-  Member<LocalDOMWindow> local_dom_window_;
   HeapMojoRemote<mojom::blink::FontAccessManager> remote_;
 };
 

@@ -111,8 +111,6 @@ class MODULES_EXPORT PaintWorklet : public Worklet {
   // This function calculates the next global scope to switch to.
   virtual wtf_size_t SelectNewGlobalScope();
 
-  Member<LocalDOMWindow> local_dom_window_;
-
   Member<PaintWorkletPendingGeneratorRegistry> pending_generator_registry_;
 
   // Used for both main and off-thread CSS Paint.

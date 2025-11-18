@@ -88,7 +88,6 @@ class MODULES_EXPORT ScreenOrientationController final
       std::unique_ptr<WebLockOrientationCallback> callback);
   void UnlockOrientationInternal();
 
-  Member<LocalDOMWindow> local_dom_window_;
   Member<ScreenOrientation> orientation_;
   bool active_lock_ = false;
   HeapMojoAssociatedRemote<device::mojom::blink::ScreenOrientation>

@@ -31,7 +31,7 @@ class CORE_EXPORT ResizeObserverController final
   static ResizeObserverController* From(LocalDOMWindow&);
   static ResizeObserverController* FromIfExists(LocalDOMWindow&);
 
-  explicit ResizeObserverController(LocalDOMWindow&);
+  ResizeObserverController() = default;
 
   void AddObserver(ResizeObserver&);
 
@@ -61,7 +61,6 @@ class CORE_EXPORT ResizeObserverController final
   }
 
  private:
-  Member<LocalDOMWindow> local_dom_window_;
   // Active observers
   HeapLinkedHashSet<WeakMember<ResizeObserver>> observers_;
   // Minimum depth for observations to be active

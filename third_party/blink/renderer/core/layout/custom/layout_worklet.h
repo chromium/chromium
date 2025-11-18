@@ -60,7 +60,6 @@ class CORE_EXPORT LayoutWorklet : public Worklet {
   bool NeedsToCreateGlobalScope() final;
   WorkletGlobalScopeProxy* CreateGlobalScope() final;
 
-  Member<LocalDOMWindow> local_dom_window_;
   DocumentDefinitionMap document_definition_map_;
   Member<PendingLayoutRegistry> pending_layout_registry_;
 };

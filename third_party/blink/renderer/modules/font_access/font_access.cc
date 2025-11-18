@@ -34,12 +34,10 @@ const char kFeaturePolicyBlocked[] =
     "Access to the feature \"local-fonts\" is disallowed by Permissions Policy";
 }
 
-FontAccess::FontAccess(LocalDOMWindow* window)
-    : local_dom_window_(*window), remote_(window) {}
+FontAccess::FontAccess(LocalDOMWindow* window) : remote_(window) {}
 
 void FontAccess::Trace(blink::Visitor* visitor) const {
   visitor->Trace(remote_);
-  visitor->Trace(local_dom_window_);
 }
 
 // static

@@ -29,7 +29,6 @@ class MODULES_EXPORT CSSAnimationWorklet final
  private:
   static CSSAnimationWorklet& From(LocalDOMWindow&);
 
-  Member<LocalDOMWindow> local_dom_window_;
   Member<AnimationWorklet> animation_worklet_;
 };
 

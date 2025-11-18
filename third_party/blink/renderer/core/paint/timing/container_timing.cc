@@ -35,8 +35,7 @@ ContainerTiming& ContainerTiming::From(LocalDOMWindow& window) {
 }
 
 ContainerTiming::ContainerTiming(LocalDOMWindow& window)
-    : local_dom_window_(window),
-      performance_(DOMWindowPerformance::performance(window)) {}
+    : performance_(DOMWindowPerformance::performance(window)) {}
 
 bool ContainerTiming::CanReportToContainerTiming() const {
   DCHECK(performance_);
@@ -225,7 +224,6 @@ void ContainerTiming::EmitPerformanceEntries() {
 }
 
 void ContainerTiming::Trace(Visitor* visitor) const {
-  visitor->Trace(local_dom_window_);
   visitor->Trace(performance_);
   visitor->Trace(container_root_records_);
 }

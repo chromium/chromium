@@ -113,20 +113,17 @@ ThirdPartyScriptDetector& ThirdPartyScriptDetector::From(
     LocalDOMWindow& window) {
   ThirdPartyScriptDetector* supplement = window.GetThirdPartyScriptDetector();
   if (!supplement) {
-    supplement = MakeGarbageCollected<ThirdPartyScriptDetector>(window);
+    supplement = MakeGarbageCollected<ThirdPartyScriptDetector>();
     window.SetThirdPartyScriptDetector(supplement);
   }
   return *supplement;
 }
 
-ThirdPartyScriptDetector::ThirdPartyScriptDetector(LocalDOMWindow& window)
-    : local_dom_window_(window),
-      precompiled_detection_regex__(
+ThirdPartyScriptDetector::ThirdPartyScriptDetector()
+    : precompiled_detection_regex__(
           kThirdPartyTechnologiesSourceLocationRegexString) {}
 
-void ThirdPartyScriptDetector::Trace(Visitor* visitor) const {
-  visitor->Trace(local_dom_window_);
-}
+void ThirdPartyScriptDetector::Trace(Visitor* visitor) const {}
 
 ThirdPartyScriptDetector::Technology ThirdPartyScriptDetector::Detect(
     const String url) {

@@ -37,7 +37,6 @@ PaintWorklet* PaintWorklet::From(LocalDOMWindow& window) {
 
 PaintWorklet::PaintWorklet(LocalDOMWindow& window)
     : Worklet(window),
-      local_dom_window_(window),
       pending_generator_registry_(
           MakeGarbageCollected<PaintWorkletPendingGeneratorRegistry>()),
       worklet_id_(PaintWorkletIdGenerator::NextId()),
@@ -141,7 +140,6 @@ void PaintWorklet::Trace(Visitor* visitor) const {
   visitor->Trace(pending_generator_registry_);
   visitor->Trace(proxy_client_);
   Worklet::Trace(visitor);
-  visitor->Trace(local_dom_window_);
 }
 
 void PaintWorklet::RegisterCSSPaintDefinition(const String& name,

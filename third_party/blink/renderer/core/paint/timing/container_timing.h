@@ -88,7 +88,6 @@ class CORE_EXPORT ContainerTiming final
   Record* GetOrCreateRecord(const DOMPaintTimingInfo& paint_timing_info,
                             Element* container_root);
 
-  Member<LocalDOMWindow> local_dom_window_;
   Member<WindowPerformance> performance_;
   HeapHashMap<WeakMember<Element>, Member<Record>> container_root_records_;
 };

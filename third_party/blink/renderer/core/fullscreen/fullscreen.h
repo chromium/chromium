@@ -155,8 +155,6 @@ class CORE_EXPORT Fullscreen final : public GarbageCollected<Fullscreen>,
                                 Element* new_element,
                                 FullscreenRequestType new_request_type);
 
-  Member<LocalDOMWindow> local_dom_window_;
-
   // Stores the pending request, promise and the type for executing
   // the asynchronous portion of the request.
   class PendingRequest : public GarbageCollected<PendingRequest> {
