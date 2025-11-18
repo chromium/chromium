@@ -124,9 +124,8 @@ bool SegmentedBuffer::GetBytes(base::span<uint8_t> buffer) const {
       break;
     }
     const size_t to_be_written = std::min(span.size(), buffer.size());
-    auto [buffer_fragment, rest] = buffer.split_at(to_be_written);
-    buffer_fragment.copy_from(base::as_bytes(span.first(to_be_written)));
-    buffer = rest;
+    buffer.take_first(to_be_written)
+        .copy_from(base::as_bytes(span.first(to_be_written)));
   }
   return buffer.empty();
 }

@@ -556,15 +556,13 @@ bool XRFrame::fillPoses(const HeapVector<Member<XRSpace>>& spaces,
   bool all_valid = true;
   auto transforms_data = transforms->AsSpan();
   for (const auto& space : spaces) {
-    auto [current_transform, remaining] =
-        transforms_data.split_at(kFloatsPerTransform);
+    auto current_transform = transforms_data.take_first<kFloatsPerTransform>();
     if (const XRPose* pose = space->getPose(base_space)) {
       current_transform.copy_from(pose->transform()->matrix()->AsSpan());
     } else {
       std::ranges::fill(current_transform, NAN);
       all_valid = false;
     }
-    transforms_data = remaining;
   }
 
   return all_valid;

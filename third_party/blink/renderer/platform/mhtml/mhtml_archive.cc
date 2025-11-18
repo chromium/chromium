@@ -408,11 +408,10 @@ void MHTMLArchive::GenerateMHTMLPart(const String& boundary,
 
       auto encoded_data_span = base::span(encoded_data);
       do {
-        auto [encoded_data_line, rest] = encoded_data_span.split_at(
+        auto encoded_data_line = encoded_data_span.take_first(
             std::min(encoded_data_span.size(), kMaximumLineLength));
         output_buffer.AppendSpan(encoded_data_line);
         output_buffer.AppendSpan(base::span_from_cstring("\r\n"));
-        encoded_data_span = rest;
       } while (!encoded_data_span.empty());
     }
   }

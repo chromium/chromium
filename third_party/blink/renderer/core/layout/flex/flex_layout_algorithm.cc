@@ -1369,8 +1369,7 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
   flex_lines->reserve(result.flex_lines.size());
   for (auto& line : result.flex_lines) {
     // Flex the items.
-    auto [line_items, remaining_items] = items.split_at(line.count);
-    items = remaining_items;
+    auto line_items = items.take_first(line.count);
     LineFlexer(line_items, main_axis_inner_size,
                line.sum_hypothetical_main_size, gap_between_items_)
         .Run();

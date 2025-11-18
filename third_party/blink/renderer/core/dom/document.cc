@@ -7467,11 +7467,10 @@ static ParseQualifiedNameResult ParseQualifiedNameInternal(
     prefix = g_null_atom;
     local_name = qualified_name;
   } else {
-    auto [prefix_span, rest] = characters.split_at(colon_pos);
-    prefix = AtomicString(prefix_span);
+    prefix = AtomicString(characters.take_first(colon_pos));
     if (prefix.empty())
       return ParseQualifiedNameResult(kQNEmptyPrefix);
-    local_name = AtomicString(rest.subspan(1u));
+    local_name = AtomicString(characters.template subspan<1u>());
   }
 
   if (local_name.empty())

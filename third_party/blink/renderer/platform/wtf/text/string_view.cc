@@ -113,9 +113,7 @@ std::string StringView::Utf8(Utf8ConversionMode mode) const {
           DCHECK_LE(characters[result.consumed], 0xDFFF);
           // There should be room left, since one UChar hasn't been
           // converted.
-          auto [replacement_buffer, rest] = buffer.split_at<3u>();
-          PutUTF8Triple(replacement_buffer, uchar::kReplacementCharacter);
-          buffer = rest;
+          PutUTF8Triple(buffer.take_first<3u>(), uchar::kReplacementCharacter);
           result.consumed++;
         }
         characters = characters.subspan(result.consumed);

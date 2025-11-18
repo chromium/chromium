@@ -190,21 +190,15 @@ inline void VTTScanner::SkipUntil() {
 template <bool predicate(UChar)>
 inline VTTScanner VTTScanner::SubrangeWhile() {
   const size_t count = CountWhile<predicate>();
-  return VTTScanner(Invoke([count](auto& buf) {
-    State collected;
-    std::tie(collected, buf) = buf.split_at(count);
-    return collected;
-  }));
+  return VTTScanner(
+      Invoke([count](auto& buf) { return State(buf.take_first(count)); }));
 }
 
 template <bool predicate(UChar)>
 inline VTTScanner VTTScanner::SubrangeUntil() {
   const size_t count = CountUntil<predicate>();
-  return VTTScanner(Invoke([count](auto& buf) {
-    State collected;
-    std::tie(collected, buf) = buf.split_at(count);
-    return collected;
-  }));
+  return VTTScanner(
+      Invoke([count](auto& buf) { return State(buf.take_first(count)); }));
 }
 
 inline UChar VTTScanner::CurrentChar() const {

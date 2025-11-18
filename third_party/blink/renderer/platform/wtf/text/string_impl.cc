@@ -1339,27 +1339,25 @@ scoped_refptr<StringImpl> StringImpl::Replace(wtf_size_t position,
     base::span<LChar> data8;
     scoped_refptr<StringImpl> new_impl = CreateUninitialized(new_length, data8);
 
-    auto [data8_before, data8_rest] = data8.split_at(position);
-    data8_before.copy_from(source8.first(position));
-    auto [data8_replaced, data8_after] = data8_rest.split_at(string.length());
+    data8.take_first(position).copy_from(source8.first(position));
+    auto data8_replaced = data8.take_first(string.length());
     if (!string.IsNull()) {
       data8_replaced.copy_from(string.Span8());
     }
-    data8_after.copy_from(source8.subspan(position + length_to_replace));
+    data8.copy_from(source8.subspan(position + length_to_replace));
     return new_impl;
   }
 
   base::span<UChar> data16;
   scoped_refptr<StringImpl> new_impl = CreateUninitialized(new_length, data16);
 
-  auto [data16_before, data16_rest] = data16.split_at(position);
-  CopyStringFragment(StringView(*this, 0, position), data16_before);
-  auto [data16_replaced, data16_after] = data16_rest.split_at(string.length());
+  CopyStringFragment(StringView(*this, 0, position),
+                     data16.take_first(position));
+  auto data16_replaced = data16.take_first(string.length());
   if (!string.IsNull()) {
     CopyStringFragment(string, data16_replaced);
   }
-  CopyStringFragment(StringView(*this, position + length_to_replace),
-                     data16_after);
+  CopyStringFragment(StringView(*this, position + length_to_replace), data16);
   return new_impl;
 }
 
@@ -1419,12 +1417,8 @@ void StringImpl::DoReplace(base::span<const SrcCharType> src,
     auto src_before =
         src.subspan(src_segment_start, src_segment_end - src_segment_start);
 
-    auto [dest_before, rest] = dest.split_at(src_before.size());
-    CopyChars(dest_before, src_before);
-
-    auto [dest_replaced, dest_after] = rest.split_at(replacement.size());
-    CopyChars(dest_replaced, replacement);
-    dest = dest_after;
+    CopyChars(dest.take_first(src_before.size()), src_before);
+    CopyChars(dest.take_first(replacement.size()), replacement);
 
     src_segment_start = src_segment_end + 1;
   }
@@ -1487,12 +1481,8 @@ void StringImpl::DoReplace(const StringView& pattern,
     const StringView source_before(*this, src_segment_start,
                                    src_segment_end - src_segment_start);
 
-    auto [dest_before, rest] = dest.split_at(source_before.length());
-    CopyStringFragment(source_before, dest_before);
-
-    auto [dest_replaced, dest_after] = rest.split_at(replacement.length());
-    CopyStringFragment(replacement, dest_replaced);
-    dest = dest_after;
+    CopyStringFragment(source_before, dest.take_first(source_before.length()));
+    CopyStringFragment(replacement, dest.take_first(replacement.length()));
 
     src_segment_start = src_segment_end + pattern.length();
   }

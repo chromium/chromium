@@ -1177,11 +1177,9 @@ String WebSocketChannelImpl::GetTextMessage(
   // We do this in order to avoid constructing a temporary buffer.
   if (received_text_is_all_ascii_) {
     StringBuffer<LChar> ascii_string_buffer(size);
-    auto ascii_buffer = base::as_writable_chars(ascii_string_buffer.Span());
+    auto ascii_buffer = ascii_string_buffer.Span();
     for (const auto& chunk : chunks) {
-      auto [copy_dest, rest] = ascii_buffer.split_at(chunk.size());
-      copy_dest.copy_from(base::as_chars(chunk));
-      ascii_buffer = rest;
+      ascii_buffer.take_first(chunk.size()).copy_from(chunk);
     }
     DCHECK(ascii_buffer.empty());
     return String(ascii_string_buffer.Release());

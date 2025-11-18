@@ -64,11 +64,7 @@ bool VTTScanner::Scan(StringView str) {
 }
 
 String VTTScanner::ExtractString(size_t length) {
-  return Invoke([length](auto& buf) {
-    auto [string_data, rest] = buf.split_at(length);
-    buf = rest;
-    return String(string_data);
-  });
+  return Invoke([length](auto& buf) { return String(buf.take_first(length)); });
 }
 
 String VTTScanner::RestOfInputAsString() {
@@ -83,10 +79,9 @@ size_t VTTScanner::ScanDigits(unsigned& number) {
   }
   bool valid_number;
   number = Invoke([num_digits, &valid_number](auto& buf) {
-    auto [number_data, rest] = buf.split_at(num_digits);
     // Consume the digits.
-    buf = rest;
-    return CharactersToUInt(number_data, NumberParsingOptions(), &valid_number);
+    return CharactersToUInt(buf.take_first(num_digits), NumberParsingOptions(),
+                            &valid_number);
   });
 
   // Since we know that scanDigits only scanned valid (ASCII) digits (and
