@@ -389,7 +389,6 @@ class CORE_EXPORT HTMLCanvasElement final
       const CanvasContextCreationAttributesCore&);
 
   scoped_refptr<StaticBitmapImage> GetSourceImageForCanvasInternal(
-      FlushReason,
       SourceImageStatus*);
 
   static std::pair<blink::Image*, float> BrokenCanvas(

@@ -1029,8 +1029,7 @@ void HTMLCanvasElement::NotifyListenersCanvasChanged() {
 
     if (!source_image) {
       SourceImageStatus status;
-      source_image =
-          GetSourceImageForCanvasInternal(FlushReason::kOther, &status);
+      source_image = GetSourceImageForCanvasInternal(&status);
       if (status != kNormalSourceImageStatus)
         continue;
     }
@@ -1744,12 +1743,11 @@ void HTMLCanvasElement::ChildrenChanged(const ChildrenChange& change) {
 scoped_refptr<Image> HTMLCanvasElement::GetSourceImageForCanvas(
     SourceImageStatus* status,
     const gfx::SizeF&) {
-  return GetSourceImageForCanvasInternal(FlushReason::kOther, status);
+  return GetSourceImageForCanvasInternal(status);
 }
 
 scoped_refptr<StaticBitmapImage>
-HTMLCanvasElement::GetSourceImageForCanvasInternal(FlushReason reason,
-                                                   SourceImageStatus* status) {
+HTMLCanvasElement::GetSourceImageForCanvasInternal(SourceImageStatus* status) {
   if (ContextHasOpenLayers(context_)) {
     *status = kLayersOpenInCanvasSource;
     return nullptr;
@@ -1780,11 +1778,11 @@ HTMLCanvasElement::GetSourceImageForCanvasInternal(FlushReason reason,
       // Because WebGL/WebGPU sources always require copying the back buffer,
       // we use PaintRenderingResultsToSnapshot instead of GetImage in order to
       // keep a cached copy of the backing in the canvas's resource provider.
-      image = RenderingContext()->PaintRenderingResultsToSnapshot(kBackBuffer,
-                                                                  reason);
+      image = RenderingContext()->PaintRenderingResultsToSnapshot(
+          kBackBuffer, FlushReason::kOther);
     } else if (RenderingContext()) {
       // This is either CanvasRenderingContext2D or ImageBitmapRenderingContext.
-      image = RenderingContext()->GetImage(reason);
+      image = RenderingContext()->GetImage(FlushReason::kOther);
     }
     if (!image) {
       image = GetTransparentImage();
