@@ -27,6 +27,7 @@ static_library("auth_factor_config") {
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/login/auth",
     "//chromeos/ash/components/osauth/public",
+    "//chromeos/ash/components/policy/local_auth_factors",
     "//components/prefs",
     "//components/user_manager",
   ]
