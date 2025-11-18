@@ -61,9 +61,7 @@ bool AwCookieAccessPolicy::GetShouldAcceptThirdPartyCookies(
   if (!io_thread_client) {
     return false;
   }
-  // We are not actually logging the duration here, just complying with the API.
-  base::TimeDelta ignored;
-  return io_thread_client->ShouldAcceptThirdPartyCookies(ignored);
+  return io_thread_client->ShouldAcceptThirdPartyCookies();
 }
 
 PrivacySetting AwCookieAccessPolicy::AllowCookies(

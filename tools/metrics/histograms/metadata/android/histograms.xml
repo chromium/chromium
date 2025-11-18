@@ -7499,35 +7499,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.WebView.IoThreadClientOnUrlLoaderTime.{Stage}"
-    units="microseconds" expires_after="2025-12-31">
-  <owner>pbirk@chromium.org</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <summary>
-    Records the cumulative time spent on calls to AwContentsIoThreadClient from
-    AwProxyingUrlLoaderFactory during {Stage}. This histogram is logged for all
-    network requests made by WebView.
-
-    Because requests can restart and terminate early, there should not be any
-    expectation that the same number of histograms are emitted for .RequestSetup
-    and .RequestDone.
-
-    These calls each involve a JNI jump and acquiring a Java lock, and the
-    purpose of the histogram is to determine if there is a performance overhead
-    that it is worth mitigating by refactoring how the UrlLoader accesses the
-    data.
-
-    The values are recorded in microseconds to capture the short duration of
-    these calls, and is only emitted by Android WebView.
-  </summary>
-  <token key="Stage">
-    <variant name="RequestDone"
-        summary="a single full pass through InterceptedRequest from Restart
-                 to end of intercept"/>
-    <variant name="RequestSetup" summary="initial setup of InterceptedRequest"/>
-  </token>
-</histogram>
-
 <histogram name="Android.WebView.isDebuggable" enum="DebuggingEnabled"
     expires_after="2026-07-25">
   <owner>ntfschr@chromium.org</owner>

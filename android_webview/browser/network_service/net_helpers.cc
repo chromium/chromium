@@ -83,13 +83,11 @@ int GetCacheModeForClient(AwContentsIoThreadClient* client) {
 
 }  // namespace
 
-int UpdateLoadFlags(int load_flags,
-                    AwContentsIoThreadClient* client,
-                    base::TimeDelta& counter) {
+int UpdateLoadFlags(int load_flags, AwContentsIoThreadClient* client) {
   if (!client)
     return load_flags;
 
-  if (client->ShouldBlockNetworkLoads(counter)) {
+  if (client->ShouldBlockNetworkLoads()) {
     return UpdateCacheControlFlags(
         load_flags,
         net::LOAD_ONLY_FROM_CACHE | net::LOAD_SKIP_CACHE_VALIDATION);
@@ -102,34 +100,30 @@ int UpdateLoadFlags(int load_flags,
   return UpdateCacheControlFlags(load_flags, cache_mode);
 }
 
-bool ShouldBlockURL(const GURL& url,
-                    AwContentsIoThreadClient* client,
-                    base::TimeDelta& counter) {
+bool ShouldBlockURL(const GURL& url, AwContentsIoThreadClient* client) {
   if (!client)
     return false;
 
   // Part of implementation of WebSettings.allowContentAccess.
-  if (url.SchemeIs(url::kContentScheme) &&
-      client->ShouldBlockContentUrls(counter)) {
+  if (url.SchemeIs(url::kContentScheme) && client->ShouldBlockContentUrls()) {
     return true;
   }
 
   if (url.SchemeIsFile()) {
     bool is_special_file_url = IsAndroidSpecialFileUrl(url);
 
-    if (is_special_file_url && client->ShouldBlockSpecialFileUrls(counter)) {
+    if (is_special_file_url && client->ShouldBlockSpecialFileUrls()) {
       return true;
     }
 
     // Part of implementation of WebSettings.allowFileAccess.
-    if (client->ShouldBlockFileUrls(counter)) {
+    if (client->ShouldBlockFileUrls()) {
       // Application's assets and resources are always available.
       return !is_special_file_url;
     }
   }
 
-  return client->ShouldBlockNetworkLoads(counter) &&
-         url.SchemeIs(url::kFtpScheme);
+  return client->ShouldBlockNetworkLoads() && url.SchemeIs(url::kFtpScheme);
 }
 
 int GetHttpCacheSize() {
