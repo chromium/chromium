@@ -56,7 +56,7 @@ if (target_cpu == "") {
     # build for ARM by default, not the host_cpu (which is likely x64).
     # This allows us to not have to specify both target_os and target_cpu
     # on the command line.
-    target_cpu = "arm"
+    target_cpu = "arm64"
   } else {
     target_cpu = host_cpu
   }
