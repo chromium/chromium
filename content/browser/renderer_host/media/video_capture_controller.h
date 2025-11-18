@@ -219,14 +219,12 @@ class CONTENT_EXPORT VideoCaptureController
 
   ~VideoCaptureController() override;
 
-  // Find a client of |id| and |handler| in |clients|.
+  // Find a client of |id| and |handler| in |controller_clients_|.
   ControllerClient* FindClient(const VideoCaptureControllerID& id,
-                               VideoCaptureControllerEventHandler* handler,
-                               const ControllerClients& clients);
+                               VideoCaptureControllerEventHandler* handler);
 
-  // Find a client of |session_id| in |clients|.
-  ControllerClient* FindClient(const base::UnguessableToken& session_id,
-                               const ControllerClients& clients);
+  // Find a client of |session_id| in |controller_clients_|.
+  ControllerClient* FindClient(const base::UnguessableToken& session_id);
 
   std::vector<BufferContext>::iterator FindBufferContextFromBufferContextId(
       int buffer_context_id);

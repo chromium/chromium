@@ -261,8 +261,9 @@ void VideoCaptureController::AddClient(
   }
 
   // Do nothing if this client has called AddClient before.
-  if (FindClient(id, event_handler, controller_clients_))
+  if (FindClient(id, event_handler)) {
     return;
+  }
 
   // If the device has reported OnStarted event, report it to this client here.
   if (state_ == State::kStarted) {
@@ -284,7 +285,7 @@ base::UnguessableToken VideoCaptureController::RemoveClient(
   string_stream << "VideoCaptureController::RemoveClient: id = " << id;
   EmitLogMessage(string_stream.str(), 1);
 
-  ControllerClient* client = FindClient(id, event_handler, controller_clients_);
+  ControllerClient* client = FindClient(id, event_handler);
   if (!client)
     return base::UnguessableToken();
 
@@ -309,7 +310,7 @@ void VideoCaptureController::PauseClient(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DVLOG(1) << "VideoCaptureController::PauseClient: id = " << id;
 
-  ControllerClient* client = FindClient(id, event_handler, controller_clients_);
+  ControllerClient* client = FindClient(id, event_handler);
   if (!client)
     return;
 
@@ -324,7 +325,7 @@ bool VideoCaptureController::ResumeClient(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DVLOG(1) << "VideoCaptureController::ResumeClient: id = " << id;
 
-  ControllerClient* client = FindClient(id, event_handler, controller_clients_);
+  ControllerClient* client = FindClient(id, event_handler);
   if (!client)
     return false;
 
@@ -368,7 +369,7 @@ void VideoCaptureController::StopSession(
                 << session_id;
   EmitLogMessage(string_stream.str(), 1);
 
-  ControllerClient* client = FindClient(session_id, controller_clients_);
+  ControllerClient* client = FindClient(session_id);
 
   if (client) {
     client->session_closed = true;
@@ -383,7 +384,7 @@ void VideoCaptureController::ReturnBuffer(
     const media::VideoCaptureFeedback& feedback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  ControllerClient* client = FindClient(id, event_handler, controller_clients_);
+  ControllerClient* client = FindClient(id, event_handler);
   CHECK(client);
 
   auto buffers_in_use_entry_iter =
@@ -781,9 +782,8 @@ void VideoCaptureController::SetDesktopCaptureWindowIdAsync(
 
 VideoCaptureController::ControllerClient* VideoCaptureController::FindClient(
     const VideoCaptureControllerID& id,
-    VideoCaptureControllerEventHandler* handler,
-    const ControllerClients& clients) {
-  for (const auto& client : clients) {
+    VideoCaptureControllerEventHandler* handler) {
+  for (const auto& client : controller_clients_) {
     if (client->controller_id == id && client->event_handler == handler)
       return client.get();
   }
@@ -791,9 +791,8 @@ VideoCaptureController::ControllerClient* VideoCaptureController::FindClient(
 }
 
 VideoCaptureController::ControllerClient* VideoCaptureController::FindClient(
-    const base::UnguessableToken& session_id,
-    const ControllerClients& clients) {
-  for (const auto& client : clients) {
+    const base::UnguessableToken& session_id) {
+  for (const auto& client : controller_clients_) {
     if (client->session_id == session_id)
       return client.get();
   }
