@@ -74,7 +74,7 @@ class StatusIndicatorSceneLayer extends SceneOverlayLayer implements SceneOverla
 
     @Override
     public SceneOverlayLayer getUpdatedSceneOverlayTree(
-            RectF viewport, RectF visibleViewport, ResourceManager resourceManager, float yOffset) {
+            RectF viewport, RectF visibleViewport, ResourceManager resourceManager) {
         final int offset = mBrowserControlsStateProvider.getTopControlsMinHeightOffset();
         StatusIndicatorSceneLayerJni.get()
                 .updateStatusIndicatorLayer(mNativePtr, resourceManager, mResourceId, offset);

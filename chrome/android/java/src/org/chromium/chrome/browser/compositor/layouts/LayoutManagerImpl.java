@@ -797,11 +797,6 @@ public class LayoutManagerImpl
                         browserControlsManager);
         assumeNonNull(layer);
 
-        float offsetPx =
-                mBrowserControlsStateProvider == null
-                        ? 0
-                        : mBrowserControlsStateProvider.getTopControlOffset();
-
         for (SceneOverlay overlay : mSceneOverlays) {
             // If the SceneOverlay is not showing, don't bother adding it to the tree.
             if (!overlay.isSceneOverlayTreeShowing()) {
@@ -811,10 +806,7 @@ public class LayoutManagerImpl
 
             SceneOverlayLayer overlayLayer =
                     overlay.getUpdatedSceneOverlayTree(
-                            mCachedWindowViewport,
-                            mCachedVisibleViewport,
-                            resourceManager,
-                            offsetPx * mPxToDp);
+                            mCachedWindowViewport, mCachedVisibleViewport, resourceManager);
             assumeNonNull(overlayLayer);
 
             overlayLayer.setContentTree(layer);

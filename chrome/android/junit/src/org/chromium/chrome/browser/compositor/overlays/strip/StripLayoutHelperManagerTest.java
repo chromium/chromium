@@ -737,7 +737,7 @@ public class StripLayoutHelperManagerTest {
 
         // Invoke the method.
         mStripLayoutHelperManager.getUpdatedSceneOverlayTree(
-                new RectF(), new RectF(), mRenderHost.getResourceManager(), 0f);
+                new RectF(), new RectF(), mRenderHost.getResourceManager());
 
         // Verify the call to #pushAndUpdateStrip.
         verify(mTabStripTreeProvider)
@@ -790,6 +790,7 @@ public class StripLayoutHelperManagerTest {
         mStripLayoutHelperManager.setTabStripTreeProviderForTesting(mTabStripTreeProvider);
 
         float yOffset = 10;
+        doReturn((int) yOffset).when(mBrowserControlStateProvider).getTopControlOffset();
         // With tab strip transition, the yOffset will be forced to be 0.
         mTabStripHeightSupplier.set(0);
         mStripLayoutHelperManager.onHeightChanged(0, /* applyScrimOverlay= */ true);
@@ -798,7 +799,7 @@ public class StripLayoutHelperManagerTest {
                 StripLayoutHelperManager.TAB_STRIP_TRANSITION_INTERPOLATOR.getInterpolation(
                         progress);
         mStripLayoutHelperManager.getUpdatedSceneOverlayTree(
-                new RectF(), new RectF(), mRenderHost.getResourceManager(), yOffset);
+                new RectF(), new RectF(), mRenderHost.getResourceManager());
         verify(mTabStripTreeProvider)
                 .pushAndUpdateStrip(
                         any(),
@@ -819,7 +820,7 @@ public class StripLayoutHelperManagerTest {
         // tab strip height.
         mStripLayoutHelperManager.onHeightTransitionFinished();
         mStripLayoutHelperManager.getUpdatedSceneOverlayTree(
-                new RectF(), new RectF(), mRenderHost.getResourceManager(), yOffset);
+                new RectF(), new RectF(), mRenderHost.getResourceManager());
         verify(mTabStripTreeProvider)
                 .pushAndUpdateStrip(
                         any(),
@@ -976,8 +977,9 @@ public class StripLayoutHelperManagerTest {
 
         // The yOffset will be forced to be reduced by the tab strip height to be kept invisible.
         float yOffset = -10;
+        doReturn((int) yOffset).when(mBrowserControlStateProvider).getTopControlOffset();
         mStripLayoutHelperManager.getUpdatedSceneOverlayTree(
-                new RectF(), new RectF(), mRenderHost.getResourceManager(), yOffset);
+                new RectF(), new RectF(), mRenderHost.getResourceManager());
         verify(mTabStripTreeProvider)
                 .pushAndUpdateStrip(
                         any(),
@@ -1004,7 +1006,7 @@ public class StripLayoutHelperManagerTest {
                 StripLayoutHelperManager.TAB_STRIP_TRANSITION_INTERPOLATOR.getInterpolation(
                         progress);
         mStripLayoutHelperManager.getUpdatedSceneOverlayTree(
-                new RectF(), new RectF(), mRenderHost.getResourceManager(), yOffset);
+                new RectF(), new RectF(), mRenderHost.getResourceManager());
         verify(mTabStripTreeProvider)
                 .pushAndUpdateStrip(
                         any(),
@@ -1025,7 +1027,7 @@ public class StripLayoutHelperManagerTest {
         // the layer should be offset to 0.
         mStripLayoutHelperManager.onHeightTransitionFinished();
         mStripLayoutHelperManager.getUpdatedSceneOverlayTree(
-                new RectF(), new RectF(), mRenderHost.getResourceManager(), yOffset);
+                new RectF(), new RectF(), mRenderHost.getResourceManager());
         verify(mTabStripTreeProvider)
                 .pushAndUpdateStrip(
                         any(),
@@ -1486,8 +1488,9 @@ public class StripLayoutHelperManagerTest {
         doReturn(false).when(mBrowserControlStateProvider).isVisibilityForced();
 
         float yOffset = 10;
+        doReturn((int) yOffset).when(mBrowserControlStateProvider).getTopControlOffset();
         mStripLayoutHelperManager.getUpdatedSceneOverlayTree(
-                new RectF(), new RectF(), mRenderHost.getResourceManager(), yOffset);
+                new RectF(), new RectF(), mRenderHost.getResourceManager());
 
         // When visibility isn't forced, and when we're not in a height transition, the offset
         // should always be 0, to position the controls at their fully visible positions.
@@ -1509,7 +1512,7 @@ public class StripLayoutHelperManagerTest {
 
         doReturn(true).when(mBrowserControlStateProvider).isVisibilityForced();
         mStripLayoutHelperManager.getUpdatedSceneOverlayTree(
-                new RectF(), new RectF(), mRenderHost.getResourceManager(), yOffset);
+                new RectF(), new RectF(), mRenderHost.getResourceManager());
 
         // When visibility is forced, use the provided offset.
         verify(mTabStripTreeProvider)

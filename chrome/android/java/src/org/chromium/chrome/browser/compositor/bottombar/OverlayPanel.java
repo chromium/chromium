@@ -984,7 +984,7 @@ public class OverlayPanel extends OverlayPanelAnimation
 
     @Override
     public @Nullable SceneOverlayLayer getUpdatedSceneOverlayTree(
-            RectF viewport, RectF visibleViewport, ResourceManager resourceManager, float yOffset) {
+            RectF viewport, RectF visibleViewport, ResourceManager resourceManager) {
         return null;
     }
 

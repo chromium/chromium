@@ -119,7 +119,7 @@ public class ScrollingBottomViewSceneLayer extends SceneOverlayLayer implements 
 
     @Override
     public SceneOverlayLayer getUpdatedSceneOverlayTree(
-            RectF viewport, RectF visibleViewport, ResourceManager resourceManager, float yOffset) {
+            RectF viewport, RectF visibleViewport, ResourceManager resourceManager) {
         boolean isShadowVisible;
         if (ChromeFeatureList.sBcivBottomControls.isEnabled()) {
             isShadowVisible = true;

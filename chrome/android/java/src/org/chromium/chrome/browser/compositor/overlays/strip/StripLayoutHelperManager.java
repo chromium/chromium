@@ -807,12 +807,11 @@ public class StripLayoutHelperManager
 
     @Override
     public SceneOverlayLayer getUpdatedSceneOverlayTree(
-            RectF viewport, RectF visibleViewport, ResourceManager resourceManager, float yOffset) {
+            RectF viewport, RectF visibleViewport, ResourceManager resourceManager) {
         assert mTabStripTreeProvider != null;
 
-        setStripVisibilityState(
-                StripVisibilityState.HIDDEN_BY_SCROLL,
-                /* clear= */ mBrowserControlsStateProvider.getTopControlOffset() >= 0);
+        float yOffset = mBrowserControlsStateProvider.getTopControlOffset() / mDensity;
+        setStripVisibilityState(StripVisibilityState.HIDDEN_BY_SCROLL, /* clear= */ yOffset >= 0);
         Tab selectedTab =
                 mTabModelSelector == null
                         ? null

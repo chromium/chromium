@@ -134,7 +134,7 @@ public class EdgeToEdgeBottomChinSceneLayer extends SceneOverlayLayer implements
 
     @Override
     public SceneOverlayLayer getUpdatedSceneOverlayTree(
-            RectF viewport, RectF visibleViewport, ResourceManager resourceManager, float yOffset) {
+            RectF viewport, RectF visibleViewport, ResourceManager resourceManager) {
         EdgeToEdgeBottomChinSceneLayerJni.get()
                 .updateEdgeToEdgeBottomChinLayer(
                         mNativePtr,

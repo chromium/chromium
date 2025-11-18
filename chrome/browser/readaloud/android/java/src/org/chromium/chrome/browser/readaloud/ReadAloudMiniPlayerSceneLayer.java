@@ -99,10 +99,7 @@ public class ReadAloudMiniPlayerSceneLayer extends SceneOverlayLayer implements 
 
     @Override
     public SceneOverlayLayer getUpdatedSceneOverlayTree(
-            RectF viewport,
-            RectF visibleViewport,
-            ResourceManager resourceManager,
-            float topOffset) {
+            RectF viewport, RectF visibleViewport, ResourceManager resourceManager) {
         ReadAloudMiniPlayerSceneLayerJni.get()
                 .updateReadAloudMiniPlayerLayer(
                         mNativePtr,

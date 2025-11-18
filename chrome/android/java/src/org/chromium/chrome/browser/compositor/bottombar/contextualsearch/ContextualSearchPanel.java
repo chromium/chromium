@@ -230,8 +230,7 @@ public class ContextualSearchPanel extends OverlayPanel {
 
     @Override
     public SceneOverlayLayer getUpdatedSceneOverlayTree(
-            RectF viewport, RectF visibleViewport, ResourceManager resourceManager, float yOffset) {
-        super.getUpdatedSceneOverlayTree(viewport, visibleViewport, resourceManager, yOffset);
+            RectF viewport, RectF visibleViewport, ResourceManager resourceManager) {
         mSceneLayer.update(
                 resourceManager,
                 this,

@@ -66,7 +66,7 @@ public class EdgeToEdgeBottomChinSceneLayerTest {
         mSceneLayer.setOffsetTag(offsetTag);
 
         RectF viewport = new RectF(0, 0, 100, 400);
-        mSceneLayer.getUpdatedSceneOverlayTree(viewport, viewport, null, 0);
+        mSceneLayer.getUpdatedSceneOverlayTree(viewport, viewport, null);
         verify(mSceneLayerJni)
                 .updateEdgeToEdgeBottomChinLayer(
                         123,

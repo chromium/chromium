@@ -73,7 +73,7 @@ class OverscrollGlowOverlay extends NavigationGlow implements SceneOverlay {
 
     @Override
     public SceneOverlayLayer getUpdatedSceneOverlayTree(
-            RectF viewport, RectF visibleViewport, ResourceManager resourceManager, float yOffset) {
+            RectF viewport, RectF visibleViewport, ResourceManager resourceManager) {
         if (!mSceneLayer.update(resourceManager, mOffset)) setIsShowing(false);
         return mSceneLayer;
     }
