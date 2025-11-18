@@ -51,6 +51,11 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteBackendImpl : public Backend {
  private:
   FRIEND_TEST_ALL_PREFIXES(PersistentCacheTest, RecoveryFromTransientError);
 
+  // Returns a SQLite error code in case of failure.
+  base::expected<std::optional<EntryMetadata>, int> FindImpl(
+      std::string_view key,
+      BufferProvider buffer_provider) EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
   // Inserts `content` and `metadata` into storage under `key`. Returns a SQLite
   // extended result code in case of error.
   base::expected<void, int> InsertImpl(std::string_view key,

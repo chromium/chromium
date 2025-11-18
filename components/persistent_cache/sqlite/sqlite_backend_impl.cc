@@ -12,6 +12,7 @@
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_view_util.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
@@ -120,37 +121,14 @@ SqliteBackendImpl::Find(std::string_view key, BufferProvider buffer_provider) {
   CHECK_GT(key.length(), 0ull);
   TRACE_EVENT0("persistent_cache", "Find");
 
-  sql::Statement stm = sql::Statement(db_->GetCachedStatement(
-      SQL_FROM_HERE,
-      "SELECT content, input_signature, write_timestamp "
-      "FROM entries WHERE key = ?"));
-  stm.BindString(0, key);
-
-  DCHECK(stm.is_valid());
-
-  // Cache hit.
-  if (stm.Step()) {
-    std::string_view content = stm.ColumnStringView(0);
-    // Get a buffer from the caller.
-    if (base::span<uint8_t> content_buffer = buffer_provider(content.size());
-        !content_buffer.empty()) {
-      // Copy the content into the caller's buffer.
-      content_buffer.copy_from_nonoverlapping(base::as_byte_span(content));
-    }
-    return EntryMetadata{.input_signature = stm.ColumnInt64(1),
-                         .write_timestamp = stm.ColumnInt64(2)};
-  }
-
-  // Cache miss.
-  if (stm.Succeeded()) {
-    return std::nullopt;
-  }
-
-  // Error handling.
-  const int error_code = db_->GetErrorCode();
-  TRACE_EVENT_INSTANT1("persistent_cache", "find_failed",
-                       TRACE_EVENT_SCOPE_THREAD, "error_code", error_code);
-  return base::unexpected(TranslateError(error_code));
+  ASSIGN_OR_RETURN(auto metadata, FindImpl(key, buffer_provider),
+                   [](int error_code) {
+                     TRACE_EVENT_INSTANT1("persistent_cache", "find_failed",
+                                          TRACE_EVENT_SCOPE_THREAD,
+                                          "error_code", error_code);
+                     return TranslateError(error_code);
+                   });
+  return metadata;
 }
 
 base::expected<void, TransactionError> SqliteBackendImpl::Insert(
@@ -176,6 +154,57 @@ base::expected<void, TransactionError> SqliteBackendImpl::Insert(
                   });
 
   return base::ok();
+}
+
+base::expected<std::optional<EntryMetadata>, int> SqliteBackendImpl::FindImpl(
+    std::string_view key,
+    BufferProvider buffer_provider) {
+  // Begin an explicit read transaction under which multiple statements will be
+  // used to read from the database.
+  sql::Transaction transaction(&*db_);
+  if (!transaction.Begin()) {
+    return base::unexpected(db_->GetErrorCode());
+  }
+
+  // Read the rowid and metadata.
+  sql::Statement stm = sql::Statement(
+      db_->GetCachedStatement(SQL_FROM_HERE,
+                              "SELECT rowid, input_signature, write_timestamp "
+                              "FROM entries WHERE key = ?"));
+  DCHECK(stm.is_valid());
+
+  stm.BindString(0, key);
+
+  if (!stm.Step()) {
+    if (stm.Succeeded()) {
+      // Cache miss. Do not run `buffer_provider`, return no value.
+      return std::nullopt;
+    }
+    // Error stepping.
+    return base::unexpected(db_->GetErrorCode());
+  }
+
+  // Open a handle to get the size of the content.
+  if (auto blob =
+          db_->GetStreamingBlob("entries", "content", stm.ColumnInt64(0),
+                                /*readonly=*/true);
+      blob.has_value()) {
+    bool succeeded = true;
+    size_t content_size = base::checked_cast<size_t>(blob->GetSize());
+    // Get a buffer from the caller.
+    if (base::span<uint8_t> content_buffer = buffer_provider(content_size);
+        !content_buffer.empty()) {
+      CHECK_EQ(content_buffer.size(), content_size);
+      // Copy the content from the database directly into the caller's buffer.
+      succeeded = blob->Read(/*offset=*/0, content_buffer);
+    }
+    if (succeeded) {
+      return EntryMetadata{.input_signature = stm.ColumnInt64(1),
+                           .write_timestamp = stm.ColumnInt64(2)};
+    }
+  }
+
+  return base::unexpected(db_->GetErrorCode());
 }
 
 base::expected<void, int> SqliteBackendImpl::InsertImpl(
@@ -217,6 +246,7 @@ base::expected<void, int> SqliteBackendImpl::InsertImpl(
   return base::ok();
 }
 
+// static
 TransactionError SqliteBackendImpl::TranslateError(int error_code) {
   switch (error_code) {
     case SQLITE_BUSY:

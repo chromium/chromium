@@ -110,8 +110,9 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) PersistentCache {
   // found. If `key` is found, `buffer_provider` will be called exactly once
   // with the size of the content. If `buffer_provider` returns a non-empty span
   // (which must be sized exactly to the given content size), the content will
-  // be written into it. If it returns an empty span, no data is copied. See
-  // class comments regarding error management.
+  // be written into it. If it returns an empty span, no data is copied. Note
+  // that an error may be returned even if `buffer_provider` had been called.
+  // See class comments regarding error management.
   //
   // Thread-safe.
   base::expected<std::optional<EntryMetadata>, TransactionError> Find(
