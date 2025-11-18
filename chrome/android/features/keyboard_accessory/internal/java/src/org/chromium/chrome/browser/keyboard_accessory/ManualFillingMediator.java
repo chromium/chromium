@@ -813,7 +813,9 @@ class ManualFillingMediator
                                     .getDimensionPixelSize(R.dimen.toolbar_shadow_height);
             newControlsOffset += mAccessorySheet.getHeight();
         }
-        mKeyboardAccessory.setStyle(new KeyboardAccessoryStyle(true, newControlsOffset, 0));
+        if (requiresVisibleBar(extensionState)) {
+            mKeyboardAccessory.setStyle(new KeyboardAccessoryStyle(true, newControlsOffset, 0));
+        }
         mBottomInsetSupplier.set(newControlsHeight);
     }
 

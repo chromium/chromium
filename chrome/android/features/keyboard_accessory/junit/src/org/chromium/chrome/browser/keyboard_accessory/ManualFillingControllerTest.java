@@ -1478,10 +1478,7 @@ public class ManualFillingControllerTest {
                 /* isCredentialFieldOrHasAutofillSuggestions= */ false);
 
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(HIDDEN));
-        verify(mMockKeyboardAccessory).setStyle(mStyleCaptor.capture());
-        KeyboardAccessoryStyle style = mStyleCaptor.getValue();
-        assertTrue(style.isDocked());
-        assertEquals(0, style.getMaxWidth());
+        verify(mMockKeyboardAccessory, never()).setStyle(any());
         verify(mMockKeyboardAccessory, never()).setHasStickyLastItem(anyBoolean());
         verify(mMockKeyboardAccessory, never()).setAnimateSuggestionsFromTop(anyBoolean());
     }
