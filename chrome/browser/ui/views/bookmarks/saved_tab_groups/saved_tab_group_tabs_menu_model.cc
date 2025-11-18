@@ -47,14 +47,12 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(STGTabsMenuModel,
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(STGTabsMenuModel, kTabsTitleItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(STGTabsMenuModel, kTab);
 
-STGTabsMenuModel::STGTabsMenuModel(Browser* browser,
-                                   TabGroupMenuContext context)
-    : ui::SimpleMenuModel(this), browser_(browser), context_(context) {}
+STGTabsMenuModel::STGTabsMenuModel(Browser* browser)
+    : ui::SimpleMenuModel(this), browser_(browser) {}
 
 STGTabsMenuModel::STGTabsMenuModel(ui::SimpleMenuModel::Delegate* delegate,
-                                   Browser* browser,
-                                   TabGroupMenuContext context)
-    : ui::SimpleMenuModel(delegate), browser_(browser), context_(context) {}
+                                   Browser* browser)
+    : ui::SimpleMenuModel(delegate), browser_(browser) {}
 
 STGTabsMenuModel::~STGTabsMenuModel() = default;
 
@@ -221,7 +219,7 @@ void STGTabsMenuModel::ExecuteCommand(int command_id, int event_flags) {
   TabGroupSyncService* tab_group_service =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(
           browser_->profile());
-  SavedTabGroupUtils::PerformTabGroupMenuAction(action, context_, browser_,
+  SavedTabGroupUtils::PerformTabGroupMenuAction(action, browser_,
                                                 tab_group_service);
 }
 

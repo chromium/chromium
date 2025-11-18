@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_menu_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/favicon/core/favicon_service.h"
@@ -246,9 +245,8 @@ void TabGroupMenuBridge::OnMenuItem(NSMenuItem* item) {
   }
 
   tab_groups::TabGroupMenuAction action = it->second;
-  tab_groups::SavedTabGroupUtils::PerformTabGroupMenuAction(
-      action, tab_groups::TabGroupMenuContext::MAC_SYSTEM_MENU, browser,
-      tab_group_service_);
+  tab_groups::SavedTabGroupUtils::PerformTabGroupMenuAction(action, browser,
+                                                            tab_group_service_);
 }
 
 NSMenuItem* TabGroupMenuBridge::CreateStaticSubmenuItem(

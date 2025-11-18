@@ -48258,17 +48258,6 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="TabGroups_SavedTabGroups_TabGroupSubmenu_Opened">
-  <owner>dominicaustria@google.com</owner>
-  <owner>top-chrome-desktop-ui@google.com</owner>
-  <description>
-    User opened a SavedTabGroup by clicking the 'Open group' menu item that
-    appears in the submenu or context menu for a tab group. This can appear in
-    several places, but one such location is the tab groups submenu within the
-    app menu.
-  </description>
-</action>
-
 <action name="TabGroups_SavedTabGroups_TabNavigated">
   <owner>dljames@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>

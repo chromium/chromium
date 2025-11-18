@@ -248,12 +248,7 @@ void STGEverythingMenu::PopulateMenu(views::MenuItemView* parent) {
       const std::optional<SavedTabGroup> tab_group =
           tab_group_service->GetGroup(group_guid);
 
-      auto tabs_model = std::make_unique<STGTabsMenuModel>(
-          this, browser_,
-          menu_context_ == MenuContext::kAppMenu
-              ? TabGroupMenuContext::APP_MENU
-              : TabGroupMenuContext::SAVED_TAB_GROUP_EVERYTHING_MENU);
-
+      auto tabs_model = std::make_unique<STGTabsMenuModel>(this, browser_);
       tabs_model->Build(tab_group.value(),
                         base::BindRepeating(
                             &STGEverythingMenu::GetAndIncrementLatestCommandId,
