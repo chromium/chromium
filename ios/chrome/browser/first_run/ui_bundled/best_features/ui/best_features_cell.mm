@@ -98,6 +98,14 @@ const CGFloat kContentViewTrailingMargin = 13.0;
     textStackView.translatesAutoresizingMaskIntoConstraints = NO;
     [contentView addSubview:textStackView];
 
+    // Adjust the cell separator inset to align with the start of the text
+    // content. The right inset aligns with the content view's trailing margin.
+    self.separatorInset =
+        UIEdgeInsetsMake(0,
+                         kTableViewHorizontalSpacing + kIconBackgroundWidth +
+                             kTableViewImagePadding,
+                         0, kContentViewTrailingMargin);
+
     [NSLayoutConstraint activateConstraints:@[
       // Icon background constraints.
       [_iconBackgroundView.leadingAnchor

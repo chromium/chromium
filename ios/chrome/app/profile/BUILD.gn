@@ -330,15 +330,18 @@ source_set("welcome_back_profile_agent") {
   public_deps = [ ":profile" ]
   deps = [
     "//base",
+    "//components/password_manager/core/browser",
     "//components/previous_session_info",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//ios/chrome/app/profile",
+    "//ios/chrome/browser/first_run/public:best_features_item",
     "//ios/chrome/browser/first_run/ui_bundled:features",
     "//ios/chrome/browser/metrics/model",
     "//ios/chrome/browser/promos_manager/model",
     "//ios/chrome/browser/promos_manager/model:constants",
     "//ios/chrome/browser/promos_manager/model:factory",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/signin/model",

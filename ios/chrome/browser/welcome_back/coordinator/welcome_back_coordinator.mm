@@ -4,24 +4,22 @@
 
 #import "ios/chrome/browser/welcome_back/coordinator/welcome_back_coordinator.h"
 
-#import "components/feature_engagement/public/event_constants.h"
-#import "components/feature_engagement/public/tracker.h"
-#import "components/password_manager/core/browser/password_manager_util.h"
-#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import <UIKit/UIKit.h>
+
 #import "ios/chrome/browser/first_run/public/best_features_item.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/welcome_back_promo_commands.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/welcome_back/coordinator/welcome_back_mediator.h"
 #import "ios/chrome/browser/welcome_back/model/features.h"
-#import "ios/chrome/browser/welcome_back/model/welcome_back_prefs.h"
 #import "ios/chrome/browser/welcome_back/ui/welcome_back_action_handler.h"
+#import "ios/chrome/browser/welcome_back/ui/welcome_back_view_controller.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
-#import "ios/chrome/common/ui/instructions_bottom_sheet/instructions_bottom_sheet_coordinator.h"
 
 @interface WelcomeBackCoordinator () <ConfirmationAlertActionHandler,
                                       WelcomeBackActionHandler>
@@ -30,12 +28,10 @@
 @implementation WelcomeBackCoordinator {
   // Welcome Back mediator.
   WelcomeBackMediator* _mediator;
+  // Welcome Back view controller.
+  WelcomeBackViewController* _viewController;
   // Base navigation controller.
   UINavigationController* _navigationController;
-  // The InstructionsBottomSheetCoordinator.
-  InstructionsBottomSheetCoordinator* _detailScreenCoordinator;
-  // Whether the user has tapped one of the Welcome Back items.
-  BOOL _itemTapped;
 }
 
 #pragma mark - ChromeCoordinator
@@ -44,32 +40,40 @@
   ProfileIOS* profile = self.profile->GetOriginalProfile();
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForProfile(profile);
-
-  _navigationController =
-      [[UINavigationController alloc] initWithNavigationBarClass:nil
-                                                    toolbarClass:nil];
+  ChromeAccountManagerService* accountManagerService =
+      ChromeAccountManagerServiceFactory::GetForProfile(profile);
 
   _mediator = [[WelcomeBackMediator alloc]
       initWithAuthenticationService:authenticationService
-              accountManagerService:ChromeAccountManagerServiceFactory::
-                                        GetForProfile(profile)];
+              accountManagerService:accountManagerService];
 
-  // `kAutofillPasswordsInOtherApps` has been used if CPE is enabled on startup,
-  // so remove the feature from the eligible features.
-  PrefService* localState = GetApplicationContext()->GetLocalState();
-  if (password_manager_util::IsCredentialProviderEnabledOnStartup(localState)) {
-    MarkWelcomeBackFeatureUsed(
-        BestFeaturesItemType::kAutofillPasswordsInOtherApps);
-  }
+  _viewController = [[WelcomeBackViewController alloc] init];
+  _viewController.actionHandler = self;
+  _viewController.welcomeBackActionHandler = self;
 
-  if (GetWelcomeBackEligibleItems().size() < 2) {
-    [self hidePromo];
-  } else {
-    // TODO(crbug.com/407963758): Implement the Welcome Back Half Sheet view.
-  }
+  _mediator.consumer = _viewController;
+
+  _navigationController = [[UINavigationController alloc]
+      initWithRootViewController:_viewController];
+  _navigationController.navigationBarHidden = YES;
+
+  [self.baseViewController presentViewController:_navigationController
+                                        animated:YES
+                                      completion:nil];
 }
 
 - (void)stop {
+  // Dismiss the presented view controller.
+  if (_navigationController.presentingViewController &&
+      !_navigationController.isBeingDismissed) {
+    [_navigationController.presentingViewController
+        dismissViewControllerAnimated:YES
+                           completion:nil];
+  }
+
+  // Clean up references.
+  _viewController = nil;
+  _navigationController = nil;
   [_mediator disconnect];
   _mediator = nil;
 }
@@ -83,26 +87,15 @@
 #pragma mark - WelcomeBackActionHandler
 
 - (void)didTapBestFeatureItem:(BestFeaturesItem*)item {
-  feature_engagement::TrackerFactory::GetForProfile(self.profile)
-      ->NotifyEvent(feature_engagement::events::kIOSWelcomeBackPromoUsed);
-  _itemTapped = YES;
-
-  _detailScreenCoordinator = [[InstructionsBottomSheetCoordinator alloc]
-      initWithBaseViewController:_navigationController
-                         browser:self.browser
-                           title:item.title
-                           steps:item.instructionSteps];
-
-  [_detailScreenCoordinator start];
+  // TODO(crbug.com/457592200): Implement action for item tap.
 }
 
 #pragma mark - Private
 
-// Dismisses the feature.
+// Dismisses the promo by sending a command.
 - (void)hidePromo {
   id<WelcomeBackPromoCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), WelcomeBackPromoCommands);
-
   [handler hideWelcomeBackPromo];
 }
 

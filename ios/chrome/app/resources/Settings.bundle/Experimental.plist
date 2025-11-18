@@ -161,6 +161,7 @@
 				<string>promos_manager::Promo::DockingPromo</string>
 				<string>promos_manager::Promo::BWGPromo</string>
 				<string>promos_manager::Promo::FullscreenSignin</string>
+				<string>promos_manager::Promo::WelcomeBack</string>
 			</array>
 			<key>Titles</key>
 			<array>
@@ -176,6 +177,7 @@
 				<string>Docking Promo</string>
 				<string>BWG Promo</string>
 				<string>Fullscreen sign-in</string>
+				<string>Welcome Back Promo</string>
 			</array>
 		</dict>
 		<dict>

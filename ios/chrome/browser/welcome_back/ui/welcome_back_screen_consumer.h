@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_WELCOME_BACK_UI_WELCOME_BACK_SCREEN_CONSUMER_H_
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 @class BestFeaturesItem;
 
