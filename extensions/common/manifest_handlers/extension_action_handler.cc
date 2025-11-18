@@ -150,11 +150,13 @@ bool ExtensionActionHandler::Validate(
 }
 
 bool ExtensionActionHandler::AlwaysParseForType(Manifest::Type type) const {
-  return type == Manifest::TYPE_EXTENSION || type == Manifest::TYPE_USER_SCRIPT;
+  return type == Manifest::Type::kExtension ||
+         type == Manifest::Type::kUserScript;
 }
 
 bool ExtensionActionHandler::AlwaysValidateForType(Manifest::Type type) const {
-  return type == Manifest::TYPE_EXTENSION || type == Manifest::TYPE_USER_SCRIPT;
+  return type == Manifest::Type::kExtension ||
+         type == Manifest::Type::kUserScript;
 }
 
 base::span<const char* const> ExtensionActionHandler::Keys() const {

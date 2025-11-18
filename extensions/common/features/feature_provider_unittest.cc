@@ -36,19 +36,19 @@ TEST(FeatureProviderTest, ManifestFeatureTypes) {
   const std::vector<Manifest::Type>& extension_types =
       feature->extension_types();
   EXPECT_EQ(8u, extension_types.size());
-  EXPECT_EQ(1, std::ranges::count(extension_types, Manifest::TYPE_EXTENSION));
+  EXPECT_EQ(1, std::ranges::count(extension_types, Manifest::Type::kExtension));
   EXPECT_EQ(1, std::ranges::count(extension_types,
-                                  Manifest::TYPE_LEGACY_PACKAGED_APP));
+                                  Manifest::Type::kLegacyPackagedApp));
   EXPECT_EQ(1,
-            std::ranges::count(extension_types, Manifest::TYPE_PLATFORM_APP));
-  EXPECT_EQ(1, std::ranges::count(extension_types, Manifest::TYPE_HOSTED_APP));
-  EXPECT_EQ(1, std::ranges::count(extension_types, Manifest::TYPE_THEME));
+            std::ranges::count(extension_types, Manifest::Type::kPlatformApp));
+  EXPECT_EQ(1, std::ranges::count(extension_types, Manifest::Type::kHostedApp));
+  EXPECT_EQ(1, std::ranges::count(extension_types, Manifest::Type::kTheme));
   EXPECT_EQ(1,
-            std::ranges::count(extension_types, Manifest::TYPE_SHARED_MODULE));
+            std::ranges::count(extension_types, Manifest::Type::kSharedModule));
   EXPECT_EQ(1, std::ranges::count(extension_types,
-                                  Manifest::TYPE_LOGIN_SCREEN_EXTENSION));
+                                  Manifest::Type::kLoginScreenExtension));
   EXPECT_EQ(1, std::ranges::count(extension_types,
-                                  Manifest::TYPE_CHROMEOS_SYSTEM_EXTENSION));
+                                  Manifest::Type::kChromeOSSystemExtension));
 }
 
 // Tests that real manifest features have the correct availability for an
@@ -99,11 +99,11 @@ TEST(FeatureProviderTest, PermissionFeatureTypes) {
   const std::vector<Manifest::Type>& extension_types =
       feature->extension_types();
   EXPECT_EQ(3u, extension_types.size());
-  EXPECT_EQ(1, std::ranges::count(extension_types, Manifest::TYPE_EXTENSION));
+  EXPECT_EQ(1, std::ranges::count(extension_types, Manifest::Type::kExtension));
   EXPECT_EQ(1, std::ranges::count(extension_types,
-                                  Manifest::TYPE_LEGACY_PACKAGED_APP));
+                                  Manifest::Type::kLegacyPackagedApp));
   EXPECT_EQ(1,
-            std::ranges::count(extension_types, Manifest::TYPE_PLATFORM_APP));
+            std::ranges::count(extension_types, Manifest::Type::kPlatformApp));
 }
 
 // Tests that real permission features have the correct availability for an app.

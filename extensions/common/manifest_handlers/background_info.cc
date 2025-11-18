@@ -437,7 +437,7 @@ bool BackgroundManifestHandler::Validate(
 }
 
 bool BackgroundManifestHandler::AlwaysParseForType(Manifest::Type type) const {
-  return type == Manifest::TYPE_PLATFORM_APP;
+  return type == Manifest::Type::kPlatformApp;
 }
 
 base::span<const char* const> BackgroundManifestHandler::Keys() const {

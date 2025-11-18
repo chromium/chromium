@@ -70,7 +70,7 @@ Feature::AvailabilityResult IsAvailableInChannel(
   }
   return feature
       .IsAvailableToManifest(
-          HashedExtensionId(std::string(32, 'a')), Manifest::TYPE_UNKNOWN,
+          HashedExtensionId(std::string(32, 'a')), Manifest::Type::kUnknown,
           ManifestLocation::kInvalidLocation, -1, Feature::GetCurrentPlatform(),
           kUnspecifiedContextId)
       .result();
@@ -91,9 +91,10 @@ class SimpleFeatureTest : public testing::Test {
     feature.set_location(feature_location);
     Feature::AvailabilityResult availability_result =
         feature
-            .IsAvailableToManifest(
-                HashedExtensionId(), Manifest::TYPE_UNKNOWN, manifest_location,
-                -1, Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
+            .IsAvailableToManifest(HashedExtensionId(),
+                                   Manifest::Type::kUnknown, manifest_location,
+                                   -1, Feature::UNSPECIFIED_PLATFORM,
+                                   kUnspecifiedContextId)
             .result();
     return availability_result == Feature::IS_AVAILABLE;
   }
@@ -104,25 +105,25 @@ class SimpleFeatureTest : public testing::Test {
 
 TEST_F(SimpleFeatureTest, IsAvailableNullCase) {
   const auto tests = std::to_array<IsAvailableTestData>({
-      {"", Manifest::TYPE_UNKNOWN, ManifestLocation::kInvalidLocation,
+      {"", Manifest::Type::kUnknown, ManifestLocation::kInvalidLocation,
        Feature::UNSPECIFIED_PLATFORM, -1, kUnspecifiedContextId,
        Feature::IS_AVAILABLE},
-      {"random-extension", Manifest::TYPE_UNKNOWN,
+      {"random-extension", Manifest::Type::kUnknown,
        ManifestLocation::kInvalidLocation, Feature::UNSPECIFIED_PLATFORM, -1,
        kUnspecifiedContextId, Feature::IS_AVAILABLE},
-      {"", Manifest::TYPE_LEGACY_PACKAGED_APP,
+      {"", Manifest::Type::kLegacyPackagedApp,
        ManifestLocation::kInvalidLocation, Feature::UNSPECIFIED_PLATFORM, -1,
        kUnspecifiedContextId, Feature::IS_AVAILABLE},
-      {"", Manifest::TYPE_UNKNOWN, ManifestLocation::kInvalidLocation,
+      {"", Manifest::Type::kUnknown, ManifestLocation::kInvalidLocation,
        Feature::UNSPECIFIED_PLATFORM, -1, kUnspecifiedContextId,
        Feature::IS_AVAILABLE},
-      {"", Manifest::TYPE_UNKNOWN, ManifestLocation::kComponent,
+      {"", Manifest::Type::kUnknown, ManifestLocation::kComponent,
        Feature::UNSPECIFIED_PLATFORM, -1, kUnspecifiedContextId,
        Feature::IS_AVAILABLE},
-      {"", Manifest::TYPE_UNKNOWN, ManifestLocation::kInvalidLocation,
+      {"", Manifest::Type::kUnknown, ManifestLocation::kInvalidLocation,
        Feature::CHROMEOS_PLATFORM, -1, kUnspecifiedContextId,
        Feature::IS_AVAILABLE},
-      {"", Manifest::TYPE_UNKNOWN, ManifestLocation::kInvalidLocation,
+      {"", Manifest::Type::kUnknown, ManifestLocation::kInvalidLocation,
        Feature::UNSPECIFIED_PLATFORM, 25, kUnspecifiedContextId,
        Feature::IS_AVAILABLE},
   });
@@ -148,14 +149,14 @@ TEST_F(SimpleFeatureTest, Allowlist) {
 
   EXPECT_EQ(Feature::IS_AVAILABLE,
             feature
-                .IsAvailableToManifest(kIdFoo, Manifest::TYPE_UNKNOWN,
+                .IsAvailableToManifest(kIdFoo, Manifest::Type::kUnknown,
                                        ManifestLocation::kInvalidLocation, -1,
                                        Feature::UNSPECIFIED_PLATFORM,
                                        kUnspecifiedContextId)
                 .result());
   EXPECT_EQ(Feature::IS_AVAILABLE,
             feature
-                .IsAvailableToManifest(kIdBar, Manifest::TYPE_UNKNOWN,
+                .IsAvailableToManifest(kIdBar, Manifest::Type::kUnknown,
                                        ManifestLocation::kInvalidLocation, -1,
                                        Feature::UNSPECIFIED_PLATFORM,
                                        kUnspecifiedContextId)
@@ -163,7 +164,7 @@ TEST_F(SimpleFeatureTest, Allowlist) {
 
   EXPECT_EQ(Feature::NOT_FOUND_IN_ALLOWLIST,
             feature
-                .IsAvailableToManifest(kIdBaz, Manifest::TYPE_UNKNOWN,
+                .IsAvailableToManifest(kIdBaz, Manifest::Type::kUnknown,
                                        ManifestLocation::kInvalidLocation, -1,
                                        Feature::UNSPECIFIED_PLATFORM,
                                        kUnspecifiedContextId)
@@ -171,16 +172,16 @@ TEST_F(SimpleFeatureTest, Allowlist) {
   EXPECT_EQ(Feature::NOT_FOUND_IN_ALLOWLIST,
             feature
                 .IsAvailableToManifest(
-                    HashedExtensionId(), Manifest::TYPE_UNKNOWN,
+                    HashedExtensionId(), Manifest::Type::kUnknown,
                     ManifestLocation::kInvalidLocation, -1,
                     Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
                 .result());
 
-  feature.set_extension_types({Manifest::TYPE_LEGACY_PACKAGED_APP});
+  feature.set_extension_types({Manifest::Type::kLegacyPackagedApp});
   EXPECT_EQ(Feature::NOT_FOUND_IN_ALLOWLIST,
             feature
                 .IsAvailableToManifest(
-                    kIdBaz, Manifest::TYPE_LEGACY_PACKAGED_APP,
+                    kIdBaz, Manifest::Type::kLegacyPackagedApp,
                     ManifestLocation::kInvalidLocation, -1,
                     Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
                 .result());
@@ -198,31 +199,33 @@ TEST_F(SimpleFeatureTest, HashedIdAllowlist) {
   EXPECT_EQ(Feature::IS_AVAILABLE,
             feature
                 .IsAvailableToManifest(
-                    HashedExtensionId(kIdFoo), Manifest::TYPE_UNKNOWN,
+                    HashedExtensionId(kIdFoo), Manifest::Type::kUnknown,
                     ManifestLocation::kInvalidLocation, -1,
                     Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
                 .result());
   EXPECT_NE(Feature::IS_AVAILABLE,
             feature
                 .IsAvailableToManifest(
-                    HashedExtensionId(kIdFooHashed), Manifest::TYPE_UNKNOWN,
+                    HashedExtensionId(kIdFooHashed), Manifest::Type::kUnknown,
                     ManifestLocation::kInvalidLocation, -1,
                     Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
                 .result());
-  EXPECT_EQ(Feature::NOT_FOUND_IN_ALLOWLIST,
-            feature
-                .IsAvailableToManifest(
-                    HashedExtensionId("slightlytoooolongforanextensionid"),
-                    Manifest::TYPE_UNKNOWN, ManifestLocation::kInvalidLocation,
-                    -1, Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
-                .result());
-  EXPECT_EQ(Feature::NOT_FOUND_IN_ALLOWLIST,
-            feature
-                .IsAvailableToManifest(
-                    HashedExtensionId("tooshortforanextensionid"),
-                    Manifest::TYPE_UNKNOWN, ManifestLocation::kInvalidLocation,
-                    -1, Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
-                .result());
+  EXPECT_EQ(
+      Feature::NOT_FOUND_IN_ALLOWLIST,
+      feature
+          .IsAvailableToManifest(
+              HashedExtensionId("slightlytoooolongforanextensionid"),
+              Manifest::Type::kUnknown, ManifestLocation::kInvalidLocation, -1,
+              Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
+          .result());
+  EXPECT_EQ(
+      Feature::NOT_FOUND_IN_ALLOWLIST,
+      feature
+          .IsAvailableToManifest(
+              HashedExtensionId("tooshortforanextensionid"),
+              Manifest::Type::kUnknown, ManifestLocation::kInvalidLocation, -1,
+              Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
+          .result());
 }
 
 TEST_F(SimpleFeatureTest, Blocklist) {
@@ -234,14 +237,14 @@ TEST_F(SimpleFeatureTest, Blocklist) {
 
   EXPECT_EQ(Feature::FOUND_IN_BLOCKLIST,
             feature
-                .IsAvailableToManifest(kIdFoo, Manifest::TYPE_UNKNOWN,
+                .IsAvailableToManifest(kIdFoo, Manifest::Type::kUnknown,
                                        ManifestLocation::kInvalidLocation, -1,
                                        Feature::UNSPECIFIED_PLATFORM,
                                        kUnspecifiedContextId)
                 .result());
   EXPECT_EQ(Feature::FOUND_IN_BLOCKLIST,
             feature
-                .IsAvailableToManifest(kIdBar, Manifest::TYPE_UNKNOWN,
+                .IsAvailableToManifest(kIdBar, Manifest::Type::kUnknown,
                                        ManifestLocation::kInvalidLocation, -1,
                                        Feature::UNSPECIFIED_PLATFORM,
                                        kUnspecifiedContextId)
@@ -249,7 +252,7 @@ TEST_F(SimpleFeatureTest, Blocklist) {
 
   EXPECT_EQ(Feature::IS_AVAILABLE,
             feature
-                .IsAvailableToManifest(kIdBaz, Manifest::TYPE_UNKNOWN,
+                .IsAvailableToManifest(kIdBaz, Manifest::Type::kUnknown,
                                        ManifestLocation::kInvalidLocation, -1,
                                        Feature::UNSPECIFIED_PLATFORM,
                                        kUnspecifiedContextId)
@@ -257,7 +260,7 @@ TEST_F(SimpleFeatureTest, Blocklist) {
   EXPECT_EQ(Feature::IS_AVAILABLE,
             feature
                 .IsAvailableToManifest(
-                    HashedExtensionId(), Manifest::TYPE_UNKNOWN,
+                    HashedExtensionId(), Manifest::Type::kUnknown,
                     ManifestLocation::kInvalidLocation, -1,
                     Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
                 .result());
@@ -275,49 +278,51 @@ TEST_F(SimpleFeatureTest, HashedIdBlocklist) {
   EXPECT_EQ(Feature::FOUND_IN_BLOCKLIST,
             feature
                 .IsAvailableToManifest(
-                    HashedExtensionId(kIdFoo), Manifest::TYPE_UNKNOWN,
+                    HashedExtensionId(kIdFoo), Manifest::Type::kUnknown,
                     ManifestLocation::kInvalidLocation, -1,
                     Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
                 .result());
   EXPECT_NE(Feature::FOUND_IN_BLOCKLIST,
             feature
                 .IsAvailableToManifest(
-                    HashedExtensionId(kIdFooHashed), Manifest::TYPE_UNKNOWN,
+                    HashedExtensionId(kIdFooHashed), Manifest::Type::kUnknown,
                     ManifestLocation::kInvalidLocation, -1,
                     Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
                 .result());
-  EXPECT_EQ(Feature::IS_AVAILABLE,
-            feature
-                .IsAvailableToManifest(
-                    HashedExtensionId("slightlytoooolongforanextensionid"),
-                    Manifest::TYPE_UNKNOWN, ManifestLocation::kInvalidLocation,
-                    -1, Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
-                .result());
-  EXPECT_EQ(Feature::IS_AVAILABLE,
-            feature
-                .IsAvailableToManifest(
-                    HashedExtensionId("tooshortforanextensionid"),
-                    Manifest::TYPE_UNKNOWN, ManifestLocation::kInvalidLocation,
-                    -1, Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
-                .result());
+  EXPECT_EQ(
+      Feature::IS_AVAILABLE,
+      feature
+          .IsAvailableToManifest(
+              HashedExtensionId("slightlytoooolongforanextensionid"),
+              Manifest::Type::kUnknown, ManifestLocation::kInvalidLocation, -1,
+              Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
+          .result());
+  EXPECT_EQ(
+      Feature::IS_AVAILABLE,
+      feature
+          .IsAvailableToManifest(
+              HashedExtensionId("tooshortforanextensionid"),
+              Manifest::Type::kUnknown, ManifestLocation::kInvalidLocation, -1,
+              Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
+          .result());
 }
 
 TEST_F(SimpleFeatureTest, PackageType) {
   SimpleFeature feature;
   feature.set_extension_types(
-      {Manifest::TYPE_EXTENSION, Manifest::TYPE_LEGACY_PACKAGED_APP});
+      {Manifest::Type::kExtension, Manifest::Type::kLegacyPackagedApp});
 
   EXPECT_EQ(Feature::IS_AVAILABLE,
             feature
                 .IsAvailableToManifest(
-                    HashedExtensionId(), Manifest::TYPE_EXTENSION,
+                    HashedExtensionId(), Manifest::Type::kExtension,
                     ManifestLocation::kInvalidLocation, -1,
                     Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
                 .result());
   EXPECT_EQ(Feature::IS_AVAILABLE,
             feature
                 .IsAvailableToManifest(
-                    HashedExtensionId(), Manifest::TYPE_LEGACY_PACKAGED_APP,
+                    HashedExtensionId(), Manifest::Type::kLegacyPackagedApp,
                     ManifestLocation::kInvalidLocation, -1,
                     Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
                 .result());
@@ -325,14 +330,14 @@ TEST_F(SimpleFeatureTest, PackageType) {
   EXPECT_EQ(Feature::INVALID_TYPE,
             feature
                 .IsAvailableToManifest(
-                    HashedExtensionId(), Manifest::TYPE_UNKNOWN,
+                    HashedExtensionId(), Manifest::Type::kUnknown,
                     ManifestLocation::kInvalidLocation, -1,
                     Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
                 .result());
   EXPECT_EQ(Feature::INVALID_TYPE,
             feature
                 .IsAvailableToManifest(
-                    HashedExtensionId(), Manifest::TYPE_THEME,
+                    HashedExtensionId(), Manifest::Type::kTheme,
                     ManifestLocation::kInvalidLocation, -1,
                     Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
                 .result());
@@ -342,7 +347,7 @@ TEST_F(SimpleFeatureTest, Context) {
   SimpleFeature feature;
   feature.set_name("somefeature");
   feature.set_contexts({mojom::ContextType::kPrivilegedExtension});
-  feature.set_extension_types({Manifest::TYPE_LEGACY_PACKAGED_APP});
+  feature.set_extension_types({Manifest::Type::kLegacyPackagedApp});
   feature.set_platforms({Feature::CHROMEOS_PLATFORM});
   feature.set_min_manifest_version(21);
   feature.set_max_manifest_version(25);
@@ -370,7 +375,7 @@ TEST_F(SimpleFeatureTest, Context) {
                 .result());
   feature.set_allowlist({});
 
-  feature.set_extension_types({Manifest::TYPE_THEME});
+  feature.set_extension_types({Manifest::Type::kTheme});
   {
     Feature::Availability availability = feature.IsAvailableToContext(
         extension.get(), mojom::ContextType::kPrivilegedExtension,
@@ -381,7 +386,7 @@ TEST_F(SimpleFeatureTest, Context) {
               availability.message());
   }
 
-  feature.set_extension_types({Manifest::TYPE_LEGACY_PACKAGED_APP});
+  feature.set_extension_types({Manifest::Type::kLegacyPackagedApp});
   feature.set_contexts({mojom::ContextType::kUnprivilegedExtension,
                         mojom::ContextType::kContentScript});
   {
@@ -560,7 +565,7 @@ TEST_F(SimpleFeatureTest, SessionType) {
     EXPECT_EQ(entry.expected_availability,
               feature
                   .IsAvailableToManifest(
-                      extension->hashed_id(), Manifest::TYPE_UNKNOWN,
+                      extension->hashed_id(), Manifest::Type::kUnknown,
                       ManifestLocation::kInvalidLocation, -1,
                       Feature::CHROMEOS_PLATFORM, kUnspecifiedContextId)
                   .result())
@@ -630,14 +635,14 @@ TEST_F(SimpleFeatureTest, Platform) {
   EXPECT_EQ(Feature::IS_AVAILABLE,
             feature
                 .IsAvailableToManifest(
-                    HashedExtensionId(), Manifest::TYPE_UNKNOWN,
+                    HashedExtensionId(), Manifest::Type::kUnknown,
                     ManifestLocation::kInvalidLocation, -1,
                     Feature::CHROMEOS_PLATFORM, kUnspecifiedContextId)
                 .result());
   EXPECT_EQ(Feature::INVALID_PLATFORM,
             feature
                 .IsAvailableToManifest(
-                    HashedExtensionId(), Manifest::TYPE_UNKNOWN,
+                    HashedExtensionId(), Manifest::Type::kUnknown,
                     ManifestLocation::kInvalidLocation, -1,
                     Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
                 .result());
@@ -650,14 +655,14 @@ TEST_F(SimpleFeatureTest, ManifestVersion) {
   EXPECT_EQ(Feature::INVALID_MIN_MANIFEST_VERSION,
             feature
                 .IsAvailableToManifest(
-                    HashedExtensionId(), Manifest::TYPE_UNKNOWN,
+                    HashedExtensionId(), Manifest::Type::kUnknown,
                     ManifestLocation::kInvalidLocation, 0,
                     Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
                 .result());
   EXPECT_EQ(Feature::INVALID_MIN_MANIFEST_VERSION,
             feature
                 .IsAvailableToManifest(
-                    HashedExtensionId(), Manifest::TYPE_UNKNOWN,
+                    HashedExtensionId(), Manifest::Type::kUnknown,
                     ManifestLocation::kInvalidLocation, 4,
                     Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
                 .result());
@@ -665,14 +670,14 @@ TEST_F(SimpleFeatureTest, ManifestVersion) {
   EXPECT_EQ(Feature::IS_AVAILABLE,
             feature
                 .IsAvailableToManifest(
-                    HashedExtensionId(), Manifest::TYPE_UNKNOWN,
+                    HashedExtensionId(), Manifest::Type::kUnknown,
                     ManifestLocation::kInvalidLocation, 5,
                     Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
                 .result());
   EXPECT_EQ(Feature::IS_AVAILABLE,
             feature
                 .IsAvailableToManifest(
-                    HashedExtensionId(), Manifest::TYPE_UNKNOWN,
+                    HashedExtensionId(), Manifest::Type::kUnknown,
                     ManifestLocation::kInvalidLocation, 10,
                     Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
                 .result());
@@ -682,21 +687,21 @@ TEST_F(SimpleFeatureTest, ManifestVersion) {
   EXPECT_EQ(Feature::INVALID_MAX_MANIFEST_VERSION,
             feature
                 .IsAvailableToManifest(
-                    HashedExtensionId(), Manifest::TYPE_UNKNOWN,
+                    HashedExtensionId(), Manifest::Type::kUnknown,
                     ManifestLocation::kInvalidLocation, 10,
                     Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
                 .result());
   EXPECT_EQ(Feature::IS_AVAILABLE,
             feature
                 .IsAvailableToManifest(
-                    HashedExtensionId(), Manifest::TYPE_UNKNOWN,
+                    HashedExtensionId(), Manifest::Type::kUnknown,
                     ManifestLocation::kInvalidLocation, 8,
                     Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
                 .result());
   EXPECT_EQ(Feature::IS_AVAILABLE,
             feature
                 .IsAvailableToManifest(
-                    HashedExtensionId(), Manifest::TYPE_UNKNOWN,
+                    HashedExtensionId(), Manifest::Type::kUnknown,
                     ManifestLocation::kInvalidLocation, 7,
                     Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
                 .result());
@@ -857,12 +862,12 @@ TEST_F(SimpleFeatureTest, SupportedChannel) {
 TEST_F(SimpleFeatureTest, SimpleFeatureAvailability) {
   std::unique_ptr<ComplexFeature> complex_feature;
   {
-    std::unique_ptr<SimpleFeature> feature1(new SimpleFeature());
+    auto feature1 = std::make_unique<SimpleFeature>();
     feature1->set_channel(Channel::BETA);
-    feature1->set_extension_types({Manifest::TYPE_EXTENSION});
-    std::unique_ptr<SimpleFeature> feature2(new SimpleFeature());
+    feature1->set_extension_types({Manifest::Type::kExtension});
+    auto feature2 = std::make_unique<SimpleFeature>();
     feature2->set_channel(Channel::BETA);
-    feature2->set_extension_types({Manifest::TYPE_LEGACY_PACKAGED_APP});
+    feature2->set_extension_types({Manifest::Type::kLegacyPackagedApp});
     std::vector<Feature*> list;
     list.push_back(feature1.release());
     list.push_back(feature2.release());
@@ -878,7 +883,7 @@ TEST_F(SimpleFeatureTest, SimpleFeatureAvailability) {
     ScopedCurrentChannel current_channel(Channel::BETA);
     EXPECT_EQ(Feature::IS_AVAILABLE,
               feature
-                  ->IsAvailableToManifest(kId1, Manifest::TYPE_EXTENSION,
+                  ->IsAvailableToManifest(kId1, Manifest::Type::kExtension,
                                           ManifestLocation::kInvalidLocation,
                                           Feature::UNSPECIFIED_PLATFORM,
                                           kUnspecifiedContextId)
@@ -886,7 +891,7 @@ TEST_F(SimpleFeatureTest, SimpleFeatureAvailability) {
     EXPECT_EQ(Feature::IS_AVAILABLE,
               feature
                   ->IsAvailableToManifest(
-                      kId2, Manifest::TYPE_LEGACY_PACKAGED_APP,
+                      kId2, Manifest::Type::kLegacyPackagedApp,
                       ManifestLocation::kInvalidLocation,
                       Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
                   .result());
@@ -895,7 +900,7 @@ TEST_F(SimpleFeatureTest, SimpleFeatureAvailability) {
     ScopedCurrentChannel current_channel(Channel::STABLE);
     EXPECT_NE(Feature::IS_AVAILABLE,
               feature
-                  ->IsAvailableToManifest(kId1, Manifest::TYPE_EXTENSION,
+                  ->IsAvailableToManifest(kId1, Manifest::Type::kExtension,
                                           ManifestLocation::kInvalidLocation,
                                           Feature::UNSPECIFIED_PLATFORM,
                                           kUnspecifiedContextId)
@@ -903,7 +908,7 @@ TEST_F(SimpleFeatureTest, SimpleFeatureAvailability) {
     EXPECT_NE(Feature::IS_AVAILABLE,
               feature
                   ->IsAvailableToManifest(
-                      kId2, Manifest::TYPE_LEGACY_PACKAGED_APP,
+                      kId2, Manifest::Type::kLegacyPackagedApp,
                       ManifestLocation::kInvalidLocation,
                       Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
                   .result());
@@ -915,13 +920,13 @@ TEST_F(SimpleFeatureTest, ComplexFeatureAvailability) {
   std::unique_ptr<ComplexFeature> complex_feature;
   {
     // Rule: "extension", channel trunk.
-    std::unique_ptr<SimpleFeature> feature1(new SimpleFeature());
+    auto feature1 = std::make_unique<SimpleFeature>();
     feature1->set_channel(Channel::UNKNOWN);
-    feature1->set_extension_types({Manifest::TYPE_EXTENSION});
-    std::unique_ptr<SimpleFeature> feature2(new SimpleFeature());
+    feature1->set_extension_types({Manifest::Type::kExtension});
+    auto feature2 = std::make_unique<SimpleFeature>();
     // Rule: "legacy_packaged_app", channel stable.
     feature2->set_channel(Channel::STABLE);
-    feature2->set_extension_types({Manifest::TYPE_LEGACY_PACKAGED_APP});
+    feature2->set_extension_types({Manifest::Type::kLegacyPackagedApp});
     std::vector<Feature*> list;
     list.push_back(feature1.release());
     list.push_back(feature2.release());
@@ -935,7 +940,7 @@ TEST_F(SimpleFeatureTest, ComplexFeatureAvailability) {
     ScopedCurrentChannel current_channel(Channel::UNKNOWN);
     EXPECT_EQ(Feature::IS_AVAILABLE,
               feature
-                  ->IsAvailableToManifest(kId1, Manifest::TYPE_EXTENSION,
+                  ->IsAvailableToManifest(kId1, Manifest::Type::kExtension,
                                           ManifestLocation::kInvalidLocation,
                                           Feature::UNSPECIFIED_PLATFORM,
                                           kUnspecifiedContextId)
@@ -946,7 +951,7 @@ TEST_F(SimpleFeatureTest, ComplexFeatureAvailability) {
     EXPECT_EQ(Feature::IS_AVAILABLE,
               feature
                   ->IsAvailableToManifest(
-                      kId2, Manifest::TYPE_LEGACY_PACKAGED_APP,
+                      kId2, Manifest::Type::kLegacyPackagedApp,
                       ManifestLocation::kInvalidLocation,
                       Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
                   .result());
@@ -955,7 +960,7 @@ TEST_F(SimpleFeatureTest, ComplexFeatureAvailability) {
     ScopedCurrentChannel current_channel(Channel::BETA);
     EXPECT_NE(Feature::IS_AVAILABLE,
               feature
-                  ->IsAvailableToManifest(kId1, Manifest::TYPE_EXTENSION,
+                  ->IsAvailableToManifest(kId1, Manifest::Type::kExtension,
                                           ManifestLocation::kInvalidLocation,
                                           Feature::UNSPECIFIED_PLATFORM,
                                           kUnspecifiedContextId)
@@ -1105,7 +1110,7 @@ TEST(SimpleFeatureUnitTest, TestAvailableToEnvironment) {
     // result should always be available.
     SimpleFeature feature;
     feature.set_min_manifest_version(2);
-    feature.set_extension_types({Manifest::TYPE_EXTENSION});
+    feature.set_extension_types({Manifest::Type::kExtension});
     feature.set_contexts({mojom::ContextType::kPrivilegedExtension});
     EXPECT_EQ(Feature::IS_AVAILABLE,
               feature.IsAvailableToEnvironment(kUnspecifiedContextId).result());
@@ -1215,7 +1220,7 @@ TEST(SimpleFeatureUnitTest, DisallowForServiceWorkers) {
   SimpleFeature feature;
   feature.set_name("somefeature");
   feature.set_contexts({mojom::ContextType::kPrivilegedExtension});
-  feature.set_extension_types({Manifest::TYPE_EXTENSION});
+  feature.set_extension_types({Manifest::Type::kExtension});
 
   auto extension = ExtensionBuilder("test")
                        .SetBackgroundContext(

@@ -14,7 +14,7 @@ namespace ui_util {
 bool ShouldDisplayInExtensionSettings(Manifest::Type type,
                                       mojom::ManifestLocation location) {
   // Don't show for themes since the settings UI isn't really useful for them.
-  if (type == Manifest::TYPE_THEME) {
+  if (type == Manifest::Type::kTheme) {
     return false;
   }
 

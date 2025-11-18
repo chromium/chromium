@@ -115,8 +115,8 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
 
     // `FOR_LOGIN_SCREEN` means that this extension was force-installed through
     // policy for the login screen. Extensions created with this flag will have
-    // type `TYPE_LOGIN_SCREEN_EXTENSION` (with limited API capabilities)
-    // instead of the usual `TYPE_EXTENSION`.
+    // type `Type::kLoginScreenExtension` (with limited API capabilities)
+    // instead of the usual `Type::kExtension`.
     FOR_LOGIN_SCREEN = 1 << 13,
 
     // `WITHHOLD_PERMISSIONS` indicates that on installation the user indicated

@@ -624,7 +624,7 @@ bool ContentSecurityPolicyIsSandboxed(
         return false;
 
       // Platform apps don't allow navigation.
-      if (type == Manifest::TYPE_PLATFORM_APP &&
+      if (type == Manifest::Type::kPlatformApp &&
           token_lower_case == kAllowTopNavigation) {
         return false;
       }

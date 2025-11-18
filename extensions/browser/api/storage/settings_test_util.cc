@@ -83,10 +83,10 @@ scoped_refptr<const Extension> AddExtensionWithIdAndPermissions(
   manifest.Set("permissions", std::move(permissions));
 
   switch (type) {
-    case Manifest::TYPE_EXTENSION:
+    case Manifest::Type::kExtension:
       break;
 
-    case Manifest::TYPE_LEGACY_PACKAGED_APP: {
+    case Manifest::Type::kLegacyPackagedApp: {
       base::Value::Dict app;
       base::Value::Dict app_launch;
       app_launch.Set("local_path", "fake.html");

@@ -241,7 +241,7 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
     if (!GetFrameOptions(*options, &create_params, &error))
       return RespondNow(Error(std::move(error)));
 
-    if (extension()->GetType() == Manifest::TYPE_EXTENSION) {
+    if (extension()->GetType() == Manifest::Type::kExtension) {
       // Allowlisted IME extensions are allowed to use this API to create IME
       // specific windows to show accented characters or suggestions.
       if (!extension()->permissions_data()->HasAPIPermission(

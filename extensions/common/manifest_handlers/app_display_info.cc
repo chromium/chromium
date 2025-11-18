@@ -94,9 +94,9 @@ base::span<const char* const> AppDisplayManifestHandler::Keys() const {
 bool AppDisplayManifestHandler::AlwaysParseForType(Manifest::Type type) const {
   // Always parse for app types; this ensures that apps default to being
   // displayed in the proper surfaces.
-  return type == Manifest::TYPE_LEGACY_PACKAGED_APP ||
-         type == Manifest::TYPE_HOSTED_APP ||
-         type == Manifest::TYPE_PLATFORM_APP;
+  return type == Manifest::Type::kLegacyPackagedApp ||
+         type == Manifest::Type::kHostedApp ||
+         type == Manifest::Type::kPlatformApp;
 }
 
 }  // namespace extensions

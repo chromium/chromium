@@ -195,7 +195,7 @@ void ZipFileInstaller::ManifestRead(
         return ZipFileInstaller::ShouldExtractFile(is_theme, file_path) &&
                !ZipFileInstaller::IsManifestFile(file_path);
       },
-      manifest_type == Manifest::TYPE_THEME);
+      manifest_type == Manifest::Type::kTheme);
 
   // TODO(crbug.com/41274425): This silently ignores blocked file types.
   //                         Add install warnings.

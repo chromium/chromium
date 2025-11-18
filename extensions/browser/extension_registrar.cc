@@ -500,7 +500,7 @@ base::flat_set<int> ExtensionRegistrar::GetDisableReasonsOnInstalled(
     // the initial install if it is supposed to be, and this allows us to turn
     // this on for other platforms without disabling already-installed
     // extensions.
-    if (extension->GetType() != Manifest::TYPE_HOSTED_APP &&
+    if (extension->GetType() != Manifest::Type::kHostedApp &&
         Manifest::IsExternalLocation(extension->location()) &&
         !extension_prefs_->IsExternalExtensionAcknowledged(extension->id()) &&
         !is_update_from_same_type) {

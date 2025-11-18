@@ -27,22 +27,36 @@ class Manifest final {
   // Do not change the order of entries or remove entries in this list as this
   // is used in ExtensionType enum in
   // tools/metrics/histograms/metadata/extensions/enums.xml.
+  // TODO(crbug.com/420858216): Add add "class" to declaration.
   enum Type {
-    TYPE_UNKNOWN = 0,
-    TYPE_EXTENSION = 1,
-    TYPE_THEME = 2,
-    TYPE_USER_SCRIPT = 3,
-    TYPE_HOSTED_APP = 4,
+    kUnknown = 0,
+    kExtension = 1,
+    kTheme = 2,
+    kUserScript = 3,
+    kHostedApp = 4,
     // This is marked legacy because platform apps are preferred. For
     // backwards compatibility, we can't remove support for packaged apps
-    TYPE_LEGACY_PACKAGED_APP = 5,
-    TYPE_PLATFORM_APP = 6,
-    TYPE_SHARED_MODULE = 7,
-    TYPE_LOGIN_SCREEN_EXTENSION = 8,
-    TYPE_CHROMEOS_SYSTEM_EXTENSION = 9,
+    kLegacyPackagedApp = 5,
+    kPlatformApp = 6,
+    kSharedModule = 7,
+    kLoginScreenExtension = 8,
+    kChromeOSSystemExtension = 9,
 
     // New enum values must go above here.
-    NUM_LOAD_TYPES
+    kNumLoadTypes,
+
+    // TODO(crbug.com/420858216): Remove these legacy values/names.
+    TYPE_UNKNOWN = kUnknown,
+    TYPE_EXTENSION = kExtension,
+    TYPE_THEME = kTheme,
+    TYPE_USER_SCRIPT = kUserScript,
+    TYPE_HOSTED_APP = kHostedApp,
+    TYPE_LEGACY_PACKAGED_APP = kLegacyPackagedApp,
+    TYPE_PLATFORM_APP = kPlatformApp,
+    TYPE_SHARED_MODULE = kSharedModule,
+    TYPE_LOGIN_SCREEN_EXTENSION = kLoginScreenExtension,
+    TYPE_CHROMEOS_SYSTEM_EXTENSION = kChromeOSSystemExtension,
+    NUM_LOAD_TYPES = kNumLoadTypes
   };
 
   // Given two install sources, return the one which should take priority
@@ -112,7 +126,7 @@ class Manifest final {
                                         bool is_theme);
 
   // Creates a Manifest for a login screen context. Note that this won't always
-  // result in a Manifest of TYPE_LOGIN_SCREEN_EXTENSION, since other items
+  // result in a Manifest of Type::kLoginScreenExtension, since other items
   // (like platform apps) may be installed in the same login screen profile.
   static std::unique_ptr<Manifest> CreateManifestForLoginScreen(
       mojom::ManifestLocation location,
@@ -146,22 +160,22 @@ class Manifest final {
   // Returns the manifest type.
   Type type() const { return type_; }
 
-  bool is_theme() const { return type_ == TYPE_THEME; }
+  bool is_theme() const { return type_ == Type::kTheme; }
   bool is_app() const {
     return is_legacy_packaged_app() || is_hosted_app() || is_platform_app();
   }
-  bool is_platform_app() const { return type_ == TYPE_PLATFORM_APP; }
-  bool is_hosted_app() const { return type_ == TYPE_HOSTED_APP; }
+  bool is_platform_app() const { return type_ == Type::kPlatformApp; }
+  bool is_hosted_app() const { return type_ == Type::kHostedApp; }
   bool is_legacy_packaged_app() const {
-    return type_ == TYPE_LEGACY_PACKAGED_APP;
+    return type_ == Type::kLegacyPackagedApp;
   }
-  bool is_extension() const { return type_ == TYPE_EXTENSION; }
+  bool is_extension() const { return type_ == Type::kExtension; }
   bool is_login_screen_extension() const {
-    return type_ == TYPE_LOGIN_SCREEN_EXTENSION;
+    return type_ == Type::kLoginScreenExtension;
   }
-  bool is_shared_module() const { return type_ == TYPE_SHARED_MODULE; }
+  bool is_shared_module() const { return type_ == Type::kSharedModule; }
   bool is_chromeos_system_extension() const {
-    return type_ == TYPE_CHROMEOS_SYSTEM_EXTENSION;
+    return type_ == Type::kChromeOSSystemExtension;
   }
 
   // These access the wrapped manifest value, returning nullptr/nullopt when the

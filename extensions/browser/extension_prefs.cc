@@ -2100,8 +2100,8 @@ void ExtensionPrefs::InitPrefStore() {
       Manifest::Type type =
           info.extension_manifest
               ? Manifest::GetTypeFromManifestValue(*info.extension_manifest)
-              : Manifest::TYPE_UNKNOWN;
-      bool is_theme = type == Manifest::TYPE_THEME;
+              : Manifest::Type::kUnknown;
+      bool is_theme = type == Manifest::Type::kTheme;
       // Erase the entry if the extension won't be loaded.
       return !Manifest::ShouldAlwaysLoadExtension(info.extension_location,
                                                   is_theme);

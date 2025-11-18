@@ -151,9 +151,9 @@ bool CommandsHandler::Parse(Extension* extension, std::u16string* error) {
 }
 
 bool CommandsHandler::AlwaysParseForType(Manifest::Type type) const {
-  return type == Manifest::TYPE_EXTENSION ||
-         type == Manifest::TYPE_LEGACY_PACKAGED_APP ||
-         type == Manifest::TYPE_PLATFORM_APP;
+  return type == Manifest::Type::kExtension ||
+         type == Manifest::Type::kLegacyPackagedApp ||
+         type == Manifest::Type::kPlatformApp;
 }
 
 void CommandsHandler::MaybeSetActionDefault(const Extension* extension,

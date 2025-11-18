@@ -99,7 +99,7 @@ bool IsManifestSupported(int manifest_version,
       manifest_version <= kMaximumSupportedManifestVersion) {
     // Emit a warning for unpacked extensions on Manifest V2 warning that
     // MV2 is deprecated.
-    if (type == Manifest::TYPE_EXTENSION && manifest_version == 2 &&
+    if (type == Manifest::Type::kExtension && manifest_version == 2 &&
         Manifest::IsUnpackedLocation(location) &&
         !g_silence_deprecated_manifest_version_warnings) {
       *warning = errors::kManifestV2IsDeprecatedWarning;
@@ -129,7 +129,7 @@ bool IsManifestSupported(int manifest_version,
   bool allow_legacy_extensions =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kAllowLegacyExtensionManifests);
-  if (type == Manifest::TYPE_EXTENSION && allow_legacy_extensions) {
+  if (type == Manifest::Type::kExtension && allow_legacy_extensions) {
     return true;
   }
 
@@ -138,12 +138,12 @@ bool IsManifestSupported(int manifest_version,
   }
 
   static constexpr int kMinimumExtensionManifestVersion = 2;
-  if (type == Manifest::TYPE_EXTENSION) {
+  if (type == Manifest::Type::kExtension) {
     return manifest_version >= kMinimumExtensionManifestVersion;
   }
 
   static constexpr int kMinimumPlatformAppManifestVersion = 2;
-  if (type == Manifest::TYPE_PLATFORM_APP) {
+  if (type == Manifest::Type::kPlatformApp) {
     return manifest_version >= kMinimumPlatformAppManifestVersion;
   }
 
@@ -287,8 +287,8 @@ scoped_refptr<Extension> Extension::Create(const base::FilePath& path,
 }
 
 Manifest::Type Extension::GetType() const {
-  return converted_from_user_script() ?
-      Manifest::TYPE_USER_SCRIPT : manifest_->type();
+  return converted_from_user_script() ? Manifest::Type::kUserScript
+                                      : manifest_->type();
 }
 
 // static

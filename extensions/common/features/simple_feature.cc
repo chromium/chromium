@@ -77,27 +77,27 @@ Feature::Availability IsAvailableToEnvironmentForBind(int context_id,
 // to developers in an error message.
 std::string GetDisplayName(Manifest::Type type) {
   switch (type) {
-    case Manifest::TYPE_UNKNOWN:
+    case Manifest::Type::kUnknown:
       return "unknown";
-    case Manifest::TYPE_EXTENSION:
+    case Manifest::Type::kExtension:
       return "extension";
-    case Manifest::TYPE_HOSTED_APP:
+    case Manifest::Type::kHostedApp:
       return "hosted app";
-    case Manifest::TYPE_LEGACY_PACKAGED_APP:
+    case Manifest::Type::kLegacyPackagedApp:
       return "legacy packaged app";
-    case Manifest::TYPE_PLATFORM_APP:
+    case Manifest::Type::kPlatformApp:
       return "packaged app";
-    case Manifest::TYPE_THEME:
+    case Manifest::Type::kTheme:
       return "theme";
-    case Manifest::TYPE_USER_SCRIPT:
+    case Manifest::Type::kUserScript:
       return "user script";
-    case Manifest::TYPE_SHARED_MODULE:
+    case Manifest::Type::kSharedModule:
       return "shared module";
-    case Manifest::TYPE_LOGIN_SCREEN_EXTENSION:
+    case Manifest::Type::kLoginScreenExtension:
       return "login screen extension";
-    case Manifest::TYPE_CHROMEOS_SYSTEM_EXTENSION:
+    case Manifest::Type::kChromeOSSystemExtension:
       return "chromeos system extension";
-    case Manifest::NUM_LOAD_TYPES:
+    case Manifest::Type::kNumLoadTypes:
       NOTREACHED();
   }
   NOTREACHED();
@@ -403,7 +403,7 @@ std::string SimpleFeature::GetAvailabilityMessage(
 Feature::Availability SimpleFeature::CreateAvailability(
     AvailabilityResult result) const {
   return Availability(
-      result, GetAvailabilityMessage(result, Manifest::TYPE_UNKNOWN, GURL(),
+      result, GetAvailabilityMessage(result, Manifest::Type::kUnknown, GURL(),
                                      mojom::ContextType::kUnspecified,
                                      version_info::Channel::UNKNOWN,
                                      mojom::FeatureSessionType::kUnknown));
@@ -422,7 +422,7 @@ Feature::Availability SimpleFeature::CreateAvailability(
     AvailabilityResult result,
     const GURL& url) const {
   return Availability(
-      result, GetAvailabilityMessage(result, Manifest::TYPE_UNKNOWN, url,
+      result, GetAvailabilityMessage(result, Manifest::Type::kUnknown, url,
                                      mojom::ContextType::kUnspecified,
                                      version_info::Channel::UNKNOWN,
                                      mojom::FeatureSessionType::kUnknown));
@@ -432,7 +432,7 @@ Feature::Availability SimpleFeature::CreateAvailability(
     AvailabilityResult result,
     mojom::ContextType context) const {
   return Availability(
-      result, GetAvailabilityMessage(result, Manifest::TYPE_UNKNOWN, GURL(),
+      result, GetAvailabilityMessage(result, Manifest::Type::kUnknown, GURL(),
                                      context, version_info::Channel::UNKNOWN,
                                      mojom::FeatureSessionType::kUnknown));
 }
@@ -441,7 +441,7 @@ Feature::Availability SimpleFeature::CreateAvailability(
     AvailabilityResult result,
     version_info::Channel channel) const {
   return Availability(
-      result, GetAvailabilityMessage(result, Manifest::TYPE_UNKNOWN, GURL(),
+      result, GetAvailabilityMessage(result, Manifest::Type::kUnknown, GURL(),
                                      mojom::ContextType::kUnspecified, channel,
                                      mojom::FeatureSessionType::kUnknown));
 }
@@ -451,7 +451,7 @@ Feature::Availability SimpleFeature::CreateAvailability(
     mojom::FeatureSessionType session_type) const {
   return Availability(
       result,
-      GetAvailabilityMessage(result, Manifest::TYPE_UNKNOWN, GURL(),
+      GetAvailabilityMessage(result, Manifest::Type::kUnknown, GURL(),
                              mojom::ContextType::kUnspecified,
                              version_info::Channel::UNKNOWN, session_type));
 }
@@ -681,7 +681,7 @@ Feature::Availability SimpleFeature::GetManifestAvailability(
   // HACK(kalman): user script -> extension. Solve this in a more generic way
   // when we compile feature files.
   Manifest::Type type_to_check =
-      (type == Manifest::TYPE_USER_SCRIPT) ? Manifest::TYPE_EXTENSION : type;
+      (type == Manifest::Type::kUserScript) ? Manifest::Type::kExtension : type;
   if (!extension_types_.empty() &&
       !base::Contains(extension_types_, type_to_check)) {
     return CreateAvailability(INVALID_TYPE, type);
