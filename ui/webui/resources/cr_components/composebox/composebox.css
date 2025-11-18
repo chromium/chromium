@@ -499,6 +499,12 @@ search-animated-glow {
   --cr-icon-button-size: 36px;
 }
 
+:host([searchbox-layout-mode="Compact"])
+    contextual-entrypoint-and-carousel::part(context-menu-entrypoint-icon) {
+  position: absolute;
+  top: 10px;
+}
+
 :host([ntp-realbox-next-enabled][searchbox-layout-mode^="Tall"][show-dropdown_]) {
   --expanded-border-radius: var(--cr-composebox-expanded-border-radius, 24px);
 }
@@ -586,8 +592,9 @@ contextual-entrypoint-and-carousel::part(voice-icon) {
 }
 
 :host([searchbox-layout-mode='Compact']) contextual-entrypoint-and-carousel::part(voice-icon) {
-  margin-inline-end: calc(var(--cr-icon-button-size) + 12px);
-  margin-inline-start: auto;
+  position: absolute;
+  right: calc(var(--cr-icon-button-size) + 12px);
+  top: 10px;
 }
 
 :host([ntp-realbox-next-enabled][searchbox-layout-mode='Compact']) contextual-entrypoint-and-carousel::part(carousel-container),

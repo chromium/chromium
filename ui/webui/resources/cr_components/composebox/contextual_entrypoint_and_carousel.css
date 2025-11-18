@@ -28,8 +28,9 @@
   align-items: center;
   display: flex;
   gap: 4px;
-  padding-inline-start: var(--contextual-entrypoint-and-carousel-context-menu-container-padding-inline-start, 4px);
   margin-bottom: var(--contextual-entrypoint-and-carousel-context-menu-container-margin-bottom);
+  min-height: var(--cr-icon-button-size);
+  padding-inline-start: var(--contextual-entrypoint-and-carousel-context-menu-container-padding-inline-start, 4px);
 }
 
 #contextEntrypoint {
