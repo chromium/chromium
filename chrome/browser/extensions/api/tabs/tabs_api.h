@@ -367,6 +367,9 @@ class TabsDetectLanguageFunction
   ~TabsDetectLanguageFunction() override = default;
   ResponseAction Run() override;
 
+  // Starts the language detection process, which is asynchronous.
+  ResponseAction StartLanguageDetection(content::WebContents* contents);
+
   // content::WebContentsObserver:
   void NavigationEntryCommitted(
       const content::LoadCommittedDetails& load_details) override;

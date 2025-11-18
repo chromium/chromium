@@ -1521,6 +1521,13 @@ ExtensionFunction::ResponseAction TabsDetectLanguageFunction::Run() {
     return RespondNow(Error(kCannotDetermineLanguageOfUnloadedTab));
   }
 
+  // Language detection is asynchronous.
+  return StartLanguageDetection(contents);
+}
+
+TabsDetectLanguageFunction::ResponseAction
+TabsDetectLanguageFunction::StartLanguageDetection(
+    content::WebContents* contents) {
   AddRef();  // Balanced in RespondWithLanguage().
 
   ChromeTranslateClient* chrome_translate_client =
@@ -1545,7 +1552,6 @@ ExtensionFunction::ResponseAction TabsDetectLanguageFunction::Run() {
   chrome_translate_client->GetTranslateDriver()->AddLanguageDetectionObserver(
       this);
   is_observing_ = true;
-
   return RespondLater();
 }
 
