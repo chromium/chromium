@@ -21,6 +21,7 @@ include_rules = [
   "+net",
   "+services/metrics",
   "+services/network/public",
+  "+services/service_manager/public/cpp",
   "+third_party/blink/public",
   "+ui",
 ]

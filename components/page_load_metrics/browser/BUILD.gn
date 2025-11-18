@@ -106,6 +106,7 @@ source_set("browser") {
     "//content/public/common",
     "//net",
     "//services/metrics/public/cpp:ukm_builders",
+    "//services/service_manager/public/cpp",
     "//ui/base",
   ]
 }
