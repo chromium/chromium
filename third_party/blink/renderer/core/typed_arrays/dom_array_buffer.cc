@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/containers/buffer_iterator.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
@@ -208,11 +207,10 @@ DOMArrayBuffer* DOMArrayBuffer::Create(
       ArrayBufferContents::AllocationFailureBehavior::kCrash);
   CHECK(contents.IsValid());
 
-  base::BufferIterator iterator(contents.ByteSpan());
+  auto contents_bytes = contents.ByteSpan();
   for (const auto& span : *shared_buffer) {
-    iterator.MutableSpan<char>(span.size()).copy_from(span);
+    contents_bytes.take_first(span.size()).copy_from(base::as_bytes(span));
   }
-
   return Create(std::move(contents));
 }
 
@@ -228,11 +226,10 @@ DOMArrayBuffer* DOMArrayBuffer::Create(
       ArrayBufferContents::AllocationFailureBehavior::kCrash);
   CHECK(contents.IsValid());
 
-  base::BufferIterator iterator(contents.ByteSpan());
+  auto contents_bytes = contents.ByteSpan();
   for (const auto& span : data) {
-    iterator.MutableSpan<uint8_t>(span.size()).copy_from(span);
+    contents_bytes.take_first(span.size()).copy_from(span);
   }
-
   return Create(std::move(contents));
 }
 
