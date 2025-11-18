@@ -26,16 +26,16 @@ BASE_DECLARE_FEATURE(kInfobarPrioritization);
 // - kMaxVisibleDefault  : max concurrently visible DEFAULT bars.
 // - kMaxVisibleLow      : max concurrently visible LOW bars.
 // - kMaxLowQueued       : max number of queued LOW entries.
-BASE_DECLARE_FEATURE_PARAM(int, kMaxVisibleCritical);
-BASE_DECLARE_FEATURE_PARAM(int, kMaxVisibleDefault);
-BASE_DECLARE_FEATURE_PARAM(int, kMaxVisibleLow);
-BASE_DECLARE_FEATURE_PARAM(int, kMaxLowQueued);
+BASE_DECLARE_FEATURE_PARAM(size_t, kMaxVisibleCritical);
+BASE_DECLARE_FEATURE_PARAM(size_t, kMaxVisibleDefault);
+BASE_DECLARE_FEATURE_PARAM(size_t, kMaxVisibleLow);
+BASE_DECLARE_FEATURE_PARAM(size_t, kMaxLowQueued);
 
 struct InfobarPriorityCaps {
-  int max_visible_critical;
-  int max_visible_default;
-  int max_visible_low;
-  int max_low_queued;
+  size_t max_visible_critical;
+  size_t max_visible_default;
+  size_t max_visible_low;
+  size_t max_low_queued;
 };
 
 // Returns whether the feature is enabled.

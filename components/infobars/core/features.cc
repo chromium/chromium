@@ -8,24 +8,24 @@ namespace infobars {
 
 BASE_FEATURE(kInfobarPrioritization, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE_PARAM(int,
+BASE_FEATURE_PARAM(size_t,
                    kMaxVisibleCritical,
                    &kInfobarPrioritization,
                    "max_visible_critical",
                    2);
 
-BASE_FEATURE_PARAM(int,
+BASE_FEATURE_PARAM(size_t,
                    kMaxVisibleDefault,
                    &kInfobarPrioritization,
                    "max_visible_default",
                    1);
 
-BASE_FEATURE_PARAM(int,
+BASE_FEATURE_PARAM(size_t,
                    kMaxVisibleLow,
                    &kInfobarPrioritization,
                    "max_visible_low",
                    1);
-BASE_FEATURE_PARAM(int,
+BASE_FEATURE_PARAM(size_t,
                    kMaxLowQueued,
                    &kInfobarPrioritization,
                    "max_low_queued",

@@ -2058,6 +2058,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="InfoBar.QueueSize" units="InfoBars" expires_after="2026-06-30">
+  <owner>koretadaniel@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Records the infobars pending queue size at a time of showing a new infobar.
+    The maximum bucket for this metric is set to 50.
+  </summary>
+</histogram>
+
 <histogram name="InfoBar.Shown" enum="InfoBarIdentifier" expires_after="never">
 <!-- expires-never: Required as long as infobars exist. -->
 
