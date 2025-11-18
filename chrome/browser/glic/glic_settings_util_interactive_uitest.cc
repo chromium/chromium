@@ -198,8 +198,15 @@ IN_PROC_BROWSER_TEST_F(GlicSettingsUtilUiTest, OpenSettingsFromGlicUi) {
           kSettingsTab, chrome::GetSettingsUrl(chrome::kGlicSettingsSubpage)));
 }
 
+// TODO(crbug.com/460830590): Enable on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_RefreshSettingsAfterAcceptingFRE \
+  DISABLED_RefreshSettingsAfterAcceptingFRE
+#else
+#define MAYBE_RefreshSettingsAfterAcceptingFRE RefreshSettingsAfterAcceptingFRE
+#endif
 IN_PROC_BROWSER_TEST_F(GlicSettingsUtilUiTest,
-                       RefreshSettingsAfterAcceptingFRE) {
+                       MAYBE_RefreshSettingsAfterAcceptingFRE) {
   const DeepQuery kPathToAiPageIndex{"settings-ui", "settings-main",
                                      "settings-ai-page-index"};
   const DeepQuery kPathToGlicPage{"settings-ui", "settings-main",
