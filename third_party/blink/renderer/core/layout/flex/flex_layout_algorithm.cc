@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/layout/flex/layout_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/flex/line_flexer.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
+#include "third_party/blink/renderer/core/layout/geometry/layout_unit_diffuser.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_input_node.h"
@@ -1577,22 +1578,23 @@ LayoutUnit InitialContentPositionOffset(const StyleContentAlignmentData& data,
   }
 }
 
-LayoutUnit ContentDistributionSpace(const StyleContentAlignmentData& data,
-                                    LayoutUnit free_space,
-                                    unsigned number_of_items) {
+LayoutUnitDiffuser ContentDistributionSpace(
+    const StyleContentAlignmentData& data,
+    LayoutUnit free_space,
+    unsigned number_of_items) {
   if (free_space <= LayoutUnit() || number_of_items <= 1) {
-    return LayoutUnit();
+    return LayoutUnitDiffuser();
   }
   switch (data.Distribution()) {
     case ContentDistributionType::kDefault:
     case ContentDistributionType::kStretch:
-      return LayoutUnit();
+      return LayoutUnitDiffuser();
     case ContentDistributionType::kSpaceBetween:
-      return free_space / (number_of_items - 1);
+      return LayoutUnitDiffuser(free_space, number_of_items - 1);
     case ContentDistributionType::kSpaceEvenly:
-      return free_space / (number_of_items + 1);
+      return LayoutUnitDiffuser(free_space, number_of_items + 1);
     case ContentDistributionType::kSpaceAround:
-      return free_space / number_of_items;
+      return LayoutUnitDiffuser(free_space, number_of_items);
   }
 }
 
@@ -1665,7 +1667,7 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
     cross_axis_free_space = LayoutUnit();
   }
 
-  const LayoutUnit space_between_lines =
+  LayoutUnitDiffuser space_between_lines =
       ContentDistributionSpace(align_content, cross_axis_free_space, num_lines);
   LayoutUnit line_cross_axis_offset =
       (is_column_ ? BorderScrollbarPadding().inline_start
@@ -1706,7 +1708,7 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
             : LayoutUnit();
 
     const wtf_size_t line_items_size = flex_line.item_indices.size();
-    const LayoutUnit space_between_items = ContentDistributionSpace(
+    LayoutUnitDiffuser space_between_items = ContentDistributionSpace(
         justify_content, main_axis_free_space, line_items_size);
     LayoutUnit main_axis_offset =
         (is_column_ ? BorderScrollbarPadding().block_start
@@ -1864,7 +1866,7 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
                      : LogicalOffset(main_axis_offset, cross_axis_offset);
 
       main_axis_offset += item.FlexedBorderBoxSize() + margin.MainEnd() +
-                          space_between_items + gap_between_items_;
+                          space_between_items.Next() + gap_between_items_;
 
       const BoxStrut logical_margins =
           physical_margins.ConvertToLogical(writing_direction);
@@ -1905,8 +1907,8 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
       item_index_in_line++;
     }
 
-    line_cross_axis_offset +=
-        flex_line.line_cross_size + space_between_lines + gap_between_lines_;
+    line_cross_axis_offset += flex_line.line_cross_size +
+                              space_between_lines.Next() + gap_between_lines_;
   }
 
   if (auto first_baseline = baseline_accumulator.FirstBaseline())
