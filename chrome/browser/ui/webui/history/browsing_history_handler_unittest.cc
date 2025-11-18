@@ -177,7 +177,6 @@ class BrowsingHistoryHandlerTest : public ChromeRenderViewHostTestHarness {
           info.search_text = search_text;
           info.reached_beginning = true;
           info.sync_timed_out = false;
-          info.has_synced_results = true;
           handler_->OnQueryComplete(
               mock_results.empty() ? results : mock_results, info,
               base::OnceClosure());

@@ -702,8 +702,6 @@ void BrowsingHistoryService::ReturnResultsToDriver(
   info.reached_beginning =
       !CanRetry(state->local_status) && !CanRetry(state->remote_status);
   info.sync_timed_out = state->remote_status == TIMED_OUT;
-  info.has_synced_results = state->remote_status == MORE_RESULTS ||
-                            state->remote_status == REACHED_BEGINNING;
   base::OnceClosure continuation =
       base::BindOnce(&BrowsingHistoryService::QueryHistoryInternal,
                      weak_factory_.GetWeakPtr(), std::move(state));
