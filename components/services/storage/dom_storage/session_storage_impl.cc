@@ -762,19 +762,6 @@ void SessionStorageImpl::InitiateConnection(bool in_memory_only) {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-SessionStorageImpl::ValueAndStatus::ValueAndStatus() = default;
-
-SessionStorageImpl::ValueAndStatus::ValueAndStatus(ValueAndStatus&&) = default;
-
-SessionStorageImpl::ValueAndStatus::~ValueAndStatus() = default;
-
-SessionStorageImpl::KeyValuePairsAndStatus::KeyValuePairsAndStatus() = default;
-
-SessionStorageImpl::KeyValuePairsAndStatus::KeyValuePairsAndStatus(
-    KeyValuePairsAndStatus&&) = default;
-
-SessionStorageImpl::KeyValuePairsAndStatus::~KeyValuePairsAndStatus() = default;
-
 void SessionStorageImpl::OnDatabaseOpened(DbStatus status) {
   if (!status.ok()) {
     LogDatabaseOpenResult(OpenResult::kDatabaseOpenFailed);
@@ -792,79 +779,27 @@ void SessionStorageImpl::OnDatabaseOpened(DbStatus status) {
     return;
   }
 
-  database_->RunDatabaseTask(
-      base::BindOnce([](DomStorageDatabaseLevelDB& db) {
-        KeyValuePairsAndStatus namespaces;
-        namespaces.status = db.GetPrefixed(
-            base::span(SessionStorageMetadata::kNamespacePrefixBytes),
-            &namespaces.key_value_pairs);
-
-        ValueAndStatus next_map_id;
-        next_map_id.status =
-            db.Get(base::span(SessionStorageMetadata::kNextMapIdKeyBytes),
-                   &next_map_id.value);
-
-        return std::make_tuple(std::move(namespaces), std::move(next_map_id));
-      }),
+  database_->ReadAllMetadata(
       base::BindOnce(&SessionStorageImpl::OnGotDatabaseMetadata,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SessionStorageImpl::OnGotDatabaseMetadata(
-    KeyValuePairsAndStatus namespaces,
-    ValueAndStatus next_map_id) {
-  if (connection_state_ == CONNECTION_SHUTDOWN)
-    return;
-
-  MetadataParseResult namespaces_parse = ParseNamespaces(std::move(namespaces));
-  if (namespaces_parse.open_result != OpenResult::kSuccess) {
-    LogDatabaseOpenResult(namespaces_parse.open_result);
-    DeleteAndRecreateDatabase(namespaces_parse.histogram_name);
+    StatusOr<DomStorageDatabase::Metadata> all_metadata) {
+  if (connection_state_ == CONNECTION_SHUTDOWN) {
     return;
   }
 
-  MetadataParseResult next_map_id_parse =
-      ParseNextMapId(std::move(next_map_id));
-  if (next_map_id_parse.open_result != OpenResult::kSuccess) {
-    LogDatabaseOpenResult(next_map_id_parse.open_result);
-    DeleteAndRecreateDatabase(next_map_id_parse.histogram_name);
+  if (!all_metadata.has_value()) {
+    LogDatabaseOpenResult(OpenResult::kNamespacesReadError);
+    DeleteAndRecreateDatabase(
+        "SessionStorageContext.OpenResultAfterReadNamespacesError");
     return;
   }
+
+  metadata_.Initialize(*std::move(all_metadata));
+
   OnConnectionFinished();
-}
-
-SessionStorageImpl::MetadataParseResult SessionStorageImpl::ParseNamespaces(
-    KeyValuePairsAndStatus namespaces) {
-  DCHECK_EQ(connection_state_, CONNECTION_IN_PROGRESS);
-
-  if (!namespaces.status.ok()) {
-    return {OpenResult::kNamespacesReadError,
-            "SessionStorageContext.OpenResultAfterReadNamespacesError"};
-  }
-
-  bool parsing_success =
-      metadata_.ParseNamespaces(std::move(namespaces.key_value_pairs));
-
-  if (!parsing_success) {
-    return {OpenResult::kNamespacesReadError,
-            "SessionStorageContext.OpenResultAfterReadNamespacesError"};
-  }
-  return {OpenResult::kSuccess, ""};
-}
-
-SessionStorageImpl::MetadataParseResult SessionStorageImpl::ParseNextMapId(
-    ValueAndStatus next_map_id) {
-  if (!next_map_id.status.ok()) {
-    if (next_map_id.status.IsNotFound())
-      return {OpenResult::kSuccess, ""};
-
-    // Other read error. Possibly database corruption.
-    return {OpenResult::kNamespacesReadError,
-            "SessionStorageContext.OpenResultAfterReadNextMapIdError"};
-  }
-
-  metadata_.ParseNextMapId(std::move(next_map_id.value));
-  return {OpenResult::kSuccess, ""};
 }
 
 void SessionStorageImpl::OnConnectionFinished() {

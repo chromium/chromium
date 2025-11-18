@@ -14,6 +14,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
+#include "components/services/storage/dom_storage/dom_storage_constants.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
@@ -23,15 +24,6 @@ namespace storage {
 // logic for parsing and saving database content.
 class SessionStorageMetadata {
  public:
-  static constexpr const int64_t kInvalidMapId = -1;
-
-  static constexpr const uint8_t kNamespacePrefixBytes[] = {
-      'n', 'a', 'm', 'e', 's', 'p', 'a', 'c', 'e', '-'};
-
-  // This is "next-map-id" (without the quotes).
-  static constexpr const uint8_t kNextMapIdKeyBytes[] = {
-      'n', 'e', 'x', 't', '-', 'm', 'a', 'p', '-', 'i', 'd'};
-
   // Represents a map which can be shared by multiple areas.
   // The |DeleteNamespace| and |DeleteArea| methods can destroy any MapData
   // objects who are no longer referenced by another namespace.
@@ -82,16 +74,9 @@ class SessionStorageMetadata {
   std::vector<AsyncDomStorageDatabase::BatchDatabaseTask>
   SetupNewDatabaseForTesting();
 
-  // Parses all namespaces and maps, and stores all metadata locally. This
-  // invalidates all NamespaceEntry and MapData objects. If there is a parsing
-  // error, the namespaces will be cleared. This call is not necessary on new
-  // databases.
-  bool ParseNamespaces(std::vector<DomStorageDatabase::KeyValuePair> values);
-
-  // Parses the next map id from the given bytes. If that fails, then it uses
-  // the next available id from parsing the namespaces. This call is not
-  // necessary on new databases.
-  void ParseNextMapId(const std::vector<uint8_t>& map_id);
+  // Populates `namespace_storage_key_map_` and sets `next_map_id_` using
+  // `source`.
+  void Initialize(DomStorageDatabase::Metadata source);
 
   // Creates new map data for the given namespace-StorageKey area. If the area
   // entry exists, then it will decrement the refcount of the old map. Tasks
@@ -150,8 +135,7 @@ class SessionStorageMetadata {
   static std::vector<uint8_t> GetMapPrefix(
       const std::vector<uint8_t>& map_number_as_bytes);
 
-  int64_t next_map_id_ = kInvalidMapId;
-  int64_t next_map_id_from_namespaces_ = 0;
+  int64_t next_map_id_ = 0;
 
   NamespaceStorageKeyMap namespace_storage_key_map_;
 };

@@ -197,6 +197,7 @@ class DomStorageDatabaseFactory {
 
  private:
   friend class LocalStorageLevelDBTest;
+  friend class SessionStorageLevelDBTest;
 
   // `Open()` uses this function to asynchronously create a
   // `base::SequenceBound<DomStorageDatabase>`. The `TDatabase` template

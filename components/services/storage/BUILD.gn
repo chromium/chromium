@@ -186,6 +186,7 @@ source_set("tests") {
     "dom_storage/async_dom_storage_database_unittest.cc",
     "dom_storage/leveldb/dom_storage_database_leveldb_unittest.cc",
     "dom_storage/leveldb/local_storage_leveldb_unittest.cc",
+    "dom_storage/leveldb/session_storage_leveldb_unittest.cc",
     "dom_storage/local_storage_impl_unittest.cc",
     "dom_storage/session_storage_area_impl_unittest.cc",
     "dom_storage/session_storage_data_map_unittest.cc",
@@ -251,6 +252,8 @@ source_set("test_support") {
   testonly = true
 
   sources = [
+    "dom_storage/leveldb/test_support/test_leveldb_utils.cc",
+    "dom_storage/leveldb/test_support/test_leveldb_utils.h",
     "dom_storage/storage_area_test_util.cc",
     "dom_storage/storage_area_test_util.h",
     "dom_storage/test_support/dom_storage_database_testing.cc",

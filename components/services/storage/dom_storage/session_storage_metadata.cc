@@ -9,10 +9,9 @@
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
 #include "components/services/storage/dom_storage/leveldb/dom_storage_batch_operation_leveldb.h"
-#include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
+#include "components/services/storage/dom_storage/leveldb/session_storage_leveldb.h"
 #include "url/gurl.h"
 
 namespace storage {
@@ -25,33 +24,12 @@ namespace {
 // This is "map-" (without the quotes).
 constexpr const uint8_t kMapIdPrefixBytes[] = {'m', 'a', 'p', '-'};
 
-constexpr const size_t kNamespacePrefixLength =
-    std::size(SessionStorageMetadata::kNamespacePrefixBytes);
-constexpr const uint8_t kNamespaceStorageKeySeperatorByte = '-';
-constexpr const size_t kNamespaceStorageKeySeperatorLength = 1;
-constexpr const size_t kPrefixBeforeStorageKeyLength =
-    kNamespacePrefixLength + blink::kSessionStorageNamespaceIdLength +
-    kNamespaceStorageKeySeperatorLength;
-
-std::string_view Uint8VectorToStringView(const std::vector<uint8_t>& bytes) {
-  return std::string_view(reinterpret_cast<const char*>(bytes.data()),
-                          bytes.size());
-}
-
-bool ValueToNumber(const std::vector<uint8_t>& value, int64_t* out) {
-  return base::StringToInt64(Uint8VectorToStringView(value), out);
-}
-
 std::vector<uint8_t> NumberToValue(int64_t map_number) {
   auto str = base::NumberToString(map_number);
   return std::vector<uint8_t>(str.begin(), str.end());
 }
 
 }  // namespace
-
-constexpr const int64_t SessionStorageMetadata::kInvalidMapId;
-constexpr const uint8_t SessionStorageMetadata::kNamespacePrefixBytes[];
-constexpr const uint8_t SessionStorageMetadata::kNextMapIdKeyBytes[];
 
 SessionStorageMetadata::MapData::MapData(int64_t map_number,
                                          blink::StorageKey storage_key)
@@ -67,86 +45,40 @@ SessionStorageMetadata::~SessionStorageMetadata() = default;
 std::vector<AsyncDomStorageDatabase::BatchDatabaseTask>
 SessionStorageMetadata::SetupNewDatabaseForTesting() {
   next_map_id_ = 0;
-  next_map_id_from_namespaces_ = 0;
   namespace_storage_key_map_.clear();
 
   std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> tasks;
   tasks.push_back(base::BindOnce(
       [](int64_t next_map_id, DomStorageBatchOperationLevelDB& batch,
          const DomStorageDatabaseLevelDB& db) {
-        batch.Put(base::span(kNextMapIdKeyBytes), NumberToValue(next_map_id));
+        batch.Put(base::span(kNextMapIdKey), NumberToValue(next_map_id));
       },
       next_map_id_));
   return tasks;
 }
 
-bool SessionStorageMetadata::ParseNamespaces(
-    std::vector<DomStorageDatabase::KeyValuePair> values) {
+void SessionStorageMetadata::Initialize(DomStorageDatabase::Metadata source) {
   namespace_storage_key_map_.clear();
-  next_map_id_from_namespaces_ = 0;
+  next_map_id_ = source.next_map_id.value();
+
   // Since the data is ordered, all namespace data is in one spot. This keeps a
   // reference to the last namespace data map to be more efficient.
   std::string last_namespace_id;
   std::map<blink::StorageKey, scoped_refptr<MapData>>* last_namespace = nullptr;
   std::map<int64_t, scoped_refptr<MapData>> maps;
-  bool error = false;
-  for (const DomStorageDatabase::KeyValuePair& key_value : values) {
-    size_t key_size = key_value.key.size();
 
-    std::string_view key_as_string = Uint8VectorToStringView(key_value.key);
+  for (const DomStorageDatabase::MapMetadata& source_map :
+       source.map_metadata) {
+    const std::string& namespace_id = source_map.map_locator.session_id();
+    const blink::StorageKey& storage_key = source_map.map_locator.storage_key();
+    int64_t map_number = source_map.map_locator.map_id().value();
 
-    if (key_size < kNamespacePrefixLength) {
-      LOG(ERROR) << "Key size is less than prefix length: " << key_as_string;
-      error = true;
-      break;
-    }
-
-    // The key must start with 'namespace-'.
-    if (!base::StartsWith(key_as_string,
-                          std::string_view(reinterpret_cast<const char*>(
-                                               kNamespacePrefixBytes),
-                                           kNamespacePrefixLength))) {
-      LOG(ERROR) << "Key must start with 'namespace-': " << key_as_string;
-      error = true;
-      break;
-    }
-
-    // Check that the prefix is 'namespace-<guid>-
-    if (key_size < kPrefixBeforeStorageKeyLength ||
-        key_as_string[kPrefixBeforeStorageKeyLength - 1] !=
-            static_cast<const char>(kNamespaceStorageKeySeperatorByte)) {
-      LOG(ERROR) << "Prefix is not 'namespace-<guid>-': " << key_as_string;
-      error = true;
-      break;
-    }
-
-    std::string_view namespace_id = key_as_string.substr(
-        kNamespacePrefixLength, blink::kSessionStorageNamespaceIdLength);
-
-    std::string_view storage_key_str =
-        key_as_string.substr(kPrefixBeforeStorageKeyLength);
-
-    int64_t map_number;
-    if (!ValueToNumber(key_value.value, &map_number)) {
-      error = true;
-      LOG(ERROR) << "Could not parse map number "
-                 << Uint8VectorToStringView(key_value.value);
-      break;
-    }
-
-    if (map_number >= next_map_id_from_namespaces_)
-      next_map_id_from_namespaces_ = map_number + 1;
-
-    std::optional<blink::StorageKey> storage_key =
-        blink::StorageKey::Deserialize(storage_key_str);
-    if (!storage_key) {
-      LOG(ERROR) << "Invalid StorageKey " << storage_key_str;
-      error = true;
-      break;
+    if (map_number >= next_map_id_) {
+      next_map_id_ = map_number + 1;
     }
 
     if (namespace_id != last_namespace_id) {
-      last_namespace_id = std::string(namespace_id);
+      last_namespace_id = namespace_id;
       DCHECK(namespace_storage_key_map_.find(last_namespace_id) ==
              namespace_storage_key_map_.end());
       last_namespace = &(namespace_storage_key_map_[last_namespace_id]);
@@ -156,30 +88,13 @@ bool SessionStorageMetadata::ParseNamespaces(
       map_it =
           maps.emplace(
                   std::piecewise_construct, std::forward_as_tuple(map_number),
-                  std::forward_as_tuple(new MapData(map_number, *storage_key)))
+                  std::forward_as_tuple(new MapData(map_number, storage_key)))
               .first;
     }
     map_it->second->IncReferenceCount();
 
-    last_namespace->emplace(
-        std::make_pair(std::move(*storage_key), map_it->second));
+    last_namespace->emplace(std::make_pair(storage_key, map_it->second));
   }
-  if (error) {
-    namespace_storage_key_map_.clear();
-    next_map_id_from_namespaces_ = 0;
-    return false;
-  }
-  if (next_map_id_ == 0 || next_map_id_ < next_map_id_from_namespaces_)
-    next_map_id_ = next_map_id_from_namespaces_;
-  return true;
-}
-
-void SessionStorageMetadata::ParseNextMapId(
-    const std::vector<uint8_t>& map_id) {
-  if (!ValueToNumber(map_id, &next_map_id_))
-    next_map_id_ = next_map_id_from_namespaces_;
-  if (next_map_id_ < next_map_id_from_namespaces_)
-    next_map_id_ = next_map_id_from_namespaces_;
 }
 
 scoped_refptr<SessionStorageMetadata::MapData>
@@ -213,7 +128,7 @@ SessionStorageMetadata::RegisterNewMap(
          DomStorageDatabase::Value storage_key_map_number,
          DomStorageBatchOperationLevelDB& batch,
          const DomStorageDatabaseLevelDB& db) {
-        batch.Put(base::span(kNextMapIdKeyBytes), NumberToValue(new_map_id));
+        batch.Put(base::span(kNextMapIdKey), NumberToValue(new_map_id));
         batch.Put(storage_key_key, storage_key_map_number);
       },
       next_map_id_, GetAreaKey(namespace_entry->first, storage_key),
@@ -337,12 +252,11 @@ SessionStorageMetadata::GetOrCreateNamespaceEntry(
 // static
 std::vector<uint8_t> SessionStorageMetadata::GetNamespacePrefix(
     const std::string& namespace_id) {
-  std::vector<uint8_t> namespace_prefix(
-      SessionStorageMetadata::kNamespacePrefixBytes,
-      std::end(SessionStorageMetadata::kNamespacePrefixBytes));
+  std::vector<uint8_t> namespace_prefix(kNamespacePrefix,
+                                        std::end(kNamespacePrefix));
   namespace_prefix.insert(namespace_prefix.end(), namespace_id.begin(),
                           namespace_id.end());
-  namespace_prefix.push_back(kNamespaceStorageKeySeperatorByte);
+  namespace_prefix.push_back(kNamespaceStorageKeySeparator);
   return namespace_prefix;
 }
 
@@ -350,11 +264,9 @@ std::vector<uint8_t> SessionStorageMetadata::GetNamespacePrefix(
 std::vector<uint8_t> SessionStorageMetadata::GetAreaKey(
     const std::string& namespace_id,
     const blink::StorageKey& storage_key) {
-  std::vector<uint8_t> area_key(
-      SessionStorageMetadata::kNamespacePrefixBytes,
-      std::end(SessionStorageMetadata::kNamespacePrefixBytes));
+  std::vector<uint8_t> area_key(kNamespacePrefix, std::end(kNamespacePrefix));
   area_key.insert(area_key.end(), namespace_id.begin(), namespace_id.end());
-  area_key.push_back(kNamespaceStorageKeySeperatorByte);
+  area_key.push_back(kNamespaceStorageKeySeparator);
   std::string storage_key_str = storage_key.Serialize();
   area_key.insert(area_key.end(), storage_key_str.begin(),
                   storage_key_str.end());
@@ -373,7 +285,7 @@ std::vector<uint8_t> SessionStorageMetadata::GetMapPrefix(
                                   std::end(kMapIdPrefixBytes));
   map_prefix.insert(map_prefix.end(), map_number_as_bytes.begin(),
                     map_number_as_bytes.end());
-  map_prefix.push_back(kNamespaceStorageKeySeperatorByte);
+  map_prefix.push_back(kNamespaceStorageKeySeparator);
   return map_prefix;
 }
 

@@ -4,10 +4,73 @@
 
 #include "components/services/storage/dom_storage/leveldb/session_storage_leveldb.h"
 
+#include <optional>
+#include <string>
+#include <string_view>
+#include <vector>
+
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/types/expected_macros.h"
+#include "components/services/storage/dom_storage/dom_storage_constants.h"
 #include "components/services/storage/dom_storage/leveldb/dom_storage_database_leveldb.h"
+#include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 
 namespace storage {
+
+StatusOr<DomStorageDatabase::MapMetadata> ParseMapMetadata(
+    const DomStorageDatabase::KeyValuePair& namespace_entry) {
+  constexpr const char kInvalidKeyError[] = "namespace key is too short";
+
+  // Expected key format: 'namespace-<session id guid>-<storage key>'.
+  // For example:
+  //   'namespace-2b437ef2_a816_4f5f_b4fd_0e2e4da516a8-https://example.test/'
+  std::string_view key = base::as_string_view(namespace_entry.key);
+
+  // The key must start with 'namespace-'.
+  CHECK(base::StartsWith(key, base::as_string_view(kNamespacePrefix)));
+
+  // Remove 'namespace-'.
+  key = key.substr(std::size(kNamespacePrefix));
+
+  // The key must include a session id guid.
+  if (key.size() < blink::kSessionStorageNamespaceIdLength) {
+    return base::unexpected(DbStatus::Corruption(kInvalidKeyError));
+  }
+  std::string session_id =
+      std::string(key.substr(0, blink::kSessionStorageNamespaceIdLength));
+
+  // '-' must separate the session id and storage key.
+  key = key.substr(blink::kSessionStorageNamespaceIdLength);
+  if (key.empty() || key[0] != kNamespaceStorageKeySeparator) {
+    return base::unexpected(DbStatus::Corruption(kInvalidKeyError));
+  }
+  key = key.substr(1);
+
+  // Only the storage key remains.
+  std::optional<blink::StorageKey> storage_key =
+      blink::StorageKey::Deserialize(key);
+  if (!storage_key) {
+    return base::unexpected(
+        DbStatus::Corruption("namespace storage key is invalid"));
+  }
+
+  // Parse the map ID integer text string.
+  int64_t map_id;
+  if (!base::StringToInt64(base::as_string_view(namespace_entry.value),
+                           &map_id)) {
+    return base::unexpected(
+        DbStatus::Corruption("namespace map id is not a number"));
+  }
+
+  return DomStorageDatabase::MapMetadata{
+      .map_locator{
+          std::move(session_id),
+          *std::move(storage_key),
+          map_id,
+      },
+  };
+}
 
 SessionStorageLevelDB::SessionStorageLevelDB(PassKey) {}
 
@@ -34,9 +97,10 @@ DomStorageDatabaseLevelDB& SessionStorageLevelDB::GetLevelDB() {
 
 StatusOr<DomStorageDatabase::Metadata>
 SessionStorageLevelDB::ReadAllMetadata() {
-  // TODO(crbug.com/377242771): Implement `DomStorageDatabase` for session
-  // storage to make backend swappable for SQLite.
-  return base::unexpected(DbStatus::NotSupported(""));
+  Metadata metadata;
+  ASSIGN_OR_RETURN(metadata.next_map_id, ReadNextMapId());
+  ASSIGN_OR_RETURN(metadata.map_metadata, ReadAllMapMetadata());
+  return metadata;
 }
 
 DbStatus SessionStorageLevelDB::PutMetadata(Metadata metadata) {
@@ -60,6 +124,48 @@ void SessionStorageLevelDB::MakeAllCommitsFailForTesting() {
 void SessionStorageLevelDB::SetDestructionCallbackForTesting(
     base::OnceClosure callback) {
   leveldb_->SetDestructionCallbackForTesting(std::move(callback));
+}
+
+StatusOr<int64_t> SessionStorageLevelDB::ReadNextMapId() const {
+  Value next_map_id_string_bytes;
+  DbStatus status = leveldb_->Get(kNextMapIdKey, &next_map_id_string_bytes);
+  if (status.IsNotFound()) {
+    // Empty databases start with zero for the next map ID.
+    return 0;
+  }
+
+  if (!status.ok()) {
+    // Failed to read the LevelDB.
+    return base::unexpected(std::move(status));
+  }
+
+  // Convert the integer text string to an `int64_t`.
+  int64_t next_map_id;
+  if (!base::StringToInt64(base::as_string_view(next_map_id_string_bytes),
+                           &next_map_id)) {
+    return base::unexpected(
+        DbStatus::Corruption("next map id is not a number"));
+  }
+  return next_map_id;
+}
+
+StatusOr<std::vector<DomStorageDatabase::MapMetadata>>
+SessionStorageLevelDB::ReadAllMapMetadata() const {
+  // Read all 'namespace-' prefixed entries from the LevelDB.
+  std::vector<KeyValuePair> namespace_entries;
+  DbStatus status = leveldb_->GetPrefixed(kNamespacePrefix, &namespace_entries);
+  if (!status.ok()) {
+    return base::unexpected(std::move(status));
+  }
+
+  // Create a `MapMetadata` for each entry.
+  std::vector<DomStorageDatabase::MapMetadata> results;
+  for (const KeyValuePair& namespace_entry : namespace_entries) {
+    ASSIGN_OR_RETURN(MapMetadata map_metadata,
+                     ParseMapMetadata(namespace_entry));
+    results.push_back(std::move(map_metadata));
+  }
+  return results;
 }
 
 }  // namespace storage

@@ -197,33 +197,8 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
   // Part of our asynchronous directory opening called from RunWhenConnected().
   void InitiateConnection(bool in_memory_only = false);
   void OnDatabaseOpened(DbStatus status);
-
-  struct ValueAndStatus {
-    ValueAndStatus();
-    ValueAndStatus(ValueAndStatus&&);
-    ~ValueAndStatus();
-    DbStatus status;
-    DomStorageDatabase::Value value;
-  };
-
-  struct KeyValuePairsAndStatus {
-    KeyValuePairsAndStatus();
-    KeyValuePairsAndStatus(KeyValuePairsAndStatus&&);
-    ~KeyValuePairsAndStatus();
-    DbStatus status;
-    std::vector<DomStorageDatabase::KeyValuePair> key_value_pairs;
-  };
-
-  void OnGotDatabaseMetadata(KeyValuePairsAndStatus namespaces,
-                             ValueAndStatus next_map_id);
-
-  struct MetadataParseResult {
-    OpenResult open_result;
-    const char* histogram_name;
-  };
-  MetadataParseResult ParseNamespaces(KeyValuePairsAndStatus namespaces);
-  MetadataParseResult ParseNextMapId(ValueAndStatus next_map_id);
-
+  void OnGotDatabaseMetadata(
+      StatusOr<DomStorageDatabase::Metadata> all_metadata);
   void OnConnectionFinished();
   void PurgeAllNamespaces();
   void DeleteAndRecreateDatabase(const char* histogram_name);

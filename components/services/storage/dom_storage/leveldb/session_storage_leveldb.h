@@ -15,6 +15,18 @@
 
 namespace storage {
 
+// The "namespace-" prefix for all metadata entries.
+inline constexpr const uint8_t kNamespacePrefix[] = {'n', 'a', 'm', 'e', 's',
+                                                     'p', 'a', 'c', 'e', '-'};
+
+// For metadata keys, splits the session id and storage key:
+// "namespace-<session_id>-<storage_key>".
+inline constexpr const uint8_t kNamespaceStorageKeySeparator = '-';
+
+// The "next-map-id" key.
+inline constexpr const uint8_t kNextMapIdKey[] = {'n', 'e', 'x', 't', '-', 'm',
+                                                  'a', 'p', '-', 'i', 'd'};
+
 // The schema "version" key.
 inline constexpr const uint8_t kSessionStorageLevelDBVersionKey[] = {
     'v', 'e', 'r', 's', 'i', 'o', 'n'};
@@ -53,7 +65,7 @@ class SessionStorageLevelDB : public DomStorageDatabase {
 
  public:
   // Use `DomStorageDatabaseFactory::Open()` to construct a
-  // base::SequenceBound<DomStorageDatabase>.
+  // `base::SequenceBound<DomStorageDatabase>`.
   explicit SessionStorageLevelDB(PassKey);
   ~SessionStorageLevelDB() override;
 
@@ -70,18 +82,6 @@ class SessionStorageLevelDB : public DomStorageDatabase {
 
   // Implement the `DomStorageDatabase` interface:
   DomStorageDatabaseLevelDB& GetLevelDB() override;
-
-  // Reads the "META:" and "METACCESS" entries from the LevelDB database
-  // described above. Parses the following from each entry to create a
-  // `MapMetadata` that combines:
-  //
-  //  (1) A storage key from the entry's key.
-  //
-  //  (2) The last write time and total bytes from the "META:" entry's value,
-  //      which is a `LocalStorageAreaWriteMetaData` protobuf.
-  //
-  //  (3) The last access time from the "METAACCESS:" entry's value, which is a
-  //      `LocalStorageAreaAccessMetaData` protobuf.
   StatusOr<Metadata> ReadAllMetadata() override;
   DbStatus PutMetadata(Metadata metadata) override;
   DbStatus RewriteDB() override;
@@ -92,6 +92,20 @@ class SessionStorageLevelDB : public DomStorageDatabase {
   void SetDestructionCallbackForTesting(base::OnceClosure callback) override;
 
  private:
+  // Parses the value from the next map ID key in the LevelDB.  Converts the
+  // value from a integer text string like "234" to an `int64_t`.  Returns 0
+  // as the default value to use when the next map key does not exist in the
+  // LevelDB.  The next map ID determines the next available ID for a new map to
+  // use.
+  StatusOr<int64_t> ReadNextMapId() const;
+
+  // Parses all "namespace-" entries.  Each key contains a session ID and
+  // storage key.  Each value contains the map ID integer text string.  Combines
+  // these to create a `MapLocator` in a `MapMetadata` for each "namespace-"
+  // entry.
+  StatusOr<std::vector<DomStorageDatabase::MapMetadata>> ReadAllMapMetadata()
+      const;
+
   std::unique_ptr<DomStorageDatabaseLevelDB> leveldb_;
 };
 

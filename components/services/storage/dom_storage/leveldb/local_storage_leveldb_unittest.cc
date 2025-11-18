@@ -13,19 +13,19 @@
 #include "base/byte_size.h"
 #include "base/containers/span.h"
 #include "base/strings/strcat.h"
-#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "components/services/storage/dom_storage/dom_storage_constants.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
 #include "components/services/storage/dom_storage/leveldb/dom_storage_batch_operation_leveldb.h"
 #include "components/services/storage/dom_storage/leveldb/dom_storage_database_leveldb.h"
+#include "components/services/storage/dom_storage/leveldb/test_support/test_leveldb_utils.h"
 #include "components/services/storage/dom_storage/test_support/dom_storage_database_testing.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace storage {
 
-// Declare internal functions for unit testing that `local_storage_leveldb->cc`
+// Declare internal functions for unit testing that `local_storage_leveldb.cc`
 // defines.
 std::vector<uint8_t> ToBytes(std::string source);
 
@@ -53,10 +53,6 @@ constexpr base::ByteSize kThirdTotalSize{50121524};
 
 constexpr const uint8_t kExpectedVersion[] = {'1'};
 
-std::vector<uint8_t> ToBytes(base::span<const uint8_t> source) {
-  return std::vector<uint8_t>(source.begin(), source.end());
-}
-
 void VerifyDatabaseVersionEntry(
     const DomStorageDatabase::KeyValuePair& version_entry) {
   EXPECT_EQ(version_entry.key, ToBytes(kLocalStorageLevelDBVersionKey));
@@ -71,10 +67,6 @@ class LocalStorageLevelDBTest : public testing::Test {
   ~LocalStorageLevelDBTest() override = default;
 
   void OpenInMemory(std::unique_ptr<LocalStorageLevelDB>* result);
-
-  // Populate the LevelDB with test values.
-  void WriteEntries(LocalStorageLevelDB& database,
-                    std::vector<DomStorageDatabase::KeyValuePair> entries);
 
   base::test::TaskEnvironment task_environment_;
 
@@ -122,19 +114,6 @@ void LocalStorageLevelDBTest::OpenInMemory(
   *result = std::move(instance);
 }
 
-void LocalStorageLevelDBTest::WriteEntries(
-    LocalStorageLevelDB& database,
-    std::vector<DomStorageDatabase::KeyValuePair> entries) {
-  std::unique_ptr<DomStorageBatchOperationLevelDB> batch =
-      database.GetLevelDB().CreateBatchOperation();
-
-  for (const DomStorageDatabase::KeyValuePair& entry : entries) {
-    batch->Put(entry.key, entry.value);
-  }
-
-  DbStatus status = batch->Commit();
-  ASSERT_TRUE(status.ok()) << status.ToString();
-}
 
 TEST_F(LocalStorageLevelDBTest, CreateAccessMetaDataKey) {
   DomStorageDatabase::Key access_metadata_key =
