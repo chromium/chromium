@@ -27,7 +27,7 @@ class SyncReadbackThread;
 // thread to avoid blocking the main thread.
 class MODULES_EXPORT BackgroundReadback
     : public GarbageCollected<BackgroundReadback>,
-      public Supplement<ExecutionContext> {
+      public GarbageCollectedMixin {
  public:
   using ReadbackToFrameDoneCallback =
       base::OnceCallback<void(scoped_refptr<media::VideoFrame>)>;
@@ -37,8 +37,6 @@ class MODULES_EXPORT BackgroundReadback
                               ExecutionContext& context);
   virtual ~BackgroundReadback();
 
-  static constexpr auto kSupplementIndex =
-      ExecutionContext::Supplements::kBackgroundReadback;
   static BackgroundReadback* From(ExecutionContext& context);
 
   void ReadbackTextureBackedFrameToMemoryFrame(
@@ -53,7 +51,7 @@ class MODULES_EXPORT BackgroundReadback
       ReadbackDoneCallback done_cb);
 
   void Trace(Visitor* visitor) const override {
-    Supplement<ExecutionContext>::Trace(visitor);
+    visitor->Trace(execution_context_);
   }
 
  private:
@@ -90,6 +88,8 @@ class MODULES_EXPORT BackgroundReadback
       base::span<uint8_t> dest_buffer,
       ReadbackDoneCallback done_cb,
       bool success);
+
+  Member<ExecutionContext> execution_context_;
 
   // Lives and dies on the worker thread.
   scoped_refptr<SyncReadbackThread> sync_readback_impl_;

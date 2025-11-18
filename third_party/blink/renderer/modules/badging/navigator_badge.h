@@ -19,11 +19,8 @@ class Navigator;
 class WorkerNavigator;
 
 class NavigatorBadge final : public GarbageCollected<NavigatorBadge>,
-                             public Supplement<ExecutionContext> {
+                             public GarbageCollectedMixin {
  public:
-  static constexpr auto kSupplementIndex =
-      ExecutionContext::Supplements::kNavigatorBadge;
-
   static NavigatorBadge& From(ScriptState*);
   explicit NavigatorBadge(ExecutionContext*);
 
@@ -65,6 +62,8 @@ class NavigatorBadge final : public GarbageCollected<NavigatorBadge>,
   static bool IsAllowed(ScriptState* script_state);
 
   mojo::Remote<mojom::blink::BadgeService> badge_service();
+
+  Member<ExecutionContext> execution_context_;
 };
 
 }  // namespace blink

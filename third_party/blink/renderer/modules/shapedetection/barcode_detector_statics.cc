@@ -13,24 +13,19 @@
 namespace blink {
 
 // static
-const unsigned BarcodeDetectorStatics::kSupplementIndex = static_cast<unsigned>(
-    ExecutionContext::Supplements::kBarcodeDetectorStatics);
-
-// static
 BarcodeDetectorStatics* BarcodeDetectorStatics::From(
     ExecutionContext* document) {
   DCHECK(document);
-  BarcodeDetectorStatics* statics =
-      Supplement<ExecutionContext>::From<BarcodeDetectorStatics>(*document);
+  BarcodeDetectorStatics* statics = document->GetBarcodeDetectorStatics();
   if (!statics) {
     statics = MakeGarbageCollected<BarcodeDetectorStatics>(*document);
-    Supplement<ExecutionContext>::ProvideTo(*document, statics);
+    document->SetBarcodeDetectorStatics(statics);
   }
   return statics;
 }
 
 BarcodeDetectorStatics::BarcodeDetectorStatics(ExecutionContext& document)
-    : Supplement<ExecutionContext>(document), service_(&document) {}
+    : execution_context_(document), service_(&document) {}
 
 BarcodeDetectorStatics::~BarcodeDetectorStatics() = default;
 
@@ -57,7 +52,7 @@ BarcodeDetectorStatics::EnumerateSupportedFormats(ScriptState* script_state) {
 }
 
 void BarcodeDetectorStatics::Trace(Visitor* visitor) const {
-  Supplement<ExecutionContext>::Trace(visitor);
+  visitor->Trace(execution_context_);
   visitor->Trace(service_);
   visitor->Trace(get_supported_format_requests_);
 }
@@ -66,7 +61,7 @@ void BarcodeDetectorStatics::EnsureServiceConnection() {
   if (service_.is_bound())
     return;
 
-  ExecutionContext* context = GetSupplementable();
+  ExecutionContext* context = execution_context_;
 
   // See https://bit.ly/2S0zRAS for task types.
   auto task_runner = context->GetTaskRunner(TaskType::kMiscPlatformAPI);

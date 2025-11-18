@@ -21,12 +21,8 @@ class P2PSocketDispatcher;
 
 class MODULES_EXPORT RtcTransportDependencies
     : public GarbageCollected<RtcTransportDependencies>,
-      public Supplement<ExecutionContext>,
       public ExecutionContextLifecycleObserver {
  public:
-  static constexpr auto kSupplementIndex =
-      ExecutionContext::Supplements::kRtcTransportDependencies;
-
   static scoped_refptr<base::SingleThreadTaskRunner> NetworkTaskRunner();
   // Gets from, invoking callback once initialized and ready.
   static void GetInitialized(
@@ -57,6 +53,7 @@ class MODULES_EXPORT RtcTransportDependencies
   Vector<base::OnceClosure> initialized_callback_list_;
   void RunOnceInitialized(base::OnceClosure initialized_callback);
 
+  Member<ExecutionContext> execution_context_;
   Member<P2PSocketDispatcher> p2p_socket_dispatcher_;
   std::unique_ptr<IpcNetworkManager> network_manager_;
   std::unique_ptr<IpcPacketSocketFactory> socket_factory_;

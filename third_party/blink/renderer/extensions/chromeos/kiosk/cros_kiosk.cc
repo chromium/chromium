@@ -14,21 +14,20 @@ namespace blink {
 
 CrosKiosk& CrosKiosk::From(ExecutionContext& execution_context) {
   CHECK(!execution_context.IsContextDestroyed());
-  CrosKiosk* supplement =
-      Supplement<ExecutionContext>::From<CrosKiosk>(execution_context);
+  CrosKiosk* supplement = execution_context.GetCrosKiosk();
   if (!supplement) {
     supplement = MakeGarbageCollected<CrosKiosk>(execution_context);
-    ProvideTo(execution_context, supplement);
+    execution_context.SetCrosKiosk(supplement);
   }
   return *supplement;
 }
 
 CrosKiosk::CrosKiosk(ExecutionContext& execution_context)
-    : Supplement(execution_context) {}
+    : execution_context_(execution_context) {}
 
 void CrosKiosk::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
-  Supplement<ExecutionContext>::Trace(visitor);
+  visitor->Trace(execution_context_);
 }
 
 }  // namespace blink

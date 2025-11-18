@@ -63,11 +63,9 @@ class ScriptState;
 
 class MODULES_EXPORT ImageBitmapFactories final
     : public GarbageCollected<ImageBitmapFactories>,
-      public Supplement<ExecutionContext>,
-      public NameClient {
+      public NameClient,
+      public GarbageCollectedMixin {
  public:
-  static const unsigned kSupplementIndex;
-
   explicit ImageBitmapFactories(ExecutionContext& context);
 
   static ScriptPromise<ImageBitmap> CreateImageBitmap(
@@ -146,6 +144,7 @@ class MODULES_EXPORT ImageBitmapFactories final
   }
 
  private:
+  Member<ExecutionContext> execution_context_;
   static ScriptPromise<ImageBitmap> CreateImageBitmap(
       ScriptState*,
       ImageBitmapSource*,

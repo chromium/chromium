@@ -231,26 +231,23 @@ bool IsFormatEnabled(media::VideoPixelFormat fmt) {
   }
 }
 
+}  // namespace
+
 class CachedVideoFramePool : public GarbageCollected<CachedVideoFramePool>,
-                             public Supplement<ExecutionContext>,
                              public ExecutionContextLifecycleStateObserver {
  public:
-  static constexpr auto kSupplementIndex =
-      ExecutionContext::Supplements::kCachedVideoFramePool;
-
   static CachedVideoFramePool& From(ExecutionContext& context) {
-    CachedVideoFramePool* supplement =
-        Supplement<ExecutionContext>::From<CachedVideoFramePool>(context);
+    CachedVideoFramePool* supplement = context.GetCachedVideoFramePool();
     if (!supplement) {
       supplement = MakeGarbageCollected<CachedVideoFramePool>(context);
-      Supplement<ExecutionContext>::ProvideTo(context, supplement);
+      context.SetCachedVideoFramePool(supplement);
     }
     return *supplement;
   }
 
   explicit CachedVideoFramePool(ExecutionContext& context)
-      : Supplement<ExecutionContext>(context),
-        ExecutionContextLifecycleStateObserver(&context) {
+      : ExecutionContextLifecycleStateObserver(&context),
+        execution_context_(context) {
     UpdateStateIfNeeded();
   }
   ~CachedVideoFramePool() override = default;
@@ -273,7 +270,7 @@ class CachedVideoFramePool : public GarbageCollected<CachedVideoFramePool>,
   }
 
   void Trace(Visitor* visitor) const override {
-    Supplement<ExecutionContext>::Trace(visitor);
+    visitor->Trace(execution_context_);
     ExecutionContextLifecycleStateObserver::Trace(visitor);
   }
 
@@ -294,8 +291,7 @@ class CachedVideoFramePool : public GarbageCollected<CachedVideoFramePool>,
   void PostMonitoringTask() {
     DCHECK(!task_handle_.IsActive());
     task_handle_ = PostDelayedCancellableTask(
-        *GetSupplementable()->GetTaskRunner(TaskType::kInternalMedia),
-        FROM_HERE,
+        *execution_context_->GetTaskRunner(TaskType::kInternalMedia), FROM_HERE,
         BindOnce(&CachedVideoFramePool::PurgeIdleFramePool,
                  WrapWeakPersistent(this)),
         kIdleTimeout);
@@ -317,6 +313,7 @@ class CachedVideoFramePool : public GarbageCollected<CachedVideoFramePool>,
     PostMonitoringTask();
   }
 
+  Member<ExecutionContext> execution_context_;
   std::unique_ptr<media::VideoFramePool> frame_pool_;
   base::TimeTicks last_frame_creation_;
   TaskHandle task_handle_;
@@ -327,26 +324,21 @@ const base::TimeDelta CachedVideoFramePool::kIdleTimeout = base::Seconds(10);
 
 class CanvasResourceProviderCache
     : public GarbageCollected<CanvasResourceProviderCache>,
-      public Supplement<ExecutionContext>,
       public ExecutionContextLifecycleStateObserver {
  public:
-  static constexpr auto kSupplementIndex =
-      ExecutionContext::Supplements::kCanvasResourceProviderCache;
-
   static CanvasResourceProviderCache& From(ExecutionContext& context) {
     CanvasResourceProviderCache* supplement =
-        Supplement<ExecutionContext>::From<CanvasResourceProviderCache>(
-            context);
+        context.GetCanvasResourceProviderCache();
     if (!supplement) {
       supplement = MakeGarbageCollected<CanvasResourceProviderCache>(context);
-      Supplement<ExecutionContext>::ProvideTo(context, supplement);
+      context.SetCanvasResourceProviderCache(supplement);
     }
     return *supplement;
   }
 
   explicit CanvasResourceProviderCache(ExecutionContext& context)
-      : Supplement<ExecutionContext>(context),
-        ExecutionContextLifecycleStateObserver(&context) {
+      : ExecutionContextLifecycleStateObserver(&context),
+        execution_context_(context) {
     UpdateStateIfNeeded();
   }
   ~CanvasResourceProviderCache() override = default;
@@ -388,7 +380,7 @@ class CanvasResourceProviderCache
   }
 
   void Trace(Visitor* visitor) const override {
-    Supplement<ExecutionContext>::Trace(visitor);
+    visitor->Trace(execution_context_);
     ExecutionContextLifecycleStateObserver::Trace(visitor);
   }
 
@@ -411,8 +403,7 @@ class CanvasResourceProviderCache
   void PostMonitoringTask() {
     DCHECK(!task_handle_.IsActive());
     task_handle_ = PostDelayedCancellableTask(
-        *GetSupplementable()->GetTaskRunner(TaskType::kInternalMedia),
-        FROM_HERE,
+        *execution_context_->GetTaskRunner(TaskType::kInternalMedia), FROM_HERE,
         BindOnce(&CanvasResourceProviderCache::PurgeIdleFramePool,
                  WrapWeakPersistent(this)),
         kIdleTimeout);
@@ -426,6 +417,7 @@ class CanvasResourceProviderCache
     PostMonitoringTask();
   }
 
+  Member<ExecutionContext> execution_context_;
   HashMap<SkImageInfo, std::unique_ptr<CanvasResourceProvider>>
       info_to_provider_;
   base::TimeTicks last_access_time_;
@@ -435,6 +427,8 @@ class CanvasResourceProviderCache
 // static -- defined out of line to satisfy link time requirements.
 const base::TimeDelta CanvasResourceProviderCache::kIdleTimeout =
     base::Seconds(10);
+
+namespace {
 
 std::optional<media::VideoPixelFormat> CopyToFormat(
     const media::VideoFrame& frame) {

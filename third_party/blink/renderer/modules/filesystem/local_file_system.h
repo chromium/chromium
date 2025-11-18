@@ -50,8 +50,8 @@ class KURL;
 class ResolveURICallbacks;
 
 class LocalFileSystem final : public GarbageCollected<LocalFileSystem>,
-                              public Supplement<ExecutionContext>,
-                              public NameClient {
+                              public NameClient,
+                              public GarbageCollectedMixin {
  public:
   enum SynchronousType { kAsynchronous, kSynchronous };
 
@@ -78,6 +78,10 @@ class LocalFileSystem final : public GarbageCollected<LocalFileSystem>,
     return "LocalFileSystem";
   }
 
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(execution_context_);
+  }
+
  private:
   void ResolveURLCallback(const KURL& file_system_url,
                           std::unique_ptr<ResolveURICallbacks> callbacks,
@@ -96,6 +100,8 @@ class LocalFileSystem final : public GarbageCollected<LocalFileSystem>,
   void ResolveURLInternal(const KURL&,
                           std::unique_ptr<ResolveURICallbacks>,
                           SynchronousType sync_type);
+
+  Member<ExecutionContext> execution_context_;
 };
 
 }  // namespace blink

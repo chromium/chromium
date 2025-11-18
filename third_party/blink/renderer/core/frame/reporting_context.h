@@ -27,10 +27,8 @@ class ReportingObserver;
 // a container for all active ReportingObservers on that ExecutionContext.
 class CORE_EXPORT ReportingContext : public GarbageCollected<ReportingContext>,
                                      public mojom::blink::ReportingObserver,
-                                     public Supplement<ExecutionContext> {
+                                     public GarbageCollectedMixin {
  public:
-  static const unsigned kSupplementIndex;
-
   explicit ReportingContext(ExecutionContext&);
 
   // Returns the ReportingContext for an ExecutionContext. If one does not

@@ -20,11 +20,8 @@ class ExecutionContext;
 // This class maintains a connection to the FileSystemAccessManager remote.
 class MODULES_EXPORT FileSystemAccessManager final
     : public GarbageCollected<FileSystemAccessManager>,
-      public Supplement<ExecutionContext>,
       public ExecutionContextClient {
  public:
-  static const unsigned kSupplementIndex;
-
   static FileSystemAccessManager& From(ExecutionContext*);
 
   explicit FileSystemAccessManager(ExecutionContext*);
@@ -46,6 +43,7 @@ class MODULES_EXPORT FileSystemAccessManager final
 
   void EnsureConnection();
 
+  Member<ExecutionContext> execution_context_;
   HeapMojoRemote<mojom::blink::FileSystemAccessManager> remote_;
 };
 

@@ -28,19 +28,18 @@ namespace blink {
 WebViewAndroid& WebViewAndroid::From(ExecutionContext& execution_context) {
   CHECK(!execution_context.IsContextDestroyed());
 
-  auto* supplement =
-      Supplement<ExecutionContext>::From<WebViewAndroid>(execution_context);
+  WebViewAndroid* supplement = execution_context.GetWebViewAndroid();
 
   if (!supplement) {
     supplement = MakeGarbageCollected<WebViewAndroid>(execution_context);
-    ProvideTo(execution_context, supplement);
+    execution_context.SetWebViewAndroid(supplement);
   }
   return *supplement;
 }
 
 WebViewAndroid::WebViewAndroid(ExecutionContext& execution_context)
-    : Supplement<ExecutionContext>(execution_context),
-      ExecutionContextClient(&execution_context),
+    : ExecutionContextClient(&execution_context),
+      execution_context_(execution_context),
       media_integrity_service_remote_(&execution_context) {}
 
 void WebViewAndroid::EnsureServiceConnection(
@@ -173,7 +172,7 @@ void WebViewAndroid::OnGetIntegrityProviderResponse(
 void WebViewAndroid::Trace(Visitor* visitor) const {
   visitor->Trace(provider_resolvers_);
   visitor->Trace(media_integrity_service_remote_);
-  Supplement<ExecutionContext>::Trace(visitor);
+  visitor->Trace(execution_context_);
   ExecutionContextClient::Trace(visitor);
   ScriptWrappable::Trace(visitor);
 }

@@ -31,25 +31,19 @@ PressureSource V8PressureSourceToPressureSource(V8PressureSource::Enum source) {
 }  // namespace
 
 // static
-const unsigned PressureObserverManager::kSupplementIndex =
-    static_cast<unsigned>(
-        ExecutionContext::Supplements::kPressureObserverManager);
-
-// static
 PressureObserverManager* PressureObserverManager::From(
     ExecutionContext* context) {
-  PressureObserverManager* manager =
-      Supplement<ExecutionContext>::From<PressureObserverManager>(context);
+  PressureObserverManager* manager = context->GetPressureObserverManager();
   if (!manager) {
     manager = MakeGarbageCollected<PressureObserverManager>(context);
-    Supplement<ExecutionContext>::ProvideTo(*context, manager);
+    context->SetPressureObserverManager(manager);
   }
   return manager;
 }
 
 PressureObserverManager::PressureObserverManager(ExecutionContext* context)
     : ExecutionContextLifecycleStateObserver(context),
-      Supplement<ExecutionContext>(*context),
+      execution_context_(*context),
       pressure_manager_(context) {
   UpdateStateIfNeeded();
   for (const auto& source : PressureObserver::knownSources()) {
@@ -111,7 +105,7 @@ void PressureObserverManager::Trace(Visitor* visitor) const {
   visitor->Trace(pressure_manager_);
   visitor->Trace(source_to_client_);
   ExecutionContextLifecycleStateObserver::Trace(visitor);
-  Supplement<ExecutionContext>::Trace(visitor);
+  visitor->Trace(execution_context_);
 }
 
 void PressureObserverManager::EnsureConnection(

@@ -61,35 +61,29 @@
 
 namespace blink {
 
-namespace {
-
 // This class holds some state relevant to current clipboard event dispatch. It
 // helps `ClipboardCommands` to know whether a given `ExecutionContext` is
 // currently handling a copy/paste command.
 class ExecutionContextClipboardEventState
     : public GarbageCollected<ExecutionContextClipboardEventState>,
-      public Supplement<ExecutionContext> {
+      public GarbageCollectedMixin {
  public:
-  static constexpr auto kSupplementIndex =
-      ExecutionContext::Supplements::kExecutionContextClipboardEventState;
-
   static ExecutionContextClipboardEventState& From(
       ExecutionContext& execution_context) {
     {
       ExecutionContextClipboardEventState* supplement =
-          Supplement<ExecutionContext>::From<
-              ExecutionContextClipboardEventState>(execution_context);
+          execution_context.GetExecutionContextClipboardEventState();
       if (!supplement) {
         supplement = MakeGarbageCollected<ExecutionContextClipboardEventState>(
             execution_context);
-        ProvideTo(execution_context, supplement);
+        execution_context.SetExecutionContextClipboardEventState(supplement);
       }
       return *supplement;
     }
   }
 
   ExecutionContextClipboardEventState(ExecutionContext& execution_context)
-      : Supplement<ExecutionContext>(execution_context) {}
+      : execution_context_(execution_context) {}
   virtual ~ExecutionContextClipboardEventState() = default;
 
   struct State {
@@ -107,11 +101,14 @@ class ExecutionContextClipboardEventState
 
   const State& GetState() const { return state_; }
 
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(execution_context_);
+  }
+
  private:
+  Member<ExecutionContext> execution_context_;
   State state_;
 };
-
-}  // namespace
 
 bool ClipboardCommands::CanReadClipboard(LocalFrame& frame,
                                          EditorCommandSource source) {

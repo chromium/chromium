@@ -28,11 +28,8 @@ namespace blink {
 // which could add 1000s of observers per second. It also avoids the use of
 // a pre-finzalizer on VideoFrames, which could have a GC performance impact.
 class MODULES_EXPORT WebCodecsLogger : public GarbageCollected<WebCodecsLogger>,
-                                       public Supplement<ExecutionContext> {
+                                       public GarbageCollectedMixin {
  public:
-  static constexpr auto kSupplementIndex =
-      ExecutionContext::Supplements::kWebCodecsLogger;
-
   // Class that reports when blink::VideoFrames have been garbage collected
   // without having close() called on them. This is a web page application
   // error which can cause a web page to stall.
@@ -68,6 +65,7 @@ class MODULES_EXPORT WebCodecsLogger : public GarbageCollected<WebCodecsLogger>,
  private:
   void LogCloseErrors(TimerBase*);
 
+  Member<ExecutionContext> execution_context_;
   base::TimeTicks last_auditor_access_;
   scoped_refptr<VideoFrameCloseAuditor> close_auditor_;
   HeapTaskRunnerTimer<WebCodecsLogger> timer_;

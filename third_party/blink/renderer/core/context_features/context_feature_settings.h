@@ -19,11 +19,8 @@ class ExecutionContext;
 // are gated behind a ContextEnabled extended attribute in IDL.
 class CORE_EXPORT ContextFeatureSettings final
     : public GarbageCollected<ContextFeatureSettings>,
-      public Supplement<ExecutionContext> {
+      public GarbageCollectedMixin {
  public:
-  static constexpr auto kSupplementIndex =
-      ExecutionContext::Supplements::kContextFeatureSettings;
-
   enum class CreationMode { kCreateIfNotExists, kDontCreateIfNotExists };
 
   explicit ContextFeatureSettings(ExecutionContext&);
@@ -71,6 +68,7 @@ class CORE_EXPORT ContextFeatureSettings final
   void Trace(Visitor*) const override;
 
  private:
+  Member<ExecutionContext> execution_context_;
   bool enable_mojo_js_ = false;
   bool enable_mojo_js_file_system_access_helper_ = false;
   bool enable_private_aggregation_in_shared_storage_ = false;

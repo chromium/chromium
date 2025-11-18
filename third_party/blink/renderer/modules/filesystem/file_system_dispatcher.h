@@ -28,7 +28,7 @@ class SecurityOrigin;
 // running in the browser process. It is owned by ExecutionContext, and
 // instances are created lazily by calling FileSystemDispatcher::From().
 class FileSystemDispatcher : public GarbageCollected<FileSystemDispatcher>,
-                             public Supplement<ExecutionContext> {
+                             public GarbageCollectedMixin {
  public:
   using StatusCallback = base::OnceCallback<void(base::File::Error error)>;
   using WriteCallback =
@@ -193,6 +193,7 @@ class FileSystemDispatcher : public GarbageCollected<FileSystemDispatcher>,
 
   void RemoveOperationRemote(int operation_id);
 
+  Member<ExecutionContext> execution_context_;
   HeapMojoRemote<mojom::blink::FileSystemManager> file_system_manager_;
   using OperationsMap =
       HeapHashMap<int,

@@ -17,7 +17,6 @@ namespace blink {
 
 class CORE_EXPORT FileBackedBlobFactoryDispatcher
     : public GarbageCollected<FileBackedBlobFactoryDispatcher>,
-      public Supplement<ExecutionContext>,
       public ExecutionContextClient {
  public:
   virtual ~FileBackedBlobFactoryDispatcher() = default;
@@ -36,15 +35,14 @@ class CORE_EXPORT FileBackedBlobFactoryDispatcher
   // GC
   void Trace(Visitor* visitor) const override;
 
-  static constexpr auto kSupplementIndex =
-      ExecutionContext::Supplements::kFileBackedBlobFactoryDispatcher;
-
  private:
   friend class FileBackedBlobFactoryTestHelper;
 
   static FileBackedBlobFactoryDispatcher* From(ExecutionContext& context);
 
   mojom::blink::FileBackedBlobFactory* GetFileBackedBlobFactory();
+
+  Member<ExecutionContext> execution_context_;
 
   HeapMojoAssociatedRemote<mojom::blink::FileBackedBlobFactory> frame_remote_;
 

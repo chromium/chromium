@@ -14,17 +14,17 @@ CodecPressureManagerProvider& CodecPressureManagerProvider::From(
     ExecutionContext& context) {
   CHECK(!context.IsContextDestroyed());
   CodecPressureManagerProvider* supplement =
-      Supplement<ExecutionContext>::From<CodecPressureManagerProvider>(context);
+      context.GetCodecPressureManagerProvider();
   if (!supplement) {
     supplement = MakeGarbageCollected<CodecPressureManagerProvider>(context);
-    ProvideTo(context, supplement);
+    context.SetCodecPressureManagerProvider(supplement);
   }
   return *supplement;
 }
 
 CodecPressureManagerProvider::CodecPressureManagerProvider(
     ExecutionContext& context)
-    : Supplement(context) {}
+    : execution_context_(context) {}
 
 CodecPressureManager*
 CodecPressureManagerProvider::GetDecoderPressureManager() {
@@ -48,7 +48,7 @@ CodecPressureManagerProvider::GetEncoderPressureManager() {
 
 scoped_refptr<base::SequencedTaskRunner>
 CodecPressureManagerProvider::GetTaskRunner() {
-  ExecutionContext* context = GetSupplementable();
+  ExecutionContext* context = execution_context_;
 
   DCHECK(context && !context->IsContextDestroyed());
 
@@ -58,7 +58,7 @@ CodecPressureManagerProvider::GetTaskRunner() {
 void CodecPressureManagerProvider::Trace(Visitor* visitor) const {
   visitor->Trace(decoder_pressure_manager_);
   visitor->Trace(encoder_pressure_manager_);
-  Supplement<ExecutionContext>::Trace(visitor);
+  visitor->Trace(execution_context_);
 }
 
 }  // namespace blink

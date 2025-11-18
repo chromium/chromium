@@ -17,11 +17,10 @@ FileSystemObservationCollection* FileSystemObservationCollection::From(
   DCHECK(context->IsContextThread());
 
   FileSystemObservationCollection* data =
-      Supplement<ExecutionContext>::From<FileSystemObservationCollection>(
-          context);
+      context->GetFileSystemObservationCollection();
   if (!data) {
     data = MakeGarbageCollected<FileSystemObservationCollection>(*context);
-    Supplement<ExecutionContext>::ProvideTo(*context, data);
+    context->SetFileSystemObservationCollection(data);
   }
 
   return data;
@@ -29,7 +28,7 @@ FileSystemObservationCollection* FileSystemObservationCollection::From(
 
 FileSystemObservationCollection::FileSystemObservationCollection(
     ExecutionContext& context)
-    : Supplement<ExecutionContext>(context), execution_context_(context) {}
+    : execution_context_(context) {}
 
 void FileSystemObservationCollection::AddObservation(
     FileSystemObserver* observer,
@@ -78,7 +77,6 @@ void FileSystemObservationCollection::RemoveObserver(
 void FileSystemObservationCollection::Trace(Visitor* visitor) const {
   visitor->Trace(observation_map_);
   visitor->Trace(execution_context_);
-  Supplement<ExecutionContext>::Trace(visitor);
 }
 
 }  // namespace blink

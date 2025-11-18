@@ -11,7 +11,7 @@
 namespace blink {
 
 ContextFeatureSettings::ContextFeatureSettings(ExecutionContext& context)
-    : Supplement<ExecutionContext>(context) {}
+    : execution_context_(context) {}
 
 DEFINE_PROTECTED_DATA base::ProtectedMemory<bool>
     ContextFeatureSettings::mojo_js_allowed_;
@@ -20,11 +20,10 @@ DEFINE_PROTECTED_DATA base::ProtectedMemory<bool>
 ContextFeatureSettings* ContextFeatureSettings::From(
     ExecutionContext* context,
     CreationMode creation_mode) {
-  ContextFeatureSettings* settings =
-      Supplement<ExecutionContext>::From<ContextFeatureSettings>(context);
+  ContextFeatureSettings* settings = context->GetContextFeatureSettings();
   if (!settings && creation_mode == CreationMode::kCreateIfNotExists) {
     settings = MakeGarbageCollected<ContextFeatureSettings>(*context);
-    Supplement<ExecutionContext>::ProvideTo(*context, settings);
+    context->SetContextFeatureSettings(settings);
   }
   return settings;
 }
@@ -52,7 +51,7 @@ void ContextFeatureSettings::CrashIfMojoJSNotAllowed() {
 }
 
 void ContextFeatureSettings::Trace(Visitor* visitor) const {
-  Supplement<ExecutionContext>::Trace(visitor);
+  visitor->Trace(execution_context_);
 }
 
 bool ContextFeatureSettings::isMojoJSEnabled() const {

@@ -250,9 +250,8 @@ class ServiceWorkerContainer::DomContentLoadedListener final
     LocalDOMWindow& window = *To<LocalDOMWindow>(execution_context);
     DCHECK(HasFiredDomContentLoaded(*window.document()));
 
-    auto* container =
-        Supplement<ExecutionContext>::From<ServiceWorkerContainer>(
-            execution_context);
+    ServiceWorkerContainer* container =
+        execution_context->GetServiceWorkerContainer();
     if (!container) {
       // There is no container for some reason, which means there's no message
       // queue to start. Just abort.
@@ -263,19 +262,16 @@ class ServiceWorkerContainer::DomContentLoadedListener final
   }
 };
 
-const unsigned ServiceWorkerContainer::kSupplementIndex = static_cast<unsigned>(
-    ExecutionContext::Supplements::kServiceWorkerContainer);
-
 ServiceWorkerContainer* ServiceWorkerContainer::From(
     ExecutionContext& execution_context) {
   ServiceWorkerContainer* container =
-      Supplement<ExecutionContext>::From<ServiceWorkerContainer>(
-          execution_context);
+
+      execution_context.GetServiceWorkerContainer();
   if (!container) {
     // TODO(leonhsl): Figure out whether it's really necessary to create an
     // instance when there's no frame or frame client for |window|.
     container = MakeGarbageCollected<ServiceWorkerContainer>(execution_context);
-    Supplement<ExecutionContext>::ProvideTo(execution_context, container);
+    execution_context.SetServiceWorkerContainer(container);
     std::unique_ptr<WebServiceWorkerProvider> provider;
 
     if (execution_context.IsWindow()) {
@@ -331,7 +327,7 @@ void ServiceWorkerContainer::Trace(Visitor* visitor) const {
   visitor->Trace(service_worker_registration_objects_);
   visitor->Trace(service_worker_objects_);
   EventTarget::Trace(visitor);
-  Supplement<ExecutionContext>::Trace(visitor);
+  visitor->Trace(execution_context_);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
@@ -723,7 +719,7 @@ void ServiceWorkerContainer::CountFeature(mojom::WebFeature feature) {
 }
 
 ExecutionContext* ServiceWorkerContainer::GetExecutionContext() const {
-  return GetSupplementable();
+  return execution_context_;
 }
 
 const AtomicString& ServiceWorkerContainer::InterfaceName() const {
@@ -757,7 +753,7 @@ ServiceWorkerContainer::GetOrCreateServiceWorkerRegistration(
 
   const int64_t registration_id = info.registration_id;
   ServiceWorkerRegistration* registration =
-      MakeGarbageCollected<ServiceWorkerRegistration>(GetSupplementable(),
+      MakeGarbageCollected<ServiceWorkerRegistration>(execution_context_,
                                                       std::move(info));
   service_worker_registration_objects_.Set(registration_id, registration);
   return registration;
@@ -774,15 +770,15 @@ ServiceWorker* ServiceWorkerContainer::GetOrCreateServiceWorker(
 
   const int64_t version_id = info.version_id;
   ServiceWorker* worker =
-      ServiceWorker::Create(GetSupplementable(), std::move(info));
+      ServiceWorker::Create(execution_context_, std::move(info));
   service_worker_objects_.Set(version_id, worker);
   return worker;
 }
 
 ServiceWorkerContainer::ServiceWorkerContainer(
     ExecutionContext& execution_context)
-    : Supplement<ExecutionContext>(execution_context),
-      ExecutionContextLifecycleObserver(&execution_context) {}
+    : ExecutionContextLifecycleObserver(&execution_context),
+      execution_context_(execution_context) {}
 
 ServiceWorkerContainer::ReadyProperty*
 ServiceWorkerContainer::CreateReadyProperty() {

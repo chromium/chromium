@@ -24,10 +24,8 @@ class ExecutionContext;
 // BarcodeDetector instances for this ExecutionContext.
 class BarcodeDetectorStatics final
     : public GarbageCollected<BarcodeDetectorStatics>,
-      public Supplement<ExecutionContext> {
+      public GarbageCollectedMixin {
  public:
-  static const unsigned kSupplementIndex;
-
   static BarcodeDetectorStatics* From(ExecutionContext*);
 
   explicit BarcodeDetectorStatics(ExecutionContext&);
@@ -47,6 +45,8 @@ class BarcodeDetectorStatics final
       ScriptPromiseResolver<IDLSequence<V8BarcodeFormat>>*,
       const Vector<shape_detection::mojom::blink::BarcodeFormat>&);
   void OnConnectionError();
+
+  Member<ExecutionContext> execution_context_;
 
   HeapMojoRemote<shape_detection::mojom::blink::BarcodeDetectionProvider>
       service_;

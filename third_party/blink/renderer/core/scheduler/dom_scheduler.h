@@ -61,14 +61,10 @@ class WebSchedulingTaskQueue;
  *  and their lifetime matches that of the associated TaskSignal.
  */
 class CORE_EXPORT DOMScheduler : public ScriptWrappable,
-                                 public ExecutionContextLifecycleObserver,
-                                 public Supplement<ExecutionContext> {
+                                 public ExecutionContextLifecycleObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static constexpr auto kSupplementIndex =
-      ExecutionContext::Supplements::kDOMScheduler;
-
   static DOMScheduler* scheduler(ExecutionContext&);
 
   explicit DOMScheduler(ExecutionContext*);
@@ -169,6 +165,8 @@ class CORE_EXPORT DOMScheduler : public ScriptWrappable,
   // UseCounters for non-trivial inheritance, both for the case where the
   // context is used, and the cross-frame case where it's ignored.
   SchedulerTaskContext* GetSchedulerTaskContextForYield();
+
+  Member<ExecutionContext> execution_context_;
 
   // `fixed_priority_task_queues_` is initialized with one entry per priority,
   // indexed by priority. This will be empty when the window is detached.

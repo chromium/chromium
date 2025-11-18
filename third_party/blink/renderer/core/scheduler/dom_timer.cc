@@ -69,29 +69,27 @@ base::TimeDelta GetMaxHighResolutionInterval() {
              : base::Milliseconds(32);
 }
 
+}  // namespace
+
 // Maintains a set of DOMTimers for a given ExecutionContext. Assigns IDs to
 // timers; these IDs are the ones returned to web authors from setTimeout or
 // setInterval. It also tracks recursive creation or iterative scheduling of
 // timers, which is used as a signal for throttling repetitive timers.
 class DOMTimerCoordinator : public GarbageCollected<DOMTimerCoordinator>,
-                            public Supplement<ExecutionContext> {
+                            public GarbageCollectedMixin {
  public:
-  static constexpr auto kSupplementIndex =
-      ExecutionContext::Supplements::kDOMTimerCoordinator;
-
   static DOMTimerCoordinator& From(ExecutionContext& context) {
     CHECK(!context.IsWorkletGlobalScope());
-    auto* coordinator =
-        Supplement<ExecutionContext>::From<DOMTimerCoordinator>(context);
+    DOMTimerCoordinator* coordinator = context.GetDOMTimerCoordinator();
     if (!coordinator) {
       coordinator = MakeGarbageCollected<DOMTimerCoordinator>(context);
-      Supplement<ExecutionContext>::ProvideTo(context, coordinator);
+      context.SetDOMTimerCoordinator(coordinator);
     }
     return *coordinator;
   }
 
   explicit DOMTimerCoordinator(ExecutionContext& context)
-      : Supplement<ExecutionContext>(context) {}
+      : execution_context_(context) {}
 
   int Install(DOMTimer* timer) {
     int timeout_id = NextID();
@@ -125,7 +123,7 @@ class DOMTimerCoordinator : public GarbageCollected<DOMTimerCoordinator>,
 
   void Trace(Visitor* visitor) const final {
     visitor->Trace(timers_);
-    Supplement<ExecutionContext>::Trace(visitor);
+    visitor->Trace(execution_context_);
   }
 
  private:
@@ -143,10 +141,13 @@ class DOMTimerCoordinator : public GarbageCollected<DOMTimerCoordinator>,
     }
   }
 
+  Member<ExecutionContext> execution_context_;
   HeapHashMap<int, Member<DOMTimer>> timers_;
   int circular_sequential_id_ = 0;
   int timer_nesting_level_ = 0;
 };
+
+namespace {
 
 bool IsAllowed(ExecutionContext& context, bool is_eval, const String& source) {
   if (context.IsContextDestroyed()) {

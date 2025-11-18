@@ -39,20 +39,27 @@
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/core/context_features/context_feature_settings.h"
+#include "third_party/blink/renderer/core/dom/abort_signal_registry.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/events/error_event.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_state_observer.h"
+#include "third_party/blink/renderer/core/fileapi/file_backed_blob_factory_dispatcher.h"
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/csp/execution_context_csp_delegate.h"
 #include "third_party/blink/renderer/core/frame/integrity_policy.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/reporting_context.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
+#include "third_party/blink/renderer/core/inspector/inspector_media_context_impl.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
+#include "third_party/blink/renderer/core/scheduler/dom_scheduler.h"
+#include "third_party/blink/renderer/core/scheduler/scripted_idle_task_controller.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worklet_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
@@ -545,9 +552,41 @@ void ExecutionContext::Trace(Visitor* visitor) const {
   visitor->Trace(content_security_policy_);
   visitor->Trace(runtime_feature_state_override_context_);
   visitor->Trace(global_indexed_db_impl_);
+  visitor->Trace(abort_signal_registry_);
+  visitor->Trace(context_feature_settings_);
+  visitor->Trace(dom_scheduler_);
+  visitor->Trace(file_backed_blob_factory_dispatcher_);
+  visitor->Trace(media_inspector_context_impl_);
+  visitor->Trace(reporting_context_);
+  visitor->Trace(scripted_idle_task_controller_);
+  visitor->Trace(ai_interface_proxy_);
+  visitor->Trace(background_readback_);
+  visitor->Trace(barcode_detector_statics_);
+  visitor->Trace(cached_video_frame_pool_);
+  visitor->Trace(canvas_resource_provider_cache_);
+  visitor->Trace(codec_pressure_manager_provider_);
+  visitor->Trace(cros_kiosk_);
+  visitor->Trace(dom_timer_coordinator_);
+  visitor->Trace(execution_context_clipboard_event_state_);
+  visitor->Trace(file_system_access_manager_);
+  visitor->Trace(file_system_dispatcher_);
+  visitor->Trace(file_system_observation_collection_);
+  visitor->Trace(idle_manager_);
+  visitor->Trace(image_bitmap_factories_);
+  visitor->Trace(local_file_system_);
+  visitor->Trace(navigator_badge_);
+  visitor->Trace(notification_manager_);
+  visitor->Trace(parsed_feature_policies_);
+  visitor->Trace(peer_connection_dependency_factory_);
+  visitor->Trace(pressure_observer_manager_);
+  visitor->Trace(rtc_transport_dependencies_);
+  visitor->Trace(service_worker_container_);
+  visitor->Trace(throttling_controller_);
+  visitor->Trace(web_codecs_logger_);
+  visitor->Trace(web_printing_manager_);
+  visitor->Trace(web_view_android_);
   MojoBindingContext::Trace(visitor);
   ConsoleLogger::Trace(visitor);
-  Supplementable<ExecutionContext, 33>::Trace(visitor);
 }
 
 bool ExecutionContext::IsSameAgentCluster(
