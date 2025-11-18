@@ -519,6 +519,10 @@ class CORE_EXPORT FragmentBuilder {
     return tallest_unbreakable_block_size_ >= LayoutUnit();
   }
 
+  void SetHasRunningAnchorTransformAnimation() {
+    has_running_anchor_transform_animation_ = true;
+  }
+
   // To be called once, after the final size has been set (i.e. in-flow layout
   // is done), and before generating the fragment.
   void Finalize();
@@ -684,6 +688,8 @@ class CORE_EXPORT FragmentBuilder {
 
   bool oof_candidates_may_have_anchors_ = false;
   bool oof_fragmentainer_descendants_may_have_anchors_ = false;
+  bool has_running_anchor_transform_animation_ = false;
+
 #if DCHECK_IS_ON()
   bool is_may_have_descendant_above_block_start_explicitly_set_ = false;
   bool is_finalized_ = false;

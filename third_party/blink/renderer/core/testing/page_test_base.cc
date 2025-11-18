@@ -19,7 +19,6 @@
 #include "third_party/blink/renderer/core/frame/csp/test_util.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
@@ -223,6 +222,10 @@ Page& PageTestBase::GetPage() const {
 
 LocalFrame& PageTestBase::GetFrame() const {
   return GetDummyPageHolder().GetFrame();
+}
+
+LocalFrameView& PageTestBase::GetFrameView() const {
+  return *GetFrame().View();
 }
 
 FrameSelection& PageTestBase::Selection() const {

@@ -342,6 +342,10 @@ void FragmentBuilder::PropagateFromFragment(
     // This child either is an anchor, or has anchors inside (or both). They are
     // to be propagated as soon as the container size is known.
     PropagateChildAnchors(child, child_offset + relative_offset);
+
+    has_running_anchor_transform_animation_ =
+        has_running_anchor_transform_animation_ ||
+        child.HasRunningAnchorTransformAnimation();
   }
 
   PropagateStickyDescendants(child);

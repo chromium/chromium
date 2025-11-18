@@ -330,6 +330,8 @@ PhysicalFragment::PhysicalFragment(FragmentBuilder* builder,
       style_variant_((unsigned)builder->style_variant_),
       is_hidden_for_paint_(builder->is_hidden_for_paint_),
       has_floating_descendants_for_paint_(false),
+      has_running_anchor_transform_animation_(
+          builder->has_running_anchor_transform_animation_),
       children_valid_(true),
       is_opaque_(builder->is_opaque_),
       is_block_in_inline_(builder->is_block_in_inline_),

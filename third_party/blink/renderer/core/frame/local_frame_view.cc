@@ -1113,6 +1113,30 @@ void LocalFrameView::RequestSameDocumentNavigationPresentationTime(
   }
 }
 
+bool LocalFrameView::HasRunningAnchorTransformAnimation() const {
+  for (Frame* child = frame_->Tree().FirstChild(); child;
+       child = child->Tree().NextSibling()) {
+    const auto* child_view = DynamicTo<LocalFrameView>(child->View());
+    if (!child_view) {
+      // If this is not a local frame (in other words, it's typically a remote
+      // frame), there's no way of answering this. Err on the safe side.
+      return true;
+    }
+    if (child_view->HasRunningAnchorTransformAnimation()) {
+      return true;
+    }
+  }
+  if (LayoutView* layout_view = GetLayoutView()) {
+    if (layout_view->PhysicalFragmentCount()) {
+      DCHECK_EQ(layout_view->PhysicalFragmentCount(), 1u);
+      const PhysicalBoxFragment* root_fragment =
+          layout_view->GetPhysicalFragment(0);
+      return root_fragment->HasRunningAnchorTransformAnimation();
+    }
+  }
+  return false;
+}
+
 std::optional<NaturalSizingInfo> LocalFrameView::GetNaturalDimensions() const {
   if (LayoutSVGRoot* content_layout_object = EmbeddedReplacedContent()) {
     return content_layout_object->UnscaledNaturalSizingInfo();
@@ -2420,9 +2444,10 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
   }
 
   UpdateIntersectionObserverStatus();
-  if (HasActiveIntersectionObservations()) {
+  if (HasActiveIntersectionObservations() ||
+      HasRunningAnchorTransformAnimation()) {
     GetChromeClient()->RequestMainFrameOnCompositorAnimation(
-        *frame_, NeedsOcclusionTracking()
+        *frame_, NeedsOcclusionTracking() && HasActiveIntersectionObservations()
                      ? cc::PropertyChangeForcesCommitCriteria::kAny
                      : cc::PropertyChangeForcesCommitCriteria::kTransform);
   }

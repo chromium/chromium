@@ -643,6 +643,13 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
     return depends_on_percentage_block_size_;
   }
 
+  // Return true if there's an anchor-positioned element inside, where its
+  // anchor either has a transform, or is inside a subtree with a transform, AND
+  // this transform is currently being animated.
+  bool HasRunningAnchorTransformAnimation() const {
+    return has_running_anchor_transform_animation_;
+  }
+
   const GCedHeapVector<Member<LayoutBoxModelObject>>* StickyDescendants()
       const {
     return propagated_data_ ? propagated_data_->sticky_descendants.Get()
@@ -761,6 +768,7 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
   uint8_t has_floating_descendants_for_paint_ : 1;  // NOLINT
   uint8_t has_adjoining_object_descendants_ : 1;    // NOLINT
   uint8_t depends_on_percentage_block_size_ : 1;    // NOLINT
+  uint8_t has_running_anchor_transform_animation_ : 1;
   mutable uint8_t children_valid_ : 1;              // NOLINT
 
   // The following bitfields are only to be used by PhysicalLineBoxFragment

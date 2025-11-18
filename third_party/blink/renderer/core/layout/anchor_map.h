@@ -22,6 +22,12 @@ class LayoutBox;
 class LayoutObject;
 class PhysicalFragment;
 
+// Reference to an anchor at a specific container. The geometry getters here
+// will return values relatively to this container.
+//
+// During layout, PhysicalAnchorReference objects will bubble up the containing
+// block chain, to help resolve anchor queries (anchor() and anchor-size()
+// functions) for elements that are to be anchored to a specific anchor.
 class CORE_EXPORT PhysicalAnchorReference
     : public GarbageCollected<PhysicalAnchorReference> {
  public:
@@ -29,12 +35,14 @@ class CORE_EXPORT PhysicalAnchorReference
                           const TransformState& transform_state,
                           const PhysicalRect& rect_without_transforms,
                           bool is_out_of_flow,
+                          bool has_running_transform_animation,
                           GCedHeapHashSet<Member<Element>>* display_locks)
       : transform_state_(transform_state),
         rect_without_transforms_(rect_without_transforms),
         element_(&element),
         display_locks_(display_locks),
-        is_out_of_flow_(is_out_of_flow) {}
+        is_out_of_flow_(is_out_of_flow),
+        has_running_transform_animation_(has_running_transform_animation) {}
 
   void Trace(Visitor* visitor) const;
 
@@ -67,6 +75,12 @@ class CORE_EXPORT PhysicalAnchorReference
   }
   bool IsOutOfFlow() const { return is_out_of_flow_; }
 
+  // True if the anchor itself has a transform, or if any of its containing
+  // blocks thus far (see class documentation) has a transform.
+  bool HasRunningTransformAnimation() const {
+    return has_running_transform_animation_;
+  }
+
  private:
   // For now, store both the transform state (to provide the bounding box after
   // applying transforms), and also the raw border box rectangle of the anchor
@@ -82,6 +96,7 @@ class CORE_EXPORT PhysicalAnchorReference
   Member<PhysicalAnchorReference> next_;
   Member<GCedHeapHashSet<Member<Element>>> display_locks_;
   bool is_out_of_flow_ = false;
+  bool has_running_transform_animation_ = false;
 };
 
 using AnchorKey = std::variant<const AnchorScopedName*, const Element*>;

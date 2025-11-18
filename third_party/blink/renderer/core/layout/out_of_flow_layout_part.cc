@@ -2418,6 +2418,11 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
   offset_info->display_locks_affected_by_anchors =
       anchor_evaluator.GetDisplayLocksAffectedByAnchors();
 
+  if (anchor_evaluator.DidResolveAnchorWithRunningTransformAnimation()) {
+    DCHECK(RuntimeEnabledFeatures::CSSAnchorWithTransformsEnabled());
+    container_builder_->SetHasRunningAnchorTransformAnimation();
+  }
+
   return *offset_info;
 }
 

@@ -28,6 +28,7 @@ class Document;
 class FrameSelection;
 class LayoutObject;
 class LocalFrame;
+class LocalFrameView;
 class PendingAnimations;
 class StyleEngine;
 
@@ -89,6 +90,7 @@ class PageTestBase : public testing::Test, public ScopedMockOverlayScrollbars {
   Document& GetDocument() const;
   Page& GetPage() const;
   LocalFrame& GetFrame() const;
+  LocalFrameView& GetFrameView() const;
   FrameSelection& Selection() const;
   DummyPageHolder& GetDummyPageHolder() const { return *dummy_page_holder_; }
   StyleEngine& GetStyleEngine();

@@ -4,11 +4,36 @@
 
 #include "third_party/blink/renderer/core/layout/anchor_map.h"
 
+#include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/physical_fragment.h"
 #include "third_party/blink/renderer/core/layout/transform_utils.h"
 
 namespace blink {
+
+namespace {
+
+bool HasRunningTransformAnimation(const LayoutObject& layout_object) {
+  const auto* element = To<Element>(layout_object.GetNode());
+  if (!element) {
+    return false;
+  }
+  const ElementAnimations* animations = element->GetElementAnimations();
+  if (!animations) {
+    return false;
+  }
+  const EffectStack& stack = animations->GetEffectStack();
+  PropertyHandle transform(CSSProperty::Get(CSSPropertyID::kTransform));
+  PropertyHandle translate(CSSProperty::Get(CSSPropertyID::kTranslate));
+  PropertyHandle rotate(CSSProperty::Get(CSSPropertyID::kRotate));
+  PropertyHandle scale(CSSProperty::Get(CSSPropertyID::kScale));
+  return stack.HasActiveAnimationsOnCompositor(transform) ||
+         stack.HasActiveAnimationsOnCompositor(translate) ||
+         stack.HasActiveAnimationsOnCompositor(rotate) ||
+         stack.HasActiveAnimationsOnCompositor(scale);
+}
+
+}  // anonymous namespace
 
 void PhysicalAnchorReference::Trace(Visitor* visitor) const {
   visitor->Trace(element_);
@@ -87,10 +112,12 @@ void AnchorMap::Set(const AnchorKey& key,
     display_locks = MakeGarbageCollected<GCedHeapHashSet<Member<Element>>>();
     display_locks->insert(element_for_display_lock);
   }
-  Set(key, MakeGarbageCollected<PhysicalAnchorReference>(
-               *To<Element>(layout_object.GetNode()), transform_state,
-               rect_without_transforms, options == SetOptions::kOutOfFlow,
-               display_locks));
+
+  auto* reference = MakeGarbageCollected<PhysicalAnchorReference>(
+      *To<Element>(layout_object.GetNode()), transform_state,
+      rect_without_transforms, options == SetOptions::kOutOfFlow,
+      HasRunningTransformAnimation(layout_object), display_locks);
+  Set(key, reference);
 }
 
 void AnchorMap::Set(const AnchorKey& key, PhysicalAnchorReference* reference) {
@@ -164,10 +191,15 @@ void AnchorMap::SetFromChild(const PhysicalFragment& child_fragment,
         display_locks->insert(element_for_display_lock);
       }
       DCHECK(reference->GetLayoutObject());
-      Set(entry.key,
-          MakeGarbageCollected<PhysicalAnchorReference>(
-              reference->GetElement(), transform_state, rect_without_transforms,
-              options == SetOptions::kOutOfFlow, display_locks));
+      const LayoutObject* child_object = child_fragment.GetLayoutObject();
+      bool has_running_transform_animation =
+          reference->HasRunningTransformAnimation() ||
+          (child_object && HasRunningTransformAnimation(*child_object));
+      auto* parent_reference = MakeGarbageCollected<PhysicalAnchorReference>(
+          reference->GetElement(), transform_state, rect_without_transforms,
+          options == SetOptions::kOutOfFlow, has_running_transform_animation,
+          display_locks);
+      Set(entry.key, parent_reference);
     }
   }
 }

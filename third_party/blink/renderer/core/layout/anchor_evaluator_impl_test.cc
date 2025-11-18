@@ -10,15 +10,19 @@
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/layout/anchor_map.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
+#include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
 namespace {
 
 class AnchorEvaluatorImplTest : public RenderingTest {
  public:
-  AnchorEvaluatorImplTest() = default;
+  AnchorEvaluatorImplTest()
+      // Make SetChildFrameHTML() work:
+      : RenderingTest(MakeGarbageCollected<SingleChildLocalFrameClient>()) {}
 
   const AnchorMap* GetAnchorMap(const Element& element) const {
     const LayoutBlockFlow* container =
@@ -424,6 +428,26 @@ TEST_F(AnchorEvaluatorImplTest, FragmentedContainingBlock) {
   EXPECT_THAT(AnchorTestData::ToList(*container_anchor_map),
               testing::ElementsAre(AnchorTestData{
                   AtomicString("--a1"), PhysicalRect(110, 10, 210, 100)}));
+}
+
+// As long as no anchor transform animation is actually running,
+// HasRunningAnchorTransformAnimation() will return false. Testing for positives
+// in a unit test has proven tricky, so there are web tests for that instead.
+TEST_F(AnchorEvaluatorImplTest, FragmentHasRunningAnchorTransformAnimation) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="anchor-name:--transformed; transform:rotate(45deg);"></div>
+    <div style="position:absolute; position-anchor:--transformed; position-area:right; width:100%;"></div>
+  )HTML");
+  const PhysicalBoxFragment& root = *GetLayoutView().GetPhysicalFragment(0);
+  EXPECT_FALSE(root.HasRunningAnchorTransformAnimation());
+}
+
+TEST_F(AnchorEvaluatorImplTest, FrameViewHasRunningAnchorTransformAnimation) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="anchor-name:--transformed; transform:rotate(45deg);"></div>
+    <div style="position:absolute; position-anchor:--transformed; position-area:right; width:100%;"></div>
+  )HTML");
+  EXPECT_FALSE(GetFrameView().HasRunningAnchorTransformAnimation());
 }
 
 }  // namespace

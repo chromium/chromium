@@ -110,6 +110,10 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
   }
   void ClearRememberedScrollOffsets() { remembered_scroll_offsets_ = nullptr; }
 
+  bool DidResolveAnchorWithRunningTransformAnimation() const {
+    return did_resolve_anchor_with_running_transform_animation_;
+  }
+
  private:
   // Unless nullptr is returned, the returned anchor reference is guaranteed to
   // have a valid LayoutObject.
@@ -219,6 +223,8 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
   // True if more than one anchor has been evaluated so far. This value is
   // cleared before a @position-try rule is applied.
   bool has_multiple_accessibility_anchors_ = false;
+
+  bool did_resolve_anchor_with_running_transform_animation_ = false;
 
   // A set of elements whose display locks' skipping status are potentially
   // impacted by anchors found by this evaluator.

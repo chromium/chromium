@@ -423,6 +423,12 @@ const PhysicalAnchorReference* AnchorEvaluatorImpl::ResolveAnchorForEvaluation(
     }
   }
 
+  if (RuntimeEnabledFeatures::CSSAnchorWithTransformsEnabled()) {
+    did_resolve_anchor_with_running_transform_animation_ =
+        did_resolve_anchor_with_running_transform_animation_ ||
+        anchor_reference->HasRunningTransformAnimation();
+  }
+
   return anchor_reference;
 }
 
