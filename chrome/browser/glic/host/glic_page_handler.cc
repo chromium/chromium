@@ -1663,8 +1663,12 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   void NotifyZeroStateSuggestionsChanged(
       glic::mojom::ZeroStateSuggestionsV2Ptr suggestions,
       mojom::ZeroStateSuggestionsOptionsPtr options) {
-    web_client_->NotifyZeroStateSuggestionsChanged(std::move(suggestions),
-                                                   std::move(options));
+    // Ideally, we should redesign this to avoid zss suggestions being delivered
+    // when there's no client.
+    if (web_client_) {
+      web_client_->NotifyZeroStateSuggestionsChanged(std::move(suggestions),
+                                                     std::move(options));
+    }
   }
 
   void NotifyActOnWebCapabilityChanged(bool can_act_on_web) {
