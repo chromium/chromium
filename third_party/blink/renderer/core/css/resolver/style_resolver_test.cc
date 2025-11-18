@@ -4200,6 +4200,7 @@ TEST_F(StyleResolverTest, UseCountPseudoElementImplicitAnchor) {
   set_sheet_text(R"HTML(
     #div::before {
       content: "";
+      position-anchor: auto;
       position-area: top left;
       left: anchor(right);
     }
@@ -4211,6 +4212,7 @@ TEST_F(StyleResolverTest, UseCountPseudoElementImplicitAnchor) {
     #div::before {
       content: "";
       position: absolute;
+      position-anchor: auto;
       position-anchor: --a;
       position-area: top left;
       left: anchor(right);
@@ -4222,6 +4224,7 @@ TEST_F(StyleResolverTest, UseCountPseudoElementImplicitAnchor) {
   set_sheet_text(R"HTML(
     #div::before {
       position: absolute;
+      position-anchor: auto;
       position-area: top left;
       left: anchor(right);
     }
@@ -4233,6 +4236,7 @@ TEST_F(StyleResolverTest, UseCountPseudoElementImplicitAnchor) {
     #div::before {
       content: "";
       position: absolute;
+      position-anchor: auto;
       justify-self: anchor-center;
     }
   )HTML");
@@ -4243,6 +4247,7 @@ TEST_F(StyleResolverTest, UseCountPseudoElementImplicitAnchor) {
     #div::before {
       content: "";
       position: fixed;
+      position-anchor: auto;
       position-area: inline-start;
     }
   )HTML");
@@ -4253,6 +4258,7 @@ TEST_F(StyleResolverTest, UseCountPseudoElementImplicitAnchor) {
     #div::before {
       content: "";
       position: fixed;
+      position-anchor: auto;
       top: anchor(bottom);
     }
   )HTML");
@@ -4264,10 +4270,26 @@ TEST_F(StyleResolverTest, UseCountPseudoElementImplicitAnchor) {
     #div::before {
       content: "";
       position: absolute;
+      position-anchor: auto;
       top: anchor(--a bottom);
     }
   )HTML");
   EXPECT_TRUE(IsUseCounted(WebFeature::kCSSPseudoElementUsesImplicitAnchor));
+
+  // If position-anchor is initial, we aren't using the implicit anchor (with
+  // the CSSPositionAnchorNone feature enabled).
+  set_sheet_text(R"HTML(
+    #div::before {
+      content: "";
+      position: absolute;
+      left: anchor(right);
+    }
+  )HTML");
+  if (RuntimeEnabledFeatures::CSSPositionAnchorNoneEnabled()) {
+    EXPECT_FALSE(IsUseCounted(WebFeature::kCSSPseudoElementUsesImplicitAnchor));
+  } else {
+    EXPECT_TRUE(IsUseCounted(WebFeature::kCSSPseudoElementUsesImplicitAnchor));
+  }
 }
 
 TEST_F(StyleResolverTest, FindContainerForElement_LayoutSiblings) {

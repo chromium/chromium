@@ -321,6 +321,8 @@ class OOFCandidateStyleIterator {
     const StylePositionAnchor& position_anchor = style.PositionAnchor();
     using Type = StylePositionAnchor::Type;
     switch (position_anchor.GetType()) {
+      case Type::kNone:
+        return false;
       case Type::kAuto:
         return static_cast<bool>(element.ImplicitAnchorElement());
       case Type::kName:
@@ -410,6 +412,8 @@ const Element* GetPositionAnchorElement(const BlockNode& node,
   const StylePositionAnchor& position_anchor = style.PositionAnchor();
   using Type = StylePositionAnchor::Type;
   switch (position_anchor.GetType()) {
+    case Type::kNone:
+      return nullptr;
     case Type::kAuto:
       if (const auto* element = DynamicTo<Element>(node.GetDOMNode())) {
         return element->ImplicitAnchorElement();

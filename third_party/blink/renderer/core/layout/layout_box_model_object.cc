@@ -84,6 +84,8 @@ bool NeedsAnchorPositionScrollData(Element& element,
   const StylePositionAnchor& position_anchor = style.PositionAnchor();
   using Type = StylePositionAnchor::Type;
   switch (position_anchor.GetType()) {
+    case Type::kNone:
+      return false;
     case Type::kAuto:
       // Now we have `position-anchor: auto`. We need `AnchorPositionScrollData`
       // only if there's an implicit anchor element to track.

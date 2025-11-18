@@ -19,11 +19,17 @@ class CORE_EXPORT StylePositionAnchor {
   DISALLOW_NEW();
 
  public:
-  enum class Type { kAuto, kName };
+  enum class Type { kNone, kAuto, kName };
 
   explicit StylePositionAnchor(Type type) : type_(type) {}
   explicit StylePositionAnchor(const ScopedCSSName* name)
       : type_(Type::kName), name_(name) {}
+
+  static StylePositionAnchor Initial() {
+    return RuntimeEnabledFeatures::CSSPositionAnchorNoneEnabled()
+               ? StylePositionAnchor(StylePositionAnchor::Type::kNone)
+               : StylePositionAnchor(StylePositionAnchor::Type::kAuto);
+  }
 
   bool operator==(const StylePositionAnchor& o) const {
     return type_ == o.type_ && base::ValuesEquivalent(name_, o.name_);
@@ -42,7 +48,7 @@ class CORE_EXPORT StylePositionAnchor {
   void Trace(Visitor* visitor) const { visitor->Trace(name_); }
 
  private:
-  Type type_ = Type::kAuto;
+  Type type_ = Type::kNone;
   Member<const ScopedCSSName> name_;
 };
 

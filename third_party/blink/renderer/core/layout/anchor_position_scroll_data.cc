@@ -24,6 +24,8 @@ const LayoutObject* PositionAnchorObject(const LayoutBox& box) {
   const StylePositionAnchor& position_anchor = box.StyleRef().PositionAnchor();
   using Type = StylePositionAnchor::Type;
   switch (position_anchor.GetType()) {
+    case Type::kNone:
+      return nullptr;
     case Type::kAuto:
       return box.AcceptableImplicitAnchor();
     case Type::kName:

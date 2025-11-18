@@ -2186,6 +2186,9 @@ StylePositionAnchor StyleBuilderConverter::ConvertPositionAnchor(
     const CSSValue& value) {
   DCHECK(value.IsScopedValue());
   if (const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
+    if (identifier_value->GetValueID() == CSSValueID::kNone) {
+      return StylePositionAnchor(StylePositionAnchor::Type::kNone);
+    }
     DCHECK_EQ(identifier_value->GetValueID(), CSSValueID::kAuto);
     return StylePositionAnchor(StylePositionAnchor::Type::kAuto);
   }

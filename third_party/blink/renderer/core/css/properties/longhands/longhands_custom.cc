@@ -194,6 +194,12 @@ const CSSValue* PositionAnchor::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
+  if (RuntimeEnabledFeatures::CSSPositionAnchorNoneEnabled()) {
+    if (CSSValue* value =
+            css_parsing_utils::ConsumeIdent<CSSValueID::kNone>(stream)) {
+      return value;
+    }
+  }
   if (CSSValue* value =
           css_parsing_utils::ConsumeIdent<CSSValueID::kAuto>(stream)) {
     return value;
@@ -209,6 +215,8 @@ const CSSValue* PositionAnchor::CSSValueFromComputedStyleInternal(
 
   const StylePositionAnchor& position_anchor = style.PositionAnchor();
   switch (position_anchor.GetType()) {
+    case Type::kNone:
+      return CSSIdentifierValue::Create(CSSValueID::kNone);
     case Type::kAuto:
       return CSSIdentifierValue::Create(CSSValueID::kAuto);
     case Type::kName:

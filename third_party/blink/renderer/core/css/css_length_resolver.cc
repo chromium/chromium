@@ -146,7 +146,7 @@ const StylePositionAnchor& CSSLengthResolver::GetPositionAnchor() const {
   using Holder = DisallowNewWrapper<StylePositionAnchor>;
   DEFINE_STATIC_LOCAL(Persistent<Holder>, empty,
                       (MakeGarbageCollected<Holder>(StylePositionAnchor(
-                          StylePositionAnchor::Type::kAuto))));
+                          StylePositionAnchor::Initial()))));
   return empty->Value();
 }
 

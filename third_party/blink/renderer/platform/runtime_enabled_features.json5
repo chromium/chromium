@@ -1510,6 +1510,9 @@
       name: "CSSParserIgnoreCharsetForURLs",
     },
     {
+      name: "CSSPositionAnchorNone",
+    },
+    {
       name: "CSSPositionStickyStaticScrollPosition",
       status: "test",
     },

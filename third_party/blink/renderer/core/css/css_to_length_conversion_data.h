@@ -285,7 +285,7 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
 
    private:
     AnchorEvaluator* evaluator_ = nullptr;
-    StylePositionAnchor position_anchor_{StylePositionAnchor::Type::kAuto};
+    StylePositionAnchor position_anchor_ = StylePositionAnchor::Initial();
     std::optional<PositionAreaOffsets> position_area_offsets_;
   };
 

@@ -249,6 +249,8 @@ const PhysicalAnchorReference* AnchorEvaluatorImpl::ResolveAnchorReference(
   DCHECK(anchor_specifier.IsDefault());
   using Type = StylePositionAnchor::Type;
   switch (position_anchor.GetType()) {
+    case Type::kNone:
+      return nullptr;
     case Type::kAuto:
       if (!implicit_anchor_) {
         return nullptr;

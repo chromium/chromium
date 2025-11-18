@@ -1978,6 +1978,9 @@ protocol::Response InspectorDOMAgent::getAnchorElement(
         box->StyleRef().PositionAnchor();
     using Type = StylePositionAnchor::Type;
     switch (position_anchor.GetType()) {
+      case Type::kNone:
+        target_object = nullptr;
+        break;
       case Type::kAuto:
         target_object = box->AcceptableImplicitAnchor();
         break;
