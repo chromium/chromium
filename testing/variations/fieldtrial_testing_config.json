@@ -12576,6 +12576,51 @@
             ]
         }
     ],
+    "HeliosFullChatHistory": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GeminiFullChatHistory"
+                    ]
+                }
+            ]
+        }
+    ],
+    "HeliosImmediateOverlay": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GeminiImmediateOverlay"
+                    ]
+                }
+            ]
+        }
+    ],
+    "HeliosLoadingRedesign": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GeminiLoadingStateRedesign"
+                    ]
+                }
+            ]
+        }
+    ],
     "HelpAppLauncherSearch": [
         {
             "platforms": [
