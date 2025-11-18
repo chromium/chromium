@@ -25,9 +25,8 @@
 // by default and there are no known tests that configure a FATAL level. If this
 // gets used from FATAL contexts under DCHECK_IS_CONFIGURABLE this may need to
 // be updated to look at LOGGING_DCHECK's current severity level.
-// Death tests misbehave on Android.
 #if PA_BUILDFLAG(DCHECKS_ARE_ON) && defined(GTEST_HAS_DEATH_TEST) && \
-    !PA_BUILDFLAG(DCHECK_IS_CONFIGURABLE) && !PA_BUILDFLAG(IS_ANDROID)
+    !PA_BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 
 // EXPECT/ASSERT_DCHECK_DEATH tests verify that a DCHECK is hit ("Check failed"
 // is part of the error message). Optionally you may specify part of the message

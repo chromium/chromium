@@ -27,7 +27,7 @@
 #include "partition_alloc/tagging.h"
 
 #if defined(LINUX_NAME_REGION)
-#include "partition_alloc/partition_alloc_base/debug/proc_maps_linux.h"
+#include "partition_alloc/partition_alloc_base/debug/proc_maps_linux.h"  // nogncheck
 #endif
 
 #include "testing/gtest/include/gtest/gtest.h"
@@ -296,6 +296,13 @@ TEST(PartitionAllocPageAllocatorTest,
   }
 
 #if defined(MTE_KILLED_BY_SIGNAL_AVAILABLE)
+  ChangeMemoryTaggingModeForCurrentThread(
+      TagViolationReportingMode::kSynchronous);
+  ASSERT_TRUE(GetMemoryTaggingModeForCurrentThread() !=
+              TagViolationReportingMode::kDisabled)
+      << "Test was built with MTE enabled and the CPU supports it, but MTE is "
+         "currently disabled in the device.";
+
   uintptr_t buffer =
       AllocPages(PageAllocationGranularity(), PageAllocationGranularity(),
                  PageAccessibilityConfiguration(
@@ -354,6 +361,13 @@ TEST(PartitionAllocPageAllocatorTest,
   }
 
 #if defined(MTE_KILLED_BY_SIGNAL_AVAILABLE)
+  ChangeMemoryTaggingModeForCurrentThread(
+      TagViolationReportingMode::kSynchronous);
+  ASSERT_TRUE(GetMemoryTaggingModeForCurrentThread() !=
+              TagViolationReportingMode::kDisabled)
+      << "Test was built with MTE enabled and the CPU supports it, but MTE is "
+         "currently disabled in the device.";
+
   uintptr_t buffer =
       AllocPages(PageAllocationGranularity(), PageAllocationGranularity(),
                  PageAccessibilityConfiguration(

@@ -100,7 +100,7 @@
 
 #if PA_BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_ANDROID) || \
     PA_BUILDFLAG(IS_CHROMEOS)
-#include "partition_alloc/partition_alloc_base/debug/proc_maps_linux.h"
+#include "partition_alloc/partition_alloc_base/debug/proc_maps_linux.h"  // nogncheck
 #endif  // PA_BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_ANDROID) ||
         // PA_BUILDFLAG(IS_CHROMEOS)
 
@@ -1547,6 +1547,13 @@ TEST_P(PartitionAllocTest, MTEProtectsFreedPtr) {
     GTEST_SKIP();
   }
 
+  ChangeMemoryTaggingModeForCurrentThread(
+      TagViolationReportingMode::kSynchronous);
+  ASSERT_TRUE(GetMemoryTaggingModeForCurrentThread() !=
+              TagViolationReportingMode::kDisabled)
+      << "Test was built with MTE enabled and the CPU supports it, but MTE is "
+         "currently disabled in the device.";
+
   // Create an arbitrarily-sized small allocation.
   size_t alloc_size = 64 - ExtraAllocSize(allocator);
   uint64_t* ptr1 =
@@ -2628,6 +2635,13 @@ TEST_P(PartitionAllocDeathTest, MTEProtectsFreedPtr) {
     GTEST_SKIP();
   }
 
+  ChangeMemoryTaggingModeForCurrentThread(
+      TagViolationReportingMode::kSynchronous);
+  ASSERT_TRUE(GetMemoryTaggingModeForCurrentThread() !=
+              TagViolationReportingMode::kDisabled)
+      << "Test was built with MTE enabled and the CPU supports it, but MTE is "
+         "currently disabled in the device.";
+
   constexpr uint64_t kCookie = 0x1234567890ABCDEF;
   constexpr uint64_t kQuarantined = 0xEFEFEFEFEFEFEFEF;
 
@@ -2660,6 +2674,13 @@ TEST_P(PartitionAllocDeathTest, SuspendTagCheckingScope) {
     // This test won't pass on systems without MTE.
     GTEST_SKIP();
   }
+
+  ChangeMemoryTaggingModeForCurrentThread(
+      TagViolationReportingMode::kSynchronous);
+  ASSERT_TRUE(GetMemoryTaggingModeForCurrentThread() !=
+              TagViolationReportingMode::kDisabled)
+      << "Test was built with MTE enabled and the CPU supports it, but MTE is "
+         "currently disabled in the device.";
 
   constexpr uint64_t kQuarantined = 0xEFEFEFEFEFEFEFEF;
 

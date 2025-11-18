@@ -978,16 +978,31 @@ if (is_clang_or_gcc) {
 # TODO(crbug.com/40158212): Consider supporting building tests outside of
 # chromium and having a dedicated 'partition_alloc_unittests' target.
 if (build_with_chromium) {
+  if (is_linux || is_chromeos || is_android) {
+    source_set("debug_proc_maps") {
+      testonly = true
+
+      sources = [
+        "partition_alloc_base/debug/proc_maps_linux.cc",
+        "partition_alloc_base/debug/proc_maps_linux.h",
+      ]
+
+      deps = [
+        ":allocator_base",
+        ":allocator_core",
+        ":buildflags",
+      ]
+    }
+  }
+
   source_set("unittests") {
     testonly = true
 
     sources = [ "partition_alloc_base/test/gtest_util.h" ]
+    deps = []
 
     if (is_linux || is_chromeos || is_android) {
-      sources += [
-        "partition_alloc_base/debug/proc_maps_linux.cc",
-        "partition_alloc_base/debug/proc_maps_linux.h",
-      ]
+      deps += [ ":debug_proc_maps" ]
     }
 
     if (is_android) {
@@ -1002,13 +1017,10 @@ if (build_with_chromium) {
         "address_pool_manager_unittest.cc",
         "address_space_randomization_unittest.cc",
         "compressed_pointer_unittest.cc",
-        "hardening_unittest.cc",
         "memory_reclaimer_unittest.cc",
-        "page_allocator_unittest.cc",
         "partition_alloc_base/bits_pa_unittest.cc",
         "partition_alloc_base/component_export_pa_unittest.cc",
         "partition_alloc_base/containers/flat_map_pa_unittest.cc",
-        "partition_alloc_base/containers/flat_tree_pa_unittest.cc",
         "partition_alloc_base/cpu_pa_unittest.cc",
         "partition_alloc_base/logging_pa_unittest.cc",
         "partition_alloc_base/no_destructor_pa_unittest.cc",
@@ -1022,14 +1034,15 @@ if (build_with_chromium) {
         "partition_alloc_base/strings/string_util_pa_unittest.cc",
         "partition_alloc_base/strings/stringprintf_pa_unittest.cc",
         "partition_alloc_base/thread_annotations_pa_unittest.cc",
-        "partition_alloc_unittest.cc",
         "partition_lock_unittest.cc",
         "reverse_bytes_unittest.cc",
         "scheduler_loop_quarantine_unittest.cc",
-        "slot_start_unittest.cc",
         "thread_cache_unittest.cc",
-        "use_death_tests.h",
       ]
+
+      if (!is_android) {
+        deps += [ ":death_unittests" ]
+      }
     }
 
     if (is_fuchsia) {
@@ -1098,7 +1111,52 @@ if (build_with_chromium) {
       ]
     }
 
-    deps = [
+    deps += [
+      ":partition_alloc",
+      ":test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+
+    configs -= partition_alloc_remove_configs
+    configs += partition_alloc_add_configs
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+  }
+
+  source_set("death_unittests") {
+    testonly = true
+
+    sources = [ "partition_alloc_base/test/gtest_util.h" ]
+    deps = []
+
+    if (is_linux || is_chromeos || is_android) {
+      deps += [ ":debug_proc_maps" ]
+    }
+
+    if (use_partition_alloc) {
+      sources += [
+        "hardening_unittest.cc",
+        "page_allocator_unittest.cc",
+        "partition_alloc_base/containers/flat_tree_pa_unittest.cc",
+        "partition_alloc_unittest.cc",
+        "slot_start_unittest.cc",
+        "use_death_tests.h",
+      ]
+    }
+
+    if ((is_android || is_linux) && target_cpu == "arm64") {
+      cflags = [
+        "-Xclang",
+        "-target-feature",
+        "-Xclang",
+        "+mte",
+      ]
+    }
+
+    deps += [
       ":partition_alloc",
       ":test_support",
       "//testing/gmock",

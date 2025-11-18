@@ -3337,6 +3337,37 @@ if (is_win) {
   }
 }
 
+if (is_android) {
+  # On Android, Death Tests must be ran on raw executables, but the default base_unittests target will run from an APK.
+  # So any test that contains at least one case that uses the Death Test mechanism must be moved here to be ran properly on Android.
+  test("base_unittests_android_death_tests") {
+    use_raw_android_executable = true
+
+    deps = [
+      ":base",
+
+      # TODO(crbug.com/40158212): Move partition_alloc tests into its repository.
+      "allocator/partition_allocator/src/partition_alloc:test_support",
+      "//base/test:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//testing/gtest:gtest_main",
+    ]
+
+    # TODO(crbug.com/40158212): Move partition_alloc tests into its repository.
+    #
+    # Note: This requires checking `build_with_chromium` because partition_alloc
+    # do not provide ":unittests" when built outside of chromium.
+    # "//base" is a dependency of WebRTC where `build_with_chromium` is false.
+    # TODO(42223878): Remove standalone WebRTC dependency on //base.
+    if (build_with_chromium) {
+      deps += [
+        "allocator/partition_allocator/src/partition_alloc:death_unittests",
+      ]
+    }
+  }
+}
+
 test("base_unittests") {
   sources = [
     "allocator/dispatcher/dispatcher_unittest.cc",
