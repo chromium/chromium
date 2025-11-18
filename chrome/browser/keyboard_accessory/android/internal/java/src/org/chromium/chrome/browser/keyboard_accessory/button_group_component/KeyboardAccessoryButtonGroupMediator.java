@@ -88,11 +88,6 @@ class KeyboardAccessoryButtonGroupMediator
     }
 
     @Override
-    public void addTab(KeyboardAccessoryData.Tab tab) {
-        mModel.get(TABS).add(tab);
-    }
-
-    @Override
     public void removeTab(KeyboardAccessoryData.Tab tab) {
         mModel.get(TABS).remove(tab);
     }

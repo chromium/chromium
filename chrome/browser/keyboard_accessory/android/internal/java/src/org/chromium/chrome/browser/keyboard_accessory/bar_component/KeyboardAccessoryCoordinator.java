@@ -88,14 +88,6 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
      */
     public interface TabSwitchingDelegate {
         /**
-         * A {@link KeyboardAccessoryData.Tab} passed into this function will be represented as item
-         * at the start of the tab layout. It is meant to trigger various bottom sheets.
-         *
-         * @param tab The tab which contains representation data of a bottom sheet.
-         */
-        void addTab(KeyboardAccessoryData.Tab tab);
-
-        /**
          * The {@link KeyboardAccessoryData.Tab} passed into this function will be completely
          * removed from the tab layout.
          *
