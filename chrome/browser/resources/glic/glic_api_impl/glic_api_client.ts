@@ -342,11 +342,14 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
           convertAnnotatedPageDataFromPrivate(p.annotatedPageData);
       const pdf = p.pdf && convertPdfDocumentDataFromPrivate(p.pdf);
       const data = p.data && new Blob([p.data.data], {type: p.data.mimeType});
+      const tabContext =
+          p.tabContext && convertTabContextResultFromPrivate(p.tabContext);
       return {
         ...p,
         data,
         annotatedPageData,
         pdf,
+        tabContext,
       };
     });
     this.host.additionalContextSubject.next({

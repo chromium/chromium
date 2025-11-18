@@ -2950,6 +2950,17 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testAdditionalContext) {
     parts.push_back(
         mojom::AdditionalContextPart::NewPdfDocumentData(std::move(pdf_data)));
   }
+
+  {
+    auto tab_data = mojom::TabData::New();
+    tab_data->tab_id = 1;
+    tab_data->window_id = 2;
+    tab_data->url = GURL("https://google.com");
+    auto tab_context = mojom::TabContext::New();
+    tab_context->tab_data = std::move(tab_data);
+    parts.push_back(
+        mojom::AdditionalContextPart::NewTabContext(std::move(tab_context)));
+  }
   context->parts = std::move(parts);
 
   GetService()->SendAdditionalContext(tabs::TabHandle(GetTabId(web_contents)),
