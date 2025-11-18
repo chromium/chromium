@@ -638,7 +638,8 @@ export class ComposeboxElement extends I18nMixinLit
   }
 
   protected onCancelClick_() {
-    if (this.input_.trim().length > 0 || this.contextFilesSize_ > 0) {
+    if (this.hasContent_()) {
+      this.resetModes();
       this.clearAllInputs();
       this.focusInput();
       this.queryAutocomplete(/* clearMatches= */ true);
@@ -648,15 +649,19 @@ export class ComposeboxElement extends I18nMixinLit
   }
 
   handleEscapeKeyLogic(): void {
-    const hasContent =
-        this.input_.trim().length > 0 || this.contextFilesSize_ > 0;
-    if (!this.composeboxCloseByEscape_ && hasContent) {
+    if (!this.composeboxCloseByEscape_ && this.hasContent_()) {
+      this.resetModes();
       this.clearAllInputs();
       this.focusInput();
       this.queryAutocomplete(/* clearMatches= */ true);
     } else {
       this.closeComposebox_();
     }
+  }
+
+  private hasContent_(): boolean {
+    return this.inDeepSearchMode_ || this.inCreateImageMode_ ||
+        this.input_.trim().length > 0 || this.contextFilesSize_ > 0;
   }
 
   protected onLensClick_() {
