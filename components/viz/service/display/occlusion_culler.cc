@@ -15,10 +15,12 @@
 #include "cc/base/math_util.h"
 #include "cc/base/region.h"
 #include "components/viz/common/display/renderer_settings.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/quads/shared_quad_state.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
+#include "components/viz/common/viz_utils.h"
 #include "components/viz/service/display/display_resource_provider.h"
 #include "components/viz/service/display/overlay_processor_interface.h"
 #include "ui/gfx/geometry/rect.h"
@@ -280,6 +282,9 @@ void OcclusionCuller::UpdateDeviceScaleFactor(float device_scale_factor) {
 
 void OcclusionCuller::RemoveOverdrawQuads(AggregatedFrame* frame) {
   base::flat_map<AggregatedRenderPassId, gfx::Rect> backdrop_filter_rects;
+  base::flat_map<AggregatedRenderPassId, raw_ptr<cc::FilterOperations>>
+      foreground_filters;
+
   for (const auto& pass : frame->render_pass_list) {
     if (!pass->backdrop_filters.IsEmpty() &&
         pass->backdrop_filters.HasFilterThatMovesPixels()) {
@@ -288,6 +293,10 @@ void OcclusionCuller::RemoveOverdrawQuads(AggregatedFrame* frame) {
       // filters, we can safely use the output rect.
       backdrop_filter_rects[pass->id] = cc::MathUtil::MapEnclosingClippedRect(
           pass->transform_to_root_target, pass->output_rect);
+    }
+
+    if (!pass->filters.IsEmpty() && pass->filters.HasFilterThatMovesPixels()) {
+      foreground_filters[pass->id] = &pass->filters;
     }
   }
 
@@ -428,19 +437,31 @@ void OcclusionCuller::RemoveOverdrawQuads(AggregatedFrame* frame) {
         }
       }
 
-      // TODO(zoraiznaeem): Enable occlusion culling on render pass draw quads.
-      if (rpdq || !current_sqs_intersects_occlusion) {
+      if ((!features::IsRenderPassDrawQuadCullingOptimizationEnabled() &&
+           rpdq) ||
+          !current_sqs_intersects_occlusion) {
         ++quad;
         continue;
       }
 
-      if (occlusion_in_quad_content_space.Contains(quad->visible_rect)) {
+      gfx::Rect visible_rect = quad->visible_rect;
+      if (rpdq) {
+        // Render pass draw quads can have pixel-moving filters that expand
+        // their visible bounds.
+        auto filter_it = foreground_filters.find(rpdq->render_pass_id);
+        if (filter_it != foreground_filters.end()) {
+          visible_rect =
+              GetExpandedRectForPixelMovingFilters(*rpdq, *filter_it->second);
+        }
+      }
+
+      if (occlusion_in_quad_content_space.Contains(visible_rect)) {
         // Case 1: for simple transforms (scale or translation), define the
         // occlusion region in the quad content space. If |quad| is not
         // shown on the screen, then set its rect and visible_rect to be empty.
         quad->visible_rect.set_size(gfx::Size());
-      } else if (occlusion_in_quad_content_space.Intersects(
-                     quad->visible_rect)) {
+      } else if (!rpdq &&
+                 occlusion_in_quad_content_space.Intersects(visible_rect)) {
         // Case 2: for simple transforms, if the quad is partially shown on
         // screen and the region formed by (occlusion region - visible_rect) is
         // a rect, then update visible_rect to the resulting rect.
@@ -462,8 +483,8 @@ void OcclusionCuller::RemoveOverdrawQuads(AggregatedFrame* frame) {
           auto new_quad = pass->quad_list.InsertCopyBeforeDrawQuad(
               quad, reduced_visible_region.size() - 1);
 
-          for (const auto& visible_rect : reduced_visible_region) {
-            new_quad->visible_rect = visible_rect;
+          for (const auto& rect : reduced_visible_region) {
+            new_quad->visible_rect = rect;
             ++new_quad;
           }
 
@@ -472,8 +493,8 @@ void OcclusionCuller::RemoveOverdrawQuads(AggregatedFrame* frame) {
         }
       } else if (occlusion_in_quad_content_space.IsEmpty() &&
                  occlusion_in_target_space.Contains(
-                     cc::MathUtil::MapEnclosingClippedRect(
-                         transform, quad->visible_rect))) {
+                     cc::MathUtil::MapEnclosingClippedRect(transform,
+                                                           visible_rect))) {
         // Case 3: for non simple transforms, define the occlusion region in
         // target space. If |quad| is not shown on the screen, then set its
         // rect and visible_rect to be empty.

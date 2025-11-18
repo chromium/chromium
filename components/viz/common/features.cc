@@ -102,6 +102,9 @@ const char kDrawQuadSplit[] = "num_of_splits";
 // can be split into during occlusion culling.
 BASE_FEATURE(kDrawQuadSplitLimit, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableRenderPassDrawQuadCullingOptimization,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 constexpr base::FeatureParam<DelegatedCompositingMode>::Option
     kDelegatedCompositingModeOption[] = {
         {DelegatedCompositingMode::kFull, "full"},
@@ -397,6 +400,12 @@ int DrawQuadSplitLimit() {
       kDrawQuadSplitLimit, kDrawQuadSplit, kDefaultDrawQuadSplitLimit);
   return std::clamp(split_limit, kMinDrawQuadSplitLimit,
                     kMaxDrawQuadSplitLimit);
+}
+
+bool IsRenderPassDrawQuadCullingOptimizationEnabled() {
+  static bool is_enabled = base::FeatureList::IsEnabled(
+      kEnableRenderPassDrawQuadCullingOptimization);
+  return is_enabled;
 }
 
 bool IsBackForwardTransitionsSameDocSharedImageEnabled() {
