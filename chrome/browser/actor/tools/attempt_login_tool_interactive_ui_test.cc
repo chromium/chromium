@@ -335,7 +335,7 @@ IN_PROC_BROWSER_TEST_P(AttemptLoginToolInteractiveUiTest, MAYBE_SmokeTest) {
 }
 
 // TODO(https://crbug.com/456675144): Flaky on asan and Wayland.
-#if defined(ADDRESS_SANITIZER) || defined(OZONE_PLATFORM_WAYLAND)
+#if defined(ADDRESS_SANITIZER) || defined(IS_LINUX)
 #define MAYBE_HandleReauth DISABLED_HandleReauth
 #else
 #define MAYBE_HandleReauth HandleReauth
