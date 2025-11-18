@@ -72,6 +72,15 @@ void ShowControlledHomeDialog(
     gfx::NativeWindow parent,
     std::unique_ptr<ControlledHomeDialogControllerInterface> controller);
 
+// Shows a dialog that prompts the user for whether to open a DownloadItem using
+// native UI. This step is necessary to prevent a malicious extension from
+// opening any downloaded file.
+void ShowDownloadOpenConfirmationDialog(
+    content::WebContents* web_contents,
+    const std::string& extension_name,
+    const base::FilePath& file_path,
+    base::OnceCallback<void(bool)> open_callback);
+
 // Shows a modal dialog to Enhanced Safe Browsing users before the extension
 // install dialog if the extension is not included in the Safe Browsing CRX
 // allowlist. `callback` will be invoked with `true` if the user accepts or

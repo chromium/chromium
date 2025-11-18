@@ -17366,14 +17366,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
     </if>
 
     <!-- Download open confirmation dialog -->
-    <if expr="not is_android">
-      <message name="IDS_DOWNLOAD_OPEN_CONFIRMATION_DIALOG_TITLE" desc="Title of the dialog prompt shown to users when an extension is trying to open a downloaded file.">
-        Open download
-      </message>
-      <message name="IDS_DOWNLOAD_OPEN_CONFIRMATION_DIALOG_MESSAGE" desc="Text of the message of the download open confirmation dialog.">
-        Allow <ph name="EXTENSION_NAME">$1<ex>Download Viewer</ex></ph> to open <ph name="FILE_NAME">$2<ex>abc.jpg</ex></ph>?
-      </message>
-    </if>
+    <message name="IDS_DOWNLOAD_OPEN_CONFIRMATION_DIALOG_TITLE" desc="Title of the dialog prompt shown to users when an extension is trying to open a downloaded file.">
+      Open download
+    </message>
+    <message name="IDS_DOWNLOAD_OPEN_CONFIRMATION_DIALOG_MESSAGE" desc="Text of the message of the download open confirmation dialog.">
+      Allow <ph name="EXTENSION_NAME">$1<ex>Download Viewer</ex></ph> to open <ph name="FILE_NAME">$2<ex>abc.jpg</ex></ph>?
+    </message>
 
     <message name="IDS_CONFIRM_FILE_UPLOAD_TITLE" desc="Title of dialog for confirming that many files are about to be uploaded / given to the site. [ICU Syntax]">
       {0, plural,

@@ -3797,8 +3797,6 @@ static_library("browser") {
       "download/download_dir_policy_handler.h",
       "download/download_dir_util.cc",
       "download/download_dir_util.h",
-      "download/download_open_dialog.cc",
-      "download/download_open_dialog.h",
       "download/download_ui_enterprise_util.cc",
       "download/download_ui_enterprise_util.h",
       "download/download_warning_desktop_hats_utils.cc",

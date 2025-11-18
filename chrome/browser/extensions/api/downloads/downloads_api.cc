@@ -51,6 +51,7 @@
 #include "chrome/browser/icon_manager.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/common/extensions/api/downloads.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
@@ -87,7 +88,6 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/download/download_danger_prompt.h"
-#include "chrome/browser/download/download_open_dialog.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #endif
@@ -1546,7 +1546,7 @@ ExtensionFunction::ResponseAction DownloadsOpenFunction::Run() {
   // TODO(qinmin): check if user prefers to open all download using the same
   // extension, or check the recent user gesture on the originating webcontents
   // to avoid showing the prompt.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+
   // For testing, callers can use AcceptDialogForTesting() to pre-determine
   // the dialog's result. This bypasses showing the dialog.
   if (g_accept_open_dialog_for_testing) {
@@ -1554,16 +1554,13 @@ ExtensionFunction::ResponseAction DownloadsOpenFunction::Run() {
     OpenPromptDone(params->download_id, /*accept=*/true);
     return RespondLater();
   }
-  ShowDownloadOpenConfirmationDialog(
+
+  extensions::ShowDownloadOpenConfirmationDialog(
       active_contents, extension()->name(), download_item->GetFullPath(),
       base::BindOnce(&DownloadsOpenFunction::OpenPromptDone, this,
                      params->download_id));
   RecordApiFunctions(DownloadsFunctionName::kDownloadsFunctionOpen);
   return RespondLater();
-#else
-  NOTIMPLEMENTED();
-  return RespondNow(Error("DownloadOpenPrompt not implemented"));
-#endif
 }
 
 // static

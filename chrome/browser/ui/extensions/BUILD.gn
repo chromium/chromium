@@ -109,6 +109,7 @@ source_set("impl") {
     sources += [
       "controlled_home_dialog.cc",
       "controlled_home_dialog_controller.cc",
+      "download_open_dialog.cc",
       "extension_action_view_model.cc",
       "extension_install_blocked_dialog.cc",
       "extension_install_friction_dialog.cc",
