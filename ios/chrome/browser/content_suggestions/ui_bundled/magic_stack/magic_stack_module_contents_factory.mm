@@ -24,7 +24,7 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/safety_check_consumer_source.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/safety_check_state.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/safety_check_view.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/send_tab_to_self/send_tab_promo_item.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/send_tab_to_self/ui/send_tab_promo_item.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/set_up_list_config.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/set_up_list_consumer_source.h"
