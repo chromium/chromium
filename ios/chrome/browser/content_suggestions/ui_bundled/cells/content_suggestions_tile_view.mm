@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_tile_view.h"
 
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_tile_layout_util.h"
 #import "ios/chrome/browser/shared/ui/util/dynamic_type_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"

@@ -27,9 +27,6 @@
 
 @property(nonatomic, strong) URLDragDropHandler* dragDropHandler;
 
-// StackView holding all subviews.
-@property(nonatomic, strong) UIStackView* verticalStackView;
-
 // List of all UITapGestureRecognizers created for the Most Visisted tiles.
 @property(nonatomic, strong)
     NSMutableArray<UITapGestureRecognizer*>* mostVisitedTapRecognizers;
@@ -57,30 +54,6 @@
                                 initWithDelegate:self.dragDropHandler]];
   self.view.backgroundColor = [UIColor clearColor];
   self.view.accessibilityIdentifier = kContentSuggestionsCollectionIdentifier;
-
-  self.verticalStackView = [[UIStackView alloc] init];
-  self.verticalStackView.translatesAutoresizingMaskIntoConstraints = NO;
-  self.verticalStackView.axis = UILayoutConstraintAxisVertical;
-  // A centered alignment will ensure the views are centered.
-  self.verticalStackView.alignment = UIStackViewAlignmentCenter;
-  // A fill distribution allows for the custom spacing between elements and
-  // height/width configurations for each row.
-  self.verticalStackView.distribution = UIStackViewDistributionFill;
-  [self.view addSubview:self.verticalStackView];
-
-  [NSLayoutConstraint activateConstraints:@[
-    [self.verticalStackView.leadingAnchor
-        constraintEqualToAnchor:self.view.leadingAnchor],
-    [self.verticalStackView.trailingAnchor
-        constraintEqualToAnchor:self.view.trailingAnchor],
-    [self.verticalStackView.topAnchor
-        constraintEqualToAnchor:self.view.topAnchor
-                       constant:content_suggestions::HeaderBottomPadding(
-                                    self.traitCollection)],
-    [self.verticalStackView.bottomAnchor
-        constraintEqualToAnchor:self.view.bottomAnchor]
-  ]];
-
   if (_mostVisitedTileConfig.mostVisitedItems.count > 0) {
     [self createAndInsertMostVisitedModule];
   }
@@ -122,9 +95,8 @@
       [[MagicStackModuleContainer alloc] initWithFrame:CGRectZero];
   [self.mostVisitedModuleContainer configureWithConfig:_mostVisitedTileConfig];
   // If viewDidLoad has been called before the first valid Most Visited Tiles
-  // are available, construct `mostVisitedStackView`.
-  if (self.verticalStackView &&
-      _mostVisitedTileConfig.mostVisitedItems.count > 0) {
+  // are available, construct the most visited tiles.
+  if (_mostVisitedTileConfig.mostVisitedItems.count > 0) {
     [self createAndInsertMostVisitedModule];
   }
 
@@ -140,21 +112,21 @@
 
 #pragma mark - Private
 
-- (void)addUIElement:(UIView*)view withCustomBottomSpacing:(CGFloat)spacing {
-  [self.verticalStackView addArrangedSubview:view];
-  if (spacing > 0) {
-    [self.verticalStackView setCustomSpacing:spacing afterView:view];
-  }
-}
-
 - (void)createAndInsertMostVisitedModule {
-  [self.verticalStackView insertArrangedSubview:self.mostVisitedModuleContainer
-                                        atIndex:0];
+  [self.view addSubview:self.mostVisitedModuleContainer];
+  self.mostVisitedModuleContainer.translatesAutoresizingMaskIntoConstraints =
+      NO;
   [NSLayoutConstraint activateConstraints:@[
-    [self.mostVisitedModuleContainer.widthAnchor
-        constraintEqualToAnchor:self.view.widthAnchor],
-    [self.mostVisitedModuleContainer.centerXAnchor
-        constraintEqualToAnchor:self.view.centerXAnchor],
+    [self.mostVisitedModuleContainer.leadingAnchor
+        constraintEqualToAnchor:self.view.leadingAnchor],
+    [self.mostVisitedModuleContainer.trailingAnchor
+        constraintEqualToAnchor:self.view.trailingAnchor],
+    [self.mostVisitedModuleContainer.topAnchor
+        constraintEqualToAnchor:self.view.topAnchor
+                       constant:content_suggestions::HeaderBottomPadding(
+                                    self.traitCollection)],
+    [self.mostVisitedModuleContainer.bottomAnchor
+        constraintEqualToAnchor:self.view.bottomAnchor]
   ]];
   [self.view layoutIfNeeded];
 }

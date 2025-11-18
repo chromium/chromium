@@ -11,7 +11,6 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/numerics/safe_conversions.h"
 #import "components/segmentation_platform/public/features.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_tile_layout_util.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/edit_button_config.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_collection_view_audience.h"

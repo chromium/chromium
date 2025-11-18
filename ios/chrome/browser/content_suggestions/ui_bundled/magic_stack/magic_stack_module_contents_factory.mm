@@ -8,7 +8,7 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/app_bundle_promo/ui/app_bundle_promo_config.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/app_bundle_promo/ui/app_bundle_promo_view.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_shortcut_tile_view.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_tile_layout_util.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_tile_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/most_visited_tiles_stack_view.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/multi_row_container_view.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/shortcuts_commands.h"
@@ -45,6 +45,21 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tips/ui/tips_module_state.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tips/ui/tips_module_view.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+
+namespace {
+
+// Returns the vertical spacing between columns of tiles under
+// `trait_collection`.
+CGFloat ContentSuggestionsTilesHorizontalSpacing(
+    UITraitCollection* trait_collection) {
+  return (trait_collection.horizontalSizeClass !=
+              UIUserInterfaceSizeClassCompact &&
+          trait_collection.verticalSizeClass != UIUserInterfaceSizeClassCompact)
+             ? kContentSuggestionsTilesHorizontalSpacingRegular
+             : kContentSuggestionsTilesHorizontalSpacingCompact;
+}
+
+}  // namespace
 
 @implementation MagicStackModuleContentsFactory
 

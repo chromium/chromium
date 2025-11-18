@@ -12,6 +12,13 @@
 // index value of the Shortcuts content.
 const int kShortcutMinimumIndex = 4;
 
+// Vertical spacing between rows of tiles.
+extern const int kContentSuggestionsTilesVerticalSpacing;
+
+// Vertical spacing between columns of tiles.
+extern const int kContentSuggestionsTilesHorizontalSpacingRegular;
+extern const int kContentSuggestionsTilesHorizontalSpacingCompact;
+
 // Enum listing the collection shortcuts on NTP and similar surfaces.
 typedef NS_ENUM(NSInteger, NTPCollectionShortcutType) {
   NTPCollectionShortcutTypeBookmark = kShortcutMinimumIndex,
