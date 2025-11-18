@@ -144,6 +144,8 @@ source_set("win") {
     "core_resource.h",
     "default_audio_device_change_detector.cc",
     "default_audio_device_change_detector.h",
+    "desktop_event_handler.cc",
+    "desktop_event_handler.h",
     "etw_trace_consumer.h",
     "evaluate_3d_display_mode.cc",
     "evaluate_3d_display_mode.h",
@@ -228,6 +230,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "desktop_event_handler_unittest.cc",
     "event_trace_data.cc",
     "event_trace_data.h",
     "event_trace_data_unittest.cc",

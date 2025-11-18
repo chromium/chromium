@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
@@ -66,12 +67,15 @@ struct AutoThread::StartupData {
 };
 
 // static
-scoped_refptr<AutoThreadTaskRunner> AutoThread::CreateWithType(
+scoped_refptr<AutoThreadTaskRunner> AutoThread::CreateWithPreInitCallback(
     const char* name,
-    scoped_refptr<AutoThreadTaskRunner> joiner,
-    base::MessagePumpType type) {
+    scoped_refptr<base::SequencedTaskRunner> joiner,
+    base::MessagePumpType pump_type,
+    base::OnceClosure pre_init_callback) {
   AutoThread* thread = new AutoThread(name, joiner.get());
-  scoped_refptr<AutoThreadTaskRunner> task_runner = thread->StartWithType(type);
+  thread->pre_init_callback_ = std::move(pre_init_callback);
+  scoped_refptr<AutoThreadTaskRunner> task_runner =
+      thread->StartWithType(pump_type);
   if (!task_runner.get()) {
     delete thread;
   }
@@ -79,9 +83,17 @@ scoped_refptr<AutoThreadTaskRunner> AutoThread::CreateWithType(
 }
 
 // static
+scoped_refptr<AutoThreadTaskRunner> AutoThread::CreateWithType(
+    const char* name,
+    scoped_refptr<base::SequencedTaskRunner> joiner,
+    base::MessagePumpType type) {
+  return CreateWithPreInitCallback(name, joiner, type, base::NullCallback());
+}
+
+// static
 scoped_refptr<AutoThreadTaskRunner> AutoThread::Create(
     const char* name,
-    scoped_refptr<AutoThreadTaskRunner> joiner) {
+    scoped_refptr<base::SequencedTaskRunner> joiner) {
   return CreateWithType(name, joiner, base::MessagePumpType::DEFAULT);
 }
 
@@ -89,7 +101,7 @@ scoped_refptr<AutoThreadTaskRunner> AutoThread::Create(
 // static
 scoped_refptr<AutoThreadTaskRunner> AutoThread::CreateWithLoopAndComInitTypes(
     const char* name,
-    scoped_refptr<AutoThreadTaskRunner> joiner,
+    scoped_refptr<base::SequencedTaskRunner> joiner,
     base::MessagePumpType pump_type,
     ComInitType com_init_type) {
   AutoThread* thread = new AutoThread(name, joiner.get());
@@ -114,7 +126,8 @@ AutoThread::AutoThread(const char* name)
   thread_checker_.DetachFromThread();
 }
 
-AutoThread::AutoThread(const char* name, AutoThreadTaskRunner* joiner)
+AutoThread::AutoThread(const char* name,
+                       scoped_refptr<base::SequencedTaskRunner> joiner)
     : startup_data_(nullptr),
 #if BUILDFLAG(IS_WIN)
       com_init_type_(COM_INIT_NONE),
@@ -194,6 +207,10 @@ void AutoThread::JoinAndDeleteThread() {
 }
 
 void AutoThread::ThreadMain() {
+  if (!pre_init_callback_.is_null()) {
+    std::move(pre_init_callback_).Run();
+  }
+
   // Bind |thread_checker_| to the current thread.
   DCHECK(thread_checker_.CalledOnValidThread());
 
