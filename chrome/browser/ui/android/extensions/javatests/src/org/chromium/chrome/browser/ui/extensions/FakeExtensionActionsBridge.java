@@ -103,9 +103,6 @@ public class FakeExtensionActionsBridge {
         /** The bridge for this profile. */
         private final ExtensionActionsBridge mBridge;
 
-        /** Whether extensions are enabled for this profile. */
-        private boolean mEnabled = true;
-
         /** Whether the model has been initialized. */
         private boolean mInitialized;
 
@@ -140,21 +137,6 @@ public class FakeExtensionActionsBridge {
             if (mInitialized) {
                 getBridge().onActionModelInitialized();
             }
-        }
-
-        /** Returns whether extensions are enabled for this profile. */
-        public boolean isEnabled() {
-            return mEnabled;
-        }
-
-        /**
-         * Sets whether extensions are enabled for this profile. Default is true.
-         *
-         * <p>Beware that production may assume that this value never changes for the lifetime of a
-         * profile.
-         */
-        public void setEnabled(boolean enabled) {
-            mEnabled = enabled;
         }
 
         /** Returns the {@link KeyEventHandler} for this profile. */
@@ -315,6 +297,11 @@ public class FakeExtensionActionsBridge {
         private FakeExtensionActionsBridgeJni() {}
 
         @Override
+        public boolean extensionsEnabled(Profile profile) {
+            return true;
+        }
+
+        @Override
         public ExtensionActionsBridge get(Profile profile) {
             return getProfileModelOrThrow(computeProfileId(profile)).getBridge();
         }
@@ -366,11 +353,6 @@ public class FakeExtensionActionsBridge {
                     .getAction(actionId, tabId)
                     .getActionRunner()
                     .runAction();
-        }
-
-        @Override
-        public boolean extensionsEnabled(long nativeExtensionActionsBridge) {
-            return getProfileModelOrThrow(nativeExtensionActionsBridge).isEnabled();
         }
 
         @Override

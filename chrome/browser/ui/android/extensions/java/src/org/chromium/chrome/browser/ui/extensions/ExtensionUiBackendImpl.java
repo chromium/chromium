@@ -16,6 +16,6 @@ public class ExtensionUiBackendImpl implements ExtensionUiBackend {
 
     @Override
     public boolean isEnabled(Profile profile) {
-        return ExtensionActionsBridge.get(profile).extensionsEnabled();
+        return ExtensionActionsBridge.extensionsEnabled(profile);
     }
 }

@@ -53,7 +53,6 @@ class ExtensionActionsBridge : public ToolbarActionsModel::Observer,
       const ToolbarActionsModel::ActionId& action_id,
       int tab_id,
       content::WebContents* web_contents);
-  bool ExtensionsEnabled(JNIEnv* env);
   jni_zero::ScopedJavaLocalRef<jobject> HandleKeyDownEvent(
       JNIEnv* env,
       const ui::KeyEventAndroid& key_event);

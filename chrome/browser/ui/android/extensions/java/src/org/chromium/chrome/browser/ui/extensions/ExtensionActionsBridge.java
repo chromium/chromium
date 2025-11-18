@@ -151,8 +151,8 @@ public class ExtensionActionsBridge {
      * temporary for until extensions are ready for dogfooding. TODO(crbug.com/422307625): Remove
      * this check once extensions are ready for dogfooding.
      */
-    public boolean extensionsEnabled() {
-        return ExtensionActionsBridgeJni.get().extensionsEnabled(mNativeExtensionActionsBridge);
+    public static boolean extensionsEnabled(Profile profile) {
+        return ExtensionActionsBridgeJni.get().extensionsEnabled(profile);
     }
 
     /** Handles the key down event and returns the result. */
@@ -242,6 +242,8 @@ public class ExtensionActionsBridge {
 
     @NativeMethods
     public interface Natives {
+        boolean extensionsEnabled(@JniType("Profile*") Profile profile);
+
         ExtensionActionsBridge get(@JniType("Profile*") Profile profile);
 
         boolean areActionsInitialized(long nativeExtensionActionsBridge);
@@ -269,8 +271,6 @@ public class ExtensionActionsBridge {
                 @JniType("std::string") String actionId,
                 int tabId,
                 @JniType("content::WebContents*") WebContents webContents);
-
-        boolean extensionsEnabled(long nativeExtensionActionsBridge);
 
         HandleKeyEventResult handleKeyDownEvent(
                 long nativeExtensionActionsBridge,

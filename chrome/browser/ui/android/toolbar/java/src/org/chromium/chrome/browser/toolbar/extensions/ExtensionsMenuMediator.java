@@ -45,8 +45,6 @@ class ExtensionsMenuMediator implements Destroyable {
     private final Callback<Profile> mProfileUpdatedCallback = this::onProfileUpdated;
     private final View mRootView;
 
-    @Nullable private Profile mProfile;
-
     public ExtensionsMenuMediator(
             Context context,
             OneshotSupplier<ChromeAndroidTask> taskSupplier,
@@ -103,20 +101,9 @@ class ExtensionsMenuMediator implements Destroyable {
     }
 
     private void onProfileUpdated(@Nullable Profile profile) {
-        if (profile == mProfile) {
-            return;
-        }
-
-        mProfile = profile;
-
         // TODO(crbug.com/422307625): Remove this check once extensions are ready for dogfooding.
-        boolean extensionsSupported = false;
-        if (mProfile != null) {
-            ExtensionActionsBridge extensionActionsBridge = ExtensionActionsBridge.get(mProfile);
-            if (extensionActionsBridge != null && extensionActionsBridge.extensionsEnabled()) {
-                extensionsSupported = true;
-            }
-        }
+        boolean extensionsSupported =
+                profile != null ? ExtensionActionsBridge.extensionsEnabled(profile) : false;
         mOnExtensionsAvailableCallback.onResult(extensionsSupported);
     }
 
@@ -152,7 +139,6 @@ class ExtensionsMenuMediator implements Destroyable {
     public void destroy() {
         mExtensionActionsUpdateHelper.destroy();
         mProfileSupplier.removeObserver(mProfileUpdatedCallback);
-        mProfile = null;
     }
 
     private class ActionsUpdateDelegate

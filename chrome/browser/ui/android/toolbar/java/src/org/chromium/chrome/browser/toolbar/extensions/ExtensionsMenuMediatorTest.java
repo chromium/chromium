@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridge;
 import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridge.ActionData;
 import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridge.ProfileModel;
 import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridgeRule;
+import org.chromium.chrome.browser.ui.extensions.FakeExtensionUiBackendRule;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController;
 import org.chromium.ui.listmenu.ListMenuButton;
@@ -94,6 +95,8 @@ public class ExtensionsMenuMediatorTest {
 
     @Rule
     public final FakeExtensionActionsBridgeRule mBridgeRule = new FakeExtensionActionsBridgeRule();
+
+    @Rule public final FakeExtensionUiBackendRule mUiBackendRule = new FakeExtensionUiBackendRule();
 
     private final FakeExtensionActionsBridge mActionsBridge = mBridgeRule.getFakeBridge();
 
@@ -168,14 +171,10 @@ public class ExtensionsMenuMediatorTest {
         shadowOf(Looper.getMainLooper()).idle();
         verify(mOnExtensionsSupportedCallback).onResult(false);
 
-        mActionsBridge.clear();
-        Profile otherProfile = mock(Profile.class);
-        ProfileModel otherProfileModel = mActionsBridge.getOrCreateProfileModel(otherProfile);
-        otherProfileModel.setInitialized(true);
-        otherProfileModel.setEnabled(false);
-        mProfileSupplier.set(otherProfile);
+        mUiBackendRule.setEnabled(false);
+        mProfileSupplier.set(mProfile);
         shadowOf(Looper.getMainLooper()).idle();
-        verify(mOnExtensionsSupportedCallback).onResult(true);
+        verify(mOnExtensionsSupportedCallback).onResult(false);
     }
 
     @Test

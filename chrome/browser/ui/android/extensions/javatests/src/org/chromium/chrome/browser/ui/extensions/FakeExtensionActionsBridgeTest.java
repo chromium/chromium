@@ -72,17 +72,6 @@ public class FakeExtensionActionsBridgeTest {
     }
 
     @Test
-    public void testEnabled() {
-        assertTrue(mProfileModel.isEnabled());
-        assertTrue(mBridge.extensionsEnabled());
-
-        mProfileModel.setEnabled(false);
-
-        assertFalse(mProfileModel.isEnabled());
-        assertFalse(mBridge.extensionsEnabled());
-    }
-
-    @Test
     public void testKeyEventHandler() {
         KeyEvent eventA = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_A);
         KeyEvent eventB = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_B);
