@@ -174,11 +174,6 @@ void ConnectorsManager::MaybeCloseLocalContentAnalysisAgentConnection() {
 }
 #endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
-void ConnectorsManager::SetTelemetryObserverCallback(
-    base::RepeatingCallback<void()> callback) {
-  telemetry_observer_callback_ = callback;
-}
-
 void ConnectorsManager::OnPrefChanged(AnalysisConnector connector) {
   CacheAnalysisConnectorPolicy(connector);
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
@@ -231,11 +226,6 @@ void ConnectorsManager::StartObservingPref(AnalysisConnector connector) {
                       &ConnectorsManager::OnPrefChanged),
                   base::Unretained(this), connector));
   }
-}
-
-const base::RepeatingCallback<void()>
-ConnectorsManager::GetTelemetryObserverCallbackForTesting() const {
-  return telemetry_observer_callback_;
 }
 
 }  // namespace enterprise_connectors

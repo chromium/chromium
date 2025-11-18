@@ -67,12 +67,6 @@ class ConnectorsManager : public ConnectorsManagerBase {
   bool IsConnectorEnabledForLocalAgent(AnalysisConnector connector) const;
 #endif
 
-  void SetTelemetryObserverCallback(base::RepeatingCallback<void()> callback);
-
-  // Public testing functions.
-  const base::RepeatingCallback<void()> GetTelemetryObserverCallbackForTesting()
-      const;
-
  private:
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
   // BrowserListObserver overrides:

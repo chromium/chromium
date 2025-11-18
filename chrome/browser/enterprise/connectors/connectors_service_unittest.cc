@@ -252,17 +252,18 @@ TEST_P(ConnectorsServiceReportingFeatureTest,
 TEST_P(ConnectorsServiceReportingFeatureTest, CheckTelemetryPolicyObserver) {
   ConnectorsService* connectors_service =
       ConnectorsServiceFactory::GetForBrowserContext(profile_);
-  ConnectorsManager* connectors_manager =
-      connectors_service->ConnectorsManagerForTesting();
+  ConnectorsManagerBase* connectors_manager_base =
+      connectors_service->ConnectorsManagerBaseForTesting();
 
   base::test::TestFuture<void> future;
   connectors_service->ObserveTelemetryReporting(future.GetRepeatingCallback());
 
-  ASSERT_FALSE(
-      connectors_manager->GetTelemetryObserverCallbackForTesting().is_null());
+  ASSERT_FALSE(connectors_manager_base->GetTelemetryObserverCallbackForTesting()
+                   .is_null());
   // Cache initially empty
   ASSERT_TRUE(
-      connectors_manager->GetReportingConnectorsSettingsForTesting().empty());
+      connectors_manager_base->GetReportingConnectorsSettingsForTesting()
+          .empty());
 
   // Enable browser crash event
   test::SetOnSecurityEventReporting(pref_service(), true, {kBrowserCrashEvent},
@@ -272,7 +273,8 @@ TEST_P(ConnectorsServiceReportingFeatureTest, CheckTelemetryPolicyObserver) {
   // Clear enabled events (not cached when cleared)
   test::SetOnSecurityEventReporting(pref_service(), false, {}, {});
   ASSERT_TRUE(
-      connectors_manager->GetReportingConnectorsSettingsForTesting().empty());
+      connectors_manager_base->GetReportingConnectorsSettingsForTesting()
+          .empty());
   EXPECT_TRUE(future.WaitAndClear());
 
   // Enable telemetry event

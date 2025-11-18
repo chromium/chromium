@@ -245,6 +245,11 @@ void ConnectorsManagerBase::StartObservingPref() {
   }
 }
 
+void ConnectorsManagerBase::SetTelemetryObserverCallback(
+    base::RepeatingCallback<void()> callback) {
+  telemetry_observer_callback_ = callback;
+}
+
 const std::vector<ReportingServiceSettings>&
 ConnectorsManagerBase::GetReportingConnectorsSettingsForTesting() const {
   return reporting_connector_settings_;
@@ -253,6 +258,11 @@ ConnectorsManagerBase::GetReportingConnectorsSettingsForTesting() const {
 const ConnectorsManagerBase::AnalysisConnectorsSettings&
 ConnectorsManagerBase::GetAnalysisConnectorsSettingsForTesting() const {
   return analysis_connector_settings_;
+}
+
+const base::RepeatingCallback<void()>
+ConnectorsManagerBase::GetTelemetryObserverCallbackForTesting() const {
+  return telemetry_observer_callback_;
 }
 
 }  // namespace enterprise_connectors

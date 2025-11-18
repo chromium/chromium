@@ -21,11 +21,12 @@
 
 namespace enterprise_connectors {
 
-ConnectorsService::ConnectorsService(ProfileIOS* profile) : profile_(profile) {
+ConnectorsService::ConnectorsService(ProfileIOS* profile)
+    : ConnectorsServiceBase(
+          std::make_unique<ConnectorsManager>(profile->GetPrefs(),
+                                              GetServiceProviderConfig())),
+      profile_(profile) {
   CHECK(profile_);
-
-  connectors_manager_ = std::make_unique<ConnectorsManager>(
-      profile_->GetPrefs(), GetServiceProviderConfig());
 }
 
 ConnectorsService::~ConnectorsService() = default;
@@ -43,16 +44,16 @@ std::string ConnectorsService::GetManagementDomain() {
     policy_scope = dm_token.value().scope;
   }
 
-    // Machine scope has precedence, only update the scope if the previous
-    // policy is not already machine-scoped.
-    if (policy_scope != policy::PolicyScope::POLICY_SCOPE_MACHINE) {
-      if (std::optional<DmToken> dm_token =
-              GetDmToken(kOnSecurityEventScopePref)) {
-        policy_scope = dm_token.value().scope;
-      }
+  // Machine scope has precedence, only update the scope if the previous
+  // policy is not already machine-scoped.
+  if (policy_scope != policy::PolicyScope::POLICY_SCOPE_MACHINE) {
+    if (std::optional<DmToken> dm_token =
+            GetDmToken(kOnSecurityEventScopePref)) {
+      policy_scope = dm_token.value().scope;
     }
+  }
 
-    return enterprise::GetManagementDomain(policy_scope, profile_);
+  return enterprise::GetManagementDomain(policy_scope, profile_);
 }
 
 bool ConnectorsService::IsConnectorEnabled(AnalysisConnector connector) const {
@@ -96,15 +97,6 @@ PrefService* ConnectorsService::GetPrefs() {
 
 const PrefService* ConnectorsService::GetPrefs() const {
   return profile_->GetPrefs();
-}
-
-ConnectorsManagerBase* ConnectorsService::GetConnectorsManagerBase() {
-  return connectors_manager_.get();
-}
-
-const ConnectorsManagerBase* ConnectorsService::GetConnectorsManagerBase()
-    const {
-  return connectors_manager_.get();
 }
 
 policy::CloudPolicyManager*

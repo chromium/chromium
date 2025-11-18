@@ -24,7 +24,7 @@ namespace enterprise_connectors {
 // - OnSecurityEventEnterpriseConnectors
 class ConnectorsService : public ConnectorsServiceBase, public KeyedService {
  public:
-  ConnectorsService(ProfileIOS* profile);
+  explicit ConnectorsService(ProfileIOS* profile);
   ~ConnectorsService() override;
 
   // Returns the CBCM domain or profile domain that enables connector policies.
@@ -48,8 +48,6 @@ class ConnectorsService : public ConnectorsServiceBase, public KeyedService {
   bool ConnectorsEnabled() const override;
   PrefService* GetPrefs() override;
   const PrefService* GetPrefs() const override;
-  ConnectorsManagerBase* GetConnectorsManagerBase() override;
-  const ConnectorsManagerBase* GetConnectorsManagerBase() const override;
   policy::CloudPolicyManager* GetManagedUserCloudPolicyManager() const override;
 
  private:
@@ -59,7 +57,6 @@ class ConnectorsService : public ConnectorsServiceBase, public KeyedService {
   FRIEND_TEST_ALL_PREFIXES(ConnectorsServiceTest, ConnectorsEnabled);
 
   raw_ptr<ProfileIOS> profile_;
-  std::unique_ptr<ConnectorsManager> connectors_manager_;
 };
 
 }  // namespace enterprise_connectors
