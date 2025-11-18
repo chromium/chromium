@@ -402,6 +402,10 @@ search-animated-glow {
   --cr-icon-button-size: 36px;
 }
 
+:host([ntp-realbox-next-enabled][searchbox-layout-mode^='Tall']) contextual-entrypoint-and-carousel::part(context-menu-entrypoint-icon) {
+  --cr-icon-button-icon-size: 20px;
+}
+
 :host([ntp-realbox-next-enabled]) contextual-entrypoint-and-carousel::part(composebox-entrypoint) {
   z-index: 100;
 }
