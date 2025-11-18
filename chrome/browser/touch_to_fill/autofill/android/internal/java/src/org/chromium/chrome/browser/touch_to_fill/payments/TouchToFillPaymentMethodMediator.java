@@ -281,6 +281,14 @@ class TouchToFillPaymentMethodMediator {
     static final String TOUCH_TO_FILL_BNPL_SELECT_ISSUER_SCREEN_UNLINKED_ISSUER_SELECTED =
             "Autofill.TouchToFill.Bnpl.SelectIssuerScreen.UnlinkedIssuerSelected";
 
+    @VisibleForTesting
+    static final String TOUCH_TO_FILL_BNPL_SELECT_ISSUER_NUMBER_OF_ISSUERS_SHOWN =
+            "Autofill.TouchToFill.Bnpl.SelectIssuerScreen.NumberOfIssuersShown";
+
+    @VisibleForTesting
+    static final String TOUCH_TO_FILL_BNPL_SELECT_ISSUER_SCREEN_SHOWN =
+            "Autofill.TouchToFill.Bnpl.SelectIssuerScreen.Shown";
+
     // LINT.IfChange
     private static final String WALLET_LINK_TEXT = "wallet.google.com";
 
@@ -649,6 +657,12 @@ class TouchToFillPaymentMethodMediator {
                 FOCUSED_VIEW_ID_FOR_ACCESSIBILITY, R.id.touch_to_fill_bnpl_issuer_selection_screen);
         mModel.set(SHEET_ITEMS, sheetItems);
         mModel.set(VISIBLE, true);
+
+        RecordHistogram.recordBooleanHistogram(
+                TOUCH_TO_FILL_BNPL_SELECT_ISSUER_SCREEN_SHOWN, /* sample= */ true);
+        RecordHistogram.recordCount100Histogram(
+                TOUCH_TO_FILL_BNPL_SELECT_ISSUER_NUMBER_OF_ISSUERS_SHOWN,
+                mBnplIssuerContexts.size());
     }
 
     public void showErrorScreen(String title, String description) {

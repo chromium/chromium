@@ -24,7 +24,9 @@ import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createCred
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createVirtualCreditCard;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_AFFILIATED_LOYALTY_CARDS_SCREEN_INDEX_SELECTED;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_ALL_LOYALTY_CARDS_SCREEN_INDEX_SELECTED;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_BNPL_SELECT_ISSUER_NUMBER_OF_ISSUERS_SHOWN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_BNPL_SELECT_ISSUER_SCREEN_LINKED_ISSUER_SELECTED;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_BNPL_SELECT_ISSUER_SCREEN_SHOWN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_BNPL_SELECT_ISSUER_SCREEN_UNLINKED_ISSUER_SELECTED;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_CREDIT_CARD_INDEX_SELECTED;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_CREDIT_CARD_OUTCOME_HISTOGRAM;
@@ -1142,6 +1144,86 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
     }
 
     @Test
+    public void testShowOneBnplIssuerRecordsHistograms() {
+        HistogramWatcher issuerSelectionScreenShownHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        TOUCH_TO_FILL_BNPL_SELECT_ISSUER_SCREEN_SHOWN, 1);
+        HistogramWatcher numIssuersShownHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        TOUCH_TO_FILL_BNPL_SELECT_ISSUER_NUMBER_OF_ISSUERS_SHOWN, 1);
+        mCoordinator
+                .getMediatorForTesting()
+                .showBnplIssuers(List.of(BNPL_ISSUER_CONTEXT_AFFIRM_LINKED));
+
+        issuerSelectionScreenShownHistogram.assertExpected();
+        numIssuersShownHistogram.assertExpected();
+    }
+
+    @Test
+    public void testShowTwoBnplIssuersRecordsHistograms() {
+        HistogramWatcher issuerSelectionScreenShownHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        TOUCH_TO_FILL_BNPL_SELECT_ISSUER_SCREEN_SHOWN, 1);
+        HistogramWatcher numIssuersShownHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        TOUCH_TO_FILL_BNPL_SELECT_ISSUER_NUMBER_OF_ISSUERS_SHOWN, 2);
+        mCoordinator
+                .getMediatorForTesting()
+                .showBnplIssuers(
+                        List.of(
+                                BNPL_ISSUER_CONTEXT_AFFIRM_LINKED,
+                                BNPL_ISSUER_CONTEXT_KLARNA_LINKED));
+
+        issuerSelectionScreenShownHistogram.assertExpected();
+        numIssuersShownHistogram.assertExpected();
+    }
+
+    @Test
+    public void testShowBnplIssuerTwiceRecordsHistograms() {
+        // Show the initial payment method selection screen.
+        mCoordinator.showPaymentMethods(
+                List.of(VISA_SUGGESTION, MASTERCARD_SUGGESTION),
+                /* shouldShowScanCreditCard= */ false);
+        assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(HOME_SCREEN));
+
+        // Simulate showing the BNPL issuer selection bottom sheet for the first time.
+        mCoordinator
+                .getMediatorForTesting()
+                .showBnplIssuers(List.of(BNPL_ISSUER_CONTEXT_AFFIRM_LINKED));
+        assertThat(
+                mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN),
+                is(BNPL_ISSUER_SELECTION_SCREEN));
+
+        // Simulate pressing the back button to return to the payment method selection screen.
+        ModelList sheetItems = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
+        assertThat(sheetItems.get(0).type, is(BNPL_SELECTION_PROGRESS_HEADER));
+        PropertyModel bnplSelectionProgressHeaderModel = sheetItems.get(0).model;
+        bnplSelectionProgressHeaderModel
+                .get(
+                        TouchToFillPaymentMethodProperties.BnplSelectionProgressHeaderProperties
+                                .BNPL_ON_BACK_BUTTON_CLICKED)
+                .run();
+        assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(HOME_SCREEN));
+
+        // Simulate showing the BNPL issuer selection bottom sheet again.
+        mCoordinator
+                .getMediatorForTesting()
+                .showBnplIssuers(List.of(BNPL_ISSUER_CONTEXT_AFFIRM_LINKED));
+        assertThat(
+                mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN),
+                is(BNPL_ISSUER_SELECTION_SCREEN));
+
+        assertEquals(
+                2,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        TOUCH_TO_FILL_BNPL_SELECT_ISSUER_SCREEN_SHOWN, /* sample= */ 1));
+        assertEquals(
+                2,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        TOUCH_TO_FILL_BNPL_SELECT_ISSUER_NUMBER_OF_ISSUERS_SHOWN, /* sample= */ 1));
+    }
+
+    @Test
     public void testUpdateBnplPaymentMethodWithUnSupportedAmount() throws TimeoutException {
         mCoordinator.showPaymentMethods(
                 List.of(VISA_SUGGESTION, BNPL_SUGGESTION), /* shouldShowScanCreditCard= */ false);
@@ -1239,7 +1321,8 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 R.string.autofill_bnpl_issuer_tos_bottom_sheet_half_height,
                 R.string.autofill_bnpl_issuer_tos_bottom_sheet_full_height,
                 R.string.autofill_bnpl_issuer_tos_bottom_sheet_closed,
-                org.chromium.chrome.browser.touch_to_fill.payments.R.id.touch_to_fill_bnpl_issuer_tos_screen);
+                org.chromium.chrome.browser.touch_to_fill.payments.R.id
+                        .touch_to_fill_bnpl_issuer_tos_screen);
 
         List<PropertyModel> headerModel = getModelsOfType(itemList, HEADER);
         assertThat(headerModel.size(), is(1));

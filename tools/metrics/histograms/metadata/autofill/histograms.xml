@@ -7905,6 +7905,29 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram
+    name="Autofill.TouchToFill.Bnpl.SelectIssuerScreen.NumberOfIssuersShown"
+    units="issuers" expires_after="2026-06-01">
+  <owner>vinnypersky@google.com</owner>
+  <owner>viplavkadam@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the number of all BNPL issuers shown in the BNPL issuer selection
+    bottom sheet. Logs when the user is on the issuer selection bottom sheet.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.TouchToFill.Bnpl.SelectIssuerScreen.Shown"
+    enum="BooleanShown" expires_after="2026-06-01">
+  <owner>vinnypersky@google.com</owner>
+  <owner>viplavkadam@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the number of times the BNPL issuer selection bottom sheet is shown.
+    Logs true when the BNPL issuer selection bottom sheet is shown.
+  </summary>
+</histogram>
+
+<histogram
     name="Autofill.TouchToFill.Bnpl.SelectIssuerScreen.UnlinkedIssuerSelected"
     enum="BnplIssuerId" expires_after="2026-06-01">
   <owner>vinnypersky@google.com</owner>
