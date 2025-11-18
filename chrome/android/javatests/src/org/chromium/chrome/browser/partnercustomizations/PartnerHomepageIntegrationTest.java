@@ -15,6 +15,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
@@ -36,6 +37,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.partnercustomizations.TestPartnerBrowserCustomizationsProvider;
 import org.chromium.chrome.test.util.ChromeTabUtils;
@@ -51,13 +53,20 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 public class PartnerHomepageIntegrationTest {
-    @Rule
-    public BasePartnerBrowserCustomizationIntegrationTestRule mActivityTestRule =
-            new BasePartnerBrowserCustomizationIntegrationTestRule();
+    private final ChromeTabbedActivityTestRule mActivityTestRule =
+            new ChromeTabbedActivityTestRule();
+
+    private final BasePartnerBrowserCustomizationIntegrationTestRule
+            mPartnerBrowserCustomizationRule =
+                    new BasePartnerBrowserCustomizationIntegrationTestRule();
 
     @Rule
     public SettingsActivityTestRule<HomepageSettings> mHomepageSettingsTestRule =
             new SettingsActivityTestRule<>(HomepageSettings.class);
+
+    @Rule
+    public final RuleChain mRuleChain =
+            RuleChain.outerRule(mPartnerBrowserCustomizationRule).around(mActivityTestRule);
 
     private static final String TEST_PAGE = "/chrome/test/data/android/about.html";
 

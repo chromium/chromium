@@ -201,5 +201,6 @@ public class CustomizationProviderDelegateUpstreamImpl implements CustomizationP
      */
     static void ignoreBrowserProviderSystemPackageCheckForTesting(boolean ignore) {
         sIgnoreSystemPackageCheckForTesting = ignore;
+        ResettersForTesting.register(() -> sIgnoreSystemPackageCheckForTesting = null);
     }
 }
