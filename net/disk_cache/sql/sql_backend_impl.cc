@@ -1097,7 +1097,7 @@ int SqlBackendImpl::WriteEntryData(
     if (buffer) {
       // Note: `buffer` can be nullptr.
       buffer = base::MakeRefCounted<net::VectorIOBuffer>(
-          buffer->span().first(static_cast<size_t>(buf_len)));
+          buffer->first(static_cast<size_t>(buf_len)));
     }
     // Callback to set an error on `res_id_or_error` when an error occurs or
     // the backend is deleted.

@@ -260,10 +260,9 @@ void WebSocket::OnRead(bool read_again, int code) {
 
   if (state_ == CONNECTING) {
     OnReadDuringHandshake(
-        read_buffer_->span().first(base::checked_cast<size_t>(code)));
+        read_buffer_->first(base::checked_cast<size_t>(code)));
   } else if (state_ == OPEN) {
-    OnReadDuringOpen(
-        read_buffer_->span().first(base::checked_cast<size_t>(code)));
+    OnReadDuringOpen(read_buffer_->first(base::checked_cast<size_t>(code)));
   }
 
   // If we were called by the event loop due to arrival of data, call Read()

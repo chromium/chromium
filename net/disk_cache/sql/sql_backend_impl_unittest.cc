@@ -919,8 +919,7 @@ TEST_F(SqlBackendImplTest, OpenEntryRacesWithIteratorAndWriteData) {
   ASSERT_EQ(
       entry->ReadData(0, 0, buffer.get(), buffer->size(), base::DoNothing()),
       kHeadData.size());
-  EXPECT_EQ(buffer->span().first(kHeadData.size()),
-            base::as_byte_span(kHeadData));
+  EXPECT_EQ(buffer->first(kHeadData.size()), base::as_byte_span(kHeadData));
   entry->Close();
 }
 

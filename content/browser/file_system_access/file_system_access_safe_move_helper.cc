@@ -117,7 +117,7 @@ class HashCalculator : public base::RefCounted<HashCalculator> {
 
     // checked_cast<size_t> is safe here: bytes_read < 0 and bytes_read == 0 are
     // both handled above by code paths that return.
-    hash_.Update(buffer_->span().first(base::checked_cast<size_t>(bytes_read)));
+    hash_.Update(buffer_->first(base::checked_cast<size_t>(bytes_read)));
     ReadMore();
   }
 

@@ -295,7 +295,7 @@ TEST_F(ZstdSourceStreamTest, WithDictionary) {
                                      callback.callback());
 
   EXPECT_EQ(static_cast<int>(source_data_len()), bytes_read);
-  EXPECT_EQ(base::as_string_view(out_buffer->span().first(source_data_len())),
+  EXPECT_EQ(base::as_string_view(out_buffer->first(source_data_len())),
             source_data());
 }
 

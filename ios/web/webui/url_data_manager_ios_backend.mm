@@ -113,7 +113,7 @@ class ReadRequest {
   // Returns a span that cover at most `count` bytes.
   base::span<uint8_t> span(size_t count) {
     CHECK(is_valid());
-    return buf_->span().first(std::min(buf_size_, count));
+    return buf_->first(std::min(buf_size_, count));
   }
 
  private:

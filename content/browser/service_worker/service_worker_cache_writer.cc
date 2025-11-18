@@ -864,7 +864,7 @@ int ServiceWorkerCacheWriter::WriteDataToResponseWriter(
     checksum_.Update(data->first(length));
   }
 
-  mojo_base::BigBuffer big_buffer(base::as_bytes(data->span().first(length)));
+  mojo_base::BigBuffer big_buffer(base::as_bytes(data->first(length)));
   writer_->WriteData(
       std::move(big_buffer),
       base::BindOnce(&AsyncOnlyCompletionCallbackAdaptor::WrappedCallback,

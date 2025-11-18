@@ -1578,8 +1578,7 @@ Error SqlPersistentStore::Backend::InsertNewBlob(
   statement.BindInt64(0, res_id.value());
   statement.BindInt64(1, start);
   statement.BindInt64(2, end);
-  const auto new_blob =
-      buffer->span().first(base::checked_cast<size_t>(buf_len));
+  const auto new_blob = buffer->first(base::checked_cast<size_t>(buf_len));
   statement.BindInt(3, CalculateCheckSum(new_blob, key.hash()));
   statement.BindBlob(4, new_blob);
   if (!statement.Run()) {
