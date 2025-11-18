@@ -90,7 +90,6 @@ export function getHtml(this: ComposeboxElement) {
           searchbox-layout-mode="${this.searchboxLayoutMode}"
           ?carousel-on-top_="${this.carouselOnTop_}"
           ?show-voice-search="${this.shouldShowVoiceSearch_()}"
-          .parentFocused="${true}"
           .submitButtonShown="${this.ntpRealboxNextEnabled && this.submitEnabled_ && this.showSubmit_}">
         <cr-composebox-dropdown
             id="matches"

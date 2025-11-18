@@ -11,7 +11,6 @@ export function getHtml(this: RecentTabChipElement) {
   return this.recentTab ? html`<!--_html_template_start_-->
   <cr-button id="recentTabButton"
       @click="${this.addTabContext_}"
-      ?disabled="${this.inputsDisabled}"
       title="${this.recentTab.title}"
       aria-label="${this.i18n('askAboutThisTabAriaLabel',
           this.recentTab.title)}">

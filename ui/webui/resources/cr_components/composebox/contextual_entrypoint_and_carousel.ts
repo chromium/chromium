@@ -101,7 +101,6 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       searchboxLayoutMode: {type: String},
       tabSuggestions: {type: Array},
       entrypointName: {type: String},
-      parentFocused: {type: Boolean},
       showVoiceSearch: {
         reflect: true,
         type: Boolean,
@@ -117,10 +116,6 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       addedTabsIds_: {type: Object},
       imageFileTypes_: {type: String},
       inputsDisabled_: {
-        reflect: true,
-        type: Boolean,
-      },
-      recentTabChipDisabled_: {
         reflect: true,
         type: Boolean,
       },
@@ -143,7 +138,6 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         type: Boolean,
       },
       recentTabForChip_: {type: Object},
-      recentTabInContext_: {type: Boolean},
       carouselOnTop_: {type: Boolean},
       submitButtonShown: {type: Boolean},
     };
@@ -154,7 +148,6 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   accessor entrypointName: string = '';
   accessor tabSuggestions: TabInfo[] = [];
   accessor carouselOnTop_: boolean = false;
-  accessor parentFocused: boolean = false;
   accessor showVoiceSearch: boolean = false;
 
   protected accessor attachmentFileTypes_: string =
@@ -168,7 +161,6 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   protected accessor imageFileTypes_: string =
       loadTimeData.getString('composeboxImageFileTypes');
   protected accessor inputsDisabled_: boolean = false;
-  protected accessor recentTabChipDisabled_: boolean = false;
   protected accessor composeboxShowPdfUpload_: boolean =
       loadTimeData.getBoolean('composeboxShowPdfUpload');
   protected accessor showContextMenuDescription_: boolean =
@@ -179,7 +171,6 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   protected accessor inDeepSearchMode_: boolean = false;
   protected accessor inCreateImageMode_: boolean = false;
   protected accessor recentTabForChip_: TabInfo|null = null;
-  protected accessor recentTabInContext_: boolean = false;
   protected accessor submitButtonShown: boolean = false;
 
   protected get inToolMode_(): boolean {
@@ -187,8 +178,8 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   }
 
   protected get shouldShowRecentTabChip_(): boolean {
-    return !!this.recentTabForChip_ && this.parentFocused &&
-        this.showRecentTabChip_ && !this.recentTabInContext_ &&
+    return !!this.recentTabForChip_ && this.showDropdown &&
+        this.showRecentTabChip_ && this.files_.size === 0 &&
         !this.inToolMode_;
   }
 
@@ -222,28 +213,13 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
            !isCreateImageToolAvailableWithImages) ||
           (this.hasImageFiles() && this.inCreateImageMode_);
       this.showFileCarousel_ = this.files_.size > 0;
-      this.recentTabChipDisabled_ = this.files_.size >= this.maxFileCount_;
       this.fire('on-context-files-changed', {files: this.files_.size});
-    }
-
-    if (changedPrivateProperties.has('files_') ||
-        changedProperties.has('tabSuggestions')) {
-      this.recentTabInContext_ = this.computeRecentTabInContext_();
     }
 
     if (changedProperties.has('tabSuggestions')) {
       this.recentTabForChip_ =
           this.tabSuggestions.find(tab => tab.showInRecentTabChip) || null;
     }
-  }
-
-  private computeRecentTabInContext_(): boolean {
-    const recentTab = this.tabSuggestions?.[0];
-    if (!recentTab) {
-      return false;
-    }
-
-    return this.addedTabsIds_.has(recentTab.tabId);
   }
 
   addFiles(files: FileList|null) {

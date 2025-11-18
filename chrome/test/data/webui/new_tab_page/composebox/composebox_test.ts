@@ -2407,6 +2407,8 @@ test('upload mixed files over limit prioritizes max files error and uploads vali
     });
 
     test('recent tab chip shows first available suggestion', async () => {
+      loadTimeData.overrideValues(
+        {composeboxShowZps: true, composeboxShowTypedSuggest: true});
       const tabInfo1 = {
         tabId: 1,
         title: 'Tab 1',
@@ -2431,26 +2433,36 @@ test('upload mixed files over limit prioritizes max files error and uploads vali
       createComposeboxElement();
       await microtasksFinished();
 
-      const recentTabChip = await getRecentTabChip();
+      // Add zps input.
+      composeboxElement.$.input.value = '';
+      composeboxElement.$.input.dispatchEvent(new Event('input'));
+      await microtasksFinished();
+
+      const composeboxDropdown =
+          composeboxElement.shadowRoot.querySelector<HTMLElement>('#matches');
+      assertTrue(!!composeboxDropdown);
+
+      // Recent tab chip should not show for no matches.
+      assertTrue(composeboxDropdown.hidden);
+      let recentTabChip = await getRecentTabChip();
+      assertFalse(!!recentTabChip);
+
+      const matches = [
+        createSearchMatch(),
+        createSearchMatch({fillIntoEdit: 'hello world 2'}),
+      ];
+      searchboxCallbackRouterRemote.autocompleteResultChanged(
+          createAutocompleteResult({
+            matches: matches,
+          }));
+      await microtasksFinished();
+
+      // Dropdown should show when matches are available.
+      assertFalse(composeboxDropdown.hidden);
+      recentTabChip = await getRecentTabChip();
       assertTrue(!!recentTabChip);
       assertEquals(tabInfo2, (recentTabChip as RecentTabChipElement).recentTab);
       assertEquals(3, composeboxElement.$.context.tabSuggestions.length);
-    });
-
-    test('recent tab chip shows when available', async () => {
-      const tabInfo = {
-        tabId: 1,
-        title: 'Sample Tab',
-        url: {url: 'https://example.com'},
-        showInRecentTabChip: true,
-        lastActive: {internalValue: 0n},
-      };
-      searchboxHandler.setResultFor(
-          'getRecentTabs', Promise.resolve({tabs: [tabInfo]}));
-      createComposeboxElement();
-      const recentTabChip = await getRecentTabChip();
-      assertTrue(
-          recentTabChip !== null, 'recent tab chip should not be visible');
     });
 
     test('hides recent tab chip when tab is in context', async () => {
@@ -2468,8 +2480,18 @@ test('upload mixed files over limit prioritizes max files error and uploads vali
       await microtasksFinished();
       await contextElement.updateComplete;
 
-      // Focus the input to simulate parent focus
-      composeboxElement.$.input.focus();
+      // Add zps matches to ensure recent tab chip is visible.
+      composeboxElement.$.input.value = '';
+      composeboxElement.$.input.dispatchEvent(new Event('input'));
+      await microtasksFinished();
+      const matches = [
+        createSearchMatch(),
+        createSearchMatch({fillIntoEdit: 'hello world 2'}),
+      ];
+      searchboxCallbackRouterRemote.autocompleteResultChanged(
+          createAutocompleteResult({
+            matches: matches,
+          }));
       await microtasksFinished();
 
       let recentTabChip = await getRecentTabChip();
