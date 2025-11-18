@@ -1665,7 +1665,6 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame,
   // When we require high res to draw, abort the draw (almost) always. This does
   // not cause the scheduler to do a main frame, instead it will continue to try
   // drawing until we finally complete, so the copy request will not be lost.
-  // TODO(weiliangc): Remove RequiresHighResToDraw. crbug.com/469175
   if (frame->checkerboarded_needs_raster) {
     if (RequiresHighResToDraw()) {
       if (expects_to_draw) {
@@ -4259,7 +4258,6 @@ void LayerTreeHostImpl::SetVisible(bool visible) {
   // If we just became visible, we have to ensure that we draw high res tiles,
   // to prevent checkerboard flashes.
   if (visible_) {
-    // TODO(crbug.com/40410467): Replace with RequiresHighResToDraw.
     SetRequiresHighResToDraw();
     // Prior CompositorFrame may have been discarded and thus we need to ensure
     // that we submit a new one, even if there are no tiles. Therefore, force a
@@ -4705,7 +4703,6 @@ bool LayerTreeHostImpl::InitializeFrameSink(
   // There will not be anything to draw here, so set high res
   // to avoid checkerboards, typically when we are recovering
   // from lost context.
-  // TODO(crbug.com/40410467): Replace with RequiresHighResToDraw.
   SetRequiresHighResToDraw();
 
   // Always allocate a new viz::LocalSurfaceId when we get a new
