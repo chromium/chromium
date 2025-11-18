@@ -60,6 +60,8 @@ class OmniboxPopupPresenterBase {
   void SetWebUIContent(
       std::unique_ptr<OmniboxPopupWebUIBaseContent> webui_content);
 
+  void EnsureWidgetCreated();
+
   // Called when the widget has just been destroyed.
   virtual void WidgetDestroyed() {}
 

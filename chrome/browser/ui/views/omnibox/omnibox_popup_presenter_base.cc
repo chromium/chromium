@@ -37,6 +37,8 @@ OmniboxPopupPresenterBase::~OmniboxPopupPresenterBase() {
 }
 
 void OmniboxPopupPresenterBase::Show() {
+  EnsureWidgetCreated();
+
   widget_->ShowInactive();
 
   if (auto* content = GetWebUIContent()) {
@@ -52,7 +54,7 @@ void OmniboxPopupPresenterBase::Show() {
 
 void OmniboxPopupPresenterBase::Hide() {
   // Only close if UI DevTools settings allow.
-  if (widget_->ShouldHandleNativeWidgetActivationChanged(false)) {
+  if (widget_ && widget_->ShouldHandleNativeWidgetActivationChanged(false)) {
     widget_->Hide();
     if (auto* content = GetWebUIContent()) {
       content->CloseUI();
@@ -61,22 +63,25 @@ void OmniboxPopupPresenterBase::Hide() {
 }
 
 bool OmniboxPopupPresenterBase::IsShown() const {
-  return widget_->IsVisible();
+  return widget_ && widget_->IsVisible();
 }
 
 void OmniboxPopupPresenterBase::SetWidgetContentHeight(int content_height) {
-  // The width is known, and is the basis for consistent web content rendering
-  // so width is specified exactly; then only height adjusts dynamically.
-  gfx::Rect widget_bounds = location_bar_view_->GetBoundsInScreen();
-  if (ShouldShowLocationBarCutout()) {
-    widget_bounds.Inset(
-        -RoundedOmniboxResultsFrame::GetLocationBarAlignmentInsets());
-    widget_bounds.set_height(widget_bounds.height() + content_height);
-  } else {
-    widget_bounds.set_height(std::max(content_height, widget_bounds.height()));
+  if (widget_) {
+    // The width is known, and is the basis for consistent web content rendering
+    // so width is specified exactly; then only height adjusts dynamically.
+    gfx::Rect widget_bounds = location_bar_view_->GetBoundsInScreen();
+    if (ShouldShowLocationBarCutout()) {
+      widget_bounds.Inset(
+          -RoundedOmniboxResultsFrame::GetLocationBarAlignmentInsets());
+      widget_bounds.set_height(widget_bounds.height() + content_height);
+    } else {
+      widget_bounds.set_height(
+          std::max(content_height, widget_bounds.height()));
+    }
+    widget_bounds.Inset(-RoundedOmniboxResultsFrame::GetShadowInsets());
+    widget_->SetBounds(widget_bounds);
   }
-  widget_bounds.Inset(-RoundedOmniboxResultsFrame::GetShadowInsets());
-  widget_->SetBounds(widget_bounds);
 }
 
 views::View* OmniboxPopupPresenterBase::GetUIContainer() const {
@@ -95,6 +100,13 @@ void OmniboxPopupPresenterBase::SetWebUIContent(
     std::unique_ptr<OmniboxPopupWebUIBaseContent> webui_content) {
   omnibox_popup_webui_content_ =
       GetUIContainer()->AddChildView(std::move(webui_content));
+  EnsureWidgetCreated();
+}
+
+void OmniboxPopupPresenterBase::EnsureWidgetCreated() {
+  if (widget_) {
+    return;
+  }
   widget_ =
       std::make_unique<ThemeCopyingWidget>(location_bar_view_->GetWidget());
 
