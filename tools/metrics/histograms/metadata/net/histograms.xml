@@ -390,27 +390,15 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Crypto.TPMOperation.Win.WrappedKeyCreation.Error"
-    enum="Win32TpmErrorCodes" expires_after="2026-04-12">
-  <owner>seblalancette@chromium.org</owner>
-  <owner>kristianm@chromium.org</owner>
-  <owner>src/crypto/OWNERS</owner>
-  <summary>
-    Collected on Windows when an operation to create a TPM-protected key from a
-    wrapped key failed. Represents the Win32 status returned by the API
-    corresponding with that operation.
-  </summary>
-</histogram>
-
 <histogram name="Crypto.TPMOperation.Win.{Operation}{SignatureAlgorithm}.Error"
     enum="Win32TpmErrorCodes" expires_after="2026-04-12">
   <owner>seblalancette@chromium.org</owner>
   <owner>kristianm@chromium.org</owner>
   <owner>src/crypto/OWNERS</owner>
   <summary>
-    Collected on Windows when a {Operation} operation failed while using a
-    TPM-protected {SignatureAlgorithm} key. Represents the Win32 status returned
-    by the API corresponding with that operation.
+    Collected on Windows when a {Operation} operation failed
+    {SignatureAlgorithm}. Represents the Win32 status returned by the API
+    corresponding with that operation.
   </summary>
   <token key="Operation">
     <variant name="MessageSigning" summary="signing"/>
@@ -419,8 +407,9 @@ chromium-metrics-reviews@google.com.
     <variant name="WrappedKeyExport" summary="wrapped key export"/>
   </token>
   <token key="SignatureAlgorithm">
-    <variant name="ECDSA"/>
-    <variant name="RSA"/>
+    <variant name="" summary="while using TPM APIs without any particular key"/>
+    <variant name="ECDSA" summary="while using a TPM-protected ECDSA key"/>
+    <variant name="RSA" summary="while using a TPM-protected RSA key"/>
   </token>
 </histogram>
 
