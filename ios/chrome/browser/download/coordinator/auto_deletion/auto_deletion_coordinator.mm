@@ -25,19 +25,19 @@
 
 namespace {
 // The number of bytes in a KB.
-CGFloat kBytesInKiloBytes = 1000;
+constexpr CGFloat kBytesInKiloBytes = 1000;
 // The number of KB in a MB.
-CGFloat kKiloBytesInMegaBytes = 1000;
+constexpr CGFloat kKiloBytesInMegaBytes = 1000;
 // The number of bytes in MB.
-CGFloat kBytesInMegaBytes = kBytesInKiloBytes * kKiloBytesInMegaBytes;
+constexpr CGFloat kBytesInMegaBytes = kBytesInKiloBytes * kKiloBytesInMegaBytes;
 // The threshold where if the user has less than this percentage of storage
 // remaining on their device then the Auto-deletion IPH should be shown. This
 // value is a percentage.
-CGFloat kAvailableStorageThreshold = 2.0;
+constexpr CGFloat kAvailableStorageThreshold = 2.0;
 // The threshold where if a file downloaded onto the device is greater than this
 // value then the Auto-deletion IPH should be shown. This value is in units of
 // MB.
-CGFloat kLargeFileSizeThreshold = 20.0;
+constexpr CGFloat kLargeFileSizeThreshold = 20.0;
 }  // namespace
 
 typedef void (^UIAlertActionHandler)(UIAlertAction* action);

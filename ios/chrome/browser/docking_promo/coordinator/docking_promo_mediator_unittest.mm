@@ -30,7 +30,7 @@
 
 namespace {
 
-NSString* kFirstRunRecencyKey = @"FirstRunRecency";
+NSString* const kFirstRunRecencyKey = @"FirstRunRecency";
 
 }  // namespace
 

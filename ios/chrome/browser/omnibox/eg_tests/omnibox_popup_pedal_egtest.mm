@@ -21,8 +21,8 @@
 
 namespace {
 
-NSString* kDinoPedalString = @"chrome://dino";
-NSString* kDinoSearchString = @"dino game";
+NSString* const kDinoPedalString = @"chrome://dino";
+NSString* const kDinoSearchString = @"dino game";
 
 }  // namespace
 

@@ -18,7 +18,7 @@
 namespace {
 
 // The size of the symbol image.
-CGFloat kSymbolImagePointSize = 18.;
+constexpr CGFloat kSymbolImagePointSize = 18.;
 
 // Returns the branded version of the Google shield symbol.
 UIImage* GetBrandedGoogleShieldSymbol() {

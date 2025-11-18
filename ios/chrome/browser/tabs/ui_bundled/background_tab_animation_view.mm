@@ -17,7 +17,7 @@ namespace {
 const CGFloat kImageSize = 28;
 const CGFloat kMaxScale = 1.3;
 const CGFloat kMinScale = 0.7;
-CGFloat kRotationAngleInRadians = 20.0 / 180 * M_PI;
+constexpr CGFloat kRotationAngleInRadians = 20.0 / 180 * M_PI;
 }  // namespace
 
 @interface BackgroundTabAnimationView ()

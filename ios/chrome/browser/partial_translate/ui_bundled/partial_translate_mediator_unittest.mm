@@ -38,7 +38,7 @@ namespace {
 
 // A template for an HTML page containing a selection.
 // "TEMPLATE_SELECTION" can be replaced by a custom text depending on the test.
-NSString* kPageHTMLTemplate =
+NSString* const kPageHTMLTemplate =
     @"<html>"
      "  <body>"
      "    This text contains a <span id='selectid'>TEMPLATE_SELECTION</span>."

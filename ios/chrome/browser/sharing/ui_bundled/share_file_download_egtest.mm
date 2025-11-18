@@ -12,7 +12,7 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 
-NSString* kPNGFilename = @"chromium_logo";
+NSString* const kPNGFilename = @"chromium_logo";
 
 namespace {
 

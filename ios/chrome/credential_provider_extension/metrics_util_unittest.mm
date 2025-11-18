@@ -14,8 +14,8 @@
 
 namespace credential_provider_extension {
 
-NSString* kMetric1 = @"CpeMetricTest1";
-NSString* kMetric2 = @"CpeMetricTest2";
+NSString* const kMetric1 = @"CpeMetricTest1";
+NSString* const kMetric2 = @"CpeMetricTest2";
 
 void RemoveMetricForKey(NSString* key) {
   NSUserDefaults* sharedDefaults = app_group::GetGroupUserDefaults();

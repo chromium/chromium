@@ -25,12 +25,12 @@
 namespace {
 
 // Table view customized header heights.
-CGFloat kAdvancedSettingsSectionHeaderHeightPointSize = 26.;
-CGFloat kSignOutSectionHeaderHeightPointSize = 26.;
-CGFloat kDefaultSectionHeaderHeightPointSize = 10.;
+constexpr CGFloat kAdvancedSettingsSectionHeaderHeightPointSize = 26.;
+constexpr CGFloat kSignOutSectionHeaderHeightPointSize = 26.;
+constexpr CGFloat kDefaultSectionHeaderHeightPointSize = 10.;
 
 // Table view customized footer heights.
-CGFloat kDefaultSectionFooterHeightPointSize = 10.;
+constexpr CGFloat kDefaultSectionFooterHeightPointSize = 10.;
 
 }  // namespace
 

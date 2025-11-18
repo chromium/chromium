@@ -12,7 +12,8 @@
 #import "testing/gtest_mac.h"
 #import "url/gurl.h"
 
-NSString* kUtilsSampleMessageHandlerName = @"UtilsSampleMessageHandlerName";
+NSString* const kUtilsSampleMessageHandlerName =
+    @"UtilsSampleMessageHandlerName";
 
 // A WKScriptMessageHandler which stores the last received WKScriptMessage;
 @interface FakeScriptMessageHandler : NSObject <WKScriptMessageHandler>

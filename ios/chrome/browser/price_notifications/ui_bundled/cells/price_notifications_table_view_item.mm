@@ -41,7 +41,7 @@ const CGFloat kPriceChipPlaceholderWidth = 50;
 const CGFloat kTrackButtonPlaceholderHeight = 28;
 const CGFloat kTrackButtonPlaceholderWidth = 70;
 // Identifier for the stop price tracking action item.
-NSString* kActionMenuIdentifier = @"priceTrackingActionMenu";
+NSString* const kActionMenuIdentifier = @"priceTrackingActionMenu";
 
 // A container for the UIView elements that will be added to the UIStackView.
 struct TableViewItemStackContent {

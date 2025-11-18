@@ -15,17 +15,17 @@
 
 namespace credential_provider_extension {
 
-NSString* kCredentialKey1 = @"key1";
-NSString* kCredentialKey2 = @"key2";
+NSString* const kCredentialKey1 = @"key1";
+NSString* const kCredentialKey2 = @"key2";
 
-NSString* kAccountInfoEmail1 = @"peter.parker@gmail.com";
-NSString* kAccountInfoEmail2 = @"mary.jane@gmail.com";
-NSString* kAccountInfoGaia1 = @"123456789";
-NSString* kAccountInfoGaia2 = @"987654321";
-NSString* kCredentialPassword1 = @"pa55word1";
-NSString* kCredentialPassword2 = @"p4ssw0rd2";
+NSString* const kAccountInfoEmail1 = @"peter.parker@gmail.com";
+NSString* const kAccountInfoEmail2 = @"mary.jane@gmail.com";
+NSString* const kAccountInfoGaia1 = @"123456789";
+NSString* const kAccountInfoGaia2 = @"987654321";
+NSString* const kCredentialPassword1 = @"pa55word1";
+NSString* const kCredentialPassword2 = @"p4ssw0rd2";
 
-NSString* kTestPrefix = @"com.google.common.SSO.KeychainTest.";
+NSString* const kTestPrefix = @"com.google.common.SSO.KeychainTest.";
 
 NSString* KeyWithPrefix(NSString* key) {
   return [NSString stringWithFormat:@"%@%@", kTestPrefix, key];

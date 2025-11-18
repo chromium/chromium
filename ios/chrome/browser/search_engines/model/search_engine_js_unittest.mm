@@ -29,7 +29,7 @@ namespace {
 // This is for cases where no message should be sent back from Js.
 constexpr base::TimeDelta kWaitForJsNotReturnTimeout = base::Milliseconds(500);
 
-NSString* kSearchableForm =
+NSString* const kSearchableForm =
     @"<html>"
     @"  <form id='f' action='index.html' method='get'>"
     @"    <input type='search' name='q'>"

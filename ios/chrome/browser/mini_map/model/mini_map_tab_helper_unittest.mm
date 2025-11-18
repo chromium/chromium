@@ -39,14 +39,14 @@ const char kNotGoogleSearchTemplate[] =
     "https://www.example.com/?q={searchTerms}";
 
 // A link to Google SRP.
-NSString* kGoogleSRPPage = @"https://www.google.com/search?q=foo";
+NSString* const kGoogleSRPPage = @"https://www.google.com/search?q=foo";
 
 // A UL to Maps.
-NSString* kMapsLink = @"https://maps.google.com/maps/foo";
+NSString* const kMapsLink = @"https://maps.google.com/maps/foo";
 
 // A valid query parameter to mark URL valid for
 // MiniMapTabHelperTestMiniMapControllerFactory.
-NSString* kValidQuery = @"valid=true";
+NSString* const kValidQuery = @"valid=true";
 }  // namespace
 
 // A Mini map factory that filters out some handled URLs based on their queries.

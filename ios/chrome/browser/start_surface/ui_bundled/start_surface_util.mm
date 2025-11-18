@@ -17,7 +17,7 @@
 namespace {
 
 // The key to store the timestamp when the scene enters into background.
-NSString* kStartSurfaceSceneEnterIntoBackgroundTime =
+NSString* const kStartSurfaceSceneEnterIntoBackgroundTime =
     @"StartSurfaceSceneEnterIntoBackgroundTime";
 
 }  // namespace

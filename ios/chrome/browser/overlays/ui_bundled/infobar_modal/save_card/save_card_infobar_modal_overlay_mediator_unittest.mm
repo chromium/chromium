@@ -49,9 +49,9 @@ static constexpr base::TimeDelta kConfirmationStateDuration =
 
 // Details of the card to be saved.
 constexpr NSString* kCardHolderName = @"Name";
-NSString* kValidExpirationMonth =
+NSString* const kValidExpirationMonth =
     base::SysUTF8ToNSString(autofill::test::NextMonth());
-NSString* kValidExpirationYear =
+NSString* const kValidExpirationYear =
     base::SysUTF8ToNSString(autofill::test::NextYear());
 
 constexpr NSString* kCardCvc = @"123";

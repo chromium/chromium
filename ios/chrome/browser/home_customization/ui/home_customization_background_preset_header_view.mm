@@ -10,7 +10,7 @@
 
 namespace {
 // The minimum width the text label can have.
-CGFloat kLabelMinWidth = 105.0;
+constexpr CGFloat kLabelMinWidth = 105.0;
 }  // namespace
 
 @implementation HomeCustomizationBackgroundPresetHeaderView {

@@ -165,7 +165,7 @@ const NSInteger kMaxShowCountNewIPHBadge = 3;
 const base::TimeDelta kFreshInstallTimeDelta = base::Days(1);
 
 #if BUILDFLAG(CHROMIUM_BRANDING) && !defined(NDEBUG)
-NSString* kDevViewSourceKey = @"DevViewSource";
+NSString* const kDevViewSourceKey = @"DevViewSource";
 #endif  // BUILDFLAG(CHROMIUM_BRANDING) && !defined(NDEBUG)
 
 // Returns the branded version of the Google Services symbol.

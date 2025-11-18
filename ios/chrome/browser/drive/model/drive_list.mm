@@ -12,15 +12,15 @@ namespace {
 // The size of the drive file picker item icon.
 constexpr CGFloat kDriveFilePickerItemIconSize = 18;
 // Prefix of MIME types associated with images.
-NSString* kImageMIMETypePrefix = @"image/";
+NSString* const kImageMIMETypePrefix = @"image/";
 // Prefix of the icon link for shortcuts.
-NSString* kShortcutImageLinkPrefix =
+NSString* const kShortcutImageLinkPrefix =
     @"https://drive-thirdparty.googleusercontent.com/64/type/";
 // Prefix of links to icons in the Drive third-party icon repository.
-NSString* kDriveIconRepositoryPrefix =
+NSString* const kDriveIconRepositoryPrefix =
     @"https://drive-thirdparty.googleusercontent.com/";
 // MIME type for folder items.
-NSString* kFolderMIMEType = @"application/vnd.google-apps.folder";
+NSString* const kFolderMIMEType = @"application/vnd.google-apps.folder";
 
 }  // namespace
 

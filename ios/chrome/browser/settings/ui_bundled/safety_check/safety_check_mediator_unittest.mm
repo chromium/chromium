@@ -77,7 +77,7 @@ using password_manager::InsecureType;
 using password_manager::TestPasswordStore;
 
 // The size of trailing symbol icons.
-NSInteger kTrailingSymbolImagePointSize = 22;
+constexpr NSInteger kTrailingSymbolImagePointSize = 22;
 
 // Registers account preference that will be used for Safe Browsing.
 PrefService* SetPrefService() {

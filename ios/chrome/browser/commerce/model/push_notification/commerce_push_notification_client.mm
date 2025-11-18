@@ -31,23 +31,23 @@
 namespace {
 
 // Identifier for long press on notification and open menu categories.
-NSString* kCommerceCategoryIdentifier = @"PriceDropNotifications";
+NSString* const kCommerceCategoryIdentifier = @"PriceDropNotifications";
 // Identifier if user taps notification (doesn't long press and
 // choose from options).
-NSString* kDefaultActionIdentifier =
+NSString* const kDefaultActionIdentifier =
     @"com.apple.UNNotificationDefaultActionIdentifier";
 // Opaque payload key from notification service.
-NSString* kSerializedPayloadKey = @"op";
+NSString* const kSerializedPayloadKey = @"op";
 // Identifier for user pressing 'Visit site' option after long pressing
 // notification.
-NSString* kVisitSiteActionIdentifier = @"visit_site";
+NSString* const kVisitSiteActionIdentifier = @"visit_site";
 // Text for option for long press.
-NSString* kVisitSiteTitle = @"Visit site";
+NSString* const kVisitSiteTitle = @"Visit site";
 // Identifier for user pressing 'Untrack price' after long pressing
 // notification.
-NSString* kUntrackPriceIdentifier = @"untrack_price";
+NSString* const kUntrackPriceIdentifier = @"untrack_price";
 // Text for option 'Untrack price' when long pressing notification.
-NSString* kUntrackPriceTitle = @"Untrack price";
+NSString* const kUntrackPriceTitle = @"Untrack price";
 
 // Returns an arbitrary profile amongst the currently loaded profile. This
 // means that this API is not safe when there are multiple profiles. Instead

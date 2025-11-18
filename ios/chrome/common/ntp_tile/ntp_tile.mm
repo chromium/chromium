@@ -5,15 +5,15 @@
 #import "ios/chrome/common/ntp_tile/ntp_tile.h"
 
 namespace {
-NSString* kTitleKey = @"title";
-NSString* kURLKey = @"URL";
-NSString* kfaviconFileNameKey = @"faviconFileName";
-NSString* kFallbackTextColorKey = @"fallbackTextColor";
-NSString* kFallbackBackgroundColorKey = @"fallbackBackgroundColor";
-NSString* kFallbackIsDefaultColorKey = @"fallbackIsDefaultColor";
-NSString* kFallbackMonogram = @"fallbackMonogram";
-NSString* kFaviconFetched = @"faviconFetched";
-NSString* kPosition = @"position";
+NSString* const kTitleKey = @"title";
+NSString* const kURLKey = @"URL";
+NSString* const kfaviconFileNameKey = @"faviconFileName";
+NSString* const kFallbackTextColorKey = @"fallbackTextColor";
+NSString* const kFallbackBackgroundColorKey = @"fallbackBackgroundColor";
+NSString* const kFallbackIsDefaultColorKey = @"fallbackIsDefaultColor";
+NSString* const kFallbackMonogram = @"fallbackMonogram";
+NSString* const kFaviconFetched = @"faviconFetched";
+NSString* const kPosition = @"position";
 }  // namespace
 
 @implementation NTPTile

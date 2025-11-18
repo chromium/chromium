@@ -41,7 +41,7 @@ NSString* const kSendTabToSelfModalCancelButton =
 NSString* const kSendTabToSelfModalSendButton =
     @"kSendTabToSelfModalSendButton";
 
-CGFloat kSymbolSize = 22;
+constexpr CGFloat kSymbolSize = 22;
 
 }  // namespace
 

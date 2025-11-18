@@ -68,7 +68,7 @@ NSArray<NSValue*>* TouchPath(CGPoint start, CGPoint end) {
   return touch_path;
 }
 
-NSString* kChromeActionsErrorDomain = @"ChromeActionsError";
+NSString* const kChromeActionsErrorDomain = @"ChromeActionsError";
 
 }  // namespace
 

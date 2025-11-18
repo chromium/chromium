@@ -15,7 +15,7 @@
 namespace {
 
 // Filename of the script to transcode images.
-NSString* kTranscodeImageScriptFileName = @"transcode_image";
+NSString* const kTranscodeImageScriptFileName = @"transcode_image";
 
 }  // namespace
 

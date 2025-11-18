@@ -39,7 +39,7 @@ namespace {
 BOOL openedMailTo = NO;
 
 // Notification name of changes to openedMailTo state.
-NSString* kMailToInstanceChanged = @"MailToInstanceChanged";
+NSString* const kMailToInstanceChanged = @"MailToInstanceChanged";
 
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierSettings = kSectionIdentifierEnumZero,

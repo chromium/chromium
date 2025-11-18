@@ -18,7 +18,7 @@
 
 namespace content_suggestions {
 
-CGFloat kDoodleHeightNoLogo = 0;
+constexpr CGFloat kDoodleHeightNoLogo = 0;
 
 class ContentSuggestionsCollectionUtilsTest : public PlatformTest {
  public:

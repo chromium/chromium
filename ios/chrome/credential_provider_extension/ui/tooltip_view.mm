@@ -9,12 +9,12 @@
 
 namespace {
 
-CGFloat kTooltipTailHeight = 8;
-CGFloat kTooltipTailWidth = 16;
-CGFloat kTooltipHorizontalPadding = 16.0f;
-CGFloat kTooltipVerticalPadding = 10.0f;
-CGFloat kTooltipCornerRadius = 8.0f;
-CGFloat kTooltipFadeInTime = 0.2f;
+constexpr CGFloat kTooltipTailHeight = 8;
+constexpr CGFloat kTooltipTailWidth = 16;
+constexpr CGFloat kTooltipHorizontalPadding = 16.0f;
+constexpr CGFloat kTooltipVerticalPadding = 10.0f;
+constexpr CGFloat kTooltipCornerRadius = 8.0f;
+constexpr CGFloat kTooltipFadeInTime = 0.2f;
 
 }  // namespace
 

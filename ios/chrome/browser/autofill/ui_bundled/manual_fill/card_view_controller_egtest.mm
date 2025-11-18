@@ -42,13 +42,13 @@ const char kFormElementCardNumber[] = "CCNo";
 const char kFormElementCardExpirationMonth[] = "CCExpiresMonth";
 const char kFormElementCardExpirationYear[] = "CCExpiresYear";
 
-NSString* kLocalCardNumber = @"4111111111111111";
-NSString* kLocalCardHolder = @"Test User";
+NSString* const kLocalCardNumber = @"4111111111111111";
+NSString* const kLocalCardHolder = @"Test User";
 // The local card's expiration month and year (only the last two digits) are set
 // with next month and next year.
-NSString* kLocalCardExpirationMonth =
+NSString* const kLocalCardExpirationMonth =
     base::SysUTF8ToNSString(autofill::test::NextMonth());
-NSString* kLocalCardExpirationYear =
+NSString* const kLocalCardExpirationYear =
     base::SysUTF8ToNSString(autofill::test::NextYear().substr(2, 2));
 
 // Unicode characters used in card number:
@@ -58,16 +58,16 @@ constexpr char16_t separator[] = {0x2060, 0x0020, 0};
 constexpr char16_t kMidlineEllipsis[] = {
     0x2022, 0x2060, 0x2006, 0x2060, 0x2022, 0x2060, 0x2006, 0x2060, 0x2022,
     0x2060, 0x2006, 0x2060, 0x2022, 0x2060, 0x2006, 0x2060, 0};
-NSString* kObfuscatedNumberPrefix = base::SysUTF16ToNSString(
+NSString* const kObfuscatedNumberPrefix = base::SysUTF16ToNSString(
     kMidlineEllipsis + std::u16string(separator) + kMidlineEllipsis +
     std::u16string(separator) + kMidlineEllipsis + std::u16string(separator));
 
-NSString* kLocalNumberObfuscated =
+NSString* const kLocalNumberObfuscated =
     [NSString stringWithFormat:@"%@1111", kObfuscatedNumberPrefix];
 
-NSString* kServerNumberObfuscated =
+NSString* const kServerNumberObfuscated =
     [NSString stringWithFormat:@"%@2109", kObfuscatedNumberPrefix];
-NSString* kCvcObfuscated =
+NSString* const kCvcObfuscated =
     base::SysUTF16ToNSString(autofill::CreditCard::GetMidlineEllipsisDots(3));
 
 const char kFormHTMLFile[] = "/credit_card.html";

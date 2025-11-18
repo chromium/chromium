@@ -74,11 +74,11 @@ NSArray* MenuDescription(UIMenuElement* menuElement, int indent) {
       stringWithFormat:@"%d:u:%@", indent, menuElement.description] ];
 }
 
-NSString* kPageHTML = @"<html>"
-                       "  <body>"
-                       "    This is a simple HTML file."
-                       "  </body>"
-                       "</html>";
+NSString* const kPageHTML = @"<html>"
+                             "  <body>"
+                             "    This is a simple HTML file."
+                             "  </body>"
+                             "</html>";
 
 // Return the base menu depending on the environment.
 NSMutableArray* GetExpectedMenu() {

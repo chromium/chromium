@@ -26,25 +26,26 @@ constexpr NSInteger kFirstPageSize = 20;
 constexpr NSInteger kNextPageSize = 50;
 
 // extra_term parameter for the Starred view.
-NSString* kStarredExtraTerm = @"starred=true";
+NSString* const kStarredExtraTerm = @"starred=true";
 // extra_term parameter for the Recent view.
-NSString* kRecentExtraTerm = @"mimeType!='application/vnd.google-apps.folder'";
+NSString* const kRecentExtraTerm =
+    @"mimeType!='application/vnd.google-apps.folder'";
 // order_by parameter for the Recent view.
-NSString* kRecentOrderBy = @"recency desc";
+NSString* const kRecentOrderBy = @"recency desc";
 // extra_term parameter for the Shared with me view.
-NSString* kSharedWithMeExtraTerm = @"sharedWithMe=true";
+NSString* const kSharedWithMeExtraTerm = @"sharedWithMe=true";
 // order_by parameter for the Shared with me view.
-NSString* kSharedWithMeOrderBy = @"sharedWithMeTime desc";
+NSString* const kSharedWithMeOrderBy = @"sharedWithMeTime desc";
 // The key word to sort items in an ascending order.
-NSString* kAscendingQueryOrder = @"asc";
+NSString* const kAscendingQueryOrder = @"asc";
 // The key word to sort items in an descending order.
-NSString* kDescendingQueryOrder = @"desc";
+NSString* const kDescendingQueryOrder = @"desc";
 // The key word to sort items by name.
-NSString* kQueryOrderNameType = @"name";
+NSString* const kQueryOrderNameType = @"name";
 // The key word to sort items by opening time.
-NSString* kQueryOrderOpeningType = @"viewedByMeTime";
+NSString* const kQueryOrderOpeningType = @"viewedByMeTime";
 // The key word to sort items by modification time.
-NSString* kQueryOrderModifiedType = @"modifiedTime";
+NSString* const kQueryOrderModifiedType = @"modifiedTime";
 // String representing any audio MIME type.
 const char kAnyAudioFileMimeType[] = "audio/*";
 // String representing any video MIME type.
@@ -52,7 +53,7 @@ const char kAnyVideoFileMimeType[] = "video/*";
 // String representing any image MIME type.
 const char kAnyImageFileMimeType[] = "image/*";
 // extra_term parameter for the "Archives" filter.
-NSString* kOnlyShowArchivesExtraTerm =
+NSString* const kOnlyShowArchivesExtraTerm =
     @"(mimeType='application/zip' or"
      " mimeType='application/x-7z-compressed' or"
      " mimeType='application/x-rar-compressed' or"
@@ -64,20 +65,20 @@ NSString* kOnlyShowArchivesExtraTerm =
      " mimeType='application/java-archive' or"
      " mimeType='application/gzip')";
 // extra_term parameter for the "Audio" filter.
-NSString* kOnlyShowAudioExtraTerm = @"mimeType contains 'audio/'";
+NSString* const kOnlyShowAudioExtraTerm = @"mimeType contains 'audio/'";
 // extra_term parameter for the "Video" filter.
-NSString* kOnlyShowVideosExtraTerm = @"mimeType contains 'video/'";
+NSString* const kOnlyShowVideosExtraTerm = @"mimeType contains 'video/'";
 // extra_term parameter for the "Photos & Images" filter.
-NSString* kOnlyShowImagesExtraTerm = @"mimeType contains 'image/'";
+NSString* const kOnlyShowImagesExtraTerm = @"mimeType contains 'image/'";
 // extra_term parameter for the "PDFs" filter.
-NSString* kOnlyShowPDFsExtraTerm = @"mimeType='application/pdf'";
+NSString* const kOnlyShowPDFsExtraTerm = @"mimeType='application/pdf'";
 // extra_term parameter to add folders to a filter.
-NSString* kAlsoShowFoldersExtraTerm =
+NSString* const kAlsoShowFoldersExtraTerm =
     @"mimeType='application/vnd.google-apps.folder'";
 // Prefix of MIME types associated with Google apps.
-NSString* kGoogleAppsMIMETypePrefix = @"application/vnd.google-apps.";
+NSString* const kGoogleAppsMIMETypePrefix = @"application/vnd.google-apps.";
 // MIME type for folder items.
-NSString* kFolderMIMEType = @"application/vnd.google-apps.folder";
+NSString* const kFolderMIMEType = @"application/vnd.google-apps.folder";
 
 // Replaces `/` and `\` characters with `_` in `file_path` and returns the
 // result.

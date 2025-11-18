@@ -13,17 +13,18 @@
 
 namespace {
 // Constants for managed preference policy keys.
-NSString* kGlobalPolicyKey = @"global";
-NSString* kUpdateDefaultKey = @"UpdateDefault";
-NSString* kDownloadPreferenceKey = @"DownloadPreference";
-NSString* kUpdatesSuppressedStartHourKey = @"UpdatesSuppressedStartHour";
-NSString* kUpdatesSuppressedStartMinuteKey = @"UpdatesSuppressedStartMin";
-NSString* kUpdatesSuppressedDurationMinuteKey = @"UpdatesSuppressedDurationMin";
-NSString* kTargetChannelKey = @"TargetChannel";
-NSString* kTargetVersionPrefixKey = @"TargetVersionPrefix";
-NSString* kRollbackToTargetVersionKey = @"RollbackToTargetVersion";
-NSString* kMajorVersionRolloutKey = @"MajorVersionRolloutPolicy";
-NSString* kMinorVersionRolloutKey = @"MinorVersionRolloutPolicy";
+NSString* const kGlobalPolicyKey = @"global";
+NSString* const kUpdateDefaultKey = @"UpdateDefault";
+NSString* const kDownloadPreferenceKey = @"DownloadPreference";
+NSString* const kUpdatesSuppressedStartHourKey = @"UpdatesSuppressedStartHour";
+NSString* const kUpdatesSuppressedStartMinuteKey = @"UpdatesSuppressedStartMin";
+NSString* const kUpdatesSuppressedDurationMinuteKey =
+    @"UpdatesSuppressedDurationMin";
+NSString* const kTargetChannelKey = @"TargetChannel";
+NSString* const kTargetVersionPrefixKey = @"TargetVersionPrefix";
+NSString* const kRollbackToTargetVersionKey = @"RollbackToTargetVersion";
+NSString* const kMajorVersionRolloutKey = @"MajorVersionRolloutPolicy";
+NSString* const kMinorVersionRolloutKey = @"MinorVersionRolloutPolicy";
 }  // namespace
 
 namespace updater {

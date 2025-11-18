@@ -11,7 +11,7 @@
 
 namespace {
 // Key in the UserDefaults for the Experimental Keys.
-NSString* kExperimentalKeysKey = @"ExperimentalKeys";
+NSString* const kExperimentalKeysKey = @"ExperimentalKeys";
 
 // Returns YES if a setting value is equivalent to not having the setting at
 // all. This must always be true for default values, otherwise the experimental

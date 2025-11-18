@@ -45,7 +45,7 @@ const char kLinkID[] = "linkID";
 const char kPageLoadedString[] = "Page loaded!";
 
 // The title of the test infobar.
-NSString* kTestInfoBarTitle = @"TestInfoBar";
+NSString* const kTestInfoBarTitle = @"TestInfoBar";
 
 // Defines the visibility of an element, in relation to the toolbar.
 typedef NS_ENUM(NSInteger, ButtonVisibility) {

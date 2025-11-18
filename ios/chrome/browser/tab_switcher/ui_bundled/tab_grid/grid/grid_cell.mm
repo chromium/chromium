@@ -28,7 +28,7 @@
 namespace {
 
 // The size of symbol icons.
-NSInteger kIconSymbolPointSize = 13;
+constexpr NSInteger kIconSymbolPointSize = 13;
 
 // Scale of activity indicator replacing fav icon when active.
 const CGFloat kIndicatorScale = 0.75;

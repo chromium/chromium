@@ -43,7 +43,7 @@ using chrome_test_util::ShareButton;
 namespace {
 
 // Accessibility ID of the Activity menu.
-NSString* kActivityMenuIdentifier = @"ActivityListView";
+NSString* const kActivityMenuIdentifier = @"ActivityListView";
 
 NSString* const kWaitForPageToStartLoadingError = @"Page did not start to load";
 NSString* const kWaitForPageToFinishLoadingError =

@@ -88,7 +88,7 @@ using ::testing::_;
 using ::testing::Return;
 
 const std::string kTestURL = "https://www.chromium.org/";
-NSString* kTestFrameID = @"11111111111111111111111111111111";
+NSString* const kTestFrameID = @"11111111111111111111111111111111";
 constexpr uint64_t kMaxPasswordLength = 10;
 constexpr char16_t kGeneratedPassword[] = u"testpassword";
 

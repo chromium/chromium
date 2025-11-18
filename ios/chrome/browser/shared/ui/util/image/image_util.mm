@@ -13,13 +13,13 @@
 
 namespace {
 
-NSString* kImageExtensionJPG = @"jpg";
-NSString* kImageExtensionPNG = @"png";
-NSString* kImageExtensionTIF = @"tif";
-NSString* kImageExtensionBMP = @"bmp";
-NSString* kImageExtensionGIF = @"gif";
-NSString* kImageExtensionICO = @"ico";
-NSString* kImageExtensionWebP = @"webp";
+NSString* const kImageExtensionJPG = @"jpg";
+NSString* const kImageExtensionPNG = @"png";
+NSString* const kImageExtensionTIF = @"tif";
+NSString* const kImageExtensionBMP = @"bmp";
+NSString* const kImageExtensionGIF = @"gif";
+NSString* const kImageExtensionICO = @"ico";
+NSString* const kImageExtensionWebP = @"webp";
 
 // Returns whether `span` starts with `prefix`.
 template <typename T, size_t E>

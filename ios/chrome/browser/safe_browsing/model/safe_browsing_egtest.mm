@@ -82,10 +82,10 @@ const char kEnterpriseBlockPage[] =
 
 // Error message logged when the wrong number of Enterprise Reports were
 // received.
-NSString* kWrongNumberOfReportsErrorMessage = @"Wrong number of reports.";
+NSString* const kWrongNumberOfReportsErrorMessage = @"Wrong number of reports.";
 
 // Id of the primary button in the security interstitial pages.
-NSString* kPrimaryButtonID = @"primary-button";
+NSString* const kPrimaryButtonID = @"primary-button";
 
 // Duration to wait for an enterprise security event report.
 constexpr base::TimeDelta kReportUploadTimeout = base::Seconds(15);

@@ -28,7 +28,7 @@ const CGFloat kLayoutGuideVerticalMargin = 8.0;
 const CGFloat kLayoutGuideMinHeight = 12.0;
 
 // The size of the incognito symbol image.
-NSInteger kIncognitoSymbolImagePointSize = 72;
+constexpr NSInteger kIncognitoSymbolImagePointSize = 72;
 
 // Returns a font, scaled to the current dynamic type settings, that is suitable
 // for the title of the incognito page.

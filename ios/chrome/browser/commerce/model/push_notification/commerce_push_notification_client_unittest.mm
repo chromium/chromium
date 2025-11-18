@@ -59,11 +59,11 @@ constexpr char kBookmarkFoundHistogramName[] =
 std::string kBookmarkTitle = "My product title";
 constexpr uint64_t kClusterId = 12345L;
 constexpr char kPayloadValue[] = "value";
-NSString* kSerializedPayloadKey = @"op";
-NSString* kVisitSiteActionId = @"visit_site";
-NSString* kVisitSiteTitle = @"Visit site";
-NSString* kUntrackPriceActionId = @"untrack_price";
-NSString* kUntrackPriceTitle = @"Untrack price";
+NSString* const kSerializedPayloadKey = @"op";
+NSString* const kVisitSiteActionId = @"visit_site";
+NSString* const kVisitSiteTitle = @"Visit site";
+NSString* const kUntrackPriceActionId = @"untrack_price";
+NSString* const kUntrackPriceTitle = @"Untrack price";
 constexpr char kUntrackSuccessHistogramName[] =
     "Commerce.PriceTracking.Untrack.Success";
 

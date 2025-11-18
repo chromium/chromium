@@ -82,7 +82,7 @@ NSArray* GetElementsByNameJavaScripts(
 }
 
 // clang-format off
-NSString* kHTMLForTestingElements = @"<html><body>"
+NSString* const kHTMLForTestingElements = @"<html><body>"
     "<input type=hidden name='gl' value='us'>"
     "<form name='testform'>"
     "  <input type=hidden name='hl' value='en'>"

@@ -39,8 +39,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 };
 
 // Table view header/footer height.
-CGFloat kSectionHeaderHeight = 8.;
-CGFloat kSectionFooterHeight = 8.;
+constexpr CGFloat kSectionHeaderHeight = 8.;
+constexpr CGFloat kSectionFooterHeight = 8.;
 
 }  // namespace
 

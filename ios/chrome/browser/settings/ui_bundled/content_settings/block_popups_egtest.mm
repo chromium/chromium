@@ -36,13 +36,14 @@ const char* kBlockPopupsUrl = "http://blockpopups";
 const char* kOpenedWindowUrl = "http://openedwindow";
 
 // Page with a button that opens a new window after a short delay.
-NSString* kBlockPopupsResponseTemplate =
+NSString* const kBlockPopupsResponseTemplate =
     @"<input type=\"button\" onclick=\"setTimeout(function() {"
      "window.open('%@')}, 1)\" "
      "id=\"open-window\" "
      "value=\"openWindow\">";
 // JavaScript that clicks that button.
-NSString* kOpenPopupScript = @"document.getElementById('open-window').click()";
+NSString* const kOpenPopupScript =
+    @"document.getElementById('open-window').click()";
 const std::string kOpenedWindowResponse = "Opened window";
 
 // Returns matcher for the block popups settings menu button.

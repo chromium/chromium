@@ -34,7 +34,7 @@
 namespace {
 
 // The number of sections for the pinned collection view.
-NSInteger kNumberOfSectionsInPinnedCollection = 1;
+constexpr NSInteger kNumberOfSectionsInPinnedCollection = 1;
 
 // Pinned cell identifier.
 NSString* const kCellIdentifier = @"PinnedCellIdentifier";

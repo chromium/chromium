@@ -21,7 +21,7 @@ namespace {
 
 // URL string passed from ios/web layer to ios/chrome and rendered on the error
 // page.
-NSString* kTestUrl = @"https://chromium.test/";
+NSString* const kTestUrl = @"https://chromium.test/";
 
 // Returns string for the given error code.
 NSString* ErrorAsString(int net_error) {

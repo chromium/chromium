@@ -24,9 +24,9 @@
 namespace {
 
 // Reuse Identifiers for table views.
-NSString* kHeaderIdentifier = @"clvcHeader";
-NSString* kCredentialCellIdentifier = @"clvcCredentialCell";
-NSString* kNewPasswordCellIdentifier = @"clvcNewPasswordCell";
+NSString* const kHeaderIdentifier = @"clvcHeader";
+NSString* const kCredentialCellIdentifier = @"clvcCredentialCell";
+NSString* const kNewPasswordCellIdentifier = @"clvcNewPasswordCell";
 
 const CGFloat kNewCredentialHeaderHeight = 35;
 // Add extra space to offset the top of the table view from the search bar.

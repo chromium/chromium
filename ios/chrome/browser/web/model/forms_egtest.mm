@@ -42,7 +42,7 @@ constexpr char kDestinationText[] = "bar!";
 constexpr char kGenericText[] = "A generic page";
 
 // Label for the button in the form.
-NSString* kSubmitButtonLabel = @"submit";
+NSString* const kSubmitButtonLabel = @"submit";
 
 // Html form template with a submission button named "submit".
 constexpr char kFormHtmlTemplate[] =

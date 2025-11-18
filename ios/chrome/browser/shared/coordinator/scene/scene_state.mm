@@ -20,7 +20,7 @@
 namespace {
 
 // Preference key used to store which profile is current.
-NSString* kIncognitoCurrentKey = @"IncognitoActive";
+NSString* const kIncognitoCurrentKey = @"IncognitoActive";
 
 // Represents the state of the -[SceneState incognitoContentVisible] property
 // that is saved in session storage (and thus unknown during app startup and

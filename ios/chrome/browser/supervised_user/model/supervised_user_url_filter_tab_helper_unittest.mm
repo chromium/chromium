@@ -38,7 +38,7 @@
 namespace {
 
 const char kTestEmail[] = "test@gmail.com";
-NSString* kExampleURL = @"http://example.com";
+NSString* const kExampleURL = @"http://example.com";
 
 }  // namespace
 

@@ -24,7 +24,7 @@ namespace {
 // view.
 const CGFloat kTableViewTopSpace = 14;
 
-NSString* kCellIdentifier = @"cdvcCell";
+NSString* const kCellIdentifier = @"cdvcCell";
 
 NSString* const kMaskedPassword = @"••••••••";
 

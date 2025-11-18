@@ -23,7 +23,7 @@
 #import "testing/platform_test.h"
 
 namespace {
-NSString* kPageHTML =
+NSString* const kPageHTML =
     @"<html>"
      "  <body>"
      "    This text contains a <span id='selectid'>selection</span>."
@@ -38,7 +38,7 @@ NSString* kPageHTML =
      "  </body>"
      "</html>";
 
-NSString* kPage2HTML =
+NSString* const kPage2HTML =
     @"<html>"
      "  <body>"
      "    This text contains a <span id='selectid'>selection2</span>."

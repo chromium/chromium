@@ -28,9 +28,9 @@ namespace {
 // Try to address a crash related to UIMenu and UIAction handling by UIKit
 // (see http://crbug.com/424069384). The fix ensures UIMenu objects have
 // non-empty titles and unique identifiers.
-NSString* kSharedActionsMenuIdentifier = @"kSharedActionsMenuIdentifier";
-NSString* kEditActionsMenuIdentifier = @"kEditActionsMenuIdentifier";
-NSString* kDestructiveActionsMenuIdentifier =
+NSString* const kSharedActionsMenuIdentifier = @"kSharedActionsMenuIdentifier";
+NSString* const kEditActionsMenuIdentifier = @"kEditActionsMenuIdentifier";
+NSString* const kDestructiveActionsMenuIdentifier =
     @"kDestructiveActionsMenuIdentifier";
 
 }  // namespace

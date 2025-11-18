@@ -55,8 +55,8 @@ NSString* const kGoBackID = @"go-back";
 NSString* const kGoBackTwoID = @"go-back-2";
 
 // URLs and labels for testWindowLocation* tests.
-NSString* kHashChangeWithHistoryLabel = @"hashChangedWithHistory";
-NSString* kHashChangeWithoutHistoryLabel = @"hashChangedWithoutHistory";
+NSString* const kHashChangeWithHistoryLabel = @"hashChangedWithHistory";
+NSString* const kHashChangeWithoutHistoryLabel = @"hashChangedWithoutHistory";
 const char kPage1URL[] = "/page1/";
 const char kHashChangedWithHistoryURL[] = "/page1/#hashChangedWithHistory";
 const char kHashChangedWithoutHistoryURL[] =

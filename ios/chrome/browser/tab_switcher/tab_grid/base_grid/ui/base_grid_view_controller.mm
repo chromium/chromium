@@ -85,7 +85,7 @@ CGFloat const kCellMaxHeightForEmptyThumbnailCenteredPortraitLayout = 275;
 // create/add to a group.
 // TODO(crbug.com/450613202): Define a fixed point margin for different device
 // size support.
-CGFloat kDragReorderMargin = 0.2;
+constexpr CGFloat kDragReorderMargin = 0.2;
 
 // Returns the accessibility identifier to set on a GroupGridCell when
 // positioned at the given index.

@@ -82,7 +82,7 @@
 
 namespace {
 
-NSString* kWindowTitle = @"Content Shell";
+NSString* const kWindowTitle = @"Content Shell";
 
 // Layout constants (in view coordinates)
 const CGFloat kButtonWidth = 72;

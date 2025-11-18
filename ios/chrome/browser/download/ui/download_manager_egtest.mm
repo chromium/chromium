@@ -39,7 +39,7 @@ using download::WaitForOpenPDFButton;
 namespace {
 
 // Accessibility ID of the Activity menu.
-NSString* kActivityMenuIdentifier = @"ActivityListView";
+NSString* const kActivityMenuIdentifier = @"ActivityListView";
 
 // Scroll to the top of the Reading List.
 void ScrollToTop() {

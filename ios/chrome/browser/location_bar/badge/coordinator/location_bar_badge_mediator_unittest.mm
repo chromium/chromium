@@ -49,7 +49,7 @@
 #import "third_party/ocmock/gtest_support.h"
 
 namespace {
-NSString* kTestAccessibilityLabel = @"testBadge";
+NSString* const kTestAccessibilityLabel = @"testBadge";
 }
 
 namespace {
