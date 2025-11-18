@@ -29,7 +29,6 @@ public final class ScrollingStripStackerUnitTest {
     private static final float OFFSET_Y = 2;
     private static final float WIDTH = 100;
     private static final float FIRST_VIEW_IDEAL_X = -WIDTH - 1;
-    private static final float CACHED_TAB_WIDTH = 30;
 
     private final ScrollingStripStacker mTarget = new ScrollingStripStacker();
     @Mock private StripLayoutTab mView1;
@@ -110,8 +109,7 @@ public final class ScrollingStripStackerUnitTest {
         mTarget.pushDrawPropertiesToViews(mInput, WIDTH / 2, 2 * WIDTH);
 
         // Move the window with xOffset = TAB_WIDTH / 2, will make both up to TAB_2 and TAB_4
-        // partially
-        // invisible. TAB_5 will still be invisible in this case.
+        // partially invisible. TAB_5 will still be invisible in this case.
         verifyViews(Arrays.asList(mView1, mView5));
     }
 }

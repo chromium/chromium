@@ -292,10 +292,12 @@ public class StripLayoutUtils {
     }
 
     /**
+     * Returns a visible {@link StripLayoutView} at the given x-position, or {@code null} if none.
+     *
      * @param views The list of {@link StripLayoutView}.
      * @param x The x position to use to retrieve view.
      * @param includeGroupTitles Whether to include group title when finding view.
-     * @return View at x position.{@code null} if no view at position or if input criteria not met.
+     * @return View at x position. {@code null} if no view at position or if input criteria not met.
      */
     public static @Nullable StripLayoutView findViewAtPositionX(
             StripLayoutView[] views, float x, boolean includeGroupTitles) {

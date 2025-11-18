@@ -78,9 +78,9 @@ public class StripStackerUnitTest {
     @Test
     public void testComputeNewTabButtonIdealXRtl() {
         LocalizationUtils.setRtlForTesting(true);
-        float expected_res = 3f;
+        float expectedRes = 3f;
         // Update drawX for RTL = ((mInput.length -1 ) * TAB_WIDTH) + BUTTON_WIDTH +
-        // expected_res = 4*25 + 10 + 3
+        // expectedRes = 4*25 + 10 + 3
         float drawX = 113f;
         for (StripLayoutTab tab : mInput) {
             when(tab.getDrawX()).thenReturn(drawX);
@@ -95,7 +95,7 @@ public class StripStackerUnitTest {
                         STRIP_WIDTH,
                         BUTTON_WIDTH,
                         /* tabStripFull= */ true);
-        assertThat("New Tab button offset does not match", result, is(expected_res));
+        assertThat("New Tab button offset does not match", result, is(expectedRes));
     }
 
     @Test
@@ -120,6 +120,6 @@ public class StripStackerUnitTest {
 
         @Override
         public void pushDrawPropertiesToViews(
-                StripLayoutView[] indexOrderedViews, float xOffset, float visibleWidth) {}
+                StripLayoutView[] indexOrderedViews, float leftBound, float rightBound) {}
     }
 }

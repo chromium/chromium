@@ -17,18 +17,18 @@ public class ScrollingStripStacker extends StripStacker {
 
     @Override
     public void pushDrawPropertiesToViews(
-            StripLayoutView[] indexOrderedViews, float xOffset, float visibleWidth) {
+            StripLayoutView[] indexOrderedViews, float leftBound, float rightBound) {
         for (int i = 0; i < indexOrderedViews.length; i++) {
             StripLayoutView view = indexOrderedViews[i];
 
             view.setDrawX(view.getIdealX() + view.getOffsetX());
             view.setDrawY(view.getOffsetY());
             // visibility is based drawX - call this after setting drawX / Y.
-            setVisible(view, xOffset, visibleWidth);
+            setVisible(view, leftBound, rightBound);
         }
     }
 
-    private static void setVisible(StripLayoutView view, float xOffset, float visibleWidth) {
+    private static void setVisible(StripLayoutView view, float leftBound, float rightBound) {
         float drawXAccountingPadding = 0f;
         float width = 0f;
         if (view instanceof StripLayoutGroupTitle groupTitle) {
@@ -54,7 +54,7 @@ public class ScrollingStripStacker extends StripStacker {
             assert false : "Method should be invoked only for tabs and groups";
         }
         view.setVisible(
-                (drawXAccountingPadding + width) >= xOffset
-                        && drawXAccountingPadding <= xOffset + visibleWidth);
+                (drawXAccountingPadding + width) >= leftBound
+                        && drawXAccountingPadding <= rightBound);
     }
 }

@@ -4837,11 +4837,10 @@ public class StripLayoutHelper
         computeIdealViewPositions();
 
         // 3. Calculate view stacking - update view draw properties and visibility.
-        float stripWidth =
-                getVisibleRightBound(/* clampToUnpinnedViews= */ false)
-                        - getVisibleLeftBound(/* clampToUnpinnedViews= */ false);
         mStripStacker.pushDrawPropertiesToViews(
-                mStripViews, getVisibleLeftBound(/* clampToUnpinnedViews= */ false), stripWidth);
+                mStripViews,
+                getVisibleLeftBound(/* clampToUnpinnedViews= */ false),
+                getVisibleRightBound(/* clampToUnpinnedViews= */ false));
         mStripStacker.pushDrawPropertiesToButtons(
                 mNewTabButton,
                 mStripTabs,
@@ -5054,6 +5053,17 @@ public class StripLayoutHelper
         if (mTabAtPositionForTesting != null) {
             return mTabAtPositionForTesting;
         }
+
+        // Views are only hidden once they're completely out of the visible region. Since tabs are
+        // wider than the NTB (which is roughly where the end-fade begins), it is possible for a tab
+        // to be visible while having its touch target partially past the NTB. Visible tabs are
+        // considered clickable, so manually suppress clicks beyond the NTB to prevent this.
+        if (LocalizationUtils.isLayoutRtl()) {
+            if (x <= mNewTabButton.getDrawX() + mNewTabButton.getWidth()) return null;
+        } else {
+            if (x >= mNewTabButton.getDrawX()) return null;
+        }
+
         return StripLayoutUtils.findViewAtPositionX(mStripViews, x, includeGroupTitles);
     }
 
