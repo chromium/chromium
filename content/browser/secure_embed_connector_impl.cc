@@ -8,6 +8,7 @@
 #include "components/input/cursor_manager.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "components/input/render_widget_host_input_event_router.h"
+#include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_manager.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
@@ -89,6 +90,51 @@ void SecureEmbedConnectorImpl::FocusInEmbedder(FocusOperation focus_op) {
   }
 }
 
+FrameTree* SecureEmbedConnectorImpl::GetFocusedFrameTree() {
+  if (!embedder_web_contents_) {
+    return &guest_web_contents_->GetPrimaryFrameTree();
+  }
+
+  return static_cast<WebContentsImpl*>(embedder_web_contents_.get())
+      ->GetFocusedFrameTree();
+}
+
+void SecureEmbedConnectorImpl::SetFocusedFrameTree(
+    FrameTree* frame_tree_to_focus) {
+  if (!embedder_web_contents_) {
+    return;
+  }
+
+  auto* embedder_web_contents =
+      static_cast<WebContentsImpl*>(embedder_web_contents_.get());
+
+  // Update focused frame tree stored in the embedder.
+  embedder_web_contents->SetFocusedFrameTree(frame_tree_to_focus);
+
+  // Ensure that outer frame trees are focused.
+  embedder_web_contents->GetPrimaryFrameTree().FocusOuterFrameTrees();
+
+  // Ensure that the embedder's page has focus so that it can display active UI
+  // and therefore the embedded plugin is also active.
+  embedder_web_contents->GetPrimaryMainFrame()
+      ->GetRenderWidgetHost()
+      ->SetPageFocus(true);
+}
+
+void SecureEmbedConnectorImpl::ClearFocusOnInnerWebContents() {
+  if (!guest_web_contents_->ContainsOrIsFocusedWebContents()) {
+    return;
+  }
+  CHECK(embedder_web_contents_)
+      << "focused frame tree should be cleared before detachment";
+
+  // Using the same logic as the one for inner WebContents in WebContentsImpl
+  // destructor.
+  static_cast<WebContentsImpl*>(
+      embedder_web_contents_->GetOutermostWebContents())
+      ->SetAsFocusedWebContentsIfNecessary();
+}
+
 bool SecureEmbedConnectorImpl::IsConfiguredToBeEmbeddedIn(
     WebContents* web_contents) {
   return embedder_web_contents_.get() == web_contents;
@@ -126,30 +172,6 @@ void SecureEmbedConnectorImpl::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
-void SecureEmbedConnectorImpl::ForwardKeyboardEvent(
-    const blink::WebKeyboardEvent& keyboard_event) {
-  if (!guest_web_contents_ || !view_) {
-    return;
-  }
-
-  input::NativeWebKeyboardEvent native_event(
-      keyboard_event, GetParentRenderWidgetHostView()->GetNativeView());
-
-  RenderWidgetHostImpl* target_host = view_->host();
-
-  // If there are multiple widgets on the page (such as when there are
-  // out-of-process iframes), pick the one that should process this event.
-  if (target_host->delegate()) {
-    target_host =
-        target_host->delegate()->GetFocusedRenderWidgetHost(target_host);
-  }
-  if (!target_host) {
-    return;
-  }
-
-  target_host->ForwardKeyboardEvent(native_event);
-}
-
 void SecureEmbedConnectorImpl::SetFocus(bool focused,
                                         blink::mojom::FocusType focus_type) {
   if (!guest_web_contents_ || !view_) {
@@ -157,11 +179,26 @@ void SecureEmbedConnectorImpl::SetFocus(bool focused,
   }
 
   view_->host()->SetPageFocus(focused);
-  if (focused && (focus_type == blink::mojom::FocusType::kForward ||
-                  focus_type == blink::mojom::FocusType::kBackward)) {
+
+  if (!focused) {
+    return;
+  }
+
+  if (focus_type == blink::mojom::FocusType::kForward ||
+      focus_type == blink::mojom::FocusType::kBackward) {
     static_cast<RenderViewHostImpl*>(guest_web_contents_->GetRenderViewHost())
         ->SetInitialFocus(
             /*reverse=*/focus_type == blink::mojom::FocusType::kBackward);
+  }
+
+  // Ensure that the embedded frame tree is the focused frame tree if it is
+  // not already the focused frame tree when the plugin becomes in focus.
+  // Skip the check for kPage. kPage doesn't involved focused frame change. It
+  // happens when OS window get/lost focus or for parent pages when child page
+  // is in focus, as part of FocusOuterFrameTrees().
+  if ((focus_type != blink::mojom::FocusType::kPage) &&
+      !guest_web_contents_->ContainsOrIsFocusedWebContents()) {
+    SetFocusedFrameTree(&guest_web_contents_->GetPrimaryFrameTree());
   }
 }
 

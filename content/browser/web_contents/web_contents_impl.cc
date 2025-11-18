@@ -1492,6 +1492,12 @@ WebContentsImpl::~WebContentsImpl() {
     outermost->SetAsFocusedWebContentsIfNecessary();
   }
 
+  // TODO(secure-embed): detach secure embed and clear focused frame tree when
+  // detaching.
+  if (secure_embed_connector_) {
+    secure_embed_connector_->ClearFocusOnInnerWebContents();
+  }
+
   if (GetOuterWebContents() &&
       GetOuterWebContents()->node_.IsUnownedInnerWebContents(this)) {
     GetOuterWebContents()->DetachUnownedInnerWebContents(this);
@@ -1849,7 +1855,7 @@ PageImpl& WebContentsImpl::GetPrimaryPage() {
 RenderFrameHostImpl* WebContentsImpl::GetFocusedFrame() {
   // If this method is called on an inner WebContents, don't return frames from
   // outside of the inner WebContents's subtree.
-  if (GetOuterWebContents() && !ContainsOrIsFocusedWebContents()) {
+  if (ShouldRestrictAccessToFocusedFrame()) {
     return nullptr;
   }
 
@@ -9171,7 +9177,13 @@ WebContentsImpl* WebContentsImpl::GetFocusedWebContents() {
 }
 
 FrameTree* WebContentsImpl::GetFocusedFrameTree() {
-  return GetOutermostWebContents()->node_.focused_frame_tree();
+  if (secure_embed_connector_) {
+    return secure_embed_connector_->GetFocusedFrameTree();
+  }
+  if (GetOuterWebContents()) {
+    return GetOuterWebContents()->GetFocusedFrameTree();
+  }
+  return node_.focused_frame_tree();
 }
 
 void WebContentsImpl::SetFocusToLocationBar() {
@@ -9181,6 +9193,8 @@ void WebContentsImpl::SetFocusToLocationBar() {
   }
 }
 
+// TODO(secure-embed): update the check if we support secure embed inside other
+// secure embed or inner WebContents.
 bool WebContentsImpl::ContainsOrIsFocusedWebContents() {
   for (WebContentsImpl* focused_contents = GetFocusedWebContents();
        focused_contents;
@@ -9191,6 +9205,17 @@ bool WebContentsImpl::ContainsOrIsFocusedWebContents() {
   }
 
   return false;
+}
+
+// TODO(secure-embed): Make `ContainsOrIsFocusedWebContents()` return true for
+// an inner WebContents that contains a focused secure-embed. With that, the
+// caller of `ShouldRestrictAccessToFocusedFrame()` could potentially use
+// `!ContainsOrIsFocusedWebContents()` directly.
+bool WebContentsImpl::ShouldRestrictAccessToFocusedFrame() {
+  // If this method is called on an inner WebContents, and the focused frame is
+  // outside of this WebContents's subtree, restrict the access.
+  return (GetOuterWebContents() || secure_embed_connector_) &&
+         !ContainsOrIsFocusedWebContents();
 }
 
 void WebContentsImpl::RemoveBrowserPluginEmbedder() {
@@ -9938,7 +9963,15 @@ void WebContentsImpl::SetFocusedFrameTree(FrameTree* frame_tree_to_focus) {
     return;
   }
 
-  GetOutermostWebContents()->node_.SetFocusedFrameTree(frame_tree_to_focus);
+  if (secure_embed_connector_) {
+    secure_embed_connector_->SetFocusedFrameTree(frame_tree_to_focus);
+    return;
+  } else if (GetOuterWebContents()) {
+    GetOuterWebContents()->SetFocusedFrameTree(frame_tree_to_focus);
+    return;
+  }
+
+  node_.SetFocusedFrameTree(frame_tree_to_focus);
 
   // Send a page level blur to the `old_focused_frame_tree` so that it displays
   // inactive UI and focus `frame_tree_to_focus` to activate it.
@@ -11744,6 +11777,12 @@ void WebContentsImpl::OnSlowWebPreferenceChanged() {
 
 blink::mojom::FrameWidgetInputHandler*
 WebContentsImpl::GetFocusedFrameWidgetInputHandler() {
+  // This function is for taking actions as RenderWidgetHostDelegate, we should
+  // not do so if the focused frame is outside of this WebContents.
+  if (ShouldRestrictAccessToFocusedFrame()) {
+    return nullptr;
+  }
+
   auto* focused_render_widget_host =
       GetFocusedRenderWidgetHost(GetPrimaryMainFrame()->GetRenderWidgetHost());
   if (!focused_render_widget_host) {

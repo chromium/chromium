@@ -236,15 +236,6 @@ void SecureEmbedWebPlugin::UpdateVisibility(bool is_visible) {}
 blink::WebInputEventResult SecureEmbedWebPlugin::HandleInputEvent(
     const blink::WebCoalescedInputEvent& coalesced_event,
     ui::Cursor* cursor) {
-  const blink::WebInputEvent& event = coalesced_event.Event();
-  if (blink::WebInputEvent::IsKeyboardEventType(event.GetType())) {
-    // We don't expect any actual coalescing here.
-    DCHECK_EQ(coalesced_event.CoalescedEventSize(), 1u);
-    host_->DispatchKeyboardEvent(
-        std::make_unique<blink::WebCoalescedInputEvent>(
-            event, coalesced_event.latency_info()));
-    return blink::WebInputEventResult::kHandledSystem;
-  }
   return blink::WebInputEventResult::kNotHandled;
 }
 

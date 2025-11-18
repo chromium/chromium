@@ -44,10 +44,6 @@ interface SecureEmbedHost {
   SynchronizeVisualProperties(blink.mojom.FrameVisualProperties visual_properties,
                               bool is_visible);
 
-  // Asks for a keyboard event delivered to the plugin to be forwarded to
-  // the embedded frame.
-  DispatchKeyboardEvent(blink.mojom.Event key_event);
-
   // Notifies that the plugin either gained or lost focus.
   SetFocus(bool focused, blink.mojom.FocusType focus_type);
 };

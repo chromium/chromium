@@ -121,8 +121,6 @@ class MockSecureEmbedHost : public mojom::SecureEmbedHost {
       const blink::FrameVisualProperties& visual_properties,
       bool is_visible) override {}
 
-  void DispatchKeyboardEvent(
-      std::unique_ptr<blink::WebCoalescedInputEvent> key_event) override {}
   void SetFocus(bool focused, blink::mojom::FocusType focus_type) override {}
 
   void OnSecureEmbedDisconnected() { secure_embed_.reset(); }

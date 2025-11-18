@@ -116,21 +116,6 @@ void SecureEmbedHost::SynchronizeVisualProperties(
   }
 }
 
-void SecureEmbedHost::DispatchKeyboardEvent(
-    std::unique_ptr<blink::WebCoalescedInputEvent> key_event) {
-  if (!key_event || key_event->CoalescedEventSize() != 1 ||
-      !blink::WebInputEvent::IsKeyboardEventType(
-          key_event->Event().GetType())) {
-    mojo::ReportBadMessage(
-        "Unexpected message type in SecureEmbedHost::DispatchKeyboardEvent");
-    return;
-  }
-  if (content::SecureEmbedConnector* connector = GetConnector()) {
-    connector->ForwardKeyboardEvent(
-        static_cast<const blink::WebKeyboardEvent&>(key_event->Event()));
-  }
-}
-
 void SecureEmbedHost::SetFocus(bool focused,
                                blink::mojom::FocusType focus_type) {
   know_have_focus_ = false;
