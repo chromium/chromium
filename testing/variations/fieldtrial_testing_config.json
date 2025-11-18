@@ -1339,9 +1339,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20250929",
+                    "name": "AnimationTriggerOn_LimitTriggerAttachmentUpdatesOn_20251111",
                     "enable_features": [
-                        "AnimationTrigger"
+                        "AnimationTrigger",
+                        "LimitTriggerAttachmentUpdates"
                     ]
                 }
             ]
