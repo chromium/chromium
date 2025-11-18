@@ -84,14 +84,14 @@ FrameNodeImpl::FrameNodeImpl(
       is_active_(is_active),
       priority_and_reason_(
           PriorityAndReason(base::TaskPriority::LOWEST, kDefaultPriorityReason),
-          perfetto::NamedTrack("Priority", 0, tracing_track_),
+          perfetto::NamedTrack("Priority", 0, *tracing_track_),
           PriorityAndReasonToString),
       is_audible_(false,
-                  perfetto::NamedTrack("IsAudible", 0, tracing_track_),
+                  perfetto::NamedTrack("IsAudible", 0, *tracing_track_),
                   YesNoStateToString),
       // Visibility is emitted to the frame track directly.
       visibility_(Visibility::kUnknown,
-                  tracing_track_,
+                  *tracing_track_,
                   FrameNodeVisibilityToString) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(process_node);
@@ -366,7 +366,7 @@ void FrameNodeImpl::OnTraceSessionStart() {
 
 void FrameNodeImpl::TraceEdges() {
   TRACE_EVENT_INSTANT("performance_manager.graph", "AttachPage",
-                      perfetto::NamedTrack("Edges", 0, tracing_track_),
+                      perfetto::NamedTrack("Edges", 0, *tracing_track_),
                       perfetto::Flow::FromPointer(this));
   page_node_->TraceFrame(base::PassKey<FrameNodeImpl>(), this);
 }
@@ -410,7 +410,7 @@ int FrameNodeImpl::render_frame_id() const {
 
 perfetto::Track FrameNodeImpl::tracing_track() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return tracing_track_;
+  return *tracing_track_;
 }
 
 FrameNode::NodeSetView<FrameNodeImpl*> FrameNodeImpl::child_frame_nodes()

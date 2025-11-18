@@ -346,7 +346,8 @@ class FrameNodeImpl
   const RenderFrameHostProxy render_frame_host_proxy_;
 
   // Perfetto track that can record trace events for the page.
-  const perfetto::NamedTrack tracing_track_;
+  const base::trace_event::TrackRegistration<perfetto::NamedTrack>
+      tracing_track_;
 
   base::ScopedObservation<TracingObserverList, TracingObserver>
       tracing_observation_{this};
