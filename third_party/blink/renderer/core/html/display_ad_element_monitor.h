@@ -43,12 +43,19 @@ class CORE_EXPORT DisplayAdElementMonitor
   OverlayVisibility CheckOverlayVisibility(const LocalFrame& main_frame,
                                            const gfx::Rect& rect_in_viewport);
 
+  bool ShouldHighlight() const { return should_highlight_; }
+
   void Trace(Visitor*) const override;
 
  private:
   Member<Element> element_;
 
   bool started_ = false;
+
+  // Caches the last known value of the DevTools "Highlight ads" setting. This
+  // value remains `false` if the element is not eligible for monitoring (e.g.,
+  // a nested ad).
+  bool should_highlight_ = false;
 
   base::TimeTicks last_overlay_check_time_;
 

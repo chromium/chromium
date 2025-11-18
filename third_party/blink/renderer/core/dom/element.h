@@ -1697,12 +1697,23 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   // Manages the element's ad-related status.
   //
-  // `HTMLFrameOwnerElement` manages its ad status separately. Therefore:
-  // 1. `SetIsAdRelated()` should not be called on a frame owner.
-  // 2. `IsAdRelated()` is overridden by `HTMLFrameOwnerElement` to return its
-  //    own frame-derived status.
+  // NOTE: `HTMLFrameOwnerElement` manages its ad status separately by
+  // deriving it from its frame. It overrides these virtual methods, and
+  // `SetIsAdRelated()` should not be called on it directly.
+
+  // Marks this element as being ad-related.
   void SetIsAdRelated();
+
+  // Returns true if the element is considered ad-related.
   virtual bool IsAdRelated() const;
+
+  // Returns true if a paint-time ad highlight should be drawn.
+  // This is the authoritative check for painters, encapsulating:
+  // 1. The element's ad status (i.e., `IsAdRelated()`).
+  // 2. The "Highlight ads" DevTools setting.
+  // 3. Logic to exclude nested ads (e.g., in an ad iframe) to avoid redundant,
+  // overlapping highlights.
+  virtual bool ShouldHighlightAd() const;
 
   void NotifyInlineStyleMutation();
 

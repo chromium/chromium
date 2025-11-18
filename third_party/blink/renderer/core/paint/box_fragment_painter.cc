@@ -70,6 +70,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_cache_skipper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scoped_display_item_fragment.h"
+#include "third_party/skia/include/utils/SkParsePath.h"
 
 namespace blink {
 
@@ -394,6 +395,120 @@ bool ShouldDelegatePaintingToViewTransition(const PhysicalBoxFragment& fragment,
   }
 }
 
+// Paints a highlight overlay for elements identified as ads. This supports the
+// "Highlight ads" feature in DevTools.
+void PaintAdHighlightIfNeeded(const PaintInfo& paint_info,
+                              const PhysicalOffset& paint_offset,
+                              const PhysicalBoxFragment& fragment,
+                              const DisplayItemClient& display_item_client,
+                              PaintPhase phase) {
+  // The highlight is an overlay, so it should only be painted during the
+  // foreground phase, after all element content is drawn.
+  if (phase != PaintPhase::kForeground) {
+    return;
+  }
+
+  const LayoutObject* layout_object = fragment.GetLayoutObject();
+  if (!layout_object) {
+    return;
+  }
+
+  Element* element = DynamicTo<Element>(layout_object->GetNode());
+  if (!element) {
+    return;
+  }
+
+  if (!element->ShouldHighlightAd()) {
+    return;
+  }
+
+  // Get the bounds of the fragment to paint the overlay over.
+  gfx::Rect paint_rect(
+      ToEnclosingRect(PhysicalRect(paint_offset, fragment.Size())));
+
+  // Check if we can use a cached version of this display item.
+  if (DrawingRecorder::UseCachedDrawingIfPossible(paint_info.context,
+                                                  display_item_client,
+                                                  DisplayItem::kFrameOverlay)) {
+    return;
+  }
+
+  // Record these draw operations as a single display item.
+  DrawingRecorder ad_highlight_recorder(paint_info.context, display_item_client,
+                                        DisplayItem::kFrameOverlay, paint_rect);
+
+  GraphicsContext& context = paint_info.context;
+
+  // Paint a red tint overlay.
+  {
+    Color red_overlay(255, 0, 0, 128);
+    context.FillRect(paint_rect, red_overlay, AutoDarkMode::Disabled(),
+                     SkBlendMode::kHardLight);
+  }
+
+  // Paint an "AD" text overlay.
+  {
+    DEFINE_STATIC_LOCAL(SkPath, ad_label_path, ());
+
+    // Check if we have parsed the path yet.
+    if (ad_label_path.isEmpty()) {
+      const char kAdLabelSvgPath[] =
+          "M36.6 62H21.9l-2.3 6.6H10.1L23.6 32.2h11.2L48.4 "
+          "68.7H38.9zm-12.3-6.7h10L 29.3 40.8zM62.6 39.3v22.2h3.4q5.7 0 "
+          "8.8-2.8 3-2.9 3-8.3 0-5.4-3-8.3-3-2.8-8.8-2.8zM53.2 32.2h9.9q8.3 0 "
+          "12.4 1.2 4.1 1.2 7 4 2.5 2.5 3.8 5.7 1.2 3.2 1.2 7.3 0 4.1-1.2 "
+          "7.4-1.3 3.2-3.8 5.7-3 2.8-7 4-4.1 1.2-12.3 1.2h-9.9z";
+
+      bool success =
+          SkParsePath::FromSVGString(kAdLabelSvgPath, &ad_label_path);
+
+      DCHECK(success) << "Internal Ad Highlight SVG string failed to parse.";
+    }
+
+    // Calculate the scale and offset to fit the 100x100 SVG path within
+    // the element's paint_rect, matching CSS
+    // 'preserveAspectRatio="xMidYMid meet"'.
+    const float kViewBoxSize = 100.0f;
+    float target_width = paint_rect.width();
+    float target_height = paint_rect.height();
+
+    // 'meet': Scale down to fit, preserving aspect ratio.
+    float scale =
+        std::min(target_width / kViewBoxSize, target_height / kViewBoxSize);
+
+    // Don't render the label if it's too small to be legible.
+    const float kMinPixelHeight = 10.0f;
+    float scaled_box_height = kViewBoxSize * scale;
+    if (scaled_box_height < kMinPixelHeight) {
+      return;
+    }
+
+    // 'xMidYMid': Center the scaled SVG path within the target rect.
+    float scaled_box_width = kViewBoxSize * scale;
+    float offset_x = paint_rect.x() + (target_width - scaled_box_width) / 2.0f;
+    float offset_y =
+        paint_rect.y() + (target_height - scaled_box_height) / 2.0f;
+
+    // Create the transformation matrix:
+    // 1. Scale the 100x100 path down.
+    // 2. Translate it to the center of the paint_rect.
+    AffineTransform transform;
+    transform.Translate(offset_x, offset_y);
+    transform.Scale(scale);
+
+    // Set up paint flags for the text.
+    // Corresponds to CSS: fill="#fff" opacity=".8"
+    cc::PaintFlags ad_label_flags;
+    ad_label_flags.setStyle(cc::PaintFlags::kFill_Style);
+    ad_label_flags.setAntiAlias(true);
+    ad_label_flags.setColor(SkColorSetARGB(204, 255, 255, 255));
+
+    // Apply the transform and draw the path.
+    context.ConcatCTM(transform);
+    context.DrawPath(ad_label_path, ad_label_flags, AutoDarkMode::Disabled());
+  }
+}
+
 }  // anonymous namespace
 
 PhysicalRect BoxFragmentPainter::InkOverflowIncludingFilters() const {
@@ -437,6 +552,17 @@ void BoxFragmentPainter::PaintFragment(const PhysicalBoxFragment& fragment,
   } else {
     layout_object->Paint(modified_paint_info);
   }
+
+  PhysicalOffset paint_offset;
+  if (const FragmentData* fragment_data = fragment.GetFragmentData()) {
+    paint_offset = fragment_data->PaintOffset();
+  }
+
+  // Paint the ad highlight last. For this monolithic path (e.g., <img>,
+  // <iframe>), the paint_offset is provided by FragmentData and represents the
+  // fragment's position in the paint layer.
+  PaintAdHighlightIfNeeded(modified_paint_info, paint_offset, fragment,
+                           *layout_object, paint_info.phase);
 }
 
 void BoxFragmentPainter::Paint(const PaintInfo& paint_info) {
@@ -619,6 +745,10 @@ void BoxFragmentPainter::PaintInternal(const PaintInfo& paint_info) {
     info.phase = original_phase;
     PaintOverflowControls(info, paint_offset);
   }
+
+  // Paint the ad highlight last.
+  PaintAdHighlightIfNeeded(info, paint_offset, box_fragment_,
+                           GetDisplayItemClient(), original_phase);
 }
 
 bool BoxFragmentPainter::PaintOverflowControls(

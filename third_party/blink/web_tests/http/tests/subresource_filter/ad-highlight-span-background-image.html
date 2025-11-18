@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script type="text/javascript">
+if (window.testRunner) {
+  testRunner.setHighlightAds();
+
+  // Tag 'alpha.png' as an ad resource.
+  testRunner.setDisallowedSubresourcePathSuffixes(["alpha.png"], false /* block_subresources */);
+}
+
+// Create an Image object to preload the resource.
+const preloader = new Image();
+
+// Define the onload callback for the preloader.
+// This fires when the image is downloaded and decoded.
+preloader.onload = function () {
+  // Now that the image is loaded, create the span.
+  const span = document.createElement('span');
+
+  span.style.display = "block";
+  span.style.width = "100px";
+  span.style.height = "200px";
+  span.style.backgroundImage = "url(resources/alpha.png)";
+
+  document.body.appendChild(span);
+
+  // Finish the test after the ad highlight is drawn.
+  requestAnimationFrame(function() {
+    requestAnimationFrame(function() {
+      if (window.testRunner)
+        testRunner.notifyDone();
+    });
+  });
+}
+
+preloader.src = "resources/alpha.png";
+
+</script>
+</body>
+</html>
