@@ -1415,17 +1415,23 @@ std::string TemplateURLRef::HandleReplacements(
             HandleReplacement(std::string(), "chrome-omni", replacement, &url);
 #endif
             break;
-          case RequestSource::NTP_COMPOSEBOX:
-            if (base::FeatureList::IsEnabled(
-                    omnibox::kComposeboxUsesChromeComposeClient) &&
-                search_terms_args.current_page_url.empty()) {
-              HandleReplacement(std::string(), "chrome-compose", replacement,
-                                &url);
-            } else {
-              HandleReplacement(std::string(), "chrome-omni", replacement,
-                                &url);
-            }
+          case RequestSource::NTP_COMPOSEBOX: {
+            // RequestSource::NTP_COMPOSEBOX will use "chrome-omni" for delayed
+            // context uploads. TODO(crbug.com/460858102) Figure out how to
+            // support delayed uploads using "chrome-compose."
+            std::string client_replacement =
+                base::FeatureList::IsEnabled(
+                    omnibox::kComposeboxUsesChromeComposeClient)
+                    ? (search_terms_args.page_classification ==
+                                   metrics::OmniboxEventProto::NTP_COMPOSEBOX &&
+                               !search_terms_args.current_page_url.empty()
+                           ? "chrome-omni"
+                           : "chrome-compose")
+                    : "chrome-omni";
+            HandleReplacement(std::string(), client_replacement, replacement,
+                              &url);
             break;
+          }
           case RequestSource::LENS_OVERLAY:
             // No replacement. Lens Overlay searchboxes don't rely on
             // TemplateURL replacement and set `client=` in

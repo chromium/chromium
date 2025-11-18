@@ -287,6 +287,7 @@ void ContextualSearchboxHandler::AddFileContext(
     AddFileContextCallback callback) {
   auto* contextual_session_handle = GetSessionHandle(web_contents_);
   if (contextual_session_handle) {
+    context_input_data_ = std::nullopt;
     contextual_session_handle->AddFileContext(
         file_info_mojom->mime_type, std::move(file_bytes),
         CreateImageEncodingOptions(), std::move(callback));
@@ -523,6 +524,7 @@ void ContextualSearchboxHandler::UploadTabContext(
   auto* contextual_session_handle = GetSessionHandle(web_contents_);
 
   if (contextual_session_handle) {
+    context_input_data_ = std::nullopt;
     contextual_session_handle->StartTabContextUploadFlow(
         context_token, std::move(page_content_data),
         CreateImageEncodingOptions());
