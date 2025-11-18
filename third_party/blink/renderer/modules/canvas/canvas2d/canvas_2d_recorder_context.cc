@@ -87,7 +87,6 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_pattern.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d_state.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_style.h"
-#include "third_party/blink/renderer/modules/canvas/canvas2d/identifiability_study_helper.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/mesh_2d_index_buffer.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/mesh_2d_uv_buffer.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/mesh_2d_vertex_buffer.h"
@@ -125,7 +124,6 @@
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-#include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -402,9 +400,6 @@ void Canvas2DRecorderContext::save() {
   if (isContextLost()) [[unlikely]] {
     return;
   }
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(CanvasOps::kSave);
-  }
 
   ValidateStateStack();
 
@@ -431,9 +426,6 @@ void Canvas2DRecorderContext::restore(ExceptionState& exception_state) {
     return;
   }
 
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(CanvasOps::kRestore);
-  }
   ValidateStateStack();
   if (state_stack_.size() <= 1) {
     // State stack is empty. Extra `restore()` are silently ignored.
@@ -464,8 +456,6 @@ void Canvas2DRecorderContext::beginLayerImpl(ScriptState* script_state,
   if (isContextLost()) [[unlikely]] {
     return;
   }
-  // TODO(crbug.com/40191831): Instrument new canvas APIs.
-  identifiability_study_helper_.set_encountered_skipped_ops();
 
   // Make sure we have a recorder and paint canvas.
   if (!GetOrCreatePaintCanvas()) {
@@ -685,8 +675,6 @@ void Canvas2DRecorderContext::endLayer(ExceptionState& exception_state) {
   if (isContextLost()) [[unlikely]] {
     return;
   }
-  // TODO(crbug.com/40191831): Instrument new canvas APIs.
-  identifiability_study_helper_.set_encountered_skipped_ops();
 
   ValidateStateStack();
   if (state_stack_.size() <= 1 || layer_count_ <= 0) {
@@ -838,9 +826,6 @@ void Canvas2DRecorderContext::RestoreMatrixClipStack(cc::PaintCanvas* c) const {
 }
 
 void Canvas2DRecorderContext::ResetInternal() {
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(CanvasOps::kReset);
-  }
   ValidateStateStack();
   state_stack_.resize(1);
   state_stack_.front() = MakeGarbageCollected<CanvasRenderingContext2DState>();
@@ -871,26 +856,6 @@ void Canvas2DRecorderContext::reset() {
   ResetInternal();
 }
 
-void Canvas2DRecorderContext::IdentifiabilityUpdateForStyleUnion(
-    const V8CanvasStyle& style) {
-  switch (style.type) {
-    case V8CanvasStyleType::kCSSColorValue:
-      break;
-    case V8CanvasStyleType::kGradient:
-      identifiability_study_helper_.UpdateBuilder(
-          style.gradient->GetIdentifiableToken());
-      break;
-    case V8CanvasStyleType::kPattern:
-      identifiability_study_helper_.UpdateBuilder(
-          style.pattern->GetIdentifiableToken());
-      break;
-    case V8CanvasStyleType::kString:
-      identifiability_study_helper_.UpdateBuilder(
-          IdentifiabilityBenignStringToken(style.string));
-      break;
-  }
-}
-
 RespectImageOrientationEnum
 Canvas2DRecorderContext::RespectImageOrientationInternal(
     CanvasImageSource* image_source) {
@@ -904,26 +869,6 @@ Canvas2DRecorderContext::RespectImageOrientationInternal(
 v8::Local<v8::Value> Canvas2DRecorderContext::strokeStyle(
     ScriptState* script_state) const {
   return CanvasStyleToV8(script_state, GetState().StrokeStyle());
-}
-
-void Canvas2DRecorderContext::
-    UpdateIdentifiabilityStudyBeforeSettingStrokeOrFill(
-        const V8CanvasStyle& v8_style,
-        CanvasOps op) {
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(op);
-    IdentifiabilityUpdateForStyleUnion(v8_style);
-  }
-}
-
-void Canvas2DRecorderContext::
-    UpdateIdentifiabilityStudyBeforeSettingStrokeOrFill(
-        v8::Local<v8::String> v8_string,
-        CanvasOps op) {
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(op);
-    identifiability_study_helper_.UpdateBuilder(v8_string->GetIdentityHash());
-  }
 }
 
 bool Canvas2DRecorderContext::ExtractColorFromV8StringAndUpdateCache(
@@ -980,8 +925,6 @@ void Canvas2DRecorderContext::setStrokeStyle(v8::Isolate* isolate,
   // from the string is expensive) so we keep a map of string to color.
   if (value->IsString()) {
     v8::Local<v8::String> v8_string = value.As<v8::String>();
-    UpdateIdentifiabilityStudyBeforeSettingStrokeOrFill(
-        v8_string, CanvasOps::kSetStrokeStyle);
     if (state.IsUnparsedStrokeColor(v8_string)) {
       return;
     }
@@ -1007,9 +950,6 @@ void Canvas2DRecorderContext::setStrokeStyle(v8::Isolate* isolate,
   if (!ExtractV8CanvasStyle(isolate, value, v8_style, exception_state)) {
     return;
   }
-
-  UpdateIdentifiabilityStudyBeforeSettingStrokeOrFill(
-      v8_style, CanvasOps::kSetStrokeStyle);
 
   switch (v8_style.type) {
     case V8CanvasStyleType::kCSSColorValue:
@@ -1108,8 +1048,6 @@ void Canvas2DRecorderContext::setFillStyle(v8::Isolate* isolate,
   // details on this.
   if (value->IsString()) {
     v8::Local<v8::String> v8_string = value.As<v8::String>();
-    UpdateIdentifiabilityStudyBeforeSettingStrokeOrFill(
-        v8_string, CanvasOps::kSetFillStyle);
     if (state.IsUnparsedFillColor(v8_string)) {
       return;
     }
@@ -1131,9 +1069,6 @@ void Canvas2DRecorderContext::setFillStyle(v8::Isolate* isolate,
   if (!ExtractV8CanvasStyle(isolate, value, v8_style, exception_state)) {
     return;
   }
-
-  UpdateIdentifiabilityStudyBeforeSettingStrokeOrFill(v8_style,
-                                                      CanvasOps::kSetFillStyle);
 
   switch (v8_style.type) {
     case V8CanvasStyleType::kCSSColorValue:
@@ -1177,10 +1112,6 @@ void Canvas2DRecorderContext::setLineWidth(double width) {
   if (state.LineWidth() == width) {
     return;
   }
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(CanvasOps::kSetLineWidth,
-                                                width);
-  }
   state.SetLineWidth(ClampTo<float>(width));
 }
 
@@ -1196,9 +1127,6 @@ void Canvas2DRecorderContext::setLineCap(const String& s) {
   CanvasRenderingContext2DState& state = GetState();
   if (state.GetLineCap() == cap) {
     return;
-  }
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(CanvasOps::kSetLineCap, cap);
   }
   state.SetLineCap(cap);
 }
@@ -1216,9 +1144,6 @@ void Canvas2DRecorderContext::setLineJoin(const String& s) {
   if (state.GetLineJoin() == join) {
     return;
   }
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(CanvasOps::kSetLineJoin, join);
-  }
   state.SetLineJoin(join);
 }
 
@@ -1233,10 +1158,6 @@ void Canvas2DRecorderContext::setMiterLimit(double limit) {
   CanvasRenderingContext2DState& state = GetState();
   if (state.MiterLimit() == limit) {
     return;
-  }
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(CanvasOps::kSetMiterLimit,
-                                                limit);
   }
   state.SetMiterLimit(ClampTo<float>(limit));
 }
@@ -1259,10 +1180,6 @@ void Canvas2DRecorderContext::setShadowOffsetX(double x) {
   if (state.ShadowOffset().x() == x) {
     return;
   }
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(CanvasOps::kSetShadowOffsetX,
-                                                x);
-  }
   state.SetShadowOffsetX(ClampTo<float>(x));
 }
 
@@ -1279,10 +1196,6 @@ void Canvas2DRecorderContext::setShadowOffsetY(double y) {
   if (state.ShadowOffset().y() == y) {
     return;
   }
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(CanvasOps::kSetShadowOffsetY,
-                                                y);
-  }
   state.SetShadowOffsetY(ClampTo<float>(y));
 }
 
@@ -1298,10 +1211,6 @@ void Canvas2DRecorderContext::setShadowBlur(double blur) {
   CanvasRenderingContext2DState& state = GetState();
   if (state.ShadowBlur() == blur) {
     return;
-  }
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(CanvasOps::kSetShadowBlur,
-                                                blur);
   }
   state.SetShadowBlur(ClampTo<float>(blur));
 }
@@ -1322,10 +1231,6 @@ void Canvas2DRecorderContext::setShadowColor(const String& color_string) {
   if (state.ShadowColor() == color) {
     return;
   }
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(CanvasOps::kSetShadowColor,
-                                                color.Rgb());
-  }
   state.SetShadowColor(color);
 }
 
@@ -1342,10 +1247,6 @@ void Canvas2DRecorderContext::setLineDash(const Vector<double>& dash) {
   if (!LineDashSequenceIsValid(dash)) {
     return;
   }
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(CanvasOps::kSetLineDash,
-                                                base::span(dash));
-  }
   GetState().SetLineDash(dash);
 }
 
@@ -1357,10 +1258,6 @@ void Canvas2DRecorderContext::setLineDashOffset(double offset) {
   CanvasRenderingContext2DState& state = GetState();
   if (!std::isfinite(offset) || state.LineDashOffset() == offset) {
     return;
-  }
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(CanvasOps::kSetLineDashOffset,
-                                                offset);
   }
   state.SetLineDashOffset(ClampTo<float>(offset));
 }
@@ -1376,10 +1273,6 @@ void Canvas2DRecorderContext::setGlobalAlpha(double alpha) {
   CanvasRenderingContext2DState& state = GetState();
   if (state.GlobalAlpha() == alpha) {
     return;
-  }
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(CanvasOps::kSetGlobalAlpha,
-                                                alpha);
   }
   state.SetGlobalAlpha(alpha);
 }
@@ -1413,10 +1306,6 @@ void Canvas2DRecorderContext::setGlobalCompositeOperation(
   if (state.GlobalComposite() == sk_blend_mode) {
     return;
   }
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(
-        CanvasOps::kSetGlobalCompositeOpertion, sk_blend_mode);
-  }
   state.SetGlobalComposite(sk_blend_mode);
 }
 
@@ -1443,16 +1332,9 @@ void Canvas2DRecorderContext::setFilter(
                         WebFeature::kCanvasRenderingContext2DCanvasFilter);
       state.SetCanvasFilter(input->GetAsCanvasFilter());
       SnapshotStateForFilter();
-      // TODO(crbug.com/40191831): Instrument new canvas APIs.
-      identifiability_study_helper_.set_encountered_skipped_ops();
       break;
     case V8UnionCanvasFilterOrString::ContentType::kString: {
       const String& filter_string = input->GetAsString();
-      if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-        identifiability_study_helper_.UpdateBuilder(
-            CanvasOps::kSetFilter,
-            IdentifiabilitySensitiveStringToken(filter_string));
-      }
       if (!state.GetCanvasFilter() && !state.IsFontDirtyForFilter() &&
           filter_string == state.UnparsedCSSFilter()) {
         return;
@@ -1484,9 +1366,6 @@ void Canvas2DRecorderContext::scale(double sx, double sy) {
   if (!std::isfinite(sx) || !std::isfinite(sy)) {
     return;
   }
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(CanvasOps::kScale, sx, sy);
-  }
 
   const CanvasRenderingContext2DState& state = GetState();
   AffineTransform new_transform = state.GetTransform();
@@ -1514,10 +1393,6 @@ void Canvas2DRecorderContext::rotate(double angle_in_radians) {
 
   if (!std::isfinite(angle_in_radians)) {
     return;
-  }
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(CanvasOps::kRotate,
-                                                angle_in_radians);
   }
 
   const CanvasRenderingContext2DState& state = GetState();
@@ -1550,9 +1425,6 @@ void Canvas2DRecorderContext::translate(double tx, double ty) {
 
   if (!std::isfinite(tx) || !std::isfinite(ty)) {
     return;
-  }
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(CanvasOps::kTranslate, tx, ty);
   }
 
   const CanvasRenderingContext2DState& state = GetState();
@@ -1596,10 +1468,6 @@ void Canvas2DRecorderContext::transform(double m11,
   float fm22 = ClampTo<float>(m22);
   float fdx = ClampTo<float>(dx);
   float fdy = ClampTo<float>(dy);
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(CanvasOps::kTransform, fm11,
-                                                fm12, fm21, fm22, fdx, fdy);
-  }
 
   AffineTransform transform(fm11, fm12, fm21, fm22, fdx, fdy);
   const CanvasRenderingContext2DState& state = GetState();
@@ -1628,9 +1496,6 @@ void Canvas2DRecorderContext::resetTransform() {
   cc::PaintCanvas* c = GetOrCreatePaintCanvas();
   if (!c) {
     return;
-  }
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(CanvasOps::kResetTransform);
   }
 
   CanvasRenderingContext2DState& state = GetState();
@@ -1709,9 +1574,6 @@ AffineTransform Canvas2DRecorderContext::GetTransform() const {
 
 void Canvas2DRecorderContext::beginPath() {
   Clear();
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(CanvasOps::kBeginPath);
-  }
 }
 
 void Canvas2DRecorderContext::DrawPathInternal(
@@ -1823,9 +1685,6 @@ void Canvas2DRecorderContext::fill(const V8CanvasFillRule& winding) {
 }
 
 void Canvas2DRecorderContext::FillImpl(SkPathFillType winding_rule) {
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(CanvasOps::kFill, winding_rule);
-  }
   DrawPathInternal(*this, CanvasRenderingContext2DState::kFillPaintType,
                    winding_rule, UsePaintCache::kDisabled);
 }
@@ -1841,27 +1700,16 @@ void Canvas2DRecorderContext::fill(Path2D* dom_path,
 
 void Canvas2DRecorderContext::FillPathImpl(Path2D* dom_path,
                                            SkPathFillType winding_rule) {
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(
-        CanvasOps::kFill__Path, dom_path->GetIdentifiableToken(), winding_rule);
-  }
   DrawPathInternal(*dom_path, CanvasRenderingContext2DState::kFillPaintType,
                    winding_rule, path2d_use_paint_cache_);
 }
 
 void Canvas2DRecorderContext::stroke() {
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(CanvasOps::kStroke);
-  }
   DrawPathInternal(*this, CanvasRenderingContext2DState::kStrokePaintType,
                    SkPathFillType::kWinding, UsePaintCache::kDisabled);
 }
 
 void Canvas2DRecorderContext::stroke(Path2D* dom_path) {
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(
-        CanvasOps::kStroke__Path, dom_path->GetIdentifiableToken());
-  }
   DrawPathInternal(*dom_path, CanvasRenderingContext2DState::kStrokePaintType,
                    SkPathFillType::kWinding, path2d_use_paint_cache_);
 }
@@ -1876,10 +1724,6 @@ void Canvas2DRecorderContext::fillRect(double x,
 
   if (!GetOrCreatePaintCanvas()) {
     return;
-  }
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(CanvasOps::kFillRect, x, y,
-                                                width, height);
   }
 
   // We are assuming that if the pattern is not accelerated and the current
@@ -1944,10 +1788,6 @@ void Canvas2DRecorderContext::strokeRect(double x,
   if (!GetOrCreatePaintCanvas()) {
     return;
   }
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(CanvasOps::kStrokeRect, x, y,
-                                                width, height);
-  }
 
   // clamp to float to avoid float cast overflow when used as SkScalar
   AdjustRectForCanvas(x, y, width, height);
@@ -1996,21 +1836,11 @@ void Canvas2DRecorderContext::ClipInternal(const Path& path,
 }
 
 void Canvas2DRecorderContext::clip(const V8CanvasFillRule& winding_rule) {
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(
-        CanvasOps::kClip,
-        IdentifiabilitySensitiveStringToken(winding_rule.AsString()));
-  }
   ClipInternal(GetPath(), winding_rule, UsePaintCache::kDisabled);
 }
 
 void Canvas2DRecorderContext::clip(Path2D* dom_path,
                                    const V8CanvasFillRule& winding_rule) {
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(
-        CanvasOps::kClip__Path, dom_path->GetIdentifiableToken(),
-        IdentifiabilitySensitiveStringToken(winding_rule.AsString()));
-  }
   ClipInternal(dom_path->GetPath(), winding_rule, path2d_use_paint_cache_);
 }
 
@@ -2124,10 +1954,6 @@ void Canvas2DRecorderContext::clearRect(double x,
   SkIRect clip_bounds;
   if (!c->getDeviceClipBounds(&clip_bounds)) {
     return;
-  }
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(CanvasOps::kClearRect, x, y,
-                                                width, height);
   }
 
   cc::PaintFlags clear_flags = GetClearFlags();
@@ -2455,12 +2281,6 @@ void Canvas2DRecorderContext::drawImage(CanvasImageSource* image_source,
   if (src_rect.IsEmpty()) {
     return;
   }
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(
-        CanvasOps::kDrawImage, fsx, fsy, fsw, fsh, fdx, fdy, fdw, fdh,
-        image ? image->width() : 0, image ? image->height() : 0);
-    identifiability_study_helper_.set_encountered_partially_digested_image();
-  }
 
   ValidateStateStack();
 
@@ -2516,11 +2336,8 @@ CanvasGradient* Canvas2DRecorderContext::createLinearGradient(double x0,
   float fx1 = ClampTo<float>(x1);
   float fy1 = ClampTo<float>(y1);
 
-  auto* gradient = MakeGarbageCollected<CanvasGradient>(gfx::PointF(fx0, fy0),
-                                                        gfx::PointF(fx1, fy1));
-  gradient->SetExecutionContext(
-      identifiability_study_helper_.execution_context());
-  return gradient;
+  return MakeGarbageCollected<CanvasGradient>(gfx::PointF(fx0, fy0),
+                                              gfx::PointF(fx1, fy1));
 }
 
 CanvasGradient* Canvas2DRecorderContext::createRadialGradient(
@@ -2552,11 +2369,8 @@ CanvasGradient* Canvas2DRecorderContext::createRadialGradient(
   float fy1 = ClampTo<float>(y1);
   float fr1 = ClampTo<float>(r1);
 
-  auto* gradient = MakeGarbageCollected<CanvasGradient>(
-      gfx::PointF(fx0, fy0), fr0, gfx::PointF(fx1, fy1), fr1);
-  gradient->SetExecutionContext(
-      identifiability_study_helper_.execution_context());
-  return gradient;
+  return MakeGarbageCollected<CanvasGradient>(gfx::PointF(fx0, fy0), fr0,
+                                              gfx::PointF(fx1, fy1), fr1);
 }
 
 CanvasGradient* Canvas2DRecorderContext::createConicGradient(double startAngle,
@@ -2568,8 +2382,6 @@ CanvasGradient* Canvas2DRecorderContext::createConicGradient(double startAngle,
       !std::isfinite(centerY)) {
     return nullptr;
   }
-  // TODO(crbug.com/40191831): Instrument new canvas APIs.
-  identifiability_study_helper_.set_encountered_skipped_ops();
 
   // clamp to float to avoid float cast overflow
   float a = ClampTo<float>(startAngle);
@@ -2580,10 +2392,7 @@ CanvasGradient* Canvas2DRecorderContext::createConicGradient(double startAngle,
   // |startAngle| at 0 starts from x-axis.
   a = Rad2deg(a) + 90;
 
-  auto* gradient = MakeGarbageCollected<CanvasGradient>(a, gfx::PointF(x, y));
-  gradient->SetExecutionContext(
-      identifiability_study_helper_.execution_context());
-  return gradient;
+  return MakeGarbageCollected<CanvasGradient>(a, gfx::PointF(x, y));
 }
 
 CanvasPattern* Canvas2DRecorderContext::createPattern(
@@ -2675,8 +2484,6 @@ CanvasPattern* Canvas2DRecorderContext::createPattern(
   auto* pattern = MakeGarbageCollected<CanvasPattern>(
       std::move(image_for_rendering), repeat_mode, origin_clean,
       source_high_entropy_canvas_op_types);
-  pattern->SetExecutionContext(
-      identifiability_study_helper_.execution_context());
   return pattern;
 }
 
@@ -2849,10 +2656,6 @@ void Canvas2DRecorderContext::setImageSmoothingEnabled(bool enabled) {
   if (enabled == state.ImageSmoothingEnabled()) {
     return;
   }
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(
-        CanvasOps::kSetImageSmoothingEnabled, enabled);
-  }
 
   state.SetImageSmoothingEnabled(enabled);
 }
@@ -2868,11 +2671,6 @@ void Canvas2DRecorderContext::setImageSmoothingQuality(
     return;
   }
 
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(
-        CanvasOps::kSetImageSmoothingQuality,
-        IdentifiabilitySensitiveStringToken(quality.AsString()));
-  }
   state.SetImageSmoothingQuality(quality);
 }
 

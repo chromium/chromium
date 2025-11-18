@@ -50,10 +50,6 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_metrics.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/gpu/gpu.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -123,7 +119,6 @@
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/image-encoders/image_encoder_utils.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-#include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "ui/base/resource/resource_scale_factor.h"
@@ -553,26 +548,6 @@ void HTMLCanvasElement::RegisterRenderingContextFactory(
       std::move(rendering_context_factory);
 }
 
-void HTMLCanvasElement::RecordIdentifiabilityMetric(
-    IdentifiableSurface surface,
-    IdentifiableToken value) const {
-  blink::IdentifiabilityMetricBuilder(GetDocument().UkmSourceID())
-      .Add(surface, value)
-      .Record(GetDocument().UkmRecorder());
-}
-
-void HTMLCanvasElement::IdentifiabilityReportWithDigest(
-    IdentifiableToken canvas_contents_token) const {
-  if (IdentifiabilityStudySettings::Get()->ShouldSampleType(
-          blink::IdentifiableSurface::Type::kCanvasReadback)) {
-    RecordIdentifiabilityMetric(
-        blink::IdentifiableSurface::FromTypeAndToken(
-            blink::IdentifiableSurface::Type::kCanvasReadback,
-            IdentifiabilityInputDigest(context_)),
-        canvas_contents_token.ToUkmMetricValue());
-  }
-}
-
 CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContext(
     ExecutionContext* execution_context,
     const String& type,
@@ -580,17 +555,6 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContext(
   auto* old_contents_cc_layer = ContentsCcLayer();
   auto* result =
       GetCanvasRenderingContextInternal(execution_context, type, attributes);
-
-  Document& doc = GetDocument();
-  if (IdentifiabilityStudySettings::Get()->ShouldSampleType(
-          IdentifiableSurface::Type::kCanvasRenderingContext)) {
-    IdentifiabilityMetricBuilder(doc.UkmSourceID())
-        .Add(IdentifiableSurface::FromTypeAndToken(
-                 IdentifiableSurface::Type::kCanvasRenderingContext,
-                 CanvasRenderingContext::RenderingAPIFromId(type)),
-             !!result)
-        .Record(doc.UkmRecorder());
-  }
 
   if (ContentsCcLayer() != old_contents_cc_layer)
     SetNeedsCompositingUpdate();
@@ -1291,7 +1255,6 @@ String HTMLCanvasElement::ToDataURLInternal(
       // Currently we only support three encoding types.
       NOTREACHED();
     }
-    IdentifiabilityReportWithDigest(IdentifiabilityBenignStringToken(data_url));
     TRACE_EVENT_INSTANT(
         TRACE_DISABLED_BY_DEFAULT("identifiability.high_entropy_api"),
         "CanvasReadback", "data_url", data_url.Utf8());
@@ -1374,11 +1337,7 @@ void HTMLCanvasElement::toBlob(V8BlobCallback* callback,
     async_creator = MakeGarbageCollected<CanvasAsyncBlobCreator>(
         image_bitmap, options,
         CanvasAsyncBlobCreator::kHTMLCanvasToBlobCallback, callback, start_time,
-        GetExecutionContext(),
-        IdentifiabilityStudySettings::Get()->ShouldSampleType(
-            IdentifiableSurface::Type::kCanvasReadback)
-            ? IdentifiabilityInputDigest(context_)
-            : 0);
+        GetExecutionContext());
   }
 
   if (async_creator) {

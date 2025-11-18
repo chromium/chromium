@@ -13,7 +13,6 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_encode_options.h"
@@ -235,32 +234,6 @@ ImageBitmapSourceStatus CanvasRenderingContextHost::CheckUsability() const {
                                 : ImageBitmapSourceError::kZeroHeight);
   }
   return base::ok();
-}
-
-IdentifiableToken CanvasRenderingContextHost::IdentifiabilityInputDigest(
-    const CanvasRenderingContext* const context) const {
-  const uint64_t context_digest =
-      context ? context->IdentifiableTextToken().ToUkmMetricValue() : 0;
-  const uint64_t context_type = static_cast<uint64_t>(
-      context ? context->GetRenderingAPI()
-              : CanvasRenderingContext::CanvasRenderingAPI::kUnknown);
-  const bool encountered_skipped_ops =
-      context && context->IdentifiabilityEncounteredSkippedOps();
-  const bool encountered_sensitive_ops =
-      context && context->IdentifiabilityEncounteredSensitiveOps();
-  const bool encountered_partially_digested_image =
-      context && context->IdentifiabilityEncounteredPartiallyDigestedImage();
-  // Bits [0-3] are the context type, bits [4-6] are skipped ops, sensitive
-  // ops, and partial image ops bits, respectively. The remaining bits are
-  // for the canvas digest.
-  uint64_t final_digest = (context_digest << 7) | context_type;
-  if (encountered_skipped_ops)
-    final_digest |= IdentifiableSurface::CanvasTaintBit::kSkipped;
-  if (encountered_sensitive_ops)
-    final_digest |= IdentifiableSurface::CanvasTaintBit::kSensitive;
-  if (encountered_partially_digested_image)
-    final_digest |= IdentifiableSurface::CanvasTaintBit::kPartiallyDigested;
-  return final_digest;
 }
 
 void CanvasRenderingContextHost::PageVisibilityChanged() {

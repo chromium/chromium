@@ -35,7 +35,6 @@
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
 #include "cc/paint/paint_record.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_performance_monitor.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
@@ -45,7 +44,6 @@
 #include "third_party/blink/renderer/core/style/filter_operations.h"
 #include "third_party/blink/renderer/core/svg/svg_resource_client.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/base_rendering_context_2d.h"
-#include "third_party/blink/renderer/modules/canvas/canvas2d/identifiability_study_helper.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
@@ -246,23 +244,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
                                   ImageDataSettings*,
                                   ExceptionState&) final;
 
-  IdentifiableToken IdentifiableTextToken() const override {
-    return identifiability_study_helper_.GetToken();
-  }
-
-  bool IdentifiabilityEncounteredSkippedOps() const override {
-    return identifiability_study_helper_.encountered_skipped_ops();
-  }
-
-  bool IdentifiabilityEncounteredSensitiveOps() const override {
-    return identifiability_study_helper_.encountered_sensitive_ops();
-  }
-
   void SendContextLostEventIfNeeded() override;
-
-  bool IdentifiabilityEncounteredPartiallyDigestedImage() const override {
-    return identifiability_study_helper_.encountered_partially_digested_image();
-  }
 
   CanvasResourceProvider* GetOrCreateResourceProvider() override;
   void SetCanvas2DResourceProviderForTesting(
@@ -319,10 +301,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   void ScrollPathIntoViewInternal(const Path&);
 
-  void DrawFocusIfNeededInternal(
-      const Path&,
-      Element*,
-      IdentifiableToken path_hash = IdentifiableToken());
+  void DrawFocusIfNeededInternal(const Path&, Element*);
   bool FocusRingCallIsValid(const Path&, Element*);
   void DrawFocusRing(const Path&, Element*);
   void UpdateElementAccessibility(const Path&, Element*);

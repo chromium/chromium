@@ -13,12 +13,10 @@
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_factory.h"
 #include "third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/base_rendering_context_2d.h"
-#include "third_party/blink/renderer/modules/canvas/canvas2d/identifiability_study_helper.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_color_params.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
-#include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 
 namespace blink {
 
@@ -119,22 +117,6 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
 
   CanvasRenderingContextHost* GetCanvasRenderingContextHost() const override;
   ExecutionContext* GetTopExecutionContext() const override;
-
-  IdentifiableToken IdentifiableTextToken() const override {
-    return identifiability_study_helper_.GetToken();
-  }
-
-  bool IdentifiabilityEncounteredSkippedOps() const override {
-    return identifiability_study_helper_.encountered_skipped_ops();
-  }
-
-  bool IdentifiabilityEncounteredSensitiveOps() const override {
-    return identifiability_study_helper_.encountered_sensitive_ops();
-  }
-
-  bool IdentifiabilityEncounteredPartiallyDigestedImage() const override {
-    return identifiability_study_helper_.encountered_partially_digested_image();
-  }
 
   std::optional<cc::PaintRecord> FlushCanvas(FlushReason) override;
 

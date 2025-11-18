@@ -95,8 +95,6 @@ class Path;
 class Path2D;
 class ScriptState;
 class V8UnionCanvasFilterOrString;
-struct V8CanvasStyle;
-enum class CanvasOps;
 enum class ColorParseResult;
 enum RespectImageOrientationEnum : uint8_t;
 template <typename T>
@@ -662,20 +660,8 @@ class MODULES_EXPORT Canvas2DRecorderContext : public CanvasPath {
 
   virtual std::optional<cc::PaintRecord> FlushCanvas(FlushReason) = 0;
 
-  // Only call if identifiability_study_helper_.ShouldUpdateBuilder() returns
-  // true.
-  void IdentifiabilityUpdateForStyleUnion(const V8CanvasStyle& style);
-
   RespectImageOrientationEnum RespectImageOrientationInternal(
       CanvasImageSource*);
-
-  // Updates the identifiability study before changing stroke or fill styles.
-  void UpdateIdentifiabilityStudyBeforeSettingStrokeOrFill(
-      const V8CanvasStyle& v8_style,
-      CanvasOps op);
-  void UpdateIdentifiabilityStudyBeforeSettingStrokeOrFill(
-      v8::Local<v8::String> v8_string,
-      CanvasOps op);
 
   // Parses the string as a color and returns the result of parsing.
   ColorParseResult ParseColorOrCurrentColor(const String& color_string,

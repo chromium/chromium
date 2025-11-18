@@ -32,8 +32,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "cc/layers/texture_layer_client.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_blob_callback.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -347,16 +345,6 @@ class CORE_EXPORT HTMLCanvasElement final
   void Dispose();
 
   void ColorSchemeMayHaveChanged();
-
-  void RecordIdentifiabilityMetric(IdentifiableSurface surface,
-                                   IdentifiableToken value) const;
-
-  // If the user is enrolled in the identifiability study, report the canvas
-  // type, and if applicable, canvas digest, taint bits, and
-  // |canvas_contents_token|, which represents the current bitmap displayed by
-  // this canvas.
-  void IdentifiabilityReportWithDigest(
-      IdentifiableToken canvas_contents_token) const;
 
   void PaintInternal(GraphicsContext&, const PhysicalRect&);
 

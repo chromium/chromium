@@ -26,11 +26,9 @@
 
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_gradient.h"
 
-#include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_color_interpolation_method.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_hue_interpolation_method.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_style.h"
-#include "third_party/blink/renderer/modules/canvas/canvas2d/identifiability_study_helper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -108,10 +106,6 @@ CanvasGradient::CanvasGradient(const gfx::PointF& p0, const gfx::PointF& p1)
                                  Gradient::SpreadMethod::kPad,
                                  Gradient::PremultipliedAlpha::kUnpremultiplied,
                                  Gradient::DegenerateHandling::kDisallow)) {
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(
-        CanvasOps::kCreateLinearGradient, p0.x(), p0.y(), p1.x(), p1.y());
-  }
 }
 
 CanvasGradient::CanvasGradient(const gfx::PointF& p0,
@@ -127,11 +121,6 @@ CanvasGradient::CanvasGradient(const gfx::PointF& p0,
                                  Gradient::SpreadMethod::kPad,
                                  Gradient::PremultipliedAlpha::kUnpremultiplied,
                                  Gradient::DegenerateHandling::kDisallow)) {
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(
-        CanvasOps::kCreateRadialGradient, p0.x(), p0.y(), r0, p1.x(), p1.y(),
-        r1);
-  }
 }
 
 // CanvasRenderingContext2D.createConicGradient only takes one angle argument
@@ -164,20 +153,8 @@ void CanvasGradient::addColorStop(double value,
                                           "') could not be parsed as a color.");
     return;
   }
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(CanvasOps::kAddColorStop, value,
-                                                color.Rgb());
-  }
 
   gradient_->AddColorStop(value, color);
-}
-
-IdentifiableToken CanvasGradient::GetIdentifiableToken() const {
-  return identifiability_study_helper_.GetToken();
-}
-
-void CanvasGradient::SetExecutionContext(ExecutionContext* context) {
-  identifiability_study_helper_.SetExecutionContext(context);
 }
 
 void CanvasGradient::setColorInterpolationMethod(
@@ -196,11 +173,6 @@ void CanvasGradient::setHueInterpolationMethod(
       V8ColorSpaceToColorSpace(color_interpolation_method_),
       V8HueInterpolationMethodToHueInterpolationMethod(
           hue_interpolation_method_));
-}
-
-void CanvasGradient::Trace(Visitor* visitor) const {
-  visitor->Trace(identifiability_study_helper_);
-  ScriptWrappable::Trace(visitor);
 }
 
 }  // namespace blink

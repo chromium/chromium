@@ -59,7 +59,6 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scroll_enums.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
@@ -202,8 +201,6 @@ CanvasRenderingContext2D::CanvasRenderingContext2D(
           attrs,
           canvas->GetDocument().GetTaskRunner(TaskType::kInternalDefault)),
       should_prune_local_font_cache_(false) {
-  identifiability_study_helper_.SetExecutionContext(
-      canvas->GetTopExecutionContext());
   if (canvas->GetDocument().GetSettings() &&
       canvas->GetDocument().GetSettings()->GetAntialiasedClips2dCanvasEnabled())
     clip_antialiasing_ = kAntiAliased;
@@ -1042,14 +1039,11 @@ void CanvasRenderingContext2D::drawFocusIfNeeded(Element* element) {
 
 void CanvasRenderingContext2D::drawFocusIfNeeded(Path2D* path2d,
                                                  Element* element) {
-  DrawFocusIfNeededInternal(path2d->GetPath(), element,
-                            path2d->GetIdentifiableToken());
+  DrawFocusIfNeededInternal(path2d->GetPath(), element);
 }
 
-void CanvasRenderingContext2D::DrawFocusIfNeededInternal(
-    const Path& path,
-    Element* element,
-    IdentifiableToken path_token) {
+void CanvasRenderingContext2D::DrawFocusIfNeededInternal(const Path& path,
+                                                         Element* element) {
   if (!FocusRingCallIsValid(path, element))
     return;
 
@@ -1057,10 +1051,6 @@ void CanvasRenderingContext2D::DrawFocusIfNeededInternal(
   // element->focused(), because element->focused() isn't updated until after
   // focus events fire.
   if (element->GetDocument().FocusedElement() == element) {
-    if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-      identifiability_study_helper_.UpdateBuilder(CanvasOps::kDrawFocusIfNeeded,
-                                                  path_token);
-    }
     ScrollPathIntoViewInternal(path);
     DrawFocusRing(path, element);
   }

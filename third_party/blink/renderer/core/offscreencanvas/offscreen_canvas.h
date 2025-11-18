@@ -242,9 +242,6 @@ class CORE_EXPORT OffscreenCanvas final
   static ContextFactoryVector& RenderingContextFactories();
   static CanvasRenderingContextFactory* GetRenderingContextFactory(int);
 
-  void RecordIdentifiabilityMetric(const blink::IdentifiableSurface& surface,
-                                   const IdentifiableToken& token) const;
-
   Member<CanvasRenderingContext> context_;
   WeakMember<ExecutionContext> execution_context_;
 

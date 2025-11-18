@@ -27,9 +27,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/scoped_refptr.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/renderer/core/geometry/dom_matrix_read_only.h"
-#include "third_party/blink/renderer/modules/canvas/canvas2d/identifiability_study_helper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -74,11 +72,6 @@ CanvasPattern::CanvasPattern(
     : pattern_(Pattern::CreateImagePattern(image, repeat)),
       origin_clean_(origin_clean),
       high_entropy_canvas_op_types_(high_entropy_canvas_op_types) {
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(
-        CanvasOps::kCreatePattern, image ? image->width() : 0,
-        image ? image->height() : 0, repeat);
-  }
 }
 
 void CanvasPattern::setTransform(DOMMatrix2DInit* transform,
@@ -89,25 +82,7 @@ void CanvasPattern::setTransform(DOMMatrix2DInit* transform,
   if (!m) {
     return;
   }
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(m->m11(), m->m12(), m->m21(),
-                                                m->m22(), m->m41(), m->m42());
-  }
-
   pattern_transform_ = m->GetAffineTransform();
-}
-
-IdentifiableToken CanvasPattern::GetIdentifiableToken() const {
-  return identifiability_study_helper_.GetToken();
-}
-
-void CanvasPattern::SetExecutionContext(ExecutionContext* context) {
-  identifiability_study_helper_.SetExecutionContext(context);
-}
-
-void CanvasPattern::Trace(Visitor* visitor) const {
-  visitor->Trace(identifiability_study_helper_);
-  ScriptWrappable::Trace(visitor);
 }
 
 }  // namespace blink

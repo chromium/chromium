@@ -59,7 +59,6 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_2d_recorder_context.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d_state.h"
-#include "third_party/blink/renderer/modules/canvas/canvas2d/identifiability_study_helper.h"
 #include "third_party/blink/renderer/modules/canvas/htmlcanvas/canvas_context_creation_attributes_helpers.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_conversions.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_enum_conversions.h"
@@ -89,7 +88,6 @@
 #include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-#include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/layout_locale.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
@@ -584,14 +582,6 @@ void BaseRenderingContext2D::putImageData(ImageData* data,
     return;
   }
 
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(
-        CanvasOps::kPutImageData, data->width(), data->height(),
-        data->GetPredefinedColorSpace(), data->GetSkColorType(), dx, dy,
-        dirty_x, dirty_y, dirty_width, dirty_height);
-    identifiability_study_helper_.set_encountered_partially_digested_image();
-  }
-
   if (dirty_width < 0) {
     if (dirty_x < 0) {
       dirty_x = dirty_width = 0;
@@ -702,11 +692,6 @@ V8CanvasTextAlign BaseRenderingContext2D::textAlign() const {
 }
 
 void BaseRenderingContext2D::setTextAlign(const V8CanvasTextAlign align) {
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(
-        CanvasOps::kSetTextAlign,
-        IdentifiabilityBenignStringToken(align.AsString()));
-  }
   GetState().SetTextAlign(align);
 }
 
@@ -716,11 +701,6 @@ V8CanvasTextBaseline BaseRenderingContext2D::textBaseline() const {
 
 void BaseRenderingContext2D::setTextBaseline(
     const V8CanvasTextBaseline baseline) {
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(
-        CanvasOps::kSetTextBaseline,
-        IdentifiabilityBenignStringToken(baseline.AsString()));
-  }
   GetState().SetTextBaseline(baseline);
 }
 
@@ -860,11 +840,6 @@ bool BaseRenderingContext2D::CurrentFontResolvedAndUpToDate() const {
 void BaseRenderingContext2D::setFont(const String& new_font) {
   if (!WillSetFont()) [[unlikely]] {
     return;
-  }
-
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(
-        CanvasOps::kSetFont, IdentifiabilityBenignStringToken(new_font));
   }
 
   CanvasRenderingContext2DState& state = GetState();
@@ -1071,17 +1046,6 @@ void BaseRenderingContext2D::DrawTextInternal(
     return;
   }
 
-  // TODO(crbug.com/40191831): Remove once identifiability study is removed.
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(
-        paint_type == CanvasRenderingContext2DState::kFillPaintType
-            ? CanvasOps::kFillText
-            : CanvasOps::kStrokeText,
-        IdentifiabilitySensitiveStringToken(text), x, y,
-        max_width ? *max_width : -1);
-    identifiability_study_helper_.set_encountered_sensitive_ops();
-  }
-
   const Font* font =
       (cluster_font != nullptr) ? cluster_font : AccessFont(canvas);
   const SimpleFontData* font_data = font->PrimaryFont();
@@ -1236,9 +1200,6 @@ void BaseRenderingContext2D::setLang(const String& lang_string) {
     return;
   }
 
-  // TODO(crbug.com/40191831): Instrument new canvas APIs.
-  identifiability_study_helper_.set_encountered_skipped_ops();
-
   state.SetLang(lang_string);
 
   // If the font has been realized, reset it to account for the new lang
@@ -1262,8 +1223,6 @@ const LayoutLocale* BaseRenderingContext2D::LocaleFromLang() {
 void BaseRenderingContext2D::setLetterSpacing(const String& letter_spacing) {
   UseCounter::Count(GetTopExecutionContext(),
                     WebFeature::kCanvasRenderingContext2DLetterSpacing);
-  // TODO(crbug.com/40191831): Instrument new canvas APIs.
-  identifiability_study_helper_.set_encountered_skipped_ops();
   CanvasRenderingContext2DState& state = GetState();
   if (!state.HasRealizedFont()) {
     setFont(font());
@@ -1275,9 +1234,6 @@ void BaseRenderingContext2D::setLetterSpacing(const String& letter_spacing) {
 void BaseRenderingContext2D::setWordSpacing(const String& word_spacing) {
   UseCounter::Count(GetTopExecutionContext(),
                     WebFeature::kCanvasRenderingContext2DWordSpacing);
-  // TODO(crbug.com/1234113): Instrument new canvas APIs.
-  identifiability_study_helper_.set_encountered_skipped_ops();
-
   CanvasRenderingContext2DState& state = GetState();
   if (!state.HasRealizedFont()) {
     setFont(font());
@@ -1290,8 +1246,6 @@ void BaseRenderingContext2D::setTextRendering(
     const V8CanvasTextRendering& text_rendering) {
   UseCounter::Count(GetTopExecutionContext(),
                     WebFeature::kCanvasRenderingContext2DTextRendering);
-  // TODO(crbug.com/1234113): Instrument new canvas APIs.
-  identifiability_study_helper_.set_encountered_skipped_ops();
   CanvasRenderingContext2DState& state = GetState();
   if (!state.HasRealizedFont()) {
     setFont(font());
@@ -1307,8 +1261,6 @@ void BaseRenderingContext2D::setFontKerning(
     const V8CanvasFontKerning font_kerning) {
   UseCounter::Count(GetTopExecutionContext(),
                     WebFeature::kCanvasRenderingContext2DFontKerning);
-  // TODO(crbug.com/1234113): Instrument new canvas APIs.
-  identifiability_study_helper_.set_encountered_skipped_ops();
   CanvasRenderingContext2DState& state = GetState();
   if (!state.HasRealizedFont()) {
     setFont(font());
@@ -1333,8 +1285,6 @@ void BaseRenderingContext2D::setFontStretch(
     const V8CanvasFontStretch& font_stretch) {
   UseCounter::Count(GetTopExecutionContext(),
                     WebFeature::kCanvasRenderingContext2DFontStretch);
-  // TODO(crbug.com/1234113): Instrument new canvas APIs.
-  identifiability_study_helper_.set_encountered_skipped_ops();
   CanvasRenderingContext2DState& state = GetState();
   if (!state.HasRealizedFont()) {
     setFont(font());
@@ -1350,8 +1300,6 @@ void BaseRenderingContext2D::setFontVariantCaps(
     const V8CanvasFontVariantCaps& font_variant_caps) {
   UseCounter::Count(GetTopExecutionContext(),
                     WebFeature::kCanvasRenderingContext2DFontVariantCaps);
-  // TODO(crbug.com/1234113): Instrument new canvas APIs.
-  identifiability_study_helper_.set_encountered_skipped_ops();
   CanvasRenderingContext2DState& state = GetState();
   if (!state.HasRealizedFont()) {
     setFont(font());

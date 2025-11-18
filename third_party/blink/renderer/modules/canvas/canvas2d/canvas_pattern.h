@@ -28,7 +28,6 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
-#include "third_party/blink/renderer/modules/canvas/canvas2d/identifiability_study_helper.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_high_entropy_op_type.h"
@@ -43,7 +42,6 @@ namespace blink {
 
 class DOMMatrix2DInit;
 class ExceptionState;
-class ExecutionContext;
 class Image;
 
 class MODULES_EXPORT CanvasPattern final : public ScriptWrappable {
@@ -72,19 +70,11 @@ class MODULES_EXPORT CanvasPattern final : public ScriptWrappable {
 
   void setTransform(DOMMatrix2DInit*, ExceptionState&);
 
-  IdentifiableToken GetIdentifiableToken() const;
-
-  // Sets on internal IdentifiabilityStudyHelper.
-  void SetExecutionContext(ExecutionContext*);
-
-  void Trace(Visitor* visitor) const override;
-
  private:
   scoped_refptr<Pattern> pattern_;
   AffineTransform pattern_transform_;
   const bool origin_clean_;
   const HighEntropyCanvasOpType high_entropy_canvas_op_types_;
-  IdentifiabilityStudyHelper identifiability_study_helper_;
 };
 
 }  // namespace blink

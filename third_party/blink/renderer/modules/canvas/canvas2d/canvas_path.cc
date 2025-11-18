@@ -48,7 +48,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_dompointinit_unrestricteddouble.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"  // IWYU pragma: keep (https://github.com/clangd/clangd/issues/2044)
 #include "third_party/blink/renderer/core/frame/web_feature.h"
-#include "third_party/blink/renderer/modules/canvas/canvas2d/identifiability_study_helper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
@@ -57,7 +56,6 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_high_entropy_op_type.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
-#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
@@ -88,9 +86,6 @@ void CanvasPath::closePath() {
     return;
   }
 
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(CanvasOps::kClosePath);
-  }
   if (IsArc()) {
     // Only the first close does something.
     if (!arc_builder_.IsClosed()) {
@@ -109,10 +104,6 @@ void CanvasPath::moveTo(double double_x, double double_y) {
   if (!std::isfinite(x) || !std::isfinite(y)) [[unlikely]] {
     return;
   }
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(CanvasOps::kMoveTo, double_x,
-                                                double_y);
-  }
   gfx::PointF point(x, y);
   if (!IsTransformInvertible()) [[unlikely]] {
     point = GetTransform().MapPoint(point);
@@ -130,10 +121,6 @@ void CanvasPath::lineTo(double double_x, double double_y) {
   float y = base::saturated_cast<float>(double_y);
   if (!std::isfinite(x) || !std::isfinite(y)) [[unlikely]] {
     return;
-  }
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(CanvasOps::kLineTo, double_x,
-                                                double_y);
   }
   gfx::PointF p1(x, y);
 
@@ -171,11 +158,6 @@ void CanvasPath::quadraticCurveTo(double double_cpx,
     return;
   }
   UpdatePathFromLineOrArcIfNecessaryForMutation();
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(CanvasOps::kQuadradicCurveTo,
-                                                double_cpx, double_cpy,
-                                                double_x, double_y);
-  }
   gfx::PointF p1(x, y);
   gfx::PointF cp(cpx, cpy);
 
@@ -209,11 +191,6 @@ void CanvasPath::bezierCurveTo(double double_cp1x,
     return;
   }
   UpdatePathFromLineOrArcIfNecessaryForMutation();
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(
-        CanvasOps::kBezierCurveTo, double_cp1x, double_cp1y, double_cp2x,
-        double_cp2y, double_x, double_y);
-  }
 
   gfx::PointF p1(x, y);
   gfx::PointF cp1(cp1x, cp1y);
@@ -254,11 +231,6 @@ void CanvasPath::arcTo(double double_x1,
     return;
   }
   UpdatePathFromLineOrArcIfNecessaryForMutation();
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(CanvasOps::kArcTo, double_x1,
-                                                double_y1, double_x2, double_y2,
-                                                double_r);
-  }
 
   gfx::PointF p1(x1, y1);
   gfx::PointF p2(x2, y2);
@@ -475,11 +447,6 @@ void CanvasPath::arc(double double_x,
   }
 
   UpdatePathFromLineOrArcIfNecessaryForMutation();
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(
-        CanvasOps::kArc, double_x, double_y, double_radius, double_start_angle,
-        double_end_angle, anticlockwise);
-  }
   high_entropy_path_op_types_ |= HighEntropyCanvasOpType::kArc;
 
   if (!radius || start_angle == end_angle) [[unlikely]] {
@@ -547,12 +514,6 @@ void CanvasPath::ellipse(double double_x,
   }
 
   UpdatePathFromLineOrArcIfNecessaryForMutation();
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(
-        CanvasOps::kEllipse, double_x, double_y, double_radius_x,
-        double_radius_y, double_rotation, double_start_angle, double_end_angle,
-        anticlockwise);
-  }
 
   CanonicalizeAngle(&start_angle, &end_angle);
   float adjusted_end_angle =
@@ -593,10 +554,6 @@ void CanvasPath::rect(double double_x,
     return;
   }
   UpdatePathFromLineOrArcIfNecessaryForMutation();
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(
-        CanvasOps::kRect, double_x, double_y, double_width, double_height);
-  }
 
   path_builder_.AddRect(gfx::PointF(x, y), gfx::PointF(x + width, y + height));
 }
@@ -632,8 +589,6 @@ void CanvasPath::roundRect(
     return;
   }
   UpdatePathFromLineOrArcIfNecessaryForMutation();
-  // TODO(crbug.com/1234113): Instrument new canvas APIs.
-  identifiability_study_helper_.set_encountered_skipped_ops();
 
   std::array<gfx::SizeF, kMaxRadii> r;
   for (int i = 0; i < num_radii; ++i) {
@@ -759,10 +714,6 @@ gfx::RectF CanvasPath::BoundingRect() const {
     return arc_builder_.BoundingRect();
   }
   return path_builder_.BoundingRect();
-}
-
-void CanvasPath::Trace(Visitor* visitor) const {
-  visitor->Trace(identifiability_study_helper_);
 }
 
 ALWAYS_INLINE gfx::RectF CanvasPath::LineBuilder::BoundingRect() const {

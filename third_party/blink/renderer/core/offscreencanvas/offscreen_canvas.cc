@@ -10,9 +10,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_metrics.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
@@ -233,16 +230,6 @@ ImageBitmap* OffscreenCanvas::transferToImageBitmap(
   return image;
 }
 
-void OffscreenCanvas::RecordIdentifiabilityMetric(
-    const blink::IdentifiableSurface& surface,
-    const IdentifiableToken& token) const {
-  if (!IdentifiabilityStudySettings::Get()->ShouldSampleSurface(surface))
-    return;
-  blink::IdentifiabilityMetricBuilder(GetExecutionContext()->UkmSourceID())
-      .Add(surface, token)
-      .Record(GetExecutionContext()->UkmRecorder());
-}
-
 scoped_refptr<Image> OffscreenCanvas::GetSourceImageForCanvas(
     SourceImageStatus* status,
     const gfx::SizeF& size) {
@@ -365,10 +352,6 @@ ScriptPromise<Blob> OffscreenCanvas::convertToBlob(
     auto* execution_context = ExecutionContext::From(script_state);
     auto* async_creator = MakeGarbageCollected<CanvasAsyncBlobCreator>(
         image_bitmap, options, function_type, start_time, execution_context,
-        IdentifiabilityStudySettings::Get()->ShouldSampleType(
-            IdentifiableSurface::Type::kCanvasReadback)
-            ? IdentifiabilityInputDigest(context_)
-            : 0,
         resolver);
     async_creator->ScheduleAsyncBlobCreation(options->quality());
     return resolver->Promise();

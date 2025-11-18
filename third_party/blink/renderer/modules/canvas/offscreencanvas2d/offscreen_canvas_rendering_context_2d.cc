@@ -105,8 +105,6 @@ OffscreenCanvasRenderingContext2D::OffscreenCanvasRenderingContext2D(
                              attrs,
                              canvas->GetTopExecutionContext()->GetTaskRunner(
                                  TaskType::kInternalDefault)) {
-  identifiability_study_helper_.SetExecutionContext(
-      canvas->GetTopExecutionContext());
   is_valid_size_ = Host()->IsValidImageSize();
 
   ExecutionContext* execution_context = canvas->GetTopExecutionContext();

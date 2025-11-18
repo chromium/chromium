@@ -28,10 +28,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_GRADIENT_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_color_interpolation_method.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_hue_interpolation_method.h"
-#include "third_party/blink/renderer/modules/canvas/canvas2d/identifiability_study_helper.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/graphics/gradient.h"
@@ -47,7 +45,6 @@ class PointF;
 namespace blink {
 
 class ExceptionState;
-class ExecutionContext;
 
 class MODULES_EXPORT CanvasGradient final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -66,13 +63,6 @@ class MODULES_EXPORT CanvasGradient final : public ScriptWrappable {
   Gradient* GetGradient() const { return gradient_.get(); }
 
   void addColorStop(double value, const String& color, ExceptionState&);
-
-  IdentifiableToken GetIdentifiableToken() const;
-
-  // Sets on internal IdentifiabilityStudyHelper.
-  void SetExecutionContext(ExecutionContext*);
-
-  void Trace(Visitor* visitor) const override;
 
   V8ColorInterpolationMethod colorInterpolationMethod() const {
     return color_interpolation_method_;
@@ -94,7 +84,6 @@ class MODULES_EXPORT CanvasGradient final : public ScriptWrappable {
 
  private:
   scoped_refptr<Gradient> gradient_;
-  IdentifiabilityStudyHelper identifiability_study_helper_;
 
   V8ColorInterpolationMethod color_interpolation_method_{
       V8ColorInterpolationMethod::Enum::kSRGB};

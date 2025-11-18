@@ -32,7 +32,6 @@
 #include "base/notreached.h"
 #include "cc/paint/paint_flags.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
@@ -327,20 +326,7 @@ class CORE_EXPORT CanvasRenderingContext
   void Trace(Visitor*) const override;
   virtual void Stop() = 0;
 
-  virtual IdentifiableToken IdentifiableTextToken() const {
-    // Token representing no bytes.
-    return IdentifiableToken(base::span<const uint8_t>());
-  }
-
-  virtual bool IdentifiabilityEncounteredSkippedOps() const { return false; }
-
-  virtual bool IdentifiabilityEncounteredSensitiveOps() const { return false; }
-
   static CanvasPerformanceMonitor& GetCanvasPerformanceMonitor();
-
-  virtual bool IdentifiabilityEncounteredPartiallyDigestedImage() const {
-    return false;
-  }
 
   bool did_print_in_current_task() const { return did_print_in_current_task_; }
 
