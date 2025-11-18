@@ -2511,5 +2511,35 @@ test('upload mixed files over limit prioritizes max files error and uploads vali
 
       assertTrue(recentTabChip === null);
     });
+
+    test('setSearchContext sets input and queries autocomplete', async () => {
+      loadTimeData.overrideValues({composeboxShowZps: true});
+      composeboxElement = new ComposeboxElement();
+      // TODO(crbug.com/460551908): Replace `ntpRealboxNextEnabled` with
+      // whatever is used to delineate the Omnibox's composebox from the
+      // NTP's.
+      composeboxElement.ntpRealboxNextEnabled = true;
+      document.body.appendChild(composeboxElement);
+
+      await microtasksFinished();
+
+      // Autocomplete waits
+      assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 0);
+
+      const context = {
+        input: 'hello world',
+        files: [],
+        attachments: [],
+        toolMode: 0,
+      };
+      composeboxElement.setSearchContext(context);
+      await microtasksFinished();
+
+      // Check that input and lastQueriedInput are set.
+      assertEquals(composeboxElement.getText(), 'hello world');
+      assertEquals((composeboxElement as any).lastQueriedInput_, 'hello world');
+      // Autocomplete should be queried again.
+      assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 1);
+    });
   });
 });
