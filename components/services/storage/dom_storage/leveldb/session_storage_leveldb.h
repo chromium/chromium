@@ -87,7 +87,6 @@ class SessionStorageLevelDB : public DomStorageDatabase {
   DbStatus RewriteDB() override;
 
   // Test-only functions.
-  bool ShouldFailAllCommits() override;
   void MakeAllCommitsFailForTesting() override;
   void SetDestructionCallbackForTesting(base::OnceClosure callback) override;
 

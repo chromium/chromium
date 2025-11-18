@@ -221,8 +221,8 @@ DbStatus DomStorageDatabaseLevelDB::RewriteDB() {
   return FromLevelDBStatus(status);
 }
 
-bool DomStorageDatabaseLevelDB::ShouldFailAllCommits() {
-  return fail_all_commits_;
+bool DomStorageDatabaseLevelDB::ShouldFailAllCommitsForTesting() {
+  return fail_all_commits_for_testing_;
 }
 
 void DomStorageDatabaseLevelDB::SetDestructionCallbackForTesting(
@@ -231,7 +231,7 @@ void DomStorageDatabaseLevelDB::SetDestructionCallbackForTesting(
 }
 
 void DomStorageDatabaseLevelDB::MakeAllCommitsFailForTesting() {
-  fail_all_commits_ = true;
+  fail_all_commits_for_testing_ = true;
 }
 
 // This can only be called from `DomStorageBatchOperationLevelDB`.

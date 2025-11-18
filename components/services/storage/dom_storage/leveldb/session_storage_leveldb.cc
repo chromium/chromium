@@ -133,10 +133,6 @@ DbStatus SessionStorageLevelDB::RewriteDB() {
   return leveldb_->RewriteDB();
 }
 
-bool SessionStorageLevelDB::ShouldFailAllCommits() {
-  return leveldb_->ShouldFailAllCommits();
-}
-
 void SessionStorageLevelDB::MakeAllCommitsFailForTesting() {
   leveldb_->MakeAllCommitsFailForTesting();
 }

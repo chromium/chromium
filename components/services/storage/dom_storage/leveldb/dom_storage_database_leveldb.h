@@ -66,7 +66,7 @@ class DomStorageDatabaseLevelDB
 
   DbStatus RewriteDB();
 
-  bool ShouldFailAllCommits();
+  bool ShouldFailAllCommitsForTesting();
   void SetDestructionCallbackForTesting(base::OnceClosure callback);
   void MakeAllCommitsFailForTesting();
 
@@ -127,9 +127,9 @@ class DomStorageDatabaseLevelDB
       memory_dump_id_;
   std::unique_ptr<leveldb::DB> db_;
 
-  // If true, all calls to `Commit()` fail with an IOError. This should only be
-  // set in tests to simulate disk failures.
-  bool fail_all_commits_ = false;
+  // If true, all calls to `DomStorageBatchOperationLevelDB::Commit()` fail with
+  // an IOError. This should only be set in tests to simulate disk failures.
+  bool fail_all_commits_for_testing_ = false;
 
   // Callback to run on destruction in tests.
   base::OnceClosure destruction_callback_;

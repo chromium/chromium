@@ -87,7 +87,7 @@ DbStatus DomStorageBatchOperationLevelDB::Commit() {
   if (!database_ || !db) {
     return DbStatus::IOError(kInvalidDatabaseMessage);
   }
-  if (database_->ShouldFailAllCommits()) {
+  if (database_->ShouldFailAllCommitsForTesting()) {
     return DbStatus::IOError("Simulated I/O Error");
   }
   return FromLevelDBStatus(db->Write(leveldb::WriteOptions(), &write_batch_));

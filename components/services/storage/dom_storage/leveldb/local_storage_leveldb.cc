@@ -259,10 +259,6 @@ DbStatus LocalStorageLevelDB::RewriteDB() {
   return leveldb_->RewriteDB();
 }
 
-bool LocalStorageLevelDB::ShouldFailAllCommits() {
-  return leveldb_->ShouldFailAllCommits();
-}
-
 void LocalStorageLevelDB::MakeAllCommitsFailForTesting() {
   leveldb_->MakeAllCommitsFailForTesting();
 }
