@@ -203,7 +203,7 @@ class LeakDetectionRequestTestWithParam
       public testing::WithParamInterface<TestParam> {};
 
 TEST_P(LeakDetectionRequestTestWithParam,
-       RequestCriticalityFeatureDefaultEnabledHeaderExpectedValue) {
+       RequestCriticalityHeaderHasExpectedValue) {
   base::MockCallback<LeakDetectionRequest::LookupSingleLeakCallback> callback;
 
   // Set an interceptor to check headers in the captured request
@@ -212,27 +212,6 @@ TEST_P(LeakDetectionRequestTestWithParam,
         EXPECT_EQ(request.headers.GetHeader(
                       LeakDetectionRequest::kRequestCriticalityHeader),
                   GetParam().expected_header_value());
-      }));
-
-  request().LookupSingleLeak(
-      test_url_loader_factory(), kAccessToken,
-      /*api_key=*/std::nullopt,
-      {GetParam().initiator, kUsernameHash, kEncryptedPayload}, callback.Get());
-}
-
-TEST_P(LeakDetectionRequestTestWithParam,
-       RequestCriticalityFeatureDisabledHeaderNotPresent) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      password_manager::features::kSetLeakCheckRequestCriticality);
-  base::MockCallback<LeakDetectionRequest::LookupSingleLeakCallback> callback;
-
-  // Set an interceptor to check headers in the captured request
-  test_url_loader_factory()->SetInterceptor(
-      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
-        EXPECT_EQ(request.headers.GetHeader(
-                      LeakDetectionRequest::kRequestCriticalityHeader),
-                  std::nullopt);
       }));
 
   request().LookupSingleLeak(

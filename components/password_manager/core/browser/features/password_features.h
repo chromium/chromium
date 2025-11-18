@@ -174,9 +174,6 @@ BASE_DECLARE_FEATURE(kPasswordManagerLogToTerminal);
 BASE_DECLARE_FEATURE(kRestartToGainAccessToKeychain);
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-// Sets request criticality when calling leak check service to detect leaked
-// passwords.
-BASE_DECLARE_FEATURE(kSetLeakCheckRequestCriticality);
 
 // Shows recovery password for the improved password change flow in the
 // management UI.
