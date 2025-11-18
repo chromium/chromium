@@ -21,7 +21,6 @@
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_account_item.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/settings/model/sync/utils/sync_util.h"
-#import "ios/chrome/browser/settings/ui_bundled/cells/account_sign_in_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/sync_switch_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/google_services_settings_command_handler.h"

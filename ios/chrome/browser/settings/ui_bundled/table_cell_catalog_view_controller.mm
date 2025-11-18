@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/reading_list/ui_bundled/reading_list_table_view_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/address_bar_preference/cells/address_bar_options_item.h"
-#import "ios/chrome/browser/settings/ui_bundled/cells/account_sign_in_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/inline_promo_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_check_cell.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_check_item.h"
@@ -79,7 +78,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemAddressBarOptions,
   ItemTypeDetailText,
   ItemTypeMultiDetailText,
-  ItemTypeAccountSignInItem,
   ItemTypeTableViewInfoButton,
   ItemTypeTableViewInfoButtonWithDetailText,
   ItemTypeTableViewInfoButtonWithImage,
@@ -445,12 +443,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   settingsHeader.text = @"Settings";
   [model setHeader:settingsHeader
       forSectionWithIdentifier:SectionIdentifierSettings];
-
-  AccountSignInItem* accountSignInItem =
-      [[AccountSignInItem alloc] initWithType:ItemTypeAccountSignInItem];
-  accountSignInItem.detailText = @"Get cool stuff on all your devices";
-  [model addItem:accountSignInItem
-      toSectionWithIdentifier:SectionIdentifierSettings];
 
   SyncSwitchItem* syncSwitchItem =
       [[SyncSwitchItem alloc] initWithType:ItemTypeSyncSwitch];

@@ -4,8 +4,6 @@
 
 source_set("cells") {
   sources = [
-    "account_sign_in_item.h",
-    "account_sign_in_item.mm",
     "byo_textfield_item.h",
     "byo_textfield_item.mm",
     "enhanced_safe_browsing_inline_promo_item.h",

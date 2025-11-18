@@ -40,6 +40,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_account_item.h"
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_settings_continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
@@ -81,7 +82,6 @@
 #import "ios/chrome/browser/settings/ui_bundled/bandwidth/bandwidth_management_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/button_catalog_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/coordinator/bwg_settings_coordinator.h"
-#import "ios/chrome/browser/settings/ui_bundled/cells/account_sign_in_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/enhanced_safe_browsing_inline_promo_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_check_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_image_detail_text_item.h"
@@ -713,13 +713,19 @@ struct EnhancedSafeBrowsingActivePromoData
 #pragma mark - Model Items
 
 - (TableViewItem*)accountSignInItem {
-  AccountSignInItem* signInTextItem =
-      [[AccountSignInItem alloc] initWithType:SettingsItemTypeSignInButton];
+  SettingsImageDetailTextItem* signInTextItem =
+      [[SettingsImageDetailTextItem alloc]
+          initWithType:SettingsItemTypeSignInButton];
   signInTextItem.accessibilityIdentifier = kSettingsSignInCellId;
-  // TODO(crbug.com/40064662): Make detailText private when the feature is
-  // launched.
+  signInTextItem.accessibilityTraits |= UIAccessibilityTraitButton;
+  signInTextItem.text =
+      l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_SIGNIN_WITH_UNO);
   signInTextItem.detailText =
       l10n_util::GetNSString(IDS_IOS_IDENTITY_DISC_SIGN_IN_PROMO_LABEL);
+  signInTextItem.image = DefaultSymbolTemplateWithPointSize(
+      kPersonCropCircleSymbol, kAccountProfilePhotoDimension);
+  signInTextItem.imageViewTintColor = [UIColor colorNamed:kBlue600Color];
+
   return signInTextItem;
 }
 
