@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] the unchanged input for 'brotli' should decompress successfully
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'DecompressionStream': Unsupported compression format: 'brotli'"
+[FAIL] truncating the input for 'brotli' should give an error
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'DecompressionStream': Unsupported compression format: 'brotli'"
+[FAIL] trailing junk for 'brotli' should give an error
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'DecompressionStream': Unsupported compression format: 'brotli'"
+Harness: the test ran to completion.
+

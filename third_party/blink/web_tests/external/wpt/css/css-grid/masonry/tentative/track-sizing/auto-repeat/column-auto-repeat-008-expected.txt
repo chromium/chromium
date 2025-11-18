@@ -1,0 +1,27 @@
+This is a testharness.js-based test.
+[FAIL] .masonry 1
+  assert_equals: \n<div class="masonry" data-expected-width="300" data-expected-height="200">\n  <div class="item" data-offset-x="200" data-offset-y="0" data-expected-width="100" data-expected-height="200"></div>\n</div>\nwidth expected 100 but got 300
+[FAIL] .masonry 2
+  assert_equals: \n<div class="masonry" style="width: 200px; height: 100px;" data-expected-width="300" data-expected-height="200">\n  <div class="item" data-offset-x="200" data-offset-y="0" data-expected-width="100" data-expected-height="200"></div>\n</div>\nwidth expected 100 but got 300
+[FAIL] .masonry 3
+  assert_equals: \n<div class="masonry" style="width: min-content; height: min-content;" data-expected-width="300" data-expected-height="200">\n  <div class="item" data-offset-x="200" data-offset-y="0" data-expected-width="100" data-expected-height="200"></div>\n</div>\nwidth expected 100 but got 300
+[FAIL] .masonry 4
+  assert_equals: \n<div class="masonry" style="width: max-content; height: max-content;" data-expected-width="300" data-expected-height="200">\n  <div class="item" data-offset-x="200" data-offset-y="0" data-expected-width="100" data-expected-height="200"></div>\n</div>\nwidth expected 100 but got 300
+[FAIL] .masonry 5
+  assert_equals: \n<div class="masonry border" data-expected-width="320" data-expected-height="220">\n  <div class="item" data-offset-x="200" data-offset-y="0" data-expected-width="100" data-expected-height="200"></div>\n</div>\nwidth expected 100 but got 300
+[FAIL] .masonry 6
+  assert_equals: \n<div class="masonry border" style="width: 200px; height: 100px;" data-expected-width="320" data-expected-height="220">\n  <div class="item" data-offset-x="200" data-offset-y="0" data-expected-width="100" data-expected-height="200"></div>\n</div>\nwidth expected 100 but got 300
+[FAIL] .masonry 7
+  assert_equals: \n<div class="masonry border" style="width: min-content; height: min-content;" data-expected-width="320" data-expected-height="220">\n  <div class="item" data-offset-x="200" data-offset-y="0" data-expected-width="100" data-expected-height="200"></div>\n</div>\nwidth expected 100 but got 300
+[FAIL] .masonry 8
+  assert_equals: \n<div class="masonry border" style="width: max-content; height: max-content;" data-expected-width="320" data-expected-height="220">\n  <div class="item" data-offset-x="200" data-offset-y="0" data-expected-width="100" data-expected-height="200"></div>\n</div>\nwidth expected 100 but got 300
+[FAIL] .masonry 9
+  assert_equals: \n<div class="masonry border border-box" data-expected-width="320" data-expected-height="220">\n  <div class="item" data-offset-x="200" data-offset-y="0" data-expected-width="100" data-expected-height="200"></div>\n</div>\nwidth expected 320 but got 300
+[FAIL] .masonry 10
+  assert_equals: \n<div class="masonry border border-box" style="width: 200px; height: 100px;" data-expected-width="300" data-expected-height="200">\n  <div class="item" data-offset-x="100" data-offset-y="0" data-expected-width="100" data-expected-height="200"></div>\n</div>\nwidth expected 100 but got 280
+[FAIL] .masonry 11
+  assert_equals: \n<div class="masonry border border-box" style="width: min-content; height: min-content;" data-expected-width="320" data-expected-height="220">\n  <div class="item" data-offset-x="200" data-offset-y="0" data-expected-width="100" data-expected-height="200"></div>\n</div>\nwidth expected 320 but got 300
+[FAIL] .masonry 12
+  assert_equals: \n<div class="masonry border border-box" style="width: max-content; height: max-content;" data-expected-width="320" data-expected-height="220">\n  <div class="item" data-offset-x="200" data-offset-y="0" data-expected-width="100" data-expected-height="200"></div>\n</div>\nwidth expected 320 but got 300
+Harness: the test ran to completion.
+

@@ -1,0 +1,43 @@
+This is a testharness.js-based test.
+[FAIL] fit-content(0%); min-width: 0px
+  assert_equals: Masonry item width expected 0 but got 200
+[FAIL] fit-content(50%); min-width: 0px
+  assert_equals: Masonry item width expected 50 but got 200
+[FAIL] fit-content(75%); min-width: 0px
+  assert_equals: Masonry item width expected 75 but got 200
+[FAIL] fit-content(100%); min-width: 0px
+  assert_equals: Masonry item width expected 100 but got 200
+[FAIL] fit-content(150%); min-width: 0px
+  assert_equals: Masonry item width expected 100 but got 200
+[FAIL] fit-content(calc(0px + 0%)); min-width: 0px
+  assert_equals: Masonry item width expected 0 but got 200
+[FAIL] fit-content(calc(0px + 50%)); min-width: 0px
+  assert_equals: Masonry item width expected 50 but got 200
+[FAIL] fit-content(calc(0px + 75%)); min-width: 0px
+  assert_equals: Masonry item width expected 75 but got 200
+[FAIL] fit-content(calc(0px + 100%)); min-width: 0px
+  assert_equals: Masonry item width expected 100 but got 200
+[FAIL] fit-content(calc(0px + 150%)); min-width: 0px
+  assert_equals: Masonry item width expected 100 but got 200
+[FAIL] fit-content(0%); min-width: auto
+  assert_equals: Masonry item width expected 50 but got 200
+[FAIL] fit-content(50%); min-width: auto
+  assert_equals: Masonry item width expected 50 but got 200
+[FAIL] fit-content(75%); min-width: auto
+  assert_equals: Masonry item width expected 75 but got 200
+[FAIL] fit-content(100%); min-width: auto
+  assert_equals: Masonry item width expected 100 but got 200
+[FAIL] fit-content(150%); min-width: auto
+  assert_equals: Masonry item width expected 100 but got 200
+[FAIL] fit-content(calc(0px + 0%)); min-width: auto
+  assert_equals: Masonry item width expected 50 but got 200
+[FAIL] fit-content(calc(0px + 50%)); min-width: auto
+  assert_equals: Masonry item width expected 50 but got 200
+[FAIL] fit-content(calc(0px + 75%)); min-width: auto
+  assert_equals: Masonry item width expected 75 but got 200
+[FAIL] fit-content(calc(0px + 100%)); min-width: auto
+  assert_equals: Masonry item width expected 100 but got 200
+[FAIL] fit-content(calc(0px + 150%)); min-width: auto
+  assert_equals: Masonry item width expected 100 but got 200
+Harness: the test ran to completion.
+

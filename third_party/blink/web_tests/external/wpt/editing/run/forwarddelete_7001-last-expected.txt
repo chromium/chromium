@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 16 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 20 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=3>foo[]</font><p><font size=5>bar</font>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><font size=\\"3\\">foo</font><font size=\\"5\\">bar</font></p>" but got "<p><font size=\\"3\\">foo</font><span style=\\"font-size:x-large\\">bar</span></p>"
 [FAIL] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=4>foo[]</font><p><font size=5>bar</font>" compare innerHTML
@@ -32,5 +32,13 @@ Found 16 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "012abc<div style=\\"display:inline-grid\\"><span>def</span></div>" but got "012<div style=\\"display:inline-grid\\">abc<span>def</span></div>"
 [FAIL] [["forwarddelete",""]] "<div style=display:grid><span>{}<br></span></div><div>abc</div>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div>abc</div>" but got "<div style=\\"display:grid\\"><span>abc</span></div>"
+[FAIL] [["forwarddelete",""]] "<div style=display:flex><span>abc[]</span><span style=display:contents>def</span></div>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"display:flex\\"><span>abcdef</span></div>" but got "<div style=\\"display:flex\\"><span>abcdef</span><span style=\\"display:contents\\"><br></span></div>"
+[FAIL] [["forwarddelete",""]] "<div style=display:flex><span style=display:contents>abc[]</span><span>def</span></div>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"display:flex\\"><span style=\\"display:contents\\">abcdef</span></div>" but got "<div style=\\"display:flex\\"><span style=\\"display:contents\\">abc</span>def</div>"
+[FAIL] [["forwarddelete",""]] "<div style=display:grid><span>abc[]</span><span style=display:contents>def</span></div>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"display:grid\\"><span>abcdef</span></div>" but got "<div style=\\"display:grid\\"><span>abcdef</span><span style=\\"display:contents\\"><br></span></div>"
+[FAIL] [["forwarddelete",""]] "<div style=display:grid><span style=display:contents>abc[]</span><span>def</span></div>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"display:grid\\"><span style=\\"display:contents\\">abcdef</span></div>" but got "<div style=\\"display:grid\\"><span style=\\"display:contents\\">abc</span>def</div>"
 Harness: the test ran to completion.
 

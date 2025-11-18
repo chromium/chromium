@@ -6,7 +6,7 @@
 <meta name="assert" content="An item spanning >1 track, at least one of which is flexible, must have a zero automatic minimum size (and thus, not grow to accommodate its children).">
 
 <style>
-.masonry { display: masonry; position: relative; grid-template-columns: repeat(12, 1fr); height: 100px; width: 100px; }
+.masonry { display: grid-lanes; position: relative; grid-template-columns: repeat(12, 1fr); height: 100px; width: 100px; }
 .test { grid-column: 1 / span 8; background: red; }
 .over { grid-column: 1 / span 8; width: 100%; background: green; position: absolute; }
 .under { grid-column: 9 / span 4; background: green; }

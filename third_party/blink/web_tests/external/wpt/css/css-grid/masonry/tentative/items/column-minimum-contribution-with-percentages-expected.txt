@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+[FAIL] auto - columns
+  assert_equals: grid-template-columns expected "100px" but got "auto"
+[FAIL] min - columns
+  assert_equals: grid-template-columns expected "50px" but got "auto"
+[FAIL] max - columns
+  assert_equals: grid-template-columns expected "100px" but got "auto"
+[FAIL] size - columns
+  assert_equals: grid-template-columns expected "100px" but got "auto"
+[FAIL] min max - columns
+  assert_equals: grid-template-columns expected "50px" but got "auto"
+[FAIL] min size - columns
+  assert_equals: grid-template-columns expected "50px" but got "auto"
+[FAIL] max size - columns
+  assert_equals: grid-template-columns expected "100px" but got "auto"
+[FAIL] min max size - columns
+  assert_equals: grid-template-columns expected "50px" but got "auto"
+Harness: the test ran to completion.
+

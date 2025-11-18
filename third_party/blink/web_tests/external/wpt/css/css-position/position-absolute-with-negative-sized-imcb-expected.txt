@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] .abspos 23
+  assert_equals: \n<div class="container">\n  <div class="abspos case4" style="inset: 15px" data-expected-width="10" data-expected-height="10" data-offset-x="10" data-offset-y="10"></div>\n</div>\noffsetLeft expected 10 but got 5
+[FAIL] .abspos 24
+  assert_equals: \n<div class="container">\n  <div class="abspos case4" style="inset: 20px" data-expected-width="10" data-expected-height="10" data-offset-x="15" data-offset-y="15"></div>\n</div>\noffsetLeft expected 15 but got 5
+[FAIL] .abspos 25
+  assert_equals: \n<div class="container">\n  <div class="abspos case4" style="inset: 25px" data-expected-width="10" data-expected-height="10" data-offset-x="20" data-offset-y="20"></div>\n</div>\noffsetLeft expected 20 but got 5
+[FAIL] .abspos 28
+  assert_equals: \n<div class="abspos case4" style="inset: 15px" data-expected-width="10" data-expected-height="10" data-offset-x="0" data-offset-y="10"></div>\noffsetLeft expected 0 but got 5
+[FAIL] .abspos 29
+  assert_equals: \n<div class="abspos case4" style="inset: 20px" data-expected-width="10" data-expected-height="10" data-offset-x="-5" data-offset-y="15"></div>\noffsetLeft expected -5 but got 5
+[FAIL] .abspos 30
+  assert_equals: \n<div class="abspos case4" style="inset: 25px" data-expected-width="10" data-expected-height="10" data-offset-x="-10" data-offset-y="20"></div>\noffsetLeft expected -10 but got 5
+Harness: the test ran to completion.
+

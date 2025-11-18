@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Draggable contenteditable element should not be draggable from border
+  assert_false: dragstart should not fire expected false got true
+Harness: the test ran to completion.
+
