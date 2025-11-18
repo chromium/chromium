@@ -108,8 +108,6 @@ PRUNE_PATHS = set([
     os.path.join('third_party', 'wix'),
     # See crbug.com/350472
     os.path.join('chrome', 'browser', 'resources', 'chromeos', 'quickoffice'),
-    # Chrome for Android proprietary code.
-    os.path.join('clank'),
 
     # Proprietary barcode detection library.
     os.path.join('third_party', 'barhopper'),
@@ -147,7 +145,7 @@ ADDITIONAL_PATHS_FILENAME = 'additional_readme_paths.json'
 
 # A list of paths that contain license information but that would otherwise
 # not be included.  Possible reasons include:
-#   - Third party directories in //clank which are considered to be Google-owned
+#   - Third party directories in //internal which are considered to be Google-owned
 #   - Directories that are directly checked out from upstream, and thus
 #     don't have a README.chromium
 #   - Directories that contain example code, or build tooling.
