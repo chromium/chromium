@@ -108,6 +108,8 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
      * from the app menu.
      */
     public IncognitoNewTabPageStation openNewIncognitoTabFast() {
+        assert mIsIncognito || !IncognitoUtils.shouldOpenIncognitoAsWindow()
+                : "Incognito tabs can only be opened in incognito windows.";
         return ChromeTriggers.invokeCustomMenuActionTo(R.id.new_incognito_tab_menu_id, this)
                 .arriveAt(IncognitoNewTabPageStation.newBuilder().initOpeningNewTab().build());
     }
