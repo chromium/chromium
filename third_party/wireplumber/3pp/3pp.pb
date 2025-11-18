@@ -12,7 +12,7 @@ create {
 
   build {
     dep: "chromium/third_party/glib"
-    dep: "chromium/third_party/pipewire-1.4"
+    dep: "chromium/third_party/pipewire"
     install: "install.sh"
     external_tool: "infra/3pp/tools/cpython3/${platform}@3@3.11.10.chromium.35"
   }
