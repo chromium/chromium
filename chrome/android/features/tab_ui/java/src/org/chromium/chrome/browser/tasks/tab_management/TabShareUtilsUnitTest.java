@@ -52,7 +52,6 @@ public class TabShareUtilsUnitTest {
     @Mock TabModel mTabModel;
     @Mock TabGroupSyncService mTabGroupSyncService;
     @Mock IdentityManager mIdentityManager;
-    @Mock CoreAccountInfo mCoreAccountInfo;
 
     private final LocalTabGroupId mLocalTabGroupId = new LocalTabGroupId(TAB_GROUP_ID);
     private SavedTabGroup mSavedTabGroup;
@@ -81,9 +80,8 @@ public class TabShareUtilsUnitTest {
 
         when(mTabGroupSyncService.getGroup(mLocalTabGroupId)).thenReturn(mSavedTabGroup);
 
-        when(mCoreAccountInfo.getGaiaId()).thenReturn(GAIA_ID);
         when(mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN))
-                .thenReturn(mCoreAccountInfo);
+                .thenReturn(CoreAccountInfo.createFromEmailAndGaiaId(EMAIL, GAIA_ID));
     }
 
     @Test

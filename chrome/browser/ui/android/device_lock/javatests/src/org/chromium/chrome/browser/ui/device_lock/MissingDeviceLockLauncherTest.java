@@ -47,8 +47,8 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.DataWipeOption;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -74,7 +74,6 @@ public class MissingDeviceLockLauncherTest {
     @Mock private IdentityManager mIdentityManager;
     @Mock private PersonalDataManager mPersonalDataManager;
     @Mock private Profile mProfile;
-    @Mock private CoreAccountInfo mCoreAccountInfo;
     @Mock private PasswordStoreBridge mPasswordStoreBridge;
 
     private MissingDeviceLockLauncher mMissingDeviceLockLauncher;
@@ -91,7 +90,6 @@ public class MissingDeviceLockLauncherTest {
         mIdentityManager = Mockito.mock(IdentityManager.class);
         mPersonalDataManager = Mockito.mock(PersonalDataManager.class);
         mProfile = Mockito.mock(Profile.class);
-        mCoreAccountInfo = Mockito.mock(CoreAccountInfo.class);
 
         mSharedPreferencesManager = ChromeSharedPreferences.getInstance();
         mSharedPreferencesManager.removeKey(ChromePreferenceKeys.DEVICE_LOCK_SHOW_ALERT_IF_REMOVED);
@@ -202,7 +200,7 @@ public class MissingDeviceLockLauncherTest {
         mSharedPreferencesManager.writeBoolean(
                 ChromePreferenceKeys.DEVICE_LOCK_SHOW_ALERT_IF_REMOVED, true);
 
-        doReturn(mCoreAccountInfo).when(mIdentityManager).getPrimaryAccountInfo(anyInt());
+        doReturn(TestAccounts.ACCOUNT1).when(mIdentityManager).getPrimaryAccountInfo(anyInt());
         doAnswer(
                         (invocation) -> {
                             SigninManager.SignOutCallback callback = invocation.getArgument(1);
@@ -237,7 +235,7 @@ public class MissingDeviceLockLauncherTest {
         mSharedPreferencesManager.writeBoolean(
                 ChromePreferenceKeys.DEVICE_LOCK_SHOW_ALERT_IF_REMOVED, true);
 
-        doReturn(mCoreAccountInfo).when(mIdentityManager).getPrimaryAccountInfo(anyInt());
+        doReturn(TestAccounts.ACCOUNT1).when(mIdentityManager).getPrimaryAccountInfo(anyInt());
         doAnswer(
                         (invocation) -> {
                             SigninManager.SignOutCallback callback = invocation.getArgument(1);

@@ -45,8 +45,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.test.util.TestAccounts;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -61,13 +61,11 @@ public class ChromeFeedbackCollectorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Activity mActivity;
     @Mock private Profile mProfile;
-    @Mock private CoreAccountInfo mAccountInfo;
 
     // Test constants.
     private static final String CATEGORY_TAG = "category_tag";
     private static final String DESCRIPTION = "description";
     private static final String FEEDBACK_CONTEXT = "feedback_context";
-    private static final String ACCOUNT_IN_USE = "foo@gmail.com";
     private static final String KEY_1 = "key1";
     private static final String KEY_2 = "key2";
     private static final String KEY_3 = "key3";
@@ -278,14 +276,13 @@ public class ChromeFeedbackCollectorUnitTest {
 
     @Before
     public void setUp() {
-        when(mAccountInfo.getEmail()).thenReturn(ACCOUNT_IN_USE);
         IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
         when(IdentityServicesProvider.get().getIdentityManager(any()))
                 .thenReturn(mock(IdentityManager.class));
         when(IdentityServicesProvider.get()
                         .getIdentityManager(any())
                         .getPrimaryAccountInfo(anyInt()))
-                .thenReturn(mAccountInfo);
+                .thenReturn(TestAccounts.ACCOUNT1);
     }
 
     @Test
@@ -384,7 +381,7 @@ public class ChromeFeedbackCollectorUnitTest {
                     assertEquals(CATEGORY_TAG, collector.getCategoryTag());
                     assertEquals(DESCRIPTION, collector.getDescription());
                     assertNull(collector.getScreenshot());
-                    assertEquals(ACCOUNT_IN_USE, collector.getAccountInUse());
+                    assertEquals(TestAccounts.ACCOUNT1.getEmail(), collector.getAccountInUse());
                 });
     }
 

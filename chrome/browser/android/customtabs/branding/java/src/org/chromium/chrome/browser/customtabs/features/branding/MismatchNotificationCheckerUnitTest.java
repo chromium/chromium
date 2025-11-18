@@ -27,9 +27,8 @@ import org.chromium.chrome.browser.customtabs.features.branding.proto.AccountMis
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.google_apis.gaia.GaiaId;
+import org.chromium.components.signin.test.util.TestAccounts;
 
 /** Unit test for {@link MismatchNotificationChecker} */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -114,7 +113,6 @@ public class MismatchNotificationCheckerUnitTest {
         private Profile mProfileMock;
         private Callback<Integer> mCallback;
         private IdentityManager mIdentityManager;
-        private CoreAccountInfo mCoreAccountInfo;
         private Callback<MismatchNotificationData> mOnClose;
 
         private final MismatchNotificationData.AppUiData mAppData =
@@ -129,10 +127,9 @@ public class MismatchNotificationCheckerUnitTest {
             mIphDisplayLock = mock(Tracker.DisplayLockHandle.class);
             when(mTracker.acquireDisplayLock()).thenReturn(mIphDisplayLock);
 
-            mCoreAccountInfo = mock(CoreAccountInfo.class);
-            when(mCoreAccountInfo.getGaiaId()).thenReturn(new GaiaId("nice-gaia-id"));
             mIdentityManager = mock(IdentityManager.class);
-            when(mIdentityManager.getPrimaryAccountInfo(anyInt())).thenReturn(mCoreAccountInfo);
+            when(mIdentityManager.getPrimaryAccountInfo(anyInt()))
+                    .thenReturn(TestAccounts.ACCOUNT1);
 
             mAppData.showCount = INIT_SHOW_COUNT;
             mAppData.closeType = CloseType.UNKNOWN.getNumber();

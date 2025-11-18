@@ -94,6 +94,7 @@ robolectric_library("junit") {
     "//components/feature_engagement/public:public_java",
     "//components/prefs/android:java",
     "//components/signin/public/android:java",
+    "//components/signin/public/android:signin_java_test_support",
     "//components/user_prefs/android:java",
     "//content/public/android:content_full_java",
     "//google_apis/gaia/android:java",

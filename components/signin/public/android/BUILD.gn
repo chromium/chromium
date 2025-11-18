@@ -13,6 +13,7 @@ android_library("java") {
     "//google_apis/gaia/android:java",
     "//net/android:net_java",
     "//third_party/android_deps:chromium_play_services_availability_java",
+    "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
   ]

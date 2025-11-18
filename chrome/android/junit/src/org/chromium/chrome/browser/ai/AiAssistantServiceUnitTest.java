@@ -77,6 +77,7 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.google_apis.gaia.GaiaId;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.widget.ToastManager;
 import org.chromium.url.JUnitTestGURLs;
@@ -104,7 +105,6 @@ public class AiAssistantServiceUnitTest {
     @Mock private Profile mProfile;
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
     @Mock private IdentityManager mIdentityManager;
-    @Mock private CoreAccountInfo mAccountInfo;
     @Mock SystemAiProvider mSystemAiProvider;
     @Mock SystemAiProviderFactory mSystemAiProviderFactory;
     @Mock private InnerTextBridge.Natives mInnerTextNatives;
@@ -578,11 +578,12 @@ public class AiAssistantServiceUnitTest {
     }
 
     private void setClientEmail(String email) {
-        when(mIdentityManager.getPrimaryAccountInfo(anyInt())).thenReturn(mAccountInfo);
-        when(mAccountInfo.getEmail()).thenReturn(email);
+        CoreAccountInfo accountInfo =
+                CoreAccountInfo.createFromEmailAndGaiaId(email, new GaiaId("test-gaia-id"));
+        when(mIdentityManager.getPrimaryAccountInfo(anyInt())).thenReturn(accountInfo);
         AccountManagerFacadeProvider.setInstanceForTests(mMockFacade);
         mCapabilitiesPromise = new Promise<>();
-        doReturn(mCapabilitiesPromise).when(mMockFacade).getAccountCapabilities(mAccountInfo);
+        doReturn(mCapabilitiesPromise).when(mMockFacade).getAccountCapabilities(accountInfo);
     }
 
     private void assertLaunchRequestIsForSummarizeUrl(

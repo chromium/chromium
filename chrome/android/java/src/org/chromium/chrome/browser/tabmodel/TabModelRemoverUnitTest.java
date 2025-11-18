@@ -52,9 +52,9 @@ import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.member_role.MemberRole;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -65,7 +65,6 @@ import java.util.List;
 /** Unit tests for {@link TabModelRemover}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabModelRemoverUnitTest {
-    private static final String EMAIL = "test@example.com";
     private static final String COLLABORATION_ID = "collaboration";
     private static final String TAB_GROUP_TITLE = "My Title";
     private static final LocalTabGroupId TAB_GROUP_1 = new LocalTabGroupId(new Token(1L, 2L));
@@ -78,7 +77,6 @@ public class TabModelRemoverUnitTest {
     @Mock private Profile mProfile;
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
     @Mock private IdentityManager mIdentityManager;
-    @Mock private CoreAccountInfo mCoreAccountInfo;
     @Mock private TabGroupModelFilterInternal mTabGroupModelFilter;
     @Mock private TabModelRemoverFlowHandler mHandler;
     @Mock private ModalDialogManager mModalDialogManager;
@@ -109,8 +107,7 @@ public class TabModelRemoverUnitTest {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
         when(mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN))
-                .thenReturn(mCoreAccountInfo);
-        when(mCoreAccountInfo.getEmail()).thenReturn(EMAIL);
+                .thenReturn(TestAccounts.ACCOUNT1);
 
         DataSharingServiceFactory.setForTesting(mDataSharingService);
         CollaborationServiceFactory.setForTesting(mCollaborationService);

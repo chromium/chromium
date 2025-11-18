@@ -156,6 +156,7 @@ robolectric_library("junit") {
     "//components/saved_tab_groups/public:java",
     "//components/saved_tab_groups/public:test_support_java",
     "//components/signin/public/android:java",
+    "//components/signin/public/android:signin_java_test_support",
     "//components/sync/android:sync_java",
     "//components/tab_groups:tab_groups_java",
     "//components/user_prefs/android:java",
