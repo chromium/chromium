@@ -64,24 +64,9 @@ Element* ContainerTiming::GetParentContainerRoot(Element* element) {
   return GetContainerRoot(parent);
 }
 
-// static
-ContainerTiming::Record::NestingPolicy ContainerTiming::Record::ToNestingPolicy(
-    const AtomicString& str) {
-  if (EqualIgnoringASCIICase(str, "transparent")) {
-    return NestingPolicy::kTransparent;
-  } else if (EqualIgnoringASCIICase(str, "shadowed")) {
-    return NestingPolicy::kShadowed;
-  }
-  // "ignore", "auto" or unset
-  return NestingPolicy::kIgnore;
-}
-
 ContainerTiming::Record::Record(const DOMPaintTimingInfo& paint_timing_info,
-                                const AtomicString& identifier,
-                                const AtomicString& nesting_policy)
-    : first_paint_timing_info_(paint_timing_info),
-      identifier_(identifier),
-      nesting_policy_(ToNestingPolicy(nesting_policy)) {}
+                                const AtomicString& identifier)
+    : first_paint_timing_info_(paint_timing_info), identifier_(identifier) {}
 
 void ContainerTiming::Record::MaybeUpdateLastNewPaintedArea(
     ContainerTiming* container_timing,
@@ -105,20 +90,11 @@ void ContainerTiming::Record::MaybeUpdateLastNewPaintedArea(
     return;
   }
 
-  Element* shadowed_element = container_root;
   Record* parent_record = container_timing->GetOrCreateRecord(
       paint_timing_info, parent_container_root);
-  if (parent_record->nesting_policy_ == NestingPolicy::kIgnore) {
-    return;
-  }
-
-  Element* propagated_element =
-      (parent_record->nesting_policy_ == NestingPolicy::kShadowed)
-          ? shadowed_element
-          : element;
   parent_record->MaybeUpdateLastNewPaintedArea(
-      container_timing, paint_timing_info, parent_container_root,
-      propagated_element, enclosing_rect);
+      container_timing, paint_timing_info, parent_container_root, element,
+      enclosing_rect);
 }
 
 void ContainerTiming::Record::MaybeEmitPerformanceEntry(
@@ -146,32 +122,12 @@ ContainerTiming::Record* ContainerTiming::GetOrCreateRecord(
   if (it == container_root_records_.end()) {
     record = MakeGarbageCollected<Record>(
         paint_timing_info,
-        container_root->FastGetAttribute(html_names::kContainertimingAttr),
-        container_root->FastGetAttribute(
-            html_names::kContainertimingNestingAttr));
+        container_root->FastGetAttribute(html_names::kContainertimingAttr));
     container_root_records_.insert(container_root, record);
   } else {
     record = it->value;
   }
   return record;
-}
-
-void ContainerTiming::MaybeUpdateContainerRootNestingPolicy(
-    Element* element,
-    const AtomicString& new_value) {
-  auto it = container_root_records_.find(element);
-  if (it != container_root_records_.end()) {
-    Record* record = it->value;
-
-    Record::NestingPolicy new_nesting_policy =
-        Record::ToNestingPolicy(new_value);
-
-    if (record->GetNestingPolicy() != new_nesting_policy) {
-      // If the nesting policy changes, the previous data is useless, drop
-      // record and start again.
-      container_root_records_.erase(it);
-    }
-  }
 }
 
 void ContainerTiming::MaybeUpdateContainerRootIdentifier(

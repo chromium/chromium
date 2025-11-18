@@ -113,7 +113,6 @@ namespace http://www.w3.org/1999/xhtml
     property computedStyleMap
     property containerTiming
     property containerTimingIgnore
-    property containerTimingNesting
     property contains
     property contentEditable
     property currentCSSZoom
@@ -1439,7 +1438,6 @@ namespace http://www.w3.org/2000/svg
     property computedStyleMap
     property containerTiming
     property containerTimingIgnore
-    property containerTimingNesting
     property contains
     property currentCSSZoom
     property currentPatch

@@ -2502,7 +2502,6 @@ interface Element : Node
     getter computedRole
     getter containerTiming
     getter containerTimingIgnore
-    getter containerTimingNesting
     getter currentCSSZoom
     getter currentPatch
     getter elementTiming
@@ -2659,7 +2658,6 @@ interface Element : Node
     setter className
     setter containerTiming
     setter containerTimingIgnore
-    setter containerTimingNesting
     setter elementTiming
     setter headingOffset
     setter headingReset

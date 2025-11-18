@@ -35,8 +35,6 @@ class CORE_EXPORT ContainerTiming final
   }
 
   bool CanReportToContainerTiming() const;
-  void MaybeUpdateContainerRootNestingPolicy(Element* element,
-                                             const AtomicString& new_value);
   void MaybeUpdateContainerRootIdentifier(Element* element,
                                           const AtomicString& new_value);
 
@@ -54,15 +52,10 @@ class CORE_EXPORT ContainerTiming final
   class Record final : public GarbageCollected<Record> {
    public:
     Record(const DOMPaintTimingInfo& paint_timing_info,
-           const AtomicString& identifier,
-           const AtomicString& nested_policy);
+           const AtomicString& identifier);
     Record(const Record&) = delete;
     Record& operator=(const Record&) = delete;
 
-    enum class NestingPolicy { kIgnore, kTransparent, kShadowed };
-    static NestingPolicy ToNestingPolicy(const AtomicString& str);
-
-    NestingPolicy GetNestingPolicy() const { return nesting_policy_; }
     const AtomicString& identifier() const { return identifier_; }
 
     void MaybeUpdateLastNewPaintedArea(
@@ -79,7 +72,6 @@ class CORE_EXPORT ContainerTiming final
    private:
     const DOMPaintTimingInfo first_paint_timing_info_;
     const AtomicString identifier_;
-    const NestingPolicy nesting_policy_ = NestingPolicy::kIgnore;
     DOMPaintTimingInfo last_new_painted_area_paint_timing_info_;
     WeakMember<Element> last_new_painted_area_element_;
     cc::Region painted_region_;
