@@ -61,11 +61,6 @@ class CORE_EXPORT HTMLPermissionElement
   V8PermissionState initialPermissionStatus() const;
   V8PermissionState permissionStatus() const;
 
-  // The events `kDismiss` and `kResolve` will be deprecated and replaced by
-  // `kPromptaction` and `kPromptdismiss`. We will keep both for backward
-  // compability and will remove the old events in M138.
-  DEFINE_ATTRIBUTE_EVENT_LISTENER(resolve, kResolve)
-  DEFINE_ATTRIBUTE_EVENT_LISTENER(dismiss, kDismiss)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(promptaction, kPromptaction)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(promptdismiss, kPromptdismiss)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(validationstatuschange,

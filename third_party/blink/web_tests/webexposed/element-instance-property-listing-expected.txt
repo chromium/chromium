@@ -695,11 +695,9 @@ html element geolocation
     property initialPermissionStatus
     property invalidReason
     property isValid
-    property ondismiss
     property onlocation
     property onpromptaction
     property onpromptdismiss
-    property onresolve
     property onvalidationstatuschange
     property permissionStatus
     property position
@@ -857,10 +855,8 @@ html element install
     property invalidReason
     property isValid
     property manifest
-    property ondismiss
     property onpromptaction
     property onpromptdismiss
-    property onresolve
     property onvalidationstatuschange
     property permissionStatus
     property type
@@ -1016,10 +1012,8 @@ html element permission
     property initialPermissionStatus
     property invalidReason
     property isValid
-    property ondismiss
     property onpromptaction
     property onpromptdismiss
-    property onresolve
     property onvalidationstatuschange
     property permissionStatus
     property type

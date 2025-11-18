@@ -1221,25 +1221,19 @@ void HTMLPermissionElement::OnEmbeddedPermissionsDecided(
     EmbeddedPermissionControlResult result) {
   pending_request_created_ = std::nullopt;
 
-  // The events `kDismiss` and `kResolve` will be deprecated and replaced by
-  // `kPromptaction` and `kPromptdismiss`. We will keep both for backward
-  // compability and will remove the old events in M138.
   switch (result) {
     case EmbeddedPermissionControlResult::kDismissed:
       DispatchEvent(
           *Event::CreateCancelableBubble(event_type_names::kPromptdismiss));
-      DispatchEvent(*Event::CreateCancelableBubble(event_type_names::kDismiss));
       return;
     case EmbeddedPermissionControlResult::kGranted:
       aggregated_permission_status_ = MojoPermissionStatus::GRANTED;
       DispatchEvent(
           *Event::CreateCancelableBubble(event_type_names::kPromptaction));
-      DispatchEvent(*Event::CreateCancelableBubble(event_type_names::kResolve));
       return;
     case EmbeddedPermissionControlResult::kDenied:
       DispatchEvent(
           *Event::CreateCancelableBubble(event_type_names::kPromptaction));
-      DispatchEvent(*Event::CreateCancelableBubble(event_type_names::kResolve));
       return;
     case EmbeddedPermissionControlResult::kNotSupported:
       AddConsoleError(String::Format(

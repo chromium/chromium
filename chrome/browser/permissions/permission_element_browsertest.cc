@@ -69,9 +69,8 @@ class PermissionElementBrowserTestBase : public InProcessBrowserTest {
     return browser()->tab_strip_model()->GetWebContentsAt(0);
   }
 
-  void WaitForResolveEvent(const std::string& id) {
+  void WaitForPromptActionEvent(const std::string& id) {
     ExpectConsoleMessage(id + "-promptaction");
-    ExpectConsoleMessage(id + "-resolve");
   }
 
   void WaitForUpdateGrantedPermissionElement(const std::string& id) {
@@ -80,7 +79,6 @@ class PermissionElementBrowserTestBase : public InProcessBrowserTest {
 
   void WaitForDismissEvent(const std::string& id) {
     ExpectConsoleMessage(id + "-promptdismiss");
-    ExpectConsoleMessage(id + "-dismiss");
   }
 
   void ExpectNoEvents() { EXPECT_EQ(0u, console_observer_->messages().size()); }
@@ -197,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
       permissions::PermissionRequestObserver observer(web_contents());
       ClickElementWithId(web_contents(), id);
       observer.Wait();
-      WaitForResolveEvent(id);
+      WaitForPromptActionEvent(id);
     }
   }
 }
@@ -214,7 +212,7 @@ IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
     permissions::PermissionRequestObserver observer(web_contents());
     ClickElementWithId(web_contents(), id);
     observer.Wait();
-    WaitForResolveEvent(id);
+    WaitForPromptActionEvent(id);
     ASSERT_TRUE(content::ExecJs(
         web_contents(), content::JsReplace("notifyWhenGranted($1);", id)));
     WaitForUpdateGrantedPermissionElement(id);
@@ -527,7 +525,7 @@ IN_PROC_BROWSER_TEST_P(PermissionElementStandardizedBrowserZoomTest,
        {"geolocation", "camera", "microphone", "camera-microphone"}) {
     // The permission element still works.
     ClickElementWithId(web_contents(), id);
-    WaitForResolveEvent(id);
+    WaitForPromptActionEvent(id);
     ExpectNoEvents();
 
     // Now set the CSS "zoom" to 2x.
@@ -649,7 +647,7 @@ IN_PROC_BROWSER_TEST_F(MiscellaneousElementBrowserTest,
     permissions::PermissionRequestObserver observer(web_contents());
     ClickElementWithId(web_contents(), id);
     observer.Wait();
-    WaitForResolveEvent(id);
+    WaitForPromptActionEvent(id);
   }
 }
 
@@ -676,15 +674,6 @@ IN_PROC_BROWSER_TEST_F(MiscellaneousElementBrowserTest,
     ExpectConsoleMessage(
         base::StrCat({"grandparent-", id, "-cancelable-true"}));
     ExpectConsoleMessage(base::StrCat({"grandparent-", id, "-bubbles-true"}));
-
-    ExpectConsoleMessage(base::StrCat({"parent-", id, "-dismiss"}));
-    ExpectConsoleMessage(base::StrCat({"parent-", id, "-cancelable-true"}));
-    ExpectConsoleMessage(base::StrCat({"parent-", id, "-bubbles-true"}));
-
-    ExpectConsoleMessage(base::StrCat({"grandparent-", id, "-dismiss"}));
-    ExpectConsoleMessage(
-        base::StrCat({"grandparent-", id, "-cancelable-true"}));
-    ExpectConsoleMessage(base::StrCat({"grandparent-", id, "-bubbles-true"}));
   }
 
   {
@@ -702,15 +691,6 @@ IN_PROC_BROWSER_TEST_F(MiscellaneousElementBrowserTest,
     ExpectConsoleMessage(base::StrCat({"parent-", id, "-bubbles-true"}));
 
     ExpectConsoleMessage(base::StrCat({"grandparent-", id, "-promptaction"}));
-    ExpectConsoleMessage(
-        base::StrCat({"grandparent-", id, "-cancelable-true"}));
-    ExpectConsoleMessage(base::StrCat({"grandparent-", id, "-bubbles-true"}));
-
-    ExpectConsoleMessage(base::StrCat({"parent-", id, "-resolve"}));
-    ExpectConsoleMessage(base::StrCat({"parent-", id, "-cancelable-true"}));
-    ExpectConsoleMessage(base::StrCat({"parent-", id, "-bubbles-true"}));
-
-    ExpectConsoleMessage(base::StrCat({"grandparent-", id, "-resolve"}));
     ExpectConsoleMessage(
         base::StrCat({"grandparent-", id, "-cancelable-true"}));
     ExpectConsoleMessage(base::StrCat({"grandparent-", id, "-bubbles-true"}));

@@ -4931,18 +4931,14 @@ interface HTMLPermissionElement : HTMLElement
     getter initialPermissionStatus
     getter invalidReason
     getter isValid
-    getter ondismiss
     getter onpromptaction
     getter onpromptdismiss
-    getter onresolve
     getter onvalidationstatuschange
     getter permissionStatus
     getter type
     method constructor
-    setter ondismiss
     setter onpromptaction
     setter onpromptdismiss
-    setter onresolve
     setter onvalidationstatuschange
     setter type
 interface HTMLPictureElement : HTMLElement
