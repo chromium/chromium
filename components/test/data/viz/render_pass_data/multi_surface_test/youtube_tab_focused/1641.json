@@ -1733,11 +1733,9 @@
                "resources": [ 26 ],
                "secure_output_only": false,
                "shared_quad_state_index": 0,
-               "uv_bottom_right": {
-                  "x": 1.0,
-                  "y": 1.0
-               },
-               "uv_top_left": {
+               "tex_coord_rect": {
+                  "height": 1.0,
+                  "width": 1.0,
                   "x": 0.0,
                   "y": 0.0
                },
@@ -1769,11 +1767,9 @@
                "resources": [ 25 ],
                "secure_output_only": false,
                "shared_quad_state_index": 0,
-               "uv_bottom_right": {
-                  "x": 1.0,
-                  "y": 1.0
-               },
-               "uv_top_left": {
+               "tex_coord_rect": {
+                  "height": 1.0,
+                  "width": 1.0,
                   "x": 0.0,
                   "y": 0.0
                },
@@ -2227,11 +2223,9 @@
                "resources": [ 35 ],
                "secure_output_only": false,
                "shared_quad_state_index": 1,
-               "uv_bottom_right": {
-                  "x": 1.0,
-                  "y": 1.0
-               },
-               "uv_top_left": {
+               "tex_coord_rect": {
+                  "height": 1.0,
+                  "width": 1.0,
                   "x": 0.0,
                   "y": 0.0
                },
@@ -2263,11 +2257,9 @@
                "resources": [ 34 ],
                "secure_output_only": false,
                "shared_quad_state_index": 1,
-               "uv_bottom_right": {
-                  "x": 1.0,
-                  "y": 1.0
-               },
-               "uv_top_left": {
+               "tex_coord_rect": {
+                  "height": 1.0,
+                  "width": 1.0,
                   "x": 0.0,
                   "y": 0.0
                },
@@ -2299,11 +2291,9 @@
                "resources": [ 33 ],
                "secure_output_only": false,
                "shared_quad_state_index": 2,
-               "uv_bottom_right": {
-                  "x": 1.0,
-                  "y": 1.0
-               },
-               "uv_top_left": {
+               "tex_coord_rect": {
+                  "height": 1.0,
+                  "width": 1.0,
                   "x": 0.0,
                   "y": 0.0
                },
@@ -2335,11 +2325,9 @@
                "resources": [ 32 ],
                "secure_output_only": false,
                "shared_quad_state_index": 2,
-               "uv_bottom_right": {
-                  "x": 1.0,
-                  "y": 1.0
-               },
-               "uv_top_left": {
+               "tex_coord_rect": {
+                  "height": 1.0,
+                  "width": 1.0,
                   "x": 0.0,
                   "y": 0.0
                },
@@ -4298,11 +4286,9 @@
                "resources": [ 54 ],
                "secure_output_only": false,
                "shared_quad_state_index": 0,
-               "uv_bottom_right": {
-                  "x": 1.0,
-                  "y": 1.0
-               },
-               "uv_top_left": {
+               "tex_coord_rect": {
+                  "height": 1.0,
+                  "width": 1.0,
                   "x": 0.0,
                   "y": 0.0
                },

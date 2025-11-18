@@ -162,8 +162,7 @@ bool StructTraits<viz::mojom::TextureQuadStateDataView, viz::DrawQuad>::Read(
   gfx::ProtectedVideoType protected_video_type =
       gfx::ProtectedVideoType::kClear;
   viz::OverlayPriority overlay_priority_hint = viz::OverlayPriority::kLow;
-  if (!data.ReadUvTopLeft(&quad->uv_top_left) ||
-      !data.ReadUvBottomRight(&quad->uv_bottom_right) ||
+  if (!data.ReadTexCoordRect(&quad->tex_coord_rect_) ||
       !data.ReadProtectedVideoType(&protected_video_type) ||
       !data.ReadOverlayPriorityHint(&overlay_priority_hint) ||
       !data.ReadRoundedDisplayMasksInfo(&quad->rounded_display_masks_info) ||

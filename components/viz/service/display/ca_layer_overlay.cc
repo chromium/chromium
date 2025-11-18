@@ -162,8 +162,8 @@ gfx::CALayerResult FromTextureQuad(
     ca_layer_overlay->transform = transform;
   }
   ca_layer_overlay->resource_id = resource_id;
-  ca_layer_overlay->uv_rect =
-      BoundingRect(quad->uv_top_left, quad->uv_bottom_right);
+  ca_layer_overlay->uv_rect = quad->GetNormalizedTexCoords(
+      resource_provider->GetResourceBackedSize(resource_id));
   ca_layer_overlay->color = quad->background_color;
   ca_layer_overlay->nearest_neighbor_filter = quad->nearest_neighbor;
   ca_layer_overlay->hdr_metadata =

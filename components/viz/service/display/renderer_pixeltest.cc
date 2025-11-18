@@ -64,6 +64,8 @@
 #include "third_party/skia/include/private/chromium/SkPMColor.h"
 #include "ui/gfx/color_transform.h"
 #include "ui/gfx/geometry/mask_filter_info.h"
+#include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/video_types.h"
@@ -975,8 +977,9 @@ TEST_P(RendererPixelTest,
   quad->rect.Offset(10, 10);
   quad->visible_rect.Offset(10, 10);
   quad->visible_rect.Inset(gfx::Insets::TLBR(50, 30, 12, 12));
-  quad->uv_top_left.SetPoint(.2, .3);
-  quad->uv_bottom_right.SetPoint(.4, .7);
+  quad->SetNormalizedTexCoordsForTesting(
+      gfx::BoundingRect(gfx::PointF(0.2f, 0.3f), gfx::PointF(0.4f, 0.7f)),
+      this->device_viewport_size_);
   quad->nearest_neighbor = true;  // To avoid bilinear filter differences.
   SharedQuadState* color_quad_state = CreateTestSharedQuadState(
       gfx::Transform(), rect, pass.get(), gfx::MaskFilterInfo());

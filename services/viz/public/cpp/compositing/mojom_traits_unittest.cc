@@ -1212,8 +1212,8 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   EXPECT_EQ(rect5, out_texture_draw_quad->visible_rect);
   EXPECT_EQ(needs_blending, out_texture_draw_quad->needs_blending);
   EXPECT_EQ(resource_id5, out_texture_draw_quad->resource_id);
-  EXPECT_EQ(uv_top_left, out_texture_draw_quad->uv_top_left);
-  EXPECT_EQ(uv_bottom_right, out_texture_draw_quad->uv_bottom_right);
+  EXPECT_EQ(gfx::BoundingRect(uv_top_left, uv_bottom_right),
+            out_texture_draw_quad->GetNormalizedTexCoords(gfx::Size(1, 1)));
   EXPECT_EQ(background_color, out_texture_draw_quad->background_color);
   EXPECT_EQ(nearest_neighbor, out_texture_draw_quad->nearest_neighbor);
   EXPECT_EQ(secure_output_only, out_texture_draw_quad->secure_output_only);
@@ -1224,8 +1224,9 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   EXPECT_EQ(rect7, out_rounded_display_mask_quad->visible_rect);
   EXPECT_EQ(needs_blending7, out_rounded_display_mask_quad->needs_blending);
   EXPECT_EQ(resource_id7, out_rounded_display_mask_quad->resource_id);
-  EXPECT_EQ(uv_top_left, out_rounded_display_mask_quad->uv_top_left);
-  EXPECT_EQ(uv_bottom_right, out_rounded_display_mask_quad->uv_bottom_right);
+  EXPECT_EQ(
+      gfx::BoundingRect(uv_top_left, uv_bottom_right),
+      out_rounded_display_mask_quad->GetNormalizedTexCoords(gfx::Size(1, 1)));
   EXPECT_EQ(origin_rounded_display_mask_radius,
             out_rounded_display_mask_quad->rounded_display_masks_info
                 .radii[TextureDrawQuad::RoundedDisplayMasksInfo::

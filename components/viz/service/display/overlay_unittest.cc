@@ -5037,8 +5037,8 @@ TEST_F(DelegatedTest, TestClipHandCrafted) {
   auto* tex_rect = CreateCandidateQuadAt(
 
       pass->shared_quad_state_list.back(), pass.get(), kSmallCandidateRect);
-  tex_rect->uv_bottom_right = gfx::PointF(1, 1);
-  tex_rect->uv_top_left = gfx::PointF(0, 0);
+  tex_rect->SetNormalizedTexCoordsForTesting(gfx::RectF(0, 0, 1, 1),
+                                             kSmallCandidateRect.size());
   pass->shared_quad_state_list.back()->clip_rect = kTestClip;
   // Check for potential candidates.
   OverlayCandidateList candidate_list;
@@ -5065,10 +5065,9 @@ TEST_F(DelegatedTest, TestVisibleRectClip) {
   const auto kSmallCandidateRect = gfx::Rect(0, 0, 100, 100);
   const auto kTestClip = gfx::Rect(0, 50, 50, 50);
   auto* tex_rect = CreateCandidateQuadAt(
-
       pass->shared_quad_state_list.back(), pass.get(), kSmallCandidateRect);
-  tex_rect->uv_bottom_right = gfx::PointF(1, 1);
-  tex_rect->uv_top_left = gfx::PointF(0, 0);
+  tex_rect->SetNormalizedTexCoordsForTesting(gfx::RectF(0, 0, 1, 1),
+                                             kSmallCandidateRect.size());
   tex_rect->visible_rect = kTestClip;
   // Check for potential candidates.
   OverlayCandidateList candidate_list;
@@ -5115,8 +5114,10 @@ TEST_F(DelegatedTest, TestClipComputed) {
   EXPECT_EQ(1U, test::NumOverlaysExcludingPrimaryPlane(candidate_list));
   auto expected_rect = kTestClip;
   expected_rect.Intersect(kSmallCandidateRect);
+  const gfx::RectF tex_coord_rect =
+      tex_rect->GetNormalizedTexCoords(kSmallCandidateRect.size());
   gfx::RectF uv_rect = cc::MathUtil::ScaleRectProportional(
-      BoundingRect(tex_rect->uv_top_left, tex_rect->uv_bottom_right),
+      BoundingRect(tex_coord_rect.origin(), tex_coord_rect.bottom_right()),
       gfx::RectF(kSmallCandidateRect), gfx::RectF(expected_rect));
   EXPECT_RECTF_NEAR(gfx::RectF(expected_rect), candidate_list[0].display_rect,
                     0.01f);
@@ -5164,10 +5165,9 @@ TEST_F(DelegatedTest, TestClipWithPrimary) {
   const auto kOversizedCandidateRect =
       gfx::Rect(kDisplaySize.height() * 2, kDisplaySize.width() * 2);
   auto* tex_rect = CreateCandidateQuadAt(
-
       pass->shared_quad_state_list.back(), pass.get(), kOversizedCandidateRect);
-  tex_rect->uv_bottom_right = gfx::PointF(1, 1);
-  tex_rect->uv_top_left = gfx::PointF(0, 0);
+  tex_rect->SetNormalizedTexCoordsForTesting(gfx::RectF(0, 0, 1, 1),
+                                             kOversizedCandidateRect.size());
   // Check for potential candidates.
   OverlayCandidateList candidate_list;
   AggregatedRenderPassList pass_list;

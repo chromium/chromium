@@ -446,9 +446,8 @@ void SoftwareRenderer::DrawTextureQuad(const TextureDrawQuad* quad) {
   if (!lock.valid())
     return;
   const SkImage* image = lock.sk_image();
-  gfx::RectF uv_rect = gfx::ScaleRect(
-      gfx::BoundingRect(quad->uv_top_left, quad->uv_bottom_right),
-      image->width(), image->height());
+  gfx::RectF uv_rect = quad->GetUnnormalizedTexCoords(
+      gfx::Size(image->width(), image->height()));
   gfx::RectF visible_uv_rect = cc::MathUtil::ScaleRectProportional(
       uv_rect, gfx::RectF(quad->rect), gfx::RectF(quad->visible_rect));
   SkRect sk_uv_rect = gfx::RectFToSkRect(visible_uv_rect);

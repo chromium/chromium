@@ -2634,9 +2634,9 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
   const SkImage* image = builder.sk_image();
   if (!image)
     return;
-  gfx::RectF uv_rect = gfx::ScaleRect(
-      gfx::BoundingRect(quad->uv_top_left, quad->uv_bottom_right),
-      image->width(), image->height());
+
+  gfx::RectF uv_rect = quad->GetUnnormalizedTexCoords(
+      gfx::Size(image->width(), image->height()));
   params->vis_tex_coords = cc::MathUtil::ScaleRectProportional(
       uv_rect, gfx::RectF(quad->rect), params->visible_rect);
 

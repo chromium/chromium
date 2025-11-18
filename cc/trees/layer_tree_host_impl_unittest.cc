@@ -10448,15 +10448,18 @@ class LayerTreeHostImplViewportCoveredTest
       gfx::SizeF gutter_texture_size_pixels =
           gfx::ScaleSize(gfx::SizeF(gutter_texture_size_),
                          host_impl_->active_tree()->device_scale_factor());
-      EXPECT_EQ(texture_quad->uv_top_left.x(),
+      const gfx::RectF texture_quad_tex_coords(
+          texture_quad->GetNormalizedTexCoords(
+              gfx::ToRoundedSize(gutter_texture_size_pixels)));
+      EXPECT_EQ(texture_quad_tex_coords.x(),
                 texture_quad->rect.x() / gutter_texture_size_pixels.width());
-      EXPECT_EQ(texture_quad->uv_top_left.y(),
+      EXPECT_EQ(texture_quad_tex_coords.y(),
                 texture_quad->rect.y() / gutter_texture_size_pixels.height());
       EXPECT_EQ(
-          texture_quad->uv_bottom_right.x(),
+          texture_quad_tex_coords.right(),
           texture_quad->rect.right() / gutter_texture_size_pixels.width());
       EXPECT_EQ(
-          texture_quad->uv_bottom_right.y(),
+          texture_quad_tex_coords.bottom(),
           texture_quad->rect.bottom() / gutter_texture_size_pixels.height());
     }
   }

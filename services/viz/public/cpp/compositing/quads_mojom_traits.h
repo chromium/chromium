@@ -35,6 +35,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/mojom/hdr_metadata_mojom_traits.h"
 
@@ -415,16 +416,10 @@ struct StructTraits<viz::mojom::TextureQuadStateDataView, viz::DrawQuad> {
     return quad->rounded_display_masks_info;
   }
 
-  static const gfx::PointF& uv_top_left(const viz::DrawQuad& input) {
+  static const gfx::RectF& tex_coord_rect(const viz::DrawQuad& input) {
     const viz::TextureDrawQuad* quad =
         viz::TextureDrawQuad::MaterialCast(&input);
-    return quad->uv_top_left;
-  }
-
-  static const gfx::PointF& uv_bottom_right(const viz::DrawQuad& input) {
-    const viz::TextureDrawQuad* quad =
-        viz::TextureDrawQuad::MaterialCast(&input);
-    return quad->uv_bottom_right;
+    return quad->tex_coord_rect_;
   }
 
   static SkColor4f background_color(const viz::DrawQuad& input) {

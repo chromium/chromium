@@ -164,7 +164,8 @@ class SurfaceTest : public test::ExoTestBase,
       ShellSurface* shell_surface,
       Transform transform,
       const gfx::RectF& expected_rect,
-      bool has_viewport);
+      bool has_viewport,
+      const gfx::Size& buffer_size);
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -925,10 +926,12 @@ TEST_P(SurfaceTest, SubpixelCoordinate) {
         // a uv rect.
         auto* tex_draw_quad =
             viz::TextureDrawQuad::MaterialCast(quad_list.front());
-        EXPECT_POINTF_NEAR(tex_draw_quad->uv_top_left, gfx::PointF(0, 0),
+        const gfx::RectF tex_draw_quad_tex_coords(
+            tex_draw_quad->GetNormalizedTexCoords(child_buffer_size));
+        EXPECT_POINTF_NEAR(tex_draw_quad_tex_coords.origin(), gfx::PointF(0, 0),
                            0.001f);
-        EXPECT_POINTF_NEAR(tex_draw_quad->uv_bottom_right, gfx::PointF(1, 1),
-                           0.001f);
+        EXPECT_POINTF_NEAR(tex_draw_quad_tex_coords.bottom_right(),
+                           gfx::PointF(1, 1), 0.001f);
         EXPECT_EQ(gfx::Transform(), transform);
         EXPECT_EQ(kTestRects[i], rect);
       } else {
@@ -976,7 +979,8 @@ void SurfaceTest::SetCropAndBufferTransformHelperTransformAndTest(
     ShellSurface* shell_surface,
     Transform transform,
     const gfx::RectF& expected_rect,
-    bool has_viewport) {
+    bool has_viewport,
+    const gfx::Size& buffer_size) {
   const gfx::Rect target_with_no_viewport(ToPixel(gfx::Rect(gfx::Size(52, 4))));
   const gfx::Rect target_with_viewport(ToPixel(gfx::Rect(gfx::Size(128, 64))));
 
@@ -999,8 +1003,7 @@ void SurfaceTest::SetCropAndBufferTransformHelperTransformAndTest(
     ASSERT_EQ(1u, quad_list.size());
     const viz::TextureDrawQuad* quad =
         viz::TextureDrawQuad::MaterialCast(quad_list.front());
-    EXPECT_EQ(expected_rect.origin(), quad->uv_top_left);
-    EXPECT_EQ(expected_rect.bottom_right(), quad->uv_bottom_right);
+    EXPECT_EQ(expected_rect, quad->GetNormalizedTexCoords(buffer_size));
     EXPECT_EQ(
         (has_viewport) ? target_with_viewport : target_with_no_viewport,
         cc::MathUtil::MapEnclosingClippedRect(
@@ -1069,7 +1072,7 @@ TEST_P(SurfaceTest, MAYBE_SetCropAndBufferTransform) {
   for (const auto& tc : testcases) {
     SetCropAndBufferTransformHelperTransformAndTest(
         surface.get(), shell_surface.get(), tc.transform,
-        gfx::SkRectToRectF(*tc.expected_rect), false);
+        gfx::SkRectToRectF(*tc.expected_rect), false, buffer_size);
   }
 
   surface->SetViewport(gfx::SizeF(128, 64));
@@ -1077,7 +1080,7 @@ TEST_P(SurfaceTest, MAYBE_SetCropAndBufferTransform) {
   for (const auto& tc : testcases) {
     SetCropAndBufferTransformHelperTransformAndTest(
         surface.get(), shell_surface.get(), tc.transform,
-        gfx::SkRectToRectF(*tc.expected_rect), true);
+        gfx::SkRectToRectF(*tc.expected_rect), true, buffer_size);
   }
 }
 

@@ -32,6 +32,9 @@
 #include "components/viz/common/resources/resource_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/video_types.h"
@@ -292,8 +295,8 @@ TEST(DrawQuadTest, CopyTextureDrawQuad) {
   gfx::Rect visible_rect(40, 50, 30, 20);
   bool blending = true;
   ResourceId resource_id(82);
-  gfx::PointF uv_top_left(0.5f, 224.f);
-  gfx::PointF uv_bottom_right(51.5f, 260.f);
+  const gfx::RectF tex_coord_rect =
+      BoundingRect(gfx::PointF(0.5f, 224.f), gfx::PointF(51.5f, 260.f));
   bool nearest_neighbor = true;
   bool secure_output_only = true;
   gfx::ProtectedVideoType protected_video_type =
@@ -301,25 +304,24 @@ TEST(DrawQuadTest, CopyTextureDrawQuad) {
   CREATE_SHARED_STATE();
 
   CREATE_QUAD_NEW(TextureDrawQuad, visible_rect, blending, resource_id,
-                  uv_top_left, uv_bottom_right, SkColors::kTransparent,
-                  nearest_neighbor, secure_output_only, protected_video_type);
+                  tex_coord_rect.origin(), tex_coord_rect.bottom_right(),
+                  SkColors::kTransparent, nearest_neighbor, secure_output_only,
+                  protected_video_type);
   EXPECT_EQ(DrawQuad::Material::kTextureContent, copy_quad->material);
   EXPECT_EQ(visible_rect, copy_quad->visible_rect);
   EXPECT_EQ(blending, copy_quad->needs_blending);
   EXPECT_EQ(resource_id, copy_quad->resource_id);
-  EXPECT_EQ(uv_top_left, copy_quad->uv_top_left);
-  EXPECT_EQ(uv_bottom_right, copy_quad->uv_bottom_right);
+  EXPECT_EQ(tex_coord_rect, copy_quad->GetNormalizedTexCoords(gfx::Size(1, 1)));
   EXPECT_EQ(nearest_neighbor, copy_quad->nearest_neighbor);
   EXPECT_EQ(secure_output_only, copy_quad->secure_output_only);
   EXPECT_EQ(protected_video_type, copy_quad->protected_video_type);
 
-  CREATE_QUAD_ALL(TextureDrawQuad, resource_id, uv_top_left, uv_bottom_right,
-                  SkColors::kTransparent, nearest_neighbor, secure_output_only,
-                  protected_video_type);
+  CREATE_QUAD_ALL(TextureDrawQuad, resource_id, tex_coord_rect.origin(),
+                  tex_coord_rect.bottom_right(), SkColors::kTransparent,
+                  nearest_neighbor, secure_output_only, protected_video_type);
   EXPECT_EQ(DrawQuad::Material::kTextureContent, copy_quad->material);
   EXPECT_EQ(resource_id, copy_quad->resource_id);
-  EXPECT_EQ(uv_top_left, copy_quad->uv_top_left);
-  EXPECT_EQ(uv_bottom_right, copy_quad->uv_bottom_right);
+  EXPECT_EQ(tex_coord_rect, copy_quad->GetNormalizedTexCoords(gfx::Size(1, 1)));
   EXPECT_EQ(nearest_neighbor, copy_quad->nearest_neighbor);
   EXPECT_EQ(secure_output_only, copy_quad->secure_output_only);
   EXPECT_EQ(protected_video_type, copy_quad->protected_video_type);

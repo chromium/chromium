@@ -47,8 +47,7 @@ void TextureDrawQuad::SetNew(const SharedQuadState* shared_quad_state,
   DrawQuad::SetAll(shared_quad_state, DrawQuad::Material::kTextureContent, rect,
                    visible_rect, needs_blending);
   resource_id = resource;
-  uv_top_left = top_left;
-  uv_bottom_right = bottom_right;
+  tex_coord_rect_ = gfx::BoundingRect(top_left, bottom_right);
   background_color = background;
   nearest_neighbor = nearest;
   secure_output_only = secure_output;
@@ -70,8 +69,7 @@ void TextureDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
   DrawQuad::SetAll(shared_quad_state, DrawQuad::Material::kTextureContent, rect,
                    visible_rect, needs_blending);
   resource_id = resource;
-  uv_top_left = top_left;
-  uv_bottom_right = bottom_right;
+  tex_coord_rect_ = gfx::BoundingRect(top_left, bottom_right);
   background_color = background;
   nearest_neighbor = nearest;
   secure_output_only = secure_output;
@@ -84,8 +82,7 @@ const TextureDrawQuad* TextureDrawQuad::MaterialCast(const DrawQuad* quad) {
 }
 
 void TextureDrawQuad::ExtendValue(base::trace_event::TracedValue* value) const {
-  cc::MathUtil::AddToTracedValue("uv_top_left", uv_top_left, value);
-  cc::MathUtil::AddToTracedValue("uv_bottom_right", uv_bottom_right, value);
+  cc::MathUtil::AddToTracedValue("tex_coord_rect", tex_coord_rect_, value);
   value->SetString("background_color",
                    color_utils::SkColor4fToRgbaString(background_color));
   value->SetString("dynamic_range_limit", dynamic_range_limit.ToString());

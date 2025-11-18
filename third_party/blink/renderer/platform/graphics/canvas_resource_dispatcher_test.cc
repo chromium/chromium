@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/skia/include/core/SkSurface.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/mojom/presentation_feedback.mojom-blink.h"
 
 using testing::_;
@@ -423,8 +424,9 @@ TEST_P(CanvasResourceDispatcherTest, DispatchFrame) {
 
             const auto* texture_quad =
                 static_cast<const viz::TextureDrawQuad*>(quad);
-            EXPECT_EQ(texture_quad->uv_top_left, gfx::PointF(0.0f, 0.0f));
-            EXPECT_EQ(texture_quad->uv_bottom_right, gfx::PointF(1.0f, 1.0f));
+            EXPECT_EQ(texture_quad->GetNormalizedTexCoords(
+                          gfx::Size(kWidth, kHeight)),
+                      gfx::RectF(0.0f, 0.0f, 1.0f, 1.0f));
 
             // CanvasResourceSharedImage::CreateSoftware() creates a resource
             // whose origin is top-left.

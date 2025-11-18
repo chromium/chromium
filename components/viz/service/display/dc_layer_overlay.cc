@@ -540,7 +540,7 @@ void FromDrawQuad(const DisplayResourceProvider* resource_provider,
   dc_layer.resource_size_in_pixels =
       resource_provider->GetResourceBackedSize(quad->resource_id);
   dc_layer.uv_rect =
-      gfx::BoundingRect(quad->uv_top_left, quad->uv_bottom_right);
+      quad->GetNormalizedTexCoords(dc_layer.resource_size_in_pixels);
   dc_layer.display_rect = gfx::RectF(quad->rect);
   dc_layer.format = resource_provider->GetSharedImageFormat(quad->resource_id);
   dc_layer.color = quad->background_color;

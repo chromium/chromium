@@ -44,7 +44,9 @@
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/linear_gradient.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/test/geometry_util.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/gpu_fence_handle.h"
@@ -674,8 +676,9 @@ TEST_F(SlimLayerTreeCompositorFrameTest, UIResourceLayerAppendQuads) {
         viz::TextureDrawQuad::MaterialCast(pass->quad_list.front());
     EXPECT_TRUE(texture_quad->needs_blending);
     EXPECT_NE(viz::kInvalidResourceId, texture_quad->resource_id);
-    EXPECT_EQ(gfx::PointF(0.0f, 0.0f), texture_quad->uv_top_left);
-    EXPECT_EQ(gfx::PointF(1.0f, 1.0f), texture_quad->uv_bottom_right);
+    EXPECT_EQ(gfx::RectF(0.0f, 0.0f, 1.0f, 1.0f),
+              texture_quad->GetNormalizedTexCoords(
+                  gfx::Size(image_info.width(), image_info.height())));
 
     ASSERT_EQ(frame.resource_list.size(), 1u);
     EXPECT_EQ(frame.resource_list[0].id, texture_quad->resource_id);
@@ -708,8 +711,9 @@ TEST_F(SlimLayerTreeCompositorFrameTest, UIResourceLayerAppendQuads) {
         viz::TextureDrawQuad::MaterialCast(pass->quad_list.front());
     EXPECT_TRUE(texture_quad->needs_blending);
     EXPECT_NE(viz::kInvalidResourceId, texture_quad->resource_id);
-    EXPECT_EQ(gfx::PointF(0.25f, 0.25f), texture_quad->uv_top_left);
-    EXPECT_EQ(gfx::PointF(0.75f, 0.75f), texture_quad->uv_bottom_right);
+    EXPECT_EQ(gfx::RectF(0.25f, 0.25f, 0.5f, 0.5f),
+              texture_quad->GetNormalizedTexCoords(
+                  gfx::Size(image_info.width(), image_info.height())));
 
     ASSERT_EQ(frame.resource_list.size(), 1u);
     EXPECT_EQ(frame.resource_list[0].id, texture_quad->resource_id);
@@ -844,8 +848,12 @@ TEST_F(SlimLayerTreeCompositorFrameTest, NinePatchLayerAppendQuads) {
         viz::TextureDrawQuad::MaterialCast(pass->quad_list.ElementAt(i));
     EXPECT_NE(viz::kInvalidResourceId, texture_quad->resource_id);
     EXPECT_TRUE(texture_quad->nearest_neighbor);
-    EXPECT_EQ(expected_uv_top_left[i], texture_quad->uv_top_left);
-    EXPECT_EQ(expected_uv_bottom_right[i], texture_quad->uv_bottom_right);
+    const gfx::RectF expected_tex_coords =
+        gfx::BoundingRect(expected_uv_top_left[i], expected_uv_bottom_right[i]);
+    const gfx::Size image_size =
+        gfx::Size(image_info.width(), image_info.height());
+    EXPECT_EQ(expected_tex_coords,
+              texture_quad->GetNormalizedTexCoords(image_size));
 
     EXPECT_EQ(frame.resource_list[0].id, texture_quad->resource_id);
     EXPECT_EQ(frame_sink_->uploaded_resources().begin()->second.viz_resource_id,

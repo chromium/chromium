@@ -8,6 +8,7 @@
 #include <array>
 #include <optional>
 
+#include "base/values.h"
 #include "cc/paint/paint_flags.h"
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/resources/resource_id.h"
@@ -16,7 +17,15 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/video_types.h"
 
+namespace mojo {
+template <typename DataViewType, typename T>
+struct StructTraits;
+}
+
 namespace viz {
+namespace mojom {
+class TextureQuadStateDataView;
+}
 
 // The priority for a quads to require being promoted to overlay.
 enum class OverlayPriority { kLow, kRegular, kRequired };
@@ -54,8 +63,35 @@ class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
               bool secure_output,
               gfx::ProtectedVideoType video_type);
 
-  gfx::PointF uv_top_left;
-  gfx::PointF uv_bottom_right;
+  // Returns the texture coordinates in the range [0, 1].
+  gfx::RectF GetNormalizedTexCoords(const gfx::Size& resource_size) const {
+    // TODO(crbug.com/451876192): This parameter is currently unused because
+    // tex_coord_rect_ is always normalized. It is included here to prepare for
+    // the next CL where tex_coord_rect_ may be unnormalized, requiring
+    // resource_size to perform the normalization.
+    return tex_coord_rect_;
+  }
+
+  // Returns the texture coordinates in the range [0, resource_size].
+  gfx::RectF GetUnnormalizedTexCoords(const gfx::Size& resource_size) const {
+    // tex_coord_rect_ is currently always normalized, so we must scale it.
+    // In the future, if the internal storage becomes unnormalized, this will
+    // simply return tex_coord_rect_ directly.
+    return gfx::ScaleRect(tex_coord_rect_,
+                          static_cast<float>(resource_size.width()),
+                          static_cast<float>(resource_size.height()));
+  }
+
+  // Sets the texture coordinates in the range [0, 1].
+  void SetNormalizedTexCoordsForTesting(const gfx::RectF& normalized_rect,
+                                        const gfx::Size& resource_size) {
+    // TODO(crbug.com/451876192): This parameter is unused because the internal
+    // storage is currently normalized. It is included to establish the API
+    // for the future CL where we will need to scale the input `normalized_rect`
+    // by `resource_size` to store it as unnormalized coordinates.
+    tex_coord_rect_ = normalized_rect;
+  }
+
   SkColor4f background_color = SkColors::kTransparent;
   cc::PaintFlags::DynamicRangeLimitMixture dynamic_range_limit;
   bool nearest_neighbor : 1;
@@ -129,6 +165,14 @@ class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
   static const TextureDrawQuad* MaterialCast(const DrawQuad*);
 
  private:
+  // TODO(crbug.com/451876192): Remove friend classes after the refactor
+  // to make TextureDrawQuad use unnormalized coordinates is complete
+  friend struct mojo::StructTraits<mojom::TextureQuadStateDataView, DrawQuad>;
+  friend void TextureDrawQuadToDict(const TextureDrawQuad* draw_quad,
+                                    base::Value::Dict* dict);
+
+  gfx::RectF tex_coord_rect_;
+
   void ExtendValue(base::trace_event::TracedValue* value) const override;
 };
 

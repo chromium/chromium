@@ -661,7 +661,11 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromTextureQuad(
     return CandidateStatus::kFailBlending;
   }
 
-  candidate.uv_rect = BoundingRect(quad->uv_top_left, quad->uv_bottom_right);
+  if (quad->resource_id != kInvalidResourceId) {
+    auto resource_size_in_pixels =
+        resource_provider_->GetResourceBackedSize(quad->resource_id);
+    candidate.uv_rect = quad->GetNormalizedTexCoords(resource_size_in_pixels);
+  }
 
   const bool y_flipped = resource_provider_->GetOrigin(quad->resource_id) ==
                          kBottomLeft_GrSurfaceOrigin;
