@@ -57,6 +57,7 @@
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/history_fuzzy_provider.h"
+#include "components/omnibox/browser/lens_suggest_inputs_utils.h"
 #include "components/omnibox/browser/omnibox_event_global_tracker.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_log.h"
@@ -181,8 +182,11 @@ void AutocompleteControllerAndroid::Start(JNIEnv* env,
   input_.set_allow_exact_keyword_match(allow_exact_keyword_match);
   input_.set_omit_asynchronous_matches(!want_asynchronous_matches);
   if (composebox_query_controller_bridge_) {
-    input_.set_lens_overlay_suggest_inputs(
-        composebox_query_controller_bridge_->GetLensOverlaySuggestInputs());
+    const auto& inputs =
+        composebox_query_controller_bridge_->GetLensOverlaySuggestInputs();
+    if (AreLensSuggestInputsReady(inputs)) {
+      input_.set_lens_overlay_suggest_inputs(inputs);
+    }
   }
   autocomplete_controller_->Start(input_);
 }
@@ -302,8 +306,11 @@ void AutocompleteControllerAndroid::OnOmniboxFocused(
   input_.set_current_title(current_title);
   input_.set_focus_type(OFT::INTERACTION_FOCUS);
   if (composebox_query_controller_bridge_) {
-    input_.set_lens_overlay_suggest_inputs(
-        composebox_query_controller_bridge_->GetLensOverlaySuggestInputs());
+    const auto& inputs =
+        composebox_query_controller_bridge_->GetLensOverlaySuggestInputs();
+    if (AreLensSuggestInputsReady(inputs)) {
+      input_.set_lens_overlay_suggest_inputs(inputs);
+    }
   }
 
   autocomplete_controller_->Start(input_);
