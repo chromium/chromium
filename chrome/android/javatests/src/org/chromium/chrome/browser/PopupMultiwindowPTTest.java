@@ -96,7 +96,11 @@ public class PopupMultiwindowPTTest {
                 initialTabCount,
                 mCtaTestRule.tabsCount(/* incognito= */ true));
 
-        TransitAsserts.assertFinalDestinations(page, popup);
+        if (page.getActivity().isIncognitoWindow()) {
+            TransitAsserts.assertFinalDestinations(mEntryPage, page, popup);
+        } else {
+            TransitAsserts.assertFinalDestinations(page, popup);
+        }
         assertTrue(popup.isIncognito());
     }
 
