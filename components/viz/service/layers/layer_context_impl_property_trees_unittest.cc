@@ -1831,7 +1831,7 @@ TEST_F(LayerContextImplUpdateDisplayTreeEffectNodeTest, BackdropFilterBounds) {
 TEST_F(LayerContextImplUpdateDisplayTreeEffectNodeTest, BackdropFilterQuality) {
   auto update = CreateDefaultUpdate();
   auto node_update = CreateDefaultSecondaryRootEffectNode();
-  node_update->backdrop_filter_quality = 2.f;
+  node_update->backdrop_filter_quality = 0.5f;
   update->effect_nodes.push_back(std::move(node_update));
 
   auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
@@ -1840,7 +1840,7 @@ TEST_F(LayerContextImplUpdateDisplayTreeEffectNodeTest, BackdropFilterQuality) {
   cc::EffectNode* node_impl =
       GetEffectNodeFromActiveTree(cc::kSecondaryRootPropertyNodeId);
   ASSERT_TRUE(node_impl);
-  EXPECT_EQ(node_impl->backdrop_filter_quality, 2.f);
+  EXPECT_EQ(node_impl->backdrop_filter_quality, 0.5f);
 }
 
 class LayerContextImplUpdateDisplayTreeScrollNodeTest

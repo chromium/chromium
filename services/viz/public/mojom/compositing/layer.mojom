@@ -354,9 +354,9 @@ struct StickyPositionNodeData {
 // Updates to a transform tree, not including the nodes themselves. These
 // correspond to data members of cc::TransformTree.
 struct TransformTreeUpdate {
-  float page_scale_factor;
-  float device_scale_factor;
-  float device_transform_scale_factor;
+  float page_scale_factor = 1.0;
+  float device_scale_factor = 1.0;
+  float device_transform_scale_factor = 1.0;
   array<int32> nodes_affected_by_outer_viewport_bounds_delta;
   array<int32> nodes_affected_by_safe_area_bottom;
   array<StickyPositionNodeData> sticky_position_data;
@@ -526,7 +526,7 @@ struct EffectNode {
   FilterOperations filters;
   FilterOperations backdrop_filters;
   skia.mojom.SkPath? backdrop_filter_bounds;
-  float backdrop_filter_quality;
+  float backdrop_filter_quality = 1.0;
 
   // The element id corresponding to the mask to apply to the filtered backdrop
   // image.

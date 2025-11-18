@@ -395,6 +395,11 @@ base::expected<void, std::string> UpdatePropertyTreeNode(
   node.filters = wire.filters;
   node.backdrop_filters = wire.backdrop_filters;
   node.backdrop_filter_bounds = wire.backdrop_filter_bounds;
+  if (wire.backdrop_filter_quality <= 0.0f ||
+      wire.backdrop_filter_quality > 1.0f ||
+      !std::isfinite(wire.backdrop_filter_quality)) {
+    return base::unexpected("Invalid backdrop_filter_quality");
+  }
   node.backdrop_filter_quality = wire.backdrop_filter_quality;
   node.backdrop_mask_element_id = wire.backdrop_mask_element_id;
   node.mask_filter_info = wire.mask_filter_info;
@@ -550,6 +555,18 @@ base::expected<void, std::string> UpdateTransformTreeProperties(
     cc::PropertyTrees& trees,
     cc::TransformTree& tree,
     mojom::TransformTreeUpdate& update) {
+  if (update.page_scale_factor <= 0 ||
+      !std::isfinite(update.page_scale_factor)) {
+    return base::unexpected("Invalid page_scale_factor");
+  }
+  if (update.device_scale_factor <= 0 ||
+      !std::isfinite(update.device_scale_factor)) {
+    return base::unexpected("Invalid device_scale_factor");
+  }
+  if (update.device_transform_scale_factor <= 0 ||
+      !std::isfinite(update.device_transform_scale_factor)) {
+    return base::unexpected("Invalid device_transform_scale_factor");
+  }
   tree.set_page_scale_factor(update.page_scale_factor);
   tree.set_device_scale_factor(update.device_scale_factor);
   tree.set_device_transform_scale_factor(update.device_transform_scale_factor);
@@ -570,6 +587,11 @@ base::expected<bool, std::string> UpdateScrollTreeProperties(
     cc::PropertyTrees& trees,
     cc::ScrollTree& tree,
     const mojom::ScrollTreeUpdate& update) {
+  for (auto const& [element_id, overscroll] : update.elastic_overscroll) {
+    if (!std::isfinite(overscroll.x()) || !std::isfinite(overscroll.y())) {
+      return base::unexpected("Invalid elastic_overscroll");
+    }
+  }
   tree.synced_scroll_offset_map() = update.synced_scroll_offsets;
   tree.scrolling_contents_cull_rects() = update.scrolling_contents_cull_rects;
   bool elastic_overscroll_changed =
@@ -1880,6 +1902,21 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
   if (update->max_safe_area_inset_bottom < 0 ||
       !std::isfinite(update->max_safe_area_inset_bottom)) {
     return base::unexpected("Invalid max safe area inset bottom");
+  }
+  if (update->browser_controls_params.top_controls_height < 0 ||
+      !std::isfinite(update->browser_controls_params.top_controls_height) ||
+      update->browser_controls_params.top_controls_min_height < 0 ||
+      !std::isfinite(update->browser_controls_params.top_controls_min_height) ||
+      update->browser_controls_params.bottom_controls_height < 0 ||
+      !std::isfinite(update->browser_controls_params.bottom_controls_height) ||
+      update->browser_controls_params.bottom_controls_min_height < 0 ||
+      !std::isfinite(
+          update->browser_controls_params.bottom_controls_min_height) ||
+      update->browser_controls_params.top_controls_min_height >
+          update->browser_controls_params.top_controls_height ||
+      update->browser_controls_params.bottom_controls_min_height >
+          update->browser_controls_params.bottom_controls_height) {
+    return base::unexpected("Invalid browser controls params");
   }
   layers.SetBrowserControlsParams(update->browser_controls_params);
   host_impl_->browser_controls_manager()->SetOffsetTagModifications(
