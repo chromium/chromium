@@ -424,15 +424,11 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   // Set how much of the block-size we've used so far for this box. This will be
   // the sum of the block-size of all previous fragments PLUS the one we're
   // building now.
-  void SetConsumedBlockSize(LayoutUnit size) {
-    EnsureBreakTokenData()->consumed_block_size = size;
-  }
+  void SetConsumedBlockSize(LayoutUnit size) { consumed_block_size_ = size; }
 
   void ReserveSpaceForMonolithicOverflow(LayoutUnit monolithic_overflow) {
     DCHECK(GetConstraintSpace().IsPaginated());
-    auto* data = EnsureBreakTokenData();
-    data->monolithic_overflow =
-        std::max(data->monolithic_overflow, monolithic_overflow);
+    monolithic_overflow_ = std::max(monolithic_overflow_, monolithic_overflow);
   }
 
   // Set how much of the column block-size we've used so far. This will be used
@@ -446,7 +442,7 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   }
 
   void SetSequenceNumber(unsigned sequence_number) {
-    EnsureBreakTokenData()->sequence_number = sequence_number;
+    sequence_number_ = sequence_number;
   }
 
   // During regular layout a break token is created at the end of layout, if
@@ -496,7 +492,7 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
       return true;
 
     // If overflowed by monolithic overflow, we need more pages.
-    if (break_token_data_ && break_token_data_->monolithic_overflow) {
+    if (monolithic_overflow_) {
       return true;
     }
 
@@ -705,17 +701,9 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
     return *grid_layout_data_.get();
   }
 
-  bool HasBreakTokenData() const { return break_token_data_; }
+  BreakTokenAlgorithmData* GetBreakTokenData() { return break_token_data_; }
 
-  BlockBreakTokenData* EnsureBreakTokenData() {
-    if (!HasBreakTokenData())
-      break_token_data_ = MakeGarbageCollected<BlockBreakTokenData>();
-    return break_token_data_;
-  }
-
-  BlockBreakTokenData* GetBreakTokenData() { return break_token_data_; }
-
-  void SetBreakTokenData(BlockBreakTokenData* break_token_data) {
+  void SetBreakTokenData(BreakTokenAlgorithmData* break_token_data) {
     break_token_data_ = break_token_data;
   }
 
@@ -824,6 +812,9 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   LayoutUnit block_offset_for_additional_columns_;
 
   LayoutUnit block_size_for_fragmentation_;
+  LayoutUnit consumed_block_size_;
+  LayoutUnit monolithic_overflow_;
+  unsigned sequence_number_ = 0;
 
   // The break-before value on the initial child we cannot honor. There's no
   // valid class A break point before a first child, only *between* siblings.
@@ -853,7 +844,7 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   wtf_size_t table_section_start_row_index_;
   Vector<LayoutUnit> table_section_row_offsets_;
 
-  BlockBreakTokenData* break_token_data_ = nullptr;
+  BreakTokenAlgorithmData* break_token_data_ = nullptr;
 
   // Grid specific types.
   std::unique_ptr<GridLayoutData> grid_layout_data_;

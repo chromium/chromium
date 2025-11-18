@@ -1293,9 +1293,8 @@ const LayoutResult* FlexLayoutAlgorithm::LayoutInternal() {
   if (GetConstraintSpace().HasBlockFragmentation()) {
     container_builder_.SetBreakTokenData(
         MakeGarbageCollected<FlexBreakTokenData>(
-            container_builder_.GetBreakTokenData(), flex_lines,
-            row_break_between_outputs, oof_children, total_intrinsic_block_size,
-            break_before_row));
+            flex_lines, row_break_between_outputs, oof_children,
+            total_intrinsic_block_size, break_before_row));
   }
 
   // Un-freeze descendant scrollbars before we run the OOF layout part.

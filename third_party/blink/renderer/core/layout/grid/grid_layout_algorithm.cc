@@ -243,12 +243,12 @@ const LayoutResult* GridLayoutAlgorithm::LayoutInternal() {
   if (constraint_space.HasBlockFragmentation()) {
     container_builder_.SetBreakTokenData(
         MakeGarbageCollected<GridBreakTokenData>(
-            container_builder_.GetBreakTokenData(), std::move(grid_items),
-            std::move(layout_subtree), intrinsic_block_size,
-            offset_in_stitched_container, grid_items_placement_data,
-            row_offset_adjustments, row_break_between, oof_children,
-            full_gap_geometry, track_idx_to_set_idx,
-            cumulative_gap_offset_adjustment, first_unprocessed_row_gap_idx));
+            std::move(grid_items), std::move(layout_subtree),
+            intrinsic_block_size, offset_in_stitched_container,
+            grid_items_placement_data, row_offset_adjustments,
+            row_break_between, oof_children, full_gap_geometry,
+            track_idx_to_set_idx, cumulative_gap_offset_adjustment,
+            first_unprocessed_row_gap_idx));
   }
 
   container_builder_.HandleOofsAndSpecialDescendants();

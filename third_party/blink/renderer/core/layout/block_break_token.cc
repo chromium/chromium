@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/block_break_token.h"
 
 #include "third_party/blink/renderer/core/layout/box_fragment_builder.h"
+#include "third_party/blink/renderer/core/layout/break_token_algorithm_data.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_break_token.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -17,6 +18,9 @@ namespace {
 
 struct SameSizeAsBlockBreakToken : BreakToken {
   Member<LayoutBox> data;
+  LayoutUnit consumed_block_size;
+  LayoutUnit monolithic_overflow;
+  unsigned sequence_number;
   unsigned numbers[1];
 };
 
@@ -37,8 +41,7 @@ BlockBreakToken* BlockBreakToken::Create(BoxFragmentBuilder* builder) {
 BlockBreakToken* BlockBreakToken::CreateRepeated(const BlockNode& node,
                                                  unsigned sequence_number) {
   auto* token = MakeGarbageCollected<BlockBreakToken>(PassKey(), node);
-  token->data_ = MakeGarbageCollected<BlockBreakTokenData>();
-  token->data_->sequence_number = sequence_number;
+  token->sequence_number_ = sequence_number;
   token->is_repeated_ = true;
   return token;
 }
@@ -49,9 +52,8 @@ BlockBreakToken* BlockBreakToken::CreateForBreakInRepeatedFragment(
     LayoutUnit consumed_block_size,
     bool is_at_block_end) {
   auto* token = MakeGarbageCollected<BlockBreakToken>(PassKey(), node);
-  token->data_ = MakeGarbageCollected<BlockBreakTokenData>();
-  token->data_->sequence_number = sequence_number;
-  token->data_->consumed_block_size = consumed_block_size;
+  token->sequence_number_ = sequence_number;
+  token->consumed_block_size_ = consumed_block_size;
   token->is_at_block_end_ = is_at_block_end;
   token->is_repeated_actual_break_ = true;
   return token;
@@ -65,9 +67,11 @@ BlockBreakToken::BlockBreakToken(PassKey key, BoxFragmentBuilder* builder)
   is_at_block_end_ = builder->is_at_block_end_;
   has_unpositioned_list_marker_ =
       static_cast<bool>(builder->GetUnpositionedListMarker());
-  DCHECK(builder->HasBreakTokenData());
   data_ = builder->break_token_data_;
   builder->break_token_data_ = nullptr;
+  consumed_block_size_ = builder->consumed_block_size_;
+  monolithic_overflow_ = builder->monolithic_overflow_;
+  sequence_number_ = builder->sequence_number_;
   for (wtf_size_t i = 0; i < const_num_children_; ++i) {
     // SAFETY: `const_num_children_` ensures buffer access never goes out of
     // range.
@@ -77,16 +81,14 @@ BlockBreakToken::BlockBreakToken(PassKey key, BoxFragmentBuilder* builder)
 
 BlockBreakToken::BlockBreakToken(PassKey key, LayoutInputNode node)
     : BreakToken(kBlockBreakToken, node),
-      data_(MakeGarbageCollected<BlockBreakTokenData>()),
       const_num_children_(0) {}
 
 void BlockBreakToken::MutableForOofFragmentation::Merge(
     const BlockBreakToken& new_break_token) {
   if (LayoutUnit monolithic_overflow = new_break_token.MonolithicOverflow()) {
     DCHECK_GT(monolithic_overflow, LayoutUnit());
-    DCHECK(break_token_.data_);
-    break_token_.data_->monolithic_overflow =
-        std::max(break_token_.data_->monolithic_overflow, monolithic_overflow);
+    break_token_.monolithic_overflow_ =
+        std::max(break_token_.monolithic_overflow_, monolithic_overflow);
   }
 }
 

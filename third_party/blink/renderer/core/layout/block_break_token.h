@@ -7,7 +7,6 @@
 
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/block_break_token_data.h"
 #include "third_party/blink/renderer/core/layout/break_token.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -16,6 +15,7 @@
 namespace blink {
 
 class BoxFragmentBuilder;
+struct BreakTokenAlgorithmData;
 
 // Represents a break token for a block node.
 class CORE_EXPORT BlockBreakToken final : public BreakToken {
@@ -72,10 +72,7 @@ class CORE_EXPORT BlockBreakToken final : public BreakToken {
   // this method would return then), there's 50px left to consume. The next
   // fragment will become 50px tall, assuming no additional fragmentation (if
   // the fragmentainer is shorter than 50px, for instance).
-  LayoutUnit ConsumedBlockSize() const {
-    DCHECK(data_);
-    return data_->consumed_block_size;
-  }
+  LayoutUnit ConsumedBlockSize() const { return consumed_block_size_; }
 
   // A unique identifier for a fragment that generates a break token. This is
   // unique within the generating layout input node. The break token of the
@@ -85,8 +82,7 @@ class CORE_EXPORT BlockBreakToken final : public BreakToken {
   // number is for such a break token is undefined.
   unsigned SequenceNumber() const {
     DCHECK(is_repeated_actual_break_ || !IsBreakBefore());
-    DCHECK(data_);
-    return data_->sequence_number;
+    return sequence_number_;
   }
 
   // The amount of monolithic fragmentainer overflow.
@@ -98,13 +94,11 @@ class CORE_EXPORT BlockBreakToken final : public BreakToken {
   // This value is only used (and set) when printing.
   LayoutUnit MonolithicOverflow() const {
     DCHECK(!is_repeated_actual_break_);
-    DCHECK(data_);
-    return data_->monolithic_overflow;
+    return monolithic_overflow_;
   }
 
-  const BlockBreakTokenData* TokenData() const {
+  const BreakTokenAlgorithmData* TokenData() const {
     DCHECK(!is_repeated_actual_break_);
-    DCHECK(data_);
     return data_.Get();
   }
 
@@ -194,7 +188,7 @@ class CORE_EXPORT BlockBreakToken final : public BreakToken {
     void Merge(const BlockBreakToken&);
 
    private:
-    const BlockBreakToken& break_token_;
+    BlockBreakToken& break_token_;
   };
   friend class MutableForOofFragmentation;
   MutableForOofFragmentation GetMutableForOofFragmentation() const {
@@ -221,7 +215,11 @@ class CORE_EXPORT BlockBreakToken final : public BreakToken {
     return UNSAFE_BUFFERS(base::span(child_break_tokens_, const_num_children_));
   }
 
-  Member<BlockBreakTokenData> data_;
+  Member<BreakTokenAlgorithmData> data_;
+
+  LayoutUnit consumed_block_size_;
+  LayoutUnit monolithic_overflow_;
+  unsigned sequence_number_ = 0;
 
   const wtf_size_t const_num_children_;
   // This must be the last member, because it is a flexible array.

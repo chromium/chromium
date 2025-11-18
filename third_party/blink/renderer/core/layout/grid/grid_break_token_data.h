@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_GRID_BREAK_TOKEN_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_GRID_BREAK_TOKEN_DATA_H_
 
-#include "third_party/blink/renderer/core/layout/block_break_token_data.h"
+#include "third_party/blink/renderer/core/layout/break_token_algorithm_data.h"
 #include "third_party/blink/renderer/core/layout/gap/gap_geometry.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -27,9 +27,8 @@ struct GridItemPlacementData {
   bool has_descendant_that_depends_on_percentage_block_size;
 };
 
-struct GridBreakTokenData final : BlockBreakTokenData {
+struct GridBreakTokenData final : BreakTokenAlgorithmData {
   GridBreakTokenData(
-      const BlockBreakTokenData* break_token_data,
       GridItems&& grid_items,
       GridLayoutSubtree grid_layout_subtree,
       LayoutUnit intrinsic_block_size,
@@ -42,7 +41,7 @@ struct GridBreakTokenData final : BlockBreakTokenData {
       Vector<wtf_size_t>& track_idx_to_set_idx,
       LayoutUnit cumulative_gap_offset_adjustment,
       wtf_size_t first_unprocessed_row_gap_idx)
-      : BlockBreakTokenData(kGridBreakTokenData, break_token_data),
+      : BreakTokenAlgorithmData(kGridData),
         grid_items(std::move(grid_items)),
         grid_layout_subtree(std::move(grid_layout_subtree)),
         intrinsic_block_size(intrinsic_block_size),
@@ -60,14 +59,14 @@ struct GridBreakTokenData final : BlockBreakTokenData {
     visitor->Trace(grid_items);
     visitor->Trace(oof_children);
     visitor->Trace(full_gap_geometry);
-    BlockBreakTokenData::Trace(visitor);
+    BreakTokenAlgorithmData::Trace(visitor);
   }
 
   GridItems grid_items;
   GridLayoutSubtree grid_layout_subtree;
   LayoutUnit intrinsic_block_size;
 
-  // This is similar to |BlockBreakTokenData::consumed_block_size|, however
+  // This is similar to |BreakTokenAlgorithmData::consumed_block_size|, however
   // it isn't used for determining the final block-size of the fragment and
   // won't include any block-end padding (this prevents saturation bugs).
   // It also won't include any cloned box decorations.
@@ -103,7 +102,7 @@ struct GridBreakTokenData final : BlockBreakTokenData {
 
 template <>
 struct DowncastTraits<GridBreakTokenData> {
-  static bool AllowFrom(const BlockBreakTokenData& token_data) {
+  static bool AllowFrom(const BreakTokenAlgorithmData& token_data) {
     return token_data.IsGridType();
   }
 };

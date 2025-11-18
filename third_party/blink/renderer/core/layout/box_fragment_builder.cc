@@ -792,7 +792,7 @@ void BoxFragmentBuilder::CheckNoBlockFragmentation() const {
   DCHECK(!HasInflowChildBreakInside());
   DCHECK(!DidBreakSelf());
   DCHECK(!has_forced_break_);
-  DCHECK(GetConstraintSpace().ShouldRepeat() || !HasBreakTokenData());
+  DCHECK(!break_token_data_);
   DCHECK_EQ(minimal_space_shortage_, kIndefiniteSize);
   if (!GetConstraintSpace().ShouldPropagateChildBreakValues()) {
     DCHECK(!initial_break_before_);
