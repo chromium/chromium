@@ -190,7 +190,8 @@ std::unique_ptr<net::test_server::HttpResponse> CreateHttpResponse(
 
 // Tests that link clicks from a chrome:// to chrome:// link result in the
 // header being shown even if was not previously shown.
-- (void)testChromeToChromeURLKeepsHeaderOnScreen {
+// TODO(crbug.com/461735565): Test flaky on device and simulator.
+- (void)DISABLED_testChromeToChromeURLKeepsHeaderOnScreen {
   const GURL kChromeAboutURL("chrome://chrome-urls");
   [ChromeEarlGrey loadURL:kChromeAboutURL];
   [ChromeEarlGrey waitForWebStateContainingText:"chrome://version"];
