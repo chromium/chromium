@@ -1,0 +1,76 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/autofill/glic/actor_filling_observer.h"
+
+#include <utility>
+
+#include "base/containers/span.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/types/expected.h"
+#include "components/autofill/core/browser/foundations/autofill_manager.h"
+#include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
+#include "components/autofill/core/browser/integrators/glic/actor_form_filling_types.h"
+#include "components/autofill/core/common/unique_ids.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
+
+namespace autofill {
+
+ActorFillingObserver::ActorFillingObserver(
+    AutofillClient& autofill_client,
+    base::span<const FieldGlobalId> field_ids,
+    Callback callback)
+    : remaining_field_ids_(field_ids.begin(), field_ids.end()),
+      callback_(std::move(callback)) {
+  autofill_managers_observation_.Observe(
+      &autofill_client, ScopedAutofillManagersObservation::
+                            InitializationPolicy::kObservePreexistingManagers);
+  // If `remaining_field_ids_` is empty, this will stop the observation and
+  // execute `callback_`.
+  FinalizeIfComplete();
+}
+
+ActorFillingObserver::~ActorFillingObserver() {
+  if (callback_) {
+    // TODO(crbug.com/455788947): Consider introducing a different type of
+    // error.
+    // TODO(crbug.com/455788947): Consider not sending an error if some
+    // fields were filled.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback_),
+                       base::unexpected(ActorFormFillingError::kNoForm)));
+  }
+}
+
+void ActorFillingObserver::OnFillOrPreviewForm(
+    AutofillManager&,
+    FormGlobalId,
+    mojom::ActionPersistence action_persistence,
+    const base::flat_set<FieldGlobalId>& filled_field_ids,
+    const FillingPayload&) {
+  switch (action_persistence) {
+    case mojom::ActionPersistence::kFill:
+      break;
+    case mojom::ActionPersistence::kPreview:
+      return;
+  }
+  for (FieldGlobalId field_id : filled_field_ids) {
+    remaining_field_ids_.erase(field_id);
+  }
+  FinalizeIfComplete();
+}
+
+void ActorFillingObserver::FinalizeIfComplete() {
+  if (!remaining_field_ids_.empty()) {
+    return;
+  }
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback_), base::ok()));
+  autofill_managers_observation_.Reset();
+}
+
+}  // namespace autofill

@@ -6,6 +6,8 @@ assert(!is_android)
 
 static_library("glic") {
   sources = [
+    "actor_filling_observer.cc",
+    "actor_filling_observer.h",
     "actor_form_filling_service.h",
     "actor_form_filling_service_impl.cc",
     "actor_form_filling_service_impl.h",
@@ -28,7 +30,10 @@ static_library("glic") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "actor_form_filling_service_unittest.cc" ]
+  sources = [
+    "actor_filling_observer_unittest.cc",
+    "actor_form_filling_service_unittest.cc",
+  ]
 
   deps = [
     ":glic",
