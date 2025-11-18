@@ -16,7 +16,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "services/video_capture/broadcasting_receiver.h"
 #include "services/video_capture/device_factory_impl.h"
 #include "services/video_capture/public/mojom/device.mojom.h"

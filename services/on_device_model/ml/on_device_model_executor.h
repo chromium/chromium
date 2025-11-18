@@ -18,7 +18,6 @@
 #include "base/native_library.h"
 #include "base/types/expected.h"
 #include "base/types/pass_key.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "services/on_device_model/backend.h"
 #include "services/on_device_model/backend_model.h"
 #include "services/on_device_model/backend_session.h"

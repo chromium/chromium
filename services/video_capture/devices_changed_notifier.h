@@ -6,7 +6,6 @@
 #define SERVICES_VIDEO_CAPTURE_DEVICES_CHANGED_NOTIFIER_H_
 
 #include "base/system/system_monitor.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/video_capture/public/mojom/devices_changed_observer.mojom.h"
 

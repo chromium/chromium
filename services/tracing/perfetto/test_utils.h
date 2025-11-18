@@ -12,7 +12,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "services/tracing/perfetto/perfetto_service.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "testing/gmock/include/gmock/gmock.h"

@@ -13,7 +13,6 @@
 #include "media/capture/video/video_capture_system.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "services/video_capture/device_factory.h"
 #include "services/video_capture/public/mojom/devices_changed_observer.mojom.h"
 

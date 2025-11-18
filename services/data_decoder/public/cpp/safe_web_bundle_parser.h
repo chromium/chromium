@@ -12,7 +12,6 @@
 #include "base/files/file.h"
 #include "base/functional/callback.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"

@@ -12,7 +12,6 @@
 #include "chromeos/crosapi/mojom/video_capture.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "services/video_capture/device_factory.h"
 
 namespace crosapi {

@@ -9,6 +9,7 @@
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/base/unguessable_token_mojom_traits.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"

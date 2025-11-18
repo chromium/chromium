@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_ui_url_loader_factory.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_response_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"

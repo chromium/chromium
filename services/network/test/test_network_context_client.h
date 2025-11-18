@@ -6,7 +6,6 @@
 #define SERVICES_NETWORK_TEST_TEST_NETWORK_CONTEXT_CLIENT_H_
 
 #include "build/build_config.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
 #include "services/network/public/mojom/network_context_client.mojom.h"
