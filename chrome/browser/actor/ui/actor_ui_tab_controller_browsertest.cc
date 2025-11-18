@@ -29,9 +29,11 @@
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/task_id.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/views/controls/animated_image_view.h"
 #include "url/gurl.h"
 
@@ -147,6 +149,75 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
   EXPECT_FALSE(
       tab_alert_controller->IsAlertActive(tabs::TabAlert::kActorAccessing));
   EXPECT_EQ(GetSpinner()->state(), views::AnimatedImageView::State::kStopped);
+}
+
+IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
+                       TabSpinnerNotVisibleWhenWaitingOnUser) {
+  // Start task on tab.
+  auto* actor_service = actor::ActorKeyedService::Get(browser()->GetProfile());
+  actor_service->GetPolicyChecker().SetActOnWebForTesting(true);
+  actor::TaskId task_id = actor_service->CreateTask();
+  actor::ActorTask* task = actor_service->GetTask(task_id);
+  actor::ui::StartTask start_task_event(task_id);
+  actor_service->GetActorUiStateManager()->OnUiEvent(start_task_event);
+  // Need to wait for the AUSM to notify the GlicActorTaskIconManager.
+  base::PlatformThread::Sleep(actor::ui::kProfileScopedUiUpdateDebounceDelay);
+
+  ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 0,
+                                     GURL(chrome::kChromeUINewTabURL),
+                                     ::ui::PAGE_TRANSITION_LINK));
+  auto* tab_one = browser()->GetTabStripModel()->GetTabAtIndex(0);
+  base::RunLoop loop;
+  task->AddTab(
+      tab_one->GetHandle(),
+      base::BindLambdaForTesting([&](actor::mojom::ActionResultPtr result) {
+        EXPECT_TRUE(actor::IsOk(*result));
+        loop.Quit();
+      }));
+  loop.Run();
+
+  tabs::TabAlertController* const tab_alert_controller =
+      tabs::TabAlertController::From(tab_one);
+
+  // The indicator should be visible on the actuating tab.
+  EXPECT_TRUE(
+      tab_alert_controller->IsAlertActive(tabs::TabAlert::kActorAccessing));
+  ASSERT_NE(GetSpinner(), nullptr);
+  EXPECT_EQ(GetSpinner()->state(), views::AnimatedImageView::State::kPlaying);
+  EXPECT_TRUE(GetSpinner()->GetVisible());
+  EXPECT_FALSE(GetSpinner()->bounds().IsEmpty());
+  EXPECT_TRUE(GetSpinner()
+                  ->animated_image()
+                  ->GetPlaybackConfig()
+                  ->ignore_reduced_motion);
+
+  // Wait for user event.
+  actor_service->GetActorUiStateManager()->OnUiEvent(
+      actor::ui::TaskStateChanged(
+          task_id, actor::ActorTask::State::kWaitingOnUser, /*title=*/""));
+  // Need to wait for the AUSM to notify the GlicActorTaskIconManager.
+  base::PlatformThread::Sleep(actor::ui::kProfileScopedUiUpdateDebounceDelay);
+
+  // The static icon should be visible, but not the spinner.
+  EXPECT_TRUE(
+      tab_alert_controller->IsAlertActive(tabs::TabAlert::kActorWaitingOnUser));
+  EXPECT_FALSE(
+      tab_alert_controller->IsAlertActive(tabs::TabAlert::kActorAccessing));
+  EXPECT_EQ(GetSpinner()->state(), views::AnimatedImageView::State::kStopped);
+
+  // Restart the task
+  actor_service->GetActorUiStateManager()->OnUiEvent(
+      actor::ui::TaskStateChanged(task_id, actor::ActorTask::State::kActing,
+                                  /*title=*/""));
+  // Need to wait for the AUSM to notify the GlicActorTaskIconManager.
+  base::PlatformThread::Sleep(actor::ui::kProfileScopedUiUpdateDebounceDelay);
+
+  // State should return to before WaitingOnUser
+  EXPECT_TRUE(
+      tab_alert_controller->IsAlertActive(tabs::TabAlert::kActorAccessing));
+  ASSERT_NE(GetSpinner(), nullptr);
+  EXPECT_EQ(GetSpinner()->state(), views::AnimatedImageView::State::kPlaying);
+  EXPECT_TRUE(GetSpinner()->GetVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,

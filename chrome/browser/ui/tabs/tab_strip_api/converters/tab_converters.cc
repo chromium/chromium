@@ -69,6 +69,8 @@ mojom::AlertState ToMojo(tabs::TabAlert state) {
       return mojom::AlertState::kGlicSharing;
     case tabs::TabAlert::kActorAccessing:
       return mojom::AlertState::kActorAccessing;
+    case tabs::TabAlert::kActorWaitingOnUser:
+      return mojom::AlertState::kActorWaitingOnUser;
   }
 }
 

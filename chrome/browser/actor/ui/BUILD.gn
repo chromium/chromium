@@ -82,6 +82,7 @@ source_set("states") {
   public = [
     "states/actor_overlay_state.h",
     "states/handoff_button_state.h",
+    "states/tab_indicator_state.h",
   ]
 
   public_deps = [ "//chrome/browser/actor:types" ]

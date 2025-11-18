@@ -33,6 +33,7 @@ ui::ColorId GetAlertIndicatorColor(TabAlert state,
     case tabs::TabAlert::kPipPlaying:
     case tabs::TabAlert::kGlicAccessing:
     case tabs::TabAlert::kGlicSharing:
+    case tabs::TabAlert::kActorWaitingOnUser:
     case tabs::TabAlert::kActorAccessing:
       group = 1;
       break;
@@ -93,6 +94,7 @@ const gfx::VectorIcon& GetAlertIcon(TabAlert alert_state) {
       return vector_icons::kPictureInPictureAltIcon;
     case TabAlert::kVrPresentingInHeadset:
       return vector_icons::kCardboardIcon;
+    case TabAlert::kActorWaitingOnUser:
     case TabAlert::kActorAccessing:
     case TabAlert::kGlicAccessing:
     case TabAlert::kGlicSharing:

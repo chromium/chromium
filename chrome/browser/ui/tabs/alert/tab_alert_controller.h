@@ -23,6 +23,10 @@ enum class WebContentsCapabilityType;
 class WebContents;
 }  // namespace content
 
+namespace actor::ui {
+enum class TabIndicatorStatus;
+}  // namespace actor::ui
+
 namespace tabs {
 class TabInterface;
 
@@ -97,7 +101,8 @@ class TabAlertController : public tabs::ContentsObservingTabFeature,
   void OnGlicAccessingStateChange(bool is_accessing);
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
-  void OnActorTabIndicatorStateChanged(bool is_accessing);
+  void OnActorTabIndicatorStateChanged(
+      actor::ui::TabIndicatorStatus tab_indicator_state);
   void OnRecentlyAudibleStateChanged(bool was_audible);
 
   // Adds `alert` to the set of already active alerts for this tab if it isn't
