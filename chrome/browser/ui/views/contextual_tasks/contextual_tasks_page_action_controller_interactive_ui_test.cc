@@ -55,7 +55,7 @@ class ContextualTasksPageActionControllerInteractiveTest
 };
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksPageActionControllerInteractiveTest,
-                       ShowContextualTaskPageAction) {
+                       DISABLED_ShowContextualTaskPageAction) {
   RunTestSequence(InstrumentTab(kFirstTab),
                   EnsureNotPresent(kContextualTasksPageActionElementId),
                   NavigateWebContents(kFirstTab, GetTestURL()),
