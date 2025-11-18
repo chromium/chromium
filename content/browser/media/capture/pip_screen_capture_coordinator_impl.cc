@@ -4,13 +4,26 @@
 
 #include "content/browser/media/capture/pip_screen_capture_coordinator_impl.h"
 
+#include "base/feature_list.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "content/browser/media/capture/pip_screen_capture_coordinator_proxy_impl.h"
 #include "content/public/browser/web_contents.h"
+#include "media/capture/capture_switches.h"
 
 namespace content {
 
-PipScreenCaptureCoordinatorImpl::PipScreenCaptureCoordinatorImpl() {}
+// static
+PipScreenCaptureCoordinatorImpl*
+PipScreenCaptureCoordinatorImpl::GetInstance() {
+  if (!base::FeatureList::IsEnabled(features::kExcludePipFromScreenCapture)) {
+    return nullptr;
+  }
+  static base::NoDestructor<PipScreenCaptureCoordinatorImpl> instance;
+  return instance.get();
+}
+
+PipScreenCaptureCoordinatorImpl::PipScreenCaptureCoordinatorImpl() = default;
 
 PipScreenCaptureCoordinatorImpl::~PipScreenCaptureCoordinatorImpl() = default;
 
@@ -62,6 +75,12 @@ void PipScreenCaptureCoordinatorImpl::AddObserver(Observer* observer) {
 
 void PipScreenCaptureCoordinatorImpl::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
+}
+
+void PipScreenCaptureCoordinatorImpl::ResetForTesting() {
+  pip_window_id_ = std::nullopt;
+  observers_.Clear();
+  weak_factory_.InvalidateWeakPtrs();
 }
 
 }  // namespace content

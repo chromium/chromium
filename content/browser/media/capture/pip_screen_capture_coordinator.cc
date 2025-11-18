@@ -4,11 +4,12 @@
 
 #include "content/browser/media/capture/pip_screen_capture_coordinator.h"
 
-#include "base/feature_list.h"
 #include "build/build_config.h"
-#include "content/browser/media/capture/pip_screen_capture_coordinator_proxy_impl.h"
 #include "content/public/browser/web_contents.h"
-#include "media/capture/capture_switches.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "content/browser/media/capture/pip_screen_capture_coordinator_impl.h"
+#endif
 
 namespace content {
 
@@ -18,7 +19,6 @@ PipScreenCaptureCoordinator*
 PipScreenCaptureCoordinator::GetOrCreateForWebContents(
     WebContents* web_contents) {
   CHECK(web_contents);
-
   return WebContentsUserData<
       PipScreenCaptureCoordinator>::GetOrCreateForWebContents(web_contents);
 }
@@ -33,30 +33,22 @@ PipScreenCaptureCoordinator::GetOrCreateForRenderFrameHost(
 
 PipScreenCaptureCoordinator::PipScreenCaptureCoordinator(
     WebContents* web_contents)
-    : WebContentsUserData<PipScreenCaptureCoordinator>(*web_contents)
-#if BUILDFLAG(IS_MAC)
-      ,
-      impl_(base::FeatureList::IsEnabled(features::kExcludePipFromScreenCapture)
-                ? std::make_unique<PipScreenCaptureCoordinatorImpl>()
-                : nullptr)
-#endif
-{
-}
+    : WebContentsUserData<PipScreenCaptureCoordinator>(*web_contents) {}
 
 PipScreenCaptureCoordinator::~PipScreenCaptureCoordinator() = default;
 
 void PipScreenCaptureCoordinator::OnPipShown(WebContents& pip_web_contents) {
 #if BUILDFLAG(IS_MAC)
-  if (impl_) {
-    impl_->OnPipShown(pip_web_contents);
+  if (auto* instance = PipScreenCaptureCoordinatorImpl::GetInstance()) {
+    instance->OnPipShown(pip_web_contents);
   }
 #endif
 }
 
 void PipScreenCaptureCoordinator::OnPipClosed() {
 #if BUILDFLAG(IS_MAC)
-  if (impl_) {
-    impl_->OnPipClosed();
+  if (auto* instance = PipScreenCaptureCoordinatorImpl::GetInstance()) {
+    instance->OnPipClosed();
   }
 #endif
 }
@@ -64,8 +56,8 @@ void PipScreenCaptureCoordinator::OnPipClosed() {
 std::unique_ptr<PipScreenCaptureCoordinatorProxy>
 PipScreenCaptureCoordinator::CreateProxy() {
 #if BUILDFLAG(IS_MAC)
-  if (impl_) {
-    return impl_->CreateProxy();
+  if (auto* instance = PipScreenCaptureCoordinatorImpl::GetInstance()) {
+    return instance->CreateProxy();
   }
 #endif
   return nullptr;

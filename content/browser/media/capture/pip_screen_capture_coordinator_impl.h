@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_MEDIA_CAPTURE_PIP_SCREEN_CAPTURE_COORDINATOR_IMPL_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "content/browser/media/capture/capture_util.h"
 #include "content/browser/media/capture/capture_util_mac.h"
@@ -17,6 +18,7 @@ class WebContents;
 
 class CONTENT_EXPORT PipScreenCaptureCoordinatorImpl {
  public:
+  static PipScreenCaptureCoordinatorImpl* GetInstance();
 
   class Observer : public base::CheckedObserver {
    public:
@@ -26,8 +28,7 @@ class CONTENT_EXPORT PipScreenCaptureCoordinatorImpl {
         std::optional<NativeWindowId> new_pip_window_id) = 0;
   };
 
-  explicit PipScreenCaptureCoordinatorImpl();
-  virtual ~PipScreenCaptureCoordinatorImpl();
+  ~PipScreenCaptureCoordinatorImpl();
 
   PipScreenCaptureCoordinatorImpl(const PipScreenCaptureCoordinatorImpl&) =
       delete;
@@ -45,7 +46,12 @@ class CONTENT_EXPORT PipScreenCaptureCoordinatorImpl {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  void ResetForTesting();
+
  private:
+  friend class base::NoDestructor<PipScreenCaptureCoordinatorImpl>;
+  PipScreenCaptureCoordinatorImpl();
+
   std::optional<NativeWindowId> pip_window_id_;
   base::ObserverList<Observer> observers_;
   base::WeakPtrFactory<PipScreenCaptureCoordinatorImpl> weak_factory_{this};

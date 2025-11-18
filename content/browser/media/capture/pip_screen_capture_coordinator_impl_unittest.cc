@@ -97,92 +97,95 @@ class PipScreenCaptureCoordinatorImplTest : public testing::Test {
  public:
   PipScreenCaptureCoordinatorImplTest() {
     feature_list_.InitAndEnableFeature(features::kExcludePipFromScreenCapture);
+    coordinator_ = PipScreenCaptureCoordinatorImpl::GetInstance();
   }
+
+  void TearDown() override { coordinator_->ResetForTesting(); }
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
-  PipScreenCaptureCoordinatorImpl coordinator_;
+  raw_ptr<PipScreenCaptureCoordinatorImpl> coordinator_;
 };
 
 TEST_F(PipScreenCaptureCoordinatorImplTest, PipWindowId) {
-  EXPECT_EQ(coordinator_.PipWindowId(), std::nullopt);
+  EXPECT_EQ(coordinator_->PipWindowId(), std::nullopt);
 
   const NativeWindowId pip_window_id = 123;
-  coordinator_.OnPipShown(pip_window_id);
-  EXPECT_EQ(coordinator_.PipWindowId(), pip_window_id);
+  coordinator_->OnPipShown(pip_window_id);
+  EXPECT_EQ(coordinator_->PipWindowId(), pip_window_id);
 
-  coordinator_.OnPipClosed();
-  EXPECT_EQ(coordinator_.PipWindowId(), std::nullopt);
+  coordinator_->OnPipClosed();
+  EXPECT_EQ(coordinator_->PipWindowId(), std::nullopt);
 }
 
 TEST_F(PipScreenCaptureCoordinatorImplTest, OnPipShownNotifiesObservers) {
   MockObserver observer;
-  coordinator_.AddObserver(&observer);
+  coordinator_->AddObserver(&observer);
 
   const NativeWindowId pip_window_id = 123;
   EXPECT_CALL(observer,
               OnPipWindowIdChanged(std::make_optional(pip_window_id)));
-  coordinator_.OnPipShown(pip_window_id);
+  coordinator_->OnPipShown(pip_window_id);
 
-  EXPECT_EQ(coordinator_.PipWindowId(), pip_window_id);
+  EXPECT_EQ(coordinator_->PipWindowId(), pip_window_id);
 
   // Calling again with the same ID should not notify.
   EXPECT_CALL(observer, OnPipWindowIdChanged(_)).Times(0);
-  coordinator_.OnPipShown(pip_window_id);
+  coordinator_->OnPipShown(pip_window_id);
 
-  coordinator_.RemoveObserver(&observer);
+  coordinator_->RemoveObserver(&observer);
 }
 
 TEST_F(PipScreenCaptureCoordinatorImplTest, OnPipClosedNotifiesObservers) {
   MockObserver observer;
-  coordinator_.AddObserver(&observer);
+  coordinator_->AddObserver(&observer);
 
   const NativeWindowId pip_window_id = 123;
   EXPECT_CALL(observer,
               OnPipWindowIdChanged(std::make_optional(pip_window_id)));
-  coordinator_.OnPipShown(pip_window_id);
+  coordinator_->OnPipShown(pip_window_id);
   testing::Mock::VerifyAndClearExpectations(&observer);
 
   EXPECT_CALL(observer, OnPipWindowIdChanged(testing::Eq(std::nullopt)));
-  coordinator_.OnPipClosed();
+  coordinator_->OnPipClosed();
 
-  coordinator_.RemoveObserver(&observer);
+  coordinator_->RemoveObserver(&observer);
 }
 
 TEST_F(PipScreenCaptureCoordinatorImplTest, AddAndRemoveObserver) {
   MockObserver observer1;
   MockObserver observer2;
 
-  coordinator_.AddObserver(&observer1);
-  coordinator_.AddObserver(&observer2);
+  coordinator_->AddObserver(&observer1);
+  coordinator_->AddObserver(&observer2);
 
   const NativeWindowId pip_window_id = 123;
   EXPECT_CALL(observer1,
               OnPipWindowIdChanged(std::make_optional(pip_window_id)));
   EXPECT_CALL(observer2,
               OnPipWindowIdChanged(std::make_optional(pip_window_id)));
-  coordinator_.OnPipShown(pip_window_id);
+  coordinator_->OnPipShown(pip_window_id);
   testing::Mock::VerifyAndClearExpectations(&observer1);
   testing::Mock::VerifyAndClearExpectations(&observer2);
 
-  coordinator_.RemoveObserver(&observer1);
+  coordinator_->RemoveObserver(&observer1);
 
   const NativeWindowId new_pip_window_id = 456;
   EXPECT_CALL(observer1, OnPipWindowIdChanged(_)).Times(0);
   EXPECT_CALL(observer2,
               OnPipWindowIdChanged(std::make_optional(new_pip_window_id)));
-  coordinator_.OnPipShown(new_pip_window_id);
+  coordinator_->OnPipShown(new_pip_window_id);
 
-  coordinator_.RemoveObserver(&observer2);
+  coordinator_->RemoveObserver(&observer2);
 }
 
 TEST_F(PipScreenCaptureCoordinatorImplTest, CreateProxy) {
   // The proxy should start with the current ID.
   const NativeWindowId pip_window_id = 123;
-  CallOnPipShownAndWaitUntilDone(task_environment_, &coordinator_,
+  CallOnPipShownAndWaitUntilDone(task_environment_, coordinator_,
                                  pip_window_id);
-  auto proxy = coordinator_.CreateProxy();
+  auto proxy = coordinator_->CreateProxy();
   ASSERT_TRUE(proxy);
 
   // The proxy's ID should be the initial pip_window_id.
@@ -192,12 +195,12 @@ TEST_F(PipScreenCaptureCoordinatorImplTest, CreateProxy) {
 
   // The proxy should be updated when the ID changes.
   const std::optional<NativeWindowId> new_pip_window_id = 456;
-  CallOnPipShownAndWaitForObserver(task_environment_, &coordinator_, observer,
+  CallOnPipShownAndWaitForObserver(task_environment_, coordinator_, observer,
                                    new_pip_window_id);
   EXPECT_EQ(proxy->PipWindowId(), new_pip_window_id);
 
   // The proxy should be updated when the pip window is closed.
-  CallOnPipClosedAndWaitForObserver(task_environment_, &coordinator_, observer);
+  CallOnPipClosedAndWaitForObserver(task_environment_, coordinator_, observer);
   EXPECT_EQ(proxy->PipWindowId(), std::nullopt);
 
   proxy->RemoveObserver(&observer);

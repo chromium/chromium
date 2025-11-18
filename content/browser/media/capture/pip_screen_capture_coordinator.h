@@ -11,10 +11,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_user_data.h"
 
-#if BUILDFLAG(IS_MAC)
-#include "content/browser/media/capture/pip_screen_capture_coordinator_impl.h"
-#endif
-
 namespace content {
 
 class WebContents;
@@ -63,10 +59,6 @@ class CONTENT_EXPORT PipScreenCaptureCoordinator
   friend class MockPipScreenCaptureCoordinator;
   friend class WebContentsUserData<PipScreenCaptureCoordinator>;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-#if BUILDFLAG(IS_MAC)
-  std::unique_ptr<PipScreenCaptureCoordinatorImpl> impl_;
-#endif
 };
 
 }  // namespace content

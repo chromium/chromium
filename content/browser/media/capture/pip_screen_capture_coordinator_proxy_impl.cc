@@ -5,7 +5,7 @@
 #include "content/browser/media/capture/pip_screen_capture_coordinator_proxy_impl.h"
 
 #include "base/functional/bind.h"
-#include "content/browser/media/capture/pip_screen_capture_coordinator.h"
+#include "content/browser/media/capture/pip_screen_capture_coordinator_impl.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace content {
