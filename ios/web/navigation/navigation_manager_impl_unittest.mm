@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import "ios/web/navigation/navigation_manager_impl.h"
 
 #import <array>
 #import <string>
+#import <string_view>
 
 #import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
@@ -57,12 +53,12 @@ namespace {
 
 // URL scheme that will be rewritten by UrlRewriter installed in
 // NavigationManagerTest fixture. Scheme will be changed to kTestWebUIScheme.
-const char kSchemeToRewrite[] = "navigationmanagerschemetorewrite";
+constexpr std::string_view kSchemeToRewrite =
+    "navigationmanagerschemetorewrite";
 
 // URLs used for session restoration tests.
-const char kTestURL1[] = "about://new-tab";
-const char kTestURL2[] = "about://version";
-const char* const kTestURLs[] = {kTestURL1, kTestURL2};
+constexpr auto kTestURLs =
+    std::to_array<std::string_view>({"about://new-tab", "about://version"});
 
 // Replaces `kSchemeToRewrite` scheme with `kTestWebUIScheme`.
 bool UrlRewriter(GURL* url, BrowserState* browser_state) {
@@ -2940,7 +2936,7 @@ TEST_F(NavigationManagerSerialisationTest, ExtraLongURLLastCommittedItem) {
 TEST_F(NavigationManagerSerialisationTest, RestoreFromProto) {
   proto::NavigationStorage storage;
   storage.set_last_committed_item_index(0);
-  for (const char* url : kTestURLs) {
+  for (std::string_view url : kTestURLs) {
     storage.add_items()->set_url(url);
   }
   storage.set_last_committed_item_index(storage.items_size() - 1);
@@ -2958,14 +2954,14 @@ TEST_F(NavigationManagerSerialisationTest, RestoreFromProto) {
 
   navigation_manager.RestoreFromProto(storage);
 
-  const int urls_count = static_cast<int>(std::size(kTestURLs));
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^{
-    return navigation_manager.GetItemCount() == urls_count;
+    return navigation_manager.GetItemCount() == kTestURLs.size();
   }));
 
-  EXPECT_EQ(navigation_manager.GetLastCommittedItemIndex(), urls_count - 1);
+  EXPECT_EQ(navigation_manager.GetLastCommittedItemIndex(),
+            static_cast<int>(kTestURLs.size()) - 1);
 
-  for (int index = 0; index < urls_count; ++index) {
+  for (size_t index = 0; index < kTestURLs.size(); ++index) {
     EXPECT_EQ(navigation_manager.GetItemAtIndex(index)->GetURL(),
               GURL(kTestURLs[index]));
   }
@@ -3000,7 +2996,7 @@ TEST_F(NavigationManagerSerialisationTest, RestoreFromProto_Empty) {
 TEST_F(NavigationManagerSerialisationTest, RestoreFromProto_LastItemIndex) {
   proto::NavigationStorage storage;
   storage.set_last_committed_item_index(0);
-  for (const char* url : kTestURLs) {
+  for (std::string_view url : kTestURLs) {
     storage.add_items()->set_url(url);
   }
   storage.set_last_committed_item_index(0);
@@ -3018,13 +3014,12 @@ TEST_F(NavigationManagerSerialisationTest, RestoreFromProto_LastItemIndex) {
 
   navigation_manager.RestoreFromProto(storage);
 
-  const int urls_count = static_cast<int>(std::size(kTestURLs));
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^{
-    return navigation_manager.GetItemCount() == urls_count;
+    return navigation_manager.GetItemCount() == kTestURLs.size();
   }));
   EXPECT_EQ(navigation_manager.GetLastCommittedItemIndex(), 0);
 
-  for (int index = 0; index < urls_count; ++index) {
+  for (size_t index = 0; index < kTestURLs.size(); ++index) {
     EXPECT_EQ(navigation_manager.GetItemAtIndex(index)->GetURL(),
               GURL(kTestURLs[index]));
   }
@@ -3033,20 +3028,24 @@ TEST_F(NavigationManagerSerialisationTest, RestoreFromProto_LastItemIndex) {
 // Tests that restoring a session with a specific virtual url which is different
 // with url works correctly.
 TEST_F(NavigationManagerSerialisationTest, RestoreVirtualURLFromProto) {
+  struct UrlAndVirtualUrl {
+    std::string_view url;
+    std::string_view virtual_url;
+  };
+
   // Tests both HTTP url and non HTTP url.
-  const std::vector<std::pair<std::string, std::string>> urls_and_virtual_urls =
-      {
-          {"http://url.test", "http://virtual.test"},
-          {"file:///path/to/file.pdf", "http://virtual.test"},
-      };
+  static constexpr auto kUrlsAndVirtualURls = std::to_array<UrlAndVirtualUrl>({
+      {"http://url.test", "http://virtual.test"},
+      {"file:///path/to/file.pdf", "http://virtual.test"},
+  });
 
   proto::NavigationStorage storage;
   storage.set_last_committed_item_index(0);
 
-  for (const auto& [url, virtual_url] : urls_and_virtual_urls) {
+  for (const auto& url_and_virtual_url : kUrlsAndVirtualURls) {
     proto::NavigationItemStorage* item = storage.add_items();
-    item->set_url(url);
-    item->set_virtual_url(virtual_url);
+    item->set_url(url_and_virtual_url.url);
+    item->set_virtual_url(url_and_virtual_url.virtual_url);
   }
 
   // Create a WebState with a real navigation proxy as this is required to
@@ -3062,17 +3061,16 @@ TEST_F(NavigationManagerSerialisationTest, RestoreVirtualURLFromProto) {
 
   navigation_manager.RestoreFromProto(storage);
 
-  const int urls_count = static_cast<int>(urls_and_virtual_urls.size());
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^{
-    return navigation_manager.GetItemCount() == urls_count;
+    return navigation_manager.GetItemCount() == kUrlsAndVirtualURls.size();
   }));
 
   EXPECT_EQ(0, navigation_manager.GetLastCommittedItemIndex());
 
-  for (int index = 0; index < urls_count; ++index) {
+  for (size_t index = 0; index < kUrlsAndVirtualURls.size(); ++index) {
     NavigationItem* item = navigation_manager.GetItemAtIndex(index);
-    GURL url = GURL(urls_and_virtual_urls[index].first);
-    GURL virtual_url = GURL(urls_and_virtual_urls[index].second);
+    GURL url = GURL(kUrlsAndVirtualURls[index].url);
+    GURL virtual_url = GURL(kUrlsAndVirtualURls[index].virtual_url);
 
     EXPECT_EQ(item->GetURL(), url);
     EXPECT_EQ(item->GetVirtualURL(), virtual_url);
