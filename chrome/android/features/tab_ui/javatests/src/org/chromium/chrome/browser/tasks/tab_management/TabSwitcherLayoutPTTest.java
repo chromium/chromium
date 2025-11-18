@@ -14,6 +14,7 @@ import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.GarbageCollectionTestUtils.canBeGarbageCollected;
 import static org.chromium.base.test.transit.TransitAsserts.assertFinalDestination;
+import static org.chromium.base.test.transit.TransitAsserts.assertFinalDestinations;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.ANDROID_ELEGANT_TEXT_HEIGHT;
 import static org.chromium.chrome.test.util.ChromeTabUtils.getIndexOnUiThread;
 
@@ -270,18 +271,25 @@ public class TabSwitcherLayoutPTTest {
                         "about:blank",
                         /* isIncognito= */ true,
                         WebPageStation::newBuilder);
-        assertTrue(cta.getCurrentTabModel().isIncognito());
+        assertTrue(pageStation.getTabModel().isIncognito());
         // Make sure all thumbnails are there before switching tabs.
         IncognitoTabSwitcherStation tabSwitcherStation =
                 enterIncognitoHtsWithThumbnailChecking(pageStation);
         pageStation = tabSwitcherStation.selectTabAtIndex(0, WebPageStation.newBuilder());
         tabSwitcherStation = pageStation.openIncognitoTabSwitcher();
-        ChromeRenderTestRule.sanitize(cta.findViewById(R.id.pane_frame));
-        mRenderTestRule.render(cta.findViewById(R.id.pane_frame), "3_incognito_web_tabs");
+        ChromeRenderTestRule.sanitize(
+                tabSwitcherStation.getActivity().findViewById(R.id.pane_frame));
+        mRenderTestRule.render(
+                tabSwitcherStation.getActivity().findViewById(R.id.pane_frame),
+                "3_incognito_web_tabs");
 
         WebPageStation previousPage =
                 tabSwitcherStation.leaveHubToPreviousTabViaBack(WebPageStation.newBuilder());
-        assertFinalDestination(previousPage);
+        if (previousPage.getActivity().isIncognitoWindow()) {
+            assertFinalDestinations(previousPage, mStartPage);
+        } else {
+            assertFinalDestination(previousPage);
+        }
     }
 
     @Test
@@ -788,6 +796,8 @@ public class TabSwitcherLayoutPTTest {
 
     @Test
     @MediumTest
+    // TODO(crbug.com/457847264): Change to @Restriction(DeviceFormFactor.PHONE) after launch.
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testUrlUpdatedNotCrashing_ForTabNotInCurrentModel() throws Exception {
         WebPageStation regularPage = mCtaTestRule.startOnBlankPage();
         Tab regularTab = regularPage.loadedTabElement.value();
@@ -862,7 +872,6 @@ public class TabSwitcherLayoutPTTest {
         List<Tab> tabsInGroup = new ArrayList<>();
         TabSwitcherStation tabSwitcher;
         WebPageStation pageStation;
-        ChromeTabbedActivity cta = mCtaTestRule.getActivity();
 
         // 1. SETUP: Create the tabs and the initial group.
         // We add an extra tab which will remain selected, allowing our tab group to show its color.
@@ -910,13 +919,18 @@ public class TabSwitcherLayoutPTTest {
             editDialog.pressBackArrowToExit();
 
             // Test
-            ChromeRenderTestRule.sanitize(cta.findViewById(R.id.pane_frame));
+            ChromeRenderTestRule.sanitize(
+                    editDialog.getHostStation().getActivity().findViewById(R.id.pane_frame));
             String renderId = renderIdPrefix + colorName;
-            mRenderTestRule.render(cta.findViewById(R.id.pane_frame), renderId);
+            mRenderTestRule.render(
+                    editDialog.getHostStation().getActivity().findViewById(R.id.pane_frame),
+                    renderId);
         }
 
         // 3. CLEANUP: Leave the hub to the last active incognito tab.
         pageStation = tabSwitcher.leaveHubToPreviousTabViaBack(WebPageStation.newBuilder());
+        if (!pageStation.getActivity().isIncognitoWindow()) {
         assertFinalDestination(pageStation);
+        }
     }
 }
