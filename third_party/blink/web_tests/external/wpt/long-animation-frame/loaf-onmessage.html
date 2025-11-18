@@ -15,7 +15,7 @@
 for (const origin of ["ORIGIN", "REMOTE_ORIGIN", "HTTP_NOTSAMESITE_ORIGIN"]) {
     test_self_event_listener(async (t, busy_wait) => {
         const iframe = document.createElement("iframe");
-        iframe.src = `${get_host_info()[origin]}/long-animation-frame/tentative/resources/postMessage.html`;
+        iframe.src = `${get_host_info()[origin]}/long-animation-frame/resources/postMessage.html`;
         const promise = new Promise(resolve => window.addEventListener("message", e => {
             if (e.data === "NEXT") {
                 busy_wait();
@@ -29,7 +29,7 @@ for (const origin of ["ORIGIN", "REMOTE_ORIGIN", "HTTP_NOTSAMESITE_ORIGIN"]) {
 
     test_self_event_listener(async (t, busy_wait) => {
         const iframe = document.createElement("iframe");
-        iframe.src = `${get_host_info()[origin]}/long-animation-frame/tentative/resources/postMessage-from-port.html`;
+        iframe.src = `${get_host_info()[origin]}/long-animation-frame/resources/postMessage-from-port.html`;
         const channel = new MessageChannel();
         const promise = new Promise(resolve => channel.port1.addEventListener("message", e => {
             if (e.data === "NEXT") {

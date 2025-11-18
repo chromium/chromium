@@ -3717,8 +3717,8 @@ crbug.com/417940356 [ Linux ] external/wpt/page-lifecycle/worker-dispay-none.ten
 crbug.com/415666471 [ Mac ] external/wpt/speech-api/SpeechRecognition-installOnDevice.https.html [ Failure Timeout ]
 crbug.com/415666471 [ Mac ] virtual/speech-with-unified-autoplay/external/wpt/speech-api/SpeechRecognition-installOnDevice.https.html [ Failure Timeout ]
 crbug.com/417576322 [ Mac14 ] external/wpt/scroll-animations/css/animation-timeline-view-functional-notation.tentative.html [ Timeout ]
-crbug.com/417576322 [ Mac15-arm64 ] virtual/threaded/external/wpt/long-animation-frame/tentative/loaf-iframe-self.html [ Skip Timeout ]
-crbug.com/417576322 [ Mac14-arm64 ] virtual/threaded/external/wpt/long-animation-frame/tentative/loaf-iframe-self.html [ Skip Timeout ]
+crbug.com/417576322 [ Mac15-arm64 ] virtual/threaded/external/wpt/long-animation-frame/loaf-iframe-self.html [ Skip Timeout ]
+crbug.com/417576322 [ Mac14-arm64 ] virtual/threaded/external/wpt/long-animation-frame/loaf-iframe-self.html [ Skip Timeout ]
 [ Win11 ] external/wpt/css/css-display/display-contents-inline-002.html [ Failure ]
 [ Win11-arm64 ] external/wpt/css/css-display/display-contents-inline-002.html [ Failure ]
 [ Win10.20h2 ] external/wpt/css/css-display/display-contents-inline-002.html [ Failure ]
@@ -4177,7 +4177,7 @@ crbug.com/371068252 [ Mac14 ] external/wpt/webcodecs/videoFrame-createImageBitma
 crbug.com/370032367 virtual/media-foundation-for-clear-dcomp/external/wpt/media-source/last-frame-dimensions.html [ Timeout ]
 crbug.com/369652659 [ Mac15-arm64 ] external/wpt/webrtc/RTCPeerConnection-getStats-timestamp.https.html [ Skip Timeout ]
 crbug.com/369652659 [ Mac15 ] external/wpt/webrtc/RTCPeerConnection-getStats-timestamp.https.html [ Skip Timeout ]
-crbug.com/369956892 [ Mac14-arm64 ] virtual/threaded/external/wpt/long-animation-frame/tentative/loaf-source-location-redirect.html [ Skip Timeout ]
+crbug.com/369956892 [ Mac14-arm64 ] virtual/threaded/external/wpt/long-animation-frame/loaf-source-location-redirect.html [ Skip Timeout ]
 [ Mac14 ] virtual/threaded/external/wpt/css/css-backgrounds/background-attachment-local-inline-002.html [ Failure ]
 crbug.com/369685643 [ Win10.20h2 ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/animating-new-content-subset.html [ Failure ]
 crbug.com/369685643 crbug.com/369826505 [ Mac ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/animating-new-content-subset.html [ Failure Pass ]
@@ -6512,8 +6512,8 @@ external/wpt/editing/other/join-different-white-space-style-paragraphs.html?* [ 
 crbug.com/415323248 crbug.com/415292402 crbug.com/413189476 virtual/fledge-bidding-and-auction-private-aggregation/external/wpt/fledge/tentative/private-aggregation.https.window.js [ Failure Pass Timeout ]
 crbug.com/417924844 virtual/close-watcher/external/wpt/close-watcher/iframes/dialog-same-origin-ynyn.html [ Skip Timeout ]
 crbug.com/417816138 virtual/close-watcher/external/wpt/close-watcher/iframes/dialog-same-origin-ynn.html [ Skip Timeout ]
-crbug.com/417870384 virtual/threaded/external/wpt/long-animation-frame/tentative/loaf-promise-scheduled-render.html [ Failure Pass ]
-crbug.com/417870384 external/wpt/long-animation-frame/tentative/loaf-promise-scheduled-render.html [ Failure Pass ]
+crbug.com/417870384 virtual/threaded/external/wpt/long-animation-frame/loaf-promise-scheduled-render.html [ Failure Pass ]
+crbug.com/417870384 external/wpt/long-animation-frame/loaf-promise-scheduled-render.html [ Failure Pass ]
 
 # Do not retry slow tests that also timeouts
 crbug.com/1210687 [ Mac ] http/tests/permissions/chromium/test-request-worker.html [ Pass Timeout ]
@@ -7164,8 +7164,8 @@ crbug.com/1446711 [ Mac ] media/controls/playback-speed-menu.html [ Timeout ]
 crbug.com/1446711 [ Win ] virtual/media-foundation-for-clear-dcomp/media/controls/accessibility-playback-speed-button.html [ Timeout ]
 crbug.com/1472813 [ Mac ] virtual/close-watcher/external/wpt/close-watcher/user-activation-shared.html?CloseWatcher [ Timeout ]
 crbug.com/1491472 [ Mac ] virtual/shared-storage-fenced-frame-mparch/http/tests/inspector-protocol/shared-storage/debugger-pause-on-first-script.js [ Skip Timeout ]
-crbug.com/1462683 [ Mac13-arm64 ] virtual/threaded/external/wpt/long-animation-frame/tentative/loaf-iframe-self.html [ Skip Timeout ]
-crbug.com/1462683 [ Mac12-arm64 ] virtual/threaded/external/wpt/long-animation-frame/tentative/loaf-iframe-self.html [ Skip Timeout ]
+crbug.com/1462683 [ Mac13-arm64 ] virtual/threaded/external/wpt/long-animation-frame/loaf-iframe-self.html [ Skip Timeout ]
+crbug.com/1462683 [ Mac12-arm64 ] virtual/threaded/external/wpt/long-animation-frame/loaf-iframe-self.html [ Skip Timeout ]
 
 crbug.com/324293120 [ Debug Linux ] external/wpt/webstorage/event_case_sensitive.html [ Failure Pass ]
 
@@ -7739,7 +7739,7 @@ crbug.com/1362106 media/video-source-error-no-candidate.html [ Failure Pass ]
 crbug.com/1362106 [ Linux ] media/video-source.html [ Failure Pass ]
 
 # Sheriff 2023-04-07
-crbug.com/1431236 external/wpt/long-animation-frame/tentative/loaf-user-callback.html [ Failure Pass ]
+crbug.com/1431236 external/wpt/long-animation-frame/loaf-user-callback.html [ Failure Pass ]
 crbug.com/1416271 external/wpt/js-self-profiling/time-domain.window.html [ Crash Failure Pass ]
 
 # Flake 2023-04-07
@@ -9032,7 +9032,7 @@ crbug.com/325441197 http/tests/devtools/elements/event-listeners-about-blank.js 
 crbug.com/325441197 http/tests/devtools/elements/event-listeners-framework-with-service-worker.js [ Failure Pass ]
 
 # Gardener 2024-04-24
-crbug.com/336691003 [ Linux ] external/wpt/long-animation-frame/tentative/loaf-source-location-inline-classic-script.html [ Failure ]
+crbug.com/336691003 [ Linux ] external/wpt/long-animation-frame/loaf-source-location-inline-classic-script.html [ Failure ]
 
 # Gardener 2024-05-01
 crbug.com/333501264 virtual/fenced-frame-mparch/external/wpt/fenced-frame/setting-null-config-navigates-to-about-blank.https.html [ Failure Pass ]

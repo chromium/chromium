@@ -4665,7 +4665,7 @@
       "external/wpt/html/semantics/embedded-content/the-img-element/decode",
       "external/wpt/intersection-observer/animating.html",
       "external/wpt/intersection-observer/v2/animated-opacity.html",
-      "external/wpt/long-animation-frame/tentative",
+      "external/wpt/long-animation-frame",
       "external/wpt/permissions-policy/experimental-features",
       "external/wpt/requestidlecallback",
       "external/wpt/scheduler/tentative/yield/yield-priority-idle-callbacks.html",

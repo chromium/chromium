@@ -70,23 +70,23 @@ function test_source_location_with_redirect({path, type, name}) {
 }
 
 test_source_location_with_redirect({
-  path: "/long-animation-frame/tentative/resources/busy.js",
+  path: "/long-animation-frame/resources/busy.js",
   type: "script-block"
 });
 
 test_source_location_with_redirect({
-  path: "/long-animation-frame/tentative/resources/raf-generates-loaf.js",
+  path: "/long-animation-frame/resources/raf-generates-loaf.js",
   name: "FrameRequestCallback",
   type: "user-callback"
 });
 test_source_location_with_redirect({
-  path: "/long-animation-frame/tentative/resources/event-generates-loaf.js",
+  path: "/long-animation-frame/resources/event-generates-loaf.js",
   type: "event-listener",
   name: "XMLHttpRequest.onload"
 });
 
 test_source_location_with_redirect({
-  path: "/long-animation-frame/tentative/resources/promise-generates-loaf.js",
+  path: "/long-animation-frame/resources/promise-generates-loaf.js",
   type: "resolve-promise",
   name: "Window.fetch.then"
 });
