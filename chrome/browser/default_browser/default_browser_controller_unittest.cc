@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/default_browser/default_browser_setter.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -51,17 +52,75 @@ class DefaultBrowserControllerTest : public testing::Test {
   std::unique_ptr<DefaultBrowserController> controller_;
 };
 
-TEST_F(DefaultBrowserControllerTest, OnAccepted) {
+TEST_F(DefaultBrowserControllerTest, OnShown) {
+  base::HistogramTester histogram_tester;
+  controller_->OnShown();
+
+  histogram_tester.ExpectTotalCount("DefaultBrowser.SettingsPage.Shown", 1);
+}
+
+TEST_F(DefaultBrowserControllerTest, OnIgnored) {
+  base::HistogramTester histogram_tester;
+  controller_->OnIgnored();
+
+  histogram_tester.ExpectUniqueSample("DefaultBrowser.SettingsPage.Interaction",
+                                      DefaultBrowserInteractionType::kIgnored,
+                                      1);
+}
+
+TEST_F(DefaultBrowserControllerTest, OnDismissed) {
+  base::HistogramTester histogram_tester;
+  controller_->OnDismissed();
+
+  histogram_tester.ExpectUniqueSample("DefaultBrowser.SettingsPage.Interaction",
+                                      DefaultBrowserInteractionType::kDismissed,
+                                      1);
+}
+
+TEST_F(DefaultBrowserControllerTest, OnAcceptedSuccess) {
+  base::HistogramTester histogram_tester;
   base::test::TestFuture<DefaultBrowserState> future;
   DefaultBrowserState state = DefaultBrowserState::IS_DEFAULT;
 
+  EXPECT_CALL(*setter_, GetType)
+      .WillOnce(testing::Return(DefaultBrowserSetterType::kShellIntegration));
   EXPECT_CALL(*setter_, Execute(testing::_))
       .WillOnce([state](DefaultBrowserSetterCompletionCallback callback) {
         std::move(callback).Run(state);
       });
+
   controller_->OnAccepted(future.GetCallback());
 
   ASSERT_EQ(future.Get(), state);
+  histogram_tester.ExpectUniqueSample("DefaultBrowser.SettingsPage.Interaction",
+                                      DefaultBrowserInteractionType::kAccepted,
+                                      1);
+
+  histogram_tester.ExpectUniqueSample("DefaultBrowser.ShellIntegration.Result",
+                                      true, 1);
+}
+
+TEST_F(DefaultBrowserControllerTest, OnAcceptedFailure) {
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<DefaultBrowserState> future;
+  DefaultBrowserState state = DefaultBrowserState::NOT_DEFAULT;
+
+  EXPECT_CALL(*setter_, GetType)
+      .WillOnce(testing::Return(DefaultBrowserSetterType::kShellIntegration));
+  EXPECT_CALL(*setter_, Execute(testing::_))
+      .WillOnce([state](DefaultBrowserSetterCompletionCallback callback) {
+        std::move(callback).Run(state);
+      });
+
+  controller_->OnAccepted(future.GetCallback());
+
+  ASSERT_EQ(future.Get(), state);
+  histogram_tester.ExpectUniqueSample("DefaultBrowser.SettingsPage.Interaction",
+                                      DefaultBrowserInteractionType::kAccepted,
+                                      1);
+
+  histogram_tester.ExpectUniqueSample("DefaultBrowser.ShellIntegration.Result",
+                                      false, 1);
 }
 
 }  // namespace default_browser

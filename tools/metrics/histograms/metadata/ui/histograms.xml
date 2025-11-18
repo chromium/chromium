@@ -53,6 +53,15 @@ chromium-metrics-reviews@google.com.
   <variant name=".Video" summary="The context menu was shown for a video"/>
 </variants>
 
+<variants name="DefaultBrowserEntrypointType">
+  <variant name="InfoBar" summary="the startup infobar"/>
+  <variant name="SettingsPage" summary="the settings page"/>
+</variants>
+
+<variants name="DefaultBrowserSetterType">
+  <variant name="ShellIntegration" summary="the shell integration setter"/>
+</variants>
+
 <!-- LINT.IfChange(TopChromeWebUIName) -->
 
 <variants name="TopChromeWebUIName">
@@ -315,6 +324,42 @@ chromium-metrics-reviews@google.com.
     For iOS, in the future Chrome will be allowed to be the default browser. How
     that will be logged is to be decided at the time of writing this
     description.
+  </summary>
+</histogram>
+
+<histogram name="DefaultBrowser.{DefaultBrowserEntrypointType}.Interaction"
+    enum="DefaultBrowserUserInteraction" expires_after="2026-07-01">
+  <owner>alsan@chromium.org</owner>
+  <owner>atharvmaan@chromium.org</owner>
+  <owner>koretadaniel@chromium.org</owner>
+  <owner>chrome-desktop-ui-waterloo@google.com</owner>
+  <summary>
+    Records the action taken by user when presented with an option to set Chrome
+    as the default browser from {DefaultBrowserEntrypointType}.
+  </summary>
+</histogram>
+
+<histogram name="DefaultBrowser.{DefaultBrowserEntrypointType}.Shown"
+    units="count" expires_after="2026-07-01">
+  <owner>alsan@chromium.org</owner>
+  <owner>atharvmaan@chromium.org</owner>
+  <owner>koretadaniel@chromium.org</owner>
+  <owner>chrome-desktop-ui-waterloo@google.com</owner>
+  <summary>
+    Records how many times {DefaultBrowserEntrypointType} entrypoint was shown
+    to the user.
+  </summary>
+</histogram>
+
+<histogram name="DefaultBrowser.{DefaultBrowserSetterType}.Result"
+    enum="BooleanSuccess" expires_after="2026-07-01">
+  <owner>alsan@chromium.org</owner>
+  <owner>atharvmaan@chromium.org</owner>
+  <owner>koretadaniel@chromium.org</owner>
+  <owner>chrome-desktop-ui-waterloo@google.com</owner>
+  <summary>
+    Records whether setting Chrome as the default browser was successful using
+    {DefaultBrowserSetterType}.
   </summary>
 </histogram>
 

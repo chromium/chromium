@@ -103,6 +103,20 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Other Mode is Default"/>
 </enum>
 
+<!-- LINT.IfChange(DefaultBrowserUserInteraction) -->
+
+<enum name="DefaultBrowserUserInteraction">
+  <summary>
+    Decisions a user can take when presented with a choice to make Chrome their
+    default browser.
+  </summary>
+  <int value="0" label="Accepted"/>
+  <int value="1" label="Ignored"/>
+  <int value="2" label="Dismissed"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/default_browser/default_browser_controller.h:DefaultBrowserInteractionType) -->
+
 <enum name="OpenLinkAs">
   <int value="0" label="Open Link as Profile displayed."/>
   <int value="1" label="Open Link as Profile clicked."/>
