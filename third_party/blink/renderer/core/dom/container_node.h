@@ -477,6 +477,7 @@ class CORE_EXPORT ContainerNode : public Node {
   // only.
   String getHTML(const GetHTMLOptions*, ExceptionState&) const;
 
+  WritableStream* streamAppendHTMLUnsafe(ScriptState*, ExceptionState&);
   WritableStream* patchSelf(ScriptState*, ExceptionState&);
   WritableStream* patchAfter(ScriptState*, Node* a, ExceptionState&);
   WritableStream* patchBefore(ScriptState*, Node* b, ExceptionState&);
