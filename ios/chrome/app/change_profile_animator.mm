@@ -162,6 +162,11 @@ void InvokeChangeProfileContinuation(ChangeProfileContinuation continuation,
 // animation if it was requested while the blur animation was still in
 // progress.
 - (void)blurComplete {
+  if (!_blurInProgress) {
+    // Return early if this is called multiple times.
+    return;
+  }
+
   _blurInProgress = NO;
   if (_unblurDuration.has_value()) {
     base::TimeDelta duration = *_unblurDuration;
@@ -180,6 +185,11 @@ void InvokeChangeProfileContinuation(ChangeProfileContinuation continuation,
 // Invoked when the unblur animation is complete. Should remove all the
 // view used for the animations.
 - (void)unblurComplete {
+  if (!_effectView) {
+    // Return early if this is called multiple times.
+    return;
+  }
+
   [_window deactivateOverlay:_effectView];
   _effectView = nil;
 }
