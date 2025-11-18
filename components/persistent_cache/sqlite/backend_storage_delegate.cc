@@ -42,8 +42,8 @@ int64_t BackendStorageDelegate::DeleteFiles(const base::FilePath& directory,
   auto file_path = directory.Append(base_name).AddExtension(kDbFileExtension);
   int64_t bytes_recovered = base::GetFileSize(file_path).value_or(0);
   bool delete_success = base::DeleteFile(file_path);
-  base::UmaHistogramBoolean("PersistentCache.ParamsManager.DbFile.DeleteSucess",
-                            delete_success);
+  base::UmaHistogramBoolean(
+      "PersistentCache.ParamsManager.DbFile.DeleteSuccess", delete_success);
   if (!delete_success) {
     return 0;
   }
@@ -52,7 +52,8 @@ int64_t BackendStorageDelegate::DeleteFiles(const base::FilePath& directory,
   auto file_size = base::GetFileSize(file_path).value_or(0);
   delete_success = base::DeleteFile(file_path);
   base::UmaHistogramBoolean(
-      "PersistentCache.ParamsManager.JournalFile.DeleteSucess", delete_success);
+      "PersistentCache.ParamsManager.JournalFile.DeleteSuccess",
+      delete_success);
   if (delete_success) {
     bytes_recovered = base::ClampAdd(bytes_recovered, file_size);
   }
