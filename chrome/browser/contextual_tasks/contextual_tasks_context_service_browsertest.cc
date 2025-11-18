@@ -461,6 +461,29 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
       "ContextualTasks.Context.RelevantTabsCount", 1, 1);
 }
 
+IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
+                       HighLexicalMatchScoreQualifiesTab) {
+  base::HistogramTester histogram_tester;
+
+  // Navigates to a page with title "Test Page"
+  NavigateToValidURL();
+
+  NotifyEmbedderMetadata();
+
+  base::test::TestFuture<std::vector<content::WebContents*>> future;
+  service()->GetRelevantTabsForQuery(
+      {.tab_selection_mode = mojom::TabSelectionMode::kMultiSignalScoring},
+      "summarize the test page",
+      /*explicit_urls=*/{}, future.GetCallback());
+
+  EXPECT_EQ(1u, future.Get().size());
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.Context.MatchingWordsCount", 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.Context.RelevantTabsCount", 1, 1);
+}
+
 IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, NotRelevantTab) {
   base::HistogramTester histogram_tester;
 

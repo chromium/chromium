@@ -10,6 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_signal_utils.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/passage_embeddings/page_embeddings_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -37,6 +38,7 @@ struct TabSignals {
   raw_ptr<content::WebContents> web_contents = nullptr;
   std::optional<float> embedding_score;
   std::optional<base::TimeDelta> duration_since_last_active;
+  std::optional<int> num_query_title_matching_words;
 };
 
 std::optional<float> GetBestEmbeddingScore(
@@ -68,7 +70,7 @@ float ProbOr(const float score1, const float score2) {
 }
 
 // TODO: crbug.com/452036470 - Add a proper scoring function based on analysis.
-double GetTabScore(TabSignals signals) {
+double GetTabScore(const TabSignals& signals) {
   double score = 0;
   if (signals.embedding_score.has_value()) {
     score = ProbOr(score, *(signals.embedding_score));
@@ -77,6 +79,13 @@ double GetTabScore(TabSignals signals) {
     score = ProbOr(
         score,
         std::pow(0.7, signals.duration_since_last_active->InSeconds() / 180));
+  }
+  if (signals.num_query_title_matching_words.has_value()) {
+    // Monotonically increasing; Always < 1.
+    // 0 matches = 0 score; 1 match = 0.57; 2 matches = 0.81 and so on.
+    float lexical_match_score =
+        1.0f - std::exp(-0.85 * *(signals.num_query_title_matching_words));
+    score = ProbOr(score, lexical_match_score);
   }
   return score;
 }
@@ -292,14 +301,24 @@ ContextualTasksContextService::SelectTabsByMultiSignalScore(
         page_embeddings_service_->GetEmbeddings(web_contents));
     tab_signals.duration_since_last_active =
         GetDurationSinceLastActive(web_contents);
+    tab_signals.num_query_title_matching_words = GetMatchingWordsCount(
+        query, base::UTF16ToUTF8(web_contents->GetTitle()));
 
-    base::UmaHistogramCounts100(
-        "ContextualTasks.Context.EmbeddingSimilarityScore",
-        static_cast<int>(std::min(
-            100 * tab_signals.embedding_score.value_or(0.0f), 100.0f)));
+    // Collect metrics.
+    if (tab_signals.embedding_score.has_value()) {
+      base::UmaHistogramCounts100(
+          "ContextualTasks.Context.EmbeddingSimilarityScore",
+          static_cast<int>(
+              std::min(100 * *(tab_signals.embedding_score), 100.0f)));
+    }
     if (tab_signals.duration_since_last_active.has_value()) {
       base::UmaHistogramTimes("ContextualTasks.Context.DurationSinceLastActive",
                               *(tab_signals.duration_since_last_active));
+    }
+    if (tab_signals.num_query_title_matching_words.has_value()) {
+      base::UmaHistogramCounts100(
+          "ContextualTasks.Context.MatchingWordsCount",
+          std::min(*(tab_signals.num_query_title_matching_words), 100));
     }
 
     // Score and select qualifying tabs.
@@ -314,13 +333,13 @@ ContextualTasksContextService::SelectTabsByMultiSignalScore(
     // Log for debugging.
     AUTO_CONTEXT_LOG(base::StringPrintf(
         "Query: %s | TabTitle: %s | EmbeddingsScore: %f | "
-        "SecondsSinceLastActive: %d | Score: %f",
+        "SecondsSinceLastActive: %d | MatchingWordsCount: %d | Score: %f",
         query, base::UTF16ToUTF8(web_contents->GetTitle()),
         tab_signals.embedding_score.value_or(0.0f),
         tab_signals.duration_since_last_active.has_value()
             ? tab_signals.duration_since_last_active->InSeconds()
             : -1,
-        score));
+        tab_signals.num_query_title_matching_words.value_or(0), score));
   }
   return relevant_tabs;
 }
