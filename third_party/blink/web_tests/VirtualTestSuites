@@ -6091,5 +6091,21 @@
       "drott@chromium.org"
     ],
     "expires": "Nov 1, 2026"
+  },
+  {
+    "prefix": "xml-no-ext-entities",
+    "platforms": ["Linux"],
+    "bases": [
+      "fast/parser/external-entities-in-xslt.xml",
+      "fast/xsl/dtd-in-source-document.xml",
+      "fast/xsl/xslt-second-level-import.xml",
+      "http/tests/security/contentTypeOptions/xml-external-entity.xml",
+      "http/tests/xmlviewer/external-entities.xml"
+    ],
+    "args": [ "--enable-features=XMLNoExternalEntities" ],
+    "owners": [
+      "drott@chromium.org"
+    ],
+    "expires": "Mar 20, 2026"
   }
 ]

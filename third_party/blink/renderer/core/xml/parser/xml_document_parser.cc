@@ -617,10 +617,6 @@ static bool IsLibxmlDefaultCatalogFile(const String& url_string) {
 }
 
 static bool ShouldAllowExternalLoad(const KURL& url) {
-  if (RuntimeEnabledFeatures::XMLNoExternalEntitiesEnabled()) {
-    return false;
-  }
-
   String url_string = url.GetString();
 
   // libxml should not be configured with catalogs enabled, so it
@@ -760,7 +756,18 @@ scoped_refptr<XMLParserContext> XMLParserContext::CreateStringParser(
   InitializeLibXMLIfNecessary();
   xmlParserCtxtPtr parser =
       xmlCreatePushParserCtxt(handlers, nullptr, nullptr, 0, nullptr);
-  xmlCtxtUseOptions(parser, XML_PARSE_HUGE | XML_PARSE_NOENT);
+
+  int32_t options = XML_PARSE_HUGE | XML_PARSE_NOENT;
+
+  // See https://crbug.com/455813733: We choose to prevent network loads of
+  // external entities and DTDs here, but not in xmlReadMemory of
+  // XmlDocPtrForString and in XSLTStyleSheet::Parse in order not to overlap
+  // with XSLT deprecation.
+  if (RuntimeEnabledFeatures::XMLNoExternalEntitiesEnabled()) {
+    options |= XML_PARSE_NO_XXE;
+  }
+
+  xmlCtxtUseOptions(parser, options);
   parser->_private = user_data;
   return base::AdoptRef(new XMLParserContext(parser));
 }
@@ -786,8 +793,17 @@ scoped_refptr<XMLParserContext> XMLParserContext::CreateMemoryParser(
   // XML_PARSE_NODICT: default dictionary option.
   // XML_PARSE_NOENT: force entities substitutions.
   // XML_PARSE_HUGE: don't impose arbitrary limits on document size.
-  xmlCtxtUseOptions(parser,
-                    XML_PARSE_NODICT | XML_PARSE_NOENT | XML_PARSE_HUGE);
+  int32_t options = XML_PARSE_NODICT | XML_PARSE_NOENT | XML_PARSE_HUGE;
+
+  // See https://crbug.com/455813733: We choose to prevent network loads of
+  // external entities and DTDs here, but not in xmlReadMemory of
+  // XmlDocPtrForString and in XSLTStyleSheet::Parse in order not to overlap
+  // with XSLT deprecation.
+  if (RuntimeEnabledFeatures::XMLNoExternalEntitiesEnabled()) {
+    options |= XML_PARSE_NO_XXE;
+  }
+
+  xmlCtxtUseOptions(parser, options);
 
   parser->_private = user_data;
 
