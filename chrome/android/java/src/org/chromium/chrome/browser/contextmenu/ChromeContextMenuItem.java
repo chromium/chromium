@@ -18,6 +18,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.DefaultBrowserInfo;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -301,9 +302,20 @@ class ChromeContextMenuItem {
                         item,
                         ChromePreferenceKeys.CONTEXT_MENU_SHOP_IMAGE_WITH_GOOGLE_LENS_CLICKED,
                         showInProductHelp);
+            case Item.OPEN_IN_CHROME_INCOGNITO_TAB:
+                if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+                    return context.getString(R.string.contextmenu_open_in_incognito_window);
+                }
+                break;
+            case Item.OPEN_IN_NEW_CHROME_TAB:
+                if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+                    return context.getString(R.string.contextmenu_open_in_chrome_window);
+                }
+                break;
             default:
                 return context.getString(getStringId(item));
         }
+        return context.getString(getStringId(item));
     }
 
     /**

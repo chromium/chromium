@@ -2961,6 +2961,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_CONTEXTMENU_OPEN_IN_NEW_CHROME_TAB" desc="Context sensitive menu item to open the selected link in a new Chrome tab from Chrome Custom Tab. [CHAR_LIMIT=30]">
         Open in new Chrome tab
       </message>
+      <message name="IDS_CONTEXTMENU_OPEN_IN_CHROME_WINDOW" desc="Context sensitive menu item to open the selected link in a Chrome window from Chrome Custom Tab. Used when there is a dedicated window for Incognito tabs. [CHAR_LIMIT=30]">
+        Open in Chrome window
+      </message>
       <message name="IDS_CONTEXTMENU_OPEN_IN_CHROME_INCOGNITO_TAB" desc="Context sensitive menu item to open the selected link in a Chrome Incognito tab from Chrome Custom Tab. [CHAR_LIMIT=30]">
         Open in Incognito tab
       </message>
