@@ -2993,9 +2993,11 @@ class PdfViewWebPluginInkTest
               ink_module_client->VisiblePageIndexFromPoint(point));
   }
 
-  void TestInProgressDraw(base::FilePath::StringViewType expected_filename,
-                          const gfx::PointF& start_position,
-                          const gfx::PointF& end_position) {
+  void TestInProgressDraw(
+      base::FilePath::StringViewType expected_filename,
+      const blink::WebInputEvent& down_event,
+      base::span<const blink::WebInputEvent* const> move_events,
+      const blink::WebInputEvent& up_event) {
     plugin_->set_in_paint_for_testing(true);
     constexpr gfx::Rect kScreenRect(kCanvasSize);
     constexpr gfx::SizeF kPageSizeInPoints(
@@ -3024,10 +3026,12 @@ class PdfViewWebPluginInkTest
     EXPECT_CALL(*engine_ptr_, ApplyStroke(_, _, _)).Times(0);
     // The final imaging for a stroke saved to a PDF should match what was final
     // drawn result when it was in-progress.
-    TestSendInputEvent(CreateLeftClickWebMouseEventAtPosition(start_position),
+    TestSendInputEvent(down_event,
                        blink::WebInputEventResult::kHandledApplication);
-    TestSendInputEvent(CreateLeftClickWebMouseMoveEventAtPosition(end_position),
-                       blink::WebInputEventResult::kHandledApplication);
+    for (const auto* move_event : move_events) {
+      TestSendInputEvent(*move_event,
+                         blink::WebInputEventResult::kHandledApplication);
+    }
 
     // Draw the canvas for the in-progress stroke.
     plugin_->Paint(canvas_.sk_canvas(), kScreenRect);
@@ -3041,7 +3045,7 @@ class PdfViewWebPluginInkTest
     // callback to be applied to a PDF page.
     testing::Mock::VerifyAndClearExpectations(engine_ptr_);
     EXPECT_CALL(*engine_ptr_, ApplyStroke(/*page_index=*/0, InkStrokeId(0), _));
-    TestSendInputEvent(CreateLeftClickWebMouseUpEventAtPosition(end_position),
+    TestSendInputEvent(up_event,
                        blink::WebInputEventResult::kHandledApplication);
 
     // Updating of `PdfViewWebPlugin::snapshot_` does not happen automatically
@@ -3435,10 +3439,17 @@ TEST_P(PdfViewWebPluginInkTest, AnnotationModeSetsFormAndClearsText) {
 TEST_P(PdfViewWebPluginInkTest, DrawInProgressStroke) {
   plugin_->OnMessage(
       CreateSetAnnotationModeMessageForTesting(InkAnnotationMode::kDraw));
+  static constexpr gfx::PointF kStartPosition{95.0f, 85.0f};
+  static constexpr gfx::PointF kEndPosition{50.0f, 45.0f};
+  blink::WebMouseEvent start_event =
+      CreateLeftClickWebMouseEventAtPosition(kStartPosition);
+  blink::WebMouseEvent move_event =
+      CreateLeftClickWebMouseMoveEventAtPosition(kEndPosition);
+  blink::WebMouseEvent end_event =
+      CreateLeftClickWebMouseUpEventAtPosition(kEndPosition);
   TestInProgressDraw(
       /*expected_filename=*/FILE_PATH_LITERAL("diagonal_stroke.png"),
-      /*start_position=*/gfx::PointF(95, 85),
-      /*end_position=*/gfx::PointF(50, 45));
+      start_event, {&move_event}, end_event);
 }
 
 class PdfViewWebPluginInkTextHighlightTest : public PdfViewWebPluginInkTest {
@@ -3507,10 +3518,17 @@ TEST_P(PdfViewWebPluginInkTextHighlightTest, DrawInProgressTextHighlight) {
 
   SetUpMouseDownMoveTextTestExpectations();
 
+  static constexpr gfx::PointF kStartPosition{55.0f, 60.0f};
+  static constexpr gfx::PointF kEndPosition{75.0f, 65.0f};
+  blink::WebMouseEvent start_event =
+      CreateLeftClickWebMouseEventAtPosition(kStartPosition);
+  blink::WebMouseEvent move_event =
+      CreateLeftClickWebMouseMoveEventAtPosition(kEndPosition);
+  blink::WebMouseEvent end_event =
+      CreateLeftClickWebMouseUpEventAtPosition(kEndPosition);
   TestInProgressDraw(
       /*expected_filename=*/FILE_PATH_LITERAL("text_highlight_stroke.png"),
-      /*start_position=*/gfx::PointF(55.0f, 60.0f),
-      /*end_position=*/gfx::PointF(75.0f, 65.0f));
+      start_event, {&move_event}, end_event);
 }
 
 class PdfViewWebPluginInk2SaveTest : public PdfViewWebPluginSaveTest {
