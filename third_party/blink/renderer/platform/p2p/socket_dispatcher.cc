@@ -16,7 +16,6 @@
 #include "third_party/blink/renderer/platform/p2p/network_list_observer.h"
 #include "third_party/blink/renderer/platform/p2p/socket_client_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
@@ -25,17 +24,16 @@ using PassKey = base::PassKey<P2PSocketDispatcher>;
 
 // static
 P2PSocketDispatcher& P2PSocketDispatcher::From(MojoBindingContext& context) {
-  auto* supplement =
-      Supplement<MojoBindingContext>::From<P2PSocketDispatcher>(context);
+  P2PSocketDispatcher* supplement = context.GetP2PSocketDispatcher();
   if (!supplement) {
     supplement = MakeGarbageCollected<P2PSocketDispatcher>(context, PassKey());
-    ProvideTo(context, supplement);
+    context.SetP2PSocketDispatcher(supplement);
   }
   return *supplement;
 }
 
 P2PSocketDispatcher::P2PSocketDispatcher(MojoBindingContext& context, PassKey)
-    : Supplement(context),
+    : mojo_binding_context_(&context),
       main_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       network_list_observers_(
           new base::ObserverListThreadSafe<blink::NetworkListObserver>()),
@@ -108,7 +106,7 @@ void P2PSocketDispatcher::RequestInterfaceIfNecessary() {
   if (!p2p_socket_manager_receiver_.is_valid())
     return;
 
-  GetSupplementable()->GetBrowserInterfaceBroker().GetInterface(
+  mojo_binding_context_->GetBrowserInterfaceBroker().GetInterface(
       std::move(p2p_socket_manager_receiver_));
 }
 
@@ -128,7 +126,7 @@ void P2PSocketDispatcher::RequestNetworkEventsIfNecessary() {
   } else {
     GetP2PSocketManager()->StartNetworkNotifications(
         network_notification_client_receiver_.BindNewPipeAndPassRemote(
-            GetSupplementable()->GetTaskRunner(TaskType::kMiscPlatformAPI)));
+            mojo_binding_context_->GetTaskRunner(TaskType::kMiscPlatformAPI)));
   }
 }
 
@@ -145,16 +143,17 @@ void P2PSocketDispatcher::OnConnectionError() {
 
 void P2PSocketDispatcher::ReconnectP2PSocketManager() {
   network_notification_client_receiver_.reset();
-  if (GetSupplementable()->IsContextDestroyed())
+  if (mojo_binding_context_->IsContextDestroyed()) {
     return;
+  }
   GetP2PSocketManager()->StartNetworkNotifications(
       network_notification_client_receiver_.BindNewPipeAndPassRemote(
-          GetSupplementable()->GetTaskRunner(TaskType::kNetworking)));
+          mojo_binding_context_->GetTaskRunner(TaskType::kNetworking)));
 }
 
 void P2PSocketDispatcher::Trace(Visitor* visitor) const {
-  Supplement::Trace(visitor);
   NetworkListManager::Trace(visitor);
+  visitor->Trace(mojo_binding_context_);
   visitor->Trace(network_notification_client_receiver_);
 }
 
