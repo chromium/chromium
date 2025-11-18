@@ -5,6 +5,7 @@
 // Test file for @webui-eslint/web-component-missing-deps
 
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
+import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import './other_button.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';

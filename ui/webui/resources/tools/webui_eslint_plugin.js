@@ -298,6 +298,9 @@ const webComponentMissingDeps = ESLintUtils.RuleCreator.withoutDocs({
       const filenames = new Set();
       for (let i = 0; i < parts.length; i++) {
         filenames.add(parts.slice(i).join('_') + '.js');
+        if (tagName === 'iron-list') {
+          filenames.add(parts.slice(i).join('-') + '.js');
+        }
       }
 
       return filenames;

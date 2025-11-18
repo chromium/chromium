@@ -148,6 +148,11 @@ class EslintTsTest(unittest.TestCase):
         _EXPECTED_ERROR % {
             'tagName': 'some-other-button'
         },
+        # Imported via iron-list.js (testing special case for
+        # third_party/polymer elements/ which use "-" instead of "_".
+        _EXPECTED_ERROR % {
+            'tagName': 'iron-list'
+        },
     ]
     for e in non_errors:
       self.assertFalse(e in str(context.exception))
