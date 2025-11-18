@@ -631,6 +631,9 @@ id<SystemIdentity> GetDisplayedIdentity(
 @property(nonatomic, assign, readonly, getter=isInvalidOrClosed)
     BOOL invalidOrClosed;
 
+// Redeclared to be assign.
+@property(nonatomic, assign) SigninPromoViewState signinPromoViewState;
+
 @end
 
 @implementation SigninPromoViewMediator {

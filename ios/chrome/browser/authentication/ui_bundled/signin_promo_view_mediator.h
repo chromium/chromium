@@ -104,7 +104,8 @@ enum class SigninPromoAction {
 @property(nonatomic, strong, readonly) id<SystemIdentity> displayedIdentity;
 
 // Sign-in promo view state. kNeverVisible by default.
-@property(nonatomic, assign) SigninPromoViewState signinPromoViewState;
+@property(nonatomic, assign, readonly)
+    SigninPromoViewState signinPromoViewState;
 
 // kTrue if the sign-in flow is in progress.
 // kFalse if the sign-in flow is not in progress.
