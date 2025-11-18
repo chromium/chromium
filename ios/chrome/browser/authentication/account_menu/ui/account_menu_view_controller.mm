@@ -43,9 +43,6 @@ const CGFloat kButtonImageSize = 18;
 // Size of the symbols.
 constexpr CGFloat kErrorSymbolSize = 22.;
 
-// Height and width of the buttons.
-constexpr CGFloat kButtonSize = 30.;
-
 // The height of the footer of sections, except for last section.
 constexpr CGFloat kFooterHeight = 16.;
 
@@ -263,7 +260,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
     return;
   }
   UIImageSymbolConfiguration* symbolConfiguration = [UIImageSymbolConfiguration
-      configurationWithPointSize:kButtonSize
+      configurationWithPointSize:kSymbolActionPointSize
                           weight:UIImageSymbolWeightRegular
                            scale:UIImageSymbolScaleMedium];
   UIAction* manageYourAccountAction = [UIAction
