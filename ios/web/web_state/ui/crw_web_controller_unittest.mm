@@ -32,7 +32,6 @@
 #import "ios/web/public/download/download_controller.h"
 #import "ios/web/public/download/download_task.h"
 #import "ios/web/public/navigation/referrer.h"
-#import "ios/web/public/session/crw_navigation_item_storage.h"
 #import "ios/web/public/test/fakes/crw_fake_web_view_content_view.h"
 #import "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/fakes/fake_download_controller_delegate.h"
