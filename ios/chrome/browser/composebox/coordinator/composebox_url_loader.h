@@ -6,11 +6,12 @@
 #define IOS_CHROME_BROWSER_COMPOSEBOX_COORDINATOR_COMPOSEBOX_URL_LOADER_H_
 
 class GURL;
+enum class WindowOpenDisposition;
 
 // Protocol for loading URLs in the composebox.
 @protocol ComposeboxURLLoader
 
-- (void)loadURL:(const GURL&)URL;
+- (void)loadURL:(const GURL&)URL disposition:(WindowOpenDisposition)disposition;
 
 @end
 

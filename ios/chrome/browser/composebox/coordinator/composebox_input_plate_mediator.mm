@@ -316,7 +316,7 @@ CreateInputDataFromAnnotatedPageContent(
   if (!_AIModeEnabled) {
     URL = net::AppendOrReplaceQueryParameter(URL, "udm", "24");
   }
-  [self.URLLoader loadURL:URL];
+  [self.URLLoader loadURL:URL disposition:WindowOpenDisposition::CURRENT_TAB];
 }
 
 - (void)setAIModeEnabled:(BOOL)enabled {
@@ -829,6 +829,7 @@ CreateInputDataFromAnnotatedPageContent(
 
 - (void)omniboxDidAcceptText:(const std::u16string&)text
               destinationURL:(const GURL&)destinationURL
+                 disposition:(WindowOpenDisposition)disposition
                 isSearchType:(BOOL)isSearchType {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if (isSearchType) {
@@ -837,7 +838,7 @@ CreateInputDataFromAnnotatedPageContent(
     }
     [self sendText:[NSString cr_fromString16:text]];
   } else {
-    [self.URLLoader loadURL:destinationURL];
+    [self.URLLoader loadURL:destinationURL disposition:disposition];
   }
 }
 

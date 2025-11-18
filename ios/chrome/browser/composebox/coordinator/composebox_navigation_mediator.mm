@@ -78,7 +78,8 @@
 
 #pragma mark - ComposeboxURLLoader
 
-- (void)loadURL:(const GURL&)URL {
+- (void)loadURL:(const GURL&)URL
+    disposition:(WindowOpenDisposition)disposition {
   if (_webState) {
     // Request an SRP without an input plate.
     GURL webStateURL = net::AppendOrReplaceQueryParameter(URL, "gsc", "2");
@@ -87,7 +88,7 @@
     webParams.transition_type = ui::PAGE_TRANSITION_GENERATED;
     _webState->GetNavigationManager()->LoadURLWithParams(webParams);
   } else {
-    [self loadURLInCurrentTab:URL];
+    [self loadURLInCurrentTab:URL disposition:disposition];
     [self dismissComposebox];
   }
 }
@@ -103,7 +104,8 @@
       !google_util::IsGoogleSearchUrl(URL)) {
     // Don't load within the embedded web view.
     decisionHandler(web::WebStatePolicyDecider::PolicyDecision::Cancel());
-    [self loadURLInCurrentTab:URL];
+    [self loadURLInCurrentTab:URL
+                  disposition:WindowOpenDisposition::CURRENT_TAB];
     [self dismissComposebox];
   } else {
     decisionHandler(web::WebStatePolicyDecider::PolicyDecision::Allow());
@@ -144,9 +146,11 @@
 }
 
 // Loads the URL in the underlying tab.
-- (void)loadURLInCurrentTab:(const GURL&)URL {
+- (void)loadURLInCurrentTab:(const GURL&)URL
+                disposition:(WindowOpenDisposition)disposition {
   UrlLoadParams params = UrlLoadParams::InCurrentTab(URL);
   params.web_params.transition_type = ui::PAGE_TRANSITION_GENERATED;
+  params.disposition = disposition;
   _urlLoadingBrowserAgent->Load(params);
 }
 

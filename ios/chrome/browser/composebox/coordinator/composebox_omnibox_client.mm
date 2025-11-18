@@ -320,6 +320,7 @@ void ComposeboxOmniboxClient::OnAutocompleteAccept(
   }
   [delegate_ omniboxDidAcceptText:match.fill_into_edit
                    destinationURL:destination_url
+                      disposition:disposition
                      isSearchType:AutocompleteMatch::IsSearchType(match.type)];
 }
 
