@@ -71,9 +71,9 @@ void OmniboxPopupPresenterBase::SetWidgetContentHeight(int content_height) {
     // The width is known, and is the basis for consistent web content rendering
     // so width is specified exactly; then only height adjusts dynamically.
     gfx::Rect widget_bounds = location_bar_view_->GetBoundsInScreen();
+    widget_bounds.Inset(
+        -RoundedOmniboxResultsFrame::GetLocationBarAlignmentInsets());
     if (ShouldShowLocationBarCutout()) {
-      widget_bounds.Inset(
-          -RoundedOmniboxResultsFrame::GetLocationBarAlignmentInsets());
       widget_bounds.set_height(widget_bounds.height() + content_height);
     } else {
       widget_bounds.set_height(
