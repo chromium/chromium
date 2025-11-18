@@ -763,12 +763,21 @@ PasswordsAndAutofillSubMenuModel::PasswordsAndAutofillSubMenuModel(
                                    vector_icons::kPasswordManagerIcon);
   SetElementIdentifierAt(GetIndexOfCommandId(IDC_SHOW_PASSWORD_MANAGER).value(),
                          AppMenuModel::kPasswordManagerMenuItem);
-  AddItemWithStringIdAndVectorIcon(this, IDC_SHOW_PAYMENT_METHODS,
-                                   IDS_PAYMENT_METHOD_SUBMENU_OPTION,
-                                   kCreditCardChromeRefreshIcon);
-  AddItemWithStringIdAndVectorIcon(this, IDC_SHOW_ADDRESSES,
-                                   IDS_ADDRESSES_AND_MORE_SUBMENU_OPTION,
-                                   vector_icons::kLocationOnChromeRefreshIcon);
+
+  AddItemWithStringIdAndVectorIcon(
+      this, IDC_SHOW_PAYMENT_METHODS,
+      base::FeatureList::IsEnabled(
+          autofill::features::kYourSavedInfoSettingsPage)
+          ? IDS_YOUR_SAVED_INFO_PAYMENTS_SUBMENU_OPTION
+          : IDS_PAYMENT_METHOD_SUBMENU_OPTION,
+      kCreditCardChromeRefreshIcon);
+  AddItemWithStringIdAndVectorIcon(
+      this, IDC_SHOW_ADDRESSES,
+      base::FeatureList::IsEnabled(
+          autofill::features::kYourSavedInfoSettingsPage)
+          ? IDS_YOUR_SAVED_INFO_CONTACT_INFO_SUBMENU_OPTION
+          : IDS_ADDRESSES_AND_MORE_SUBMENU_OPTION,
+      vector_icons::kLocationOnChromeRefreshIcon);
 
   if (base::FeatureList::IsEnabled(
           autofill::features::kYourSavedInfoSettingsPage)) {
