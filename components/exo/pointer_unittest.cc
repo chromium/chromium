@@ -2156,7 +2156,6 @@ TEST_F(PointerTest, SetCursorBitmapFromBuffer) {
 
   // Create a TestSharedImageInterface to create a mappable shared image.
   auto test_sii = base::MakeRefCounted<gpu::TestSharedImageInterface>();
-  test_sii->AlwaysBackMappableSharedImagesWithShMem();
   constexpr gfx::Size buffer_size(10, 10);
   const auto format = viz::SinglePlaneFormat::kRGBA_8888;
   // Setting some default usage in order to get a mappable shared image.
