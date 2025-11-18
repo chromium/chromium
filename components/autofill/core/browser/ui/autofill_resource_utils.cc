@@ -57,6 +57,10 @@ constexpr auto kOldDataResources = base::MakeFixedFlatMap<Suggestion::Icon,
     {Suggestion::Icon::kWork, IDR_ANDROID_AUTOFILL_WORK},
     {Suggestion::Icon::kAndroidMessages, IDR_ANDROID_AUTOFILL_ANDROID_MESSAGES},
     {Suggestion::Icon::kRecoveryPassword, IDR_ANDROID_PASSWORD_HISTORY},
+    {Suggestion::Icon::kIdCard, IDR_ANDROID_AUTOFILL_ID_CARD},
+    {Suggestion::Icon::kFlight, IDR_ANDROID_AUTOFILL_FLIGHT},
+    {Suggestion::Icon::kPersonCheck, IDR_ANDROID_AUTOFILL_PERSON_CHECK},
+    {Suggestion::Icon::kVehicle, IDR_ANDROID_AUTOFILL_VEHICLE},
 #endif  // BUILDFLAG(IS_ANDROID)
 });
 
@@ -83,6 +87,10 @@ constexpr auto kDataResources = base::MakeFixedFlatMap<Suggestion::Icon, int>({
     {Suggestion::Icon::kWork, IDR_ANDROID_AUTOFILL_WORK},
     {Suggestion::Icon::kAndroidMessages, IDR_ANDROID_AUTOFILL_ANDROID_MESSAGES},
     {Suggestion::Icon::kRecoveryPassword, IDR_ANDROID_PASSWORD_HISTORY},
+    {Suggestion::Icon::kIdCard, IDR_ANDROID_AUTOFILL_ID_CARD},
+    {Suggestion::Icon::kFlight, IDR_ANDROID_AUTOFILL_FLIGHT},
+    {Suggestion::Icon::kPersonCheck, IDR_ANDROID_AUTOFILL_PERSON_CHECK},
+    {Suggestion::Icon::kVehicle, IDR_ANDROID_AUTOFILL_VEHICLE},
 #endif  // BUILDFLAG(IS_ANDROID)
 });
 

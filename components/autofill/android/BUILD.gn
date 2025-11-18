@@ -184,8 +184,12 @@ android_resources("autofill_java_resources") {
 android_resources("autofill_browser_resources") {
   sources = [
     "browser/java/res/drawable/autofill_external_link.xml",
+    "browser/java/res/drawable/directions_car.xml",
+    "browser/java/res/drawable/flight.xml",
     "browser/java/res/drawable/home_logo.xml",
+    "browser/java/res/drawable/id_card.xml",
     "browser/java/res/drawable/location_on_logo.xml",
+    "browser/java/res/drawable/person_check.xml",
     "browser/java/res/drawable/work_logo.xml",
   ]
 }
