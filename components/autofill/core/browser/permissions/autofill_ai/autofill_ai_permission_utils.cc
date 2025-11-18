@@ -574,6 +574,21 @@ bool GetAutofillAiOptInStatus(const PrefService* prefs,
     return false;
   }
 
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillAiSetSyncablePrefFromAccountPref)) {
+    return prefs::IsAutofillAiSyncedOptInStatusEnabled(prefs);
+  }
+
+  return GetAutofillAiOptInStatusFromNonSyncingPref(prefs, identity_manager);
+}
+
+bool GetAutofillAiOptInStatusFromNonSyncingPref(
+    const PrefService* prefs,
+    const signin::IdentityManager* identity_manager) {
+  if (!prefs) {
+    return false;
+  }
+
   // Check the account-independent opt-in setting.
   if (const base::Value* value = syncer::GetAccountKeyedPrefValue(
           prefs, prefs::kAutofillAiOptInStatus, GetDefaultGaiaIdHash());
@@ -598,6 +613,13 @@ bool SetAutofillAiOptInStatus(AutofillClient& client,
     return false;
   }
 
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillAiSetSyncablePrefFromAccountPref)) {
+    prefs::SetAutofillAiSyncedOptInStatus(
+        client.GetPrefs(), opt_in_status == AutofillAiOptInStatus::kOptedIn);
+  }
+
+  // Still set the old pref in case of a rollback.
   const std::optional<GaiaIdHash> signed_in_hash =
       GetAccountGaiaIdHash(client.GetIdentityManager());
   if (signed_in_hash) {

@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
@@ -636,6 +637,40 @@ TEST_F(AutofillAiPermissionUtilsTest,
   client().GetPrefs()->SetBoolean(prefs::kAutofillProfileEnabled, false);
   EXPECT_TRUE(MayPerformAutofillAiAction(client(), AutofillAiAction::kOptIn,
                                          std::nullopt));
+}
+
+// Test that when the syncable pref feature is on, both prefs are updated.
+TEST_F(AutofillAiPermissionUtilsTest,
+       OptIn_SyncablePrefFeatureOn_UpdatesBothAccountKeyedAndSyncablePref) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      {features::kAutofillAiSetSyncablePrefFromAccountPref});
+  const base::Value::Dict& pref_dict =
+      client().GetPrefs()->GetDict(prefs::kAutofillAiOptInStatus);
+
+  // There is a single user account.
+  ASSERT_EQ(pref_dict.size(), 1u);
+  const std::string signed_in_hash = pref_dict.begin()->first;
+  // This guarantees that it is a signed in user.
+  ASSERT_FALSE(signed_in_hash.empty());
+
+  // Opt user out.
+  ASSERT_TRUE(
+      SetAutofillAiOptInStatus(client(), AutofillAiOptInStatus::kOptedOut));
+  EXPECT_FALSE(GetAutofillAiOptInStatus(client()));
+  EXPECT_FALSE(
+      prefs::IsAutofillAiSyncedOptInStatusEnabled(client().GetPrefs()));
+  EXPECT_FALSE(GetAutofillAiOptInStatusFromNonSyncingPref(
+      client().GetPrefs(), client().GetIdentityManager()));
+
+  // Opt user back in.
+  ASSERT_TRUE(
+      SetAutofillAiOptInStatus(client(), AutofillAiOptInStatus::kOptedIn));
+  EXPECT_TRUE(GetAutofillAiOptInStatus(client()));
+  EXPECT_TRUE(prefs::IsAutofillAiSyncedOptInStatusEnabled(client().GetPrefs()));
+  // Checks that the soon to be deprecated account keyed pref is also updated.
+  EXPECT_TRUE(GetAutofillAiOptInStatusFromNonSyncingPref(
+      client().GetPrefs(), client().GetIdentityManager()));
 }
 
 // Tests that changes to the opt-in status are recorded in metrics.

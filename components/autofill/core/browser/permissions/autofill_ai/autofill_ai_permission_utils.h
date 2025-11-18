@@ -89,6 +89,13 @@ bool MayPerformAutofillAiAction(
 [[nodiscard]] bool GetAutofillAiOptInStatus(
     const PrefService* prefs,
     const signin::IdentityManager* identity_manager);
+// Similar to `GetAutofillAiOptInStatus()` but always uses the pref that is
+// currently being deprecated (`prefs::kAutofillAiOptInStatus`). This method
+// should only be used at start-up time to migrate the old pref value to the new
+// one.
+[[nodiscard]] bool GetAutofillAiOptInStatusFromNonSyncingPref(
+    const PrefService* prefs,
+    const signin::IdentityManager* identity_manager);
 
 // Sets the AutofillAI opt-in status for the profile and account tied to
 // `client`. Returns `false` if the opt-in status may not be changed and `true`
