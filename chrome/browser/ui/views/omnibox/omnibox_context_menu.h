@@ -43,6 +43,7 @@ class OmniboxContextMenu : public views::MenuDelegate,
   void ExecuteCommand(int command_id, int event_flags) override;
   const gfx::FontList* GetLabelFontList(int command_id) const override;
   std::optional<SkColor> GetLabelColor(int command_id) const override;
+  int GetMaxWidthForMenu(views::MenuItemView* menu) override;
   bool IsCommandEnabled(int command_id) const override;
   bool IsCommandVisible(int command_id) const override;
 
