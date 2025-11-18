@@ -59,6 +59,13 @@ class CONTENT_EXPORT IdentityRequestAccount
     kAuto,
   };
 
+  enum class DisplayPriority {
+    // An account that was logged into before the request.
+    kRegular,
+    // An account that was newly logged into during the request.
+    kNew,
+  };
+
   IdentityRequestAccount(
       const std::string& id,
       const std::string& display_identifier,
@@ -117,6 +124,9 @@ class CONTENT_EXPORT IdentityRequestAccount
   // The last used timestamp, or nullopt if the account has not been used
   // before.
   std::optional<base::Time> last_used_timestamp;
+
+  // How the account should be prioritized in the UI.
+  DisplayPriority display_priority = DisplayPriority::kRegular;
 
   // Whether this account is filtered out or not. An account may be filtered out
   // due to login hint, domain hint, or account label.

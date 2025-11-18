@@ -987,11 +987,13 @@ void RequestService::MaybeShowAccountsDialog() {
         // If both have last used timestamp, prefer the latest.
         return *account1->last_used_timestamp > *account2->last_used_timestamp;
       });
-  // Copy the newly logged in accounts into `new_accounts_`, if there are any.
-  new_accounts_.clear();
+  // Set the display priority for newly logged in accounts.
   for (const auto& account : accounts_) {
     if (IsNewlyLoggedIn(*account)) {
-      new_accounts_.push_back(account);
+      account->display_priority = IdentityRequestAccount::DisplayPriority::kNew;
+    } else {
+      account->display_priority =
+          IdentityRequestAccount::DisplayPriority::kRegular;
     }
     if (account->is_filtered_out) {
       account->identity_provider->idp_metadata.has_filtered_out_account = true;
@@ -1081,7 +1083,6 @@ void RequestService::MaybeShowAccountsDialog() {
     if (dialog_type_ == DialogType::kAutoReauth) {
       accounts_ = {auto_reauthn_account};
       idp_data_for_display_ = {auto_reauthn_idp};
-      new_accounts_.clear();
       accounts_[0]->identity_provider = idp_data_for_display_[0];
     }
   }
@@ -1175,7 +1176,7 @@ void RequestService::MaybeShowAccountsDialog() {
   } else {
     if (!request_dialog_controller_->ShowAccountsDialog(
             CreateRpData(/*client_metadata_received=*/true),
-            idp_data_for_display_, accounts_, rp_mode_, new_accounts_,
+            idp_data_for_display_, accounts_, rp_mode_,
             base::BindOnce(&RequestService::OnAccountSelected,
                            weak_ptr_factory_.GetWeakPtr()),
             base::BindRepeating(&RequestService::LoginToIdP,
@@ -1274,12 +1275,14 @@ void RequestService::NotifyAutofillSuggestionAccepted(
   }
 
   // TODO(crbug.com/412640661): in order to skip the account chooser, we
-  // overload the use of "new_accounts" in the ShowAccountsDialog. We should
-  // probably refactor the API to support this use case, rather than overload
-  // an unintended use.
+  // set the display priority to `kNew`. We should probably refactor the API to
+  // support this use case, rather than overload an unintended use.
+  for (const auto& account : selected) {
+    account->display_priority = IdentityRequestAccount::DisplayPriority::kNew;
+  }
   if (!request_dialog_controller_->ShowAccountsDialog(
           CreateRpData(/*client_metadata_received=*/true),
-          idp_data_for_display_, {}, blink::mojom::RpMode::kActive, selected,
+          idp_data_for_display_, selected, blink::mojom::RpMode::kActive,
           base::BindOnce(&RequestService::OnAccountSelected,
                          weak_ptr_factory_.GetWeakPtr()),
           base::BindRepeating(&RequestService::LoginToIdP,
@@ -2012,7 +2015,6 @@ void RequestService::CleanUp() {
   mismatch_dialog_shown_time_ = std::nullopt;
   has_shown_mismatch_ = false;
   idp_accounts_.clear();
-  new_accounts_.clear();
   accounts_.clear();
   idp_login_infos_.clear();
   idp_infos_.clear();

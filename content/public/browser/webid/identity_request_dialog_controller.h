@@ -216,20 +216,19 @@ class CONTENT_EXPORT IdentityRequestDialogController {
       ShouldShowAccountsPassiveDialogCallback cb);
 
   // Shows and accounts selections for the given IDP. The `on_selected` callback
-  // is called with the selected account id or empty string otherwise.
-  // `new_accounts` are the accounts that were just logged in, which should
-  // be prioritized in the UI. The `accounts_display_callback` is called when
-  // the dialog is successfully shown so that the backend can record the time of
-  // display for metrics purposes. Returns true if the method successfully
-  // showed UI. When false, the caller should assume that the API invocation was
-  // terminated and the cleanup methods invoked. `rp_data` may be modified by
-  // this method, such as by setting the RP icon.
+  // is called with the selected account id or empty string otherwise. Accounts
+  // with `DisplayPriority::kNew` should be prioritized in the UI. The
+  // `accounts_display_callback` is called when the dialog is successfully shown
+  // so that the backend can record the time of display for metrics purposes.
+  // Returns true if the method successfully showed UI. When false, the caller
+  // should assume that the API invocation was terminated and the cleanup
+  // methods invoked. `rp_data` may be modified by this method, such as by
+  // setting the RP icon.
   virtual bool ShowAccountsDialog(
       RelyingPartyData rp_data,
       const std::vector<scoped_refptr<IdentityProviderData>>& idp_list,
       const std::vector<scoped_refptr<IdentityRequestAccount>>& accounts,
       blink::mojom::RpMode rp_mode,
-      const std::vector<scoped_refptr<IdentityRequestAccount>>& new_accounts,
       AccountSelectionCallback on_selected,
       LoginToIdPCallback on_add_account,
       DismissCallback dismiss_callback,

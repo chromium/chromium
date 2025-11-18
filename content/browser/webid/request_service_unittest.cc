@@ -637,7 +637,6 @@ class TestDialogController
       const std::vector<IdentityProviderDataPtr>& idp_list,
       const std::vector<IdentityRequestAccountPtr>& accounts,
       blink::mojom::RpMode rp_mode,
-      const std::vector<IdentityRequestAccountPtr>& new_accounts,
       IdentityRequestDialogController::AccountSelectionCallback on_selected,
       IdentityRequestDialogController::LoginToIdPCallback on_add_account,
       IdentityRequestDialogController::DismissCallback dismiss_callback,
@@ -652,7 +651,13 @@ class TestDialogController
     state_->sign_in_mode = SignInMode::kExplicit;
     state_->rp_context = idp_list[0]->rp_context;
 
-    state_->new_accounts = new_accounts;
+    state_->new_accounts.clear();
+    for (const auto& account : accounts) {
+      if (account->display_priority ==
+          IdentityRequestAccount::DisplayPriority::kNew) {
+        state_->new_accounts.push_back(account);
+      }
+    }
 
     state_->all_accounts_for_display = accounts;
     for (const auto& idp_data : idp_list) {
@@ -3771,7 +3776,6 @@ class DisableApiWhenDialogShownDialogController : public TestDialogController {
       const std::vector<IdentityProviderDataPtr>& idp_list,
       const std::vector<IdentityRequestAccountPtr>& accounts,
       blink::mojom::RpMode rp_mode,
-      const std::vector<IdentityRequestAccountPtr>& new_accounts,
       IdentityRequestDialogController::AccountSelectionCallback on_selected,
       IdentityRequestDialogController::LoginToIdPCallback on_add_account,
       IdentityRequestDialogController::DismissCallback dismiss_callback,
@@ -3783,9 +3787,9 @@ class DisableApiWhenDialogShownDialogController : public TestDialogController {
 
     // Call parent class method in order to store callback parameters.
     return TestDialogController::ShowAccountsDialog(
-        std::move(rp_data), idp_list, accounts, rp_mode, new_accounts,
-        std::move(on_selected), std::move(on_add_account),
-        std::move(dismiss_callback), std::move(accounts_displayed_callback));
+        std::move(rp_data), idp_list, accounts, rp_mode, std::move(on_selected),
+        std::move(on_add_account), std::move(dismiss_callback),
+        std::move(accounts_displayed_callback));
   }
 
  private:
@@ -7804,7 +7808,6 @@ class TestDialogControllerWithImmediateDismiss : public TestDialogController {
       const std::vector<IdentityProviderDataPtr>& idp_list,
       const std::vector<IdentityRequestAccountPtr>& accounts,
       blink::mojom::RpMode rp_mode,
-      const std::vector<IdentityRequestAccountPtr>& new_accounts,
       IdentityRequestDialogController::AccountSelectionCallback on_selected,
       IdentityRequestDialogController::LoginToIdPCallback on_add_account,
       IdentityRequestDialogController::DismissCallback dismiss_callback,
@@ -7888,6 +7891,13 @@ TEST_F(RequestServiceTest, UseOtherAccountAccountOrder) {
         // accounts, kAccountIdNicolas, kAccountIdPeter and kAccountIdZach,
         // in that order.
         test_network_request_manager_->accounts_list_ = kMultipleAccounts;
+        for (const auto& account :
+             test_network_request_manager_->accounts_list_) {
+          if (account->id == kAccountIdPeter) {
+            account->display_priority =
+                IdentityRequestAccount::DisplayPriority::kNew;
+          }
+        }
         federated_auth_request_impl_->OnIdpSigninStatusReceived(
             OriginFromString(kProviderUrlFull), true);
         return modal.get();
@@ -7939,6 +7949,14 @@ TEST_F(RequestServiceTest, UseOtherAccountMultipleNewAccounts) {
         // that order.
         test_network_request_manager_->accounts_list_ = {
             kSingleAccount[0], kTwoAccounts[0], kTwoAccounts[1]};
+        for (const auto& account :
+             test_network_request_manager_->accounts_list_) {
+          if (account->id == kTwoAccounts[0]->id ||
+              account->id == kTwoAccounts[1]->id) {
+            account->display_priority =
+                IdentityRequestAccount::DisplayPriority::kNew;
+          }
+        }
         federated_auth_request_impl_->OnIdpSigninStatusReceived(
             OriginFromString(kProviderUrlFull), true);
         return modal.get();

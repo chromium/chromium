@@ -99,7 +99,6 @@ bool IdentityDialogController::ShowAccountsDialog(
     const std::vector<IdentityProviderDataPtr>& identity_provider_data,
     const std::vector<IdentityRequestAccountPtr>& accounts,
     blink::mojom::RpMode rp_mode,
-    const std::vector<IdentityRequestAccountPtr>& new_accounts,
     AccountSelectionCallback on_selected,
     LoginToIdPCallback on_add_account,
     DismissCallback dismiss_callback,
@@ -121,6 +120,13 @@ bool IdentityDialogController::ShowAccountsDialog(
     rp_data.rp_icon = favicon_driver->GetFavicon();
   }
 
+  std::vector<IdentityRequestAccountPtr> new_accounts;
+  for (const auto& account : accounts) {
+    if (account->display_priority ==
+        content::IdentityRequestAccount::DisplayPriority::kNew) {
+      new_accounts.push_back(account);
+    }
+  }
   // Do not modify any member variables if the accounts dialog is not shown
   // because the caller may have destroyed this object.
   if (account_view_->Show(rp_data, identity_provider_data, accounts, rp_mode,

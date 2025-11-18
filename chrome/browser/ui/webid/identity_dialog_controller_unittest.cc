@@ -201,10 +201,8 @@ class IdentityDialogControllerTest : public ChromeRenderViewHostTestHarness {
     controller->ShowAccountsDialog(
         content::RelyingPartyData(kTopFrameEtldPlusOne,
                                   /*iframe_for_display=*/u""),
-        {idp_data}, accounts_, rp_mode,
-        /*new_accounts=*/std::vector<IdentityRequestAccountPtr>(),
-        /*on_selected=*/base::DoNothing(), /*on_add_account=*/base::DoNothing(),
-        std::move(dismiss_callback),
+        {idp_data}, accounts_, rp_mode, /*on_selected=*/base::DoNothing(),
+        /*on_add_account=*/base::DoNothing(), std::move(dismiss_callback),
         /*accounts_displayed_callback=*/base::DoNothing());
   }
 
@@ -525,8 +523,7 @@ TEST_F(IdentityDialogControllerTest,
             CreateMockOptimizationGuideDecider());
 
     auto mock_view = std::make_unique<MockAccountSelectionView>();
-    EXPECT_CALL(*mock_view, Show(_, _, _, _, _))
-        .WillOnce(testing::Return(true));
+    EXPECT_CALL(*mock_view, Show).WillOnce(testing::Return(true));
     controller->SetAccountSelectionViewForTesting(std::move(mock_view));
 
     EXPECT_CALL(*segmentation_platform_service_,
@@ -553,8 +550,7 @@ TEST_F(IdentityDialogControllerTest,
             CreateMockOptimizationGuideDecider());
 
     auto mock_view = std::make_unique<MockAccountSelectionView>();
-    EXPECT_CALL(*mock_view, Show(_, _, _, _, _))
-        .WillOnce(testing::Return(true));
+    EXPECT_CALL(*mock_view, Show).WillOnce(testing::Return(true));
     controller->SetAccountSelectionViewForTesting(std::move(mock_view));
 
     EXPECT_CALL(*segmentation_platform_service_,
@@ -581,8 +577,7 @@ TEST_F(IdentityDialogControllerTest,
             CreateMockOptimizationGuideDecider());
 
     auto mock_view = std::make_unique<MockAccountSelectionView>();
-    EXPECT_CALL(*mock_view, Show(_, _, _, _, _))
-        .WillOnce(testing::Return(true));
+    EXPECT_CALL(*mock_view, Show).WillOnce(testing::Return(true));
     controller->SetAccountSelectionViewForTesting(std::move(mock_view));
 
     EXPECT_CALL(*segmentation_platform_service_,
@@ -612,7 +607,7 @@ TEST_F(IdentityDialogControllerTest,
           CreateMockSegmentationPlatformService("FedCmUserLoud", run_loop),
           CreateMockOptimizationGuideDecider());
   auto mock_view = std::make_unique<MockAccountSelectionView>();
-  EXPECT_CALL(*mock_view, Show(_, _, _, _, _)).WillOnce(testing::Return(false));
+  EXPECT_CALL(*mock_view, Show).WillOnce(testing::Return(false));
   controller->SetAccountSelectionViewForTesting(std::move(mock_view));
   EXPECT_CALL(*segmentation_platform_service_,
               CollectTrainingData(_, _, _, _, _))
