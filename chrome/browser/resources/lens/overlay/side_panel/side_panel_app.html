@@ -397,6 +397,15 @@
     display: none;
   }
 
+  #composebox::part(carousel-container) {
+    opacity: 0;
+  }
+
+  #composebox[show-file-carousel_][expanding_]::part(carousel-container) {
+    opacity: 1;
+    transition: var(--icon-entry-transition);
+  }
+
   #composebox:not([expanding_])[show-file-carousel_]::part(cr-composebox-file-carousel) {
     pointer-events: none;
   }
@@ -482,6 +491,10 @@
   :host(:not([is-composebox-focused])) #composeboxContainer #composebox::part(dropdown),
   #composeboxContainer:has(#composebox:not([show-dropdown_])) #composebox::part(dropdown) {
     display: none;
+  }
+
+  #composebox::part(context-entrypoint) {
+    transition-delay: 0ms;
   }
 
   :host(:not([show-upload-progress])) #uploadProgressBarContainer,

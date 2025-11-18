@@ -16,6 +16,7 @@ import '//resources/cr_components/composebox/composebox.js';
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {ComposeboxElement} from '//resources/cr_components/composebox/composebox.js';
 import {HelpBubbleMixin} from '//resources/cr_components/help_bubble/help_bubble_mixin.js';
+import {GlowAnimationState} from '//resources/cr_components/search/constants.js';
 import type {SearchboxElement} from '//resources/cr_components/searchbox/searchbox.js';
 import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
@@ -408,10 +409,12 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
         () => this.feedbackToastDismissed = true);
     this.eventTracker_.add(this.$.composebox, 'composebox-focus-in', () => {
       this.$.feedbackToast.hide();
+      this.$.composebox.playGlowAnimation();
       this.isComposeboxFocused = true;
     });
     this.eventTracker_.add(this.$.composebox, 'composebox-focus-out', () => {
       this.isComposeboxFocused = false;
+      this.$.composebox.animationState = GlowAnimationState.NONE;
     });
 
     // Start listening to postMessages on the window.
