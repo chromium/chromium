@@ -284,7 +284,8 @@ Feature::Availability ScriptContext::GetAvailability(
                         switches::kExtensionTestApiOnWebPages) &&
                     context_type_ == mojom::ContextType::kWebPage);
     Feature::AvailabilityResult result =
-        allowed ? Feature::IS_AVAILABLE : Feature::MISSING_COMMAND_LINE_SWITCH;
+        allowed ? Feature::AvailabilityResult::kIsAvailable
+                : Feature::AvailabilityResult::kMissingCommandLineSwitch;
     return Feature::Availability(result,
                                  allowed ? "" : "Only allowed in tests");
   }
@@ -309,7 +310,7 @@ Feature::Availability ScriptContext::GetAvailability(
               .IsMessagingEnabledInUserScriptWorld(*blink_isolated_world_id_);
       if (!is_available) {
         return Feature::Availability(
-            Feature::INVALID_CONTEXT,
+            Feature::AvailabilityResult::kInvalidContext,
             "Messaging APIs are not enabled for this user script world.");
       }
     }

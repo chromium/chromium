@@ -30,7 +30,7 @@ namespace extensions {
 using NoIconVariantsManifestTest = ManifestTest;
 
 TEST_F(NoIconVariantsManifestTest, Warnings) {
-  // Test simple feature's AvailabilityResult::UNSUPPORTED_CHANNEL.
+  // Test simple feature's AvailabilityResult::kUnsupportedChannel.
   LoadAndExpectWarning("icon_variants.json",
                        "'icon_variants' requires canary channel or newer, "
                        "but this is the stable channel.");

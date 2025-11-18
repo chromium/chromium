@@ -218,7 +218,7 @@ Feature::Availability ExtensionAPI::IsAvailable(
     const ContextData& context_data) {
   const Feature* feature = GetFeatureDependency(full_name);
   if (!feature) {
-    return Feature::Availability(Feature::NOT_PRESENT,
+    return Feature::Availability(Feature::AvailabilityResult::kNotPresent,
                                  "Unknown feature: " + std::string(full_name));
   }
 
@@ -309,7 +309,8 @@ Feature::Availability ExtensionAPI::IsAliasAvailable(
     const ContextData& context_data) {
   const std::string& alias = feature.alias();
   if (alias.empty()) {
-    return Feature::Availability(Feature::NOT_PRESENT, "Alias not defined");
+    return Feature::Availability(Feature::AvailabilityResult::kNotPresent,
+                                 "Alias not defined");
   }
 
   auto provider = dependency_providers_.find("api");

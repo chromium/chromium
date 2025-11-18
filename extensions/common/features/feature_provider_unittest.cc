@@ -60,7 +60,7 @@ TEST(FeatureProviderTest, ManifestFeatureAvailability) {
       ExtensionBuilder("test extension").Build();
 
   const Feature* feature = provider->GetFeature("description");
-  EXPECT_EQ(Feature::IS_AVAILABLE,
+  EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             feature
                 ->IsAvailableToContext(extension.get(),
                                        mojom::ContextType::kUnspecified, GURL(),
@@ -70,7 +70,7 @@ TEST(FeatureProviderTest, ManifestFeatureAvailability) {
   // This is a generic extension, so an app-only feature isn't allowed.
   feature = provider->GetFeature("app.background");
   ASSERT_TRUE(feature);
-  EXPECT_EQ(Feature::INVALID_TYPE,
+  EXPECT_EQ(Feature::AvailabilityResult::kInvalidType,
             feature
                 ->IsAvailableToContext(extension.get(),
                                        mojom::ContextType::kUnspecified, GURL(),
@@ -80,7 +80,7 @@ TEST(FeatureProviderTest, ManifestFeatureAvailability) {
   // A feature not listed in the manifest isn't allowed.
   feature = provider->GetFeature("background");
   ASSERT_TRUE(feature);
-  EXPECT_EQ(Feature::NOT_PRESENT,
+  EXPECT_EQ(Feature::AvailabilityResult::kNotPresent,
             feature
                 ->IsAvailableToContext(extension.get(),
                                        mojom::ContextType::kUnspecified, GURL(),
@@ -118,7 +118,7 @@ TEST(FeatureProviderTest, PermissionFeatureAvailability) {
 
   // A permission requested in the manifest is available.
   const Feature* feature = provider->GetFeature("power");
-  EXPECT_EQ(Feature::IS_AVAILABLE,
+  EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             feature
                 ->IsAvailableToContext(app.get(),
                                        mojom::ContextType::kUnspecified, GURL(),
@@ -126,12 +126,12 @@ TEST(FeatureProviderTest, PermissionFeatureAvailability) {
                 .result());
 
   // A permission only available to allowlisted extensions returns availability
-  // NOT_FOUND_IN_ALLOWLIST.
+  // AvailabilityResult::kNotFoundInAllowlist.
   // bluetoothPrivate is unsupported in desktop-android build.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   feature = provider->GetFeature("bluetoothPrivate");
   ASSERT_TRUE(feature);
-  EXPECT_EQ(Feature::NOT_FOUND_IN_ALLOWLIST,
+  EXPECT_EQ(Feature::AvailabilityResult::kNotFoundInAllowlist,
             feature
                 ->IsAvailableToContext(app.get(),
                                        mojom::ContextType::kUnspecified, GURL(),
@@ -139,10 +139,11 @@ TEST(FeatureProviderTest, PermissionFeatureAvailability) {
                 .result());
 #endif
 
-  // A permission that isn't part of the manifest returns NOT_PRESENT.
+  // A permission that isn't part of the manifest returns
+  // AvailabilityResult::kNotPresent.
   feature = provider->GetFeature("unlimitedStorage");
   ASSERT_TRUE(feature);
-  EXPECT_EQ(Feature::NOT_PRESENT,
+  EXPECT_EQ(Feature::AvailabilityResult::kNotPresent,
             feature
                 ->IsAvailableToContext(app.get(),
                                        mojom::ContextType::kUnspecified, GURL(),

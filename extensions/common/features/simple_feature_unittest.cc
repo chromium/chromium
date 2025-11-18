@@ -96,7 +96,7 @@ class SimpleFeatureTest : public testing::Test {
                                    -1, Feature::UNSPECIFIED_PLATFORM,
                                    kUnspecifiedContextId)
             .result();
-    return availability_result == Feature::IS_AVAILABLE;
+    return availability_result == Feature::AvailabilityResult::kIsAvailable;
   }
 
  private:
@@ -107,25 +107,25 @@ TEST_F(SimpleFeatureTest, IsAvailableNullCase) {
   const auto tests = std::to_array<IsAvailableTestData>({
       {"", Manifest::Type::kUnknown, ManifestLocation::kInvalidLocation,
        Feature::UNSPECIFIED_PLATFORM, -1, kUnspecifiedContextId,
-       Feature::IS_AVAILABLE},
+       Feature::AvailabilityResult::kIsAvailable},
       {"random-extension", Manifest::Type::kUnknown,
        ManifestLocation::kInvalidLocation, Feature::UNSPECIFIED_PLATFORM, -1,
-       kUnspecifiedContextId, Feature::IS_AVAILABLE},
+       kUnspecifiedContextId, Feature::AvailabilityResult::kIsAvailable},
       {"", Manifest::Type::kLegacyPackagedApp,
        ManifestLocation::kInvalidLocation, Feature::UNSPECIFIED_PLATFORM, -1,
-       kUnspecifiedContextId, Feature::IS_AVAILABLE},
+       kUnspecifiedContextId, Feature::AvailabilityResult::kIsAvailable},
       {"", Manifest::Type::kUnknown, ManifestLocation::kInvalidLocation,
        Feature::UNSPECIFIED_PLATFORM, -1, kUnspecifiedContextId,
-       Feature::IS_AVAILABLE},
+       Feature::AvailabilityResult::kIsAvailable},
       {"", Manifest::Type::kUnknown, ManifestLocation::kComponent,
        Feature::UNSPECIFIED_PLATFORM, -1, kUnspecifiedContextId,
-       Feature::IS_AVAILABLE},
+       Feature::AvailabilityResult::kIsAvailable},
       {"", Manifest::Type::kUnknown, ManifestLocation::kInvalidLocation,
        Feature::CHROMEOS_PLATFORM, -1, kUnspecifiedContextId,
-       Feature::IS_AVAILABLE},
+       Feature::AvailabilityResult::kIsAvailable},
       {"", Manifest::Type::kUnknown, ManifestLocation::kInvalidLocation,
        Feature::UNSPECIFIED_PLATFORM, 25, kUnspecifiedContextId,
-       Feature::IS_AVAILABLE},
+       Feature::AvailabilityResult::kIsAvailable},
   });
 
   SimpleFeature feature;
@@ -147,14 +147,14 @@ TEST_F(SimpleFeatureTest, Allowlist) {
   SimpleFeature feature;
   feature.set_allowlist({kIdFoo.value().c_str(), kIdBar.value().c_str()});
 
-  EXPECT_EQ(Feature::IS_AVAILABLE,
+  EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             feature
                 .IsAvailableToManifest(kIdFoo, Manifest::Type::kUnknown,
                                        ManifestLocation::kInvalidLocation, -1,
                                        Feature::UNSPECIFIED_PLATFORM,
                                        kUnspecifiedContextId)
                 .result());
-  EXPECT_EQ(Feature::IS_AVAILABLE,
+  EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             feature
                 .IsAvailableToManifest(kIdBar, Manifest::Type::kUnknown,
                                        ManifestLocation::kInvalidLocation, -1,
@@ -162,14 +162,14 @@ TEST_F(SimpleFeatureTest, Allowlist) {
                                        kUnspecifiedContextId)
                 .result());
 
-  EXPECT_EQ(Feature::NOT_FOUND_IN_ALLOWLIST,
+  EXPECT_EQ(Feature::AvailabilityResult::kNotFoundInAllowlist,
             feature
                 .IsAvailableToManifest(kIdBaz, Manifest::Type::kUnknown,
                                        ManifestLocation::kInvalidLocation, -1,
                                        Feature::UNSPECIFIED_PLATFORM,
                                        kUnspecifiedContextId)
                 .result());
-  EXPECT_EQ(Feature::NOT_FOUND_IN_ALLOWLIST,
+  EXPECT_EQ(Feature::AvailabilityResult::kNotFoundInAllowlist,
             feature
                 .IsAvailableToManifest(
                     HashedExtensionId(), Manifest::Type::kUnknown,
@@ -178,7 +178,7 @@ TEST_F(SimpleFeatureTest, Allowlist) {
                 .result());
 
   feature.set_extension_types({Manifest::Type::kLegacyPackagedApp});
-  EXPECT_EQ(Feature::NOT_FOUND_IN_ALLOWLIST,
+  EXPECT_EQ(Feature::AvailabilityResult::kNotFoundInAllowlist,
             feature
                 .IsAvailableToManifest(
                     kIdBaz, Manifest::Type::kLegacyPackagedApp,
@@ -196,14 +196,14 @@ TEST_F(SimpleFeatureTest, HashedIdAllowlist) {
 
   feature.set_allowlist({kIdFooHashed.c_str()});
 
-  EXPECT_EQ(Feature::IS_AVAILABLE,
+  EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             feature
                 .IsAvailableToManifest(
                     HashedExtensionId(kIdFoo), Manifest::Type::kUnknown,
                     ManifestLocation::kInvalidLocation, -1,
                     Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
                 .result());
-  EXPECT_NE(Feature::IS_AVAILABLE,
+  EXPECT_NE(Feature::AvailabilityResult::kIsAvailable,
             feature
                 .IsAvailableToManifest(
                     HashedExtensionId(kIdFooHashed), Manifest::Type::kUnknown,
@@ -211,7 +211,7 @@ TEST_F(SimpleFeatureTest, HashedIdAllowlist) {
                     Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
                 .result());
   EXPECT_EQ(
-      Feature::NOT_FOUND_IN_ALLOWLIST,
+      Feature::AvailabilityResult::kNotFoundInAllowlist,
       feature
           .IsAvailableToManifest(
               HashedExtensionId("slightlytoooolongforanextensionid"),
@@ -219,7 +219,7 @@ TEST_F(SimpleFeatureTest, HashedIdAllowlist) {
               Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
           .result());
   EXPECT_EQ(
-      Feature::NOT_FOUND_IN_ALLOWLIST,
+      Feature::AvailabilityResult::kNotFoundInAllowlist,
       feature
           .IsAvailableToManifest(
               HashedExtensionId("tooshortforanextensionid"),
@@ -235,14 +235,14 @@ TEST_F(SimpleFeatureTest, Blocklist) {
   SimpleFeature feature;
   feature.set_blocklist({kIdFoo.value().c_str(), kIdBar.value().c_str()});
 
-  EXPECT_EQ(Feature::FOUND_IN_BLOCKLIST,
+  EXPECT_EQ(Feature::AvailabilityResult::kFoundInBlocklist,
             feature
                 .IsAvailableToManifest(kIdFoo, Manifest::Type::kUnknown,
                                        ManifestLocation::kInvalidLocation, -1,
                                        Feature::UNSPECIFIED_PLATFORM,
                                        kUnspecifiedContextId)
                 .result());
-  EXPECT_EQ(Feature::FOUND_IN_BLOCKLIST,
+  EXPECT_EQ(Feature::AvailabilityResult::kFoundInBlocklist,
             feature
                 .IsAvailableToManifest(kIdBar, Manifest::Type::kUnknown,
                                        ManifestLocation::kInvalidLocation, -1,
@@ -250,14 +250,14 @@ TEST_F(SimpleFeatureTest, Blocklist) {
                                        kUnspecifiedContextId)
                 .result());
 
-  EXPECT_EQ(Feature::IS_AVAILABLE,
+  EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             feature
                 .IsAvailableToManifest(kIdBaz, Manifest::Type::kUnknown,
                                        ManifestLocation::kInvalidLocation, -1,
                                        Feature::UNSPECIFIED_PLATFORM,
                                        kUnspecifiedContextId)
                 .result());
-  EXPECT_EQ(Feature::IS_AVAILABLE,
+  EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             feature
                 .IsAvailableToManifest(
                     HashedExtensionId(), Manifest::Type::kUnknown,
@@ -275,14 +275,14 @@ TEST_F(SimpleFeatureTest, HashedIdBlocklist) {
 
   feature.set_blocklist({kIdFooHashed.c_str()});
 
-  EXPECT_EQ(Feature::FOUND_IN_BLOCKLIST,
+  EXPECT_EQ(Feature::AvailabilityResult::kFoundInBlocklist,
             feature
                 .IsAvailableToManifest(
                     HashedExtensionId(kIdFoo), Manifest::Type::kUnknown,
                     ManifestLocation::kInvalidLocation, -1,
                     Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
                 .result());
-  EXPECT_NE(Feature::FOUND_IN_BLOCKLIST,
+  EXPECT_NE(Feature::AvailabilityResult::kFoundInBlocklist,
             feature
                 .IsAvailableToManifest(
                     HashedExtensionId(kIdFooHashed), Manifest::Type::kUnknown,
@@ -290,7 +290,7 @@ TEST_F(SimpleFeatureTest, HashedIdBlocklist) {
                     Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
                 .result());
   EXPECT_EQ(
-      Feature::IS_AVAILABLE,
+      Feature::AvailabilityResult::kIsAvailable,
       feature
           .IsAvailableToManifest(
               HashedExtensionId("slightlytoooolongforanextensionid"),
@@ -298,7 +298,7 @@ TEST_F(SimpleFeatureTest, HashedIdBlocklist) {
               Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
           .result());
   EXPECT_EQ(
-      Feature::IS_AVAILABLE,
+      Feature::AvailabilityResult::kIsAvailable,
       feature
           .IsAvailableToManifest(
               HashedExtensionId("tooshortforanextensionid"),
@@ -312,14 +312,14 @@ TEST_F(SimpleFeatureTest, PackageType) {
   feature.set_extension_types(
       {Manifest::Type::kExtension, Manifest::Type::kLegacyPackagedApp});
 
-  EXPECT_EQ(Feature::IS_AVAILABLE,
+  EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             feature
                 .IsAvailableToManifest(
                     HashedExtensionId(), Manifest::Type::kExtension,
                     ManifestLocation::kInvalidLocation, -1,
                     Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
                 .result());
-  EXPECT_EQ(Feature::IS_AVAILABLE,
+  EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             feature
                 .IsAvailableToManifest(
                     HashedExtensionId(), Manifest::Type::kLegacyPackagedApp,
@@ -327,14 +327,14 @@ TEST_F(SimpleFeatureTest, PackageType) {
                     Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
                 .result());
 
-  EXPECT_EQ(Feature::INVALID_TYPE,
+  EXPECT_EQ(Feature::AvailabilityResult::kInvalidType,
             feature
                 .IsAvailableToManifest(
                     HashedExtensionId(), Manifest::Type::kUnknown,
                     ManifestLocation::kInvalidLocation, -1,
                     Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
                 .result());
-  EXPECT_EQ(Feature::INVALID_TYPE,
+  EXPECT_EQ(Feature::AvailabilityResult::kInvalidType,
             feature
                 .IsAvailableToManifest(
                     HashedExtensionId(), Manifest::Type::kTheme,
@@ -366,7 +366,7 @@ TEST_F(SimpleFeatureTest, Context) {
   ASSERT_TRUE(extension.get());
 
   feature.set_allowlist({"monkey"});
-  EXPECT_EQ(Feature::NOT_FOUND_IN_ALLOWLIST,
+  EXPECT_EQ(Feature::AvailabilityResult::kNotFoundInAllowlist,
             feature
                 .IsAvailableToContext(extension.get(),
                                       mojom::ContextType::kPrivilegedExtension,
@@ -380,7 +380,7 @@ TEST_F(SimpleFeatureTest, Context) {
     Feature::Availability availability = feature.IsAvailableToContext(
         extension.get(), mojom::ContextType::kPrivilegedExtension,
         Feature::CHROMEOS_PLATFORM, kUnspecifiedContextId, TestContextData());
-    EXPECT_EQ(Feature::INVALID_TYPE, availability.result());
+    EXPECT_EQ(Feature::AvailabilityResult::kInvalidType, availability.result());
     EXPECT_EQ("'somefeature' is only allowed for themes, "
               "but this is a legacy packaged app.",
               availability.message());
@@ -393,7 +393,8 @@ TEST_F(SimpleFeatureTest, Context) {
     Feature::Availability availability = feature.IsAvailableToContext(
         extension.get(), mojom::ContextType::kPrivilegedExtension,
         Feature::CHROMEOS_PLATFORM, kUnspecifiedContextId, TestContextData());
-    EXPECT_EQ(Feature::INVALID_CONTEXT, availability.result());
+    EXPECT_EQ(Feature::AvailabilityResult::kInvalidContext,
+              availability.result());
     EXPECT_EQ("'somefeature' is only allowed to run in extension iframes and "
               "content scripts, but this is a privileged page",
               availability.message());
@@ -406,7 +407,8 @@ TEST_F(SimpleFeatureTest, Context) {
     Feature::Availability availability = feature.IsAvailableToContext(
         extension.get(), mojom::ContextType::kPrivilegedExtension,
         Feature::CHROMEOS_PLATFORM, kUnspecifiedContextId, TestContextData());
-    EXPECT_EQ(Feature::INVALID_CONTEXT, availability.result());
+    EXPECT_EQ(Feature::AvailabilityResult::kInvalidContext,
+              availability.result());
     EXPECT_EQ("'somefeature' is only allowed to run in extension iframes, "
               "content scripts, and web pages, but this is a privileged page",
               availability.message());
@@ -415,7 +417,7 @@ TEST_F(SimpleFeatureTest, Context) {
   {
     SimpleFeature other_feature;
     other_feature.set_location(SimpleFeature::COMPONENT_LOCATION);
-    EXPECT_EQ(Feature::INVALID_LOCATION,
+    EXPECT_EQ(Feature::AvailabilityResult::kInvalidLocation,
               other_feature
                   .IsAvailableToContext(
                       extension.get(), mojom::ContextType::kPrivilegedExtension,
@@ -425,7 +427,7 @@ TEST_F(SimpleFeatureTest, Context) {
   }
 
   feature.set_contexts({mojom::ContextType::kPrivilegedExtension});
-  EXPECT_EQ(Feature::INVALID_PLATFORM,
+  EXPECT_EQ(Feature::AvailabilityResult::kInvalidPlatform,
             feature
                 .IsAvailableToContext(extension.get(),
                                       mojom::ContextType::kPrivilegedExtension,
@@ -434,7 +436,7 @@ TEST_F(SimpleFeatureTest, Context) {
                 .result());
 
   feature.set_min_manifest_version(22);
-  EXPECT_EQ(Feature::INVALID_MIN_MANIFEST_VERSION,
+  EXPECT_EQ(Feature::AvailabilityResult::kInvalidMinManifestVersion,
             feature
                 .IsAvailableToContext(extension.get(),
                                       mojom::ContextType::kPrivilegedExtension,
@@ -444,7 +446,7 @@ TEST_F(SimpleFeatureTest, Context) {
   feature.set_min_manifest_version(21);
 
   feature.set_max_manifest_version(18);
-  EXPECT_EQ(Feature::INVALID_MAX_MANIFEST_VERSION,
+  EXPECT_EQ(Feature::AvailabilityResult::kInvalidMaxManifestVersion,
             feature
                 .IsAvailableToContext(extension.get(),
                                       mojom::ContextType::kPrivilegedExtension,
@@ -470,78 +472,78 @@ TEST_F(SimpleFeatureTest, SessionType) {
 
   const auto kTestData = std::to_array<FeatureSessionTypeTestData>({
       {"kiosk_feature in kiosk session",
-       Feature::IS_AVAILABLE,
+       Feature::AvailabilityResult::kIsAvailable,
        mojom::FeatureSessionType::kKiosk,
        {mojom::FeatureSessionType::kKiosk}},
       {"kiosk feature in regular session",
-       Feature::INVALID_SESSION_TYPE,
+       Feature::AvailabilityResult::kInvalidSessionType,
        mojom::FeatureSessionType::kRegular,
        {mojom::FeatureSessionType::kKiosk}},
       {"kiosk feature in unknown session",
-       Feature::INVALID_SESSION_TYPE,
+       Feature::AvailabilityResult::kInvalidSessionType,
        mojom::FeatureSessionType::kUnknown,
        {mojom::FeatureSessionType::kKiosk}},
       {"kiosk feature in initial session",
-       Feature::INVALID_SESSION_TYPE,
+       Feature::AvailabilityResult::kInvalidSessionType,
        mojom::FeatureSessionType::kInitial,
        {mojom::FeatureSessionType::kKiosk}},
       {"non kiosk feature in kiosk session",
-       Feature::INVALID_SESSION_TYPE,
+       Feature::AvailabilityResult::kInvalidSessionType,
        mojom::FeatureSessionType::kKiosk,
        {mojom::FeatureSessionType::kRegular}},
       {"non kiosk feature in regular session",
-       Feature::IS_AVAILABLE,
+       Feature::AvailabilityResult::kIsAvailable,
        mojom::FeatureSessionType::kRegular,
        {mojom::FeatureSessionType::kRegular}},
       {"non kiosk feature in unknown session",
-       Feature::INVALID_SESSION_TYPE,
+       Feature::AvailabilityResult::kInvalidSessionType,
        mojom::FeatureSessionType::kUnknown,
        {mojom::FeatureSessionType::kRegular}},
       {"non kiosk feature in initial session",
-       Feature::INVALID_SESSION_TYPE,
+       Feature::AvailabilityResult::kInvalidSessionType,
        mojom::FeatureSessionType::kInitial,
        {mojom::FeatureSessionType::kRegular}},
       {"session agnostic feature in kiosk session",
-       Feature::IS_AVAILABLE,
+       Feature::AvailabilityResult::kIsAvailable,
        mojom::FeatureSessionType::kKiosk,
        {}},
       {"session agnostic feature in auto-launched kiosk session",
-       Feature::IS_AVAILABLE,
+       Feature::AvailabilityResult::kIsAvailable,
        mojom::FeatureSessionType::kAutolaunchedKiosk,
        {}},
       {"session agnostic feature in regular session",
-       Feature::IS_AVAILABLE,
+       Feature::AvailabilityResult::kIsAvailable,
        mojom::FeatureSessionType::kRegular,
        {}},
       {"session agnostic feature in unknown session",
-       Feature::IS_AVAILABLE,
+       Feature::AvailabilityResult::kIsAvailable,
        mojom::FeatureSessionType::kUnknown,
        {}},
       {"feature with multiple session types",
-       Feature::IS_AVAILABLE,
+       Feature::AvailabilityResult::kIsAvailable,
        mojom::FeatureSessionType::kRegular,
        {mojom::FeatureSessionType::kRegular,
         mojom::FeatureSessionType::kKiosk}},
       {"feature with multiple session types in unknown session",
-       Feature::INVALID_SESSION_TYPE,
+       Feature::AvailabilityResult::kInvalidSessionType,
        mojom::FeatureSessionType::kUnknown,
        {mojom::FeatureSessionType::kRegular,
         mojom::FeatureSessionType::kKiosk}},
       {"feature with multiple session types in initial session",
-       Feature::INVALID_SESSION_TYPE,
+       Feature::AvailabilityResult::kInvalidSessionType,
        mojom::FeatureSessionType::kInitial,
        {mojom::FeatureSessionType::kRegular,
         mojom::FeatureSessionType::kKiosk}},
       {"feature with auto-launched kiosk session type in regular session",
-       Feature::INVALID_SESSION_TYPE,
+       Feature::AvailabilityResult::kInvalidSessionType,
        mojom::FeatureSessionType::kAutolaunchedKiosk,
        {mojom::FeatureSessionType::kRegular}},
       {"feature with auto-launched kiosk session type in auto-launched kiosk",
-       Feature::IS_AVAILABLE,
+       Feature::AvailabilityResult::kIsAvailable,
        mojom::FeatureSessionType::kAutolaunchedKiosk,
        {mojom::FeatureSessionType::kAutolaunchedKiosk}},
       {"feature with kiosk session type in auto-launched kiosk session",
-       Feature::IS_AVAILABLE,
+       Feature::AvailabilityResult::kIsAvailable,
        mojom::FeatureSessionType::kAutolaunchedKiosk,
        {mojom::FeatureSessionType::kKiosk}},
   });
@@ -632,14 +634,14 @@ TEST_F(SimpleFeatureTest, Location) {
 TEST_F(SimpleFeatureTest, Platform) {
   SimpleFeature feature;
   feature.set_platforms({Feature::CHROMEOS_PLATFORM});
-  EXPECT_EQ(Feature::IS_AVAILABLE,
+  EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             feature
                 .IsAvailableToManifest(
                     HashedExtensionId(), Manifest::Type::kUnknown,
                     ManifestLocation::kInvalidLocation, -1,
                     Feature::CHROMEOS_PLATFORM, kUnspecifiedContextId)
                 .result());
-  EXPECT_EQ(Feature::INVALID_PLATFORM,
+  EXPECT_EQ(Feature::AvailabilityResult::kInvalidPlatform,
             feature
                 .IsAvailableToManifest(
                     HashedExtensionId(), Manifest::Type::kUnknown,
@@ -652,14 +654,14 @@ TEST_F(SimpleFeatureTest, ManifestVersion) {
   SimpleFeature feature;
   feature.set_min_manifest_version(5);
 
-  EXPECT_EQ(Feature::INVALID_MIN_MANIFEST_VERSION,
+  EXPECT_EQ(Feature::AvailabilityResult::kInvalidMinManifestVersion,
             feature
                 .IsAvailableToManifest(
                     HashedExtensionId(), Manifest::Type::kUnknown,
                     ManifestLocation::kInvalidLocation, 0,
                     Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
                 .result());
-  EXPECT_EQ(Feature::INVALID_MIN_MANIFEST_VERSION,
+  EXPECT_EQ(Feature::AvailabilityResult::kInvalidMinManifestVersion,
             feature
                 .IsAvailableToManifest(
                     HashedExtensionId(), Manifest::Type::kUnknown,
@@ -667,14 +669,14 @@ TEST_F(SimpleFeatureTest, ManifestVersion) {
                     Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
                 .result());
 
-  EXPECT_EQ(Feature::IS_AVAILABLE,
+  EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             feature
                 .IsAvailableToManifest(
                     HashedExtensionId(), Manifest::Type::kUnknown,
                     ManifestLocation::kInvalidLocation, 5,
                     Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
                 .result());
-  EXPECT_EQ(Feature::IS_AVAILABLE,
+  EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             feature
                 .IsAvailableToManifest(
                     HashedExtensionId(), Manifest::Type::kUnknown,
@@ -684,21 +686,21 @@ TEST_F(SimpleFeatureTest, ManifestVersion) {
 
   feature.set_max_manifest_version(8);
 
-  EXPECT_EQ(Feature::INVALID_MAX_MANIFEST_VERSION,
+  EXPECT_EQ(Feature::AvailabilityResult::kInvalidMaxManifestVersion,
             feature
                 .IsAvailableToManifest(
                     HashedExtensionId(), Manifest::Type::kUnknown,
                     ManifestLocation::kInvalidLocation, 10,
                     Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
                 .result());
-  EXPECT_EQ(Feature::IS_AVAILABLE,
+  EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             feature
                 .IsAvailableToManifest(
                     HashedExtensionId(), Manifest::Type::kUnknown,
                     ManifestLocation::kInvalidLocation, 8,
                     Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
                 .result());
-  EXPECT_EQ(Feature::IS_AVAILABLE,
+  EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             feature
                 .IsAvailableToManifest(
                     HashedExtensionId(), Manifest::Type::kUnknown,
@@ -711,39 +713,39 @@ TEST_F(SimpleFeatureTest, CommandLineSwitch) {
   SimpleFeature feature;
   feature.set_command_line_switch("laser-beams");
   {
-    EXPECT_EQ(Feature::MISSING_COMMAND_LINE_SWITCH,
+    EXPECT_EQ(Feature::AvailabilityResult::kMissingCommandLineSwitch,
               feature.IsAvailableToEnvironment(kUnspecifiedContextId).result());
   }
   {
     base::test::ScopedCommandLine scoped_command_line;
     scoped_command_line.GetProcessCommandLine()->AppendSwitch("laser-beams");
-    EXPECT_EQ(Feature::MISSING_COMMAND_LINE_SWITCH,
+    EXPECT_EQ(Feature::AvailabilityResult::kMissingCommandLineSwitch,
               feature.IsAvailableToEnvironment(kUnspecifiedContextId).result());
   }
   {
     base::test::ScopedCommandLine scoped_command_line;
     scoped_command_line.GetProcessCommandLine()->AppendSwitch(
         "enable-laser-beams");
-    EXPECT_EQ(Feature::IS_AVAILABLE,
+    EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
               feature.IsAvailableToEnvironment(kUnspecifiedContextId).result());
   }
   {
     base::test::ScopedCommandLine scoped_command_line;
     scoped_command_line.GetProcessCommandLine()->AppendSwitch(
         "disable-laser-beams");
-    EXPECT_EQ(Feature::MISSING_COMMAND_LINE_SWITCH,
+    EXPECT_EQ(Feature::AvailabilityResult::kMissingCommandLineSwitch,
               feature.IsAvailableToEnvironment(kUnspecifiedContextId).result());
   }
   {
     base::test::ScopedCommandLine scoped_command_line;
     scoped_command_line.GetProcessCommandLine()->AppendSwitch("laser-beams=1");
-    EXPECT_EQ(Feature::IS_AVAILABLE,
+    EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
               feature.IsAvailableToEnvironment(kUnspecifiedContextId).result());
   }
   {
     base::test::ScopedCommandLine scoped_command_line;
     scoped_command_line.GetProcessCommandLine()->AppendSwitch("laser-beams=0");
-    EXPECT_EQ(Feature::MISSING_COMMAND_LINE_SWITCH,
+    EXPECT_EQ(Feature::AvailabilityResult::kMissingCommandLineSwitch,
               feature.IsAvailableToEnvironment(kUnspecifiedContextId).result());
   }
 }
@@ -759,13 +761,13 @@ TEST_F(SimpleFeatureTest, FeatureFlags) {
 
   SimpleFeature simple_feature_1;
   simple_feature_1.set_feature_flag(kStubFeature1.name);
-  EXPECT_EQ(Feature::IS_AVAILABLE,
+  EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             simple_feature_1.IsAvailableToEnvironment(kUnspecifiedContextId)
                 .result());
 
   SimpleFeature simple_feature_2;
   simple_feature_2.set_feature_flag(kStubFeature2.name);
-  EXPECT_EQ(Feature::FEATURE_FLAG_DISABLED,
+  EXPECT_EQ(Feature::AvailabilityResult::kFeatureFlagDisabled,
             simple_feature_2.IsAvailableToEnvironment(kUnspecifiedContextId)
                 .result());
 
@@ -773,10 +775,10 @@ TEST_F(SimpleFeatureTest, FeatureFlags) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({kStubFeature2} /* enabled_features */,
                                        {kStubFeature1} /* disabled_features */);
-  EXPECT_EQ(Feature::FEATURE_FLAG_DISABLED,
+  EXPECT_EQ(Feature::AvailabilityResult::kFeatureFlagDisabled,
             simple_feature_1.IsAvailableToEnvironment(kUnspecifiedContextId)
                 .result());
-  EXPECT_EQ(Feature::IS_AVAILABLE,
+  EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             simple_feature_2.IsAvailableToEnvironment(kUnspecifiedContextId)
                 .result());
 }
@@ -785,76 +787,76 @@ TEST_F(SimpleFeatureTest, FeatureFlags) {
 // compute feature availability.
 TEST_F(SimpleFeatureTest, SupportedChannel) {
   // stable supported.
-  EXPECT_EQ(Feature::IS_AVAILABLE,
+  EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             IsAvailableInChannel(Channel::STABLE, Channel::UNKNOWN));
-  EXPECT_EQ(Feature::IS_AVAILABLE,
+  EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             IsAvailableInChannel(Channel::STABLE, Channel::CANARY));
-  EXPECT_EQ(Feature::IS_AVAILABLE,
+  EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             IsAvailableInChannel(Channel::STABLE, Channel::DEV));
-  EXPECT_EQ(Feature::IS_AVAILABLE,
+  EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             IsAvailableInChannel(Channel::STABLE, Channel::BETA));
-  EXPECT_EQ(Feature::IS_AVAILABLE,
+  EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             IsAvailableInChannel(Channel::STABLE, Channel::STABLE));
 
   // beta supported.
-  EXPECT_EQ(Feature::IS_AVAILABLE,
+  EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             IsAvailableInChannel(Channel::BETA, Channel::UNKNOWN));
-  EXPECT_EQ(Feature::IS_AVAILABLE,
+  EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             IsAvailableInChannel(Channel::BETA, Channel::CANARY));
-  EXPECT_EQ(Feature::IS_AVAILABLE,
+  EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             IsAvailableInChannel(Channel::BETA, Channel::DEV));
-  EXPECT_EQ(Feature::IS_AVAILABLE,
+  EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             IsAvailableInChannel(Channel::BETA, Channel::BETA));
-  EXPECT_EQ(Feature::UNSUPPORTED_CHANNEL,
+  EXPECT_EQ(Feature::AvailabilityResult::kUnsupportedChannel,
             IsAvailableInChannel(Channel::BETA, Channel::STABLE));
 
   // dev supported.
-  EXPECT_EQ(Feature::IS_AVAILABLE,
+  EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             IsAvailableInChannel(Channel::DEV, Channel::UNKNOWN));
-  EXPECT_EQ(Feature::IS_AVAILABLE,
+  EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             IsAvailableInChannel(Channel::DEV, Channel::CANARY));
-  EXPECT_EQ(Feature::IS_AVAILABLE,
+  EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             IsAvailableInChannel(Channel::DEV, Channel::DEV));
-  EXPECT_EQ(Feature::UNSUPPORTED_CHANNEL,
+  EXPECT_EQ(Feature::AvailabilityResult::kUnsupportedChannel,
             IsAvailableInChannel(Channel::DEV, Channel::BETA));
-  EXPECT_EQ(Feature::UNSUPPORTED_CHANNEL,
+  EXPECT_EQ(Feature::AvailabilityResult::kUnsupportedChannel,
             IsAvailableInChannel(Channel::DEV, Channel::STABLE));
 
   // canary supported.
-  EXPECT_EQ(Feature::IS_AVAILABLE,
+  EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             IsAvailableInChannel(Channel::CANARY, Channel::UNKNOWN));
-  EXPECT_EQ(Feature::IS_AVAILABLE,
+  EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             IsAvailableInChannel(Channel::CANARY, Channel::CANARY));
-  EXPECT_EQ(Feature::UNSUPPORTED_CHANNEL,
+  EXPECT_EQ(Feature::AvailabilityResult::kUnsupportedChannel,
             IsAvailableInChannel(Channel::CANARY, Channel::DEV));
-  EXPECT_EQ(Feature::UNSUPPORTED_CHANNEL,
+  EXPECT_EQ(Feature::AvailabilityResult::kUnsupportedChannel,
             IsAvailableInChannel(Channel::CANARY, Channel::BETA));
-  EXPECT_EQ(Feature::UNSUPPORTED_CHANNEL,
+  EXPECT_EQ(Feature::AvailabilityResult::kUnsupportedChannel,
             IsAvailableInChannel(Channel::CANARY, Channel::STABLE));
 
   // trunk supported.
-  EXPECT_EQ(Feature::IS_AVAILABLE,
+  EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             IsAvailableInChannel(Channel::UNKNOWN, Channel::UNKNOWN));
-  EXPECT_EQ(Feature::UNSUPPORTED_CHANNEL,
+  EXPECT_EQ(Feature::AvailabilityResult::kUnsupportedChannel,
             IsAvailableInChannel(Channel::UNKNOWN, Channel::CANARY));
-  EXPECT_EQ(Feature::UNSUPPORTED_CHANNEL,
+  EXPECT_EQ(Feature::AvailabilityResult::kUnsupportedChannel,
             IsAvailableInChannel(Channel::UNKNOWN, Channel::DEV));
-  EXPECT_EQ(Feature::UNSUPPORTED_CHANNEL,
+  EXPECT_EQ(Feature::AvailabilityResult::kUnsupportedChannel,
             IsAvailableInChannel(Channel::UNKNOWN, Channel::BETA));
-  EXPECT_EQ(Feature::UNSUPPORTED_CHANNEL,
+  EXPECT_EQ(Feature::AvailabilityResult::kUnsupportedChannel,
             IsAvailableInChannel(Channel::UNKNOWN, Channel::STABLE));
 
   // Verify that a feature without a channel specified is available in all
   // channels.
-  EXPECT_EQ(Feature::IS_AVAILABLE,
+  EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             IsAvailableInChannel(std::nullopt, Channel::UNKNOWN));
-  EXPECT_EQ(Feature::IS_AVAILABLE,
+  EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             IsAvailableInChannel(std::nullopt, Channel::CANARY));
-  EXPECT_EQ(Feature::IS_AVAILABLE,
+  EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             IsAvailableInChannel(std::nullopt, Channel::DEV));
-  EXPECT_EQ(Feature::IS_AVAILABLE,
+  EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             IsAvailableInChannel(std::nullopt, Channel::BETA));
-  EXPECT_EQ(Feature::IS_AVAILABLE,
+  EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             IsAvailableInChannel(std::nullopt, Channel::STABLE));
 }
 
@@ -881,14 +883,14 @@ TEST_F(SimpleFeatureTest, SimpleFeatureAvailability) {
   const HashedExtensionId kId2(std::string(32, 'b'));
   {
     ScopedCurrentChannel current_channel(Channel::BETA);
-    EXPECT_EQ(Feature::IS_AVAILABLE,
+    EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
               feature
                   ->IsAvailableToManifest(kId1, Manifest::Type::kExtension,
                                           ManifestLocation::kInvalidLocation,
                                           Feature::UNSPECIFIED_PLATFORM,
                                           kUnspecifiedContextId)
                   .result());
-    EXPECT_EQ(Feature::IS_AVAILABLE,
+    EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
               feature
                   ->IsAvailableToManifest(
                       kId2, Manifest::Type::kLegacyPackagedApp,
@@ -898,14 +900,14 @@ TEST_F(SimpleFeatureTest, SimpleFeatureAvailability) {
   }
   {
     ScopedCurrentChannel current_channel(Channel::STABLE);
-    EXPECT_NE(Feature::IS_AVAILABLE,
+    EXPECT_NE(Feature::AvailabilityResult::kIsAvailable,
               feature
                   ->IsAvailableToManifest(kId1, Manifest::Type::kExtension,
                                           ManifestLocation::kInvalidLocation,
                                           Feature::UNSPECIFIED_PLATFORM,
                                           kUnspecifiedContextId)
                   .result());
-    EXPECT_NE(Feature::IS_AVAILABLE,
+    EXPECT_NE(Feature::AvailabilityResult::kIsAvailable,
               feature
                   ->IsAvailableToManifest(
                       kId2, Manifest::Type::kLegacyPackagedApp,
@@ -938,7 +940,7 @@ TEST_F(SimpleFeatureTest, ComplexFeatureAvailability) {
   Feature* feature = static_cast<Feature*>(complex_feature.get());
   {
     ScopedCurrentChannel current_channel(Channel::UNKNOWN);
-    EXPECT_EQ(Feature::IS_AVAILABLE,
+    EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
               feature
                   ->IsAvailableToManifest(kId1, Manifest::Type::kExtension,
                                           ManifestLocation::kInvalidLocation,
@@ -948,7 +950,7 @@ TEST_F(SimpleFeatureTest, ComplexFeatureAvailability) {
   }
   {
     ScopedCurrentChannel current_channel(Channel::BETA);
-    EXPECT_EQ(Feature::IS_AVAILABLE,
+    EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
               feature
                   ->IsAvailableToManifest(
                       kId2, Manifest::Type::kLegacyPackagedApp,
@@ -958,7 +960,7 @@ TEST_F(SimpleFeatureTest, ComplexFeatureAvailability) {
   }
   {
     ScopedCurrentChannel current_channel(Channel::BETA);
-    EXPECT_NE(Feature::IS_AVAILABLE,
+    EXPECT_NE(Feature::AvailabilityResult::kIsAvailable,
               feature
                   ->IsAvailableToManifest(kId1, Manifest::Type::kExtension,
                                           ManifestLocation::kInvalidLocation,
@@ -992,7 +994,7 @@ TEST(SimpleFeatureUnitTest, TestRequiresDelegatedAvailabilityCheck) {
   {
     // Test a feature that requires a delegated availability check but is
     // missing the check handler.
-    EXPECT_EQ(Feature::MISSING_DELEGATED_AVAILABILITY_CHECK,
+    EXPECT_EQ(Feature::AvailabilityResult::kMissingDelegatedAvailabilityCheck,
               feature
                   .IsAvailableToContext(
                       /*extension=*/nullptr, mojom::ContextType::kWebPage,
@@ -1005,7 +1007,7 @@ TEST(SimpleFeatureUnitTest, TestRequiresDelegatedAvailabilityCheck) {
   {
     // Test a feature that requires a delegated availability check and the check
     // is not successful.
-    EXPECT_EQ(Feature::FAILED_DELEGATED_AVAILABILITY_CHECK,
+    EXPECT_EQ(Feature::AvailabilityResult::kFailedDelegatedAvailabilityCheck,
               feature
                   .IsAvailableToContext(
                       /*extension=*/nullptr, mojom::ContextType::kWebPage,
@@ -1019,7 +1021,7 @@ TEST(SimpleFeatureUnitTest, TestRequiresDelegatedAvailabilityCheck) {
   {
     // Test a feature that requires a delegated availability check and the check
     // is successful.
-    EXPECT_EQ(Feature::IS_AVAILABLE,
+    EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
               feature
                   .IsAvailableToContext(
                       /*extension=*/nullptr, mojom::ContextType::kWebPage,
@@ -1034,7 +1036,7 @@ TEST(SimpleFeatureUnitTest, TestRequiresDelegatedAvailabilityCheck) {
     // would be successful, but actually isn't called since the environment
     // check fails.
     ScopedCurrentChannel current_channel(Channel::STABLE);
-    EXPECT_EQ(Feature::UNSUPPORTED_CHANNEL,
+    EXPECT_EQ(Feature::AvailabilityResult::kUnsupportedChannel,
               feature
                   .IsAvailableToContext(
                       /*extension=*/nullptr, mojom::ContextType::kWebPage,
@@ -1048,7 +1050,7 @@ TEST(SimpleFeatureUnitTest, TestRequiresDelegatedAvailabilityCheck) {
     // would be successful, then confirm the check is called because the
     // environment check passes.
     ScopedCurrentChannel current_channel(Channel::STABLE);
-    EXPECT_EQ(Feature::IS_AVAILABLE,
+    EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
               feature
                   .IsAvailableToContext(
                       /*extension=*/nullptr, mojom::ContextType::kWebPage,
@@ -1061,7 +1063,7 @@ TEST(SimpleFeatureUnitTest, TestRequiresDelegatedAvailabilityCheck) {
   {
     // Test a feature that requires a delegated availability check and the check
     // would be successful, but the URL is not contained in the matchlist.
-    EXPECT_EQ(Feature::INVALID_URL,
+    EXPECT_EQ(Feature::AvailabilityResult::kInvalidUrl,
               feature
                   .IsAvailableToContext(
                       /*extension=*/nullptr, mojom::ContextType::kWebPage,
@@ -1085,7 +1087,7 @@ TEST(SimpleFeatureUnitTest, TestChannelsWithoutExtension) {
   {
     // It should be available on trunk.
     ScopedCurrentChannel current_channel(Channel::UNKNOWN);
-    EXPECT_EQ(Feature::IS_AVAILABLE,
+    EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
               feature
                   .IsAvailableToContext(nullptr, mojom::ContextType::kWebUi,
                                         kAllowlistedUrl, kUnspecifiedContextId,
@@ -1095,7 +1097,7 @@ TEST(SimpleFeatureUnitTest, TestChannelsWithoutExtension) {
   {
     // It should be unavailable on beta.
     ScopedCurrentChannel current_channel(Channel::BETA);
-    EXPECT_EQ(Feature::UNSUPPORTED_CHANNEL,
+    EXPECT_EQ(Feature::AvailabilityResult::kUnsupportedChannel,
               feature
                   .IsAvailableToContext(nullptr, mojom::ContextType::kWebUi,
                                         kAllowlistedUrl, kUnspecifiedContextId,
@@ -1112,7 +1114,7 @@ TEST(SimpleFeatureUnitTest, TestAvailableToEnvironment) {
     feature.set_min_manifest_version(2);
     feature.set_extension_types({Manifest::Type::kExtension});
     feature.set_contexts({mojom::ContextType::kPrivilegedExtension});
-    EXPECT_EQ(Feature::IS_AVAILABLE,
+    EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
               feature.IsAvailableToEnvironment(kUnspecifiedContextId).result());
   }
 
@@ -1123,13 +1125,13 @@ TEST(SimpleFeatureUnitTest, TestAvailableToEnvironment) {
     {
       ScopedCurrentChannel current_channel(Channel::BETA);
       EXPECT_EQ(
-          Feature::IS_AVAILABLE,
+          Feature::AvailabilityResult::kIsAvailable,
           feature.IsAvailableToEnvironment(kUnspecifiedContextId).result());
     }
     {
       ScopedCurrentChannel current_channel(Channel::STABLE);
       EXPECT_EQ(
-          Feature::UNSUPPORTED_CHANNEL,
+          Feature::AvailabilityResult::kUnsupportedChannel,
           feature.IsAvailableToEnvironment(kUnspecifiedContextId).result());
     }
   }
@@ -1140,14 +1142,14 @@ TEST(SimpleFeatureUnitTest, TestAvailableToEnvironment) {
     SimpleFeature feature;
     feature.set_command_line_switch(kFakeSwitch);
 
-    EXPECT_EQ(Feature::MISSING_COMMAND_LINE_SWITCH,
+    EXPECT_EQ(Feature::AvailabilityResult::kMissingCommandLineSwitch,
               feature.IsAvailableToEnvironment(kUnspecifiedContextId).result());
     {
       base::test::ScopedCommandLine command_line;
       command_line.GetProcessCommandLine()->AppendSwitch(
           base::StringPrintf("enable-%s", kFakeSwitch));
       EXPECT_EQ(
-          Feature::IS_AVAILABLE,
+          Feature::AvailabilityResult::kIsAvailable,
           feature.IsAvailableToEnvironment(kUnspecifiedContextId).result());
     }
   }
@@ -1167,14 +1169,14 @@ TEST(SimpleFeatureUnitTest, TestExperimentalExtensionApisSwitch) {
 
   {
     base::test::ScopedCommandLine scoped_command_line;
-    EXPECT_EQ(Feature::UNSUPPORTED_CHANNEL, test_feature());
+    EXPECT_EQ(Feature::AvailabilityResult::kUnsupportedChannel, test_feature());
   }
 
   {
     base::test::ScopedCommandLine scoped_command_line;
     scoped_command_line.GetProcessCommandLine()->AppendSwitch(
         switches::kEnableExperimentalExtensionApis);
-    EXPECT_EQ(Feature::IS_AVAILABLE, test_feature());
+    EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable, test_feature());
   }
 }
 
@@ -1189,30 +1191,30 @@ TEST_F(SimpleFeatureTest, RestrictDeveloperModeAPIs) {
   // should be available if and only if the user is in dev mode.
   SetCurrentDeveloperMode(kContextId1, true);
   EXPECT_EQ(
-      Feature::IS_AVAILABLE,
+      Feature::AvailabilityResult::kIsAvailable,
       dev_mode_only_feature.IsAvailableToEnvironment(kContextId1).result());
-  EXPECT_EQ(Feature::IS_AVAILABLE,
+  EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             other_feature.IsAvailableToEnvironment(kContextId1).result());
 
   SetCurrentDeveloperMode(kContextId1, false);
   EXPECT_EQ(
-      Feature::REQUIRES_DEVELOPER_MODE,
+      Feature::AvailabilityResult::kRequiresDeveloperMode,
       dev_mode_only_feature.IsAvailableToEnvironment(kContextId1).result());
-  EXPECT_EQ(Feature::IS_AVAILABLE,
+  EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             other_feature.IsAvailableToEnvironment(kContextId1).result());
 
   SetCurrentDeveloperMode(kContextId2, true);
   EXPECT_EQ(
-      Feature::IS_AVAILABLE,
+      Feature::AvailabilityResult::kIsAvailable,
       dev_mode_only_feature.IsAvailableToEnvironment(kContextId2).result());
-  EXPECT_EQ(Feature::IS_AVAILABLE,
+  EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             other_feature.IsAvailableToEnvironment(kContextId2).result());
 
   SetCurrentDeveloperMode(kContextId2, false);
   EXPECT_EQ(
-      Feature::REQUIRES_DEVELOPER_MODE,
+      Feature::AvailabilityResult::kRequiresDeveloperMode,
       dev_mode_only_feature.IsAvailableToEnvironment(kContextId2).result());
-  EXPECT_EQ(Feature::IS_AVAILABLE,
+  EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             other_feature.IsAvailableToEnvironment(kContextId2).result());
 }
 
@@ -1230,7 +1232,7 @@ TEST(SimpleFeatureUnitTest, DisallowForServiceWorkers) {
   EXPECT_TRUE(BackgroundInfo::IsServiceWorkerBased(extension.get()));
 
   // Expect the feature is allowed, since the default is to allow.
-  EXPECT_EQ(Feature::IS_AVAILABLE,
+  EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             feature
                 .IsAvailableToContext(
                     extension.get(), mojom::ContextType::kPrivilegedExtension,
@@ -1242,7 +1244,7 @@ TEST(SimpleFeatureUnitTest, DisallowForServiceWorkers) {
 
   // Check with a different script file, which should return available,
   // since it's not a service worker context.
-  EXPECT_EQ(Feature::IS_AVAILABLE,
+  EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             feature
                 .IsAvailableToContext(extension.get(),
                                       mojom::ContextType::kPrivilegedExtension,
@@ -1253,7 +1255,7 @@ TEST(SimpleFeatureUnitTest, DisallowForServiceWorkers) {
 
   // Disable the feature for service workers. The feature should be disallowed.
   feature.set_disallow_for_service_workers(true);
-  EXPECT_EQ(Feature::INVALID_CONTEXT,
+  EXPECT_EQ(Feature::AvailabilityResult::kInvalidContext,
             feature
                 .IsAvailableToContext(
                     extension.get(), mojom::ContextType::kPrivilegedExtension,

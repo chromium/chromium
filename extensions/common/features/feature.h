@@ -46,25 +46,27 @@ class Feature {
 
   // Whether a feature is available in a given situation or not, and if not,
   // why not.
-  enum AvailabilityResult {
-    IS_AVAILABLE,
-    NOT_FOUND_IN_ALLOWLIST,
-    INVALID_URL,
-    INVALID_TYPE,
-    INVALID_CONTEXT,
-    INVALID_LOCATION,
-    INVALID_PLATFORM,
-    INVALID_MIN_MANIFEST_VERSION,
-    INVALID_MAX_MANIFEST_VERSION,
-    INVALID_SESSION_TYPE,
-    NOT_PRESENT,
-    UNSUPPORTED_CHANNEL,
-    FOUND_IN_BLOCKLIST,
-    MISSING_COMMAND_LINE_SWITCH,
-    FEATURE_FLAG_DISABLED,
-    REQUIRES_DEVELOPER_MODE,
-    MISSING_DELEGATED_AVAILABILITY_CHECK,
-    FAILED_DELEGATED_AVAILABILITY_CHECK,
+  // Note: do not reorder or remove enum values because the order impacts
+  // result_as_int32() used by V8ContextNativeHandler::GetAvailability().
+  enum class AvailabilityResult {
+    kIsAvailable,
+    kNotFoundInAllowlist,
+    kInvalidUrl,
+    kInvalidType,
+    kInvalidContext,
+    kInvalidLocation,
+    kInvalidPlatform,
+    kInvalidMinManifestVersion,
+    kInvalidMaxManifestVersion,
+    kInvalidSessionType,
+    kNotPresent,
+    kUnsupportedChannel,
+    kFoundInBlocklist,
+    kMissingCommandLineSwitch,
+    kFeatureFlagDisabled,
+    kRequiresDeveloperMode,
+    kMissingDelegatedAvailabilityCheck,
+    kFailedDelegatedAvailabilityCheck
   };
 
   // Shorthand for delegated availability check handler function signature. The
@@ -92,7 +94,11 @@ class Feature {
         : result_(result), message_(message) {}
 
     AvailabilityResult result() const { return result_; }
-    bool is_available() const { return result_ == IS_AVAILABLE; }
+    // Used by V8ContextNativeHandler::GetAvailability().
+    int32_t result_as_int32() const { return static_cast<int32_t>(result_); }
+    bool is_available() const {
+      return result_ == AvailabilityResult::kIsAvailable;
+    }
     const std::string& message() const { return message_; }
 
    private:

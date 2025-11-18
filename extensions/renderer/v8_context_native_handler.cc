@@ -58,7 +58,7 @@ void V8ContextNativeHandler::GetAvailability(
            v8::String::NewFromUtf8(isolate, "result",
                                    v8::NewStringType::kInternalized)
                .ToLocalChecked(),
-           v8::Integer::New(isolate, availability.result()))
+           v8::Integer::New(isolate, availability.result_as_int32()))
       .ToChecked();
   args.GetReturnValue().Set(ret);
 }
