@@ -388,6 +388,7 @@ if (_is_default_toolchain) {
       "//chrome/browser/settings:search_java",
       "//components/credential_management/android:java",
       "//components/enterprise/client_certificates/android:browser_binding_java",
+      "//components/media_router/browser/android:cast_options_provider_java",
       "//components/sync_preferences/cross_device_pref_tracker/android:java",
       "//components/tabs/public/android:java",
       "//components/visited_url_ranking/public:public_java",
@@ -2169,7 +2170,6 @@ if (_is_default_toolchain) {
       "//chrome/browser/version:java",
       "//components/crash/android:java",
       "//components/embedder_support/android:application_java",
-      "//components/media_router/browser/android:cast_options_provider_java",
       "//components/minidump_uploader:minidump_uploader_java",
       "//components/module_installer/android:module_installer_java",
       "//third_party/android_deps:playcore_java",
@@ -2192,7 +2192,6 @@ if (_is_default_toolchain) {
       # Deps to pull services into base module.
       # TODO(crbug.com/40148088): Consider moving these to the chrome module to
       # reduce base dex size.
-      "$google_play_services_package:google_play_services_cast_framework_java",
       "//base:service_loader_java",
       "//chrome/android/modules/on_demand:provider_java",
       "//components/background_task_scheduler:background_task_scheduler_java",

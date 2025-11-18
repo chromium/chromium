@@ -11,13 +11,16 @@
   <dist:module dist:onDemand="false">  # DIFF-ANCHOR: 2805007f
     <dist:fusing dist:include="true"/>
   </dist:module>  # DIFF-ANCHOR: 2805007f
-  <queries>  # DIFF-ANCHOR: ac70d2a8
+  <queries>  # DIFF-ANCHOR: 2a6d7800
     <intent>  # DIFF-ANCHOR: dd112d1c
       <action android:name="android.intent.action.VIEW"/>
       <category android:name="android.intent.category.BROWSABLE"/>
       <data android:scheme="https"/>
     </intent>  # DIFF-ANCHOR: dd112d1c
-  </queries>  # DIFF-ANCHOR: ac70d2a8
+    <package android:name="com.google.android.gms.policy_cast_dynamite"/>
+  </queries>  # DIFF-ANCHOR: 2a6d7800
+  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
   <uses-permission android:name="android.permission.USE_BIOMETRIC"/>
   <uses-permission android:name="android.permission.USE_FINGERPRINT"/>
   <uses-sdk android:minSdkVersion="29" android:targetSdkVersion="36"/>
@@ -721,6 +724,10 @@
       </intent-filter>  # DIFF-ANCHOR: 1ebe78e9
       <meta-data android:name="android.appwidget.provider" android:resource="@xml/bookmark_widget_info"/>
     </receiver>  # DIFF-ANCHOR: 58d39a0f
+    <receiver  # DIFF-ANCHOR: 0a6f8fa5
+        android:name="com.google.android.gms.cast.framework.media.MediaIntentReceiver"
+        android:exported="false">
+    </receiver>  # DIFF-ANCHOR: 0a6f8fa5
     <receiver  # DIFF-ANCHOR: 68e22783
         android:name="org.chromium.chrome.browser.announcement.AnnouncementNotificationManager$Receiver"
         android:exported="false">
