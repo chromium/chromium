@@ -78,7 +78,8 @@ a {
   color: var(--heading-color);
 }
 
-#connectors-section-title {
+#connectors-section-title,
+#profile-reporting-title {
   font-size: 1.4em;
   font-weight: normal;
   line-height: 1.25em;

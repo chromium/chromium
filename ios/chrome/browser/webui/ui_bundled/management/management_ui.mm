@@ -8,6 +8,7 @@
 
 #import "base/strings/strcat.h"
 #import "base/strings/utf_string_conversions.h"
+#import "components/enterprise/browser/reporting/common_pref_names.h"
 #import "components/enterprise/connectors/core/features.h"
 #import "components/grit/management_resources.h"
 #import "components/grit/management_resources_map.h"
@@ -81,6 +82,13 @@ std::optional<std::u16string> GetManagementMessage(web::WebUIIOS* web_ui) {
   }
 
   return std::nullopt;
+}
+
+// Whether the Profile Reporting section should be displayed. This section is
+// visible if reporting is enabled at the profile level.
+bool IsProfileReportingEnabled(PrefService* profile_prefs) {
+  return profile_prefs->GetBoolean(
+      enterprise_reporting::kCloudProfileReportingEnabled);
 }
 
 // Whether the "Page is visited" event subsection under Chrome Enteprise
@@ -169,8 +177,26 @@ web::WebUIIOSDataSource* CreateManagementUIHTMLSource(web::WebUIIOS* web_ui) {
   source->AddLocalizedString("learnMore",
                              IDS_IOS_MANAGEMENT_UI_LEARN_MORE_LINK);
 
-  // Connectors Section
+  // Reporting Section
   ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui)->GetOriginalProfile();
+  source->AddLocalizedString("browserReporting",
+                             IDS_MANAGEMENT_BROWSER_REPORTING);
+  source->AddBoolean("profileReportingEnabled",
+                     IsProfileReportingEnabled(profile->GetPrefs()));
+  source->AddLocalizedString("profileReportingExplanation",
+                             IDS_MANAGEMENT_PROFILE_REPORTING_EXPLANATION);
+  source->AddLocalizedString("profileReportingOverview",
+                             IDS_MANAGEMENT_PROFILE_REPORTING_OVERVIEW);
+  source->AddLocalizedString("profileReportingUsername",
+                             IDS_MANAGEMENT_PROFILE_REPORTING_USERNAME);
+  source->AddLocalizedString("profileReportingBrowser",
+                             IDS_MANAGEMENT_PROFILE_REPORTING_BROWSER);
+  source->AddLocalizedString("profileReportingPolicy",
+                             IDS_MANAGEMENT_PROFILE_REPORTING_POLICY);
+  source->AddLocalizedString("profileReportingLearnMore",
+                             IDS_MANAGEMENT_PROFILE_REPORTING_LEARN_MORE);
+
+  // Connectors Section
   auto* connectors_service =
       enterprise_connectors::ConnectorsServiceFactory::GetForProfile(profile);
   CHECK(connectors_service);

@@ -64,6 +64,7 @@ source_set("coordinator") {
     "//components/crash/core/common:reporter_running_ios",
     "//components/download/public/background_service:public",
     "//components/download/resources/download_internals:resources",
+    "//components/enterprise",
     "//components/enterprise/connectors/core",
     "//components/local_state",
     "//components/metrics_services_manager",

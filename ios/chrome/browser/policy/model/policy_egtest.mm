@@ -561,6 +561,33 @@ constexpr char kEnrollmentToken[] = "fake-enrollment-token";
                                     base::SysNSStringToUTF16(kDomain1))];
 }
 
+// Tests the chrome://management page when reporting is disabled.
+- (void)testManagementPageManagedWithoutReporting {
+  // Open the management page.
+  [ChromeEarlGrey loadURL:GURL(kChromeUIManagementURL)];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:l10n_util::GetStringUTF8(
+                                        IDS_MANAGEMENT_BROWSER_REPORTING)];
+
+  // Expect the profile reporting section to be invisible.
+  GREYAssertFalse(
+      [ChromeEarlGrey webStateContainsElement:VisibleElementSelector(
+                                                  @"profile-reporting-info")],
+      @"Profile reporting section is visible.");
+}
+
+// Tests the chrome://management page when profile reporting is enabled.
+- (void)testManagementPageManagedWithProfileReporting {
+  // Set up profile reporting.
+  SetPolicy(true, policy::key::kCloudProfileReportingEnabled);
+
+  // Open the management page and check if the content is expected.
+  [ChromeEarlGrey loadURL:GURL(kChromeUIManagementURL)];
+  [ChromeEarlGrey waitForWebStateContainingText:
+                      l10n_util::GetStringUTF8(
+                          IDS_MANAGEMENT_PROFILE_REPORTING_EXPLANATION)];
+}
+
 // Tests the chrome://management page when there are machine level policies and
 // user level policies from the same domain.
 - (void)testManagementPageManagedWithCBCMAndUserPolicyDifferentDomains {
