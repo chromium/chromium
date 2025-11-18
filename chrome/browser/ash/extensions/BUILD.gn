@@ -65,6 +65,7 @@ static_library("extensions") {
     "//chrome/browser/ash/login/demo_mode",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/extensions:external_loader",
     "//chrome/browser/extensions/api/input_ime",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/chromeos:app_icon_resources",

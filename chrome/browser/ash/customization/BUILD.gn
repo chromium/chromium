@@ -26,6 +26,7 @@ static_library("customization") {
     "//chrome/browser/ash/extensions",
     "//chrome/browser/ash/login/users/avatar",
     "//chrome/browser/ash/net",
+    "//chrome/browser/extensions:external_loader",
     "//chrome/browser/profiles",
     "//chrome/common",
     "//chromeos/ash/components/system",

@@ -24,6 +24,19 @@ assert(enable_extensions_core)
 assert(enable_supervised_users)
 assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
 
+source_set("external_loader") {
+  sources = [
+    "external_loader.cc",
+    "external_loader.h",
+  ]
+  deps = [
+    "//base",
+    "//content/public/browser",
+    "//extensions/browser",
+    "//extensions/buildflags",
+  ]
+}
+
 source_set("extensions") {
   # TODO(https://crbug.com/356905053): When files support being built on
   # desktop android, move them here, outside the if (enable_extensions) block.
@@ -350,8 +363,6 @@ source_set("extensions") {
     "external_install_manager.h",
     "external_install_manager_factory.cc",
     "external_install_manager_factory.h",
-    "external_loader.cc",
-    "external_loader.h",
     "external_policy_loader.cc",
     "external_policy_loader.h",
     "external_pref_loader.cc",
@@ -513,6 +524,7 @@ source_set("extensions") {
     "//chrome/browser/devtools",
     "//chrome/browser/download",
     "//chrome/browser/extensions:cws_item_service_proto",
+    "//chrome/browser/extensions:external_loader",
     "//chrome/browser/extensions/api:api_registration",
     "//chrome/browser/favicon",
     "//chrome/browser/google",
@@ -1128,6 +1140,7 @@ source_set("extensions") {
 
       deps += [
         "//chrome/browser/ash/certificate_provider",
+        "//chrome/browser/ash/policy/core",
         "//chrome/browser/chromeos/extensions/desk_api",
         "//chrome/browser/chromeos/extensions/external_loader",
         "//chrome/browser/chromeos/extensions/login_screen/login_state",
@@ -1205,7 +1218,6 @@ source_set("extensions") {
         "//chrome/browser/chromeos/extensions/contact_center_insights",
         "//chrome/browser/chromeos/extensions/component_extension_content_settings",
         "//chrome/browser/chromeos/extensions/desk_api",
-        "//chrome/browser/chromeos/extensions/external_loader",
         "//chrome/browser/chromeos/extensions/file_system_provider",
         "//chrome/browser/chromeos/extensions/login_screen/login/cleanup",
       ]
@@ -1607,6 +1619,7 @@ static_library("test_support") {
     "//chrome/browser",
     "//chrome/browser:test_support",
     "//chrome/browser/extensions",
+    "//chrome/browser/extensions:external_loader",
     "//chrome/browser/tab_group_sync:factories",
     "//chrome/browser/ui/toolbar",
     "//components/crx_file",
