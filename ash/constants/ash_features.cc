@@ -1154,13 +1154,6 @@ BASE_FEATURE(kInstantTethering, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kInternalServerSideSpeechRecognition,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Feature overrides the `InternalServerSideSpeechRecognition` that is exposed
-// via chrome://flags. This flag is used as a kill switch to disable the feature
-// in case that the feature introduced unexpected server load.
-// TODO(b/265957535) Clean up this flag after launch.
-BASE_FEATURE(kInternalServerSideSpeechRecognitionControl,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables or disables the internal server side speech recognition on ChromeOS.
 // The supported locales for this feature are specified using the locales
 // filter in finch config.
@@ -2914,22 +2907,13 @@ bool IsInternalServerSideSpeechRecognitionEnabled() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // TODO(b/245614967): Once ready, enable this feature under
   // kProjectorBleedingEdgeExperience flag as well.
-  return IsInternalServerSideSpeechRecognitionControlEnabled() &&
-         (ShouldForceEnableServerSideSpeechRecognition() ||
+  return (ShouldForceEnableServerSideSpeechRecognition() ||
           base::FeatureList::IsEnabled(kInternalServerSideSpeechRecognition));
 #else
   return false;
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
-bool IsInternalServerSideSpeechRecognitionControlEnabled() {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return base::FeatureList::IsEnabled(
-      kInternalServerSideSpeechRecognitionControl);
-#else
-  return false;
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-}
 
 bool IsInternalServerSideSpeechRecognitionEnabledByFinch() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

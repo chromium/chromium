@@ -13637,11 +13637,14 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
                                        const FeatureEntry& entry) {
 #if BUILDFLAG(IS_CHROMEOS)
   version_info::Channel channel = chrome::GetChannel();
-  // enable-projector-server-side-speech-recognition is only available if
-  // the InternalServerSideSpeechRecognitionControl flag is enabled as well.
+  // enable-projector-server-side-speech-recognition is only available in Chrome
+  // branded builds.
   if (!strcmp(kProjectorServerSideSpeechRecognition, entry.internal_name)) {
-    return !ash::features::
-        IsInternalServerSideSpeechRecognitionControlEnabled();
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    return false;
+#else
+    return true;
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   }
 
   // enable-ui-devtools is only available on for non Stable channels.
