@@ -242,6 +242,7 @@ class OverflowMenuMediatorTest : public PlatformTest {
     // Explicitly disconnect the mediator so there won't be any WebStateList
     // observers when browser_ gets destroyed.
     [mediator_ disconnect];
+    [orderer_ disconnect];
     overlay_presenter_->SetPresentationContext(nullptr);
     overlay_presenter_ = nullptr;
     browser_.reset();
@@ -255,6 +256,7 @@ class OverflowMenuMediatorTest : public PlatformTest {
   OverflowMenuMediator* CreateMediator(BOOL incognito) {
     orderer_ = [[OverflowMenuOrderer alloc] initWithIsIncognito:incognito];
     orderer_.model = model_;
+    orderer_.localStatePrefs = localStatePrefs_.get();
 
     mediator_ = [[OverflowMenuMediator alloc] init];
     mediator_.incognito = incognito;
@@ -295,6 +297,12 @@ class OverflowMenuMediatorTest : public PlatformTest {
         prefs::kOverflowMenuDestinationsOrder);
     localStatePrefs_->registry()->RegisterDictionaryPref(
         prefs::kOverflowMenuActionsOrder);
+    localStatePrefs_->registry()->RegisterBooleanPref(
+        prefs::kOverflowMenuDestinationUsageHistoryEnabled, true);
+    localStatePrefs_->registry()->RegisterListPref(
+        prefs::kOverflowMenuHiddenDestinations);
+    localStatePrefs_->registry()->RegisterDictionaryPref(
+        prefs::kOverflowMenuDestinationBadgeData);
   }
 
   void SetUpBookmarks() {

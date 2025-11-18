@@ -763,19 +763,42 @@ TEST_F(OverflowMenuOrdererTest, MovesBadgedDestinationsWithNoUsageHistory) {
             all_destinations[6]);
 }
 
-// Tests that the action ranking pref gets populated after sorting once.
-TEST_F(OverflowMenuOrdererTest, StoresInitialActionRanking) {
+// Tests that the initial order for users who have not customized their actions
+// matches the default action order.
+TEST_F(OverflowMenuOrdererTest,
+       ConfirmsInitialActionRankingMatchesDefaultOrder) {
   InitializeOverflowMenuOrderer(NO);
+
+  // Set the default action order.
   ActionRanking sample_actions = SampleActions();
   action_provider_.basePageActions = sample_actions;
 
-  [overflow_menu_orderer_ updatePageActions];
+  // Verify kOverflowMenuActionsOrder is empty.
+  const base::Value::Dict& initial_ranking =
+      prefs_->GetDict(prefs::kOverflowMenuActionsOrder);
+  EXPECT_TRUE(initial_ranking.empty());
 
+  OverflowMenuActionGroup* group =
+      [[OverflowMenuActionGroup alloc] initWithGroupName:@"test"
+                                                 actions:@[]
+                                                  footer:nil];
+  overflow_menu_orderer_.pageActionsGroup = group;
+  [overflow_menu_orderer_ updatePageActions];
+  NSArray<OverflowMenuAction*>* ordered_actions = group.actions;
+
+  // Verify the retrieved actions match the default actions.
+  EXPECT_EQ(ordered_actions.count, sample_actions.size());
+  for (size_t i = 0; i < sample_actions.size(); ++i) {
+    EXPECT_EQ(
+        static_cast<overflow_menu::ActionType>(ordered_actions[i].actionType),
+        sample_actions[i]);
+  }
+
+  // Verify that kOverflowMenuActionsOrder remains empty because no
+  // customization has occurred.
   const base::Value::Dict& stored_ranking =
       prefs_->GetDict(prefs::kOverflowMenuActionsOrder);
-
-  EXPECT_EQ(stored_ranking.size(), 2u);
-  EXPECT_EQ(stored_ranking.FindList("shown")->size(), sample_actions.size());
+  EXPECT_TRUE(stored_ranking.empty());
 }
 
 // Tests that reenabling destnation usage history clears the destination usage
