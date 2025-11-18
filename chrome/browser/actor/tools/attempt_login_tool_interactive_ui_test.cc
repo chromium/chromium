@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/base64.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/glic/host/glic_features.mojom.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/glic/test_support/interactive_test_util.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "components/favicon/core/test/mock_favicon_service.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -64,6 +66,8 @@ class AttemptLoginToolInteractiveUiTest
     if (multi_instance_enabled()) {
       scoped_feature_list_.InitWithFeatures(
           /*enabled_features=*/{password_manager::features::kActorLogin,
+                                password_manager::features::
+                                    kActorLoginReauthTaskRefocus,
                                 actor::kGlicEnableAutoLoginDialogs,
                                 features::kGlicMultiInstance,
                                 glic::mojom::features::kGlicMultiTab,
@@ -72,6 +76,8 @@ class AttemptLoginToolInteractiveUiTest
     } else {
       scoped_feature_list_.InitWithFeatures(
           /*enabled_features=*/{password_manager::features::kActorLogin,
+                                password_manager::features::
+                                    kActorLoginReauthTaskRefocus,
                                 actor::kGlicEnableAutoLoginDialogs},
           /*disabled_features=*/{features::kGlicMultiInstance,
                                  glic::mojom::features::kGlicMultiTab,
@@ -320,6 +326,72 @@ IN_PROC_BROWSER_TEST_P(AttemptLoginToolInteractiveUiTest, MAYBE_SmokeTest) {
   ASSERT_TRUE(last_credential_used.has_value());
   EXPECT_EQ(u"username2", last_credential_used->username);
   EXPECT_TRUE(mock_login_service().last_permission_was_permanent());
+}
+
+// TODO(https://crbug.com/456675144): Flaky on asan.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_HandleReauth DISABLED_HandleReauth
+#else
+#define MAYBE_HandleReauth HandleReauth
+#endif
+IN_PROC_BROWSER_TEST_P(AttemptLoginToolInteractiveUiTest, MAYBE_HandleReauth) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTargetTabId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOtherTabId);
+
+  const GURL url =
+      embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
+
+  actor_login::Credential persisted_cred = MakeTestCredential(
+      u"username", url, /*immediately_available_to_login=*/true);
+  persisted_cred.has_persistent_permission = true;
+  mock_login_service().SetCredentials(std::vector{persisted_cred});
+  mock_login_service().SetLoginStatus(
+      actor_login::LoginStatusResult::kErrorDeviceReauthRequired);
+
+  std::unique_ptr<ToolRequest> navigate_action =
+      MakeNavigateRequest(*active_tab(), url.spec());
+  std::unique_ptr<ToolRequest> login_action =
+      MakeAttemptLoginRequest(*active_tab());
+
+  ActResultFuture nav_result;
+
+  RunTestSequence(InstrumentTab(kTargetTabId), Do([&]() {
+                    actor_task().Act(ToRequestList(navigate_action),
+                                     nav_result.GetCallback());
+                  }));
+
+  ExpectOkResult(nav_result);
+
+  ActResultFuture login_result;
+
+  // Create a new browser, and when the target tab is in the background, trigger
+  // the login. As the target is in the background, the login needing reauth is
+  // blocked on user attention.
+  RunTestSequence(
+      // clang-format off
+      InstrumentNextTab(kOtherTabId, AnyBrowser()),
+      Do([&]() { chrome::NewWindow(browser()); }),
+      InAnyContext(WaitForWebContentsReady(kOtherTabId)),
+      Do([&]() {
+        actor_task().Act(ToRequestList(login_action),
+                         login_result.GetCallback());
+      })
+      // clang-format on
+  );
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return mock_login_service().last_credential_used().has_value();
+  }));
+
+  EXPECT_FALSE(login_result.IsReady());
+
+  mock_login_service().SetLoginStatus(
+      actor_login::LoginStatusResult::kSuccessUsernameAndPasswordFilled);
+
+  // Foreground the target tab, which will retry the login.
+  RunTestSequence(ActivateSurface(kTargetTabId));
+
+  ExpectOkResult(login_result);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

@@ -106,6 +106,11 @@ class ToolDelegate {
   virtual void RequestToShowAutofillSuggestions(
       std::vector<autofill::ActorFormFillingRequest> requests,
       AutofillSuggestionSelectedCallback callback) = 0;
+
+  // During tool execution, the tool becomes blocked on the user's attention.
+  // The task still has control of the tab.
+  virtual void InterruptFromTool() = 0;
+  virtual void UninterruptFromTool() = 0;
 };
 
 }  // namespace actor

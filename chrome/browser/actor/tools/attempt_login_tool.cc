@@ -17,6 +17,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor_webui.mojom-data-view.h"
 #include "chrome/common/actor_webui.mojom.h"
@@ -66,8 +67,6 @@ mojom::ActionResultCode LoginResultToActorResult(
     case actor_login::LoginStatusResult::kErrorNoFillableFields:
       return mojom::ActionResultCode::kLoginNoFillableFields;
     case actor_login::LoginStatusResult::kErrorDeviceReauthRequired:
-      // TODO(crbug.com/449923972): Handle this error: draw attention of the
-      // user to the tab and retry once the tab is in the foreground.
       return mojom::ActionResultCode::kLoginDeviceReauthRequired;
     case actor_login::LoginStatusResult::kErrorDeviceReauthFailed:
       return mojom::ActionResultCode::kLoginDeviceReauthFailed;
@@ -136,13 +135,16 @@ void AttemptLoginTool::Invoke(InvokeCallback callback) {
       user_selected_credential_and_pemission =
           tool_delegate().GetUserSelectedCredential(current_origin);
   if (user_selected_credential_and_pemission.has_value()) {
+    const bool should_store_permission =
+        user_selected_credential_and_pemission->permission_duration ==
+        webui::mojom::UserGrantedPermissionDuration::kAlwaysAllow;
     GetActorLoginService().AttemptLogin(
         tab, user_selected_credential_and_pemission->credential,
-        user_selected_credential_and_pemission->permission_duration ==
-            webui::mojom::UserGrantedPermissionDuration::kAlwaysAllow,
-        quality_logger_.AsWeakPtr(),
+        should_store_permission, quality_logger_.AsWeakPtr(),
         base::BindOnce(&AttemptLoginTool::OnAttemptLogin,
-                       weak_ptr_factory_.GetWeakPtr()));
+                       weak_ptr_factory_.GetWeakPtr(),
+                       user_selected_credential_and_pemission->credential,
+                       should_store_permission));
     return;
   }
 
@@ -349,16 +351,20 @@ void AttemptLoginTool::OnCredentialSelected(
     return;
   }
 
-  GetActorLoginService().AttemptLogin(
-      tab, *selected_credential,
+  const bool should_store_permission =
       response->permission_duration ==
-          webui::mojom::UserGrantedPermissionDuration::kAlwaysAllow,
+      webui::mojom::UserGrantedPermissionDuration::kAlwaysAllow;
+  GetActorLoginService().AttemptLogin(
+      tab, *selected_credential, should_store_permission,
       quality_logger_.AsWeakPtr(),
       base::BindOnce(&AttemptLoginTool::OnAttemptLogin,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), *selected_credential,
+                     should_store_permission));
 }
 
 void AttemptLoginTool::OnAttemptLogin(
+    actor_login::Credential selected_credential,
+    bool should_store_permission,
     actor_login::LoginStatusResultOrError login_status) {
   if (!login_status.has_value()) {
     PostResponseTask(std::move(invoke_callback_),
@@ -366,9 +372,97 @@ void AttemptLoginTool::OnAttemptLogin(
     return;
   }
 
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kActorLoginReauthTaskRefocus) &&
+      login_status.value() ==
+          actor_login::LoginStatusResult::kErrorDeviceReauthRequired) {
+    if (!tab_handle_.Get()) {
+      PostResponseTask(std::move(invoke_callback_),
+                       MakeResult(mojom::ActionResultCode::kTabWentAway));
+      return;
+    }
+
+    credential_awaiting_task_focus_ = {selected_credential,
+                                       should_store_permission};
+    ObserveTabToAwaitFocus();
+    tool_delegate().InterruptFromTool();
+    return;
+  }
+
   mojom::ActionResultCode code = LoginResultToActorResult(login_status.value());
   PostResponseTask(std::move(invoke_callback_),
                    IsOk(code) ? MakeOkResult() : MakeResult(code));
+}
+
+void AttemptLoginTool::OnWillDetach(tabs::TabInterface* tab,
+                                    tabs::TabInterface::DetachReason reason) {
+  if (reason == tabs::TabInterface::DetachReason::kDelete &&
+      credential_awaiting_task_focus_.has_value()) {
+    PostResponseTask(std::move(invoke_callback_),
+                     MakeResult(mojom::ActionResultCode::kTabWentAway));
+  }
+}
+
+void AttemptLoginTool::HandleTabActivatedChange(tabs::TabInterface* tab) {
+  MaybeRetryCredentialNeedingFocus();
+}
+
+void AttemptLoginTool::HandleWindowActivatedChange(
+    BrowserWindowInterface* browser_window) {
+  MaybeRetryCredentialNeedingFocus();
+}
+
+void AttemptLoginTool::ObserveTabToAwaitFocus() {
+  tabs::TabInterface* tab = tab_handle_.Get();
+  CHECK(tab);
+
+  will_detach_subscription_ = tab->RegisterWillDetach(base::BindRepeating(
+      &AttemptLoginTool::OnWillDetach, base::Unretained(this)));
+  tab_did_activate_subscription_ = tab->RegisterDidActivate(base::BindRepeating(
+      &AttemptLoginTool::HandleTabActivatedChange, base::Unretained(this)));
+  BrowserWindowInterface* browser_window = tab->GetBrowserWindowInterface();
+  // TODO(mcnee): Should we update the window subscription if the tab is moved?
+  // The tab would probably be focused first which would cause us to stop
+  // observing anyway.
+  window_did_become_active_subscription_ =
+      browser_window->RegisterDidBecomeActive(
+          base::BindRepeating(&AttemptLoginTool::HandleWindowActivatedChange,
+                              base::Unretained(this)));
+}
+
+void AttemptLoginTool::StopObservingTab() {
+  will_detach_subscription_ = {};
+  tab_did_activate_subscription_ = {};
+  window_did_become_active_subscription_ = {};
+}
+
+void AttemptLoginTool::MaybeRetryCredentialNeedingFocus() {
+  if (!credential_awaiting_task_focus_.has_value()) {
+    return;
+  }
+
+  tabs::TabInterface* tab = tab_handle_.Get();
+  CHECK(tab);
+  BrowserWindowInterface* browser_window = tab->GetBrowserWindowInterface();
+
+  // Note that this is more specific than the conditions checked in
+  // `ActorLoginDelegateImpl::IsTaskInFocus`, but for simplicity we check for
+  // the specific tab being activated, since the task nudge will take the user
+  // there anyway.
+  if (!browser_window->IsActive() || !tab->IsActivated()) {
+    return;
+  }
+
+  StopObservingTab();
+  tool_delegate().UninterruptFromTool();
+
+  GetActorLoginService().AttemptLogin(
+      tab, credential_awaiting_task_focus_->first,
+      credential_awaiting_task_focus_->second, quality_logger_.AsWeakPtr(),
+      base::BindOnce(&AttemptLoginTool::OnAttemptLogin,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     credential_awaiting_task_focus_->first,
+                     credential_awaiting_task_focus_->second));
 }
 
 std::string AttemptLoginTool::DebugString() const {

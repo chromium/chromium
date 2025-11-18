@@ -140,7 +140,7 @@ class ActorTask {
   void Interrupt();
 
   // Uninterrupt from waiting on user input.
-  void Uninterrupt();
+  void Uninterrupt(State resumed_state);
 
   // Returns true if the task hasn't completed and is under control of the user.
   // That is, the actor cannot send actions and the user is able to interact

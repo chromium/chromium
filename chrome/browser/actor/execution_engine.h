@@ -143,6 +143,8 @@ class ExecutionEngine : public ToolDelegate {
   void RequestToShowAutofillSuggestions(
       std::vector<autofill::ActorFormFillingRequest> requests,
       AutofillSuggestionSelectedCallback callback) override;
+  void InterruptFromTool() override;
+  void UninterruptFromTool() override;
 
   using AllowedOriginSet = absl::flat_hash_set<url::Origin>;
   void AddWritableMainframeOrigins(

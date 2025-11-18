@@ -163,7 +163,7 @@ void ActorTask::SetState(State new_state) {
              kFinished, kFailed}},
            {kActing,
             {kReflecting, kPausedByActor, kPausedByUser, kCancelled, kFinished,
-             kFailed}},
+             kWaitingOnUser, kFailed}},
            {kReflecting,
             {kActing, kPausedByActor, kPausedByUser, kCancelled, kFinished,
              kWaitingOnUser, kFailed}},
@@ -362,17 +362,17 @@ void ActorTask::Resume() {
 }
 
 void ActorTask::Interrupt() {
-  if (GetState() != State::kReflecting) {
+  if (GetState() != State::kReflecting && GetState() != State::kActing) {
     return;
   }
   SetState(State::kWaitingOnUser);
 }
 
-void ActorTask::Uninterrupt() {
+void ActorTask::Uninterrupt(State resumed_state) {
   if (GetState() != State::kWaitingOnUser) {
     return;
   }
-  SetState(State::kReflecting);
+  SetState(resumed_state);
 }
 
 bool ActorTask::IsUnderUserControl() const {
