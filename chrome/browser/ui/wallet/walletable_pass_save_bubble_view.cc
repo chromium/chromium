@@ -114,6 +114,7 @@ int WalletablePassSaveBubbleView::GetDialogTitleResourceId() const {
     case optimization_guide::proto::WalletablePass::kLoyaltyCard:
       return IDS_WALLET_WALLETABLE_PASS_SAVE_LOYALTY_CARD_DIALOG_TITLE;
     case optimization_guide::proto::WalletablePass::kEventPass:
+      return IDS_WALLET_WALLETABLE_PASS_SAVE_EVENT_TICKET_DIALOG_TITLE;
     case optimization_guide::proto::WalletablePass::PASS_NOT_SET:
       NOTREACHED() << "Not supported walletable pass type: "
                    << pass_->pass_case();
@@ -121,12 +122,11 @@ int WalletablePassSaveBubbleView::GetDialogTitleResourceId() const {
 }
 
 int WalletablePassSaveBubbleView::GetHeaderImageResourceId() const {
-  // TODO(crbug.com/451833977): Replace with the actual header view images for
-  // each pass.
   switch (pass_->pass_case()) {
     case optimization_guide::proto::WalletablePass::kLoyaltyCard:
-      return IDR_AUTOFILL_SAVE_VEHICLE_LOTTIE;
+      return IDR_WALLET_PASS_SAVE_LOYALTY_CARD_LOTTIE;
     case optimization_guide::proto::WalletablePass::kEventPass:
+      return IDR_WALLET_PASS_SAVE_EVENT_TICKET_LOTTIE;
     case optimization_guide::proto::WalletablePass::PASS_NOT_SET:
       NOTREACHED() << "Not supported walletable pass type: "
                    << pass_->pass_case();

@@ -31,6 +31,10 @@
     Save loyalty card to Wallet
   </message>
 
+  <message name="IDS_WALLET_WALLETABLE_PASS_SAVE_EVENT_TICKET_DIALOG_TITLE" desc="Title text of the save event ticket dialog.">
+    Save event ticket to Wallet
+  </message>
+
   <message name="IDS_WALLET_WALLETABLE_PASS_GOOGLE_WALLET_TITLE" desc="The name of the Google Wallet product.">
     Google Wallet
   </message>
