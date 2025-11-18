@@ -211,15 +211,14 @@ TEST_P(AccessibilityTest, AccessibilityStructureTree) {
       engine->GetStructureTree();
   ASSERT_TRUE(doc_structure);
 
-  static constexpr char kExpectedStructureTree[] =
-      "/S /Document\n"
-      "++/S /Part\n"
-      "++++/S /Document /Lang (en-US)\n"
-      "++++++/S /Art AssociatedTextRunLens={ 9 }\n"
-      "++++++/S /BlockQuote AssociatedTextRunLens={ 12 }\n"
-      "++++++/S /P AssociatedTextRunLens={ 11 }\n"
-      "++++++/S /H1 AssociatedTextRunLens={ 10 }\n"
-      "++++++/S /H2 AssociatedTextRunLens={ 8 }";
+  static constexpr char kExpectedStructureTree[] = R"(/S /Document
+++/S /Part
+++++/S /Document /Lang (en-US)
+++++++/S /Art AssociatedTextRunLens={ 9 }
+++++++/S /BlockQuote AssociatedTextRunLens={ 12 }
+++++++/S /P AssociatedTextRunLens={ 11 }
+++++++/S /H1 AssociatedTextRunLens={ 10 }
+++++++/S /H2 AssociatedTextRunLens={ 8 })";
 
   EXPECT_EQ(kExpectedStructureTree,
             AccessibilityStructureElementToString(*doc_structure));
@@ -239,17 +238,13 @@ TEST_P(AccessibilityTest, AccessibilityStructureTreeWithImages) {
       engine->GetStructureTree();
   ASSERT_TRUE(doc_structure);
 
-  static constexpr char kExpectedStructureTree[] =
-      "/S /Document\n"
-      "++/S /Part\n"
-      "++++/S /Document\n"
-      "++++++/S /P\n"
-      "++++++++/S /Figure /Alt (Image 1) "
-      "AssociatedImage={page_object_index=0 bounds=380,78 67x68}\n"
-      "++++++++/S /Figure /Alt (Image 2) "
-      "AssociatedImage={page_object_index=1 bounds=380,385 27x28}\n"
-      "++++++++/S /Figure /Alt (Image 3) "
-      "AssociatedImage={page_object_index=2 bounds=380,678 1x1}";
+  static constexpr char kExpectedStructureTree[] = R"(/S /Document
+++/S /Part
+++++/S /Document
+++++++/S /P
+++++++++/S /Figure /Alt (Image 1) AssociatedImage={page_object_index=0 bounds=380,78 67x68}
+++++++++/S /Figure /Alt (Image 2) AssociatedImage={page_object_index=1 bounds=380,385 27x28}
+++++++++/S /Figure /Alt (Image 3) AssociatedImage={page_object_index=2 bounds=380,678 1x1})";
 
   EXPECT_EQ(kExpectedStructureTree,
             AccessibilityStructureElementToString(*doc_structure));
