@@ -4,11 +4,14 @@
 # found in the LICENSE file.
 """Tests for pyl module."""
 
+import pathlib
+import sys
 import tokenize
 import textwrap
 import unittest
 
-import pyl
+sys.path.append(str(pathlib.Path(__file__).parent.parent))
+from lib import pyl
 
 
 class TokenTest(unittest.TestCase):

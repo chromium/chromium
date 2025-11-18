@@ -3,13 +3,16 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import datetime
+import pathlib
+import sys
 import textwrap
 import typing
 import unittest
-import datetime
 
-import convert_pyls_lib
-import pyl
+sys.path.append(str(pathlib.Path(__file__).parent.parent))
+from lib import convert_pyls
+from lib import pyl
 
 
 # return typing.Any to prevent type checkers from complaining about the general
@@ -22,7 +25,7 @@ def _to_pyl_value(value: object) -> typing.Any:
   return nodes[0]
 
 
-class ConvertPylsLibTest(unittest.TestCase):
+class ConvertPylsTest(unittest.TestCase):
 
   def test_convert_gn_isolate_map_pyl_success(self):
     gn_isolate_map = {
@@ -50,7 +53,7 @@ class ConvertPylsLibTest(unittest.TestCase):
         },
     }
 
-    files = convert_pyls_lib.convert_gn_isolate_map_pyl(
+    files = convert_pyls.convert_gn_isolate_map_pyl(
         _to_pyl_value(gn_isolate_map))
 
     self.maxDiff = None
@@ -124,7 +127,7 @@ class ConvertPylsLibTest(unittest.TestCase):
         },
     })
     with self.assertRaises(Exception) as caught:
-      convert_pyls_lib.convert_gn_isolate_map_pyl(gn_isolate_map)
+      convert_pyls.convert_gn_isolate_map_pyl(gn_isolate_map)
     self.assertEqual(str(caught.exception),
                      'test:1:1: isolate test_isolate missing type')
 
@@ -136,7 +139,7 @@ class ConvertPylsLibTest(unittest.TestCase):
         },
     })
     with self.assertRaises(Exception) as caught:
-      convert_pyls_lib.convert_gn_isolate_map_pyl(gn_isolate_map)
+      convert_pyls.convert_gn_isolate_map_pyl(gn_isolate_map)
     self.assertEqual(
         str(caught.exception),
         ('test:1:55: args specified for isolate "test_isolate"'
@@ -151,7 +154,7 @@ class ConvertPylsLibTest(unittest.TestCase):
         },
     })
     with self.assertRaises(Exception) as caught:
-      convert_pyls_lib.convert_gn_isolate_map_pyl(gn_isolate_map)
+      convert_pyls.convert_gn_isolate_map_pyl(gn_isolate_map)
     self.assertEqual(
         str(caught.exception),
         ('test:1:40: script specified for isolate "test_isolate"'
@@ -166,7 +169,7 @@ class ConvertPylsLibTest(unittest.TestCase):
         },
     })
     with self.assertRaises(Exception) as caught:
-      convert_pyls_lib.convert_gn_isolate_map_pyl(gn_isolate_map)
+      convert_pyls.convert_gn_isolate_map_pyl(gn_isolate_map)
     self.assertEqual(str(caught.exception),
                      'test:1:40: unhandled key in isolate: "unknown_key"')
 

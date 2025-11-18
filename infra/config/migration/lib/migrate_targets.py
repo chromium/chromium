@@ -9,10 +9,10 @@ import dataclasses
 import pathlib
 import typing
 
-import buildozer
-import pyl
-import starlark_conversions
-import values
+from . import buildozer
+from . import pyl
+from . import starlark_conversions
+from . import values
 
 
 def _per_test_modifications(

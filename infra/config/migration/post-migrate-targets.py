@@ -28,9 +28,9 @@ import subprocess
 import sys
 import typing
 
-import buildozer
-import post_migrate_targets_lib
-import pyl
+from lib import buildozer
+from lib import post_migrate_targets
+from lib import pyl
 
 _INFRA_CONFIG_DIR = pathlib.Path(os.getcwd())
 _TESTING_BUILDBOT_DIR = (_INFRA_CONFIG_DIR / '../../testing/buildbot').resolve()
@@ -86,12 +86,10 @@ def _update_suites(suites_to_migrate: dict[str, _SuiteToMigrate]) -> None:
 
 
 _SUITE_TYPE_HANDLERS = {
-    'basic_suites':
-    post_migrate_targets_lib.convert_basic_suite,
-    'compound_suites':
-    post_migrate_targets_lib.convert_compound_suite,
+    'basic_suites': post_migrate_targets.convert_basic_suite,
+    'compound_suites': post_migrate_targets.convert_compound_suite,
     'matrix_compound_suites':
-    post_migrate_targets_lib.convert_matrix_compound_suite,
+    post_migrate_targets.convert_matrix_compound_suite,
 }
 
 # generate_buildbot_json.py outputs the unreferenced names like

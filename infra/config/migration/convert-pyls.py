@@ -9,8 +9,8 @@ import pathlib
 import subprocess
 import typing
 
-import convert_pyls_lib
-import pyl
+from lib import convert_pyls
+from lib import pyl
 
 
 def _parse_args(
@@ -41,7 +41,7 @@ def main():
 
   gn_isolate_map = _get_literal(args.pyls_dir / 'gn_isolate_map.pyl')
   if gn_isolate_map:
-    new_files = convert_pyls_lib.convert_gn_isolate_map_pyl(
+    new_files = convert_pyls.convert_gn_isolate_map_pyl(
         typing.cast(pyl.Dict[pyl.Str, pyl.Dict[pyl.Str, pyl.Value]],
                     gn_isolate_map))
 

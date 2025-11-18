@@ -4,9 +4,9 @@
 """Utilities for converting python values to starlark values."""
 
 import typing
-import pyl
 
-import values
+from . import pyl
+from . import values
 
 _MAGIC_ARG_MAPPING = {
     '$$MAGIC_SUBSTITUTION_AndroidDesktopTelemetryRemote':

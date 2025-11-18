@@ -7,9 +7,9 @@ import collections.abc
 import datetime
 import typing
 
-import pyl
-import starlark_conversions
-import values
+from . import pyl
+from . import starlark_conversions
+from . import values
 
 _COPYRIGHT_HEADER = f"""\
 # Copyright {datetime.datetime.now().year} The Chromium Authors

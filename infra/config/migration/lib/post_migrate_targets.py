@@ -4,9 +4,9 @@
 
 import typing
 
-import pyl
-import starlark_conversions
-import values
+from . import pyl
+from . import starlark_conversions
+from . import values
 
 
 def convert_basic_suite(

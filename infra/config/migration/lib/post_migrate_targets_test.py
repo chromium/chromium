@@ -3,12 +3,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import pathlib
+import sys
 import textwrap
 import typing
 import unittest
 
-import post_migrate_targets_lib
-import pyl
+sys.path.append(str(pathlib.Path(__file__).parent.parent))
+from lib import post_migrate_targets
+from lib import pyl
 
 
 # return typing.Any to prevent type checkers from complaining about the general
@@ -30,7 +33,7 @@ class PostMigrateTargetsLibTest(unittest.TestCase):
         },
     }
     with self.assertRaises(Exception) as caught:
-      post_migrate_targets_lib.convert_basic_suite(_to_pyl_value(suite))
+      post_migrate_targets.convert_basic_suite(_to_pyl_value(suite))
     self.assertEqual(
         str(caught.exception),
         'test:1:11: unhandled key in basic suite test definition: "unhandled_key"'
@@ -67,7 +70,7 @@ class PostMigrateTargetsLibTest(unittest.TestCase):
             'telemetry_test_name': 'telemetry_test',
         },
     }
-    result = post_migrate_targets_lib.convert_basic_suite(_to_pyl_value(suite))
+    result = post_migrate_targets.convert_basic_suite(_to_pyl_value(suite))
     self.maxDiff = None
     self.assertEqual(
         result,
@@ -127,8 +130,7 @@ class PostMigrateTargetsLibTest(unittest.TestCase):
 
   def test_convert_compound_suite(self):
     suite = ['suite1', 'suite2']
-    result = post_migrate_targets_lib.convert_compound_suite(
-        _to_pyl_value(suite))
+    result = post_migrate_targets.convert_compound_suite(_to_pyl_value(suite))
     self.assertEqual(
         result,
         {
@@ -149,8 +151,7 @@ class PostMigrateTargetsLibTest(unittest.TestCase):
         },
     }
     with self.assertRaises(Exception) as caught:
-      post_migrate_targets_lib.convert_matrix_compound_suite(
-          _to_pyl_value(suite))
+      post_migrate_targets.convert_matrix_compound_suite(_to_pyl_value(suite))
     self.assertEqual(
         str(caught.exception),
         'test:1:12: unhandled key in matrix config: "unhandled_key"')
@@ -163,7 +164,7 @@ class PostMigrateTargetsLibTest(unittest.TestCase):
             'variants': ['variant1'],
         },
     }
-    result = post_migrate_targets_lib.convert_matrix_compound_suite(
+    result = post_migrate_targets.convert_matrix_compound_suite(
         _to_pyl_value(suite))
     self.assertEqual(
         result,

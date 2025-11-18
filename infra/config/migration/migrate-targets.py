@@ -16,8 +16,8 @@ import subprocess
 import sys
 import typing
 
-import migrate_targets_lib
-import pyl
+from lib import migrate_targets
+from lib import pyl
 
 _INFRA_CONFIG_DIR = pathlib.Path(os.getcwd())
 _TESTING_BUILDBOT_DIR = (_INFRA_CONFIG_DIR / '../../testing/buildbot').resolve()
@@ -45,14 +45,14 @@ def main(argv: list[str]):
                                        'test_suite_exceptions.pyl')
 
   try:
-    edits = migrate_targets_lib.process_waterfall(
+    edits = migrate_targets.process_waterfall(
         args.builder_group,
         builders,
         typing.cast(pyl.List[pyl.Dict[pyl.Str, pyl.Value]], waterfalls),
         typing.cast(pyl.Dict[pyl.Str, pyl.Dict[pyl.Str, pyl.Value]],
                     test_suite_exceptions),
     )
-  except migrate_targets_lib.WaterfallError as e:
+  except migrate_targets.WaterfallError as e:
     print(e, file=sys.stderr)
     sys.exit(1)
 
@@ -67,7 +67,7 @@ def main(argv: list[str]):
     star_file = (_INFRA_CONFIG_DIR /
                  f'subprojects/chromium/{bucket}/{args.builder_group}.star')
 
-  migrate_targets_lib.update_starlark(
+  migrate_targets.update_starlark(
       args.builder_group,
       star_file,
       edits,

@@ -4,11 +4,14 @@
 # found in the LICENSE file.
 """Unit test for value_builders module."""
 
+import pathlib
+import sys
 import textwrap
 import typing
 import unittest
 
-import values
+sys.path.append(str(pathlib.Path(__file__).parent.parent))
+from lib import values
 
 
 class TestValueBuilder(values._CompoundValueBuilder):

@@ -4,13 +4,15 @@
 # found in the LICENSE file.
 
 import pathlib
+import sys
 import textwrap
 import typing
 import unittest
 from unittest import mock
 
-import migrate_targets_lib
-import pyl
+sys.path.append(str(pathlib.Path(__file__).parent.parent))
+from lib import migrate_targets
+from lib import pyl
 
 
 # return typing.Any to prevent type checkers from complaining about the general
@@ -26,8 +28,8 @@ def _to_pyl_value(value: object) -> typing.Any:
 class MigrateTargetsTest(unittest.TestCase):
 
   def test_process_waterfall_builder_group_not_found(self):
-    with self.assertRaises(migrate_targets_lib.WaterfallError) as caught:
-      migrate_targets_lib.process_waterfall(
+    with self.assertRaises(migrate_targets.WaterfallError) as caught:
+      migrate_targets.process_waterfall(
           'non-existent',
           None,
           _to_pyl_value([]),
@@ -45,8 +47,8 @@ class MigrateTargetsTest(unittest.TestCase):
             },
         },
     ]
-    with self.assertRaises(migrate_targets_lib.WaterfallError) as caught:
-      migrate_targets_lib.process_waterfall(
+    with self.assertRaises(migrate_targets.WaterfallError) as caught:
+      migrate_targets.process_waterfall(
           'test-group',
           {'builder-1', 'builder-2'},
           _to_pyl_value(waterfalls),
@@ -66,7 +68,7 @@ class MigrateTargetsTest(unittest.TestCase):
         },
     ]
     with self.assertRaises(Exception) as caught:
-      migrate_targets_lib.process_waterfall(
+      migrate_targets.process_waterfall(
           'test-group',
           None,
           _to_pyl_value(waterfalls),
@@ -89,7 +91,7 @@ class MigrateTargetsTest(unittest.TestCase):
         },
     ]
     with self.assertRaises(Exception) as caught:
-      migrate_targets_lib.process_waterfall(
+      migrate_targets.process_waterfall(
           'test-group',
           None,
           _to_pyl_value(waterfalls),
@@ -110,7 +112,7 @@ class MigrateTargetsTest(unittest.TestCase):
         },
     ]
     with self.assertRaises(Exception) as caught:
-      migrate_targets_lib.process_waterfall(
+      migrate_targets.process_waterfall(
           'test-group',
           None,
           _to_pyl_value(waterfalls),
@@ -158,7 +160,7 @@ class MigrateTargetsTest(unittest.TestCase):
     ]
     test_suite_exceptions = {}
 
-    edits = migrate_targets_lib.process_waterfall(
+    edits = migrate_targets.process_waterfall(
         'test-group',
         None,
         _to_pyl_value(waterfalls),
@@ -167,7 +169,7 @@ class MigrateTargetsTest(unittest.TestCase):
 
     self.assertEqual(
         edits,
-        migrate_targets_lib.StarlarkEdits(
+        migrate_targets.StarlarkEdits(
             targets_builder_defaults={
                 'mixins':
                 textwrap.dedent("""\
@@ -248,7 +250,7 @@ class MigrateTargetsTest(unittest.TestCase):
     ]
     test_suite_exceptions = {'test-1': {'unknown_key': 'value'}}
     with self.assertRaises(Exception) as caught:
-      migrate_targets_lib.process_waterfall(
+      migrate_targets.process_waterfall(
           'test-group',
           None,
           _to_pyl_value(waterfalls),
@@ -281,7 +283,7 @@ class MigrateTargetsTest(unittest.TestCase):
         },
     }
     with self.assertRaises(Exception) as caught:
-      migrate_targets_lib.process_waterfall(
+      migrate_targets.process_waterfall(
           'test-group',
           None,
           _to_pyl_value(waterfalls),
@@ -312,7 +314,7 @@ class MigrateTargetsTest(unittest.TestCase):
         },
     }
     with self.assertRaises(Exception) as caught:
-      migrate_targets_lib.process_waterfall(
+      migrate_targets.process_waterfall(
           'test-group',
           None,
           _to_pyl_value(waterfalls),
@@ -375,7 +377,7 @@ class MigrateTargetsTest(unittest.TestCase):
         },
     }
 
-    edits = migrate_targets_lib.process_waterfall(
+    edits = migrate_targets.process_waterfall(
         'test-group',
         None,
         _to_pyl_value(waterfalls),
@@ -385,7 +387,7 @@ class MigrateTargetsTest(unittest.TestCase):
     self.maxDiff = None
     self.assertEqual(
         edits,
-        migrate_targets_lib.StarlarkEdits(
+        migrate_targets.StarlarkEdits(
             targets_builder_defaults={},
             targets_settings_defaults={},
             edits_by_builder={
@@ -480,7 +482,7 @@ class MigrateTargetsTest(unittest.TestCase):
         },
     ]
 
-    edits = migrate_targets_lib.process_waterfall(
+    edits = migrate_targets.process_waterfall(
         'test-group',
         {'builder-1', 'builder-2'},
         _to_pyl_value(waterfalls),
@@ -490,11 +492,11 @@ class MigrateTargetsTest(unittest.TestCase):
     self.assertCountEqual(edits.edits_by_builder.keys(),
                           ['builder-1', 'builder-2'])
 
-  @mock.patch('migrate_targets_lib.buildozer.run')
+  @mock.patch('lib.migrate_targets.buildozer.run')
   def test_update_starlark(self, mock_buildozer_run):
     builder_group = 'test-group'
     star_file = pathlib.Path('path/to/file.star')
-    edits = migrate_targets_lib.StarlarkEdits(
+    edits = migrate_targets.StarlarkEdits(
         targets_builder_defaults={'mixins': '["mixin1"]'},
         targets_settings_defaults={'allow_script_tests': 'False'},
         edits_by_builder={
@@ -509,7 +511,7 @@ class MigrateTargetsTest(unittest.TestCase):
     # An empty string means it doesn't exist.
     mock_buildozer_run.return_value = ''
 
-    migrate_targets_lib.update_starlark(builder_group, star_file, edits)
+    migrate_targets.update_starlark(builder_group, star_file, edits)
 
     file_target = f'{star_file}:__pkg__'
     builder_target = f'{star_file}:builder-1'
@@ -555,11 +557,11 @@ class MigrateTargetsTest(unittest.TestCase):
     mock_buildozer_run.assert_any_call(
         'set targets_settings targets.settings()', builder_target)
 
-  @mock.patch('migrate_targets_lib.buildozer.run')
+  @mock.patch('lib.migrate_targets.buildozer.run')
   def test_update_starlark_defaults_exist(self, mock_buildozer_run):
     builder_group = 'test-group'
     star_file = pathlib.Path('path/to/file.star')
-    edits = migrate_targets_lib.StarlarkEdits(
+    edits = migrate_targets.StarlarkEdits(
         targets_builder_defaults={'mixins': '["mixin1"]'},
         targets_settings_defaults={'allow_script_tests': 'False'},
         edits_by_builder={},
@@ -569,7 +571,7 @@ class MigrateTargetsTest(unittest.TestCase):
     # A non-empty string means it does exist.
     mock_buildozer_run.return_value = 'exists'
 
-    migrate_targets_lib.update_starlark(builder_group, star_file, edits)
+    migrate_targets.update_starlark(builder_group, star_file, edits)
 
     builder_defaults_target = f'{star_file}:%targets.builder_defaults.set'
     settings_defaults_target = f'{star_file}:%targets.settings_defaults.set'
@@ -586,17 +588,17 @@ class MigrateTargetsTest(unittest.TestCase):
                            for c in mock_buildozer_run.mock_calls)
     self.assertFalse(new_call_present)
 
-  @mock.patch('migrate_targets_lib.buildozer.run')
+  @mock.patch('lib.migrate_targets.buildozer.run')
   def test_update_starlark_no_edits(self, mock_buildozer_run):
     builder_group = 'test-group'
     star_file = pathlib.Path('path/to/file.star')
-    edits = migrate_targets_lib.StarlarkEdits(
+    edits = migrate_targets.StarlarkEdits(
         targets_builder_defaults={},
         targets_settings_defaults={},
         edits_by_builder={'builder-1': {}},
     )
 
-    migrate_targets_lib.update_starlark(builder_group, star_file, edits)
+    migrate_targets.update_starlark(builder_group, star_file, edits)
 
     # load is always called
     self.assertEqual(mock_buildozer_run.call_count, 1)

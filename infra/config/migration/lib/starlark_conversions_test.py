@@ -4,13 +4,16 @@
 # found in the LICENSE file.
 """Unit test for conversions module."""
 
+import pathlib
+import sys
 import textwrap
 import typing
 import unittest
 
-import pyl
-import starlark_conversions
-import values
+sys.path.append(str(pathlib.Path(__file__).parent.parent))
+from lib import pyl
+from lib import starlark_conversions
+from lib import values
 
 
 # return typing.Any to prevent type checkers from complaining about the general
