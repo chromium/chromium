@@ -13472,7 +13472,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"autofill-disable-bnpl-country-check-for-testing",
      flag_descriptions::kAutofillDisableBnplCountryCheckForTestingName,
      flag_descriptions::kAutofillDisableBnplCountryCheckForTestingDescription,
-     kOsDesktop,
+     kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillDisableBnplCountryCheckForTesting)},
 
