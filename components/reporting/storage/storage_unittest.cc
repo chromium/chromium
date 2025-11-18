@@ -4,6 +4,7 @@
 
 #include "components/reporting/storage/storage.h"
 
+#include <array>
 #include <atomic>
 #include <cstdint>
 #include <optional>
@@ -11,7 +12,9 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/auto_spanification_helper.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/span_writer.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -567,7 +570,7 @@ class StorageTest
                      std::move(processed_cb));
         return;
       }
-      // Decrypt encrypted_record asynhcronously, then resume on the current
+      // Decrypt encrypted_record asynchronously, then resume on the current
       // sequence.
       (new SingleDecryptionContext(
            encrypted_record, decryptor_,
@@ -957,46 +960,44 @@ class StorageTest
     ASSERT_OK(c_result) << c_result;
   }
 
+  template <size_t N>
+  std::string_view Uint8ArrayToStringView(const std::array<uint8_t, N>& arr) {
+    return std::string_view(reinterpret_cast<const char*>(arr.data()),
+                            arr.size());
+  }
+
   SignedEncryptionInfo GenerateAndSignKey() {
     CHECK(decryptor_) << "Decryptor not created";
     // Generate new pair of private key and public value.
-    uint8_t private_key[kKeySize];
+    std::array<uint8_t, kKeySize> private_key;
     Encryptor::PublicKeyId public_key_id;
-    uint8_t public_value[kKeySize];
+    std::array<uint8_t, kKeySize> public_value;
     test::GenerateEncryptionKeyPair(private_key, public_value);
     test::TestEvent<StatusOr<Encryptor::PublicKeyId>> prepare_key_pair;
-    decryptor_->RecordKeyPair(
-        std::string(reinterpret_cast<const char*>(private_key), kKeySize),
-        std::string(reinterpret_cast<const char*>(public_value), kKeySize),
-        prepare_key_pair.cb());
+    decryptor_->RecordKeyPair(Uint8ArrayToStringView(private_key),
+                              Uint8ArrayToStringView(public_value),
+                              prepare_key_pair.cb());
     auto prepare_key_result = prepare_key_pair.result();
     CHECK(prepare_key_result.has_value()) << prepare_key_result.error();
     public_key_id = prepare_key_result.value();
     // Prepare signed encryption key to be delivered to Storage.
     SignedEncryptionInfo signed_encryption_key;
     signed_encryption_key.set_public_asymmetric_key(
-        std::string(reinterpret_cast<const char*>(public_value), kKeySize));
+        Uint8ArrayToStringView(public_value));
     signed_encryption_key.set_public_key_id(public_key_id);
     // Sign public key.
-    uint8_t value_to_sign[sizeof(Encryptor::PublicKeyId) + kKeySize];
-    UNSAFE_TODO(
-        memcpy(value_to_sign, &public_key_id, sizeof(Encryptor::PublicKeyId)));
-    UNSAFE_TODO(memcpy(value_to_sign + sizeof(Encryptor::PublicKeyId),
-                       public_value, kKeySize));
-    uint8_t signature[kSignatureSize];
-    test::SignMessage(
-        signing_private_key_,
-        std::string_view(reinterpret_cast<const char*>(value_to_sign),
-                         sizeof(value_to_sign)),
-        signature);
-    signed_encryption_key.set_signature(
-        std::string(reinterpret_cast<const char*>(signature), kSignatureSize));
+    std::array<uint8_t, sizeof(Encryptor::PublicKeyId) + kKeySize>
+        value_to_sign;
+    auto writer = base::SpanWriter<uint8_t>(value_to_sign);
+    writer.Write(base::byte_span_from_ref(public_key_id));
+    writer.Write(public_value);
+    std::array<uint8_t, kSignatureSize> signature;
+    test::SignMessage(signing_private_key_,
+                      Uint8ArrayToStringView(value_to_sign), signature);
+    signed_encryption_key.set_signature(Uint8ArrayToStringView(signature));
     // Double check signature.
-    CHECK(VerifySignature(
-        signature_verification_public_key_,
-        std::string_view(reinterpret_cast<const char*>(value_to_sign),
-                         sizeof(value_to_sign)),
-        signature));
+    CHECK(VerifySignature(signature_verification_public_key_,
+                          Uint8ArrayToStringView(value_to_sign), signature));
     return signed_encryption_key;
   }
 
@@ -1013,9 +1014,8 @@ class StorageTest
     // Generate signing key pair.
     test::GenerateSigningKeyPair(signing_private_key_,
                                  signature_verification_public_key_);
-    options_.set_signature_verification_public_key(std::string(
-        reinterpret_cast<const char*>(signature_verification_public_key_),
-        kKeySize));
+    options_.set_signature_verification_public_key(
+        Uint8ArrayToStringView(signature_verification_public_key_));
     // Create decryption module.
     auto decryptor_result = test::Decryptor::Create();
     ASSERT_TRUE(decryptor_result.has_value()) << decryptor_result.error();
@@ -1047,8 +1047,8 @@ class StorageTest
 
   base::test::ScopedFeatureList scoped_feature_list_;
 
-  uint8_t signature_verification_public_key_[kKeySize];
-  uint8_t signing_private_key_[kSignKeySize];
+  std::array<uint8_t, kKeySize> signature_verification_public_key_;
+  std::array<uint8_t, kSignKeySize> signing_private_key_;
 
   base::ScopedTempDir location_;
   TestStorageOptions options_;
