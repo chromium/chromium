@@ -3173,6 +3173,7 @@ class raw_hash_set {
     }
     if (!empty()) {
       if (equal_to(key, single_slot())) {
+        common().infoz().RecordInsertHit();
         return {single_iterator(), false};
       }
     }
@@ -3204,6 +3205,7 @@ class raw_hash_set {
           if (ABSL_PREDICT_TRUE(equal_to(key, slot_array() + seq.offset(i)))) {
             index = seq.offset(i);
             inserted = false;
+            common().infoz().RecordInsertHit();
             return;
           }
         }

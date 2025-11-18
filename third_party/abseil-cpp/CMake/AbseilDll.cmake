@@ -127,6 +127,8 @@ set(ABSL_INTERNAL_DLL_FILES
   "debugging/internal/address_is_readable.h"
   "debugging/internal/addresses.h"
   "debugging/internal/bounded_utf8_length_sequence.h"
+  "debugging/internal/borrowed_fixup_buffer.h"
+  "debugging/internal/borrowed_fixup_buffer.cc"
   "debugging/internal/decode_rust_punycode.cc"
   "debugging/internal/decode_rust_punycode.h"
   "debugging/internal/demangle.cc"
