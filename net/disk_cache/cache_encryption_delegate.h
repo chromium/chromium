@@ -21,7 +21,7 @@ class NET_EXPORT CacheEncryptionDelegate {
   virtual ~CacheEncryptionDelegate() = default;
 
   // Async init. Don't call any other methods before |callback| is called with
-  // success.
+  // success. If already initialized, should run the callback immediately.
   virtual void Init(base::OnceClosure callback) = 0;
 
   virtual bool EncryptData(base::span<const uint8_t> plaintext,

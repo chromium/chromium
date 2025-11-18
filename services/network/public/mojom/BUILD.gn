@@ -1732,6 +1732,7 @@ mojom("mojom_permissions_policy") {
 mojom("mojom") {
   generate_java = true
   sources = [
+    "cache_encryption_provider.mojom",
     "cert_verifier_service.mojom",
     "cert_verifier_service_updater.mojom",
     "connection_change_observer_client.mojom",
