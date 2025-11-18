@@ -376,7 +376,7 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
                                                             DeviceFeatureList
                                                                     .WEBAUTHN_IMMEDIATE_GET)
                                                     && isUvpaa));
-                            boolean signal_supported =
+                            boolean signalSupported =
                                     isUvpaa
                                             && DeviceFeatureMap.isEnabled(
                                                     DeviceFeatureList.WEBAUTHN_ANDROID_SIGNAL);
@@ -384,17 +384,17 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
                                     createWebAuthnClientCapability(
                                             AuthenticatorConstants
                                                     .CAPABILITY_SIGNAL_ALL_ACCEPTED_CREDENTIALS,
-                                            signal_supported));
+                                            signalSupported));
                             capabilities.add(
                                     createWebAuthnClientCapability(
                                             AuthenticatorConstants
                                                     .CAPABILITY_SIGNAL_CURRENT_USER_DETAILS,
-                                            signal_supported));
+                                            signalSupported));
                             capabilities.add(
                                     createWebAuthnClientCapability(
                                             AuthenticatorConstants
                                                     .CAPABILITY_SIGNAL_UNKNOWN_CREDENTIAL,
-                                            signal_supported));
+                                            signalSupported));
                             callback.call(capabilities.toArray(new WebAuthnClientCapability[0]));
                         });
     }
