@@ -61,3 +61,7 @@
 # being launched when it is an accelerated bubble and so the subsequent click
 # to unselect it can fail.
 -*/DragAndDropBrowserTest.DropUrlIntoOmnibox/*
+
+# TODO(crbug.com/456675144): Disable HandleReauth, fails due to unsupported
+# window activation on Wayland/Mutter.
+-All/AttemptLoginToolInteractiveUiTest.HandleReauth/1
