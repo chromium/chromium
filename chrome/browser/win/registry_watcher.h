@@ -31,6 +31,9 @@ class RegistryWatcher {
   RegistryWatcher(const RegistryWatcher&) = delete;
   RegistryWatcher& operator=(const RegistryWatcher&) = delete;
 
+  // Returns the number of key that this watcher is watching.
+  size_t GetRegistryKeyCount() const;
+
  private:
   // Called when a change is detected on one of the registry keys.
   void OnRegistryKeyChanged();

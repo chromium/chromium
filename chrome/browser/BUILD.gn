@@ -6511,6 +6511,7 @@ static_library("browser") {
       "//chrome/browser/webnn",
       "//chrome/browser/win:cloud_synced_folder_checker",
       "//chrome/browser/win:mica_titlebar",
+      "//chrome/browser/win:registry_watcher",
       "//chrome/browser/win/conflicts:module_info",
       "//chrome/chrome_elf:constants",
       "//chrome/chrome_elf:dll_hash",

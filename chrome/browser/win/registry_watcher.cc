@@ -43,6 +43,10 @@ RegistryWatcher::~RegistryWatcher() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
+size_t RegistryWatcher::GetRegistryKeyCount() const {
+  return registry_key_watchers_.size();
+}
+
 void RegistryWatcher::OnRegistryKeyChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Stop watching all other keys to prevent multiple callbacks.

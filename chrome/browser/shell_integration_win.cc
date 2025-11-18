@@ -48,6 +48,7 @@
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/shortcuts/platform_util_win.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/win/registry_watcher.h"
 #include "chrome/browser/win/settings_app_monitor.h"
 #include "chrome/browser/win/util_win_service.h"
 #include "chrome/common/chrome_constants.h"
@@ -339,13 +340,13 @@ class OpenSystemSettingsHelper {
                            base::OnceClosure on_finished_callback)
       : on_finished_callback_(std::move(on_finished_callback)) {
     for (const wchar_t* const* scan = &schemes[0]; *scan != nullptr; ++scan) {
-      AddRegistryKeyWatcher(base::StrCat({L"SOFTWARE\\Microsoft\\Windows\\Shell"
-                                          L"\\Associations\\UrlAssociations\\",
-                                          *scan, L"\\UserChoice"})
-                                .c_str());
+      AddRegistryWatcher(base::StrCat({L"SOFTWARE\\Microsoft\\Windows\\Shell"
+                                       L"\\Associations\\UrlAssociations\\",
+                                       *scan, L"\\UserChoice"})
+                             .c_str());
     }
-    // Only the watchers that were succesfully initialized are counted.
-    registry_watcher_count_ = registry_key_watchers_.size();
+    // Only the watchers that were successfully initialized are counted.
+    registry_watcher_count_ = registry_watchers_.size();
 
     timer_.Start(FROM_HERE, base::Minutes(2),
                  base::BindOnce(&OpenSystemSettingsHelper::ConcludeInteraction,
@@ -386,16 +387,23 @@ class OpenSystemSettingsHelper {
 
   // Helper function to create a registry watcher for a given |key_path|. Do
   // nothing on initialization failure.
-  void AddRegistryKeyWatcher(const wchar_t* key_path) {
+  void AddRegistryWatcher(const wchar_t* key_path) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     auto reg_key = std::make_unique<base::win::RegKey>(HKEY_CURRENT_USER,
                                                        key_path, KEY_NOTIFY);
 
-    if (reg_key->Valid() && reg_key->StartWatching(base::BindOnce(
-                                &OpenSystemSettingsHelper::OnRegistryKeyChanged,
-                                weak_ptr_factory_.GetWeakPtr()))) {
-      registry_key_watchers_.push_back(std::move(reg_key));
+    if (reg_key->Valid()) {
+      std::vector<std::wstring> key_paths = {key_path};
+      auto registry_watcher = std::make_unique<RegistryWatcher>(
+          key_paths,
+          base::BindOnce(&OpenSystemSettingsHelper::OnRegistryKeyChanged,
+                         weak_ptr_factory_.GetWeakPtr()));
+
+      // Verify that the watcher is watching at least one registry key.
+      if (registry_watcher->GetRegistryKeyCount() >= 1u) {
+        registry_watchers_.push_back(std::move(registry_watcher));
+      }
     }
   }
 
@@ -412,7 +420,7 @@ class OpenSystemSettingsHelper {
   // There can be multiple registry key watchers as some settings modify
   // multiple scheme associations. e.g. Changing the default browser modifies
   // the http and https associations.
-  std::vector<std::unique_ptr<base::win::RegKey>> registry_key_watchers_;
+  std::vector<std::unique_ptr<RegistryWatcher>> registry_watchers_;
 
   base::OneShotTimer timer_;
 
