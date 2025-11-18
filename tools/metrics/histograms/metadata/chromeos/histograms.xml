@@ -53,7 +53,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </variant>
   <variant name="DiagnosticsUi" summary="CROS Diagnostics Application">
     <owner>byronlee@google.com</owner>
-    <owner>cros-tdm-tpe-eng@google.com</owner>
+    <owner>lt-diagnostics@google.com</owner>
   </variant>
   <variant name="EnterpriseESim" summary="enterprise eSIM">
     <owner>chadduffin@chromium.org</owner>
@@ -1363,9 +1363,9 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 
 <histogram
     name="ChromeOS.DiagnosticsUi.Error.CrosHealthdProbeError.{ProbeErrorSourceStruct}"
-    enum="CrosDiagnosticsCrosHealthdProbeError" expires_after="2025-12-31">
+    enum="CrosDiagnosticsCrosHealthdProbeError" expires_after="2026-12-31">
   <owner>byronlee@google.com</owner>
-  <owner>cros-tdm-tpe-eng@google.com</owner>
+  <owner>lt-diagnostics@google.com</owner>
   <summary>
     Records the ProbeError::ErrorType returned on request for
     {ProbeErrorSourceStruct}. Recorded on the event a request to cros_healthd
@@ -1380,9 +1380,9 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.DiagnosticsUi.Error.{ErrorSource}"
-    enum="CrosDiagnosticsDataError" expires_after="2025-12-31">
+    enum="CrosDiagnosticsDataError" expires_after="2026-12-31">
   <owner>byronlee@google.com</owner>
-  <owner>cros-tdm-tpe-eng@google.com</owner>
+  <owner>lt-diagnostics@google.com</owner>
   <summary>
     Records error type such as no data error, not a number error and expectation
     not met error when receiving system information including battery info,
@@ -1396,18 +1396,18 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.DiagnosticsUi.InitialScreen"
-    units="CrosDiagnosticsNavigationView" expires_after="2025-12-31">
+    units="CrosDiagnosticsNavigationView" expires_after="2026-12-31">
   <owner>byronlee@google.com</owner>
-  <owner>cros-tdm-tpe-eng@google.com</owner>
+  <owner>lt-diagnostics@google.com</owner>
   <summary>
     Records requested initial screen when opening the Diagnostics App.
   </summary>
 </histogram>
 
 <histogram name="ChromeOS.DiagnosticsUi.KeyboardTesterRoutineDuration"
-    units="ms" expires_after="2026-04-12">
+    units="ms" expires_after="2026-12-31">
   <owner>byronlee@google.com</owner>
-  <owner>cros-tdm-tpe-eng@google.com</owner>
+  <owner>lt-diagnostics@google.com</owner>
   <summary>
     Records the duration that the user spent in the Keyboard Tester. Emitted
     when the user closes the keyboard tester.
@@ -1415,9 +1415,9 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.DiagnosticsUi.MemoryRoutineDuration" units="s"
-    expires_after="2026-04-12">
+    expires_after="2026-12-31">
   <owner>byronlee@google.com</owner>
-  <owner>cros-tdm-tpe-eng@google.com</owner>
+  <owner>lt-diagnostics@google.com</owner>
   <summary>
     Records the duration that the Memory Routine took to complete. Emitted when
     the routine completes successfully.
@@ -1425,9 +1425,9 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.DiagnosticsUi.OpenDuration" units="ms"
-    expires_after="2026-05-03">
+    expires_after="2026-12-31">
   <owner>byronlee@google.com</owner>
-  <owner>cros-tdm-tpe-eng@google.com</owner>
+  <owner>lt-diagnostics@google.com</owner>
   <summary>
     Records the duration that the Diagnostics App is open. emitted when the app
     is closed.
@@ -1435,9 +1435,9 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.DiagnosticsUi.RoutineCount" units="routines"
-    expires_after="2025-12-31">
+    expires_after="2026-12-31">
   <owner>byronlee@google.com</owner>
-  <owner>cros-tdm-tpe-eng@google.com</owner>
+  <owner>lt-diagnostics@google.com</owner>
   <summary>
     Records the number of routines run while the Chrome OS Diagnostics App was
     open. Begins at zero each time the app is open and recorded each time the
@@ -1446,9 +1446,9 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.DiagnosticsUi.{NavigationView}.OpenDuration"
-    units="ms" expires_after="2025-12-31">
+    units="ms" expires_after="2026-12-31">
   <owner>byronlee@google.com</owner>
-  <owner>cros-tdm-tpe-eng@google.com</owner>
+  <owner>lt-diagnostics@google.com</owner>
   <summary>
     Records the duration that the Diagnostics App is open for a given page view.
     Emitted when the active page changes or when the app is closed. Cumulatively
@@ -1465,9 +1465,9 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.DiagnosticsUi.{RoutineType}Result"
-    enum="CrosDiagnosticsRoutineResult" expires_after="2026-05-03">
+    enum="CrosDiagnosticsRoutineResult" expires_after="2026-12-31">
   <owner>byronlee@google.com</owner>
-  <owner>cros-tdm-tpe-eng@google.com</owner>
+  <owner>lt-diagnostics@google.com</owner>
   <summary>Records the result of the {RoutineType} Routine.</summary>
   <token key="RoutineType">
     <variant name="BatteryCharge"/>
@@ -1823,10 +1823,10 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Healthd.DiagnosticResult.{Routine}"
-    enum="CrosHealthdDiagnosticResult" expires_after="2026-05-03">
+    enum="CrosHealthdDiagnosticResult" expires_after="2026-12-31">
   <owner>weiluanwang@google.com</owner>
   <owner>dennyh@google.com</owner>
-  <owner>cros-tdm-tpe-eng@google.com</owner>
+  <owner>lt-diagnostics@google.com</owner>
   <summary>
     Records the diagnostic results from healthd to analyze the usage and the
     pass rate. Emitted when a routine terminates.
@@ -1883,10 +1883,10 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Healthd.EventSubscription"
-    enum="CrosHealthdEventCategory" expires_after="2025-12-31">
+    enum="CrosHealthdEventCategory" expires_after="2026-12-31">
   <owner>weiluanwang@google.com</owner>
   <owner>dennyh@google.com</owner>
-  <owner>cros-tdm-tpe-eng@google.com</owner>
+  <owner>lt-diagnostics@google.com</owner>
   <summary>
     Records the event subscription to healthd to analyze the usage. Emitted when
     the specific category is requested from a client.
@@ -1894,10 +1894,10 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Healthd.RoutineCreation"
-    enum="CrosHealthdRoutineCategory" expires_after="2026-05-03">
+    enum="CrosHealthdRoutineCategory" expires_after="2026-12-31">
   <owner>weiluanwang@google.com</owner>
   <owner>dennyh@google.com</owner>
-  <owner>cros-tdm-tpe-eng@google.com</owner>
+  <owner>lt-diagnostics@google.com</owner>
   <summary>
     Records the routine creation in healthd to analyze the usage. Emitted when
     the specific category is requested from a client.
@@ -1905,10 +1905,10 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Healthd.TelemetryResult.{Category}"
-    enum="CrosHealthdTelemetryResult" expires_after="2026-03-01">
+    enum="CrosHealthdTelemetryResult" expires_after="2026-12-31">
   <owner>weiluanwang@google.com</owner>
   <owner>dennyh@google.com</owner>
-  <owner>cros-tdm-tpe-eng@google.com</owner>
+  <owner>lt-diagnostics@google.com</owner>
   <summary>
     Records the telemetry results from healthd to analyze the usage and error
     rate. Emitted when the specific category is requested from a client.
@@ -1939,9 +1939,9 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Heartd.Action" enum="HeartdActionType"
-    expires_after="2025-12-31">
-  <owner>kerker@google.com</owner>
-  <owner>cros-tdm-tpe-eng@google.com</owner>
+    expires_after="2026-12-31">
+  <owner>byronlee@google.com</owner>
+  <owner>lt-diagnostics@google.com</owner>
   <summary>
     Records the action taken by the heartd service. When heartd starts up, we
     check if we reboot the device before, if yes, we send the metrics.
@@ -4673,10 +4673,10 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.TelemetryExtension.RoutineCreation"
-    enum="TelemetryExtensionRoutineCategory" expires_after="2026-04-12">
+    enum="TelemetryExtensionRoutineCategory" expires_after="2026-12-31">
   <owner>weiluanwang@google.com</owner>
   <owner>dennyh@google.com</owner>
-  <owner>cros-tdm-tpe-eng@google.com</owner>
+  <owner>lt-diagnostics@google.com</owner>
   <summary>
     The specific routine category created in the Telemetry extension. This is
     emitted every time a routine is created.
@@ -4684,10 +4684,10 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.TelemetryExtension.RoutineSupportedStatusQuery"
-    enum="TelemetryExtensionRoutineCategory" expires_after="2026-03-01">
+    enum="TelemetryExtensionRoutineCategory" expires_after="2026-12-31">
   <owner>weiluanwang@google.com</owner>
   <owner>dennyh@google.com</owner>
-  <owner>cros-tdm-tpe-eng@google.com</owner>
+  <owner>lt-diagnostics@google.com</owner>
   <summary>
     The specific routine category queried in the Telemetry extension. This is
     emitted every time a client queries whether a routine category is supported.
