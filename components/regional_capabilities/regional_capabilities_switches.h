@@ -40,10 +40,6 @@ inline constexpr char kDefaultListCountryOverride[] = "DEFAULT_EEA";
 inline constexpr char kEeaListCountryOverride[] = "EEA_ALL";
 
 #if BUILDFLAG(IS_ANDROID)
-// Mitigate overlap cases between the legacy search engine promo and the
-// device-based program eligibility determinations.
-BASE_DECLARE_FEATURE(kMitigateLegacySearchEnginePromoOverlap);
-
 // Ensure that the legacy search engine promos don't trigger on out of
 // scope device types.
 BASE_DECLARE_FEATURE(kRestrictLegacySearchEnginePromoOnFormFactors);

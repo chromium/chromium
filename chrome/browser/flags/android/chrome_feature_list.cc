@@ -511,7 +511,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &sensitive_content::features::kSensitiveContent,
     &sensitive_content::features::kSensitiveContentWhileSwitchingTabs,
     &supervised_user::kPropagateDeviceContentFiltersToSupervisedUser,
-    &switches::kMitigateLegacySearchEnginePromoOverlap,
     &switches::kRestrictLegacySearchEnginePromoOnFormFactors,
     &sync_sessions::kOptimizeAssociateWindowsAndroid,
     &syncer::kSyncEnableNewSyncDashboardUrl,
