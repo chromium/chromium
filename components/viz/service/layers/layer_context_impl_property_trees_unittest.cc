@@ -41,6 +41,12 @@ namespace {
 
 class LayerContextImplPropertyTreesTestBase : public LayerContextImplTest {
  protected:
+  base::expected<void, std::string> ApplyDefaultUpdate() {
+    // Apply a default valid update first.
+    auto update = CreateDefaultUpdate();
+    return layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  }
+
   mojom::TransformNodePtr CreateDefaultSecondaryRootTransformNode() {
     auto node = mojom::TransformNode::New();
     node->id = cc::kSecondaryRootPropertyNodeId;
@@ -80,9 +86,7 @@ class LayerContextImplPropertyTreesTestBase : public LayerContextImplTest {
 TEST_F(LayerContextImplPropertyTreesTestBase,
        AnyTreeChangedTriggersResetCachedDataAndNeedsUpdateDrawProperties) {
   // Initial update to set up the tree.
-  auto update1 = CreateDefaultUpdate();
-  EXPECT_TRUE(
-      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  EXPECT_TRUE(ApplyDefaultUpdate().has_value());
   auto* active_tree = layer_context_impl_->host_impl()->active_tree();
 
   // --- Test Transform Node Change ---
@@ -181,10 +185,7 @@ class LayerContextImplUpdateDisplayTreeTransformNodeTest
 
 TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
        UpdateExistingTransformNodeProperties) {
-  // Apply a default valid update first.
-  auto update1 = CreateDefaultUpdate();
-  EXPECT_TRUE(
-      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  EXPECT_TRUE(ApplyDefaultUpdate().has_value());
 
   auto update2 = CreateDefaultUpdate();
   auto node_update = CreateDefaultSecondaryRootTransformNode();
@@ -220,9 +221,7 @@ TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
 
 TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
        UpdateTransformNodeToParent) {
-  auto update1 = CreateDefaultUpdate();
-  EXPECT_TRUE(
-      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  EXPECT_TRUE(ApplyDefaultUpdate().has_value());
 
   auto update2 = CreateDefaultUpdate();
   auto node_update = CreateDefaultSecondaryRootTransformNode();
@@ -243,9 +242,7 @@ TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
 
 TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
        UpdateTransformNodeSnapAmount) {
-  auto update1 = CreateDefaultUpdate();
-  EXPECT_TRUE(
-      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  EXPECT_TRUE(ApplyDefaultUpdate().has_value());
 
   auto update2 = CreateDefaultUpdate();
   auto node_update = CreateDefaultSecondaryRootTransformNode();
@@ -264,9 +261,7 @@ TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
 
 TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
        UpdateTransformNodeHasPotentialAnimation) {
-  auto update1 = CreateDefaultUpdate();
-  EXPECT_TRUE(
-      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  EXPECT_TRUE(ApplyDefaultUpdate().has_value());
 
   auto update2 = CreateDefaultUpdate();
   auto node_update = CreateDefaultSecondaryRootTransformNode();
@@ -284,9 +279,7 @@ TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
 
 TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
        UpdateTransformNodeIsCurrentlyAnimating) {
-  auto update1 = CreateDefaultUpdate();
-  EXPECT_TRUE(
-      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  EXPECT_TRUE(ApplyDefaultUpdate().has_value());
 
   auto update2 = CreateDefaultUpdate();
   auto node_update = CreateDefaultSecondaryRootTransformNode();
@@ -304,9 +297,7 @@ TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
 
 TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
        UpdateTransformNodeScrolls) {
-  auto update1 = CreateDefaultUpdate();
-  EXPECT_TRUE(
-      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  EXPECT_TRUE(ApplyDefaultUpdate().has_value());
 
   auto update2 = CreateDefaultUpdate();
   auto node_update = CreateDefaultSecondaryRootTransformNode();
@@ -324,9 +315,7 @@ TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
 
 TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
        UpdateTransformNodeShouldUndoOverscroll) {
-  auto update1 = CreateDefaultUpdate();
-  EXPECT_TRUE(
-      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  EXPECT_TRUE(ApplyDefaultUpdate().has_value());
 
   auto update2 = CreateDefaultUpdate();
   auto node_update = CreateDefaultSecondaryRootTransformNode();
@@ -344,9 +333,7 @@ TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
 
 TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
        UpdateTransformNodeShouldBeSnapped) {
-  auto update1 = CreateDefaultUpdate();
-  EXPECT_TRUE(
-      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  EXPECT_TRUE(ApplyDefaultUpdate().has_value());
 
   auto update2 = CreateDefaultUpdate();
   auto node_update = CreateDefaultSecondaryRootTransformNode();
@@ -364,9 +351,7 @@ TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
 
 TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
        UpdateTransformNodeMovedByOuterViewportBoundsDeltaY) {
-  auto update1 = CreateDefaultUpdate();
-  EXPECT_TRUE(
-      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  EXPECT_TRUE(ApplyDefaultUpdate().has_value());
 
   auto update2 = CreateDefaultUpdate();
   auto node_update = CreateDefaultSecondaryRootTransformNode();
@@ -384,9 +369,7 @@ TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
 
 TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
        UpdateTransformNodeTransformChanged) {
-  auto update1 = CreateDefaultUpdate();
-  EXPECT_TRUE(
-      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  EXPECT_TRUE(ApplyDefaultUpdate().has_value());
 
   auto update2 = CreateDefaultUpdate();
   auto node_update = CreateDefaultSecondaryRootTransformNode();
@@ -404,9 +387,7 @@ TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
 
 TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
        UpdateTransformNodeDelegatesToParentForBackface) {
-  auto update1 = CreateDefaultUpdate();
-  EXPECT_TRUE(
-      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  EXPECT_TRUE(ApplyDefaultUpdate().has_value());
 
   auto update2 = CreateDefaultUpdate();
   auto node_update = CreateDefaultSecondaryRootTransformNode();
@@ -424,9 +405,7 @@ TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
 
 TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
        UpdateTransformNodeMaximumAnimationScale) {
-  auto update1 = CreateDefaultUpdate();
-  EXPECT_TRUE(
-      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  EXPECT_TRUE(ApplyDefaultUpdate().has_value());
 
   auto update2 = CreateDefaultUpdate();
   auto node_update = CreateDefaultSecondaryRootTransformNode();
@@ -445,9 +424,7 @@ TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
 
 TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
        UpdateTransformNodeNodeAndAncestorsAreAnimatedOrInvertible) {
-  auto update1 = CreateDefaultUpdate();
-  EXPECT_TRUE(
-      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  EXPECT_TRUE(ApplyDefaultUpdate().has_value());
 
   auto update2 = CreateDefaultUpdate();
   auto node_update = CreateDefaultSecondaryRootTransformNode();
@@ -465,9 +442,7 @@ TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
 
 TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
        UpdateTransformNodeIsInvertible) {
-  auto update1 = CreateDefaultUpdate();
-  EXPECT_TRUE(
-      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  EXPECT_TRUE(ApplyDefaultUpdate().has_value());
 
   auto update2 = CreateDefaultUpdate();
   auto node_update = CreateDefaultSecondaryRootTransformNode();
@@ -485,9 +460,7 @@ TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
 
 TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
        UpdateTransformNodeAncestorsAreInvertible) {
-  auto update1 = CreateDefaultUpdate();
-  EXPECT_TRUE(
-      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  EXPECT_TRUE(ApplyDefaultUpdate().has_value());
 
   auto update2 = CreateDefaultUpdate();
   auto node_update = CreateDefaultSecondaryRootTransformNode();
@@ -505,9 +478,7 @@ TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
 
 TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
        UpdateTransformNodeNodeAndAncestorsAreFlat) {
-  auto update1 = CreateDefaultUpdate();
-  EXPECT_TRUE(
-      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  EXPECT_TRUE(ApplyDefaultUpdate().has_value());
 
   auto update2 = CreateDefaultUpdate();
   auto node_update = CreateDefaultSecondaryRootTransformNode();
@@ -525,9 +496,7 @@ TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
 
 TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
        UpdateTransformNodeNodeOrAncestorsWillChangeTransform) {
-  auto update1 = CreateDefaultUpdate();
-  EXPECT_TRUE(
-      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  EXPECT_TRUE(ApplyDefaultUpdate().has_value());
 
   auto update2 = CreateDefaultUpdate();
   auto node_update = CreateDefaultSecondaryRootTransformNode();
@@ -545,9 +514,7 @@ TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
 
 TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
        UpdateTransformNodeVisibleFrameElementId) {
-  auto update1 = CreateDefaultUpdate();
-  EXPECT_TRUE(
-      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  EXPECT_TRUE(ApplyDefaultUpdate().has_value());
 
   auto update2 = CreateDefaultUpdate();
   auto node_update = CreateDefaultSecondaryRootTransformNode();
@@ -567,9 +534,7 @@ TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
 TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
        AddRemoveTransformNodes) {
   // Apply a default valid update first.
-  auto update1 = CreateDefaultUpdate();
-  EXPECT_TRUE(
-      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  EXPECT_TRUE(ApplyDefaultUpdate().has_value());
   uint32_t initial_node_count = layer_context_impl_->host_impl()
                                     ->active_tree()
                                     ->property_trees()
@@ -775,9 +740,7 @@ TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
 TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
        InvalidParentFrameId) {
   // Apply a default valid update first to set up the tree.
-  auto update1 = CreateDefaultUpdate();
-  EXPECT_TRUE(
-      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  EXPECT_TRUE(ApplyDefaultUpdate().has_value());
 
   auto update2 = CreateDefaultUpdate();
   auto node_update = mojom::TransformNode::New();
@@ -812,9 +775,7 @@ TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
        InvalidStickyPositionConstraintId_EmptyData) {
   // Apply a default valid update. sticky_position_data will be empty by
   // default.
-  auto update1 = CreateDefaultUpdate();
-  EXPECT_TRUE(
-      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  EXPECT_TRUE(ApplyDefaultUpdate().has_value());
   ASSERT_TRUE(layer_context_impl_->host_impl()
                   ->active_tree()
                   ->property_trees()
@@ -863,9 +824,7 @@ TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
        InvalidAnchorPositionScrollDataId_EmptyData) {
   // Apply a default valid update. anchor_position_scroll_data will be empty by
   // default.
-  auto update1 = CreateDefaultUpdate();
-  EXPECT_TRUE(
-      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  EXPECT_TRUE(ApplyDefaultUpdate().has_value());
   ASSERT_TRUE(layer_context_impl_->host_impl()
                   ->active_tree()
                   ->property_trees()
@@ -946,9 +905,7 @@ class LayerContextImplUpdateDisplayTreeClipNodeTest
 TEST_F(LayerContextImplUpdateDisplayTreeClipNodeTest,
        UpdateExistingClipNodeProperties) {
   // Apply a default valid update first.
-  auto update1 = CreateDefaultUpdate();
-  EXPECT_TRUE(
-      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  EXPECT_TRUE(ApplyDefaultUpdate().has_value());
 
   auto update2 = CreateDefaultUpdate();
   auto node_update = CreateDefaultSecondaryRootClipNode();
@@ -969,9 +926,7 @@ TEST_F(LayerContextImplUpdateDisplayTreeClipNodeTest,
 
 TEST_F(LayerContextImplUpdateDisplayTreeClipNodeTest, AddRemoveClipNodes) {
   // Apply a default valid update first.
-  auto update1 = CreateDefaultUpdate();
-  EXPECT_TRUE(
-      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  EXPECT_TRUE(ApplyDefaultUpdate().has_value());
   uint32_t initial_node_count = layer_context_impl_->host_impl()
                                     ->active_tree()
                                     ->property_trees()
@@ -1158,9 +1113,7 @@ TEST_F(LayerContextImplUpdateDisplayTreeEffectNodeTest,
 
 TEST_F(LayerContextImplUpdateDisplayTreeEffectNodeTest, AddRemoveEffectNodes) {
   // Apply a default valid update first.
-  auto update1 = CreateDefaultUpdate();
-  EXPECT_TRUE(
-      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  EXPECT_TRUE(ApplyDefaultUpdate().has_value());
   uint32_t initial_node_count = layer_context_impl_->host_impl()
                                     ->active_tree()
                                     ->property_trees()
@@ -1209,9 +1162,7 @@ TEST_F(LayerContextImplUpdateDisplayTreeEffectNodeTest, AddRemoveEffectNodes) {
 TEST_F(LayerContextImplUpdateDisplayTreeEffectNodeTest,
        AddRemoveCopyOutputRequests) {
   // Apply a default valid update first.
-  auto update1 = CreateDefaultUpdate();
-  EXPECT_TRUE(
-      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  EXPECT_TRUE(ApplyDefaultUpdate().has_value());
 
   // Add a copy request.
   auto update_add_request = CreateDefaultUpdate();
@@ -1913,10 +1864,7 @@ class LayerContextImplUpdateDisplayTreeScrollNodeTest
 
 TEST_F(LayerContextImplUpdateDisplayTreeScrollNodeTest,
        UpdateExistingScrollNodeProperties) {
-  // Apply a default valid update first.
-  auto update1 = CreateDefaultUpdate();
-  EXPECT_TRUE(
-      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  EXPECT_TRUE(ApplyDefaultUpdate().has_value());
 
   auto update2 = CreateDefaultUpdate();
   auto node_update = mojom::ScrollNode::New();
@@ -1947,10 +1895,7 @@ TEST_F(LayerContextImplUpdateDisplayTreeScrollNodeTest,
 }
 
 TEST_F(LayerContextImplUpdateDisplayTreeScrollNodeTest, AddRemoveScrollNodes) {
-  // Apply a default valid update first.
-  auto update1 = CreateDefaultUpdate();
-  EXPECT_TRUE(
-      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  EXPECT_TRUE(ApplyDefaultUpdate().has_value());
   uint32_t initial_node_count = layer_context_impl_->host_impl()
                                     ->active_tree()
                                     ->property_trees()
@@ -2159,6 +2104,154 @@ TEST_F(LayerContextImplUpdateDisplayTreeScrollNodeTest,
   EXPECT_EQ(result.error(),
             "Invalid parent_id for non-root property tree node");
 }
+
+class LayerContextImplUpdateDisplayTreeScrollNodeWithBoolParamTest
+    : public LayerContextImplUpdateDisplayTreeScrollNodeTest,
+      public ::testing::WithParamInterface<bool> {
+ protected:
+  mojom::ScrollNodePtr CreateDefaultScrollNodeUpdate() {
+    auto node_update = mojom::ScrollNode::New();
+    node_update->id = cc::kSecondaryRootPropertyNodeId;
+    node_update->parent_id = cc::kRootPropertyNodeId;
+    node_update->transform_id = cc::kSecondaryRootPropertyNodeId;
+    return node_update;
+  }
+};
+
+TEST_P(LayerContextImplUpdateDisplayTreeScrollNodeWithBoolParamTest,
+       MaxScrollOffsetAffectedByPageScale) {
+  const bool max_scroll_offset_affected_by_page_scale = GetParam();
+  EXPECT_TRUE(ApplyDefaultUpdate().has_value());
+
+  auto update = CreateDefaultUpdate();
+  auto node_update = CreateDefaultScrollNodeUpdate();
+  if (max_scroll_offset_affected_by_page_scale) {
+    node_update->max_scroll_offset_affected_by_page_scale =
+        max_scroll_offset_affected_by_page_scale;
+  }
+  update->scroll_nodes.push_back(std::move(node_update));
+
+  cc::ScrollNode* node_impl =
+      GetScrollNodeFromActiveTree(cc::kSecondaryRootPropertyNodeId);
+  ASSERT_TRUE(node_impl);
+  EXPECT_FALSE(node_impl->max_scroll_offset_affected_by_page_scale);
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_TRUE(result.has_value());
+
+  node_impl = GetScrollNodeFromActiveTree(cc::kSecondaryRootPropertyNodeId);
+  ASSERT_TRUE(node_impl);
+  EXPECT_EQ(node_impl->max_scroll_offset_affected_by_page_scale,
+            max_scroll_offset_affected_by_page_scale);
+}
+
+TEST_P(LayerContextImplUpdateDisplayTreeScrollNodeWithBoolParamTest,
+       ScrollsInnerViewport) {
+  const bool scrolls_inner_viewport = GetParam();
+  EXPECT_TRUE(ApplyDefaultUpdate().has_value());
+
+  auto update = CreateDefaultUpdate();
+  auto node_update = CreateDefaultScrollNodeUpdate();
+  if (scrolls_inner_viewport) {
+    node_update->scrolls_inner_viewport = scrolls_inner_viewport;
+  }
+  update->scroll_nodes.push_back(std::move(node_update));
+
+  cc::ScrollNode* node_impl =
+      GetScrollNodeFromActiveTree(cc::kSecondaryRootPropertyNodeId);
+  ASSERT_TRUE(node_impl);
+  EXPECT_FALSE(node_impl->scrolls_inner_viewport);
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_TRUE(result.has_value());
+
+  node_impl = GetScrollNodeFromActiveTree(cc::kSecondaryRootPropertyNodeId);
+  ASSERT_TRUE(node_impl);
+  EXPECT_EQ(node_impl->scrolls_inner_viewport, scrolls_inner_viewport);
+}
+
+TEST_P(LayerContextImplUpdateDisplayTreeScrollNodeWithBoolParamTest,
+       ScrollsOuterViewport) {
+  const bool scrolls_outer_viewport = GetParam();
+  // Apply a default valid update first.
+  EXPECT_TRUE(ApplyDefaultUpdate().has_value());
+
+  auto update = CreateDefaultUpdate();
+  auto node_update = CreateDefaultScrollNodeUpdate();
+  if (scrolls_outer_viewport) {
+    node_update->scrolls_outer_viewport = scrolls_outer_viewport;
+  }
+  update->scroll_nodes.push_back(std::move(node_update));
+
+  cc::ScrollNode* node_impl =
+      GetScrollNodeFromActiveTree(cc::kSecondaryRootPropertyNodeId);
+  ASSERT_TRUE(node_impl);
+  EXPECT_FALSE(node_impl->scrolls_outer_viewport);
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_TRUE(result.has_value());
+
+  node_impl = GetScrollNodeFromActiveTree(cc::kSecondaryRootPropertyNodeId);
+  ASSERT_TRUE(node_impl);
+  EXPECT_EQ(node_impl->scrolls_outer_viewport, scrolls_outer_viewport);
+}
+
+TEST_P(LayerContextImplUpdateDisplayTreeScrollNodeWithBoolParamTest,
+       PreventViewportScrollingFromInner) {
+  const bool prevent_viewport_scrolling_from_inner = GetParam();
+  // Apply a default valid update first.
+  EXPECT_TRUE(ApplyDefaultUpdate().has_value());
+
+  auto update = CreateDefaultUpdate();
+  auto node_update = CreateDefaultScrollNodeUpdate();
+  if (prevent_viewport_scrolling_from_inner) {
+    node_update->prevent_viewport_scrolling_from_inner =
+        prevent_viewport_scrolling_from_inner;
+  }
+  update->scroll_nodes.push_back(std::move(node_update));
+
+  cc::ScrollNode* node_impl =
+      GetScrollNodeFromActiveTree(cc::kSecondaryRootPropertyNodeId);
+  ASSERT_TRUE(node_impl);
+  EXPECT_FALSE(node_impl->prevent_viewport_scrolling_from_inner);
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_TRUE(result.has_value());
+
+  node_impl = GetScrollNodeFromActiveTree(cc::kSecondaryRootPropertyNodeId);
+  ASSERT_TRUE(node_impl);
+  EXPECT_EQ(node_impl->prevent_viewport_scrolling_from_inner,
+            prevent_viewport_scrolling_from_inner);
+}
+
+TEST_P(LayerContextImplUpdateDisplayTreeScrollNodeWithBoolParamTest,
+       IsComposited) {
+  const bool is_composited = GetParam();
+  // Apply a default valid update first.
+  EXPECT_TRUE(ApplyDefaultUpdate().has_value());
+
+  auto update = CreateDefaultUpdate();
+  auto node_update = CreateDefaultScrollNodeUpdate();
+  if (is_composited) {
+    node_update->is_composited = is_composited;
+  }
+  update->scroll_nodes.push_back(std::move(node_update));
+
+  cc::ScrollNode* node_impl =
+      GetScrollNodeFromActiveTree(cc::kSecondaryRootPropertyNodeId);
+  ASSERT_TRUE(node_impl);
+  EXPECT_FALSE(node_impl->is_composited);
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_TRUE(result.has_value());
+
+  node_impl = GetScrollNodeFromActiveTree(cc::kSecondaryRootPropertyNodeId);
+  ASSERT_TRUE(node_impl);
+  EXPECT_EQ(node_impl->is_composited, is_composited);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    DefaultValues,
+    LayerContextImplUpdateDisplayTreeScrollNodeWithBoolParamTest,
+    ::testing::Values(true, false),
+    [](const testing::TestParamInfo<
+        LayerContextImplUpdateDisplayTreeScrollNodeWithBoolParamTest::
+            ParamType>& info) { return info.param ? "True" : "False"; });
 
 class LayerContextImplUpdateDisplayTreePageScaleFactorTest
     : public LayerContextImplTest,
