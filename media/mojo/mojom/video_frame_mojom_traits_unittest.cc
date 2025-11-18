@@ -653,7 +653,6 @@ TEST_F(VideoFrameStructTraitsTest, DmabufsVideoFrameTooSmall) {
 
 TEST_F(VideoFrameStructTraitsTest, MappableSharedImageVideoFrame) {
   auto test_sii = base::MakeRefCounted<gpu::TestSharedImageInterface>();
-  test_sii->AlwaysBackMappableSharedImagesWithShMem();
   gfx::Size coded_size = gfx::Size(256, 256);
   gfx::Rect visible_rect(coded_size);
   auto timestamp = base::Milliseconds(1);

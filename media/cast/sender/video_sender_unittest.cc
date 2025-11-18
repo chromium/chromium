@@ -178,7 +178,6 @@ class VideoSenderTest : public ::testing::TestWithParam<bool>,
 
     if (encoder_type == EncoderType::kHardware) {
       sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
-      sii_->AlwaysBackMappableSharedImagesWithShMem();
       mock_gpu_factories_ =
           std::make_unique<MockGpuVideoAcceleratorFactories>(sii_.get());
       EXPECT_CALL(*mock_gpu_factories_, GetTaskRunner())

@@ -96,7 +96,6 @@ class MediaVideoEncoderWrapperTest : public TestWithCastEnvironment {
  protected:
   MediaVideoEncoderWrapperTest() {
     sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
-    sii_->AlwaysBackMappableSharedImagesWithShMem();
     mock_gpu_factories_ =
         std::make_unique<MockGpuVideoAcceleratorFactories>(sii_.get());
 

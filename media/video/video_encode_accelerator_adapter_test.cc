@@ -54,7 +54,6 @@ class VideoEncodeAcceleratorAdapterTest
 
     vea_ = new FakeVideoEncodeAccelerator(vea_runner_);
     sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
-    sii_->AlwaysBackMappableSharedImagesWithShMem();
     gpu_factories_ =
         std::make_unique<MockGpuVideoAcceleratorFactories>(sii_.get());
     supported_profiles_ = {

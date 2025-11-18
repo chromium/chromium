@@ -42,7 +42,6 @@ class GpuMemoryBufferVideoFramePoolTest : public ::testing::Test {
     test_clock_.Advance(base::Seconds(1234));
 
     sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
-    sii_->AlwaysBackMappableSharedImagesWithShMem();
     media_task_runner_ = base::MakeRefCounted<base::TestSimpleTaskRunner>();
     copy_task_runner_ = base::MakeRefCounted<base::TestSimpleTaskRunner>();
     media_task_runner_handle_ =
