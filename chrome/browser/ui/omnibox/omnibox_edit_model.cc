@@ -754,16 +754,20 @@ void OmniboxEditModel::EnterKeywordModeForDefaultSearchProvider(
                    u"");
 }
 
-void OmniboxEditModel::OpenAiMode(bool via_keyboard) {
+void OmniboxEditModel::OpenAiMode(bool via_keyboard, bool via_context_menu) {
   // If the omnibox hasn't been modified (changed selection or text), then AIM
   // button should open AIM popup. Otherwise, it should navigate to Google AI
   // page.
-  if ((popup_selection_.line == 0 ||
-       popup_selection_.line == OmniboxPopupSelection::kNoMatch) &&
-      !user_input_in_progress_ &&
-      base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxAimPopup)) {
-    controller_->popup_state_manager()->SetPopupState(OmniboxPopupState::kAim);
-    return;
+  if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxAimPopup)) {
+    bool omnibox_not_modified_by_user =
+        (popup_selection_.line == 0 ||
+         popup_selection_.line == OmniboxPopupSelection::kNoMatch) &&
+        !user_input_in_progress_;
+    if (omnibox_not_modified_by_user || via_context_menu) {
+      controller_->popup_state_manager()->SetPopupState(
+          OmniboxPopupState::kAim);
+      return;
+    }
   }
 
   std::u16string query_text =
@@ -787,7 +791,7 @@ void OmniboxEditModel::OpenSelection(OmniboxPopupSelection selection,
   // of `kNoMatch`, which would otherwise be handled by the `AcceptInput` case
   // below.
   if (selection.state == OmniboxPopupSelection::FOCUSED_BUTTON_AIM) {
-    OpenAiMode(via_keyboard);
+    OpenAiMode(via_keyboard, /*via_context_menu=*/false);
     return;
   }
   // If the AIM page action was NOT activated, then make sure we still record

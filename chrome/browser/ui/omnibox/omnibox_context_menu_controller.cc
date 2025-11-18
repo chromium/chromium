@@ -280,7 +280,7 @@ void OmniboxContextMenuController::OnGetTabPageContext(
                                          std::move(page_content_data),
                                          CreateImageEncodingOptions());
   UpdateSearchboxContext(/*tab_info=*/tab_info, /*tool_mode=*/std::nullopt);
-  edit_model_->OpenAiMode(/*via_keyboard=*/false);
+  edit_model_->OpenAiMode(/*via_keyboard=*/false, /*via_context_menu=*/true);
 }
 
 void OmniboxContextMenuController::UpdateSearchboxContext(
@@ -366,13 +366,15 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
         UpdateSearchboxContext(
             /*tab_info=*/std::nullopt,
             /*tool_mode=*/searchbox::mojom::ToolMode::kDeepSearch);
-        edit_model_->OpenAiMode(/*via_keyboard=*/false);
+        edit_model_->OpenAiMode(/*via_keyboard=*/false,
+                                /*via_context_menu=*/true);
         break;
       case IDC_OMNIBOX_CONTEXT_CREATE_IMAGES:
         UpdateSearchboxContext(
             /*tab_info=*/std::nullopt,
             /*tool_mode=*/searchbox::mojom::ToolMode::kCreateImage);
-        edit_model_->OpenAiMode(/*via_keyboard=*/false);
+        edit_model_->OpenAiMode(/*via_keyboard=*/false,
+                                /*via_context_menu=*/true);
         break;
       default:
         NOTREACHED();

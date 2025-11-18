@@ -28,7 +28,9 @@ class TestOmniboxEditModelForContextMenu : public OmniboxEditModel {
       : OmniboxEditModel(controller) {}
   ~TestOmniboxEditModelForContextMenu() override = default;
 
-  void OpenAiMode(bool via_keyboard) override { ai_mode_open_calls_++; }
+  void OpenAiMode(bool via_keyboard, bool via_context_menu) override {
+    ai_mode_open_calls_++;
+  }
 
   int ai_mode_open_calls() const { return ai_mode_open_calls_; }
 

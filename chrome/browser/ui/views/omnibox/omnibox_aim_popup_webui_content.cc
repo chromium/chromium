@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/contextual_search/searchbox_context_data.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
@@ -46,6 +47,11 @@ void OmniboxAimPopupWebUIContent::ShowUI() {
     auto* omnibox_popup_ui = webui_controller->GetAs<OmniboxPopupUI>();
     if (omnibox_popup_ui && omnibox_popup_ui->popup_aim_handler()) {
       auto context = context_data->TakePendingContext();
+      if (!context) {
+        context = std::make_unique<SearchboxContextData::Context>();
+      }
+      context->text =
+          base::UTF16ToUTF8(location_bar_view()->GetOmniboxView()->GetText());
       omnibox_popup_ui->popup_aim_handler()->OnShow(std::move(context));
     }
   }
