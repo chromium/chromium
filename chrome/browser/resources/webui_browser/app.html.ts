@@ -13,12 +13,12 @@ export function getHtml(this: WebuiBrowserAppElement) {
   <div id="topContainer">
     <div class="titlebarDiv" @mousedown="${this.onTabDragMouseDown_}">
       <div class="tabstripDiv" style="margin-left:${this.tabStripInset_}px">
-        <webui-browser-tabstrip id="tabstrip"
+        <webui-browser-tab-strip id="tabstrip"
           @tab-click="${this.onTabClick_}"
           @tab-drag-out-of-bounds="${this.onTabDragOutOfBounds_}"
           @tab-close="${this.onTabClosed_}"
           @tab-add="${this.onAddTabClick_}">
-        </webui-browser-tabstrip>
+        </webui-browser-tab-strip>
       </div>
       <if expr="not is_macosx">
         <div class="captionButtonsDiv">

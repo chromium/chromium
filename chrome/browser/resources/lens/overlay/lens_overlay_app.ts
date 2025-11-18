@@ -8,9 +8,11 @@ import './selection_overlay.js';
 import './translate_button.js';
 import '/lens/shared/searchbox_ghost_loader.js';
 import '/lens/shared/searchbox_shared_style.css.js';
-import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import '//resources/cr_elements/icons.html.js';
 import '//resources/cr_components/searchbox/searchbox.js';
+import '//resources/cr_elements/cr_button/cr_button.js';
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import '//resources/cr_elements/cr_toast/cr_toast.js';
+import '//resources/cr_elements/icons.html.js';
 
 import {HelpBubbleMixin} from '//resources/cr_components/help_bubble/help_bubble_mixin.js';
 import type {SearchboxElement} from '//resources/cr_components/searchbox/searchbox.js';

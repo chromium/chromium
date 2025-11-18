@@ -10,8 +10,10 @@ import './product_selector.js';
 import './table.js';
 import './horizontal_carousel.js';
 import './comparison_table_list.js';
-import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
+import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
+import 'chrome://resources/cr_elements/cr_loading_gradient/cr_loading_gradient.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import './shared_vars.css.js';
 

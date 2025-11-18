@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './description_citation.js';
+import './empty_section.js';
 
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';

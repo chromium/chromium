@@ -8,10 +8,12 @@ import './feedback_toast.js';
 import '/strings.m.js';
 import '/lens/shared/searchbox_ghost_loader.js';
 import '/lens/shared/searchbox_shared_style.css.js';
+import '//resources/cr_components/composebox/composebox.js';
 import '//resources/cr_components/searchbox/searchbox.js';
+import '//resources/cr_elements/cr_button/cr_button.js';
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_icons.css.js';
 import '//resources/cr_elements/cr_toast/cr_toast.js';
-import '//resources/cr_components/composebox/composebox.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {ComposeboxElement} from '//resources/cr_components/composebox/composebox.js';

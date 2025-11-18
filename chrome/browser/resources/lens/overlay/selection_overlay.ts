@@ -11,6 +11,7 @@ import './overlay_border_glow.js';
 import './overlay_shimmer_canvas.js';
 import '/strings.m.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_toast/cr_toast.js';
 
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';

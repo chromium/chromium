@@ -11,6 +11,9 @@ import '/strings.m.js';
 import './tab_strip.js';
 import './webview.js';
 import 'chrome://resources/cr_components/searchbox/searchbox.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import {assert} from '//resources/js/assert.js';

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {Tab as TabData} from '/tab_strip_api/tab_strip_api_data_model.mojom-webui.js';
@@ -89,7 +91,7 @@ export class TabElement extends CrLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'webui-browser-tabstrip': TabStrip;
+    'webui-browser-tab-strip': TabStrip;
     'webui-browser-tab': TabElement;
   }
 }

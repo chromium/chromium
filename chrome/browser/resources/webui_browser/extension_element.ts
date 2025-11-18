@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './icons.html.js';
+import '//resources/cr_elements/cr_button/cr_button.js';
 
 import {CrLitElement, type PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {MenuSourceType} from '//resources/mojo/ui/base/mojom/menu_source_type.mojom-webui.js';

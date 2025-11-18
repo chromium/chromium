@@ -20,7 +20,7 @@ const ScreenshotElementBase = SupportToolPageMixin(PolymerElement);
 
 export class ScreenshotElement extends ScreenshotElementBase {
   static get is() {
-    return 'screenshot-element';
+    return 'support-tool-screenshot';
   }
 
   static get template() {
@@ -233,7 +233,7 @@ export class ScreenshotElement extends ScreenshotElementBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'screenshot-element': ScreenshotElement;
+    'support-tool-screenshot': ScreenshotElement;
   }
 }
 

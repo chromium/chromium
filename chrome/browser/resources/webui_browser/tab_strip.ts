@@ -24,7 +24,7 @@ export interface TabStrip {
 
 export class TabStrip extends CrLitElement {
   static get is() {
-    return 'webui-browser-tabstrip';
+    return 'webui-browser-tab-strip';
   }
 
   static override get styles() {
