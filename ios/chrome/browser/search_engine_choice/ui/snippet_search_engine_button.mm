@@ -10,22 +10,13 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/search_engine_choice/ui/search_engine_choice_constants.h"
+#import "ios/chrome/browser/search_engine_choice/ui/search_engine_current_default_pill_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
-
-// View to display the 'Current default' pill.
-// TODO(crbug.com/458277988): Need to move PillView in its own file.
-@interface PillView : UIView
-- (instancetype)initWithString:(NSString*)string;
-@end
 
 namespace {
 
@@ -52,10 +43,6 @@ constexpr CGFloat kSeparatorThickness = 1.;
 constexpr NSTimeInterval kSnippetAnimationDurationInSecond = .3;
 // Alpha value for the checked background color.
 constexpr NSTimeInterval kCheckedBackgroundColorAlpha = .1;
-// Extra horizontal margin for the current default pill.
-constexpr CGFloat kCurrentDefaultPillHorizontalMargin = 5.;
-// Border width for the current default pill.
-constexpr CGFloat kCurrentDefaultPillBorderWidth = 1.;
 
 // List of values according to the style.
 typedef struct {
@@ -103,62 +90,7 @@ UIColor* GetCheckedTintColor() {
   return [UIColor colorNamed:kBlueColor];
 }
 
-// Returns just "Current default".
-// TODO(crbug.com/458252292): Need to add "Current default" string.
-NSString* GetCurrentDefaultString() {
-  NSString* string = l10n_util::GetNSStringF(
-      IDS_SEARCH_ENGINE_CHOICE_CURRENT_DEFAULT_SEARCH_ENGINE_PREPEND,
-      std::u16string());
-  StringWithTag parsed_string =
-      ParseStringWithTag(string, @"BEGIN_BOLD[ \t]*", @"[ \t]*END_BOLD");
-  if (parsed_string.range.location == NSNotFound) {
-    return string;
-  }
-  return [parsed_string.string substringWithRange:parsed_string.range];
-}
-
 }  // namespace
-
-@implementation PillView
-
-- (instancetype)initWithString:(NSString*)string {
-  self = [super initWithFrame:CGRectZero];
-  if (self) {
-    UILabel* label = [[UILabel alloc] init];
-    [self addSubview:label];
-    label.translatesAutoresizingMaskIntoConstraints = NO;
-    label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2];
-    label.adjustsFontForContentSizeCategory = YES;
-    label.text = string;
-    label.textColor = [UIColor colorNamed:kTextSecondaryColor];
-    AddSameConstraintsWithInsets(
-        label, self,
-        NSDirectionalEdgeInsetsMake(0, kCurrentDefaultPillHorizontalMargin, 0,
-                                    kCurrentDefaultPillHorizontalMargin));
-    self.layer.borderWidth = kCurrentDefaultPillBorderWidth;
-    NSArray<UITrait>* traits =
-        TraitCollectionSetForTraits(@[ UITraitUserInterfaceStyle.class ]);
-    [self registerForTraitChanges:traits
-                       withAction:@selector(applyTraitUserInterfaceStyle)];
-    [self applyTraitUserInterfaceStyle];
-  }
-  return self;
-}
-
-- (void)layoutSubviews {
-  [super layoutSubviews];
-  // Ensure the view is fully rounded based on its current height
-  self.layer.cornerRadius = self.bounds.size.height / 2.0;
-  self.layer.masksToBounds = YES;
-}
-
-- (void)applyTraitUserInterfaceStyle {
-  // The border color needs to be updated manually each time the user interface
-  // style is updated.
-  self.layer.borderColor = [UIColor colorNamed:kTextSecondaryColor].CGColor;
-}
-
-@end
 
 @implementation SnippetSearchEngineButton {
   // Container View for the faviconView.
@@ -223,16 +155,14 @@ NSString* GetCurrentDefaultString() {
         // has the same height than `kIsCurrentDefault`.
         // But the current default needs to be hidden using alpha.
         buttonLayout = &kWithCurrentDefaultButtonLayout;
-        currentDefaultPill =
-            [[PillView alloc] initWithString:GetCurrentDefaultString()];
+        currentDefaultPill = [[SearchEngineCurrentDefaultPillView alloc] init];
         currentDefaultPill.translatesAutoresizingMaskIntoConstraints = NO;
         currentDefaultPill.alpha = 0;
         [self addSubview:currentDefaultPill];
         break;
       case CurrentDefaultState::kIsCurrentDefault:
         buttonLayout = &kWithCurrentDefaultButtonLayout;
-        currentDefaultPill =
-            [[PillView alloc] initWithString:GetCurrentDefaultString()];
+        currentDefaultPill = [[SearchEngineCurrentDefaultPillView alloc] init];
         currentDefaultPill.translatesAutoresizingMaskIntoConstraints = NO;
         [self addSubview:currentDefaultPill];
         break;

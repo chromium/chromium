@@ -10,6 +10,8 @@ source_set("ui") {
     "search_engine_choice_mutator.h",
     "search_engine_choice_view_controller.h",
     "search_engine_choice_view_controller.mm",
+    "search_engine_current_default_pill_view.h",
+    "search_engine_current_default_pill_view.mm",
     "snippet_search_engine_button.h",
     "snippet_search_engine_button.mm",
     "snippet_search_engine_element.h",
