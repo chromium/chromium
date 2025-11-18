@@ -134,7 +134,7 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
   // Action chips colors.
   mixer[kColorNewTabPageActionChipBackground] = {ui::kColorSysBaseContainer};
   mixer[kColorNewTabPageActionChipBackgroundHover] = {
-      ui::kColorSysStateHoverOnSubtle};
+      ui::kColorSysStateRippleNeutralOnSubtle};
 
   mixer[kColorNewTabPageActionChipTextTitle] = {ui::kColorSysOnSurface};
   mixer[kColorNewTabPageActionChipTextBody] = {ui::kColorSysOnSurfaceSubtle};
