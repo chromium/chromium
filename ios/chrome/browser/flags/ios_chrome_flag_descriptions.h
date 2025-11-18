@@ -779,10 +779,6 @@ extern const char kPageActionMenuDescription[];
 extern const char kPageContentAnnotationsName[];
 extern const char kPageContentAnnotationsDescription[];
 
-extern const char kPageContentAnnotationsPersistSalientImageMetadataName[];
-extern const char
-    kPageContentAnnotationsPersistSalientImageMetadataDescription[];
-
 extern const char kPageContentAnnotationsRemotePageMetadataName[];
 extern const char kPageContentAnnotationsRemotePageMetadataDescription[];
 

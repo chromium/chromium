@@ -821,9 +821,7 @@ class PageContentAnnotationsServiceSalientImageMetadataBrowserTest
  public:
   PageContentAnnotationsServiceSalientImageMetadataBrowserTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kPageContentAnnotations, {}},
-         {features::kPageContentAnnotationsPersistSalientImageMetadata,
-          {{"supported_countries", "*"}, {"supported_locales", "*"}}}},
+        {{features::kPageContentAnnotations, {}}},
         /*disabled_features=*/{});
     set_load_model_on_startup(false);
   }

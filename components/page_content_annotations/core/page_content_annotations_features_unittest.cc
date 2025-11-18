@@ -114,19 +114,20 @@ TEST(PageContentAnnotationsFeaturesTest,
 }
 
 TEST(PageContentAnnotationsFeaturesTest, ShouldPersistSalientImageMetadata) {
-  base::test::ScopedFeatureList scoped_feature_list;
-
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kPageContentAnnotationsPersistSalientImageMetadata,
-      {{"supported_locales", "en-US,en-CA"}, {"supported_countries", "US,CA"}});
-
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  // Mobile should accept all locales and countries.
   EXPECT_TRUE(features::ShouldPersistSalientImageMetadata("en-US", "CA"));
+  EXPECT_TRUE(features::ShouldPersistSalientImageMetadata("fr-CH", "CH"));
+#else
+  // Desktop should only accept en-US, US.
+  EXPECT_TRUE(features::ShouldPersistSalientImageMetadata("en-US", "US"));
   // Tests case-insensitivity.
-  EXPECT_TRUE(features::ShouldPersistSalientImageMetadata("en-US", "cA"));
+  EXPECT_TRUE(features::ShouldPersistSalientImageMetadata("en-US", "uS"));
   EXPECT_FALSE(features::ShouldPersistSalientImageMetadata("", ""));
   EXPECT_FALSE(
       features::ShouldPersistSalientImageMetadata("en-US", "badcountry"));
   EXPECT_FALSE(features::ShouldPersistSalientImageMetadata("badlocale", "US"));
+#endif
 }
 
 TEST(PageContentAnnotationsFeaturesTest,
@@ -155,41 +156,41 @@ TEST(PageContentAnnotationsFeaturesTest,
   base::test::ScopedFeatureList scoped_feature_list;
   // Specified params should override defaults.
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kPageContentAnnotationsPersistSalientImageMetadata,
+      features::kRemotePageMetadata,
       {{"supported_locales", "en-US,en-CA,fr"}, {"supported_countries", "*"}});
   // All countries allowed by param, ignoring default_value allowlist.
   EXPECT_TRUE(features::IsSupportedCountryForFeature(
-      "US", features::kPageContentAnnotationsPersistSalientImageMetadata,
+      "US", features::kRemotePageMetadata,
       /*default_value=*/""));
   EXPECT_TRUE(features::IsSupportedCountryForFeature(
-      "CA", features::kPageContentAnnotationsPersistSalientImageMetadata,
+      "CA", features::kRemotePageMetadata,
       /*default_value=*/"*"));
   EXPECT_TRUE(features::IsSupportedCountryForFeature(
-      "CA", features::kPageContentAnnotationsPersistSalientImageMetadata,
+      "CA", features::kRemotePageMetadata,
       /*default_value=*/"US"));
   // Locales only allow en-US,en-CA specifically respecting param.
   EXPECT_TRUE(features::IsSupportedLocaleForFeature(
-      "en-CA", features::kPageContentAnnotationsPersistSalientImageMetadata,
+      "en-CA", features::kRemotePageMetadata,
       /*default_value=*/"*"));
   EXPECT_TRUE(features::IsSupportedLocaleForFeature(
-      "en-US", features::kPageContentAnnotationsPersistSalientImageMetadata,
+      "en-US", features::kRemotePageMetadata,
       /*default_value=*/"*"));
   // en locale is less specific than allowlist so it doesn't match.
-  EXPECT_FALSE(features::IsSupportedLocaleForFeature(
-      "en", features::kPageContentAnnotationsPersistSalientImageMetadata,
-      /*default_value=*/""));
+  EXPECT_FALSE(
+      features::IsSupportedLocaleForFeature("en", features::kRemotePageMetadata,
+                                            /*default_value=*/""));
   // More specific than allowlist is allowed.
+  EXPECT_TRUE(
+      features::IsSupportedLocaleForFeature("fr", features::kRemotePageMetadata,
+                                            /*default_value=*/"*"));
   EXPECT_TRUE(features::IsSupportedLocaleForFeature(
-      "fr", features::kPageContentAnnotationsPersistSalientImageMetadata,
+      "fr-CA", features::kRemotePageMetadata,
       /*default_value=*/"*"));
-  EXPECT_TRUE(features::IsSupportedLocaleForFeature(
-      "fr-CA", features::kPageContentAnnotationsPersistSalientImageMetadata,
-      /*default_value=*/"*"));
+  EXPECT_FALSE(
+      features::IsSupportedLocaleForFeature("it", features::kRemotePageMetadata,
+                                            /*default_value=*/""));
   EXPECT_FALSE(features::IsSupportedLocaleForFeature(
-      "it", features::kPageContentAnnotationsPersistSalientImageMetadata,
-      /*default_value=*/""));
-  EXPECT_FALSE(features::IsSupportedLocaleForFeature(
-      "zh-TW", features::kPageContentAnnotationsPersistSalientImageMetadata,
+      "zh-TW", features::kRemotePageMetadata,
       /*default_value=*/""));
 }
 

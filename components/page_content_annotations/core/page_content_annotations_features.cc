@@ -67,6 +67,46 @@ const base::FeatureParam<std::string> kAnnotatedPageContentMode{
 const base::FeatureParam<std::string> kPageContentExtractionTriggeringMode{
     &kAnnotatedPageContentExtraction, "triggering_mode", "on_load"};
 
+bool IsSupportedLocale(const std::string& locale,
+                       const std::string& supported_locales) {
+  if (supported_locales == "*") {
+    return true;
+  }
+
+  std::vector<std::string> supported = base::SplitString(
+      supported_locales, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  // An empty admits any locale.
+  if (supported.empty()) {
+    return true;
+  }
+
+  // Otherwise, the locale or the primary language subtag must match an element
+  // of the allowlist.
+  return base::Contains(supported, locale) ||
+         base::Contains(supported, l10n_util::GetLanguage(locale));
+}
+
+bool IsSupportedCountry(const std::string& country_code,
+                        const std::string& supported_countries) {
+  if (supported_countries == "*") {
+    return true;
+  }
+
+  std::vector<std::string> supported =
+      base::SplitString(supported_countries, ",", base::TRIM_WHITESPACE,
+                        base::SPLIT_WANT_NONEMPTY);
+  // An empty allowlist admits any country.
+  if (supported.empty()) {
+    return true;
+  }
+
+  return std::ranges::any_of(
+      supported, [&country_code](const auto& supported_country_code) {
+        return base::EqualsCaseInsensitiveASCII(supported_country_code,
+                                                country_code);
+      });
+}
+
 }  // namespace
 
 // Enables page content to be annotated.
@@ -84,9 +124,6 @@ BASE_FEATURE(kRemotePageMetadata, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOptimizationGuideUseContinueOnShutdownForPageContentAnnotations,
              enabled_by_default_non_ios);
-
-BASE_FEATURE(kPageContentAnnotationsPersistSalientImageMetadata,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kExtractRelatedSearchesFromPrefetchedZPSResponse,
              enabled_by_default_desktop_only);
@@ -209,14 +246,10 @@ size_t MaxVisitAnnotationCacheSize() {
 
 bool ShouldPersistSalientImageMetadata(const std::string& locale,
                                        const std::string& country_code) {
-  return base::FeatureList::IsEnabled(
-             kPageContentAnnotationsPersistSalientImageMetadata) &&
-         IsSupportedLocaleForFeature(
-             locale, kPageContentAnnotationsPersistSalientImageMetadata,
-             enabled_all_mobile_locales_en_us_desktop_only) &&
-         IsSupportedCountryForFeature(
-             country_code, kPageContentAnnotationsPersistSalientImageMetadata,
-             enabled_all_mobile_countries_us_desktop_only);
+  return IsSupportedLocale(locale,
+                           enabled_all_mobile_locales_en_us_desktop_only) &&
+         IsSupportedCountry(country_code,
+                            enabled_all_mobile_countries_us_desktop_only);
 }
 
 size_t MaxRelatedSearchesCacheSize() {
@@ -252,9 +285,10 @@ PageContentExtractionTriggeringMode GetPageContentExtractionTriggeringMode() {
   return PageContentExtractionTriggeringMode::kOnLoad;
 }
 
-bool IsSupportedLocaleForFeature(const std::string locale,
-                                 const base::Feature& feature,
-                                 const std::string& default_value) {
+bool IsSupportedLocaleForFeature(
+    const std::string& locale,
+    const base::Feature& feature,
+    const std::string& default_value = "de,en,es,fr,it,nl,pt,tr") {
   if (!base::FeatureList::IsEnabled(feature)) {
     return false;
   }
@@ -265,22 +299,8 @@ bool IsSupportedLocaleForFeature(const std::string locale,
     // The default list of supported locales for optimization guide features.
     value = default_value;
   }
-  if (value == "*") {
-    // Still provide a way to enable all locales remotely via the '*' character.
-    return true;
-  }
 
-  std::vector<std::string> supported_locales = base::SplitString(
-      value, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  // An empty allowlist admits any locale.
-  if (supported_locales.empty()) {
-    return true;
-  }
-
-  // Otherwise, the locale or the primary language subtag must match an element
-  // of the allowlist.
-  return base::Contains(supported_locales, locale) ||
-         base::Contains(supported_locales, l10n_util::GetLanguage(locale));
+  return IsSupportedLocale(locale, value);
 }
 
 bool IsSupportedCountryForFeature(const std::string& country_code,
@@ -296,24 +316,8 @@ bool IsSupportedCountryForFeature(const std::string& country_code,
     // The default list of supported countries for optimization guide features.
     value = default_value;
   }
-  if (value == "*") {
-    // Still provide a way to enable all countries remotely via the '*'
-    // character.
-    return true;
-  }
 
-  std::vector<std::string> supported_countries = base::SplitString(
-      value, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  // An empty allowlist admits any country.
-  if (supported_countries.empty()) {
-    return true;
-  }
-
-  return std::ranges::any_of(
-      supported_countries, [&country_code](const auto& supported_country_code) {
-        return base::EqualsCaseInsensitiveASCII(supported_country_code,
-                                                country_code);
-      });
+  return IsSupportedCountry(country_code, value);
 }
 
 }  // namespace page_content_annotations::features

@@ -8044,11 +8044,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "page-content-annotations-persist-salient-image-metadata",
-    "owners": [ "sophiechang@chromium.org", "chrome-intelligence-core@google.com"],
-    "expiry_milestone": 130
-  },
-  {
     "name": "page-content-annotations-remote-page-metadata",
     "owners": [ "sophiechang@chromium.org", "chrome-intelligence-core@google.com"],
     "expiry_milestone": 150

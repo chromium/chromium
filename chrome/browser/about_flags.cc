@@ -7553,15 +7553,6 @@ const FeatureEntry kFeatureEntries[] = {
          kPageContentAnnotationsVariations,
          "PageContentAnnotations")},
 
-    {"page-content-annotations-persist-salient-image-metadata",
-     flag_descriptions::kPageContentAnnotationsPersistSalientImageMetadataName,
-     flag_descriptions::
-         kPageContentAnnotationsPersistSalientImageMetadataDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         page_content_annotations::features::
-             kPageContentAnnotationsPersistSalientImageMetadata)},
-
     {"page-content-annotations-remote-page-metadata",
      flag_descriptions::kPageContentAnnotationsRemotePageMetadataName,
      flag_descriptions::kPageContentAnnotationsRemotePageMetadataDescription,

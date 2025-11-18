@@ -3342,13 +3342,6 @@ inline constexpr char kPageContentAnnotationsName[] =
 inline constexpr char kPageContentAnnotationsDescription[] =
     "Enables page content to be annotated on-device.";
 
-inline constexpr char kPageContentAnnotationsPersistSalientImageMetadataName[] =
-    "Page content annotations - Persist salient image metadata";
-inline constexpr char
-    kPageContentAnnotationsPersistSalientImageMetadataDescription[] =
-        "Enables salient image metadata per page load to be persisted "
-        "on-device.";
-
 inline constexpr char kPageContentAnnotationsRemotePageMetadataName[] =
     "Page content annotations - Remote page metadata";
 inline constexpr char kPageContentAnnotationsRemotePageMetadataDescription[] =
