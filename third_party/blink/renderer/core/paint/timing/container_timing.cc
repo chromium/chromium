@@ -85,6 +85,13 @@ void ContainerTiming::Record::MaybeUpdateLastNewPaintedArea(
 
   has_pending_changes_ = true;
 
+  // A container timing root with the ignore attribute will not report to
+  // ancestor roots.
+  if (container_root->FastGetAttribute(
+          html_names::kContainertimingIgnoreAttr)) {
+    return;
+  }
+
   Element* parent_container_root = GetParentContainerRoot(container_root);
   if (!parent_container_root) {
     return;
