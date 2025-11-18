@@ -748,6 +748,7 @@ class BlinkPerfWebGL(_BlinkPerfBenchmark):
                 component='Blink>WebGPU',
                 documentation_url='https://bit.ly/blink-perf-benchmarks')
 class BlinkPerfWebGPU(_BlinkPerfBenchmark):
+  # Run the WebGPU perf tests ONLY on core-capable adapters.
   SUBDIR = 'webgpu'
   SUPPORTED_PLATFORMS = [
       story.expectations.WIN_10,
@@ -760,17 +761,16 @@ class BlinkPerfWebGPU(_BlinkPerfBenchmark):
     return 'blink_perf.webgpu'
 
   def SetExtraBrowserOptionsWithBrowser(self, options, possible_browser):
+    # Make sure WebGPU is enabled if possible, even if not shipped.
+    # The test itself ensures it won't use a fallback (software) backend.
+    options.AppendExtraBrowserArgs(['--enable-unsafe-webgpu'])
+
     if possible_browser.platform.GetOSName() == 'linux':
-      # On Linux, WebGPU is not yet enabled by default, and also needs some
-      # extra flags to make sure Chromium is in the correct mode to run WebGPU.
-      # TODO(442791440): TODO(40218893): Remove flags as they become unneeded.
-      #
-      # Note, we avoid --enable-unsafe-webgpu because we never want to run perf
-      # tests on the SwiftShader CPU-fallback backend (which is disabled without
-      # that flag). If this results in WebGPU being unavailable, these tests
-      # will skip themselves.
+      # Flags to make sure Chromium is in the correct mode to run WebGPU.
+      # TODO(442791440): TODO(40218893): Remove these flags and switch to
+      # testing the backend we get by default. Or, if needed, test both.
       options.AppendExtraBrowserArgs([
-          '--enable-features=WebGPUService,Vulkan,VulkanFromANGLE',
+          '--enable-features=Vulkan,VulkanFromANGLE',
           '--use-angle=vulkan',
           '--ozone-platform=x11',
       ])
@@ -784,9 +784,10 @@ class BlinkPerfWebGPU(_BlinkPerfBenchmark):
                 component='Blink>WebGPU',
                 documentation_url='https://bit.ly/blink-perf-benchmarks')
 class BlinkPerfWebGPUCompat(_BlinkPerfBenchmark):
+  # Run the WebGPU perf tests ONLY on core-INcapable adapters.
   SUBDIR = 'webgpu'
   # Currently, Android is the only production target platform for WebGPU
-  # Compat's OpenGL ES backend. Enable other Compat platforms as needed.
+  # Compat's core-incapable backend(s). Enable other Compat configs as needed.
   SUPPORTED_PLATFORMS = [story.expectations.ALL_ANDROID]
   # TODO(crbug.com/443111618): Schedule this benchmark.
   SCHEDULED = False
@@ -803,9 +804,13 @@ class BlinkPerfWebGPUCompat(_BlinkPerfBenchmark):
                                   append_query='compatonly')
 
   def SetExtraBrowserOptionsWithBrowser(self, options, possible_browser):
-    options.AppendExtraBrowserArgs([
-        '--use-webgpu-adapter=opengles',
-    ])
+    # Make sure WebGPU is enabled if possible, even if not shipped.
+    # The test itself ensures it won't use a fallback (software) backend.
+    options.AppendExtraBrowserArgs(['--enable-unsafe-webgpu'])
+
+    # Make sure we're only using the GLES backend. Change this if different
+    # flags are needed on other Core-incapable configs.
+    options.AppendExtraBrowserArgs(['--use-webgpu-adapter=opengles'])
 
 
 @benchmark.Info(emails=[
