@@ -14,6 +14,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
+import org.chromium.chrome.browser.omnibox.fusebox.ComposeBoxQueryControllerBridge;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceResult;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.omnibox.AutocompleteInput;
@@ -126,7 +127,7 @@ public class AutocompleteController {
      * @param input The AutocompleteInput containing page URL and classification.
      * @param webContents The WebContents for the current tab.
      */
-    void startPrefetch(AutocompleteInput input, @Nullable WebContents webContents) {
+    public void startPrefetch(AutocompleteInput input, @Nullable WebContents webContents) {
         if (mNativeController == 0) return;
         AutocompleteControllerJni.get()
                 .startPrefetch(
@@ -331,6 +332,13 @@ public class AutocompleteController {
                         mNativeController, match.getNativeObjectRef(), matchIndex, webContents);
     }
 
+    public void setComposeboxQueryControllerBridge(
+            @Nullable ComposeBoxQueryControllerBridge bridge) {
+        AutocompleteControllerJni.get()
+                .setComposeboxQueryControllerBridge(
+                        mNativeController, bridge == null ? 0L : bridge.getNativeInstance());
+    }
+
     /**
      * Pass the voice provider a list representing the results of a voice recognition.
      *
@@ -452,6 +460,10 @@ public class AutocompleteController {
                 long nativeAutocompleteControllerAndroid,
                 long nativeAutocompleteMatch,
                 long elapsedTimeSinceInputChange);
+
+        void setComposeboxQueryControllerBridge(
+                long nativeAutocompleteControllerAndroid,
+                long nativeComposeboxQueryControllerBridge);
 
         void setVoiceMatches(
                 long nativeAutocompleteControllerAndroid,

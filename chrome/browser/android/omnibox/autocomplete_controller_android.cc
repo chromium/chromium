@@ -180,6 +180,10 @@ void AutocompleteControllerAndroid::Start(JNIEnv* env,
   input_.set_prefer_keyword(prefer_keyword);
   input_.set_allow_exact_keyword_match(allow_exact_keyword_match);
   input_.set_omit_asynchronous_matches(!want_asynchronous_matches);
+  if (composebox_query_controller_bridge_) {
+    input_.set_lens_overlay_suggest_inputs(
+        composebox_query_controller_bridge_->GetLensOverlaySuggestInputs());
+  }
   autocomplete_controller_->Start(input_);
 }
 
@@ -297,6 +301,10 @@ void AutocompleteControllerAndroid::OnOmniboxFocused(
   input_.set_current_url(current_url);
   input_.set_current_title(current_title);
   input_.set_focus_type(OFT::INTERACTION_FOCUS);
+  if (composebox_query_controller_bridge_) {
+    input_.set_lens_overlay_suggest_inputs(
+        composebox_query_controller_bridge_->GetLensOverlaySuggestInputs());
+  }
 
   autocomplete_controller_->Start(input_);
 }
@@ -470,6 +478,14 @@ void AutocompleteControllerAndroid::Shutdown() {
 // static
 void AutocompleteControllerAndroid::EnsureFactoryBuilt() {
   AutocompleteControllerAndroid::Factory::GetInstance();
+}
+
+void AutocompleteControllerAndroid::SetComposeboxQueryControllerBridge(
+    JNIEnv* env,
+    uintptr_t composebox_controller_ptr) {
+  composebox_query_controller_bridge_ =
+      reinterpret_cast<ComposeboxQueryControllerBridge*>(
+          composebox_controller_ptr);
 }
 
 void AutocompleteControllerAndroid::SetVoiceMatches(

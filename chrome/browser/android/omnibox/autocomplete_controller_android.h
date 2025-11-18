@@ -10,6 +10,7 @@
 #include "base/android/jni_android.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/android/omnibox/composebox_query_controller_bridge.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
@@ -104,6 +105,11 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
 
   static void EnsureFactoryBuilt();
 
+  // Pass an instance of the ComposeboxQueryControllerBridge to improve Suggest.
+  void SetComposeboxQueryControllerBridge(
+      JNIEnv* env,
+      uintptr_t composebox_controller_bridge_ptr);
+
   // Pass detected voice matches down to VoiceSuggestionsProvider.
   void SetVoiceMatches(
       JNIEnv* env,
@@ -197,6 +203,11 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
   // Invalidated only immediately before the AutocompleteControllerAndroid is
   // destroyed.
   std::unique_ptr<AutocompleteController> autocomplete_controller_;
+
+  // The ComposeBoxQueryController instance related to the same input session.
+  // This may and often will be unset.
+  raw_ptr<const ComposeboxQueryControllerBridge>
+      composebox_query_controller_bridge_;
 
   // Factory used to create asynchronously invoked callbacks.
   // Retained throughout the lifetime of the AutocompleteControllerAndroid.

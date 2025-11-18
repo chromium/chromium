@@ -227,6 +227,11 @@ bool ComposeboxQueryControllerBridge::IsCreateImagesEligible(JNIEnv* env) {
   return aim_service && aim_service->IsCreateImagesEligible();
 }
 
+const lens::proto::LensOverlaySuggestInputs&
+ComposeboxQueryControllerBridge::GetLensOverlaySuggestInputs() const {
+  return query_controller_->suggest_inputs();
+}
+
 void ComposeboxQueryControllerBridge::OnFileUploadStatusChanged(
     const base::UnguessableToken& file_token,
     lens::MimeType mime_type,

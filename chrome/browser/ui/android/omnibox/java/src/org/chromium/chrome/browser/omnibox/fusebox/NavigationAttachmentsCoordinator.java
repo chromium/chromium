@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.AiModeActivationSource;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
@@ -128,6 +129,8 @@ public class NavigationAttachmentsCoordinator
         mMediator = null;
 
         mComposeBoxQueryControllerBridge = ComposeBoxQueryControllerBridge.getForProfile(profile);
+        AutocompleteController.getForProfile(profile)
+                .setComposeboxQueryControllerBridge(mComposeBoxQueryControllerBridge);
         if (mComposeBoxQueryControllerBridge == null) return;
 
         // Set the bridge for the model list to enable tight coupling

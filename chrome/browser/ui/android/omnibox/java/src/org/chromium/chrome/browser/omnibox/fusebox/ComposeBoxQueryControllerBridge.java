@@ -41,6 +41,10 @@ public class ComposeBoxQueryControllerBridge {
         mNativeInstance = 0;
     }
 
+    public long getNativeInstance() {
+        return mNativeInstance;
+    }
+
     /** Start a new Composebox session. An active session is required to upload files. */
     void notifySessionStarted() {
         ComposeBoxQueryControllerBridgeJni.get().notifySessionStarted(mNativeInstance);

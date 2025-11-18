@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/contextual_search/internal/composebox_query_controller.h"
+#include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "third_party/jni_zero/jni_zero.h"
 
 namespace content {
@@ -50,6 +51,9 @@ class ComposeboxQueryControllerBridge
   void RemoveAttachment(JNIEnv* env, const std::string& token);
   bool IsPdfUploadEligible(JNIEnv* env);
   bool IsCreateImagesEligible(JNIEnv* env);
+
+  const lens::proto::LensOverlaySuggestInputs& GetLensOverlaySuggestInputs()
+      const;
 
   // ComposeboxQueryController::FileUploadStatusObserver:
   void OnFileUploadStatusChanged(

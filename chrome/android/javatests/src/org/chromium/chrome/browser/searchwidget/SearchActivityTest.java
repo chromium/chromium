@@ -6,8 +6,11 @@ package org.chromium.chrome.browser.searchwidget;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyBoolean;
+import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -434,11 +437,10 @@ public class SearchActivityTest {
 
         // Set some text in the search box, then continue startup.
         mOmnibox.requestFocus();
-        // Confirm specifically:
-        // - no prefetch,
-        // - no zero suggestions fetches,
-        // - no typed suggestions fetches.
-        verifyNoMoreInteractions(mAutocompleteController);
+
+        verify(mAutocompleteController, never()).start(any(), anyInt(), anyBoolean());
+        verify(mAutocompleteController, never()).startPrefetch(any(), any());
+        verify(mAutocompleteController, never()).startZeroSuggest(any());
 
         ThreadUtils.runOnUiThreadBlocking(mTestDelegate.onSearchEngineFinalizedCallback.bind(true));
 

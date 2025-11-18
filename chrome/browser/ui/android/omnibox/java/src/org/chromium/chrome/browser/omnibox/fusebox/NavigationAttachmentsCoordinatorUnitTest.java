@@ -44,6 +44,8 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -66,7 +68,9 @@ import java.util.function.Function;
 public class NavigationAttachmentsCoordinatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private ComposeBoxQueryControllerBridge.Natives mControllerMock;
+    @Mock private AutocompleteController mAutocompleteController;
+    @Mock private AutocompleteController.Natives mControllerJniMock;
+    @Mock private ComposeBoxQueryControllerBridge.Natives mComposeboxController;
     @Mock private LocationBarDataProvider mLocationBarDataProvider;
     @Mock private NavigationAttachmentsMediator mMediator;
     @Mock private TabModelSelector mTabModelSelector;
@@ -92,7 +96,10 @@ public class NavigationAttachmentsCoordinatorUnitTest {
 
     @Before
     public void setUp() {
-        ComposeBoxQueryControllerBridgeJni.setInstanceForTesting(mControllerMock);
+        ComposeBoxQueryControllerBridgeJni.setInstanceForTesting(mComposeboxController);
+
+        AutocompleteControllerJni.setInstanceForTesting(mControllerJniMock);
+        lenient().doReturn(mAutocompleteController).when(mControllerJniMock).getForProfile(any());
 
         mActivityController = Robolectric.buildActivity(TestActivity.class).setup();
         Activity activity = mActivityController.get();
@@ -137,7 +144,7 @@ public class NavigationAttachmentsCoordinatorUnitTest {
         // Start with a default state.
         mCoordinator.setMediatorForTesting(null);
 
-        doReturn(/* nativeInstance= */ 1L).when(mControllerMock).init(any(Profile.class));
+        doReturn(/* nativeInstance= */ 1L).when(mComposeboxController).init(any(Profile.class));
         mProfileSupplier.set(mProfile);
         assertNotNull(mCoordinator.getMediatorForTesting());
         assertNotEquals(mMediator, mCoordinator.getMediatorForTesting());
@@ -149,7 +156,7 @@ public class NavigationAttachmentsCoordinatorUnitTest {
         // Start with a default state.
         mCoordinator.setMediatorForTesting(null);
 
-        doReturn(/* nativeInstance= */ 0L).when(mControllerMock).init(any(Profile.class));
+        doReturn(/* nativeInstance= */ 0L).when(mComposeboxController).init(any(Profile.class));
         mProfileSupplier.set(mProfile);
         assertNull(mCoordinator.getMediatorForTesting());
     }
@@ -161,7 +168,7 @@ public class NavigationAttachmentsCoordinatorUnitTest {
         mCoordinator.setMediatorForTesting(null);
 
         mProfileSupplier.set(mProfile);
-        verify(mControllerMock, never()).init(any());
+        verify(mComposeboxController, never()).init(any());
         assertNull(mCoordinator.getMediatorForTesting());
     }
 
@@ -242,7 +249,7 @@ public class NavigationAttachmentsCoordinatorUnitTest {
     @Test
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testNtpAiModeButtonPress() {
-        doReturn(/* nativeInstance= */ 1L).when(mControllerMock).init(any(Profile.class));
+        doReturn(/* nativeInstance= */ 1L).when(mComposeboxController).init(any(Profile.class));
         mProfileSupplier.set(mProfile);
         ShadowLooper.idleMainLooper();
         mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.AI_MODE);
@@ -263,7 +270,7 @@ public class NavigationAttachmentsCoordinatorUnitTest {
     @Test
     @EnableFeatures({OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT})
     public void getAttachmentTokens_returnsEmptyListWhenMediatorHasNoAttachments() {
-        doReturn(/* nativeInstance= */ 1L).when(mControllerMock).init(any(Profile.class));
+        doReturn(/* nativeInstance= */ 1L).when(mComposeboxController).init(any(Profile.class));
         mProfileSupplier.set(mProfile);
         ShadowLooper.idleMainLooper();
 
@@ -275,7 +282,7 @@ public class NavigationAttachmentsCoordinatorUnitTest {
     @Test
     @EnableFeatures({OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT})
     public void getAttachmentTokens_returnsTokensWhenMediatorHasAttachments() {
-        doReturn(/* nativeInstance= */ 1L).when(mControllerMock).init(any(Profile.class));
+        doReturn(/* nativeInstance= */ 1L).when(mComposeboxController).init(any(Profile.class));
         mProfileSupplier.set(mProfile);
         ShadowLooper.idleMainLooper();
 
