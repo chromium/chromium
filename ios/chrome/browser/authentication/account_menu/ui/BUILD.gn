@@ -12,7 +12,6 @@ source_set("ui") {
     "account_menu_view_controller.h",
     "account_menu_view_controller.mm",
   ]
-  public_deps = [ "//ios/chrome/browser/shared/coordinator/chrome_coordinator" ]
   deps = [
     "//base",
     "//components/strings",
