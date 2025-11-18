@@ -559,6 +559,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
                 mControlContainer.mutateHairlineLayoutParams();
         hairlineLayoutParams.anchorGravity =
                 newControlsPosition == ControlsPosition.TOP ? Gravity.BOTTOM : Gravity.TOP;
+        hairlineLayoutParams.gravity = hairlineLayoutParams.anchorGravity;
         LayoutParams layoutParams = mControlContainer.mutateLayoutParams();
         int verticalGravity =
                 newControlsPosition == ControlsPosition.TOP ? Gravity.TOP : Gravity.BOTTOM;
