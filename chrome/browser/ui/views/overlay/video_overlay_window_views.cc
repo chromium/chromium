@@ -1512,6 +1512,12 @@ void VideoOverlayWindowViews::OnUpdateControlsBounds() {
   gfx::Rect middle_controls_bounds = gfx::BoundingRect(
       top_controls_bounds.bottom_left(), bottom_controls_bounds.top_right());
 
+  // For video conferencing controls there are no bottom controls, so we center
+  // the middle vc controls given the height of the top controls.
+  gfx::Rect vc_middle_controls_bounds(
+      top_controls_bounds.bottom_left(),
+      {bounds.width(), bounds.height() - (2 * top_controls_bounds.height())});
+
   title_view_->SetSize(bounds.size());
   playback_controls_container_view_->SetSize(bounds.size());
   vc_controls_container_view_->SetSize(bounds.size());
@@ -1539,18 +1545,26 @@ void VideoOverlayWindowViews::OnUpdateControlsBounds() {
   minimize_button_->SetPosition(GetBounds().size());
   back_to_tab_button_->SetPosition(GetBounds().size());
 
+  const bool showing_vc_controls = show_toggle_camera_button_ ||
+                                   show_toggle_microphone_button_ ||
+                                   show_hang_up_button_;
+  gfx::Rect effective_middle_controls_bounds =
+      showing_vc_controls ? vc_middle_controls_bounds : middle_controls_bounds;
+
   // Positioning of the middle row of controls.
   const gfx::Point center_control_position(
-      middle_controls_bounds.CenterPoint().x() - kCenterButtonSize / 2,
-      middle_controls_bounds.CenterPoint().y() - kCenterButtonSize / 2);
+      effective_middle_controls_bounds.CenterPoint().x() -
+          kCenterButtonSize / 2,
+      effective_middle_controls_bounds.CenterPoint().y() -
+          kCenterButtonSize / 2);
   const gfx::Point center_left_control_position(
       center_control_position.x() - kCenterControlMargin -
           kActionButtonSize.width(),
-      middle_controls_bounds.CenterPoint().y() -
+      effective_middle_controls_bounds.CenterPoint().y() -
           kActionButtonSize.height() / 2);
   const gfx::Point center_right_control_position(
       center_control_position.x() + kCenterButtonSize + kCenterControlMargin,
-      middle_controls_bounds.CenterPoint().y() -
+      effective_middle_controls_bounds.CenterPoint().y() -
           kActionButtonSize.height() / 2);
 
   // If any VC control is visible, then we will hide the playback controls
@@ -1558,8 +1572,7 @@ void VideoOverlayWindowViews::OnUpdateControlsBounds() {
   hang_up_button_->SetVisible(show_hang_up_button_);
   toggle_camera_button_->SetVisible(show_toggle_camera_button_);
   toggle_microphone_button_->SetVisible(show_toggle_microphone_button_);
-  if (show_toggle_camera_button_ || show_toggle_microphone_button_ ||
-      show_hang_up_button_) {
+  if (showing_vc_controls) {
     hang_up_button_->SetPosition(center_control_position);
     toggle_camera_button_->SetPosition(center_left_control_position);
     toggle_microphone_button_->SetPosition(center_right_control_position);
