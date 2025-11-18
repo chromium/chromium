@@ -57,8 +57,8 @@ class UnitTestCapturedSitesCommands(unittest.TestCase):
         [
             'chrome', [],
             ('/usr/bin/google-chrome --ignore-certificate-errors-spki-list=2HcX'
-             'CSKKJS0lEXLQEWhpHUfGuojiU0tiT5gOF9LP6IQ=,PoNnQAwghMiLUPg1YNFtvTfG'
-             'reNT8r9oeLEyzgNCJWc= --user-data-dir="/tmp/captured_sites/userdir'
+             'CSKKJS0lEXLQEWhpHUfGuojiU0tiT5gOF9LP6IQ=,PhrPvGIaAMmd29hj8BCZOq09'
+             '6yj7uMpRNHpn5PDxI6I= --user-data-dir="/tmp/captured_sites/userdir'
              '" --disable-application-cache --show-autofill-signatures --enable'
              '-features=AutofillShowTypePredictions --disable-features=Autofill'
              'CacheQueryResponses')
@@ -66,8 +66,8 @@ class UnitTestCapturedSitesCommands(unittest.TestCase):
         [
             'chrome', ['-r'],
             ('out/Release/chrome --ignore-certificate-errors-spki-list=2HcXCSKK'
-             'JS0lEXLQEWhpHUfGuojiU0tiT5gOF9LP6IQ=,PoNnQAwghMiLUPg1YNFtvTfGreNT'
-             '8r9oeLEyzgNCJWc= --user-data-dir="/tmp/captured_sites/userdir" --'
+             'JS0lEXLQEWhpHUfGuojiU0tiT5gOF9LP6IQ=,PhrPvGIaAMmd29hj8BCZOq096yj7'
+             'uMpRNHpn5PDxI6I= --user-data-dir="/tmp/captured_sites/userdir" --'
              'disable-application-cache --show-autofill-signatures --enable-fea'
              'tures=AutofillShowTypePredictions --disable-features=AutofillCach'
              'eQueryResponses')
@@ -75,8 +75,8 @@ class UnitTestCapturedSitesCommands(unittest.TestCase):
         [
             'chrome', ['-w'],
             ('/usr/bin/google-chrome --ignore-certificate-errors-spki-list=2HcX'
-             'CSKKJS0lEXLQEWhpHUfGuojiU0tiT5gOF9LP6IQ=,PoNnQAwghMiLUPg1YNFtvTfG'
-             'reNT8r9oeLEyzgNCJWc= --user-data-dir="/tmp/captured_sites/userdir'
+             'CSKKJS0lEXLQEWhpHUfGuojiU0tiT5gOF9LP6IQ=,PhrPvGIaAMmd29hj8BCZOq09'
+             '6yj7uMpRNHpn5PDxI6I= --user-data-dir="/tmp/captured_sites/userdir'
              '" --disable-application-cache --show-autofill-signatures --enable'
              '-features=AutofillShowTypePredictions --disable-features=Autofill'
              'CacheQueryResponses --host-resolver-rules="MAP *:80 127.0.0.1:808'
@@ -85,8 +85,8 @@ class UnitTestCapturedSitesCommands(unittest.TestCase):
         [
             'chrome', ['-r', '-w'],
             ('out/Release/chrome --ignore-certificate-errors-spki-list=2HcXCSKK'
-             'JS0lEXLQEWhpHUfGuojiU0tiT5gOF9LP6IQ=,PoNnQAwghMiLUPg1YNFtvTfGreNT'
-             '8r9oeLEyzgNCJWc= --user-data-dir="/tmp/captured_sites/userdir" --'
+             'JS0lEXLQEWhpHUfGuojiU0tiT5gOF9LP6IQ=,PhrPvGIaAMmd29hj8BCZOq096yj7'
+             'uMpRNHpn5PDxI6I= --user-data-dir="/tmp/captured_sites/userdir" --'
              'disable-application-cache --show-autofill-signatures --enable-fea'
              'tures=AutofillShowTypePredictions --disable-features=AutofillCach'
              'eQueryResponses --host-resolver-rules="MAP *:80 127.0.0.1:8080,MA'

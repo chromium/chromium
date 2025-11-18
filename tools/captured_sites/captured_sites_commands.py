@@ -111,7 +111,7 @@ _WPR_CERT_LOOKUP = {
             '2HcXCSKKJS0lEXLQEWhpHUfGuojiU0tiT5gOF9LP6IQ='),
     'rsa':
     WprInfo('wpr_cert.pem', 'wpr_key.pem',
-            'PoNnQAwghMiLUPg1YNFtvTfGreNT8r9oeLEyzgNCJWc='),
+            'PhrPvGIaAMmd29hj8BCZOq096yj7uMpRNHpn5PDxI6I='),
 }
 
 

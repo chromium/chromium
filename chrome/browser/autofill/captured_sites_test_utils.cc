@@ -105,7 +105,7 @@ const int kAutofillActionNumRetries = 5;
 // public key hash. Doing so tells Chrome to ignore server certificate
 // validation errors from WPR.
 const char kWebPageReplayCertSPKI[] =
-    "PoNnQAwghMiLUPg1YNFtvTfGreNT8r9oeLEyzgNCJWc=";
+    "PhrPvGIaAMmd29hj8BCZOq096yj7uMpRNHpn5PDxI6I=";
 
 const char kTimeClockOverrideNotSetMessage[] =
     "No TimeClock override set from wpr archive: ";
