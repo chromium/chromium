@@ -44,6 +44,10 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/command.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/ash/components/network/network_handler_test_helper.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace glic {
 namespace {
 using ::base::Bucket;
@@ -215,6 +219,9 @@ class GlicMetricsTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   TestStartupLaunchManager startup_launch_manager_;
+#if BUILDFLAG(IS_CHROMEOS)
+  ash::NetworkHandlerTestHelper network_handler_test_helper_;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   content::RenderViewHostTestEnabler enabler_;
 
