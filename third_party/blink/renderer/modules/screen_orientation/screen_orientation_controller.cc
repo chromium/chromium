@@ -7,8 +7,6 @@
 #include <memory>
 #include <utility>
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -279,18 +277,6 @@ void ScreenOrientationController::OnLockOrientationResult(
     ScreenOrientationLockResult result) {
   if (!pending_callback_ || request_id != request_id_)
     return;
-
-  if (IdentifiabilityStudySettings::Get()->ShouldSampleSurface(
-          IdentifiableSurface::FromTypeAndToken(
-              IdentifiableSurface::Type::kWebFeature,
-              WebFeature::kScreenOrientationLock))) {
-    auto* context = GetExecutionContext();
-    IdentifiabilityMetricBuilder(context->UkmSourceID())
-        .AddWebFeature(WebFeature::kScreenOrientationLock,
-                       result == ScreenOrientationLockResult::
-                                     SCREEN_ORIENTATION_LOCK_RESULT_SUCCESS)
-        .Record(context->UkmRecorder());
-  }
 
   switch (result) {
     case ScreenOrientationLockResult::SCREEN_ORIENTATION_LOCK_RESULT_SUCCESS:
