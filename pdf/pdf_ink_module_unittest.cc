@@ -34,6 +34,7 @@
 #include "pdf/pdf_ink_module_client.h"
 #include "pdf/pdf_ink_transform.h"
 #include "pdf/pdfium/pdfium_ink_reader.h"
+#include "pdf/test/input_event_util.h"
 #include "pdf/test/mock_pdf_caret_client.h"
 #include "pdf/test/mouse_event_builder.h"
 #include "pdf/test/pdf_ink_test_helpers.h"
@@ -218,13 +219,6 @@ MATCHER_P2(WebKeyboardEventEq, key, modifiers, "") {
     return false;
   }
   return true;
-}
-
-blink::WebMouseEvent CreateMouseMoveEventAtPoint(const gfx::PointF& point) {
-  return MouseEventBuilder()
-      .SetType(blink::WebInputEvent::Type::kMouseMove)
-      .SetPosition(point)
-      .Build();
 }
 
 blink::WebMouseEvent CreateMouseMoveWithLeftButtonEventAtPoint(
@@ -1103,9 +1097,7 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
     {
       // Start a drawing or erase action.
       blink::WebMouseEvent mouse_down_event =
-          MouseEventBuilder()
-              .CreateLeftClickAtPosition(kMouseDownPoint)
-              .Build();
+          CreateLeftClickWebMouseEventAtPosition(kMouseDownPoint);
       EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
 
       // Simulate scenario where another view has taken the focus and consumed
@@ -1113,7 +1105,7 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
       // left mouse button being pressed.  This should be handled, as it treats
       // it as a signal to terminate the prior stroke.
       blink::WebMouseEvent mouse_move_event =
-          CreateMouseMoveEventAtPoint(kMouseMovePoint);
+          CreateMoveWebMouseEventToPosition(kMouseMovePoint);
       EXPECT_TRUE(ink_module().HandleInputEvent(mouse_move_event));
     }
 
@@ -1122,22 +1114,18 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
       // since there is no longer any active drawing or erasing.
       constexpr gfx::PointF kMouseMovePoint2 = gfx::PointF(21.0f, 26.0f);
       blink::WebMouseEvent mouse_move_event =
-          CreateMouseMoveEventAtPoint(kMouseMovePoint2);
+          CreateMoveWebMouseEventToPosition(kMouseMovePoint2);
       EXPECT_FALSE(ink_module().HandleInputEvent(mouse_move_event));
     }
 
     {
       // Start another stroke with a new mouse down event, which is handled.
       blink::WebMouseEvent mouse_down_event =
-          MouseEventBuilder()
-              .CreateLeftClickAtPosition(kMouseDownPoint)
-              .Build();
+          CreateLeftClickWebMouseEventAtPosition(kMouseDownPoint);
       EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
 
       blink::WebMouseEvent mouse_up_event =
-          MouseEventBuilder()
-              .CreateLeftMouseUpAtPosition(kMouseUpPoint)
-              .Build();
+          CreateLeftClickWebMouseUpEventAtPosition(kMouseUpPoint);
       EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
     }
   }
@@ -1355,7 +1343,7 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
       const gfx::PointF& mouse_up_point,
       bool expect_mouse_events_handled) {
     blink::WebMouseEvent mouse_down_event =
-        MouseEventBuilder().CreateLeftClickAtPosition(mouse_down_point).Build();
+        CreateLeftClickWebMouseEventAtPosition(mouse_down_point);
     EXPECT_EQ(expect_mouse_events_handled,
               ink_module().HandleInputEvent(mouse_down_event));
 
@@ -1367,7 +1355,7 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
     }
 
     blink::WebMouseEvent mouse_up_event =
-        MouseEventBuilder().CreateLeftMouseUpAtPosition(mouse_up_point).Build();
+        CreateLeftClickWebMouseUpEventAtPosition(mouse_up_point);
     EXPECT_EQ(expect_mouse_events_handled,
               ink_module().HandleInputEvent(mouse_up_event));
   }
@@ -1581,7 +1569,7 @@ TEST_P(PdfInkModuleStrokeTest, AnnotationWithMouseInterruptedByPenEvents) {
   InitializeSimpleSinglePageBasicLayout();
 
   blink::WebMouseEvent mouse_down_event =
-      MouseEventBuilder().CreateLeftClickAtPosition(kMouseDownPoint).Build();
+      CreateLeftClickWebMouseEventAtPosition(kMouseDownPoint);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
 
   blink::WebMouseEvent mouse_move_event =
@@ -1591,7 +1579,7 @@ TEST_P(PdfInkModuleStrokeTest, AnnotationWithMouseInterruptedByPenEvents) {
   // Per manual testing on a Windows laptop, pen input causes mouse events to
   // lose their left-button down state while the pen is active.
   blink::WebMouseEvent mouse_move_no_left_button_event =
-      CreateMouseMoveEventAtPoint(kMouseMovePoint);
+      CreateMoveWebMouseEventToPosition(kMouseMovePoint);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_move_no_left_button_event));
 
   const std::vector<base::span<const gfx::PointF>> all_move_points{
@@ -1607,7 +1595,7 @@ TEST_P(PdfInkModuleStrokeTest, AnnotationWithMouseInterruptedByPenEvents) {
   EXPECT_FALSE(ink_module().HandleInputEvent(mouse_move_event));
 
   blink::WebMouseEvent mouse_up_event =
-      MouseEventBuilder().CreateLeftMouseUpAtPosition(kMouseUpPoint).Build();
+      CreateLeftClickWebMouseUpEventAtPosition(kMouseUpPoint);
   EXPECT_FALSE(ink_module().HandleInputEvent(mouse_up_event));
 
   ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/2,
@@ -2176,7 +2164,7 @@ TEST_P(PdfInkModuleStrokeTest, StrokeMissedEndEventThenMouseDown) {
   InitializeSimpleSinglePageBasicLayout();
 
   blink::WebMouseEvent mouse_down_event =
-      MouseEventBuilder().CreateLeftClickAtPosition(kMouseDownPoint).Build();
+      CreateLeftClickWebMouseEventAtPosition(kMouseDownPoint);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
 
   blink::WebMouseEvent mouse_move_event =
@@ -2212,7 +2200,7 @@ TEST_P(PdfInkModuleStrokeTest, StrokeWithNoEndEventThenTouchStart) {
   InitializeSimpleSinglePageBasicLayout();
 
   blink::WebMouseEvent mouse_down_event =
-      MouseEventBuilder().CreateLeftClickAtPosition(kMouseDownPoint).Build();
+      CreateLeftClickWebMouseEventAtPosition(kMouseDownPoint);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
 
   blink::WebMouseEvent mouse_move_event =
@@ -2239,9 +2227,7 @@ TEST_P(PdfInkModuleStrokeTest, ChangeBrushColorDuringDrawing) {
   SelectBrushTool(PdfInkBrush::Type::kPen, black_pen_message_params);
 
   blink::WebMouseEvent mouse_down_event =
-      MouseEventBuilder()
-          .CreateLeftClickAtPosition(kLeftVerticalStrokePoint1)
-          .Build();
+      CreateLeftClickWebMouseEventAtPosition(kLeftVerticalStrokePoint1);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
 
   // While the stroke is still in progress, change the pen color.  This has no
@@ -2261,9 +2247,7 @@ TEST_P(PdfInkModuleStrokeTest, ChangeBrushColorDuringDrawing) {
       CreateMouseMoveWithLeftButtonEventAtPoint(kLeftVerticalStrokePoint2);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_move_event));
   blink::WebMouseEvent mouse_up_event =
-      MouseEventBuilder()
-          .CreateLeftMouseUpAtPosition(kLeftVerticalStrokePoint2)
-          .Build();
+      CreateLeftClickWebMouseUpEventAtPosition(kLeftVerticalStrokePoint2);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
   VerifyAndClearExpectations();
 
@@ -2293,9 +2277,7 @@ TEST_P(PdfInkModuleStrokeTest, ChangeBrushSizeDuringDrawing) {
   SelectBrushTool(PdfInkBrush::Type::kPen, message_params);
 
   blink::WebMouseEvent mouse_down_event =
-      MouseEventBuilder()
-          .CreateLeftClickAtPosition(kLeftVerticalStrokePoint1)
-          .Build();
+      CreateLeftClickWebMouseEventAtPosition(kLeftVerticalStrokePoint1);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
 
   // While the stroke is still in progress, change the pen size.  This has no
@@ -2320,9 +2302,7 @@ TEST_P(PdfInkModuleStrokeTest, ChangeBrushSizeDuringDrawing) {
       CreateMouseMoveWithLeftButtonEventAtPoint(kLeftVerticalStrokePoint2);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_move_event));
   blink::WebMouseEvent mouse_up_event =
-      MouseEventBuilder()
-          .CreateLeftMouseUpAtPosition(kLeftVerticalStrokePoint2)
-          .Build();
+      CreateLeftClickWebMouseUpEventAtPosition(kLeftVerticalStrokePoint2);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
   VerifyAndClearExpectations();
 
@@ -2345,9 +2325,7 @@ TEST_P(PdfInkModuleStrokeTest, ChangeToEraserDuringDrawing) {
   EXPECT_CALL(client(), StrokeAdded(kPageIndex, InkStrokeId(1), _));
   EXPECT_CALL(client(), UpdateStrokeActive(_, _, _)).Times(0);
   blink::WebMouseEvent mouse_down_event =
-      MouseEventBuilder()
-          .CreateLeftClickAtPosition(kRightVerticalStrokePoint1)
-          .Build();
+      CreateLeftClickWebMouseEventAtPosition(kRightVerticalStrokePoint1);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
 
   // While the stroke is still in progress, change to the eraser tool.  This
@@ -2365,9 +2343,7 @@ TEST_P(PdfInkModuleStrokeTest, ChangeToEraserDuringDrawing) {
       CreateMouseMoveWithLeftButtonEventAtPoint(kRightVerticalStrokePoint2);
   EXPECT_FALSE(ink_module().HandleInputEvent(mouse_move_event));
   blink::WebMouseEvent mouse_up_event =
-      MouseEventBuilder()
-          .CreateLeftMouseUpAtPosition(kRightVerticalStrokePoint2)
-          .Build();
+      CreateLeftClickWebMouseUpEventAtPosition(kRightVerticalStrokePoint2);
   EXPECT_FALSE(ink_module().HandleInputEvent(mouse_up_event));
   VerifyAndClearExpectations();
 
@@ -2407,9 +2383,7 @@ TEST_P(PdfInkModuleStrokeTest, ChangeToDrawingDuringErasing) {
   EXPECT_CALL(client(), StrokeAdded(_, _, _)).Times(0);
   EXPECT_CALL(client(), UpdateStrokeActive(kPageIndex, InkStrokeId(0), _));
   blink::WebMouseEvent mouse_down_event =
-      MouseEventBuilder()
-          .CreateLeftClickAtPosition(kLeftVerticalStrokePoint1)
-          .Build();
+      CreateLeftClickWebMouseEventAtPosition(kLeftVerticalStrokePoint1);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
 
   // While the stroke is still in progress, change the input tool type to a
@@ -2431,9 +2405,7 @@ TEST_P(PdfInkModuleStrokeTest, ChangeToDrawingDuringErasing) {
       CreateMouseMoveWithLeftButtonEventAtPoint(kRightVerticalStrokePoint2);
   EXPECT_FALSE(ink_module().HandleInputEvent(mouse_move_event));
   blink::WebMouseEvent mouse_up_event =
-      MouseEventBuilder()
-          .CreateLeftMouseUpAtPosition(kRightVerticalStrokePoint1)
-          .Build();
+      CreateLeftClickWebMouseUpEventAtPosition(kRightVerticalStrokePoint1);
   EXPECT_FALSE(ink_module().HandleInputEvent(mouse_up_event));
   VerifyAndClearExpectations();
 
@@ -2461,9 +2433,7 @@ TEST_P(PdfInkModuleStrokeTest, ChangeDrawingBrushTypeDuringDrawing) {
   SelectBrushTool(PdfInkBrush::Type::kPen, pen_message_params);
 
   blink::WebMouseEvent mouse_down_event =
-      MouseEventBuilder()
-          .CreateLeftClickAtPosition(kLeftVerticalStrokePoint1)
-          .Build();
+      CreateLeftClickWebMouseEventAtPosition(kLeftVerticalStrokePoint1);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
 
   // While the stroke is still in progress, change the input tool type to a
@@ -2492,9 +2462,7 @@ TEST_P(PdfInkModuleStrokeTest, ChangeDrawingBrushTypeDuringDrawing) {
       CreateMouseMoveWithLeftButtonEventAtPoint(kLeftVerticalStrokePoint2);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_move_event));
   blink::WebMouseEvent mouse_up_event =
-      MouseEventBuilder()
-          .CreateLeftMouseUpAtPosition(kLeftVerticalStrokePoint2)
-          .Build();
+      CreateLeftClickWebMouseUpEventAtPosition(kLeftVerticalStrokePoint2);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
   VerifyAndClearExpectations();
 
@@ -2512,7 +2480,7 @@ TEST_P(PdfInkModuleStrokeTest, EventWithPastTimeStamp) {
   InitializeSimpleSinglePageBasicLayout();
 
   blink::WebMouseEvent mouse_down_event =
-      MouseEventBuilder().CreateLeftClickAtPosition(kMouseDownPoint).Build();
+      CreateLeftClickWebMouseEventAtPosition(kMouseDownPoint);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
 
   blink::WebMouseEvent mouse_move_event =
@@ -2524,7 +2492,7 @@ TEST_P(PdfInkModuleStrokeTest, EventWithPastTimeStamp) {
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_move_event));
 
   blink::WebMouseEvent mouse_up_event =
-      MouseEventBuilder().CreateLeftMouseUpAtPosition(kMouseUpPoint).Build();
+      CreateLeftClickWebMouseUpEventAtPosition(kMouseUpPoint);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
 
   EXPECT_EQ(2, GetInputOfTypeCountForPage(
@@ -3804,9 +3772,7 @@ TEST_P(PdfInkModuleTextHighlightTest, TwoClickCount) {
   EXPECT_TRUE(ink_module().HandleInputEvent(
       CreateMouseMoveWithLeftButtonEventAtPoint(kStartPointInsidePage0)));
   blink::WebMouseEvent mouse_up_event =
-      MouseEventBuilder()
-          .CreateLeftMouseUpAtPosition(kStartPointInsidePage0)
-          .Build();
+      CreateLeftClickWebMouseUpEventAtPosition(kStartPointInsidePage0);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
 
   ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/1,
@@ -3867,9 +3833,7 @@ TEST_P(PdfInkModuleTextHighlightTest, ThreeClickCount) {
   EXPECT_TRUE(ink_module().HandleInputEvent(
       CreateMouseMoveWithLeftButtonEventAtPoint(kStartPointInsidePage0)));
   blink::WebMouseEvent mouse_up_event =
-      MouseEventBuilder()
-          .CreateLeftMouseUpAtPosition(kStartPointInsidePage0)
-          .Build();
+      CreateLeftClickWebMouseUpEventAtPosition(kStartPointInsidePage0);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
 
   ExpectStrokeCounts(/*started=*/3, /*modified_finished=*/2,
@@ -3889,9 +3853,7 @@ TEST_P(PdfInkModuleTextHighlightTest, MouseUpOnNonSelection) {
                                               /*click_count=*/1));
 
   blink::WebMouseEvent mouse_down_event =
-      MouseEventBuilder()
-          .CreateLeftClickAtPosition(kStartPointInsidePage0)
-          .Build();
+      CreateLeftClickWebMouseEventAtPosition(kStartPointInsidePage0);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
 
   VerifyAndClearExpectations();
@@ -3907,9 +3869,7 @@ TEST_P(PdfInkModuleTextHighlightTest, MouseUpOnNonSelection) {
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_move_event));
 
   blink::WebMouseEvent mouse_up_event =
-      MouseEventBuilder()
-          .CreateLeftMouseUpAtPosition(kEndPointInsidePage0)
-          .Build();
+      CreateLeftClickWebMouseUpEventAtPosition(kEndPointInsidePage0);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
 
   ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
@@ -3944,9 +3904,7 @@ TEST_P(PdfInkModuleTextHighlightTest, MultiplePages) {
                                               /*click_count=*/1));
 
   blink::WebMouseEvent mouse_down_event =
-      MouseEventBuilder()
-          .CreateLeftClickAtPosition(kStartPointInsidePage0)
-          .Build();
+      CreateLeftClickWebMouseEventAtPosition(kStartPointInsidePage0);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
 
   // Move to page 1. Select rects from both pages.
@@ -3969,9 +3927,8 @@ TEST_P(PdfInkModuleTextHighlightTest, MultiplePages) {
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_move_event));
 
   blink::WebMouseEvent mouse_up_event =
-      MouseEventBuilder()
-          .CreateLeftMouseUpAtPosition(kTwoPageVerticalLayoutPoint1InsidePage1)
-          .Build();
+      CreateLeftClickWebMouseUpEventAtPosition(
+          kTwoPageVerticalLayoutPoint1InsidePage1);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
 
   // All the selection strokes are considered one stroke.
@@ -4134,7 +4091,7 @@ TEST_P(PdfInkModuleTextHighlightTest, CursorOnMouseMove) {
 
   // Move to a text position. The cursor should remain as the custom pen cursor.
   blink::WebMouseEvent mouse_move_event =
-      CreateMouseMoveEventAtPoint(kEndPointInsidePage0);
+      CreateMoveWebMouseEventToPosition(kEndPointInsidePage0);
   // The event will be considered not handled, but the cursor will still update.
   EXPECT_FALSE(ink_module().HandleInputEvent(mouse_move_event));
 
@@ -4152,7 +4109,7 @@ TEST_P(PdfInkModuleTextHighlightTest, CursorOnMouseMove) {
   // Move to a text position. The cursor should be an I-beam.
   EXPECT_CALL(client(),
               UpdateInkCursor(ui::Cursor(ui::mojom::CursorType::kIBeam)));
-  mouse_move_event = CreateMouseMoveEventAtPoint(kStartPointInsidePage0);
+  mouse_move_event = CreateMoveWebMouseEventToPosition(kStartPointInsidePage0);
   EXPECT_FALSE(ink_module().HandleInputEvent(mouse_move_event));
 
   VerifyAndClearExpectations();
@@ -4166,7 +4123,7 @@ TEST_P(PdfInkModuleTextHighlightTest, CursorOnMouseMove) {
     EXPECT_CALL(client(),
                 UpdateInkCursor(CursorBitmapImageSizeEq(SkISize(10, 10))));
   }
-  mouse_move_event = CreateMouseMoveEventAtPoint(kEndPointInsidePage0);
+  mouse_move_event = CreateMoveWebMouseEventToPosition(kEndPointInsidePage0);
   EXPECT_FALSE(ink_module().HandleInputEvent(mouse_move_event));
 }
 
@@ -4188,7 +4145,7 @@ TEST_P(PdfInkModuleTextHighlightTest, CursorOnMouseMoveWhileTextSelecting) {
   EXPECT_CALL(client(),
               UpdateInkCursor(ui::Cursor(ui::mojom::CursorType::kIBeam)));
   blink::WebMouseEvent mouse_move_event =
-      CreateMouseMoveEventAtPoint(kStartPointInsidePage0);
+      CreateMoveWebMouseEventToPosition(kStartPointInsidePage0);
   EXPECT_FALSE(ink_module().HandleInputEvent(mouse_move_event));
 
   VerifyAndClearExpectations();
@@ -4197,9 +4154,7 @@ TEST_P(PdfInkModuleTextHighlightTest, CursorOnMouseMoveWhileTextSelecting) {
   // remain as an I-beam.
   EXPECT_CALL(client(), UpdateInkCursor(_)).Times(0);
   blink::WebMouseEvent mouse_down_event =
-      MouseEventBuilder()
-          .CreateLeftClickAtPosition(kStartPointInsidePage0)
-          .Build();
+      CreateLeftClickWebMouseEventAtPosition(kStartPointInsidePage0);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
   mouse_move_event =
       CreateMouseMoveWithLeftButtonEventAtPoint(kEndPointInsidePage0);
@@ -4212,9 +4167,7 @@ TEST_P(PdfInkModuleTextHighlightTest, CursorOnMouseMoveWhileTextSelecting) {
   EXPECT_CALL(client(),
               UpdateInkCursor(CursorBitmapImageSizeEq(SkISize(8, 8))));
   blink::WebMouseEvent mouse_up_event =
-      MouseEventBuilder()
-          .CreateLeftMouseUpAtPosition(kEndPointInsidePage0)
-          .Build();
+      CreateLeftClickWebMouseUpEventAtPosition(kEndPointInsidePage0);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
 }
 
@@ -4236,7 +4189,7 @@ TEST_P(PdfInkModuleTextHighlightTest, CursorOnMouseMoveWhileBrushDrawing) {
   // highlighter cursor.
   EXPECT_CALL(client(), UpdateInkCursor(_)).Times(0);
   blink::WebMouseEvent mouse_move_event =
-      CreateMouseMoveEventAtPoint(kStartPointInsidePage0);
+      CreateMoveWebMouseEventToPosition(kStartPointInsidePage0);
   EXPECT_FALSE(ink_module().HandleInputEvent(mouse_move_event));
 
   VerifyAndClearExpectations();
@@ -4245,9 +4198,7 @@ TEST_P(PdfInkModuleTextHighlightTest, CursorOnMouseMoveWhileBrushDrawing) {
   // custom highlighter cursor.
   EXPECT_CALL(client(), UpdateInkCursor(_)).Times(0);
   blink::WebMouseEvent mouse_down_event =
-      MouseEventBuilder()
-          .CreateLeftClickAtPosition(kStartPointInsidePage0)
-          .Build();
+      CreateLeftClickWebMouseEventAtPosition(kStartPointInsidePage0);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
   mouse_move_event =
       CreateMouseMoveWithLeftButtonEventAtPoint(kEndPointInsidePage0);
@@ -4259,9 +4210,7 @@ TEST_P(PdfInkModuleTextHighlightTest, CursorOnMouseMoveWhileBrushDrawing) {
   EXPECT_CALL(client(),
               UpdateInkCursor(ui::Cursor(ui::mojom::CursorType::kIBeam)));
   blink::WebMouseEvent mouse_up_event =
-      MouseEventBuilder()
-          .CreateLeftMouseUpAtPosition(kEndPointInsidePage0)
-          .Build();
+      CreateLeftClickWebMouseUpEventAtPosition(kEndPointInsidePage0);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
 }
 
@@ -4306,9 +4255,7 @@ TEST_P(PdfInkModuleTextHighlightTest,
   EXPECT_CALL(client(), ExtendSelectionByPoint(kEndPointInsidePage0));
 
   blink::WebMouseEvent mouse_down_event =
-      MouseEventBuilder()
-          .CreateLeftClickAtPosition(kStartPointInsidePage0)
-          .Build();
+      CreateLeftClickWebMouseEventAtPosition(kStartPointInsidePage0);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
 
   blink::WebMouseEvent mouse_move_event =
@@ -4339,9 +4286,7 @@ TEST_P(PdfInkModuleTextHighlightTest,
   EXPECT_CALL(client(), ExtendSelectionByPoint(kEndPointInsidePage0));
 
   blink::WebMouseEvent mouse_down_event =
-      MouseEventBuilder()
-          .CreateLeftClickAtPosition(kStartPointInsidePage0)
-          .Build();
+      CreateLeftClickWebMouseEventAtPosition(kStartPointInsidePage0);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
 
   blink::WebMouseEvent mouse_move_event =

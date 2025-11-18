@@ -37,6 +37,7 @@
 #include "pdf/pdfium/pdfium_engine_client.h"
 #include "pdf/pdfium/pdfium_page.h"
 #include "pdf/pdfium/pdfium_test_base.h"
+#include "pdf/test/input_event_util.h"
 #include "pdf/test/mouse_event_builder.h"
 #include "pdf/test/test_client.h"
 #include "pdf/test/test_document_loader.h"
@@ -96,16 +97,6 @@ MATCHER_P(LayoutWithOptions, options, "") {
   return arg.options() == options;
 }
 
-blink::WebMouseEvent CreateLeftClickWebMouseEventAtPosition(
-    const gfx::PointF& position) {
-  return MouseEventBuilder().CreateLeftClickAtPosition(position).Build();
-}
-
-blink::WebMouseEvent CreateLeftClickWebMouseUpEventAtPosition(
-    const gfx::PointF& position) {
-  return MouseEventBuilder().CreateLeftMouseUpAtPosition(position).Build();
-}
-
 blink::WebMouseEvent CreateRightClickWebMouseEventAtPosition(
     const gfx::PointF& position) {
   return MouseEventBuilder()
@@ -113,14 +104,6 @@ blink::WebMouseEvent CreateRightClickWebMouseEventAtPosition(
       .SetPosition(position)
       .SetButton(blink::WebPointerProperties::Button::kRight)
       .SetClickCount(1)
-      .Build();
-}
-
-blink::WebMouseEvent CreateMoveWebMouseEventToPosition(
-    const gfx::PointF& position) {
-  return MouseEventBuilder()
-      .SetType(blink::WebInputEvent::Type::kMouseMove)
-      .SetPosition(position)
       .Build();
 }
 

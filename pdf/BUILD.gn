@@ -437,6 +437,8 @@ if (enable_pdf) {
     sources = [
       "test/fake_annotation_agent_host.cc",
       "test/fake_annotation_agent_host.h",
+      "test/input_event_util.cc",
+      "test/input_event_util.h",
       "test/mock_pdf_caret_client.cc",
       "test/mock_pdf_caret_client.h",
       "test/mock_web_associated_url_loader.cc",

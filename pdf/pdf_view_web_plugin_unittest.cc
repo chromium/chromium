@@ -43,6 +43,7 @@
 #include "pdf/pdf_features.h"
 #include "pdf/pdf_ink_annotation_mode.h"
 #include "pdf/test/fake_annotation_agent_host.h"
+#include "pdf/test/input_event_util.h"
 #include "pdf/test/mock_web_associated_url_loader.h"
 #include "pdf/test/mouse_event_builder.h"
 #include "pdf/test/test_helpers.h"
@@ -2963,12 +2964,10 @@ class PdfViewWebPluginInkTest
     // Draw some trivial strokes.
     plugin_->OnMessage(
         CreateSetAnnotationModeMessageForTesting(InkAnnotationMode::kDraw));
-    TestSendInputEvent(
-        MouseEventBuilder().CreateLeftClickAtPosition({10, 10}).Build(),
-        blink::WebInputEventResult::kHandledApplication);
-    TestSendInputEvent(
-        MouseEventBuilder().CreateLeftMouseUpAtPosition({20, 20}).Build(),
-        blink::WebInputEventResult::kHandledApplication);
+    TestSendInputEvent(CreateLeftClickWebMouseEventAtPosition({10, 10}),
+                       blink::WebInputEventResult::kHandledApplication);
+    TestSendInputEvent(CreateLeftClickWebMouseUpEventAtPosition({20, 20}),
+                       blink::WebInputEventResult::kHandledApplication);
   }
 
   void SendThumbnail(std::string_view message_id, const gfx::SizeF& page_size) {
@@ -3025,9 +3024,8 @@ class PdfViewWebPluginInkTest
     EXPECT_CALL(*engine_ptr_, ApplyStroke(_, _, _)).Times(0);
     // The final imaging for a stroke saved to a PDF should match what was final
     // drawn result when it was in-progress.
-    TestSendInputEvent(
-        MouseEventBuilder().CreateLeftClickAtPosition(start_position).Build(),
-        blink::WebInputEventResult::kHandledApplication);
+    TestSendInputEvent(CreateLeftClickWebMouseEventAtPosition(start_position),
+                       blink::WebInputEventResult::kHandledApplication);
     TestSendInputEvent(
         MouseEventBuilder()
             .SetType(blink::WebInputEvent::Type::kMouseMove)
@@ -3048,9 +3046,8 @@ class PdfViewWebPluginInkTest
     // callback to be applied to a PDF page.
     testing::Mock::VerifyAndClearExpectations(engine_ptr_);
     EXPECT_CALL(*engine_ptr_, ApplyStroke(/*page_index=*/0, InkStrokeId(0), _));
-    TestSendInputEvent(
-        MouseEventBuilder().CreateLeftMouseUpAtPosition(end_position).Build(),
-        blink::WebInputEventResult::kHandledApplication);
+    TestSendInputEvent(CreateLeftClickWebMouseUpEventAtPosition(end_position),
+                       blink::WebInputEventResult::kHandledApplication);
 
     // Updating of `PdfViewWebPlugin::snapshot_` does not happen automatically
     // on the invalidate call, but later after the tasks PaintManager posted
@@ -3490,9 +3487,8 @@ TEST_P(PdfViewWebPluginInkTextHighlightTest, SelectionDoesNotChange) {
       "highlighter", &kLightGreenBrushParams));
 
   SetUpMouseDownMoveTextTestExpectations();
-  TestSendInputEvent(
-      MouseEventBuilder().CreateLeftClickAtPosition(kStartTextPosition).Build(),
-      blink::WebInputEventResult::kHandledApplication);
+  TestSendInputEvent(CreateLeftClickWebMouseEventAtPosition(kStartTextPosition),
+                     blink::WebInputEventResult::kHandledApplication);
   TestSendInputEvent(MouseEventBuilder()
                          .SetType(blink::WebInputEvent::Type::kMouseMove)
                          .SetPosition(kEndTextPosition)
