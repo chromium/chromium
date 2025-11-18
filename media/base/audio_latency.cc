@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <numeric>
 
 #include "base/check_op.h"
 #include "base/logging.h"
@@ -40,24 +41,6 @@ uint32_t RoundUpToPowerOfTwo(uint32_t v) {
   v |= v >> 16;
   v++;
   return v;
-}
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-// WebAudio renderer's quantum size (frames per callback) that is used for
-// calculating the "interactive" buffer size.
-// TODO(crbug.com/40637820): This number needs to be passed down from Blink when
-// user-selectable render quantum size is implemented.
-const int kWebAudioRenderQuantumSize = 128;
-
-// From media/renderers/paint_canvas_video_renderer.cc. To calculate the optimum
-// buffer size for Pixel 3/4/5 devices, which has a HW buffer size of 96 frames.
-int GCD(int a, int b) {
-  return a == 0 ? b : GCD(b % a, a);
-}
-
-int LCM(int a, int b) {
-  return a / GCD(a, b) * b;
 }
 #endif
 
@@ -174,6 +157,12 @@ int AudioLatency::GetInteractiveBufferSize(int hardware_buffer_size) {
   // information out.
   LOG(INFO) << "audioHardwareBufferSize = " << hardware_buffer_size;
 
+  // WebAudio renderer's quantum size (frames per callback) that is used for
+  // calculating the "interactive" buffer size.
+  // TODO(crbug.com/40637820): This number needs to be passed down from Blink
+  // when user-selectable render quantum size is implemented.
+  const int kWebAudioRenderQuantumSize = 128;
+
   if (hardware_buffer_size >= kWebAudioRenderQuantumSize)
     return hardware_buffer_size;
 
@@ -181,9 +170,9 @@ int AudioLatency::GetInteractiveBufferSize(int hardware_buffer_size) {
   // compute LCM to avoid glitches and regulate the workload per callback.
   // (e.g. 96 vs 128 -> 384) Also cap the buffer size to 4 render quanta
   // (512 frames ~= 10ms at 48K) if LCM goes beyond interactive latency range.
-  int sensible_buffer_size = std::min(
-      LCM(hardware_buffer_size, kWebAudioRenderQuantumSize),
-      kWebAudioRenderQuantumSize * 4);
+  int sensible_buffer_size =
+      std::min(std::lcm(hardware_buffer_size, kWebAudioRenderQuantumSize),
+               kWebAudioRenderQuantumSize * 4);
 
   return sensible_buffer_size;
 #else
