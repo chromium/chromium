@@ -574,7 +574,7 @@ contextual-entrypoint-and-carousel::part(voice-icon) {
 
 :host([show-submit_][submit-enabled_][searchbox-layout-mode='TallTopContext']) #submitContainer {
   margin-inline-end: 12px;
-  margin-inline-start: 4px;
+  margin-inline-start: var(--cr-composebox-submit-button-margin-inline-start, 4px);
   position: static;
 }
 

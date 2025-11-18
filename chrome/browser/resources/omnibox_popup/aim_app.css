@@ -50,6 +50,7 @@ cr-composebox {
   --color-composebox-upload-button-disabled: var(--color-omnibox-composebox-foreground-disabled);
   --composebox-context-menu-entrypoint-button-color: var(--color-omnibox-composebox-primary-action);
   --cr-composebox-outline-hcm: none;
+  --cr-composebox-submit-button-margin-inline-start: auto;
 
   position: relative;
 }
