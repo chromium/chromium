@@ -861,6 +861,12 @@ void ClientSideDetectionHost::RegisterAutofillManager() {
 
 void ClientSideDetectionHost::MaybeStartPreClassification(
     ClientSideDetectionType request_type) {
+  MaybeStartPreClassification(request_type, std::nullopt);
+}
+
+void ClientSideDetectionHost::MaybeStartPreClassification(
+    ClientSideDetectionType request_type,
+    std::optional<std::string> credit_card_form_event) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     return;
   }
@@ -883,6 +889,12 @@ void ClientSideDetectionHost::MaybeStartPreClassification(
   current_url_ = rfh->GetLastCommittedURL();
   last_committed_url_map_[request_type] = current_url_;
   current_outermost_main_frame_id_ = rfh->GetGlobalId();
+  if (credit_card_form_event) {
+    DCHECK(request_type == ClientSideDetectionType::CREDIT_CARD_FORM);
+    last_credit_card_form_event_trigger_url_map_[credit_card_form_event
+                                                     .value()] = current_url_;
+  }
+
   // Check whether we can cassify the current URL for phishing.
   classification_request_ = std::make_unique<ShouldClassifyUrlRequest>(
       rfh->GetLastCommittedURL(), rfh->GetLastResponseHead(),
@@ -986,7 +998,9 @@ void ClientSideDetectionHost::OnFieldTypesDetermined(
     NOTREACHED();
   }();
 
-  OnCreditCardFormEvent("OnFieldTypesDetermined", field_heuristic);
+  OnCreditCardFormEvent("OnFieldTypesDetermined",
+                        kCsdCreditCardFormPingOnDetection.Get(),
+                        field_heuristic);
 }
 
 // OnBeforeFocusOnFormField is an Autofill observer callback that triggers a CSD
@@ -1018,21 +1032,24 @@ void ClientSideDetectionHost::OnBeforeFocusOnFormField(
     field_heuristic = credit_card_form::kAutofillLocal;
   }
 
-  OnCreditCardFormEvent("OnBeforeFocusOnFormField", field_heuristic);
+  OnCreditCardFormEvent("OnBeforeFocusOnFormField",
+                        kCsdCreditCardFormPingOnInteraction.Get(),
+                        field_heuristic);
 }
 
 void ClientSideDetectionHost::OnCreditCardFormEvent(
     std::string event_name,
+    bool allow_ping,
     credit_card_form::FieldDetectionHeuristic field_heuristic) {
   // Early exit if ESB is not enabled.
   if (!IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
     return;
   }
 
-  // Early exit if preclassification has already been done for
-  // CREDIT_CARD_FORM and this URL.
+  // Early exit if preclassification has already been done for this
+  // event triggering CREDIT_CARD_FORM and this URL.
   if (HasDonePreclassificationCheckOnSameURL(
-          ClientSideDetectionType::CREDIT_CARD_FORM)) {
+          ClientSideDetectionType::CREDIT_CARD_FORM, event_name)) {
     return;
   }
 
@@ -1049,20 +1066,21 @@ void ClientSideDetectionHost::OnCreditCardFormEvent(
     history_service_->GetVisibleVisitCountToHost(
         url,
         base::BindOnce(&ClientSideDetectionHost::OnCreditCardFormVisitCount,
-                       weak_factory_.GetWeakPtr(), event_name,
+                       weak_factory_.GetWeakPtr(), event_name, allow_ping,
                        base::TimeTicks::Now(), field_heuristic),
         &task_tracker_);
   } else {
     history::VisibleVisitCountToHostResult history_result =
         cached_history_result.value_or(
             history::VisibleVisitCountToHostResult{/*success=*/false});
-    OnCreditCardFormVisitCount(event_name, std::nullopt, field_heuristic,
-                               history_result);
+    OnCreditCardFormVisitCount(event_name, allow_ping, std::nullopt,
+                               field_heuristic, history_result);
   }
 }
 
 void ClientSideDetectionHost::OnCreditCardFormVisitCount(
     std::string event_name,
+    bool allow_ping,
     std::optional<base::TimeTicks> start_time,
     credit_card_form::FieldDetectionHeuristic field_heuristic,
     history::VisibleVisitCountToHostResult history_result) {
@@ -1082,12 +1100,19 @@ void ClientSideDetectionHost::OnCreditCardFormVisitCount(
   }
   credit_card_form::LogEvent(event_name, site_visit, field_heuristic);
 
+  // After logging, only continue to pre-classification if sending a ping
+  // is allowed.
+  if (!allow_ping) {
+    return;
+  }
+
   // Early exit if it is known that the user has visited this site before.
   if (site_visit == credit_card_form::kRepeatSiteVisit) {
     return;
   }
 
-  MaybeStartPreClassification(ClientSideDetectionType::CREDIT_CARD_FORM);
+  MaybeStartPreClassification(ClientSideDetectionType::CREDIT_CARD_FORM,
+                              event_name);
 }
 
 void ClientSideDetectionHost::KeyboardLockRequested() {
@@ -1166,11 +1191,28 @@ void ClientSideDetectionHost::OnTextCopiedToClipboard(
 
 bool ClientSideDetectionHost::HasDonePreclassificationCheckOnSameURL(
     ClientSideDetectionType client_side_detection_type) {
+  return HasDonePreclassificationCheckOnSameURL(client_side_detection_type,
+                                                std::nullopt);
+}
+
+bool ClientSideDetectionHost::HasDonePreclassificationCheckOnSameURL(
+    ClientSideDetectionType client_side_detection_type,
+    std::optional<std::string> credit_card_form_event) {
   content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
   auto last_committed_url =
       last_committed_url_map_.find(client_side_detection_type);
-  return last_committed_url != last_committed_url_map_.end() &&
-         rfh->GetLastCommittedURL() == last_committed_url->second;
+  bool has_done_url = last_committed_url != last_committed_url_map_.end() &&
+                      rfh->GetLastCommittedURL() == last_committed_url->second;
+  if (client_side_detection_type == ClientSideDetectionType::CREDIT_CARD_FORM) {
+    DCHECK(credit_card_form_event);
+    auto last_event_url = last_credit_card_form_event_trigger_url_map_.find(
+        credit_card_form_event);
+    bool has_done_event =
+        last_event_url != last_credit_card_form_event_trigger_url_map_.end() &&
+        rfh->GetLastCommittedURL() == last_event_url->second;
+    return has_done_url && has_done_event;
+  }
+  return has_done_url;
 }
 
 void ClientSideDetectionHost::OnPhishingPreClassificationDone(

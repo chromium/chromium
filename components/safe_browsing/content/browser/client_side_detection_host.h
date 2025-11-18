@@ -340,6 +340,9 @@ class ClientSideDetectionHost
   // Helper function to create preclassification check once requirements are
   // met.
   void MaybeStartPreClassification(ClientSideDetectionType request_type);
+  void MaybeStartPreClassification(
+      ClientSideDetectionType request_type,
+      std::optional<std::string> credit_card_form_event);
 
   // Called when pre-classification checks are done for the phishing
   // classifiers. |request_type| is passed in to specify the process that
@@ -510,11 +513,15 @@ class ClientSideDetectionHost
   // same as the last committed URL on the RenderFrameHost.
   bool HasDonePreclassificationCheckOnSameURL(
       ClientSideDetectionType client_side_detection_type);
+  bool HasDonePreclassificationCheckOnSameURL(
+      ClientSideDetectionType client_side_detection_type,
+      std::optional<std::string> credit_card_form_event);
 
   // OnCreditCardFormEvent is a common method called by Autofill credit card
   // form events that may trigger a CSD ping.
   void OnCreditCardFormEvent(
       std::string event_name,
+      bool allow_ping,
       credit_card_form::FieldDetectionHeuristic field_heuristic);
 
   // OnCreditCardFormVisitCount is a callback that is called when site
@@ -523,6 +530,7 @@ class ClientSideDetectionHost
   // ping.
   void OnCreditCardFormVisitCount(
       std::string event_name,
+      bool allow_ping,
       std::optional<base::TimeTicks> start_time,
       credit_card_form::FieldDetectionHeuristic field_heuristic,
       history::VisibleVisitCountToHostResult history_result);
@@ -610,6 +618,11 @@ class ClientSideDetectionHost
   // ClientSideDetectionType. This is because for some ClientSideDetectionType,
   // it can be triggered at a frequent basis per same URL.
   base::flat_map<ClientSideDetectionType, GURL> last_committed_url_map_;
+
+  // This map is used to track the last committed URL per credit card form
+  // event trigger that may trigger a CREDIT_CARD_FORM ping.
+  base::flat_map<std::string, GURL>
+      last_credit_card_form_event_trigger_url_map_;
 
   base::ScopedObservation<AsyncCheckTracker, AsyncCheckTracker::Observer>
       async_check_observation_{this};

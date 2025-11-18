@@ -73,6 +73,12 @@ extern const base::FeatureParam<double> kCsdCreditCardFormSampleRate;
 // If the user has visited more times than this max, then the CSD ping is
 // blocked.
 extern const base::FeatureParam<int> kCsdCreditCardFormMaxUserVisit;
+// Specifies whether to allow pre-classification to continue on a credit card
+// form detection event after logging telemetry.
+extern const base::FeatureParam<bool> kCsdCreditCardFormPingOnDetection;
+// Specifies whether to allow pre-classification to continue on a credit card
+// form interaction event after logging telemetry.
+extern const base::FeatureParam<bool> kCsdCreditCardFormPingOnInteraction;
 
 // Killswitch for Llama forced trigger info redirect chain check.
 BASE_DECLARE_FEATURE(kClientSideDetectionForcedLlamaRedirectChainKillswitch);

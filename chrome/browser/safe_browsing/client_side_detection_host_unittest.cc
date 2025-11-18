@@ -2241,8 +2241,9 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
   auto form_data = autofill::test::CreateTestEmailOrLoyaltyCardFormData();
   autofill_manager()->OnFormsSeen({form_data}, {});
 
-  // Preclassification should not have been triggered by OnFormsSeen.
   EXPECT_FALSE(future.IsReady());
+
+  // The event was not even logged (before pre-classification).
   histogram_tester_.ExpectTotalCount(
       "SBClientPhishing.CreditCardFormEvent.OnFieldTypesDetermined", 0);
 }
@@ -2271,8 +2272,9 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
   autofill_manager()->OnFocusOnFormField(
       form_data, form_data.fields().begin()->global_id());
 
-  // Preclassification should not have been triggered by OnFocusOnFormField.
   EXPECT_FALSE(future.IsReady());
+
+  // The event was not even logged (before pre-classification).
   histogram_tester_.ExpectTotalCount(
       "SBClientPhishing.CreditCardFormEvent.OnBeforeFocusOnFormField", 0);
 }
@@ -2301,8 +2303,9 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
       /*is_https=*/true, /*use_month_type=*/true);
   autofill_manager()->OnFormsSeen({form_data}, {});
 
-  // Preclassification should not have been triggered by OnFormsSeen.
   EXPECT_FALSE(future.IsReady());
+
+  // The event was not even logged (before pre-classification).
   histogram_tester_.ExpectTotalCount(
       "SBClientPhishing.CreditCardFormEvent.OnFieldTypesDetermined", 0);
 }
@@ -2333,8 +2336,9 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
   autofill_manager()->OnFocusOnFormField(
       form_data, form_data.fields().begin()->global_id());
 
-  // Preclassification should not have been triggered by OnFormsSeen.
   EXPECT_FALSE(future.IsReady());
+
+  // The event was not even logged (before pre-classification).
   histogram_tester_.ExpectTotalCount(
       "SBClientPhishing.CreditCardFormEvent.OnBeforeFocusOnFormField", 0);
 }
@@ -2345,9 +2349,11 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
     GTEST_SKIP();
   }
 
-  // Feature enabled, 100% HC allowlist acceptance, 0% sample rate
-  // (default params):
-  feature_list_.InitAndEnableFeature(kClientSideDetectionCreditCardForm);
+  // Feature enabled, detection pings enabled, 100% HC allowlist acceptance:
+  feature_list_.InitAndEnableFeatureWithParameters(
+      kClientSideDetectionCreditCardForm,
+      {{kCsdCreditCardFormPingOnDetection.name, "true"},
+       {kCsdCreditCardFormHCAcceptanceRate.name, "1.0"}});
   SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
 
   GURL url("http://host.com/");
@@ -2396,9 +2402,11 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
     GTEST_SKIP();
   }
 
-  // Feature enabled, 100% HC allowlist acceptance, 0% sample rate
-  // (default params):
-  feature_list_.InitAndEnableFeature(kClientSideDetectionCreditCardForm);
+  // Feature enabled, interaction pings enabled, 100% HC allowlist acceptance:
+  feature_list_.InitAndEnableFeatureWithParameters(
+      kClientSideDetectionCreditCardForm,
+      {{kCsdCreditCardFormPingOnInteraction.name, "true"},
+       {kCsdCreditCardFormHCAcceptanceRate.name, "1.0"}});
   SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
 
   GURL url("http://host.com/");
@@ -2447,10 +2455,12 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
     GTEST_SKIP();
   }
 
-  // Feature enabled, 0% HC allowlist acceptance, 0% sample rate:
+  // Feature enabled, detection pings enabled, 100% HC allowlist acceptance,
+  // 0% sample rate:
   feature_list_.InitAndEnableFeatureWithParameters(
       kClientSideDetectionCreditCardForm,
-      {{kCsdCreditCardFormHCAcceptanceRate.name, "0.0"},
+      {{kCsdCreditCardFormPingOnDetection.name, "true"},
+       {kCsdCreditCardFormHCAcceptanceRate.name, "0.0"},
        {kCsdCreditCardFormSampleRate.name, "0.0"}});
   SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
 
@@ -2500,10 +2510,12 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
     GTEST_SKIP();
   }
 
-  // Feature enabled, 0% HC allowlist acceptance, 0% sample rate:
+  // Feature enabled, interaction pings enabled, 100% HC allowlist acceptance,
+  // 0% sample rate:
   feature_list_.InitAndEnableFeatureWithParameters(
       kClientSideDetectionCreditCardForm,
-      {{kCsdCreditCardFormHCAcceptanceRate.name, "0.0"},
+      {{kCsdCreditCardFormPingOnInteraction.name, "true"},
+       {kCsdCreditCardFormHCAcceptanceRate.name, "0.0"},
        {kCsdCreditCardFormSampleRate.name, "0.0"}});
   SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
 
@@ -2555,10 +2567,12 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
     GTEST_SKIP();
   }
 
-  // Feature enabled, 100% sample rate, max site engagement = 1 (new visit)
+  // Feature enabled, detection pings enabled, 100% sample rate,
+  // max site engagement = 1 (new visit):
   feature_list_.InitAndEnableFeatureWithParameters(
       kClientSideDetectionCreditCardForm,
       {
+          {kCsdCreditCardFormPingOnDetection.name, "true"},
           {kCsdCreditCardFormSampleRate.name, "1.0"},
           {kCsdCreditCardFormMaxUserVisit.name, "1"},
       });
@@ -2603,10 +2617,12 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
     GTEST_SKIP();
   }
 
-  // Feature enabled, 100% sample rate, max site engagement = 2 visits
+  // Feature enabled, interaction pings enabled, 100% sample rate,
+  // max site engagement = 1 (new visit):
   feature_list_.InitAndEnableFeatureWithParameters(
       kClientSideDetectionCreditCardForm,
       {
+          {kCsdCreditCardFormPingOnInteraction.name, "true"},
           {kCsdCreditCardFormSampleRate.name, "1.0"},
           {kCsdCreditCardFormMaxUserVisit.name, "1"},
       });
@@ -2653,10 +2669,12 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
     GTEST_SKIP();
   }
 
-  // Feature enabled, 100% sample rate, max site engagement = 2 visits
+  // Feature enabled, detection pings enabled, 100% sample rate,
+  // max site engagement = 2 visits
   feature_list_.InitAndEnableFeatureWithParameters(
       kClientSideDetectionCreditCardForm,
       {
+          {kCsdCreditCardFormPingOnDetection.name, "true"},
           {kCsdCreditCardFormSampleRate.name, "1.0"},
           {kCsdCreditCardFormMaxUserVisit.name, "2"},
       });
@@ -2705,12 +2723,15 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
     GTEST_SKIP();
   }
 
-  // Feature enabled, 100% sample rate, max site engagement = 2 visits
+  // Feature enabled, interaction pings enabled, 100% sample rate,
+  // max site engagement = 2 visits
   feature_list_.InitAndEnableFeatureWithParameters(
       kClientSideDetectionCreditCardForm,
       {
+          {kCsdCreditCardFormPingOnDetection.name, "true"},
+          {kCsdCreditCardFormPingOnInteraction.name, "true"},
           {kCsdCreditCardFormSampleRate.name, "1.0"},
-          {kCsdCreditCardFormMaxUserVisit.name, "1"},
+          {kCsdCreditCardFormMaxUserVisit.name, "2"},
       });
   SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
 
@@ -2734,32 +2755,32 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
   histogram_tester_.ExpectTotalCount(
       "SBClientPhishing.HistoryServiceDuration.GetVisibleVisitCountToHost", 0);
 
-  ExpectPreClassificationChecks(url, &kFalse, &kFalse, nullptr, nullptr,
-                                nullptr);
   auto form_data = autofill::test::CreateTestCreditCardFormData(
       /*is_https=*/true, /*use_month_type=*/true);
+  ExpectPreClassificationChecks(url, &kFalse, &kFalse, nullptr, nullptr,
+                                nullptr);
   autofill_manager()->OnFormsSeen({form_data}, {});
   WaitUntilHighConfidenceAllowlistCheckDone();
   WaitAndCheckPreClassificationChecks();
 
-  TestFuture<ClientSideDetectionType> future;
-  csd_host_->set_preclassification_started_callback_for_testing(
-      future.GetRepeatingCallback());
+  ExpectPreClassificationChecks(url, &kFalse, &kFalse, nullptr, nullptr,
+                                nullptr);
   autofill_manager()->OnFocusOnFormField(
       form_data, form_data.fields().begin()->global_id());
-  EXPECT_FALSE(future.IsReady());
+  WaitUntilHighConfidenceAllowlistCheckDone();
+  WaitAndCheckPreClassificationChecks();
 
   // Pre-classification should have proceeded to classification
-  // on the first event (detection).
+  // for both events.
   ExpectOnlyBucketCount(
       "SBClientPhishing.CreditCardFormEvent.OnFieldTypesDetermined",
       credit_card_form::kNewSiteVisitNoReferringAppAutofillLocalHeuristic, 1);
   ExpectOnlyBucketCount(
       "SBClientPhishing.CreditCardFormEvent.OnBeforeFocusOnFormField",
-      credit_card_form::kNewSiteVisitNoReferringAppAutofillServerHeuristic, 0);
+      credit_card_form::kNewSiteVisitNoReferringAppAutofillServerHeuristic, 1);
   ExpectOnlyBucketCount(
       "SBClientPhishing.PreClassificationCheckResult.CreditCardForm",
-      PreClassificationCheckResult::CLASSIFY, 1);
+      PreClassificationCheckResult::CLASSIFY, 2);
 
   // Note also that HistoryService was not called a second time either.
   histogram_tester_.ExpectTotalCount(
@@ -2772,10 +2793,13 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
     GTEST_SKIP();
   }
 
-  // Feature enabled, 100% sample rate:
+  // Feature enabled, detection pings enabled, 100% sample rate:
   feature_list_.InitAndEnableFeatureWithParameters(
       kClientSideDetectionCreditCardForm,
-      {{kCsdCreditCardFormSampleRate.name, "1.0"}});
+      {
+          {kCsdCreditCardFormPingOnDetection.name, "true"},
+          {kCsdCreditCardFormSampleRate.name, "1.0"},
+      });
   SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
 
   GURL url("http://host.com/");
@@ -2827,10 +2851,13 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
     GTEST_SKIP();
   }
 
-  // Feature enabled, 100% sample rate:
+  // Feature enabled, interaction pings enabled, 100% sample rate:
   feature_list_.InitAndEnableFeatureWithParameters(
       kClientSideDetectionCreditCardForm,
-      {{kCsdCreditCardFormSampleRate.name, "1.0"}});
+      {
+          {kCsdCreditCardFormPingOnInteraction.name, "true"},
+          {kCsdCreditCardFormSampleRate.name, "1.0"},
+      });
   SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
 
   GURL url("http://host.com/");
