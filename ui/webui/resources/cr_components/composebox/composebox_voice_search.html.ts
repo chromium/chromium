@@ -16,9 +16,10 @@ export function getHtml(this: ComposeboxVoiceSearchElement) {
           ${this.i18n('details')}
         </a>
       </div>
-      <textarea id="input" .value="${this.finalResult_}" placeholder="${
-          this.listeningPlaceholder_}" ?hidden="${this.showErrorScrim_}"
-          disabled>
+      <textarea id="input"
+          .value="${this.finalResult_ + (this.interimResult_ || '')}"
+          placeholder="${this.listeningPlaceholder_}"
+          ?hidden="${this.showErrorScrim_}" disabled>
       </textarea>
       <cr-icon-button id="closeButton" class="icon-clear"
           title="Close" @click="${this.onCloseClick_}">

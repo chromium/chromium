@@ -10,8 +10,9 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  --cr-composebox-outline-hcm: solid var(--color-composebox-outline-hcm);
   --color-composebox-submit-button-hover: var(--color-searchbox-results-background-hovered);
+  --composebox-cancel-button-top: 12px;
+  --cr-composebox-outline-hcm: solid var(--color-composebox-outline-hcm);
   --cr-icon-button-size: 36px;
   --input-bottom-spacing: 10px;
   --text-input-top-spacing: 10px;
@@ -80,7 +81,9 @@
   border-radius: 30px;
   box-shadow: var(--cr-searchbox-shadow);
   font-size: var(--cr-composebox-font-size, 18px);
-  transition: var(--border-radius-transition);
+  transition: var(--border-radius-transition),
+      /* Fast out (start), slow in (end) box shadow transition. */
+      box-shadow 500ms cubic-bezier(0.4, 0.0, 0.2, 1);
   width: var(--cr-composebox-width, 337px);
 }
 
@@ -125,10 +128,9 @@
   pointer-events: auto;
   position: relative;
   overflow: hidden;
-}
-
-:host([in-voice-search-mode_]) #composebox {
-  display: none;
+  transition:
+      opacity 500ms ease-in-out,
+      visibility 500ms ease-in-out;
 }
 
 :host([is-dragging-file_]) #composebox * {
@@ -337,16 +339,23 @@ search-animated-glow {
   --cr-icon-button-fill-color:
       var(--color-composebox-cancel-button-light);
   /* SVG is size 20 with 5px of padding so actual size is 10px */
+  /* TODO(crbug.com/460532414) Rename CSS variables to be more
+      distinguishable */
   --cr-icon-button-icon-size: 20px;
   position: absolute;
-  top: 12px;
+  top: var(--composebox-cancel-button-top);
   inset-inline-end: 12px;
   /* Uses the same transitions as the submit button so they are in sync. */
   transition: var(--submit-enabled-transition);
 }
 
-:host([searchbox-layout-mode="Compact"]) #cancelIcon {
-  top: 10px;
+:host([searchbox-layout-mode="Compact"]) {
+  /* Used in search-animated-glow-element. */
+  --search-animated-glow-drag-drop-placeholder-top: 16px;
+  /* Changes both composebox and voice-search's: */
+  --composebox-cancel-button-top: 10px;
+  /* Changes voicebox text top padding. */
+  --composebox-voice-search-top-padding: 9px;
 }
 
 :host([expanding_][is-collapsible]) #cancelIcon {
@@ -663,11 +672,35 @@ contextual-entrypoint-and-carousel::part(voice-icon) {
   margin-top: 14px;
 }
 
-:host(:not([in-voice-search-mode_])) cr-composebox-voice-search {
+:host([in-voice-search-mode_]) {
+  box-shadow: 2px 17px 18px -10px rgba(0, 0, 0, 0.03);
+}
+
+:host([in-voice-search-mode_]) #suggestionActivity {
   display: none;
 }
 
-:host([searchbox-layout-mode="Compact"]) {
-  /* Used in search-animated-glow-element. */
-  --search-animated-glow-drag-drop-placeholder-top: 16px;
+:host([in-voice-search-mode_]) .icon-fade {
+  opacity: 0;
+  transition: var(--icon-exit-transition);
+}
+
+:host([in-voice-search-mode_]) #composebox {
+  opacity: 0;
+  /* CANNOT be display: None since :host depends on its height. */
+  visibility: hidden;
+}
+
+cr-composebox-voice-search {
+  opacity: 1;
+  @starting-style {
+    opacity: 0;  /* Since hidden elements have no previous state. */
+  }
+  transition: opacity 90ms ease-in-out, display 110ms allow-discrete;
+  z-index: 2;
+}
+
+:host(:not([in-voice-search-mode_])) cr-composebox-voice-search {
+  display: none;
+  opacity: 0;
 }

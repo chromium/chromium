@@ -636,11 +636,13 @@ export class ComposeboxElement extends I18nMixinLit
 
   protected openAimVoiceSearch_() {
     this.inVoiceSearchMode_ = true;
+    this.animationState = GlowAnimationState.LISTENING;
     this.$.voiceSearch.start();
   }
 
   protected onVoiceSearchClose_() {
     this.inVoiceSearchMode_ = false;
+    this.animationState = GlowAnimationState.NONE;
   }
 
   protected onCancelClick_() {

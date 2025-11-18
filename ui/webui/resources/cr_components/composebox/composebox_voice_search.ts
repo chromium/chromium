@@ -177,7 +177,6 @@ export class ComposeboxVoiceSearchElement extends
   private onSpeechStart_() {
     this.resetIdleTimer_();
     this.state_ = State.SPEECH_RECEIVED;
-    // TODO(crbug.com/457421071): Start animation here.
   }
 
 
@@ -194,21 +193,22 @@ export class ComposeboxVoiceSearchElement extends
 
     const speechResult = results[e.resultIndex];
     assert(speechResult);
-    // Process final results.
+    // Process final results if is fully final.
     if (!!speechResult && speechResult.isFinal) {
       this.finalResult_ = speechResult[0]!.transcript;
+      this.fire('on-transcription-update', this.finalResult_);
       this.onFinalResult_();
       return;
     }
 
-    // Process interim results.
+    // Process interim results based on confidence.
     for (let j = 0; j < results.length; j++) {
       const resultList = results[j]!;
-      const result = resultList[0];
+      const result = resultList[0];  // best guess
       assert(result);
 
       if (result.confidence > RECOGNITION_CONFIDENCE_THRESHOLD) {
-        this.finalResult_ += result.transcript;
+        this.finalResult_ += result.transcript;  // Displayed
       } else {
         this.interimResult_ += result.transcript;
       }

@@ -5,11 +5,9 @@
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {SearchAnimatedGlowElement} from './animated_glow.js';
+import {GlowAnimationState} from './constants.js';
 
 export function getHtml(this: SearchAnimatedGlowElement) {
-  // TODO(crbug.com/454730356): replace
-  // drop string with translatable string.
-
   /*
    * Note: this does not include ::before and
    * ::after notes. See .css file comments for more details on impl.
@@ -37,6 +35,11 @@ export function getHtml(this: SearchAnimatedGlowElement) {
     <div class="double-gradient-mask"></div>
     <div class="gradient"></div>
     <div class="background"></div>
+    ${this.requiresVoice ? html`
+      <audio-wave
+          ?is-listening="${this.animationState === GlowAnimationState.LISTENING}">
+      </audio-wave>
+    ` : ''}
   <!--_html_template_end_-->`;
   // clang-format on
 }

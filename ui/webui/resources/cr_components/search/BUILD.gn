@@ -9,13 +9,18 @@ assert(!is_android && !is_ios)
 build_webui("build") {
   grd_prefix = "cr_components_search"
   ts_files = [
-    "animated_glow.ts",
     "animated_glow.html.ts",
+    "animated_glow.ts",
+    "audio_wave.html.ts",
+    "audio_wave.ts",
     "constants.ts",
     "drag_drop_handler.ts",
     "drag_drop_host.ts",
   ]
-  css_files = [ "animated_glow.css" ]
+  css_files = [
+    "animated_glow.css",
+    "audio_wave.css",
+  ]
 
   ts_out_dir = "$root_gen_dir/ui/webui/resources/tsc/cr_components/search"
   ts_composite = true

@@ -13,11 +13,19 @@
   --drag-placeholder-line-height: 24px;
   --drag-placeholder-font-size: 16px;
 
-  --end-angle-open_: 245deg;
+  --end-angle-expand_: 245deg;
+  --end-angle-listen_: 230deg;
   --end-angle-submit_: 330deg;
 
-  --glow-stroke-width_: 2px;
+  --expand-timing_: var(--glif-rotation-duration_)
+      var(--standard-curve, --search-animated-glow-standard-curve);
+
+  /* All gradient rotation and background blur/border shrinking needs to be at
+   * interval, otherwise border-radius due to border width
+   * may not be at right size at right time. */
   --glif-rotation-duration_: var(--search-animated-glif-rotation-duration, 1000ms);
+
+  --glow-stroke-width_: 2px;
 
   --search-animated-glow-background: rgb(255, 255, 255);
   --search-animated-glow-background-z-index: 3;
@@ -34,16 +42,17 @@
     rgba(49, 134, 255, 0) 308.88deg,
     rgba(52, 168, 82, 0) 360deg
   );
+
   --search-animated-glow-gradient-curve: cubic-bezier(0.2, 0, 0, 1);
 
-  /*
-  * Standard curve var is taken from parent, if any;
-  * otherwise use default here.
-  */
+  /* Expand duration and standard curve vars
+   * are taken from parent, if any; otherwise use default here. */
+  --search-animated-glow-expand-duration: 600ms;
   --search-animated-glow-standard-curve: cubic-bezier(0.4, 0, 0.2, 1);
 
-  --start-angle-open_: 30deg;
+  --start-angle-expand_: 30deg;
   --start-angle-submit_: 200deg;
+  --start-angle-listen_: 35deg;
   border-radius: inherit;
 }
 
@@ -75,13 +84,12 @@
   position: absolute;
 }
 
-.gradient.gradient-outer-glow {
+:host([animation-state='expanding']) .gradient.gradient-outer-glow {
   /* Standard-curve can be defined by parent; otherwise use default. */
-  animation: blur-open var(--glif-rotation-duration_)
-    var(--standard-curve, --search-animated-glow-standard-curve);
+  animation: blur-expand var(--expand-timing_)
 }
 
-@keyframes blur-open {
+@keyframes blur-expand {
   17% {
     filter: blur(30px);
     opacity: 17.5%;
@@ -148,6 +156,11 @@
   z-index: var(--search-animated-glow-gradient-z-index, 2);
 }
 
+:host([animation-state='listening']) .gradient::before {
+  animation: gradient-spin-listen var(--glif-rotation-duration_)
+    var(--search-animated-glow-gradient-curve) forwards;
+}
+
 :host([animation-state='dragging']) .gradient::before,
 :host([animation-state='dragging']) .double-gradient::before {
   animation: ambient-spin 6s linear infinite;
@@ -207,17 +220,19 @@
 @keyframes gradient-spin-expand {
   0% {
     opacity: 0;
-    transform: rotate(var(--start-angle-open_));
+    transform: rotate(var(--start-angle-expand_));
   }
   17% {
     opacity: var(--gradient-spin-expand-peak-opacity_, 1);
   }
   100% {
     opacity: 0;
-    transform: rotate(var(--end-angle-open_));
+    transform: rotate(var(--end-angle-expand_));
   }
 }
 
+/* So can go from "expanding" to "submit" and still trigger gradient-spin
+ * (same animation not run twice unless it's a new animation or class). */
 @keyframes gradient-spin-submit {
   0% {
     opacity: 0;
@@ -232,12 +247,28 @@
   }
 }
 
+/* So can go from "expanding" to "listen" and still trigger gradient-spin. */
+@keyframes gradient-spin-listen {
+  0% {
+    opacity: 0;
+    transform: rotate(var(--start-angle-listen_));
+  }
+  8% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(var(--end-angle-listen_));
+  }
+}
+
 .background {
   /* The peephole whose border shrinks the background::before
-  * element so the gradient shows up behind it as a border.
-  */
+   * element so the gradient shows up behind it as a border.
+   * Activates once upon init; again whenever gradient-border-width-close
+   * triggered */
   animation: gradient-border-width var(--glif-rotation-duration_)
-    var(--standard-curve, --search-animated-glow-standard-curve);
+      var(--standard-curve, --search-animated-glow-standard-curve);
   border: 0 solid transparent;
   border-radius: inherit;
   contain: paint;
@@ -260,6 +291,13 @@
 
 .double-gradient-mask::before,
 .background::before {
+  /* In expand/submit mode: is the deepest background covering
+   * .gradient. The input is layered on top of this.
+   * In dragging mode: the frosted glass middle background on top
+   * of the gradient. .gradient::after is the deepest background
+   * in dragging mode. Because .background and the gradient
+   * are blurred, it makes the gradient glow instead
+   * of being fully solid. */
   background-color: var(--cr-composebox-background-color,
       --search-animated-glow-background);
   border-radius: inherit;
@@ -294,8 +332,15 @@
 }
 
 :host([animation-state='expanding'][is-collapsible]) .background::before {
-  animation: color-pulse-on-expand var(--expand-duration)
+  animation: color-pulse-on-expand var(--expand-duration,
+      --search-animated-glow-expand-duration)
       var(--standard-curve, --search-animated-glow-standard-curve);
+}
+
+:host([animation-state='listening']) .background::before {
+  animation:
+      plate-background-blur-on-expand var(--glif-rotation-duration_)
+          var(--standard-curve, --search-animated-glow-standard-curve);
 }
 
 @keyframes plate-background-blur-on-expand {
@@ -319,6 +364,15 @@
   }
 }
 
+@keyframes color-pulse-on-expand-listen {
+  40% {
+    background: var(--color-composebox-scrim-background);
+  }
+  50% {
+    background: var(--color-composebox-scrim-background);
+  }
+}
+
 :host([entrypoint-name='Omnibox'][animation-state='expanding']) .background::before {
   animation: none;
   filter: blur(8px);
@@ -336,10 +390,18 @@
   z-index: var(--search-animated-glow-background-z-index, 3);
 }
 
-:host([animation-state='expanding']) .background,
+:host([animation-state='expanding']) .background {
+  animation: gradient-border-width-close-expand var(--glif-rotation-duration_)
+      var(--standard-curve, --search-animated-glow-standard-curve);
+}
 :host([animation-state='submitting']) .background {
-  animation: gradient-border-width-close var(--glif-rotation-duration_)
-    var(--standard-curve, --search-animated-glow-standard-curve);
+  animation: gradient-border-width-close-submit var(--glif-rotation-duration_)
+      var(--standard-curve, --search-animated-glow-standard-curve);
+}
+
+:host([animation-state='listening']) .background {
+  animation: gradient-border-width-close-listen var(--glif-rotation-duration_)
+      var(--standard-curve, --search-animated-glow-standard-curve);
 }
 
 :host([animation-state='dragging']) .background::before {
@@ -349,7 +411,31 @@
   z-index: var(--search-animated-glow-background-z-index, 3);
 }
 
-@keyframes gradient-border-width-close {
+@keyframes gradient-border-width-close-expand {
+  0% {
+    border-width: 0;
+  }
+  17% {
+    border-width: var(--glow-stroke-width_);
+  }
+  100% {
+    border-width: 0;
+  }
+}
+
+@keyframes gradient-border-width-close-listen {
+  0% {
+    border-width: 0;
+  }
+  11% {
+    border-width: var(--glow-stroke-width_);
+  }
+  100% {
+    border-width: 0;
+  }
+}
+
+@keyframes gradient-border-width-close-submit {
   0% {
     border-width: 0;
   }
