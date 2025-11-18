@@ -168,8 +168,6 @@ class MODULES_EXPORT MediaCapabilities final : public ScriptWrappable,
     webrtc_encoding_info_handler_for_test_ = handler;
   }
 
-  Member<NavigatorBase> navigator_base_;
-
   HeapMojoRemote<media::mojom::blink::VideoDecodePerfHistory>
       decode_history_service_;
 

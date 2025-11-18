@@ -24,7 +24,6 @@ class NavigatorML : public GarbageCollected<NavigatorML>,
   void Trace(blink::Visitor*) const override;
 
  private:
-  Member<NavigatorBase> navigator_base_;
   Member<ML> ml_;
 };
 

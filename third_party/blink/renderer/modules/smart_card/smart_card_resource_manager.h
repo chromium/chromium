@@ -55,7 +55,6 @@ class MODULES_EXPORT SmartCardResourceManager final
       ScriptPromiseResolver<SmartCardContext>*,
       device::mojom::blink::SmartCardCreateContextResultPtr);
 
-  Member<NavigatorBase> navigator_base_;
   HeapMojoRemote<mojom::blink::SmartCardService> service_;
   HeapHashSet<Member<ScriptPromiseResolver<SmartCardContext>>>
       create_context_promises_;

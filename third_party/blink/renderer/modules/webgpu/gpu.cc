@@ -149,7 +149,6 @@ GPU* GPU::gpu(NavigatorBase& navigator) {
 
 GPU::GPU(NavigatorBase& navigator)
     : ExecutionContextLifecycleObserver(navigator.GetExecutionContext()),
-      navigator_base_(navigator),
       wgsl_language_features_(MakeGarbageCollected<WGSLLanguageFeatures>(
           GatherWGSLLanguageFeatures())),
       mappable_buffer_handles_(
@@ -163,7 +162,6 @@ WGSLLanguageFeatures* GPU::wgslLanguageFeatures() const {
 
 void GPU::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
-  visitor->Trace(navigator_base_);
   ExecutionContextLifecycleObserver::Trace(visitor);
   visitor->Trace(mappable_buffers_);
   visitor->Trace(wgsl_language_features_);

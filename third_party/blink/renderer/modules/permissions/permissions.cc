@@ -54,7 +54,6 @@ Permissions* Permissions::permissions(NavigatorBase& navigator) {
 
 Permissions::Permissions(NavigatorBase& navigator)
     : ExecutionContextLifecycleObserver(navigator.GetExecutionContext()),
-      navigator_base_(navigator),
       service_(navigator.GetExecutionContext()) {}
 
 ScriptPromise<PermissionStatus> Permissions::query(
@@ -225,7 +224,6 @@ void Permissions::Trace(Visitor* visitor) const {
   visitor->Trace(service_);
   visitor->Trace(listeners_);
   ScriptWrappable::Trace(visitor);
-  visitor->Trace(navigator_base_);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 

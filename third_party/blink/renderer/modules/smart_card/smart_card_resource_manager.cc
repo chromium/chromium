@@ -59,7 +59,6 @@ SmartCardResourceManager* SmartCardResourceManager::smartCard(
 
 SmartCardResourceManager::SmartCardResourceManager(NavigatorBase& navigator)
     : ExecutionContextLifecycleObserver(navigator.GetExecutionContext()),
-      navigator_base_(navigator),
       service_(navigator.GetExecutionContext()) {}
 
 void SmartCardResourceManager::ContextDestroyed() {
@@ -70,7 +69,6 @@ void SmartCardResourceManager::Trace(Visitor* visitor) const {
   visitor->Trace(service_);
   visitor->Trace(create_context_promises_);
   ScriptWrappable::Trace(visitor);
-  visitor->Trace(navigator_base_);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 

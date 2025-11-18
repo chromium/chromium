@@ -99,8 +99,6 @@ class Permissions final : public ScriptWrappable,
   mojom::blink::PermissionDescriptorPtr CreatePermissionVerificationDescriptor(
       PermissionType descriptor_type);
 
-  Member<NavigatorBase> navigator_base_;
-
   int created_permission_status_objects_ = 0;
 
   HeapHashMap<PermissionType, Member<PermissionStatusListener>> listeners_;

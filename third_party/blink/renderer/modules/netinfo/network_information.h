@@ -85,8 +85,6 @@ class NetworkInformation final
 
   void MaybeShowWebHoldbackConsoleMsg();
 
-  Member<NavigatorBase> navigator_base_;
-
   // Touched only on context thread.
   WebConnectionType type_;
 

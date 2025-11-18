@@ -41,7 +41,6 @@ WakeLock::WakeLock(NavigatorBase& navigator)
       PageVisibilityObserver(navigator.DomWindow()
                                  ? navigator.DomWindow()->GetFrame()->GetPage()
                                  : nullptr),
-      navigator_base_(navigator),
       permission_service_(navigator.GetExecutionContext()),
       managers_{
           MakeGarbageCollected<WakeLockManager>(navigator.GetExecutionContext(),
@@ -262,7 +261,6 @@ void WakeLock::Trace(Visitor* visitor) const {
   for (const Member<WakeLockManager>& manager : managers_)
     visitor->Trace(manager);
   visitor->Trace(permission_service_);
-  visitor->Trace(navigator_base_);
   PageVisibilityObserver::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
   ScriptWrappable::Trace(visitor);
