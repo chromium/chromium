@@ -324,9 +324,9 @@ public class CredManHelperRobolectricTest {
         assertThat(mCallback.getStatus()).isEqualTo(Integer.valueOf(AuthenticatorStatus.SUCCESS));
         verify(mBrowserBridge, times(1)).onCredManUiClosed(any(), anyBoolean());
         verify(mMetricsHelper, times(1))
-                .reportGetCredentialMetrics(eq(CredManGetRequestEnum.SENT_REQUEST), any());
+                .reportGetCredentialMetrics(eq(CredManGetRequestEnum.SENT_REQUEST), anyInt());
         verify(mMetricsHelper, times(1))
-                .reportGetCredentialMetrics(eq(CredManGetRequestEnum.SUCCESS_PASSKEY), any());
+                .reportGetCredentialMetrics(eq(CredManGetRequestEnum.SUCCESS_PASSKEY), anyInt());
     }
 
     @Test
@@ -431,7 +431,7 @@ public class CredManHelperRobolectricTest {
                         GetAssertionOutcome.USER_CANCELLATION);
         verify(mBrowserBridge, times(1)).onCredManUiClosed(any(), anyBoolean());
         verify(mMetricsHelper, times(1))
-                .reportGetCredentialMetrics(eq(CredManGetRequestEnum.CANCELLED), any());
+                .reportGetCredentialMetrics(eq(CredManGetRequestEnum.CANCELLED), anyInt());
     }
 
     @Test
@@ -457,7 +457,7 @@ public class CredManHelperRobolectricTest {
         verify(mErrorCallback, times(1)).onResult(AuthenticatorStatus.UNKNOWN_ERROR, null);
         verify(mBrowserBridge, times(1)).onCredManUiClosed(any(), anyBoolean());
         verify(mMetricsHelper, times(1))
-                .reportGetCredentialMetrics(eq(CredManGetRequestEnum.FAILURE), any());
+                .reportGetCredentialMetrics(eq(CredManGetRequestEnum.FAILURE), anyInt());
     }
 
     @Test
@@ -569,7 +569,7 @@ public class CredManHelperRobolectricTest {
         verify(mBarrier, times(1)).onCredManCancelled(AuthenticatorStatus.ABORT_ERROR);
         verify(mBrowserBridge, times(1)).cleanupCredManRequest(any());
         verify(mBrowserBridge, never()).onCredManUiClosed(any(), anyBoolean());
-        verify(mMetricsHelper, never()).reportGetCredentialMetrics(anyInt(), any());
+        verify(mMetricsHelper, never()).reportGetCredentialMetrics(anyInt(), anyInt());
     }
 
     @Test
@@ -623,7 +623,7 @@ public class CredManHelperRobolectricTest {
         verify(mBrowserBridge, never()).cleanupCredManRequest(any());
         verify(mBrowserBridge, times(1)).onCredManUiClosed(any(), anyBoolean());
         verify(mMetricsHelper, times(1))
-                .reportGetCredentialMetrics(eq(CredManGetRequestEnum.CANCELLED), any());
+                .reportGetCredentialMetrics(eq(CredManGetRequestEnum.CANCELLED), anyInt());
     }
 
     @Test
@@ -678,7 +678,7 @@ public class CredManHelperRobolectricTest {
         verify(mBrowserBridge, times(1))
                 .onPasswordCredentialReceived(any(), eq(username), eq(password));
         verify(mMetricsHelper, times(1))
-                .reportGetCredentialMetrics(eq(CredManGetRequestEnum.SUCCESS_PASSWORD), any());
+                .reportGetCredentialMetrics(eq(CredManGetRequestEnum.SUCCESS_PASSWORD), anyInt());
     }
 
     @Test
@@ -761,9 +761,9 @@ public class CredManHelperRobolectricTest {
         assertThat(mCallback.getStatus()).isEqualTo(Integer.valueOf(AuthenticatorStatus.SUCCESS));
         verify(mBrowserBridge, times(1)).onCredManUiClosed(any(), anyBoolean());
         verify(mMetricsHelper, times(1))
-                .reportGetCredentialMetrics(eq(CredManGetRequestEnum.SENT_REQUEST), any());
+                .reportGetCredentialMetrics(eq(CredManGetRequestEnum.SENT_REQUEST), anyInt());
         verify(mMetricsHelper, times(1))
-                .reportGetCredentialMetrics(eq(CredManGetRequestEnum.SUCCESS_PASSKEY), any());
+                .reportGetCredentialMetrics(eq(CredManGetRequestEnum.SUCCESS_PASSKEY), anyInt());
     }
 
     @Test
@@ -837,7 +837,7 @@ public class CredManHelperRobolectricTest {
         verify(mBarrier, times(1)).onCredManCancelled(AuthenticatorStatus.NOT_ALLOWED_ERROR);
         verify(mBrowserBridge, times(1)).cleanupCredManRequest(any());
         verify(mBrowserBridge, never()).onCredManUiClosed(any(), anyBoolean());
-        verify(mMetricsHelper, never()).reportGetCredentialMetrics(anyInt(), any());
+        verify(mMetricsHelper, never()).reportGetCredentialMetrics(anyInt(), anyInt());
     }
 
     private Credential createPasskeyCredential() {

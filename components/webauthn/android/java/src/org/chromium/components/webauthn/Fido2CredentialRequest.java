@@ -23,6 +23,7 @@ import android.os.Parcel;
 import android.os.ResultReceiver;
 import android.util.Pair;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
@@ -62,6 +63,8 @@ import org.chromium.net.GURLUtils;
 import org.chromium.ui.util.RunnableTimer;
 import org.chromium.url.Origin;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -110,17 +113,27 @@ public class Fido2CredentialRequest
     // Some modes do credential enumeration in advance of calling a platform API to get a passkey
     // assertion. In these cases a cancellation before the final request is sent can prevent
     // UI from being shown. Cancellation is ignored if the UI might already be showing.
-    public enum CancellableUiState {
-        NONE,
-        WAITING_FOR_RP_ID_VALIDATION,
-        WAITING_FOR_CREDENTIAL_LIST,
-        WAITING_FOR_SELECTION,
-        REQUEST_SENT_TO_PLATFORM,
-        CANCEL_PENDING,
-        CANCEL_PENDING_RP_ID_VALIDATION_COMPLETE,
+    @IntDef({
+        CancellableUiState.NONE,
+        CancellableUiState.WAITING_FOR_RP_ID_VALIDATION,
+        CancellableUiState.WAITING_FOR_CREDENTIAL_LIST,
+        CancellableUiState.WAITING_FOR_SELECTION,
+        CancellableUiState.REQUEST_SENT_TO_PLATFORM,
+        CancellableUiState.CANCEL_PENDING,
+        CancellableUiState.CANCEL_PENDING_RP_ID_VALIDATION_COMPLETE
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface CancellableUiState {
+        int NONE = 0;
+        int WAITING_FOR_RP_ID_VALIDATION = 1;
+        int WAITING_FOR_CREDENTIAL_LIST = 2;
+        int WAITING_FOR_SELECTION = 3;
+        int REQUEST_SENT_TO_PLATFORM = 4;
+        int CANCEL_PENDING = 5;
+        int CANCEL_PENDING_RP_ID_VALIDATION_COMPLETE = 6;
     }
 
-    private CancellableUiState mCancellableUiState = CancellableUiState.NONE;
+    private @CancellableUiState int mCancellableUiState = CancellableUiState.NONE;
 
     // Not null when the GMSCore-created ClientDataJson needs to be overridden or when using the
     // CredMan API.
@@ -739,20 +752,20 @@ public class Fido2CredentialRequest
         mCredManHelper.cancelGetAssertion(AuthenticatorStatus.ABORT_ERROR);
 
         switch (mCancellableUiState) {
-            case WAITING_FOR_RP_ID_VALIDATION:
+            case CancellableUiState.WAITING_FOR_RP_ID_VALIDATION:
                 mCancellableUiState = CancellableUiState.CANCEL_PENDING_RP_ID_VALIDATION_COMPLETE;
                 break;
-            case WAITING_FOR_CREDENTIAL_LIST:
+            case CancellableUiState.WAITING_FOR_CREDENTIAL_LIST:
                 mCancellableUiState = CancellableUiState.CANCEL_PENDING;
                 mBarrier.onFido2ApiCancelled();
                 break;
-            case WAITING_FOR_SELECTION:
+            case CancellableUiState.WAITING_FOR_SELECTION:
                 assumeNonNull(getBridge());
                 getBridge().cleanupRequest(mAuthenticationContextProvider.getRenderFrameHost());
                 mCancellableUiState = CancellableUiState.NONE;
                 mBarrier.onFido2ApiCancelled();
                 break;
-            case REQUEST_SENT_TO_PLATFORM:
+            case CancellableUiState.REQUEST_SENT_TO_PLATFORM:
                 // If the platform successfully completes the getAssertion then cancelation is
                 // ignored, but if it returns an error then CANCEL_PENDING removes the option to
                 // try again.

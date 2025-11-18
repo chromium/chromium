@@ -77,7 +77,7 @@ public class CredManHelper {
     private final AuthenticationContextProvider mAuthenticationContextProvider;
     private final WebauthnBrowserBridge.Provider mBridgeProvider;
     private byte @Nullable [] mClientDataJson;
-    private CancellableUiState mCancellableUiState = CancellableUiState.NONE;
+    private @CancellableUiState int mCancellableUiState = CancellableUiState.NONE;
     private final @Nullable CredManRequestDecorator mCredManRequestDecorator;
     private CredManMetricsHelper mMetricsHelper;
     private @Nullable Runnable mNoCredentialsFallback;
@@ -588,12 +588,12 @@ public class CredManHelper {
     public void cancelGetAssertion(int error) {
         log(TAG, "cancelGetAssertion");
         switch (mCancellableUiState) {
-            case WAITING_FOR_CREDENTIAL_LIST:
+            case CancellableUiState.WAITING_FOR_CREDENTIAL_LIST:
                 mCancellableUiState = CancellableUiState.CANCEL_PENDING;
                 assumeNonNull(mBarrier);
                 mBarrier.onCredManCancelled(error);
                 break;
-            case WAITING_FOR_SELECTION:
+            case CancellableUiState.WAITING_FOR_SELECTION:
                 assumeNonNull(mBridgeProvider.getBridge());
                 mBridgeProvider
                         .getBridge()

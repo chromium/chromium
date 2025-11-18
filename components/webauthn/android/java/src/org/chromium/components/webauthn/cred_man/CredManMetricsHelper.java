@@ -104,7 +104,7 @@ public class CredManMetricsHelper {
     }
 
     public void reportGetCredentialMetrics(
-            @CredManGetRequestEnum int value, CancellableUiState cancellableUiState) {
+            @CredManGetRequestEnum int value, @CancellableUiState int cancellableUiState) {
         assert !(cancellableUiState == CancellableUiState.NONE)
                         || !(value == CredManGetRequestEnum.SUCCESS_PASSWORD)
                 : "Passwords cannot be received from modal requests!";
