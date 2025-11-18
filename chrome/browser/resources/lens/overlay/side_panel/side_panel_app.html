@@ -476,6 +476,13 @@
     transform: translateY(calc(-1 * (var(--composebox-height) + var(--composebox-margin-bottom))));
   }
 
+  /* Hide the dropdown when the dropdown is not enabled, the dropdown is not showable,
+   or when the composebox is not focused. */
+  :host(:not([enable-lens-aim-suggestions])) #composeboxContainer #composebox::part(dropdown),
+  :host(:not([is-composebox-focused])) #composeboxContainer #composebox::part(dropdown),
+  #composeboxContainer:has(#composebox:not([show-dropdown_])) #composebox::part(dropdown) {
+    display: none;
+  }
 
   :host(:not([show-upload-progress])) #uploadProgressBarContainer,
   :host([is-error-page-visible]) #uploadProgressBarContainer {
