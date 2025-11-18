@@ -114,6 +114,7 @@ export class OmniboxAimAppElement extends CrLitElement implements Page {
     assert(composebox);
     const input = composebox.getInputText();
     composebox.clearAllInputs();
+    composebox.clearAutocompleteMatches();
     return Promise.resolve({input});
   }
 
