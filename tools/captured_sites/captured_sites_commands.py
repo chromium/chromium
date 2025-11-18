@@ -360,7 +360,7 @@ class ChromeCommand(Command):
       return
     with open(archive_path, 'r') as read_file:
       data = json.load(read_file)
-    if not 'startingURL' in data:
+    if 'startingURL' not in data:
       print('No startingURL found in file for "%s"' % url, file=sys.stderr)
       return
     print('%s test starts at:' % url, file=sys.stderr)
