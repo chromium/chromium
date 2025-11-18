@@ -1048,19 +1048,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.BulkCheck.PasswordCheckReferrerAndroid2"
-    enum="PasswordCheckReferrerAndroid" expires_after="2025-11-23">
-  <owner>ioanap@chromium.org</owner>
-  <owner>friedrichh@chromium.org</owner>
-  <summary>
-    Referrer of a navigation to the Password Check UI Settings view. Recorded
-    when the user enters the view. Replaces
-    PasswordManager.BulkCheck.PasswordCheckReferrerAndroid histogram. Fixing the
-    bug that LEAK_DIALOG entry was reported as PHISHED_WARNING_DIALOG with UPM
-    enabled.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.BulkCheck.Time" units="ms"
     expires_after="2026-04-26">
   <owner>vasilii@chromium.org</owner>
@@ -1295,21 +1282,6 @@ chromium-metrics-reviews@google.com.
   <token key="Issue">
     <variant name="CountLeaked" summary="leaked credentials in the database"/>
     <variant name="CountPhished" summary="phished credentials in the database"/>
-  </token>
-</histogram>
-
-<histogram name="PasswordManager.CredentialEntryActions.{CredentialEntryType}"
-    enum="CredentialEntryAction" expires_after="2025-11-16">
-  <owner>ioanap@chromium.org</owner>
-  <owner>friedrichh@chromium.org</owner>
-  <summary>
-    Records actions performed by the users in the {CredentialEntryType} view.
-    Android-only for now.
-  </summary>
-  <token key="CredentialEntryType">
-    <variant name="BlockedCredential"/>
-    <variant name="FederatedCredential"/>
-    <variant name="SavedPassword"/>
   </token>
 </histogram>
 
@@ -1574,17 +1546,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the error encountered when trying to create a temporary file during
     a user-initiated password export. Android only.
-  </summary>
-</histogram>
-
-<histogram name="PasswordManager.ExportAndroid.MoreThanZeroPasswords"
-    enum="BooleanYesNo" expires_after="2025-12-28">
-  <owner>ioanap@chromium.org</owner>
-  <owner>atsvirchkova@google.com</owner>
-  <summary>
-    Records whether the serializatiation step of the user-initiated password
-    export flow was attempted for more than 0 passwords. Attempting to export 0
-    passwords is considered an error. Android only.
   </summary>
 </histogram>
 
