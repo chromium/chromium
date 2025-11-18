@@ -349,14 +349,13 @@ void WaylandBufferManagerGpu::AddBindingWaylandBufferManagerGpu(
   receiver_set_.Add(this, std::move(receiver));
 }
 
-const std::vector<uint64_t>
-WaylandBufferManagerGpu::GetModifiersForBufferFormat(
-    gfx::BufferFormat buffer_format) const {
-  auto it = supported_buffer_formats_with_modifiers_.find(buffer_format);
+const std::vector<uint64_t> WaylandBufferManagerGpu::GetModifiersForFormat(
+    viz::SharedImageFormat format) const {
+  auto it = supported_buffer_formats_with_modifiers_.find(
+      viz::SharedImageFormatToBufferFormat(format));
   if (it != supported_buffer_formats_with_modifiers_.end()) {
     if (drm_modifiers_filter_) {
-      return drm_modifiers_filter_->Filter(
-          viz::GetSharedImageFormat(buffer_format), it->second);
+      return drm_modifiers_filter_->Filter(format, it->second);
     }
     return it->second;
   }

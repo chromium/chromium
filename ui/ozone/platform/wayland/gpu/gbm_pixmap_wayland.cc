@@ -58,7 +58,7 @@ bool GbmPixmapWayland::InitializeBuffer(
   auto buffer_format = viz::SharedImageFormatToBufferFormat(format);
   const uint32_t fourcc_format = GetFourCCFormatFromSharedImageFormat(format);
   const uint32_t gbm_flags = ui::NativePixmapUsageToGbmFlags(usage);
-  auto modifiers = buffer_manager_->GetModifiersForBufferFormat(buffer_format);
+  auto modifiers = buffer_manager_->GetModifiersForFormat(format);
 
   // Create buffer object without format modifiers unless they are explicitly
   // advertised by the Wayland compositor, via linux-dmabuf protocol.
