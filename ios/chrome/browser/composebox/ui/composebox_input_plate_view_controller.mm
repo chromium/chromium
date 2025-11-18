@@ -821,6 +821,9 @@ const CGFloat kFadeViewWidth = 30.0f;
 
   _glowEffectView = ios::provider::CreateGlowEffect(
       CGRectZero, kInputPlateCornerRadius, kGlowEffectWidth);
+  // Temporarily remove the glow effect view while its broken (the effect
+  // doesn't stop rotating).
+  _glowEffectView = nil;
   if (_glowEffectView) {
     _glowEffectView.translatesAutoresizingMaskIntoConstraints = NO;
     _glowEffectView.userInteractionEnabled = NO;
