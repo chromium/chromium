@@ -111,6 +111,9 @@ CreditCardAccessManager::~CreditCardAccessManager() {
         ->SetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted(
             std::nullopt);
   }
+  // Reset informs observers that pending fetch requests are now considered
+  // failed.
+  Reset();
   for (Observer& observer : observers_) {
     observer.OnCreditCardAccessManagerDestroyed(*this);
   }

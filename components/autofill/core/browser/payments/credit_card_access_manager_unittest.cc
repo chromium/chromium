@@ -283,6 +283,26 @@ TEST_P(CreditCardAccessManagerAuthFlowTest,
   EXPECT_THAT(accessor().number(), IsEmpty());
 }
 
+// Tests that the observer receives `OnCreditCardFetchFailed` events for
+// retrievals that not completed on `CreditCardAccessManager` destruction.
+TEST_P(CreditCardAccessManagerAuthFlowTest, ResetsOnDestruction) {
+  CreateServerCard(kTestGUID, kTestNumber);
+  const CreditCard* card =
+      personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
+
+  NiceMock<MockCreditCardAccessManagerObserver> observer;
+  ExpectCardRetrievalFailure(*card, observer);
+  EXPECT_CALL(observer, OnCreditCardAccessManagerDestroyed).WillOnce([&]() {
+    credit_card_access_manager().RemoveObserver(&observer);
+  });
+
+  credit_card_access_manager().AddObserver(&observer);
+  PrepareToFetchCreditCardAndWaitForCallbacks();
+  FetchCreditCardAndCompleteRiskBasedAuthIfAvailable(card);
+
+  autofill_manager().Reset();
+}
+
 // Ensures that a "try again" response from payments does not end the flow.
 TEST_P(CreditCardAccessManagerAuthFlowTest, FetchServerCardCVCTryAgainFailure) {
   CreateServerCard(kTestGUID, kTestNumber);
