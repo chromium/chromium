@@ -1231,6 +1231,60 @@ suite('NewTabPageAppTest', () => {
       assertTrue(!!composebox);
       assertStyle($$(app, '#searchbox')!, 'visibility', 'hidden');
     });
+
+    test('Sequential ESC clears input then closes composebox', async () => {
+      // Arrange: Override the flag to FALSE for this specific test.
+      loadTimeData.overrideValues({composeboxCloseByEscape: false});
+      await microtasksFinished();
+
+      // Arrange: Create and open the Composebox UI.
+      const searchbox = $$(app, '#searchbox');
+      assertTrue(!!searchbox);
+      searchbox.dispatchEvent(new CustomEvent('open-composebox', {
+        detail: {searchboxText: '', contextFiles: []},
+      }));
+      await microtasksFinished();
+
+      const composebox = app.shadowRoot.querySelector('cr-composebox');
+      assertTrue(!!composebox);
+      // 1. Setup: Simulate input content.
+      composebox.$.input.value = 'test input';
+      composebox.$.input.dispatchEvent(new Event('input'));
+      await microtasksFinished();
+
+      assertEquals('test input', composebox.$.input.value);
+
+      //First ESC: Clear Input (Content present)
+      const closePromise1 = eventToPromise('close-composebox', composebox);
+      let closedAfterFirstEsc = false;
+      closePromise1.then(() => closedAfterFirstEsc = true);
+
+      // Act: Press ESC 1.
+      composebox.dispatchEvent(new KeyboardEvent(
+          'keydown', {key: 'Escape', bubbles: true, composed: true}));
+      await microtasksFinished();
+
+      // Assert 1: Verify input cleared, component did NOT close.
+      assertFalse(
+          closedAfterFirstEsc,
+          'First ESC should clear input, not close the box.');
+      assertEquals(
+          '', composebox.$.input.value,
+          'Input must be cleared after first ESC.');
+
+      // Second ESC: Close Box (Content empty)
+      // Act: Press ESC 2.
+      const whenCloseComposebox =
+          eventToPromise('close-composebox', composebox);
+
+      composebox.dispatchEvent(new KeyboardEvent(
+          'keydown', {key: 'Escape', bubbles: true, composed: true}));
+      await whenCloseComposebox;  // Wait for the close event
+
+      // Assert 2: Verify close occurred.
+      assertTrue(true, 'Second ESC must trigger the close event.');
+    });
+
     test(
         'Clicking the searchbox composebox button notifies composebox handler',
         async () => {

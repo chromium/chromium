@@ -647,6 +647,18 @@ export class ComposeboxElement extends I18nMixinLit
     }
   }
 
+  handleEscapeKeyLogic(): void {
+    const hasContent =
+        this.input_.trim().length > 0 || this.contextFilesSize_ > 0;
+    if (!this.composeboxCloseByEscape_ && hasContent) {
+      this.clearAllInputs();
+      this.focusInput();
+      this.queryAutocomplete(/* clearMatches= */ true);
+    } else {
+      this.closeComposebox_();
+    }
+  }
+
   protected onLensClick_() {
     this.pageHandler_.handleLensButtonClick();
   }
@@ -755,14 +767,8 @@ export class ComposeboxElement extends I18nMixinLit
     }
 
     if (e.key === 'Escape') {
-      if (!this.composeboxCloseByEscape_ &&
-          (this.input_.trim().length > 0 || this.contextFilesSize_ > 0)) {
-        this.clearAllInputs();
-        this.focusInput();
-        this.queryAutocomplete(/* clearMatches= */ true);
-      } else {
-        this.closeComposebox_();
-      }
+      this.handleEscapeKeyLogic();
+      e.stopPropagation();
       e.preventDefault();
       return;
     }

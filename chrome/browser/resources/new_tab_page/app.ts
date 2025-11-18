@@ -938,6 +938,15 @@ export class AppElement extends AppElementBase {
     // <if expr="is_macosx">
     ctrlKeyPressed = ctrlKeyPressed || e.metaKey;
     // </if>
+    if (e.key === 'Escape' && this.showComposebox_) {
+        const composebox =
+            this.shadowRoot.querySelector<ComposeboxElement>('#composebox');
+        if (composebox) {
+          composebox.handleEscapeKeyLogic();
+          e.preventDefault();
+          return;
+        }
+    }
     if (ctrlKeyPressed && e.code === 'Period' && e.shiftKey) {
       this.showVoiceSearchOverlay_ = true;
       recordVoiceAction(VoiceAction.ACTIVATE_KEYBOARD);
