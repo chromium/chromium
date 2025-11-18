@@ -26,6 +26,7 @@ class ChromeStylePluginTest(plugin_testing.ClangPluginTest):
         '-isystem',
         os.path.join(os.getcwd(), 'system'),
         '-Wno-inconsistent-missing-override',
+        '-Wunsafe-buffer-usage',
         '--include-directory',
         '.',
     ])

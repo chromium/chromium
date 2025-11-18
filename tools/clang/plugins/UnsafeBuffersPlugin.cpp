@@ -480,23 +480,6 @@ class UnsafeBuffersASTConsumer : public clang::ASTConsumer {
         new UnsafeBuffersDiagnosticConsumer(&engine, old_client_, instance_,
                                             std::move(path_file_config)),
         /*owned=*/true);
-
-    // Enable all the unsafe buffer diagnostics as Remarks. This prevents them
-    // from stopping compilation, even with -Werror. If we see the remark go by,
-    // we can re-emit it as a warning for the files we want to include in the
-    // check.
-    engine.setSeverityForGroup(clang::diag::Flavor::WarningOrError,
-                               "unsafe-buffer-usage",
-                               clang::diag::Severity::Remark);
-    engine.setSeverityForGroup(clang::diag::Flavor::WarningOrError,
-                               "unsafe-buffer-usage-in-libc-call",
-                               clang::diag::Severity::Remark);
-    engine.setSeverityForGroup(clang::diag::Flavor::WarningOrError,
-                               "unsafe-buffer-usage-in-container",
-                               clang::diag::Severity::Remark);
-    engine.setSeverityForGroup(clang::diag::Flavor::WarningOrError,
-                               "unsafe-buffer-usage-in-unique-ptr-array-access",
-                               clang::diag::Severity::Remark);
   }
 
   ~UnsafeBuffersASTConsumer() {
@@ -600,7 +583,8 @@ class AllowUnsafeLibcPragmaHandler : public clang::PragmaHandler {
 
 static clang::FrontendPluginRegistry::Add<UnsafeBuffersASTAction> X1(
     "unsafe-buffers",
-    "Enforces -Wunsafe-buffer-usage during incremental rollout");
+    "Disables existing warnings of -Wunsafe-buffer-usage during incremental "
+    "rollout");
 
 static clang::PragmaHandlerRegistry::Add<AllowUnsafeBuffersPragmaHandler> X2(
     AllowUnsafeBuffersPragmaHandler::kName,
