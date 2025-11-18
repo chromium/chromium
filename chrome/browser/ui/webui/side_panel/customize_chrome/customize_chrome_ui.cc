@@ -303,9 +303,10 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
 
   const auto* aim_eligibility_service =
       AimEligibilityServiceFactory::GetForProfile(profile_);
-  source->AddBoolean(
-      "aimPolicyEnabled",
-      aim_eligibility_service && aim_eligibility_service->IsAimEligible());
+  source->AddBoolean("aimPolicyEnabled",
+                     aim_eligibility_service &&
+                         aim_eligibility_service->IsDeepSearchEligible() &&
+                         aim_eligibility_service->IsCreateImagesEligible());
 
   source->AddBoolean("footerEnabled",
                      base::FeatureList::IsEnabled(ntp_features::kNtpFooter));
