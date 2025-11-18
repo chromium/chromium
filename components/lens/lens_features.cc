@@ -587,6 +587,10 @@ const base::FeatureParam<int> kAimSuggestionsCount{
 const base::FeatureParam<bool> kEnableAimTypeaheadSuggestions{
     &kLensAimSuggestions, "enable-typeahead-suggestions", false};
 
+constexpr base::FeatureParam<base::TimeDelta> kLensAimSuggestionTimeout{
+    &kLensAimSuggestions, "lens-aim-suggestion-timeout",
+    base::Milliseconds(10000)};
+
 int GetLensAimSuggestionsCount() {
   if (!GetAimSuggestionsEnabled()) {
     return 0;
@@ -1091,6 +1095,10 @@ LensAimSuggestionsType GetLensAimSuggestionsType() {
     return LensAimSuggestionsType::kNone;
   }
   return kLensAimSuggestionsType.Get();
+}
+
+base::TimeDelta GetLensAimSuggestionTimeout() {
+  return kLensAimSuggestionTimeout.Get();
 }
 
 bool IsLensAimTypeAheadSuggestionsEnabled() {
