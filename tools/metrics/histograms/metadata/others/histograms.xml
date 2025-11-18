@@ -6632,7 +6632,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Process.Sandbox.DwriteHookStatus" enum="Boolean"
-    expires_after="2025-11-13">
+    expires_after="2026-11-13">
   <owner>ajgo@chromium.org</owner>
   <owner>wfh@chromium.org</owner>
   <summary>
