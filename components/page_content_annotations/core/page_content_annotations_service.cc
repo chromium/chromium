@@ -717,6 +717,11 @@ void PageContentAnnotationsService::OnURLVisitedWithNavigationId(
     return;
   }
 
+  if (visited_url_info.response_code_category ==
+      history::VisitResponseCodeCategory::k404) {
+    return;
+  }
+
   // By default, annotate the title.
   HistoryVisit history_visit(visit_row.visit_id);
   history_visit.nav_entry_timestamp = visit_row.visit_time;

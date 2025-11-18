@@ -256,6 +256,24 @@ TEST_F(PageContentAnnotationsServiceTest, NonHTTPUrlIgnored) {
   task_environment_.FastForwardBy(base::Seconds(5));
 }
 
+TEST_F(PageContentAnnotationsServiceTest, VisitWith404ResponseIgnored) {
+  history::VisitID visit_id = 1;
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  EXPECT_CALL(*history_service_,
+              AddContentModelAnnotationsForVisit(_, visit_id))
+      .Times(0);
+#endif
+
+  VisitURL(GURL("https://example.com"), u"404test", visit_id,
+           /*local_navigation_id=*/1,
+           /*is_synced_visit=*/true,
+           /*timestamp=*/base::Time(),
+           history::VisitResponseCodeCategory::k404);
+
+  task_environment_.FastForwardBy(base::Seconds(5));
+}
+
 TEST_F(PageContentAnnotationsServiceTest, ObserveSyncedVisitsNonSearch) {
   history::VisitID visit_id = 1;
 
