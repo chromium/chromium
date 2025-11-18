@@ -5,28 +5,36 @@
 #include "services/webnn/host/execution_provider_initializer.h"
 
 #include <appmodel.h>
+#include <wrl.h>
 
 #include <algorithm>
-#include <memory>
+#include <optional>
 #include <string_view>
+#include <utility>
+#include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/queue.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/concurrent_closures.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
+#include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/scoped_hstring.h"
 #include "services/webnn/public/cpp/execution_providers_info.h"
 #include "services/webnn/public/cpp/platform_functions_win.h"
 #include "services/webnn/public/cpp/win_app_runtime_package_info.h"
+#include "third_party/windows_app_sdk_headers/src/inc/abi/winml/Microsoft.Windows.AI.MachineLearning.h"
 
 namespace webnn {
 
@@ -40,8 +48,14 @@ using EnsureReadyAsyncOp =
 using EnsureReadyCompletedHandler =
     __FIAsyncOperationWithProgressCompletedHandler_2_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProviderReadyResult_double;
 
-// Maps to ExecutionProviderStatusUma in
-// tools/metrics/histograms/metadata/webnn/enums.xml.
+// A flat map with execution provider (EP) name as the key and package info as
+// the value.
+using EpPackageInfoMap = base::flat_map<std::string, mojom::EpPackageInfoPtr>;
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(ExecutionProviderStatusUma)
 enum class ExecutionProviderStatusUma {
   kUnknown = 0,
   kEpVersionTooLow = 1,
@@ -51,6 +65,7 @@ enum class ExecutionProviderStatusUma {
 
   kMaxValue = kReadyForUse,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/webnn/enums.xml:ExecutionProviderStatusUma)
 
 void RecordEpStatus(std::string_view ep_name,
                     ExecutionProviderStatusUma status) {
@@ -80,7 +95,7 @@ std::string VersionToString(const PACKAGE_VERSION& version) {
                             version.Build, version.Revision);
 }
 
-auto CloneMap(const base::flat_map<std::string, mojom::EpPackageInfoPtr>& map) {
+auto CloneMap(const EpPackageInfoMap& map) {
   std::vector<std::pair<std::string, mojom::EpPackageInfoPtr>> cloned_entries;
   cloned_entries.reserve(map.size());
   std::ranges::for_each(map, [&cloned_entries](const auto& pair) {
@@ -89,6 +104,7 @@ auto CloneMap(const base::flat_map<std::string, mojom::EpPackageInfoPtr>& map) {
   return base::flat_map(std::move(cloned_entries));
 }
 
+// Retrieves the name of the EP.
 std::string GetProviderName(abi_winml::IExecutionProvider* provider) {
   base::win::ScopedHString name(nullptr);
   HRESULT hr =
@@ -97,24 +113,24 @@ std::string GetProviderName(abi_winml::IExecutionProvider* provider) {
   return name.GetAsUTF8();
 }
 
-// This method may block and must run on a background thread.
+// Activates the EP Catalog and retrieves all available EPs.
 std::vector<Microsoft::WRL::ComPtr<abi_winml::IExecutionProvider>>
 ActivateCatalogAndGetAvailableEps() {
-  // TODO(crbug.com/457463699): Retry EP catalog activation if the
-  // initialization of WinAppRuntime fails.
-  if (InitializePackageDependencyForProcess(kWinAppRuntimePackageFamilyName,
-                                            kWinAppRuntimePackageMinVersion)
-          .empty()) {
-    return {};
-  }
-
+  HRESULT hr = S_OK;
   Microsoft::WRL::ComPtr<abi_winml::IExecutionProviderCatalogStatics>
       catalog_statics;
-  HRESULT hr = base::win::RoGetActivationFactory(
-      base::win::ScopedHString::Create(
-          RuntimeClass_Microsoft_Windows_AI_MachineLearning_ExecutionProviderCatalog)
-          .get(),
-      IID_PPV_ARGS(&catalog_statics));
+  {
+    // `RoGetActivationFactory()` below loads Windows ML dlls for activating the
+    // EP Catalog API.
+    base::ScopedBlockingCall scoped_blocking_call(
+        FROM_HERE, base::BlockingType::MAY_BLOCK);
+
+    hr = base::win::RoGetActivationFactory(
+        base::win::ScopedHString::Create(
+            RuntimeClass_Microsoft_Windows_AI_MachineLearning_ExecutionProviderCatalog)
+            .get(),
+        IID_PPV_ARGS(&catalog_statics));
+  }
   if (FAILED(hr)) {
     PLOG(WARNING) << "[WebNN] RoGetActivationFactory() failed.";
     return {};
@@ -160,11 +176,11 @@ ActivateCatalogAndGetAvailableEps() {
 std::optional<std::pair<std::string, mojom::EpPackageInfoPtr>>
 QueryPackageInfoFromProvider(abi_winml::IExecutionProvider* provider,
                              EnsureReadyAsyncOp* ensure_op) {
-  std::string ep_name = GetProviderName(provider);
-
   Microsoft::WRL::ComPtr<IAsyncInfo> async_info;
   HRESULT hr = ensure_op->QueryInterface(IID_PPV_ARGS(&async_info));
   CHECK_EQ(hr, S_OK);
+
+  std::string ep_name = GetProviderName(provider);
 
   AsyncStatus status;
   hr = async_info->get_Status(&status);
@@ -273,157 +289,214 @@ void EnsureExecutionProviderReadyAsync(
     return;
   }
 
-  auto ensure_op_callback = base::BindPostTask(
-      base::SequencedTaskRunner::GetCurrentDefault(),
-      base::BindOnce(
-          [](Microsoft::WRL::ComPtr<abi_winml::IExecutionProvider> provider,
-             Microsoft::WRL::ComPtr<EnsureReadyAsyncOp> ensure_op,
-             base::OnceCallback<void(
-                 std::optional<std::pair<std::string,
-                                         mojom::EpPackageInfoPtr>>)> callback) {
-            std::move(callback).Run(
-                QueryPackageInfoFromProvider(provider.Get(), ensure_op.Get()));
-          },
-          std::move(provider), ensure_op, std::move(callback)));
-
   ensure_op->put_Completed(
       Microsoft::WRL::Callback<EnsureReadyCompletedHandler>(
-          [ensure_op_callback = std::move(ensure_op_callback)](
-              EnsureReadyAsyncOp* ensure_op, AsyncStatus status) mutable {
-            std::move(ensure_op_callback).Run();
+          [provider, callback = base::BindPostTask(
+                         base::SequencedTaskRunner::GetCurrentDefault(),
+                         std::move(callback))](EnsureReadyAsyncOp* ensure_op,
+                                               AsyncStatus status) mutable {
+            std::move(callback).Run(
+                QueryPackageInfoFromProvider(provider.Get(), ensure_op));
             return S_OK;
           })
           .Get());
 }
 
-}  // namespace
-
-// static
-ExecutionProviderInitializer* ExecutionProviderInitializer::GetInstance() {
-  static base::NoDestructor<ExecutionProviderInitializer> instance;
-  return instance.get();
-}
-
-ExecutionProviderInitializer::ExecutionProviderInitializer() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&ActivateCatalogAndGetAvailableEps),
-      base::BindOnce(&ExecutionProviderInitializer::Initialize,
-                     weak_factory_.GetWeakPtr()));
-}
-
-void ExecutionProviderInitializer::EnsureExecutionProvidersReady(
-    base::OnceCallback<void(EpPackageInfoMap)> callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (initialized_) {
-    std::move(callback).Run(CloneMap(ep_package_info_map_));
-    return;
+// A singleton class that manages installation and initialization of EP
+// packages using the EP Catalog API of Windows App Runtime, ensuring all
+// required EPs are ready for use.
+class ExecutionProviderInitializer {
+ public:
+  static ExecutionProviderInitializer* GetInstance() {
+    static base::NoDestructor<ExecutionProviderInitializer> instance;
+    return instance.get();
   }
-  pending_callbacks_.push(std::move(callback));
-}
 
-void ExecutionProviderInitializer::Initialize(
-    std::vector<Microsoft::WRL::ComPtr<abi_winml::IExecutionProvider>>
-        providers) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ~ExecutionProviderInitializer() = delete;
+  ExecutionProviderInitializer(const ExecutionProviderInitializer&) = delete;
+  ExecutionProviderInitializer& operator=(const ExecutionProviderInitializer&) =
+      delete;
 
-  CHECK(!initialized_);
+  void EnsureExecutionProvidersReady(
+      base::OnceCallback<void(EpPackageInfoMap)> callback) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Check the ready state of each provider and try to ensure they are ready.
-  //
-  // Providers in the "not ready" state are already installed, so
-  // `EnsureExecutionProviderReadyAsync` is expected to complete quickly.
-  // `concurrent_closures` will wait for these providers to become ready before
-  // invoking `OnInitialize()`, which blocks WebNN context creation.
-  //
-  // Providers in the "not present" state are not yet installed.
-  // `EnsureExecutionProviderReadyAsync` will trigger the download and
-  // installation, which takes longer time to complete. This installation runs
-  // on a background thread and does NOT block WebNN context creation.
-  base::ConcurrentClosures concurrent_closures;
-  for (const auto& provider : providers) {
-    std::string ep_name = GetProviderName(provider.Get());
-
-    abi_winml::ExecutionProviderReadyState ready_state;
-    HRESULT hr = provider->get_ReadyState(&ready_state);
-    CHECK_EQ(hr, S_OK);
-
-    switch (ready_state) {
-      case abi_winml::ExecutionProviderReadyState_Ready: {
-        LOG(FATAL) << "[WebNN] [" << ep_name
-                   << "] is already in ready state before `EnsureReadyAsync()` "
-                      "is called.";
+    switch (state_) {
+      case State::kEpCatalogNotActivated: {
+        // Tries to activate the EP Catalog, if succeeded, queues the callback
+        // to wait for the EPs to get ready, otherwise invokes the callback with
+        // an empty map immediately.
+        if (TryActivateEPCatalog()) {
+          state_ = State::kEpCatalogActivated;
+          pending_callbacks_.push(std::move(callback));
+        } else {
+          std::move(callback).Run({});
+        }
+        return;
       }
-      case abi_winml::ExecutionProviderReadyState_NotReady: {
-        EnsureExecutionProviderReadyAsync(
-            provider,
-            base::BindOnce(
-                [](base::OnceClosure closure,
-                   base::WeakPtr<ExecutionProviderInitializer> self,
-                   std::optional<std::pair<
-                       std::string, mojom::EpPackageInfoPtr>> package_info) {
-                  if (!self) {
-                    return;
-                  }
-                  if (package_info.has_value()) {
-                    self->AddExecutionProviderPackageInfo(
-                        std::move(*package_info));
-                  }
-                  std::move(closure).Run();
-                },
-                concurrent_closures.CreateClosure(),
-                weak_factory_.GetWeakPtr()));
-        break;
+      case State::kEpCatalogActivated: {
+        pending_callbacks_.push(std::move(callback));
+        return;
       }
-      case abi_winml::ExecutionProviderReadyState_NotPresent: {
-        RecordEpStatus(ep_name, ExecutionProviderStatusUma::kNotInstalled);
-
-        EnsureExecutionProviderReadyAsync(
-            provider,
-            base::BindOnce(
-                [](base::WeakPtr<ExecutionProviderInitializer> self,
-                   std::optional<std::pair<
-                       std::string, mojom::EpPackageInfoPtr>> package_info) {
-                  if (!self) {
-                    return;
-                  }
-                  if (package_info.has_value()) {
-                    self->AddExecutionProviderPackageInfo(
-                        std::move(*package_info));
-                  }
-                },
-                weak_factory_.GetWeakPtr()));
-        break;
+      case State::kEpsEnsured: {
+        std::move(callback).Run(CloneMap(ep_package_info_map_));
+        return;
       }
     }
   }
 
-  std::move(concurrent_closures)
-      .Done(base::BindOnce(&ExecutionProviderInitializer::OnInitialize,
-                           weak_factory_.GetWeakPtr()));
-}
+ private:
+  friend class base::NoDestructor<ExecutionProviderInitializer>;
 
-void ExecutionProviderInitializer::OnInitialize() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  initialized_ = true;
-
-  while (!pending_callbacks_.empty()) {
-    std::move(pending_callbacks_.front()).Run(CloneMap(ep_package_info_map_));
-    pending_callbacks_.pop();
+  ExecutionProviderInitializer() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   }
-}
 
-void ExecutionProviderInitializer::AddExecutionProviderPackageInfo(
-    std::pair<std::string, mojom::EpPackageInfoPtr> package_info) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Activates the EP Catalog if not already activated.
+  bool TryActivateEPCatalog() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  ep_package_info_map_.insert(std::move(package_info));
+    // Initializes the dependency on the runtime package to ensure the EP
+    // Catalog can be used.
+    if (InitializePackageDependencyForProcess(kWinAppRuntimePackageFamilyName,
+                                              kWinAppRuntimePackageMinVersion)
+            .empty()) {
+      return false;
+    }
+
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE,
+        {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+         base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+        base::BindOnce(&ActivateCatalogAndGetAvailableEps),
+        base::BindOnce(&ExecutionProviderInitializer::Initialize,
+                       base::Unretained(this)));
+
+    return true;
+  }
+
+  // Initializes the EPs retrieved from the catalog and triggers installation of
+  // their packages.
+  void Initialize(
+      std::vector<Microsoft::WRL::ComPtr<abi_winml::IExecutionProvider>>
+          providers) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    // Checks the ready state of each provider and ensures they reach the ready
+    // state.
+    //
+    // Providers in the "not ready" state are already installed, so
+    // `EnsureExecutionProviderReadyAsync` is expected to complete quickly.
+    // `concurrent_closures` will wait for these providers to get ready
+    // before invoking `OnInitialize()`, which blocks WebNN context creation.
+    //
+    // Providers in the "not present" state are not yet installed.
+    // `EnsureExecutionProviderReadyAsync` will trigger the package download and
+    // installation, which takes longer time to complete. This installation runs
+    // on a background thread and does NOT block WebNN context creation.
+    base::ConcurrentClosures concurrent_closures;
+    for (const auto& provider : providers) {
+      abi_winml::ExecutionProviderReadyState ready_state;
+      HRESULT hr = provider->get_ReadyState(&ready_state);
+      CHECK_EQ(hr, S_OK);
+
+      std::string ep_name = GetProviderName(provider.Get());
+
+      switch (ready_state) {
+        case abi_winml::ExecutionProviderReadyState_Ready: {
+          LOG(FATAL)
+              << "[WebNN] [" << ep_name
+              << "] is already in ready state before `EnsureReadyAsync()` "
+                 "is called.";
+        }
+        case abi_winml::ExecutionProviderReadyState_NotReady: {
+          EnsureExecutionProviderReadyAsync(
+              provider,
+              base::BindOnce(
+                  [](base::OnceClosure closure,
+                     std::optional<std::pair<
+                         std::string, mojom::EpPackageInfoPtr>> package_info) {
+                    if (package_info.has_value()) {
+                      auto* instance =
+                          ExecutionProviderInitializer::GetInstance();
+                      instance->AddExecutionProviderPackageInfo(
+                          std::move(*package_info));
+                    }
+                    std::move(closure).Run();
+                  },
+                  concurrent_closures.CreateClosure()));
+          break;
+        }
+        case abi_winml::ExecutionProviderReadyState_NotPresent: {
+          RecordEpStatus(ep_name, ExecutionProviderStatusUma::kNotInstalled);
+
+          EnsureExecutionProviderReadyAsync(
+              provider, base::BindOnce(
+                            [](std::optional<
+                                std::pair<std::string, mojom::EpPackageInfoPtr>>
+                                   package_info) {
+                              if (package_info.has_value()) {
+                                auto* instance =
+                                    ExecutionProviderInitializer::GetInstance();
+                                instance->AddExecutionProviderPackageInfo(
+                                    std::move(*package_info));
+                              }
+                            }));
+          break;
+        }
+      }
+    }
+
+    std::move(concurrent_closures)
+        .Done(base::BindOnce(&ExecutionProviderInitializer::OnInitialize,
+                             base::Unretained(this)));
+  }
+
+  // Called when the installed execution providers are ensured ready and their
+  // package info are cached. Invokes all the pending callbacks.
+  void OnInitialize() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    state_ = State::kEpsEnsured;
+
+    while (!pending_callbacks_.empty()) {
+      std::move(pending_callbacks_.front()).Run(CloneMap(ep_package_info_map_));
+      pending_callbacks_.pop();
+    }
+  }
+
+  void AddExecutionProviderPackageInfo(
+      std::pair<std::string, mojom::EpPackageInfoPtr> package_info) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    ep_package_info_map_.insert(std::move(package_info));
+  }
+
+  // Cached package info of EPs that are ready for use.
+  EpPackageInfoMap ep_package_info_map_;
+
+  // Pending callbacks to be invoked once initialization is complete.
+  base::queue<base::OnceCallback<void(EpPackageInfoMap)>> pending_callbacks_;
+
+  enum class State {
+    // The EP Catalog is not activated yet.
+    kEpCatalogNotActivated,
+    // The EP Catalog is activated but the EPs are not ready.
+    kEpCatalogActivated,
+    // The already installed EPs are ensured to be ready.
+    kEpsEnsured,
+  };
+  State state_ = State::kEpCatalogNotActivated;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+};
+
+}  // namespace
+
+void EnsureExecutionProvidersReady(
+    base::OnceCallback<void(EpPackageInfoMap)> callback) {
+  auto* instance = ExecutionProviderInitializer::GetInstance();
+  instance->EnsureExecutionProvidersReady(std::move(callback));
 }
 
 }  // namespace webnn

@@ -36,10 +36,7 @@ DeviceTypeUma in //services/webnn/webnn_context_provider_impl.cc.
   <int value="2" label="Npu"/>
 </enum>
 
-<!--
-The values in ExecutionProviderStatusUma enum type map to those in the enum class
-ExecutionProviderStatusUma in //services/webnn/host/execution_provider_initializer.cc.
--->
+<!-- LINT.IfChange(ExecutionProviderStatusUma) -->
 
 <enum name="ExecutionProviderStatusUma">
   <int value="0" label="Unknown"/>
@@ -48,6 +45,8 @@ ExecutionProviderStatusUma in //services/webnn/host/execution_provider_initializ
   <int value="3" label="Ensure ready failed"/>
   <int value="4" label="Ready for use"/>
 </enum>
+
+<!-- LINT.ThenChange(//services/webnn/host/execution_provider_initializer.cc:ExecutionProviderStatusUma) -->
 
 <!--
 The values in MLGraphOperatorUma enum type map to those in the enum class

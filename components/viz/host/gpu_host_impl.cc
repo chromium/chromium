@@ -797,8 +797,7 @@ void GpuHostImpl::ClearGrShaderDiskCache() {
 #if BUILDFLAG(IS_WIN)
 void GpuHostImpl::EnsureWebNNExecutionProvidersReady(
     EnsureWebNNExecutionProvidersReadyCallback cb) {
-  auto* initializer = webnn::ExecutionProviderInitializer::GetInstance();
-  initializer->EnsureExecutionProvidersReady(std::move(cb));
+  webnn::EnsureExecutionProvidersReady(std::move(cb));
 }
 #endif
 
