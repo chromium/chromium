@@ -238,6 +238,31 @@ void AddGeneratedThemeComprehensiveColors(ui::ColorMixer& mixer) {
   // Styling for Doodle Share Button.
   mixer[kColorNewTabPageDoodleShareButtonBackground] = element_background_color;
   mixer[kColorNewTabPageDoodleShareButtonIcon] = primary_foreground_color;
+
+  // Action chips colors.
+  mixer[kColorNewTabPageActionChipBackground] =
+      SelectBasedOnWhiteInput({kColorNewTabPageBackground}, gfx::kGoogleGrey100,
+                              element_background_color);
+  mixer[kColorNewTabPageActionChipBackgroundHover] = SelectBasedOnDarkInput(
+      element_background_color,
+      ui::SetAlpha(SK_ColorWHITE,
+                   /* 10% opacity */ 0.1 * SK_AlphaOPAQUE),
+      ui::SetAlpha(gfx::kGoogleGrey900,
+                   /* 10% opacity */ 0.1 * SK_AlphaOPAQUE));
+
+  mixer[kColorNewTabPageActionChipTextTitle] = {primary_foreground_color};
+  mixer[kColorNewTabPageActionChipTextBody] = SelectBasedOnDarkInput(
+      element_background_color,
+      ui::PickGoogleColor(gfx::kGoogleGrey700, element_background_color,
+                          color_utils::kMinimumReadableContrastRatio),
+      ui::PickGoogleColor(gfx::kGoogleGrey500, element_background_color,
+                          color_utils::kMinimumReadableContrastRatio));
+  mixer[kColorNewTabPageActionChipDeepSearchIcon] = SelectBasedOnDarkInput(
+      element_background_color,
+      ui::PickGoogleColor(gfx::kGoogleGrey700, element_background_color,
+                          color_utils::kMinimumReadableContrastRatio),
+      ui::PickGoogleColor(gfx::kGoogleGrey500, element_background_color,
+                          color_utils::kMinimumReadableContrastRatio));
 }
 
 }  // namespace
@@ -425,23 +450,6 @@ void AddNewTabPageColorMixer(ui::ColorProvider* provider,
   mixer[kColorNewTabFooterText] =
       ui::GetColorWithMaxContrast({kColorNewTabFooterBackground});
   mixer[kColorNewTabFooterLogoBackground] = {SK_ColorWHITE};
-
-  // Action chips colors.
-  mixer[kColorNewTabPageActionChipBackground] =
-      SelectBasedOnWhiteInput({kColorNewTabPageBackground}, gfx::kGoogleGrey100,
-                              element_background_color);
-  mixer[kColorNewTabPageActionChipBackgroundHover] = SelectBasedOnDarkInput(
-      element_background_color,
-      ui::SetAlpha(SK_ColorWHITE,
-                   /* 10% opacity */ 0.1 * SK_AlphaOPAQUE),
-      ui::SetAlpha(gfx::kGoogleGrey900,
-                   /* 10% opacity */ 0.1 * SK_AlphaOPAQUE));
-
-  mixer[kColorNewTabPageActionChipTextTitle] = {primary_foreground_color};
-  mixer[kColorNewTabPageActionChipTextBody] = {dark_mode ? SK_ColorWHITE
-                                                         : gfx::kGoogleGrey800};
-  mixer[kColorNewTabPageActionChipDeepSearchIcon] = {
-      dark_mode ? SK_ColorWHITE : gfx::kGoogleGrey800};
 }
 
 void AddWebThemeNewTabPageColors(ui::ColorMixer& mixer, bool dark_mode) {
@@ -581,5 +589,17 @@ void AddWebThemeNewTabPageColors(ui::ColorMixer& mixer, bool dark_mode) {
       kColorTabGroupTabStripFrameActivePurple};
   mixer[kColorNewTabPageModuleTabGroupsDotOrange] = {
       kColorTabGroupTabStripFrameActiveOrange};
+
+  // Action chips colors.
+  mixer[kColorNewTabPageActionChipBackground] = {
+      dark_mode ? gfx::kGoogleGrey800 : gfx::kGoogleGrey100};
+  mixer[kColorNewTabPageActionChipBackgroundHover] = {
+      kColorNewTabPageControlBackgroundHovered};
+
+  mixer[kColorNewTabPageActionChipTextTitle] = {primary_foreground_color};
+  mixer[kColorNewTabPageActionChipTextBody] = {dark_mode ? SK_ColorWHITE
+                                                         : gfx::kGoogleGrey800};
+  mixer[kColorNewTabPageActionChipDeepSearchIcon] = {
+      dark_mode ? SK_ColorWHITE : gfx::kGoogleGrey800};
   // LINT.ThenChange(//chrome/browser/ui/color/material_new_tab_page_color_mixer.cc)
 }
