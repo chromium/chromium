@@ -456,21 +456,6 @@ void LocationBarView::Init() {
           page_action_items, page_actions::PageActionPropertiesProvider(),
           page_action_params));
 
-  const auto* aim_eligibility_service =
-      AimEligibilityServiceFactory::GetForProfile(profile_);
-  const bool aim_omnibox_entrypoint_enabled =
-      browser_ &&
-      OmniboxFieldTrial::IsAimOmniboxEntrypointEnabled(aim_eligibility_service);
-  if (!page_action_container_->children().empty() &&
-      aim_omnibox_entrypoint_enabled &&
-      IsPageActionMigrated(PageActionIconType::kAiMode)) {
-    auto* first_page_action_view = static_cast<page_actions::PageActionView*>(
-        page_action_container_->children().front());
-    DCHECK(first_page_action_view->GetActionId() == kActionAiMode)
-        << "kActionAiMode must be the first child in PageActionContainerView "
-           "to ensure it's the left-most page action.";
-  }
-
   PageActionIconParams params;
   // |browser_| may be null when LocationBarView is used for non-Browser windows
   // such as PresentationReceiverWindowView, which do not support page actions.
@@ -537,7 +522,18 @@ void LocationBarView::Init() {
                                 PageActionIconType::kLensOverlayHomework);
   }
 
-  if (aim_omnibox_entrypoint_enabled) {
+  // Because the AIM eligibility service might not be ready on startup,
+  // the AI Mode page action type is always added. Unless the main AIM
+  // omnibox entrypoint Feature is explicitly disabled, which can be used
+  // as a kill switch in case of any unanticipated issues with this
+  // approach.
+  auto* feature_list = base::FeatureList::GetInstance();
+  bool aim_omnibox_entrypoint_explicitly_disabled =
+      feature_list &&
+      feature_list->IsFeatureOverridden(
+          omnibox::kAiModeOmniboxEntryPoint.name) &&
+      !base::FeatureList::IsEnabled(omnibox::kAiModeOmniboxEntryPoint);
+  if (!aim_omnibox_entrypoint_explicitly_disabled) {
     // Position in the leading position, like the entrypoint for
     // kLensOverlayHomework above. While both chips may be enabled, they will
     // not appear at the same time due to different focus behavior. The
@@ -567,7 +563,7 @@ void LocationBarView::Init() {
   page_action_icon_controller_ = page_action_icon_container_->controller();
 
   if (!page_action_icon_container_->children().empty() &&
-      aim_omnibox_entrypoint_enabled &&
+      !aim_omnibox_entrypoint_explicitly_disabled &&
       !IsPageActionMigrated(PageActionIconType::kAiMode)) {
     auto* first_page_action_icon_view = static_cast<PageActionIconView*>(
         page_action_icon_container_->children().front());
