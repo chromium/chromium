@@ -30,6 +30,8 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+#include <linux/ashmem.h>
+
 #include "base/android/linker/ashmem.h"
 #endif
 

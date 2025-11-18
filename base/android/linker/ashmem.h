@@ -38,20 +38,4 @@ int ashmem_pin_region(int fd, size_t offset, size_t len);
 int ashmem_unpin_region(int fd, size_t offset, size_t len);
 int ashmem_get_size_region(int fd);
 
-#ifndef __ASHMEMIOC /* in case someone included <linux/ashmem.h> too */
-
-#define ASHMEM_NAME_LEN 256
-
-#define ASHMEM_NAME_DEF "dev/ashmem"
-
-/* Return values from ASHMEM_PIN: Was the mapping purged while unpinned? */
-#define ASHMEM_NOT_PURGED 0
-#define ASHMEM_WAS_PURGED 1
-
-/* Return values from ASHMEM_UNPIN: Is the mapping now pinned or unpinned? */
-#define ASHMEM_IS_UNPINNED 0
-#define ASHMEM_IS_PINNED 1
-
-#endif /* ! __ASHMEMIOC */
-
 #endif  // BASE_ANDROID_LINKER_ASHMEM_H_
