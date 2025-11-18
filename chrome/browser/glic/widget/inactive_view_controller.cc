@@ -96,6 +96,7 @@ std::unique_ptr<views::View> InactiveViewController::CreateCardView() {
   card_view->layer()->SetFillsBoundsOpaquely(false);
   card_view->SetBackground(
       views::CreateRoundedRectBackground(kColorSidePanelBackground, 16));
+  card_view->SetVisible(false);
   card_view_tracker_.SetView(card_view.get());
 
   auto icon = std::make_unique<views::ImageView>(ui::ImageModel::FromImageSkia(
