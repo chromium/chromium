@@ -205,8 +205,16 @@ IN_PROC_BROWSER_TEST_F(ActorDragAndReleaseToolBrowserTest,
   EXPECT_EQ(50, GetRangeValue(*main_frame(), "#offscreenRange"));
 }
 
+// TODO(crbug.com/460801630): Enable on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_DragAndReleaseTool_CrossOriginSubframe \
+  DISABLED_DragAndReleaseTool_CrossOriginSubframe
+#else
+#define MAYBE_DragAndReleaseTool_CrossOriginSubframe \
+  DragAndReleaseTool_CrossOriginSubframe
+#endif
 IN_PROC_BROWSER_TEST_F(ActorDragAndReleaseToolBrowserTest,
-                       DragAndReleaseTool_CrossOriginSubframe) {
+                       MAYBE_DragAndReleaseTool_CrossOriginSubframe) {
   const GURL url = embedded_https_test_server().GetURL(
       "/actor/positioned_iframe_no_scroll.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
