@@ -17,6 +17,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TAB
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TAB_ID;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TITLE;
 import static org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip.PinnedTabStripProperties.BACKGROUND_COLOR;
+import static org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip.PinnedTabStripProperties.IS_VISIBLE;
 
 import static java.lang.Math.max;
 
@@ -212,8 +213,13 @@ public class PinnedTabStripMediator {
      * The main entry point for updates. Called when the main tab grid is scrolled, which may
      * trigger a change in the set of visible pinned tabs.
      */
-    public void onScrolled() {
+    void onScrolled() {
         updatePinnedTabsBar();
+    }
+
+    /** Returns whether the pinned tab strip is currently visible. */
+    boolean isPinnedTabsBarVisible() {
+        return mStripPropertyModel.get(IS_VISIBLE);
     }
 
     /**

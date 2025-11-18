@@ -150,6 +150,11 @@ public class PinnedTabStripCoordinator {
         mMediator.onScrolled();
     }
 
+    /** Returns whether the pinned tabs strip is currently visible. */
+    public boolean isPinnedTabsBarVisible() {
+        return mMediator.isPinnedTabsBarVisible();
+    }
+
     PinnedTabStripMediator createMediator(
             Activity activity,
             RecyclerView tabGridListRecyclerView,

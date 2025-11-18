@@ -580,18 +580,41 @@ public class HubToolbarView extends LinearLayout {
         }
     }
 
-    private AnimatorSet getHubSearchBoxTransitionAnimation(boolean visible) {
+    AnimatorSet getHubSearchBoxTransitionAnimation(boolean visible) {
+        boolean isSquishAnimationEnabled =
+                ChromeFeatureList.sAndroidPinnedTabs.isEnabled()
+                        && ChromeFeatureList.sAndroidPinnedTabsSearchBoxSquishAnimation.getValue();
+
+        AnimatorSet transitionAnimator = new AnimatorSet();
+
         float fadeAlphaFrom = visible ? 0 : 1;
         float fadeAlphaTo = visible ? 1 : 0;
-        float slideTransitionY = visible ? 0 : -mSearchBoxLayout.getHeight();
         Animator fade =
                 ObjectAnimator.ofFloat(mSearchBoxLayout, View.ALPHA, fadeAlphaFrom, fadeAlphaTo);
-        Animator slide =
-                ObjectAnimator.ofFloat(mSearchBoxLayout, View.TRANSLATION_Y, slideTransitionY);
-        AnimatorSet slideFadeHubSearchBoxAnimator = new AnimatorSet();
-        slideFadeHubSearchBoxAnimator.play(slide).with(fade);
-        slideFadeHubSearchBoxAnimator.setDuration(PANE_FADE_ANIMATION_DURATION_MS);
-        return slideFadeHubSearchBoxAnimator;
+
+        Animator primaryAnimator;
+        if (isSquishAnimationEnabled) {
+            primaryAnimator = createSquishAnimation(visible);
+        } else {
+            primaryAnimator = createSlideAnimation(visible);
+        }
+
+        transitionAnimator.play(primaryAnimator).with(fade);
+        transitionAnimator.setDuration(PANE_FADE_ANIMATION_DURATION_MS);
+
+        return transitionAnimator;
+    }
+
+    private Animator createSquishAnimation(boolean visible) {
+        mSearchBoxLayout.setPivotY(0);
+        float scaleYFrom = visible ? 0f : 1f;
+        float scaleYTo = visible ? 1f : 0f;
+        return ObjectAnimator.ofFloat(mSearchBoxLayout, View.SCALE_Y, scaleYFrom, scaleYTo);
+    }
+
+    private Animator createSlideAnimation(boolean visible) {
+        float slideTransitionY = visible ? 0 : -mSearchBoxLayout.getHeight();
+        return ObjectAnimator.ofFloat(mSearchBoxLayout, View.TRANSLATION_Y, slideTransitionY);
     }
 
     private GradientDrawable buildBackgroundDrawableForTab() {

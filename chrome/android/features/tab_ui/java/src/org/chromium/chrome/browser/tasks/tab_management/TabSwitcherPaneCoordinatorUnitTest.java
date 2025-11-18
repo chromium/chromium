@@ -68,7 +68,6 @@ import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.hub.DirectionalScrollListener;
 import org.chromium.chrome.browser.hub.SingleChildViewManager;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -600,55 +599,10 @@ public class TabSwitcherPaneCoordinatorUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
-    public void testDirectionalScrollListener() {
-        doReturn(1).when(mTabModel).getPinnedTabsCount();
-        DirectionalScrollListener listener = mCoordinator.getDirectionalScrollListenerForTesting();
-        assertNotNull(listener);
-
-        listener.onScrolled(null, 0, 20);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        verify(mHubSearchBoxVisibilitySupplier, times(1)).set(false);
-
-        listener.onScrolled(null, 0, -20);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        verify(mHubSearchBoxVisibilitySupplier, times(1)).set(true);
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
-    public void testDirectionalScrollListener_noPinnedTabs() {
-        doReturn(0).when(mTabModel).getPinnedTabsCount();
-        DirectionalScrollListener listener = mCoordinator.getDirectionalScrollListenerForTesting();
-        assertNotNull(listener);
-
-        listener.onScrolled(null, 0, 20);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        verify(mHubSearchBoxVisibilitySupplier, never()).set(anyBoolean());
-
-        listener.onScrolled(null, 0, -20);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        verify(mHubSearchBoxVisibilitySupplier, never()).set(anyBoolean());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
     public void testTabModelObserver_didChangePinState_noPinnedTabs() {
         MockTab tab = new MockTab(1, mProfile);
 
         doReturn(0).when(mTabModel).getPinnedTabsCount();
-        when(mHubSearchBoxVisibilitySupplier.get()).thenReturn(true);
-
-        mTabModelObserver.didChangePinState(tab);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        verify(mHubSearchBoxVisibilitySupplier, times(1)).set(true);
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
-    public void testTabModelObserver_didChangePinState_withPinnedTabs_searchVisible() {
-        MockTab tab = new MockTab(1, mProfile);
-
-        doReturn(1).when(mTabModel).getPinnedTabsCount();
         when(mHubSearchBoxVisibilitySupplier.get()).thenReturn(true);
 
         mTabModelObserver.didChangePinState(tab);

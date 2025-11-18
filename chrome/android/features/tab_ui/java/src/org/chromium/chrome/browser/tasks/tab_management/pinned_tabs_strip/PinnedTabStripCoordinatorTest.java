@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -136,5 +137,14 @@ public class PinnedTabStripCoordinatorTest {
     public void testDestroy() {
         mCoordinator.destroy();
         verify(mMediator).destroy();
+    }
+
+    @Test
+    public void testIsPinnedTabsBarVisible() {
+        when(mMediator.isPinnedTabsBarVisible()).thenReturn(true);
+        assertTrue(mCoordinator.isPinnedTabsBarVisible());
+
+        when(mMediator.isPinnedTabsBarVisible()).thenReturn(false);
+        assertFalse(mCoordinator.isPinnedTabsBarVisible());
     }
 }

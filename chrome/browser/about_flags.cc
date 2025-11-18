@@ -4934,6 +4934,26 @@ const FeatureEntry::FeatureVariation kAndroidTabHighlightingVariations[] = {
     {"Force Shift Click", kAndroidTabHighlightingForceShiftClick,
      std::size(kAndroidTabHighlightingForceShiftClick), nullptr}};
 
+const FeatureEntry::FeatureParam kAndroidPinnedTabsSearchBoxMovement[] = {
+    {"search_box_movement", "true"}};
+const FeatureEntry::FeatureParam kAndroidPinnedTabsSearchBoxSquishAnimation[] =
+    {{"search_box_squish_animation", "true"}};
+const FeatureEntry::FeatureParam
+    kAndroidPinnedTabsSearchBoxMovementWithSquishAnimation[] = {
+        {"search_box_movement", "true"},
+        {"search_box_squish_animation", "true"}};
+const FeatureEntry::FeatureVariation kAndroidPinnedTabsVariations[] = {
+    {"Enable search box movement", kAndroidPinnedTabsSearchBoxMovement,
+     std::size(kAndroidPinnedTabsSearchBoxMovement), nullptr},
+    {"Enable search box squish animation",
+     kAndroidPinnedTabsSearchBoxSquishAnimation,
+     std::size(kAndroidPinnedTabsSearchBoxSquishAnimation), nullptr},
+    {"Enable search box movement with squish animation",
+     kAndroidPinnedTabsSearchBoxMovementWithSquishAnimation,
+     std::size(kAndroidPinnedTabsSearchBoxMovementWithSquishAnimation),
+     nullptr},
+};
+
 const FeatureEntry::FeatureParam kAndroidTipsNotificationsTrustAndSafety[] = {
     {"trust_and_safety", "true"}};
 const FeatureEntry::FeatureParam kAndroidTipsNotificationsEssential[] = {
@@ -6355,7 +6375,9 @@ const FeatureEntry kFeatureEntries[] = {
     // Pinned tabs.
     {"android-pinned-tabs", flag_descriptions::kAndroidPinnedTabsName,
      flag_descriptions::kAndroidPinnedTabsDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAndroidPinnedTabs)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kAndroidPinnedTabs,
+                                    kAndroidPinnedTabsVariations,
+                                    "AndroidPinnedTabsVariations")},
 
     // Pinned tabs on tablet tab strip.
     {"android-pinned-tabs-tablet-tab-strip",
