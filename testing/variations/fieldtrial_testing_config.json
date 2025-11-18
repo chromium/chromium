@@ -131,25 +131,6 @@
             ]
         }
     ],
-    "AbslFlatMapInVariantMap": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "windows",
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AbslFlatMapInVariantMap"
-                    ]
-                }
-            ]
-        }
-    ],
     "AccessibilityCheckJavaNodeCacheFreshness": [
         {
             "platforms": [
@@ -15751,199 +15732,6 @@
             ]
         }
     ],
-    "MemoryCacheCombined": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "IP_Enabled",
-                    "enable_features": [
-                        "MemoryCacheIntelligentPruning",
-                        "MemoryCacheStrongReference",
-                        "ReleaseResourceDecodedDataOnMemoryPressure",
-                        "ReleaseResourceStrongReferencesOnMemoryPressure"
-                    ],
-                    "disable_features": [
-                        "MemoryCacheChangeStrongReferencePruneDelay",
-                        "MemoryCacheStrongReferenceExtensions"
-                    ]
-                },
-                {
-                    "name": "IP_Enabled_NoPressureRelease",
-                    "enable_features": [
-                        "MemoryCacheIntelligentPruning",
-                        "MemoryCacheStrongReference"
-                    ],
-                    "disable_features": [
-                        "MemoryCacheChangeStrongReferencePruneDelay",
-                        "MemoryCacheStrongReferenceExtensions",
-                        "ReleaseResourceDecodedDataOnMemoryPressure",
-                        "ReleaseResourceStrongReferencesOnMemoryPressure"
-                    ]
-                },
-                {
-                    "name": "MaxLimits1HourDelay",
-                    "params": {
-                        "memory_cache_strong_ref_resource_size_threshold": "104857600",
-                        "memory_cache_strong_ref_total_size_threshold": "209715200",
-                        "strong_reference_prune_delay": "60m"
-                    },
-                    "enable_features": [
-                        "MemoryCacheChangeStrongReferencePruneDelay",
-                        "MemoryCacheStrongReference"
-                    ],
-                    "disable_features": [
-                        "MemoryCacheIntelligentPruning",
-                        "MemoryCacheStrongReferenceExtensions",
-                        "ReleaseResourceDecodedDataOnMemoryPressure",
-                        "ReleaseResourceStrongReferencesOnMemoryPressure"
-                    ]
-                },
-                {
-                    "name": "MaxLimits1HourDelay_HM",
-                    "params": {
-                        "image": "true",
-                        "manifest": "true",
-                        "memory_cache_strong_ref_resource_size_threshold": "104857600",
-                        "memory_cache_strong_ref_total_size_threshold": "209715200",
-                        "raw": "true",
-                        "strong_reference_prune_delay": "60m",
-                        "svg_document": "true",
-                        "xsl_stylesheet": "true"
-                    },
-                    "enable_features": [
-                        "MemoryCacheChangeStrongReferencePruneDelay",
-                        "MemoryCacheStrongReference",
-                        "MemoryCacheStrongReferenceExtensions"
-                    ],
-                    "disable_features": [
-                        "MemoryCacheIntelligentPruning",
-                        "ReleaseResourceDecodedDataOnMemoryPressure",
-                        "ReleaseResourceStrongReferencesOnMemoryPressure"
-                    ]
-                },
-                {
-                    "name": "Combination_HM_MaxLimits",
-                    "params": {
-                        "image": "true",
-                        "manifest": "true",
-                        "memory_cache_strong_ref_resource_size_threshold": "104857600",
-                        "memory_cache_strong_ref_total_size_threshold": "209715200",
-                        "raw": "true",
-                        "strong_reference_prune_delay": "60m",
-                        "svg_document": "true",
-                        "xsl_stylesheet": "true"
-                    },
-                    "enable_features": [
-                        "MemoryCacheChangeStrongReferencePruneDelay",
-                        "MemoryCacheIntelligentPruning",
-                        "MemoryCacheStrongReference",
-                        "MemoryCacheStrongReferenceExtensions"
-                    ],
-                    "disable_features": [
-                        "ReleaseResourceDecodedDataOnMemoryPressure",
-                        "ReleaseResourceStrongReferencesOnMemoryPressure"
-                    ]
-                },
-                {
-                    "name": "Combination_Image_MaxLimits",
-                    "params": {
-                        "image": "true",
-                        "memory_cache_strong_ref_resource_size_threshold": "104857600",
-                        "memory_cache_strong_ref_total_size_threshold": "209715200",
-                        "strong_reference_prune_delay": "60m"
-                    },
-                    "enable_features": [
-                        "MemoryCacheChangeStrongReferencePruneDelay",
-                        "MemoryCacheIntelligentPruning",
-                        "MemoryCacheStrongReference",
-                        "MemoryCacheStrongReferenceExtensions"
-                    ],
-                    "disable_features": [
-                        "ReleaseResourceDecodedDataOnMemoryPressure",
-                        "ReleaseResourceStrongReferencesOnMemoryPressure"
-                    ]
-                },
-                {
-                    "name": "Combination_HM_MaxLimits_Balanced",
-                    "params": {
-                        "cost_weight": "0.0005",
-                        "freq_weight": "75.0",
-                        "image": "true",
-                        "manifest": "true",
-                        "memory_cache_strong_ref_resource_size_threshold": "104857600",
-                        "memory_cache_strong_ref_total_size_threshold": "209715200",
-                        "raw": "true",
-                        "strong_reference_prune_delay": "60m",
-                        "svg_document": "true",
-                        "type_weight": "75.0",
-                        "xsl_stylesheet": "true"
-                    },
-                    "enable_features": [
-                        "MemoryCacheChangeStrongReferencePruneDelay",
-                        "MemoryCacheIntelligentPruning",
-                        "MemoryCacheStrongReference",
-                        "MemoryCacheStrongReferenceExtensions"
-                    ],
-                    "disable_features": [
-                        "ReleaseResourceDecodedDataOnMemoryPressure",
-                        "ReleaseResourceStrongReferencesOnMemoryPressure"
-                    ]
-                },
-                {
-                    "name": "Combination_HM_MaxLimits_SizeAware",
-                    "params": {
-                        "cost_weight": "0.005",
-                        "freq_weight": "60.0",
-                        "image": "true",
-                        "manifest": "true",
-                        "memory_cache_strong_ref_resource_size_threshold": "104857600",
-                        "memory_cache_strong_ref_total_size_threshold": "209715200",
-                        "raw": "true",
-                        "strong_reference_prune_delay": "60m",
-                        "svg_document": "true",
-                        "type_weight": "80.0",
-                        "xsl_stylesheet": "true"
-                    },
-                    "enable_features": [
-                        "MemoryCacheChangeStrongReferencePruneDelay",
-                        "MemoryCacheIntelligentPruning",
-                        "MemoryCacheStrongReference",
-                        "MemoryCacheStrongReferenceExtensions"
-                    ],
-                    "disable_features": [
-                        "ReleaseResourceDecodedDataOnMemoryPressure",
-                        "ReleaseResourceStrongReferencesOnMemoryPressure"
-                    ]
-                },
-                {
-                    "name": "IntelligentPruning_HM_DefaultLimits",
-                    "params": {
-                        "image": "true",
-                        "manifest": "true",
-                        "raw": "true",
-                        "svg_document": "true",
-                        "xsl_stylesheet": "true"
-                    },
-                    "enable_features": [
-                        "MemoryCacheIntelligentPruning",
-                        "MemoryCacheStrongReference",
-                        "MemoryCacheStrongReferenceExtensions"
-                    ],
-                    "disable_features": [
-                        "MemoryCacheChangeStrongReferencePruneDelay",
-                        "ReleaseResourceDecodedDataOnMemoryPressure",
-                        "ReleaseResourceStrongReferencesOnMemoryPressure"
-                    ]
-                }
-            ]
-        }
-    ],
     "MemoryConsumerForNGShapeCache": [
         {
             "platforms": [
@@ -18484,19 +18272,57 @@
         {
             "platforms": [
                 "android",
-                "android_webview",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac"
+                "android_webview"
             ],
             "experiments": [
                 {
-                    "name": "EnabledConservative",
+                    "name": "EnabledConservative_20251114",
                     "params": {
                         "MacCriticalDiskSpacePressureThresholdMB": "250"
                     },
                     "enable_features": [
+                        "AbslFlatMapInVariantMap",
+                        "AsyncSetCookie",
+                        "AvoidCloneArgsOnExtensionFunctionDispatch",
+                        "AvoidUnnecessaryGetMinimizeButtonOffset",
+                        "AvoidUnnecessaryShouldRenderRichAnimation",
+                        "CompressParkableStrings",
+                        "FastPathNoRaster",
+                        "GCOnArrayBufferAllocationFailure",
+                        "MacAllowBackgroundingRenderProcesses",
+                        "MacCriticalDiskSpacePressure",
+                        "MvcUpdateViewWhenModelChanged",
+                        "NoPreReadMainDllIfSsd",
+                        "PageAllocatorRetryOnCommitFailure",
+                        "ReducePPMs",
+                        "ReloadTabUiResourcesIfChanged",
+                        "RemoveCancelledScriptedIdleTasks",
+                        "ScreenWinDisplayLookupByHMONITOR",
+                        "SlimDirectReceiverIpc",
+                        "TerminationTargetPolicy",
+                        "UpdateDirectManipulationHelperOnParentChange"
+                    ],
+                    "disable_features": [
+                        "MemoryCacheStrongReference",
+                        "SuppressMemoryListeners",
+                        "SuppressMemoryMonitor"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
+                "chromeos",
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledConservative_20251114",
+                    "params": {
+                        "MacCriticalDiskSpacePressureThresholdMB": "250"
+                    },
+                    "enable_features": [
+                        "AbslFlatMapInVariantMap",
                         "AsyncSetCookie",
                         "AvoidCloneArgsOnExtensionFunctionDispatch",
                         "AvoidUnnecessaryGetMinimizeButtonOffset",
@@ -18522,15 +18348,63 @@
         },
         {
             "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledConservative_20251114",
+                    "params": {
+                        "MacCriticalDiskSpacePressureThresholdMB": "250",
+                        "suppress_memory_listeners_mask": "0000200200220200020020000002020000000000000000020",
+                        "suppress_memory_monitor_mask": "00020000020000"
+                    },
+                    "enable_features": [
+                        "AbslFlatMapInVariantMap",
+                        "AsyncSetCookie",
+                        "AvoidCloneArgsOnExtensionFunctionDispatch",
+                        "AvoidUnnecessaryGetMinimizeButtonOffset",
+                        "AvoidUnnecessaryShouldRenderRichAnimation",
+                        "CompressParkableStrings",
+                        "FastPathNoRaster",
+                        "GCOnArrayBufferAllocationFailure",
+                        "MacAllowBackgroundingRenderProcesses",
+                        "MacCriticalDiskSpacePressure",
+                        "MemoryCacheStrongReference",
+                        "MvcUpdateViewWhenModelChanged",
+                        "NoPreReadMainDllIfSsd",
+                        "PageAllocatorRetryOnCommitFailure",
+                        "ReducePPMs",
+                        "ReleaseResourceDecodedDataOnMemoryPressure",
+                        "ReleaseResourceStrongReferencesOnMemoryPressure",
+                        "ReloadTabUiResourcesIfChanged",
+                        "RemoveCancelledScriptedIdleTasks",
+                        "ScreenWinDisplayLookupByHMONITOR",
+                        "SlimDirectReceiverIpc",
+                        "SuppressMemoryListeners",
+                        "SuppressMemoryMonitor",
+                        "TerminationTargetPolicy",
+                        "UpdateDirectManipulationHelperOnParentChange"
+                    ],
+                    "disable_features": [
+                        "MemoryCacheChangeStrongReferencePruneDelay"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
                 "windows"
             ],
             "experiments": [
                 {
-                    "name": "EnabledConservative",
+                    "name": "EnabledConservative_20251114",
                     "params": {
-                        "MacCriticalDiskSpacePressureThresholdMB": "250"
+                        "MacCriticalDiskSpacePressureThresholdMB": "250",
+                        "suppress_memory_listeners_mask": "0000200200220200020020000002020000000000000000020",
+                        "suppress_memory_monitor_mask": "00020000020000"
                     },
                     "enable_features": [
+                        "AbslFlatMapInVariantMap",
                         "AsyncSetCookie",
                         "AvoidCloneArgsOnExtensionFunctionDispatch",
                         "AvoidUnnecessaryGetMinimizeButtonOffset",
@@ -18541,16 +18415,24 @@
                         "GCOnArrayBufferAllocationFailure",
                         "MacAllowBackgroundingRenderProcesses",
                         "MacCriticalDiskSpacePressure",
+                        "MemoryCacheStrongReference",
                         "MvcUpdateViewWhenModelChanged",
                         "NoPreReadMainDllIfSsd",
                         "PageAllocatorRetryOnCommitFailure",
                         "ReducePPMs",
+                        "ReleaseResourceDecodedDataOnMemoryPressure",
+                        "ReleaseResourceStrongReferencesOnMemoryPressure",
                         "ReloadTabUiResourcesIfChanged",
                         "RemoveCancelledScriptedIdleTasks",
                         "ScreenWinDisplayLookupByHMONITOR",
                         "SlimDirectReceiverIpc",
+                        "SuppressMemoryListeners",
+                        "SuppressMemoryMonitor",
                         "TerminationTargetPolicy",
                         "UpdateDirectManipulationHelperOnParentChange"
+                    ],
+                    "disable_features": [
+                        "MemoryCacheChangeStrongReferencePruneDelay"
                     ]
                 }
             ]
@@ -24962,30 +24844,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "SupportOpeningDraggedLinksInSameTab"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SuppressMemoryListeners": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "suppress_memory_listeners_mask": "0000200200220200020020000002020000000000000000020",
-                        "suppress_memory_monitor_mask": "00020000020000"
-                    },
-                    "enable_features": [
-                        "SuppressMemoryListeners",
-                        "SuppressMemoryMonitor"
                     ]
                 }
             ]
