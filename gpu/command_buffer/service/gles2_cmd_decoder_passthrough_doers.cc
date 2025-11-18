@@ -2803,7 +2803,8 @@ error::Error GLES2DecoderPassthroughImpl::DoReadPixels(GLint x,
                                                        int32_t* success) {
   CheckErrorCallbackState();
   ScopedPackStateRowLengthReset reset_row_length(
-      api(), bufsize != 0 && feature_info_->gl_version_info().is_es3);
+      api(), bound_buffers_[GL_PIXEL_PACK_BUFFER] == 0 &&
+                 feature_info_->gl_version_info().is_es3);
   api()->glReadPixelsRobustANGLEFn(x, y, width, height, format, type, bufsize,
                                    length, columns, rows, pixels);
   *success = CheckErrorCallbackState() ? 0 : 1;

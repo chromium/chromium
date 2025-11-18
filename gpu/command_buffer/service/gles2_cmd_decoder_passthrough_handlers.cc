@@ -1142,6 +1142,10 @@ error::Error GLES2DecoderPassthroughImpl::HandleReadPixels(
     }
     pixels =
         reinterpret_cast<uint8_t*>(static_cast<intptr_t>(pixels_shm_offset));
+    // The bufSize argument to glReadPixels must be large enough to fit the data
+    // and is validated independently of pixel pack buffer state. The buffer is
+    // independently validated to be large enough.
+    buffer_size = std::numeric_limits<GLsizei>::max();
   }
 
   GLsizei bufsize = buffer_size;
