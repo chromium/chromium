@@ -130,9 +130,8 @@ export class ContextMenuEntrypointElement extends
       void {
     super.firstUpdated(changedProperties);
     if (!glyphAnimationDone) {
-      const glowingWrapper =
-          this.shadowRoot.querySelector<HTMLElement>('#glowWrapper')!;
-      glowingWrapper.classList.add('play');
+      this.shadowRoot.querySelector<HTMLElement>('#glowWrapper')
+          ?.classList.add('play');
       glyphAnimationDone = true;
     }
   }
