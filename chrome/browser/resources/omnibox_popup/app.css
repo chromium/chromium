@@ -23,14 +23,12 @@
   --cr-searchbox-match-font-weight: 700;
 
   --text-input-inline-start-spacing: 16px;
-  --contextual-entrypoint-and-carousel-context-menu-container-padding-inline-start: 9px;
+  --contextual-entrypoint-and-carousel-context-menu-container-padding-inline-start: 12px;
   --contextual-entrypoint-and-carousel-carousel-divider-margin-top: 8px;
   --contextual-entrypoint-and-carousel-carousel-divider-margin-bottom: 8px;
   --contextual-entrypoint-and-carousel-context-menu-container-inline-start: 0px;
 
-  /* Closely resembles the views Omnibox input font size.
-  * TODO(crbug.com/450640041): Investigate webUI blink & views rendering difference */
-  font-size: 14.3px;/* closely resembles the omnibox input font size. */
+  font-size: var(--omnibox-font-size);
 
   /* Colors used in the cr-searchbox results dropdown */
   --color-searchbox-answer-icon-background: var(--color-omnibox-answer-icon-g-m3-background);
