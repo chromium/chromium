@@ -38,6 +38,8 @@ class GlicSidePanelCoordinator : public SidePanelEntryObserver {
                            SidePanelRegistry* side_panel_registry);
   ~GlicSidePanelCoordinator() override;
 
+  static GlicSidePanelCoordinator* GetForTab(tabs::TabInterface* tab);
+
   // Create and register the Glic side panel entry.
   void CreateAndRegisterEntry();
 
@@ -47,7 +49,7 @@ class GlicSidePanelCoordinator : public SidePanelEntryObserver {
     kShown,
     // The side panel is in the background, but it will show if its tab becomes
     // active.
-    kHidden,
+    kBackgrounded,
     // The side panel is closed and will only be shown if explicitly requested.
     kClosed,
   };
@@ -60,6 +62,8 @@ class GlicSidePanelCoordinator : public SidePanelEntryObserver {
 
   // Returns true if the Glic side panel is currently the active entry.
   bool IsShowing() const;
+
+  State state() { return state_; }
 
   // Registers `callback` to be called when panel visibility is updated.
   base::CallbackListSubscription AddStateCallback(
@@ -85,7 +89,7 @@ class GlicSidePanelCoordinator : public SidePanelEntryObserver {
   void OnEntryShown(SidePanelEntry* entry) override;
 
  private:
-  void OnTabDeactivated(tabs::TabInterface* tab);
+  void CheckStateAfterHidden();
 
   // Returns the SidePanelCoordinator for the window associated with `tab_`.
   SidePanelCoordinator* GetWindowSidePanelCoordinator() const;
@@ -100,15 +104,16 @@ class GlicSidePanelCoordinator : public SidePanelEntryObserver {
   base::WeakPtr<SidePanelEntry> entry_;
   base::CallbackListSubscription on_glic_enabled_changed_subscription_;
   base::RepeatingCallbackList<void(State state)> state_changed_callbacks_;
-  base::CallbackListSubscription tab_deactivated_subscription_;
 
-  State state_ = State::kHidden;
+  State state_ = State::kClosed;
 
   // Tracks the glic container view.
   views::ViewTracker glic_container_tracker_;
 
   // Caches the contents view if it's set before the container is created.
   std::unique_ptr<views::View> contents_view_;
+
+  base::WeakPtrFactory<GlicSidePanelCoordinator> weak_ptr_factory_{this};
 };
 
 }  // namespace glic

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/side_panel/glic/glic_side_panel_coordinator.h"
 
 #include "base/functional/callback.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
@@ -46,15 +48,21 @@ GlicSidePanelCoordinator::GlicSidePanelCoordinator(
   if (glic_service->enabling().IsAllowed()) {
     CreateAndRegisterEntry();
   }
-  tab_deactivated_subscription_ =
-      tab_->RegisterWillDeactivate(base::BindRepeating(
-          &GlicSidePanelCoordinator::OnTabDeactivated, base::Unretained(this)));
 }
 
 GlicSidePanelCoordinator::~GlicSidePanelCoordinator() {
   if (entry_) {
     entry_->RemoveObserver(this);
   }
+}
+
+// static
+GlicSidePanelCoordinator* GlicSidePanelCoordinator::GetForTab(
+    tabs::TabInterface* tab) {
+  if (!tab || !tab->GetTabFeatures()) {
+    return nullptr;
+  }
+  return tab->GetTabFeatures()->glic_side_panel_coordinator();
 }
 
 void GlicSidePanelCoordinator::CreateAndRegisterEntry() {
@@ -117,7 +125,12 @@ void GlicSidePanelCoordinator::OnEntryWillHide(
     SidePanelEntry* entry,
     SidePanelEntryHideReason reason) {
   CHECK_EQ(entry->key().id(), SidePanelEntry::Id::kGlic);
-  state_ = State::kClosed;
+  if (reason == SidePanelEntryHideReason::kBackgrounded) {
+    state_ = State::kBackgrounded;
+  } else {
+    state_ = State::kClosed;
+  }
+
   NotifyStateChanged();
 }
 
@@ -131,13 +144,6 @@ void GlicSidePanelCoordinator::OnEntryShown(SidePanelEntry* entry) {
   CHECK_EQ(entry->key().id(), SidePanelEntry::Id::kGlic);
   state_ = State::kShown;
   NotifyStateChanged();
-}
-
-void GlicSidePanelCoordinator::OnTabDeactivated(tabs::TabInterface* tab) {
-  if (IsShowing()) {
-    state_ = State::kHidden;
-    NotifyStateChanged();
-  }
 }
 
 void GlicSidePanelCoordinator::OnGlicEnabledChanged() {

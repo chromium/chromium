@@ -1696,6 +1696,11 @@ class ApiTests extends ApiTestFixtureBase {
         conversationChangeRequest.desiredView, ClientView.CONVERSATION);
   }
 
+  async testRemoveBlankInstanceOnClose() {
+    assertDefined(this.host.closePanel);
+    await this.host.closePanel();
+  }
+
   async testJournal() {
     assertDefined(this.host.getJournalHost);
     const journalHost = this.host.getJournalHost();

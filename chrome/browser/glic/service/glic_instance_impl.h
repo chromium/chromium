@@ -316,6 +316,7 @@ class GlicInstanceImpl : public GlicInstance,
   bool ShouldPinOnBind() const;
 
   void MaybeActivateForegroundEmbedder();
+  void MaybeRemoveBlankInstanceOnClose();
   EmbedderEntry& BindTab(tabs::TabInterface* tab);
   // For any pinned tab not already bound to a conversation bind it to this one.
   void OnTabPinningStatusChanged(tabs::TabInterface* tab, bool pinned);
@@ -389,6 +390,8 @@ class GlicInstanceImpl : public GlicInstance,
 
   base::OneShotTimer inactivity_timer_;
   base::TimeTicks last_active_time_;
+
+  base::OneShotTimer remove_blank_instance_timer_;
 
   base::WeakPtrFactory<GlicInstanceImpl> weak_ptr_factory_{this};
 };

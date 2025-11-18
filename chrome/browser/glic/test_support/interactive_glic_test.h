@@ -502,6 +502,21 @@ class InteractiveGlicTestMixin : public T {
     });
   }
 
+  auto RegisterConversation(std::string conversation_id) {
+    return Api::Do([this, conversation_id]() {
+      if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+        auto* instance = GetGlicInstanceImpl();
+        if (!instance) {
+          return;
+        }
+        auto conversation_info = glic::mojom::ConversationInfo::New();
+        conversation_info->conversation_id = conversation_id;
+        instance->RegisterConversation(std::move(conversation_info),
+                                       base::DoNothing());
+      }
+    });
+  }
+
   auto ClickWebuiCloseButton() {
     return ClickWebElement(TargetWebContents::kGlicWebUi, ".close-button");
   }

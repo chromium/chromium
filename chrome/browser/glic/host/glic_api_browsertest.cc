@@ -604,7 +604,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE(testAllTestsAreRegistered)) {
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testLoadWhileWindowClosed) {
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone),
-      CloseGlic());
+      // Registering a conversation id ensures that the instance isn't deleted
+      // as soon as the side panel is closed.
+      RegisterConversation("test-id"), CloseGlic());
   ExecuteJsTest();
   // Make sure the WebUI transitions to kReady, otherwise the web client may be
   // destroyed.
@@ -617,7 +619,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testInitializeFailsWindowClosed) {
   // Fail client initialization, should see error page.
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone),
-      CloseGlic());
+      // Registering a conversation id ensures that the instance isn't deleted
+      // as soon as the side panel is closed.
+      RegisterConversation("test-id"), CloseGlic());
   ExecuteJsTest();
   WaitForWebUiState(mojom::WebUiState::kError);
   histogram_tester.ExpectUniqueSample(
@@ -2116,7 +2120,8 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout,
   // Client loads, and navigates to a new URL. We try to load the client again,
   // but it fails.
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents));
+                                 GlicInstrumentMode::kHostAndContents),
+                  RegisterConversation("test-id"));
   WebUIStateListener listener(GetHost());
   listener.WaitForWebUiState(mojom::WebUiState::kReady);
   ExecuteJsTest({.params = base::Value(0)});
@@ -2633,6 +2638,21 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
       GlicWindowMode::kDetached, kGlicButtonElementId,
       mojom::InvocationSource::kTopChromeButton));
   ContinueJsTest();
+}
+
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testRemoveBlankInstanceOnClose) {
+  if (!GetParam().multi_instance) {
+    GTEST_SKIP() << "Only supported in multi-instance mode.";
+  }
+
+  RunTestSequence(
+      InstrumentTab(kFirstTab),
+      OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
+  ASSERT_EQ(1u, GetService()->window_controller().GetInstances().size());
+  ExecuteJsTest();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return GetService()->window_controller().GetInstances().size() == 0u;
+  }));
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
