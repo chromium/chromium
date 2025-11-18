@@ -12,6 +12,7 @@
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "components/google/core/common/google_util.h"
 #include "components/page_load_metrics/browser/navigation_handle_user_data.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
@@ -32,9 +33,10 @@ bool IsSearchUrl(content::WebContents& web_contents, const GURL& url) {
   auto* profile = Profile::FromBrowserContext(web_contents.GetBrowserContext());
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile);
-  return template_url_service &&
-         template_url_service->IsSearchResultsPageFromDefaultSearchProvider(
-             url);
+  return (template_url_service &&
+          template_url_service->IsSearchResultsPageFromDefaultSearchProvider(
+              url)) ||
+         google_util::IsGoogleSearchUrl(url);
 }
 
 }  // namespace

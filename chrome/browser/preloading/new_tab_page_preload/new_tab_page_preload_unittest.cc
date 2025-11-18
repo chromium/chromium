@@ -100,4 +100,22 @@ TEST_F(NewTabPagePreloadPipelineManagerTest, DisallowSearchUrl) {
       "Prerender.IsPrerenderingSRPUrl.Embedder_NewTabPage", true, 1);
 }
 
+// Test that a non default search related url from a common search provider is
+// ignored by the prerender NewTabPage trigger.
+TEST_F(NewTabPagePreloadPipelineManagerTest,
+       DisallowSearchUrlOtherThanDefaultSearchProvider) {
+  base::HistogramTester histogram_tester;
+  GURL prerendering_url = GURL("https://www.google.co.jp/search?q=123");
+  TemplateURLServiceFactoryTestUtil factory_util(profile());
+  EXPECT_FALSE(
+      factory_util.model()->IsSearchResultsPageFromDefaultSearchProvider(
+          prerendering_url));
+  new_tab_page_preload_manager()->StartPrerender(
+      prerendering_url,
+      chrome_preloading_predictor::kMouseHoverOrMouseDownOnNewTabPage);
+
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.IsPrerenderingSRPUrl.Embedder_NewTabPage", true, 1);
+}
+
 }  // namespace
