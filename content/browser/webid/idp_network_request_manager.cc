@@ -4,6 +4,9 @@
 
 #include "content/browser/webid/idp_network_request_manager.h"
 
+#include <optional>
+#include <string>
+
 #include "base/barrier_closure.h"
 #include "base/base64.h"
 #include "base/containers/flat_set.h"
@@ -900,7 +903,7 @@ void OnTokenRequestParsed(
 }
 
 void OnLogoutCompleted(IdpNetworkRequestManager::LogoutCallback callback,
-                       std::unique_ptr<std::string> response_body,
+                       std::optional<std::string> response_body,
                        int response_code,
                        const std::string& mime_type,
                        bool cors_error) {
@@ -1400,7 +1403,7 @@ void IdpNetworkRequestManager::FetchClientMetadata(
 
 void IdpNetworkRequestManager::OnDownloadedImage(
     ImageCallback callback,
-    std::unique_ptr<std::string> response_body,
+    std::optional<std::string> response_body,
     int response_code,
     const std::string& mime_type,
     bool cors_error) {

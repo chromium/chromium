@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <optional>
+#include <string>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -483,7 +484,7 @@ class PreflightController::PreflightLoader final {
              has_authorization_covered_by_wildcard);
   }
 
-  void HandleResponseBody(std::unique_ptr<std::string> response_body) {
+  void HandleResponseBody(std::optional<std::string> response_body) {
     const int error = loader_->NetError();
     const std::optional<URLLoaderCompletionStatus>& status =
         loader_->CompletionStatus();

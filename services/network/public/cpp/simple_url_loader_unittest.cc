@@ -40,6 +40,7 @@
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
+#include "base/types/optional_ref.h"
 #include "build/build_config.h"
 #include "mojo/public/c/system/types.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -340,9 +341,9 @@ class SimpleLoaderTestHelper : public SimpleURLLoaderStreamConsumer {
   // this is just the value passed to the callback. For DownloadType::TO_FILE,
   // it is nullptr if an empty FilePath was passed to the callback, or the
   // contents of the file, otherwise.
-  const std::string* response_body() const {
+  base::optional_ref<const std::string> response_body() const {
     EXPECT_TRUE(done_);
-    return response_body_.get();
+    return response_body_;
   }
 
   // Returns true if the callback has been invoked.
@@ -383,7 +384,7 @@ class SimpleLoaderTestHelper : public SimpleURLLoaderStreamConsumer {
   }
 
  private:
-  void DownloadedToString(std::unique_ptr<std::string> response_body) {
+  void DownloadedToString(std::optional<std::string> response_body) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     EXPECT_FALSE(done_);
     EXPECT_EQ(DownloadType::TO_STRING, download_type_);
@@ -413,8 +414,8 @@ class SimpleLoaderTestHelper : public SimpleURLLoaderStreamConsumer {
 
     if (!file_path.empty()) {
       EXPECT_TRUE(base::PathExists(file_path));
-      response_body_ = std::make_unique<std::string>();
-      EXPECT_TRUE(base::ReadFileToString(file_path, response_body_.get()));
+      response_body_ = std::make_optional<std::string>();
+      EXPECT_TRUE(base::ReadFileToString(file_path, &*response_body_));
     }
 
     // Can do some additional checks in the TO_FILE case. Unfortunately, in the
@@ -506,7 +507,7 @@ class SimpleLoaderTestHelper : public SimpleURLLoaderStreamConsumer {
     if (success ||
         (allow_http_error_results_ && simple_url_loader_->ResponseInfo())) {
       response_body_ =
-          std::make_unique<std::string>(download_as_stream_response_body_);
+          std::make_optional<std::string>(download_as_stream_response_body_);
     }
 
     if (destroy_loader_on_complete_)
@@ -549,8 +550,8 @@ class SimpleLoaderTestHelper : public SimpleURLLoaderStreamConsumer {
   base::RunLoop run_loop_;
 
   // Response body, regardless of DownloadType. Only populated on completion.
-  // Null on error.
-  std::unique_ptr<std::string> response_body_;
+  // Empty on error.
+  std::optional<std::string> response_body_;
 
   base::OnceClosure on_destruction_callback_;
 

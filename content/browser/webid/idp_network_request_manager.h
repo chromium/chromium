@@ -358,7 +358,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager : public NetworkRequestManager {
   bool IsCrossSiteIframe() const;
 
   void OnDownloadedImage(ImageCallback callback,
-                         std::unique_ptr<std::string> response_body,
+                         std::optional<std::string> response_body,
                          int response_code,
                          const std::string& mime_type,
                          bool cors_error);

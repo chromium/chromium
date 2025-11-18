@@ -202,7 +202,7 @@ class CONTENT_EXPORT BiddingAndAuctionServerKeyFetcher {
   // Called when the JSON blob containing the keys have been successfully
   // fetched over the network.
   void OnFetchKeysFromNetworkComplete(url::Origin coordinator,
-                                      std::unique_ptr<std::string> response);
+                                      std::optional<std::string> response);
 
   // Called when the JSON blob containing the keys has be parsed into
   // base::Values. Uses the parsed result to add keys to the cache and calls

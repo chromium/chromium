@@ -24,7 +24,7 @@ class Value;
 namespace content::webid {
 
 using DownloadCallback =
-    base::OnceCallback<void(std::unique_ptr<std::string> response_body,
+    base::OnceCallback<void(std::optional<std::string> response_body,
                             int response_code,
                             const std::string& mime_type,
                             bool cors_error)>;
@@ -103,7 +103,7 @@ class CONTENT_EXPORT NetworkRequestManager {
   // Called when download initiated by DownloadUrl() completes.
   void OnDownloadedUrl(std::unique_ptr<network::SimpleURLLoader> url_loader,
                        DownloadCallback callback,
-                       std::unique_ptr<std::string> response_body);
+                       std::optional<std::string> response_body);
 
   std::unique_ptr<network::ResourceRequest> CreateUncredentialedResourceRequest(
       const GURL& target_url,

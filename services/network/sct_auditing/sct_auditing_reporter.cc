@@ -4,6 +4,9 @@
 
 #include "services/network/sct_auditing/sct_auditing_reporter.h"
 
+#include <optional>
+#include <string>
+
 #include "base/base64.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -358,7 +361,7 @@ void SCTAuditingReporter::SendLookupQuery() {
 }
 
 void SCTAuditingReporter::OnSendLookupQueryComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   int response_code = 0;
   if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers) {
     response_code = url_loader_->ResponseInfo()->headers->response_code();

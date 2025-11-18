@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -115,7 +116,7 @@ void TrustTokenKeyCommitmentController::HandleRedirect(
 }
 
 void TrustTokenKeyCommitmentController::HandleResponseBody(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   DCHECK(parser_);
 
   int error = url_loader_->NetError();

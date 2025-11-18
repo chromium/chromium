@@ -227,7 +227,7 @@ class CONTENT_EXPORT SharedStorageWorkletHost
       bool opted_in,
       std::string data_origin_opt_in_error_message);
 
-  void OnOptInRequestComplete(std::unique_ptr<std::string> response_body);
+  void OnOptInRequestComplete(std::optional<std::string> response_body);
 
   void OnJsonParsed(std::optional<base::Value::List> result);
 

@@ -1238,7 +1238,7 @@ void InterestGroupUpdateManager::DidUpdateInterestGroupsOfOwnerNetFetch(
     UrlLoadersList::iterator simple_url_loader_it,
     blink::InterestGroupKey group_key,
     base::TimeTicks start_time,
-    std::unique_ptr<std::string> fetch_body) {
+    std::optional<std::string> fetch_body) {
   DCHECK_EQ(group_key.owner, owners_to_update_.FrontOwner());
   DCHECK_GT(num_in_flight_updates_, 0);
   DCHECK(!waiting_on_db_read_);

@@ -4,7 +4,11 @@
 
 #include "content/browser/webid/network_request_manager.h"
 
+#include <optional>
+#include <string>
+
 #include "base/strings/string_util.h"
+#include "base/types/optional_ref.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/webid/flags.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -26,7 +30,7 @@ constexpr char kUrlEncodedContentType[] = "application/x-www-form-urlencoded";
 // response size that is a part of this protocol.
 constexpr int maxResponseSizeInKiB = 1024;
 
-ParseStatus GetResponseError(std::string* response_body,
+ParseStatus GetResponseError(base::optional_ref<std::string> response_body,
                              int response_code,
                              const std::string& mime_type) {
   if (response_code == net::HTTP_NOT_FOUND) {
@@ -64,12 +68,12 @@ void OnJsonParsed(ParseJsonCallback parse_json_callback,
 }
 
 void OnDownloadedJson(ParseJsonCallback parse_json_callback,
-                      std::unique_ptr<std::string> response_body,
+                      std::optional<std::string> response_body,
                       int response_code,
                       const std::string& mime_type,
                       bool cors_error) {
   ParseStatus parse_status =
-      GetResponseError(response_body.get(), response_code, mime_type);
+      GetResponseError(response_body, response_code, mime_type);
 
   if (parse_status != ParseStatus::kSuccess) {
     std::move(parse_json_callback)
@@ -193,7 +197,7 @@ void NetworkRequestManager::DownloadUrl(
 void NetworkRequestManager::OnDownloadedUrl(
     std::unique_ptr<network::SimpleURLLoader> url_loader,
     DownloadCallback callback,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   auto* response_info = url_loader->ResponseInfo();
   // Use the HTTP response code, if available. If it is not available, use the
   // NetError(). Note that it is acceptable to put these in the same int because
@@ -210,7 +214,7 @@ void NetworkRequestManager::OnDownloadedUrl(
   if (it != urlloader_devtools_request_id_map_.end()) {
     auto request_id = it->second;
     const std::string& response_body_str =
-        response_body ? *response_body : std::string();
+        response_body.value_or(std::string());
     auto completion_status = status.value_or(
         network::URLLoaderCompletionStatus(url_loader->NetError()));
 

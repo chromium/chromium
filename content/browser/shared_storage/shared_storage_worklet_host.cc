@@ -1822,7 +1822,7 @@ bool SharedStorageWorkletHost::IsSharedStorageSelectURLAllowed(
 }
 
 void SharedStorageWorkletHost::OnOptInRequestComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   const auto* response_info = data_origin_opt_in_url_loader_->ResponseInfo();
   if (!response_body || !response_info ||
       !blink::IsJSONMimeType(response_info->mime_type)) {

@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "base/component_export.h"
 #include "base/containers/unique_ptr_adapters.h"

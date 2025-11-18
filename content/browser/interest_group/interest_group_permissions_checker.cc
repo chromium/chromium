@@ -4,6 +4,9 @@
 
 #include "content/browser/interest_group/interest_group_permissions_checker.h"
 
+#include <optional>
+#include <string>
+
 #include "base/functional/callback.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
@@ -167,7 +170,7 @@ void InterestGroupPermissionsChecker::ClearCache() {
 
 void InterestGroupPermissionsChecker::OnRequestComplete(
     ActiveRequestMap::iterator active_request,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   const auto* response_info =
       active_request->second->simple_url_loader->ResponseInfo();
   if (!response_body || !response_info ||
