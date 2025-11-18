@@ -165,6 +165,11 @@ ComposeboxOmniboxClient::GetPageClassification(bool is_prefetch) const {
       is_prefetch);
 }
 
+std::optional<lens::proto::LensOverlaySuggestInputs>
+ComposeboxOmniboxClient::GetLensOverlaySuggestInputs() const {
+  return [delegate_ suggestInputs];
+}
+
 security_state::SecurityLevel ComposeboxOmniboxClient::GetSecurityLevel()
     const {
   return location_bar_->GetLocationBarModel()->GetSecurityLevel();

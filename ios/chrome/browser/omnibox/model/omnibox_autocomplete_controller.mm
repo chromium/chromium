@@ -21,6 +21,7 @@
 #import "components/omnibox/browser/autocomplete_result.h"
 #import "components/omnibox/browser/clipboard_provider.h"
 #import "components/omnibox/browser/history_url_provider.h"
+#import "components/omnibox/browser/lens_suggest_inputs_utils.h"
 #import "components/omnibox/browser/omnibox_client.h"
 #import "components/omnibox/browser/omnibox_popup_selection.h"
 #import "components/omnibox/browser/omnibox_pref_names.h"
@@ -431,10 +432,7 @@ using base::UserMetricsAction;
   input.set_current_url(_omniboxClient->GetURL());
   input.set_current_title(_omniboxClient->GetTitle());
   input.set_prevent_inline_autocomplete(preventInlineAutocomplete);
-  if (std::optional<lens::proto::LensOverlaySuggestInputs> suggestInputs =
-          _omniboxClient->GetLensOverlaySuggestInputs()) {
-    input.set_lens_overlay_suggest_inputs(*suggestInputs);
-  }
+  [self attachSuggestInputsToAutocompleteInput:input];
 
   [self startAutocompleteWithInput:input];
 }
@@ -479,11 +477,8 @@ using base::UserMetricsAction;
   input.set_current_url(_omniboxClient->GetURL());
   input.set_current_title(_omniboxClient->GetTitle());
   input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
-  // Set the lens overlay suggest inputs, if available.
-  if (std::optional<lens::proto::LensOverlaySuggestInputs> suggestInputs =
-          _omniboxClient->GetLensOverlaySuggestInputs()) {
-    input.set_lens_overlay_suggest_inputs(*suggestInputs);
-  }
+  [self attachSuggestInputsToAutocompleteInput:input];
+
   [self startAutocompleteWithInput:input];
 }
 
@@ -590,6 +585,24 @@ using base::UserMetricsAction;
 }
 
 #pragma mark - Private
+
+/// Attaches the client's suggest inputs if valid.
+- (void)attachSuggestInputsToAutocompleteInput:(AutocompleteInput&)input {
+  std::optional<lens::proto::LensOverlaySuggestInputs> suggestInputs =
+      _omniboxClient->GetLensOverlaySuggestInputs();
+
+  if (!suggestInputs) {
+    return;
+  }
+
+  if ((_omniboxPresentationContext ==
+       OmniboxPresentationContext::kComposebox) &&
+      !AreLensSuggestInputsReady(suggestInputs)) {
+    return;
+  }
+
+  input.set_lens_overlay_suggest_inputs(*suggestInputs);
+}
 
 /// Wraps the suggestions and send them to the delegate.
 - (void)updateWithSortedResults:(const AutocompleteResult&)results {

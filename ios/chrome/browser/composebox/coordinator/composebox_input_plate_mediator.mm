@@ -28,6 +28,7 @@
 #import "base/unguessable_token.h"
 #import "components/lens/contextual_input.h"
 #import "components/lens/lens_bitmap_processing.h"
+#import "components/omnibox/browser/lens_suggest_inputs_utils.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/omnibox/composebox/ios/composebox_file_upload_observer_bridge.h"
 #import "components/omnibox/composebox/ios/composebox_query_controller_ios.h"
@@ -591,9 +592,11 @@ CreateInputDataFromAnnotatedPageContent(
     case contextual_search::FileUploadStatus::kUploadExpired:
       item.state = ComposeboxInputItemState::kError;
       break;
+    case contextual_search::FileUploadStatus::kProcessingSuggestSignalsReady:
+      [self.delegate reloadAutocompleteSuggestions];
+      break;
     case contextual_search::FileUploadStatus::kNotUploaded:
     case contextual_search::FileUploadStatus::kProcessing:
-    case contextual_search::FileUploadStatus::kProcessingSuggestSignalsReady:
     case contextual_search::FileUploadStatus::kUploadStarted:
       // No-op, as the state is already `Uploading`.
       return;
@@ -822,6 +825,14 @@ CreateInputDataFromAnnotatedPageContent(
 }
 
 #pragma mark - ComposeboxOmniboxClientDelegate
+
+- (std::optional<lens::proto::LensOverlaySuggestInputs>)suggestInputs {
+  if (!_composeboxQueryController) {
+    return std::nullopt;
+  }
+
+  return _composeboxQueryController->suggest_inputs();
+}
 
 - (BOOL)isAIModeEnabled {
   return _AIModeEnabled;

@@ -110,6 +110,10 @@ class ComposeboxOmniboxClient final : public OmniboxClient,
                            web::NavigationContext* navigation_context) override;
   void WebStateDestroyed(web::WebState* web_state) override;
 
+  // Returns the LensOverlaySuggestInputs if available.
+  std::optional<lens::proto::LensOverlaySuggestInputs>
+  GetLensOverlaySuggestInputs() const override;
+
  private:
   // Object associated with a web state id in `web_state_tracker_`. If the
   // navigation succeeds, the shortcut is stored in the ShortcutsDatabase.

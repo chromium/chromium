@@ -10,6 +10,9 @@ enum class WindowOpenDisposition;
 /// Delegate for ComposeboxOmniboxClient.
 @protocol ComposeboxOmniboxClientDelegate
 
+/// Returns the current attached suggest input in the composebox.
+- (std::optional<lens::proto::LensOverlaySuggestInputs>)suggestInputs;
+
 /// Returns YES if AI Mode is enabled.
 - (BOOL)isAIModeEnabled;
 
