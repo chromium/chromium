@@ -158,7 +158,7 @@ void ExtensionsMenuViewModel::GrantSiteAccess(
       permissions_manager->GetUserSiteAccess(*extension, url);
   CHECK(CanUserCustomizeExtensionSiteAccess(*extension, *profile,
                                             *toolbar_model, *web_contents));
-  CHECK_EQ(current_site_access, PermissionsManager::UserSiteAccess::kOnClick);
+  DCHECK_EQ(current_site_access, PermissionsManager::UserSiteAccess::kOnClick);
 
   // Update site access when extension requested host permissions for the
   // current site (that is, site access was withheld).
