@@ -16,10 +16,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -37,10 +37,7 @@ import org.chromium.components.autofill.TestViewStructure;
 })
 @Batch(Batch.PER_CLASS)
 @EnableFeatures({"AnnotatedPageContentsVirtualStructure"})
-// TODO(crbug.com/439491767): Fix broken tests caused by desktop-like incognito window.
-@DisableFeatures("AndroidOpenIncognitoAsWindow")
 public class PageContentProtoViewStructureBuilderTest {
-
     private static final String TEST_PATH =
             "/chrome/test/data/android/annotated_page_content/index.html";
     private static final long DEFAULT_MAX_TIME_TO_WAIT_IN_MS = 3000;
@@ -71,7 +68,7 @@ public class PageContentProtoViewStructureBuilderTest {
         var incognitoPage =
                 mActivityTestRule
                         .startOnBlankPage()
-                        .openNewIncognitoTabFast()
+                        .openNewIncognitoTabOrWindowFast()
                         .loadWebPageProgrammatically(testUrl);
         var viewStructure = getViewStructureForPage(incognitoPage);
 
@@ -81,6 +78,10 @@ public class PageContentProtoViewStructureBuilderTest {
                     viewStructure
                             .getExtras()
                             .containsKey(PageContentProtoViewStructureBuilder.APC_PROTO_EXTRA_KEY));
+        }
+
+        if (incognitoPage.getActivity().isIncognitoWindow()) {
+            ApplicationTestUtils.finishActivity(incognitoPage.getActivity());
         }
     }
 
