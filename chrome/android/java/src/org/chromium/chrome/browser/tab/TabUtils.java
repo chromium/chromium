@@ -26,6 +26,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
+import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -52,6 +53,14 @@ public class TabUtils {
 
     // Do not instantiate this class.
     private TabUtils() {}
+
+    /**
+     * @return Whether the given tab is initialized and not destroyed.
+     */
+    @Contract("null -> false")
+    public static boolean isValid(@Nullable Tab tab) {
+        return tab != null && tab.isInitialized() && !tab.isDestroyed();
+    }
 
     /**
      * @return {@link Activity} associated with the given tab.

@@ -73,6 +73,7 @@ import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
@@ -599,7 +600,7 @@ class TabListMediator implements TabListNotificationHandler {
                             model = mModelList.get(indexAndTab.first).model;
                         }
                     }
-                    if (tab != null && model != null) {
+                    if (TabUtils.isValid(tab) && model != null) {
                         model.set(TabProperties.URL_DOMAIN, getDomainForTab(tab));
                         // Changing URL will result in a thumbnail invalidation if the on-disk
                         // thumbnail doesn't match.

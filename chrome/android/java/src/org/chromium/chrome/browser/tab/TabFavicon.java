@@ -60,9 +60,9 @@ public class TabFavicon extends TabWebContentsUserData {
     }
 
     private static @Nullable TabFavicon get(Tab tab) {
-        if (sInstanceForTesting != null) return sInstanceForTesting;
-        if (tab == null || !tab.isInitialized()) return null;
-        return tab.getUserDataHost().getUserData(USER_DATA_KEY);
+        return sInstanceForTesting != null
+                ? sInstanceForTesting
+                : !TabUtils.isValid(tab) ? null : tab.getUserDataHost().getUserData(USER_DATA_KEY);
     }
 
     /**
