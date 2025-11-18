@@ -384,7 +384,9 @@ public class MiniOriginBarController implements Observer {
             }
             case MiniOriginState.ANIMATING -> {
                 return switch (miniOriginEvent) {
-                    case MiniOriginEvent.CONTROLS_POSITION_BECAME_TOP -> MiniOriginState.NOT_READY;
+                    case MiniOriginEvent.FORM_FIELD_LOST_FOCUS,
+                            MiniOriginEvent.CONTROLS_POSITION_BECAME_TOP ->
+                            MiniOriginState.NOT_READY;
                     // A predictive back hide animation for the keyboard can be cancelled,
                     // ending in a transient state where the keyboard insets are not applied but
                     // it remains visible. To avoid visual glitches from hiding and reshowing,
