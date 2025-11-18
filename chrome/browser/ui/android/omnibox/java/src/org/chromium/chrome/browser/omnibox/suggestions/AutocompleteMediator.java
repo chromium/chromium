@@ -591,8 +591,7 @@ class AutocompleteMediator
                                 url,
                                 mLastActionUpTimestamp,
                                 /* openInNewTab= */ false,
-                                /* openInNewWindow= */ false,
-                                /* shouldUpdateSuggestionUrl= */ true);
+                                /* openInNewWindow= */ false);
 
         // Note: Action will be reset when load is initiated.
         if (mAutocomplete != null) {
@@ -985,27 +984,6 @@ class AutocompleteMediator
             // For Hub Search, default behavior kicks off search by pressing enter, do not return.
         }
 
-        @AutocompleteRequestType
-        int type = mNavigationAttachmentsCoordinator.getAutocompleteRequestTypeSupplier().get();
-        if (type == AutocompleteRequestType.AI_MODE
-                || type == AutocompleteRequestType.IMAGE_GENERATION) {
-            AutocompleteMatch suggestionMatch = getSuggestionMatchForUrlText(urlText);
-            if (suggestionMatch == null) return;
-            GURL url =
-                    type == AutocompleteRequestType.AI_MODE
-                            ? mNavigationAttachmentsCoordinator.getAimUrl(urlText)
-                            : mNavigationAttachmentsCoordinator.getImageGenerationUrl(urlText);
-            loadUrlForOmniboxMatch(
-                    0,
-                    suggestionMatch,
-                    url,
-                    eventTime,
-                    /* openInNewTab= */ false,
-                    openInNewWindow,
-                    /* shouldUpdateSuggestionUrl= */ false);
-            return;
-        }
-
         if (mAutocomplete != null) {
             findMatchAndLoadUrl(urlText, eventTime, openInNewTab, openInNewWindow);
         } else {
@@ -1036,8 +1014,7 @@ class AutocompleteMediator
                 suggestionMatch.getUrl(),
                 inputStart,
                 openInNewTab,
-                openInNewWindow,
-                /* shouldUpdateSuggestionUrl= */ true);
+                openInNewWindow);
     }
 
     private @Nullable AutocompleteMatch getSuggestionMatchForUrlText(String urlText) {
@@ -1070,8 +1047,6 @@ class AutocompleteMediator
      * @param openInNewWindow Whether the URL will be loaded in a new window. If {@code true}, the
      *     URL will be loaded in a new window. If {@code false}, The URL will be loaded in the
      *     current window.
-     * @param shouldUpdateSuggestionUrl Whether the suggestion url should be updated with additional
-     *     query formulation stats param.
      */
     private void loadUrlForOmniboxMatch(
             int matchIndex,
@@ -1079,8 +1054,7 @@ class AutocompleteMediator
             GURL url,
             long inputStart,
             boolean openInNewTab,
-            boolean openInNewWindow,
-            boolean shouldUpdateSuggestionUrl) {
+            boolean openInNewWindow) {
         try (TraceEvent e = TraceEvent.scoped("AutocompleteMediator.loadUrlFromOmniboxMatch")) {
             OmniboxMetrics.recordFocusToOpenTime(System.currentTimeMillis() - mUrlFocusTime);
 
@@ -1088,9 +1062,19 @@ class AutocompleteMediator
             mDeferredLoadAction = null;
 
             mOmniboxFocusResultedInNavigation = true;
-            if (shouldUpdateSuggestionUrl) {
-                url = updateSuggestionUrlIfNeeded(suggestion, url);
-            }
+
+            url = updateSuggestionUrlIfNeeded(suggestion, url);
+
+            url =
+                    switch (mNavigationAttachmentsCoordinator
+                            .getAutocompleteRequestTypeSupplier()
+                            .get()) {
+                        case AutocompleteRequestType.AI_MODE ->
+                                mNavigationAttachmentsCoordinator.getAimUrl(url);
+                        case AutocompleteRequestType.IMAGE_GENERATION ->
+                                mNavigationAttachmentsCoordinator.getImageGenerationUrl(url);
+                        default -> url;
+                    };
 
             // loadUrl modifies AutocompleteController's state clearing the native
             // AutocompleteResults needed by onSuggestionsSelected. Therefore,

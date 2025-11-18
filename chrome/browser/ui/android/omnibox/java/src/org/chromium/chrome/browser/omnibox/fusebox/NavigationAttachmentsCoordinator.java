@@ -222,15 +222,15 @@ public class NavigationAttachmentsCoordinator
     }
 
     /** Returns the URL associated with the current AIM session. */
-    public GURL getAimUrl(String queryText) {
+    public GURL getAimUrl(GURL url) {
         if (mMediator == null) return GURL.emptyGURL();
-        return mMediator.getAimUrl(queryText);
+        return mMediator.getAimUrl(url);
     }
 
     /** Returns the URL associated with the current image generation session. */
-    public GURL getImageGenerationUrl(String queryText) {
+    public GURL getImageGenerationUrl(GURL url) {
         if (mMediator == null) return GURL.emptyGURL();
-        return mMediator.getImageGenerationUrl(queryText);
+        return mMediator.getImageGenerationUrl(url);
     }
 
     public PropertyModel getModelForTesting() {

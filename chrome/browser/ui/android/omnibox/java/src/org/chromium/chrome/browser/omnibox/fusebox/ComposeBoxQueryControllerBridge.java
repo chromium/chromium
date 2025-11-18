@@ -88,13 +88,12 @@ public class ComposeBoxQueryControllerBridge {
                 .addTabContextFromCache(mNativeInstance, tabId);
     }
 
-    GURL getAimUrl(String queryText) {
-        return ComposeBoxQueryControllerBridgeJni.get().getAimUrl(mNativeInstance, queryText);
+    GURL getAimUrl(GURL url) {
+        return ComposeBoxQueryControllerBridgeJni.get().getAimUrl(mNativeInstance, url);
     }
 
-    GURL getImageGenerationUrl(String queryText) {
-        return ComposeBoxQueryControllerBridgeJni.get()
-                .getImageGenerationUrl(mNativeInstance, queryText);
+    GURL getImageGenerationUrl(GURL url) {
+        return ComposeBoxQueryControllerBridgeJni.get().getImageGenerationUrl(mNativeInstance, url);
     }
 
     /** Remove the given file from the current session. */
@@ -141,11 +140,11 @@ public class ComposeBoxQueryControllerBridge {
 
         @NativeClassQualifiedName("ComposeboxQueryControllerBridge")
         @JniType("GURL")
-        GURL getAimUrl(long nativeInstance, @JniType("std::string") String queryText);
+        GURL getAimUrl(long nativeInstance, @JniType("GURL") GURL url);
 
         @NativeClassQualifiedName("ComposeboxQueryControllerBridge")
         @JniType("GURL")
-        GURL getImageGenerationUrl(long nativeInstance, @JniType("std::string") String queryText);
+        GURL getImageGenerationUrl(long nativeInstance, @JniType("GURL") GURL url);
 
         @NativeClassQualifiedName("ComposeboxQueryControllerBridge")
         void removeAttachment(long nativeInstance, @JniType("std::string") String token);

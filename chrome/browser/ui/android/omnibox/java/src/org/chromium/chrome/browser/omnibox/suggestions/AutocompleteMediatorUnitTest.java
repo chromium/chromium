@@ -1635,7 +1635,7 @@ public class AutocompleteMediatorUnitTest {
         when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("test");
         mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.AI_MODE);
         GURL url = JUnitTestGURLs.BLUE_2;
-        when(mNavigationAttachmentsCoordinator.getAimUrl("test")).thenReturn(url);
+        when(mNavigationAttachmentsCoordinator.getAimUrl(any())).thenReturn(url);
 
         AutocompleteMatch defaultMatch =
                 AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
@@ -1664,9 +1664,9 @@ public class AutocompleteMediatorUnitTest {
         when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("test");
         mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.IMAGE_GENERATION);
         GURL url1 = JUnitTestGURLs.BLUE_1;
-        when(mNavigationAttachmentsCoordinator.getAimUrl("test")).thenReturn(url1);
+        when(mNavigationAttachmentsCoordinator.getAimUrl(any())).thenReturn(url1);
         GURL url2 = JUnitTestGURLs.BLUE_2;
-        when(mNavigationAttachmentsCoordinator.getImageGenerationUrl("test")).thenReturn(url2);
+        when(mNavigationAttachmentsCoordinator.getImageGenerationUrl(any())).thenReturn(url2);
 
         AutocompleteMatch defaultMatch =
                 AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)

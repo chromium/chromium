@@ -212,19 +212,20 @@ public class NavigationAttachmentsMediator {
     }
 
     /**
-     * @param queryText The query text to be used for the AIM URL.
+     * @param url The search URL to get the AIM analog of.
      * @return The URL for the AIM service.
      */
-    GURL getAimUrl(String queryText) {
-        return mComposeBoxQueryControllerBridge.getAimUrl(queryText);
+    GURL getAimUrl(GURL url) {
+        return mComposeBoxQueryControllerBridge.getAimUrl(url);
     }
 
     /**
+     * @param url The search URL to get the Image generator analog of.
      * @param queryText The query text to be used for the image generation URL.
      * @return The URL for the image generation service.
      */
-    GURL getImageGenerationUrl(String queryText) {
-        return mComposeBoxQueryControllerBridge.getImageGenerationUrl(queryText);
+    GURL getImageGenerationUrl(GURL url) {
+        return mComposeBoxQueryControllerBridge.getImageGenerationUrl(url);
     }
 
     @VisibleForTesting

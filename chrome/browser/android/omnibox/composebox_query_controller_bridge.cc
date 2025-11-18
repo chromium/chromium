@@ -21,12 +21,14 @@
 #include "chrome/common/channel_info.h"
 #include "components/lens/contextual_input.h"
 #include "components/lens/lens_bitmap_processing.h"
+#include "components/lens/lens_url_utils.h"
 #include "components/lens/tab_contextualization_controller.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/page_content_annotations/core/page_content_cache.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
+#include "net/base/url_util.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
@@ -179,28 +181,28 @@ ComposeboxQueryControllerBridge::AddTabContextFromCache(JNIEnv* env,
   return base::android::ConvertUTF8ToJavaString(env, file_token.ToString());
 }
 
-GURL ComposeboxQueryControllerBridge::GetAimUrl(JNIEnv* env,
-                                                std::string& query_text) {
-  // TODO(crbug.com/448149357): Update the bridge interface to take in
-  // additional params for the create search url request info.
+std::unique_ptr<ComposeboxQueryController::CreateSearchUrlRequestInfo>
+ComposeboxQueryControllerBridge::CreateSearchUrlRequestInfoFromUrl(GURL url) {
   std::unique_ptr<ComposeboxQueryController::CreateSearchUrlRequestInfo>
       search_url_request_info = std::make_unique<
           ComposeboxQueryController::CreateSearchUrlRequestInfo>();
-  search_url_request_info->query_text = query_text;
+  net::GetValueForKeyInQuery(url, "q", &search_url_request_info->query_text);
+  search_url_request_info->additional_params =
+      lens::GetParametersMapWithoutQuery(url);
   search_url_request_info->query_start_time = base::Time::Now();
+  return search_url_request_info;
+}
+
+GURL ComposeboxQueryControllerBridge::GetAimUrl(JNIEnv* env, GURL url) {
+  auto search_url_request_info =
+      CreateSearchUrlRequestInfoFromUrl(std::move(url));
   return query_controller_->CreateSearchUrl(std::move(search_url_request_info));
 }
 
-GURL ComposeboxQueryControllerBridge::GetImageGenerationUrl(
-    JNIEnv* env,
-    std::string& query_text) {
-  // TODO(crbug.com/448149357): Update the bridge interface to take in
-  // additional params for the create search url request info.
-  std::unique_ptr<ComposeboxQueryController::CreateSearchUrlRequestInfo>
-      search_url_request_info = std::make_unique<
-          ComposeboxQueryController::CreateSearchUrlRequestInfo>();
-  search_url_request_info->query_text = query_text;
-  search_url_request_info->query_start_time = base::Time::Now();
+GURL ComposeboxQueryControllerBridge::GetImageGenerationUrl(JNIEnv* env,
+                                                            GURL url) {
+  auto search_url_request_info =
+      CreateSearchUrlRequestInfoFromUrl(std::move(url));
   search_url_request_info->additional_params["imgn"] = "1";
   return query_controller_->CreateSearchUrl(std::move(search_url_request_info));
 }

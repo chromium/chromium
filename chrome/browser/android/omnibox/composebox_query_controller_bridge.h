@@ -46,8 +46,8 @@ class ComposeboxQueryControllerBridge
   base::android::ScopedJavaLocalRef<jobject> AddTabContextFromCache(
       JNIEnv* env,
       long tab_id);
-  GURL GetAimUrl(JNIEnv* env, std::string& query_text);
-  GURL GetImageGenerationUrl(JNIEnv* env, std::string& query_text);
+  GURL GetAimUrl(JNIEnv* env, GURL url);
+  GURL GetImageGenerationUrl(JNIEnv* env, GURL url);
   void RemoveAttachment(JNIEnv* env, const std::string& token);
   bool IsPdfUploadEligible(JNIEnv* env);
   bool IsCreateImagesEligible(JNIEnv* env);
@@ -72,6 +72,9 @@ class ComposeboxQueryControllerBridge
       JNIEnv* env,
       const base::UnguessableToken& context_token,
       std::optional<optimization_guide::proto::PageContext> page_context);
+
+  std::unique_ptr<ComposeboxQueryController::CreateSearchUrlRequestInfo>
+  CreateSearchUrlRequestInfoFromUrl(GURL url);
 
   raw_ptr<Profile> profile_;
   std::unique_ptr<ComposeboxQueryController> query_controller_;
