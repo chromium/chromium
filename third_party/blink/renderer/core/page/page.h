@@ -61,7 +61,6 @@
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/scheduler/public/agent_group_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/page_scheduler.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/insets.h"
@@ -109,6 +108,9 @@ class SVGDocumentResourceTracker;
 class TopDocumentRootScrollerController;
 class ValidationMessageClient;
 class VisualViewport;
+#if BUILDFLAG(IS_ANDROID)
+class SuspendCaptureObserver;
+#endif
 
 typedef uint64_t LinkHash;
 
@@ -117,14 +119,11 @@ typedef uint64_t LinkHash;
 //
 // Note that frames can be local or remote to this process.
 class CORE_EXPORT Page final : public GarbageCollected<Page>,
-                               public Supplementable<Page, 1>,
                                public SettingsDelegate,
                                public PageScheduler::Delegate {
   friend class Settings;
 
  public:
-  enum class Supplements { kSuspendCaptureObserver = 0 };
-
   // Any pages not owned by a web view should be created using this method.
   static Page* CreateNonOrdinary(
       ChromeClient& chrome_client,
@@ -386,7 +385,7 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
 
   void AcceptLanguagesChanged();
 
-  void Trace(Visitor*) const override;
+  void Trace(Visitor*) const;
 
   void DidInitializeCompositing(cc::AnimationHost&);
   void WillStopCompositing();
@@ -586,6 +585,18 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
     internal_settings_ = internal_settings;
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  ForwardDeclaredMember<SuspendCaptureObserver> GetSuspendCaptureObserver()
+      const {
+    return suspend_capture_observer_;
+  }
+  void SetSuspendCaptureObserver(
+      ForwardDeclaredMember<SuspendCaptureObserver> suspend_capture_observer) {
+    suspend_capture_observer_ = suspend_capture_observer;
+  }
+
+#endif
+
  private:
   friend class ScopedPagePauser;
   class CloseTaskHandler;
@@ -784,9 +795,10 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   ForwardDeclaredMember<NoStatePrefetchClient> no_state_prefetch_client_;
   ForwardDeclaredMember<AudioGraphTracer> audio_graph_tracer_;
   ForwardDeclaredMember<InternalSettings> internal_settings_;
+#if BUILDFLAG(IS_ANDROID)
+  ForwardDeclaredMember<SuspendCaptureObserver> suspend_capture_observer_;
+#endif
 };
-
-extern template class CORE_EXTERN_TEMPLATE_EXPORT Supplement<Page>;
 
 class CORE_EXPORT InternalSettingsPageSupplementBase
     : public GarbageCollectedMixin {

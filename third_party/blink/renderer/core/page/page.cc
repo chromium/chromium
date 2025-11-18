@@ -1354,7 +1354,9 @@ void Page::Trace(Visitor* visitor) const {
   visitor->Trace(no_state_prefetch_client_);
   visitor->Trace(audio_graph_tracer_);
   visitor->Trace(internal_settings_);
-  Supplementable::Trace(visitor);
+#if BUILDFLAG(IS_ANDROID)
+  visitor->Trace(suspend_capture_observer_);
+#endif
 }
 
 void Page::DidInitializeCompositing(cc::AnimationHost& host) {
@@ -1586,8 +1588,6 @@ void Page::SetAttributionSupport(
     network::mojom::AttributionSupport attribution_support) {
   attribution_support_ = attribution_support;
 }
-
-template class CORE_TEMPLATE_EXPORT Supplement<Page>;
 
 // static
 void Page::PrepareForLeakDetection() {
