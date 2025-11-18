@@ -88,7 +88,7 @@ void TaskState::DidCancel() {
   value_ = Value::kCanceled;
 }
 
-Task::Task() = default;
+Task::Task() : trace_task_id_(base::trace_event::GetNextGlobalTraceId()) {}
 
 Task::~Task() = default;
 
@@ -108,10 +108,6 @@ TaskGraph::Node::Node(scoped_refptr<Task> new_task,
       priority(priority),
       dependencies(dependencies),
       has_external_dependency(has_external_dependency) {
-  // Set a trace task id to use for connecting from where the task was posted.
-  if (task) {
-    task->set_trace_task_id(base::trace_event::GetNextGlobalTraceId());
-  }
 }
 
 TaskGraph::Node::Node(Node&& other) = default;
