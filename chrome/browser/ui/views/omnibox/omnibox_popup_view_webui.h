@@ -50,6 +50,7 @@ class OmniboxPopupViewWebUI : public OmniboxPopupView,
                           OmniboxPopupSelection selection) override {}
   void OnMatchIconUpdated(size_t index) override {}
   void OnContentsChanged() override;
+  void OnKeywordStateChanged(bool is_keyword_selected) override {}
 
  protected:
   friend class OmniboxPopupViewWebUITest;

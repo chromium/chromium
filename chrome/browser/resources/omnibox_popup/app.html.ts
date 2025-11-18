@@ -21,7 +21,7 @@ export function getHtml(this: OmniboxPopupAppElement) {
   `;
 
   return html`<!--_html_template_start_-->
-${this.searchboxLayoutMode_.startsWith('Tall') ? html`
+${this.showContextEntrypoint_ ? html`
 <!-- WebUI Omnibox popup w/ "Add Context" button -->
 <div class="dropdownContainer">
   <contextual-entrypoint-and-carousel id="context"
@@ -29,7 +29,7 @@ ${this.searchboxLayoutMode_.startsWith('Tall') ? html`
       exportparts="composebox-entrypoint, context-menu-entrypoint-icon"
       entrypoint-name="Omnibox"
       searchbox-layout-mode="${this.searchboxLayoutMode_}"
-      ?show-dropdown="${this.result_?.matches.length ?? 0}"
+      ?show-dropdown="${!this.hasVisibleMatches_}"
       @context-menu-entrypoint-click="${this.onContextualEntryPointClicked_}">
     ${searchboxDropdown}
   </contextual-entrypoint-and-carousel>

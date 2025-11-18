@@ -317,7 +317,7 @@ void OmniboxEditModel::RestoreState(const State* state) {
     }
     SetKeyword(state->keyword);
     SetKeywordPlaceholder(state->keyword_placeholder);
-    is_keyword_hint_ = state->is_keyword_hint;
+    SetIsKeywordHint(state->is_keyword_hint);
     keyword_mode_entry_method_ = state->keyword_mode_entry_method;
     if (view_) {
       view_->OnKeywordPlaceholderTextChange();
@@ -376,9 +376,9 @@ std::u16string OmniboxEditModel::GetPermanentDisplayText() const {
 
 void OmniboxEditModel::SetUserText(const std::u16string& text) {
   SetInputInProgress(true);
-  keyword_.clear();
+  SetKeyword(std::u16string());
   keyword_placeholder_.clear();
-  is_keyword_hint_ = false;
+  SetIsKeywordHint(false);
   keyword_mode_entry_method_ = OmniboxEventProto::INVALID;
   if (view_) {
     view_->OnKeywordPlaceholderTextChange();
@@ -584,9 +584,9 @@ void OmniboxEditModel::Revert() {
   input_.Clear();
   paste_state_ = PasteState::kNone;
   InternalSetUserText(std::u16string());
-  keyword_.clear();
+  SetKeyword(std::u16string());
   keyword_placeholder_.clear();
-  is_keyword_hint_ = false;
+  SetIsKeywordHint(false);
   keyword_mode_entry_method_ = OmniboxEventProto::INVALID;
   if (view_) {
     view_->OnKeywordPlaceholderTextChange();
@@ -716,7 +716,7 @@ void OmniboxEditModel::EnterKeywordMode(
   }
   SetKeyword(template_url->keyword());
   SetKeywordPlaceholder(placeholder_text);
-  is_keyword_hint_ = false;
+  SetIsKeywordHint(false);
   keyword_mode_entry_method_ = entry_method;
   if (view_) {
     view_->OnKeywordPlaceholderTextChange();
@@ -867,7 +867,7 @@ bool OmniboxEditModel::AcceptKeyword(
 
   controller_->StopAutocomplete(/*clear_result=*/false);
 
-  is_keyword_hint_ = false;
+  SetIsKeywordHint(false);
   keyword_mode_entry_method_ = entry_method;
   if (original_user_text_with_keyword_.empty()) {
     original_user_text_with_keyword_ = user_text_;
@@ -986,7 +986,7 @@ void OmniboxEditModel::ClearKeyword() {
   // search, which feels bizarre.
   if (was_toggled_into_keyword_mode && entry_by_tab) {
     // State 4 above.
-    is_keyword_hint_ = true;
+    SetIsKeywordHint(true);
     keyword_mode_entry_method_ = OmniboxEventProto::INVALID;
     const std::u16string window_text = keyword_ + view_->GetText();
     view_->SetWindowTextAndCaretPos(window_text, keyword_.length(), false,
@@ -1023,9 +1023,9 @@ void OmniboxEditModel::ClearKeyword() {
       prefix = keyword_ + u" ";
     }
 
-    keyword_.clear();
+    SetKeyword(std::u16string());
     keyword_placeholder_.clear();
-    is_keyword_hint_ = false;
+    SetIsKeywordHint(false);
     keyword_mode_entry_method_ = OmniboxEventProto::INVALID;
     if (view_) {
       view_->OnKeywordPlaceholderTextChange();
@@ -1307,7 +1307,7 @@ void OmniboxEditModel::OnPopupDataChanged(
     bool keyword_was_selected = is_keyword_selected();
     SetKeyword(keyword);
     SetKeywordPlaceholder(keyword_placeholder);
-    is_keyword_hint_ = is_keyword_hint;
+    SetIsKeywordHint(is_keyword_hint);
     if (!keyword_was_selected && is_keyword_selected()) {
       // Since we entered keyword mode, record the reason. Note that we
       // don't do this simply because the keyword changes, since the user
@@ -2865,12 +2865,26 @@ std::u16string OmniboxEditModel::GetText() const {
 }
 
 void OmniboxEditModel::SetKeyword(const std::u16string& keyword) {
+  const bool old_keyword_selected = is_keyword_selected();
   keyword_ = keyword;
+  const bool new_keyword_selected = is_keyword_selected();
+  if (old_keyword_selected != new_keyword_selected) {
+    observers_.Notify(&Observer::OnKeywordStateChanged, new_keyword_selected);
+  }
 }
 
 void OmniboxEditModel::SetKeywordPlaceholder(
     const std::u16string& keyword_placeholder) {
   keyword_placeholder_ = keyword_placeholder;
+}
+
+void OmniboxEditModel::SetIsKeywordHint(bool is_keyword_hint) {
+  const bool old_keyword_selected = is_keyword_selected();
+  is_keyword_hint_ = is_keyword_hint;
+  const bool new_keyword_selected = is_keyword_selected();
+  if (old_keyword_selected != new_keyword_selected) {
+    observers_.Notify(&Observer::OnKeywordStateChanged, new_keyword_selected);
+  }
 }
 
 void OmniboxEditModel::RecordAiModeMetrics(const std::u16string& query_text,

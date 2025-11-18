@@ -89,6 +89,9 @@ class OmniboxEditModel {
     // opened, or closed.
     virtual void OnContentsChanged() = 0;
 
+    // The keyword state has changed.
+    virtual void OnKeywordStateChanged(bool is_keyword_selected) = 0;
+
     ~Observer() override = default;
   };
 
@@ -695,6 +698,7 @@ class OmniboxEditModel {
   // Always use these to set keyword members instead of mutating them directly.
   void SetKeyword(const std::u16string& keyword);
   void SetKeywordPlaceholder(const std::u16string& keyword_placeholder);
+  void SetIsKeywordHint(bool is_keyword_hint);
 
   // Record various UMA metrics associated with the AIM page action.
   // `query_text` represents the text entered by the user at activation time.

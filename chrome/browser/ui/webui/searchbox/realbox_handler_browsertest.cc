@@ -83,6 +83,7 @@ class RealboxSearchBrowserTestPage : public searchbox::mojom::Page {
   void AddFileContext(
       const base::UnguessableToken& token,
       searchbox::mojom::SelectedFileInfoPtr file_info) override {}
+  MOCK_METHOD(void, SetKeywordSelected, (bool is_keyword_selected), (override));
 
   mojo::PendingRemote<searchbox::mojom::Page> GetRemotePage() {
     return receiver_.BindNewPipeAndPassRemote();
