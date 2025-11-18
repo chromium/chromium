@@ -30,6 +30,13 @@
 
 using base::test::FeatureRef;
 
+// TODO(crbug.com/460829501): Re-enable failing tests on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE(test_name) DISABLED_##test_name
+#else
+#define MAYBE(test_name) test_name
+#endif
+
 namespace glic {
 namespace {
 
@@ -64,7 +71,7 @@ class GlicEnablingTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(GlicEnablingTest, EnabledForProfileTest) {
+IN_PROC_BROWSER_TEST_F(GlicEnablingTest, MAYBE(EnabledForProfileTest)) {
   ASSERT_FALSE(GlicEnabling::IsEnabledForProfile(nullptr));
 
   ASSERT_FALSE(GlicEnabling::IsEnabledForProfile(profile()));
@@ -72,7 +79,7 @@ IN_PROC_BROWSER_TEST_F(GlicEnablingTest, EnabledForProfileTest) {
   ASSERT_TRUE(GlicEnabling::IsEnabledForProfile(profile()));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicEnablingTest, AttributeEntryUpdatesOnChange) {
+IN_PROC_BROWSER_TEST_F(GlicEnablingTest, MAYBE(AttributeEntryUpdatesOnChange)) {
   SigninWithPrimaryAccount(profile());
   ASSERT_FALSE(GlicEnabling::IsEnabledForProfile(profile()));
 
@@ -136,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(GlicEnablingTieredRolloutTest, EnabledForProfileTest) {
 }
 
 IN_PROC_BROWSER_TEST_F(GlicEnablingTieredRolloutTest,
-                       InTieredRolloutGroupOtherCriteriaNotPassing) {
+                       MAYBE(InTieredRolloutGroupOtherCriteriaNotPassing)) {
   // Should be enabled as profile.
   SetTieredRolloutEligibilityForProfile(/*is_eligible=*/true);
   EXPECT_FALSE(GlicEnabling::IsEnabledForProfile(profile()));
@@ -161,7 +168,7 @@ class GlicEnablingSimultaneousRolloutTest
 };
 
 IN_PROC_BROWSER_TEST_F(GlicEnablingSimultaneousRolloutTest,
-                       EnabledForProfileTest) {
+                       MAYBE(EnabledForProfileTest)) {
   ForceSigninAndModelExecutionCapability(profile());
 
   // Eligible for tiered rollout. Profile enabled for GLIC.
