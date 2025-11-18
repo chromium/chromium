@@ -33,6 +33,11 @@ void FindTabHelper::DismissFindNavigator() {
 
 void FindTabHelper::SetFullscreenController(
     FullscreenController* fullscreen_controller) {
+  if (!fullscreen_controller) {
+    // If the tab helper is being disconnected from the browser then stop the
+    // find session.
+    StopFinding();
+  }
   DCHECK(controller_);
   controller_.fullscreenController = fullscreen_controller;
 }
@@ -68,6 +73,9 @@ void FindTabHelper::ContinueFinding(FindDirection direction) {
 }
 
 void FindTabHelper::StopFinding() {
+  if (!IsFindUIActive()) {
+    return;
+  }
   SetFindUIActive(false);
   [controller_ disableFindInPage];
 }
@@ -114,7 +122,5 @@ void FindTabHelper::DidFinishNavigation(
     return;
   }
 
-  if (IsFindUIActive()) {
-    StopFinding();
-  }
+  StopFinding();
 }
