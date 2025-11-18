@@ -2114,6 +2114,7 @@ void SqlPersistentStore::Backend::EvictEntries(
                      auto dict = std::move(trace_context).WriteDictionary();
                      PopulateTraceDetails(result, store_status_, dict);
                    });
+  MaybeCrashIfCorrupted(corruption_detected);
   std::move(callback).Run(ResIdListOrErrorAndStoreStatus(
       result == Error::kOk ? ResIdListOrError(std::move(res_ids))
                            : base::unexpected(result),
@@ -2145,7 +2146,8 @@ Error SqlPersistentStore::Backend::EvictEntriesInternal(
     }
   }
   return UpdateStoreStatusAndCommitTransaction(
-      transaction, -res_ids.size(), -bytes_usage, corruption_detected);
+      transaction, -static_cast<int64_t>(res_ids.size()), -bytes_usage,
+      corruption_detected);
 }
 
 Error SqlPersistentStore::Backend::UpdateStoreStatusAndCommitTransaction(

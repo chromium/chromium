@@ -4505,6 +4505,7 @@ TEST_F(SqlPersistentStoreTest, IdleTimeEviction) {
       1000;  // 9250
 
   CreateStore(kMaxBytes);
+  store_->EnableStrictCorruptionCheckForTesting();
   ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
 
   // Add entries to trigger idle time eviction.
