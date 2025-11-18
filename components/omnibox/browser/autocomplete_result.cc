@@ -480,19 +480,26 @@ void AutocompleteResult::SortAndCull(
                     suggestion_groups_map_));
             break;
           case OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX:
+            sections.push_back(
+                std::make_unique<DesktopLensMultimodalZpsSection>(
+                    suggestion_groups_map_));
+            break;
+          case OmniboxEventProto::LENS_SIDE_PANEL_COMPOSEBOX: {
+            size_t max_aim_suggestions =
+                lens::features::GetLensAimSuggestionsCount();
+            // Always add contextual suggestions
+            sections.push_back(std::make_unique<DesktopComposeboxZpsSection>(
+                suggestion_groups_map_, max_aim_suggestions,
+                max_aim_suggestions, max_aim_suggestions));
+            // Add multimodal suggestions if enabled.
             if (lens::features::GetLensAimSuggestionsType() ==
                 lens::features::LensAimSuggestionsType::kMultimodal) {
               sections.push_back(
                   std::make_unique<DesktopLensMultimodalZpsSection>(
-                      suggestion_groups_map_,
-                      static_cast<size_t>(
-                          lens::features::GetLensAimSuggestionsCount())));
-            } else {
-              sections.push_back(
-                  std::make_unique<DesktopLensMultimodalZpsSection>(
-                      suggestion_groups_map_));
+                      suggestion_groups_map_, max_aim_suggestions));
             }
             break;
+          }
           default:
             NOTREACHED();
         }
@@ -561,14 +568,6 @@ void AutocompleteResult::SortAndCull(
               composebox_suggestion_limit_config.max_aim_suggestions;
           max_contextual_suggestions =
               composebox_suggestion_limit_config.max_contextual_suggestions;
-        }
-        if (page_classification ==
-            OmniboxEventProto::LENS_SIDE_PANEL_COMPOSEBOX) {
-          max_aim_suggestions = lens::features::GetLensAimSuggestionsCount();
-          max_contextual_suggestions =
-              lens::features::GetLensAimSuggestionsCount();
-          composebox_max_suggestions =
-              max_aim_suggestions + max_contextual_suggestions;
         }
         sections.push_back(std::make_unique<DesktopComposeboxZpsSection>(
             suggestion_groups_map_, composebox_max_suggestions,
