@@ -290,7 +290,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Composebox.File.WebUI.UploadAttemptFailure"
-    enum="ComposeboxFileValidationError" expires_after="2026-01-20">
+    enum="ComposeboxFileValidationError" expires_after="2026-05-17">
   <owner>jennserrano@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
@@ -1487,7 +1487,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Modules.LoadedModulesCount" units="count"
-    expires_after="2026-03-15">
+    expires_after="2026-05-17">
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
