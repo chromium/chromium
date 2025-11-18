@@ -3894,12 +3894,46 @@ INSTANTIATE_TEST_SUITE_P(WithSyncFeatureEnabled,
 
 IN_PROC_BROWSER_TEST_P(EnclaveAuthenticatorConditionalCreateBrowserTest,
                        ConditionalCreate) {
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), https_server_.GetURL("www.example.com", "/title1.html")));
-
+  // Set up the enclave and inject a password with a recent last use timestamp.
+  // A conditional create request for the same username should succeed.
   BootstrapEnclave();
   InjectPassword(base::Time::Now());
 
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL("www.example.com", "/title1.html")));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kMakeCredentialConditionalCreate);
+  delegate_observer()->WaitForUI();
+
+  std::string script_result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  std::optional<std::vector<uint8_t>> cred_id =
+      ParseCredentialId(script_result);
+  EXPECT_TRUE(cred_id);
+
+  histogram_tester_.ExpectUniqueSample(
+      "WebAuthentication.AutomaticPasskeyUpgrade.Result",
+      /*sample=*/PasskeyUpgradeResult::kSuccess,
+      /*expected_bucket_count=*/1);
+
+  // The request should not have instantiated non-enclave discoveries.
+  ASSERT_TRUE(
+      delegate_observer()->on_transport_availability_enumerated_called());
+  EXPECT_TRUE(delegate_observer()->transports_observed()->empty());
+}
+
+IN_PROC_BROWSER_TEST_P(EnclaveAuthenticatorConditionalCreateBrowserTest,
+                       ConditionalCreate_EnclaveNotLoaded) {
+  // Set up the enclave and then reset it to force it to be loaded from disk at
+  // the beginning of the subsequent conditional create request.
+  BootstrapEnclave();
+  enclave_manager().ResetForTesting();
+  InjectPassword(base::Time::Now());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL("www.example.com", "/title1.html")));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::DOMMessageQueue message_queue(web_contents);

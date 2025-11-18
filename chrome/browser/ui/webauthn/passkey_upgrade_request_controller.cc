@@ -48,12 +48,6 @@
 
 using RenderFrameHost = content::RenderFrameHost;
 
-enum class PasskeyUpgradeRequestController::EnclaveState {
-  kUnknown,
-  kReady,
-  kError,
-};
-
 void RecordPasskeyUpgradeResultHistogram(PasskeyUpgradeResult result) {
   base::UmaHistogramEnumeration(
       "WebAuthentication.AutomaticPasskeyUpgrade.Result", result);

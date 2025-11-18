@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/webauthn/enclave_manager.h"
 #include "chrome/browser/webauthn/enclave_manager_factory.h"
 #include "chrome/browser/webauthn/fake_recovery_key_store.h"
 #include "chrome/browser/webauthn/fake_security_domain_service.h"
@@ -46,6 +48,7 @@
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/fido/enclave/enclave_protocol_utils.h"
 #include "device/fido/features.h"
+#include "enclave_authenticator_browsertest_base.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -218,6 +221,11 @@ webauthn::PasskeyModel* EnclaveAuthenticatorTestBase::passkey_model() {
       browser()->profile());
 }
 
+EnclaveManager& EnclaveAuthenticatorTestBase::enclave_manager() {
+  return CHECK_DEREF(EnclaveManagerFactory::GetAsEnclaveManagerForProfile(
+      browser()->profile()));
+}
+
 void EnclaveAuthenticatorTestBase::EnableUVKeySupport(
     bool fake_hardware_backing) {
   fake_uv_provider_.emplace<crypto::ScopedFakeUserVerifyingKeyProvider>(
@@ -327,14 +335,9 @@ void EnclaveAuthenticatorTestBase::SimulateSuccessfulGpmPinCreation(
     const std::string& pin_value) {
   WaitForEnclaveLoaded();
 
-  EnclaveManager* enclave_manager =
-      EnclaveManagerFactory::GetAsEnclaveManagerForProfile(
-          browser()->profile());
-  ASSERT_TRUE(enclave_manager);
-
   {
-    auto store_keys_lock = enclave_manager->GetStoreKeysLock();
-    enclave_manager->StoreKeys(
+    auto store_keys_lock = enclave_manager().GetStoreKeysLock();
+    enclave_manager().StoreKeys(
         kSyncGaiaId,
         {std::vector<uint8_t>(std::begin(kSecurityDomainSecret),
                               std::end(kSecurityDomainSecret))},
@@ -342,26 +345,21 @@ void EnclaveAuthenticatorTestBase::SimulateSuccessfulGpmPinCreation(
   }
 
   base::test::TestFuture<bool> add_device_future;
-  enclave_manager->AddDeviceAndPINToAccount(
+  enclave_manager().AddDeviceAndPINToAccount(
       "123456",
       /*previous_pin_public_key=*/std::nullopt,
       add_device_future.GetCallback());
   ASSERT_TRUE(add_device_future.Wait()) << "AddDeviceAndPINToAccount timed out";
   ASSERT_TRUE(add_device_future.Get()) << "AddDeviceAndPINToAccount failed";
 
-  ASSERT_TRUE(enclave_manager->is_ready());
-  ASSERT_TRUE(enclave_manager->has_wrapped_pin());
+  ASSERT_TRUE(enclave_manager().is_ready());
+  ASSERT_TRUE(enclave_manager().has_wrapped_pin());
 }
 
 void EnclaveAuthenticatorTestBase::WaitForEnclaveLoaded() {
-  EnclaveManager* enclave_manager =
-      EnclaveManagerFactory::GetAsEnclaveManagerForProfile(
-          browser()->profile());
-  ASSERT_TRUE(enclave_manager);
-
-  if (!enclave_manager->is_loaded()) {
+  if (!enclave_manager().is_loaded()) {
     base::test::TestFuture<void> load_future;
-    enclave_manager->Load(load_future.GetCallback());
+    enclave_manager().Load(load_future.GetCallback());
     ASSERT_TRUE(load_future.Wait());
   }
 }
