@@ -69,6 +69,9 @@ export class OmniboxAimAppElement extends CrLitElement implements Page {
             e.preventDefault();
           });
     }
+
+    this.eventTracker_.add(
+        composebox, 'composebox-submit', this.onComposeboxSubmit_.bind(this));
   }
 
   override disconnectedCallback() {
@@ -103,6 +106,12 @@ export class OmniboxAimAppElement extends CrLitElement implements Page {
     const input = composebox.getInputText();
     composebox.clearAllInputs();
     return Promise.resolve({input});
+  }
+
+  private onComposeboxSubmit_() {
+    const composebox = this.shadowRoot.querySelector('cr-composebox');
+    assert(composebox);
+    composebox.clearAllInputs();
   }
 }
 
