@@ -140,10 +140,16 @@ public class NtpThemeMediatorUnitTest {
     public void testHandleChromeDefaultSectionClick() {
         createMediator(/* shouldShowAlone= */ true);
 
+        String histogramName = "NewTabPage.Customization.BottomSheet.Shown";
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        histogramName, BottomSheetType.CHROME_DEFAULT);
+
         mMediator.handleChromeDefaultSectionClick(mView);
         verify(mNtpCustomizationConfigManager)
                 .onBackgroundColorChanged(eq(mContext), eq(null), eq(DEFAULT));
         verify(mNtpThemeBridgeJniMock).resetCustomBackground(1L);
+        histogramWatcher.assertExpected();
     }
 
     @Test

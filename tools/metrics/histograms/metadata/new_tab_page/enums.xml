@@ -344,10 +344,11 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Discover Feed Bottom Sheet"/>
   <int value="3" label="New Tab Page Appearance Bottom Sheet"/>
   <int value="4" label="Most Visited Tiles Bottom Sheet"/>
-  <int value="5" label="New Tab Page Theme Collections Bottom Sheet"/>
-  <int value="6" label="New Tab Page Single Theme Collection Bottom Sheet"/>
-  <int value="7" label="New Tab Page Chrome Colors Bottom Sheet"/>
-  <int value="8" label="New Tab Page Upload Image Photo Picker"/>
+  <int value="5" label="Theme Collections"/>
+  <int value="6" label="Single Theme Collection"/>
+  <int value="7" label="Chrome Colors"/>
+  <int value="8" label="Upload Image Photo Picker"/>
+  <int value="9" label="Chrome Default"/>
 </enum>
 
 <enum name="NtpCustomizationEntryPoint">

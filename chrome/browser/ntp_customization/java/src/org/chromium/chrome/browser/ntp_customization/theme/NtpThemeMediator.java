@@ -220,6 +220,9 @@ public class NtpThemeMediator {
         }
         mNtpCustomizationConfigManager.onBackgroundColorChanged(
                 mContext, /* colorInfo= */ null, DEFAULT);
+
+        NtpCustomizationMetricsUtils.recordBottomSheetShown(
+                NtpCustomizationCoordinator.BottomSheetType.CHROME_DEFAULT);
     }
 
     @VisibleForTesting
