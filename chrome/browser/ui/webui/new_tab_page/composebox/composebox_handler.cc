@@ -37,6 +37,8 @@ class ComposeboxOmniboxClient final : public ContextualOmniboxClient {
   // OmniboxClient:
   metrics::OmniboxEventProto::PageClassification GetPageClassification(
       bool is_prefetch) const override;
+  std::optional<lens::ContextualInputData> GetContextualInputData()
+      const override;
 
   void OnAutocompleteAccept(
       const GURL& destination_url,
@@ -67,6 +69,14 @@ ComposeboxOmniboxClient::~ComposeboxOmniboxClient() = default;
 metrics::OmniboxEventProto::PageClassification
 ComposeboxOmniboxClient::GetPageClassification(bool is_prefetch) const {
   return metrics::OmniboxEventProto::NTP_COMPOSEBOX;
+}
+
+std::optional<lens::ContextualInputData>
+ComposeboxOmniboxClient::GetContextualInputData() const {
+  if (composebox_handler_) {
+    return composebox_handler_->context_input_data();
+  }
+  return std::nullopt;
 }
 
 void ComposeboxOmniboxClient::OnAutocompleteAccept(

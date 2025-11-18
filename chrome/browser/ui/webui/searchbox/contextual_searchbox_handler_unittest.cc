@@ -571,6 +571,7 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, AddTabContext_DelayUpload) {
 
   // Assert
   ASSERT_TRUE(handler().tab_context_snapshot_.has_value());
+  ASSERT_TRUE(handler().context_input_data().has_value());
   ASSERT_EQ(composebox_query::mojom::FileUploadStatus::kProcessing, status);
 }
 
@@ -623,6 +624,7 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, DeleteContext_DelayUpload) {
   deleted_tokens = handler().deleted_context_tokens();
   ASSERT_TRUE(deleted_tokens.contains(file_token));
   ASSERT_FALSE(handler().tab_context_snapshot_.has_value());
+  ASSERT_FALSE(handler().context_input_data().has_value());
 }
 
 TEST_F(ContextualSearchboxHandlerTestTabsTest, AddTabContextNotFound) {

@@ -399,6 +399,7 @@ void ContextualSearchboxHandler::DeleteContext(
   if (tab_context_snapshot_.has_value() &&
       tab_context_snapshot_.value().first == context_token) {
     tab_context_snapshot_.reset();
+    context_input_data_ = std::nullopt;
   }
 }
 
@@ -406,6 +407,8 @@ void ContextualSearchboxHandler::ClearFiles() {
   if (auto* contextual_session_handle = GetSessionHandle(web_contents_)) {
     contextual_session_handle->ClearFiles();
   }
+  context_input_data_ = std::nullopt;
+  tab_context_snapshot_.reset();
 }
 
 void ContextualSearchboxHandler::SubmitQuery(const std::string& query_text,
@@ -504,6 +507,7 @@ void ContextualSearchboxHandler::OnGetTabPageContext(
 void ContextualSearchboxHandler::SnapshotTabContext(
     const base::UnguessableToken& context_token,
     std::unique_ptr<lens::ContextualInputData> page_content_data) {
+  context_input_data_ = *page_content_data;
   tab_context_snapshot_.emplace(context_token, std::move(page_content_data));
 
   page_->OnContextualInputStatusChanged(

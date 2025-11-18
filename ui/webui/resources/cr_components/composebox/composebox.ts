@@ -1038,6 +1038,12 @@ export class ComposeboxElement extends I18nMixinLit
         }
       }
 
+      // Query autocomplete to get contextual suggestions for tabs.
+      if (status === FileUploadStatus.kProcessing &&
+          file.type.includes('tab')) {
+        this.queryAutocomplete(/* clearMatches= */ true);
+      }
+
       if (status === FileUploadStatus.kUploadSuccessful) {
         const announcer = getAnnouncerInstance();
         announcer.announce(this.i18n('composeboxFileUploadCompleteText'));

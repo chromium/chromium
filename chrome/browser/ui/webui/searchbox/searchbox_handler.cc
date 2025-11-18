@@ -879,6 +879,15 @@ void SearchboxHandler::QueryAutocomplete(const std::u16string& input,
       autocomplete_input.set_lens_overlay_suggest_inputs(*suggest_inputs);
     }
   }
+  if (controller_->client()->GetContextualInputData().has_value()) {
+    auto context_data = controller_->client()->GetContextualInputData().value();
+    if (context_data.page_title.has_value() &&
+        context_data.page_url.has_value()) {
+      autocomplete_input.set_context_tab_title(
+          base::UTF8ToUTF16(context_data.page_title.value()));
+      autocomplete_input.set_context_tab_url(context_data.page_url.value());
+    }
+  }
 
   autocomplete_input.set_aim_tool_mode(GetAimToolMode());
 

@@ -114,6 +114,10 @@ class ContextualSearchboxHandler
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
 
+  std::optional<lens::ContextualInputData> context_input_data() {
+    return context_input_data_;
+  }
+
  protected:
   void ComputeAndOpenQueryUrl(
       const std::string& query_text,
@@ -180,6 +184,8 @@ class ContextualSearchboxHandler
                           contextual_search::ContextualSearchContextController::
                               FileUploadStatusObserver>
       file_upload_status_observer_{this};
+
+  std::optional<lens::ContextualInputData> context_input_data_;
 
   base::WeakPtrFactory<ContextualSearchboxHandler> weak_ptr_factory_{this};
 };
