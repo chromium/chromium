@@ -6470,16 +6470,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Pepper.InterfaceUsed" enum="PepperInterface"
-    expires_after="2025-12-28">
-  <owner>fabiansommer@chromium.org</owner>
-  <owner>dschuff@chromium.org</owner>
-  <summary>
-    The number of out-of-process plugin processes that have loaded a particular
-    PPB interface version.
-  </summary>
-</histogram>
-
 <histogram name="PeriodicBackgroundSync.Event.BatchSize" units="events"
     expires_after="2022-07-31">
   <owner>nator@chromium.org</owner>
