@@ -18,7 +18,9 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.permissions.RuntimePermissionTestUtils.RuntimePromptResponse;
 import org.chromium.chrome.browser.permissions.RuntimePermissionTestUtils.TestAndroidPermissionDelegate;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -358,7 +360,13 @@ public class RuntimePermissionTest {
     @Feature({"RuntimePermissions", "Location"})
     public void testAllowRuntimeLocationIncognito() throws Exception {
         RuntimePermissionTestUtils.setupGeolocationSystemMock();
-        mPermissionTestRule.newIncognitoTabFromMenu();
+        ChromeActivity incognitoActivity;
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            incognitoActivity = mPermissionTestRule.newIncognitoWindowFromMenu();
+        } else {
+            mPermissionTestRule.newIncognitoTabFromMenu();
+            incognitoActivity = mPermissionTestRule.getActivity();
+        }
 
         String[] requestablePermission =
                 new String[] {
@@ -369,6 +377,7 @@ public class RuntimePermissionTest {
                 new TestAndroidPermissionDelegate(
                         requestablePermission, RuntimePromptResponse.GRANT);
         RuntimePermissionTestUtils.runTest(
+                incognitoActivity,
                 mPermissionTestRule,
                 mTestAndroidPermissionDelegate,
                 GEOLOCATION_TEST,
