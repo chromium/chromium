@@ -495,6 +495,7 @@ void ContextualSearchboxHandler::ComputeAndOpenQueryUrl(
         base::DoNothing());
   }
 #endif
+  ClearFiles();
 }
 
 void ContextualSearchboxHandler::OnGetTabPageContext(
