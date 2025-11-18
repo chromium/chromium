@@ -13786,7 +13786,21 @@
                         "EnableReadabilityHeuristic",
                         "EnableReaderModeDefaultBrowserPromo",
                         "EnableReaderModeInUS",
-                        "EnableReaderModePageEligibilityForToolsMenu",
+                        "EnableReaderModePageEligibilityForToolsMenu"
+                    ]
+                }
+            ]
+        }
+    ],
+    "IOSReaderModeWithTranslate": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
                         "EnableReaderModeTranslation"
                     ]
                 }
