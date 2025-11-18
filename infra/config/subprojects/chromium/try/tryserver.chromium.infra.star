@@ -28,6 +28,7 @@ try_.builder(
     builderless = False,
     cores = 8,
     os = os.LINUX_DEFAULT,
+    execution_timeout = 6 * time.hour,
     properties = {
         "$build/chromium_3pp": {
             "platform": "linux-amd64",
