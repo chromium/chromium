@@ -5421,8 +5421,8 @@ void RenderFrameHostManager::CommitPending(
     // Only use this mechanism when there is no proxy to parent or outer
     // delegate. Otherwise we will partially duplicate SetChildRWHView work.
     delegate_->NotifySwappedRWHVChildFrameFromRenderManager(
-      static_cast<RenderWidgetHostViewChildFrame*>(new_view),
-      allow_paint_holding);
+        static_cast<RenderWidgetHostViewChildFrame*>(new_view),
+        allow_paint_holding);
   }
 
   if (render_frame_host_->is_local_root()) {

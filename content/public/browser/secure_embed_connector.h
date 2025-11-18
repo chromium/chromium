@@ -5,6 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_SECURE_EMBED_CONNECTOR_H_
 #define CONTENT_PUBLIC_BROWSER_SECURE_EMBED_CONNECTOR_H_
 
+#include "base/observer_list.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "content/common/content_export.h"
@@ -42,9 +43,25 @@ class CONTENT_EXPORT SecureEmbedConnector {
     // Requests focus in the embedder document for either the embedding element,
     // or the elements before or after it in the tab order, based on `focus_op`.
     virtual void FocusInEmbedder(FocusOperation focus_op) = 0;
+
+    // Returns the exact frame the contents is embedded in.
+    virtual RenderFrameHost* ParentFrame() = 0;
+  };
+
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnSecureEmbedAttached(RenderFrameHost* parent_frame,
+                                       WebContents* parent_web_contents,
+                                       WebContents* child_web_contents) = 0;
+    virtual void OnSecureEmbedDetached(RenderFrameHost* parent_frame,
+                                       WebContents* parent_web_contents,
+                                       WebContents* child_web_contents) = 0;
   };
 
   virtual ~SecureEmbedConnector() = default;
+
+  virtual void AddObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(Observer* observer) = 0;
 
   // Returns true if the WebContents this is owned by is configured to be
   // embedded in `web_contents`.

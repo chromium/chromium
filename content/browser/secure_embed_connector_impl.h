@@ -56,6 +56,9 @@ class SecureEmbedConnectorImpl : public SecureEmbedConnector,
   void SetDelegate(SecureEmbedConnector::Delegate* delegate) override;
   SecureEmbedConnector::Delegate* GetDelegate() override;
 
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
+
   // CrossProcessFrameConnectorBase:
   // TODO(secure-embed): Some of the methods that we override here don't need to
   // be on CrossProcessFrameConnectorBase class at all. Go through them and
@@ -133,7 +136,7 @@ class SecureEmbedConnectorImpl : public SecureEmbedConnector,
  private:
   // Forward decl for internal observer that tracks WebContents events and
   // forwards them to this class.
-  class Observer;
+  class WCObserver;
 
   // Resets the rect and the viz::LocalSurfaceId of the connector to ensure the
   // unguessable surface ID is not reused after a cross-process navigation.
@@ -152,7 +155,7 @@ class SecureEmbedConnectorImpl : public SecureEmbedConnector,
   // for GuestFrameImpl to get the RenderFrameHost from the guest WebContents.
   RenderFrameHostImpl* current_child_frame_host() const;
 
-  std::unique_ptr<Observer> observer_;
+  std::unique_ptr<WCObserver> observer_;
   raw_ptr<SecureEmbedConnector::Delegate> delegate_ = nullptr;
 
   base::WeakPtr<WebContents> embedder_web_contents_;
@@ -202,6 +205,8 @@ class SecureEmbedConnectorImpl : public SecureEmbedConnector,
   bool is_throttled_ = false;
   bool subtree_throttled_ = false;
   bool display_locked_ = false;
+
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace content

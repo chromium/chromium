@@ -98,6 +98,11 @@ PerformanceManagerTabHelper::PerformanceManagerTabHelper(
   DCHECK_EQ(1u, frame_count);
 #endif
 
+  if (content::SecureEmbedConnector* connector =
+          web_contents->GetSecureEmbedConnector()) {
+    connector->AddObserver(this);
+  }
+
   PagePropertyFlags initial_property_flags;
   if (web_contents->GetVisibility() == content::Visibility::VISIBLE) {
     initial_property_flags.Put(PagePropertyFlag::kIsVisible);
@@ -175,6 +180,11 @@ void PerformanceManagerTabHelper::TearDownAndSelfDelete() {
 
   MaybeUnsubscribeFromNotificationPermissionStatusChange(
       web_contents()->GetBrowserContext()->GetPermissionController());
+
+  if (content::SecureEmbedConnector* connector =
+          web_contents()->GetSecureEmbedConnector()) {
+    connector->RemoveObserver(this);
+  }
 
   // Unsubscribe from the associated WebContents.
   Observe(nullptr);
@@ -618,6 +628,25 @@ void PerformanceManagerTabHelper::AboutToBeDiscarded(
       PerformanceManager::GetPrimaryPageNodeForWebContents(new_contents);
   CHECK(new_page_node);
   page_node_->OnAboutToBeDiscarded(new_page_node);
+}
+
+void PerformanceManagerTabHelper::OnSecureEmbedAttached(
+    content::RenderFrameHost* parent_frame,
+    content::WebContents* parent_web_contents,
+    content::WebContents* child_web_contents) {
+  FromWebContents(parent_web_contents)
+      ->InnerWebContentsAttached(child_web_contents, parent_frame);
+}
+
+void PerformanceManagerTabHelper::OnSecureEmbedDetached(
+    content::RenderFrameHost* parent_frame,
+    content::WebContents* parent_web_contents,
+    content::WebContents* child_web_contents) {
+  auto* helper = FromWebContents(child_web_contents);
+  CHECK(helper);
+  auto* page = helper->page_node_.get();
+  CHECK(page);
+  page->ClearEmbedderFrameNode();
 }
 
 void PerformanceManagerTabHelper::BindDocumentCoordinationUnit(

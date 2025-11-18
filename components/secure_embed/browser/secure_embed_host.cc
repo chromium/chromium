@@ -30,8 +30,11 @@ SecureEmbedHost::SecureEmbedHost(content::RenderFrameHost* render_frame_host)
 SecureEmbedHost::~SecureEmbedHost() {
   --instance_count_for_testing_;
   if (content::SecureEmbedConnector* connector = GetConnector()) {
-    connector->SetDelegate(nullptr);
+    // Note: we detach delegate after changing visibility so that
+    // performance_manager doesn't get pertrurbed by us messing w/visibility
+    // of something not top-level.
     connector->OnVisibilityChanged(blink::mojom::FrameVisibility::kNotRendered);
+    connector->SetDelegate(nullptr);
   }
 }
 
@@ -43,7 +46,6 @@ void SecureEmbedHost::Create(
       base::WrapUnique(new SecureEmbedHost(render_frame_host)),
       std::move(receiver));
 }
-
 
 void SecureEmbedHost::SetSecureEmbed(
     mojo::PendingAssociatedRemote<mojom::SecureEmbed> secure_embed) {
@@ -190,6 +192,10 @@ void SecureEmbedHost::FocusInEmbedder(
   }
 
   secure_embed_->RequestFocus(mojo_focus_op);
+}
+
+content::RenderFrameHost* SecureEmbedHost::ParentFrame() {
+  return render_frame_host_;
 }
 
 content::SecureEmbedConnector* SecureEmbedHost::GetConnector() {
