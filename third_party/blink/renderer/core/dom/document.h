@@ -419,11 +419,6 @@ class CORE_EXPORT Document : public ContainerNode,
 
   void MediaQueryAffectingValueChanged(MediaValueChange change);
 
-  // SetMediaFeatureEvaluated and WasMediaFeatureEvaluated are used to prevent
-  // UKM sampling of CSS media features more than once per document.
-  void SetMediaFeatureEvaluated(int feature);
-  bool WasMediaFeatureEvaluated(int feature);
-
   using TreeScope::getElementById;
 
   bool IsInitialEmptyDocument() const { return is_initial_empty_document_; }
@@ -2846,10 +2841,6 @@ class CORE_EXPORT Document : public ContainerNode,
   // Mutable because the token is lazily-generated on demand if no token is
   // explicitly set.
   mutable std::optional<DocumentToken> token_;
-
-  // Bitfield used for tracking UKM sampling of media features such that each
-  // media feature is sampled only once per document.
-  uint64_t evaluated_media_features_ = 0;
 
   DocumentLifecycle lifecycle_;
 
