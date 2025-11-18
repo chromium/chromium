@@ -80,7 +80,7 @@
   overflow: hidden;
   padding: 0px 12px 0px 8px;
   position: relative;
-  width: 174px;
+  width: 154px;
 }
 
 .thumbnail {
@@ -106,11 +106,6 @@
   width: 100%;
 }
 
-.chip:hover .pdf-icon,
-.chip:hover cr-composebox-tab-favicon {
-  display: none;
-}
-
 .chip-overlay {
   background-color: var(--color-composebox-context-entrypoint-hover-background);
   border-radius: inherit;
@@ -125,26 +120,42 @@
 }
 
 .overlay {
+  align-items: center;
+  display: flex;
   height: 100%;
-  left: 0;
+  justify-content: center;
   opacity: 0;
   position: absolute;
+  right: 0;
   top: 0;
-  width: 100%;
+  width: 44px;
+}
+
+.gradient-protection {
+  background: linear-gradient(
+    270deg,
+    var(--color-composebox-file-carousel-remove-gradient-start) 85.29%,
+    var(--color-composebox-file-carousel-remove-gradient-end) 123.53%
+  );
+  border-radius: 0 8px 8px 0;
+  height: 44px;
+  left: -12px;
+  position: absolute;
+  top: 0;
+  width: 56px;
+  pointer-events: none;
 }
 
 .remove-button {
-  --cr-icon-button-fill-color: white;
-  --cr-icon-button-icon-size: 20px;
+  --cr-icon-button-fill-color: black;
+  --cr-icon-button-height: 24px;
+  --cr-icon-button-width: 24px;
+  --cr-icon-button-icon-size: 16px;
   --cr-icon-button-margin-start: 0;
-  background-color: var(--color-composebox-file-image-overlay);
-  border-radius: 4px;
+  background-color: var(--color-composebox-file-carousel-remove-button);
+  border-radius: 50%;
   color: var(--color-composebox-pdf-chip-icon);
-  height: 100%;
-  left: 0;
-  position: absolute;
-  top: 0;
-  width: 100%;
+  position: relative;
 }
 
 .title {
@@ -171,4 +182,20 @@
   border-radius: 50%;
   height: 16px;
   width: 16px;
+}
+
+.tabInfo {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.url {
+  color: var(--color-composebox-file-carousel-url);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

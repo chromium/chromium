@@ -278,6 +278,10 @@
   E_CPONLY(kColorComposeboxPdfChipIcon) \
   E_CPONLY(kColorComposeboxFileImageOverlay) \
   E_CPONLY(kColorComposeboxFileCarouselDivider) \
+  E_CPONLY(kColorComposeboxFileCarouselRemoveButton) \
+  E_CPONLY(kColorComposeboxFileCarouselRemoveGradientStart) \
+  E_CPONLY(kColorComposeboxFileCarouselRemoveGradientEnd) \
+  E_CPONLY(kColorComposeboxFileCarouselUrl) \
   E_CPONLY(kColorComposeboxContextEntrypointTextDisabled) \
   E_CPONLY(kColorComposeboxContextEntrypointHoverBackground) \
   E_CPONLY(kColorComposeboxLink) \

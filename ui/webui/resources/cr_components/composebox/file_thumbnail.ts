@@ -57,8 +57,16 @@ export class ComposeboxFileThumbnailElement extends CrLitElement {
     this.fire('delete-file', {uuid: this.file.uuid});
   }
 
-  get deleteFileButtonTitle(): string {
+  protected get deleteFileButtonTitle_(): string {
     return loadTimeData.getStringF('composeboxDeleteFileTitle', this.file.name);
+  }
+
+  protected get formattedUrl_(): string|null {
+    if (!this.file?.url) {
+      return null;
+    }
+    const link = new URL(this.file.url.url);
+    return (link.host + link.pathname).replace(/\/$/, '');
   }
 }
 
