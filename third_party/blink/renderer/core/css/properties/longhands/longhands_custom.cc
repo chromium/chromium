@@ -1446,6 +1446,25 @@ const CSSValue* BorderBottomStyle::CSSValueFromComputedStyleInternal(
   return CSSIdentifierValue::Create(style.BorderBottomStyle());
 }
 
+void BorderBottomWidth::ApplyInherit(StyleResolverState& state) const {
+  if (state.GetDocument().StandardizedBrowserZoomEnabled()) {
+    if (ApplyParentValueIfZoomChanged(state)) {
+      return;
+    }
+  }
+
+  // Following the resolution of CSSWG issue 11494, the computed value of
+  // border-*-width should be independent of the border-*-style.
+  // https://github.com/w3c/csswg-drafts/issues/11494#issuecomment-2675800489
+  if (RuntimeEnabledFeatures::DecoupleComputedBorderWidthFromStyleEnabled()) {
+    state.StyleBuilder().SetBorderBottomWidth(
+        state.ParentStyle()->BorderBottomWidthInternal());
+  } else {
+    state.StyleBuilder().SetBorderBottomWidth(
+        state.ParentStyle()->BorderBottomWidth());
+  }
+}
+
 const CSSValue* BorderBottomWidth::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
@@ -1722,6 +1741,25 @@ const CSSValue* BorderLeftStyle::CSSValueFromComputedStyleInternal(
   return CSSIdentifierValue::Create(style.BorderLeftStyle());
 }
 
+void BorderLeftWidth::ApplyInherit(StyleResolverState& state) const {
+  if (state.GetDocument().StandardizedBrowserZoomEnabled()) {
+    if (ApplyParentValueIfZoomChanged(state)) {
+      return;
+    }
+  }
+
+  // Following the resolution of CSSWG issue 11494, the computed value of
+  // border-*-width should be independent of the border-*-style.
+  // https://github.com/w3c/csswg-drafts/issues/11494#issuecomment-2675800489
+  if (RuntimeEnabledFeatures::DecoupleComputedBorderWidthFromStyleEnabled()) {
+    state.StyleBuilder().SetBorderLeftWidth(
+        state.ParentStyle()->BorderLeftWidthInternal());
+  } else {
+    state.StyleBuilder().SetBorderLeftWidth(
+        state.ParentStyle()->BorderLeftWidth());
+  }
+}
+
 const CSSValue* BorderLeftWidth::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
@@ -1808,6 +1846,25 @@ const CSSValue* BorderRightStyle::CSSValueFromComputedStyleInternal(
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   return CSSIdentifierValue::Create(style.BorderRightStyle());
+}
+
+void BorderRightWidth::ApplyInherit(StyleResolverState& state) const {
+  if (state.GetDocument().StandardizedBrowserZoomEnabled()) {
+    if (ApplyParentValueIfZoomChanged(state)) {
+      return;
+    }
+  }
+
+  // Following the resolution of CSSWG issue 11494, the computed value of
+  // border-*-width should be independent of the border-*-style.
+  // https://github.com/w3c/csswg-drafts/issues/11494#issuecomment-2675800489
+  if (RuntimeEnabledFeatures::DecoupleComputedBorderWidthFromStyleEnabled()) {
+    state.StyleBuilder().SetBorderRightWidth(
+        state.ParentStyle()->BorderRightWidthInternal());
+  } else {
+    state.StyleBuilder().SetBorderRightWidth(
+        state.ParentStyle()->BorderRightWidth());
+  }
 }
 
 const CSSValue* BorderRightWidth::ParseSingleValue(
@@ -1942,6 +1999,25 @@ const CSSValue* BorderTopStyle::CSSValueFromComputedStyleInternal(
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   return CSSIdentifierValue::Create(style.BorderTopStyle());
+}
+
+void BorderTopWidth::ApplyInherit(StyleResolverState& state) const {
+  if (state.GetDocument().StandardizedBrowserZoomEnabled()) {
+    if (ApplyParentValueIfZoomChanged(state)) {
+      return;
+    }
+  }
+
+  // Following the resolution of CSSWG issue 11494, the computed value of
+  // border-*-width should be independent of the border-*-style.
+  // https://github.com/w3c/csswg-drafts/issues/11494#issuecomment-2675800489
+  if (RuntimeEnabledFeatures::DecoupleComputedBorderWidthFromStyleEnabled()) {
+    state.StyleBuilder().SetBorderTopWidth(
+        state.ParentStyle()->BorderTopWidthInternal());
+  } else {
+    state.StyleBuilder().SetBorderTopWidth(
+        state.ParentStyle()->BorderTopWidth());
+  }
 }
 
 const CSSValue* BorderTopWidth::ParseSingleValue(
@@ -2816,6 +2892,19 @@ const CSSValue* RowRuleStyle::CSSValueFromComputedStyleInternal(
     CSSValuePhase value_phase) const {
   return ComputedStyleUtils::ValueForGapDecorationStyleDataList(
       style.RowRuleStyle(), style, value_phase);
+}
+
+void ColumnRuleWidth::ApplyInherit(StyleResolverState& state) const {
+  // Following the resolution of CSSWG issue 11494, the computed value of
+  // column-rule-width should be independent of the column-rule-style.
+  // https://github.com/w3c/csswg-drafts/issues/11494#issuecomment-2675800489
+  if (RuntimeEnabledFeatures::DecoupleComputedBorderWidthFromStyleEnabled()) {
+    state.StyleBuilder().SetColumnRuleWidth(
+        state.ParentStyle()->ColumnRuleWidthInternal());
+  } else {
+    state.StyleBuilder().SetColumnRuleWidth(
+        state.ParentStyle()->ColumnRuleWidth());
+  }
 }
 
 const CSSValue* ColumnRuleWidth::ParseSingleValue(
@@ -7627,6 +7716,18 @@ void OutlineStyle::ApplyValue(StyleResolverState& state,
   builder.SetOutlineStyleIsAuto(
       static_cast<bool>(identifier_value.ConvertTo<OutlineIsAuto>()));
   builder.SetOutlineStyle(identifier_value.ConvertTo<EBorderStyle>());
+}
+
+void OutlineWidth::ApplyInherit(StyleResolverState& state) const {
+  // Following the resolution of CSSWG issue 11494, the computed value of
+  // outline-width should be independent of the outline-style.
+  // https://github.com/w3c/csswg-drafts/issues/11494#issuecomment-2675800489
+  if (RuntimeEnabledFeatures::DecoupleComputedBorderWidthFromStyleEnabled()) {
+    state.StyleBuilder().SetOutlineWidth(
+        state.ParentStyle()->OutlineWidthInternal());
+  } else {
+    state.StyleBuilder().SetOutlineWidth(state.ParentStyle()->OutlineWidth());
+  }
 }
 
 const CSSValue* OutlineWidth::ParseSingleValue(

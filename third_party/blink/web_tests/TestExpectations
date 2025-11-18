@@ -3201,8 +3201,6 @@ crbug.com/418804914 virtual/close-watcher/external/wpt/close-watcher/iframes/dia
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/460803526 external/wpt/css/css-grid/subgrid/independent-formatting-context-fieldset.html [ Failure ]
-crbug.com/460204587 external/wpt/css/CSS2/borders/border-width-011.xht [ Failure ]
-crbug.com/460204587 external/wpt/css/CSS2/borders/border-width-012.xht [ Failure ]
 crbug.com/460207415 [ Android ] external/wpt/webdriver/tests/bidi/emulation/set_locale_override/contexts.py [ Failure ]
 crbug.com/458814536 external/wpt/webdriver/tests/bidi/network/get_data/data_type.py [ Failure ]
 crbug.com/453781784 external/wpt/css/css-text/text-transform/text-transform-fullwidth-001.xht [ Failure ]

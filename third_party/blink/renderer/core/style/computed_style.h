@@ -293,6 +293,7 @@ class ComputedStyle final : public ComputedStyleBase {
   friend class css_longhand::ColumnRuleWidth;
   friend class css_longhand::OutlineWidth;
   friend class ComputedStylePropertyMap;
+  friend class LengthPropertyFunctions;
   // Access to private Appearance() and HasAppearance().
   friend class LayoutTheme;
   friend class StyleAdjuster;
