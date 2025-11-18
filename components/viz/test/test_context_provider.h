@@ -58,7 +58,6 @@ class TestContextProvider
   explicit TestContextProvider(
       std::unique_ptr<TestContextSupport> support,
       std::unique_ptr<TestGLES2Interface> gl,
-      std::unique_ptr<gpu::raster::RasterInterface> raster,
       scoped_refptr<gpu::TestSharedImageInterface> sii,
       bool support_locking);
 
@@ -113,7 +112,6 @@ class TestContextProvider
 
   // Used for GLES2 contexts.
   std::unique_ptr<TestGLES2Interface> context_gl_;
-  std::unique_ptr<gpu::raster::RasterInterface> raster_interface_gles_;
 
   // Used for raster contexts.
   std::unique_ptr<TestRasterInterface> raster_context_;

@@ -132,7 +132,6 @@ scoped_refptr<TestContextProvider> TestContextProvider::CreateGLES(
       std::make_unique<TestContextSupport>(),
       std::make_unique<TestGLES2InterfaceForContextProvider>(
           std::move(additional_extensions)),
-      /*raster=*/nullptr,
       /*sii=*/nullptr, support_locking);
 }
 
@@ -209,12 +208,10 @@ TestContextProvider::TestContextProvider(
 TestContextProvider::TestContextProvider(
     std::unique_ptr<TestContextSupport> support,
     std::unique_ptr<TestGLES2Interface> gl,
-    std::unique_ptr<gpu::raster::RasterInterface> raster,
     scoped_refptr<gpu::TestSharedImageInterface> sii,
     bool support_locking)
     : support_(std::move(support)),
       context_gl_(std::move(gl)),
-      raster_interface_gles_(std::move(raster)),
       support_locking_(support_locking) {
   DCHECK(main_thread_checker_.CalledOnValidThread());
   DCHECK(context_gl_);
@@ -299,7 +296,7 @@ gpu::gles2::GLES2Interface* TestContextProvider::ContextGL() {
 }
 
 gpu::raster::RasterInterface* TestContextProvider::RasterInterface() {
-  return raster_context_ ? raster_context_.get() : raster_interface_gles_.get();
+  return raster_context_.get();
 }
 
 gpu::ContextSupport* TestContextProvider::ContextSupport() {
