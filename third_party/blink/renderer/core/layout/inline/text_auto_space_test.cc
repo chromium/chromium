@@ -18,7 +18,7 @@ namespace {
 using testing::ElementsAre;
 using testing::ElementsAreArray;
 
-class TextAutoSpaceTest : public RenderingTest, ScopedCSSTextAutoSpaceForTest {
+class TextAutoSpaceTest : public RenderingTest {
  public:
   struct AutoSpaceCallback : public TextAutoSpace::Callback {
     void DidApply(base::span<const OffsetWithSpacing> applied_offsets) final {
@@ -29,8 +29,6 @@ class TextAutoSpaceTest : public RenderingTest, ScopedCSSTextAutoSpaceForTest {
 
     Vector<wtf_size_t> offsets;
   };
-
-  explicit TextAutoSpaceTest() : ScopedCSSTextAutoSpaceForTest(true) {}
 
   LayoutBlockFlow* PreparePageLayoutBlock(String html,
                                           String container_css = String()) {

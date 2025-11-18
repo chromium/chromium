@@ -1617,7 +1617,6 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
     case CSSPropertyID::kRubyPosition:
       return value_id == CSSValueID::kOver || value_id == CSSValueID::kUnder;
     case CSSPropertyID::kTextAutospace:
-      DCHECK(RuntimeEnabledFeatures::CSSTextAutoSpaceEnabled());
       return value_id == CSSValueID::kNormal ||
              value_id == CSSValueID::kNoAutospace;
     case CSSPropertyID::kTextSpacingTrim:
