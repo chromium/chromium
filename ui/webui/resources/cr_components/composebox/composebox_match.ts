@@ -64,7 +64,8 @@ export class ComposeboxMatchElement extends CrLitElement {
 
   override connectedCallback() {
     super.connectedCallback();
-    this.addEventListener('click', (event) => this.onMatchClick_(event));
+    // Use mousedown to avoid clicks being swallowed by focusin.
+    this.addEventListener('mousedown', (event) => this.onMouseDown_(event));
     this.addEventListener('focusin', () => this.onMatchFocusin_());
   }
 
@@ -86,7 +87,7 @@ export class ComposeboxMatchElement extends CrLitElement {
     });
   }
 
-  private onMatchClick_(e: MouseEvent) {
+  private onMouseDown_(e: MouseEvent) {
     if (e.button > 1) {
       // Only handle main (generally left) and middle button presses.
       return;
