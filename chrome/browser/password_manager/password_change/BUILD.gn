@@ -24,6 +24,8 @@ source_set("password_change") {
     "password_change_hats.h",
     "password_change_submission_verifier.cc",
     "password_change_submission_verifier.h",
+    "typing_helper.cc",
+    "typing_helper.h",
   ]
 
   deps = [
