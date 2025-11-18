@@ -2355,7 +2355,7 @@
             ]
         }
     ],
-    "AutofillAndroidDesktopKeyboardAccessoryRevamp": [
+    "AutofillAndroidKeyboardAccessoryDynamicPositioning": [
         {
             "platforms": [
                 "android"
@@ -2364,22 +2364,9 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "AutofillAndroidDesktopKeyboardAccessoryRevamp"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AutofillAndroidDesktopSuppressAccessoryOnEmpty": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillAndroidDesktopSuppressAccessoryOnEmpty"
+                        "AutofillAndroidDesktopKeyboardAccessoryRevamp",
+                        "AutofillAndroidDesktopSuppressAccessoryOnEmpty",
+                        "AutofillAndroidKeyboardAccessoryDynamicPositioning"
                     ]
                 }
             ]

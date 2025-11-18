@@ -341,9 +341,7 @@ BASE_FEATURE(kAutofillAndPasswordsInSameSurface,
 // TODO(crbug.com/438125774): Remove when launched.
 BASE_FEATURE(kAutofillAndroidDesktopKeyboardAccessoryRevamp,
              base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_ANDROID)
 // If enabled, on Android desktop, Autofill keyboard accessory will be
 // suppressed when there are no autofill suggestions.
 BASE_FEATURE(kAutofillAndroidDesktopSuppressAccessoryOnEmpty,
@@ -361,6 +359,16 @@ BASE_FEATURE(kAutofillAndroidDesktopSuppressAccessoryOnEmpty,
 // `kAutofillAndroidDisableSuggestionsOnJSFocus`
 BASE_FEATURE(kAutofillAndroidDisableSuggestionsOnJSFocus,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_ANDROID)
+// If enabled, on Android, the Autofill keyboard accessory will not be
+// displayed attached to the keyboard but will be placed below or above the
+// focused field. It works only for large form factor devices like tablets or
+// desktops.
+// TODO(crbug.com/438125774): Remove when launched.
+BASE_FEATURE(kAutofillAndroidKeyboardAccessoryDynamicPositioning,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // When enabled, the placeholder is not considered a label fallback on the
 // renderer side anymore. Instead, local heuristic will match regexes against

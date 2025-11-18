@@ -110,6 +110,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &autofill::features::kAndroidAutofillSupportForHttpAuth,
     &autofill::features::kAutofillAndroidDesktopKeyboardAccessoryRevamp,
     &autofill::features::kAutofillAndroidDesktopSuppressAccessoryOnEmpty,
+    &autofill::features::kAutofillAndroidKeyboardAccessoryDynamicPositioning,
     &autofill::features::kAutofillDeepLinkAutofillOptions,
     &autofill::features::kAutofillEnableBuyNowPayLater,
     &autofill::features::kAutofillEnableCardBenefitsForAmericanExpress,

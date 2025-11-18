@@ -261,6 +261,8 @@ public abstract class ChromeFeatureList {
             "AutofillAndroidDesktopKeyboardAccessoryRevamp";
     public static final String AUTOFILL_ANDROID_DESKTOP_SUPPRESS_ACCESSORY_ON_EMPTY =
             "AutofillAndroidDesktopSuppressAccessoryOnEmpty";
+    public static final String AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING =
+            "AutofillAndroidKeyboardAccessoryDynamicPositioning";
     public static final String AUTOFILL_DEEP_LINK_AUTOFILL_OPTIONS =
             "AutofillDeepLinkAutofillOptions";
     public static final String AUTOFILL_ENABLE_BUY_NOW_PAY_LATER = "AutofillEnableBuyNowPayLater";
