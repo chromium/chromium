@@ -2713,24 +2713,6 @@ TEST_F(ReadAnythingAppControllerTest,
 }
 
 TEST_F(ReadAnythingAppControllerTest,
-       GetCurrentText_SuperscriptCombinedWithCurrentSegment) {
-  std::u16string sentence1 = u"And I am almost there.";
-  std::u16string sentence2 = u"2";
-  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
-  ui::AXNodeData static_text2 = test::SuperscriptNode(kId2, sentence2);
-
-  SendUpdateAndDistillNodes({std::move(static_text1), std::move(static_text2)});
-
-  std::vector<ReadAloudTextSegment> next_segments = GetCurrentTextSegments();
-
-  ExpectNodesMapToEntireText(next_segments, {kId1, kId2},
-                             {sentence1, sentence2});
-
-  // Nodes are empty at the end of the new tree.
-  MoveToNextAndAssertEmpty();
-}
-
-TEST_F(ReadAnythingAppControllerTest,
        GetCurrentText_SuperscriptWithBracketsCombinedWithCurrentSegment) {
   std::u16string sentence1 = u"And I am almost there.";
   std::u16string sentence2 = u"[2]";
@@ -3063,6 +3045,24 @@ class ReadAnythingAppControllerV8SegmentationTest
         {features::kReadAnythingReadAloudTSTextSegmentation});
   }
 };
+
+TEST_F(ReadAnythingAppControllerV8SegmentationTest,
+       GetCurrentText_SuperscriptCombinedWithCurrentSegment) {
+  std::u16string sentence1 = u"And I am almost there.";
+  std::u16string sentence2 = u"2";
+  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
+  ui::AXNodeData static_text2 = test::SuperscriptNode(kId2, sentence2);
+
+  SendUpdateAndDistillNodes({std::move(static_text1), std::move(static_text2)});
+
+  std::vector<ReadAloudTextSegment> next_segments = GetCurrentTextSegments();
+
+  ExpectNodesMapToEntireText(next_segments, {kId1, kId2},
+                             {sentence1, sentence2});
+
+  // Nodes are empty at the end of the new tree.
+  MoveToNextAndAssertEmpty();
+}
 
 TEST_F(ReadAnythingAppControllerV8SegmentationTest,
        GetCurrentText_IncludesListMarkers) {

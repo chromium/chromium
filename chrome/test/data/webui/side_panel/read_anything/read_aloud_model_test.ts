@@ -28,6 +28,27 @@ suite('ReadAloudModel', () => {
     assertEquals(sentence, node.getText().trim());
   }
 
+  // Creates a linked citation intended to mimic citations in Wikipedia and
+  // other articles. Of the format:
+  // <sup><a><span>[</span>text content<span>]</span></a></sup>
+  function createLinkedCitationSuperscript(text: string): HTMLElement {
+    const superscript = document.createElement('sup');
+    const link = document.createElement('a');
+    const openingBracketSpan = document.createElement('span');
+    const textSpan = document.createTextNode(text);
+    const closingBracketSpan = document.createElement('span');
+
+    openingBracketSpan.textContent = '[';
+    closingBracketSpan.textContent = ']';
+
+    link.appendChild(openingBracketSpan);
+    link.appendChild(textSpan);
+    link.appendChild(closingBracketSpan);
+
+    superscript.appendChild(link);
+    return superscript;
+  }
+
   setup(() => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -1089,6 +1110,101 @@ suite('ReadAloudModel', () => {
         // "teensatiricalcrime film"
         assertEquals(
             'teen satirical crime film',
+            getReadAloudModel().getCurrentTextContent().trim());
+
+        getReadAloudModel().moveSpeechForward();
+        assertTextEmpty();
+      });
+
+  test(
+      'getCurrentTextSegments superscript combined with current segment',
+      async () => {
+        const div = document.createElement('div');
+        const sentence1 = document.createElement('b');
+        sentence1.textContent = 'And I am almost there.';
+
+        const sentence2 = document.createElement('sup');
+        sentence2.textContent = '2';
+
+        div.appendChild(sentence1);
+        div.appendChild(sentence2);
+        document.body.appendChild(div);
+
+        await microtasksFinished();
+        getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+        assertEquals(
+            sentence1.textContent + sentence2.textContent,
+            getReadAloudModel().getCurrentTextContent().trim());
+
+        getReadAloudModel().moveSpeechForward();
+        assertTextEmpty();
+      });
+
+  test(
+      'getCurrentTextSegments superscript combined with preceding sentence instead of succeeding sentence',
+      async () => {
+        // Create a container element to hold the simplified structure
+        const simplifiedContainer = document.createElement('p');
+
+        // Text before the citation
+        simplifiedContainer.appendChild(
+            document.createTextNode('I\'m coming!'));
+
+        // <sup><a><span>[</span>b<span>]</span></a></sup>
+        const citation = createLinkedCitationSuperscript('b');
+        simplifiedContainer.appendChild(citation);
+
+        // Text after the citation.
+        simplifiedContainer.appendChild(
+            document.createTextNode(' Wait for me.'));
+
+        document.body.appendChild(simplifiedContainer);
+
+        await microtasksFinished();
+        getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+        assertEquals(
+            'I\'m coming![b]',
+            getReadAloudModel().getCurrentTextContent().trim());
+        getReadAloudModel().moveSpeechForward();
+        assertEquals(
+            'Wait for me.', getReadAloudModel().getCurrentTextContent().trim());
+
+        getReadAloudModel().moveSpeechForward();
+        assertTextEmpty();
+      });
+
+  test(
+      'getCurrentTextSegments superscript combined with preceding sentence with multiple superscripts',
+      async () => {
+        // Create a container element to hold the simplified structure
+        const simplifiedContainer = document.createElement('p');
+
+        // Text before the citation
+        simplifiedContainer.appendChild(
+            document.createTextNode('Wait for me, I\'m coming.'));
+
+        // <sup><a><span>[</span>7<span>]</span></a></sup>
+        const citation7 = createLinkedCitationSuperscript('7');
+        simplifiedContainer.appendChild(citation7);
+
+        // <sup><a><span>[</span>8<span>]</span></a></sup>
+        const citation8 = createLinkedCitationSuperscript('8');
+        simplifiedContainer.appendChild(citation8);
+
+        // Text after the citation.
+        simplifiedContainer.appendChild(
+            document.createTextNode(' Show the way so we can see.'));
+
+        document.body.appendChild(simplifiedContainer);
+
+        await microtasksFinished();
+        getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+        assertEquals(
+            'Wait for me, I\'m coming.[7][8]',
+            getReadAloudModel().getCurrentTextContent().trim());
+        getReadAloudModel().moveSpeechForward();
+        assertEquals(
+            'Show the way so we can see.',
             getReadAloudModel().getCurrentTextContent().trim());
 
         getReadAloudModel().moveSpeechForward();

@@ -96,6 +96,7 @@ class AxReadAloudNodeImpl extends AxReadAloudNode {
 // Represents a node used by read aloud that's based entirely on the DOM.
 export class DomReadAloudNode extends ReadAloudNode {
   nearestBlockAncestor: Node|undefined = undefined;
+  private isSuperscript_?: boolean;
 
   protected constructor(protected node: Node) {
     super();
@@ -124,6 +125,28 @@ export class DomReadAloudNode extends ReadAloudNode {
   refresh(newNode: Node) {
     this.node = newNode;
     this.nearestBlockAncestor = this.getNearestBlockAncestor_();
+  }
+
+  // Returns true if the DOM node associated with this ReadAloudNode is
+  // part of a superscript (i.e., inside a <sup> tag).
+  isSuperscript(): boolean {
+    // Don't recalculate whether this node is a superscript if we've already
+    // checked.
+    if (this.isSuperscript_ !== undefined) {
+      return this.isSuperscript_;
+    }
+
+    const domNode = this.node;
+    if (!domNode) {
+      this.isSuperscript_ = false;  // Cache the result
+      return false;
+    }
+    const element = domNode.nodeType === Node.ELEMENT_NODE ?
+        domNode as Element :
+        domNode.parentElement;
+
+    this.isSuperscript_ = !!element?.closest('sup');
+    return this.isSuperscript_;
   }
 
   // The nearest ancestor to the DOM node associated with this ReadAloudNode
