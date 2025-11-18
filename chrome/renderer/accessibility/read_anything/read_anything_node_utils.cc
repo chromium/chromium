@@ -233,6 +233,27 @@ std::u16string GetTextContent(const ui::AXNode* ax_node,
   return ax_node->GetTextContentUTF16();
 }
 
+std::u16string GetPrefixText(const ui::AXNode* ax_node,
+                             bool is_pdf,
+                             bool is_docs) {
+  auto original_text = GetTextContent(ax_node, is_pdf, is_docs);
+  auto* node = ax_node->GetPreviousUnignoredInTreeOrder();
+  auto prefix_text = GetTextContent(node, is_pdf, is_docs);
+  // TODO(crbug.com/c/459160459): Update this logic for use with Readability
+  // distillation.
+  while (prefix_text.size() < kMinPrefixLength ||
+         prefix_text == original_text || IsIgnored(node, is_pdf)) {
+    auto* previous = node->GetPreviousUnignoredInTreeOrder();
+    if (!previous) {
+      break;
+    }
+    node = previous;
+    prefix_text = GetTextContent(node, is_pdf, is_docs);
+  }
+
+  return prefix_text;
+}
+
 std::u16string GetNameAttributeText(const ui::AXNode* ax_node) {
   DCHECK(ax_node);
   std::u16string node_text;

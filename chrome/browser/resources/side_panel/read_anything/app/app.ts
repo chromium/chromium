@@ -234,7 +234,8 @@ export class AppElement extends AppElementBase implements SpeechListener,
     };
 
     chrome.readingMode.updateSelection = () => {
-      this.selectionController_.updateSelection(this.getSelection());
+      this.selectionController_.updateSelection(
+          this.getSelection(), this.$.container);
     };
 
     chrome.readingMode.updateVoicePackStatus =

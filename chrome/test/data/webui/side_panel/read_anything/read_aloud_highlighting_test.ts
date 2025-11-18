@@ -256,7 +256,7 @@ suite('ReadAloudHighlight', () => {
           },
           axTree);
       chrome.readingMode.setContentForTesting(selectedTree, leafIds);
-      selectionController.updateSelection(app.getSelection());
+      selectionController.updateSelection(app.getSelection(), app.$.container);
       emitEvent(app, ToolbarEvent.PLAY_PAUSE);
       mockTimer.tick(playFromSelectionTimeout);
       mockTimer.uninstall();

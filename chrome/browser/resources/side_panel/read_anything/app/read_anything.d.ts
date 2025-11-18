@@ -144,6 +144,9 @@ declare namespace chrome {
     // the selected text.
     function getTextContent(nodeId: number): string;
 
+    // Returns the text content that precedes the provided node id.
+    function getPrefixText(nodeId: number): string;
+
     // Returns the text direction of the AXNode for the provided AXNodeID.
     function getTextDirection(nodeId: number): string;
 

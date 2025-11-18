@@ -1161,6 +1161,7 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("getHtmlTag", &ReadAnythingAppController::GetHtmlTag)
       .SetMethod("getLanguage", &ReadAnythingAppController::GetLanguage)
       .SetMethod("getTextContent", &ReadAnythingAppController::GetTextContent)
+      .SetMethod("getPrefixText", &ReadAnythingAppController::GetPrefixText)
       .SetMethod("getUrl", &ReadAnythingAppController::GetUrl)
       .SetMethod("getAltText", &ReadAnythingAppController::GetAltText)
       .SetMethod("shouldBold", &ReadAnythingAppController::ShouldBold)
@@ -1502,6 +1503,14 @@ std::u16string ReadAnythingAppController::GetTextContent(
   CHECK(ax_node);
 
   return a11y::GetTextContent(ax_node, model_.is_pdf(), IsGoogleDocs());
+}
+
+std::u16string ReadAnythingAppController::GetPrefixText(
+    ui::AXNodeID ax_node_id) const {
+  ui::AXNode* ax_node = model_.GetAXNode(ax_node_id);
+  CHECK(ax_node);
+
+  return a11y::GetPrefixText(ax_node, model_.is_pdf(), IsGoogleDocs());
 }
 
 std::string ReadAnythingAppController::GetTextDirection(

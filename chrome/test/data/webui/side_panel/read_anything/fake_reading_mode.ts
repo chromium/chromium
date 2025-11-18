@@ -134,6 +134,11 @@ export class FakeReadingMode {
     return 'super awesome text content' + nodeId;
   }
 
+  // Returns the text content that precedes the provided node id.
+  getPrefixText(nodeId: number): string {
+    return 'super awesome text content' + nodeId;
+  }
+
   // Returns the text direction of the AXNode for the provided AXNodeID.
   getTextDirection(_nodeId: number): string {
     return 'ltr';

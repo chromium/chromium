@@ -214,7 +214,7 @@ suite('Speech', () => {
           baseTree);
       chrome.readingMode.setContentForTesting(selectedTree, leafIds);
       const selectionController = SelectionController.getInstance();
-      selectionController.updateSelection(app.getSelection());
+      selectionController.updateSelection(app.getSelection(), app.$.container);
       selectionController.onSelectionChange(app.getSelection());
     }
 
