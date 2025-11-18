@@ -12,6 +12,9 @@
 namespace content {
 
 void WebContentsImpl::Resize(const gfx::Rect& new_bounds) {
+  if (secure_embed_connector_) {
+    return;
+  }
   NSView* view = GetNativeView().GetNativeNSView();
   NSRect old_wcv_frame = view.frame;
   CGFloat new_x = old_wcv_frame.origin.x;

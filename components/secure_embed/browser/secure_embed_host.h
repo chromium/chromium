@@ -46,7 +46,8 @@ class COMPONENT_EXPORT(SECURE_EMBED) SecureEmbedHost
       mojo::PendingAssociatedRemote<mojom::SecureEmbed> secure_embed) override;
   void Attach(int64_t content_id) override;
   void SynchronizeVisualProperties(
-      const blink::FrameVisualProperties& visual_properties) override;
+      const blink::FrameVisualProperties& visual_properties,
+      bool is_visible) override;
   void DispatchKeyboardEvent(
       std::unique_ptr<blink::WebCoalescedInputEvent> key_event) override;
   void SetFocus(bool focused, blink::mojom::FocusType focus_type) override;

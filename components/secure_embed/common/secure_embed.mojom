@@ -38,7 +38,11 @@ interface SecureEmbedHost {
 
   Attach(int64 content_id);
 
-  SynchronizeVisualProperties(blink.mojom.FrameVisualProperties visual_properties);
+  // `is_visible` here reports visibility with respect to visibility: CSS
+  // property; the embed may also be hidden by display:none in which case
+  // this pipe will be disconnected.
+  SynchronizeVisualProperties(blink.mojom.FrameVisualProperties visual_properties,
+                              bool is_visible);
 
   // Asks for a keyboard event delivered to the plugin to be forwarded to
   // the embedded frame.

@@ -9,6 +9,7 @@
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
+#include "third_party/blink/public/mojom/frame/lifecycle.mojom.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -61,6 +62,10 @@ class CONTENT_EXPORT SecureEmbedConnector {
   // Called by the embedder to synchronize visual properties with the guest.
   virtual void OnSynchronizeVisualProperties(
       const blink::FrameVisualProperties& visual_properties) = 0;
+
+  // Called by the embedder to report the content being hidden or shown.
+  virtual void OnVisibilityChanged(
+      blink::mojom::FrameVisibility visibility) = 0;
 
   // Called by the embedder to forwards a single keyboard event to the
   // embedded frame.

@@ -457,19 +457,17 @@ void SecureEmbedConnectorImpl::OnVisibilityChanged(
 
   current_child_frame_host()->VisibilityChanged(visibility_);
 
-  // TODO(secure-embed): Needs finished.
-
-  // If there is an inner WebContents, it should be notified of the change in
-  // the visibility. The Show/Hide methods will not be called if an inner
-  // WebContents exists since the corresponding WebContents will itself call
-  // Show/Hide on all the RenderWidgetHostViews (including this) one.
-  // if (view_->host()
-  //        ->frame_tree()
-  //        ->delegate()
-  //        ->OnRenderFrameProxyVisibilityChanged(frame_proxy_in_parent_renderer_,
-  //                                              visibility_)) {
-  //  return;
-  //}
+  switch (visibility) {
+    case blink::mojom::FrameVisibility::kRenderedInViewport:
+      guest_web_contents_->WasShown();
+      break;
+    case blink::mojom::FrameVisibility::kNotRendered:
+      guest_web_contents_->WasHidden();
+      break;
+    case blink::mojom::FrameVisibility::kRenderedOutOfViewport:
+      guest_web_contents_->WasOccluded();
+      break;
+  }
 
   if (visible && !view_->host()->frame_tree()->IsHidden()) {
     view_->Show();

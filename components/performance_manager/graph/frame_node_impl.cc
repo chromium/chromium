@@ -521,9 +521,10 @@ void FrameNodeImpl::SetViewportIntersection(
   // The outermost main frame or embedder is always fully intersecting with the
   // viewport, so it is not tracked.
   if (!parent_or_outer_document_or_embedder()) {
-    mojo::ReportBadMessage(
-        "The viewport intersection is never sent for the outermost main "
-        "frame.");
+    // TODO(secure-embed): Fix this properly.
+    // mojo::ReportBadMessage(
+    //     "The viewport intersection is never sent for the outermost main "
+    //     "frame.");
     return;
   }
 

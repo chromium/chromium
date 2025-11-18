@@ -222,7 +222,7 @@ void SecureEmbedWebPlugin::SendVisualProperties() {
   viz::SurfaceId surface_id(frame_sink_id_, local_surface_id);
   DCHECK(surface_id.is_valid());
   layer_->SetSurfaceId(surface_id, cc::DeadlinePolicy::UseDefaultDeadline());
-  host_->SynchronizeVisualProperties(visual_properties);
+  host_->SynchronizeVisualProperties(visual_properties, last_is_visible_);
   container_->ScheduleAnimation();
 }
 

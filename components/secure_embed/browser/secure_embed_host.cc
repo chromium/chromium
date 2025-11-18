@@ -31,6 +31,7 @@ SecureEmbedHost::~SecureEmbedHost() {
   --instance_count_for_testing_;
   if (content::SecureEmbedConnector* connector = GetConnector()) {
     connector->SetDelegate(nullptr);
+    connector->OnVisibilityChanged(blink::mojom::FrameVisibility::kNotRendered);
   }
 }
 
@@ -102,8 +103,13 @@ void SecureEmbedHost::Attach(int64_t content_id) {
 }
 
 void SecureEmbedHost::SynchronizeVisualProperties(
-    const blink::FrameVisualProperties& visual_properties) {
+    const blink::FrameVisualProperties& visual_properties,
+    bool is_visible) {
   if (content::SecureEmbedConnector* connector = GetConnector()) {
+    // TODO(secure-embed): We need to figure out when we're out of viewport.
+    connector->OnVisibilityChanged(
+        is_visible ? blink::mojom::FrameVisibility::kRenderedInViewport
+                   : blink::mojom::FrameVisibility::kNotRendered);
     connector->OnSynchronizeVisualProperties(visual_properties);
   }
 }
