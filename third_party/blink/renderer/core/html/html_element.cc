@@ -325,13 +325,14 @@ void HTMLElement::ApplyBorderAttributeToStyle(
 }
 
 bool HTMLElement::IsPresentationAttribute(const QualifiedName& name) const {
-  if (name == html_names::kAlignAttr ||
+  if (name == html_names::kAlignAttr || name == html_names::kAnchorAttr ||
       name == html_names::kContenteditableAttr ||
       name == html_names::kHiddenAttr || name == html_names::kLangAttr ||
       name.Matches(xml_names::kLangAttr) ||
       name == html_names::kDraggableAttr || name == html_names::kDirAttr ||
-      name == html_names::kInertAttr)
+      name == html_names::kInertAttr) {
     return true;
+  }
   return Element::IsPresentationAttribute(name);
 }
 
@@ -360,6 +361,11 @@ void HTMLElement::CollectStyleForPresentationAttribute(
     } else {
       AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kTextAlign,
                                               value);
+    }
+  } else if (name == html_names::kAnchorAttr) {
+    if (RuntimeEnabledFeatures::HTMLAnchorAttributeEnabled()) {
+      AddPropertyToPresentationAttributeStyle(
+          style, CSSPropertyID::kPositionAnchor, CSSValueID::kAuto);
     }
   } else if (name == html_names::kContenteditableAttr) {
     AtomicString lower_value = value.LowerASCII();
