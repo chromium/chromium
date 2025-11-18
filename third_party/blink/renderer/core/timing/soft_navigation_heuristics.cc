@@ -35,9 +35,6 @@ namespace blink {
 
 namespace {
 
-BASE_FEATURE(kShutdownSoftNavigationContextOnDetach,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 const char kPageLoadInternalSoftNavigationOutcome[] =
     "PageLoad.Internal.SoftNavigationOutcome";
 
@@ -264,9 +261,7 @@ void SoftNavigationHeuristics::Shutdown() {
   const auto viewport_area = CalculateViewportArea();
   const auto required_paint_area = CalculateRequiredPaintArea();
   for (const auto& context : potential_soft_navigations_) {
-    if (base::FeatureList::IsEnabled(kShutdownSoftNavigationContextOnDetach)) {
-      context->Shutdown();
-    }
+    context->Shutdown();
     OnSoftNavigationContextWasExhausted(*context.Get(), viewport_area,
                                         required_paint_area);
   }
