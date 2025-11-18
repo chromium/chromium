@@ -508,11 +508,6 @@ search-animated-glow {
   margin-bottom: 10px;
 }
 
-:host([ntp-realbox-next-enabled]) contextual-entrypoint-and-carousel::part(context-menu-entrypoint-icon) {
-  --cr-icon-button-icon-size: 24px;
-  --cr-icon-button-size: 36px;
-}
-
 :host([searchbox-layout-mode="Compact"])
     contextual-entrypoint-and-carousel::part(context-menu-entrypoint-icon) {
   position: absolute;
@@ -669,8 +664,13 @@ contextual-entrypoint-and-carousel::part(voice-icon) {
 }
 
 :host([ntp-realbox-next-enabled]) contextual-entrypoint-and-carousel::part(context-menu-entrypoint-icon) {
-  --cr-icon-button-icon-size: 20px;
+  --cr-icon-button-icon-size: 24px;
   --cr-icon-button-margin-start: 2px;
+  --cr-icon-button-size: 36px;
+}
+
+:host([ntp-realbox-next-enabled][searchbox-layout-mode^="Tall"]) contextual-entrypoint-and-carousel::part(context-menu-entrypoint-icon) {
+  --cr-icon-button-icon-size: 20px;
 }
 
 :host([searchbox-layout-mode='Compact']) contextual-entrypoint-and-carousel::part(cr-composebox-file-carousel) {
