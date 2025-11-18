@@ -12,11 +12,20 @@
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
+#include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_service.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "components/favicon/core/test/mock_favicon_service.h"
+#include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
+#include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
+#include "components/optimization_guide/proto/features/actor_login.pb.h"
+#include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -85,6 +94,8 @@ class ActorAttemptLoginToolTest : public ActorToolsTest {
   ActorAttemptLoginToolTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{password_manager::features::kActorLogin,
+                              password_manager::features::
+                                  kActorLoginQualityLogs,
                               actor::kGlicEnableAutoLoginDialogs,
                               actor::kGlicEnableAutoLoginPersistedPermissions},
         /*disabled_features=*/{});
@@ -113,6 +124,12 @@ class ActorAttemptLoginToolTest : public ActorToolsTest {
 
     ON_CALL(mock_execution_engine(), GetFaviconService())
         .WillByDefault(Return(nullptr));
+
+    OptimizationGuideKeyedServiceFactory::GetForProfile(GetProfile())
+        ->SetModelQualityLogsUploaderServiceForTesting(
+            std::make_unique<
+                optimization_guide::TestModelQualityLogsUploaderService>(
+                g_browser_process->local_state()));
   }
 
   std::unique_ptr<ExecutionEngine> CreateExecutionEngine(
@@ -124,6 +141,20 @@ class ActorAttemptLoginToolTest : public ActorToolsTest {
 
   MockExecutionEngine& mock_execution_engine() {
     return static_cast<MockExecutionEngine&>(execution_engine());
+  }
+
+  optimization_guide::TestModelQualityLogsUploaderService*
+  test_mqls_uploader() {
+    return static_cast<
+        optimization_guide::TestModelQualityLogsUploaderService*>(
+        OptimizationGuideKeyedServiceFactory::GetForProfile(GetProfile())
+            ->GetModelQualityLogsUploaderService());
+  }
+
+  const std::vector<
+      std::unique_ptr<optimization_guide::proto::LogAiDataRequest>>&
+  uploaded_logs() {
+    return test_mqls_uploader()->uploaded_logs();
   }
 
  private:
@@ -151,6 +182,10 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, Basic) {
       mock_login_service().last_credential_used();
   ASSERT_TRUE(last_credential_used.has_value());
   EXPECT_EQ(u"username", last_credential_used->username);
+  ASSERT_EQ(uploaded_logs().size(), 1u);
+  EXPECT_EQ(
+      uploaded_logs()[0]->actor_login().quality().permission_picked(),
+      optimization_guide::proto::ActorLoginQuality_PermissionOption_ALLOW_ONCE);
 }
 
 IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, NoCredentials) {
@@ -411,6 +446,11 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, CredentialSaved) {
   EXPECT_EQ(u"username1",
             mock_login_service().last_credential_used()->username);
   EXPECT_TRUE(mock_login_service().last_permission_was_permanent());
+  // There are two tool calls, so expect 2 logs
+  ASSERT_EQ(uploaded_logs().size(), 2u);
+  EXPECT_EQ(uploaded_logs()[0]->actor_login().quality().permission_picked(),
+            optimization_guide::proto::
+                ActorLoginQuality_PermissionOption_ALWAYS_ALLOW);
 }
 
 IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, UsePersistedCredential) {

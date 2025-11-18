@@ -335,6 +335,8 @@ source_set("browser_tests") {
     "//components/favicon/core/test:test_support",
     "//components/javascript_dialogs",
     "//components/optimization_guide/core:bloomfilter",
+    "//components/optimization_guide/core:model_execution_test_support",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/core/common:features",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
