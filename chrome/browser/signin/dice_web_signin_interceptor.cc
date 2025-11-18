@@ -80,6 +80,7 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_prefs.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
@@ -105,11 +106,20 @@ constexpr size_t kMaxChromeSigninInterceptionDismissCount = 5;
 // The user will only see the Chrome Signin bubble reprompt a maximum of 4 times
 // (not including the initial time the bubble was declined).
 static constexpr int kMaxChromeSigninBubbleRepromptCountAllowed = 4;
+// Same as for kMaxChromeSigninBubbleRepromptCountAllowed, with different value
+// to be used in SigninPromoLimitsExperiment.
+static constexpr int
+    kMaxChromeSigninBubbleRepromptCountAllowedForLimitsExperiment = 10;
 // The Chrome Signin bubble can be reprompted only if a minimum duration time
 // has passed since the last bubble was shown (either initial bubble or a
 // reprompt).
 static constexpr base::TimeDelta kMinimumDurationForChromeSigninBubbleReprompt =
     base::Days(60);
+// Same as for kMinimumDurationForChromeSigninBubbleReprompt, with different
+// value to be used in SigninPromoLimitsExperiment.
+static constexpr base::TimeDelta
+    kMinimumDurationForChromeSigninBubbleRepromptForLimitsExperiment =
+        base::Days(7);
 
 // Helper function to return the primary account info. The returned info is
 // empty if there is no primary account, and non-empty otherwise. Extended
@@ -188,7 +198,11 @@ bool ShouldAllowChromeSigninBubbleReprompt(const SigninPrefs& signin_prefs,
 
   // Maximum reprompt count check.
   int reprompt_count = signin_prefs.GetChromeSigninBubbleRepromptCount(gaia_id);
-  if (reprompt_count >= kMaxChromeSigninBubbleRepromptCountAllowed) {
+  int max_reprompt_count =
+      base::FeatureList::IsEnabled(switches::kSigninPromoLimitsExperiment)
+          ? kMaxChromeSigninBubbleRepromptCountAllowedForLimitsExperiment
+          : kMaxChromeSigninBubbleRepromptCountAllowed;
+  if (reprompt_count >= max_reprompt_count) {
     return false;
   }
 
@@ -198,8 +212,11 @@ bool ShouldAllowChromeSigninBubbleReprompt(const SigninPrefs& signin_prefs,
       GetTimeSinceLastChromeSigninDecline(signin_prefs, gaia_id);
 
   // Minimum duration since last chrome signin decline check.
-  return time_since_last_decline >=
-         kMinimumDurationForChromeSigninBubbleReprompt;
+  const base::TimeDelta minimum_duration =
+      base::FeatureList::IsEnabled(switches::kSigninPromoLimitsExperiment)
+          ? kMinimumDurationForChromeSigninBubbleRepromptForLimitsExperiment
+          : kMinimumDurationForChromeSigninBubbleReprompt;
+  return time_since_last_decline >= minimum_duration;
 }
 
 // Set showing the bubble as a reprompt if the user previously declined the
@@ -227,7 +244,6 @@ void MaybeUpdateRepromptInfoAfterDecline(SigninPrefs& signin_prefs,
       gaia_id, base::Time::Now());
   int new_reprompt_count =
       signin_prefs.IncrementChromeSigninBubbleRepromptCount(gaia_id);
-
   base::UmaHistogramExactLinear("Signin.Intercept.ChromeSignin.RepromptCount",
                                 new_reprompt_count,
                                 kMaxChromeSigninBubbleRepromptCountAllowed + 1);
