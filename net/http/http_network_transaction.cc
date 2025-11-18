@@ -2381,8 +2381,9 @@ void HttpNetworkTransaction::CopyConnectionAttemptsFromStreamRequest() {
   // Since the transaction can restart with auth credentials, it may create a
   // stream more than once. Accumulate all of the connection attempts across
   // those streams by appending them to the vector:
-  for (const auto& attempt : stream_request_->connection_attempts())
-    connection_attempts_.push_back(attempt);
+  const auto& request_attempts = stream_request_->connection_attempts();
+  connection_attempts_.insert(connection_attempts_.end(),
+                              request_attempts.begin(), request_attempts.end());
 }
 
 bool HttpNetworkTransaction::ContentEncodingsValid() const {

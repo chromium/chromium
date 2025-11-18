@@ -418,7 +418,7 @@ int SSLConnectJob::DoSSLConnectComplete(int result) {
   connect_timing_.ssl_end = base::TimeTicks::Now();
 
   if (result != OK && !server_address_.address().empty()) {
-    connection_attempts_.push_back(ConnectionAttempt(server_address_, result));
+    connection_attempts_.emplace_back(server_address_, result);
     server_address_ = IPEndPoint();
   }
 

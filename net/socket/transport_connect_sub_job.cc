@@ -247,8 +247,7 @@ int TransportConnectSubJob::DoTransportConnectComplete(int result) {
     // Drop the socket to release the endpoint lock, if any.
     transport_socket_.reset();
 
-    parent_job_->connection_attempts_.push_back(
-        ConnectionAttempt(CurrentAddress(), result));
+    parent_job_->connection_attempts_.emplace_back(CurrentAddress(), result);
 
     // Don't try the next address if entering suspend mode.
     if (result != ERR_NETWORK_IO_SUSPENDED &&

@@ -80,7 +80,7 @@ class NET_EXPORT HttpResponseHeaders
     Builder& AddHeader(std::string_view name, std::string_view value) {
       DCHECK(HttpUtil::IsValidHeaderName(name));
       DCHECK(HttpUtil::IsValidHeaderValue(value));
-      headers_.push_back({name, value});
+      headers_.emplace_back(name, value);
       return *this;
     }
 

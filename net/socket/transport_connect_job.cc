@@ -281,7 +281,7 @@ int TransportConnectJob::DoResolveHostComplete(int result) {
 
   if (result != OK) {
     // If hostname resolution failed, record an empty endpoint and the result.
-    connection_attempts_.push_back(ConnectionAttempt(IPEndPoint(), result));
+    connection_attempts_.emplace_back(IPEndPoint(), result);
     return result;
   }
 

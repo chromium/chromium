@@ -1454,7 +1454,7 @@ void CookieMonster::FilterCookiesWithOptions(
 
     if (!access_result.status.IsInclude()) {
       if (options.return_excluded_cookies()) {
-        excluded_cookies.push_back({*cookie_ptr, access_result});
+        excluded_cookies.emplace_back(*cookie_ptr, access_result);
       }
       continue;
     }
@@ -1463,7 +1463,7 @@ void CookieMonster::FilterCookiesWithOptions(
       InternalUpdateCookieAccessTime(*cookie_ptr, current_time);
     }
 
-    included_cookies.push_back({*cookie_ptr, access_result});
+    included_cookies.emplace_back(*cookie_ptr, access_result);
   }
 }
 

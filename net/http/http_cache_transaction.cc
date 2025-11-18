@@ -4034,10 +4034,10 @@ void HttpCache::Transaction::SaveNetworkTransactionInfo(
   network_transaction_info_.received_body_bytes =
       transaction.GetReceivedBodyBytes();
 
-  ConnectionAttempts attempts = transaction.GetConnectionAttempts();
-  for (const auto& attempt : attempts) {
-    network_transaction_info_.old_connection_attempts.push_back(attempt);
-  }
+  const auto connection_attempts = transaction.GetConnectionAttempts();
+  network_transaction_info_.old_connection_attempts.insert(
+      network_transaction_info_.old_connection_attempts.end(),
+      connection_attempts.begin(), connection_attempts.end());
   network_transaction_info_.old_remote_endpoint = IPEndPoint();
   transaction.GetRemoteEndpoint(&network_transaction_info_.old_remote_endpoint);
 

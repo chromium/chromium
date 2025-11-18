@@ -760,7 +760,7 @@ void HostResolverManager::Job::OnDnsTaskFailure(
   // to use during request completion.
   base::TimeDelta ttl =
       failure_results.has_ttl() ? failure_results.ttl() : base::Seconds(0);
-  completion_results_.push_back({failure_results, ttl, secure});
+  completion_results_.emplace_back(failure_results, ttl, secure);
 
   dns_task_error_ = failure_results.error();
   KillDnsTask();

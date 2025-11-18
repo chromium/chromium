@@ -4,6 +4,7 @@
 
 #include "net/http/http_request_headers.h"
 
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -27,6 +28,11 @@
 namespace net {
 
 namespace {
+
+constexpr char kEncodingGzip[] = "gzip";
+constexpr char kEncodingDeflate[] = "deflate";
+constexpr char kEncodingBrotli[] = "br";
+constexpr char kEncodingZstd[] = "zstd";
 
 bool SupportsStreamType(const std::optional<base::flat_set<SourceStreamType>>&
                             accepted_stream_types,
@@ -163,8 +169,9 @@ void HttpRequestHeaders::SetHeaderIfMissing(std::string_view key,
   CHECK(HttpUtil::IsValidHeaderName(key));
   CHECK(HttpUtil::IsValidHeaderValue(value));
   auto it = FindHeader(key);
-  if (it == headers_.end())
-    headers_.push_back(HeaderKeyValuePair(key, value));
+  if (it == headers_.end()) {
+    headers_.emplace_back(key, value);
+  }
 }
 
 void HttpRequestHeaders::RemoveHeader(std::string_view key) {
@@ -279,12 +286,13 @@ void HttpRequestHeaders::SetAcceptEncodingIfMissing(
   // will be in the first transmitted packet. This can sometimes make it easier
   // to filter and analyze the streams to assure that a proxy has not damaged
   // these headers. Some proxies deliberately corrupt Accept-Encoding headers.
-  std::vector<std::string> advertised_encoding_names;
+  std::vector<std::string_view> advertised_encoding_names;
+  advertised_encoding_names.reserve(4u);
   if (SupportsStreamType(accepted_stream_types, SourceStreamType::kGzip)) {
-    advertised_encoding_names.push_back("gzip");
+    advertised_encoding_names.emplace_back(kEncodingGzip);
   }
   if (SupportsStreamType(accepted_stream_types, SourceStreamType::kDeflate)) {
-    advertised_encoding_names.push_back("deflate");
+    advertised_encoding_names.emplace_back(kEncodingDeflate);
   }
 
   const bool can_use_advanced_encodings =
@@ -294,18 +302,18 @@ void HttpRequestHeaders::SetAcceptEncodingIfMissing(
   if (enable_brotli &&
       SupportsStreamType(accepted_stream_types, SourceStreamType::kBrotli) &&
       can_use_advanced_encodings) {
-    advertised_encoding_names.push_back("br");
+    advertised_encoding_names.emplace_back(kEncodingBrotli);
   }
   // Advertise "zstd" encoding only if transferred data is opaque to proxy.
   if (enable_zstd &&
       SupportsStreamType(accepted_stream_types, SourceStreamType::kZstd) &&
       can_use_advanced_encodings) {
-    advertised_encoding_names.push_back("zstd");
+    advertised_encoding_names.emplace_back(kEncodingZstd);
   }
   if (!advertised_encoding_names.empty()) {
     // Tell the server what compression formats are supported.
     SetHeader(kAcceptEncoding,
-              base::JoinString(base::span(advertised_encoding_names), ", "));
+              base::JoinString(advertised_encoding_names, ", "));
   }
 }
 
