@@ -7,12 +7,14 @@
 #include <windows.h>
 
 #include <algorithm>
+#include <bit>
 #include <limits>
 #include <utility>
 
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/files/drive_info.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -27,12 +29,12 @@ namespace {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class Operation {
-  kCreate,
-  kGetInfo,
-  kAllocate,
-  kWrite,
-  kSetInfo,
-  kClearDelete,
+  kCreate = 0,
+  // kGetInfo = 1,
+  kAllocate = 2,
+  kWrite = 3,
+  kSetInfo = 4,
+  kClearDelete = 5,
   kMaxValue = kClearDelete,
 };
 
@@ -40,8 +42,6 @@ std::string_view ToString(Operation operation) {
   switch (operation) {
     case Operation::kCreate:
       return "Create";
-    case Operation::kGetInfo:
-      return "GetInfo";
     case Operation::kAllocate:
       return "Allocate";
     case Operation::kWrite:
@@ -89,6 +89,83 @@ base::HeapArray<uint8_t, void (*)(void*)> MakeEmptyBuffer() {
                                                                    nullptr));
 }
 
+// Returns the physical sector size for the device on which `path` resides,
+// falling back to 4096 bytes (the norm as of this writing) if the value cannot
+// be determined.
+DWORD DeterminePhysicalSectorSize(const base::FilePath& path) {
+  // TODO(crbug.com/456155453): Remove UMA and logging from this function once
+  // this has been verified on stable.
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class Result {
+    kSuccess = 0,
+    kDriveInfoFailed = 1,
+    kNoSizeValue = 2,
+    kGreaterThanFourK = 3,
+    kNotPowerOfTwo = 4,
+    kMaxValue = kNotPowerOfTwo
+  };
+
+  Result result = Result::kSuccess;  // Be optimistic.
+  std::optional<DWORD> reported_sector_size;
+  DWORD sector_size = 4096;  // A safe default in case all else fails.
+
+  if (auto drive_info = base::GetFileDriveInfo(path); !drive_info.has_value()) {
+    result = Result::kDriveInfoFailed;
+  } else if (!drive_info->bytes_per_sector.has_value()) {
+    result = Result::kNoSizeValue;
+  } else {
+    reported_sector_size = *drive_info->bytes_per_sector;
+    if (!std::has_single_bit(*reported_sector_size)) {
+      result = Result::kNotPowerOfTwo;
+    } else if (*reported_sector_size > 4096) {
+      result = Result::kGreaterThanFourK;
+    } else {
+      sector_size = *drive_info->bytes_per_sector;
+    }
+  }
+
+  // Emit histograms and log only once per process.
+  [[maybe_unused]] static const bool have_logged_once =
+      [](Result result, std::optional<DWORD> reported_sector_size) {
+        base::UmaHistogramEnumeration(
+            "Setup.Install.UnbufferedFileWriter."
+            "DeterminePhysicalSectorSizeResult",
+            result);
+        if (reported_sector_size.has_value()) {
+          base::UmaHistogramSparse(
+              "Setup.Install.UnbufferedFileWriter.PhysicalSectorSize",
+              *reported_sector_size);
+        }
+        switch (result) {
+          case Result::kSuccess:
+            break;
+          case Result::kDriveInfoFailed:
+            PLOG(ERROR)
+                << "Failed to get drive info; assuming 4KiB sector size.";
+            break;
+          case Result::kNoSizeValue:
+            LOG(ERROR) << "Failed to determine physical sector size; assuming"
+                          " 4KiB.";
+            break;
+          case Result::kGreaterThanFourK:
+            LOG(ERROR) << "Device reported " << *reported_sector_size
+                       << " bytes per sector, which is highly unusual; trying"
+                          " with 4KiB.";
+            break;
+          case Result::kNotPowerOfTwo:
+            LOG(ERROR) << "Device reported " << *reported_sector_size
+                       << " bytes per sector, which is not a power of two; "
+                          "trying with 4KiB.";
+            break;
+        }
+        return true;
+      }(result, reported_sector_size);
+
+  return sector_size;
+}
+
 }  // namespace
 
 // static
@@ -118,16 +195,7 @@ base::expected<UnbufferedFileWriter, DWORD> UnbufferedFileWriter::Create(
   // The file is deleted unless committed.
   file.DeleteOnClose(true);
 
-  // Get the physical sector size for the device backing the file.
-  FILE_STORAGE_INFO storage = {};
-  if (!::GetFileInformationByHandleEx(file.GetPlatformFile(), FileStorageInfo,
-                                      &storage, sizeof(storage))) {
-    auto error = ::GetLastError();
-    PLOG(ERROR) << "GetFileInformationByHandleEx failed";
-    RecordFailure(Operation::kGetInfo, error);
-    return base::unexpected(error);
-  }
-  const DWORD physical_sector_size = storage.PhysicalBytesPerSectorForAtomicity;
+  const DWORD physical_sector_size = DeterminePhysicalSectorSize(path);
 
   // Make the buffer size an even multiple of the physical sector size.
   buffer_size = buffer_size ? RoundUp(buffer_size, physical_sector_size)
