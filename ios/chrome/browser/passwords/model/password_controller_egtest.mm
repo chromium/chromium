@@ -140,15 +140,19 @@ void WaitForBottomSheetAndOpenKeyboard(NSString* username) {
 
 // Types `text` on an input field with `fieldID`. Dismisses the credential
 // bottom sheet if `dismissBottomSheet` is true.
-void TypeTextOnField(NSString* text,
-                     const std::string& fieldID,
-                     bool dismissBottomSheet = false) {
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(fieldID)];
-  if (dismissBottomSheet) {
-    WaitForBottomSheetAndOpenKeyboard(text);
-  }
+void TypeTextOnField(NSString* text, const std::string& fieldID) {
+  [ChromeEarlGrey
+      evaluateJavaScriptForSideEffect:
+          [NSString stringWithFormat:@"document.getElementById('%@').focus();",
+                                     base::SysUTF8ToNSString(fieldID)]];
   TypeText(text);
+  // Wait for the current input field to contain the `text` (i.e. typing from
+  // SimulatePhysicalKeyboardEvent finished) before proceeding to next step.
+  [ChromeEarlGrey
+      waitForJavaScriptCondition:
+          [NSString stringWithFormat:
+                        @"document.getElementById('%@').value.includes('%@');",
+                        base::SysUTF8ToNSString(fieldID), text]];
 }
 
 // Types the username and password on the UFF forms.
@@ -159,7 +163,12 @@ void TypeUsernameAndPasswordOnUFF(NSString* username,
   // field to be focused on, which triggers the credential bottom sheet. Once
   // dismissed the bottom sheet isn't shown again when focusing on other login
   // fields, as long as the page isn't reloaded.
-  TypeTextOnField(username, "single_un", dismissBottomSheetOnUsername);
+  if (dismissBottomSheetOnUsername) {
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+        performAction:chrome_test_util::TapWebElementWithId("single_un")];
+    WaitForBottomSheetAndOpenKeyboard(username);
+  }
+  TypeTextOnField(username, "single_un");
   TypeTextOnField(password, "single_pw");
 }
 
@@ -844,8 +853,7 @@ void LoginOnUff() {
   // Simulate login.
   TypeTextOnField(@"test-username@test-domain.com", kFormUsername);
   TypeTextOnField(@"test-password", kFormPassword);
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId("submit_button")];
+  [ChromeEarlGrey tapWebStateElementWithID:@"submit_button"];
 
   // Wait for report to upload.
   [self waitForEnterpriseReports:1];
