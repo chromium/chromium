@@ -38,15 +38,21 @@ namespace {
 
 using testing::ContainerEq;
 
-constexpr syncer::DataTypeSet kTypesGatedBehindHistoryOptIn{
-    syncer::COLLABORATION_GROUP,
-    syncer::HISTORY,
-    syncer::HISTORY_DELETE_DIRECTIVES,
-    syncer::SAVED_TAB_GROUP,
-    syncer::SHARED_TAB_GROUP_DATA,
-    syncer::SHARED_TAB_GROUP_ACCOUNT_DATA,
-    syncer::SESSIONS,
-    syncer::USER_EVENTS};
+syncer::DataTypeSet GetTypesGatedBehindHistoryOptIn() {
+  syncer::DataTypeSet types = {syncer::COLLABORATION_GROUP,
+                               syncer::HISTORY,
+                               syncer::HISTORY_DELETE_DIRECTIVES,
+                               syncer::SAVED_TAB_GROUP,
+                               syncer::SHARED_TAB_GROUP_DATA,
+                               syncer::SHARED_TAB_GROUP_ACCOUNT_DATA,
+                               syncer::SESSIONS,
+                               syncer::USER_EVENTS};
+  if (base::FeatureList::IsEnabled(
+          syncer::kSpellcheckSeparateLocalAndAccountDictionaries)) {
+    types.Put(syncer::DICTIONARY);
+  }
+  return types;
+}
 
 base::FilePath GetTestFilePathForCacheGuid() {
   base::FilePath user_data_path;
@@ -155,8 +161,9 @@ IN_PROC_BROWSER_TEST_P(SingleClientStandaloneTransportSyncTest,
             GetSyncService(0)->GetTransportState());
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureActive());
 
-  syncer::DataTypeSet expected_types = Difference(
-      AllowedTypesInStandaloneTransportMode(), kTypesGatedBehindHistoryOptIn);
+  syncer::DataTypeSet expected_types =
+      Difference(AllowedTypesInStandaloneTransportMode(),
+                 GetTypesGatedBehindHistoryOptIn());
 
   // Bookmarks and reading list require a separate opt in, unless
   // `syncer::kReplaceSyncPromosWithSignInPromos` is enabled.
@@ -328,8 +335,9 @@ IN_PROC_BROWSER_TEST_P(SingleClientStandaloneTransportSyncTest,
       syncer::UserSelectableType::kHistory));
 
   // Make sure that only the allowed types got activated.
-  syncer::DataTypeSet expected_types = Difference(
-      AllowedTypesInStandaloneTransportMode(), kTypesGatedBehindHistoryOptIn);
+  syncer::DataTypeSet expected_types =
+      Difference(AllowedTypesInStandaloneTransportMode(),
+                 GetTypesGatedBehindHistoryOptIn());
 
   // Bookmarks and reading list require a separate opt in, unless
   // `syncer::kReplaceSyncPromosWithSignInPromos` is enabled.
@@ -448,8 +456,9 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
 
   // Make sure that only the allowed types got activated.
-  syncer::DataTypeSet expected_types = Difference(
-      AllowedTypesInStandaloneTransportMode(), kTypesGatedBehindHistoryOptIn);
+  syncer::DataTypeSet expected_types =
+      Difference(AllowedTypesInStandaloneTransportMode(),
+                 GetTypesGatedBehindHistoryOptIn());
 
   if (GetParam()) {
 #if !(BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
