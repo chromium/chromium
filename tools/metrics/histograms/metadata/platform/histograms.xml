@@ -2037,7 +2037,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.Odml.CpuUsageMilliPercent" units="1/1000ths of %"
     expires_after="2026-03-29">
-  <owner>yich@google.com</owner>
+  <owner>hcyang@google.com</owner>
   <owner>cros-odml-foundations-eng@google.com</owner>
   <summary>
     Fraction of total CPU resources used by ChromeOS ODML Service, sampled every
@@ -2046,8 +2046,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Odml.PeakTotalMallocMemoryKb" units="KB"
-    expires_after="2025-11-22">
-  <owner>yich@google.com</owner>
+    expires_after="2026-03-29">
+  <owner>hcyang@google.com</owner>
   <owner>cros-odml-foundations-eng@google.com</owner>
   <summary>
     Peak total malloc memory used by ChromeOS ODML Service over the last one
@@ -2057,7 +2057,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.Odml.PeakTotalRssMemoryKb" units="KB"
     expires_after="2026-03-29">
-  <owner>yich@google.com</owner>
+  <owner>hcyang@google.com</owner>
   <owner>cros-odml-foundations-eng@google.com</owner>
   <summary>
     Peak total resident set size memory used by ChromeOS ODML Service over the
@@ -2067,7 +2067,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.Odml.PeakTotalSwapMemoryKb" units="KB"
     expires_after="2026-03-29">
-  <owner>yich@google.com</owner>
+  <owner>hcyang@google.com</owner>
   <owner>cros-odml-foundations-eng@google.com</owner>
   <summary>
     Peak total swap memory used by ChromeOS ODML Service over the last one hour.
@@ -2077,7 +2077,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.Odml.TotalMallocMemoryKb" units="KB"
     expires_after="2026-03-29">
-  <owner>yich@google.com</owner>
+  <owner>hcyang@google.com</owner>
   <owner>cros-odml-foundations-eng@google.com</owner>
   <summary>
     Total malloc memory used by ChromeOS ODML Service, sampled every 5 minutes.
@@ -2086,7 +2086,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.Odml.TotalRssMemoryKb" units="KB"
     expires_after="2026-03-29">
-  <owner>yich@google.com</owner>
+  <owner>hcyang@google.com</owner>
   <owner>cros-odml-foundations-eng@google.com</owner>
   <summary>
     Total resident set size memory used by ChromeOS ODML Service, sampled every
@@ -2096,7 +2096,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.Odml.TotalSwapMemoryKb" units="KB"
     expires_after="2026-03-29">
-  <owner>yich@google.com</owner>
+  <owner>hcyang@google.com</owner>
   <owner>cros-odml-foundations-eng@google.com</owner>
   <summary>
     Total swap memory used by ChromeOS ODML Service, sampled every 5 minutes.
