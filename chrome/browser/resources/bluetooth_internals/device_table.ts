@@ -5,10 +5,12 @@
 /**
  * Javascript for DeviceTable UI, served from chrome://bluetooth-internals/.
  */
+import type {ActionLink} from 'chrome://resources/js/action_link.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
-import {DeviceCollection} from './device_collection.js';
+import type {DeviceInfo} from './device.mojom-webui.js';
+import type {DeviceCollection} from './device_collection.js';
 import {getTemplate} from './device_table.html.js';
 import {formatManufacturerDataMap, formatServiceUuids} from './device_utils.js';
 
@@ -28,53 +30,38 @@ const COLUMNS = {
  * devices.
  */
 export class DeviceTableElement extends CustomElement {
-  static get template() {
+  static override get template() {
     return getTemplate();
   }
 
-  static get is() {
-    return 'device-table';
-  }
-
-  constructor() {
-    super();
-
-    /** @private {?DeviceCollection} */
-    this.devices_ = null;
-
-    /** @private {?HTMLTBodyElement} */
-    this.body_ = null;
-
-    /** @private {?NodeListOf<Element>} */
-    this.headers_ = null;
-
-    /** @private {!Map<!DeviceInfo, boolean>} */
-    this.inspectionMap_ = new Map();
-  }
+  private devices_: DeviceCollection|null = null;
+  private body_: HTMLTableSectionElement|null = null;
+  private headers_: HTMLCollectionOf<HTMLTableCellElement>|null = null;
+  private inspectionMap_: Map<DeviceInfo, boolean> = new Map();
 
   /**
    * Decorates an element as a UI element class. Caches references to the
    *    table body and headers.
    */
   connectedCallback() {
+    assert(this.shadowRoot);
     this.body_ = this.shadowRoot.querySelector('tbody');
-    this.headers_ = this.shadowRoot.querySelector('thead').rows[0].cells;
+    this.headers_ = this.shadowRoot.querySelector('thead')!.rows[0]!.cells;
   }
 
   /**
    * Sets the tables device collection.
-   * @param {!DeviceCollection} deviceCollection
    */
-  setDevices(deviceCollection) {
+  setDevices(deviceCollection: DeviceCollection) {
     assert(!this.devices_, 'Devices can only be set once.');
 
     this.devices_ = deviceCollection;
     this.devices_.addEventListener(
-        'device-update', this.handleDeviceUpdate_.bind(this));
+        'device-update', (e) => this.handleDeviceUpdate_(e as CustomEvent));
     this.devices_.addEventListener(
-        'device-added', this.handleDeviceAdded_.bind(this));
+        'device-added', (e) => this.handleDeviceAdded_(e as CustomEvent));
     this.devices_.addEventListener(
-        'devices-reset-for-test', this.redraw_.bind(this));
+        'devices-reset-for-test', () => this.redraw_());
 
     this.redraw_();
   }
@@ -83,25 +70,22 @@ export class DeviceTableElement extends CustomElement {
    * Updates the inspect status of the row matching the given |deviceInfo|.
    * If |isInspecting| is true, the forget link is enabled otherwise it's
    * disabled.
-   * @param {!DeviceInfo} deviceInfo
-   * @param {boolean} isInspecting
    */
-  setInspecting(deviceInfo, isInspecting) {
+  setInspecting(deviceInfo: DeviceInfo, isInspecting: boolean) {
     this.inspectionMap_.set(deviceInfo, isInspecting);
-    this.updateRow_(deviceInfo, this.devices_.getByAddress(deviceInfo.address));
+    this.updateRow_(
+        deviceInfo, this.devices_!.getByAddress(deviceInfo.address));
   }
 
   /**
    * Fires a forget pressed event for the row |index|.
-   * @param {number} index
-   * @private
    */
-  handleForgetClick_(index) {
+  private handleForgetClick_(index: number) {
     const event = new CustomEvent('forgetpressed', {
       bubbles: true,
       composed: true,
       detail: {
-        address: this.devices_.item(index).address,
+        address: this.devices_!.item(index)!.address,
       },
     });
     this.dispatchEvent(event);
@@ -109,26 +93,20 @@ export class DeviceTableElement extends CustomElement {
 
   /**
    * Updates table row on change event of the device collection.
-   * @param {!CustomEvent<number>} event
-   * @private
    */
-  handleDeviceUpdate_(event) {
-    this.updateRow_(
-        /** @type {!DeviceInfo} */ (this.devices_.item(event.detail)),
-        event.detail);
+  private handleDeviceUpdate_(event: CustomEvent<number>) {
+    this.updateRow_(this.devices_!.item(event.detail)!, event.detail);
   }
 
   /**
    * Fires an inspect pressed event for the row |index|.
-   * @param {number} index
-   * @private
    */
-  handleInspectClick_(index) {
+  private handleInspectClick_(index: number) {
     const event = new CustomEvent('inspectpressed', {
       bubbles: true,
       composed: true,
       detail: {
-        address: this.devices_.item(index).address,
+        address: this.devices_!.item(index)!.address,
       },
     });
     this.dispatchEvent(event);
@@ -136,24 +114,20 @@ export class DeviceTableElement extends CustomElement {
 
   /**
    * Updates table row on splice event of the device collection.
-   * @param {!CustomEvent<device: DeviceInfo, index: number>} event
-   * @private
    */
-  handleDeviceAdded_(event) {
+  private handleDeviceAdded_(
+      event: CustomEvent<{device: DeviceInfo, index: number}>) {
     this.insertRow_(event.detail.device, event.detail.index);
   }
 
   /**
    * Inserts a new row at |index| and updates it with info from |device|.
-   * @param {!DeviceInfo} device
-   * @param {?number} index
-   * @private
    */
-  insertRow_(device, index) {
-    const row = this.body_.insertRow(index);
+  private insertRow_(device: DeviceInfo, index: number|null) {
+    const row = this.body_!.insertRow(index ?? 0);
     row.id = device.address;
 
-    for (let i = 0; i < this.headers_.length; i++) {
+    for (let i = 0; i < this.headers_!.length; i++) {
       // Skip the LINKS column. It has no data-field attribute.
       if (i === COLUMNS.LINKS) {
         continue;
@@ -168,51 +142,47 @@ export class DeviceTableElement extends CustomElement {
     inspectLink.setAttribute('is', 'action-link');
     inspectLink.textContent = 'Inspect';
     inspectCell.appendChild(inspectLink);
-    inspectLink.addEventListener('click', function() {
+    inspectLink.addEventListener('click', () => {
       this.handleInspectClick_(row.sectionRowIndex);
-    }.bind(this));
+    });
 
     const forgetLink = document.createElement('a', {is: 'action-link'});
     forgetLink.setAttribute('is', 'action-link');
     forgetLink.textContent = 'Forget';
     inspectCell.appendChild(forgetLink);
-    forgetLink.addEventListener('click', function() {
+    forgetLink.addEventListener('click', () => {
       this.handleForgetClick_(row.sectionRowIndex);
-    }.bind(this));
+    });
 
     this.updateRow_(device, row.sectionRowIndex);
   }
 
   /**
    * Deletes and recreates the table using the cached |devices_|.
-   * @private
    */
-  redraw_() {
-    const table = this.shadowRoot.querySelector('table');
-    table.removeChild(this.body_);
+  private redraw_() {
+    const table = this.shadowRoot!.querySelector('table')!;
+    table.removeChild(this.body_!);
     table.appendChild(document.createElement('tbody'));
-    this.body_ = this.shadowRoot.querySelector('tbody');
+    this.body_ = this.shadowRoot!.querySelector('tbody')!;
     this.body_.classList.add('table-body');
 
+    assert(this.devices_);
     for (let i = 0; i < this.devices_.length; i++) {
-      this.insertRow_(
-          /** @type {!DeviceInfo} */ (this.devices_.item(i)), null);
+      this.insertRow_(this.devices_.item(i)!, null);
     }
   }
 
   /**
    * Updates the row at |index| with the info from |device|.
-   * @param {!DeviceInfo} device
-   * @param {number} index
-   * @private
    */
-  updateRow_(device, index) {
-    const row = this.body_.rows[index];
+  private updateRow_(device: DeviceInfo, index: number) {
+    const row = this.body_!.rows[index];
     assert(row, 'Row ' + index + ' is not in the table.');
 
-    row.classList.toggle('removed', this.devices_.isRemoved(device));
+    row.classList.toggle('removed', this.devices_!.isRemoved(device));
 
-    const forgetLink = row.cells[COLUMNS.LINKS].children[1];
+    const forgetLink = row.cells[COLUMNS.LINKS]!.children[1] as ActionLink;
 
     if (this.inspectionMap_.has(device)) {
       forgetLink.disabled = !this.inspectionMap_.get(device);
@@ -221,19 +191,20 @@ export class DeviceTableElement extends CustomElement {
     }
 
     // Update the properties based on the header field path.
+    assert(this.headers_);
     for (let i = 0; i < this.headers_.length; i++) {
       // Skip the LINKS column. It has no data-field attribute.
       if (i === COLUMNS.LINKS) {
         continue;
       }
 
-      const header = this.headers_[i];
-      const propName = header.dataset.field;
+      const header = this.headers_[i]!;
+      const propName = header.dataset['field']!;
 
       const parts = propName.split('.');
-      let obj = device;
+      let obj: any = device;
       while (obj != null && parts.length > 0) {
-        const part = parts.shift();
+        const part = parts.shift()!;
         obj = obj[part];
       }
 
@@ -245,9 +216,9 @@ export class DeviceTableElement extends CustomElement {
         obj = formatManufacturerDataMap(obj);
       }
 
-      const cell = row.cells[i];
+      const cell = row.cells[i]!;
       cell.textContent = obj == null ? 'Unknown' : obj;
-      cell.dataset.label = header.textContent;
+      cell.dataset['label'] = header.textContent!;
     }
   }
 }

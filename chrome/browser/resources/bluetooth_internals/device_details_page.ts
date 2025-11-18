@@ -11,14 +11,16 @@
 import './service_list.js';
 import './object_fieldset.js';
 
-import {$} from 'chrome://resources/js/util.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {getRequiredElement} from 'chrome://resources/js/util.js';
 
-import {DeviceRemote} from './device.mojom-webui.js';
+import type {DeviceInfo, DeviceRemote, ServiceInfo} from './device.mojom-webui.js';
 import {connectToDevice} from './device_broker.js';
 import {ConnectionStatus} from './device_collection.js';
 import {formatManufacturerDataMap, formatServiceUuids} from './device_utils.js';
-import {ObjectFieldsetElement} from './object_fieldset.js';
+import type {ObjectFieldsetElement} from './object_fieldset.js';
 import {Page} from './page.js';
+import type {ServiceListElement} from './service_list.js';
 import {showSnackbar, SnackbarType} from './snackbar.js';
 
 /**
@@ -42,56 +44,50 @@ const PROPERTY_NAMES = {
  * compononent that lists all of the active services on the device.
  */
 export class DeviceDetailsPage extends Page {
-  /**
-   * @param {string} id
-   * @param {!DeviceInfo} deviceInfo
-   */
-  constructor(id, deviceInfo) {
+  deviceInfo: DeviceInfo;
+  services: ServiceInfo[]|null = null;
+  private device_: DeviceRemote|null = null;
+  private deviceFieldSet_: ObjectFieldsetElement;
+  private serviceList_: ServiceListElement;
+  private status_: ConnectionStatus = ConnectionStatus.DISCONNECTED;
+  private connectBtn_: HTMLButtonElement|null = null;
+
+  constructor(id: string, deviceInfo: DeviceInfo) {
     super(id, deviceInfo.nameForDisplay, id);
 
-    /** @type {!DeviceInfo} */
     this.deviceInfo = deviceInfo;
 
-    /** @type {?Array<ServiceInfo>} */
-    this.services = null;
-
-    /** @private {?DeviceRemote} */
-    this.device_ = null;
-
-    /** @private {!ObjectFieldsetElement} */
-    this.deviceFieldSet_ = document.createElement('object-fieldset');
+    this.deviceFieldSet_ =
+        document.createElement('object-fieldset') as ObjectFieldsetElement;
     this.deviceFieldSet_.toggleAttribute('show-all', true);
-    this.deviceFieldSet_.dataset.nameMap = JSON.stringify(PROPERTY_NAMES);
+    this.deviceFieldSet_.dataset['nameMap'] = JSON.stringify(PROPERTY_NAMES);
 
-    /** @private {!ServiceList} */
-    this.serviceList_ = document.createElement('service-list');
-
-    /** @private {!ConnectionStatus} */
-    this.status_ = ConnectionStatus.DISCONNECTED;
-
-    /** @private {?Element} */
-    this.connectBtn_ = null;
+    this.serviceList_ =
+        document.createElement('service-list') as ServiceListElement;
 
     this.pageDiv.appendChild(document.importNode(
-        $('device-details-template').content, true /* deep */));
+        getRequiredElement<HTMLTemplateElement>('device-details-template')
+            .content,
+        true /* deep */));
 
-    this.pageDiv.querySelector('.device-details')
-        .appendChild(this.deviceFieldSet_);
-    this.pageDiv.querySelector('.services').appendChild(this.serviceList_);
+    this.pageDiv.querySelector('.device-details')!.appendChild(
+        this.deviceFieldSet_);
+    this.pageDiv.querySelector('.services')!.appendChild(this.serviceList_);
 
-    this.pageDiv.querySelector('.forget').addEventListener('click', function() {
+    this.pageDiv.querySelector('.forget')!.addEventListener('click', () => {
       this.disconnect();
       this.pageDiv.dispatchEvent(new CustomEvent('forgetpressed', {
         detail: {
           address: this.deviceInfo.address,
         },
       }));
-    }.bind(this));
+    });
 
-    this.connectBtn_ = this.pageDiv.querySelector('.disconnect');
-    this.connectBtn_.addEventListener('click', function() {
+    this.connectBtn_ =
+        this.pageDiv.querySelector<HTMLButtonElement>('.disconnect')!;
+    this.connectBtn_.addEventListener('click', () => {
       this.device_ !== null ? this.disconnect() : this.connect();
-    }.bind(this));
+    });
 
     this.redraw();
   }
@@ -105,21 +101,21 @@ export class DeviceDetailsPage extends Page {
     this.updateConnectionStatus_(ConnectionStatus.CONNECTING);
 
     connectToDevice(this.deviceInfo.address)
-        .then(function(device) {
+        .then((device) => {
           this.device_ = device;
 
           this.updateConnectionStatus_(ConnectionStatus.CONNECTED);
 
           // Fetch services asynchronously.
           return this.device_.getServices();
-        }.bind(this))
-        .then(function(response) {
+        })
+        .then((response) => {
           this.services = response.services;
           this.serviceList_.load(this.deviceInfo.address);
           this.redraw();
           this.fireDeviceInfoChanged_();
-        }.bind(this))
-        .catch(function(error) {
+        })
+        .catch((error) => {
           // If a connection error occurs while fetching the services, the
           // DeviceRemote reference must be removed.
           if (this.device_) {
@@ -129,10 +125,10 @@ export class DeviceDetailsPage extends Page {
 
           showSnackbar(
               this.deviceInfo.nameForDisplay + ': ' + error.message,
-              SnackbarType.ERROR, 'Retry', this.connect.bind(this));
+              SnackbarType.ERROR, 'Retry', () => this.connect());
 
           this.updateConnectionStatus_(ConnectionStatus.DISCONNECTED);
-        }.bind(this));
+        });
   }
 
   /** Disconnects the page from the Bluetooth device. */
@@ -159,10 +155,10 @@ export class DeviceDetailsPage extends Page {
 
     const connectedText = isConnected ? 'Connected' : 'Not Connected';
 
-    const rssi = this.deviceInfo.rssi || {};
+    const rssi = this.deviceInfo.rssi;
 
-    let rssiValue = 'Unknown';
-    if (rssi.value != null && rssi.value <= 0) {
+    let rssiValue: number|string = 'Unknown';
+    if (rssi && rssi.value != null && rssi.value <= 0) {
       rssiValue = rssi.value;
     }
 
@@ -180,23 +176,21 @@ export class DeviceDetailsPage extends Page {
       manufacturerDataMap: manufacturerDataMapText,
     };
 
-    this.deviceFieldSet_.dataset.value = JSON.stringify(deviceViewObj);
+    this.deviceFieldSet_.dataset['value'] = JSON.stringify(deviceViewObj);
   }
 
   /**
    * Sets the page's device info and forces a redraw.
-   * @param {!DeviceInfo} info
    */
-  setDeviceInfo(info) {
+  setDeviceInfo(info: DeviceInfo) {
     this.deviceInfo = info;
     this.redraw();
   }
 
   /**
    * Fires an 'infochanged' event with the current |deviceInfo|
-   * @private
    */
-  fireDeviceInfoChanged_() {
+  private fireDeviceInfoChanged_() {
     this.pageDiv.dispatchEvent(new CustomEvent('infochanged', {
       bubbles: true,
       detail: {
@@ -209,15 +203,14 @@ export class DeviceDetailsPage extends Page {
    * Updates the current connection status. Caches the latest status, updates
    * the connection button message, and fires a 'connectionchanged' event when
    * finished.
-   * @param {!ConnectionStatus} status
-   * @private
    */
-  updateConnectionStatus_(status) {
+  private updateConnectionStatus_(status: ConnectionStatus) {
     if (this.status_ === status) {
       return;
     }
 
     this.status_ = status;
+    assert(this.connectBtn_);
     if (status === ConnectionStatus.DISCONNECTED) {
       this.connectBtn_.textContent = 'Connect';
       this.connectBtn_.disabled = false;

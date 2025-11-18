@@ -17,12 +17,12 @@ build_webui("build") {
   web_component_files = [
     "characteristic_list_item.ts",
     "descriptor_list_item.ts",
-    "device_table.js",
+    "device_table.ts",
     "expandable_list.ts",
     "expandable_list_item.ts",
     "object_fieldset.ts",
     "service_list_item.ts",
-    "snackbar.js",
+    "snackbar.ts",
     "value_control.js",
   ]
 
@@ -35,7 +35,7 @@ build_webui("build") {
     "descriptor_list.ts",
     "device_broker.ts",
     "device_collection.ts",
-    "device_details_page.js",
+    "device_details_page.ts",
     "device_utils.ts",
     "devices_page.ts",
     "main.ts",
