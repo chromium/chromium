@@ -1259,7 +1259,7 @@
     {
       // Let transforms affect anchor() and anchor-size() functions.
       name: "CSSAnchorWithTransforms",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Whether <image> values are allowed as counter style <symbol>
