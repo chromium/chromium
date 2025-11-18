@@ -6,10 +6,15 @@ package org.chromium.components.webauthn;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import androidx.annotation.IntDef;
+
 import org.chromium.base.Callback;
 import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * Barrier class is responsible for waiting the completion of Fido2 and/or Android Credential
@@ -22,33 +27,41 @@ import org.chromium.build.annotations.Nullable;
  */
 @NullMarked
 public class Barrier {
-    private enum Status {
-        NONE,
-        WAITING,
-        SUCCESS,
-        FAILURE,
+    @IntDef({Status.NONE, Status.WAITING, Status.SUCCESS, Status.FAILURE})
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface Status {
+        int NONE = 0;
+        int WAITING = 1;
+        int SUCCESS = 2;
+        int FAILURE = 3;
     }
 
-    public enum Mode {
+    @IntDef({Mode.ONLY_FIDO_2_API, Mode.ONLY_CRED_MAN, Mode.BOTH})
+    public @interface Mode {
         // Barrier will complete once the Fido2Api calls are complete.
-        ONLY_FIDO_2_API,
+        int ONLY_FIDO_2_API = 0;
         // Barrier will complete once the CredMan calls are complete.
-        ONLY_CRED_MAN,
+        int ONLY_CRED_MAN = 1;
         // Barrier will complete when both calls are complete.
-        BOTH,
+        int BOTH = 2;
     }
 
-    private enum CallbacksToRun {
-        RUN_FIDO_2_CALLBACK,
-        RUN_CRED_MAN_CALLBACK,
-        RUN_BOTH,
+    @IntDef({
+        CallbacksToRun.RUN_FIDO_2_CALLBACK,
+        CallbacksToRun.RUN_CRED_MAN_CALLBACK,
+        CallbacksToRun.RUN_BOTH
+    })
+    private @interface CallbacksToRun {
+        int RUN_FIDO_2_CALLBACK = 0;
+        int RUN_CRED_MAN_CALLBACK = 1;
+        int RUN_BOTH = 2;
     }
 
     private final Callback<Integer> mErrorCallback;
     @Nullable private Runnable mFido2ApiRunnable;
     @Nullable private Runnable mCredManRunnable;
-    private Status mFido2ApiStatus;
-    private Status mCredManStatus;
+    private @Status int mFido2ApiStatus;
+    private @Status int mCredManStatus;
     private int mFido2ApiError;
     private boolean mFido2ApiCancelled;
     private boolean mCredManCancelled;
@@ -60,16 +73,16 @@ public class Barrier {
         mCredManStatus = Status.NONE;
     }
 
-    public void resetAndSetWaitStatus(Mode mode) {
+    public void resetAndSetWaitStatus(@Mode int mode) {
         reset();
         switch (mode) {
-            case ONLY_FIDO_2_API:
+            case Mode.ONLY_FIDO_2_API:
                 mFido2ApiStatus = Status.WAITING;
                 break;
-            case ONLY_CRED_MAN:
+            case Mode.ONLY_CRED_MAN:
                 mCredManStatus = Status.WAITING;
                 break;
-            case BOTH:
+            case Mode.BOTH:
                 mFido2ApiStatus = Status.WAITING;
                 mCredManStatus = Status.WAITING;
                 break;
@@ -81,14 +94,14 @@ public class Barrier {
     public void onCredManSuccessful(Runnable onBarrierComplete) {
         mCredManRunnable = onBarrierComplete;
         switch (mFido2ApiStatus) {
-            case SUCCESS:
+            case Status.SUCCESS:
                 maybeRunSuccessCallbacks(CallbacksToRun.RUN_BOTH);
                 break;
-            case WAITING:
+            case Status.WAITING:
                 mCredManStatus = Status.SUCCESS;
                 break;
-            case NONE:
-            case FAILURE:
+            case Status.NONE:
+            case Status.FAILURE:
                 maybeRunSuccessCallbacks(CallbacksToRun.RUN_CRED_MAN_CALLBACK);
                 break;
         }
@@ -96,16 +109,16 @@ public class Barrier {
 
     public void onCredManFailed(int error) {
         switch (mFido2ApiStatus) {
-            case SUCCESS:
+            case Status.SUCCESS:
                 maybeRunSuccessCallbacks(CallbacksToRun.RUN_FIDO_2_CALLBACK);
                 break;
-            case WAITING:
+            case Status.WAITING:
                 mCredManStatus = Status.FAILURE;
                 break;
-            case NONE:
+            case Status.NONE:
                 mErrorCallback.onResult(error);
                 break;
-            case FAILURE:
+            case Status.FAILURE:
                 mErrorCallback.onResult(mFido2ApiError);
                 break;
         }
@@ -114,14 +127,14 @@ public class Barrier {
     public void onFido2ApiSuccessful(Runnable onBarrierComplete) {
         mFido2ApiRunnable = onBarrierComplete;
         switch (mCredManStatus) {
-            case SUCCESS:
+            case Status.SUCCESS:
                 maybeRunSuccessCallbacks(CallbacksToRun.RUN_BOTH);
                 break;
-            case WAITING:
+            case Status.WAITING:
                 mFido2ApiStatus = Status.SUCCESS;
                 break;
-            case NONE:
-            case FAILURE:
+            case Status.NONE:
+            case Status.FAILURE:
                 maybeRunSuccessCallbacks(CallbacksToRun.RUN_FIDO_2_CALLBACK);
                 break;
         }
@@ -129,15 +142,15 @@ public class Barrier {
 
     public void onFido2ApiFailed(int error) {
         switch (mCredManStatus) {
-            case SUCCESS:
+            case Status.SUCCESS:
                 maybeRunSuccessCallbacks(CallbacksToRun.RUN_CRED_MAN_CALLBACK);
                 break;
-            case WAITING:
+            case Status.WAITING:
                 mFido2ApiError = error;
                 mFido2ApiStatus = Status.FAILURE;
                 break;
-            case NONE:
-            case FAILURE:
+            case Status.NONE:
+            case Status.FAILURE:
                 mErrorCallback.onResult(error);
                 break;
         }
@@ -181,7 +194,7 @@ public class Barrier {
         mIsImmediateIncognito = true;
     }
 
-    private void maybeRunSuccessCallbacks(CallbacksToRun callbacks) {
+    private void maybeRunSuccessCallbacks(@CallbacksToRun int callbacks) {
         if (mIsImmediateIncognito) {
             mErrorCallback.onResult(AuthenticatorStatus.NOT_ALLOWED_ERROR);
             return;

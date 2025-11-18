@@ -184,9 +184,9 @@ public class Fido2CredentialRequest
         mMakeCredentialCallback = null;
     }
 
-    private Barrier.Mode getBarrierMode() {
+    private @Barrier.Mode int getBarrierMode() {
         @CredManSupport int support = CredManSupportProvider.getCredManSupport();
-        Barrier.Mode mode;
+        @Barrier.Mode int mode;
         switch (support) {
             case CredManSupport.DISABLED:
                 mode = Barrier.Mode.ONLY_FIDO_2_API;
@@ -1039,7 +1039,7 @@ public class Fido2CredentialRequest
         assert publicKeyOptions.allowCredentials.length > 0;
         assert options.mediation != Mediation.CONDITIONAL;
         assert mPlayServicesAvailable;
-        Barrier.Mode mode = getBarrierMode();
+        @Barrier.Mode int mode = getBarrierMode();
         assert mode == Barrier.Mode.ONLY_CRED_MAN || mode == Barrier.Mode.BOTH;
 
         GmsCoreGetCredentialsHelper.getInstance()
@@ -1080,7 +1080,7 @@ public class Fido2CredentialRequest
         assert publicKeyOptions.allowCredentials.length > 0;
         assert options.mediation != Mediation.CONDITIONAL;
         assert mPlayServicesAvailable;
-        Barrier.Mode mode = getBarrierMode();
+        @Barrier.Mode int mode = getBarrierMode();
         assert mode == Barrier.Mode.ONLY_CRED_MAN || mode == Barrier.Mode.BOTH;
 
         for (WebauthnCredentialDetails credential : retrievedCredentials) {

@@ -166,7 +166,7 @@ public class BarrierTest {
     }
 
     @Parameter(0)
-    public Barrier.Mode mMode;
+    public @Barrier.Mode int mMode;
 
     @Parameter(1)
     public ApiCallType mFirstCompletedApi;
