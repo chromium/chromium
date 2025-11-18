@@ -1,7 +1,7 @@
 Name: okio
 Short Name: okio-jvm
-URL: https://repo.maven.apache.org/maven2/com/squareup/okio/okio-jvm/3.16.3/okio-jvm-3.16.3.jar
-Version: 3.16.3
+URL: https://repo.maven.apache.org/maven2/com/squareup/okio/okio-jvm/3.16.4/okio-jvm-3.16.4.jar
+Version: 3.16.4
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE

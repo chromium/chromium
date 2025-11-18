@@ -1622,7 +1622,7 @@
     {
         "name": "okio-jvm",
         "group": "com.squareup.okio",
-        "version": "3.16.3"
+        "version": "3.16.4"
     },
     {
         "name": "wire-runtime",
@@ -1647,52 +1647,52 @@
     {
         "name": "grpc-android",
         "group": "io.grpc",
-        "version": "1.76.0"
+        "version": "1.77.0"
     },
     {
         "name": "grpc-api",
         "group": "io.grpc",
-        "version": "1.76.0"
+        "version": "1.77.0"
     },
     {
         "name": "grpc-binder",
         "group": "io.grpc",
-        "version": "1.76.0"
+        "version": "1.77.0"
     },
     {
         "name": "grpc-context",
         "group": "io.grpc",
-        "version": "1.76.0"
+        "version": "1.77.0"
     },
     {
         "name": "grpc-core",
         "group": "io.grpc",
-        "version": "1.76.0"
+        "version": "1.77.0"
     },
     {
         "name": "grpc-inprocess",
         "group": "io.grpc",
-        "version": "1.76.0"
+        "version": "1.77.0"
     },
     {
         "name": "grpc-protobuf-lite",
         "group": "io.grpc",
-        "version": "1.76.0"
+        "version": "1.77.0"
     },
     {
         "name": "grpc-stub",
         "group": "io.grpc",
-        "version": "1.76.0"
+        "version": "1.77.0"
     },
     {
         "name": "grpc-testing",
         "group": "io.grpc",
-        "version": "1.76.0"
+        "version": "1.77.0"
     },
     {
         "name": "grpc-util",
         "group": "io.grpc",
-        "version": "1.76.0"
+        "version": "1.77.0"
     },
     {
         "name": "perfmark-api",
