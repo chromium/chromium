@@ -283,6 +283,11 @@ export class SearchboxElement extends SearchboxElementBase implements
         reflect: true,
       },
 
+      ntpNextFeaturesEnabled: {
+        type: Boolean,
+        reflect: true,
+      },
+
       cyclingPlaceholders: {
         type: Boolean,
       },
@@ -414,6 +419,7 @@ export class SearchboxElement extends SearchboxElementBase implements
       loadTimeData.getBoolean('searchboxCr23SteadyStateShadow');
   accessor searchboxLayoutMode: string = '';
   accessor ntpRealboxNextEnabled: boolean = false;
+  accessor ntpNextFeaturesEnabled: boolean = false;
   accessor cyclingPlaceholders: boolean = false;
   accessor composeboxEnabled: boolean = false;
   accessor composeButtonEnabled: boolean = false;

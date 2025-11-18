@@ -10,21 +10,33 @@ export function getHtml(this: ContextMenuEntrypointElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
     ${this.showContextMenuDescription ? html`
+    <div id="glowWrapper" class="glow-container tall">
     <cr-button id="entrypoint"
+        class="ai-mode-button"
         @click="${this.onEntrypointClick_}"
         ?disabled="${this.inputsDisabled}"
         title="${this.i18n('addContextTitle')}">
       <cr-icon id="entrypointIcon" icon="cr:add" slot="prefix-icon"></cr-icon>
       <span id="description">${this.i18n('addContext')}</span>
     </cr-button>
+      <div class="aim-gradient-outer-blur aim-c"></div>
+      <div class="aim-gradient-solid aim-c"></div>
+      <div class="aim-background aim-c"></div>
+    </div>
     `: html`
-      <cr-icon-button id="entrypoint"
-          part="context-menu-entrypoint-icon"
-          iron-icon="cr:add"
-          @click="${this.onEntrypointClick_}"
-          ?disabled="${this.inputsDisabled}"
-          title="${this.i18n('addContextTitle')}">
-      </cr-icon-button>
+      <div id="glowWrapper" class="glow-container">
+        <cr-icon-button id="entrypoint"
+            class="ai-mode-button"
+            part="context-menu-entrypoint-icon"
+            iron-icon="cr:add"
+            @click="${this.onEntrypointClick_}"
+            ?disabled="${this.inputsDisabled}"
+            title="${this.i18n('addContextTitle')}">
+        </cr-icon-button>
+        <div class="aim-gradient-outer-blur aim-c"></div>
+        <div class="aim-gradient-solid aim-c"></div>
+        <div class="aim-background aim-c"></div>
+      </div>
     `}
 
   <cr-action-menu id="menu" role-description="${this.i18n('menu')}">

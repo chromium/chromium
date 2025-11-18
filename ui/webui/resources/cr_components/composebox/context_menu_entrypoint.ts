@@ -26,6 +26,7 @@ import {getHtml} from './context_menu_entrypoint.html.js';
 const MENU_WIDTH_PX = 190;
 /** The string value of the tall bottom context layout mode. */
 const TALL_BOTTOM_CONTEXT_LAYOUT_MODE = 'TallBottomContext';
+let glyphAnimationDone = false;
 
 export interface ContextMenuEntrypointElement {
   $: {
@@ -69,6 +70,7 @@ export class ContextMenuEntrypointElement extends
       tabSuggestions: {type: Array},
       entrypointName: {type: String},
       searchboxLayoutMode: {type: String},
+      ntpNextFeaturesEnabled: {type: Boolean, reflect: true},
 
       // =========================================================================
       // Protected properties
@@ -99,6 +101,7 @@ export class ContextMenuEntrypointElement extends
   accessor tabSuggestions: TabInfo[] = [];
   accessor entrypointName: string = '';
   accessor searchboxLayoutMode: string = '';
+  accessor ntpNextFeaturesEnabled: boolean = false;
 
   protected accessor enableMultiTabSelection_: boolean =
       loadTimeData.getBoolean('composeboxContextMenuEnableMultiTabSelection');
@@ -120,6 +123,17 @@ export class ContextMenuEntrypointElement extends
     if (this.enableMultiTabSelection_ &&
         this.searchboxLayoutMode !== TALL_BOTTOM_CONTEXT_LAYOUT_MODE) {
       this.showMenuAtEntrypoint_();
+    }
+  }
+
+  override firstUpdated(changedProperties: Map<string|number|symbol, unknown>):
+      void {
+    super.firstUpdated(changedProperties);
+    if (!glyphAnimationDone) {
+      const glowingWrapper =
+          this.shadowRoot.querySelector<HTMLElement>('#glowWrapper')!;
+      glowingWrapper.classList.add('play');
+      glyphAnimationDone = true;
     }
   }
 
