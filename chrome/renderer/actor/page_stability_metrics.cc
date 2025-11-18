@@ -7,6 +7,7 @@
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/time/time.h"
 #include "chrome/common/actor/page_stability_metrics_common.h"
 #include "chrome/renderer/actor/page_stability_monitor.h"
 
@@ -15,6 +16,11 @@ namespace actor {
 PageStabilityMetrics::PageStabilityMetrics() = default;
 
 PageStabilityMetrics::~PageStabilityMetrics() = default;
+
+void PageStabilityMetrics::Start() {
+  CHECK(start_waiting_time_.is_null());
+  start_waiting_time_ = base::TimeTicks::Now();
+}
 
 void PageStabilityMetrics::WillMoveToState(PageStabilityMonitor::State state) {
   switch (state) {
@@ -25,6 +31,7 @@ void PageStabilityMetrics::WillMoveToState(PageStabilityMonitor::State state) {
     case PageStabilityMonitor::State::kWaitForNavigation:
       break;
     case PageStabilityMonitor::State::kStartMonitoring:
+      start_monitoring_time_ = base::TimeTicks::Now();
       break;
     case PageStabilityMonitor::State::kWaitForNetworkIdle:
       break;
@@ -59,8 +66,60 @@ void PageStabilityMetrics::WillMoveToState(PageStabilityMonitor::State state) {
       stability_outcome_ = PageStabilityOutcome::kMojoDisconnected;
       break;
     case PageStabilityMonitor::State::kDone:
+      // The state machine is not entered until we start to wait for page
+      // stability.
+      CHECK(!start_waiting_time_.is_null());
+
       base::UmaHistogramEnumeration(
           kActorRendererPageStabilityOutcomeMetricName, stability_outcome_);
+
+      RecordTimingMetrics();
+      break;
+  }
+}
+
+void PageStabilityMetrics::RecordTimingMetrics() {
+  const base::TimeTicks now = base::TimeTicks::Now();
+  const base::TimeDelta total_duration = now - start_waiting_time_;
+
+  switch (stability_outcome_) {
+    case PageStabilityOutcome::kNetworkAndMainThread:
+    case PageStabilityOutcome::kNetworkAndMainThreadDelayed:
+    case PageStabilityOutcome::kPaint:
+    case PageStabilityOutcome::kPaintDelayed:
+      // These are the successful stabilization paths. Record their duration to
+      // analyze the performance of checks that completed as expected.
+      base::UmaHistogramTimes(
+          kActorRendererPageStabilityTotalTimeToStableMetricName,
+          total_duration);
+
+      CHECK(!start_monitoring_time_.is_null());
+      base::UmaHistogramTimes(
+          kActorRendererPageStabilityTimeFromMonitoringToStableMetricName,
+          now - start_monitoring_time_);
+      break;
+    case PageStabilityOutcome::kRenderFrameGoingAway:
+      // The check was aborted because the frame was destroyed by a navigation.
+      // The duration is interesting for understanding how long checks run
+      // before being navigated away.
+      base::UmaHistogramTimes(
+          kActorRendererPageStabilityTotalTimeToRenderFrameGoingAwayMetricName,
+          total_duration);
+      break;
+    case PageStabilityOutcome::kUnknown:
+    // TODO(linnan): This should not happen. Add NOTREACHED() after confirming
+    // with the Actor.RendererPageStability.Outcome metric.
+    case PageStabilityOutcome::kTimeout:
+      // A timeout occurred. The duration is simply the fixed timeout value,
+      // which is not an interesting distribution to measure as a timing metric.
+      // The frequency of timeouts is already captured by the
+      // Actor.RendererPageStability.Outcome metric count, so we do not record a
+      // duration here to avoid skewing the other stats.
+    case PageStabilityOutcome::kMojoDisconnected:
+      // The check was aborted because the connection to the browser was lost
+      // (e.g., due to a crash or shutdown). The duration until this external
+      // event is not a meaningful measurement of page stability, so it is not
+      // recorded.
       break;
   }
 }

@@ -77,6 +77,13 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, NetworkAndMainThreadIdle) {
       kActorRendererPageStabilityOutcomeMetricName,
       PageStabilityOutcome::kNetworkAndMainThread,
       /*expected_bucket_count=*/1);
+
+  histogram_tester.ExpectTotalCount(
+      kActorRendererPageStabilityTotalTimeToStableMetricName, 1);
+  histogram_tester.ExpectTotalCount(
+      kActorRendererPageStabilityTimeFromMonitoringToStableMetricName, 1);
+  histogram_tester.ExpectTotalCount(
+      kActorRendererPageStabilityTotalTimeToRenderFrameGoingAwayMetricName, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, Paint) {
@@ -111,6 +118,13 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, Paint) {
       kActorRendererPageStabilityOutcomeMetricName,
       PageStabilityOutcome::kPaint,
       /*expected_bucket_count=*/1);
+
+  histogram_tester.ExpectTotalCount(
+      kActorRendererPageStabilityTotalTimeToStableMetricName, 1);
+  histogram_tester.ExpectTotalCount(
+      kActorRendererPageStabilityTimeFromMonitoringToStableMetricName, 1);
+  histogram_tester.ExpectTotalCount(
+      kActorRendererPageStabilityTotalTimeToRenderFrameGoingAwayMetricName, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, Timeout) {
@@ -138,6 +152,13 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, Timeout) {
       kActorRendererPageStabilityOutcomeMetricName,
       PageStabilityOutcome::kTimeout,
       /*expected_bucket_count=*/1);
+
+  histogram_tester.ExpectTotalCount(
+      kActorRendererPageStabilityTotalTimeToStableMetricName, 0);
+  histogram_tester.ExpectTotalCount(
+      kActorRendererPageStabilityTimeFromMonitoringToStableMetricName, 0);
+  histogram_tester.ExpectTotalCount(
+      kActorRendererPageStabilityTotalTimeToRenderFrameGoingAwayMetricName, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, RenderFrameGoingAway) {
@@ -176,6 +197,13 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, RenderFrameGoingAway) {
       kActorRendererPageStabilityOutcomeMetricName,
       PageStabilityOutcome::kRenderFrameGoingAway,
       /*expected_bucket_count=*/1);
+
+  histogram_tester.ExpectTotalCount(
+      kActorRendererPageStabilityTotalTimeToStableMetricName, 0);
+  histogram_tester.ExpectTotalCount(
+      kActorRendererPageStabilityTimeFromMonitoringToStableMetricName, 0);
+  histogram_tester.ExpectTotalCount(
+      kActorRendererPageStabilityTotalTimeToRenderFrameGoingAwayMetricName, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, MojoDisconnected) {
@@ -208,6 +236,13 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, MojoDisconnected) {
       kActorRendererPageStabilityOutcomeMetricName,
       PageStabilityOutcome::kMojoDisconnected,
       /*expected_bucket_count=*/1);
+
+  histogram_tester.ExpectTotalCount(
+      kActorRendererPageStabilityTotalTimeToStableMetricName, 0);
+  histogram_tester.ExpectTotalCount(
+      kActorRendererPageStabilityTimeFromMonitoringToStableMetricName, 0);
+  histogram_tester.ExpectTotalCount(
+      kActorRendererPageStabilityTotalTimeToRenderFrameGoingAwayMetricName, 0);
 }
 
 class PageStabilityMetricsMinWaitTest : public PageStabilityTest {
@@ -261,6 +296,13 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsMinWaitTest,
       kActorRendererPageStabilityOutcomeMetricName,
       PageStabilityOutcome::kNetworkAndMainThreadDelayed,
       /*expected_bucket_count=*/1);
+
+  histogram_tester.ExpectTotalCount(
+      kActorRendererPageStabilityTotalTimeToStableMetricName, 1);
+  histogram_tester.ExpectTotalCount(
+      kActorRendererPageStabilityTimeFromMonitoringToStableMetricName, 1);
+  histogram_tester.ExpectTotalCount(
+      kActorRendererPageStabilityTotalTimeToRenderFrameGoingAwayMetricName, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(PageStabilityMetricsMinWaitTest, PaintDelayed) {
@@ -295,6 +337,13 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsMinWaitTest, PaintDelayed) {
       kActorRendererPageStabilityOutcomeMetricName,
       PageStabilityOutcome::kPaintDelayed,
       /*expected_bucket_count=*/1);
+
+  histogram_tester.ExpectTotalCount(
+      kActorRendererPageStabilityTotalTimeToStableMetricName, 1);
+  histogram_tester.ExpectTotalCount(
+      kActorRendererPageStabilityTimeFromMonitoringToStableMetricName, 1);
+  histogram_tester.ExpectTotalCount(
+      kActorRendererPageStabilityTotalTimeToRenderFrameGoingAwayMetricName, 0);
 }
 
 }  // namespace actor

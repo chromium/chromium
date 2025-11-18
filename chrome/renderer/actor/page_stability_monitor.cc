@@ -94,6 +94,7 @@ void PageStabilityMonitor::NotifyWhenStable(base::TimeDelta observation_delay,
   is_stable_callback_ = std::move(callback);
 
   metrics_ = std::make_unique<PageStabilityMetrics>();
+  metrics_->Start();
 
   if (render_frame_did_go_away_) {
     MoveToState(State::kRenderFrameGoingAway);

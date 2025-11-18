@@ -9,4 +9,14 @@ namespace actor {
 const char kActorRendererPageStabilityOutcomeMetricName[] =
     "Actor.RendererPageStability.Outcome";
 
+const char kActorRendererPageStabilityTotalTimeToStableMetricName[] =
+    "Actor.RendererPageStability.TotalTimeToStable";
+
+const char
+    kActorRendererPageStabilityTotalTimeToRenderFrameGoingAwayMetricName[] =
+        "Actor.RendererPageStability.TotalTimeToRenderFrameGoingAway";
+
+const char kActorRendererPageStabilityTimeFromMonitoringToStableMetricName[] =
+    "Actor.RendererPageStability.TimeFromMonitoringToStable";
+
 }  // namespace actor

@@ -25,6 +25,11 @@ enum class PageStabilityOutcome {
 // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/enums.xml:PageStabilityOutcome)
 
 extern const char kActorRendererPageStabilityOutcomeMetricName[];
+extern const char kActorRendererPageStabilityTotalTimeToStableMetricName[];
+extern const char
+    kActorRendererPageStabilityTotalTimeToRenderFrameGoingAwayMetricName[];
+extern const char
+    kActorRendererPageStabilityTimeFromMonitoringToStableMetricName[];
 
 }  // namespace actor
 

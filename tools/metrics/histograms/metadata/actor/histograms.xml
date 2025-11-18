@@ -320,6 +320,44 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Actor.RendererPageStability.TimeFromMonitoringToStable"
+    units="ms" expires_after="2026-08-11">
+  <owner>linnan@google.com</owner>
+  <owner>bokan@google.com</owner>
+  <owner>chrome-synapse-team@google.com</owner>
+  <summary>
+    The time from when active monitoring starts (kStartMonitoring state) until
+    the stability check completes (due to paint or network/main thread idle).
+    Not recorded for timeouts or aborted checks (e.g., Mojo disconnection or the
+    render frame destroyed). It excludes any initial, tool-specific delay.
+  </summary>
+</histogram>
+
+<histogram name="Actor.RendererPageStability.TotalTimeToRenderFrameGoingAway"
+    units="ms" expires_after="2026-08-11">
+  <owner>linnan@google.com</owner>
+  <owner>bokan@google.com</owner>
+  <owner>chrome-synapse-team@google.com</owner>
+  <summary>
+    The total time from when NotifyWhenStable() is called until the stability
+    check is aborted because the render frame was destroyed. This may be used to
+    analyze the duration of checks interrupted by a cross-document navigation.
+  </summary>
+</histogram>
+
+<histogram name="Actor.RendererPageStability.TotalTimeToStable" units="ms"
+    expires_after="2026-08-11">
+  <owner>linnan@google.com</owner>
+  <owner>bokan@google.com</owner>
+  <owner>chrome-synapse-team@google.com</owner>
+  <summary>
+    The total time from when NotifyWhenStable() is called until the stability
+    check completes (due to paint or network/main thread idle). Not recorded for
+    timeouts or aborted checks (e.g., Mojo disconnection or the render frame
+    destroyed).
+  </summary>
+</histogram>
+
 <histogram name="Actor.Task.Count.{StoppedReason}" units="count"
     expires_after="2026-08-11">
   <owner>dtapuska@google.com</owner>
