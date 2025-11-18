@@ -30,6 +30,7 @@ source_set("lens_promo") {
   deps = [
     ":shared",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/tips_notifications/ui/resources",
     "//ios/chrome/common/ui/button_stack",
     "//ios/chrome/common/ui/instructions_bottom_sheet",

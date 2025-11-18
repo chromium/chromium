@@ -7,10 +7,25 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_util.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
+
+namespace {
+
+// Returns the color provider for the Lens Search animation.
+NSDictionary<NSString*, UIColor*>* LensColorProvider(
+    int omnibox_color,
+    int lens_background_color) {
+  return @{
+    @"Omnibox.*.*.Color" : UIColorFromRGB(omnibox_color),
+    @"Lens_Icon_Background.*.*.Color" : UIColorFromRGB(lens_background_color),
+  };
+}
+
+}  // namespace
 
 @implementation BestFeaturesItem
 - (instancetype)initWithType:(BestFeaturesItemType)type {
@@ -251,6 +266,7 @@
 - (NSDictionary<NSString*, UIColor*>*)lightModeColorProvider {
   switch (self.type) {
     case BestFeaturesItemType::kLensSearch:
+      return LensColorProvider(0xEDF4FE, 0xFFFFFF);
     case BestFeaturesItemType::kEnhancedSafeBrowsing:
     case BestFeaturesItemType::kLockedIncognitoTabs:
     case BestFeaturesItemType::kSaveAndAutofillPasswords:
@@ -265,6 +281,7 @@
 - (NSDictionary<NSString*, UIColor*>*)darkModeColorProvider {
   switch (self.type) {
     case BestFeaturesItemType::kLensSearch:
+      return LensColorProvider(0x232428, 0x464A4E);
     case BestFeaturesItemType::kEnhancedSafeBrowsing:
     case BestFeaturesItemType::kLockedIncognitoTabs:
     case BestFeaturesItemType::kSaveAndAutofillPasswords:
