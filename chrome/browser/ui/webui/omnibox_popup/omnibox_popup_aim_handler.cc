@@ -4,11 +4,14 @@
 
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_aim_handler.h"
 
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/contextual_search/searchbox_context_data.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_aim_popup_webui_content.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
+#include "ui/base/window_open_disposition.h"
 
 namespace {
 
@@ -69,4 +72,13 @@ void OmniboxPopupAimHandler::AddContext(
 
 void OmniboxPopupAimHandler::Close() {
   omnibox_popup_ui_->embedder()->CloseUI();
+}
+
+void OmniboxPopupAimHandler::NavigateCurrentTab(const GURL& url) {
+  auto* browser_window_interface = webui::GetBrowserWindowInterface(
+      omnibox_popup_ui_->web_ui()->GetWebContents());
+  content::OpenURLParams params(url, content::Referrer(),
+                                WindowOpenDisposition::CURRENT_TAB,
+                                ui::PAGE_TRANSITION_LINK, false);
+  browser_window_interface->OpenURL(params, base::NullCallback());
 }

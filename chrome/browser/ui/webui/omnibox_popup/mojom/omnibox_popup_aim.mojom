@@ -6,6 +6,7 @@ module omnibox_popup_aim.mojom;
 
 import "components/omnibox/browser/searchbox.mojom";
 import "mojo/public/mojom/base/work_in_progress.mojom";
+import "url/mojom/url.mojom";
 
 // The browser-side handler for the Omnibox AIM Popup.
 interface PageHandlerFactory {
@@ -19,6 +20,9 @@ interface PageHandler {
   // Notifies the handler to close the popup, note that not every close action
   // goes through this path as C++/Views code is responsible for presentation.
   Close();
+
+  // Called to open URLs in AIM such as the suggestion activity link.
+  NavigateCurrentTab(url.mojom.Url url);
 };
 
 // The WebUI page for the Omnibox AIM Popup.
