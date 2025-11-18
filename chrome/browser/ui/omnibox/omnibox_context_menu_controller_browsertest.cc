@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/omnibox/omnibox_context_menu_controller.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/ui/contextual_search/searchbox_context_data.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -126,7 +128,10 @@ class OmniboxContextMenuControllerBrowserTest : public InProcessBrowserTest {
         /*enabled_features=*/
         {{omnibox::internal::kWebUIOmniboxAimPopup,
           {{omnibox::kWebUIOmniboxAimPopupAddContextButtonVariantParam.name,
-            "inline"}}},
+            "inline"},
+           {omnibox::kForceToolsAndModels.name, "true"},
+           {omnibox::kShowCreateImageTool.name, "true"},
+           {omnibox::kShowToolsAndModels.name, "true"}}},
          {omnibox::kWebUIOmniboxPopup, {}}},
         /*disabled_features=*/{omnibox::kAimServerEligibilityEnabled});
   }

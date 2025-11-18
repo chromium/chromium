@@ -145,7 +145,16 @@ void OmniboxContextMenuController::AddStaticItems() {
                                      ui::SimpleMenuModel::kDefaultIconSize);
   AddItemWithStringIdAndIcon(IDC_OMNIBOX_CONTEXT_ADD_FILE,
                              IDS_NTP_COMPOSE_ADD_FILE, add_file_icon);
-  AddSeparator();
+
+  auto* browser_window_interface =
+      webui::GetBrowserWindowInterface(web_contents_.get());
+  Profile* profile = browser_window_interface->GetProfile();
+
+  if (omnibox::IsDeepSearchEnabled(profile) ||
+      omnibox::IsCreateImagesEnabled(profile)) {
+    AddSeparator();
+  }
+
   auto deep_search_icon =
       ui::ImageModel::FromVectorIcon(kTravelExploreIcon, ui::kColorMenuIcon,
                                      ui::SimpleMenuModel::kDefaultIconSize);
@@ -361,4 +370,26 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
         NOTREACHED();
     }
   }
+}
+
+bool OmniboxContextMenuController::IsCommandIdVisible(int command_id) const {
+  if (command_id == IDC_OMNIBOX_CONTEXT_DEEP_RESEARCH ||
+      command_id == IDC_OMNIBOX_CONTEXT_CREATE_IMAGES) {
+    auto* browser_window_interface =
+        webui::GetBrowserWindowInterface(web_contents_.get());
+    Profile* profile = browser_window_interface->GetProfile();
+
+    if (!profile) {
+      return false;
+    }
+
+    if (command_id == IDC_OMNIBOX_CONTEXT_DEEP_RESEARCH) {
+      return omnibox::IsDeepSearchEnabled(profile);
+    }
+    if (command_id == IDC_OMNIBOX_CONTEXT_CREATE_IMAGES) {
+      return omnibox::IsCreateImagesEnabled(profile);
+    }
+  }
+
+  return true;
 }
