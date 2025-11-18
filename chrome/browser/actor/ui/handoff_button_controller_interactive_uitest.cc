@@ -70,11 +70,6 @@ class ActorUiHandoffButtonControllerInteractiveUiTest
     InteractiveBrowserTest::SetUp();
   }
 
-  void SetUpOnMainThread() override {
-    InteractiveBrowserTest::SetUpOnMainThread();
-    actor_keyed_service()->GetPolicyChecker().SetActOnWebForTesting(true);
-  }
-
   auto ClearOmniboxFocus() {
     return WithView(kOmniboxElementId, [](OmniboxViewViews* omnibox_view) {
       omnibox_view->GetFocusManager()->ClearFocus();

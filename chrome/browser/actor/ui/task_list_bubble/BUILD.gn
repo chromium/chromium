@@ -101,6 +101,7 @@ source_set("interactive_ui_tests") {
     "//base/test:test_support",
     "//chrome/browser/actor",
     "//chrome/browser/actor/ui",
+    "//chrome/browser/actor/ui:actor_ui_interactive_base",
     "//chrome/browser/ui:ui_features",
     "//chrome/test:test_support",
     "//testing/gtest",

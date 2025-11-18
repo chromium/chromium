@@ -16,6 +16,7 @@
 class ActorUiInteractiveBrowserTest : public InteractiveBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override;
+  void SetUpOnMainThread() override;
 
   void StartActingOnTab();
   void PauseTask();

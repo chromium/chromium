@@ -71,18 +71,15 @@ void GlicActorTaskIconManager::OnInstanceStateChange(bool is_showing,
 void GlicActorTaskIconManager::OnActorTaskStateUpdate(actor::TaskId task_id) {
   current_task_id_ = task_id;
 
-  // TODO(crbug.com/446734119): Instead ActorTask should hold a glic
-  // InstanceId and use that to retrieve the instance.
-  std::vector<glic::GlicInstance*> instances =
-      window_controller_->GetInstances();
-  if (instances.empty()) {
-    return;
-  }
-  glic::GlicInstance* instance = instances.front();
+  // TODO(crbug.com/444706814): Delete instance code once task icon path is
+  // removed.
+  glic::GlicInstance* instance = window_controller_->GetInstanceForTab(
+      GetLastUpdatedTabForTaskId(task_id));
+
   if (base::FeatureList::IsEnabled(features::kGlicActorUiNudgeRedesign)) {
     UpdateTaskListBubble(task_id);
     UpdateTaskNudge();
-  } else {
+  } else if (instance) {
     UpdateTaskIcon(instance->IsShowing(),
                    instance->host().GetPrimaryCurrentView());
   }
