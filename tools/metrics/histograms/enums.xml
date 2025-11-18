@@ -10840,6 +10840,8 @@ from previous Chrome versions.
   <int value="-1173283620" label="MouseAndTrackpadDropdownMenu:disabled"/>
   <int value="-1172961022" label="QuickDeleteAndroidSurvey:enabled"/>
   <int value="-1172940200" label="AuxiliarySearchThirdParty:enabled"/>
+  <int value="-1172905322"
+      label="AutofillEnablePaymentsMandatoryReauthChromeOs:disabled"/>
   <int value="-1172572865" label="NTPShowGoogleGInOmnibox:enabled"/>
   <int value="-1172204005" label="enable-offline-auto-reload-visible-only"/>
   <int value="-1171556368" label="SyncPollImmediatelyOnEveryStartup2:disabled"/>
@@ -18002,6 +18004,8 @@ from previous Chrome versions.
   <int value="1350197823" label="DragToSnapInClamshellMode:enabled"/>
   <int value="1351054716" label="EnableManagementPromotionBanner:disabled"/>
   <int value="1351213243" label="SuppressTextMessages:disabled"/>
+  <int value="1351311338"
+      label="AutofillEnablePaymentsMandatoryReauthChromeOs:enabled"/>
   <int value="1351344112" label="ContentIndexingDownloadHome:enabled"/>
   <int value="1351830811" label="do-not-ignore-autocomplete-off"/>
   <int value="1351858231" label="UnoDesktop:enabled"/>

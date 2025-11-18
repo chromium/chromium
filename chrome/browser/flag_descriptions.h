@@ -920,6 +920,14 @@ inline constexpr char
         "When enabled, offers will be displayed in the keyboard accessory when "
         "available.";
 
+inline constexpr char kAutofillEnablePaymentsMandatoryReauthChromeOsName[] =
+    "Enable mandatory re-auth for payments autofill on ChromeOS";
+inline constexpr char
+    kAutofillEnablePaymentsMandatoryReauthChromeOsDescription[] =
+        "When enabled, in use-cases where we would not have triggered any "
+        "interactive authentication to autofill payment methods, we will "
+        "trigger a device authentication on ChromeOS.";
+
 inline constexpr char kKeyboardLockApiOnAndroidName[] =
     "Keyboard Lock API on Android";
 inline constexpr char kKeyboardLockApiOnAndroidDescription[] =

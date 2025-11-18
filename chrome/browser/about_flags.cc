@@ -9431,6 +9431,16 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::kAutofillEnableOffersInClankKeyboardAccessory)},
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+    {"autofill-enable-payments-mandatory-reauth-chromeos",
+     flag_descriptions::kAutofillEnablePaymentsMandatoryReauthChromeOsName,
+     flag_descriptions::
+         kAutofillEnablePaymentsMandatoryReauthChromeOsDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnablePaymentsMandatoryReauthChromeOs)},
+#endif
+
 #if BUILDFLAG(ENABLE_PDF)
     {"pdf-xfa-forms", flag_descriptions::kPdfXfaFormsName,
      flag_descriptions::kPdfXfaFormsDescription, kOsDesktop,
