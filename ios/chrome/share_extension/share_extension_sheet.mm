@@ -98,8 +98,6 @@ CGFloat const kUpdatedMainViewCornerRadius = 32.0;
   self.topAlignedLayout = YES;
   self.scrollEnabled = YES;
 
-  self.addsContentViewBottomInset = NO;
-  self.showsGradientView = NO;
   self.showDismissBarButton = NO;
 
   self.navigationItem.titleView = [self configureSheetTitleView];
