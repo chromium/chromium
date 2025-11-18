@@ -13,6 +13,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test/variations:variations_desktop_smoke_tests",
+        "module_scheme": "flat",
         "name": "variations_android_smoke_tests",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
@@ -54,6 +55,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test/variations:variations_desktop_smoke_tests",
+        "module_scheme": "flat",
         "name": "variations_webview_smoke_tests",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
@@ -97,6 +99,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test/variations:variations_desktop_smoke_tests",
+        "module_scheme": "flat",
         "name": "variations_desktop_smoke_tests",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
@@ -129,6 +132,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test/variations:variations_desktop_smoke_tests",
+        "module_scheme": "flat",
         "name": "variations_desktop_smoke_tests",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
@@ -162,6 +166,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test/variations:variations_desktop_smoke_tests",
+        "module_scheme": "flat",
         "name": "variations_desktop_smoke_tests",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",

@@ -11,6 +11,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//chrome/test:browser_tests",
+        "module_scheme": "gtest",
         "name": "devtools_browser_tests",
         "swarming": {
           "dimensions": {
@@ -36,6 +37,7 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "module_name": "//:blink_web_tests",
+        "module_scheme": "webtest",
         "name": "blink_web_tests",
         "resultdb": {
           "enable": true,
@@ -64,6 +66,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//chrome/test:browser_tests",
+        "module_scheme": "gtest",
         "name": "devtools_browser_tests",
         "swarming": {
           "dimensions": {
@@ -89,6 +92,7 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "module_name": "//:blink_web_tests",
+        "module_scheme": "webtest",
         "name": "blink_web_tests",
         "resultdb": {
           "enable": true,
@@ -121,6 +125,7 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "module_name": "//:blink_web_tests",
+        "module_scheme": "webtest",
         "name": "blink_web_tests",
         "resultdb": {
           "enable": true,

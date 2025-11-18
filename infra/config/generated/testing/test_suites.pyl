@@ -915,6 +915,7 @@
           'mixins': [
             'has_native_resultdb_integration',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'info_collection',
         'mixins': [
@@ -931,6 +932,7 @@
           'mixins': [
             'has_native_resultdb_integration',
           ],
+          'module_scheme': 'flat',
         },
         'mixins': [
           'gpu_integration_test_common_args',
@@ -948,6 +950,7 @@
             'gpu_force_skia_ganesh',
             'gpu_integration_test_common_args',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'context_lost',
       },
@@ -962,6 +965,7 @@
             'gpu_integration_test_expected_color_args',
             'gpu_integration_test_common_args',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'expected_color',
       },
@@ -970,6 +974,7 @@
           'mixins': [
             'has_native_resultdb_integration',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'gpu_process',
         'mixins': [
@@ -981,6 +986,7 @@
           'mixins': [
             'has_native_resultdb_integration',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'hardware_accelerated_feature',
         'mixins': [
@@ -998,6 +1004,7 @@
             'gpu_integration_test_pixel_args',
             'gpu_integration_test_common_args',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'pixel',
       },
@@ -1011,6 +1018,7 @@
             'gpu_integration_test_screenshot_sync_args',
             'gpu_integration_test_common_args',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'screenshot_sync',
       },
@@ -1026,6 +1034,7 @@
             'gpu_force_skia_ganesh',
             'gpu_integration_test_common_args',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'context_lost',
       },
@@ -1040,6 +1049,7 @@
             'gpu_integration_test_expected_color_args',
             'gpu_integration_test_common_args',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'expected_color',
       },
@@ -1048,6 +1058,7 @@
           'mixins': [
             'has_native_resultdb_integration',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'gpu_process',
         'mixins': [
@@ -1059,6 +1070,7 @@
           'mixins': [
             'has_native_resultdb_integration',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'hardware_accelerated_feature',
         'mixins': [
@@ -1076,6 +1088,7 @@
             'gpu_integration_test_pixel_args',
             'gpu_integration_test_common_args',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'pixel',
       },
@@ -1089,6 +1102,7 @@
             'gpu_integration_test_screenshot_sync_args',
             'gpu_integration_test_common_args',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'screenshot_sync',
       },
@@ -1104,6 +1118,7 @@
             'gpu_force_skia_graphite',
             'gpu_integration_test_common_args',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'context_lost',
       },
@@ -1118,6 +1133,7 @@
             'gpu_integration_test_expected_color_args',
             'gpu_integration_test_common_args',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'expected_color',
       },
@@ -1126,6 +1142,7 @@
           'mixins': [
             'has_native_resultdb_integration',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'gpu_process',
         'mixins': [
@@ -1137,6 +1154,7 @@
           'mixins': [
             'has_native_resultdb_integration',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'hardware_accelerated_feature',
         'mixins': [
@@ -1154,6 +1172,7 @@
             'gpu_integration_test_pixel_args',
             'gpu_integration_test_common_args',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'pixel',
       },
@@ -1167,6 +1186,7 @@
             'gpu_integration_test_screenshot_sync_args',
             'gpu_integration_test_common_args',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'screenshot_sync',
       },
@@ -1174,6 +1194,9 @@
 
     'gpu_noop_sleep_telemetry_test': {
       'noop_sleep_tests': {
+        'test_common': {
+          'module_scheme': 'flat',
+        },
         'telemetry_test_name': 'noop_sleep',
         'mixins': [
           'gpu_integration_test_common_args',
@@ -1190,6 +1213,7 @@
             'gpu_force_skia_graphite',
             'gpu_integration_test_common_args',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'context_lost',
       },
@@ -1203,6 +1227,7 @@
             'gpu_integration_test_expected_color_args',
             'gpu_integration_test_common_args',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'expected_color',
       },
@@ -1216,6 +1241,7 @@
             'gpu_integration_test_pixel_args',
             'gpu_integration_test_common_args',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'pixel',
       },
@@ -1228,6 +1254,7 @@
             'gpu_integration_test_screenshot_sync_args',
             'gpu_integration_test_common_args',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'screenshot_sync',
       },
@@ -1241,6 +1268,7 @@
             'gpu_force_command_decoder_passthrough',
             'gpu_integration_test_common_args',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'context_lost',
       },
@@ -1253,6 +1281,7 @@
             'gpu_integration_test_expected_color_args',
             'gpu_integration_test_common_args',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'expected_color',
       },
@@ -1261,6 +1290,7 @@
           'mixins': [
             'has_native_resultdb_integration',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'gpu_process',
         'mixins': [
@@ -1272,6 +1302,7 @@
           'mixins': [
             'has_native_resultdb_integration',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'hardware_accelerated_feature',
         'mixins': [
@@ -1287,6 +1318,7 @@
             'gpu_integration_test_pixel_args',
             'gpu_integration_test_common_args',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'pixel',
       },
@@ -1298,6 +1330,7 @@
             'gpu_integration_test_screenshot_sync_args',
             'gpu_integration_test_common_args',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'screenshot_sync',
       },
@@ -1310,6 +1343,7 @@
             'skia_gold_test',
             'has_native_resultdb_integration',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'pixel',
         'mixins': [
@@ -1335,6 +1369,7 @@
             'gpu_force_command_decoder_validating',
             'gpu_integration_test_common_args',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'context_lost',
       },
@@ -1347,6 +1382,7 @@
             'gpu_integration_test_expected_color_args',
             'gpu_integration_test_common_args',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'expected_color',
       },
@@ -1355,6 +1391,7 @@
           'mixins': [
             'has_native_resultdb_integration',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'gpu_process',
         'mixins': [
@@ -1366,6 +1403,7 @@
           'mixins': [
             'has_native_resultdb_integration',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'hardware_accelerated_feature',
         'mixins': [
@@ -1381,6 +1419,7 @@
             'gpu_integration_test_pixel_args',
             'gpu_integration_test_common_args',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'pixel',
       },
@@ -1392,6 +1431,7 @@
             'gpu_integration_test_screenshot_sync_args',
             'gpu_integration_test_common_args',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'screenshot_sync',
       },
@@ -1407,6 +1447,7 @@
             'gpu_force_skia_ganesh',
             'gpu_integration_test_common_args',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'webcodecs',
       },
@@ -1422,6 +1463,7 @@
             'gpu_force_skia_ganesh',
             'gpu_integration_test_common_args',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'webcodecs',
       },
@@ -1437,6 +1479,7 @@
             'gpu_force_skia_graphite',
             'gpu_integration_test_common_args',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'webcodecs',
       },
@@ -1449,6 +1492,7 @@
             'has_native_resultdb_integration',
             'gpu_integration_test_common_args',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'webcodecs',
       },
@@ -1465,6 +1509,7 @@
             'gpu_integration_test_webgl2_args',
             'gpu_integration_test_common_args',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'webgl2_conformance',
         'swarming': {
@@ -1485,6 +1530,7 @@
             'gpu_integration_test_webgl2_args',
             'gpu_integration_test_common_args',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'webgl2_conformance',
         'swarming': {
@@ -1504,6 +1550,7 @@
             'gpu_integration_test_webgl2_args',
             'gpu_integration_test_common_args',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'webgl2_conformance',
         'swarming': {
@@ -1523,6 +1570,7 @@
             'gpu_integration_test_webgl2_args',
             'gpu_integration_test_common_args',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'webgl2_conformance',
         'swarming': {
@@ -1547,6 +1595,7 @@
             'gpu_integration_test_webgl2_args',
             'gpu_integration_test_common_args',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'webgl2_conformance',
         'swarming': {
@@ -1566,6 +1615,7 @@
             'gpu_integration_test_webgl1_args',
             'gpu_integration_test_common_args',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'webgl1_conformance',
         'swarming': {
@@ -1585,6 +1635,7 @@
             'gpu_integration_test_webgl1_args',
             'gpu_integration_test_common_args',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'webgl1_conformance',
         'swarming': {
@@ -1605,6 +1656,7 @@
             'gpu_integration_test_webgl1_args',
             'gpu_integration_test_common_args',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'webgl1_conformance',
         'swarming': {
@@ -1624,6 +1676,7 @@
             'gpu_integration_test_webgl1_args',
             'gpu_integration_test_common_args',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'webgl1_conformance',
         'swarming': {
@@ -1643,6 +1696,7 @@
             'gpu_integration_test_webgl1_args',
             'gpu_integration_test_common_args',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'webgl1_conformance',
         'swarming': {
@@ -1667,6 +1721,7 @@
             'gpu_integration_test_webgl1_args',
             'gpu_integration_test_common_args',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'webgl1_conformance',
       },
@@ -1685,6 +1740,7 @@
             'gpu_integration_test_webgl1_args',
             'gpu_integration_test_common_args',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'webgl1_conformance',
       },
@@ -1699,6 +1755,7 @@
             'gpu_force_angle_swiftshader',
             'gpu_integration_test_common_args',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'webgl1_conformance',
         'args': [
@@ -1721,6 +1778,7 @@
             'gpu_integration_test_webgl1_args',
             'gpu_integration_test_common_args',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'webgl1_conformance',
         'swarming': {
@@ -1743,6 +1801,7 @@
             'gpu_integration_test_webgl1_args',
             'gpu_integration_test_common_args',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'webgl1_conformance',
         'swarming': {
@@ -1761,6 +1820,7 @@
             'gpu_force_skia_ganesh',
             'gpu_integration_test_common_args',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'webrtc',
       },
@@ -1776,6 +1836,7 @@
             'gpu_force_skia_ganesh',
             'gpu_integration_test_common_args',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'webrtc',
       },
@@ -1791,6 +1852,7 @@
             'gpu_force_skia_graphite',
             'gpu_integration_test_common_args',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'webrtc',
       },
@@ -1803,6 +1865,7 @@
             'has_native_resultdb_integration',
             'gpu_integration_test_common_args',
           ],
+          'module_scheme': 'flat',
         },
         'telemetry_test_name': 'webrtc',
       },

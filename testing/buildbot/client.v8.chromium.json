@@ -11,6 +11,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//extensions/shell:app_shell_unittests",
+        "module_scheme": "gtest",
         "name": "app_shell_unittests",
         "swarming": {
           "dimensions": {
@@ -26,6 +27,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//chrome/test:browser_tests",
+        "module_scheme": "gtest",
         "name": "browser_tests",
         "swarming": {
           "dimensions": {
@@ -42,6 +44,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//chrome/test:chrome_app_unittests",
+        "module_scheme": "gtest",
         "name": "chrome_app_unittests",
         "swarming": {
           "dimensions": {
@@ -57,6 +60,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//chrome/test/chromedriver:chromedriver_unittests",
+        "module_scheme": "gtest",
         "name": "chromedriver_unittests",
         "swarming": {
           "dimensions": {
@@ -72,6 +76,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//components:components_browsertests",
+        "module_scheme": "gtest",
         "name": "components_browsertests",
         "swarming": {
           "dimensions": {
@@ -87,6 +92,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//components:components_unittests",
+        "module_scheme": "gtest",
         "name": "components_unittests",
         "swarming": {
           "dimensions": {
@@ -102,6 +108,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//ui/compositor:compositor_unittests",
+        "module_scheme": "gtest",
         "name": "compositor_unittests",
         "swarming": {
           "dimensions": {
@@ -117,6 +124,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//content/test:content_browsertests",
+        "module_scheme": "gtest",
         "name": "content_browsertests",
         "swarming": {
           "dimensions": {
@@ -132,6 +140,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//content/test:content_unittests",
+        "module_scheme": "gtest",
         "name": "content_unittests",
         "swarming": {
           "dimensions": {
@@ -147,6 +156,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//device:device_unittests",
+        "module_scheme": "gtest",
         "name": "device_unittests",
         "swarming": {
           "dimensions": {
@@ -162,6 +172,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//extensions:extensions_browsertests",
+        "module_scheme": "gtest",
         "name": "extensions_browsertests",
         "swarming": {
           "dimensions": {
@@ -177,6 +188,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//extensions:extensions_unittests",
+        "module_scheme": "gtest",
         "name": "extensions_unittests",
         "swarming": {
           "dimensions": {
@@ -192,6 +204,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//google_apis/gcm:gcm_unit_tests",
+        "module_scheme": "gtest",
         "name": "gcm_unit_tests",
         "swarming": {
           "dimensions": {
@@ -207,6 +220,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//gin:gin_unittests",
+        "module_scheme": "gtest",
         "name": "gin_unittests",
         "swarming": {
           "dimensions": {
@@ -222,6 +236,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//google_apis:google_apis_unittests",
+        "module_scheme": "gtest",
         "name": "google_apis_unittests",
         "swarming": {
           "dimensions": {
@@ -237,6 +252,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//gpu:gpu_unittests",
+        "module_scheme": "gtest",
         "name": "gpu_unittests",
         "swarming": {
           "dimensions": {
@@ -252,6 +268,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//headless:headless_browsertests",
+        "module_scheme": "gtest",
         "name": "headless_browsertests",
         "swarming": {
           "dimensions": {
@@ -267,6 +284,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//headless:headless_unittests",
+        "module_scheme": "gtest",
         "name": "headless_unittests",
         "swarming": {
           "dimensions": {
@@ -282,6 +300,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//chrome/test:interactive_ui_tests",
+        "module_scheme": "gtest",
         "name": "interactive_ui_tests",
         "swarming": {
           "dimensions": {
@@ -297,6 +316,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//net:net_unittests",
+        "module_scheme": "gtest",
         "name": "net_unittests",
         "swarming": {
           "dimensions": {
@@ -312,6 +332,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//pdf:pdf_unittests",
+        "module_scheme": "gtest",
         "name": "pdf_unittests",
         "swarming": {
           "dimensions": {
@@ -327,6 +348,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//remoting:remoting_unittests",
+        "module_scheme": "gtest",
         "name": "remoting_unittests",
         "swarming": {
           "dimensions": {
@@ -342,6 +364,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//services:services_unittests",
+        "module_scheme": "gtest",
         "name": "services_unittests",
         "swarming": {
           "dimensions": {
@@ -357,6 +380,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//chrome/test:sync_integration_tests",
+        "module_scheme": "gtest",
         "name": "sync_integration_tests",
         "swarming": {
           "dimensions": {
@@ -373,6 +397,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//chrome/test:unit_tests",
+        "module_scheme": "gtest",
         "name": "unit_tests",
         "swarming": {
           "dimensions": {
@@ -390,6 +415,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//content/shell:content_shell_crash_test",
+        "module_scheme": "single",
         "name": "content_shell_crash_test",
         "resultdb": {
           "enable": true,
@@ -409,6 +435,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test:telemetry_gpu_unittests",
+        "module_scheme": "flat",
         "name": "telemetry_gpu_unittests",
         "resultdb": {
           "enable": true
@@ -432,6 +459,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test:telemetry_perf_unittests",
+        "module_scheme": "pyunit",
         "name": "telemetry_perf_unittests",
         "resultdb": {
           "enable": true
@@ -456,6 +484,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test:telemetry_unittests",
+        "module_scheme": "pyunit",
         "name": "telemetry_unittests",
         "resultdb": {
           "enable": true
@@ -483,6 +512,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//extensions/shell:app_shell_unittests",
+        "module_scheme": "gtest",
         "name": "app_shell_unittests",
         "swarming": {
           "dimensions": {
@@ -498,6 +528,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//chrome/test:browser_tests",
+        "module_scheme": "gtest",
         "name": "browser_tests",
         "swarming": {
           "dimensions": {
@@ -514,6 +545,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//chrome/test:chrome_app_unittests",
+        "module_scheme": "gtest",
         "name": "chrome_app_unittests",
         "swarming": {
           "dimensions": {
@@ -529,6 +561,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//chrome/test/chromedriver:chromedriver_unittests",
+        "module_scheme": "gtest",
         "name": "chromedriver_unittests",
         "swarming": {
           "dimensions": {
@@ -544,6 +577,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//components:components_browsertests",
+        "module_scheme": "gtest",
         "name": "components_browsertests",
         "swarming": {
           "dimensions": {
@@ -559,6 +593,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//components:components_unittests",
+        "module_scheme": "gtest",
         "name": "components_unittests",
         "swarming": {
           "dimensions": {
@@ -574,6 +609,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//ui/compositor:compositor_unittests",
+        "module_scheme": "gtest",
         "name": "compositor_unittests",
         "swarming": {
           "dimensions": {
@@ -589,6 +625,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//content/test:content_browsertests",
+        "module_scheme": "gtest",
         "name": "content_browsertests",
         "swarming": {
           "dimensions": {
@@ -604,6 +641,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//content/test:content_unittests",
+        "module_scheme": "gtest",
         "name": "content_unittests",
         "swarming": {
           "dimensions": {
@@ -619,6 +657,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//device:device_unittests",
+        "module_scheme": "gtest",
         "name": "device_unittests",
         "swarming": {
           "dimensions": {
@@ -634,6 +673,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//extensions:extensions_browsertests",
+        "module_scheme": "gtest",
         "name": "extensions_browsertests",
         "swarming": {
           "dimensions": {
@@ -649,6 +689,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//extensions:extensions_unittests",
+        "module_scheme": "gtest",
         "name": "extensions_unittests",
         "swarming": {
           "dimensions": {
@@ -664,6 +705,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//google_apis/gcm:gcm_unit_tests",
+        "module_scheme": "gtest",
         "name": "gcm_unit_tests",
         "swarming": {
           "dimensions": {
@@ -679,6 +721,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//gin:gin_unittests",
+        "module_scheme": "gtest",
         "name": "gin_unittests",
         "swarming": {
           "dimensions": {
@@ -694,6 +737,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//google_apis:google_apis_unittests",
+        "module_scheme": "gtest",
         "name": "google_apis_unittests",
         "swarming": {
           "dimensions": {
@@ -709,6 +753,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//gpu:gpu_unittests",
+        "module_scheme": "gtest",
         "name": "gpu_unittests",
         "swarming": {
           "dimensions": {
@@ -724,6 +769,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//headless:headless_browsertests",
+        "module_scheme": "gtest",
         "name": "headless_browsertests",
         "swarming": {
           "dimensions": {
@@ -739,6 +785,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//headless:headless_unittests",
+        "module_scheme": "gtest",
         "name": "headless_unittests",
         "swarming": {
           "dimensions": {
@@ -754,6 +801,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//chrome/test:interactive_ui_tests",
+        "module_scheme": "gtest",
         "name": "interactive_ui_tests",
         "swarming": {
           "dimensions": {
@@ -770,6 +818,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//net:net_unittests",
+        "module_scheme": "gtest",
         "name": "net_unittests",
         "swarming": {
           "dimensions": {
@@ -785,6 +834,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//pdf:pdf_unittests",
+        "module_scheme": "gtest",
         "name": "pdf_unittests",
         "swarming": {
           "dimensions": {
@@ -800,6 +850,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//remoting:remoting_unittests",
+        "module_scheme": "gtest",
         "name": "remoting_unittests",
         "swarming": {
           "dimensions": {
@@ -815,6 +866,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//services:services_unittests",
+        "module_scheme": "gtest",
         "name": "services_unittests",
         "swarming": {
           "dimensions": {
@@ -830,6 +882,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//chrome/test:sync_integration_tests",
+        "module_scheme": "gtest",
         "name": "sync_integration_tests",
         "swarming": {
           "dimensions": {
@@ -846,6 +899,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//chrome/test:unit_tests",
+        "module_scheme": "gtest",
         "name": "unit_tests",
         "swarming": {
           "dimensions": {
@@ -863,6 +917,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//content/shell:content_shell_crash_test",
+        "module_scheme": "single",
         "name": "content_shell_crash_test",
         "resultdb": {
           "enable": true,
@@ -882,6 +937,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test:telemetry_gpu_unittests",
+        "module_scheme": "flat",
         "name": "telemetry_gpu_unittests",
         "resultdb": {
           "enable": true
@@ -905,6 +961,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test:telemetry_unittests",
+        "module_scheme": "pyunit",
         "name": "telemetry_unittests",
         "resultdb": {
           "enable": true
