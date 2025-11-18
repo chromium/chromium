@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <bit>
 #include <cmath>
 #include <numeric>
 
@@ -26,25 +27,6 @@
 #endif
 
 namespace media {
-
-namespace {
-
-#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_FUCHSIA)
-// Taken from "Bit Twiddling Hacks"
-// http://graphics.stanford.edu/~seander/bithacks.html#RoundUpPowerOf2
-uint32_t RoundUpToPowerOfTwo(uint32_t v) {
-  v--;
-  v |= v >> 1;
-  v |= v >> 2;
-  v |= v >> 4;
-  v |= v >> 8;
-  v |= v >> 16;
-  v++;
-  return v;
-}
-#endif
-
-}  // namespace
 
 // static
 bool AudioLatency::IsResamplingPassthroughSupported(Type type) {
@@ -71,7 +53,8 @@ int AudioLatency::GetHighLatencyBufferSize(int sample_rate,
 #if BUILDFLAG(USE_CRAS)
   // Use 80ms rounded to a power of 2.
   const double eighty_ms_size = 8.0 * sample_rate / 100;
-  const int high_latency_buffer_size = RoundUpToPowerOfTwo(eighty_ms_size);
+  const int high_latency_buffer_size =
+      std::bit_ceil(static_cast<uint32_t>(std::round(eighty_ms_size)));
 #elif BUILDFLAG(IS_FUCHSIA)
   // Use 80ms buffers. Doesn't need to be aligned to power of 2, but it should
   // be a multiple of the scheduling period used for audio threads.
@@ -103,7 +86,8 @@ int AudioLatency::GetHighLatencyBufferSize(int sample_rate,
   // On Linux, the minimum hardware buffer size is 512, so the lower calculated
   // values are unused.  OSX may have a value as low as 128.
   const double twenty_ms_size = 2.0 * sample_rate / 100;
-  const int high_latency_buffer_size = RoundUpToPowerOfTwo(twenty_ms_size);
+  const int high_latency_buffer_size =
+      std::bit_ceil(static_cast<uint32_t>(std::round(twenty_ms_size)));
 #endif
 
   return std::max(preferred_buffer_size, high_latency_buffer_size);
