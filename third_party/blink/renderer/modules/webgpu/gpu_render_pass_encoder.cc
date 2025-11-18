@@ -54,6 +54,25 @@ void GPURenderPassEncoder::setBindGroup(
       data_span.size(), data_span.data());
 }
 
+void GPURenderPassEncoder::setImmediates(uint32_t range_offset,
+                                         base::span<const uint8_t> data,
+                                         uint64_t data_offset,
+                                         ExceptionState& exception_state) {
+  // TODO(crbug.com/366291600): Implement setImmediates.
+  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                    "setImmediates is not yet implemented");
+}
+
+void GPURenderPassEncoder::setImmediates(uint32_t range_offset,
+                                         base::span<const uint8_t> data,
+                                         uint64_t data_offset,
+                                         uint64_t size,
+                                         ExceptionState& exception_state) {
+  // TODO(crbug.com/366291600): Implement setImmediates.
+  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                    "setImmediates is not yet implemented");
+}
+
 void GPURenderPassEncoder::setBlendConstant(const V8GPUColor* color,
                                             ExceptionState& exception_state) {
   wgpu::Color dawn_color;

@@ -104,6 +104,25 @@ void GPURenderBundleEncoder::setBindGroup(
       data_span.size(), data_span.data());
 }
 
+void GPURenderBundleEncoder::setImmediates(uint32_t range_offset,
+                                           base::span<const uint8_t> data,
+                                           uint64_t data_offset,
+                                           ExceptionState& exception_state) {
+  // TODO(crbug.com/366291600): Implement setImmediates.
+  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                    "setImmediates is not yet implemented");
+}
+
+void GPURenderBundleEncoder::setImmediates(uint32_t range_offset,
+                                           base::span<const uint8_t> data,
+                                           uint64_t data_offset,
+                                           uint64_t size,
+                                           ExceptionState& exception_state) {
+  // TODO(crbug.com/366291600): Implement setImmediates.
+  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                    "setImmediates is not yet implemented");
+}
+
 GPURenderBundle* GPURenderBundleEncoder::finish(
     const GPURenderBundleDescriptor* webgpu_desc) {
   wgpu::RenderBundleDescriptor dawn_desc = {};

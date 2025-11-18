@@ -52,6 +52,25 @@ void GPUComputePassEncoder::setBindGroup(
       data_span.size(), data_span.data());
 }
 
+void GPUComputePassEncoder::setImmediates(uint32_t range_offset,
+                                          base::span<const uint8_t> data,
+                                          uint64_t data_offset,
+                                          ExceptionState& exception_state) {
+  // TODO(crbug.com/366291600): Implement setImmediates.
+  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                    "setImmediates is not yet implemented");
+}
+
+void GPUComputePassEncoder::setImmediates(uint32_t range_offset,
+                                          base::span<const uint8_t> data,
+                                          uint64_t data_offset,
+                                          uint64_t size,
+                                          ExceptionState& exception_state) {
+  // TODO(crbug.com/366291600): Implement setImmediates.
+  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                    "setImmediates is not yet implemented");
+}
+
 void GPUComputePassEncoder::writeTimestamp(
     const DawnObject<wgpu::QuerySet>* querySet,
     uint32_t queryIndex,
