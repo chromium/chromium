@@ -1628,6 +1628,7 @@ dialog:-internal-dialog-in-top-layer {
 
 [popover] {
     position: fixed;
+    position-anchor: auto;
     inset: 0;
     width: fit-content;
     height: fit-content;
@@ -2340,6 +2341,7 @@ select::-internal-select-autofill-preview-text {
     display: flex;
     flex-direction: column;
     position: absolute;
+    position-anchor: auto;
     width: max-content;
     min-width: 150px;
     color: CanvasText;
