@@ -28,6 +28,9 @@ class ActorLoginQualityLogger
   void SetGetCredentialsDetails(
       optimization_guide::proto::ActorLoginQuality_GetCredentialsDetails
           get_credentials_details) override;
+  void AddAttemptLoginDetails(
+      optimization_guide::proto::ActorLoginQuality_AttemptLoginDetails
+          attempt_login_details) override;
   void UploadFinalLog(optimization_guide::ModelQualityLogsUploaderService*
                           mqls_uploader) const override;
 

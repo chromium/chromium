@@ -146,6 +146,23 @@ optimization_guide::proto::
     ActorLoginQuality_GetCredentialsDetails_PermissionDetails
     PermissionEnumToProtoType(PermissionDetailsMqls permission);
 
+// C++ enum copy of `AttemptLoginOutcome` in `actor_login.proto`.
+enum class AttemptLoginOutcomeMqls {
+  kUnspecified,
+  kSuccess,
+  kNoSignInForm,
+  kInvalidCredential,
+  kNoFillableFields,
+  kDisallowedOrigin,
+  kReauthRequired,
+  kReauthFailed,
+
+};
+
+optimization_guide::proto::
+    ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome
+    OutcomeEnumToProtoType(AttemptLoginOutcomeMqls outcome);
+
 }  // namespace actor_login
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_ACTOR_LOGIN_ACTOR_LOGIN_TYPES_H_

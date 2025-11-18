@@ -20,6 +20,12 @@ void ActorLoginQualityLogger::SetGetCredentialsDetails(
       get_credentials_details);
 }
 
+void ActorLoginQualityLogger::AddAttemptLoginDetails(
+    optimization_guide::proto::ActorLoginQuality_AttemptLoginDetails
+        attempt_login_details) {
+  log_data_.add_attempt_login_details()->CopyFrom(attempt_login_details);
+}
+
 void ActorLoginQualityLogger::UploadFinalLog(
     optimization_guide::ModelQualityLogsUploaderService* mqls_uploader) const {
   if (!mqls_uploader) {

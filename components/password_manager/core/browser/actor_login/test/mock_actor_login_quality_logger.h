@@ -20,6 +20,10 @@ class MockActorLoginQualityLogger : public ActorLoginQualityLoggerInterface {
       void,
       SetGetCredentialsDetails,
       (optimization_guide::proto::ActorLoginQuality_GetCredentialsDetails));
+  MOCK_METHOD(
+      void,
+      AddAttemptLoginDetails,
+      (optimization_guide::proto::ActorLoginQuality_AttemptLoginDetails));
   MOCK_METHOD(void,
               UploadFinalLog,
               (optimization_guide::ModelQualityLogsUploaderService *

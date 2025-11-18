@@ -26,6 +26,10 @@ class ActorLoginQualityLoggerInterface {
       optimization_guide::proto::ActorLoginQuality_GetCredentialsDetails
           get_credentials_details) = 0;
 
+  virtual void AddAttemptLoginDetails(
+      optimization_guide::proto::ActorLoginQuality_AttemptLoginDetails
+          attempt_login_details) = 0;
+
   // To be called when the trajectory is finished and the final log should
   // be uploaded to the server.
   virtual void UploadFinalLog(

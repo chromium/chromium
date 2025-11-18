@@ -7,6 +7,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -18,6 +19,7 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/device_reauth/mock_device_authenticator.h"
+#include "components/optimization_guide/proto/features/actor_login.pb.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/password_manager/core/browser/actor_login/test/actor_login_test_util.h"
 #include "components/password_manager/core/browser/actor_login/test/mock_actor_login_quality_logger.h"
@@ -30,6 +32,7 @@
 #include "components/password_manager/core/browser/password_save_manager_impl.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
+#include "components/proto_extras/proto_matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -40,6 +43,7 @@ namespace actor_login {
 using autofill::FormData;
 using autofill::FormFieldData;
 using autofill::test::CreateTestFormField;
+using base::test::EqualsProto;
 using base::test::RunOnceCallback;
 using base::test::RunOnceCallbackRepeatedly;
 using device_reauth::DeviceAuthenticator;
@@ -58,11 +62,36 @@ using testing::_;
 using testing::DoAll;
 using testing::Eq;
 using testing::Invoke;
+using testing::Matcher;
 using testing::Return;
 using testing::ReturnRef;
 using testing::WithArg;
 
 namespace {
+
+using AttemptLoginDetails =
+    optimization_guide::proto::ActorLoginQuality_AttemptLoginDetails;
+using FillingFormResult = optimization_guide::proto::
+    ActorLoginQuality_AttemptLoginDetails_FillingFormResult;
+
+Matcher<AttemptLoginDetails> EqualsAttemptLoginDetails(
+    const AttemptLoginDetails& expected) {
+  std::vector<testing::Matcher<const FillingFormResult&>> form_result_matchers;
+  form_result_matchers.reserve(expected.filling_form_result().size());
+  for (const auto& result : expected.filling_form_result()) {
+    form_result_matchers.push_back(EqualsProto(result));
+  }
+
+  return testing::AllOf(
+      testing::Property("outcome", &AttemptLoginDetails::outcome,
+                        expected.outcome()),
+      testing::Property("attempt_login_time_ms",
+                        &AttemptLoginDetails::attempt_login_time_ms,
+                        expected.attempt_login_time_ms()),
+      testing::Property(
+          "filling_form_result", &AttemptLoginDetails::filling_form_result,
+          testing::UnorderedElementsAreArray(form_result_matchers)));
+}
 
 constexpr char16_t kTestUsername[] = u"username";
 constexpr char16_t kTestPassword[] = u"password";
@@ -214,7 +243,8 @@ class ActorLoginCredentialFillerTest : public ::testing::TestWithParam<bool> {
   url::Origin main_frame_origin_ =
       url::Origin::Create(GURL("https://example.com"));
 
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   autofill::test::AutofillUnitTestEnvironment autofill_test_environment_{
       {.disable_server_communication = true}};
   testing::NiceMock<MockPasswordManager> mock_password_manager_;
@@ -234,18 +264,27 @@ TEST_P(ActorLoginCredentialFillerTest, NoSigninForm_NoManagers) {
   std::vector<std::unique_ptr<PasswordFormManager>> form_managers;
 
   base::test::TestFuture<LoginStatusResultOrError> future;
-  base::MockCallback<LoginStatusResultOrErrorReply> mock_callback;
-  ActorLoginCredentialFiller filler(
+  auto filler = std::make_unique<ActorLoginCredentialFiller>(
       origin, credential, should_store_permission(), &mock_client_,
       mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
 
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillRepeatedly(Return(base::span(form_managers)));
-  filler.AttemptLogin(&mock_password_manager_);
+
+  filler->AttemptLogin(&mock_password_manager_);
   ASSERT_TRUE(future.Get().has_value());
   EXPECT_EQ(future.Get().value(), LoginStatusResult::kErrorNoSigninForm);
+  AttemptLoginDetails expected_details;
+  expected_details.set_outcome(
+      optimization_guide::proto::
+          ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_NO_SIGN_IN_FORM);
+  expected_details.set_attempt_login_time_ms(0);
+  EXPECT_CALL(
+      mock_mqls_logger_,
+      AddAttemptLoginDetails(EqualsAttemptLoginDetails(expected_details)));
+  // Destroy the filler, because it sends logs in the destructor.
+  filler.reset();
 }
-
 TEST_P(ActorLoginCredentialFillerTest, NoSigninForm_CrossSiteIframe) {
   url::Origin origin = url::Origin::Create(GURL("https://example.com/login"));
   url::Origin cross_site_origin =
@@ -260,7 +299,6 @@ TEST_P(ActorLoginCredentialFillerTest, NoSigninForm_CrossSiteIframe) {
   form_managers.push_back(std::move(form_manager));
 
   base::test::TestFuture<LoginStatusResultOrError> future;
-  base::MockCallback<LoginStatusResultOrErrorReply> mock_callback;
   ActorLoginCredentialFiller filler(
       origin, credential, should_store_permission(), &mock_client_,
       mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
@@ -287,7 +325,6 @@ TEST_P(ActorLoginCredentialFillerTest, NoSigninForm_NoParsedForm) {
 
   form_managers.push_back(std::move(form_manager));
 
-  base::MockCallback<LoginStatusResultOrErrorReply> mock_callback;
   base::test::TestFuture<LoginStatusResultOrError> future;
   ActorLoginCredentialFiller filler(
       origin, credential, should_store_permission(), &mock_client_,
@@ -310,7 +347,6 @@ TEST_P(ActorLoginCredentialFillerTest, NoSigninForm_NotLoginForm) {
           origin, CreateChangePasswordFormData(origin.GetURL()));
   form_managers.push_back(std::move(form_manager));
 
-  base::MockCallback<LoginStatusResultOrErrorReply> mock_callback;
   base::test::TestFuture<LoginStatusResultOrError> future;
   ActorLoginCredentialFiller filler(
       origin, credential, should_store_permission(), &mock_client_,
@@ -337,16 +373,26 @@ TEST_P(ActorLoginCredentialFillerTest,
   std::vector<std::unique_ptr<PasswordFormManager>> form_managers;
   form_managers.push_back(CreateFormManagerWithParsedForm(origin, form_data));
 
-  base::MockCallback<LoginStatusResultOrErrorReply> mock_callback;
   base::test::TestFuture<LoginStatusResultOrError> future;
-  ActorLoginCredentialFiller filler(
+  auto filler = std::make_unique<ActorLoginCredentialFiller>(
       origin, credential, should_store_permission(), &mock_client_,
       mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillRepeatedly(Return(base::span(form_managers)));
-  filler.AttemptLogin(&mock_password_manager_);
+
+  filler->AttemptLogin(&mock_password_manager_);
   ASSERT_TRUE(future.Get().has_value());
   EXPECT_EQ(future.Get().value(), LoginStatusResult::kErrorInvalidCredential);
+  AttemptLoginDetails expected_details;
+  expected_details.set_outcome(
+      optimization_guide::proto::
+          ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_INVALID_CREDENTIAL);
+  expected_details.set_attempt_login_time_ms(0);
+  EXPECT_CALL(
+      mock_mqls_logger_,
+      AddAttemptLoginDetails(EqualsAttemptLoginDetails(expected_details)));
+  // Destroy the filler, because it sends logs in the destructor.
+  filler.reset();
 }
 
 TEST_P(ActorLoginCredentialFillerTest,
@@ -362,7 +408,6 @@ TEST_P(ActorLoginCredentialFillerTest,
   std::vector<std::unique_ptr<PasswordFormManager>> form_managers;
   form_managers.push_back(CreateFormManagerWithParsedForm(origin, form_data));
 
-  base::MockCallback<LoginStatusResultOrErrorReply> mock_callback;
   base::test::TestFuture<LoginStatusResultOrError> future;
   ActorLoginCredentialFiller filler(
       origin, credential, should_store_permission(), &mock_client_,
@@ -433,6 +478,7 @@ TEST_P(ActorLoginCredentialFillerTest,
   ActorLoginCredentialFiller filler(
       main_frame_origin, credential, should_store_permission(), &mock_client_,
       mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
+
   filler.AttemptLogin(&mock_password_manager_);
   ASSERT_TRUE(future.Get().has_value());
   EXPECT_EQ(future.Get().value(), LoginStatusResult::kErrorInvalidCredential);
@@ -462,6 +508,7 @@ TEST_P(ActorLoginCredentialFillerTest, DoesntFillFencedFrameForm) {
       .WillRepeatedly(Return(base::span(form_managers)));
   ON_CALL(mock_driver_, IsInPrimaryMainFrame).WillByDefault(Return(false));
   EXPECT_CALL(mock_driver_, IsNestedWithinFencedFrame).WillOnce(Return(true));
+
   filler.AttemptLogin(&mock_password_manager_);
   ASSERT_TRUE(future.Get().has_value());
   EXPECT_EQ(future.Get().value(), LoginStatusResult::kErrorNoSigninForm);
@@ -530,7 +577,7 @@ TEST_P(ActorLoginCredentialFillerTest, FillsNestedFrameWithSameOrigin) {
   const PasswordForm* parsed_form = form_managers[0]->GetParsedObservedForm();
 
   base::test::TestFuture<LoginStatusResultOrError> future;
-  ActorLoginCredentialFiller filler(
+  auto filler = std::make_unique<ActorLoginCredentialFiller>(
       main_frame_origin, credential, should_store_permission(), &mock_client_,
       mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
@@ -542,11 +589,24 @@ TEST_P(ActorLoginCredentialFillerTest, FillsNestedFrameWithSameOrigin) {
               FillField(parsed_form->password_element_renderer_id, _, _, _))
       .WillOnce(RunOnceCallback<3>(true));
 
-  filler.AttemptLogin(&mock_password_manager_);
+  filler->AttemptLogin(&mock_password_manager_);
   const LoginStatusResultOrError& result = future.Get();
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value(),
             LoginStatusResult::kSuccessUsernameAndPasswordFilled);
+  AttemptLoginDetails expected_details;
+  expected_details.set_outcome(
+      optimization_guide::proto::
+          ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_SUCCESS);
+  expected_details.set_attempt_login_time_ms(0);
+  FillingFormResult* form_result = expected_details.add_filling_form_result();
+  form_result->set_was_username_filled(true);
+  form_result->set_was_password_filled(true);
+  EXPECT_CALL(
+      mock_mqls_logger_,
+      AddAttemptLoginDetails(EqualsAttemptLoginDetails(expected_details)));
+  // Destroy the filler, because it sends logs in the destructor.
+  filler.reset();
 }
 
 TEST_P(ActorLoginCredentialFillerTest,
@@ -704,7 +764,7 @@ TEST_P(ActorLoginCredentialFillerTest, FillUsernameAndPasswordSingleForm) {
   const PasswordForm* parsed_form = form_managers[0]->GetParsedObservedForm();
 
   base::test::TestFuture<LoginStatusResultOrError> future;
-  ActorLoginCredentialFiller filler(
+  auto filler = std::make_unique<ActorLoginCredentialFiller>(
       origin, credential, should_store_permission(), &mock_client_,
       mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
@@ -728,11 +788,26 @@ TEST_P(ActorLoginCredentialFillerTest, FillUsernameAndPasswordSingleForm) {
                 autofill::FieldPropertiesFlags::kAutofilledActorLogin, _))
       .WillOnce(RunOnceCallback<3>(true));
 
-  filler.AttemptLogin(&mock_password_manager_);
+  filler->AttemptLogin(&mock_password_manager_);
+  const int kRequestDurationMs = 5;
+  task_environment_.AdvanceClock(base::Milliseconds(kRequestDurationMs));
   const LoginStatusResultOrError& result = future.Get();
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value(),
             LoginStatusResult::kSuccessUsernameAndPasswordFilled);
+  AttemptLoginDetails expected_details;
+  expected_details.set_outcome(
+      optimization_guide::proto::
+          ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_SUCCESS);
+  expected_details.set_attempt_login_time_ms(kRequestDurationMs);
+  FillingFormResult* form_result = expected_details.add_filling_form_result();
+  form_result->set_was_username_filled(true);
+  form_result->set_was_password_filled(true);
+  EXPECT_CALL(
+      mock_mqls_logger_,
+      AddAttemptLoginDetails(EqualsAttemptLoginDetails(expected_details)));
+  // Destroy the filler, because it sends logs in the destructor.
+  filler.reset();
 }
 
 TEST_P(ActorLoginCredentialFillerTest,
@@ -981,7 +1056,7 @@ TEST_P(ActorLoginCredentialFillerTest, FillOnlyUsernameFieldSingleForm) {
   const PasswordForm* parsed_form = form_managers[0]->GetParsedObservedForm();
 
   base::test::TestFuture<LoginStatusResultOrError> future;
-  ActorLoginCredentialFiller filler(
+  auto filler = std::make_unique<ActorLoginCredentialFiller>(
       origin, credential, should_store_permission(), &mock_client_,
       mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
 
@@ -1006,10 +1081,23 @@ TEST_P(ActorLoginCredentialFillerTest, FillOnlyUsernameFieldSingleForm) {
       FillField(parsed_form->password_element_renderer_id, Eq(kTestPassword),
                 autofill::FieldPropertiesFlags::kAutofilledActorLogin, _))
       .Times(0);
-  filler.AttemptLogin(&mock_password_manager_);
+
+  filler->AttemptLogin(&mock_password_manager_);
   const LoginStatusResultOrError& result = future.Get();
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value(), LoginStatusResult::kSuccessUsernameFilled);
+  AttemptLoginDetails expected_details;
+  expected_details.set_outcome(
+      optimization_guide::proto::
+          ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_SUCCESS);
+  expected_details.set_attempt_login_time_ms(0);
+  FillingFormResult* form_result = expected_details.add_filling_form_result();
+  form_result->set_was_username_filled(true);
+  EXPECT_CALL(
+      mock_mqls_logger_,
+      AddAttemptLoginDetails(EqualsAttemptLoginDetails(expected_details)));
+  // Destroy the filler, because it sends logs in the destructor.
+  filler.reset();
 }
 
 // Tests filling the password in a single chosen form.
@@ -1034,7 +1122,7 @@ TEST_P(ActorLoginCredentialFillerTest, FillOnlyPasswordFieldSingleForm) {
   const PasswordForm* parsed_form = form_managers[0]->GetParsedObservedForm();
 
   base::test::TestFuture<LoginStatusResultOrError> future;
-  ActorLoginCredentialFiller filler(
+  auto filler = std::make_unique<ActorLoginCredentialFiller>(
       origin, credential, should_store_permission(), &mock_client_,
       mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
 
@@ -1058,10 +1146,23 @@ TEST_P(ActorLoginCredentialFillerTest, FillOnlyPasswordFieldSingleForm) {
       FillField(parsed_form->password_element_renderer_id, Eq(kTestPassword),
                 autofill::FieldPropertiesFlags::kAutofilledActorLogin, _))
       .WillOnce(RunOnceCallback<3>(true));
-  filler.AttemptLogin(&mock_password_manager_);
+
+  filler->AttemptLogin(&mock_password_manager_);
   const LoginStatusResultOrError& result = future.Get();
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value(), LoginStatusResult::kSuccessPasswordFilled);
+  AttemptLoginDetails expected_details;
+  expected_details.set_outcome(
+      optimization_guide::proto::
+          ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_SUCCESS);
+  expected_details.set_attempt_login_time_ms(0);
+  FillingFormResult* form_result = expected_details.add_filling_form_result();
+  form_result->set_was_password_filled(true);
+  EXPECT_CALL(
+      mock_mqls_logger_,
+      AddAttemptLoginDetails(EqualsAttemptLoginDetails(expected_details)));
+  // Destroy the filler, because it sends logs in the destructor.
+  filler.reset();
 }
 
 // Tests filling the username in a single chosen form.
@@ -1084,7 +1185,7 @@ TEST_P(ActorLoginCredentialFillerTest, FillUsernameFailsSingleForm) {
   const PasswordForm* parsed_form = form_managers[0]->GetParsedObservedForm();
 
   base::test::TestFuture<LoginStatusResultOrError> future;
-  ActorLoginCredentialFiller filler(
+  auto filler = std::make_unique<ActorLoginCredentialFiller>(
       origin, credential, should_store_permission(), &mock_client_,
       mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
 
@@ -1105,11 +1206,25 @@ TEST_P(ActorLoginCredentialFillerTest, FillUsernameFailsSingleForm) {
       FillField(parsed_form->password_element_renderer_id, Eq(kTestPassword),
                 autofill::FieldPropertiesFlags::kAutofilledActorLogin, _))
       .WillOnce(RunOnceCallback<3>(true));
-  filler.AttemptLogin(&mock_password_manager_);
+
+  filler->AttemptLogin(&mock_password_manager_);
 
   const LoginStatusResultOrError& result = future.Get();
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value(), LoginStatusResult::kSuccessPasswordFilled);
+  AttemptLoginDetails expected_details;
+  expected_details.set_outcome(
+      optimization_guide::proto::
+          ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_SUCCESS);
+  expected_details.set_attempt_login_time_ms(0);
+  FillingFormResult* form_result = expected_details.add_filling_form_result();
+  form_result->set_was_username_filled(false);
+  form_result->set_was_password_filled(true);
+  EXPECT_CALL(
+      mock_mqls_logger_,
+      AddAttemptLoginDetails(EqualsAttemptLoginDetails(expected_details)));
+  // Destroy the filler, because it sends logs in the destructor.
+  filler.reset();
 }
 
 // Tests not being able to fill the password in a single chosen form.
@@ -1132,7 +1247,7 @@ TEST_P(ActorLoginCredentialFillerTest, FillPasswordFailsSingleForm) {
   const PasswordForm* parsed_form = form_managers[0]->GetParsedObservedForm();
 
   base::test::TestFuture<LoginStatusResultOrError> future;
-  ActorLoginCredentialFiller filler(
+  auto filler = std::make_unique<ActorLoginCredentialFiller>(
       origin, credential, should_store_permission(), &mock_client_,
       mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
 
@@ -1153,10 +1268,24 @@ TEST_P(ActorLoginCredentialFillerTest, FillPasswordFailsSingleForm) {
       FillField(parsed_form->password_element_renderer_id, Eq(kTestPassword),
                 autofill::FieldPropertiesFlags::kAutofilledActorLogin, _))
       .WillOnce(RunOnceCallback<3>(false));
-  filler.AttemptLogin(&mock_password_manager_);
+
+  filler->AttemptLogin(&mock_password_manager_);
   const LoginStatusResultOrError& result = future.Get();
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value(), LoginStatusResult::kSuccessUsernameFilled);
+  AttemptLoginDetails expected_details;
+  expected_details.set_outcome(
+      optimization_guide::proto::
+          ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_SUCCESS);
+  expected_details.set_attempt_login_time_ms(0);
+  FillingFormResult* form_result = expected_details.add_filling_form_result();
+  form_result->set_was_username_filled(true);
+  form_result->set_was_password_filled(false);
+  EXPECT_CALL(
+      mock_mqls_logger_,
+      AddAttemptLoginDetails(EqualsAttemptLoginDetails(expected_details)));
+  // Destroy the filler, because it sends logs in the destructor.
+  filler.reset();
 }
 
 // Tests that filling both fields fails in a single chosen form.
@@ -1179,7 +1308,7 @@ TEST_P(ActorLoginCredentialFillerTest, FillBothFailsSingleForm) {
   const PasswordForm* parsed_form = form_managers[0]->GetParsedObservedForm();
 
   base::test::TestFuture<LoginStatusResultOrError> future;
-  ActorLoginCredentialFiller filler(
+  auto filler = std::make_unique<ActorLoginCredentialFiller>(
       origin, credential, should_store_permission(), &mock_client_,
       mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
 
@@ -1201,10 +1330,24 @@ TEST_P(ActorLoginCredentialFillerTest, FillBothFailsSingleForm) {
       FillField(parsed_form->password_element_renderer_id, Eq(kTestPassword),
                 autofill::FieldPropertiesFlags::kAutofilledActorLogin, _))
       .WillOnce(RunOnceCallback<3>(false));
-  filler.AttemptLogin(&mock_password_manager_);
+
+  filler->AttemptLogin(&mock_password_manager_);
   const LoginStatusResultOrError& result = future.Get();
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value(), LoginStatusResult::kErrorNoFillableFields);
+  AttemptLoginDetails expected_details;
+  expected_details.set_outcome(
+      optimization_guide::proto::
+          ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_NO_FILLABLE_FIELDS);
+  expected_details.set_attempt_login_time_ms(0);
+  FillingFormResult* form_result = expected_details.add_filling_form_result();
+  form_result->set_was_username_filled(false);
+  form_result->set_was_password_filled(false);
+  EXPECT_CALL(
+      mock_mqls_logger_,
+      AddAttemptLoginDetails(EqualsAttemptLoginDetails(expected_details)));
+  // Destroy the filler, because it sends logs in the destructor.
+  filler.reset();
 }
 
 // Tests filling username and password succeeds if filling all eligible
@@ -1242,7 +1385,7 @@ TEST_P(ActorLoginCredentialFillerTest,
       form_managers[2]->GetParsedObservedForm();
 
   base::test::TestFuture<LoginStatusResultOrError> future;
-  ActorLoginCredentialFiller filler(
+  auto filler = std::make_unique<ActorLoginCredentialFiller>(
       origin, credential, should_store_permission(), &mock_client_,
       mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
 
@@ -1274,11 +1417,28 @@ TEST_P(ActorLoginCredentialFillerTest,
                 autofill::FieldPropertiesFlags::kAutofilledActorLogin, _))
       .WillOnce(RunOnceCallback<3>(true));
 
-  filler.AttemptLogin(&mock_password_manager_);
+  filler->AttemptLogin(&mock_password_manager_);
   const LoginStatusResultOrError& result = future.Get();
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value(),
             LoginStatusResult::kSuccessUsernameAndPasswordFilled);
+  AttemptLoginDetails expected_details;
+  expected_details.set_outcome(
+      optimization_guide::proto::
+          ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_SUCCESS);
+  expected_details.set_attempt_login_time_ms(0);
+  FillingFormResult* form_result1 = expected_details.add_filling_form_result();
+  form_result1->set_was_username_filled(false);
+  form_result1->set_was_password_filled(false);
+  FillingFormResult* form_result2 = expected_details.add_filling_form_result();
+  form_result2->set_was_username_filled(true);
+  FillingFormResult* form_result3 = expected_details.add_filling_form_result();
+  form_result3->set_was_password_filled(true);
+  EXPECT_CALL(
+      mock_mqls_logger_,
+      AddAttemptLoginDetails(EqualsAttemptLoginDetails(expected_details)));
+  // Destroy the filler, because it sends logs in the destructor.
+  filler.reset();
 }
 
 TEST_P(ActorLoginCredentialFillerTest,
@@ -1318,7 +1478,7 @@ TEST_P(ActorLoginCredentialFillerTest,
   const PasswordForm* parsed_form_2 = form_managers[1]->GetParsedObservedForm();
 
   base::test::TestFuture<LoginStatusResultOrError> future;
-  ActorLoginCredentialFiller filler(
+  auto filler = std::make_unique<ActorLoginCredentialFiller>(
       origin, credential, should_store_permission(), &mock_client_,
       mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
 
@@ -1364,11 +1524,27 @@ TEST_P(ActorLoginCredentialFillerTest,
                 autofill::FieldPropertiesFlags::kAutofilledActorLogin, _))
       .WillOnce(RunOnceCallback<3>(true));
 
-  filler.AttemptLogin(&mock_password_manager_);
+  filler->AttemptLogin(&mock_password_manager_);
   const LoginStatusResultOrError& result = future.Get();
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value(),
             LoginStatusResult::kSuccessUsernameAndPasswordFilled);
+  AttemptLoginDetails expected_details;
+  expected_details.set_outcome(
+      optimization_guide::proto::
+          ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_SUCCESS);
+  expected_details.set_attempt_login_time_ms(0);
+  FillingFormResult* form_result1 = expected_details.add_filling_form_result();
+  form_result1->set_was_username_filled(false);
+  form_result1->set_was_password_filled(false);
+  FillingFormResult* form_result2 = expected_details.add_filling_form_result();
+  form_result2->set_was_username_filled(true);
+  form_result2->set_was_password_filled(true);
+  EXPECT_CALL(
+      mock_mqls_logger_,
+      AddAttemptLoginDetails(EqualsAttemptLoginDetails(expected_details)));
+  // Destroy the filler, because it sends logs in the destructor.
+  filler.reset();
 }
 
 TEST_P(ActorLoginCredentialFillerTest,
@@ -1596,7 +1772,7 @@ TEST_P(ActorLoginCredentialFillerTest, StoresPermissionWhenFillingAllFields) {
       form_managers[2]->GetParsedObservedForm();
 
   base::test::TestFuture<LoginStatusResultOrError> future;
-  ActorLoginCredentialFiller filler(
+  auto filler = std::make_unique<ActorLoginCredentialFiller>(
       origin, credential, should_store_permission(), &mock_client_,
       mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
 
@@ -1627,7 +1803,7 @@ TEST_P(ActorLoginCredentialFillerTest, StoresPermissionWhenFillingAllFields) {
                 autofill::FieldPropertiesFlags::kAutofilledActorLogin, _))
       .WillOnce(RunOnceCallback<3>(true));
 
-  filler.AttemptLogin(&mock_password_manager_);
+  filler->AttemptLogin(&mock_password_manager_);
   ASSERT_TRUE(future.Get().has_value());
 
   autofill::test_api(form_data).field(0).set_value(kTestUsername);
@@ -1659,6 +1835,23 @@ TEST_P(ActorLoginCredentialFillerTest, StoresPermissionWhenFillingAllFields) {
             false);
   EXPECT_EQ(form_managers[2]->GetPendingCredentials().actor_login_approved,
             should_store_permission());
+  AttemptLoginDetails expected_details;
+  expected_details.set_outcome(
+      optimization_guide::proto::
+          ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_SUCCESS);
+  expected_details.set_attempt_login_time_ms(0);
+  FillingFormResult* form_result1 = expected_details.add_filling_form_result();
+  form_result1->set_was_username_filled(true);
+  form_result1->set_was_password_filled(true);
+  FillingFormResult* form_result2 = expected_details.add_filling_form_result();
+  form_result2->set_was_username_filled(true);
+  FillingFormResult* form_result3 = expected_details.add_filling_form_result();
+  form_result3->set_was_password_filled(true);
+  EXPECT_CALL(
+      mock_mqls_logger_,
+      AddAttemptLoginDetails(EqualsAttemptLoginDetails(expected_details)));
+  // Destroy the filler, because it sends logs in the destructor.
+  filler.reset();
 }
 
 TEST_P(ActorLoginCredentialFillerTest, FillOnlyUsernameInAllEligibleFields) {
@@ -1696,7 +1889,7 @@ TEST_P(ActorLoginCredentialFillerTest, FillOnlyUsernameInAllEligibleFields) {
       form_managers[2]->GetParsedObservedForm();
 
   base::test::TestFuture<LoginStatusResultOrError> future;
-  ActorLoginCredentialFiller filler(
+  auto filler = std::make_unique<ActorLoginCredentialFiller>(
       origin, credential, should_store_permission(), &mock_client_,
       mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
 
@@ -1729,10 +1922,27 @@ TEST_P(ActorLoginCredentialFillerTest, FillOnlyUsernameInAllEligibleFields) {
                 autofill::FieldPropertiesFlags::kAutofilledActorLogin, _))
       .WillOnce(RunOnceCallback<3>(false));
 
-  filler.AttemptLogin(&mock_password_manager_);
+  filler->AttemptLogin(&mock_password_manager_);
   const LoginStatusResultOrError& result = future.Get();
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value(), LoginStatusResult::kSuccessUsernameFilled);
+  AttemptLoginDetails expected_details;
+  expected_details.set_outcome(
+      optimization_guide::proto::
+          ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_SUCCESS);
+  expected_details.set_attempt_login_time_ms(0);
+  FillingFormResult* form_result1 = expected_details.add_filling_form_result();
+  form_result1->set_was_username_filled(false);
+  form_result1->set_was_password_filled(false);
+  FillingFormResult* form_result2 = expected_details.add_filling_form_result();
+  form_result2->set_was_username_filled(true);
+  FillingFormResult* form_result3 = expected_details.add_filling_form_result();
+  form_result3->set_was_password_filled(false);
+  EXPECT_CALL(
+      mock_mqls_logger_,
+      AddAttemptLoginDetails(EqualsAttemptLoginDetails(expected_details)));
+  // Destroy the filler, because it sends logs in the destructor.
+  filler.reset();
 }
 
 TEST_P(ActorLoginCredentialFillerTest, FillOnlyPasswordInAllEligibleFields) {
@@ -1767,7 +1977,7 @@ TEST_P(ActorLoginCredentialFillerTest, FillOnlyPasswordInAllEligibleFields) {
       form_managers[2]->GetParsedObservedForm();
 
   base::test::TestFuture<LoginStatusResultOrError> future;
-  ActorLoginCredentialFiller filler(
+  auto filler = std::make_unique<ActorLoginCredentialFiller>(
       origin, credential, should_store_permission(), &mock_client_,
       mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
 
@@ -1800,10 +2010,27 @@ TEST_P(ActorLoginCredentialFillerTest, FillOnlyPasswordInAllEligibleFields) {
                 autofill::FieldPropertiesFlags::kAutofilledActorLogin, _))
       .WillOnce(RunOnceCallback<3>(false));
 
-  filler.AttemptLogin(&mock_password_manager_);
+  filler->AttemptLogin(&mock_password_manager_);
   const LoginStatusResultOrError& result = future.Get();
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value(), LoginStatusResult::kSuccessPasswordFilled);
+  AttemptLoginDetails expected_details;
+  expected_details.set_outcome(
+      optimization_guide::proto::
+          ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_SUCCESS);
+  expected_details.set_attempt_login_time_ms(0);
+  FillingFormResult* form_result1 = expected_details.add_filling_form_result();
+  form_result1->set_was_username_filled(false);
+  form_result1->set_was_password_filled(true);
+  FillingFormResult* form_result2 = expected_details.add_filling_form_result();
+  form_result2->set_was_username_filled(false);
+  FillingFormResult* form_result3 = expected_details.add_filling_form_result();
+  form_result3->set_was_password_filled(false);
+  EXPECT_CALL(
+      mock_mqls_logger_,
+      AddAttemptLoginDetails(EqualsAttemptLoginDetails(expected_details)));
+  // Destroy the filler, because it sends logs in the destructor.
+  filler.reset();
 }
 
 TEST_P(ActorLoginCredentialFillerTest, FillingFailsInAllEligibleFields) {
@@ -1838,7 +2065,7 @@ TEST_P(ActorLoginCredentialFillerTest, FillingFailsInAllEligibleFields) {
       form_managers[2]->GetParsedObservedForm();
 
   base::test::TestFuture<LoginStatusResultOrError> future;
-  ActorLoginCredentialFiller filler(
+  auto filler = std::make_unique<ActorLoginCredentialFiller>(
       origin, credential, should_store_permission(), &mock_client_,
       mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
 
@@ -1870,10 +2097,27 @@ TEST_P(ActorLoginCredentialFillerTest, FillingFailsInAllEligibleFields) {
                 autofill::FieldPropertiesFlags::kAutofilledActorLogin, _))
       .WillOnce(RunOnceCallback<3>(false));
 
-  filler.AttemptLogin(&mock_password_manager_);
+  filler->AttemptLogin(&mock_password_manager_);
   const LoginStatusResultOrError& result = future.Get();
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value(), LoginStatusResult::kErrorNoFillableFields);
+  AttemptLoginDetails expected_details;
+  expected_details.set_outcome(
+      optimization_guide::proto::
+          ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_NO_FILLABLE_FIELDS);
+  expected_details.set_attempt_login_time_ms(0);
+  FillingFormResult* form_result1 = expected_details.add_filling_form_result();
+  form_result1->set_was_username_filled(false);
+  form_result1->set_was_password_filled(false);
+  FillingFormResult* form_result2 = expected_details.add_filling_form_result();
+  form_result2->set_was_username_filled(false);
+  FillingFormResult* form_result3 = expected_details.add_filling_form_result();
+  form_result3->set_was_password_filled(false);
+  EXPECT_CALL(
+      mock_mqls_logger_,
+      AddAttemptLoginDetails(EqualsAttemptLoginDetails(expected_details)));
+  // Destroy the filler, because it sends logs in the destructor.
+  filler.reset();
 }
 
 TEST_P(ActorLoginCredentialFillerTest, FillingIsDisabled) {
@@ -1886,13 +2130,24 @@ TEST_P(ActorLoginCredentialFillerTest, FillingIsDisabled) {
       .WillOnce(Return(false));
 
   base::MockCallback<LoginStatusResultOrErrorReply> mock_callback;
-  ActorLoginCredentialFiller filler(
+  auto filler = std::make_unique<ActorLoginCredentialFiller>(
       origin, credential, should_store_permission(), &mock_client_,
       mqls_logger(), mock_is_task_in_focus_.Get(), mock_callback.Get());
 
   EXPECT_CALL(mock_callback,
               Run(Eq(base::unexpected(ActorLoginError::kFillingNotAllowed))));
-  filler.AttemptLogin(&mock_password_manager_);
+
+  filler->AttemptLogin(&mock_password_manager_);
+  AttemptLoginDetails expected_details;
+  expected_details.set_outcome(
+      optimization_guide::proto::
+          ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_UNSPECIFIED);
+  expected_details.set_attempt_login_time_ms(0);
+  EXPECT_CALL(
+      mock_mqls_logger_,
+      AddAttemptLoginDetails(EqualsAttemptLoginDetails(expected_details)));
+  // Destroy the filler, because it sends logs in the destructor.
+  filler.reset();
 }
 
 TEST_P(ActorLoginCredentialFillerTest, RequestsReauthBeforeFillingSingleForm) {
@@ -2040,7 +2295,7 @@ TEST_P(ActorLoginCredentialFillerTest,
       form_managers[2]->GetParsedObservedForm();
 
   base::test::TestFuture<LoginStatusResultOrError> future;
-  ActorLoginCredentialFiller filler(
+  auto filler = std::make_unique<ActorLoginCredentialFiller>(
       origin, credential, should_store_permission(), &mock_client_,
       mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
   ON_CALL(mock_form_cache_, GetFormManagers)
@@ -2085,11 +2340,27 @@ TEST_P(ActorLoginCredentialFillerTest,
                 autofill::FieldPropertiesFlags::kAutofilledActorLogin, _))
       .Times(0);
 
-  filler.AttemptLogin(&mock_password_manager_);
+  AttemptLoginDetails expected_details;
+  expected_details.set_outcome(
+      optimization_guide::proto::
+          ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_SUCCESS);
+  expected_details.set_attempt_login_time_ms(0);
+  FillingFormResult* form_result1 = expected_details.add_filling_form_result();
+  form_result1->set_was_username_filled(true);
+  form_result1->set_was_password_filled(true);
+  FillingFormResult* form_result2 = expected_details.add_filling_form_result();
+  form_result2->set_was_username_filled(true);
+  EXPECT_CALL(
+      mock_mqls_logger_,
+      AddAttemptLoginDetails(EqualsAttemptLoginDetails(expected_details)));
+
+  filler->AttemptLogin(&mock_password_manager_);
   const LoginStatusResultOrError& result = future.Get();
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value(),
             LoginStatusResult::kSuccessUsernameAndPasswordFilled);
+  // Destroy the filler, because it sends logs in the destructor.
+  filler.reset();
 }
 
 TEST_P(ActorLoginCredentialFillerTest,
@@ -2127,7 +2398,7 @@ TEST_P(ActorLoginCredentialFillerTest,
       form_managers[2]->GetParsedObservedForm();
 
   base::test::TestFuture<LoginStatusResultOrError> future;
-  ActorLoginCredentialFiller filler(
+  auto filler = std::make_unique<ActorLoginCredentialFiller>(
       origin, credential, should_store_permission(), &mock_client_,
       mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
   ON_CALL(mock_form_cache_, GetFormManagers)
@@ -2172,11 +2443,27 @@ TEST_P(ActorLoginCredentialFillerTest,
                 autofill::FieldPropertiesFlags::kAutofilledActorLogin, _))
       .WillOnce(RunOnceCallback<3>(true));
 
-  filler.AttemptLogin(&mock_password_manager_);
+  AttemptLoginDetails expected_details;
+  expected_details.set_outcome(
+      optimization_guide::proto::
+          ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_SUCCESS);
+  expected_details.set_attempt_login_time_ms(0);
+  FillingFormResult* form_result1 = expected_details.add_filling_form_result();
+  form_result1->set_was_username_filled(true);
+  form_result1->set_was_password_filled(true);
+  FillingFormResult* form_result2 = expected_details.add_filling_form_result();
+  form_result2->set_was_password_filled(true);
+  EXPECT_CALL(
+      mock_mqls_logger_,
+      AddAttemptLoginDetails(EqualsAttemptLoginDetails(expected_details)));
+
+  filler->AttemptLogin(&mock_password_manager_);
   const LoginStatusResultOrError& result = future.Get();
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value(),
             LoginStatusResult::kSuccessUsernameAndPasswordFilled);
+  // Destroy the filler, because it sends logs in the destructor.
+  filler.reset();
 }
 
 TEST_P(ActorLoginCredentialFillerTest,
@@ -2239,7 +2526,7 @@ TEST_P(ActorLoginCredentialFillerTest,
 
   base::test::TestFuture<LoginStatusResultOrError> future;
   EXPECT_CALL(mock_is_task_in_focus_, Run).WillOnce(Return(false));
-  ActorLoginCredentialFiller filler(
+  auto filler = std::make_unique<ActorLoginCredentialFiller>(
       origin, credential, should_store_permission(), &mock_client_,
       mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
@@ -2247,10 +2534,20 @@ TEST_P(ActorLoginCredentialFillerTest,
 
   SetUpDeviceAuthenticatorToRequireReauth(mock_client_);
 
-  filler.AttemptLogin(&mock_password_manager_);
+  filler->AttemptLogin(&mock_password_manager_);
   const LoginStatusResultOrError& result = future.Get();
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value(), LoginStatusResult::kErrorDeviceReauthRequired);
+  AttemptLoginDetails expected_details;
+  expected_details.set_outcome(
+      optimization_guide::proto::
+          ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_REAUTH_REQUIRED);
+  expected_details.set_attempt_login_time_ms(0);
+  EXPECT_CALL(
+      mock_mqls_logger_,
+      AddAttemptLoginDetails(EqualsAttemptLoginDetails(expected_details)));
+  // Destroy the filler, because it sends logs in the destructor.
+  filler.reset();
 }
 
 TEST_P(ActorLoginCredentialFillerTest,
@@ -2273,7 +2570,7 @@ TEST_P(ActorLoginCredentialFillerTest,
 
   base::test::TestFuture<LoginStatusResultOrError> future;
   ON_CALL(mock_is_task_in_focus_, Run).WillByDefault(Return(false));
-  ActorLoginCredentialFiller filler(
+  auto filler = std::make_unique<ActorLoginCredentialFiller>(
       origin, credential, should_store_permission(), &mock_client_,
       mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
@@ -2288,10 +2585,20 @@ TEST_P(ActorLoginCredentialFillerTest,
   EXPECT_CALL(*weak_device_authenticator, AuthenticateWithMessage)
       .WillOnce(RunOnceCallback<1>(false));
 
-  filler.AttemptLogin(&mock_password_manager_);
+  filler->AttemptLogin(&mock_password_manager_);
   const LoginStatusResultOrError& result = future.Get();
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value(), LoginStatusResult::kErrorDeviceReauthFailed);
+  AttemptLoginDetails expected_details;
+  expected_details.set_outcome(
+      optimization_guide::proto::
+          ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_REAUTH_FAILED);
+  expected_details.set_attempt_login_time_ms(0);
+  EXPECT_CALL(
+      mock_mqls_logger_,
+      AddAttemptLoginDetails(EqualsAttemptLoginDetails(expected_details)));
+  // Destroy the filler, because it sends logs in the destructor.
+  filler.reset();
 }
 
 TEST_P(ActorLoginCredentialFillerTest, DoesntFillIfReauthFails) {
@@ -2312,7 +2619,7 @@ TEST_P(ActorLoginCredentialFillerTest, DoesntFillIfReauthFails) {
   // Set up the device authenticator and pretend that reauth before
   // filling is required.
   base::test::TestFuture<LoginStatusResultOrError> future;
-  ActorLoginCredentialFiller filler(
+  auto filler = std::make_unique<ActorLoginCredentialFiller>(
       origin, credential, should_store_permission(), &mock_client_,
       mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
@@ -2338,9 +2645,19 @@ TEST_P(ActorLoginCredentialFillerTest, DoesntFillIfReauthFails) {
                 autofill::FieldPropertiesFlags::kAutofilledActorLogin, _))
       .Times(0);
 
-  filler.AttemptLogin(&mock_password_manager_);
+  filler->AttemptLogin(&mock_password_manager_);
   ASSERT_TRUE(future.Get().has_value());
   EXPECT_EQ(future.Get().value(), LoginStatusResult::kErrorDeviceReauthFailed);
+  AttemptLoginDetails expected_details;
+  expected_details.set_outcome(
+      optimization_guide::proto::
+          ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_REAUTH_FAILED);
+  expected_details.set_attempt_login_time_ms(0);
+  EXPECT_CALL(
+      mock_mqls_logger_,
+      AddAttemptLoginDetails(EqualsAttemptLoginDetails(expected_details)));
+  // Destroy the filler, because it sends logs in the destructor.
+  filler.reset();
 }
 
 TEST_P(ActorLoginCredentialFillerTest, ReturnsErrorIfFormWentAwayDuringReauth) {
@@ -2362,7 +2679,7 @@ TEST_P(ActorLoginCredentialFillerTest, ReturnsErrorIfFormWentAwayDuringReauth) {
   const PasswordForm* parsed_form = form_managers[0]->GetParsedObservedForm();
 
   base::test::TestFuture<LoginStatusResultOrError> future;
-  ActorLoginCredentialFiller filler(
+  auto filler = std::make_unique<ActorLoginCredentialFiller>(
       origin, credential, should_store_permission(), &mock_client_,
       mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
@@ -2393,9 +2710,20 @@ TEST_P(ActorLoginCredentialFillerTest, ReturnsErrorIfFormWentAwayDuringReauth) {
       FillField(parsed_form->password_element_renderer_id, Eq(kTestPassword),
                 autofill::FieldPropertiesFlags::kAutofilledActorLogin, _))
       .Times(0);
-  filler.AttemptLogin(&mock_password_manager_);
+
+  filler->AttemptLogin(&mock_password_manager_);
   ASSERT_TRUE(future.Get().has_value());
   EXPECT_EQ(future.Get().value(), LoginStatusResult::kErrorNoFillableFields);
+  AttemptLoginDetails expected_details;
+  expected_details.set_outcome(
+      optimization_guide::proto::
+          ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_NO_FILLABLE_FIELDS);
+  expected_details.set_attempt_login_time_ms(0);
+  EXPECT_CALL(
+      mock_mqls_logger_,
+      AddAttemptLoginDetails(EqualsAttemptLoginDetails(expected_details)));
+  // Destroy the filler, because it sends logs in the destructor.
+  filler.reset();
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

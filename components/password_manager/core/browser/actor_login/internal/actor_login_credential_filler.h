@@ -4,16 +4,21 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_ACTOR_LOGIN_INTERNAL_ACTOR_LOGIN_CREDENTIAL_FILLER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_ACTOR_LOGIN_INTERNAL_ACTOR_LOGIN_CREDENTIAL_FILLER_H_
 
+#include <map>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/device_reauth/device_authenticator.h"
+#include "components/optimization_guide/proto/features/actor_login.pb.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_quality_logger_interface.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_interface.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "url/gurl.h"
 
 namespace password_manager {
@@ -98,11 +103,11 @@ class ActorLoginCredentialFiller {
                                bool authenticated);
 
   // Sends a message to the renderer to fill the form in the `driver`'s frame,
-  // identified by `form_renderer_id`. `username` and `password` are the
-  // strings to fill in the form.
+  // identified by `form_global_id.form_renderer_id`. `username` and `password`
+  // are the strings to fill in the form.
   // This method might be called async if reauthentication is needed beforehand.
   void FillForm(base::WeakPtr<password_manager::PasswordManagerDriver> driver,
-                autofill::FormRendererId form_renderer_id,
+                autofill::FormGlobalId form_global_id,
                 std::u16string username,
                 std::u16string password);
 
@@ -117,19 +122,25 @@ class ActorLoginCredentialFiller {
   // `driver`'s frame with `value`. `closure` will be called to signal
   // completion at the very end of the flow.
   void FillField(password_manager::PasswordManagerDriver* driver,
+                 autofill::FormGlobalId form_global_id,
                  autofill::FieldRendererId field_renderer_id,
                  const std::u16string& value,
                  FieldType type,
                  base::OnceClosure closure);
 
   // Called with the success status of filling the respective field.
-  void ProcessSingleFillingResult(FieldType field_type,
+  void ProcessSingleFillingResult(autofill::FormGlobalId form_global_id,
+                                  FieldType field_type,
                                   autofill::FieldRendererId field_id,
                                   bool success);
 
   // Called when all filling operations have finished. Invokes `callback_`
   // with the result based on `username_filled_` and `password_filled_`.
   void OnFillingDone();
+
+  // Populates data into `attempt_login_logs_` at the end of credential
+  // filling.
+  void BuildAttemptLoginOutcome(AttemptLoginOutcomeMqls outcome);
 
   // The origin of the primary main frame.
   const url::Origin origin_;
@@ -145,6 +156,14 @@ class ActorLoginCredentialFiller {
   bool username_filled_ = false;
   bool password_filled_ = false;
 
+  // The result of filling eligible login forms. The key is the global id of
+  // the form.
+  absl::flat_hash_map<
+      autofill::FormGlobalId,
+      optimization_guide::proto::ActorLoginQuality_AttemptLoginDetails::
+          FillingFormResult>
+      filling_results_;
+
   // Safe to access from everywhere apart from the destructor.
   raw_ptr<password_manager::PasswordManagerClient> client_ = nullptr;
 
@@ -152,6 +171,17 @@ class ActorLoginCredentialFiller {
   // (GetCredentials + AttemptLogin). Owned by AttemptLoginTool.
   // TODO(crbug.com/460025687): Use raw_ptr instead.
   base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger_;
+
+  // Logs entry to be given to `mqls_logger` when the request ends.
+  optimization_guide::proto::ActorLoginQuality_AttemptLoginDetails
+      attempt_login_logs_;
+
+  // Used to compute the request duration. Excludes reauth duration.
+  base::TimeTicks start_time_;
+
+  // Used to compute the reauth duration if it was initiated. The duration is
+  // subtracted from the request duration.
+  std::optional<base::TimeTicks> reauth_start_time_;
 
   // Helper object for finding login forms.
   std::unique_ptr<ActorLoginFormFinder> login_form_finder_;
