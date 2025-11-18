@@ -1481,7 +1481,7 @@ source_set("unit_tests") {
     "crowdsourcing/randomized_encoder_unittest.cc",
     "crowdsourcing/votes_uploader_unittest.cc",
     "data_manager/addresses/account_name_email_store_unittest.cc",
-    "data_manager/addresses/account_name_email_strike_manager_unittests.cc",
+    "data_manager/addresses/account_name_email_strike_manager_unittest.cc",
     "data_manager/addresses/address_data_cleaner_unittest.cc",
     "data_manager/addresses/address_data_manager_unittest.cc",
     "data_manager/addresses/home_and_work_metadata_store_unittest.cc",
