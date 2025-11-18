@@ -326,6 +326,8 @@
 
   #privacyNotice {
     display: flex;
+    inset-block-start: 118px;
+    inset-inline-end: 72px;
     padding: 16px 20px;
     flex-direction: column;
     align-items: flex-start;
@@ -334,8 +336,45 @@
     background: #FFF;
     /* Elevation Light/2 */
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.30), 0 2px 6px 2px rgba(0, 0, 0, 0.15);
+    position: absolute;
     width: 266px;
     z-index: 6;  /* Keep aligned with cursor and context menu. */
+  }
+
+  :host(:not([is-lens-overlay-contextual-searchbox-enabled])) #privacyNotice {
+    inset-block-start: 34px;
+    inset-inline-end: 124px;
+  }
+
+  :host([is-lens-overlay-contextual-searchbox-enabled][enable-csb-motion-tweaks]) #privacyNotice {
+    /* Set opacity to 0 so it can animate in with the searchbox. */
+    transition: none;
+    opacity: 0;
+  }
+
+  /* Keyframes for the privacy notice enter animation */
+  @keyframes privacyNoticeEnter {
+    0% {
+      opacity: 0;
+      transform: scale(0.9, 0.75);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1, 1);
+    }
+  }
+
+  :host([can-animate-in-close-button][enable-csb-motion-tweaks]) #privacyNotice {
+    animation: privacyNoticeEnter 483ms cubic-bezier(0, 0, 0, 1) forwards;
+    /* The above removes the transition so the privacy notice can animate in.
+     * Now that its animating, add the transition back so it can fade out when
+     * the overlay is closed. */
+    transition: inherit;
+  }
+
+  :host([search-box-hidden]) #privacyNotice {
+    /* Hide when initiating a drag. */
+    display: none;
   }
 
   #privacyNoticeHeader {
@@ -372,8 +411,6 @@
     position: absolute;
     inset-block-start: 40px;
     inset-inline-end: 140px;
-    flex-direction: column;
-    gap: 18px;
   }
 
   #searchboxContainer > * {
@@ -511,6 +548,13 @@
       hidden$="[[!isImageRendered]]"
       on-pointerenter="handlePointerEnterBackgroundScrim"
       on-pointerleave="handlePointerLeaveBackgroundScrim"></div>
+  <template is="dom-if" if="[[isPrivacyNoticeVisible]]">
+    <div id="privacyNotice">
+      <div id="privacyNoticeHeader">$i18n{privacyNoticeHeader}
+      </div>
+      <div id="privacyNoticeBody">$i18nRaw{privacyNoticeBody}</div>
+    </div>
+  </template>
   <lens-selection-overlay id="selectionOverlay" theme="[[theme]]"
       is-searchbox-focused="[[isSearchboxFocused]]"
       are-language-pickers-open="[[areLanguagePickersOpen]]"
@@ -532,13 +576,6 @@
       page-content-type="[[pageContentType]]"
       suggestion-count="[[searchboxSuggestionCount]]">
     </cr-searchbox-ghost-loader>
-    <template is="dom-if" if="[[isPrivacyNoticeVisible]]">
-      <div id="privacyNotice">
-        <div id="privacyNoticeHeader">$i18n{privacyNoticeHeader}
-        </div>
-        <div id="privacyNoticeBody">$i18nRaw{privacyNoticeBody}</div>
-      </div>
-    </template>
   </div>
   <div id="translateButtonContainer" class="button-container">
     <translate-button id="translateButton"
