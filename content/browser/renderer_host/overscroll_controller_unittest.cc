@@ -7,6 +7,8 @@
 #include <memory>
 
 #include "base/containers/queue.h"
+#include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/renderer_host/overscroll_controller_delegate.h"
 #include "content/common/features.h"
@@ -23,6 +25,11 @@ class OverscrollControllerTest : public ::testing::Test {
  public:
   OverscrollControllerTest(const OverscrollControllerTest&) = delete;
   OverscrollControllerTest& operator=(const OverscrollControllerTest&) = delete;
+
+  void ResetController() {
+    controller_.reset();
+    controller_reset_ = true;
+  }
 
  protected:
   OverscrollControllerTest() {}
@@ -116,9 +123,12 @@ class OverscrollControllerTest : public ::testing::Test {
     return controller_->overscroll_source_;
   }
 
- private:
+  OverscrollController* controller() const { return controller_.get(); }
+
+ protected:  // This line is added
   std::unique_ptr<TestOverscrollDelegate> delegate_;
   std::unique_ptr<OverscrollController> controller_;
+  bool controller_reset_ = false;
 
   // Keeps track of the last event that has been processed by the overscroll
   // controller which is not yet ACKed. Will be null if no event is processed or
@@ -126,6 +136,9 @@ class OverscrollControllerTest : public ::testing::Test {
   std::unique_ptr<blink::WebInputEvent> current_event_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
+
+  // This must be the last member.
+  base::WeakPtrFactory<OverscrollControllerTest> weak_factory_{this};
 };
 
 // Tests that if a mouse-wheel is consumed by content before overscroll is
@@ -773,6 +786,54 @@ TEST_F(OverscrollControllerTest, PullToRefreshAfterCoolOff) {
   EXPECT_EQ(OverscrollSource::NONE, controller_source());
   EXPECT_EQ(OVERSCROLL_NONE, delegate()->current_mode());
   EXPECT_EQ(OVERSCROLL_NONE, delegate()->completed_mode());
+}
+
+// Test that the controller doesn't crash if the delegate deletes it during
+// OnOverscrollComplete. This test sets up a scenario where the delegate's
+// OnOverscrollComplete callback destroys the OverscrollController.
+// While this test confirms the delegate callback is run and the controller
+// is destroyed, reliably triggering a Use-After-Free crash without the
+// WeakPtr fix in OverscrollController::CompleteAction generally requires
+// running under ASan. This test primarily verifies the destruction
+// control flow.
+TEST_F(OverscrollControllerTest, DelegateDeletesControllerOnComplete) {
+  ScopedPullToRefreshMode scoped_mode(
+      OverscrollConfig::PullToRefreshMode::kEnabled);
+
+  base::TimeTicks timestamp =
+      blink::WebInputEvent::GetStaticTimeStampForTests();
+
+  EXPECT_FALSE(
+      SimulateGestureEvent(blink::WebInputEvent::Type::kGestureScrollBegin,
+                           blink::WebGestureDevice::kTouchscreen, timestamp));
+  SimulateAck(false);
+
+  // Simulate a touchscreen gesture scroll-update event that passes the start
+  // threshold and ACK it as not processed. Pull-to-refresh should be triggered.
+  EXPECT_FALSE(SimulateGestureScrollUpdate(
+      0, 1000, blink::WebGestureDevice::kTouchscreen, timestamp, false));
+  SimulateAck(false);
+  EXPECT_EQ(OVERSCROLL_SOUTH, controller_mode());
+  EXPECT_EQ(OverscrollSource::TOUCHSCREEN, controller_source());
+  EXPECT_EQ(OVERSCROLL_SOUTH, delegate()->current_mode());
+  EXPECT_EQ(OVERSCROLL_NONE, delegate()->completed_mode());
+
+  // Set up the delegate to invoke a callback that deletes the controller.
+  delegate()->set_delete_controller_on_complete(true);
+  delegate()->set_on_complete_callback(base::BindOnce(
+      &OverscrollControllerTest::ResetController, weak_factory_.GetWeakPtr()));
+
+  timestamp += base::Seconds(1);
+
+  // Simulate a GestureScrollEnd to trigger OnOverscrollComplete.
+  EXPECT_FALSE(
+      SimulateGestureEvent(blink::WebInputEvent::Type::kGestureScrollEnd,
+                           blink::WebGestureDevice::kTouchscreen, timestamp));
+  SimulateAck(false);
+
+  // The callback should have been run, deleting the controller.
+  EXPECT_TRUE(controller_reset_);
+  EXPECT_EQ(nullptr, controller());
 }
 
 }  // namespace content

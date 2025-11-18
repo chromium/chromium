@@ -8,6 +8,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "content/browser/renderer_host/overscroll_controller.h"
 #include "content/browser/renderer_host/overscroll_controller_delegate.h"
 #include "ui/gfx/geometry/size.h"
@@ -24,6 +25,14 @@ class TestOverscrollDelegate : public OverscrollControllerDelegate {
   ~TestOverscrollDelegate() override;
 
   void set_delta_cap(float delta_cap) { delta_cap_ = delta_cap; }
+
+  void set_delete_controller_on_complete(bool delete_controller) {
+    delete_controller_on_complete_ = delete_controller;
+  }
+
+  void set_on_complete_callback(base::OnceClosure callback) {
+    on_complete_callback_ = std::move(callback);
+  }
 
   OverscrollMode current_mode() const { return current_mode_; }
   OverscrollMode completed_mode() const { return completed_mode_; }
@@ -55,6 +64,9 @@ class TestOverscrollDelegate : public OverscrollControllerDelegate {
 
   float delta_x_;
   float delta_y_;
+
+  bool delete_controller_on_complete_ = false;
+  base::OnceClosure on_complete_callback_;
 };
 
 }  // namespace content

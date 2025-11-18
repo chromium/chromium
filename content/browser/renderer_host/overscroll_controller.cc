@@ -560,8 +560,19 @@ bool OverscrollController::ProcessOverscroll(float delta_x,
 
 void OverscrollController::CompleteAction() {
   ignore_following_inertial_events_ = true;
-  if (delegate_)
+  if (delegate_) {
+    // The delegate call can lead to the destruction of |this|.
+    // Get a weak pointer to |this| before making the call.
+    base::WeakPtr<OverscrollController> weak_this = weak_factory_.GetWeakPtr();
+
     delegate_->OnOverscrollComplete(overscroll_mode_);
+
+    // If |this| was destroyed, the weak pointer will now be invalid.
+    // Return immediately to avoid the UAF on the call to Reset().
+    if (!weak_this) {
+      return;
+    }
+  }
   Reset();
 }
 
