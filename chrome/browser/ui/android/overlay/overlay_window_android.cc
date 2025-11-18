@@ -253,6 +253,13 @@ void OverlayWindowAndroid::HangUp(JNIEnv* env) {
 }
 
 void OverlayWindowAndroid::Hide(JNIEnv* env) {
+  if (auto* web_contents = controller_->GetWebContents()) {
+    if (auto* helper =
+            AutoPictureInPictureTabHelper::FromWebContents(web_contents)) {
+      helper->OnPictureInPictureWindowWillHide();
+    }
+  }
+
   // Hides the window without pausing the video, effectively moving the playback
   // to the background.
   Hide();

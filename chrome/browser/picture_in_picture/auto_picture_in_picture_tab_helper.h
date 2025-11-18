@@ -175,6 +175,10 @@ class AutoPictureInPictureTabHelper
   // it opened or using the hide button.
   void OnPictureInPictureDismissed();
 
+  // Called from native OverlayWindowAndroid when the user clicks the "hide"
+  // button (headphone icon).
+  void OnPictureInPictureWindowWillHide();
+
   int GetDismissCountForTesting(const GURL& url);
 
   // Overrides the media engagement check for testing. This is necessary for
@@ -434,6 +438,12 @@ class AutoPictureInPictureTabHelper
   // (document vs video). Accumulated time is recorded during the destruction of
   // `this`.
   std::optional<base::TimeDelta> total_browser_initiated_pip_time_for_session_;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Set to the current time when the hide button in Android PiP window was
+  // clicked.
+  std::optional<base::TimeTicks> hide_button_clicked_time_;
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Clock used for metric related to the total time spent with a
   // picture-in-picture window open.

@@ -2363,6 +2363,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.AutoPictureInPicture.BackToTabPostHideTime" units="ms"
+    expires_after="2026-10-31">
+  <owner>philyan@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Records the time elapsed between the user hiding an auto-picture-in-picture
+    window and the user returning to the original tab. This is only recorded
+    when the user taps the &quot;hide&quot; button (a headphone icon) on the PiP
+    window on Android, which keeps the audio playing in the background. The hide
+    icon is only visible for auto-pip initialized pausable media.
+  </summary>
+</histogram>
+
 <histogram
     name="Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason.{AutomaticReason}.PromptResultV2"
     enum="MediaAutoPictureInPicturePromptResult" expires_after="2026-06-18">

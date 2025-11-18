@@ -37,6 +37,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -546,6 +547,28 @@ public class AutoPictureInPictureTabHelperTest {
         // Verify that the dismiss count is now 1.
         assertDismissCount(
                 webContents, url, 1, "Dismiss count should be 1 after hide button dismissal.");
+    }
+
+    @Test
+    @MediumTest
+    public void testBackToTabPostHideTimeRecorded() throws TimeoutException {
+        WebContents webContents = loadUrlAndInitializeForTest(AUTO_PIP_VIDEO_PAGE);
+        Tab originalTab = mPage.getTab();
+
+        // Start watching for the histogram.
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord("Media.AutoPictureInPicture.BackToTabPostHideTime")
+                        .build();
+
+        // Enter auto-PiP and hide the window.
+        enterAutoPipAndHide(webContents, originalTab);
+
+        // Switch back to the original tab.
+        switchToTab(originalTab);
+
+        // Verify the histogram was recorded.
+        histogramWatcher.assertExpected();
     }
 
     /**

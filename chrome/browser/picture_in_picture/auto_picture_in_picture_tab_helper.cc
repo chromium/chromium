@@ -96,6 +96,10 @@ void AutoPictureInPictureTabHelper::PrimaryPageChanged(content::Page& page) {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   StopAndResetAsyncTasks();
+
+#if BUILDFLAG(IS_ANDROID)
+  hide_button_clicked_time_ = std::nullopt;
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void AutoPictureInPictureTabHelper::AccumulateTotalPipTimeForSession(
@@ -884,6 +888,10 @@ void AutoPictureInPictureTabHelper::OnPictureInPictureDismissed() {
   }
 }
 
+void AutoPictureInPictureTabHelper::OnPictureInPictureWindowWillHide() {
+  hide_button_clicked_time_ = clock_->NowTicks();
+}
+
 int AutoPictureInPictureTabHelper::GetDismissCountForTesting(const GURL& url) {
   if (!auto_blocker_) {
     return 0;
@@ -909,6 +917,19 @@ void AutoPictureInPictureTabHelper::OnUserClosedWindow() {
 }
 
 void AutoPictureInPictureTabHelper::OnTabBecameActive() {
+#if BUILDFLAG(IS_ANDROID)
+  if (hide_button_clicked_time_) {
+    base::TimeDelta back_to_tab_post_hide_time =
+        clock_->NowTicks() - hide_button_clicked_time_.value();
+    hide_button_clicked_time_ = std::nullopt;
+
+    base::UmaHistogramCustomTimes(
+        "Media.AutoPictureInPicture.BackToTabPostHideTime",
+        back_to_tab_post_hide_time, base::Milliseconds(1), base::Hours(10),
+        100);
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   // We're the newly active tab, possibly before we've been notified by the tab
   // strip helper.  See if there's an autopip instance to close, and close it.
   // We may be called more than once for the same tab switch operation, once
