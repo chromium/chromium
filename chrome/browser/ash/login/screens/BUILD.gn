@@ -418,6 +418,7 @@ source_set("browser_tests") {
     "edu_coexistence_login_browsertest.cc",
     "family_link_notice_browsertest.cc",
     "fingerprint_setup_browsertest.cc",
+    "fjord_station_setup_screen_browsertest.cc",
     "gaia_info_screen_browsertest.cc",
     "gemini_intro_screen_browsertest.cc",
     "gesture_navigation_screen_browsertest.cc",

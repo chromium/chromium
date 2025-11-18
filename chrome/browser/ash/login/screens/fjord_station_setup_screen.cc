@@ -10,15 +10,25 @@
 namespace ash {
 
 FjordStationSetupScreen::FjordStationSetupScreen(
-    base::WeakPtr<FjordStationSetupScreenView> view)
+    base::WeakPtr<FjordStationSetupScreenView> view,
+    const base::RepeatingClosure& exit_callback)
     : BaseScreen(FjordStationSetupScreenView::kScreenId,
                  OobeScreenPriority::DEFAULT),
-      view_(std::move(view)) {}
+      OobeMojoBinder(this),
+      view_(std::move(view)),
+      exit_callback_(exit_callback) {}
 
 FjordStationSetupScreen::~FjordStationSetupScreen() = default;
 
 void FjordStationSetupScreen::ShowImpl() {
   view_->Show();
+}
+
+void FjordStationSetupScreen::OnSetupComplete() {
+  if (is_hidden()) {
+    return;
+  }
+  exit_callback_.Run();
 }
 
 }  // namespace ash

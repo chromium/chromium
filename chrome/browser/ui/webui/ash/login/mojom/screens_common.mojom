@@ -52,6 +52,14 @@ interface DrivePinningPage {
                        mojo_base.mojom.String16 free_space);
 };
 
+// Interface for the FjordStationSetupScreen. Lives in the browser process.
+// A renderer uses this to invoke methods that are implemented in
+// the browser process.
+interface FjordStationSetupPageHandler {
+  // Emits a done button clicked.
+  OnSetupComplete();
+};
+
 // Interface for the gaia info screen. Lives in the browser process.
 // A renderer uses this to invoke methods that are implemented in
 // the browser process.

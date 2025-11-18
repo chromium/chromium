@@ -45,7 +45,7 @@ class FjordStationSetupScreenHandler final
 
   // BaseScreenHandler:
   void DeclareLocalizedValues(
-      ::login::LocalizedValuesBuilder* builder) override {}
+      ::login::LocalizedValuesBuilder* builder) override;
 
   // FjordStationSetupScreenView:
   void Show() override;

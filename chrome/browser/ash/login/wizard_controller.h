@@ -478,6 +478,7 @@ class WizardController : public OobeUI::Observer {
       PersonalizedRecommendAppsScreen::Result result);
   void OnPerksDiscoveryScreenExit(PerksDiscoveryScreen::Result result);
   void OnAppLaunchSplashScreenExit();
+  void OnFjordStationSetupScreenExit();
 
   // Callback invoked once it has been determined whether the device is disabled
   // or not.
