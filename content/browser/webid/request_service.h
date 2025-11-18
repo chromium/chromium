@@ -41,6 +41,7 @@ namespace content {
 
 class FederatedIdentityAutoReauthnPermissionContextDelegate;
 class FederatedIdentityPermissionContextDelegate;
+class NavigationHandle;
 class RenderFrameHost;
 
 namespace webid {
@@ -110,6 +111,16 @@ class CONTENT_EXPORT RequestService
   // TODO(crbug.com/459135671): Change tests to navigate instead and remove
   // this method.
   void ResetAndDeleteThisForTesting();
+
+  // An overload of the mojo version of RequestToken. If |navigation_handle|
+  // is provided, that handle is checked to see if user activation is present.
+  // This is virtual so that it can be mocked.MockNavigationThrottleRegistry
+  virtual void RequestToken(
+      std::vector<blink::mojom::IdentityProviderGetParametersPtr>
+          idp_get_params_ptrs,
+      MediationRequirement requirement,
+      NavigationHandle* navigation_handle,
+      RequestTokenCallback);
 
   // blink::mojom::FederatedAuthRequest:
   void RequestToken(std::vector<blink::mojom::IdentityProviderGetParametersPtr>

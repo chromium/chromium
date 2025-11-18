@@ -10,6 +10,8 @@
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "content/browser/webid/accounts_fetcher.h"
+#include "content/browser/webid/request_service.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -26,12 +28,26 @@
 #include "url/gurl.h"
 
 using ::testing::_;
+using testing::WithArgs;
 
 namespace content::webid {
 
-class MockFederatedAuthRequest : public blink::mojom::FederatedAuthRequest {
+class InterceptorMockNavigationHandle : public MockNavigationHandle {
  public:
-  explicit MockFederatedAuthRequest() {}
+  explicit InterceptorMockNavigationHandle(WebContents* web_contents)
+      : MockNavigationHandle(web_contents) {}
+
+  blink::mojom::NavigationInitiatorActivationAndAdStatus
+  GetNavigationInitiatorActivationAndAdStatus() override {
+    return blink::mojom::NavigationInitiatorActivationAndAdStatus::
+        kStartedWithTransientActivationFromNonAd;
+  }
+};
+
+class MockFederatedAuthRequest : public RequestService {
+ public:
+  explicit MockFederatedAuthRequest(RenderFrameHost* rfh)
+      : RequestService(rfh) {}
 
   MOCK_METHOD(
       void,
@@ -39,6 +55,7 @@ class MockFederatedAuthRequest : public blink::mojom::FederatedAuthRequest {
       (std::vector<blink::mojom::IdentityProviderGetParametersPtr>
            idp_get_params,
        password_manager::CredentialMediationRequirement mediation_requirement,
+       NavigationHandle* navigation_handle,
        RequestTokenCallback callback),
       (override));
   MOCK_METHOD(void, CancelTokenRequest, (), (override));
@@ -181,10 +198,11 @@ TEST_F(NavigationInterceptorTest, WillProcessResponse) {
   data_decoder::test::InProcessDataDecoder in_process_data_decoder;
 
   std::unique_ptr<MockFederatedAuthRequest> federated_auth_request =
-      std::make_unique<MockFederatedAuthRequest>();
+      std::make_unique<MockFederatedAuthRequest>(
+          web_contents()->GetPrimaryMainFrame());
 
   NavigateAndCommit(GURL("https://rp.example/"));
-  content::MockNavigationHandle mock_navigation_handle(web_contents());
+  InterceptorMockNavigationHandle mock_navigation_handle(web_contents());
   mock_navigation_handle.set_render_frame_host(
       web_contents()->GetPrimaryMainFrame());
   mock_navigation_handle.set_is_in_primary_main_frame(true);
@@ -202,16 +220,16 @@ TEST_F(NavigationInterceptorTest, WillProcessResponse) {
   content::MockNavigationThrottleRegistry registry(&mock_navigation_handle);
 
   webid::NavigationInterceptor interceptor(
-      registry, base::BindLambdaForTesting(
-                    [&federated_auth_request](content::RenderFrameHost* rfh)
-                        -> blink::mojom::FederatedAuthRequest* {
-                      return federated_auth_request.get();
-                    }));
+      registry,
+      base::BindLambdaForTesting(
+          [&federated_auth_request](RenderFrameHost* rfh) -> RequestService* {
+            return federated_auth_request.get();
+          }));
 
   GURL redirect_to("https://rp.example");
 
-  EXPECT_CALL(*federated_auth_request.get(), RequestToken(_, _, _))
-      .WillOnce(testing::WithArgs<2>(
+  EXPECT_CALL(*federated_auth_request.get(), RequestToken)
+      .WillOnce(WithArgs<3>(
           [&redirect_to](
               blink::mojom::FederatedAuthRequest::RequestTokenCallback
                   callback) {
@@ -234,14 +252,15 @@ TEST_F(NavigationInterceptorTest, WillProcessResponse) {
   EXPECT_EQ(observer.started_url(), redirect_to);
 }
 
-TEST_F(NavigationInterceptorTest, WillProcessResponseTokenRequestFails) {
-  // Uses an in-process data decoder service for testing.
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
-
-  auto federated_auth_request = std::make_unique<MockFederatedAuthRequest>();
+TEST_F(NavigationInterceptorTest, WillProcessResponseNoActivation) {
+  std::unique_ptr<MockFederatedAuthRequest> federated_auth_request =
+      std::make_unique<MockFederatedAuthRequest>(
+          web_contents()->GetPrimaryMainFrame());
 
   NavigateAndCommit(GURL("https://rp.example/"));
-  content::MockNavigationHandle mock_navigation_handle(web_contents());
+  // MockNavigationHandle (as opposed to InterceptorNavigationHandle) does not
+  // have activation.
+  MockNavigationHandle mock_navigation_handle(web_contents());
   mock_navigation_handle.set_render_frame_host(
       web_contents()->GetPrimaryMainFrame());
   mock_navigation_handle.set_is_in_primary_main_frame(true);
@@ -259,14 +278,51 @@ TEST_F(NavigationInterceptorTest, WillProcessResponseTokenRequestFails) {
   content::MockNavigationThrottleRegistry registry(&mock_navigation_handle);
 
   webid::NavigationInterceptor interceptor(
-      registry, base::BindLambdaForTesting(
-                    [&federated_auth_request](content::RenderFrameHost* rfh)
-                        -> blink::mojom::FederatedAuthRequest* {
-                      return federated_auth_request.get();
-                    }));
+      registry,
+      base::BindLambdaForTesting(
+          [&federated_auth_request](RenderFrameHost* rfh) -> RequestService* {
+            return federated_auth_request.get();
+          }));
 
-  EXPECT_CALL(*federated_auth_request.get(), RequestToken(_, _, _))
-      .WillOnce(testing::WithArgs<2>(
+  // Because there was no activation, we should proceed.
+  auto result = interceptor.WillProcessResponse();
+  EXPECT_EQ(result, content::NavigationThrottle::PROCEED);
+}
+
+TEST_F(NavigationInterceptorTest, WillProcessResponseTokenRequestFails) {
+  // Uses an in-process data decoder service for testing.
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
+
+  auto federated_auth_request = std::make_unique<MockFederatedAuthRequest>(
+      web_contents()->GetPrimaryMainFrame());
+
+  NavigateAndCommit(GURL("https://rp.example/"));
+  InterceptorMockNavigationHandle mock_navigation_handle(web_contents());
+  mock_navigation_handle.set_render_frame_host(
+      web_contents()->GetPrimaryMainFrame());
+  mock_navigation_handle.set_is_in_primary_main_frame(true);
+
+  auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+  headers->AddHeader("FedCM-Intercept-Navigation",
+                     net::structured_headers::SerializeDictionary(
+                         webid::EncodeParams({
+                             {"config_url", "https://idp.example/fedcm.json"},
+                             {"client_id", "1234"},
+                         }))
+                         .value());
+  mock_navigation_handle.set_response_headers(headers);
+
+  content::MockNavigationThrottleRegistry registry(&mock_navigation_handle);
+
+  webid::NavigationInterceptor interceptor(
+      registry,
+      base::BindLambdaForTesting(
+          [&federated_auth_request](RenderFrameHost* rfh) -> RequestService* {
+            return federated_auth_request.get();
+          }));
+
+  EXPECT_CALL(*federated_auth_request.get(), RequestToken)
+      .WillOnce(WithArgs<3>(
           [](blink::mojom::FederatedAuthRequest::RequestTokenCallback
                  callback) {
             std::move(callback).Run(

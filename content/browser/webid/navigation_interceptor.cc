@@ -10,6 +10,7 @@
 #include "base/values.h"
 #include "content/browser/webid/flags.h"
 #include "content/browser/webid/request_service.h"
+#include "content/browser/webid/webid_utils.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -38,10 +39,11 @@ NavigationInterceptor::NavigationInterceptor(
     NavigationThrottleRegistry& registry)
     : NavigationInterceptor(
           registry,
-          base::BindRepeating([](content::RenderFrameHost* rfh)
-                                  -> blink::mojom::FederatedAuthRequest* {
-            return webid::RequestService::GetOrCreateForCurrentDocument(rfh);
-          })) {}
+          base::BindRepeating(
+              [](content::RenderFrameHost* rfh) -> RequestService* {
+                return webid::RequestService::GetOrCreateForCurrentDocument(
+                    rfh);
+              })) {}
 
 NavigationInterceptor::NavigationInterceptor(
     NavigationThrottleRegistry& registry,
@@ -55,6 +57,12 @@ content::NavigationThrottle::ThrottleCheckResult
 NavigationInterceptor::WillProcessResponse() {
   if (!navigation_handle()->IsInPrimaryMainFrame()) {
     // Only top level navigations can be intercepted.
+    return PROCEED;
+  }
+
+  // Only intercept user-initiated navigations because we want to use
+  // active mode.
+  if (!DidNavigationHandleHaveActivation(navigation_handle())) {
     return PROCEED;
   }
 
@@ -121,6 +129,7 @@ void NavigationInterceptor::OnHeaderParsed(
   service_builder_.Run(rfh)->RequestToken(
       std::move(*idp_get_params_vector),
       password_manager::CredentialMediationRequirement::kOptional,
+      navigation_handle(),
       base::BindOnce(&NavigationInterceptor::OnTokenResponse,
                      weak_ptr_factory_.GetWeakPtr()));
 }

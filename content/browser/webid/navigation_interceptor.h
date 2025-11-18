@@ -22,6 +22,7 @@ class NavigationThrottleRegistry;
 class RenderFrameHost;
 
 namespace webid {
+class RequestService;
 
 // The NavigationInterceptor enables Identity Providers to control
 // navigations to their endpoints by cancelling it and replacing it
@@ -45,8 +46,7 @@ class CONTENT_EXPORT NavigationInterceptor
   };
 
   using RequestServiceBuilder =
-      base::RepeatingCallback<blink::mojom::FederatedAuthRequest*(
-          content::RenderFrameHost* rfh)>;
+      base::RepeatingCallback<RequestService*(content::RenderFrameHost* rfh)>;
 
   explicit NavigationInterceptor(NavigationThrottleRegistry& registry);
   NavigationInterceptor(NavigationThrottleRegistry& registry,

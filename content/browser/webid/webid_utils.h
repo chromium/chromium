@@ -27,6 +27,7 @@ enum class FedCmIdpSigninStatusMode;
 class FederatedIdentityApiPermissionContextDelegate;
 class FederatedIdentityPermissionContextDelegate;
 enum class IdpSigninStatus;
+class NavigationHandle;
 class RenderFrameHost;
 
 namespace webid {
@@ -115,6 +116,8 @@ RequesterFrameType ComputeRequesterFrameType(const RenderFrameHost& rfh,
 void MaybeAddResponseCodeToConsole(RenderFrameHost& render_frame_host,
                                    const char* fetch_description,
                                    int response_code);
+
+bool DidNavigationHandleHaveActivation(NavigationHandle* handle);
 
 // Creates a Perfetto track for the class pointed to by `class_pointer`.
 perfetto::NamedTrack CreatePerfettoTrackForFedCM(void* class_pointer);

@@ -14,6 +14,7 @@
 #include "content/browser/webid/metrics.h"
 #include "content/browser/webid/request_page_data.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/runtime_feature_state/runtime_feature_state_document_data.h"
 #include "content/public/browser/webid/federated_identity_api_permission_context_delegate.h"
 #include "content/public/browser/webid/federated_identity_permission_context_delegate.h"
@@ -468,6 +469,12 @@ void MaybeAddResponseCodeToConsole(RenderFrameHost& render_frame_host,
     render_frame_host.AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kError, *console_message);
   }
+}
+
+bool DidNavigationHandleHaveActivation(NavigationHandle* handle) {
+  return handle->GetNavigationInitiatorActivationAndAdStatus() !=
+         blink::mojom::NavigationInitiatorActivationAndAdStatus::
+             kDidNotStartWithTransientActivation;
 }
 
 perfetto::NamedTrack CreatePerfettoTrackForFedCM(void* class_pointer) {

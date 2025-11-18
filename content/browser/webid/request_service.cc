@@ -40,6 +40,7 @@
 #include "content/browser/webid/webid_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/webid/federated_identity_api_permission_context_delegate.h"
@@ -283,6 +284,16 @@ void RequestService::RequestToken(
     std::vector<IdentityProviderGetParametersPtr> idp_get_params_ptrs,
     MediationRequirement requirement,
     RequestTokenCallback callback) {
+  // This call is coming from Mojo, so we have no navigation handle.
+  RequestToken(std::move(idp_get_params_ptrs), requirement,
+               /*navigation_handle=*/nullptr, std::move(callback));
+}
+
+void RequestService::RequestToken(
+    std::vector<IdentityProviderGetParametersPtr> idp_get_params_ptrs,
+    MediationRequirement requirement,
+    NavigationHandle* navigation_handle,
+    RequestTokenCallback callback) {
   if (ShouldTerminateRequest(idp_get_params_ptrs, requirement)) {
     return;
   }
@@ -337,6 +348,8 @@ void RequestService::RequestToken(
   }
 
   had_transient_user_activation_ =
+      (navigation_handle &&
+       DidNavigationHandleHaveActivation(navigation_handle)) ||
       render_frame_host().HasTransientUserActivation();
 
   // Store the previous `idp_order_` value from this class. Note that this is {}
