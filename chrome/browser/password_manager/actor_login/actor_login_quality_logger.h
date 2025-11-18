@@ -35,6 +35,9 @@ class ActorLoginQualityLogger
   void AddAttemptLoginDetails(
       optimization_guide::proto::ActorLoginQuality_AttemptLoginDetails
           attempt_login_details) override;
+  void SetPermissionPicked(
+      optimization_guide::proto::ActorLoginQuality_PermissionOption
+          permission_option) override;
   void UploadFinalLog(optimization_guide::ModelQualityLogsUploaderService*
                           mqls_uploader) const override;
 

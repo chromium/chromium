@@ -293,6 +293,9 @@ void AttemptLoginTool::OnCredentialSelected(
               << " not found in the credentials list.";
     }
   } else {
+    quality_logger_.SetPermissionPicked(
+        optimization_guide::proto::
+            ActorLoginQuality_PermissionOption_TASK_STOPPED);
     VLOG(2) << "SelectCredentialDialogResponse has no selected "
                "credential id.";
   }
@@ -305,6 +308,23 @@ void AttemptLoginTool::OnCredentialSelected(
     return;
   }
 
+  if (response->permission_duration.has_value()) {
+    switch (response->permission_duration.value()) {
+      case webui::mojom::UserGrantedPermissionDuration::kOneTime:
+        quality_logger_.SetPermissionPicked(
+            optimization_guide::proto::
+                ActorLoginQuality_PermissionOption_ALLOW_ONCE);
+        break;
+      case webui::mojom::UserGrantedPermissionDuration::kAlwaysAllow:
+        quality_logger_.SetPermissionPicked(
+            optimization_guide::proto::
+                ActorLoginQuality_PermissionOption_ALWAYS_ALLOW);
+        break;
+    }
+  } else {
+    quality_logger_.SetPermissionPicked(
+        optimization_guide::proto::ActorLoginQuality_PermissionOption_UNKNOWN);
+  }
   // Cache the user selected credential for reuse.
   tool_delegate().SetUserSelectedCredential(
       ToolDelegate::CredentialWithPermission(
