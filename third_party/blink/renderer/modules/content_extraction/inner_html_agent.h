@@ -10,7 +10,6 @@
 #include "third_party/blink/public/mojom/content_extraction/inner_html.mojom-blink.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver_set.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
@@ -21,7 +20,7 @@ class LocalFrame;
 // to InnerHtmlBuilder to handle building of the text.
 class InnerHtmlAgent final : public GarbageCollected<InnerHtmlAgent>,
                              public mojom::blink::InnerHtmlAgent,
-                             public Supplement<Document> {
+                             public GarbageCollectedMixin {
  public:
   static const unsigned kSupplementIndex;
   static InnerHtmlAgent* From(Document&);
@@ -42,6 +41,7 @@ class InnerHtmlAgent final : public GarbageCollected<InnerHtmlAgent>,
  private:
   void Bind(mojo::PendingReceiver<mojom::blink::InnerHtmlAgent> receiver);
 
+  Member<Document> document_;
   HeapMojoReceiverSet<mojom::blink::InnerHtmlAgent, InnerHtmlAgent>
       receiver_set_;
 };
