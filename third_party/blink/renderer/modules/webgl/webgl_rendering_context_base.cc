@@ -6057,8 +6057,8 @@ void WebGLRenderingContextBase::TexImageHelperHTMLImageElement(
     // Maybe it should be the resolved destination size?.
     if (have_svg_image) {
       SourceImageStatus status;
-      image_for_render = image->GetSourceImageForCanvas(
-          FlushReason::kOther, &status, gfx::SizeF(300, 150));
+      image_for_render =
+          image->GetSourceImageForCanvas(&status, gfx::SizeF(300, 150));
       // Since the size of the source has not been previously validated,
       // GetSourceImageForCanvas() can return nullptr.
       if (!image_for_render) {
@@ -6339,8 +6339,7 @@ void WebGLRenderingContextBase::TexImageHelperCanvasRenderingContextHost(
 
   SourceImageStatus source_image_status = kInvalidSourceImageStatus;
   scoped_refptr<Image> image = context_host->GetSourceImageForCanvas(
-      FlushReason::kOther, &source_image_status,
-      gfx::SizeF(*params.width, *params.height));
+      &source_image_status, gfx::SizeF(*params.width, *params.height));
   if (source_image_status != kNormalSourceImageStatus)
     return;
 

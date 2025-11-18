@@ -113,8 +113,7 @@ class CORE_EXPORT HTMLVideoElement final : public HTMLMediaElement,
       bool reinterpret_as_srgb = false);
 
   // CanvasImageSource implementation
-  scoped_refptr<Image> GetSourceImageForCanvas(FlushReason,
-                                               SourceImageStatus*,
+  scoped_refptr<Image> GetSourceImageForCanvas(SourceImageStatus*,
                                                const gfx::SizeF&) override;
   bool IsVideoElement() const override { return true; }
   bool WouldTaintOrigin() const override;

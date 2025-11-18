@@ -35,7 +35,6 @@ ResourceStatus CSSURLImageValue::Status() const {
 }
 
 scoped_refptr<Image> CSSURLImageValue::GetSourceImageForCanvas(
-    FlushReason,
     SourceImageStatus*,
     const gfx::SizeF&) {
   return GetImage();

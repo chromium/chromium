@@ -51,8 +51,7 @@ enum SourceImageStatus {
 
 class CORE_EXPORT CanvasImageSource {
  public:
-  virtual scoped_refptr<Image> GetSourceImageForCanvas(FlushReason,
-                                                       SourceImageStatus*,
+  virtual scoped_refptr<Image> GetSourceImageForCanvas(SourceImageStatus*,
                                                        const gfx::SizeF&) = 0;
 
   // IMPORTANT: Result must be independent of whether destinationContext is

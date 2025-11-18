@@ -244,7 +244,6 @@ void OffscreenCanvas::RecordIdentifiabilityMetric(
 }
 
 scoped_refptr<Image> OffscreenCanvas::GetSourceImageForCanvas(
-    FlushReason reason,
     SourceImageStatus* status,
     const gfx::SizeF& size) {
   if (!context_) {
@@ -268,10 +267,10 @@ scoped_refptr<Image> OffscreenCanvas::GetSourceImageForCanvas(
     // Because WebGL/WebGPU sources always require copying the back buffer,
     // we use PaintRenderingResultsToSnapshot instead of GetImage in order to
     // keep a cached copy of the backing in the canvas's resource provider.
-    image = RenderingContext()->PaintRenderingResultsToSnapshot(kBackBuffer,
-                                                                reason);
+    image = RenderingContext()->PaintRenderingResultsToSnapshot(
+        kBackBuffer, FlushReason::kOther);
   } else {
-    image = RenderingContext()->GetImage(reason);
+    image = RenderingContext()->GetImage(FlushReason::kOther);
   }
   if (!image) {
     image = CreateTransparentImage();

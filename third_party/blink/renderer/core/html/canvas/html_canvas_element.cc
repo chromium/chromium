@@ -1742,10 +1742,9 @@ void HTMLCanvasElement::ChildrenChanged(const ChildrenChange& change) {
 }
 
 scoped_refptr<Image> HTMLCanvasElement::GetSourceImageForCanvas(
-    FlushReason reason,
     SourceImageStatus* status,
     const gfx::SizeF&) {
-  return GetSourceImageForCanvasInternal(reason, status);
+  return GetSourceImageForCanvasInternal(FlushReason::kOther, status);
 }
 
 scoped_refptr<StaticBitmapImage>
