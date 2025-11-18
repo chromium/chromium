@@ -1237,7 +1237,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ads.InterestGroup.Auction.SameSiteAdComponentsMaxCountForWinningBid"
-    units="NumComponents" expires_after="2025-11-16">
+    units="NumComponents" expires_after="2026-05-16">
   <owner>averge@chromium.org</owner>
   <owner>privacy-sandbox-dev@chromium.org</owner>
   <summary>
