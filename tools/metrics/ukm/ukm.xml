@@ -3903,6 +3903,13 @@ be describing additional metrics about the same event.
       AutofillAi.KeyMetrics.
     </summary>
   </metric>
+  <metric name="FormSignature">
+    <summary>
+      The signature of the form (mod 1021). This is the hash identifier used to
+      denote this form. See components/autofill/core/common/signatures.cc for
+      more details.
+    </summary>
+  </metric>
   <metric name="PromptType">
     <summary>
       Describes the type of prompt shown to the user. This could be for example

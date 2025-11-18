@@ -298,6 +298,8 @@ void AutofillAiUkmLogger::LogImportPromptResult(
                                      ->mutable_user_prompt_metrics();
 
     mqls_user_prompt_event->set_domain(domain);
+    mqls_user_prompt_event->set_form_signature(
+        CalculateFormSignature(form).value());
     mqls_user_prompt_event->set_form_session_identifier(form_session_id);
     mqls_user_prompt_event->set_storage_type(GetStorageType(record_type));
     mqls_user_prompt_event->set_prompt_type(GetPromptType(prompt_type));
@@ -310,6 +312,7 @@ void AutofillAiUkmLogger::LogImportPromptResult(
   }
   ukm::builders::AutofillAi_UserPromptMetrics(ukm_source_id)
       .SetFormSessionIdentifier(form_session_id)
+      .SetFormSignature(CalculateFormSignature(form).value())
       .SetEntityType(base::to_underlying(entity_type.name()))
       .SetStorageType(GetStorageType(record_type))
       .SetPromptType(GetPromptType(prompt_type))
