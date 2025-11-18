@@ -469,6 +469,12 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             return;
         }
 
+        // Here, if fragment is MainSettings, this is running in single-column layout.
+        // So, we should disable selection highlight.
+        if (fragment instanceof MainSettings mainSettings) {
+            mainSettings.setMultiColumnSettings(null, null);
+        }
+
         fragment.requireContext()
                 .getTheme()
                 .applyStyle(R.style.ThemeOverlay_Chromium_Settings_Containment, true);
