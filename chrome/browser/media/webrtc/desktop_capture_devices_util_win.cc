@@ -10,6 +10,7 @@
 
 #include "base/base_paths_win.h"
 #include "base/files/file_path.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/process/process_handle.h"
 #include "base/win/scoped_handle.h"
@@ -17,6 +18,22 @@
 #include "base/win/windows_types.h"
 
 namespace {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class GetAppMainProcessIdWinResult {
+  kSuccess = 0,
+  kFailedToGetWindowProcessId = 1,
+  kFailedToOpenWindowProcessHandle = 2,
+  kFailedToFindUWPAppCoreWindow = 3,
+  kFailedToGetUWPAppCoreWindowProcessId = 4,
+  kMaxValue = kFailedToGetUWPAppCoreWindowProcessId
+};
+
+void RecordGetAppMainProcessIdResult(GetAppMainProcessIdWinResult result) {
+  base::UmaHistogramEnumeration(
+      "Media.GetDisplayMedia.BasicFlow.Win.GetApplicationIdResult", result);
+}
 
 bool IsUWPApp(const base::FilePath& app_path) {
   base::FilePath system_path;
@@ -65,6 +82,8 @@ base::ProcessId GetUWPAppCoreWindowProcessId(HWND hwnd) {
                                 std::ref(main_uwp_app_core_window)));
   // There is no child window with the class name Windows.UI.Core.CoreWindow.
   if (!main_uwp_app_core_window) {
+    RecordGetAppMainProcessIdResult(
+        GetAppMainProcessIdWinResult::kFailedToFindUWPAppCoreWindow);
     return base::kNullProcessId;
   }
 
@@ -72,6 +91,8 @@ base::ProcessId GetUWPAppCoreWindowProcessId(HWND hwnd) {
   DWORD thread_id =
       GetWindowThreadProcessId(main_uwp_app_core_window, &main_process_id);
   if (!thread_id || !main_process_id) {
+    RecordGetAppMainProcessIdResult(
+        GetAppMainProcessIdWinResult::kFailedToGetUWPAppCoreWindowProcessId);
     return base::kNullProcessId;
   }
 
@@ -99,33 +120,14 @@ base::FilePath GetProcessExecutablePath(HANDLE process_handle) {
   return base::FilePath(image_path);
 }
 
-}  // namespace
-
-base::ProcessId GetAppMainProcessId(intptr_t window_id) {
-  HWND hwnd = reinterpret_cast<HWND>(window_id);
-  DWORD process_id;
-  DWORD thread_id = GetWindowThreadProcessId(hwnd, &process_id);
-  if (!thread_id || !process_id) {
-    return base::kNullProcessId;
-  }
-
-  base::win::ScopedHandle process_handle(
-      OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION,
-                  /*bInheritHandle=*/FALSE, process_id));
-  if (!process_handle.is_valid()) {
-    return base::kNullProcessId;
-  }
-
-  // UWP apps' UI follow a hierarchy where the top-level window is created by
-  // ApplicationFrameHost.exe and the actual app window is a child window of the
-  // top-level window. Therefore, in this situation, we need to look down in the
-  // window hierarchy to find the correct process id.
-  base::FilePath app_path = GetProcessExecutablePath(process_handle.get());
-  // Checks if process is a UWP app.
-  if (IsUWPApp(app_path)) {
-    return GetUWPAppCoreWindowProcessId(hwnd);
-  }
-
+// Finds the root process id of the application's
+// process tree. The root process of the tree is defined as the oldest ancestor
+// process that shares the same executable image with the process identified by
+// `process_id`.
+base::ProcessId GetGenericAppRootProcessId(
+    DWORD process_id,
+    const base::win::ScopedHandle& process_handle,
+    const base::FilePath& app_path) {
   base::ProcessId main_process_id_candidate = process_id;
   base::ProcessId parent_id = base::GetParentProcessId(process_handle.get());
   if (parent_id <= 0) {
@@ -156,4 +158,45 @@ base::ProcessId GetAppMainProcessId(intptr_t window_id) {
   }
 
   return main_process_id_candidate;
+}
+
+}  // namespace
+
+base::ProcessId GetAppMainProcessId(intptr_t window_id) {
+  HWND hwnd = reinterpret_cast<HWND>(window_id);
+  DWORD process_id;
+  DWORD thread_id = GetWindowThreadProcessId(hwnd, &process_id);
+  if (!thread_id || !process_id) {
+    RecordGetAppMainProcessIdResult(
+        GetAppMainProcessIdWinResult::kFailedToGetWindowProcessId);
+    return base::kNullProcessId;
+  }
+
+  base::win::ScopedHandle process_handle(
+      OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION,
+                  /*bInheritHandle=*/FALSE, process_id));
+  if (!process_handle.is_valid()) {
+    RecordGetAppMainProcessIdResult(
+        GetAppMainProcessIdWinResult::kFailedToOpenWindowProcessHandle);
+    return base::kNullProcessId;
+  }
+
+  // UWP apps' UI follow a hierarchy where the top-level window is created by
+  // ApplicationFrameHost.exe and the actual app window is a child window of the
+  // top-level window. Therefore, in this situation, we need to look down in the
+  // window hierarchy to find the correct process id.
+  base::FilePath app_path = GetProcessExecutablePath(process_handle.get());
+  base::ProcessId main_process_id = base::kNullProcessId;
+  // Checks if process is a UWP app.
+  if (IsUWPApp(app_path)) {
+    main_process_id = GetUWPAppCoreWindowProcessId(hwnd);
+  } else {
+    main_process_id =
+        GetGenericAppRootProcessId(process_id, process_handle, app_path);
+  }
+
+  if (main_process_id != base::kNullProcessId) {
+    RecordGetAppMainProcessIdResult(GetAppMainProcessIdWinResult::kSuccess);
+  }
+  return main_process_id;
 }

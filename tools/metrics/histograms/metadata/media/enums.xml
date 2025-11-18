@@ -1130,6 +1130,14 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Enum placerholder. See crbug/1179826"/>
 </enum>
 
+<enum name="GetAppMainProcessIdWinResult">
+  <int value="0" label="kSuccess"/>
+  <int value="1" label="kFailedToGetWindowProcessId"/>
+  <int value="2" label="kFailedToOpenWindowProcessHandle"/>
+  <int value="3" label="kFailedToFindUWPAppCoreWindow"/>
+  <int value="4" label="kFailedToGetUWPAppCoreWindowProcessId"/>
+</enum>
+
 <enum name="GetDeviceInfosResult">
   <int value="0" label="SuccessNoRetry"/>
   <int value="1" label="FailureNoRetry"/>

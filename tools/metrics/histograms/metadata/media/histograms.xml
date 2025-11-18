@@ -4172,6 +4172,17 @@ chromium-metrics-reviews@google.com.
   <token key="RendererType" variants="RendererType"/>
 </histogram>
 
+<histogram name="Media.GetDisplayMedia.BasicFlow.Win.GetApplicationIdResult"
+    enum="GetAppMainProcessIdWinResult" expires_after="2026-05-11">
+  <owner>eladalon@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
+  <owner>gabrielbrito@microsoft.com</owner>
+  <summary>
+    Records the result of trying to get the application ID of an application
+    whose window was selected in the getDisplayMedia() media picker on Windows.
+  </summary>
+</histogram>
+
 <histogram name="Media.GetDisplayMedia.Constraints.DisplaySurface"
     enum="GetDisplayMediaConstraintsDisplaySurface" expires_after="2024-03-17">
   <owner>eladalon@chromium.org</owner>
@@ -6633,12 +6644,15 @@ chromium-metrics-reviews@google.com.
     chooses to share a display surface of type {Type}. (Not recorded if the user
     rejects the prompt.) Tracks the state of the audio toggle at the time when
     the user approved the capture. If the audio toggle is not present, this
-    histogram distinguishes the reason for its absence.
+    histogram distinguishes the reason for its absence. Note that
+    `WindowsAppAudio` is a subset of `Windows` where the option to share
+    application audio is provided instead of system audio.
   </summary>
   <token key="Type">
     <variant name="Screens"/>
     <variant name="Tabs"/>
     <variant name="Windows"/>
+    <variant name="WindowsAppAudio"/>
   </token>
 </histogram>
 

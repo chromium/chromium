@@ -993,6 +993,13 @@ void DesktopMediaPickerDialogView::RecordAudioToggleUma(
   }
 
   base::UmaHistogramEnumeration(name, status);
+
+  if (source.type == DesktopMediaID::Type::TYPE_WINDOW &&
+      window_audio_type_offered_ == DesktopMediaID::AudioType::kApplication) {
+    base::UmaHistogramEnumeration(
+        "Media.Ui.GetDisplayMedia.BasicFlow.AudioToggleState.WindowsAppAudio",
+        status);
+  }
 }
 
 void DesktopMediaPickerDialogView::RecordTabDiscardedStatusUma(
