@@ -97,6 +97,8 @@ component("crypto") {
       "apple/keychain_util.mm",
       "apple/keychain_v2.h",
       "apple/keychain_v2.mm",
+      "apple/scoped_keychain_user_interaction_allowed.cc",
+      "apple/scoped_keychain_user_interaction_allowed.h",
     ]
 
     if (is_mac) {

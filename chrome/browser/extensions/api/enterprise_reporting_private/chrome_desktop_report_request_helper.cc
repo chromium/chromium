@@ -32,7 +32,7 @@
 #if BUILDFLAG(IS_MAC)
 #include "base/apple/foundation_util.h"
 #include "chrome/browser/extensions/api/enterprise_reporting_private/keychain_data_helper_mac.h"
-#include "crypto/apple/keychain.h"
+#include "crypto/apple/scoped_keychain_user_interaction_allowed.h"
 #include "crypto/apple/security_framework_lock.h"
 #endif
 
