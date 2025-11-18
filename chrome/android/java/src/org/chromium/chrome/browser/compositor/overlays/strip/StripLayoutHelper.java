@@ -5919,7 +5919,8 @@ public class StripLayoutHelper
 
     public void onMediaStateChanged(Tab tab, @MediaState int mediaState) {
         StripLayoutTab stripLayoutTab = findTabById(tab.getId());
-        assumeNonNull(stripLayoutTab);
+        // This state may get reset after the tab has already closed, so ignore if null.
+        if (stripLayoutTab == null) return;
         stripLayoutTab.setMediaState(mediaState);
         setAccessibilityDescription(stripLayoutTab, tab);
     }
