@@ -172,6 +172,8 @@ public class TabModelImplTest {
 
     @Test
     @SmallTest
+    // TODO(crbug.com/457847264): Change to @Restriction(DeviceFormFactor.PHONE) after launch
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void validIndexAfterRestored_FromPreviousActivity_WithIncognitoTabs() {
         mPage = Journeys.createIncognitoTabsWithWebPages(mPage, List.of(mTestUrl));
 
@@ -1067,6 +1069,8 @@ public class TabModelImplTest {
 
     @Test
     @SmallTest
+    // TODO(crbug.com/457847264): Change to @Restriction(DeviceFormFactor.PHONE) after launch
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testCloseIncognitoTabSwitchesToNormalModelAndUpdatesIncognitoIndex() {
         TabModel incognitoTabModel =
                 mActivityTestRule.getActivity().getTabModelSelector().getModel(true);
@@ -1567,6 +1571,8 @@ public class TabModelImplTest {
 
     @Test
     @SmallTest
+    // TODO(crbug.com/457847264): Change to @Restriction(DeviceFormFactor.PHONE) after launch
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testSetMuteSetting_Incognito() {
         WebPageStation page = mPage.loadWebPageProgrammatically(mTestUrl);
         Journeys.createIncognitoTabsWithWebPages(page, List.of(mTestUrl));
