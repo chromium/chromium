@@ -415,7 +415,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   }
 
   if (self.hideHeaderOnTallContent) {
-    [self updateActionButtonsAndPushUpScrollViewIfMandatory];
+    [self handleDidReachBottomOfContent];
   }
 
   NSArray<UITrait>* traits = @[
@@ -549,12 +549,6 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   [self setupBannerConstraints];
   [self scaleBannerWithCurrentImage:self.bannerImageView.image
                              toSize:[self computeBannerImageSize]];
-}
-
-- (void)setPrimaryActionString:(NSString*)text {
-  _primaryActionString = text;
-  self.configuration.primaryActionString = text;
-  [self reloadConfiguration];
 }
 
 - (UIImageView*)bannerImageView {
@@ -713,6 +707,12 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   [self reloadConfiguration];
 }
 
+- (void)setPrimaryActionString:(NSString*)primaryActionString {
+  _primaryActionString = primaryActionString;
+  self.configuration.primaryActionString = primaryActionString;
+  [self reloadConfiguration];
+}
+
 - (void)setSecondaryActionString:(NSString*)secondaryActionString {
   _secondaryActionString = secondaryActionString;
   self.configuration.secondaryActionString = secondaryActionString;
@@ -758,27 +758,22 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 
 // Sets the button styles based on `actionButtonsVisibility`.
 - (void)updateButtonStyles {
-  self.configuration.primaryActionString = self.primaryActionString;
-  self.configuration.secondaryActionString = self.secondaryActionString;
-  self.configuration.tertiaryActionString = self.tertiaryActionString;
-
   switch (self.actionButtonsVisibility) {
     case ActionButtonsVisibility::kDefault:
     case ActionButtonsVisibility::kRegularButtonsShown:
+      self.configuration.hideButtons = NO;
       self.configuration.primaryButtonStyle = ChromeButtonStylePrimary;
       self.configuration.secondaryButtonStyle = ChromeButtonStyleSecondary;
       self.configuration.tertiaryButtonStyle = ChromeButtonStyleTertiary;
       break;
     case ActionButtonsVisibility::kEquallyWeightedButtonShown:
+      self.configuration.hideButtons = NO;
       self.configuration.primaryButtonStyle = ChromeButtonStyleTertiary;
       self.configuration.secondaryButtonStyle = ChromeButtonStyleTertiary;
       self.configuration.tertiaryButtonStyle = ChromeButtonStyleTertiary;
       break;
     case ActionButtonsVisibility::kHidden:
-      // Hide all buttons by setting action strings to nil.
-      self.configuration.primaryActionString = nil;
-      self.configuration.secondaryActionString = nil;
-      self.configuration.tertiaryActionString = nil;
+      self.configuration.hideButtons = YES;
       break;
   }
   [self reloadConfiguration];
@@ -1055,7 +1050,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   // scrolling is required.
   BOOL isScrolledToBottom = [self isScrolledToBottom];
   if (self.didReachBottom || isScrolledToBottom) {
-    [self updateActionButtonsAndPushUpScrollViewIfMandatory];
+    [self handleDidReachBottomOfContent];
   } else {
     [self setReadMoreText];
   }
@@ -1072,22 +1067,14 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 
   BOOL isScrolledToBottom = [self isScrolledToBottom];
   if (self.scrollToEndMandatory && !self.didReachBottom && isScrolledToBottom) {
-    [self updateActionButtonsAndPushUpScrollViewIfMandatory];
+    [self handleDidReachBottomOfContent];
   }
 }
 
-// This method should be called right before the view is scrolled to the bottom.
-// It updates the primary button's label and adds secondary and/or tertiary
-// buttons, and as a result, pushing the scroll view up by updating the bottom
-// offset of the scroll view and scroll to the new offset if the change in
-// action buttons is triggered by a scroll in a view that sets
-// `self.scrollToEndMandatory=YES`. It also sets `self.didReachBottom` to YES.
-- (void)updateActionButtonsAndPushUpScrollViewIfMandatory {
-  self.configuration.primaryActionString = self.primaryActionString;
-  self.configuration.secondaryActionString = self.secondaryActionString;
-  self.configuration.tertiaryActionString = self.tertiaryActionString;
-  [self reloadConfiguration];
-
+// If scrolling to the end is mandatory, it triggers a scroll to the bottom.
+// It also handles hiding the header if the content is tall and sets
+// `self.didReachBottom` to YES.
+- (void)handleDidReachBottomOfContent {
   if (self.scrollToEndMandatory) {
     _shouldScrollToBottom = YES;
   } else if (self.hideHeaderOnTallContent) {

@@ -45,6 +45,9 @@
 // `isLoading`.
 @property(nonatomic, assign, getter=isConfirmed) BOOL confirmed;
 
+// When YES, the entire button stack is hidden. Defaults to NO.
+@property(nonatomic, assign) BOOL hideButtons;
+
 @end
 
 #endif  // IOS_CHROME_COMMON_UI_BUTTON_STACK_BUTTON_STACK_CONFIGURATION_H_

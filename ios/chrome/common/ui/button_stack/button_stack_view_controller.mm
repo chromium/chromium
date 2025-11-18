@@ -183,6 +183,9 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
 }
 
 - (BOOL)hasVisibleButtons {
+  if (self.configuration.hideButtons) {
+    return NO;
+  }
   return !(_primaryActionButton.hidden && _secondaryActionButton.hidden &&
            _tertiaryActionButton.hidden);
 }
@@ -341,6 +344,7 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
 // Updates the buttons' visibility, titles, and images based on the current
 // configuration.
 - (void)reconfigureButtons {
+  _actionStackView.hidden = _configuration.hideButtons;
   [self configureButtonForPosition:ButtonStackButtonPositionPrimary
                         withString:_configuration.primaryActionString
                              style:_configuration.primaryButtonStyle];
