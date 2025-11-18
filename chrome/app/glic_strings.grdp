@@ -276,9 +276,6 @@
   </message>
 
   <!-- Glic Window -->
-  <message name="IDS_GLIC_INACTIVE_VIEW_CARD_TEXT" desc="Text displayed on the card when the Gemini conversation is in Floaty and the side panel is blurred.">
-    Your Gemini conversation is in a pop-out chat. Click anywhere on this side panel to move it here.
-  </message>
   <message name="IDS_GLIC_WINDOW_TITLE" desc="Accessible title for the Gemini Window." is_accessibility_with_no_ui="true">
     Gemini
   </message>

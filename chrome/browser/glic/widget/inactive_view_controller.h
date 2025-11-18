@@ -78,12 +78,8 @@ class InactiveViewController : public views::ViewObserver,
   bool is_image_distorted_ = false;
 
   std::unique_ptr<gfx::SlideAnimation> animation_;
-  views::ViewTracker card_view_tracker_;
 
   base::WeakPtrFactory<InactiveViewController> weak_ptr_factory_{this};
-
-  // Creates and returns the card view.
-  std::unique_ptr<views::View> CreateCardView();
 };
 
 #endif  // CHROME_BROWSER_GLIC_WIDGET_INACTIVE_VIEW_CONTROLLER_H_
