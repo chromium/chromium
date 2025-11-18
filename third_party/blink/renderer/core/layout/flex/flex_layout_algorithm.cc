@@ -1701,11 +1701,11 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
     const LayoutUnit main_axis_free_space =
         should_apply_main_axis_auto_margin ? LayoutUnit()
                                            : flex_line.main_axis_free_space;
-    const LayoutUnit main_axis_auto_margin =
+    LayoutUnitDiffuser main_axis_auto_margin =
         should_apply_main_axis_auto_margin
-            ? flex_line.main_axis_free_space /
-                  flex_line.main_axis_auto_margin_count
-            : LayoutUnit();
+            ? LayoutUnitDiffuser(flex_line.main_axis_free_space,
+                                 flex_line.main_axis_auto_margin_count)
+            : LayoutUnitDiffuser();
 
     const wtf_size_t line_items_size = flex_line.item_indices.size();
     LayoutUnitDiffuser space_between_items = ContentDistributionSpace(
@@ -1810,10 +1810,10 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
 
         // Main-axis margins are distributed to evenly across the whole line.
         if (is_margin_auto.MainStart()) {
-          margin.MainStart() = main_axis_auto_margin;
+          margin.MainStart() = main_axis_auto_margin.Next();
         }
         if (is_margin_auto.MainEnd()) {
-          margin.MainEnd() = main_axis_auto_margin;
+          margin.MainEnd() = main_axis_auto_margin.Next();
         }
       }
 
