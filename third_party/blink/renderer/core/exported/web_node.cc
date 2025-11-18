@@ -311,8 +311,9 @@ base::ScopedClosureRunner WebNode::AddEventListener(
   class EventListener : public NativeEventListener {
    public:
     EventListener(Node* node,
+                  EventType event_type,
                   base::RepeatingCallback<void(WebDOMEvent)> handler)
-        : node_(node), handler_(std::move(handler)) {}
+        : node_(node), event_type_(event_type), handler_(std::move(handler)) {}
 
     void Invoke(ExecutionContext*, Event* event) override {
       handler_.Run(WebDOMEvent(event));
@@ -348,7 +349,8 @@ base::ScopedClosureRunner WebNode::AddEventListener(
   };
 
   WebPrivatePtrForGC<EventListener> listener =
-      MakeGarbageCollected<EventListener>(Unwrap<Node>(), std::move(handler));
+      MakeGarbageCollected<EventListener>(Unwrap<Node>(), event_type,
+                                          std::move(handler));
   listener->AddListener();
   return base::ScopedClosureRunner(BindOnce(
       &EventListener::RemoveListener, WrapWeakPersistent(listener.Get())));
