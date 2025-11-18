@@ -48,6 +48,8 @@ class ProfileOAuth2TokenServiceDelegateAndroid
 
   // Seeds the accounts with |accounts| then resumes the reload of
   // accounts once the account seeding is complete.
+  // If |primary_account_id| is not std::nullopt, then it must exist in
+  // |accounts|.
   void SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
       const std::vector<AccountInfo>& accounts,
       const std::optional<CoreAccountId>& primary_account_id) override;
@@ -86,6 +88,8 @@ class ProfileOAuth2TokenServiceDelegateAndroid
   void FireRefreshTokensLoaded() override;
 
  private:
+  friend class OAuth2TokenServiceDelegateAndroidForTest;
+
   // ProfileOAuth2TokenServiceDelegate implementation:
   // Overridden from ProfileOAuth2TokenService to complete signout of all
   // POA2TService aware accounts.
@@ -112,7 +116,7 @@ class ProfileOAuth2TokenServiceDelegateAndroid
   // As |GetAccounts| but with only validated account IDs.
   std::vector<CoreAccountId> GetValidAccounts() const;
   // Set accounts that have been advertised by OnRefreshTokenAvailable.
-  virtual void SetAccounts(const std::vector<CoreAccountId>& accounts);
+  void SetAccounts(const std::vector<CoreAccountId>& accounts);
 
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
 

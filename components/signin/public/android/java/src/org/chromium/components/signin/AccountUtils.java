@@ -13,6 +13,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.signin.AccountManagerFacade.ChildAccountStatusListener;
 import org.chromium.components.signin.base.AccountInfo;
+import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.google_apis.gaia.GaiaId;
 
 import java.util.Arrays;
@@ -74,6 +75,20 @@ public class AccountUtils {
             final List<AccountInfo> accounts, GaiaId accountGaiaId) {
         for (AccountInfo account : accounts) {
             if (account.getGaiaId().equals(accountGaiaId)) {
+                return account;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Finds the first {@link AccountInfo} among `accounts` whose {@link CoreAccountId} is equal to
+     * `accountId`; null if there is no match.
+     */
+    public static @Nullable AccountInfo findAccountByAccountId(
+            final List<AccountInfo> accounts, CoreAccountId accountId) {
+        for (AccountInfo account : accounts) {
+            if (account.getId().equals(accountId)) {
                 return account;
             }
         }

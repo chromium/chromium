@@ -73,6 +73,10 @@ public class IdentityMutator {
         IdentityMutatorJni.get().revokeSyncConsent(mNativeIdentityMutator, sourceMetric);
     }
 
+    /**
+     * Seeds and reloads the given `accounts`. If `primaryAccountId` is not null then it must exist
+     * in the given `accounts`.
+     */
     public void seedAccountsThenReloadAllAccountsWithPrimaryAccount(
             List<AccountInfo> accounts, @Nullable CoreAccountId primaryAccountId) {
         IdentityMutatorJni.get()
