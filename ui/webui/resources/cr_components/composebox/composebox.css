@@ -13,6 +13,7 @@
   --color-composebox-submit-button-hover: var(--color-searchbox-results-background-hovered);
   --composebox-cancel-button-top: var(--cr-composebox-cancel-button-top, 12px);
   --cr-composebox-outline-hcm: solid var(--color-composebox-outline-hcm);
+  --cr-composebox-submit-container-size: 40px;
   --cr-icon-button-size: 36px;
   --input-bottom-spacing: 10px;
   --text-input-top-spacing: 10px;
@@ -413,11 +414,11 @@ search-animated-glow {
 #submitContainer {
   border-radius: 50%;
   cursor: default; /* For Lens side panel. */
-  height: var(--cr-icon-button-size);
+  height: var(--cr-composebox-submit-container-size, var(--cr-icon-button-size));
   bottom: var(--input-bottom-spacing);
   position: absolute;
   inset-inline-end: 12px;
-  width: var(--cr-icon-button-size);
+  width: var(--cr-composebox-submit-container-size, var(--cr-icon-button-size));
 }
 
 :host([show-submit_][submit-enabled_]) #submitContainer {
@@ -428,6 +429,8 @@ search-animated-glow {
   border-radius: inherit;
   display: inherit;
   height: var(--cr-icon-button-size);
+  margin-inline-start: 2px;
+  margin-top: 2px;
   position: absolute;
   width: var(--cr-icon-button-size);
   z-index: 2;
@@ -441,9 +444,10 @@ search-animated-glow {
   --cr-icon-button-fill-color: var(--color-composebox-submit-button-icon, white);
   --cr-icon-button-icon-size: 16px;
   background-color: var(--color-composebox-submit-button-background);
-  bottom: 0;
+  margin-inline-start: 0px;
+  inset-inline-start: 2px;
   opacity: 30%; /* For Lens side panel. */
-  inset-inline-end: 0;
+  top: 2px;
   transition: var(--submit-enabled-transition);
 }
 
@@ -589,20 +593,19 @@ contextual-entrypoint-and-carousel::part(voice-icon) {
 }
 
 :host([show-submit_][submit-enabled_][searchbox-layout-mode='TallTopContext']) #submitContainer {
-  margin-inline-end: 12px;
+  margin-inline-end: 10px;
   margin-inline-start: var(--cr-composebox-submit-button-margin-inline-start, 4px);
   position: static;
 }
 
 :host([show-submit_][submit-enabled_][searchbox-layout-mode='TallTopContext']) #submitIcon {
   margin-inline-end: 12px;
-  margin-inline-start: 0px;
   position: relative;
 }
 
 :host([searchbox-layout-mode='Compact']) contextual-entrypoint-and-carousel::part(voice-icon) {
   position: absolute;
-  right: calc(var(--cr-icon-button-size) + 12px);
+  inset-inline-end: calc(var(--cr-composebox-submit-container-size) + 12px);
   top: 10px;
 }
 
@@ -621,24 +624,25 @@ contextual-entrypoint-and-carousel::part(voice-icon) {
 
 :host([show-submit_][submit-enabled_][searchbox-layout-mode='Compact'][context-files-size_="0"]) #submitContainer {
   bottom: 0px;
-  padding-top: 18px;
+  margin-inline-end: -2px;
+  margin-top: 16px;
 }
 
 :host([show-submit_][submit-enabled_][searchbox-layout-mode='Compact']:not([context-files-size_="0"])) #submitContainer {
-  bottom: 16px;
+  bottom: 14px;
 }
 
 :host([show-submit_][submit-enabled_][searchbox-layout-mode='TallBottomContext']) #submitContainer {
-  inset-inline-end: 12px;
+  inset-inline-end: 10px;
   position: absolute;
 }
 
 :host([show-submit_][submit-enabled_][searchbox-layout-mode='TallBottomContext']:not([show-dropdown_])) #submitContainer {
-  bottom: 12px;
+  bottom: 10px;
 }
 
 :host([show-submit_][submit-enabled_][searchbox-layout-mode='TallBottomContext'][show-dropdown_]) #submitContainer {
-  top: 60px;
+  top: 58px;
 }
 
 :host([show-submit_][submit-enabled_][searchbox-layout-mode='TallBottomContext'][show-dropdown_][context-files-size_="0"]) contextual-entrypoint-and-carousel::part(carousel-divider) {
@@ -655,7 +659,7 @@ contextual-entrypoint-and-carousel::part(voice-icon) {
 }
 
 :host([show-submit_][submit-enabled_][searchbox-layout-mode='TallBottomContext']) contextual-entrypoint-and-carousel::part(voice-icon) {
-  inset-inline-end: calc(var(--cr-icon-button-size) + 18px);
+  inset-inline-end: calc(var(--cr-composebox-submit-container-size) + 18px);
 }
 
 :host([show-submit_][submit-enabled_][searchbox-layout-mode='TallBottomContext'][show-dropdown_]) contextual-entrypoint-and-carousel::part(voice-icon) {
