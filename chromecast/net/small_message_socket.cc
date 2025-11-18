@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromecast/net/small_message_socket.h"
 
 #include <stdint.h>
@@ -16,6 +11,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span_writer.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -74,7 +70,7 @@ void SmallMessageSocket::BufferWrapper::DidConsume(size_t bytes) {
 
   SetSpan(span().subspan(bytes));
   used_ += bytes;
-  CHECK_EQ(data(), buffer_->data() + used_);
+  UNSAFE_TODO(CHECK_EQ(data(), buffer_->data() + used_));
 }
 
 char* SmallMessageSocket::BufferWrapper::StartOfBuffer() const {
@@ -441,7 +437,8 @@ bool SmallMessageSocket::HandleCompletedMessageBuffers() {
       // Current buffer is not big enough.
       auto new_buffer =
           base::MakeRefCounted<::net::IOBufferWithSize>(total_size);
-      memcpy(new_buffer->data(), read_buffer_->StartOfBuffer(), bytes_read);
+      UNSAFE_TODO(memcpy(new_buffer->data(), read_buffer_->StartOfBuffer(),
+                         bytes_read));
       read_buffer_->SetUnderlyingBuffer(std::move(new_buffer), total_size);
       read_buffer_->DidConsume(bytes_read);
       return true;
@@ -462,7 +459,8 @@ bool SmallMessageSocket::HandleCompletedMessageBuffers() {
         new_buffer = base::MakeRefCounted<::net::IOBufferWithSize>(extra_size);
         new_buffer_size = extra_size;
       }
-      memcpy(new_buffer->data(), old_buffer->data() + total_size, extra_size);
+      UNSAFE_TODO(memcpy(new_buffer->data(), old_buffer->data() + total_size,
+                         extra_size));
     }
     read_buffer_->SetUnderlyingBuffer(std::move(new_buffer), new_buffer_size);
     read_buffer_->DidConsume(extra_size);
@@ -487,7 +485,7 @@ bool SmallMessageSocket::Delegate::OnMessageBuffer(
     scoped_refptr<net::IOBuffer> buffer,
     size_t size) {
   size_t offset = SizeDataBytes(size);
-  return OnMessage(buffer->data() + offset, size - offset);
+  return OnMessage(UNSAFE_TODO(buffer->data() + offset), size - offset);
 }
 
 }  // namespace chromecast

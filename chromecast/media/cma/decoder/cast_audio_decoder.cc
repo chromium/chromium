@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromecast/media/api/cast_audio_decoder.h"
 
 #include <algorithm>
@@ -16,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
@@ -55,7 +51,7 @@ class DecoderBufferExternalMemory
       : buffer_(std::move(buffer)) {}
 
   const base::span<const uint8_t> Span() const override {
-    return {buffer_->data(), buffer_->data_size()};
+    return UNSAFE_TODO({buffer_->data(), buffer_->data_size()});
   }
 
  private:
@@ -291,7 +287,7 @@ class CastAudioDecoderImpl : public CastAudioDecoder {
       float* ptr = reinterpret_cast<float*>(result->writable_data());
       for (auto channel : bus->AllChannels()) {
         std::copy_n(channel.data(), num_frames, ptr);
-        ptr += num_frames;
+        UNSAFE_TODO(ptr += num_frames);
       }
     } else {
       NOTREACHED();

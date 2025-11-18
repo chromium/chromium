@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromecast/media/cma/backend/android/audio_sink_android_audiotrack_impl.h"
 
 #include <algorithm>
 #include <string>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -160,8 +156,8 @@ AudioSinkAndroidAudioTrackImpl::GetAudioTrackTimestamp() {
       base::android::AttachCurrentThread(), j_audio_sink_audiotrack_impl_);
   return MediaPipelineBackendAndroid::AudioTrackTimestamp(
       direct_audio_track_timestamp_address_[0],
-      direct_audio_track_timestamp_address_[1],
-      direct_audio_track_timestamp_address_[2]);
+      UNSAFE_TODO(direct_audio_track_timestamp_address_[1]),
+      UNSAFE_TODO(direct_audio_track_timestamp_address_[2]));
 }
 
 int AudioSinkAndroidAudioTrackImpl::GetStartThresholdInFrames() {
@@ -257,7 +253,7 @@ void AudioSinkAndroidAudioTrackImpl::FeedData() {
   // RenderingDelay was returned through JNI via direct buffers.
   sink_rendering_delay_.delay_microseconds = direct_rendering_delay_address_[0];
   sink_rendering_delay_.timestamp_microseconds =
-      direct_rendering_delay_address_[1];
+      UNSAFE_TODO(direct_rendering_delay_address_[1]);
 
   TrackRawMonotonicClockDeviation();
 
@@ -298,8 +294,8 @@ int AudioSinkAndroidAudioTrackImpl::ReformatData() {
   int num_of_frames = num_of_samples / num_channels_;
   std::vector<const float*> src(num_channels_);
   for (int c = 0; c < num_channels_; c++) {
-    src[c] = reinterpret_cast<const float*>(pending_data_->data()) +
-             c * num_of_frames;
+    src[c] = UNSAFE_TODO(reinterpret_cast<const float*>(pending_data_->data()) +
+                         c * num_of_frames);
   }
   if (use_hw_av_sync_) {
     // Convert audio data from float to int16_t since hardware av sync audio
@@ -307,7 +303,7 @@ int AudioSinkAndroidAudioTrackImpl::ReformatData() {
     int16_t* dst = reinterpret_cast<int16_t*>(direct_pcm_buffer_address_);
     for (int f = 0; f < num_of_frames; f++) {
       for (int c = 0; c < num_channels_; c++) {
-        *dst++ = *src[c]++;
+        *UNSAFE_TODO(dst++) = *UNSAFE_TODO(src[c]++);
       }
     }
     return static_cast<int>(pending_data_->data_size()) /
@@ -316,7 +312,7 @@ int AudioSinkAndroidAudioTrackImpl::ReformatData() {
     float* dst = reinterpret_cast<float*>(direct_pcm_buffer_address_);
     for (int f = 0; f < num_of_frames; f++) {
       for (int c = 0; c < num_channels_; c++) {
-        *dst++ = *src[c]++;
+        *UNSAFE_TODO(dst++) = *UNSAFE_TODO(src[c]++);
       }
     }
     return static_cast<int>(pending_data_->data_size());
@@ -348,9 +344,10 @@ void AudioSinkAndroidAudioTrackImpl::FeedDataContinue() {
   LOG(INFO) << __func__ << "(" << this << "): send remaining " << left_to_send
             << "/" << pending_data_bytes_after_reformat_;
 
-  memmove(direct_pcm_buffer_address_,
-          direct_pcm_buffer_address_ + pending_data_bytes_already_fed_,
-          left_to_send);
+  UNSAFE_TODO(
+      memmove(direct_pcm_buffer_address_,
+              direct_pcm_buffer_address_ + pending_data_bytes_already_fed_,
+              left_to_send));
 
   int bytes_per_frame =
       num_channels_ * (use_hw_av_sync_ ? sizeof(int16_t) : sizeof(float));
@@ -371,7 +368,7 @@ void AudioSinkAndroidAudioTrackImpl::FeedDataContinue() {
   // RenderingDelay was returned through JNI via direct buffers.
   sink_rendering_delay_.delay_microseconds = direct_rendering_delay_address_[0];
   sink_rendering_delay_.timestamp_microseconds =
-      direct_rendering_delay_address_[1];
+      UNSAFE_TODO(direct_rendering_delay_address_[1]);
 
   TrackRawMonotonicClockDeviation();
 

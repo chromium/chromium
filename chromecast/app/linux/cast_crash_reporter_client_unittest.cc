@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "chromecast/app/linux/cast_crash_reporter_client.h"
 
 #include <fstream>
 #include <vector>
 
 #include "base/base_paths.h"
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -19,7 +17,6 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
-#include "chromecast/app/linux/cast_crash_reporter_client.h"
 #include "chromecast/base/scoped_temp_file.h"
 #include "chromecast/crash/app_state_tracker.h"
 #include "chromecast/crash/linux/crash_testing_utils.h"
@@ -37,8 +34,8 @@ int WriteFakeDumpStateFile(const std::string& path) {
   // Append the correct extension and write the data to file.
   base::File dumpstate(base::FilePath(path).AddExtension(".txt.gz"),
                        base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
-  dumpstate.Write(
-      0, kFakeDumpstateContents, sizeof(kFakeDumpstateContents) - 1);
+  UNSAFE_TODO(dumpstate.Write(0, kFakeDumpstateContents,
+                              sizeof(kFakeDumpstateContents) - 1));
   return 0;
 }
 

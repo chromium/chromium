@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromecast/net/fake_stream_socket.h"
 
 #include <algorithm>
@@ -14,6 +9,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -63,7 +59,7 @@ class SocketBuffer {
   void Write(const char* data, size_t len) {
     DCHECK(data);
     DCHECK_GT(len, 0u);
-    data_.insert(data_.end(), data, data + len);
+    data_.insert(data_.end(), data, UNSAFE_TODO(data + len));
     if (!pending_read_callback_.is_null()) {
       int result = ReadInternal(pending_read_data_, pending_read_len_);
       pending_read_data_ = nullptr;
@@ -85,7 +81,7 @@ class SocketBuffer {
     DCHECK(data);
     DCHECK_GT(len, 0u);
     len = std::min(len, data_.size());
-    std::memcpy(data, data_.data(), len);
+    UNSAFE_TODO(std::memcpy(data, data_.data(), len));
     data_.erase(data_.begin(), data_.begin() + len);
     return len;
   }

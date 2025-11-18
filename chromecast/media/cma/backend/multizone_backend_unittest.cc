@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stdint.h>
 #include <stdlib.h>
 
@@ -17,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -252,7 +248,7 @@ void BufferFeeder::FeedBuffer() {
           pushed_us_when_rate_changed_ + playback_rate_change_interval_us_) {
     pushed_us_when_rate_changed_ = pushed_us_;
     ++current_rate_index_;
-    playback_rate_ = rate_change_sequence_[current_rate_index_];
+    playback_rate_ = UNSAFE_TODO(rate_change_sequence_[current_rate_index_]);
     LOG(INFO) << "Change playback rate to " << playback_rate_;
     ASSERT_TRUE(backend_->SetPlaybackRate(playback_rate_));
     // Changing the playback rate will change the rendering delay on devices
@@ -274,7 +270,8 @@ void BufferFeeder::FeedBuffer() {
                            (config_.samples_per_second * playback_rate_);
     auto silence_buffer =
         base::MakeRefCounted<::media::DecoderBuffer>(size_bytes);
-    memset(silence_buffer->writable_data(), 0, silence_buffer->size());
+    UNSAFE_TODO(
+        memset(silence_buffer->writable_data(), 0, silence_buffer->size()));
     pending_buffer_ = new media::DecoderBufferAdapter(silence_buffer);
     pending_buffer_->set_timestamp(base::Microseconds(pushed_us_));
   }

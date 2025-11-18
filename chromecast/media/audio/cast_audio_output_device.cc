@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromecast/media/audio/cast_audio_output_device.h"
 
 #include <cstdint>
@@ -15,6 +10,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -254,9 +250,9 @@ class CastAudioOutputDevice::Internal
           base::MakeRefCounted<net::IOBufferWithSize>(io_buffer_size);
       audio_bus_->ToInterleaved<::media::SignedInt16SampleTypeTraits>(
           frames_filled,
-          reinterpret_cast<int16_t*>(
+          reinterpret_cast<int16_t*>(UNSAFE_TODO(
               io_buffer->data() +
-              audio_output_service::OutputSocket::kAudioMessageHeaderSize));
+              audio_output_service::OutputSocket::kAudioMessageHeaderSize)));
 
       DCHECK(output_connection_);
       output_connection_->SendAudioBuffer(std::move(io_buffer), filled_bytes,

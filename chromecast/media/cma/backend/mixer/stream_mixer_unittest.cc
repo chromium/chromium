@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromecast/media/cma/backend/mixer/stream_mixer.h"
 
 #include <algorithm>
@@ -15,6 +10,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
@@ -167,8 +163,8 @@ std::unique_ptr<::media::AudioBus> GetTestData(size_t index) {
   CHECK_LT(index, NUM_DATA_SETS);
   int frames = NUM_SAMPLES / kNumChannels;
   auto data = ::media::AudioBus::Create(kNumChannels, frames);
-  data->FromInterleaved<::media::SignedInt32SampleTypeTraits>(kTestData[index],
-                                                              frames);
+  data->FromInterleaved<::media::SignedInt32SampleTypeTraits>(
+      UNSAFE_TODO(kTestData[index]), frames);
   return data;
 }
 
@@ -227,7 +223,7 @@ class MockMixerOutput : public MixerOutputStream {
                  int data_size,
                  bool* out_playback_interrupted) {
     *out_playback_interrupted = false;
-    data_.insert(data_.end(), data, data + data_size);
+    data_.insert(data_.end(), data, UNSAFE_TODO(data + data_size));
     return true;
   }
 
@@ -288,7 +284,7 @@ std::unique_ptr<::media::AudioBus> GetMixedAudioData(
   auto mixed = ::media::AudioBus::Create(num_channels, read_size);
   for (int c = 0; c < mixed->channels(); ++c) {
     for (int f = 0; f < read_size; ++f) {
-      float* result = mixed->channel_span(c).data() + f;
+      float* result = UNSAFE_TODO(mixed->channel_span(c).data() + f);
 
       // Sum the sample from each input stream, scaling each stream.
       *result = 0.0;
@@ -1046,7 +1042,7 @@ TEST_F(StreamMixerTest, TwoUnscaledStreamsMixProperlyWithEdgeCases) {
   for (size_t i = 0; i < inputs.size(); ++i) {
     auto test_data = ::media::AudioBus::Create(kNumChannels, kNumFrames);
     test_data->FromInterleaved<::media::SignedInt32SampleTypeTraits>(
-        kEdgeData[i], kNumFrames);
+        UNSAFE_TODO(kEdgeData[i]), kNumFrames);
     inputs[i]->SetData(std::move(test_data));
     EXPECT_CALL(*inputs[i], FillAudioPlaybackFrames(_, _, _)).Times(1);
   }

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromecast/media/audio/capture_service/message_parsing_utils.h"
 
 #include <algorithm>
@@ -16,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span_writer.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -106,10 +102,11 @@ bool ConvertPlanarData(int channels,
   const typename Traits::ValueType* base_data =
       reinterpret_cast<const typename Traits::ValueType*>(data);
   for (int c = 0; c < channels; ++c) {
-    const typename Traits::ValueType* source = base_data + c * frames;
+    const typename Traits::ValueType* source =
+        UNSAFE_TODO(base_data + c * frames);
     auto dest = audio->channel_span(c);
     for (int f = 0; f < frames; ++f) {
-      dest[f] = Traits::ToFloat(source[f]);
+      dest[f] = Traits::ToFloat(UNSAFE_TODO(source[f]));
     }
   }
   return true;
@@ -127,8 +124,9 @@ bool ConvertPlanarFloat(int channels,
   DCHECK_EQ(frames, audio->frames());
   const float* base_data = reinterpret_cast<const float*>(data);
   for (int c = 0; c < channels; ++c) {
-    const float* source = base_data + c * frames;
-    std::copy(source, source + frames, audio->channel_span(c).data());
+    const float* source = UNSAFE_TODO(base_data + c * frames);
+    std::copy(source, UNSAFE_TODO(source + frames),
+              audio->channel_span(c).data());
   }
   return true;
 }
@@ -225,7 +223,7 @@ bool ReadPcmAudioHeader(const char* data,
     return false;
   }
   PcmPacketHeader header;
-  memcpy(&header.message_type, data, kPcmAudioHeaderBytes);
+  UNSAFE_TODO(memcpy(&header.message_type, data, kPcmAudioHeaderBytes));
   if (static_cast<MessageType>(header.message_type) != MessageType::kPcmAudio) {
     LOG(ERROR) << "Message type mismatch.";
     return false;
@@ -252,7 +250,7 @@ scoped_refptr<net::IOBufferWithSize> MakePcmAudioMessage(StreamType stream_type,
   }
   if (data_size > 0) {
     DCHECK(data);
-    std::copy(data, data + data_size, ptr);
+    std::copy(data, UNSAFE_TODO(data + data_size), ptr);
   }
   return io_buffer;
 }
@@ -294,8 +292,8 @@ bool ReadDataToAudioBus(const StreamInfo& stream_info,
   DCHECK(audio_bus);
   DCHECK_EQ(stream_info.num_channels, audio_bus->channels());
   return ConvertData(stream_info.num_channels, stream_info.sample_format,
-                     data + kPcmAudioHeaderBytes, size - kPcmAudioHeaderBytes,
-                     audio_bus);
+                     UNSAFE_TODO(data + kPcmAudioHeaderBytes),
+                     size - kPcmAudioHeaderBytes, audio_bus);
 }
 
 bool ReadPcmAudioMessage(const char* data,
@@ -319,7 +317,7 @@ bool ReadHandshakeMessage(const char* data,
     return false;
   }
   HandshakePacket packet;
-  memcpy(&packet.message_type, data, kHandshakeHeaderBytes);
+  UNSAFE_TODO(memcpy(&packet.message_type, data, kHandshakeHeaderBytes));
   MessageType message_type = static_cast<MessageType>(packet.message_type);
   if (message_type != MessageType::kHandshake ||
       packet.stream_type > static_cast<uint8_t>(StreamType::kLastType) ||

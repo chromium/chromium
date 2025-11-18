@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromecast/media/cma/backend/proxy/audio_decoder_pipeline_node.h"
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/test_simple_task_runner.h"
 #include "chromecast/base/task_runner_impl.h"
@@ -55,8 +51,8 @@ TEST_F(AudioDecoderPipelineNodeTests, TestAudioDecoderCalls) {
   scoped_refptr<CastDecoderBufferImpl> buffer(
       new CastDecoderBufferImpl(3, StreamId::kPrimary));
   buffer->writable_data()[0] = 1;
-  buffer->writable_data()[1] = 2;
-  buffer->writable_data()[2] = 3;
+  UNSAFE_TODO(buffer->writable_data()[1]) = 2;
+  UNSAFE_TODO(buffer->writable_data()[2]) = 3;
   EXPECT_CALL(*child_node_, PushBuffer(testing::_))
       .WillOnce([ptr = buffer.get()](
                     auto result) -> CmaBackend::Decoder::BufferStatus {

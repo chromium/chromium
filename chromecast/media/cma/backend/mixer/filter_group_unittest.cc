@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromecast/media/cma/backend/mixer/filter_group.h"
 
+#include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/ptr_util.h"
 #include "chromecast/media/cma/backend/mixer/mixer_input.h"
@@ -177,7 +173,8 @@ class FilterGroupTest : public testing::Test,
     float* interleaved_data = filter_group_->GetOutputBuffer();
     for (int f = 0; f < kInputFrames; ++f) {
       for (int ch = 0; ch < kNumInputChannels; ++ch) {
-        ASSERT_EQ(Input(ch, f), interleaved_data[f * kNumInputChannels + ch])
+        UNSAFE_TODO(ASSERT_EQ(Input(ch, f),
+                              interleaved_data[f * kNumInputChannels + ch]))
             << f;
       }
     }

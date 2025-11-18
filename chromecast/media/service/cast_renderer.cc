@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromecast/media/service/cast_renderer.h"
 
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -434,8 +430,8 @@ void CastRenderer::OnError(::media::PipelineStatus status) {
 
 void CastRenderer::OnEnded(Stream stream) {
   DCHECK(task_runner_->BelongsToCurrentThread());
-  DCHECK(!eos_[stream]);
-  eos_[stream] = true;
+  UNSAFE_TODO(DCHECK(!eos_[stream]));
+  UNSAFE_TODO(eos_[stream]) = true;
   LOG(INFO) << __FUNCTION__ << ": eos_audio=" << eos_[STREAM_AUDIO]
             << " eos_video=" << eos_[STREAM_VIDEO];
   if (eos_[STREAM_AUDIO] && eos_[STREAM_VIDEO])

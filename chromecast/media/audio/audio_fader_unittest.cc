@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "chromecast/media/audio/audio_fader.h"
 
 #include <algorithm>
 #include <limits>
 #include <memory>
 
-#include "chromecast/media/audio/audio_fader.h"
+#include "base/compiler_specific.h"
 #include "media/base/audio_bus.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -58,7 +55,7 @@ class TestFaderSource : public AudioProvider {
     last_filled_frames_ = count;
 
     for (int c = 0; c < kNumChannels; ++c) {
-      std::fill_n(channel_data[c], count, 1.0f);
+      std::fill_n(UNSAFE_TODO(channel_data[c]), count, 1.0f);
     }
 
     return count;
@@ -96,7 +93,7 @@ TEST(AudioFaderTest, Startup) {
   auto dest = CreateAudioBus(kFillSize);
   float* channels[kNumChannels];
   for (int c = 0; c < kNumChannels; ++c) {
-    channels[c] = dest->channel_span(c).data();
+    UNSAFE_TODO(channels[c]) = dest->channel_span(c).data();
   }
   EXPECT_EQ(fader.FillFrames(kFillSize, 0, channels), kFillSize);
 
@@ -123,7 +120,7 @@ TEST(AudioFaderTest, FadeInOver2Buffers) {
   auto dest = CreateAudioBus(kFillSize);
   float* channels[kNumChannels];
   for (int c = 0; c < kNumChannels; ++c) {
-    channels[c] = dest->channel_span(c).data();
+    UNSAFE_TODO(channels[c]) = dest->channel_span(c).data();
   }
   EXPECT_EQ(fader.FillFrames(kFillSize, 0, channels), kFillSize);
 
@@ -162,7 +159,7 @@ TEST(AudioFaderTest, ContinuePlaying) {
   int frames_needed = fader.FramesNeededFromSource(kFillSize);
   float* channels[kNumChannels];
   for (int c = 0; c < kNumChannels; ++c) {
-    channels[c] = dest->channel_span(c).data();
+    UNSAFE_TODO(channels[c]) = dest->channel_span(c).data();
   }
   EXPECT_EQ(fader.FillFrames(kFillSize, 0, channels), kFillSize);
 
@@ -194,7 +191,7 @@ TEST(AudioFaderTest, FadeOut) {
   int frames_needed = fader.FramesNeededFromSource(kFillSize);
   float* channels[kNumChannels];
   for (int c = 0; c < kNumChannels; ++c) {
-    channels[c] = dest->channel_span(c).data();
+    UNSAFE_TODO(channels[c]) = dest->channel_span(c).data();
   }
   EXPECT_EQ(fader.FillFrames(kFillSize, 0, channels), kFillSize);
 
@@ -238,7 +235,7 @@ TEST(AudioFaderTest, FadeOutPartially) {
   int frames_needed = fader.FramesNeededFromSource(kFillSize);
   float* channels[kNumChannels];
   for (int c = 0; c < kNumChannels; ++c) {
-    channels[c] = dest->channel_span(c).data();
+    UNSAFE_TODO(channels[c]) = dest->channel_span(c).data();
   }
   EXPECT_EQ(fader.FillFrames(kFillSize, 0, channels), kFillSize);
 
@@ -297,7 +294,7 @@ TEST(AudioFaderTest, IncompleteFadeIn) {
   source.set_max_fill_frames(10);
   float* channels[kNumChannels];
   for (int c = 0; c < kNumChannels; ++c) {
-    channels[c] = dest->channel_span(c).data();
+    UNSAFE_TODO(channels[c]) = dest->channel_span(c).data();
   }
   int filled = fader.FillFrames(kFillSize, 0, channels);
 
@@ -326,7 +323,7 @@ TEST(AudioFaderTest, FadeInPartially) {
   auto dest = CreateAudioBus(kFillSize);
   float* channels[kNumChannels];
   for (int c = 0; c < kNumChannels; ++c) {
-    channels[c] = dest->channel_span(c).data();
+    UNSAFE_TODO(channels[c]) = dest->channel_span(c).data();
   }
   EXPECT_EQ(fader.FillFrames(kFillSize, 0, channels), kFillSize);
 

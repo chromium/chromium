@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromecast/media/common/media_pipeline_backend_manager.h"
 
 #include <algorithm>
 #include <limits>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -74,7 +70,7 @@ MediaPipelineBackendManager::MediaPipelineBackendManager(
   DCHECK_EQ(playing_noneffects_audio_streams_count_.size(),
             static_cast<size_t>(AudioContentType::kNumTypes));
   for (int i = 0; i < NUM_DECODER_TYPES; ++i) {
-    decoder_count_[i] = 0;
+    UNSAFE_TODO(decoder_count_[i]) = 0;
   }
 
   RUN_ON_MEDIA_THREAD(CreateMixerConnection);
@@ -122,21 +118,21 @@ bool MediaPipelineBackendManager::IncrementDecoderCount(DecoderType type) {
   DCHECK(type < NUM_DECODER_TYPES);
   const int limit =
       (type == VIDEO_DECODER) ? kVideoDecoderLimit : kAudioDecoderLimit;
-  if (decoder_count_[type] >= limit) {
+  if (UNSAFE_TODO(decoder_count_[type]) >= limit) {
     LOG(WARNING) << "Decoder limit reached for type " << type;
     return false;
   }
 
-  ++decoder_count_[type];
+  UNSAFE_TODO(++decoder_count_[type]);
   return true;
 }
 
 void MediaPipelineBackendManager::DecrementDecoderCount(DecoderType type) {
   DCHECK(media_task_runner_->BelongsToCurrentThread());
   DCHECK(type < NUM_DECODER_TYPES);
-  DCHECK_GT(decoder_count_[type], 0);
+  UNSAFE_TODO(DCHECK_GT(decoder_count_[type], 0));
 
-  decoder_count_[type]--;
+  UNSAFE_TODO(decoder_count_[type])--;
 }
 
 void MediaPipelineBackendManager::UpdatePlayingAudioCount(

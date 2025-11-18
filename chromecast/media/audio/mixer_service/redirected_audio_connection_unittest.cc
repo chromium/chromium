@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromecast/media/audio/mixer_service/redirected_audio_connection.h"
 
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "chromecast/media/audio/mixer_service/mock_mixer_socket.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -46,7 +42,7 @@ class MockRedirectedAudioObserver
   void OnRedirectedAudioImpl(int64_t timestamp, float* data, int frames) {
     data_.clear();
     // Save received data to local.
-    data_.insert(data_.end(), data, data + frames);
+    data_.insert(data_.end(), data, UNSAFE_TODO(data + frames));
   }
 
   std::vector<float> data_;

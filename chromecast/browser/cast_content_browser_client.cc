@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromecast/browser/cast_content_browser_client.h"
 
 #include <stddef.h>
@@ -16,6 +11,7 @@
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
@@ -384,7 +380,7 @@ bool CastContentBrowserClient::IsHandledURL(const GURL& url) {
 
   const std::string& scheme = url.GetScheme();
   for (size_t i = 0; i < std::size(kProtocolList); ++i) {
-    if (scheme == kProtocolList[i]) {
+    if (scheme == UNSAFE_TODO(kProtocolList[i])) {
       return true;
     }
   }

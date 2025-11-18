@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromecast/media/cma/backend/proxy/proxy_call_translator.h"
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
@@ -206,8 +202,8 @@ TEST_F(ProxyCallTranslatorTest, TestExternalPushBuffer) {
   scoped_refptr<CastDecoderBufferImpl> buffer(
       new CastDecoderBufferImpl(3, StreamId::kPrimary));
   buffer->writable_data()[0] = 1;
-  buffer->writable_data()[1] = 2;
-  buffer->writable_data()[2] = 3;
+  UNSAFE_TODO(buffer->writable_data()[1]) = 2;
+  UNSAFE_TODO(buffer->writable_data()[2]) = 3;
   EXPECT_EQ(translator_.PushBuffer(buffer, 1),
             CmaBackend::BufferStatus::kBufferSuccess);
 
