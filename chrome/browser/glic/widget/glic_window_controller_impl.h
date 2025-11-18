@@ -88,6 +88,8 @@ class GlicWindowControllerImpl
   void MaybeSetWidgetCanResize() override;
   gfx::Size GetPanelSize() override;
   void Close() override;
+  void CloseAndShutdownInstanceWithFrame(
+      content::RenderFrameHost* render_frame_host) override;
 
   void AddStateObserver(StateObserver* observer) override;
   void RemoveStateObserver(StateObserver* observer) override;

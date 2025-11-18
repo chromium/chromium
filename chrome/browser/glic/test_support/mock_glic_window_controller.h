@@ -46,6 +46,10 @@ class MockGlicWindowController
   MOCK_METHOD(void, SetDraggableAreas, (const std::vector<gfx::Rect>&), ());
   MOCK_METHOD(void, SetMinimumWidgetSize, (const gfx::Size&), ());
   MOCK_METHOD(void, Close, (), (override));
+  MOCK_METHOD(void,
+              CloseAndShutdownInstanceWithFrame,
+              (content::RenderFrameHost * render_frame_host),
+              (override));
   MOCK_METHOD(mojom::PanelState, GetPanelState, (), (override));
   MOCK_METHOD(void, AddStateObserver, (StateObserver*), (override));
   MOCK_METHOD(void, RemoveStateObserver, (StateObserver*), (override));

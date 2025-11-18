@@ -106,6 +106,8 @@ class GlicInstanceCoordinatorImpl
   // coordinator.
   void Shutdown() override;
   void Close() override;
+  void CloseAndShutdownInstanceWithFrame(
+      content::RenderFrameHost* render_frame_host) override;
 
   void AddGlobalStateObserver(StateObserver* observer) override;
   void RemoveGlobalStateObserver(StateObserver* observer) override;

@@ -303,6 +303,11 @@ void GlicKeyedService::CloseAndShutdown() {
   fre_controller_->Shutdown();
 }
 
+void GlicKeyedService::CloseAndShutdown(
+    content::RenderFrameHost* render_frame_host) {
+  window_controller().CloseAndShutdownInstanceWithFrame(render_frame_host);
+}
+
 void GlicKeyedService::CloseFloatingPanel() {
   window_controller().Close();
 }

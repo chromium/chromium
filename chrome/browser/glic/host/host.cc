@@ -78,6 +78,12 @@ void Host::SetDelegate(EmbedderDelegate* new_delegate) {
   delegate_ = new_delegate;
 }
 
+void Host::Shutdown(content::RenderFrameHost* render_frame_host) {
+  if (IsWebContentPresentAndMatches(render_frame_host)) {
+    Shutdown();
+  }
+}
+
 void Host::Shutdown() {
   handler_info_.reset();
   contents_.reset();

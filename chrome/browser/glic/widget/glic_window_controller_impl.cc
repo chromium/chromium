@@ -1010,6 +1010,11 @@ void GlicWindowControllerImpl::Close() {
   }
 }
 
+void GlicWindowControllerImpl::CloseAndShutdownInstanceWithFrame(
+    content::RenderFrameHost* render_frame_host) {
+  NOTREACHED();
+}
+
 void GlicWindowControllerImpl::ClosePanel() {
   Close();
   if (screenshot_capturer_) {

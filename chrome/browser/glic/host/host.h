@@ -205,11 +205,13 @@ class Host : public GlicSharingManagerProvider {
       glic::mojom::ConversationInfoPtr info,
       mojom::WebClientHandler::RegisterConversationCallback callback);
 
+  // Delete the owned web contents if present and matches.
+  void Shutdown(content::RenderFrameHost* render_frame_host);
   // Delete the owned web contents and prepare for destruction.
   void Shutdown();
 
   // Request panel closing if the web contents is present and matches.
-  void Close(content::RenderFrameHost* outermost_render_frame_host);
+  void Close(content::RenderFrameHost* render_frame_host);
   // Reload the web contents, if it is present and matches.
   void Reload(content::RenderFrameHost* render_frame_host);
   // Reload the web contents.

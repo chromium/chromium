@@ -126,6 +126,10 @@ class GlicKeyedService : public KeyedService,
   // TODO(crbug.com/454112198): Remove when multi-instance launches.
   void CloseAndShutdown();
 
+  // Close the active embedder and clear contents for an instance associated
+  // with this render frame host.
+  void CloseAndShutdown(content::RenderFrameHost* render_frame_host);
+
   // Close the panel. Virtual for testing.
   // TODO(crbug.com/448406730): Remove testing logic that relies on
   // GKS::CloseFloatingPanel since close panel is now being handled by

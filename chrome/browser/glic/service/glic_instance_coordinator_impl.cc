@@ -225,6 +225,17 @@ void GlicInstanceCoordinatorImpl::Close() {
   CloseFloaty();
 }
 
+void GlicInstanceCoordinatorImpl::CloseAndShutdownInstanceWithFrame(
+    content::RenderFrameHost* render_frame_host) {
+  for (auto* instance : GetInstances()) {
+    if (instance) {
+      // These calls only have effect if render_frame_host matches.
+      instance->host().Close(render_frame_host);
+      instance->host().Shutdown(render_frame_host);
+    }
+  }
+}
+
 void GlicInstanceCoordinatorImpl::CloseFloaty() {
   if (auto* floaty_instance = GetInstanceWithFloaty()) {
     floaty_instance->Close(FloatingEmbedderKey{});

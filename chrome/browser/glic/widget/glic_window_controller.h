@@ -85,6 +85,8 @@ class GlicWindowController {
 
   // Close the panel but keep the glic WebContents alive in the background.
   virtual void Close() = 0;
+  virtual void CloseAndShutdownInstanceWithFrame(
+      content::RenderFrameHost* render_frame_host) = 0;
 
   // Returns wehether or not the glic window is currently showing detached.
   // When True |GetGlicWidget| will return a valid ptr.
