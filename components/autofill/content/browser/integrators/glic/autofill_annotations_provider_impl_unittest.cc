@@ -254,7 +254,8 @@ TEST_F(AutofillAnnotationsProviderImplTest,
 // it exists but autofill is disabled.
 TEST_F(AutofillAnnotationsProviderImplTest,
        GetAutofillAvailability_CreditCard_AutofillDisabled) {
-  client()->SetAutofillPaymentMethodsEnabled(false);
+  client()->GetPaymentsAutofillClient()->SetAutofillPaymentMethodsEnabled(
+      false);
 
   client()->GetPersonalDataManager().payments_data_manager().AddCreditCard(
       CreateCreditCard());

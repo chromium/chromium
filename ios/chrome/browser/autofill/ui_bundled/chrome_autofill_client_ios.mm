@@ -382,15 +382,13 @@ void ChromeAutofillClientIOS::HideAutofillSuggestions(
 }
 
 bool ChromeAutofillClientIOS::IsAutofillEnabled() const {
-  return IsAutofillProfileEnabled() || IsAutofillPaymentMethodsEnabled();
+  return IsAutofillProfileEnabled() ||
+         AutofillClient::GetPaymentsAutofillClient()
+             ->IsAutofillPaymentMethodsEnabled();
 }
 
 bool ChromeAutofillClientIOS::IsAutofillProfileEnabled() const {
   return prefs::IsAutofillProfileEnabled(GetPrefs());
-}
-
-bool ChromeAutofillClientIOS::IsAutofillPaymentMethodsEnabled() const {
-  return prefs::IsAutofillPaymentMethodsEnabled(GetPrefs());
 }
 
 bool ChromeAutofillClientIOS::IsWalletStorageEnabled() const {

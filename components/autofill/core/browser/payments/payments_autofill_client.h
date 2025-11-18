@@ -568,6 +568,10 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // was accepted, this will display the re-auth opt-in confirmation bubble.
   virtual void ShowMandatoryReauthOptInConfirmation() = 0;
 
+  // Returns true if the value of the AutofillCreditCardEnabled pref is true
+  // and the client supports Autofill.
+  virtual bool IsAutofillPaymentMethodsEnabled() const = 0;
+
   // Gets the IbanManager instance associated with the client.
   virtual IbanManager* GetIbanManager() = 0;
 

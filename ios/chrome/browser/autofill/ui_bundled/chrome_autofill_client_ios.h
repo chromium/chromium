@@ -131,7 +131,6 @@ class ChromeAutofillClientIOS : public AutofillClientIOS {
   void HideAutofillSuggestions(SuggestionHidingReason reason) override;
   bool IsAutofillEnabled() const override;
   bool IsAutofillProfileEnabled() const override;
-  bool IsAutofillPaymentMethodsEnabled() const override;
   bool IsWalletStorageEnabled() const override;
   bool IsAutocompleteEnabled() const override;
   bool IsPasswordManagerEnabled() const override;

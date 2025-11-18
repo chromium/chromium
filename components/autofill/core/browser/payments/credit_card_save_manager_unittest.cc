@@ -638,7 +638,7 @@ TEST_F(CreditCardSaveManagerTest, InvalidCreditCardNumberIsNotSaved) {
 }
 
 TEST_F(CreditCardSaveManagerTest, CreditCardDisabledDoesNotSave) {
-  autofill_client().SetAutofillPaymentMethodsEnabled(false);
+  payments_client().SetAutofillPaymentMethodsEnabled(false);
   // Create, fill and submit an address form in order to establish a recent
   // profile which can be selected for the upload request.
   FormData address_form = CreateTestAddressFormData();

@@ -623,7 +623,8 @@ void MaybeImportFromSubmittedForm(AutofillClient& client,
     // Update Personal Data with the form's submitted data.
     client.GetFormDataImporter()->ImportAndProcessFormData(
         form_structure, client.IsAutofillProfileEnabled(),
-        client.IsAutofillPaymentMethodsEnabled(), ukm_source_id);
+        client.GetPaymentsAutofillClient()->IsAutofillPaymentMethodsEnabled(),
+        ukm_source_id);
   }
 
   AutofillPlusAddressDelegate* plus_address_delegate =
@@ -848,7 +849,9 @@ bool BrowserAutofillManager::ShouldShowScanCreditCard(
     const FormStructure& form,
     const AutofillField& trigger_field) {
   if (!client().GetPaymentsAutofillClient()->HasCreditCardScanFeature() ||
-      !client().IsAutofillPaymentMethodsEnabled()) {
+      !client()
+           .GetPaymentsAutofillClient()
+           ->IsAutofillPaymentMethodsEnabled()) {
     return false;
   }
 
@@ -890,9 +893,11 @@ bool BrowserAutofillManager::ShouldParseForms() {
           CHECK_DEREF(client().GetPrefs()));
     }
     autofill_metrics::LogIsAutofillPaymentMethodsEnabledAtPageLoad(
-        client().IsAutofillPaymentMethodsEnabled(),
+        client().GetPaymentsAutofillClient()->IsAutofillPaymentMethodsEnabled(),
         metrics_->signin_state_for_metrics);
-    if (!client().IsAutofillPaymentMethodsEnabled()) {
+    if (!client()
+             .GetPaymentsAutofillClient()
+             ->IsAutofillPaymentMethodsEnabled()) {
       autofill_metrics::LogAutofillPaymentMethodsDisabledReasonAtPageLoad(
           CHECK_DEREF(client().GetPrefs()));
     }
@@ -1018,7 +1023,7 @@ void BrowserAutofillManager::LogSubmissionMetrics(
   if (client().IsAutofillProfileEnabled()) {
     metrics_->address_form_event_logger.OnWillSubmitForm(*submitted_form);
   }
-  if (client().IsAutofillPaymentMethodsEnabled()) {
+  if (client().GetPaymentsAutofillClient()->IsAutofillPaymentMethodsEnabled()) {
     metrics_->credit_card_form_event_logger.set_signin_state_for_metrics(
         metrics_->signin_state_for_metrics);
     metrics_->credit_card_form_event_logger.OnWillSubmitForm(*submitted_form);
@@ -1032,7 +1037,7 @@ void BrowserAutofillManager::LogSubmissionMetrics(
     address_on_typing_manager_.LogAddressOnTypingCorrectnessMetrics(
         *submitted_form);
   }
-  if (client().IsAutofillPaymentMethodsEnabled()) {
+  if (client().GetPaymentsAutofillClient()->IsAutofillPaymentMethodsEnabled()) {
     metrics_->credit_card_form_event_logger.set_signin_state_for_metrics(
         metrics_->signin_state_for_metrics);
     metrics_->credit_card_form_event_logger.OnFormSubmitted(*submitted_form);
@@ -1697,7 +1702,9 @@ void BrowserAutofillManager::OnGenerateSuggestionsComplete(
     } else {
       const DenseSet<AmountExtractionManager::EligibleFeature>
           eligible_features = GetAmountExtractionManager().GetEligibleFeatures(
-              client().IsAutofillPaymentMethodsEnabled(),
+              client()
+                  .GetPaymentsAutofillClient()
+                  ->IsAutofillPaymentMethodsEnabled(),
               ShouldSuppressSuggestions(context.suppress_reason, log_manager()),
               !suggestions.empty(), context.filling_product,
               autofill_field->Type().GetCreditCardType());
@@ -3178,7 +3185,9 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
       }
       break;
     case FillingProduct::kCreditCard:
-      if (client().IsAutofillPaymentMethodsEnabled()) {
+      if (client()
+              .GetPaymentsAutofillClient()
+              ->IsAutofillPaymentMethodsEnabled()) {
         suggestions = GetCreditCardSuggestions(form, *form_structure, field,
                                                *autofill_field);
       }

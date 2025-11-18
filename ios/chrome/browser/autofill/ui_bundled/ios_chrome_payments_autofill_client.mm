@@ -45,6 +45,7 @@
 #import "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
 #import "components/autofill/core/browser/ui/payments/virtual_card_enroll_ui_model.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
+#import "components/autofill/core/common/autofill_prefs.h"
 #import "components/autofill/ios/browser/credit_card_save_metrics_ios.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/credit_card/autofill_save_card_infobar_delegate_ios.h"
@@ -481,6 +482,10 @@ void IOSChromePaymentsAutofillClient::ShowMandatoryReauthOptInPrompt(
     base::RepeatingClosure close_mandatory_reauth_callback) {}
 
 void IOSChromePaymentsAutofillClient::ShowMandatoryReauthOptInConfirmation() {}
+
+bool IOSChromePaymentsAutofillClient::IsAutofillPaymentMethodsEnabled() const {
+  return autofill::prefs::IsAutofillPaymentMethodsEnabled(pref_service_);
+}
 
 IbanManager* IOSChromePaymentsAutofillClient::GetIbanManager() {
   return nullptr;

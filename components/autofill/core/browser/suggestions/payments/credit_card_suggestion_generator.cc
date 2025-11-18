@@ -102,7 +102,7 @@ void CreditCardSuggestionGenerator::FetchSuggestionData(
         void(std::pair<SuggestionDataSource,
                        std::vector<SuggestionGenerator::SuggestionData>>)>
         callback) {
-  if (!client.IsAutofillPaymentMethodsEnabled()) {
+  if (!client.GetPaymentsAutofillClient()->IsAutofillPaymentMethodsEnabled()) {
     callback({SuggestionDataSource::kCreditCard, {}});
     return;
   }
@@ -331,8 +331,10 @@ bool CreditCardSuggestionGenerator::ShouldShowScanCreditCard(
     const FormData& form,
     const FormFieldData& trigger_field,
     const AutofillField* trigger_autofill_field) {
-  if (!client.GetPaymentsAutofillClient()->HasCreditCardScanFeature() ||
-      !client.IsAutofillPaymentMethodsEnabled()) {
+  const payments::PaymentsAutofillClient& payments_client =
+      *client.GetPaymentsAutofillClient();
+  if (!payments_client.HasCreditCardScanFeature() ||
+      !payments_client.IsAutofillPaymentMethodsEnabled()) {
     return false;
   }
 

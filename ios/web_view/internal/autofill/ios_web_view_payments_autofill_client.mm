@@ -25,6 +25,7 @@
 #import "components/autofill/core/browser/ui/payments/bnpl_tos_controller.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_controller.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller.h"
+#import "components/autofill/core/common/autofill_prefs.h"
 #import "components/prefs/pref_service.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_prefs.h"
@@ -331,6 +332,10 @@ void IOSWebViewPaymentsAutofillClient::ShowMandatoryReauthOptInPrompt(
     base::RepeatingClosure close_mandatory_reauth_callback) {}
 
 void IOSWebViewPaymentsAutofillClient::ShowMandatoryReauthOptInConfirmation() {}
+
+bool IOSWebViewPaymentsAutofillClient::IsAutofillPaymentMethodsEnabled() const {
+  return autofill::prefs::IsAutofillPaymentMethodsEnabled(GetPrefService());
+}
 
 IbanManager* IOSWebViewPaymentsAutofillClient::GetIbanManager() {
   return nullptr;

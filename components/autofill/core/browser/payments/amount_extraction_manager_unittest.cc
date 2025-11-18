@@ -114,7 +114,9 @@ class AmountExtractionManagerTest
  protected:
   void SetUp() override {
     InitAutofillClient();
-    autofill_client().SetAutofillPaymentMethodsEnabled(true);
+    autofill_client()
+        .GetPaymentsAutofillClient()
+        ->SetAutofillPaymentMethodsEnabled(true);
     autofill_client()
         .GetPersonalDataManager()
         .payments_data_manager()

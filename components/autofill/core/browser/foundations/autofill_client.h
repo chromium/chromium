@@ -596,10 +596,6 @@ class AutofillClient {
   // the client supports Autofill.
   virtual bool IsAutofillProfileEnabled() const = 0;
 
-  // Returns true if the value of the AutofillCreditCardEnabled pref is true
-  // and the client supports Autofill.
-  virtual bool IsAutofillPaymentMethodsEnabled() const = 0;
-
   // Whether the Autocomplete feature of Autofill should be enabled.
   virtual bool IsAutocompleteEnabled() const = 0;
 

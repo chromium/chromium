@@ -369,7 +369,8 @@ AutofillAvailability AutofillAnnotationsProviderImpl::GetAutofillAvailability(
       .has_fillable_address = client.IsAutofillProfileEnabled() &&
                               !pdm.address_data_manager().GetProfiles().empty(),
       .has_fillable_credit_card =
-          client.IsAutofillPaymentMethodsEnabled() &&
+          client.GetPaymentsAutofillClient()
+              ->IsAutofillPaymentMethodsEnabled() &&
           !pdm.payments_data_manager().GetCreditCards().empty(),
   };
 }

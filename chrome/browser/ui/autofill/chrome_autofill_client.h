@@ -196,7 +196,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
       const base::flat_set<EntityTypeName>& saved_entities) final;
   bool IsAutofillEnabled() const final;
   bool IsAutofillProfileEnabled() const final;
-  bool IsAutofillPaymentMethodsEnabled() const final;
   bool IsAutocompleteEnabled() const final;
   bool IsWalletStorageEnabled() const final;
   bool IsPasswordManagerEnabled() const final;

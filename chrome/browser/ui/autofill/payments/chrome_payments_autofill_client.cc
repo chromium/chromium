@@ -67,6 +67,7 @@
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
 #include "components/autofill/core/browser/ui/payments/save_and_fill_dialog_controller_impl.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -823,6 +824,12 @@ void ChromePaymentsAutofillClient::ShowMandatoryReauthOptInConfirmation() {
   MandatoryReauthBubbleControllerImpl::FromWebContents(web_contents())
       ->ReshowBubble();
 #endif
+}
+
+bool ChromePaymentsAutofillClient::IsAutofillPaymentMethodsEnabled() const {
+  return prefs::IsAutofillPaymentMethodsEnabled(
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext())
+          ->GetPrefs());
 }
 
 IbanManager* ChromePaymentsAutofillClient::GetIbanManager() {

@@ -29,6 +29,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_ui_delegate.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/test/gmock_callback_support.h"
@@ -319,6 +320,10 @@ void TestPaymentsAutofillClient::ShowMandatoryReauthOptInPrompt(
 
 void TestPaymentsAutofillClient::ShowMandatoryReauthOptInConfirmation() {
   mandatory_reauth_opt_in_prompt_was_reshown_ = true;
+}
+
+bool TestPaymentsAutofillClient::IsAutofillPaymentMethodsEnabled() const {
+  return autofill_payment_methods_enabled_;
 }
 
 MockIbanManager* TestPaymentsAutofillClient::GetIbanManager() {

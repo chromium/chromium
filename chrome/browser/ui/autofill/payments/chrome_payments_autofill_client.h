@@ -191,6 +191,7 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
       base::OnceClosure cancel_mandatory_reauth_callback,
       base::RepeatingClosure close_mandatory_reauth_callback) override;
   void ShowMandatoryReauthOptInConfirmation() override;
+  bool IsAutofillPaymentMethodsEnabled() const final;
   IbanManager* GetIbanManager() override;
   IbanAccessManager* GetIbanAccessManager() override;
   MerchantPromoCodeManager* GetMerchantPromoCodeManager() override;

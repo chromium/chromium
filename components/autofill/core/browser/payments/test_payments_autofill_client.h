@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
@@ -30,6 +31,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_tos_controller.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_ui_delegate.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 
 #if !BUILDFLAG(IS_IOS)
 namespace webauthn {
@@ -170,6 +172,7 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
       base::OnceClosure cancel_mandatory_reauth_callback,
       base::RepeatingClosure close_mandatory_reauth_callback) override;
   void ShowMandatoryReauthOptInConfirmation() override;
+  bool IsAutofillPaymentMethodsEnabled() const final;
   MockIbanManager* GetIbanManager() override;
   MockIbanAccessManager* GetIbanAccessManager() override;
   MockMerchantPromoCodeManager* GetMerchantPromoCodeManager() override;
@@ -223,6 +226,20 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   BnplUiDelegate* GetBnplUiDelegate() override;
 
   // Begin TestPaymentsAutofillClient-specific section.
+
+  void SetAutofillPaymentMethodsEnabled(bool autofill_payment_methods_enabled) {
+    autofill_payment_methods_enabled_ = autofill_payment_methods_enabled;
+    if (PrefService* prefs = client_->GetPrefs()) {
+      prefs->SetBoolean(prefs::kAutofillCreditCardEnabled,
+                        autofill_payment_methods_enabled);
+    }
+    if (!autofill_payment_methods_enabled) {
+      // Credit card data is refreshed when this pref is changed.
+      static_cast<TestPersonalDataManager&>(client_->GetPersonalDataManager())
+          .test_payments_data_manager()
+          .ClearCreditCards();
+    }
+  }
 
   bool GetMandatoryReauthOptInPromptWasShown();
 
@@ -382,6 +399,8 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   bool mandatory_reauth_opt_in_prompt_was_reshown_ = false;
 
   bool unmask_authenticator_selection_dialog_shown_ = false;
+
+  bool autofill_payment_methods_enabled_ = true;
 
   std::unique_ptr<MockIbanManager> mock_iban_manager_;
 

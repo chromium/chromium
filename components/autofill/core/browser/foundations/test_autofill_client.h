@@ -375,15 +375,13 @@ class TestAutofillClientTemplate : public T {
   }
 
   bool IsAutofillEnabled() const override {
-    return IsAutofillProfileEnabled() || IsAutofillPaymentMethodsEnabled();
+    return IsAutofillProfileEnabled() ||
+           AutofillClient::GetPaymentsAutofillClient()
+               ->IsAutofillPaymentMethodsEnabled();
   }
 
   bool IsAutofillProfileEnabled() const override {
     return autofill_profile_enabled_;
-  }
-
-  bool IsAutofillPaymentMethodsEnabled() const override {
-    return autofill_payment_methods_enabled_;
   }
 
   bool IsWalletStorageEnabled() const override {
@@ -494,18 +492,6 @@ class TestAutofillClientTemplate : public T {
     if (!autofill_profile_enabled_) {
       // Profile data is refreshed when this pref is changed.
       GetPersonalDataManager().test_address_data_manager().ClearProfiles();
-    }
-  }
-
-  void SetAutofillPaymentMethodsEnabled(bool autofill_payment_methods_enabled) {
-    autofill_payment_methods_enabled_ = autofill_payment_methods_enabled;
-    if (PrefService* prefs = GetPrefs()) {
-      prefs->SetBoolean(prefs::kAutofillCreditCardEnabled,
-                        autofill_payment_methods_enabled);
-    }
-    if (!autofill_payment_methods_enabled) {
-      // Credit card data is refreshed when this pref is changed.
-      GetPersonalDataManager().test_payments_data_manager().ClearCreditCards();
     }
   }
 
@@ -723,7 +709,6 @@ class TestAutofillClientTemplate : public T {
 #endif
 
   bool autofill_profile_enabled_ = true;
-  bool autofill_payment_methods_enabled_ = true;
   bool wallet_storage_enabled_ = true;
 
   // NULL by default.

@@ -231,10 +231,6 @@ bool AndroidAutofillClient::IsAutofillProfileEnabled() const {
   NOTREACHED();
 }
 
-bool AndroidAutofillClient::IsAutofillPaymentMethodsEnabled() const {
-  NOTREACHED();
-}
-
 bool AndroidAutofillClient::IsWalletStorageEnabled() const {
   return false;
 }

@@ -1052,15 +1052,13 @@ void ChromeAutofillClient::TriggerAutofillAiSavePromptSurvey(
 }
 
 bool ChromeAutofillClient::IsAutofillEnabled() const {
-  return IsAutofillProfileEnabled() || IsAutofillPaymentMethodsEnabled();
+  return IsAutofillProfileEnabled() ||
+         AutofillClient::GetPaymentsAutofillClient()
+             ->IsAutofillPaymentMethodsEnabled();
 }
 
 bool ChromeAutofillClient::IsAutofillProfileEnabled() const {
   return prefs::IsAutofillProfileEnabled(GetPrefs());
-}
-
-bool ChromeAutofillClient::IsAutofillPaymentMethodsEnabled() const {
-  return prefs::IsAutofillPaymentMethodsEnabled(GetPrefs());
 }
 
 bool ChromeAutofillClient::IsAutocompleteEnabled() const {
