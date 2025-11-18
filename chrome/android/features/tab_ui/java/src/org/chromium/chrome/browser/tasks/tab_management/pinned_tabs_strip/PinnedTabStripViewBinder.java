@@ -20,19 +20,14 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** View binder for the pinned tabs strip. */
 @NullMarked
 class PinnedTabStripViewBinder {
-
     public static void bind(PropertyModel model, RecyclerView view, PropertyKey propertyKey) {
         if (IS_VISIBLE.equals(propertyKey)) {
-            boolean shouldBeVisible = model.get(IS_VISIBLE);
             PinnedTabStripAnimationManager animationManager = model.get(ANIMATION_MANAGER);
+            boolean shouldBeVisible = model.get(IS_VISIBLE);
             ObservableSupplierImpl<Boolean> isVisibilityAnimationRunningSupplier =
                     model.get(IS_VISIBILITY_ANIMATION_RUNNING_SUPPLIER);
-
-            if (shouldBeVisible) {
-                animationManager.animateShowPinnedTabBar(isVisibilityAnimationRunningSupplier);
-            } else {
-                animationManager.animateHidePinnedTabBar(isVisibilityAnimationRunningSupplier);
-            }
+            animationManager.animatePinnedTabBarVisibility(
+                    shouldBeVisible, isVisibilityAnimationRunningSupplier);
         } else if (SCROLL_TO_POSITION.equals(propertyKey)) {
             int position = model.get(SCROLL_TO_POSITION);
             if (position != -1) {

@@ -8,7 +8,7 @@ found in the LICENSE file.
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/pinned_tabs_strip_recycler_view"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="@dimen/pinned_tab_strip_height"
     android:clipToPadding="false"
     android:paddingHorizontal="@dimen/pinned_tab_strip_recycler_view_padding_horizontal"
     android:visibility="gone" />

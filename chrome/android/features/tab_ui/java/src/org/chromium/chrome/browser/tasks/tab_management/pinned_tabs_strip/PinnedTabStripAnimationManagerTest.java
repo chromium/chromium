@@ -63,7 +63,16 @@ public class PinnedTabStripAnimationManagerTest {
     @Test
     public void testAnimateShow_AlreadyVisible() {
         when(mRecyclerView.getVisibility()).thenReturn(View.VISIBLE);
-        mAnimationManager.animateShowPinnedTabBar(mAnimationRunningSupplier);
+        doAnswer(
+                        invocation -> {
+                            invocation.getArgument(0, Runnable.class).run();
+                            return null;
+                        })
+                .when(mRecyclerView)
+                .post(any(Runnable.class));
+
+        mAnimationManager.animatePinnedTabBarVisibility(true, mAnimationRunningSupplier);
+
         verify(mAnimationHandler, never()).startAnimation(any());
         assertFalse(mAnimationRunningSupplier.get());
     }
@@ -73,20 +82,31 @@ public class PinnedTabStripAnimationManagerTest {
         when(mRecyclerView.getVisibility()).thenReturn(View.GONE);
         doAnswer(
                         invocation -> {
-                            Runnable task = invocation.getArgument(0);
-                            task.run();
+                            invocation.getArgument(0, Runnable.class).run();
                             return null;
                         })
                 .when(mRecyclerView)
                 .post(any(Runnable.class));
-        mAnimationManager.animateShowPinnedTabBar(mAnimationRunningSupplier);
+
+        mAnimationManager.animatePinnedTabBarVisibility(true, mAnimationRunningSupplier);
+
+        verify(mRecyclerView).setVisibility(View.INVISIBLE);
         verify(mAnimationHandler).startAnimation(any());
     }
 
     @Test
     public void testAnimateHide_AlreadyHidden() {
         when(mRecyclerView.getVisibility()).thenReturn(View.GONE);
-        mAnimationManager.animateHidePinnedTabBar(mAnimationRunningSupplier);
+        doAnswer(
+                        invocation -> {
+                            invocation.getArgument(0, Runnable.class).run();
+                            return null;
+                        })
+                .when(mRecyclerView)
+                .post(any(Runnable.class));
+
+        mAnimationManager.animatePinnedTabBarVisibility(false, mAnimationRunningSupplier);
+
         verify(mAnimationHandler, never()).startAnimation(any());
         assertFalse(mAnimationRunningSupplier.get());
     }
@@ -94,7 +114,16 @@ public class PinnedTabStripAnimationManagerTest {
     @Test
     public void testAnimateHide_Visible() {
         when(mRecyclerView.getVisibility()).thenReturn(View.VISIBLE);
-        mAnimationManager.animateHidePinnedTabBar(mAnimationRunningSupplier);
+        doAnswer(
+                        invocation -> {
+                            invocation.getArgument(0, Runnable.class).run();
+                            return null;
+                        })
+                .when(mRecyclerView)
+                .post(any(Runnable.class));
+
+        mAnimationManager.animatePinnedTabBarVisibility(false, mAnimationRunningSupplier);
+
         verify(mAnimationHandler).startAnimation(any());
     }
 
@@ -104,7 +133,7 @@ public class PinnedTabStripAnimationManagerTest {
         verify(mAnimationHandler).forceFinishAnimation();
         verify(mRecyclerView).setVisibility(View.VISIBLE);
         verify(mRecyclerView).setAlpha(1.0f);
-        verify(mRecyclerView).setTranslationY(0);
+        verify(mRecyclerView).setClipBounds(null);
         assertFalse(mAnimationRunningSupplier.get());
     }
 
