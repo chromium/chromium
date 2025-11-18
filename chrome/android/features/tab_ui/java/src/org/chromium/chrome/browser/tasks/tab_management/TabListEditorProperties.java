@@ -14,32 +14,11 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** {@link PropertyKey} list for TabListEditor. */
 @NullMarked
 public class TabListEditorProperties {
-    public static final PropertyModel.WritableBooleanPropertyKey IS_VISIBLE =
-            new PropertyModel.WritableBooleanPropertyKey();
-
-    public static final PropertyModel.WritableObjectPropertyKey<View.OnClickListener>
-            TOOLBAR_NAVIGATION_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
-
-    public static final PropertyModel.WritableIntPropertyKey PRIMARY_COLOR =
-            new PropertyModel.WritableIntPropertyKey();
-
-    public static final PropertyModel.WritableIntPropertyKey TOOLBAR_BACKGROUND_COLOR =
-            new PropertyModel.WritableIntPropertyKey();
-
-    public static final PropertyModel.WritableObjectPropertyKey<ColorStateList> TOOLBAR_TEXT_TINT =
-            new PropertyModel.WritableObjectPropertyKey<>();
-
-    public static final PropertyModel.WritableObjectPropertyKey<ColorStateList>
-            TOOLBAR_BUTTON_TINT = new PropertyModel.WritableObjectPropertyKey<>();
-
-    public static final PropertyModel.WritableObjectPropertyKey<String> TOOLBAR_TITLE =
-            new PropertyModel.WritableObjectPropertyKey<>();
-
-    public static final PropertyModel.WritableIntPropertyKey TOP_MARGIN =
-            new PropertyModel.WritableIntPropertyKey();
-
     public static final PropertyModel.WritableIntPropertyKey CREATION_MODE =
             new PropertyModel.WritableIntPropertyKey();
+
+    public static final PropertyModel.WritableObjectPropertyKey<View.OnClickListener>
+            DONE_BUTTON_CLICK_HANDLER = new PropertyModel.WritableObjectPropertyKey<>();
 
     public static final PropertyModel.WritableBooleanPropertyKey DONE_BUTTON_VISIBILITY =
             new PropertyModel.WritableBooleanPropertyKey();
@@ -47,22 +26,43 @@ public class TabListEditorProperties {
     public static final PropertyModel.WritableBooleanPropertyKey IS_DONE_BUTTON_ENABLED =
             new PropertyModel.WritableBooleanPropertyKey();
 
+    public static final PropertyModel.WritableBooleanPropertyKey IS_VISIBLE =
+            new PropertyModel.WritableBooleanPropertyKey();
+
+    public static final PropertyModel.WritableIntPropertyKey PRIMARY_COLOR =
+            new PropertyModel.WritableIntPropertyKey();
+
+    public static final PropertyModel.WritableIntPropertyKey TOOLBAR_BACKGROUND_COLOR =
+            new PropertyModel.WritableIntPropertyKey();
+
+    public static final PropertyModel.WritableObjectPropertyKey<ColorStateList>
+            TOOLBAR_BUTTON_TINT = new PropertyModel.WritableObjectPropertyKey<>();
+
     public static final PropertyModel.WritableObjectPropertyKey<View.OnClickListener>
-            DONE_BUTTON_CLICK_HANDLER = new PropertyModel.WritableObjectPropertyKey<>();
+            TOOLBAR_NAVIGATION_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
+
+    public static final PropertyModel.WritableObjectPropertyKey<ColorStateList> TOOLBAR_TEXT_TINT =
+            new PropertyModel.WritableObjectPropertyKey<>();
+
+    public static final PropertyModel.WritableObjectPropertyKey<String> TOOLBAR_TITLE =
+            new PropertyModel.WritableObjectPropertyKey<>();
+
+    public static final PropertyModel.WritableIntPropertyKey TOP_MARGIN =
+            new PropertyModel.WritableIntPropertyKey();
 
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
-                IS_VISIBLE,
-                TOOLBAR_NAVIGATION_LISTENER,
-                PRIMARY_COLOR,
-                TOOLBAR_BACKGROUND_COLOR,
-                TOOLBAR_TEXT_TINT,
-                TOOLBAR_BUTTON_TINT,
-                TOOLBAR_TITLE,
-                TOP_MARGIN,
                 CREATION_MODE,
+                DONE_BUTTON_CLICK_HANDLER,
                 DONE_BUTTON_VISIBILITY,
                 IS_DONE_BUTTON_ENABLED,
-                DONE_BUTTON_CLICK_HANDLER
+                IS_VISIBLE,
+                PRIMARY_COLOR,
+                TOOLBAR_BACKGROUND_COLOR,
+                TOOLBAR_BUTTON_TINT,
+                TOOLBAR_NAVIGATION_LISTENER,
+                TOOLBAR_TEXT_TINT,
+                TOOLBAR_TITLE,
+                TOP_MARGIN
             };
 }
