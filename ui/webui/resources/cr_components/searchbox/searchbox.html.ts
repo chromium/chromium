@@ -55,7 +55,7 @@ ${this.ntpRealboxNextEnabled ? html`
 
   ${this.ntpRealboxNextEnabled ? html`
     <div class="dropdownContainer">
-      <search-animated-glow animation-state="${this.animationState}">
+      <search-animated-glow animation-state="${this.animationState}" part="animated-glow">
       </search-animated-glow>
       <contextual-entrypoint-and-carousel id="context"
           part="contextual-entrypoint-and-carousel"
