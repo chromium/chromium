@@ -14,8 +14,8 @@
 // The delegate for the choice screen coordinator
 @protocol SearchEngineChoiceCoordinatorDelegate <NSObject>
 
-// Called when the UI is dismissed.
-- (void)choiceScreenWillBeDismissed:(SearchEngineChoiceCoordinator*)coordinator;
+// Called when the UI has been dismissed.
+- (void)choiceScreenWasDismissed:(SearchEngineChoiceCoordinator*)coordinator;
 
 @end
 

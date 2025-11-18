@@ -110,8 +110,7 @@ enum class SkipScreenDecision {
 
 #pragma mark - SearchEngineChoiceCoordinatorDelegate
 
-- (void)choiceScreenWillBeDismissed:
-    (SearchEngineChoiceCoordinator*)coordinator {
+- (void)choiceScreenWasDismissed:(SearchEngineChoiceCoordinator*)coordinator {
   DCHECK_EQ(_searchEngineChoiceCoordinator, coordinator);
   [self stopPresentingChoiceScreen];
 

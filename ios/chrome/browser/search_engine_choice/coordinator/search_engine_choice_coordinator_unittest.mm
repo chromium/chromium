@@ -67,8 +67,7 @@
 
 @synthesize wasDismissed = _wasDismissed;
 
-- (void)choiceScreenWillBeDismissed:
-    (SearchEngineChoiceCoordinator*)coordinator {
+- (void)choiceScreenWasDismissed:(SearchEngineChoiceCoordinator*)coordinator {
   _wasDismissed = YES;
 }
 
@@ -98,15 +97,6 @@ class SearchEngineChoiceCoordinatorTest : public PlatformTest {
   }
 
   ~SearchEngineChoiceCoordinatorTest() override {
-    if (!first_run_) {
-      OCMExpect(
-          [search_engine_choice_view_controller_mock_ presentingViewController])
-          .andReturn(nil);
-    }
-    OCMExpect([search_engine_choice_mediator_mock_ disconnect]);
-    OCMExpect([search_engine_choice_mediator_mock_ setConsumer:nil]);
-    OCMExpect([search_engine_choice_view_controller_mock_ setMutator:nil]);
-    [coordinator_ stop];
     coordinator_ = nil;
     EXPECT_OCMOCK_VERIFY((id)search_engine_choice_view_controller_mock_);
     EXPECT_OCMOCK_VERIFY((id)search_engine_choice_mediator_mock_);
@@ -139,6 +129,9 @@ class SearchEngineChoiceCoordinatorTest : public PlatformTest {
     OCMExpect([search_engine_choice_view_controller_mock_
                   initWithFirstRunMode:first_run_])
         .andReturn(search_engine_choice_view_controller_mock_);
+    OCMStub(
+        [search_engine_choice_view_controller_mock_ presentingViewController])
+        .andReturn(base_view_controller_);
     if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE &&
         !first_run_) {
       OCMExpect([search_engine_choice_view_controller_mock_
@@ -178,10 +171,9 @@ class SearchEngineChoiceCoordinatorTest : public PlatformTest {
   // for the non FRE case. And starts the coordinator.
   void CreateAndStartCoordinatorWithoutFre() {
     first_run_ = false;
-    UIViewController* base_view_controller =
-        [[FakeUIViewController alloc] init];
+    base_view_controller_ = [[FakeUIViewController alloc] init];
     coordinator_ = [[SearchEngineChoiceCoordinator alloc]
-        initWithBaseViewController:base_view_controller
+        initWithBaseViewController:base_view_controller_
                            browser:browser_.get()];
 
     CreateViewControllerMock();
@@ -235,7 +227,12 @@ class SearchEngineChoiceCoordinatorTest : public PlatformTest {
   // button.
   void SelectAndSetAsDefault() {
     OCMExpect([search_engine_choice_mediator_mock_ saveDefaultSearchEngine]);
+    ExpectViewControllerDismissed();
     [search_engine_choice_action_delegate_ didTapPrimaryButton];
+    base::RunLoop run_loop;
+    task_environment_.GetMainThreadTaskRunner()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
     if (first_run_) {
       EXPECT_TRUE(first_run_delegate_.wasDismissed);
       EXPECT_FALSE(coordinator_delegate_.wasDismissed);
@@ -243,6 +240,21 @@ class SearchEngineChoiceCoordinatorTest : public PlatformTest {
       EXPECT_FALSE(first_run_delegate_.wasDismissed);
       EXPECT_TRUE(coordinator_delegate_.wasDismissed);
     }
+  }
+
+  // Expect the view controller to be dismissed.
+  void ExpectViewControllerDismissed() {
+    OCMExpect([search_engine_choice_view_controller_mock_ setMutator:nil]);
+  }
+
+  void StopCoordinator(bool view_controller_already_dismissed) {
+    if (!view_controller_already_dismissed) {
+      ExpectViewControllerDismissed();
+    }
+    OCMExpect([search_engine_choice_mediator_mock_ disconnect]);
+    OCMExpect([search_engine_choice_mediator_mock_ setConsumer:nil]);
+    [coordinator_ stop];
+    coordinator_ = nil;
   }
 
   // Simulates the user openning the Learn-More dialog.
@@ -312,6 +324,7 @@ class SearchEngineChoiceCoordinatorTest : public PlatformTest {
       nil;
   bool first_run_ = false;
   SearchEngineChoiceCoordinator* coordinator_ = nil;
+  UIViewController* base_view_controller_ = nil;
   base::HistogramTester histogram_tester_;
   FirstRunScreenTestDelegate* first_run_delegate_ = nil;
   SearchEngineChoiceCoordinatorTestDelegate* coordinator_delegate_ = nil;
@@ -325,6 +338,8 @@ TEST_F(SearchEngineChoiceCoordinatorTest, TestHistograms) {
 
   SelectAndSetAsDefault();
   ExpectDefaultWasSetRecorded();
+
+  StopCoordinator(/*view_controller_already_dismissed=*/true);
 }
 
 // Checks that the correct metrics are recorded when the Learn More screen is
@@ -334,6 +349,8 @@ TEST_F(SearchEngineChoiceCoordinatorTest, TestLearnMoreRecorded) {
 
   ShowLearnMore();
   ExpectLearnMoreWasDisplayedRecorded();
+
+  StopCoordinator(/*view_controller_already_dismissed=*/false);
 }
 
 // Checks that the correct metrics are recorded for the FRE and that the screen
@@ -344,6 +361,7 @@ TEST_F(SearchEngineChoiceCoordinatorTest, TestFreHistograms) {
 
   SelectAndSetAsDefault();
   ExpectFreDefaultWasSetRecorded();
+  StopCoordinator(/*view_controller_already_dismissed=*/true);
 }
 
 // Checks that the correct metrics are recorded in the FRE when the Learn More
@@ -353,4 +371,5 @@ TEST_F(SearchEngineChoiceCoordinatorTest, TestFreLearnMoreRecorded) {
 
   ShowLearnMore();
   ExpectFreLearnMoreWasDisplayedRecorded();
+  StopCoordinator(/*view_controller_already_dismissed=*/false);
 }

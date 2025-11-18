@@ -91,7 +91,7 @@ using search_engines::SearchEngineChoiceScreenEvents;
           /*app_started_via_external_intent=*/false)) {
     // If the search engine enterprise pocliy has been loaded, just before to
     // open the Search Engine Choice dialog, it should be skipped.
-    [self dismissChoiceScreen];
+    [self dismissChoiceScreenIfNeeded];
     return;
   }
   _viewController =
@@ -142,17 +142,16 @@ using search_engines::SearchEngineChoiceScreenEvents;
 
 - (void)stop {
   if (!_firstRun) {
-    [_viewController.presentingViewController
-        dismissViewControllerAnimated:YES
-                           completion:nil];
+    [self dismissChoiceScreenAnimated:YES completion:nil];
+  } else {
+    _viewController.mutator = nil;
+    _viewController = nil;
   }
   [_searchEngineChoiceLearnMoreCoordinator stop];
   _searchEngineChoiceLearnMoreCoordinator = nil;
   [_mediator disconnect];
   _mediator.consumer = nil;
   _mediator = nil;
-  _viewController.mutator = nil;
-  _viewController = nil;
   _baseNavigationController = nil;
   _firstRunDelegate = nil;
   [super stop];
@@ -201,7 +200,7 @@ using search_engines::SearchEngineChoiceScreenEvents;
         recordChoiceScreenEvent:SearchEngineChoiceScreenEvents::kDefaultWasSet];
   }
   [_mediator saveDefaultSearchEngine];
-  [self dismissChoiceScreen];
+  [self dismissChoiceScreenIfNeeded];
 }
 
 #pragma mark - SearchEngineChoiceLearnMoreCoordinatorDelegate
@@ -214,12 +213,31 @@ using search_engines::SearchEngineChoiceScreenEvents;
 
 #pragma mark - Private
 
-- (void)dismissChoiceScreen {
+// For the first run, the view controller is not dismissed, and
+// `_firstRunDelegate` is called. Otherwise, the view controller is dismissed,
+// and then the delegate is called.
+- (void)dismissChoiceScreenIfNeeded {
   if (_firstRun) {
     [_firstRunDelegate screenWillFinishPresenting];
   } else {
-    [self.delegate choiceScreenWillBeDismissed:self];
+    __weak __typeof(self) weakSelf = self;
+    [self dismissChoiceScreenAnimated:YES
+                           completion:^{
+                             [weakSelf.delegate
+                                 choiceScreenWasDismissed:weakSelf];
+                           }];
   }
+}
+
+// Dimisses the view controller and calls `completion`.
+- (void)dismissChoiceScreenAnimated:(BOOL)animated
+                         completion:(ProceduralBlock)completion {
+  UIViewController* viewController = _viewController;
+  _viewController.mutator = nil;
+  _viewController = nil;
+  [viewController.presentingViewController
+      dismissViewControllerAnimated:animated
+                         completion:completion];
 }
 
 - (void)recordChoiceScreenEvent:(SearchEngineChoiceScreenEvents)event {
