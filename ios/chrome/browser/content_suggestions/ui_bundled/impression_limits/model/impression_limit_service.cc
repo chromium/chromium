@@ -10,6 +10,7 @@
 #include "base/json/values_util.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -357,10 +358,10 @@ void ImpressionLimitService::OnUntracked(const GURL& url) {
 }
 
 const std::set<std::string_view> ImpressionLimitService::GetAllowListedPrefs() {
-  static std::set<std::string_view> prefs = {
-      tab_resumption_prefs::kTabResumptionRegularUrlImpressions,
-      tab_resumption_prefs::kTabResumptionWithPriceDropUrlImpressions,
-      tab_resumption_prefs::kTabResumptionWithPriceTrackableUrlImpressions,
-      shop_card_prefs::kShopCardPriceDropUrlImpressions};
-  return prefs;
+  static base::NoDestructor<std::set<std::string_view>> prefs(
+      {tab_resumption_prefs::kTabResumptionRegularUrlImpressions,
+       tab_resumption_prefs::kTabResumptionWithPriceDropUrlImpressions,
+       tab_resumption_prefs::kTabResumptionWithPriceTrackableUrlImpressions,
+       shop_card_prefs::kShopCardPriceDropUrlImpressions});
+  return *prefs;
 }
