@@ -165,7 +165,8 @@ bool PageActionModel::GetActionActive() const {
 }
 
 PageActionColorSource PageActionModel::GetColorSource() const {
-  return color_source_;
+  return color_source_.has_value() ? *color_source_
+                                   : PageActionColorSource::kForeground;
 }
 
 void PageActionModel::SetOverrideText(

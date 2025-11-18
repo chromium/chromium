@@ -47,6 +47,14 @@ class PageActionModelObserver;
 class PageActionMetricsRecorderFactory;
 class PageActionMetricsRecorderInterface;
 
+// Indicates the source used to color the page action icon.
+enum class PageActionColorSource {
+  // The foreground's color.
+  kForeground,
+  // A blend between the focus border color and the background.
+  kCascadingAccent,
+};
+
 // Configuration for a page action's suggestion chip.
 struct SuggestionChipConfig {
   // Whether the chip should have expand/collapse animations.

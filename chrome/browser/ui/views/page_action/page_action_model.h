@@ -24,14 +24,7 @@ namespace page_actions {
 struct SuggestionChipConfig;
 class PageActionController;
 class PageActionModelObserver;
-
-// Indicates the source used to color the page action icon.
-enum class PageActionColorSource {
-  // The foreground's color.
-  kForeground,
-  // A blend between the focus border color and the background.
-  kCascadingAccent,
-};
+enum class PageActionColorSource;
 
 // Interface to PageActionModel, used for either the concrete implementation
 // or a mock for testing.
@@ -214,7 +207,7 @@ class PageActionModel : public PageActionModelInterface {
   ui::ImageModel action_item_image_;
   // When set, it will always take precedence over `action_item_image_`.
   std::optional<ui::ImageModel> override_image_;
-  PageActionColorSource color_source_ = PageActionColorSource::kForeground;
+  std::optional<PageActionColorSource> color_source_;
 
   // When set, it will always take precedence over `text_`.
   std::optional<std::u16string> override_text_;
