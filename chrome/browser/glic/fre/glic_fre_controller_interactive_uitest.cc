@@ -37,7 +37,9 @@ namespace {
 
 using glic::test::internal::kGlicFreShowingDialogState;
 
+#if !BUILDFLAG(IS_CHROMEOS)
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<GURL>,
                                     kOpenedTabUrlState);
 
