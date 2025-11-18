@@ -102,7 +102,7 @@
 :host([ntp-realbox-next-enabled]) {
   --cr-composebox-font-size: var(--cr-composebox-custom-font-size, 16px);
   --contextual-entrypoint-and-carousel-context-menu-container-padding-inline-start: 0px;
-  --input-bottom-spacing: 12px;
+  --input-bottom-spacing: var(--cr-composebox-input-bottom-spacing, 12px);
   --text-input-inline-start-spacing: var(--cr-composebox-text-input-inline-start, 18px);
 }
 
@@ -159,7 +159,7 @@ search-animated-glow {
 
 :host([expanding_]) #composebox {
   height: calc-size(auto, size);
-  max-height: 422px;
+  max-height: var(--cr-composebox-max-height, 422px);
   transition-duration: var(--expand-duration);
 }
 
