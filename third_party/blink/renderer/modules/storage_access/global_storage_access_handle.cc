@@ -15,13 +15,11 @@ using PassKey = base::PassKey<GlobalStorageAccessHandle>;
 // static
 GlobalStorageAccessHandle& GlobalStorageAccessHandle::From(
     LocalDOMWindow& window) {
-  GlobalStorageAccessHandle* supplement =
-      Supplement<LocalDOMWindow>::template From<GlobalStorageAccessHandle>(
-          window);
+  GlobalStorageAccessHandle* supplement = window.GetGlobalStorageAccessHandle();
   if (!supplement) {
     supplement =
         MakeGarbageCollected<GlobalStorageAccessHandle>(PassKey(), window);
-    Supplement<LocalDOMWindow>::ProvideTo(window, supplement);
+    window.SetGlobalStorageAccessHandle(supplement);
   }
   return *supplement;
 }
@@ -30,12 +28,11 @@ HeapMojoRemote<mojom::blink::StorageAccessHandle>&
 GlobalStorageAccessHandle::GetRemote() {
   if (!remote_) {
     mojo::PendingRemote<mojom::blink::StorageAccessHandle> remote;
-    GetSupplementable()
-        ->GetExecutionContext()
+    local_dom_window_->GetExecutionContext()
         ->GetBrowserInterfaceBroker()
         .GetInterface(remote.InitWithNewPipeAndPassReceiver());
     remote_.Bind(std::move(remote),
-                 GetSupplementable()->GetExecutionContext()->GetTaskRunner(
+                 local_dom_window_->GetExecutionContext()->GetTaskRunner(
                      TaskType::kMiscPlatformAPI));
   }
   return remote_;
@@ -43,21 +40,21 @@ GlobalStorageAccessHandle::GetRemote() {
 
 StorageArea* GlobalStorageAccessHandle::GetSessionStorageArea() {
   if (!session_storage_area_) {
-    if (!GetSupplementable()->GetSecurityOrigin()->CanAccessSessionStorage()) {
+    if (!local_dom_window_->GetSecurityOrigin()->CanAccessSessionStorage()) {
       return nullptr;
     }
-    if (!GetSupplementable()->GetFrame()) {
+    if (!local_dom_window_->GetFrame()) {
       return nullptr;
     }
     StorageNamespace* storage_namespace =
-        StorageNamespace::From(GetSupplementable()->GetFrame()->GetPage());
+        StorageNamespace::From(local_dom_window_->GetFrame()->GetPage());
     if (!storage_namespace) {
       return nullptr;
     }
     session_storage_area_ = StorageArea::Create(
-        GetSupplementable(),
+        local_dom_window_,
         storage_namespace->GetCachedArea(
-            GetSupplementable(), {},
+            local_dom_window_, {},
             StorageNamespace::StorageContext::kStorageAccessAPI),
         StorageArea::StorageType::kSessionStorage);
   }
@@ -66,24 +63,23 @@ StorageArea* GlobalStorageAccessHandle::GetSessionStorageArea() {
 
 StorageArea* GlobalStorageAccessHandle::GetLocalStorageArea() {
   if (!local_storage_area_) {
-    if (!GetSupplementable()->GetSecurityOrigin()->CanAccessLocalStorage()) {
+    if (!local_dom_window_->GetSecurityOrigin()->CanAccessLocalStorage()) {
       return nullptr;
     }
-    if (!GetSupplementable()->GetFrame()) {
+    if (!local_dom_window_->GetFrame()) {
       return nullptr;
     }
-    if (!GetSupplementable()
-             ->GetFrame()
+    if (!local_dom_window_->GetFrame()
              ->GetSettings()
              ->GetLocalStorageEnabled()) {
       return nullptr;
     }
     scoped_refptr<CachedStorageArea> storage_area =
         StorageController::GetInstance()->GetLocalStorageArea(
-            GetSupplementable(), {},
+            local_dom_window_, {},
             StorageNamespace::StorageContext::kStorageAccessAPI);
     local_storage_area_ =
-        StorageArea::Create(GetSupplementable(), std::move(storage_area),
+        StorageArea::Create(local_dom_window_, std::move(storage_area),
                             StorageArea::StorageType::kLocalStorage);
   }
   return local_storage_area_;
@@ -91,7 +87,7 @@ StorageArea* GlobalStorageAccessHandle::GetLocalStorageArea() {
 
 IDBFactory* GlobalStorageAccessHandle::GetIDBFactory() {
   if (!idb_factory_) {
-    if (!GetSupplementable()->GetSecurityOrigin()->CanAccessDatabase()) {
+    if (!local_dom_window_->GetSecurityOrigin()->CanAccessDatabase()) {
       return nullptr;
     }
     HeapMojoRemote<mojom::blink::StorageAccessHandle>& remote = GetRemote();
@@ -100,7 +96,7 @@ IDBFactory* GlobalStorageAccessHandle::GetIDBFactory() {
     }
     mojo::PendingRemote<mojom::blink::IDBFactory> indexed_db_remote;
     remote->BindIndexedDB(indexed_db_remote.InitWithNewPipeAndPassReceiver());
-    idb_factory_ = MakeGarbageCollected<IDBFactory>(GetSupplementable());
+    idb_factory_ = MakeGarbageCollected<IDBFactory>(local_dom_window_);
     idb_factory_->SetRemote(std::move(indexed_db_remote));
   }
   return idb_factory_;
@@ -108,7 +104,7 @@ IDBFactory* GlobalStorageAccessHandle::GetIDBFactory() {
 
 LockManager* GlobalStorageAccessHandle::GetLockManager() {
   if (!lock_manager_) {
-    if (!GetSupplementable()->GetSecurityOrigin()->CanAccessLocks()) {
+    if (!local_dom_window_->GetSecurityOrigin()->CanAccessLocks()) {
       return nullptr;
     }
     HeapMojoRemote<mojom::blink::StorageAccessHandle>& remote = GetRemote();
@@ -118,16 +114,16 @@ LockManager* GlobalStorageAccessHandle::GetLockManager() {
     mojo::PendingRemote<mojom::blink::LockManager> locks_remote;
     remote->BindLocks(locks_remote.InitWithNewPipeAndPassReceiver());
     lock_manager_ =
-        MakeGarbageCollected<LockManager>(*GetSupplementable()->navigator());
+        MakeGarbageCollected<LockManager>(*local_dom_window_->navigator());
     lock_manager_->SetManager(std::move(locks_remote),
-                              GetSupplementable()->GetExecutionContext());
+                              local_dom_window_->GetExecutionContext());
   }
   return lock_manager_;
 }
 
 CacheStorage* GlobalStorageAccessHandle::GetCacheStorage() {
   if (!cache_storage_) {
-    if (!GetSupplementable()->GetSecurityOrigin()->CanAccessCacheStorage()) {
+    if (!local_dom_window_->GetSecurityOrigin()->CanAccessCacheStorage()) {
       return nullptr;
     }
     HeapMojoRemote<mojom::blink::StorageAccessHandle>& remote = GetRemote();
@@ -137,8 +133,8 @@ CacheStorage* GlobalStorageAccessHandle::GetCacheStorage() {
     mojo::PendingRemote<mojom::blink::CacheStorage> cache_remote;
     remote->BindCaches(cache_remote.InitWithNewPipeAndPassReceiver());
     cache_storage_ = MakeGarbageCollected<CacheStorage>(
-        GetSupplementable()->GetExecutionContext(),
-        GlobalFetch::ScopedFetcher::From(*GetSupplementable()),
+        local_dom_window_->GetExecutionContext(),
+        GlobalFetch::ScopedFetcher::From(*local_dom_window_),
         std::move(cache_remote));
   }
   return cache_storage_;
@@ -146,7 +142,7 @@ CacheStorage* GlobalStorageAccessHandle::GetCacheStorage() {
 
 PublicURLManager* GlobalStorageAccessHandle::GetPublicURLManager() {
   if (!public_url_manager_) {
-    if (GetSupplementable()->GetSecurityOrigin()->IsOpaque()) {
+    if (local_dom_window_->GetSecurityOrigin()->IsOpaque()) {
       return nullptr;
     }
     HeapMojoRemote<mojom::blink::StorageAccessHandle>& remote = GetRemote();
@@ -158,7 +154,7 @@ PublicURLManager* GlobalStorageAccessHandle::GetPublicURLManager() {
     remote->BindBlobStorage(
         blob_storage_remote.InitWithNewEndpointAndPassReceiver());
     public_url_manager_ = MakeGarbageCollected<PublicURLManager>(
-        PassKey(), GetSupplementable()->GetExecutionContext(),
+        PassKey(), local_dom_window_->GetExecutionContext(),
         std::move(blob_storage_remote));
   }
   return public_url_manager_;
@@ -167,7 +163,7 @@ PublicURLManager* GlobalStorageAccessHandle::GetPublicURLManager() {
 HeapMojoAssociatedRemote<mojom::blink::BroadcastChannelProvider>&
 GlobalStorageAccessHandle::GetBroadcastChannelProvider() {
   if (!broadcast_channel_provider_) {
-    if (GetSupplementable()->GetSecurityOrigin()->IsOpaque()) {
+    if (local_dom_window_->GetSecurityOrigin()->IsOpaque()) {
       return broadcast_channel_provider_;
     }
     HeapMojoRemote<mojom::blink::StorageAccessHandle>& remote = GetRemote();
@@ -176,7 +172,7 @@ GlobalStorageAccessHandle::GetBroadcastChannelProvider() {
     }
     remote->BindBroadcastChannel(
         broadcast_channel_provider_.BindNewEndpointAndPassReceiver(
-            GetSupplementable()->GetExecutionContext()->GetTaskRunner(
+            local_dom_window_->GetExecutionContext()->GetTaskRunner(
                 TaskType::kInternalDefault)));
   }
   return broadcast_channel_provider_;
@@ -185,7 +181,7 @@ GlobalStorageAccessHandle::GetBroadcastChannelProvider() {
 HeapMojoRemote<mojom::blink::SharedWorkerConnector>&
 GlobalStorageAccessHandle::GetSharedWorkerConnector() {
   if (!shared_worker_connector_) {
-    if (!GetSupplementable()->GetSecurityOrigin()->CanAccessSharedWorkers()) {
+    if (!local_dom_window_->GetSecurityOrigin()->CanAccessSharedWorkers()) {
       return shared_worker_connector_;
     }
     HeapMojoRemote<mojom::blink::StorageAccessHandle>& remote = GetRemote();
@@ -194,7 +190,7 @@ GlobalStorageAccessHandle::GetSharedWorkerConnector() {
     }
     remote->BindSharedWorker(
         shared_worker_connector_.BindNewPipeAndPassReceiver(
-            GetSupplementable()->GetExecutionContext()->GetTaskRunner(
+            local_dom_window_->GetExecutionContext()->GetTaskRunner(
                 TaskType::kDOMManipulation)));
   }
   return shared_worker_connector_;
@@ -210,7 +206,7 @@ void GlobalStorageAccessHandle::Trace(Visitor* visitor) const {
   visitor->Trace(public_url_manager_);
   visitor->Trace(broadcast_channel_provider_);
   visitor->Trace(shared_worker_connector_);
-  Supplement<LocalDOMWindow>::Trace(visitor);
+  visitor->Trace(local_dom_window_);
 }
 
 }  // namespace blink

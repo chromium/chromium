@@ -11,28 +11,21 @@
 
 namespace blink {
 
-namespace {
-
 class WindowSharedStorageImpl final
     : public GarbageCollected<WindowSharedStorageImpl>,
-      public Supplement<LocalDOMWindow> {
+      public GarbageCollectedMixin {
  public:
-  static constexpr auto kSupplementIndex =
-      LocalDOMWindow::Supplements::kWindowSharedStorageImpl;
-
   static WindowSharedStorageImpl& From(LocalDOMWindow& window) {
-    WindowSharedStorageImpl* supplement =
-        Supplement<LocalDOMWindow>::template From<WindowSharedStorageImpl>(
-            window);
+    WindowSharedStorageImpl* supplement = window.GetWindowSharedStorageImpl();
     if (!supplement) {
       supplement = MakeGarbageCollected<WindowSharedStorageImpl>(window);
-      Supplement<LocalDOMWindow>::ProvideTo(window, supplement);
+      window.SetWindowSharedStorageImpl(supplement);
     }
     return *supplement;
   }
 
   explicit WindowSharedStorageImpl(LocalDOMWindow& window)
-      : Supplement<LocalDOMWindow>(window) {}
+      : local_dom_window_(window) {}
 
   SharedStorage* GetOrCreate(LocalDOMWindow& fetching_scope) {
     if (!shared_storage_)
@@ -42,14 +35,13 @@ class WindowSharedStorageImpl final
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(shared_storage_);
-    Supplement<LocalDOMWindow>::Trace(visitor);
+    visitor->Trace(local_dom_window_);
   }
 
  private:
+  Member<LocalDOMWindow> local_dom_window_;
   Member<SharedStorage> shared_storage_;
 };
-
-}  // namespace
 
 SharedStorage* WindowSharedStorage::sharedStorage(
     LocalDOMWindow& window,

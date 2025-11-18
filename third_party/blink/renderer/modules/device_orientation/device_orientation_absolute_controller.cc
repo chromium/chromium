@@ -21,12 +21,11 @@ DeviceOrientationAbsoluteController::~DeviceOrientationAbsoluteController() =
 DeviceOrientationAbsoluteController& DeviceOrientationAbsoluteController::From(
     LocalDOMWindow& window) {
   DeviceOrientationAbsoluteController* controller =
-      Supplement<LocalDOMWindow>::From<DeviceOrientationAbsoluteController>(
-          window);
+      window.GetDeviceOrientationAbsoluteController();
   if (!controller) {
     controller =
         MakeGarbageCollected<DeviceOrientationAbsoluteController>(window);
-    Supplement<LocalDOMWindow>::ProvideTo(window, controller);
+    window.SetDeviceOrientationAbsoluteController(controller);
   }
   return *controller;
 }

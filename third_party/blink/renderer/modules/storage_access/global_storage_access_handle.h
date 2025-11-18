@@ -26,16 +26,13 @@ namespace blink {
 // disconnections when the handle is garbage collected.
 class GlobalStorageAccessHandle final
     : public GarbageCollected<GlobalStorageAccessHandle>,
-      public Supplement<LocalDOMWindow> {
+      public GarbageCollectedMixin {
  public:
-  static constexpr auto kSupplementIndex =
-      LocalDOMWindow::Supplements::kGlobalStorageAccessHandle;
-
   static GlobalStorageAccessHandle& From(LocalDOMWindow& window);
 
   explicit GlobalStorageAccessHandle(base::PassKey<GlobalStorageAccessHandle>,
                                      LocalDOMWindow& window)
-      : Supplement<LocalDOMWindow>(window),
+      : local_dom_window_(window),
         remote_(window.GetExecutionContext()),
         broadcast_channel_provider_(window.GetExecutionContext()),
         shared_worker_connector_(window.GetExecutionContext()) {}
@@ -55,6 +52,7 @@ class GlobalStorageAccessHandle final
   void Trace(Visitor* visitor) const override;
 
  private:
+  Member<LocalDOMWindow> local_dom_window_;
   HeapMojoRemote<mojom::blink::StorageAccessHandle> remote_;
   Member<StorageArea> session_storage_area_;
   Member<StorageArea> local_storage_area_;

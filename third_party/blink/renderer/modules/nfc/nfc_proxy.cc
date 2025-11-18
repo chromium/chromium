@@ -19,22 +19,18 @@
 namespace blink {
 
 // static
-const unsigned NFCProxy::kSupplementIndex =
-    static_cast<unsigned>(LocalDOMWindow::Supplements::kNFCProxy);
-
-// static
 NFCProxy* NFCProxy::From(LocalDOMWindow& window) {
-  NFCProxy* nfc_proxy = Supplement<LocalDOMWindow>::From<NFCProxy>(window);
+  NFCProxy* nfc_proxy = window.GetNFCProxy();
   if (!nfc_proxy) {
     nfc_proxy = MakeGarbageCollected<NFCProxy>(window);
-    Supplement<LocalDOMWindow>::ProvideTo(window, nfc_proxy);
+    window.SetNFCProxy(nfc_proxy);
   }
   return nfc_proxy;
 }
 
 // NFCProxy
 NFCProxy::NFCProxy(LocalDOMWindow& window)
-    : Supplement<LocalDOMWindow>(window),
+    : local_dom_window_(window),
       nfc_remote_(window.GetExecutionContext()),
       client_receiver_(this, window.GetExecutionContext()) {}
 
@@ -45,7 +41,7 @@ void NFCProxy::Trace(Visitor* visitor) const {
   visitor->Trace(nfc_remote_);
   visitor->Trace(writers_);
   visitor->Trace(readers_);
-  Supplement<LocalDOMWindow>::Trace(visitor);
+  visitor->Trace(local_dom_window_);
 }
 
 void NFCProxy::StartReading(NDEFReader* reader,
@@ -185,9 +181,9 @@ void NFCProxy::EnsureMojoConnection() {
 
   // See https://bit.ly/2S0zRAS for task types.
   auto task_runner =
-      GetSupplementable()->GetTaskRunner(TaskType::kMiscPlatformAPI);
+      local_dom_window_->GetTaskRunner(TaskType::kMiscPlatformAPI);
 
-  GetSupplementable()->GetBrowserInterfaceBroker().GetInterface(
+  local_dom_window_->GetBrowserInterfaceBroker().GetInterface(
       nfc_remote_.BindNewPipeAndPassReceiver(task_runner));
   nfc_remote_.set_disconnect_handler(
       BindOnce(&NFCProxy::OnMojoConnectionError, WrapWeakPersistent(this)));

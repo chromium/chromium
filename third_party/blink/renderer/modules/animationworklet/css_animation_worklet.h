@@ -16,12 +16,8 @@ namespace blink {
 
 class MODULES_EXPORT CSSAnimationWorklet final
     : public GarbageCollected<CSSAnimationWorklet>,
-      public Supplement<LocalDOMWindow>,
       public ExecutionContextLifecycleObserver {
  public:
-  static constexpr auto kSupplementIndex =
-      LocalDOMWindow::Supplements::kCSSAnimationWorklet;
-
   static AnimationWorklet* animationWorklet(ScriptState*);
 
   explicit CSSAnimationWorklet(LocalDOMWindow&);
@@ -33,6 +29,7 @@ class MODULES_EXPORT CSSAnimationWorklet final
  private:
   static CSSAnimationWorklet& From(LocalDOMWindow&);
 
+  Member<LocalDOMWindow> local_dom_window_;
   Member<AnimationWorklet> animation_worklet_;
 };
 

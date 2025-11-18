@@ -2680,8 +2680,7 @@ bool LocalFrameView::RunCompositingInputsLifecyclePhase(
       // and then painted during this lifecycle.
       if (LocalDOMWindow* window = frame_view.GetFrame().DomWindow()) {
         if (HighlightRegistry* highlight_registry =
-                window->Supplementable<LocalDOMWindow, 43>::RequireSupplement<
-                    HighlightRegistry>()) {
+                window->GetHighlightRegistry()) {
           highlight_registry->ValidateHighlightMarkers();
         }
       }

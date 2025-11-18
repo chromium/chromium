@@ -22,25 +22,20 @@
 namespace blink {
 
 DOMWindowStorage::DOMWindowStorage(LocalDOMWindow& window)
-    : Supplement<LocalDOMWindow>(window) {}
+    : local_dom_window_(window) {}
 
 void DOMWindowStorage::Trace(Visitor* visitor) const {
   visitor->Trace(session_storage_);
   visitor->Trace(local_storage_);
-  Supplement<LocalDOMWindow>::Trace(visitor);
+  visitor->Trace(local_dom_window_);
 }
 
 // static
-const unsigned DOMWindowStorage::kSupplementIndex =
-    static_cast<unsigned>(LocalDOMWindow::Supplements::kDOMWindowStorage);
-
-// static
 DOMWindowStorage& DOMWindowStorage::From(LocalDOMWindow& window) {
-  DOMWindowStorage* supplement =
-      Supplement<LocalDOMWindow>::From<DOMWindowStorage>(window);
+  DOMWindowStorage* supplement = window.GetDOMWindowStorage();
   if (!supplement) {
     supplement = MakeGarbageCollected<DOMWindowStorage>(window);
-    ProvideTo(window, supplement);
+    window.SetDOMWindowStorage(supplement);
   }
   return *supplement;
 }
@@ -63,7 +58,7 @@ StorageArea* DOMWindowStorage::sessionStorage(
   if (!storage)
     return nullptr;
 
-  LocalDOMWindow* window = GetSupplementable();
+  LocalDOMWindow* window = local_dom_window_;
   if (window->GetSecurityOrigin()->IsLocal())
     UseCounter::Count(window, WebFeature::kFileAccessedSessionStorage);
 
@@ -80,7 +75,7 @@ StorageArea* DOMWindowStorage::localStorage(
   if (!storage)
     return nullptr;
 
-  LocalDOMWindow* window = GetSupplementable();
+  LocalDOMWindow* window = local_dom_window_;
   if (window->GetSecurityOrigin()->IsLocal())
     UseCounter::Count(window, WebFeature::kFileAccessedLocalStorage);
 
@@ -111,7 +106,7 @@ StorageArea* DOMWindowStorage::GetOrCreateSessionStorage(
     ExceptionState& exception_state,
     mojo::PendingRemote<mojom::blink::StorageArea> storage_area_for_init)
     const {
-  LocalDOMWindow* window = GetSupplementable();
+  LocalDOMWindow* window = local_dom_window_;
   if (!window->GetFrame())
     return nullptr;
 
@@ -155,7 +150,7 @@ StorageArea* DOMWindowStorage::GetOrCreateLocalStorage(
     ExceptionState& exception_state,
     mojo::PendingRemote<mojom::blink::StorageArea> storage_area_for_init)
     const {
-  LocalDOMWindow* window = GetSupplementable();
+  LocalDOMWindow* window = local_dom_window_;
   if (!window->GetFrame())
     return nullptr;
 

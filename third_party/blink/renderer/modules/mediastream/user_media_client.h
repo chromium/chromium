@@ -37,11 +37,8 @@ class LocalFrame;
 // called and destroyed on the render thread.
 class MODULES_EXPORT UserMediaClient
     : public GarbageCollected<UserMediaClient>,
-      public Supplement<LocalDOMWindow>,
       public ExecutionContextLifecycleObserver {
  public:
-  static const unsigned kSupplementIndex;
-
   // TODO(guidou): Make all constructors private and replace with Create methods
   // that return a std::unique_ptr. This class is intended for instantiation on
   // the free store. https://crbug.com/764293
@@ -81,6 +78,8 @@ class MODULES_EXPORT UserMediaClient
       base::UnguessableToken session_id,
       base::UnguessableToken transfer_id,
       UserMediaProcessor::KeepDeviceAliveForTransferCallback keep_alive_cb);
+
+  LocalDOMWindow* GetLocalDOMWindow() const { return local_dom_window_; }
 
  protected:
   // Production code forwards the main ctor to this one.
@@ -135,6 +134,8 @@ class MODULES_EXPORT UserMediaClient
   blink::mojom::blink::MediaDevicesDispatcherHost* GetMediaDevicesDispatcher();
   RequestQueue* GetRequestQueue(
       mojom::blink::MediaStreamType user_media_request);
+
+  Member<LocalDOMWindow> local_dom_window_;
 
   // LocalFrame instance that own this UserMediaClient.
   WeakMember<LocalFrame> frame_;

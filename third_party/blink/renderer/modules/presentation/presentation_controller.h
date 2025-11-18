@@ -30,8 +30,8 @@ class PresentationAvailabilityState;
 // from which websites can implement the controlling side of a presentation.
 class MODULES_EXPORT PresentationController
     : public GarbageCollected<PresentationController>,
-      public Supplement<LocalDOMWindow>,
-      public mojom::blink::PresentationController {
+      public mojom::blink::PresentationController,
+      public GarbageCollectedMixin {
  public:
   static const unsigned kSupplementIndex;
 
@@ -72,6 +72,8 @@ class MODULES_EXPORT PresentationController
   // needed. Always non-null.
   PresentationAvailabilityState* GetAvailabilityState();
 
+  LocalDOMWindow* GetLocalDOMWindow() const { return local_dom_window_; }
+
   // Marked virtual for testing.
   virtual void AddAvailabilityObserver(PresentationAvailabilityObserver*);
   virtual void RemoveAvailabilityObserver(PresentationAvailabilityObserver*);
@@ -93,6 +95,8 @@ class MODULES_EXPORT PresentationController
   // null if it doesn't exist.
   ControllerPresentationConnection* FindConnection(
       const mojom::blink::PresentationInfo&) const;
+
+  Member<LocalDOMWindow> local_dom_window_;
 
   // Lazily-instantiated when the page queries for availability.
   Member<PresentationAvailabilityState> availability_state_;

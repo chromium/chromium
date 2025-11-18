@@ -24,11 +24,10 @@ class ResizeObserver;
 // shallowest notification from previous iteration are delivered.
 class CORE_EXPORT ResizeObserverController final
     : public GarbageCollected<ResizeObserverController>,
-      public Supplement<LocalDOMWindow> {
+      public GarbageCollectedMixin {
  public:
   static const size_t kDepthBottom = 4096;
 
-  static const unsigned kSupplementIndex;
   static ResizeObserverController* From(LocalDOMWindow&);
   static ResizeObserverController* FromIfExists(LocalDOMWindow&);
 
@@ -62,6 +61,7 @@ class CORE_EXPORT ResizeObserverController final
   }
 
  private:
+  Member<LocalDOMWindow> local_dom_window_;
   // Active observers
   HeapLinkedHashSet<WeakMember<ResizeObserver>> observers_;
   // Minimum depth for observations to be active

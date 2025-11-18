@@ -22,7 +22,7 @@ class LocalFrame;
 class MODULES_EXPORT InstallationServiceImpl final
     : public GarbageCollected<InstallationServiceImpl>,
       public mojom::blink::InstallationService,
-      public Supplement<LocalDOMWindow> {
+      public GarbageCollectedMixin {
  public:
   static const unsigned kSupplementIndex;
   static InstallationServiceImpl* From(LocalDOMWindow&);
@@ -44,6 +44,7 @@ class MODULES_EXPORT InstallationServiceImpl final
   void OnInstall() override;
 
  private:
+  Member<LocalDOMWindow> local_dom_window_;
   HeapMojoReceiverSet<mojom::blink::InstallationService,
                       InstallationServiceImpl>
       receivers_;

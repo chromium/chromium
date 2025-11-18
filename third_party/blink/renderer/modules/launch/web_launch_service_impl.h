@@ -28,9 +28,8 @@ class LocalDOMWindow;
 class MODULES_EXPORT WebLaunchServiceImpl final
     : public GarbageCollected<WebLaunchServiceImpl>,
       public mojom::blink::WebLaunchService,
-      public Supplement<LocalDOMWindow> {
+      public GarbageCollectedMixin {
  public:
-  static const unsigned kSupplementIndex;
   static WebLaunchServiceImpl* From(LocalDOMWindow&);
   static void BindReceiver(
       LocalFrame* frame,
@@ -53,6 +52,7 @@ class MODULES_EXPORT WebLaunchServiceImpl final
                            bool navigation_started) override;
 
  private:
+  Member<LocalDOMWindow> local_dom_window_;
   HeapMojoAssociatedReceiver<mojom::blink::WebLaunchService,
                              WebLaunchServiceImpl,
                              HeapMojoWrapperMode::kForceWithoutContextObserver>

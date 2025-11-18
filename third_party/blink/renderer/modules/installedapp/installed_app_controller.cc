@@ -23,39 +23,38 @@ InstalledAppController::~InstalledAppController() = default;
 void InstalledAppController::GetInstalledRelatedApps(
     ScriptPromiseResolver<IDLSequence<RelatedApplication>>* resolver) {
   // When detached, the fetch logic is no longer valid.
-  if (!GetSupplementable()->GetFrame()) {
+  if (!local_dom_window_->GetFrame()) {
     // Resolving a promise is a no-op with a detached frame.
     return;
   }
 
   // Get the list of related applications from the manifest.
   // Upon returning, filter the result list to those apps that are installed.
-  ManifestManager::From(*GetSupplementable())
+  ManifestManager::From(*local_dom_window_)
       ->RequestManifest(
           BindOnce(&InstalledAppController::OnGetManifestForRelatedApps,
                    WrapPersistent(this), WrapPersistent(resolver)));
 }
 
 InstalledAppController* InstalledAppController::From(LocalDOMWindow& window) {
-  InstalledAppController* controller =
-      Supplement<LocalDOMWindow>::From<InstalledAppController>(window);
+  InstalledAppController* controller = window.GetInstalledAppController();
   if (!controller) {
     controller = MakeGarbageCollected<InstalledAppController>(window);
-    Supplement<LocalDOMWindow>::ProvideTo(window, controller);
+    window.SetInstalledAppController(controller);
   }
 
   return controller;
 }
 
 InstalledAppController::InstalledAppController(LocalDOMWindow& window)
-    : Supplement<LocalDOMWindow>(window), provider_(&window) {}
+    : local_dom_window_(window), provider_(&window) {}
 
 void InstalledAppController::OnGetManifestForRelatedApps(
     ScriptPromiseResolver<IDLSequence<RelatedApplication>>* resolver,
     mojom::blink::ManifestRequestResult result,
     const KURL& url,
     mojom::blink::ManifestPtr manifest) {
-  if (!GetSupplementable()->GetFrame()) {
+  if (!local_dom_window_->GetFrame()) {
     // Resolving a promise is a no-op with a detached frame.
     return;
   }
@@ -71,9 +70,9 @@ void InstalledAppController::OnGetManifestForRelatedApps(
 
   if (!provider_.is_bound()) {
     // See https://bit.ly/2S0zRAS for task types.
-    GetSupplementable()->GetBrowserInterfaceBroker().GetInterface(
+    local_dom_window_->GetBrowserInterfaceBroker().GetInterface(
         provider_.BindNewPipeAndPassReceiver(
-            GetSupplementable()->GetTaskRunner(TaskType::kMiscPlatformAPI)));
+            local_dom_window_->GetTaskRunner(TaskType::kMiscPlatformAPI)));
     // TODO(mgiuca): Set a connection error handler. This requires a refactor to
     // work like NavigatorShare.cpp (retain a persistent list of clients to
     // reject all of their promises).
@@ -105,7 +104,7 @@ void InstalledAppController::OnFilterInstalledApps(
     applications.push_back(app);
   }
 
-  LocalDOMWindow* window = GetSupplementable();
+  LocalDOMWindow* window = local_dom_window_;
   ukm::builders::InstalledRelatedApps(window->UkmSourceID())
       .SetCalled(true)
       .Record(window->UkmRecorder());
@@ -115,7 +114,7 @@ void InstalledAppController::OnFilterInstalledApps(
 
 void InstalledAppController::Trace(Visitor* visitor) const {
   visitor->Trace(provider_);
-  Supplement<LocalDOMWindow>::Trace(visitor);
+  visitor->Trace(local_dom_window_);
 }
 
 }  // namespace blink

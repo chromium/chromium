@@ -14,12 +14,8 @@ namespace blink {
 
 class MODULES_EXPORT DOMWindowStorageController final
     : public GarbageCollected<DOMWindowStorageController>,
-      public Supplement<LocalDOMWindow>,
       public LocalDOMWindow::EventListenerObserver {
  public:
-  static constexpr auto kSupplementIndex =
-      LocalDOMWindow::Supplements::kDOMWindowStorageController;
-
   explicit DOMWindowStorageController(LocalDOMWindow&);
   static DOMWindowStorageController& From(LocalDOMWindow&);
 
@@ -29,6 +25,9 @@ class MODULES_EXPORT DOMWindowStorageController final
   void DidAddEventListener(LocalDOMWindow*, const AtomicString&) override;
   void DidRemoveEventListener(LocalDOMWindow*, const AtomicString&) override {}
   void DidRemoveAllEventListeners(LocalDOMWindow*) override {}
+
+ private:
+  Member<LocalDOMWindow> local_dom_window_;
 };
 
 }  // namespace blink

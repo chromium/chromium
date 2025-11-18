@@ -40,23 +40,19 @@
 
 namespace blink {
 
-const unsigned SpeechRecognitionController::kSupplementIndex =
-    static_cast<unsigned>(
-        LocalDOMWindow::Supplements::kSpeechRecognitionController);
-
 SpeechRecognitionController* SpeechRecognitionController::From(
     LocalDOMWindow& window) {
   SpeechRecognitionController* controller =
-      Supplement<LocalDOMWindow>::From<SpeechRecognitionController>(window);
+      window.GetSpeechRecognitionController();
   if (!controller) {
     controller = MakeGarbageCollected<SpeechRecognitionController>(window);
-    Supplement<LocalDOMWindow>::ProvideTo(window, controller);
+    window.SetSpeechRecognitionController(controller);
   }
   return controller;
 }
 
 SpeechRecognitionController::SpeechRecognitionController(LocalDOMWindow& window)
-    : Supplement<LocalDOMWindow>(window),
+    : local_dom_window_(window),
       speech_recognizer_(&window),
       on_device_speech_recognition_(&window) {}
 
@@ -135,7 +131,7 @@ void SpeechRecognitionController::Install(
 }
 
 void SpeechRecognitionController::Trace(Visitor* visitor) const {
-  Supplement::Trace(visitor);
+  visitor->Trace(local_dom_window_);
   visitor->Trace(speech_recognizer_);
   visitor->Trace(on_device_speech_recognition_);
 }
@@ -143,9 +139,9 @@ void SpeechRecognitionController::Trace(Visitor* visitor) const {
 media::mojom::blink::SpeechRecognizer*
 SpeechRecognitionController::GetSpeechRecognizer() {
   if (!speech_recognizer_.is_bound()) {
-    GetSupplementable()->GetBrowserInterfaceBroker().GetInterface(
+    local_dom_window_->GetBrowserInterfaceBroker().GetInterface(
         speech_recognizer_.BindNewPipeAndPassReceiver(
-            GetSupplementable()->GetTaskRunner(TaskType::kMiscPlatformAPI)));
+            local_dom_window_->GetTaskRunner(TaskType::kMiscPlatformAPI)));
   }
   return speech_recognizer_.get();
 }
@@ -153,9 +149,9 @@ SpeechRecognitionController::GetSpeechRecognizer() {
 media::mojom::blink::OnDeviceSpeechRecognition*
 SpeechRecognitionController::GetOnDeviceSpeechRecognition() {
   if (!on_device_speech_recognition_.is_bound()) {
-    GetSupplementable()->GetBrowserInterfaceBroker().GetInterface(
+    local_dom_window_->GetBrowserInterfaceBroker().GetInterface(
         on_device_speech_recognition_.BindNewPipeAndPassReceiver(
-            GetSupplementable()->GetTaskRunner(TaskType::kMiscPlatformAPI)));
+            local_dom_window_->GetTaskRunner(TaskType::kMiscPlatformAPI)));
   }
   return on_device_speech_recognition_.get();
 }

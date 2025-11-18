@@ -18,12 +18,12 @@ SensorProxyImpl::SensorProxyImpl(device::mojom::blink::SensorType sensor_type,
                                  SensorProviderProxy* provider,
                                  Page* page)
     : SensorProxy(sensor_type, provider, page),
-      sensor_remote_(provider->GetSupplementable()),
-      client_receiver_(this, provider->GetSupplementable()),
+      sensor_remote_(provider->GetLocalDOMWindow()),
+      client_receiver_(this, provider->GetLocalDOMWindow()),
       task_runner_(
-          provider->GetSupplementable()->GetTaskRunner(TaskType::kSensor)),
+          provider->GetLocalDOMWindow()->GetTaskRunner(TaskType::kSensor)),
       polling_timer_(
-          provider->GetSupplementable()->GetTaskRunner(TaskType::kSensor),
+          provider->GetLocalDOMWindow()->GetTaskRunner(TaskType::kSensor),
           this,
           &SensorProxyImpl::OnPollingTimer) {}
 

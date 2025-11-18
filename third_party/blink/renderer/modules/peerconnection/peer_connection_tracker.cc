@@ -494,13 +494,12 @@ class InternalStandardStatsObserver : public webrtc::RTCStatsCollectorCallback {
 };
 
 PeerConnectionTracker& PeerConnectionTracker::From(LocalDOMWindow& window) {
-  PeerConnectionTracker* tracker =
-      Supplement<LocalDOMWindow>::From<PeerConnectionTracker>(window);
+  PeerConnectionTracker* tracker = window.GetPeerConnectionTracker();
   if (!tracker) {
     tracker = MakeGarbageCollected<PeerConnectionTracker>(
         window, window.GetTaskRunner(TaskType::kNetworking),
         base::PassKey<PeerConnectionTracker>());
-    ProvideTo(window, tracker);
+    window.SetPeerConnectionTracker(tracker);
   }
   return *tracker;
 }
@@ -530,7 +529,7 @@ PeerConnectionTracker::PeerConnectionTracker(
     LocalDOMWindow& window,
     scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
     base::PassKey<PeerConnectionTracker>)
-    : Supplement<LocalDOMWindow>(window),
+    : local_dom_window_(window),
       // Do not set a lifecycle notifier for `peer_connection_tracker_host_` to
       // ensure that its mojo pipe stays alive until the execution context is
       // destroyed. `RTCPeerConnection`, which owns a `RTCPeerConnectionHandler`
@@ -551,7 +550,7 @@ PeerConnectionTracker::PeerConnectionTracker(
 PeerConnectionTracker::PeerConnectionTracker(
     mojo::PendingRemote<blink::mojom::blink::PeerConnectionTrackerHost> host,
     scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner)
-    : Supplement(nullptr),
+    : local_dom_window_(nullptr),
       peer_connection_tracker_host_(nullptr),
       receiver_(this, nullptr),
       main_thread_task_runner_(std::move(main_thread_task_runner)) {
@@ -564,8 +563,8 @@ void PeerConnectionTracker::Bind(
     mojo::PendingReceiver<blink::mojom::blink::PeerConnectionManager>
         receiver) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_);
-  receiver_.Bind(std::move(receiver), GetSupplementable()->GetTaskRunner(
-                                          TaskType::kMiscPlatformAPI));
+  receiver_.Bind(std::move(receiver),
+                 local_dom_window_->GetTaskRunner(TaskType::kMiscPlatformAPI));
 }
 
 void PeerConnectionTracker::OnSuspend() {

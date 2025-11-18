@@ -19,12 +19,8 @@
 namespace blink {
 
 // static
-const unsigned AppBannerController::kSupplementIndex =
-    static_cast<unsigned>(LocalDOMWindow::Supplements::kAppBannerController);
-
-// static
 AppBannerController* AppBannerController::From(LocalDOMWindow& window) {
-  return Supplement<LocalDOMWindow>::From<AppBannerController>(window);
+  return window.GetAppBannerController();
 }
 
 // static
@@ -37,14 +33,14 @@ void AppBannerController::BindReceiver(
   if (!controller) {
     controller = MakeGarbageCollected<AppBannerController>(
         base::PassKey<AppBannerController>(), window);
-    Supplement<LocalDOMWindow>::ProvideTo(window, controller);
+    window.SetAppBannerController(controller);
   }
   controller->Bind(std::move(receiver));
 }
 
 AppBannerController::AppBannerController(base::PassKey<AppBannerController>,
                                          LocalDOMWindow& window)
-    : Supplement<LocalDOMWindow>(window), receiver_(this, &window) {}
+    : local_dom_window_(window), receiver_(this, &window) {}
 
 void AppBannerController::Bind(
     mojo::PendingReceiver<mojom::blink::AppBannerController> receiver) {
@@ -52,13 +48,13 @@ void AppBannerController::Bind(
   // and there shouldn't never be multiple callers bound at a time.
   receiver_.reset();
   // See https://bit.ly/2S0zRAS for task types.
-  receiver_.Bind(std::move(receiver), GetSupplementable()->GetTaskRunner(
-                                          TaskType::kMiscPlatformAPI));
+  receiver_.Bind(std::move(receiver),
+                 local_dom_window_->GetTaskRunner(TaskType::kMiscPlatformAPI));
 }
 
 void AppBannerController::Trace(Visitor* visitor) const {
   visitor->Trace(receiver_);
-  Supplement<LocalDOMWindow>::Trace(visitor);
+  visitor->Trace(local_dom_window_);
 }
 
 void AppBannerController::BannerPromptRequest(
@@ -71,8 +67,8 @@ void AppBannerController::BannerPromptRequest(
   // called in pagehide().
 
   mojom::AppBannerPromptReply reply =
-      GetSupplementable()->DispatchEvent(*BeforeInstallPromptEvent::Create(
-          event_type_names::kBeforeinstallprompt, *GetSupplementable(),
+      local_dom_window_->DispatchEvent(*BeforeInstallPromptEvent::Create(
+          event_type_names::kBeforeinstallprompt, *local_dom_window_,
           std::move(service_remote), std::move(event_receiver), platforms)) ==
               DispatchEventResult::kNotCanceled
           ? mojom::AppBannerPromptReply::NONE

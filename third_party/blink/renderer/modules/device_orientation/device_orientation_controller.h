@@ -21,12 +21,8 @@ class ScriptState;
 class V8PermissionState;
 
 class MODULES_EXPORT DeviceOrientationController
-    : public DeviceSingleWindowEventController,
-      public Supplement<LocalDOMWindow> {
+    : public DeviceSingleWindowEventController {
  public:
-  static constexpr auto kSupplementIndex =
-      LocalDOMWindow::Supplements::kDeviceOrientationController;
-
   explicit DeviceOrientationController(LocalDOMWindow&);
   ~DeviceOrientationController() override;
 
@@ -67,6 +63,8 @@ class MODULES_EXPORT DeviceOrientationController
   bool IsNullEvent(Event*) const override;
 
   DeviceOrientationData* LastData() const;
+
+  Member<LocalDOMWindow> local_dom_window_;
 
   Member<DeviceOrientationData> override_orientation_data_;
 

@@ -221,9 +221,10 @@ ControllerPresentationConnection* ControllerPresentationConnection::Create(
   DCHECK(controller);
   DCHECK(request);
 
-  auto* connection = MakeGarbageCollected<ControllerPresentationConnection>(
-      *controller->GetSupplementable(), controller, presentation_info.id,
-      presentation_info.url);
+  ControllerPresentationConnection* connection =
+      MakeGarbageCollected<ControllerPresentationConnection>(
+          *controller->GetLocalDOMWindow(), controller, presentation_info.id,
+          presentation_info.url);
   controller->RegisterConnection(connection);
 
   // Fire onconnectionavailable event asynchronously.

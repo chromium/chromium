@@ -28,31 +28,27 @@
 
 namespace blink {
 
-// static
-const unsigned PushMessagingClient::kSupplementIndex =
-    static_cast<unsigned>(LocalDOMWindow::Supplements::kPushMessagingClient);
-
 PushMessagingClient::PushMessagingClient(LocalDOMWindow& window)
-    : Supplement<LocalDOMWindow>(window), push_messaging_manager_(&window) {
+    : local_dom_window_(window), push_messaging_manager_(&window) {
   // This class will be instantiated for every page load (rather than on push
   // messaging use), so there's nothing to be done in this constructor.
 }
 
 // static
 PushMessagingClient* PushMessagingClient::From(LocalDOMWindow& window) {
-  auto* client = Supplement<LocalDOMWindow>::From<PushMessagingClient>(window);
+  PushMessagingClient* client = window.GetPushMessagingClient();
   if (!client) {
     client = MakeGarbageCollected<PushMessagingClient>(window);
-    Supplement<LocalDOMWindow>::ProvideTo(window, client);
+    window.SetPushMessagingClient(client);
   }
   return client;
 }
 
 mojom::blink::PushMessaging* PushMessagingClient::GetPushMessagingRemote() {
   if (!push_messaging_manager_.is_bound()) {
-    GetSupplementable()->GetBrowserInterfaceBroker().GetInterface(
+    local_dom_window_->GetBrowserInterfaceBroker().GetInterface(
         push_messaging_manager_.BindNewPipeAndPassReceiver(
-            GetSupplementable()->GetTaskRunner(TaskType::kMiscPlatformAPI)));
+            local_dom_window_->GetTaskRunner(TaskType::kMiscPlatformAPI)));
   }
 
   return push_messaging_manager_.get();
@@ -72,7 +68,7 @@ void PushMessagingClient::Subscribe(
   // fetching the manifest.
   if (!options->applicationServerKey()->ByteLength()) {
     ManifestManager* manifest_manager =
-        ManifestManager::From(*GetSupplementable());
+        ManifestManager::From(*local_dom_window_);
     manifest_manager->RequestManifest(BindOnce(
         &PushMessagingClient::DidGetManifest, WrapPersistent(this),
         WrapPersistent(service_worker_registration), std::move(options_ptr),
@@ -84,7 +80,7 @@ void PushMessagingClient::Subscribe(
 }
 
 void PushMessagingClient::Trace(Visitor* visitor) const {
-  Supplement<LocalDOMWindow>::Trace(visitor);
+  visitor->Trace(local_dom_window_);
   visitor->Trace(push_messaging_manager_);
 }
 

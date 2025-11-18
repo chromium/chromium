@@ -75,17 +75,16 @@ AtomicString ImagePaintString() {
 
 // static
 ImageElementTiming& ImageElementTiming::From(LocalDOMWindow& window) {
-  ImageElementTiming* timing =
-      Supplement<LocalDOMWindow>::From<ImageElementTiming>(window);
+  ImageElementTiming* timing = window.GetImageElementTiming();
   if (!timing) {
     timing = MakeGarbageCollected<ImageElementTiming>(window);
-    ProvideTo(window, timing);
+    window.SetImageElementTiming(timing);
   }
   return *timing;
 }
 
 ImageElementTiming::ImageElementTiming(LocalDOMWindow& window)
-    : Supplement<LocalDOMWindow>(window) {}
+    : local_dom_window_(window) {}
 
 void ImageElementTiming::NotifyImageFinished(
     const LayoutObject& layout_object,
@@ -148,7 +147,7 @@ void ImageElementTiming::NotifyImagePaintedInternal(
     const PropertyTreeStateOrAlias& current_paint_chunk_properties,
     base::TimeTicks load_time,
     const gfx::Rect& image_border) {
-  LocalFrame* frame = GetSupplementable()->GetFrame();
+  LocalFrame* frame = local_dom_window_->GetFrame();
   DCHECK(frame == layout_object.GetDocument().GetFrame());
   // Background images could cause |node| to not be an element. For example,
   // style applied to body causes this node to be a Document Node. Therefore,
@@ -185,7 +184,7 @@ void ImageElementTiming::NotifyImagePaintedInternal(
 
   const KURL& url = cached_image.Url();
   ExecutionContext* context = layout_object.GetDocument().GetExecutionContext();
-  DCHECK(GetSupplementable()->document() == &layout_object.GetDocument());
+  DCHECK(local_dom_window_->document() == &layout_object.GetDocument());
   DCHECK(context->GetSecurityOrigin());
 
   // If the image URL is a data URL ("data:image/..."), then the |name| of the
@@ -218,7 +217,7 @@ OptionalPaintTimingCallback ImageElementTiming::TakePaintTimingCallback() {
           return;
         }
         WindowPerformance* performance =
-            DOMWindowPerformance::performance(*self->GetSupplementable());
+            DOMWindowPerformance::performance(*self->local_dom_window_);
         if (!performance) {
           return;
         }
@@ -291,7 +290,7 @@ void ImageElementTiming::EnsureContainerTiming() {
   if (container_timing_) {
     return;
   }
-  LocalDOMWindow* window = GetSupplementable();
+  LocalDOMWindow* window = local_dom_window_;
   DCHECK(window);
   container_timing_ = ContainerTiming::From(*window);
 }
@@ -299,7 +298,7 @@ void ImageElementTiming::EnsureContainerTiming() {
 void ImageElementTiming::Trace(Visitor* visitor) const {
   visitor->Trace(element_timings_);
   visitor->Trace(background_image_timestamps_);
-  Supplement<LocalDOMWindow>::Trace(visitor);
+  visitor->Trace(local_dom_window_);
   visitor->Trace(container_timing_);
 }
 

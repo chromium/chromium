@@ -47,13 +47,10 @@ class LocalDOMWindow;
 class MODULES_EXPORT SpeechSynthesis final
     : public EventTarget,
       public SpeechSynthesisBase,
-      public Supplement<LocalDOMWindow>,
       public mojom::blink::SpeechSynthesisVoiceListObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const unsigned kSupplementIndex;
-
   static SpeechSynthesisBase* Create(LocalDOMWindow&);
   static SpeechSynthesis* speechSynthesis(LocalDOMWindow&);
   static void CreateForTesting(
@@ -140,6 +137,7 @@ class MODULES_EXPORT SpeechSynthesis final
       mojo::PendingRemote<mojom::blink::SpeechSynthesis>);
   mojom::blink::SpeechSynthesis* TryEnsureMojomSynthesis();
 
+  Member<LocalDOMWindow> local_dom_window_;
   HeapMojoReceiver<mojom::blink::SpeechSynthesisVoiceListObserver,
                    SpeechSynthesis>
       receiver_;

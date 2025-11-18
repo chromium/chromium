@@ -19,12 +19,8 @@ class ScriptState;
 class V8PermissionState;
 
 class MODULES_EXPORT DeviceMotionController final
-    : public DeviceSingleWindowEventController,
-      public Supplement<LocalDOMWindow> {
+    : public DeviceSingleWindowEventController {
  public:
-  static constexpr auto kSupplementIndex =
-      LocalDOMWindow::Supplements::kDeviceMotionController;
-
   explicit DeviceMotionController(LocalDOMWindow&);
   ~DeviceMotionController() override;
 
@@ -48,6 +44,9 @@ class MODULES_EXPORT DeviceMotionController final
   Event* LastEvent() const override;
   const AtomicString& EventTypeName() const override;
   bool IsNullEvent(Event*) const override;
+
+  Member<LocalDOMWindow> local_dom_window_;
+
   Member<DeviceMotionEventPump> motion_event_pump_;
 
   HeapMojoRemote<mojom::blink::PermissionService> permission_service_;

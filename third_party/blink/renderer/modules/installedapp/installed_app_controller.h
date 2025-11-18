@@ -20,11 +20,8 @@ namespace blink {
 
 class MODULES_EXPORT InstalledAppController final
     : public GarbageCollected<InstalledAppController>,
-      public Supplement<LocalDOMWindow> {
+      public GarbageCollectedMixin {
  public:
-  static constexpr auto kSupplementIndex =
-      LocalDOMWindow::Supplements::kInstalledAppController;
-
   explicit InstalledAppController(LocalDOMWindow&);
 
   InstalledAppController(const InstalledAppController&) = delete;
@@ -57,6 +54,8 @@ class MODULES_EXPORT InstalledAppController final
   void OnFilterInstalledApps(
       ScriptPromiseResolver<IDLSequence<RelatedApplication>>* resolver,
       Vector<mojom::blink::RelatedApplicationPtr>);
+
+  Member<LocalDOMWindow> local_dom_window_;
 
   // Handle to the InstalledApp mojo service.
   HeapMojoRemote<mojom::blink::InstalledAppProvider> provider_;

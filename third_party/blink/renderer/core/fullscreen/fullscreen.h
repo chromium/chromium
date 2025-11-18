@@ -66,11 +66,8 @@ enum class RequestFullscreenError {
 // Document supplement as each document has some fullscreen state, and to
 // actually enter and exit fullscreen it (indirectly) uses FullscreenController.
 class CORE_EXPORT Fullscreen final : public GarbageCollected<Fullscreen>,
-                                     public Supplement<LocalDOMWindow>,
                                      public ExecutionContextLifecycleObserver {
  public:
-  static const unsigned kSupplementIndex;
-
   explicit Fullscreen(LocalDOMWindow&);
   ~Fullscreen() override;
 
@@ -157,6 +154,8 @@ class CORE_EXPORT Fullscreen final : public GarbageCollected<Fullscreen>,
   void FullscreenElementChanged(Element* old_element,
                                 Element* new_element,
                                 FullscreenRequestType new_request_type);
+
+  Member<LocalDOMWindow> local_dom_window_;
 
   // Stores the pending request, promise and the type for executing
   // the asynchronous portion of the request.

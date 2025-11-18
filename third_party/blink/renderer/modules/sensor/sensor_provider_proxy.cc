@@ -11,15 +11,15 @@ namespace blink {
 
 // SensorProviderProxy
 SensorProviderProxy::SensorProviderProxy(LocalDOMWindow& window)
-    : Supplement<LocalDOMWindow>(window), sensor_provider_(&window) {}
+    : local_dom_window_(window), sensor_provider_(&window) {}
 
 void SensorProviderProxy::InitializeIfNeeded() {
   if (sensor_provider_.is_bound())
     return;
 
-  GetSupplementable()->GetBrowserInterfaceBroker().GetInterface(
+  local_dom_window_->GetBrowserInterfaceBroker().GetInterface(
       sensor_provider_.BindNewPipeAndPassReceiver(
-          GetSupplementable()->GetTaskRunner(TaskType::kSensor)));
+          local_dom_window_->GetTaskRunner(TaskType::kSensor)));
   sensor_provider_.set_disconnect_handler(
       BindOnce(&SensorProviderProxy::OnSensorProviderConnectionError,
                WrapWeakPersistent(this)));
@@ -28,11 +28,10 @@ void SensorProviderProxy::InitializeIfNeeded() {
 // static
 SensorProviderProxy* SensorProviderProxy::From(LocalDOMWindow* window) {
   DCHECK(window);
-  SensorProviderProxy* provider_proxy =
-      Supplement<LocalDOMWindow>::From<SensorProviderProxy>(*window);
+  SensorProviderProxy* provider_proxy = window->GetSensorProviderProxy();
   if (!provider_proxy) {
     provider_proxy = MakeGarbageCollected<SensorProviderProxy>(*window);
-    Supplement<LocalDOMWindow>::ProvideTo(*window, provider_proxy);
+    window->SetSensorProviderProxy(provider_proxy);
   }
   return provider_proxy;
 }
@@ -42,7 +41,7 @@ SensorProviderProxy::~SensorProviderProxy() = default;
 void SensorProviderProxy::Trace(Visitor* visitor) const {
   visitor->Trace(sensor_proxies_);
   visitor->Trace(sensor_provider_);
-  Supplement<LocalDOMWindow>::Trace(visitor);
+  visitor->Trace(local_dom_window_);
 }
 
 SensorProxy* SensorProviderProxy::CreateSensorProxy(

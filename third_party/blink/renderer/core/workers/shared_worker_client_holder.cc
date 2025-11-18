@@ -61,17 +61,16 @@ namespace blink {
 SharedWorkerClientHolder* SharedWorkerClientHolder::From(
     LocalDOMWindow& window) {
   DCHECK(IsMainThread());
-  SharedWorkerClientHolder* holder =
-      Supplement<LocalDOMWindow>::From<SharedWorkerClientHolder>(window);
+  SharedWorkerClientHolder* holder = window.GetSharedWorkerClientHolder();
   if (!holder) {
     holder = MakeGarbageCollected<SharedWorkerClientHolder>(window);
-    Supplement<LocalDOMWindow>::ProvideTo(window, holder);
+    window.SetSharedWorkerClientHolder(holder);
   }
   return holder;
 }
 
 SharedWorkerClientHolder::SharedWorkerClientHolder(LocalDOMWindow& window)
-    : Supplement(window),
+    : local_dom_window_(window),
       connector_(&window),
       client_receivers_(&window),
       task_runner_(window.GetTaskRunner(blink::TaskType::kDOMManipulation)) {
@@ -136,7 +135,7 @@ void SharedWorkerClientHolder::Connect(
 void SharedWorkerClientHolder::Trace(Visitor* visitor) const {
   visitor->Trace(connector_);
   visitor->Trace(client_receivers_);
-  Supplement<LocalDOMWindow>::Trace(visitor);
+  visitor->Trace(local_dom_window_);
 }
 
 }  // namespace blink

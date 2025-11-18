@@ -17,23 +17,18 @@
 namespace blink {
 
 PresentationController::PresentationController(LocalDOMWindow& window)
-    : Supplement<LocalDOMWindow>(window),
+    : local_dom_window_(window),
       presentation_service_remote_(&window),
       presentation_controller_receiver_(this, &window) {}
 
 PresentationController::~PresentationController() = default;
 
 // static
-const unsigned PresentationController::kSupplementIndex =
-    static_cast<unsigned>(LocalDOMWindow::Supplements::kPresentationController);
-
-// static
 PresentationController* PresentationController::From(LocalDOMWindow& window) {
-  PresentationController* controller =
-      Supplement<LocalDOMWindow>::From<PresentationController>(window);
+  PresentationController* controller = window.GetPresentationController();
   if (!controller) {
     controller = MakeGarbageCollected<PresentationController>(window);
-    Supplement<LocalDOMWindow>::ProvideTo(window, controller);
+    window.SetPresentationController(controller);
   }
   return controller;
 }
@@ -53,7 +48,7 @@ void PresentationController::Trace(Visitor* visitor) const {
   visitor->Trace(connections_);
   visitor->Trace(availability_state_);
   visitor->Trace(presentation_service_remote_);
-  Supplement<LocalDOMWindow>::Trace(visitor);
+  visitor->Trace(local_dom_window_);
 }
 
 void PresentationController::SetPresentation(Presentation* presentation) {
@@ -149,10 +144,10 @@ PresentationController::FindExistingConnection(
 
 HeapMojoRemote<mojom::blink::PresentationService>&
 PresentationController::GetPresentationService() {
-  if (!presentation_service_remote_ && GetSupplementable()) {
+  if (!presentation_service_remote_ && local_dom_window_) {
     scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-        GetSupplementable()->GetTaskRunner(TaskType::kPresentation);
-    GetSupplementable()->GetBrowserInterfaceBroker().GetInterface(
+        local_dom_window_->GetTaskRunner(TaskType::kPresentation);
+    local_dom_window_->GetBrowserInterfaceBroker().GetInterface(
         presentation_service_remote_.BindNewPipeAndPassReceiver(task_runner));
 
     // Note: `presentation_controller_receiver_` should always be unbound in

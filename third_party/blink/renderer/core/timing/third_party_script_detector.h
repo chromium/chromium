@@ -16,10 +16,8 @@ class LocalDOMWindow;
 
 class ThirdPartyScriptDetector final
     : public GarbageCollected<ThirdPartyScriptDetector>,
-      public Supplement<LocalDOMWindow> {
+      public GarbageCollectedMixin {
  public:
-  static const unsigned kSupplementIndex;
-
   static ThirdPartyScriptDetector& From(LocalDOMWindow&);
 
   explicit ThirdPartyScriptDetector(LocalDOMWindow&);
@@ -60,6 +58,7 @@ class ThirdPartyScriptDetector final
   Technology Detect(const String url);
 
  private:
+  Member<LocalDOMWindow> local_dom_window_;
   RE2 precompiled_detection_regex__;
   HashMap<String, Technology> url_to_technology_cache_;
 };

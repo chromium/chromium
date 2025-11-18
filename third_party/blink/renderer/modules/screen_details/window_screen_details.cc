@@ -17,13 +17,9 @@
 
 namespace blink {
 
-// static
-const unsigned WindowScreenDetails::kSupplementIndex =
-    static_cast<unsigned>(LocalDOMWindow::Supplements::kWindowScreenDetails);
-
 WindowScreenDetails::WindowScreenDetails(LocalDOMWindow* window)
     : ExecutionContextLifecycleObserver(window),
-      Supplement<LocalDOMWindow>(*window),
+      local_dom_window_(*window),
       permission_service_(window) {}
 
 // static
@@ -42,16 +38,15 @@ void WindowScreenDetails::Trace(Visitor* visitor) const {
   visitor->Trace(screen_details_);
   visitor->Trace(permission_service_);
   ExecutionContextLifecycleObserver::Trace(visitor);
-  Supplement<LocalDOMWindow>::Trace(visitor);
+  visitor->Trace(local_dom_window_);
 }
 
 // static
 WindowScreenDetails* WindowScreenDetails::From(LocalDOMWindow* window) {
-  auto* supplement =
-      Supplement<LocalDOMWindow>::From<WindowScreenDetails>(window);
+  WindowScreenDetails* supplement = window->GetWindowScreenDetails();
   if (!supplement) {
     supplement = MakeGarbageCollected<WindowScreenDetails>(window);
-    Supplement<LocalDOMWindow>::ProvideTo(*window, supplement);
+    window->SetWindowScreenDetails(supplement);
   }
   return supplement;
 }
@@ -79,7 +74,7 @@ ScriptPromise<ScreenDetails> WindowScreenDetails::GetScreenDetails(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<ScreenDetails>>(
       script_state, exception_state.GetContext());
   const bool has_transient_user_activation =
-      LocalFrame::HasTransientUserActivation(GetSupplementable()->GetFrame());
+      LocalFrame::HasTransientUserActivation(local_dom_window_->GetFrame());
   auto callback =
       BindOnce(&WindowScreenDetails::OnPermissionInquiryComplete,
                WrapPersistent(this), WrapPersistent(resolver),
@@ -118,7 +113,7 @@ void WindowScreenDetails::OnPermissionInquiryComplete(
   }
 
   if (!screen_details_)
-    screen_details_ = MakeGarbageCollected<ScreenDetails>(GetSupplementable());
+    screen_details_ = MakeGarbageCollected<ScreenDetails>(local_dom_window_);
   resolver->Resolve(screen_details_);
 }
 

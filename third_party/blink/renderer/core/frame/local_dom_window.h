@@ -58,7 +58,6 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
@@ -84,6 +83,7 @@ class LocalFrame;
 class MediaQueryList;
 class MessageEvent;
 class Modulator;
+class PageVisibilityObserver;
 class NavigationApi;
 class Navigator;
 class Screen;
@@ -100,6 +100,48 @@ class V8FrameRequestCallback;
 struct WebPictureInPictureWindowOptions;
 class WindowAgent;
 class WindowPerformance;
+class AppBannerController;
+class AudioRendererSinkCacheWindowObserver;
+class CSSAnimationWorklet;
+class CachedPermissionStatus;
+class ContainerTiming;
+class CredentialManagerProxy;
+class DOMWindowCrypto;
+class DOMWindowDigitalGoods;
+class DOMWindowLaunchQueue;
+class DOMWindowStorage;
+class DOMWindowStorageController;
+class DeviceMotionController;
+class DeviceOrientationAbsoluteController;
+class DeviceOrientationController;
+class DocumentPictureInPicture;
+class FontAccess;
+class Fullscreen;
+class GlobalStorageAccessHandle;
+class HighlightRegistry;
+class ImageElementTiming;
+class InstallationServiceImpl;
+class InstalledAppController;
+class LayoutWorklet;
+class ManifestManager;
+class NFCProxy;
+class PaintWorklet;
+class PeerConnectionTracker;
+class PresentationController;
+class PushMessagingClient;
+class ResizeObserverController;
+class ScreenOrientationController;
+class SensorProviderProxy;
+class SharedStorageWindowSupplement;
+class SharedWorkerClientHolder;
+class SpeechRecognitionController;
+class SpeechSynthesis;
+class TextElementTiming;
+class ThirdPartyScriptDetector;
+class UserMediaClient;
+class WebLaunchServiceImpl;
+class WindowScreenDetails;
+class WindowSharedStorageImpl;
 
 template <typename T>
 class GlobalFetchImpl;
@@ -123,61 +165,14 @@ enum PageTransitionEventPersistence {
 
 // Note: if you're thinking of returning something DOM-related by reference,
 // please ping dcheng@chromium.org first. You probably don't want to do that.
-class CORE_EXPORT LocalDOMWindow final
-    : public DOMWindow,
-      public ExecutionContext,
-      public WindowOrWorkerGlobalScope,
-      public UniversalGlobalScope,
-      public WindowEventHandlers,
-      public Supplementable<LocalDOMWindow, 43> {
+class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
+                                         public ExecutionContext,
+                                         public WindowOrWorkerGlobalScope,
+                                         public UniversalGlobalScope,
+                                         public WindowEventHandlers {
   USING_PRE_FINALIZER(LocalDOMWindow, Dispose);
 
  public:
-  enum class Supplements {
-    kCachedPermissionStatus = 0,
-    kFullscreen = 2,
-    kHighlightRegistry = 3,
-    kLayoutWorklet = 4,
-    kContainerTiming = 5,
-    kImageElementTiming = 6,
-    kTextElementTiming = 7,
-    kResizeObserverController = 8,
-    kThirdPartyScriptDetector = 9,
-    kSharedWorkerClientHolder = 10,
-    kCSSAnimationWorklet = 11,
-    kAppBannerController = 12,
-    kCredentialManagerProxy = 13,
-    kDOMWindowCrypto = 14,
-    kPaintWorklet = 15,
-    kDeviceMotionController = 16,
-    kDeviceOrientationController = 17,
-    kDeviceOrientationAbsoluteController = 18,
-    kDocumentPictureInPicture = 19,
-    kFontAccess = 20,
-    kInstallationServiceImpl = 21,
-    kInstalledAppController = 22,
-    kDOMWindowLaunchQueue = 23,
-    kWebLaunchServiceImpl = 24,
-    kManifestManager = 25,
-    kUserMediaClient = 26,
-    kNFCProxy = 27,
-    kDOMWindowDigitalGoods = 28,
-    kPeerConnectionTracker = 29,
-    kPresentationController = 30,
-    kPushMessagingClient = 31,
-    kWindowScreenDetails = 32,
-    kScreenOrientationController = 33,
-    kSensorProviderProxy = 34,
-    kSharedStorageWindowSupplement = 35,
-    kSpeechRecognitionController = 36,
-    kSpeechSynthesis = 37,
-    kGlobalStorageAccessHandle = 38,
-    kAudioRendererSinkCache = 39,
-    kDOMWindowStorageController = 40,
-    kDOMWindowStorage = 41,
-    kWindowSharedStorageImpl = 42
-  };
-
   class CORE_EXPORT EventListenerObserver : public GarbageCollectedMixin {
    public:
     virtual void DidAddEventListener(LocalDOMWindow*, const AtomicString&) = 0;
@@ -674,6 +669,356 @@ class CORE_EXPORT LocalDOMWindow final
     global_indexed_db_impl_ = global_indexed_db_impl;
   }
 
+  CachedPermissionStatus* GetCachedPermissionStatus() const {
+    return cached_permission_status_;
+  }
+  void SetCachedPermissionStatus(
+      CachedPermissionStatus* cached_permission_status) {
+    cached_permission_status_ = cached_permission_status;
+  }
+
+  ContainerTiming* GetContainerTiming() const { return container_timing_; }
+  void SetContainerTiming(ContainerTiming* container_timing) {
+    container_timing_ = container_timing;
+  }
+
+  Fullscreen* GetFullscreen() const { return fullscreen_; }
+  void SetFullscreen(Fullscreen* fullscreen) { fullscreen_ = fullscreen; }
+
+  HighlightRegistry* GetHighlightRegistry() const {
+    return highlight_registry_;
+  }
+  void SetHighlightRegistry(HighlightRegistry* highlight_registry) {
+    highlight_registry_ = highlight_registry;
+  }
+
+  ImageElementTiming* GetImageElementTiming() const {
+    return image_element_timing_;
+  }
+  void SetImageElementTiming(ImageElementTiming* image_element_timing) {
+    image_element_timing_ = image_element_timing;
+  }
+
+  LayoutWorklet* GetLayoutWorklet() const { return layout_worklet_; }
+  void SetLayoutWorklet(LayoutWorklet* layout_worklet) {
+    layout_worklet_ = layout_worklet;
+  }
+
+  ResizeObserverController* GetResizeObserverController() const {
+    return resize_observer_controller_;
+  }
+  void SetResizeObserverController(
+      ResizeObserverController* resize_observer_controller) {
+    resize_observer_controller_ = resize_observer_controller;
+  }
+
+  SharedWorkerClientHolder* GetSharedWorkerClientHolder() const {
+    return shared_worker_client_holder_;
+  }
+  void SetSharedWorkerClientHolder(
+      SharedWorkerClientHolder* shared_worker_client_holder) {
+    shared_worker_client_holder_ = shared_worker_client_holder;
+  }
+
+  TextElementTiming* GetTextElementTiming() const {
+    return text_element_timing_;
+  }
+  void SetTextElementTiming(TextElementTiming* text_element_timing) {
+    text_element_timing_ = text_element_timing;
+  }
+
+  ForwardDeclaredMember<AppBannerController> GetAppBannerController() const {
+    return app_banner_controller_;
+  }
+  void SetAppBannerController(
+      ForwardDeclaredMember<AppBannerController> app_banner_controller) {
+    app_banner_controller_ = app_banner_controller;
+  }
+
+  ForwardDeclaredMember<AudioRendererSinkCacheWindowObserver>
+  GetAudioRendererSinkCacheWindowObserver() const {
+    return audio_renderer_sink_cache_window_observer_;
+  }
+  void SetAudioRendererSinkCacheWindowObserver(
+      ForwardDeclaredMember<AudioRendererSinkCacheWindowObserver>
+          audio_renderer_sink_cache_window_observer) {
+    audio_renderer_sink_cache_window_observer_ =
+        audio_renderer_sink_cache_window_observer;
+  }
+
+  ForwardDeclaredMember<CSSAnimationWorklet> GetCSSAnimationWorklet() const {
+    return css_animation_worklet_;
+  }
+  void SetCSSAnimationWorklet(
+      ForwardDeclaredMember<CSSAnimationWorklet> css_animation_worklet) {
+    css_animation_worklet_ = css_animation_worklet;
+  }
+
+  ForwardDeclaredMember<CredentialManagerProxy> GetCredentialManagerProxy()
+      const {
+    return credential_manager_proxy_;
+  }
+  void SetCredentialManagerProxy(
+      ForwardDeclaredMember<CredentialManagerProxy> credential_manager_proxy) {
+    credential_manager_proxy_ = credential_manager_proxy;
+  }
+
+  ForwardDeclaredMember<DOMWindowCrypto> GetDOMWindowCrypto() const {
+    return dom_window_crypto_;
+  }
+  void SetDOMWindowCrypto(
+      ForwardDeclaredMember<DOMWindowCrypto> dom_window_crypto) {
+    dom_window_crypto_ = dom_window_crypto;
+  }
+
+  ForwardDeclaredMember<DOMWindowDigitalGoods> GetDOMWindowDigitalGoods()
+      const {
+    return dom_window_digital_goods_;
+  }
+  void SetDOMWindowDigitalGoods(
+      ForwardDeclaredMember<DOMWindowDigitalGoods> dom_window_digital_goods) {
+    dom_window_digital_goods_ = dom_window_digital_goods;
+  }
+
+  ForwardDeclaredMember<DOMWindowLaunchQueue> GetDOMWindowLaunchQueue() const {
+    return dom_window_launch_queue_;
+  }
+  void SetDOMWindowLaunchQueue(
+      ForwardDeclaredMember<DOMWindowLaunchQueue> dom_window_launch_queue) {
+    dom_window_launch_queue_ = dom_window_launch_queue;
+  }
+
+  ForwardDeclaredMember<DOMWindowStorage> GetDOMWindowStorage() const {
+    return dom_window_storage_;
+  }
+  void SetDOMWindowStorage(
+      ForwardDeclaredMember<DOMWindowStorage> dom_window_storage) {
+    dom_window_storage_ = dom_window_storage;
+  }
+
+  ForwardDeclaredMember<DOMWindowStorageController>
+  GetDOMWindowStorageController() const {
+    return dom_window_storage_controller_;
+  }
+  void SetDOMWindowStorageController(
+      ForwardDeclaredMember<DOMWindowStorageController>
+          dom_window_storage_controller) {
+    dom_window_storage_controller_ = dom_window_storage_controller;
+  }
+
+  ForwardDeclaredMember<DeviceMotionController, PageVisibilityObserver>
+  GetDeviceMotionController() const {
+    return device_motion_controller_;
+  }
+  void SetDeviceMotionController(
+      ForwardDeclaredMember<DeviceMotionController, PageVisibilityObserver>
+          device_motion_controller) {
+    device_motion_controller_ = device_motion_controller;
+  }
+
+  ForwardDeclaredMember<DeviceOrientationAbsoluteController,
+                        PageVisibilityObserver>
+  GetDeviceOrientationAbsoluteController() const {
+    return device_orientation_absolute_controller_;
+  }
+  void SetDeviceOrientationAbsoluteController(
+      ForwardDeclaredMember<DeviceOrientationAbsoluteController,
+                            PageVisibilityObserver>
+          device_orientation_absolute_controller) {
+    device_orientation_absolute_controller_ =
+        device_orientation_absolute_controller;
+  }
+
+  ForwardDeclaredMember<DeviceOrientationController, PageVisibilityObserver>
+  GetDeviceOrientationController() const {
+    return device_orientation_controller_;
+  }
+  void SetDeviceOrientationController(
+      ForwardDeclaredMember<DeviceOrientationController, PageVisibilityObserver>
+          device_orientation_controller) {
+    device_orientation_controller_ = device_orientation_controller;
+  }
+
+  ForwardDeclaredMember<DocumentPictureInPicture> GetDocumentPictureInPicture()
+      const {
+    return document_picture_in_picture_;
+  }
+  void SetDocumentPictureInPicture(
+      ForwardDeclaredMember<DocumentPictureInPicture>
+          document_picture_in_picture) {
+    document_picture_in_picture_ = document_picture_in_picture;
+  }
+
+  ForwardDeclaredMember<FontAccess> GetFontAccess() const {
+    return font_access_;
+  }
+  void SetFontAccess(ForwardDeclaredMember<FontAccess> font_access) {
+    font_access_ = font_access;
+  }
+
+  ForwardDeclaredMember<GlobalStorageAccessHandle>
+  GetGlobalStorageAccessHandle() const {
+    return global_storage_access_handle_;
+  }
+  void SetGlobalStorageAccessHandle(
+      ForwardDeclaredMember<GlobalStorageAccessHandle>
+          global_storage_access_handle) {
+    global_storage_access_handle_ = global_storage_access_handle;
+  }
+
+  ForwardDeclaredMember<InstallationServiceImpl> GetInstallationServiceImpl()
+      const {
+    return installation_service_impl_;
+  }
+  void SetInstallationServiceImpl(ForwardDeclaredMember<InstallationServiceImpl>
+                                      installation_service_impl) {
+    installation_service_impl_ = installation_service_impl;
+  }
+
+  ForwardDeclaredMember<InstalledAppController> GetInstalledAppController()
+      const {
+    return installed_app_controller_;
+  }
+  void SetInstalledAppController(
+      ForwardDeclaredMember<InstalledAppController> installed_app_controller) {
+    installed_app_controller_ = installed_app_controller;
+  }
+
+  ForwardDeclaredMember<ManifestManager> GetManifestManager() const {
+    return manifest_manager_;
+  }
+  void SetManifestManager(
+      ForwardDeclaredMember<ManifestManager> manifest_manager) {
+    manifest_manager_ = manifest_manager;
+  }
+
+  ForwardDeclaredMember<NFCProxy> GetNFCProxy() const { return nfcproxy_; }
+  void SetNFCProxy(ForwardDeclaredMember<NFCProxy> nfcproxy) {
+    nfcproxy_ = nfcproxy;
+  }
+
+  ForwardDeclaredMember<PaintWorklet> GetPaintWorklet() const {
+    return paint_worklet_;
+  }
+  void SetPaintWorklet(ForwardDeclaredMember<PaintWorklet> paint_worklet) {
+    paint_worklet_ = paint_worklet;
+  }
+
+  ForwardDeclaredMember<PeerConnectionTracker> GetPeerConnectionTracker()
+      const {
+    return peer_connection_tracker_;
+  }
+  void SetPeerConnectionTracker(
+      ForwardDeclaredMember<PeerConnectionTracker> peer_connection_tracker) {
+    peer_connection_tracker_ = peer_connection_tracker;
+  }
+
+  ForwardDeclaredMember<PresentationController> GetPresentationController()
+      const {
+    return presentation_controller_;
+  }
+  void SetPresentationController(
+      ForwardDeclaredMember<PresentationController> presentation_controller) {
+    presentation_controller_ = presentation_controller;
+  }
+
+  ForwardDeclaredMember<PushMessagingClient> GetPushMessagingClient() const {
+    return push_messaging_client_;
+  }
+  void SetPushMessagingClient(
+      ForwardDeclaredMember<PushMessagingClient> push_messaging_client) {
+    push_messaging_client_ = push_messaging_client;
+  }
+
+  ForwardDeclaredMember<ScreenOrientationController, PageVisibilityObserver>
+  GetScreenOrientationController() const {
+    return screen_orientation_controller_;
+  }
+  void SetScreenOrientationController(
+      ForwardDeclaredMember<ScreenOrientationController, PageVisibilityObserver>
+          screen_orientation_controller) {
+    screen_orientation_controller_ = screen_orientation_controller;
+  }
+
+  ForwardDeclaredMember<SensorProviderProxy> GetSensorProviderProxy() const {
+    return sensor_provider_proxy_;
+  }
+  void SetSensorProviderProxy(
+      ForwardDeclaredMember<SensorProviderProxy> sensor_provider_proxy) {
+    sensor_provider_proxy_ = sensor_provider_proxy;
+  }
+
+  ForwardDeclaredMember<SharedStorageWindowSupplement>
+  GetSharedStorageWindowSupplement() const {
+    return shared_storage_window_supplement_;
+  }
+  void SetSharedStorageWindowSupplement(
+      ForwardDeclaredMember<SharedStorageWindowSupplement>
+          shared_storage_window_supplement) {
+    shared_storage_window_supplement_ = shared_storage_window_supplement;
+  }
+
+  ForwardDeclaredMember<SpeechRecognitionController>
+  GetSpeechRecognitionController() const {
+    return speech_recognition_controller_;
+  }
+  void SetSpeechRecognitionController(
+      ForwardDeclaredMember<SpeechRecognitionController>
+          speech_recognition_controller) {
+    speech_recognition_controller_ = speech_recognition_controller;
+  }
+
+  ForwardDeclaredMember<SpeechSynthesis> GetSpeechSynthesis() const {
+    return speech_synthesis_;
+  }
+  void SetSpeechSynthesis(
+      ForwardDeclaredMember<SpeechSynthesis> speech_synthesis) {
+    speech_synthesis_ = speech_synthesis;
+  }
+
+  ForwardDeclaredMember<ThirdPartyScriptDetector> GetThirdPartyScriptDetector()
+      const {
+    return third_party_script_detector_;
+  }
+  void SetThirdPartyScriptDetector(
+      ForwardDeclaredMember<ThirdPartyScriptDetector>
+          third_party_script_detector) {
+    third_party_script_detector_ = third_party_script_detector;
+  }
+
+  ForwardDeclaredMember<UserMediaClient> GetUserMediaClient() const {
+    return user_media_client_;
+  }
+  void SetUserMediaClient(
+      ForwardDeclaredMember<UserMediaClient> user_media_client) {
+    user_media_client_ = user_media_client;
+  }
+
+  ForwardDeclaredMember<WebLaunchServiceImpl> GetWebLaunchServiceImpl() const {
+    return web_launch_service_impl_;
+  }
+  void SetWebLaunchServiceImpl(
+      ForwardDeclaredMember<WebLaunchServiceImpl> web_launch_service_impl) {
+    web_launch_service_impl_ = web_launch_service_impl;
+  }
+
+  ForwardDeclaredMember<WindowScreenDetails> GetWindowScreenDetails() const {
+    return window_screen_details_;
+  }
+  void SetWindowScreenDetails(
+      ForwardDeclaredMember<WindowScreenDetails> window_screen_details) {
+    window_screen_details_ = window_screen_details;
+  }
+
+  ForwardDeclaredMember<WindowSharedStorageImpl> GetWindowSharedStorageImpl()
+      const {
+    return window_shared_storage_impl_;
+  }
+  void SetWindowSharedStorageImpl(ForwardDeclaredMember<WindowSharedStorageImpl>
+                                      window_shared_storage_impl) {
+    window_shared_storage_impl_ = window_shared_storage_impl;
+  }
+
  protected:
   // EventTarget overrides.
   void AddedEventListener(const AtomicString& event_type,
@@ -814,6 +1159,59 @@ class CORE_EXPORT LocalDOMWindow final
       global_performance_impl_;
   ForwardDeclaredMember<GlobalIndexedDBImpl<LocalDOMWindow>>
       global_indexed_db_impl_;
+
+  Member<CachedPermissionStatus> cached_permission_status_;
+  Member<ContainerTiming> container_timing_;
+  Member<Fullscreen> fullscreen_;
+  Member<HighlightRegistry> highlight_registry_;
+  Member<ImageElementTiming> image_element_timing_;
+  Member<LayoutWorklet> layout_worklet_;
+  Member<ResizeObserverController> resize_observer_controller_;
+  Member<SharedWorkerClientHolder> shared_worker_client_holder_;
+  Member<TextElementTiming> text_element_timing_;
+  ForwardDeclaredMember<AppBannerController> app_banner_controller_;
+  ForwardDeclaredMember<AudioRendererSinkCacheWindowObserver>
+      audio_renderer_sink_cache_window_observer_;
+  ForwardDeclaredMember<CSSAnimationWorklet> css_animation_worklet_;
+  ForwardDeclaredMember<CredentialManagerProxy> credential_manager_proxy_;
+  ForwardDeclaredMember<DOMWindowCrypto> dom_window_crypto_;
+  ForwardDeclaredMember<DOMWindowDigitalGoods> dom_window_digital_goods_;
+  ForwardDeclaredMember<DOMWindowLaunchQueue> dom_window_launch_queue_;
+  ForwardDeclaredMember<DOMWindowStorage> dom_window_storage_;
+  ForwardDeclaredMember<DOMWindowStorageController>
+      dom_window_storage_controller_;
+  ForwardDeclaredMember<DeviceMotionController, PageVisibilityObserver>
+      device_motion_controller_;
+  ForwardDeclaredMember<DeviceOrientationAbsoluteController,
+                        PageVisibilityObserver>
+      device_orientation_absolute_controller_;
+  ForwardDeclaredMember<DeviceOrientationController, PageVisibilityObserver>
+      device_orientation_controller_;
+  ForwardDeclaredMember<DocumentPictureInPicture> document_picture_in_picture_;
+  ForwardDeclaredMember<FontAccess> font_access_;
+  ForwardDeclaredMember<GlobalStorageAccessHandle>
+      global_storage_access_handle_;
+  ForwardDeclaredMember<InstallationServiceImpl> installation_service_impl_;
+  ForwardDeclaredMember<InstalledAppController> installed_app_controller_;
+  ForwardDeclaredMember<ManifestManager> manifest_manager_;
+  ForwardDeclaredMember<NFCProxy> nfcproxy_;
+  ForwardDeclaredMember<PaintWorklet> paint_worklet_;
+  ForwardDeclaredMember<PeerConnectionTracker> peer_connection_tracker_;
+  ForwardDeclaredMember<PresentationController> presentation_controller_;
+  ForwardDeclaredMember<PushMessagingClient> push_messaging_client_;
+  ForwardDeclaredMember<ScreenOrientationController, PageVisibilityObserver>
+      screen_orientation_controller_;
+  ForwardDeclaredMember<SensorProviderProxy> sensor_provider_proxy_;
+  ForwardDeclaredMember<SharedStorageWindowSupplement>
+      shared_storage_window_supplement_;
+  ForwardDeclaredMember<SpeechRecognitionController>
+      speech_recognition_controller_;
+  ForwardDeclaredMember<SpeechSynthesis> speech_synthesis_;
+  ForwardDeclaredMember<ThirdPartyScriptDetector> third_party_script_detector_;
+  ForwardDeclaredMember<UserMediaClient> user_media_client_;
+  ForwardDeclaredMember<WebLaunchServiceImpl> web_launch_service_impl_;
+  ForwardDeclaredMember<WindowScreenDetails> window_screen_details_;
+  ForwardDeclaredMember<WindowSharedStorageImpl> window_shared_storage_impl_;
 
   // If set, this window is a Document Picture in Picture window.
   // https://wicg.github.io/document-picture-in-picture/

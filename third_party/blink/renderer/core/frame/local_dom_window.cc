@@ -91,6 +91,7 @@
 #include "third_party/blink/renderer/core/execution_context/window_agent.h"
 #include "third_party/blink/renderer/core/frame/attribution_src_loader.h"
 #include "third_party/blink/renderer/core/frame/bar_prop.h"
+#include "third_party/blink/renderer/core/frame/cached_permission_status.h"
 #include "third_party/blink/renderer/core/frame/crash_report_storage.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/document_policy_violation_report_body.h"
@@ -111,6 +112,8 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/viewport_data.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
+#include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
+#include "third_party/blink/renderer/core/highlight/highlight_registry.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/fence.h"
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
@@ -123,6 +126,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/inspector/main_thread_debugger.h"
 #include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
+#include "third_party/blink/renderer/core/layout/custom/layout_worklet.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
@@ -134,7 +138,11 @@
 #include "third_party/blink/renderer/core/page/scrolling/scrolling_coordinator.h"
 #include "third_party/blink/renderer/core/page/scrolling/sync_scroll_attempt_heuristic.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/core/paint/timing/container_timing.h"
+#include "third_party/blink/renderer/core/paint/timing/image_element_timing.h"
+#include "third_party/blink/renderer/core/paint/timing/text_element_timing.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/resize_observer/resize_observer_controller.h"
 #include "third_party/blink/renderer/core/scheduler/scripted_idle_task_controller.h"
 #include "third_party/blink/renderer/core/scheduler/task_attribution_util.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
@@ -146,6 +154,7 @@
 #include "third_party/blink/renderer/core/trustedtypes/trusted_type_policy_factory.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
+#include "third_party/blink/renderer/core/workers/shared_worker_client_holder.h"
 #include "third_party/blink/renderer/platform/back_forward_cache_buffer_limit_tracker.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -2543,9 +2552,50 @@ void LocalDOMWindow::Trace(Visitor* visitor) const {
   visitor->Trace(global_cookie_store_impl_);
   visitor->Trace(global_performance_impl_);
   visitor->Trace(global_indexed_db_impl_);
+  visitor->Trace(cached_permission_status_);
+  visitor->Trace(container_timing_);
+  visitor->Trace(fullscreen_);
+  visitor->Trace(highlight_registry_);
+  visitor->Trace(image_element_timing_);
+  visitor->Trace(layout_worklet_);
+  visitor->Trace(resize_observer_controller_);
+  visitor->Trace(shared_worker_client_holder_);
+  visitor->Trace(text_element_timing_);
+  visitor->Trace(app_banner_controller_);
+  visitor->Trace(audio_renderer_sink_cache_window_observer_);
+  visitor->Trace(css_animation_worklet_);
+  visitor->Trace(credential_manager_proxy_);
+  visitor->Trace(dom_window_crypto_);
+  visitor->Trace(dom_window_digital_goods_);
+  visitor->Trace(dom_window_launch_queue_);
+  visitor->Trace(dom_window_storage_);
+  visitor->Trace(dom_window_storage_controller_);
+  visitor->Trace(device_motion_controller_);
+  visitor->Trace(device_orientation_absolute_controller_);
+  visitor->Trace(device_orientation_controller_);
+  visitor->Trace(document_picture_in_picture_);
+  visitor->Trace(font_access_);
+  visitor->Trace(global_storage_access_handle_);
+  visitor->Trace(installation_service_impl_);
+  visitor->Trace(installed_app_controller_);
+  visitor->Trace(manifest_manager_);
+  visitor->Trace(nfcproxy_);
+  visitor->Trace(paint_worklet_);
+  visitor->Trace(peer_connection_tracker_);
+  visitor->Trace(presentation_controller_);
+  visitor->Trace(push_messaging_client_);
+  visitor->Trace(screen_orientation_controller_);
+  visitor->Trace(sensor_provider_proxy_);
+  visitor->Trace(shared_storage_window_supplement_);
+  visitor->Trace(speech_recognition_controller_);
+  visitor->Trace(speech_synthesis_);
+  visitor->Trace(third_party_script_detector_);
+  visitor->Trace(user_media_client_);
+  visitor->Trace(web_launch_service_impl_);
+  visitor->Trace(window_screen_details_);
+  visitor->Trace(window_shared_storage_impl_);
   DOMWindow::Trace(visitor);
   ExecutionContext::Trace(visitor);
-  Supplementable<LocalDOMWindow, 43>::Trace(visitor);
 }
 
 bool LocalDOMWindow::CrossOriginIsolatedCapability() const {

@@ -12,10 +12,10 @@ namespace blink {
 SharedStorageWindowSupplement* SharedStorageWindowSupplement::From(
     LocalDOMWindow& window) {
   SharedStorageWindowSupplement* supplement =
-      Supplement<LocalDOMWindow>::From<SharedStorageWindowSupplement>(window);
+      window.GetSharedStorageWindowSupplement();
   if (!supplement) {
     supplement = MakeGarbageCollected<SharedStorageWindowSupplement>(window);
-    Supplement<LocalDOMWindow>::ProvideTo(window, supplement);
+    window.SetSharedStorageWindowSupplement(supplement);
   }
 
   return supplement;
@@ -23,17 +23,17 @@ SharedStorageWindowSupplement* SharedStorageWindowSupplement::From(
 
 void SharedStorageWindowSupplement::Trace(Visitor* visitor) const {
   visitor->Trace(shared_storage_document_service_);
-  Supplement<LocalDOMWindow>::Trace(visitor);
+  visitor->Trace(local_dom_window_);
 }
 
 SharedStorageWindowSupplement::SharedStorageWindowSupplement(
     LocalDOMWindow& window)
-    : Supplement<LocalDOMWindow>(window) {}
+    : local_dom_window_(window) {}
 
 mojom::blink::SharedStorageDocumentService*
 SharedStorageWindowSupplement::GetSharedStorageDocumentService() {
   if (!shared_storage_document_service_.is_bound()) {
-    LocalDOMWindow* window = GetSupplementable();
+    LocalDOMWindow* window = local_dom_window_;
     LocalFrame* frame = window->GetFrame();
     DCHECK(frame);
 

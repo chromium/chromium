@@ -18,22 +18,17 @@ using mojom::blink::PermissionService;
 using mojom::blink::PermissionStatus;
 
 // static
-const unsigned CachedPermissionStatus::kSupplementIndex =
-    static_cast<unsigned>(LocalDOMWindow::Supplements::kCachedPermissionStatus);
-
-// static
 CachedPermissionStatus* CachedPermissionStatus::From(LocalDOMWindow* window) {
-  CachedPermissionStatus* cache =
-      Supplement<LocalDOMWindow>::From<CachedPermissionStatus>(window);
+  CachedPermissionStatus* cache = window->GetCachedPermissionStatus();
   if (!cache) {
     cache = MakeGarbageCollected<CachedPermissionStatus>(window);
-    ProvideTo(*window, cache);
+    window->SetCachedPermissionStatus(cache);
   }
   return cache;
 }
 
 CachedPermissionStatus::CachedPermissionStatus(LocalDOMWindow* local_dom_window)
-    : Supplement<LocalDOMWindow>(*local_dom_window),
+    : local_dom_window_(*local_dom_window),
       permission_service_(local_dom_window),
       permission_observer_receivers_(this, local_dom_window) {
   CHECK(local_dom_window);
@@ -44,7 +39,7 @@ void CachedPermissionStatus::Trace(Visitor* visitor) const {
   visitor->Trace(permission_service_);
   visitor->Trace(permission_observer_receivers_);
   visitor->Trace(clients_);
-  Supplement<LocalDOMWindow>::Trace(visitor);
+  visitor->Trace(local_dom_window_);
 }
 
 void CachedPermissionStatus::RegisterClient(
@@ -131,7 +126,7 @@ void CachedPermissionStatus::OnPermissionStatusChange(PermissionStatus status) {
 
 PermissionService* CachedPermissionStatus::GetPermissionService() {
   if (!permission_service_.is_bound()) {
-    GetSupplementable()->GetBrowserInterfaceBroker().GetInterface(
+    local_dom_window_->GetBrowserInterfaceBroker().GetInterface(
         permission_service_.BindNewPipeAndPassReceiver(GetTaskRunner()));
   }
 
@@ -140,7 +135,7 @@ PermissionService* CachedPermissionStatus::GetPermissionService() {
 
 scoped_refptr<base::SingleThreadTaskRunner>
 CachedPermissionStatus::GetTaskRunner() {
-  return GetSupplementable()->GetTaskRunner(TaskType::kInternalDefault);
+  return local_dom_window_->GetTaskRunner(TaskType::kInternalDefault);
 }
 
 }  // namespace blink

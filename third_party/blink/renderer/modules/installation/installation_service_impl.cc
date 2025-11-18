@@ -14,13 +14,8 @@
 namespace blink {
 
 // static
-const unsigned InstallationServiceImpl::kSupplementIndex =
-    static_cast<unsigned>(
-        LocalDOMWindow::Supplements::kInstallationServiceImpl);
-
-// static
 InstallationServiceImpl* InstallationServiceImpl::From(LocalDOMWindow& window) {
-  return Supplement<LocalDOMWindow>::From<InstallationServiceImpl>(window);
+  return window.GetInstallationServiceImpl();
 }
 
 // static
@@ -32,7 +27,7 @@ void InstallationServiceImpl::BindReceiver(
   if (!service) {
     service = MakeGarbageCollected<InstallationServiceImpl>(
         base::PassKey<InstallationServiceImpl>(), *frame);
-    Supplement<LocalDOMWindow>::ProvideTo(*frame->DomWindow(), service);
+    frame->DomWindow()->SetInstallationServiceImpl(service);
   }
   service->Bind(std::move(receiver));
 }
@@ -40,23 +35,23 @@ void InstallationServiceImpl::BindReceiver(
 InstallationServiceImpl::InstallationServiceImpl(
     base::PassKey<InstallationServiceImpl>,
     LocalFrame& frame)
-    : Supplement<LocalDOMWindow>(*frame.DomWindow()),
+    : local_dom_window_(*frame.DomWindow()),
       receivers_(this, frame.DomWindow()) {}
 
 void InstallationServiceImpl::Bind(
     mojo::PendingReceiver<mojom::blink::InstallationService> receiver) {
   // See https://bit.ly/2S0zRAS for task types.
-  receivers_.Add(std::move(receiver), GetSupplementable()->GetTaskRunner(
-                                          TaskType::kMiscPlatformAPI));
+  receivers_.Add(std::move(receiver),
+                 local_dom_window_->GetTaskRunner(TaskType::kMiscPlatformAPI));
 }
 
 void InstallationServiceImpl::Trace(Visitor* visitor) const {
   visitor->Trace(receivers_);
-  Supplement<LocalDOMWindow>::Trace(visitor);
+  visitor->Trace(local_dom_window_);
 }
 
 void InstallationServiceImpl::OnInstall() {
-  GetSupplementable()->DispatchEvent(
+  local_dom_window_->DispatchEvent(
       *Event::Create(event_type_names::kAppinstalled));
 }
 

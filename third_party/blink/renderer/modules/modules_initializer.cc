@@ -410,8 +410,7 @@ void ModulesInitializer::DidUpdateScreens(
     LocalFrame& frame,
     const display::ScreenInfos& screen_infos) {
   auto* window = frame.DomWindow();
-  if (auto* supplement =
-          Supplement<LocalDOMWindow>::From<WindowScreenDetails>(window)) {
+  if (WindowScreenDetails* supplement = window->GetWindowScreenDetails()) {
     // screen_details() may be null if permission has not been granted.
     if (auto* screen_details = supplement->screen_details()) {
       screen_details->UpdateScreenInfos(window, screen_infos);

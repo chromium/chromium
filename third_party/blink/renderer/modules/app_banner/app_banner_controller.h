@@ -20,10 +20,9 @@ class LocalDOMWindow;
 class LocalFrame;
 
 class AppBannerController final : public GarbageCollected<AppBannerController>,
-                                  public Supplement<LocalDOMWindow>,
-                                  public mojom::blink::AppBannerController {
+                                  public mojom::blink::AppBannerController,
+                                  public GarbageCollectedMixin {
  public:
-  static const unsigned kSupplementIndex;
   static AppBannerController* From(LocalDOMWindow&);
   static void BindReceiver(
       LocalFrame*,
@@ -47,6 +46,7 @@ class AppBannerController final : public GarbageCollected<AppBannerController>,
  private:
   void Bind(mojo::PendingReceiver<mojom::blink::AppBannerController> receiver);
 
+  Member<LocalDOMWindow> local_dom_window_;
   HeapMojoReceiver<mojom::blink::AppBannerController, AppBannerController>
       receiver_;
 };

@@ -22,8 +22,7 @@ class CSSPaintImageGeneratorImpl;
 
 // Manages a paint worklet:
 // https://drafts.css-houdini.org/css-paint-api/#dom-css-paintworklet
-class MODULES_EXPORT PaintWorklet : public Worklet,
-                                    public Supplement<LocalDOMWindow> {
+class MODULES_EXPORT PaintWorklet : public Worklet {
  public:
   static const unsigned kSupplementIndex;
 
@@ -111,6 +110,8 @@ class MODULES_EXPORT PaintWorklet : public Worklet,
   virtual int GetPaintsBeforeSwitching();
   // This function calculates the next global scope to switch to.
   virtual wtf_size_t SelectNewGlobalScope();
+
+  Member<LocalDOMWindow> local_dom_window_;
 
   Member<PaintWorkletPendingGeneratorRegistry> pending_generator_registry_;
 

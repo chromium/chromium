@@ -19,24 +19,20 @@ DocumentLayoutDefinition* const kInvalidDocumentLayoutDefinition = nullptr;
 
 // static
 LayoutWorklet* LayoutWorklet::From(LocalDOMWindow& window) {
-  LayoutWorklet* supplement =
-      Supplement<LocalDOMWindow>::From<LayoutWorklet>(window);
+  LayoutWorklet* supplement = window.GetLayoutWorklet();
   if (!supplement && window.GetFrame()) {
     supplement = MakeGarbageCollected<LayoutWorklet>(window);
-    ProvideTo(window, supplement);
+    window.SetLayoutWorklet(supplement);
   }
   return supplement;
 }
 
 LayoutWorklet::LayoutWorklet(LocalDOMWindow& window)
     : Worklet(window),
-      Supplement<LocalDOMWindow>(window),
+      local_dom_window_(window),
       pending_layout_registry_(MakeGarbageCollected<PendingLayoutRegistry>()) {}
 
 LayoutWorklet::~LayoutWorklet() = default;
-
-const unsigned LayoutWorklet::kSupplementIndex =
-    static_cast<unsigned>(LocalDOMWindow::Supplements::kLayoutWorklet);
 
 void LayoutWorklet::AddPendingLayout(const AtomicString& name, Node* node) {
   pending_layout_registry_->AddPendingLayout(name, node);
@@ -50,7 +46,7 @@ void LayoutWorklet::Trace(Visitor* visitor) const {
   visitor->Trace(document_definition_map_);
   visitor->Trace(pending_layout_registry_);
   Worklet::Trace(visitor);
-  Supplement<LocalDOMWindow>::Trace(visitor);
+  visitor->Trace(local_dom_window_);
 }
 
 bool LayoutWorklet::NeedsToCreateGlobalScope() {
