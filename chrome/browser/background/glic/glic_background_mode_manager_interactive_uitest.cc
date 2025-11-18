@@ -92,7 +92,13 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest, KeepAlive) {
 }
 
 // Checks that the status icon exists when the pref is enabled.
-IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest, StatusIcon) {
+// TODO(crbug.com/460829115): Enable on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_StatusIcon DISABLED_StatusIcon
+#else
+#define MAYBE_StatusIcon StatusIcon
+#endif
+IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest, MAYBE_StatusIcon) {
   ASSERT_FALSE(g_browser_process->status_tray()->HasStatusIconOfTypeForTesting(
       StatusTray::StatusIconType::GLIC_ICON));
 
@@ -237,7 +243,14 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest, HotkeyPressed) {
                                      1);
 }
 
-IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest, DeleteEligibleProfile) {
+// TODO(crbug.com/460829115): Evaluate whether this is relevant on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_DeleteEligibleProfile DISABLED_DeleteEligibleProfile
+#else
+#define MAYBE_DeleteEligibleProfile DeleteEligibleProfile
+#endif
+IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest,
+                       MAYBE_DeleteEligibleProfile) {
   GlicBackgroundModeManager* const background_mode_manager =
       g_browser_process->GetFeatures()->glic_background_mode_manager();
   g_browser_process->local_state()->SetBoolean(prefs::kGlicLauncherEnabled,
