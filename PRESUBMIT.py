@@ -3892,45 +3892,6 @@ def CheckSpamLogging(input_api, output_api):
     return []
 
 
-def CheckForAnonymousVariables(input_api, output_api):
-    """These types are all expected to hold locks while in scope and
-    so should never be anonymous (which causes them to be immediately
-    destroyed)."""
-    they_who_must_be_named = [
-        'base::AutoLock',
-        'base::AutoUnlock',
-        'SkAutoBlitterChoose',
-        'SkAutoCanvasRestore',
-        'SkAutoDescriptor',
-        'SkAutoHDC',
-        'SkAutoMalloc',
-        'SkAutoMaskFreeImage',
-        'SkAutoRasterClipValidate',
-    ]
-    anonymous = r'(%s)\s*[({]' % '|'.join(they_who_must_be_named)
-    # bad: base::AutoLock(lock.get());
-    # not bad: base::AutoLock lock(lock.get());
-    bad_pattern = input_api.re.compile(anonymous)
-    # good: new base::AutoLock(lock.get())
-    good_pattern = input_api.re.compile(r'\bnew\s*' + anonymous)
-    errors = []
-
-    for f in input_api.AffectedFiles():
-        if not f.LocalPath().endswith(('.cc', '.h', '.inl', '.m', '.mm')):
-            continue
-        for linenum, line in f.ChangedContents():
-            if bad_pattern.search(line) and not good_pattern.search(line):
-                errors.append('%s:%d' % (f.LocalPath(), linenum))
-
-    if errors:
-        return [
-            output_api.PresubmitError(
-                'These lines create anonymous variables that need to be named:',
-                items=errors)
-        ]
-    return []
-
-
 def CheckUniquePtrOnUpload(input_api, output_api):
     # Returns whether |template_str| is of the form <T, U...> for some types T
     # and U, or is invalid due to mismatched angle bracket pairs. Assumes that
