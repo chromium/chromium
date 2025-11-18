@@ -4044,6 +4044,21 @@
             ]
         }
     ],
+    "BocaRedirectStudentAudioToKiosk": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "BocaRedirectStudentAudioToKiosk"
+                    ]
+                }
+            ]
+        }
+    ],
     "BocaScreenSharingStudent": [
         {
             "platforms": [

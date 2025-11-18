@@ -268,6 +268,11 @@ BASE_FEATURE(kBocaHostAudio, base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables or disables using audio for the Kiosk client in the Boca app.
 BASE_FEATURE(kBocaAudioForKiosk, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables or disables setting audio params when sharing from a student device
+// to a remote kiosk receiver.
+BASE_FEATURE(kBocaRedirectStudentAudioToKiosk,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kCrosSwitcher, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Indicates whether the camera super resolution is supported. Note that this
@@ -2482,6 +2487,10 @@ bool IsBocaHostAudioEnabled() {
 
 bool IsBocaAudioForKioskEnabled() {
   return base::FeatureList::IsEnabled(kBocaAudioForKiosk);
+}
+
+bool IsBocaRedirectStudentAudioToKioskEnabled() {
+  return base::FeatureList::IsEnabled(kBocaRedirectStudentAudioToKiosk);
 }
 
 bool IsBrightnessControlInSettingsEnabled() {
