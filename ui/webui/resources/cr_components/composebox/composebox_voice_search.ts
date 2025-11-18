@@ -229,6 +229,7 @@ export class ComposeboxVoiceSearchElement extends
       case State.ERROR_RECEIVED:
         // All other errors should close voice search.
         if (this.error_ !== Error.NOT_ALLOWED) {
+          this.resetState_();
           this.fire('on-voice-search-cancel');
         }
         return;
@@ -261,7 +262,16 @@ export class ComposeboxVoiceSearchElement extends
 
   protected onCloseClick_() {
     this.voiceRecognition_.abort();
+    this.resetState_();
     this.fire('on-voice-search-cancel');
+  }
+
+  private resetState_() {
+    this.state_ = State.UNINITIALIZED;
+    this.finalResult_ = '';
+    this.interimResult_ = '';
+    this.error_ = null;
+    this.errorMessage_ = '';
   }
 
   protected onLinkClick_() {
