@@ -474,6 +474,7 @@
   }
 
   :host([enable-lens-aim-suggestions]) #composebox::part(dropdown) {
+    --cr-composebox-match-height: 54px;
     background-color: var(--search-background-color);
     /* Stack the dropdown on top of the other elements in the composebox. */
     order: -1;
@@ -496,6 +497,15 @@
   #composebox::part(context-entrypoint) {
     transition-delay: 0ms;
   }
+
+  :host([enable-lens-aim-suggestions]) #composebox::part(match-text-container) {
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    display: -webkit-box;
+    line-height: 20px;
+    white-space: normal;
+  }
+
 
   :host(:not([show-upload-progress])) #uploadProgressBarContainer,
   :host([is-error-page-visible]) #uploadProgressBarContainer {

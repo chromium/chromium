@@ -13,6 +13,7 @@ export function getHtml(this: ComposeboxDropdownElement) {
     ${this.result?.matches.map((item, index) => html`
       <cr-composebox-match
           aria-label="${this.computeAriaLabel_(item)}"
+          exportparts="match-text-container"
           tabindex="0"
           role="option"
           .match="${item}"

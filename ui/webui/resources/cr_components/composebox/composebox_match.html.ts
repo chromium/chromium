@@ -14,7 +14,7 @@ export function getHtml(this: ComposeboxMatchElement) {
   <div id="iconContainer">
     <div id="icon" style="-webkit-mask-image: url(${this.iconPath_()});"></div>
   </div>
-  <div id="textContainer">
+  <div id="textContainer" part="match-text-container">
     ${this.computeContents_()}
   </div>
   <cr-icon-button id="remove" class="action-icon icon-clear"
