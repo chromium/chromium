@@ -31,14 +31,11 @@ class SerialPortRequestOptions;
 class SerialPortFilter;
 
 class MODULES_EXPORT Serial final : public EventTarget,
-                                    public Supplement<NavigatorBase>,
                                     public ExecutionContextLifecycleObserver,
                                     public mojom::blink::SerialServiceClient {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const unsigned kSupplementIndex;
-
   // Web-exposed navigator.serial
   static Serial* serial(NavigatorBase&);
 
@@ -94,6 +91,7 @@ class MODULES_EXPORT Serial final : public EventTarget,
   void OnRequestPort(ScriptPromiseResolver<SerialPort>*,
                      mojom::blink::SerialPortInfoPtr);
 
+  Member<NavigatorBase> navigator_base_;
   HeapMojoRemote<mojom::blink::SerialService> service_;
   HeapMojoReceiver<mojom::blink::SerialServiceClient, Serial> receiver_;
   HeapHashSet<Member<ScriptPromiseResolver<IDLSequence<SerialPort>>>>

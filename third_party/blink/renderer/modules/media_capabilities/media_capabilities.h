@@ -38,16 +38,13 @@ class MediaKeySystemAccess;
 class NavigatorBase;
 class ScriptState;
 
-class MODULES_EXPORT MediaCapabilities final
-    : public ScriptWrappable,
-      public Supplement<NavigatorBase> {
+class MODULES_EXPORT MediaCapabilities final : public ScriptWrappable,
+                                               public GarbageCollectedMixin {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
   static const char kWebrtcDecodeSmoothIfPowerEfficientParamName[];
   static const char kWebrtcEncodeSmoothIfPowerEfficientParamName[];
-
-  static const unsigned kSupplementIndex;
 
   // Getter for navigator.mediaCapabilities
   static MediaCapabilities* mediaCapabilities(NavigatorBase&);
@@ -170,6 +167,8 @@ class MODULES_EXPORT MediaCapabilities final
       WebrtcEncodingInfoHandler* handler) {
     webrtc_encoding_info_handler_for_test_ = handler;
   }
+
+  Member<NavigatorBase> navigator_base_;
 
   HeapMojoRemote<media::mojom::blink::VideoDecodePerfHistory>
       decode_history_service_;

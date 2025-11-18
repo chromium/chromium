@@ -290,25 +290,21 @@ void NetworkInformation::StopObserving() {
   }
 }
 
-const unsigned NetworkInformation::kSupplementIndex =
-    static_cast<unsigned>(NavigatorBase::Supplements::kNetworkInformation);
-
 NetworkInformation* NetworkInformation::connection(NavigatorBase& navigator) {
   if (!navigator.GetExecutionContext())
     return nullptr;
-  NetworkInformation* supplement =
-      Supplement<NavigatorBase>::From<NetworkInformation>(navigator);
+  NetworkInformation* supplement = navigator.GetNetworkInformation();
   if (!supplement) {
     supplement = MakeGarbageCollected<NetworkInformation>(navigator);
-    ProvideTo(navigator, supplement);
+    navigator.SetNetworkInformation(supplement);
   }
   return supplement;
 }
 
 NetworkInformation::NetworkInformation(NavigatorBase& navigator)
     : ActiveScriptWrappable<NetworkInformation>({}),
-      Supplement<NavigatorBase>(navigator),
       ExecutionContextLifecycleObserver(navigator.GetExecutionContext()),
+      navigator_base_(navigator),
       web_holdback_console_message_shown_(false),
       context_stopped_(false) {
   std::optional<base::TimeDelta> http_rtt;
@@ -327,7 +323,7 @@ NetworkInformation::NetworkInformation(NavigatorBase& navigator)
 
 void NetworkInformation::Trace(Visitor* visitor) const {
   EventTarget::Trace(visitor);
-  Supplement<NavigatorBase>::Trace(visitor);
+  visitor->Trace(navigator_base_);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 

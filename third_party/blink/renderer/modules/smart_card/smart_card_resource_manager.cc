@@ -47,24 +47,19 @@ bool ShouldBlockSmartCardServiceCall(ExecutionContext* context,
 
 }  // namespace
 
-const unsigned SmartCardResourceManager::kSupplementIndex =
-    static_cast<unsigned>(
-        NavigatorBase::Supplements::kSmartCardResourceManager);
-
 SmartCardResourceManager* SmartCardResourceManager::smartCard(
     NavigatorBase& navigator) {
-  SmartCardResourceManager* smartcard =
-      Supplement<NavigatorBase>::From<SmartCardResourceManager>(navigator);
+  SmartCardResourceManager* smartcard = navigator.GetSmartCardResourceManager();
   if (!smartcard) {
     smartcard = MakeGarbageCollected<SmartCardResourceManager>(navigator);
-    ProvideTo(navigator, smartcard);
+    navigator.SetSmartCardResourceManager(smartcard);
   }
   return smartcard;
 }
 
 SmartCardResourceManager::SmartCardResourceManager(NavigatorBase& navigator)
-    : Supplement<NavigatorBase>(navigator),
-      ExecutionContextLifecycleObserver(navigator.GetExecutionContext()),
+    : ExecutionContextLifecycleObserver(navigator.GetExecutionContext()),
+      navigator_base_(navigator),
       service_(navigator.GetExecutionContext()) {}
 
 void SmartCardResourceManager::ContextDestroyed() {
@@ -75,7 +70,7 @@ void SmartCardResourceManager::Trace(Visitor* visitor) const {
   visitor->Trace(service_);
   visitor->Trace(create_context_promises_);
   ScriptWrappable::Trace(visitor);
-  Supplement<NavigatorBase>::Trace(visitor);
+  visitor->Trace(navigator_base_);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 

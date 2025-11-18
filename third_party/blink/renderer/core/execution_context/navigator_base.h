@@ -31,9 +31,25 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/forward_declared_member.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
+
+class ContextLifecycleObserver;
+class GPU;
+class Geolocation;
+class HID;
+class LockManager;
+class LockedMode;
+class MediaCapabilities;
+class NavigatorML;
+class NavigatorStorageQuota;
+class NetworkInformation;
+class Permissions;
+class Serial;
+class SmartCardResourceManager;
+class StorageBucketManager;
+class USB;
+class WakeLock;
 
 template <typename T>
 class GlobalFetchImpl;
@@ -48,27 +64,8 @@ class CORE_EXPORT NavigatorBase : public ScriptWrappable,
                                   public NavigatorLanguage,
                                   public NavigatorOnLine,
                                   public NavigatorUA,
-                                  public ExecutionContextClient,
-                                  public Supplementable<NavigatorBase, 15> {
+                                  public ExecutionContextClient {
  public:
-  enum class Supplements {
-    kLockManager = 0,
-    kNetworkInformation = 1,
-    kMediaCapabilities = 2,
-    kNavigatorStorageQuota = 3,
-    kPermissions = 4,
-    kWakeLock = 5,
-    kUSB = 6,
-    kHID = 7,
-    kGPU = 8,
-    kLockedMode = 9,
-    kSmartCardResourceManager = 10,
-    kStorageBucketManager = 11,
-    kNavigatorML = 12,
-    kSerial = 13,
-    kGeolocation = 14
-  };
-
   explicit NavigatorBase(ExecutionContext* context);
 
   // NavigatorID override
@@ -87,11 +84,124 @@ class CORE_EXPORT NavigatorBase : public ScriptWrappable,
     global_fetch_impl_ = global_fetch_impl;
   }
 
+  Geolocation* GetGeolocation() const { return geolocation_; }
+  void SetGeolocation(Geolocation* geolocation) { geolocation_ = geolocation; }
+
+  ForwardDeclaredMember<GPU> GetGPU() const { return gpu_; }
+  void SetGPU(ForwardDeclaredMember<GPU> gpu) { gpu_ = gpu; }
+
+  ForwardDeclaredMember<HID> GetHID() const { return hid_; }
+  void SetHID(ForwardDeclaredMember<HID> hid) { hid_ = hid; }
+
+  ForwardDeclaredMember<LockManager> GetLockManager() const {
+    return lock_manager_;
+  }
+  void SetLockManager(ForwardDeclaredMember<LockManager> lock_manager) {
+    lock_manager_ = lock_manager;
+  }
+
+  ForwardDeclaredMember<LockedMode> GetLockedMode() const {
+    return locked_mode_;
+  }
+  void SetLockedMode(ForwardDeclaredMember<LockedMode> locked_mode) {
+    locked_mode_ = locked_mode;
+  }
+
+  ForwardDeclaredMember<MediaCapabilities> GetMediaCapabilities() const {
+    return media_capabilities_;
+  }
+  void SetMediaCapabilities(
+      ForwardDeclaredMember<MediaCapabilities> media_capabilities) {
+    media_capabilities_ = media_capabilities;
+  }
+
+  ForwardDeclaredMember<NavigatorML> GetNavigatorML() const {
+    return navigator_ml_;
+  }
+  void SetNavigatorML(ForwardDeclaredMember<NavigatorML> navigator_ml) {
+    navigator_ml_ = navigator_ml;
+  }
+
+  ForwardDeclaredMember<NavigatorStorageQuota> GetNavigatorStorageQuota()
+      const {
+    return navigator_storage_quota_;
+  }
+  void SetNavigatorStorageQuota(
+      ForwardDeclaredMember<NavigatorStorageQuota> navigator_storage_quota) {
+    navigator_storage_quota_ = navigator_storage_quota;
+  }
+
+  ForwardDeclaredMember<NetworkInformation, ContextLifecycleObserver>
+  GetNetworkInformation() const {
+    return network_information_;
+  }
+  void SetNetworkInformation(
+      ForwardDeclaredMember<NetworkInformation, ContextLifecycleObserver>
+          network_information) {
+    network_information_ = network_information;
+  }
+
+  ForwardDeclaredMember<Permissions> GetPermissions() const {
+    return permissions_;
+  }
+  void SetPermissions(ForwardDeclaredMember<Permissions> permissions) {
+    permissions_ = permissions;
+  }
+
+  ForwardDeclaredMember<Serial> GetSerial() const { return serial_; }
+  void SetSerial(ForwardDeclaredMember<Serial> serial) { serial_ = serial; }
+
+  ForwardDeclaredMember<SmartCardResourceManager> GetSmartCardResourceManager()
+      const {
+    return smart_card_resource_manager_;
+  }
+  void SetSmartCardResourceManager(
+      ForwardDeclaredMember<SmartCardResourceManager>
+          smart_card_resource_manager) {
+    smart_card_resource_manager_ = smart_card_resource_manager;
+  }
+
+  ForwardDeclaredMember<StorageBucketManager> GetStorageBucketManager() const {
+    return storage_bucket_manager_;
+  }
+  void SetStorageBucketManager(
+      ForwardDeclaredMember<StorageBucketManager> storage_bucket_manager) {
+    storage_bucket_manager_ = storage_bucket_manager;
+  }
+
+  ForwardDeclaredMember<USB> GetUSB() const { return usb_; }
+  void SetUSB(ForwardDeclaredMember<USB> usb) { usb_ = usb; }
+
+  ForwardDeclaredMember<WakeLock, ContextLifecycleObserver> GetWakeLock()
+      const {
+    return wake_lock_;
+  }
+  void SetWakeLock(
+      ForwardDeclaredMember<WakeLock, ContextLifecycleObserver> wake_lock) {
+    wake_lock_ = wake_lock;
+  }
+
  protected:
   ExecutionContext* GetUAExecutionContext() const override;
   UserAgentMetadata GetUserAgentMetadata() const override;
 
+  Member<Geolocation> geolocation_;
   ForwardDeclaredMember<GlobalFetchImpl<NavigatorBase>> global_fetch_impl_;
+  ForwardDeclaredMember<GPU> gpu_;
+  ForwardDeclaredMember<HID> hid_;
+  ForwardDeclaredMember<LockManager> lock_manager_;
+  ForwardDeclaredMember<LockedMode> locked_mode_;
+  ForwardDeclaredMember<MediaCapabilities> media_capabilities_;
+  ForwardDeclaredMember<NavigatorML> navigator_ml_;
+  ForwardDeclaredMember<NavigatorStorageQuota> navigator_storage_quota_;
+  ForwardDeclaredMember<NetworkInformation, ContextLifecycleObserver>
+      network_information_;
+  ForwardDeclaredMember<Permissions> permissions_;
+  ForwardDeclaredMember<Serial> serial_;
+  ForwardDeclaredMember<SmartCardResourceManager> smart_card_resource_manager_;
+  ForwardDeclaredMember<StorageBucketManager> storage_bucket_manager_;
+  ForwardDeclaredMember<USB> usb_;
+  ForwardDeclaredMember<WakeLock, ContextLifecycleObserver> wake_lock_;
 };
 
 }  // namespace blink

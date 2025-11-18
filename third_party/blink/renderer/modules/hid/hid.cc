@@ -95,20 +95,17 @@ void RejectWithTypeError(const String& message,
 
 }  // namespace
 
-const unsigned HID::kSupplementIndex =
-    static_cast<unsigned>(NavigatorBase::Supplements::kHID);
-
 HID* HID::hid(NavigatorBase& navigator) {
-  HID* hid = Supplement<NavigatorBase>::From<HID>(navigator);
+  HID* hid = navigator.GetHID();
   if (!hid) {
     hid = MakeGarbageCollected<HID>(navigator);
-    ProvideTo(navigator, hid);
+    navigator.SetHID(hid);
   }
   return hid;
 }
 
 HID::HID(NavigatorBase& navigator)
-    : Supplement<NavigatorBase>(navigator),
+    : navigator_base_(navigator),
       service_(navigator.GetExecutionContext()),
       receiver_(this, navigator.GetExecutionContext()) {
   if (!base::FeatureList::IsEnabled(
@@ -128,7 +125,7 @@ HID::~HID() {
 }
 
 ExecutionContext* HID::GetExecutionContext() const {
-  return GetSupplementable()->GetExecutionContext();
+  return navigator_base_->GetExecutionContext();
 }
 
 const AtomicString& HID::InterfaceName() const {
@@ -145,7 +142,7 @@ void HID::AddedEventListener(const AtomicString& event_type,
   }
 
   auto* context = GetExecutionContext();
-  if (ShouldBlockHidServiceCall(GetSupplementable()->DomWindow(), context,
+  if (ShouldBlockHidServiceCall(navigator_base_->DomWindow(), context,
                                 nullptr)) {
     return;
   }
@@ -198,7 +195,7 @@ void HID::DeviceChanged(device::mojom::blink::HidDeviceInfoPtr device_info) {
 ScriptPromise<IDLSequence<HIDDevice>> HID::getDevices(
     ScriptState* script_state,
     ExceptionState& exception_state) {
-  if (ShouldBlockHidServiceCall(GetSupplementable()->DomWindow(),
+  if (ShouldBlockHidServiceCall(navigator_base_->DomWindow(),
                                 GetExecutionContext(), &exception_state)) {
     return ScriptPromise<IDLSequence<HIDDevice>>();
   }
@@ -219,7 +216,7 @@ ScriptPromise<IDLSequence<HIDDevice>> HID::requestDevice(
     ExceptionState& exception_state) {
   // requestDevice requires a window to satisfy the user activation requirement
   // and to show a chooser dialog.
-  auto* window = GetSupplementable()->DomWindow();
+  auto* window = navigator_base_->DomWindow();
   if (!window) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       kContextGone);
@@ -428,7 +425,7 @@ void HID::Trace(Visitor* visitor) const {
   visitor->Trace(device_cache_);
   visitor->Trace(receiver_);
   EventTarget::Trace(visitor);
-  Supplement<NavigatorBase>::Trace(visitor);
+  visitor->Trace(navigator_base_);
 }
 
 }  // namespace blink

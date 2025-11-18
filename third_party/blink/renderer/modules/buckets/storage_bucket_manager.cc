@@ -81,22 +81,17 @@ mojom::blink::BucketPoliciesPtr ToMojoBucketPolicies(
 
 }  // namespace
 
-const unsigned StorageBucketManager::kSupplementIndex =
-    static_cast<unsigned>(NavigatorBase::Supplements::kStorageBucketManager);
-
 StorageBucketManager::StorageBucketManager(NavigatorBase& navigator)
-    : Supplement<NavigatorBase>(navigator),
-      ExecutionContextClient(navigator.GetExecutionContext()),
+    : ExecutionContextClient(navigator.GetExecutionContext()),
       manager_remote_(navigator.GetExecutionContext()),
       navigator_base_(navigator) {}
 
 StorageBucketManager* StorageBucketManager::storageBuckets(
     NavigatorBase& navigator) {
-  auto* supplement =
-      Supplement<NavigatorBase>::From<StorageBucketManager>(navigator);
+  StorageBucketManager* supplement = navigator.GetStorageBucketManager();
   if (!supplement) {
     supplement = MakeGarbageCollected<StorageBucketManager>(navigator);
-    Supplement<NavigatorBase>::ProvideTo(navigator, supplement);
+    navigator.SetStorageBucketManager(supplement);
   }
   return supplement;
 }
@@ -304,7 +299,6 @@ void StorageBucketManager::Trace(Visitor* visitor) const {
   visitor->Trace(manager_remote_);
   visitor->Trace(navigator_base_);
   ScriptWrappable::Trace(visitor);
-  Supplement<NavigatorBase>::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
 }
 

@@ -166,21 +166,18 @@ bool ShouldBlockUsbServiceCall(LocalDOMWindow* window,
 
 }  // namespace
 
-const unsigned USB::kSupplementIndex =
-    static_cast<unsigned>(NavigatorBase::Supplements::kUSB);
-
 USB* USB::usb(NavigatorBase& navigator) {
-  USB* usb = Supplement<NavigatorBase>::From<USB>(navigator);
+  USB* usb = navigator.GetUSB();
   if (!usb) {
     usb = MakeGarbageCollected<USB>(navigator);
-    ProvideTo(navigator, usb);
+    navigator.SetUSB(usb);
   }
   return usb;
 }
 
 USB::USB(NavigatorBase& navigator)
-    : Supplement<NavigatorBase>(navigator),
-      ExecutionContextLifecycleObserver(navigator.GetExecutionContext()),
+    : ExecutionContextLifecycleObserver(navigator.GetExecutionContext()),
+      navigator_base_(navigator),
       service_(navigator.GetExecutionContext()),
       client_receiver_(this, navigator.GetExecutionContext()) {}
 
@@ -194,7 +191,7 @@ USB::~USB() {
 ScriptPromise<IDLSequence<USBDevice>> USB::getDevices(
     ScriptState* script_state,
     ExceptionState& exception_state) {
-  if (ShouldBlockUsbServiceCall(GetSupplementable()->DomWindow(),
+  if (ShouldBlockUsbServiceCall(navigator_base_->DomWindow(),
                                 GetExecutionContext(), &exception_state)) {
     return ScriptPromise<IDLSequence<USBDevice>>();
   }
@@ -221,7 +218,7 @@ ScriptPromise<USBDevice> USB::requestDevice(
     return EmptyPromise();
   }
 
-  if (ShouldBlockUsbServiceCall(GetSupplementable()->DomWindow(),
+  if (ShouldBlockUsbServiceCall(navigator_base_->DomWindow(),
                                 GetExecutionContext(), &exception_state)) {
     return EmptyPromise();
   }
@@ -388,7 +385,7 @@ void USB::AddedEventListener(const AtomicString& event_type,
   }
 
   auto* context = GetExecutionContext();
-  if (ShouldBlockUsbServiceCall(GetSupplementable()->DomWindow(), context,
+  if (ShouldBlockUsbServiceCall(navigator_base_->DomWindow(), context,
                                 nullptr)) {
     return;
   }
@@ -444,7 +441,7 @@ void USB::Trace(Visitor* visitor) const {
   visitor->Trace(client_receiver_);
   visitor->Trace(device_cache_);
   EventTarget::Trace(visitor);
-  Supplement<NavigatorBase>::Trace(visitor);
+  visitor->Trace(navigator_base_);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 

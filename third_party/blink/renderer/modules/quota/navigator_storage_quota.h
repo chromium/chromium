@@ -43,10 +43,8 @@ class StorageManager;
 
 class NavigatorStorageQuota final
     : public GarbageCollected<NavigatorStorageQuota>,
-      public Supplement<NavigatorBase> {
+      public GarbageCollectedMixin {
  public:
-  static const unsigned kSupplementIndex;
-
   // Web-exposed on window only.
   static DeprecatedStorageQuota* webkitTemporaryStorage(Navigator&);
   static DeprecatedStorageQuota* webkitPersistentStorage(Navigator&);
@@ -61,6 +59,7 @@ class NavigatorStorageQuota final
  private:
   static NavigatorStorageQuota& From(NavigatorBase&);
 
+  Member<NavigatorBase> navigator_base_;
   mutable Member<DeprecatedStorageQuota> temporary_storage_;
   mutable Member<StorageManager> storage_manager_;
 };

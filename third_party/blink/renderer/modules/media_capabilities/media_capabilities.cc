@@ -745,23 +745,18 @@ const char MediaCapabilities::kWebrtcDecodeSmoothIfPowerEfficientParamName[] =
 const char MediaCapabilities::kWebrtcEncodeSmoothIfPowerEfficientParamName[] =
     "webrtc_encode_smooth_if_power_efficient";
 
-// static
-const unsigned MediaCapabilities::kSupplementIndex =
-    static_cast<unsigned>(NavigatorBase::Supplements::kMediaCapabilities);
-
 MediaCapabilities* MediaCapabilities::mediaCapabilities(
     NavigatorBase& navigator) {
-  MediaCapabilities* supplement =
-      Supplement<NavigatorBase>::From<MediaCapabilities>(navigator);
+  MediaCapabilities* supplement = navigator.GetMediaCapabilities();
   if (!supplement) {
     supplement = MakeGarbageCollected<MediaCapabilities>(navigator);
-    ProvideTo(navigator, supplement);
+    navigator.SetMediaCapabilities(supplement);
   }
   return supplement;
 }
 
 MediaCapabilities::MediaCapabilities(NavigatorBase& navigator)
-    : Supplement<NavigatorBase>(navigator),
+    : navigator_base_(navigator),
       decode_history_service_(navigator.GetExecutionContext()),
       webrtc_history_service_(navigator.GetExecutionContext()) {}
 
@@ -770,7 +765,7 @@ void MediaCapabilities::Trace(blink::Visitor* visitor) const {
   visitor->Trace(webrtc_history_service_);
   visitor->Trace(pending_cb_map_);
   ScriptWrappable::Trace(visitor);
-  Supplement<NavigatorBase>::Trace(visitor);
+  visitor->Trace(navigator_base_);
 }
 
 MediaCapabilities::PendingCallbackState::PendingCallbackState(

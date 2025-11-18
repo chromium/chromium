@@ -9,6 +9,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/navigator_concurrent_hardware.h"
+#include "third_party/blink/renderer/core/geolocation/geolocation.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -77,7 +78,22 @@ void NavigatorBase::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   NavigatorLanguage::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
-  Supplementable::Trace(visitor);
+  visitor->Trace(gpu_);
+  visitor->Trace(geolocation_);
+  visitor->Trace(global_fetch_impl_);
+  visitor->Trace(hid_);
+  visitor->Trace(lock_manager_);
+  visitor->Trace(locked_mode_);
+  visitor->Trace(media_capabilities_);
+  visitor->Trace(navigator_ml_);
+  visitor->Trace(navigator_storage_quota_);
+  visitor->Trace(network_information_);
+  visitor->Trace(permissions_);
+  visitor->Trace(serial_);
+  visitor->Trace(smart_card_resource_manager_);
+  visitor->Trace(storage_bucket_manager_);
+  visitor->Trace(usb_);
+  visitor->Trace(wake_lock_);
 }
 
 unsigned int NavigatorBase::hardwareConcurrency() const {

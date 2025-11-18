@@ -138,22 +138,18 @@ WebGPUExecutionContextToken GetExecutionContextToken(
 }  // anonymous namespace
 
 // static
-const unsigned GPU::kSupplementIndex =
-    static_cast<unsigned>(NavigatorBase::Supplements::kGPU);
-
-// static
 GPU* GPU::gpu(NavigatorBase& navigator) {
-  GPU* gpu = Supplement<NavigatorBase>::From<GPU>(navigator);
+  GPU* gpu = navigator.GetGPU();
   if (!gpu) {
     gpu = MakeGarbageCollected<GPU>(navigator);
-    ProvideTo(navigator, gpu);
+    navigator.SetGPU(gpu);
   }
   return gpu;
 }
 
 GPU::GPU(NavigatorBase& navigator)
-    : Supplement<NavigatorBase>(navigator),
-      ExecutionContextLifecycleObserver(navigator.GetExecutionContext()),
+    : ExecutionContextLifecycleObserver(navigator.GetExecutionContext()),
+      navigator_base_(navigator),
       wgsl_language_features_(MakeGarbageCollected<WGSLLanguageFeatures>(
           GatherWGSLLanguageFeatures())),
       mappable_buffer_handles_(
@@ -167,7 +163,7 @@ WGSLLanguageFeatures* GPU::wgslLanguageFeatures() const {
 
 void GPU::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
-  Supplement<NavigatorBase>::Trace(visitor);
+  visitor->Trace(navigator_base_);
   ExecutionContextLifecycleObserver::Trace(visitor);
   visitor->Trace(mappable_buffers_);
   visitor->Trace(wgsl_language_features_);
