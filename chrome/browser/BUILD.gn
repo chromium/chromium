@@ -462,6 +462,8 @@ static_library("browser") {
     "enterprise/core/dependency_factory_impl.h",
     "enterprise/data_protection/view_source_navigation_throttle.cc",
     "enterprise/data_protection/view_source_navigation_throttle.h",
+    "enterprise/encryption/cache_encryption_provider_impl.cc",
+    "enterprise/encryption/cache_encryption_provider_impl.h",
     "enterprise/identifiers/profile_id_delegate_impl.cc",
     "enterprise/identifiers/profile_id_delegate_impl.h",
     "enterprise/identifiers/profile_id_service_factory.cc",
