@@ -6,6 +6,8 @@ assert(is_win || is_mac || is_linux || is_chromeos)
 
 source_set("searchbox") {
   sources = [
+    "composebox_handler.cc",
+    "composebox_handler.h",
     "contextual_search_type_converters.cc",
     "contextual_search_type_converters.h",
     "contextual_searchbox_handler.cc",
@@ -61,6 +63,8 @@ source_set("searchbox") {
     "//chrome/browser/ui/views/location_bar",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/omnibox_popup/mojom",
+    "//chrome/browser/ui/webui/top_chrome",
+    "//components/application_locale_storage",
     "//components/bookmarks/browser",
     "//components/contextual_search:public",
     "//components/lens",
@@ -77,6 +81,7 @@ source_set("searchbox") {
     "//components/strings:components_strings",
     "//components/strings:components_strings_grit",
     "//components/variations",
+    "//components/variations/service",
     "//components/vector_icons",
     "//content/public/browser",
     "//net",

@@ -1095,7 +1095,8 @@
     },
     'desktop_composebox': {
       'filepath': '^chrome/browser/resources/new_tab_page/composebox/|'\
-                  '^chrome/browser/ui/webui/new_tab_page/composebox/|'\
+                  '^chrome/browser/ui/webui/searchbox/composebox_handler.cc|'\
+                  '^chrome/browser/ui/webui/searchbox/composebox_handler.h|'\
                   '^chrome/test/data/webui/new_tab_page/composebox/|'\
                   '^components/omnibox/composebox/',
     },

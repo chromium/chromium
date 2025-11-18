@@ -67,7 +67,6 @@ source_set("lens") {
     "//chrome/browser/ui/promos:service",
     "//chrome/browser/ui/views/frame:immersive_mode_controller",
     "//chrome/browser/ui/views/side_panel",
-    "//chrome/browser/ui/webui/new_tab_page/composebox",
     "//chrome/browser/ui/webui/searchbox",
     "//chrome/browser/ui/webui/top_chrome",
     "//components/content_extraction/content/browser",
@@ -84,6 +83,7 @@ source_set("lens") {
     "//ui/base/mojom:ui_base_types",
     "//ui/base/unowned_user_data",
     "//ui/views",
+    "//ui/webui/resources/cr_components/composebox:mojo_bindings",
   ]
 
   if (enable_pdf) {
