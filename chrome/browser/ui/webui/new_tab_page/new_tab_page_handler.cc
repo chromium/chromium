@@ -131,32 +131,6 @@ std::vector<std::string> GetSurveyEligibleModuleIds() {
       base::SplitResult::SPLIT_WANT_NONEMPTY);
 }
 
-const void* const kCustomizeChromeAutoOpenedUserDataKey =
-    &kCustomizeChromeAutoOpenedUserDataKey;
-
-class CustomizeChromeAutoOpenedUserData : public base::SupportsUserData::Data {
- public:
-  static CustomizeChromeAutoOpenedUserData* GetOrCreateForProfile(
-      Profile* profile) {
-    auto* data = static_cast<CustomizeChromeAutoOpenedUserData*>(
-        profile->GetUserData(kCustomizeChromeAutoOpenedUserDataKey));
-    if (!data) {
-      data = new CustomizeChromeAutoOpenedUserData();
-      profile->SetUserData(kCustomizeChromeAutoOpenedUserDataKey,
-                           base::WrapUnique(data));
-    }
-    return data;
-  }
-
-  int times_opened() const { return times_opened_; }
-  void IncrementTimesOpened() { times_opened_ += 1; }
-
- private:
-  CustomizeChromeAutoOpenedUserData() = default;
-
-  int times_opened_ = 0;
-};
-
 // Returns true if we should force dark foreground colors for the Google logo
 // and the One Google Bar. This is done to fix specific GWS themes where the
 // always-light logo and OGB colors do not sufficiently contrast with lighter
