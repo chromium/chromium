@@ -573,11 +573,7 @@ void ChromeAutofillClient::GetAiPageContent(GetAiPageContentCallback callback) {
 }
 
 AutofillAiManager* ChromeAutofillClient::GetAutofillAiManager() {
-#if !BUILDFLAG(IS_ANDROID)
-  return &autofill_ai_manager_;
-#else
-  return nullptr;
-#endif
+  return autofill_ai_manager_.get();
 }
 
 AutofillAiModelCache* ChromeAutofillClient::GetAutofillAiModelCache() {
@@ -1228,12 +1224,6 @@ void ChromeAutofillClient::NotifyIphFeatureUsed(
 ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
     : ContentAutofillClient(web_contents),
       content::WebContentsObserver(web_contents),
-#if !BUILDFLAG(IS_ANDROID)
-      autofill_ai_manager_(
-          this,
-          StrikeDatabaseFactory::GetForProfile(
-              Profile::FromBrowserContext(web_contents->GetBrowserContext()))),
-#endif
       ablation_study_(g_browser_process->local_state()),
       identity_credential_delegate_(web_contents),
       otp_field_detector_(std::make_unique<OtpFieldDetector>(this)),
@@ -1243,7 +1233,11 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
   // Initialize StrikeDatabase so its cache will be loaded and ready to use
   // when requested by other Autofill classes.
   GetStrikeDatabase();
-
+  if (base::FeatureList::IsEnabled(features::kAutofillAiWithDataSchema)) {
+    autofill_ai_manager_ = std::make_unique<AutofillAiManager>(
+        this, StrikeDatabaseFactory::GetForProfile(Profile::FromBrowserContext(
+                  web_contents->GetBrowserContext())));
+  }
 #if BUILDFLAG(IS_ANDROID)
   save_update_address_profile_flow_manager_ =
       std::make_unique<SaveUpdateAddressProfileFlowManager>();

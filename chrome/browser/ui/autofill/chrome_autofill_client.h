@@ -296,9 +296,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   autofill_metrics::FormInteractionsUkmLogger form_interactions_ukm_logger_{
       this};
 
-#if !BUILDFLAG(IS_ANDROID)
-  AutofillAiManager autofill_ai_manager_;
-#endif
+  std::unique_ptr<AutofillAiManager> autofill_ai_manager_;
 
   // These members are initialized lazily in their respective getters.
   // Therefore, do not access the members directly.
