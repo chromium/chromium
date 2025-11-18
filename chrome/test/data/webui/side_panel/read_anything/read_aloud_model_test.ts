@@ -1056,4 +1056,42 @@ suite('ReadAloudModel', () => {
         getReadAloudModel().moveSpeechForward();
         assertTextEmpty();
       });
+
+  test(
+      'getCurrentText does not filter out whitespace between nodes',
+      async () => {
+        const teenLink = document.createElement('a');
+        const p = document.createElement('p');
+        teenLink.textContent = 'teen';
+        p.appendChild(teenLink);
+
+        const whitespaceSpan = document.createElement('span');
+        whitespaceSpan.textContent = ' ';
+        p.appendChild(whitespaceSpan);
+
+        const satiricalLink = document.createElement('a');
+        satiricalLink.textContent = 'satirical';
+        p.appendChild(satiricalLink);
+
+        const whitespaceSpan2 = document.createElement('span');
+        whitespaceSpan2.textContent = ' ';
+        p.appendChild(whitespaceSpan2);
+
+        const crimeFilmLink = document.createElement('a');
+        crimeFilmLink.textContent = 'crime film';
+        p.appendChild(crimeFilmLink);
+
+        document.body.appendChild(p);
+
+        await microtasksFinished();
+        getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+        // If whitespace were filtered out, this would be
+        // "teensatiricalcrime film"
+        assertEquals(
+            'teen satirical crime film',
+            getReadAloudModel().getCurrentTextContent().trim());
+
+        getReadAloudModel().moveSpeechForward();
+        assertTextEmpty();
+      });
 });

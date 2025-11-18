@@ -283,7 +283,14 @@ export class TsReadModelImpl implements ReadAloudModelBrowserProxy {
       if (currentNode.nodeType === Node.ELEMENT_NODE) {
         this.addNodeForListElement(currentNode, textNodes);
       } else if (currentNode.nodeType === Node.TEXT_NODE) {
-        if (currentNode.textContent && currentNode.textContent.trim().length) {
+        // Don't filter out text nodes that are just whitespace. Filtering
+        // out these nodes can cause two different nodes to be improperly
+        // grouped as the same word.
+        // e.g.
+        // <a>link</a> <a>hyperlink</a> would be incorrectly spoken as
+        // "linkhyperlink" instead of "link hyperlink" if the whitespace
+        // was filtered out. This would cause issues with highlighting.
+        if (currentNode.textContent) {
           const readAloudNode = ReadAloudNode.create(currentNode);
           if (readAloudNode instanceof DomReadAloudNode) {
             textNodes.push(readAloudNode);
