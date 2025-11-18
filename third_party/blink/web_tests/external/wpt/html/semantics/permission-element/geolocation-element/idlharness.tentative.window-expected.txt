@@ -1,0 +1,21 @@
+This is a testharness.js-based test.
+[FAIL] HTMLGeolocationElement interface: existence and properties of interface object
+  assert_equals: prototype of HTMLGeolocationElement is not HTMLElement expected function "function HTMLElement() { [native code] }" but got function "function HTMLPermissionElement() { [native code] }"
+[FAIL] HTMLGeolocationElement interface: existence and properties of interface prototype object
+  assert_equals: prototype of HTMLGeolocationElement.prototype is not HTMLElement.prototype expected object "[object HTMLElement]" but got object "[object HTMLPermissionElement]"
+[FAIL] HTMLGeolocationElement interface: attribute isValid
+  assert_own_property: expected property "isValid" missing
+[FAIL] HTMLGeolocationElement interface: attribute invalidReason
+  assert_own_property: expected property "invalidReason" missing
+[FAIL] HTMLGeolocationElement interface: attribute initialPermissionStatus
+  assert_own_property: expected property "initialPermissionStatus" missing
+[FAIL] HTMLGeolocationElement interface: attribute permissionStatus
+  assert_own_property: expected property "permissionStatus" missing
+[FAIL] HTMLGeolocationElement interface: attribute onpromptaction
+  assert_own_property: expected property "onpromptaction" missing
+[FAIL] HTMLGeolocationElement interface: attribute onpromptdismiss
+  assert_own_property: expected property "onpromptdismiss" missing
+[FAIL] HTMLGeolocationElement interface: attribute onvalidationstatuschange
+  assert_own_property: expected property "onvalidationstatuschange" missing
+Harness: the test ran to completion.
+
