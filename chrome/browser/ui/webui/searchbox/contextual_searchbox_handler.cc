@@ -310,14 +310,9 @@ void ContextualSearchboxHandler::AddTabContext(int32_t tab_id,
   lens::TabContextualizationController* tab_contextualization_controller =
       tab->GetTabFeatures()->tab_contextualization_controller();
   auto token = base::UnguessableToken::Create();
-  // If necessary, delay the tab context from being uploaded to the lens server.
-  // TODO(crbug.com/455972558) upload on query submission when delayed.
-  auto context_callback =
-      delay_upload
-          ? base::DoNothing()
-          : base::BindOnce(&ContextualSearchboxHandler::OnGetTabPageContext,
-                           weak_ptr_factory_.GetWeakPtr(), token);
-  tab_contextualization_controller->GetPageContext(std::move(context_callback));
+  tab_contextualization_controller->GetPageContext(
+      base::BindOnce(&ContextualSearchboxHandler::OnGetTabPageContext,
+                     weak_ptr_factory_.GetWeakPtr(), delay_upload, token));
   std::move(callback).Run(token);
 }
 
@@ -399,6 +394,12 @@ void ContextualSearchboxHandler::DeleteContext(
       deleted_context_tokens_.insert(context_token);
     }
   }
+
+  // If the context token matches the cached tab context, we clear the snapshot.
+  if (tab_context_snapshot_.has_value() &&
+      tab_context_snapshot_.value().first == context_token) {
+    tab_context_snapshot_.reset();
+  }
 }
 
 void ContextualSearchboxHandler::ClearFiles() {
@@ -455,6 +456,9 @@ void ContextualSearchboxHandler::ComputeAndOpenQueryUrl(
     std::map<std::string, std::string> additional_params) {
   auto* contextual_session_handle = GetSessionHandle(web_contents_);
   if (contextual_session_handle) {
+    // Upload the cached tab context if it exists.
+    UploadSnapshotTabContextIfPresent();
+
     auto search_url_request_info =
         std::make_unique<contextual_search::ContextualSearchContextController::
                              CreateSearchUrlRequestInfo>();
@@ -481,6 +485,7 @@ void ContextualSearchboxHandler::ComputeAndOpenQueryUrl(
 }
 
 void ContextualSearchboxHandler::OnGetTabPageContext(
+    bool delay_upload,
     const base::UnguessableToken& context_token,
     std::unique_ptr<lens::ContextualInputData> page_content_data) {
   if (deleted_context_tokens_.contains(context_token)) {
@@ -488,12 +493,48 @@ void ContextualSearchboxHandler::OnGetTabPageContext(
     deleted_context_tokens_.erase(context_token);
     return;
   }
+
+  if (delay_upload) {
+    SnapshotTabContext(context_token, std::move(page_content_data));
+  } else {
+    UploadTabContext(context_token, std::move(page_content_data));
+  }
+}
+
+void ContextualSearchboxHandler::SnapshotTabContext(
+    const base::UnguessableToken& context_token,
+    std::unique_ptr<lens::ContextualInputData> page_content_data) {
+  tab_context_snapshot_.emplace(context_token, std::move(page_content_data));
+
+  page_->OnContextualInputStatusChanged(
+      context_token,
+      contextual_search::ToMojom(
+          contextual_search::FileUploadStatus::kProcessing),
+      std::nullopt);
+}
+
+void ContextualSearchboxHandler::UploadTabContext(
+    const base::UnguessableToken& context_token,
+    std::unique_ptr<lens::ContextualInputData> page_content_data) {
   auto* contextual_session_handle = GetSessionHandle(web_contents_);
+
   if (contextual_session_handle) {
     contextual_session_handle->StartTabContextUploadFlow(
         context_token, std::move(page_content_data),
         CreateImageEncodingOptions());
   }
+}
+
+void ContextualSearchboxHandler::UploadSnapshotTabContextIfPresent() {
+  if (!tab_context_snapshot_.has_value()) {
+    return;
+  }
+
+  auto [context_token, page_content_data] =
+      std::move(tab_context_snapshot_.value());
+  tab_context_snapshot_.reset();
+
+  UploadTabContext(context_token, std::move(page_content_data));
 }
 
 void ContextualSearchboxHandler::OpenUrl(
