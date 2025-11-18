@@ -102,9 +102,12 @@ class GlicUserStatusBrowserTest : public InProcessBrowserTest {
         ::prefs::kGeminiSettings,
         static_cast<int>(glic::prefs::SettingsPolicyState::kEnabled));
 
+#if !BUILDFLAG(IS_CHROMEOS)
+    // TODO(crbug.com/460830699): Evaluate whether this is necessary on ChromeOS.
     disclaimer_service_resetter_ =
         enterprise_util::DisableAutomaticManagementDisclaimerUntilReset(
             profile());
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   }
 
   void TearDownOnMainThread() override {
