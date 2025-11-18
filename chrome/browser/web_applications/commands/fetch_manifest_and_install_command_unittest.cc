@@ -72,6 +72,7 @@
 #include "ui/gfx/test/sk_gmock_support.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "base/test/task_environment.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chromeos/ash/experiences/arc/mojom/intent_helper.mojom.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
@@ -85,7 +86,14 @@
 namespace web_app {
 namespace {
 
-class FetchManifestAndInstallCommandTest : public WebAppTest {
+class FetchManifestAndInstallCommandTest
+    : public WebAppTest
+#if BUILDFLAG(IS_CHROMEOS)
+    ,
+      // TODO(crbug.com/461689107): Figure out a better way and remove this.
+      public base::test::TaskEnvironment::DestructionObserver
+#endif  //  BUILDFLAG(IS_CHROMEOS)
+{
  public:
   const GURL kWebAppUrl = GURL("https://example.com/path/index.html");
   const webapps::AppId kWebAppId =
@@ -132,13 +140,26 @@ class FetchManifestAndInstallCommandTest : public WebAppTest {
     fake_intent_helper_host_.reset();
     arc_app_test_.PreProfileTearDown();
 
-    // TODO(crbug.com/454468678): This should be called after profile is
-    // deleted, but before TaskEnvironment is deleted.
-    arc_app_test_.PostProfileTearDown();
+    // `ArcAppTest::PostProfileTearDown` should be called after profile is
+    // deleted, but before TaskEnvironment is deleted. In this test, both
+    // profile and TaskEnvironment are destroyed in the parent's TearDown. So,
+    // this test uses `TaskEnvironment::DestructionObserver` to get the chance.
+    // TODO(crbug.com/461689107): Figure out a better way and remove this.
+    base::test::TaskEnvironment::AddDestructionObserver(this);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
     WebAppTest::TearDown();
   }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // base::test::TaskEnvironment::DestructionObserver override:
+  // TODO(crbug.com/461689107): Figure out a better way and remove this.
+  void WillDestroyCurrentTaskEnvironment() override {
+    base::test::TaskEnvironment::RemoveDestructionObserver(this);
+
+    arc_app_test_.PostProfileTearDown();
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   WebAppProvider* provider() { return WebAppProvider::GetForTest(profile()); }
 

@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chromeos/ash/experiences/arc/mojom/app.mojom-forward.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -50,12 +49,18 @@ class ArcAppTest {
   virtual ~ArcAppTest();
 
   // Tests should call the SetUp / TearDown methods in the following order.
-  // 1. PreProfileSetUp
-  // 2. (create a profile)
-  // 3. PostProfileSetUp
-  // 4. PreProfileTearDown
-  // 5. (delete the profile)
-  // 6. PostProfileTearDown
+  // 1. (Optionally, SetUserEmail. See the comment below.)
+  // 2. PreProfileSetUp
+  // 3. (create a profile)
+  // 4. PostProfileSetUp
+  // 5. PreProfileTearDown
+  // 6. (delete the profile)
+  // 7. PostProfileTearDown
+
+  // This must be called before `PreProfileSetUp` if `user_manager_mode` is
+  // `kCreate` and the profile user name is other than
+  // `TestingProfile::kDefaultProfileUserName`.
+  void SetUserEmail(const std::string& email);
 
   // Perform initialization that's supposed to be done before profile creation.
   // `PostProfileTearDown` must also be called afterward.
@@ -152,13 +157,14 @@ class ArcAppTest {
   }
 
  private:
-  const user_manager::User* CreateUserAndLogin();
+  void CreateUserAndLogin();
   bool FindPackage(const std::string& package_name);
   void CreateFakeAppsAndPackages();
 
   const UserManagerMode user_manager_mode_;
 
   // Unowned pointer.
+  raw_ptr<const user_manager::User> user_ = nullptr;
   raw_ptr<Profile> profile_ = nullptr;
 
   raw_ptr<ArcAppListPrefs, DanglingUntriaged> arc_app_list_pref_ = nullptr;
@@ -179,6 +185,7 @@ class ArcAppTest {
   bool wait_compatibility_mode_ = false;
 
   std::unique_ptr<session_manager::SessionManager> session_manager_;
+  user_manager::ScopedUserManager user_manager_;
 
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
   std::unique_ptr<arc::ArcSessionManager> arc_session_manager_;
@@ -189,12 +196,12 @@ class ArcAppTest {
       compatibility_mode_instance_;
   std::unique_ptr<arc::FakeIntentHelperInstance> intent_helper_instance_;
 
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      fake_user_manager_;
   std::vector<arc::mojom::AppInfoPtr> fake_apps_;
   std::vector<arc::mojom::AppInfoPtr> fake_default_apps_;
   std::vector<arc::mojom::ArcPackageInfoPtr> fake_packages_;
   std::vector<arc::mojom::ShortcutInfo> fake_shortcuts_;
+
+  std::string user_email_;
 
   bool concierge_client_initialized_ = false;
 

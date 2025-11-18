@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -26,6 +27,9 @@
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_bridge.h"
@@ -42,7 +46,11 @@
 #include "chromeos/ash/experiences/arc/test/fake_intent_helper_instance.h"
 #include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/fake_user_manager_delegate.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
+#include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_manager_impl.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -93,10 +101,7 @@ std::vector<arc::mojom::AppInfoPtr> ArcAppTest::CloneApps(
 }
 
 ArcAppTest::ArcAppTest(UserManagerMode user_manager_mode)
-    : user_manager_mode_(user_manager_mode),
-      fake_user_manager_(user_manager_mode == UserManagerMode::kDoNothing
-                             ? nullptr
-                             : std::make_unique<ash::FakeChromeUserManager>()) {
+    : user_manager_mode_(user_manager_mode) {
   CreateFakeAppsAndPackages();
 }
 
@@ -113,6 +118,10 @@ void ArcAppTest::PreProfileSetUp() {
 
   arc::SetArcAvailableCommandLineForTesting(
       base::CommandLine::ForCurrentProcess());
+
+  // TODO(crbug.com/455728516): Fix tests that create TestingProfile without
+  // ProfileManager, and use ScopedAccountIdAnnotator.
+  ash::ProfileHelper::SetProfileToUserForTestingEnabled(true);
 
   // ChromeMainDelegate::PostEarlyInitialization:
   if (!ash::ConciergeClient::Get()) {
@@ -140,6 +149,18 @@ void ArcAppTest::PreProfileSetUp() {
           base::BindRepeating(arc::FakeArcSession::Create)));
   DCHECK(arc::ArcSessionManager::Get());
   arc::ArcSessionManager::SetUiEnabledForTesting(false);
+
+  // ChromeBrowserMainPartsAsh::PreProfileInit:
+  if (user_manager_mode_ == UserManagerMode::kCreate) {
+    user_manager_.Reset(std::make_unique<user_manager::UserManagerImpl>(
+        std::make_unique<user_manager::FakeUserManagerDelegate>(),
+        TestingBrowserProcess::GetGlobal()->local_state()));
+    session_manager::SessionManager::Get()->OnUserManagerCreated(
+        user_manager_.Get());
+
+    // Set up user and then create a session.
+    CreateUserAndLogin();
+  }
 }
 
 void ArcAppTest::PostProfileSetUp(Profile* profile) {
@@ -150,14 +171,29 @@ void ArcAppTest::PostProfileSetUp(Profile* profile) {
   DCHECK(!profile_);
   profile_ = profile;
 
-  // Set up user.
-  if (fake_user_manager_.Get()) {
-    const user_manager::User* user = CreateUserAndLogin();
+  // Set up user-profile mapping.
+  if (user_manager_mode_ == UserManagerMode::kCreate) {
+    CHECK(user_);
+    CHECK_EQ(user_->GetAccountId().GetUserEmail(),
+             profile->GetProfileUserName())
+        << "Test needs to call `SetUserEmail` before PreProfileSetUp";
 
-    // If for any reason the garbage collector kicks in while we are waiting for
-    // an icon, have the user-to-profile mapping ready to avoid using the real
-    // profile manager (which is null).
-    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
+    // NOTE: Some tests call SetUp() again after TearDown().
+    // TODO(crbug.com/446582547): Fix those tests and remove the `Get` check.
+    if (!ash::AnnotatedAccountId::Get(profile_)) {
+      ash::AnnotatedAccountId::Set(profile_, user_->GetAccountId(),
+                                   /*for_test=*/true);
+    }
+
+    user_manager_.Get()->OnUserProfileCreated(user_->GetAccountId(),
+                                              profile->GetPrefs());
+
+    // The testing mapping is needed for `ProfileHelper::GetProfileByUser`.
+    // If the mapping is not setup, ProfileManager is required to look up the
+    // profile. However, several test fixtures create TestingProfile without
+    // ProfileManager.
+    // TODO(crbug.com/455728516): Fix those tests and remove this.
+    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user_,
                                                                  profile_);
   }
 
@@ -388,6 +424,11 @@ void ArcAppTest::PreProfileTearDown() {
 
   arc::ResetArcAllowedCheckForTesting(profile_);
 
+  if (user_manager_mode_ == UserManagerMode::kCreate) {
+    CHECK(user_);
+    user_manager_.Get()->OnUserProfileWillBeDestroyed(user_->GetAccountId());
+  }
+
   profile_ = nullptr;
 }
 
@@ -404,7 +445,15 @@ void ArcAppTest::PostProfileTearDown() {
     arc_service_manager_.reset();
   }
 
-  session_manager_.reset();
+  if (user_manager_mode_ == UserManagerMode::kCreate) {
+    user_ = nullptr;
+
+    CHECK(session_manager_);
+    session_manager_.reset();
+
+    CHECK(user_manager_.Get());
+    user_manager_.Reset();
+  }
 
   // ConciergeClient may be initialized from other testing utility, such as
   // ash::AshTestHelper::SetUp(), so Shutdown() only when it is initialized in
@@ -413,6 +462,10 @@ void ArcAppTest::PostProfileTearDown() {
     ash::ConciergeClient::Shutdown();
     concierge_client_initialized_ = false;
   }
+
+  // TODO(crbug.com/455728516): Fix tests that create TestingProfile without
+  // ProfileManager, and use ScopedAccountIdAnnotator.
+  ash::ProfileHelper::SetProfileToUserForTestingEnabled(false);
 }
 
 void ArcAppTest::StopArcInstance() {
@@ -428,12 +481,23 @@ void ArcAppTest::RestartArcInstance() {
   WaitForInstanceReady(bridge_service->app());
 }
 
-const user_manager::User* ArcAppTest::CreateUserAndLogin() {
-  const AccountId account_id(AccountId::FromUserEmailGaiaId(
-      profile_->GetProfileUserName(), GaiaId("1234567890")));
-  const user_manager::User* user = fake_user_manager_->AddUser(account_id);
-  fake_user_manager_->LoginUser(account_id);
-  return user;
+void ArcAppTest::CreateUserAndLogin() {
+  std::string profile_user_name = user_email_;
+  if (user_email_.empty()) {
+    profile_user_name = TestingProfile::kDefaultProfileUserName;
+  }
+
+  const AccountId account_id(
+      AccountId::FromUserEmailGaiaId(profile_user_name, GaiaId("1234567890")));
+  CHECK(user_manager::TestHelper(user_manager::UserManager::Get())
+            .AddRegularUser(account_id));
+  CHECK_DEREF(session_manager::SessionManager::Get())
+      .CreateSession(account_id,
+                     user_manager::TestHelper::GetFakeUsernameHash(account_id),
+                     /*new_user=*/false, /*has_active_session=*/false);
+
+  user_ = user_manager::UserManager::Get()->FindUser(account_id);
+  CHECK(user_);
 }
 
 void ArcAppTest::AddPackage(arc::mojom::ArcPackageInfoPtr package) {
@@ -459,4 +523,8 @@ void ArcAppTest::RemovePackage(const std::string& package_name) {
 bool ArcAppTest::FindPackage(const std::string& package_name) {
   return base::Contains(fake_packages_, package_name,
                         &arc::mojom::ArcPackageInfo::package_name);
+}
+
+void ArcAppTest::SetUserEmail(const std::string& email) {
+  user_email_ = email;
 }

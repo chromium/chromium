@@ -93,6 +93,7 @@ class KioskArcvmAppServiceTest : public testing::Test {
 
   void SetUp() override {
     arc_app_test_.set_persist_service_manager(true);
+    arc_app_test_.SetUserEmail(kAppEmail);
     arc_app_test_.PreProfileSetUp();
 
     // TODO(crbug.com/418638940): Refactor to use ChromeAshTestBase.

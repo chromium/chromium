@@ -27,6 +27,7 @@
 #include "ui/webui/resources/cr_components/app_management/app_management.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "base/test/task_environment.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"  // nogncheck
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"  // nogncheck
 #include "chrome/browser/apps/app_service/app_service_test.h"  // nogncheck
@@ -871,7 +872,9 @@ TEST_P(AppManagementPageHandlerTestBase, NavigationCapturingUserChoice) {
 
 #if BUILDFLAG(IS_CHROMEOS)
 class AppManagementPageHandlerArcTest
-    : public AppManagementPageHandlerTestBase {
+    : public AppManagementPageHandlerTestBase,
+      // TODO(crbug.com/461689107): Figure out a better way and remove this.
+      public base::test::TaskEnvironment::DestructionObserver {
  public:
   void SetUp() override {
     // We want to set up the real ArcIntentHelper KeyedService with a fake
@@ -886,10 +889,23 @@ class AppManagementPageHandlerArcTest
   void TearDown() override {
     arc_app_test_.StopArcInstance();
     arc_app_test_.PreProfileTearDown();
-    // TODO(crbug.com/454468678): This should be called after profile is
-    // deleted, but before TaskEnvironment is deleted.
-    arc_app_test_.PostProfileTearDown();
+
+    // `ArcAppTest::PostProfileTearDown` should be called after profile is
+    // deleted, but before TaskEnvironment is deleted. In this test, both
+    // profile and TaskEnvironment are destroyed in the parent's TearDown. So,
+    // this test uses `TaskEnvironment::DestructionObserver` to get the chance.
+    // TODO(crbug.com/461689107): Figure out a better way and remove this.
+    base::test::TaskEnvironment::AddDestructionObserver(this);
+
     AppManagementPageHandlerTestBase::TearDown();
+  }
+
+  // base::test::TaskEnvironment::DestructionObserver:
+  // TODO(crbug.com/461689107): Figure out a better way and remove this.
+  void WillDestroyCurrentTaskEnvironment() override {
+    base::test::TaskEnvironment::RemoveDestructionObserver(this);
+
+    arc_app_test_.PostProfileTearDown();
   }
 
  protected:

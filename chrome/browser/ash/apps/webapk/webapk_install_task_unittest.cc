@@ -115,7 +115,8 @@ class WebApkInstallTaskTest : public testing::Test {
 
     arc_app_test_.PreProfileSetUp();
 
-    profile_ = profile_manager_->CreateTestingProfile("test");
+    profile_ = profile_manager_->CreateTestingProfile(
+        TestingProfile::kDefaultProfileUserName);
 
     app_service_test_.SetUp(profile());
 
