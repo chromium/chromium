@@ -4980,8 +4980,8 @@ targets.bundle(
         targets.bundle(
             targets = "ios_common_tests",
             variants = [
-                "SIM_IPAD_AIR_6TH_GEN_26_1",
-                "SIM_IPHONE_16_26_1",
+                "SIM_IPAD_AIR_6TH_GEN_26_2",
+                "SIM_IPHONE_16_26_2",
             ],
         ),
         targets.bundle(
@@ -4990,8 +4990,8 @@ targets.bundle(
                 "xcodebuild_sim_runner",
             ],
             variants = [
-                "SIM_IPAD_AIR_6TH_GEN_26_1",
-                "SIM_IPHONE_16_26_1",
+                "SIM_IPAD_AIR_6TH_GEN_26_2",
+                "SIM_IPHONE_16_26_2",
             ],
         ),
         targets.bundle(
@@ -5001,8 +5001,8 @@ targets.bundle(
                 "record_failed_tests",
             ],
             variants = [
-                "SIM_IPAD_AIR_6TH_GEN_26_1",
-                "SIM_IPHONE_16_26_1",
+                "SIM_IPAD_AIR_6TH_GEN_26_2",
+                "SIM_IPHONE_16_26_2",
             ],
         ),
         targets.bundle(
@@ -5012,16 +5012,16 @@ targets.bundle(
                 "record_failed_tests",
             ],
             variants = [
-                "SIM_IPAD_AIR_6TH_GEN_26_1",
-                "SIM_IPHONE_16_26_1",
+                "SIM_IPAD_AIR_6TH_GEN_26_2",
+                "SIM_IPHONE_16_26_2",
             ],
         ),
         targets.bundle(
             targets = "ios_screen_size_dependent_tests",
             variants = [
-                "SIM_IPAD_AIR_6TH_GEN_26_1",
-                "SIM_IPHONE_16_26_1",
-                "SIM_IPHONE_SE_3RD_GEN_26_1",
+                "SIM_IPAD_AIR_6TH_GEN_26_2",
+                "SIM_IPHONE_16_26_2",
+                "SIM_IPHONE_SE_3RD_GEN_26_2",
             ],
         ),
     ],
@@ -5033,8 +5033,8 @@ targets.bundle(
         targets.bundle(
             targets = "ios_common_tests",
             variants = [
-                "SIM_IPAD_AIR_6TH_GEN_26_1",
-                "SIM_IPHONE_16_26_1",
+                "SIM_IPAD_AIR_6TH_GEN_26_2",
+                "SIM_IPHONE_16_26_2",
             ],
         ),
         targets.bundle(
@@ -5043,8 +5043,8 @@ targets.bundle(
                 "xcodebuild_sim_runner",
             ],
             variants = [
-                "SIM_IPAD_AIR_6TH_GEN_26_1",
-                "SIM_IPHONE_16_26_1",
+                "SIM_IPAD_AIR_6TH_GEN_26_2",
+                "SIM_IPHONE_16_26_2",
             ],
         ),
         targets.bundle(
@@ -5053,16 +5053,16 @@ targets.bundle(
                 "xcodebuild_sim_runner",
             ],
             variants = [
-                "SIM_IPAD_AIR_6TH_GEN_26_1",
-                "SIM_IPHONE_16_26_1",
+                "SIM_IPAD_AIR_6TH_GEN_26_2",
+                "SIM_IPHONE_16_26_2",
             ],
         ),
         targets.bundle(
             targets = "ios_screen_size_dependent_tests",
             variants = [
-                "SIM_IPAD_AIR_6TH_GEN_26_1",
-                "SIM_IPHONE_16_26_1",
-                "SIM_IPHONE_SE_3RD_GEN_26_1",
+                "SIM_IPAD_AIR_6TH_GEN_26_2",
+                "SIM_IPHONE_16_26_2",
+                "SIM_IPHONE_SE_3RD_GEN_26_2",
             ],
         ),
     ],
@@ -5118,7 +5118,7 @@ targets.bundle(
         targets.bundle(
             targets = "ios_blink_tests",
             variants = [
-                "SIM_IPHONE_15_26_1",
+                "SIM_IPHONE_15_26_2",
             ],
         ),
     ],

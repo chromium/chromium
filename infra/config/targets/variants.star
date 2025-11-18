@@ -340,17 +340,17 @@ targets.variant(
 )
 
 targets.variant(
-    name = "SIM_IPAD_AIR_6TH_GEN_26_1",
-    identifier = "iPad Air (6th generation) 26.1",
+    name = "SIM_IPAD_AIR_6TH_GEN_26_2",
+    identifier = "iPad Air (6th generation) 26.2",
     generate_pyl_entry = False,
     mixins = [
-        "ios_runtime_cache_26_1",
+        "ios_runtime_cache_26_2",
     ],
     args = [
         "--platform",
         "iPad Air 11-inch (M2)",
         "--version",
-        "26.1",
+        "26.2",
     ],
 )
 
@@ -549,17 +549,17 @@ targets.variant(
 )
 
 targets.variant(
-    name = "SIM_IPHONE_15_26_1",
-    identifier = "iPhone 15 26.1",
+    name = "SIM_IPHONE_15_26_2",
+    identifier = "iPhone 15 26.2",
     generate_pyl_entry = False,
     mixins = [
-        "ios_runtime_cache_26_1",
+        "ios_runtime_cache_26_2",
     ],
     args = [
         "--platform",
         "iPhone 15",
         "--version",
-        "26.1",
+        "26.2",
     ],
 )
 
@@ -594,17 +594,17 @@ targets.variant(
 )
 
 targets.variant(
-    name = "SIM_IPHONE_16_26_1",
-    identifier = "iPhone 16 26.1",
+    name = "SIM_IPHONE_16_26_2",
+    identifier = "iPhone 16 26.2",
     generate_pyl_entry = False,
     mixins = [
-        "ios_runtime_cache_26_1",
+        "ios_runtime_cache_26_2",
     ],
     args = [
         "--platform",
         "iPhone 16",
         "--version",
-        "26.1",
+        "26.2",
     ],
 )
 
@@ -759,17 +759,17 @@ targets.variant(
 )
 
 targets.variant(
-    name = "SIM_IPHONE_SE_3RD_GEN_26_1",
-    identifier = "iPhone SE (3rd generation) 26.1",
+    name = "SIM_IPHONE_SE_3RD_GEN_26_2",
+    identifier = "iPhone SE (3rd generation) 26.2",
     generate_pyl_entry = False,
     mixins = [
-        "ios_runtime_cache_26_1",
+        "ios_runtime_cache_26_2",
     ],
     args = [
         "--platform",
         "iPhone SE (3rd generation)",
         "--version",
-        "26.1",
+        "26.2",
     ],
 )
 
