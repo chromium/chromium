@@ -480,13 +480,16 @@ void AppBannerManagerAndroid::OnInstallEvent(
           TrackUserResponse(USER_RESPONSE_NATIVE_APP_ACCEPTED);
           break;
         case AddToHomescreenParams::AppType::WEBAPK:
-          [[fallthrough]];
-        case AddToHomescreenParams::AppType::SHORTCUT:
           TrackUserResponse(USER_RESPONSE_WEB_APP_ACCEPTED);
           AppBannerSettingsHelper::RecordBannerInstallEvent(
               web_contents(), a2hs_params.shortcut_info->url.spec());
           break;
         default:
+          // a2hs_params should be the one created by
+          // CreateAddToHomescreenParams(), which only returns
+          // AddToHomescreenParams::AppType::NATIVE or
+          // AddToHomescreenParams::AppType::WEBAPK, so this shouldn't be
+          // reached.
           NOTREACHED();
       }
       break;
@@ -507,8 +510,7 @@ void AppBannerManagerAndroid::OnInstallEvent(
 
     case AddToHomescreenInstaller::Event::INSTALL_REQUEST_FINISHED:
       SendBannerAccepted();
-      if (a2hs_params.app_type == AddToHomescreenParams::AppType::WEBAPK ||
-          a2hs_params.app_type == AddToHomescreenParams::AppType::SHORTCUT) {
+      if (a2hs_params.app_type == AddToHomescreenParams::AppType::WEBAPK) {
         OnInstall(a2hs_params.shortcut_info->display,
                   /*set_current_web_app_not_installable=*/false);
       }
