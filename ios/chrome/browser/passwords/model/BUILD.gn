@@ -80,6 +80,8 @@ source_set("model") {
     "//components/translate/core/browser",
     "//components/ukm",
     "//components/ukm/ios:ukm_url_recorder",
+    "//components/webauthn/ios",
+    "//components/webauthn/ios:features",
     "//google_apis",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/strings",

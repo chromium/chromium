@@ -29,10 +29,13 @@
 #import "components/password_manager/core/browser/password_requirements_service.h"
 #import "components/password_manager/core/browser/password_sync_util.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
+#import "components/password_manager/ios/ios_password_manager_driver.h"
 #import "components/password_manager/ios/password_manager_ios_util.h"
 #import "components/sync/service/sync_service.h"
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
+#import "components/webauthn/ios/features.h"
+#import "components/webauthn/ios/ios_webauthn_credentials_delegate_factory.h"
 #import "ios/chrome/browser/enterprise/connectors/reporting/ios_reporting_event_router_factory.h"
 #import "ios/chrome/browser/passwords/model/features.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
@@ -387,6 +390,18 @@ bool IOSChromePasswordManagerClient::IsIsolationForPasswordSitesEnabled()
 
 bool IOSChromePasswordManagerClient::IsNewTabPage() const {
   return false;
+}
+
+password_manager::WebAuthnCredentialsDelegate*
+IOSChromePasswordManagerClient::GetWebAuthnCredentialsDelegateForDriver(
+    password_manager::PasswordManagerDriver* driver) {
+  if (!base::FeatureList::IsEnabled(kIOSPasskeyModalLoginWithShim)) {
+    return nullptr;
+  }
+
+  return IOSWebAuthnCredentialsDelegateFactory::GetFactory(bridge_.webState)
+      ->GetDelegateForFrame(
+          static_cast<IOSPasswordManagerDriver*>(driver)->web_frame_id());
 }
 
 safe_browsing::PasswordProtectionService*

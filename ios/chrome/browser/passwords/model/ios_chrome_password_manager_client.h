@@ -155,6 +155,9 @@ class IOSChromePasswordManagerClient
   void UpdateFormManagers() override;
   bool IsIsolationForPasswordSitesEnabled() const override;
   bool IsNewTabPage() const override;
+  password_manager::WebAuthnCredentialsDelegate*
+  GetWebAuthnCredentialsDelegateForDriver(
+      password_manager::PasswordManagerDriver* driver) override;
   safe_browsing::PasswordProtectionService* GetPasswordProtectionService()
       const override;
   autofill::AutofillCrowdsourcingManager* GetAutofillCrowdsourcingManager()

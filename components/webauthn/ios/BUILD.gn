@@ -7,6 +7,10 @@ import("//ios/web/public/js_messaging/optimize_ts.gni")
 source_set("ios") {
   sources = [
     "ios_passkey_client.h",
+    "ios_webauthn_credentials_delegate.h",
+    "ios_webauthn_credentials_delegate.mm",
+    "ios_webauthn_credentials_delegate_factory.h",
+    "ios_webauthn_credentials_delegate_factory.mm",
     "passkey_java_script_feature.h",
     "passkey_java_script_feature.mm",
     "passkey_tab_helper.h",
@@ -18,6 +22,9 @@ source_set("ios") {
     ":passkey_controller_js",
     ":passkey_types",
     "//base",
+    "//components/autofill/ios/browser",
+    "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser:passkey_credential",
     "//components/webauthn/core/browser:client_data",
     "//components/webauthn/core/browser:passkey_model",
     "//device/fido",
@@ -57,11 +64,15 @@ source_set("features") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "passkey_tab_helper_unittest.mm" ]
+  sources = [
+    "ios_webauthn_credentials_delegate_factory_unittest.mm",
+    "passkey_tab_helper_unittest.mm",
+  ]
   deps = [
     ":ios",
     ":js_tests",
     "//base/test:test_support",
+    "//components/autofill/ios/browser",
     "//components/webauthn/core/browser:passkey_model",
     "//components/webauthn/core/browser:test_support",
     "//ios/web/public/test",
