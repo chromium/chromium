@@ -603,6 +603,10 @@ void HistoryMenuBridge::CancelFaviconRequest(HistoryItem* item) {
 void HistoryMenuBridge::OnURLVisited(
     history::HistoryService* history_service,
     const history::VisitedURLInfo& visited_url_info) {
+  if (visited_url_info.response_code_category ==
+      history::VisitResponseCodeCategory::k404) {
+    return;
+  }
   OnHistoryChanged();
 }
 
