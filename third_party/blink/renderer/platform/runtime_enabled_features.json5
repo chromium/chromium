@@ -1511,6 +1511,7 @@
     },
     {
       name: "CSSPositionAnchorNone",
+      status: "stable",
     },
     {
       name: "CSSPositionStickyStaticScrollPosition",
