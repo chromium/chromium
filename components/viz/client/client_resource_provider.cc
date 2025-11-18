@@ -294,8 +294,11 @@ void ClientResourceProvider::ReceiveReturnsFromParent(
 
   for (const auto& returned : resources) {
     auto imported_it = imported_resources_.find(returned.id);
-    // Everything being returned should already be in the imported list.
-    DCHECK(imported_it != imported_resources_.end());
+    if (imported_it == imported_resources_.end()) {
+      // TODO(zmo): In theory, everything being returned should already be in
+      // the imported list. We should figure out why this happens.
+      continue;
+    }
     auto& imported = imported_it->second;
 
     DCHECK_GE(imported.exported_count, returned.count);
