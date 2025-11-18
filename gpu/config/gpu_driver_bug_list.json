@@ -3786,6 +3786,38 @@
       "features": [
         "disable_sharing_nv12_from_d3d11_to_d3d12"
       ]
+    },
+    {
+      "id": 468,
+      "cr_bugs": [453890655],
+      "description": "D3D12 video encode may cause heap corruption on legacy Intel GPUs.",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "intel_gpu_generation": {
+        "op": "<=",
+        "value": "10"
+      },
+      "features": [
+        "disable_d3d12_video_encoder"
+      ]
+    },
+    {
+      "id": 469,
+      "cr_bugs": [453890655],
+      "description": "D3D12 video encode may cause heap corruption on legacy Intel drivers.",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "driver_version": {
+        "op": "<",
+        "value": "30.0.100.9955"
+      },
+      "features": [
+        "disable_d3d12_video_encoder"
+      ]
     }
   ]
 }
