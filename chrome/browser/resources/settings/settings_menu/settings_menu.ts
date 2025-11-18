@@ -40,6 +40,7 @@ export interface SettingsMenuElement {
     autofill: HTMLLinkElement,
     menu: CrMenuSelector,
     people: HTMLLinkElement,
+    yourSavedInfo: HTMLLinkElement,
   };
 }
 

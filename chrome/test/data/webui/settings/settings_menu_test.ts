@@ -180,6 +180,11 @@ suite('SettingsMenu', function() {
   });
 
   test('autofillPageMenuClick', async function() {
+    loadTimeData.overrideValues({enableYourSavedInfoSettingsPage: false});
+    resetRouterForTesting();
+    createSettingsMenu();
+    await flushTasks();
+
     const entry = settingsMenu.shadowRoot!.querySelector<HTMLElement>(
       'a[href=\'/autofill\']');
     assertTrue(!!entry);

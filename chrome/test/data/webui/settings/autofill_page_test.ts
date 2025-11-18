@@ -151,6 +151,7 @@ suite('PasswordsAndForms', function() {
 
   setup(async function() {
     loadTimeData.overrideValues({
+      enableYourSavedInfoSettingsPage: false,
       shouldShowPayOverTimeSettings: true,
     });
 

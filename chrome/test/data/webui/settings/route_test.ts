@@ -336,6 +336,7 @@ suite('Basic', function() {
       autofill: true,
     });
     loadTimeData.overrideValues({
+      enableYourSavedInfoSettingsPage: false,
       showAutofillAiControl: true,
     });
     resetRouterForTesting();
