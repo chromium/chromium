@@ -6,6 +6,8 @@ package org.chromium.base.process_launcher;
 
 import android.os.Handler;
 
+import com.google.errorprone.annotations.MustBeClosed;
+
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.BindingRequestQueue;
@@ -35,6 +37,7 @@ public interface ScopedServiceBindingBatch extends AutoCloseable {
      * the UI thread.
      */
     @CalledByNative
+    @MustBeClosed
     static @Nullable ScopedServiceBindingBatch scoped() {
         ScopedServiceBindingBatchImpl realBatch = ScopedServiceBindingBatchImpl.scoped();
         if (realBatch != null) {
