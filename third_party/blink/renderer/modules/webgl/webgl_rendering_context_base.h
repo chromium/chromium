@@ -42,7 +42,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_webgl_context_attributes.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
-#include "third_party/blink/renderer/core/html/canvas/ukm_parameters.h"
 #include "third_party/blink/renderer/core/layout/content_change_type.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
@@ -139,10 +138,6 @@ class MODULES_EXPORT WebGLRenderingContextBase
   ~WebGLRenderingContextBase() override;
 
   HTMLCanvasElement* canvas() const;
-
-  const UkmParameters GetUkmParameters() const {
-    return Host()->GetUkmParameters();
-  }
 
   virtual String ContextName() const = 0;
   virtual void RegisterContextExtensions() = 0;
@@ -2003,13 +1998,6 @@ class MODULES_EXPORT WebGLRenderingContextBase
   static void InitializeWebGLContextLimits(
       WebGraphicsContext3DProvider* context_provider);
   static unsigned CurrentMaxGLContexts();
-
-  void RecordIdentifiableGLParameterDigest(GLenum pname,
-                                           IdentifiableToken value);
-
-  void RecordShaderPrecisionFormatForStudy(GLenum shader_type,
-                                           GLenum precision_type,
-                                           WebGLShaderPrecisionFormat* format);
 
   void Dispose() override;
 

@@ -11,9 +11,6 @@
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_token_builder.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
 #include "third_party/blink/renderer/bindings/modules/v8/webgl_any.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -656,7 +653,6 @@ ScriptValue WebGL2RenderingContextBase::getInternalformatParameter(
       auto values = base::HeapArray<GLint>::WithSize(length);
       ContextGL()->GetInternalformativ(target, internalformat, GL_SAMPLES,
                                        length, values.data());
-      RecordInternalFormatParameter(internalformat, values.data(), length);
       return WebGLAny(script_state, DOMInt32Array::Create(values));
     }
     default:
@@ -664,30 +660,6 @@ ScriptValue WebGL2RenderingContextBase::getInternalformatParameter(
                         "invalid parameter name");
       return ScriptValue::CreateNull(script_state->GetIsolate());
   }
-}
-
-// TODO(crbug.com/351564777): should be UNSAFE_BUFFER_USAGE.
-void WebGL2RenderingContextBase::RecordInternalFormatParameter(
-    GLenum internalformat,
-    GLint* values,
-    GLint length) {
-  if (!IdentifiabilityStudySettings::Get()->ShouldSampleType(
-          IdentifiableSurface::Type::kWebGLInternalFormatParameter))
-    return;
-  // SAFETY: required from caller.
-  const base::span<GLint> values_span =
-      UNSAFE_BUFFERS(base::span(values, base::checked_cast<size_t>(length)));
-  const auto& ukm_params = GetUkmParameters();
-  IdentifiableTokenBuilder builder;
-  for (const auto& value : values_span) {
-    builder.AddValue(value);
-  }
-  IdentifiabilityMetricBuilder(ukm_params.source_id)
-      .Add(IdentifiableSurface::FromTypeAndToken(
-               IdentifiableSurface::Type::kWebGLInternalFormatParameter,
-               internalformat),
-           builder.GetToken())
-      .Record(ukm_params.ukm_recorder);
 }
 
 bool WebGL2RenderingContextBase::CheckAndTranslateAttachments(
