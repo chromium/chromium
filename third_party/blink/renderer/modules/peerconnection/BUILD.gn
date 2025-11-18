@@ -21,8 +21,6 @@ blink_modules_sources("peerconnection") {
     "adapters/web_rtc_cross_thread_copier.cc",
     "adapters/web_rtc_cross_thread_copier.h",
     "dedicated_worker_global_scope_rtc_transform.h",
-    "identifiability_metrics.cc",
-    "identifiability_metrics.h",
     "media_stream_remote_video_source.cc",
     "media_stream_remote_video_source.h",
     "media_stream_track_metrics.cc",
