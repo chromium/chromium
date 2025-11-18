@@ -160,6 +160,10 @@ public class CustomTabsConnection {
     static final String PARALLEL_REQUEST_URL_KEY =
             "android.support.customtabs.PARALLEL_REQUEST_URL";
 
+    @VisibleForTesting
+    static final String PARALLEL_REQUEST_URL_LIST_KEY =
+            "android.support.customtabs.PARALLEL_REQUEST_URL_LIST";
+
     static final String RESOURCE_PREFETCH_URL_LIST_KEY =
             "androidx.browser.RESOURCE_PREFETCH_URL_LIST";
 
@@ -1203,22 +1207,31 @@ public class CustomTabsConnection {
             Log.w(TAG, "handleParallelRequest() = " + PARALLEL_REQUEST_MESSAGES[status]);
         }
 
-        if ((status != ParallelRequestStatus.NO_REQUEST)
-                && (status != ParallelRequestStatus.FAILURE_NOT_INITIALIZED)
-                && (status != ParallelRequestStatus.FAILURE_NOT_AUTHORIZED)
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.CCT_REPORT_PARALLEL_REQUEST_STATUS)) {
-            Bundle args = new Bundle();
-            Uri url = intent.getParcelableExtra(PARALLEL_REQUEST_URL_KEY);
-            args.putParcelable("url", url);
-            args.putInt("status", status);
-            safeExtraCallback(session, ON_DETACHED_REQUEST_REQUESTED, args);
-            if (mLogRequests) {
-                logCallback(ON_DETACHED_REQUEST_REQUESTED, bundleToJson(args).toString());
-            }
+        // Success is already reported per URL, report any failures here.
+        if ((status != ParallelRequestStatus.SUCCESS)) {
+            reportParallelRequestStatus(
+                    session, status, intent.getParcelableExtra(PARALLEL_REQUEST_URL_KEY));
         }
 
         return status;
+    }
+
+    private void reportParallelRequestStatus(
+            @Nullable SessionHolder<?> session,
+            @ParallelRequestStatus int status,
+            @Nullable Uri url) {
+        if ((status == ParallelRequestStatus.NO_REQUEST)
+                || !ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.CCT_REPORT_PARALLEL_REQUEST_STATUS)) {
+            return;
+        }
+        Bundle args = new Bundle();
+        args.putParcelable("url", url);
+        args.putInt("status", status);
+        safeExtraCallback(session, ON_DETACHED_REQUEST_REQUESTED, args);
+        if (mLogRequests) {
+            logCallback(ON_DETACHED_REQUEST_REQUESTED, bundleToJson(args).toString());
+        }
     }
 
     /**
@@ -1232,46 +1245,70 @@ public class CustomTabsConnection {
             @Nullable SessionHolder<?> session, Intent intent) {
         ThreadUtils.assertOnUiThread();
 
-        if (!intent.hasExtra(PARALLEL_REQUEST_URL_KEY)) return ParallelRequestStatus.NO_REQUEST;
+        if (!intent.hasExtra(PARALLEL_REQUEST_URL_KEY)
+                && !intent.hasExtra(PARALLEL_REQUEST_URL_LIST_KEY)) {
+            return ParallelRequestStatus.NO_REQUEST;
+        }
         if (!ChromeBrowserInitializer.getInstance().isFullBrowserInitialized()) {
             return ParallelRequestStatus.FAILURE_NOT_INITIALIZED;
         }
-        if (!mClientManager.getAllowParallelRequestForSession(session)) {
+        String packageName = mClientManager.getClientPackageNameForSession(session);
+        if (session == null
+                || packageName == null
+                || !mClientManager.getAllowParallelRequestForSession(session)) {
             return ParallelRequestStatus.FAILURE_NOT_AUTHORIZED;
         }
-        Uri referrer = intent.getParcelableExtra(PARALLEL_REQUEST_REFERRER_KEY);
-        Uri url = intent.getParcelableExtra(PARALLEL_REQUEST_URL_KEY);
+
+        Uri referrer = IntentUtils.safeGetParcelableExtra(intent, PARALLEL_REQUEST_REFERRER_KEY);
         int policy =
                 intent.getIntExtra(PARALLEL_REQUEST_REFERRER_POLICY_KEY, ReferrerPolicy.DEFAULT);
-        if (url == null) return ParallelRequestStatus.FAILURE_INVALID_URL;
         if (referrer == null) return ParallelRequestStatus.FAILURE_INVALID_REFERRER;
         if (policy < ReferrerPolicy.MIN_VALUE || policy > ReferrerPolicy.MAX_VALUE) {
             policy = ReferrerPolicy.DEFAULT;
         }
 
-        if (url.toString().equals("") || !isValid(url)) {
-            return ParallelRequestStatus.FAILURE_INVALID_URL;
-        }
         if (!canDoParallelRequest(session, referrer)) {
             return ParallelRequestStatus.FAILURE_INVALID_REFERRER_FOR_SESSION;
         }
 
-        String urlString = url.toString();
         String referrerString = referrer.toString();
-        String packageName = mClientManager.getClientPackageNameForSession(session);
+        Uri uri = intent.getParcelableExtra(PARALLEL_REQUEST_URL_KEY);
+        if (uri != null) {
+            return doParallelResourceRequest(session, uri, referrerString, packageName, policy);
+        }
+
+        List<Uri> urls =
+                IntentUtils.getParcelableArrayListExtra(intent, PARALLEL_REQUEST_URL_LIST_KEY);
+        if (urls == null) return ParallelRequestStatus.FAILURE_INVALID_URL;
+        for (Uri url : urls) {
+            @ParallelRequestStatus
+            int result =
+                    doParallelResourceRequest(session, url, referrerString, packageName, policy);
+            if (result != ParallelRequestStatus.SUCCESS) return result;
+        }
+        return ParallelRequestStatus.SUCCESS;
+    }
+
+    private @ParallelRequestStatus int doParallelResourceRequest(
+            SessionHolder<?> session, Uri url, String referrer, String packageName, int policy) {
+        if (url.toString().equals("") || !isValid(url)) {
+            return ParallelRequestStatus.FAILURE_INVALID_URL;
+        }
+        String urlString = url.toString();
+
         CustomTabsConnectionJni.get()
                 .createAndStartDetachedResourceRequest(
                         ProfileManager.getLastUsedRegularProfile(),
                         session,
                         packageName,
                         urlString,
-                        referrerString,
+                        referrer,
                         policy,
                         DetachedResourceRequestMotivation.PARALLEL_REQUEST);
         if (mLogRequests) {
-            Log.w(TAG, "startParallelRequest(%s, %s, %d)", urlString, referrerString, policy);
+            Log.w(TAG, "startParallelRequest(%s, %s, %d)", urlString, referrer, policy);
         }
-
+        reportParallelRequestStatus(session, ParallelRequestStatus.SUCCESS, url);
         return ParallelRequestStatus.SUCCESS;
     }
 

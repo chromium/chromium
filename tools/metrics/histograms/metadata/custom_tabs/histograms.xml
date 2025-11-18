@@ -691,14 +691,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.ParallelRequestStatusOnStart"
-    enum="CustomTabsParallelRequestStatusOnStart" expires_after="M120">
+    enum="CustomTabsParallelRequestStatusOnStart" expires_after="2026-11-01">
   <owner>lizeb@chromium.org</owner>
   <owner>cct-team@google.com</owner>
+  <owner>mthiesse@chromium.org</owner>
   <summary>
     Recorded only on Android. Whether a parallel request was requested by the
     calling application, and if so its initial status. Recorded once per handled
-    intent, when the request is initiated. Starting with M84 this is is also
-    recorded for webapps/WebAPKs. Filter the platform for just CCT/TWA data.
+    intent, when the request is initiated. Filter the platform for just CCT/TWA
+    data. Expired in M120 and brought back in M144.
   </summary>
 </histogram>
 
