@@ -5320,9 +5320,6 @@ bool LayerTreeHostImpl::AnimateLayers(base::TimeTicks monotonic_time,
   // TODO(crbug.com/40443202): Only do this if the animations are on the active
   // tree, or if they are on the pending tree waiting for some future time to
   // start.
-  // TODO(crbug.com/40443205): We currently have a single signal from the
-  // animation_host, so on the last frame of an animation we will
-  // still request an extra SetNeedsAnimate here.
   if (animated) {
     // TODO(crbug.com/40667010): If only scroll animations present, schedule a
     // frame only if scroll changes.
@@ -5360,9 +5357,6 @@ bool LayerTreeHostImpl::AnimateLayers(base::TimeTicks monotonic_time,
         FrameSequenceTrackerType::kSETCompositorAnimation);
   }
 
-  // TODO(crbug.com/40443205): We could return true only if the animations are
-  // on the active tree. There's no need to cause a draw to take place from
-  // animations starting/ticking on the pending tree.
   return animated;
 }
 
