@@ -33,7 +33,8 @@ namespace {
 using Param = std::tuple<bool /*wait_8_days*/,
                          bool /*sync_broken_icons*/,
                          bool /*trusted_icons_enabled*/,
-                         bool /*predictable_app_updates_enabled*/>;
+                         bool /*predictable_app_updates_enabled*/,
+                         SyncTest::SetupSyncMode>;
 }  // namespace
 
 class SingleClientWebAppsSyncGeneratedIconFixSyncTest
@@ -51,6 +52,8 @@ class SingleClientWebAppsSyncGeneratedIconFixSyncTest
         "_",
         std::get<3>(param.param) ? "PredictableAppUpdatesEnabled"
                                  : "PredictableAppUpdatesDisabled",
+        "_",
+        testing::PrintToString(std::get<4>(param.param)),
     });
   }
 
@@ -59,6 +62,10 @@ class SingleClientWebAppsSyncGeneratedIconFixSyncTest
     clock_ = std::make_unique<base::SimpleTestClock>();
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
+
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
+    }
 
     if (trusted_icons_enabled()) {
       enabled_features.push_back(features::kWebAppUsePrimaryIcon);
@@ -114,6 +121,10 @@ class SingleClientWebAppsSyncGeneratedIconFixSyncTest
   void TearDownOnMainThread() override {
     web_app::test::UninstallAllWebApps(GetProfile(/*index=*/0));
     SyncTest::TearDownOnMainThread();
+  }
+
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return std::get<4>(GetParam());
   }
 
   // Triggers a manifest update by launching the app or loading the update_url
@@ -282,11 +293,11 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAppsSyncGeneratedIconFixSyncTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     SingleClientWebAppsSyncGeneratedIconFixSyncTest,
-    testing::Combine(
-        /*wait_8_days=*/testing::Bool(),
-        /*sync_broken_icons=*/testing::Bool(),
-        /*trusted_icons_enabled=*/testing::Bool(),
-        /*predictable_app_updates_enabled=*/testing::Bool()),
+    testing::Combine(/*wait_8_days=*/testing::Bool(),
+                     /*sync_broken_icons=*/testing::Bool(),
+                     /*trusted_icons_enabled=*/testing::Bool(),
+                     /*predictable_app_updates_enabled=*/testing::Bool(),
+                     GetSyncTestModes()),
     SingleClientWebAppsSyncGeneratedIconFixSyncTest::ParamToString);
 
 }  // namespace web_app
