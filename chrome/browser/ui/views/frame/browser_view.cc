@@ -2534,8 +2534,14 @@ void BrowserView::UpdateBorderlessModeEnabled() {
       window_management_permission_granted_ =
           status == blink::mojom::PermissionStatus::GRANTED;
     }
+
+    if (borderless_mode_enabled && browser()->app_controller() &&
+        !browser()->app_controller()->UrlMatchesBorderlessPattern(
+            web_contents->GetVisibleURL())) {
+      borderless_mode_enabled = false;
+    }
   } else {
-    // Defaults to the value of borderless_mode_enabled if web contents are
+    // Defaults to the value of `borderless_mode_enabled` if web contents are
     // null. These get overridden when the app is launched and its web contents
     // are ready.
     window_management_permission_granted_ = borderless_mode_enabled;

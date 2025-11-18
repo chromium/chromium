@@ -453,6 +453,10 @@ bool AppBrowserController::AppUsesBorderlessMode() const {
   return false;
 }
 
+bool AppBrowserController::UrlMatchesBorderlessPattern(const GURL& url) const {
+  return false;
+}
+
 bool AppBrowserController::AppUsesTabbed() const {
   return false;
 }

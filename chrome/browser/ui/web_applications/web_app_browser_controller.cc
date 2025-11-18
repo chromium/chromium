@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
 
+#include <algorithm>
+
 #include "ash/constants/web_app_id_constants.h"
 #include "base/callback_list.h"
 #include "base/check_is_test.h"
@@ -33,6 +35,7 @@
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/ui_manager/update_dialog_types.h"
+#include "chrome/browser/web_applications/url_pattern_with_regex_matcher.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
@@ -194,6 +197,19 @@ void WebAppBrowserController::ToggleWindowControlsOverlayEnabled(
 bool WebAppBrowserController::AppUsesBorderlessMode() const {
   return IsIsolatedWebApp() &&
          effective_display_mode_ == DisplayMode::kBorderless;
+}
+
+bool WebAppBrowserController::UrlMatchesBorderlessPattern(
+    const GURL& url) const {
+  const WebApp* app = registrar().GetAppById(app_id());
+  if (app == nullptr) {
+    return false;
+  }
+  return app->borderless_url_patterns().empty() ||
+         std::ranges::any_of(app->borderless_url_patterns(),
+                             [&url](const blink::SafeUrlPattern& p) {
+                               return UrlPatternWithRegexMatcher(p).Match(url);
+                             });
 }
 
 bool WebAppBrowserController::AppUsesTabbed() const {
