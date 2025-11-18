@@ -182,8 +182,6 @@ class V8LocalCompileHintsProducer;
 
 enum class BackForwardCacheAware;
 
-extern template class CORE_EXTERN_TEMPLATE_EXPORT Supplement<LocalFrame>;
-
 // A LocalFrame is a frame hosted inside this process.
 //
 // LocalFrame should not inherit from Mojo interfaces, and should not have
