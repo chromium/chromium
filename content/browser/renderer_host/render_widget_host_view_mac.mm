@@ -880,13 +880,13 @@ void RenderWidgetHostViewMac::UpdateScreenInfo() {
 
   // During auto-resize it is the responsibility of the caller to ensure that
   // the NSView and RenderWidgetHostImpl are kept in sync.
-  if (host()->auto_resize_enabled())
-    return;
-
-  if (host()->delegate())
-    host()->delegate()->SendScreenRects();
-  else
-    host()->SendScreenRects();
+  if (!host()->auto_resize_enabled()) {
+    if (host()->delegate()) {
+      host()->delegate()->SendScreenRects();
+    } else {
+      host()->SendScreenRects();
+    }
+  }
 
   // Update with the latest display list from the remote process if needed.
   bool current_display_changed = false;
