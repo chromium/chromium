@@ -17,6 +17,8 @@ source_set("model") {
     "reader_mode_distiller_page.mm",
     "reader_mode_distiller_viewer.h",
     "reader_mode_distiller_viewer.mm",
+    "reader_mode_eligibility_decider.h",
+    "reader_mode_eligibility_decider.mm",
     "reader_mode_font_size_utils.h",
     "reader_mode_font_size_utils.mm",
     "reader_mode_java_script_feature.h",

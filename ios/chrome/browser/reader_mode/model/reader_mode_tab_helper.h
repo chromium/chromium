@@ -9,13 +9,11 @@
 #import "base/observer_list.h"
 #import "base/scoped_observation.h"
 #import "base/timer/timer.h"
-#import "components/optimization_guide/core/hints/optimization_guide_decider.h"
-#import "components/optimization_guide/core/hints/optimization_guide_decision.h"
-#import "components/optimization_guide/core/hints/optimization_metadata.h"
 #import "ios/chrome/browser/dom_distiller/model/distiller_service.h"
 #import "ios/chrome/browser/reader_mode/model/constants.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_content_delegate.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_distiller_viewer.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_eligibility_decider.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_metrics_helper.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
 #import "ios/web/public/web_state_observer.h"
@@ -96,7 +94,9 @@ class ReaderModeTabHelper : public web::WebStateObserver,
       base::OnceCallback<void(std::optional<bool>)> callback);
 
   // Setter and getter for the readerMode handler.
+
   void SetReaderModeHandler(id<ReaderModeCommands> reader_mode_handler);
+
   id<ReaderModeCommands> GetReaderModeHandler() const;
 
   // Processes the result of the Reader Mode heuristic trigger.
@@ -105,11 +105,11 @@ class ReaderModeTabHelper : public web::WebStateObserver,
   // web::WebStateObserver overrides:
   void DidStartNavigation(web::WebState* web_state,
                           web::NavigationContext* navigation_context) override;
-  void DidFinishNavigation(web::WebState* web_state,
-                           web::NavigationContext* navigation_context) override;
   void PageLoaded(
       web::WebState* web_state,
       web::PageLoadCompletionStatus load_completion_status) override;
+  void DidFinishNavigation(web::WebState* web_state,
+                           web::NavigationContext* navigation_context) override;
   void WebStateDestroyed(web::WebState* web_state) override;
 
   // ReaderModeContentDelegate overrides:
@@ -130,25 +130,6 @@ class ReaderModeTabHelper : public web::WebStateObserver,
  private:
   friend class web::WebStateUserData<ReaderModeTabHelper>;
 
-  // Handles the result from the Readability JavaScript heuristic triggering
-  // logic.
-  void HandleReadabilityHeuristicResult(const base::Value* result);
-
-  void OnOptimizationGuideDecision(
-      optimization_guide::OptimizationGuideDecision decision,
-      const optimization_guide::OptimizationMetadata& metadata);
-  void CompleteHeuristic(ReaderModeHeuristicResult result);
-
-  // Trigger the heuristic to determine reader mode eligibility.
-  void TriggerReaderModeHeuristic(const GURL& url);
-
-  // Starts the reader mode heuristic with a timer.
-  void TriggerReaderModeHeuristicAsync(const GURL& url);
-
-  // Resets `reader_mode_eligible_url_` if it is different than the current url
-  // context and stops all heuristic triggering.
-  void ResetUrlEligibility(const GURL& url);
-
   // Callback for handling completion of the page distillation.
   void PageDistillationCompleted(
       ReaderModeAccessPoint access_point,
@@ -164,12 +145,6 @@ class ReaderModeTabHelper : public web::WebStateObserver,
   // Destroys the content tab helper in `reader_mode_web_state_` and stops any
   // ongoing distillation.
   void DestroyReaderModeContent(ReaderModeDeactivationReason reason);
-
-  // Sets the last committed URL. If `url` is the equal to the previous value
-  // ignoring ref, then this is a no-op.
-  void SetLastCommittedUrl(const GURL& url);
-  // Calls the callbacks waiting for the last committed URL eligibility result.
-  void CallLastCommittedUrlEligibilityCallbacks(std::optional<bool> result);
 
   // Cancels any ongoing distillation and destroys the `reader_mode_web_state_`.
   void CancelDistillation();
@@ -205,29 +180,12 @@ class ReaderModeTabHelper : public web::WebStateObserver,
   // WebState used to render the Reader mode content. Lazily created the first
   // time Reader mode is activated and persists until the tab is closed.
   std::unique_ptr<web::WebState> reader_mode_web_state_;
-  base::OneShotTimer trigger_reader_mode_timer_;
   base::OneShotTimer reader_mode_distillation_timer_;
 
-  // URL on which we are triggering the eligibility heuristic.
-  std::optional<GURL> eligibility_heuristic_url_;
-  // Last committed URL, ignoring ref.
-  GURL last_committed_url_without_ref_;
-  // Whether the last committed URL eligibility has been determined.
-  bool last_committed_url_eligibility_ready_ = false;
-  // Callbacks waiting for the last committed URL eligibility result.
-  std::vector<base::OnceCallback<void(std::optional<bool>)>>
-      last_committed_url_eligibility_callbacks_;
-
-  // Last URL determined eligible to Reader mode in this WebState.
-  GURL reader_mode_eligible_url_;
   raw_ptr<web::WebState> web_state_ = nullptr;
   base::ScopedObservation<web::WebState, web::WebStateObserver>
       web_state_observation_{this};
   raw_ptr<DistillerService> distiller_service_;
-
-  // The optimization guide decider for page metadata.
-  raw_ptr<optimization_guide::OptimizationGuideDecider>
-      optimization_guide_decider_ = nullptr;
 
   std::unique_ptr<ReaderModeDistillerViewer> distiller_viewer_;
 
@@ -241,6 +199,7 @@ class ReaderModeTabHelper : public web::WebStateObserver,
 
   // Records metrics for the Reader mode with `web_state_`.
   ReaderModeMetricsHelper metrics_helper_;
+  ReaderModeEligibilityDecider eligibility_decider_;
   base::ObserverList<Observer, true> observers_;
 
   base::WeakPtrFactory<ReaderModeTabHelper> weak_ptr_factory_{this};
