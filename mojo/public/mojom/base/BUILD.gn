@@ -15,6 +15,7 @@ mojom_component("base") {
     "big_string.mojom",
     "binder.mojom",
     "byte_count.mojom",
+    "byte_size.mojom",
     "byte_string.mojom",
     "empty.mojom",
     "error.mojom",
@@ -108,6 +109,34 @@ mojom_component("base") {
         },
       ]
       traits_headers = [ "//mojo/public/cpp/base/byte_count_mojom_traits.h" ]
+      traits_public_deps = [
+        "//base",
+        "//mojo/public/cpp/base:shared_typemap_traits",
+      ]
+    },
+    {
+      types = [
+        {
+          mojom = "mojo_base.mojom.ByteSize"
+          cpp = "::base::ByteSize"
+          copyable_pass_by_value = true
+        },
+      ]
+      traits_headers = [ "//mojo/public/cpp/base/byte_size_mojom_traits.h" ]
+      traits_public_deps = [
+        "//base",
+        "//mojo/public/cpp/base:shared_typemap_traits",
+      ]
+    },
+    {
+      types = [
+        {
+          mojom = "mojo_base.mojom.ByteSizeDelta"
+          cpp = "::base::ByteSizeDelta"
+          copyable_pass_by_value = true
+        },
+      ]
+      traits_headers = [ "//mojo/public/cpp/base/byte_size_mojom_traits.h" ]
       traits_public_deps = [
         "//base",
         "//mojo/public/cpp/base:shared_typemap_traits",

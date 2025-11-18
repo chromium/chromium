@@ -5,6 +5,8 @@
 module mojo_base.mojom;
 
 // Corresponds to `base::ByteCount` in base/byte_count.h.
+//
+// DEPRECATED: use ByteSize for unsigned values and ByteSizeDelta for signed.
 struct ByteCount {
   int64 count;
 };
