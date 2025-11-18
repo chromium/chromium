@@ -134,6 +134,25 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Prefetch.PrefetchContainer.AddedToDomainLookupStarted.{TriggerTypeAndEagerness}"
+    units="ms" expires_after="2026-11-12">
+  <owner>yoichio@chromium.org</owner>
+  <owner>chrome-loading@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Records the duration from when `PrefetchContainer` is added to
+    `PrefetchService` to when the domain lookup for the corresponding URL
+    request is started.
+
+    This metric is recorded when `PrefetchContainer::dtor()` is called if it
+    received a non-redirect header.
+
+    This histogram is only recorded for prefetches of {TriggerTypeAndEagerness}.
+  </summary>
+  <token key="TriggerTypeAndEagerness" variants="TriggerTypeAndEagerness"/>
+</histogram>
+
+<histogram
     name="Prefetch.PrefetchContainer.AddedToHeaderDeterminedSuccessfully.{TriggerTypeAndEagerness}"
     units="ms" expires_after="2026-04-05">
   <owner>kenoss@chromium.org</owner>
@@ -264,6 +283,25 @@ chromium-metrics-reviews@google.com.
     into account. Please see
     `PrefetchService::recent_unmatched_navigated_keys_for_metrics_` for more
     details.
+
+    This histogram is only recorded for prefetches of {TriggerTypeAndEagerness}.
+  </summary>
+  <token key="TriggerTypeAndEagerness" variants="TriggerTypeAndEagerness"/>
+</histogram>
+
+<histogram
+    name="Prefetch.PrefetchContainer.PrefetchStartedToDomainLookupStarted.{TriggerTypeAndEagerness}"
+    units="ms" expires_after="2026-11-12">
+  <owner>yoichio@chromium.org</owner>
+  <owner>chrome-loading@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Records the duration from when `PrefetchService` starts its loading process
+    (i.e., `PrefetchService::StartSinglePrefetch` is called) to when the domain
+    lookup for the corresponding URL request is started.
+
+    This metric is recorded when `PrefetchContainer::dtor()` is called if it
+    received a non-redirect header.
 
     This histogram is only recorded for prefetches of {TriggerTypeAndEagerness}.
   </summary>

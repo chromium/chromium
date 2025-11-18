@@ -51,6 +51,7 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_features.h"
 #include "net/base/load_flags.h"
+#include "net/base/load_timing_info.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_request_info.h"
 #include "net/url_request/redirect_util.h"
@@ -1942,6 +1943,8 @@ void PrefetchContainer::NotifyPrefetchResponseReceived(
 
   prefetch_container_metrics_.time_url_request_started =
       head.load_timing.request_start;
+  prefetch_container_metrics_.time_domain_lookup_started =
+      head.load_timing.connect_timing.domain_lookup_start;
 
   // DevTools plumbing.
   auto* renderer_initiator_info = request().GetRendererInitiatorInfo();
@@ -2111,6 +2114,22 @@ void PrefetchContainer::RecordPrefetchDurationHistogram() {
           GetMetricsSuffix(),
       }),
       prefetch_container_metrics_.time_url_request_started.value() -
+          prefetch_container_metrics_.time_prefetch_started.value());
+
+  CHECK(prefetch_container_metrics_.time_domain_lookup_started.has_value());
+  base::UmaHistogramTimes(
+      base::StrCat({
+          "Prefetch.PrefetchContainer.AddedToDomainLookupStarted.",
+          GetMetricsSuffix(),
+      }),
+      prefetch_container_metrics_.time_domain_lookup_started.value() -
+          prefetch_container_metrics_.time_added_to_prefetch_service.value());
+  base::UmaHistogramTimes(
+      base::StrCat({
+          "Prefetch.PrefetchContainer.PrefetchStartedToDomainLookupStarted.",
+          GetMetricsSuffix(),
+      }),
+      prefetch_container_metrics_.time_domain_lookup_started.value() -
           prefetch_container_metrics_.time_prefetch_started.value());
 
   if (!prefetch_container_metrics_.time_header_determined_successfully

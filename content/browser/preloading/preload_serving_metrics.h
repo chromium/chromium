@@ -58,6 +58,7 @@ struct CONTENT_EXPORT PrefetchContainerMetrics final {
   std::optional<base::TimeTicks> time_initial_eligibility_got;
   std::optional<base::TimeTicks> time_prefetch_started;
   std::optional<base::TimeTicks> time_url_request_started;
+  std::optional<base::TimeTicks> time_domain_lookup_started;
   std::optional<base::TimeTicks> time_header_determined_successfully;
   std::optional<base::TimeTicks> time_prefetch_completed_successfully;
 };
