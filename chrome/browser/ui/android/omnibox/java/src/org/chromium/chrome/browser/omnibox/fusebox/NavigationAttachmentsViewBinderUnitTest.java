@@ -288,6 +288,21 @@ public class NavigationAttachmentsViewBinderUnitTest {
     }
 
     @Test
+    public void fileButtonEnabledState() {
+        mModel.set(
+                NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE,
+                AutocompleteRequestType.IMAGE_GENERATION);
+        NavigationAttachmentsViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
+        assertFalse(mPopup.mFileButton.isEnabled());
+
+        mModel.set(
+                NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE,
+                AutocompleteRequestType.SEARCH);
+        NavigationAttachmentsViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
+        assertTrue(mPopup.mFileButton.isEnabled());
+    }
+
+    @Test
     public void addCurrentTabButton() {
         mModel.set(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_VISIBLE, false);
         assertEquals(View.GONE, mPopup.mAddCurrentTab.getVisibility());

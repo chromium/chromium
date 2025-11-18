@@ -208,6 +208,7 @@ class NavigationAttachmentsViewBinder {
                 isCreateImageButtonVisible ? View.VISIBLE : View.GONE);
         views.popup.mRequestTypeDivider.setVisibility(
                 isAiModeButtonVisible || isCreateImageButtonVisible ? View.VISIBLE : View.GONE);
+        views.popup.mFileButton.setEnabled(!isImageGenerationUsed);
     }
 
     static void reanchorViewsForCompactFusebox(
