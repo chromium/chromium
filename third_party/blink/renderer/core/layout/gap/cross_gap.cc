@@ -22,12 +22,10 @@ void CrossGapRange::Increment(wtf_size_t cross_gap_index) {
 }
 
 String CrossGapRange::ToString() const {
-  String str;
-  str = "(" +
-        (start_index_.has_value() ? String::Number(*start_index_) : "null") +
-        " --> " +
-        (end_index_.has_value() ? String::Number(*end_index_) : "null") + ")";
-  return str;
+  return StrCat(
+      {"(", (start_index_.has_value() ? String::Number(*start_index_) : "null"),
+       " --> ", (end_index_.has_value() ? String::Number(*end_index_) : "null"),
+       ")"});
 }
 
 String CrossGap::ToString(bool verbose) const {
@@ -42,15 +40,15 @@ String CrossGap::ToString(bool verbose) const {
     } else {
       edge_state = "kNone";
     }
-    return String("CrossStartOffset(") +
-           gap_logical_offset_.inline_offset.ToString() + ", " +
-           gap_logical_offset_.block_offset.ToString() + "); " +
-           "EdgeState: " + edge_state + ";";
+    return StrCat({"CrossStartOffset(",
+                   gap_logical_offset_.inline_offset.ToString(), ", ",
+                   gap_logical_offset_.block_offset.ToString(), "); ",
+                   "EdgeState: ", edge_state, ";"});
   }
 
-  return String("CrossStartOffset(") +
-         gap_logical_offset_.inline_offset.ToString() + ", " +
-         gap_logical_offset_.block_offset.ToString() + ")";
+  return StrCat({"CrossStartOffset(",
+                 gap_logical_offset_.inline_offset.ToString(), ", ",
+                 gap_logical_offset_.block_offset.ToString(), ")"});
 }
 
 void CrossGap::AddGapSegmentStateRange(

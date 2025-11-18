@@ -9,14 +9,12 @@
 namespace blink {
 
 String MainGap::ToString(bool verbose) const {
-  String str = String("MainOffset(") + gap_offset_.ToString() + "); ";
-
   if (verbose) {
-    str = str + "Before: " + range_of_cross_gaps_before_.ToString() + ";";
-    str = str + "After: " + range_of_cross_gaps_after_.ToString() + ";";
+    return StrCat({"MainOffset(", gap_offset_.ToString(), "); ",
+                   "Before: ", range_of_cross_gaps_before_.ToString(), ";",
+                   "After: ", range_of_cross_gaps_after_.ToString(), ";"});
   }
-
-  return str;
+  return StrCat({"MainOffset(", gap_offset_.ToString(), "); "});
 }
 
 void MainGap::AddGapSegmentStateRange(

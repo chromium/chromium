@@ -283,7 +283,7 @@ String LayoutTextFragment::PlainText() const {
   const OffsetMapping* first_letter_mapping = first_letter->GetOffsetMapping();
   if (first_letter_mapping && remaining_text_mapping &&
       first_letter_mapping != remaining_text_mapping)
-    return first_letter_mapping->GetText() + LayoutText::PlainText();
+    return StrCat({first_letter_mapping->GetText(), LayoutText::PlainText()});
   return LayoutText::PlainText();
 }
 

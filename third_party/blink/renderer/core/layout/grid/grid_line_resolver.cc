@@ -23,9 +23,9 @@ static inline GridTrackSizingDirection DirectionFromSide(
 
 static inline String ImplicitNamedGridLineForSide(const String& line_name,
                                                   GridPositionSide side) {
-  return line_name + ((side == kColumnStartSide || side == kRowStartSide)
-                          ? "-start"
-                          : "-end");
+  return StrCat({line_name, ((side == kColumnStartSide || side == kRowStartSide)
+                                 ? "-start"
+                                 : "-end")});
 }
 
 GridLineResolver::GridLineResolver(const ComputedStyle& parent_style,

@@ -493,13 +493,15 @@ String AbstractInlineTextBox::GetText() const {
   //  - accessibility/inline-text-changes.html
   //  - accessibility/inline-text-word-boundaries.html
   if (NeedsTrailingSpace())
-    result = result + " ";
+    result = StrCat({result, " "});
 
   // When the CSS first-letter pseudoselector is used, the LayoutText for the
   // first letter is excluded from the accessibility tree, so we need to prepend
   // its text here.
-  if (LayoutText* first_letter = GetFirstLetterPseudoLayoutText())
-    result = first_letter->TransformedText().SimplifyWhiteSpace() + result;
+  if (LayoutText* first_letter = GetFirstLetterPseudoLayoutText()) {
+    result =
+        StrCat({first_letter->TransformedText().SimplifyWhiteSpace(), result});
+  }
 
   return result;
 }

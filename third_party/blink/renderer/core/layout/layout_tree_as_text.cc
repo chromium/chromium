@@ -110,7 +110,7 @@ static String GetTagName(Node* n) {
   if (const auto* element = DynamicTo<Element>(n)) {
     const AtomicString& pseudo = element->ShadowPseudoId();
     if (!pseudo.empty())
-      return "::" + pseudo;
+      return StrCat({"::", pseudo});
   }
   return n->nodeName();
 }

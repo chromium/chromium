@@ -52,10 +52,11 @@ scoped_refptr<LayoutTheme> LayoutThemeMobile::Create() {
 LayoutThemeMobile::~LayoutThemeMobile() = default;
 
 String LayoutThemeMobile::ExtraDefaultStyleSheet() {
-  String stylesheet =
-      LayoutThemeDefault::ExtraDefaultStyleSheet() +
-      UncompressResourceAsASCIIString(IDR_UASTYLE_THEME_CHROMIUM_LINUX_CSS) +
-      UncompressResourceAsASCIIString(IDR_UASTYLE_THEME_CHROMIUM_ANDROID_CSS);
+  String stylesheet = StrCat(
+      {LayoutThemeDefault::ExtraDefaultStyleSheet(),
+       UncompressResourceAsASCIIString(IDR_UASTYLE_THEME_CHROMIUM_LINUX_CSS),
+       UncompressResourceAsASCIIString(
+           IDR_UASTYLE_THEME_CHROMIUM_ANDROID_CSS)});
   return stylesheet;
 }
 

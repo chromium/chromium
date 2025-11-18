@@ -249,15 +249,15 @@ static const String UniqueSimpleSelectorAmongSiblings(Element* element) {
   if (element->HasClass()) {
     AtomicString unique_classname = UniqueClassnameAmongSiblings(element);
     if (!unique_classname.empty()) {
-      return AtomicString(".") + unique_classname;
+      return StrCat({".", unique_classname});
     }
   }
 
-  return ":nth-child(" +
-         String::Number(NthIndexCache::NthChildIndex(
-             *element, /*filter=*/nullptr, /*selector_checker=*/nullptr,
-             /*context=*/nullptr)) +
-         ")";
+  return StrCat({":nth-child(",
+                 String::Number(NthIndexCache::NthChildIndex(
+                     *element, /*filter=*/nullptr, /*selector_checker=*/nullptr,
+                     /*context=*/nullptr)),
+                 ")"});
 }
 
 // Computes a selector that uniquely identifies |anchor_node|. This is done

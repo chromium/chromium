@@ -179,7 +179,7 @@ static bool CheckShapeImageOrigin(Document& document,
   document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
       mojom::ConsoleMessageSource::kSecurity,
       mojom::ConsoleMessageLevel::kError,
-      "Unsafe attempt to load URL " + url_string + "."));
+      StrCat({"Unsafe attempt to load URL ", url_string, "."})));
   return false;
 }
 
