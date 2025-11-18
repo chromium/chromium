@@ -48,7 +48,7 @@ class PLATFORM_EXPORT ParsedContentHeaderFieldParameters final {
 
   // Note that in the case of multiple values for the same name, the last value
   // is returned.
-  String ParameterValueForName(const String&) const;
+  String ParameterValueForName(StringView) const;
   size_t ParameterCount() const;
   bool HasDuplicatedNames() const;
 
