@@ -232,6 +232,7 @@ class CORE_EXPORT WebSettingsImpl final : public WebSettings {
 
   void SetAriaModalPrunesAXTree(bool) override;
   void SetSelectionClipboardBufferAvailable(bool) override;
+  void SetMiddleClickPasteAllowed(bool) override;
   void SetAccessibilityIncludeSvgGElement(bool) override;
   void SetWebXRImmersiveArAllowed(bool webxr_immersive_ar_allowed) override;
   void SetModalContextMenu(bool) override;

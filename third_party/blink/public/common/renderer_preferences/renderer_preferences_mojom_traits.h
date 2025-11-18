@@ -199,6 +199,13 @@ struct BLINK_COMMON_EXPORT
   }
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+  static const bool& middle_click_paste_allowed(
+      const ::blink::RendererPreferences& data) {
+    return data.middle_click_paste_allowed;
+  }
+#endif
+
 #if BUILDFLAG(IS_WIN)
   static const std::u16string& caption_font_family_name(
       const ::blink::RendererPreferences& data) {

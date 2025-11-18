@@ -3608,6 +3608,11 @@ void WebViewImpl::UpdateRendererPreferences(
       renderer_preferences_.selection_clipboard_buffer_available);
 #endif  // BUILDFLAG(IS_OZONE)
 
+#if BUILDFLAG(IS_LINUX)
+  GetSettings()->SetMiddleClickPasteAllowed(
+      renderer_preferences_.middle_click_paste_allowed);
+#endif  // BUILDFLAG(IS_LINUX)
+
   SetExplicitlyAllowedPorts(
       renderer_preferences_.explicitly_allowed_network_ports);
 

@@ -1206,6 +1206,10 @@
       initial: false,
     },
     {
+      name: "middleClickPasteAllowed",
+      initial: true
+    },
+    {
       name: "accessibilityIncludeSvgGElement",
       initial: false,
     },

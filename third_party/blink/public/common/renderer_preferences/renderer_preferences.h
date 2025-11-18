@@ -88,6 +88,9 @@ struct BLINK_COMMON_EXPORT RendererPreferences {
 #if BUILDFLAG(IS_OZONE)
   bool selection_clipboard_buffer_available{false};
 #endif
+#if BUILDFLAG(IS_LINUX)
+  bool middle_click_paste_allowed{true};
+#endif
   bool plugin_fullscreen_allowed{true};
   bool caret_browsing_enabled{false};
   bool uses_platform_autofill{false};
