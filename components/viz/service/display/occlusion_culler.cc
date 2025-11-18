@@ -15,7 +15,6 @@
 #include "cc/base/math_util.h"
 #include "cc/base/region.h"
 #include "components/viz/common/display/renderer_settings.h"
-#include "components/viz/common/features.h"
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/quads/shared_quad_state.h"
@@ -297,9 +296,6 @@ void OcclusionCuller::RemoveOverdrawQuads(AggregatedFrame* frame) {
     bool last_sqs_is_for_rpdq = false;
 
     cc::Region occlusion_in_target_space;
-    // TODO(b:424284352): Remove after
-    // `kEnableBackdropFiltersCullingOptimization` is enabled by default.
-    cc::Region backdrop_filters_in_target_space;
     bool current_sqs_intersects_occlusion = false;
 
     // TODO(yiyix): Add filter effects to draw occlusion calculation
@@ -314,29 +310,12 @@ void OcclusionCuller::RemoveOverdrawQuads(AggregatedFrame* frame) {
     }
 
     auto quad_list_end = pass->quad_list.end();
-
     cc::Region occlusion_in_quad_content_space;
-    // TODO(b:424284352): Remove after
-    // `kEnableBackdropFiltersCullingOptimization` is enabled by default.
-    gfx::Rect render_pass_quads_in_content_space;
 
     for (auto quad = pass->quad_list.begin(); quad != quad_list_end;) {
       // Sanity check: we should not have a Compositor
       // CompositorRenderPassDrawQuad here.
       DCHECK_NE(quad->material, DrawQuad::Material::kCompositorRenderPass);
-
-      if (!features::IsBackdropFiltersCullingOptimizationEnabled()) {
-        if (auto* rpdq = quad->DynamicCast<AggregatedRenderPassDrawQuad>()) {
-          auto it = backdrop_filter_rects.find(rpdq->render_pass_id);
-          if (it != backdrop_filter_rects.end()) {
-            auto& [_, rect_in_target] = *it;
-            backdrop_filters_in_target_space.Union(rect_in_target);
-          }
-
-          ++quad;
-          continue;
-        }
-      }
 
       // Also skip quad if the DrawQuad is inside a 3d object.
       if (quad->shared_quad_state->sorting_context_id != 0) {
@@ -383,7 +362,7 @@ void OcclusionCuller::RemoveOverdrawQuads(AggregatedFrame* frame) {
           }
         }
 
-        if (features::IsBackdropFiltersCullingOptimizationEnabled() && rpdq) {
+        if (rpdq) {
           // A RenderPass with backdrop filters may apply to a quad underlying
           // RenderPassQuad. These regions should be tracked so that correctly
           // handle splitting and occlusion of the underlying quad.
@@ -403,7 +382,6 @@ void OcclusionCuller::RemoveOverdrawQuads(AggregatedFrame* frame) {
         last_sqs = quad->shared_quad_state;
         last_sqs_is_for_rpdq = !!rpdq;
         occlusion_in_quad_content_space.Clear();
-        render_pass_quads_in_content_space = gfx::Rect();
 
         const auto current_sqs_in_target_space =
             cc::MathUtil::MapEnclosingClippedRect(
@@ -447,20 +425,6 @@ void OcclusionCuller::RemoveOverdrawQuads(AggregatedFrame* frame) {
                   SafeConvertRectForRegion(rect_in_content));
             }
           }
-
-          // A render pass quad may apply some filter or transform to an
-          // underlying quad. Do not split quads when they intersect with a
-          // render pass quad.
-          if (!features::IsBackdropFiltersCullingOptimizationEnabled() &&
-              current_sqs_in_target_space.Intersects(
-                  backdrop_filters_in_target_space.bounds())) {
-            for (auto rect_in_target_space : backdrop_filters_in_target_space) {
-              const auto rect_in_content =
-                  cc::MathUtil::MapEnclosedRectWith2dAxisAlignedTransform(
-                      reverse_transform, rect_in_target_space);
-                render_pass_quads_in_content_space.Union(rect_in_content);
-            }
-          }
         }
       }
 
@@ -490,7 +454,6 @@ void OcclusionCuller::RemoveOverdrawQuads(AggregatedFrame* frame) {
         // more than X fragments.
         const bool should_split_quads =
             !overlay_processor_->DisableSplittingQuads() &&
-            !visible_region.Intersects(render_pass_quads_in_content_space) &&
             ReduceComplexity(visible_region, settings_.quad_split_limit,
                              reduced_visible_region) &&
             CanSplitDrawQuad(*quad, visible_region.bounds().size(),

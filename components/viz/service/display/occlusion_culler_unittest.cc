@@ -14,7 +14,6 @@
 #include "base/check.h"
 #include "cc/base/math_util.h"
 #include "components/viz/common/display/renderer_settings.h"
-#include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
@@ -168,91 +167,7 @@ TEST_F(OcclusionCullerTest, OcclusionCullingWithBlending) {
   EXPECT_EQ(1u, NumVisibleRects(frame.render_pass_list.back()->quad_list));
 }
 
-// Quads that intersect backdrop filter render pass quads should not be
-// split because splitting may affect how the filter applies to an
-// underlying quad.
-// TODO(b:424284352): Remove the test once the optimization is enabled by
-// default.
 TEST_F(OcclusionCullerTest, OcclusionCullingWithIntersectingBackdropFilter) {
-  if (features::IsBackdropFiltersCullingOptimizationEnabled()) {
-    GTEST_SKIP();
-  }
-
-  RendererSettings::OcclusionCullerSettings settings;
-  settings.minimum_fragments_reduced = 0;
-
-  InitOcclusionCuller(settings);
-  AggregatedFrame frame = MakeDefaultAggregatedFrame(/*num_render_passes=*/2);
-
-  bool are_contents_opaque = true;
-  float opacity = 1.f;
-
-  // Rects, shared quad states and quads map 1:1:1
-  std::array<gfx::Rect, 3> rects = {
-      gfx::Rect(75, 0, 50, 100),
-      gfx::Rect(0, 0, 50, 50),
-      gfx::Rect(0, 0, 100, 100),
-  };
-
-  std::array<SharedQuadState*, 3> shared_quad_states;
-  std::array<DrawQuad*, 3> quads;
-
-  // Set up the backdrop filter render pass
-  auto& bd_render_pass = frame.render_pass_list.at(0);
-  auto& root_render_pass = frame.render_pass_list.at(1);
-  auto bd_filter_rect = rects[0];
-
-  cc::FilterOperations backdrop_filters;
-  backdrop_filters.Append(cc::FilterOperation::CreateBlurFilter(5.0));
-  bd_render_pass->SetAll(
-      AggregatedRenderPassId{2}, bd_filter_rect, gfx::Rect(), gfx::Transform(),
-      cc::FilterOperations(), backdrop_filters,
-      SkPath::Rect(gfx::RectToSkRect(bd_filter_rect)),
-      gfx::ContentColorUsage::kSRGB, false, false, false, false);
-
-  // Add quads to root render pass
-  for (int i = 0; i < 3; i++) {
-    shared_quad_states[i] = root_render_pass->CreateAndAppendSharedQuadState();
-    shared_quad_states[i]->SetAll(
-        gfx::Transform(), rects[i], rects[i], gfx::MaskFilterInfo(),
-        /*clip=*/std::nullopt, are_contents_opaque, opacity,
-        SkBlendMode::kSrcOver, /*sorting_context=*/0,
-        /*layer_id=*/0u, /*fast_rounded_corner=*/false);
-
-    if (i == 0) {  // Backdrop filter quad
-      auto* new_quad =
-          root_render_pass->quad_list
-              .AllocateAndConstruct<AggregatedRenderPassDrawQuad>();
-      new_quad->SetNew(shared_quad_states[i], rects[i], rects[i],
-                       bd_render_pass->id, ResourceId(2), gfx::RectF(),
-                       gfx::Size(), gfx::Vector2dF(1, 1), gfx::PointF(),
-                       gfx::RectF(), false, 1.f);
-      quads[i] = new_quad;
-    } else {
-      auto* new_quad = root_render_pass->quad_list
-                           .AllocateAndConstruct<SolidColorDrawQuad>();
-      new_quad->SetNew(shared_quad_states[i], rects[i], rects[i],
-                       SkColors::kBlack, false);
-      quads[i] = new_quad;
-    }
-  }
-
-  // +---+-+-+-+
-  // | 1 | | . |
-  // +---+ | 0 |
-  // | 2   | . |
-  // +-----+---+
-  EXPECT_EQ(std::size(rects), root_render_pass->quad_list.size());
-  occlusion_culler()->RemoveOverdrawQuads(&frame);
-  ASSERT_EQ(std::size(rects), root_render_pass->quad_list.size());
-
-  for (int i = 0; i < 3; i++) {
-    EXPECT_EQ(rects[i], root_render_pass->quad_list.ElementAt(i)->visible_rect);
-  }
-}
-
-TEST_F(OcclusionCullerTest,
-       OcclusionCullingWithIntersectingBackdropFilterWithOptimization) {
   //
   // +-----------------------------+ quad_2 (0,0 1000x1000)
   // |                             |
@@ -269,10 +184,6 @@ TEST_F(OcclusionCullerTest,
   //
   // z-order: backdrop_render_pass_1 > quad_1 > backdrop_render_pass_2
   // > quad_2
-
-  if (!features::IsBackdropFiltersCullingOptimizationEnabled()) {
-    GTEST_SKIP();
-  }
 
   RendererSettings::OcclusionCullerSettings settings;
   settings.minimum_fragments_reduced = 0;
@@ -384,10 +295,6 @@ TEST_F(OcclusionCullerTest,
 
 TEST_F(OcclusionCullerTest, EnsureOccluderComplexityWithBackdropFilters) {
   // z-order: quad_1 > backdrop_render_pass_1 >> quad_2
-  if (!features::IsBackdropFiltersCullingOptimizationEnabled()) {
-    GTEST_SKIP();
-  }
-
   RendererSettings::OcclusionCullerSettings settings;
   settings.minimum_fragments_reduced = 0;
   settings.maximum_occluder_complexity = 2;
