@@ -224,11 +224,12 @@ scoped_refptr<ClientSharedImage> TestSharedImageInterface::CreateSharedImage(
   SharedImageInfo si_info_copy = si_info;
   // Set CPU read/write usage based on buffer usage.
   si_info_copy.meta.usage |= GetCpuSIUsage(buffer_usage);
-  if (always_use_shmem_for_mappable_si_) {
-    auto client_si = ClientSharedImage::CreateForTesting(
-        mailbox, si_info_copy.meta, sync_token, buffer_usage, holder_);
-    most_recent_mappable_shared_image_ = client_si.get();
-    return client_si;
+
+  // Since the GMB handle that we create here is always shared memory, clear
+  // the external sampler prefs to avoid a CHECK within ClientSI that external
+  // sampling is set only with a native GMB handle.
+  if (si_info_copy.meta.format.PrefersExternalSampler()) {
+    si_info_copy.meta.format.ClearPrefersExternalSampler();
   }
 
   auto gmb_handle = CreateGMBHandle(si_info.meta.format, si_info_copy.meta.size,
