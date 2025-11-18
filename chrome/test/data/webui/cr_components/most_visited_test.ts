@@ -464,6 +464,37 @@ suite('ExpandableTiles', () => {
   });
 
   test(
+      'show less button on first row with 8 tiles and custom links disabled',
+      async () => {
+        await setUpTest({
+          singleRow: true,
+          reflowOnOverflow: true,
+          expandableTilesEnabled: true,
+        });
+        await addTiles(8, /*customLinksEnabled=*/ false);
+
+        const showMoreButton = getShowMoreButton();
+        assertTrue(isVisible(showMoreButton));
+
+        // Click "Show more" to expand.
+        showMoreButton!.click();
+        await microtasksFinished();
+
+        // We expect 1 row with 8 tiles and a "Show less" button.
+        const showLessButton = getShowLessButton();
+        assertTrue(isVisible(showLessButton));
+        assertHiddenTileLength(0);
+        const expandedItems =
+            queryAll<HTMLElement>('.tile:not([hidden]), #showLess');
+        assertEquals(8 + 1, expandedItems.length);
+        const firstItemTop = expandedItems[0]!.offsetTop;
+        for (const item of expandedItems) {
+          assertEquals(firstItemTop, item.offsetTop);
+        }
+        assertEquals(1, rowCount());
+      });
+
+  test(
       'show more and show less buttons do not move during drag and drop',
       async () => {
         await setUpTest({reflowOnOverflow: true, expandableTilesEnabled: true});
