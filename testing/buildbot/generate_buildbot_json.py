@@ -301,9 +301,9 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
 
       @property
       def actual_path(self):
-        if os.path.exists(self.generated_path):
-          return self.generated_path
-        return self.legacy_path
+        if os.path.exists(self.legacy_path):
+          return self.legacy_path
+        return self.generated_path
 
     @functools.cached_property
     def gn_isolate_map_pyl(self):
