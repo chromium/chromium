@@ -12,12 +12,16 @@
 
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/wm/window_animations.h"
+#include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
+#include "chrome/browser/ash/browser_delegate/browser_type.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
@@ -39,7 +43,10 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
+#include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/app_window/native_app_window.h"
@@ -57,8 +64,15 @@ namespace {
 // The time delta between clicks in which clicks to launch V2 apps are ignored.
 const int kClickSuppressionInMS = 1000;
 
-bool IsAppBrowser(Browser* browser) {
-  return browser->is_type_app() || browser->is_type_app_popup();
+bool IsAppBrowser(const ash::BrowserDelegate& browser) {
+  auto type = browser.GetType();
+  return type == ash::BrowserType::kApp || type == ash::BrowserType::kAppPopup;
+}
+
+const AccountId& GetActiveAccountId() {
+  const session_manager::Session& active_session =
+      CHECK_DEREF(session_manager::SessionManager::Get()->GetActiveSession());
+  return active_session.account_id();
 }
 
 // Activate the browser with the given |content| and show the associated tab,
@@ -168,12 +182,13 @@ class AppMatcher {
 
     // If the browser is an app window, and the app name matches the extension,
     // then the contents match the app.
-    if (IsAppBrowser(browser)) {
+    ash::BrowserDelegate& delegate = CHECK_DEREF(
+        ash::BrowserController::GetInstance()->GetDelegate(browser));
+    if (IsAppBrowser(delegate)) {
       const Extension* browser_extension =
           ExtensionRegistry::Get(browser->profile())
-              ->GetExtensionById(
-                  web_app::GetAppIdFromApplicationName(browser->app_name()),
-                  ExtensionRegistry::EVERYTHING);
+              ->GetExtensionById(delegate.GetAppId().value_or(std::string()),
+                                 ExtensionRegistry::EVERYTHING);
       return browser_extension == extension_;
     }
 
@@ -481,8 +496,9 @@ void AppShortcutShelfItemController::Close() {
   } else {
     for (content::WebContents* item : GetAppWebContents(base::NullCallback())) {
       Browser* browser = chrome::FindBrowserWithTab(item);
-      if (!browser ||
-          !multi_user_util::IsProfileFromActiveUser(browser->profile())) {
+      ash::BrowserDelegate* delegate =
+          ash::BrowserController::GetInstance()->GetDelegate(browser);
+      if (!delegate || delegate->GetAccountId() != GetActiveAccountId()) {
         continue;
       }
       TabStripModel* tab_strip = browser->tab_strip_model();
@@ -533,23 +549,26 @@ AppShortcutShelfItemController::GetAppWebContents(
     return items;
   }
 
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (!filter_predicate.is_null() &&
-        !filter_predicate.Run(browser->window()->GetNativeWindow())) {
-      continue;
-    }
-    if (!multi_user_util::IsProfileFromActiveUser(browser->profile())) {
-      continue;
-    }
-    TabStripModel* tab_strip = browser->tab_strip_model();
-    for (int index = 0; index < tab_strip->count(); index++) {
-      content::WebContents* web_contents = tab_strip->GetWebContentsAt(index);
-      if (matcher.IsAshBrowser() ||
-          matcher.WebContentMatchesApp(web_contents, browser)) {
-        items.push_back(web_contents);
-      }
-    }
-  }
+  ash::BrowserController::GetInstance()->ForEachBrowser(
+      ash::BrowserController::BrowserOrder::kAscendingCreationTime,
+      [&](ash::BrowserDelegate& browser) {
+        if (!filter_predicate.is_null() &&
+            !filter_predicate.Run(browser.GetNativeWindow())) {
+          return ash::BrowserController::kContinueIteration;
+        }
+        if (browser.GetAccountId() != GetActiveAccountId()) {
+          return ash::BrowserController::kContinueIteration;
+        }
+        for (size_t index = 0; index < browser.GetWebContentsCount(); index++) {
+          content::WebContents* web_contents = browser.GetWebContentsAt(index);
+          if (matcher.IsAshBrowser() ||
+              matcher.WebContentMatchesApp(web_contents,
+                                           &browser.GetBrowser())) {
+            items.push_back(web_contents);
+          }
+        }
+        return ash::BrowserController::kContinueIteration;
+      });
   return items;
 }
 
@@ -558,23 +577,24 @@ AppShortcutShelfItemController::GetAppBrowsers(
     const ItemFilterPredicate& filter_predicate) {
   DCHECK(IsWindowedWebApp());
   std::vector<raw_ptr<Browser, VectorExperimental>> browsers;
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (!filter_predicate.is_null() &&
-        !filter_predicate.Run(browser->window()->GetNativeWindow())) {
-      continue;
-    }
-    if (!multi_user_util::IsProfileFromActiveUser(browser->profile())) {
-      continue;
-    }
-    if (!IsAppBrowser(browser)) {
-      continue;
-    }
-
-    if (web_app::GetAppIdFromApplicationName(browser->app_name()) == app_id() &&
-        browser->tab_strip_model()->GetActiveWebContents()) {
-      browsers.push_back(browser);
-    }
-  }
+  ash::BrowserController::GetInstance()->ForEachBrowser(
+      ash::BrowserController::BrowserOrder::kAscendingCreationTime,
+      [&](ash::BrowserDelegate& browser) {
+        if (!filter_predicate.is_null() &&
+            !filter_predicate.Run(browser.GetNativeWindow())) {
+          return ash::BrowserController::kContinueIteration;
+        }
+        if (browser.GetAccountId() != GetActiveAccountId()) {
+          return ash::BrowserController::kContinueIteration;
+        }
+        if (!IsAppBrowser(browser)) {
+          return ash::BrowserController::kContinueIteration;
+        }
+        if (browser.GetAppId() == app_id() && browser.GetActiveWebContents()) {
+          browsers.push_back(&browser.GetBrowser());
+        }
+        return ash::BrowserController::kContinueIteration;
+      });
   return browsers;
 }
 
