@@ -45,7 +45,7 @@ bool NativeMessagePort::IsValidPort() {
 
 void NativeMessagePort::DispatchOnMessage(const Message& message) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  dispatcher_->DispatchOnMessage(message.data);
+  dispatcher_->DispatchOnMessage(message.data());
 }
 
 void NativeMessagePort::PostMessageFromNativeHost(const std::string& message) {

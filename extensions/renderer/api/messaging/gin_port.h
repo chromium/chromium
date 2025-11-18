@@ -25,7 +25,7 @@ class Arguments;
 
 namespace extensions {
 class APIEventHandler;
-struct Message;
+class Message;
 
 // A gin::Wrappable implementation of `runtime.Port` exposed to extensions. This
 // provides a means for extensions to communicate with themselves and each

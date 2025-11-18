@@ -10,10 +10,13 @@ namespace mojo {
 
 bool StructTraits<extensions::mojom::MessageDataView, extensions::Message>::
     Read(extensions::mojom::MessageDataView data, extensions::Message* out) {
-  out->format = data.format();
-  out->user_gesture = data.user_gesture();
-  out->from_privileged_context = data.from_privileged_context();
-  return data.ReadData(&out->data);
+  std::string message_data;
+  if (!data.ReadData(&message_data)) {
+    return false;
+  }
+  *out = extensions::Message(message_data, data.format(), data.user_gesture(),
+                             data.from_privileged_context());
+  return true;
 }
 
 bool StructTraits<extensions::mojom::PortIdDataView, extensions::PortId>::Read(

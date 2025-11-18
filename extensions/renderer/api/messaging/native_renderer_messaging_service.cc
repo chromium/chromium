@@ -373,7 +373,7 @@ v8::Local<v8::Promise> NativeRendererMessagingService::SendOneTimeMessage(
   // port's `mojom::SerializationFormat` is always the same as that passed by
   // messaging clients and is independent of any fallback behavior.
   PortId port_id(script_context->context_id(), data->next_port_id++, is_opener,
-                 message.format);
+                 message.format());
   mojo::PendingAssociatedRemote<mojom::MessagePort> message_port;
   mojo::PendingAssociatedReceiver<mojom::MessagePortHost>
       message_port_host_receiver;
@@ -515,7 +515,7 @@ void NativeRendererMessagingService::DeliverMessageToWorker(
   v8::Isolate* isolate = script_context->isolate();
   v8::HandleScope handle_scope(isolate);
   std::unique_ptr<InteractionProvider::Scope> scoped_extension_interaction;
-  if (message.user_gesture) {
+  if (message.user_gesture()) {
     // TODO(crbug.com/41467311): Add logging for privilege level for
     // sender and receiver and decide if want to allow unprivileged to
     // privileged support.
@@ -533,8 +533,8 @@ void NativeRendererMessagingService::DeliverMessageToBackgroundPage(
     ScriptContext* script_context) {
   std::unique_ptr<blink::WebScopedWindowFocusAllowedIndicator>
       allow_window_focus;
-  if (message.user_gesture && script_context->web_frame()) {
-    bool sender_is_privileged = message.from_privileged_context;
+  if (message.user_gesture() && script_context->web_frame()) {
+    bool sender_is_privileged = message.from_privileged_context();
     bool receiver_is_privileged =
         script_context->context_type() ==
         extensions::mojom::ContextType::kPrivilegedExtension;

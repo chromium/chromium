@@ -25,7 +25,7 @@ class RenderFrameHost;
 
 namespace extensions {
 
-struct Message;
+class Message;
 struct MessagingEndpoint;
 struct PortContext;
 

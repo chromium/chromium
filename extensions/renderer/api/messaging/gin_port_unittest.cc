@@ -191,15 +191,15 @@ TEST_F(GinPortTest, TestPostMessage) {
       ASSERT_TRUE(delegate()->last_port_id());
       EXPECT_EQ(*expected_port_id, delegate()->last_port_id());
       ASSERT_TRUE(delegate()->last_message());
-      EXPECT_EQ(expected_message->data, delegate()->last_message()->data);
-      EXPECT_EQ(expected_message->user_gesture,
-                delegate()->last_message()->user_gesture);
+      EXPECT_EQ(expected_message->data(), delegate()->last_message()->data());
+      EXPECT_EQ(expected_message->user_gesture(),
+                delegate()->last_message()->user_gesture());
     } else {
       RunFunctionAndExpectError(v8_function, context, std::size(args), args,
                                 "Uncaught Error: Could not serialize message.");
       EXPECT_FALSE(delegate()->last_port_id());
       EXPECT_FALSE(delegate()->last_message())
-          << delegate()->last_message()->data;
+          << delegate()->last_message()->data();
     }
     delegate()->ResetLastMessage();
   };

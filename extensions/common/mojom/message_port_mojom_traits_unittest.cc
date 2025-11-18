@@ -57,35 +57,33 @@ TEST(MessagePortMojomTraitsTest, MessageEmpty) {
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<extensions::mojom::Message>(
       input, output));
 
-  EXPECT_EQ(input.data, output.data);
-  EXPECT_EQ(input.format, output.format);
-  EXPECT_EQ(input.user_gesture, output.user_gesture);
-  EXPECT_EQ(input.from_privileged_context, output.from_privileged_context);
+  EXPECT_EQ(input.data(), output.data());
+  EXPECT_EQ(input.format(), output.format());
+  EXPECT_EQ(input.user_gesture(), output.user_gesture());
+  EXPECT_EQ(input.from_privileged_context(), output.from_privileged_context());
 }
 
 TEST(MessagePortMojomTraitsTest, MessageValues) {
-  Message input;
-  input.data = "some text";
-  input.format = mojom::SerializationFormat::kStructuredCloned;
-  input.user_gesture = true;
-  input.from_privileged_context = true;
+  Message input("some text", mojom::SerializationFormat::kStructuredCloned,
+                /*user_gesture=*/true, /*from_privileged_context=*/true);
   Message output;
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<extensions::mojom::Message>(
       input, output));
 
-  EXPECT_EQ(input.data, output.data);
-  EXPECT_EQ(input.format, output.format);
-  EXPECT_EQ(input.user_gesture, output.user_gesture);
-  EXPECT_EQ(input.from_privileged_context, output.from_privileged_context);
+  EXPECT_EQ(input.data(), output.data());
+  EXPECT_EQ(input.format(), output.format());
+  EXPECT_EQ(input.user_gesture(), output.user_gesture());
+  EXPECT_EQ(input.from_privileged_context(), output.from_privileged_context());
 
-  input.user_gesture = false;
+  input = Message("some text", mojom::SerializationFormat::kStructuredCloned,
+                  /*user_gesture=*/false, /*from_privileged_context=*/true);
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<extensions::mojom::Message>(
       input, output));
 
-  EXPECT_EQ(input.data, output.data);
-  EXPECT_EQ(input.format, output.format);
-  EXPECT_EQ(input.user_gesture, output.user_gesture);
-  EXPECT_EQ(input.from_privileged_context, output.from_privileged_context);
+  EXPECT_EQ(input.data(), output.data());
+  EXPECT_EQ(input.format(), output.format());
+  EXPECT_EQ(input.user_gesture(), output.user_gesture());
+  EXPECT_EQ(input.from_privileged_context(), output.from_privileged_context());
 }
 
 }  // namespace extensions

@@ -20,7 +20,7 @@ class SingleThreadTaskRunner;
 namespace extensions {
 class NativeMessageHost;
 class NativeMessagePortDispatcher;
-struct Message;
+class Message;
 struct PortId;
 
 // A port that manages communication with a native application.

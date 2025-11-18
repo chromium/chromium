@@ -205,7 +205,7 @@ v8::Local<v8::Value> MessageToV8UsingJSON(v8::Local<v8::Context> context,
                                           std::string* error) {
   v8::Isolate* isolate = v8::Isolate::GetCurrent();
   v8::Local<v8::String> v8_message_string =
-      gin::StringToV8(isolate, message.data);
+      gin::StringToV8(isolate, message.data());
   v8::Local<v8::Value> parsed_message;
   if (!v8::JSON::Parse(context, v8_message_string).ToLocal(&parsed_message)) {
     CHECK(is_parsing_fail_safe);
@@ -221,7 +221,7 @@ v8::Local<v8::Value> MessageToV8(v8::Local<v8::Context> context,
                                  const Message& message,
                                  bool is_parsing_fail_safe,
                                  std::string* error) {
-  switch (message.format) {
+  switch (message.format()) {
     case mojom::SerializationFormat::kStructuredCloned:
       return MessageToV8UsingStructuredCloning(context, message, error);
     case mojom::SerializationFormat::kJson:

@@ -32,7 +32,7 @@ enum class ChannelType;
 class NativeExtensionBindingsSystem;
 class NativeRendererMessagingService;
 class ScriptContext;
-struct Message;
+class Message;
 struct MessageTarget;
 struct PortId;
 

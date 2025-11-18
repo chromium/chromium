@@ -5,33 +5,39 @@
 #ifndef EXTENSIONS_COMMON_API_MESSAGING_MESSAGE_H_
 #define EXTENSIONS_COMMON_API_MESSAGING_MESSAGE_H_
 
+#include <string>
+
 #include "extensions/common/mojom/message_port.mojom-shared.h"
 
 namespace extensions {
 
 // A message consists of both the data itself as well as a user gesture state.
-struct Message {
-  std::string data;
-  mojom::SerializationFormat format = mojom::SerializationFormat::kJson;
-  bool user_gesture = false;
-  bool from_privileged_context = false;
-
-  Message() = default;
+class Message {
+ public:
+  Message();
   Message(const std::string& data,
           mojom::SerializationFormat format,
           bool user_gesture,
-          bool from_privileged_context = false)
-      : data(data),
-        format(format),
-        user_gesture(user_gesture),
-        from_privileged_context(from_privileged_context) {}
+          bool from_privileged_context = false);
+  Message(const Message& other);
+  Message(Message&& other);
+  ~Message();
 
-  bool operator==(const Message& other) const {
-    // Skipping the equality check for `from_privileged_context` here
-    // because this field is used only for histograms.
-    return data == other.data && user_gesture == other.user_gesture &&
-           format == other.format;
-  }
+  Message& operator=(const Message& other);
+  Message& operator=(Message&& other);
+
+  bool operator==(const Message& other) const;
+
+  const std::string& data() const { return data_; }
+  mojom::SerializationFormat format() const { return format_; }
+  bool user_gesture() const { return user_gesture_; }
+  bool from_privileged_context() const { return from_privileged_context_; }
+
+ private:
+  std::string data_;
+  mojom::SerializationFormat format_ = mojom::SerializationFormat::kJson;
+  bool user_gesture_ = false;
+  bool from_privileged_context_ = false;
 };
 
 }  // namespace extensions

@@ -23,7 +23,7 @@ enum class SerializationFormat;
 }  // namespace mojom
 
 class ScriptContext;
-struct Message;
+class Message;
 struct MessagingEndpoint;
 
 namespace messaging_util {
