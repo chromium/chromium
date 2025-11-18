@@ -1113,11 +1113,7 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
       // left mouse button being pressed.  This should be handled, as it treats
       // it as a signal to terminate the prior stroke.
       blink::WebMouseEvent mouse_move_event =
-          MouseEventBuilder()
-              .SetType(blink::WebInputEvent::Type::kMouseMove)
-              .SetPosition(kMouseMovePoint)
-              .SetButton(blink::WebPointerProperties::Button::kNoButton)
-              .Build();
+          CreateMouseMoveEventAtPoint(kMouseMovePoint);
       EXPECT_TRUE(ink_module().HandleInputEvent(mouse_move_event));
     }
 
@@ -1126,11 +1122,7 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
       // since there is no longer any active drawing or erasing.
       constexpr gfx::PointF kMouseMovePoint2 = gfx::PointF(21.0f, 26.0f);
       blink::WebMouseEvent mouse_move_event =
-          MouseEventBuilder()
-              .SetType(blink::WebInputEvent::Type::kMouseMove)
-              .SetPosition(kMouseMovePoint2)
-              .SetButton(blink::WebPointerProperties::Button::kNoButton)
-              .Build();
+          CreateMouseMoveEventAtPoint(kMouseMovePoint2);
       EXPECT_FALSE(ink_module().HandleInputEvent(mouse_move_event));
     }
 
@@ -1599,10 +1591,7 @@ TEST_P(PdfInkModuleStrokeTest, AnnotationWithMouseInterruptedByPenEvents) {
   // Per manual testing on a Windows laptop, pen input causes mouse events to
   // lose their left-button down state while the pen is active.
   blink::WebMouseEvent mouse_move_no_left_button_event =
-      MouseEventBuilder()
-          .SetType(blink::WebInputEvent::Type::kMouseMove)
-          .SetPosition(kMouseMovePoint)
-          .Build();
+      CreateMouseMoveEventAtPoint(kMouseMovePoint);
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_move_no_left_button_event));
 
   const std::vector<base::span<const gfx::PointF>> all_move_points{
