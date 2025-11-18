@@ -139,7 +139,8 @@ bool ExtensionAppShimManagerDelegate::AppCanCreateHost(
     return false;
   if (extension->is_hosted_app() &&
       extensions::GetLaunchType(extensions::ExtensionPrefs::Get(profile),
-                                extension) == extensions::LAUNCH_TYPE_REGULAR) {
+                                extension) ==
+          extensions::LaunchType::kRegular) {
     return false;
   }
   // Note that this will return true for non-hosted apps (e.g, Chrome Remote

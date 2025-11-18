@@ -41,7 +41,7 @@ struct AppState {
 
   syncer::StringOrdinal app_launch_ordinal;
   syncer::StringOrdinal page_ordinal;
-  extensions::LaunchType launch_type = extensions::LAUNCH_TYPE_INVALID;
+  extensions::LaunchType launch_type = extensions::LaunchType::kInvalid;
   GURL launch_web_url;
   std::string description;
   std::string name;

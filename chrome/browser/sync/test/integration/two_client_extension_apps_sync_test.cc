@@ -333,22 +333,22 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest,
 
   // Change the launch type to window.
   extensions::SetLaunchType(GetProfile(1), extensions::kWebStoreAppId,
-                            extensions::LAUNCH_TYPE_WINDOW);
+                            extensions::LaunchType::kWindow);
   ASSERT_TRUE(AppsMatchChecker().Wait());
   ASSERT_EQ(extensions::GetLaunchTypePrefValue(
                 extensions::ExtensionPrefs::Get(GetProfile(0)),
                 extensions::kWebStoreAppId),
-            extensions::LAUNCH_TYPE_WINDOW);
+            extensions::LaunchType::kWindow);
 
   // Change the launch type to regular tab.
   extensions::SetLaunchType(GetProfile(1), extensions::kWebStoreAppId,
-                            extensions::LAUNCH_TYPE_REGULAR);
+                            extensions::LaunchType::kRegular);
   ASSERT_TRUE(AppsMatchChecker().Wait());
 
   ASSERT_EQ(extensions::GetLaunchTypePrefValue(
                 extensions::ExtensionPrefs::Get(GetProfile(0)),
                 extensions::kWebStoreAppId),
-            extensions::LAUNCH_TYPE_REGULAR);
+            extensions::LaunchType::kRegular);
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest, UnexpectedLaunchType) {
@@ -358,7 +358,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest, UnexpectedLaunchType) {
   ASSERT_TRUE(AllProfilesHaveSameApps());
 
   extensions::SetLaunchType(GetProfile(1), extensions::kWebStoreAppId,
-                            extensions::LAUNCH_TYPE_REGULAR);
+                            extensions::LaunchType::kRegular);
   ASSERT_TRUE(AppsMatchChecker().Wait());
 
   const extensions::Extension* extension =
@@ -380,7 +380,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest, UnexpectedLaunchType) {
       *extension, original_data.enabled(), original_data.disable_reasons(),
       original_data.incognito_enabled(), original_data.remote_install(),
       original_data.update_url(), original_data.app_launch_ordinal(),
-      original_data.page_ordinal(), extensions::NUM_LAUNCH_TYPES);
+      original_data.page_ordinal(), extensions::LaunchType::kNumLaunchTypes);
   extension_sync_service->ApplySyncData(invalid_launch_type_data);
 
   // The launch type should remain the same.
