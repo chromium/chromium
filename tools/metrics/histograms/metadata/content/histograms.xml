@@ -431,7 +431,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContentSettings.RegularProfile.DefaultJavascriptOptimizationBlockedByOs"
-    enum="Boolean" expires_after="2026-01-01">
+    enum="Boolean" expires_after="2026-04-01">
   <owner>pkotwicz@google.com</owner>
   <owner>src/chrome/browser/site_protection/OWNERS</owner>
   <summary>
