@@ -810,7 +810,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Network.Ash.Hotspot.Upstream.Cellular.Usage.Config.CompatibilityMode"
-    enum="BooleanEnabled" expires_after="2025-11-20">
+    enum="BooleanEnabled" expires_after="2026-11-20">
   <owner>jiajunz@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
