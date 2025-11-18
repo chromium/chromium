@@ -10,8 +10,6 @@ blink_modules_sources("media_capabilities") {
   sources = [
     "media_capabilities.cc",
     "media_capabilities.h",
-    "media_capabilities_identifiability_metrics.cc",
-    "media_capabilities_identifiability_metrics.h",
   ]
   deps = [
     "//media",

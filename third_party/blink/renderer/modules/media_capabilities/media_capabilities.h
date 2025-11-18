@@ -12,7 +12,6 @@
 #include "media/base/video_color_space.h"
 #include "media/mojo/mojom/video_decode_perf_history.mojom-blink.h"
 #include "media/mojo/mojom/webrtc_video_perf.mojom-blink.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_configuration.h"
@@ -69,8 +68,7 @@ class MODULES_EXPORT MediaCapabilities final : public ScriptWrappable,
    public:
     PendingCallbackState(ScriptPromiseResolverBase* resolver,
                          MediaKeySystemAccess* access,
-                         const base::TimeTicks& request_time,
-                         std::optional<IdentifiableToken> input_token);
+                         const base::TimeTicks& request_time);
     virtual void Trace(blink::Visitor* visitor) const;
 
     Member<ScriptPromiseResolverBase> resolver;
@@ -83,7 +81,6 @@ class MODULES_EXPORT MediaCapabilities final : public ScriptWrappable,
     std::optional<bool> is_gpu_factories_supported;
     std::optional<bool> is_builtin_video_codec;
     base::TimeTicks request_time;
-    std::optional<IdentifiableToken> input_token;
   };
 
   FRIEND_TEST_ALL_PREFIXES(MediaCapabilitiesTests,
