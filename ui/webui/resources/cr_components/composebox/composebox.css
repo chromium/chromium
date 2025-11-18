@@ -546,7 +546,8 @@ contextual-entrypoint-and-carousel::part(voice-icon) {
   --cr-icon-button-size: 36px;
 }
 
-:host([ntp-realbox-next-enabled]) #submitOverlay {
+:host([ntp-realbox-next-enabled][searchbox-layout-mode='Compact']) #submitOverlay,
+:host([ntp-realbox-next-enabled][searchbox-layout-mode='TallBottomContext']) #submitOverlay {
   position: relative;
 }
 
