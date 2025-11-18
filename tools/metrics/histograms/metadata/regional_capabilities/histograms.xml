@@ -77,6 +77,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<!-- LINT.IfChange(RegionalCapabilities.FunnelStage.Eligibility) -->
+
 <histogram name="RegionalCapabilities.FunnelStage.Eligibility"
     enum="SearchEngineChoiceScreenConditions" expires_after="2026-08-19">
   <owner>dgn@chromium.org</owner>
@@ -87,6 +89,8 @@ chromium-metrics-reviews@google.com.
     possibly eligible for a search engine choice screen.
   </summary>
 </histogram>
+
+<!-- LINT.ThenChange(tools/metrics/histograms/metadata/puma/histograms.xml:PUMA.RegionalCapabilities.FunnelStage.Eligibility) -->
 
 <histogram name="RegionalCapabilities.FunnelStage.RegionalPresence"
     enum="RegionalProgramAndLocationMatch" expires_after="2026-03-29">
@@ -103,6 +107,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<!-- LINT.IfChange(RegionalCapabilities.FunnelStage.Reported) -->
+
 <histogram name="RegionalCapabilities.FunnelStage.Reported"
     enum="RegionalCapabilitiesFunnelStage" expires_after="2026-03-22">
   <owner>dgn@chromium.org</owner>
@@ -115,6 +121,10 @@ chromium-metrics-reviews@google.com.
     to trigger a choice screen.
   </summary>
 </histogram>
+
+<!-- LINT.ThenChange(tools/metrics/histograms/metadata/puma/histograms.xml:PUMA.RegionalCapabilities.FunnelStage.Reported) -->
+
+<!-- LINT.IfChange(RegionalCapabilities.FunnelStage.Triggering) -->
 
 <histogram name="RegionalCapabilities.FunnelStage.Triggering"
     enum="SearchEngineChoiceScreenConditions" expires_after="2026-08-19">
@@ -131,6 +141,8 @@ chromium-metrics-reviews@google.com.
     this histogram will not be recorded.
   </summary>
 </histogram>
+
+<!-- LINT.ThenChange(tools/metrics/histograms/metadata/puma/histograms.xml:PUMA.RegionalCapabilities.FunnelStage.Triggering) -->
 
 <histogram name="RegionalCapabilities.LoadedCountrySource"
     enum="LoadedCapabilitiesCountrySource" expires_after="2026-05-03">
