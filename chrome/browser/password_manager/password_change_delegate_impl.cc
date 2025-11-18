@@ -753,7 +753,9 @@ void PasswordChangeDelegateImpl::OnCrossOriginNavigationDetected() {
   }
   navigation_observer_.reset();
 
-  // TODO(454022517): Record a special interruption for this case in MQLS.
+  ReportFlowInterruption(
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_CROSE_ORIGIN_NAVIGATION);
 
   // Navigation happened when looking for a change password form, password
   // change can be terminated safely with `kChangePasswordFormNotFound`.

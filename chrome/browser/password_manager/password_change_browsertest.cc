@@ -670,7 +670,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, NewPasswordIsSaved) {
       /*open_form_status=*/
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_STEP_SKIPPED,
-      /* submit_form_status=*/
+      /*submit_form_status=*/
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS,
       /*verify_submission_status=*/
@@ -869,7 +869,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
       /*open_form_status=*/
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_STEP_SKIPPED,
-      /* submit_form_status=*/
+      /*submit_form_status=*/
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS,
       /*verify_submission_status=*/
@@ -1017,7 +1017,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OTPDetectionHaltsTheFlow) {
       /*open_form_status=*/
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_OTP_DETECTED,
-      /* submit_form_status=*/
+      /*submit_form_status=*/
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS,
       /*verify_submission_status=*/
@@ -1076,7 +1076,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, CancelFromToast) {
       /*open_form_status=*/
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_FLOW_INTERRUPTED,
-      /* submit_form_status=*/
+      /*submit_form_status=*/
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS,
       /*verify_submission_status=*/
@@ -1262,6 +1262,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
                        CrossOriginNavigationDetected) {
+  SetModelQualityLogsUploader();
   base::HistogramTester histogram_tester;
 
   SetPrivacyNoticeAcceptedPref();
@@ -1306,6 +1307,28 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
     return delegate->GetCurrentState() ==
            PasswordChangeDelegate::State::kPasswordChangeFailed;
   }));
+
+  delegate->Stop();
+  EXPECT_TRUE(base::test::RunUntil([&delegate]() {
+    // Delegate's destructor is called async, so this is needed before checking
+    // the metrics report.
+    return delegate == nullptr;
+  }));
+
+  VerifyUniqueQualityLog(
+      /*login_check_status=*/QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS,
+      /*open_form_status=*/
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_STEP_SKIPPED,
+      /*submit_form_status=*/
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_CROSE_ORIGIN_NAVIGATION,
+      /*verify_submission_status=*/
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS,
+      /*final_status=*/
+      FinalModelStatus::FINAL_MODEL_STATUS_UNSPECIFIED);
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
@@ -1395,7 +1418,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
       /*open_form_status=*/
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_FLOW_INTERRUPTED,
-      /* submit_form_status=*/
+      /*submit_form_status=*/
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS,
       /*verify_submission_status=*/
@@ -1442,7 +1465,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
       /*open_form_status=*/
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_FLOW_INTERRUPTED,
-      /* submit_form_status=*/
+      /*submit_form_status=*/
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS,
       /*verify_submission_status=*/
@@ -1495,7 +1518,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
       /*open_form_status=*/
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_STEP_SKIPPED,
-      /* submit_form_status=*/
+      /*submit_form_status=*/
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_FLOW_INTERRUPTED,
       /*verify_submission_status=*/
@@ -1556,7 +1579,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
       /*open_form_status=*/
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_STEP_SKIPPED,
-      /* submit_form_status=*/
+      /*submit_form_status=*/
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS,
       /*verify_submission_status=*/
@@ -1604,7 +1627,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
       /*open_form_status=*/
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_STEP_SKIPPED,
-      /* submit_form_status=*/
+      /*submit_form_status=*/
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_OTP_DETECTED,
       /*verify_submission_status=*/
@@ -1648,7 +1671,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
       /*open_form_status=*/
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_STEP_SKIPPED,
-      /* submit_form_status=*/
+      /*submit_form_status=*/
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS,
       /*verify_submission_status=*/
@@ -1752,7 +1775,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestWithLoginCheck,
       /*open_form_status=*/
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS,
-      /* submit_form_status=*/
+      /*submit_form_status=*/
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS,
       /*verify_submission_status=*/
@@ -1807,7 +1830,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestWithLoginCheck,
       /*open_form_status=*/
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS,
-      /* submit_form_status=*/
+      /*submit_form_status=*/
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS,
       /*verify_submission_status=*/
