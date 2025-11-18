@@ -444,9 +444,6 @@ void InfoBarView::AddViewBeforeCloseButton(std::unique_ptr<views::View> view) {
         ReorderChildView(view_ptr, index.value());
       }
     }
-  } else {
-    // If there is no close button, then add the link at the end.
-    AddChildView(std::move(view));
   }
 }
 
