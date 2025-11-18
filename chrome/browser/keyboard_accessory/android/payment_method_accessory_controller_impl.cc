@@ -230,7 +230,7 @@ PaymentMethodAccessoryControllerImpl::GetSheetData() const {
   for (const CardOrVirtualCard& card_or_virtual : GetAllCreditCards()) {
     const CreditCard* card = UnwrapCardOrVirtualCard(card_or_virtual);
     if (add_all_cards || !autofill_manager->GetCreditCardAccessManager()
-                              .IsCardPresentInUnmaskedCache(*card)) {
+                              ->IsCardPresentInUnmaskedCache(*card)) {
       info_to_add.push_back(TranslateCard(card, allow_filling));
     }
   }
@@ -472,7 +472,7 @@ PaymentMethodAccessoryControllerImpl::GetUnmaskedCreditCards() const {
     return std::vector<const CachedServerCardInfo*>();
   }
   std::vector<const CachedServerCardInfo*> unmasked_cards =
-      autofill_manager->GetCreditCardAccessManager().GetCachedUnmaskedCards();
+      autofill_manager->GetCreditCardAccessManager()->GetCachedUnmaskedCards();
   // Show unmasked virtual cards and card info retrieval enrolled server cards
   // in the manual filling view if they exist. All other cards are dropped.
   auto non_runtime_retrieval_card = [](const CachedServerCardInfo* card_info) {
@@ -576,7 +576,7 @@ bool PaymentMethodAccessoryControllerImpl::FetchIfCreditCardId(
     return false;
   }
 
-  GetAutofillManager()->GetCreditCardAccessManager().FetchCreditCard(
+  GetAutofillManager()->GetCreditCardAccessManager()->FetchCreditCard(
       UnwrapCardOrVirtualCard(*card_iter),
       base::BindOnce(&PaymentMethodAccessoryControllerImpl::OnCreditCardFetched,
                      weak_ptr_factory_.GetWeakPtr()));

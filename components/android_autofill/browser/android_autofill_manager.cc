@@ -210,6 +210,15 @@ AutofillProvider* AndroidAutofillManager::GetAutofillProvider() {
   return nullptr;
 }
 
+CreditCardAccessManager* AndroidAutofillManager::GetCreditCardAccessManager() {
+  return nullptr;
+}
+
+const CreditCardAccessManager*
+AndroidAutofillManager::GetCreditCardAccessManager() const {
+  return nullptr;
+}
+
 FieldTypeGroup AndroidAutofillManager::ComputeFieldTypeGroupForField(
     const FormGlobalId& form_id,
     const FieldGlobalId& field_id) {

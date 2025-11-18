@@ -53,6 +53,9 @@ class AndroidAutofillManager : public AutofillManager,
 
   void ReportAutofillWebOTPMetrics(bool used_web_otp) override {}
 
+  CreditCardAccessManager* GetCreditCardAccessManager() override;
+  const CreditCardAccessManager* GetCreditCardAccessManager() const override;
+
   bool has_server_prediction(FormGlobalId form) const {
     return forms_with_server_predictions_.contains(form);
   }

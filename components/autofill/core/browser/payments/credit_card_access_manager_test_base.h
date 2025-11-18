@@ -192,7 +192,7 @@ class CreditCardAccessManagerTestBase
   TestAccessor& accessor() { return accessor_; }
 
   CreditCardAccessManager& credit_card_access_manager() {
-    return autofill_manager().GetCreditCardAccessManager();
+    return *autofill_manager().GetCreditCardAccessManager();
   }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)

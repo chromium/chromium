@@ -343,7 +343,7 @@ TEST_F(PaymentMethodAccessoryControllerTest,
   // cache.
   unmasked_card.set_record_type(CreditCard::RecordType::kVirtualCard);
   std::u16string cvc = u"123";
-  autofill_manager().GetCreditCardAccessManager().CacheUnmaskedCardInfo(
+  autofill_manager().GetCreditCardAccessManager()->CacheUnmaskedCardInfo(
       unmasked_card, cvc);
 
   EXPECT_CALL(filling_source_observer_,
@@ -470,7 +470,7 @@ TEST_F(PaymentMethodAccessoryControllerTest,
   // Update the record type and add it to the unmasked cards cache.
   unmasked_card.set_record_type(CreditCard::RecordType::kFullServerCard);
   std::u16string cvc = u"123";
-  autofill_manager().GetCreditCardAccessManager().CacheUnmaskedCardInfo(
+  autofill_manager().GetCreditCardAccessManager()->CacheUnmaskedCardInfo(
       unmasked_card, cvc);
 
   EXPECT_CALL(filling_source_observer_,
@@ -803,7 +803,7 @@ TEST_F(PaymentMethodAccessoryControllerTest,
       CreditCard::VirtualCardEnrollmentState::kUnspecified);
 
   std::u16string cvc = u"123";
-  autofill_manager().GetCreditCardAccessManager().CacheUnmaskedCardInfo(
+  autofill_manager().GetCreditCardAccessManager()->CacheUnmaskedCardInfo(
       bnpl_card, cvc);
   paydm().AddCreditCard(bnpl_card);
 

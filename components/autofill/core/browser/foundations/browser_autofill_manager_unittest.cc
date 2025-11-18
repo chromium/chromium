@@ -1444,7 +1444,7 @@ class BrowserAutofillManagerTest
 
   MockCreditCardAccessManager& cc_access_manager() {
     return static_cast<MockCreditCardAccessManager&>(
-        autofill_manager().GetCreditCardAccessManager());
+        *autofill_manager().GetCreditCardAccessManager());
   }
 
   MockAmountExtractionManager& amount_extraction_manager() {

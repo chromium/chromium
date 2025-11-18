@@ -142,7 +142,7 @@ void AutofillMetricsBaseTest::SetUpHelper() {
   autofill_driver().SetLocalFrameToken(test::MakeLocalFrameToken());
 
 #if !BUILDFLAG(IS_IOS)
-  test_api(autofill_manager().GetCreditCardAccessManager())
+  test_api(*autofill_manager().GetCreditCardAccessManager())
       .set_fido_authenticator(std::make_unique<TestCreditCardFidoAuthenticator>(
           &autofill_driver(), &autofill_client()));
 #endif
@@ -190,7 +190,7 @@ void AutofillMetricsBaseTest::RecreateProfile() {
 
 void AutofillMetricsBaseTest::SetFidoEligibility(bool is_verifiable) {
   CreditCardAccessManager& access_manager =
-      autofill_manager().GetCreditCardAccessManager();
+      *autofill_manager().GetCreditCardAccessManager();
 #if !BUILDFLAG(IS_IOS)
   static_cast<TestCreditCardFidoAuthenticator*>(
       access_manager.GetOrCreateFidoAuthenticator())
@@ -213,10 +213,10 @@ void AutofillMetricsBaseTest::OnDidGetRealPan(
   // challenge is required.
   if (autofill_manager()
           .GetCreditCardAccessManager()
-          .IsMaskedServerCardRiskBasedAuthAvailable()) {
+          ->IsMaskedServerCardRiskBasedAuthAvailable()) {
     autofill_manager()
         .GetCreditCardAccessManager()
-        .OnRiskBasedAuthenticationResponseReceived(
+        ->OnRiskBasedAuthenticationResponseReceived(
             CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse()
                 .with_result(CreditCardRiskBasedAuthenticator::
                                  RiskBasedAuthenticationResponse::Result::

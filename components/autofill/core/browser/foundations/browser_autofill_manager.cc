@@ -808,15 +808,15 @@ base::WeakPtr<AutofillManager> BrowserAutofillManager::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-CreditCardAccessManager& BrowserAutofillManager::GetCreditCardAccessManager() {
+CreditCardAccessManager* BrowserAutofillManager::GetCreditCardAccessManager() {
   if (!credit_card_access_manager_) {
     credit_card_access_manager_ =
         std::make_unique<CreditCardAccessManager>(this);
   }
-  return *credit_card_access_manager_;
+  return credit_card_access_manager_.get();
 }
 
-const CreditCardAccessManager&
+const CreditCardAccessManager*
 BrowserAutofillManager::GetCreditCardAccessManager() const {
   return const_cast<BrowserAutofillManager*>(this)
       ->GetCreditCardAccessManager();
@@ -2015,7 +2015,7 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
 
     if (credit_card.record_type() == CreditCard::RecordType::kFullServerCard ||
         credit_card.record_type() == CreditCard::RecordType::kVirtualCard) {
-      self->GetCreditCardAccessManager().CacheUnmaskedCardInfo(
+      self->GetCreditCardAccessManager()->CacheUnmaskedCardInfo(
           credit_card, credit_card.cvc());
     }
 
@@ -2039,7 +2039,7 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
   bool fetched_independently = credit_card.is_bnpl_card();
 
   if (require_card_fetching) {
-    GetCreditCardAccessManager().FetchCreditCard(
+    GetCreditCardAccessManager()->FetchCreditCard(
         &credit_card,
         base::BindOnce(on_fetched, weak_ptr_factory_.GetWeakPtr(),
                        fill_or_preview, form, autofill_field.global_id(),
@@ -2245,7 +2245,7 @@ void BrowserAutofillManager::DidShowSuggestions(
   if (base::Contains(shown_suggestion_types, FillingProduct::kCreditCard,
                      GetFillingProductFromSuggestionType) &&
       IsCreditCardFidoAuthenticationEnabled()) {
-    GetCreditCardAccessManager().PrepareToFetchCreditCard();
+    GetCreditCardAccessManager()->PrepareToFetchCreditCard();
   }
 
   if (shown_suggestion_types.contains(SuggestionType::kScanCreditCard)) {
@@ -2321,7 +2321,7 @@ void BrowserAutofillManager::OnSingleFieldSuggestionSelected(
 }
 
 bool BrowserAutofillManager::ShouldClearPreviewedForm() {
-  return GetCreditCardAccessManager().ShouldClearPreviewedForm();
+  return GetCreditCardAccessManager()->ShouldClearPreviewedForm();
 }
 
 void BrowserAutofillManager::OnSelectFieldOptionsDidChangeImpl(
@@ -2602,7 +2602,7 @@ void BrowserAutofillManager::UpdateLoggersReadinessData() {
   if (!client().IsAutofillEnabled()) {
     return;
   }
-  GetCreditCardAccessManager().UpdateCreditCardFormEventLogger();
+  GetCreditCardAccessManager()->UpdateCreditCardFormEventLogger();
   metrics_->address_form_event_logger.UpdateProfileAvailabilityForReadiness(
       client().GetPersonalDataManager().address_data_manager().GetProfiles());
   if (ValuablesDataManager* valuables_manager =

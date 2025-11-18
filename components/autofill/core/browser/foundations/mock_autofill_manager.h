@@ -94,6 +94,14 @@ class MockAutofillManager : public AutofillManager {
               ReportAutofillWebOTPMetrics,
               (bool used_web_otp),
               (override));
+  MOCK_METHOD(CreditCardAccessManager*,
+              GetCreditCardAccessManager,
+              (),
+              (override));
+  MOCK_METHOD(const CreditCardAccessManager*,
+              GetCreditCardAccessManager,
+              (),
+              (const override));
 
   base::WeakPtr<AutofillManager> GetWeakPtr() override;
 

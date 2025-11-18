@@ -70,9 +70,9 @@ class CreditCardAccessManagerBrowserTest : public InProcessBrowserTest {
     ContentAutofillDriver* autofill_driver =
         ContentAutofillDriver::GetForRenderFrameHost(
             web_contents()->GetPrimaryMainFrame());
-    return static_cast<BrowserAutofillManager&>(
-               autofill_driver->GetAutofillManager())
-        .GetCreditCardAccessManager();
+    return *static_cast<BrowserAutofillManager&>(
+                autofill_driver->GetAutofillManager())
+                .GetCreditCardAccessManager();
   }
 
  private:

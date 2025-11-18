@@ -233,8 +233,8 @@ class BrowserAutofillManager : public AutofillManager {
   // Upload the current pending form.
   void ProcessPendingFormForUpload();
 
-  CreditCardAccessManager& GetCreditCardAccessManager();
-  const CreditCardAccessManager& GetCreditCardAccessManager() const;
+  CreditCardAccessManager* GetCreditCardAccessManager() override;
+  const CreditCardAccessManager* GetCreditCardAccessManager() const override;
 
   // Gets the payments BNPL manager owned by `this`. This will be used to
   // handle BNPL flows. May return nullptr if BNPL is not supported on the

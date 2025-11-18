@@ -46,6 +46,7 @@ struct AutofillServerPrediction;
 class AutofillField;
 class AutofillProfile;
 class CreditCard;
+class CreditCardAccessManager;
 class FormData;
 class FormFieldData;
 class FormStructure;
@@ -341,6 +342,11 @@ class AutofillManager
       HeuristicSource source,
       FormGlobalId form_id,
       const std::vector<FieldGlobalId>& field_ids) const;
+
+  // Returns the `CreditCardAccessManager` associated with `this`. Null only
+  // for Android (i.e., platform) Autofill.
+  virtual CreditCardAccessManager* GetCreditCardAccessManager() = 0;
+  virtual const CreditCardAccessManager* GetCreditCardAccessManager() const = 0;
 
   void AddObserver(Observer* observer) { observers_.AddObserver(observer); }
 

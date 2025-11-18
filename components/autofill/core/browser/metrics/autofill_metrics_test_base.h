@@ -305,7 +305,7 @@ class AutofillMetricsBaseTest : public WithTestAutofillClientDriverManager<
 
   MockCreditCardAccessManager& credit_card_access_manager() {
     return static_cast<MockCreditCardAccessManager&>(
-        autofill_manager().GetCreditCardAccessManager());
+        *autofill_manager().GetCreditCardAccessManager());
   }
 
   TestPersonalDataManager& personal_data() {
