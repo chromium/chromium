@@ -11,7 +11,7 @@
 namespace web {
 namespace nscoder_util {
 
-void EncodeString(NSCoder* coder, NSString* key, const std::string& string) {
+void EncodeString(NSCoder* coder, NSString* key, std::string_view string) {
   [coder encodeBytes:reinterpret_cast<const uint8_t*>(string.data())
               length:string.size()
               forKey:key];
