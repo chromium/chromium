@@ -1038,6 +1038,7 @@ ci.thin_tester(
         mixins = [
             "mac_15_x64",
             "isolate_profile_data",
+            "retry_only_failed_tests",
         ],
         per_test_modifications = {
             "blink_web_tests": targets.mixin(
@@ -1067,7 +1068,6 @@ ci.thin_tester(
                 # Only retry the individual failed tests instead of rerunning
                 # entire shards.
                 # crbug.com/1475852
-                retry_only_failed_tests = True,
                 swarming = targets.swarming(
                     shards = 12,
                 ),

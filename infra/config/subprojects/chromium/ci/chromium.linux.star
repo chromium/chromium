@@ -488,6 +488,7 @@ ci.thin_tester(
         mixins = [
             "isolate_profile_data",
             "linux-jammy",
+            "retry_only_failed_tests",
         ],
         per_test_modifications = {
             "blink_web_tests": targets.mixin(
@@ -504,19 +505,9 @@ ci.thin_tester(
                 ],
             ),
             "browser_tests": targets.mixin(
-                # Only retry the individual failed tests instead of rerunning
-                # entire shards.
-                # crbug.com/1473501
-                retry_only_failed_tests = True,
                 swarming = targets.swarming(
                     shards = 20,
                 ),
-            ),
-            "content_browsertests": targets.mixin(
-                # Only retry the individual failed tests instead of rerunning
-                # entire shards.
-                # crbug.com/1473501
-                retry_only_failed_tests = True,
             ),
             "not_site_per_process_blink_web_tests": targets.mixin(
                 args = [
@@ -528,12 +519,6 @@ ci.thin_tester(
                     "--xvfb",
                     "--jobs=1",
                 ],
-            ),
-            "unit_tests": targets.mixin(
-                # Only retry the individual failed tests instead of rerunning
-                # entire shards.
-                # crbug.com/1473501
-                retry_only_failed_tests = True,
             ),
             "webdriver_wpt_tests": targets.mixin(
                 ci_only = True,
