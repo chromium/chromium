@@ -756,6 +756,7 @@ chromium-metrics-reviews@google.com.
   <int value="-753390931" label="chrome://interstitials/"/>
   <int value="-734627230" label="chrome://extension-icon/"/>
   <int value="-727952446" label="chrome://nacl/"/>
+  <int value="-722142308" label="chrome://updater/"/>
   <int value="-707542503" label="chrome://choose-mobile-network/"/>
   <int value="-695712248" label="chrome://segmentation-internals/"/>
   <int value="-680649366" label="chrome-untrusted://hats/"/>

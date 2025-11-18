@@ -3057,6 +3057,10 @@ static_library("ui") {
   }
 
   if (is_win || is_mac) {
+    sources += [
+      "webui/updater/updater_ui.cc",
+      "webui/updater/updater_ui.h",
+    ]
     deps += [
       "//chrome/browser/ui/pdf/infobar",
       "//chrome/browser/ui/startup/default_browser_prompt/pin_infobar",

@@ -130,6 +130,10 @@ group("resources") {
     ]
   }
 
+  if (is_mac || is_win) {
+    public_deps += [ "updater:resources" ]
+  }
+
   if (!is_android && !is_chromeos) {
     public_deps += [
       "inline_login:resources",

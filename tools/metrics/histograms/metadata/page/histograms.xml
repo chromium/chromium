@@ -468,6 +468,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".terms"/>
   <variant name=".topics-internals"/>
   <variant name=".translate-internals"/>
+  <variant name=".updater"/>
   <variant name=".urgent-password-expiry-notification"/>
   <variant name=".usb-internals"/>
   <variant name=".vc-background"/>

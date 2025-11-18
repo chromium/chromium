@@ -1,0 +1,40 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_mac || is_win)
+
+source_set("updater") {
+  sources = [ "updater_ui.h" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/notifications/scheduler/public",
+    "//chrome/browser/profiles",
+    "//chrome/common",
+    "//content/public/browser",
+    "//ui/webui",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "notifications_internals_ui.cc",
+    "notifications_internals_ui_page_handler.cc",
+  ]
+  public_deps = [
+    ":mojo_bindings",
+    ":notifications_internals",
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/notifications/scheduler/public",
+    "//chrome/browser/profiles",
+    "//chrome/browser/resources/notifications_internals:resources_grit",
+    "//content/public/browser",
+    "//ui/webui",
+  ]
+}
+
+mojom("mojo_bindings") {
+  sources = [ "notifications_internals.mojom" ]
+  webui_module_path = "/"
+}

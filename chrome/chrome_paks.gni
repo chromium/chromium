@@ -598,6 +598,11 @@ template("chrome_extra_paks") {
         "//ui/webui/resources:code_cache_resources",
       ]
     }
+
+    if (is_mac || is_win) {
+      sources += [ "$root_gen_dir/chrome/updater_resources.pak" ]
+      deps += [ "//chrome/browser/resources/updater:resources" ]
+    }
   }
 }
 
