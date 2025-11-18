@@ -637,11 +637,6 @@ void HTMLPermissionElement::UpdateAppearance() {
 void HTMLPermissionElement::UpdateIcon(
     PermissionName permnission,
     HTMLPermissionIconElement::VisualState visual_state) {
-  if (!RuntimeEnabledFeatures::PermissionElementIconEnabled(
-          GetDocument().GetExecutionContext())) {
-    return;
-  }
-
   permission_internal_icon_->SetIcon(permnission, is_precise_location_,
                                      visual_state);
 }
@@ -860,12 +855,9 @@ void HTMLPermissionElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   permission_container_->SetShadowPseudoId(
       shadow_element_names::kPseudoInternalPermissionContainer);
   root.AppendChild(permission_container_);
-  if (RuntimeEnabledFeatures::PermissionElementIconEnabled(
-          GetDocument().GetExecutionContext())) {
-    permission_internal_icon_ =
-        MakeGarbageCollected<HTMLPermissionIconElement>(GetDocument());
-    permission_container_->AppendChild(permission_internal_icon_);
-  }
+  permission_internal_icon_ =
+      MakeGarbageCollected<HTMLPermissionIconElement>(GetDocument());
+  permission_container_->AppendChild(permission_internal_icon_);
   permission_text_span_ = MakeGarbageCollected<HTMLSpanElement>(GetDocument());
   permission_text_span_->SetShadowPseudoId(
       shadow_element_names::kPseudoInternalPermissionTextSpan);

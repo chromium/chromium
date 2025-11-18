@@ -3799,16 +3799,6 @@
       implied_by: ["GeolocationElement", "InstallElement"],
     },
     {
-      // Tracking bug for the implementation: crbug.com/352249547
-      // This flag adds having the option to show an icon in the Permission
-      // element, if developers want to.
-      // The flag will enable us to land the feature over multiple CLs, and will
-      // be enabled after the feature has been fully implemented.
-      name: "PermissionElementIcon",
-      status: "stable",
-      depends_on: ["PermissionElement"],
-    },
-    {
       name: "Permissions",
       public: true,
       status: "stable",
