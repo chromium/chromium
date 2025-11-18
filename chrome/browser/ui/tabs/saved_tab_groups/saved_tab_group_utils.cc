@@ -784,6 +784,7 @@ tabs::TabInterface* SavedTabGroupUtils::GetGroupedTab(LocalTabGroupID group_id,
 
 void SavedTabGroupUtils::PerformTabGroupMenuAction(
     const TabGroupMenuAction& action,
+    const TabGroupMenuContext& context,
     Browser* browser,
     TabGroupSyncService* tab_group_service) {
   auto type = action.type;
@@ -797,7 +798,12 @@ void SavedTabGroupUtils::PerformTabGroupMenuAction(
   switch (type) {
     case TabGroupMenuAction::Type::OPEN_IN_BROWSER: {
       base::RecordAction(base::UserMetricsAction(
-          "TabGroups_SavedTabGroups_OpenedFromTabGroupsAppMenu"));
+          "TabGroups_SavedTabGroups_TabGroupSubmenu_Opened"));
+
+      if (context == TabGroupMenuContext::APP_MENU) {
+        base::RecordAction(base::UserMetricsAction(
+            "TabGroups_SavedTabGroups_OpenedFromTabGroupsAppMenu"));
+      }
 
       bool will_open_shared_group = false;
       if (std::optional<tab_groups::SavedTabGroup> saved_group =

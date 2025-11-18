@@ -39,8 +39,10 @@ class STGTabsMenuModel : public ui::SimpleMenuModel,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTabsTitleItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTab);
 
-  explicit STGTabsMenuModel(Browser* browser);
-  STGTabsMenuModel(ui::SimpleMenuModel::Delegate* delegate, Browser* browser);
+  explicit STGTabsMenuModel(Browser* browser, TabGroupMenuContext menu_context);
+  STGTabsMenuModel(ui::SimpleMenuModel::Delegate* delegate,
+                   Browser* browser,
+                   TabGroupMenuContext menu_context);
 
   STGTabsMenuModel(const STGTabsMenuModel&) = delete;
   STGTabsMenuModel& operator=(const STGTabsMenuModel&) = delete;
@@ -69,6 +71,7 @@ class STGTabsMenuModel : public ui::SimpleMenuModel,
   base::CancelableTaskTracker cancelable_task_tracker_;
   bool should_enable_move_menu_item_;
   std::optional<base::Uuid> sync_id_ = std::nullopt;
+  TabGroupMenuContext context_;
 
   // The key is a submenu command id, i.e. one of the following:
   //        Open Group
