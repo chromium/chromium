@@ -265,9 +265,11 @@ TEST_F(ChromiumSocketFactoryTest, CheckSendTime) {
   std::unique_ptr<webrtc::AsyncPacketSocket> sending_socket =
       socket_factory_->CreateUdpSocket(
           webrtc_env_, webrtc::SocketAddress("127.0.0.1", 0), 0, 0);
-  sending_socket->SignalSentPacket.connect(
-      static_cast<ChromiumSocketFactoryTest*>(this),
-      &ChromiumSocketFactoryTest::OnSentPacket);
+  sending_socket->SubscribeSentPacket(
+      this, [this](webrtc::AsyncPacketSocket* socket,
+                   const webrtc::SentPacketInfo& info) {
+        OnSentPacket(socket, info);
+      });
   VerifyCanSendAndReceive(sending_socket.get());
 
   // Check receive time is from rtc clock as well

@@ -132,7 +132,7 @@ int FakeUdpSocket::SendTo(const void* data,
   webrtc::ApplyPacketOptions(
       webrtc::ArrayView<uint8_t>(buffer->bytes(), data_size),
       options.packet_time_params, (now - base::TimeTicks()).InMicroseconds());
-  SignalSentPacket(
+  NotifySentPacket(
       this, webrtc::SentPacketInfo(options.packet_id, webrtc::TimeMillis()));
   dispatcher_->DeliverPacket(local_address_, address, buffer, data_size);
   return data_size;

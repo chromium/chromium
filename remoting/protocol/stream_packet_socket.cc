@@ -290,7 +290,7 @@ void StreamPacketSocket::OnConnectCompleted(int result) {
     return;
   }
   state_ = STATE_CONNECTED;
-  SignalConnect(this);
+  NotifyConnect(this);
   DoRead();
 }
 
@@ -322,7 +322,7 @@ void StreamPacketSocket::DoWrite() {
     }
   }
 
-  SignalReadyToSend(this);
+  NotifyReadyToSend(this);
 }
 
 bool StreamPacketSocket::HandleWriteResult(int result) {
@@ -342,7 +342,7 @@ bool StreamPacketSocket::HandleWriteResult(int result) {
     const webrtc::SentPacketInfo sent_packet(packet.options.packet_id,
                                              webrtc::TimeMillis());
     send_queue_.pop_front();
-    SignalSentPacket(this, sent_packet);
+    NotifySentPacket(this, sent_packet);
   }
   return true;
 }
@@ -439,7 +439,7 @@ void StreamPacketSocket::CloseWithNetError(int net_error) {
   }
 
   Close();
-  SignalClose(this, error_);
+  NotifyClosed(error_);
 }
 
 }  // namespace remoting::protocol

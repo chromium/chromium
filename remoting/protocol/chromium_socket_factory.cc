@@ -393,7 +393,7 @@ void UdpPacketSocket::OnSendCompleted(int result) {
   const webrtc::SentPacketInfo sent_packet(
       send_queue_.front().options.packet_id, webrtc::TimeMillis());
   send_queue_.pop_front();
-  SignalSentPacket(this, sent_packet);
+  NotifySentPacket(this, sent_packet);
   if (run_from_callback) {
     DoSend();
   }
