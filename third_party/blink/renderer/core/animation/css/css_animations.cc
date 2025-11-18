@@ -2313,6 +2313,8 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
       css_animation.ResetIgnoreCSSTimeline();
     }
     css_animation.SetRange(entry.range_start, entry.range_end);
+
+    css_animation.RemoveStaleNamedTriggerAttachments(entry.trigger_attachments);
     css_animation.SetTriggerAttachments(entry.trigger_attachments);
     if (RuntimeEnabledFeatures::LimitTriggerAttachmentUpdatesEnabled()) {
       if (entry.trigger_attachments) {

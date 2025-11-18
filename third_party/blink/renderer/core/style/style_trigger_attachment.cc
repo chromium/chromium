@@ -12,6 +12,7 @@ namespace blink {
 
 void StyleTriggerAttachment::Attach(AnimationTrigger& trigger,
                                     CSSAnimation& animation) const {
+  DCHECK(animation.OwningElement());
   std::optional<V8AnimationTriggerBehavior> enter_behavior(enter_behavior_);
 
   std::optional<V8AnimationTriggerBehavior> exit_behavior(
@@ -24,6 +25,7 @@ void StyleTriggerAttachment::Attach(AnimationTrigger& trigger,
 
   trigger.addAnimation(&animation, *enter_behavior, *exit_behavior,
                        ASSERT_NO_EXCEPTION);
+  animation.SetNamedTriggerAttachment(trigger_name_, &trigger);
 }
 
 }  // namespace blink

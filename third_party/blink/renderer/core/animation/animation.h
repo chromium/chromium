@@ -778,6 +778,9 @@ class CORE_EXPORT Animation : public EventTarget,
                            PendingActivityWithFinishedEventListener);
   friend class ScriptedTimelineTriggerTest;
   FRIEND_TEST_ALL_PREFIXES(CSSAnimationsTriggerTest, ChangeTriggerName);
+  FRIEND_TEST_ALL_PREFIXES(CSSAnimationsTriggerTest, ChangeTriggerAttachments);
+  FRIEND_TEST_ALL_PREFIXES(CSSAnimationsTriggerTest,
+                           SameTriggerNameDifferentSource);
 };
 
 }  // namespace blink

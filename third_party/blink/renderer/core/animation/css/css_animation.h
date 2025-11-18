@@ -99,6 +99,12 @@ class CORE_EXPORT CSSAnimation : public Animation {
     trigger_attachments_ = attachments;
   }
 
+  void SetNamedTriggerAttachment(Member<const ScopedCSSName> name,
+                                 AnimationTrigger* trigger);
+  void RemoveStaleNamedTriggerAttachments(
+      const Member<const StyleTriggerAttachmentVector>&
+          attachment_declarations);
+
  protected:
   AnimationEffect::EventDelegate* CreateEventDelegate(
       Element* target,
@@ -141,6 +147,14 @@ class CORE_EXPORT CSSAnimation : public Animation {
 
   // Names of Triggers corresponding to the animation-trigger property.
   Member<const StyleTriggerAttachmentVector> trigger_attachments_;
+
+  // This maps the trigger names to the AnimationTriggers that were attached as
+  // a result of the animation-trigger declaration. We need to keep track of
+  // this so that when style changes happen, in addition to attaching the
+  // (potentially new) correct trigger but we also remove the old (potentially
+  // incorrect) outdated trigger.
+  HeapHashMap<Member<const ScopedCSSName>, Member<AnimationTrigger>>
+      named_trigger_attachments_;
 };
 
 template <>

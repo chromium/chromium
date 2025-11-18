@@ -2125,4 +2125,177 @@ TEST_P(CSSAnimationsTriggerTest, ChangeTriggerName) {
   EXPECT_EQ(scroller->NamedTriggers(), nullptr);
 }
 
+TEST_P(CSSAnimationsTriggerTest, ChangeTriggerAttachments) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes stretch {
+        from { transform: scaleX(1); }
+        to { transform: scaleX(5); }
+      }
+      #target {
+        height: 50px;
+        width: 50px;
+        animation: stretch 1s;
+      }
+      .source1 {
+        timeline-trigger: --trigger1 view() contain 10% contain 90%;
+      }
+      .source2 {
+        timeline-trigger: --trigger2 view() contain 10% contain 90%;
+      }
+      .source3 {
+        timeline-trigger: --trigger3 view() contain 10% contain 90%;
+      }
+      .target1 {
+        animation-trigger: --trigger1 play pause;
+      }
+      .target2 {
+        animation-trigger: --trigger2 play reset;
+      }
+      .target3 {
+        animation-trigger: --trigger3 play-once play-forwards;
+      }
+     .scroller {
+        overflow-y: scroll;
+        height: 500px;
+        width: 500px;
+        border: solid 1px;
+        position: relative;
+      }
+      .source1, source2, source3 {
+        width: 400px;
+        height: 400px;
+      }
+      .space {
+        width: 50px;
+        height: 600px;
+      }
+    </style>
+      <div id="target"></div>
+      <div id="scroller" class="scroller">
+        <div class="space"></div>
+        <div id="source1" class="source1"></div>
+        <div class="space"></div>
+        <div id="source2" class="source2"></div>
+        <div class="space"></div>
+        <div id="source3" class="source3"></div>
+        <div class="space"></div>
+      </div>
+    </div>
+  )HTML");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+
+  Element* source1 = GetDocument().getElementById(AtomicString("source1"));
+  Element* source2 = GetDocument().getElementById(AtomicString("source2"));
+  Element* source3 = GetDocument().getElementById(AtomicString("source3"));
+
+  AnimationTrigger* trigger1 = source1->NamedTriggers()->begin()->value.Get();
+  AnimationTrigger* trigger2 = source2->NamedTriggers()->begin()->value.Get();
+  AnimationTrigger* trigger3 = source3->NamedTriggers()->begin()->value.Get();
+
+  ElementAnimations* animations = target->GetElementAnimations();
+  CSSAnimation* animation =
+      DynamicTo<CSSAnimation>((*animations->Animations().begin()).key.Get());
+  EXPECT_EQ(animation->triggers_.size(), 0);
+
+  auto test_attachment = [&](AtomicString target_class,
+                             AnimationTrigger* expected_trigger) {
+    // Ensure that when animation-trigger changes the name of the trigger to
+    // which it is attached, we correctly detach from any old trigger and attach
+    // to the new one.
+    target->classList().Add(AtomicString(target_class));
+    UpdateAllLifecyclePhasesForTest();
+
+    EXPECT_EQ(animation->triggers_.size(), 1);
+    EXPECT_EQ(animation->triggers_.begin()->Get(), expected_trigger);
+
+    target->classList().Remove(AtomicString(target_class));
+    UpdateAllLifecyclePhasesForTest();
+    EXPECT_EQ(animation->triggers_.size(), 0);
+  };
+
+  test_attachment(AtomicString("target1"), trigger1);
+  test_attachment(AtomicString("target2"), trigger2);
+  test_attachment(AtomicString("target3"), trigger3);
+}
+
+TEST_P(CSSAnimationsTriggerTest, SameTriggerNameDifferentSource) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes stretch {
+        from { transform: scaleX(1); }
+        to { transform: scaleX(5); }
+      }
+      #target {
+        height: 50px;
+        width: 50px;
+        animation: stretch 1s;
+        animation-trigger: --trigger play pause;
+      }
+      .source {
+        timeline-trigger: --trigger view() contain 10% contain 90%;
+      }
+     .scroller {
+        overflow-y: scroll;
+        height: 500px;
+        width: 500px;
+        border: solid 1px;
+        position: relative;
+      }
+      .subject {
+        width: 400px;
+        height: 400px;
+      }
+      .space {
+        width: 50px;
+        height: 600px;
+      }
+      .wrapper {
+        height: 1000px;
+        width: 1000px;
+      }
+    </style>
+      <div id="target"></div>
+      <div id="scroller" class="scroller">
+        <div class="space"></div>
+        <div id="subject1" class="subject"></div>
+        <div class="space"></div>
+        <div id="subject2" class="subject"></div>
+        <div class="space"></div>
+        <div id="subject3" class="subject"></div>
+        <div class="space"></div>
+      </div>
+  )HTML");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+
+  Element* subject1 = GetDocument().getElementById(AtomicString("subject1"));
+  Element* subject2 = GetDocument().getElementById(AtomicString("subject2"));
+  Element* subject3 = GetDocument().getElementById(AtomicString("subject3"));
+
+  ElementAnimations* animations = target->GetElementAnimations();
+  CSSAnimation* animation =
+      DynamicTo<CSSAnimation>((*animations->Animations().begin()).key.Get());
+  EXPECT_EQ(animation->triggers_.size(), 0);
+
+  auto test_attachment = [&](Element* source) {
+    // animation-trigger declares an attachment to "--trigger". Ensure
+    // that the animation is attached to the trigger from the most up-to-date
+    // source.
+    source->classList().Add(AtomicString("source"));
+    UpdateAllLifecyclePhasesForTest();
+
+    AnimationTrigger* trigger = source->NamedTriggers()->begin()->value.Get();
+    EXPECT_EQ(animation->triggers_.size(), 1);
+    EXPECT_EQ(animation->triggers_.begin()->Get(), trigger);
+
+    source->classList().Remove(AtomicString("source"));
+    UpdateAllLifecyclePhasesForTest();
+    EXPECT_EQ(animation->triggers_.size(), 0);
+  };
+
+  test_attachment(subject1);
+  test_attachment(subject2);
+  test_attachment(subject3);
+}
+
 }  // namespace blink
