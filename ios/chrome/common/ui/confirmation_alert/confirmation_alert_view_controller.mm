@@ -380,10 +380,6 @@ const CGFloat kFaviconBadgeSideLength = 24;
 
   UINavigationItem* navigationItem = [[UINavigationItem alloc] init];
 
-  if (self.titleView) {
-    navigationItem.titleView = self.titleView;
-  }
-
   if (self.showDismissBarButton) {
     UIBarButtonItem* dismissButton;
     if (self.customDismissBarButtonImage) {
@@ -570,7 +566,7 @@ const CGFloat kFaviconBadgeSideLength = 24;
 }
 
 - (BOOL)hasNavigationBar {
-  return self.showDismissBarButton || self.titleView;
+  return self.showDismissBarButton;
 }
 
 // Helper to create the stack view.

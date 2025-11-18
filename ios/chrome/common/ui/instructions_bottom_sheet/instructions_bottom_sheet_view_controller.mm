@@ -28,31 +28,15 @@
 
 - (void)viewDidLoad {
   self.topAlignedLayout = YES;
-  self.scrollEnabled = NO;
-  self.dismissBarButtonSystemItem = UIBarButtonSystemItemClose;
-  self.titleView = [self createTitleLabel];
+  self.title = _titleString;
+  self.showDismissBarButton = NO;
   self.underTitleView = [self createInstructionView];
   [super viewDidLoad];
 
   [self setUpBottomSheetDetents];
-  [self expandBottomSheet];
 }
 
 #pragma mark - Private
-
-// Returns a label to use as the title of the instructions view.
-- (UILabel*)createTitleLabel {
-  UILabel* label = [[UILabel alloc] init];
-  label.translatesAutoresizingMaskIntoConstraints = NO;
-  label.numberOfLines = 0;
-  label.text = _titleString;
-  label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
-  label.adjustsFontForContentSizeCategory = YES;
-  label.textAlignment = NSTextAlignmentCenter;
-  label.accessibilityTraits |= UIAccessibilityTraitHeader;
-
-  return label;
-}
 
 // Returns a view containing instructions to enable Enhanced Safe Browsing.
 - (InstructionView*)createInstructionView {

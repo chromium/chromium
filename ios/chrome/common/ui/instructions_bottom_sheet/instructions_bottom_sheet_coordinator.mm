@@ -15,6 +15,8 @@
 @implementation InstructionsBottomSheetCoordinator {
   // The view controller for this coordinator.
   InstructionsBottomSheetViewController* _viewController;
+  // The navigation controller containing the instructions.
+  UINavigationController* _navigationController;
   // The title of the bottom sheet.
   NSString* _title;
   // The instruction steps to be displayed.
@@ -36,24 +38,31 @@
 #pragma mark - Chrome Coordinator
 
 - (void)start {
-  [super start];
-
   _viewController =
       [[InstructionsBottomSheetViewController alloc] initWithTitle:_title
                                                       instructions:_steps];
   _viewController.actionHandler = self;
 
+  _navigationController = [[UINavigationController alloc]
+      initWithRootViewController:_viewController];
+
+  _viewController.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
+      initWithBarButtonSystemItem:UIBarButtonSystemItemClose
+                           target:self
+                           action:@selector(stop)];
+
   self.baseViewController.presentationController.delegate = self;
-  [self.baseViewController presentViewController:_viewController
+  [self.baseViewController presentViewController:_navigationController
                                         animated:YES
                                       completion:nil];
 }
 
 - (void)stop {
-  [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
+  [_navigationController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:nil];
   _viewController = nil;
-
-  [super stop];
+  _navigationController = nil;
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
@@ -67,10 +76,6 @@
 
 - (void)confirmationAlertPrimaryAction {
   // No primary action.
-}
-
-- (void)confirmationAlertDismissAction {
-  [self stop];
 }
 
 @end
