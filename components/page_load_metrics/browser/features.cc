@@ -34,4 +34,6 @@ BASE_FEATURE(kBackForwardCacheEmitZeroSamplesForKeyMetrics,
 
 BASE_FEATURE(kClickInputTracker, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPaidContentMetricsObserver, base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace page_load_metrics::features

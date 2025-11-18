@@ -47,6 +47,8 @@ BASE_DECLARE_FEATURE(kBackForwardCacheEmitZeroSamplesForKeyMetrics);
 
 BASE_DECLARE_FEATURE(kClickInputTracker);
 
+BASE_DECLARE_FEATURE(kPaidContentMetricsObserver);
+
 }  // namespace page_load_metrics::features
 
 #endif  // COMPONENTS_PAGE_LOAD_METRICS_BROWSER_FEATURES_H_
