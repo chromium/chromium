@@ -39,7 +39,7 @@ class LoadErrorReporter {
     // Called when an unpacked extension fails to load.
     virtual void OnLoadFailure(content::BrowserContext* browser_context,
                                const base::FilePath& extension_path,
-                               const std::string& error) = 0;
+                               const std::u16string& error) = 0;
   };
 
   LoadErrorReporter(const LoadErrorReporter&) = delete;
@@ -58,7 +58,7 @@ class LoadErrorReporter {
   // systems rely on the notification. Investigate what it will take to remove
   // the notification and this method.
   void ReportLoadError(const base::FilePath& extension_path,
-                       const std::string& error,
+                       const std::u16string& error,
                        content::BrowserContext* browser_context,
                        bool be_noisy);
 

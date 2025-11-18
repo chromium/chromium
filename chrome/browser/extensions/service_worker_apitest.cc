@@ -1714,7 +1714,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
   // Set a completion callback so we can get the ID of the extension.
   installer->set_completion_callback(base::BindLambdaForTesting(
       [&id](const Extension* extension, const base::FilePath& path,
-            const std::string& error) {
+            const std::u16string& error) {
         ASSERT_TRUE(extension);
         ASSERT_TRUE(error.empty());
         id = extension->id();

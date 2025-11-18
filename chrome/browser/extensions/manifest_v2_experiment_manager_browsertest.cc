@@ -840,9 +840,9 @@ IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
       UnpackedInstaller::Create(profile());
   auto on_complete = [&run_loop, &id](const Extension* extension,
                                       const base::FilePath& file_path,
-                                      const std::string& error) {
+                                      const std::u16string& error) {
     EXPECT_TRUE(extension);
-    EXPECT_EQ("", error);
+    EXPECT_EQ(u"", error);
     id = extension->id();
     run_loop.Quit();
   };
@@ -871,13 +871,13 @@ IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
   test_dir.WriteManifest(kMv2Manifest);
 
   base::RunLoop run_loop;
-  std::string install_error;
+  std::u16string install_error;
   scoped_refptr<UnpackedInstaller> installer =
       UnpackedInstaller::Create(profile());
   auto on_complete = [&run_loop, &install_error](
                          const Extension* extension,
                          const base::FilePath& file_path,
-                         const std::string& error) {
+                         const std::u16string& error) {
     install_error = error;
     run_loop.Quit();
   };
@@ -887,8 +887,8 @@ IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
   run_loop.Run();
 
   EXPECT_EQ(
-      "Cannot install extension because it uses an unsupported "
-      "manifest version.",
+      u"Cannot install extension because it uses an unsupported "
+      u"manifest version.",
       install_error);
 }
 

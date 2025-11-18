@@ -289,18 +289,14 @@ void InstalledLoader::Load(const ExtensionInfo& info, bool write_to_prefs) {
     return;
 
   scoped_refptr<const Extension> extension;
-  // TODO(crbug.com/41317803): Continue removing std::string errors and
-  // replacing with std::u16string.
-  std::string error_utf8;
-
+  std::u16string error;
   if (info.extension_manifest) {
-    std::u16string error_utf16;
     extension = Extension::Create(info.extension_path, info.extension_location,
                                   *info.extension_manifest,
-                                  GetCreationFlags(&info), &error_utf16);
-    error_utf8 = base::UTF16ToUTF8(error_utf16);
+                                  GetCreationFlags(&info), &error);
   } else {
-    error_utf8 = manifest_errors::kManifestUnreadable;
+    error = base::UTF8ToUTF16(
+        std::string_view(manifest_errors::kManifestUnreadable));
   }
 
   // Once installed, non-unpacked extensions cannot change their IDs (e.g., by
@@ -308,13 +304,14 @@ void InstalledLoader::Load(const ExtensionInfo& info, bool write_to_prefs) {
   // TODO(jstritar): migrate preferences when unpacked extensions change IDs.
   if (extension.get() && !Manifest::IsUnpackedLocation(extension->location()) &&
       info.extension_id != extension->id()) {
-    error_utf8 = manifest_errors::kCannotChangeExtensionID;
+    error = base::UTF8ToUTF16(
+        std::string_view(manifest_errors::kCannotChangeExtensionID));
     extension = nullptr;
   }
 
   if (!extension.get()) {
     LoadErrorReporter::GetInstance()->ReportLoadError(info.extension_path,
-                                                      error_utf8, profile_,
+                                                      error, profile_,
                                                       false);  // Be quiet.
     return;
   }
@@ -388,6 +385,8 @@ void InstalledLoader::LoadAllExtensions(Profile* profile) {
       // thread.
       base::ScopedAllowBlocking allow_blocking;
 
+      // TODO(crbug.com/41317803): Continue removing std::string errors and
+      // replacing with std::u16string.
       std::string error;
       scoped_refptr<const Extension> extension(
           file_util::LoadExtension(info.extension_path, info.extension_location,
@@ -395,9 +394,9 @@ void InstalledLoader::LoadAllExtensions(Profile* profile) {
 
       if (!extension.get() || extension->id() != info.extension_id) {
         invalid_extensions_.insert(info.extension_path);
-        LoadErrorReporter::GetInstance()->ReportLoadError(info.extension_path,
-                                                          error, profile,
-                                                          false);  // Be quiet.
+        LoadErrorReporter::GetInstance()->ReportLoadError(
+            info.extension_path, base::UTF8ToUTF16(error), profile,
+            false);  // Be quiet.
         continue;
       }
 

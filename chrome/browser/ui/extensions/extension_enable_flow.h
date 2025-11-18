@@ -60,7 +60,7 @@ class ExtensionEnableFlow : public extensions::LoadErrorReporter::Observer,
   // LoadErrorReporter::Observer:
   void OnLoadFailure(content::BrowserContext* browser_context,
                      const base::FilePath& file_path,
-                     const std::string& error) override;
+                     const std::u16string& error) override;
 
  private:
   // Runs the enable flow. It starts by checking if the extension is loaded.

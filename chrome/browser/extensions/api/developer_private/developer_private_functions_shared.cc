@@ -296,7 +296,7 @@ bool MatchesExtension(ui::FileInfo& file_info,
 namespace api {
 
 void DeveloperPrivateAPIFunction::GetManifestError(
-    const std::string& error,
+    const std::u16string& error,
     const base::FilePath& extension_path,
     GetManifestErrorCallback callback) {
   size_t line = 0u;
@@ -309,7 +309,7 @@ void DeveloperPrivateAPIFunction::GetManifestError(
   // it's ready).
   //
   // This regex call can fail, but if it does, we just don't highlight anything.
-  re2::RE2::FullMatch(error, regex, &line, &column);
+  re2::RE2::FullMatch(base::UTF16ToUTF8(error), regex, &line, &column);
 
   // This will read the manifest and call AddFailure with the read manifest
   // contents.
@@ -322,7 +322,7 @@ void DeveloperPrivateAPIFunction::GetManifestError(
 
 developer::LoadError DeveloperPrivateAPIFunction::CreateLoadError(
     const base::FilePath& file_path,
-    const std::string& error,
+    const std::u16string& error,
     size_t line_number,
     const std::string& manifest,
     const DeveloperPrivateAPI::UnpackedRetryId& retry_guid) {
@@ -330,7 +330,7 @@ developer::LoadError DeveloperPrivateAPIFunction::CreateLoadError(
 
   SourceHighlighter highlighter(manifest, line_number);
   developer::LoadError response;
-  response.error = error;
+  response.error = base::UTF16ToUTF8(error);
   response.path = base::UTF16ToUTF8(prettified_path.LossyDisplayName());
   response.retry_guid = retry_guid;
 
@@ -699,7 +699,7 @@ void DeveloperPrivateReloadFunction::OnShutdown(ExtensionRegistry* registry) {
 void DeveloperPrivateReloadFunction::OnLoadFailure(
     content::BrowserContext* browser_context,
     const base::FilePath& file_path,
-    const std::string& error) {
+    const std::u16string& error) {
   if (file_path == reloading_extension_path_) {
     // Reload failed - create an error to pass back to the extension.
     GetManifestError(
@@ -712,7 +712,7 @@ void DeveloperPrivateReloadFunction::OnLoadFailure(
 
 void DeveloperPrivateReloadFunction::OnGotManifestError(
     const base::FilePath& file_path,
-    const std::string& error,
+    const std::u16string& error,
     size_t line_number,
     const std::string& manifest) {
   DeveloperPrivateAPI::UnpackedRetryId retry_guid =
@@ -868,7 +868,7 @@ void DeveloperPrivateLoadUnpackedFunction::StartFileLoad(
   std::optional<base::FilePath> vp =
       base::ResolveToVirtualDocumentPath(file_path);
   if (!vp) {
-    OnLoadComplete(nullptr, file_path, "Failed to resolve (removed?)");
+    OnLoadComplete(nullptr, file_path, u"Failed to resolve (removed?)");
     return;
   }
   file_path = *vp;
@@ -887,14 +887,14 @@ void DeveloperPrivateLoadUnpackedFunction::StartFileLoad(
 void DeveloperPrivateLoadUnpackedFunction::OnLoadComplete(
     const Extension* extension,
     const base::FilePath& file_path,
-    const std::string& error) {
+    const std::u16string& error) {
   if (extension) {
     Finish(NoArguments());
     return;
   }
 
   if (!populate_error_) {
-    Finish(Error(error));
+    Finish(Error(base::UTF16ToUTF8(error)));
     return;
   }
 
@@ -906,7 +906,7 @@ void DeveloperPrivateLoadUnpackedFunction::OnLoadComplete(
 
 void DeveloperPrivateLoadUnpackedFunction::OnGotManifestError(
     const base::FilePath& file_path,
-    const std::string& error,
+    const std::u16string& error,
     size_t line_number,
     const std::string& manifest) {
   DCHECK(!retry_guid_.empty());

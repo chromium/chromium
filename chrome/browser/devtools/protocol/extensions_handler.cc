@@ -191,13 +191,14 @@ void ExtensionsHandler::LoadUnpacked(
 void ExtensionsHandler::OnLoaded(std::unique_ptr<LoadUnpackedCallback> callback,
                                  const extensions::Extension* extension,
                                  const base::FilePath& path,
-                                 const std::string& err) {
+                                 const std::u16string& err) {
   if (err.empty()) {
     std::move(callback)->sendSuccess(extension->id());
     return;
   }
 
-  std::move(callback)->sendFailure(protocol::Response::InvalidRequest(err));
+  std::move(callback)->sendFailure(
+      protocol::Response::InvalidRequest(base::UTF16ToUTF8(err)));
 }
 
 void ExtensionsHandler::Uninstall(const protocol::String& id,

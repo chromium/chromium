@@ -91,19 +91,19 @@ class DeveloperPrivateAPIFunction : public ExtensionFunction {
   // migration.
   using GetManifestErrorCallback =
       base::OnceCallback<void(const base::FilePath& file_path,
-                              const std::string& error,
+                              const std::u16string& error,
                               size_t line_number,
                               const std::string& manifest)>;
   // Takes in an `error` string and tries to parse it as a manifest error (with
   // line number), asynchronously calling `callback` with the results.
-  void GetManifestError(const std::string& error,
+  void GetManifestError(const std::u16string& error,
                         const base::FilePath& extension_path,
                         GetManifestErrorCallback callback);
 
   // Creates a developer::LoadError from the provided data.
   developer_private::LoadError CreateLoadError(
       const base::FilePath& file_path,
-      const std::string& error,
+      const std::u16string& error,
       size_t line_number,
       const std::string& manifest,
       const DeveloperPrivateAPI::UnpackedRetryId& retry_guid);
@@ -256,7 +256,7 @@ class DeveloperPrivateReloadFunction : public DeveloperPrivateAPIFunction,
   // LoadErrorReporter::Observer:
   void OnLoadFailure(content::BrowserContext* browser_context,
                      const base::FilePath& file_path,
-                     const std::string& error) override;
+                     const std::u16string& error) override;
 
  protected:
   ~DeveloperPrivateReloadFunction() override;
@@ -267,7 +267,7 @@ class DeveloperPrivateReloadFunction : public DeveloperPrivateAPIFunction,
  private:
   // Callback once we parse a manifest error from a failed reload.
   void OnGotManifestError(const base::FilePath& file_path,
-                          const std::string& error,
+                          const std::u16string& error,
                           size_t line_number,
                           const std::string& manifest);
 
@@ -319,11 +319,11 @@ class DeveloperPrivateLoadUnpackedFunction
   // Called when `file_path` load is completed
   void OnLoadComplete(const Extension* extension,
                       const base::FilePath& file_path,
-                      const std::string& error);
+                      const std::u16string& error);
 
   // Called when `file_path` load encounters a manifest parsing `error`.
   void OnGotManifestError(const base::FilePath& file_path,
-                          const std::string& error,
+                          const std::u16string& error,
                           size_t line_number,
                           const std::string& manifest);
 

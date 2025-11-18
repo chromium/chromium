@@ -48,14 +48,12 @@ LoadErrorReporter::~LoadErrorReporter() = default;
 
 void LoadErrorReporter::ReportLoadError(
     const base::FilePath& extension_path,
-    const std::string& error,
+    const std::u16string& error,
     content::BrowserContext* browser_context,
     bool be_noisy) {
-  std::string path_str = base::UTF16ToUTF8(extension_path.LossyDisplayName());
-  std::u16string message = base::UTF8ToUTF16(base::StringPrintf(
-      "%s %s. %s",
-      l10n_util::GetStringUTF8(IDS_EXTENSIONS_LOAD_ERROR_MESSAGE).c_str(),
-      path_str.c_str(), error.c_str()));
+  std::u16string message =
+      l10n_util::GetStringUTF16(IDS_EXTENSIONS_LOAD_ERROR_MESSAGE) + u" " +
+      extension_path.LossyDisplayName() + u". " + error;
   ReportError(message, be_noisy);
   for (auto& observer : observers_)
     observer.OnLoadFailure(browser_context, extension_path, error);

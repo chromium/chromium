@@ -70,7 +70,7 @@ class UnpackedInstaller : public base::RefCountedThreadSafe<
 
   using CompletionCallback = base::OnceCallback<void(const Extension* extension,
                                                      const base::FilePath&,
-                                                     const std::string&)>;
+                                                     const std::u16string&)>;
 
   UnpackedInstaller(const UnpackedInstaller&) = delete;
   UnpackedInstaller& operator=(const UnpackedInstaller&) = delete;

@@ -610,7 +610,7 @@ void ChromeExtensionRegistrarDelegate::UninstallExtensionOnFileThread(
 void ChromeExtensionRegistrarDelegate::OnUnpackedReloadFailure(
     const Extension* extension,
     const base::FilePath& file_path,
-    const std::string& error) {
+    const std::u16string& error) {
   if (!error.empty()) {
     extension_registrar_->OnUnpackedExtensionReloadFailed(file_path);
   }

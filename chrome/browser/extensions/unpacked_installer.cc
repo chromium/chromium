@@ -359,16 +359,20 @@ void UnpackedInstaller::LoadWithFileAccessOnFileThread(int flags) {
                  base::BindOnce(&UnpackedInstaller::StartInstallChecks, this));
 }
 
+// TODO(crbug.com/41317803): Continue removing std::string error and
+// replacing with std::u16string.
 void UnpackedInstaller::ReportExtensionLoadError(const std::string &error) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (profile_) {
     LoadErrorReporter::GetInstance()->ReportLoadError(
-        extension_path_, error, profile_, be_noisy_on_failure_);
+        extension_path_, base::UTF8ToUTF16(error), profile_,
+        be_noisy_on_failure_);
   }
 
   if (!callback_.is_null())
-    std::move(callback_).Run(nullptr, extension_path_, error);
+    std::move(callback_).Run(nullptr, extension_path_,
+                             base::UTF8ToUTF16(error));
 }
 
 void UnpackedInstaller::InstallExtension() {
@@ -404,7 +408,7 @@ void UnpackedInstaller::InstallExtension() {
   RecordCommandLineMetrics();
 
   if (!callback_.is_null())
-    std::move(callback_).Run(extension(), extension_path_, std::string());
+    std::move(callback_).Run(extension(), extension_path_, std::u16string());
 }
 
 void UnpackedInstaller::RecordCommandLineMetrics() {

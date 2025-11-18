@@ -189,7 +189,7 @@ void ExtensionEnableFlow::StopObserving() {
 void ExtensionEnableFlow::OnLoadFailure(
     content::BrowserContext* browser_context,
     const base::FilePath& file_path,
-    const std::string& error) {
+    const std::u16string& error) {
   StopObserving();
   delegate_->ExtensionEnableFlowAborted(
       /*user_initiated=*/false);  // |delegate_| may delete us.
