@@ -1171,6 +1171,14 @@ views::View* ToolbarView::GetAnchorView(
   return location_bar_;
 }
 
+views::BubbleAnchor ToolbarView::GetBubbleAnchor(
+    std::optional<actions::ActionId> action_id) {
+  if (views::View* view = GetAnchorView(action_id)) {
+    return view;
+  }
+  return nullptr;
+}
+
 void ToolbarView::ZoomChangedForActiveTab(bool can_show_bubble) {
   if (IsPageActionMigrated(PageActionIconType::kZoom)) {
     auto* zoom_view_controller = browser_->GetActiveTabInterface()

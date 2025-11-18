@@ -168,7 +168,7 @@ bool HasAddressEntry(const std::vector<ProfileValueDifference>& diff) {
 }  // namespace
 
 UpdateAddressProfileView::UpdateAddressProfileView(
-    views::View* anchor_view,
+    views::BubbleAnchor anchor_view,
     std::unique_ptr<UpdateAddressBubbleController> controller,
     content::WebContents* web_contents)
     : AddressBubbleBaseView(anchor_view, web_contents),

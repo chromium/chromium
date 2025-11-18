@@ -41,7 +41,7 @@ const int kMaxNicknameChars = 25;
 
 }  // namespace
 
-SaveIbanBubbleView::SaveIbanBubbleView(views::View* anchor_view,
+SaveIbanBubbleView::SaveIbanBubbleView(views::BubbleAnchor anchor_view,
                                        content::WebContents* web_contents,
                                        IbanBubbleController* controller)
     : AutofillLocationBarBubble(anchor_view, web_contents),

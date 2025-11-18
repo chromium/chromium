@@ -274,6 +274,14 @@ views::View* WebAppFrameToolbarView::GetAnchorView(
   return anchor ? anchor : this;
 }
 
+views::BubbleAnchor WebAppFrameToolbarView::GetBubbleAnchor(
+    std::optional<actions::ActionId> action_id) {
+  if (views::View* view = GetAnchorView(action_id)) {
+    return view;
+  }
+  return nullptr;
+}
+
 void WebAppFrameToolbarView::ZoomChangedForActiveTab(bool can_show_bubble) {
   if (IsPageActionMigrated(PageActionIconType::kZoom)) {
     auto* zoom_view_controller = browser_view_->browser()

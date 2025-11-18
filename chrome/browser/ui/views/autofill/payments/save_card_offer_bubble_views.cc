@@ -64,7 +64,7 @@
 namespace autofill {
 
 SaveCardOfferBubbleViews::SaveCardOfferBubbleViews(
-    views::View* anchor_view,
+    views::BubbleAnchor anchor_view,
     content::WebContents* web_contents,
     SaveCardBubbleController* controller)
     : SaveCardBubbleViews(anchor_view, web_contents, controller) {

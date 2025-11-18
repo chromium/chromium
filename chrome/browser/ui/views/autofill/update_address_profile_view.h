@@ -18,10 +18,6 @@ namespace content {
 class WebContents;
 }
 
-namespace views {
-class View;
-}
-
 namespace autofill {
 
 // Shown after a user submits a form with an address profile that's slightly
@@ -34,7 +30,7 @@ class UpdateAddressProfileView : public AddressBubbleBaseView {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kEditButtonViewId);
 
   UpdateAddressProfileView(
-      views::View* anchor_view,
+      views::BubbleAnchor anchor_view,
       std::unique_ptr<UpdateAddressBubbleController> controller,
       content::WebContents* web_contents);
 

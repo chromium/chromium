@@ -33,7 +33,7 @@ class SaveIbanBubbleView : public AutofillLocationBarBubble,
   METADATA_HEADER(SaveIbanBubbleView, AutofillLocationBarBubble)
  public:
   // Bubble will be anchored to `anchor_view`.
-  SaveIbanBubbleView(views::View* anchor_view,
+  SaveIbanBubbleView(views::BubbleAnchor anchor_view,
                      content::WebContents* web_contents,
                      IbanBubbleController* controller);
 

@@ -35,7 +35,7 @@ class SaveAddressProfileView : public AddressBubbleBaseView {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kEditButtonViewId);
 
   SaveAddressProfileView(
-      views::View* anchor_view,
+      views::BubbleAnchor anchor_view,
       std::unique_ptr<SaveAddressBubbleController> controller,
       content::WebContents* web_contents);
 

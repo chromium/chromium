@@ -34,6 +34,7 @@ source_set("toolbar_button_provider") {
   public_deps = [
     "//chrome/browser/ui/page_action:icon_type",
     "//ui/actions:actions_headers",
+    "//ui/views",
   ]
 }
 

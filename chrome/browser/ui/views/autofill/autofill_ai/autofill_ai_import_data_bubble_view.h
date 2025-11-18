@@ -23,7 +23,7 @@ class AutofillAiImportDataBubbleView : public AutofillLocationBarBubble {
   METADATA_HEADER(AutofillAiImportDataBubbleView, views::View)
 
  public:
-  AutofillAiImportDataBubbleView(views::View* anchor_view,
+  AutofillAiImportDataBubbleView(views::BubbleAnchor anchor_view,
                                  content::WebContents* web_contents,
                                  AutofillAiImportDataController* controller);
 

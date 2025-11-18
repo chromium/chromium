@@ -112,7 +112,7 @@ GetAutofillAiBubbleClosedReasonFromWidget(const views::Widget* widget) {
 }  // namespace
 
 AutofillAiImportDataBubbleView::AutofillAiImportDataBubbleView(
-    views::View* anchor_view,
+    views::BubbleAnchor anchor_view,
     content::WebContents* web_contents,
     AutofillAiImportDataController* controller)
     : AutofillLocationBarBubble(anchor_view, web_contents),

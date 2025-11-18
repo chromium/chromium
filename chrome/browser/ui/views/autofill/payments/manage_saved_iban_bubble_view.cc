@@ -26,7 +26,7 @@
 namespace autofill {
 
 ManageSavedIbanBubbleView::ManageSavedIbanBubbleView(
-    views::View* anchor_view,
+    views::BubbleAnchor anchor_view,
     content::WebContents* web_contents,
     IbanBubbleController* controller)
     : AutofillLocationBarBubble(anchor_view, web_contents),

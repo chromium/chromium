@@ -113,7 +113,7 @@ std::unique_ptr<views::View> CreateStreetAddressView(
 }  // namespace
 
 SaveAddressProfileView::SaveAddressProfileView(
-    views::View* anchor_view,
+    views::BubbleAnchor anchor_view,
     std::unique_ptr<SaveAddressBubbleController> controller,
     content::WebContents* web_contents)
     : AddressBubbleBaseView(anchor_view, web_contents),

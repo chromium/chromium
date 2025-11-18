@@ -29,7 +29,7 @@ class SaveCardBubbleViews : public AutofillLocationBarBubble {
   METADATA_HEADER(SaveCardBubbleViews, AutofillLocationBarBubble)
  public:
   // Bubble will be anchored to |anchor_view|.
-  SaveCardBubbleViews(views::View* anchor_view,
+  SaveCardBubbleViews(views::BubbleAnchor anchor_view,
                       content::WebContents* web_contents,
                       SaveCardBubbleController* controller);
 

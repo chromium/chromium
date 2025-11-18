@@ -50,7 +50,7 @@ int GetObfuscationLength() {
              : 4;
 }
 
-SaveCardBubbleViews::SaveCardBubbleViews(views::View* anchor_view,
+SaveCardBubbleViews::SaveCardBubbleViews(views::BubbleAnchor anchor_view,
                                          content::WebContents* web_contents,
                                          SaveCardBubbleController* controller)
     : AutofillLocationBarBubble(anchor_view, web_contents),

@@ -31,7 +31,7 @@ class OfferNotificationBubbleViews : public AutofillLocationBarBubble {
   METADATA_HEADER(OfferNotificationBubbleViews, AutofillLocationBarBubble)
  public:
   // Bubble will be anchored to |anchor_view|.
-  OfferNotificationBubbleViews(views::View* anchor_view,
+  OfferNotificationBubbleViews(views::BubbleAnchor anchor_view,
                                content::WebContents* web_contents,
                                OfferNotificationBubbleController* controller);
   OfferNotificationBubbleViews(const OfferNotificationBubbleViews&) = delete;
