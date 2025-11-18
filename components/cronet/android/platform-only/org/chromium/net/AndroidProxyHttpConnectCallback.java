@@ -23,15 +23,15 @@ final class AndroidProxyHttpConnectCallback implements android.net.http.Proxy.Ht
             @NonNull List<Pair<String, String>> responseHeaders, int statusCode) {
         @org.chromium.net.Proxy.HttpConnectCallback.OnResponseReceivedAction
         int result = mBackend.onResponseReceived(responseHeaders, statusCode);
-        switch (result) {
-            case org.chromium.net.Proxy.HttpConnectCallback.RESPONSE_ACTION_CLOSE:
-                return android.net.http.Proxy.HttpConnectCallback.RESPONSE_ACTION_CLOSE;
-            case org.chromium.net.Proxy.HttpConnectCallback.RESPONSE_ACTION_PROCEED:
-                return android.net.http.Proxy.HttpConnectCallback.RESPONSE_ACTION_PROCEED;
-            default:
-                throw new AssertionError(
-                        String.format("Unknown OnResponseReceivedAction: %i", result));
-        }
+        return switch (result) {
+            case org.chromium.net.Proxy.HttpConnectCallback.RESPONSE_ACTION_CLOSE ->
+                    android.net.http.Proxy.HttpConnectCallback.RESPONSE_ACTION_CLOSE;
+            case org.chromium.net.Proxy.HttpConnectCallback.RESPONSE_ACTION_PROCEED ->
+                    android.net.http.Proxy.HttpConnectCallback.RESPONSE_ACTION_PROCEED;
+            default ->
+                    throw new AssertionError(
+                            String.format("Unknown OnResponseReceivedAction: %d", result));
+        };
     }
 
     AndroidProxyHttpConnectCallback(org.chromium.net.Proxy.HttpConnectCallback backend) {

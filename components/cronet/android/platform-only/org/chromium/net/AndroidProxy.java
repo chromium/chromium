@@ -22,14 +22,11 @@ final class AndroidProxy {
     }
 
     private static int translateScheme(@org.chromium.net.Proxy.Scheme int scheme) {
-        switch (scheme) {
-            case android.net.http.Proxy.SCHEME_HTTP:
-                return android.net.http.Proxy.SCHEME_HTTP;
-            case android.net.http.Proxy.SCHEME_HTTPS:
-                return android.net.http.Proxy.SCHEME_HTTPS;
-            default:
-                throw new AssertionError(String.format("Unknown scheme %d", scheme));
-        }
+        return switch (scheme) {
+            case android.net.http.Proxy.SCHEME_HTTP -> android.net.http.Proxy.SCHEME_HTTP;
+            case android.net.http.Proxy.SCHEME_HTTPS -> android.net.http.Proxy.SCHEME_HTTPS;
+            default -> throw new AssertionError(String.format("Unknown scheme %d", scheme));
+        };
     }
 
     private AndroidProxy() {}

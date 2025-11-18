@@ -283,15 +283,11 @@ class AndroidHttpEngineBuilderWrapper extends ICronetEngineBuilder {
      * DnsOptions and QuicOptions.
      */
     private static int optionalBooleanToMigrationOptionState(OptionalBoolean value) {
-        switch (value) {
-            case TRUE:
-                return android.net.http.ConnectionMigrationOptions.MIGRATION_OPTION_ENABLED;
-            case FALSE:
-                return android.net.http.ConnectionMigrationOptions.MIGRATION_OPTION_DISABLED;
-            case UNSET:
-                return android.net.http.ConnectionMigrationOptions.MIGRATION_OPTION_UNSPECIFIED;
-        }
-
-        throw new AssertionError("Invalid OptionalBoolean value: " + value);
+        return switch (value) {
+            case TRUE -> android.net.http.ConnectionMigrationOptions.MIGRATION_OPTION_ENABLED;
+            case FALSE -> android.net.http.ConnectionMigrationOptions.MIGRATION_OPTION_DISABLED;
+            case UNSET -> android.net.http.ConnectionMigrationOptions.MIGRATION_OPTION_UNSPECIFIED;
+            default -> throw new AssertionError("Invalid OptionalBoolean value: " + value);
+        };
     }
 }
