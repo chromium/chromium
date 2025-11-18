@@ -3280,6 +3280,7 @@ constexpr SurfaceTestCase kSurfaceTestCases[] = {
     {"promise_resolve", "Promise.resolve().then($1);"},
     {"promise_reject", "Promise.reject().catch($1);"},
     {"queueMicrotask", "queueMicrotask($1);"},
+    {"postTask", "scheduler.postTask($1);"},
     {"dynamic_script_tag", R"SCRIPT(
       const s = document.createElement("script");
       s.innerText = '$1();';
