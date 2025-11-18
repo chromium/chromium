@@ -4,12 +4,18 @@
 
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 
+#include <memory>
 #include <string>
 
 #include "base/base64.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
+#include "chrome/browser/autocomplete/chrome_aim_eligibility_service.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/testing_profile.h"
+#include "content/public/test/browser_task_environment.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/omnibox_proto/ntp_composebox_config.pb.h"
@@ -36,7 +42,7 @@ class OmniboxNextFeaturesTest : public testing::Test {
 // Tests the configuration when the feature is disabled.
 TEST_F(OmniboxNextFeaturesTest, ComposeboxConfigDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(kWebUIOmniboxAimPopup);
+  scoped_feature_list.InitAndDisableFeature(internal::kWebUIOmniboxAimPopup);
 
   base::HistogramTester histogram_tester;
   scoped_config_.Reset();
@@ -51,7 +57,7 @@ TEST_F(OmniboxNextFeaturesTest, ComposeboxConfigDisabled) {
 // default parameter.
 TEST_F(OmniboxNextFeaturesTest, ComposeboxConfigEnabled_DefaultConfiguration) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kWebUIOmniboxAimPopup);
+  scoped_feature_list.InitAndEnableFeature(internal::kWebUIOmniboxAimPopup);
 
   base::HistogramTester histogram_tester;
   scoped_config_.Reset();
@@ -93,7 +99,7 @@ TEST_F(OmniboxNextFeaturesTest, ComposeboxConfigEnabled_DefaultConfiguration) {
 TEST_F(OmniboxNextFeaturesTest, ComposeboxConfigEnabled_Invalid_Configuration) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      kWebUIOmniboxAimPopup, {{kConfigParam.name, "hello world"}});
+      internal::kWebUIOmniboxAimPopup, {{kConfigParam.name, "hello world"}});
 
   base::HistogramTester histogram_tester;
   scoped_config_.Reset();
@@ -114,7 +120,7 @@ TEST_F(OmniboxNextFeaturesTest,
 
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      kWebUIOmniboxAimPopup,
+      internal::kWebUIOmniboxAimPopup,
       {{kConfigParam.name, SerializeAndBase64EncodeProto(fieldtrial_config)}});
 
   base::HistogramTester histogram_tester;
@@ -135,7 +141,7 @@ TEST_F(OmniboxNextFeaturesTest,
 
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      kWebUIOmniboxAimPopup,
+      internal::kWebUIOmniboxAimPopup,
       {{kConfigParam.name, SerializeAndBase64EncodeProto(fieldtrial_config)}});
 
   base::HistogramTester histogram_tester;
@@ -160,7 +166,7 @@ TEST_F(OmniboxNextFeaturesTest,
 
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      kWebUIOmniboxAimPopup,
+      internal::kWebUIOmniboxAimPopup,
       {{kConfigParam.name, SerializeAndBase64EncodeProto(fieldtrial_config)}});
 
   base::HistogramTester histogram_tester;
@@ -186,7 +192,7 @@ TEST_F(OmniboxNextFeaturesTest,
 
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      kWebUIOmniboxAimPopup,
+      internal::kWebUIOmniboxAimPopup,
       {{kConfigParam.name, SerializeAndBase64EncodeProto(fieldtrial_config)}});
 
   base::HistogramTester histogram_tester;
@@ -216,7 +222,7 @@ TEST_F(OmniboxNextFeaturesTest, ComposeboxConfigEnabled_Valid_ClearMimeTypes) {
 
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      kWebUIOmniboxAimPopup,
+      internal::kWebUIOmniboxAimPopup,
       {{kConfigParam.name, SerializeAndBase64EncodeProto(fieldtrial_config)}});
 
   base::HistogramTester histogram_tester;
@@ -231,6 +237,68 @@ TEST_F(OmniboxNextFeaturesTest, ComposeboxConfigEnabled_Valid_ClearMimeTypes) {
 
   histogram_tester.ExpectUniqueSample(kConfigParamParseSuccessHistogram, true,
                                       1);
+}
+
+class TestingAimEligibilityService : public ChromeAimEligibilityService {
+ public:
+  TestingAimEligibilityService(Profile* profile, bool is_aim_eligible)
+      : ChromeAimEligibilityService(*profile->GetPrefs(),
+                                    /*template_url_service=*/nullptr,
+                                    /*url_loader_factory=*/nullptr,
+                                    /*identity_manager=*/nullptr),
+        is_aim_eligible_(is_aim_eligible) {}
+
+  bool IsAimEligible() const override { return is_aim_eligible_; }
+
+ private:
+  const bool is_aim_eligible_;
+};
+
+class OmniboxNextAimEligibilityTest : public testing::Test {
+ public:
+  OmniboxNextAimEligibilityTest() = default;
+
+ protected:
+  void SetUpAimEligibilityService(bool is_aim_eligible) {
+    AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
+        &profile_, base::BindOnce(
+                       [](bool is_eligible, content::BrowserContext* context)
+                           -> std::unique_ptr<KeyedService> {
+                         return std::make_unique<TestingAimEligibilityService>(
+                             static_cast<TestingProfile*>(context),
+                             is_eligible);
+                       },
+                       is_aim_eligible));
+  }
+
+  TestingProfile* profile() { return &profile_; }
+
+  content::BrowserTaskEnvironment task_environment_;
+  TestingProfile profile_;
+};
+
+TEST_F(OmniboxNextAimEligibilityTest, IsAimPopupEnabled) {
+  const struct {
+    bool feature_enabled;
+    bool is_aim_eligible;
+    bool expected_popup_enabled;
+  } test_cases[] = {
+      {true, true, true},
+      {true, false, false},
+      {false, true, false},
+      {false, false, false},
+  };
+
+  for (const auto& test_case : test_cases) {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatureState(internal::kWebUIOmniboxAimPopup,
+                                      test_case.feature_enabled);
+
+    SetUpAimEligibilityService(test_case.is_aim_eligible);
+
+    EXPECT_EQ(omnibox::IsAimPopupEnabled(profile()),
+              test_case.expected_popup_enabled);
+  }
 }
 
 }  // namespace omnibox

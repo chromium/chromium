@@ -61,7 +61,7 @@ class OmniboxPopupAimTest : public WebUIMochaBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
-      omnibox::kWebUIOmniboxAimPopup};
+      omnibox::internal::kWebUIOmniboxAimPopup};
 };
 
 #if BUILDFLAG(USE_JAVASCRIPT_COVERAGE)

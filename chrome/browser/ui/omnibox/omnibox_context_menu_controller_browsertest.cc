@@ -123,11 +123,12 @@ class OmniboxContextMenuControllerBrowserTest : public InProcessBrowserTest {
  public:
   OmniboxContextMenuControllerBrowserTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{omnibox::kWebUIOmniboxAimPopup,
+        /*enabled_features=*/
+        {{omnibox::internal::kWebUIOmniboxAimPopup,
           {{omnibox::kWebUIOmniboxAimPopupAddContextButtonVariantParam.name,
             "inline"}}},
          {omnibox::kWebUIOmniboxPopup, {}}},
-        {});
+        /*disabled_features=*/{omnibox::kAimServerEligibilityEnabled});
   }
 
   OmniboxContextMenuControllerBrowserTest(

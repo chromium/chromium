@@ -525,8 +525,7 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
   const bool is_ntp_composebox_enabled =
       ntp_composebox::IsNtpComposeboxEnabled(Profile::FromBrowserContext(
           render_frame_host->GetProcess()->GetBrowserContext()));
-  const bool is_omnibox_aim_popup_enabled =
-      base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxAimPopup);
+  const bool is_omnibox_aim_popup_enabled = omnibox::IsAimPopupFeatureEnabled();
   const bool is_contextual_tasks_enabled =
       base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks);
 

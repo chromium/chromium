@@ -208,6 +208,7 @@ if (!is_android) {
       ":omnibox",
       ":test_support",
       "//base/test:test_support",
+      "//chrome/browser/autocomplete:aim_eligibility_service",
       "//chrome/browser/search_engines",
       "//chrome/test:test_support",
       "//components/bookmarks/test",

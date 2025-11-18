@@ -500,7 +500,7 @@ ui::ImageModel OmniboxEditModel::GetSuperGIcon(int image_size,
 }
 
 bool OmniboxEditModel::ShouldShowAddContextButton() const {
-  return base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxAimPopup) &&
+  return controller_->client()->IsAimPopupEnabled() &&
          omnibox::kWebUIOmniboxAimPopupAddContextButtonVariantParam.Get() ==
              omnibox::AddContextButtonVariant::kInline &&
          controller_->IsPopupOpen();
@@ -755,7 +755,7 @@ void OmniboxEditModel::EnterKeywordModeForDefaultSearchProvider(
 }
 
 void OmniboxEditModel::OpenAiMode(bool via_keyboard, bool via_context_menu) {
-  if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxAimPopup)) {
+  if (controller_->client()->IsAimPopupEnabled()) {
     // In general, adding a context will always open the AIM popup, while the
     // AIM button will prefer to navigate to the AI page with a query
     // prepopulated.
