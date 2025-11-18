@@ -302,8 +302,9 @@ void SessionService::SetTabGroupMetadata(
     if (const std::optional<tab_groups::SavedTabGroup> saved_group =
             tab_group_service->GetGroup(group_id)) {
       saved_guid = saved_group->saved_guid().AsLowercaseString();
-    } else if (local_to_sync_id_mapping_.contains(group_id)) {
-      saved_guid = local_to_sync_id_mapping_.at(group_id);
+    } else if (auto it = local_to_sync_id_mapping_.find(group_id);
+               it != local_to_sync_id_mapping_.end()) {
+      saved_guid = it->second;
     }
   }
 
