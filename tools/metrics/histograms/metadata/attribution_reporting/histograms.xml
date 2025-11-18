@@ -628,26 +628,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Conversions.HttpResponseOrNetErrorCode.{AppState}"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-05-17">
-  <owner>tquintanilla@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Error info for sending an attribution report, recorded for each report sent
-    on an Android device while the Chrome application state is
-    &quot;{AppState}&quot;. The HTTP response code is recorded if there is no
-    net error code for the request, or the net error code indicates there was a
-    response code failure.
-  </summary>
-  <token key="AppState">
-    <variant name="AppBackgrounded"/>
-    <variant name="AppDestroyed"/>
-    <variant name="AppPaused"/>
-    <variant name="AppRunning"/>
-    <variant name="AppStateUnknown"/>
-  </token>
-</histogram>
-
 <histogram name="Conversions.HttpResponseOrNetErrorCodeEventLevel"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-04-26">
   <owner>linnan@chromium.org</owner>

@@ -15,7 +15,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/values.h"
-#include "build/buildflag.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/aggregatable_debug_report.h"
 #include "content/browser/attribution_reporting/attribution_debug_report.h"
@@ -36,10 +35,6 @@
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "url/gurl.h"
 #include "url/origin.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/application_status_listener.h"
-#endif
 
 namespace content {
 
@@ -69,29 +64,9 @@ void NetworkHistogram(std::string_view suffix,
 
 AttributionReportNetworkSender::AttributionReportNetworkSender(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : url_loader_factory_(std::move(url_loader_factory))
-#if BUILDFLAG(IS_ANDROID)
-      ,
-      application_status_listener_(
-          base::android::ApplicationStatusListener::New(base::BindRepeating(
-              &AttributionReportNetworkSender::OnApplicationStateChanged,
-              // Listener is destroyed at destructor, and
-              // object will be alive for any callback.
-              base::Unretained(this)))) {
-  CHECK(url_loader_factory_);
-  OnApplicationStateChanged(
-      base::android::ApplicationStatusListener::GetState());
-}
-
-void AttributionReportNetworkSender::OnApplicationStateChanged(
-    base::android::ApplicationState state) {
-  app_state_ = state;
-}
-#else
-{
+    : url_loader_factory_(std::move(url_loader_factory)) {
   CHECK(url_loader_factory_);
 }
-#endif
 
 AttributionReportNetworkSender::~AttributionReportNetworkSender() = default;
 
@@ -253,30 +228,6 @@ void AttributionReportNetworkSender::OnReportSent(
   std::optional<bool> retry_succeed =
       loader->GetNumRetries() > 0 ? std::make_optional<bool>(net_ok_and_http_ok)
                                   : std::nullopt;
-
-#if BUILDFLAG(IS_ANDROID)
-  std::string_view suffix;
-  switch (app_state_) {
-    case base::android::APPLICATION_STATE_HAS_RUNNING_ACTIVITIES:
-      suffix = "AppRunning";
-      break;
-    case base::android::APPLICATION_STATE_HAS_PAUSED_ACTIVITIES:
-      suffix = "AppPaused";
-      break;
-    case base::android::APPLICATION_STATE_HAS_STOPPED_ACTIVITIES:
-      suffix = "AppBackgrounded";
-      break;
-    case base::android::APPLICATION_STATE_HAS_DESTROYED_ACTIVITIES:
-      suffix = "AppDestroyed";
-      break;
-    case base::android::APPLICATION_STATE_UNKNOWN:
-      suffix = "AppStateUnknown";
-      break;
-  }
-  base::UmaHistogramSparse(
-      base::StrCat({"Conversions.HttpResponseOrNetErrorCode.", suffix}),
-      response_or_net_error);
-#endif
 
   std::visit(
       absl::Overload{
