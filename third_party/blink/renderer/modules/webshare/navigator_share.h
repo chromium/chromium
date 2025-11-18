@@ -34,7 +34,6 @@ class MODULES_EXPORT NavigatorShare final
   ~NavigatorShare() = default;
 
   // Gets, or creates, NavigatorShare supplement on Navigator.
-  // See platform/Supplementable.h
   static NavigatorShare& From(Navigator&);
 
   // Navigator partial interface

@@ -51,8 +51,6 @@ class WindowAgent final : public Agent, public AgentGroupScheduler::Agent {
   AgentGroupScheduler& GetAgentGroupScheduler();
 
  private:
-  // Note clients may attach per-agent data via Supplementable.
-  // MutationObservers are attached this way.
   // TODO(keishi): Move per-agent data here with the correct granularity.
   // E.g. CustomElementReactionStack should move here.
   Member<AgentGroupScheduler> agent_group_scheduler_;

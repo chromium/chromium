@@ -45,7 +45,7 @@ class MODULES_EXPORT PresentationController
   static PresentationController* From(LocalDOMWindow&);
   static PresentationController* FromContext(ExecutionContext*);
 
-  // Implementation of Supplement.
+  // Implementation of GarbageCollectedMixin.
   void Trace(Visitor*) const override;
 
   // Called by the Presentation object to advertize itself to the controller.

@@ -10333,8 +10333,6 @@ CustomElementRegistry* Document::EffectiveGlobalCustomElementRegistry() const {
   return nullptr;
 }
 
-template class CORE_TEMPLATE_EXPORT Supplement<Document>;
-
 }  // namespace blink
 
 #ifndef NDEBUG

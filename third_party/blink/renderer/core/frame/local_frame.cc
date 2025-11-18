@@ -402,8 +402,6 @@ const char* DocumentReadyStateToString(
 
 }  // namespace
 
-template class CORE_TEMPLATE_EXPORT Supplement<LocalFrame>;
-
 // static
 LocalFrame* LocalFrame::FromFrameToken(const LocalFrameToken& frame_token) {
   LocalFramesByTokenMap& local_frames_map = GetLocalFramesMap();

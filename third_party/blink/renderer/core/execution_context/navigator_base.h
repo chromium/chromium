@@ -55,8 +55,7 @@ template <typename T>
 class GlobalFetchImpl;
 
 // NavigatorBase is a helper for shared logic between Navigator and
-// WorkerNavigator. It is also a Supplementable, and can therefore be used for
-// classes that need to Supplement both Navigator and WorkerNavigator.
+// WorkerNavigator.
 class CORE_EXPORT NavigatorBase : public ScriptWrappable,
                                   public NavigatorConcurrentHardware,
                                   public NavigatorDeviceMemory,

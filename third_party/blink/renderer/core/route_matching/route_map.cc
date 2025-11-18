@@ -55,8 +55,6 @@ Route* RouteMap::get(const String& route_name) {
   return it->value;
 }
 
-// BEGIN Supplement support:
-
 const RouteMap* RouteMap::Get(const Document* document) {
   if (!document) {
     return nullptr;
@@ -79,8 +77,6 @@ RouteMap& RouteMap::Ensure(Document& document) {
   }
   return *route_map;
 }
-
-// END Supplement support
 
 RouteMap::ParseResult RouteMap::ParseAndApplyRoutes(
     const String& route_map_text) {

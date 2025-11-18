@@ -70,8 +70,6 @@ CookieStore* GlobalCookieStore::cookieStore(LocalDOMWindow& window) {
 
 // static
 CookieStore* GlobalCookieStore::cookieStore(ServiceWorkerGlobalScope& worker) {
-  // ServiceWorkerGlobalScope is Supplementable<WorkerGlobalScope>, not
-  // Supplementable<ServiceWorkerGlobalScope>.
   return GlobalCookieStoreImpl<WorkerGlobalScope>::From(worker).GetCookieStore(
       worker);
 }

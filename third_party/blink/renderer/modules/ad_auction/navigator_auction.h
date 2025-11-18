@@ -49,7 +49,6 @@ class MODULES_EXPORT NavigatorAuction final
   explicit NavigatorAuction(Navigator&);
 
   // Gets, or creates, NavigatorAuction supplement on Navigator.
-  // See platform/Supplementable.h
   static NavigatorAuction& From(ExecutionContext*, Navigator&);
 
   // TODO(crbug.com/1441988): Make `const AuctionAdInterestGroup*` after rename.

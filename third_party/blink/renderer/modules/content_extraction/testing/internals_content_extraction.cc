@@ -29,7 +29,6 @@ AIPageContentAgent* GetAIPageContentAgent(Document& document,
     return nullptr;
   }
 
-  // AiPageContentAgent is a Supplement on Document.
   AIPageContentAgent* agent =
       AIPageContentAgent::GetOrCreateForTesting(document);
   if (!agent) {
