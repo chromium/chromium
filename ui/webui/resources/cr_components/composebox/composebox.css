@@ -11,7 +11,7 @@
 
 :host {
   --color-composebox-submit-button-hover: var(--color-searchbox-results-background-hovered);
-  --composebox-cancel-button-top: 12px;
+  --composebox-cancel-button-top: var(--cr-composebox-cancel-button-top, 12px);
   --cr-composebox-outline-hcm: solid var(--color-composebox-outline-hcm);
   --cr-icon-button-size: 36px;
   --input-bottom-spacing: 10px;

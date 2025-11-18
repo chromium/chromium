@@ -23,6 +23,7 @@
   --cr-composebox-max-height: 800px;
   --cr-composebox-text-container-padding-block-start: 0;
   --search-animated-glif-rotation-duration: 2000ms;
+  --cr-composebox-cancel-button-top: 5px;
 }
 
 cr-composebox {
@@ -41,7 +42,7 @@ cr-composebox {
   --color-composebox-pdf-chip-icon: var(--color-omnibox-text-subtle);
   --color-composebox-recent-tab-chip-outline: unset; /* Omnibox has no recent tab chip. */
   --color-composebox-scrim-background: unset; /* No scrim. */
-  --color-composebox-submit-button-background: var(--color-sys-primary);
+  --color-composebox-submit-button-background: var(--color-omnibox-composebox-submit-button-background);
   --color-composebox-submit-button-icon: var(--color-omnibox-composebox-submit-button-icon);
   --color-composebox-submit-button-hover: var(--color-omnibox-action-icon-hover);
   --color-composebox-suggestion-activity: unset; /* No activity suggestion disclaimer. */
@@ -59,5 +60,6 @@ cr-composebox {
 
 cr-composebox[searchbox-layout-mode="Compact"]::part(context-menu-entrypoint-icon) {
   --cr-icon-button-size: 28px;
+  left: 12px;
   top: 14px;
 }

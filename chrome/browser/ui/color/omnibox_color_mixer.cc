@@ -456,7 +456,8 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
   mixer[kColorOmniboxComposeboxSubmitButtonBackground] =
       ui::SelectBasedOnDarkInput(kColorOmniboxResultsBackground,
                                  gfx::kGoogleBlue200, gfx::kGoogleBlue600);
-  mixer[kColorOmniboxComposeboxSubmitButtonIcon] = {ui::kColorSysOnPrimary};
+  mixer[kColorOmniboxComposeboxSubmitButtonIcon] = ui::SelectBasedOnDarkInput(
+      kColorOmniboxResultsBackground, gfx::kGoogleGrey900, gfx::kGoogleBlue200);
 
   // Override omnibox colors per CR2023 spec.
   ApplyOmniboxCR2023Colors(mixer, key);
