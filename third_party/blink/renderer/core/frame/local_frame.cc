@@ -2780,12 +2780,8 @@ std::optional<AdScriptIdentifier> LocalFrame::CreationAdScript() const {
 }
 
 void LocalFrame::UpdateAdHighlight() {
-  // Ad highlighting is now primarily handled by `BoxFragmentPainter` on the
-  // owner element. We retain this legacy path solely for fenced frame trees, as
-  // a <fencedframe> owner element does not know its ad status.
-  if (!IsInFencedFrameTree()) {
+  if (IsMainFrame() && !IsInFencedFrameTree())
     return;
-  }
 
   // TODO(bokan): Fenced frames may need some work to propagate the ad
   // highlighting setting to the inner tree.

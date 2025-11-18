@@ -851,11 +851,6 @@ bool HTMLFrameOwnerElement::IsAdRelated() const {
   return content_frame_->IsAdFrame();
 }
 
-bool HTMLFrameOwnerElement::ShouldHighlightAd() const {
-  return display_ad_element_monitor_ &&
-         display_ad_element_monitor_->ShouldHighlight();
-}
-
 mojom::blink::ColorScheme HTMLFrameOwnerElement::GetColorScheme() const {
   if (const auto* style = GetComputedStyle())
     return style->UsedColorScheme();

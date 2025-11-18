@@ -6,12 +6,10 @@
 
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
-#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/map_coordinates_flags.h"
-#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 
 namespace blink {
@@ -92,18 +90,6 @@ void DisplayAdElementMonitor::DidFinishLifecycleUpdate(
 
   LocalFrame* frame = element_->GetDocument().GetFrame();
   DCHECK(frame);
-
-  // We use this lifecycle update as an opportunity to poll the "Highlight ads"
-  // setting (toggled by DevTools). If it has changed, we trigger a repaint.
-  // This polling approach is less precise than relying on direct events, but
-  // it's more robust against potential race conditions or missed state updates.
-  bool should_highlight = frame->GetPage()->GetSettings().GetHighlightAds();
-  if (should_highlight != should_highlight_) {
-    should_highlight_ = should_highlight;
-    if (auto* layout_object = element_->GetLayoutObject()) {
-      layout_object->SetShouldDoFullPaintInvalidation();
-    }
-  }
 
   const LocalFrame& local_root_main_frame = frame->LocalFrameRoot();
 
