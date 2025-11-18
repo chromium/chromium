@@ -31,19 +31,16 @@ class SidePanel;
 // you must get a pointer to it from the SidePanel instance.
 //
 // Usage:
-// 1. Get the SidePanelAnimationCoordinator from the SidePanel.
-// 2. Implement `SidePanelAnimationCoordinator::Observer` for each view that
+// 1. Get the SidePanelAnimationCoordinator from the SidePanel instance.
+// 2. Implement `SidePanelAnimationCoordinator::Observer` on the view that
 //    needs to be animated.
-// 3. For each observer, define an `AnimationSpecification` struct specifying
-//    the timing and tweening for the open and close animations.
-// 4. Register each animation and its observer with the coordinator via
-//    `AddObserver()`.
-// 5. The SidePanel will automatically call `Start()` or `Reset()` on the
-//    coordinator when its visibility changes.
-// 6. The observer's `OnAnimationSequenceProgressed()` will be called as the
-//    animation runs. Inside the callback, the observer can get its interpolated
-//    value (from 0.0 to 1.0) by calling `GetAnimationValueFor()` and use it to
-//    update the view's properties (e.g., position, opacity, etc.).
+// 3. In the view's initialization, register it as an observer for a specific
+//    `SidePanelAnimationId` by calling `AddObserver()`.
+// 4. Implement `OnAnimationSequenceProgressed()`. Inside this callback, use the
+//    provided `animation_value` (from 0.0 to 1.0) to update the view's
+//    properties (e.g., position, opacity).
+// 5. The SidePanel automatically calls `Start()` or `Reset()` on the
+//    coordinator when its visibility changes, driving the animation.
 class SidePanelAnimationCoordinator : views::AnimationDelegateViews {
  public:
   using SidePanelAnimationId = ui::ElementIdentifier;
