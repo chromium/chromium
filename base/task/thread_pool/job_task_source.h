@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <atomic>
+#include <cstdint>
 #include <limits>
 #include <optional>
 #include <utility>
@@ -120,8 +121,7 @@ class BASE_EXPORT JobTaskSource : public TaskSource {
     State();
     ~State();
 
-    // Sets as canceled. Returns the state
-    // before the operation.
+    // Sets as canceled. Returns the state before the operation.
     Value Cancel();
 
     // Increments the worker count by 1. Returns the state before the operation.
@@ -214,6 +214,7 @@ class BASE_EXPORT JobTaskSource : public TaskSource {
   // Signaled when |join_flag_| is kWaiting* and a worker returns.
   std::optional<ConditionVariable> worker_released_condition_
       GUARDED_BY(worker_lock_);
+  bool is_queued_ GUARDED_BY(worker_lock_) = false;
 
   std::atomic<uint32_t> assigned_task_ids_{0};
 

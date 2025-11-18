@@ -221,6 +221,7 @@ bool JobTaskSource::WaitForParticipationOpportunity() {
 
 TaskSource::RunStatus JobTaskSource::WillRunTask() {
   CheckedAutoLock auto_lock(worker_lock_);
+  is_queued_ = false;
   auto state_before_add = state_.Load();
 
   // Don't allow this worker to run the task if either:
@@ -242,11 +243,14 @@ TaskSource::RunStatus JobTaskSource::WillRunTask() {
   if (worker_count_before_add >= max_concurrency) {
     return RunStatus::kDisallowed;
   }
-
   DCHECK_LT(worker_count_before_add, max_concurrency);
-  return max_concurrency == worker_count_before_add + 1
-             ? RunStatus::kAllowedSaturated
-             : RunStatus::kAllowedNotSaturated;
+  TaskSource::RunStatus status =
+      (max_concurrency == worker_count_before_add + 1)
+          ? RunStatus::kAllowedSaturated
+          : RunStatus::kAllowedNotSaturated;
+
+  is_queued_ = (status == RunStatus::kAllowedNotSaturated);
+  return status;
 }
 
 size_t JobTaskSource::GetRemainingConcurrency() const {
@@ -282,6 +286,7 @@ void JobTaskSource::NotifyConcurrencyIncrease() {
     return;
   }
 
+  bool should_queue;
   {
     // Lock is taken to access |join_flag_| below and signal
     // |worker_released_condition_|.
@@ -289,6 +294,7 @@ void JobTaskSource::NotifyConcurrencyIncrease() {
     if (join_flag_.ShouldWorkerSignal()) {
       worker_released_condition_->Signal();
     }
+    should_queue = !std::exchange(is_queued_, true);
   }
 
   // Make sure the task source is in the queue if not already.
@@ -297,7 +303,9 @@ void JobTaskSource::NotifyConcurrencyIncrease() {
   // previously were too many worker. For simplicity, the task source is always
   // enqueued and will get discarded if already saturated when it is popped from
   // the priority queue.
-  delegate_->EnqueueJobTaskSource(this);
+  if (should_queue) {
+    delegate_->EnqueueJobTaskSource(this);
+  }
 }
 
 size_t JobTaskSource::GetMaxConcurrency() const {
@@ -373,8 +381,10 @@ bool JobTaskSource::DidProcessTask(TaskSource::Transaction* /*transaction*/) {
   // Re-enqueue the TaskSource if the task ran and the worker count is below the
   // max concurrency.
   // |worker_count - 1| to exclude the returning thread.
-  return state_before_sub.worker_count() <=
-         GetMaxConcurrency(state_before_sub.worker_count() - 1);
+  bool reenqueue = state_before_sub.worker_count() <=
+                   GetMaxConcurrency(state_before_sub.worker_count() - 1);
+  is_queued_ |= reenqueue;
+  return reenqueue;
 }
 
 // This is a no-op and should always return true.
