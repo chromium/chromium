@@ -144,8 +144,8 @@ class MEDIA_EXPORT AudioManagerMac : public AudioManagerApple {
   // Streams should consult ShouldDeferStreamStart() and if true check the value
   // again after |kStartDelayInSecsForPowerEvents| has elapsed. If false, the
   // stream may be started immediately.
-  // TODO(henrika): track UMA statistics related to defer start to come up with
-  // a suitable delay value.
+  //
+  // As of Nov 2025, this is still helpful, see https://crbug.com/447640763.
   enum { kStartDelayInSecsForPowerEvents = 5 };
   bool ShouldDeferStreamStart() const override;
 
