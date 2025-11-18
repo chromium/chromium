@@ -212,38 +212,6 @@ TEST_F(SessionStorageMetadataTest, LoadingData) {
   EXPECT_EQ(1, entry->second[test_storage_key2_]->ReferenceCount());
 }
 
-TEST_F(SessionStorageMetadataTest, SaveNewMap) {
-  SetupTestData();
-  SessionStorageMetadata metadata;
-  ReadMetadataFromDatabase(&metadata);
-
-  std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> tasks;
-  auto ns1_entry = metadata.GetOrCreateNamespaceEntry(test_namespace1_id_);
-  auto map_data =
-      metadata.RegisterNewMap(ns1_entry, test_storage_key1_, &tasks);
-  ASSERT_TRUE(map_data);
-
-  // Verify in-memory metadata is correct.
-  EXPECT_EQ(StdStringToUint8Vector("map-5-"),
-            ns1_entry->second[test_storage_key1_]->KeyPrefix());
-  EXPECT_EQ(1, ns1_entry->second[test_storage_key1_]->ReferenceCount());
-  EXPECT_EQ(1, metadata.GetOrCreateNamespaceEntry(test_namespace2_id_)
-                   ->second[test_storage_key1_]
-                   ->ReferenceCount());
-
-  DbStatus status;
-  RunBatch(std::move(tasks), base::BindOnce(&ErrorCallback, &status));
-  EXPECT_TRUE(status.ok());
-
-  // Verify metadata was written to disk.
-  auto contents = GetDatabaseContents();
-  EXPECT_EQ(StdStringToUint8Vector("6"), contents[next_map_id_key_]);
-  EXPECT_EQ(StdStringToUint8Vector("5"),
-            contents[StdStringToUint8Vector(std::string("namespace-") +
-                                            test_namespace1_id_ + "-" +
-                                            test_storage_key1_.Serialize())]);
-}
-
 TEST_F(SessionStorageMetadataTest, ShallowCopies) {
   SetupTestData();
   SessionStorageMetadata metadata;

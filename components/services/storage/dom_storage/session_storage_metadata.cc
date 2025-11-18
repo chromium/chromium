@@ -34,6 +34,7 @@ std::vector<uint8_t> NumberToValue(int64_t map_number) {
 SessionStorageMetadata::MapData::MapData(int64_t map_number,
                                          blink::StorageKey storage_key)
     : number_as_bytes_(NumberToValue(map_number)),
+      map_id_(map_number),
       key_prefix_(SessionStorageMetadata::GetMapPrefix(number_as_bytes_)),
       storage_key_(std::move(storage_key)) {}
 SessionStorageMetadata::MapData::~MapData() = default;
@@ -98,10 +99,8 @@ void SessionStorageMetadata::Initialize(DomStorageDatabase::Metadata source) {
 }
 
 scoped_refptr<SessionStorageMetadata::MapData>
-SessionStorageMetadata::RegisterNewMap(
-    NamespaceEntry namespace_entry,
-    const blink::StorageKey& storage_key,
-    std::vector<AsyncDomStorageDatabase::BatchDatabaseTask>* save_tasks) {
+SessionStorageMetadata::RegisterNewMap(NamespaceEntry namespace_entry,
+                                       const blink::StorageKey& storage_key) {
   auto new_map_data = base::MakeRefCounted<MapData>(next_map_id_, storage_key);
   ++next_map_id_;
 
@@ -122,18 +121,6 @@ SessionStorageMetadata::RegisterNewMap(
     namespace_storage_keys.emplace(std::make_pair(storage_key, new_map_data));
   }
   new_map_data->IncReferenceCount();
-
-  save_tasks->push_back(base::BindOnce(
-      [](int64_t new_map_id, DomStorageDatabase::Key storage_key_key,
-         DomStorageDatabase::Value storage_key_map_number,
-         DomStorageBatchOperationLevelDB& batch,
-         const DomStorageDatabaseLevelDB& db) {
-        batch.Put(base::span(kNextMapIdKey), NumberToValue(new_map_id));
-        batch.Put(storage_key_key, storage_key_map_number);
-      },
-      next_map_id_, GetAreaKey(namespace_entry->first, storage_key),
-      new_map_data->MapNumberAsBytes()));
-
   return new_map_data;
 }
 
@@ -157,7 +144,8 @@ void SessionStorageMetadata::RegisterShallowClonedNamespace(
         std::forward_as_tuple(storage_key_map_pair.second));
     storage_key_map_pair.second->IncReferenceCount();
     new_entries.emplace_back(
-        GetAreaKey(destination_namespace->first, storage_key_map_pair.first),
+        SessionStorageLevelDB::CreateMapMetadataKey(
+            destination_namespace->first, storage_key_map_pair.first),
         storage_key_map_pair.second->MapNumberAsBytes());
   }
 
@@ -217,7 +205,8 @@ void SessionStorageMetadata::DeleteArea(
 
   MapData* map_data = storage_key_map_it->second.get();
 
-  DomStorageDatabase::Key area_key = GetAreaKey(namespace_id, storage_key);
+  DomStorageDatabase::Key area_key =
+      SessionStorageLevelDB::CreateMapMetadataKey(namespace_id, storage_key);
   std::vector<DomStorageDatabase::Key> prefixes_to_delete;
   DCHECK_GT(map_data->ReferenceCount(), 0);
   map_data->DecReferenceCount();
@@ -258,19 +247,6 @@ std::vector<uint8_t> SessionStorageMetadata::GetNamespacePrefix(
                           namespace_id.end());
   namespace_prefix.push_back(kNamespaceStorageKeySeparator);
   return namespace_prefix;
-}
-
-// static
-std::vector<uint8_t> SessionStorageMetadata::GetAreaKey(
-    const std::string& namespace_id,
-    const blink::StorageKey& storage_key) {
-  std::vector<uint8_t> area_key(kNamespacePrefix, std::end(kNamespacePrefix));
-  area_key.insert(area_key.end(), namespace_id.begin(), namespace_id.end());
-  area_key.push_back(kNamespaceStorageKeySeparator);
-  std::string storage_key_str = storage_key.Serialize();
-  area_key.insert(area_key.end(), storage_key_str.begin(),
-                  storage_key_str.end());
-  return area_key;
 }
 
 // static

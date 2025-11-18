@@ -574,15 +574,23 @@ scoped_refptr<SessionStorageMetadata::MapData>
 SessionStorageImpl::RegisterNewAreaMap(
     SessionStorageMetadata::NamespaceEntry namespace_entry,
     const blink::StorageKey& storage_key) {
-  std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> save_tasks;
   scoped_refptr<SessionStorageMetadata::MapData> map_entry =
-      metadata_.RegisterNewMap(namespace_entry, storage_key, &save_tasks);
+      metadata_.RegisterNewMap(namespace_entry, storage_key);
 
   if (database_) {
-    database_->RunBatchDatabaseTasks(
-        RunBatchTasksContext::kRegisterNewAreaMap, std::move(save_tasks),
-        base::BindOnce(&SessionStorageImpl::OnCommitResult,
-                       weak_ptr_factory_.GetWeakPtr()));
+    // Save the new map in the database.
+    DomStorageDatabase::Metadata metadata;
+    metadata.next_map_id = map_entry->map_id() + 1;
+    metadata.map_metadata.push_back({
+        .map_locator{
+            /*session_id=*/namespace_entry->first,
+            map_entry->storage_key(),
+            map_entry->map_id(),
+        },
+    });
+    database_->PutMetadata(std::move(metadata),
+                           base::BindOnce(&SessionStorageImpl::OnCommitResult,
+                                          weak_ptr_factory_.GetWeakPtr()));
   }
   return map_entry;
 }

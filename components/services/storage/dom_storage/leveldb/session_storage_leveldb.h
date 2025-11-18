@@ -91,6 +91,13 @@ class SessionStorageLevelDB : public DomStorageDatabase {
   void MakeAllCommitsFailForTesting() override;
   void SetDestructionCallbackForTesting(base::OnceClosure callback) override;
 
+  // Returns `namespace-<session_id>-<storage_key>`.
+  //
+  // TODO(crbug.com/377242771): Make private after refactoring to support a
+  // swappable backend for SQLite.
+  static Key CreateMapMetadataKey(std::string session_id,
+                                  const blink::StorageKey& storage_key);
+
  private:
   // Parses the value from the next map ID key in the LevelDB.  Converts the
   // value from a integer text string like "234" to an `int64_t`.  Returns 0

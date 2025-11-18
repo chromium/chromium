@@ -13,6 +13,7 @@
 #include "base/strings/string_util.h"
 #include "base/types/expected_macros.h"
 #include "components/services/storage/dom_storage/dom_storage_constants.h"
+#include "components/services/storage/dom_storage/leveldb/dom_storage_batch_operation_leveldb.h"
 #include "components/services/storage/dom_storage/leveldb/dom_storage_database_leveldb.h"
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 
@@ -24,7 +25,7 @@ StatusOr<DomStorageDatabase::MapMetadata> ParseMapMetadata(
 
   // Expected key format: 'namespace-<session id guid>-<storage key>'.
   // For example:
-  //   'namespace-2b437ef2_a816_4f5f_b4fd_0e2e4da516a8-https://example.test/'
+  // 'namespace-2b437ef2_a816_4f5f_b4fd_0e2e4da516a8-https://example.test/'
   std::string_view key = base::as_string_view(namespace_entry.key);
 
   // The key must start with 'namespace-'.
@@ -104,9 +105,28 @@ SessionStorageLevelDB::ReadAllMetadata() {
 }
 
 DbStatus SessionStorageLevelDB::PutMetadata(Metadata metadata) {
-  // TODO(crbug.com/377242771): Implement `DomStorageDatabase` for session
-  // storage to make backend swappable for SQLite.
-  return DbStatus::NotSupported("");
+  // Callers must update at least one map along with the next map ID.
+  CHECK_GT(metadata.map_metadata.size(), 0u);
+  CHECK(metadata.next_map_id.has_value());
+
+  std::unique_ptr<DomStorageBatchOperationLevelDB> batch =
+      leveldb_->CreateBatchOperation();
+
+  // Write the next map ID.
+  batch->Put(kNextMapIdKey,
+             base::as_byte_span(base::NumberToString(*metadata.next_map_id)));
+
+  // Write the metadata for each map in `metadata.map_metadata`
+  for (const MapMetadata& map_metadata : metadata.map_metadata) {
+    const MapLocator& map_locator = map_metadata.map_locator;
+
+    Key key = CreateMapMetadataKey(map_locator.session_id(),
+                                   map_locator.storage_key());
+
+    std::string value = base::NumberToString(map_locator.map_id().value());
+    batch->Put(std::move(key), base::as_byte_span(value));
+  }
+  return batch->Commit();
 }
 
 DbStatus SessionStorageLevelDB::RewriteDB() {
@@ -124,6 +144,35 @@ void SessionStorageLevelDB::MakeAllCommitsFailForTesting() {
 void SessionStorageLevelDB::SetDestructionCallbackForTesting(
     base::OnceClosure callback) {
   leveldb_->SetDestructionCallbackForTesting(std::move(callback));
+}
+
+DomStorageDatabase::Key SessionStorageLevelDB::CreateMapMetadataKey(
+    std::string session_id,
+    const blink::StorageKey& storage_key) {
+  // `session_id` must be a GUID string.
+  CHECK_EQ(session_id.size(), blink::kSessionStorageNamespaceIdLength);
+
+  std::string serialized_storage_key = storage_key.Serialize();
+
+  Key key;
+  key.reserve(std::size(kNamespacePrefix) + session_id.size() +
+              /*kNamespaceStorageKeySeparator=*/1 +
+              serialized_storage_key.length());
+
+  // Add 'namespace-'.
+  key.insert(key.end(), std::begin(kNamespacePrefix),
+             std::end(kNamespacePrefix));
+
+  // Append `session_id`.
+  key.insert(key.end(), session_id.begin(), session_id.end());
+
+  // Append '-'.
+  key.push_back(kNamespaceStorageKeySeparator);
+
+  // Append `storage_key`.
+  key.insert(key.end(), serialized_storage_key.begin(),
+             serialized_storage_key.end());
+  return key;
 }
 
 StatusOr<int64_t> SessionStorageLevelDB::ReadNextMapId() const {

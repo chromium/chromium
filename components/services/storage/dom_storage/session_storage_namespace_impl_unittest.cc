@@ -83,12 +83,9 @@ class SessionStorageNamespaceImplTest
     loop.Run();
 
     metadata_.SetupNewDatabaseForTesting();
-    std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> save_tasks;
     auto entry = metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_);
-    auto map_id =
-        metadata_.RegisterNewMap(entry, test_storage_key1_, &save_tasks);
+    auto map_id = metadata_.RegisterNewMap(entry, test_storage_key1_);
     DCHECK(map_id->KeyPrefix() == StdStringToUint8Vector("map-0-"));
-    RunBatch(std::move(save_tasks));
 
     // Put some data in one of the maps.
     base::RunLoop put_loop;
@@ -123,11 +120,7 @@ class SessionStorageNamespaceImplTest
   scoped_refptr<SessionStorageMetadata::MapData> RegisterNewAreaMap(
       NamespaceEntry namespace_entry,
       const blink::StorageKey& storage_key) {
-    std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> save_tasks;
-    auto map_data =
-        metadata_.RegisterNewMap(namespace_entry, storage_key, &save_tasks);
-    RunBatch(std::move(save_tasks));
-    return map_data;
+    return metadata_.RegisterNewMap(namespace_entry, storage_key);
   }
 
   void RegisterShallowClonedNamespace(

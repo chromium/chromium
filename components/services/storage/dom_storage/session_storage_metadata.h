@@ -32,6 +32,7 @@ class SessionStorageMetadata {
    public:
     explicit MapData(int64_t map_number, blink::StorageKey storage_key);
 
+    int64_t map_id() const { return map_id_; }
     const blink::StorageKey& storage_key() const { return storage_key_; }
 
     // The number of namespaces that reference this map.
@@ -56,6 +57,13 @@ class SessionStorageMetadata {
     // The map number as bytes (e.g. "2"). These bytes are the string
     // representation of the map number.
     std::vector<uint8_t> number_as_bytes_;
+
+    // `number_as_bytes_` as an `int64_t`.
+    //
+    // TODO(crbug.com/377242771): Remove `number_as_bytes_` after refactoring to
+    // support a swappable backend for SQLite.
+    int64_t map_id_;
+
     std::vector<uint8_t> key_prefix_;
     blink::StorageKey storage_key_;
     int reference_count_ = 0;
@@ -79,16 +87,12 @@ class SessionStorageMetadata {
   void Initialize(DomStorageDatabase::Metadata source);
 
   // Creates new map data for the given namespace-StorageKey area. If the area
-  // entry exists, then it will decrement the refcount of the old map. Tasks
-  // appended to |*save_tasks| if run will save the new or modified area entry
-  // to disk, as well as saving the next available map id.
+  // entry exists, then it will decrement the refcount of the old map.
   //
   // NOTE: It is invalid to call this method for an area that has a map with
   // only one reference.
-  scoped_refptr<MapData> RegisterNewMap(
-      NamespaceEntry namespace_entry,
-      const blink::StorageKey& storage_key,
-      std::vector<AsyncDomStorageDatabase::BatchDatabaseTask>* save_tasks);
+  scoped_refptr<MapData> RegisterNewMap(NamespaceEntry namespace_entry,
+                                        const blink::StorageKey& storage_key);
 
   // Registers an StorageKey-map in the |destination_namespace| from every
   // StorageKey-map in the |source_namespace|. The |destination_namespace| must
@@ -129,8 +133,6 @@ class SessionStorageMetadata {
  private:
   static std::vector<uint8_t> GetNamespacePrefix(
       const std::string& namespace_id);
-  static std::vector<uint8_t> GetAreaKey(const std::string& namespace_id,
-                                         const blink::StorageKey& storage_key);
   static std::vector<uint8_t> GetMapPrefix(int64_t map_number);
   static std::vector<uint8_t> GetMapPrefix(
       const std::vector<uint8_t>& map_number_as_bytes);
