@@ -20,9 +20,6 @@
 #include "media/base/supported_types.h"
 #include "media/base/video_decoder_config.h"
 #include "media/media_buildflags.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 #include "third_party/blink/public/platform/web_media_source.h"
 #include "third_party/blink/public/platform/web_source_buffer.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_decoder_config.h"
@@ -53,7 +50,6 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/network/mime/content_type.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
-#include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -639,7 +635,6 @@ bool MediaSource::IsTypeSupportedInternal(ExecutionContext* context,
     DVLOG(1) << __func__ << "(" << type << ", "
              << base::ToString(enforce_codec_specificity)
              << ") -> false (not supported by HTMLMediaElement)";
-    RecordIdentifiabilityMetric(context, type, false);
     return false;
   }
 
@@ -667,28 +662,12 @@ bool MediaSource::IsTypeSupportedInternal(ExecutionContext* context,
   DVLOG(2) << __func__ << "(" << type << ", "
            << base::ToString(enforce_codec_specificity) << ") -> "
            << base::ToString(result);
-  RecordIdentifiabilityMetric(context, type, result);
   return result;
 }
 
 // static
 bool MediaSource::canConstructInDedicatedWorker(ExecutionContext* context) {
   return true;
-}
-
-void MediaSource::RecordIdentifiabilityMetric(ExecutionContext* context,
-                                              const String& type,
-                                              bool result) {
-  if (!IdentifiabilityStudySettings::Get()->ShouldSampleType(
-          blink::IdentifiableSurface::Type::kMediaSource_IsTypeSupported)) {
-    return;
-  }
-  blink::IdentifiabilityMetricBuilder(context->UkmSourceID())
-      .Add(blink::IdentifiableSurface::FromTypeAndToken(
-               blink::IdentifiableSurface::Type::kMediaSource_IsTypeSupported,
-               IdentifiabilityBenignStringToken(type)),
-           result)
-      .Record(context->UkmRecorder());
 }
 
 const AtomicString& MediaSource::InterfaceName() const {

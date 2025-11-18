@@ -241,9 +241,6 @@ class MediaSource final : public EventTarget,
       std::unique_ptr<media::VideoDecoderConfig> video_config,
       ExceptionState&) LOCKS_EXCLUDED(attachment_link_lock_);
   void ScheduleEvent(const AtomicString& event_name);
-  static void RecordIdentifiabilityMetric(ExecutionContext* context,
-                                          const String& type,
-                                          bool result);
 
   // Implements the duration change algorithm.
   // http://w3c.github.io/media-source/#duration-change-algorithm
