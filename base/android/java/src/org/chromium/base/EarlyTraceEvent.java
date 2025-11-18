@@ -384,8 +384,7 @@ public class EarlyTraceEvent {
             if (e.mIsStart) {
                 if (e.mIsToplevel) {
                     EarlyTraceEventJni.get()
-                            .recordEarlyToplevelBeginEvent(
-                                    e.mName, e.mTimeNanos, e.mThreadId, e.mThreadTimeMillis);
+                            .recordEarlyToplevelBeginEvent(e.mName, e.mTimeNanos, e.mThreadId);
                 } else {
                     EarlyTraceEventJni.get()
                             .recordEarlyBeginEvent(
@@ -394,8 +393,7 @@ public class EarlyTraceEvent {
             } else {
                 if (e.mIsToplevel) {
                     EarlyTraceEventJni.get()
-                            .recordEarlyToplevelEndEvent(
-                                    e.mName, e.mTimeNanos, e.mThreadId, e.mThreadTimeMillis);
+                            .recordEarlyToplevelEndEvent(e.mName, e.mTimeNanos, e.mThreadId);
                 } else {
                     EarlyTraceEventJni.get()
                             .recordEarlyEndEvent(
@@ -448,16 +446,10 @@ public class EarlyTraceEvent {
                 long threadMillis);
 
         void recordEarlyToplevelBeginEvent(
-                @JniType("std::string") String name,
-                long timeNanos,
-                int threadId,
-                long threadMillis);
+                @JniType("std::string") String name, long timeNanos, int threadId);
 
         void recordEarlyToplevelEndEvent(
-                @JniType("std::string") String name,
-                long timeNanos,
-                int threadId,
-                long threadMillis);
+                @JniType("std::string") String name, long timeNanos, int threadId);
 
         void recordEarlyAsyncBeginEvent(
                 @JniType("std::string") String name, long id, long timeNanos);

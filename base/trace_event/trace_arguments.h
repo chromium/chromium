@@ -649,13 +649,12 @@ class BASE_EXPORT TraceArguments {
   // Use |storage| to copy all copyable strings.
   // If |copy_all_strings| is false, then only the TRACE_VALUE_TYPE_COPY_STRING
   // values will be copied into storage. If it is true, then argument names are
-  // also copied to storage, as well as the strings pointed to by
-  // |*extra_string1| and |*extra_string2|.
+  // also copied to storage, as well as the string pointed to by
+  // |*extra_string|.
   // NOTE: If there are no strings to copy, |*storage| is left untouched.
   void CopyStringsTo(StringStorage* storage,
                      bool copy_all_strings,
-                     const char** extra_string1,
-                     const char** extra_string2);
+                     const char** extra_string);
 
   // Append debug string representation to |*out|.
   void AppendDebugString(std::string* out);

@@ -243,11 +243,9 @@ base::trace_event::TraceEventHandle AddTraceEventWithThreadIdAndTimestamps(
     char phase,
     const unsigned char* category_group_enabled,
     const char* name,
-    const char* scope,
     uint64_t id,
     base::PlatformThreadId thread_id,
     const base::TimeTicks& timestamp,
-    const base::ThreadTicks& thread_timestamp,
     base::trace_event::TraceArguments* args,
     unsigned int flags) {
   base::trace_event::TraceEventHandle handle = {};
@@ -256,9 +254,9 @@ base::trace_event::TraceEventHandle AddTraceEventWithThreadIdAndTimestamps(
   }
   DCHECK(!timestamp.is_null());
 
-  base::trace_event::TraceEvent new_trace_event(
-      thread_id, timestamp, thread_timestamp, phase, category_group_enabled,
-      name, scope, id, args, flags);
+  base::trace_event::TraceEvent new_trace_event(thread_id, timestamp, phase,
+                                                category_group_enabled, name,
+                                                id, args, flags);
 
   base::trace_event::OnAddLegacyTraceEvent(&new_trace_event);
   return handle;
@@ -779,23 +777,19 @@ base::trace_event::TraceEventHandle AddTraceEvent(
     char phase,
     const unsigned char* category_group_enabled,
     const char* name,
-    const char* scope,
     uint64_t id,
     base::trace_event::TraceArguments* args,
     unsigned int flags) {
   auto thread_id = base::PlatformThread::CurrentId();
   base::TimeTicks now = TRACE_TIME_TICKS_NOW();
   return AddTraceEventWithThreadIdAndTimestamp(
-      phase, category_group_enabled, name, scope, id,
-      trace_event_internal::kNoId,  // bind_id
-      thread_id, now, args, flags);
+      phase, category_group_enabled, name, id, thread_id, now, args, flags);
 }
 
 base::trace_event::TraceEventHandle AddTraceEventWithProcessId(
     char phase,
     const unsigned char* category_group_enabled,
     const char* name,
-    const char* scope,
     uint64_t id,
     base::ProcessId process_id,
     base::trace_event::TraceArguments* args,
@@ -804,8 +798,7 @@ base::trace_event::TraceEventHandle AddTraceEventWithProcessId(
                 sizeof(base::ProcessId));
   base::TimeTicks now = TRACE_TIME_TICKS_NOW();
   return AddTraceEventWithThreadIdAndTimestamp(
-      phase, category_group_enabled, name, scope, id,
-      trace_event_internal::kNoId,  // bind_id
+      phase, category_group_enabled, name, id,
       base::PlatformThreadId(
           static_cast<base::PlatformThreadId::UnderlyingType>(process_id)),
       now, args, flags | TRACE_EVENT_FLAG_HAS_PROCESS_ID);
@@ -815,40 +808,27 @@ base::trace_event::TraceEventHandle AddTraceEventWithThreadIdAndTimestamp(
     char phase,
     const unsigned char* category_group_enabled,
     const char* name,
-    const char* scope,
     uint64_t id,
-    uint64_t bind_id,
     base::PlatformThreadId thread_id,
     const base::TimeTicks& timestamp,
     base::trace_event::TraceArguments* args,
     unsigned int flags) {
-  base::ThreadTicks thread_now;
-  // If timestamp is provided explicitly, don't record thread time as it would
-  // be for the wrong timestamp. Similarly, if we record an event for another
-  // process or thread, we shouldn't report the current thread's thread time.
-  if (!(flags & TRACE_EVENT_FLAG_EXPLICIT_TIMESTAMP ||
-        flags & TRACE_EVENT_FLAG_HAS_PROCESS_ID ||
-        thread_id != base::PlatformThread::CurrentId())) {
-    thread_now = base::trace_event::ThreadNow();
-  }
   return base::trace_event::AddTraceEventWithThreadIdAndTimestamps(
-      phase, category_group_enabled, name, scope, id, thread_id, timestamp,
-      thread_now, args, flags);
+      phase, category_group_enabled, name, id, thread_id, timestamp, args,
+      flags);
 }
 
 base::trace_event::TraceEventHandle AddTraceEventWithThreadIdAndTimestamps(
     char phase,
     const unsigned char* category_group_enabled,
     const char* name,
-    const char* scope,
     uint64_t id,
     base::PlatformThreadId thread_id,
     const base::TimeTicks& timestamp,
-    const base::ThreadTicks& thread_timestamp,
     unsigned int flags) {
   return base::trace_event::AddTraceEventWithThreadIdAndTimestamps(
-      phase, category_group_enabled, name, scope, id, thread_id, timestamp,
-      thread_timestamp, nullptr, flags);
+      phase, category_group_enabled, name, id, thread_id, timestamp, nullptr,
+      flags);
 }
 
 void UpdateTraceEventDuration(const unsigned char* category_group_enabled,

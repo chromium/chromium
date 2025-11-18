@@ -34,7 +34,6 @@
 //                    char phase,
 //                    const unsigned char* category_group_enabled,
 //                    const char* name,
-//                    const char* scope,
 //                    uint64_t id,
 //                    base::trace_event::TraceArguments* args,
 //                    unsigned int flags)
@@ -47,7 +46,6 @@
 //                    char phase,
 //                    const unsigned char* category_group_enabled,
 //                    const char* name,
-//                    const char* scope,
 //                    uint64_t id,
 //                    base::ProcessId process_id,
 //                    base::trace_event::TraceArguments* args,
@@ -61,9 +59,7 @@
 //                    char phase,
 //                    const unsigned char* category_group_enabled,
 //                    const char* name,
-//                    const char* scope,
 //                    uint64_t id,
-//                    uint64_t bind_id,
 //                    base::PlatformThreadId thread_id,
 //                    const TimeTicks& timestamp,
 //                    base::trace_event::TraceArguments* args,
@@ -106,7 +102,6 @@ namespace trace_event_internal {
 // Specify these values when the corresponding argument of AddTraceEvent is not
 // used.
 const int kZeroNumArgs = 0;
-const std::nullptr_t kGlobalScope = nullptr;
 const uint64_t kNoId = 0;
 
 // These functions all internally call
@@ -118,7 +113,6 @@ base::trace_event::TraceEventHandle BASE_EXPORT
 AddTraceEvent(char phase,
               const unsigned char* category_group_enabled,
               const char* name,
-              const char* scope,
               uint64_t id,
               base::trace_event::TraceArguments* args,
               unsigned int flags);
@@ -127,7 +121,6 @@ base::trace_event::TraceEventHandle BASE_EXPORT
 AddTraceEventWithProcessId(char phase,
                            const unsigned char* category_group_enabled,
                            const char* name,
-                           const char* scope,
                            uint64_t id,
                            base::ProcessId process_id,
                            base::trace_event::TraceArguments* args,
@@ -138,9 +131,7 @@ AddTraceEventWithThreadIdAndTimestamp(
     char phase,
     const unsigned char* category_group_enabled,
     const char* name,
-    const char* scope,
     uint64_t id,
-    uint64_t bind_id,
     base::PlatformThreadId thread_id,
     const base::TimeTicks& timestamp,
     base::trace_event::TraceArguments* args,
@@ -151,11 +142,9 @@ AddTraceEventWithThreadIdAndTimestamps(
     char phase,
     const unsigned char* category_group_enabled,
     const char* name,
-    const char* scope,
     uint64_t id,
     base::PlatformThreadId thread_id,
     const base::TimeTicks& timestamp,
-    const base::ThreadTicks& thread_timestamp,
     unsigned int flags);
 
 void BASE_EXPORT

@@ -837,13 +837,13 @@ IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest, AddTraceEventWithProcessId) {
       TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED("memory");
 
   TRACE_EVENT_API_ADD_TRACE_EVENT_WITH_PROCESS_ID(
-      TRACE_EVENT_PHASE_INSTANT, category_group_enabled, "foo_memory_event",
-      nullptr, 0, browser_pid, nullptr, TRACE_EVENT_FLAG_HAS_ID);
+      TRACE_EVENT_PHASE_INSTANT, category_group_enabled, "foo_memory_event", 0,
+      browser_pid, nullptr, TRACE_EVENT_FLAG_HAS_ID);
 
   for (base::ProcessId child_pid : child_pids) {
     TRACE_EVENT_API_ADD_TRACE_EVENT_WITH_PROCESS_ID(
         TRACE_EVENT_PHASE_INSTANT, category_group_enabled, "foo_memory_event",
-        nullptr, 0, child_pid, nullptr, TRACE_EVENT_FLAG_HAS_ID);
+        0, child_pid, nullptr, TRACE_EVENT_FLAG_HAS_ID);
   }
 
   absl::Status status = ttp.StopAndParseTrace();

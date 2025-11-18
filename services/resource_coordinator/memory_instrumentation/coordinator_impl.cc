@@ -535,8 +535,8 @@ void CoordinatorImpl::OnDumpProcessesForTracing(
         TRACE_EVENT_PHASE_MEMORY_DUMP,
         TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(
             base::trace_event::MemoryDumpManager::kTraceCategory),
-        "periodic_interval", trace_event_internal::kGlobalScope, dump_guid,
-        result->pid, &args, TRACE_EVENT_FLAG_HAS_ID);
+        "periodic_interval", dump_guid, result->pid, &args,
+        TRACE_EVENT_FLAG_HAS_ID);
   }
 
   FinalizeGlobalMemoryDumpIfAllManagersReplied();

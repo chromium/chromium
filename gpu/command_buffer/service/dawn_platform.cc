@@ -175,8 +175,7 @@ uint64_t DawnPlatform::AddTraceEvent(
 
   base::trace_event::TraceEventHandle handle =
       TRACE_EVENT_API_ADD_TRACE_EVENT_WITH_THREAD_ID_AND_TIMESTAMP(
-          phase, category_group_enabled, name,
-          trace_event_internal::kGlobalScope, id, trace_event_internal::kNoId,
+          phase, category_group_enabled, name, id,
           base::PlatformThread::CurrentId(), timestamp_tt, &args, flags);
 
   uint64_t result = 0;

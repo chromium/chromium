@@ -239,14 +239,12 @@ void TraceArguments::Reset() {
 
 void TraceArguments::CopyStringsTo(StringStorage* storage,
                                    bool copy_all_strings,
-                                   const char** extra_string1,
-                                   const char** extra_string2) {
+                                   const char** extra_string) {
   // First, compute total allocation size.
   size_t alloc_size = 0;
 
   if (copy_all_strings) {
-    alloc_size +=
-        GetAllocLength(*extra_string1) + GetAllocLength(*extra_string2);
+    alloc_size += GetAllocLength(*extra_string);
     for (size_t n = 0; n < size_; ++n) {
       alloc_size += GetAllocLength(names_[n]);
     }
@@ -265,8 +263,7 @@ void TraceArguments::CopyStringsTo(StringStorage* storage,
     char* ptr = storage->data();
     const char* end = ptr + alloc_size;
     if (copy_all_strings) {
-      CopyTraceEventParameter(&ptr, extra_string1, end);
-      CopyTraceEventParameter(&ptr, extra_string2, end);
+      CopyTraceEventParameter(&ptr, extra_string, end);
       for (size_t n = 0; n < size_; ++n) {
         CopyTraceEventParameter(&ptr, &names_[n], end);
       }
@@ -279,11 +276,8 @@ void TraceArguments::CopyStringsTo(StringStorage* storage,
 #if DCHECK_IS_ON()
     DCHECK_EQ(end, ptr) << "Overrun by " << ptr - end;
     if (copy_all_strings) {
-      if (extra_string1 && *extra_string1) {
-        DCHECK(storage->Contains(*extra_string1));
-      }
-      if (extra_string2 && *extra_string2) {
-        DCHECK(storage->Contains(*extra_string2));
+      if (extra_string && *extra_string) {
+        DCHECK(storage->Contains(*extra_string));
       }
       for (size_t n = 0; n < size_; ++n) {
         DCHECK(storage->Contains(names_[n]));

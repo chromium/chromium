@@ -397,7 +397,7 @@ TEST(TraceArguments, CopyStringsTo_NoStrings) {
   StringStorage storage;
 
   TraceArguments args("arg1", 10, "arg2", 42);
-  args.CopyStringsTo(&storage, false, nullptr, nullptr);
+  args.CopyStringsTo(&storage, false, nullptr);
   EXPECT_TRUE(storage.empty());
   EXPECT_EQ(0U, storage.size());
 }
@@ -408,16 +408,14 @@ TEST(TraceArguments, CopyStringsTo_OnlyArgs) {
   TraceArguments args("arg1", TraceStringWithCopy("Hello"), "arg2",
                       TraceStringWithCopy("World"));
 
-  const char kExtra1[] = "extra1";
-  const char kExtra2[] = "extra2";
-  const char* extra1 = kExtra1;
-  const char* extra2 = kExtra2;
+  const char kExtra[] = "extra";
+  const char* extra = kExtra;
 
   // Types should be copyable strings.
   EXPECT_EQ(TRACE_VALUE_TYPE_COPY_STRING, args.types()[0]);
   UNSAFE_TODO(EXPECT_EQ(TRACE_VALUE_TYPE_COPY_STRING, args.types()[1]));
 
-  args.CopyStringsTo(&storage, false, &extra1, &extra2);
+  args.CopyStringsTo(&storage, false, &extra);
 
   // Storage should be allocated.
   EXPECT_TRUE(storage.data());
@@ -439,25 +437,22 @@ TEST(TraceArguments, CopyStringsTo_OnlyArgs) {
   EXPECT_STREQ("Hello", args.values()[0].as_string);
   UNSAFE_TODO(EXPECT_STREQ("World", args.values()[1].as_string));
 
-  // |extra1| and |extra2| should not be copied.
-  EXPECT_EQ(kExtra1, extra1);
-  EXPECT_EQ(kExtra2, extra2);
+  // `extra` should not be copied.
+  EXPECT_EQ(kExtra, extra);
 }
 
 TEST(TraceArguments, CopyStringsTo_Everything) {
   StringStorage storage;
 
   TraceArguments args("arg1", "Hello", "arg2", "World");
-  const char kExtra1[] = "extra1";
-  const char kExtra2[] = "extra2";
-  const char* extra1 = kExtra1;
-  const char* extra2 = kExtra2;
+  const char kExtra[] = "extra";
+  const char* extra = kExtra;
 
   // Types should be normal strings.
   EXPECT_EQ(TRACE_VALUE_TYPE_STRING, args.types()[0]);
   UNSAFE_TODO(EXPECT_EQ(TRACE_VALUE_TYPE_STRING, args.types()[1]));
 
-  args.CopyStringsTo(&storage, true, &extra1, &extra2);
+  args.CopyStringsTo(&storage, true, &extra);
 
   // Storage should be allocated.
   EXPECT_TRUE(storage.data());
@@ -479,13 +474,10 @@ TEST(TraceArguments, CopyStringsTo_Everything) {
   EXPECT_STREQ("Hello", args.values()[0].as_string);
   UNSAFE_TODO(EXPECT_STREQ("World", args.values()[1].as_string));
 
-  // |extra1| and |extra2| should be copied.
-  EXPECT_NE(kExtra1, extra1);
-  EXPECT_NE(kExtra2, extra2);
-  EXPECT_TRUE(storage.Contains(extra1));
-  EXPECT_TRUE(storage.Contains(extra2));
-  EXPECT_STREQ(kExtra1, extra1);
-  EXPECT_STREQ(kExtra2, extra2);
+  // `extra` should be copied.
+  EXPECT_NE(kExtra, extra);
+  EXPECT_TRUE(storage.Contains(extra));
+  EXPECT_STREQ(kExtra, extra);
 }
 
 }  // namespace base::trace_event
