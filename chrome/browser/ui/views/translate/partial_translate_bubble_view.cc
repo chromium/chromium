@@ -283,7 +283,7 @@ void PartialTranslateBubbleView::ShowOptionsMenu(views::Button* source) {
   options_menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
 
   options_menu_model_->AddItemWithStringId(
-      OptionsMenuItem::CHANGE_TARGET_LANGUAGE,
+      static_cast<int>(OptionsMenuItem::kChangeTargetLanguage),
       IDS_TRANSLATE_BUBBLE_CHANGE_TARGET_LANGUAGE);
   options_menu_model_->SetElementIdentifierAt(
       options_menu_model_->GetItemCount() - 1, kChangeTargetLanguage);
@@ -291,7 +291,7 @@ void PartialTranslateBubbleView::ShowOptionsMenu(views::Button* source) {
   auto source_language =
       model_->GetSourceLanguageNameAt(model_->GetSourceLanguageIndex());
   options_menu_model_->AddItem(
-      OptionsMenuItem::CHANGE_SOURCE_LANGUAGE,
+      static_cast<int>(OptionsMenuItem::kChangeSourceLanguage),
       l10n_util::GetStringFUTF16(
           IDS_PARTIAL_TRANSLATE_BUBBLE_CHANGE_SOURCE_LANGUAGE,
           source_language));
@@ -309,14 +309,14 @@ void PartialTranslateBubbleView::ShowOptionsMenu(views::Button* source) {
 void PartialTranslateBubbleView::ExecuteCommand(int command_id,
                                                 int event_flags) {
   switch (command_id) {
-    case OptionsMenuItem::CHANGE_TARGET_LANGUAGE:
+    case static_cast<int>(OptionsMenuItem::kChangeTargetLanguage):
       translate::ReportPartialTranslateBubbleUiAction(
           translate::PartialTranslateBubbleUiEvent::
               CHANGE_TARGET_LANGUAGE_OPTION_CLICKED);
       SwitchView(PartialTranslateBubbleModel::VIEW_STATE_TARGET_LANGUAGE);
       break;
 
-    case OptionsMenuItem::CHANGE_SOURCE_LANGUAGE:
+    case static_cast<int>(OptionsMenuItem::kChangeSourceLanguage):
       translate::ReportPartialTranslateBubbleUiAction(
           translate::PartialTranslateBubbleUiEvent::
               CHANGE_SOURCE_LANGUAGE_OPTION_CLICKED);

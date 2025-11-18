@@ -141,7 +141,7 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
  protected:
   // Whether a specific button should be inserted on the leading or trailing
   // side.
-  enum ButtonAlignment { ALIGN_LEADING, ALIGN_TRAILING };
+  enum class ButtonAlignment { kAlignLeading, kAlignTrailing };
 
   struct TopAreaPadding {
     int leading;

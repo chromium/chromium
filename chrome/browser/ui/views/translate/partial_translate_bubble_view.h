@@ -47,7 +47,7 @@ class PartialTranslateBubbleView : public LocationBarBubbleDelegateView,
 
  public:
   // Item IDs for the option button's menu.
-  enum OptionsMenuItem { CHANGE_TARGET_LANGUAGE, CHANGE_SOURCE_LANGUAGE };
+  enum class OptionsMenuItem { kChangeTargetLanguage, kChangeSourceLanguage };
 
   // Element IDs for ui::ElementTracker
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kIdentifier);

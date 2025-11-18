@@ -45,7 +45,7 @@ class TabStripActionContainer : public views::View,
  public:
   class TabStripNudgeAnimationSession {
    public:
-    enum class AnimationSessionType { SHOW, HIDE };
+    enum class AnimationSessionType { kShow, kHide };
 
     TabStripNudgeAnimationSession(TabStripNudgeButton* button,
                                   TabStripActionContainer* container,

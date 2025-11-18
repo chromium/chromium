@@ -182,7 +182,7 @@ class FullscreenController : public ExclusiveAccessControllerBase {
  private:
   friend class ExclusiveAccessTest;
 
-  enum FullscreenInternalOption { BROWSER, TAB };
+  enum class FullscreenInternalOption { kBrowser, kTab };
 
   // Posts a task to notify observers of the fullscreen state change.
   void PostFullscreenChangeNotification();

@@ -107,7 +107,7 @@ TabStripActionContainer::TabStripNudgeAnimationSession::
       on_animation_ended_(std::move(on_animation_ended)),
       is_opacity_animated_(is_opacity_animated),
       is_executing_show_or_hide_(false) {
-  if (session_type_ == AnimationSessionType::HIDE) {
+  if (session_type_ == AnimationSessionType::kHide) {
     expansion_animation_.Reset(1);
     if (is_opacity_animated) {
       opacity_animation_.Reset(1);
@@ -120,7 +120,7 @@ TabStripActionContainer::TabStripNudgeAnimationSession::
 
 void TabStripActionContainer::TabStripNudgeAnimationSession::Start() {
   if (session_type_ ==
-      TabStripNudgeAnimationSession::AnimationSessionType::SHOW) {
+      TabStripNudgeAnimationSession::AnimationSessionType::kShow) {
     Show();
   } else {
     Hide();
@@ -171,11 +171,11 @@ void TabStripActionContainer::TabStripNudgeAnimationSession::Hide() {
   base::AutoReset<bool> resetter(&is_executing_show_or_hide_, true);
   // Animate and hide existing chip.
   if (session_type_ ==
-      TabStripNudgeAnimationSession::AnimationSessionType::SHOW) {
+      TabStripNudgeAnimationSession::AnimationSessionType::kShow) {
     if (is_opacity_animated_ && opacity_animation_delay_timer_.IsRunning()) {
       opacity_animation_delay_timer_.FireNow();
     }
-    session_type_ = TabStripNudgeAnimationSession::AnimationSessionType::HIDE;
+    session_type_ = TabStripNudgeAnimationSession::AnimationSessionType::kHide;
   }
 
   expansion_animation_.SetTweenType(gfx::Tween::Type::ACCEL_20_DECEL_100);
@@ -887,7 +887,7 @@ void TabStripActionContainer::ExecuteShowTabStripNudge(
   if (!tab_strip_controller_->CanShowModalUI() &&
       !(animation_session_ &&
         animation_session_->session_type() ==
-            TabStripNudgeAnimationSession::AnimationSessionType::HIDE &&
+            TabStripNudgeAnimationSession::AnimationSessionType::kHide &&
         animation_session_->button() == button)) {
     return;
   }
@@ -913,7 +913,8 @@ void TabStripActionContainer::ExecuteShowTabStripNudge(
 
   if (!ButtonOwnsAnimation(button)) {
     animation_session_ = std::make_unique<TabStripNudgeAnimationSession>(
-        button, this, TabStripNudgeAnimationSession::AnimationSessionType::SHOW,
+        button, this,
+        TabStripNudgeAnimationSession::AnimationSessionType::kShow,
         base::BindOnce(&TabStripActionContainer::OnAnimationSessionEnded,
                        base::Unretained(this)),
         (button != glic_button_ && button != glic_actor_task_icon_));
@@ -931,7 +932,7 @@ void TabStripActionContainer::ExecuteHideTabStripNudge(
   // create a new animation session.
   if (animation_session_ &&
       animation_session_->session_type() ==
-          TabStripNudgeAnimationSession::AnimationSessionType::SHOW &&
+          TabStripNudgeAnimationSession::AnimationSessionType::kShow &&
       animation_session_->button() == button) {
     hide_tab_strip_nudge_timer_.Stop();
     animation_session_->Hide();
@@ -956,7 +957,8 @@ void TabStripActionContainer::ExecuteHideTabStripNudge(
   hide_tab_strip_nudge_timer_.Stop();
   if (!ButtonOwnsAnimation(button)) {
     animation_session_ = std::make_unique<TabStripNudgeAnimationSession>(
-        button, this, TabStripNudgeAnimationSession::AnimationSessionType::HIDE,
+        button, this,
+        TabStripNudgeAnimationSession::AnimationSessionType::kHide,
         base::BindOnce(&TabStripActionContainer::OnAnimationSessionEnded,
                        base::Unretained(this)),
         (button != glic_button_ && button != glic_actor_task_icon_));
@@ -1057,7 +1059,7 @@ void TabStripActionContainer::OnAnimationSessionEnded() {
   // showing other modal UIs.
   if (animation_session_ &&
       animation_session_->session_type() ==
-          TabStripNudgeAnimationSession::AnimationSessionType::HIDE) {
+          TabStripNudgeAnimationSession::AnimationSessionType::kHide) {
     scoped_tab_strip_modal_ui_.reset();
 
     if (locked_expansion_button_) {

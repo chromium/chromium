@@ -313,12 +313,12 @@ void OpaqueBrowserFrameViewLayout::LayoutWindowControls() {
 
   if (delegate_->ShouldShowCaptionButtons()) {
     for (const auto& button : leading_buttons_) {
-      ConfigureButton(button, ALIGN_LEADING);
+      ConfigureButton(button, ButtonAlignment::kAlignLeading);
       std::erase(buttons_not_shown, button);
     }
 
     for (const auto& button : base::Reversed(trailing_buttons_)) {
-      ConfigureButton(button, ALIGN_TRAILING);
+      ConfigureButton(button, ButtonAlignment::kAlignTrailing);
       std::erase(buttons_not_shown, button);
     }
   }
@@ -504,15 +504,16 @@ void OpaqueBrowserFrameViewLayout::SetBoundsForButton(
     DCHECK_EQ(views::ImageButton::kViewClassName, button->GetClassName());
     auto* const image_button = static_cast<views::ImageButton*>(button);
     image_button->SetImageHorizontalAlignment(
-        (alignment == ALIGN_LEADING) ? views::ImageButton::ALIGN_RIGHT
-                                     : views::ImageButton::ALIGN_LEFT);
+        (alignment == ButtonAlignment::kAlignLeading)
+            ? views::ImageButton::ALIGN_RIGHT
+            : views::ImageButton::ALIGN_LEFT);
     image_button->SetImageVerticalAlignment(views::ImageButton::ALIGN_BOTTOM);
   }
 
   TopAreaPadding top_area_padding = GetTopAreaPadding();
 
   switch (alignment) {
-    case ALIGN_LEADING: {
+    case ButtonAlignment::kAlignLeading: {
       int extra_width = top_area_padding.leading;
       int button_start_spacing =
           GetWindowCaptionSpacing(button_id, true, !placed_leading_button_);
@@ -540,7 +541,7 @@ void OpaqueBrowserFrameViewLayout::SetBoundsForButton(
       placed_leading_button_ = true;
       break;
     }
-    case ALIGN_TRAILING: {
+    case ButtonAlignment::kAlignTrailing: {
       int extra_width = top_area_padding.trailing;
       int button_start_spacing =
           GetWindowCaptionSpacing(button_id, true, !placed_trailing_button_);
