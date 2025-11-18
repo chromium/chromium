@@ -82,6 +82,12 @@ content::WebContents* WebUIContentsWrapper::Host::AddNewContents(
   return nullptr;
 }
 
+bool WebUIContentsWrapper::Host::PreHandleGestureEvent(
+    content::WebContents* source,
+    const blink::WebGestureEvent& event) {
+  return false;
+}
+
 WebUIContentsWrapper::WebUIContentsWrapper(const GURL& webui_url,
                                            Profile* profile,
                                            int task_manager_string_id,
@@ -227,6 +233,12 @@ content::WebContents* WebUIContentsWrapper::AddNewContents(
                                        target_url, disposition, window_features,
                                        user_gesture, was_blocked)
                : nullptr;
+}
+
+bool WebUIContentsWrapper::PreHandleGestureEvent(
+    content::WebContents* source,
+    const blink::WebGestureEvent& event) {
+  return host_ ? host_->PreHandleGestureEvent(source, event) : false;
 }
 
 void WebUIContentsWrapper::PrimaryPageChanged(content::Page& page) {

@@ -62,6 +62,8 @@ class OmniboxPopupWebUIBaseContent : public views::WebView,
                              const gfx::Size& new_size) override;
   bool HandleKeyboardEvent(content::WebContents* source,
                            const input::NativeWebKeyboardEvent& event) override;
+  bool PreHandleGestureEvent(content::WebContents* source,
+                             const blink::WebGestureEvent& event) override;
 
  protected:
   // Set up the WebUI content page and hook up the Omnibox handlers.
