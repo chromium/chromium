@@ -102,9 +102,7 @@ void HTMLGeolocationElement::AttributeChanged(
     HTMLElement::AttributeChanged(params);
     return;
   } else if (params.name == html_names::kAutolocateAttr) {
-    if (!params.new_value) {
-      did_autolocate_trigger_request = false;
-    } else {
+    if (params.new_value) {
       MaybeTriggerAutolocate(ForceAutolocate::kNo);
     }
   } else if (params.name == html_names::kWatchAttr) {
@@ -142,7 +140,6 @@ void HTMLGeolocationElement::OnPermissionStatusChange(
   bool has_made_permission_decision_granted = PermissionsGranted();
   HTMLPermissionElement::OnPermissionStatusChange(permission_name, status);
   if (status != mojom::blink::PermissionStatus::GRANTED) {
-    did_autolocate_trigger_request = false;
     ClearWatch();
     return;
   }

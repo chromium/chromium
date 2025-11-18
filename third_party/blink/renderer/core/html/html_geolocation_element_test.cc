@@ -535,6 +535,8 @@ TEST_F(HTMLGeolocationElementTest,
   // 3. Permission is then revoked by the user (e.g. in page settings).
   // 4. The user clicks the element to grant permission again.
   // 5. After permission is granted, request location should trigger again.
+  // 6. Another permission change event from Ask->Granted should not trigger
+  //    request location.
 
   // Start with permission GRANTED.
   CachedPermissionStatus::From(GetDocument().domWindow())
@@ -572,6 +574,19 @@ TEST_F(HTMLGeolocationElementTest,
   // Request location should trigger again.
   CheckAppearance(geolocation_element, kUsingLocationString,
                   /*is_spinning*/ true);
+  // Let it finish.
+  task_environment().FastForwardBy(kTimeToSimulateCallback);
+  geolocation_element->CurrentPositionCallback(base::ok(nullptr));
+  CheckAppearance(geolocation_element, kGeolocationString,
+                  /*is_spinning*/ false);
+  permission_service()->NotifyPermissionStatusChange(
+      PermissionName::GEOLOCATION, MojoPermissionStatus::ASK);
+  permission_service()->NotifyPermissionStatusChange(
+      PermissionName::GEOLOCATION, MojoPermissionStatus::GRANTED);
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  CheckAppearance(geolocation_element, kGeolocationString,
+                  /*is_spinning*/ false);
 }
 
 TEST_F(HTMLGeolocationElementTest, PermissionStatusChangeAfterDecided) {
