@@ -265,7 +265,7 @@
   E_CPONLY(kColorComposeboxOutlineHcm) \
   E_CPONLY(kColorComposeboxRecentTabChipOutline) \
   E_CPONLY(kColorComposeboxScrimBackground) \
-  E_CPONLY(kColorComposeboxSubmitButton) \
+  E_CPONLY(kColorComposeboxSubmitButtonBackground) \
   E_CPONLY(kColorComposeboxSuggestionActivity) \
   E_CPONLY(kColorComposeboxTabSelectorButtonSelected) \
   E_CPONLY(kColorComposeboxTypeAhead) \
@@ -380,6 +380,7 @@
   E_CPONLY(kColorOmniboxComposeboxFaviconBackground) \
   E_CPONLY(kColorOmniboxComposeboxForegroundDisabled) \
   E_CPONLY(kColorOmniboxComposeboxPrimaryAction) \
+  E_CPONLY(kColorOmniboxComposeboxSubmitButtonBackground) \
   E_CPONLY(kColorOmniboxContextEntrypointHoverBackground) \
   E_CPONLY(kColorOmniboxContextEntrypointText) \
   E_CPONLY(kColorOmniboxIconBackground) \

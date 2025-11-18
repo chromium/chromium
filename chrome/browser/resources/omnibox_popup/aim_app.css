@@ -19,8 +19,8 @@ cr-composebox {
   --cr-composebox-background-color: var(--color-omnibox-results-background);
   --color-composebox-background: var(--color-omnibox-results-background);
   --color-composebox-cancel-button: unset; /* Lens only */
-  --color-composebox-cancel-button-light: var(--color-omnibox-composebox-favicon-background);
-  --color-composebox-context-entrypoint-hover-background: var(--color-omnibox-context-entrypoint-hover-background);
+  --color-composebox-cancel-button-light: var(--color-omnibox-text-dimmed);
+  --color-composebox-context-entrypoint-hover-background: var(--color-omnibox-action-icon-hover);
   --color-composebox-context-entrypoint-text-disabled: var(--color-omnibox-composebox-foreground-disabled);
   --color-composebox-file-image-overlay: var(--color-omnibox-text);
   --color-composebox-font: var(--color-omnibox-text);
@@ -31,13 +31,15 @@ cr-composebox {
   --color-composebox-pdf-chip-icon: var(--color-omnibox-text-subtle);
   --color-composebox-recent-tab-chip-outline: unset; /* Omnibox has no recent tab chip. */
   --color-composebox-scrim-background: unset; /* No scrim. */
-  --color-composebox-submit-button: var(--color-omnibox-composebox-primary-action);
+  --color-composebox-submit-button-background: var(--color-omnibox-composebox-submit-button-background);
+  --color-composebox-submit-button-hover: var(--color-omnibox-action-icon-hover);
   --color-composebox-suggestion-activity: unset; /* No activity suggestion disclaimer. */
   --color-composebox-type-ahead: var(--color-omnibox-composebox-foreground-disabled);
   --color-composebox-type-ahead-chip: var(--color-omnibox-composebox-foreground-disabled);
   --color-composebox-upload-button: var(--omnibox-results-chip-background);
   --color-composebox-upload-button-disabled: var(--color-omnibox-composebox-foreground-disabled);
   --composebox-context-menu-entrypoint-button-color: var(--color-omnibox-composebox-primary-action);
+  --cr-composebox-outline-hcm: none;
 
   position: relative;
 }
