@@ -1569,6 +1569,9 @@ public final class Fido2Api {
                     case 6:
                         details.mIsPayment = parcel.readInt() != 0;
                         break;
+                    case 7:
+                        details.mLastUsedTimeMs = parcel.readLong();
+                        break;
                     default:
                         // unknown tag. Skip over it.
                         parcel.setDataPosition(addLengthToParcelPosition(header.second, parcel));

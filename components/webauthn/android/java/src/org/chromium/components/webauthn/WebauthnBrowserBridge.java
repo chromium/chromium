@@ -251,6 +251,11 @@ public class WebauthnBrowserBridge {
     }
 
     @CalledByNative
+    private static long getWebauthnCredentialDetailsLastUsedTimeMs(WebauthnCredentialDetails cred) {
+        return cred.mLastUsedTimeMs;
+    }
+
+    @CalledByNative
     private static SelectedCredential createSelectedPasswordCredential(
             String username, String password) {
         return new SelectedCredential(

@@ -877,17 +877,20 @@ TEST_F(PasswordDetailsTableViewControllerTest, SortsCredentialsByHiddenState) {
       PasskeyCredential::Source::kGooglePasswordManager;
   PasskeyCredential::RpId rp_id("www.example.com");
   base::Time creation_time = base::Time::Now();
+  base::Time last_used_time = base::Time::Now();
   PasskeyCredential hidden_passkey_credential(
       source, rp_id, PasskeyCredential::CredentialId({'c', 'r', 'e', 'd', '1'}),
       PasskeyCredential::UserId({'u', 's', 'e', 'r', '1'}),
       PasskeyCredential::Username("username1"),
       PasskeyCredential::DisplayName("display_name1"), creation_time,
+      last_used_time,
       /*hidden=*/true);
   PasskeyCredential passkey_credential(
       source, rp_id, PasskeyCredential::CredentialId({'c', 'r', 'e', 'd', '2'}),
       PasskeyCredential::UserId({'u', 's', 'e', 'r', '2'}),
       PasskeyCredential::Username("username2"),
       PasskeyCredential::DisplayName("display_name2"), creation_time,
+      last_used_time,
       /*hidden=*/false);
 
   NSArray<CredentialDetails*>* passkeys = @[

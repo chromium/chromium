@@ -789,6 +789,7 @@ public class Fido2ApiTestHelper {
         credential.mCredentialId = new byte[] {8, 7, 6};
         credential.mIsDiscoverable = true;
         credential.mIsPayment = false;
+        credential.mLastUsedTimeMs = 42;
         return credential;
     }
 

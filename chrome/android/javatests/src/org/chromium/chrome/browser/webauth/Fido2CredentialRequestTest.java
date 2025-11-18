@@ -431,16 +431,19 @@ public class Fido2CredentialRequestTest {
                 Assert.assertEquals(mExpectedCredentialList.size(), credentialList.size());
                 for (int i = 0; i < credentialList.size(); i++) {
                     Assert.assertEquals(
-                            mExpectedCredentialList.get(0).mUserName,
-                            credentialList.get(0).mUserName);
+                            mExpectedCredentialList.get(i).mUserName,
+                            credentialList.get(i).mUserName);
                     Assert.assertEquals(
-                            mExpectedCredentialList.get(0).mUserDisplayName,
-                            credentialList.get(0).mUserDisplayName);
+                            mExpectedCredentialList.get(i).mUserDisplayName,
+                            credentialList.get(i).mUserDisplayName);
                     Assert.assertArrayEquals(
-                            mExpectedCredentialList.get(0).mCredentialId,
-                            credentialList.get(0).mCredentialId);
+                            mExpectedCredentialList.get(i).mCredentialId,
+                            credentialList.get(i).mCredentialId);
                     Assert.assertArrayEquals(
-                            mExpectedCredentialList.get(0).mUserId, credentialList.get(0).mUserId);
+                            mExpectedCredentialList.get(i).mUserId, credentialList.get(i).mUserId);
+                    Assert.assertEquals(
+                            mExpectedCredentialList.get(i).mLastUsedTimeMs,
+                            credentialList.get(i).mLastUsedTimeMs);
                 }
             }
 

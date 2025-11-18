@@ -20,6 +20,7 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/time/time.h"
 #include "components/webauthn/android/webauthn_client_android.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -58,6 +59,13 @@ device::DiscoverableCredentialMetadata ConvertJavaCredentialDetailsToMetadata(
       env,
       Java_WebauthnBrowserBridge_getWebauthnCredentialDetailsUserDisplayName(
           env, j_credential));
+  int64_t last_used_time_ms =
+      Java_WebauthnBrowserBridge_getWebauthnCredentialDetailsLastUsedTimeMs(
+          env, j_credential);
+  if (last_used_time_ms != 0) {
+    credential.last_used_time =
+        base::Time::FromMillisecondsSinceUnixEpoch(last_used_time_ms);
+  }
   return credential;
 }
 

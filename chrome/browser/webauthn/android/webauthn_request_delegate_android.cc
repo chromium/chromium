@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -88,7 +89,8 @@ void WebAuthnRequestDelegateAndroid::OnWebAuthnRequestPending(
             PasskeyCredential::UserId(credential.user.id),
             PasskeyCredential::Username(credential.user.name.value_or("")),
             PasskeyCredential::DisplayName(
-                credential.user.display_name.value_or("")));
+                credential.user.display_name.value_or("")),
+            /*creation_time=*/std::nullopt, credential.last_used_time);
       });
 
   bool is_immediate = false;

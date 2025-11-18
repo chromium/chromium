@@ -31,12 +31,14 @@ constexpr std::array<const uint8_t, 4> kUserId1 = {'1', '2', '3', '4'};
 constexpr char kUserName1[] = "reimu";
 constexpr char kUserDisplayName1[] = "Reimu Hakurei";
 constexpr int kCreationEpochSecs1 = 1;
+constexpr int kLastUsedEpochSecs1 = 5;
 
 constexpr std::array<const uint8_t, 4> kCredentialId2 = {'e', 'f', 'g', 'h'};
 constexpr std::array<const uint8_t, 4> kUserId2 = {'5', '6', '7', '8'};
 constexpr char kUserName2[] = "marisa";
 constexpr char kUserDisplayName2[] = "Marisa Kirisame";
 constexpr int kCreationEpochSecs2 = 2;
+constexpr int kLastUsedEpochSecs2 = 6;
 
 constexpr std::array<const uint8_t, 4> kCredentialIdShadow1 = {'i', 'j', 'k'};
 constexpr std::array<const uint8_t, 4> kCredentialIdShadow2 = {'l', 'm', 'n'};
@@ -62,6 +64,8 @@ TEST_F(PasskeyCredentialTest, FromCredentialSpecifics) {
   credential1.set_user_name(kUserName1);
   credential1.set_user_display_name(kUserDisplayName1);
   credential1.set_creation_time(kCreationEpochSecs1 * 1000);
+  credential1.set_last_used_time_windows_epoch_micros(
+      base::Seconds(kLastUsedEpochSecs1).InMicroseconds());
 
   sync_pb::WebauthnCredentialSpecifics credential2;
   credential2.set_sync_id(base::RandBytesAsString(16));
@@ -71,6 +75,8 @@ TEST_F(PasskeyCredentialTest, FromCredentialSpecifics) {
   credential2.set_user_name(kUserName2);
   credential2.set_user_display_name(kUserDisplayName2);
   credential2.set_creation_time(kCreationEpochSecs2 * 1000);
+  credential2.set_last_used_time_windows_epoch_micros(
+      base::Seconds(kLastUsedEpochSecs2).InMicroseconds());
   credential2.set_hidden(true);
 
   // Shadow the first credential.
@@ -85,6 +91,8 @@ TEST_F(PasskeyCredentialTest, FromCredentialSpecifics) {
   credential1_shadow.add_newly_shadowed_credential_ids(
       credential1.credential_id());
   credential1_shadow.set_creation_time(kCreationEpochSecs1 * 1000);
+  credential1_shadow.set_last_used_time_windows_epoch_micros(
+      kLastUsedEpochSecs1 * 1000000);
 
   std::vector<PasskeyCredential> credentials =
       PasskeyCredential::FromCredentialSpecifics(std::vector{
@@ -104,6 +112,8 @@ TEST_F(PasskeyCredentialTest, FromCredentialSpecifics) {
                             PasskeyCredential::Username(kUserName1),
                             PasskeyCredential::DisplayName(kUserDisplayName1),
                             base::Time::FromTimeT(kCreationEpochSecs1),
+                            base::Time::FromDeltaSinceWindowsEpoch(
+                                base::Seconds(kLastUsedEpochSecs1)),
                             /*hidden=*/false),
           PasskeyCredential(
               PasskeyCredential::Source::kAndroidPhone,
@@ -113,6 +123,8 @@ TEST_F(PasskeyCredentialTest, FromCredentialSpecifics) {
               PasskeyCredential::Username(kUserName2),
               PasskeyCredential::DisplayName(kUserDisplayName2),
               base::Time::FromTimeT(kCreationEpochSecs2),
+              base::Time::FromDeltaSinceWindowsEpoch(
+                  base::Seconds(kLastUsedEpochSecs2)),
               /*hidden=*/true)));
 }
 
