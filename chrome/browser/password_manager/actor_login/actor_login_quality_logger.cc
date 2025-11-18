@@ -7,11 +7,42 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_util.h"
+#include "chrome/browser/browser_process.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
+#include "components/translate/core/browser/translate_manager.h"
+#include "components/variations/service/variations_service.h"
+#include "content/public/browser/web_contents.h"
 
-ActorLoginQualityLogger::ActorLoginQualityLogger() = default;
+ActorLoginQualityLogger::ActorLoginQualityLogger() {
+  variations::VariationsService* variation_service =
+      g_browser_process->variations_service();
+  if (variation_service) {
+    log_data_.set_location(
+        base::ToUpperASCII(variation_service->GetLatestCountry()));
+  }
+}
+
 ActorLoginQualityLogger::~ActorLoginQualityLogger() = default;
+
+void ActorLoginQualityLogger::SetDomainAndLanguage(
+    translate::TranslateManager* translate_manager,
+    const GURL& url) {
+  // This should only be set once per log entry, by the first
+  // request.
+  if (log_data_.has_domain()) {
+    return;
+  }
+  log_data_.set_domain(
+      affiliations::GetExtendedTopLevelDomain(url,
+                                              /*psl_extensions=*/{}));
+  if (translate_manager) {
+    log_data_.set_language(
+        translate_manager->GetLanguageState()->source_language());
+  }
+}
 
 void ActorLoginQualityLogger::SetGetCredentialsDetails(
     optimization_guide::proto::ActorLoginQuality_GetCredentialsDetails

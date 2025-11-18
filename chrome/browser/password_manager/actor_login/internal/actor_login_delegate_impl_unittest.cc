@@ -53,6 +53,8 @@ using password_manager::PasswordFormManager;
 using password_manager::PasswordManagerDriver;
 using password_manager::PasswordManagerInterface;
 using password_manager::PasswordSaveManagerImpl;
+using testing::_;
+using testing::Eq;
 using testing::NiceMock;
 using testing::Return;
 using testing::ReturnRef;
@@ -246,7 +248,7 @@ class ActorLoginDelegateImplTest : public ChromeRenderViewHostTestHarness {
 TEST_F(ActorLoginDelegateImplTest, GetCredentialsSuccess_FeatureOn) {
   base::test::ScopedFeatureList scoped_feature_list(
       password_manager::features::kActorLogin);
-  SetUpActorCredentialFillerDeps();
+  SetUpGetCredentialsDeps();
   EXPECT_CALL(mock_form_cache_, GetFormManagers()).Times(1);
 
   base::test::TestFuture<CredentialsOrError> future;
@@ -254,6 +256,20 @@ TEST_F(ActorLoginDelegateImplTest, GetCredentialsSuccess_FeatureOn) {
 
   ASSERT_TRUE(future.Get().has_value());
   EXPECT_TRUE(future.Get().value().empty());
+}
+
+TEST_F(ActorLoginDelegateImplTest, GetCredentialsLogsDomainAndLanguage) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      password_manager::features::kActorLogin);
+  SetUpGetCredentialsDeps();
+  EXPECT_CALL(mock_form_cache_, GetFormManagers()).Times(1);
+
+  const GURL kUrl = GURL("https://example.com");
+  content::WebContentsTester* web_contents_tester =
+      content::WebContentsTester::For(web_contents());
+  web_contents_tester->NavigateAndCommit(kUrl);
+  EXPECT_CALL(*mqls_logger(), SetDomainAndLanguage(_, Eq(kUrl)));
+  delegate_->GetCredentials(mqls_logger(), base::DoNothing());
 }
 
 TEST_F(ActorLoginDelegateImplTest, GetCredentials_FeatureOff) {
@@ -320,6 +336,24 @@ TEST_F(ActorLoginDelegateImplTest, AttemptLogin_FeatureOn) {
 
   ASSERT_TRUE(future.Get().has_value());
   EXPECT_EQ(future.Get().value(), LoginStatusResult::kErrorNoSigninForm);
+}
+
+TEST_F(ActorLoginDelegateImplTest, AttemptLoginLogsDomainAndLanguage) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      password_manager::features::kActorLogin);
+  GURL url = GURL("https://example.com");
+  url::Origin origin = url::Origin::Create(url);
+  Credential credential = CreateTestCredential(u"username", url, origin);
+
+  SetUpActorCredentialFillerDeps();
+
+  EXPECT_CALL(mock_form_cache_, GetFormManagers()).Times(1);
+
+  content::WebContentsTester* web_contents_tester =
+      content::WebContentsTester::For(web_contents());
+  web_contents_tester->NavigateAndCommit(url);
+  EXPECT_CALL(*mqls_logger(), SetDomainAndLanguage(_, Eq(url)));
+  delegate_->AttemptLogin(credential, false, mqls_logger(), base::DoNothing());
 }
 
 TEST_F(ActorLoginDelegateImplTest, AttemptLoginServiceBusy_FeatureOn) {

@@ -18,6 +18,7 @@ source_set("delegate") {
 
   deps = [
     "//base",
+    "//chrome/browser/translate",
     "//chrome/browser/ui/browser_window",
     "//chrome/common:buildflags",
     "//components/password_manager/content/browser",
