@@ -34,7 +34,7 @@
             [[AIPrototypingFreeformViewController alloc]
                 initForFeature:AIPrototypingFeature::kFreeform],
             [[AIPrototypingTabOrganizationViewController alloc]
-                initForFeature:AIPrototypingFeature::kTabOrganization],
+                initForFeature:AIPrototypingFeature::kSmartTabGrouping],
             [[AIPrototypingCalendarViewController alloc]
                 initForFeature:AIPrototypingFeature::kEnhancedCalendar],
             nil];

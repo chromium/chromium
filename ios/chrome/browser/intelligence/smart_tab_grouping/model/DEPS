@@ -1,0 +1,7 @@
+include_rules = [
+  "+ios/chrome/browser/intelligence/proto_wrappers",
+  "+ios/chrome/browser/optimization_guide/model",
+  "+ios/chrome/browser/optimization_guide/mojom",
+  "+ios/chrome/browser/signin/model/identity_manager_factory.h",
+  "+mojo/public/cpp/base/proto_wrapper.h",
+]
