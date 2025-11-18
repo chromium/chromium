@@ -357,7 +357,7 @@ using signin_metrics::PromoAction;
 - (void)start {
   // `signinCompletion` needs to be set by the owner to know when the sign-in
   // is finished.
-  DCHECK(self.signinCompletion);
+  CHECK(self.signinCompletion, base::NotFatalUntil::M151);
 }
 
 #pragma mark - AnimatedCoordinator
@@ -372,16 +372,17 @@ using signin_metrics::PromoAction;
 - (void)runCompletionWithSigninResult:(SigninCoordinatorResult)signinResult
                    completionIdentity:(id<SystemIdentity>)completionIdentity {
   // `identity` is set, if and only if the sign-in is successful.
-  DCHECK(
-      ((signinResult == SigninCoordinatorResultSuccess ||
-        signinResult == SigninCoordinatorProfileSwitch) &&
-       completionIdentity) ||
-      ((signinResult != SigninCoordinatorResultSuccess) && !completionIdentity))
+  CHECK(((signinResult == SigninCoordinatorResultSuccess ||
+          signinResult == SigninCoordinatorProfileSwitch) &&
+         completionIdentity) ||
+            ((signinResult != SigninCoordinatorResultSuccess) &&
+             !completionIdentity),
+        base::NotFatalUntil::M151)
       << "signinResult: " << signinResult
       << ", identity: " << (completionIdentity ? "YES" : "NO");
   // If `self.signinCompletion` is nil, this method has been probably called
   // twice.
-  DCHECK(self.signinCompletion);
+  CHECK(self.signinCompletion, base::NotFatalUntil::M151);
   SigninCoordinatorCompletionCallback signinCompletion = self.signinCompletion;
   // The owner should call the stop method, during the callback.
   // `self.signinCompletion` needs to be set to nil before calling it.
