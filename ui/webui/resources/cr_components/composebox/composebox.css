@@ -287,7 +287,7 @@ search-animated-glow {
   color: var(--color-composebox-type-ahead-chip);
   font-size: 12px;
   font-weight: 700;
-  line-height: 28px;
+  line-height: 24px;
   margin-left: 4px;
   padding: 6px 8px;
 }
