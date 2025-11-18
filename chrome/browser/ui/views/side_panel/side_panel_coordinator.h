@@ -46,7 +46,10 @@ class SidePanelCoordinator final : public SidePanelUIBase,
   void TearDownPreBrowserWindowDestruction();
 
   // SidePanelUI:
-  void Close(SidePanelEntry::PanelType panel_type) override;
+  using SidePanelUI::Close;
+  void Close(SidePanelEntry::PanelType panel_type,
+             SidePanelEntryHideReason reason,
+             bool suppress_animations) override;
   void Toggle(SidePanelEntryKey key,
               SidePanelUtil::SidePanelOpenTrigger open_trigger) override;
   void ShowFrom(SidePanelEntryKey entry_key,
@@ -54,10 +57,6 @@ class SidePanelCoordinator final : public SidePanelUIBase,
 
   // SidePanelUIBase:
   using SidePanelUIBase::Show;
-  void Close(bool suppress_animations,
-             SidePanelEntry::PanelType panel_entry,
-             SidePanelEntryHideReason reason =
-                 SidePanelEntryHideReason::kSidePanelClosed) override;
   void Show(const UniqueKey& entry,
             std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger,
             bool suppress_animations) override;

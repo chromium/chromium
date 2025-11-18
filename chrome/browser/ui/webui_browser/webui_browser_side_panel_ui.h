@@ -23,7 +23,9 @@ class WebUIBrowserSidePanelUI : public SidePanelUIBase {
   ~WebUIBrowserSidePanelUI() override;
 
   // SidePanelUI:
-  void Close(SidePanelEntry::PanelType panel_type) override;
+  void Close(SidePanelEntry::PanelType panel_type,
+             SidePanelEntryHideReason reason,
+             bool suppress_animations) override;
   void Toggle(SidePanelEntryKey key,
               SidePanelOpenTrigger open_trigger) override;
   void ShowFrom(SidePanelEntryKey entry_key,
@@ -38,9 +40,6 @@ class WebUIBrowserSidePanelUI : public SidePanelUIBase {
 
  private:
   // SidePanelUIBase:
-  void Close(bool suppress_animations,
-             SidePanelEntry::PanelType panel_type,
-             SidePanelEntryHideReason reason) override;
   void Show(const UniqueKey& entry,
             std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger,
             bool suppress_animations) override;

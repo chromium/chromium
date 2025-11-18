@@ -12,8 +12,9 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/extension_id.h"
@@ -112,11 +113,15 @@ bool SidePanelRegistry::Deregister(const SidePanelEntry::Key& key) {
   // TODO(https://crbug.com/360163254): This is nullptr in
   // BrowserWithTestWindowTest. When the test suite goes away the nullptr check
   // can be removed.
-  if (auto* coordinator = GetCoordinator()) {
-    bool for_tab = get_scope_type() == SidePanelEntryScope::ScopeType::kTab;
+  if (auto* const side_panel_ui =
+          GetBrowserWindowInterface().GetFeatures().side_panel_ui()) {
+    const bool for_tab =
+        get_scope_type() == SidePanelEntryScope::ScopeType::kTab;
     // If the entry with the same key and scope is showing, synchronously close.
-    if (coordinator->IsSidePanelEntryShowing(key, for_tab)) {
-      coordinator->Close(/*suppress_animations=*/true, panel_type);
+    if (side_panel_ui->IsSidePanelEntryShowing(key, for_tab)) {
+      side_panel_ui->Close(panel_type,
+                           SidePanelEntryHideReason::kSidePanelClosed,
+                           /*suppress_animations=*/true);
     }
   }
 
@@ -152,8 +157,4 @@ const BrowserWindowInterface& SidePanelRegistry::GetBrowserWindowInterface()
              ? *std::get<tabs::TabInterface*>(owner_)
                     ->GetBrowserWindowInterface()
              : *std::get<BrowserWindowInterface*>(owner_);
-}
-
-SidePanelCoordinator* SidePanelRegistry::GetCoordinator() {
-  return GetBrowserWindowInterface().GetFeatures().side_panel_coordinator();
 }

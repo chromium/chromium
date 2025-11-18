@@ -16,8 +16,6 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_scope.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
-class SidePanelCoordinator;
-
 namespace content {
 class WebContents;
 }  // namespace content
@@ -79,8 +77,6 @@ class SidePanelRegistry final : public SidePanelEntryObserver,
   const BrowserWindowInterface& GetBrowserWindowInterface() const override;
 
  private:
-  SidePanelCoordinator* GetCoordinator();
-
   // The active entry hosted in the side panel used to determine what entry
   // should be visible. This is reset by the coordinator when the panel is
   // closed. When there are multiple registries, this may not be the entry

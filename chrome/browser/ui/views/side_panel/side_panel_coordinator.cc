@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_waiter.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_header.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_header_controller.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
@@ -52,14 +53,10 @@ void SidePanelCoordinator::Init(Browser* browser) {
 
 void SidePanelCoordinator::TearDownPreBrowserWindowDestruction() {
   for (auto panel_type : SidePanelEntry::PanelTypes::All()) {
-    Close(/*suppress_animations=*/true, panel_type);
+    Close(panel_type, SidePanelEntryHideReason::kSidePanelClosed,
+          /*suppress_animations=*/true);
   }
   side_panel_toolbar_pinning_controller_.reset();
-}
-
-void SidePanelCoordinator::Close(SidePanelEntry::PanelType panel_type) {
-  Close(/*suppress_animations=*/false, panel_type,
-        SidePanelEntryHideReason::kSidePanelClosed);
 }
 
 void SidePanelCoordinator::Toggle(
@@ -143,10 +140,9 @@ void SidePanelCoordinator::Show(
                               ? SidePanelEntry::PanelType::kToolbar
                               : SidePanelEntry::PanelType::kContent;
         IsSidePanelShowing(other_type)) {
-      Close(/*suppress_animations=*/true, other_type,
-            SidePanelEntryHideReason::kSidePanelClosed);
+      Close(other_type, SidePanelEntryHideReason::kSidePanelClosed,
+            /*suppress_animations=*/true);
     }
-
     if (entry->type() == SidePanelEntry::PanelType::kContent) {
       // Record usage for side panel promo.
       feature_engagement::TrackerFactory::GetForBrowserContext(
@@ -215,9 +211,9 @@ void SidePanelCoordinator::Show(
 //   (4) At the moment that this comment was written, if this class is showing
 //   a window-scoped side-panel entry, and the window is closed via any
 //   mechanism, this method is not called.
-void SidePanelCoordinator::Close(bool suppress_animations,
-                                 SidePanelEntry::PanelType panel_type,
-                                 SidePanelEntryHideReason reason) {
+void SidePanelCoordinator::Close(SidePanelEntry::PanelType panel_type,
+                                 SidePanelEntryHideReason reason,
+                                 bool suppress_animations) {
   SidePanel* const side_panel = GetSidePanelFor(panel_type);
   if (!IsSidePanelShowing(panel_type) ||
       (!suppress_animations && side_panel->IsClosing())) {
@@ -373,8 +369,8 @@ void SidePanelCoordinator::MaybeShowEntryOnTabStripModelChanged(
               content_wrapper->children().front());
           (*active_entry)->CacheView(std::move(current_entry_view));
         }
-        Close(/*suppress_animations=*/true, type,
-              SidePanelEntryHideReason::kBackgrounded);
+        Close(type, SidePanelEntryHideReason::kBackgrounded,
+              /*suppress_animations=*/true);
       }
     } else if (auto active_entry =
                    new_contextual_registry

@@ -20,9 +20,9 @@
 #include "chrome/browser/ui/read_anything/read_anything_side_panel_web_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_page_handler.h"
@@ -254,12 +254,12 @@ void ReadAnythingSidePanelController::TabWillDetach(
   if (!tab_->IsActivated()) {
     return;
   }
-  auto* coordinator =
-      tab_->GetBrowserWindowInterface()->GetFeatures().side_panel_coordinator();
+  auto* const side_panel_ui =
+      tab_->GetBrowserWindowInterface()->GetFeatures().side_panel_ui();
   // TODO(https://crbug.com/360163254): BrowserWithTestWindowTest currently does
   // not create a SidePanelCoordinator. This block will be unnecessary once that
   // changes.
-  if (!coordinator) {
+  if (!side_panel_ui) {
     // TODO(webium): create a SidePanelCoordinator for WebUIBrowser.
     // This is a temporary solution to avoid a crash.
     if (!webui_browser::IsWebUIBrowserEnabled()) {
@@ -269,11 +269,13 @@ void ReadAnythingSidePanelController::TabWillDetach(
   }
 
   SidePanelEntry::Key read_anything_key(SidePanelEntry::Id::kReadAnything);
-  if (coordinator->IsSidePanelEntryShowing(read_anything_key)) {
+  if (side_panel_ui->IsSidePanelEntryShowing(read_anything_key)) {
     SidePanelEntry* const entry =
         side_panel_registry_->GetEntryForKey(read_anything_key);
     CHECK(entry);
-    coordinator->Close(/*suppress_animations=*/true, entry->type());
+    side_panel_ui->Close(entry->type(),
+                         SidePanelEntryHideReason::kSidePanelClosed,
+                         /*suppress_animations=*/true);
   }
 }
 

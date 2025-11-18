@@ -63,7 +63,6 @@
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
@@ -964,9 +963,9 @@ void LensOverlayController::ShowUI(
 
   Profile* profile =
       Profile::FromBrowserContext(tab_->GetContents()->GetBrowserContext());
-  auto* side_panel_coordinator =
-      tab_->GetBrowserWindowInterface()->GetFeatures().side_panel_coordinator();
-  CHECK(side_panel_coordinator);
+  auto* const side_panel_ui =
+      tab_->GetBrowserWindowInterface()->GetFeatures().side_panel_ui();
+  CHECK(side_panel_ui);
 
   // Create the languages controller.
   languages_controller_ =
@@ -975,11 +974,10 @@ void LensOverlayController::ShowUI(
   // Setup observer to be notified of side panel opens and closes.
   SidePanelEntry::PanelType panel_type =
       GetLensOverlaySidePanelCoordinator()->GetPanelType();
-  side_panel_shown_subscription_ =
-      side_panel_coordinator->RegisterSidePanelShown(
-          panel_type,
-          base::BindRepeating(&LensOverlayController::OnSidePanelDidOpen,
-                              weak_factory_.GetWeakPtr()));
+  side_panel_shown_subscription_ = side_panel_ui->RegisterSidePanelShown(
+      panel_type,
+      base::BindRepeating(&LensOverlayController::OnSidePanelDidOpen,
+                          weak_factory_.GetWeakPtr()));
 
   if (find_in_page::FindTabHelper* const find_tab_helper =
           find_in_page::FindTabHelper::FromWebContents(tab_->GetContents())) {
@@ -1027,12 +1025,13 @@ void LensOverlayController::ShowUI(
 
   // This should be the last thing called in ShowUI, so if something goes wrong
   // in capturing the screenshot, the state gets cleaned up correctly.
-  if (side_panel_coordinator->IsSidePanelShowing(panel_type) &&
+  if (side_panel_ui->IsSidePanelShowing(panel_type) &&
       !IsResultsSidePanelShowing()) {
     // Close the currently opened side panel synchronously if it's not the Lens
     // panel. Postpone the screenshot for a fixed time to allow reflow.
     state_ = State::kClosingOpenedSidePanel;
-    side_panel_coordinator->Close(/*suppress_animations=*/true, panel_type);
+    side_panel_ui->Close(panel_type, SidePanelEntryHideReason::kSidePanelClosed,
+                         /*suppress_animations=*/true);
     base::SingleThreadTaskRunner::GetCurrentDefault()
         ->PostNonNestableDelayedTask(
             FROM_HERE,

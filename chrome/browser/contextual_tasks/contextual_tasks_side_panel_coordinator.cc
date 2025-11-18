@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_scope.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
@@ -337,8 +338,9 @@ content::WebContents* ContextualTasksSidePanelCoordinator::
 void ContextualTasksSidePanelCoordinator::Hide() {
   auto* side_panel_ui = static_cast<SidePanelCoordinator*>(
       browser_window_->GetFeatures().side_panel_ui());
-  side_panel_ui->Close(/*suppress_animations=*/true,
-                       SidePanelEntry::PanelType::kToolbar);
+  side_panel_ui->Close(SidePanelEntry::PanelType::kToolbar,
+                       SidePanelEntryHideReason::kSidePanelClosed,
+                       /*suppress_animations=*/true);
 }
 
 void ContextualTasksSidePanelCoordinator::Unhide() {

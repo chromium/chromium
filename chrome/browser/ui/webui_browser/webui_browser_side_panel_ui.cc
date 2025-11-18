@@ -40,14 +40,9 @@ WebUIBrowserSidePanelUI::WebUIBrowserSidePanelUI(Browser* browser)
 
 WebUIBrowserSidePanelUI::~WebUIBrowserSidePanelUI() = default;
 
-void WebUIBrowserSidePanelUI::Close(SidePanelEntry::PanelType panel_type) {
-  Close(/*suppress_animations=*/true, panel_type,
-        SidePanelEntryHideReason::kSidePanelClosed);
-}
-
-void WebUIBrowserSidePanelUI::Close(bool suppress_animations,
-                                    SidePanelEntry::PanelType panel_type,
-                                    SidePanelEntryHideReason reason) {
+void WebUIBrowserSidePanelUI::Close(SidePanelEntry::PanelType panel_type,
+                                    SidePanelEntryHideReason reason,
+                                    bool supress_animations) {
   if (!IsSidePanelShowing(panel_type)) {
     return;
   }
@@ -200,8 +195,8 @@ void WebUIBrowserSidePanelUI::MaybeShowEntryOnTabStripModelChanged(
     current_side_panel_view_.reset();
   }
 
-  Close(/*suppress_animations=*/true, panel_type,
-        SidePanelEntryHideReason::kSidePanelClosed);
+  Close(panel_type, SidePanelEntryHideReason::kSidePanelClosed,
+        /*suppress_animations=*/true);
 }
 
 void WebUIBrowserSidePanelUI::OnSidePanelClosed(
