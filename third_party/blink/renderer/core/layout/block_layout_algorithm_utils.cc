@@ -95,10 +95,14 @@ BlockContentAlignment ComputeContentAlignment(const ComputedStyle& style,
           return BlockContentAlignment::kBaseline;
 
         case EVerticalAlign::kMiddle:
-          return BlockContentAlignment::kUnsafeCenter;
+          return RuntimeEnabledFeatures::LayoutTableCellAlignmentSafeEnabled()
+                     ? BlockContentAlignment::kSafeCenter
+                     : BlockContentAlignment::kUnsafeCenter;
 
         case EVerticalAlign::kBottom:
-          return BlockContentAlignment::kUnsafeEnd;
+          return RuntimeEnabledFeatures::LayoutTableCellAlignmentSafeEnabled()
+                     ? BlockContentAlignment::kSafeEnd
+                     : BlockContentAlignment::kUnsafeEnd;
       }
       break;
 
