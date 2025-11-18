@@ -3080,6 +3080,10 @@
       base_feature: "none",
     },
     {
+      // Speculative fix for renderer hangs in crbug.com/447174988
+      name: "LimitTriggerAttachmentUpdates"
+    },
+    {
       // Improves the logic for removing focus from a currently focused <a>
       // element when its href attribute is removed by considering other ways
       // that an <a> may be focusable. Shipped in M142, should be safe to

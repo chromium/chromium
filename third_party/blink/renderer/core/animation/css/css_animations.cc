@@ -2314,6 +2314,17 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
     }
     css_animation.SetRange(entry.range_start, entry.range_end);
     css_animation.SetTriggerAttachments(entry.trigger_attachments);
+    if (RuntimeEnabledFeatures::LimitTriggerAttachmentUpdatesEnabled()) {
+      if (entry.trigger_attachments) {
+        element->GetDocument()
+            .GetDocumentAnimations()
+            .AddPendingTriggerAttachmentUpdate(&css_animation);
+      } else {
+        element->GetDocument()
+            .GetDocumentAnimations()
+            .RemovePendingTriggerAttachmentUpdate(&css_animation);
+      }
+    }
     css_animation.SetTriggerActionPlayState(
         entry.play_state_list[entry.index % entry.play_state_list.size()]);
     running_animations_[entry.index]->Update(entry);
@@ -2351,6 +2362,10 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
 
     if (!entry.trigger_attachments) {
       animation->play();
+    } else if (RuntimeEnabledFeatures::LimitTriggerAttachmentUpdatesEnabled()) {
+      element->GetDocument()
+          .GetDocumentAnimations()
+          .AddPendingTriggerAttachmentUpdate(animation);
     }
     if (inert_animation->Paused()) {
       animation->pause();

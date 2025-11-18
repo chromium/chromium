@@ -260,43 +260,13 @@ void AnimationTimeline::UpdateAnimationTriggerAttachments() {
       continue;
     }
 
-    const Member<const StyleTriggerAttachmentVector>&
-        animation_trigger_attachments = css_animation->GetTriggerAttachments();
-    if (!animation_trigger_attachments) {
-      continue;
-    }
+    auto attach_function = [&](AnimationTrigger& trigger,
+                               const StyleTriggerAttachment& attachment) {
+      attachment.Attach(trigger, *css_animation);
+    };
 
-    Element* element = animation->OwningElement();
-
-    while (element) {
-      LayoutBox* element_box = element->GetLayoutBox();
-      if (!element_box) {
-        element = element->parentElement();
-        continue;
-      }
-
-      for (const auto& fragment : element_box->PhysicalFragments()) {
-        const GCedNamedAnimationTriggerMap* named_triggers =
-            fragment.NamedTriggers();
-        if (!named_triggers) {
-          continue;
-        }
-
-        for (auto& entry : *named_triggers) {
-          AnimationTrigger* trigger = entry.value.Get();
-
-          for (auto attachment : *animation_trigger_attachments) {
-            if (attachment->TriggerName()->GetName() == entry.key->GetName()) {
-              // TODO(crbug.com/c/429392773): This attaches all triggers of
-              // matching names. When a resolution for resolving triggers with
-              // the same name has been reached, we should update this.
-              attachment->Attach(*trigger, *css_animation);
-            }
-          }
-        }
-      }
-      element = element->parentElement();
-    }
+    GetDocument()->GetDocumentAnimations().UpdateTriggerAttachment(
+        *css_animation, attach_function);
   }
 }
 

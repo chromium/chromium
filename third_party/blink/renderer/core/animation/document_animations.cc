@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/animation/animation_clock.h"
 #include "third_party/blink/renderer/core/animation/animation_timeline.h"
 #include "third_party/blink/renderer/core/animation/animation_trigger.h"
+#include "third_party/blink/renderer/core/animation/css/css_animation.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/animation/pending_animations.h"
 #include "third_party/blink/renderer/core/animation/worklet_animation_controller.h"
@@ -48,6 +49,8 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/layout/layout_box.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/page_animator.h"
@@ -86,6 +89,49 @@ bool CompareAnimations(const Member<Animation>& left,
       Animation::CompareAnimationsOrdering::kTreeOrder);
 }
 }  // namespace
+
+// static
+void DocumentAnimations::UpdateTriggerAttachment(
+    CSSAnimation& animation,
+    base::FunctionRef<void(AnimationTrigger& trigger,
+                           const StyleTriggerAttachment& attachment)>
+        attach_function) {
+  const Member<const StyleTriggerAttachmentVector>&
+      animation_trigger_attachments = animation.GetTriggerAttachments();
+  if (!animation_trigger_attachments) {
+    return;
+  }
+
+  const Element* element = animation.OwningElement();
+
+  while (element) {
+    const LayoutBox* element_box = element->GetLayoutBox();
+    if (!element_box) {
+      element = element->parentElement();
+      continue;
+    }
+
+    for (const auto& fragment : element_box->PhysicalFragments()) {
+      const GCedNamedAnimationTriggerMap* named_triggers =
+          fragment.NamedTriggers();
+      if (!named_triggers) {
+        continue;
+      }
+
+      for (auto& entry : *named_triggers) {
+        AnimationTrigger* trigger = entry.value.Get();
+
+        for (auto attachment : *animation_trigger_attachments) {
+          if (attachment->TriggerName()->GetName() == entry.key->GetName()) {
+            attach_function(*trigger, *attachment);
+          }
+        }
+      }
+    }
+
+    element = element->parentElement();
+  }
+}
 
 DocumentAnimations::DocumentAnimations(Document* document)
     : document_(document) {}
@@ -241,6 +287,7 @@ void DocumentAnimations::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
   visitor->Trace(timelines_);
   visitor->Trace(triggers_);
+  visitor->Trace(pending_trigger_attachment_updates_);
 }
 
 void DocumentAnimations::GetAnimationsTargetingTreeScope(
@@ -323,8 +370,12 @@ void DocumentAnimations::RemoveReplacedAnimations(
 }
 
 void DocumentAnimations::UpdateAnimationTriggerAttachments() {
-  for (const auto& timeline : timelines_) {
-    timeline->UpdateAnimationTriggerAttachments();
+  if (RuntimeEnabledFeatures::LimitTriggerAttachmentUpdatesEnabled()) {
+    ExecutePendingTriggerAttachmentUpdates();
+  } else {
+    for (const auto& timeline : timelines_) {
+      timeline->UpdateAnimationTriggerAttachments();
+    }
   }
 }
 
@@ -341,6 +392,56 @@ void DocumentAnimations::UpdateCompositorAnimationTriggers() {
   for (AnimationTrigger* trigger : triggers_) {
     trigger->UpdateCompositorTrigger();
   }
+}
+
+void DocumentAnimations::AddPendingTriggerAttachmentUpdate(
+    CSSAnimation* animation) {
+  pending_trigger_attachment_updates_.insert(animation);
+}
+
+void DocumentAnimations::RemovePendingTriggerAttachmentUpdate(
+    CSSAnimation* animation) {
+  pending_trigger_attachment_updates_.erase(animation);
+}
+
+void DocumentAnimations::ExecutePendingTriggerAttachmentUpdates() {
+  // Track animations whose attachments weren't completely fulfilled.
+  HeapHashSet<WeakMember<CSSAnimation>> defer;
+
+  for (CSSAnimation* animation : pending_trigger_attachment_updates_) {
+    const Member<const StyleTriggerAttachmentVector>&
+        animation_trigger_attachments = animation->GetTriggerAttachments();
+    if (!animation_trigger_attachments) {
+      continue;
+    }
+
+    wtf_size_t expected_attachments_size =
+        animation_trigger_attachments->size();
+    HeapHashMap<WeakMember<AnimationTrigger>,
+                WeakMember<const StyleTriggerAttachment>>
+        relevant_attachments;
+
+    auto attach_function = [&](AnimationTrigger& trigger,
+                               const StyleTriggerAttachment& attachment) {
+      relevant_attachments.Set(&trigger, &attachment);
+    };
+
+    UpdateTriggerAttachment(*animation, attach_function);
+
+    for (const auto& [trigger, attachment] : relevant_attachments) {
+      attachment->Attach(*trigger, *animation);
+    }
+
+    if (expected_attachments_size != relevant_attachments.size()) {
+      // We didn't find all the triggers with the names declared in this
+      // animation's animation-trigger declaration. Queue this animation up for
+      // another attempt to find its triggers after we've run style and layout
+      // again.
+      defer.insert(animation);
+    }
+  }
+
+  pending_trigger_attachment_updates_.swap(defer);
 }
 
 }  // namespace blink
