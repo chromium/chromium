@@ -7,23 +7,11 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_item.h"
+#import "ios/chrome/browser/settings/ui_bundled/cells/settings_image_detail_text_item.h"
 
-// SendTabToSelfImageDetailTextItem is an item that displays an image, a title
-// and a detail text. This item uses multi-lines text field.
-@interface SendTabToSelfImageDetailTextItem : TableViewItem
-
-// The image to display (required).
-@property(nonatomic, strong) UIImage* iconImage;
-
-// The title text to display.
-@property(nonatomic, copy) NSString* text;
-
-// The detail text to display.
-@property(nonatomic, copy) NSString* detailText;
-
-// The state displaying a check mark accessory.
-@property(nonatomic) BOOL selected;
+// SendTabToSelfImageDetailTextItem is a subclass of
+// SettingsImageDetailTextItem, just adding a field to store the cache GUID.
+@interface SendTabToSelfImageDetailTextItem : SettingsImageDetailTextItem
 
 // The cache GUID for the device being displayed.
 @property(nonatomic, copy) NSString* cacheGuid;

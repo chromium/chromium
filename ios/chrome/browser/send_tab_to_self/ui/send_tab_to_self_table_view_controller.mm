@@ -202,8 +202,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
       return;
     }
-    self.selectedItem.selected = NO;
-    imageDetailTextItem.selected = YES;
+    self.selectedItem.accessoryType = UITableViewCellAccessoryNone;
+    imageDetailTextItem.accessoryType = UITableViewCellAccessoryCheckmark;
     [self reconfigureCellsForItems:@[ self.selectedItem, imageDetailTextItem ]];
     self.selectedItem = imageDetailTextItem;
     [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
@@ -250,25 +250,27 @@ typedef NS_ENUM(NSInteger, ItemType) {
         [self sendTabToSelfdaysSinceLastUpdate:daysSinceLastUpdate];
     switch (iter->form_factor) {
       case syncer::DeviceInfo::FormFactor::kTablet:
-        deviceItem.iconImage = MakeSymbolMonochrome(
+        deviceItem.image = MakeSymbolMonochrome(
             DefaultSymbolWithPointSize(kIPadSymbol, kSymbolSize));
         break;
       case syncer::DeviceInfo::FormFactor::kPhone:
-        deviceItem.iconImage = MakeSymbolMonochrome(
+        deviceItem.image = MakeSymbolMonochrome(
             DefaultSymbolWithPointSize(kIPhoneSymbol, kSymbolSize));
         break;
       case syncer::DeviceInfo::FormFactor::kDesktop:
-        deviceItem.iconImage = MakeSymbolMonochrome(
+        deviceItem.image = MakeSymbolMonochrome(
             DefaultSymbolWithPointSize(kLaptopSymbol, kSymbolSize));
         break;
       default:
-        deviceItem.iconImage = MakeSymbolMonochrome(
+        deviceItem.image = MakeSymbolMonochrome(
             DefaultSymbolWithPointSize(kLaptopSymbol, kSymbolSize));
         break;
     }
 
+    deviceItem.imageViewTintColor = [UIColor colorNamed:kGrey400Color];
+
     if (iter == _targetDeviceList.begin()) {
-      deviceItem.selected = YES;
+      deviceItem.accessoryType = UITableViewCellAccessoryCheckmark;
       self.selectedItem = deviceItem;
     }
 
