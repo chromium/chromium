@@ -598,7 +598,7 @@ class PopupViewViewsPlusAddressSuggestionBrowsertest
   }
 
  private:
-  autofill::test::AutofillUnitTestEnvironment autofill_env_;
+  autofill::test::AutofillBrowserTestEnvironment autofill_env_;
 
   plus_addresses::FakePlusAddressAllocator allocator_;
   plus_addresses::FakePlusAddressSettingService setting_service_;

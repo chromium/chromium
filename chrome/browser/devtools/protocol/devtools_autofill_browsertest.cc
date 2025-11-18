@@ -263,7 +263,7 @@ class DevToolsAutofillTest : public DevToolsProtocolTestBase {
   }
 
  private:
-  test::AutofillUnitTestEnvironment autofill_test_environment_;
+  test::AutofillBrowserTestEnvironment autofill_test_environment_;
   autofill::TestAutofillManagerInjector<TestAutofillManager>
       autofill_manager_injector_;
 };

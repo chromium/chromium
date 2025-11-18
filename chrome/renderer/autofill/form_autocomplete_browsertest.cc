@@ -286,7 +286,7 @@ class FormAutocompleteTest : public ChromeRenderViewTest {
     return focus_test_utils_->GetFocusLog(GetMainFrame()->GetDocument());
   }
 
-  test::AutofillUnitTestEnvironment autofill_test_environment_;
+  test::AutofillBrowserTestEnvironment autofill_test_environment_;
   FakeContentAutofillDriver fake_driver_;
   std::unique_ptr<test::FocusTestUtils> focus_test_utils_;
 };

@@ -410,8 +410,7 @@ class PasswordChangeBrowserTest : public PasswordManagerBrowserTestBase {
   }
 
  private:
-  autofill::test::AutofillUnitTestEnvironment autofill_environment_{
-      {.disable_server_communication = true}};
+  autofill::test::AutofillBrowserTestEnvironment autofill_environment_;
   base::CallbackListSubscription create_services_subscription_;
   autofill::TestAutofillManagerInjector<TestAutofillManager>
       autofill_manager_injector_;
