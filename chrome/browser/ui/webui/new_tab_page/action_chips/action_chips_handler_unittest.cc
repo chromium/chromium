@@ -305,14 +305,9 @@ INSTANTIATE_TEST_SUITE_P(
                                CreateStaticImageGenerationChip()},
         },
         StaticChipsTestCase{
-            .test_name = "IgnoresChromeUrls",
-            .tabs = {{.url = "chrome://version", .title = "Version"},
-                     {.url = "chrome://blank", .title = "Blank"}},
-            .expected_chips = {CreateStaticDeepSearchChip(),
-                               CreateStaticImageGenerationChip()}},
-        StaticChipsTestCase{
             .test_name = "MostRecentTabIgnoringChromeUrls",
             .tabs = {{.url = "chrome://version", .title = "Version"},
+                     // Note: Google homepage is not a SRP, so it's not ignored.
                      {.url = "https://www.google.com", .title = "Google"},
                      {.url = "chrome://blank", .title = "Blank"}},
             .expected_chips = {CreateStaticRecentTabChip(
@@ -321,6 +316,21 @@ INSTANTIATE_TEST_SUITE_P(
                                     .url = GURL("https://www.google.com"),
                                     .last_active_time = GetTimeAt(1)}),
                                CreateStaticDeepSearchChip(),
+                               CreateStaticImageGenerationChip()}},
+        StaticChipsTestCase{
+            .test_name = "IgnoresAllInvalidTabs",
+            .tabs =
+                {
+                    {.url = "https://www.google.com/search?q=test",
+                     .title = "Google SRP"},
+                    {.url = "invalidUrl", .title = "Invalid URL"},
+                    {.url = "about:blank", .title = "About Blank"},
+                    {.url = "chrome://version",
+                     .title = "Chrome Internal Page"},
+                    {.url = "chrome-untrusted://terminal",
+                     .title = "Untrusted Internal Page"},
+                },
+            .expected_chips = {CreateStaticDeepSearchChip(),
                                CreateStaticImageGenerationChip()}},
     }),
     [](const testing::TestParamInfo<StaticChipsTestCase>& param_info) {
