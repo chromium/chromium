@@ -396,6 +396,16 @@ chromium-metrics-reviews@google.com.
              link navigation."/>
 </enum>
 
+<!-- LINT.IfChange(PaidContentState) -->
+
+<enum name="PaidContentState">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Has paid content"/>
+  <int value="2" label="No paid content found"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/page_load_metrics/browser/observers/paid_content_page_load_metrics_observer.cc:PaidContentState) -->
+
 <!-- LINT.IfChange(PrerenderPrewarmNavigationStatus) -->
 
 <enum name="PrerenderPrewarmNavigationStatus">

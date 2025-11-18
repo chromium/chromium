@@ -4600,6 +4600,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PageLoad.PaidContent.State" enum="PaidContentState"
+    expires_after="2026-10-22">
+  <owner>gklassen@chromium.org</owner>
+  <owner>sullivan@chromium.org</owner>
+  <summary>
+    Records the state of paid content detection for the page load. The state can
+    be kUnknown (initial value), kHasPaidContent (paid content metadata found),
+    or kNoPaidContentFound (no paid content metadata found), based on
+    `isAccessibleForFree` document metadata.
+  </summary>
+</histogram>
+
 <histogram name="PageLoad.PaintTiming.ForegroundToFirstContentfulPaint"
     units="ms" expires_after="2026-04-13">
   <owner>sullivan@chromium.org</owner>

@@ -22190,12 +22190,6 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="Was foregrounded and reached first contentful paint"/>
 </enum>
 
-<enum name="PaidContentState">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Has paid content"/>
-  <int value="2" label="No paid content found"/>
-</enum>
-
 <enum name="PaintHoldingCommitTrigger2">
   <int value="0" label="Feature Disabled"/>
   <int value="1" label="Disallowed"/>
