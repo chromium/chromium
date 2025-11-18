@@ -21,6 +21,10 @@ namespace chrome_pdf {
 blink::WebMouseEvent CreateLeftClickWebMouseEventAtPosition(
     const gfx::PointF& position);
 
+// Move to `position` with the left button down.
+blink::WebMouseEvent CreateLeftClickWebMouseMoveEventAtPosition(
+    const gfx::PointF& position);
+
 // Left button up at `position`.
 blink::WebMouseEvent CreateLeftClickWebMouseUpEventAtPosition(
     const gfx::PointF& position);

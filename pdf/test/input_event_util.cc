@@ -16,6 +16,15 @@ blink::WebMouseEvent CreateLeftClickWebMouseEventAtPosition(
   return MouseEventBuilder().CreateLeftClickAtPosition(position).Build();
 }
 
+blink::WebMouseEvent CreateLeftClickWebMouseMoveEventAtPosition(
+    const gfx::PointF& point) {
+  return MouseEventBuilder()
+      .SetType(blink::WebInputEvent::Type::kMouseMove)
+      .SetPosition(point)
+      .SetButton(blink::WebPointerProperties::Button::kLeft)
+      .Build();
+}
+
 blink::WebMouseEvent CreateLeftClickWebMouseUpEventAtPosition(
     const gfx::PointF& position) {
   return MouseEventBuilder().CreateLeftMouseUpAtPosition(position).Build();

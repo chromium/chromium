@@ -3026,13 +3026,8 @@ class PdfViewWebPluginInkTest
     // drawn result when it was in-progress.
     TestSendInputEvent(CreateLeftClickWebMouseEventAtPosition(start_position),
                        blink::WebInputEventResult::kHandledApplication);
-    TestSendInputEvent(
-        MouseEventBuilder()
-            .SetType(blink::WebInputEvent::Type::kMouseMove)
-            .SetPosition(end_position)
-            .SetButton(blink::WebPointerProperties::Button::kLeft)
-            .Build(),
-        blink::WebInputEventResult::kHandledApplication);
+    TestSendInputEvent(CreateLeftClickWebMouseMoveEventAtPosition(end_position),
+                       blink::WebInputEventResult::kHandledApplication);
 
     // Draw the canvas for the in-progress stroke.
     plugin_->Paint(canvas_.sk_canvas(), kScreenRect);
@@ -3489,12 +3484,9 @@ TEST_P(PdfViewWebPluginInkTextHighlightTest, SelectionDoesNotChange) {
   SetUpMouseDownMoveTextTestExpectations();
   TestSendInputEvent(CreateLeftClickWebMouseEventAtPosition(kStartTextPosition),
                      blink::WebInputEventResult::kHandledApplication);
-  TestSendInputEvent(MouseEventBuilder()
-                         .SetType(blink::WebInputEvent::Type::kMouseMove)
-                         .SetPosition(kEndTextPosition)
-                         .SetButton(blink::WebPointerProperties::Button::kLeft)
-                         .Build(),
-                     blink::WebInputEventResult::kHandledApplication);
+  TestSendInputEvent(
+      CreateLeftClickWebMouseMoveEventAtPosition(kEndTextPosition),
+      blink::WebInputEventResult::kHandledApplication);
 
   EXPECT_CALL(*client_ptr_, TextSelectionChanged(_, _, _)).Times(0);
 
