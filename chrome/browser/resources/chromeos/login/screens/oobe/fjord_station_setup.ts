@@ -9,15 +9,15 @@ import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
 import {OobeDialogHostMixin} from '../../components/mixins/oobe_dialog_host_mixin.js';
 import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
 
-import {getTemplate} from './fjord_touch_controller.html.js';
+import {getTemplate} from './fjord_station_setup.html.js';
 
-export const FjordTouchControllerScreenElementBase =
+export const FjordStationSetupScreenElementBase =
     OobeDialogHostMixin(LoginScreenMixin(OobeI18nMixin(PolymerElement)));
 
-export class FjordTouchControllerScreen extends
-    FjordTouchControllerScreenElementBase {
+export class FjordStationSetupScreen extends
+    FjordStationSetupScreenElementBase {
   static get is() {
-    return 'fjord-touch-controller-element' as const;
+    return 'fjord-station-setup-element' as const;
   }
 
   static get template(): HTMLTemplateElement {
@@ -30,22 +30,14 @@ export class FjordTouchControllerScreen extends
 
   override ready(): void {
     super.ready();
-    this.initializeLoginScreen('FjordTouchControllerScreen');
-  }
-
-  /**
-   * Returns the control which should receive initial focus.
-   */
-  override get defaultControl(): HTMLElement|null {
-    return this.shadowRoot!.querySelector('#oobeFrame');
+    this.initializeLoginScreen('FjordStationSetupScreen');
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    [FjordTouchControllerScreen.is]: FjordTouchControllerScreen;
+    [FjordStationSetupScreen.is]: FjordStationSetupScreen;
   }
 }
 
-customElements.define(
-    FjordTouchControllerScreen.is, FjordTouchControllerScreen);
+customElements.define(FjordStationSetupScreen.is, FjordStationSetupScreen);
