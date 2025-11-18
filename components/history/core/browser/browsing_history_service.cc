@@ -37,14 +37,6 @@ namespace {
 // The amount of time to wait for a response from the WebHistoryService.
 constexpr int kWebHistoryTimeoutSeconds = 3;
 
-// Buckets for UMA histograms.
-enum WebHistoryQueryBuckets {
-  WEB_HISTORY_QUERY_FAILED = 0,
-  WEB_HISTORY_QUERY_SUCCEEDED,
-  WEB_HISTORY_QUERY_TIMED_OUT,
-  NUM_WEB_HISTORY_QUERY_BUCKETS
-};
-
 QueryOptions OptionsWithEndTime(QueryOptions original_options,
                                 base::Time end_time) {
   QueryOptions options(original_options);
