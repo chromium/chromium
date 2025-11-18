@@ -39,6 +39,10 @@ class OmniboxPopupAimHandler : public omnibox_popup_aim::mojom::PageHandler {
   // in has closed.
   void OnClose();
 
+  // Forwards an AddContext() call to the page. This call is intended to be used
+  // to notify the page that searchbox context has been added.
+  void AddContext(std::unique_ptr<SearchboxContextData::Context> context);
+
  private:
   void OnClosedCallback(const std::string& input);
 
