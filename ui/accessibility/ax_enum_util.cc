@@ -1182,6 +1182,8 @@ const char* ToString(ax::mojom::Action action) {
       return "suspendMedia";
     case ax::mojom::Action::kLongClick:
       return "longClick";
+    case ax::mojom::Action::kRequestLayoutBasedAction:
+      return "requestLayoutBasedAction";
   }
 
   return "";
@@ -1243,6 +1245,10 @@ const char* ToString(ax::mojom::DefaultActionVerb default_action_verb) {
       return "select";
     case ax::mojom::DefaultActionVerb::kUncheck:
       return "uncheck";
+    case ax::mojom::DefaultActionVerb::kClickInHitTest:
+      return "clickInHitTest";
+    case ax::mojom::DefaultActionVerb::kClickNotInHitTest:
+      return "clickNotInHitTest";
   }
 
   return "";

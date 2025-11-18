@@ -55,6 +55,7 @@ import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.MOVEM
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_DATA_REQUEST_IMAGE_DATA_KEY;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_URL;
+import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_REQUEST_LAYOUT_BASED_ACTIONS;
 import static org.chromium.content_public.browser.ContentFeatureList.ACCESSIBILITY_MANAGE_BROADCAST_RECEIVER_ON_BACKGROUND;
 
 import android.annotation.SuppressLint;
@@ -2128,6 +2129,21 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     }
 
     @CalledByNative
+    private void handleDefaultActionVerbChanged(int virtualViewId) {
+        if (isAccessibilityEnabled()) {
+            // TODO(crbug.com/460580025): Check if AccessibilityEvent.CONTENT_CHANGE_TYPE_UNDEFINED
+            // is the right type to use here.
+            AccessibilityEvent event =
+                    AccessibilityEvent.obtain(AccessibilityEvent.CONTENT_CHANGE_TYPE_UNDEFINED);
+            if (event == null) {
+                return;
+            }
+            event.setSource(mView, virtualViewId);
+            requestSendAccessibilityEvent(event);
+        }
+    }
+
+    @CalledByNative
     private void announceLiveRegionText(String text) {
         assert !ContentFeatureMap.isEnabled(
                         ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE)
@@ -2269,6 +2285,9 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             case EXTRA_DATA_ABSOLUTE_DRAWING_ORDER_KEY:
                 getPaintOrder(virtualViewId, info);
                 break;
+            case EXTRAS_KEY_REQUEST_LAYOUT_BASED_ACTIONS:
+                requestLayoutBasedActions(virtualViewId, info);
+                break;
         }
     }
 
@@ -2340,6 +2359,11 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         int paintOrder =
                 WebContentsAccessibilityImplJni.get().getPaintOrder(mNativeObj, virtualViewId);
         info.getExtras().putInt(EXTRA_DATA_ABSOLUTE_DRAWING_ORDER_KEY, paintOrder);
+    }
+
+    private void requestLayoutBasedActions(int virtualViewId, AccessibilityNodeInfoCompat info) {
+        WebContentsAccessibilityImplJni.get()
+                .requestLayoutBasedActions(mNativeObj, virtualViewId, info);
     }
 
     @NativeMethods
@@ -2518,5 +2542,9 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                 boolean hasSentPreviousRequest);
 
         int getPaintOrder(long nativeWebContentsAccessibilityAndroid, int id);
+        void requestLayoutBasedActions(
+                long nativeWebContentsAccessibilityAndroid,
+                int id,
+                AccessibilityNodeInfoCompat info);
     }
 }

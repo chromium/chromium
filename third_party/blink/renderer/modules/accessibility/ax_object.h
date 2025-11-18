@@ -1556,6 +1556,9 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // Only children that are included in tree, maybe rename to children_in_tree_.
   AXObjectVector children_;
   bool has_dirty_descendants_ = false;
+  // When true, actions may use more expensive layout-based computations.
+  // e.g. DefaultActionVerb::kClickInHitTest.
+  bool use_layout_based_action_ = false;
 
   // The final role, taking into account the ARIA role and native role.
   ax::mojom::blink::Role role_;

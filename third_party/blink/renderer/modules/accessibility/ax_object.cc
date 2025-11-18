@@ -5450,8 +5450,33 @@ ax::mojom::blink::DefaultActionVerb AXObject::Action() const {
     case ax::mojom::blink::Role::kPopUpButton:
       return ax::mojom::blink::DefaultActionVerb::kOpen;
     default:
-      if (action_element == GetNode())
-        return ax::mojom::blink::DefaultActionVerb::kClick;
+      if (action_element == GetNode()) {
+        if (use_layout_based_action_) {
+          ui::AXRelativeBounds bounds;
+          bool clips_children;
+          PopulateAXRelativeBounds(bounds, &clips_children);
+
+          HitTestRequest request(
+              HitTestRequest::kReadOnly | HitTestRequest::kActive |
+              HitTestRequest::kListBased | HitTestRequest::kPenetratingList);
+          HitTestLocation location(PhysicalRect::EnclosingRect(bounds.bounds));
+          HitTestResult result(request, location);
+          GetDocument()->GetLayoutView()->HitTestNoLifecycleUpdate(location,
+                                                                  result);
+          const HitTestResult::NodeSet& hits = result.ListBasedTestResult();
+          for (Node* hit : hits) {
+            while (hit) {
+              if (hit == GetNode()) {
+                return ax::mojom::DefaultActionVerb::kClickInHitTest;
+              }
+              hit = hit->parentNode();
+            }
+          }
+          return ax::mojom::DefaultActionVerb::kClickNotInHitTest;
+        } else {
+          return ax::mojom::DefaultActionVerb::kClick;
+        }
+      }
       return ax::mojom::blink::DefaultActionVerb::kClickAncestor;
   }
 }
@@ -7395,6 +7420,10 @@ bool AXObject::PerformAction(const ui::AXActionData& action_data) {
     case ax::mojom::blink::Action::kLongClick:
     case ax::mojom::blink::Action::kScrollToPositionAtRowColumn:
       return false;  // Handled in `RenderAccessibilityImpl`.
+    case ax::mojom::Action::kRequestLayoutBasedAction:
+      use_layout_based_action_ = true;
+      AXObjectCache().MarkAXObjectDirtyWithCleanLayout(this);
+      return true;
   }
 }
 

@@ -292,7 +292,12 @@ bool BrowserAccessibilityAndroid::IsClickable() const {
   // a click listener is present in its ancestry chain.
   if (HasIntAttribute(ax::mojom::IntAttribute::kDefaultActionVerb) &&
       (GetData().GetDefaultActionVerb() !=
-       ax::mojom::DefaultActionVerb::kClickAncestor)) {
+       ax::mojom::DefaultActionVerb::kClickAncestor) &&
+      (!base::FeatureList::IsEnabled(
+          features::kAccessibilityRequestLayoutBasedActions) ||
+      GetData().GetDefaultActionVerb() !=
+       ax::mojom::DefaultActionVerb::kClickNotInHitTest)
+      ) {
     return true;
   }
 
@@ -2305,6 +2310,15 @@ bool BrowserAccessibilityAndroid::HasCharacterLocations() const {
   }
   return false;
 }
+
+bool BrowserAccessibilityAndroid::HasLayoutBasedActions() const {
+  const auto default_action_verb = GetData().GetDefaultActionVerb();
+  return default_action_verb ==
+    ax::mojom::DefaultActionVerb::kClickInHitTest ||
+          default_action_verb ==
+            ax::mojom::DefaultActionVerb::kClickNotInHitTest;
+}
+
 
 bool BrowserAccessibilityAndroid::HasImage() const {
   if (ui::IsImageOrVideo(GetRole())) {

@@ -666,6 +666,9 @@ void AXEventGenerator::OnIntAttributeChanged(AXTree* tree,
         AddEvent(node, Event::OBJECT_ATTRIBUTE_CHANGED);
       }
       break;
+    case ax::mojom::IntAttribute::kDefaultActionVerb:
+      AddEvent(node, Event::DEFAULT_ACTION_VERB_CHANGED);
+      break;
     default:
       break;
   }
@@ -1325,6 +1328,8 @@ const char* ToString(AXEventGenerator::Event event) {
       return "collapsed";
     case AXEventGenerator::Event::CONTROLS_CHANGED:
       return "controlsChanged";
+    case AXEventGenerator::Event::DEFAULT_ACTION_VERB_CHANGED:
+      return "defaultActionVerbChanged";
     case AXEventGenerator::Event::DETAILS_CHANGED:
       return "detailsChanged";
     case AXEventGenerator::Event::DESCRIBED_BY_CHANGED:

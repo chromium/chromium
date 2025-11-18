@@ -689,6 +689,7 @@ void AXNodeData::AddAction(ax::mojom::Action action_enum) {
     case ax::mojom::Action::kStopDuckingMedia:
     case ax::mojom::Action::kSuspendMedia:
     case ax::mojom::Action::kLongClick:
+    case ax::mojom::Action::kRequestLayoutBasedAction:
       break;
   }
 

@@ -137,6 +137,9 @@ public class AccessibilityNodeInfoBuilder {
             "AccessibilityNodeInfo.requestImageData";
     public static final String EXTRAS_KEY_IMAGE_DATA = "AccessibilityNodeInfo.imageData";
 
+    public static final String EXTRAS_KEY_REQUEST_LAYOUT_BASED_ACTIONS =
+            "AccessibilityNodeInfo.requestLayoutBasedActions";
+
     public static final String ACCESSIBILITY_SPANNABLE_CREATION_TIME =
             "Accessibility.Android.Performance.SpannableCreationTime2";
     private static final int MAX_TIME_BUCKET = 5 * 1000; // 5,000 microseconds = 5ms.
@@ -199,7 +202,8 @@ public class AccessibilityNodeInfoBuilder {
             boolean visibleToUser,
             boolean hasCharacterLocations,
             boolean isRequired,
-            boolean isHeading) {
+            boolean isHeading,
+            boolean hasLayoutBasedActions) {
         node.setCheckable(checkable);
         node.setClickable(clickable);
         node.setEditable(editable);
@@ -225,6 +229,11 @@ public class AccessibilityNodeInfoBuilder {
             availableExtraData.add(EXTRA_DATA_TEXT_CHARACTER_LOCATION_KEY);
             availableExtraData.add(EXTRA_DATA_TEXT_CHARACTER_LOCATION_IN_WINDOW_KEY);
         }
+
+        if (clickable && !hasLayoutBasedActions) {
+            availableExtraData.add(EXTRAS_KEY_REQUEST_LAYOUT_BASED_ACTIONS);
+        }
+
         node.setAvailableExtraData(availableExtraData);
 
         node.setMovementGranularities(

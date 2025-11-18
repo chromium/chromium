@@ -493,6 +493,7 @@ void AXMediaAppUntrustedService::PerformAction(
     case ax::mojom::Action::kStopDuckingMedia:
     case ax::mojom::Action::kSuspendMedia:
     case ax::mojom::Action::kLongClick:
+    case ax::mojom::Action::kRequestLayoutBasedAction:
       NOTIMPLEMENTED();
       return;
   }

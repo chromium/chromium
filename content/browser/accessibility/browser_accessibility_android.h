@@ -113,6 +113,7 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
 
   bool HasCharacterLocations() const;
   bool HasImage() const;
+  bool HasLayoutBasedActions() const;
 
   const char* GetClassName() const;
   bool IsChildOfLeaf() const override;

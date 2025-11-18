@@ -284,6 +284,9 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
             ANDROID_ACCESSIBILITY_EVENT_CONTENT_CHANGE_TYPE_STATE_DESCRIPTION);
       }
       break;
+    case ui::AXEventGenerator::Event::DEFAULT_ACTION_VERB_CHANGED:
+      wcax->HandleDefaultActionVerbChanged(android_node->GetUniqueId());
+      break;
     case ui::AXEventGenerator::Event::DESCRIPTION_CHANGED: {
       wcax->HandleWindowContentChange(
           android_node->GetUniqueId(),

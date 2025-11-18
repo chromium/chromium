@@ -291,6 +291,9 @@ AutomationInternalPerformActionFunction::Result ConvertToAXActionData(
     case api::automation::ActionType::kLongClick:
       action->action = ax::mojom::Action::kLongClick;
       break;
+    case api::automation::ActionType::kRequestLayoutBasedAction:
+      action->action = ax::mojom::Action::kRequestLayoutBasedAction;
+      break;
     case api::automation::ActionType::kAnnotatePageImages:
     case api::automation::ActionType::kSignalEndOfTest:
     case api::automation::ActionType::kStitchChildTree:

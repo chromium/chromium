@@ -400,8 +400,8 @@ enum State {
 // An action to be taken on an accessibility node.
 // In contrast to |AXDefaultActionVerb|, these describe what happens to the
 // object, e.g. "FOCUS".
-// Next version: 5
-// Next value: 41
+// Next version: 6
+// Next value: 42
 [Extensible, Stable, Uuid="ed8e4466-0522-4f98-ac28-59a523b70232"]
 enum Action {
   [Default]kNone = 0,
@@ -464,7 +464,7 @@ enum Action {
   // Delete any selected text in the control's text value and
   // insert |AXActionData::value| in its place, like when typing or pasting.
   kReplaceSelectedText = 17,
-
+  [MinVersion=5] kRequestLayoutBasedAction = 41,
   [MinVersion=1] kResumeMedia = 34,
 
   // Scrolls by approximately one screen in a specific direction. Should be
@@ -571,6 +571,12 @@ enum DefaultActionVerb {
   // ancestors has click handlers attached which are able to capture the click
   // as it bubbles up.
   kClickAncestor,
+
+  // A click on this node will result in event dispatch to this node.
+  kClickInHitTest,
+
+  // A click on this node will not result in event dispatch to this node.
+  kClickNotInHitTest,
 
   kJump,
   kOpen,

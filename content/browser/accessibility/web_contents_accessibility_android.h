@@ -304,6 +304,12 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   // Get the paint order for a given node.
   jint GetPaintOrder(JNIEnv* env, jint unique_id);
 
+  // Request layout based actions for a given node.
+  void RequestLayoutBasedActions(
+      JNIEnv* env,
+      jint unique_id,
+      const base::android::JavaParamRef<jobject>& info);
+
   void UpdateFrameInfo(float page_scale);
 
   // Set a new max for TYPE_WINDOW_CONTENT_CHANGED events to fire.
@@ -402,6 +408,7 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   void HandlePaneOpened(int32_t unique_id);
   // Dispatches LIVE_REGION_NODE_CHANGED AxGeneratedEvents over the JNI Bridge.
   void HandleLiveRegionNodeChanged(int32_t unique_id);
+  void HandleDefaultActionVerbChanged(int32_t unique_id);
   void AnnounceLiveRegionText(const std::u16string& text);
   void HandleActiveDescendantChanged(int32_t unique_id);
   void HandleTextSelectionChanged(int32_t unique_id);

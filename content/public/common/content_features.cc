@@ -1291,6 +1291,14 @@ BASE_FEATURE(kAccessibilityDeprecateTypeAnnounce,
 BASE_FEATURE(kAccessibilityImproveLiveRegionAnnounce,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When this feature is enabled, the accessibility tree will be requested to
+// layout based on the actions that are performed on the renderer side. In
+// particular this will be used to determine whether or not a node is clickable
+// or not.
+BASE_FEATURE(kAccessibilityRequestLayoutBasedActions,
+             "AccessibilityRequestLayoutBasedActions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the second iteration of AccessibilityPageZoom, which continues
 // the work completed in the first experiment and the subsequent fast-follow.
 // This version of the experiment explores enabling OS-level adjustments.
