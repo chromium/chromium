@@ -402,6 +402,15 @@ EncoderStatus MediaFoundationVideoEncodeAccelerator::Initialize(
     return {EncoderStatus::Codes::kEncoderInitializationError};
   }
 
+  LUID mft_luid{0, 0};
+  UINT32 out_size = 0;
+  activate_->GetBlob(MFT_ENUM_ADAPTER_LUID, reinterpret_cast<BYTE*>(&mft_luid),
+                     sizeof(LUID), &out_size);
+  if (out_size != sizeof(LUID) || mft_luid.HighPart != luid_.HighPart ||
+      mft_luid.LowPart != luid_.LowPart) {
+    dxgi_resource_mapping_required_ = true;
+  }
+
   // Set the SW implementation of the rate controller. Do nothing if SW RC is
   // not supported.
   SetSWRateControl();
@@ -535,6 +544,14 @@ EncoderStatus MediaFoundationVideoEncodeAccelerator::Initialize(
     }
   }
 
+  // Disable shared image encode if MFVP or encoder HMFT requires pre-mapping
+  // of incoming video frame, as the feature is intended to reduce video frame
+  // readback.
+  if (dxgi_resource_mapping_required_) {
+    encoder_info_.supports_gpu_shared_images = false;
+    encoder_info_.gpu_supported_pixel_formats.clear();
+  }
+
   // Notify encoder info change to client after initialization succeeded.
   client_->NotifyEncoderInfoChange(encoder_info_);
 
@@ -563,15 +580,8 @@ bool MediaFoundationVideoEncodeAccelerator::InitializeMFT(
       return false;
     }
 
-    LUID mft_luid{0, 0};
-    UINT32 out_size = 0;
-    activate_->GetBlob(MFT_ENUM_ADAPTER_LUID,
-                       reinterpret_cast<BYTE*>(&mft_luid), sizeof(LUID),
-                       &out_size);
-
     hr = E_FAIL;
-    if (out_size == sizeof(LUID) && mft_luid.HighPart == luid_.HighPart &&
-        mft_luid.LowPart == luid_.LowPart) {
+    if (!dxgi_resource_mapping_required_) {
       // Only try to set the device manager for MFTs on the correct adapter.
       // Don't rely on MFT rejecting the device manager.
       auto mf_dxgi_device_manager =
