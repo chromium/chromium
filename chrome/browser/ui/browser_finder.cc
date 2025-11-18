@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/display/display.h"
@@ -312,10 +313,14 @@ Browser* FindBrowserWithActiveWindow() {
 
 Browser* FindBrowserWithTab(const WebContents* web_contents) {
   DCHECK(web_contents);
-  auto& all_tabs = AllTabContentses();
-  auto it = std::ranges::find(all_tabs, web_contents);
-
-  return (it == all_tabs.end()) ? nullptr : it.browser();
+  Browser* found = nullptr;
+  tabs::ForEachTabInterface([web_contents, &found](tabs::TabInterface* tab) {
+    if (tab->GetContents() == web_contents) {
+      found = tab->GetBrowserWindowInterface()->GetBrowserForMigrationOnly();
+    }
+    return !found;
+  });
+  return found;
 }
 
 Browser* FindBrowserWithGroup(tab_groups::TabGroupId group, Profile* profile) {

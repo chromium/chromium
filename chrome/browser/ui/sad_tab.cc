@@ -20,6 +20,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/ui_metrics/sadtab_metrics_types.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
@@ -64,8 +65,10 @@ bool IsRepeatedlyCrashing() {
 }
 
 bool AreOtherTabsOpen() {
-  return std::distance(AllTabContentses().begin(), AllTabContentses().end()) >
-         1;
+  int count = 0;
+  tabs::ForEachTabInterface(
+      [&count](tabs::TabInterface* tab) { return ++count < 2; });
+  return count > 1;
 }
 
 }  // namespace

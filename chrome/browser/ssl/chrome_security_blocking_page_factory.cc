@@ -60,6 +60,7 @@
 #include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/captive_portal/content/captive_portal_tab_helper.h"
+#include "components/tabs/public/tab_interface.h"
 #include "net/base/net_errors.h"
 #include "net/dns/public/secure_dns_mode.h"
 #endif
@@ -360,17 +361,24 @@ void ChromeSecurityBlockingPageFactory::OpenLoginPageForBrowser(
   // new popup windows where secure DNS will be disabled.
   if (secure_dns_config.mode() == net::SecureDnsMode::kSecure) {
     // If there is already a captive portal popup window, do not create another.
-    for (auto* contents : AllTabContentses()) {
-      captive_portal::CaptivePortalTabHelper* captive_portal_tab_helper =
+    bool found_login_tab = false;
+    tabs::ForEachTabInterface([&found_login_tab](tabs::TabInterface* tab) {
+      content::WebContents* const contents = tab->GetContents();
+      captive_portal::CaptivePortalTabHelper* const captive_portal_tab_helper =
           captive_portal::CaptivePortalTabHelper::FromWebContents(contents);
       if (captive_portal_tab_helper->IsLoginTab()) {
-        Browser* browser_with_login_tab = chrome::FindBrowserWithTab(contents);
-        browser_with_login_tab->window()->Show();
-        browser_with_login_tab->tab_strip_model()->ActivateTabAt(
-            browser_with_login_tab->tab_strip_model()->GetIndexOfWebContents(
-                contents));
-        return;
+        BrowserWindowInterface* const browser_with_login_tab =
+            tab->GetBrowserWindowInterface();
+        browser_with_login_tab->GetWindow()->Show();
+        TabStripModel* const tab_strip_model =
+            browser_with_login_tab->GetTabStripModel();
+        tab_strip_model->ActivateTabAt(tab_strip_model->GetIndexOfTab(tab));
+        found_login_tab = true;
       }
+      return !found_login_tab;
+    });
+    if (found_login_tab) {
+      return;
     }
   }
 

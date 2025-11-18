@@ -57,6 +57,7 @@
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/security_interstitials/content/ssl_blocking_page.h"
 #include "components/security_interstitials/content/ssl_error_handler.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
@@ -198,14 +199,25 @@ std::string CreateServerRedirect(const std::string& dest_url) {
 
 // Returns the total number of tabs across all Browsers, for all Profiles.
 int NumTabs() {
-  return std::distance(AllTabContentses().begin(), AllTabContentses().end());
+  int count = 0;
+  tabs::ForEachTabInterface([&count](tabs::TabInterface* tab) {
+    ++count;
+    return true;
+  });
+  return count;
 }
 
 // Returns the total number of loading tabs across all Browsers, for all
 // Profiles.
 int NumLoadingTabs() {
-  return std::ranges::count_if(AllTabContentses(),
-                               &content::WebContents::IsLoading);
+  int count = 0;
+  tabs::ForEachTabInterface([&count](tabs::TabInterface* tab) {
+    if (tab->GetContents()->IsLoading()) {
+      ++count;
+    }
+    return true;
+  });
+  return count;
 }
 
 bool IsLoginTab(WebContents* web_contents) {
@@ -407,10 +419,13 @@ class FailLoadsAfterLoginObserver : public LoadObserver::Observer {
 
 FailLoadsAfterLoginObserver::FailLoadsAfterLoginObserver()
     : waiting_for_navigation_(false) {
-  std::ranges::copy_if(
-      AllTabContentses(),
-      std::inserter(tabs_needing_navigation_, tabs_needing_navigation_.end()),
-      &content::WebContents::IsLoading);
+  tabs::ForEachTabInterface([this](tabs::TabInterface* tab) {
+    content::WebContents* const contents = tab->GetContents();
+    if (contents->IsLoading()) {
+      tabs_needing_navigation_.insert(contents);
+    }
+    return true;
+  });
   // Add an observer for each tab.
   for (WebContents* contents : tabs_needing_navigation_) {
     load_observers_.push_back(std::make_unique<LoadObserver>(this, contents));
@@ -1341,10 +1356,14 @@ CaptivePortalBrowserTest::GetStateOfTabReloaderAt(Browser* browser,
 
 int CaptivePortalBrowserTest::NumTabsWithState(
     captive_portal::CaptivePortalTabReloader::State state) const {
-  return std::ranges::count(AllTabContentses(), state,
-                            [this](content::WebContents* web_contents) {
-                              return GetStateOfTabReloader(web_contents);
-                            });
+  int count = 0;
+  tabs::ForEachTabInterface([this, state, &count](tabs::TabInterface* tab) {
+    if (GetStateOfTabReloader(tab->GetContents()) == state) {
+      ++count;
+    }
+    return true;
+  });
+  return count;
 }
 
 int CaptivePortalBrowserTest::NumBrokenTabs() const {

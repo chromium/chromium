@@ -53,6 +53,7 @@
 #include "components/services/app_service/public/cpp/app_capability_access_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/user_manager/user_manager.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/media_session.h"
@@ -374,10 +375,11 @@ void MediaClientImpl::RequestCaptureState() {
 }
 
 void MediaClientImpl::SuspendMediaSessions() {
-  for (auto* web_contents : AllTabContentses()) {
-    content::MediaSession::Get(web_contents)
+  tabs::ForEachTabInterface([](tabs::TabInterface* tab) {
+    content::MediaSession::Get(tab->GetContents())
         ->Suspend(content::MediaSession::SuspendType::kSystem);
-  }
+    return true;
+  });
 }
 
 void MediaClientImpl::OnRequestUpdate(int render_process_id,

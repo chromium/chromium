@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -81,7 +82,13 @@ std::vector<content::WebContents*> GetHungWebContentsList(
     return IsWebContentsHung(web_contents, hung_process) &&
            !web_contents->IsCrashed();
   };
-  std::ranges::copy_if(AllTabContentses(), std::back_inserter(result), is_hung);
+  tabs::ForEachTabInterface([&result, &is_hung](tabs::TabInterface* tab) {
+    content::WebContents* const web_contents = tab->GetContents();
+    if (is_hung(web_contents)) {
+      result.push_back(web_contents);
+    }
+    return true;
+  });
 
   // Move |hung_web_contents| to the front.  It might be missing from the
   // initial |results| when it hasn't yet committed a navigation into the hung

@@ -35,6 +35,7 @@
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/tabs/public/split_tab_id.h"
 #include "components/tabs/public/split_tab_visual_data.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/url_formatter/url_fixer.h"
 #include "content/public/browser/favicon_status.h"
 #include "content/public/browser/navigation_controller.h"
@@ -1400,8 +1401,10 @@ void ExtensionTabUtil::CreateTab(
 void ExtensionTabUtil::ForEachTab(
     base::RepeatingCallback<void(WebContents*)> callback) {
 #if !BUILDFLAG(IS_ANDROID)
-  for (auto* web_contents : AllTabContentses())
-    callback.Run(web_contents);
+  tabs::ForEachTabInterface([&callback](tabs::TabInterface* tab) {
+    callback.Run(tab->GetContents());
+    return true;
+  });
 #else
   // Android has its own notion of the tab strip and cannot use the code above.
   for (TabModel* tab_model : TabModelList::models()) {

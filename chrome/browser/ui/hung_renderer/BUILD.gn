@@ -16,6 +16,7 @@ source_set("hung_renderer") {
     "//base:i18n",
     "//chrome/app:generated_resources",
     "//chrome/browser/ui/tab_contents",
+    "//components/tabs:public",
     "//components/url_formatter",
     "//content/public/browser",
     "//ui/base",
