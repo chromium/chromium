@@ -80,8 +80,9 @@ FontDataManager::FontDataManager()
 FontDataManager::~FontDataManager() = default;
 
 int FontDataManager::onCountFamilies() const {
+  base::AutoLock locked(family_names_lock_);
   if (family_names_.empty()) {
-    GetAllFamilyNames();
+    GetAllFamilyNamesLockRequired();
   }
 
   return family_names_.size();
@@ -89,12 +90,13 @@ int FontDataManager::onCountFamilies() const {
 
 void FontDataManager::onGetFamilyName(int index,
                                       SkString* requested_family_name) const {
-  if (family_names_.empty()) {
-    GetAllFamilyNames();
-  }
-
   if (index < 0) {
     return;
+  }
+
+  base::AutoLock locked(family_names_lock_);
+  if (family_names_.empty()) {
+    GetAllFamilyNamesLockRequired();
   }
 
   size_t family_index = static_cast<size_t>(index);
@@ -341,7 +343,7 @@ sk_sp<SkTypeface> FontDataManager::CreateTypefaceFromMatchResult(
       // request that resolves to the same font file.
       base::MemoryMappedFile* file_mapping = nullptr;
       {
-        base::AutoLock locked(lock_);
+        base::AutoLock locked(mapped_files_lock_);
 
         std::unique_ptr<base::MemoryMappedFile>& mapped_files_entry =
             mapped_files_[match_result->typeface_data->get_font_file()->id];
@@ -374,7 +376,7 @@ sk_sp<SkTypeface> FontDataManager::CreateTypefaceFromMatchResult(
       // process. A cache is used to avoid mapping the same memory space
       // multiple time.
       {
-        base::AutoLock locked(lock_);
+        base::AutoLock locked(mapped_regions_lock_);
 
         const auto iter =
             mapped_regions_.find(font_data_memory_region.GetGUID());
@@ -405,13 +407,13 @@ sk_sp<SkTypeface> FontDataManager::CreateTypefaceFromMatchResult(
   return typeface;
 }
 
-void FontDataManager::GetAllFamilyNames() const {
+void FontDataManager::GetAllFamilyNamesLockRequired() const {
   GetRemoteFontDataService().GetAllFamilyNames(&family_names_);
 }
 
 std::optional<sk_sp<SkTypeface>> FontDataManager::TryGetFromCache(
     const FontDataManager::MatchFamilyRequest& request) const {
-  base::AutoLock locked(lock_);
+  base::AutoLock locked(typeface_cache_lock_);
   auto iter = typeface_cache_.Get(request);
   if (iter != typeface_cache_.end()) {
     return iter->second;
@@ -423,7 +425,7 @@ std::optional<sk_sp<SkTypeface>> FontDataManager::TryGetFromCache(
 void FontDataManager::AddToCache(
     const FontDataManager::MatchFamilyRequest& request,
     sk_sp<SkTypeface> typeface) const {
-  base::AutoLock locked(lock_);
+  base::AutoLock locked(typeface_cache_lock_);
   typeface_cache_.Put(std::move(request), typeface);
 }
 

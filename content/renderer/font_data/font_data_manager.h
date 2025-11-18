@@ -90,8 +90,9 @@ class CONTENT_EXPORT FontDataManager : public SkFontMgr {
       mojom::MatchFamilyNameResultPtr match_result) const;
 
   // This must be const to allow being called from onCountFamilies and
-  // onGetFamilyNames, but it does mutate family_names_.
-  void GetAllFamilyNames() const;
+  // onGetFamilyNames, but it does mutate family_names_. Requires holding
+  // `family_names_lock_`.
+  void GetAllFamilyNamesLockRequired() const;
 
   // Key of the typeface_cache_.
   struct MatchFamilyRequest {
@@ -131,21 +132,32 @@ class CONTENT_EXPORT FontDataManager : public SkFontMgr {
              lhs.width == rhs.width && lhs.slant == rhs.slant;
     }
   };
-  // Cache of the font requests to existing typefaces.
+
+  // Calls to this class can be on any thread hence there is a lock to guard
+  // each of the caches. The mapped regions, mapped files, typeface, and family
+  // names caches are independent of one another (they're not read/written in
+  // the same circumstances and they don't have to stay in sync), so they can
+  // each get a separate lock.
+  mutable base::Lock mapped_regions_lock_;
+  mutable base::Lock mapped_files_lock_;
+  mutable base::Lock family_names_lock_;
+  mutable base::Lock typeface_cache_lock_;
+
+  // Cache of the font requests to existing typefaces. Allows replying directly
+  // with a typeface for a match request that was already made.
   mutable base::HashingLRUCache<MatchFamilyRequest,
                                 sk_sp<SkTypeface>,
                                 MatchFamilyRequestHash,
                                 MatchFamilyRequestEqual>
-      typeface_cache_;
+      typeface_cache_ GUARDED_BY(typeface_cache_lock_);
 
-  // Calls to this class can be on any thread hence there is a lock to guard
-  // the cache.
-  mutable base::Lock lock_;
-
-  // Cache of the shared memory region by GUID to known font mappings.
+  // Cache of the shared memory region by GUID to known font mappings. Allows
+  // reusing a pre-existing shared memory region if it contains the data
+  // required to fulfill a match request even though that match request doesn't
+  // correspond to a typeface cached in `typeface_cache_`.
   mutable absl::flat_hash_map<base::UnguessableToken,
                               base::ReadOnlySharedMemoryMapping>
-      mapped_regions_;
+      mapped_regions_ GUARDED_BY(mapped_regions_lock_);
 
   // Cache of the memory mapped files to ensure the mapping lives.
   // The key is an ID received from the renderer along with the handle that
@@ -159,13 +171,13 @@ class CONTENT_EXPORT FontDataManager : public SkFontMgr {
   // typeface objects that reference them which can be used for the entire
   // lifetime of the renderer process.
   mutable absl::flat_hash_map<uint64_t, std::unique_ptr<base::MemoryMappedFile>>
-      mapped_files_ GUARDED_BY(lock_);
+      mapped_files_ GUARDED_BY(mapped_files_lock_);
 
   // A cache of all the font family names that could be returned by
   // onGetFamilyName. When populated, this has the same amount of elements as
   // returned by onCountFamilies. This is populated on the first call to either
   // onCountFamilies or onGetFamilyName.
-  mutable std::vector<std::string> family_names_;
+  mutable std::vector<std::string> family_names_ GUARDED_BY(family_names_lock_);
 
 #if BUILDFLAG(ENABLE_FREETYPE)
   sk_sp<SkFontMgr> custom_fnt_mgr_;
