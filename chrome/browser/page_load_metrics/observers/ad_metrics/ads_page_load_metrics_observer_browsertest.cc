@@ -18,7 +18,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -34,9 +33,7 @@
 #include "components/page_load_metrics/browser/observers/ad_metrics/ad_intervention_browser_test_utils.h"
 #include "components/page_load_metrics/browser/observers/ad_metrics/frame_tree_data.h"
 #include "components/page_load_metrics/browser/observers/use_counter_page_load_metrics_observer.h"
-#include "components/page_load_metrics/browser/page_load_metrics_memory_tracker.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
-#include "components/performance_manager/public/v8_memory/v8_detailed_memory.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
 #include "components/subresource_filter/content/shared/browser/ruleset_service.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
@@ -109,12 +106,6 @@ const char kPeakWindowdPercentHistogramId[] =
 const char kHeavyAdInterventionTypeHistogramId[] =
     "PageLoad.Clients.Ads.HeavyAds.InterventionType2";
 
-const char kMemoryMainFrameMaxHistogramId[] =
-    "PageLoad.Clients.Ads.Memory.MainFrame.Max";
-
-const char kMemoryUpdateCountHistogramId[] =
-    "PageLoad.Clients.Ads.Memory.UpdateCount";
-
 }  // namespace
 
 class AdsPageLoadMetricsObserverBrowserTest
@@ -139,8 +130,7 @@ class AdsPageLoadMetricsObserverBrowserTest
 
   void SetUp() override {
     std::vector<base::test::FeatureRef> enabled = {
-        subresource_filter::kAdTagging,
-        page_load_metrics::features::kV8PerFrameMemoryMonitoring};
+        subresource_filter::kAdTagging};
     std::vector<base::test::FeatureRef> disabled = {};
 
     scoped_feature_list_.InitWithFeatures(enabled, disabled);
@@ -3114,113 +3104,6 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
       "PageLoad.Clients.Ads.Bytes.AdFrames.Aggregate.Total2", 0);
   histogram_tester.ExpectTotalCount(
       "PageLoad.Clients.Ads.FrameCounts.AdFrames.Total", 0);
-}
-
-class AdsMemoryMeasurementBrowserTest
-    : public subresource_filter::SubresourceFilterBrowserTest {
- public:
-  AdsMemoryMeasurementBrowserTest() = default;
-
-  AdsMemoryMeasurementBrowserTest(const AdsMemoryMeasurementBrowserTest&) =
-      delete;
-  AdsMemoryMeasurementBrowserTest& operator=(
-      const AdsMemoryMeasurementBrowserTest&) = delete;
-
-  ~AdsMemoryMeasurementBrowserTest() override = default;
-
-  void SetUp() override {
-    performance_manager::v8_memory::internal::
-        SetEagerMemoryMeasurementEnabledForTesting(true);
-    std::vector<base::test::FeatureRef> enabled = {
-        subresource_filter::kAdTagging,
-        page_load_metrics::features::kV8PerFrameMemoryMonitoring};
-    std::vector<base::test::FeatureRef> disabled = {};
-    scoped_feature_list_.InitWithFeatures(enabled, disabled);
-
-    subresource_filter::SubresourceFilterBrowserTest::SetUp();
-  }
-
-  std::unique_ptr<page_load_metrics::PageLoadMetricsTestWaiter>
-  CreatePageLoadMetricsTestWaiter() {
-    content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
-    return std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
-        web_contents);
-  }
-
-  std::unordered_set<content::GlobalRenderFrameHostId,
-                     content::GlobalRenderFrameHostIdHasher>
-  GetFrameRoutingIds() {
-    content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
-    std::unordered_set<content::GlobalRenderFrameHostId,
-                       content::GlobalRenderFrameHostIdHasher>
-        frame_routing_ids;
-
-    web_contents->GetPrimaryMainFrame()->ForEachRenderFrameHost(
-        [&frame_routing_ids](content::RenderFrameHost* frame) {
-          frame_routing_ids.insert(frame->GetGlobalId());
-        });
-
-    return frame_routing_ids;
-  }
-
- private:
-  std::unique_ptr<page_load_metrics::PageLoadMetricsTestWaiter> waiter_;
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(AdsMemoryMeasurementBrowserTest,
-                       SingleAdFrame_MaxMemoryBytesRecorded) {
-  base::HistogramTester histogram_tester;
-
-  // Instantiate a memory request and observer to set memory measurement
-  // polling parameters. PageLoadMetricsMemoryTracker will get results as soon
-  // as they're available for this request, which is able to use
-  // kEagerForTesting mode.
-  using performance_manager::v8_memory::V8DetailedMemoryRequest;
-  auto memory_request = std::make_unique<V8DetailedMemoryRequest>(
-      base::Seconds(1),
-      V8DetailedMemoryRequest::MeasurementMode::kEagerForTesting);
-  memory_request->StartMeasurement();
-
-  // cross_site_iframe_factory loads URLs like:
-  // http://b.com:40919/cross_site_iframe_factory.html?b()
-  SetRulesetWithRules({subresource_filter::testing::CreateSuffixRule("b()")});
-  const GURL main_url(embedded_test_server()->GetURL(
-      "a.com", "/cross_site_iframe_factory.html?a(b)"));
-
-  // Create a waiter, navigate to the main URL, and prime the waiter with the
-  // mainframe's routing ID.
-  auto waiter = CreatePageLoadMetricsTestWaiter();
-
-  // Navigate to the main URL.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
-
-  waiter->AddMemoryUpdateExpectation(browser()
-                                         ->tab_strip_model()
-                                         ->GetActiveWebContents()
-                                         ->GetPrimaryMainFrame()
-                                         ->GetGlobalId());
-
-  // Add any additional frame routing IDs and wait until we get positive
-  // memory measurements for each frame.
-  for (content::GlobalRenderFrameHostId id : GetFrameRoutingIds()) {
-    waiter->AddMemoryUpdateExpectation(id);
-  }
-  waiter->Wait();
-
-  // Navigate away to force the histogram recording.
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
-
-  histogram_tester.ExpectTotalCount(kMemoryMainFrameMaxHistogramId, 1);
-  EXPECT_GT(
-      histogram_tester.GetAllSamples(kMemoryMainFrameMaxHistogramId)[0].min, 0);
-
-  histogram_tester.ExpectTotalCount(kMemoryUpdateCountHistogramId, 1);
-  EXPECT_GE(
-      histogram_tester.GetAllSamples(kMemoryUpdateCountHistogramId)[0].min, 1);
 }
 
 class AdsPageLoadMetricsObserverPrerenderingBrowserTest

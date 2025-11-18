@@ -764,7 +764,7 @@ void UkmPageLoadMetricsObserver::
     builder
         .SetPaintTimingBeforeSoftNavigation_NavigationToLargestContentfulPaint2(
             largest_contentful_paint.Time().value().InMilliseconds());
-        PAGE_LOAD_HISTOGRAM("PageLoad.BeforeSoftNavigation.LargestContentfulPaint2",
+    PAGE_LOAD_HISTOGRAM("PageLoad.BeforeSoftNavigation.LargestContentfulPaint2",
                         largest_contentful_paint.Time().value());
   }
   builder.Record(ukm::UkmRecorder::Get());
@@ -1363,11 +1363,6 @@ void UkmPageLoadMetricsObserver::ReportLayoutStability() {
                            GetDelegate()
                                .GetPageRenderData()
                                .layout_shift_score_before_input_or_scroll));
-
-  base::UmaHistogramCounts100(
-      "PageLoad.LayoutInstability.CumulativeShiftScore.MainFrame",
-      page_load_metrics::LayoutShiftUmaValue(
-          GetDelegate().GetMainFrameRenderData().layout_shift_score));
 }
 
 void UkmPageLoadMetricsObserver::ReportLayoutInstabilityAfterFirstForeground() {

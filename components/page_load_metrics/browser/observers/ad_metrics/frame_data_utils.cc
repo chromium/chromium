@@ -93,10 +93,4 @@ void PeakCpuAggregator::UpdatePeakWindowedPercent(
     peak_windowed_percent_ = current_windowed_percent;
 }
 
-void MemoryUsageAggregator::UpdateUsage(base::ByteCount delta_bytes) {
-  current_bytes_used_ += delta_bytes;
-  if (current_bytes_used_ > max_bytes_used_)
-    max_bytes_used_ = current_bytes_used_;
-}
-
 }  // namespace page_load_metrics

@@ -30,7 +30,6 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/page_load_metrics/browser/features.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
-#include "components/page_load_metrics/browser/page_load_metrics_memory_tracker.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/page_load_metrics/browser/resource_tracker.h"
 #include "components/page_load_metrics/common/page_end_reason.h"
@@ -801,34 +800,6 @@ void AdsPageLoadMetricsObserver::OnSubFrameDeleted(
   ad_frames_data_.erase(id_and_data);
 }
 
-void AdsPageLoadMetricsObserver::OnV8MemoryChanged(
-    const std::vector<MemoryUpdate>& memory_updates) {
-  for (const auto& update : memory_updates) {
-    memory_update_count_++;
-
-    content::RenderFrameHost* render_frame_host =
-        content::RenderFrameHost::FromID(update.routing_id);
-
-    if (!render_frame_host) {
-      continue;
-    }
-
-    content::FrameTreeNodeId frame_node_id =
-        render_frame_host->GetFrameTreeNodeId();
-    FrameTreeData* ad_frame_data = FindFrameData(frame_node_id);
-
-    if (ad_frame_data) {
-      ad_frame_data->UpdateMemoryUsage(update.delta_bytes);
-      UpdateAggregateMemoryUsage(update.delta_bytes,
-                                 ad_frame_data->visibility());
-    } else if (!render_frame_host->GetParentOrOuterDocument()) {
-      // |render_frame_host| is the outermost main frame.
-      aggregate_frame_data_->update_outermost_main_frame_memory(
-          update.delta_bytes);
-    }
-  }
-}
-
 void AdsPageLoadMetricsObserver::OnAdAuctionComplete(
     bool is_server_auction,
     bool is_on_device_auction,
@@ -1187,14 +1158,6 @@ void AdsPageLoadMetricsObserver::RecordAggregateHistogramsForAdTagging(
                 outermost_main_frame_resource_data.ad_network_bytes());
   ADS_HISTOGRAM("Bytes.MainFrame.Ads.Total2", PAGE_BYTES_HISTOGRAM, visibility,
                 outermost_main_frame_resource_data.ad_bytes());
-  if (base::FeatureList::IsEnabled(
-          page_load_metrics::features::kV8PerFrameMemoryMonitoring)) {
-    PAGE_BYTES_HISTOGRAM(
-        "PageLoad.Clients.Ads.Memory.MainFrame.Max",
-        aggregate_frame_data_->outermost_main_frame_max_memory());
-    base::UmaHistogramCounts10000("PageLoad.Clients.Ads.Memory.UpdateCount",
-                                  memory_update_count_);
-  }
 }
 
 void AdsPageLoadMetricsObserver::RecordPerFrameMetrics(
@@ -1571,20 +1534,6 @@ AdsPageLoadMetricsObserver::GetHeavyAdBlocklist() {
   }
 
   return heavy_ad_service_->heavy_ad_blocklist();
-}
-
-void AdsPageLoadMetricsObserver::UpdateAggregateMemoryUsage(
-    base::ByteCount delta_bytes,
-    FrameVisibility frame_visibility) {
-  // For both the given |frame_visibility| and kAnyVisibility, update the
-  // current aggregate memory usage by adding the needed delta, and then
-  // if the current aggregate usage is greater than the recorded
-  // max aggregate usage, update the max aggregate usage.
-  for (const auto visibility :
-       {FrameVisibility::kAnyVisibility, frame_visibility}) {
-    aggregate_frame_data_->update_ad_memory_by_visibility(visibility,
-                                                          delta_bytes);
-  }
 }
 
 void AdsPageLoadMetricsObserver::CleanupDeletedFrame(

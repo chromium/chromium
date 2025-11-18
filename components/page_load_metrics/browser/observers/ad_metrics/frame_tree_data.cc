@@ -64,13 +64,8 @@ void FrameTreeData::MaybeUpdateFrameDepth(
     frame_depth_ = GetFullFrameDepth(render_frame_host) - root_frame_depth_;
 }
 
-void FrameTreeData::UpdateMemoryUsage(base::ByteCount delta_bytes) {
-  memory_usage_.UpdateUsage(delta_bytes);
-}
-
 bool FrameTreeData::ShouldRecordFrameForMetrics() const {
-  return !resource_data().bytes().is_zero() || !GetTotalCpuUsage().is_zero() ||
-         memory_usage_.max_bytes_used().is_positive();
+  return !resource_data().bytes().is_zero() || !GetTotalCpuUsage().is_zero();
 }
 
 void FrameTreeData::RecordAdFrameLoadUkmEvent(ukm::SourceId source_id) const {

@@ -5,24 +5,18 @@
 #include "android_webview/browser/page_load_metrics/page_load_metrics_initialize.h"
 
 #include "android_webview/browser/page_load_metrics/aw_gws_page_load_metrics_observer.h"
-#include "android_webview/browser/page_load_metrics/aw_page_load_metrics_memory_tracker_factory.h"
 #include "android_webview/browser/page_load_metrics/service_level_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/features.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/page_load_metrics/browser/observers/abandoned_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/third_party_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_embedder_base.h"
-#include "components/page_load_metrics/browser/page_load_metrics_memory_tracker.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "components/page_load_metrics/google/browser/gws_abandoned_page_load_metrics_observer.h"
 
 namespace content {
 class BrowserContext;
 }  // namespace content
-
-namespace page_load_metrics {
-class PageLoadMetricsMemoryTracker;
-}  // namespace page_load_metrics
 
 namespace android_webview {
 
@@ -43,9 +37,6 @@ class PageLoadMetricsEmbedder
   bool IsNoStatePrefetch(content::WebContents* web_contents) override;
   bool IsExtensionUrl(const GURL& url) override;
   bool IsNonTabWebUI(const GURL& url) override;
-  page_load_metrics::PageLoadMetricsMemoryTracker*
-  GetMemoryTrackerForBrowserContext(
-      content::BrowserContext* browser_context) override;
 
  protected:
   // page_load_metrics::PageLoadMetricsEmbedderBase:
@@ -87,18 +78,6 @@ bool PageLoadMetricsEmbedder::IsNonTabWebUI(const GURL& url) {
   // Android web view doesn't have non-tab webUI surfaces (such as desktop tab
   // search, side panel, etc).
   return false;
-}
-
-page_load_metrics::PageLoadMetricsMemoryTracker*
-PageLoadMetricsEmbedder::GetMemoryTrackerForBrowserContext(
-    content::BrowserContext* browser_context) {
-  if (!base::FeatureList::IsEnabled(
-          page_load_metrics::features::kV8PerFrameMemoryMonitoring)) {
-    return nullptr;
-  }
-
-  return AwPageLoadMetricsMemoryTrackerFactory::GetForBrowserContext(
-      browser_context);
 }
 
 }  // namespace

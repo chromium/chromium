@@ -128,23 +128,6 @@ class PeakCpuAggregator {
   int peak_windowed_percent_ = 0;
 };
 
-class MemoryUsageAggregator {
- public:
-  void UpdateUsage(base::ByteCount delta_bytes);
-
-  base::ByteCount max_bytes_used() const { return max_bytes_used_; }
-
- private:
-  // Maximum concurrent memory usage by V8 in this ad frame tree.
-  // Tracks max value of |v8_current_memory_bytes_used_| for this frame tree.
-  base::ByteCount max_bytes_used_;
-
-  // Current concurrent memory usage by V8 in this ad frame tree.
-  // Computation is best-effort, as it relies on individual asynchronous
-  // per-frame measurements, some of which may be stale.
-  base::ByteCount current_bytes_used_;
-};
-
 }  // namespace page_load_metrics
 
 #endif  // COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_AD_METRICS_FRAME_DATA_UTILS_H_

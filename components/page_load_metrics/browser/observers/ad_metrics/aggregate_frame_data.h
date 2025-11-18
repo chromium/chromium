@@ -81,8 +81,6 @@ class AggregateFrameData {
     base::ByteCount bytes;
     base::ByteCount network_bytes;
     size_t frames = 0;
-    // MemoryUsage is aggregated when a memory update is received.
-    MemoryUsageAggregator memory;
   };
 
   // Returns the appropriate AdDataByVisibility given the |visibility|.
@@ -105,23 +103,9 @@ class AggregateFrameData {
                                       size_t frames) {
     ad_data_[static_cast<size_t>(visibility)].frames += frames;
   }
-  void update_ad_memory_by_visibility(FrameVisibility visibility,
-                                      base::ByteCount delta_bytes) {
-    ad_data_[static_cast<size_t>(visibility)].memory.UpdateUsage(delta_bytes);
-  }
-
-  // Updates the memory for the main frame of the page.
-  void update_outermost_main_frame_memory(base::ByteCount delta_memory) {
-    outermost_main_frame_memory_.UpdateUsage(delta_memory);
-  }
 
   // Updates the total ad cpu usage for the page.
   void update_ad_cpu_usage(base::TimeDelta usage) { ad_cpu_usage_ += usage; }
-
-  // Get the total memory usage for this page.
-  base::ByteCount outermost_main_frame_max_memory() const {
-    return outermost_main_frame_memory_.max_bytes_used();
-  }
 
   // Get the total cpu usage of this page.
   base::TimeDelta total_cpu_usage() const { return cpu_usage_; }
@@ -142,9 +126,6 @@ class AggregateFrameData {
   // The overall cpu usage for this page.
   base::TimeDelta cpu_usage_;
   base::TimeDelta ad_cpu_usage_;
-
-  // The memory used by the outermost main frame.
-  MemoryUsageAggregator outermost_main_frame_memory_;
 
   // The resource data for this page.
   ResourceLoadAggregator resource_data_;

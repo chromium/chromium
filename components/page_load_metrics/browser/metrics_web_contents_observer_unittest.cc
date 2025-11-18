@@ -1310,11 +1310,6 @@ class MetricsWebContentsObserverNonPrimaryPageTest
       return CONTINUE_OBSERVING;
     }
 
-    void OnV8MemoryChanged(
-        const std::vector<MemoryUpdate>& memory_updates) override {
-      owner_->OnV8MemoryChanged(committed_url_, memory_updates);
-    }
-
    private:
     raw_ptr<MetricsWebContentsObserverNonPrimaryPageTest> owner_;
     GURL committed_url_;
@@ -1341,52 +1336,6 @@ class MetricsWebContentsObserverNonPrimaryPageTest
       override {
     return std::make_unique<Embedder>(this);
   }
-
-  void OnV8MemoryChanged(const GURL& url,
-                         const std::vector<MemoryUpdate>& memory_updates) {
-    std::vector<MemoryUpdate>& updates_for_url = observed_memory_updates_[url];
-    updates_for_url.insert(updates_for_url.end(), memory_updates.begin(),
-                           memory_updates.end());
-  }
-
- protected:
-  std::map<GURL, std::vector<MemoryUpdate>> observed_memory_updates_;
 };
-
-TEST_F(MetricsWebContentsObserverNonPrimaryPageTest, MemoryUpdates) {
-  // Go to the URL1.
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL(kDefaultTestUrl));
-  ASSERT_EQ(main_rfh()->GetLastCommittedURL().spec(), GURL(kDefaultTestUrl));
-  content::GlobalRenderFrameHostId rfh1_id = main_rfh()->GetGlobalId();
-
-  ASSERT_EQ(0, CountCompleteTimingReported());
-  EXPECT_EQ(0, CountOnBackForwardCacheEntered());
-  EXPECT_EQ(1, tracker_committed_count());
-
-  // Go to the URL2.
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL(kDefaultTestUrl2));
-  ASSERT_EQ(main_rfh()->GetLastCommittedURL().spec(), GURL(kDefaultTestUrl2));
-  content::GlobalRenderFrameHostId rfh2_id = main_rfh()->GetGlobalId();
-
-  ASSERT_EQ(1, CountCompleteTimingReported());
-  EXPECT_EQ(1, CountOnBackForwardCacheEntered());
-  EXPECT_EQ(2, tracker_committed_count());
-
-  std::vector<MemoryUpdate> memory_updates = {{rfh1_id, base::ByteCount(100)},
-                                              {rfh2_id, base::ByteCount(200)}};
-  observer()->OnV8MemoryChanged(memory_updates);
-
-  // Verify that memory updates are observed both in primary URL2 and
-  // non-primary URL1.
-  ASSERT_EQ(2u, observed_memory_updates_.size());
-  ASSERT_EQ(1u, observed_memory_updates_[GURL(kDefaultTestUrl)].size());
-  EXPECT_EQ(base::ByteCount(100),
-            observed_memory_updates_[GURL(kDefaultTestUrl)][0].delta_bytes);
-  ASSERT_EQ(1u, observed_memory_updates_[GURL(kDefaultTestUrl2)].size());
-  EXPECT_EQ(base::ByteCount(200),
-            observed_memory_updates_[GURL(kDefaultTestUrl2)][0].delta_bytes);
-}
 
 }  // namespace page_load_metrics

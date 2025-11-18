@@ -67,7 +67,6 @@ class LoadingPredictorPageLoadMetricsObserver
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
   void OnFirstMeaningfulPaintInMainFrameDocument(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
-
  private:
   raw_ptr<predictors::ResourcePrefetchPredictor> predictor_;
   raw_ptr<predictors::LoadingPredictorTabHelper> predictor_tab_helper_;

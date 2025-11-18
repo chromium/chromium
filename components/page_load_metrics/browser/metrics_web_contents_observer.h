@@ -44,7 +44,6 @@ class PageLoadMetricsEmbedderInterface;
 class PageLoadMetricsMemoryTracker;
 class PageLoadMetricsObserverDelegate;
 class PageLoadTracker;
-struct MemoryUpdate;
 
 // MetricsWebContentsObserver tracks page loads and loading metrics
 // related data based on IPC messages received from a
@@ -192,11 +191,6 @@ class MetricsWebContentsObserver
   // it's likely that prefetch will occur in this WebContents. This should
   // not be called within WebContentsObserver::DidFinishNavigation methods.
   void OnPrefetchLikely();
-
-  // Called when V8 per-frame memory usage updates are available. Virtual for
-  // test classes to override.
-  virtual void OnV8MemoryChanged(
-      const std::vector<MemoryUpdate>& memory_updates);
 
   // Called when a `SharedStorageWorkletHost` is created for `rfh`.
   void OnSharedStorageWorkletHostCreated(content::RenderFrameHost* rfh);
@@ -387,12 +381,6 @@ class MetricsWebContentsObserver
   // and vanish before we get signal about what caused the abort (new
   // navigation, stop button, etc.).
   std::vector<std::unique_ptr<PageLoadTracker>> aborted_provisional_loads_;
-
-  // Memory updates that are accumulated while there is no PageLoadTracker
-  // associated with RenderFrameHost. Will be sent in
-  // HandleCommittedNavigationForTrackedLoad, unless the RenderFrameHost is
-  // deleted and/or web contents is destroyed.
-  std::vector<MemoryUpdate> queued_memory_updates_;
 
   // This stores the PageLoadTracker for the primary page. GetPageLoadTracker()
   // is available to find a PageLoadTracker for non-primary pages.

@@ -11,10 +11,6 @@
 
 namespace page_load_metrics {
 
-MemoryUpdate::MemoryUpdate(content::GlobalRenderFrameHostId id,
-                           base::ByteCount delta)
-    : routing_id(id), delta_bytes(delta) {}
-
 ExtraRequestCompleteInfo::ExtraRequestCompleteInfo(
     const url::SchemeHostPort& final_url,
     const net::IPEndPoint& remote_endpoint,

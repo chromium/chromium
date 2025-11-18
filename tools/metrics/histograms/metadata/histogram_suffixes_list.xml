@@ -421,8 +421,6 @@ chromium-metrics-reviews@google.com.
       label="The page was backgrounded at least once from navigation start to
              this event."/>
   <affected-histogram
-      name="PageLoad.Clients.DocWrite.Block.ParseTiming.ParseBlockedOnScriptLoad"/>
-  <affected-histogram
       name="PageLoad.Clients.ServiceWorker2.PaintTiming.NavigationToFirstContentfulPaint"/>
   <affected-histogram
       name="PageLoad.Clients.ServiceWorker2.ParseTiming.NavigationToParseStart"/>
@@ -437,15 +435,12 @@ chromium-metrics-reviews@google.com.
   <affected-histogram
       name="PageLoad.PaintTiming.ParseStartToFirstContentfulPaint"/>
   <affected-histogram name="PageLoad.ParseTiming.NavigationToParseStart"/>
-  <affected-histogram name="PageLoad.ParseTiming.ParseBlockedOnScriptLoad"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="PageLoadMetricsAfterPaint" separator=".">
   <suffix name="AfterPaint"
       label="Limited to the duration of time starting after first paint, for
              page loads that reached first paint."/>
-  <affected-histogram
-      name="PageLoad.Clients.FromGoogleSearch.PageTiming.ForegroundDuration"/>
   <affected-histogram name="PageLoad.PageTiming.ForegroundDuration"/>
 </histogram_suffixes>
 
@@ -480,7 +475,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="PageLoad.PaintTiming.NavigationToFirstImagePaint"/>
   <affected-histogram name="PageLoad.PaintTiming.NavigationToFirstPaint"/>
   <affected-histogram name="PageLoad.ParseTiming.NavigationToParseStart"/>
-  <affected-histogram name="PageLoad.ParseTiming.ParseBlockedOnScriptLoad"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="PageLoadMetricsClientsDocWrite" separator="."
@@ -493,11 +487,6 @@ chromium-metrics-reviews@google.com.
       name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint"/>
   <affected-histogram
       name="PageLoad.PaintTiming.ParseStartToFirstContentfulPaint"/>
-  <affected-histogram
-      name="PageLoad.ParseTiming.ParseBlockedOnScriptExecution"/>
-  <affected-histogram
-      name="PageLoad.ParseTiming.ParseBlockedOnScriptExecutionFromDocumentWrite"/>
-  <affected-histogram name="PageLoad.ParseTiming.ParseBlockedOnScriptLoad"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="PageLoadMetricsClientsFromGoogleSearch" separator="."
@@ -511,10 +500,7 @@ chromium-metrics-reviews@google.com.
       name="PageLoad.DocumentTiming.NavigationToLoadEventFired"/>
   <affected-histogram name="PageLoad.InteractiveTiming.FirstInputDelay4"/>
   <affected-histogram
-      name="PageLoad.LayoutInstability.CumulativeShiftScore.MainFrame"/>
-  <affected-histogram
       name="PageLoad.LayoutInstability.MaxCumulativeShiftScore.SessionWindow.Gap1000ms.Max5000ms2"/>
-  <affected-histogram name="PageLoad.PageTiming.ForegroundDuration"/>
   <affected-histogram
       name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint"/>
   <affected-histogram name="PageLoad.PaintTiming.NavigationToFirstImagePaint"/>
@@ -554,7 +540,6 @@ chromium-metrics-reviews@google.com.
       name="PageLoad.DocumentTiming.NavigationToLoadEventFired"/>
   <affected-histogram
       name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint"/>
-  <affected-histogram name="PageLoad.ParseTiming.ParseBlockedOnScriptLoad"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="PageLoadMetricsClientsProtocol" separator="."
@@ -588,7 +573,6 @@ chromium-metrics-reviews@google.com.
       name="PageLoad.DocumentTiming.NavigationToLoadEventFired"/>
   <affected-histogram
       name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint"/>
-  <affected-histogram name="PageLoad.ParseTiming.ParseBlockedOnScriptLoad"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="PageLoadMetricsClientsScheme" separator="."
@@ -684,8 +668,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram_suffixes name="PageLoadMetricsNoCommit" separator=".">
   <suffix name="NoCommit" label="Limited to page loads that did not commit."/>
-  <affected-histogram
-      name="PageLoad.Clients.FromGoogleSearch.PageTiming.ForegroundDuration"/>
   <affected-histogram name="PageLoad.PageTiming.ForegroundDuration"/>
 </histogram_suffixes>
 
@@ -695,8 +677,6 @@ chromium-metrics-reviews@google.com.
              paint."/>
   <suffix name="WithPaint"
       label="The foreground duration for page loads reached first paint."/>
-  <affected-histogram
-      name="PageLoad.Clients.FromGoogleSearch.PageTiming.ForegroundDuration"/>
   <affected-histogram name="PageLoad.PageTiming.ForegroundDuration"/>
 </histogram_suffixes>
 
@@ -838,20 +818,20 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="PasswordProtection.Verdict"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="PasswordProtectionTriggerForPasswordFieldOnFocus"
-    separator=".">
-  <suffix name="PasswordFieldOnFocus"
-      label="Password protection triggered by password field on focus event."/>
-  <affected-histogram name="PasswordProtection.RequestOutcome"/>
-  <affected-histogram name="PasswordProtection.Verdict"/>
-</histogram_suffixes>
-
 <histogram_suffixes
     name="PasswordProtectionTriggerForOneTimePasswordFieldDetected"
     separator=".">
   <suffix name="OneTimePasswordFieldDetected"
       label="Password protection triggered by one time password field
              detected."/>
+  <affected-histogram name="PasswordProtection.RequestOutcome"/>
+  <affected-histogram name="PasswordProtection.Verdict"/>
+</histogram_suffixes>
+
+<histogram_suffixes name="PasswordProtectionTriggerForPasswordFieldOnFocus"
+    separator=".">
+  <suffix name="PasswordFieldOnFocus"
+      label="Password protection triggered by password field on focus event."/>
   <affected-histogram name="PasswordProtection.RequestOutcome"/>
   <affected-histogram name="PasswordProtection.Verdict"/>
 </histogram_suffixes>

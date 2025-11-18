@@ -123,13 +123,6 @@ struct FailedProvisionalLoadInfo {
   content::NavigationDiscardReason discard_reason;
 };
 
-// Struct for storing per-frame memory update data.
-struct MemoryUpdate {
-  content::GlobalRenderFrameHostId routing_id;
-  base::ByteCount delta_bytes;
-  MemoryUpdate(content::GlobalRenderFrameHostId id, base::ByteCount delta);
-};
-
 // Interface for PageLoadMetrics observers. Only PageLoadMetricsForwardObserver
 // should inherit this interface directly, and others should do
 // PageLoadMetricsObserver class.
@@ -634,12 +627,6 @@ class PageLoadMetricsObserverInterface {
 
   // Called when the previewed page is activated for the tab promotion.
   virtual void DidActivatePreviewedPage(base::TimeTicks activation_time) = 0;
-
-  // Called when V8 per-frame memory usage updates are available. Each
-  // MemoryUpdate consists of a GlobalRenderFrameHostId and a nonzero change in
-  // bytes used.
-  virtual void OnV8MemoryChanged(
-      const std::vector<MemoryUpdate>& memory_updates) = 0;
 
   // Called when a `SharedStorageWorkletHost` is created.
   virtual void OnSharedStorageWorkletHostCreated() = 0;

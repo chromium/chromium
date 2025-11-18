@@ -479,13 +479,6 @@ void PageLoadMetricsForwardObserver::DidActivatePrerenderedPage(
 void PageLoadMetricsForwardObserver::DidActivatePreviewedPage(
     base::TimeTicks activation_time) {}
 
-void PageLoadMetricsForwardObserver::OnV8MemoryChanged(
-    const std::vector<MemoryUpdate>& memory_updates) {
-  if (!parent_observer_)
-    return;
-  parent_observer_->OnV8MemoryChanged(memory_updates);
-}
-
 void PageLoadMetricsForwardObserver::OnSharedStorageWorkletHostCreated() {
   if (!parent_observer_)
     return;

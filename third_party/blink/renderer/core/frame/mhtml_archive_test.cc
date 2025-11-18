@@ -195,10 +195,6 @@ class MHTMLArchiveTest : public testing::Test {
     ASSERT_TRUE(archive);
 
     EXPECT_EQ(archive->LoadResult(), expected_result);
-
-    // Check that the correct count, and only the correct count, increased.
-    histogram_tester.ExpectUniqueSample(
-        "PageSerialization.MhtmlLoading.LoadResult", expected_result, 1);
   }
 
  private:

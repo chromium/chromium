@@ -185,8 +185,6 @@ class PageLoadMetricsForwardObserver final
   void DidActivatePrerenderedPage(
       content::NavigationHandle* navigation_handle) override;
   void DidActivatePreviewedPage(base::TimeTicks activation_time) override;
-  void OnV8MemoryChanged(
-      const std::vector<MemoryUpdate>& memory_updates) override;
   void OnSharedStorageWorkletHostCreated() override;
   void OnSharedStorageSelectURLCalled() override;
   void OnCustomUserTimingMarkObserved(

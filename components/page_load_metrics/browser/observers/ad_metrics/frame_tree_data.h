@@ -162,9 +162,6 @@ class FrameTreeData final {
   // frame.
   void MaybeUpdateFrameDepth(content::RenderFrameHost* render_frame_host);
 
-  // Updates the recorded bytes of memory used.
-  void UpdateMemoryUsage(base::ByteCount delta_bytes);
-
   // Returns whether the frame should be recorded for UKMs and UMA histograms.
   // A frame should be recorded if it has non-zero bytes or non-zero CPU usage
   // (or both).
@@ -362,9 +359,6 @@ class FrameTreeData final {
 
   // The peak cpu usage for this frame tree.
   PeakCpuAggregator peak_cpu_;
-
-  // Memory usage by v8 in this ad frame tree.
-  MemoryUsageAggregator memory_usage_;
 
   // Owns weak pointers to the instance.
   base::WeakPtrFactory<FrameTreeData> weak_ptr_factory_{this};

@@ -85,8 +85,6 @@ class WaiterMetricsObserver final : public PageLoadMetricsObserver {
       const gfx::Rect& main_frame_viewport_rect) override;
   void OnMainFrameAdRectsChanged(
       const base::flat_map<int, gfx::Rect>& main_frame_ad_rects) override;
-  void OnV8MemoryChanged(
-      const std::vector<MemoryUpdate>& memory_updates) override;
   void OnPageRenderDataUpdate(const mojom::FrameRenderDataUpdate& render_data,
                               bool is_main_frame) override;
   void OnComplete(const mojom::PageLoadTiming& timing) override;
@@ -230,11 +228,6 @@ void PageLoadMetricsTestWaiter::AddMinimumNetworkBytesExpectation(
 void PageLoadMetricsTestWaiter::AddMinimumAggregateCpuTimeExpectation(
     base::TimeDelta minimum) {
   expected_minimum_aggregate_cpu_time_ = minimum;
-}
-
-void PageLoadMetricsTestWaiter::AddMemoryUpdateExpectation(
-    content::GlobalRenderFrameHostId routing_id) {
-  expected_.memory_update_frame_ids_.insert(routing_id);
 }
 
 void PageLoadMetricsTestWaiter::AddLoadingBehaviorExpectation(
@@ -489,15 +482,6 @@ void PageLoadMetricsTestWaiter::OnDidFinishSubFrameNavigation(
     run_loop_->Quit();
 }
 
-void PageLoadMetricsTestWaiter::OnV8MemoryChanged(
-    const std::vector<MemoryUpdate>& memory_updates) {
-  for (const auto& update : memory_updates)
-    observed_.memory_update_frame_ids_.insert(update.routing_id);
-
-  if (ExpectationsSatisfied() && run_loop_)
-    run_loop_->Quit();
-}
-
 void PageLoadMetricsTestWaiter::FrameSizeChanged(
     content::RenderFrameHost* render_frame_host,
     const gfx::Size& frame_size) {
@@ -731,10 +715,6 @@ bool PageLoadMetricsTestWaiter::MainFrameAdRectsExpectationsSatisfied() const {
   return observed_.did_observed_main_frame_ad_rects_;
 }
 
-bool PageLoadMetricsTestWaiter::MemoryUpdateExpectationsSatisfied() const {
-  return IsSubset(expected_.memory_update_frame_ids_,
-                  observed_.memory_update_frame_ids_);
-}
 bool PageLoadMetricsTestWaiter::LayoutShiftExpectationsSatisfied() const {
   return expected_.num_layout_shifts_ <= observed_.num_layout_shifts_;
 }
@@ -805,7 +785,6 @@ bool PageLoadMetricsTestWaiter::ExpectationsSatisfied() const {
          MainFrameIntersectionExpectationsSatisfied() &&
          MainFrameViewportRectExpectationsSatisfied() &&
          MainFrameAdRectsExpectationsSatisfied() &&
-         MemoryUpdateExpectationsSatisfied() &&
          LayoutShiftExpectationsSatisfied() &&
          NumInteractionsExpectationsSatisfied() &&
          NumLargestContentfulPaintImageSatisfied() &&
@@ -830,7 +809,6 @@ void PageLoadMetricsTestWaiter::AssertExpectationsSatisfied() const {
   EXPECT_TRUE(CpuTimeExpectationsSatisfied());
   EXPECT_TRUE(MainFrameIntersectionExpectationsSatisfied());
   EXPECT_TRUE(MainFrameViewportRectExpectationsSatisfied());
-  EXPECT_TRUE(MemoryUpdateExpectationsSatisfied());
 }
 
 void PageLoadMetricsTestWaiter::ResetExpectations() {
@@ -956,13 +934,6 @@ void WaiterMetricsObserver::FrameSizeChanged(
     const gfx::Size& frame_size) {
   if (waiter_) {
     waiter_->FrameSizeChanged(render_frame_host, frame_size);
-  }
-}
-
-void WaiterMetricsObserver::OnV8MemoryChanged(
-    const std::vector<MemoryUpdate>& memory_updates) {
-  if (waiter_) {
-    waiter_->OnV8MemoryChanged(memory_updates);
   }
 }
 

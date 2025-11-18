@@ -43,7 +43,6 @@ class WebContents;
 
 namespace page_load_metrics {
 
-struct MemoryUpdate;
 class PageLoadMetricsEmbedderInterface;
 
 namespace internal {
@@ -437,9 +436,6 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
 
   // Called when the previewed page was activated for the tab promotion.
   void DidActivatePreviewedPage(base::TimeTicks activation_time);
-
-  // Called when V8 per-frame memory usage updates are available.
-  void OnV8MemoryChanged(const std::vector<MemoryUpdate>& memory_updates);
 
   // Called when a `SharedStorageWorkletHost` is created.
   void OnSharedStorageWorkletHostCreated();

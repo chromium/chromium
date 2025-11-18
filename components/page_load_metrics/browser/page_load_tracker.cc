@@ -23,7 +23,6 @@
 #include "components/page_load_metrics/browser/observers/assert_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_embedder_interface.h"
 #include "components/page_load_metrics/browser/page_load_metrics_forward_observer.h"
-#include "components/page_load_metrics/browser/page_load_metrics_memory_tracker.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
@@ -1457,13 +1456,6 @@ void PageLoadTracker::OnRestoreFromBackForwardCache(
   // no longer accurate, so reset that as well.
   page_end_reason_ = END_NONE;
   page_end_time_ = base::TimeTicks();
-}
-
-void PageLoadTracker::OnV8MemoryChanged(
-    const std::vector<MemoryUpdate>& memory_updates) {
-  for (const auto& observer : observers_) {
-    observer->OnV8MemoryChanged(memory_updates);
-  }
 }
 
 void PageLoadTracker::OnSharedStorageWorkletHostCreated() {

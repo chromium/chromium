@@ -43,9 +43,6 @@ extern const char
     kHistogramThirdRequestAnimationFrameAfterBackForwardCacheRestore[];
 extern const char kHistogramFirstInputDelayAfterBackForwardCacheRestore[];
 extern const char kHistogramCumulativeShiftScoreAfterBackForwardCacheRestore[];
-extern const char
-    kHistogramCumulativeShiftScoreMainFrameAfterBackForwardCacheRestore[];
-extern const char kHistogramCumulativeShiftScoreAfterBackForwardCacheRestore[];
 
 }  // namespace internal
 

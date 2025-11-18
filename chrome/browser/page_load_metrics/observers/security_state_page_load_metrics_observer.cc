@@ -75,7 +75,7 @@ std::string SecurityStatePageLoadMetricsObserver::
 
 SecurityStatePageLoadMetricsObserver::SecurityStatePageLoadMetricsObserver(
     site_engagement::SiteEngagementService* engagement_service)
-    : content::WebContentsObserver(), engagement_service_(engagement_service) {}
+    : engagement_service_(engagement_service) {}
 
 SecurityStatePageLoadMetricsObserver::~SecurityStatePageLoadMetricsObserver() =
     default;

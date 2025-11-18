@@ -19,7 +19,6 @@
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "components/page_load_metrics/browser/metrics_lifecycle_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_embedder_interface.h"
-#include "components/page_load_metrics/browser/page_load_metrics_memory_tracker.h"
 #include "components/page_load_metrics/browser/page_load_metrics_update_dispatcher.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
@@ -252,21 +251,9 @@ void MetricsWebContentsObserver::FrameDeleted(
 
 void MetricsWebContentsObserver::RenderFrameDeleted(
     content::RenderFrameHost* rfh) {
-  if (auto* memory_tracker = GetMemoryTracker()) {
-    memory_tracker->OnRenderFrameDeleted(rfh, this);
-  }
-
   if (PageLoadTracker* tracker = GetPageLoadTracker(rfh)) {
     tracker->RenderFrameDeleted(rfh);
   }
-
-  content::GlobalRenderFrameHostId rfh_id = rfh->GetGlobalId();
-  auto new_end_it = std::remove_if(queued_memory_updates_.begin(),
-                                   queued_memory_updates_.end(),
-                                   [rfh_id](const MemoryUpdate& update) {
-                                     return update.routing_id == rfh_id;
-                                   });
-  queued_memory_updates_.erase(new_end_it, queued_memory_updates_.end());
 
   // PageLoadTracker and smoothness data can be associated only with a main
   // frame.
@@ -845,19 +832,6 @@ void MetricsWebContentsObserver::HandleCommittedNavigationForTrackedLoad(
     }
   }
 
-  // Send queued memory updates for the tracker.
-  content::GlobalRenderFrameHostId rfh_id = render_frame_host->GetGlobalId();
-  auto first_update_for_rfh = std::partition(
-      queued_memory_updates_.begin(), queued_memory_updates_.end(),
-      [rfh_id](const MemoryUpdate& update) {
-        return update.routing_id != rfh_id;
-      });
-  if (first_update_for_rfh != queued_memory_updates_.end()) {
-    raw_tracker->OnV8MemoryChanged(std::vector<MemoryUpdate>(
-        first_update_for_rfh, queued_memory_updates_.end()));
-    queued_memory_updates_.erase(first_update_for_rfh,
-                                 queued_memory_updates_.end());
-  }
 }
 
 void MetricsWebContentsObserver::MaybeStorePageLoadTrackerForBackForwardCache(
@@ -1376,34 +1350,6 @@ void MetricsWebContentsObserver::OnPrefetchLikely() {
   }
 }
 
-void MetricsWebContentsObserver::OnV8MemoryChanged(
-    const std::vector<MemoryUpdate>& memory_updates) {
-  std::map<PageLoadTracker*, std::vector<MemoryUpdate>> per_tracker_updates;
-  for (const MemoryUpdate& update : memory_updates) {
-    content::RenderFrameHost* rfh =
-        content::RenderFrameHost::FromID(update.routing_id);
-    if (!rfh) {
-      continue;
-    }
-    PageLoadTracker* tracker = GetPageLoadTracker(rfh);
-    if (tracker) {
-      per_tracker_updates[tracker].push_back(update);
-    } else {
-      // If the load hasn't committed yet, then memory updates can't be sent
-      // at this time, but will still need to be sent later. Queue the updates
-      // in case `tracker` is null due to the navigation having not yet
-      // completed, in which case the queued updates will be sent when
-      // HandleCommittedNavigationForTrackedLoad is called.  Otherwise, they
-      // will be ignored and cleared when `rfh` is deleted.
-      queued_memory_updates_.push_back(update);
-    }
-  }
-
-  for (const auto& map_pair : per_tracker_updates) {
-    map_pair.first->OnV8MemoryChanged(map_pair.second);
-  }
-}
-
 void MetricsWebContentsObserver::OnSharedStorageWorkletHostCreated(
     content::RenderFrameHost* rfh) {
   if (!rfh) {
@@ -1555,12 +1501,6 @@ PageLoadTracker* MetricsWebContentsObserver::GetAncestralAlivePageLoadTracker(
   }
 
   return nullptr;
-}
-
-PageLoadMetricsMemoryTracker* MetricsWebContentsObserver::GetMemoryTracker()
-    const {
-  return embedder_interface_->GetMemoryTrackerForBrowserContext(
-      web_contents()->GetBrowserContext());
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(MetricsWebContentsObserver);

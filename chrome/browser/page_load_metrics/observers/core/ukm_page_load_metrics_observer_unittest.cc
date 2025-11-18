@@ -2181,11 +2181,6 @@ TEST_F(UkmPageLoadMetricsObserverTest, LayoutInstabilitySubframeAggregation) {
                   "PageLoad.LayoutInstability.CumulativeShiftScore"),
               testing::ElementsAre(base::Bucket(25, 1)));
 
-  // Main-frame (DCLS) score includes only the LS scores in the main frame.
-  EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
-                  "PageLoad.LayoutInstability.CumulativeShiftScore.MainFrame"),
-              testing::ElementsAre(base::Bucket(10, 1)));
-
   const auto& ukm_recorder = tester()->test_ukm_recorder();
   std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
       ukm_recorder.GetMergedEntriesByName(PageLoad::kEntryName);

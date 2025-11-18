@@ -432,9 +432,6 @@ class PageLoadMetricsBrowserTest : public InProcessBrowserTest {
             kHistogramNavigationTimingNavigationStartToFirstLoaderCallback,
         expected_count);
     histogram_tester_->ExpectTotalCount(
-        internal::kHistogramNavigationTimingNavigationStartToFinalRequestStart,
-        expected_count);
-    histogram_tester_->ExpectTotalCount(
         internal::kHistogramNavigationTimingNavigationStartToFinalResponseStart,
         expected_count);
     histogram_tester_->ExpectTotalCount(
@@ -1035,10 +1032,6 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, NewPage) {
   histogram_tester_->ExpectTotalCount(internal::kHistogramDomContentLoaded, 1);
   histogram_tester_->ExpectTotalCount(internal::kHistogramLoad, 1);
   histogram_tester_->ExpectTotalCount(internal::kHistogramFirstPaint, 1);
-  histogram_tester_->ExpectTotalCount(
-      internal::kHistogramParseBlockedOnScriptLoad, 1);
-  histogram_tester_->ExpectTotalCount(
-      internal::kHistogramParseBlockedOnScriptExecution, 1);
 
   // Force navigation to another page, which should force logging of histograms
   // persisted at the end of the page load lifetime.
@@ -1070,10 +1063,6 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, Redirect) {
   histogram_tester_->ExpectTotalCount(internal::kHistogramDomContentLoaded, 1);
   histogram_tester_->ExpectTotalCount(internal::kHistogramLoad, 1);
   histogram_tester_->ExpectTotalCount(internal::kHistogramFirstPaint, 1);
-  histogram_tester_->ExpectTotalCount(
-      internal::kHistogramParseBlockedOnScriptLoad, 1);
-  histogram_tester_->ExpectTotalCount(
-      internal::kHistogramParseBlockedOnScriptExecution, 1);
 
   // Force navigation to another page, which should force logging of histograms
   // persisted at the end of the page load lifetime.

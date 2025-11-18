@@ -910,41 +910,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.Clients.Ads.Memory.MainFrame.Max" units="KiB"
-    expires_after="2024-11-10">
-  <owner>cammie@chromium.org</owner>
-  <owner>jkarlin@chromium.org</owner>
-  <owner>chrome-ads-histograms@google.com</owner>
-  <summary>
-    The maximum reported number of kilobytes of memory used by V8 by the main
-    frame in this pageload.
-
-    Only recorded if the page has at least one identified ad frame. Recorded in
-    PageLoadMetrics when the page is destroyed. An ad frame consists of the
-    identified ad frame and all of its children (which may also be ads, but are
-    counted as part of the ancestor ad frame).
-
-    Warning: This histogram has incomplete data. It expired in 03/2022 and was
-    unexpired in 11/2023.
-  </summary>
-</histogram>
-
-<histogram name="PageLoad.Clients.Ads.Memory.UpdateCount" units="count"
-    expires_after="2024-11-10">
-  <owner>cammie@chromium.org</owner>
-  <owner>jkarlin@chromium.org</owner>
-  <owner>chrome-ads-histograms@google.com</owner>
-  <summary>
-    The number of V8 memory measurement updates received by
-    AdsPageLoadMetricsObserver per pageload. Only recorded if the page has at
-    least one identified ad frame. Recorded in PageLoadMetrics when the page is
-    destroyed.
-
-    Warning: This histogram has incomplete data. It expired in 06/2022 and was
-    unexpired in 11/2023.
-  </summary>
-</histogram>
-
 <histogram name="PageLoad.Clients.Ads.Resources.Bytes.Ads2" units="KB"
     expires_after="2026-10-01">
   <owner>jkarlin@chromium.org</owner>
@@ -2643,7 +2608,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.Prerender.LayoutInstability.CumulativeShiftScore{PreloadingTriggerType}"
-    units="ms" expires_after="2026-03-22">
+    units="scorex10" expires_after="2026-03-22">
   <owner>nhiroki@chromium.org</owner>
   <owner>src/content/browser/preloading/prerender/OWNERS</owner>
   <summary>
@@ -2912,18 +2877,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="PageLoad.Clients.ThirdParty.PaintTiming.NavigationToLargestContentfulPaint.HasThirdPartyFont"
-    units="ms" expires_after="2021-12-31">
-  <owner>shivanisha@chromium.org</owner>
-  <owner>jkarlin@chromium.org</owner>
-  <summary>
-    Records the largest contentful paint only for pages that load a third party
-    font and whose largest contentful resource type is text. See
-    PageLoad.PaintTiming.NavigationToLargestContentfulPaint2 for details.
-  </summary>
-</histogram>
-
 <histogram name="PageLoad.Clients.TPCD.AdTPCAccess.BlockedByExperiment2"
     enum="Boolean" expires_after="2026-03-22">
   <owner>victortan@chromium.org</owner>
@@ -2987,26 +2940,6 @@ chromium-metrics-reviews@google.com.
     records the status of the access based on the TPCD experiment, including
     what re-enablement mitigations were applied or skipped. Only recorded for
     third party, non-partitioned cookies.
-  </summary>
-</histogram>
-
-<histogram
-    name="PageLoad.Clients.UseCounter.Experimental.MetricsReplayAtActivationDuration"
-    units="ms" expires_after="2024-02-09">
-  <owner>kenoss@chromium.org</owner>
-  <owner>toyoshim@chromium.org</owner>
-  <summary>
-    The duration of
-    UseCounterPageLoadMetricsObserver::DidActivatePrerenderedPage.
-
-    Recorded iff the page is prerendered and activated. When a page is
-    prerendered, metrics &quot;Blink.UseCounter.*&quot; are buffered into
-    memory. When a page is activated then, buffered metrics are flushed and
-    recorded. This metric records the duration of this flush, in case of this
-    cause a performance degradation.
-
-    Warning: this histogram was expired from 2023-03-16 to 2023-03-2 9and also
-    between 2023-09-03 and M121; data may be missing.
   </summary>
 </histogram>
 
@@ -3392,17 +3325,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.Experimental.InputTiming.InputToNavigationStart.Background"
-    units="ms" expires_after="2024-02-25">
-  <owner>spelchat@chromium.org</owner>
-  <owner>chrome-brapp-loading@google.com</owner>
-  <summary>
-    The time between the OS-level input event that initiated a navigation, and
-    the navigation actually starting, for background loads.
-  </summary>
-</histogram>
-
-<histogram
     name="PageLoad.Experimental.InputTiming.InputToNavigationStart.FromLinkClick"
     units="ms" expires_after="2026-04-12">
   <owner>spelchat@chromium.org</owner>
@@ -3424,119 +3346,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.Experimental.Memory.Core.MainFrame.Max" units="KiB"
-    expires_after="2024-11-10">
-  <owner>cammie@chromium.org</owner>
-  <owner>jkarlin@chromium.org</owner>
-  <owner>chrome-ads-histograms@google.com</owner>
-  <summary>
-    The maximum reported number of kilobytes of memory used by V8 by the main
-    frame in this pageload.
-
-    Only recorded if memory tracking is enabled. Recorded in PageLoadMetrics
-    when the page is destroyed.
-
-    Warning: This histogram has incomplete data. It expired in 03/2022 and was
-    unexpired in 11/2023.
-  </summary>
-</histogram>
-
-<histogram name="PageLoad.Experimental.Memory.Core.Subframe.Aggregate.Max"
-    units="KiB" expires_after="2024-11-10">
-  <owner>cammie@chromium.org</owner>
-  <owner>jkarlin@chromium.org</owner>
-  <owner>chrome-ads-histograms@google.com</owner>
-  <summary>
-    The maximum reported aggregate number of kilobytes of memory used by V8 by
-    subframes in this pageload. The value recorded is the maximum simultaneous
-    usage by all subframes during this pageload, not including the main frame.
-
-    Only recorded if memory tracking is enabled. Recorded in PageLoadMetrics
-    when the page is destroyed.
-
-    Warning: This histogram has incomplete data. It expired in 03/2022 and was
-    unexpired in 11/2023.
-  </summary>
-</histogram>
-
-<histogram name="PageLoad.Experimental.Memory.Core.Total.Max" units="KiB"
-    expires_after="2024-11-10">
-  <owner>cammie@chromium.org</owner>
-  <owner>jkarlin@chromium.org</owner>
-  <owner>chrome-ads-histograms@google.com</owner>
-  <summary>
-    The maximum reported aggregate number of kilobytes of memory used by V8 by
-    all frames in this pageload. The value recorded is the maximum simultaneous
-    usage by all frames during this pageload, including the main frame.
-
-    Only recorded if memory tracking is enabled. Recorded in PageLoadMetrics
-    when the page is destroyed.
-
-    Warning: This histogram has incomplete data. It expired in 03/2022 and was
-    unexpired in 11/2023.
-  </summary>
-</histogram>
-
-<histogram
-    name="PageLoad.Experimental.NavigationTiming.FinalLoaderCallbackToNavigationCommitSent"
-    units="ms" expires_after="2021-05-08">
-  <owner>nhiroki@chromium.org</owner>
-  <owner>chrome-loading@google.com</owner>
-  <summary>
-    The interval between when a callback for the navigation loader is last
-    invoked and when navigation commit message is sent to a renderer process for
-    the main resource of a main frame navigation.
-  </summary>
-</histogram>
-
-<histogram
-    name="PageLoad.Experimental.NavigationTiming.FinalRequestStartToFinalResponseStart"
-    units="ms" expires_after="2021-05-08">
-  <owner>nhiroki@chromium.org</owner>
-  <owner>chrome-loading@google.com</owner>
-  <summary>
-    The interval between when the final HTTP request is sent and when the
-    headers of the final HTTP response is received for the main resource of a
-    main frame navigation.
-  </summary>
-</histogram>
-
-<histogram
-    name="PageLoad.Experimental.NavigationTiming.FinalResponseStartToFinalLoaderCallback"
-    units="ms" expires_after="2021-05-08">
-  <owner>nhiroki@chromium.org</owner>
-  <owner>chrome-loading@google.com</owner>
-  <summary>
-    The interval between when the headers of the final HTTP response is received
-    and when a callback for the navigation loader is last invoked for the main
-    resource of a main frame navigation.
-  </summary>
-</histogram>
-
-<histogram
-    name="PageLoad.Experimental.NavigationTiming.FirstRequestStartToFirstResponseStart"
-    units="ms" expires_after="2021-05-08">
-  <owner>nhiroki@chromium.org</owner>
-  <owner>chrome-loading@google.com</owner>
-  <summary>
-    The interval between when the first HTTP request is sent and when the
-    headers of the first HTTP response is received for the main resource of a
-    main frame navigation.
-  </summary>
-</histogram>
-
-<histogram
-    name="PageLoad.Experimental.NavigationTiming.FirstResponseStartToFirstLoaderCallback"
-    units="ms" expires_after="2021-08-01">
-  <owner>nhiroki@chromium.org</owner>
-  <owner>chrome-loading@google.com</owner>
-  <summary>
-    The interval between when the headers of the first HTTP response is received
-    and when a callback for the navigation loader is first invoked for the main
-    resource of a main frame navigation.
-  </summary>
-</histogram>
-
 <histogram
     name="PageLoad.Experimental.NavigationTiming.NavigationStartToFinalLoaderCallback"
     units="ms" expires_after="2025-05-11">
@@ -3545,19 +3354,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The time relative to navigation start that a callback for the navigation
     loader is last invoked for the main resource of a main frame navigation.
-  </summary>
-</histogram>
-
-<histogram
-    name="PageLoad.Experimental.NavigationTiming.NavigationStartToFinalRequestStart"
-    units="ms" expires_after="2024-09-29">
-  <owner>nhiroki@chromium.org</owner>
-  <owner>chrome-loading@google.com</owner>
-  <summary>
-    The time relative to navigation start that the final HTTP request is sent
-    for the main resource of a main frame navigation.
-
-    This metric has incomplete data. It was expired between 2023-03-12 and M121.
   </summary>
 </histogram>
 
@@ -3674,18 +3470,6 @@ chromium-metrics-reviews@google.com.
   <token key="RequestDestination" variants="RequestDestination"/>
 </histogram>
 
-<histogram
-    name="PageLoad.Experimental.PageTiming.TotalSubresourceLoadTimeAtFirstContentfulPaint"
-    units="ms" expires_after="2024-05-20">
-  <owner>cduvall@chromium.org</owner>
-  <owner>jam@chromium.org</owner>
-  <summary>
-    Measures the aggregate time of subresource requests (from start to when
-    headers have been received) which have been completed before the first
-    contentful paint. Logged for every page load.
-  </summary>
-</histogram>
-
 <histogram name="PageLoad.Experimental.PageVisitFinalStatus"
     enum="PageVisitFinalStatus" expires_after="2026-12-22">
   <owner>sullivan@chromium.org</owner>
@@ -3708,17 +3492,6 @@ chromium-metrics-reviews@google.com.
     The page visit type that represents if the page follows a link navigation,
     and the page is followed by another link navigation. This metrics is
     recorded when the page is destructed.
-  </summary>
-</histogram>
-
-<histogram
-    name="PageLoad.Experimental.PaintTiming.FirstEligibleToPaintToFirstPaint"
-    units="ms" expires_after="2024-07-14">
-  <owner>cduvall@chromium.org</owner>
-  <owner>jam@chromium.org</owner>
-  <summary>
-    Measures the time from when the page is first eligible to paint to when the
-    first paint occurs. Logged for every foreground page load.
   </summary>
 </histogram>
 
@@ -4111,16 +3884,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.Internal.PaintTiming.NavigationToFirstContentfulPaint.InitiatingProcess"
-    enum="ProcessType2" expires_after="2020-09-05">
-  <owner>sullivan@chromium.org</owner>
-  <summary>
-    Breakdown of NavigationToFirstContentfulPaint counts by process that
-    initiated the navigation (this will only be renderer or browser).
-  </summary>
-</histogram>
-
-<histogram
     name="PageLoad.Internal.Prerender2.ActivatedPageLoaderStatus{PreloadingTriggerType}"
     enum="NetErrorCodes" expires_after="2025-09-14">
   <owner>lingqi@chromium.org</owner>
@@ -4361,17 +4124,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.LayoutInstability.CumulativeShiftScore.MainFrame"
-    units="scorex10" expires_after="2022-10-23">
-  <owner>bmcquade@chromium.org</owner>
-  <owner>skobes@chromium.org</owner>
-  <summary>
-    Measures the cumulative layout shift score (bit.ly/lsm-explainer) that has
-    occurred in the main frame. Recorded at the end of the page lifetime, such
-    as when the page is being navigated away from or when a tab is being closed.
-  </summary>
-</histogram>
-
 <histogram
     name="PageLoad.LayoutInstability.CumulativeShiftScore.MainFrame.AfterBackForwardCacheRestore"
     units="scorex10" expires_after="2022-01-02">
@@ -4490,17 +4242,6 @@ chromium-metrics-reviews@google.com.
     backgrounded. This metric has a very long tail, for pages that spend a long
     period of time in the foreground. As such, use of the mean or tail values
     are not recommended.
-  </summary>
-</histogram>
-
-<histogram
-    name="PageLoad.PageTiming.ForegroundDuration.PageEndReason.ForwardBackNavigation.UserGesture"
-    units="ms" expires_after="M81">
-  <owner>jkarlin@chromium.org</owner>
-  <summary>
-    The time since navigation start before the user presses the back button on a
-    page. Only measures page loads that remained in foreground and were created
-    by user gesture inside the renderer (as opposed to browser UX gestures).
   </summary>
 </histogram>
 
@@ -4938,44 +4679,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.ParseTiming.ParseBlockedOnScriptExecution" units="ms"
-    expires_after="2024-11-17">
-  <owner>cduvall@chromium.org</owner>
-  <owner>swarm-team@google.com</owner>
-  <summary>
-    Measures the time that the HTML parser spent blocked on the execution of
-    scripts, for main frame documents that finished parsing.
-
-    This histogram has incomplete data. It expired on 2022-02-01 and was
-    re-added on 2022-05-23.
-  </summary>
-</histogram>
-
-<histogram
-    name="PageLoad.ParseTiming.ParseBlockedOnScriptExecutionFromDocumentWrite"
-    units="ms" expires_after="2024-02-09">
-  <owner>cduvall@chromium.org</owner>
-  <owner>swarm-team@google.com</owner>
-  <summary>
-    Measures the time that the HTML parser spent blocked on the execution of
-    scripts inserted from document.write, for main frame documents that finished
-    parsing.
-
-    This histogram has incomplete data. It expired on 2022-02-01 and was
-    re-added on 2022-05-23.
-  </summary>
-</histogram>
-
-<histogram name="PageLoad.ParseTiming.ParseBlockedOnScriptLoad" units="ms"
-    expires_after="2024-04-28">
-  <owner>bmcquade@chromium.org</owner>
-  <owner>csharrison@chromium.org</owner>
-  <summary>
-    Measures the time that the HTML parser spent blocked on the load of scripts,
-    for main frame documents that finished parsing.
-  </summary>
-</histogram>
-
 <histogram name="PageLoad.SoftNavigation.CumulativeLayoutShift" units="ms"
     expires_after="2026-05-20">
   <owner>sullivan@chromium.org</owner>
@@ -5093,44 +4796,6 @@ chromium-metrics-reviews@google.com.
 
     Warning: This metric expired around 04/2022 and was unexpired 07/2023. Data
     may be missing.
-  </summary>
-</histogram>
-
-<histogram
-    name="PageLoad.{AdsPageLoadMetricVisibilityType}.FrameCounts.AdFrames.PerFrame.CreativeOriginStatus"
-    enum="CrossOriginCreativeStatus" expires_after="2021-12-31">
-  <owner>cammie@chromium.org</owner>
-  <owner>jkarlin@chromium.org</owner>
-  <owner>chrome-ads-histograms@google.com</owner>
-  <summary>
-    For each identified ad frame, whether the origin of the ad creative frame
-    matches or differs from the origin of the main frame.
-
-    The ad creative frame is heuristically determined, from among an identified
-    ad frame and all of its children, as the first of these frames to record a
-    First Contentful Paint. If no FCP is recorded, the creative origin status is
-    marked as indeterminate. {AdsPageLoadMetricVisibilityType}
-  </summary>
-</histogram>
-
-<histogram
-    name="PageLoad.{AdsPageLoadMetricVisibilityType}.FrameCounts.AdFrames.PerFrame.CreativeOriginStatusWithThrottling"
-    enum="CrossOriginCreativeStatusWithThrottling" expires_after="2021-12-31">
-  <owner>cammie@chromium.org</owner>
-  <owner>jkarlin@chromium.org</owner>
-  <owner>chrome-ads-histograms@google.com</owner>
-  <summary>
-    For each identified ad frame, whether the origin of the ad creative frame
-    matches or differs from the origin of the main frame, further split by
-    whether the frame has lifecycle updates throttled. Metric is emitted on
-    frame deletion.
-
-    The ad creative frame is heuristically determined, from among an identified
-    ad frame and all of its children, as the first of these frames to record a
-    First Contentful Paint. If no FCP is recorded, the creative origin status is
-    marked as indeterminate. Frames that are render-throttled will not have an
-    FCP. Ad frames with indeterminate creative origin status are broken out as
-    throttled or not. {AdsPageLoadMetricVisibilityType}
   </summary>
 </histogram>
 
@@ -5263,13 +4928,6 @@ chromium-metrics-reviews@google.com.
     Includes only time taken by frame_serializer.cc. Reported when frame
     serialization completes.
   </summary>
-</histogram>
-
-<histogram name="PageSerialization.MhtmlLoading.LoadResult"
-    enum="MhtmlLoadResult" expires_after="2023-04-23">
-  <owner>sclittle@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>Reports the result of an attempt to load an MHTML archive.</summary>
 </histogram>
 
 </histograms>

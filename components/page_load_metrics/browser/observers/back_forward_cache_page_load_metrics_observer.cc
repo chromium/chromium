@@ -32,11 +32,11 @@ const char kHistogramThirdRequestAnimationFrameAfterBackForwardCacheRestore[] =
     "PageLoad.PaintTiming.NavigationToFirstPaint.BFCachePolyfillThird";
 const char kHistogramFirstInputDelayAfterBackForwardCacheRestore[] =
     "PageLoad.InteractiveTiming.FirstInputDelay.AfterBackForwardCacheRestore";
-extern const char
+const char
     kHistogramCumulativeShiftScoreMainFrameAfterBackForwardCacheRestore[] =
         "PageLoad.LayoutInstability.CumulativeShiftScore.MainFrame."
         "AfterBackForwardCacheRestore";
-extern const char kHistogramCumulativeShiftScoreAfterBackForwardCacheRestore[] =
+const char kHistogramCumulativeShiftScoreAfterBackForwardCacheRestore[] =
     "PageLoad.LayoutInstability.CumulativeShiftScore."
     "AfterBackForwardCacheRestore";
 
@@ -426,9 +426,6 @@ void BackForwardCachePageLoadMetricsObserver::
   if (base::FeatureList::IsEnabled(
           page_load_metrics::features::
               kBackForwardCacheEmitZeroSamplesForKeyMetrics)) {
-    base::UmaHistogramCounts100(
-        "PageLoad.LayoutInstability.CumulativeShiftScore.MainFrame",
-        page_load_metrics::LayoutShiftUmaValue(layout_main_frame_shift_score));
     base::UmaHistogramCounts100(
         "PageLoad.LayoutInstability.CumulativeShiftScore",
         page_load_metrics::LayoutShiftUmaValue(layout_shift_score));

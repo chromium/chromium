@@ -175,8 +175,6 @@ source_set("browser") {
     "network_service/net_helpers.h",
     "page_load_metrics/aw_gws_page_load_metrics_observer.cc",
     "page_load_metrics/aw_gws_page_load_metrics_observer.h",
-    "page_load_metrics/aw_page_load_metrics_memory_tracker_factory.cc",
-    "page_load_metrics/aw_page_load_metrics_memory_tracker_factory.h",
     "page_load_metrics/aw_page_load_metrics_provider.cc",
     "page_load_metrics/aw_page_load_metrics_provider.h",
     "page_load_metrics/aw_web_performance_metrics_observer.cc",

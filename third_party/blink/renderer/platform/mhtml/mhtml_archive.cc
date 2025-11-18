@@ -34,7 +34,6 @@
 
 #include "base/containers/contains.h"
 #include "base/i18n/time_formatting.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
@@ -202,23 +201,8 @@ String ConvertToPrintableCharacters(const String& text) {
 MHTMLArchive::MHTMLArchive() : load_result_(MHTMLLoadResult::kInvalidArchive) {}
 
 // static
-void MHTMLArchive::ReportLoadResult(MHTMLLoadResult result) {
-  UMA_HISTOGRAM_ENUMERATION("PageSerialization.MhtmlLoading.LoadResult",
-                            result);
-}
-
-// static
 MHTMLArchive* MHTMLArchive::Create(const KURL& url,
                                    scoped_refptr<const SharedBuffer> data) {
-  MHTMLArchive* archive = CreateArchive(url, data);
-  ReportLoadResult(archive->LoadResult());
-  return archive;
-}
-
-// static
-MHTMLArchive* MHTMLArchive::CreateArchive(
-    const KURL& url,
-    scoped_refptr<const SharedBuffer> data) {
   MHTMLArchive* archive = MakeGarbageCollected<MHTMLArchive>();
   archive->archive_url_ = url;
 
