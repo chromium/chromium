@@ -284,10 +284,6 @@ class MockConsumer : public mojom::FrameSinkVideoConsumer {
                          std::move(mapping)));
     } else if (data->is_gpu_memory_buffer_handle()) {
       // kNativeTexture + NV12 / RGBA
-      // Create a test GpuMemoryBuffer as these test don't run the code to
-      // produce GPU frames. The mailbox values aren't important since
-      // IsLetterboxedFrame does no verification for GMB VideoFrames.
-      test_sii_->AlwaysBackMappableSharedImagesWithShMem();
 
       // Setting some default usage in order to get a mappable shared image.
       const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
@@ -770,8 +766,6 @@ class TestGmbVideoFramePoolContext
       const gfx::ColorSpace& color_space,
       gpu::SharedImageUsageSet usage,
       gpu::SyncToken& sync_token) override {
-    context_provider_->SharedImageInterface()
-        ->AlwaysBackMappableSharedImagesWithShMem();
     return context_provider_->SharedImageInterface()->CreateSharedImage(
         {si_format, size, color_space, usage,
          "FrameSinkVideoCapturerImplUnittest"},
