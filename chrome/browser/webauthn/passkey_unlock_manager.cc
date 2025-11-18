@@ -17,6 +17,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
+#include "device/fido/features.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -56,7 +57,7 @@ void PasskeyUnlockManager::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-bool PasskeyUnlockManager::ShouldDisplayErrorUi() {
+bool PasskeyUnlockManager::ShouldDisplayErrorUi() const {
   return ArePasskeysLocked() && ArePasskeysUnlockable();
 }
 
@@ -67,7 +68,7 @@ void PasskeyUnlockManager::OpenTabWithPasskeyUnlockChallenge(Browser* browser) {
 }
 
 std::u16string PasskeyUnlockManager::GetPasskeyErrorProfilePillTitle(
-    ExperimentArm experiment_arm) {
+    ExperimentArm experiment_arm) const {
   switch (experiment_arm) {
     case ExperimentArm::kUnlock:
       return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_PASSKEYS_ERROR_UNLOCK);
@@ -106,6 +107,17 @@ std::u16string PasskeyUnlockManager::GetPasskeyErrorProfileMenuButtonLabel(
       return l10n_util::GetStringUTF16(
           IDS_PROFILE_MENU_PASSKEYS_ERROR_BUTTON_VERIFY);
   }
+}
+
+// static
+bool PasskeyUnlockManager::IsPasskeyUnlockErrorUiEnabled() {
+  return base::FeatureList::IsEnabled(device::kPasskeyUnlockErrorUi) &&
+         base::FeatureList::IsEnabled(device::kPasskeyUnlockManager) &&
+         base::FeatureList::IsEnabled(device::kWebAuthnOpportunisticRetrieval);
+}
+
+void PasskeyUnlockManager::NotifyObserversForTesting() {
+  NotifyObservers();
 }
 
 PasskeyModel* PasskeyUnlockManager::passkey_model() {
@@ -168,12 +180,12 @@ void PasskeyUnlockManager::AsynchronouslyLoadEnclaveManager() {
                                base::Minutes(4));
 }
 
-bool PasskeyUnlockManager::ArePasskeysLocked() {
+bool PasskeyUnlockManager::ArePasskeysLocked() const {
   // TODO(crbug.com/450238902): Also check enclave manager readiness.
   return has_passkeys_.value_or(false) && sync_active_;
 }
 
-bool PasskeyUnlockManager::ArePasskeysUnlockable() {
+bool PasskeyUnlockManager::ArePasskeysUnlockable() const {
   // TODO(crbug.com/450238902): Also check GPM PIN availability.
   // TODO(crbug.com/450551870): Check for more verification methods.
   return has_system_uv_.value_or(false);
@@ -183,6 +195,7 @@ void PasskeyUnlockManager::Shutdown() {
   for (Observer& observer : observer_list_) {
     observer.OnPasskeyUnlockManagerShuttingDown();
   }
+  enclave_manager_observation_.Reset();
   passkey_model_observation_.Reset();
   sync_service_observation_.Reset();
 }
@@ -217,5 +230,7 @@ void PasskeyUnlockManager::OnStateChanged(syncer::SyncService* sync) {
 void PasskeyUnlockManager::OnSyncShutdown(syncer::SyncService* sync) {
   NOTREACHED();
 }
+
+PasskeyUnlockManager::PasskeyUnlockManager() = default;
 
 }  // namespace webauthn

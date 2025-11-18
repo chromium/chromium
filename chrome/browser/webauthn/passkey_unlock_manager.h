@@ -59,17 +59,25 @@ class PasskeyUnlockManager : public KeyedService,
   void RemoveObserver(Observer* observer);
 
   // Synchronously tells whether the passkey error UI should be displayed.
-  bool ShouldDisplayErrorUi();
+  virtual bool ShouldDisplayErrorUi() const;
 
   // Opens a browser tab with a challenge for unlocking passkeys.
   static void OpenTabWithPasskeyUnlockChallenge(Browser* browser);
 
   // Methods providing the UI strings depending on the experiment arms.
-  std::u16string GetPasskeyErrorProfilePillTitle(ExperimentArm experiment_arm);
+  std::u16string GetPasskeyErrorProfilePillTitle(
+      ExperimentArm experiment_arm) const;
   std::u16string GetPasskeyErrorProfileMenuDetails(
       ExperimentArm experiment_arm);
   std::u16string GetPasskeyErrorProfileMenuButtonLabel(
       ExperimentArm experiment_arm);
+
+  // Returns true if the passkey unlock error UI is enabled, depending on the
+  // feature flags.
+  static bool IsPasskeyUnlockErrorUiEnabled();
+
+  // Used in tests to notify observers.
+  void NotifyObserversForTesting();
 
  private:
   // Returns the PasskeyModel associated with the profile passed to the
@@ -104,8 +112,8 @@ class PasskeyUnlockManager : public KeyedService,
   void AsynchronouslyLoadEnclaveManager();
 
   // Helpers for ShouldDisplayErrorUi().
-  bool ArePasskeysLocked();
-  bool ArePasskeysUnlockable();
+  bool ArePasskeysLocked() const;
+  bool ArePasskeysUnlockable() const;
 
   void Shutdown() override;
 
@@ -142,6 +150,9 @@ class PasskeyUnlockManager : public KeyedService,
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_service_observation_{this};
   base::WeakPtrFactory<PasskeyUnlockManager> weak_ptr_factory_{this};
+
+ protected:
+  PasskeyUnlockManager();
 };
 
 }  // namespace webauthn

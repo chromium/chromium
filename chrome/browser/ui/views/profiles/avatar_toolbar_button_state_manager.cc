@@ -51,6 +51,8 @@
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/webauthn/passkey_unlock_manager.h"
+#include "chrome/browser/webauthn/passkey_unlock_manager_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -888,6 +890,7 @@ class HistorySyncOptinCoordinator
         break;
       case ButtonState::kNormal:
       case ButtonState::kManagement:
+      case ButtonState::kPasskeysLockedError:
         CHECK(!collapse_timer_.IsRunning());
         break;
     }
@@ -911,6 +914,7 @@ class HistorySyncOptinCoordinator
       case ButtonState::kSigninPending:
       case ButtonState::kSyncPaused:
       case ButtonState::kUpgradeClientError:
+      case ButtonState::kPasskeysLockedError:
       case ButtonState::kPassphraseError:
         break;
     }
@@ -1159,6 +1163,72 @@ class HistorySyncOptinStateProvider : public StateProvider {
   const raw_ref<Browser> browser_;
 };
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+// Observes passkey unlock manager to see if the passkeys are locked and the
+// error UI needs to be shown. If passkeys are locked, but could be unlocked, it
+// updates the profile avatar. It also updates the profile avatar after
+// unlocking passkeys.
+class PasskeyStateProvider : public StateProvider,
+                             public webauthn::PasskeyUnlockManager::Observer {
+ public:
+  ~PasskeyStateProvider() override = default;
+
+  explicit PasskeyStateProvider(Profile* profile, StateObserver* state_observer)
+      : StateProvider(profile, state_observer) {
+    passkey_manager_observation_.Observe(
+        webauthn::PasskeyUnlockManagerFactory::GetForProfile(profile));
+  }
+
+  // StateProvider:
+  bool IsActive() const final {
+    return passkey_manager_observation_.GetSource()->ShouldDisplayErrorUi();
+  }
+
+  std::optional<SkColor> GetHighlightColor(
+      const ui::ColorProvider& color_provider) const override {
+    // We use the same colors as the colors of sync errors.
+    return color_provider.GetColor(kColorAvatarButtonHighlightPasskeysLocked);
+  }
+
+  ui::ImageModel GetAvatarIcon(
+      int icon_size,
+      SkColor /*icon_color*/,
+      const ui::ColorProvider& color_provider) const override {
+    return GetAvatarImageWithDottedRing(profile(), color_provider, icon_size);
+  }
+
+  std::u16string GetAvatarTooltipText() const final {
+    // TODO(crbug.com/454658811): Add support for other experiment arms and
+    // check if the tooltip text needs to be updated.
+    return passkey_manager_observation_.GetSource()
+        ->GetPasskeyErrorProfilePillTitle(
+            webauthn::PasskeyUnlockManager::ExperimentArm::kVerify);
+  }
+
+  std::pair<ChromeColorIds, ChromeColorIds> GetInkdropColors() const override {
+    return {kColorToolbarInkDropHover, kColorAvatarButtonNormalRipple};
+  }
+
+  std::u16string GetText() const override {
+    // TODO(crbug.com/454658811): Add support for other experiment arms.
+    return passkey_manager_observation_.GetSource()
+        ->GetPasskeyErrorProfilePillTitle(
+            webauthn::PasskeyUnlockManager::ExperimentArm::kVerify);
+  }
+
+ private:
+  void OnPasskeyUnlockManagerStateChanged() final { RequestUpdate(); }
+
+  void OnPasskeyUnlockManagerShuttingDown() final {
+    passkey_manager_observation_.Reset();
+  }
+
+  void OnPasskeyUnlockManagerIsReady() final { RequestUpdate(); }
+
+  base::ScopedObservation<webauthn::PasskeyUnlockManager,
+                          webauthn::PasskeyUnlockManager::Observer>
+      passkey_manager_observation_{this};
+};
 
 // This provider observes sync errors (including transport mode). It can be
 // configured to listen to a specific error with `sync_error_type`, or to all
@@ -1899,6 +1969,12 @@ void AvatarToolbarButtonStateManager::CreateStatesAndListeners(
             profile,
             /*state_observer=*/this, &avatar_toolbar_button_.get());
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+    if (webauthn::PasskeyUnlockManager::IsPasskeyUnlockErrorUiEnabled()) {
+      states_[ButtonState::kPasskeysLockedError] =
+          std::make_unique<PasskeyStateProvider>(profile,
+                                                 /*state_observer=*/this);
+    }
 
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(profile);

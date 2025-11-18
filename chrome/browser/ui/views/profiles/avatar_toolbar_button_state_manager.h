@@ -160,6 +160,7 @@ class AvatarToolbarButtonStateManager
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
     kHistorySyncOptin,
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+    kPasskeysLockedError,
     // Includes Work and School.
     kManagement,
     kNormal

@@ -50,6 +50,8 @@
 #include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_view_base.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/webauthn/passkey_unlock_manager.h"
+#include "chrome/browser/webauthn/passkey_unlock_manager_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -86,9 +88,11 @@
 #include "components/user_education/common/user_education_features.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
 #include "content/public/test/test_utils.h"
+#include "device/fido/features.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -3308,3 +3312,75 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonSignInBenefitsIphBrowserTest,
   EXPECT_FALSE(WillShowPromo());
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+#if !BUILDFLAG(IS_CHROMEOS)
+class MockPasskeyUnlockManager : public webauthn::PasskeyUnlockManager {
+ public:
+  MOCK_METHOD(bool, ShouldDisplayErrorUi, (), (const, override));
+};
+
+class AvatarToolbarButtonPasskeyUnlockErrorBrowserTest
+    : public AvatarToolbarButtonBrowserTest {
+ public:
+  AvatarToolbarButtonPasskeyUnlockErrorBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{device::kPasskeyUnlockErrorUi,
+                              device::kPasskeyUnlockManager,
+                              device::kWebAuthnOpportunisticRetrieval},
+        /*disabled_features=*/{});
+  }
+
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    AvatarToolbarButtonBrowserTest::SetUpBrowserContextKeyedServices(context);
+    webauthn::PasskeyUnlockManagerFactory::GetInstance()
+        ->SetTestingFactoryAndUse(
+            context, base::BindRepeating(
+                         &AvatarToolbarButtonPasskeyUnlockErrorBrowserTest::
+                             CreateMockPasskeyUnlockManager,
+                         base::Unretained(this)));
+  }
+
+  void TearDownOnMainThread() override {
+    mock_passkey_unlock_manager_ = nullptr;
+    AvatarToolbarButtonBrowserTest::TearDownOnMainThread();
+  }
+
+ protected:
+  MockPasskeyUnlockManager* passkey_unlock_manager() {
+    return mock_passkey_unlock_manager_;
+  }
+
+ private:
+  std::unique_ptr<KeyedService> CreateMockPasskeyUnlockManager(
+      content::BrowserContext* context) {
+    auto passkey_unlock_manager =
+        std::make_unique<testing::NiceMock<MockPasskeyUnlockManager>>();
+    mock_passkey_unlock_manager_ = passkey_unlock_manager.get();
+    ON_CALL(*passkey_unlock_manager, ShouldDisplayErrorUi())
+        .WillByDefault(testing::Return(true));
+    return passkey_unlock_manager;
+  }
+
+  raw_ptr<MockPasskeyUnlockManager> mock_passkey_unlock_manager_ = nullptr;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonPasskeyUnlockErrorBrowserTest,
+                       PasskeyUnlockError) {
+  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
+  SigninWithImageAndClearGreetingAndSyncPromo(avatar, u"test@gmail.com");
+
+  EXPECT_EQ(avatar->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_PASSKEYS_ERROR_VERIFY));
+
+  // Simulate the error disappearing.
+  ON_CALL(*passkey_unlock_manager(), ShouldDisplayErrorUi())
+      .WillByDefault(testing::Return(false));
+  EXPECT_CALL(*passkey_unlock_manager(), ShouldDisplayErrorUi())
+      .Times(testing::AtLeast(1));
+  passkey_unlock_manager()->NotifyObserversForTesting();
+
+  EXPECT_EQ(avatar->GetText(), std::u16string());
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
