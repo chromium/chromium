@@ -456,28 +456,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Conversions.DbVersionOnReportSentAndDeleted" units="Report"
-    expires_after="2026-04-26">
-  <owner>tquintanilla@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Records the DB version every time `AttributionStorageSql::DeleteReport` is
-    invoked, i.e. whenever a report is sent or hits the max number of send
-    attempts and is subsequently deleted. This metric was added starting with DB
-    version 58.
-  </summary>
-</histogram>
-
-<histogram name="Conversions.DbVersionOnSourceStored" units="Source"
-    expires_after="2026-04-26">
-  <owner>tquintanilla@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Records the DB version on every successful source or noised source stored.
-    This metric was added starting with version 56.
-  </summary>
-</histogram>
-
 <histogram
     name="Conversions.DebugReport.HttpResponseOrNetErrorCodeAggregatable"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-02-04">

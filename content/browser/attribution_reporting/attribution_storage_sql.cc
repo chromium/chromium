@@ -1516,14 +1516,7 @@ bool AttributionStorageSql::DeleteReport(AttributionReport::Id report_id) {
     return true;
   }
 
-  bool success = DeleteReportInternal(report_id);
-  if (success) {
-    base::UmaHistogramCustomCounts(
-        "Conversions.DbVersionOnReportSentAndDeleted", kCurrentVersionNumber,
-        /*min=*/58,
-        /*exclusive_max=*/88, /*buckets=*/30);
-  }
-  return success;
+  return DeleteReportInternal(report_id);
 }
 
 bool AttributionStorageSql::DeleteReportInternal(

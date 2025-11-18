@@ -232,10 +232,7 @@ class AttributionResolverTest : public testing::Test {
 };
 
 TEST_F(AttributionResolverTest, ImpressionStoredAndRetrieved_ValuesIdentical) {
-  base::HistogramTester histograms;
   storage()->StoreSource(SourceBuilder().Build());
-  histograms.ExpectBucketCount("Conversions.DbVersionOnSourceStored",
-                               AttributionStorageSql::kCurrentVersionNumber, 1);
   EXPECT_THAT(storage()->GetActiveSources(),
               ElementsAre(SourceBuilder().BuildStored()));
 }
@@ -477,8 +474,6 @@ TEST_F(AttributionResolverTest,
 }
 
 TEST_F(AttributionResolverTest, ConversionReportDeleted_RemovedFromStorage) {
-  base::HistogramTester histograms;
-
   storage()->StoreSource(SourceBuilder().Build());
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
@@ -489,7 +484,6 @@ TEST_F(AttributionResolverTest, ConversionReportDeleted_RemovedFromStorage) {
   DeleteReports(reports);
 
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), IsEmpty());
-  histograms.ExpectTotalCount("Conversions.DbVersionOnReportSentAndDeleted", 1);
 }
 
 TEST_F(AttributionResolverTest,

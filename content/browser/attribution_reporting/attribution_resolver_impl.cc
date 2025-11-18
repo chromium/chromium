@@ -494,12 +494,6 @@ StoreSourceResult AttributionResolverImpl::StoreSource(StorableSource source) {
     return make_result(StoreSourceResult::InternalError());
   }
 
-  static_assert(AttributionStorageSql::kCurrentVersionNumber < 86);
-  base::UmaHistogramCustomCounts("Conversions.DbVersionOnSourceStored",
-                                 AttributionStorageSql::kCurrentVersionNumber,
-                                 /*min=*/56,
-                                 /*exclusive_max=*/86, /*buckets=*/30);
-
   return make_result(StoreSourceResult::Success(min_fake_report_time,
                                                 stored_source->source_id()));
 }
