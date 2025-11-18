@@ -21,7 +21,8 @@ class RoundedOmniboxResultsFrame : public views::View {
 
  public:
   RoundedOmniboxResultsFrame(views::View* contents,
-                             LocationBarView* location_bar);
+                             LocationBarView* location_bar,
+                             bool forward_mouse_events);
   RoundedOmniboxResultsFrame(const RoundedOmniboxResultsFrame&) = delete;
   RoundedOmniboxResultsFrame& operator=(const RoundedOmniboxResultsFrame&) =
       delete;
@@ -50,7 +51,7 @@ class RoundedOmniboxResultsFrame : public views::View {
 
   // views::View:
   void Layout(PassKey) override;
-  void AddedToWidget() override;
+  void VisibilityChanged(View* starting_from, bool is_visible) override;
 #if !defined(USE_AURA)
   void OnMouseMoved(const ui::MouseEvent& event) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
@@ -62,6 +63,9 @@ class RoundedOmniboxResultsFrame : public views::View {
   raw_ptr<views::View> top_background_ = nullptr;
   raw_ptr<views::View> contents_host_ = nullptr;
   raw_ptr<views::View> contents_;
+
+  // Only used on platforms that support Aura (non-Mac).
+  [[maybe_unused]] const bool forward_mouse_events_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_ROUNDED_OMNIBOX_RESULTS_FRAME_H_

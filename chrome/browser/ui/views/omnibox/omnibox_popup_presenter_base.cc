@@ -122,7 +122,8 @@ void OmniboxPopupPresenterBase::SetWebUIContent(
       views::kWidgetIdentifierKey,
       const_cast<void*>(omnibox::kOmniboxWebUIPopupWidgetId));
   auto rounded_frame = std::make_unique<RoundedOmniboxResultsFrame>(
-      owned_omnibox_popup_webui_container_.release(), location_bar_view_);
+      owned_omnibox_popup_webui_container_.release(), location_bar_view_,
+      /*forward_mouse_events=*/ShouldShowLocationBarCutout());
   rounded_frame->SetProperty(views::kElementIdentifierKey,
                              kRoundedResultsFrame);
   widget_->SetContentsView(std::move(rounded_frame));
