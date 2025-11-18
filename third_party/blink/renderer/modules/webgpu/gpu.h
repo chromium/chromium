@@ -108,10 +108,6 @@ class MODULES_EXPORT GPU final : public ScriptWrappable,
       wgpu::Adapter adapter,
       wgpu::StringView error_message);
 
-  void RecordAdapterForIdentifiability(ScriptState* script_state,
-                                       const GPURequestAdapterOptions* options,
-                                       GPUAdapter* adapter) const;
-
   void RequestAdapterImpl(ScriptState* script_state,
                           const GPURequestAdapterOptions* options,
                           ScriptPromiseResolver<IDLNullable<GPUAdapter>>*);
