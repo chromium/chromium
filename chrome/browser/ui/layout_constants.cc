@@ -137,6 +137,8 @@ int GetLayoutConstant(LayoutConstant constant) {
     case MAIN_BACKGROUND_REGION_CORNER_RADIUS:
     case TOOLBAR_CORNER_RADIUS:
       return 8;
+    case VERTICAL_TAB_HEIGHT:
+      return 30;
     case VERTICAL_TAB_STRIP_HORIZONTAL_PADDING:
       return 12;
     case VERTICAL_TAB_STRIP_BOTTOM_BUTTON_PADDING:

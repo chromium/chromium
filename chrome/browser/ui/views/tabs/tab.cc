@@ -280,7 +280,6 @@ Tab::Tab(TabSlotController* controller)
       base::BindRepeating(&Tab::CloseButtonPressed, base::Unretained(this)),
       base::BindRepeating(&TabSlotController::OnMouseEventInTab,
                           base::Unretained(controller_))));
-  close_button_->SetHasInkDropActionOnClick(true);
 
 #if BUILDFLAG(IS_CHROMEOS)
   showing_close_button_ = !controller_->IsLockedForOnTask();

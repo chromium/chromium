@@ -182,6 +182,9 @@ enum LayoutConstant {
   // height side panel.
   TOOLBAR_HEIGHT_SIDE_PANEL_INSET,
 
+  // The height of a vertical tab.
+  VERTICAL_TAB_HEIGHT,
+
   // The horizontal padding between the sides of the vertical tab strip and its
   // content.
   VERTICAL_TAB_STRIP_HORIZONTAL_PADDING,

@@ -39,7 +39,6 @@
 #endif
 
 namespace {
-constexpr int kIconSize = 16;
 constexpr gfx::Size kButtonSize = {28, 28};
 }  // namespace
 
@@ -50,6 +49,11 @@ TabCloseButton::TabCloseButton(PressedCallback pressed_callback,
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
   GetViewAccessibility().SetName(l10n_util::GetStringUTF16(IDS_ACCNAME_CLOSE));
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
+
+  // Some sites cannot be closed immediately and instead show a confirmation
+  // dialog when the close button is clicked, so this is needed to reset the
+  // inkdrop state.
+  SetHasInkDropActionOnClick(true);
 
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
   views::InkDrop::Get(this)->SetHighlightOpacity(0.16f);
@@ -201,15 +205,18 @@ bool TabCloseButton::GetHitTestMask(SkPath* mask) const {
 void TabCloseButton::UpdateIcon() {
   const auto& icon = kCloseTabChromeRefreshIcon;
 
-  SetImageModel(views::Button::STATE_NORMAL,
-                ui::ImageModel::FromVectorIcon(icon, colors_.foreground_color,
-                                               kIconSize));
-  SetImageModel(views::Button::STATE_HOVERED,
-                ui::ImageModel::FromVectorIcon(icon, colors_.foreground_color,
-                                               kIconSize));
-  SetImageModel(views::Button::STATE_PRESSED,
-                ui::ImageModel::FromVectorIcon(icon, colors_.foreground_color,
-                                               kIconSize));
+  SetImageModel(
+      views::Button::STATE_NORMAL,
+      ui::ImageModel::FromVectorIcon(icon, colors_.foreground_color,
+                                     GetLayoutConstant(TAB_CLOSE_BUTTON_SIZE)));
+  SetImageModel(
+      views::Button::STATE_HOVERED,
+      ui::ImageModel::FromVectorIcon(icon, colors_.foreground_color,
+                                     GetLayoutConstant(TAB_CLOSE_BUTTON_SIZE)));
+  SetImageModel(
+      views::Button::STATE_PRESSED,
+      ui::ImageModel::FromVectorIcon(icon, colors_.foreground_color,
+                                     GetLayoutConstant(TAB_CLOSE_BUTTON_SIZE)));
 }
 
 BEGIN_METADATA(TabCloseButton)

@@ -11,6 +11,7 @@
 #include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/view.h"
 
+class TabCloseButton;
 class TabCollectionNode;
 class VerticalTabIcon;
 
@@ -33,6 +34,7 @@ class VerticalTabView : public views::View, public views::LayoutDelegate {
       const views::SizeBounds& size_bounds) const override;
 
   VerticalTabIcon* icon_for_testing() { return icon_; }
+  TabCloseButton* close_button_for_testing() { return close_button_; }
 
  private:
   void ResetCollectionNode();
@@ -46,6 +48,7 @@ class VerticalTabView : public views::View, public views::LayoutDelegate {
 
   const raw_ptr<VerticalTabIcon> icon_;
   const raw_ptr<views::Label> title_;
+  const raw_ptr<TabCloseButton> close_button_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_TAB_VIEW_H_
