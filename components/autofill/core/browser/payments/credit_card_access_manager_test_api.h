@@ -118,6 +118,11 @@ class CreditCardAccessManagerTestApi {
         selected_challenge_option_id);
   }
 
+  template <typename Functor, typename... Args>
+  void NotifyObservers(const Functor& functor, const Args&... args) {
+    credit_card_access_manager_->NotifyObservers(functor, args...);
+  }
+
  private:
   const raw_ref<CreditCardAccessManager> credit_card_access_manager_;
 };

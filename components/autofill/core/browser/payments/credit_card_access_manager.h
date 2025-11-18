@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_CREDIT_CARD_ACCESS_MANAGER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_CREDIT_CARD_ACCESS_MANAGER_H_
 
+#include <concepts>
+#include <functional>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -95,12 +97,12 @@ class CreditCardAccessManager
         CreditCardAccessManager& ccam) {}
 
     // Signals that `ccam` has begun fetching the full information for `card`.
-    virtual void OnCreditCardFetchStarted(const CreditCardAccessManager& ccam,
+    virtual void OnCreditCardFetchStarted(CreditCardAccessManager& ccam,
                                           const CreditCard& card) {}
 
     // Signals that fetching the credit card information for `card` succeeded.
     // Called after the requester of the fetch was notified.
-    virtual void OnCreditCardFetchSucceeded(const CreditCardAccessManager& ccam,
+    virtual void OnCreditCardFetchSucceeded(CreditCardAccessManager& ccam,
                                             const CreditCard& card) {}
 
     // Signals that fetching the credit card information for `card` failed.
@@ -108,7 +110,7 @@ class CreditCardAccessManager
     // Important: Note that this event is not yet called in every call path -
     // do not rely on it.
     // TODO(crbug.com/460035068): Ensure that all call paths call CCAM::Reset().
-    virtual void OnCreditCardFetchFailed(const CreditCardAccessManager& ccam,
+    virtual void OnCreditCardFetchFailed(CreditCardAccessManager& ccam,
                                          const CreditCard* card) {}
   };
 
@@ -406,6 +408,16 @@ class CreditCardAccessManager
   // Invoked when the card is successfully fetched.
   void OnCreditCardFetched(const CreditCard& card,
                            bool card_was_fetched_from_cache);
+
+  // Notifies the `observers_` that a `functor` event has taken place.
+  template <typename Functor, typename... Args>
+    requires(
+        std::invocable<Functor, Observer&, CreditCardAccessManager&, Args...>)
+  void NotifyObservers(const Functor& functor, const Args&... args) {
+    for (Observer& observer : observers_) {
+      std::invoke(functor, observer, *this, args...);
+    }
+  }
 
   // The current form of authentication in progress.
   UnmaskAuthFlowType unmask_auth_flow_type_ = UnmaskAuthFlowType::kNone;

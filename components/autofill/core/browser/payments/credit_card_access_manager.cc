@@ -114,9 +114,7 @@ CreditCardAccessManager::~CreditCardAccessManager() {
   // Reset informs observers that pending fetch requests are now considered
   // failed.
   Reset();
-  for (Observer& observer : observers_) {
-    observer.OnCreditCardAccessManagerDestroyed(*this);
-  }
+  NotifyObservers(&Observer::OnCreditCardAccessManagerDestroyed);
 }
 
 void CreditCardAccessManager::AddObserver(Observer* observer) {
@@ -357,7 +355,7 @@ void CreditCardAccessManager::FetchCreditCard(
   }
 
   // Get the card's record type to correctly handle its fetching.
-  observers_.Notify(&Observer::OnCreditCardFetchStarted, *this, *card);
+  NotifyObservers(&Observer::OnCreditCardFetchStarted, *card);
   CreditCard::RecordType record_type = card->record_type();
   on_credit_card_fetched_callback_ = std::move(on_credit_card_fetched);
 
@@ -1628,7 +1626,7 @@ void CreditCardAccessManager::Reset() {
   // If the success callback was never called, then there must have been an
   // error.
   if (std::exchange(on_credit_card_fetched_callback_, {})) {
-    observers_.Notify(&Observer::OnCreditCardFetchFailed, *this, card_.get());
+    NotifyObservers(&Observer::OnCreditCardFetchFailed, card_.get());
   }
   card_.reset();
 }
@@ -1811,7 +1809,7 @@ void CreditCardAccessManager::OnCreditCardFetched(
   if (on_credit_card_fetched_callback_) {
     std::move(on_credit_card_fetched_callback_).Run(card);
   }
-  observers_.Notify(&Observer::OnCreditCardFetchSucceeded, *this, card);
+  NotifyObservers(&Observer::OnCreditCardFetchSucceeded, card);
 }
 
 }  // namespace autofill

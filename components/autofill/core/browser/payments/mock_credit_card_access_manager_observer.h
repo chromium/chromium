@@ -22,15 +22,15 @@ class MockCreditCardAccessManagerObserver
               (override));
   MOCK_METHOD(void,
               OnCreditCardFetchStarted,
-              (const CreditCardAccessManager&, const CreditCard&),
+              (CreditCardAccessManager&, const CreditCard&),
               (override));
   MOCK_METHOD(void,
               OnCreditCardFetchSucceeded,
-              (const CreditCardAccessManager&, const CreditCard&),
+              (CreditCardAccessManager&, const CreditCard&),
               (override));
   MOCK_METHOD(void,
               OnCreditCardFetchFailed,
-              (const CreditCardAccessManager&, const CreditCard*),
+              (CreditCardAccessManager&, const CreditCard*),
               (override));
 };
 
