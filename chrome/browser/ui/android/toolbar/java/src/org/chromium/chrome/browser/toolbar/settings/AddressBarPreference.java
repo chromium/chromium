@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.toolbar.settings;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ValueAnimator;
 import android.content.Context;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.widget.RadioGroup;
 
@@ -22,7 +25,9 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.prefs.LocalStatePrefs;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.ToolbarPositionController.ToolbarPositionAndSource;
+import org.chromium.chrome.browser.toolbar.settings.AddressBarSettingsFragment.HighlightedOption;
 import org.chromium.components.browser_ui.settings.ContainedRadioButtonGroupPreference;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout;
 import org.chromium.components.prefs.PrefService;
@@ -31,9 +36,13 @@ import org.chromium.components.prefs.PrefService;
 @NullMarked
 public class AddressBarPreference extends ContainedRadioButtonGroupPreference
         implements RadioGroup.OnCheckedChangeListener {
+    private static final int HIGHLIGHT_ANIMATION_DELAY_MS = 3000;
+    private static final int HIGHLIGHT_ANIMATION_DURATION_MS = 1000;
+
     private RadioButtonWithDescriptionLayout mGroup;
     private RadioButtonWithDescription mTopButton;
     private RadioButtonWithDescription mBottomButton;
+    private @HighlightedOption int mHighlightedOption;
 
     // We choose this as a "default return value" because top omnibox is the default today. Choose
     // TOP_SETTINGS because TOP_LONG_PRESS causes an animation (see ToolbarPositionController).
@@ -44,6 +53,15 @@ public class AddressBarPreference extends ContainedRadioButtonGroupPreference
         super(context, attrs);
         // Inflating from XML.
         setLayoutResource(R.layout.address_bar_preference);
+    }
+
+    /**
+     * Set Address Bar highlighted option. Called before onBindViewHolder.
+     *
+     * @param highlightedOption The highlighted option for this preference.
+     */
+    public void init(@HighlightedOption int highlightedOption) {
+        mHighlightedOption = highlightedOption;
     }
 
     /** If native is initialized, writes the toolbar position and source. */
@@ -161,6 +179,30 @@ public class AddressBarPreference extends ContainedRadioButtonGroupPreference
 
         mTopButton = (RadioButtonWithDescription) holder.findViewById(R.id.address_bar_top);
         mBottomButton = (RadioButtonWithDescription) holder.findViewById(R.id.address_bar_bottom);
+
+        if (mHighlightedOption == HighlightedOption.BOTTOM_TOOLBAR) {
+            int highlightColor = SemanticColorUtils.getSettingsBackgroundColor(getContext());
+            int defaultColor = SemanticColorUtils.getDefaultBgColor(getContext());
+            mBottomButton.setBackgroundColor(highlightColor);
+
+            // Add a post delayed task to make the highlight fade out after a period of time.
+            new Handler()
+                    .postDelayed(
+                            () -> {
+                                if (!mBottomButton.isAttachedToWindow()) return;
+
+                                ValueAnimator colorAnimation =
+                                        ValueAnimator.ofObject(
+                                                new ArgbEvaluator(), highlightColor, defaultColor);
+                                colorAnimation.setDuration(HIGHLIGHT_ANIMATION_DURATION_MS);
+                                colorAnimation.addUpdateListener(
+                                        animator ->
+                                                mBottomButton.setBackgroundColor(
+                                                        (int) animator.getAnimatedValue()));
+                                colorAnimation.start();
+                            },
+                            HIGHLIGHT_ANIMATION_DELAY_MS);
+        }
 
         if (ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
             // TODO(crbug.com/439911511): Set the value directly in the layout instead.

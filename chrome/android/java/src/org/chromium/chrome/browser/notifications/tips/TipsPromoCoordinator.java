@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.safe_browsing.metrics.SettingsAccessPoint;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.toolbar.settings.AddressBarSettingsFragment;
+import org.chromium.chrome.browser.toolbar.settings.AddressBarSettingsFragment.HighlightedOption;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -234,7 +235,11 @@ public class TipsPromoCoordinator {
                 break;
             case TipsNotificationsFeatureType.BOTTOM_OMNIBOX:
                 SettingsNavigationFactory.createSettingsNavigation()
-                        .startSettings(mContext, AddressBarSettingsFragment.class);
+                        .startSettings(
+                                mContext,
+                                AddressBarSettingsFragment.class,
+                                AddressBarSettingsFragment.createArguments(
+                                        HighlightedOption.BOTTOM_TOOLBAR));
                 break;
             default:
                 assert false : "Invalid feature type: " + featureType;

@@ -282,7 +282,7 @@ public class TipsPromoCoordinatorUnitTest {
 
         mView.findViewById(R.id.tips_promo_settings_button).performClick();
         verify(mBottomSheetController).hideContent(any(), eq(true));
-        verify(mSettingsNavigation).startSettings(eq(mActivity), any());
+        verify(mSettingsNavigation).startSettings(eq(mActivity), any(), any());
 
         histogramWatcher.assertExpected();
     }

@@ -18,6 +18,8 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Bundle;
 import android.widget.ImageView;
 
 import androidx.fragment.app.FragmentManager;
@@ -36,6 +38,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowPackageManager;
 
 import org.chromium.base.ContextUtils;
@@ -49,6 +52,8 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.prefs.LocalStatePrefs;
 import org.chromium.chrome.browser.prefs.LocalStatePrefsJni;
 import org.chromium.chrome.browser.toolbar.ToolbarPositionController.ToolbarPositionAndSource;
+import org.chromium.chrome.browser.toolbar.settings.AddressBarSettingsFragment.HighlightedOption;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.ui.base.TestActivity;
@@ -105,7 +110,25 @@ public class AddressBarSettingsFragmentUnitTest {
         mActivity = (TestActivity) activity;
     }
 
-    private void launchFragment() {
+    @Test
+    @SmallTest
+    public void testBottomButtonHighlight() {
+        launchFragmentWithArgs(
+                AddressBarSettingsFragment.createArguments(HighlightedOption.BOTTOM_TOOLBAR));
+
+        ColorDrawable initialBackground = (ColorDrawable) mBottomButton.getBackground();
+        assertEquals(
+                SemanticColorUtils.getSettingsBackgroundColor(mActivity),
+                initialBackground.getColor());
+
+        // Run delayed animation that reverts the color.
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        ColorDrawable finalBackground = (ColorDrawable) mBottomButton.getBackground();
+        assertEquals(SemanticColorUtils.getDefaultBgColor(mActivity), finalBackground.getColor());
+    }
+
+    private void launchFragmentWithArgs(Bundle args) {
         FragmentManager fragmentManager = mActivity.getSupportFragmentManager();
         mSettings =
                 (AddressBarSettingsFragment)
@@ -114,6 +137,7 @@ public class AddressBarSettingsFragmentUnitTest {
                                 .instantiate(
                                         AddressBarSettingsFragment.class.getClassLoader(),
                                         AddressBarSettingsFragment.class.getName());
+        mSettings.setArguments(args);
 
         fragmentManager.beginTransaction().replace(android.R.id.content, mSettings).commit();
         mActivityScenarioRule.getScenario().moveToState(State.STARTED);
@@ -143,7 +167,7 @@ public class AddressBarSettingsFragmentUnitTest {
         mSharedPreferencesManager.writeInt(
                 ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, ToolbarPositionAndSource.TOP_SETTINGS);
 
-        launchFragment();
+        launchFragmentWithArgs(null);
         assertEquals(
                 mActivity.getString(R.string.address_bar_settings_description),
                 mAddressBarTitle.getSummary());
@@ -176,7 +200,7 @@ public class AddressBarSettingsFragmentUnitTest {
                 ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED,
                 ToolbarPositionAndSource.BOTTOM_SETTINGS);
 
-        launchFragment();
+        launchFragmentWithArgs(null);
         assertFalse(mTopButton.isChecked());
         assertTrue(mBottomButton.isChecked());
         assertFalse(mToolbarPositionImage.isSelected());
@@ -202,7 +226,7 @@ public class AddressBarSettingsFragmentUnitTest {
                 ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED,
                 ToolbarPositionAndSource.BOTTOM_SETTINGS);
 
-        launchFragment();
+        launchFragmentWithArgs(null);
         assertFalse(mTopButton.isChecked());
         assertTrue(mBottomButton.isChecked());
         assertFalse(mToolbarPositionImage.isSelected());
@@ -228,7 +252,7 @@ public class AddressBarSettingsFragmentUnitTest {
         shadowPackageManager.setSystemFeature(PackageManager.FEATURE_SENSOR_HINGE_ANGLE, true);
         mSharedPreferencesManager.writeBoolean(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, true);
 
-        launchFragment();
+        launchFragmentWithArgs(null);
         assertEquals(
                 mActivity.getString(R.string.address_bar_settings_description_foldable),
                 mAddressBarTitle.getSummary());
