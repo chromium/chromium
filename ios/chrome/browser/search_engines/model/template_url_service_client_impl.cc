@@ -82,6 +82,11 @@ void TemplateURLServiceClientImpl::OnURLVisited(
     return;
   }
 
+  if (visited_url_info.response_code_category ==
+      history::VisitResponseCodeCategory::k404) {
+    return;
+  }
+
   TemplateURLService::URLVisitedDetails details = {
       visited_url_info.url_row.url(),
       ui::PageTransitionCoreTypeIs(visited_url_info.visit_row.transition,
