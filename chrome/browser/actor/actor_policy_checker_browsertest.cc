@@ -461,8 +461,14 @@ class ActorPolicyCheckerBrowserTestWithManagedAccount
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(crbug.com/460824365): Enable on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_CapabilityUpdatedForAccount DISABLED_CapabilityUpdatedForAccount
+#else
+#define MAYBE_CapabilityUpdatedForAccount CapabilityUpdatedForAccount
+#endif
 IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestWithManagedAccount,
-                       CapabilityUpdatedForAccount) {
+                       MAYBE_CapabilityUpdatedForAccount) {
   // No account is signed in, thus no capability.
   EXPECT_FALSE(ActorKeyedService::Get(browser()->profile())
                    ->GetPolicyChecker()
@@ -512,9 +518,15 @@ IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestWithManagedAccount,
 using ActorPolicyCheckerBrowserTestWithManagedAccountWithPolicy =
     ActorPolicyCheckerBrowserTestManagedBrowser;
 
+// TODO(crbug.com/460824365): Enable on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_CapabilityUpdatedForAccount DISABLED_CapabilityUpdatedForAccount
+#else
+#define MAYBE_CapabilityUpdatedForAccount CapabilityUpdatedForAccount
+#endif
 IN_PROC_BROWSER_TEST_F(
     ActorPolicyCheckerBrowserTestWithManagedAccountWithPolicy,
-    CapabilityUpdatedForAccount) {
+    MAYBE_CapabilityUpdatedForAccount) {
   UpdateGeminiActOnWebPolicy(
       glic::prefs::GlicActuationOnWebPolicyState::kDisabled);
   EXPECT_FALSE(ActorKeyedService::Get(browser()->profile())
