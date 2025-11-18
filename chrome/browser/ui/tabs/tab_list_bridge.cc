@@ -105,7 +105,22 @@ int TabListBridge::GetIndexOfTab(tabs::TabHandle tab) {
 }
 
 void TabListBridge::HighlightTabs(tabs::TabHandle tab_to_activate,
-                                  const std::set<tabs::TabHandle>& tabs) {}
+                                  const std::set<tabs::TabHandle>& tabs) {
+  CHECK(tabs.contains(tab_to_activate))
+      << "Tab to activate is not included in tabs to highlight.";
+
+  ui::ListSelectionModel selected_tabs = tab_strip_->selection_model();
+  for (const auto& tab_handle : tabs) {
+    auto index = tab_strip_->GetIndexOfTab(tab_handle.Get());
+    CHECK_NE(index, TabStripModel::kNoTab)
+        << "Trying to highlight a non-existent tab.";
+
+    selected_tabs.AddIndexToSelection(index);
+  }
+
+  selected_tabs.set_active(tab_strip_->GetIndexOfTab(tab_to_activate.Get()));
+  tab_strip_->SetSelectionFromModel(std::move(selected_tabs));
+}
 
 void TabListBridge::MoveTab(tabs::TabHandle tab, int index) {
   int current_index = GetIndexOfTab(tab);
@@ -149,6 +164,7 @@ void TabListBridge::UnpinTab(tabs::TabHandle tab) {
 std::optional<tab_groups::TabGroupId> TabListBridge::AddTabsToGroup(
     std::optional<tab_groups::TabGroupId> group_id,
     const std::set<tabs::TabHandle>& tabs) {
+  NOTIMPLEMENTED();
   return std::nullopt;
 }
 

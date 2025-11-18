@@ -420,3 +420,55 @@ IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, Observer_OnActiveTabChanged) {
   EXPECT_THAT(observer.ReadEvent(Event::Type::ACTIVE_TAB_CHANGED).tab,
               MatchesTab(url3));
 }
+
+IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, HighlightTabs) {
+  // Create four tabs: initially the tab with `url4` is active.
+  const GURL url1("http://one.example");
+  const GURL url2("http://two.example");
+  const GURL url3("http://three.example");
+  const GURL url4("http://four.example");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url1, WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url3, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url4, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  ASSERT_TRUE(tab_strip_model);
+  EXPECT_EQ(3, tab_strip_model->active_index());
+
+  // Initially, only the active tab is selected.
+  EXPECT_FALSE(tab_strip_model->IsTabSelected(0));
+  EXPECT_FALSE(tab_strip_model->IsTabSelected(1));
+  EXPECT_FALSE(tab_strip_model->IsTabSelected(2));
+  EXPECT_TRUE(tab_strip_model->IsTabSelected(3));
+
+  TabListInterface* tab_list_interface = TabListInterface::From(browser());
+  ASSERT_TRUE(tab_list_interface);
+
+  // Select the tabs with `url1` and `url2` and make the tab with `url2` the
+  // active tab.
+  std::set<tabs::TabHandle> tabs_to_select;
+  tabs_to_select.insert(tab_list_interface->GetTab(0)->GetHandle());
+  tabs_to_select.insert(tab_list_interface->GetTab(1)->GetHandle());
+
+  tab_list_interface->HighlightTabs(tab_list_interface->GetTab(1)->GetHandle(),
+                                    tabs_to_select);
+
+  EXPECT_EQ(1, tab_strip_model->active_index());
+
+  // Verify that the tab with `url4` is still selected since it was the previous
+  // active tab (which is selected), but the tab with `url3` is not selected.
+  EXPECT_TRUE(tab_strip_model->IsTabSelected(0));
+  EXPECT_TRUE(tab_strip_model->IsTabSelected(1));
+  EXPECT_FALSE(tab_strip_model->IsTabSelected(2));
+  EXPECT_TRUE(tab_strip_model->IsTabSelected(3));
+}
