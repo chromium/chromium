@@ -78,11 +78,6 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(
               kSyncSupportAlwaysSyncingPriorityPreferences)) {
         types.Put(PRIORITY_PREFERENCES);
       }
-      if ((!skip_feature_checks_if_early || base::FeatureList::GetInstance()) &&
-          base::FeatureList::IsEnabled(
-              kSpellcheckSeparateLocalAndAccountDictionaries)) {
-        types.Remove(DICTIONARY);
-      }
       return {kPreferencesTypeName, PREFERENCES, types};
     }
     case UserSelectableType::kPasswords:
@@ -97,17 +92,10 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(
               {AUTOFILL, AUTOFILL_PROFILE, CONTACT_INFO}};
     case UserSelectableType::kThemes:
       return {kThemesTypeName, THEMES, {THEMES}};
-    case UserSelectableType::kHistory: {
-      DataTypeSet types = {HISTORY, HISTORY_DELETE_DIRECTIVES, USER_EVENTS};
-      // With `kSpellcheckSeparateLocalAndAccountDictionaries` enabled,
-      // `DICTIONARY` is controlled by the History opt-in.
-      if ((!skip_feature_checks_if_early || base::FeatureList::GetInstance()) &&
-          base::FeatureList::IsEnabled(
-              kSpellcheckSeparateLocalAndAccountDictionaries)) {
-        types.Put(DICTIONARY);
-      }
-      return {kHistoryTypeName, HISTORY, types};
-    }
+    case UserSelectableType::kHistory:
+      return {kHistoryTypeName,
+              HISTORY,
+              {HISTORY, HISTORY_DELETE_DIRECTIVES, USER_EVENTS}};
     case UserSelectableType::kExtensions:
       return {
           kExtensionsTypeName, EXTENSIONS, {EXTENSIONS, EXTENSION_SETTINGS}};
