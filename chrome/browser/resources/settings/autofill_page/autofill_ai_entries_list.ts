@@ -92,7 +92,7 @@ export class SettingsAutofillAiEntriesListElement extends
         value: null,
       },
 
-      title: {
+      listTitle: {
         type: String,
       },
 
@@ -178,7 +178,7 @@ export class SettingsAutofillAiEntriesListElement extends
 
   declare ineligibleUser: boolean;
   declare allowedEntityTypes: Set<EntityTypeName>|null;
-  declare title: string;
+  declare listTitle: string;
   declare allowEditingPref: chrome.settingsPrivate.PrefObject<boolean>|null;
   declare private allowEditing_: boolean;
   declare private activeEntityInstance_: EntityInstance|null;
