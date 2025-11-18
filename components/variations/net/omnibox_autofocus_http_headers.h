@@ -41,8 +41,7 @@ BASE_DECLARE_FEATURE_PARAM(bool, kWithHardwareKeyboard);
 COMPONENT_EXPORT(OMNIBOX_AUTOFOCUS_HTTP_HEADERS)
 BASE_DECLARE_FEATURE_PARAM(bool, kWithPrediction);
 
-// Returns the value to set for the header. Returns an empty string if the
-// kOmniboxAutofocusOnIncognitoNtp feature is disabled.
+// Returns the value to set for the header.
 COMPONENT_EXPORT(OMNIBOX_AUTOFOCUS_HTTP_HEADERS)
 std::string GetHeaderValue();
 
@@ -51,8 +50,9 @@ std::string GetHeaderValue();
 COMPONENT_EXPORT(OMNIBOX_AUTOFOCUS_HTTP_HEADERS)
 bool ShouldAppendHeader(const GURL& url);
 
-// Adds an HTTP header reporting the omnibox autofocus experiment state if its
-// value is non-empty. Only reported if the |url| is a Google domain.
+// Adds an HTTP header reporting the omnibox autofocus experiment state.
+// Only reported if the |url| is a Google domain and
+// `kReportOmniboxAutofocusHeader` feature flag is enabled.
 // This method is safe to call both from browser and from child processes.
 COMPONENT_EXPORT(OMNIBOX_AUTOFOCUS_HTTP_HEADERS)
 void AppendOmniboxAutofocusHeaderIfNeeded(const GURL& url,

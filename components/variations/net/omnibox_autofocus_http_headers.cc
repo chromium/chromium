@@ -13,18 +13,20 @@
 
 namespace variations {
 
-// The header used to report the state of the omnibox autofocus experiment.
-// This header reports one of eight possible values: "0" through "7".
-// These values correspond to a bitmask of experiment parameters for the
-// for the `kOmniboxAutofocusOnIncognitoNtp` feature.
-// - bit 0: with_hardware_keyboard
-// - bit 1: with_prediction
-// - bit 2: not_first_tab
+// The `X-Omnibox-Autofocus` header, used on Android to report the state of the
+// `kOmniboxAutofocusOnIncognitoNtp` feature.
+// The header can have one of 9 values:
+// - "-1": The feature is disabled.
+// - "0" through "7": When the feature is enabled, this is a bitmask of the
+//   following feature parameters:
+//   - bit 0 (rightmost): `with_hardware_keyboard`
+//   - bit 1: `with_prediction`
+//   - bit 2 (leftmost): `not_first_tab`
 const char kOmniboxAutofocusHeaderName[] = "X-Omnibox-Autofocus";
 
 // Whether to enable reporting the header. Included as a quick escape hatch in
 // case of crashes.
-BASE_FEATURE(kReportOmniboxAutofocusHeader, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kReportOmniboxAutofocusHeader, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Feature that controls the Omnibox Autofocus experiment.
 BASE_FEATURE(kOmniboxAutofocusOnIncognitoNtp,
@@ -61,6 +63,8 @@ std::string GetHeaderValue() {
     int value =
         (not_first_tab << 2) | (with_prediction << 1) | with_hardware_keyboard;
     header_value = base::NumberToString(value);
+  } else {
+    header_value = "-1";
   }
   return header_value;
 }
@@ -84,9 +88,6 @@ void AppendOmniboxAutofocusHeaderIfNeeded(const GURL& url,
   }
 
   std::string header = GetHeaderValue();
-  if (header.empty()) {
-    return;
-  }
   // Set the omnibox header to cors_exempt_headers rather than headers
   // to be exempted from CORS checks.
   request->cors_exempt_headers.SetHeaderIfMissing(kOmniboxAutofocusHeaderName,

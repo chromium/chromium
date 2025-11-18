@@ -22,15 +22,6 @@ void OmniboxAutofocusURLLoaderThrottle::AppendThrottleIfNeeded(
   if (!base::FeatureList::IsEnabled(kReportOmniboxAutofocusHeader)) {
     return;
   }
-
-  // Don't add the URL loader throttle if there's no header to report. This is a
-  // minor optimization, and also prevents some noisy DCHECKs from failing in
-  // tests: https://cs.chromium.org/search/?q=crbug.com/845683
-  const std::string header = GetHeaderValue();
-  if (header.empty()) {
-    return;
-  }
-
   throttles->push_back(std::make_unique<OmniboxAutofocusURLLoaderThrottle>());
 #endif  // BUILDFLAG(IS_ANDROID)
 }
@@ -40,7 +31,9 @@ void OmniboxAutofocusURLLoaderThrottle::DetachFromCurrentSequence() {}
 void OmniboxAutofocusURLLoaderThrottle::WillStartRequest(
     network::ResourceRequest* request,
     bool* defer) {
+#if BUILDFLAG(IS_ANDROID)
   AppendOmniboxAutofocusHeaderIfNeeded(request->url, request);
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void OmniboxAutofocusURLLoaderThrottle::WillRedirectRequest(
@@ -53,9 +46,11 @@ void OmniboxAutofocusURLLoaderThrottle::WillRedirectRequest(
   // Note: No need to check the kReportOmniboxAutofocusHeader
   // feature state here, as this class is only instantiated when the feature is
   // enabled.
+ #if BUILDFLAG(IS_ANDROID)
   if (!ShouldAppendHeader(redirect_info->new_url)) {
     to_be_removed_headers->push_back(kOmniboxAutofocusHeaderName);
   }
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace variations

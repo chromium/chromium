@@ -29,7 +29,7 @@ class OmniboxAutofocusURLLoaderThrottleTest : public testing::Test {
 };
 
 struct AppendThrottleTestParam {
-  std::vector<base::test::FeatureRefAndParams> enabled_features;
+  std::vector<base::test::FeatureRef> enabled_features;
   std::vector<base::test::FeatureRef> disabled_features;
   size_t expected_throttles_size;
 };
@@ -41,8 +41,8 @@ class OmniboxAutofocusURLLoaderThrottleAppendTest
 TEST_P(OmniboxAutofocusURLLoaderThrottleAppendTest, AppendThrottleIfNeeded) {
   const AppendThrottleTestParam& param = GetParam();
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(param.enabled_features,
-                                             param.disabled_features);
+  feature_list.InitWithFeatures(param.enabled_features,
+                                param.disabled_features);
 
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
   OmniboxAutofocusURLLoaderThrottle::AppendThrottleIfNeeded(&throttles);
@@ -53,18 +53,16 @@ INSTANTIATE_TEST_SUITE_P(
     OmniboxAutofocusURLLoaderThrottleTest,
     OmniboxAutofocusURLLoaderThrottleAppendTest,
     testing::ValuesIn(std::vector<AppendThrottleTestParam>{
-        // Test with kReportOmniboxAutofocusHeader disabled.
+        // Test with kReportOmniboxAutofocusHeader disabled (by default).
+        {/*enabled_features=*/{},
+         /*disabled_features=*/{},
+         /*expected_throttles_size=*/0u},
+        // Test with kReportOmniboxAutofocusHeader disabled (explicitly).
         {/*enabled_features=*/{},
          /*disabled_features=*/{kReportOmniboxAutofocusHeader},
          /*expected_throttles_size=*/0u},
-        // Test with kReportOmniboxAutofocusHeader enabled but empty header.
-        {/*enabled_features=*/{{kReportOmniboxAutofocusHeader, {}}},
-         /*disabled_features=*/{kOmniboxAutofocusOnIncognitoNtp},
-         /*expected_throttles_size=*/0u},
-        // Test with kReportOmniboxAutofocusHeader enabled and non-empty header.
-        {/*enabled_features=*/
-         {{kReportOmniboxAutofocusHeader, {}},
-          {kOmniboxAutofocusOnIncognitoNtp, {{"not_first_tab", "true"}}}},
+        // Test with kReportOmniboxAutofocusHeader enabled.
+        {/*enabled_features=*/{kReportOmniboxAutofocusHeader},
          /*disabled_features=*/{},
 #if BUILDFLAG(IS_ANDROID)
          /*expected_throttles_size=*/1u
@@ -74,6 +72,7 @@ INSTANTIATE_TEST_SUITE_P(
         }}));
 
 #if BUILDFLAG(IS_ANDROID)
+
 TEST_F(OmniboxAutofocusURLLoaderThrottleTest, WillStartRequest) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(

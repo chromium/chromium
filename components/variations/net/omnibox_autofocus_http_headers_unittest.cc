@@ -45,7 +45,7 @@ INSTANTIATE_TEST_SUITE_P(
     OmniboxAutofocusGetHeaderValueTest,
     testing::ValuesIn(std::vector<GetHeaderValueTestParam>{
         // Test with kOmniboxAutofocusOnIncognitoNtp disabled.
-        {false, {}, ""},
+        {false, {}, "-1"},
         // Test with kOmniboxAutofocusOnIncognitoNtp enabled and no params set.
         {true, {}, "0"},
         // Test with kOmniboxAutofocusOnIncognitoNtp enabled and all params
@@ -120,8 +120,7 @@ TEST(OmniboxAutofocusHttpHeadersTest,
 
 TEST(OmniboxAutofocusHttpHeadersTest, ShouldAppendHeader_ForControlGroup) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {kReportOmniboxAutofocusHeader, kOmniboxAutofocusOnIncognitoNtp}, {});
+  feature_list.InitAndEnableFeature(kReportOmniboxAutofocusHeader);
 
   network::ResourceRequest request;
   request.url = GURL("https://www.google.com");
@@ -129,7 +128,7 @@ TEST(OmniboxAutofocusHttpHeadersTest, ShouldAppendHeader_ForControlGroup) {
   std::optional<std::string> header_value =
       request.cors_exempt_headers.GetHeader(kOmniboxAutofocusHeaderName);
   ASSERT_TRUE(header_value.has_value());
-  EXPECT_EQ(*header_value, "0");
+  EXPECT_EQ(*header_value, "-1");
 }
 
 TEST(OmniboxAutofocusHttpHeadersTest, ShouldAppendHeader_ForTreatmentGroup) {
