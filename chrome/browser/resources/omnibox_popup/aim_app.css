@@ -52,10 +52,14 @@ cr-composebox {
   --color-composebox-upload-button-disabled: var(--color-omnibox-composebox-foreground-disabled);
   --cr-composebox-outline-hcm: none;
   --cr-composebox-submit-button-margin-inline-start: auto;
-  --cr-composebox-suggestion-activity-bottom: 10px;
+  --cr-composebox-suggestion-activity-bottom: 0;
   --cr-composebox-suggestion-activity-margin-top: 0;
 
   position: relative;
+}
+
+cr-composebox[searchbox-layout-mode="Compact"] {
+  --input-bottom-spacing: 14px;
 }
 
 cr-composebox[searchbox-layout-mode="Compact"]::part(context-menu-entrypoint-icon) {
