@@ -166,8 +166,6 @@ class CORE_EXPORT DOMScheduler : public ScriptWrappable,
   // context is used, and the cross-frame case where it's ignored.
   SchedulerTaskContext* GetSchedulerTaskContextForYield();
 
-  Member<ExecutionContext> execution_context_;
-
   // `fixed_priority_task_queues_` is initialized with one entry per priority,
   // indexed by priority. This will be empty when the window is detached.
   FixedPriorityTaskQueueVector fixed_priority_task_queues_;

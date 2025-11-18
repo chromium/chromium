@@ -73,8 +73,6 @@ class AIInterfaceProxy final : public GarbageCollected<AIInterfaceProxy>,
   HeapMojoRemote<mojom::blink::AIManager>& GetAIManagerRemoteImpl(
       ExecutionContext* execution_context);
 
-  Member<ExecutionContext> execution_context_;
-
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   HeapMojoRemote<mojom::blink::TranslationManager> translation_manager_remote_{

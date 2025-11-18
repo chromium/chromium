@@ -60,8 +60,6 @@ class MODULES_EXPORT PressureObserverManager final
   void DidAddClient(V8PressureSource::Enum,
                     device::mojom::blink::PressureManagerAddClientResult);
 
-  Member<ExecutionContext> execution_context_;
-
   // Connection to the browser side implementation.
   HeapMojoRemote<mojom::blink::WebPressureManager> pressure_manager_;
 

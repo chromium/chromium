@@ -45,7 +45,6 @@ class EXTENSIONS_WEBVIEW_EXPORT WebViewAndroid : public ScriptWrappable,
       ScriptPromiseResolver<MediaIntegrityTokenProvider>* resolver,
       std::optional<mojom::blink::WebViewMediaIntegrityErrorCode> error);
 
-  Member<ExecutionContext> execution_context_;
   HeapHashSet<Member<ScriptPromiseResolver<MediaIntegrityTokenProvider>>>
       provider_resolvers_;
   HeapMojoRemote<mojom::blink::WebViewMediaIntegrityService>

@@ -48,8 +48,6 @@ class CORE_EXPORT AbortSignalRegistry
   void ContextDestroyed() override;
 
  private:
-  Member<ExecutionContext> execution_context_;
-
   // Map holding abort algorithm handlers for event listeners that have them,
   // tying the lifetime of the abort algorithm to the `EventListener`. This is
   // cleared when context is destroyed since we won't run event listeners after

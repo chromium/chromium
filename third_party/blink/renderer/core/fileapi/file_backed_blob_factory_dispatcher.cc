@@ -49,7 +49,6 @@ mojom::blink::FileBackedBlobFactory* GetFileBackedBlobFactory(
 FileBackedBlobFactoryDispatcher::FileBackedBlobFactoryDispatcher(
     ExecutionContext& context)
     : ExecutionContextClient(&context),
-      execution_context_(context),
       frame_remote_(&context),
       worker_remote_(&context) {}
 
@@ -85,7 +84,6 @@ void FileBackedBlobFactoryDispatcher::FlushForTesting() {
 }
 
 void FileBackedBlobFactoryDispatcher::Trace(Visitor* visitor) const {
-  visitor->Trace(execution_context_);
   ExecutionContextClient::Trace(visitor);
   visitor->Trace(frame_remote_);
   visitor->Trace(worker_remote_);

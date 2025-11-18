@@ -106,7 +106,6 @@ ScriptedIdleTaskController& ScriptedIdleTaskController::From(
 ScriptedIdleTaskController::ScriptedIdleTaskController(
     ExecutionContext* context)
     : ExecutionContextLifecycleStateObserver(context),
-      execution_context_(*context),
       scheduler_(ThreadScheduler::Current()) {
   UpdateStateIfNeeded();
 }
@@ -118,7 +117,6 @@ ScriptedIdleTaskController::~ScriptedIdleTaskController() {
 void ScriptedIdleTaskController::Trace(Visitor* visitor) const {
   visitor->Trace(idle_tasks_);
   ExecutionContextLifecycleStateObserver::Trace(visitor);
-  visitor->Trace(execution_context_);
 }
 
 int ScriptedIdleTaskController::NextCallbackId() {

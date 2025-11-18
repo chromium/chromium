@@ -73,7 +73,6 @@ DOMScheduler* DOMScheduler::scheduler(ExecutionContext& context) {
 
 DOMScheduler::DOMScheduler(ExecutionContext* context)
     : ExecutionContextLifecycleObserver(context),
-      execution_context_(*context),
       fixed_priority_task_signals_(kWebSchedulingPriorityCount) {
   if (context->IsContextDestroyed()) {
     return;
@@ -96,7 +95,6 @@ void DOMScheduler::Trace(Visitor* visitor) const {
   visitor->Trace(signal_to_continuation_queue_map_);
   ScriptWrappable::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
-  visitor->Trace(execution_context_);
 }
 
 ScriptPromise<IDLAny> DOMScheduler::postTask(

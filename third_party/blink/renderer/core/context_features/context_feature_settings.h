@@ -23,7 +23,7 @@ class CORE_EXPORT ContextFeatureSettings final
  public:
   enum class CreationMode { kCreateIfNotExists, kDontCreateIfNotExists };
 
-  explicit ContextFeatureSettings(ExecutionContext&);
+  ContextFeatureSettings() = default;
 
   // Returns the ContextFeatureSettings for an ExecutionContext. If one does not
   // already exist for the given context, one is created.
@@ -68,7 +68,6 @@ class CORE_EXPORT ContextFeatureSettings final
   void Trace(Visitor*) const override;
 
  private:
-  Member<ExecutionContext> execution_context_;
   bool enable_mojo_js_ = false;
   bool enable_mojo_js_file_system_access_helper_ = false;
   bool enable_private_aggregation_in_shared_storage_ = false;

@@ -39,7 +39,6 @@ WebViewAndroid& WebViewAndroid::From(ExecutionContext& execution_context) {
 
 WebViewAndroid::WebViewAndroid(ExecutionContext& execution_context)
     : ExecutionContextClient(&execution_context),
-      execution_context_(execution_context),
       media_integrity_service_remote_(&execution_context) {}
 
 void WebViewAndroid::EnsureServiceConnection(
@@ -172,7 +171,6 @@ void WebViewAndroid::OnGetIntegrityProviderResponse(
 void WebViewAndroid::Trace(Visitor* visitor) const {
   visitor->Trace(provider_resolvers_);
   visitor->Trace(media_integrity_service_remote_);
-  visitor->Trace(execution_context_);
   ExecutionContextClient::Trace(visitor);
   ScriptWrappable::Trace(visitor);
 }

@@ -127,7 +127,6 @@ void RtcTransportDependencies::GetInitialized(
 RtcTransportDependencies::RtcTransportDependencies(ExecutionContext& context,
                                                    PassKey)
     : ExecutionContextLifecycleObserver(&context),
-      execution_context_(context),
       p2p_socket_dispatcher_(P2PSocketDispatcher::From(context)),
       webrtc_environment_(webrtc::EnvironmentFactory().Create()) {
   // Start initialization on the network thread.
@@ -230,7 +229,6 @@ void RtcTransportDependencies::ContextDestroyed() {
 }
 
 void RtcTransportDependencies::Trace(Visitor* visitor) const {
-  visitor->Trace(execution_context_);
   ExecutionContextLifecycleObserver::Trace(visitor);
   visitor->Trace(p2p_socket_dispatcher_);
 }

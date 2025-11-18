@@ -43,7 +43,6 @@ class MODULES_EXPORT FileSystemAccessManager final
 
   void EnsureConnection();
 
-  Member<ExecutionContext> execution_context_;
   HeapMojoRemote<mojom::blink::FileSystemAccessManager> remote_;
 };
 

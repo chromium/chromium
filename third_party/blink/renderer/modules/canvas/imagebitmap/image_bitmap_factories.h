@@ -66,7 +66,7 @@ class MODULES_EXPORT ImageBitmapFactories final
       public NameClient,
       public GarbageCollectedMixin {
  public:
-  explicit ImageBitmapFactories(ExecutionContext& context);
+  ImageBitmapFactories() = default;
 
   static ScriptPromise<ImageBitmap> CreateImageBitmap(
       ScriptState*,
@@ -144,7 +144,6 @@ class MODULES_EXPORT ImageBitmapFactories final
   }
 
  private:
-  Member<ExecutionContext> execution_context_;
   static ScriptPromise<ImageBitmap> CreateImageBitmap(
       ScriptState*,
       ImageBitmapSource*,

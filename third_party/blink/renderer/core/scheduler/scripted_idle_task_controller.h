@@ -154,8 +154,6 @@ class CORE_EXPORT ScriptedIdleTaskController
     return !IsHashTraitsEmptyOrDeletedValue<Traits, CallbackId>(id);
   }
 
-  Member<ExecutionContext> execution_context_;
-
   // Not owned.
   ThreadScheduler* scheduler_;
 

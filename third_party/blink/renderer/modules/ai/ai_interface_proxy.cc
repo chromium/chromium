@@ -13,8 +13,7 @@ namespace blink {
 // TODO(crbug.com/406770758): Consider refactoring to have this class own the
 // execution context as a member.
 AIInterfaceProxy::AIInterfaceProxy(ExecutionContext* execution_context)
-    : execution_context_(*execution_context),
-      task_runner_(
+    : task_runner_(
           execution_context->GetTaskRunner(TaskType::kInternalDefault)),
       language_detection_model_(
           MakeGarbageCollected<LanguageDetectionModel>()) {}
@@ -22,7 +21,6 @@ AIInterfaceProxy::AIInterfaceProxy(ExecutionContext* execution_context)
 AIInterfaceProxy::~AIInterfaceProxy() = default;
 
 void AIInterfaceProxy::Trace(Visitor* visitor) const {
-  visitor->Trace(execution_context_);
   visitor->Trace(translation_manager_remote_);
   visitor->Trace(language_detection_driver_);
   visitor->Trace(language_detection_model_);

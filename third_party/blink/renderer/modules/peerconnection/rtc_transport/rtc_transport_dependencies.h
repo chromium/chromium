@@ -53,7 +53,6 @@ class MODULES_EXPORT RtcTransportDependencies
   Vector<base::OnceClosure> initialized_callback_list_;
   void RunOnceInitialized(base::OnceClosure initialized_callback);
 
-  Member<ExecutionContext> execution_context_;
   Member<P2PSocketDispatcher> p2p_socket_dispatcher_;
   std::unique_ptr<IpcNetworkManager> network_manager_;
   std::unique_ptr<IpcPacketSocketFactory> socket_factory_;

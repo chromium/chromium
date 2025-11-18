@@ -23,13 +23,10 @@ FileSystemAccessManager& FileSystemAccessManager::From(
 }
 
 FileSystemAccessManager::FileSystemAccessManager(ExecutionContext* context)
-    : ExecutionContextClient(context),
-      execution_context_(*context),
-      remote_(context) {}
+    : ExecutionContextClient(context), remote_(context) {}
 
 void FileSystemAccessManager::Trace(Visitor* visitor) const {
   visitor->Trace(remote_);
-  visitor->Trace(execution_context_);
   ExecutionContextClient::Trace(visitor);
 }
 
