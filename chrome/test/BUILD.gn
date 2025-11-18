@@ -4469,7 +4469,10 @@ if (!is_android) {
         "../browser/invalidation/profile_invalidation_provider_factory_browsertest.cc",
         "../browser/net/nss_context_chromeos_browsertest.cc",
       ]
-      deps += [ "//chrome/browser/ui/download" ]
+      deps += [
+        "//chrome/browser/default_browser:browser_tests",
+        "//chrome/browser/ui/download",
+      ]
     }
 
     if (include_js_tests) {
@@ -10416,6 +10419,10 @@ test("unit_tests") {
     }
 
     deps += [ "//components/enterprise:test_support" ]
+
+    if (is_win) {
+      deps += [ "//chrome/browser/win:registry_watcher" ]
+    }
   }
 
   if (toolkit_views) {

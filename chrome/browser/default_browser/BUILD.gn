@@ -2,11 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-assert(!is_android, "Default browser framework is only for desktop platforms")
-assert(!is_chromeos, "Default browser framework doesn't exist on chromeos")
+assert(!is_android && !is_chromeos,
+       "Default browser is for desktop platforms only except ChromeOS.")
 
 source_set("default_browser") {
-  friend = [ ":unit_tests" ]
+  friend = [
+    ":unit_tests",
+    ":browser_tests",
+  ]
 
   public = [
     "default_browser_controller.h",
@@ -18,6 +21,8 @@ source_set("default_browser") {
     "default_browser_controller.cc",
     "default_browser_features.cc",
     "default_browser_manager.cc",
+    "default_browser_monitor.cc",
+    "default_browser_monitor.h",
     "default_browser_setter.h",
     "setters/shell_integration_default_browser_setter.cc",
     "setters/shell_integration_default_browser_setter.h",
@@ -26,6 +31,14 @@ source_set("default_browser") {
   public_deps = [ "//base" ]
 
   deps = [ "//chrome/browser:shell_integration" ]
+
+  if (is_win) {
+    sources += [ "default_browser_monitor_win.cc" ]
+
+    deps += [ "//chrome/browser/win:registry_watcher" ]
+  } else {
+    sources += [ "default_browser_monitor_stub.cc" ]
+  }
 }
 
 source_set("unit_tests") {
@@ -43,5 +56,23 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser:shell_integration",
     "//content/test:test_support",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "default_browser_manager_browsertest.cc" ]
+
+  deps = [
+    ":default_browser",
+    "//base/test:test_support",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:global_features",
+    "//chrome/test:test_support_ui",
+    "//content/test:test_support",
+    "//ui/base",
   ]
 }

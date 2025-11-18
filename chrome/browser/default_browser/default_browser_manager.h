@@ -7,10 +7,13 @@
 
 #include <memory>
 
+#include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/default_browser/default_browser_controller.h"
 
 namespace default_browser {
+
+class DefaultBrowserMonitor;
 
 using DefaultBrowserCheckCompletionCallback =
     base::OnceCallback<void(DefaultBrowserState)>;
@@ -21,8 +24,8 @@ using DefaultBrowserCheckCompletionCallback =
 // default-browser utilities.
 class DefaultBrowserManager {
  public:
-  DefaultBrowserManager() = default;
-  ~DefaultBrowserManager() = default;
+  DefaultBrowserManager();
+  ~DefaultBrowserManager();
 
   DefaultBrowserManager(const DefaultBrowserManager&) = delete;
   DefaultBrowserManager& operator=(const DefaultBrowserManager&) = delete;
@@ -35,6 +38,21 @@ class DefaultBrowserManager {
   // Utility method to check the current default browser state asynchronously.
   static void GetDefaultBrowserState(
       DefaultBrowserCheckCompletionCallback callback);
+
+  // Registers a callback that will be invoked on the manager thread whenever
+  // the system's default browser for HTTP/HTTPS protocols changes. The returned
+  // subscription object MUST be kept in scope for as long as the caller wishes
+  // to receive notifications. Destroying the subscription object will
+  // unregister the callback.
+  //
+  // For now, only Windows platform will notify when a change occur.
+  base::CallbackListSubscription RegisterDefaultBrowserChanged(
+      base::RepeatingClosure callback);
+
+ private:
+  // The platform default browser change monitor that handles the low-level
+  // logic for detecting when the system's default browser has changed.
+  std::unique_ptr<DefaultBrowserMonitor> monitor_;
 };
 
 }  // namespace default_browser
