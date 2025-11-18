@@ -334,8 +334,10 @@ IN_PROC_BROWSER_TEST_P(AttemptLoginToolInteractiveUiTest, MAYBE_SmokeTest) {
   EXPECT_TRUE(mock_login_service().last_permission_was_permanent());
 }
 
-// TODO(https://crbug.com/456675144): Flaky on asan and Wayland.
-#if defined(ADDRESS_SANITIZER) || defined(IS_LINUX)
+// TODO(https://crbug.com/456675144): Flaky on asan.
+// This test does not work on Wayland, but setting SetOnIncompatibleAction does
+// not seem to skip the test, so we just disable on linux for now.
+#if defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_LINUX)
 #define MAYBE_HandleReauth DISABLED_HandleReauth
 #else
 #define MAYBE_HandleReauth HandleReauth
