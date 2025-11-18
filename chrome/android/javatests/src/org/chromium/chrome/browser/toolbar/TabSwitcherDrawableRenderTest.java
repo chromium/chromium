@@ -30,6 +30,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
@@ -127,14 +128,17 @@ public class TabSwitcherDrawableRenderTest {
     public void testTabSwitcherDrawable_newTabPageIncognito() throws Exception {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
 
-        mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, /* incognito= */ true);
-        NewTabPageTestUtils.waitForNtpLoaded(mActivityTestRule.getActivityTab());
+        IncognitoNewTabPageStation incognitoPage = mPage.openNewIncognitoTabOrWindowFast();
 
+        ToggleTabStackButton toggleTabStackButton =
+                incognitoPage.getActivity().findViewById(R.id.tab_switcher_button);
+        TabSwitcherDrawable tabSwitcherDrawable =
+                toggleTabStackButton.getTabSwitcherDrawableForTesting();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabSwitcherDrawable.setNotificationIconStatus(/* shouldShow= */ true);
+                    tabSwitcherDrawable.setNotificationIconStatus(/* shouldShow= */ true);
                 });
-        View toolbarView = activity.findViewById(R.id.toolbar);
+        View toolbarView = incognitoPage.getActivity().findViewById(R.id.toolbar);
         mRenderTestRule.render(toolbarView, "tab_page_toolbar_view_incognito_no_show");
     }
 
