@@ -22,6 +22,8 @@ BASE_FEATURE(kAndroidTWAOriginDisplay, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidWebAppHeaderForStandaloneMode,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAndroidAutoMintedTWA, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Do not remove this feature flag, since it serves as a kill-switch for the ML

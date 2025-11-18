@@ -176,6 +176,7 @@ public abstract class ChromeFeatureList {
             "AndroidAppIntegrationMultiDataSource";
     public static final String ANDROID_AUTOFILL_SUPPORT_FOR_HTTP_AUTH =
             "AndroidAutofillSupportForHttpAuth";
+    public static final String ANDROID_AUTO_MINTED_TWA = "AndroidAutoMintedTWA";
     public static final String ANDROID_BOOKMARK_BAR = "AndroidBookmarkBar";
     public static final String ANDROID_BOOKMARK_BAR_FAST_FOLLOW = "AndroidBookmarkBarFastFollow";
     public static final String ANDROID_BOTTOM_TOOLBAR = "AndroidBottomToolbar";
@@ -738,6 +739,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ANDROID_APP_INTEGRATION_MODULE, true);
     public static final CachedFlag sAndroidAppIntegrationMultiDataSource =
             newCachedFlag(ANDROID_APP_INTEGRATION_MULTI_DATA_SOURCE, true);
+    public static final CachedFlag sAndroidAutoMintedTwa =
+            newCachedFlag(ANDROID_AUTO_MINTED_TWA, false);
     public static final CachedFlag sAndroidBottomToolbar =
             newCachedFlag(ANDROID_BOTTOM_TOOLBAR, true, true);
     public static final CachedFlag sAndroidBottomToolbarV2 =
@@ -1135,6 +1138,7 @@ public abstract class ChromeFeatureList {
                     sAndroidAnimatedProgressBarInViz,
                     sAndroidAppIntegrationModule,
                     sAndroidAppIntegrationMultiDataSource,
+                    sAndroidAutoMintedTwa,
                     sAndroidBottomToolbar,
                     sAndroidBottomToolbarV2,
                     sAndroidComposeplate,

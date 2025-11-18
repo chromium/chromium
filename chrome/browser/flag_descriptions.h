@@ -4885,6 +4885,12 @@ inline constexpr char kAndroidAutofillUpdateContextForWebContentsDescription[] =
     "When enabled, the Autofill provider is updated whenever the context of "
     "the WebContents changes.";
 
+inline constexpr char kAndroidAutoMintedTWAName[] = "Auto-minted TWA";
+inline constexpr char kAndroidAutoMintedTWADescription[] =
+    "Installs Web apps locally as an auto-minted Trusted Web Activity-based "
+    "Android package instead of a server-minted WebAPK. This feature "
+    "additionally requires WebApp Mainline module enabled.";
+
 inline constexpr char kAndroidComposeplateName[] =
     "Enable composeplate on New Tab Page";
 inline constexpr char kAndroidComposeplateDescription[] =

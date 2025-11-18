@@ -3094,6 +3094,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "enable-auto-minted-twa",
+    "owners": [ "fx-twa-eng@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "enable-autofill-credit-card-upload",
     "owners": [ "osaul@google.com" ],
     // This flag is heavily used by the testing team that can't easily use the

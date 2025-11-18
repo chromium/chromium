@@ -19193,6 +19193,7 @@ from previous Chrome versions.
       label="HighlightManagedPrefDisclaimerAndroid:disabled"/>
   <int value="1765591001" label="VidsAppPreinstall:disabled"/>
   <int value="1766048620" label="FedCmError:enabled"/>
+  <int value="1766429608" label="AndroidAutoMintedTWA:enabled"/>
   <int value="1766676896" label="affiliation-based-matching:disabled"/>
   <int value="1767218791" label="TouchDragAndContextMenu:enabled"/>
   <int value="1767411597" label="DisallowUnsafeHttpDownloads:enabled"/>
@@ -20245,6 +20246,7 @@ from previous Chrome versions.
   <int value="2121776031" label="auto-virtual-keyboard"/>
   <int value="2121870664"
       label="lacros-data-backward-migration-policy:enabled"/>
+  <int value="2122017004" label="AndroidAutoMintedTWA:disabled"/>
   <int value="2122023503" label="enable-win32k-lockdown-mimetypes"/>
   <int value="2122256719" label="EnableCardboard:disabled"/>
   <int value="2122690871"

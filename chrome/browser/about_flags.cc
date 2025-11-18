@@ -13533,6 +13533,12 @@ const FeatureEntry kFeatureEntries[] = {
      kOsMac | kOsWin | kOsLinux,
      FEATURE_VALUE_TYPE(switches::kUndoMigrationOfSyncingUserToSignedIn)},
 
+#if BUILDFLAG(IS_ANDROID)
+    {"enable-auto-minted-twa", flag_descriptions::kAndroidAutoMintedTWAName,
+     flag_descriptions::kAndroidAutoMintedTWADescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(webapps::features::kAndroidAutoMintedTWA)},
+#endif
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
