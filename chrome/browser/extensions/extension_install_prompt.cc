@@ -295,33 +295,48 @@ std::u16string ExtensionInstallPrompt::Prompt::GetPermissionsHeading() const {
   return l10n_util::GetStringUTF16(id);
 }
 
-void ExtensionInstallPrompt::Prompt::AppendRatingStars(
-    StarAppender appender, void* data) const {
-  CHECK(appender);
+std::vector<const gfx::ImageSkia*>
+ExtensionInstallPrompt::Prompt::GetRatingStars() const {
   CHECK(AllowWebstoreData(type_));
-  int rating_integer = floor(average_rating_);
-  double rating_fractional = average_rating_ - rating_integer;
+
+  // The star display logic replicates the one used by the webstore (from
+  // components.ratingutils.setFractionalYellowStars).
+  int full_stars = floor(average_rating_);
+  double rating_fractional = average_rating_ - full_stars;
 
   if (rating_fractional > 0.66) {
-    rating_integer++;
+    // Show one more full star (e.g. 3.67 stars is shown as 4 full stars)
+    full_stars += 1;
   }
 
   if (rating_fractional < 0.33 || rating_fractional > 0.66) {
+    // Do not show a half star.
+    // E.g.:
+    //   - 3.32 stars is shown as 3 full stars
+    //   - 3.33 stars is shown as 3.5 full stars
+    //   - 3.66 stars is shown as 3.5 full stars
+    //   - 3.67 stars is shown as 4 full stars
     rating_fractional = 0;
   }
 
+  std::vector<const gfx::ImageSkia*> star_images;
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-  int i;
-  for (i = 0; i < rating_integer; i++) {
-    appender(rb.GetImageSkiaNamed(IDR_EXTENSIONS_RATING_STAR_ON), data);
-  }
-  if (rating_fractional) {
-    appender(rb.GetImageSkiaNamed(IDR_EXTENSIONS_RATING_STAR_HALF_LEFT), data);
+
+  int i = 0;
+  while (i < full_stars) {
+    star_images.push_back(rb.GetImageSkiaNamed(IDR_EXTENSIONS_RATING_STAR_ON));
     i++;
   }
-  for (; i < kMaxExtensionRating; i++) {
-    appender(rb.GetImageSkiaNamed(IDR_EXTENSIONS_RATING_STAR_OFF), data);
+  if (rating_fractional) {
+    star_images.push_back(
+        rb.GetImageSkiaNamed(IDR_EXTENSIONS_RATING_STAR_HALF_LEFT));
+    i++;
   }
+  while (i < kMaxExtensionRating) {
+    star_images.push_back(rb.GetImageSkiaNamed(IDR_EXTENSIONS_RATING_STAR_OFF));
+    i++;
+  }
+  return star_images;
 }
 
 std::u16string ExtensionInstallPrompt::Prompt::GetRatingCount() const {

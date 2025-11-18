@@ -141,13 +141,7 @@ class ExtensionInstallPrompt {
 
     // Getters for webstore metadata. Only populated when the type is
     // INLINE_INSTALL_PROMPT, EXTERNAL_INSTALL_PROMPT, or REPAIR_PROMPT.
-
-    // The star display logic replicates the one used by the webstore (from
-    // components.ratingutils.setFractionalYellowStars). Callers pass in an
-    // "appender", which will be repeatedly called back with the star images
-    // that they append to the star display area.
-    typedef void(*StarAppender)(const gfx::ImageSkia*, void*);
-    void AppendRatingStars(StarAppender appender, void* data) const;
+    std::vector<const gfx::ImageSkia*> GetRatingStars() const;
     std::u16string GetRatingCount() const;
     std::u16string GetUserCount() const;
     size_t GetPermissionCount() const;

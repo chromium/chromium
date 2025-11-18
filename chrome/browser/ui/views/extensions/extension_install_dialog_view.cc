@@ -46,6 +46,7 @@
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -187,12 +188,6 @@ class TitleLabelWrapper : public views::View {
 
 BEGIN_METADATA(TitleLabelWrapper)
 END_METADATA
-
-void AddResourceIcon(const gfx::ImageSkia* skia_image, void* data) {
-  views::View* parent = static_cast<views::View*>(data);
-  parent->AddChildView(
-      std::make_unique<RatingStar>(ui::ImageModel::FromImageSkia(*skia_image)));
-}
 
 void ShowExtensionInstallDialogImpl(
     std::unique_ptr<ExtensionInstallPromptShowParams> show_params,
@@ -502,7 +497,12 @@ void ExtensionInstallDialogView::AddedToWidget() {
         provider->GetDistanceMetric(views::DISTANCE_RELATED_LABEL_HORIZONTAL)));
     auto rating = std::make_unique<RatingsView>(prompt_->average_rating(),
                                                 prompt_->rating_count());
-    prompt_->AppendRatingStars(AddResourceIcon, rating.get());
+    std::vector<const gfx::ImageSkia*> rating_stars = prompt_->GetRatingStars();
+    for (auto star : rating_stars) {
+      rating->AddChildView(
+          std::make_unique<RatingStar>(ui::ImageModel::FromImageSkia(*star)));
+    }
+
     rating_container->AddChildView(std::move(rating));
     auto rating_count = std::make_unique<RatingLabel>(
         prompt_->GetRatingCount(), views::style::CONTEXT_DIALOG_BODY_TEXT);
