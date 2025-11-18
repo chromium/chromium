@@ -1,17 +1,20 @@
 <!DOCTYPE html>
 <html>
-<head><script src="resources/ad-iframe-writer.js"></script></head>
 <body>
 <script type="text/javascript">
 if (window.testRunner) {
   testRunner.setHighlightAds();
+
+  // Tag 'alpha.png' as an ad resource.
+  testRunner.setDisallowedSubresourcePathSuffixes(["alpha.png"], false /* block_subresources */);
 }
 
-ad_frame = createAdFrame();
-ad_frame.width = 100;
-ad_frame.height = 200;
+const img = document.createElement('img');
+img.width = 100;
+img.height = 200;
+img.src = "resources/alpha.png";
 
-ad_frame.onload = function () {
+img.onload = function () {
   // Finish the test after the ad highlight is drawn.
   requestAnimationFrame(function() {
     requestAnimationFrame(function() {
@@ -20,10 +23,12 @@ ad_frame.onload = function () {
     });
   });
 }
-ad_frame.src = "about:blank";
+
+document.body.appendChild(img);
 
 if (window.testRunner)
   testRunner.waitUntilDone();
+
 </script>
 </body>
 </html>

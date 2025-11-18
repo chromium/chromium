@@ -8410,6 +8410,16 @@ bool Element::IsAdRelated() const {
   return false;
 }
 
+bool Element::ShouldHighlightAd() const {
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    if (const DisplayAdElementMonitor* monitor =
+            data->GetDisplayAdElementMonitor()) {
+      return monitor->ShouldHighlight();
+    }
+  }
+  return false;
+}
+
 bool Element::HasUndoStack() const {
   if (const ElementRareDataVector* data = GetElementRareData()) {
     return data->HasUndoStack();
