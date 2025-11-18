@@ -116,6 +116,10 @@ class SearchEngineChoiceCoordinatorTest : public PlatformTest {
   std::unique_ptr<policy::MockPolicyService> CreateMockPolicyService() {
     auto policy_service = std::make_unique<policy::MockPolicyService>();
 
+    EXPECT_CALL(*policy_service.get(),
+                GetPolicies(::testing::Eq(policy::PolicyNamespace(
+                    policy::POLICY_DOMAIN_CHROME, std::string()))))
+        .Times(::testing::AnyNumber());
     ON_CALL(*policy_service.get(),
             GetPolicies(::testing::Eq(policy::PolicyNamespace(
                 policy::POLICY_DOMAIN_CHROME, std::string()))))
