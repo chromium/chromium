@@ -845,7 +845,9 @@ public class SelectableListToolbar<E> extends Toolbar
 
     /** Hides the keyboard. */
     public void hideKeyboard() {
-        KeyboardVisibilityDelegate.getInstance().hideKeyboard(mSearchEditText);
+        View searchText =
+                mIsLargeScreenWithKeyboard ? mInlineSearchBox.getSearchText() : mSearchEditText;
+        KeyboardVisibilityDelegate.getInstance().hideKeyboard(searchText);
     }
 
     @Override
@@ -936,6 +938,6 @@ public class SelectableListToolbar<E> extends Toolbar
     }
 
     public EditText getSearchTextForTest() {
-        return mInlineSearchBox.getSearchTextForTest(); // IN-TEST
+        return mInlineSearchBox.getSearchText(); // IN-TEST
     }
 }

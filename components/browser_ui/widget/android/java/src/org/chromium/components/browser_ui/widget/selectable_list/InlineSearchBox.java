@@ -184,7 +184,7 @@ public class InlineSearchBox {
         return !TextUtils.isEmpty(mInlineSearchEditText.getText());
     }
 
-    public EditText getSearchTextForTest() {
+    public EditText getSearchText() {
         return mInlineSearchEditText;
     }
 
