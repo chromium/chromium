@@ -27,12 +27,12 @@
 #include "chrome/browser/ui/contextual_search/searchbox_context_data.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/location_bar/omnibox_popup_file_selector.h"
-#include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_aim_handler.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
@@ -67,7 +67,7 @@ bool IsValidTab(GURL url) {
 std::optional<lens::ImageEncodingOptions> CreateImageEncodingOptions() {
   // TODO(crbug.com/457815342): Use omnibox fieldtrial when available.
   auto image_upload_config =
-      ntp_composebox::FeatureConfig::Get().config.composebox().image_upload();
+      omnibox::FeatureConfig::Get().config.composebox().image_upload();
   return lens::ImageEncodingOptions{
       .enable_webp_encoding = image_upload_config.enable_webp_encoding(),
       .max_size = image_upload_config.downscale_max_image_size(),
@@ -356,13 +356,15 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
       case IDC_OMNIBOX_CONTEXT_ADD_IMAGE: {
         file_selector_->OpenFileUploadDialog(
             web_contents_.get(),
-            /*is_image=*/true, GetQueryController(), GetEditModel());
+            /*is_image=*/true, GetQueryController(), GetEditModel(),
+            CreateImageEncodingOptions());
         break;
       }
       case IDC_OMNIBOX_CONTEXT_ADD_FILE:
         file_selector_->OpenFileUploadDialog(
             web_contents_.get(),
-            /*is_image=*/false, GetQueryController(), GetEditModel());
+            /*is_image=*/false, GetQueryController(), GetEditModel(),
+            CreateImageEncodingOptions());
         break;
       case IDC_OMNIBOX_CONTEXT_DEEP_RESEARCH:
         UpdateSearchboxContext(
