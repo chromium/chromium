@@ -252,6 +252,14 @@ class TabsQueryFunction : public ExtensionFunction {
  private:
   ~TabsQueryFunction() override = default;
 
+  // Builds the list of tab objects to return.
+  base::Value::List BuildTabList(BrowserWindowInterface* current_browser,
+                                 BrowserWindowInterface* last_active_browser,
+                                 const URLPatternSet& url_patterns,
+                                 const std::string& window_type,
+                                 int window_id,
+                                 int tab_index);
+
   // Returns true if the given `candidate_profile` matches the calling
   // extension's profile (taking into account incognito access).
   bool MatchesProfile(Profile* candidate_profile);

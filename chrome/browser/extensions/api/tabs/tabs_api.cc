@@ -806,7 +806,6 @@ ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
     window_type = tabs::ToString(query_info_.window_type);
   }
 
-  base::Value::List result;
   Profile* profile = Profile::FromBrowserContext(browser_context());
   BrowserWindowInterface* last_active_browser =
       browser_window_util::GetLastActiveBrowserWithProfile(
@@ -822,6 +821,21 @@ ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
     // Note: current_browser may still be null.
   }
 
+  base::Value::List result =
+      BuildTabList(current_browser, last_active_browser, url_patterns,
+                   window_type, window_id, index);
+
+  return RespondNow(WithArguments(std::move(result)));
+}
+
+base::Value::List TabsQueryFunction::BuildTabList(
+    BrowserWindowInterface* current_browser,
+    BrowserWindowInterface* last_active_browser,
+    const URLPatternSet& url_patterns,
+    const std::string& window_type,
+    int window_id,
+    int tab_index) {
+  base::Value::List result;
   // Historically, we queried browsers in creation order. Maintain that behavior
   // (for now).
   std::vector<BrowserWindowInterface*> all_browsers =
@@ -834,7 +848,7 @@ ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
 
     TabListInterface* tab_list = TabListInterface::From(browser);
     for (int i = 0; i < tab_list->GetTabCount(); ++i) {
-      if (index > -1 && i != index) {
+      if (tab_index > -1 && i != tab_index) {
         continue;
       }
 
@@ -851,8 +865,7 @@ ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
                         .ToValue());
     }
   }
-
-  return RespondNow(WithArguments(std::move(result)));
+  return result;
 }
 
 bool TabsQueryFunction::MatchesProfile(Profile* candidate_profile) {
