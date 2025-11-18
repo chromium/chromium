@@ -215,7 +215,9 @@ class ContextClustererHistoryServiceObserverTest : public testing::Test {
                 history::VisitID opener_visit = history::kInvalidVisitID,
                 history::VisitID referring_visit = history::kInvalidVisitID,
                 bool is_synced_visit = false,
-                bool is_visible_visit = true) {
+                bool is_visible_visit = true,
+                history::VisitResponseCodeCategory response_code_category =
+                    history::VisitResponseCodeCategory::kNot404) {
     history::URLRow url_row(url);
     history::VisitRow new_visit;
     new_visit.visit_id = visit_id;
@@ -229,8 +231,7 @@ class ContextClustererHistoryServiceObserverTest : public testing::Test {
         ui::PAGE_TRANSITION_CHAIN_END);
     observer_->OnURLVisited(
         history_service_.get(),
-        history::VisitedURLInfo(url_row, new_visit,
-                                history::VisitResponseCodeCategory::kNot404));
+        history::VisitedURLInfo(url_row, new_visit, response_code_category));
   }
 
   // Simulates deleting `urls` from history. If `urls` is empty, we will
@@ -646,6 +647,28 @@ TEST_F(ContextClustererHistoryServiceObserverTest, SkipsBlocklistedHost) {
 
   histogram_tester.ExpectTotalCount(
       "History.Clusters.ContextClusterer.DbLatency.ReserveNextClusterId", 0);
+}
+
+TEST_F(ContextClustererHistoryServiceObserverTest, Skips404Visits) {
+  base::HistogramTester histogram_tester;
+
+  SetPersistenceExpectedConfig();
+
+  VisitURL(GURL("https://example.com"), 1, base::Time::FromTimeT(123),
+           history::kInvalidVisitID, history::kInvalidVisitID,
+           /*is_synced_visit=*/false, /*is_visible_visit=*/true,
+           history::VisitResponseCodeCategory::k404);
+
+  EXPECT_EQ(0, GetNumClustersCreated());
+
+  // No DB latency histograms should be recorded.
+  histogram_tester.ExpectTotalCount(
+      "History.Clusters.ContextClusterer.DbLatency.ReserveNextClusterId", 0);
+  histogram_tester.ExpectTotalCount(
+      "History.Clusters.ContextClusterer.DbLatency.UpdateClusterVisit", 0);
+  // Visit processing histogram should not be recorded.
+  histogram_tester.ExpectTotalCount(
+      "History.Clusters.ContextClusterer.VisitProcessingLatency.UrlVisited", 0);
 }
 
 TEST_F(ContextClustererHistoryServiceObserverTest, MultipleClusters) {

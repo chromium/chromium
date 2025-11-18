@@ -9,6 +9,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/history_clusters_util.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decider.h"
@@ -156,6 +157,10 @@ void ContextClustererHistoryServiceObserver::OnURLVisited(
     const history::VisitedURLInfo& visited_url_info) {
   TRACE_EVENT0("browser",
                "ContextClusteringHistoryServiceObserver::OnURLVisited");
+  if (visited_url_info.response_code_category ==
+      history::VisitResponseCodeCategory::k404) {
+    return;
+  }
 
   ScopedVisitProcessingTimer url_visited_processing_timer(
       VisitProcessingStage::kUrlVisited);
