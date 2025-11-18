@@ -23,6 +23,9 @@ class MockSpeechRecognition {
       ((this: MockSpeechRecognition,
         ev: SpeechRecognitionEvent) => void)|null = null;
   onend: (() => void)|null = null;
+  onerror:
+      ((this: MockSpeechRecognition,
+        ev: SpeechRecognitionErrorEvent) => void)|null = null;
   interimResults = true;
   continuous = false;
   constructor() {
@@ -273,4 +276,58 @@ suite('Composebox voice search', () => {
         assertStyle(composeboxElement.$.composebox, 'display', 'flex');
         assertStyle(composeboxElement.$.voiceSearch, 'display', 'none');
       });
+
+  test('on error shows error container for NOT_ALLOWED', async () => {
+    const voiceSearchButton = getVoiceSearchButton(composeboxElement);
+    voiceSearchButton!.click();
+    await microtasksFinished();
+
+    // Simulate a 'not-allowed' error.
+    mockSpeechRecognition.onerror!
+        ({error: 'not-allowed'} as SpeechRecognitionErrorEvent);
+    await microtasksFinished();
+
+    const voiceSearchElement = composeboxElement.$.voiceSearch;
+    const errorContainer =
+        voiceSearchElement.shadowRoot.querySelector<HTMLElement>(
+            '#error-container');
+    const inputElement =
+        voiceSearchElement.shadowRoot.querySelector<HTMLTextAreaElement>(
+            '#input');
+
+    assertTrue(!!errorContainer);
+    assertFalse(errorContainer.hidden);
+    assertTrue(inputElement!.hidden);
+    assertStyle(composeboxElement.$.composebox, 'display', 'none');
+    assertStyle(composeboxElement.$.voiceSearch, 'display', 'flex');
+  });
+
+  test('on error closes voice search for other errors', async () => {
+    const voiceSearchButton = getVoiceSearchButton(composeboxElement);
+    voiceSearchButton!.click();
+    await microtasksFinished();
+
+    // Simulate a 'network' error.
+    mockSpeechRecognition.onerror!
+        ({error: 'network'} as SpeechRecognitionErrorEvent);
+    mockSpeechRecognition.onend!();
+    await microtasksFinished();
+
+    const voiceSearchElement = composeboxElement.$.voiceSearch;
+    const errorContainer =
+        voiceSearchElement.shadowRoot.querySelector<HTMLElement>(
+            '#error-container');
+    const inputElement =
+        voiceSearchElement.shadowRoot.querySelector<HTMLTextAreaElement>(
+            '#input');
+
+    // The error container should be hidden because it's not a NOT_ALLOWED
+    // error, and the voice search should close.
+    assertTrue(errorContainer!.hidden);
+    assertFalse(inputElement!.hidden);
+
+    assertStyle(composeboxElement.$.composebox, 'display', 'flex');
+    assertStyle(composeboxElement.$.voiceSearch, 'display', 'none');
+  });
+
 });

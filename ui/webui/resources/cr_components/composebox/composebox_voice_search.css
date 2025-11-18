@@ -30,16 +30,25 @@
 #input {
   background-color: transparent;
   border: none;
+  outline: none;
+  resize: none;
+}
+
+#input,
+#error-container {
   box-sizing: border-box;
   color: var(--color-composebox-font-light);
   flex-grow: 1;
   font-family: inherit;
   font-size: var(--cr-composebox-font-size, 18px);
   line-height: 24px;
-  outline: none;
   padding: 20px 56px 20px 20px;
-  resize: none;
   width: 100%;
+}
+
+#error-container a {
+  color: var(--color-composebox-link);
+  text-decoration: underline;
 }
 
 #closeButton {

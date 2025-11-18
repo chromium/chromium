@@ -373,6 +373,7 @@ void AddNewTabPageColorMixer(ui::ColorProvider* provider,
       ui::kColorSysOnPrimary};
   mixer[kColorComposeboxErrorScrimForeground] = {
       ui::kColorSysInverseSurface};
+  mixer[kColorComposeboxLink] = {gfx::kGoogleBlue700};
 
   mixer[kColorNewTabPageMostVisitedTileBackgroundUnthemed] = {
       gfx::kGoogleGrey100};

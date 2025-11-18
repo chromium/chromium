@@ -4,6 +4,7 @@
 
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
+import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -52,6 +53,12 @@ enum State {
   RESULT_FINAL = 5,
 }
 
+// The set of controller errors
+enum Error {
+  // Error given when voice search permission enabled.
+  NOT_ALLOWED = 0,
+}
+
 // TODO(crbug.com/40449919): Remove when bug is fixed.
 declare global {
   interface Window {
@@ -65,7 +72,10 @@ export interface ComposeboxVoiceSearchElement {
   };
 }
 
-export class ComposeboxVoiceSearchElement extends CrLitElement {
+const ComposeboxVoiceSearchElementBase = I18nMixinLit(CrLitElement);
+
+export class ComposeboxVoiceSearchElement extends
+    ComposeboxVoiceSearchElementBase {
   static get is() {
     return 'cr-composebox-voice-search';
   }
@@ -85,7 +95,8 @@ export class ComposeboxVoiceSearchElement extends CrLitElement {
       state_: {type: Number},
       finalResult_: {type: String},
       interimResult_: {type: String},
-
+      errorMessage_: {type: String},
+      error_: {type: Number},
     };
   }
 
@@ -97,7 +108,15 @@ export class ComposeboxVoiceSearchElement extends CrLitElement {
   protected accessor finalResult_: string = '';
   protected accessor interimResult_: string = '';
   private timerId_: number|null = null;
+  protected accessor error_: Error|null = null;
+  protected accessor errorMessage_: string = '';
+  protected detailsUrl_: string =
+      `https://support.google.com/chrome/?p=ui_voice_search&hl=${
+          window.navigator.language}`;
 
+  protected get showErrorScrim_(): boolean {
+    return !!this.errorMessage_;
+  }
 
   constructor() {
     super();
@@ -109,6 +128,9 @@ export class ComposeboxVoiceSearchElement extends CrLitElement {
     this.voiceRecognition_.onend = this.onEnd_.bind(this);
     this.voiceRecognition_.onaudiostart = this.onAudioStart_.bind(this);
     this.voiceRecognition_.onspeechstart = this.onSpeechStart_.bind(this);
+    this.voiceRecognition_.onerror = (e) => {
+      this.onError_(e.error);
+    };
   }
 
   override disconnectedCallback() {
@@ -118,6 +140,7 @@ export class ComposeboxVoiceSearchElement extends CrLitElement {
 
 
   start() {
+    this.errorMessage_ = '';
     this.voiceRecognition_.start();
     this.state_ = State.STARTED;
     this.resetIdleTimer_();
@@ -201,10 +224,27 @@ export class ComposeboxVoiceSearchElement extends CrLitElement {
       case State.AUDIO_RECEIVED:
       case State.SPEECH_RECEIVED:
       case State.RESULT_RECEIVED:
-      case State.ERROR_RECEIVED:
         this.fire('on-voice-search-cancel');
         return;
+      case State.ERROR_RECEIVED:
+        // All other errors should close voice search.
+        if (this.error_ !== Error.NOT_ALLOWED) {
+          this.fire('on-voice-search-cancel');
+        }
+        return;
       case State.RESULT_FINAL:
+        return;
+      default:
+        return;
+    }
+  }
+
+  private onError_(webkitError: string) {
+    this.state_ = State.ERROR_RECEIVED;
+    switch (webkitError) {
+      case 'not-allowed':
+        this.error_ = Error.NOT_ALLOWED;
+        this.errorMessage_ = loadTimeData.getString('permissionError');
         return;
       default:
         return;
@@ -221,6 +261,10 @@ export class ComposeboxVoiceSearchElement extends CrLitElement {
 
   protected onCloseClick_() {
     this.voiceRecognition_.abort();
+    this.fire('on-voice-search-cancel');
+  }
+
+  protected onLinkClick_() {
     this.fire('on-voice-search-cancel');
   }
 }
