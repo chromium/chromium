@@ -327,7 +327,7 @@ enum class PasskeyUserVerificationStatus {
 - (void)performPasskeyRegistrationWithoutUserInteractionIfPossible:
     (ASPasskeyCredentialRequest*)registrationRequest API_AVAILABLE(ios(18.0)) {
   PasskeyRequestDetails* passkeyRequestDetails =
-      [self passkeyDetailsFromRequest:registrationRequest];
+      [self passkeyDetailsFromConditionalCreateRequest:registrationRequest];
   if (![passkeyRequestDetails
           hasMatchingPassword:self.credentialStore.credentials]) {
     [self exitWithErrorCode:ASExtensionErrorCodeFailed];
@@ -764,7 +764,22 @@ enum class PasskeyUserVerificationStatus {
 
   return [[PasskeyRequestDetails alloc]
                        initWithRequest:credentialRequest
-      isBiometricAuthenticationEnabled:[self isBiometricAuthenticationEnabled]];
+      isBiometricAuthenticationEnabled:[self isBiometricAuthenticationEnabled]
+                   isConditionalCreate:NO];
+}
+
+// Returns a PasskeyRequestDetails object created from ASCredentialRequest for a
+// conditional registration request. May return nil.
+- (PasskeyRequestDetails*)passkeyDetailsFromConditionalCreateRequest:
+    (id<ASCredentialRequest>)credentialRequest {
+  if (!credentialRequest) {
+    return nil;
+  }
+
+  return [[PasskeyRequestDetails alloc]
+                       initWithRequest:credentialRequest
+      isBiometricAuthenticationEnabled:[self isBiometricAuthenticationEnabled]
+                   isConditionalCreate:YES];
 }
 
 // Returns a PasskeyRequestDetails object created from

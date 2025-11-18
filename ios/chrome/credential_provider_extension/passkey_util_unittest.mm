@@ -272,36 +272,57 @@ TEST_F(PasskeyUtilTest,
   // Cases where user verification should be performed.
   EXPECT_TRUE(ShouldPerformUserVerificationForPreference(
       ASAuthorizationPublicKeyCredentialUserVerificationPreferenceRequired,
-      /*is_biometric_authentication_enabled=*/YES));
+      /*is_biometric_authentication_enabled=*/YES,
+      /*is_conditional_create=*/NO));
   EXPECT_TRUE(ShouldPerformUserVerificationForPreference(
       ASAuthorizationPublicKeyCredentialUserVerificationPreferenceRequired,
-      /*is_biometric_authentication_enabled=*/NO));
+      /*is_biometric_authentication_enabled=*/NO,
+      /*is_conditional_create=*/NO));
   EXPECT_TRUE(ShouldPerformUserVerificationForPreference(
       ASAuthorizationPublicKeyCredentialUserVerificationPreferencePreferred,
-      /*is_biometric_authentication_enabled=*/YES));
+      /*is_biometric_authentication_enabled=*/YES,
+      /*is_conditional_create=*/NO));
   EXPECT_TRUE(ShouldPerformUserVerificationForPreference(
-      @"invalid preference",
-      /*is_biometric_authentication_enabled=*/YES));  // Not a valid preference
-                                                      // value, should fall back
-                                                      // to the "preferred"
-                                                      // preference.
+      @"invalid preference",  // Falls back to "preferred" preference.
+      /*is_biometric_authentication_enabled=*/YES,
+      /*is_conditional_create=*/NO));
 
   // Cases where user verification shouldn't be performed.
   EXPECT_FALSE(ShouldPerformUserVerificationForPreference(
       ASAuthorizationPublicKeyCredentialUserVerificationPreferencePreferred,
-      /*is_biometric_authentication_enabled=*/NO));
+      /*is_biometric_authentication_enabled=*/NO,
+      /*is_conditional_create=*/NO));
   EXPECT_FALSE(ShouldPerformUserVerificationForPreference(
-      @"invalid preference",
-      /*is_biometric_authentication_enabled=*/NO));  // Not a valid preference
-                                                     // value, should fall back
-                                                     // to the "preferred"
-                                                     // preference.
-  EXPECT_FALSE(ShouldPerformUserVerificationForPreference(
-      ASAuthorizationPublicKeyCredentialUserVerificationPreferenceDiscouraged,
-      /*is_biometric_authentication_enabled=*/YES));
+      @"invalid preference",  // Falls back to "preferred" preference.
+      /*is_biometric_authentication_enabled=*/NO,
+      /*is_conditional_create=*/NO));
   EXPECT_FALSE(ShouldPerformUserVerificationForPreference(
       ASAuthorizationPublicKeyCredentialUserVerificationPreferenceDiscouraged,
-      /*is_biometric_authentication_enabled=*/NO));
+      /*is_biometric_authentication_enabled=*/YES,
+      /*is_conditional_create=*/NO));
+  EXPECT_FALSE(ShouldPerformUserVerificationForPreference(
+      ASAuthorizationPublicKeyCredentialUserVerificationPreferenceDiscouraged,
+      /*is_biometric_authentication_enabled=*/NO,
+      /*is_conditional_create=*/NO));
+
+  // Cases where user verification would usually be performed, but not for
+  // conditional creation.
+  EXPECT_FALSE(ShouldPerformUserVerificationForPreference(
+      ASAuthorizationPublicKeyCredentialUserVerificationPreferenceRequired,
+      /*is_biometric_authentication_enabled=*/YES,
+      /*is_conditional_create=*/YES));
+  EXPECT_FALSE(ShouldPerformUserVerificationForPreference(
+      ASAuthorizationPublicKeyCredentialUserVerificationPreferenceRequired,
+      /*is_biometric_authentication_enabled=*/NO,
+      /*is_conditional_create=*/YES));
+  EXPECT_FALSE(ShouldPerformUserVerificationForPreference(
+      ASAuthorizationPublicKeyCredentialUserVerificationPreferencePreferred,
+      /*is_biometric_authentication_enabled=*/YES,
+      /*is_conditional_create=*/YES));
+  EXPECT_FALSE(ShouldPerformUserVerificationForPreference(
+      @"invalid preference",  // Falls back to "preferred" preference.
+      /*is_biometric_authentication_enabled=*/YES,
+      /*is_conditional_create=*/YES));
 }
 
 // Tests that the 'setLargeBlobIsSupported' setter works to mark Large Blob
