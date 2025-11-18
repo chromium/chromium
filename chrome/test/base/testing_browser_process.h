@@ -54,7 +54,7 @@ class MetricsService;
 namespace network {
 class TestNetworkConnectionTracker;
 class TestNetworkQualityTracker;
-}
+}  // namespace network
 
 namespace os_crypt_async {
 class OSCryptAsync;
@@ -223,6 +223,12 @@ class TestingBrowserProcess
 
   void ShutdownBrowserPolicyConnector();
 
+  // This member needs to stay at or near the top of the list so it gets
+  // destroyed late in the shutdown process. Several other members rely on
+  // |features_|, so having it lower in this file could cause use-after-free
+  // issues.
+  std::unique_ptr<GlobalFeatures> features_;
+
   // The value returned by `IsShuttingDown()`.
   bool is_shutting_down_ = false;
 
@@ -299,7 +305,6 @@ class TestingBrowserProcess
 
   std::unique_ptr<StatusTray> status_tray_;
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
-  std::unique_ptr<GlobalFeatures> features_;
 };
 
 // RAII (resource acquisition is initialization) for TestingBrowserProcess.
