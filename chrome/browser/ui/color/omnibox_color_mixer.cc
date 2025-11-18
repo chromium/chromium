@@ -153,6 +153,7 @@ void ApplyCR2023OmniboxExpandedStateColors(ui::ColorMixer& mixer,
   mixer[kColorOmniboxComposeboxPrimaryAction] = {ui::kColorSysPrimary};
   mixer[kColorOmniboxComposeboxSubmitButtonBackground] = {
       kColorOmniboxComposeboxPrimaryAction};
+  mixer[kColorOmniboxComposeboxSubmitButtonIcon] = {ui::kColorSysOnPrimary};
 }
 
 // Apply fallback Omnibox color mappings for CR2023 clients who are not eligible
@@ -455,6 +456,7 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
   mixer[kColorOmniboxComposeboxSubmitButtonBackground] =
       ui::SelectBasedOnDarkInput(kColorOmniboxResultsBackground,
                                  gfx::kGoogleBlue200, gfx::kGoogleBlue600);
+  mixer[kColorOmniboxComposeboxSubmitButtonIcon] = {ui::kColorSysOnPrimary};
 
   // Override omnibox colors per CR2023 spec.
   ApplyOmniboxCR2023Colors(mixer, key);
