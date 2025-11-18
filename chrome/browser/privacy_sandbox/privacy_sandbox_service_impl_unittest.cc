@@ -2817,9 +2817,11 @@ TEST_F(PrivacySandboxServiceM1ConsentPromptTest,
       PromptTypeCombination::kPSNoticeEEA_NSNoticeEEA, 1);
 }
 
-TEST_F(PrivacySandboxServiceTest, UserMigratesToEEAAfterRowAck) {
+TEST_F(PrivacySandboxServiceTest,
+       UserMigratesToEEAAfterRowAckWithNoticeServiceEnabled) {
   feature_list()->InitWithFeatureStates(
-      {{privacy_sandbox::kDisablePrivacySandboxPrompts, false}});
+      {{privacy_sandbox::kPrivacySandboxGetPromptFromNoticeService, true},
+       {privacy_sandbox::kDisablePrivacySandboxPrompts, false}});
   // User starts in ROW.
   MoveToROW();
 
@@ -2847,6 +2849,41 @@ TEST_F(PrivacySandboxServiceTest, UserMigratesToEEAAfterRowAck) {
       TestOutput{{kPromptType, static_cast<int>(PromptType::kM1Consent)},
                  {kM1PromptSuppressedReason,
                   static_cast<int>(PromptSuppressedReason::kNone)}});
+}
+
+TEST_F(PrivacySandboxServiceTest,
+       UserMigratesToEEAAfterRowAckWithNoticeServiceDisabled) {
+  feature_list()->InitWithFeatureStates(
+      {{privacy_sandbox::kPrivacySandboxGetPromptFromNoticeService, false},
+       {privacy_sandbox::kDisablePrivacySandboxPrompts, false}});
+  // User starts in ROW.
+  MoveToROW();
+
+  // A ROW notice is shown.
+  RunTestCase(
+      TestState{}, TestInput{{kForceChromeBuild, true}},
+      TestOutput{{kPromptType, static_cast<int>(PromptType::kM1NoticeROW)},
+                 {kM1PromptSuppressedReason,
+                  static_cast<int>(PromptSuppressedReason::kNone)}});
+
+  // User acknowledges the notice.
+  RunTestCase(TestState{},
+              TestInput{{kForceChromeBuild, true},
+                        {kPromptAction, static_cast<int>(kNoticeAcknowledge)}},
+              TestOutput{{kPromptType, static_cast<int>(PromptType::kNone)},
+                         {kM1PromptSuppressedReason,
+                          static_cast<int>(PromptSuppressedReason::kNone)}});
+
+  // User moves to EEA.
+  MoveToEEA();
+
+  // A consent prompt should be shown, but isn't. This is a known bug in the PS
+  // implementation. The fix is to be deployed using the
+  // kPrivacySandboxGetPromptFromNoticeService above.
+  RunTestCase(TestState{}, TestInput{{kForceChromeBuild, true}},
+              TestOutput{{kPromptType, static_cast<int>(PromptType::kNone)},
+                         {kM1PromptSuppressedReason,
+                          static_cast<int>(PromptSuppressedReason::kNone)}});
 }
 
 TEST_F(PrivacySandboxServiceM1ConsentPromptTest,
@@ -3046,7 +3083,11 @@ TEST_F(PrivacySandboxServiceM1NoticePromptTest, M1EEAFlowInterrupted) {
   // consent but not yet acknowledged the notice, return kM1NoticeROW.
   // If the notice is served from the NoticeService, this will return
   // kM1NoticeEEA as Topics doesn't need to be re acked.
-  PromptType expected = PromptType::kM1NoticeEEA;
+  PromptType expected =
+      base::FeatureList::IsEnabled(
+          privacy_sandbox::kPrivacySandboxGetPromptFromNoticeService)
+          ? PromptType::kM1NoticeEEA
+          : PromptType::kM1NoticeROW;
   RunTestCase(TestState{{kM1PromptPreviouslySuppressedReason,
                          static_cast<int>(PromptSuppressedReason::kNone)},
                         {kM1ConsentDecisionPreviouslyMade, true},

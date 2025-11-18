@@ -44,7 +44,8 @@ class PrivacySandboxNoticeViewManagerTest : public InProcessBrowserTest {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{privacy_sandbox::kPrivacySandboxNoticeFramework,
                               privacy_sandbox::kDisablePrivacySandboxPrompts},
-        /*disabled_features=*/{});
+        /*disabled_features=*/{
+            privacy_sandbox::kPrivacySandboxGetPromptFromNoticeService});
   }
 
   void SetUpOnMainThread() override {
