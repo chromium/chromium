@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import "ios/web/history_state_util.h"
 
-#import <stddef.h>
+#import <array>
+#import <string_view>
 
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -18,18 +14,15 @@
 
 namespace web {
 namespace {
+using HistoryStateUtilTest = PlatformTest;
+
 struct TestEntry {
-  std::string fromUrl;
-  std::string toUrl;
-  std::string expectedUrl;
+  std::string_view fromUrl;
+  std::string_view toUrl;
+  std::string_view expectedUrl;
 };
 
-class HistoryStateUtilTest : public PlatformTest {
- protected:
-  static const struct TestEntry tests_[];
-};
-
-const struct TestEntry HistoryStateUtilTest::tests_[] = {
+constexpr auto kTests = std::to_array<TestEntry>({
     // Valid absolute changes.
     {"http://foo.com", "http://foo.com/bar", "http://foo.com/bar"},
     {"https://foo.com", "https://foo.com/bar", "https://foo.com/bar"},
@@ -59,30 +52,31 @@ const struct TestEntry HistoryStateUtilTest::tests_[] = {
     {"http://foo.com:42", "http://foo.com/bar", ""},
     // Invalid URL.
     {"http://foo.com", "http://fo o.c om/ba r", ""},
-    {"http://foo.com:80", "bar", "http://foo.com:80/bar"}};
+    {"http://foo.com:80", "bar", "http://foo.com:80/bar"},
+});
 
 TEST_F(HistoryStateUtilTest, TestIsHistoryStateChangeValid) {
-  for (size_t i = 0; i < std::size(tests_); ++i) {
-    GURL fromUrl(tests_[i].fromUrl);
+  for (const TestEntry& test : kTests) {
+    GURL fromUrl(test.fromUrl);
     GURL toUrl = history_state_util::GetHistoryStateChangeUrl(fromUrl, fromUrl,
-                                                              tests_[i].toUrl);
-    bool expected_result = tests_[i].expectedUrl.size() > 0;
+                                                              test.toUrl);
+    bool expected_result = test.expectedUrl.size() > 0;
     bool actual_result = toUrl.is_valid();
     if (actual_result) {
       actual_result =
           history_state_util::IsHistoryStateChangeValid(fromUrl, toUrl);
     }
     EXPECT_EQ(expected_result, actual_result)
-        << tests_[i].fromUrl << " " << tests_[i].toUrl;
+        << test.fromUrl << " " << test.toUrl;
   }
 }
 
 TEST_F(HistoryStateUtilTest, TestGetHistoryStateChangeUrl) {
-  for (size_t i = 0; i < std::size(tests_); ++i) {
-    GURL fromUrl(tests_[i].fromUrl);
-    GURL expectedResult(tests_[i].expectedUrl);
+  for (const TestEntry& test : kTests) {
+    GURL fromUrl(test.fromUrl);
+    GURL expectedResult(test.expectedUrl);
     GURL actualResult = history_state_util::GetHistoryStateChangeUrl(
-        fromUrl, fromUrl, tests_[i].toUrl);
+        fromUrl, fromUrl, test.toUrl);
     EXPECT_EQ(expectedResult, actualResult);
   }
 }

@@ -5,7 +5,7 @@
 #ifndef IOS_WEB_HISTORY_STATE_UTIL_H_
 #define IOS_WEB_HISTORY_STATE_UTIL_H_
 
-#include <string>
+#include <string_view>
 
 class GURL;
 
@@ -22,7 +22,7 @@ bool IsHistoryStateChangeValid(const GURL& currentUrl, const GURL& toUrl);
 // URL if the resolved destination, or the transition, is not valid.
 GURL GetHistoryStateChangeUrl(const GURL& currentUrl,
                               const GURL& baseUrl,
-                              const std::string& destination);
+                              std::string_view destination);
 
 }  // namespace history_state_util
 }  // namespace web

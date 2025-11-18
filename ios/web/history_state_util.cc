@@ -22,7 +22,7 @@ bool IsHistoryStateChangeValid(const GURL& current_url, const GURL& to_url) {
 
 GURL GetHistoryStateChangeUrl(const GURL& current_url,
                               const GURL& base_url,
-                              const std::string& destination) {
+                              std::string_view destination) {
   if (!base_url.is_valid()) {
     return GURL();
   }
