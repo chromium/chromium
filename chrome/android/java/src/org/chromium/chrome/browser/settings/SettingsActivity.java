@@ -1041,7 +1041,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         @Override
         public void onFragmentAttached(
                 FragmentManager fragmentManager, Fragment fragment, Context context) {
-            if (!MAIN_FRAGMENT_TAG.equals(fragment.getTag())) {
+            if (!(fragment instanceof SettingsFragment)
+                    && !MAIN_FRAGMENT_TAG.equals(fragment.getTag())) {
                 return;
             }
 
