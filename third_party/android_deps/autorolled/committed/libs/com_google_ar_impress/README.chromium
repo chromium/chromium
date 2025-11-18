@@ -1,7 +1,7 @@
 Name: impress
 Short Name: impress
-URL: https://dl.google.com/dl/android/maven2/com/google/ar/impress/0.0.7/impress-0.0.7.aar
-Version: 0.0.7
+URL: https://dl.google.com/dl/android/maven2/com/google/ar/impress/0.0.8/impress-0.0.8.aar
+Version: 0.0.8
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
