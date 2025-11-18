@@ -6249,6 +6249,7 @@ template("performance_test_suite_template_base") {
     args += [ "--chromium-output-directory=@WrappedPath(.)" ]
 
     data_deps += [
+      "//base:base_perftests",
       "//components:components_perftests",
       "//testing:run_perf_test",
       "//third_party/dawn/src/tint/cmd/bench:bench_cmd",
@@ -6256,7 +6257,6 @@ template("performance_test_suite_template_base") {
 
     if (!is_android) {
       data_deps += [
-        "//base:base_perftests",
         "//chrome/test:load_library_perf_tests",
         "//components/tracing:tracing_perftests",
         "//testing:run_perf_test",
