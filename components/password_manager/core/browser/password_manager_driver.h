@@ -25,6 +25,7 @@ class FormData;
 struct ParsingResult;
 struct PasswordFormGenerationData;
 struct PasswordFormFillData;
+class AutofillDriver;
 }  // namespace autofill
 
 namespace gfx {
@@ -228,6 +229,8 @@ class PasswordManagerDriver {
   // Checks if the view area of the field is visible.
   virtual void CheckViewAreaVisible(autofill::FieldRendererId field_id,
                                     base::OnceCallback<void(bool)>) = 0;
+
+  virtual autofill::AutofillDriver* GetAutofillDriver() const = 0;
 
   // Get a WeakPtr to the instance.
   virtual base::WeakPtr<PasswordManagerDriver> AsWeakPtr() = 0;

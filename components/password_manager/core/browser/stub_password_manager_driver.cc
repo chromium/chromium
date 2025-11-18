@@ -121,6 +121,10 @@ void StubPasswordManagerDriver::CheckViewAreaVisible(
     autofill::FieldRendererId field_id,
     base::OnceCallback<void(bool)>) {}
 
+autofill::AutofillDriver* StubPasswordManagerDriver::GetAutofillDriver() const {
+  return nullptr;
+}
+
 base::WeakPtr<PasswordManagerDriver> StubPasswordManagerDriver::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }

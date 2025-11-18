@@ -415,6 +415,12 @@ void ContentPasswordManagerDriver::CheckViewAreaVisible(
   }
 }
 
+autofill::AutofillDriver* ContentPasswordManagerDriver::GetAutofillDriver()
+    const {
+  return autofill::ContentAutofillDriver::GetForRenderFrameHost(
+      render_frame_host());
+}
+
 void ContentPasswordManagerDriver::AnnotateFieldsWithParsingResult(
     const autofill::ParsingResult& parsing_result) {
   if (const auto& agent = GetPasswordAutofillAgent()) {

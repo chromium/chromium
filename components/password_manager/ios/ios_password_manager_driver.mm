@@ -213,6 +213,11 @@ void IOSPasswordManagerDriver::CheckViewAreaVisible(
   NOTREACHED();
 }
 
+autofill::AutofillDriver* IOSPasswordManagerDriver::GetAutofillDriver() const {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
 base::WeakPtr<password_manager::PasswordManagerDriver>
 IOSPasswordManagerDriver::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();

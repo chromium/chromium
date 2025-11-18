@@ -74,6 +74,7 @@ class StubPasswordManagerDriver : public PasswordManagerDriver {
       const gfx::RectF& bounds_in_frame_coordinates) override;
   void CheckViewAreaVisible(autofill::FieldRendererId field_id,
                             base::OnceCallback<void(bool)>) override;
+  autofill::AutofillDriver* GetAutofillDriver() const override;
   base::WeakPtr<password_manager::PasswordManagerDriver> AsWeakPtr() override;
 
  private:

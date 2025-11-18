@@ -532,6 +532,8 @@ std::string SavePasswordProgressLogger::GetStringFromID(
       return "Automated password change: form not found";
     case STRING_AUTOMATED_PASSWORD_CHANGE_SUBMISSION_DETECTED_OR_TIMEOUT:
       return "Automated password change: submission detected or timeout";
+    case STRING_AUTOMATED_PASSWORD_CHANGE_FILLING_ACTION_RESULT:
+      return "Automated password change: filling action result";
     case STRING_PASSWORD_CHANGE_OVERRIDDEN_BY_SWITCH:
       return "Automated password change: Overridden by switch";
     case STRING_PASSWORD_CHANGE_GENERATION_UNAVAILABLE:
