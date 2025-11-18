@@ -450,6 +450,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# We supply these as stubs and will only use them in older Android versions which had a framework
+# implementation. We don't want R8 to complain about them not being there during optimization.
+-dontwarn android.hardware.fingerprint.FingerprintManager.**
+
 # Never inline methods, but allow shrinking and obfuscation.
 -keepclassmembernames,allowobfuscation,allowshrinking
         class androidx.biometric.AuthenticationCallbackProvider$Api* {
