@@ -14,15 +14,21 @@
 
 // The properties for the primary action.
 @property(nonatomic, copy) NSString* primaryActionString;
+// Defaults to ChromeButtonStylePrimary.
 @property(nonatomic, assign) ChromeButtonStyle primaryButtonStyle;
+// Defaults to YES.
+@property(nonatomic, assign) BOOL primaryActionEnabled;
 
 // The properties for the secondary action.
 @property(nonatomic, copy) NSString* secondaryActionString;
+// Defaults to nil.
 @property(nonatomic, strong) UIImage* secondaryActionImage;
+// Defaults to ChromeButtonStyleSecondary.
 @property(nonatomic, assign) ChromeButtonStyle secondaryButtonStyle;
 
 // The properties for the tertiary action.
 @property(nonatomic, copy) NSString* tertiaryActionString;
+// Defaults to ChromeButtonStyleSecondary.
 @property(nonatomic, assign) ChromeButtonStyle tertiaryButtonStyle;
 
 // When YES, the primaryActionButton will be disabled, its title text will be

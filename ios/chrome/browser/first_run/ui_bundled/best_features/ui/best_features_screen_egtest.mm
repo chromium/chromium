@@ -159,8 +159,7 @@ id<GREYMatcher> SharePasswordsTitle() {
 #pragma mark - Helpers
 
 // Taps a promo button.
-- (void)tapPromoButton:(NSString*)buttonID {
-  id<GREYMatcher> buttonMatcher = grey_accessibilityID(buttonID);
+- (void)tapPromoButton:(id<GREYMatcher>)buttonMatcher {
   id<GREYMatcher> scrollViewMatcher =
       grey_accessibilityID(kPromoStyleScrollViewAccessibilityIdentifier);
   // Needs to scroll slowly to make sure to not miss a cell if it is not
@@ -183,12 +182,12 @@ id<GREYMatcher> SharePasswordsTitle() {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   // Sign in.
-  [self tapPromoButton:kPromoStylePrimaryActionAccessibilityIdentifier];
+  [self tapPromoButton:chrome_test_util::ButtonStackPrimaryButton()];
   // Skip history/tab sync.
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:
           grey_accessibilityID(kHistorySyncViewAccessibilityIdentifier)];
-  [self tapPromoButton:kPromoStyleSecondaryActionAccessibilityIdentifier];
+  [self tapPromoButton:chrome_test_util::ButtonStackSecondaryButton()];
 }
 
 // Skips the Default Browser Promo.
@@ -200,7 +199,7 @@ id<GREYMatcher> SharePasswordsTitle() {
   [[EarlGrey selectElementWithMatcher:DefaultBrowserPromoTitle()]
       assertWithMatcher:grey_sufficientlyVisible()];
   // Skip the Default Browser Promo to avoid leaving the app.
-  [self tapPromoButton:kPromoStyleSecondaryActionAccessibilityIdentifier];
+  [self tapPromoButton:chrome_test_util::ButtonStackSecondaryButton()];
 
   // Wait for the Best Features Screen to appear.
   [ChromeEarlGrey
@@ -213,8 +212,9 @@ id<GREYMatcher> SharePasswordsTitle() {
   NSString* title = l10n_util::GetNSString(title_id);
 
   // Click on the item.
-  [self tapPromoButton:[kBestFeaturesCellAccessibilityPrefix
-                           stringByAppendingString:title]];
+  [self
+      tapPromoButton:grey_accessibilityID([kBestFeaturesCellAccessibilityPrefix
+                         stringByAppendingString:title])];
 
   // Ensure the Feature Highlight Screenshot view appears.
   [[EarlGrey selectElementWithMatcher:grey_text(title)]
@@ -222,7 +222,7 @@ id<GREYMatcher> SharePasswordsTitle() {
 
   // Click the primary action button and ensure the Instructions Half Sheet View
   // Controller comes up.
-  [self tapPromoButton:kButtonStackPrimaryActionAccessibilityIdentifier];
+  [self tapPromoButton:chrome_test_util::ButtonStackPrimaryButton()];
   [[EarlGrey
       selectElementWithMatcher:grey_text(l10n_util::GetNSString(step_id))]
       assertWithMatcher:grey_sufficientlyVisible()];

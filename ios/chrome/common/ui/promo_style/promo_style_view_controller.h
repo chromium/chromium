@@ -9,6 +9,7 @@
 
 #import "base/memory/scoped_refptr.h"
 #import "base/task/sequenced_task_runner.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_view_controller.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
 
 enum class PromoStyleImageType {
@@ -40,7 +41,8 @@ enum class ActionButtonsVisibility {
 
 // A base view controller for the common UI controls in the new Promo
 // Style screens.
-@interface PromoStyleViewController : UIViewController <UITextViewDelegate>
+@interface PromoStyleViewController
+    : ButtonStackViewController <UITextViewDelegate>
 
 - (instancetype)initWithTaskRunner:
     (scoped_refptr<base::SequencedTaskRunner>)taskRunner;

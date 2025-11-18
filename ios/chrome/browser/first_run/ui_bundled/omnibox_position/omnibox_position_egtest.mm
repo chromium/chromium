@@ -63,8 +63,7 @@ id<GREYMatcher> BottomAddressBarOptionSelected() {
 
 /// Returns GREYElementInteraction for `matcher`, using `scrollViewMatcher` to
 /// scroll.
-void TapPromoStyleButton(NSString* buttonIdentifier) {
-  id<GREYMatcher> buttonMatcher = grey_accessibilityID(buttonIdentifier);
+void TapPromoStyleButton(id<GREYMatcher> buttonMatcher) {
   id<GREYMatcher> scrollViewMatcher =
       grey_accessibilityID(kPromoStyleScrollViewAccessibilityIdentifier);
   // Needs to scroll slowly to make sure to not miss a cell if it is not
@@ -112,7 +111,7 @@ void TapPromoStyleButton(NSString* buttonIdentifier) {
       assertWithMatcher:grey_notNil()];
 
   // Confirm selection.
-  TapPromoStyleButton(kPromoStylePrimaryActionAccessibilityIdentifier);
+  TapPromoStyleButton(chrome_test_util::ButtonStackPrimaryButton());
 
   // Verify that the preferred omnibox position is top.
   GREYAssertFalse(
@@ -147,7 +146,7 @@ void TapPromoStyleButton(NSString* buttonIdentifier) {
       assertWithMatcher:grey_notNil()];
 
   // Confirm selection.
-  TapPromoStyleButton(kPromoStylePrimaryActionAccessibilityIdentifier);
+  TapPromoStyleButton(chrome_test_util::ButtonStackPrimaryButton());
 
   // Verify that the preferred omnibox position is bottom.
   GREYAssertTrue([ChromeEarlGrey
@@ -174,7 +173,7 @@ void TapPromoStyleButton(NSString* buttonIdentifier) {
       assertWithMatcher:grey_notNil()];
 
   // Confirm selection.
-  TapPromoStyleButton(kPromoStylePrimaryActionAccessibilityIdentifier);
+  TapPromoStyleButton(chrome_test_util::ButtonStackPrimaryButton());
 
   // Verify that the preferred omnibox position is top.
   GREYAssertFalse(
@@ -201,7 +200,7 @@ void TapPromoStyleButton(NSString* buttonIdentifier) {
       assertWithMatcher:grey_notNil()];
 
   // Discard selection.
-  TapPromoStyleButton(kPromoStyleSecondaryActionAccessibilityIdentifier);
+  TapPromoStyleButton(chrome_test_util::ButtonStackSecondaryButton());
 
   // Verify that there is no user preferred omnibox position.
   GREYAssertTrue(

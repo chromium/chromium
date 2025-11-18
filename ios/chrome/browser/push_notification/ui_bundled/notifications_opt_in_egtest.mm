@@ -86,8 +86,7 @@ id<GREYMatcher> OptInScreenMatcher() {
 
 // Asserts that the primary action button is enabled (or not).
 - (void)assertPrimaryButtonEnabled:(BOOL)enabled {
-  id<GREYMatcher> primaryButton =
-      grey_accessibilityID(kPromoStylePrimaryActionAccessibilityIdentifier);
+  id<GREYMatcher> primaryButton = chrome_test_util::ButtonStackPrimaryButton();
   id<GREYMatcher> enabledMatcher =
       enabled ? grey_enabled() : grey_not(grey_enabled());
   [[EarlGrey selectElementWithMatcher:primaryButton]
@@ -119,9 +118,8 @@ id<GREYMatcher> OptInScreenMatcher() {
   [self assertPrimaryButtonEnabled:NO];
 
   // Dismiss prompt by tapping on secondary action button.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     kPromoStyleSecondaryActionAccessibilityIdentifier)]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonStackSecondaryButton()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:OptInScreenMatcher()]
       assertWithMatcher:grey_notVisible()];

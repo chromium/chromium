@@ -10,6 +10,7 @@
   self = [super init];
   if (self) {
     _primaryButtonStyle = ChromeButtonStylePrimary;
+    _primaryActionEnabled = YES;
     _secondaryButtonStyle = ChromeButtonStyleSecondary;
     _tertiaryButtonStyle = ChromeButtonStyleSecondary;
   }

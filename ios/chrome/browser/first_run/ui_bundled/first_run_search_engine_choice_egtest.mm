@@ -84,8 +84,8 @@
 // scrolls down and that it correctly sets the default search engine.
 - (void)testSearchEngineChoiceScreenSelectThenScroll {
   // Skip sign-in.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::PromoScreenSecondaryButtonMatcher()
+  [[self elementInteractionWithGreyMatcher:chrome_test_util::
+                                               ButtonStackSecondaryButton()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
@@ -126,8 +126,8 @@
 // search engine and that it correctly sets the default search engine.
 - (void)testSearchEngineChoiceScreenScrollThenSelect {
   // Skip sign-in.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::PromoScreenSecondaryButtonMatcher()
+  [[self elementInteractionWithGreyMatcher:chrome_test_util::
+                                               ButtonStackSecondaryButton()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
@@ -182,8 +182,8 @@
   policy_test_utils::MergePolicy(true,
                                  policy::key::kDefaultSearchProviderEnabled);
   // Skip sign-in.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::PromoScreenSecondaryButtonMatcher()
+  [[self elementInteractionWithGreyMatcher:chrome_test_util::
+                                               ButtonStackSecondaryButton()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
@@ -218,8 +218,8 @@
   // Skip sign-in.
   chrome_test_util::GREYAssertErrorNil(
       [MetricsAppInterface expectTotalCount:0 forHistogram:eventHistogram]);
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::PromoScreenSecondaryButtonMatcher()
+  [[self elementInteractionWithGreyMatcher:chrome_test_util::
+                                               ButtonStackSecondaryButton()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
@@ -297,7 +297,7 @@
             FRESigninIntentSigninWithPolicy];
   // Accept sign-in.
   [[self elementInteractionWithGreyMatcher:chrome_test_util::
-                                               PromoScreenPrimaryButtonMatcher()
+                                               ButtonStackPrimaryButton()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
@@ -328,8 +328,8 @@
 // `kSkipDefaultBrowserInFirstRun` is enabled.
 - (void)testNoDefaultBrowserPromoAfterSearchEngineChoiceScreen {
   // Skip sign-in.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::PromoScreenSecondaryButtonMatcher()
+  [[self elementInteractionWithGreyMatcher:chrome_test_util::
+                                               ButtonStackSecondaryButton()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];

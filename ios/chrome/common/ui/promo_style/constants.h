@@ -19,15 +19,6 @@ extern NSString* const kPromoStyleSubtitleAccessibilityIdentifier;
 // A11y Identifier for the read more action button.
 extern NSString* const kPromoStyleReadMoreActionAccessibilityIdentifier;
 
-// A11y Identifier for the primary action button.
-extern NSString* const kPromoStylePrimaryActionAccessibilityIdentifier;
-
-// A11y Identifier for the secondary action button.
-extern NSString* const kPromoStyleSecondaryActionAccessibilityIdentifier;
-
-// A11y Identifier for the tertiary action button.
-extern NSString* const kPromoStyleTertiaryActionAccessibilityIdentifier;
-
 // A11y Identifier for the learn more button.
 extern NSString* const kPromoStyleLearnMoreActionAccessibilityIdentifier;
 

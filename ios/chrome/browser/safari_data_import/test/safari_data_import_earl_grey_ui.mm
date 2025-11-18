@@ -19,9 +19,9 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "ui/strings/grit/ui_strings.h"
 
+using chrome_test_util::ButtonStackPrimaryButton;
 using chrome_test_util::ButtonWithAccessibilityLabel;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
-using chrome_test_util::PromoScreenPrimaryButtonMatcher;
 using chrome_test_util::StaticTextWithAccessibilityLabelId;
 
 namespace {
@@ -79,7 +79,7 @@ void GoToImportScreen() {
 }
 
 id<GREYMatcher> ImportScreenButtonWithTextId(int text_id) {
-  return grey_allOf(PromoScreenPrimaryButtonMatcher(),
+  return grey_allOf(ButtonStackPrimaryButton(),
                     ButtonWithAccessibilityLabelId(text_id),
                     grey_interactable(), nil);
 }
@@ -116,7 +116,7 @@ void LoadFile(SafariDataImportTestFile file) {
 
   id<GREYMatcher> any_activity_indicator =
       grey_allOf(grey_kindOfClassName(@"UIActivityIndicatorView"),
-                 grey_ancestor(PromoScreenPrimaryButtonMatcher()), nil);
+                 grey_ancestor(ButtonStackPrimaryButton()), nil);
   [ChromeEarlGrey
       waitForUIElementToDisappearWithMatcher:any_activity_indicator
                                      timeout:base::test::ios::

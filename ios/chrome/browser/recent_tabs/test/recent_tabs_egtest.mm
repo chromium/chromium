@@ -357,8 +357,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       onElementWithMatcher:chrome_test_util::HistoryOptInPromoMatcher()]
       assertWithMatcher:grey_notNil()];
   // Accept History Sync.
-  [[[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                           PromoScreenPrimaryButtonMatcher()]
+  [[[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonStackPrimaryButton()]
          usingSearchAction:chrome_test_util::HistoryOptInScrollDown()
       onElementWithMatcher:chrome_test_util::HistoryOptInPromoMatcher()]
       performAction:grey_tap()];
@@ -412,8 +412,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
                                    kHistorySyncViewAccessibilityIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
   // Decline History Sync.
-  [[[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                           PromoScreenSecondaryButtonMatcher()]
+  [[[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonStackSecondaryButton()]
          usingSearchAction:chrome_test_util::HistoryOptInScrollDown()
       onElementWithMatcher:chrome_test_util::HistoryOptInPromoMatcher()]
       performAction:grey_tap()];
@@ -467,8 +467,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
                                      kHistorySyncViewAccessibilityIdentifier)]
         assertWithMatcher:grey_sufficientlyVisible()];
     // Decline History Sync.
-    [[[EarlGrey selectElementWithMatcher:
-                    chrome_test_util::PromoScreenSecondaryButtonMatcher()]
+    [[[EarlGrey
+        selectElementWithMatcher:chrome_test_util::ButtonStackSecondaryButton()]
            usingSearchAction:chrome_test_util::HistoryOptInScrollDown()
         onElementWithMatcher:chrome_test_util::HistoryOptInPromoMatcher()]
         performAction:grey_tap()];
@@ -561,8 +561,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       onElementWithMatcher:chrome_test_util::HistoryOptInPromoMatcher()]
       assertWithMatcher:grey_notNil()];
   // Accept History Sync.
-  [[[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                           PromoScreenPrimaryButtonMatcher()]
+  [[[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonStackPrimaryButton()]
          usingSearchAction:chrome_test_util::HistoryOptInScrollDown()
       onElementWithMatcher:chrome_test_util::HistoryOptInPromoMatcher()]
       performAction:grey_tap()];
@@ -613,8 +613,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
                                    kHistorySyncViewAccessibilityIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
   // Decline History Sync.
-  [[[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                           PromoScreenSecondaryButtonMatcher()]
+  [[[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonStackSecondaryButton()]
          usingSearchAction:chrome_test_util::HistoryOptInScrollDown()
       onElementWithMatcher:chrome_test_util::HistoryOptInPromoMatcher()]
       performAction:grey_tap()];

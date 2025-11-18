@@ -14,6 +14,8 @@
 #import "ios/chrome/common/app_group/app_group_utils.h"
 #import "ios/chrome/common/constants.h"
 #import "ios/chrome/common/string_util.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_action_delegate.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/highlight_button.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
@@ -47,13 +49,9 @@ constexpr CGFloat kDefaultBannerMultiplier = 0.25;
 constexpr CGFloat kShortBannerMultiplier = 0.2;
 constexpr CGFloat kExtraShortBannerMultiplier = 0.15;
 constexpr CGFloat kMoreArrowMargin = 4;
-constexpr CGFloat kPreviousContentVisibleOnScroll = 0.15;
-constexpr CGFloat kSeparatorHeight = 1;
 constexpr CGFloat kLearnMoreButtonSide = 40;
 constexpr CGFloat kheaderImageSize = 48;
 constexpr CGFloat kFullheaderImageSize = 100;
-constexpr CGFloat kStackViewEquallyWeightedButtonSpacing = 12;
-constexpr CGFloat kStackViewDefaultButtonSpacing = 0;
 constexpr CGFloat kButtonPadding = 8;
 
 // Corner radius for the whole view.
@@ -72,76 +70,51 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 
 }  // namespace
 
-@interface PromoStyleViewController () <UIScrollViewDelegate>
+@interface PromoStyleViewController () <ButtonStackActionDelegate,
+                                        UIScrollViewDelegate>
 
 @property(nonatomic, strong) UIImageView* bannerImageView;
 // This view contains only the header image.
 @property(nonatomic, strong) UIImageView* headerImageView;
 @property(nonatomic, strong) UITextView* disclaimerView;
-// Primary action button for the view controller.
-@property(nonatomic, strong) ChromeButton* primaryActionButton;
-// Activity indicator on top of `primaryActionButton`.
-@property(nonatomic, strong)
-    UIActivityIndicatorView* primaryButtonActivityIndicatorView;
 // Read/Write override.
 @property(nonatomic, assign, readwrite) BOOL didReachBottom;
 
 @end
 
 @implementation PromoStyleViewController {
-  // Whether banner is light or dark mode
-  UIUserInterfaceStyle _bannerStyle;
-
-  UIScrollView* _scrollView;
-  // UIView that wraps the scrollable content.
-  UIView* _scrollContentView;
   // This view contains the header image with a shadow background image behind.
   UIView* _fullHeaderImageView;
   // This view contains the background image for the header image. The header
   // view will be placed at the center of it.
   UIImageView* _headerBackgroundImageView;
-  // Stack view containing the action buttons.
-  UIStackView* _actionButtonsStackView;
-  UIButton* _secondaryActionButton;
-  UIButton* _tertiaryActionButton;
-
-  UIView* _separator;
-  CGFloat _scrollViewBottomOffsetY;
 
   // Layout constraint for `headerBackgroundImageView` top margin.
   NSLayoutConstraint* _headerBackgroundImageViewTopMargin;
-
   // Layout constraint for `titleLabel` top margin when there is no banner or
   // header.
   NSLayoutConstraint* _titleLabelNoHeaderTopMargin;
-
-  // YES if the views can be updated on scroll updates (e.g., change the text
-  // label string of the primary button) which corresponds to the moment where
-  // the layout reflects the latest updates.
-  BOOL _canUpdateViewsOnScroll;
-
-  // Whether the image is currently being calculated; used to prevent infinite
-  // recursions caused by `viewDidLayoutSubviews`.
-  BOOL _calculatingImageSize;
-
-  // Vertical constraints for buttons; used to reset top anchors when the number
-  // of buttons changes on scroll.
-  NSArray<NSLayoutConstraint*>* _buttonsVerticalAnchorConstraints;
-
   // The width layout guide for promo content under the banner.
   UILayoutGuide* _widthLayoutGuide;
-
+  // Layout guide for the margin between the subtitle and the screen-specific
+  // content.
+  UILayoutGuide* _subtitleMarginLayoutGuide;
   // Vertical constraints for banner; used to deactivate these constraints when
   // the banner is hidden.
   NSArray<NSLayoutConstraint*>* _bannerConstraints;
 
+  // Whether banner is light or dark mode.
+  UIUserInterfaceStyle _bannerStyle;
+  // YES if the views can be updated on scroll updates (e.g., change the text
+  // label string of the primary button) which corresponds to the moment where
+  // the layout reflects the latest updates.
+  BOOL _canUpdateViewsOnScroll;
+  // Whether the image is currently being calculated; used to prevent infinite
+  // recursions caused by `viewDidLayoutSubviews`.
+  BOOL _calculatingImageSize;
   // Indicate that the view should scroll to the bottom at the end of the next
   // layout.
   BOOL _shouldScrollToBottom;
-
-  // Whether the buttons have been updated from "More" to the action buttons.
-  BOOL _buttonUpdated;
-
   // Task runner to resize banner image off the UI thread.
   scoped_refptr<base::SequencedTaskRunner> _taskRunner;
 }
@@ -149,14 +122,16 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 @synthesize actionButtonsVisibility = _actionButtonsVisibility;
 @synthesize dismissButton = _dismissButton;
 @synthesize learnMoreButton = _learnMoreButton;
-@synthesize primaryButtonSpinnerEnabled = _primaryButtonSpinnerEnabled;
 
 #pragma mark - Public
 
 - (instancetype)initWithTaskRunner:
     (scoped_refptr<base::SequencedTaskRunner>)taskRunner {
-  self = [super initWithNibName:nil bundle:nil];
+  ButtonStackConfiguration* configuration =
+      [[ButtonStackConfiguration alloc] init];
+  self = [super initWithConfiguration:configuration];
   if (self) {
+    self.actionDelegate = self;
     _titleHorizontalMargin = kTitleHorizontalMargin;
     _subtitleBottomMargin = kDefaultSubtitleBottomMargin;
     _headerImageShadowInset = kHeaderImageShadowShadowInset;
@@ -165,6 +140,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
         kNoBackgroundHeaderImageTopMarginPercentage;
     _primaryButtonEnabled = YES;
     _taskRunner = taskRunner;
+    _bannerStyle = UIUserInterfaceStyleUnspecified;
   }
 
   return self;
@@ -189,115 +165,48 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 - (void)viewDidLoad {
   [super viewDidLoad];
 
+  [self updateButtonStyles];
+
   UIView* view = self.view;
   view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
 
-  if (self.usePromoStyleBackground) {
-    CHECK(self.shouldHideBanner);
-    UIView* backgroundView = [[PromoStyleBackgroundView alloc] init];
-    backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
-    backgroundView.layer.zPosition = -1;
-    [view addSubview:backgroundView];
-    AddSameConstraints(view, backgroundView);
-  }
-
-  // Create a layout guide for the margin between the subtitle and the screen-
-  // specific content. A layout guide is needed because the margin scales with
-  // the view height.
-  UILayoutGuide* subtitleMarginLayoutGuide = [[UILayoutGuide alloc] init];
-
-  _separator = [[UIView alloc] init];
-  _bannerStyle = UIUserInterfaceStyleUnspecified;
-  _separator.translatesAutoresizingMaskIntoConstraints = NO;
-  _separator.backgroundColor = [UIColor colorNamed:kSeparatorColor];
-  _separator.hidden = YES;
-  [view addSubview:_separator];
-
-  _scrollContentView = [[UIView alloc] init];
-  _scrollContentView.translatesAutoresizingMaskIntoConstraints = NO;
-  [_scrollContentView addSubview:self.bannerImageView];
-  if (self.headerImageType != PromoStyleImageType::kNone) {
-    _fullHeaderImageView = [self createFullHeaderImageView];
-    _headerBackgroundImageView = [self createheaderBackgroundImageView];
-    [_scrollContentView addSubview:_headerBackgroundImageView];
-    [_headerBackgroundImageView addSubview:_fullHeaderImageView];
-    [_fullHeaderImageView addSubview:self.headerImageView];
-  }
-
-  UILabel* titleLabel = self.titleLabel;
-  [_scrollContentView addSubview:titleLabel];
-  _subtitleLabel = [self createSubtitleLabel];
-  [_scrollContentView addSubview:_subtitleLabel];
-  [view addLayoutGuide:subtitleMarginLayoutGuide];
-
-  UIView* specificContentView = self.specificContentView;
-  [_scrollContentView addSubview:specificContentView];
-
-  UITextView* disclaimerView = self.disclaimerView;
-  if (disclaimerView) {
-    [_scrollContentView addSubview:disclaimerView];
-  }
-
-  // Wrap everything except the action buttons in a scroll view, to support
-  // dynamic types.
-  _scrollView = [self createScrollView];
-  [_scrollView addSubview:_scrollContentView];
-  [view addSubview:_scrollView];
-
-  // Add learn more button to top left of the view, if requested.
-  if (self.shouldShowLearnMoreButton) {
-    [view insertSubview:self.learnMoreButton aboveSubview:_scrollView];
-  }
-
-  // Add dismiss button to top right of the view, if requested.
-  if (self.shouldShowDismissButton) {
-    [view insertSubview:self.dismissButton aboveSubview:_scrollView];
-  }
-
-  _actionButtonsStackView = [[UIStackView alloc] init];
-  _actionButtonsStackView.alignment = UIStackViewAlignmentFill;
-  _actionButtonsStackView.axis = UILayoutConstraintAxisVertical;
-  _actionButtonsStackView.translatesAutoresizingMaskIntoConstraints = NO;
-  [_actionButtonsStackView addArrangedSubview:self.primaryActionButton];
-  _actionButtonsStackView.hidden =
-      (self.actionButtonsVisibility == ActionButtonsVisibility::kHidden);
-  [view addSubview:_actionButtonsStackView];
-
+  [self setupBackgroundView];
+  [self.contentView addSubview:self.bannerImageView];
+  [self setupHeaderView];
+  [self setupLabels];
+  [self setupContentViews];
+  [self setupActionButtons];
   [self updatePromoStyleWidth];
 
+  UITextView* disclaimerView = self.disclaimerView;
+  UIView* specificContentView = self.specificContentView;
   if (disclaimerView) {
     [NSLayoutConstraint activateConstraints:@[
       [disclaimerView.topAnchor
           constraintEqualToAnchor:specificContentView.bottomAnchor
                          constant:kPromoStyleDefaultMargin],
       [disclaimerView.leadingAnchor
-          constraintEqualToAnchor:_scrollContentView.leadingAnchor],
+          constraintEqualToAnchor:self.contentView.leadingAnchor],
       [disclaimerView.trailingAnchor
-          constraintEqualToAnchor:_scrollContentView.trailingAnchor],
+          constraintEqualToAnchor:self.contentView.trailingAnchor],
 
     ]];
     if (self.topAlignedLayout) {
       [NSLayoutConstraint activateConstraints:@[
         [disclaimerView.bottomAnchor
-            constraintLessThanOrEqualToAnchor:_scrollContentView.bottomAnchor]
+            constraintLessThanOrEqualToAnchor:self.contentView.bottomAnchor]
       ]];
     } else {
       [NSLayoutConstraint activateConstraints:@[
         [disclaimerView.bottomAnchor
-            constraintEqualToAnchor:_scrollContentView.bottomAnchor]
+            constraintEqualToAnchor:self.contentView.bottomAnchor]
       ]];
     }
   } else {
-    [_scrollContentView.bottomAnchor
+    [self.contentView.bottomAnchor
         constraintEqualToAnchor:specificContentView.bottomAnchor]
         .active = YES;
   }
-
-  NSLayoutConstraint* scrollViewTopConstraint =
-      self.layoutBehindNavigationBar
-          ? [_scrollView.topAnchor constraintEqualToAnchor:view.topAnchor]
-          : [_scrollView.topAnchor
-                constraintEqualToAnchor:view.safeAreaLayoutGuide.topAnchor];
 
   if (self.preferToCompressContent) {
     // Constrain the height of _scrollContentView to the height of _scrollView,
@@ -306,60 +215,40 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
     // content is made scrollable only after views with compression resistence
     // of UILayoutPriorityDefaultLow are first compressed.
     NSLayoutConstraint* contentViewUnscrollableHeightConstraint =
-        [_scrollContentView.heightAnchor
-            constraintEqualToAnchor:_scrollView.heightAnchor];
+        [self.contentView.heightAnchor
+            constraintEqualToAnchor:self.view.heightAnchor];
     contentViewUnscrollableHeightConstraint.priority =
         UILayoutPriorityDefaultLow + 1;
     contentViewUnscrollableHeightConstraint.active = YES;
   }
 
   [NSLayoutConstraint activateConstraints:@[
-    // Scroll view constraints.
-    scrollViewTopConstraint,
-    [_scrollView.leadingAnchor constraintEqualToAnchor:view.leadingAnchor],
-    [_scrollView.trailingAnchor constraintEqualToAnchor:view.trailingAnchor],
-
-    // Separator constraints.
-    [_separator.heightAnchor constraintEqualToConstant:kSeparatorHeight],
-    [_separator.leadingAnchor constraintEqualToAnchor:view.leadingAnchor],
-    [_separator.trailingAnchor constraintEqualToAnchor:view.trailingAnchor],
-    [_separator.topAnchor constraintEqualToAnchor:_scrollView.bottomAnchor],
-
-    // Scroll content view constraints. Constrain its height to at least the
-    // scroll view height, so that derived VCs can pin UI elements just above
-    // the buttons.
-    [_scrollContentView.topAnchor
-        constraintEqualToAnchor:_scrollView.topAnchor],
-    [_scrollContentView.bottomAnchor
-        constraintEqualToAnchor:_scrollView.bottomAnchor],
-    [_scrollContentView.heightAnchor
-        constraintGreaterThanOrEqualToAnchor:_scrollView.heightAnchor],
-
     // Labels contraints. Attach them to the top of the scroll content view, and
     // center them horizontally.
-    [titleLabel.centerXAnchor
-        constraintEqualToAnchor:_scrollContentView.centerXAnchor],
-    [titleLabel.widthAnchor
-        constraintLessThanOrEqualToAnchor:_scrollContentView.widthAnchor
+    [self.titleLabel.centerXAnchor
+        constraintEqualToAnchor:self.contentView.centerXAnchor],
+    [self.titleLabel.widthAnchor
+        constraintLessThanOrEqualToAnchor:self.contentView.widthAnchor
                                  constant:-2 * self.titleHorizontalMargin],
-    [_subtitleLabel.topAnchor constraintEqualToAnchor:titleLabel.bottomAnchor
-                                             constant:kPromoStyleDefaultMargin],
+    [_subtitleLabel.topAnchor
+        constraintEqualToAnchor:self.titleLabel.bottomAnchor
+                       constant:kPromoStyleDefaultMargin],
     [_subtitleLabel.centerXAnchor
-        constraintEqualToAnchor:_scrollContentView.centerXAnchor],
+        constraintEqualToAnchor:self.contentView.centerXAnchor],
     [_subtitleLabel.widthAnchor
-        constraintLessThanOrEqualToAnchor:_scrollContentView.widthAnchor],
+        constraintLessThanOrEqualToAnchor:self.contentView.widthAnchor],
 
     // Constraints for the screen-specific content view. It should take the
     // remaining scroll view area, with some margins on the top and sides.
-    [subtitleMarginLayoutGuide.topAnchor
+    [_subtitleMarginLayoutGuide.topAnchor
         constraintEqualToAnchor:_subtitleLabel.bottomAnchor],
-    [subtitleMarginLayoutGuide.heightAnchor
+    [_subtitleMarginLayoutGuide.heightAnchor
         constraintEqualToConstant:_subtitleBottomMargin],
 
     [specificContentView.leadingAnchor
-        constraintEqualToAnchor:_scrollContentView.leadingAnchor],
+        constraintEqualToAnchor:self.contentView.leadingAnchor],
     [specificContentView.trailingAnchor
-        constraintEqualToAnchor:_scrollContentView.trailingAnchor],
+        constraintEqualToAnchor:self.contentView.trailingAnchor],
   ]];
 
   if (self.hideSpecificContentView) {
@@ -372,7 +261,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   } else {
     [NSLayoutConstraint activateConstraints:@[
       [specificContentView.topAnchor
-          constraintEqualToAnchor:subtitleMarginLayoutGuide.bottomAnchor]
+          constraintEqualToAnchor:_subtitleMarginLayoutGuide.bottomAnchor]
     ]];
   }
 
@@ -383,8 +272,8 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
     limitView.clipsToBounds = YES;
     limitView.translatesAutoresizingMaskIntoConstraints = NO;
     limitView.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
-    [_scrollContentView insertSubview:limitView
-                         aboveSubview:self.bannerImageView];
+    [self.contentView insertSubview:limitView
+                       aboveSubview:self.bannerImageView];
 
     // Corner radius cannot reach over half of the view, so set the height to 2*
     // kCornerRadius.
@@ -413,11 +302,11 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
     UIImageView* headerImageView = self.headerImageView;
     [NSLayoutConstraint activateConstraints:@[
       _headerBackgroundImageViewTopMargin,
-      [titleLabel.topAnchor
+      [_titleLabel.topAnchor
           constraintEqualToAnchor:_headerBackgroundImageView.bottomAnchor
                          constant:headerImageBottomMargin],
       [_headerBackgroundImageView.centerXAnchor
-          constraintEqualToAnchor:_scrollContentView.centerXAnchor],
+          constraintEqualToAnchor:self.contentView.centerXAnchor],
       [_headerBackgroundImageView.centerXAnchor
           constraintEqualToAnchor:_fullHeaderImageView.centerXAnchor],
       [_headerBackgroundImageView.centerYAnchor
@@ -484,7 +373,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
                           forAxis:UILayoutConstraintAxisVertical];
   } else {
     [NSLayoutConstraint activateConstraints:@[
-      [titleLabel.topAnchor
+      [_titleLabel.topAnchor
           constraintEqualToAnchor:self.bannerImageView.bottomAnchor
                          constant:_titleTopMarginWhenNoHeaderImage],
     ]];
@@ -492,33 +381,11 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 
   [self setupBannerConstraints];
 
-  _buttonsVerticalAnchorConstraints = @[
-    [_scrollView.bottomAnchor
-        constraintEqualToAnchor:_actionButtonsStackView.topAnchor
-                       constant:-kPromoStyleDefaultMargin],
-    [_actionButtonsStackView.bottomAnchor
-        constraintLessThanOrEqualToAnchor:view.bottomAnchor
-                                 constant:-kActionsBottomMarginWithoutSafeArea],
-    [_actionButtonsStackView.bottomAnchor
-        constraintLessThanOrEqualToAnchor:view.safeAreaLayoutGuide.bottomAnchor
-                                 constant:-kActionsBottomMarginWithSafeArea],
-  ];
-  [NSLayoutConstraint activateConstraints:_buttonsVerticalAnchorConstraints];
-
-  // Also constrain the bottom of the action stack view to the bottom of the
-  // safe area, but with a lower priority, so that the action stack view is put
-  // as close to the bottom as possible.
-  NSLayoutConstraint* actionBottomConstraint =
-      [_actionButtonsStackView.bottomAnchor
-          constraintEqualToAnchor:view.safeAreaLayoutGuide.bottomAnchor];
-  actionBottomConstraint.priority = UILayoutPriorityDefaultLow;
-  actionBottomConstraint.active = YES;
-
   if (self.shouldShowLearnMoreButton) {
     UIButton* learnMoreButton = self.learnMoreButton;
     [NSLayoutConstraint activateConstraints:@[
       [learnMoreButton.topAnchor
-          constraintEqualToAnchor:_scrollContentView.topAnchor],
+          constraintEqualToAnchor:self.contentView.topAnchor],
       [learnMoreButton.leadingAnchor
           constraintEqualToAnchor:view.safeAreaLayoutGuide.leadingAnchor],
       [learnMoreButton.widthAnchor
@@ -531,7 +398,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   if (self.shouldShowDismissButton) {
     [NSLayoutConstraint activateConstraints:@[
       [_dismissButton.topAnchor
-          constraintEqualToAnchor:_scrollContentView.topAnchor],
+          constraintEqualToAnchor:self.contentView.topAnchor],
       [_dismissButton.trailingAnchor
           constraintEqualToAnchor:view.trailingAnchor
                          constant:-kPromoStyleDefaultMargin],
@@ -638,57 +505,23 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   }
 }
 
-- (void)setActionButtonsVisibility:(ActionButtonsVisibility)visibility {
-  if (_actionButtonsVisibility == visibility) {
+- (void)setActionButtonsVisibility:
+    (ActionButtonsVisibility)actionButtonsVisibility {
+  if (_actionButtonsVisibility == actionButtonsVisibility) {
     return;
   }
-
-  // Visibility should not be reverted to kDefault.
-  DCHECK(visibility != ActionButtonsVisibility::kDefault);
-  _actionButtonsVisibility = visibility;
+  _actionButtonsVisibility = actionButtonsVisibility;
+  [self updateButtonStyles];
 
   // On hidden visibility, hide the entire button stack view and the disclaimer
   // view above it.
-  if (visibility == ActionButtonsVisibility::kHidden) {
-    if (_actionButtonsStackView) {
-      _actionButtonsStackView.hidden = YES;
-    }
+  if (actionButtonsVisibility == ActionButtonsVisibility::kHidden) {
     self.disclaimerView.hidden = YES;
     return;
   }
 
-  // On unhiding, the primary action button will have updated style based
-  // on actionButtonsVisibility.
-  if (self.primaryActionString) {
-    BOOL equallyWeightedButton =
-        (self.actionButtonsVisibility ==
-         ActionButtonsVisibility::kEquallyWeightedButtonShown);
-    if (equallyWeightedButton) {
-      self.primaryActionButton.style = ChromeButtonStyleTertiary;
-    } else {
-      self.primaryActionButton.style = ChromeButtonStylePrimary;
-    }
-  }
-  // The secondary action button has button type based on
-  // actionButtonsVisibility and should be recreated.
-  if (_secondaryActionButton) {
-    UIView* parent = _secondaryActionButton.superview;
-    NSUInteger buttonIndex =
-        [parent.subviews indexOfObject:_secondaryActionButton];
-
-    // Remove the current secondary button from view.
-    [_secondaryActionButton removeFromSuperview];
-    _secondaryActionButton = [self createSecondaryActionButton];
-
-    [_actionButtonsStackView insertArrangedSubview:_secondaryActionButton
-                                           atIndex:buttonIndex];
-    [self updateActionButtonsSpacing];
-  }
-
-  // Fade the buttons and disclaimer text in if they are hidden.
-  if (_actionButtonsStackView.hidden) {
-    _actionButtonsStackView.alpha = 0;
-    _actionButtonsStackView.hidden = NO;
+  // Fade the disclaimer text in if hidden.
+  if (![self hasVisibleButtons]) {
     self.disclaimerView.alpha = 0;
     self.disclaimerView.hidden = NO;
     __weak __typeof(self) weakSelf = self;
@@ -698,50 +531,9 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
                        if (!strongSelf) {
                          return;
                        }
-                       [strongSelf updateActionButtonsStackAlpha:1.0];
                        strongSelf.disclaimerView.alpha = 1.0;
                      }
                      completion:nil];
-  }
-}
-
-- (void)setPrimaryButtonSpinnerEnabled:(BOOL)enabled {
-  if (_primaryButtonSpinnerEnabled == enabled) {
-    return;
-  }
-
-  _primaryButtonSpinnerEnabled = enabled;
-
-  if (enabled) {
-    CHECK(!self.primaryButtonActivityIndicatorView);
-    CHECK(self.primaryActionString);
-    // Disable the button.
-    self.primaryActionButton.enabled = NO;
-    // Set blank button text and set accessibility label.
-    self.primaryActionButton.title = @" ";
-    [self.primaryActionButton setAccessibilityLabel:self.primaryActionString];
-    // Create the spinner overlay.
-    self.primaryButtonActivityIndicatorView =
-        [[UIActivityIndicatorView alloc] init];
-    self.primaryButtonActivityIndicatorView
-        .translatesAutoresizingMaskIntoConstraints = NO;
-    self.primaryButtonActivityIndicatorView.color =
-        [UIColor colorNamed:kPrimaryBackgroundColor];
-    // Add the spinner to the primary button.
-    [self.primaryActionButton
-        addSubview:self.primaryButtonActivityIndicatorView];
-    AddSameCenterConstraints(self.primaryButtonActivityIndicatorView,
-                             self.primaryActionButton);
-    [self.primaryButtonActivityIndicatorView startAnimating];
-  } else {
-    CHECK(self.primaryButtonActivityIndicatorView);
-    // Remove the spinner.
-    [self.primaryButtonActivityIndicatorView removeFromSuperview];
-    self.primaryButtonActivityIndicatorView = nil;
-    self.primaryActionButton.enabled = YES;
-    // Reset the button text and accessibility label.
-    self.primaryActionButton.title = self.primaryActionString;
-    self.primaryActionButton.accessibilityLabel = nil;
   }
 }
 
@@ -763,16 +555,8 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 
 - (void)setPrimaryActionString:(NSString*)text {
   _primaryActionString = text;
-  // Change the button's label, unless scrolling to the end is mandatory and the
-  // scroll view hasn't been scrolled to the end at least once yet.
-  if (_primaryActionButton &&
-      (!self.scrollToEndMandatory || self.didReachBottom)) {
-    UIButtonConfiguration* buttonConfiguration =
-        _primaryActionButton.configuration;
-    buttonConfiguration.attributedTitle = nil;
-    buttonConfiguration.title = _primaryActionString;
-    _primaryActionButton.configuration = buttonConfiguration;
-  }
+  self.configuration.primaryActionString = text;
+  [self reloadConfiguration];
 }
 
 - (UIImageView*)bannerImageView {
@@ -848,28 +632,6 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
     _specificContentView.translatesAutoresizingMaskIntoConstraints = NO;
   }
   return _specificContentView;
-}
-
-- (ChromeButton*)primaryActionButton {
-  if (!_primaryActionButton) {
-    // Use `primaryActionString` even if scrolling to the end is mandatory
-    // because at the viewDidLoad stage, the scroll view hasn't computed its
-    // content height, so there is no way to know if scrolling is needed.
-    // This label will be updated at the viewDidAppear stage if necessary.
-    _primaryActionButton =
-        [self createButtonForPrimary:YES
-                            withText:self.primaryActionString
-             accessibilityIdentifier:
-                 kPromoStylePrimaryActionAccessibilityIdentifier];
-
-    [_primaryActionButton addTarget:self
-                             action:@selector(didTapPrimaryActionButton)
-                   forControlEvents:UIControlEventTouchUpInside];
-    _primaryActionButton.enabled = _primaryButtonEnabled;
-    _primaryActionButton.hidden =
-        (self.actionButtonsVisibility == ActionButtonsVisibility::kHidden);
-  }
-  return _primaryActionButton;
 }
 
 - (UITextView*)disclaimerView {
@@ -949,16 +711,161 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 
 - (void)setPrimaryButtonEnabled:(BOOL)primaryButtonEnabled {
   _primaryButtonEnabled = primaryButtonEnabled;
-  if (_primaryActionButton) {
-    _primaryActionButton.enabled = primaryButtonEnabled;
+  self.configuration.primaryActionEnabled = primaryButtonEnabled;
+  [self reloadConfiguration];
+}
+
+- (void)setSecondaryActionString:(NSString*)secondaryActionString {
+  _secondaryActionString = secondaryActionString;
+  self.configuration.secondaryActionString = secondaryActionString;
+  [self reloadConfiguration];
+}
+
+- (void)setTertiaryActionString:(NSString*)tertiaryActionString {
+  _tertiaryActionString = tertiaryActionString;
+  self.configuration.tertiaryActionString = tertiaryActionString;
+  [self reloadConfiguration];
+}
+
+#pragma mark - ButtonStackActionDelegate
+
+- (void)didTapPrimaryActionButton {
+  if ([self.delegate respondsToSelector:@selector(didTapPrimaryActionButton)]) {
+    base::UmaHistogramEnumeration("IOS.PromoStyleSheet.Outcome",
+                                  PromoStyleSheetAction::kPrimaryButtonTapped);
+    [self.delegate didTapPrimaryActionButton];
+  }
+}
+
+- (void)didTapSecondaryActionButton {
+  if ([self.delegate
+          respondsToSelector:@selector(didTapSecondaryActionButton)]) {
+    base::UmaHistogramEnumeration(
+        "IOS.PromoStyleSheet.Outcome",
+        PromoStyleSheetAction::kSecondaryButtonTapped);
+    [self.delegate didTapSecondaryActionButton];
+  }
+}
+
+- (void)didTapTertiaryActionButton {
+  if ([self.delegate
+          respondsToSelector:@selector(didTapTertiaryActionButton)]) {
+    base::UmaHistogramEnumeration("IOS.PromoStyleSheet.Outcome",
+                                  PromoStyleSheetAction::kTertiaryButtonTapped);
+    [self.delegate didTapTertiaryActionButton];
   }
 }
 
 #pragma mark - Private
 
+// Sets the button styles based on `actionButtonsVisibility`.
+- (void)updateButtonStyles {
+  self.configuration.primaryActionString = self.primaryActionString;
+  self.configuration.secondaryActionString = self.secondaryActionString;
+  self.configuration.tertiaryActionString = self.tertiaryActionString;
+
+  switch (self.actionButtonsVisibility) {
+    case ActionButtonsVisibility::kDefault:
+    case ActionButtonsVisibility::kRegularButtonsShown:
+      self.configuration.primaryButtonStyle = ChromeButtonStylePrimary;
+      self.configuration.secondaryButtonStyle = ChromeButtonStyleSecondary;
+      self.configuration.tertiaryButtonStyle = ChromeButtonStyleTertiary;
+      break;
+    case ActionButtonsVisibility::kEquallyWeightedButtonShown:
+      self.configuration.primaryButtonStyle = ChromeButtonStyleTertiary;
+      self.configuration.secondaryButtonStyle = ChromeButtonStyleTertiary;
+      self.configuration.tertiaryButtonStyle = ChromeButtonStyleTertiary;
+      break;
+    case ActionButtonsVisibility::kHidden:
+      // Hide all buttons by setting action strings to nil.
+      self.configuration.primaryActionString = nil;
+      self.configuration.secondaryActionString = nil;
+      self.configuration.tertiaryActionString = nil;
+      break;
+  }
+  [self reloadConfiguration];
+}
+
+// Creates and returns the full header image view based on the `headerImageType`
+// property.
+- (UIView*)createFullHeaderImageView {
+  switch (self.headerImageType) {
+    case PromoStyleImageType::kAvatar: {
+      UIImage* circleImage = [UIImage imageNamed:@"promo_style_avatar_circle"];
+      DCHECK(circleImage);
+      UIImageView* imageView = [[UIImageView alloc] initWithImage:circleImage];
+      imageView.translatesAutoresizingMaskIntoConstraints = NO;
+      return imageView;
+    }
+    case PromoStyleImageType::kImageWithShadow: {
+      UIView* frameView = [[UIView alloc] init];
+      frameView.translatesAutoresizingMaskIntoConstraints = NO;
+      frameView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+      if (self.headerViewForceStyleLight) {
+        frameView.overrideUserInterfaceStyle = UIUserInterfaceStyleLight;
+      }
+      frameView.layer.cornerRadius = kHeaderImageCornerRadius;
+      frameView.layer.shadowOffset =
+          CGSizeMake(kHeaderImageShadowOffsetX, kHeaderImageShadowOffsetY);
+      frameView.layer.shadowRadius = kHeaderImageShadowRadius;
+      frameView.layer.shadowOpacity = kHeaderImageShadowOpacity;
+      return frameView;
+    }
+    case PromoStyleImageType::kImage: {
+      UIView* frameView = [[UIView alloc] init];
+      frameView.translatesAutoresizingMaskIntoConstraints = NO;
+      return frameView;
+    }
+    case PromoStyleImageType::kNone:
+      NOTREACHED();
+  }
+}
+
+// Creates and returns the header background image view.
+- (UIImageView*)createHeaderBackgroundImageView {
+  CHECK(self.headerImageType != PromoStyleImageType::kNone);
+  UIImageView* imageView =
+      [[UIImageView alloc] initWithImage:self.headerBackgroundImage];
+  imageView.translatesAutoresizingMaskIntoConstraints = NO;
+  imageView.accessibilityIdentifier =
+      kPromoStyleHeaderViewBackgroundAccessibilityIdentifier;
+  return imageView;
+}
+
+// Creates and returns the subtitle label.
+- (UILabel*)createSubtitleLabel {
+  UILabel* subtitleLabel = [[UILabel alloc] init];
+  subtitleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+  subtitleLabel.numberOfLines = 0;
+  subtitleLabel.textColor = [UIColor colorNamed:kGrey800Color];
+  subtitleLabel.text = self.subtitleText;
+  subtitleLabel.textAlignment = NSTextAlignmentCenter;
+  subtitleLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  subtitleLabel.adjustsFontForContentSizeCategory = YES;
+  subtitleLabel.accessibilityIdentifier =
+      kPromoStyleSubtitleAccessibilityIdentifier;
+  return subtitleLabel;
+}
+
+// Update the width of the content area and action buttons. Should be invoked
+// on `-viewDidLoad` to setup the initial width, and also when the horizontal
+// size class changes.
+- (void)updatePromoStyleWidth {
+  if (_widthLayoutGuide) {
+    [self.view removeLayoutGuide:_widthLayoutGuide];
+  }
+  _widthLayoutGuide = AddPromoStyleWidthLayoutGuide(self.view);
+  [NSLayoutConstraint activateConstraints:@[
+    [self.contentView.leadingAnchor
+        constraintEqualToAnchor:_widthLayoutGuide.leadingAnchor],
+    [self.contentView.trailingAnchor
+        constraintEqualToAnchor:_widthLayoutGuide.trailingAnchor],
+  ]];
+}
+
 // Updates banner constraints.
 - (void)setupBannerConstraints {
-  if (_scrollContentView == nil) {
+  if (self.contentView == nil) {
     return;
   }
 
@@ -968,16 +875,16 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 
   _bannerConstraints = @[
     // Common banner image constraints, further constraints are added below.
-    // This one ensures the banner is well centered within the view.
+    // This one ensures the banner is well centered within the content view.
     [self.bannerImageView.centerXAnchor
-        constraintEqualToAnchor:self.view.centerXAnchor],
+        constraintEqualToAnchor:self.contentView.centerXAnchor],
   ];
 
   if (self.shouldHideBanner) {
     _bannerConstraints = [_bannerConstraints arrayByAddingObjectsFromArray:@[
       [self.bannerImageView.heightAnchor constraintEqualToConstant:0],
       [self.bannerImageView.topAnchor
-          constraintEqualToAnchor:_scrollContentView.topAnchor
+          constraintEqualToAnchor:self.contentView.topAnchor
                          constant:kPromoStyleDefaultMargin]
     ]];
   } else if (self.shouldBannerFillTopSpace) {
@@ -994,13 +901,14 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
     // Default.
     _bannerConstraints = [_bannerConstraints arrayByAddingObjectsFromArray:@[
       [self.bannerImageView.topAnchor
-          constraintEqualToAnchor:_scrollContentView.topAnchor],
+          constraintEqualToAnchor:self.contentView.topAnchor],
     ]];
   }
 
   [NSLayoutConstraint activateConstraints:_bannerConstraints];
 }
 
+// Returns the banner image to be displayed.
 - (UIImage*)bannerImage {
   if (self.shouldHideBanner && !self.bannerName) {
     return [[UIImage alloc] init];
@@ -1035,6 +943,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   return newSize;
 }
 
+// Returns the multiplier for the banner height based on the `bannerSize`.
 - (CGFloat)bannerMultiplier {
   switch (self.bannerSize) {
     case BannerImageSizeType::kExtraShort:
@@ -1091,7 +1000,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
           self.bannerImageView));
 }
 
-// Sets or resets the "Read More" text label when the bottom hasn't been
+// Sets or resets the "Read More" text label when the bottom has not been
 // reached yet and scrolling to the end is mandatory.
 - (void)setReadMoreText {
   if (!self.scrollToEndMandatory) {
@@ -1152,10 +1061,9 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   }];
 }
 
-// Add the scroll view delegate and setup the content views. Should be done only
-// once all the view layouts are fully done.
+// Adds the scroll view delegate and sets up the content views. This should be
+// done only once all the view layouts are fully done.
 - (void)setupScrollView {
-  _scrollView.delegate = self;
   _canUpdateViewsOnScroll = YES;
 
   // At this point, the scroll view has computed its content height. If
@@ -1163,34 +1071,12 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   // fully visible (scrolled), set `didReachBottom` to YES. Otherwise, replace
   // the primary button's label with the read more label to indicate that more
   // scrolling is required.
-  _scrollViewBottomOffsetY = _scrollView.contentSize.height -
-                             _scrollView.bounds.size.height +
-                             _scrollView.contentInset.bottom;
-
   BOOL isScrolledToBottom = [self isScrolledToBottom];
-  _separator.hidden = isScrolledToBottom;
   if (self.didReachBottom || isScrolledToBottom) {
     [self updateActionButtonsAndPushUpScrollViewIfMandatory];
   } else {
     [self setReadMoreText];
   }
-}
-
-// Returns whether the scroll view's offset has reached the scroll view's
-// content height, indicating that the scroll view has been fully scrolled.
-- (BOOL)isScrolledToBottom {
-  CGFloat scrollPosition =
-      _scrollView.contentOffset.y + _scrollView.frame.size.height;
-  CGFloat scrollLimit =
-      _scrollView.contentSize.height + _scrollView.contentInset.bottom;
-  return scrollPosition >= scrollLimit;
-}
-
-- (void)scrollToBottom {
-  CGFloat scrollLimit = _scrollView.contentSize.height -
-                        _scrollView.bounds.size.height +
-                        _scrollView.contentInset.bottom;
-  [_scrollView setContentOffset:CGPointMake(0, scrollLimit) animated:YES];
 }
 
 // If scrolling to the end of the content is mandatory, this method updates the
@@ -1203,33 +1089,9 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   }
 
   BOOL isScrolledToBottom = [self isScrolledToBottom];
-  _separator.hidden = isScrolledToBottom;
   if (self.scrollToEndMandatory && !self.didReachBottom && isScrolledToBottom) {
     [self updateActionButtonsAndPushUpScrollViewIfMandatory];
   }
-}
-
-// Update the width of the content area and action buttons. Should be invoked
-// on `-viewDidLoad` to setup the initial width, and also when the horizontal
-// size class changes.
-- (void)updatePromoStyleWidth {
-  if (_widthLayoutGuide) {
-    [self.view removeLayoutGuide:_widthLayoutGuide];
-  }
-  _widthLayoutGuide = AddPromoStyleWidthLayoutGuide(self.view);
-  [NSLayoutConstraint activateConstraints:@[
-    [_scrollContentView.leadingAnchor
-        constraintEqualToAnchor:_widthLayoutGuide.leadingAnchor],
-    [_scrollContentView.trailingAnchor
-        constraintEqualToAnchor:_widthLayoutGuide.trailingAnchor],
-    // Action stack view constraints. Constrain the bottom of the action stack
-    // view to both the bottom of the screen and the bottom of the safe area, to
-    // give a nice result whether the device has a physical home button or not.
-    [_actionButtonsStackView.leadingAnchor
-        constraintEqualToAnchor:_widthLayoutGuide.leadingAnchor],
-    [_actionButtonsStackView.trailingAnchor
-        constraintEqualToAnchor:_widthLayoutGuide.trailingAnchor],
-  ]];
 }
 
 // This method should be called right before the view is scrolled to the bottom.
@@ -1239,54 +1101,11 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 // action buttons is triggered by a scroll in a view that sets
 // `self.scrollToEndMandatory=YES`. It also sets `self.didReachBottom` to YES.
 - (void)updateActionButtonsAndPushUpScrollViewIfMandatory {
-  if (_buttonUpdated) {
-    return;
-  }
-  _buttonUpdated = YES;
-  ChromeButton* primaryActionButton = self.primaryActionButton;
-  UIButtonConfiguration* buttonConfiguration =
-      primaryActionButton.configuration;
-  buttonConfiguration.attributedTitle = nil;
-  buttonConfiguration.title = self.primaryActionString;
-  primaryActionButton.configuration = buttonConfiguration;
-  primaryActionButton.accessibilityIdentifier =
-      kPromoStylePrimaryActionAccessibilityIdentifier;
+  self.configuration.primaryActionString = self.primaryActionString;
+  self.configuration.secondaryActionString = self.secondaryActionString;
+  self.configuration.tertiaryActionString = self.tertiaryActionString;
+  [self reloadConfiguration];
 
-  // Add other buttons with the correct margins.
-  if (self.secondaryActionString) {
-    _secondaryActionButton = [self createSecondaryActionButton];
-    [_actionButtonsStackView
-        insertArrangedSubview:_secondaryActionButton
-                      atIndex:app_group::IsConfirmationButtonSwapOrderEnabled()
-                                  ? 0
-                                  : 1];
-    [self updateActionButtonsSpacing];
-  }
-  if (self.tertiaryActionString) {
-    _tertiaryActionButton = [self createTertiaryActionButton];
-    [_actionButtonsStackView insertArrangedSubview:_tertiaryActionButton
-                                           atIndex:0];
-  }
-
-  if (self.secondaryActionString || self.tertiaryActionString) {
-    // Update constraints.
-    [NSLayoutConstraint
-        deactivateConstraints:_buttonsVerticalAnchorConstraints];
-    _buttonsVerticalAnchorConstraints = @[
-      [_scrollView.bottomAnchor
-          constraintEqualToAnchor:_actionButtonsStackView.topAnchor
-                         constant:self.tertiaryActionString
-                                      ? 0
-                                      : -kPromoStyleDefaultMargin],
-      [_actionButtonsStackView.bottomAnchor
-          constraintLessThanOrEqualToAnchor:self.view.bottomAnchor
-                                   constant:-kActionsBottomMarginWithSafeArea],
-      [_actionButtonsStackView.bottomAnchor
-          constraintLessThanOrEqualToAnchor:self.view.safeAreaLayoutGuide
-                                                .bottomAnchor],
-    ];
-    [NSLayoutConstraint activateConstraints:_buttonsVerticalAnchorConstraints];
-  }
   if (self.scrollToEndMandatory) {
     _shouldScrollToBottom = YES;
   } else if (self.hideHeaderOnTallContent) {
@@ -1295,50 +1114,6 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
     });
   }
   self.didReachBottom = YES;
-}
-
-- (void)didTapPrimaryActionButton {
-  if (self.scrollToEndMandatory && !self.didReachBottom) {
-    // Calculate the offset needed to see the next content while keeping the
-    // current content partially visible.
-    CGFloat currentOffsetY = _scrollView.contentOffset.y;
-    CGPoint targetOffset = CGPointMake(
-        0, currentOffsetY + _scrollView.bounds.size.height *
-                                (1.0 - kPreviousContentVisibleOnScroll));
-    // Add one point to maximum possible offset to work around some issues when
-    // the fonts are increased.
-    if (targetOffset.y < _scrollViewBottomOffsetY + 1) {
-      [_scrollView setContentOffset:targetOffset animated:YES];
-    } else {
-      [self updateActionButtonsAndPushUpScrollViewIfMandatory];
-    }
-  } else if ([self.delegate
-                 respondsToSelector:@selector(didTapPrimaryActionButton)]) {
-    [self.delegate didTapPrimaryActionButton];
-  }
-  base::UmaHistogramEnumeration("IOS.PromoStyleSheet.Outcome",
-                                PromoStyleSheetAction::kPrimaryButtonTapped);
-}
-
-- (void)didTapSecondaryActionButton {
-  DCHECK(self.secondaryActionString);
-  if ([self.delegate
-          respondsToSelector:@selector(didTapSecondaryActionButton)]) {
-    [self.delegate didTapSecondaryActionButton];
-    base::UmaHistogramEnumeration(
-        "IOS.PromoStyleSheet.Outcome",
-        PromoStyleSheetAction::kSecondaryButtonTapped);
-  }
-}
-
-- (void)didTapTertiaryActionButton {
-  DCHECK(self.tertiaryActionString);
-  if ([self.delegate
-          respondsToSelector:@selector(didTapTertiaryActionButton)]) {
-    [self.delegate didTapTertiaryActionButton];
-    base::UmaHistogramEnumeration("IOS.PromoStyleSheet.Outcome",
-                                  PromoStyleSheetAction::kTertiaryButtonTapped);
-  }
 }
 
 // Handle taps on the help button.
@@ -1359,11 +1134,12 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   }
 }
 
+// Returns the font text style for the disclaimer label.
 - (UIFontTextStyle)disclaimerLabelFontTextStyle {
   return UIFontTextStyleCaption2;
 }
 
-// Helper class that returns the an NSAttributedString generated from the
+// Helper method that returns an NSAttributedString generated from the
 // current disclaimer text and URLs.
 - (NSAttributedString*)attributedStringForDisclaimer {
   StringWithTags parsedString = ParseStringWithLinks(self.disclaimerText);
@@ -1393,103 +1169,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   return attributedText;
 }
 
-- (UIScrollView*)createScrollView {
-  UIScrollView* scrollView = [[UIScrollView alloc] init];
-  scrollView.translatesAutoresizingMaskIntoConstraints = NO;
-  scrollView.accessibilityIdentifier =
-      kPromoStyleScrollViewAccessibilityIdentifier;
-  scrollView.contentInsetAdjustmentBehavior =
-      UIScrollViewContentInsetAdjustmentNever;
-  return scrollView;
-}
-
-- (UIView*)createFullHeaderImageView {
-  switch (self.headerImageType) {
-    case PromoStyleImageType::kAvatar: {
-      UIImage* circleImage = [UIImage imageNamed:@"promo_style_avatar_circle"];
-      DCHECK(circleImage);
-      UIImageView* imageView = [[UIImageView alloc] initWithImage:circleImage];
-      imageView.translatesAutoresizingMaskIntoConstraints = NO;
-      return imageView;
-    }
-    case PromoStyleImageType::kImageWithShadow: {
-      UIView* frameView = [[UIView alloc] init];
-      frameView.translatesAutoresizingMaskIntoConstraints = NO;
-      frameView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
-      if (self.headerViewForceStyleLight) {
-        frameView.overrideUserInterfaceStyle = UIUserInterfaceStyleLight;
-      }
-      frameView.layer.cornerRadius = kHeaderImageCornerRadius;
-      frameView.layer.shadowOffset =
-          CGSizeMake(kHeaderImageShadowOffsetX, kHeaderImageShadowOffsetY);
-      frameView.layer.shadowRadius = kHeaderImageShadowRadius;
-      frameView.layer.shadowOpacity = kHeaderImageShadowOpacity;
-      return frameView;
-    }
-    case PromoStyleImageType::kImage: {
-      UIView* frameView = [[UIView alloc] init];
-      frameView.translatesAutoresizingMaskIntoConstraints = NO;
-      return frameView;
-    }
-    case PromoStyleImageType::kNone:
-      NOTREACHED();
-  }
-}
-
-- (UIImageView*)createheaderBackgroundImageView {
-  CHECK(self.headerImageType != PromoStyleImageType::kNone);
-  UIImageView* imageView =
-      [[UIImageView alloc] initWithImage:self.headerBackgroundImage];
-  imageView.translatesAutoresizingMaskIntoConstraints = NO;
-  imageView.accessibilityIdentifier =
-      kPromoStyleHeaderViewBackgroundAccessibilityIdentifier;
-  return imageView;
-}
-
-- (UILabel*)createSubtitleLabel {
-  UILabel* subtitleLabel = [[UILabel alloc] init];
-  subtitleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-  subtitleLabel.numberOfLines = 0;
-  subtitleLabel.textColor = [UIColor colorNamed:kGrey800Color];
-  subtitleLabel.text = self.subtitleText;
-  subtitleLabel.textAlignment = NSTextAlignmentCenter;
-  subtitleLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  subtitleLabel.adjustsFontForContentSizeCategory = YES;
-  subtitleLabel.accessibilityIdentifier =
-      kPromoStyleSubtitleAccessibilityIdentifier;
-  return subtitleLabel;
-}
-
-- (UIButton*)createSecondaryActionButton {
-  DCHECK(self.secondaryActionString);
-  UIButton* button =
-      [self createButtonForPrimary:NO
-                          withText:self.secondaryActionString
-           accessibilityIdentifier:
-               kPromoStyleSecondaryActionAccessibilityIdentifier];
-  UILabel* titleLabel = button.titleLabel;
-  titleLabel.adjustsFontSizeToFitWidth = YES;
-  titleLabel.minimumScaleFactor = 0.7;
-
-  [button addTarget:self
-                action:@selector(didTapSecondaryActionButton)
-      forControlEvents:UIControlEventTouchUpInside];
-
-  return button;
-}
-
-- (UIButton*)createTertiaryActionButton {
-  DCHECK(self.tertiaryActionString);
-  UIButton* button = [self
-       createButtonForPrimary:NO
-                     withText:self.tertiaryActionString
-      accessibilityIdentifier:kPromoStyleTertiaryActionAccessibilityIdentifier];
-  [button addTarget:self
-                action:@selector(didTapTertiaryActionButton)
-      forControlEvents:UIControlEventTouchUpInside];
-  return button;
-}
-
+// Hides the header if the content is tall and the header should be hidden.
 - (void)hideHeaderOnTallContentIfNeeded {
   // Once hidden, the header will not reappear.
   if (!self.hideHeaderOnTallContent || !_canUpdateViewsOnScroll ||
@@ -1508,41 +1188,72 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   _headerImageView.hidden = YES;
   if (!_titleLabelNoHeaderTopMargin) {
     _titleLabelNoHeaderTopMargin = [_titleLabel.topAnchor
-        constraintEqualToAnchor:_scrollContentView.topAnchor
+        constraintEqualToAnchor:self.contentView.topAnchor
                        constant:kTitleNoHeaderTopMargin];
   }
   _titleLabelNoHeaderTopMargin.active = YES;
   _headerBackgroundImageViewTopMargin.active = NO;
 
-  [_scrollView layoutIfNeeded];
+  [_headerBackgroundImageView layoutIfNeeded];
   [self updateViewsOnScrollViewUpdate];
 }
 
-- (void)updateActionButtonsSpacing {
-  if (@available(iOS 26, *)) {
-    _actionButtonsStackView.spacing = kStackViewEquallyWeightedButtonSpacing;
-  } else {
-    switch (self.actionButtonsVisibility) {
-      case ActionButtonsVisibility::kEquallyWeightedButtonShown:
-        // Spacing is needed when all buttons have filled background.
-        [_actionButtonsStackView
-            setCustomSpacing:kStackViewEquallyWeightedButtonSpacing
-                   afterView:_primaryActionButton];
-        break;
-      case ActionButtonsVisibility::kRegularButtonsShown:
-        [_actionButtonsStackView setCustomSpacing:kStackViewDefaultButtonSpacing
-                                        afterView:_primaryActionButton];
-        break;
-      default:
-        // Do not add button spacing by default or when buttons are hidden.
-        break;
-    }
+// Sets up the background view.
+- (void)setupBackgroundView {
+  if (!self.usePromoStyleBackground) {
+    return;
+  }
+  CHECK(self.shouldHideBanner);
+  UIView* backgroundView = [[PromoStyleBackgroundView alloc] init];
+  backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+  backgroundView.layer.zPosition = -1;
+  [self.view insertSubview:backgroundView atIndex:0];
+  AddSameConstraints(self.view, backgroundView);
+}
+
+// Sets up the header view.
+- (void)setupHeaderView {
+  if (self.headerImageType == PromoStyleImageType::kNone) {
+    return;
+  }
+  _fullHeaderImageView = [self createFullHeaderImageView];
+  _headerBackgroundImageView = [self createHeaderBackgroundImageView];
+  [self.contentView addSubview:_headerBackgroundImageView];
+  [_headerBackgroundImageView addSubview:_fullHeaderImageView];
+  [_fullHeaderImageView addSubview:self.headerImageView];
+}
+
+// Sets up the title and subtitle labels.
+- (void)setupLabels {
+  UILabel* titleLabel = self.titleLabel;
+  [self.contentView addSubview:titleLabel];
+  _subtitleLabel = [self createSubtitleLabel];
+  [self.contentView addSubview:_subtitleLabel];
+  _subtitleMarginLayoutGuide = [[UILayoutGuide alloc] init];
+  [self.view addLayoutGuide:_subtitleMarginLayoutGuide];
+}
+
+// Sets up the specific content view and disclaimer view.
+- (void)setupContentViews {
+  UIView* specificContentView = self.specificContentView;
+  [self.contentView addSubview:specificContentView];
+
+  UITextView* disclaimerView = self.disclaimerView;
+  if (disclaimerView) {
+    [self.contentView addSubview:disclaimerView];
   }
 }
 
-- (void)updateActionButtonsStackAlpha:(CGFloat)alpha {
-  if (_actionButtonsStackView) {
-    _actionButtonsStackView.alpha = alpha;
+// Sets up the learn more and dismiss buttons.
+- (void)setupActionButtons {
+  // Add learn more button to top left of the view, if requested.
+  if (self.shouldShowLearnMoreButton) {
+    [self.view insertSubview:self.learnMoreButton aboveSubview:self.view];
+  }
+
+  // Add dismiss button to top right of the view, if requested.
+  if (self.shouldShowDismissButton) {
+    [self.view insertSubview:self.dismissButton aboveSubview:self.view];
   }
 }
 
@@ -1564,34 +1275,6 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
     [strongSelf updatePromoStyleWidth];
     [strongSelf hideHeaderOnTallContentIfNeeded];
   });
-}
-
-// Creates a button to be used for the button `primary` or not.
-- (ChromeButton*)createButtonForPrimary:(BOOL)primary
-                               withText:(NSString*)buttonText
-                accessibilityIdentifier:(NSString*)accessibilityIdentifier {
-  BOOL equallyWeightedButton =
-      (self.actionButtonsVisibility ==
-       ActionButtonsVisibility::kEquallyWeightedButtonShown);
-  ChromeButton* button;
-  if (equallyWeightedButton) {
-    button = [[ChromeButton alloc] initWithStyle:ChromeButtonStyleTertiary];
-  } else {
-    button =
-        primary
-            ? [[ChromeButton alloc] initWithStyle:ChromeButtonStylePrimary]
-            : [[ChromeButton alloc] initWithStyle:ChromeButtonStyleSecondary];
-  }
-  UIButtonConfiguration* buttonConfiguration = button.configuration;
-  buttonConfiguration.titlePadding = kMoreArrowMargin;
-  buttonConfiguration.title = buttonText;
-  buttonConfiguration.titleLineBreakMode = NSLineBreakByTruncatingTail;
-  button.configuration = buttonConfiguration;
-
-  button.titleLabel.adjustsFontForContentSizeCategory = YES;
-  button.accessibilityIdentifier = accessibilityIdentifier;
-
-  return button;
 }
 
 #pragma mark - UIScrollViewDelegate

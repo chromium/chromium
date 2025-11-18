@@ -424,8 +424,8 @@ id<GREYMatcher> identityDiscMatcher() {
   if ([SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled]) {
     // Dismiss the history sync screen.
     [ChromeEarlGrey waitForMatcher:HistoryScreenMatcher()];
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                            PromoScreenSecondaryButtonMatcher()]
+    [[EarlGrey
+        selectElementWithMatcher:chrome_test_util::ButtonStackSecondaryButton()]
         performAction:grey_tap()];
   }
 
@@ -480,8 +480,8 @@ id<GREYMatcher> identityDiscMatcher() {
   if ([SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled]) {
     // Dismiss the history sync screen.
     [ChromeEarlGrey waitForMatcher:HistoryScreenMatcher()];
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                            PromoScreenSecondaryButtonMatcher()]
+    [[EarlGrey
+        selectElementWithMatcher:chrome_test_util::ButtonStackSecondaryButton()]
         performAction:grey_tap()];
   }
 

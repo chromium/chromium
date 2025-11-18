@@ -500,7 +500,8 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
 - (void)updateButtonState {
   const BOOL showingProgressState =
       self.configuration.isLoading || self.configuration.isConfirmed;
-  _primaryActionButton.enabled = !showingProgressState;
+  _primaryActionButton.enabled =
+      self.configuration.primaryActionEnabled && !showingProgressState;
   _secondaryActionButton.enabled = !showingProgressState;
   _tertiaryActionButton.enabled = !showingProgressState;
 

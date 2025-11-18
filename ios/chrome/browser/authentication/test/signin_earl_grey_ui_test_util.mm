@@ -51,12 +51,12 @@ void CloseHistorySyncSheet(BOOL enableHistorySync) {
 
   [ChromeEarlGrey waitForMatcher:history_sync_matcher];
   if (enableHistorySync) {
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                            PromoScreenPrimaryButtonMatcher()]
+    [[EarlGrey
+        selectElementWithMatcher:chrome_test_util::ButtonStackPrimaryButton()]
         performAction:grey_tap()];
   } else {
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                            PromoScreenSecondaryButtonMatcher()]
+    [[EarlGrey
+        selectElementWithMatcher:chrome_test_util::ButtonStackSecondaryButton()]
         performAction:grey_tap()];
   }
 }
@@ -96,8 +96,8 @@ void MaybeTapSigninBottomSheetAndHistoryConfirmationDialog(
   // If the history type isn't enabled yet, the history opt-in dialog should
   // show up now. Tap the "Yes, I'm In" button.
   if (![ChromeEarlGrey isSyncHistoryDataTypeSelected]) {
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                            PromoScreenPrimaryButtonMatcher()]
+    [[EarlGrey
+        selectElementWithMatcher:chrome_test_util::ButtonStackPrimaryButton()]
         performAction:grey_tap()];
   }
 }

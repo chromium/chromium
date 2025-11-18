@@ -169,7 +169,8 @@ id<GREYMatcher> DeclineManagementButtonMatcher() {
         [ChromeMatchersAppInterface buttonWithAccessibilityLabelID:IDS_CANCEL],
         nil);
   }
-  return chrome_test_util::PromoScreenSecondaryButtonMatcher();
+  return grey_allOf(chrome_test_util::ButtonStackSecondaryButton(),
+                    grey_sufficientlyVisible(), nil);
 }
 
 }  // namespace

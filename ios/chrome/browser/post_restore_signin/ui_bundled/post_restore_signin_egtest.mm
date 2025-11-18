@@ -77,8 +77,8 @@ FakeSystemIdentity* const kPrimaryIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI addFakeAccountInFakeAddAccountMenu:kPrimaryIdentity];
 
   // Decline History Sync.
-  [[[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                           PromoScreenSecondaryButtonMatcher()]
+  [[[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonStackSecondaryButton()]
          usingSearchAction:chrome_test_util::HistoryOptInScrollDown()
       onElementWithMatcher:chrome_test_util::HistoryOptInPromoMatcher()]
       performAction:grey_tap()];

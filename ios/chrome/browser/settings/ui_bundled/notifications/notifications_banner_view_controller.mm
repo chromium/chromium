@@ -100,8 +100,6 @@ bool TooNarrowForBanner(UIView* view) {
 
 - (void)viewDidLoad {
   self.titleText = l10n_util::GetNSString(IDS_IOS_NOTIFICATIONS_OPT_IN_TITLE);
-  self.primaryActionString = @" ";
-  self.actionButtonsVisibility = ActionButtonsVisibility::kHidden;
   self.titleHorizontalMargin = kTitleHorizontalMargin;
   self.titleTopMarginWhenNoHeaderImage = kSpaceAboveTitle;
   [self configureBanner];

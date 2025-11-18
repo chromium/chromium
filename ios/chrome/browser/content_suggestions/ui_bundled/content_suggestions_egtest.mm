@@ -78,8 +78,7 @@ void TapView(NSString* accessibility_id) {
 
 // Tap the PromoStyleSecondaryActionButton.
 void TapPromoStyleSecondaryActionButton() {
-  id<GREYMatcher> button =
-      grey_accessibilityID(kPromoStyleSecondaryActionAccessibilityIdentifier);
+  id<GREYMatcher> button = chrome_test_util::ButtonStackSecondaryButton();
   [[EarlGrey selectElementWithMatcher:button] assertWithMatcher:grey_notNil()];
   [[EarlGrey selectElementWithMatcher:button] performAction:grey_tap()];
 }

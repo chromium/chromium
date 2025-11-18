@@ -14,12 +14,6 @@ NSString* const kPromoStyleSubtitleAccessibilityIdentifier =
     @"PromoStyleSubtitleAccessibilityIdentifier";
 NSString* const kPromoStyleReadMoreActionAccessibilityIdentifier =
     @"PromoStyleReadMoreActionAccessibilityIdentifier";
-NSString* const kPromoStylePrimaryActionAccessibilityIdentifier =
-    @"PromoStylePrimaryActionAccessibilityIdentifier";
-NSString* const kPromoStyleSecondaryActionAccessibilityIdentifier =
-    @"PromoStyleSecondaryActionAccessibilityIdentifier";
-NSString* const kPromoStyleTertiaryActionAccessibilityIdentifier =
-    @"PromoStyleTertiaryActionAccessibilityIdentifier";
 NSString* const kPromoStyleLearnMoreActionAccessibilityIdentifier =
     @"PromoStyleLearnMoreActionAccessibilityIdentifier";
 NSString* const kPromoStyleDisclaimerViewAccessibilityIdentifier =

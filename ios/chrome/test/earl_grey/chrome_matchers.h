@@ -345,11 +345,15 @@ id<GREYMatcher> IdentityChooserScrim();
 // Returns matcher for the cancel button in the fake add account flow.
 id<GREYMatcher> FakeAddAccountScreenCancelButton();
 
+// TODO(crbug.com/444648926): Remove this matcher once downstream dependencies
+// have been updated.
 // Returns matcher for the primary button (typically labeled somethings like
 // "Yes") in various promo screens, including sign-in, history sync, default
 // browser choice, and more.
 id<GREYMatcher> PromoScreenPrimaryButtonMatcher();
 
+// TODO(crbug.com/444648926): Remove this matcher once downstream dependencies
+// have been updated.
 // Returns matcher for the secondary button (typically labeled somethings like
 // "No Thanks") in various promo screens, including sign-in, history sync,
 // default browser choice, and more.
@@ -755,14 +759,6 @@ id<GREYMatcher> UseSuggestedPasswordMatcher();
 // Matcher for Toolbar element item corresponding to the given accessibility ID
 // `button_id`.
 id<GREYMatcher> ToolbarButtonWithID(NSString* button_id);
-
-#pragma mark - Promo style view controller
-
-// Returns matcher for the primary action button.
-id<GREYMatcher> PromoScreenPrimaryButtonMatcher();
-
-// Returns matcher for the secondary action button.
-id<GREYMatcher> PromoScreenSecondaryButtonMatcher();
 
 #pragma mark - Incognito Interstitial
 

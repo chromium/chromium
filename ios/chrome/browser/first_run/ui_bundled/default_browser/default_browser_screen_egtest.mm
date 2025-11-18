@@ -96,12 +96,12 @@ id<GREYMatcher> DefaultPromoSubtitle() {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   // Sign in.
-  [self tapPromoButton:kPromoStylePrimaryActionAccessibilityIdentifier];
+  [self tapPromoButton:chrome_test_util::ButtonStackPrimaryButton()];
   // Enable history/tab sync.
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:
           grey_accessibilityID(kHistorySyncViewAccessibilityIdentifier)];
-  [self tapPromoButton:kPromoStylePrimaryActionAccessibilityIdentifier];
+  [self tapPromoButton:chrome_test_util::ButtonStackPrimaryButton()];
   [ChromeEarlGrey
       waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
   [ChromeEarlGrey
@@ -117,8 +117,7 @@ id<GREYMatcher> DefaultPromoSubtitle() {
 }
 
 // Taps a promo button.
-- (void)tapPromoButton:(NSString*)buttonID {
-  id<GREYMatcher> buttonMatcher = grey_accessibilityID(buttonID);
+- (void)tapPromoButton:(id<GREYMatcher>)buttonMatcher {
   id<GREYMatcher> scrollViewMatcher =
       grey_accessibilityID(kPromoStyleScrollViewAccessibilityIdentifier);
   // Needs to scroll slowly to make sure to not miss a cell if it is not

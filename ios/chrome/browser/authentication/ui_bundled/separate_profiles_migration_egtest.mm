@@ -504,8 +504,8 @@
       selectElementWithMatcher:grey_text(l10n_util::GetNSString(
                                    IDS_IOS_ENTERPRISE_PROFILE_CREATION_GOTIT))]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          PromoScreenPrimaryButtonMatcher()]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonStackPrimaryButton()]
       performAction:grey_tap()];
 
   // Relaunch again and verify the onboarding UI shows only once; does not show

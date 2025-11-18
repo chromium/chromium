@@ -238,9 +238,9 @@ void MaybeDismissNotification() {
         first_run::kFirstRunOmniboxPositionChoiceScreenAccessibilityIdentifier);
     [ChromeEarlGrey waitForUIElementToAppearWithMatcher:omniboxPositionView];
 
-    // Dismiss the Omnibox Position view.
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                            PromoScreenSecondaryButtonMatcher()]
+    [[EarlGrey selectElementWithMatcher:
+                   grey_allOf(chrome_test_util::ButtonStackSecondaryButton(),
+                              grey_sufficientlyVisible(), nil)]
         performAction:grey_tap()];
   }
 
@@ -302,8 +302,10 @@ void MaybeDismissNotification() {
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:grey_accessibilityID(
                                                           @"kLensPromoAXID")];
   // Tap "Show me how".
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          PromoScreenSecondaryButtonMatcher()]
+  // Use `grey_sufficientlyVisible()` to target the visible secondary button.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_allOf(chrome_test_util::ButtonStackSecondaryButton(),
+                            grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
   id<GREYMatcher> instructions =
       grey_accessibilityID(@"kLensPromoInstructionsAXID");
@@ -320,12 +322,17 @@ void MaybeDismissNotification() {
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:grey_accessibilityID(
                                                           @"kLensPromoAXID")];
   // Tap "Show me how" again.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          PromoScreenSecondaryButtonMatcher()]
+  // Use `grey_sufficientlyVisible()` to target the visible secondary button.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_allOf(chrome_test_util::ButtonStackSecondaryButton(),
+                            grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
   // Tap "Go To Lens".
+  // Use `grey_sufficientlyVisible()` to target the visible primary button.
   [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::ButtonStackPrimaryButton()]
+      selectElementWithMatcher:grey_allOf(
+                                   chrome_test_util::ButtonStackPrimaryButton(),
+                                   grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
   MaybeTapAllowOnPopup();
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"escape" flags:0];
@@ -350,8 +357,8 @@ void MaybeDismissNotification() {
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
                       grey_accessibilityID(@"kEnhancedSafeBrowsingPromoAXID")];
   // Tap "Show me how".
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          PromoScreenSecondaryButtonMatcher()]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonStackSecondaryButton()]
       performAction:grey_tap()];
   id<GREYMatcher> instructions =
       grey_accessibilityID(@"kEnhancedSafeBrowsingPromoInstructionsAXID");
@@ -359,12 +366,15 @@ void MaybeDismissNotification() {
   [[EarlGrey selectElementWithMatcher:instructions]
       performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
   // Tap "Show me how" again.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          PromoScreenSecondaryButtonMatcher()]
-      performAction:grey_tap()];
-  // Tap "Go To Settings".
   [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::ButtonStackPrimaryButton()]
+      selectElementWithMatcher:chrome_test_util::ButtonStackSecondaryButton()]
+      performAction:grey_tap()];
+  // Use `grey_sufficientlyVisible()` to target the visible primary button on
+  // the instructions view, avoiding conflicts with the underlying promo view.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   chrome_test_util::ButtonStackPrimaryButton(),
+                                   grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
 
   // Request the notification a second time.

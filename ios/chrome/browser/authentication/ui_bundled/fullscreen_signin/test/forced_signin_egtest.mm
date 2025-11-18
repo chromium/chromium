@@ -219,8 +219,8 @@ void CompleteSigninFlow() {
                                                        fakeIdentity1]
                                      assertVisible:NO];
   // History sync opt-in screen.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          PromoScreenPrimaryButtonMatcher()]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonStackPrimaryButton()]
       performAction:grey_tap()];
 }
 

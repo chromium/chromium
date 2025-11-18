@@ -210,8 +210,6 @@ UIImage* CheckmarkImage() {
 }
 
 - (void)setPrimaryButtonImage:(PrimaryButtonImage)primaryButtonImage {
-  CHECK(self.style == ChromeButtonStylePrimary ||
-        self.style == ChromeButtonStylePrimaryDestructive);
   UIButtonConfiguration* button_configuration = self.configuration;
   button_configuration.image = nil;
   button_configuration.showsActivityIndicator = NO;
