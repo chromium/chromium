@@ -9,13 +9,13 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_handler.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 class MetricsReporter;
 class OmniboxController;
-class OmniboxPopupUI;
 
 namespace content {
 class WebUI;
@@ -29,13 +29,16 @@ class WebuiOmniboxHandler : public SearchboxHandler,
       mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler,
       MetricsReporter* metrics_reporter,
       OmniboxController* omnibox_controller,
-      OmniboxPopupUI* omnibox_popup_ui,
       content::WebUI* web_ui);
 
   WebuiOmniboxHandler(const WebuiOmniboxHandler&) = delete;
   WebuiOmniboxHandler& operator=(const WebuiOmniboxHandler&) = delete;
 
   ~WebuiOmniboxHandler() override;
+
+  void SetEmbedder(base::WeakPtr<TopChromeWebUIController::Embedder> embedder) {
+    embedder_ = embedder;
+  }
 
   // searchbox::mojom::PageHandler:
   void ActivateKeyword(uint8_t line,
@@ -71,7 +74,7 @@ class WebuiOmniboxHandler : public SearchboxHandler,
 
   raw_ptr<MetricsReporter> metrics_reporter_;
 
-  raw_ref<OmniboxPopupUI> omnibox_popup_ui_;
+  base::WeakPtr<TopChromeWebUIController::Embedder> embedder_;
 
   base::WeakPtrFactory<WebuiOmniboxHandler> weak_ptr_factory_{this};
 };

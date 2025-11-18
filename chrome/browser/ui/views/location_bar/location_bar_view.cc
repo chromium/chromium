@@ -1989,20 +1989,15 @@ bool LocationBarView::IsEditingOrEmpty() const {
 void LocationBarView::OnLocationIconPressed(const ui::MouseEvent& event) {
   if (browser_ &&
       GetOmniboxController()->edit_model()->ShouldShowAddContextButton()) {
-    auto omnibox_popup_view_webui =
-        omnibox_popup_view_->GetOmniboxPopupViewWebUI();
-    if (!omnibox_popup_view_webui) {
+    if (!omnibox_popup_aim_presenter_ ||
+        !omnibox_popup_aim_presenter_->GetWebUIContent() ||
+        !omnibox_popup_aim_presenter_->GetWebUIContent()->GetWebContents()) {
       return;
     }
 
     omnibox_context_menu_ = std::make_unique<OmniboxContextMenu>(
-        GetWidget(),
-        omnibox_popup_view_webui->presenter()
-            ->GetWebUIContent()
-            ->GetWebContents(),
-        omnibox_popup_file_selector_.get(),
-        omnibox_popup_aim_presenter_->GetWebUIContent()->GetWebContents(),
-        GetOmniboxController()->edit_model());
+        GetWidget(), omnibox_popup_file_selector_.get(),
+        omnibox_popup_aim_presenter_->GetWebUIContent()->GetWebContents());
     gfx::Point point(0, location_icon_view_->height());
     views::View::ConvertPointToScreen(location_icon_view_, &point);
     run_omnibox_context_menu_callback_.Run(omnibox_context_menu_.get(), point);

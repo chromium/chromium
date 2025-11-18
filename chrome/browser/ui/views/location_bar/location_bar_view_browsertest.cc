@@ -628,8 +628,7 @@ class LocationBarViewAddContextButtonBrowserTest
 };
 
 // TODO(crbug.com/454313733): This test is flaky on Linux.
-// TODO(crbug.com/459561205): This test currently is broken.
-#if 1
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_AddContextButtonVisibilityAndClick \
   DISABLED_AddContextButtonVisibilityAndClick
 #else

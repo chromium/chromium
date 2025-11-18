@@ -201,9 +201,8 @@ void ComposeboxHandler::ClearFiles() {
 }
 
 void ComposeboxHandler::ShowContextMenu(const gfx::Point& point) {
-  auto embedder = web_ui_controller_->embedder();
-  if (embedder) {
-    embedder->ShowContextMenu(point, nullptr);
+  if (embedder_) {
+    embedder_->ShowContextMenu(point, /*menu_model=*/nullptr);
   }
 }
 

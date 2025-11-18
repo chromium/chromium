@@ -45,10 +45,8 @@ struct ContextualInputData;
 // shown for the omnibox.
 class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
  public:
-  explicit OmniboxContextMenuController(content::WebContents* web_contents,
-                                        OmniboxPopupFileSelector* file_selector,
-                                        content::WebContents* aim_web_contents,
-                                        OmniboxEditModel* edit_model);
+  explicit OmniboxContextMenuController(OmniboxPopupFileSelector* file_selector,
+                                        content::WebContents* web_contents);
   struct TabInfo {
     int tab_id;
     std::u16string title;
@@ -108,11 +106,13 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
 
   void UpdateSearchboxContextToolMode(searchbox::mojom::ToolMode tool_mode);
 
-  std::unique_ptr<ui::SimpleMenuModel> menu_model_;
-  base::WeakPtr<content::WebContents> web_contents_;
-  base::WeakPtr<OmniboxPopupFileSelector> file_selector_;
   raw_ptr<contextual_search::ContextualSearchContextController>
-      query_controller_;
+  GetQueryController();
+  raw_ptr<OmniboxEditModel> GetEditModel();
+
+  std::unique_ptr<ui::SimpleMenuModel> menu_model_;
+  base::WeakPtr<OmniboxPopupFileSelector> file_selector_;
+  base::WeakPtr<content::WebContents> web_contents_;
   raw_ptr<OmniboxEditModel> edit_model_;
 
   // Needed for using FaviconService.

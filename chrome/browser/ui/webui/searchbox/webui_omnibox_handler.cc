@@ -79,14 +79,12 @@ WebuiOmniboxHandler::WebuiOmniboxHandler(
     mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler,
     MetricsReporter* metrics_reporter,
     OmniboxController* omnibox_controller,
-    OmniboxPopupUI* omnibox_popup_ui,
     content::WebUI* web_ui)
     : SearchboxHandler(std::move(pending_page_handler),
                        Profile::FromWebUI(web_ui),
                        web_ui->GetWebContents(),
                        /*controller=*/nullptr),
-      metrics_reporter_(metrics_reporter),
-      omnibox_popup_ui_(*omnibox_popup_ui) {
+      metrics_reporter_(metrics_reporter) {
   // Keep a reference to the OmniboxController instance owned by the
   // `OmniboxView`.
   CHECK(omnibox_controller);
@@ -170,9 +168,8 @@ void WebuiOmniboxHandler::ActivateKeyword(
 }
 
 void WebuiOmniboxHandler::ShowContextMenu(const gfx::Point& point) {
-  auto embedder = omnibox_popup_ui_->embedder();
-  if (embedder) {
-    embedder->ShowContextMenu(point, nullptr);
+  if (embedder_) {
+    embedder_->ShowContextMenu(point, nullptr);
   }
 }
 

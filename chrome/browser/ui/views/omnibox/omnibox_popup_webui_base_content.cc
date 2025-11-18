@@ -99,12 +99,10 @@ void OmniboxPopupWebUIBaseContent::ShowCustomContextMenu(
     std::unique_ptr<ui::MenuModel> menu_model) {
   ConvertPointToScreen(this, &point);
   context_menu_ = std::make_unique<OmniboxContextMenu>(
-      GetWidget(), GetWebContents(),
-      location_bar_view_->GetOmniboxPopupFileSelector(),
+      GetWidget(), location_bar_view_->GetOmniboxPopupFileSelector(),
       location_bar_view_->GetOmniboxPopupAimPresenter()
           ->GetWebUIContent()
-          ->GetWebContents(),
-      controller()->edit_model());
+          ->GetWebContents());
   context_menu_->RunMenuAt(point, ui::mojom::MenuSourceType::kMouse);
 }
 

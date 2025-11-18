@@ -174,8 +174,9 @@ void OmniboxPopupUI::BindInterface(
       MetricsReporterService::GetFromWebContents(web_ui()->GetWebContents());
   handler_ = std::make_unique<WebuiOmniboxHandler>(
       std::move(pending_page_handler),
-      metrics_reporter_service->metrics_reporter(), omnibox_controller, this,
+      metrics_reporter_service->metrics_reporter(), omnibox_controller,
       web_ui());
+  handler_->SetEmbedder(embedder());
 }
 
 void OmniboxPopupUI::BindInterface(
@@ -228,7 +229,7 @@ void OmniboxPopupUI::CreatePageHandler(
 
     // TODO(crbug.com/435288212): Move searchbox mojom to use factory pattern.
     composebox_handler_->SetPage(std::move(pending_searchbox_page));
-    composebox_handler_->SetWebUIController(this);
+    composebox_handler_->SetEmbedder(embedder());
   }
 }
 

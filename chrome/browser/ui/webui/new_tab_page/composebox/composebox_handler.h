@@ -11,6 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/searchbox/contextual_searchbox_handler.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -43,8 +44,8 @@ class ComposeboxHandler : public composebox::mojom::PageHandler,
       content::WebContents* web_contents);
   ~ComposeboxHandler() override;
 
-  void SetWebUIController(TopChromeWebUIController* web_ui_controller) {
-    web_ui_controller_ = web_ui_controller;
+  void SetEmbedder(base::WeakPtr<TopChromeWebUIController::Embedder> embedder) {
+    embedder_ = embedder;
   }
 
   // composebox::mojom::PageHandler:
@@ -92,7 +93,7 @@ class ComposeboxHandler : public composebox::mojom::PageHandler,
   omnibox::ChromeAimToolsAndModels aim_tool_mode_ =
       omnibox::ChromeAimToolsAndModels::TOOL_MODE_UNSPECIFIED;
   raw_ptr<content::WebContents> web_contents_;
-  raw_ptr<TopChromeWebUIController> web_ui_controller_;
+  base::WeakPtr<TopChromeWebUIController::Embedder> embedder_;
 
   // These are located at the end of the list of member variables to ensure the
   // WebUI page is disconnected before other members are destroyed.

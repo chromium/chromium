@@ -418,11 +418,9 @@ class WebuiOmniboxHandlerTest : public SearchboxHandlerTest {
         content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
     web_ui_.set_web_contents(web_contents_.get());
 
-    omnibox_popup_ui_ = std::make_unique<OmniboxPopupUI>(&web_ui_);
     handler_ = std::make_unique<WebuiOmniboxHandler>(
         mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
-        /*metrics_reporter=*/nullptr, omnibox_controller_.get(),
-        omnibox_popup_ui_.get(), &web_ui_);
+        /*metrics_reporter=*/nullptr, omnibox_controller_.get(), &web_ui_);
     handler_->SetPage(page_.BindAndGetRemote());
   }
 
