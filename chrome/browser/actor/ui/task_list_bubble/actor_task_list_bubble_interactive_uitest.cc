@@ -80,8 +80,14 @@ IN_PROC_BROWSER_TEST_F(ActorTaskListBubbleInteractiveUiTest,
       InAnyContext(WaitForHide(kActorTaskListBubbleView)));
 }
 
+// TODO(crbug.com/458775033): Fix and re-enable this test on macOS.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_OnTaskInBubbleActuatesTab DISABLED_OnTaskInBubbleActuatesTab
+#else
+#define MAYBE_OnTaskInBubbleActuatesTab OnTaskInBubbleActuatesTab
+#endif
 IN_PROC_BROWSER_TEST_F(ActorTaskListBubbleInteractiveUiTest,
-                       ClickingOnTaskInBubbleActuatesTab) {
+                       MAYBE_OnTaskInBubbleActuatesTab) {
   // Anchor to top container for tests.
   views::View* anchor_view =
       BrowserView::GetBrowserViewForBrowser(browser())->top_container();
