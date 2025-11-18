@@ -867,6 +867,11 @@ extern LensAimSuggestionsType GetLensAimSuggestionsType();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensAimTypeAheadSuggestionsEnabled();
 
+// Whether to clear the vsint param from the multimodal request when there is no
+// region selection.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool ClearVsintWhenNoRegionSelection();
+
 // Whether to close the overlay when the user transitions to the AIM UI.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool ShouldCloseOverlayOnAimTransition();

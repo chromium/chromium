@@ -262,7 +262,15 @@ LensComposeboxController::GetLensSuggestInputs() const {
   if (!lens::features::GetAimSuggestionsEnabled()) {
     return lens::proto::LensOverlaySuggestInputs();
   }
-  return suggest_inputs_;
+  lens::proto::LensOverlaySuggestInputs suggest_inputs = suggest_inputs_;
+  // If the overlay is closed and there is not a region selection in the
+  // composebox, clear the vsint param so that the server will not focus
+  // suggestions on the stale region.
+  if (!HasRegionSelection() &&
+      lens::features::ClearVsintWhenNoRegionSelection()) {
+    suggest_inputs.clear_encoded_visual_search_interaction_log_data();
+  }
+  return suggest_inputs;
 }
 
 void LensComposeboxController::UpdateSuggestInputs(
@@ -334,4 +342,10 @@ LensComposeboxController::BuildVisualSelectionFileInfo(
   return file_info;
 }
 
+bool LensComposeboxController::HasRegionSelection() const {
+  const bool has_region_in_composebox = vsc_image_data_.has_value();
+  const bool has_region_in_overlay =
+      lens_search_controller_->lens_overlay_controller()->HasRegionSelection();
+  return has_region_in_overlay || has_region_in_composebox;
+}
 }  // namespace lens

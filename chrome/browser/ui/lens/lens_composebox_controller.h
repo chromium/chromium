@@ -126,6 +126,10 @@ class LensComposeboxController {
       const std::string& image_data_url,
       bool is_deletable);
 
+  // Returns true if there is a pending region in the composebox, or there
+  // is an active region selection in the overlay.
+  bool HasRegionSelection() const;
+
   // Owns this.
   const raw_ptr<LensSearchController> lens_search_controller_;
 
