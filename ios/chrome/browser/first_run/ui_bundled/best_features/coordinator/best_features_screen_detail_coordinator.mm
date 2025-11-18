@@ -52,7 +52,7 @@
   _viewController = [[FeatureHighlightScreenshotViewController alloc]
       initWithFeatureHighlightItem:_bestFeaturesItem];
   _viewController.actionHandler = self;
-  _baseNavigationController.delegate = _viewController;
+  _baseNavigationController.navigationBarHidden = NO;
   [_baseNavigationController pushViewController:_viewController animated:YES];
 }
 

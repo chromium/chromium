@@ -35,8 +35,7 @@ bool IsBestFeaturesLast() {
 }
 }  // namespace
 
-@interface FeatureHighlightScreenshotViewController () <
-    UINavigationControllerDelegate>
+@interface FeatureHighlightScreenshotViewController ()
 
 @end
 
@@ -86,14 +85,6 @@ bool IsBestFeaturesLast() {
         BestFeaturesActionHistogramForItemType(_bestFeaturesItem.type),
         BestFeaturesDetailScreenActionType::kNavigateBack);
   }
-}
-
-#pragma mark - UINavigationControllerDelegate
-
-- (void)navigationController:(UINavigationController*)navigationController
-      willShowViewController:(UIViewController*)viewController
-                    animated:(BOOL)animated {
-  [navigationController setNavigationBarHidden:(viewController != self)];
 }
 
 @end

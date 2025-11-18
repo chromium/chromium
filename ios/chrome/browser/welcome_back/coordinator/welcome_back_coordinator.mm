@@ -6,7 +6,12 @@
 
 #import <UIKit/UIKit.h>
 
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/tracker.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/first_run/public/best_features_item.h"
+#import "ios/chrome/browser/first_run/ui_bundled/best_features/coordinator/best_features_screen_detail_coordinator.h"
+#import "ios/chrome/browser/first_run/ui_bundled/first_run_screen_delegate.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -22,7 +27,10 @@
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 
 @interface WelcomeBackCoordinator () <ConfirmationAlertActionHandler,
-                                      WelcomeBackActionHandler>
+                                      WelcomeBackActionHandler,
+                                      FirstRunScreenDelegate,
+                                      UINavigationControllerDelegate,
+                                      UIAdaptivePresentationControllerDelegate>
 @end
 
 @implementation WelcomeBackCoordinator {
@@ -32,6 +40,8 @@
   WelcomeBackViewController* _viewController;
   // Base navigation controller.
   UINavigationController* _navigationController;
+  // The BestFeaturesScreenDetail coordinator.
+  BestFeaturesScreenDetailCoordinator* _detailScreenCoordinator;
 }
 
 #pragma mark - ChromeCoordinator
@@ -56,6 +66,17 @@
   _navigationController = [[UINavigationController alloc]
       initWithRootViewController:_viewController];
   _navigationController.navigationBarHidden = YES;
+  _navigationController.delegate = self;
+  _navigationController.presentationController.delegate = self;
+
+  UISheetPresentationController* sheetController =
+      _navigationController.sheetPresentationController;
+
+  // Set both possible detents from the start.
+  sheetController.detents = @[
+    _viewController.preferredHeightDetent,
+    [UISheetPresentationControllerDetent largeDetent]
+  ];
 
   [self.baseViewController presentViewController:_navigationController
                                         animated:YES
@@ -87,7 +108,57 @@
 #pragma mark - WelcomeBackActionHandler
 
 - (void)didTapBestFeatureItem:(BestFeaturesItem*)item {
-  // TODO(crbug.com/457592200): Implement action for item tap.
+  feature_engagement::TrackerFactory::GetForProfile(self.profile)
+      ->NotifyEvent(feature_engagement::events::kIOSWelcomeBackPromoUsed);
+
+  // Ensure the sheet is at the large detent.
+  [_navigationController.sheetPresentationController animateChanges:^{
+    _navigationController.sheetPresentationController.selectedDetentIdentifier =
+        UISheetPresentationControllerDetentIdentifierLarge;
+  }];
+
+  _detailScreenCoordinator = [[BestFeaturesScreenDetailCoordinator alloc]
+      initWithBaseNavigationViewController:_navigationController
+                                   browser:self.browser
+                          bestFeaturesItem:item];
+  _detailScreenCoordinator.delegate = self;
+  [_detailScreenCoordinator start];
+}
+
+#pragma mark - FirstRunScreenDelegate
+
+- (void)screenWillFinishPresenting {
+  // First dismiss the best feature detail view.
+  [_navigationController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:nil];
+  [_detailScreenCoordinator stop];
+  _detailScreenCoordinator = nil;
+  // Clean the promo.
+  [self hidePromo];
+}
+
+#pragma mark - UINavigationControllerDelegate
+
+- (void)navigationController:(UINavigationController*)navigationController
+      willShowViewController:(UIViewController*)viewController
+                    animated:(BOOL)animated {
+  BOOL isWelcomeBackViewController =
+      [viewController isKindOfClass:[WelcomeBackViewController class]];
+  // When navigating back to the welcome back screen from a feature detail
+  // screen.
+  if (isWelcomeBackViewController && _detailScreenCoordinator) {
+    _navigationController.navigationBarHidden = YES;
+    [_detailScreenCoordinator stop];
+    _detailScreenCoordinator = nil;
+  }
+}
+
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  [self hidePromo];
 }
 
 #pragma mark - Private

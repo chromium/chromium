@@ -59,6 +59,17 @@ constexpr CGFloat kTableViewHorizontalPadding = 6.0f;
 
 #pragma mark - UIViewController
 
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+  // Ensure the sheet is at the correct custom detent.
+  if (self.navigationController.sheetPresentationController) {
+    [self.navigationController.sheetPresentationController animateChanges:^{
+      self.navigationController.sheetPresentationController
+          .selectedDetentIdentifier = @"preferred_height";
+    }];
+  }
+}
+
 - (void)viewDidLoad {
   // Configure the strings and layout.
   self.titleString = _title;
@@ -121,9 +132,6 @@ constexpr CGFloat kTableViewHorizontalPadding = 6.0f;
   // Initial height update.
   [self.view layoutIfNeeded];
   [self updateTableViewHeightConstraint];
-
-  // Configure sheet detents.
-  self.sheetPresentationController.detents = @[ self.preferredHeightDetent ];
 }
 
 - (void)viewWillLayoutSubviews {

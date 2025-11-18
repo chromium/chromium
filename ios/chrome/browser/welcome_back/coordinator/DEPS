@@ -4,4 +4,5 @@ include_rules = [
   "+ios/chrome/browser/first_run/ui_bundled/best_features",
   "+ios/chrome/browser/first_run/ui_bundled/features.h",
   "+ios/chrome/browser/signin/model",
+  "+ios/chrome/browser/first_run/ui_bundled/first_run_screen_delegate.h",
 ]
