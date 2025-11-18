@@ -30,6 +30,7 @@ constexpr SkColor kColorGemSysColorPrimary_Light =
     SkColorSetRGB(0x0B, 0x57, 0xD0);
 constexpr SkColor kColorSysStateHoverOnSubtle_Light = SkColorSetARGB(0x0F, 0x1F, 0x1F, 0x1F);
 constexpr SkColor kColorSysTonalOutline_Light = SkColorSetRGB(0xA8, 0xC7, 0xFA);
+constexpr SkColor kColorSysPrimary_Light = SkColorSetRGB(0x0B, 0x57, 0xD0);
 
 constexpr SkColor kColorSysOnSurfaceSubtle_Light =
     SkColorSetRGB(0x47, 0x47, 0x47);
@@ -314,6 +315,7 @@ void AddNewTabPageColorMixer(ui::ColorProvider* provider,
                                  SK_ColorWHITE, gfx::kGoogleGrey900);
 
   mixer[kColorComposeboxBackground] = {SK_ColorWHITE};
+  mixer[kColorComposeboxFileChipSpinner] = {kColorSysPrimary_Light};
   mixer[kColorComposeboxFont] = {
       dark_mode ? SkColorSetRGB(0xE6, 0xE8, 0xF0)
                 : SkColorSetRGB(0x0A, 0x0A, 0x0A)};

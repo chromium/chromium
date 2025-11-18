@@ -24,7 +24,7 @@
 .spinner-circle {
   animation: spin 1.5s linear infinite;
   fill: none;
-  stroke: var(--color-composebox-upload-button);
+  stroke: var(--color-composebox-file-chip-spinner);
   stroke-dasharray: 240;
   stroke-dashoffset: 60;
   stroke-linecap: round;

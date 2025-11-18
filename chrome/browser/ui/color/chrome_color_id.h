@@ -250,6 +250,7 @@
   E_CPONLY(kColorNewTabPageChipBackground) \
   E_CPONLY(kColorNewTabPageChipForeground) \
   E_CPONLY(kColorComposeboxBackground) \
+  E_CPONLY(kColorComposeboxFileChipSpinner) \
   E_CPONLY(kColorComposeboxFont) \
   E_CPONLY(kColorComposeboxFontLight) \
   E_CPONLY(kColorComposeboxCancelButton) \
