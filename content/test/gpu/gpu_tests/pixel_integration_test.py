@@ -80,6 +80,14 @@ class PixelIntegrationTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
           'Pixel_OffscreenCanvasWebGLSoftwareCompositingWorker',
       }
 
+    if host_information.IsMac() and host_information.Isx86Cpu():
+      serial_tests |= {
+          # Can take a while to finish and does not reliably send heartbeats in
+          # the meantime. To avoid potential slowdowns from other tests which
+          # cause flaky timeouts, run this test serially on older hardware.
+          'Pixel_SVGHuge',
+      }
+
     if host_information.IsWindows() and host_information.IsArmCpu():
       serial_tests |= {
           # Context loss tests don't like being run in parallel on Windows
