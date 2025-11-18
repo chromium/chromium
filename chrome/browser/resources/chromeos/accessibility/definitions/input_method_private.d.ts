@@ -120,24 +120,9 @@ declare global {
         koreanShowHangulCandidate?: boolean;
         pinyinChinesePunctuation?: boolean;
         pinyinDefaultChinese?: boolean;
-        pinyinEnableFuzzy?: boolean;
         pinyinEnableLowerPaging?: boolean;
         pinyinEnableUpperPaging?: boolean;
         pinyinFullWidthCharacter?: boolean;
-        pinyinFuzzyConfig?: {
-          an_ang?: boolean,
-          c_ch?: boolean,
-          en_eng?: boolean,
-          f_h?: boolean,
-          ian_iang?: boolean,
-          in_ing?: boolean,
-          k_g?: boolean,
-          l_n?: boolean,
-          r_l?: boolean,
-          s_sh?: boolean,
-          uan_uang?: boolean,
-          z_zh?: boolean,
-        };
         zhuyinKeyboardLayout?: string;
         zhuyinPageSize?: number;
         zhuyinSelectKeys?: string;

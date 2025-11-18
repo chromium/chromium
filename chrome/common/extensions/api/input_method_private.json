@@ -142,29 +142,9 @@
             "optional": true,
             "description": "User can use shortcuts to switch between Chinese and English quickly when using pinyin, this flag indicates whether the default language is Chinese."
           },
-          "pinyinEnableFuzzy": { "type": "boolean", "optional": true, "description": "Whether to enable fuzzy pinyin."},
           "pinyinEnableLowerPaging": { "type": "boolean", "optional": true, "description": "Whether to enable using ','/'.' to page up/down the candidates in pinyin."},
           "pinyinEnableUpperPaging": { "type": "boolean", "optional": true, "description": "Whether to enable using '-'/'=' to page up/down the candidates in pinyin."},
           "pinyinFullWidthCharacter": { "type": "boolean", "optional": true, "description": "Whether to output full width letters and digits in pinyin."},
-          "pinyinFuzzyConfig": {
-            "type": "object",
-            "optional": true,
-            "description": "The configuration of which fuzzy pairs are enable.",
-            "properties": {
-              "an_ang": {"type": "boolean", "optional": true, "description": "Whether to enable an_ang fuzzy"},
-              "c_ch": {"type": "boolean", "optional": true, "description": "Whether to enable c_ch fuzzy"},
-              "en_eng": {"type": "boolean", "optional": true, "description": "Whether to enable en_eng fuzzy"},
-              "f_h": {"type": "boolean", "optional": true, "description": "Whether to enable f_h fuzzy"},
-              "ian_iang": {"type": "boolean", "optional": true, "description": "Whether to enable ian_iang fuzzy"},
-              "in_ing": {"type": "boolean", "optional": true, "description": "Whether to enable in_ing fuzzy"},
-              "k_g": {"type": "boolean", "optional": true, "description": "Whether to enable k_g fuzzy"},
-              "l_n": {"type": "boolean", "optional": true, "description": "Whether to enable l_n fuzzy"},
-              "r_l": {"type": "boolean", "optional": true, "description": "Whether to enable r_l fuzzy"},
-              "s_sh": {"type": "boolean", "optional": true, "description": "Whether to enable s_sh fuzzy"},
-              "uan_uang": {"type": "boolean", "optional": true, "description": "Whether to enable uan_uang fuzzy"},
-              "z_zh": {"type": "boolean", "optional": true, "description": "Whether to enable z_zh fuzzy"}
-            }
-          },
           "zhuyinKeyboardLayout": { "type": "string", "optional": true, "description": "The layout of zhuyin keyboard."},
           "zhuyinPageSize": { "type": "integer", "optional": true, "description": "The page size of zhuyin candidate page."},
           "zhuyinSelectKeys": { "type": "string", "optional": true, "description": "The keys used to select candidates in zhuyin."},
