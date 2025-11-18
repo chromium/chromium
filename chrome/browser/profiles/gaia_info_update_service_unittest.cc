@@ -53,10 +53,10 @@
 #include "ui/gfx/image/image_unittest_util.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/background/startup_launch_manager.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
+#include "chrome/browser/startup/startup_launch_manager.h"
 #endif
 
 using signin::constants::kNoHostedDomainFound;
