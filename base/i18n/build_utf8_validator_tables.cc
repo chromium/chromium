@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <array>
-
 // Create a state machine for validating UTF-8. The algorithm in brief:
 // 1. Convert the complete unicode range of code points, except for the
 //    surrogate code points, to an ordered array of sequences of bytes in
@@ -35,6 +33,7 @@
 #include <string.h>
 
 #include <algorithm>
+#include <array>
 #include <map>
 #include <string>
 #include <vector>
@@ -43,6 +42,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/logging/logging_settings.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"

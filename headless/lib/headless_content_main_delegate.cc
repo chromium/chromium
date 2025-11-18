@@ -17,6 +17,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/lazy_instance.h"
+#include "base/logging/logging_settings.h"
 #include "base/notimplemented.h"
 #include "base/path_service.h"
 #include "base/process/current_process.h"

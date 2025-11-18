@@ -14,6 +14,7 @@
 #include "base/fuchsia/test_component_context_for_process.h"
 #include "base/fuchsia/test_interface_natural_impl.h"
 #include "base/fuchsia/test_log_listener_safe.h"
+#include "base/logging/logging_settings.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_logging_settings.h"

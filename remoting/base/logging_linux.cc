@@ -5,6 +5,7 @@
 #include "remoting/base/logging_internal.h"
 
 #include "base/logging.h"
+#include "base/logging/logging_settings.h"
 
 namespace remoting {
 

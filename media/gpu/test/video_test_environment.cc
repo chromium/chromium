@@ -4,6 +4,7 @@
 
 #include "media/gpu/test/video_test_environment.h"
 
+#include "base/logging/logging_settings.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"

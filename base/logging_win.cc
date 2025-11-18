@@ -11,6 +11,7 @@
 
 #include <initguid.h>
 
+#include "base/logging/logging_settings.h"
 #include "base/memory/singleton.h"
 
 namespace logging {

@@ -23,6 +23,7 @@
 #include "base/functional/function_ref.h"
 #include "base/i18n/time_formatting.h"
 #include "base/logging.h"
+#include "base/logging/logging_settings.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/process/kill.h"

@@ -32,6 +32,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
+#include "base/logging/logging_settings.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/scoped_generic.h"
 #include "base/strings/string_number_conversions.h"

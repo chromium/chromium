@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/logging/logging_settings.h"
 #include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/path_service.h"
