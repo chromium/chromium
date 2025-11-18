@@ -4524,6 +4524,21 @@
             ]
         }
     ],
+    "CacheIdentityListInChrome": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CacheIdentityListInChrome"
+                    ]
+                }
+            ]
+        }
+    ],
     "CacheIsMultiInstanceApi31Enabled": [
         {
             "platforms": [
