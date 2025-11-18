@@ -372,13 +372,12 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   }
 
   private addTabFromAttachment_(tabAttachment: TabAttachmentStub) {
-    // TODO(crbug.com/459920991): Figure out if we should delay upload.
     this.addTabContext_(new CustomEvent('addTabContext', {
       detail: {
         id: tabAttachment.tabId,
         title: tabAttachment.title,
         url: tabAttachment.url,
-        delayUpload: /*delay_upload=*/ true,
+        delayUpload: /*delay_upload=*/ false,
       },
     }));
   }

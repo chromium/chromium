@@ -29,7 +29,6 @@
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/location_bar/omnibox_popup_file_selector.h"
@@ -43,7 +42,6 @@
 #include "components/favicon/core/favicon_service.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/lens/contextual_input.h"
-#include "components/lens/tab_contextualization_controller.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
@@ -249,27 +247,6 @@ void OmniboxContextMenuController::AddTitleWithStringId(int localization_id) {
 }
 
 void OmniboxContextMenuController::AddTabContext(const TabInfo& tab_info) {
-  const tabs::TabHandle handle = tabs::TabHandle(tab_info.tab_id);
-  tabs::TabInterface* const tab = handle.Get();
-  if (!tab) {
-    return;
-  }
-  lens::TabContextualizationController* tab_contextualization_controller =
-      tab->GetTabFeatures()->tab_contextualization_controller();
-  auto token = base::UnguessableToken::Create();
-  auto context_callback =
-      base::BindOnce(&OmniboxContextMenuController::OnGetTabPageContext,
-                     weak_ptr_factory_.GetWeakPtr(), token, tab_info);
-  tab_contextualization_controller->GetPageContext(std::move(context_callback));
-}
-
-void OmniboxContextMenuController::OnGetTabPageContext(
-    const base::UnguessableToken& context_token,
-    const TabInfo& tab_info,
-    std::unique_ptr<lens::ContextualInputData> page_content_data) {
-  GetQueryController()->StartFileUploadFlow(context_token,
-                                            std::move(page_content_data),
-                                            CreateImageEncodingOptions());
   UpdateSearchboxContext(/*tab_info=*/tab_info, /*tool_mode=*/std::nullopt);
   GetEditModel()->OpenAiMode(/*via_keyboard=*/false, /*via_context_menu=*/true);
 }
