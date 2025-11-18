@@ -61,23 +61,19 @@ class WalletSurfacingChecker : public SingleClientStatusChangeChecker {
 // transport mode (true) or not (false).
 class SingleClientAccountSettingSyncTest
     : public SyncTest,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
   SingleClientAccountSettingSyncTest() : SyncTest(SINGLE_CLIENT) {
-    features_.InitWithFeatures(
-        /*enabled_features=*/{syncer::kSyncAccountSettings},
-        /*disabled_features=*/{});
+    std::vector<base::test::FeatureRef> enabled_features = {
+        syncer::kSyncAccountSettings};
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
+    }
+    feature_list_.InitWithFeatures(enabled_features, /*disabled_features=*/{});
   }
 
-  // Sets up the sync client in sync-the-feature or sync-the-transport mode,
-  // depending on `GetParam()`. Returns true if setup succeeded.
-  bool SetupSync() {
-    const bool should_run_in_transport_mode = GetParam();
-    if (should_run_in_transport_mode) {
-      return SetupClients() && GetClient(0)->SignInPrimaryAccount() &&
-             GetClient(0)->AwaitSyncTransportActive();
-    }
-    return SyncTest::SetupSync();
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return GetParam();
   }
 
   AccountSettingService* GetAccountSettingService() {
@@ -104,21 +100,13 @@ class SingleClientAccountSettingSyncTest
   }
 
  private:
-  base::test::ScopedFeatureList features_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    SingleClientAccountSettingSyncTest,
-#if BUILDFLAG(IS_CHROMEOS)
-    // On ChromeOS, sync-the-feature gets started automatically once a primary
-    // account is signed in and transport mode is not a thing. As such, only run
-    // the tests in sync-the-feature mode.
-    testing::Values(false)
-#else
-    testing::Bool()
-#endif
-);
+INSTANTIATE_TEST_SUITE_P(,
+                         SingleClientAccountSettingSyncTest,
+                         GetSyncTestModes(),
+                         testing::PrintToStringParamName());
 
 IN_PROC_BROWSER_TEST_P(SingleClientAccountSettingSyncTest, InitialSync) {
   InjectSpecificsToServer(
