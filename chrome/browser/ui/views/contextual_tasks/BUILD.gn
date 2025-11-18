@@ -6,8 +6,10 @@ assert(is_win || is_mac || is_linux || is_chromeos)
 
 source_set("contextual_tasks") {
   sources = [ "contextual_tasks_page_action_controller.h" ]
-  public_deps = [ "//chrome/browser/ui/views/page_action" ]
-  deps = []
+  public_deps = [
+    "//chrome/browser/ui/views/page_action",
+    "//components/contextual_tasks/public",
+  ]
 }
 
 source_set("impl") {
@@ -15,6 +17,7 @@ source_set("impl") {
 
   deps = [
     ":contextual_tasks",
+    "//chrome/browser/contextual_tasks",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/views/side_panel",
     "//components/contextual_tasks/public:feature_list",
@@ -28,6 +31,7 @@ source_set("interactive_ui_tests") {
   sources = [ "contextual_tasks_page_action_controller_interactive_ui_test.cc" ]
   deps = [
     ":contextual_tasks",
+    "//chrome/browser/contextual_tasks",
     "//chrome/browser/ui:ui_features",
     "//chrome/test:test_support",
     "//components/contextual_tasks/public",

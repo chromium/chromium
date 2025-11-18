@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_page_action_controller.h"
 
+#include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_context_controller_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -13,6 +15,9 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
+#include "components/contextual_tasks/public/contextual_tasks_service.h"
+#include "components/sessions/content/session_tab_helper.h"
+#include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
 
 DEFINE_USER_DATA(ContextualTasksPageActionController);
@@ -22,8 +27,12 @@ ContextualTasksPageActionController::ContextualTasksPageActionController(
     : tab_interface_(tab_interface),
       scoped_unowned_user_data_(tab_interface->GetUnownedUserDataHost(),
                                 *this) {
-  tab_interface->GetTabFeatures()->page_action_controller()->Show(
-      kActionContextualPanelPageActionChip);
+  Profile* const profile =
+      tab_interface->GetBrowserWindowInterface()->GetProfile();
+  contextual_tasks::ContextualTasksContextController* const context_controller =
+      contextual_tasks::ContextualTasksContextControllerFactory::GetForProfile(
+          profile);
+  contextual_task_observation_.Observe(context_controller);
 }
 
 ContextualTasksPageActionController::~ContextualTasksPageActionController() =
@@ -41,4 +50,30 @@ void ContextualTasksPageActionController::InvokePageAction() {
       .side_panel_ui()
       ->Toggle(SidePanelEntryKey(SidePanelEntryId::kContextualTasks),
                SidePanelOpenTrigger::kAppMenu);
+}
+
+void ContextualTasksPageActionController::OnTaskAdded(
+    const contextual_tasks::ContextualTask& task,
+    contextual_tasks::ContextualTasksService::TriggerSource source) {
+  tab_interface_->GetTabFeatures()->page_action_controller()->Show(
+      kActionContextualPanelPageActionChip);
+}
+
+void ContextualTasksPageActionController::OnTaskUpdated(
+    const contextual_tasks::ContextualTask& task,
+    contextual_tasks::ContextualTasksService::TriggerSource source) {
+  OnTaskAdded(task, source);
+}
+
+void ContextualTasksPageActionController::OnTaskRemoved(
+    const base::Uuid& task_id,
+    contextual_tasks::ContextualTasksService::TriggerSource source) {
+  tab_interface_->GetTabFeatures()->page_action_controller()->Hide(
+      kActionContextualPanelPageActionChip);
+}
+
+void ContextualTasksPageActionController::OnWillBeDestroyed() {
+  tab_interface_->GetTabFeatures()->page_action_controller()->Hide(
+      kActionContextualPanelPageActionChip);
+  contextual_task_observation_.Reset();
 }
