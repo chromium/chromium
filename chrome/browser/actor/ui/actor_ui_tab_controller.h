@@ -48,6 +48,7 @@ class ActorUiTabController : public ActorUiTabControllerInterface,
   void OnHandoffButtonHoverStatusChanged() override;
   void OnHandoffButtonFocusStatusChanged() override;
   UiTabState GetCurrentUiTabState() const override;
+  bool ShouldShowActorTabIndicator() override;
 
   // ImmersiveModeController::Observer
   void OnImmersiveFullscreenEntered() override;
@@ -91,7 +92,7 @@ class ActorUiTabController : public ActorUiTabControllerInterface,
   void OnUpdateFinished();
 
   // Sets the Tab Indicator visibility.
-  void SetActorTabIndicatorVisibility(TabIndicatorStatus tab_indicator_type,
+  void SetActorTabIndicatorVisibility(bool should_show_tab_indicator,
                                       base::OnceClosure callback);
 
   // Sets the Border Glow visibility.
@@ -150,7 +151,7 @@ class ActorUiTabController : public ActorUiTabControllerInterface,
   std::unique_ptr<HandoffButtonController> handoff_button_controller_;
   std::unique_ptr<ActorUiTabControllerFactoryInterface> controller_factory_;
 
-  TabIndicatorStatus tab_indicator_;
+  bool should_show_actor_tab_indicator_ = false;
   base::RetainingOneShotTimer update_scrim_background_debounce_timer_;
 
   ::ui::ScopedUnownedUserData<ActorUiTabController> scoped_unowned_user_data_;

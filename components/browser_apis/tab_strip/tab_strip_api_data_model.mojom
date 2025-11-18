@@ -23,7 +23,6 @@ enum AlertState {
   kBluetoothScanActive,
   kDesktopCapturing,
   kActorAccessing,
-  kActorWaitingOnUser,
   kGlicAccessing,
   kGlicSharing,
   kHidConnected,

@@ -14,7 +14,6 @@ enum TabAlertState {
   kBluetoothScanActive,
   kDesktopCapturing,
   kActorAccessing,
-  kActorWaitingOnUser,
   kGlicAccessing,
   kGlicSharing,
   kHidConnected,

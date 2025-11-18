@@ -88,6 +88,11 @@ void ActorUiTabController::OnUiTabStateChange(const UiTabState& ui_tab_state,
   UpdateUi(std::move(callback));
 }
 
+bool ActorUiTabController::ShouldShowActorTabIndicator() {
+  return features::kGlicActorUiTabIndicator.Get() &&
+         should_show_actor_tab_indicator_;
+}
+
 void ActorUiTabController::OnTabWillDetach(
     tabs::TabInterface* tab_interface,
     tabs::TabInterface::DetachReason reason) {
@@ -162,16 +167,17 @@ ActorUiTabController::RegisterActorOverlayStateChange(
 }
 
 void ActorUiTabController::SetActorTabIndicatorVisibility(
-    TabIndicatorStatus tab_indicator_status,
+    bool should_show_tab_indicator,
     base::OnceClosure callback) {
   // When GLIC isn't enabled, we never set the tab indicator.
-  // TODO(crbug.com/461457730) remove GLIC dependency once the ACTOR_ACCESSING
+  // TODO(crbug.com/422538779) remove GLIC dependency once the ACTOR_ACCESSING
   // alert migrates away from the GLIC_ACCESSING resources.
 #if BUILDFLAG(ENABLE_GLIC)
-  if (tab_indicator_ != tab_indicator_status) {
-    tab_indicator_ = tab_indicator_status;
+  if (should_show_actor_tab_indicator_ != should_show_tab_indicator) {
+    should_show_actor_tab_indicator_ = should_show_tab_indicator;
     if (on_actor_tab_indicator_changed_callback_) {
-      on_actor_tab_indicator_changed_callback_.Run(tab_indicator_);
+      on_actor_tab_indicator_changed_callback_.Run(
+          should_show_actor_tab_indicator_);
       // Notify tab strip model of state change.
       tab_->GetBrowserWindowInterface()->GetTabStripModel()->NotifyTabChanged(
           base::to_address(tab_), TabChangeType::kAll);
@@ -212,7 +218,7 @@ void ActorUiTabController::UpdateUi(UiResultCallback callback) {
   }
   // Tab Indicator
   if (features::kGlicActorUiTabIndicator.Get()) {
-    SetActorTabIndicatorVisibility(current_ui_tab_state_.tab_indicator,
+    SetActorTabIndicatorVisibility(current_ui_tab_state_.tab_indicator_visible,
                                    concurrent_closures.CreateClosure());
   }
   // Border Glow

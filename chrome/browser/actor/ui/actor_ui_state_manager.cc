@@ -40,17 +40,7 @@ const UiTabState& GetActorControlledUiTabState() {
   static const UiTabState kActorState = {
       .actor_overlay = {.is_active = true, .border_glow_visible = true},
       .handoff_button = {.is_active = true, .controller = kActor},
-      .tab_indicator = TabIndicatorStatus::kDynamic,
-      .border_glow_visible = true,
-  };
-  return kActorState;
-}
-
-const UiTabState& GetWaitingOnUserUiTabState() {
-  static const UiTabState kActorState = {
-      .actor_overlay = {.is_active = true, .border_glow_visible = true},
-      .handoff_button = {.is_active = true, .controller = kActor},
-      .tab_indicator = TabIndicatorStatus::kStatic,
+      .tab_indicator_visible = true,
       .border_glow_visible = true,
   };
   return kActorState;
@@ -62,7 +52,7 @@ const UiTabState& GetPausedUiTabState() {
       .handoff_button = {.is_active = !base::FeatureList::IsEnabled(
                              features::kGlicHandoffButtonHiddenClientControl),
                          .controller = kClient},
-      .tab_indicator = TabIndicatorStatus::kNone,
+      .tab_indicator_visible = false,
       .border_glow_visible = false,
   };
   return kPausedState;
@@ -72,7 +62,7 @@ const UiTabState& GetCompletedUiTabState() {
   static const UiTabState kCompletedState = {
       .actor_overlay = {.is_active = false, .border_glow_visible = false},
       .handoff_button = {.is_active = false, .controller = kClient},
-      .tab_indicator = TabIndicatorStatus::kNone,
+      .tab_indicator_visible = false,
       .border_glow_visible = false,
   };
   return kCompletedState;
@@ -146,10 +136,8 @@ void ActorUiStateManager::OnActorTaskStateChange(
           << "Task state should never be set to kCreated from another state.";
     case ActorTask::State::kActing:
     case ActorTask::State::kReflecting:
-      ui_tab_state = GetActorControlledUiTabState();
-      break;
     case ActorTask::State::kWaitingOnUser:
-      ui_tab_state = GetWaitingOnUserUiTabState();
+      ui_tab_state = GetActorControlledUiTabState();
       break;
     case ActorTask::State::kPausedByUser:
     case ActorTask::State::kPausedByActor:

@@ -75,8 +75,6 @@ MojoTabAlertState EnumTraits<MojoTabAlertState, NativeTabAlertState>::ToMojom(
       return MojoTabAlertState::kVideoRecording;
     case mojo::NativeTabAlertState::kActorAccessing:
       return MojoTabAlertState::kActorAccessing;
-    case mojo::NativeTabAlertState::kActorWaitingOnUser:
-      return MojoTabAlertState::kActorWaitingOnUser;
     case NativeTabAlertState::kGlicAccessing:
       return MojoTabAlertState::kGlicAccessing;
     case NativeTabAlertState::kGlicSharing:
@@ -133,9 +131,6 @@ bool EnumTraits<MojoTabAlertState, NativeTabAlertState>::FromMojom(
       return true;
     case MojoTabAlertState::kActorAccessing:
       *out = NativeTabAlertState::kActorAccessing;
-      return true;
-    case MojoTabAlertState::kActorWaitingOnUser:
-      *out = NativeTabAlertState::kActorWaitingOnUser;
       return true;
     case MojoTabAlertState::kGlicAccessing:
       *out = NativeTabAlertState::kGlicAccessing;

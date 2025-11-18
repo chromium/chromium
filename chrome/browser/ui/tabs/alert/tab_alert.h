@@ -26,7 +26,6 @@ enum class TabAlert {
   kGlicAccessing,          // Glic is accessing the tab's contents.
   kGlicSharing,            // The tab's contents are shared with glic.
   kActorAccessing,         // Actor is accessing the tab's contents.
-  kActorWaitingOnUser,     // Actor is waiting on user to respond.
 };
 // Any changes to the TabAlert enum needs to be updated in CompareAlerts as
 // well.
