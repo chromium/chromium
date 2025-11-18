@@ -83,17 +83,13 @@ VibrationController::SanitizeVibrationPattern(
 // static
 VibrationController& VibrationController::From(Navigator& navigator) {
   VibrationController* vibration_controller =
-      Supplement<Navigator>::From<VibrationController>(navigator);
+      navigator.GetVibrationController();
   if (!vibration_controller) {
     vibration_controller = MakeGarbageCollected<VibrationController>(navigator);
-    ProvideTo(navigator, vibration_controller);
+    navigator.SetVibrationController(vibration_controller);
   }
   return *vibration_controller;
 }
-
-// static
-const unsigned VibrationController::kSupplementIndex =
-    static_cast<unsigned>(Navigator::Supplements::kVibrationController);
 
 // static
 bool VibrationController::vibrate(Navigator& navigator, unsigned time) {
@@ -113,9 +109,9 @@ bool VibrationController::vibrate(Navigator& navigator,
 }
 
 VibrationController::VibrationController(Navigator& navigator)
-    : Supplement<Navigator>(navigator),
-      ExecutionContextLifecycleObserver(navigator.DomWindow()),
+    : ExecutionContextLifecycleObserver(navigator.DomWindow()),
       PageVisibilityObserver(DomWindow()->GetFrame()->GetPage()),
+      navigator_(navigator),
       vibration_manager_(DomWindow()),
       timer_do_vibrate_(DomWindow()->GetTaskRunner(TaskType::kMiscPlatformAPI),
                         this,
@@ -262,9 +258,9 @@ void VibrationController::PageVisibilityChanged() {
 }
 
 void VibrationController::Trace(Visitor* visitor) const {
-  Supplement<Navigator>::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
   PageVisibilityObserver::Trace(visitor);
+  visitor->Trace(navigator_);
   visitor->Trace(vibration_manager_);
   visitor->Trace(timer_do_vibrate_);
 }

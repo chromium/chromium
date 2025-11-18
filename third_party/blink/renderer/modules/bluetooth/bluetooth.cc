@@ -314,7 +314,7 @@ void ConvertRequestDeviceOptions(
 ScriptPromise<IDLBoolean> Bluetooth::getAvailability(
     ScriptState* script_state,
     ExceptionState& exception_state) {
-  LocalDOMWindow* window = GetSupplementable()->DomWindow();
+  LocalDOMWindow* window = navigator_->DomWindow();
 
   if (IsRequestDenied(window, exception_state)) {
     return EmptyPromise();
@@ -378,7 +378,7 @@ void Bluetooth::RequestDeviceCallback(
 ScriptPromise<IDLSequence<BluetoothDevice>> Bluetooth::getDevices(
     ScriptState* script_state,
     ExceptionState& exception_state) {
-  LocalDOMWindow* window = GetSupplementable()->DomWindow();
+  LocalDOMWindow* window = navigator_->DomWindow();
 
   if (IsRequestDenied(window, exception_state)) {
     return ScriptPromise<IDLSequence<BluetoothDevice>>();
@@ -415,7 +415,7 @@ ScriptPromise<BluetoothDevice> Bluetooth::requestDevice(
     ScriptState* script_state,
     const RequestDeviceOptions* options,
     ExceptionState& exception_state) {
-  LocalDOMWindow* window = GetSupplementable()->DomWindow();
+  LocalDOMWindow* window = navigator_->DomWindow();
 
   if (IsRequestDenied(window, exception_state)) {
     return EmptyPromise();
@@ -526,7 +526,7 @@ ScriptPromise<BluetoothLEScan> Bluetooth::requestLEScan(
     ScriptState* script_state,
     const BluetoothLEScanOptions* options,
     ExceptionState& exception_state) {
-  LocalDOMWindow* window = GetSupplementable()->DomWindow();
+  LocalDOMWindow* window = navigator_->DomWindow();
 
   if (IsRequestDenied(window, exception_state)) {
     return EmptyPromise();
@@ -615,7 +615,7 @@ const AtomicString& Bluetooth::InterfaceName() const {
 }
 
 ExecutionContext* Bluetooth::GetExecutionContext() const {
-  return GetSupplementable()->DomWindow();
+  return navigator_->DomWindow();
 }
 
 void Bluetooth::Trace(Visitor* visitor) const {
@@ -623,29 +623,25 @@ void Bluetooth::Trace(Visitor* visitor) const {
   visitor->Trace(client_receivers_);
   visitor->Trace(service_);
   EventTarget::Trace(visitor);
-  Supplement<Navigator>::Trace(visitor);
+  visitor->Trace(navigator_);
   PageVisibilityObserver::Trace(visitor);
 }
-
-// static
-const unsigned Bluetooth::kSupplementIndex =
-    static_cast<unsigned>(Navigator::Supplements::kBluetooth);
 
 Bluetooth* Bluetooth::bluetooth(Navigator& navigator) {
   if (!navigator.DomWindow())
     return nullptr;
 
-  Bluetooth* supplement = Supplement<Navigator>::From<Bluetooth>(navigator);
+  Bluetooth* supplement = navigator.GetBluetooth();
   if (!supplement) {
     supplement = MakeGarbageCollected<Bluetooth>(navigator);
-    ProvideTo(navigator, supplement);
+    navigator.SetBluetooth(supplement);
   }
   return supplement;
 }
 
 Bluetooth::Bluetooth(Navigator& navigator)
-    : Supplement<Navigator>(navigator),
-      PageVisibilityObserver(navigator.DomWindow()->GetFrame()->GetPage()),
+    : PageVisibilityObserver(navigator.DomWindow()->GetFrame()->GetPage()),
+      navigator_(navigator),
       client_receivers_(this, navigator.DomWindow()),
       service_(navigator.DomWindow()) {}
 

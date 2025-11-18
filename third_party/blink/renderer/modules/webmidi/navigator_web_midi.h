@@ -44,10 +44,8 @@ class MIDIAccess;
 class Navigator;
 
 class NavigatorWebMIDI final : public GarbageCollected<NavigatorWebMIDI>,
-                               public Supplement<Navigator> {
+                               public GarbageCollectedMixin {
  public:
-  static const unsigned kSupplementIndex;
-
   static NavigatorWebMIDI& From(Navigator&);
   static ScriptPromise<MIDIAccess> requestMIDIAccess(
       ScriptState*,
@@ -61,6 +59,9 @@ class NavigatorWebMIDI final : public GarbageCollected<NavigatorWebMIDI>,
   explicit NavigatorWebMIDI(Navigator&);
 
   void Trace(Visitor*) const override;
+
+ private:
+  Member<Navigator> navigator_;
 };
 
 }  // namespace blink

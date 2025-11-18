@@ -411,23 +411,19 @@ void RecordUma(EnumerateDevicesFirstStateOnContextDestroyed value) {
 
 }  // namespace
 
-const unsigned MediaDevices::kSupplementIndex =
-    static_cast<unsigned>(Navigator::Supplements::kMediaDevices);
-
 MediaDevices* MediaDevices::mediaDevices(Navigator& navigator) {
-  MediaDevices* supplement =
-      Supplement<Navigator>::From<MediaDevices>(navigator);
+  MediaDevices* supplement = navigator.GetMediaDevices();
   if (!supplement) {
     supplement = MakeGarbageCollected<MediaDevices>(navigator);
-    ProvideTo(navigator, supplement);
+    navigator.SetMediaDevices(supplement);
   }
   return supplement;
 }
 
 MediaDevices::MediaDevices(Navigator& navigator)
     : ActiveScriptWrappable<MediaDevices>({}),
-      Supplement<Navigator>(navigator),
       ExecutionContextLifecycleObserver(navigator.DomWindow()),
+      navigator_(navigator),
       is_execution_context_active_(!!navigator.DomWindow()),
       dispatcher_host_(navigator.GetExecutionContext()),
       receiver_(this, navigator.DomWindow()) {}
@@ -499,7 +495,7 @@ ScriptPromise<MediaStream> MediaDevices::getUserMedia(
     return promise;
   }
 
-  LocalDOMWindow* window = GetSupplementable()->DomWindow();
+  LocalDOMWindow* window = navigator_->DomWindow();
   LocalFrame* local_frame = window ? window->GetFrame() : nullptr;
   if (local_frame && local_frame->IsAdScriptInStack()) {
     if (constraints->hasAudio()) {
@@ -1409,7 +1405,7 @@ void MediaDevices::Trace(Visitor* visitor) const {
   visitor->Trace(crop_target_resolvers_);
   visitor->Trace(restriction_target_resolvers_);
 
-  Supplement<Navigator>::Trace(visitor);
+  visitor->Trace(navigator_);
   EventTarget::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }

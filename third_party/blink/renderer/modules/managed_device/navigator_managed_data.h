@@ -26,13 +26,10 @@ class ScriptState;
 class MODULES_EXPORT NavigatorManagedData final
     : public EventTarget,
       public ActiveScriptWrappable<NavigatorManagedData>,
-      public Supplement<Navigator>,
       public mojom::blink::ManagedConfigurationObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const unsigned kSupplementIndex;
-
   // Web-based getter for navigator.managed.
   static NavigatorManagedData* managed(Navigator&);
 
@@ -97,6 +94,7 @@ class MODULES_EXPORT NavigatorManagedData final
   void OnServiceConnectionError();
   void StopObserving();
 
+  Member<Navigator> navigator_;
   HeapMojoRemote<mojom::blink::DeviceAPIService> device_api_service_;
   HeapMojoRemote<mojom::blink::ManagedConfigurationService>
       managed_configuration_service_;

@@ -42,11 +42,9 @@ class V8UnionFencedFrameConfigOrUSVString;
 
 class MODULES_EXPORT NavigatorAuction final
     : public GarbageCollected<NavigatorAuction>,
-      public Supplement<Navigator> {
+      public GarbageCollectedMixin {
  public:
   class AuctionHandle;
-  static constexpr auto kSupplementIndex =
-      Navigator::Supplements::kNavigatorAuction;
 
   explicit NavigatorAuction(Navigator&);
 
@@ -215,7 +213,7 @@ class MODULES_EXPORT NavigatorAuction final
   void Trace(Visitor* visitor) const override {
     visitor->Trace(ad_auction_service_);
     visitor->Trace(protected_audience_);
-    Supplement<Navigator>::Trace(visitor);
+    visitor->Trace(navigator_);
   }
 
  private:
@@ -284,6 +282,8 @@ class MODULES_EXPORT NavigatorAuction final
       ScriptPromiseResolver<AdAuctionData>* resolver,
       Vector<mojom::blink::AdAuctionPerSellerRequestPtr> requests,
       const std::optional<base::Uuid>& request_id);
+
+  Member<Navigator> navigator_;
 
   // Manage queues of cross-site join and leave operations that have yet to be
   // sent to the browser process.

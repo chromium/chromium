@@ -14,15 +14,11 @@
 namespace blink {
 
 // static
-const unsigned WindowControlsOverlay::kSupplementIndex =
-    static_cast<unsigned>(Navigator::Supplements::kWindowControlsOverlay);
-
-// static
 WindowControlsOverlay& WindowControlsOverlay::From(Navigator& navigator) {
   WindowControlsOverlay* supplement = FromIfExists(navigator);
   if (!supplement) {
     supplement = MakeGarbageCollected<WindowControlsOverlay>(navigator);
-    ProvideTo(navigator, supplement);
+    navigator.SetWindowControlsOverlay(supplement);
   }
   return *supplement;
 }
@@ -30,7 +26,7 @@ WindowControlsOverlay& WindowControlsOverlay::From(Navigator& navigator) {
 // static
 WindowControlsOverlay* WindowControlsOverlay::FromIfExists(
     Navigator& navigator) {
-  return Supplement<Navigator>::From<WindowControlsOverlay>(navigator);
+  return navigator.GetWindowControlsOverlay();
 }
 
 // static
@@ -40,15 +36,14 @@ WindowControlsOverlay* WindowControlsOverlay::windowControlsOverlay(
 }
 
 WindowControlsOverlay::WindowControlsOverlay(Navigator& navigator)
-    : Supplement<Navigator>(navigator),
-      WindowControlsOverlayChangedDelegate(
-          navigator.DomWindow() ? navigator.DomWindow()->GetFrame() : nullptr) {
-}
+    : WindowControlsOverlayChangedDelegate(
+          navigator.DomWindow() ? navigator.DomWindow()->GetFrame() : nullptr),
+      navigator_(navigator) {}
 
 WindowControlsOverlay::~WindowControlsOverlay() = default;
 
 ExecutionContext* WindowControlsOverlay::GetExecutionContext() const {
-  return GetSupplementable()->DomWindow();
+  return navigator_->DomWindow();
 }
 
 const AtomicString& WindowControlsOverlay::InterfaceName() const {
@@ -56,23 +51,20 @@ const AtomicString& WindowControlsOverlay::InterfaceName() const {
 }
 
 bool WindowControlsOverlay::visible() const {
-  if (!GetSupplementable()->DomWindow())
+  if (!navigator_->DomWindow()) {
     return false;
+  }
 
-  return GetSupplementable()
-      ->DomWindow()
-      ->GetFrame()
-      ->IsWindowControlsOverlayVisible();
+  return navigator_->DomWindow()->GetFrame()->IsWindowControlsOverlayVisible();
 }
 
 DOMRect* WindowControlsOverlay::getTitlebarAreaRect() const {
-  if (!GetSupplementable()->DomWindow())
+  if (!navigator_->DomWindow()) {
     return DOMRect::Create(0, 0, 0, 0);
+  }
 
-  const auto& rect = GetSupplementable()
-                         ->DomWindow()
-                         ->GetFrame()
-                         ->GetWindowControlsOverlayRect();
+  const auto& rect =
+      navigator_->DomWindow()->GetFrame()->GetWindowControlsOverlayRect();
   return DOMRect::Create(rect.x(), rect.y(), rect.width(), rect.height());
 }
 
@@ -87,7 +79,7 @@ void WindowControlsOverlay::WindowControlsOverlayChanged(
 
 void WindowControlsOverlay::Trace(blink::Visitor* visitor) const {
   EventTarget::Trace(visitor);
-  Supplement<Navigator>::Trace(visitor);
+  visitor->Trace(navigator_);
 }
 
 }  // namespace blink

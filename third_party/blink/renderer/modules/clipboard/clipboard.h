@@ -19,11 +19,10 @@ class Navigator;
 class ScriptState;
 class ClipboardReadOptions;
 
-class Clipboard : public EventTarget, public Supplement<Navigator> {
+class Clipboard : public EventTarget, public GarbageCollectedMixin {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const unsigned kSupplementIndex;
   static Clipboard* clipboard(Navigator&);
   explicit Clipboard(Navigator&);
 
@@ -66,6 +65,7 @@ class Clipboard : public EventTarget, public Supplement<Navigator> {
                             const RegisteredEventListener&) override;
 
  private:
+  Member<Navigator> navigator_;
   Member<ClipboardChangeEventController> clipboard_change_event_controller_;
 };
 

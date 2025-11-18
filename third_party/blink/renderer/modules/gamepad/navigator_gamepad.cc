@@ -61,18 +61,14 @@ bool HasConnectionEventListeners(LocalDOMWindow* window) {
 
 }  // namespace
 
-// static
-const unsigned NavigatorGamepad::kSupplementIndex =
-    static_cast<unsigned>(Navigator::Supplements::kNavigatorGamepad);
 const char kFeaturePolicyBlocked[] =
     "Access to the feature \"gamepad\" is disallowed by permissions policy.";
 
 NavigatorGamepad& NavigatorGamepad::From(Navigator& navigator) {
-  NavigatorGamepad* supplement =
-      Supplement<Navigator>::From<NavigatorGamepad>(navigator);
+  NavigatorGamepad* supplement = navigator.GetNavigatorGamepad();
   if (!supplement) {
     supplement = MakeGarbageCollected<NavigatorGamepad>(navigator);
-    ProvideTo(navigator, supplement);
+    navigator.SetNavigatorGamepad(supplement);
   }
   return *supplement;
 }
@@ -118,7 +114,7 @@ HeapVector<Member<Gamepad>> NavigatorGamepad::getGamepads(
   if (!navigator.DomWindow()) {
     // Using an existing NavigatorGamepad if one exists, but don't create one
     // for a detached window, as its subclasses depend on a non-null window.
-    auto* gamepad = Supplement<Navigator>::From<NavigatorGamepad>(navigator);
+    NavigatorGamepad* gamepad = navigator.GetNavigatorGamepad();
     if (gamepad) {
       HeapVector<Member<Gamepad>> result = gamepad->Gamepads();
       RecordGamepadsForIdentifiabilityStudy(gamepad->GetExecutionContext(),
@@ -252,7 +248,7 @@ void NavigatorGamepad::Trace(Visitor* visitor) const {
   visitor->Trace(gamepads_back_);
   visitor->Trace(vibration_actuators_);
   visitor->Trace(gamepad_dispatcher_);
-  Supplement<Navigator>::Trace(visitor);
+  visitor->Trace(navigator_);
   ExecutionContextClient::Trace(visitor);
   PlatformEventController::Trace(visitor);
   Gamepad::Client::Trace(visitor);
@@ -281,9 +277,9 @@ void NavigatorGamepad::DidUpdateData() {
 }
 
 NavigatorGamepad::NavigatorGamepad(Navigator& navigator)
-    : Supplement<Navigator>(navigator),
-      ExecutionContextClient(navigator.DomWindow()),
+    : ExecutionContextClient(navigator.DomWindow()),
       PlatformEventController(*navigator.DomWindow()),
+      navigator_(navigator),
       gamepad_dispatcher_(
           MakeGarbageCollected<GamepadDispatcher>(*navigator.DomWindow())) {
   LocalDOMWindow* window = navigator.DomWindow();

@@ -29,11 +29,15 @@
 #include "third_party/blink/renderer/core/execution_context/navigator_base.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/navigator_user_activation.h"
+#include "third_party/blink/renderer/core/frame/scheduling.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/geolocation/geolocation.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/preferences/navigator_preferences.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
 #include "third_party/blink/renderer/platform/language.h"
@@ -122,7 +126,39 @@ String Navigator::GetAcceptLanguages() {
 
 void Navigator::Trace(Visitor* visitor) const {
   NavigatorBase::Trace(visitor);
-  Supplementable<Navigator, 33>::Trace(visitor);
+  visitor->Trace(geolocation_);
+  visitor->Trace(model_context_supplement_);
+  visitor->Trace(navigator_preferences_);
+  visitor->Trace(navigator_user_activation_);
+  visitor->Trace(scheduling_);
+  visitor->Trace(authentication_credentials_container_);
+  visitor->Trace(battery_manager_);
+  visitor->Trace(bluetooth_);
+  visitor->Trace(clipboard_);
+  visitor->Trace(contacts_manager_);
+  visitor->Trace(cookie_deprecation_label_);
+  visitor->Trace(handwriting_recognition_service_);
+  visitor->Trace(ink_);
+  visitor->Trace(media_devices_);
+  visitor->Trace(media_session_);
+  visitor->Trace(navigator_auction_);
+  visitor->Trace(navigator_beacon_);
+  visitor->Trace(navigator_content_utils_);
+  visitor->Trace(navigator_device_posture_);
+  visitor->Trace(navigator_gamepad_);
+  visitor->Trace(navigator_keyboard_);
+  visitor->Trace(navigator_login_);
+  visitor->Trace(navigator_managed_data_);
+  visitor->Trace(navigator_plugins_);
+  visitor->Trace(navigator_share_);
+  visitor->Trace(navigator_web_install_);
+  visitor->Trace(navigator_web_midi_);
+  visitor->Trace(presentation_);
+  visitor->Trace(sub_apps_);
+  visitor->Trace(vibration_controller_);
+  visitor->Trace(virtual_keyboard_);
+  visitor->Trace(window_controls_overlay_);
+  visitor->Trace(xrsystem_);
 }
 
 }  // namespace blink

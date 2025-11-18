@@ -17,10 +17,8 @@ class Navigator;
 
 class CORE_EXPORT ModelContextSupplement final
     : public GarbageCollected<ModelContextSupplement>,
-      public Supplement<Navigator> {
+      public GarbageCollectedMixin {
  public:
-  static const unsigned kSupplementIndex;
-
   static ModelContextSupplement& From(Navigator&);
   static ModelContext* GetIfExists(Navigator&);
   static ModelContext* modelContext(Navigator&);
@@ -36,6 +34,7 @@ class CORE_EXPORT ModelContextSupplement final
   ModelContext* modelContext();
   ModelContextTesting* modelContextTesting();
 
+  Member<Navigator> navigator_;
   Member<ModelContext> model_context_;
   Member<ModelContextTesting> model_context_testing_;
 };

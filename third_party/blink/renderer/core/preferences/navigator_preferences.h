@@ -18,11 +18,8 @@ class PreferenceManager;
 // https://wicg.github.io/web-preferences-api/#extensions-to-the-navigator-interface
 class CORE_EXPORT NavigatorPreferences final
     : public GarbageCollected<NavigatorPreferences>,
-      public Supplement<Navigator> {
+      public GarbageCollectedMixin {
  public:
-  static constexpr auto kSupplementIndex =
-      Navigator::Supplements::kNavigatorPreferences;
-
   static PreferenceManager* preferences(Navigator& navigator);
   PreferenceManager* preferences();
 
@@ -33,6 +30,7 @@ class CORE_EXPORT NavigatorPreferences final
  private:
   static NavigatorPreferences& From(Navigator&);
 
+  Member<Navigator> navigator_;
   Member<PreferenceManager> preference_manager_;
 };
 

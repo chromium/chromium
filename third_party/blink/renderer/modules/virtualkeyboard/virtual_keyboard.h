@@ -24,12 +24,10 @@ class Navigator;
 // to JS authors. The VirtualKeyboard object lives in the Navigator.
 // It is exposed to JS via a new attribute virtualKeyboard in the Navigator.
 class VirtualKeyboard final : public EventTarget,
-                              public Supplement<Navigator>,
                               public VirtualKeyboardOverlayChangedObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const unsigned kSupplementIndex;
   static VirtualKeyboard* virtualKeyboard(Navigator&);
 
   explicit VirtualKeyboard(Navigator& navigator);
@@ -56,6 +54,7 @@ class VirtualKeyboard final : public EventTarget,
   void Trace(Visitor*) const override;
 
  private:
+  Member<Navigator> navigator_;
   Member<DOMRect> bounding_rect_;
 };
 

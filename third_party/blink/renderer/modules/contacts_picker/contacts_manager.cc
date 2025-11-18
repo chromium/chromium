@@ -96,22 +96,17 @@ TypeConverter<blink::ContactInfo*, blink::mojom::blink::ContactInfoPtr>::
 namespace blink {
 
 // static
-const unsigned ContactsManager::kSupplementIndex =
-    static_cast<unsigned>(Navigator::Supplements::kContactsManager);
-
-// static
 ContactsManager* ContactsManager::contacts(Navigator& navigator) {
-  auto* supplement = Supplement<Navigator>::From<ContactsManager>(navigator);
+  ContactsManager* supplement = navigator.GetContactsManager();
   if (!supplement) {
     supplement = MakeGarbageCollected<ContactsManager>(navigator);
-    ProvideTo(navigator, supplement);
+    navigator.SetContactsManager(supplement);
   }
   return supplement;
 }
 
 ContactsManager::ContactsManager(Navigator& navigator)
-    : Supplement<Navigator>(navigator),
-      contacts_manager_(navigator.DomWindow()) {}
+    : navigator_(navigator), contacts_manager_(navigator.DomWindow()) {}
 
 ContactsManager::~ContactsManager() = default;
 
@@ -265,7 +260,7 @@ ScriptPromise<IDLSequence<V8ContactProperty>> ContactsManager::getProperties(
 
 void ContactsManager::Trace(Visitor* visitor) const {
   visitor->Trace(contacts_manager_);
-  Supplement<Navigator>::Trace(visitor);
+  visitor->Trace(navigator_);
   ScriptWrappable::Trace(visitor);
 }
 

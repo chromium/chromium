@@ -22,13 +22,11 @@ class Navigator;
 
 class BatteryManager final : public EventTarget,
                              public ActiveScriptWrappable<BatteryManager>,
-                             public Supplement<Navigator>,
                              public ExecutionContextLifecycleStateObserver,
                              public PlatformEventController {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const unsigned kSupplementIndex;
   static ScriptPromise<BatteryManager> getBattery(ScriptState*, Navigator&);
   explicit BatteryManager(Navigator&);
   ~BatteryManager() override;
@@ -70,6 +68,7 @@ class BatteryManager final : public EventTarget,
   void Trace(Visitor*) const override;
 
  private:
+  Member<Navigator> navigator_;
   using BatteryProperty = ScriptPromiseProperty<BatteryManager, DOMException>;
   Member<BatteryProperty> battery_property_;
   BatteryStatus battery_status_;

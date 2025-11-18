@@ -164,11 +164,11 @@ bool VerifyCustomHandlerURLSyntax(const KURL& full_url,
 NavigatorContentUtils& NavigatorContentUtils::From(Navigator& navigator,
                                                    LocalFrame& frame) {
   NavigatorContentUtils* navigator_content_utils =
-      Supplement<Navigator>::From<NavigatorContentUtils>(navigator);
+      navigator.GetNavigatorContentUtils();
   if (!navigator_content_utils) {
     navigator_content_utils = MakeGarbageCollected<NavigatorContentUtils>(
         navigator, MakeGarbageCollected<NavigatorContentUtilsClient>(&frame));
-    ProvideTo(navigator, navigator_content_utils);
+    navigator.SetNavigatorContentUtils(navigator_content_utils);
   }
   return *navigator_content_utils;
 }
@@ -276,7 +276,7 @@ void NavigatorContentUtils::unregisterProtocolHandler(
 
 void NavigatorContentUtils::Trace(Visitor* visitor) const {
   visitor->Trace(client_);
-  Supplement<Navigator>::Trace(visitor);
+  visitor->Trace(navigator_);
 }
 
 }  // namespace blink

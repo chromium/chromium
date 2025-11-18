@@ -3565,7 +3565,7 @@ void NavigatorAuction::AuctionHandle::ResolveToConfigResolved::React(
 }
 
 NavigatorAuction::NavigatorAuction(Navigator& navigator)
-    : Supplement(navigator),
+    : navigator_(navigator),
       queued_cross_site_joins_(kMaxActiveCrossSiteJoins,
                                BindRepeating(&NavigatorAuction::StartJoin,
                                              WrapWeakPersistent(this))),
@@ -3586,11 +3586,10 @@ NavigatorAuction::NavigatorAuction(Navigator& navigator)
 
 NavigatorAuction& NavigatorAuction::From(ExecutionContext* context,
                                          Navigator& navigator) {
-  NavigatorAuction* supplement =
-      Supplement<Navigator>::From<NavigatorAuction>(navigator);
+  NavigatorAuction* supplement = navigator.GetNavigatorAuction();
   if (!supplement) {
     supplement = MakeGarbageCollected<NavigatorAuction>(navigator);
-    ProvideTo(navigator, supplement);
+    navigator.SetNavigatorAuction(supplement);
   }
   return *supplement;
 }
@@ -3780,7 +3779,7 @@ ScriptPromise<IDLUndefined> NavigatorAuction::leaveAdInterestGroup(
 ScriptPromise<IDLUndefined> NavigatorAuction::leaveAdInterestGroupForDocument(
     ScriptState* script_state,
     ExceptionState& exception_state) {
-  LocalDOMWindow* window = GetSupplementable()->DomWindow();
+  LocalDOMWindow* window = navigator_->DomWindow();
   if (!window) {
     exception_state.ThrowSecurityError(
         "May not leaveAdInterestGroup from a Document that is not fully "
@@ -3994,7 +3993,7 @@ ScriptPromise<IDLString> NavigatorAuction::createAuctionNonce(
   auto promise = resolver->Promise();
 
   resolver->Resolve(CombineAuctionNonce(
-      GetSupplementable()->DomWindow()->document()->base_auction_nonce(),
+      navigator_->DomWindow()->document()->base_auction_nonce(),
       auction_nonce_counter_++));
   return promise;
 }
@@ -4040,7 +4039,7 @@ NavigatorAuction::runAdAuction(ScriptState* script_state,
       /*is_top_level=*/true, /*nested_pos=*/0, *script_state, *context,
       exception_state,
       /*resource_fetcher=*/
-      *GetSupplementable()->DomWindow()->document()->Fetcher(), *config);
+      *navigator_->DomWindow()->document()->Fetcher(), *config);
   if (!mojo_config) {
     return ScriptPromise<IDLNullable<V8UnionFencedFrameConfigOrUSVString>>();
   }

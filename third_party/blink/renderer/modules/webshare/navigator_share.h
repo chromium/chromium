@@ -26,11 +26,11 @@ class ShareData;
 
 class MODULES_EXPORT NavigatorShare final
     : public GarbageCollected<NavigatorShare>,
-      public Supplement<Navigator> {
+      public GarbageCollectedMixin {
  public:
   static const unsigned kSupplementIndex;
 
-  NavigatorShare(Navigator& navigator) : Supplement(navigator) {}
+  explicit NavigatorShare(Navigator& navigator) : navigator_(navigator) {}
   ~NavigatorShare() = default;
 
   // Gets, or creates, NavigatorShare supplement on Navigator.
@@ -54,6 +54,8 @@ class MODULES_EXPORT NavigatorShare final
   class ShareClientImpl;
 
   void OnConnectionError();
+
+  Member<Navigator> navigator_;
 
   // |NavigatorShare| is not ExecutionContext-associated.
   HeapMojoRemote<blink::mojom::blink::ShareService> service_remote_{nullptr};

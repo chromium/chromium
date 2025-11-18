@@ -56,14 +56,11 @@ class Navigator;
 
 class MODULES_EXPORT NavigatorGamepad final
     : public GarbageCollected<NavigatorGamepad>,
-      public Supplement<Navigator>,
       public ExecutionContextClient,
       public PlatformEventController,
       public LocalDOMWindow::EventListenerObserver,
       public Gamepad::Client {
  public:
-  static const unsigned kSupplementIndex;
-
   static NavigatorGamepad& From(Navigator&);
 
   explicit NavigatorGamepad(Navigator&);
@@ -102,6 +99,8 @@ class MODULES_EXPORT NavigatorGamepad final
   void SetTouchEvents(const Gamepad&,
                       GamepadTouchVector&,
                       base::span<const device::GamepadTouch>) override;
+
+  Member<Navigator> navigator_;
 
   // A reference to the buffer containing the last-received gamepad state. May
   // be nullptr if no data has been received yet. Do not overwrite this buffer

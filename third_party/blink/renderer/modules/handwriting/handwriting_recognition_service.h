@@ -22,11 +22,8 @@ class ScriptState;
 
 class HandwritingRecognitionService final
     : public GarbageCollected<HandwritingRecognitionService>,
-      public Supplement<Navigator> {
+      public GarbageCollectedMixin {
  public:
-  static constexpr auto kSupplementIndex =
-      Navigator::Supplements::kHandwritingRecognitionService;
-
   explicit HandwritingRecognitionService(Navigator&);
 
   static HandwritingRecognitionService& From(Navigator&);
@@ -61,6 +58,7 @@ class HandwritingRecognitionService final
                              const HandwritingModelConstraint* constraint,
                              ExceptionState&);
 
+  Member<Navigator> navigator_;
   HeapMojoRemote<handwriting::mojom::blink::HandwritingRecognitionService>
       remote_service_;
 };

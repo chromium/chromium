@@ -15,23 +15,19 @@
 
 namespace blink {
 
-const unsigned Scheduling::kSupplementIndex =
-    static_cast<unsigned>(Navigator::Supplements::kScheduling);
-
 Scheduling* Scheduling::scheduling(Navigator& navigator) {
-  Scheduling* supplement = Supplement<Navigator>::From<Scheduling>(navigator);
+  Scheduling* supplement = navigator.GetScheduling();
   if (!supplement) {
     supplement = MakeGarbageCollected<Scheduling>(navigator);
-    ProvideTo(navigator, supplement);
+    navigator.SetScheduling(supplement);
   }
   return supplement;
 }
 
-Scheduling::Scheduling(Navigator& navigator)
-    : Supplement<Navigator>(navigator) {}
+Scheduling::Scheduling(Navigator& navigator) : navigator_(navigator) {}
 
 bool Scheduling::isInputPending(const IsInputPendingOptions* options) const {
-  LocalDOMWindow* window = GetSupplementable()->DomWindow();
+  LocalDOMWindow* window = navigator_->DomWindow();
   DCHECK(options);
   if (!window)
     return false;
@@ -50,7 +46,7 @@ bool Scheduling::isInputPending(const IsInputPendingOptions* options) const {
 
 void Scheduling::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
-  Supplement<Navigator>::Trace(visitor);
+  visitor->Trace(navigator_);
 }
 
 }  // namespace blink

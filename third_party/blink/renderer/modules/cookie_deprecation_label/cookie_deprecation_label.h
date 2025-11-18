@@ -15,7 +15,7 @@ class Navigator;
 class ScriptState;
 
 class CookieDeprecationLabel : public ScriptWrappable,
-                               public Supplement<Navigator> {
+                               public GarbageCollectedMixin {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -31,6 +31,9 @@ class CookieDeprecationLabel : public ScriptWrappable,
   ScriptPromise<IDLString> getValue(ScriptState* script_state);
 
   void Trace(Visitor*) const override;
+
+ private:
+  Member<Navigator> navigator_;
 };
 
 }  // namespace blink

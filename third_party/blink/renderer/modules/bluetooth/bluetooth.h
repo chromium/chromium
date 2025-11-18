@@ -29,7 +29,6 @@ class Navigator;
 class ScriptState;
 
 class Bluetooth final : public EventTarget,
-                        public Supplement<Navigator>,
                         public PageVisibilityObserver,
                         public mojom::blink::WebBluetoothAdvertisementClient {
   DEFINE_WRAPPERTYPEINFO();
@@ -98,6 +97,8 @@ class Bluetooth final : public EventTarget,
       mojom::blink::WebBluetoothResult);
 
   void EnsureServiceConnection(ExecutionContext*);
+
+  Member<Navigator> navigator_;
 
   // Map of device ids to BluetoothDevice objects.
   // Ensures only one BluetoothDevice instance represents each

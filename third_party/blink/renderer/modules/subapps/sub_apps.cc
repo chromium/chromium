@@ -91,33 +91,28 @@ HeapVector<std::pair<String, Member<SubAppsListResult>>> ListResultsFromMojo(
 
 }  // namespace
 
-// static
-const unsigned SubApps::kSupplementIndex =
-    static_cast<unsigned>(Navigator::Supplements::kSubApps);
-
 SubApps::SubApps(Navigator& navigator)
-    : Supplement<Navigator>(navigator),
-      service_(navigator.GetExecutionContext()) {}
+    : navigator_(navigator), service_(navigator.GetExecutionContext()) {}
 
 // static
 SubApps* SubApps::subApps(Navigator& navigator) {
-  SubApps* subapps = Supplement<Navigator>::From<SubApps>(navigator);
+  SubApps* subapps = navigator.GetSubApps();
   if (!subapps) {
     subapps = MakeGarbageCollected<SubApps>(navigator);
-    ProvideTo(navigator, subapps);
+    navigator.SetSubApps(subapps);
   }
   return subapps;
 }
 
 void SubApps::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
-  Supplement<Navigator>::Trace(visitor);
   visitor->Trace(service_);
+  visitor->Trace(navigator_);
 }
 
 HeapMojoRemote<SubAppsService>& SubApps::GetService() {
   if (!service_.is_bound()) {
-    auto* context = GetSupplementable()->GetExecutionContext();
+    auto* context = navigator_->GetExecutionContext();
     context->GetBrowserInterfaceBroker().GetInterface(
         service_.BindNewPipeAndPassReceiver(
             context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
@@ -145,7 +140,7 @@ ScriptPromise<IDLRecord<IDLString, V8SubAppsResultCode>> SubApps::add(
     return ScriptPromise<IDLRecord<IDLString, V8SubAppsResultCode>>();
   }
 
-  auto* frame = GetSupplementable()->DomWindow()->GetFrame();
+  auto* frame = navigator_->DomWindow()->GetFrame();
   bool needsUserActivation =
       frame->GetSettings()
           ->GetRequireTransientActivationAndAuthorizationForSubAppsAPI();
@@ -287,7 +282,7 @@ bool SubApps::CheckPreconditionsMaybeThrow(ScriptState* script_state,
     return false;
   }
 
-  Navigator* const navigator = GetSupplementable();
+  Navigator* const navigator = navigator_;
 
   if (!navigator->DomWindow()) {
     exception_state.ThrowDOMException(

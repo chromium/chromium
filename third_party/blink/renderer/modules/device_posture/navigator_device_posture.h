@@ -15,10 +15,8 @@ class DevicePosture;
 
 class NavigatorDevicePosture final
     : public GarbageCollected<NavigatorDevicePosture>,
-      public Supplement<Navigator> {
+      public GarbageCollectedMixin {
  public:
-  static constexpr auto kSupplementIndex =
-      Navigator::Supplements::kNavigatorDevicePosture;
   static DevicePosture* devicePosture(Navigator&);
 
   explicit NavigatorDevicePosture(Navigator&);
@@ -26,6 +24,7 @@ class NavigatorDevicePosture final
   void Trace(Visitor*) const override;
 
  private:
+  Member<Navigator> navigator_;
   Member<DevicePosture> posture_;
 };
 

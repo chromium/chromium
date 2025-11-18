@@ -14,19 +14,16 @@
 
 namespace blink {
 
-const unsigned Ink::kSupplementIndex =
-    static_cast<unsigned>(Navigator::Supplements::kInk);
-
 Ink* Ink::ink(Navigator& navigator) {
-  Ink* ink = Supplement<Navigator>::From<Ink>(navigator);
+  Ink* ink = navigator.GetInk();
   if (!ink) {
     ink = MakeGarbageCollected<Ink>(navigator);
-    ProvideTo(navigator, ink);
+    navigator.SetInk(ink);
   }
   return ink;
 }
 
-Ink::Ink(Navigator& navigator) : Supplement<Navigator>(navigator) {}
+Ink::Ink(Navigator& navigator) : navigator_(navigator) {}
 
 ScriptPromise<DelegatedInkTrailPresenter> Ink::requestPresenter(
     ScriptState* state,
@@ -40,7 +37,7 @@ ScriptPromise<DelegatedInkTrailPresenter> Ink::requestPresenter(
 
   if (presenter_param->presentationArea() &&
       (presenter_param->presentationArea()->GetDocument() !=
-       GetSupplementable()->DomWindow()->GetFrame()->GetDocument())) {
+       navigator_->DomWindow()->GetFrame()->GetDocument())) {
     V8ThrowDOMException::Throw(
         state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
         "Presentation area element does not belong to the document.");
@@ -50,12 +47,12 @@ ScriptPromise<DelegatedInkTrailPresenter> Ink::requestPresenter(
   return ToResolvedPromise<DelegatedInkTrailPresenter>(
       state, MakeGarbageCollected<DelegatedInkTrailPresenter>(
                  presenter_param->presentationArea(),
-                 GetSupplementable()->DomWindow()->GetFrame()));
+                 navigator_->DomWindow()->GetFrame()));
 }
 
 void Ink::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
-  Supplement<Navigator>::Trace(visitor);
+  visitor->Trace(navigator_);
 }
 
 }  // namespace blink

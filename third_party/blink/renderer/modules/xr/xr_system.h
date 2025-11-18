@@ -70,14 +70,12 @@ class XRSessionInit;
 // The XRSystem keeps weak references to XRSession objects after they were
 // returned through a successful requestSession promise, but does not own them.
 class XRSystem final : public EventTarget,
-                       public Supplement<Navigator>,
                        public ExecutionContextLifecycleObserver,
                        public device::mojom::blink::VRServiceClient,
                        public FocusChangedObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const unsigned kSupplementIndex;
   static XRSystem* From(Document&);
   static XRSystem* FromIfExists(Document&);
 
@@ -450,6 +448,8 @@ class XRSystem final : public EventTarget,
   // Currently, it checks whether AR is enabled in runtime features, and in web
   // settings (controlled by enterprise policy).
   bool IsImmersiveArAllowed();
+
+  Member<Navigator> navigator_;
 
   // Indicates whether use of requestDevice has already been logged.
   bool did_log_supports_immersive_ = false;

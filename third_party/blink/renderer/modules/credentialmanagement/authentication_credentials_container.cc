@@ -1085,10 +1085,6 @@ bool IsImmediateGetRequest(const ExecutionContext& context,
 
 }  // namespace
 
-const unsigned AuthenticationCredentialsContainer::kSupplementIndex =
-    static_cast<unsigned>(
-        Navigator::Supplements::kAuthenticationCredentialsContainer);
-
 DOMException* AuthenticatorStatusToDOMException(
     AuthenticatorStatus status,
     const WebAuthnDOMExceptionDetailsPtr& dom_exception_details) {
@@ -1317,19 +1313,18 @@ class AuthenticationCredentialsContainer::PublicKeyRequestAbortAlgorithm final
 CredentialsContainer* AuthenticationCredentialsContainer::credentials(
     Navigator& navigator) {
   AuthenticationCredentialsContainer* credentials =
-      Supplement<Navigator>::From<AuthenticationCredentialsContainer>(
-          navigator);
+      navigator.GetAuthenticationCredentialsContainer();
   if (!credentials) {
     credentials =
         MakeGarbageCollected<AuthenticationCredentialsContainer>(navigator);
-    ProvideTo(navigator, credentials);
+    navigator.SetAuthenticationCredentialsContainer(credentials);
   }
   return credentials;
 }
 
 AuthenticationCredentialsContainer::AuthenticationCredentialsContainer(
     Navigator& navigator)
-    : Supplement<Navigator>(navigator) {}
+    : navigator_(navigator) {}
 
 ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
     ScriptState* script_state,
@@ -1980,7 +1975,7 @@ AuthenticationCredentialsContainer::preventSilentAccess(
 }
 
 void AuthenticationCredentialsContainer::Trace(Visitor* visitor) const {
-  Supplement<Navigator>::Trace(visitor);
+  visitor->Trace(navigator_);
   CredentialsContainer::Trace(visitor);
 }
 

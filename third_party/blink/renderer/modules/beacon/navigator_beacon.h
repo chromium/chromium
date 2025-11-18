@@ -17,11 +17,8 @@ class ExceptionState;
 class KURL;
 
 class NavigatorBeacon final : public GarbageCollected<NavigatorBeacon>,
-                              public Supplement<Navigator> {
+                              public GarbageCollectedMixin {
  public:
-  static constexpr auto kSupplementIndex =
-      Navigator::Supplements::kNavigatorBeacon;
-
   static NavigatorBeacon& From(Navigator&);
 
   explicit NavigatorBeacon(Navigator&);
@@ -42,6 +39,8 @@ class NavigatorBeacon final : public GarbageCollected<NavigatorBeacon>,
                       const V8UnionReadableStreamOrXMLHttpRequestBodyInit* data,
                       ExceptionState& exception_state);
   bool CanSendBeacon(ExecutionContext*, const KURL&, ExceptionState&);
+
+  Member<Navigator> navigator_;
 };
 
 }  // namespace blink

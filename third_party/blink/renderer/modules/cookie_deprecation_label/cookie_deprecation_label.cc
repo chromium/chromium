@@ -20,23 +20,18 @@
 namespace blink {
 
 // static
-const unsigned CookieDeprecationLabel::kSupplementIndex =
-    static_cast<unsigned>(Navigator::Supplements::kCookieDeprecationLabel);
-
-// static
 CookieDeprecationLabel* CookieDeprecationLabel::cookieDeprecationLabel(
     Navigator& navigator) {
-  auto* supplement =
-      Supplement<Navigator>::From<CookieDeprecationLabel>(navigator);
+  CookieDeprecationLabel* supplement = navigator.GetCookieDeprecationLabel();
   if (!supplement) {
     supplement = MakeGarbageCollected<CookieDeprecationLabel>(navigator);
-    ProvideTo(navigator, supplement);
+    navigator.SetCookieDeprecationLabel(supplement);
   }
   return supplement;
 }
 
 CookieDeprecationLabel::CookieDeprecationLabel(Navigator& navigator)
-    : Supplement<Navigator>(navigator) {}
+    : navigator_(navigator) {}
 
 CookieDeprecationLabel::~CookieDeprecationLabel() = default;
 
@@ -44,7 +39,7 @@ ScriptPromise<IDLString> CookieDeprecationLabel::getValue(
     ScriptState* script_state) {
   String label;
 
-  if (auto* dom_window = GetSupplementable()->DomWindow()) {
+  if (auto* dom_window = navigator_->DomWindow()) {
     label = dom_window->document()->Loader()->GetCookieDeprecationLabel();
   }
 
@@ -52,7 +47,7 @@ ScriptPromise<IDLString> CookieDeprecationLabel::getValue(
 }
 
 void CookieDeprecationLabel::Trace(Visitor* visitor) const {
-  Supplement<Navigator>::Trace(visitor);
+  visitor->Trace(navigator_);
   ScriptWrappable::Trace(visitor);
 }
 

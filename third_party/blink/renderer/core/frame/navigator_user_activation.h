@@ -16,11 +16,8 @@ class UserActivation;
 
 class CORE_EXPORT NavigatorUserActivation final
     : public GarbageCollected<NavigatorUserActivation>,
-      public Supplement<Navigator> {
+      public GarbageCollectedMixin {
  public:
-  static constexpr auto kSupplementIndex =
-      Navigator::Supplements::kNavigatorUserActivation;
-
   static UserActivation* userActivation(Navigator& navigator);
   UserActivation* userActivation();
 
@@ -31,6 +28,7 @@ class CORE_EXPORT NavigatorUserActivation final
  private:
   static NavigatorUserActivation& From(Navigator&);
 
+  Member<Navigator> navigator_;
   Member<UserActivation> user_activation_;
 };
 

@@ -17,23 +17,21 @@ DevicePosture* NavigatorDevicePosture::devicePosture(Navigator& navigator) {
       navigator.GetExecutionContext()));
 
   UseCounter::Count(navigator.GetExecutionContext(), WebFeature::kFoldableAPIs);
-  NavigatorDevicePosture* supplement =
-      Supplement<Navigator>::From<NavigatorDevicePosture>(navigator);
+  NavigatorDevicePosture* supplement = navigator.GetNavigatorDevicePosture();
   if (!supplement) {
     supplement = MakeGarbageCollected<NavigatorDevicePosture>(navigator);
-    ProvideTo(navigator, supplement);
+    navigator.SetNavigatorDevicePosture(supplement);
   }
   return supplement->posture_.Get();
 }
 
 NavigatorDevicePosture::NavigatorDevicePosture(Navigator& navigator)
-    : Supplement<Navigator>(navigator),
-      posture_(MakeGarbageCollected<DevicePosture>(
-          GetSupplementable()->DomWindow())) {}
+    : navigator_(navigator),
+      posture_(MakeGarbageCollected<DevicePosture>(navigator_->DomWindow())) {}
 
 void NavigatorDevicePosture::Trace(Visitor* visitor) const {
   visitor->Trace(posture_);
-  Supplement<Navigator>::Trace(visitor);
+  visitor->Trace(navigator_);
 }
 
 }  // namespace blink

@@ -148,10 +148,10 @@ Geolocation* Geolocation::geolocation(Navigator& navigator) {
   if (!navigator.DomWindow())
     return nullptr;
 
-  Geolocation* supplement = Supplement<Navigator>::From<Geolocation>(navigator);
+  Geolocation* supplement = navigator.GetGeolocation();
   if (!supplement) {
     supplement = MakeGarbageCollected<Geolocation>(navigator);
-    ProvideTo(navigator, supplement);
+    navigator.SetGeolocation(supplement);
   }
   return supplement;
 }

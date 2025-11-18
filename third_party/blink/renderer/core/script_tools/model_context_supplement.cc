@@ -9,24 +9,18 @@
 namespace blink {
 
 // static
-const unsigned ModelContextSupplement::kSupplementIndex =
-    static_cast<unsigned>(Navigator::Supplements::kModelContextSupplement);
-
-// static
 ModelContextSupplement& ModelContextSupplement::From(Navigator& navigator) {
-  ModelContextSupplement* supplement =
-      Supplement<Navigator>::From<ModelContextSupplement>(navigator);
+  ModelContextSupplement* supplement = navigator.GetModelContextSupplement();
   if (!supplement) {
     supplement = MakeGarbageCollected<ModelContextSupplement>(navigator);
-    ProvideTo(navigator, supplement);
+    navigator.SetModelContextSupplement(supplement);
   }
   return *supplement;
 }
 
 // static
 ModelContext* ModelContextSupplement::GetIfExists(Navigator& navigator) {
-  ModelContextSupplement* supplement =
-      Supplement<Navigator>::From<ModelContextSupplement>(navigator);
+  ModelContextSupplement* supplement = navigator.GetModelContextSupplement();
   return supplement ? supplement->modelContext() : nullptr;
 }
 
@@ -42,17 +36,17 @@ ModelContextTesting* ModelContextSupplement::modelContextTesting(
 }
 
 ModelContextSupplement::ModelContextSupplement(Navigator& navigator)
-    : Supplement<Navigator>(navigator) {}
+    : navigator_(navigator) {}
 
 void ModelContextSupplement::Trace(Visitor* visitor) const {
   visitor->Trace(model_context_);
   visitor->Trace(model_context_testing_);
-  Supplement<Navigator>::Trace(visitor);
+  visitor->Trace(navigator_);
 }
 
 ModelContext* ModelContextSupplement::modelContext() {
   if (!model_context_) {
-    if (auto* window = GetSupplementable()->DomWindow()) {
+    if (auto* window = navigator_->DomWindow()) {
       model_context_ = MakeGarbageCollected<ModelContext>(
           window->GetTaskRunner(TaskType::kUserInteraction));
     }
