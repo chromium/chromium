@@ -23,6 +23,7 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "base/values.h"
+#include "chrome/browser/ash/login/demo_mode/demo_mode_dimensions.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -35,7 +36,6 @@
 #include "chromeos/ash/components/settings/user_login_permission_tracker.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/account_id/account_id.h"
-#include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
@@ -77,8 +77,13 @@ const char kDMToken[] = "dm_token";
 const char kClientID[] = "client_id";
 
 const char kDeviceInfo[] = "device_info";
-const char kLocale[] = "locale";
+const char kBuildVersion[] = "build_version";
 const char kCountry[] = "country";
+const char kRetailer[] = "retailer";
+const char kStoreId[] = "store_id";
+const char kBoard[] = "board";
+const char kModel[] = "model";
+const char kLocale[] = "locale";
 
 // Maximum accepted size of an ItemSuggest response. 1MB.
 constexpr int kMaxResponseSize = 1024 * 1024;
@@ -353,17 +358,30 @@ policy::DeviceCloudPolicyManagerAsh* GetDeviceCloudPolicyManager() {
 }
 
 base::Value::Dict GetDeviceInfo() {
-  // This field "locale" is used to set the language of the demo account.
-  const std::string& locale = g_browser_process->local_state()->GetString(
-      language::prefs::kApplicationLocale);
-  // This field "country" is intended to be used to control region specific
-  // behaviors, including TOS agreement, focus backend services and etc. Convert
-  // it to uppercase since some devices may still have the country in lowercase.
-  const std::string country = base::ToUpperASCII(
-      g_browser_process->local_state()->GetString(prefs::kDemoModeCountry));
+  // Full ChromeOS version, for example: R127-15919.0.0_stable-channel.
+  const std::string version = demo_mode::GetChromeOSVersionString();
 
-  // TODO(crbug.com/449237585): Add other DeviceInfo fields.
-  return base::Value::Dict().Set(kLocale, locale).Set(kCountry, country);
+  // This field "country" is intended to be used to control region specific
+  // behaviors, including TOS agreement, focus backend services and etc.
+  const std::string country = demo_mode::Country();
+
+  const std::string retailer = demo_mode::RetailerName();
+  const std::string store_id = demo_mode::StoreNumber();
+
+  const std::string board = demo_mode::Board();
+  const std::string_view model = demo_mode::Model();
+
+  // This field "locale" is used to set the language of the demo account.
+  const std::string locale = demo_mode::Locale();
+
+  return base::Value::Dict()
+      .Set(kBuildVersion, version)
+      .Set(kCountry, country)
+      .Set(kRetailer, retailer)
+      .Set(kStoreId, store_id)
+      .Set(kBoard, board)
+      .Set(kModel, model)
+      .Set(kLocale, locale);
 }
 
 }  // namespace
