@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram.h"
+#include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_snapshot_manager.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/metrics/persistent_histogram_allocator.h"
@@ -317,7 +318,8 @@ void StatisticsRecorder::PrepareDeltas(
     HistogramBase::Flags flags_to_set,
     HistogramBase::Flags required_flags,
     HistogramSnapshotManager* snapshot_manager) {
-  Histograms histograms = Sort(GetHistograms(include_persistent));
+  Histograms histograms =
+      Sort(GetHistograms(include_persistent, HistogramBase::Flags::kNoFlags));
   snapshot_manager->PrepareDeltas(std::move(histograms), flags_to_set,
                                   required_flags);
 }
