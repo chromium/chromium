@@ -401,7 +401,7 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
-<!-- LINT.ThenChange(//components/webauthn/ios/passkey_tab_helper.mm) -->
+<!-- LINT.ThenChange(//components/webauthn/ios/passkey_tab_helper.h) -->
 
 <enum name="WebAuthenticationMacOSPasskeysPermission">
   <int value="0" label="Requested permission during a create() call"/>

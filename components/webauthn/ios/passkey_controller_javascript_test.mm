@@ -137,7 +137,7 @@ TEST_F(PasskeyControllerJavaScriptTest,
   EXPECT_EQ(allKeys.count, 1ul);
   EXPECT_TRUE([allKeys containsObject:@"event"]);
 
-  EXPECT_NSEQ(@"createRequested", body[@"event"]);
+  EXPECT_NSEQ(@"logCreateRequest", body[@"event"]);
 }
 
 TEST_F(PasskeyControllerJavaScriptTest,
@@ -155,7 +155,7 @@ TEST_F(PasskeyControllerJavaScriptTest,
   EXPECT_EQ(allKeys.count, 1ul);
   EXPECT_TRUE([allKeys containsObject:@"event"]);
 
-  EXPECT_NSEQ(@"getRequested", body[@"event"]);
+  EXPECT_NSEQ(@"logGetRequest", body[@"event"]);
 }
 
 TEST_F(PasskeyControllerJavaScriptTest,

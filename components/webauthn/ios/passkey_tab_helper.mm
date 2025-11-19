@@ -17,26 +17,8 @@
 
 namespace {
 
-// These values are logged to UMA. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// LINT.IfChange
-enum class WebAuthenticationIOSContentAreaEvent {
-  kGetRequested,
-  kCreateRequested,
-  kGetResolvedGpm,
-  kGetResolvedNonGpm,
-  kCreateResolvedGpm,
-  kCreateResolvedNonGpm,
-  kMaxValue = kCreateResolvedNonGpm,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml)
-
-// Logs a metric indicating that an `event` occurred.
-void LogEvent(WebAuthenticationIOSContentAreaEvent event) {
-  base::UmaHistogramEnumeration("WebAuthentication.IOS.ContentAreaEvent",
-                                event);
-}
+constexpr char kWebAuthenticationIOSContentAreaEventHistogram[] =
+    "WebAuthentication.IOS.ContentAreaEvent";
 
 class [[maybe_unused, nodiscard]] ScopedAllowPasskeyCreationInfobar {
  public:
@@ -132,36 +114,10 @@ PasskeyTabHelper::RegistrationRequestParams::~RegistrationRequestParams() {}
 
 PasskeyTabHelper::~PasskeyTabHelper() = default;
 
-void PasskeyTabHelper::LogEventFromString(const std::string& event) {
-  if (event == "getRequested") {
-    LogEvent(WebAuthenticationIOSContentAreaEvent::kGetRequested);
-  } else if (event == "createRequested") {
-    LogEvent(WebAuthenticationIOSContentAreaEvent::kCreateRequested);
-  } else if (event == "createResolvedGpm") {
-    LogEvent(WebAuthenticationIOSContentAreaEvent::kCreateResolvedGpm);
-  } else if (event == "createResolvedNonGpm") {
-    LogEvent(WebAuthenticationIOSContentAreaEvent::kCreateResolvedNonGpm);
-  } else {
-    NOTREACHED();
-  }
-}
-
-void PasskeyTabHelper::HandleGetResolvedEvent(
-    const std::string& credential_id_base64url_encoded,
-    const std::string& rp_id) {
-  std::string credential_id;
-  if (!base::Base64UrlDecode(credential_id_base64url_encoded,
-                             base::Base64UrlDecodePolicy::IGNORE_PADDING,
-                             &credential_id)) {
-    return;
-  }
-
-  if (passkey_model_->GetPasskeyByCredentialId(rp_id, credential_id)
-          .has_value()) {
-    LogEvent(WebAuthenticationIOSContentAreaEvent::kGetResolvedGpm);
-  } else {
-    LogEvent(WebAuthenticationIOSContentAreaEvent::kGetResolvedNonGpm);
-  }
+void PasskeyTabHelper::LogEvent(
+    WebAuthenticationIOSContentAreaEvent event_type) {
+  base::UmaHistogramEnumeration(kWebAuthenticationIOSContentAreaEventHistogram,
+                                event_type);
 }
 
 void PasskeyTabHelper::HandleGetRequestedEvent(AssertionRequestParams params) {
@@ -196,6 +152,12 @@ void PasskeyTabHelper::HandleCreateRequestedEvent(
 
   // TODO(crbug.com/385174410): Handle this event.
   PasskeyJavaScriptFeature::GetInstance()->DeferToRenderer(web_frame);
+}
+
+bool PasskeyTabHelper::HasCredential(const std::string& rp_id,
+                                     const std::string& credential_id) const {
+  return passkey_model_->GetPasskeyByCredentialId(rp_id, credential_id)
+      .has_value();
 }
 
 PasskeyTabHelper::PasskeyTabHelper(web::WebState* web_state,

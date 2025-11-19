@@ -117,8 +117,9 @@ class PasskeyTabHelperTest : public PlatformTest {
   web::FakeWebState fake_web_state_;
 };
 
-TEST_F(PasskeyTabHelperTest, LogsEventFromGetRequestedString) {
-  passkey_tab_helper()->LogEventFromString("getRequested");
+TEST_F(PasskeyTabHelperTest, LogsEventFromGetRequested) {
+  passkey_tab_helper()->LogEvent(
+      PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::kGetRequested);
 
   constexpr int kGetRequestedBucket = 0;
   histogram_tester_.ExpectUniqueSample(
@@ -126,8 +127,9 @@ TEST_F(PasskeyTabHelperTest, LogsEventFromGetRequestedString) {
       /*count=*/1);
 }
 
-TEST_F(PasskeyTabHelperTest, LogsEventFromCreateRequestedString) {
-  passkey_tab_helper()->LogEventFromString("createRequested");
+TEST_F(PasskeyTabHelperTest, LogsEventFromCreateRequested) {
+  passkey_tab_helper()->LogEvent(
+      PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::kCreateRequested);
 
   constexpr int kCreateRequestedBucket = 1;
   histogram_tester_.ExpectUniqueSample(
@@ -136,15 +138,8 @@ TEST_F(PasskeyTabHelperTest, LogsEventFromCreateRequestedString) {
 }
 
 TEST_F(PasskeyTabHelperTest, LogsGetResolvedEventGpmPasskey) {
-  sync_pb::WebauthnCredentialSpecifics passkey = GetTestPasskey(kCredentialId);
-  passkey_model_->AddNewPasskeyForTesting(std::move(passkey));
-
-  std::string credential_id_base64url_encoded;
-  base::Base64UrlEncode(kCredentialId,
-                        base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                        &credential_id_base64url_encoded);
-  passkey_tab_helper()->HandleGetResolvedEvent(credential_id_base64url_encoded,
-                                               kRpId);
+  passkey_tab_helper()->LogEvent(
+      PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::kGetResolvedGpm);
 
   constexpr int kGetResolvedGpmBucket = 2;
   histogram_tester_.ExpectUniqueSample(
@@ -153,12 +148,9 @@ TEST_F(PasskeyTabHelperTest, LogsGetResolvedEventGpmPasskey) {
 }
 
 TEST_F(PasskeyTabHelperTest, LogsGetResolvedEventNonGpmPasskey) {
-  std::string credential_id_base64url_encoded;
-  base::Base64UrlEncode(kCredentialId,
-                        base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                        &credential_id_base64url_encoded);
-  passkey_tab_helper()->HandleGetResolvedEvent(credential_id_base64url_encoded,
-                                               kRpId);
+  passkey_tab_helper()->LogEvent(
+      PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::
+          kGetResolvedNonGpm);
 
   constexpr int kGetResolvedNonGpmBucket = 3;
   histogram_tester_.ExpectUniqueSample(
@@ -166,8 +158,10 @@ TEST_F(PasskeyTabHelperTest, LogsGetResolvedEventNonGpmPasskey) {
       /*count=*/1);
 }
 
-TEST_F(PasskeyTabHelperTest, LogsEventFromCreateResolvedGpmString) {
-  passkey_tab_helper()->LogEventFromString("createResolvedGpm");
+TEST_F(PasskeyTabHelperTest, LogsEventFromCreateResolvedGpm) {
+  passkey_tab_helper()->LogEvent(
+      PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::
+          kCreateResolvedGpm);
 
   constexpr int kCreateRequestedBucket = 4;
   histogram_tester_.ExpectUniqueSample(
@@ -175,8 +169,10 @@ TEST_F(PasskeyTabHelperTest, LogsEventFromCreateResolvedGpmString) {
       /*count=*/1);
 }
 
-TEST_F(PasskeyTabHelperTest, LogsEventFromCreateResolvedNonGpmString) {
-  passkey_tab_helper()->LogEventFromString("createResolvedNonGpm");
+TEST_F(PasskeyTabHelperTest, LogsEventFromCreateResolvedNonGpm) {
+  passkey_tab_helper()->LogEvent(
+      PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::
+          kCreateResolvedNonGpm);
 
   constexpr int kCreateRequestedBucket = 5;
   histogram_tester_.ExpectUniqueSample(

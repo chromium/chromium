@@ -33,11 +33,17 @@ constexpr char kEvent[] = "event";
 // Message event types.
 constexpr char kHandleGetRequest[] = "handleGetRequest";
 constexpr char kHandleCreateRequest[] = "handleCreateRequest";
-constexpr char kGetRequested[] = "getRequested";
-constexpr char kCreateRequested[] = "createRequested";
-constexpr char kCreateResolvedGpm[] = "createResolvedGpm";
-constexpr char kCreateResolvedNonGpm[] = "createResolvedNonGpm";
-constexpr char kGetResolved[] = "getResolved";
+constexpr char kLogGetRequest[] = "logGetRequest";
+constexpr char kLogCreateRequest[] = "logCreateRequest";
+constexpr char kLogGetResolved[] = "logGetResolved";
+constexpr char kLogCreateResolved[] = "logCreateResolved";
+
+// Parameters of the "logGetResolved" event.
+constexpr char kCredentialId[] = "credentialId";
+constexpr char kRpId[] = "rpId";
+
+// Parameter for the "logCreateResolved" event.
+constexpr char kIsGpm[] = "isGpm";
 
 // Frame ID for handle* events.
 constexpr char kFrameId[] = "frameId";
@@ -67,10 +73,6 @@ constexpr char kDisplayName[] = "displayName";
 // Member of the credential descriptors array.
 constexpr char kType[] = "type";
 constexpr char kTransports[] = "transports";
-
-// Parameters of the "getResolved" event.
-constexpr char kCredentialId[] = "credential_id";
-constexpr char kRpId[] = "rp_id";
 
 // Returns the placeholder replacements for the JavaScript feature script.
 web::JavaScriptFeature::FeatureScript::PlaceholderReplacements
@@ -103,6 +105,46 @@ std::vector<uint8_t> Base64Decode(const std::string* base_64_string) {
   }
 
   return decoded_data;
+}
+
+// Extracts the type of log event received.
+// Returns std::nullopt on any non log event or invalid log event.
+std::optional<PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent>
+ExtractLogEventType(const std::string& event,
+                    const base::Value::Dict& dict,
+                    const PasskeyTabHelper& tab_helper) {
+  if (event == kLogGetRequest) {
+    return PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::
+        kGetRequested;
+  } else if (event == kLogCreateRequest) {
+    return PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::
+        kCreateRequested;
+  } else if (event == kLogGetResolved) {
+    const std::string* credential_id = dict.FindString(kCredentialId);
+    const std::string* rp_id = dict.FindString(kRpId);
+    if (!credential_id || credential_id->empty() || !rp_id || rp_id->empty()) {
+      return std::nullopt;
+    }
+
+    return tab_helper.HasCredential(*rp_id, *credential_id)
+               ? PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::
+                     kGetResolvedGpm
+               : PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::
+                     kGetResolvedNonGpm;
+  } else if (event == kLogCreateResolved) {
+    // Parameter for the "logCreateResolved" event.
+    std::optional<bool> isGpm = dict.FindBool(kIsGpm);
+    if (!isGpm.has_value()) {
+      return std::nullopt;
+    }
+
+    return *isGpm ? PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::
+                        kCreateResolvedGpm
+                  : PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::
+                        kCreateResolvedNonGpm;
+  }
+
+  return std::nullopt;
 }
 
 // Extracts all parameters required to build a PublicKeyCredentialUserEntity
@@ -341,7 +383,8 @@ void PasskeyJavaScriptFeature::ScriptMessageReceived(
       return;
     }
 
-    passkey_tab_helper->LogEventFromString(kGetRequested);
+    passkey_tab_helper->LogEvent(
+        PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::kGetRequested);
     passkey_tab_helper->HandleGetRequestedEvent(
         ExtractAssertionRequestParams(dict));
     return;
@@ -351,28 +394,18 @@ void PasskeyJavaScriptFeature::ScriptMessageReceived(
       return;
     }
 
-    passkey_tab_helper->LogEventFromString(kCreateRequested);
+    passkey_tab_helper->LogEvent(
+        PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::
+            kCreateRequested);
     passkey_tab_helper->HandleCreateRequestedEvent(
         ExtractRegistrationRequestParams(dict));
     return;
-  } else if (*event == kGetRequested || *event == kCreateRequested ||
-             *event == kCreateResolvedGpm || *event == kCreateResolvedNonGpm) {
-    // For those events there are no more expected arguments.
-    passkey_tab_helper->LogEventFromString(*event);
-    return;
   }
 
-  // Expected arguments for "getResolved" event:
-  // credential_id: (string) base64url encoded identifer of the credential.
-  // rp_id: (string) The relying party's identifier.
-  if (*event == kGetResolved) {
-    const std::string* credential_id = dict.FindString(kCredentialId);
-    const std::string* rp_id = dict.FindString(kRpId);
-    if (credential_id && !credential_id->empty() && rp_id && !rp_id->empty()) {
-      passkey_tab_helper->HandleGetResolvedEvent(*credential_id, *rp_id);
-    }
-    return;
-  }
+  std::optional<PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent>
+      log_event_type = ExtractLogEventType(*event, dict, *passkey_tab_helper);
 
-  // TODO(crbug.com/369629469): Handle other types of events.
+  if (log_event_type.has_value()) {
+    passkey_tab_helper->LogEvent(*log_event_type);
+  }
 }

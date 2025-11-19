@@ -33,6 +33,21 @@ class WebFrame;
 class PasskeyTabHelper : public web::WebStateObserver,
                          public web::WebStateUserData<PasskeyTabHelper> {
  public:
+  // These values are logged to UMA. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange
+  enum class WebAuthenticationIOSContentAreaEvent {
+    kGetRequested,
+    kCreateRequested,
+    kGetResolvedGpm,
+    kGetResolvedNonGpm,
+    kCreateResolvedGpm,
+    kCreateResolvedNonGpm,
+    kMaxValue = kCreateResolvedNonGpm,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml)
+
   struct RequestParams {
     RequestParams();
     RequestParams(const std::string& frame_id,
@@ -84,22 +99,19 @@ class PasskeyTabHelper : public web::WebStateObserver,
 
   ~PasskeyTabHelper() override;
 
-  // Logs metric indicating that an event occurred, with the event type
-  // determined by the given string.
-  void LogEventFromString(const std::string& event);
-
-  // Checks whether a navigator.credentials.get() call that returned a WebAuthn
-  // credential was resolved by Google Password Manager as the authenticator by
-  // checking its presence in `passkey_model_` and logs it.
-  void HandleGetResolvedEvent(
-      const std::string& credential_id_base64url_encoded,
-      const std::string& rp_id);
+  // Logs metric indicating that an event of the given type occurred.
+  void LogEvent(WebAuthenticationIOSContentAreaEvent event_type);
 
   // Handles passkey assertion requests. Yields if any parameter is missing.
   void HandleGetRequestedEvent(AssertionRequestParams params);
 
   // Handles passkey registration requests. Yields if any parameter is missing.
   void HandleCreateRequestedEvent(RegistrationRequestParams params);
+
+  // Returns whether the tab helper's passkey model contains a passkey matching
+  // the provided rp id and credential id.
+  bool HasCredential(const std::string& rp_id,
+                     const std::string& credential_id) const;
 
  private:
   friend class web::WebStateUserData<PasskeyTabHelper>;

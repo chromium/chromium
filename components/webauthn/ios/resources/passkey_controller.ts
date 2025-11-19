@@ -248,7 +248,7 @@ function publicKeyCredentialPromise(timeoutMs: number|undefined):
 // metrics purposes.
 function createPassthroughRegistrationRequest(
     options?: CredentialCreationOptions|undefined): Promise<Credential|null> {
-  sendWebKitMessage(HANDLER_NAME, {'event': 'createRequested'});
+  sendWebKitMessage(HANDLER_NAME, {'event': 'logCreateRequest'});
 
   return cachedNavigatorCredentials.create(options).then((credential) => {
     if (credential && credential instanceof PublicKeyCredential &&
@@ -258,8 +258,8 @@ function createPassthroughRegistrationRequest(
       const aaguid = new Uint8Array(
           credential.response.getAuthenticatorData().slice(37).slice(0, 16));
       sendWebKitMessage(HANDLER_NAME, {
-        'event': isGpmAaguid(aaguid) ? 'createResolvedGpm' :
-                                       'createResolvedNonGpm',
+        'event': 'logCreateResolved',
+        'isGpm': isGpmAaguid(aaguid),
       });
     }
     return credential;
@@ -272,7 +272,7 @@ function createPassthroughRegistrationRequest(
 // metrics purposes.
 function createPassthroughAttestationRequest(
     options?: CredentialRequestOptions|undefined): Promise<Credential|null> {
-  sendWebKitMessage(HANDLER_NAME, {'event': 'getRequested'});
+  sendWebKitMessage(HANDLER_NAME, {'event': 'logGetRequest'});
 
   return cachedNavigatorCredentials.get(options).then((credential) => {
     if (credential && credential instanceof PublicKeyCredential) {
@@ -281,9 +281,9 @@ function createPassthroughAttestationRequest(
       // (https://w3c.github.io/webauthn/#dom-publickeycredentialrequestoptions-rpid).
       const rpId = options!.publicKey!.rpId ?? document.location.host;
       sendWebKitMessage(HANDLER_NAME, {
-        'event': 'getResolved',
-        'credential_id': credential.id,
-        'rp_id': rpId,
+        'event': 'logGetResolved',
+        'credentialId': credential.id,
+        'rpId': rpId,
       });
     }
     return credential;
