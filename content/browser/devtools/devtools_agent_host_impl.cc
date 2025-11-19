@@ -205,13 +205,14 @@ DevToolsAgentHost::List DevToolsAgentHost::GetOrCreateAll() {
 void DevToolsAgentHost::StartRemoteDebuggingServer(
     std::unique_ptr<DevToolsSocketFactory> server_socket_factory,
     const base::FilePath& active_port_output_directory,
-    const base::FilePath& debug_frontend_dir) {
+    const base::FilePath& debug_frontend_dir,
+    RemoteDebuggingServerMode mode) {
   DevToolsManagerDelegate* delegate =
       DevToolsManager::GetInstance()->delegate();
   CHECK(delegate);
   SetDevToolsHttpHandler(std::make_unique<DevToolsHttpHandler>(
       delegate, std::move(server_socket_factory), active_port_output_directory,
-      debug_frontend_dir));
+      debug_frontend_dir, mode));
 }
 
 // static

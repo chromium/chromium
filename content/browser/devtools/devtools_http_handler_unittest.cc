@@ -152,7 +152,11 @@ class TCPServerSocketFactory : public DummyServerSocketFactory {
 class MockDevToolsManagerDelegate : public DevToolsManagerDelegate {
  public:
   static MockDevToolsManagerDelegate* last_instance;
-  MockDevToolsManagerDelegate() { last_instance = this; }
+  MockDevToolsManagerDelegate() {
+    last_instance = this;
+    EXPECT_CALL(*this, SetActiveWebSocketConnections(testing::_))
+        .Times(testing::AtLeast(0));
+  }
   MOCK_METHOD(scoped_refptr<DevToolsAgentHost>,
               CreateNewTarget,
               (const GURL& url, TargetType target_type, bool new_window),
@@ -160,6 +164,14 @@ class MockDevToolsManagerDelegate : public DevToolsManagerDelegate {
   MOCK_METHOD(DevToolsAgentHost::List,
               RemoteDebuggingTargets,
               (TargetType target_type),
+              (override));
+  MOCK_METHOD(void,
+              AcceptDebugging,
+              (base::OnceCallback<void(AcceptConnectionResult)> callback),
+              (override));
+  MOCK_METHOD(void,
+              SetActiveWebSocketConnections,
+              (size_t count),
               (override));
 };
 
@@ -440,18 +452,20 @@ TEST_F(DevToolsHttpHandlerTest, TestJsonList) {
   run_loop_2.Run();
 }
 
-class DevToolsWebSocketHandlerTest : public DevToolsHttpHandlerTest {
+class DevToolsHttpHandlerWithServerTest : public DevToolsHttpHandlerTest {
  public:
-  DevToolsWebSocketHandlerTest() = default;
+  DevToolsHttpHandlerWithServerTest() = default;
 
-  int StartServer() {
+  int StartServer(
+      DevToolsAgentHost::RemoteDebuggingServerMode mode =
+          DevToolsAgentHost::RemoteDebuggingServerMode::kDefault) {
     std::unique_ptr<TCPServerSocketFactory> factory =
         std::make_unique<TCPServerSocketFactory>(run_loop_.QuitClosure(),
                                                  run_loop_2_.QuitClosure());
     TCPServerSocketFactory* factory_raw = factory.get();
 
     DevToolsAgentHost::StartRemoteDebuggingServer(
-        std::move(factory), base::FilePath(), base::FilePath());
+        std::move(factory), base::FilePath(), base::FilePath(), mode);
     // Our dummy socket factory will post a quit message once the server will
     // become ready.
     run_loop_.Run();
@@ -460,9 +474,36 @@ class DevToolsWebSocketHandlerTest : public DevToolsHttpHandlerTest {
 
   void StopServer() {
     DevToolsAgentHost::StopRemoteDebuggingServer();
-    // Make sure the handler actually stops.
     run_loop_2_.Run();
   }
+
+  std::unique_ptr<net::URLRequest> RunRequestUntilCompletion(
+      std::string url,
+      std::map<std::string, std::string> headers = {}) {
+    net::TestDelegate delegate;
+    auto request = request_context_->CreateRequest(
+        GURL(url), net::DEFAULT_PRIORITY, &delegate,
+        TRAFFIC_ANNOTATION_FOR_TESTS);
+    for (auto const& [key, value] : headers) {
+      request->SetExtraRequestHeaderByName(key, value, true);
+    }
+
+    request->Start();
+    delegate.RunUntilComplete();
+    EXPECT_GE(delegate.request_status(), 0);
+    return request;
+  }
+
+ protected:
+  std::unique_ptr<net::URLRequestContext> request_context_ =
+      net::CreateTestURLRequestContextBuilder()->Build();
+  base::RunLoop run_loop_;
+  base::RunLoop run_loop_2_;
+};
+
+class DevToolsWebSocketHandlerTest : public DevToolsHttpHandlerWithServerTest {
+ public:
+  DevToolsWebSocketHandlerTest() = default;
 
   std::string GetWebSocketDebuggingURL(int port) {
     GURL url(base::StringPrintf("http://127.0.0.1:%d/json/version", port));
@@ -480,29 +521,6 @@ class DevToolsWebSocketHandlerTest : public DevToolsHttpHandlerTest {
     std::string prefix = "ws://";
     return "http://" + debugging_url.substr(prefix.length());
   }
-
-  std::unique_ptr<net::URLRequest> RunRequestUntilCompletion(
-      std::string url,
-      std::map<std::string, std::string> headers) {
-    net::TestDelegate delegate;
-    auto request = request_context_->CreateRequest(
-        GURL(url), net::DEFAULT_PRIORITY, &delegate,
-        TRAFFIC_ANNOTATION_FOR_TESTS);
-    for (auto const& [key, value] : headers) {
-      request->SetExtraRequestHeaderByName(key, value, true);
-    }
-
-    request->Start();
-    delegate.RunUntilComplete();
-    EXPECT_GE(delegate.request_status(), 0);
-    return request;
-  }
-
- private:
-  std::unique_ptr<net::URLRequestContext> request_context_ =
-      net::CreateTestURLRequestContextBuilder()->Build();
-  base::RunLoop run_loop_;
-  base::RunLoop run_loop_2_;
 };
 
 TEST_F(DevToolsWebSocketHandlerTest,
@@ -575,6 +593,106 @@ TEST_F(DevToolsWebSocketHandlerTest, TestAllowsCLIOverrideAllowsOrigins) {
                                           {"origin", "http://127.0.0.1"},
                                       });
   EXPECT_EQ(request->GetResponseCode(), 403);
+
+  StopServer();
+}
+
+class DevToolsHttpHandlerWithApprovalTest
+    : public DevToolsHttpHandlerWithServerTest {
+ public:
+  int StartServer() {
+    return DevToolsHttpHandlerWithServerTest::StartServer(
+        DevToolsAgentHost::RemoteDebuggingServerMode::kWithApprovalOnly);
+  }
+};
+
+TEST_F(DevToolsHttpHandlerWithApprovalTest, JsonRequestsReturn404) {
+  int port = StartServer();
+
+  auto request = RunRequestUntilCompletion(
+      base::StringPrintf("http://127.0.0.1:%d/json", port));
+  EXPECT_EQ(404, request->response_info().headers->response_code());
+
+  request = RunRequestUntilCompletion(
+      base::StringPrintf("http://127.0.0.1:%d/json/list", port));
+  EXPECT_EQ(404, request->response_info().headers->response_code());
+
+  StopServer();
+}
+
+TEST_F(DevToolsHttpHandlerWithApprovalTest,
+       DiscoveryAndFrontendPagesReturn404) {
+  int port = StartServer();
+
+  auto request = RunRequestUntilCompletion(
+      base::StringPrintf("http://127.0.0.1:%d/", port));
+  EXPECT_EQ(404, request->response_info().headers->response_code());
+
+  request = RunRequestUntilCompletion(
+      base::StringPrintf("http://127.0.0.1:%d/devtools/inspector.html", port));
+  EXPECT_EQ(404, request->response_info().headers->response_code());
+
+  StopServer();
+}
+
+TEST_F(DevToolsHttpHandlerWithApprovalTest,
+       WebSocketConnectionRequiresApprovalAllow) {
+  int port = StartServer();
+  EXPECT_CALL(*MockDevToolsManagerDelegate::last_instance, AcceptDebugging)
+      .WillOnce(
+          [](base::OnceCallback<void(
+                 DevToolsManagerDelegate::AcceptConnectionResult)> callback) {
+            std::move(callback).Run(
+                DevToolsManagerDelegate::AcceptConnectionResult::kAllow);
+          });
+  EXPECT_CALL(*MockDevToolsManagerDelegate::last_instance,
+              SetActiveWebSocketConnections(1));
+
+  std::string url =
+      base::StringPrintf("http://127.0.0.1:%d/devtools/browser", port);
+  auto request = RunRequestUntilCompletion(
+      url, {{"connection", "upgrade"}, {"upgrade", "websocket"}});
+
+  // This error is expected because it's not a well-formed WS request.
+  // It means that the request is accepted by the server though.
+  EXPECT_EQ(500, request->response_info().headers->response_code());
+
+  EXPECT_CALL(*MockDevToolsManagerDelegate::last_instance,
+              SetActiveWebSocketConnections(0));
+  StopServer();
+}
+
+TEST_F(DevToolsHttpHandlerWithApprovalTest,
+       WebSocketConnectionRequiresApprovalDeny) {
+  int port = StartServer();
+  EXPECT_CALL(*MockDevToolsManagerDelegate::last_instance, AcceptDebugging)
+      .WillOnce(
+          [](base::OnceCallback<void(
+                 DevToolsManagerDelegate::AcceptConnectionResult)> callback) {
+            std::move(callback).Run(
+                DevToolsManagerDelegate::AcceptConnectionResult::kDeny);
+          });
+
+  std::string url =
+      base::StringPrintf("http://127.0.0.1:%d/devtools/browser", port);
+  auto request = RunRequestUntilCompletion(
+      url, {{"connection", "upgrade"}, {"upgrade", "websocket"}});
+  EXPECT_EQ(403, request->response_info().headers->response_code());
+
+  StopServer();
+}
+
+TEST_F(DevToolsHttpHandlerWithApprovalTest,
+       NonBrowserWebSocketConnectionIsRejected) {
+  int port = StartServer();
+  EXPECT_CALL(*MockDevToolsManagerDelegate::last_instance, AcceptDebugging)
+      .Times(0);
+  std::string url =
+      base::StringPrintf("http://127.0.0.1:%d/devtools/page/test", port);
+  auto request = RunRequestUntilCompletion(
+      url, {{"connection", "upgrade"}, {"upgrade", "websocket"}});
+
+  EXPECT_EQ(403, request->response_info().headers->response_code());
 
   StopServer();
 }

@@ -105,7 +105,12 @@ bool DevToolsManagerDelegate::IsBrowserTargetDiscoverable() {
   return false;
 }
 
-DevToolsManagerDelegate::~DevToolsManagerDelegate() {
+void DevToolsManagerDelegate::AcceptDebugging(AcceptCallback callback) {
+  std::move(callback).Run(
+      content::DevToolsManagerDelegate::AcceptConnectionResult::kDeny);
 }
 
+void DevToolsManagerDelegate::SetActiveWebSocketConnections(size_t count) {}
+
+DevToolsManagerDelegate::~DevToolsManagerDelegate() = default;
 }  // namespace content

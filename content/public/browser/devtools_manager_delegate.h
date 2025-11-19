@@ -34,6 +34,17 @@ class CONTENT_EXPORT DevToolsManagerDelegate {
     explicit DevToolsOptions(std::optional<std::string> panel_id);
     ~DevToolsOptions();
   };
+
+  // When the remote debugging server is started in the approval mode, the
+  // AcceptDebugging() method is called for each connection. The result of
+  // that call determines whether the connection is allowed or denied.
+  enum class AcceptConnectionResult {
+    // The connection was denied by the user.
+    kDeny,
+    // The connection was allowed.
+    kAllow,
+  };
+
   // Opens the inspector for |agent_host|.
   virtual void Inspect(DevToolsAgentHost* agent_host);
 
@@ -142,6 +153,15 @@ class CONTENT_EXPORT DevToolsManagerDelegate {
   // the Lab testing). If you want to return true here, please get security
   // clearance from the devtools owners.
   virtual bool IsBrowserTargetDiscoverable();
+
+  using AcceptCallback =
+      base::OnceCallback<void(DevToolsManagerDelegate::AcceptConnectionResult)>;
+  // Called when a new debugging connection is received if the
+  // remote debugging server is started in approval mode.
+  virtual void AcceptDebugging(AcceptCallback);
+  // Called when the number of active WebSocket connections changes
+  // The embedder can use this information to update the UI.
+  virtual void SetActiveWebSocketConnections(size_t count);
 
   virtual ~DevToolsManagerDelegate();
 };
