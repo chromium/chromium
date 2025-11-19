@@ -73,7 +73,7 @@ std::u16string_view DesktopMediaContentPaneView::GetAudioLabelText() const {
 #if BUILDFLAG(IS_MAC)
 void DesktopMediaContentPaneView::SetAudioWarningVisible(bool visible) {
   if (audio_warning_view_) {
-    audio_warning_view_->SetVisible(visible);
+    audio_warning_view_->SetWarningVisible(visible);
     if (!visible) {
       share_audio_view_->RequestFocus();
     }

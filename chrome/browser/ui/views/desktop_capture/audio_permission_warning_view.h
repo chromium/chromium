@@ -25,13 +25,13 @@ class AudioPermissionWarningView : public views::View {
   AudioPermissionWarningView& operator=(const AudioPermissionWarningView&) =
       delete;
   ~AudioPermissionWarningView() override;
+  void SetWarningVisible(bool visible);
 
  private:
   void OpenSystemSettings();
 
   // views::View:
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
-  void VisibilityChanged(views::View* starting_from, bool is_visible) override;
 
   const base::RepeatingCallback<void()> cancel_callback_;
 

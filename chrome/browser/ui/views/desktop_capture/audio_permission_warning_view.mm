@@ -4,20 +4,19 @@
 
 #include "chrome/browser/ui/views/desktop_capture/audio_permission_warning_view.h"
 
-#include "base/mac/launch_application.h"
 #include "base/mac/mac_util.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/desktop_capture/audio_capture_permission_checker.h"
 #include "chrome/grit/branded_strings.h"
-#include "chrome/grit/component_extension_resources.h"
 #include "chrome/grit/generated_resources.h"
-#include "ui/accessibility/platform/ax_platform.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/color/color_id.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/label.h"
@@ -45,6 +44,7 @@ AudioPermissionWarningView::AudioPermissionWarningView(
   label_->SetMultiLine(true);
   label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label_->SetTextStyle(views::style::STYLE_BODY_4);
+  label_->GetViewAccessibility().SetRole(ax::mojom::Role::kAlert);
 
   auto* button_container =
       content_wrapper->AddChildView(std::make_unique<views::View>());
@@ -74,20 +74,16 @@ AudioPermissionWarningView::AudioPermissionWarningView(
 
 AudioPermissionWarningView::~AudioPermissionWarningView() = default;
 
-void AudioPermissionWarningView::VisibilityChanged(views::View* starting_from,
-                                                   bool is_visible) {
+void AudioPermissionWarningView::SetWarningVisible(bool visible) {
   // Child views may remain in focus even though their parent is hidden,
   // unless their focus behavior is set to 'never'.
-  cancel_button_->SetFocusBehavior(is_visible ? FocusBehavior::ACCESSIBLE_ONLY
-                                              : FocusBehavior::NEVER);
+  cancel_button_->SetFocusBehavior(visible ? FocusBehavior::ACCESSIBLE_ONLY
+                                           : FocusBehavior::NEVER);
   system_settings_button_->SetFocusBehavior(
-      is_visible ? FocusBehavior::ACCESSIBLE_ONLY : FocusBehavior::NEVER);
-
-  if (is_visible && ui::AXPlatform::GetInstance().IsScreenReaderActive()) {
-    label_->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
-    label_->RequestFocus();
-  } else {
-    label_->SetFocusBehavior(FocusBehavior::NEVER);
+      visible ? FocusBehavior::ACCESSIBLE_ONLY : FocusBehavior::NEVER);
+  SetVisible(visible);
+  if (visible) {
+    label_->GetViewAccessibility().NotifyEvent(ax::mojom::Event::kAlert, true);
   }
 }
 
