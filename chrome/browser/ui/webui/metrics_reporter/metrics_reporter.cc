@@ -11,7 +11,11 @@ MetricsReporter::MetricsReporter() = default;
 MetricsReporter::~MetricsReporter() = default;
 
 void MetricsReporter::Mark(const std::string& name) {
-  marks_[name] = base::TimeTicks::Now();
+  Mark(name, base::TimeTicks::Now());
+}
+
+void MetricsReporter::Mark(const std::string& name, base::TimeTicks time) {
+  marks_[name] = time;
 }
 
 void MetricsReporter::Measure(const std::string& start_mark,

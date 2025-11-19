@@ -14,6 +14,7 @@ class MockMetricsReporter : public MetricsReporter {
   ~MockMetricsReporter() override;
 
   MOCK_METHOD(void, Mark, (const std::string&));
+  MOCK_METHOD(void, Mark, (const std::string&, base::TimeTicks));
   MOCK_METHOD(void,
               Measure,
               (const std::string&, MetricsReporter::MeasureCallback));

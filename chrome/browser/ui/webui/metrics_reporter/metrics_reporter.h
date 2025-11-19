@@ -29,6 +29,7 @@ class MetricsReporter : public metrics_reporter::mojom::PageMetricsHost {
   using HasMarkCallback = base::OnceCallback<void(bool)>;
 
   virtual void Mark(const std::string& name);
+  virtual void Mark(const std::string& name, base::TimeTicks time);
   virtual void Measure(const std::string& start_mark, MeasureCallback callback);
   virtual void Measure(const std::string& start_mark,
                        const std::string& end_mark,
