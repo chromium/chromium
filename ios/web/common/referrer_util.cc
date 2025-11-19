@@ -85,7 +85,7 @@ net::ReferrerPolicy PolicyForNavigation(const GURL& destination,
   NOTREACHED();
 }
 
-ReferrerPolicy ReferrerPolicyFromString(const std::string& policy) {
+ReferrerPolicy ReferrerPolicyFromString(std::string_view policy) {
   // https://w3c.github.io/webappsec-referrer-policy/#determine-policy-for-token
   if (policy == "never" || policy == "no-referrer") {
     return ReferrerPolicyNever;

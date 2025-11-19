@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ios/web/common/referrer_util.h"
+
+#include <array>
+#include <string_view>
 
 #include "ios/web/public/navigation/referrer.h"
 #include "net/url_request/referrer_policy.h"
@@ -17,13 +15,13 @@
 
 namespace {
 
-const char* const kTestUrls[] = {
+constexpr auto kTestUrls = std::to_array<std::string_view>({
     "",
     "http://user:password@foo.com/a/b/c.html",
     "https://foo.com/d.html#fragment",
     "http://user:password@bar.net/e/f.html#fragment",
     "https://user:password@bar.net/g/h.html",
-};
+});
 
 }  // namespace
 
@@ -34,13 +32,12 @@ using ReferrerUtilTest = PlatformTest;
 // Tests that no matter what the transition and policy, the result is always
 // stripped of things that should not be in a referrer (e.g., passwords).
 TEST_F(ReferrerUtilTest, ReferrerSanitization) {
-  for (unsigned int source = 0; source < std::size(kTestUrls); ++source) {
-    for (unsigned int dest = 0; dest < std::size(kTestUrls); ++dest) {
+  for (std::string_view source : kTestUrls) {
+    for (std::string_view dest : kTestUrls) {
       for (unsigned int policy = 0; policy <= ReferrerPolicyLast; ++policy) {
-        Referrer referrer(GURL(kTestUrls[source]),
-                          static_cast<ReferrerPolicy>(policy));
+        Referrer referrer(GURL(source), static_cast<ReferrerPolicy>(policy));
         std::string value =
-            ReferrerHeaderValueForNavigation(GURL(kTestUrls[dest]), referrer);
+            ReferrerHeaderValueForNavigation(GURL(dest), referrer);
 
         EXPECT_EQ(GURL(value).GetAsReferrer().spec(), value);
       }
@@ -50,10 +47,10 @@ TEST_F(ReferrerUtilTest, ReferrerSanitization) {
 
 // Tests that the Always policy works as expected.
 TEST_F(ReferrerUtilTest, AlwaysPolicy) {
-  for (unsigned int source = 0; source < std::size(kTestUrls); ++source) {
-    for (unsigned int dest = 1; dest < std::size(kTestUrls); ++dest) {
-      GURL source_url(kTestUrls[source]);
-      GURL dest_url(kTestUrls[dest]);
+  for (std::string_view source : kTestUrls) {
+    for (std::string_view dest : base::span(kTestUrls).subspan(1u)) {
+      GURL source_url(source);
+      GURL dest_url(dest);
       Referrer referrer(source_url, ReferrerPolicyAlways);
       std::string value = ReferrerHeaderValueForNavigation(dest_url, referrer);
 
@@ -66,10 +63,10 @@ TEST_F(ReferrerUtilTest, AlwaysPolicy) {
 // Tests that the Default policy works as expected, and matches
 // NoReferrerWhenDowngrade.
 TEST_F(ReferrerUtilTest, DefaultPolicy) {
-  for (unsigned int source = 0; source < std::size(kTestUrls); ++source) {
-    for (unsigned int dest = 1; dest < std::size(kTestUrls); ++dest) {
-      GURL source_url(kTestUrls[source]);
-      GURL dest_url(kTestUrls[dest]);
+  for (std::string_view source : kTestUrls) {
+    for (std::string_view dest : base::span(kTestUrls).subspan(1u)) {
+      GURL source_url(source);
+      GURL dest_url(dest);
       Referrer referrer(source_url, ReferrerPolicyDefault);
       std::string value = ReferrerHeaderValueForNavigation(dest_url, referrer);
 
@@ -90,10 +87,10 @@ TEST_F(ReferrerUtilTest, DefaultPolicy) {
 
 // Tests that the Never policy works as expected.
 TEST_F(ReferrerUtilTest, NeverPolicy) {
-  for (unsigned int source = 0; source < std::size(kTestUrls); ++source) {
-    for (unsigned int dest = 1; dest < std::size(kTestUrls); ++dest) {
-      GURL source_url(kTestUrls[source]);
-      GURL dest_url(kTestUrls[dest]);
+  for (std::string_view source : kTestUrls) {
+    for (std::string_view dest : base::span(kTestUrls).subspan(1u)) {
+      GURL source_url(source);
+      GURL dest_url(dest);
       Referrer referrer(source_url, ReferrerPolicyNever);
       std::string value = ReferrerHeaderValueForNavigation(dest_url, referrer);
 
@@ -105,10 +102,10 @@ TEST_F(ReferrerUtilTest, NeverPolicy) {
 
 // Tests that the Origin policy works as expected.
 TEST_F(ReferrerUtilTest, OriginPolicy) {
-  for (unsigned int source = 0; source < std::size(kTestUrls); ++source) {
-    for (unsigned int dest = 1; dest < std::size(kTestUrls); ++dest) {
-      GURL source_url(kTestUrls[source]);
-      GURL dest_url(kTestUrls[dest]);
+  for (std::string_view source : kTestUrls) {
+    for (std::string_view dest : base::span(kTestUrls).subspan(1u)) {
+      GURL source_url(source);
+      GURL dest_url(dest);
       Referrer referrer(source_url, ReferrerPolicyOrigin);
       std::string value = ReferrerHeaderValueForNavigation(dest_url, referrer);
 
@@ -120,10 +117,10 @@ TEST_F(ReferrerUtilTest, OriginPolicy) {
 
 // Tests that the OriginWhenCrossOrigin policy works as expected.
 TEST_F(ReferrerUtilTest, OriginWhenCrossOriginPolicy) {
-  for (unsigned int source = 0; source < std::size(kTestUrls); ++source) {
-    for (unsigned int dest = 1; dest < std::size(kTestUrls); ++dest) {
-      GURL source_url(kTestUrls[source]);
-      GURL dest_url(kTestUrls[dest]);
+  for (std::string_view source : kTestUrls) {
+    for (std::string_view dest : base::span(kTestUrls).subspan(1u)) {
+      GURL source_url(source);
+      GURL dest_url(dest);
       Referrer referrer(source_url, ReferrerPolicyOriginWhenCrossOrigin);
       std::string value = ReferrerHeaderValueForNavigation(dest_url, referrer);
 
@@ -141,10 +138,10 @@ TEST_F(ReferrerUtilTest, OriginWhenCrossOriginPolicy) {
 
 // Tests that the same-origin policy works as expected.
 TEST_F(ReferrerUtilTest, SameOriginPolicy) {
-  for (unsigned int source = 0; source < std::size(kTestUrls); ++source) {
-    for (unsigned int dest = 1; dest < std::size(kTestUrls); ++dest) {
-      GURL source_url(kTestUrls[source]);
-      GURL dest_url(kTestUrls[dest]);
+  for (std::string_view source : kTestUrls) {
+    for (std::string_view dest : base::span(kTestUrls).subspan(1u)) {
+      GURL source_url(source);
+      GURL dest_url(dest);
       Referrer referrer(source_url, ReferrerPolicySameOrigin);
       std::string value = ReferrerHeaderValueForNavigation(dest_url, referrer);
 
@@ -161,10 +158,10 @@ TEST_F(ReferrerUtilTest, SameOriginPolicy) {
 
 // Tests that the strict-origin policy works as expected.
 TEST_F(ReferrerUtilTest, StrictOriginPolicy) {
-  for (unsigned int source = 0; source < std::size(kTestUrls); ++source) {
-    for (unsigned int dest = 1; dest < std::size(kTestUrls); ++dest) {
-      GURL source_url(kTestUrls[source]);
-      GURL dest_url(kTestUrls[dest]);
+  for (std::string_view source : kTestUrls) {
+    for (std::string_view dest : base::span(kTestUrls).subspan(1u)) {
+      GURL source_url(source);
+      GURL dest_url(dest);
       Referrer referrer(source_url, ReferrerPolicyStrictOrigin);
       std::string value = ReferrerHeaderValueForNavigation(dest_url, referrer);
 
@@ -181,10 +178,10 @@ TEST_F(ReferrerUtilTest, StrictOriginPolicy) {
 
 // Tests that the strict-origin-when-cross-origin policy works as expected.
 TEST_F(ReferrerUtilTest, StrictOriginWhenCrossOriginPolicy) {
-  for (unsigned int source = 0; source < std::size(kTestUrls); ++source) {
-    for (unsigned int dest = 1; dest < std::size(kTestUrls); ++dest) {
-      GURL source_url(kTestUrls[source]);
-      GURL dest_url(kTestUrls[dest]);
+  for (std::string_view source : kTestUrls) {
+    for (std::string_view dest : base::span(kTestUrls).subspan(1u)) {
+      GURL source_url(source);
+      GURL dest_url(dest);
       Referrer referrer(source_url, ReferrerPolicyStrictOriginWhenCrossOrigin);
       std::string value = ReferrerHeaderValueForNavigation(dest_url, referrer);
 
@@ -252,43 +249,85 @@ TEST_F(ReferrerUtilTest, PolicyForNavigation) {
 // Tests that all the strings corresponding to web::ReferrerPolicy values are
 // correctly handled.
 TEST_F(ReferrerUtilTest, PolicyFromString) {
-  // The ordering here must match web::ReferrerPolicy; this makes the test
-  // simpler, at the cost of needing to re-order if the enum is re-ordered.
-  const char* const kPolicyStrings[] = {
-      "unsafe-url",
-      nullptr,  // Default is skipped, because no string maps to Default.
-      "no-referrer-when-downgrade",
-      "no-referrer",
-      "origin",
-      "origin-when-cross-origin",
-      "same-origin",
-      "strict-origin",
-      "strict-origin-when-cross-origin",
+  // Maps a policy value to a policy name.
+  struct PolicyMapping {
+    std::string_view name;
+    ReferrerPolicy value;
   };
-  // Test that all the values are supported.
-  for (int i = 0; i < ReferrerPolicyLast; ++i) {
-    if (!kPolicyStrings[i]) {
-      continue;
-    }
-    EXPECT_EQ(i, ReferrerPolicyFromString(kPolicyStrings[i]));
+
+  // Maps policy names to policy values.
+  static constexpr auto kPolicyMappings = std::to_array<PolicyMapping>({
+      // Policy names
+      {
+          "unsafe-url",
+          ReferrerPolicyAlways,
+      },
+      {
+          "no-referrer-when-downgrade",
+          ReferrerPolicyNoReferrerWhenDowngrade,
+      },
+      {
+          "no-referrer",
+          ReferrerPolicyNever,
+      },
+      {
+          "origin",
+          ReferrerPolicyOrigin,
+      },
+      {
+          "origin-when-cross-origin",
+          ReferrerPolicyOriginWhenCrossOrigin,
+      },
+      {
+          "same-origin",
+          ReferrerPolicySameOrigin,
+      },
+      {
+          "strict-origin",
+          ReferrerPolicyStrictOrigin,
+      },
+      {
+          "strict-origin-when-cross-origin",
+          ReferrerPolicyStrictOriginWhenCrossOrigin,
+      },
+
+      // Legacy policy names
+      {
+          "never",
+          ReferrerPolicyNever,
+      },
+      {
+          "always",
+          ReferrerPolicyAlways,
+      },
+
+      // Per the spec, "default" maps to NoReferrerWhenDowngrade; the
+      // Default enum value is not actually a spec'd value.
+      {
+          "default",
+          ReferrerPolicyNoReferrerWhenDowngrade,
+      },
+
+      // Invalid values maps to Default
+      {
+          "",
+          ReferrerPolicyDefault,
+      },
+      {
+          "made-up",
+          ReferrerPolicyDefault,
+      },
+  });
+
+  std::set<ReferrerPolicy> policies;
+  for (const auto& policy_mapping : kPolicyMappings) {
+    policies.insert(policy_mapping.value);
+    EXPECT_EQ(policy_mapping.value,
+              ReferrerPolicyFromString(policy_mapping.name));
   }
 
-  // Verify that if something is added to the enum, its string value gets added
-  // to the mapping function.
-  EXPECT_EQ(ReferrerPolicyLast + 1,
-            static_cast<int>(std::size(kPolicyStrings)));
-
-  // Test the legacy policy names.
-  EXPECT_EQ(ReferrerPolicyNever, ReferrerPolicyFromString("never"));
-  // Note that per the spec, "default" maps to NoReferrerWhenDowngrade; the
-  // Default enum value is not actually a spec'd value.
-  EXPECT_EQ(ReferrerPolicyNoReferrerWhenDowngrade,
-            ReferrerPolicyFromString("default"));
-  EXPECT_EQ(ReferrerPolicyAlways, ReferrerPolicyFromString("always"));
-
-  // Test that invalid values map to Default.
-  EXPECT_EQ(ReferrerPolicyDefault, ReferrerPolicyFromString(""));
-  EXPECT_EQ(ReferrerPolicyDefault, ReferrerPolicyFromString("made-up"));
+  // Check that all policies have been tested.
+  EXPECT_EQ(policies.size(), static_cast<size_t>(ReferrerPolicyLast + 1));
 }
 
 }  // namespace web
