@@ -36,6 +36,9 @@ class SavedPasswordsPresenter;
 // Updates the status of the password import in the UI.
 - (void)onPasswordsImported:(const password_manager::ImportResults&)results;
 
+// Updates the status of the passkey import in the UI.
+- (void)onPasskeysImported:(int)passkeysImported;
+
 @end
 
 // Handles importing credentials using the Credential Exchange Format

@@ -23,8 +23,6 @@ struct ImportProcessingResult;
 //
 // The caller should initiate the process by calling `StartImport`.
 // TODO(crbug.com/458337350): Add more unit tests.
-// TODO(crbug.com/458337350): Implement the API for resuming import after
-// resolving conflicts.
 class PasskeyImporter {
  public:
   using ProcessingCallback =
@@ -44,18 +42,23 @@ class PasskeyImporter {
   void StartImport(std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys,
                    ProcessingCallback processing_callback);
 
- private:
-  // Used to store a conflicting pair of passkeys, i.e. having matching `rp_id`
-  // and `user_id`.
-  struct ConflictingPasskeys {
-    sync_pb::WebauthnCredentialSpecifics stored_passkey;
-    sync_pb::WebauthnCredentialSpecifics incoming_passkey;
-  };
+  // Finalizes the import process by actually storing the previously cached
+  // `valid_passkeys_` and the subset of `conflicting_passkeys_` with the ids
+  // provided on `selected_conflicting_passkey_ids`. Runs
+  // `passkeys_imported_callback` informing how many passkeys were actually
+  // imported.
+  void FinishImport(std::vector<int> selected_conflicting_passkey_ids,
+                    base::OnceCallback<void(int)> passkeys_imported_callback);
 
+ private:
   // Performs the async work described in `StartImport()`.
   void ProcessPasskeys(
       std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys,
       ProcessingCallback processing_callback);
+
+  // Performs the async work described in `FinishImport()`.
+  void ImportPasskeys(std::vector<int> selected_conflicting_passkey_ids,
+                      base::OnceCallback<void(int)> passkeys_imported_callback);
 
   // Provides access to stored WebAuthn credentials.
   const raw_ref<PasskeyModel> passkey_model_;
@@ -63,8 +66,9 @@ class PasskeyImporter {
   // Caches ready to be imported passkeys.
   std::vector<sync_pb::WebauthnCredentialSpecifics> valid_passkeys_;
 
-  // Caches conflicting passkeys.
-  std::vector<ConflictingPasskeys> conflicting_passkeys_;
+  // Caches passkeys present on the import list that are conflicting with the
+  // already stored passkeys (e.g. having matching `user_id` and `rp_id`).
+  std::vector<sync_pb::WebauthnCredentialSpecifics> conflicting_passkeys_;
 
   base::WeakPtrFactory<PasskeyImporter> weak_ptr_factory_{this};
 };

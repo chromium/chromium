@@ -104,6 +104,15 @@
                                    count:results.number_imported]];
 }
 
+- (void)onPasskeysImported:(int)passkeysImported {
+  // TODO(crbug.com/450982128): Handle displaying errors.
+  [_consumer
+      setImportDataItem:[[ImportDataItem alloc]
+                            initWithType:ImportDataItemType::kPasskeys
+                                  status:ImportDataItemImportStatus::kImported
+                                   count:passkeysImported]];
+}
+
 #pragma mark - DataImportCredentialConflictMutator
 
 - (void)continueToImportPasswords:(NSArray<NSNumber*>*)passwordIdentifiers {

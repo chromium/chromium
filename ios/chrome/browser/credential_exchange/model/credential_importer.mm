@@ -125,15 +125,22 @@ std::string DataToString(NSData* data) {
 
 - (void)finishImportWithSelectedPasswordIds:
     (const std::vector<int>&)selectedPasswordIds {
+  __weak __typeof(_delegate) weakDelegate = _delegate;
   if (_passwords.count > 0) {
-    __weak __typeof(_delegate) weakDelegate = _delegate;
     _passwordImporter->ContinueImport(
         selectedPasswordIds,
         base::BindOnce(^(const password_manager::ImportResults& results) {
           [weakDelegate onPasswordsImported:results];
         }));
   }
-  // TODO(crbug.com/458337350): Implement resume in passkey importer.
+  if (_passkeys.count > 0) {
+    // TODO(crbug.com/450982128): Pass chosen ids from the conflict UI.
+    _passkeyImporter->FinishImport(
+        /*selected_conflicting_passkey_ids=*/{},
+        base::BindOnce(^(int passkeysImported) {
+          [weakDelegate onPasskeysImported:passkeysImported];
+        }));
+  }
 }
 
 #pragma mark - CredentialImportManagerDelegate

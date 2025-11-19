@@ -30,6 +30,7 @@ using ::testing::UnorderedElementsAre;
 
 constexpr char kRpId[] = "example.com";
 constexpr char kUserId[] = "user_id";
+constexpr char kUserId2[] = "user_id2";
 
 sync_pb::WebauthnCredentialSpecifics CreatePasskey(const std::string& rp_id,
                                                    const std::string& user_id) {
@@ -55,6 +56,13 @@ class PasskeyImporterTest : public testing::Test {
       std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys) {
     base::test::TestFuture<const ImportProcessingResult&> future;
     passkey_importer_->StartImport(std::move(passkeys), future.GetCallback());
+    return future.Get();
+  }
+
+  int FinishImport(std::vector<int> selected_passkey_ids) {
+    base::test::TestFuture<int> future;
+    passkey_importer_->FinishImport(std::move(selected_passkey_ids),
+                                    future.GetCallback());
     return future.Get();
   }
 
@@ -92,6 +100,49 @@ TEST_F(PasskeyImporterTest, ProcessesConflictingPasskeys) {
   EXPECT_THAT(result.errors, IsEmpty());
   EXPECT_THAT(result.conflicts,
               UnorderedElementsAre(ImportedInfoIs(kRpId, "username")));
+}
+
+TEST_F(PasskeyImporterTest, ImportsValidPasskeys) {
+  std::ignore = StartImport(
+      {CreatePasskey(kRpId, kUserId), CreatePasskey(kRpId, kUserId2)});
+  int passkeys_imported = FinishImport(/*selected_passkey_ids=*/{});
+  EXPECT_EQ(passkeys_imported, 2);
+  EXPECT_THAT(passkey_model_->GetAllPasskeys(), SizeIs(2));
+}
+
+TEST_F(PasskeyImporterTest, ImportsIncomingConflictingPasskey) {
+  sync_pb::WebauthnCredentialSpecifics stored_passkey =
+      CreatePasskey(kRpId, kUserId);
+  passkey_model_->AddNewPasskeyForTesting(stored_passkey);
+
+  std::ignore = StartImport(
+      {CreatePasskey(kRpId, kUserId), CreatePasskey(kRpId, kUserId2)});
+  int passkeys_imported = FinishImport(/*selected_passkey_ids=*/{0});
+  EXPECT_EQ(passkeys_imported, 2);
+  EXPECT_THAT(passkey_model_->GetAllPasskeys(), SizeIs(3));
+}
+
+TEST_F(PasskeyImporterTest, IgnoresNotSelectedConflictingPasskey) {
+  sync_pb::WebauthnCredentialSpecifics stored_passkey =
+      CreatePasskey(kRpId, kUserId);
+  passkey_model_->AddNewPasskeyForTesting(stored_passkey);
+
+  std::ignore = StartImport(
+      {CreatePasskey(kRpId, kUserId), CreatePasskey(kRpId, kUserId2)});
+  int passkeys_imported = FinishImport(/*selected_passkey_ids=*/{});
+  EXPECT_EQ(passkeys_imported, 1);
+  EXPECT_THAT(passkey_model_->GetAllPasskeys(), SizeIs(2));
+}
+
+TEST_F(PasskeyImporterTest, DoesNotImportInvalidPasskeys) {
+  sync_pb::WebauthnCredentialSpecifics invalid_passkey =
+      CreatePasskey(kRpId, kUserId);
+  invalid_passkey.clear_private_key();
+  std::ignore = StartImport({invalid_passkey});
+
+  int passkeys_imported = FinishImport(/*selected_passkey_ids=*/{});
+  EXPECT_EQ(passkeys_imported, 0);
+  EXPECT_THAT(passkey_model_->GetAllPasskeys(), IsEmpty());
 }
 
 }  // namespace
