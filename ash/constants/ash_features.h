@@ -1036,6 +1036,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaCaptionToggleEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsBocaSpotlightRobotRequesterEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsBocaRedirectStudentAudioToKioskEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsBocaSequentialInsertActivityEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsBocaTranslateToggleEnabled();

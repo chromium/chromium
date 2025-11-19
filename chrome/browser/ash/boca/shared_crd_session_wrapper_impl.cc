@@ -47,6 +47,9 @@ void SharedCrdSessionWrapperImpl::StartCrdHost(
   parameters.allow_clipboard_sync = false;
   parameters.request_origin =
       policy::SharedCrdSession::RequestOrigin::kClassManagement;
+  // When remoting to a kiosk receiver, audio should play on the kiosk only.
+  parameters.audio_playback =
+      policy::SharedCrdSession::AudioPlayback::kRemoteOnly;
   crd_session_->StartCrdHost(
       parameters, std::move(success_callback),
       base::BindOnce(&OnError, std::move(error_callback)),

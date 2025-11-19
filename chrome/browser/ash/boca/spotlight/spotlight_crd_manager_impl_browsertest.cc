@@ -100,7 +100,9 @@ IN_PROC_BROWSER_TEST_F(SpotlightCrdManagerImplTest,
           WithArg<1>([&](auto callback) { std::move(callback).Run("123"); }));
   TestFuture<const std::string&> success_future;
 
-  manager_->InitiateSpotlightSession(success_future.GetCallback(), kUserEmail);
+  manager_->InitiateSpotlightSession(success_future.GetCallback(),
+                                     /*is_student_to_receiver=*/false,
+                                     kUserEmail);
   ::testing::Mock::VerifyAndClearExpectations(crd_session_);
 
   EXPECT_EQ(kSpotlightConnectionCode, success_future.Get());
@@ -124,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(
       base::BindOnce([](const std::string& result) {
         GTEST_FAIL() << "Unexpected call to success callback";
       }),
-      kUserEmail);
+      /*is_student_to_receiver=*/false, kUserEmail);
   ::testing::Mock::VerifyAndClearExpectations(crd_session_);
 
   EXPECT_TRUE(error_callback_future.Wait());
@@ -141,7 +143,9 @@ IN_PROC_BROWSER_TEST_F(SpotlightCrdManagerImplTest,
   EXPECT_CALL(*crd_session_, TerminateSession()).Times(1);
   TestFuture<const std::string&> success_future;
 
-  manager_->InitiateSpotlightSession(success_future.GetCallback(), kUserEmail);
+  manager_->InitiateSpotlightSession(success_future.GetCallback(),
+                                     /*is_student_to_receiver=*/false,
+                                     kUserEmail);
 
   manager_->OnSessionEnded();
   ::testing::Mock::VerifyAndClearExpectations(crd_session_);
@@ -179,7 +183,9 @@ IN_PROC_BROWSER_TEST_F(SpotlightCrdManagerImplTest,
           [&]() { std::move(session_finished_future.GetCallback()).Run(); }));
 
   TestFuture<const std::string&> success_future;
-  manager_->InitiateSpotlightSession(success_future.GetCallback(), kUserEmail);
+  manager_->InitiateSpotlightSession(success_future.GetCallback(),
+                                     /*is_student_to_receiver=*/false,
+                                     kUserEmail);
 
   manager_->OnSessionEnded();
   ::testing::Mock::VerifyAndClearExpectations(crd_session_);

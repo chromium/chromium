@@ -33,6 +33,7 @@ class SpotlightCrdManagerImpl : public SpotlightCrdManager {
   // SpotlightCrdManager:
   void OnSessionEnded() override;
   void InitiateSpotlightSession(ConnectionCodeCallback callback,
+                                bool is_student_to_receiver,
                                 const std::string& requester_email) override;
   void ShowPersistentNotification(const std::string& teacher_name) override;
   void HidePersistentNotification() override;

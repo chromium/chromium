@@ -18,6 +18,9 @@ class SharedCrdSession;
 
 namespace ash::boca {
 
+// This class is part of a framework for remotely initiated CRD sessions on
+// managed ChromeOS devices. It is intended to be called only by Class Tools
+// kiosk receiver code.
 class SharedCrdSessionWrapperImpl : public SharedCrdSessionWrapper {
  public:
   explicit SharedCrdSessionWrapperImpl(
