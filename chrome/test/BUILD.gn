@@ -7668,7 +7668,10 @@ test("unit_tests") {
   }
 
   if (is_internal_chrome_branded) {
-    deps += [ "//chrome/browser/nearby_sharing/internal/icons:vector_icons" ]
+    deps += [
+      "//chrome/browser/cpu_performance_internal:unit_tests",
+      "//chrome/browser/nearby_sharing/internal/icons:vector_icons",
+    ]
   }
 
   if (is_mac) {

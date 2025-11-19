@@ -1215,6 +1215,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   void RecordAssistedLogin(
       content::ContentBrowserClient::AssistedLoginType login_type) override;
 
+  blink::mojom::PerformanceTier GetCpuPerformanceTier() override;
+
  protected:
   static bool HandleWebUI(GURL* url, content::BrowserContext* browser_context);
   static bool HandleWebUIReverse(GURL* url,
