@@ -66,7 +66,7 @@ class MockTransport : public Transport {
 
 class MockSecureSession : public SecureSession {
  public:
-  MOCK_METHOD(std::optional<oak::session::v1::HandshakeRequest>,
+  MOCK_METHOD(oak::session::v1::HandshakeRequest,
               GetHandshakeMessage,
               (),
               (override));
@@ -372,33 +372,6 @@ TEST_F(SecureChannelImplTest, GetAttestationRequestFails) {
   const auto& result = future.Get();
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), ErrorCode::kAttestationFailed);
-}
-
-// Tests a failure in generating the handshake message.
-TEST_F(SecureChannelImplTest, GetHandshakeMessageFails) {
-  oak::session::v1::SessionRequest expected_attestation_request;
-  expected_attestation_request.mutable_attest_request();
-  oak::session::v1::SessionResponse attestation_session_response;
-  attestation_session_response.mutable_attest_response();
-
-  EXPECT_CALL(*attestation_handler_, GetAttestationRequest())
-      .WillOnce(Return(expected_attestation_request.attest_request()));
-  EXPECT_CALL(*transport_, Send(EqualsSessionRequest(expected_attestation_request)))
-      .WillOnce([&] {
-        response_callback_.Run(attestation_session_response);
-      });
-  EXPECT_CALL(*attestation_handler_, VerifyAttestationResponse(_))
-      .WillOnce(Return(true));
-  EXPECT_CALL(*secure_session_, GetHandshakeMessage())
-      .WillOnce(Return(std::nullopt));
-
-  base::test::TestFuture<base::expected<Response, ErrorCode>> future;
-  secure_channel_->SetResponseCallback(future.GetRepeatingCallback());
-  EXPECT_TRUE(secure_channel_->Write(CreateRequest(1)));
-
-  const auto& result = future.Get();
-  ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), ErrorCode::kHandshakeFailed);
 }
 
 // Tests a failure in processing the handshake response.

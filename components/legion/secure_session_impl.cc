@@ -22,8 +22,7 @@ SecureSessionImpl::SecureSessionImpl() = default;
 
 SecureSessionImpl::~SecureSessionImpl() = default;
 
-std::optional<oak::session::v1::HandshakeRequest>
-SecureSessionImpl::GetHandshakeMessage() {
+oak::session::v1::HandshakeRequest SecureSessionImpl::GetHandshakeMessage() {
   noise_.emplace();
   noise_->Init(Noise::HandshakeType::kNN);
   uint8_t prologue[1];

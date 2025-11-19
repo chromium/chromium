@@ -159,10 +159,9 @@ class SecureSessionImplTest : public ::testing::Test {
  protected:
   void PerformValidHandshake(ServerSecureSession& server_session) {
     auto client_handshake_request = client_session_.GetHandshakeMessage();
-    ASSERT_TRUE(client_handshake_request.has_value());
 
     auto server_handshake_response =
-        server_session.ProcessHandshake(client_handshake_request.value());
+        server_session.ProcessHandshake(client_handshake_request);
     ASSERT_TRUE(server_handshake_response.has_value());
 
     ASSERT_TRUE(client_session_.ProcessHandshakeResponse(
@@ -201,17 +200,17 @@ TEST_F(SecureSessionImplTest, HandshakeAndEncryptDecryptSucceeds) {
 
 TEST_F(SecureSessionImplTest, GetHandshakeMessageSucceeds) {
   auto request = client_session_.GetHandshakeMessage();
-  ASSERT_TRUE(request.has_value());
-  EXPECT_TRUE(request->has_noise_handshake_message());
+  EXPECT_TRUE(request.has_noise_handshake_message());
 
-  const auto& noise_msg = request->noise_handshake_message();
+  const auto& noise_msg = request.noise_handshake_message();
   EXPECT_EQ(noise_msg.ephemeral_public_key().size(), kEphemeralPublicKeySize);
   EXPECT_FALSE(noise_msg.ciphertext().empty());
 }
 
 TEST_F(SecureSessionImplTest, ProcessHandshakeResponseInvalidPeerKey) {
-  auto request = client_session_.GetHandshakeMessage();
-  ASSERT_TRUE(request.has_value());
+  // Though the result is not used, it's important to call GetHandshakeMessage()
+  // before ProcessHandshakeResponse().
+  client_session_.GetHandshakeMessage();
 
   oak::session::v1::HandshakeResponse response;
   auto* noise_msg = response.mutable_noise_handshake_message();
@@ -223,8 +222,9 @@ TEST_F(SecureSessionImplTest, ProcessHandshakeResponseInvalidPeerKey) {
 }
 
 TEST_F(SecureSessionImplTest, ProcessHandshakeResponseInvalidCiphertext) {
-  auto client_handshake_request_opt = client_session_.GetHandshakeMessage();
-  ASSERT_TRUE(client_handshake_request_opt.has_value());
+  // Though the result is not used, it's important to call GetHandshakeMessage()
+  // before ProcessHandshakeResponse().
+  client_session_.GetHandshakeMessage();
 
   // Create a valid server response, but then corrupt the ciphertext.
   oak::session::v1::HandshakeResponse server_handshake_response;
@@ -263,13 +263,12 @@ TEST_F(SecureSessionImplTest, ProcessHandshakeResponseWithoutHandshake) {
 // which is not allowed in the NN handshake pattern.
 TEST_F(SecureSessionImplTest, ProcessHandshakeResponseNonEmptyPlaintext) {
   auto client_handshake_request = client_session_.GetHandshakeMessage();
-  ASSERT_TRUE(client_handshake_request.has_value());
 
   ServerSecureSession server_session;
   // Generate a server response with a non-empty payload, which is invalid for
   // the NN handshake pattern.
-  auto server_handshake_response = server_session.ProcessHandshake(
-      client_handshake_request.value(), {1, 2, 3});
+  auto server_handshake_response =
+      server_session.ProcessHandshake(client_handshake_request, {1, 2, 3});
   ASSERT_TRUE(server_handshake_response.has_value());
 
   // The client should reject the response because the decrypted payload is not

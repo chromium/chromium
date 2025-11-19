@@ -135,17 +135,12 @@ void SecureChannelImpl::OnAttestationResponse(
 
   state_ = SecureChannelImpl::State::kPerformingHandshake;
   // Step 3: Get and Send Handshake Request
-  std::optional<oak::session::v1::HandshakeRequest> handshake_request =
+  oak::session::v1::HandshakeRequest handshake_request =
       secure_session_->GetHandshakeMessage();
-  if (!handshake_request.has_value()) {
-    DLOG(ERROR) << "Failed to get handshake request.";
-    FailAllRequestsAndSetPermanentFailure(ErrorCode::kHandshakeFailed);
-    return;
-  }
 
   DVLOG(1) << "Sending handshake request.";
   oak::session::v1::SessionRequest request;
-  *request.mutable_handshake_request() = std::move(handshake_request.value());
+  *request.mutable_handshake_request() = std::move(handshake_request);
   Send(request);
 }
 

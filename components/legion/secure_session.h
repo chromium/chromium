@@ -27,9 +27,7 @@ class SecureSession {
   virtual ~SecureSession() = default;
 
   // Generates the initial handshake message.
-  // Returns std::nullopt on failure.
-  virtual std::optional<oak::session::v1::HandshakeRequest>
-  GetHandshakeMessage() = 0;
+  virtual oak::session::v1::HandshakeRequest GetHandshakeMessage() = 0;
 
   // Processes the server's handshake response (e.g., keys).
   // This should be called after the initial handshake message has been sent
