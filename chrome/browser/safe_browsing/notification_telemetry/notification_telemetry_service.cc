@@ -4,6 +4,9 @@
 
 #include "chrome/browser/safe_browsing/notification_telemetry/notification_telemetry_service.h"
 
+#include <optional>
+#include <string>
+
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -382,7 +385,7 @@ void NotificationTelemetryService::OnNewNotificationServiceWorkerSubscription(
 }
 
 void NotificationTelemetryService::UploadComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   // Take ownership of the loader in this scope.
   std::unique_ptr<network::SimpleURLLoader> url_loader(std::move(url_loader_));
   int response_code = 0;

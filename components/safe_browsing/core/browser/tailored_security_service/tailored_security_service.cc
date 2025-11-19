@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -156,7 +157,7 @@ class RequestImpl : public TailoredSecurityService::Request {
 
   void Shutdown() override {}
 
-  void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body) {
+  void OnSimpleLoaderComplete(std::optional<std::string> response_body) {
     response_code_ = 0;
     if (simple_url_loader_->ResponseInfo() &&
         simple_url_loader_->ResponseInfo()->headers) {
@@ -180,11 +181,7 @@ class RequestImpl : public TailoredSecurityService::Request {
       return;
     }
 
-    if (response_body) {
-      response_body_ = std::move(*response_body);
-    } else {
-      response_body_.clear();
-    }
+    response_body_ = std::move(response_body).value_or("");
     is_pending_ = false;
     std::move(callback_).Run(this, true);
     // It is valid for the callback to delete |this|, so do not access any

@@ -357,7 +357,7 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
       bool is_sampled_report,
       scoped_refptr<base::SequencedTaskRunner> response_callback_task_runner,
       std::optional<int> webui_token,
-      std::unique_ptr<std::string> response_body);
+      std::optional<std::string> response_body);
 
   // Fills in fields in |RTLookupRequest|.  |url| is expected to be already
   // sanitized.

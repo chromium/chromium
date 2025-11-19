@@ -5,6 +5,8 @@
 #include "chrome/browser/safe_browsing/download_protection/check_client_download_request_base.h"
 
 #include <algorithm>
+#include <optional>
+#include <string>
 
 #include "base/barrier_callback.h"
 #include "base/cancelable_callback.h"
@@ -542,7 +544,7 @@ void CheckClientDownloadRequestBase::SendRequest() {
 }
 
 void CheckClientDownloadRequestBase::OnURLLoaderComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   bool success = loader_->NetError() == net::OK;
   int response_code = 0;
@@ -558,7 +560,7 @@ void CheckClientDownloadRequestBase::OnURLLoaderComplete(
   std::string token;
   if (success && net::HTTP_OK == response_code) {
     ClientDownloadResponse response;
-    if (!response.ParseFromString(*response_body.get())) {
+    if (!response.ParseFromString(*response_body)) {
       reason = REASON_INVALID_RESPONSE_PROTO;
       result = DownloadCheckResult::UNKNOWN;
     } else if (sampled_unsupported_file_) {
@@ -641,7 +643,7 @@ void CheckClientDownloadRequestBase::OnURLLoaderComplete(
     bool upload_requested = response.upload();
     MaybeBeginFeedbackForDownload(result, upload_requested,
                                   client_download_request_data_,
-                                  *response_body.get());
+                                  *response_body);
 #endif
   }
 

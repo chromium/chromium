@@ -15,6 +15,7 @@
 // Design doc: go/design-doc-v4-full-hash-manager
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <utility>
@@ -183,7 +184,7 @@ class V4GetHashProtocolManager {
 
   // Callback when the request completes
   void OnURLLoaderComplete(network::SimpleURLLoader* url_loader,
-                           std::unique_ptr<std::string> response_body);
+                           std::optional<std::string> response_body);
 
   // Populates the protobuf with the FullHashCache data.
   void CollectFullHashCacheInfo(FullHashCacheInfo* full_hash_cache_info);

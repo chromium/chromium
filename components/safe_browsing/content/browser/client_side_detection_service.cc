@@ -204,14 +204,10 @@ bool ClientSideDetectionService::IsLocalResource(
 void ClientSideDetectionService::OnURLLoaderComplete(
     network::SimpleURLLoader* url_loader,
     base::Time start_time,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   base::UmaHistogramTimes("SBClientPhishing.NetworkRequestDuration",
                           base::Time::Now() - start_time);
 
-  std::string data;
-  if (response_body) {
-    data = std::move(*response_body.get());
-  }
   std::optional<net::HttpStatusCode> response_code = std::nullopt;
   if (url_loader->ResponseInfo() && url_loader->ResponseInfo()->headers) {
     response_code = static_cast<net::HttpStatusCode>(
@@ -223,7 +219,8 @@ void ClientSideDetectionService::OnURLLoaderComplete(
 
   DCHECK(base::Contains(client_phishing_reports_, url_loader));
   HandlePhishingVerdict(url_loader, url_loader->GetFinalURL(),
-                        url_loader->NetError(), response_code, data);
+                        url_loader->NetError(), response_code,
+                        response_body.value_or(""));
 }
 
 void ClientSideDetectionService::SendModelToRenderers() {

@@ -5,6 +5,8 @@
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
 
 #include <memory>
+#include <optional>
+#include <string>
 
 #include "base/base64url.h"
 #include "base/logging.h"
@@ -517,7 +519,7 @@ void RealTimeUrlLookupServiceBase::OnURLLoaderComplete(
     bool is_sampled_report,
     scoped_refptr<base::SequencedTaskRunner> response_callback_task_runner,
     std::optional<int> webui_token,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(first_request_start_time_);
 

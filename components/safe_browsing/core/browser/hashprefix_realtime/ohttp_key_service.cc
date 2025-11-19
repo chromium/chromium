@@ -4,6 +4,10 @@
 
 #include "components/safe_browsing/core/browser/hashprefix_realtime/ohttp_key_service.h"
 
+#include <optional>
+#include <string>
+#include <utility>
+
 #include "base/base64.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
@@ -321,7 +325,7 @@ void OhttpKeyService::StartFetch(Callback callback,
 
 void OhttpKeyService::OnURLLoaderComplete(
     base::TimeTicks request_start_time,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   DCHECK(url_loader_);
   int net_error = url_loader_->NetError();
   int response_code = 0;
@@ -346,9 +350,8 @@ void OhttpKeyService::OnURLLoaderComplete(
   } else {
     backoff_operator_->ReportError();
   }
-  pending_callbacks_.Notify(is_key_fetch_successful
-                                ? std::optional<std::string>(*response_body)
-                                : std::nullopt);
+  pending_callbacks_.Notify(is_key_fetch_successful ? std::move(response_body)
+                                                    : std::nullopt);
 }
 
 void OhttpKeyService::MaybeStartOrRescheduleAsyncFetch() {

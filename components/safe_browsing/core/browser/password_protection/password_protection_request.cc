@@ -5,6 +5,8 @@
 #include "components/safe_browsing/core/browser/password_protection/password_protection_request.h"
 
 #include <cstddef>
+#include <optional>
+#include <string>
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -405,7 +407,7 @@ void PasswordProtectionRequest::StartTimeout() {
 }
 
 void PasswordProtectionRequest::OnURLLoaderComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
   int response_code = 0;
   if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers)

@@ -9,6 +9,7 @@
 // servers.
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -20,6 +21,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
+#include "base/types/optional_ref.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/safe_browsing/core/browser/db/hit_report.h"
 #include "components/safe_browsing/core/browser/db/util.h"
@@ -142,17 +144,6 @@ class PingManager : public KeyedService {
       const base::FilePath& persister_root_path,
       base::RepeatingCallback<bool()> get_should_send_persisted_report);
 
-  void OnURLLoaderComplete(network::SimpleURLLoader* source,
-                           std::unique_ptr<std::string> response_body);
-  void OnSafeBrowsingHitURLLoaderComplete(
-      network::SimpleURLLoader* source,
-      std::unique_ptr<std::string> response_body);
-  void OnThreatDetailsReportURLLoaderComplete(
-      network::SimpleURLLoader* source,
-      bool has_access_token,
-      ClientSafeBrowsingReportRequest::ReportType report_type,
-      std::unique_ptr<std::string> response_body);
-
   // Report to Google when a SafeBrowsing warning is shown to the user.
   // |hit_report.threat_type| should be one of the types known by
   // SafeBrowsingtHitUrl. This method will also sanitize the URLs in the report
@@ -234,6 +225,17 @@ class PingManager : public KeyedService {
 
   // Sends `serialized_reports` to Safe Browsing.
   void OnReadPersistedReportsDone(std::vector<std::string> serialized_reports);
+
+  void OnURLLoaderComplete(network::SimpleURLLoader* source,
+                           base::optional_ref<std::string> response_body);
+  void OnSafeBrowsingHitURLLoaderComplete(
+      network::SimpleURLLoader* source,
+      std::optional<std::string> response_body);
+  void OnThreatDetailsReportURLLoaderComplete(
+      network::SimpleURLLoader* source,
+      bool has_access_token,
+      ClientSafeBrowsingReportRequest::ReportType report_type,
+      std::optional<std::string> response_body);
 
   // Track outstanding SafeBrowsing report fetchers for clean up.
   // We add both "hit" and "detail" fetchers in this set.

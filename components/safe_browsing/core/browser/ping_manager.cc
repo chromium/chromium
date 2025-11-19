@@ -5,6 +5,8 @@
 #include "components/safe_browsing/core/browser/ping_manager.h"
 
 #include <memory>
+#include <optional>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -26,6 +28,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/types/optional_ref.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/safe_browsing_hats_delegate.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -250,7 +253,7 @@ PingManager::~PingManager() = default;
 // All SafeBrowsing request responses are handled here.
 void PingManager::OnURLLoaderComplete(
     network::SimpleURLLoader* source,
-    std::unique_ptr<std::string> response_body) {
+    base::optional_ref<std::string> response_body) {
   auto it = safebrowsing_reports_.find(source);
   CHECK(it != safebrowsing_reports_.end());
   safebrowsing_reports_.erase(it);
@@ -261,19 +264,19 @@ void PingManager::OnURLLoaderComplete(
 
 void PingManager::OnSafeBrowsingHitURLLoaderComplete(
     network::SimpleURLLoader* source,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   int response_code = source->ResponseInfo() && source->ResponseInfo()->headers
                           ? source->ResponseInfo()->headers->response_code()
                           : 0;
   RecordHttpResponseOrErrorCode("SafeBrowsing.HitReport.NetworkResult",
                                 source->NetError(), response_code);
-  OnURLLoaderComplete(source, std::move(response_body));
+  OnURLLoaderComplete(source, response_body);
 }
 void PingManager::OnThreatDetailsReportURLLoaderComplete(
     network::SimpleURLLoader* source,
     bool has_access_token,
     ClientSafeBrowsingReportRequest::ReportType report_type,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   int response_code = source->ResponseInfo() && source->ResponseInfo()->headers
                           ? source->ResponseInfo()->headers->response_code()
                           : 0;
@@ -289,7 +292,7 @@ void PingManager::OnThreatDetailsReportURLLoaderComplete(
         "SafeBrowsing.ClientSafeBrowsingReport.BadRequestReportType",
         report_type, ClientSafeBrowsingReportRequest::ReportType_MAX + 1);
   }
-  OnURLLoaderComplete(source, std::move(response_body));
+  OnURLLoaderComplete(source, response_body);
 }
 
 // Sends a SafeBrowsing "hit" report.

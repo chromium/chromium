@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SAFE_BROWSING_EXTENSION_TELEMETRY_EXTENSION_TELEMETRY_SERVICE_H_
 
 #include <memory>
+#include <string>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
@@ -15,6 +16,7 @@
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/types/optional_ref.h"
 #include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -177,7 +179,8 @@ class ExtensionTelemetryService : public KeyedService {
   // Creates and sends telemetry report to enterprise.
   void CreateAndSendEnterpriseReport();
 
-  void OnUploadComplete(bool success, const std::string& response_data);
+  void OnUploadComplete(bool success,
+                        base::optional_ref<std::string> response_data);
 
   // Returns a bool that represents if there is any signal processor
   // information to report.

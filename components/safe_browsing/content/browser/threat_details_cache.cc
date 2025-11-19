@@ -8,6 +8,10 @@
 
 #include <stdint.h>
 
+#include <optional>
+#include <string>
+#include <utility>
+
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/strings/string_number_conversions.h"
@@ -143,7 +147,7 @@ ThreatDetailsCacheCollector::GetResource(const GURL& url) {
 }
 
 void ThreatDetailsCacheCollector::OnURLLoaderComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   DVLOG(1) << "OnURLLoaderComplete";
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(current_load_);
@@ -173,10 +177,7 @@ void ThreatDetailsCacheCollector::OnURLLoaderComplete(
   }
 
   ReadResponse(resource);
-  std::string data;
-  if (response_body)
-    data = *response_body;
-  ReadData(resource, data);
+  ReadData(resource, response_body.value_or(""));
   AdvanceEntry();
 }
 

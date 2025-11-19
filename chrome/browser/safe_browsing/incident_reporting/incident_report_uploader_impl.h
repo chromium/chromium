@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SAFE_BROWSING_INCIDENT_REPORTING_INCIDENT_REPORT_UPLOADER_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/gtest_prod_util.h"
@@ -57,7 +58,7 @@ class IncidentReportUploaderImpl : public IncidentReportUploader {
   static GURL GetIncidentReportUrl();
 
   // Callback when SimpleURLLoader gets the response.
-  void OnURLLoaderComplete(std::unique_ptr<std::string> response_body);
+  void OnURLLoaderComplete(std::optional<std::string> response_body);
 
   void OnURLLoaderCompleteInternal(const std::string& response_body,
                                    int response_code,

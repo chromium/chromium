@@ -61,7 +61,7 @@ class V4UpdateProtocolManager {
       V4UpdateCallback update_callback,
       ExtendedReportingLevelCallback extended_reporting_level_callback);
 
-  void OnURLLoaderComplete(std::unique_ptr<std::string> response_body);
+  void OnURLLoaderComplete(std::optional<std::string> response_body);
 
   // Schedule the next update without backoff.
   void ScheduleNextUpdate(std::unique_ptr<StoreStateMap> store_state_map);

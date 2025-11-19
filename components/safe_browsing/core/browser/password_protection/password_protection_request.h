@@ -6,6 +6,7 @@
 #define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_PASSWORD_PROTECTION_PASSWORD_PROTECTION_REQUEST_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -74,7 +75,7 @@ class PasswordProtectionRequest
   void Cancel(bool timed_out) override;
 
   // Processes the received response.
-  void OnURLLoaderComplete(std::unique_ptr<std::string> response_body);
+  void OnURLLoaderComplete(std::optional<std::string> response_body);
 
   GURL main_frame_url() const { return main_frame_url_; }
 

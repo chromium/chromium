@@ -5,6 +5,7 @@
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service.h"
 
 #include <sstream>
+#include <string>
 #include <vector>
 
 #include "base/command_line.h"
@@ -24,6 +25,7 @@
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/types/optional_ref.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -825,14 +827,14 @@ void ExtensionTelemetryService::CreateAndSendEnterpriseReport() {
 
 void ExtensionTelemetryService::OnUploadComplete(
     bool success,
-    const std::string& response_data) {
+    base::optional_ref<std::string> response_data) {
   // TODO(crbug.com/40253384): Add `config_manager_` implementation
   // to check server response and update config.
   if (success) {
     SetLastUploadTimeForExtensionTelemetry(*pref_service_, base::Time::Now());
 
     ExtensionTelemetryReportResponse response;
-    if (response.ParseFromString(response_data)) {
+    if (response.ParseFromString(*response_data)) {
       ProcessOffstoreExtensionVerdicts(response);
     }
   }
