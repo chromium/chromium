@@ -58,6 +58,7 @@ import java.util.concurrent.TimeoutException;
 /** Unit tests for {@link SettingsActivity}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = ShadowProfileManagerUtils.class)
+@DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
 public class SettingsActivityUnitTest {
     /** Shadow class to bypass the real call to ProfileManagerUtils. */
     @Implements(ProfileManagerUtils.class)

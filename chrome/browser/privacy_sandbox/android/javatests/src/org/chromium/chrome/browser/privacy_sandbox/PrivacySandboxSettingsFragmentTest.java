@@ -99,6 +99,7 @@ public final class PrivacySandboxSettingsFragmentTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
+    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testRenderPrivacySandboxSettingsV4() throws IOException {
         startPrivacySandboxSettingsV4();
         mRenderTestRule.render(
@@ -130,6 +131,7 @@ public final class PrivacySandboxSettingsFragmentTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testFledgePrefDisabledDescription() {
         runOnUiThreadBlocking(
                 () -> setFledgePrefEnabled(ProfileManager.getLastUsedRegularProfile(), false));
@@ -152,6 +154,7 @@ public final class PrivacySandboxSettingsFragmentTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testAdMeasurementPrefDisabledDescription() {
         runOnUiThreadBlocking(
                 () ->
@@ -165,6 +168,7 @@ public final class PrivacySandboxSettingsFragmentTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testAdMeasurementPrefEnabledDescription() {
         runOnUiThreadBlocking(
                 () ->
@@ -202,6 +206,7 @@ public final class PrivacySandboxSettingsFragmentTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testNavigateToFledgePageV2() {
         startPrivacySandboxSettingsV4();
         onView(withText(R.string.ad_privacy_page_fledge_link_row_label)).perform(click());
@@ -213,6 +218,7 @@ public final class PrivacySandboxSettingsFragmentTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testNavigateToAdMeasurementPage() {
         startPrivacySandboxSettingsV4();
         onView(withText(R.string.ad_privacy_page_ad_measurement_link_row_label)).perform(click());

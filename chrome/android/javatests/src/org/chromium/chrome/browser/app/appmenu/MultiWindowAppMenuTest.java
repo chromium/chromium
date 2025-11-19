@@ -150,13 +150,17 @@ public class MultiWindowAppMenuTest {
     @Test
     @LargeTest
     @EnableFeatures(OPEN_WINDOW_ON_TOP)
+    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testInteractWithBothWindows_robustWindowManagementExperimentalEnabled() {
         doTestInteractWithBothWindows();
     }
 
     @Test
     @LargeTest
-    @DisableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL)
+    @DisableFeatures({
+        ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL,
+        ChromeFeatureList.SETTINGS_MULTI_COLUMN
+    })
     public void testInteractWithBothWindows() {
         doTestInteractWithBothWindows();
     }

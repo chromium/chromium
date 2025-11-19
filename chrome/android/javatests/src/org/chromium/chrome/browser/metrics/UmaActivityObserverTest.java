@@ -165,6 +165,7 @@ public class UmaActivityObserverTest {
 
     @Test
     @LargeTest
+    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testSessionPreservedInSettings() throws Exception {
         WebPageStation pageInFirstWindow = mCtaTestRule.startOnBlankPage();
         ThreadUtils.runOnUiThreadBlocking(
