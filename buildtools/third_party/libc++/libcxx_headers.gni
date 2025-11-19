@@ -11,7 +11,7 @@
 import("//buildtools/deps_revisions.gni")
 
 assert(
-    libcxx_revision == "454a561737fb62e75ba82bfae9fb07ee64acdd68",
+    libcxx_revision == "29d97bf40ff6d6f59af9462362ec005c75bdc7b0",
     "libcxx_headers.gni and third_party/libc++ are out of sync.$0x0A$0x0AIf you were messing around with the libc++ repository, run:$0x0A`buildtools/third_party/libc++/generate_libcxx_headers.py`$0x0A$0x0AIf the script doesn't resolve the error, file a bug to msta@ with reproduction details.$0x0A")
 
 libcxx_headers = [
@@ -278,6 +278,7 @@ libcxx_headers = [
   "//third_party/libc++/src/include/__chrono/gps_clock.h",
   "//third_party/libc++/src/include/__chrono/hh_mm_ss.h",
   "//third_party/libc++/src/include/__chrono/high_resolution_clock.h",
+  "//third_party/libc++/src/include/__chrono/is_clock.h",
   "//third_party/libc++/src/include/__chrono/leap_second.h",
   "//third_party/libc++/src/include/__chrono/literals.h",
   "//third_party/libc++/src/include/__chrono/local_info.h",
@@ -802,7 +803,6 @@ libcxx_headers = [
   "//third_party/libc++/src/include/__tuple/tuple_like.h",
   "//third_party/libc++/src/include/__tuple/tuple_like_no_subrange.h",
   "//third_party/libc++/src/include/__tuple/tuple_size.h",
-  "//third_party/libc++/src/include/__tuple/tuple_types.h",
   "//third_party/libc++/src/include/__type_traits/add_cv_quals.h",
   "//third_party/libc++/src/include/__type_traits/add_pointer.h",
   "//third_party/libc++/src/include/__type_traits/add_reference.h",
