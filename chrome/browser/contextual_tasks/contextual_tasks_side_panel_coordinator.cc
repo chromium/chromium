@@ -206,6 +206,14 @@ ContextualTasksSidePanelCoordinator::DetachWebContentsForTask(
     if ((*it)->task_id && (*it)->task_id.value() == task_id) {
       std::unique_ptr<content::WebContents> web_contents =
           std::move((*it)->web_contents);
+      // Reset the association with the BrowserWindow since the WebContents will
+      // soon be associated with a tab.
+      webui::SetBrowserWindowInterface(web_contents.get(),
+                                       /*browser_window_interface=*/nullptr);
+      if (web_view_ && web_view_->web_contents() == web_contents.get()) {
+        web_view_->SetWebContents(nullptr);
+      }
+
       task_id_to_web_contents_cache_.erase(it);
       return web_contents;
     }
