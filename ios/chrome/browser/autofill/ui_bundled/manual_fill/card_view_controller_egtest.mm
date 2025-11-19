@@ -647,7 +647,8 @@ void DismissPaymentBottomSheet() {
 }
 
 // Tests that the "Add Payment Method..." action works on OTR.
-- (void)testOTRAddPaymentMethodActionOpensAddPaymentMethodSettings {
+// TODO(crbug.com/462093327): Re-enable flaky test.
+- (void)FLAKY_testOTRAddPaymentMethodActionOpensAddPaymentMethodSettings {
   // Open a tab in incognito.
   [ChromeEarlGrey openNewIncognitoTab];
   [self loadURL];
