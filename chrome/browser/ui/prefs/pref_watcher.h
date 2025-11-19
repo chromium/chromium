@@ -17,6 +17,7 @@
 
 class Profile;
 class PrefsTabHelper;
+class PrimaryPastePrefHelper;
 
 // Watches updates in WebKitPreferences and blink::RendererPreferences, and
 // notifies tab helpers and registered watchers of those updates.
@@ -51,6 +52,11 @@ class PrefWatcher : public KeyedService,
   // |tab_helpers_| observe changes in WebKitPreferences and
   // blink::RendererPreferences.
   std::set<raw_ptr<PrefsTabHelper, SetExperimental>> tab_helpers_;
+
+#if BUILDFLAG(IS_LINUX)
+  friend class PrimaryPastePrefHelper;
+  std::unique_ptr<PrimaryPastePrefHelper> primary_paste_pref_helper_;
+#endif
 
   // |renderer_preference_watchers_| observe changes in
   // blink::RendererPreferences. If the consumer also wants to WebKit

@@ -61,6 +61,10 @@ source_set("impl") {
   } else {
     deps += [ "//chrome/browser/themes" ]
   }
+
+  if (is_linux) {
+    deps += [ "//ui/linux:linux_ui" ]
+  }
 }
 
 if (!is_android || enable_desktop_android_extensions) {

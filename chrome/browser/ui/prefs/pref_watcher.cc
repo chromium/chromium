@@ -38,6 +38,11 @@
 #include "components/browser_ui/accessibility/android/font_size_prefs_android.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+#include "ui/linux/linux_ui.h"
+#include "ui/linux/primary_paste_pref_observer.h"
+#endif
+
 namespace {
 
 // The list of prefs we want to observe.
@@ -86,11 +91,40 @@ const char* const kWebPrefsToObserve[] = {
 
 }  // namespace
 
+#if BUILDFLAG(IS_LINUX)
+// A helper class to handle notifying about changes in the
+// Primary Paste/Middle Click Paste preference on Linux.
+class PrimaryPastePrefHelper : public ui::PrimaryPastePrefObserver {
+ public:
+  explicit PrimaryPastePrefHelper(PrefWatcher* watcher) : watcher_(watcher) {
+    DCHECK(watcher);
+
+    if (auto* linux_ui = ui::LinuxUi::instance()) {
+      primary_paste_pref_observation_.Observe(linux_ui);
+    }
+  }
+
+  // ui::PrimaryPastePrefObserver:
+  void OnPrimaryPastePrefChanged() override {
+    watcher_->UpdateRendererPreferences();
+  }
+
+ private:
+  raw_ptr<PrefWatcher> watcher_;
+  base::ScopedObservation<ui::LinuxUi, ui::PrimaryPastePrefObserver>
+      primary_paste_pref_observation_{this};
+};
+#endif
+
 // Watching all these settings per tab is slow when a user has a lot of tabs and
 // and they use session restore. So watch them once per profile.
 // http://crbug.com/452693
 PrefWatcher::PrefWatcher(Profile* profile) : profile_(profile) {
   native_theme_observation_.Observe(ui::NativeTheme::GetInstanceForWeb());
+
+#if BUILDFLAG(IS_LINUX)
+  primary_paste_pref_helper_ = std::make_unique<PrimaryPastePrefHelper>(this);
+#endif
 
   profile_pref_change_registrar_.Init(profile_->GetPrefs());
 
