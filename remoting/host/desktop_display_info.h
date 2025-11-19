@@ -12,6 +12,7 @@
 #include <optional>
 
 #include "remoting/proto/control.pb.h"
+#include "remoting/proto/coordinates.pb.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 
@@ -35,6 +36,10 @@ struct DisplayGeometry {
   DisplayGeometry(const DisplayGeometry&);
   DisplayGeometry& operator=(const DisplayGeometry&);
   ~DisplayGeometry();
+
+  // Returns whether `global_absolute_coordinate` is within the boundaries of
+  // the desktop geometry.
+  bool Contains(const webrtc::DesktopVector& global_absolute_coordinate) const;
 
   webrtc::ScreenId id;
   int32_t x, y;
@@ -88,6 +93,11 @@ class DesktopDisplayInfo {
   }
 
   const std::optional<PixelType>& pixel_type() const { return pixel_type_; }
+
+  // Converts a global absolute coordinate to a fractional coordinate. Returns
+  // nullopt if the absolute coordinate is not within any display.
+  std::optional<protocol::FractionalCoordinate> ToFractionalCoordinate(
+      const webrtc::DesktopVector& global_absolute_coordinate) const;
 
   std::unique_ptr<protocol::VideoLayout> GetVideoLayoutProto() const;
 

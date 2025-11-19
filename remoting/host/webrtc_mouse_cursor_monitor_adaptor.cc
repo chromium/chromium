@@ -4,6 +4,8 @@
 
 #include "remoting/host/webrtc_mouse_cursor_monitor_adaptor.h"
 
+#include <optional>
+
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -67,21 +69,14 @@ void WebrtcMouseCursorMonitorAdaptor::OnMouseCursorPosition(
   if (!display_info) {
     return;
   }
-  for (const auto& display : display_info->displays()) {
-    if (position.x() >= display.x &&
-        position.x() < static_cast<int>(display.x + display.width) &&
-        position.y() >= display.y &&
-        position.y() < static_cast<int>(display.y + display.height)) {
-      auto fractional_position = protocol::ToFractionalCoordinate(
-          display.id,
-          {static_cast<int>(display.width), static_cast<int>(display.height)},
-          {position.x() - display.x, position.y() - display.y});
-      callback_->OnMouseCursorFractionalPosition(fractional_position);
-      return;
-    }
+  std::optional<protocol::FractionalCoordinate> fractional_position =
+      display_info->ToFractionalCoordinate(position);
+  if (fractional_position.has_value()) {
+    callback_->OnMouseCursorFractionalPosition(*fractional_position);
+  } else {
+    LOG(ERROR) << "Cursor position " << position.x() << ", " << position.y()
+               << " is not within any display.";
   }
-  LOG(ERROR) << "Cursor position " << position.x() << ", " << position.y()
-             << " is not within any display.";
 }
 
 void WebrtcMouseCursorMonitorAdaptor::StartCaptureTimer(

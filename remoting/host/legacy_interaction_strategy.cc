@@ -47,6 +47,10 @@
 #include "remoting/host/chromeos/mouse_cursor_monitor_aura.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include "remoting/host/win/mouse_cursor_monitor_win.h"
+#endif
+
 namespace remoting {
 
 LegacyInteractionStrategy::~LegacyInteractionStrategy() {
@@ -91,8 +95,9 @@ std::unique_ptr<DesktopCapturer> LegacyInteractionStrategy::CreateVideoCapturer(
 #else   // !BUILDFLAG(IS_CHROMEOS)
   // The mouse cursor monitor runs on the |video_capture_task_runner_| so the
   // desktop capturer also needs to run on that task_runner for certain
-  // platforms. For example, if we run the desktop capturer on a different
-  // thread on Windows, the cursor shape won't be captured when in GDI mode.
+  // platforms.
+  // TODO: yuweih - The comment above is not valid for Windows. Validate it for
+  // other platforms.
   capture_task_runner = video_capture_task_runner_;
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
@@ -152,6 +157,11 @@ std::unique_ptr<protocol::MouseCursorMonitor>
 LegacyInteractionStrategy::CreateMouseCursorMonitor() {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
+  auto display_monitor = std::make_unique<DelegatingDesktopDisplayInfoMonitor>(
+      display_info_monitor_.GetWeakPtr());
+#if BUILDFLAG(IS_WIN)
+  return std::make_unique<MouseCursorMonitorWin>(std::move(display_monitor));
+#else  // !BUILDFLAG(IS_WIN)
   auto creator = base::BindOnce(
       [](webrtc::DesktopCaptureOptions options)
           -> std::unique_ptr<webrtc::MouseCursorMonitor> {
@@ -165,8 +175,8 @@ LegacyInteractionStrategy::CreateMouseCursorMonitor() {
   return std::make_unique<WebrtcMouseCursorMonitorAdaptor>(
       std::make_unique<MouseCursorMonitorProxy>(video_capture_task_runner_,
                                                 std::move(creator)),
-      std::make_unique<DelegatingDesktopDisplayInfoMonitor>(
-          display_info_monitor_.GetWeakPtr()));
+      std::move(display_monitor));
+#endif  // !BUILDFLAG(IS_WIN)
 }
 
 std::unique_ptr<KeyboardLayoutMonitor>

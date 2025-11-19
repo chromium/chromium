@@ -4,11 +4,14 @@
 
 #include "remoting/host/desktop_display_info.h"
 
+#include <algorithm>
+
 #include "base/check.h"
 #include "build/build_config.h"
 #include "remoting/base/constants.h"
 #include "remoting/base/logging.h"
 #include "remoting/proto/control.pb.h"
+#include "remoting/protocol/coordinate_conversion.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 
 namespace remoting {
@@ -36,6 +39,14 @@ DisplayGeometry::DisplayGeometry(webrtc::ScreenId id,
 DisplayGeometry::DisplayGeometry(const DisplayGeometry&) = default;
 DisplayGeometry& DisplayGeometry::operator=(const DisplayGeometry&) = default;
 DisplayGeometry::~DisplayGeometry() = default;
+
+bool DisplayGeometry::Contains(
+    const webrtc::DesktopVector& global_absolute_coordinate) const {
+  return global_absolute_coordinate.x() >= x &&
+         global_absolute_coordinate.x() < static_cast<int>(x + width) &&
+         global_absolute_coordinate.y() >= y &&
+         global_absolute_coordinate.y() < static_cast<int>(y + height);
+}
 
 DesktopDisplayInfo::DesktopDisplayInfo() = default;
 DesktopDisplayInfo::DesktopDisplayInfo(DesktopDisplayInfo&&) = default;
@@ -198,6 +209,23 @@ void DesktopDisplayInfo::AddDisplayFrom(
                          /* dpi */ track.x_dpi(),
                          /* bpp */ 24,
                          /* is_default */ false, track.display_name());
+}
+
+std::optional<protocol::FractionalCoordinate>
+DesktopDisplayInfo::ToFractionalCoordinate(
+    const webrtc::DesktopVector& global_absolute_coordinate) const {
+  auto it = std::find_if(
+      displays_.begin(), displays_.end(),
+      [&global_absolute_coordinate](const DisplayGeometry& display) {
+        return display.Contains(global_absolute_coordinate);
+      });
+  if (it == displays_.end()) {
+    return std::nullopt;
+  }
+  return protocol::ToFractionalCoordinate(
+      it->id, {static_cast<int>(it->width), static_cast<int>(it->height)},
+      {global_absolute_coordinate.x() - it->x,
+       global_absolute_coordinate.y() - it->y});
 }
 
 std::unique_ptr<protocol::VideoLayout> DesktopDisplayInfo::GetVideoLayoutProto()
