@@ -368,3 +368,22 @@ TEST_F(FaviconCacheTest, ObserveFaviconsChanged) {
   // B calls)| above should verify that we re-request the icon for kUrlA only
   // (because the null result has been invalidated by OnFaviconsChanged).
 }
+
+TEST_F(FaviconCacheTest, DoNotExpireNullFaviconsFor404) {
+  ExpectFaviconServiceForPageUrlCalls(1, 0);
+
+  EXPECT_TRUE(
+      cache_.GetFaviconForPageUrl(kUrlA, base::BindOnce(&Fail)).IsEmpty());
+  std::move(favicon_service_a_site_response_)
+      .Run(favicon_base::FaviconImageResult());
+
+  cache_.OnURLVisited(
+      nullptr /* history_service */,
+      history::VisitedURLInfo(history::URLRow(kUrlA), history::VisitRow(),
+                              history::VisitResponseCodeCategory::k404));
+
+  // The empty favicon should not have been expired. We do not expect another
+  // call to the mock underlying FaviconService.
+  EXPECT_TRUE(
+      cache_.GetFaviconForPageUrl(kUrlA, base::BindOnce(&Fail)).IsEmpty());
+}

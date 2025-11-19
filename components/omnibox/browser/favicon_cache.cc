@@ -163,6 +163,10 @@ void FaviconCache::InvokeRequestCallbackWithFavicon(const Request& request,
 void FaviconCache::OnURLVisited(
     history::HistoryService* history_service,
     const history::VisitedURLInfo& visited_url_info) {
+  if (visited_url_info.response_code_category ==
+      history::VisitResponseCodeCategory::k404) {
+    return;
+  }
   auto it = responses_without_favicons_.Peek(
       {RequestType::kByPageUrl, visited_url_info.url_row.url()});
   if (it != responses_without_favicons_.end())

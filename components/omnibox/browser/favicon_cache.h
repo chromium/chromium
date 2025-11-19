@@ -84,6 +84,7 @@ class FaviconCache : public history::HistoryServiceObserver {
  private:
   FRIEND_TEST_ALL_PREFIXES(FaviconCacheTest, ClearIconsWithHistoryDeletions);
   FRIEND_TEST_ALL_PREFIXES(FaviconCacheTest, ExpireNullFaviconsByHistory);
+  FRIEND_TEST_ALL_PREFIXES(FaviconCacheTest, DoNotExpireNullFaviconsFor404);
   FRIEND_TEST_ALL_PREFIXES(FaviconCacheTest, ObserveFaviconsChanged);
 
   enum class RequestType {
