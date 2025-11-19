@@ -14,7 +14,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
@@ -626,7 +625,6 @@ public class SensitiveContentTest {
                     assertEquals(2, tabModel.getCount());
                     secondTabAfterFreeze[0] = tabModel.getTabAt(1);
                     assertNotNull(secondTabAfterFreeze[0]);
-                    assertNull(secondTabAfterFreeze[0].getWebContents());
                 });
 
         // Select the second tab.

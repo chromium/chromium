@@ -226,6 +226,7 @@ public class TabTest {
     @Test
     @SmallTest
     @Feature({"Tab"})
+    @DisableFeatures(ChromeFeatureList.LOAD_ALL_TABS_AT_STARTUP)
     public void testFrozenTabAttachment() {
         String url =
                 mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/about.html");
@@ -282,7 +283,10 @@ public class TabTest {
     @Test
     @SmallTest
     @Feature({"Tab"})
-    @DisableFeatures(ChromeFeatureList.TAB_FREEZING_USES_DISCARD)
+    @DisableFeatures({
+        ChromeFeatureList.TAB_FREEZING_USES_DISCARD,
+        ChromeFeatureList.LOAD_ALL_TABS_AT_STARTUP
+    })
     public void testFreezeAndAppendPendingNavigation_AlreadyFrozen() {
         String firstUrl =
                 mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/about.html");
@@ -358,6 +362,7 @@ public class TabTest {
     @Test
     @SmallTest
     @Feature({"Tab"})
+    @DisableFeatures(ChromeFeatureList.LOAD_ALL_TABS_AT_STARTUP)
     public void testFreezeAndAppendPendingNavigation_NullTitle() {
         String firstUrl =
                 mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/about.html");

@@ -21,8 +21,10 @@ import org.chromium.base.Token;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ntp.RecentlyClosedBulkEvent;
 import org.chromium.chrome.browser.ntp.RecentlyClosedEntry;
@@ -117,6 +119,7 @@ public class HistoricalTabSaverImplTest {
      */
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.LOAD_ALL_TABS_AT_STARTUP)
     public void testCreateHistoricalTab_Frozen_HistoricalTabCreated() {
         final Tab tab =
                 mActivityTestRule.loadUrlInNewTab(getUrl(TEST_PAGE_1), /* incognito= */ false);
@@ -137,6 +140,7 @@ public class HistoricalTabSaverImplTest {
      */
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.LOAD_ALL_TABS_AT_STARTUP)
     public void testCreateHistoricalTab_Frozen_CannotRestore() {
         final Tab tab =
                 mActivityTestRule.loadUrlInNewTab(getUrl(TEST_PAGE_1), /* incognito= */ false);
@@ -180,6 +184,7 @@ public class HistoricalTabSaverImplTest {
      */
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.LOAD_ALL_TABS_AT_STARTUP)
     public void testCreateHistoricalGroup_Frozen_HistoricalGroupCreated() {
         final Tab tab0 =
                 mActivityTestRule.loadUrlInNewTab(getUrl(TEST_PAGE_1), /* incognito= */ false);
@@ -212,6 +217,7 @@ public class HistoricalTabSaverImplTest {
      */
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.LOAD_ALL_TABS_AT_STARTUP)
     public void testCreateHistoricalGroup_Frozen_CannotRestore() {
         final Tab tab0 =
                 mActivityTestRule.loadUrlInNewTab(getUrl(TEST_PAGE_1), /* incognito= */ false);
@@ -300,6 +306,7 @@ public class HistoricalTabSaverImplTest {
      */
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.LOAD_ALL_TABS_AT_STARTUP)
     public void testCreateHistoricalBulk_Frozen_HistoricalBulkCreated() {
         final Tab tab0 =
                 mActivityTestRule.loadUrlInNewTab(getUrl(TEST_PAGE_1), /* incognito= */ false);
@@ -327,6 +334,7 @@ public class HistoricalTabSaverImplTest {
      */
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.LOAD_ALL_TABS_AT_STARTUP)
     public void testCreateHistoricalBulk_Frozen_CannotRestore() {
         final Tab tab0 =
                 mActivityTestRule.loadUrlInNewTab(getUrl(TEST_PAGE_1), /* incognito= */ false);

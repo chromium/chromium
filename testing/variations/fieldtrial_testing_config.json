@@ -15268,6 +15268,28 @@
             ]
         }
     ],
+    "LoadAllTabsAtStartup": [
+        {
+            "platforms": [
+                "android_webview",
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LazyBrowserInterfaceBroker",
+                        "LoadAllTabsAtStartup"
+                    ]
+                }
+            ]
+        }
+    ],
     "LoadNativeEarly": [
         {
             "platforms": [
