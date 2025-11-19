@@ -296,19 +296,9 @@ void PlusAddressServiceImpl::GetAffiliatedPlusAddresses(
 }
 
 std::vector<Suggestion> PlusAddressServiceImpl::GetSuggestionsFromPlusAddresses(
-    const std::vector<std::string>& plus_addresses,
-    const url::Origin& origin,
-    const autofill::FormFieldData& focused_field,
-    bool is_plus_address_manually_triggered) {
-  // TODO(crbug.com/409962888): Remove early return and add a CHECK once
-  // `BrowserAutofillManager` doesn't call this method anymore.
-  if (!IsPlusAddressFillingEnabled(origin)) {
-    return {};
-  }
-
+    const std::vector<std::string>& plus_addresses) {
   std::vector<Suggestion> suggestions =
-      PlusAddressSuggestionHelper().GetSuggestions(
-          plus_addresses, focused_field, is_plus_address_manually_triggered);
+      PlusAddressSuggestionHelper().GetSuggestions(plus_addresses);
   const autofill::DenseSet<SuggestionType> suggestion_types(suggestions,
                                                             &Suggestion::type);
 

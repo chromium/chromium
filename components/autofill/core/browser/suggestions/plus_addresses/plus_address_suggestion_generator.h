@@ -14,6 +14,20 @@
 
 namespace autofill {
 
+// Returns the suggestions to be offered on the field in `form` on a
+// `trigger_field`. `plus_addresses` are assumed to be the
+// plus profiles affiliated with the primary main frame origin.
+// TODO(crbug.com/409962888): Remove once the new suggestion generation logic
+// is launched.
+[[nodiscard]] std::vector<Suggestion> GetSuggestionsFromPlusAddresses(
+    const FormData& form,
+    const FormFieldData& trigger_field,
+    const FormStructure* form_structure,
+    const AutofillField* trigger_autofill_field,
+    AutofillClient& client,
+    bool is_manually_triggered,
+    const std::vector<std::string>& plus_addresses);
+
 class PlusAddressSuggestionGenerator : public SuggestionGenerator {
  public:
   explicit PlusAddressSuggestionGenerator(
@@ -41,6 +55,20 @@ class PlusAddressSuggestionGenerator : public SuggestionGenerator {
       const base::flat_map<SuggestionDataSource, std::vector<SuggestionData>>&
           all_suggestion_data,
       base::OnceCallback<void(ReturnedSuggestions)> callback) override;
+
+  // Like SuggestionGenerator override, but takes a base::FunctionRef instead of
+  // a base::OnceCallback. Calls that callback exactly once.
+  // TODO(crbug.com/409962888): Remove when BrowserAutofillManager doesn't call
+  // it anymore.
+  void GenerateSuggestions(
+      const FormData& form,
+      const FormFieldData& trigger_field,
+      const FormStructure* form_structure,
+      const AutofillField* trigger_autofill_field,
+      const AutofillClient& client,
+      const base::flat_map<SuggestionDataSource, std::vector<SuggestionData>>&
+          all_suggestion_data,
+      base::FunctionRef<void(ReturnedSuggestions)> callback);
 
  private:
   // Returns the type of suggestion data this generator is supposed to fetch.

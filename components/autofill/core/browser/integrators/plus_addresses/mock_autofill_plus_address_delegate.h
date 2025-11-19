@@ -38,10 +38,7 @@ class MockAutofillPlusAddressDelegate : public AutofillPlusAddressDelegate {
               (override));
   MOCK_METHOD(std::vector<Suggestion>,
               GetSuggestionsFromPlusAddresses,
-              (const std::vector<std::string>&,
-               const url::Origin&,
-               const FormFieldData&,
-               bool),
+              (const std::vector<std::string>&),
               (override));
   MOCK_METHOD(Suggestion, GetManagePlusAddressSuggestion, (), (const override));
   MOCK_METHOD(void,

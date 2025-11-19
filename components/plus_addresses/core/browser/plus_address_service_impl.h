@@ -76,10 +76,7 @@ class PlusAddressServiceImpl : public PlusAddressService,
       const url::Origin& origin,
       base::OnceCallback<void(std::vector<std::string>)> callback) override;
   std::vector<autofill::Suggestion> GetSuggestionsFromPlusAddresses(
-      const std::vector<std::string>& plus_addresses,
-      const url::Origin& origin,
-      const autofill::FormFieldData& focused_field,
-      bool is_plus_address_manually_triggered) override;
+      const std::vector<std::string>& plus_addresses) override;
   autofill::Suggestion GetManagePlusAddressSuggestion() const override;
   void RecordAutofillSuggestionEvent(SuggestionEvent suggestion_event) override;
   void OnPlusAddressSuggestionShown(

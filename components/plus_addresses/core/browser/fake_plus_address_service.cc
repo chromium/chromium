@@ -49,22 +49,15 @@ void FakePlusAddressService::RemoveObserver(PlusAddressService::Observer* o) {
 
 std::vector<autofill::Suggestion>
 FakePlusAddressService::GetSuggestionsFromPlusAddresses(
-    const std::vector<std::string>& plus_addresses,
-    const url::Origin& last_committed_primary_main_frame_origin,
-    const autofill::FormFieldData& focused_field,
-    bool is_plus_address_manually_triggered) {
-  if (IsPlusAddressFillingEnabled(last_committed_primary_main_frame_origin)) {
-    Suggestion suggestion =
-        Suggestion(plus_addresses::test::kFakePlusAddressU16,
-                   SuggestionType::kFillExistingPlusAddress);
-    if constexpr (!BUILDFLAG(IS_ANDROID)) {
-      suggestion.labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
-          IDS_PLUS_ADDRESS_FILL_SUGGESTION_SECONDARY_TEXT))}};
-    }
-    suggestion.icon = Suggestion::Icon::kPlusAddress;
-    return {suggestion};
+    const std::vector<std::string>& plus_addresses) {
+  Suggestion suggestion = Suggestion(plus_addresses::test::kFakePlusAddressU16,
+                                     SuggestionType::kFillExistingPlusAddress);
+  if constexpr (!BUILDFLAG(IS_ANDROID)) {
+    suggestion.labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
+        IDS_PLUS_ADDRESS_FILL_SUGGESTION_SECONDARY_TEXT))}};
   }
-  return {};
+  suggestion.icon = Suggestion::Icon::kPlusAddress;
+  return {suggestion};
 }
 
 autofill::Suggestion FakePlusAddressService::GetManagePlusAddressSuggestion()

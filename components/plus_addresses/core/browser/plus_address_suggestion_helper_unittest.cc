@@ -33,7 +33,6 @@ namespace {
 
 using autofill::Suggestion;
 using autofill::SuggestionType;
-using ::testing::ElementsAre;
 
 class PlusAddressSuggestionHelperTest : public ::testing::Test {
  public:
@@ -43,25 +42,13 @@ class PlusAddressSuggestionHelperTest : public ::testing::Test {
   autofill::test::AutofillUnitTestEnvironment autofill_env_;
 };
 
-// Tests that filling is offered on fields where autofill was previously
-// triggered and prefix-matching is not applied.
-TEST_F(PlusAddressSuggestionHelperTest,
-       FillingSuggestionOnPreviouslyAutofilledFields) {
+// Tests that suggestions are returned
+TEST_F(PlusAddressSuggestionHelperTest, GetSuggestions) {
   PlusAddressSuggestionHelper generator;
   const std::string plus_address = "test+plus@test.com";
 
-  autofill::FormFieldData focused_field;
   EXPECT_THAT(generator.GetSuggestions(
-                  /*affiliated_plus_addresses=*/{plus_address}, focused_field,
-                  /*is_plus_address_manually_triggered=*/false),
-              test::IsSingleFillPlusAddressSuggestion(plus_address));
-
-  // Field got autofilled. The values does not prefix-match any plus address.
-  focused_field.set_is_autofilled(true);
-  focused_field.set_value(u"pp");
-  EXPECT_THAT(generator.GetSuggestions(
-                  /*affiliated_plus_addresses=*/{plus_address}, focused_field,
-                  /*is_plus_address_manually_triggered=*/false),
+                  /*affiliated_plus_addresses=*/{plus_address}),
               test::IsSingleFillPlusAddressSuggestion(plus_address));
 }
 }  // namespace

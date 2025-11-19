@@ -28,10 +28,14 @@
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
+#include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/integrators/password_form_classification.h"
 #include "components/autofill/core/browser/integrators/plus_addresses/autofill_plus_address_delegate.h"
+#include "components/autofill/core/browser/suggestions/plus_addresses/plus_address_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/suggestions/suggestion_test_helpers.h"
@@ -83,6 +87,9 @@ namespace plus_addresses {
 namespace {
 
 using SuggestionEvent = autofill::AutofillPlusAddressDelegate::SuggestionEvent;
+using SuggestionDataSource =
+    autofill::PlusAddressSuggestionGenerator::SuggestionDataSource;
+using SuggestionData = autofill::PlusAddressSuggestionGenerator::SuggestionData;
 using affiliations::FacetURI;
 using autofill::AutofillSuggestionTriggerSource;
 using autofill::EqualsSuggestion;
@@ -94,6 +101,8 @@ using autofill::SuggestionType;
 using base::Bucket;
 using base::BucketsAre;
 using base::test::RunOnceCallback;
+using base::test::RunOnceCallbackRepeatedly;
+using base::test::TestFuture;
 using test::CreatePreallocatedPlusAddress;
 using test::IsSingleFillPlusAddressSuggestion;
 using ::testing::_;
@@ -159,7 +168,7 @@ class PlusAddressServiceTest : public ::testing::Test {
     group.facets.emplace_back(
         FacetURI::FromPotentiallyInvalidSpec(origin.Serialize()));
     ON_CALL(affiliation_service(), GetGroupingInfo)
-        .WillByDefault(RunOnceCallback<1>(
+        .WillByDefault(RunOnceCallbackRepeatedly<1>(
             std::vector<affiliations::GroupedFacets>{group}));
 
     base::MockCallback<base::OnceCallback<void(std::vector<std::string>)>>
@@ -174,10 +183,35 @@ class PlusAddressServiceTest : public ::testing::Test {
     service().GetAffiliatedPlusAddresses(origin, callback.Get());
     run_loop.Quit();
 
-    return service().GetSuggestionsFromPlusAddresses(
-        affiliated_plus_addresses, origin, focused_field,
-        trigger_source == autofill::mojom::AutofillSuggestionTriggerSource::
-                              kManualFallbackPlusAddresses);
+    autofill::PlusAddressSuggestionGenerator suggestion_generator(
+        &service(), trigger_source ==
+                        autofill::mojom::AutofillSuggestionTriggerSource::
+                            kManualFallbackPlusAddresses);
+
+    TestFuture<std::pair<SuggestionDataSource, std::vector<SuggestionData>>>
+        fetch_future;
+
+    FormData form;
+    form.set_fields({focused_field});
+    autofill::FormStructure form_structure(form);
+    autofill::AutofillField trigger_autofill_field(focused_field);
+    trigger_autofill_field.SetTypeTo(
+        autofill::AutofillType(autofill::FieldType::EMAIL_ADDRESS),
+        autofill::AutofillPredictionSource::kServerOverride);
+    suggestion_generator.FetchSuggestionData(
+        form, focused_field, &form_structure, &trigger_autofill_field,
+        autofill::TestAutofillClient(), fetch_future.GetCallback());
+
+    std::pair<SuggestionDataSource, std::vector<SuggestionData>>
+        fetched_plus_addresses = fetch_future.Take();
+    TestFuture<std::pair<autofill::FillingProduct, std::vector<Suggestion>>>
+        generate_future;
+
+    suggestion_generator.GenerateSuggestions(
+        form, focused_field, &form_structure, &trigger_autofill_field,
+        autofill::TestAutofillClient(), {fetched_plus_addresses},
+        generate_future.GetCallback());
+    return generate_future.Take().second;
   }
 
  protected:
@@ -381,7 +415,7 @@ class PlusAddressServiceRequestsTest : public PlusAddressServiceTest {
 // yet confirmed.
 TEST_F(PlusAddressServiceRequestsTest, ReservePlusAddress_ReturnsUnconfirmed) {
   PlusProfile profile = test::CreatePlusProfile();
-  base::test::TestFuture<const PlusProfileOrError&> future;
+  TestFuture<const PlusProfileOrError&> future;
   service().ReservePlusAddress(OriginFromFacet(profile.facet),
                                future.GetCallback());
 
@@ -400,7 +434,7 @@ TEST_F(PlusAddressServiceRequestsTest, ReservePlusAddress_ReturnsUnconfirmed) {
 // Tests that `ReservePlusAddress` saves a new plus address if it is confirmed.
 TEST_F(PlusAddressServiceRequestsTest, ReservePlusAddress_ReturnsConfirmed) {
   PlusProfile profile = test::CreatePlusProfile();
-  base::test::TestFuture<const PlusProfileOrError&> future;
+  TestFuture<const PlusProfileOrError&> future;
   service().ReservePlusAddress(OriginFromFacet(profile.facet),
                                future.GetCallback());
 
@@ -417,7 +451,7 @@ TEST_F(PlusAddressServiceRequestsTest, ReservePlusAddress_ReturnsConfirmed) {
 
 // Tests that `ReservePlusAddress` handles network errors.
 TEST_F(PlusAddressServiceRequestsTest, ReservePlusAddress_Fails) {
-  base::test::TestFuture<const PlusProfileOrError&> future;
+  TestFuture<const PlusProfileOrError&> future;
   service().ReservePlusAddress(kNoSubdomainOrigin, future.GetCallback());
 
   // Check that the future callback is still blocked, and unblock it.
@@ -436,7 +470,7 @@ TEST_F(PlusAddressServiceRequestsTest, ConfirmPlusAddress_Successful) {
   EXPECT_CALL(observer,
               OnPlusAddressesChanged(ElementsAre(PlusAddressDataChange(
                   PlusAddressDataChange::Type::kAdd, profile))));
-  base::test::TestFuture<const PlusProfileOrError&> future;
+  TestFuture<const PlusProfileOrError&> future;
   service().ConfirmPlusAddress(OriginFromFacet(profile.facet),
                                profile.plus_address, future.GetCallback());
 
@@ -450,7 +484,7 @@ TEST_F(PlusAddressServiceRequestsTest, ConfirmPlusAddress_Successful) {
   EXPECT_TRUE(service().IsPlusAddress(*profile.plus_address));
 
   // Assert that ensuing calls to the same facet do not make a network request.
-  base::test::TestFuture<const PlusProfileOrError&> second_future;
+  TestFuture<const PlusProfileOrError&> second_future;
   service().ConfirmPlusAddress(OriginFromFacet(profile.facet),
                                profile.plus_address,
                                second_future.GetCallback());
@@ -463,7 +497,7 @@ TEST_F(PlusAddressServiceRequestsTest, ConfirmPlusAddress_Successful) {
 TEST_F(PlusAddressServiceRequestsTest, ConfirmPlusAddress_Fails) {
   ASSERT_FALSE(service().IsPlusAddress(kPlusAddress));
 
-  base::test::TestFuture<const PlusProfileOrError&> future;
+  TestFuture<const PlusProfileOrError&> future;
   service().ConfirmPlusAddress(kNoSubdomainOrigin, PlusAddress(kPlusAddress),
                                future.GetCallback());
 
@@ -490,11 +524,11 @@ TEST_F(PlusAddressServiceRequestsTest,
   // Verify that Plus Address creation doesn't occur.
   PlusProfile profile = test::CreatePlusProfile();
   profile.is_confirmed = false;
-  base::test::TestFuture<const PlusProfileOrError&> reserve;
+  TestFuture<const PlusProfileOrError&> reserve;
   service().ReservePlusAddress(OriginFromFacet(profile.facet),
                                reserve.GetCallback());
   ASSERT_TRUE(reserve.Wait());
-  base::test::TestFuture<const PlusProfileOrError&> confirm;
+  TestFuture<const PlusProfileOrError&> confirm;
   service().ConfirmPlusAddress(OriginFromFacet(profile.facet),
                                profile.plus_address, confirm.GetCallback());
   ASSERT_TRUE(confirm.Wait());
@@ -529,7 +563,7 @@ TEST_F(PlusAddressServiceRequestsTest,
 TEST_F(PlusAddressServiceRequestsTest,
        PrimaryRefreshTokenError_ResetsHttpRequests) {
   PlusProfile profile = test::CreatePlusProfile();
-  base::test::TestFuture<const PlusProfileOrError&> future;
+  TestFuture<const PlusProfileOrError&> future;
   service().ReservePlusAddress(OriginFromFacet(profile.facet),
                                future.GetCallback());
 
@@ -581,7 +615,7 @@ TEST_F(PlusAddressServiceRequestsTest,
       GoogleServiceAuthError(GoogleServiceAuthError::NONE));
 
   // Verify that Plus Address creation occurs and makes a network request.
-  base::test::TestFuture<const PlusProfileOrError&> reserve;
+  TestFuture<const PlusProfileOrError&> reserve;
   service().ReservePlusAddress(OriginFromFacet(profile.facet),
                                reserve.GetCallback());
   EXPECT_EQ(url_loader_factory().NumPending(), 1);
@@ -590,7 +624,7 @@ TEST_F(PlusAddressServiceRequestsTest,
       kReservePlusAddressEndpoint, test::MakeCreationResponse(profile));
   EXPECT_EQ(reserve.Get()->plus_address, profile.plus_address);
 
-  base::test::TestFuture<const PlusProfileOrError&> confirm;
+  TestFuture<const PlusProfileOrError&> confirm;
   service().ConfirmPlusAddress(OriginFromFacet(profile.facet),
                                profile.plus_address, confirm.GetCallback());
   EXPECT_EQ(url_loader_factory().NumPending(), 1);
@@ -603,7 +637,7 @@ TEST_F(PlusAddressServiceRequestsTest,
 // Tests that ongoing network requests are cancelled on signout.
 #if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(PlusAddressServiceRequestsTest, OngoingRequestsCancelledOnSignout) {
-  base::test::TestFuture<const PlusProfileOrError&> future;
+  TestFuture<const PlusProfileOrError&> future;
   service().ReservePlusAddress(kNoSubdomainOrigin, future.GetCallback());
   EXPECT_FALSE(future.IsReady());
 
@@ -685,7 +719,7 @@ TEST_F(PlusAddressServicePreAllocationTest,
           .Append(CreatePreallocatedPlusAddress(kFuture, kPlusAddress1))
           .Append(CreatePreallocatedPlusAddress(kFuture, kPlusAddress2)));
 
-  base::test::TestFuture<const PlusProfileOrError&> reserve;
+  TestFuture<const PlusProfileOrError&> reserve;
   service().ReservePlusAddress(kOrigin, reserve.GetCallback());
   ASSERT_TRUE(reserve.Get().has_value());
   PlusProfile profile = *reserve.Get();
@@ -694,7 +728,7 @@ TEST_F(PlusAddressServicePreAllocationTest,
   // Simulate a response.
   profile.is_confirmed = true;
   profile.profile_id = "123";
-  base::test::TestFuture<const PlusProfileOrError&> confirm;
+  TestFuture<const PlusProfileOrError&> confirm;
   service().ConfirmPlusAddress(kOrigin, profile.plus_address,
                                confirm.GetCallback());
   ASSERT_TRUE(url_loader_factory().SimulateResponseForPendingRequest(
@@ -1467,8 +1501,8 @@ TEST_F(PlusAddressAffiliationsTest, GetEmptyAffiliatedSuggestionMatches) {
       FacetURI::FromCanonicalSpec("https://group.affiliated.com"));
 
   EXPECT_CALL(affiliation_service(), GetGroupingInfo)
-      .WillOnce(
-          RunOnceCallback<1>(std::vector<affiliations::GroupedFacets>{group}));
+      .WillRepeatedly(RunOnceCallbackRepeatedly<1>(
+          std::vector<affiliations::GroupedFacets>{group}));
 
   const url::Origin origin = url::Origin::Create(GURL("https://example.com"));
   EXPECT_THAT(FetchPlusAddressSuggestions(

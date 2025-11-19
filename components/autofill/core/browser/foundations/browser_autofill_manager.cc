@@ -138,6 +138,8 @@
 #include "components/autofill/core/browser/suggestions/payments/iban_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/payments/merchant_promo_code_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
+#include "components/autofill/core/browser/suggestions/plus_addresses/plus_address.h"
+#include "components/autofill/core/browser/suggestions/plus_addresses/plus_address_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
@@ -1293,8 +1295,6 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1(
     AutofillSuggestionTriggerSource trigger_source) {
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
-  const AutofillPlusAddressDelegate* plus_address_delegate =
-      client().GetPlusAddressDelegate();
   // In case we cannot fetch the parsed `FormStructure` and `AutofillField`, we
   // still need to offer Autocomplete.
   // TODO(crbug.com/433224307): Consider early returning here when the cache
@@ -1304,30 +1304,37 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1(
 
   SuggestionsContext context = BuildSuggestionsContext(
       form, form_structure, field, autofill_field, trigger_source);
-  const bool field_is_relevant_for_plus_addresses =
-      IsPlusAddressesManuallyTriggered(trigger_source) ||
-      // TODO(crbug.com/409962888): Figure out if plus addresses should be
-      // conditioned on Address Autofill being enabled.
-      (client().IsAutofillProfileEnabled() &&
-       !context.do_not_generate_autofill_suggestions && autofill_field &&
-       plus_address_delegate &&
-       plus_address_delegate->IsFieldEligibleForPlusAddress(*autofill_field) &&
-       plus_address_delegate->IsPlusAddressFillingEnabled(
-           client().GetLastCommittedPrimaryMainFrameOrigin()));
 
   auto generate_suggestions_and_maybe_show_ui_phase2 = base::BindOnce(
       &BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2,
       weak_ptr_factory_.GetWeakPtr(), form, field, trigger_source, context);
 
-  if (field_is_relevant_for_plus_addresses) {
-    client().GetPlusAddressDelegate()->GetAffiliatedPlusAddresses(
-        client().GetLastCommittedPrimaryMainFrameOrigin(),
-        std::move(generate_suggestions_and_maybe_show_ui_phase2));
+  if (auto* delegate = client().GetPlusAddressDelegate()) {
+    // The `generate_suggestions_and_maybe_show_ui_phase2` has to be wrapped
+    // such that the plus addresses are mapped from the new interface to the old
+    // one.
+    // TODO(crbug.com/409962888): Remove once the new suggestion generation
+    // logic is launched.
+    auto wrapper_callback = base::BindOnce(
+        [](std::pair<autofill::SuggestionGenerator::SuggestionDataSource,
+                     std::vector<autofill::SuggestionGenerator::SuggestionData>>
+               suggestions_pair) {
+          return base::ToVector(
+              std::move(suggestions_pair.second),
+              [](autofill::SuggestionGenerator::SuggestionData& suggestion) {
+                return std::get<PlusAddress>(std::move(suggestion)).value();
+              });
+        });
+    PlusAddressSuggestionGenerator plus_address_suggestion_generator(
+        delegate, IsPlusAddressesManuallyTriggered(trigger_source));
+    plus_address_suggestion_generator.FetchSuggestionData(
+        form, field, form_structure, autofill_field, client(),
+        std::move(wrapper_callback)
+            .Then(std::move(generate_suggestions_and_maybe_show_ui_phase2)));
     return;
   }
 
-  std::move(generate_suggestions_and_maybe_show_ui_phase2)
-      .Run(/*plus_addresses=*/{});
+  std::move(generate_suggestions_and_maybe_show_ui_phase2).Run({});
 }
 
 void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
@@ -1491,9 +1498,9 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3(
             : AutofillPlusAddressDelegate::SuggestionContext::
                   kAutofillProfileOnEmailField;
     std::vector<Suggestion> plus_address_suggestions =
-        client().GetPlusAddressDelegate()->GetSuggestionsFromPlusAddresses(
-            plus_addresses, client().GetLastCommittedPrimaryMainFrameOrigin(),
-            field, IsPlusAddressesManuallyTriggered(trigger_source));
+        GetSuggestionsFromPlusAddresses(
+            form, field, form_structure, autofill_field, client(),
+            IsPlusAddressesManuallyTriggered(trigger_source), plus_addresses);
 
     MixPlusAddressAndAddressSuggestions(std::move(plus_address_suggestions),
                                         std::move(suggestions),
@@ -1556,10 +1563,9 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3(
 
   std::vector<Suggestion> plus_address_suggestions;
   if (should_offer_plus_addresses) {
-    plus_address_suggestions =
-        client().GetPlusAddressDelegate()->GetSuggestionsFromPlusAddresses(
-            plus_addresses, client().GetLastCommittedPrimaryMainFrameOrigin(),
-            field, IsPlusAddressesManuallyTriggered(trigger_source));
+    plus_address_suggestions = GetSuggestionsFromPlusAddresses(
+        form, field, form_structure, autofill_field, client(),
+        IsPlusAddressesManuallyTriggered(trigger_source), plus_addresses);
   }
 
   auto on_single_field_suggestions_callback = base::BindOnce(
@@ -3521,6 +3527,13 @@ void BrowserAutofillManager::InitializeSuggestionGenerators(
       otp_manager_) {
     suggestion_generators_.push_back(
         std::make_unique<OtpSuggestionGenerator>(*otp_manager_));
+  }
+  if (relevant_filling_products.contains(FillingProduct::kPlusAddresses)) {
+    if (auto* delegate = client().GetPlusAddressDelegate()) {
+      suggestion_generators_.push_back(
+          std::make_unique<PlusAddressSuggestionGenerator>(
+              delegate, IsPlusAddressesManuallyTriggered(trigger_source)));
+    }
   }
 }
 

@@ -27,6 +27,7 @@ namespace autofill {
 namespace {
 using ::base::test::RunOnceCallback;
 using ::base::test::RunOnceCallbackRepeatedly;
+using ::base::test::TestFuture;
 using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::Field;
@@ -61,9 +62,8 @@ class PlusAddressSuggestionGeneratorTest : public testing::Test {
     ON_CALL(plus_address_delegate_, IsFieldEligibleForPlusAddress)
         .WillByDefault(Return(true));
 
-    ON_CALL(plus_address_delegate_, GetSuggestionsFromPlusAddresses(_, _, _, _))
-        .WillByDefault([](const std::vector<std::string>& plus_addresses,
-                          const url::Origin&, const FormFieldData&, bool) {
+    ON_CALL(plus_address_delegate_, GetSuggestionsFromPlusAddresses)
+        .WillByDefault([](const std::vector<std::string>& plus_addresses) {
           std::vector<Suggestion> suggestions;
           suggestions.reserve(plus_addresses.size());
 
@@ -95,7 +95,7 @@ class PlusAddressSuggestionGeneratorTest : public testing::Test {
     generator.FetchSuggestionData(form(), field(), form_structure(),
                                   autofill_field(), client(), fetch_cb.Get());
 
-    base::test::TestFuture<ReturnedSuggestions> future;
+    TestFuture<ReturnedSuggestions> future;
     generator.GenerateSuggestions(
         form(), field(), form_structure(), autofill_field(), client(),
         {{fetched_suggestions}}, future.GetCallback());

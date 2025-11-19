@@ -31,6 +31,48 @@ constexpr FieldTypeSet kPlusAddressRelevantFieldTypes =
 
 }  // namespace
 
+std::vector<Suggestion> GetSuggestionsFromPlusAddresses(
+    const FormData& form,
+    const FormFieldData& trigger_field,
+    const FormStructure* form_structure,
+    const AutofillField* trigger_autofill_field,
+    AutofillClient& client,
+    bool is_manually_triggered,
+    const std::vector<std::string>& plus_addresses) {
+  if (!client.GetPlusAddressDelegate()) {
+    return {};
+  }
+
+  PlusAddressSuggestionGenerator generator(client.GetPlusAddressDelegate(),
+                                           is_manually_triggered);
+  std::vector<SuggestionGenerator::SuggestionData>
+      plus_address_suggestion_data =
+          base::ToVector(plus_addresses, [](const std::string& plus_address) {
+            return SuggestionGenerator::SuggestionData(
+                PlusAddress(plus_address));
+          });
+
+  std::vector<Suggestion> suggestions;
+  // Execution of the `PlusAddressSuggestionGenerator::GenerateSuggestions()` is
+  // synchronous, so returning `suggestions` is safe.
+  auto on_suggestions_generated =
+      [&suggestions](
+          SuggestionGenerator::ReturnedSuggestions returned_suggestions) {
+        suggestions = std::move(returned_suggestions.second);
+      };
+
+  base::flat_map<SuggestionGenerator::SuggestionDataSource,
+                 std::vector<SuggestionGenerator::SuggestionData>>
+      all_suggestion_data = {
+          {SuggestionGenerator::SuggestionDataSource::kPlusAddress,
+           std::move(plus_address_suggestion_data)}};
+
+  generator.GenerateSuggestions(form, trigger_field, form_structure,
+                                trigger_autofill_field, client,
+                                all_suggestion_data, on_suggestions_generated);
+  return suggestions;
+}
+
 PlusAddressSuggestionGenerator::PlusAddressSuggestionGenerator(
     AutofillPlusAddressDelegate* plus_address_delegate,
     bool is_manually_triggered)
@@ -100,15 +142,27 @@ void PlusAddressSuggestionGenerator::GenerateSuggestions(
     const base::flat_map<SuggestionDataSource, std::vector<SuggestionData>>&
         all_suggestion_data,
     base::OnceCallback<void(ReturnedSuggestions)> callback) {
-  if (!plus_address_delegate_) {
-    std::move(callback).Run({FillingProduct::kPlusAddresses, {}});
-    return;
-  }
+  GenerateSuggestions(
+      form, trigger_field, form_structure, trigger_autofill_field, client,
+      all_suggestion_data,
+      [&callback](ReturnedSuggestions returned_suggestions) {
+        std::move(callback).Run(std::move(returned_suggestions));
+      });
+}
 
+void PlusAddressSuggestionGenerator::GenerateSuggestions(
+    const FormData& form,
+    const FormFieldData& trigger_field,
+    const FormStructure* form_structure,
+    const AutofillField* trigger_autofill_field,
+    const AutofillClient& client,
+    const base::flat_map<SuggestionDataSource, std::vector<SuggestionData>>&
+        all_suggestion_data,
+    base::FunctionRef<void(ReturnedSuggestions)> callback) {
   const std::vector<SuggestionData>* plus_addresses_data =
       base::FindOrNull(all_suggestion_data, SuggestionDataSource::kPlusAddress);
   if (!plus_addresses_data || plus_addresses_data->empty()) {
-    std::move(callback).Run({FillingProduct::kPlusAddresses, {}});
+    callback({FillingProduct::kPlusAddresses, {}});
     return;
   }
 
@@ -119,11 +173,8 @@ void PlusAddressSuggestionGenerator::GenerateSuggestions(
 
   std::vector<Suggestion> suggestions =
       plus_address_delegate_->GetSuggestionsFromPlusAddresses(
-          plus_addresses_to_suggest,
-          client.GetLastCommittedPrimaryMainFrameOrigin(), trigger_field,
-          is_manually_triggered_);
-  std::move(callback).Run(
-      {FillingProduct::kPlusAddresses, std::move(suggestions)});
+          plus_addresses_to_suggest);
+  callback({FillingProduct::kPlusAddresses, std::move(suggestions)});
 }
 
 std::optional<PlusAddressSuggestionGenerator::SuggestionDataSource>

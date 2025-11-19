@@ -11,7 +11,6 @@
 #include "base/memory/stack_allocated.h"
 
 namespace autofill {
-class FormFieldData;
 struct Suggestion;
 }  // namespace autofill
 
@@ -20,6 +19,8 @@ namespace plus_addresses {
 // Helper class for generation plus address suggestions. Objects of this class
 // are not intended to be saved into a member - instead, their lifetime should
 // be scoped to a method call that generates suggestions.
+// TODO(crbug.com/409962888): Remove this class and make the methods free
+// functions.
 class PlusAddressSuggestionHelper final {
   STACK_ALLOCATED();
 
@@ -27,16 +28,11 @@ class PlusAddressSuggestionHelper final {
   PlusAddressSuggestionHelper();
   ~PlusAddressSuggestionHelper();
 
-  // Returns the suggestions to be offered on the field in `focused_form` with
-  // `focused_field_id` with Password Manager classification
-  // `focused_form_classification`. `affiliated_profiles` are assumed to be the
-  // plus profiles affiliated with the primary main frame origin.
-  // Note that the method CHECKs that a field with `focused_field_id` is
-  // contained in `focused_form`.
+  // Returns the suggestions to be offered for `affiliated_plus_addresses`.
+  // Note that this method does not do any filtering and always returns
+  // suggestions for all plus addresses in `affiliated_plus_addresses`.
   [[nodiscard]] std::vector<autofill::Suggestion> GetSuggestions(
-      const std::vector<std::string>& affiliated_plus_addresses,
-      const autofill::FormFieldData& focused_field,
-      bool is_plus_address_manually_triggered);
+      const std::vector<std::string>& affiliated_plus_addresses);
 
   // Returns a suggestion for managing plus addresses.
   static autofill::Suggestion GetManagePlusAddressSuggestion();

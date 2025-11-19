@@ -24,6 +24,7 @@ class Origin;
 namespace autofill {
 
 class AutofillField;
+class PlusAddressSuggestionGenerator;
 struct Suggestion;
 
 // The interface for communication from //components/autofill to
@@ -90,17 +91,13 @@ class AutofillPlusAddressDelegate {
       const url::Origin& origin,
       base::OnceCallback<void(std::vector<std::string>)> callback) = 0;
 
-  // Returns the suggestions to show for the given list of `plus_addresses`,
-  // `origin` and the `focused_field`.
-  // If `is_plus_address_manually_triggered` is true (e.g. the suggestions were
-  // triggered from the context menu on Desktop), then information about the
-  // focused form and field is ignored. Otherwise, only suggestions whose prefix
-  // matches the value in the focused field are shown.
+  // Returns the suggestions to show for the given list of `plus_addresses`.
+  // Note that this method does not do any filtering and always returns
+  // suggestions for all plus addresses in `plus_addresses`.
+  // Note that this method shouldn't be called from sources other than
+  // `PlusAddressSuggestionGenerator`.
   virtual std::vector<Suggestion> GetSuggestionsFromPlusAddresses(
-      const std::vector<std::string>& plus_addresses,
-      const url::Origin& origin,
-      const FormFieldData& focused_field,
-      bool is_plus_address_manually_triggered) = 0;
+      const std::vector<std::string>& plus_addresses) = 0;
 
   // Returns the "Manage plus addresses..." suggestion which redirects the user
   // to the plus address management page.

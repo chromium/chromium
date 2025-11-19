@@ -43,29 +43,17 @@ PlusAddressSuggestionHelper::PlusAddressSuggestionHelper() = default;
 PlusAddressSuggestionHelper::~PlusAddressSuggestionHelper() = default;
 
 std::vector<autofill::Suggestion> PlusAddressSuggestionHelper::GetSuggestions(
-    const std::vector<std::string>& affiliated_plus_addresses,
-    const autofill::FormFieldData& focused_field,
-    bool is_plus_address_manually_triggered) {
-  const std::u16string normalized_field_value =
-      autofill::RemoveDiacriticsAndConvertToLowerCase(focused_field.value());
-
+    const std::vector<std::string>& affiliated_plus_addresses) {
   std::vector<Suggestion> suggestions;
   suggestions.reserve(affiliated_plus_addresses.size());
   for (const std::string& affiliated_plus_address : affiliated_plus_addresses) {
-    std::u16string plus_address = base::UTF8ToUTF16(affiliated_plus_address);
-    // Generally, plus address suggestions are only available on fields whose
-    // content matches the suggestion text. In cases where the field was
-    // previously autofilled or suggestions were manually triggered, no prefix
-    // matching should be applied.
-    // TODO(crbug.com/409962888): Remove filtering and add a CHECK once
-    // `BrowserAutofillManager` doesn't call
-    // PlusAddressServiceImpl::GetSuggestionsFromPlusAddresses() anymore.
-    if (is_plus_address_manually_triggered || focused_field.is_autofilled() ||
-        plus_address.starts_with(normalized_field_value)) {
-      suggestions.push_back(
-          CreateFillPlusAddressSuggestion(std::move(plus_address)));
-    }
+    suggestions.push_back(CreateFillPlusAddressSuggestion(
+        base::UTF8ToUTF16(affiliated_plus_address)));
   }
+  // It is required by `autofill::SuggestionGenerator` that this function should
+  // not filter plus addresses and should return an `autofill::Suggestion`
+  // object for each of them.
+  CHECK_EQ(suggestions.size(), affiliated_plus_addresses.size());
   return suggestions;
 }
 
