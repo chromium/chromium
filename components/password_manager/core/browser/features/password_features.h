@@ -111,6 +111,9 @@ BASE_DECLARE_FEATURE(kEnablePasswordManagerMojoApi);
 // Later change password url is used during password change.
 BASE_DECLARE_FEATURE(kFetchChangePasswordUrlForPasswordChange);
 
+// Enables filling of change password form by typing.
+BASE_DECLARE_FEATURE(kFillChangePasswordFormByTyping);
+
 // Enables the experiment for the password manager to only fill on account
 // selection, rather than autofilling on page load, with highlighting of fields.
 BASE_DECLARE_FEATURE(kFillOnAccountSelect);

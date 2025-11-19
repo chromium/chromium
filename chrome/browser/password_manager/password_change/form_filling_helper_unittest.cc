@@ -6,6 +6,7 @@
 
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
@@ -95,6 +96,9 @@ TEST_F(FormFillingHelperTest, SuccessfulFilling) {
   FormFillingHelper helper(web_contents(), driver()->AsWeakPtr(),
                            std::move(tasks), completion_future.GetCallback());
 
+  EXPECT_TRUE(base::test::RunUntil(
+      [&helper]() { return helper.typing_helper() != nullptr; }));
+
   // Expect a call to driver to extract the form.
   EXPECT_CALL(*driver(), GetAutofillDriver)
       .WillOnce(Return(&autofill_driver()));
@@ -123,6 +127,9 @@ TEST_F(FormFillingHelperTest, FilledInAscendingOrder) {
       completion_future;
   FormFillingHelper helper(web_contents(), driver()->AsWeakPtr(),
                            std::move(tasks), completion_future.GetCallback());
+
+  EXPECT_TRUE(base::test::RunUntil(
+      [&helper]() { return helper.typing_helper() != nullptr; }));
 
   ASSERT_TRUE(helper.typing_helper());
   EXPECT_EQ(field_1.renderer_id(),
@@ -163,6 +170,9 @@ TEST_F(FormFillingHelperTest, TypingFailure) {
   FormFillingHelper helper(web_contents(), driver()->AsWeakPtr(),
                            std::move(tasks), completion_future.GetCallback());
 
+  EXPECT_TRUE(base::test::RunUntil(
+      [&helper]() { return helper.typing_helper() != nullptr; }));
+
   EXPECT_CALL(*driver(), GetAutofillDriver).Times(0);
   EXPECT_CALL(autofill_driver(), ExtractFormWithField).Times(0);
 
@@ -183,6 +193,9 @@ TEST_F(FormFillingHelperTest, FailedToObtainAutofillDriver) {
   FormFillingHelper helper(web_contents(), driver()->AsWeakPtr(),
                            std::move(tasks), completion_future.GetCallback());
 
+  EXPECT_TRUE(base::test::RunUntil(
+      [&helper]() { return helper.typing_helper() != nullptr; }));
+
   EXPECT_CALL(*driver(), GetAutofillDriver).WillOnce(Return(nullptr));
   EXPECT_CALL(autofill_driver(), ExtractFormWithField).Times(0);
 
@@ -202,6 +215,9 @@ TEST_F(FormFillingHelperTest, FormExtractionFailure) {
       completion_future;
   FormFillingHelper helper(web_contents(), driver()->AsWeakPtr(),
                            std::move(tasks), completion_future.GetCallback());
+
+  EXPECT_TRUE(base::test::RunUntil(
+      [&helper]() { return helper.typing_helper() != nullptr; }));
 
   EXPECT_CALL(*driver(), GetAutofillDriver)
       .WillOnce(Return(&autofill_driver()));

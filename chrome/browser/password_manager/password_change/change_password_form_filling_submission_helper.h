@@ -30,6 +30,7 @@ class PasswordManagerClient;
 class PasswordChangeSubmissionVerifier;
 class ModelQualityLogsUploader;
 class ChangePasswordFormWaiter;
+class FormFillingHelper;
 
 // Helper class which fills a form, submits it and verifies submission result.
 // Upon completion invokes `result_callback` to notify the result of submission.
@@ -87,6 +88,9 @@ class ChangePasswordFormFillingSubmissionHelper {
   password_manager::PasswordFormManager* form_manager() {
     return form_manager_.get();
   }
+
+  FormFillingHelper* form_filler() { return form_filler_.get(); }
+
 #endif
   // Whether helper has submitted change password form or not.
   bool IsPasswordFormSubmitted() const {
@@ -99,8 +103,6 @@ class ChangePasswordFormFillingSubmissionHelper {
       base::WeakPtr<password_manager::PasswordManagerDriver> driver);
 
   void ChangePasswordFormFilled(
-      base::WeakPtr<password_manager::PasswordManagerDriver> driver,
-      autofill::FieldRendererId field_id,
       const std::optional<autofill::FormData>& submitted_form);
 
   void OnPageContentReceived(
@@ -152,6 +154,8 @@ class ChangePasswordFormFillingSubmissionHelper {
   base::OneShotTimer timeout_timer_;
 
   bool submission_detected_ = false;
+
+  std::unique_ptr<FormFillingHelper> form_filler_;
 
   // Helper object which verifies whether password was updated successfully.
   std::unique_ptr<PasswordChangeSubmissionVerifier> submission_verifier_;

@@ -58,7 +58,11 @@ FormFillingHelper::FormFillingHelper(
         std::move(value), std::move(on_filling_complete));
   }
 
-  std::move(callback_chain).Run();
+  // PostTask is required because if the form is filled immediately the fields
+  // might be cleared by PasswordAutofillAgent if there were no credentials to
+  // fill during SendFillInformationToRenderer call.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, std::move(callback_chain));
 }
 
 FormFillingHelper::~FormFillingHelper() = default;

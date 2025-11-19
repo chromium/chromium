@@ -480,14 +480,13 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
   PasswordsNavigationObserver observer(web_contents);
   EXPECT_TRUE(observer.Wait());
 
-  // Wait and verify the old password is filled correctly.
-  WaitForElementValue("password", "pa$$word");
+  std::string generated_password = base::UTF16ToUTF8(
+      static_cast<PasswordChangeDelegateImpl*>(delegate)->generated_password());
 
-  // Verify there is a new password generated and it's filled into both fields.
-  std::string new_password =
-      GetElementValue(/*iframe_id=*/"null", "new_password_1");
-  EXPECT_FALSE(new_password.empty());
-  CheckElementValue("new_password_2", new_password);
+  // Verify all the fields are filled correctly.
+  WaitForElementValue("new_password_2", generated_password);
+  WaitForElementValue("new_password_1", generated_password);
+  WaitForElementValue("password", "pa$$word");
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, PasswordChangeStateUpdated) {
@@ -567,16 +566,14 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, GeneratedPasswordIsPreSaved) {
   SetWebContents(delegate_impl->executor());
   PasswordsNavigationObserver observer(WebContents());
   EXPECT_TRUE(observer.Wait());
-  WaitForElementValue("password", "pa$$word");
 
   // Verify generated password is pre-saved.
+  WaitForElementValue("password", "pa$$word");
   WaitForPasswordStore();
-  std::string generated_password =
-      base::UTF16ToUTF8(delegate_impl->generated_password());
-  EXPECT_EQ(generated_password,
-            GetElementValue(/*iframe_id=*/"null", "new_password_1"));
   CheckThatCredentialsStored(
-      /*username=*/"test", "pa$$word", generated_password);
+      /*username=*/"test", "pa$$word",
+      base::UTF16ToUTF8(static_cast<PasswordChangeDelegateImpl*>(delegate)
+                            ->generated_password()));
 }
 
 // Verify that after password change is stopped, password change delegate is not

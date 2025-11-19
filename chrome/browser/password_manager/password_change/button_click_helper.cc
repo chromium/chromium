@@ -14,6 +14,8 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
+namespace {
+
 using Logger = password_manager::BrowserSavePasswordProgressLogger;
 
 std::unique_ptr<Logger> GetLoggerIfAvailable(
@@ -29,6 +31,8 @@ std::unique_ptr<Logger> GetLoggerIfAvailable(
 
   return nullptr;
 }
+
+}  // namespace
 
 ButtonClickHelper::ButtonClickHelper(
     content::WebContents* web_contents,
