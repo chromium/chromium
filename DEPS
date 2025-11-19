@@ -4662,17 +4662,6 @@ hooks = [
     ],
   },
   {
-    'name': 'Fetch PGO profiles for android arm64',
-    'pattern': '.',
-    'condition': 'checkout_pgo_profiles and checkout_android',
-    'action': [ 'python3',
-                'src/tools/update_pgo_profiles.py',
-                '--target=android-arm64',
-                'update',
-                '--gs-url-base=chromium-optimization-profiles/pgo_profiles',
-    ],
-  },
-  {
     'name': 'Fetch PGO profiles for android-desktop-x64',
     'pattern': '.',
     'condition': 'checkout_pgo_profiles and checkout_android',
