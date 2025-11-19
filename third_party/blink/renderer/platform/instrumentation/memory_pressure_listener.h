@@ -43,11 +43,8 @@ class PLATFORM_EXPORT MemoryPressureListenerRegistration {
 
 // MemoryPressureListenerRegistry listens to some events which could be
 // opportunities for reducing memory consumption and notifies its clients.
-class PLATFORM_EXPORT MemoryPressureListenerRegistry final
-    : public GarbageCollected<MemoryPressureListenerRegistry> {
+class PLATFORM_EXPORT MemoryPressureListenerRegistry final {
  public:
-  static MemoryPressureListenerRegistry& Instance();
-
   // See: SysUtils::IsLowEndDevice for the full details of what "low-end" means.
   // This returns true for devices that can use more extreme tradeoffs for
   // performance. Many low memory devices (<=1GB) are not considered low-end.
@@ -69,28 +66,12 @@ class PLATFORM_EXPORT MemoryPressureListenerRegistry final
   // the heap size.
   static void Initialize();
 
-  MemoryPressureListenerRegistry();
-  MemoryPressureListenerRegistry(const MemoryPressureListenerRegistry&) =
-      delete;
-  MemoryPressureListenerRegistry& operator=(
-      const MemoryPressureListenerRegistry&) = delete;
-
-  // RegisterClient() and UnregisterClient() work only in the main thread.
-  void RegisterClient(MemoryPressureListener*);
-  void UnregisterClient(MemoryPressureListener*);
-
-  void OnMemoryPressure(base::MemoryPressureLevel);
-
-  void Trace(Visitor*) const;
-
  private:
   friend class Internals;
 
   static void SetIsLowEndDeviceForTesting(bool);
 
   static bool is_low_end_device_;
-
-  HeapHashSet<WeakMember<MemoryPressureListener>> clients_;
 };
 
 }  // namespace blink

@@ -147,7 +147,6 @@
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/platform/web_cache.h"
 #include "third_party/blink/public/platform/web_image_generator.h"
-#include "third_party/blink/public/platform/web_memory_pressure_listener.h"
 #include "third_party/blink/public/platform/web_network_state_notifier.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/platform/web_scoped_page_pauser.h"
@@ -1673,10 +1672,6 @@ void RenderThreadImpl::OnMemoryPressure(
         data->set_level(base::trace_event::MemoryPressureLevelToTraceEnum(
             memory_pressure_level));
       });
-
-  if (blink_platform_impl_) {
-    blink::WebMemoryPressureListener::OnMemoryPressure(memory_pressure_level);
-  }
 }
 
 void RenderThreadImpl::OnRendererInterfaceReceiver(
