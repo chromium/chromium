@@ -293,6 +293,7 @@ GURL ContextualTasksUiService::GetDefaultAiPageUrl() {
 
 void ContextualTasksUiService::OnTaskChangedInPanel(
     BrowserWindowInterface* browser_window_interface,
+    content::WebContents* web_contents,
     const base::Uuid& task_id) {
   // If a new thread is started in the panel, affiliated tabs should change
   // their thread to the new one.
@@ -320,11 +321,14 @@ void ContextualTasksUiService::OnTaskChangedInPanel(
       for (const auto& id : tab_ids) {
         context_controller_->AssociateTabWithTask(new_task_id, id);
       }
-      return;
     }
+  } else {
+    context_controller_->AssociateTabWithTask(new_task_id, active_id);
   }
 
-  context_controller_->AssociateTabWithTask(new_task_id, active_id);
+  ContextualTasksSidePanelCoordinator* coordinator =
+      ContextualTasksSidePanelCoordinator::From(browser_window_interface);
+  coordinator->OnTaskChanged(web_contents, new_task_id);
 }
 
 void ContextualTasksUiService::MoveTaskUiToToNewTab(

@@ -42,11 +42,13 @@ class ContextualTasksSidePanelCoordinatorInteractiveUiTest
     // Create task1 and associate with tab0 and tab2, create task2 and associate
     // with tab1. Left tab3 with no task associated with.
     ContextualTask task1 = contextual_tasks_controller->CreateTask();
+    task_id1_ = task1.GetTaskId();
     contextual_tasks_controller->AssociateTabWithTask(
         task1.GetTaskId(),
         sessions::SessionTabHelper::IdForTab(
             browser()->tab_strip_model()->GetWebContentsAt(0)));
     ContextualTask task2 = contextual_tasks_controller->CreateTask();
+    task_id2_ = task2.GetTaskId();
     contextual_tasks_controller->AssociateTabWithTask(
         task2.GetTaskId(),
         sessions::SessionTabHelper::IdForTab(
@@ -58,6 +60,10 @@ class ContextualTasksSidePanelCoordinatorInteractiveUiTest
 
     browser()->GetFeatures().side_panel_ui()->DisableAnimationsForTesting();
   }
+
+ protected:
+  base::Uuid task_id1_;
+  base::Uuid task_id2_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -217,6 +223,79 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
         // Verify the tab web contents is transferred into the side panel.
         EXPECT_EQ(tab_web_contents,
                   coordinator->GetActiveWebContentsForTesting());
+      }));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
+                       SidePanelCreateNewTask) {
+  SetUpTasks();
+  ContextualTasksSidePanelCoordinator* coordinator =
+      ContextualTasksSidePanelCoordinator::From(browser());
+  RunTestSequence(
+      Do([&]() {
+        // Open side panel.
+        coordinator->Show();
+      }),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId), Do([&]() {
+        content::WebContents* web_contents1 =
+            coordinator->GetActiveWebContentsForTesting();
+        // Change current task from task1 to a new task.
+        ContextualTasksContextController* contextual_tasks_controller =
+            ContextualTasksContextControllerFactory::GetForProfile(
+                browser()->profile());
+        ContextualTask new_task = contextual_tasks_controller->CreateTask();
+        contextual_tasks_controller->AssociateTabWithTask(
+            new_task.GetTaskId(),
+            sessions::SessionTabHelper::IdForTab(
+                browser()->tab_strip_model()->GetActiveWebContents()));
+        coordinator->OnTaskChanged(web_contents1, new_task.GetTaskId());
+        EXPECT_TRUE(coordinator->IsSidePanelOpen());
+
+        // Activate tab1, it associates with the task2 WebContents.
+        browser()->tab_strip_model()->ActivateTabAt(1);
+        EXPECT_NE(web_contents1, coordinator->GetActiveWebContentsForTesting());
+        EXPECT_TRUE(coordinator->IsSidePanelOpen());
+
+        // Activate tab0, it associates with the new WebContents.
+        browser()->tab_strip_model()->ActivateTabAt(0);
+        EXPECT_EQ(web_contents1, coordinator->GetActiveWebContentsForTesting());
+        EXPECT_TRUE(coordinator->IsSidePanelOpen());
+      }));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
+                       SidePanelSelectExistingTask) {
+  SetUpTasks();
+  ContextualTasksSidePanelCoordinator* coordinator =
+      ContextualTasksSidePanelCoordinator::From(browser());
+  RunTestSequence(
+      Do([&]() {
+        // Open side panel.
+        coordinator->Show();
+      }),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId), Do([&]() {
+        content::WebContents* web_contents1 =
+            coordinator->GetActiveWebContentsForTesting();
+        // Change current task from task1 to task2.
+        ContextualTasksContextController* contextual_tasks_controller =
+            ContextualTasksContextControllerFactory::GetForProfile(
+                browser()->profile());
+        contextual_tasks_controller->AssociateTabWithTask(
+            task_id2_,
+            sessions::SessionTabHelper::IdForTab(
+                browser()->tab_strip_model()->GetActiveWebContents()));
+        coordinator->OnTaskChanged(web_contents1, task_id2_);
+        EXPECT_TRUE(coordinator->IsSidePanelOpen());
+
+        // Activate tab1, now it associates with the current WebContents.
+        browser()->tab_strip_model()->ActivateTabAt(1);
+        EXPECT_EQ(web_contents1, coordinator->GetActiveWebContentsForTesting());
+        EXPECT_TRUE(coordinator->IsSidePanelOpen());
+
+        // Activate tab0, it still associates with the current WebContents.
+        browser()->tab_strip_model()->ActivateTabAt(0);
+        EXPECT_EQ(web_contents1, coordinator->GetActiveWebContentsForTesting());
+        EXPECT_TRUE(coordinator->IsSidePanelOpen());
       }));
 }
 

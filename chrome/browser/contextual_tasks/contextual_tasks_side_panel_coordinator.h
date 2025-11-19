@@ -91,6 +91,10 @@ class ContextualTasksSidePanelCoordinator {
   std::unique_ptr<content::WebContents> DetachWebContentsForTask(
       const base::Uuid& task_id);
 
+  // Called when the current task is changed to a new task or an existing task.
+  // In both cases, the cache needs to be updated.
+  void OnTaskChanged(content::WebContents* web_contents, base::Uuid task_id);
+
  private:
   // Get the task associated with the active tab.
   std::optional<ContextualTask> GetCurrentTask();

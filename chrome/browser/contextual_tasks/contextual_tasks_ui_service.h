@@ -89,6 +89,7 @@ class ContextualTasksUiService : public KeyedService {
   // for user to create a new task.
   virtual void OnTaskChangedInPanel(
       BrowserWindowInterface* browser_window_interface,
+      content::WebContents* web_contents,
       const base::Uuid& task_id);
 
   // Returns whether the provided URL is to an AI page.

@@ -53,6 +53,7 @@ class TaskInfoDelegate {
   virtual void SetThreadTitle(std::optional<std::string> title) = 0;
   virtual bool IsShownInTab() = 0;
   virtual BrowserWindowInterface* GetBrowser() = 0;
+  virtual content::WebContents* GetWebUIWebContents() = 0;
 };
 
 class ContextualTasksUI : public TaskInfoDelegate,
@@ -102,6 +103,7 @@ class ContextualTasksUI : public TaskInfoDelegate,
   void SetThreadTitle(std::optional<std::string> title) override;
   bool IsShownInTab() override;
   BrowserWindowInterface* GetBrowser() override;
+  content::WebContents* GetWebUIWebContents() override;
 
   void CloseSidePanel();
 

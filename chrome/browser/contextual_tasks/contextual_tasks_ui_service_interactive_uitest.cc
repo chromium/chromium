@@ -157,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Call OnTaskChangedInPanel and verify that both tabs are now associated with
   // the second task.
-  service->OnTaskChangedInPanel(browser(), task2.GetTaskId());
+  service->OnTaskChangedInPanel(browser(), nullptr, task2.GetTaskId());
   EXPECT_EQ(task2.GetTaskId(),
             contextual_tasks_controller->GetContextualTaskForTab(tab1_id)
                 ->GetTaskId());
@@ -200,7 +200,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
 
   // Call OnTaskChangedInPanel and verify that the first tab is now associated
   // with an empty task.
-  service->OnTaskChangedInPanel(browser(), base::Uuid());
+  service->OnTaskChangedInPanel(browser(), nullptr, base::Uuid());
   std::optional<ContextualTask> empty_task =
       contextual_tasks_controller->GetContextualTaskForTab(tab1_id);
 

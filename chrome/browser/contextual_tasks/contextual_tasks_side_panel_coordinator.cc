@@ -222,6 +222,26 @@ ContextualTasksSidePanelCoordinator::DetachWebContentsForTask(
   return nullptr;
 }
 
+void ContextualTasksSidePanelCoordinator::OnTaskChanged(
+    content::WebContents* web_contents,
+    base::Uuid new_task_id) {
+  for (auto it = task_id_to_web_contents_cache_.begin();
+       it != task_id_to_web_contents_cache_.end();) {
+    if ((*it)->web_contents.get() == web_contents) {
+      // Update current WebContents with the new task id.
+      (*it)->task_id = new_task_id;
+    } else if ((*it)->task_id && (*it)->task_id == new_task_id) {
+      // Remove other WebContents with the same id from cache.
+      if (web_view_ && web_view_->web_contents() == (*it)->web_contents.get()) {
+        web_view_->SetWebContents(nullptr);
+      }
+      it = task_id_to_web_contents_cache_.erase(it);
+      continue;
+    }
+    ++it;
+  }
+}
+
 std::optional<ContextualTask>
 ContextualTasksSidePanelCoordinator::GetCurrentTask() {
   tabs::TabInterface* active_tab_interface =

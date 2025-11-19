@@ -195,6 +195,10 @@ BrowserWindowInterface* ContextualTasksUI::GetBrowser() {
   return FromWebContents(web_ui()->GetWebContents());
 }
 
+content::WebContents* ContextualTasksUI::GetWebUIWebContents() {
+  return web_ui()->GetWebContents();
+}
+
 void ContextualTasksUI::CloseSidePanel() {
   auto* browser = webui::GetBrowserWindowInterface(web_ui()->GetWebContents());
   auto* coordinator =
@@ -296,8 +300,9 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
     task_info_delegate_->SetThreadTitle(std::nullopt);
     if (!task_info_delegate_->IsShownInTab() &&
         task_info_delegate_->GetBrowser()) {
-      ui_service_->OnTaskChangedInPanel(task_info_delegate_->GetBrowser(),
-                                        base::Uuid());
+      ui_service_->OnTaskChangedInPanel(
+          task_info_delegate_->GetBrowser(),
+          task_info_delegate_->GetWebUIWebContents(), base::Uuid());
     }
     return;
   }
@@ -344,8 +349,10 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
 
   if (!task_info_delegate_->IsShownInTab() &&
       task_info_delegate_->GetBrowser()) {
-    ui_service_->OnTaskChangedInPanel(task_info_delegate_->GetBrowser(),
-                                      task_info_delegate_->GetTaskId().value());
+    ui_service_->OnTaskChangedInPanel(
+        task_info_delegate_->GetBrowser(),
+        task_info_delegate_->GetWebUIWebContents(),
+        task_info_delegate_->GetTaskId().value());
   }
 }
 
