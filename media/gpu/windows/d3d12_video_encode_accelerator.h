@@ -101,6 +101,8 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAccelerator
   size_t GetSharedHandleCacheSizeForTesting() const;
 
  private:
+  struct InputFrameRef;
+
   void InitializeTask(const Config& config, const SupportedProfiles& profile);
 
   void UseOutputBitstreamBufferTask(BitstreamBuffer buffer);
@@ -119,10 +121,7 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAccelerator
   void EncodeTask(scoped_refptr<VideoFrame> frame,
                   const VideoEncoder::EncodeOptions& options);
 
-  void DoEncodeTask(scoped_refptr<VideoFrame> frame,
-                    Microsoft::WRL::ComPtr<ID3D12Resource> resolved_texture,
-                    const VideoEncoder::EncodeOptions& options,
-                    base::TimeTicks start_time,
+  void DoEncodeTask(const InputFrameRef& input_frame,
                     const BitstreamBuffer& bitstream_buffer);
 
   void TryEncodeFrames();
@@ -206,8 +205,6 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAccelerator
 
   // Invoked once flush is completed.
   FlushCallback flush_callback_;
-
-  struct InputFrameRef;
 
   base::circular_deque<InputFrameRef> input_frames_queue_
       GUARDED_BY_CONTEXT(encoder_sequence_checker_);

@@ -815,9 +815,7 @@ void D3D12VideoEncodeAccelerator::TryEncodeFrames() {
       break;
     }
 
-    DoEncodeTask(next_input.frame, next_input.resolved_resource,
-                 next_input.options, next_input.frame_encode_start_time,
-                 bitstream_buffers_.front());
+    DoEncodeTask(next_input, bitstream_buffers_.front());
     input_frames_queue_.pop_front();
     bitstream_buffers_.pop();
   }
@@ -831,13 +829,11 @@ void D3D12VideoEncodeAccelerator::TryEncodeFrames() {
 }
 
 void D3D12VideoEncodeAccelerator::DoEncodeTask(
-    scoped_refptr<VideoFrame> frame,
-    Microsoft::WRL::ComPtr<ID3D12Resource> resolved_texture,
-    const VideoEncoder::EncodeOptions& options,
-    base::TimeTicks start_time,
+    const InputFrameRef& input_frame,
     const BitstreamBuffer& bitstream_buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
 
+  scoped_refptr<VideoFrame> frame = input_frame.frame;
   Microsoft::WRL::ComPtr<ID3D12Resource> input_texture;
   if (frame->storage_type() == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
     if (frame->HasNativeGpuMemoryBuffer()) {
@@ -853,18 +849,20 @@ void D3D12VideoEncodeAccelerator::DoEncodeTask(
     }
   } else if (frame->storage_type() == VideoFrame::STORAGE_SHMEM) {
     input_texture = CreateResourceForSharedMemoryVideoFrame(*frame);
-  } else if (!resolved_texture) {
+  } else if (frame->HasSharedImage()) {
+    input_texture = input_frame.resolved_resource;
+  } else {
     return NotifyError({EncoderStatus::Codes::kInvalidInputFrame,
                         "Unsupported frame storage type for encoding"});
   }
-  if (!input_texture && !resolved_texture) {
+  if (!input_texture) {
     return NotifyError({EncoderStatus::Codes::kInvalidInputFrame,
                         "Failed to create input_texture"});
   }
 
   auto result_or_error =
-      encoder_->Encode(resolved_texture ? resolved_texture : input_texture, 0,
-                       frame->ColorSpace(), bitstream_buffer, options);
+      encoder_->Encode(input_texture, 0, frame->ColorSpace(), bitstream_buffer,
+                       input_frame.options);
   if (!result_or_error.has_value()) {
     return NotifyError(std::move(result_or_error).error());
   }
@@ -874,8 +872,9 @@ void D3D12VideoEncodeAccelerator::DoEncodeTask(
   result.metadata.timestamp = frame->timestamp();
 
   if (metrics_helper_) {
-    metrics_helper_->EncodeOneFrame(result.metadata.key_frame,
-                                    base::TimeTicks::Now() - start_time);
+    metrics_helper_->EncodeOneFrame(
+        result.metadata.key_frame,
+        base::TimeTicks::Now() - input_frame.frame_encode_start_time);
   }
   if (!encoded_at_least_one_frame_) {
     encoded_at_least_one_frame_ = true;
