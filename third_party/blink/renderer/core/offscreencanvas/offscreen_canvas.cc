@@ -254,8 +254,7 @@ scoped_refptr<Image> OffscreenCanvas::GetSourceImageForCanvas(
     // Because WebGL/WebGPU sources always require copying the back buffer,
     // we use PaintRenderingResultsToSnapshot instead of GetImage in order to
     // keep a cached copy of the backing in the canvas's resource provider.
-    image = RenderingContext()->PaintRenderingResultsToSnapshot(
-        kBackBuffer, FlushReason::kOther);
+    image = RenderingContext()->PaintRenderingResultsToSnapshot(kBackBuffer);
   } else {
     image = RenderingContext()->GetImage(FlushReason::kOther);
   }

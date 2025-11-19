@@ -3557,8 +3557,7 @@ void WebGLRenderingContextWebGPUBase::PageVisibilityChanged() {
 
 scoped_refptr<StaticBitmapImage>
 WebGLRenderingContextWebGPUBase::PaintRenderingResultsToSnapshot(
-    SourceDrawingBuffer source_buffer,
-    FlushReason reason) {
+    SourceDrawingBuffer source_buffer) {
   NOTIMPLEMENTED();
   return nullptr;
 }

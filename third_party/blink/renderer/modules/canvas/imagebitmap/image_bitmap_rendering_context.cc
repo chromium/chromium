@@ -71,9 +71,8 @@ void ImageBitmapRenderingContext::Stop() {
 
 scoped_refptr<StaticBitmapImage>
 ImageBitmapRenderingContext::PaintRenderingResultsToSnapshot(
-    SourceDrawingBuffer source_buffer,
-    FlushReason reason) {
-  return GetImage(reason);
+    SourceDrawingBuffer source_buffer) {
+  return GetImage(FlushReason::kOther);
 }
 
 void ImageBitmapRenderingContext::Dispose() {

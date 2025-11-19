@@ -1127,8 +1127,7 @@ void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
 
   // Grab a snapshot.
   scoped_refptr<StaticBitmapImage> snapshot =
-      context_->PaintRenderingResultsToSnapshot(kFrontBuffer,
-                                                FlushReason::kOther);
+      context_->PaintRenderingResultsToSnapshot(kFrontBuffer);
 
   if (snapshot) {
     SkBlendMode composite_operator =
@@ -1184,8 +1183,7 @@ scoped_refptr<StaticBitmapImage> HTMLCanvasElement::Snapshot(
     image_bitmap = OffscreenCanvasFrame()->Bitmap();
   } else if (IsWebGL()) {
     if (context_->CreationAttributes().premultiplied_alpha) {
-      image_bitmap = context_->PaintRenderingResultsToSnapshot(
-          source_buffer, FlushReason::kOther);
+      image_bitmap = context_->PaintRenderingResultsToSnapshot(source_buffer);
     } else {
       image_bitmap =
           context_->GetRGBAUnacceleratedStaticBitmapImage(source_buffer);
@@ -1736,8 +1734,7 @@ HTMLCanvasElement::GetSourceImageForCanvasInternal(SourceImageStatus* status) {
       // Because WebGL/WebGPU sources always require copying the back buffer,
       // we use PaintRenderingResultsToSnapshot instead of GetImage in order to
       // keep a cached copy of the backing in the canvas's resource provider.
-      image = RenderingContext()->PaintRenderingResultsToSnapshot(
-          kBackBuffer, FlushReason::kOther);
+      image = RenderingContext()->PaintRenderingResultsToSnapshot(kBackBuffer);
     } else if (RenderingContext()) {
       // This is either CanvasRenderingContext2D or ImageBitmapRenderingContext.
       image = RenderingContext()->GetImage(FlushReason::kOther);

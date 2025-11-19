@@ -1285,8 +1285,7 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
   bool IsPaintable() const override;
   void PageVisibilityChanged() override;
   scoped_refptr<StaticBitmapImage> PaintRenderingResultsToSnapshot(
-      SourceDrawingBuffer source_buffer,
-      FlushReason reason) override;
+      SourceDrawingBuffer source_buffer) override;
   bool CopyRenderingResultsToVideoFrame(
       WebGraphicsContext3DVideoFramePool*,
       SourceDrawingBuffer,

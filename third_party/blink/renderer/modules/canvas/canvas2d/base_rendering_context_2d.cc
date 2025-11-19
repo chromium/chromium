@@ -772,15 +772,14 @@ void BaseRenderingContext2D::Reset() {
 
 scoped_refptr<StaticBitmapImage>
 BaseRenderingContext2D::PaintRenderingResultsToSnapshot(
-    SourceDrawingBuffer source_buffer,
-    FlushReason reason) {
+    SourceDrawingBuffer source_buffer) {
   if (!IsResourceProviderValid()) {
     return nullptr;
   }
 
   CanvasResourceProvider* provider = GetResourceProvider();
-  provider->FlushCanvas(reason);
-  return provider->Snapshot(reason);
+  provider->FlushCanvas();
+  return provider->Snapshot();
 }
 
 bool BaseRenderingContext2D::IsResourceProviderValid() {

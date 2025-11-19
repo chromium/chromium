@@ -283,12 +283,11 @@ GPUCanvasContext::PaintRenderingResultsToCanvas(
 
 scoped_refptr<StaticBitmapImage>
 GPUCanvasContext::PaintRenderingResultsToSnapshot(
-    SourceDrawingBuffer source_buffer,
-    FlushReason reason) {
+    SourceDrawingBuffer source_buffer) {
   CanvasResourceProviderSharedImage* provider =
       PaintRenderingResultsToCanvas(source_buffer);
 
-  return provider ? provider->Snapshot(reason) : nullptr;
+  return provider ? provider->Snapshot(FlushReason::kOther) : nullptr;
 }
 
 bool GPUCanvasContext::CopyRenderingResultsToVideoFrame(

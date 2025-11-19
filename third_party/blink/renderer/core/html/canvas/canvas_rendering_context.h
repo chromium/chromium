@@ -200,8 +200,7 @@ class CORE_EXPORT CanvasRenderingContext
   // Returns a StaticBitmapImage containing the current content, or nullptr if
   // it was not possible to obtain that content.
   virtual scoped_refptr<StaticBitmapImage> PaintRenderingResultsToSnapshot(
-      SourceDrawingBuffer source_buffer,
-      FlushReason reason) = 0;
+      SourceDrawingBuffer source_buffer) = 0;
 
   // WebGL-specific methods
   virtual void ClearMarkedCanvasDirty() {}
