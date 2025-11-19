@@ -137,7 +137,6 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
     _headerImageBottomMargin = kButtonStackMargin;
     _noBackgroundHeaderImageTopMarginPercentage =
         kNoBackgroundHeaderImageTopMarginPercentage;
-    _primaryButtonEnabled = YES;
     _taskRunner = taskRunner;
     _bannerStyle = UIUserInterfaceStyleUnspecified;
   }
@@ -699,30 +698,6 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
         [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
   }
   return _dismissButton;
-}
-
-- (void)setPrimaryButtonEnabled:(BOOL)primaryButtonEnabled {
-  _primaryButtonEnabled = primaryButtonEnabled;
-  self.configuration.primaryActionEnabled = primaryButtonEnabled;
-  [self reloadConfiguration];
-}
-
-- (void)setPrimaryActionString:(NSString*)primaryActionString {
-  _primaryActionString = primaryActionString;
-  self.configuration.primaryActionString = primaryActionString;
-  [self reloadConfiguration];
-}
-
-- (void)setSecondaryActionString:(NSString*)secondaryActionString {
-  _secondaryActionString = secondaryActionString;
-  self.configuration.secondaryActionString = secondaryActionString;
-  [self reloadConfiguration];
-}
-
-- (void)setTertiaryActionString:(NSString*)tertiaryActionString {
-  _tertiaryActionString = tertiaryActionString;
-  self.configuration.tertiaryActionString = tertiaryActionString;
-  [self reloadConfiguration];
 }
 
 #pragma mark - ButtonStackActionDelegate

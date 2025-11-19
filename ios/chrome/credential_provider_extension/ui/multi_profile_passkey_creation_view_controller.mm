@@ -4,6 +4,7 @@
 
 #import "ios/chrome/credential_provider_extension/ui/multi_profile_passkey_creation_view_controller.h"
 
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_container_view.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
@@ -148,9 +149,9 @@ NSAttributedString* AsAttributedString(NSString* text,
   self.specificContentView = [self createSpecificContentView];
   self.subtitleBottomMargin = 0;
 
-  self.primaryActionString = NSLocalizedString(
+  self.configuration.primaryActionString = NSLocalizedString(
       @"IDS_IOS_CREDENTIAL_PROVIDER_EXTENSION_CREATE", @"Create");
-  self.secondaryActionString = NSLocalizedString(
+  self.configuration.secondaryActionString = NSLocalizedString(
       @"IDS_IOS_CREDENTIAL_PROVIDER_EXTENSION_CANCEL", @"Cancel");
 
   [super viewDidLoad];

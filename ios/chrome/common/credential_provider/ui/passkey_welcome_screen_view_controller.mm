@@ -6,6 +6,7 @@
 
 #import "base/notreached.h"
 #import "ios/chrome/common/credential_provider/ui/passkey_welcome_screen_strings.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/instruction_view/instruction_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -94,8 +95,8 @@ NSString* GetBannerName(PasskeyWelcomeScreenPurpose purpose) {
     self.subtitleText = _strings.subtitle;
   }
 
-  self.primaryActionString = _strings.primaryButton;
-  self.secondaryActionString = _strings.secondaryButton;
+  self.configuration.primaryActionString = _strings.primaryButton;
+  self.configuration.secondaryActionString = _strings.secondaryButton;
 
   [super viewDidLoad];
 

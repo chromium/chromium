@@ -6,6 +6,7 @@
 
 #import "base/test/task_environment.h"
 #import "ios/chrome/common/credential_provider/ui/passkey_welcome_screen_strings.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -48,8 +49,9 @@ TEST_F(PasskeyWelcomeScreenViewControllerTest,
   EXPECT_NSEQ(controller.titleText, @"title");
   EXPECT_FALSE(controller.subtitleText);
   EXPECT_EQ(controller.specificContentView.subviews.count, 2u);
-  EXPECT_NSEQ(controller.primaryActionString, @"primaryButton");
-  EXPECT_NSEQ(controller.secondaryActionString, @"secondaryButton");
+  EXPECT_NSEQ(controller.configuration.primaryActionString, @"primaryButton");
+  EXPECT_NSEQ(controller.configuration.secondaryActionString,
+              @"secondaryButton");
   EXPECT_NSEQ(controller.view.backgroundColor,
               [UIColor colorNamed:kPrimaryBackgroundColor]);
 }
@@ -68,8 +70,9 @@ TEST_F(PasskeyWelcomeScreenViewControllerTest,
   EXPECT_NSEQ(controller.titleText, @"title");
   EXPECT_NSEQ(controller.subtitleText, @"subtitle");
   EXPECT_EQ(controller.specificContentView.subviews.count, 0u);
-  EXPECT_NSEQ(controller.primaryActionString, @"primaryButton");
-  EXPECT_NSEQ(controller.secondaryActionString, @"secondaryButton");
+  EXPECT_NSEQ(controller.configuration.primaryActionString, @"primaryButton");
+  EXPECT_NSEQ(controller.configuration.secondaryActionString,
+              @"secondaryButton");
   EXPECT_NSEQ(controller.view.backgroundColor,
               [UIColor colorNamed:kPrimaryBackgroundColor]);
 }
@@ -88,8 +91,9 @@ TEST_F(PasskeyWelcomeScreenViewControllerTest,
   EXPECT_NSEQ(controller.titleText, @"title");
   EXPECT_NSEQ(controller.subtitleText, @"subtitle");
   EXPECT_EQ(controller.specificContentView.subviews.count, 0u);
-  EXPECT_NSEQ(controller.primaryActionString, @"primaryButton");
-  EXPECT_NSEQ(controller.secondaryActionString, @"secondaryButton");
+  EXPECT_NSEQ(controller.configuration.primaryActionString, @"primaryButton");
+  EXPECT_NSEQ(controller.configuration.secondaryActionString,
+              @"secondaryButton");
   EXPECT_NSEQ(controller.view.backgroundColor,
               [UIColor colorNamed:kPrimaryBackgroundColor]);
 }

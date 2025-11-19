@@ -7,6 +7,7 @@
 #import <AuthenticationServices/AuthenticationServices.h>
 
 #import "base/test/task_environment.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/credential_provider_extension/passkey_request_details+Testing.h"
 #import "ios/chrome/credential_provider_extension/ui/feature_flags.h"
@@ -47,10 +48,10 @@ TEST_F(MultiProfilePasskeyCreationViewControllerTest,
   EXPECT_FALSE(controller.subtitleText);
   EXPECT_EQ(controller.specificContentView.subviews.count, 2u);
   EXPECT_NSEQ(
-      controller.primaryActionString,
+      controller.configuration.primaryActionString,
       NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_EXTENSION_CREATE", @""));
   EXPECT_NSEQ(
-      controller.secondaryActionString,
+      controller.configuration.secondaryActionString,
       NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_EXTENSION_CANCEL", @""));
   EXPECT_NSEQ(controller.view.backgroundColor,
               [UIColor colorNamed:kPrimaryBackgroundColor]);

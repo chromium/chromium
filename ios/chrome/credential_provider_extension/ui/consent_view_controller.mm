@@ -7,6 +7,7 @@
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/app_group/app_group_utils.h"
 #import "ios/chrome/common/credential_provider/constants.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 namespace {
@@ -52,7 +53,7 @@ NSString* const kConsentViewControllerIdentifier =
   self.shouldShowLearnMoreButton = YES;
   // Primary action button is initialized regardless of the visibility set and
   // the view crashes without this value set.
-  self.primaryActionString = @"";
+  self.configuration.primaryActionString = @"";
   self.actionButtonsVisibility = ActionButtonsVisibility::kHidden;
   self.shouldShowDismissButton = YES;
   self.dismissButtonString = NSLocalizedString(

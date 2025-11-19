@@ -15,6 +15,7 @@ source_set("ui") {
   deps = [
     "//base",
     "//ios/chrome/common/credential_provider/ui/resources",
+    "//ios/chrome/common/ui/button_stack",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/instruction_view",
     "//ios/chrome/common/ui/promo_style",
@@ -29,6 +30,7 @@ source_set("unit_tests") {
     ":ui",
     "//base",
     "//base/test:test_support",
+    "//ios/chrome/common/ui/button_stack",
     "//ios/chrome/common/ui/colors",
     "//testing/gtest",
   ]

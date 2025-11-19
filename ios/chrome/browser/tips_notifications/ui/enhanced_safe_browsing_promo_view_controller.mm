@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/tips_notifications/ui/enhanced_safe_browsing_promo_view_controller.h"
 
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -44,9 +45,9 @@ NSString* const kEnhancedSafeBrowsingPromoAXID =
   self.subtitleText =
       l10n_util::GetNSString(IDS_IOS_ENHANCED_SAFE_BROWSING_PROMO_SUBTITLE);
 
-  self.primaryActionString = l10n_util::GetNSString(
+  self.configuration.primaryActionString = l10n_util::GetNSString(
       IDS_IOS_ENHANCED_SAFE_BROWSING_PROMO_PRIMARY_ACTION);
-  self.secondaryActionString =
+  self.configuration.secondaryActionString =
       l10n_util::GetNSString(IDS_IOS_ENHANCED_SAFE_BROWSING_PROMO_SHOW_ME_HOW);
   [super viewDidLoad];
   self.view.accessibilityIdentifier = kEnhancedSafeBrowsingPromoAXID;

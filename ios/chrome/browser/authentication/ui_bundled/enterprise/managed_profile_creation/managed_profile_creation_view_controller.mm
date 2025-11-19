@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/common/string_util.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -103,12 +104,12 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 
   // If _multiProfileForceMigration is YES, the user cannot refuse the
   // migration, and the secondary button is hidden.
-  self.primaryActionString =
+  self.configuration.primaryActionString =
       _multiProfileForceMigration
           ? l10n_util::GetNSString(IDS_IOS_ENTERPRISE_PROFILE_CREATION_GOTIT)
           : l10n_util::GetNSString(
                 IDS_IOS_ENTERPRISE_PROFILE_CREATION_CONTINUE);
-  self.secondaryActionString =
+  self.configuration.secondaryActionString =
       _multiProfileForceMigration
           ? nil
           : l10n_util::GetNSString(IDS_IOS_ENTERPRISE_PROFILE_CREATION_CANCEL);

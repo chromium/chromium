@@ -22,6 +22,7 @@ source_set("ui") {
     "//ios/chrome/browser/settings/ui_bundled/password:ui",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/common/ui/button_stack",
     "//ios/chrome/common/ui/promo_style",
     "//ui/base",
   ]

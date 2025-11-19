@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -46,7 +47,7 @@ NSString* const kLensTutorialAnimationDarkViewId =
   self.titleText = l10n_util::GetNSString(IDS_IOS_BEST_FEATURES_LENS_TITLE);
   self.subtitleText =
       l10n_util::GetNSString(IDS_IOS_BEST_FEATURES_LENS_SUBTITLE);
-  self.primaryActionString =
+  self.configuration.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_BEST_FEATURES_START_BROWSING_BUTTON);
 
   NSArray<UITrait>* traits =

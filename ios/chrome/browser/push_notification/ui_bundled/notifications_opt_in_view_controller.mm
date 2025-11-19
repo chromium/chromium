@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -82,9 +83,9 @@ bool TooNarrowForBanner(UIView* view) {
   self.subtitleText =
       l10n_util::GetNSString(IDS_IOS_NOTIFICATIONS_OPT_IN_SUBTITLE);
   self.titleHorizontalMargin = kTitleHorizontalMargin;
-  self.primaryActionString =
+  self.configuration.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_NOTIFICATIONS_OPT_IN_ENABLE_BUTTON);
-  self.secondaryActionString =
+  self.configuration.secondaryActionString =
       l10n_util::GetNSString(IDS_IOS_NOTIFICATIONS_ALERT_CANCEL);
   self.titleTopMarginWhenNoHeaderImage = kSpaceAboveTitle;
   [self configureBanner];
@@ -327,9 +328,10 @@ bool TooNarrowForBanner(UIView* view) {
 // Enables the primary action button if any one of the toggles are on. Disables
 // otherwise.
 - (void)updatePrimaryButtonState {
-  self.primaryButtonEnabled =
+  self.configuration.primaryActionEnabled =
       _contentNotificationsEnabled || _tipsNotificationsEnabled ||
       _priceTrackingNotificationsEnabled || _safetyCheckNotificationsEnabled;
+  [self reloadConfiguration];
 }
 
 // Configures the banner based on the view's size.

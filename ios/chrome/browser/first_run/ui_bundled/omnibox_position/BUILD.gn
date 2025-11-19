@@ -51,6 +51,7 @@ source_set("omnibox_position_ui") {
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/toolbar/ui_bundled/public",
+    "//ios/chrome/common/ui/button_stack",
     "//ios/chrome/common/ui/promo_style",
     "//ios/chrome/common/ui/util",
     "//ui/base",

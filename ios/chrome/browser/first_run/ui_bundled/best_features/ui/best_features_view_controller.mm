@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -88,7 +89,7 @@ const CGFloat kTableViewSectionFooterHeight = 3;
 
   self.titleText = l10n_util::GetNSString(IDS_IOS_BEST_FEATURES_TITLE);
   self.subtitleText = l10n_util::GetNSString(IDS_IOS_BEST_FEATURES_SUBTITLE);
-  self.primaryActionString = [self primaryActionString];
+  self.configuration.primaryActionString = [self primaryActionString];
 
   [super viewDidLoad];
 

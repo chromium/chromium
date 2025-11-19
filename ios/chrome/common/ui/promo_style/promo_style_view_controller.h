@@ -162,21 +162,6 @@ enum class ActionButtonsVisibility {
 // Indicates that the specificContentView will not be used and must be hidden.
 @property(nonatomic, assign) BOOL hideSpecificContentView;
 
-// The text for the primary action. Must be set before the view is loaded.
-@property(nonatomic, copy) NSString* primaryActionString;
-
-// The primary action button is enabled when set to YES, disabled when NO. The
-// button is enabled by default.
-@property(nonatomic, assign) BOOL primaryButtonEnabled;
-
-// The text for the secondary action. Must be set before the view is loaded. If
-// not set, there won't be a secondary action button.
-@property(nonatomic, copy) NSString* secondaryActionString;
-
-// The text for the tertiary action. Must be set before the view is loaded. If
-// not set, there won't be a tertiary action button.
-@property(nonatomic, copy) NSString* tertiaryActionString;
-
 // The delegate to invoke when buttons are tapped. Can be derived by screen-
 // specific view controllers if additional buttons are used.
 @property(nonatomic, weak) id<PromoStyleViewControllerDelegate> delegate;
@@ -233,10 +218,6 @@ enum class ActionButtonsVisibility {
 // Visibility and style indicator of the primary and secondary action buttons.
 @property(nonatomic, assign, readwrite)
     ActionButtonsVisibility actionButtonsVisibility;
-
-// Whether the primary button should be disabled and have its button text
-// replaced with a spinner. Should be set only after the view is loaded.
-@property(nonatomic, assign) BOOL primaryButtonSpinnerEnabled;
 
 // Determines the font text style to use for the title.
 - (UIFontTextStyle)titleLabelFontTextStyle;

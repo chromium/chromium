@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/string_util.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/popover_label_view_controller.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -191,10 +192,10 @@ NSString* const kCollaborationSigninHeaderBackground =
   // Set primary button if sign-in is disabled. For other cases, the primary
   // button is set with `setSelectedIdentityUserName:email:givenName:avatar:`
   // or `noIdentityAvailable`.
-  DCHECK(self.primaryActionString ||
+  DCHECK(self.configuration.primaryActionString ||
          self.signinStatus == SigninScreenConsumerSigninStatusDisabled);
   if (self.signinStatus == SigninScreenConsumerSigninStatusDisabled) {
-    self.primaryActionString =
+    self.configuration.primaryActionString =
         l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_CONTINUE);
   }
 
@@ -257,7 +258,7 @@ NSString* const kCollaborationSigninHeaderBackground =
 
 - (void)setUIEnabled:(BOOL)UIEnabled {
   // For the disabled UI, show a spinner in the primary button.
-  self.primaryButtonSpinnerEnabled = !UIEnabled;
+  self.configuration.loading = !UIEnabled;
   self.view.userInteractionEnabled = UIEnabled;
 }
 
@@ -339,13 +340,14 @@ NSString* const kCollaborationSigninHeaderBackground =
 - (void)updateUIForIdentityAvailable:(BOOL)identityAvailable {
   self.identityControl.hidden = !identityAvailable;
   if (identityAvailable) {
-    self.primaryActionString = l10n_util::GetNSStringF(
+    self.configuration.primaryActionString = l10n_util::GetNSStringF(
         IDS_IOS_FIRST_RUN_SIGNIN_CONTINUE_AS,
         base::SysNSStringToUTF16(self.personalizedButtonPrompt));
   } else {
-    self.primaryActionString =
+    self.configuration.primaryActionString =
         l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SIGN_IN_ACTION);
   }
+  [self reloadConfiguration];
 }
 
 // Configures the view controller for the
@@ -389,7 +391,7 @@ NSString* const kCollaborationSigninHeaderBackground =
   switch (_contextStyle) {
     case SigninContextStyle::kCollaborationJoinTabGroup:
     case SigninContextStyle::kCollaborationShareTabGroup:
-      self.secondaryActionString = l10n_util::GetNSString(
+      self.configuration.secondaryActionString = l10n_util::GetNSString(
           IDS_IOS_PROMOS_MANAGER_ALERT_PROMO_DEFAULT_CANCEL_BUTTON_TEXT);
       break;
     case SigninContextStyle::kDefault: {
@@ -398,16 +400,16 @@ NSString* const kCollaborationSigninHeaderBackground =
             kFRESignInSecondaryActionLabelUpdateParam.Get();
         if (signinValue ==
             kFRESignInSecondaryActionLabelUpdateParamStaySignedOut) {
-          self.secondaryActionString =
+          self.configuration.secondaryActionString =
               l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_STAY_SIGNED_OUT);
         } else {
           // Fallback action when no valid value is provided.
-          self.secondaryActionString =
+          self.configuration.secondaryActionString =
               l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_DONT_SIGN_IN);
         }
       } else {
         // When the feature flag is disabled, default to the original string
-        self.secondaryActionString =
+        self.configuration.secondaryActionString =
             l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_DONT_SIGN_IN);
       }
     } break;

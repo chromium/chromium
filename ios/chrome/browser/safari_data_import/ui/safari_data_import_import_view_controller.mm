@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/safari_data_import/public/ui_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/string_util.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/instruction_view/instruction_view.h"
 #import "ios/chrome/common/ui/util/text_view_util.h"
@@ -34,7 +35,7 @@
   self.titleText = l10n_util::GetNSString(IDS_IOS_SAFARI_IMPORT_IMPORT_TITLE);
   self.subtitleText =
       l10n_util::GetNSString(IDS_IOS_SAFARI_IMPORT_IMPORT_SUBTITLE);
-  self.primaryActionString = l10n_util::GetNSString(
+  self.configuration.primaryActionString = l10n_util::GetNSString(
       IDS_IOS_SAFARI_IMPORT_IMPORT_ACTION_BUTTON_SELECT_YOUR_FILE);
   self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
@@ -58,35 +59,36 @@
       /// `kNotStarted` once the table view is displayed.
       CHECK_LT(static_cast<int>(_importStage),
                static_cast<int>(SafariDataImportStage::kReadyForImport));
-      self.primaryActionString = l10n_util::GetNSString(
+      self.configuration.primaryActionString = l10n_util::GetNSString(
           IDS_IOS_SAFARI_IMPORT_IMPORT_ACTION_BUTTON_SELECT_YOUR_FILE);
-      self.primaryButtonSpinnerEnabled = NO;
+      self.configuration.loading = NO;
       [self.itemTableView reset];
       break;
     case SafariDataImportStage::kFileLoading:
-      self.primaryButtonSpinnerEnabled = YES;
+      self.configuration.loading = YES;
       break;
     case SafariDataImportStage::kReadyForImport:
       [self showTableView];
       [self showDisclaimerForEligibleUser];
-      self.primaryActionString = l10n_util::GetNSString(
+      self.configuration.primaryActionString = l10n_util::GetNSString(
           IDS_IOS_SAFARI_IMPORT_IMPORT_ACTION_BUTTON_IMPORT);
-      self.primaryButtonSpinnerEnabled = NO;
+      self.configuration.loading = NO;
       break;
     case SafariDataImportStage::kImporting:
-      self.primaryButtonEnabled = NO;
+      self.configuration.primaryActionEnabled = NO;
       self.navigationItem.hidesBackButton = YES;
       self.navigationItem.rightBarButtonItem = nil;
       [self.itemTableView notifyImportStart];
       break;
     case SafariDataImportStage::kImported:
       [_disclaimer removeFromSuperview];
-      self.primaryActionString = l10n_util::GetNSString(
+      self.configuration.primaryActionString = l10n_util::GetNSString(
           IDS_IOS_SAFARI_IMPORT_IMPORT_ACTION_BUTTON_DONE);
-      self.primaryButtonEnabled = YES;
+      self.configuration.primaryActionEnabled = YES;
       break;
   }
   _importStage = stage;
+  [self reloadConfiguration];
 }
 
 #pragma mark - Private
