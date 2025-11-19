@@ -743,14 +743,23 @@ Status Database::GetAllOperation(
 
   bool did_first_seek = false;
 
-  // Max idbvalue size before blob wrapping is 64k, so make an assumption
-  // that max key/value size is 128kb tops, to fit under 128mb mojo limit.
-  // This value is just a heuristic and is an attempt to make sure that
-  // GetAll fits under the message limit size.
+  // Values get passed over mojo with BigBuffer, which caps inline byte usage
+  // before falling back to shared memory. This cap is 64kiB; assume that max
+  // key/value size is 128kiB tops, to fit under 128MiB mojo limit. This value
+  // is just a heuristic and is an attempt to make sure that GetAll fits under
+  // the message limit size.
+  static_assert(blink::mojom::kIDBMaxMessageSize >
+                    blink::mojom::kIDBGetAllChunkSize *
+                        mojo_base::BigBuffer::kMaxInlineBytes * 2,
+                "Chunk heuristic too large");
+
+  // LevelDB code assumes that BigBuffer always inlines its bytes. It's probably
+  // OK if that assumption doesn't hold, but alert loudly to spur someone to
+  // investigate if this ever changes.
   static_assert(
-      blink::mojom::kIDBMaxMessageSize >
-          blink::mojom::kIDBGetAllChunkSize * blink::mojom::kIDBWrapThreshold,
-      "Chunk heuristic too large");
+      mojo_base::BigBuffer::kMaxInlineBytes >= blink::mojom::kIDBWrapThreshold,
+      "Value wrapping threshold is higher than BigBuffer inline size; "
+      "BigBuffer may use shared memory with LevelDB backing store");
 
   const size_t max_values_before_sending = blink::mojom::kIDBGetAllChunkSize;
   int64_t num_found_items = 0;

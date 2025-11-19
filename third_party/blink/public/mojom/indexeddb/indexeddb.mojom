@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
@@ -225,7 +226,7 @@ union IDBExternalObject {
 };
 
 struct IDBValue {
-  array<uint8> bits;
+  mojo_base.mojom.BigBuffer bits;
   array<IDBExternalObject> external_objects;
 };
 

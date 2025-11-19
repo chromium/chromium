@@ -32,6 +32,7 @@
 #include "content/browser/indexed_db/instance/sqlite/backing_store_database_impl.h"
 #include "content/browser/indexed_db/instance/sqlite/backing_store_transaction_impl.h"
 #include "content/browser/indexed_db/status.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "sql/database.h"
 #include "sql/error_delegate_util.h"
 #include "sql/meta_table.h"
@@ -154,11 +155,11 @@ StatusOr<blink::IndexedDBKeyPath> ColumnKeyPath(sql::Statement& statement,
   return blink::IndexedDBKeyPath(std::move(parts));
 }
 
-StatusOr<std::vector<uint8_t>> DoDecompress(
+StatusOr<mojo_base::BigBuffer> DoDecompress(
     base::span<const uint8_t> compressed,
     int compression_type) {
   if (compression_type == static_cast<int>(CompressionType::kUncompressed)) {
-    return base::ToVector(compressed);
+    return mojo_base::BigBuffer(compressed);
   }
 
   if (compression_type == static_cast<int>(CompressionType::kZstd)) {
@@ -169,7 +170,7 @@ StatusOr<std::vector<uint8_t>> DoDecompress(
       return base::unexpected(Status::Corruption("ZSTD decompression failed"));
     }
 
-    std::vector<uint8_t> decompressed(decompressed_size);
+    mojo_base::BigBuffer decompressed(decompressed_size);
     if (ZSTD_isError(ZSTD_decompress(decompressed.data(), decompressed.size(),
                                      compressed.data(), compressed.size()))) {
       return base::unexpected(Status::Corruption("ZSTD decompression failed"));
@@ -187,7 +188,7 @@ StatusOr<std::vector<uint8_t>> DoDecompress(
           Status::Corruption("Snappy decompression failed"));
     }
 
-    std::vector<uint8_t> decompressed(decompressed_length);
+    mojo_base::BigBuffer decompressed(decompressed_length);
     base::span<char> dest = base::as_writable_chars(base::span(decompressed));
     if (!snappy::RawUncompress(src.data(), src.size(), dest.data())) {
       return base::unexpected(
@@ -1661,6 +1662,14 @@ StatusOr<BackingStore::RecordIdentifier> DatabaseConnection::PutRecord(
   // Insert record, including inline data.
   const std::string encoded_key = EncodeSortableIDBKey(key);
   {
+    // `bits_copy` *may* be used to briefly own the data that is copied into the
+    // SQL db. NB: this is declared here to ensure its lifetime exceeds that of
+    // `statement`.
+    std::vector<uint8_t> bits_copy;
+    // `bits_span` *will* refer to the data that should be copied into the SQL
+    // db.
+    base::span<const uint8_t> bits_span;
+
     // "INSERT OR REPLACE" deletes the row corresponding to
     // [object_store_id, key] if it exists and inserts a new row with `value`.
     sql::Statement statement(db_->GetCachedStatement(
@@ -1674,40 +1683,56 @@ StatusOr<BackingStore::RecordIdentifier> DatabaseConnection::PutRecord(
 
     static constexpr base::ByteSize kMinimumCompressionSize(64);
     static constexpr float kMinimumCompressionRatio = 0.8f;
+    if (value.bits.storage_type() ==
+        mojo_base::BigBuffer::StorageType::kSharedMemory) {
+      // Make a copy of the bits if they are in shared memory before attempting
+      // to compress. See BigBuffer docs re: TOCTOU bugs.
+      bits_copy = base::ToVector(std::move(value.bits));
+      bits_span = base::span(bits_copy);
+    } else {
+      bits_span = base::span(value.bits);
+    }
 
-    if (value.bits.size() >= kMinimumCompressionSize.InBytes()) {
+    // Maybe compress, updating `bits_span` and `bits_copy` as appropriate.
+    if (bits_span.size() >= kMinimumCompressionSize.InBytes()) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
-      size_t max_compressed_size = ZSTD_compressBound(value.bits.size());
+      size_t max_compressed_size = ZSTD_compressBound(bits_span.size());
       std::vector<uint8_t> compressed_bits(max_compressed_size);
+
       // Compression level of -4 yields compression output similar to Snappy.
       size_t compressed_length = ZSTD_compress(
-          compressed_bits.data(), compressed_bits.size(), value.bits.data(),
-          value.bits.size(), /*compressionLevel=*/-4);
+          compressed_bits.data(), compressed_bits.size(), bits_span.data(),
+          bits_span.size(), /*compressionLevel=*/-4);
       compression_type = CompressionType::kZstd;
 #else
       size_t max_compressed_size =
-          snappy::MaxCompressedLength(value.bits.size());
+          snappy::MaxCompressedLength(bits_span.size());
       std::vector<uint8_t> compressed_bits(max_compressed_size);
       size_t compressed_length = 0;
-      base::span<const char> src = base::as_chars(base::span(value.bits));
+      base::span<const char> src = base::as_chars(bits_span);
       base::span<char> dest =
           base::as_writable_chars(base::span(compressed_bits));
       snappy::RawCompress(src.data(), src.size(), dest.data(),
                           &compressed_length);
       compression_type = CompressionType::kSnappy;
 #endif
-      if (compressed_length <= value.bits.size() * kMinimumCompressionRatio) {
+      if (compressed_length <= bits_span.size() * kMinimumCompressionRatio) {
         compressed_bits.resize(compressed_length);
-        statement.BindBlob(3, std::move(compressed_bits));
+        bits_copy = std::move(compressed_bits);
+        bits_span = base::span(bits_copy);
       } else {
         compression_type = CompressionType::kUncompressed;
       }
     }
 
     statement.BindInt(2, static_cast<int>(compression_type));
-    if (compression_type == CompressionType::kUncompressed) {
-      statement.BindBlob(3, std::move(value.bits));
-    }
+    // Passing `bits_span` directly would make an unnecessary copy via
+    // `RefCountedBytes`, so construct a `RefCountedStaticMemory`, which doesn't
+    // copy. This is safe as long as `statement` is destroyed and clears the
+    // `RefCountedStaticMemory` binding *before* the object that owns that
+    // memory (`bits_copy` or `value.bits`) is destroyed.
+    statement.BindBlob(
+        3, base::MakeRefCounted<base::RefCountedStaticMemory>(bits_span));
     RUN_STATEMENT_RETURN_ON_ERROR(statement);
   }
   const int64_t record_row_id = db_->GetLastInsertRowId();
@@ -2255,7 +2280,7 @@ void DatabaseConnection::ValidateInputs(int64_t object_store_id,
   CHECK(iter->second.indexes.contains(index_id));
 }
 
-StatusOr<std::vector<uint8_t>> DatabaseConnection::Decompress(
+StatusOr<mojo_base::BigBuffer> DatabaseConnection::Decompress(
     base::span<const uint8_t> compressed,
     int compression_type) {
   return DoDecompress(compressed, compression_type)

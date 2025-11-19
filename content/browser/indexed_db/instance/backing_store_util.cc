@@ -152,7 +152,7 @@ base::DictValue RecordToDictValue(BackingStore::Cursor& cursor,
     record.Set("value_digest",
                base::ToVector(crypto::hash::Sha256(value.bits)));
   } else {
-    record.Set("value", std::move(value.bits));
+    record.Set("value", base::ToVector(value.bits));
   }
 
   // Include some limited metadata for blobs (and other external objects).

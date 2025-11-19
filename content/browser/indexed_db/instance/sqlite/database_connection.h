@@ -25,6 +25,7 @@
 #include "content/browser/indexed_db/instance/sqlite/blob_writer.h"
 #include "content/browser/indexed_db/status.h"
 #include "content/common/content_export.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "sql/streaming_blob_handle.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_path.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_range.h"
@@ -248,7 +249,7 @@ class CONTENT_EXPORT DatabaseConnection {
 
   // Decompresses bytes found in the database. Will return an error and mark the
   // database as corrupt on failure.
-  StatusOr<std::vector<uint8_t>> Decompress(
+  StatusOr<mojo_base::BigBuffer> Decompress(
       base::span<const uint8_t> compressed,
       int compression_type);
 

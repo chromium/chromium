@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/numerics/safe_conversions.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/base/string16_mojom_traits.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom-blink.h"
@@ -165,10 +166,10 @@ UnionTraits<blink::mojom::IDBKeyDataView, std::unique_ptr<blink::IDBKey>>::
 }
 
 // static
-base::span<const uint8_t>
+mojo_base::BigBuffer
 StructTraits<blink::mojom::IDBValueDataView, std::unique_ptr<blink::IDBValue>>::
     bits(const std::unique_ptr<blink::IDBValue>& input) {
-  return input->Data();
+  return mojo_base::BigBuffer(input->Data());
 }
 
 // static
@@ -212,12 +213,12 @@ bool StructTraits<blink::mojom::IDBValueDataView,
                   std::unique_ptr<blink::IDBValue>>::
     Read(blink::mojom::IDBValueDataView data,
          std::unique_ptr<blink::IDBValue>* out) {
-  blink::Vector<char> value_bits;
-  if (!data.ReadBits(reinterpret_cast<blink::Vector<uint8_t>*>(&value_bits))) {
+  mojo_base::BigBuffer buffer;
+  if (!data.ReadBits(&buffer)) {
     return false;
   }
 
-  if (value_bits.empty()) {
+  if (buffer.size() == 0U) {
     *out = std::make_unique<blink::IDBValue>();
     return true;
   }
@@ -260,7 +261,7 @@ bool StructTraits<blink::mojom::IDBValueDataView,
   }
 
   *out = std::make_unique<blink::IDBValue>();
-  (*out)->SetData(std::move(value_bits));
+  (*out)->SetData(std::move(buffer));
   (*out)->SetBlobInfo(std::move(value_blob_info));
   (*out)->SetFileSystemAccessTokens(std::move(file_system_access_tokens));
   return true;

@@ -125,7 +125,7 @@ struct MODULES_EXPORT
 template <>
 struct MODULES_EXPORT StructTraits<blink::mojom::IDBValueDataView,
                                    std::unique_ptr<blink::IDBValue>> {
-  static base::span<const uint8_t> bits(
+  static mojo_base::BigBuffer bits(
       const std::unique_ptr<blink::IDBValue>& input);
   static blink::Vector<blink::mojom::blink::IDBExternalObjectPtr>
   external_objects(const std::unique_ptr<blink::IDBValue>& input);

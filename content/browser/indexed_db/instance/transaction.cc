@@ -499,6 +499,12 @@ void Transaction::Put(int64_t object_store_id,
     return;
   }
 
+  if (input_value->bits.storage_type() ==
+      mojo_base::BigBuffer::StorageType::kInvalidBuffer) {
+    mojo::ReportBadMessage("Attempted to Put invalid SSV.");
+    return;
+  }
+
   std::vector<IndexedDBExternalObject> external_objects;
   uint64_t total_blob_size = 0;
   if (!input_value->external_objects.empty() &&

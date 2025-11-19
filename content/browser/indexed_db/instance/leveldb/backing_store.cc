@@ -2237,7 +2237,7 @@ StatusOr<IndexedDBValue> BackingStore::Transaction::GetRecord(
     return base::unexpected(InternalInconsistencyStatus());
   }
 
-  record.bits.assign(slice.begin(), slice.end());
+  record.bits = mojo_base::BigBuffer(base::as_byte_span(slice));
   s = GetExternalObjectsForRecord(leveldb_key, &record);
   if (!s.ok()) {
     return base::unexpected(s);
@@ -2290,6 +2290,9 @@ StatusOr<BackingStore::RecordIdentifier> BackingStore::Transaction::PutRecord(
 
   std::string v;
   EncodeVarInt(version, &v);
+  // The value must fit inline as larger values would have gotten wrapped.
+  CHECK_EQ(value.bits.storage_type(),
+           mojo_base::BigBuffer::StorageType::kBytes);
   v.append(value.bits.begin(), value.bits.end());
 
   s = leveldb_transaction->Put(object_store_data_key, &v);
@@ -3703,7 +3706,7 @@ bool ObjectStoreCursorImpl::LoadCurrentRow(Status* s) {
     return false;
   }
 
-  current_value_.bits.assign(value_slice.begin(), value_slice.end());
+  current_value_.bits = mojo_base::BigBuffer(base::as_byte_span(value_slice));
   return true;
 }
 
@@ -3936,7 +3939,7 @@ bool IndexCursorImpl::LoadCurrentRow(Status* s) {
     return false;
   }
 
-  current_value_.bits.assign(slice.begin(), slice.end());
+  current_value_.bits = mojo_base::BigBuffer(base::as_byte_span(slice));
   *s = transaction_->GetExternalObjectsForRecord(primary_leveldb_key_,
                                                  &current_value_);
   return s->ok();

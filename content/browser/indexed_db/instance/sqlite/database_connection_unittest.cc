@@ -252,7 +252,7 @@ class DatabaseConnectionCorruptionTest : public DatabaseConnectionTest {
     StatusOr<IndexedDBValue> value = read_value();
 
     ASSERT_TRUE(value.has_value());
-    EXPECT_EQ(value.value().bits, kValue.bits);
+    EXPECT_EQ(base::span(value.value().bits), base::span(kValue.bits));
 
     StatusOr<base::DictValue> contents_before_corruption =
         SnapshotDatabase(*db);
@@ -296,7 +296,8 @@ class DatabaseConnectionCorruptionTest : public DatabaseConnectionTest {
       // Read works because the DB was recovered (or, on Fuchsia, was deleted,
       // recreated, and the record inserted again).
       ASSERT_TRUE(recovered_value.has_value());
-      EXPECT_EQ(recovered_value.value().bits, kValue.bits);
+      EXPECT_EQ(base::span(recovered_value.value().bits),
+                base::span(kValue.bits));
     };
     verify_recovery();
 

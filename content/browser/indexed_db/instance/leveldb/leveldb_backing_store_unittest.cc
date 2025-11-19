@@ -388,7 +388,7 @@ TEST_P(LevelDbBackingStoreTestWithExternalObjects, ActiveBlobJournal) {
   IndexedDBValue read_result_value = std::move(result.value());
 
   CommitTransactionAndVerify(*transaction2);
-  EXPECT_EQ(value3_.bits, read_result_value.bits);
+  EXPECT_EQ(base::span(value3_.bits), base::span(read_result_value.bits));
   EXPECT_TRUE(CheckBlobInfoMatches(read_result_value.external_objects));
   EXPECT_TRUE(CheckBlobReadsMatchWrites(read_result_value.external_objects));
   for (const IndexedDBExternalObject& external_object :
@@ -492,7 +492,7 @@ TEST_F(LevelDbBackingStoreTest, HighIds) {
     transaction2.Begin(CreateDummyLock());
     auto result = transaction2.GetRecord(high_object_store_id, key1);
     EXPECT_TRUE(result.has_value());
-    EXPECT_EQ(value1.bits, result->bits);
+    EXPECT_EQ(base::span(value1.bits), base::span(result->bits));
 
     EXPECT_FALSE(transaction2
                      .GetFirstPrimaryKeyForIndexKey(
@@ -1015,7 +1015,7 @@ TEST_F(LevelDbBackingStoreTestWithBlobs, SchemaUpgradeV3ToV4) {
 
   // Finish up transaction2, verifying blob reads.
   CommitTransactionAndVerify(transaction2);
-  EXPECT_EQ(value3_.bits, result_value.bits);
+  EXPECT_EQ(base::span(value3_.bits), base::span(result_value.bits));
   EXPECT_TRUE(CheckBlobInfoMatches(result_value.external_objects));
 }
 

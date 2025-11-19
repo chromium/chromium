@@ -862,8 +862,7 @@ TEST_P(IndexedDBTest, DISABLED_PutWithInvalidBlob) {
                                      nullptr)));
 
   auto new_value = blink::mojom::IDBValue::New();
-  auto value = base::span_from_cstring("hello");
-  new_value->bits.assign(value.begin(), value.end());
+  new_value->bits = mojo_base::BigBuffer(base::as_byte_span("hello"));
   new_value->external_objects = std::move(external_objects);
 
   connection->version_change_transaction->Put(
@@ -1181,7 +1180,7 @@ TEST_P(IndexedDBTest, NotifyIndexedDBContentChanged) {
 
   auto new_value = blink::mojom::IDBValue::New();
   auto value = base::span_from_cstring("value");
-  new_value->bits.assign(value.begin(), value.end());
+  new_value->bits = mojo_base::BigBuffer(base::as_bytes(value));
 
   connection1->version_change_transaction->Put(
       kObjectStoreId, std::move(new_value), IndexedDBKey(u"key"),
