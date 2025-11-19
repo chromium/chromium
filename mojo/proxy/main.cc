@@ -11,7 +11,6 @@
 #include "base/command_line.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
-#include "base/logging/logging_settings.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"

@@ -35,7 +35,6 @@ include_rules = [
     "+base/i18n/time_formatting.h",
     "+base/location.h",
     "+base/logging.h",
-    "+base/logging/logging_settings.h",
     "+base/memory/ptr_util.h",
     "+base/memory/ref_counted.h",
     "+base/memory/weak_ptr.h",

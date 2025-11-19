@@ -353,7 +353,6 @@ component("base") {
     "logging.cc",
     "logging.h",
     "logging/log_severity.h",
-    "logging/logging_settings.h",
     "macros/concat.h",
     "macros/if.h",
     "macros/is_empty.h",

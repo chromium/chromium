@@ -18,7 +18,6 @@
 #include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
-#include "base/logging/logging_settings.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/values.h"

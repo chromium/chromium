@@ -11,7 +11,6 @@
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/logging.h"
-#include "base/logging/logging_settings.h"
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"

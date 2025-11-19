@@ -11,7 +11,6 @@
 #include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
-#include "base/logging/logging_settings.h"
 #include "chrome/utility/safe_browsing/mac/hfs.h"
 #include "chrome/utility/safe_browsing/mac/read_stream.h"
 #include "chrome/utility/safe_browsing/mac/udif.h"

@@ -17,7 +17,6 @@
 #include "base/fuchsia/test_component_context_for_process.h"
 #include "base/fuchsia/test_log_listener_safe.h"
 #include "base/logging.h"
-#include "base/logging/logging_settings.h"
 #include "base/test/scoped_logging_settings.h"
 #include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"

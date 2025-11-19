@@ -10,7 +10,6 @@
 #include "base/debug/stack_trace.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/logging/logging_settings.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"

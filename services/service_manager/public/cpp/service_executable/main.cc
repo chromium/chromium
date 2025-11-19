@@ -12,7 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/i18n/icu_util.h"
 #include "base/logging.h"
-#include "base/logging/logging_settings.h"
 #include "base/metrics/field_trial.h"
 #include "base/process/launch.h"
 #include "base/strings/string_split.h"

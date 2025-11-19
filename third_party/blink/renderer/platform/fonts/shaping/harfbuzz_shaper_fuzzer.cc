@@ -9,7 +9,6 @@
 #include <unicode/ustring.h>
 
 #include "base/command_line.h"
-#include "base/logging/logging_settings.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/plain_text_node.h"

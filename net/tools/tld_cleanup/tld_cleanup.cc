@@ -31,7 +31,6 @@
 #include "base/files/file_path.h"
 #include "base/i18n/icu_util.h"
 #include "base/logging.h"
-#include "base/logging/logging_settings.h"
 #include "base/path_service.h"
 #include "base/process/memory.h"
 #include "net/tools/tld_cleanup/tld_cleanup_util.h"

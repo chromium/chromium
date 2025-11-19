@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/logging.h"
-#include "base/logging/logging_settings.h"
 #include "third_party/win_virtual_display/controller/display_driver_controller.h"
 
 namespace {

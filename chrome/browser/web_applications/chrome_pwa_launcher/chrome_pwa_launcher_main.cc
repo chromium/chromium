@@ -6,7 +6,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/logging/logging_settings.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/win/windows_types.h"
