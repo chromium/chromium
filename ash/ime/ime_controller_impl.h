@@ -16,9 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "ui/base/ime/ash/ime_keyset.h"
 
 namespace ui {

@@ -20,7 +20,6 @@
 #include "chromeos/ash/components/boca/retriable_request_sender.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_observer.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"

@@ -13,7 +13,6 @@
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
 
 class PrefService;

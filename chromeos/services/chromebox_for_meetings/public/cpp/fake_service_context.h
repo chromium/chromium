@@ -7,8 +7,6 @@
 
 #include "base/functional/bind.h"
 #include "chromeos/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {
 namespace cfm {

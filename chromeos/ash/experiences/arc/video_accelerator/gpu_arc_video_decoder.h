@@ -18,7 +18,6 @@
 #include "media/base/decoder_buffer.h"
 #include "media/base/video_decoder.h"
 #include "media/gpu/chromeos/vda_video_frame_pool.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 

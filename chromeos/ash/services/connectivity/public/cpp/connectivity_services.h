@@ -7,7 +7,6 @@
 
 #include "chromeos/ash/services/connectivity/public/mojom/passpoint.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace ash::connectivity {
 

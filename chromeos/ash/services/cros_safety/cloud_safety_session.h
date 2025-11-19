@@ -11,7 +11,6 @@
 #include "components/manta/manta_service.h"
 #include "components/manta/walrus_provider.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash {
 

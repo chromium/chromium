@@ -11,8 +11,6 @@
 #include "chromeos/ash/experiences/arc/mojom/oemcrypto.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
 class BrowserContext;
