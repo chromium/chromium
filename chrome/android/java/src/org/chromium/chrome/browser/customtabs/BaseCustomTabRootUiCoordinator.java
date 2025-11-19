@@ -49,6 +49,8 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvid
 import org.chromium.chrome.browser.customtabs.features.CustomTabNavigationBarController;
 import org.chromium.chrome.browser.customtabs.features.branding.BrandingController;
 import org.chromium.chrome.browser.customtabs.features.branding.MismatchNotificationChecker;
+import org.chromium.chrome.browser.customtabs.features.desktop_popup_header.DesktopPopupHeaderLayoutCoordinator;
+import org.chromium.chrome.browser.customtabs.features.desktop_popup_header.DesktopPopupHeaderUtils;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizeDelegate;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedFeatureUtils;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.CustomTabHeightStrategy;
@@ -146,6 +148,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     private final Supplier<BrowserServicesThemeColorProvider> mWebAppThemeColorProvider;
     private final @Nullable String mClientPackageName;
     private boolean mHeaderAsOverlay;
+    private @Nullable DesktopPopupHeaderLayoutCoordinator mDesktopPopupHeaderLayoutCoordinator;
 
     // TODO(crbug.com/402213312): This can be NonNull once the flag is enabled by default.
     private @Nullable CustomTabToolbarButtonsCoordinator mToolbarButtonsCoordinator;
@@ -780,6 +783,19 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                             mClientPackageName);
             mBrowserControlsManager.addObserver(mWebAppHeaderLayoutCoordinator);
         }
+        if (DesktopPopupHeaderUtils.isDesktopPopupHeaderEnabled(intentDataProvider)) {
+            final var desktopWindowStateManager = getDesktopWindowStateManager();
+            assert desktopWindowStateManager != null;
+
+            mDesktopPopupHeaderLayoutCoordinator =
+                    new DesktopPopupHeaderLayoutCoordinator(
+                            mActivity.findViewById(
+                                    DesktopPopupHeaderUtils.getHeaderViewStubViewId()),
+                            desktopWindowStateManager,
+                            mActivityTabProvider,
+                            intentDataProvider.getCustomTabMode() == INCOGNITO,
+                            mActivity);
+        }
     }
 
     @Override
@@ -918,6 +934,11 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         if (mToolbarButtonsCoordinator != null) {
             mToolbarButtonsCoordinator.destroy();
             mToolbarButtonsCoordinator = null;
+        }
+
+        if (mDesktopPopupHeaderLayoutCoordinator != null) {
+            mDesktopPopupHeaderLayoutCoordinator.destroy();
+            mDesktopPopupHeaderLayoutCoordinator = null;
         }
     }
 
