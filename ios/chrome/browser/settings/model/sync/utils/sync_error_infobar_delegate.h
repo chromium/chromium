@@ -77,6 +77,7 @@ class SyncErrorInfoBarDelegate : public ConfirmInfoBarDelegate,
   std::u16string title_;
   std::u16string message_;
   std::u16string button_text_;
+  bool infobar_is_relevant_ = YES;
 };
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_MODEL_SYNC_UTILS_SYNC_ERROR_INFOBAR_DELEGATE_H_

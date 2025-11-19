@@ -126,6 +126,10 @@ std::u16string SyncErrorInfoBarDelegate::GetButtonLabel(
 }
 
 bool SyncErrorInfoBarDelegate::Accept() {
+  if (!infobar_is_relevant_) {
+    // The user tapped on Accept while the view was being dismissed or replaced.
+    return false;
+  }
   switch (error_state_) {
     case syncer::SyncService::UserActionableError::kSignInNeedsUpdate:
       [presenter_ showPrimaryAccountReauth];
@@ -185,6 +189,10 @@ void SyncErrorInfoBarDelegate::OnStateChanged(syncer::SyncService* sync) {
   if (error_state_ == new_error_state) {
     return;
   }
+  // The current infobar was about the previour error state. We should not start
+  // any action based on it. The infobar either is already being removed, or it
+  // will be removed or replaced. No need to do anything more to close the view.
+  infobar_is_relevant_ = false;
   error_state_ = new_error_state;
   if (new_error_state == syncer::SyncService::UserActionableError::kNone) {
     infobar->RemoveSelf();

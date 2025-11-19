@@ -8,6 +8,7 @@
 
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_mock_clock_override.h"
+#import "components/infobars/core/infobar.h"
 #import "components/infobars/core/infobar_manager.h"
 #import "components/sync/service/sync_service_utils.h"
 #import "components/sync/test/mock_sync_service.h"
@@ -85,6 +86,32 @@ TEST_F(SyncErrorInfobarDelegateTest, SyncServiceSignInNeedsUpdate) {
   std::unique_ptr<SyncErrorInfoBarDelegate> delegate(
       new SyncErrorInfoBarDelegate(profile_.get(), presenter_,
                                    kSyncErrorInfoBarTrigger));
+
+  EXPECT_FALSE(delegate->Accept());
+}
+
+// Tests that the user sign-out while the infobar is displayed, check that
+// nothing occurs when accept is called.
+TEST_F(SyncErrorInfobarDelegateTest, SyncServiceSignInNeedsUpdateAndSignout) {
+  ON_CALL(*mock_sync_service(), GetUserActionableError())
+      .WillByDefault(
+          Return(syncer::SyncService::UserActionableError::kSignInNeedsUpdate));
+
+  std::unique_ptr<SyncErrorInfoBarDelegate> delegate_unique_ptr(
+      new SyncErrorInfoBarDelegate(profile_.get(), presenter_,
+                                   kSyncErrorInfoBarTrigger));
+
+  SyncErrorInfoBarDelegate* delegate = delegate_unique_ptr.get();
+  // The infobar must be set, otherwise the delegate believes the infobar is
+  // being stopped.
+  infobars::InfoBar infobar(std::move(delegate_unique_ptr));
+
+  ON_CALL(*mock_sync_service(), GetUserActionableError())
+      .WillByDefault(Return(syncer::SyncService::UserActionableError::kNone));
+  delegate->OnStateChanged(mock_sync_service());
+
+  // The actual test here is that `presenter_` is not called on anything. It’s a
+  // strick mock, so any call on it would cause the test to fail.
 
   EXPECT_FALSE(delegate->Accept());
 }
