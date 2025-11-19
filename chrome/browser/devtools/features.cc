@@ -208,6 +208,10 @@ BASE_FEATURE(kDevToolsStartingStyleDebugging, base::FEATURE_ENABLED_BY_DEFAULT);
 // Whether Network panel should use Durable Messages to preserve network bodies.
 BASE_FEATURE(kDevToolsEnableDurableMessages, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, allows starting remote debugging in a running Chrome instance.
+BASE_FEATURE(kDevToolsAcceptDebuggingConnections,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Whether the policy dialog should be shown instead of greying out the
 // Developer Tools toggle.
 // TODO(crbug.com/442892562): Remove this flag once the feature is launched.

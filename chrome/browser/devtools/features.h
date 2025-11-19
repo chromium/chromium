@@ -123,6 +123,8 @@ BASE_DECLARE_FEATURE(kDevToolsStartingStyleDebugging);
 
 BASE_DECLARE_FEATURE(kDevToolsEnableDurableMessages);
 
+BASE_DECLARE_FEATURE(kDevToolsAcceptDebuggingConnections);
+
 BASE_DECLARE_FEATURE(kDevToolsShowPolicyDialog);
 
 BASE_DECLARE_FEATURE(kDevToolsAiAssistanceContextSelectionAgent);
