@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -9088,13 +9089,13 @@ void NavigationRequest::SetPrerenderActivationNavigationState(
       replication_state;
 }
 
-void NavigationRequest::RemoveRequestHeader(const std::string& header_name) {
+void NavigationRequest::RemoveRequestHeader(std::string_view header_name) {
   DCHECK(state_ == WILL_REDIRECT_REQUEST);
-  removed_request_headers_.push_back(header_name);
+  removed_request_headers_.emplace_back(header_name);
 }
 
-void NavigationRequest::SetRequestHeader(const std::string& header_name,
-                                         const std::string& header_value) {
+void NavigationRequest::SetRequestHeader(std::string_view header_name,
+                                         std::string_view header_value) {
   DCHECK(state_ == WILL_START_REQUEST || state_ == WILL_REDIRECT_REQUEST);
   modified_request_headers_.SetHeader(header_name, header_value);
 }

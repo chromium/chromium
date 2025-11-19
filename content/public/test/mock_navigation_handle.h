@@ -6,6 +6,7 @@
 #define CONTENT_PUBLIC_TEST_MOCK_NAVIGATION_HANDLE_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -165,8 +166,8 @@ class MockNavigationHandle : public NavigationHandle {
   const net::HttpRequestHeaders& GetRequestHeaders() override {
     return request_headers_;
   }
-  MOCK_METHOD1(RemoveRequestHeader, void(const std::string&));
-  MOCK_METHOD2(SetRequestHeader, void(const std::string&, const std::string&));
+  MOCK_METHOD1(RemoveRequestHeader, void(std::string_view));
+  MOCK_METHOD2(SetRequestHeader, void(std::string_view, std::string_view));
   const net::HttpResponseHeaders* GetResponseHeaders() override {
     return response_headers_.get();
   }

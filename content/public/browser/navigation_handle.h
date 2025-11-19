@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -432,14 +433,14 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
 
   // Remove a request's header. If the header is not present, it has no effect.
   // Must be called during a redirect.
-  virtual void RemoveRequestHeader(const std::string& header_name) = 0;
+  virtual void RemoveRequestHeader(std::string_view header_name) = 0;
 
   // Set a request's header. If the header is already present, its value is
   // overwritten. When modified during a navigation start, the headers will be
   // applied to the initial network request. When modified during a redirect,
   // the headers will be applied to the redirected request.
-  virtual void SetRequestHeader(const std::string& header_name,
-                                const std::string& header_value) = 0;
+  virtual void SetRequestHeader(std::string_view header_name,
+                                std::string_view header_value) = 0;
 
   // Set LCP Critical Path Predictor hint data to be passed along to the
   // renderer process on the navigation commit.

@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -413,9 +414,9 @@ class CONTENT_EXPORT NavigationRequest
   const GURL& GetPreviousPrimaryMainFrameURL() override;
   net::IPEndPoint GetSocketAddress() override;
   const net::HttpRequestHeaders& GetRequestHeaders() override;
-  void RemoveRequestHeader(const std::string& header_name) override;
-  void SetRequestHeader(const std::string& header_name,
-                        const std::string& header_value) override;
+  void RemoveRequestHeader(std::string_view header_name) override;
+  void SetRequestHeader(std::string_view header_name,
+                        std::string_view header_value) override;
   void SetLCPPNavigationHint(
       const blink::mojom::LCPCriticalPathPredictorNavigationTimeHint& hint)
       override;
