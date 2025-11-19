@@ -11,7 +11,8 @@
 #if BUILDFLAG(IS_WIN)
 #include "chrome/install_static/test/scoped_install_details.h"
 #elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
-#include "base/test/nix/scoped_chrome_version_extra_override.h"
+#include <optional>
+#include <string>
 #endif
 
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -43,7 +44,8 @@ class ScopedChannelOverride {
 #if BUILDFLAG(IS_WIN)
   install_static::ScopedInstallDetails scoped_install_details_;
 #elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
-  base::test::ScopedChromeVersionExtraOverride scoped_channel_override_;
+  // The original value of the CHROME_VERSION_EXTRA environment variable.
+  const std::optional<std::string> old_env_var_;
 #endif
 };
 

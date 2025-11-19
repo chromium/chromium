@@ -4,27 +4,48 @@
 
 #include "chrome/test/base/scoped_channel_override.h"
 
-#include "base/test/nix/scoped_chrome_version_extra_override.h"
-#include "base/version_info/channel.h"
-#include "base/version_info/nix/version_extra_utils.h"
+#include <memory>
+#include <optional>
+#include <string>
+#include <utility>
+
+#include "base/environment.h"
+#include "base/strings/cstring_view.h"
 
 namespace chrome {
 
 namespace {
 
-version_info::Channel GetBaseChannel(ScopedChannelOverride::Channel channel) {
+// Exchanges the value of the environment variable `name` with `new_value`;
+// returning its previous value or null if it was not set. The variable is
+// removed from the environment if `new_value` is null.
+std::optional<std::string> ExchangeEnvironmentVariable(
+    base::cstring_view name,
+    std::optional<std::string> new_value) {
+  auto environment = base::Environment::Create();
+  std::optional<std::string> old_value = environment->GetVar(name);
+  if (new_value)
+    environment->SetVar(name, *new_value);
+  else
+    environment->UnSetVar(name);
+  return old_value;
+}
+
+constexpr base::cstring_view kChromeVersionExtra = "CHROME_VERSION_EXTRA";
+
+std::string GetVersionExtra(ScopedChannelOverride::Channel channel) {
   switch (channel) {
     case ScopedChannelOverride::Channel::kExtendedStable:
-      return version_info::Channel::STABLE;
+      return "extended";
     case ScopedChannelOverride::Channel::kStable:
-      return version_info::Channel::STABLE;
+      return "stable";
     case ScopedChannelOverride::Channel::kBeta:
-      return version_info::Channel::BETA;
+      return "beta";
     case ScopedChannelOverride::Channel::kDev:
-      return version_info::Channel::DEV;
+      return "unstable";
 #if BUILDFLAG(IS_LINUX)
     case ScopedChannelOverride::Channel::kCanary:
-      return version_info::Channel::CANARY;
+      return "canary";
 #endif  // BUILDFLAG(IS_LINUX)
   }
 }
@@ -32,10 +53,11 @@ version_info::Channel GetBaseChannel(ScopedChannelOverride::Channel channel) {
 }  // namespace
 
 ScopedChannelOverride::ScopedChannelOverride(Channel channel)
-    : scoped_channel_override_(
-          GetBaseChannel(channel),
-          channel == ScopedChannelOverride::Channel::kExtendedStable) {}
+    : old_env_var_(ExchangeEnvironmentVariable(kChromeVersionExtra,
+                                               GetVersionExtra(channel))) {}
 
-ScopedChannelOverride::~ScopedChannelOverride() = default;
+ScopedChannelOverride::~ScopedChannelOverride() {
+  ExchangeEnvironmentVariable(kChromeVersionExtra, old_env_var_);
+}
 
 }  // namespace chrome

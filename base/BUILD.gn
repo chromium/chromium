@@ -2351,8 +2351,6 @@ component("base") {
     sources += [
       "memory/platform_shared_memory_mapper_posix.cc",
       "memory/platform_shared_memory_region_posix.cc",
-      "version_info/nix/version_extra_utils.cc",
-      "version_info/nix/version_extra_utils.h",
     ]
   }
 
@@ -3985,7 +3983,6 @@ test("base_unittests") {
       "files/scoped_file_linux_unittest.cc",
       "nix/mime_util_xdg_unittest.cc",
       "process/set_process_title_linux_unittest.cc",
-      "version_info/nix/version_extra_utils_unittest.cc",
     ]
 
     deps += [ ":stack_canary_linux_unittests" ]
