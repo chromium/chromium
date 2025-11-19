@@ -537,8 +537,7 @@ LayerTreeHostImpl::LayerTreeHostImpl(
       << "scrollbar_flash_after_any_scroll_update "
       << "can be enabled";
 
-  if (base::FeatureList::IsEnabled(features::kTreesInViz) &&
-      !settings_.TreesInVizInClientProcess()) {
+  if (settings.trees_in_viz_in_viz_process) {
     compositor_frame_reporting_controller_ =
         std::make_unique<StubCompositorFrameReportingController>();
   } else {
