@@ -58,7 +58,7 @@ class DomStorageDatabaseLevelDB
       delete;
   ~DomStorageDatabaseLevelDB() override;
 
-  DbStatus Get(KeyView key, Value* out_value) const;
+  StatusOr<Value> Get(KeyView key) const;
   DbStatus Put(KeyView key, ValueView value);
   DbStatus GetPrefixed(KeyView prefix,
                        std::vector<KeyValuePair>* entries) const;

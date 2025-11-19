@@ -167,16 +167,19 @@ void DomStorageDatabaseLevelDB::Destroy(
                              std::move(callback))));
 }
 
-DbStatus DomStorageDatabaseLevelDB::Get(KeyView key, Value* out_value) const {
+StatusOr<DomStorageDatabase::Value> DomStorageDatabaseLevelDB::Get(
+    KeyView key) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!db_) {
-    return DbStatus::IOError(kInvalidDatabaseMessage);
+    return base::unexpected(DbStatus::IOError(kInvalidDatabaseMessage));
   }
   std::string value;
   leveldb::Status status =
       db_->Get(leveldb::ReadOptions(), MakeSlice(key), &value);
-  *out_value = Value(value.begin(), value.end());
-  return FromLevelDBStatus(status);
+  if (!status.ok()) {
+    return base::unexpected(FromLevelDBStatus(status));
+  }
+  return Value(value.begin(), value.end());
 }
 
 DbStatus DomStorageDatabaseLevelDB::Put(KeyView key, ValueView value) {
@@ -246,22 +249,20 @@ DbStatus DomStorageDatabaseLevelDB::EnsureVersion(
     int64_t max_supported_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  Value version_string_bytes;
-  DbStatus status = Get(version_key, &version_string_bytes);
-  if (status.IsNotFound()) {
-    // Write the version entry when it does not exist.
-    return Put(version_key,
-               base::as_byte_span(base::NumberToString(max_supported_version)));
-  }
-
-  if (!status.ok()) {
+  StatusOr<Value> version_bytes = Get(version_key);
+  if (!version_bytes.has_value()) {
+    if (version_bytes.error().IsNotFound()) {
+      // Write the version entry when it does not exist.
+      return Put(version_key, base::as_byte_span(
+                                  base::NumberToString(max_supported_version)));
+    }
     // The database failed to read the version key.
-    return status;
+    return version_bytes.error();
   }
 
   // Verify the contents of the version key.
   int64_t actual_version;
-  if (!base::StringToInt64(base::as_string_view(version_string_bytes),
+  if (!base::StringToInt64(base::as_string_view(*version_bytes),
                            &actual_version)) {
     return DbStatus::Corruption("version is not a number");
   }

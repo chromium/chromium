@@ -195,30 +195,32 @@ class StorageAreaImplTest : public testing::Test,
   }
 
   std::string GetDatabaseEntry(std::string_view key) {
-    std::vector<uint8_t> value;
+    StatusOr<DomStorageDatabase::Value> value;
     base::RunLoop loop;
     db_->database().PostTaskWithThisObject(base::BindLambdaForTesting(
         [&](DomStorageDatabase* dom_storage_database) {
           DomStorageDatabaseLevelDB& db = dom_storage_database->GetLevelDB();
-          ASSERT_TRUE(db.Get(ToBytes(key), &value).ok());
+          value = db.Get(ToBytes(key));
           loop.Quit();
         }));
     loop.Run();
-    return std::string(value.begin(), value.end());
+    if (!value.has_value()) {
+      return std::string();
+    }
+    return std::string(value->begin(), value->end());
   }
 
   bool HasDatabaseEntry(std::string_view key) {
     base::RunLoop loop;
-    DbStatus status;
+    bool has_entry = false;
     db_->database().PostTaskWithThisObject(base::BindLambdaForTesting(
         [&](DomStorageDatabase* dom_storage_database) {
           DomStorageDatabaseLevelDB& db = dom_storage_database->GetLevelDB();
-          std::vector<uint8_t> value;
-          status = db.Get(ToBytes(key), &value);
+          has_entry = db.Get(ToBytes(key)).has_value();
           loop.Quit();
         }));
     loop.Run();
-    return status.ok();
+    return has_entry;
   }
 
   void ClearDatabase() {

@@ -172,22 +172,20 @@ DomStorageDatabase::Key SessionStorageLevelDB::CreateMapMetadataKey(
 }
 
 StatusOr<int64_t> SessionStorageLevelDB::ReadNextMapId() const {
-  Value next_map_id_string_bytes;
-  DbStatus status = leveldb_->Get(kNextMapIdKey, &next_map_id_string_bytes);
-  if (status.IsNotFound()) {
-    // Empty databases start with zero for the next map ID.
-    return 0;
-  }
+  StatusOr<Value> map_id_bytes = leveldb_->Get(kNextMapIdKey);
+  if (!map_id_bytes.has_value()) {
+    if (map_id_bytes.error().IsNotFound()) {
+      // Empty databases start with zero for the next map ID.
+      return 0;
+    }
 
-  if (!status.ok()) {
     // Failed to read the LevelDB.
-    return base::unexpected(std::move(status));
+    return base::unexpected(std::move(map_id_bytes).error());
   }
 
   // Convert the integer text string to an `int64_t`.
   int64_t next_map_id;
-  if (!base::StringToInt64(base::as_string_view(next_map_id_string_bytes),
-                           &next_map_id)) {
+  if (!base::StringToInt64(base::as_string_view(*map_id_bytes), &next_map_id)) {
     return base::unexpected(
         DbStatus::Corruption("next map id is not a number"));
   }

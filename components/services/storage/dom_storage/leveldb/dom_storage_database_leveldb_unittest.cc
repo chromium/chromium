@@ -16,6 +16,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
 #include "base/trace_event/memory_allocator_dump_guid.h"
 #include "components/services/storage/dom_storage/leveldb/dom_storage_batch_operation_leveldb.h"
@@ -23,6 +24,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using base::test::ErrorIs;
+using ::testing::IsTrue;
+using ::testing::Property;
 using ::testing::UnorderedElementsAreArray;
 
 // Helper to make Status checks a little more legible in test failures.
@@ -135,8 +139,8 @@ TEST_F(DomStorageDatabaseLevelDBTest, BasicOperations) {
   EXPECT_STATUS_OK(db->Put(base::byte_span_from_cstring(kTestKey),
                            base::byte_span_from_cstring(kTestValue)));
 
-  DomStorageDatabase::Value value;
-  EXPECT_STATUS_OK(db->Get(base::byte_span_from_cstring(kTestKey), &value));
+  ASSERT_OK_AND_ASSIGN(DomStorageDatabase::Value value,
+                       db->Get(base::byte_span_from_cstring(kTestKey)));
   EXPECT_VALUE_EQ(kTestValue, value);
 }
 
@@ -158,8 +162,9 @@ TEST_F(DomStorageDatabaseLevelDBTest, Reopen) {
 
   // Re-open and verify that we can read what was written above.
   ASSERT_NO_FATAL_FAILURE(Open(temp_dir.GetPath(), &db));
-  DomStorageDatabaseLevelDB::Value value;
-  EXPECT_STATUS_OK(db->Get(base::byte_span_from_cstring(kTestKey), &value));
+
+  ASSERT_OK_AND_ASSIGN(DomStorageDatabase::Value value,
+                       db->Get(base::byte_span_from_cstring(kTestKey)));
   EXPECT_VALUE_EQ(kTestValue, value);
   db.reset();
 
@@ -175,8 +180,8 @@ TEST_F(DomStorageDatabaseLevelDBTest, Reopen) {
   // Verify that the database was destroyed (open again and verify it's a blank
   // slate).
   ASSERT_NO_FATAL_FAILURE(Open(temp_dir.GetPath(), &db));
-  EXPECT_TRUE(
-      db->Get(base::byte_span_from_cstring(kTestKey), &value).IsNotFound());
+  EXPECT_THAT(db->Get(base::byte_span_from_cstring(kTestKey)),
+              ErrorIs(Property(&DbStatus::IsNotFound, IsTrue)));
   db.reset();
 }
 
@@ -315,9 +320,9 @@ TEST_F(DomStorageDatabaseLevelDBTest, DeletePrefixed) {
       db->GetPrefixed(base::byte_span_from_cstring(kTestPrefix2), &entries));
 
   // The lone unprefixed value should still exist.
-  DomStorageDatabase::Value value;
-  EXPECT_STATUS_OK(
-      db->Get(base::byte_span_from_cstring(kTestUnprefixedKey), &value));
+  ASSERT_OK_AND_ASSIGN(
+      DomStorageDatabase::Value value,
+      db->Get(base::byte_span_from_cstring(kTestUnprefixedKey)));
   EXPECT_VALUE_EQ(kTestValue1, value);
 }
 
@@ -381,19 +386,17 @@ TEST_F(DomStorageDatabaseLevelDBTest, OpenWritesVersion) {
   std::unique_ptr<DomStorageDatabaseLevelDB> db;
   ASSERT_NO_FATAL_FAILURE(Open(temp_dir.GetPath(), &db));
 
-  DomStorageDatabase::Value version_string_bytes;
-  DbStatus status = db->Get(kTestVersionKey, &version_string_bytes);
-  EXPECT_TRUE(status.ok()) << status.ToString();
-  EXPECT_EQ(version_string_bytes,
+  ASSERT_OK_AND_ASSIGN(DomStorageDatabase::Value version_bytes,
+                       db->Get(kTestVersionKey));
+  EXPECT_EQ(version_bytes,
             base::as_byte_span(std::string(kTestMaxSupportedVersionString)));
 
   // Re-open the database. `EnsureVersion()` must read the existing value.
   db.reset();
   ASSERT_NO_FATAL_FAILURE(Open(temp_dir.GetPath(), &db));
 
-  status = db->Get(kTestVersionKey, &version_string_bytes);
-  EXPECT_TRUE(status.ok()) << status.ToString();
-  EXPECT_EQ(version_string_bytes,
+  ASSERT_OK_AND_ASSIGN(version_bytes, db->Get(kTestVersionKey));
+  EXPECT_EQ(version_bytes,
             base::as_byte_span(std::string(kTestMaxSupportedVersionString)));
 }
 
