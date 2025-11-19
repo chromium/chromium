@@ -95,16 +95,6 @@ class ActorPolicyCheckerBrowserTestBase : public ActorToolsTest {
     ActorToolsTest::TearDownOnMainThread();
   }
 
-  void SetUpInProcessBrowserTestFixture() override {
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kNoErrorDialogs);
-    policy_provider_.SetDefaultReturns(
-        /*is_initialization_complete_return=*/true,
-        /*is_first_policy_load_complete_return=*/true);
-    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
-        &policy_provider_);
-  }
-
   void SetUpBrowserContextKeyedServices(
       content::BrowserContext* context) override {
     IdentityTestEnvironmentProfileAdaptor::
@@ -114,11 +104,6 @@ class ActorPolicyCheckerBrowserTestBase : public ActorToolsTest {
                                      &test_url_loader_factory_));
 
     ActorToolsTest::SetUpBrowserContextKeyedServices(context);
-  }
-
-  void UpdateProviderPolicy(const policy::PolicyMap& policy) {
-    policy::PolicyMap policy_with_defaults = policy.Clone();
-    policy_provider_.UpdateChromePolicy(policy_with_defaults);
   }
 
   void SimulatePrimaryAccountChangedSignIn(const TestAccount* account) {
@@ -170,7 +155,6 @@ class ActorPolicyCheckerBrowserTestBase : public ActorToolsTest {
   bool ShouldForceActOnWeb() override { return false; }
 
  private:
-  ::testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor> adaptor_;
   raw_ptr<signin::IdentityManager> identity_manager_;
   raw_ptr<signin::IdentityTestEnvironment> identity_test_env_;
