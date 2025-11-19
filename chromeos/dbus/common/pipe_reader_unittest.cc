@@ -15,21 +15,14 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
-#include "base/run_loop.h"
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
 namespace {
-
-void CopyResult(base::RunLoop* run_loop,
-                std::optional<std::string>* output,
-                std::optional<std::string> result) {
-  run_loop->Quit();
-  *output = std::move(result);
-}
 
 // Writes the |data| to |fd|, then close |fd|.
 void WriteData(base::ScopedFD fd, const std::string& data) {
@@ -57,27 +50,21 @@ class PipeReaderTest : public testing::Test {
 
 TEST_F(PipeReaderTest, Empty) {
   auto reader = std::make_unique<PipeReader>(GetTaskRunner());
-  base::RunLoop run_loop;
-  std::optional<std::string> output;
-  base::ScopedFD write_fd =
-      reader->StartIO(base::BindOnce(&CopyResult, &run_loop, &output));
+  base::test::TestFuture<std::optional<std::string>> output_test_future;
+  base::ScopedFD write_fd = reader->StartIO(output_test_future.GetCallback());
   write_fd.reset();
-  run_loop.Run();
-  EXPECT_EQ(std::string(), output);
+  EXPECT_EQ(std::string(), output_test_future.Get());
 }
 
 TEST_F(PipeReaderTest, SmallData) {
   constexpr char kSmallData[] = "abcdefghijklmnopqrstuvwxyz";
 
   auto reader = std::make_unique<PipeReader>(GetTaskRunner());
-  base::RunLoop run_loop;
-  std::optional<std::string> output;
-  base::ScopedFD write_fd =
-      reader->StartIO(base::BindOnce(&CopyResult, &run_loop, &output));
+  base::test::TestFuture<std::optional<std::string>> output_test_future;
+  base::ScopedFD write_fd = reader->StartIO(output_test_future.GetCallback());
   base::ThreadPool::PostTask(
       FROM_HERE, base::BindOnce(&WriteData, std::move(write_fd), kSmallData));
-  run_loop.Run();
-  EXPECT_EQ(std::string(kSmallData), output);
+  EXPECT_EQ(std::string(kSmallData), output_test_future.Get());
 }
 
 TEST_F(PipeReaderTest, LargeData) {
@@ -85,14 +72,11 @@ TEST_F(PipeReaderTest, LargeData) {
   const std::string large_data(8192, 'a');
 
   auto reader = std::make_unique<PipeReader>(GetTaskRunner());
-  base::RunLoop run_loop;
-  std::optional<std::string> output;
-  base::ScopedFD write_fd =
-      reader->StartIO(base::BindOnce(&CopyResult, &run_loop, &output));
+  base::test::TestFuture<std::optional<std::string>> output_test_future;
+  base::ScopedFD write_fd = reader->StartIO(output_test_future.GetCallback());
   base::ThreadPool::PostTask(
       FROM_HERE, base::BindOnce(&WriteData, std::move(write_fd), large_data));
-  run_loop.Run();
-  EXPECT_EQ(large_data, output);
+  EXPECT_EQ(large_data, output_test_future.Get());
 }
 
 TEST_F(PipeReaderTest, Cancel) {
