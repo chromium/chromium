@@ -34,7 +34,11 @@ bool IsTabValidForSharing(content::WebContents* web_contents) {
       {GURL(), GURL(url::kAboutBlankURL),
        GURL(chrome::kChromeUINewTabPageThirdPartyURL),
        GURL(chrome::kChromeUINewTabPageURL), GURL(chrome::kChromeUINewTabURL),
-       GURL(chrome::kChromeUIWhatsNewURL)}};
+#if !BUILDFLAG(IS_CHROMEOS)
+       // "What's New" does not exist in the form of a tab on ChromeOS.
+       GURL(chrome::kChromeUIWhatsNewURL)
+#endif
+      }};
   if (!web_contents) {
     return false;
   }
