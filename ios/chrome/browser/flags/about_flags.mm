@@ -1306,11 +1306,16 @@ const FeatureEntry::FeatureParam kAskGeminiChipUseSnackbarVariation[] = {
 const FeatureEntry::FeatureParam kAskGeminiChipIgnoreCriteriaVariation[] = {
     {kAskGeminiChipIgnoreCriteria, "true"},
 };
+const FeatureEntry::FeatureParam kAskGeminiChipPrepopulateFloatyVariation[] = {
+    {kAskGeminiChipPrepopulateFloaty, "true"},
+};
 const FeatureEntry::FeatureVariation kAskGeminiChipVariations[] = {
     {"Use Snackbar", kAskGeminiChipUseSnackbarVariation,
      std::size(kAskGeminiChipUseSnackbarVariation), nullptr},
     {"Ignore FET and Time Criteria", kAskGeminiChipIgnoreCriteriaVariation,
      std::size(kAskGeminiChipIgnoreCriteriaVariation), nullptr},
+    {"Prepopulate Floaty", kAskGeminiChipPrepopulateFloatyVariation,
+     std::size(kAskGeminiChipPrepopulateFloatyVariation), nullptr},
 };
 
 // LINT.IfChange(DataSharingVersioningChoices)

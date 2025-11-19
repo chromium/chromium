@@ -48,6 +48,11 @@ extern const char kAskGeminiChipIgnoreCriteria[];
 bool IsAskGeminiSnackbarEnabled();
 extern const char kAskGeminiChipUseSnackbar[];
 
+// Returns true if the Ask Gemini chip should prepopulate the Gemini Floaty with
+// a prompt.
+bool IsAskGeminiChipPrepopulateFloatyEnabled();
+extern const char kAskGeminiChipPrepopulateFloaty[];
+
 // Feature flag controlling the cross-tab floaty chat persistence.
 BASE_DECLARE_FEATURE(kGeminiCrossTab);
 
