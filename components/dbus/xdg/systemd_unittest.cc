@@ -12,6 +12,9 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
+#include "base/test/nix/scoped_chrome_version_extra_override.h"
+#include "base/version_info/channel.h"
+#include "base/version_info/nix/version_extra_utils.h"
 #include "components/dbus/xdg/request.h"
 #include "dbus/message.h"
 #include "dbus/mock_bus.h"
@@ -398,8 +401,8 @@ TEST_F(SetSystemdScopeUnitNameForXdgPortalTest, UnitNameConstruction) {
         std::move(callback).Run(response.get());
       });
 
-  base::ScopedEnvironmentVariableOverride env_override("CHROME_VERSION_EXTRA",
-                                                       "beta");
+  base::test::ScopedChromeVersionExtraOverride env_override(
+      version_info::Channel::BETA);
 
   auto mock_systemd_proxy = base::MakeRefCounted<dbus::MockObjectProxy>(
       bus.get(), kServiceNameSystemd, dbus::ObjectPath(kObjectPathSystemd));

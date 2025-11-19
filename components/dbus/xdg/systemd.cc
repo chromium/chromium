@@ -19,6 +19,7 @@
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/version_info/nix/version_extra_utils.h"
 #include "build/branding_buildflags.h"
 #include "components/dbus/utils/name_has_owner.h"
 #include "components/dbus/utils/variant.h"
@@ -50,34 +51,9 @@ constexpr char kMethodGetUnit[] = "GetUnit";
 constexpr char kInterfaceSystemdUnit[] = "org.freedesktop.systemd1.Unit";
 constexpr char kActiveStateProp[] = "ActiveState";
 
-constexpr char kUnitNameFormat[] = "app-$1$2-$3.scope";
+constexpr char kUnitNameFormat[] = "app-$1-$2.scope";
 
 constexpr char kModeReplace[] = "replace";
-
-constexpr char kChannelEnvVar[] = "CHROME_VERSION_EXTRA";
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-constexpr char kAppNamePrefix[] = "com.google.Chrome";
-#else
-constexpr char kAppNamePrefix[] = "org.chromium.Chromium";
-#endif
-
-const char* GetAppNameSuffix(const std::string& channel) {
-  if (channel == "beta") {
-    return ".beta";
-  }
-  if (channel == "unstable") {
-    return ".unstable";
-  }
-  if (channel == "canary") {
-    return ".canary";
-  }
-  // No suffix for stable. Also if the channel is unknown, the most likely
-  // scenario is the user is running the binary directly and not getting the
-  // environment variable set, so assume stable to minimize potential risk of
-  // settings or data loss.
-  return "";
-}
 
 // Declare this helper for SystemdUnitActiveStateWatcher to be used.
 void SetStateAndRunCallbacks(SystemdUnitStatus result);
@@ -231,15 +207,13 @@ void OnNameHasOwnerResponse(scoped_refptr<dbus::Bus> bus,
     return;
   }
 
-  auto env = base::Environment::Create();
-  std::string channel = env->GetVar(kChannelEnvVar).value_or("");
-  const char* app_name_suffix = GetAppNameSuffix(channel);
+  std::string app_name =
+      version_info::nix::GetAppName(*base::Environment::Create());
 
   // The unit naming format is specified in
   // https://systemd.io/DESKTOP_ENVIRONMENTS/
   auto unit_name = base::ReplaceStringPlaceholders(
-      kUnitNameFormat,
-      {kAppNamePrefix, app_name_suffix, base::NumberToString(pid)}, nullptr);
+      kUnitNameFormat, {app_name, base::NumberToString(pid)}, nullptr);
 
   auto* systemd = bus->GetObjectProxy(kServiceNameSystemd,
                                       dbus::ObjectPath(kObjectPathSystemd));
