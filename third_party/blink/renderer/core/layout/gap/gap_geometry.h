@@ -230,6 +230,14 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
       GridTrackSizingDirection direction,
       wtf_size_t gap_index) const;
 
+  // Fills `intersections` for a flex main gap at `gap_index`, which includes:
+  // 1. Cross gaps that appear before the main gap
+  // 2. Cross gaps that appear after the main gap
+  void GenerateMainIntersectionListForFlex(
+      GridTrackSizingDirection direction,
+      wtf_size_t gap_index,
+      Vector<LayoutUnit>& intersections) const;
+
   // Returns a list of intersection offsets for a cross gap. For grid
   // containers, this includes the container content edges and every main gap
   // offset. For flex containers, it includes the cross-gap start offset and its
@@ -237,6 +245,31 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   Vector<LayoutUnit> GenerateCrossIntersectionList(
       GridTrackSizingDirection direction,
       wtf_size_t gap_index) const;
+
+  // Fills `intersections` for a grid cross gap at `gap_index`, which includes:
+  // 1. The content-start edge
+  // 2. The start offset of every main gap
+  // 3. The content-end edge
+  void GenerateCrossIntersectionListForGrid(
+      GridTrackSizingDirection direction,
+      Vector<LayoutUnit>& intersections) const;
+
+  // Fills `intersections` for a flex cross gap at `gap_index`, which includes:
+  // 1. The gap's start offset
+  // 2. Its computed end offset (either a main gap or the container's
+  // content-end edge)
+  void GenerateCrossIntersectionListForFlex(
+      GridTrackSizingDirection direction,
+      wtf_size_t gap_index,
+      Vector<LayoutUnit>& intersections) const;
+
+  // Fills `intersections` for a multicol cross gap at `gap_index`, which includes:
+  // 1. The start block offset of the cross gap.
+  // 2. The offset of any main gaps that intersect this cross gap.
+  void GenerateCrossIntersectionListForMulticol(
+      GridTrackSizingDirection direction,
+      wtf_size_t gap_index,
+      Vector<LayoutUnit>& intersections) const;
 
   // Computes the end offset for a flex or multicol cross gap at
   // `cross_gap_index`. The end offset is either:
