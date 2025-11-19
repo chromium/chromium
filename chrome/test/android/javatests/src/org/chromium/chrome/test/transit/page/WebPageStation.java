@@ -12,7 +12,6 @@ import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.Element;
 import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.base.test.transit.ViewElement;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.transit.SoftKeyboardFacility;
@@ -162,17 +161,8 @@ public class WebPageStation extends CtaPageStation {
     }
 
     /** Click the URL bar to enter the Omnibox. */
-    public Pair<OmniboxFacility, SoftKeyboardFacility> openOmnibox() {
-        return openOmnibox(/* fakeSuggestions= */ null);
-    }
-
-    /**
-     * Click the URL bar to enter the Omnibox.
-     *
-     * @param fakeSuggestions If non-null, fake suggestions expected to be shown in the Omnibox.
-     */
     public Pair<OmniboxFacility, SoftKeyboardFacility> openOmnibox(
-            @Nullable FakeOmniboxSuggestions fakeSuggestions) {
+            FakeOmniboxSuggestions fakeSuggestions) {
         OmniboxFacility omniboxFacility =
                 new OmniboxFacility(/* incognito= */ mIsIncognito, fakeSuggestions);
         SoftKeyboardFacility softKeyboard = new SoftKeyboardFacility();

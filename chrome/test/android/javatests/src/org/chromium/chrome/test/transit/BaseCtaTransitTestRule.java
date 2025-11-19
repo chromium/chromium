@@ -180,6 +180,11 @@ public class BaseCtaTransitTestRule {
         return mActivityTestRule.getEmbeddedTestServerRule();
     }
 
+    // TODO(crbug.com/406324209): Use OmniboxFacility#typeText().
+    public void typeInOmnibox(String text, boolean oneCharAtATime) throws InterruptedException {
+        mActivityTestRule.typeInOmnibox(text, oneCharAtATime);
+    }
+
     /** Pause the Activity going to home screen, then resume it. */
     @CheckReturnValue
     public TripBuilder pauseAndResumeActivityTo(Station<?> currentStation) {

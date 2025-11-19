@@ -150,7 +150,7 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> {
         return performViewActionTo(ForgivingClickAction.forgivingClick());
     }
 
-    /** Start a Transition by typing |text| into this View char by char. */
+    /** Start a Transition by typing |text| into this View. */
     public TripBuilder typeTextTo(String text) {
         return new TripBuilder()
                 .withContext(this)

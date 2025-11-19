@@ -15,7 +15,6 @@ import android.view.View;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
@@ -32,12 +31,13 @@ public class OmniboxFacility extends Facility<CtaPageStation> {
     public static final ViewSpec<View> DELETE_BUTTON =
             LOCATION_BAR.descendant(withId(R.id.delete_button));
     private final boolean mIncognito;
-    private final @Nullable FakeOmniboxSuggestions mFakeSuggestions;
+    private final FakeOmniboxSuggestions mFakeSuggestions;
     public ViewElement<UrlBar> urlBarElement;
     public ViewElement<View> actionContainerElement;
     public ViewElement<View> micButtonElement;
 
-    public OmniboxFacility(boolean incognito, @Nullable FakeOmniboxSuggestions fakeSuggestions) {
+    public OmniboxFacility(boolean incognito, FakeOmniboxSuggestions fakeSuggestions) {
+        assert fakeSuggestions != null : "Tests should not rely on server results.";
         mIncognito = incognito;
         mFakeSuggestions = fakeSuggestions;
     }
@@ -69,20 +69,13 @@ public class OmniboxFacility extends Facility<CtaPageStation> {
     }
 
     public FakeOmniboxSuggestions getFakeSuggestions() {
-        assert mFakeSuggestions != null : "Fake suggestions not passed to OmniboxFacility.";
         return mFakeSuggestions;
     }
 
-    /** Enter text into the omnibox char by char. */
+    /** Enter text into the omnibox. */
     public OmniboxEnteredTextFacility typeText(String textToTypeAndExpect) {
         return urlBarElement
                 .typeTextTo(textToTypeAndExpect)
                 .enterFacility(new OmniboxEnteredTextFacility(this, textToTypeAndExpect));
-    }
-
-    /** Set text into the omnibox as an atomic operation. */
-    public OmniboxEnteredTextFacility setText(String textToSetAndExpect) {
-        return runOnUiThreadTo(() -> urlBarElement.value().setText(textToSetAndExpect))
-                .enterFacility(new OmniboxEnteredTextFacility(this, textToSetAndExpect));
     }
 }
