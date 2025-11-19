@@ -976,6 +976,7 @@ const CGFloat kDividerWidth = 1.0;
   switch (featureType) {
     case PageActionMenuTranslate:
       [self.mutator revertTranslation];
+      [self.pageActionMenuHandler dismissPageActionMenuWithCompletion:nil];
       break;
     case PageActionMenuPopupBlocker:
       [self.mutator allowBlockedPopups];
