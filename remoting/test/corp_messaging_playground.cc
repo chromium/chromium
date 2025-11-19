@@ -20,13 +20,13 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/uuid.h"
 #include "net/ssl/client_cert_store.h"
 #include "remoting/base/certificate_helpers.h"
 #include "remoting/base/http_status.h"
 #include "remoting/base/internal_headers.h"
 #include "remoting/base/url_request_context_getter.h"
 #include "remoting/signaling/corp_messaging_client.h"
-#include "remoting/test/ping_pong_helper.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/transitional_url_loader_factory_owner.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
@@ -151,9 +151,51 @@ void CorpMessagingPlayground::OnPeerMessageReceived(
   }
 
   std::visit(absl::Overload(
-                 [](const PingPongStruct& message) {
-                   // TODO: joedow - Replace simple message ping-pong with proto
-                   // version.
+                 [this](const PingPongStruct& message) {
+                   if (message.type == PingPongStruct::Type::PONG) {
+                     auto rtt = base::Time::Now() - last_ping_sent_time_;
+                     ping_total_rtt_ += rtt;
+                     LOG(INFO) << "Current RTT: " << rtt.InMilliseconds()
+                               << "ms, Total RTT: "
+                               << ping_total_rtt_.InMilliseconds() << "ms";
+
+                     if (message.current_count >= message.exchange_count) {
+                       LOG(INFO) << "Ping-pong exchange finished. Total RTT: "
+                                 << ping_total_rtt_.InMilliseconds() << "ms";
+                       return;
+                     }
+
+                     // Send next PING.
+                     internal::PingPongStruct ping_pong;
+                     ping_pong.type = PingPongStruct::Type::PING;
+                     ping_pong.rally_id = message.rally_id;
+                     ping_pong.current_count = message.current_count + 1;
+                     ping_pong.exchange_count = message.exchange_count;
+
+                     internal::SystemTestStruct response_message;
+                     response_message.test_message = std::move(ping_pong);
+
+                     last_ping_sent_time_ = base::Time::Now();
+                     client_->SendTestMessage(messaging_authz_token_,
+                                              std::move(response_message),
+                                              base::DoNothing());
+                   } else if (message.type == PingPongStruct::Type::PING) {
+                     // Send PONG.
+                     internal::PingPongStruct ping_pong;
+                     ping_pong.type = PingPongStruct::Type::PONG;
+                     ping_pong.rally_id = message.rally_id;
+                     ping_pong.current_count = message.current_count;
+                     ping_pong.exchange_count = message.exchange_count;
+
+                     internal::SystemTestStruct response_message;
+                     response_message.test_message = std::move(ping_pong);
+
+                     client_->SendTestMessage(messaging_authz_token_,
+                                              std::move(response_message),
+                                              base::DoNothing());
+                   } else {
+                     NOTREACHED();
+                   }
                  },
                  [](const BurstStruct& message) {
                    LOG(INFO)
@@ -161,39 +203,9 @@ void CorpMessagingPlayground::OnPeerMessageReceived(
                        << ", burst_count=" << message.burst_count
                        << ", payload=" << message.payload;
                  },
-                 [this](const SimpleStruct& simple_message) {
+                 [](const SimpleStruct& simple_message) {
                    LOG(INFO) << "PeerMessage received: payload="
                              << simple_message.payload;
-
-                   if (IsPongMessage(simple_message.payload)) {
-                     auto rtt = base::Time::Now() - last_ping_sent_time_;
-                     ping_total_rtt_ += rtt;
-                     LOG(INFO) << "Current RTT: " << rtt.InMilliseconds()
-                               << "ms, Total RTT: "
-                               << ping_total_rtt_.InMilliseconds() << "ms";
-                     // Now respond with a ping unless we've reached our max
-                     // count.
-                     std::optional<std::string> ping_payload =
-                         OnPingPongMessageReceived(simple_message.payload);
-                     if (ping_payload.has_value()) {
-                       last_ping_sent_time_ = base::Time::Now();
-                       client_->SendMessage(messaging_authz_token_,
-                                            *ping_payload, base::DoNothing());
-                     } else {
-                       LOG(INFO) << "Ping-pong exchange finished. Total RTT: "
-                                 << ping_total_rtt_.InMilliseconds() << "ms";
-                     }
-                   } else if (IsPingMessage(simple_message.payload)) {
-                     std::optional<std::string> pong_payload =
-                         OnPingPongMessageReceived(simple_message.payload);
-                     if (pong_payload.has_value()) {
-                       client_->SendMessage(messaging_authz_token_,
-                                            *pong_payload, base::DoNothing());
-                     } else {
-                       LOG(ERROR) << "Failed to generate response for Ping: "
-                                  << simple_message.payload;
-                     }
-                   }
                  },
                  [this](const ShareSessionTokenStruct& message) {
                    LOG(INFO) << "ShareSessionToken received.";
@@ -255,10 +267,19 @@ void CorpMessagingPlayground::StartPingPongRally() {
     return;
   }
   LOG(INFO) << "Starting a new Ping-Pong rally.";
+  // TODO: joedow - Use a map to track RTTs for concurrent rallies.
   ping_total_rtt_ = {};
   last_ping_sent_time_ = base::Time::Now();
-  client_->SendMessage(messaging_authz_token_, CreatePingMessage(1),
-                       base::DoNothing());
+  internal::SystemTestStruct message;
+  internal::PingPongStruct ping_pong;
+  ping_pong.type = PingPongStruct::Type::PING;
+  ping_pong.rally_id = "chromium-playground-rally-" +
+                       base::Uuid::GenerateRandomV4().AsLowercaseString();
+  ping_pong.current_count = 1;
+  ping_pong.exchange_count = 10;
+  message.test_message = std::move(ping_pong);
+  client_->SendTestMessage(messaging_authz_token_, std::move(message),
+                           base::DoNothing());
 }
 
 void CorpMessagingPlayground::SendLargeMessage() {

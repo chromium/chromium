@@ -210,8 +210,6 @@ if (enable_me2me_host && is_linux) {
       "corp_messaging_playground.cc",
       "corp_messaging_playground.h",
       "corp_messaging_playground_main.cc",
-      "ping_pong_helper.cc",
-      "ping_pong_helper.h",
     ]
     deps = [
       "//mojo/core/embedder",
