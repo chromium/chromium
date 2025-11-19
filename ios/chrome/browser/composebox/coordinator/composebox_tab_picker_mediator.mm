@@ -96,8 +96,15 @@
 - (void)createGridItemsWithCompletion:
     (void (^)(NSArray<GridItemIdentifier*>*))completion {
   if (!IsComposeboxTabPickerCachedAPCEnabled()) {
-    completion(CreateTabItems(self.webStateList,
-                              TabGroupRange(0, self.webStateList->count())));
+    NSMutableArray<GridItemIdentifier*>* items = [[NSMutableArray alloc] init];
+    for (int i = 0; i < self.webStateList->count(); i++) {
+      web::WebState* webState = self.webStateList->GetWebStateAt(i);
+      GridItemIdentifier* item = [GridItemIdentifier tabIdentifier:webState];
+      item.tabSwitcherItem.hidesSnapshot =
+          !webState->IsRealized() || webState->IsLoading();
+      [items addObject:item];
+    }
+    completion(items);
     return;
   }
 
