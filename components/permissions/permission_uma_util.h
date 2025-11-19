@@ -205,9 +205,8 @@ enum class PermissionHeaderPolicyForUMA {
 
 // The kind of permission prompt UX used to surface a permission request.
 // Enum used in UKMs and UMAs, do not re-order or change values. Deprecated
-// items should only be commented out. New items should be added at the end,
-// and the "PermissionPromptDisposition" histogram suffix needs to be updated to
-// match (tools/metrics/histograms/metadata/histogram_suffixes_list.xml).
+// items should only be commented out. New items should be added at the end.
+// LINT.IfChange(PermissionPromptDisposition)
 enum class PermissionPromptDisposition {
   // Not all permission actions will have an associated permission prompt (e.g.
   // changing permission via the settings page).
@@ -265,6 +264,7 @@ enum class PermissionPromptDisposition {
   // Only used on macOS, a native OS provided permission prompt.
   MAC_OS_PROMPT = 14,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/permissions/histograms.xml:PromptDisposition)
 
 // The reason why the permission prompt disposition was used. Enum used in UKMs,
 // do not re-order or change values. Deprecated items should only be commented

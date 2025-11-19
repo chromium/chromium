@@ -217,6 +217,8 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/permissions/permission_request_enums.h:PredictionModelType) -->
 
+<!-- LINT.IfChange(PromptDisposition) -->
+
 <variants name="PromptDisposition">
   <variant name="AnchoredBubble"/>
   <variant name="CustomModalDialog"/>
@@ -231,6 +233,8 @@ chromium-metrics-reviews@google.com.
   <variant name="ModalDialog"/>
   <variant name="NoneVisible"/>
 </variants>
+
+<!-- LINT.ThenChange(//components/permissions/permission_uma_util.h:PermissionPromptDisposition) -->
 
 <variants name="RelevanceOutputPredictionModels">
   <variant name="AIv1"/>
