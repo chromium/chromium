@@ -1476,8 +1476,6 @@ component("platform") {
     "storage/blink_storage_key.h",
     "storage/blink_storage_key_hash.h",
     "storage/blink_storage_key_mojom_traits.cc",
-    "supplementable.cc",
-    "supplementable.h",
     "text/bidi_paragraph.cc",
     "text/bidi_paragraph.h",
     "text/capitalize.cc",
