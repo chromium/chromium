@@ -29,7 +29,6 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "extensions/common/extension_id.h"
 
-class BackgroundModeOptimizer;
 class Browser;
 class PrefRegistrySimple;
 class Profile;
@@ -442,9 +441,6 @@ class BackgroundModeManager : public BrowserListObserver,
   // extensions are finished installing.
   std::unique_ptr<ScopedKeepAlive> keep_alive_for_force_installed_extensions_;
 
-  // Reference to the optimizer to use to reduce Chrome's footprint when in
-  // background mode. If null, optimizations are disabled.
-  std::unique_ptr<BackgroundModeOptimizer> optimizer_;
 
   // Set to true when Chrome is running with the --keep-alive-for-test flag
   // (used for testing background mode without having to install a background

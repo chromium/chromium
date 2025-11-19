@@ -11,7 +11,6 @@ source_set("extensions") {
   sources = [
     "background_application_list_model.h",
     "background_mode_manager.h",
-    "background_mode_optimizer.h",
   ]
 
   deps = [
@@ -34,7 +33,6 @@ source_set("impl") {
   sources = [
     "background_application_list_model.cc",
     "background_mode_manager.cc",
-    "background_mode_optimizer.cc",
   ]
   if (is_win) {
     sources += [ "background_mode_manager_win.cc" ]
@@ -91,7 +89,6 @@ source_set("unit_tests") {
   sources = [
     "background_application_list_model_unittest.cc",
     "background_mode_manager_unittest.cc",
-    "background_mode_optimizer_unittest.cc",
   ]
 
   deps = [

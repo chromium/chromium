@@ -27,7 +27,6 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/background/extensions/background_application_list_model.h"
-#include "chrome/browser/background/extensions/background_mode_optimizer.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -312,7 +311,6 @@ BackgroundModeManager::BackgroundModeManager(
     // in a mode that doesn't open a browser window. It will be resumed when the
     // first browser window is opened.
     SuspendBackgroundMode();
-    optimizer_ = BackgroundModeOptimizer::Create();
   }
 
   // If the --keep-alive-for-test flag is passed, then always keep the browser
@@ -642,7 +640,6 @@ void BackgroundModeManager::ExecuteCommand(int command_id, int event_flags) {
 //  BackgroundModeManager, private
 void BackgroundModeManager::ReleaseStartupKeepAliveCallback() {
   keep_alive_for_startup_.reset();
-  optimizer_ = BackgroundModeOptimizer::Create();
 }
 
 void BackgroundModeManager::ReleaseStartupKeepAlive() {
