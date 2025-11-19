@@ -702,6 +702,7 @@ ci.builder(
             "clang_tot_gn",
             "no_treat_warnings_as_errors",
             "x64",
+            "remoteexec",
         ],
     ),
     targets = targets.bundle(
@@ -714,6 +715,7 @@ ci.builder(
         short_name = "rel",
     ),
     contact_team_email = "lexan@google.com",
+    siso_remote_jobs = min(siso.remote_jobs.HIGH_JOBS_FOR_CI, 400),
 )
 
 ci.builder(
@@ -741,6 +743,7 @@ ci.builder(
             "clang_tot_gn",
             "no_treat_warnings_as_errors",
             "x64",
+            "remoteexec",
         ],
     ),
     targets = targets.bundle(
@@ -753,6 +756,7 @@ ci.builder(
         short_name = "dbg",
     ),
     contact_team_email = "lexan@google.com",
+    siso_remote_jobs = min(siso.remote_jobs.HIGH_JOBS_FOR_CI, 400),
 )
 
 ci.builder(
@@ -784,6 +788,7 @@ ci.builder(
             "cast_receiver_size_optimized",
             "x64",
             "dcheck_always_on",
+            "remoteexec",
         ],
     ),
     targets = targets.bundle(
@@ -843,6 +848,7 @@ ci.builder(
         ),
     ],
     contact_team_email = "lexan@google.com",
+    siso_remote_jobs = min(siso.remote_jobs.HIGH_JOBS_FOR_CI, 400),
 )
 
 ci.builder(
@@ -878,6 +884,7 @@ ci.builder(
             "arm64_host",
             "cast_receiver_size_optimized",
             "dcheck_always_on",
+            "remoteexec",
         ],
     ),
     targets = targets.bundle(
@@ -901,6 +908,7 @@ ci.builder(
         ),
     ],
     contact_team_email = "lexan@google.com",
+    siso_remote_jobs = min(siso.remote_jobs.HIGH_JOBS_FOR_CI, 400),
 )
 
 clang_tot_linux_builder(
