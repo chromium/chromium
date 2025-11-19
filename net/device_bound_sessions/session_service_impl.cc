@@ -268,6 +268,10 @@ SessionServiceImpl::GetFederatedProviderSessionIfValid(
         SessionError::kInvalidFederatedSessionWrongProviderOrigin));
   }
 
+  if (!provider_session->unexportable_key_id().has_value()) {
+    return base::unexpected(SessionError(SessionError::kInvalidFederatedKey));
+  }
+
   unexportable_keys::ServiceErrorOr<
       crypto::SignatureVerifier::SignatureAlgorithm>
       algorithm =

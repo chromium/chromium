@@ -1425,6 +1425,54 @@ TEST_F(SessionServiceImplTestWithFederatedSessions,
                                 SessionError::kInvalidFederatedSessionUrl, 1);
 }
 
+TEST_F(SessionServiceImplTestWithFederatedSessions,
+       FederatedRegistrationKeyUnrestored) {
+  // Create the provider session
+  SchemefulSite site(kTestUrl);
+  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
+  Session* provider_session =
+      service().GetSession({site, Session::Id(kSessionId)});
+  ASSERT_NE(provider_session, nullptr);
+
+  // Create the provider key and the correct thumbprint, but leave it
+  // unrestored.
+  provider_session->set_unexportable_key_id(
+      base::unexpected(unexportable_keys::ServiceError::kKeyNotReady));
+
+  base::test::TestFuture<
+      unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>>
+      key_future;
+  key_service()->GenerateSigningKeySlowlyAsync(
+      {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
+      unexportable_keys::BackgroundTaskPriority::kBestEffort,
+      key_future.GetCallback());
+  unexportable_keys::UnexportableKeyId key = *key_future.Take();
+  std::string key_thumbprint = CreateJwkThumbprint(
+      crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
+      *key_service()->GetSubjectPublicKeyInfo(key));
+
+  // Attempt a registration with a session provider
+  base::HistogramTester histograms;
+  auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
+      "RelyingSession", "https://rp.com/refresh", "https://rp.com");
+  auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
+      kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
+      "challenge", /*authorization=*/std::nullopt, key_thumbprint, kTestUrl,
+      Session::Id(kSessionId));
+  service().RegisterBoundSession(
+      SessionService::OnAccessCallback(), std::move(fetch_param),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      NetLogWithSource(), /*original_request_initiator=*/std::nullopt);
+
+  // The relying session will not exist, since we did not have the
+  // provider key restored.
+  Session* relying_session = service().GetSession(
+      {SchemefulSite(GURL("https://rp.com")), Session::Id("RelyingSession")});
+  EXPECT_EQ(relying_session, nullptr);
+  histograms.ExpectUniqueSample("Net.DeviceBoundSessions.RegistrationResult",
+                                SessionError::kInvalidFederatedKey, 1);
+}
+
 TEST_F(SessionServiceImplTestWithoutFederatedSessions,
        IgnoresFederatedRegistration) {
   // Create the provider session
