@@ -1058,6 +1058,7 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1706586824377653884">Administratoringiz tomonidan qo‘shilgan</translation>
 <translation id="170658918174941828">Yuqorida kiritilganlardan tashqari Chrome versiyasi, operatsion tizim versiyasi, Cast sozlamalari, translatsiya samaradorligiga oid statistika, ulanish davomidagi tashxis jurnallari yuborilad. Ushbu maʼlumotlar bizga nosozliklarni aniqlash va funksiyani takomillashtirishga yordam beradi. Oʻzingiz bila turib yoki tasodifan taqdim etgan har qanday maʼlumotdan maxfiylik siyosatimizga muvofiq foydalaniladi. Bu fikr-mulohazani yuborish orqali siz Google undan oʻz mahsuloti yoki xizmatini yaxshilashda ishlatishiga rozilik bildirasiz.</translation>
 <translation id="17081583771848899">launcher + alt + <ph name="TOP_ROW_KEY" /></translation>
+<translation id="170825127491242914">Bulutli xotiraga saqlash</translation>
 <translation id="1708291623166985230">Hotspot faolsizlantirildi</translation>
 <translation id="1708338024780164500">(Nofaol)</translation>
 <translation id="1708563369218024896">Hech qanday maʼlumot yigʻuvchi tanlanmagan. Kamida bitta maʼlumot yigʻuvchini tanlang.</translation>
@@ -6662,6 +6663,7 @@ Bu amal uchun bir nechta kalit tugma belgilash mumkin.</translation>
 <translation id="5585912436068747822">Formatlash amalga oshmadi</translation>
 <translation id="5587765208077583036">Fayllar ilovasida jild ustida sichqonchaning oʻng tugmasini bosing va “<ph name="SPECIFIC_NAME" /> bilan ulashish” bandini tanlang.</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
+<translation id="5588712142463367677">Sahifadagi saytlarni filtrlash</translation>
 <translation id="558918721941304263">Ilovalar yuklanmoqda…</translation>
 <translation id="5590418976913374224">Qurilma ishga tushganda ovoz yangrasin</translation>
 <translation id="5591465468509111843">Belgilar orasidagi masofa juda katta</translation>
@@ -8052,6 +8054,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - Ekran namoyish qilinmoqda</translation>
 <translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% tugallandi</translation>
 <translation id="6580203076670148210">Tekshirish tezligi</translation>
+<translation id="6580676117087365538">Bu kengaytmadan barcha kompyuterlarda foydalanish uchun shaxsingizni tasdiqlang</translation>
 <translation id="6581356304040102696">Parollar import qilinmadi. Fayl hajmi 1 MB dan oshmasligi kerak.</translation>
 <translation id="6582080224869403177">Xavfsizlik maqsadlarida <ph name="DEVICE_TYPE" /> qurilmangizni ilk sozlamalarga qaytaring.</translation>
 <translation id="6582274660680936615">Siz Mehmon rejimidasiz</translation>
@@ -9572,6 +9575,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7647403192093989392">Hech qanday harakat aniqlanmadi</translation>
 <translation id="7648023614017258011">Chrome oʻrnatilgan jamlanmani tekshirmoqda</translation>
 <translation id="7648048654005891115">Tugmalar tartibi uslubi</translation>
+<translation id="7648180062672842917">Bu fayl tarkibida maxfiy yoki xavfli maʼlumot bor. Tashkilotingiz bunday maʼlumotlarni bulutli xotiraga saqlashni taqiqlagan yoki rad etgan.</translation>
 <translation id="7649070708921625228">Yordam</translation>
 <translation id="7649954700951153978">iOS qurilmasida eslatish</translation>
 <translation id="7650141368285545431">Boshqa qurilmada kirish kalitini ishlating</translation>
@@ -10899,6 +10903,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8535005006684281994">Netscape sertifikatini yangilash URL manzili</translation>
 <translation id="8536810348276651776">Bir nechta saytlardagi hisobingizdan chiqasiz. Chrome uchun Family Link sozlamalari amal qilishi uchun Google hisobingizga kirgan holda qolasiz.</translation>
 <translation id="8536956381488731905">Tugmalar tovushi</translation>
+<translation id="8537854269962256103">Gemini bilan suhbatingiz qalqib chiqqan oynada. Uni bu yerga olish uchun yon panelning istalgan qismini bosing.</translation>
 <translation id="8539727552378197395">Yo‘q (HttpOnly)</translation>
 <translation id="8539766201049804895">Yangilash</translation>
 <translation id="8540136935098276800">URL manzilni xatosiz kiriting</translation>
@@ -11146,6 +11151,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8703766890819308134">Qidiruv tezkor tugmalarini chiqarish</translation>
 <translation id="8704662571571150811">Domenlar</translation>
 <translation id="8705331520020532516">Seriya raqami</translation>
+<translation id="870536819717176711">Joriy varaqni Geminiga ulashish tanlansa, varaqdagi butun kontent, media va URL Googlega yuboriladi.</translation>
 <translation id="8705580154597116082">Telefon tarqatayotgan Wi-Fi tarmoq mavjud</translation>
 <translation id="8705629851992224300">Elektron kalitingiz oʻqilmadi</translation>
 <translation id="8706111173576263877">QR kod skanerlandi.</translation>

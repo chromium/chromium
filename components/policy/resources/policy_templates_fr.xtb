@@ -173,6 +173,13 @@ Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://ch
 <translation id="1089150222292592899">Saisir automatiquement le nom d'utilisateur sur la page de l'IdP SAML</translation>
 <translation id="1090430607214486535">Sensible</translation>
 <translation id="1091765729282771296">Autoriser les sites à demander aux utilisateurs d'accorder l'accès à un appareil HID</translation>
+<translation id="1093047620074696166">Pour des raisons de sécurité, les API Web <ph name="SHOW_OPEN_FILE_PICKER_API_NAME" /> ,<ph name="SHOW_SAVE_FILE_PICKER_API_NAME" /> et <ph name="SHOW_DIRECTORY_PICKER_API_NAME" /> nécessitent un geste préalable de l'utilisateur ("activation temporaire") pour être appelées, sans quoi l'appel échouera.
+
+Lorsque cette règle est configurée, les administrateurs peuvent préciser les origines sur lesquelles ces API peuvent être appelées sans geste préalable de l'utilisateur.
+
+Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://chromeenterprise.google/policies/url-patterns/. La valeur * n'est pas acceptée pour cette règle.
+
+Si cette règle n'est pas configurée, toutes les origines nécessitent un geste préalable de l'utilisateur pour appeler ces API.</translation>
 <translation id="1095209545735032039">Bloquer l'API Serial sur ces sites</translation>
 <translation id="1096105751829466145">Moteur de recherche par défaut</translation>
 <translation id="1099282607296956954">Activer l'isolation des sites pour tous les sites</translation>
@@ -1386,6 +1393,23 @@ Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> ferme l'onglet apr�
 <translation id="1972134432340252414">Bloquer les anciens points d'extension du processus du navigateur</translation>
 <translation id="1973804850652157024">Contrôler l'utilisation de l'API Controlled Frame</translation>
 <translation id="1977581177449752640">Si cette règle est configurée, l'hôte d'accès à distance utilise un certificat client avec le nom commun de l'émetteur pour s'identifier auprès de "<ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" />". Pour permettre à cet hôte d'utiliser n'importe quel certificat client disponible, définissez cette règle sur "<ph name="WILDCARD_VALUE" />". Si cette règle est définie sur une chaîne vide ou qu'elle n'est pas configurée, elle est désactivée.</translation>
+<translation id="1982446141078810235">Cette règle permet de limiter les adresses IP et interfaces utilisées par WebRTC pour essayer d'identifier la meilleure connexion disponible pour chaque format d'URL spécifique.
+
+Elle accepte une liste de paires de formats d'URL et de types de gestion. Les formats d'URL sont vérifiés dans l'ordre. Le premier qui correspond détermine quelle gestion est utilisée par WebRTC pour le domaine. Lorsque l'URL du document actuel ne correspond à aucune entrée, elle utilise la configuration définie par la règle <ph name="WEB_RTC_IP_HANDLING_POLICY_NAME" />.
+
+Pour en savoir plus sur les formats d'entrée valides, veuillez consulter https://chromeenterprise.google/policies/url-patterns/. Les caractères génériques (<ph name="WILDCARD_VALUE" />) sont autorisés. Cette règle ne tient compte que de l'origine. Ainsi, tout chemin d'accès dans le format d'URL est ignoré.
+
+Valeurs de gestion valides :
+
+* default : WebRTC utilise toutes les interfaces réseau.
+
+* default_public_and_private_interfaces : WebRTC utilise toutes les interfaces publiques et privées.
+
+* default_public_interface_only : WebRTC utilise toutes les interfaces publiques, mais pas les interfaces privées.
+
+* disable_non_proxied_udp : WebRTC utilise le proxy UDP SOCKS ou bascule sur le proxy TCP.
+
+Consultez la section 5.2 du document RFC 8828 (https://tools.ietf.org/html/rfc8828.html#section-5.2) pour obtenir une description détaillée de toutes les valeurs de gestion.</translation>
 <translation id="1984934843478301531">Automatisation du lancement des applis</translation>
 <translation id="1985545260037812875">Afficher l'écran de configuration de la taille d'affichage lors de la connexion</translation>
 <translation id="1987789058026551147">Activer les rapports sur les sessions kiosque de l'appareil</translation>
@@ -3318,6 +3342,15 @@ Si <ph name="NTPCARDSVISIBLE" /> est désactivé, la carte Outlook ne s'affiche 
 <translation id="3341649870321644698">Activer le mode Sans distractions avec uniquement les sons pour se concentrer.</translation>
 <translation id="334231891933432876">Déconnecter l'utilisateur dès que son compte n'est plus authentifié</translation>
 <translation id="3345323903592385588">Ordre d'affichage de la configuration de VM dans le programme d'installation. Lorsque plusieurs configurations de VM sont spécifiées, celle avec la plus petite valeur display_order s'affiche en haut de la liste. Prend la valeur zéro par défaut.</translation>
+<translation id="3349823333182687926">Si cette règle est configurée, vous pouvez lister les formats d'URL qui peuvent utiliser les captures de fenêtre et d'onglet.
+
+      Si elle ne l'est pas, ces sites ne sont pas pris en compte pour un remplacement à ce niveau de capture.
+
+      Cette règle est ignorée si un site correspond à un format d'URL dans l'une de ces règles : <ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SAME_ORIGIN_TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />.
+
+      Si un site correspond à un format d'URL dans cette règle, les règles suivantes sont ignorées : <ph name="SCREEN_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME" />.
+
+      Pour en savoir plus sur les formats d‘<ph name="URL_LABEL" /> valides, veuillez consulter https://chromeenterprise.google/policies/url-patterns/.  Cette règle ne tient compte que de l'origine. Ainsi, tout chemin d'accès dans le format d'URL est ignoré.</translation>
 <translation id="3351661569026056296">Si vous définissez cette règle sur "True", les touches de la première rangée du clavier deviennent des touches de fonction. Le comportement d'origine des touches multimédias est rétabli en appuyant sur la touche de recherche.
 
 Si cette règle est définie sur "False" ou n'est pas configurée, les touches sont des touches multimédias par défaut. Elles deviennent des touches de fonction lorsque la touche de recherche est maintenue enfoncée.</translation>
@@ -3731,6 +3764,9 @@ Il s'agit d'une règle temporaire qui sera supprimée à l'avenir.</translation>
 <translation id="3616490235694929053">Cette règle définit si l'utilisateur voit l'écran de configuration de la taille d'affichage la première fois qu'il se connecte.
       Si cette règle est définie sur "False", l'écran n'est pas affiché.
       Si cette règle est définie sur "True", l'écran est affiché.</translation>
+<translation id="3621103925288234132">Si cette règle est configurée, les origines supplémentaires listées sont autorisées à accéder aux autorisations du navigateur (ex. : géolocalisation, appareil photo, micro), qui sont déjà disponibles pour l'origine d'installation des applications de kiosque Web.
+
+Pour en savoir plus sur les formats d‘<ph name="URL_LABEL" /> valides, veuillez consulter https://chromeenterprise.google/policies/url-patterns/. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
 <translation id="3622463490728773174">Autoriser la nouvelle implémentation</translation>
 <translation id="3623332696371971798">Empêcher l'accès à Google Photos depuis l'appli de personnalisation</translation>
 <translation id="3625900437628963632">Permet de spécifier si le mot de passe Kerberos défini dans cet élément de règle doit être mémorisé ou non. Si cette règle n'est pas configurée ou si elle est définie sur "true", le mot de passe est mémorisé. Si cette règle est définie sur "false", le mot de passe n'est pas mémorisé. Si le champ de mot de passe (disponible à partir de la version 116 de ChromeOS) n'est pas spécifié pour ce compte, la règle est ignorée.</translation>
@@ -3955,6 +3991,17 @@ Si cette règle est définie sur "2", les origines d'applis Web isolées ne peu
 
       Si cette règle n'est pas définie, le paramètre sera désactivé par défaut pour les utilisateurs gérés par une entreprise et activé par défaut pour les utilisateurs non gérés.</translation>
 <translation id="3791179836066841809">Documentation de la règle</translation>
+<translation id="3792548089600605745">Si cette règle est configurée, vous pouvez lister les formats d'URL qui peuvent utiliser la capture d'onglet.
+
+      Si elle ne l'est pas, ces sites ne sont pas pris en compte pour un remplacement à ce niveau de capture.
+
+      Notez que les applications Chrome en mode fenêtre pourront quand même être capturées.
+
+      Cette règle est ignorée si un site correspond à un format d'URL dans la règle <ph name="SAME_ORIGIN_TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />.
+
+      Si un site correspond à un format d'URL dans cette règle, les règles suivantes sont ignorées : <ph name="WINDOW_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME" />.
+
+      Pour en savoir plus sur les formats d‘<ph name="URL_LABEL" /> valides, veuillez consulter https://chromeenterprise.google/policies/url-patterns/.  Cette règle ne tient compte que de l'origine. Ainsi, tout chemin d'accès dans le format d'URL est ignoré.</translation>
 <translation id="379318040165550702">Autoriser les utilisateurs à choisir</translation>
 <translation id="3796527892245558832">Sélecteur de profil disponible au démarrage</translation>
 <translation id="3798922329287609568">La définition de cette règle limite l'impression en mode recto verso.
@@ -5091,6 +5138,13 @@ Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://ch
           </translation>
 <translation id="4578265298946081589">Ne pas redémarrer en cas de déconnexion de l'utilisateur.</translation>
 <translation id="4581507927311097234">Délai d'inactivité de l'utilisateur, en millisecondes, au terme duquel l'écran est éteint.</translation>
+<translation id="4582027661281685066">Liste de formats d'URL. Les requêtes initiées à partir de sites desservis par des origines qui figurent sur la liste ne sont pas soumises aux contrôles d‘<ph name="PRIVATE_NETWORK_ACCESS" />.
+
+          Si cette règle n'est pas configurée, la liste est considérée comme étant vide.
+
+          Pour les origines autres que celles représentées par les formats spécifiés ici, la valeur globale par défaut est utilisée à partir de la règle <ph name="INSECURE_PRIVATE_NETWORK_REQUESTS_ALLOWED_POLICY_NAME" /> si celle-ci est définie ou, à défaut, à partir de la configuration personnelle de l'utilisateur.
+
+          Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://chromeenterprise.google/policies/url-patterns/.</translation>
 <translation id="4582338216073557489">Si cette règle est définie sur "None", <ph name="PRODUCT_NAME" /> utilise la taille de cache par défaut pour stocker les fichiers mis en cache sur le disque. L'utilisateur ne peut pas la modifier.
 
       Si vous configurez cette règle, <ph name="PRODUCT_NAME" /> utilise la taille de cache de votre choix, que l'utilisateur ait spécifié ou non le flag "--disk-cache-size". (Toute valeur inférieure à quelques mégaoctets est arrondie.)
@@ -5802,6 +5856,13 @@ Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instan
 <translation id="5041315457555330432">Autoriser <ph name="PRODUCT_NAME" /> à ne se connecter qu'aux appareils avec une adresse IP privée, sauf si la fonctionnalité CastAllowAllIPs est activée.</translation>
 <translation id="504689994545234073">Activer le stockage local des fichiers utilisateur</translation>
 <translation id="5048890362473520096">Activer le bac à sable LPAC pour les services d'impression</translation>
+<translation id="5053070908839680464">Pour des raisons de sécurité, l'API Web <ph name="GET_DISPLAY_MEDIA_API_NAME" /> nécessite un geste préalable de l'utilisateur ("activation temporaire"). Sinon, une erreur se produit.
+
+Une fois cette règle définie, les administrateurs peuvent préciser les origines sur lesquelles cette API peut être appelée sans geste préalable de l'utilisateur.
+
+Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://chromeenterprise.google/policies/url-patterns/. La valeur * n'est pas acceptée pour cette règle.
+
+Si cette règle n'est pas configurée, toutes les origines nécessitent un geste préalable de l'utilisateur pour appeler cette API.</translation>
 <translation id="5055474681190962362">Jour du mois [1-31] (interprété dans le fuseau horaire local de l'appareil) où l'appareil doit redémarrer. Utilisé uniquement quand "frequency" est défini sur "MONTHLY". Si le nombre maximal de jours dans un mois donné est dépassé, le dernier jour de ce mois est sélectionné.</translation>
 <translation id="5055513974503523022">L'arrière-plan de visioconférence par IA générative permet aux utilisateurs de s'exprimer en utilisant les fonctionnalités d'IA générative pour créer des arrière-plans de visioconférence personnalisés dans <ph name="PRODUCT_OS_NAME" />.
 
@@ -6539,6 +6600,11 @@ Si cette règle est définie sur "false", l'utilisation d'identifiants n'est pas
 
       Remarque : Sur iOS, si cette règle est modifiée en cours de session, la modification ne prend effet qu'au redémarrage du navigateur.</translation>
 <translation id="549471902631700911">Désactiver la réception d'enquêtes sur la navigation sécurisée</translation>
+<translation id="549625769649876757">Cette règle permet de lister les formats d'URL pour lesquels les sites sont autorisés à accéder à la géolocalisation haute précision de l'utilisateur sans avoir à lui demander son autorisation au préalable.
+
+Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_GEOLOCATION_SETTING" /> s'applique pour tous les sites, à condition qu'elle soit définie. Si ce n'est pas le cas, le paramètre défini par l'utilisateur s'applique.
+
+Pour en savoir plus sur les formats d‘<ph name="URL_LABEL" /> valides, veuillez consulter https://chromeenterprise.google/policies/url-patterns. Les caractères génériques (<ph name="WILDCARD_VALUE" />) sont autorisés.</translation>
 <translation id="5499375345075963939">Cette règle n'est active qu'en mode "point de vente".
 
       Lorsque sa valeur est configurée, et si elle ne correspond pas à 0, l'utilisateur connecté en mode démonstration est déconnecté automatiquement après la durée d'inactivité définie.
@@ -8187,6 +8253,9 @@ Remarque : La validité des mots de passe peut dépasser le délai spécifié e
 <translation id="6539246272469751178">Cette règle n'a aucun effet sur les applications Android. Celles-ci se servent toujours du répertoire de téléchargements par défaut. Elles ne peuvent pas accéder aux fichiers téléchargés par <ph name="PRODUCT_OS_NAME" /> dans un autre répertoire de téléchargements.</translation>
 <translation id="6541383786427998658">Activer la journalisation système des extensions d'entreprise</translation>
 <translation id="654303922206238013">Stratégie de migration pour eCryptfs</translation>
+<translation id="6544205049437664515">Cette règle permet la lecture automatique des vidéos (sans accord de l'utilisateur) avec leur contenu audio dans <ph name="PRODUCT_NAME" />. Si la règle <ph name="AUTOPLAY_ALLOWED_POLICY_NAME" /> est définie sur "True", cette règle n'a aucune incidence. Si <ph name="AUTOPLAY_ALLOWED_POLICY_NAME" /> est définie sur "False", la lecture automatique est toujours activée pour les formats d'URL inclus dans cette règle. Si <ph name="PRODUCT_NAME" /> est en cours d'exécution lorsque cette règle est modifiée, la modification n'affectera que les nouveaux onglets ouverts.
+
+      Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://chromeenterprise.google/policies/url-patterns/.</translation>
 <translation id="6544601600794014309">Activer la traduction pour Réponses rapides</translation>
 <translation id="654546276700640113">Cette règle permet de définir le nombre maximal de caractères que peut contenir un code. Une valeur égale ou inférieure à 0 signifie que l'utilisateur peut définir un code de n'importe quelle longueur. Si la valeur est inférieure à <ph name="PIN_UNLOCK_MINIMUM_LENGTH_POLICY_NAME" />, mais supérieure à 0, la longueur maximale est définie sur la longueur minimale.
 
@@ -8890,6 +8959,15 @@ Pour en savoir plus sur les formats d'URL valides, consultez https://chromeenter
 <translation id="7008308728445338159">Contrôles d'interception des requêtes DNS activés</translation>
 <translation id="7009043124653876961">Désactiver les suggestions d'emoji lors de la saisie</translation>
 <translation id="7010006999849135962">Activer l'authentification sans code pour l'hôte d'accès à distance</translation>
+<translation id="7012747034204028941">Si cette règle est configurée, vous pouvez lister les formats d'URL qui peuvent utiliser les captures d'écran, de fenêtre et d'onglet.
+
+      Si elle ne l'est pas, ces sites ne sont pas pris en compte pour un remplacement à ce niveau de capture.
+
+      Cette règle est ignorée si un site correspond à un format d'URL dans l'une de ces règles : <ph name="WINDOW_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SAME_ORIGIN_TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />.
+
+      Si un site correspond à un format d'URL dans cette règle, la règle <ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME" /> est ignorée.
+
+      Pour en savoir plus sur les formats d‘<ph name="URL_LABEL" /> valides, veuillez consulter https://chromeenterprise.google/policies/url-patterns/.  Cette règle ne tient compte que de l'origine. Ainsi, tout chemin d'accès dans le format d'URL est ignoré.</translation>
 <translation id="7013333561002112085">Si cette règle est définie sur <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_ENABLED" /> (valeur 1), le navigateur demande un certificat client au serveur de gestion des appareils pour un utilisateur ou profil géré. Ce certificat sera disponible, par exemple, pour les connexions mTLS.
 
 Si cette règle est définie sur <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_DISABLED" /> (valeur 0), le navigateur ne peut pas demander le certificat client. Si le certificat client géré d'un profil a déjà été provisionné en raison de l'activation de cette règle auparavant, il ne sera pas supprimé. Toutefois, il ne sera pas disponible pour les connexions mTLS ni renouvelé quand il arrivera à expiration.</translation>
@@ -9814,6 +9892,9 @@ Si vous définissez cette règle, vous devez désactiver la règle <ph name="PRI
 <translation id="7657261947024629645">Privilégier les performances.</translation>
 <translation id="76580522298425324">Autoriser la capture d'écran sans geste préalable de l'utilisateur</translation>
 <translation id="7661379728107156839">Faible complexité</translation>
+<translation id="7664977773563102099">Cette règle permet de lister les URL dont les formats sont mis en correspondance avec la source de sécurité de l'URL à l'origine de la demande. En cas de correspondance, l'accès aux appareils de capture audio est autorisé sans invite.
+
+      Pour en savoir plus sur les formats d‘<ph name="URL_LABEL" /> valides, consultez https://chromeenterprise.google/policies/url-patterns/. Notez toutefois que le format "*", qui correspond à n'importe quelle URL, n'est pas pris en charge par cette règle.</translation>
 <translation id="7666228839913571182">Autoriser les cookies tiers</translation>
 <translation id="7666782560345386904">Paramètres de la saisie automatique améliorée</translation>
 <translation id="7669630878711068277">Si vous activez cette règle ou que vous ne la configurez pas, les utilisateurs peuvent imprimer dans <ph name="PRODUCT_NAME" />. En revanche, ils ne peuvent pas modifier ce paramètre.
@@ -10842,6 +10923,11 @@ Les certificats doivent être encodés en base64.</translation>
 <translation id="8381774264911275515">Désactiver le transfert des cookies d'authentification unique SAML dans la session utilisateur lors de la connexion</translation>
 <translation id="8382184662529825177">Autoriser l'utilisation de l'attestation à distance pour assurer la protection du contenu de l'appareil</translation>
 <translation id="838870586332499308">Activer l'itinérance des données</translation>
+<translation id="8392010421565173310">Liste d'autorisation qui contrôle les rapports de télémétrie de site Web pour les utilisateurs affiliés. Les rapports sur les types de données de télémétrie sont contrôlés par la règle <ph name="REPORT_WEBSITE_TELEMETRY_POLICY_NAME" />.
+
+Si cette règle est configurée, des rapports de télémétrie de site Web sont créés pour les URL figurant dans la liste d'autorisation.
+Si cette règle n'est pas configurée, aucun rapport de télémétrie de site Web n'est créé.
+Pour en savoir plus sur les formats d'URL valides, consultez https://chromeenterprise.google/policies/url-patterns/. Seuls les schémas d'URL HTTP et HTTPS sont autorisés pour cette règle.</translation>
 <translation id="8392478748777481636">Cette règle est obsolète et non compatible, veuillez utiliser la règle <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> à la place.</translation>
 <translation id="8393850527597048037">Plate-forme uniquement</translation>
 <translation id="8395350646076131800">Délai d'inactivité pour l'écran de verrouillage de l'économiseur d'écran de l'utilisateur.</translation>
@@ -10986,6 +11072,35 @@ Le champ <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> indique la quantit
           Si vous ne définissez pas cette règle, le moteur de rendu par défaut est utilisé pour tous les sites, tel que spécifié par la règle "ChromeFrameRendererSettings".
 
           Pour voir des exemples de formats, accédez à l'adresse https://www.chromium.org/developers/how-tos/chrome-frame-getting-started.</translation>
+<translation id="8484830523381746060">Vous pouvez activer cette règle afin de créer un dictionnaire d'extensions de fichier et une liste correspondante de domaines qui seront exemptés d'avertissements de téléchargement basés sur l'extension. Cela permet aux administrateurs de l'entreprise de bloquer ces avertissements pour les fichiers associés à un domaine listé. Par exemple, si l'extension "jnlp" est associée à "website1.com", les utilisateurs verront un avertissement s'ils téléchargent des fichiers "jnlp" depuis "website2.com". En revanche, ils n'en verront pas s'ils téléchargent des fichiers "jnlp" depuis "website1.com".
+
+Le téléchargement, depuis les domaines identifiés par cette règle, de fichiers dont l'extension est spécifiée fera toutefois l'objet d'avertissements de sécurité (non basés sur l'extension) pour signaler, par exemple, un contenu mixte ou une navigation sécurisée.
+
+Si vous désactivez cette règle, ou que vous ne la configurez pas, les utilisateurs verront des avertissements s'ils téléchargent des fichiers des types spécifiés.
+
+Si vous activez cette règle :
+
+* Les URL doivent avoir le format décrit sur https://chromeenterprise.google/policies/url-patterns/.
+
+* L'extension doit être saisie au format ASCII, en minuscules. Les extensions doivent être listées sans le séparateur qui les précède (par exemple, indiquez "jlnp" et non ".jlnp").
+
+Exemple :
+
+La configuration suivante empêche que des avertissements s'affichent en cas de téléchargement de fichiers de type "exe" et "jnlp" depuis le domaine *.example.com, et de fichiers de type "swf" depuis tous les domaines. L'utilisateur voit un avertissement s'il télécharge un fichier exe ou jnlp depuis un autre domaine, mais pas s'il télécharge un fichier swf.
+
+[
+  { "file_extension": "jnlp", "domains": ["example.com"] },
+  { "file_extension": "exe", "domains": ["example.com"] },
+  { "file_extension": "swf", "domains": ["*"] }
+]
+
+Notez que même si les avertissements basés sur l'extension sont ici supprimés en cas de téléchargement d'un fichier swf depuis n'importe quel domaine, il n'est pas recommandé d'appliquer ce type de configuration aux extensions dangereuses, pour des raisons de sécurité. Cet exemple ne vise qu'à montrer qu'il est possible de le faire.
+
+Si cette règle est activée en même temps que <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" />, les exemptions aux avertissements basés sur l'extension spécifiées par cette règle prévalent sur un paramètre <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" /> qui bloquerait les types de fichiers dangereux. Les exemptions spécifiées par cette règle ne s'appliquent qu'au comportement "bloquer les types de fichiers dangereux" spécifié par les valeurs 1 et 2 de <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" />.
+
+Par exemple, si cette règle spécifie une exemption pour les téléchargements "exe" depuis "website1.com" et que <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" /> est configurée pour bloquer les téléchargements malveillants et les types de fichiers dangereux (valeur 1), les téléchargements "exe" depuis "website1.com" seront exemptés du blocage basé sur l'extension, mais seront quand même bloqués s'ils sont malveillants.
+
+Pour en savoir plus sur <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" />, consultez https://chromeenterprise.google/policies/?policy=DownloadRestrictions.</translation>
 <translation id="8489169564515126823">Désactivé : les barres de défilement ne sont pas sélectionnables par défaut.</translation>
 <translation id="8489964335640955763">PluginVm</translation>
 <translation id="8493645415242333585">Désactiver l'enregistrement de l'historique du navigateur</translation>

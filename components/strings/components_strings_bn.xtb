@@ -425,6 +425,7 @@
 <translation id="1682696192498422849">আগে ছোট প্রান্ত</translation>
 <translation id="168693727862418163">এই নীতির মান সেটির স্কিমার সাথে যাচাই করা যায়নি, তাই সেটি উপেক্ষা করা হবে।</translation>
 <translation id="168841957122794586">সার্ভার সার্টিফিকেটে একটি দুর্বল ক্রিপ্টোগ্রাফিক কী আছে৷</translation>
+<translation id="1688718429648938412">Wallet-এ লয়ালটি কার্ড সেভ করুন</translation>
 <translation id="1689333818294560261">বিশেষ নাম</translation>
 <translation id="1692622044604477956">সিনেমার তালিকা এবং থিয়েটার শো-টাইম</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />আপনি কীভাবে আপনার ডেটা ম্যানেজ করতে পারেন:<ph name="END_BOLD" /> ৪ সপ্তাহের বেশি পুরনো বিষয় Chrome অটোমেটিক মুছে দেয়। আপনি ব্রাউজ করার সাথে সাথে তালিকায় একই বিষয় আবার দেখানো হতে পারে। এছাড়াও আপনি এমন বিষয়গুলিকে ব্লক করতে পারেন যেগুলি আপনি Chrome-এ শেয়ার করতে চান না এবং Chrome-এর সেটিংসে যেকোনও সময় বিজ্ঞাপনের বিষয়গুলি বন্ধ করতে পারেন।</translation>
@@ -3661,6 +3662,7 @@
 <translation id="6965978654500191972">ডিভাইস</translation>
 <translation id="696703987787944103">পারসেপচুয়াল</translation>
 <translation id="6967851206780867018">কন্টেন্টের কারণে ১টি ফাইল ব্লক করা হয়েছে</translation>
+<translation id="6968217325369275594">আপনার যেকোনও ডিভাইস থেকে আপডেট পেতে নিজের তথ্য সেভ করুন। <ph name="ACCOUNT" />-এর জন্য <ph name="IDS_WALLET_WALLETABLE_PASS_GOOGLE_WALLET_TITLE" />-এ আপনার তথ্য সেভ করা আছে।</translation>
 <translation id="6970885655016700774">ফ্যাব্রিক (আর্কাইভাল)</translation>
 <translation id="6971439137020188025">Slides-এ চটপট নতুন Google প্রেজেন্টেশন তৈরি করুন</translation>
 <translation id="6972629891077993081">HID ডিভাইস</translation>

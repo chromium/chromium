@@ -425,6 +425,7 @@
 <translation id="1682696192498422849">짧은 쪽 먼저</translation>
 <translation id="168693727862418163">이 정책 값은 스키마에 대해 유효성이 확인되지 않았으므로 무시됩니다.</translation>
 <translation id="168841957122794586">서버 인증서에 안전성이 낮은 암호화 키가 포함되어 있습니다.</translation>
+<translation id="1688718429648938412">월렛에 포인트 카드를 저장하세요</translation>
 <translation id="1689333818294560261">닉네임</translation>
 <translation id="1692622044604477956">영화 상영작 목록 및 상영 시간</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />사용자가 데이터를 관리하는 방법:<ph name="END_BOLD" /> Chrome에서는 4주가 지난 주제를 자동 삭제합니다. 인터넷을 사용하다 보면 동일한 주제가 목록에 다시 표시될 수 있습니다. 사용자는 언제든지 Chrome 설정에서 Chrome이 사이트와 공유하길 원하지 않는 주제를 차단하고 광고 주제를 사용 중지할 수도 있습니다.</translation>
@@ -2386,7 +2387,7 @@
 <translation id="4877521229462766300">삽입된 콘텐츠를 허용하시겠습니까?</translation>
 <translation id="4879491255372875719">자동(기본값)</translation>
 <translation id="4880328155169081699">신분증을 업데이트하시겠습니까?</translation>
-<translation id="4880827082731008257">기록 검색</translation>
+<translation id="4880827082731008257">검색 기록</translation>
 <translation id="4881695831933465202">열기</translation>
 <translation id="4881808915112408168">24x31.5인치</translation>
 <translation id="4882314601499260499">적용된 사용자 정책이 없습니다. 사용자 정책을 추가하려면 조직에서 <ph name="LINK_BEGIN" />도메인을 확인<ph name="LINK_END" />해야 합니다.</translation>
@@ -3082,7 +3083,7 @@
 <translation id="6040539895181423374">가격 정보</translation>
 <translation id="604124094241169006">자동</translation>
 <translation id="6041777658117377052">챔버 온도</translation>
-<translation id="6042308850641462728">자세히</translation>
+<translation id="6042308850641462728">더보기</translation>
 <translation id="6043357981274314628">완료</translation>
 <translation id="6045164183059402045">적용 템플릿</translation>
 <translation id="6046892054959167494"><ph name="SEARCH_AGGREGATOR_KEYWORD" />을(를) 입력하여 검색하거나 <ph name="SEARCH_AGGREGATOR_SHORT_NAME" />에게 질문하세요.</translation>
@@ -3661,6 +3662,7 @@
 <translation id="6965978654500191972">기기</translation>
 <translation id="696703987787944103">가시 범위</translation>
 <translation id="6967851206780867018">콘텐츠로 인해 파일 1개가 차단되었습니다.</translation>
+<translation id="6968217325369275594">정보를 저장하여 모든 기기에서 업데이트를 받으세요. 정보는 <ph name="ACCOUNT" />의 <ph name="IDS_WALLET_WALLETABLE_PASS_GOOGLE_WALLET_TITLE" />에 저장됩니다</translation>
 <translation id="6970885655016700774">패브릭(보관용)</translation>
 <translation id="6971439137020188025">Slides에서 빠르게 새 Google 프레젠테이션 만들기</translation>
 <translation id="6972629891077993081">HID 기기</translation>

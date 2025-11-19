@@ -533,7 +533,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1348966090521113558">Configuració d'accessibilitat del ratolí</translation>
 <translation id="1350962700620017446"><ph name="EXTENSION_NAME" /> vol cercar escàners de documents i accedir-hi</translation>
 <translation id="1352834119074414157">És possible que aquest paquet estigui trencat o en perill. Tanca aquesta finestra i torna a baixar-lo.</translation>
-<translation id="1353275871123211385">Per utilitzar els controls parentals, com ara l'aprovació d'aplicacions i els límits de temps de connexió, el nen ha de tenir un Compte de Google gestionat pel pare o per la mare. Més endavant, es pot afegir un compte de centre educatiu per utilitzar eines com, per exemple, Google Classroom.</translation>
+<translation id="1353275871123211385">Per utilitzar els controls parentals, com ara l'aprovació d'aplicacions i els límits de temps de pantalla, el nen ha de tenir un Compte de Google gestionat pel pare o per la mare. Més endavant, es pot afegir un compte de centre educatiu per utilitzar eines com, per exemple, Google Classroom.</translation>
 <translation id="135389172849514421">Funciona sense connexió</translation>
 <translation id="1353980523955420967">No hem trobat el fitxer PPD. Comprova que Chromebook estigui en línia i torna-ho a provar.</translation>
 <translation id="1354045473509304750">Continua permetent que <ph name="HOST" /> utilitzi i mogui la càmera</translation>
@@ -3387,7 +3387,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3321460131042519426">Activa l'ajust de paraules</translation>
 <translation id="3321494112580110651">No veus la teva impressora?</translation>
 <translation id="3321776060736518525">Font: <ph name="APP_URL" /></translation>
-<translation id="3323521181261657960">Has obtingut més temps de connexió!</translation>
+<translation id="3323521181261657960">Has obtingut més temps de pantalla!</translation>
 <translation id="3325930488268995856">Connectat a Microsoft OneDrive</translation>
 <translation id="3325995804968971809">Estil</translation>
 <translation id="3327050066667856415">Els Chromebook estan dissenyats perquè siguin segurs. El teu dispositiu està protegit del programari maliciós automàticament i no necessita programari addicional.</translation>
@@ -3716,7 +3716,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3553442438687311630">Autenticació de Microsoft</translation>
 <translation id="3554493885489666172"><ph name="PROFILE_NAME" /> gestiona el teu dispositiu. Els administradors poden accedir a les dades de qualsevol perfil d'aquest dispositiu.</translation>
 <translation id="3555812735919707620">Suprimeix l'extensió</translation>
-<translation id="3557101512409028104">Estableix restriccions de llocs web i límits de temps de connexió amb Family Link</translation>
+<translation id="3557101512409028104">Estableix restriccions de llocs web i límits de temps de pantalla amb Family Link</translation>
 <translation id="3557267430539505890"><ph name="BEGIN_PARAGRAPH1" />Si permets que els dispositius ChromeOS ens enviïn informes automàtics, ens ajudaràs a prioritzar què s'ha de corregir i millorar a ChromeOS. Aquests informes poden incloure dades com ara quan es bloqueja ChromeOS, quines funcions s'han utilitzat i quanta memòria s'utilitza normalment.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Pots iniciar o aturar l'enviament d'aquests informes en qualsevol moment a la configuració del dispositiu ChromeOS del teu fill o filla. Si ets l'administrador d'un domini, pots canviar aquesta opció de configuració a la consola d'administració.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3559079791149580653">Deixa d'emetre la pantalla a <ph name="DEVICE_NAME" /></translation>
@@ -4557,7 +4557,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4099874310852108874">S'ha produït un error de la xarxa.</translation>
 <translation id="4100020874626534113">Permet l'assignació diacrítica flexible. Per exemple, pots escriure "anhs" o "asnh" per obtenir "ánh".</translation>
 <translation id="4100733287846229632">Queda molt poc espai al dispositiu</translation>
-<translation id="4100853287411968461">Nou límit de temps de connexió</translation>
+<translation id="4100853287411968461">Nou límit de temps de pantalla</translation>
 <translation id="4101352914005291489">SSID amagat</translation>
 <translation id="410225014223200513">Fer una O amb els llavis</translation>
 <translation id="4102906002417106771">Reinicia per fer un Powerwash</translation>

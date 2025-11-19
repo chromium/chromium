@@ -662,6 +662,7 @@
 <translation id="2085876078937250610">சேமி…</translation>
 <translation id="2088913896151127116">வார்த்தைகளைச் சேர்</translation>
 <translation id="2090451897496479509">கூடுதல் தகவல்களுக்கு வழங்குநரைத் தொடர்புகொள்ளவும்</translation>
+<translation id="2090686487550343086">IBANகள்</translation>
 <translation id="2091887806945687916">ஒலி</translation>
 <translation id="2093184051799735948"><ph name="ENGINE_NAME" /> இல் தேடுங்கள் அல்லது URLலை டைப் செய்யுங்கள்</translation>
 <translation id="2093982008204312032">கடவுச்சொற்களை நிரப்புவதற்காக Windows Helloவை முடக்க Google Chrome முயல்கிறது.</translation>
@@ -799,6 +800,7 @@
 <translation id="2283340219607151381">முகவரிகளைச் சேமித்துத் தானாக நிரப்பு</translation>
 <translation id="2283447177162560884">'<ph name="PAGE_TITLE" />' நீக்கப்பட்டது</translation>
 <translation id="2283599456633275070">பயணம்</translation>
+<translation id="2285709459648658719">பாஸ்போர்ட்டுகள்</translation>
 <translation id="2286383991450886080">34 x 44 இன்ச்</translation>
 <translation id="2288422996159078444">நீங்கள் தட்டச்சு செய்பவை, பார்வையிடும் பக்கங்கள், இணையத்தில் செய்யும் பிற நடவடிக்கைகள் கண்காணிக்கப்படுகின்றன. மேலும் உங்களுக்குத் தெரியாமலேயே தளங்களில் உள்ள உள்ளடக்கம் மாற்றப்படலாம்.</translation>
 <translation id="2289385804009217824">டிரிம்</translation>
@@ -2547,6 +2549,7 @@
 <translation id="5137761395480718572">வைஃபை அனுமதிச் சான்றுகளை நிறுவ இந்த ஆப்ஸ் அனுமதி கோருகிறது. அமைத்த பிறகு, பங்கேற்கும் வைஃபை நெட்வொர்க்குகளில் உங்கள் <ph name="DEVICE_TYPE" /> தானாகவே இணையும். இந்த அனுமதிச் சான்றுகளை அகற்ற ஆப்ஸை நிறுவல் நீக்கவும். <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">விர்ச்சுவல் கார்டு தற்போது கிடைக்கவில்லை, உங்கள் பேங்கைத் தொடர்புகொள்ளவும்</translation>
 <translation id="5138227688689900538">குறைவாகக் காட்டு</translation>
+<translation id="5140155249377545621">ஓட்டுநர் உரிமங்கள்</translation>
 <translation id="5144613843429436866">இந்தத் தளத்திற்கு <ph name="PERMISSION" /> அணுகலை அனுமதித்துள்ளீர்கள்</translation>
 <translation id="5145883236150621069">கொள்கைப் பதிலில் பிழைக் குறியீடு உள்ளது</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> இணையதளத்திற்கான அறிவிப்புகள் தடுக்கப்பட்டுள்ளன</translation>

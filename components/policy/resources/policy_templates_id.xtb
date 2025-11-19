@@ -175,6 +175,20 @@ Untuk mengetahui informasi selengkapnya tentang pola URL yang valid, lihat https
 <translation id="1089150222292592899">Mengisi otomatis nama pengguna di halaman IdP SAML</translation>
 <translation id="1090430607214486535">Sensitif</translation>
 <translation id="1091765729282771296">Izinkan situs meminta kepada pengguna untuk memberikan akses ke perangkat HID</translation>
+<translation id="1093047620074696166">Untuk alasan keamanan, <ph name="SHOW_OPEN_FILE_PICKER_API_NAME" />,
+<ph name="SHOW_SAVE_FILE_PICKER_API_NAME" />, dan <ph name="SHOW_DIRECTORY_PICKER_API_NAME" /> web API
+memerlukan gestur pengguna sebelumnya ("aktivasi sementara") untuk dipanggil. Jika tidak ada gestur pengguna sebelumnya,
+panggilan API ini akan gagal.
+
+Jika kebijakan ini disetel, admin akan dapat menentukan origin tempat API ini dapat
+dipanggil tanpa gestur pengguna sebelumnya.
+
+Untuk mengetahui informasi selengkapnya tentang pola URL yang valid, lihat
+https://chromeenterprise.google/policies/url-patterns/. * bukanlah
+nilai yang diterima untuk kebijakan ini.
+
+Jika kebijakan ini tidak disetel, semua origin akan memerlukan gestur pengguna sebelumnya untuk memanggil
+API ini.</translation>
 <translation id="1095209545735032039">Memblokir Serial API di situs ini</translation>
 <translation id="1096105751829466145">Penyedia penelusuran default</translation>
 <translation id="1099282607296956954">Aktifkan Isolasi Situs untuk setiap situs</translation>
@@ -1446,6 +1460,23 @@ Jika kebijakan disetel ke Nonaktif, <ph name="PRODUCT_NAME" /> akan menutup tab 
 <translation id="1972134432340252414">Blokir titik ekstensi lama dalam Proses browser</translation>
 <translation id="1973804850652157024">Mengontrol penggunaan Controlled Frame API</translation>
 <translation id="1977581177449752640">Jika kebijakan disetel, host akses jarak jauh akan menggunakan sertifikat klien dengan CN penerbit tertentu untuk melakukan autentikasi ke <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" />. Untuk menggunakan sertifikat klien yang tersedia, setel kebijakan ke <ph name="WILDCARD_VALUE" />. Jika kebijakan tidak disetel atau disetel ke kosong, fitur ini akan dinonaktifkan.</translation>
+<translation id="1982446141078810235">Kebijakan ini memungkinkan pembatasan alamat IP dan antarmuka yang dapat digunakan oleh WebRTC saat mencoba menemukan koneksi terbaik yang tersedia untuk setiap pola URL tertentu.
+
+Kebijakan ini menerima daftar pasangan pola URL dan jenis penanganan. Pola URL diperiksa secara berurutan dan kecocokan pertama akan mengonfigurasi penanganan yang digunakan oleh WebRTC untuk domain tersebut. Jika URL dokumen saat ini tidak cocok dengan entri apa pun, dokumen tersebut akan menggunakan konfigurasi yang ditetapkan oleh kebijakan <ph name="WEB_RTC_IP_HANDLING_POLICY_NAME" />.
+
+Untuk mengetahui informasi selengkapnya tentang pola input yang valid, lihat https://chromeenterprise.google/policies/url-patterns/. Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan. Kebijakan ini hanya mencocokkan berdasarkan origin, sehingga jalur apa pun di pola URL akan diabaikan.
+
+Nilai penanganan yang valid:
+
+* default - WebRTC menggunakan semua antarmuka jaringan.
+
+* default_public_and_private_interfaces - WebRTC menggunakan semua antarmuka publik dan pribadi.
+
+* default_public_interface_only - WebRTC menggunakan semua antarmuka publik, tetapi tidak menggunakan antarmuka pribadi.
+
+* disable_non_proxied_udp - WebRTC menggunakan proxy SOCKS UDP atau akan beralih ke proxy TCP.
+
+Lihat RFC 8828 bagian 5.2 (https://tools.ietf.org/html/rfc8828.html#section-5.2) untuk melihat deskripsi terperinci tentang semua nilai penanganan.</translation>
 <translation id="1984934843478301531">Otomatisasi Peluncuran Aplikasi</translation>
 <translation id="1985545260037812875">Tampilkan layar setelan ukuran tampilan selama login</translation>
 <translation id="1987789058026551147">Aktifkan pelaporan sesi kios perangkat</translation>
@@ -3475,6 +3506,15 @@ Jika <ph name="NTPCARDSVISIBLE" /> disetel ke nonaktif, Kartu Outlook tidak akan
 <translation id="3341649870321644698">Aktifkan Mode Fokus dengan Suara Fokus saja.</translation>
 <translation id="334231891933432876">Buat pengguna logout segera setelah akunnya menjadi tidak terautentikasi</translation>
 <translation id="3345323903592385588">Urutan konfigurasi VM yang akan ditampilkan di penginstal. Jika beberapa konfigurasi VM ditentukan, konfigurasi dengan nilai display_order terkecil ditampilkan di bagian atas daftar. Nilai defaultnya adalah nol.</translation>
+<translation id="3349823333182687926">Jika kebijakan ini disetel, Anda akan dapat menetapkan daftar pola URL yang dapat menggunakan Tangkapan Jendela dan Tab.
+
+      Jika kebijakan ini tidak disetel, situs tidak akan dianggap sebagai penggantian pada tingkat Tangkapan ini.
+
+      Kebijakan ini akan diabaikan jika situs cocok dengan pola URL di salah satu kebijakan berikut: <ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SAME_ORIGIN_TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />.
+
+      Jika situs cocok dengan pola URL di kebijakan ini, kebijakan berikut akan diabaikan: <ph name="SCREEN_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME" />.
+
+      Untuk mengetahui informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://chromeenterprise.google/policies/url-patterns/.  Kebijakan ini hanya mencocokkan berdasarkan origin, sehingga jalur apa pun di pola URL akan diabaikan.</translation>
 <translation id="3351661569026056296">Jika kebijakan disetel ke Benar (True), tombol baris teratas pada keyboard akan bertindak sebagai perintah tombol fungsi. Jika menekan tombol Penelusuran, perilaku tombol tersebut akan kembali menjadi tombol media.
 
 Jika kebijakan disetel ke Salah (False) atau tidak disetel, default keyboard adalah membuat perintah tombol media. Jika menekan tombol Penelusuran, tombol tersebut akan berubah menjadi tombol fungsi.</translation>
@@ -3889,6 +3929,9 @@ Kebijakan ini adalah kebijakan sementara yang akan dihapus di masa mendatang.</t
 <translation id="3616490235694929053">Kebijakan ini mengontrol apakah layar setelan ukuran tampilan akan ditampilkan kepada pengguna selama login pertama.
       Jika kebijakan disetel ke salah (false), layar setelan ukuran tampilan tidak akan ditampilkan.
       Jika disetel ke benar (true), layar setelan ukuran tampilan akan ditampilkan.</translation>
+<translation id="3621103925288234132">Jika kebijakan ini disetel, origin tambahan yang tercantum dapat mengakses izin browser (mis. geolokasi, kamera, mikrofon) yang sudah tersedia ke origin penginstalan aplikasi kios web.
+
+Untuk mengetahui informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://chromeenterprise.google/policies/url-patterns/. <ph name="WILDCARD_VALUE" /> bukanlah nilai yang diterima untuk kebijakan ini.</translation>
 <translation id="3622463490728773174">Izinkan implementasi baru</translation>
 <translation id="3623332696371971798">Cegah akses Google Foto dari aplikasi personalisasi</translation>
 <translation id="3625900437628963632">Apakah ingin mengingat nilai sandi Kerberos yang ditetapkan di item kebijakan ini. Jika tidak disetel atau disetel ke benar (true), sandi akan diingat. Jika disetel ke salah (false), sandi tidak akan diingat. Diabaikan jika kolom sandi tidak ditentukan untuk akun ini. Kolom ini didukung mulai ChromeOS versi 116.</translation>
@@ -4134,6 +4177,17 @@ Jika setelan ini dinonaktifkan, pengguna tidak akan diizinkan untuk menggunakan 
 
 Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengguna yang dikelola perusahaan dan diizinkan bagi pengguna yang tidak dikelola.</translation>
 <translation id="3791179836066841809">Dokumentasi kebijakan</translation>
+<translation id="3792548089600605745">Jika kebijakan ini disetel, Anda akan dapat menetapkan daftar pola URL yang dapat menggunakan Tangkapan Tab.
+
+      Jika kebijakan ini tidak disetel, situs tidak akan dianggap sebagai penggantian pada tingkat tangkapan ini.
+
+      Perlu diperhatikan bahwa Aplikasi Chrome yang memiliki jendela akan tetap diizinkan untuk ditangkap gambarnya.
+
+      Kebijakan ini akan diabaikan jika situs cocok dengan pola URL di kebijakan <ph name="SAME_ORIGIN_TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />.
+
+      Jika situs cocok dengan pola URL di kebijakan ini, kebijakan berikut akan diabaikan: <ph name="WINDOW_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME" />.
+
+      Untuk mengetahui informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://chromeenterprise.google/policies/url-patterns/.  Kebijakan ini hanya mencocokkan berdasarkan origin, sehingga jalur apa pun di pola URL akan diabaikan.</translation>
 <translation id="379318040165550702">Izinkan pengguna memilih</translation>
 <translation id="3796527892245558832">Pemilih profil tersedia saat browser dimulai</translation>
 <translation id="3798922329287609568">Jika kebijakan disetel, mode dupleks pencetakan akan dibatasi.
@@ -5291,6 +5345,13 @@ Untuk mengetahui informasi selengkapnya tentang pola URL yang valid, lihat https
           </translation>
 <translation id="4578265298946081589">Jangan reboot saat pengguna logout.</translation>
 <translation id="4581507927311097234">Durasi waktu tanpa input pengguna sebelum layar dinonaktifkan, dalam milidetik.</translation>
+<translation id="4582027661281685066">Daftar Pola URL. Permintaan yang dimulai dari situs yang disajikan dengan pencocokan origin tidak tunduk pada pemeriksaan <ph name="PRIVATE_NETWORK_ACCESS" />.
+
+          Jika tidak disetel, kebijakan ini berperilaku sebagaimana jika disetel ke daftar kosong.
+
+          Untuk origin yang tidak tercakup oleh pola yang ditentukan di sini, nilai default global akan digunakan dari kebijakan <ph name="INSECURE_PRIVATE_NETWORK_REQUESTS_ALLOWED_POLICY_NAME" /> jika disetel, atau dari konfigurasi pribadi pengguna jika kebijakan tersebut tidak disetel.
+
+          Untuk mengetahui informasi selengkapnya tentang pola URL yang valid, lihat https://chromeenterprise.google/policies/url-patterns/.</translation>
 <translation id="4582338216073557489">Jika kebijakan disetel ke Tidak Ada (None), <ph name="PRODUCT_NAME" /> akan menggunakan ukuran cache default untuk menyimpan file dalam cache di disk. Pengguna tidak dapat mengubahnya.
 
       Jika kebijakan disetel, <ph name="PRODUCT_NAME" /> akan menggunakan ukuran cache yang Anda sediakan, baik pengguna menentukan tanda --disk-cache-size atau tidak. (Nilai yang kurang dari beberapa megabyte akan dibulatkan ke atas).
@@ -6039,6 +6100,19 @@ Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia di instance yang dike
 <translation id="5041315457555330432">Izinkan <ph name="PRODUCT_NAME" /> untuk hanya terhubung ke perangkat di alamat IP pribadi, kecuali jika fitur CastAllowAllIPs diaktifkan.</translation>
 <translation id="504689994545234073">Aktifkan penyimpanan file pengguna secara lokal</translation>
 <translation id="5048890362473520096">Mengaktifkan LPAC Sandbox untuk layanan pencetakan</translation>
+<translation id="5053070908839680464">Untuk alasan keamanan, <ph name="GET_DISPLAY_MEDIA_API_NAME" /> web API memerlukan
+gestur pengguna sebelumnya ("aktivasi sementara") untuk dipanggil. Jika tidak ada gestur pengguna sebelumnya,
+panggilan API ini akan gagal.
+
+Jika kebijakan ini disetel, admin akan dapat menentukan origin tempat API ini dapat
+dipanggil tanpa gestur pengguna sebelumnya.
+
+Untuk mengetahui informasi selengkapnya tentang pola URL yang valid, lihat
+https://chromeenterprise.google/policies/url-patterns/. * bukanlah
+nilai yang diterima untuk kebijakan ini.
+
+Jika kebijakan ini tidak disetel, semua origin akan memerlukan gestur pengguna sebelumnya untuk memanggil
+API ini.</translation>
 <translation id="5055474681190962362">Hari dalam sebulan [1-31] saat mulai ulang harus dilakukan, disesuaikan dengan zona waktu lokal perangkat. Hanya digunakan saat 'frequency'-nya 'MONTHLY'. Jika lebih dari jumlah hari maksimum dalam bulan tertentu, hari terakhir bulan itu akan dipilih.</translation>
 <translation id="5055513974503523022">Latar Belakang Konferensi Video AI Generatif memungkinkan pengguna mengekspresikan diri menggunakan fitur AI generatif untuk membuat latar belakang konferensi video yang dipersonalisasi di <ph name="PRODUCT_OS_NAME" />.
 
@@ -6791,6 +6865,11 @@ Jika kebijakan ini disetel ke salah (false), ID konten yang dilindungi tidak dii
 
       Catatan: Di iOS, jika kebijakan diubah selama suatu sesi, perubahan hanya akan berpengaruh saat peluncuran kembali.</translation>
 <translation id="549471902631700911">Nonaktifkan penerimaan survei Safe Browsing</translation>
+<translation id="549625769649876757">Jika kebijakan ini disetel, Anda akan dapat menetapkan daftar pola URL yang menentukan situs yang diizinkan untuk mengakses geolokasi akurasi tinggi pengguna tanpa harus meminta izin kepada pengguna terlebih dahulu untuk melakukannya.
+
+Jika kebijakan ini tidak disetel, <ph name="DEFAULT_GEOLOCATION_SETTING" /> akan berlaku untuk semua situs, jika disetel. Jika tidak disetel, setelan pribadi pengguna akan berlaku.
+
+Untuk mengetahui informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://chromeenterprise.google/policies/url-patterns. Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan.</translation>
 <translation id="5499375345075963939">Kebijakan ini hanya aktif pada mode ritel.
 
       Saat nilai kebijakan ini disetel dan tidak 0, maka pengguna demo yang saat ini telah masuk akan dikeluarkan secara otomatis setelah waktu tidak aktif selama durasi yang ditentukan telah habis.
@@ -8532,6 +8611,9 @@ Catatan: Sandi mungkin menjadi lebih lama dari jumlah hari yang ditentukan jika 
 <translation id="6539246272469751178">Kebijakan ini tidak memengaruhi aplikasi Android. Aplikasi Android selalu menggunakan direktori download default dan tidak dapat mengakses file apa pun yang didownload oleh <ph name="PRODUCT_OS_NAME" /> ke direktori download non-default.</translation>
 <translation id="6541383786427998658">Mengaktifkan logging sistem ekstensi perusahaan</translation>
 <translation id="654303922206238013">Strategi migrasi untuk ecryptfs</translation>
+<translation id="6544205049437664515">Jika kebijakan ini disetel, video akan dapat diputar secara otomatis (tanpa persetujuan pengguna) dengan konten audio di <ph name="PRODUCT_NAME" />. Jika kebijakan <ph name="AUTOPLAY_ALLOWED_POLICY_NAME" /> disetel ke Benar (True), kebijakan ini tidak akan berpengaruh. Jika kebijakan <ph name="AUTOPLAY_ALLOWED_POLICY_NAME" /> disetel ke Salah (False), pola URL yang disetel di kebijakan ini tetap dapat diputar. Jika kebijakan ini berubah saat <ph name="PRODUCT_NAME" /> sedang berjalan, kebijakan hanya akan berlaku untuk tab yang baru dibuka.
+
+      Untuk mengetahui informasi selengkapnya tentang pola URL yang valid, lihat https://chromeenterprise.google/policies/url-patterns/.</translation>
 <translation id="6544601600794014309">Aktifkan Terjemahan Jawaban Instan</translation>
 <translation id="654546276700640113">Jika kebijakan disetel, panjang PIN maksimum yang dikonfigurasi akan diterapkan. Nilai 0 atau lebih kecil berarti pengguna dapat menyetel panjang PIN sesuai keinginan. Jika nilainya lebih kecil dari <ph name="PIN_UNLOCK_MINIMUM_LENGTH_POLICY_NAME" /> tetapi lebih besar dari 0, panjang maksimum akan disetel ke panjang minimum.
 
@@ -9260,6 +9342,15 @@ Untuk mengetahui informasi selengkapnya tentang pola URL yang valid, lihat https
 <translation id="7008308728445338159">Pemeriksaan intersepsi DNS diaktifkan</translation>
 <translation id="7009043124653876961">Nonaktifkan saran emoji saat pengguna mengetik</translation>
 <translation id="7010006999849135962">Aktifkan autentikasi tanpa PIN untuk host akses jarak jauh</translation>
+<translation id="7012747034204028941">Jika kebijakan ini disetel, Anda akan dapat menetapkan daftar pola URL yang dapat menggunakan Tangkapan Desktop, Jendela, dan Tab.
+
+      Jika kebijakan ini tidak disetel, situs tidak akan dianggap sebagai penggantian pada tingkat Tangkapan ini.
+
+      Kebijakan ini akan diabaikan jika situs cocok dengan pola URL di salah satu kebijakan berikut: <ph name="WINDOW_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SAME_ORIGIN_TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />.
+
+      Jika situs cocok dengan pola URL di kebijakan ini, <ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME" /> akan diabaikan.
+
+      Untuk mengetahui informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://chromeenterprise.google/policies/url-patterns/.  Kebijakan ini hanya mencocokkan berdasarkan origin, sehingga jalur apa pun di pola URL akan diabaikan.</translation>
 <translation id="7013333561002112085">Jika kebijakan ini disetel ke <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_ENABLED" /> (nilai 1), browser akan meminta sertifikat klien dari server pengelolaan perangkat untuk profil atau pengguna terkelola. Sertifikat ini akan tersedia untuk, mis. koneksi mTLS.
 
 Jika kebijakan ini disetel ke <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_DISABLED" /> (nilai 0), browser tidak akan dapat meminta sertifikat klien. Jika sertifikat klien terkelola milik profil sudah disediakan, karena kebijakan ini telah diaktifkan sebelumnya, sertifikat tersebut tidak akan dihapus, tetapi sertifikat tidak akan tersedia untuk koneksi mTLS dan tidak akan diperpanjang saat masa berlakunya berakhir.</translation>
@@ -10246,6 +10337,9 @@ Jika kebijakan ini disetel, kebijakan <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_P
 <translation id="7657261947024629645">Mengoptimalkan performa.</translation>
 <translation id="76580522298425324">Mengizinkan screenshot tanpa gestur pengguna sebelumnya</translation>
 <translation id="7661379728107156839">Kompleksitas Rendah</translation>
+<translation id="7664977773563102099">Jika kebijakan ini disetel, Anda akan menentukan daftar URL yang polanya cocok dengan origin keamanan URL yang meminta. Jika terdapat kecocokan, akses ke perangkat perekaman audio akan diberikan tanpa permintaan izin
+
+      Untuk mengetahui informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://chromeenterprise.google/policies/url-patterns/. Namun, perlu diperhatikan bahwa pola "*", yang cocok dengan URL apa pun, tidak didukung oleh kebijakan ini.</translation>
 <translation id="7666228839913571182">Izinkan cookie pihak ketiga</translation>
 <translation id="7666782560345386904">Setelan untuk isi otomatis yang ditingkatkan</translation>
 <translation id="7669630878711068277">Jika kebijakan disetel ke Aktif atau tidak disetel, pengguna dapat mencetak dalam <ph name="PRODUCT_NAME" />, tetapi pengguna tidak dapat mengganti setelan ini.
@@ -11311,6 +11405,11 @@ Sertifikat harus dienkode dengan base64.</translation>
 <translation id="8381774264911275515">Nonaktifkan transfer Cookie SSO SAML ke sesi pengguna selama login</translation>
 <translation id="8382184662529825177">Mengaktifkan penggunaan pengesahan jarak jauh untuk perlindungan konten bagi perangkat</translation>
 <translation id="838870586332499308">Aktifkan roaming data</translation>
+<translation id="8392010421565173310">Daftar yang diizinkan yang mengontrol pelaporan telemetri situs bagi pengguna terafiliasi. Jenis data telemetri yang dilaporkan dikontrol oleh kebijakan <ph name="REPORT_WEBSITE_TELEMETRY_POLICY_NAME" />.
+
+Jika kebijakan ini disetel, pelaporan telemetri situs untuk URL yang diizinkan akan dikontrol.
+Jika kebijakan ini tidak disetel, tidak ada telemetri situs yang akan dilaporkan.
+Untuk mengetahui informasi selengkapnya tentang pola URL yang valid, lihat https://chromeenterprise.google/policies/url-patterns/. Hanya skema URL HTTP dan HTTPS yang diizinkan untuk kebijakan ini.</translation>
 <translation id="8392478748777481636">Kebijakan ini tidak digunakan lagi dan tidak didukung. Sebagai gantinya, gunakan kebijakan '<ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />'.</translation>
 <translation id="8393850527597048037">Khusus Platform</translation>
 <translation id="8395350646076131800">Waktu tunggu tidak ada aktivitas untuk screensaver layar kunci pengguna.</translation>
@@ -11460,6 +11559,35 @@ Kebijakan akan dihapus pada M75.</translation>
           Jika kebijakan ini tidak disetel, perender default akan digunakan untuk semua situs yang telah ditetapkan oleh kebijakan 'ChromeFrameRendererSettings'.
 
           Untuk melihat contoh pola, buka https://www.chromium.org/developers/how-tos/chrome-frame-getting-started.</translation>
+<translation id="8484830523381746060">Anda dapat mengaktifkan kebijakan ini untuk membuat kamus ekstensi jenis file beserta daftar domain yang sesuai yang tidak akan muncul di peringatan download berbasis ekstensi jenis file. Kebijakan ini memungkinkan administrator perusahaan memblokir peringatan download berbasis ekstensi jenis file untuk file yang dikaitkan dengan domain yang tercantum. Misalnya, jika ekstensi "jnlp" dikaitkan dengan "website1.com", pengguna tidak akan melihat peringatan saat mendownload file "jnlp" dari "website1.com", tetapi akan melihat peringatan download saat mendownload file "jnlp" dari "website2.com".
+
+File dengan ekstensi jenis file yang ditentukan untuk domain yang diidentifikasi oleh kebijakan ini akan tetap mendapatkan peringatan keamanan berbasis ekstensi non-jenis file seperti peringatan download konten campuran dan peringatan Safe Browsing.
+
+Jika kebijakan ini dinonaktifkan atau tidak dikonfigurasi, jenis file yang memicu peringatan download berbasis ekstensi akan menampilkan peringatan kepada pengguna.
+
+Jika kebijakan ini diaktifkan:
+
+* Pola URL harus diformat sesuai dengan https://chromeenterprise.google/policies/url-patterns/.
+
+* Ekstensi jenis file yang dimasukkan harus dalam huruf kecil ASCII. Pemisah di awal tidak boleh disertakan saat mencantumkan ekstensi jenis file, sehingga Anda harus menggunakan daftar "jnlp", bukan ".jnlp".
+
+Contoh:
+
+Contoh nilai berikut akan mencegah peringatan download berbasis ekstensi jenis file pada ekstensi "exe" dan "jnlp" untuk domain *.example.com, dan pada ekstensi "swf" untuk semua domain. Pengguna akan melihat peringatan download berbasis ekstensi jenis file di domain lain untuk file exe dan jnlp, tetapi bukan untuk file swf.
+
+[
+  { "file_extension": "jnlp", "domains": ["example.com"] },
+  { "file_extension": "exe", "domains": ["example.com"] },
+  { "file_extension": "swf", "domains": ["*"] }
+]
+
+Perhatikan bahwa meskipun contoh sebelumnya menunjukkan penekanan pada peringatan download berbasis ekstensi jenis file untuk file "swf" bagi semua domain, sebaiknya Anda tidak menerapkan penekanan pada peringatan tersebut bagi semua domain untuk ekstensi jenis file berbahaya demi alasan keamanan. Contoh ini diberikan hanya untuk mendemonstrasikan bahwa hal tersebut dapat dilakukan.
+
+Jika kebijakan ini diaktifkan bersama <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" />, pengecualian untuk peringatan berbasis ekstensi jenis file yang ditentukan oleh kebijakan ini akan diprioritaskan daripada setelan <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" /> yang akan memblokir jenis file berbahaya. Pengecualian yang ditentukan oleh kebijakan ini hanya berlaku untuk perilaku "blokir jenis file berbahaya" yang ditentukan oleh nilai 1 dan 2 dari <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" />.
+
+Misalnya, jika kebijakan ini menentukan pengecualian untuk download "exe" dari "website1.com", dan <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" /> disetel untuk memblokir download dan jenis file berbahaya (nilai 1), download "exe" dari "website1.com" akan dikecualikan dari pemblokiran berbasis ekstensi jenis file, tetapi tetap akan diblokir jika berbahaya.
+
+Informasi selengkapnya tentang <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" /> dapat ditemukan di https://chromeenterprise.google/policies/?policy=DownloadRestrictions.</translation>
 <translation id="8489169564515126823">Dinonaktifkan: Scroller tidak dapat difokuskan secara default.</translation>
 <translation id="8489964335640955763">PluginVm</translation>
 <translation id="8493645415242333585">Menonaktifkan penyimpanan histori browser</translation>

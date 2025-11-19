@@ -1060,6 +1060,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1706586824377653884">Adicionado pelo gestor</translation>
 <translation id="170658918174941828">A versão do Chrome, a versão do sistema operativo, as definições do Cast, as estatísticas de desempenho do espelhamento e os registos de diagnóstico dos canais de comunicação são enviados juntamente com as informações que optar por incluir acima. Este feedback é utilizado para diagnosticar problemas e ajudar a melhorar a funcionalidade. Todas as informações pessoais que enviar, explícita ou acidentalmente, são protegidas em conformidade com as nossas Políticas de Privacidade. Ao enviar este feedback, concorda que a Google poderá utilizá-lo para melhorar qualquer produto ou serviço Google.</translation>
 <translation id="17081583771848899">Launcher + Alt + <ph name="TOP_ROW_KEY" /></translation>
+<translation id="170825127491242914">Guardar no armazenamento na nuvem</translation>
 <translation id="1708291623166985230">Zona Wi-Fi desativada</translation>
 <translation id="1708338024780164500">(Inativa)</translation>
 <translation id="1708563369218024896">Nenhuma recolha de dados selecionada. Selecione, pelo menos, uma recolha de dados.</translation>
@@ -6664,6 +6665,7 @@ Pode atribuir vários interruptores a esta ação.</translation>
 <translation id="5585912436068747822">Falha na formatação</translation>
 <translation id="5587765208077583036">Para partilhar, clique com o botão direito do rato numa pasta na app Files e selecione "Partilhar com <ph name="SPECIFIC_NAME" />".</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
+<translation id="5588712142463367677">Filtrar sites na página</translation>
 <translation id="558918721941304263">A carregar aplicações…</translation>
 <translation id="5590418976913374224">Reproduzir som no arranque do dispositivo</translation>
 <translation id="5591465468509111843">Muito largo</translation>
@@ -8055,6 +8057,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> – conteúdo do ambiente de trabalho partilhado.</translation>
 <translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% concluída</translation>
 <translation id="6580203076670148210">Velocidade de análise</translation>
+<translation id="6580676117087365538">Para usar esta extensão em todos os seus computadores, valide a sua identidade</translation>
 <translation id="6581356304040102696">Não é possível importar palavras-passe. O tamanho do ficheiro deve ser inferior a 1 MB.</translation>
 <translation id="6582080224869403177">Efetue a reposição do dispositivo <ph name="DEVICE_TYPE" /> para atualizar a sua segurança.</translation>
 <translation id="6582274660680936615">Está a navegar como convidado</translation>
@@ -9576,6 +9579,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7647403192093989392">Não existem atividades recentes.</translation>
 <translation id="7648023614017258011">O Chrome está a validar o pacote de instalação</translation>
 <translation id="7648048654005891115">Estilo do esquema do teclado</translation>
+<translation id="7648180062672842917">Este ficheiro tem dados sensíveis ou perigosos. A sua organização vai permitir-lhe guardá-lo no armazenamento na nuvem ou rejeitá-lo</translation>
 <translation id="7649070708921625228">Ajuda</translation>
 <translation id="7649954700951153978">Lembrar-me no iOS</translation>
 <translation id="7650141368285545431">Usar chave de acesso de outro dispositivo</translation>
@@ -10904,6 +10908,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8535005006684281994">URL de renovação de certificado Netscape</translation>
 <translation id="8536810348276651776">A sua sessão é terminada na maioria dos sites. Continua com sessão iniciada na sua Conta Google para que se apliquem as definições do Family Link para o Chrome.</translation>
 <translation id="8536956381488731905">Som ao premir as teclas</translation>
+<translation id="8537854269962256103">A sua conversa do Gemini está num chat numa nova janela. Clique em qualquer parte deste painel lateral para o mover para aqui.</translation>
 <translation id="8539727552378197395">Não (HttpOnly)</translation>
 <translation id="8539766201049804895">Atualizar</translation>
 <translation id="8540136935098276800">Introduza um URL formatado corretamente.</translation>
@@ -11151,6 +11156,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8703766890819308134">Mostrar atalhos de pesquisa</translation>
 <translation id="8704662571571150811">Domínios</translation>
 <translation id="8705331520020532516">Número de série</translation>
+<translation id="870536819717176711">Quando opta por partilhar o separador atual com o Gemini, o conteúdo completo, os elementos multimédia e o URL do separador são enviados para a Google.</translation>
 <translation id="8705580154597116082">Wi-Fi disponível através do telemóvel</translation>
 <translation id="8705629851992224300">Não foi possível ler a sua chave de segurança.</translation>
 <translation id="8706111173576263877">O código QR foi lido.</translation>

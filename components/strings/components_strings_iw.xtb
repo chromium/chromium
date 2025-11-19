@@ -425,6 +425,7 @@
 <translation id="1682696192498422849">הקצה הקצר ראשון</translation>
 <translation id="168693727862418163">אימות ערך המדיניות הזה נכשל בבדיקה מול הסכימה והמערכת תתעלם ממנו.</translation>
 <translation id="168841957122794586">אישור השרת מכיל מפתח הצפנה חלש.</translation>
+<translation id="1688718429648938412">‏שמירת כרטיס מועדון הלקוחות ב-Wallet</translation>
 <translation id="1689333818294560261">כינוי</translation>
 <translation id="1692622044604477956">רשימות סרטים בקולנוע וזמני הקרנה</translation>
 <translation id="1697430960030447570">‏<ph name="BEGIN_BOLD" />מה האפשרויות שזמינות לך לניהול הנתונים שלך:<ph name="END_BOLD" /> Chrome מוחק באופן אוטומטי נושאים שנוספו לפני יותר מ-4 שבועות. אם המשכת לגלוש לאותם אתרים, אחד הנושאים עשוי להופיע ברשימה מחדש. בכל שלב ניתן גם לחסום נושאים שלא רוצים ש-Chrome ישתף עם אתרים ולהשבית את נושאי המודעות דרך הגדרות Chrome.</translation>
@@ -3666,6 +3667,7 @@ Del</translation>
 <translation id="6965978654500191972">מכשיר</translation>
 <translation id="696703987787944103">בהתאם לתפישה</translation>
 <translation id="6967851206780867018">קובץ אחד נחסם מסיבות שקשורות לתוכן</translation>
+<translation id="6968217325369275594">כדי לקבל עדכונים מכל המכשירים, צריך לשמור את הפרטים. הפרטים נשמרים ב-<ph name="IDS_WALLET_WALLETABLE_PASS_GOOGLE_WALLET_TITLE" /> בחשבון <ph name="ACCOUNT" />.</translation>
 <translation id="6970885655016700774">Fabric (Archival)</translation>
 <translation id="6971439137020188025">‏יצירה מהירה של מצגת חדשה ב-Google Slides</translation>
 <translation id="6972629891077993081">‏מכשירי ממשק אנושי (HID)</translation>

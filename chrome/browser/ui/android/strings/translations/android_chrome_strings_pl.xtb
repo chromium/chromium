@@ -622,6 +622,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="3710560693796335511">Współpraca</translation>
 <translation id="3718765429352682176">Możesz zobaczyć historię z innych aplikacji, które otwierają linki w Chrome.</translation>
 <translation id="3721119614952978349">Ty i Google</translation>
+<translation id="3727000368239390918">Zaloguj się, aby mieć dostęp do kart oraz innych ustawień i danych na wszystkich swoich urządzeniach</translation>
 <translation id="3737319253362202215">Ustawienia tłumaczenia</translation>
 <translation id="3738139272394829648">Dotknij, by wyszukać</translation>
 <translation id="3739455665973395693">Na swoim koncie Google nie masz przejętych haseł</translation>
@@ -873,7 +874,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="4769095993849849966">Nowa nazwa pliku</translation>
 <translation id="4769632191812288342">Otrzymujesz standardową ochronę</translation>
 <translation id="4773122030389014189">Udostępnij grupę kart „<ph name="GROUP_NAME" />”</translation>
-<translation id="4775646243557794597">Usunięto dane z <ph name="TIME_PERIOD" /></translation>
+<translation id="4775646243557794597">Usunięto dane z: <ph name="TIME_PERIOD" /></translation>
 <translation id="4777866634702576038">Usunąć grupę kart?</translation>
 <translation id="4778653490315793244">Nie ma nic do wyświetlenia</translation>
 <translation id="4782929588435725897">Twoją domyślną wyszukiwarką jest <ph name="SEARCH_ENGINE" /></translation>

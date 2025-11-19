@@ -425,6 +425,7 @@
 <translation id="1682696192498422849">先從短邊開始</translation>
 <translation id="168693727862418163">此政策的值無法通過其綱要 (schema) 的驗證，因此會被忽略。</translation>
 <translation id="168841957122794586">伺服器憑證含有防護力薄弱的加密編譯金鑰。</translation>
+<translation id="1688718429648938412">將會員卡儲存至「錢包」</translation>
 <translation id="1689333818294560261">暱稱</translation>
 <translation id="1692622044604477956">電影場次和放映時間</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />您可如何管理資料：<ph name="END_BOLD" />Chrome 會自動刪除超過 4 星期的主題。隨著您持續瀏覽，清單可能會再次出現特定主題。此外，您亦可隨時在 Chrome 設定封鎖不希望 Chrome 與網站分享的主題，以及關閉廣告主題。</translation>
@@ -3660,6 +3661,7 @@
 <translation id="6965978654500191972">裝置</translation>
 <translation id="696703987787944103">感知</translation>
 <translation id="6967851206780867018">1 個檔案因內容而被封鎖</translation>
+<translation id="6968217325369275594">儲存資料後，你便可透過任何裝置取得最新資訊。資料會儲存到 <ph name="ACCOUNT" /> 的「<ph name="IDS_WALLET_WALLETABLE_PASS_GOOGLE_WALLET_TITLE" />」。</translation>
 <translation id="6970885655016700774">布料 (封存用)</translation>
 <translation id="6971439137020188025">在「簡報」中快速建立新的 Google 簡報</translation>
 <translation id="6972629891077993081">HID 裝置</translation>

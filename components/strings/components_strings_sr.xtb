@@ -425,6 +425,7 @@
 <translation id="1682696192498422849">Прво кратка ивица</translation>
 <translation id="168693727862418163">Валидација шеме ове вредности за смернице није успела и занемариће се.</translation>
 <translation id="168841957122794586">Сертификат сервера садржи слаб криптографски кључ.</translation>
+<translation id="1688718429648938412">Сачувајте картицу лојалности у Новчанику</translation>
 <translation id="1689333818294560261">Надимак</translation>
 <translation id="1692622044604477956">Листе филмова и репертоари биоскопа</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Како можете да управљате подацима:<ph name="END_BOLD" /> Chrome аутоматски брише теме старије од 4 недеље. Када наставите да прегледате, тема ће се можда поново појавити на листи. Можете и да блокирате теме које не желите да Chrome дели са сајтовима и да искључите теме огласа у било ком тренутку у подешавањима Chrome-а.</translation>
@@ -661,6 +662,7 @@
 <translation id="2085876078937250610">Сачувај…</translation>
 <translation id="2088913896151127116">Додајте текст</translation>
 <translation id="2090451897496479509">Више информација потражите од добављача</translation>
+<translation id="2090686487550343086">IBAN-ови</translation>
 <translation id="2091887806945687916">Звук</translation>
 <translation id="2093184051799735948">Претражите <ph name="ENGINE_NAME" /> или унесите URL</translation>
 <translation id="2093982008204312032">Google Chrome покушава да искључи Windows Hello за попуњавање лозинки.</translation>
@@ -798,6 +800,7 @@
 <translation id="2283340219607151381">Чувај и уноси адресе</translation>
 <translation id="2283447177162560884">Ставка <ph name="PAGE_TITLE" /> је избрисана</translation>
 <translation id="2283599456633275070">Путовања</translation>
+<translation id="2285709459648658719">Пасоши</translation>
 <translation id="2286383991450886080">34×44 in</translation>
 <translation id="2288422996159078444">Све што унесете, све странице које прегледате или све друге активности на вебу се прате. Садржај на сајтовима може да се мења без вашег знања.</translation>
 <translation id="2289385804009217824">Скраћивање</translation>
@@ -2550,6 +2553,7 @@
 <translation id="5137761395480718572">Ова апликација захтева дозволу да инсталира акредитиве за WiFi. После подешавања <ph name="DEVICE_TYPE" /> се аутоматски повезује са WiFi мрежама које учествују. Да бисте уклонили ове акредитиве, деинсталирајте апликацију. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">Виртуелна картица тренутно није доступна. Обратите се банци.</translation>
 <translation id="5138227688689900538">Прикажи мање</translation>
+<translation id="5140155249377545621">Возачке дозволе</translation>
 <translation id="5144613843429436866">Одобрили сте дозволу <ph name="PERMISSION" /> за овај сајт</translation>
 <translation id="5145883236150621069">Кôд грешке је присутан у одговору на смернице</translation>
 <translation id="5146995429444047494">Обавештења за <ph name="ORIGIN" /> су блокирана</translation>
@@ -3660,6 +3664,7 @@
 <translation id="6965978654500191972">Уређај</translation>
 <translation id="696703987787944103">Опажајно</translation>
 <translation id="6967851206780867018">1 фајл је блокиран због садржаја</translation>
+<translation id="6968217325369275594">Сачувајте информације да бисте добијали новости са било ког уређаја. Информације се чувају у <ph name="IDS_WALLET_WALLETABLE_PASS_GOOGLE_WALLET_TITLE" />-у за <ph name="ACCOUNT" />.</translation>
 <translation id="6970885655016700774">Тканина (архива)</translation>
 <translation id="6971439137020188025">Брзо направите нову Google презентацију у Презентацијама</translation>
 <translation id="6972629891077993081">Уређаји са интерфејсом</translation>
@@ -4234,6 +4239,7 @@
 <translation id="7886897188117641322">Одаберите широке категорије тема које могу да се користе за персонализацију огласа</translation>
 <translation id="7887683347370398519">Проверите CVC и покушајте поново</translation>
 <translation id="7887885240995164102">Покрени режим слике у слици</translation>
+<translation id="7888367499748383555">Без накнада, годишња каматна стопа од само 0% (ако испуњавате услове)</translation>
 <translation id="7888575728750733395">Намера рендеровања штампања</translation>
 <translation id="7890748547282909375">Пријавите се на Microsoft OneDrive да бисте сачували снимак екрана</translation>
 <translation id="7890755620327858054">Плаћање касније тренутно није доступно. Покушајте поново или изаберите други начин плаћања.</translation>

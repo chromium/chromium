@@ -425,6 +425,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1682696192498422849">Co bordo curto primeiro</translation>
 <translation id="168693727862418163">Non puido cotexarse o valor desta política co seu esquema para levar a cabo a súa validación, así que se ignorará.</translation>
 <translation id="168841957122794586">O certificado do servidor contén unha clave criptográfica non segura.</translation>
+<translation id="1688718429648938412">Garda a tarxeta de fidelidade en Wallet</translation>
 <translation id="1689333818294560261">Alcume</translation>
 <translation id="1692622044604477956">Carteleira e horarios de cines</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Como podes xestionar os teus datos?<ph name="END_BOLD" /> Chrome elimina automaticamente os temas que teñen máis de 4 semanas de antigüidade. Algúns poderían aparecer outra vez na lista ao seguires navegando. Tamén podes bloquear os temas que non queiras que Chrome comparta cos sitios, así como desactivar os temas de anuncios en calquera momento na configuración de Chrome.</translation>
@@ -3661,6 +3662,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6965978654500191972">Dispositivo</translation>
 <translation id="696703987787944103">Percepción</translation>
 <translation id="6967851206780867018">Bloqueouse 1 ficheiro debido ao contido</translation>
+<translation id="6968217325369275594">Garda a túa información para recibir actualización de calquera dos teus dispositivos. A túa información está gardada en <ph name="IDS_WALLET_WALLETABLE_PASS_GOOGLE_WALLET_TITLE" /> (<ph name="ACCOUNT" />).</translation>
 <translation id="6970885655016700774">Tecido (arquivo)</translation>
 <translation id="6971439137020188025">Crear rapidamente unha presentación nova en Presentacións</translation>
 <translation id="6972629891077993081">Dispositivos de interface humana</translation>

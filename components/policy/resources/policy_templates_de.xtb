@@ -173,6 +173,13 @@ Ausführliche Informationen zu gültigen URL‑Mustern findest du unter https://
 <translation id="1089150222292592899">Nutzername auf der SAML-IdP-Seite automatisch ausfüllen lassen</translation>
 <translation id="1090430607214486535">Eingeschränkt</translation>
 <translation id="1091765729282771296">Websites dürfen den Nutzer um Zugriff auf HID-Geräte bitten</translation>
+<translation id="1093047620074696166">Aus Sicherheitsgründen erfordert das Aufrufen der Web-APIs „<ph name="SHOW_OPEN_FILE_PICKER_API_NAME" />“, „<ph name="SHOW_SAVE_FILE_PICKER_API_NAME" />“ und „<ph name="SHOW_DIRECTORY_PICKER_API_NAME" />“ eine vorherige Nutzergeste („vorübergehende Aktivierung“), andernfalls tritt ein Fehler auf.
+
+Wenn diese Richtlinie konfiguriert ist, können Administratoren Ursprünge festlegen, von denen diese APIs ohne vorherige Nutzergeste aufgerufen werden können.
+
+Ausführliche Informationen zu gültigen URL-Mustern findest du unter https://chromeenterprise.google/policies/url-patterns/. * ist kein akzeptierter Wert für diese Richtlinie.
+
+Wenn diese Richtlinie nicht konfiguriert ist, muss vor dem Aufrufen dieser APIs unabhängig vom Ursprung eine Nutzergeste ausgeführt werden.</translation>
 <translation id="1095209545735032039">Serial API auf diesen Websites blockieren</translation>
 <translation id="1096105751829466145">Standardsuchmaschine</translation>
 <translation id="1099282607296956954">Website-Isolierung für jede Website aktivieren</translation>
@@ -1386,6 +1393,23 @@ Ist die Richtlinie deaktiviert, schließt <ph name="PRODUCT_NAME" /> den Tab nac
 <translation id="1972134432340252414">Alte Erweiterungspunkte im Browserprozess blockieren</translation>
 <translation id="1973804850652157024">Verwendung der Controlled Frame API steuern</translation>
 <translation id="1977581177449752640">Wenn diese Richtlinie konfiguriert ist, verwendet der Host für den Remote-Zugriff ein Clientzertifikat mit dem angegebenen Aussteller-CN zur Authentifizierung bei <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" />. Setze die Richtlinie auf <ph name="WILDCARD_VALUE" />, um alle verfügbaren Clientzertifikate zu verwenden. Diese Funktion ist deaktiviert, wenn sie leer oder nicht konfiguriert ist.</translation>
+<translation id="1982446141078810235">Mit dieser Richtlinie kannst du einschränken, welche IP-Adressen und Schnittstellen WebRTC bei der Suche nach der bestmöglichen Verbindung für bestimmte URL-Muster verwenden kann.
+
+Du kannst eine Liste von URL-Mustern und Handling-Typ-Paaren festlegen. Die URL-Muster werden der Reihe nach geprüft und die erste Übereinstimmung bestimmt, welches Handling von WebRTC für die Domain verwendet wird. Wenn die URL des aktuellen Dokuments mit keinem Eintrag übereinstimmt, wird die Konfiguration verwendet, die in der Richtlinie „<ph name="WEB_RTC_IP_HANDLING_POLICY_NAME" />“ festgelegt wurde.
+
+Ausführliche Informationen zu gültigen Eingabemustern findest du unter https://chromeenterprise.google/policies/url-patterns/. Platzhalter wie <ph name="WILDCARD_VALUE" /> sind zulässig. Diese Richtlinie gleicht nur anhand des Ursprungs ab, daher werden alle Pfade des URL-Musters ignoriert.
+
+Gültige Werte für das Handling:
+
+* default: WebRTC verwendet alle Netzwerkschnittstellen.
+
+* default_public_and_private_interfaces: WebRTC verwendet alle öffentlichen und privaten Schnittstellen.
+
+* default_public_interface_only: WebRTC verwendet alle öffentlichen Schnittstellen, aber keine privaten.
+
+* disable_non_proxied_udp: WebRTC verwendet entweder einen UDP-SOCKS-Proxy oder als Fallback einen TCP-Proxy.
+
+Eine ausführliche Beschreibung aller Werte findest du unter RFC 8828, Abschnitt 5.2 (https://tools.ietf.org/html/rfc8828.html#section-5.2).</translation>
 <translation id="1984934843478301531">App-Start-Automatisierung</translation>
 <translation id="1985545260037812875">Bildschirm mit der Einstellung für die Anzeigegröße bei der Anmeldung anzeigen</translation>
 <translation id="1987789058026551147">Melden des Status für die Kiosksitzung auf Geräten aktivieren</translation>
@@ -3318,6 +3342,15 @@ Wenn die Richtlinie <ph name="NTPCARDSVISIBLE" /> deaktiviert ist, wird die Outl
 <translation id="3341649870321644698">Konzentrationsmodus mit „nur Sounds für mehr Konzentration“ aktivieren.</translation>
 <translation id="334231891933432876">Nutzer wird abgemeldet, sobald sein Konto nicht mehr authentifiziert ist</translation>
 <translation id="3345323903592385588">Die Reihenfolge, in der die VM-Konfigurationen im Installationsprogramm angezeigt werden. Wenn du mehrere VM-Konfigurationen angegeben hast, wird oben in der Liste die mit dem niedrigsten „display_order“-Wert angezeigt. Der Standardwert ist null.</translation>
+<translation id="3349823333182687926">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, die die Fenster- und Tabaufnahme verwenden können.
+
+      Ist sie nicht konfiguriert, können Websites diese Aufnahmefunktionen nicht nutzen.
+
+      Diese Richtlinie wird nicht berücksichtigt, wenn eine Website mit einem URL-Muster in einer der folgenden Richtlinien übereinstimmt: „<ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />“ oder „<ph name="SAME_ORIGIN_TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />“.
+
+      Wenn eine Website mit einem URL-Muster in dieser Richtlinie übereinstimmt, werden die folgenden Richtlinien nicht berücksichtigt: „<ph name="SCREEN_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />“ und „<ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME" />“.
+
+      Ausführliche Informationen zu gültigen <ph name="URL_LABEL" />‑Mustern findest du unter https://chromeenterprise.google/policies/url-patterns/.  Diese Richtlinie gleicht nur anhand des Ursprungs ab, daher werden alle Pfade des URL-Musters ignoriert.</translation>
 <translation id="3351661569026056296">Wenn du die Richtlinie auf „True“ setzt, führt die oberste Reihe der Tastatur Funktionstastenbefehle aus. Bei gedrückter Suchtaste führt die Tastatur stattdessen wieder Medientastenbefehle aus.
 
 Wenn du die Richtlinie auf „False“ setzt oder nicht konfigurierst, führt die Tastatur standardmäßig Medientastenbefehle aus. Bei gedrückter Suchtaste führt die Tastatur Funktionstastenbefehle aus.</translation>
@@ -3732,6 +3765,9 @@ Diese Richtlinie ist vorübergehend und wird in Zukunft entfernt.</translation>
 <translation id="3616490235694929053">Mit dieser Richtlinie wird festgelegt, ob dem Nutzer bei der ersten Anmeldung der Bildschirm mit der Einstellung für die Anzeigegröße angezeigt wird.
       Wenn die Richtlinie auf „false“ gesetzt ist, wird der Bildschirm mit der Einstellung für die Anzeigegröße nicht angezeigt.
       Wird diese Richtlinie auf „true“ gesetzt, wird der Bildschirm mit der Einstellung für die Anzeigegröße angezeigt.</translation>
+<translation id="3621103925288234132">Wenn die Richtlinie konfiguriert ist, können die aufgeführten zusätzlichen Ursprünge auf Browserberechtigungen zugreifen (z. B. für Standort, Kamera und Mikrofon), die bereits für den Installationsursprung der Webkiosk-Anwendungen verfügbar sind.
+
+Ausführliche Informationen zu gültigen <ph name="URL_LABEL" />‑Mustern findest du unter https://chromeenterprise.google/policies/url-patterns/. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="3622463490728773174">Neue Implementierung zulassen</translation>
 <translation id="3623332696371971798">Google Fotos den Zugriff über die Personalisierungs-App nicht erlauben</translation>
 <translation id="3625900437628963632">Gibt an, ob das in diesem Richtlinienelement festgelegte Kerberos-Passwort gespeichert wird. Wenn die Richtlinie nicht konfiguriert oder auf „true“ gesetzt ist, wird das Passwort gespeichert. Ist sie auf „false“ gesetzt, wird das Passwort nicht gespeichert. Wird ignoriert, wenn für dieses Konto kein Passwort festgelegt ist. Dieses Feld wird seit ChromeOS-Version 116 unterstützt.</translation>
@@ -3955,6 +3991,17 @@ Wenn die Richtlinie auf „2“ gesetzt ist, können Ursprünge der isolierten W
 Wenn diese Einstellung deaktiviert ist, können Nutzer sich nicht mit Smart Lock anmelden.
 Wenn diese Richtlinie nicht festgelegt ist, gilt die Standardeinstellung: Vom Unternehmen verwaltete Nutzer können sich nicht mit Smart Lock anmelden, nicht verwaltete Nutzer können sich mit Smart Lock anmelden.</translation>
 <translation id="3791179836066841809">Richtliniendokumentation</translation>
+<translation id="3792548089600605745">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, die die Tabaufnahme verwenden können.
+
+      Ist sie nicht konfiguriert, können Websites diese Aufnahmefunktion nicht nutzen.
+
+      Bitte beachte, dass Chrome-Apps im Fenstermodus trotzdem aufgenommen werden können.
+
+      Diese Richtlinie wird nicht berücksichtigt, wenn eine Website mit einem URL-Muster in der Richtlinie „<ph name="SAME_ORIGIN_TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />“ übereinstimmt.
+
+      Wenn eine Website mit einem URL-Muster in dieser Richtlinie übereinstimmt, werden die folgenden Richtlinien nicht berücksichtigt: „<ph name="WINDOW_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />“, „<ph name="SCREEN_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />“ und „<ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME" />“.
+
+      Ausführliche Informationen zu gültigen <ph name="URL_LABEL" />‑Mustern findest du unter https://chromeenterprise.google/policies/url-patterns/.  Diese Richtlinie gleicht nur anhand des Ursprungs ab, daher werden alle Pfade des URL-Musters ignoriert.</translation>
 <translation id="379318040165550702">Nutzer können auswählen</translation>
 <translation id="3796527892245558832">Profil-Picker beim Start verfügbar</translation>
 <translation id="3798922329287609568">Durch diese Richtlinie kann der Duplexdruck eingeschränkt werden.
@@ -5079,6 +5126,13 @@ Ausführliche Informationen zu gültigen URL-Mustern findest du unter https://ch
           </translation>
 <translation id="4578265298946081589">Nach Nutzerabmeldung nicht neu starten.</translation>
 <translation id="4581507927311097234">Zeitraum ohne Nutzereingabe, nach dem der Bildschirm ausgeschaltet wird, angegeben in Millisekunden.</translation>
+<translation id="4582027661281685066">Liste der URL-Muster. Anfragen, die von Websites initiiert werden, welche durch übereinstimmende Ursprünge bereitgestellt werden, unterliegen keinen <ph name="PRIVATE_NETWORK_ACCESS" />-Prüfungen.
+
+          Wenn diese Richtlinie nicht konfiguriert ist, verhält sie sich, als wäre sie auf die leere Liste eingestellt.
+
+          Bei Ursprüngen, die durch die hier angegebenen Muster nicht abgedeckt sind, kommt entweder der globale Standardwert der Richtlinie „<ph name="INSECURE_PRIVATE_NETWORK_REQUESTS_ALLOWED_POLICY_NAME" />“ zum Einsatz (sofern konfiguriert) oder die persönliche Konfiguration des Nutzers.
+
+          Ausführliche Informationen zu gültigen URL-Mustern findest du unter https://chromeenterprise.google/policies/url-patterns/.</translation>
 <translation id="4582338216073557489">Wenn die Richtlinie auf „Keine“ festgelegt ist, verwendet <ph name="PRODUCT_NAME" /> die Cachestandardgröße zum Speichern von Dateien im Cache auf dem Laufwerk. Dies kann vom Nutzer nicht geändert werden.
 
       Wenn du die Richtlinie konfigurierst, verwendet <ph name="PRODUCT_NAME" /> die von dir angegebene Cachegröße unabhängig davon, ob Nutzer das Flag „--disk-cache-size“ angeben oder nicht. Werte, die kleiner als einige Megabyte sind, werden aufgerundet.
@@ -5799,6 +5853,13 @@ Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 <translation id="5041315457555330432"><ph name="PRODUCT_NAME" /> nur erlauben, Verbindungen zu Geräten unter privaten IP-Adressen herzustellen, es sei denn, die Funktion „CastAllowAllIPs“ ist aktiviert.</translation>
 <translation id="504689994545234073">Lokales Speichern von Nutzerdateien aktivieren</translation>
 <translation id="5048890362473520096">LPAC-Sandbox für Druckdienste aktivieren</translation>
+<translation id="5053070908839680464">Aus Sicherheitsgründen erfordert das Aufrufen der Web-API „<ph name="GET_DISPLAY_MEDIA_API_NAME" />“ eine vorherige Nutzergeste („vorübergehende Aktivierung“), andernfalls tritt ein Fehler auf.
+
+Mithilfe dieser Richtlinie können Administratoren Ursprünge festlegen, von denen diese API ohne vorherige Nutzergeste aufgerufen werden kann.
+
+Ausführliche Informationen zu gültigen URL-Mustern findest du unter https://chromeenterprise.google/policies/url-patterns/. * ist kein akzeptierter Wert für diese Richtlinie.
+
+Wenn diese Richtlinie nicht konfiguriert ist, muss vor dem Aufrufen dieser API unabhängig vom Ursprung eine Nutzergeste ausgeführt werden.</translation>
 <translation id="5055474681190962362">Tag im Monat (1–31), an dem der Neustart ausgeführt werden soll, angegeben in der lokalen Zeit des Geräts. Diese Richtlinie wird nur verwendet, wenn „frequency“ auf „MONTHLY“ gesetzt ist. Falls der Wert höher ist als die maximale Anzahl von Tagen in einem bestimmten Monat, wird der jeweils letzte Tag des Monats gewählt.</translation>
 <translation id="5055513974503523022">Mit „VC‑Hintergrund basierend auf generativer KI“ können Nutzer mithilfe von auf generativer KI basierenden Funktion personalisierte Hintergründe für Videokonferenzen in <ph name="PRODUCT_OS_NAME" /> erstellen.
 
@@ -6533,6 +6594,11 @@ Wenn die Richtlinie auf „False“ gesetzt ist, dürfen keine Kennungen für ge
 
       Hinweis: Wenn die Richtlinie unter iOS während einer Sitzung geändert wird, gilt sie erst beim Neustart.</translation>
 <translation id="549471902631700911">Empfang von Safe Browsing-Umfragen deaktivieren</translation>
+<translation id="549625769649876757">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, durch die angegeben wird, welchen Websites der Zugriff auf den im Modus „Hohe Genauigkeit“ ermittelten Standort des Nutzers erlaubt ist, ohne dass sie zuerst die Erlaubnis des Nutzers dafür einholen müssen.
+
+Wenn die Richtlinie nicht konfiguriert ist, gilt für alle Websites die Einstellung „<ph name="DEFAULT_GEOLOCATION_SETTING" />“, sofern sie festgelegt ist. Ist sie nicht festgelegt, wird die persönliche Einstellung des Nutzers verwendet.
+
+Ausführliche Informationen zu gültigen <ph name="URL_LABEL" />‑Mustern findest du unter https://chromeenterprise.google/policies/url-patterns. Platzhalter wie <ph name="WILDCARD_VALUE" /> sind zulässig.</translation>
 <translation id="5499375345075963939">Diese Richtlinie ist nur im Händlermodus aktiv.
 
       Wenn für diese Richtlinie ein Wert festgelegt wurde und dieser Wert nicht "0" ist, wird der aktuell angemeldete Demo-Nutzer nach der angegebenen Inaktivitätsdauer automatisch abgemeldet.
@@ -8173,6 +8239,9 @@ Hinweis: Wenn der Client über einen längeren Zeitraum offline war, werden Pass
 <translation id="6539246272469751178">Diese Richtlinie hat keine Auswirkung auf Android-Apps. Android-Apps verwenden immer das Standardverzeichnis für Downloads und haben keinen Zugriff auf Dateien, die von <ph name="PRODUCT_OS_NAME" /> in ein anderes Verzeichnis als das Standardverzeichnis für Downloads heruntergeladen werden.</translation>
 <translation id="6541383786427998658">Systemprotokollierung für Unternehmenserweiterungen aktivieren</translation>
 <translation id="654303922206238013">Migrationsstrategie für eCryptfs</translation>
+<translation id="6544205049437664515">Wenn diese Richtlinie konfiguriert ist, können in <ph name="PRODUCT_NAME" /> ohne Einwilligung des Nutzers automatisch Videos mit Ton abgespielt werden. Wenn die Richtlinie „<ph name="AUTOPLAY_ALLOWED_POLICY_NAME" />“ auf „True“ gesetzt ist, hat diese Richtlinie keine Auswirkungen. Ist die Richtlinie „<ph name="AUTOPLAY_ALLOWED_POLICY_NAME" />“ auf „False“ gesetzt, können alle in dieser Richtlinie festgelegten URL-Muster weiterhin wiedergegeben werden. Wird die Richtlinie während der Ausführung von <ph name="PRODUCT_NAME" /> geändert, wird sie nur auf neu geöffnete Tabs angewendet.
+
+      Ausführliche Informationen zu gültigen URL-Mustern findest du unter https://chromeenterprise.google/policies/url-patterns/.</translation>
 <translation id="6544601600794014309">Übersetzung über „Schnellinfo“ aktivieren</translation>
 <translation id="654546276700640113">Wenn diese Richtlinie konfiguriert ist, wird die eingestellte maximale PIN-Länge erzwungen. Bei einem Wert von 0 oder kleiner kann der Nutzer eine beliebige PIN-Länge festlegen. Wenn dieser Wert kleiner als <ph name="PIN_UNLOCK_MINIMUM_LENGTH_POLICY_NAME" />, aber größer als 0 ist, entspricht die maximale Länge der minimalen Länge.
 
@@ -8874,6 +8943,15 @@ Ausführliche Informationen zu gültigen URL-Mustern findest du unter https://ch
 <translation id="7008308728445338159">DNS-Abfangprüfungen aktiviert</translation>
 <translation id="7009043124653876961">Emoji-Vorschläge beim Tippen deaktivieren</translation>
 <translation id="7010006999849135962">Authentifizierung ohne PIN für den Host für den Remote-Zugriff aktivieren</translation>
+<translation id="7012747034204028941">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, die die Desktop-, Fenster- und Tabaufnahme verwenden können.
+
+      Ist sie nicht konfiguriert, können Websites diese Aufnahmefunktionen nicht nutzen.
+
+      Diese Richtlinie wird nicht berücksichtigt, wenn eine Website mit einem URL-Muster in einer der folgenden Richtlinien übereinstimmt: „<ph name="WINDOW_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />“, „<ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />“ oder „<ph name="SAME_ORIGIN_TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />“.
+
+      Wenn eine Website mit einem URL-Muster in dieser Richtlinie übereinstimmt, wird „<ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME" />“ nicht berücksichtigt.
+
+      Ausführliche Informationen zu gültigen <ph name="URL_LABEL" />‑Mustern findest du unter https://chromeenterprise.google/policies/url-patterns/.  Diese Richtlinie gleicht nur anhand des Ursprungs ab, daher werden alle Pfade des URL-Musters ignoriert.</translation>
 <translation id="7013333561002112085">Wenn diese Richtlinie auf „<ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_ENABLED" />“ (Wert 1) gesetzt ist, fordert der Browser für verwaltete Nutzer und Profile ein Clientzertifikat vom Geräteverwaltungsserver an. Dieses Zertifikat wird z. B. für mTLS-Verbindungen zur Verfügung gestellt.
 
 Wenn diese Richtlinie auf „<ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_DISABLED" />“ (Wert 0) gesetzt ist, kann der Browser das Clientzertifikat nicht anfordern. Wenn das Clientzertifikat eines verwalteten Profils bereits zur Verfügung gestellt wurde, weil diese Richtlinie zuvor aktiviert war, wird es nicht gelöscht, aber es ist nicht für mTLS-Verbindungen verfügbar und wird nach Ablauf nicht verlängert.</translation>
@@ -9796,6 +9874,9 @@ Wenn du diese Richtlinie konfigurieren möchtest, muss die Richtlinie <ph name="
 <translation id="7657261947024629645">Für eine optimale Leistung.</translation>
 <translation id="76580522298425324">Bildschirmaufnahme ohne vorherige Nutzergeste zulassen</translation>
 <translation id="7661379728107156839">Geringe Komplexität</translation>
+<translation id="7664977773563102099">Wenn du diese Richtlinie konfigurierst, gibst du eine Liste von URLs an, deren Muster mit dem SecurityOrigin-Objekt der anfragenden URL abgeglichen werden. Bei einer Übereinstimmung wird ohne Nachfrage Zugriff auf Audioaufnahmegeräte gewährt.
+
+      Ausführliche Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://chromeenterprise.google/policies/url-patterns/. Das Muster *, das bei jeder URL zu einer Übereinstimmung führt, wird von dieser Richtlinie jedoch nicht unterstützt.</translation>
 <translation id="7666228839913571182">Drittanbieter-Cookies zulassen</translation>
 <translation id="7666782560345386904">Einstellungen für das erweiterte Autofill</translation>
 <translation id="7669630878711068277">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer in „<ph name="PRODUCT_NAME" />“ drucken. Nutzer können diese Einstellung nicht ändern.
@@ -10821,6 +10902,11 @@ Zertifikate müssen mit Base64 codiert sein.</translation>
 <translation id="8381774264911275515">Übertragung von SAML-SSO-Cookies in die Nutzersitzung während der Anmeldung deaktivieren</translation>
 <translation id="8382184662529825177">Verwendung von Remote-Bescheinigung (Remote Attestation) zum Schutz von Inhalten für das Gerät aktivieren</translation>
 <translation id="838870586332499308">Daten-Roaming aktivieren</translation>
+<translation id="8392010421565173310">Mit dieser Zulassungsliste wird die Erstellung von Berichten mit Telemetriedaten zu Websites von verknüpften Nutzern gesteuert. Die gemeldeten Typen von Telemetriedaten werden über die Richtlinie „<ph name="REPORT_WEBSITE_TELEMETRY_POLICY_NAME" />“ festgelegt.
+
+Wenn diese Richtlinie konfiguriert ist, werden Berichte mit Telemetriedaten zu den Websites erstellt, deren URLs auf der Zulassungsliste aufgeführt sind.
+Ist die Richtlinie nicht konfiguriert, werden keine Telemetriedaten zu Websites gemeldet.
+Ausführliche Informationen zu gültigen URL-Mustern findest du unter https://chromeenterprise.google/policies/url-patterns/. Für diese Richtlinie sind nur HTTP- und HTTPS-URL-Schemata zulässig.</translation>
 <translation id="8392478748777481636">Diese Richtlinie ist veraltet und wird nicht mehr unterstützt. Bitte verwende stattdessen die Richtlinie „<ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />“.</translation>
 <translation id="8393850527597048037">Nur Plattform</translation>
 <translation id="8395350646076131800">Zeitlimit für die Inaktivität für den Bildschirmschoner auf dem Sperrbildschirm des Nutzers.</translation>
@@ -10965,6 +11051,35 @@ Die Richtlinie wird in M75 entfernt.</translation>
           Wenn diese Richtlinie nicht konfiguriert ist, kommt der über die Richtlinie "ChromeFrameRendererSettings" festgelegte Standard-Renderer für alle Websites zum Einsatz.
 
           Beispielmuster findest du unter https://www.chromium.org/developers/how-tos/chrome-frame-getting-started.</translation>
+<translation id="8484830523381746060">Du kannst diese Richtlinie aktivieren, um ein Wörterbuch der Dateityperweiterungen mit einer entsprechenden Liste der Domains zu erstellen, für die keine erweiterungsbasierten Downloadwarnungen angezeigt werden sollen. Unternehmensadministratoren haben so die Möglichkeit, erweiterungsbasierte Downloadwarnungen für Dateien zu blockieren, die einer Domain in der Liste zugewiesen sind. Ist die Erweiterung „jnlp“ beispielsweise website1.com zugewiesen, sehen Nutzer keine Warnung, wenn sie „jnlp“-Dateien von website1.com herunterladen. Es wird aber eine angezeigt, wenn sie „jnlp“-Dateien von website2.com herunterladen.
+
+Für Dateien mit Dateierweiterungen, die nach dieser Richtlinie für Domains festgelegt wurden, werden weiter Sicherheitswarnungen angezeigt, die nicht auf Dateierweiterungen beruhen. Das können z. B. Warnungen beim Herunterladen von gemischten Inhalten und Safe Browsing-Warnungen sein.
+
+Wenn du diese Richtlinie deaktivierst oder nicht konfigurierst, werden für Dateitypen, bei denen erweiterungsbasierte Downloadwarnungen ausgelöst werden, Warnungen für den Nutzer angezeigt.
+
+Wenn du diese Richtlinie aktivierst:
+
+* muss das URL-Muster entsprechend https://chromeenterprise.google/policies/url-patterns/ formatiert sein.
+
+* muss die Dateityperweiterung in Kleinbuchstaben (ASCII) angegeben werden. Das vorangestellte Trennzeichen muss beim Angeben der Dateityperweiterung ausgelassen werden. Gib also z. B. „jnlp“ und nicht „.jnlp“ an.
+
+Beispiel:
+
+Durch den folgenden Beispielwert würden erweiterungsbasierte Downloadwarnungen bei „exe“- und „jnlp“-Erweiterungen von *.beispiel.de-Domains und von „swf“-Dateien von allen Domains blockiert. Nutzer sehen aber entsprechende Warnungen, wenn sie versuchen, „exe“- und „jnlp“-Dateien von einer anderen Domain herunterzuladen. Auf „swf“-Dateien trifft das nicht zu.
+
+[
+        { "file_extension": "jnlp", "domains": ["beispiel.de"] },
+        { "file_extension": "exe", "domains": ["beispiel.de"] },
+        { "file_extension": "swf", "domains": ["*"] }
+      ]
+
+Wichtig: Im Beispiel oben werden erweiterungsbasierte Downloadwarnungen für „.swf“-Dateien domainübergreifend blockiert. Im Fall von gefährlichen Dateierweiterungen ist es aus Sicherheitsgründen jedoch nicht empfehlenswert, die entsprechenden Warnungen für alle Domains zu blockieren. Das Beispiel soll nur zeigen, dass dies im Grunde möglich ist.
+
+Wenn diese Richtlinie zusammen mit „<ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" />“ aktiviert ist, haben die Ausnahmen von erweiterungsbasierten Warnungen beim Herunterladen, die durch diese Richtlinie festgelegt werden, Vorrang vor einer Einstellung in „<ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" />“, die gefährliche Dateitypen blockieren würde. Die in dieser Richtlinie festgelegten Ausnahmen gelten nur für das Verhalten „Gefährliche Dateitypen blockieren“, das durch die Werte 1 und 2 von „<ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" />“ festgelegt wird.
+
+Wenn diese Richtlinie beispielsweise eine Ausnahme für Downloads von „exe“-Dateien von website1.com vorsieht und „<ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" />“ so konfiguriert ist, dass schädliche Downloads und gefährliche Dateitypen blockiert werden (Wert 1), werden Downloads von „exe“-Dateien von website1.com von der blockbasierten Dateityperweiterung ausgenommen, aber weiterhin blockiert, wenn sie schädlich sind.
+
+Weitere Informationen zur Richtlinie „<ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" />“ findest du unter https://chromeenterprise.google/policies/?policy=DownloadRestrictions.</translation>
 <translation id="8489169564515126823">Deaktiviert: Scroller sind standardmäßig nicht fokussierbar.</translation>
 <translation id="8489964335640955763">PluginVm</translation>
 <translation id="8493645415242333585">Speichern des Browserverlaufs deaktivieren</translation>

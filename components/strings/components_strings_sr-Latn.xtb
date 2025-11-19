@@ -425,6 +425,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1682696192498422849">Prvo kratka ivica</translation>
 <translation id="168693727862418163">Validacija šeme ove vrednosti za smernice nije uspela i zanemariće se.</translation>
 <translation id="168841957122794586">Sertifikat servera sadrži slab kriptografski ključ.</translation>
+<translation id="1688718429648938412">Sačuvajte karticu lojalnosti u Novčaniku</translation>
 <translation id="1689333818294560261">Nadimak</translation>
 <translation id="1692622044604477956">Liste filmova i repertoari bioskopa</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Kako možete da upravljate podacima:<ph name="END_BOLD" /> Chrome automatski briše teme starije od 4 nedelje. Kada nastavite da pregledate, tema će se možda ponovo pojaviti na listi. Možete i da blokirate teme koje ne želite da Chrome deli sa sajtovima i da isključite teme oglasa u bilo kom trenutku u podešavanjima Chrome-a.</translation>
@@ -661,6 +662,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2085876078937250610">Sačuvaj…</translation>
 <translation id="2088913896151127116">Dodajte tekst</translation>
 <translation id="2090451897496479509">Više informacija potražite od dobavljača</translation>
+<translation id="2090686487550343086">IBAN-ovi</translation>
 <translation id="2091887806945687916">Zvuk</translation>
 <translation id="2093184051799735948">Pretražite <ph name="ENGINE_NAME" /> ili unesite URL</translation>
 <translation id="2093982008204312032">Google Chrome pokušava da isključi Windows Hello za popunjavanje lozinki.</translation>
@@ -798,6 +800,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2283340219607151381">Čuvaj i unosi adrese</translation>
 <translation id="2283447177162560884">Stavka <ph name="PAGE_TITLE" /> je izbrisana</translation>
 <translation id="2283599456633275070">Putovanja</translation>
+<translation id="2285709459648658719">Pasoši</translation>
 <translation id="2286383991450886080">34×44 in</translation>
 <translation id="2288422996159078444">Sve što unesete, sve stranice koje pregledate ili sve druge aktivnosti na vebu se prate. Sadržaj na sajtovima može da se menja bez vašeg znanja.</translation>
 <translation id="2289385804009217824">Skraćivanje</translation>
@@ -2550,6 +2553,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5137761395480718572">Ova aplikacija zahteva dozvolu da instalira akreditive za WiFi. Posle podešavanja <ph name="DEVICE_TYPE" /> se automatski povezuje sa WiFi mrežama koje učestvuju. Da biste uklonili ove akreditive, deinstalirajte aplikaciju. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">Virtuelna kartica trenutno nije dostupna. Obratite se banci.</translation>
 <translation id="5138227688689900538">Prikaži manje</translation>
+<translation id="5140155249377545621">Vozačke dozvole</translation>
 <translation id="5144613843429436866">Odobrili ste dozvolu <ph name="PERMISSION" /> za ovaj sajt</translation>
 <translation id="5145883236150621069">Kôd greške je prisutan u odgovoru na smernice</translation>
 <translation id="5146995429444047494">Obaveštenja za <ph name="ORIGIN" /> su blokirana</translation>
@@ -3660,6 +3664,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6965978654500191972">Uređaj</translation>
 <translation id="696703987787944103">Opažajno</translation>
 <translation id="6967851206780867018">1 fajl je blokiran zbog sadržaja</translation>
+<translation id="6968217325369275594">Sačuvajte informacije da biste dobijali novosti sa bilo kog uređaja. Informacije se čuvaju u <ph name="IDS_WALLET_WALLETABLE_PASS_GOOGLE_WALLET_TITLE" />-u za <ph name="ACCOUNT" />.</translation>
 <translation id="6970885655016700774">Tkanina (arhiva)</translation>
 <translation id="6971439137020188025">Brzo napravite novu Google prezentaciju u Prezentacijama</translation>
 <translation id="6972629891077993081">Uređaji sa interfejsom</translation>
@@ -4234,6 +4239,7 @@ Dodatni detalji:
 <translation id="7886897188117641322">Odaberite široke kategorije tema koje mogu da se koriste za personalizaciju oglasa</translation>
 <translation id="7887683347370398519">Proverite CVC i pokušajte ponovo</translation>
 <translation id="7887885240995164102">Pokreni režim slike u slici</translation>
+<translation id="7888367499748383555">Bez naknada, godišnja kamatna stopa od samo 0% (ako ispunjavate uslove)</translation>
 <translation id="7888575728750733395">Namera renderovanja štampanja</translation>
 <translation id="7890748547282909375">Prijavite se na Microsoft OneDrive da biste sačuvali snimak ekrana</translation>
 <translation id="7890755620327858054">Plaćanje kasnije trenutno nije dostupno. Pokušajte ponovo ili izaberite drugi način plaćanja.</translation>

@@ -425,6 +425,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1682696192498422849">Pirmiau trumpasis kraštas</translation>
 <translation id="168693727862418163">Šios politikos vertės nepavyko patvirtinti pagal schemą ir jos bus nepaisoma.</translation>
 <translation id="168841957122794586">Serverio sertifikate yra nesudėtingas kriptografinis raktas.</translation>
+<translation id="1688718429648938412">Lojalumo kortelės išsaugojimas sistemoje „Wallet“</translation>
 <translation id="1689333818294560261">Slapyvardis</translation>
 <translation id="1692622044604477956">Filmų sąrašai ir kino teatrų repertuaras</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Kaip galite tvarkyti savo duomenis:<ph name="END_BOLD" /> „Chrome“ automatiškai ištrina senesnes nei keturių savaičių temas. Jums naršant toliau, tema gali būti vėl rodoma sąraše. Taip pat galite blokuoti temas, kurių „Chrome“ neturėtų bendrinti su svetainėmis, ir bet kuriuo metu išjungti skelbimų temas „Chrome“ nustatymuose.</translation>
@@ -661,6 +662,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2085876078937250610">Išsaugoti…</translation>
 <translation id="2088913896151127116">Pridėti teksto</translation>
 <translation id="2090451897496479509">Jei reikia daugiau informacijos, susisiekite su teikėju</translation>
+<translation id="2090686487550343086">IBAN</translation>
 <translation id="2091887806945687916">Garsas</translation>
 <translation id="2093184051799735948">Ieškokite „<ph name="ENGINE_NAME" />“ arba įveskite URL</translation>
 <translation id="2093982008204312032">„Google Chrome“ bando išjungti „Windows Hello“ slaptažodžiams užpildyti.</translation>
@@ -798,6 +800,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2283340219607151381">Išsaugoti ir užpildyti adresus</translation>
 <translation id="2283447177162560884">„<ph name="PAGE_TITLE" />“ ištrintas</translation>
 <translation id="2283599456633275070">Kelionės</translation>
+<translation id="2285709459648658719">Pasai</translation>
 <translation id="2286383991450886080">34 x 44 col.</translation>
 <translation id="2288422996159078444">Visas vedamas tekstas, visi peržiūrimi puslapiai ar bet kokia kita veikla žiniatinklyje yra stebima. Svetainių turinys gali būti keičiamas jums nežinant.</translation>
 <translation id="2289385804009217824">Apkarpymas</translation>
@@ -2551,6 +2554,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5137761395480718572">Ši programa prašo leidimo įdiegti „Wi-Fi“ prisijungimo duomenis. Po sąrankos „<ph name="DEVICE_TYPE" />“ bus automatiškai prijungtas prie dalyvaujančių „Wi-Fi“ tinklų. Kad pašalintumėte šiuos prisijungimo duomenis, pašalinkite programą. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">Šiuo metu virtuali kortelė nepasiekiama. Susisiekite su savo banku.</translation>
 <translation id="5138227688689900538">Rodyti mažiau</translation>
+<translation id="5140155249377545621">Vairuotojo pažymėjimai</translation>
 <translation id="5144613843429436866">Leidote <ph name="PERMISSION" /> šioje svetainėje</translation>
 <translation id="5145883236150621069">Politikos atsakyme yra klaidos kodas</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> pranešimai užblokuoti</translation>
@@ -3662,6 +3666,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6965978654500191972">Įrenginys</translation>
 <translation id="696703987787944103">Subjektyvusis</translation>
 <translation id="6967851206780867018">Dėl turinio užblokuotas vienas failas</translation>
+<translation id="6968217325369275594">Išsaugokite informaciją, kad gautumėte naujienas iš bet kurio įrenginio. Jūsų informacija išsaugota „<ph name="IDS_WALLET_WALLETABLE_PASS_GOOGLE_WALLET_TITLE" />“ (<ph name="ACCOUNT" />).</translation>
 <translation id="6970885655016700774">Audinys (archyvinis)</translation>
 <translation id="6971439137020188025">Greitai sukurkite naują „Google“ pristatymą Skaidrėse</translation>
 <translation id="6972629891077993081">HID įrenginiai</translation>
@@ -4236,6 +4241,7 @@ Papildoma išsami informacija:
 <translation id="7886897188117641322">Pasirinkite, kurias plačias temų kategorijas galima naudoti skelbimams suasmeninti</translation>
 <translation id="7887683347370398519">Patikrinkite kortelės saugos kodą (CVC) ir bandykite dar kartą</translation>
 <translation id="7887885240995164102">Įeiti į vaizdo vaizde režimą</translation>
+<translation id="7888367499748383555">Nėra mokesčių, MPN gali būti net 0 proc. (atsižvelgiant į tinkamumą)</translation>
 <translation id="7888575728750733395">Spausdinimo pateikimo tikslas</translation>
 <translation id="7890748547282909375">Prisijunkite prie „Microsoft OneDrive“, kad išsaugotumėte ekrano kopiją</translation>
 <translation id="7890755620327858054">Šiuo metu mokėjimo vėliau funkcija nepasiekiama. Bandykite dar kartą arba pasirinkite kitą mokėjimo metodą.</translation>

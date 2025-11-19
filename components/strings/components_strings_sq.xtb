@@ -425,6 +425,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1682696192498422849">Ana e shkurtër në fillim</translation>
 <translation id="168693727862418163">Vërtetimi i kësaj vlere të politikës kundrejt skemës së saj dështoi dhe do të shpërfillet.</translation>
 <translation id="168841957122794586">Certifikata e serverit përmban një çelës të dobët kriptografik.</translation>
+<translation id="1688718429648938412">Ruaje kartën e besnikërisë te "Portofoli"</translation>
 <translation id="1689333818294560261">Pseudonimi</translation>
 <translation id="1692622044604477956">Listimet e filmave dhe oraret e shfaqjeve në kinema</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Si mund t'i menaxhosh të dhënat e tua:<ph name="END_BOLD" /> Chrome i fshin në mënyrë automatike temat që janë më të vjetra se 4 javë. Ndërsa vazhdon të shfletosh, një temë mund të shfaqet përsëri në listë. Mund t'i bllokosh po ashtu temat që nuk dëshiron që Chrome t'i ndajë me sajtet dhe të çaktivizosh temat e reklamave në çdo kohë te cilësimet e Chrome.</translation>
@@ -3660,6 +3661,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6965978654500191972">Pajisja</translation>
 <translation id="696703987787944103">Perceptues</translation>
 <translation id="6967851206780867018">1 skedar është bllokuar për shkak të përmbajtjes</translation>
+<translation id="6968217325369275594">Ruaj informacionet e tua për të marrë përditësime nga cilado nga pajisjet e tua. Informacionet e tua ruhen te <ph name="IDS_WALLET_WALLETABLE_PASS_GOOGLE_WALLET_TITLE" /> për <ph name="ACCOUNT" />.</translation>
 <translation id="6970885655016700774">Pëlhurë (arkivore)</translation>
 <translation id="6971439137020188025">Krijo shpejt një prezantim të ri të Google në "Diapozitivat e Google"</translation>
 <translation id="6972629891077993081">Pajisjet HID</translation>

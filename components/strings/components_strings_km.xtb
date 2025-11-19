@@ -664,6 +664,7 @@
 <translation id="2085876078937250610">រក្សាទុក…</translation>
 <translation id="2088913896151127116">បញ្ចូល​អក្សរ</translation>
 <translation id="2090451897496479509">ទាក់ទងទៅ​ក្រុមហ៊ុន​ផ្ដល់សេវា ដើម្បី​ទទួលបាន​ព័ត៌មាន​បន្ថែម</translation>
+<translation id="2090686487550343086">IBAN</translation>
 <translation id="2091887806945687916">សំឡេង</translation>
 <translation id="2093184051799735948">ស្វែងរក <ph name="ENGINE_NAME" /> ឬវាយបញ្ចូល URL</translation>
 <translation id="2093982008204312032">Google Chrome កំពុងព្យាយាម​បិទ Windows Hello សម្រាប់ការបំពេញ​ពាក្យសម្ងាត់។</translation>
@@ -801,6 +802,7 @@
 <translation id="2283340219607151381">រក្សាទុក និង​បំពេញ​អាសយដ្ឋាន</translation>
 <translation id="2283447177162560884">បានលុប '<ph name="PAGE_TITLE" />'</translation>
 <translation id="2283599456633275070">ការ​ធ្វើដំណើរ</translation>
+<translation id="2285709459648658719">លិខិតឆ្លងដែន</translation>
 <translation id="2286383991450886080">34 x 44 in</translation>
 <translation id="2288422996159078444">អ្វី​ដែលអ្នក​វាយបញ្ចូល ទំព័រ​ទាំងឡាយ​ដែលអ្នក​មើល ឬ​សកម្មភាព​ផ្សេងទៀត​នៅលើ​បណ្ដាញ​កំពុង​ត្រូវបាន​ឃ្លាំមើល​។ ខ្លឹមសារ​នៅលើ​គេហទំព័រ​ផ្សេងៗ​អាចនឹង​ត្រូវបាន​ប្ដូរ​ដោយ​មិនឱ្យ​អ្នក​ដឹង​។</translation>
 <translation id="2289385804009217824">តម្រឹម</translation>
@@ -2555,6 +2557,7 @@
 <translation id="5137761395480718572">កម្មវិធី​នេះ​កំពុង​ស្នើសុំ​ការអនុញ្ញាត ដើម្បី​ដំឡើង​ព័ត៌មានផ្ទៀងផ្ទាត់ Wi-Fi។ បន្ទាប់ពីរៀបចំរួច <ph name="DEVICE_TYPE" /> របស់អ្នក​នឹងភ្ជាប់ដោយស្វ័យប្រវត្តិ​ទៅ​បណ្ដាញ Wi-Fi ដែលចូលរួម។ ដើម្បី​ដក​ព័ត៌មានផ្ទៀងផ្ទាត់​ទាំង​នេះ​ចេញ សូម​លុប​កម្មវិធី។ <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">មិនអាចប្រើ​កាតនិម្មិត​នៅពេលនេះបានទេ សូមទាក់ទងធនាគារ​របស់អ្នក</translation>
 <translation id="5138227688689900538">បង្ហាញ​តិច</translation>
+<translation id="5140155249377545621">បណ្ណ​បើកបរ</translation>
 <translation id="5144613843429436866">អ្នកបានអនុញ្ញាត<ph name="PERMISSION" />សម្រាប់​គេហទំព័រនេះ</translation>
 <translation id="5145883236150621069">លេខកូដកំហុសឆ្គងបង្ហាញនៅក្នុងការឆ្លើយតបគោលការណ៍</translation>
 <translation id="5146995429444047494">ការជូនដំណឹង​សម្រាប់ <ph name="ORIGIN" /> ត្រូវបានទប់ស្កាត់</translation>
