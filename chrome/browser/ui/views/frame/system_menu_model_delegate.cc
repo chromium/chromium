@@ -12,6 +12,8 @@
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/core/tab_restore_service.h"
@@ -95,7 +97,9 @@ bool SystemMenuModelDelegate::GetAcceleratorForCommandId(
 }
 
 bool SystemMenuModelDelegate::IsItemForCommandIdDynamic(int command_id) const {
-  return std::set{IDC_RESTORE_TAB, IDC_GLIC_TOGGLE_PIN}.contains(command_id);
+  return std::set{IDC_RESTORE_TAB, IDC_GLIC_TOGGLE_PIN,
+                  IDC_TOGGLE_VERTICAL_TABS}
+      .contains(command_id);
 }
 
 std::u16string SystemMenuModelDelegate::GetLabelForCommandId(
@@ -121,6 +125,13 @@ std::u16string SystemMenuModelDelegate::GetLabelForCommandId(
           }
         }
       }
+      break;
+    case IDC_TOGGLE_VERTICAL_TABS:
+      string_id = browser_->browser_window_features()
+                          ->vertical_tab_strip_state_controller()
+                          ->ShouldDisplayVerticalTabs()
+                      ? IDS_SWITCH_TO_HORIZONTAL_TAB
+                      : IDS_SWITCH_TO_VERTICAL_TAB;
       break;
 #if BUILDFLAG(ENABLE_GLIC)
     case IDC_GLIC_TOGGLE_PIN:
