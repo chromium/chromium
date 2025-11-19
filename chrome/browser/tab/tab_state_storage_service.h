@@ -16,6 +16,7 @@
 #include "base/supports_user_data.h"
 #include "chrome/browser/tab/restore_id_associator.h"
 #include "chrome/browser/tab/restore_id_associator_builder.h"
+#include "chrome/browser/tab/storage_id.h"
 #include "chrome/browser/tab/storage_id_mapping.h"
 #include "chrome/browser/tab/storage_loaded_data.h"
 #include "chrome/browser/tab/tab_group_collection_data.h"
@@ -46,16 +47,15 @@ class TabStateStorageService : public KeyedService,
   using LoadDataCallback =
       base::OnceCallback<void(std::unique_ptr<StorageLoadedData>)>;
 
-  explicit TabStateStorageService(
-      std::unique_ptr<TabStateStorageBackend> tab_backend,
-      std::unique_ptr<TabStoragePackager> packager,
-      TabCanonicalizer tab_canonicalizer,
-      AssociatorBuilderFactory builder_factory);
+  TabStateStorageService(std::unique_ptr<TabStateStorageBackend> tab_backend,
+                         std::unique_ptr<TabStoragePackager> packager,
+                         TabCanonicalizer tab_canonicalizer,
+                         AssociatorBuilderFactory builder_factory);
   ~TabStateStorageService() override;
 
   // StorageIdMapping:
-  int GetStorageId(const TabCollection* collection) override;
-  int GetStorageId(const TabInterface* tab) override;
+  StorageId GetStorageId(const TabCollection* collection) override;
+  StorageId GetStorageId(const TabInterface* tab) override;
 
   void Save(const TabInterface* tab);
   void Save(const TabCollection* collection);
@@ -86,8 +86,9 @@ class TabStateStorageService : public KeyedService,
   void OnAllNodesLoaded(LoadDataCallback callback,
                         std::vector<NodeState> entries);
 
-  void OnTabCreated(int storage_id, const TabInterface* tab);
-  void OnCollectionCreated(int storage_id, const TabCollection* collection);
+  void OnTabCreated(StorageId storage_id, const TabInterface* tab);
+  void OnCollectionCreated(StorageId storage_id,
+                           const TabCollection* collection);
 
   std::unique_ptr<TabStateStorageBackend> tab_backend_;
   std::unique_ptr<TabStoragePackager> packager_;
@@ -97,9 +98,9 @@ class TabStateStorageService : public KeyedService,
 
   // Storage ids need to be unique across tabs and collections, but the handles
   // do not have this guarantee. Track them separately.
-  int next_storage_id_ = 1;
-  absl::flat_hash_map<int32_t, int> tab_handle_to_storage_id_;
-  absl::flat_hash_map<int32_t, int> collection_handle_to_storage_id_;
+  StorageId next_storage_id_ = 1;
+  absl::flat_hash_map<int32_t, StorageId> tab_handle_to_storage_id_;
+  absl::flat_hash_map<int32_t, StorageId> collection_handle_to_storage_id_;
 
   base::WeakPtrFactory<TabStateStorageService> weak_ptr_factory_{this};
 };

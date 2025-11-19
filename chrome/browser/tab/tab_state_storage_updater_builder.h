@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "chrome/browser/tab/storage_id.h"
 #include "chrome/browser/tab/tab_storage_package.h"
 #include "chrome/browser/tab/tab_storage_type.h"
 
@@ -23,14 +24,14 @@ class TabStateStorageUpdaterBuilder {
       const TabStateStorageUpdaterBuilder&) = delete;
   ~TabStateStorageUpdaterBuilder();
 
-  void SaveNode(int id,
+  void SaveNode(StorageId id,
                 std::string window_tag,
                 bool is_off_the_record,
                 TabStorageType type,
                 std::unique_ptr<StoragePackage> package);
-  void SaveNodePayload(int id, std::unique_ptr<Payload> payload);
-  void SaveChildren(int id, std::unique_ptr<Payload> children);
-  void RemoveNode(int id);
+  void SaveNodePayload(StorageId id, std::unique_ptr<Payload> payload);
+  void SaveChildren(StorageId id, std::unique_ptr<Payload> children);
+  void RemoveNode(StorageId id);
 
   std::unique_ptr<TabStateStorageUpdater> Build();
 

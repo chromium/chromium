@@ -132,7 +132,7 @@ bool InitSchema(sql::Database* db, sql::MetaTable* meta_table) {
 
 }  // namespace
 
-NodeState::NodeState(int id,
+NodeState::NodeState(StorageId id,
                      TabStorageType type,
                      std::vector<uint8_t> payload,
                      std::vector<uint8_t> children)
@@ -206,7 +206,7 @@ bool TabStateStorageDatabase::Initialize() {
 }
 
 bool TabStateStorageDatabase::SaveNode(OpenTransaction* transaction,
-                                       int id,
+                                       StorageId id,
                                        std::string window_tag,
                                        bool is_off_the_record,
                                        TabStorageType type,
@@ -236,7 +236,7 @@ bool TabStateStorageDatabase::SaveNode(OpenTransaction* transaction,
 }
 
 bool TabStateStorageDatabase::SaveNodePayload(OpenTransaction* transaction,
-                                              int id,
+                                              StorageId id,
                                               std::vector<uint8_t> payload) {
   CHECK(db_);
   DCHECK(OpenTransaction::IsValid(transaction));
@@ -258,7 +258,7 @@ bool TabStateStorageDatabase::SaveNodePayload(OpenTransaction* transaction,
 }
 
 bool TabStateStorageDatabase::SaveNodeChildren(OpenTransaction* transaction,
-                                               int id,
+                                               StorageId id,
                                                std::vector<uint8_t> children) {
   CHECK(db_);
   DCHECK(OpenTransaction::IsValid(transaction));
@@ -273,13 +273,14 @@ bool TabStateStorageDatabase::SaveNodeChildren(OpenTransaction* transaction,
   sql::Statement write_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kUpdateChildrenSql));
 
-  write_statement.BindInt(0, id);
-  write_statement.BindBlob(1, std::move(children));
+  write_statement.BindBlob(0, std::move(children));
+  write_statement.BindInt(1, id);
 
   return write_statement.Run();
 }
 
-bool TabStateStorageDatabase::RemoveNode(OpenTransaction* transaction, int id) {
+bool TabStateStorageDatabase::RemoveNode(OpenTransaction* transaction,
+                                         StorageId id) {
   CHECK(db_);
   DCHECK(OpenTransaction::IsValid(transaction));
 

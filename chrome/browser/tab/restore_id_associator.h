@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "chrome/browser/tab/protocol/children.pb.h"
 #include "chrome/browser/tab/protocol/tab_state.pb.h"
+#include "chrome/browser/tab/storage_id.h"
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/tabs/public/tab_strip_collection.h"
@@ -17,12 +18,12 @@ namespace tabs {
 // A callback invoked when a TabInterface is associated with its
 // persistent storage_id.
 using OnTabAssociation =
-    base::RepeatingCallback<void(int storage_id, const TabInterface*)>;
+    base::RepeatingCallback<void(StorageId storage_id, const TabInterface*)>;
 
 // A callback invoked when a TabCollection is associated with its
 // persistent storage_id.
 using OnCollectionAssociation =
-    base::RepeatingCallback<void(int storage_id, const TabCollection*)>;
+    base::RepeatingCallback<void(StorageId storage_id, const TabCollection*)>;
 
 // Associates in-memory nodes with their storage IDs in the storage layer.
 class RestoreIdAssociator {

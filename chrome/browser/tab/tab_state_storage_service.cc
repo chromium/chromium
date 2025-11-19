@@ -28,9 +28,10 @@ namespace tabs {
 namespace {
 
 template <typename T>
-int GetOrCreateStorageId(T* object,
-                         absl::flat_hash_map<int32_t, int>& handle_map,
-                         int& next_storage_id) {
+StorageId GetOrCreateStorageId(
+    T* object,
+    absl::flat_hash_map<int32_t, StorageId>& handle_map,
+    StorageId& next_storage_id) {
   int32_t handle_id = object->GetHandle().raw_value();
   auto [it, inserted] = handle_map.try_emplace(handle_id, next_storage_id);
   if (inserted) {
@@ -48,7 +49,7 @@ void SaveChildrenInternal(TabStateStorageUpdaterBuilder& builder,
                        packager->PackageChildren(parent, *service));
 }
 
-void RemoveNodeSequence(int storage_id,
+void RemoveNodeSequence(StorageId storage_id,
                         const TabCollection* parent,
                         TabStateStorageService* service,
                         TabStoragePackager* packager,
@@ -84,17 +85,17 @@ constexpr int kMaxTreeHeight = 5;
 // encountered during the traversal. The height of the tree is small
 // so there is no risk of stack overflow from recursing.
 void SortTabsInOrder(
-    int current_node_storage_id,
-    std::optional<int> active_tab_storage_id,
-    const absl::flat_hash_map<int, std::vector<int>>& children_map,
-    absl::flat_hash_map<int, LoadedTabState>& loaded_tabs_map,
+    StorageId current_node_storage_id,
+    std::optional<StorageId> active_tab_storage_id,
+    const absl::flat_hash_map<StorageId, std::vector<StorageId>>& children_map,
+    absl::flat_hash_map<StorageId, LoadedTabState>& loaded_tabs_map,
     std::vector<LoadedTabState>& sorted_tabs,
     std::optional<int>& active_tab_index,
     int depth = 0) {
   DCHECK_LE(depth, kMaxTreeHeight) << "Tree is too tall, possible cycle?";
   const auto it = children_map.find(current_node_storage_id);
   if (it != children_map.end()) {
-    for (const int child_id : it->second) {
+    for (const auto& child_id : it->second) {
       SortTabsInOrder(child_id, active_tab_storage_id, children_map,
                       loaded_tabs_map, sorted_tabs, active_tab_index,
                       depth + 1);
@@ -131,12 +132,13 @@ TabStateStorageService::TabStateStorageService(
 
 TabStateStorageService::~TabStateStorageService() = default;
 
-int TabStateStorageService::GetStorageId(const TabCollection* collection) {
+StorageId TabStateStorageService::GetStorageId(
+    const TabCollection* collection) {
   return ::tabs::GetOrCreateStorageId(
       collection, collection_handle_to_storage_id_, next_storage_id_);
 }
 
-int TabStateStorageService::GetStorageId(const TabInterface* tab) {
+StorageId TabStateStorageService::GetStorageId(const TabInterface* tab) {
   return ::tabs::GetOrCreateStorageId(
       tab_canonicalizer_.Run(tab), tab_handle_to_storage_id_, next_storage_id_);
 }
@@ -152,7 +154,7 @@ void TabStateStorageService::Save(const TabInterface* tab) {
   std::string window_tag = packager_->GetWindowTag(parent);
   bool is_off_the_record = packager_->IsOffTheRecord(parent);
 
-  int storage_id = GetStorageId(tab);
+  StorageId storage_id = GetStorageId(tab);
   TabStateStorageUpdaterBuilder builder;
   builder.SaveNode(storage_id, std::move(window_tag), is_off_the_record,
                    TabStorageType::kTab, std::move(package));
@@ -169,7 +171,7 @@ void TabStateStorageService::Save(const TabCollection* collection) {
   std::string window_tag = packager_->GetWindowTag(collection);
   bool is_off_the_record = packager_->IsOffTheRecord(collection);
 
-  int storage_id = GetStorageId(collection);
+  StorageId storage_id = GetStorageId(collection);
   TabStorageType type = TabCollectionTypeToTabStorageType(collection->type());
   TabStateStorageUpdaterBuilder builder;
   builder.SaveNode(storage_id, std::move(window_tag), is_off_the_record, type,
@@ -184,7 +186,7 @@ void TabStateStorageService::SavePayload(const TabCollection* collection) {
       packager_->PackagePayload(collection, *this);
   DCHECK(payload) << "Packager should return a payload";
 
-  int storage_id = GetStorageId(collection);
+  StorageId storage_id = GetStorageId(collection);
   TabStateStorageUpdaterBuilder builder;
   builder.SaveNodePayload(storage_id, std::move(payload));
   tab_backend_->Update(builder.Build());
@@ -248,13 +250,13 @@ void TabStateStorageService::OnAllNodesLoaded(LoadDataCallback callback,
     return;
   }
 
-  std::optional<int> root_storage_id;
-  std::optional<int> active_tab_storage_id;
-  absl::flat_hash_map<int, LoadedTabState> loaded_tabs_map;
-  absl::flat_hash_map<int, std::vector<int>> children_map;
+  std::optional<StorageId> root_storage_id;
+  std::optional<StorageId> active_tab_storage_id;
+  absl::flat_hash_map<StorageId, LoadedTabState> loaded_tabs_map;
+  absl::flat_hash_map<StorageId, std::vector<StorageId>> children_map;
   std::vector<std::unique_ptr<TabGroupCollectionData>> loaded_groups;
 
-  int max_storage_id = 0;
+  StorageId max_storage_id = 0;
   for (auto& entry : entries) {
     max_storage_id = std::max(max_storage_id, entry.id);
     if (entry.type == TabStorageType::kTab) {
@@ -288,7 +290,8 @@ void TabStateStorageService::OnAllNodesLoaded(LoadDataCallback callback,
         builder->RegisterCollection(entry.id, entry.type, children);
         const auto& storage_ids = children.storage_id();
         children_map.emplace(
-            entry.id, std::vector<int>(storage_ids.begin(), storage_ids.end()));
+            entry.id,
+            std::vector<StorageId>(storage_ids.begin(), storage_ids.end()));
       }
 
       if (entry.type == TabStorageType::kGroup) {
@@ -332,7 +335,7 @@ void TabStateStorageService::OnAllNodesLoaded(LoadDataCallback callback,
   std::move(callback).Run(std::move(loaded_data));
 }
 
-void TabStateStorageService::OnTabCreated(int storage_id,
+void TabStateStorageService::OnTabCreated(StorageId storage_id,
                                           const TabInterface* tab) {
   const TabInterface* canonicalized_tab = tab_canonicalizer_.Run(tab);
   if (canonicalized_tab == nullptr) {
@@ -347,7 +350,7 @@ void TabStateStorageService::OnTabCreated(int storage_id,
 }
 
 void TabStateStorageService::OnCollectionCreated(
-    int storage_id,
+    StorageId storage_id,
     const TabCollection* collection) {
   if (collection == nullptr) {
     // TODO(https://crbug.com/448151790): Consider removing from the database.

@@ -12,6 +12,7 @@
 #include "chrome/browser/tab/protocol/tab_state.pb.h"
 #include "chrome/browser/tab/restore_id_associator.h"
 #include "chrome/browser/tab/restore_id_associator_builder.h"
+#include "chrome/browser/tab/storage_id.h"
 #include "chrome/browser/tab/tab_storage_type.h"
 
 namespace tabs {
@@ -25,10 +26,11 @@ class RestoreIdAssociatorBuilderAndroid : public RestoreIdAssociatorBuilder {
   RestoreIdAssociatorBuilderAndroid(OnTabAssociation, OnCollectionAssociation);
   ~RestoreIdAssociatorBuilderAndroid() override;
 
-  void RegisterCollection(int storage_id,
+  void RegisterCollection(StorageId storage_id,
                           TabStorageType type,
                           const tabs_pb::Children& children) override;
-  void RegisterTab(int storage_id, const tabs_pb::TabState& tab_state) override;
+  void RegisterTab(StorageId storage_id,
+                   const tabs_pb::TabState& tab_state) override;
 
   std::unique_ptr<RestoreIdAssociator> BuildAssociator() override;
 

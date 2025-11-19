@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_TAB_STORAGE_ID_MAPPING_H_
 #define CHROME_BROWSER_TAB_STORAGE_ID_MAPPING_H_
 
+#include "chrome/browser/tab/storage_id.h"
+
 namespace tabs {
 
 class TabCollection;
@@ -15,8 +17,8 @@ class StorageIdMapping {
  public:
   virtual ~StorageIdMapping() = default;
 
-  virtual int GetStorageId(const TabCollection* collection) = 0;
-  virtual int GetStorageId(const TabInterface* tab) = 0;
+  virtual StorageId GetStorageId(const TabCollection* collection) = 0;
+  virtual StorageId GetStorageId(const TabInterface* tab) = 0;
 };
 
 }  // namespace tabs

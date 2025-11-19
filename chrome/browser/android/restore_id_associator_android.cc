@@ -34,7 +34,7 @@ bool RestoreIdAssociatorAndroid::AssociateTabAndAncestors(
     return false;
   }
 
-  int storage_id =
+  StorageId storage_id =
       state_->tab_android_id_to_storage_id[tab_android->GetAndroidId()];
   state_->on_tab_association.Run(storage_id, tab_android);
   AssociateAncestorsInternal(state_->id_to_parent_id.at(storage_id),
@@ -57,10 +57,10 @@ bool RestoreIdAssociatorAndroid::HasCollectionBeenAssociated(
 }
 
 void RestoreIdAssociatorAndroid::AssociateAncestorsInternal(
-    int storage_id,
+    StorageId storage_id,
     const TabCollection* collection) {
   TabCollection::Handle curr_collection = collection->GetHandle();
-  int curr_id = storage_id;
+  StorageId curr_id = storage_id;
 
   while (ShouldProcessCollection(curr_id, curr_collection)) {
     const TabCollection* curr_collection_ptr = curr_collection.Get();
@@ -79,7 +79,7 @@ void RestoreIdAssociatorAndroid::AssociateAncestorsInternal(
 }
 
 bool RestoreIdAssociatorAndroid::ShouldProcessCollection(
-    int storage_id,
+    StorageId storage_id,
     TabCollection::Handle collection) {
   // Must allow for root collection.
   bool is_root = !collection.Get()->GetParentCollection();

@@ -23,7 +23,7 @@ namespace {
 
 class SaveNodeUpdateUnit : public StorageUpdateUnit {
  public:
-  SaveNodeUpdateUnit(int id,
+  SaveNodeUpdateUnit(StorageId id,
                      std::string window_tag,
                      bool is_off_the_record,
                      TabStorageType type,
@@ -48,7 +48,7 @@ class SaveNodeUpdateUnit : public StorageUpdateUnit {
   }
 
  private:
-  int id_;
+  StorageId id_;
   std::string window_tag_;
   bool is_off_the_record_;
   TabStorageType type_;
@@ -57,7 +57,7 @@ class SaveNodeUpdateUnit : public StorageUpdateUnit {
 
 class SavePayloadUpdateUnit : public StorageUpdateUnit {
  public:
-  SavePayloadUpdateUnit(int id, std::unique_ptr<Payload> payload)
+  SavePayloadUpdateUnit(StorageId id, std::unique_ptr<Payload> payload)
       : id_(id), payload_(std::move(payload)) {}
 
   bool Execute(TabStateStorageDatabase* db,
@@ -71,13 +71,13 @@ class SavePayloadUpdateUnit : public StorageUpdateUnit {
   }
 
  private:
-  int id_;
+  StorageId id_;
   std::unique_ptr<Payload> payload_;
 };
 
 class SaveChildrenUpdateUnit : public StorageUpdateUnit {
  public:
-  SaveChildrenUpdateUnit(int id, std::unique_ptr<Payload> children)
+  SaveChildrenUpdateUnit(StorageId id, std::unique_ptr<Payload> children)
       : id_(id), children_(std::move(children)) {}
 
   bool Execute(TabStateStorageDatabase* db,
@@ -92,13 +92,13 @@ class SaveChildrenUpdateUnit : public StorageUpdateUnit {
   }
 
  private:
-  int id_;
+  StorageId id_;
   std::unique_ptr<Payload> children_;
 };
 
 class RemoveNodeUpdateUnit : public StorageUpdateUnit {
  public:
-  explicit RemoveNodeUpdateUnit(int id) : id_(id) {}
+  explicit RemoveNodeUpdateUnit(StorageId id) : id_(id) {}
 
   bool Execute(TabStateStorageDatabase* db,
                OpenTransaction* transaction) override {
@@ -110,7 +110,7 @@ class RemoveNodeUpdateUnit : public StorageUpdateUnit {
   }
 
  private:
-  int id_;
+  StorageId id_;
 };
 
 }  // namespace
@@ -121,7 +121,7 @@ TabStateStorageUpdaterBuilder::TabStateStorageUpdaterBuilder()
 TabStateStorageUpdaterBuilder::~TabStateStorageUpdaterBuilder() = default;
 
 void TabStateStorageUpdaterBuilder::SaveNode(
-    int id,
+    StorageId id,
     std::string window_tag,
     bool is_off_the_record,
     TabStorageType type,
@@ -131,20 +131,20 @@ void TabStateStorageUpdaterBuilder::SaveNode(
 }
 
 void TabStateStorageUpdaterBuilder::SaveNodePayload(
-    int id,
+    StorageId id,
     std::unique_ptr<Payload> payload) {
   updater_->Add(
       std::make_unique<SavePayloadUpdateUnit>(id, std::move(payload)));
 }
 
 void TabStateStorageUpdaterBuilder::SaveChildren(
-    int id,
+    StorageId id,
     std::unique_ptr<Payload> children) {
   updater_->Add(
       std::make_unique<SaveChildrenUpdateUnit>(id, std::move(children)));
 }
 
-void TabStateStorageUpdaterBuilder::RemoveNode(int id) {
+void TabStateStorageUpdaterBuilder::RemoveNode(StorageId id) {
   updater_->Add(std::make_unique<RemoveNodeUpdateUnit>(id));
 }
 

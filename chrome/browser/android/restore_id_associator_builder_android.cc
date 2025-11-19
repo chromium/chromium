@@ -20,14 +20,14 @@ RestoreIdAssociatorBuilderAndroid::~RestoreIdAssociatorBuilderAndroid() =
     default;
 
 void RestoreIdAssociatorBuilderAndroid::RegisterCollection(
-    int storage_id,
+    StorageId storage_id,
     TabStorageType type,
     const tabs_pb::Children& children) {
   DCHECK(state_);
   state_->id_to_parent_id.reserve(children.storage_id_size());
 
   // Build a mapping of children IDs to parent IDs;
-  for (int child_id : children.storage_id()) {
+  for (const auto& child_id : children.storage_id()) {
     state_->id_to_parent_id[child_id] = storage_id;
   }
 
@@ -39,7 +39,7 @@ void RestoreIdAssociatorBuilderAndroid::RegisterCollection(
 }
 
 void RestoreIdAssociatorBuilderAndroid::RegisterTab(
-    int storage_id,
+    StorageId storage_id,
     const tabs_pb::TabState& tab_state) {
   DCHECK(state_);
   state_->tab_android_id_to_storage_id[tab_state.tab_id()] = storage_id;

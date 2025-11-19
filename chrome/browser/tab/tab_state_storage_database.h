@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "chrome/browser/tab/storage_id.h"
 #include "chrome/browser/tab/tab_storage_type.h"
 
 namespace sql {
@@ -24,7 +25,7 @@ namespace tabs {
 // Represents a row in the node table, to allow returning many rows of data.
 // Each row may be a tab or parent collection.
 struct NodeState {
-  NodeState(int id,
+  NodeState(StorageId id,
             TabStorageType type,
             std::vector<uint8_t> payload,
             std::vector<uint8_t> children);
@@ -36,7 +37,7 @@ struct NodeState {
   NodeState(NodeState&&) noexcept;
   NodeState& operator=(NodeState&&) noexcept;
 
-  int id;
+  StorageId id;
   TabStorageType type;
   std::vector<uint8_t> payload;
   std::vector<uint8_t> children;
@@ -83,7 +84,7 @@ class TabStateStorageDatabase {
 
   // Saves a node to the database.
   bool SaveNode(OpenTransaction* transaction,
-                int id,
+                StorageId id,
                 std::string window_tag,
                 bool is_off_the_record,
                 TabStorageType type,
@@ -93,18 +94,18 @@ class TabStateStorageDatabase {
   // Saves a node payload to the database.
   // This will silently fail if the node does not already exist.
   bool SaveNodePayload(OpenTransaction* transaction,
-                       int id,
+                       StorageId id,
                        std::vector<uint8_t> payload);
 
   // Saves the children of a node to the database.
   // This will silently fail if the node does not already exist.
   bool SaveNodeChildren(OpenTransaction* transaction,
-                        int id,
+                        StorageId id,
                         std::vector<uint8_t> children);
 
   // Removes a node from the database.
   // This will silently fail if the node does not already exist.
-  bool RemoveNode(OpenTransaction* transaction, int id);
+  bool RemoveNode(OpenTransaction* transaction, StorageId id);
 
   // Creates an open transaction.
   OpenTransaction* CreateTransaction();
