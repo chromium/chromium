@@ -812,10 +812,8 @@ TEST_P(CanvasRenderingContext2DTest, GetImageWithAccelerationDisabled) {
   Context2D()->SetCanvas2DResourceProviderForTesting(std::move(provider), size);
   ASSERT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kCPU);
 
-  EXPECT_FALSE(Context2D()
-                   ->GetImage(FlushReason::kOther)
-                   ->PaintImageForCurrentFrame()
-                   .IsTextureBacked());
+  EXPECT_FALSE(
+      Context2D()->GetImage()->PaintImageForCurrentFrame().IsTextureBacked());
 
   // The GetImage() call should have preserved the rasterization mode as well as
   // the validity of the resource.
@@ -1800,10 +1798,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, GetImage) {
 
   // Verify that CanvasRenderingContext2D::GetImage() creates an accelerated
   // image given that the underlying CanvasResourceProvider does so.
-  EXPECT_TRUE(Context2D()
-                  ->GetImage(FlushReason::kOther)
-                  ->PaintImageForCurrentFrame()
-                  .IsTextureBacked());
+  EXPECT_TRUE(
+      Context2D()->GetImage()->PaintImageForCurrentFrame().IsTextureBacked());
 
   // The GetImage() call should have preserved the rasterization mode as well as
   // the validity of the resource.
@@ -2003,11 +1999,11 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, GetImageAfterContextLoss) {
   ASSERT_TRUE(SetUpFullAccelerationAndCcLayer(CanvasElement(), Context2D()));
 
   EXPECT_TRUE(Context2D()->IsResourceProviderValid());
-  EXPECT_TRUE(Context2D()->GetImage(FlushReason::kOther));
+  EXPECT_TRUE(Context2D()->GetImage());
 
   test_context_provider_->GetTestRasterInterface()->set_context_lost(true);
 
-  EXPECT_FALSE(Context2D()->GetImage(FlushReason::kOther));
+  EXPECT_FALSE(Context2D()->GetImage());
 }
 
 TEST_P(CanvasRenderingContext2DTestAccelerated,
@@ -3165,7 +3161,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 
   // Taking a snapshot of the canvas while hibernating should produce an
   // unaccelerated image.
-  EXPECT_FALSE(Context2D()->GetImage(FlushReason::kOther)->IsTextureBacked());
+  EXPECT_FALSE(Context2D()->GetImage()->IsTextureBacked());
 
   // The action of taking the snapshot should not have impacted the state of
   // hibernation.

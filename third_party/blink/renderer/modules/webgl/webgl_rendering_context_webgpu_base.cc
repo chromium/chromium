@@ -3532,8 +3532,7 @@ bool WebGLRenderingContextWebGPUBase::isContextLost() const {
   return IsLost();
 }
 
-scoped_refptr<StaticBitmapImage> WebGLRenderingContextWebGPUBase::GetImage(
-    FlushReason) {
+scoped_refptr<StaticBitmapImage> WebGLRenderingContextWebGPUBase::GetImage() {
   NOTIMPLEMENTED();
   return nullptr;
 }

@@ -72,7 +72,7 @@ void ImageBitmapRenderingContext::Stop() {
 scoped_refptr<StaticBitmapImage>
 ImageBitmapRenderingContext::PaintRenderingResultsToSnapshot(
     SourceDrawingBuffer source_buffer) {
-  return GetImage(FlushReason::kOther);
+  return GetImage();
 }
 
 void ImageBitmapRenderingContext::Dispose() {
@@ -114,8 +114,7 @@ void ImageBitmapRenderingContext::SetImage(ImageBitmap* image_bitmap) {
   Host()->UpdateMemoryUsage();
 }
 
-scoped_refptr<StaticBitmapImage> ImageBitmapRenderingContext::GetImage(
-    FlushReason) {
+scoped_refptr<StaticBitmapImage> ImageBitmapRenderingContext::GetImage() {
   return image_layer_bridge_->GetImage();
 }
 

@@ -63,7 +63,7 @@ class MODULES_EXPORT ImageBitmapRenderingContext final
   // If SetImage receives a null imagebitmap, it will Reset the internal bitmap
   // to a black and transparent bitmap.
   void SetImage(ImageBitmap*);
-  scoped_refptr<StaticBitmapImage> GetImage(FlushReason) final;
+  scoped_refptr<StaticBitmapImage> GetImage() final;
 
   void SetUV(const gfx::PointF& left_top, const gfx::PointF& right_bottom);
 

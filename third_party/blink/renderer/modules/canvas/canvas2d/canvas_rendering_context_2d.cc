@@ -718,8 +718,7 @@ bool CanvasRenderingContext2D::CanCreateResourceProvider() {
   return GetOrCreateResourceProvider();
 }
 
-scoped_refptr<StaticBitmapImage> blink::CanvasRenderingContext2D::GetImage(
-    FlushReason reason) {
+scoped_refptr<StaticBitmapImage> blink::CanvasRenderingContext2D::GetImage() {
   if (IsHibernating()) {
     return UnacceleratedStaticBitmapImage::Create(
         GetHibernationHandler()->GetImage());
@@ -729,8 +728,8 @@ scoped_refptr<StaticBitmapImage> blink::CanvasRenderingContext2D::GetImage(
     return nullptr;
   }
 
-  resource_provider_->FlushCanvas(reason);
-  return resource_provider_->Snapshot(reason);
+  resource_provider_->FlushCanvas();
+  return resource_provider_->Snapshot();
 }
 
 ImageData* CanvasRenderingContext2D::getImageDataInternal(
@@ -1393,7 +1392,7 @@ void CanvasRenderingContext2D::DropAndRecreateExistingResourceProvider() {
     return;
   }
 
-  scoped_refptr<StaticBitmapImage> image = GetImage(FlushReason::kOther);
+  scoped_refptr<StaticBitmapImage> image = GetImage();
   // image can be null if allocation failed in which case we should just
   // abort the provider switch to retain the old provider, which is still
   // functional.

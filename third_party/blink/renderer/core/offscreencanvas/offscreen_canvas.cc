@@ -256,7 +256,7 @@ scoped_refptr<Image> OffscreenCanvas::GetSourceImageForCanvas(
     // keep a cached copy of the backing in the canvas's resource provider.
     image = RenderingContext()->PaintRenderingResultsToSnapshot(kBackBuffer);
   } else {
-    image = RenderingContext()->GetImage(FlushReason::kOther);
+    image = RenderingContext()->GetImage();
   }
   if (!image) {
     image = CreateTransparentImage();
@@ -341,8 +341,7 @@ ScriptPromise<Blob> OffscreenCanvas::convertToBlob(
   }
 
   base::TimeTicks start_time = base::TimeTicks::Now();
-  scoped_refptr<StaticBitmapImage> image_bitmap =
-      context_->GetImage(FlushReason::kOther);
+  scoped_refptr<StaticBitmapImage> image_bitmap = context_->GetImage();
   if (image_bitmap) {
     auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<Blob>>(
         script_state, exception_state.GetContext());

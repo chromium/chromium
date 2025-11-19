@@ -1191,7 +1191,7 @@ scoped_refptr<StaticBitmapImage> HTMLCanvasElement::Snapshot(
   } else if (context_) {
     DCHECK(IsRenderingContext2D() || IsImageBitmapRenderingContext() ||
            IsWebGPU());
-    image_bitmap = context_->GetImage(FlushReason::kOther);
+    image_bitmap = context_->GetImage();
   }
 
   if (!image_bitmap) {
@@ -1737,7 +1737,7 @@ HTMLCanvasElement::GetSourceImageForCanvasInternal(SourceImageStatus* status) {
       image = RenderingContext()->PaintRenderingResultsToSnapshot(kBackBuffer);
     } else if (RenderingContext()) {
       // This is either CanvasRenderingContext2D or ImageBitmapRenderingContext.
-      image = RenderingContext()->GetImage(FlushReason::kOther);
+      image = RenderingContext()->GetImage();
     }
     if (!image) {
       image = GetTransparentImage();
@@ -1762,8 +1762,7 @@ gfx::SizeF HTMLCanvasElement::ElementSize(
     const gfx::SizeF&,
     const RespectImageOrientationEnum) const {
   if (IsImageBitmapRenderingContext()) {
-    scoped_refptr<Image> image =
-        RenderingContext()->GetImage(FlushReason::kOther);
+    scoped_refptr<Image> image = RenderingContext()->GetImage();
     if (image) {
       return gfx::SizeF(image->width(), image->height());
     }

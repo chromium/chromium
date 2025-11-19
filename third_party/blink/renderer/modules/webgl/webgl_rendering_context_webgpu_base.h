@@ -1278,7 +1278,7 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
   gfx::ColorSpace GetColorSpace() const override;
   int AllocatedBufferCountPerPixel() const override;
   bool isContextLost() const override;
-  scoped_refptr<StaticBitmapImage> GetImage(FlushReason) override;
+  scoped_refptr<StaticBitmapImage> GetImage() override;
   void SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata) override;
 
   bool IsComposited() const override;

@@ -818,8 +818,7 @@ void WebGLRenderingContextBase::drawingBufferStorage(GLenum sizedformat,
                                        gfx::Size(width, height));
 }
 
-scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage(
-    FlushReason reason) {
+scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage() {
   if (!GetDrawingBuffer())
     return nullptr;
 
@@ -858,7 +857,7 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage(
                                                kBackBuffer)) {
       return nullptr;
     }
-    return resource_provider->Snapshot(reason);
+    return resource_provider->Snapshot(FlushReason::kOther);
   } else {
     // Match the SBI configuration to that produced when using GPU compositing:
     // N32 and premul (as set by `CopyRenderingResultsFromDrawingBuffer`) and

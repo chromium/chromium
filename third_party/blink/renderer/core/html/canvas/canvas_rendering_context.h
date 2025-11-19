@@ -165,7 +165,7 @@ class CORE_EXPORT CanvasRenderingContext
   virtual viz::SharedImageFormat GetSharedImageFormat() const = 0;
   virtual gfx::ColorSpace GetColorSpace() const = 0;
 
-  virtual scoped_refptr<StaticBitmapImage> GetImage(FlushReason) = 0;
+  virtual scoped_refptr<StaticBitmapImage> GetImage() = 0;
   virtual bool IsComposited() const = 0;
 
   virtual gfx::Vector2dF PhysicalPixelToCanvasGridScaleFactor() const {

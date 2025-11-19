@@ -477,7 +477,7 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
     }
   }
 
-  scoped_refptr<StaticBitmapImage> snapshot = GetImage(FlushReason::kOther);
+  scoped_refptr<StaticBitmapImage> snapshot = GetImage();
 
   TRACE_EVENT_INSTANT(
       TRACE_DISABLED_BY_DEFAULT("identifiability.high_entropy_api"),

@@ -170,7 +170,7 @@ void GPUCanvasContext::Dispose() {
   CanvasRenderingContext::Dispose();
 }
 
-scoped_refptr<StaticBitmapImage> GPUCanvasContext::GetImage(FlushReason) {
+scoped_refptr<StaticBitmapImage> GPUCanvasContext::GetImage() {
   if (!swap_buffers_) {
     return nullptr;
   }
