@@ -282,6 +282,10 @@ void FontDataManager::SetFontServiceForTesting(
   remote.Bind(std::move(font_data_service));
 }
 
+size_t FontDataManager::GetMappedFilesCountForTesting() const {
+  return mapped_files_.size();
+}
+
 font_data_service::mojom::FontDataService&
 FontDataManager::GetRemoteFontDataService() const {
   mojo::Remote<font_data_service::mojom::FontDataService>& remote =
@@ -331,17 +335,33 @@ sk_sp<SkTypeface> FontDataManager::CreateTypefaceFromMatchResult(
     // Attempt to create the typeface data based on the match result.
     if (match_result->typeface_data->is_font_file()) {
       TRACE_EVENT("fonts", "FontDataManager - using mapped file");
-      if (auto file_mapping = std::make_unique<base::MemoryMappedFile>();
-          file_mapping->Initialize(
-              std::move(match_result->typeface_data->get_font_file()))) {
+
+      // If the file's unique ID is already present in `mapped_files_`, we must
+      // reuse it to avoid re-creating a memory mapped file for each match
+      // request that resolves to the same font file.
+      base::MemoryMappedFile* file_mapping = nullptr;
+      {
+        base::AutoLock locked(lock_);
+
+        std::unique_ptr<base::MemoryMappedFile>& mapped_files_entry =
+            mapped_files_[match_result->typeface_data->get_font_file()->id];
+        if (!mapped_files_entry) {
+          auto new_mapping = std::make_unique<base::MemoryMappedFile>();
+          if (new_mapping->Initialize(std::move(
+                  match_result->typeface_data->get_font_file()->file_handle))) {
+            mapped_files_entry = std::move(new_mapping);
+            base::UmaHistogramCounts1000(
+                "Chrome.FontDataManager.NumMappedFiles", mapped_files_.size());
+          }
+        }
+        file_mapping = mapped_files_entry.get();
+      }
+
+      if (file_mapping) {
         typeface = onMakeFromStreamArgs(
             SkMemoryStream::MakeDirect(file_mapping->data(),
                                        file_mapping->length()),
             args);
-        if (typeface) {
-          // The typeface was found, so keep the mapping alive.
-          mapped_font_file = std::move(file_mapping);
-        }
       }
     } else if (match_result->typeface_data->is_region() &&
                match_result->typeface_data->get_region().IsValid()) {
@@ -378,16 +398,6 @@ sk_sp<SkTypeface> FontDataManager::CreateTypefaceFromMatchResult(
         typeface = onMakeFromStreamArgs(
             SkMemoryStream::MakeDirect(mapped_memory, mapped_size), args);
       }
-    }
-  }
-
-  // Add the mapped_font_file to the cache so it lives as long as required.
-  {
-    base::AutoLock locked(lock_);
-    if (mapped_font_file) {
-      mapped_files_.push_back(std::move(mapped_font_file));
-      base::UmaHistogramCounts1000("Chrome.FontDataManager.NumMappedFiles",
-                                   mapped_files_.size());
     }
   }
 

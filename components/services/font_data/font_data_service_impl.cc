@@ -90,7 +90,8 @@ void FontDataServiceImpl::BindReceiver(
   receivers_.Add(this, std::move(receiver));
 }
 
-base::File FontDataServiceImpl::GetFileHandle(SkTypeface& typeface) {
+std::tuple<base::File, size_t> FontDataServiceImpl::GetFileHandle(
+    SkTypeface& typeface) {
   SkString font_path;
   typeface.getResourceName(&font_path);
   base::UmaHistogramBoolean("Chrome.FontDataService.EmptyPathOnGetFileHandle",
@@ -99,9 +100,11 @@ base::File FontDataServiceImpl::GetFileHandle(SkTypeface& typeface) {
     return {};
   }
 
-  auto font_file = base::File(base::FilePath::FromUTF8Unsafe(font_path.c_str()),
-                              base::File::FLAG_OPEN | base::File::FLAG_READ |
-                                  base::File::FLAG_WIN_EXCLUSIVE_WRITE);
+  auto font_file_path = base::FilePath::FromUTF8Unsafe(font_path.c_str());
+
+  auto font_file =
+      base::File(font_file_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                                     base::File::FLAG_WIN_EXCLUSIVE_WRITE);
 #if BUILDFLAG(IS_WIN)
   if (!font_file.IsValid()) {
     base::UmaHistogramSparse("Chrome.FontDataService.WinLastError",
@@ -109,7 +112,7 @@ base::File FontDataServiceImpl::GetFileHandle(SkTypeface& typeface) {
   }
 #endif  // BUILDFLAG(IS_WIN)
 
-  return font_file;
+  return std::make_tuple(std::move(font_file), GetUniqueFileId(font_file_path));
 }
 
 void FontDataServiceImpl::MatchFamilyName(const std::string& family_name,
@@ -232,6 +235,12 @@ size_t FontDataServiceImpl::GetOrCreateAssetIndex(
   return asset_index;
 }
 
+size_t FontDataServiceImpl::GetUniqueFileId(base::FilePath path) {
+  size_t new_id = unique_path_ids_.size() + 1;
+  auto [it, inserted] = unique_path_ids_.try_emplace(path, new_id);
+  return it->second;
+}
+
 mojom::MatchFamilyNameResultPtr
 FontDataServiceImpl::CreateMatchFamilyNameResult(sk_sp<SkTypeface> typeface) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -257,11 +266,14 @@ FontDataServiceImpl::CreateMatchFamilyNameResult(sk_sp<SkTypeface> typeface) {
 
       // Try to share the font with a base::File. This is avoiding copy of the
       // content of the file.
-      base::File font_file = GetFileHandle(*typeface);
+      base::File font_file;
+      size_t font_file_unique_id;
+      std::tie(font_file, font_file_unique_id) = GetFileHandle(*typeface);
       if (font_file.IsValid()) {
         TRACE_EVENT("fonts", "FontDataServiceImpl - sharing file handle");
         result->typeface_data =
-            mojom::TypefaceData::NewFontFile(std::move(font_file));
+            mojom::TypefaceData::NewFontFile(mojom::TypefaceFile::New(
+                std::move(font_file), font_file_unique_id));
       } else {
         TRACE_EVENT("fonts", "FontDataServiceImpl - sharing memory region");
         // If it failed to share as an base::File, try sharing with shared

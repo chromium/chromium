@@ -27,10 +27,10 @@ class TestFontDataService : public FontDataServiceImpl {
   TestFontDataService(const TestFontDataService&) = delete;
   TestFontDataService& operator=(const TestFontDataService&) = delete;
 
-  base::File GetFileHandle(SkTypeface& typeface) override {
+  std::tuple<base::File, size_t> GetFileHandle(SkTypeface& typeface) override {
     if (use_memory_fallback_) {
       // Return an empty file handle to simulate the fallback.
-      return base::File();
+      return {base::File(), 0UL};
     }
     return FontDataServiceImpl::GetFileHandle(typeface);
   }
@@ -75,7 +75,8 @@ TEST_F(FontDataServiceImplUnitTest, MatchFamilyName) {
       &out_result);
   EXPECT_EQ(impl_.GetCacheSizeForTesting(), 0u);
   EXPECT_TRUE(out_result->typeface_data->is_font_file());
-  EXPECT_TRUE(out_result->typeface_data->get_font_file().IsValid());
+  EXPECT_TRUE(
+      out_result->typeface_data->get_font_file()->file_handle.IsValid());
 }
 
 TEST_F(FontDataServiceImplUnitTest, MatchFamilyNameMemoryCacheSize) {
@@ -133,7 +134,8 @@ TEST_F(FontDataServiceImplUnitTest, MatchFamilyNameCharacterNoLanguageTags) {
       {}, uni_char, &out_result);
   EXPECT_EQ(impl_.GetCacheSizeForTesting(), 0u);
   EXPECT_TRUE(out_result->typeface_data->is_font_file());
-  EXPECT_TRUE(out_result->typeface_data->get_font_file().IsValid());
+  EXPECT_TRUE(
+      out_result->typeface_data->get_font_file()->file_handle.IsValid());
 }
 
 TEST_F(FontDataServiceImplUnitTest, MatchFamilyNameCharacterWithLanguageTags) {
@@ -147,7 +149,8 @@ TEST_F(FontDataServiceImplUnitTest, MatchFamilyNameCharacterWithLanguageTags) {
       {"zh"}, uni_char, &out_result);
   EXPECT_EQ(impl_.GetCacheSizeForTesting(), 0u);
   EXPECT_TRUE(out_result->typeface_data->is_font_file());
-  EXPECT_TRUE(out_result->typeface_data->get_font_file().IsValid());
+  EXPECT_TRUE(
+      out_result->typeface_data->get_font_file()->file_handle.IsValid());
 }
 
 TEST_F(FontDataServiceImplUnitTest, GetAllFamilyNames) {
@@ -172,7 +175,8 @@ TEST_F(FontDataServiceImplUnitTest, LegacyMakeTypefaceNullFamilyName) {
       std::nullopt, CreateTypefaceStyle(400, 5, mojom::TypefaceSlant::kRoman),
       &out_result);
   EXPECT_TRUE(out_result->typeface_data->is_font_file());
-  EXPECT_TRUE(out_result->typeface_data->get_font_file().IsValid());
+  EXPECT_TRUE(
+      out_result->typeface_data->get_font_file()->file_handle.IsValid());
 }
 
 }  // namespace
