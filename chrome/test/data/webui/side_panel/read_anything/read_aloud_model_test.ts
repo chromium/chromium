@@ -1210,4 +1210,34 @@ suite('ReadAloudModel', () => {
         getReadAloudModel().moveSpeechForward();
         assertTextEmpty();
       });
+
+  test(
+      'getCurrentTextSegments all superscript nodes included in current sentence',
+      async () => {
+        // Create a container element to hold the simplified structure
+        const paragraph = document.createElement('p');
+
+        // Text before the citation
+        paragraph.appendChild(document.createTextNode('Doubt comes in.'));
+
+        const superscript = document.createElement('sup');
+        superscript.appendChild(document.createTextNode('['));
+        superscript.appendChild(document.createTextNode('3'));
+        superscript.appendChild(document.createTextNode(']'));
+        paragraph.appendChild(superscript);
+
+        document.body.appendChild(paragraph);
+        await microtasksFinished();
+        getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+
+        // The first sentence and its superscript are returned as one segment.
+        assertEquals(
+            'Doubt comes in.[3]',
+            getReadAloudModel().getCurrentTextContent().trim());
+
+
+        getReadAloudModel().moveSpeechForward();
+        assertTextEmpty();
+      });
+
 });

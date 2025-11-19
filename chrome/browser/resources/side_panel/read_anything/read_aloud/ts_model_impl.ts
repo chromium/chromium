@@ -246,9 +246,7 @@ export class TsReadModelImpl implements ReadAloudModelBrowserProxy {
       }
 
       // Set the buffer to the current (potentially remaining) sentence
-      if (currentSentence) {
-        previousSentence = currentSentence;
-      }
+      previousSentence = currentSentence;
     }
 
     if (previousSentence) {
