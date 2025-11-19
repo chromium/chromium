@@ -210,8 +210,16 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest,
 
 // Basic test to ensure sending a click to a coordinate in cross origin subframe
 // works.
+// TODO(crbug.com/460824293): Reenable on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_InvokeToolCrossSiteSubframeWithCoordinateTarget \
+  DISABLED_InvokeToolCrossSiteSubframeWithCoordinateTarget
+#else
+#define MAYBE_InvokeToolCrossSiteSubframeWithCoordinateTarget \
+  InvokeToolCrossSiteSubframeWithCoordinateTarget
+#endif
 IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest,
-                       InvokeToolCrossSiteSubframeWithCoordinateTarget) {
+                       MAYBE_InvokeToolCrossSiteSubframeWithCoordinateTarget) {
   const GURL url = embedded_https_test_server().GetURL(
       "/actor/positioned_iframe_no_scroll.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));

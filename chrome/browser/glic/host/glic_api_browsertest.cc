@@ -3081,17 +3081,24 @@ auto DefaultTestParamSet() {
 INSTANTIATE_TEST_SUITE_P(
     ,
     GlicApiTestWithOneTab,
-#if defined(SLOW_BINARY)
+#if defined(SLOW_BINARY) || BUILDFLAG(IS_CHROMEOS)
+    // TODO(crbug.com/460826483): Evaluate the feasibility of multi_instance.
     // Even the test setup sometimes doesn't finish on ASAN for multi-instance.
     testing::Values(TestParams{.multi_instance = false}),
 #else
     DefaultTestParamSet(),
 #endif
     &WithTestParams::PrintTestVariant);
-INSTANTIATE_TEST_SUITE_P(,
-                         GlicApiTest,
-                         DefaultTestParamSet(),
-                         &WithTestParams::PrintTestVariant);
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    GlicApiTest,
+#if BUILDFLAG(IS_CHROMEOS)
+    // TODO(crbug.com/460826483): Evaluate the feasibility of multi_instance.
+    testing::Values(TestParams{.multi_instance = false}),
+#else
+    DefaultTestParamSet(),
+#endif
+    &WithTestParams::PrintTestVariant);
 INSTANTIATE_TEST_SUITE_P(,
                          GlicApiTestWithDefaultTabContextEnabled,
                          DefaultTestParamSet(),

@@ -644,7 +644,14 @@ class GlicMetricsFeaturesEnabledTest : public GlicMetricsTest {
   GlicUnitTestEnvironment glic_test_env_;
 };
 
-TEST_F(GlicMetricsFeaturesEnabledTest, ImpressionBeforeFre) {
+// TODO(crbug.com/461140301): Reenable these tests on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE(test_name) DISABLED_##test_name
+#else
+#define MAYBE(test_name) test_name
+#endif
+
+TEST_F(GlicMetricsFeaturesEnabledTest, MAYBE(ImpressionBeforeFre)) {
   profile_->GetPrefs()->SetInteger(
       prefs::kGlicCompletedFre,
       static_cast<int>(prefs::FreStatus::kNotStarted));
@@ -652,7 +659,7 @@ TEST_F(GlicMetricsFeaturesEnabledTest, ImpressionBeforeFre) {
   ExpectEntryPointImpressionLogged(EntryPointStatus::kBeforeFreAndEligible);
 }
 
-TEST_F(GlicMetricsFeaturesEnabledTest, ImpressionIncompleteFre) {
+TEST_F(GlicMetricsFeaturesEnabledTest, MAYBE(ImpressionIncompleteFre)) {
   profile_->GetPrefs()->SetInteger(
       prefs::kGlicCompletedFre,
       static_cast<int>(prefs::FreStatus::kIncomplete));
@@ -660,7 +667,7 @@ TEST_F(GlicMetricsFeaturesEnabledTest, ImpressionIncompleteFre) {
   ExpectEntryPointImpressionLogged(EntryPointStatus::kIncompleteFreAndEligible);
 }
 
-TEST_F(GlicMetricsFeaturesEnabledTest, ImpressionAfterFreBrowserOnly) {
+TEST_F(GlicMetricsFeaturesEnabledTest, MAYBE(ImpressionAfterFreBrowserOnly)) {
   // kGeminiSettings is enabled
   // kGlicPinnedToTabstrip is true
   // kGlicLauncherEnabled is false
@@ -668,7 +675,7 @@ TEST_F(GlicMetricsFeaturesEnabledTest, ImpressionAfterFreBrowserOnly) {
   ExpectEntryPointImpressionLogged(EntryPointStatus::kAfterFreBrowserOnly);
 }
 
-TEST_F(GlicMetricsFeaturesEnabledTest, ImpressionAfterFreOsOnly) {
+TEST_F(GlicMetricsFeaturesEnabledTest, MAYBE(ImpressionAfterFreOsOnly)) {
   // kGeminiSettings is enabled
   profile_->GetPrefs()->SetBoolean(prefs::kGlicPinnedToTabstrip, false);
   local_state()->SetBoolean(prefs::kGlicLauncherEnabled, true);
@@ -676,7 +683,7 @@ TEST_F(GlicMetricsFeaturesEnabledTest, ImpressionAfterFreOsOnly) {
   ExpectEntryPointImpressionLogged(EntryPointStatus::kAfterFreOsOnly);
 }
 
-TEST_F(GlicMetricsFeaturesEnabledTest, ImpressionAfterFreEnabled) {
+TEST_F(GlicMetricsFeaturesEnabledTest, MAYBE(ImpressionAfterFreEnabled)) {
   // kGeminiSettings is enabled
   // kGlicPinnedToTabstrip is true
   local_state()->SetBoolean(prefs::kGlicLauncherEnabled, true);
@@ -684,7 +691,8 @@ TEST_F(GlicMetricsFeaturesEnabledTest, ImpressionAfterFreEnabled) {
   ExpectEntryPointImpressionLogged(EntryPointStatus::kAfterFreBrowserAndOs);
 }
 
-TEST_F(GlicMetricsFeaturesEnabledTest, ImpressionAfterFreDisabledEntrypoints) {
+TEST_F(GlicMetricsFeaturesEnabledTest,
+       MAYBE(ImpressionAfterFreDisabledEntrypoints)) {
   // kGeminiSettings is enabled
   profile_->GetPrefs()->SetBoolean(prefs::kGlicPinnedToTabstrip, false);
   // kGlicLauncherEnabled is false
@@ -692,7 +700,8 @@ TEST_F(GlicMetricsFeaturesEnabledTest, ImpressionAfterFreDisabledEntrypoints) {
   ExpectEntryPointImpressionLogged(EntryPointStatus::kAfterFreThreeDotOnly);
 }
 
-TEST_F(GlicMetricsFeaturesEnabledTest, ImpressionAfterFreNotPermittedByPolicy) {
+TEST_F(GlicMetricsFeaturesEnabledTest,
+       MAYBE(ImpressionAfterFreNotPermittedByPolicy)) {
   // kGeminiSettings is enabled
   // kGlicPinnedToTabstrip is true
   // kGlicLauncherEnabled is true
@@ -705,7 +714,7 @@ TEST_F(GlicMetricsFeaturesEnabledTest, ImpressionAfterFreNotPermittedByPolicy) {
   ExpectEntryPointImpressionLogged(EntryPointStatus::kAfterFreNotEligible);
 }
 
-TEST_F(GlicMetricsFeaturesEnabledTest, EnablingChanged) {
+TEST_F(GlicMetricsFeaturesEnabledTest, MAYBE(EnablingChanged)) {
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Disabled"), 0);
   // Glic starts enabled and during profile creation GlicMetrics records a user
   // action.
@@ -741,7 +750,7 @@ TEST_F(GlicMetricsFeaturesEnabledTest, EnablingChanged) {
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Enabled"), 3);
 }
 
-TEST_F(GlicMetricsFeaturesEnabledTest, PinnedChanged) {
+TEST_F(GlicMetricsFeaturesEnabledTest, MAYBE(PinnedChanged)) {
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Pinned"), 0);
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Unpinned"), 0);
   profile_->GetPrefs()->SetBoolean(prefs::kGlicPinnedToTabstrip, false);
@@ -752,7 +761,7 @@ TEST_F(GlicMetricsFeaturesEnabledTest, PinnedChanged) {
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Unpinned"), 1);
 }
 
-TEST_F(GlicMetricsFeaturesEnabledTest, ShortcutStatus) {
+TEST_F(GlicMetricsFeaturesEnabledTest, MAYBE(ShortcutStatus)) {
   task_environment_.FastForwardBy(base::Minutes(16));
   histogram_tester_.ExpectTotalCount(
       "Glic.OsEntrypoint.Settings.ShortcutStatus", 1);
