@@ -593,7 +593,7 @@ class FakeCanvasResourceProvider : public CanvasResourceProviderSharedImage {
             compositing_mode == CompositingMode::kSupportsDirectCompositing) {
     ON_CALL(*this, Snapshot)
         .WillByDefault([this](ImageOrientation orientation) {
-          return UnacceleratedSnapshot(orientation, FlushReason::kOther);
+          return UnacceleratedSnapshot(orientation);
         });
   }
   ~FakeCanvasResourceProvider() override = default;

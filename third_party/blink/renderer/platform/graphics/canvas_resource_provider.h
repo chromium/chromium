@@ -315,8 +315,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   }
 
   scoped_refptr<UnacceleratedStaticBitmapImage> UnacceleratedSnapshot(
-      ImageOrientation,
-      FlushReason);
+      ImageOrientation);
 
   CanvasResourceProvider(const ResourceProviderType&,
                          gfx::Size size,
