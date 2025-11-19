@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/dom/increment_load_event_delay_count.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/attribution_src_loader.h"
+#include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/frame_owner.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
@@ -516,7 +517,8 @@ void ImageLoader::DoUpdateFromElement(const DOMWrapperWorld* world,
           GetElement()->GetExecutionContext()->IsSecureContext()) {
         resource_request.SetBrowsingTopics(true);
         UseCounter::Count(document, mojom::blink::WebFeature::kTopicsAPIImg);
-        UseCounter::Count(document, mojom::blink::WebFeature::kTopicsAPIAll);
+        Deprecation::CountDeprecation(GetElement()->GetExecutionContext(),
+                                      WebFeature::kTopicsAPIAll);
       }
     }
 

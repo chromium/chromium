@@ -1,0 +1,21 @@
+Tests that deprecation issues are reported for <img browsingtopics>.
+
+Inspector issue: {
+    issue : {
+        code : DeprecationIssue
+        details : {
+            deprecationIssueDetails : {
+                affectedFrame : {
+                    frameId : <string>
+                }
+                sourceCodeLocation : {
+                    columnNumber : 0
+                    lineNumber : -1
+                    url : https://a.test:8443/inspector-protocol/resources/empty.html
+                }
+                type : Topics
+            }
+        }
+    }
+}
+

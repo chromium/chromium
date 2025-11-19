@@ -578,6 +578,14 @@
       milestone: 71,
     },
     {
+      name: "Topics",
+      message: "The Topics API is deprecated and will be removed in a future release.",
+      translation_note: "A deprecation warning shown in the DevTools Issues tab. It's shown when one of the Topics APIs like `document.browsingTopics()`, `<img browsingtopics>`, `<iframe browsingtopics>`, or `fetch(url, {browsingTopics: true})` are used.",
+      web_features: [
+        "kTopicsAPIAll",
+      ],
+    },
+    {
       name: "UnloadHandler",
       message: "Unload event listeners are deprecated and will be removed.",
       translation_note: "A deprecation warning shown in the DevTools Issues tab. It's shown when a listener for the `unload` event is added.",
