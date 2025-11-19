@@ -5,8 +5,19 @@
 module infobar_internals.mojom;
 
 // Types for every infobar that can be triggered from the internals page.
+// Keep these sorted alphabetically.
 enum InfoBarType {
+  // Default browser infobar. Can only be triggered on non-ChromeOS desktop
+  // platforms.
+  [EnableIf=is_win|is_mac|is_linux]
+  kDefaultBrowser,
+
+  // Installer downloader infobar. Can only be triggered on Windows.
+  [EnableIf=is_win_and_chrome_branded]
   kInstallerDownloader,
+
+  // Session restore infobar. Can only be triggered on Win, Mac and Linux.
+  [EnableIf=is_win|is_mac|is_linux]
   kSessionRestore,
 };
 
