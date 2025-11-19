@@ -38,10 +38,6 @@
   width: var(--button-height);
 }
 
-.glow-container.tall {
-  margin-left: 4px;
-}
-
 cr-button#entrypoint.ai-mode-button {
   width: max-content;
 }
@@ -188,7 +184,7 @@ cr-button#entrypoint.ai-mode-button {
   --cr-hover-background-color:
       var(--color-composebox-context-entrypoint-hover-background);
   --cr-icon-button-margin-start: 6px;
-  --icon-block-padding-small: 8px;
+  --icon-block-padding-small: 10px;
   border: initial;
   gap: 4px;
 }
@@ -196,6 +192,7 @@ cr-button#entrypoint.ai-mode-button {
 :host([ntp-next-features-enabled]) #entrypoint {
   --cr-hover-background-color: transparent;
   animation: hover-background-delay 0ms 1850ms linear forwards;
+  --icon-block-padding-small: 8px;
 }
 
 #entrypoint:not([disabled]) {
