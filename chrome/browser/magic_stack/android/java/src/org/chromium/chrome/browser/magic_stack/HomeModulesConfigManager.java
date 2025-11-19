@@ -34,9 +34,12 @@ import java.util.Set;
 @NullMarked
 public class HomeModulesConfigManager {
     /** An interface to use for getting home modules related updates. */
-    interface HomeModulesStateListener {
+    public interface HomeModulesStateListener {
         /** Called when the home modules' specific module type is disabled or enabled. */
-        void onModuleConfigChanged(@ModuleType int moduleType, boolean isEnabled);
+        default void onModuleConfigChanged(@ModuleType int moduleType, boolean isEnabled) {}
+
+        /** Called when the "all cards" switch is disabled or enabled. */
+        default void allCardsConfigChanged(boolean isEnabled) {}
     }
 
     private final SharedPreferencesManager mSharedPreferencesManager;
@@ -70,7 +73,7 @@ public class HomeModulesConfigManager {
      * Adds a {@link HomeModulesStateListener} to receive updates when the home modules state
      * changes.
      */
-    void addListener(HomeModulesStateListener listener) {
+    public void addListener(HomeModulesStateListener listener) {
         mHomepageStateListeners.addObserver(listener);
     }
 
@@ -79,7 +82,7 @@ public class HomeModulesConfigManager {
      *
      * @param listener The listener to remove.
      */
-    void removeListener(HomeModulesStateListener listener) {
+    public void removeListener(HomeModulesStateListener listener) {
         mHomepageStateListeners.removeObserver(listener);
     }
 
@@ -123,6 +126,25 @@ public class HomeModulesConfigManager {
     public void setPrefModuleTypeEnabled(@ModuleType int moduleType, boolean enabled) {
         mSharedPreferencesManager.writeBoolean(getSettingsPreferenceKey(moduleType), enabled);
         notifyModuleTypeUpdated(moduleType, enabled);
+    }
+
+    /** Returns the user preference for whether all cards in the magic stack are enabled. */
+    public boolean getPrefAllCardsEnabled() {
+        return mSharedPreferencesManager.readBoolean(
+                ChromePreferenceKeys.HOME_MODULE_CARDS_ENABLED, true);
+    }
+
+    /**
+     * Sets the user preference for whether all cards in the magic stack are enabled.
+     *
+     * @param enabled True is all cards are enabled.
+     */
+    public void setPrefAllCardsEnabled(boolean enabled) {
+        mSharedPreferencesManager.writeBoolean(
+                ChromePreferenceKeys.HOME_MODULE_CARDS_ENABLED, enabled);
+        for (HomeModulesStateListener listener : mHomepageStateListeners) {
+            listener.allCardsConfigChanged(enabled);
+        }
     }
 
     /**
