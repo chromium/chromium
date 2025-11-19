@@ -138,8 +138,11 @@ public class TextInputState {
                             mSelection.start() - beforeLength,
                             mSelection.end() + afterLength);
         }
+
         return new SurroundingTextInternal(
-                text, beforeLength, mSelection.end() - (mSelection.start() - beforeLength), -1);
+                text, /* selectionStart= */ beforeLength,
+                /* selectionEnd= */ beforeLength + mSelection.end() - mSelection.start(),
+                /* offset= */ mSelection.start() - beforeLength);
     }
 
     @Override
