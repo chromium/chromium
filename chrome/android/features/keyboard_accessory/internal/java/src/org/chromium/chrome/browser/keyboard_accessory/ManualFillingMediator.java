@@ -161,6 +161,13 @@ class ManualFillingMediator
                         updateExtensionStateAndKeyboard(isSoftKeyboardShowing(getContentView()));
                     }
                 }
+
+                @Override
+                public void onContentViewScrollingStateChanged(boolean scrolling) {
+                    if (scrolling && shouldHideOnScroll()) {
+                        hide();
+                    }
+                }
             };
 
     private final FullscreenManager.Observer mFullscreenObserver =
@@ -605,6 +612,15 @@ class ManualFillingMediator
         return isLargeFormFactor()
                 && ChromeFeatureList.isEnabled(
                         ChromeFeatureList.AUTOFILL_ANDROID_DESKTOP_KEYBOARD_ACCESSORY_REVAMP);
+    }
+
+    /**
+     * @return Whether Keyboard Accessory should hide on page scroll.
+     */
+    private boolean shouldHideOnScroll() {
+        return isLargeFormFactor()
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING);
     }
 
     public boolean isLargeFormFactor() {
