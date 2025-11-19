@@ -18258,6 +18258,28 @@
             ]
         }
     ],
+    "PdfSaveToDriveSurvey": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "consumer-trigger-id": "E6hRdJzmG0ugnJ3q1cK0WrDN8qfv",
+                        "enterprise-trigger-id": "NYK9PbTYD0ugnJ3q1cK0Twvu4X5v",
+                        "probability": "1.0"
+                    },
+                    "enable_features": [
+                        "PdfSaveToDriveSurvey"
+                    ]
+                }
+            ]
+        }
+    ],
     "PdfUseShowSaveFilePicker": [
         {
             "platforms": [
