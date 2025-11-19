@@ -24,10 +24,7 @@ export function getHtml(this: ContextualTasksAppElement) {
       </top-toolbar>
   `}
   <webview id="threadFrame" src="${this.threadUrl_}"></webview>
-  <div id="composeboxContainer">
-    <cr-composebox id="composebox">
-    </cr-composebox>
-  </div>
+  <contextual-tasks-composebox></contextual-tasks-composebox>
   <!--_html_template_end_-->`;
 }
 // clang-format on

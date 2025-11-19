@@ -17,6 +17,8 @@ build_webui("build") {
   ts_files = [
     "app.ts",
     "app.html.ts",
+    "composebox.ts",
+    "composebox.html.ts",
     "contextual_tasks_browser_proxy.ts",
     "top_toolbar.ts",
     "top_toolbar.html.ts",
@@ -27,6 +29,7 @@ build_webui("build") {
 
   css_files = [
     "app.css",
+    "composebox.css",
     "top_toolbar.css",
     "internals/app.css",
   ]
@@ -51,6 +54,7 @@ build_webui("build") {
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/cr_components/composebox:build_ts",
+    "//ui/webui/resources/cr_components/search:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",

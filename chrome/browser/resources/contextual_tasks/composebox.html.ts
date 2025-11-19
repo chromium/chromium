@@ -1,0 +1,32 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import '/strings.m.js';
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {ContextualTasksComposeboxElement} from './composebox.js';
+
+// clang-format off
+export function getHtml(this: ContextualTasksComposeboxElement) {
+  return html`<!--_html_template_start_-->
+  <div id="composeboxContainer"
+    style="
+      --composebox-height: ${this.composeboxHeight_}px;
+      --composebox-dropdown-height: ${this.composeboxDropdownHeight_}px;"
+      >
+    <cr-composebox
+      id="composebox"
+      ?autofocus="${false}"
+      carousel-on-top_
+    >
+        <!-- Currently an empty div that has height to force the input textarea to
+            not flow behind the Lens icon. Eventually, this should contain the
+            submit button and the Lens icon. -->
+      <div id="composeboxFooter" slot="footer"></div>
+    </cr-composebox>
+  </div>
+  <!--_html_template_end_-->`;
+}
+// clang-format on

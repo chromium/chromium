@@ -9,21 +9,15 @@
  * #css_wrapper_metadata_end */
 
 :host {
+  background-color: var(--search-background-color);
   display: flex;
   flex-direction: column;
+  height: 100%;
 }
 
 #threadFrame {
   border: none;
   flex-grow: 1;
+  height: 100%;
   overflow: hidden;
-}
-
-#composeboxContainer {
-  background-color: var(--google-grey-50);
-  height: 64px;
-  inset-block-end: 0;
-  min-height: var(--composebox-collapsed-height);
-  position: absolute;
-  width: 100%;
 }

@@ -73,9 +73,11 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksComposeBoxPixelTest, Screenshots) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
 
   // DeepQuery needed to target elements with injected JS.
-  const DeepQuery kComposebox = {"contextual-tasks-app", "#composebox"};
-  const DeepQuery kComposeBoxInput = {"contextual-tasks-app", "#composebox",
-                                      "textarea"};
+  const DeepQuery kComposebox = {"contextual-tasks-app",
+                                 "contextual-tasks-composebox", "#composebox"};
+  const DeepQuery kComposeBoxInput = {"contextual-tasks-app",
+                                      "contextual-tasks-composebox",
+                                      "#composebox", "textarea"};
   const DeepQuery kAiPageWebView = {"contextual-tasks-app", "webview"};
 
   RunTestSequence(
@@ -115,5 +117,5 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksComposeBoxPixelTest, Screenshots) {
       // Take a screenshot of the composebox.
       ScreenshotWebUi(kActiveTab, kComposebox,
                       /*screenshot_name=*/"ContextualTasksComposebox",
-                      /*baseline_cl=*/"7093460"));
+                      /*baseline_cl=*/"7163438"));
 }

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './composebox.js';
 import './top_toolbar.js';
-import '//resources/cr_components/composebox/composebox.js';
 
 import type {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -128,6 +128,7 @@ export class ContextualTasksAppElement extends CrLitElement {
   }
 
   override disconnectedCallback() {
+    super.disconnectedCallback();
     this.listenerIds_.forEach(
         id => this.browserProxy_.callbackRouter.removeListener(id));
     this.$.threadFrame.request.onBeforeSendHeaders.removeListener(
