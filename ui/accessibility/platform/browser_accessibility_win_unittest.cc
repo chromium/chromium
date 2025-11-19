@@ -3708,4 +3708,71 @@ TEST_F(BrowserAccessibilityWinTest, PlatformGetSiblings) {
   EXPECT_EQ(nullptr, polite_node->PlatformGetNextSibling());
 }
 
+TEST_F(BrowserAccessibilityWinTest, OnExtendedPropertiesUsedAfterDestruction) {
+  // Create a simple tree with a text field that has extended properties.
+  AXNodeData text_field;
+  text_field.id = 2;
+  text_field.role = ax::mojom::Role::kTextField;
+  text_field.AddStringAttribute(ax::mojom::StringAttribute::kDescription,
+                                "Test description");
+  text_field.AddIntAttribute(ax::mojom::IntAttribute::kTextSelStart, 0);
+  text_field.AddIntAttribute(ax::mojom::IntAttribute::kTextSelEnd, 5);
+
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids.push_back(2);
+
+  // Create the manager and get the text field node.
+  std::unique_ptr<BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManager::Create(
+          MakeAXTreeUpdateForTesting(root, text_field), node_id_delegate_,
+          test_browser_accessibility_delegate_.get()));
+
+  BrowserAccessibilityComWin* text_field_node =
+      ToBrowserAccessibilityComWin(manager->GetFromID(2));
+  ASSERT_NE(nullptr, text_field_node);
+
+  // Test that methods work normally before destruction
+  // get_endIndex method calls OnExtendedPropertiesUsed with IsDestroyed()
+  // check.
+  LONG end_index = -1;
+  EXPECT_HRESULT_SUCCEEDED(text_field_node->get_endIndex(&end_index));
+
+  // get_description method calls OnExtendedPropertiesUsed with IsDestroyed()
+  // check.
+  base::win::ScopedBstr description;
+  EXPECT_HRESULT_SUCCEEDED(
+      text_field_node->get_description(description.Receive()));
+
+  // For testing only. This method clears the delegate pointer to simulate
+  // destruction.
+  auto* pre_delegate = text_field_node->SetDelegateForTesting(nullptr);
+
+  // These calls should not crash even though the object is destroyed
+  // and OnExtendedPropertiesUsed is called with IsDestroyed() check
+  // in get_endIndex and get_description methods.
+
+  // Test get_endIndex after destruction (calls OnExtendedPropertiesUsed)
+  // This should fail gracefully without crashing.
+  end_index = -1;
+  EXPECT_HRESULT_FAILED(text_field_node->get_endIndex(&end_index));
+
+  // Test get_description after destruction (calls OnExtendedPropertiesUsed)
+  // This should also fail gracefully without crashing.
+  description.Reset();
+  EXPECT_HRESULT_FAILED(
+      text_field_node->get_description(description.Receive()));
+
+  // Additional test: Try other methods that call OnExtendedPropertiesUsed
+  // with proper IsDestroyed() checks to ensure they handle destruction
+  // correctly.
+
+  // nActions method has IsDestroyed() check before OnExtendedPropertiesUsed.
+  LONG n_actions = -1;
+  EXPECT_HRESULT_FAILED(text_field_node->nActions(&n_actions));
+
+  text_field_node->SetDelegateForTesting(pre_delegate);
+}
+
 }  // namespace ui

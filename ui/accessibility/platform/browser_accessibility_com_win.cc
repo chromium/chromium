@@ -382,6 +382,9 @@ IFACEMETHODIMP BrowserAccessibilityComWin::scrollSubstringTo(
     IA2ScrollType scroll_type) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("scrollSubstringTo");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_SCROLL_SUBSTRING_TO);
+  if (IsDestroyed()) {
+    return E_FAIL;
+  }
   // This is a sign that a screen reader is active, so treat it like inline
   // text box usage.
   OnInlineTextBoxesUsed();
@@ -686,6 +689,9 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_startIndex(LONG* index) {
 IFACEMETHODIMP BrowserAccessibilityComWin::get_endIndex(LONG* index) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_endIndex");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_END_INDEX);
+  if (IsDestroyed()) {
+    return E_FAIL;
+  }
   OnExtendedPropertiesUsed();
   LONG start_index;
   // TODO(grt): Call an impl fn rather than the COM method.
@@ -769,6 +775,9 @@ BrowserAccessibilityComWin::get_description(LONG action_index,
                                             BSTR* description) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_description");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_IAACTION_GET_DESCRIPTION);
+  if (IsDestroyed()) {
+    return E_FAIL;
+  }
   OnExtendedPropertiesUsed();
   return E_NOTIMPL;
 }
@@ -1049,6 +1058,9 @@ BrowserAccessibilityComWin::get_nameSpaceURIForID(SHORT name_space_id,
                                                   BSTR* name_space_uri) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_nameSpaceURIForID");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_NAMESPACE_URI_FOR_ID);
+  if (IsDestroyed()) {
+    return E_FAIL;
+  }
   OnExtendedPropertiesUsed();
   return E_NOTIMPL;
 }
@@ -1058,6 +1070,9 @@ BrowserAccessibilityComWin::put_alternateViewMediaTypes(
     BSTR* comma_separated_media_types) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("put_alternateViewMediaTypes");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_PUT_ALTERNATE_VIEW_MEDIA_TYPES);
+  if (IsDestroyed()) {
+    return E_FAIL;
+  }
   OnExtendedPropertiesUsed();
   return E_NOTIMPL;
 }
@@ -1462,6 +1477,9 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_clippedSubstringBounds(
     int* out_height) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_clippedSubstringBounds");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_CLIPPED_SUBSTRING_BOUNDS);
+  if (IsDestroyed()) {
+    return E_FAIL;
+  }
   OnInlineTextBoxesUsed();
   // TODO(dmazzoni): fully support this API by intersecting the
   // rect with the container's rect.

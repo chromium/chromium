@@ -105,6 +105,10 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeBase : public AXPlatformNode {
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
   void NotifyAccessibilityEvent(ax::mojom::Event event_type) override;
 
+  // For testing.
+  AXPlatformNodeDelegate* SetDelegateForTesting(
+      AXPlatformNodeDelegate* delegate);
+
   // Returns the top-level URL for the active document. This should generally
   // correspond to what would be shown in the Omnibox.
   std::string GetRootURL() const override;
