@@ -125,8 +125,6 @@ void PhishingClassifierDelegate::StartPhishingDetection(
     const GURL& url,
     safe_browsing::mojom::ClientSideDetectionType request_type,
     StartPhishingDetectionCallback callback) {
-  RecordEvent(SBPhishingClassifierEvent::kPhishingDetectionRequested);
-
   if (!callback_.is_null())
     std::move(callback_).Run(mojom::PhishingDetectorResult::CANCELLED,
                              std::nullopt);
@@ -135,6 +133,7 @@ void PhishingClassifierDelegate::StartPhishingDetection(
   last_url_received_from_browser_ = StripRef(url);
   callback_ = std::move(callback);
   request_type_ = request_type;
+  RecordEvent(SBPhishingClassifierEvent::kPhishingDetectionRequested);
   // Start classifying the current page if all conditions are met.
   // See MaybeStartClassification() for details.
   MaybeStartClassification();
