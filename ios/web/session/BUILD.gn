@@ -15,7 +15,6 @@ source_set("session") {
     "//net",
   ]
   sources = [
-    "crw_session_user_data.mm",
     "session_certificate.cc",
     "session_certificate.h",
     "session_certificate_policy_cache_impl.cc",
