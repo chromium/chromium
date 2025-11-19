@@ -142,6 +142,12 @@ HistoryEventRouter::~HistoryEventRouter() = default;
 void HistoryEventRouter::OnURLVisited(
     history::HistoryService* history_service,
     const history::VisitedURLInfo& visited_url_info) {
+  // Filter out 404 visits to prevent them from appearing in the UI and
+  // impacting user journeys.
+  if (visited_url_info.response_code_category ==
+      history::VisitResponseCodeCategory::k404) {
+    return;
+  }
   auto args = OnVisited::Create(GetHistoryItem(visited_url_info.url_row));
   DispatchEvent(profile_, events::HISTORY_ON_VISITED,
                 api::history::OnVisited::kEventName, std::move(args));
