@@ -1254,6 +1254,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "AndroidWindowPopupCustomTabUi",
                         "AndroidWindowPopupLargeScreen",
                         "AndroidWindowPopupPredictFinalBounds",
                         "AndroidWindowPopupResizeAfterSpawn"
