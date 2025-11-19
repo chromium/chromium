@@ -62,10 +62,7 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
 
 @end
 
-@implementation AdaptiveToolbarViewController {
-  // Whether the location bar is currently focused.
-  BOOL _locationBarFocused;
-}
+@implementation AdaptiveToolbarViewController
 
 @dynamic view;
 @synthesize buttonFactory = _buttonFactory;
@@ -247,13 +244,6 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
 
 - (void)setLocationBarHeight:(CGFloat)height {
   [self.view setLocationBarHeight:height];
-}
-
-- (void)setLocationBarFocused:(BOOL)focused {
-  // This is used to prevent updating the location bar container height when
-  // the multiline omnibox is enabled, as it's already handled by the toolbar
-  // height delegate.
-  _locationBarFocused = focused;
 }
 
 #pragma mark - ToolbarConsumer

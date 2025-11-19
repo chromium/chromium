@@ -38,6 +38,10 @@
 @property(nonatomic, strong) ToolbarButtonFactory* buttonFactory;
 // Layout Guide Center.
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
+// Whether the location bar is currently focused. This is used to prevent
+// updating the location bar container height when the multiline omnibox is
+// enabled, as it's already handled by the toolbar height delegate.
+@property(nonatomic, assign) BOOL locationBarFocused;
 // View controller for the location bar containing the omnibox. Nil when the
 // toolbar doesn't have the omnibox.
 @property(nonatomic, weak) UIViewController* locationBarViewController;
@@ -77,8 +81,6 @@
 - (void)IPHHighlightTabGridButton:(BOOL)highlight;
 // Sets the height of the location bar. Used when the omnibox is multiline.
 - (void)setLocationBarHeight:(CGFloat)height;
-// Informs the view controller that the location bar is focused or not.
-- (void)setLocationBarFocused:(BOOL)focused;
 
 @end
 

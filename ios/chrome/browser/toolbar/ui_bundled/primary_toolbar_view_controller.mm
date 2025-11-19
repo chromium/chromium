@@ -305,13 +305,9 @@ BASE_FEATURE(kPrimaryToolbarViewDidLoadUpdateViews,
 }
 
 - (void)setLocationBarHeightExpanded {
-  if (IsMultilineBrowserOmniboxEnabled()) {
-    // With multine omnibox the location bar edit state height is managed by the
-    // toolbar coordinator.
-    self.view.locationBarContainer.layer.cornerRadius =
-        LocationBarHeight(self.traitCollection.preferredContentSizeCategory) /
-        2;
-  } else {
+  // Avoid resetting the location bar height to its steady state when focused
+  // with multiline enabled, since its height may have been adjusted.
+  if (!IsMultilineBrowserOmniboxEnabled() || !self.locationBarFocused) {
     [self setLocationBarContainerHeight:LocationBarHeight(
                                             self.traitCollection
                                                 .preferredContentSizeCategory)];
