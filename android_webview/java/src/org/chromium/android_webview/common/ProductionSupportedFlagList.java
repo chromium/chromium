@@ -927,9 +927,6 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.FENCED_FRAMES_API_CHANGES,
                 "Enable Fenced Frames HTML Element extra APIs."),
         Flag.baseFeature(
-                AwFeatures.WEBVIEW_SHORT_CIRCUIT_SHOULD_INTERCEPT_REQUEST,
-                "Short circuit shouldInterceptRequest calls when they're not overridden."),
-        Flag.baseFeature(
                 BlinkFeatures.MEMORY_SAVER_MODE_RENDER_TUNING,
                 "Enables v8 memory saver mode on low memory thresholds."),
         Flag.baseFeature(

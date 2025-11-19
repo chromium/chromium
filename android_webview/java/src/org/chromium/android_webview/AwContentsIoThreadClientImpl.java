@@ -43,10 +43,6 @@ class AwContentsIoThreadClientImpl extends AwContentsIoThreadClient {
     @Override
     @Nullable
     public ShouldInterceptRequestMediator getShouldInterceptRequestMediator(String url) {
-        if (mShouldInterceptRequestMediator.canSkipShouldInterceptRequest(url)) {
-            return null;
-        }
-
         return mShouldInterceptRequestMediator;
     }
 

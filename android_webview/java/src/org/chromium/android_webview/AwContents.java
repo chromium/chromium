@@ -1075,7 +1075,6 @@ public class AwContents implements SmartClipProvider {
             String defaultVideoPosterUrl =
                     mDefaultVideoPosterRequestHandler.getDefaultVideoPosterUrl();
             mSettings.setDefaultVideoPosterUrl(defaultVideoPosterUrl);
-            mShouldInterceptRequestMediator.setNoSkipUrl(defaultVideoPosterUrl);
             mScrollOffsetManager =
                     dependencyFactory.createScrollOffsetManager(
                             new AwScrollOffsetManagerDelegate());

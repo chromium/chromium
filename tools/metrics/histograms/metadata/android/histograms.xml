@@ -8494,10 +8494,7 @@ chromium-metrics-reviews@google.com.
     Not all requests will result in the callback being invoked, and thus the
     histogram will not be emitted in these cases. Some non-exhaustive edge cases
     include post-redirect requests not invoking the callback, and callbacks
-    being triggered by non-network requests, such as data URIs. Note also that
-    the callback invocation will be skipped if the embedding application has not
-    implemented the callback and the
-    &quot;WebViewShortCircuitShouldInterceptRequest&quot; feature is enabled.
+    being triggered by non-network requests, such as data URIs.
 
     This histogram was added in M116. Prior milestones logged
     &quot;Android.WebView.ShouldInterceptRequest.InterceptionType2&quot;,

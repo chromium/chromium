@@ -149,13 +149,6 @@ BASE_FEATURE(kWebViewWebauthn, base::FEATURE_ENABLED_BY_DEFAULT);
 // enabled.
 BASE_FEATURE(kWebViewRenderDocument, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, if the developer hasn't overridden shouldInterceptRequest
-// (or provided the async version), we short circuit (return no response)
-// on the IO thread instead of calling the (empty) method on a background
-// thread.
-BASE_FEATURE(kWebViewShortCircuitShouldInterceptRequest,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, WebView disables MSAA and doesn't auto sharpen mip-mapped
 // textures on very large screen devices (such as TVs). The exact criteria for
 // what qualifies for this can be found in AwGrContextOptionsProvider.java.
