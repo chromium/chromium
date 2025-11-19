@@ -1,0 +1,49 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/lens/lens_results_panel_router.h"
+
+#include "chrome/browser/ui/lens/lens_search_controller.h"
+#include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
+
+namespace lens {
+
+LensResultsPanelRouter::LensResultsPanelRouter(
+    LensSearchController* lens_search_controller)
+    : lens_search_controller_(lens_search_controller) {}
+
+LensResultsPanelRouter::~LensResultsPanelRouter() = default;
+
+bool LensResultsPanelRouter::IsEntryShowing() {
+  return is_off() ? false : lens_side_panel_coordinator()->IsEntryShowing();
+}
+
+SidePanelEntry::PanelType LensResultsPanelRouter::GetPanelType() const {
+  return is_off() ? SidePanelEntry::PanelType::kContent
+                  : lens_side_panel_coordinator()->GetPanelType();
+}
+
+void LensResultsPanelRouter::FocusSearchbox() {
+  if (is_off()) {
+    return;
+  }
+  lens_side_panel_coordinator()->FocusSearchbox();
+}
+
+void LensResultsPanelRouter::OnOverlayShown() {
+  if (is_off()) {
+    return;
+  }
+  lens_side_panel_coordinator()->SetIsOverlayShowing(true);
+}
+
+void LensResultsPanelRouter::OnOverlayHidden() {
+  if (is_off()) {
+    return;
+  }
+  lens_side_panel_coordinator()->SetIsOverlayShowing(false);
+}
+
+}  // namespace lens

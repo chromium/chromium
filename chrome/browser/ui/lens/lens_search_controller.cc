@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/lens/lens_composebox_controller.h"
+#include "chrome/browser/ui/lens/lens_results_panel_router.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_event_handler.h"
 #include "chrome/browser/ui/lens/lens_overlay_image_helper.h"
@@ -565,6 +566,11 @@ LensSearchController::lens_overlay_side_panel_coordinator() {
   return lens_overlay_side_panel_coordinator_.get();
 }
 
+lens::LensResultsPanelRouter* LensSearchController::results_panel_router() {
+  CheckInitialized(initialized_);
+  return results_panel_router_.get();
+}
+
 lens::LensSearchboxController*
 LensSearchController::lens_searchbox_controller() {
   CheckInitialized(initialized_);
@@ -695,6 +701,10 @@ void LensSearchController::StartLensSession(
   // initialize any data needed for the searchbox.
   lens_searchbox_controller_->OnSessionStart(suppress_contextualization);
 
+  // Set the results panel delegate to the side panel coordinator owned by
+  // this controller.
+  results_panel_router_ = std::make_unique<lens::LensResultsPanelRouter>(this);
+
   // Reset session state.
   hats_triggered_in_session_ = false;
 }
@@ -769,6 +779,7 @@ void LensSearchController::CloseLensPart2(
   lens_permission_bubble_controller_.reset();
   lens_contextualization_controller_->ResetState();
   lens_overlay_side_panel_coordinator_->DeregisterEntryAndCleanup();
+  results_panel_router_.reset();
 
   // Cleanup the query controller after the overlay controller to prevent
   // dangling ptrs.

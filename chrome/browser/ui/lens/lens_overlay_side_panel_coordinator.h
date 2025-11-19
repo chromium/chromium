@@ -228,6 +228,9 @@ class LensOverlaySidePanelCoordinator
   // Suppresses the ghost loader in the side panel.
   void SuppressGhostLoader();
 
+  // Focuses the searchbox in the side panel.
+  virtual void FocusSearchbox();
+
   /////////////////////////////////////////////////////////////////////////////
   // Test only methods.
   /////////////////////////////////////////////////////////////////////////////
@@ -291,9 +294,6 @@ class LensOverlaySidePanelCoordinator
 
   // Focuses the results iframe in the side panel.
   virtual void FocusResultsFrame();
-
-  // Focuses the composebox in the side panel.
-  virtual void FocusSearchbox();
 
  private:
   // Data class for constructing the side panel and storing side panel state for

@@ -26,6 +26,7 @@ class LensOverlayGen204Controller;
 class LensOverlaySidePanelCoordinator;
 class LensPermissionBubbleController;
 class LensComposeboxController;
+class LensResultsPanelRouter;
 class LensSearchboxController;
 class LensSearchContextualizationController;
 }  // namespace lens
@@ -213,6 +214,9 @@ class LensSearchController {
 
   // Returns the LensOverlaySidePanelCoordinator.
   lens::LensOverlaySidePanelCoordinator* lens_overlay_side_panel_coordinator();
+
+  // Returns the LensResultsPanelRouter.
+  lens::LensResultsPanelRouter* results_panel_router();
 
   // Returns the LensSearchboxController.
   lens::LensSearchboxController* lens_searchbox_controller();
@@ -456,6 +460,9 @@ class LensSearchController {
   // The side panel coordinator for the Lens Search feature on this tab.
   std::unique_ptr<lens::LensOverlaySidePanelCoordinator>
       lens_overlay_side_panel_coordinator_;
+
+  // The results side panel router used by this controller.
+  std::unique_ptr<lens::LensResultsPanelRouter> results_panel_router_;
 
   // The searchbox controller for the Lens Search feature on this tab.
   // TODO(crbug.com/413138792): Hook up this controller to handle searchbox

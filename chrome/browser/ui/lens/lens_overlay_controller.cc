@@ -51,6 +51,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_untrusted_ui.h"
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
 #include "chrome/browser/ui/lens/lens_preselection_bubble.h"
+#include "chrome/browser/ui/lens/lens_results_panel_router.h"
 #include "chrome/browser/ui/lens/lens_search_contextualization_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/lens/lens_search_feature_flag_utils.h"
@@ -2573,13 +2574,13 @@ void LensOverlayController::HandleStartQueryResponse(
 void LensOverlayController::HandleInteractionURLResponse(
     lens::proto::LensOverlayUrlResponse response) {
   MaybeOpenSidePanel();
-  auto* results_side_panel_coordinator = GetLensOverlaySidePanelCoordinator();
+  auto* results_panel_router = GetLensResultsPanelRouter();
 
   if (use_aim_for_visual_search_ &&
       IsVisualSelectionType(lens_selection_type_) &&
       lens::features::GetEnableLensButtonInSearchbox()) {
     // Focus the side panel contents so the composebox can be properly focused.
-    results_side_panel_coordinator->FocusSearchbox();
+    results_panel_router->FocusSearchbox();
 
     // The latest vsint is stored in the query controller. By returning here,
     // the URL will not be loaded into the side panel. Instead, when the user
@@ -2587,6 +2588,12 @@ void LensOverlayController::HandleInteractionURLResponse(
     return;
   }
 
+  // This will become a no-op when the Next panel is enabled (as the
+  // `side_panel_page_` in the Lens overlay side panel coordinator will not be
+  // bound). In the future, the Lens query controller router (or similar) will
+  // notify the side panel that it should load the interaction URL without
+  // involving the overlay controller at all.
+  auto* results_side_panel_coordinator = GetLensOverlaySidePanelCoordinator();
   results_side_panel_coordinator->SetLatestPageUrlWithResponse(
       GURL(response.page_url()));
   results_side_panel_coordinator->LoadURLInResultsFrame(GURL(response.url()));
@@ -2891,7 +2898,12 @@ void LensOverlayController::UpdateEntryPointsState() {
 }
 
 void LensOverlayController::NotifyIsOverlayShowing(bool is_showing) {
-  GetLensOverlaySidePanelCoordinator()->SetIsOverlayShowing(is_showing);
+  auto* results_panel_router = GetLensResultsPanelRouter();
+  if (is_showing) {
+    results_panel_router->OnOverlayShown();
+  } else {
+    results_panel_router->OnOverlayHidden();
+  }
 }
 
 void LensOverlayController::OnPdfPartialPageTextRetrieved(
@@ -3020,7 +3032,7 @@ void LensOverlayController::SetOverlayWebViewOpacity(float opacity) {
 }
 
 bool LensOverlayController::IsResultsSidePanelShowing() {
-  return GetLensOverlaySidePanelCoordinator()->IsEntryShowing();
+  return GetLensResultsPanelRouter()->IsEntryShowing();
 }
 
 void LensOverlayController::MaybeGrantLensOverlayPermissions() {
@@ -3041,6 +3053,11 @@ LensOverlayController::GetLensSearchboxController() {
 lens::LensOverlaySidePanelCoordinator*
 LensOverlayController::GetLensOverlaySidePanelCoordinator() {
   return lens_search_controller_->lens_overlay_side_panel_coordinator();
+}
+
+lens::LensResultsPanelRouter*
+LensOverlayController::GetLensResultsPanelRouter() {
+  return lens_search_controller_->results_panel_router();
 }
 
 lens::LensSearchContextualizationController*

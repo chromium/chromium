@@ -76,6 +76,7 @@ class LensSessionMetricsLogger;
 class LensOverlayQueryController;
 class LensOverlaySidePanelCoordinator;
 class LensPermissionBubbleController;
+class LensResultsPanelRouter;
 class LensSearchboxController;
 class LensSearchContextualizationController;
 struct SearchQuery;
@@ -976,6 +977,9 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
 
   // Shorthand to grab the LensOverlaySidePanelCoordinator for this instance of Lens.
   lens::LensOverlaySidePanelCoordinator* GetLensOverlaySidePanelCoordinator();
+
+  // Shorthand to grab the LensResultsPanelRouter for this instance of Lens.
+  lens::LensResultsPanelRouter* GetLensResultsPanelRouter();
 
   // Shorthand to grab the LensSearchContextualizationController for this
   // instance of Lens.

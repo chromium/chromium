@@ -660,14 +660,16 @@ void LensOverlaySidePanelCoordinator::LoadURLInResultsFrame(const GURL& url) {
 }
 
 void LensOverlaySidePanelCoordinator::NotifyPageContentUpdated() {
+  if (!side_panel_page_) {
+    return;
+  }
+
   auto page_content_type =
       StringMimeTypeToMojoPageContentType(GetLensOverlayController()
                                               ->GetTabInterface()
                                               ->GetContents()
                                               ->GetContentsMimeType());
-  if (side_panel_page_) {
-    side_panel_page_->PageContentTypeChanged(page_content_type);
-  }
+  side_panel_page_->PageContentTypeChanged(page_content_type);
 }
 
 void LensOverlaySidePanelCoordinator::MaybeSetSidePanelShowErrorPage(
@@ -761,17 +763,17 @@ void LensOverlaySidePanelCoordinator::FocusResultsFrame() {
   }
 }
 
+void LensOverlaySidePanelCoordinator::SuppressGhostLoader() {
+  if (side_panel_page_) {
+    side_panel_page_->SuppressGhostLoader();
+  }
+}
+
 void LensOverlaySidePanelCoordinator::FocusSearchbox() {
   auto* web_contents = GetSidePanelWebContents();
   if (web_contents && side_panel_page_) {
     web_contents->Focus();
     side_panel_page_->FocusSearchbox();
-  }
-}
-
-void LensOverlaySidePanelCoordinator::SuppressGhostLoader() {
-  if (side_panel_page_) {
-    side_panel_page_->SuppressGhostLoader();
   }
 }
 
