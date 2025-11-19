@@ -6,6 +6,8 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
+#include <string>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -111,7 +113,7 @@ class ChromeSigninProxyingURLLoaderFactoryTest : public testing::Test {
 
   network::TestURLLoaderFactory* factory() { return &test_factory_; }
   network::SimpleURLLoader* loader() { return loader_.get(); }
-  base::test::TestFuture<std::unique_ptr<std::string>>&
+  base::test::TestFuture<std::optional<std::string>>&
   request_complete_future() {
     return request_complete_future_;
   }
@@ -127,7 +129,7 @@ class ChromeSigninProxyingURLLoaderFactoryTest : public testing::Test {
   std::unique_ptr<ProxyingURLLoaderFactory> proxying_factory_;
   network::TestURLLoaderFactory test_factory_;
   mojo::Receiver<network::mojom::URLLoaderFactory> test_factory_receiver_;
-  base::test::TestFuture<std::unique_ptr<std::string>> request_complete_future_;
+  base::test::TestFuture<std::optional<std::string>> request_complete_future_;
 };
 
 TEST_F(ChromeSigninProxyingURLLoaderFactoryTest, NoModification) {
@@ -138,7 +140,8 @@ TEST_F(ChromeSigninProxyingURLLoaderFactoryTest, NoModification) {
   base::WeakPtr<MockDelegate> delegate = StartRequest(std::move(request));
 
   ASSERT_TRUE(request_complete_future().Wait());
-  std::string* response_body = request_complete_future().Get().get();
+  const std::optional<std::string>& response_body =
+      request_complete_future().Get();
   EXPECT_EQ(net::OK, loader()->NetError());
   ASSERT_TRUE(response_body);
   EXPECT_EQ("Hello.", *response_body);
@@ -287,7 +290,8 @@ TEST_F(ChromeSigninProxyingURLLoaderFactoryTest, ModifyHeaders) {
 
   // Wait for the request to complete and check the response.
   ASSERT_TRUE(request_complete_future().Wait());
-  std::string* response_body = request_complete_future().Get().get();
+  const std::optional<std::string>& response_body =
+      request_complete_future().Get();
   EXPECT_EQ(net::OK, loader()->NetError());
   const network::mojom::URLResponseHead* response_head =
       loader()->ResponseInfo();
@@ -363,7 +367,8 @@ TEST_F(ChromeSigninProxyingURLLoaderFactoryTest, RequestKeepAlive) {
   factory()->AddResponse("https://google.com", "Hello.");
 
   ASSERT_TRUE(request_complete_future().Wait());
-  std::string* response_body = request_complete_future().Get().get();
+  const std::optional<std::string>& response_body =
+      request_complete_future().Get();
   EXPECT_EQ(net::OK, loader()->NetError());
   ASSERT_TRUE(response_body);
   EXPECT_EQ("Hello.", *response_body);

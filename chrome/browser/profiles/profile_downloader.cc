@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -226,7 +227,7 @@ void ProfileDownloader::FetchImageData() {
 }
 
 void ProfileDownloader::OnURLLoaderComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   int response_code = -1;
   if (simple_loader_->ResponseInfo() && simple_loader_->ResponseInfo()->headers)
@@ -235,7 +236,7 @@ void ProfileDownloader::OnURLLoaderComplete(
   if (response_body) {
     simple_loader_.reset();
     DVLOG(1) << "Decoding the image...";
-    ImageDecoder::Start(this, std::move(*response_body));
+    ImageDecoder::Start(this, std::move(response_body).value());
   } else if (response_code == net::HTTP_NOT_FOUND) {
     simple_loader_.reset();
     VLOG(1) << "Got 404, using default picture...";

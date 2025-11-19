@@ -162,7 +162,7 @@ void WebstoreDataFetcher::OnResponseStarted(
 }
 
 void WebstoreDataFetcher::OnFetchItemSnippetResponseReceived(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   if (!response_body) {
     delegate_->OnWebstoreRequestFailure(id_);
     return;

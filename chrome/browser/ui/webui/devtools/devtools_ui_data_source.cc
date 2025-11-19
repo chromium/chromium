@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/webui/devtools/devtools_ui_data_source.h"
 
 #include <list>
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/command_line.h"
@@ -376,7 +378,7 @@ void DevToolsDataSource::StartFileRequest(const std::string& path,
 
 void DevToolsDataSource::OnLoadComplete(
     std::list<PendingRequest>::iterator request_iter,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   GotDataCallback callback = std::move(request_iter->callback);
   pending_requests_.erase(request_iter);
   std::move(callback).Run(response_body

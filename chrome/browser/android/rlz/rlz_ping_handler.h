@@ -8,6 +8,7 @@
 #include <jni.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/android/scoped_java_ref.h"
@@ -45,7 +46,7 @@ class RlzPingHandler {
             const base::android::JavaParamRef<jobject>& j_callback);
 
  private:
-  void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body);
+  void OnSimpleLoaderComplete(std::optional<std::string> response_body);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;

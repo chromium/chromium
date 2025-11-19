@@ -181,7 +181,7 @@ class WebApkInstaller {
   // Called with the contents of the update request file.
   void OnReadUpdateRequest(std::unique_ptr<std::string> update_request);
 
-  void OnURLLoaderComplete(std::unique_ptr<std::string> response_body);
+  void OnURLLoaderComplete(std::optional<std::string> response_body);
 
   // Called with the computed Murmur2 hash for the icons.
   void OnGotIconMurmur2Hashes(

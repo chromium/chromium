@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_CWS_INFO_SERVICE_H_
 
 #include <optional>
+#include <string>
 
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
@@ -155,7 +156,7 @@ class CWSInfoService : public CWSInfoServiceInterface, public KeyedService {
   void SendRequest();
 
   // Handles the server response associated with a single network request.
-  void OnResponseReceived(std::unique_ptr<std::string> response);
+  void OnResponseReceived(std::optional<std::string> response);
 
   // Saves data to prefs if the response data is different from the saved data.
   // Returns true if the response data is saved, false otherwise.

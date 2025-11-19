@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/check_op.h"
@@ -62,19 +64,18 @@ void CloseDictionary(base::File file) {
 
 // Saves |data| to file at |path|. Returns true on successful save, otherwise
 // returns false.
-bool SaveDictionaryData(std::unique_ptr<std::string> data,
-                        const base::FilePath& path) {
+bool SaveDictionaryData(std::string data, const base::FilePath& path) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
-  if (!base::WriteFile(path, *data)) {
+  if (!base::WriteFile(path, data)) {
     bool success = false;
 #if BUILDFLAG(IS_WIN)
     base::FilePath dict_dir;
     base::PathService::Get(chrome::DIR_USER_DATA, &dict_dir);
     base::FilePath fallback_file_path =
         dict_dir.Append(path.BaseName());
-    if (base::WriteFile(fallback_file_path, *data)) {
+    if (base::WriteFile(fallback_file_path, data)) {
       success = true;
     }
 #endif
@@ -221,7 +222,7 @@ bool SpellcheckHunspellDictionary::IsDownloadFailure() {
 }
 
 void SpellcheckHunspellDictionary::OnSimpleLoaderComplete(
-    std::unique_ptr<std::string> data) {
+    std::optional<std::string> data) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   bool is_success = simple_loader_->NetError() == net::OK;
@@ -258,7 +259,7 @@ void SpellcheckHunspellDictionary::OnSimpleLoaderComplete(
 
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&SaveDictionaryData, std::move(data),
+      base::BindOnce(&SaveDictionaryData, std::move(data).value(),
                      dictionary_file_.path),
       base::BindOnce(&SpellcheckHunspellDictionary::SaveDictionaryDataComplete,
                      weak_ptr_factory_.GetWeakPtr()));

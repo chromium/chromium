@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+#include <string>
+
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -310,7 +313,7 @@ IN_PROC_BROWSER_TEST_F(HangingPacRequestProxyScriptBrowserTest, Shutdown) {
       storage_partition->GetURLLoaderFactoryForBrowserProcess();
   simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory.get(),
-      base::BindOnce([](std::unique_ptr<std::string> body) {
+      base::BindOnce([](std::optional<std::string> body) {
         ADD_FAILURE() << "This request should never complete.";
       }));
 

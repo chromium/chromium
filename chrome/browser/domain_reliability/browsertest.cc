@@ -4,6 +4,7 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/test/test_future.h"
@@ -312,7 +313,10 @@ IN_PROC_BROWSER_TEST_F(DomainReliabilityBrowserTest, RequestAtShutdown) {
   auto* storage_partition = browser()->profile()->GetDefaultStoragePartition();
   simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       storage_partition->GetURLLoaderFactoryForBrowserProcess().get(),
-      base::BindOnce([](std::unique_ptr<std::string> body) {}));
+      // TODO(crbug.com/40258809): Can simplify this to `base::DoNothing()` once
+      // the version of DownloadToStringOfUnboundedSizeUntilCrashAndDie() that
+      // takes a BodyAsStringCallbackDeprecated is removed.
+      base::DoNothingAs<void(std::optional<std::string>)>());
 
   simple_loader.release();
 }

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/android/rlz/rlz_ping_handler.h"
 
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/android/callback_android.h"
@@ -129,7 +131,7 @@ void RlzPingHandler::Ping(
 }
 
 void RlzPingHandler::OnSimpleLoaderComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   bool valid = false;
   if (!response_body) {
     int response_code = -1;

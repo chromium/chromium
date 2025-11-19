@@ -230,7 +230,7 @@ class WebRtcLogUploader {
 
   void OnSimpleLoaderComplete(SimpleURLLoaderList::iterator it,
                               UploadDoneData upload_done_data,
-                              std::unique_ptr<std::string> response_body);
+                              std::optional<std::string> response_body);
 
   SEQUENCE_CHECKER(main_sequence_checker_);
 

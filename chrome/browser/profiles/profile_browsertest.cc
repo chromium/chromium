@@ -7,6 +7,8 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
+#include <string>
 
 #include "base/check.h"
 #include "base/command_line.h"
@@ -135,7 +137,7 @@ class SimpleURLLoaderHelper {
   SimpleURLLoaderHelper(const SimpleURLLoaderHelper&) = delete;
   SimpleURLLoaderHelper& operator=(const SimpleURLLoaderHelper&) = delete;
 
-  void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body) {
+  void OnSimpleLoaderComplete(std::optional<std::string> response_body) {
     EXPECT_EQ(expected_error_code_, loader_->NetError());
     is_complete_ = true;
     run_loop_.Quit();

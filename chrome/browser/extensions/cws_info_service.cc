@@ -4,6 +4,8 @@
 
 #include "chrome/browser/extensions/cws_info_service.h"
 
+#include <optional>
+#include <string>
 #include <string_view>
 
 #include "base/containers/contains.h"
@@ -448,7 +450,7 @@ void CWSInfoService::SendRequest() {
   info_requests_++;
 }
 
-void CWSInfoService::OnResponseReceived(std::unique_ptr<std::string> response) {
+void CWSInfoService::OnResponseReceived(std::optional<std::string> response) {
   CHECK(url_loader_);
   RecordNetworkHistograms(url_loader_.get());
 

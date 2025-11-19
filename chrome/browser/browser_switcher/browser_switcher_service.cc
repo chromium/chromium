@@ -168,7 +168,7 @@ network::mojom::URLLoaderFactory* XmlDownloader::GetURLLoaderFactoryForURL(
 }
 
 void XmlDownloader::ParseXml(RulesetSource* source,
-                             std::unique_ptr<std::string> bytes) {
+                             std::optional<std::string> bytes) {
   if (!bytes) {
     DoneParsing(source, ParsedXml({}, {}, "could not fetch XML"));
     return;

@@ -106,7 +106,7 @@ void BrandcodeConfigFetcher::SetCallback(FetchCallback callback) {
 }
 
 void BrandcodeConfigFetcher::OnSimpleLoaderComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   const bool is_valid_response =
       response_body && simple_url_loader_->ResponseInfo() &&
       simple_url_loader_->ResponseInfo()->mime_type == "text/xml";
