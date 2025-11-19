@@ -8,7 +8,8 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {PageManager, PageManagerObserver} from './page_manager.js';
+import {PageManager} from './page_manager.js';
+import type {PageManagerObserver} from './page_manager.js';
 
 interface SidebarItem {
   pageName: string;
@@ -18,7 +19,7 @@ interface SidebarItem {
 /**
  * A side menu that lists the currently navigable pages.
  */
-export class Sidebar extends PageManagerObserver {
+export class Sidebar implements PageManagerObserver {
   private sidebarDiv_: HTMLElement;
   private sidebarContent_: HTMLElement;
   private sidebarList_: HTMLElement;
@@ -26,7 +27,6 @@ export class Sidebar extends PageManagerObserver {
 
   /** @param sidebarDiv The div corresponding to the sidebar. */
   constructor(sidebarDiv: HTMLElement) {
-    super();
     this.sidebarDiv_ = sidebarDiv;
     this.sidebarContent_ =
         this.sidebarDiv_.querySelector<HTMLElement>('.sidebar-content')!;
@@ -103,11 +103,13 @@ export class Sidebar extends PageManagerObserver {
    * Called when a page is navigated to.
    * @param path The path of the page being visited.
    */
-  override updateHistory(path: string) {
+  updateHistory(path: string) {
     this.sidebarContent_.querySelectorAll<HTMLElement>('li').forEach((item) => {
       item.classList.toggle('selected', item.dataset['pageName'] === path);
     });
   }
+
+  updateTitle(_title: string) {}
 
   /**
    * Switches the page based on which sidebar list button was clicked.

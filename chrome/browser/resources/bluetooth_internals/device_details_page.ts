@@ -231,3 +231,10 @@ export class DeviceDetailsPage extends Page {
     }));
   }
 }
+
+declare global {
+  interface HTMLElementEventMap {
+    'infochanged': CustomEvent<{info: DeviceInfo}>;
+    'forgetpressed': CustomEvent<{address: string}>;
+  }
+}

@@ -23,13 +23,13 @@ build_webui("build") {
     "object_fieldset.ts",
     "service_list_item.ts",
     "snackbar.ts",
-    "value_control.js",
+    "value_control.ts",
   ]
 
   ts_files = [
     "adapter_broker.ts",
     "adapter_page.ts",
-    "bluetooth_internals.js",
+    "bluetooth_internals.ts",
     "characteristic_list.ts",
     "debug_log_page.ts",
     "descriptor_list.ts",
@@ -40,7 +40,7 @@ build_webui("build") {
     "devices_page.ts",
     "main.ts",
     "page.ts",
-    "page_manager.js",
+    "page_manager.ts",
     "service_list.ts",
     "sidebar.ts",
   ]

@@ -13,35 +13,31 @@ import {Page} from './page.js';
  * the path to open the correct hierarchy of pages.
  */
 export class PageManager {
-  constructor() {
-    /**
-     * True if page is served from a dialog.
-     * @type {boolean}
-     */
-    this.isDialog = false;
+  /**
+   * True if page is served from a dialog.
+   */
+  isDialog: boolean = false;
 
-    /**
-     * Root pages. Maps lower-case page names to the respective page object.
-     * @type {!Map<string, !Page>}
-     */
-    this.registeredPages = new Map();
+  /**
+   * Root pages. Maps lower-case page names to the respective page object.
+   */
+  registeredPages: Map<string, Page> = new Map();
 
-    /**
-     * Observers will be notified when opening and closing overlays.
-     * @private {!Array<!PageManagerObserver>}
-     */
-    this.observers_ = [];
+  /**
+   * Observers will be notified when opening and closing overlays.
+   */
+  private observers_: PageManagerObserver[] = [];
 
-    /** @private {?Page} */
-    this.defaultPage_ = null;
-  }
+  private defaultPage_: Page|null = null;
+
+  constructor() {}
 
   /**
    * Initializes the complete page.
-   * @param {Page} defaultPage The page to be shown when no
+   * @param defaultPage The page to be shown when no
    *     page is specified in the path.
    */
-  initialize(defaultPage) {
+  initialize(defaultPage: Page) {
     this.defaultPage_ = defaultPage;
 
     FocusOutlineManager.forDocument(document);
@@ -49,51 +45,50 @@ export class PageManager {
 
   /**
    * Registers new page.
-   * @param {!Page} page Page to register.
+   * @param page Page to register.
    */
-  register(page) {
+  register(page: Page) {
     this.registeredPages.set(page.name.toLowerCase(), page);
     page.addEventListener(
-        'page-hash-changed',
-        e => this.onPageHashChanged_(/** @type {!CustomEvent} */ (e)));
+        'page-hash-changed', e => this.onPageHashChanged_(e as CustomEvent));
     page.initializePage();
   }
 
   /**
    * Unregisters an existing page.
-   * @param {!Page} page Page to unregister.
+   * @param page Page to unregister.
    */
-  unregister(page) {
+  unregister(page: Page) {
     this.registeredPages.delete(page.name.toLowerCase());
   }
 
   /**
    * Shows the default page.
-   * @param {boolean=} opt_updateHistory If we should update the history after
+   * @param updateHistory If we should update the history after
    *     showing the page (defaults to true).
    */
-  showDefaultPage(opt_updateHistory) {
+  showDefaultPage(updateHistory?: boolean) {
     assert(
         this.defaultPage_ instanceof Page,
         'PageManager must be initialized with a default page.');
-    this.showPageByName(this.defaultPage_.name, opt_updateHistory);
+    this.showPageByName(this.defaultPage_.name, updateHistory);
   }
 
   /**
    * Shows a registered page.
-   * @param {string} pageName Page name.
-   * @param {boolean=} opt_updateHistory If we should update the history after
+   * @param pageName Page name.
+   * @param updateHistory If we should update the history after
    *     showing the page (defaults to true).
-   * @param {Object=} opt_propertyBag An optional bag of properties including
+   * @param propertyBag An optional bag of properties including
    *     replaceState (if history state should be replaced instead of pushed).
    *     hash (a hash state to attach to the page).
    */
-  showPageByName(pageName, opt_updateHistory, opt_propertyBag) {
-    opt_updateHistory = opt_updateHistory !== false;
-    opt_propertyBag = opt_propertyBag || {};
-
+  showPageByName(pageName: string, updateHistory: boolean = true, propertyBag: {
+    replaceState?: boolean,
+    hash?: string,
+  } = {}) {
     // Find the currently visible root-level page.
-    let rootPage = null;
+    let rootPage: Page|null = null;
     for (const page of this.registeredPages.values()) {
       if (page.visible && !page.parentPage) {
         rootPage = page;
@@ -102,10 +97,8 @@ export class PageManager {
     }
 
     // Find the target page.
-    let targetPage = this.registeredPages.get(pageName.toLowerCase());
-    if (!targetPage) {
-      targetPage = this.defaultPage_;
-    }
+    const targetPage =
+        this.registeredPages.get(pageName.toLowerCase()) ?? this.defaultPage_!;
 
     pageName = targetPage.name.toLowerCase();
     const targetPageWasVisible = targetPage.visible;
@@ -118,7 +111,7 @@ export class PageManager {
     });
 
     // Update the page's hash.
-    targetPage.hash = opt_propertyBag.hash || '';
+    targetPage.hash = propertyBag.hash || '';
 
     // Update visibilities to show only the hierarchy of the target page.
     this.registeredPages.forEach(page => {
@@ -127,8 +120,8 @@ export class PageManager {
     });
 
     // Update the history and current location.
-    if (opt_updateHistory) {
-      this.updateHistoryState_(!!opt_propertyBag.replaceState);
+    if (updateHistory) {
+      this.updateHistoryState_(!!propertyBag.replaceState);
     }
 
     // Update focus if any other control was focused on the previous page,
@@ -159,12 +152,12 @@ export class PageManager {
 
   /**
    * Returns the name of the page from the current path.
-   * @return {string} Name of the page specified by the current path.
+   * @return Name of the page specified by the current path.
    */
-  getPageNameFromPath() {
+  getPageNameFromPath(): string {
     const path = location.pathname;
     if (path.length <= 1) {
-      return this.defaultPage_.name;
+      return this.defaultPage_!.name;
     }
 
     // Skip starting slash and remove trailing slash (if any).
@@ -174,9 +167,9 @@ export class PageManager {
   /**
    * Gets the level of the page. Root pages (e.g., BrowserOptions) are at
    * level 0.
-   * @return {number} How far down this page is from the root page.
+   * @return How far down this page is from the root page.
    */
-  getNestingLevel(page) {
+  getNestingLevel(page: Page): number {
     let level = 0;
     let parent = page.parentPage;
     while (parent) {
@@ -189,12 +182,13 @@ export class PageManager {
   /**
    * Checks whether one page is an ancestor of the other page in terms of
    * subpage nesting.
-   * @param {Page} potentialAncestor Potential ancestor.
-   * @param {Page} potentialDescendent Potential descendent.
-   * @return {boolean} True if |potentialDescendent| is nested under
+   * @param potentialAncestor Potential ancestor.
+   * @param potentialDescendent Potential descendent.
+   * @return True if |potentialDescendent| is nested under
    *     |potentialAncestor|.
    */
-  isAncestorOfPage(potentialAncestor, potentialDescendent) {
+  isAncestorOfPage(potentialAncestor: Page, potentialDescendent: Page):
+      boolean {
     let parent = potentialDescendent.parentPage;
     while (parent) {
       if (parent === potentialAncestor) {
@@ -208,28 +202,26 @@ export class PageManager {
   /**
    * Called when a page's hash changes. If the page is the topmost visible
    * page, the history state is updated.
-   * @param {!CustomEvent} e
    */
-  onPageHashChanged_(e) {
-    const page = /** @type {!Page} */ (e.target);
+  private onPageHashChanged_(e: CustomEvent) {
+    const page = e.target as Page;
     if (page === this.getTopmostVisiblePage()) {
       this.updateHistoryState_(false);
     }
   }
 
   /**
-   * @param {!PageManagerObserver} observer The observer to register.
+   * @param observer The observer to register.
    */
-  addObserver(observer) {
+  addObserver(observer: PageManagerObserver) {
     this.observers_.push(observer);
   }
 
   /**
    * Returns the topmost visible page.
-   * @return {Page}
    * @private
    */
-  getTopmostVisiblePage() {
+  private getTopmostVisiblePage(): Page|null {
     for (const page of this.registeredPages.values()) {
       if (page.visible) {
         return page;
@@ -244,12 +236,12 @@ export class PageManager {
    * visible page with a non-empty title.
    * @private
    */
-  updateTitle_() {
+  private updateTitle_() {
     let page = this.getTopmostVisiblePage();
     while (page) {
       if (page.title) {
-        for (let i = 0; i < this.observers_.length; ++i) {
-          this.observers_[i].updateTitle(page.title);
+        for (const observer of this.observers_) {
+          observer.updateTitle(page.title);
         }
         return;
       }
@@ -260,16 +252,18 @@ export class PageManager {
   /**
    * Constructs a new path to push onto the history stack, using observers
    * to update the history.
-   * @param {boolean} replace If true, handlers should replace the current
+   * @param replace If true, handlers should replace the current
    *     history event rather than create new ones.
    * @private
    */
-  updateHistoryState_(replace) {
+  private updateHistoryState_(replace: boolean) {
     if (this.isDialog) {
       return;
     }
 
     const page = this.getTopmostVisiblePage();
+    assert(page);
+
     let path = window.location.pathname + window.location.hash;
     if (path) {
       // Remove trailing slash.
@@ -283,34 +277,32 @@ export class PageManager {
       return;
     }
 
-    for (let i = 0; i < this.observers_.length; ++i) {
-      this.observers_[i].updateHistory(newPath, replace);
+    for (const observer of this.observers_) {
+      observer.updateHistory(newPath, replace);
     }
   }
 
-  /** @return {!PageManager} */
-  static getInstance() {
+  static getInstance(): PageManager {
     return instance || (instance = new PageManager());
   }
 }
 
-/** @type {?PageManager} */
-let instance = null;
+let instance: PageManager|null = null;
 
 /**
  * An observer of PageManager.
  */
-export class PageManagerObserver {
+export interface PageManagerObserver {
   /**
    * Called when a new title should be set.
-   * @param {string} title The title to set.
+   * @param title The title to set.
    */
-  updateTitle(title) {}
+  updateTitle(title: string): void;
 
   /**
    * Called when a page is navigated to.
-   * @param {string} path The path of the page being visited.
-   * @param {boolean} replace If true, allow no history events to be created.
+   * @param path The path of the page being visited.
+   * @param replace If true, allow no history events to be created.
    */
-  updateHistory(path, replace) {}
+  updateHistory(path: string, replace: boolean): void;
 }

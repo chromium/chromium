@@ -6,7 +6,7 @@
  * Javascript for ValueControl, served from chrome://bluetooth-internals/.
  */
 
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
 import {GattResult, Property} from './device.mojom-webui.js';
@@ -14,23 +14,19 @@ import {connectToDevice} from './device_broker.js';
 import {showSnackbar, SnackbarType} from './snackbar.js';
 import {getTemplate} from './value_control.html.js';
 
-/**
- * @typedef {{
- *    deviceAddress: string,
- *    serviceId: string,
- *    characteristicId: string,
- *    descriptorId: (string|undefined),
- *    properties: (number|undefined),
- *  }}
- */
-let ValueLoadOptions;
+interface ValueLoadOptions {
+  deviceAddress: string;
+  serviceId: string;
+  characteristicId: string;
+  descriptorId?: string;
+  properties?: number;
+}
 
-/** @enum {string}  */
-export const ValueDataType = {
-  HEXADECIMAL: 'Hexadecimal',
-  UTF8: 'UTF-8',
-  DECIMAL: 'Decimal',
-};
+export enum ValueDataType {
+  HEXADECIMAL = 'Hexadecimal',
+  UTF8 = 'UTF-8',
+  DECIMAL = 'Decimal',
+}
 
 /**
  * A container for an array value that needs to be converted to multiple
@@ -38,42 +34,38 @@ export const ValueDataType = {
  * to the needed display type at runtime.
  */
 export class Value {
-  /** @param {!Array<number>} initialValue */
-  constructor(initialValue) {
-    /** @private {!Array<number>} */
+  private value_: number[];
+
+  constructor(initialValue: number[]) {
     this.value_ = initialValue;
   }
 
   /**
    * Gets the backing array value.
-   * @return {!Array<number>}
    */
-  getArray() {
+  getArray(): number[] {
     return this.value_;
   }
 
   /**
    * Sets the backing array value.
-   * @param {!Array<number>} newValue
    */
-  setArray(newValue) {
+  setArray(newValue: number[]) {
     this.value_ = newValue;
   }
 
   /**
    * Sets the value by converting the |newValue| string using the formatting
    * specified by |valueDataType|.
-   * @param {!ValueDataType} valueDataType
-   * @param {string} newValue
    */
-  setAs(valueDataType, newValue) {
+  setAs(valueDataType: ValueDataType, newValue: string) {
     switch (valueDataType) {
       case ValueDataType.HEXADECIMAL:
         this.setValueFromHex_(newValue);
         break;
 
       case ValueDataType.UTF8:
-        this.setValueFromUTF8_(newValue);
+        this.setValueFromUtf8_(newValue);
         break;
 
       case ValueDataType.DECIMAL:
@@ -84,45 +76,37 @@ export class Value {
 
   /**
    * Gets the value as a string representing the given |valueDataType|.
-   * @param {!ValueDataType} valueDataType
-   * @return {string}
    */
-  getAs(valueDataType) {
+  getAs(valueDataType: ValueDataType): string {
     switch (valueDataType) {
       case ValueDataType.HEXADECIMAL:
         return this.toHex_();
 
       case ValueDataType.UTF8:
-        return this.toUTF8_();
+        return this.toUtf8_();
 
       case ValueDataType.DECIMAL:
         return this.toDecimal_();
     }
-    assertNotReached();
-    return '';
   }
 
   /**
    * Converts the value to a hex string.
-   * @return {string}
-   * @private
    */
-  toHex_() {
+  private toHex_(): string {
     if (this.value_.length === 0) {
       return '';
     }
 
-    return this.value_.reduce(function(result, value, index) {
+    return this.value_.reduce(function(result, value, _index) {
       return result + ('0' + value.toString(16)).substr(-2);
     }, '0x');
   }
 
   /**
    * Sets the value from a hex string.
-   * @param {string} newValue
-   * @private
    */
-  setValueFromHex_(newValue) {
+  private setValueFromHex_(newValue: string) {
     if (!newValue) {
       this.value_ = [];
       return;
@@ -142,10 +126,8 @@ export class Value {
 
   /**
    * Converts the value to a UTF-8 encoded text string.
-   * @return {string}
-   * @private
    */
-  toUTF8_() {
+  private toUtf8_(): string {
     return this.value_.reduce(function(result, value) {
       return result + String.fromCharCode(value);
     }, '');
@@ -153,10 +135,8 @@ export class Value {
 
   /**
    * Sets the value from a UTF-8 encoded text string.
-   * @param {string} newValue
-   * @private
    */
-  setValueFromUTF8_(newValue) {
+  private setValueFromUtf8_(newValue: string) {
     if (!newValue) {
       this.value_ = [];
       return;
@@ -169,19 +149,15 @@ export class Value {
 
   /**
    * Converts the value to a decimal string with numbers delimited by '-'.
-   * @return {string}
-   * @private
    */
-  toDecimal_() {
+  private toDecimal_(): string {
     return this.value_.join('-');
   }
 
   /**
    * Sets the value from a decimal string delimited by '-'.
-   * @param {string} newValue
-   * @private
    */
-  setValueFromDecimal_(newValue) {
+  private setValueFromDecimal_(newValue: string) {
     if (!newValue) {
       this.value_ = [];
       return;
@@ -211,7 +187,7 @@ export class ValueControlElement extends CustomElement {
     return 'value-control';
   }
 
-  static get template() {
+  static override get template() {
     return getTemplate();
   }
 
@@ -219,49 +195,52 @@ export class ValueControlElement extends CustomElement {
     return ['data-value', 'data-options'];
   }
 
+  private value_: Value;
+  private deviceAddress_: string|null;
+  private serviceId_: string|null;
+  private characteristicId_: string|null;
+  private descriptorId_: string|null;
+  private properties_: number;
+  private valueInput_: HTMLInputElement;
+  private typeSelect_: HTMLSelectElement;
+  private writeBtn_: HTMLButtonElement;
+  private readBtn_: HTMLButtonElement;
+  private unavailableMessage_: HTMLElement;
+
   constructor() {
     super();
 
-    /** @private {!Value} */
     this.value_ = new Value([]);
-    /** @private {?string} */
     this.deviceAddress_ = null;
-    /** @private {?string} */
     this.serviceId_ = null;
-    /** @private {?string} */
     this.characteristicId_ = null;
-    /** @private {?string|undefined} */
     this.descriptorId_ = null;
-    /** @private {number} */
     this.properties_ = Number.MAX_SAFE_INTEGER;
-    /** @private {!HTMLInputElement} */
-    this.valueInput_ = this.shadowRoot.querySelector('input');
-    /** @private {!HTMLSelectElement} */
-    this.typeSelect_ = this.shadowRoot.querySelector('select');
-    /** @private {!HTMLButtonElement} */
-    this.writeBtn_ = this.shadowRoot.querySelector('button.write');
-    /** @private {!HTMLButtonElement} */
-    this.readBtn_ = this.shadowRoot.querySelector('button.read');
-    /** @private {!HTMLElement} */
-    this.unavailableMessage_ = this.shadowRoot.querySelector('h3');
+    assert(this.shadowRoot);
+    this.valueInput_ = this.shadowRoot.querySelector('input')!;
+    this.typeSelect_ = this.shadowRoot.querySelector('select')!;
+    this.writeBtn_ = this.shadowRoot.querySelector('button.write')!;
+    this.readBtn_ = this.shadowRoot.querySelector('button.read')!;
+    this.unavailableMessage_ = this.shadowRoot.querySelector('h3')!;
   }
 
   connectedCallback() {
     this.classList.add('value-control');
 
-    this.valueInput_.addEventListener('change', function() {
+    this.valueInput_.addEventListener('change', () => {
       try {
-        this.value_.setAs(this.typeSelect_.value, this.valueInput_.value);
+        this.value_.setAs(
+            this.typeSelect_.value as ValueDataType, this.valueInput_.value);
       } catch (e) {
-        showSnackbar(e.message, SnackbarType.ERROR);
+        showSnackbar((e as Error).message, SnackbarType.ERROR);
       }
-    }.bind(this));
+    });
 
-    this.typeSelect_.addEventListener('change', this.redraw.bind(this));
+    this.typeSelect_.addEventListener('change', () => this.redraw());
 
-    this.readBtn_.addEventListener('click', this.readValue_.bind(this));
+    this.readBtn_.addEventListener('click', () => this.readValue_());
 
-    this.writeBtn_.addEventListener('click', this.writeValue_.bind(this));
+    this.writeBtn_.addEventListener('click', () => this.writeValue_());
 
     this.redraw();
   }
@@ -271,7 +250,7 @@ export class ValueControlElement extends CustomElement {
    * match the read/write settings in |options.properties|. If properties
    * are not provided, no restrictions on reading/writing are applied.
    */
-  attributeChangedCallback(name, oldValue, newValue) {
+  attributeChangedCallback(name: string, oldValue: string, newValue: string) {
     assert(name === 'data-value' || name === 'data-options');
 
     if (oldValue === newValue) {
@@ -279,11 +258,11 @@ export class ValueControlElement extends CustomElement {
     }
 
     if (name === 'data-options') {
-      const options = JSON.parse(newValue);
+      const options = JSON.parse(newValue) as ValueLoadOptions;
       this.deviceAddress_ = options.deviceAddress;
       this.serviceId_ = options.serviceId;
       this.characteristicId_ = options.characteristicId;
-      this.descriptorId_ = options.descriptorId;
+      this.descriptorId_ = options.descriptorId ?? null;
 
       if (options.properties) {
         this.properties_ = options.properties;
@@ -313,29 +292,25 @@ export class ValueControlElement extends CustomElement {
       return;
     }
 
-    this.valueInput_.value = this.value_.getAs(this.typeSelect_.value);
+    this.valueInput_.value =
+        this.value_.getAs(this.typeSelect_.value as ValueDataType);
   }
 
   /**
    * Sets the value of the control.
-   * @param {!Array<number>} value
    */
-  setValue(value) {
+  setValue(value: number[]) {
     this.value_.setArray(value);
     this.redraw();
   }
 
   /**
    * Gets an error string describing the given |result| code.
-   * @param {!GattResult} result
-   * @private
    */
-  getErrorString_(result) {
+  private getErrorString_(result: GattResult): string {
     // TODO(crbug.com/40492643): Replace with more descriptive error
     // messages.
-    return Object.keys(GattResult).find(function(key) {
-      return GattResult[key] === result;
-    });
+    return GattResult[result];
   }
 
   /**
@@ -343,14 +318,15 @@ export class ValueControlElement extends CustomElement {
    * retrieves the current value of the characteristic in the |service_id|
    * with id |characteristic_id|. If |descriptor_id| is defined,  the
    * descriptor value with |descriptor_id| is read instead.
-   * @private
    */
-  readValue_() {
+  private readValue_() {
     this.readBtn_.disabled = true;
 
     assert(this.deviceAddress_);
     connectToDevice(this.deviceAddress_)
-        .then(function(device) {
+        .then(device => {
+          assert(this.serviceId_);
+          assert(this.characteristicId_);
           if (this.descriptorId_) {
             return device.readValueForDescriptor(
                 this.serviceId_, this.characteristicId_, this.descriptorId_);
@@ -358,12 +334,13 @@ export class ValueControlElement extends CustomElement {
 
           return device.readValueForCharacteristic(
               this.serviceId_, this.characteristicId_);
-        }.bind(this))
-        .then(function(response) {
+        })
+        .then(response => {
           this.readBtn_.disabled = false;
+          assert(this.deviceAddress_);
 
           if (response.result === GattResult.SUCCESS) {
-            this.setValue(response.value);
+            this.setValue(response.value!);
             showSnackbar(
                 this.deviceAddress_ + ': Read succeeded', SnackbarType.SUCCESS);
             return;
@@ -372,8 +349,8 @@ export class ValueControlElement extends CustomElement {
           const errorString = this.getErrorString_(response.result);
           showSnackbar(
               this.deviceAddress_ + ': ' + errorString, SnackbarType.ERROR,
-              'Retry', this.readValue_.bind(this));
-        }.bind(this));
+              'Retry', () => this.readValue_());
+        });
   }
 
   /**
@@ -381,14 +358,15 @@ export class ValueControlElement extends CustomElement {
    * retrieves the current value of the characteristic in the
    * |service_id| with id |characteristic_id|. If |descriptor_id| is defined,
    * the descriptor value with |descriptor_id| is written instead.
-   * @private
    */
-  writeValue_() {
+  private writeValue_() {
     this.writeBtn_.disabled = true;
 
     assert(this.deviceAddress_);
     connectToDevice(this.deviceAddress_)
-        .then(function(device) {
+        .then(device => {
+          assert(this.serviceId_);
+          assert(this.characteristicId_);
           if (this.descriptorId_) {
             return device.writeValueForDescriptor(
                 this.serviceId_, this.characteristicId_, this.descriptorId_,
@@ -397,9 +375,10 @@ export class ValueControlElement extends CustomElement {
 
           return device.writeValueForCharacteristic(
               this.serviceId_, this.characteristicId_, this.value_.getArray());
-        }.bind(this))
-        .then(function(response) {
+        })
+        .then(response => {
           this.writeBtn_.disabled = false;
+          assert(this.deviceAddress_);
 
           if (response.result === GattResult.SUCCESS) {
             showSnackbar(
@@ -411,8 +390,8 @@ export class ValueControlElement extends CustomElement {
           const errorString = this.getErrorString_(response.result);
           showSnackbar(
               this.deviceAddress_ + ': ' + errorString, SnackbarType.ERROR,
-              'Retry', this.writeValue_.bind(this));
-        }.bind(this));
+              'Retry', () => this.writeValue_());
+        });
   }
 }
 

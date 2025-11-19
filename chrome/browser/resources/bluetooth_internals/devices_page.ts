@@ -85,3 +85,10 @@ export class DevicesPage extends Page {
     }
   }
 }
+
+declare global {
+  interface HTMLElementEventMap {
+    'inspectpressed': CustomEvent<{address: string}>;
+    'scanpressed': CustomEvent;
+  }
+}
