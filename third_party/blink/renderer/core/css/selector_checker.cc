@@ -576,8 +576,6 @@ SelectorChecker::FeaturelessMatch SelectorChecker::MatchShadowHost(
     case CSSSelector::kPseudoOnlyOfType:
     case CSSSelector::kPseudoOptional:
     case CSSSelector::kPseudoPart:
-    case CSSSelector::kPseudoPermissionElementInvalidStyle:
-    case CSSSelector::kPseudoPermissionElementOccluded:
     case CSSSelector::kPseudoPermissionGranted:
     case CSSSelector::kPseudoPermissionIcon:
     case CSSSelector::kPseudoPlaceholder:
@@ -2755,18 +2753,6 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
           element.GetExecutionContext()));
       auto* permission_element = DynamicTo<HTMLPermissionElement>(element);
       return permission_element && permission_element->granted();
-    }
-    case CSSSelector::kPseudoPermissionElementInvalidStyle: {
-      CHECK(RuntimeEnabledFeatures::PermissionElementEnabled(
-          element.GetExecutionContext()));
-      auto* permission_element = DynamicTo<HTMLPermissionElement>(element);
-      return permission_element && permission_element->HasInvalidStyle();
-    }
-    case CSSSelector::kPseudoPermissionElementOccluded: {
-      CHECK(RuntimeEnabledFeatures::PermissionElementEnabled(
-          element.GetExecutionContext()));
-      auto* permission_element = DynamicTo<HTMLPermissionElement>(element);
-      return permission_element && permission_element->IsOccluded();
     }
     case CSSSelector::kPseudoPictureInPicture:
       return PictureInPictureController::IsElementInPictureInPicture(&element);

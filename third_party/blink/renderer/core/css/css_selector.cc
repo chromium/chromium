@@ -484,8 +484,6 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoPastCue:
     case kPseudoPatching:
     case kPseudoPaused:
-    case kPseudoPermissionElementInvalidStyle:
-    case kPseudoPermissionElementOccluded:
     case kPseudoPermissionGranted:
     case kPseudoPictureInPicture:
     case kPseudoPlaceholderShown:
@@ -649,7 +647,6 @@ constexpr static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"interest-source", CSSSelector::kPseudoInterestSource},
     {"interest-target", CSSSelector::kPseudoInterestTarget},
     {"invalid", CSSSelector::kPseudoInvalid},
-    {"invalid-style", CSSSelector::kPseudoPermissionElementInvalidStyle},
     {"last-child", CSSSelector::kPseudoLastChild},
     {"last-of-type", CSSSelector::kPseudoLastOfType},
     {"left", CSSSelector::kPseudoLeftPage},
@@ -657,7 +654,6 @@ constexpr static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"marker", CSSSelector::kPseudoMarker},
     {"modal", CSSSelector::kPseudoModal},
     {"no-button", CSSSelector::kPseudoNoButton},
-    {"occluded", CSSSelector::kPseudoPermissionElementOccluded},
     {"only-child", CSSSelector::kPseudoOnlyChild},
     {"only-of-type", CSSSelector::kPseudoOnlyOfType},
     {"open", CSSSelector::kPseudoOpen},
@@ -775,18 +771,6 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
 
   if (match->type == CSSSelector::kPseudoPatching &&
       !RuntimeEnabledFeatures::DocumentPatchingEnabled()) {
-    return CSSSelector::kPseudoUnknown;
-  }
-
-  if (match->type == CSSSelector::kPseudoPermissionElementInvalidStyle &&
-      !RuntimeEnabledFeatures::PermissionElementEnabled(
-          document ? document->GetExecutionContext() : nullptr)) {
-    return CSSSelector::kPseudoUnknown;
-  }
-
-  if (match->type == CSSSelector::kPseudoPermissionElementOccluded &&
-      !RuntimeEnabledFeatures::PermissionElementEnabled(
-          document ? document->GetExecutionContext() : nullptr)) {
     return CSSSelector::kPseudoUnknown;
   }
 
@@ -1047,8 +1031,6 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoPastCue:
     case kPseudoPatching:
     case kPseudoPaused:
-    case kPseudoPermissionElementInvalidStyle:
-    case kPseudoPermissionElementOccluded:
     case kPseudoPermissionGranted:
     case kPseudoPictureInPicture:
     case kPseudoPlaceholderShown:
@@ -1808,8 +1790,6 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoMenulistPopoverWithMenulistAnchor:
     case kPseudoModal:
     case kPseudoOptional:
-    case kPseudoPermissionElementInvalidStyle:
-    case kPseudoPermissionElementOccluded:
     case kPseudoPermissionGranted:
     case kPseudoPlaceholderShown:
     case kPseudoReadOnly:

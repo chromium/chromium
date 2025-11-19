@@ -351,7 +351,6 @@ HTMLPermissionElement::HTMLPermissionElement(
     Document& document,
     std::optional<QualifiedName> tag_name)
     : HTMLElement(tag_name.value_or(html_names::kPermissionTag), document),
-      ScrollSnapshotClient(GetDocument().GetFrame()),
       permission_service_(document.GetExecutionContext()),
       embedded_permission_control_receiver_(this,
                                             document.GetExecutionContext()),
@@ -459,7 +458,6 @@ void HTMLPermissionElement::RemovedFrom(ContainerNode& insertion_point) {
   HTMLElement::RemovedFrom(insertion_point);
   permission_status_map_.clear();
   aggregated_permission_status_ = std::nullopt;
-  pseudo_state_ = {/*has_invalid_style*/ false, /*is_occluded*/ false};
   if (disable_reason_expire_timer_.IsActive()) {
     disable_reason_expire_timer_.Stop();
   }
@@ -520,16 +518,6 @@ bool HTMLPermissionElement::CanGeneratePseudoElement(PseudoId id) const {
     default:
       return Element::CanGeneratePseudoElement(id);
   }
-}
-
-bool HTMLPermissionElement::HasInvalidStyle() const {
-  return IsClickingDisabledIndefinitely(DisableReason::kInvalidStyle);
-}
-
-bool HTMLPermissionElement::IsOccluded() const {
-  return !GetRecentlyAttachedTimeoutRemaining() &&
-         IsClickingDisabledIndefinitely(
-             DisableReason::kIntersectionVisibilityOccludedOrDistorted);
 }
 
 bool HTMLPermissionElement::IsRenderered() const {
@@ -1241,7 +1229,6 @@ void HTMLPermissionElement::OnEmbeddedPermissionsDecided(
 
 void HTMLPermissionElement::DisableReasonExpireTimerFired(TimerBase* timer) {
   EnableClicking(static_cast<DisableReasonExpireTimer*>(timer)->reason());
-  NotifyClickingDisablePseudoStateChanged();
 }
 
 void HTMLPermissionElement::MaybeDispatchValidationChangeEvent() {
@@ -1255,28 +1242,6 @@ void HTMLPermissionElement::MaybeDispatchValidationChangeEvent() {
   EnqueueEvent(
       *Event::CreateCancelableBubble(event_type_names::kValidationstatuschange),
       TaskType::kDOMManipulation);
-}
-
-bool HTMLPermissionElement::UpdateSnapshot() {
-  return NotifyClickingDisablePseudoStateChanged();
-}
-
-bool HTMLPermissionElement::NotifyClickingDisablePseudoStateChanged() {
-  ClickingDisablePseudoState new_state(HasInvalidStyle(), IsOccluded());
-  if (new_state.is_occluded != pseudo_state_.is_occluded) {
-    PseudoStateChanged(CSSSelector::kPseudoPermissionElementOccluded);
-  }
-
-  if (new_state.has_invalid_style != pseudo_state_.has_invalid_style) {
-    PseudoStateChanged(CSSSelector::kPseudoPermissionElementInvalidStyle);
-  }
-
-  if (pseudo_state_ != new_state) {
-    pseudo_state_ = new_state;
-    return true;
-  }
-
-  return false;
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
@@ -1527,14 +1492,6 @@ void HTMLPermissionElement::OnIntersectionChanged(
           DisableReason::kIntersectionVisibilityOutOfViewPortOrClipped);
       break;
   }
-
-  // TODO(crbug.com/342330035): revisit it when we write spec for <permission>
-  // element.
-  GetTaskRunner()->PostTask(
-      FROM_HERE,
-      blink::BindOnce(
-          &HTMLPermissionElement::NotifyClickingDisablePseudoStateChangedTask,
-          WrapWeakPersistent(this)));
 }
 
 bool HTMLPermissionElement::IsMaskedByAncestor() const {

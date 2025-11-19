@@ -135,8 +135,6 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoFullscreen:
     case CSSSelector::kPseudoPatching:
     case CSSSelector::kPseudoPaused:
-    case CSSSelector::kPseudoPermissionElementInvalidStyle:
-    case CSSSelector::kPseudoPermissionElementOccluded:
     case CSSSelector::kPseudoPermissionGranted:
     case CSSSelector::kPseudoPictureInPicture:
     case CSSSelector::kPseudoPlaying:
@@ -1678,8 +1676,6 @@ RuleInvalidationDataVisitor<VisitorType>::InvalidationSetForSimpleSelector(
       case CSSSelector::kPseudoFullScreenAncestor:
       case CSSSelector::kPseudoFullscreen:
       case CSSSelector::kPseudoPaused:
-      case CSSSelector::kPseudoPermissionElementInvalidStyle:
-      case CSSSelector::kPseudoPermissionElementOccluded:
       case CSSSelector::kPseudoPermissionGranted:
       case CSSSelector::kPseudoPictureInPicture:
       case CSSSelector::kPseudoPlaying:

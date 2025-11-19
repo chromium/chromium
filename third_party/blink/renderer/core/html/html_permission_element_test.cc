@@ -991,9 +991,6 @@ TEST_F(HTMLPermissionElementSimTest, InvalidDisplayStyleElement) {
   checker.CheckClickingEnabled(/*enabled=*/false);
   checker.CheckClickingEnabledAfterDelay(kDefaultTimeout,
                                          /*expected_enabled=*/false);
-  EXPECT_TRUE(To<HTMLPermissionElement>(
-                  GetDocument().QuerySelector(AtomicString("permission")))
-                  ->matches(AtomicString(":invalid-style")));
 
   permission_element->setAttribute(
       html_names::kStyleAttr,
@@ -1002,9 +999,6 @@ TEST_F(HTMLPermissionElementSimTest, InvalidDisplayStyleElement) {
   checker.CheckClickingEnabled(/*enabled=*/false);
   checker.CheckClickingEnabledAfterDelay(kDefaultTimeout,
                                          /*expected_enabled=*/true);
-  EXPECT_FALSE(To<HTMLPermissionElement>(
-                   GetDocument().QuerySelector(AtomicString("permission")))
-                   ->matches(AtomicString(":invalid-style")));
 }
 
 TEST_F(HTMLPermissionElementSimTest, BadContrastDisablesElement) {
@@ -1017,9 +1011,6 @@ TEST_F(HTMLPermissionElementSimTest, BadContrastDisablesElement) {
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   checker.CheckClickingEnabledAfterDelay(kDefaultTimeout,
                                          /*expected_enabled=*/true);
-  EXPECT_FALSE(To<HTMLPermissionElement>(
-                   GetDocument().QuerySelector(AtomicString("permission")))
-                   ->matches(AtomicString(":invalid-style")));
 
   // Red on purple is not sufficient contrast.
   permission_element->setAttribute(
@@ -1027,9 +1018,6 @@ TEST_F(HTMLPermissionElementSimTest, BadContrastDisablesElement) {
       AtomicString("color: red; background-color: purple;"));
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   checker.CheckClickingEnabled(/*enabled=*/false);
-  EXPECT_TRUE(To<HTMLPermissionElement>(
-                  GetDocument().QuerySelector(AtomicString("permission")))
-                  ->matches(AtomicString(":invalid-style")));
 
   // Purple on yellow is sufficient contrast, the element will be re-enabled
   // after a delay.
@@ -1040,9 +1028,6 @@ TEST_F(HTMLPermissionElementSimTest, BadContrastDisablesElement) {
   checker.CheckClickingEnabled(/*enabled=*/false);
   checker.CheckClickingEnabledAfterDelay(kDefaultTimeout,
                                          /*expected_enabled=*/true);
-  EXPECT_FALSE(To<HTMLPermissionElement>(
-                   GetDocument().QuerySelector(AtomicString("permission")))
-                   ->matches(AtomicString(":invalid-style")));
 
   // Purple on yellow is sufficient contrast, however the alpha is not at 100%
   // so the element should become disabled. rgba(255, 255, 0, 0.99) is "yellow"
@@ -1710,83 +1695,6 @@ TEST_F(HTMLPermissionElementIntersectionTest,
   EXPECT_EQ(console_messages.back(),
             String::Format("The permission element is occluded by node %s",
                            div->ToString().Utf8().c_str()));
-}
-
-TEST_F(HTMLPermissionElementIntersectionTest, ClickingDisablePseudoClass) {
-  GetDocument().GetSettings()->SetDefaultFontSize(12);
-  SimRequest main_resource("https://example.test/", "text/html");
-  LoadURL("https://example.test/");
-  main_resource.Complete(R"HTML(
-    <!doctype html>
-    <div id='cover'
-      style='position: fixed; left: 0px; top: 100px; width: 100px; height: 100px;'>
-    </div>
-    <permission id='camera' type='camera'></permission>
-  )HTML");
-
-  Compositor().BeginFrame();
-  auto* permission_element = To<HTMLPermissionElement>(
-      GetDocument().QuerySelector(AtomicString("permission")));
-  auto* div =
-      To<HTMLDivElement>(GetDocument().QuerySelector(AtomicString("div")));
-  WaitForIntersectionVisibilityChanged(
-      permission_element,
-      HTMLPermissionElement::IntersectionVisibility::kFullyVisible);
-  DeferredChecker checker(permission_element);
-  checker.CheckClickingEnabledAfterDelay(kDefaultTimeout,
-                                         /*expected_enabled*/ true);
-  EXPECT_FALSE(To<HTMLPermissionElement>(
-                   GetDocument().QuerySelector(AtomicString("permission")))
-                   ->matches(AtomicString(":occluded")));
-
-  permission_element->setAttribute(
-      html_names::kStyleAttr,
-      AtomicString("color: red; background-color: white;"));
-  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
-  checker.CheckClickingEnabledAfterDelay(kDefaultTimeout,
-                                         /*expected_enabled=*/true);
-  EXPECT_FALSE(To<HTMLPermissionElement>(
-                   GetDocument().QuerySelector(AtomicString("permission")))
-                   ->matches(AtomicString(":invalid-style")));
-
-  // Red on purple is not sufficient contrast.
-  permission_element->setAttribute(
-      html_names::kStyleAttr,
-      AtomicString("color: red; background-color: purple;"));
-  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
-  checker.CheckClickingEnabled(/*enabled=*/false);
-  EXPECT_TRUE(To<HTMLPermissionElement>(
-                  GetDocument().QuerySelector(AtomicString("permission")))
-                  ->matches(AtomicString(":invalid-style")));
-
-  // Move the div to overlap the Permission Element
-  div->SetInlineStyleProperty(CSSPropertyID::kTop, "0px");
-  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
-  WaitForIntersectionVisibilityChanged(
-      permission_element,
-      HTMLPermissionElement::IntersectionVisibility::kOccludedOrDistorted);
-  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
-  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(To<HTMLPermissionElement>(
-                  GetDocument().QuerySelector(AtomicString("permission")))
-                  ->matches(AtomicString(":occluded")));
-  div->SetInlineStyleProperty(CSSPropertyID::kTop, "100px");
-  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
-  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(To<HTMLPermissionElement>(
-                   GetDocument().QuerySelector(AtomicString("permission")))
-                   ->matches(AtomicString(":occluded")));
-
-  permission_element->setAttribute(
-      html_names::kStyleAttr,
-      AtomicString("color: yellow; background-color: purple;"));
-  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
-  checker.CheckClickingEnabled(/*enabled=*/false);
-  checker.CheckClickingEnabledAfterDelay(kDefaultTimeout,
-                                         /*expected_enabled=*/true);
-  EXPECT_FALSE(To<HTMLPermissionElement>(
-                   GetDocument().QuerySelector(AtomicString("permission")))
-                   ->matches(AtomicString(":invalid-style")));
 }
 
 TEST_F(HTMLPermissionElementIntersectionTest, IntersectionOclluderLogging) {
