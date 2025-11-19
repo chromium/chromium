@@ -139,39 +139,19 @@ chrome.inputMethodPrivate.InputContext;
  * User preference settings for a specific input method. Japanese input methods
  * are not included because they are managed separately by Mozc module.
  * @typedef {{
- *   enableCompletion: (boolean|undefined),
  *   enableDoubleSpacePeriod: (boolean|undefined),
  *   enableGestureTyping: (boolean|undefined),
- *   enablePrediction: (boolean|undefined),
  *   enableSoundOnKeypress: (boolean|undefined),
- *   physicalKeyboardAutoCorrectionEnabledByDefault: (boolean|undefined),
  *   physicalKeyboardAutoCorrectionLevel: (number|undefined),
- *   physicalKeyboardEnableCapitalization: (boolean|undefined),
- *   physicalKeyboardEnableDiacriticsOnLongpress: (boolean|undefined),
- *   physicalKeyboardEnablePredictiveWriting: (boolean|undefined),
  *   virtualKeyboardAutoCorrectionLevel: (number|undefined),
  *   virtualKeyboardEnableCapitalization: (boolean|undefined),
  *   xkbLayout: (string|undefined),
  *   koreanEnableSyllableInput: (boolean|undefined),
  *   koreanKeyboardLayout: (string|undefined),
- *   koreanShowHangulCandidate: (boolean|undefined),
  *   pinyinChinesePunctuation: (boolean|undefined),
  *   pinyinDefaultChinese: (boolean|undefined),
- *   pinyinEnableLowerPaging: (boolean|undefined),
- *   pinyinEnableUpperPaging: (boolean|undefined),
  *   pinyinFullWidthCharacter: (boolean|undefined),
- *   zhuyinKeyboardLayout: (string|undefined),
  *   zhuyinPageSize: (number|undefined),
- *   zhuyinSelectKeys: (string|undefined),
- *   vietnameseVniAllowFlexibleDiacritics: (boolean|undefined),
- *   vietnameseVniNewStyleToneMarkPlacement: (boolean|undefined),
- *   vietnameseVniInsertDoubleHornOnUo: (boolean|undefined),
- *   vietnameseVniShowUnderline: (boolean|undefined),
- *   vietnameseTelexAllowFlexibleDiacritics: (boolean|undefined),
- *   vietnameseTelexNewStyleToneMarkPlacement: (boolean|undefined),
- *   vietnameseTelexInsertDoubleHornOnUo: (boolean|undefined),
- *   vietnameseTelexInsertUHornOnW: (boolean|undefined),
- *   vietnameseTelexShowUnderline: (boolean|undefined)
  * }}
  */
 chrome.inputMethodPrivate.InputMethodSettings;
