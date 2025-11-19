@@ -395,7 +395,8 @@ NativeScreenCapturePickerMac::CreateDevice(const DesktopMediaID& source) {
       base::BindPostTask(
           device_task_runner_,
           base::BindOnce(&NativeScreenCapturePickerMac::UpdateStreamMap,
-                         weak_ptr_factory_.GetWeakPtr())));
+                         weak_ptr_factory_.GetWeakPtr())),
+      /*pip_screen_capture_coordinator_proxy=*/nullptr);
 }
 
 void NativeScreenCapturePickerMac::ScheduleCleanup(DesktopMediaID::Id id) {

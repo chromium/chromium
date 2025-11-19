@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "content/browser/media/capture/pip_screen_capture_coordinator_proxy.h"
 #include "content/browser/renderer_host/media/video_capture_controller.h"
 #include "content/browser/renderer_host/media/video_capture_provider.h"
 #include "content/public/browser/video_capture_device_launcher.h"
@@ -86,6 +87,14 @@ class InProcessVideoCaptureDeviceLauncher : public VideoCaptureDeviceLauncher {
       std::unique_ptr<media::VideoCaptureDeviceClient> client,
       ReceiveDeviceCallback result_callback);
 
+  void OnPipScreenCaptureCoordinatorProxyCreated(
+      const DesktopMediaID& desktop_id,
+      const media::VideoCaptureParams& params,
+      std::unique_ptr<media::VideoCaptureDeviceClient> device_client,
+      ReceiveDeviceCallback result_callback,
+      std::unique_ptr<PipScreenCaptureCoordinatorProxy>
+          pip_screen_capture_coordinator_proxy);
+
   void DoStartDesktopCaptureWithReceiverOnDeviceThread(
       const DesktopMediaID& desktop_id,
       const media::VideoCaptureParams& params,
@@ -108,6 +117,7 @@ class InProcessVideoCaptureDeviceLauncher : public VideoCaptureDeviceLauncher {
   State state_;
   std::unique_ptr<media::FakeVideoCaptureDeviceFactory> fake_device_factory_;
   raw_ptr<NativeScreenCapturePicker> native_screen_capture_picker_;
+  base::WeakPtrFactory<InProcessVideoCaptureDeviceLauncher> weak_factory_{this};
 };
 
 }  // namespace content

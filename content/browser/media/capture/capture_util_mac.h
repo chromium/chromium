@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_MEDIA_CAPTURE_CAPTURE_UTIL_MAC_H_
 
 #include "content/browser/media/capture/capture_util.h"
+#include "content/browser/media/capture/pip_screen_capture_coordinator_proxy.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/desktop_media_id.h"
 
@@ -17,7 +18,10 @@ namespace content {
 class WebContents;
 
 std::unique_ptr<media::VideoCaptureDevice> CONTENT_EXPORT
-CreateScreenCaptureKitDeviceMac(const DesktopMediaID& source);
+CreateScreenCaptureKitDeviceMac(
+    const DesktopMediaID& source,
+    std::unique_ptr<PipScreenCaptureCoordinatorProxy>
+        pip_screen_capture_coordinator_proxy);
 
 // Returns the windowNumber prorperty of the window associated to
 // |web_contents| if there is an associated window with a positive

@@ -15,12 +15,16 @@
 namespace content {
 
 std::unique_ptr<media::VideoCaptureDevice> CreateScreenCaptureKitDeviceMac(
-    const DesktopMediaID& source) {
+    const DesktopMediaID& source,
+    std::unique_ptr<PipScreenCaptureCoordinatorProxy>
+        pip_screen_capture_coordinator_proxy) {
   // Although ScreenCaptureKit is available in 12.3 there were some bugs that
   // were not fixed until 13.2.
   if (@available(macOS 13.2, *)) {
-    return CreateScreenCaptureKitDeviceMac(source, /*filter=*/nullptr,
-                                           /*callback=*/base::DoNothing());
+    return CreateScreenCaptureKitDeviceMac(
+        source, /*filter=*/nullptr,
+        /*callback=*/base::DoNothing(),
+        std::move(pip_screen_capture_coordinator_proxy));
   } else {
     return nullptr;
   }
