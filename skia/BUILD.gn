@@ -161,11 +161,8 @@ config("skia_config") {
 
 # Internal-facing config for Skia library code.
 config("skia_library_config") {
-  # Turn on SK_API to export Skia's public API
-  defines = [
-    "IS_SKIA_IMPL=1",
-    "SKIA_IMPLEMENTATION=1",
-  ]
+  # Turn on SK_API to export Skia's public API (using base/component_export.h)
+  defines = [ "IS_SKIA_IMPL=1" ]
   if (!allow_avx512) {
     defines += [ "SKCMS_DISABLE_SKX=1" ]
   }
@@ -725,6 +722,11 @@ template("skia_source_set") {
     configs += [
       ":skia_config",
       ":skia_library_config",
+
+      # TODO(kjlubick): Properly have source sets depend on skcms
+      # and then we shouldn't need these configs.
+      ":skcms_implementation_config",
+      ":skcms_public_config",
       "//build/config/compiler:no_chromium_code",
     ]
 
@@ -768,8 +770,9 @@ skia_source_set("skia_core_and_effects") {
   sources += skia_effects_sources
   sources += skia_effects_imagefilter_sources
   sources += skia_pathops_sources
+  deps = []
   if (skia_support_gpu) {
-    deps = [ "//gpu/config:workaround_list" ]
+    deps += [ "//gpu/config:workaround_list" ]
   }
   if (skia_use_dawn) {
     # Note: This is needed as files in this target include GrDawnTypes.h, which
@@ -877,10 +880,24 @@ skia_source_set("skia_opts") {
   visibility = [ ":skia" ]
 }
 
+# Public config for skcms.
+config("skcms_public_config") {
+  if (is_component_build) {
+    defines = [ "SKCMS_DLL=1" ]
+  }
+}
+
+config("skcms_implementation_config") {
+  defines = [ "SKCMS_IMPLEMENTATION=1" ]
+  visibility = [ ":*" ]
+}
+
 # Like `skia_library_config` but for things that are `skcms`-specific.
 config("skcms_library_config") {
+  cflags = []
+
   if (!is_win) {
-    cflags = [
+    cflags += [
       "-w",
       "-std=c11",
     ]
@@ -894,17 +911,6 @@ config("skcms_library_config") {
   }
   if (current_cpu == "loong64") {
     cflags += [ "-mlsx" ]
-  }
-
-  if (is_component_build) {
-    # TODO(lukasza, kjlubick): Is this the right definition?  `SK_API` is defined in
-    # a more complicated way (e.g. it covers `dllimport` and changes behavior
-    # depending on `SKIA_DLL` and `SKIA_IMPLEMENTATION`).
-    if (is_win) {
-      defines = [ "SKCMS_API=__declspec(dllexport)" ]
-    } else {
-      defines = [ "SKCMS_API=__attribute__((visibility(\"default\")))" ]
-    }
   }
 
   visibility = [
@@ -956,18 +962,26 @@ if (current_cpu == "x64") {
 }
 
 source_set("skcms_TransformBaseline_and_public") {
-  configs += [ ":skcms_library_config" ]
+  configs += [
+    ":skcms_library_config",
+    ":skcms_implementation_config",
+    ":skcms_public_config",
+  ]
   sources = rebase_path(skcms_TransformBaseline + skcms_public,
                         ".",
                         "//third_party/skia/modules/skcms")
+  visibility = [ ":skcms" ]
 }
 
+# TODO(kjlubick) Make this a component
 source_set("skcms") {
   deps = [
     ":skcms_TransformBaseline_and_public",
     ":skcms_TransformHsw",
     ":skcms_TransformSkx",
   ]
+  public_configs = [ ":skcms_implementation_config" ]
+  all_dependent_configs = [ ":skcms_public_config" ]
   public =
       rebase_path(skcms_public_headers, ".", "//third_party/skia/modules/skcms")
   include_dirs = [ "//third_party/skia/modules/skcms" ]
