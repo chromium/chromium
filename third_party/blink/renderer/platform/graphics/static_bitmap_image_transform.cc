@@ -240,7 +240,6 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyUsingPixmap(
 // Perform all transformations using a blit, which will result in a new
 // premultiplied-alpha result.
 scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
-    FlushReason flush_reason,
     scoped_refptr<StaticBitmapImage> source,
     const StaticBitmapImageTransform::Params& options) {
   // This path will necessarily premultiply alpha.
@@ -285,7 +284,8 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
       BlitToCanvas(resource_provider->Canvas(), source_paint_image,
                    source_orientation, SkRect::Make(source_rect), dest_size,
                    options);
-      return resource_provider->Snapshot(flush_reason, source_orientation);
+      return resource_provider->Snapshot(FlushReason::kOther,
+                                         source_orientation);
     }
   }
 
@@ -357,7 +357,7 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::Apply(
   if (!options.premultiply_alpha) {
     return ApplyUsingPixmap(source, options);
   }
-  return ApplyWithBlit(FlushReason::kOther, source, options);
+  return ApplyWithBlit(source, options);
 }
 
 scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::Clone(

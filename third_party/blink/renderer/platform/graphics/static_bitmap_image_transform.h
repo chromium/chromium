@@ -79,7 +79,6 @@ class PLATFORM_EXPORT StaticBitmapImageTransform {
   // Apply the specified transform by using a blit. The blit may be done on the
   // GPU or may be done in software. The result is always premultiplied.
   static scoped_refptr<StaticBitmapImage> ApplyWithBlit(
-      FlushReason,
       scoped_refptr<StaticBitmapImage> image,
       const Params& params);
 };
