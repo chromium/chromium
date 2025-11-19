@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_animation_coordinator.h"
 
 #include <algorithm>
+#include <optional>
 #include <utility>
 
 #include "base/notreached.h"
@@ -84,23 +85,23 @@ SidePanelAnimationCoordinator::SidePanelAnimationCoordinator(
 
   animation_spec_map_ = {
       {AnimationType::kOpen,
-       {{AnimationSpecification(
+       AnimationSpecification(
            /*tween_type=*/is_content_height_panel
                ? gfx::Tween::Type::EASE_IN_OUT_EMPHASIZED
                : gfx::Tween::Type::ACCEL_45_DECEL_88,
            /*sequences=*/{{.animation_id = kSidePanelBoundsAnimation,
                            .start = base::Milliseconds(0),
                            .duration = base::Milliseconds(
-                               is_content_height_panel ? 450 : 350)}})}}},
+                               is_content_height_panel ? 450 : 350)}})},
       {AnimationType::kClose,
-       {AnimationSpecification(
+       AnimationSpecification(
            /*tween_type=*/is_content_height_panel
                ? gfx::Tween::Type::EASE_IN_OUT_EMPHASIZED
                : gfx::Tween::Type::ACCEL_45_DECEL_88,
            /*sequences=*/{{.animation_id = kSidePanelBoundsAnimation,
                            .start = base::Milliseconds(0),
                            .duration = base::Milliseconds(
-                               is_content_height_panel ? 450 : 350)}})}}};
+                               is_content_height_panel ? 450 : 350)}})}};
 
   Reset(AnimationType::kClose);
 }
@@ -153,11 +154,15 @@ double SidePanelAnimationCoordinator::GetAnimationValueFor(
     return IsAnimatingOpen(animation_type_) ? 1.0 : 0.0;
   }
 
-  const AnimationSpecification& specification =
+  const std::optional<AnimationSpecification> specification =
       GetAnimationSpecificationForAnimationId(animation_id);
 
-  const AnimationSequence sequence =
-      specification.GetSequenceForAnimationId(animation_id);
+  if (!specification) {
+    return 0.0f;
+  }
+
+  const AnimationSequence& sequence =
+      specification->GetSequenceForAnimationId(animation_id);
 
   base::TimeDelta start_time = sequence.start;
   base::TimeDelta duration = sequence.duration;
@@ -175,7 +180,7 @@ double SidePanelAnimationCoordinator::GetAnimationValueFor(
   }
 
   progress = AdjustProgressForAnimationType(progress);
-  return gfx::Tween::CalculateValue(specification.tween_type, progress);
+  return gfx::Tween::CalculateValue(specification->tween_type, progress);
 }
 
 bool SidePanelAnimationCoordinator::IsClosing() {
@@ -202,6 +207,7 @@ void SidePanelAnimationCoordinator::AnimationEnded(
     if (!IsAnimationSequenceFinished(animation_id)) {
       continue;
     }
+
     for (Observer* observer : observers) {
       observer->OnAnimationSequenceEnded(animation_id);
     }
@@ -226,40 +232,45 @@ base::TimeDelta SidePanelAnimationCoordinator::GetElapsedAnimationTime() const {
 
 base::TimeDelta SidePanelAnimationCoordinator::GetAnimationDuration(
     AnimationType type) {
-  base::TimeDelta duration;
-  for (const AnimationSpecification& animation : animation_spec_map_[type]) {
-    duration = std::max(duration, animation.GetAnimationDuration());
-  }
-
+  base::TimeDelta duration =
+      animation_spec_map_.at(type).GetAnimationDuration();
   return duration;
 }
 
 bool SidePanelAnimationCoordinator::IsAnimationSequenceRunning(
     const SidePanelAnimationId& animation_id) {
-  return GetAnimationSpecificationForAnimationId(animation_id)
-      .IsSequenceRunning(animation_id, GetElapsedAnimationTime());
+  const std::optional<AnimationSpecification> specification =
+      GetAnimationSpecificationForAnimationId(animation_id);
+  if (!specification) {
+    return false;
+  }
+
+  return specification->IsSequenceRunning(animation_id,
+                                          GetElapsedAnimationTime());
 }
 
 bool SidePanelAnimationCoordinator::IsAnimationSequenceFinished(
     const SidePanelAnimationId& animation_id) {
-  const AnimationSpecification& specification =
+  const std::optional<AnimationSpecification> specification =
       GetAnimationSpecificationForAnimationId(animation_id);
+  if (!specification) {
+    return false;
+  }
+
   const AnimationSequence& sequence =
-      specification.GetSequenceForAnimationId(animation_id);
+      specification->GetSequenceForAnimationId(animation_id);
   return GetElapsedAnimationTime() >= sequence.start + sequence.duration;
 }
 
-const AnimationSpecification&
+const std::optional<AnimationSpecification>
 SidePanelAnimationCoordinator::GetAnimationSpecificationForAnimationId(
     const SidePanelAnimationId& animation_id) {
-  auto animation_it = std::ranges::find_if(
-      animation_spec_map_[animation_type_],
-      [animation_id](const AnimationSpecification& specification) {
-        return specification.HasAnimationId(animation_id);
-      });
+  const AnimationSpecification& animation_specification =
+      animation_spec_map_.at(animation_type_);
 
-  CHECK(animation_it != animation_spec_map_[animation_type_].end())
-      << "Property not found";
+  if (!animation_specification.HasAnimationId(animation_id)) {
+    return std::nullopt;
+  }
 
-  return *animation_it;
+  return animation_specification;
 }

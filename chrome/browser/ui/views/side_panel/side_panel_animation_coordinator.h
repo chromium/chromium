@@ -92,7 +92,6 @@ class SidePanelAnimationCoordinator : views::AnimationDelegateViews {
 
   // Start the animation for a specific type.
   void Start(AnimationType type);
-
   // Snap to the end state for the animations associated with `type`.
   void Reset(AnimationType type);
 
@@ -100,11 +99,20 @@ class SidePanelAnimationCoordinator : views::AnimationDelegateViews {
                    Observer* observer);
   void RemoveObserver(const SidePanelAnimationId& animation_id,
                       Observer* observer);
+
+  // Returns the animation value for `animation_id` based on it's
+  // AnimationSpecification's tween / animation curve. Will always return 0 for
+  // animation ids that don't exist for current animation type.
   double GetAnimationValueFor(const SidePanelAnimationId& animation_id);
 
   // Returns true if the AnimationCoordinator is in the process of a close
   // animation.
   bool IsClosing();
+
+  std::map<AnimationType, AnimationSpecification>&
+  animation_spec_map_for_testing() {
+    return animation_spec_map_;
+  }
 
  private:
   // views::AnimationDelegateViews
@@ -116,24 +124,25 @@ class SidePanelAnimationCoordinator : views::AnimationDelegateViews {
   base::TimeDelta GetAnimationDuration(AnimationType type);
 
   // Returns true if the animation is running based on `current_progress_ms_`
-  // and the `animate_state_`.
+  // and the `animate_state_`. Can return false if `animation_id` was not found.
   bool IsAnimationSequenceRunning(const SidePanelAnimationId& animation_id);
 
   // Returns true if the animation is finished based on `current_progress_ms_`
-  // and the `animate_state_`.
+  // and the `animate_state_`. Can return false if `animation_id` was not found.
   bool IsAnimationSequenceFinished(const SidePanelAnimationId& animation_id);
 
-  const AnimationSpecification& GetAnimationSpecificationForAnimationId(
+  // Returns the AnimationSpecification for `animation_id`. Will always return 0
+  // for animation_ids that don't exist for current animation type.
+  const std::optional<AnimationSpecification>
+  GetAnimationSpecificationForAnimationId(
       const SidePanelAnimationId& animation_id);
 
-  // When true we are showing the animation. When false we are hiding the
-  // animation.
+  // The current AnimationType of the coordinator.
   AnimationType animation_type_ = AnimationType::kClose;
 
-  // Maps the AnimationType to the list of all of the AnimationSpecifications
-  // that should run for that type.
-  std::map<AnimationType, std::vector<AnimationSpecification>>
-      animation_spec_map_;
+  // Maps the AnimationType to a single AnimationSpecifications that will run
+  // for that type.
+  std::map<AnimationType, AnimationSpecification> animation_spec_map_;
 
   // Maps the property id to the list of its observers.
   std::map<SidePanelAnimationId, std::vector<raw_ptr<Observer>>>

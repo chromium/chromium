@@ -3724,6 +3724,7 @@ if (!is_android) {
       "../browser/ui/views/sharing/sharing_browsertest.cc",
       "../browser/ui/views/sharing/sharing_browsertest.h",
       "../browser/ui/views/side_panel/history_clusters/history_clusters_side_panel_coordinator_browsertest.cc",
+      "../browser/ui/views/side_panel/side_panel_animation_coordinator_browsertest.cc",
       "../browser/ui/views/side_panel/side_panel_coordinator_browsertest.cc",
       "../browser/ui/views/side_panel/side_panel_web_ui_view_browsertest.cc",
       "../browser/ui/views/tab_contents/chrome_web_contents_view_delegate_browsertest.cc",
