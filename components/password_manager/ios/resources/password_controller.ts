@@ -163,8 +163,11 @@ function fillPasswordForm(
   }
 
   // Check fields that are not inside any <form> tag.
+  // TODO(crbug.com/454044167): Cleanup autofill TS type casting.
   const unownedInputs =
-      gCrWebLegacy.fill.getUnownedAutofillableFormFieldElements(document.all, []);
+      fillUtil.getUnownedAutofillableFormFieldElements(
+          Array.from(document.all) as fillConstants.FormControlElement[], []) as
+      HTMLInputElement[];
   if (unownedInputs.length > 0) {
     return fillUsernameAndPassword(unownedInputs, formData, username, password);
   }
@@ -216,9 +219,12 @@ function fillGeneratedPassword(
   if (!form && hasFormTag) {
     return false;
   }
+  // TODO(crbug.com/454044167): Cleanup autofill TS type casting.
   const inputs = hasFormTag ?
       getFormInputElements(form) :
-      gCrWebLegacy.fill.getUnownedAutofillableFormFieldElements(document.all, []);
+      fillUtil.getUnownedAutofillableFormFieldElements(
+          Array.from(document.all) as fillConstants.FormControlElement[], []) as
+          HTMLInputElement[];
   const newPasswordField =
       findInputByFieldRendererID(inputs, newPasswordIdentifier);
   if (!newPasswordField) {
@@ -381,9 +387,11 @@ function getPasswordFormDataList(formDataList: fillUtil.AutofillFormData[]) {
  */
 function getPasswordFormDataFromUnownedElements(): object|null {
   const fieldsets: fillConstants.FormControlElement[] = [];
+  // TODO(crbug.com/454044167): Cleanup autofill TS type casting.
   const unownedControlElements =
-  gCrWebLegacy.fill.getUnownedAutofillableFormFieldElements(
-          document.all, fieldsets);
+      fillUtil.getUnownedAutofillableFormFieldElements(
+          Array.from(document.all) as fillConstants.FormControlElement[],
+          fieldsets) as HTMLInputElement[];
   if (unownedControlElements.length === 0) {
     return null;
   }

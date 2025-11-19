@@ -154,8 +154,7 @@ function getUnownedIframes() {
 function extractUnownedFields(restrictUnownedFieldsToFormlessCheckout) {
   const fieldsets = [];
   const unownedControlElements =
-      __gCrWeb.fill.getUnownedAutofillableFormFieldElements(
-          document.all, fieldsets);
+      fillUtil.getUnownedAutofillableFormFieldElements(document.all, fieldsets);
   const numEditableUnownedElements =
       countEditableElements_(unownedControlElements);
   const iframeElements =
@@ -386,7 +385,7 @@ __gCrWeb.autofill['clearAutofilledFields'] = function(
 
   const controlElements = form ?
       __gCrWeb.form.getFormControlElements(form) :
-      __gCrWeb.fill.getUnownedAutofillableFormFieldElements(
+      fillUtil.getUnownedAutofillableFormFieldElements(
           document.all,
           /*fieldsets=*/[]);
 

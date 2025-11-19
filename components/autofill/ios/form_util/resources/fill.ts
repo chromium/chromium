@@ -8,7 +8,6 @@ import * as fillConstants from '//components/autofill/ios/form_util/resources/fi
 import * as inferenceUtil from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
 import {formOrFieldsetsToFormData, getFrameUrlOrOrigin} from '//components/autofill/ios/form_util/resources/fill_web_form.js';
-import {isFormControlElement} from '//components/autofill/ios/form_util/resources/form_utils.js';
 import {gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {isTextField} from '//ios/web/public/js_messaging/resources/utils.js';
 
@@ -229,45 +228,6 @@ gCrWebLegacy.fill.autofillSubmissionData =
 };
 
 /**
- * Get all form control elements from |elements| that are not part of a form.
- * Also append the fieldsets encountered that are not part of a form to
- * |fieldsets|.
- *
- * It is based on the logic in:
- *     std::vector<WebFormControlElement>
- *     GetUnownedAutofillableFormFieldElements(
- *         const WebElementCollection& elements,
- *         std::vector<WebElement>* fieldsets);
- * in chromium/src/components/autofill/content/renderer/form_autofill_util.cc.
- *
- * In the C++ version, |fieldsets| can be NULL, in which case we do not try to
- * append to it.
- *
- * @param elements elements to look through.
- * @param fieldsets out param for unowned fieldsets.
- * @return The elements that are not part of a form.
- */
-gCrWebLegacy.fill.getUnownedAutofillableFormFieldElements = function(
-    elements: fillConstants.FormControlElement[],
-    fieldsets: Element[]): fillConstants.FormControlElement[] {
-  const unownedFieldsetChildren: fillConstants.FormControlElement[] = [];
-  for (const element of elements) {
-    if (isFormControlElement(element)) {
-      if (!element.form) {
-        unownedFieldsetChildren.push(element);
-      }
-    }
-
-    if (inferenceUtil.hasTagName(element, 'fieldset') &&
-        !fillUtil.isElementInsideFormOrFieldSet(element)) {
-      fieldsets.push(element);
-    }
-  }
-  return extractAutofillableElementsFromSet(unownedFieldsetChildren);
-};
-
-
-/**
  * Fills |form| with the form data object corresponding to the unowned elements
  * and fieldsets in the document.
  * |extract_mask| controls what data is extracted.
@@ -370,29 +330,3 @@ gCrWebLegacy.fill.unownedFormElementsAndFieldSetsToFormData = function(
       form);
 };
 
-
-/**
- * Returns the auto-fillable form control elements in |formElement|.
- *
- * It is based on the logic in:
- *     std::vector<blink::WebFormControlElement>
- *     ExtractAutofillableElementsFromSet(
- *         const WebVector<WebFormControlElement>& control_elements);
- * in chromium/src/components/autofill/content/renderer/form_autofill_util.h.
- *
- * @param controlElements Set of control elements.
- * @return The array of autofillable elements.
- */
-function extractAutofillableElementsFromSet(
-    controlElements: fillConstants.FormControlElement[])
-    : fillConstants.FormControlElement[] {
-  const autofillableElements
-      : fillConstants.FormControlElement[] = [];
-  for (const element of controlElements) {
-    if (!inferenceUtil.isAutofillableElement(element)) {
-      continue;
-    }
-    autofillableElements.push(element);
-  }
-  return autofillableElements;
-}
