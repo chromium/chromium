@@ -3672,7 +3672,7 @@
             ]
         }
     ],
-    "BackForwardTransitionsCrossDocSharedImage": [
+    "BackForwardTransitionsSharedImage": [
         {
             "platforms": [
                 "android"
@@ -3681,21 +3681,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "BackForwardTransitionsCrossDocSharedImage"
-                    ]
-                }
-            ]
-        }
-    ],
-    "BackForwardTransitionsSameDocSharedImage": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
+                        "BackForwardTransitionsCrossDocSharedImage",
+                        "BackForwardTransitionsNativePageSharedImage",
                         "BackForwardTransitionsSameDocSharedImage"
                     ]
                 }
