@@ -7,9 +7,8 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
-#include "services/webnn/ort/buffer_content_ort.h"
+#include "services/webnn/ort/scoped_ort_types.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom-forward.h"
-#include "services/webnn/queueable_resource_state.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_tensor_impl.h"
 #include "third_party/windows_app_sdk_headers/src/inc/abi/winml/winml/onnxruntime_c_api.h"
@@ -18,17 +17,16 @@ namespace webnn::ort {
 
 class TensorImplOrt final : public WebNNTensorImpl {
  public:
-  TensorImplOrt(
-      mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
-      base::WeakPtr<WebNNContextImpl> context,
-      mojom::TensorInfoPtr tensor_info,
-      scoped_refptr<QueueableResourceState<BufferContentOrt>> buffer_state);
+  TensorImplOrt(mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
+                base::WeakPtr<WebNNContextImpl> context,
+                mojom::TensorInfoPtr tensor_info,
+                size_t size,
+                ScopedOrtValue tensor);
 
   TensorImplOrt(const TensorImplOrt&) = delete;
   TensorImplOrt& operator=(const TensorImplOrt&) = delete;
 
-  const scoped_refptr<QueueableResourceState<BufferContentOrt>>&
-  GetBufferState() const;
+  OrtValue* tensor() const { return tensor_.get(); }
 
  private:
   ~TensorImplOrt() override;
@@ -40,8 +38,10 @@ class TensorImplOrt final : public WebNNTensorImpl {
       std::unique_ptr<gpu::WebNNTensorRepresentation::ScopedAccess> access)
       override;
 
-  scoped_refptr<QueueableResourceState<BufferContentOrt>> buffer_state_
-      GUARDED_BY_CONTEXT(gpu_sequence_checker_);
+  base::span<uint8_t> AsSpan() const;
+
+  const ScopedOrtValue tensor_ GUARDED_BY_CONTEXT(gpu_sequence_checker_);
+  const size_t size_;
 };
 
 }  // namespace webnn::ort

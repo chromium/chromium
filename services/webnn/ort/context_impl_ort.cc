@@ -5,14 +5,14 @@
 #include "services/webnn/ort/context_impl_ort.h"
 
 #include "base/feature_list.h"
-#include "services/webnn/ort/buffer_content_ort.h"
 #include "services/webnn/ort/graph_impl_ort.h"
+#include "services/webnn/ort/ort_data_type.h"
+#include "services/webnn/ort/ort_status.h"
 #include "services/webnn/ort/tensor_impl_ort.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom.h"
-#include "services/webnn/queueable_resource_state.h"
 #include "services/webnn/scoped_sequence.h"
 #include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_context_impl.h"
@@ -371,14 +371,44 @@ ContextImplOrt::CreateTensorImpl(
                           "Creation of constant tensors is not supported."));
   }
 
-  auto buffer_content = std::make_unique<BufferContentOrt>(
-      tensor_info->descriptor, device_allocator_);
-  auto buffer_state =
-      base::MakeRefCounted<QueueableResourceState<BufferContentOrt>>(
-          std::move(buffer_content));
+  const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
+
+  OrtAllocator* allocator = nullptr;
+  // Use the device allocator if it's present. Otherwise, use the default
+  // allocator which is CPU based and non-arena.
+  if (device_allocator_) {
+    allocator = device_allocator_->get();
+  } else {
+    // `GetAllocatorWithDefaultOptions()` always returns the same pointer to the
+    // same default allocator and its returned value should NOT be freed.
+    CHECK_STATUS(ort_api->GetAllocatorWithDefaultOptions(&allocator));
+  }
+  CHECK(allocator);
+
+  ONNXTensorElementDataType ort_data_type =
+      WebnnToOnnxDataType(tensor_info->descriptor.data_type());
+  std::vector<int64_t> ort_shape =
+      WebnnToOnnxShape(tensor_info->descriptor.shape());
+
+  // TODO(crbug.com/453420646): Implement context lost handling for ORT tensor
+  // creation failures.
+  // TODO(crbug.com/445971854): Emit mojom::Error since CreateTensorAsOrtValue()
+  // could malloc and fail if OOM.
+  ScopedOrtValue tensor;
+  CHECK_STATUS(ort_api->CreateTensorAsOrtValue(
+      allocator, ort_shape.data(), ort_shape.size(), ort_data_type,
+      ScopedOrtValue::Receiver(tensor).get()));
+  CHECK(tensor.get());
+
+  size_t size;
+  CHECK_STATUS(ort_api->GetTensorSizeInBytes(tensor.get(), &size));
+
+  // Invalid values are rejected in GraphBuilder.
+  CHECK(base::IsValueInRangeForNumericType<int>(size));
+
   return base::MakeRefCounted<TensorImplOrt>(std::move(receiver), AsWeakPtr(),
-                                             std::move(tensor_info),
-                                             std::move(buffer_state));
+                                             std::move(tensor_info), size,
+                                             std::move(tensor));
 }
 
 base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>

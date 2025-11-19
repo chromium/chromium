@@ -8,6 +8,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "services/webnn/error.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
+#include "services/webnn/public/cpp/webnn_trace.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom.h"
 #include "services/webnn/webnn_context_impl.h"
 
@@ -51,6 +52,8 @@ bool WebNNTensorImpl::IsValidWithDescriptor(
 }
 
 void WebNNTensorImpl::ReadTensor(ReadTensorCallback callback) {
+  ScopedTrace scoped_trace("WebNNTensorImpl::ReadTensor");
+
   if (!usage().Has(MLTensorUsageFlags::kRead)) {
     GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
     return;
@@ -64,22 +67,25 @@ void WebNNTensorImpl::ReadTensor(ReadTensorCallback callback) {
 
   // Call ReadTensorImpl() implemented by a backend.
   context_->scheduler_task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](WebNNTensorImpl* self, ReadTensorCallback callback,
-             mojo::ReportBadMessageCallback bad_message_cb) {
-            if (self->is_exported()) {
-              LOG(ERROR) << "[WebNN] Invalid to read tensor when exported.";
-              std::move(bad_message_cb).Run(kBadMessageInvalidTensor);
-              return;
-            }
-            self->ReadTensorImpl(std::move(callback));
-          },
-          base::RetainedRef(this), std::move(mojo_callback_wrapper),
-          GetMojoReceiver().GetBadMessageCallback()));
+      FROM_HERE, base::BindOnce(
+                     [](WebNNTensorImpl* self, ReadTensorCallback callback,
+                        ScopedTrace scoped_trace) {
+                       if (self->is_exported()) {
+                         LOG(ERROR)
+                             << "[WebNN] Invalid to read tensor when exported.";
+                         self->GetMojoReceiver().ReportBadMessage(
+                             kBadMessageInvalidTensor);
+                         return;
+                       }
+                       self->ReadTensorImpl(std::move(callback));
+                     },
+                     base::RetainedRef(this), std::move(mojo_callback_wrapper),
+                     std::move(scoped_trace)));
 }
 
 void WebNNTensorImpl::WriteTensor(mojo_base::BigBuffer src_buffer) {
+  ScopedTrace scoped_trace("WebNNTensorImpl::WriteTensor");
+
   if (!usage().Has(MLTensorUsageFlags::kWrite)) {
     GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
     return;
@@ -99,16 +105,17 @@ void WebNNTensorImpl::WriteTensor(mojo_base::BigBuffer src_buffer) {
       FROM_HERE,
       base::BindOnce(
           [](WebNNTensorImpl* self, mojo_base::BigBuffer src_buffer,
-             mojo::ReportBadMessageCallback bad_message_cb) {
+             ScopedTrace scoped_trace) {
             if (self->is_exported()) {
               LOG(ERROR) << "[WebNN] Invalid to write tensor when exported.";
-              std::move(bad_message_cb).Run(kBadMessageInvalidTensor);
+              self->GetMojoReceiver().ReportBadMessage(
+                  kBadMessageInvalidTensor);
               return;
             }
             self->WriteTensorImpl(std::move(src_buffer));
           },
           base::RetainedRef(this), std::move(src_buffer),
-          GetMojoReceiver().GetBadMessageCallback()));
+          std::move(scoped_trace)));
 }
 
 void WebNNTensorImpl::ImportTensor(const gpu::SyncToken& fence) {

@@ -5,13 +5,14 @@
 #include "services/webnn/ort/tensor_impl_ort.h"
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/notimplemented.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "services/webnn/ort/context_impl_ort.h"
+#include "services/webnn/ort/ort_status.h"
 #include "services/webnn/ort/platform_functions_ort.h"
 #include "services/webnn/public/cpp/webnn_trace.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom.h"
-#include "services/webnn/resource_task.h"
 
 namespace webnn::ort {
 
@@ -19,100 +20,49 @@ TensorImplOrt::TensorImplOrt(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
     base::WeakPtr<WebNNContextImpl> context,
     mojom::TensorInfoPtr tensor_info,
-    scoped_refptr<QueueableResourceState<BufferContentOrt>> buffer_state)
+    size_t size,
+    ScopedOrtValue tensor)
     : WebNNTensorImpl(std::move(receiver),
                       std::move(context),
                       std::move(tensor_info)),
-      buffer_state_(std::move(buffer_state)) {}
+      tensor_(std::move(tensor)),
+      size_(size) {
+  // Initialize the tensor with zeros, otherwise, reading uninitialized memory
+  // will get random values.
+  // TODO(crbug.com/461303833): check whether fast HW clears can be used
+  // instead.
+  std::ranges::fill(AsSpan(), 0);
+}
 
 TensorImplOrt::~TensorImplOrt() = default;
 
-const scoped_refptr<QueueableResourceState<BufferContentOrt>>&
-TensorImplOrt::GetBufferState() const {
+base::span<uint8_t> TensorImplOrt::AsSpan() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
 
-  return buffer_state_;
+  void* ort_tensor_raw_data = nullptr;
+  CHECK_STATUS(
+      PlatformFunctions::GetInstance()->ort_api()->GetTensorMutableData(
+          tensor_.get(), &ort_tensor_raw_data));
+  CHECK(ort_tensor_raw_data);
+  // SAFETY: ORT guarantees that it has allocated enough memory to
+  // store tensor.
+  return UNSAFE_BUFFERS(
+      base::span(static_cast<uint8_t*>(ort_tensor_raw_data), size_));
 }
 
 void TensorImplOrt::ReadTensorImpl(ReadTensorCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
 
-  ScopedTrace scoped_trace("TensorImplOrt::ReadTensorImpl");
-
-  // Lock the buffer contents as shared/read-only.
-  std::vector<scoped_refptr<QueueableResourceStateBase>> shared_resources = {
-      buffer_state_};
-
-  scoped_trace.AddStep("Wait for tensor");
-  auto task = base::MakeRefCounted<ResourceTask>(
-      /*shared_resources=*/
-      std::move(shared_resources),
-      /*exclusive_resources=*/
-      std::vector<scoped_refptr<QueueableResourceStateBase>>(),
-      base::BindOnce(
-          [](base::WeakPtr<WebNNContextImpl> context, size_t bytes_to_read,
-             scoped_refptr<QueueableResourceState<BufferContentOrt>>
-                 buffer_state,
-             ReadTensorCallback callback, ScopedTrace scoped_trace,
-             base::OnceClosure completion_closure) {
-            if (context) {
-              scoped_trace.AddStep("Begin read");
-              // Memory copies are fast, avoid the overhead of posting a task
-              // to the thread pool and do the work synchronously.
-              base::span<const uint8_t> buffer_span =
-                  buffer_state->GetSharedLockedResource().AsSpan();
-              CHECK_EQ(bytes_to_read, buffer_span.size());
-              std::move(callback).Run(mojom::ReadTensorResult::NewBuffer(
-                  context->WriteDataToDataPipeOrBigBuffer(buffer_span)));
-
-              scoped_trace.AddStep("End read");
-            }
-            // Unlock the buffer contents.
-            std::move(completion_closure).Run();
-          },
-          context_->AsWeakPtr(),
-          /*bytes_to_read=*/PackedByteLength(), buffer_state_,
-          std::move(callback), std::move(scoped_trace)));
-  task->Enqueue();
+  base::span<const uint8_t> buffer_span = AsSpan();
+  CHECK_EQ(PackedByteLength(), buffer_span.size());
+  std::move(callback).Run(mojom::ReadTensorResult::NewBuffer(
+      context_->WriteDataToDataPipeOrBigBuffer(buffer_span)));
 }
 
 void TensorImplOrt::WriteTensorImpl(mojo_base::BigBuffer src_buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
 
-  ScopedTrace scoped_trace("TensorImplOrt::WriteTensorImpl");
-
-  // Take an exclusive lock to the buffer contents while writing.
-  std::vector<scoped_refptr<QueueableResourceStateBase>> exclusive_resources = {
-      buffer_state_};
-
-  scoped_trace.AddStep("Wait for tensor");
-  auto task = base::MakeRefCounted<ResourceTask>(
-      /*shared_resources=*/
-      std::vector<scoped_refptr<QueueableResourceStateBase>>(),
-      /*exclusive_resources=*/
-      std::move(exclusive_resources),
-      base::BindOnce(
-          [](base::WeakPtr<WebNNContextImpl> context,
-             scoped_refptr<QueueableResourceState<BufferContentOrt>>
-                 buffer_state,
-             mojo_base::BigBuffer src_buffer, ScopedTrace scoped_trace,
-             base::OnceClosure completion_closure) {
-            if (context) {
-              scoped_trace.AddStep("Begin write");
-              // Memory copies are fast, avoid the overhead of posting a task to
-              // the thread pool and do the work synchronously.
-              base::span<uint8_t> buffer_span =
-                  buffer_state->GetExclusivelyLockedResource()->AsSpan();
-              context->ReadDataFromBigBufferOrDataPipe(std::move(src_buffer),
-                                                       buffer_span);
-              scoped_trace.AddStep("End write");
-            }
-            // Unlock the buffer contents.
-            std::move(completion_closure).Run();
-          },
-          context_->AsWeakPtr(), buffer_state_, std::move(src_buffer),
-          std::move(scoped_trace)));
-  task->Enqueue();
+  context_->ReadDataFromBigBufferOrDataPipe(std::move(src_buffer), AsSpan());
 }
 
 bool TensorImplOrt::ImportTensorImpl() {

@@ -169,8 +169,6 @@ component("webnn_service") {
 
   if (is_win) {
     sources += [
-      "ort/buffer_content_ort.cc",
-      "ort/buffer_content_ort.h",
       "ort/context_impl_ort.cc",
       "ort/context_impl_ort.h",
       "ort/context_provider_ort.cc",

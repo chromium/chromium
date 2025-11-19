@@ -22,34 +22,11 @@
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
-#include "services/webnn/resource_task.h"
 #include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_graph_impl.h"
 #include "third_party/windows_app_sdk_headers/src/inc/abi/winml/winml/onnxruntime_c_api.h"
 
 namespace webnn::ort {
-
-namespace {
-
-std::vector<std::pair<std::string,
-                      scoped_refptr<QueueableResourceState<BufferContentOrt>>>>
-ToNamedBufferStates(
-    const base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>>&
-        named_tensors) {
-  std::vector<std::pair<
-      std::string, scoped_refptr<QueueableResourceState<BufferContentOrt>>>>
-      buffer_states_vec;
-  buffer_states_vec.reserve(named_tensors.size());
-
-  for (const auto& [name, tensor] : named_tensors) {
-    auto* ort_tensor = static_cast<TensorImplOrt*>(tensor.get());
-    buffer_states_vec.emplace_back(name, ort_tensor->GetBufferState());
-  }
-
-  return buffer_states_vec;
-}
-
-}  // namespace
 
 // Represents the collection of resources associated with a particular graph.
 // These resources may outlive their associated `GraphImplOrt` instance while
@@ -74,12 +51,12 @@ class GraphImplOrt::ComputeResources {
 
   ~ComputeResources() = default;
 
-  void OrtRunSync(
-      std::vector<std::pair<std::string, const OrtValue*>> named_input_tensors,
-      std::vector<std::pair<std::string, OrtValue*>> named_output_tensors) {
+  void OrtRunSync(base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>>
+                      named_input_tensors,
+                  base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>>
+                      named_output_tensors) {
     SCOPED_UMA_HISTOGRAM_TIMER("WebNN.ORT.TimingMs.Inference");
 
-    ScopedTrace scoped_trace("GraphImplOrt::ComputeResources::OrtRunSync");
     std::vector<const char*> input_names;
     std::vector<const OrtValue*> input_tensors;
     input_names.reserve(named_input_tensors.size());
@@ -87,7 +64,8 @@ class GraphImplOrt::ComputeResources {
     for (const auto& [name, tensor] : named_input_tensors) {
       input_names.push_back(
           operand_input_name_to_onnx_input_name_.at(name).c_str());
-      input_tensors.push_back(tensor);
+      input_tensors.push_back(
+          static_cast<TensorImplOrt*>(tensor.get())->tensor());
     }
 
     std::vector<const char*> output_names;
@@ -97,7 +75,8 @@ class GraphImplOrt::ComputeResources {
     for (const auto& [name, tensor] : named_output_tensors) {
       output_names.push_back(
           operand_output_name_to_onnx_output_name_.at(name).c_str());
-      output_tensors.push_back(tensor);
+      output_tensors.push_back(
+          static_cast<TensorImplOrt*>(tensor.get())->tensor());
     }
 
     const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
@@ -222,88 +201,18 @@ GraphImplOrt::GraphImplOrt(
     : WebNNGraphImpl(std::move(receiver),
                      std::move(context),
                      std::move(compute_resource_info),
-                     std::move(devices)) {
-  compute_resources_state_ =
-      base::MakeRefCounted<QueueableResourceState<ComputeResources>>(
-          std::move(compute_resources));
-}
+                     std::move(devices)),
+      compute_resources_(std::move(compute_resources)) {}
 
 void GraphImplOrt::DispatchImpl(
     base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>>
         named_input_tensors,
     base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>>
         named_output_tensors) {
-  ScopedTrace scoped_trace("GraphImplOrt::DispatchImpl");
-  std::vector<std::pair<
-      std::string, scoped_refptr<QueueableResourceState<BufferContentOrt>>>>
-      named_input_buffer_states = ToNamedBufferStates(named_input_tensors);
-  std::vector<std::pair<
-      std::string, scoped_refptr<QueueableResourceState<BufferContentOrt>>>>
-      named_output_buffer_states = ToNamedBufferStates(named_output_tensors);
-
-  // Input tensors will be read from while the graph is executing, so lock them
-  // them as shared/read-only.
-  std::vector<scoped_refptr<QueueableResourceStateBase>> shared_resources;
-  shared_resources.reserve(named_input_tensors.size());
-  for (const auto& [_, buffer_state] : named_input_buffer_states) {
-    shared_resources.push_back(buffer_state);
-  }
-
-  // Exclusively reserve all output tensors, which will be written to.
-  std::vector<scoped_refptr<QueueableResourceStateBase>> exclusive_resources;
-  // Extra +1 is for the compute resources.
-  exclusive_resources.reserve(1 + named_output_tensors.size());
-  exclusive_resources.push_back(compute_resources_state_);
-  for (const auto& [_, buffer_state] : named_output_buffer_states) {
-    exclusive_resources.push_back(buffer_state);
-  }
-
-  auto task = base::MakeRefCounted<ResourceTask>(
-      std::move(shared_resources), std::move(exclusive_resources),
-      base::BindOnce(
-          [](scoped_refptr<QueueableResourceState<ComputeResources>>
-                 compute_resources_state,
-             std::vector<std::pair<
-                 std::string,
-                 scoped_refptr<QueueableResourceState<BufferContentOrt>>>>
-                 named_input_buffer_states,
-             std::vector<std::pair<
-                 std::string,
-                 scoped_refptr<QueueableResourceState<BufferContentOrt>>>>
-                 named_output_buffer_states,
-             base::OnceClosure completion_closure) {
-            ComputeResources* raw_compute_resources =
-                compute_resources_state->GetExclusivelyLockedResource();
-
-            std::vector<std::pair<std::string, const OrtValue*>>
-                named_input_tensors;
-            named_input_tensors.reserve(named_input_buffer_states.size());
-            std::vector<std::pair<std::string, OrtValue*>> named_output_tensors;
-            named_output_tensors.reserve(named_output_buffer_states.size());
-
-            for (const auto& [name, buffer] : named_input_buffer_states) {
-              named_input_tensors.emplace_back(
-                  name, buffer->GetSharedLockedResource().tensor());
-            }
-            for (const auto& [name, buffer] : named_output_buffer_states) {
-              named_output_tensors.emplace_back(
-                  name, buffer->GetExclusivelyLockedResource()->tensor());
-            }
-
-            // Compute tasks can take a significant amount of time, use the
-            // thread pool to avoid blocking the main thread.
-            base::ThreadPool::PostTaskAndReply(
-                FROM_HERE,
-                base::BindOnce(&ComputeResources::OrtRunSync,
-                               base::Unretained(raw_compute_resources),
-                               std::move(named_input_tensors),
-                               std::move(named_output_tensors)),
-                std::move(completion_closure));
-          },
-          compute_resources_state_, std::move(named_input_buffer_states),
-          std::move(named_output_buffer_states)));
-
-  task->Enqueue();
+  // Ort runs the graph on its own thread, so this call blocks until execution
+  // completes.
+  compute_resources_->OrtRunSync(std::move(named_input_tensors),
+                                 std::move(named_output_tensors));
 }
 
 }  // namespace webnn::ort
