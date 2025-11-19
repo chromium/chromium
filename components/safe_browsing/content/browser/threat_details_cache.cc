@@ -177,7 +177,7 @@ void ThreatDetailsCacheCollector::OnURLLoaderComplete(
   }
 
   ReadResponse(resource);
-  ReadData(resource, response_body.value_or(""));
+  ReadData(resource, std::move(response_body).value_or(""));
   AdvanceEntry();
 }
 

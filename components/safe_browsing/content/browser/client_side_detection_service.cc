@@ -220,7 +220,7 @@ void ClientSideDetectionService::OnURLLoaderComplete(
   DCHECK(base::Contains(client_phishing_reports_, url_loader));
   HandlePhishingVerdict(url_loader, url_loader->GetFinalURL(),
                         url_loader->NetError(), response_code,
-                        response_body.value_or(""));
+                        std::move(response_body).value_or(""));
 }
 
 void ClientSideDetectionService::SendModelToRenderers() {

@@ -117,8 +117,8 @@ void IncidentReportUploaderImpl::OnURLLoaderComplete(
   if (url_loader->ResponseInfo() && url_loader->ResponseInfo()->headers)
     response_code = url_loader->ResponseInfo()->headers->response_code();
 
-  OnURLLoaderCompleteInternal(response_body.value_or(""), response_code,
-                              url_loader->NetError());
+  OnURLLoaderCompleteInternal(std::move(response_body).value_or(""),
+                              response_code, url_loader->NetError());
 }
 
 void IncidentReportUploaderImpl::OnURLLoaderCompleteInternal(

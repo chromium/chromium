@@ -341,7 +341,7 @@ void V4UpdateProtocolManager::OnURLLoaderComplete(
     response_code = request_->ResponseInfo()->headers->response_code();
 
   OnURLLoaderCompleteInternal(request_->NetError(), response_code,
-                              response_body.value_or(""));
+                              std::move(response_body).value_or(""));
 }
 
 void V4UpdateProtocolManager::OnURLLoaderCompleteInternal(

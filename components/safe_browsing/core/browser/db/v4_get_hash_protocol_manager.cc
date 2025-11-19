@@ -780,7 +780,7 @@ void V4GetHashProtocolManager::OnURLLoaderComplete(
     response_code = url_loader->ResponseInfo()->headers->response_code();
 
   OnURLLoaderCompleteInternal(url_loader, url_loader->NetError(), response_code,
-                              response_body.value_or(""));
+                              std::move(response_body).value_or(""));
 }
 
 void V4GetHashProtocolManager::OnURLLoaderCompleteInternal(
