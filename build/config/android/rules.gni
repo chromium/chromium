@@ -2936,7 +2936,8 @@ if (!is_robolectric && enable_java_templates) {
           deps += [ ":$_compile_resources_target" ]
           proguard_mapping_path = _proguard_mapping_path
 
-          if (!defined(enable_proguard_checks) && defined(testonly) && testonly) {
+          if (!defined(enable_proguard_checks) && defined(testonly) &&
+              testonly) {
             # Ignore -checkdiscard and -checkenumunboxed failures.
             enable_proguard_checks = false
           }
@@ -3254,6 +3255,7 @@ if (!is_robolectric && enable_java_templates) {
                                [
                                  "lint_baseline_file",
                                  "lint_gen_dir",
+                                 "lint_jar_path",
                                  "lint_suppressions_file",
                                  "min_sdk_version",
                                ])

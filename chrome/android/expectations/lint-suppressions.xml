@@ -368,6 +368,9 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <ignore regexp="The resource `R.plurals.tab_selection_editor_unpin_tabs` appears to be unused"/>
     <ignore regexp="The resource `R.plurals.accessibility_tab_selection_editor_unpin_tabs` appears to be unused"/>
 
+    <!-- TODO(https://crbug.com/461840249): Remove the following 1 line after lint migrates to using merged manifests. -->
+    <ignore regexp="The resource `R.string.menu` appears to be unused"/>
+
     <!-- Endnote: Please specify number of suppressions when adding more -->
   </issue>
   <issue id="VectorPath" severity="ignore"/>

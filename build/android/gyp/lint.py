@@ -97,6 +97,7 @@ def _GenerateProjectFile(android_manifest,
   manifest = ElementTree.SubElement(main_module, 'manifest')
   manifest.set('file', android_manifest)
   if srcjar_sources:
+    srcjar_sources = sorted(set(srcjar_sources))  # Ensure these are unique.
     for srcjar_file in srcjar_sources:
       src = ElementTree.SubElement(main_module, 'src')
       src.set('file', srcjar_file)
@@ -104,6 +105,7 @@ def _GenerateProjectFile(android_manifest,
       # we get "UnusedResources" lint errors when resources are used only by
       # generated files.
   if sources:
+    sources = sorted(set(sources))  # Ensure these are unique.
     for source in sources:
       src = ElementTree.SubElement(main_module, 'src')
       src.set('file', source)
@@ -111,14 +113,17 @@ def _GenerateProjectFile(android_manifest,
       # non-test files, which lint does not allow:
       # "Test sources cannot be in the same source root as production files"
   if classpath:
+    # The classpath entries should already be unique and order matters.
     for file_path in classpath:
       classpath_element = ElementTree.SubElement(main_module, 'classpath')
       classpath_element.set('file', file_path)
   if resource_sources:
+    resource_sources = sorted(set(resource_sources))  # Ensure these are unique.
     for resource_file in resource_sources:
       resource = ElementTree.SubElement(main_module, 'resource')
       resource.set('file', resource_file)
   if aars:
+    aars = sorted(set(aars))  # Ensure these are unique.
     for aar in aars:
       lint = ElementTree.SubElement(main_module, 'aar')
       lint.set('file', aar)

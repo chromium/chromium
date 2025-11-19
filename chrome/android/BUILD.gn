@@ -63,7 +63,6 @@ if (android_64bit_target_cpu) {
   _main_monochrome_public_bundle_target = "monochrome_32_64_public_bundle"
   _main_trichrome_chrome_bundle_target = "trichrome_chrome_32_64_bundle"
   _main_trichrome_library_apk_target = "trichrome_library_32_64_apk"
-  _android_lint_target_name = "monochrome_64_public_bundle"
 
   # monochrome_apk is only 64-bit primary, we have no 32-bit primary version,
   # as we don't ship it to users.
@@ -73,7 +72,6 @@ if (android_64bit_target_cpu) {
   _main_monochrome_public_apk_target = "monochrome_public_apk"
   _main_trichrome_chrome_bundle_target = "trichrome_chrome_bundle"
   _main_trichrome_library_apk_target = "trichrome_library_apk"
-  _android_lint_target_name = "monochrome_public_bundle"
 }
 
 if (_is_default_toolchain) {
@@ -129,20 +127,6 @@ if (_is_default_toolchain) {
       module_descs = chrome_module_descs
       chrome_deps = [ ":delegate_public_impl_java" ]
       add_view_trace_events = true
-
-      if (target_name == _android_lint_target_name) {
-        enable_lint = true
-
-        # Monochrome bundle is used as our unified lint target, so it needs to set the
-        # lowest shipping minSdkVersion to catch all potential NewApi errors.
-        lint_min_sdk_version = default_min_sdk_version
-        lint_baseline_file = "expectations/lint-baseline.xml"
-        lint_suppressions_file = "expectations/lint-suppressions.xml"
-
-        # Since this target's name changes if we are 32 or 64 bit, we want to keep
-        # the gen_dir the same for the lint baseline files.
-        lint_gen_dir = "$target_gen_dir/monochrome_public_bundle__lint"
-      }
     }
   }
 
@@ -2058,6 +2042,12 @@ if (_is_default_toolchain) {
           [ "//build/config:toolchain_marker_" +
             get_label_info(android_secondary_abi_toolchain, "name") ]
     }
+
+    # This target is used because we need an APK in order to allow a single
+    # merged manifest for lint.
+    enable_lint = true
+    lint_baseline_file = "expectations/lint-baseline.xml"
+    lint_suppressions_file = "expectations/lint-suppressions.xml"
   }
 
   chrome_public_bundle("chrome_public_bundle") {
@@ -2398,9 +2388,6 @@ if (_is_default_toolchain) {
 
   # TODO(crbug.com/40193330): Rename to chrome_public_integration_test_apk
   chrome_public_test_apk_tmpl("chrome_public_test_apk") {
-    # TODO(wnwen): Re-enable when new lint failures are disabled for test targets.
-    #enable_lint = true
-
     apk_name = "ChromePublicTest"
     deps = [
       ":chrome_test_apk_template_resources",
@@ -2781,7 +2768,7 @@ if (_is_default_toolchain) {
 
   group("android_lint") {
     if (!disable_android_lint) {
-      deps = [ ":${_android_lint_target_name}__lint" ]
+      deps = [ ":chrome_public_apk__lint" ]
       if (defined(additional_chrome_lint_targets)) {
         deps += additional_chrome_lint_targets
       }
