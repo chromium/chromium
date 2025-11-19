@@ -36,6 +36,7 @@ using internal::HostSendMessageResponse;
 constexpr char kFakePayload[] = "fake_payload";
 constexpr char kFakeUsername[] = "fake_user";
 constexpr char kFakeAuthzToken[] = "fake_token";
+constexpr char kFakePublicKey[] = "fake_public_key";
 
 using StatusCallback = CorpMessagingClient::StatusCallback;
 
@@ -56,7 +57,7 @@ class CorpMessagingClientTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
   ProtobufHttpTestResponder test_responder_;
-  CorpMessagingClient messaging_client_{kFakeUsername,
+  CorpMessagingClient messaging_client_{kFakeUsername, kFakePublicKey,
                                         test_responder_.GetUrlLoaderFactory(),
                                         CreateClientCertStoreInstance()};
 };

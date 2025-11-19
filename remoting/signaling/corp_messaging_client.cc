@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "remoting/base/environment_details.h"
 #include "remoting/base/http_status.h"
 #include "remoting/base/internal_headers.h"
 #include "remoting/base/protobuf_http_client.h"
@@ -93,9 +94,11 @@ constexpr net::NetworkTrafficAnnotationTag kSendMessageTrafficAnnotation =
 
 CorpMessagingClient::CorpMessagingClient(
     const std::string& username,
+    const std::string& public_key,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<net::ClientCertStore> client_cert_store)
     : username_(username),
+      public_key_(public_key),
       client_(std::make_unique<ProtobufHttpClient>(
           ServiceUrls::GetInstance()->remoting_corp_endpoint(),
           /*token_getter=*/nullptr,
@@ -214,6 +217,12 @@ CorpMessagingClient::OpenReceiveMessagesStream(
       kReceiveMessagesTrafficAnnotation);
   internal::HostOpenChannelRequestStruct request;
   request.username = username_;
+  request.host_public_key = public_key_;
+  request.machine_info.version = GetBuildVersion();
+  request.machine_info.operating_system_info.name = GetOperatingSystemName();
+  request.machine_info.operating_system_info.version =
+      GetOperatingSystemVersion();
+
   config->request_message = internal::GetHostOpenChannelRequest(request);
   config->path = internal::GetHostOpenChannelPath();
   config->authenticated = false;

@@ -10,6 +10,7 @@
 #include <variant>
 
 #include "base/time/time.h"
+#include "remoting/proto/service_common.h"
 
 // This file defines structs for the MessagingService. For official builds,
 // these structs are populated by code in //remoting/internal. For unofficial
@@ -99,12 +100,22 @@ struct HostSendMessageRequestStruct {
   PeerMessageStruct peer_message;
 };
 
+struct MachineInfo {
+  // The compiled version of the host agent or playground binary.
+  std::string version;
+
+  // Details about the operating system the binary is running on.
+  OperatingSystemInfoStruct operating_system_info;
+};
+
 // Response received from the server after calling `SendHostMessage`.
 struct HostSendMessageResponseStruct {};
 
 // Request sent to `ReceiveClientMessages`.
 struct HostOpenChannelRequestStruct {
   std::string username;
+  std::string host_public_key;
+  MachineInfo machine_info;
 };
 
 // Response received from the server after calling `ReceiveClientMessages`. Note

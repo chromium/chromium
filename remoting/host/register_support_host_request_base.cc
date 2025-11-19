@@ -6,9 +6,9 @@
 
 #include "base/logging.h"
 #include "base/strings/stringize_macros.h"
+#include "remoting/base/environment_details.h"
 #include "remoting/base/errors.h"
 #include "remoting/base/http_status.h"
-#include "remoting/host/host_details.h"
 #include "remoting/signaling/signaling_address.h"
 
 namespace remoting {
@@ -97,8 +97,8 @@ void RegisterSupportHostRequestBase::RegisterHostInternal() {
   host.public_key = key_pair_->GetPublicKey();
   host.version = STRINGIZE(VERSION);
   host.authorized_helper_email = authorized_helper_;
-  host.operating_system_info.name = GetHostOperatingSystemName();
-  host.operating_system_info.version = GetHostOperatingSystemVersion();
+  host.operating_system_info.name = GetOperatingSystemName();
+  host.operating_system_info.version = GetOperatingSystemVersion();
   const SignalingAddress& local_address = signal_strategy_->GetLocalAddress();
   if (!local_address.GetFtlInfo(&host.tachyon_account_info.account_id,
                                 &host.tachyon_account_info.registration_id)) {

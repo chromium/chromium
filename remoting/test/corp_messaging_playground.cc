@@ -25,6 +25,7 @@
 #include "remoting/base/certificate_helpers.h"
 #include "remoting/base/http_status.h"
 #include "remoting/base/internal_headers.h"
+#include "remoting/base/rsa_key_pair.h"
 #include "remoting/base/url_request_context_getter.h"
 #include "remoting/signaling/corp_messaging_client.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -99,7 +100,8 @@ CorpMessagingPlayground::CorpMessagingPlayground(const std::string& username) {
       std::make_unique<network::TransitionalURLLoaderFactoryOwner>(
           url_request_context_getter, /* is_trusted= */ true);
   client_ = std::make_unique<CorpMessagingClient>(
-      username, url_loader_factory_owner_->GetURLLoaderFactory(),
+      username, key_pair_->GetPublicKey(),
+      url_loader_factory_owner_->GetURLLoaderFactory(),
       CreateClientCertStoreInstance());
   core_ = std::make_unique<Core>(base::BindPostTask(
       base::SingleThreadTaskRunner::GetCurrentDefault(),

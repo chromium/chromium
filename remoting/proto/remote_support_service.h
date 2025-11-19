@@ -7,17 +7,9 @@
 
 #include <string>
 
+#include "remoting/proto/service_common.h"
+
 namespace remoting::internal {
-
-struct TachyonAccountInfoStruct {
-  std::string account_id;
-  std::string registration_id;
-};
-
-struct OperatingSystemInfoStruct {
-  std::string name;
-  std::string version;
-};
 
 struct RemoteSupportHostStruct {
   RemoteSupportHostStruct();

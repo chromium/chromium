@@ -1,11 +1,13 @@
-// Copyright 2015 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/host_details.h"
+#include "remoting/base/environment_details.h"
 
+#include "base/strings/stringize_macros.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
+#include "remoting/base/version.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "base/linux_util.h"
@@ -13,9 +15,13 @@
 
 namespace remoting {
 
-// Get the host Operating System Name, removing the need to check for OS
-// definitions and keeps the keys used consistent.
-std::string GetHostOperatingSystemName() {
+std::string GetBuildVersion() {
+  return STRINGIZE(VERSION);
+}
+
+// Get the Operating System Name, removing the need to check for OS definitions
+// and keeps the keys used consistent.
+std::string GetOperatingSystemName() {
 #if BUILDFLAG(IS_WIN)
   return "Windows";
 #elif BUILDFLAG(IS_APPLE)
@@ -27,13 +33,13 @@ std::string GetHostOperatingSystemName() {
 #elif BUILDFLAG(IS_ANDROID)
   return "Android";
 #else
-#error "Unsupported host OS"
+  return "Unsupported OS";
 #endif
 }
 
-// Get the host Operating System Version, removing the need to check for OS
+// Get the Operating System Version, removing the need to check for OS
 // definitions and keeps the format used consistent.
-std::string GetHostOperatingSystemVersion() {
+std::string GetOperatingSystemVersion() {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   return base::GetLinuxDistro();
 #else

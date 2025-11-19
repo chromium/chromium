@@ -48,6 +48,7 @@ class CorpMessagingClient final {
 
   CorpMessagingClient(
       const std::string& username,
+      const std::string& public_key,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<net::ClientCertStore> client_cert_store);
 
@@ -96,6 +97,7 @@ class CorpMessagingClient final {
   void OnMessageReceived(const internal::PeerMessageStruct& message);
 
   std::string username_;
+  std::string public_key_;
   std::unique_ptr<ProtobufHttpClient> client_;
   std::unique_ptr<MessageChannel> message_channel_;
   MessageCallbackList callback_list_;

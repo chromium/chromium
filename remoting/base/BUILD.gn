@@ -76,6 +76,8 @@ source_set("base") {
     "cpu_utils.h",
     "directory_service_client.cc",
     "directory_service_client.h",
+    "environment_details.cc",
+    "environment_details.h",
     "fqdn.cc",
     "fqdn.h",
     "instance_identity_token.cc",

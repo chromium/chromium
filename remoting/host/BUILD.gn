@@ -403,8 +403,6 @@ static_library("common") {
     "host_attributes.h",
     "host_config.cc",
     "host_config.h",
-    "host_details.cc",
-    "host_details.h",
     "host_event_logger.h",
     "host_event_reporter.h",
     "host_experiment_session_plugin.cc",

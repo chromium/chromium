@@ -47,6 +47,7 @@ source_set("internal_structs") {
     "messaging_service.h",
     "remote_support_service.cc",
     "remote_support_service.h",
+    "service_common.h",
     "session_authz_service.cc",
     "session_authz_service.h",
   ]

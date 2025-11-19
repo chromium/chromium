@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "remoting/base/internal_headers.h"
+#include "remoting/base/rsa_key_pair.h"
 
 namespace base {
 class RunLoop;
@@ -46,6 +47,7 @@ class CorpMessagingPlayground {
 
   std::unique_ptr<network::TransitionalURLLoaderFactoryOwner>
       url_loader_factory_owner_;
+  scoped_refptr<RsaKeyPair> key_pair_{RsaKeyPair::Generate()};
   std::unique_ptr<CorpMessagingClient> client_;
   std::unique_ptr<base::RunLoop> run_loop_;
   std::unique_ptr<Core> core_;
