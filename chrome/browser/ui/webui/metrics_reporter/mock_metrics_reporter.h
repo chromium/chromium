@@ -26,6 +26,11 @@ class MockMetricsReporter : public MetricsReporter {
   MOCK_METHOD(void,
               HasMark,
               (const std::string&, MetricsReporter::HasMarkCallback));
+  MOCK_METHOD(void,
+              Measure,
+              (const std::string&,
+               base::TimeTicks,
+               MetricsReporter::MeasureCallback));
   MOCK_METHOD(bool, HasLocalMark, (const std::string&));
   MOCK_METHOD(void, ClearMark, (const std::string&));
 };
