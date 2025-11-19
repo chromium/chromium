@@ -265,12 +265,6 @@ std::optional<AnalysisSettings> ConnectorsService::GetCommonAnalysisSettings(
   return settings;
 }
 
-bool ConnectorsService::HasExtraUiToDisplay(AnalysisConnector connector,
-                                            const std::string& tag) {
-  return GetCustomMessage(connector, tag) || GetLearnMoreUrl(connector, tag) ||
-         GetBypassJustificationRequired(connector, tag);
-}
-
 std::string ConnectorsService::GetManagementDomain() {
   if (!ConnectorsEnabled()) {
     return std::string();

@@ -163,6 +163,12 @@ void ConnectorsServiceBase::PopulateDeviceMetadata(
   }
 }
 
+bool ConnectorsServiceBase::HasExtraUiToDisplay(AnalysisConnector connector,
+                                                const std::string& tag) {
+  return GetCustomMessage(connector, tag) || GetLearnMoreUrl(connector, tag) ||
+         GetBypassJustificationRequired(connector, tag);
+}
+
 bool ConnectorsServiceBase::IsConnectorEnabled(
     AnalysisConnector connector) const {
   if (!ConnectorsEnabled()) {

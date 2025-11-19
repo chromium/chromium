@@ -49,10 +49,6 @@ class ConnectorsService : public ConnectorsServiceBase, public KeyedService {
       AnalysisConnector connector);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  // Returns true if the admin has opted into custom message, learn more URL or
-  // letting the user provide bypass justifications in an input dialog.
-  bool HasExtraUiToDisplay(AnalysisConnector connector, const std::string& tag);
-
   // Returns the profile email if real-time URL check is set for the profile,
   // the device ID if it is set for the device, or an empty string if it is
   // unset.

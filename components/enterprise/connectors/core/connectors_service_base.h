@@ -58,6 +58,10 @@ class ConnectorsServiceBase {
   // Returns whether the Connectors are enabled.
   virtual bool IsConnectorEnabled(AnalysisConnector connector) const;
 
+  // Returns true if the admin has opted into custom message, learn more URL or
+  // letting the user provide bypass justifications in an input dialog.
+  bool HasExtraUiToDisplay(AnalysisConnector connector, const std::string& tag);
+
   bool DelayUntilVerdict(AnalysisConnector connector);
 
   // Returns true if the admin enabled Bypass Justification.
