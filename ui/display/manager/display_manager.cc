@@ -1529,6 +1529,19 @@ size_t DisplayManager::GetNumDisplays() const {
   return active_display_list_.size();
 }
 
+size_t DisplayManager::GetNumExternalDisplays() const {
+  if (display::HasInternalDisplay()) {
+    size_t count = 0;
+    for (int64_t id : connected_display_id_list_) {
+      if (!IsInternalDisplayId(id)) {
+        count += 1;
+      }
+    }
+    return count;
+  }
+  return num_connected_displays();
+}
+
 bool DisplayManager::IsActiveDisplayId(int64_t display_id) const {
   return ContainsDisplayWithId(active_display_list_, display_id);
 }
