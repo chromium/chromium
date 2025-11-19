@@ -26,7 +26,6 @@ import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../hats_browser_proxy.js';
 import {loadTimeData} from '../i18n_setup.js';
 import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl, PrivacyGuideInteractions} from '../metrics_browser_proxy.js';
@@ -36,6 +35,7 @@ import type {Route} from '../router.js';
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 import {CookieControlsMode} from '../site_settings/constants.js';
 
+import {HatsBrowserProxyImpl, TrustSafetyInteraction} from './hats_browser_proxy.js';
 import {PrivacyGuideAvailabilityMixin} from './privacy_guide/privacy_guide_availability_mixin.js';
 import {getTemplate} from './privacy_page.html.js';
 

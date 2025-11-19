@@ -31,7 +31,6 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import type {SettingsCollapseRadioButtonElement} from '../../controls/collapse_radio_button.js';
 import type {SettingsRadioGroupElement} from '../../controls/settings_radio_group.js';
 import type {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
-import {HatsBrowserProxyImpl, SecurityPageInteraction} from '../../hats_browser_proxy.js';
 import {loadTimeData} from '../../i18n_setup.js';
 import type {MetricsBrowserProxy} from '../../metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl, PrivacyElementInteractions, SafeBrowsingInteractions} from '../../metrics_browser_proxy.js';
@@ -43,6 +42,7 @@ import {ContentSettingsTypes} from '../../site_settings/constants.js';
 import type {SiteSettingsBrowserProxy} from '../../site_settings/site_settings_browser_proxy.js';
 import {SiteSettingsBrowserProxyImpl} from '../../site_settings/site_settings_browser_proxy.js';
 import {isSettingEnabled} from '../../site_settings/site_settings_util.js';
+import {HatsBrowserProxyImpl, SecurityPageInteraction} from '../hats_browser_proxy.js';
 
 import {getTemplate} from './security_page.html.js';
 
