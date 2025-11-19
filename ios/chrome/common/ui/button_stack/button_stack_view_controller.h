@@ -77,6 +77,10 @@
 - (instancetype)initWithConfiguration:(ButtonStackConfiguration*)configuration
     NS_DESIGNATED_INITIALIZER;
 
+// Initializes the view controller with a default `ButtonStackConfiguration`.
+// Prefer using `initWithConfiguration:` when possible.
+- (instancetype)init;
+
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil
                          bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;

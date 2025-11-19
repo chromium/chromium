@@ -74,6 +74,10 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
   BOOL _showsGradientView;
 }
 
+- (instancetype)init {
+  return [self initWithConfiguration:[[ButtonStackConfiguration alloc] init]];
+}
+
 - (instancetype)initWithConfiguration:(ButtonStackConfiguration*)configuration {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
