@@ -48,6 +48,7 @@ found in the LICENSE file.
         android:layout_width="match_parent"
         android:layout_marginBottom="@dimen/tips_notifications_bottom_sheet_step_vertical_padding"
         android:orientation="vertical"
+        android:clickable="true"
         android:focusable="true"/>
 
     <org.chromium.ui.widget.ButtonCompat
