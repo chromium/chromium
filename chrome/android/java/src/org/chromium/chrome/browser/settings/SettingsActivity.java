@@ -48,6 +48,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
+import org.chromium.chrome.browser.back_press.BackPressHelper.OnKeyDownHandler;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
@@ -162,6 +163,9 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     private final Map<Fragment, ContainmentItemDecoration> mItemDecorations = new HashMap<>();
 
     private @Nullable SettingsSearchCoordinator mSearchCoordinator;
+
+    private @Nullable OnKeyDownHandler mMainFragmentKeyDownHandler;
+    private @Nullable OnKeyDownHandler mBottomSheetKeyDownHandler;
 
     // Update handler of the Settings activity title. mTitleUpdater is used (i.e. nonnull)
     // in multi-column mode is disabled, and mMultiColumnTitleUpdater is used iff
@@ -841,6 +845,15 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (mMainFragmentKeyDownHandler != null
+                && mMainFragmentKeyDownHandler.onKeyDown(keyCode, event)) {
+            return true;
+        }
+        if (mBottomSheetKeyDownHandler != null
+                && mBottomSheetKeyDownHandler.onKeyDown(keyCode, event)) {
+            return true;
+        }
+
         // Finish the current settings when the ESC key is pressed.
         if (keyCode == KeyEvent.KEYCODE_ESCAPE) {
             Fragment mainFragment = getMainFragment();
@@ -863,18 +876,20 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             // We do not support embeddable fragments to implement BackPressHandler as it requires
             // keeping track of the main fragment while there is no real use case for it.
             assert !ChromeFeatureList.sSettingsSingleActivity.isEnabled() || mStandalone;
-            BackPressHelper.create(
-                    activeFragment.getViewLifecycleOwner(),
-                    getOnBackPressedDispatcher(),
-                    (BackPressHandler) activeFragment);
+            mMainFragmentKeyDownHandler =
+                    BackPressHelper.create(
+                            activeFragment.getViewLifecycleOwner(),
+                            getOnBackPressedDispatcher(),
+                            (BackPressHandler) activeFragment);
         }
     }
 
     private void registerBottomSheetBackPressHandler() {
-        BackPressHelper.create(
-                this,
-                getOnBackPressedDispatcher(),
-                mManagedBottomSheetController.getBottomSheetBackPressHandler());
+        mBottomSheetKeyDownHandler =
+                BackPressHelper.create(
+                        this,
+                        getOnBackPressedDispatcher(),
+                        mManagedBottomSheetController.getBottomSheetBackPressHandler());
     }
 
     @Override

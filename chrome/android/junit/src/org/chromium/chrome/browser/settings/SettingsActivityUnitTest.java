@@ -59,6 +59,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = ShadowProfileManagerUtils.class)
 @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
+@EnableFeatures({ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES})
 public class SettingsActivityUnitTest {
     /** Shadow class to bypass the real call to ProfileManagerUtils. */
     @Implements(ProfileManagerUtils.class)
@@ -335,6 +336,30 @@ public class SettingsActivityUnitTest {
             assertEquals("Recycler view item offset padding is wrong", parentPadding, outRect.left);
             assertEquals("Recycler view item end offset is wrong", parentPadding, outRect.right);
         }
+    }
+
+    @Test
+    public void testEscapeKey_HandledByFragment() throws TimeoutException {
+        startSettings(TestStandaloneFragment.class.getName());
+        TestStandaloneFragment mainFragment =
+                (TestStandaloneFragment) mSettingsActivity.getMainFragment();
+        mainFragment.getHandleBackPressChangedSupplier().set(true);
+        assertTrue(mSettingsActivity.getOnBackPressedDispatcher().hasEnabledCallbacks());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    KeyEvent event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ESCAPE);
+                    assertTrue(mSettingsActivity.dispatchKeyEvent(event));
+                });
+
+        // Check that the back press was triggered. More of a confidence check.
+        mainFragment.getBackPressCallback().waitForOnly();
+
+        // Check that #finish was not triggered, to verify it went down the path of escape handling.
+        assertFalse(
+                "Finishing the activity should not have been triggered with a handler ready to act"
+                    + " on the event.",
+                mSettingsActivity.isFinishing());
     }
 
     private void startSettings(String fragmentName) {
