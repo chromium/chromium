@@ -482,6 +482,9 @@ public final class ChromePreferenceKeys {
     // Max count of Chrome instances used in a day.
     public static final String MULTI_INSTANCE_MAX_INSTANCE_COUNT =
             "Chrome.MultiInstance.MaxInstanceCount";
+    // Max count of Chrome Incognito instances used in a day.
+    public static final String MULTI_INSTANCE_MAX_INSTANCE_COUNT_INCOGNITO =
+            "Chrome.MultiInstance.MaxInstanceCountIncognito";
     // Information on each instance.
     public static final KeyPrefix MULTI_INSTANCE_INCOGNITO_TAB_COUNT =
             new KeyPrefix("Chrome.MultiInstance.IncognitoTabCount.*");
@@ -1184,6 +1187,7 @@ public final class ChromePreferenceKeys {
                 MULTI_INSTANCE_INCOGNITO_TAB_COUNT.pattern(),
                 MULTI_INSTANCE_MAX_COUNT_TIME,
                 MULTI_INSTANCE_MAX_INSTANCE_COUNT,
+                MULTI_INSTANCE_MAX_INSTANCE_COUNT_INCOGNITO,
                 MULTI_INSTANCE_LAST_ACCESSED_TIME.pattern(),
                 MULTI_INSTANCE_START_TIME,
                 MULTI_INSTANCE_TAB_COUNT.pattern(),

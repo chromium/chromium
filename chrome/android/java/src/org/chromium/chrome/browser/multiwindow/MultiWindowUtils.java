@@ -97,6 +97,10 @@ public class MultiWindowUtils implements ActivityStateListener {
             "Android.MultiInstance.NumActivities.DesktopWindow";
     static final String HISTOGRAM_NUM_INSTANCES_DESKTOP_WINDOW =
             "Android.MultiInstance.NumInstances.DesktopWindow";
+    static final String HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW_INCOGNITO =
+            "Android.MultiInstance.NumActivities.DesktopWindow.Incognito";
+    static final String HISTOGRAM_NUM_INSTANCES_DESKTOP_WINDOW_INCOGNITO =
+            "Android.MultiInstance.NumInstances.DesktopWindow.Incognito";
     static final String OPEN_ADJACENTLY_PARAM = "open_adjacently";
 
     private static MultiWindowUtils sInstance = new MultiWindowUtils();
@@ -1093,6 +1097,22 @@ public class MultiWindowUtils implements ActivityStateListener {
                 HISTOGRAM_NUM_INSTANCES_DESKTOP_WINDOW,
                 getInstanceCountWithFallback(PersistedInstanceType.ANY),
                 TabWindowManager.MAX_SELECTORS + 1);
+
+        // Emit histograms for running Incognito activity count.
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            RecordHistogram.recordExactLinearHistogram(
+                    HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW_INCOGNITO,
+                    getIncognitoInstanceCount(/* activeOnly= */ true),
+                    TabWindowManager.MAX_SELECTORS + 1);
+        }
+
+        // Emit histograms for total Incognito instance count.
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            RecordHistogram.recordExactLinearHistogram(
+                    HISTOGRAM_NUM_INSTANCES_DESKTOP_WINDOW_INCOGNITO,
+                    getIncognitoInstanceCount(/* activeOnly= */ false),
+                    TabWindowManager.MAX_SELECTORS + 1);
+        }
     }
 
     /**

@@ -15,6 +15,7 @@ import android.view.ViewStub;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -185,6 +186,7 @@ public class IncognitoIndicatorCoordinator extends ToolbarChild
                 (model, view) -> {
                     int menuId = model.get(ListMenuItemProperties.MENU_ITEM_ID);
                     if (menuId == R.id.close_all_incognito_windows_menu_id) {
+                        RecordUserAction.record("MobileIncognitoIndicatorCloseAllWindows");
                         IncognitoTabHostUtils.closeAllIncognitoTabs();
                     }
                     if (mMenuWindow != null) {
@@ -249,6 +251,7 @@ public class IncognitoIndicatorCoordinator extends ToolbarChild
             mMenuWindow.dismiss();
             return;
         }
+        RecordUserAction.record("MobileIncognitoIndicatorClicked");
         Context context = mIncognitoIndicator.getContext();
         createAndShowMenu(context, buildMenuItems(context));
     }

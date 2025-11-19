@@ -26253,6 +26253,22 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileIncognitoIndicatorClicked">
+  <owner>mklw@google.com</owner>
+  <description>
+    The user clicked on the Incognito indicator button on the toolbar. Android
+    only.
+  </description>
+</action>
+
+<action name="MobileIncognitoIndicatorCloseAllWindows">
+  <owner>mklw@google.com</owner>
+  <description>
+    The user clicked on the &quot;Close all Incognito windows&quot; menu item
+    that appears after clicking on the Incognito indicator. Android only.
+  </description>
+</action>
+
 <action name="MobileKeyboardAccessoryOpenPasswordManager">
   <owner>noemies@google.com</owner>
   <description>

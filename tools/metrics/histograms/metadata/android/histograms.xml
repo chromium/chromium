@@ -3285,6 +3285,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.MultiInstance.MaxInstanceCountIncognito"
+    units="instances" expires_after="2026-11-06">
+  <owner>shuyng@google.com</owner>
+  <owner>skavuluru@google.com</owner>
+  <owner>mklw@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    The maximum number of Chrome Incognito-only instances that ran at the same
+    time in a 24-hour period. Checked whenever there is an activity state change
+    to log the stats once in 24 hours.
+  </summary>
+</histogram>
+
 <histogram name="Android.MultiInstance.MaxWindowLimitExceeded" enum="Boolean"
     expires_after="2026-05-03">
   <owner>ranjithkagathi@google.com</owner>
@@ -3330,6 +3343,39 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.MultiInstance.NumActivities.DesktopWindow.Incognito"
+    units="activities" expires_after="2026-11-06">
+  <owner>shuyng@google.com</owner>
+  <owner>skavuluru@google.com</owner>
+  <owner>mklw@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the number of running Incognito-only ChromeTabbedActivity's on every
+    ChromeTabbedActivity startup in a desktop window. This includes activities
+    that may not be visible on screen (i.e. it includes ChromeTabbedActivity's
+    in the &quot;stopped&quot; state). This does not include
+    ChromeTabbedActivity's that have been destroyed regardless of whether their
+    owning Android Task may be retrieved in Android Recents. Applicable to
+    Android V+ only.
+  </summary>
+</histogram>
+
+<histogram name="Android.MultiInstance.NumActivities.Incognito"
+    units="activities" expires_after="2026-11-06">
+  <owner>shuyng@google.com</owner>
+  <owner>skavuluru@google.com</owner>
+  <owner>mklw@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the number of running Incognito-only ChromeTabbedActivity's on every
+    ChromeTabbedActivity startup. This includes activities that may not be
+    visible on screen (i.e. it includes ChromeTabbedActivity's in the
+    &quot;stopped&quot; state). This does not include ChromeTabbedActivity's
+    that have been destroyed regardless of whether their owning Android Task may
+    be retrieved in Android Recents. Applicable to Android S+ only.
+  </summary>
+</histogram>
+
 <histogram name="Android.MultiInstance.NumInstances" units="instances"
     expires_after="2026-05-03">
   <owner>jinsukkim@chromium.org</owner>
@@ -3361,6 +3407,42 @@ chromium-metrics-reviews@google.com.
     Recents if they are associated with a live ChromeTabbedActivity or Android
     Task. Recorded on every ChromeTabbedActivity start-up in a desktop window.
     Applicable to Android V+ only.
+  </summary>
+</histogram>
+
+<histogram name="Android.MultiInstance.NumInstances.DesktopWindow.Incognito"
+    units="instances" expires_after="2026-11-06">
+  <owner>shuyng@google.com</owner>
+  <owner>skavuluru@google.com</owner>
+  <owner>mklw@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    The number of allocated Incognito-only instance IDs which corresponds to the
+    number of retrievable Chrome instances (aka windows). An instance is
+    considered retrievable if it has tab state data on disk irrespective of
+    whether that data is currently assigned to a running ChromeTabbedActivity.
+    These instances may be retrieved from Chrome's in-app window manager from
+    Android Recents if they are associated with a live ChromeTabbedActivity or
+    Android Task. Recorded on every ChromeTabbedActivity start-up in a desktop
+    window. Applicable to Android V+ only.
+  </summary>
+</histogram>
+
+<histogram name="Android.MultiInstance.NumInstances.Incognito"
+    units="instances" expires_after="2026-11-06">
+  <owner>shuyng@google.com</owner>
+  <owner>skavuluru@google.com</owner>
+  <owner>mklw@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    The number of allocated Incognito-only instance IDs which corresponds to the
+    number of retrievable Chrome instances (aka windows). An instance is
+    considered retrievable if it has tab state data on disk irrespective of
+    whether that data is currently assigned to a running ChromeTabbedActivity.
+    These instances may be retrieved from Chrome's in-app window manager from
+    Android Recents if they are associated with a live ChromeTabbedActivity or
+    Android Task. Recorded on every ChromeTabbedActivity start-up. Applicable to
+    Android S+ only.
   </summary>
 </histogram>
 
