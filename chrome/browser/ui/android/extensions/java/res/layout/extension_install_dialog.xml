@@ -21,27 +21,50 @@ found in the LICENSE file.
     <!-- TODO(crbug.com/424010795): Add webstore information -->
   </LinearLayout>
 
-
   <LinearLayout
-    android:id="@+id/permissions_container"
+    android:id="@+id/scroll_view_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <org.chromium.ui.widget.TextViewWithLeading
-      android:id="@+id/permissions_heading"
-      android:textAppearance="@style/TextAppearance.TextMedium.Primary"
-      app:leading="@dimen/text_size_medium_leading"
-      style="@style/AlertDialogContent" />
-  </LinearLayout>
+    <LinearLayout
+        android:id="@+id/permissions_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingTop="@dimen/modal_dialog_control_vertical_padding_filled"
+        android:visibility="gone">
+        <TextView
+          android:id="@+id/permissions_heading"
+          android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+          style="@style/AlertDialogContent" />
+    </LinearLayout>
 
-  <LinearLayout
-    android:id="@+id/justification_container"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:visibility="gone">
-    <!-- TODO(crbug.com/424010795): Add justification textfield -->
+    <LinearLayout
+      android:id="@+id/justification_container"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      android:paddingTop="@dimen/modal_dialog_control_vertical_padding_filled"
+      android:visibility="gone">
+      <TextView
+        android:id="@+id/justification_heading"
+        android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+        style="@style/AlertDialogContent" />
+
+      <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/justification_input_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="@dimen/dialog_padding_sides"
+        app:counterEnabled="true"
+        app:counterMaxLength="@integer/extension_install_dialog_justification_max_input">
+          <com.google.android.material.textfield.TextInputEditText
+              android:id="@+id/justification_input_text"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"/>
+      </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
   </LinearLayout>
 
 </LinearLayout>

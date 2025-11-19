@@ -130,7 +130,9 @@ if (enable_extensions_core) {
       "//components/browser_ui/site_settings/android:java",
       "//components/embedder_support/android:util_java",
       "//content/public/android:content_full_java",
+      "//third_party/android_deps:material_design_java",
       "//third_party/androidx:androidx_test_core_java",
+      "//third_party/androidx:androidx_test_ext_junit_java",
       "//third_party/androidx:androidx_test_runner_java",
       "//third_party/junit",
       "//third_party/mockito:mockito_java",
@@ -155,6 +157,7 @@ android_resources("java_resources") {
     "java/res/layout/extensions_menu_header.xml",
     "java/res/layout/extensions_menu_item.xml",
     "java/res/values/dimens.xml",
+    "java/res/values/integers.xml",
   ]
 
   deps = [

@@ -18558,16 +18558,16 @@ Please help our engineers fix this problem. Tell us what happened right before y
           =1 {Click to view the extension}
           other {Click to view these extensions}}
       </message>
-      <message name="IDS_ENTERPRISE_EXTENSION_REQUEST_JUSTIFICATION" desc="Text describing the extension request justificaion textfield.">
-        Justification for requesting this extension:
-      </message>
-      <message name="IDS_ENTERPRISE_EXTENSION_REQUEST_JUSTIFICATION_PLACEHOLDER" desc="Placeholder text which appears inside the extension request justification textfield.">
-        Enter justification...
-      </message>
-      <message name="IDS_ENTERPRISE_EXTENSION_REQUEST_JUSTIFICATION_LENGTH_LIMIT" desc="Text displaying the current number of characters in the extension request justification text box, as well as the maximum character limit. This is used to inform the user when the limit is exceeded.">
-        <ph name="ACTUAL_CHAR_COUNT">$1<ex>10</ex></ph>/<ph name="MAX_CHAR_COUNT">$2<ex>300</ex></ph>
-      </message>
     </if>
+    <message name="IDS_ENTERPRISE_EXTENSION_REQUEST_JUSTIFICATION" desc="Text describing the extension request justificaion textfield.">
+      Justification for requesting this extension:
+    </message>
+    <message name="IDS_ENTERPRISE_EXTENSION_REQUEST_JUSTIFICATION_PLACEHOLDER" desc="Placeholder text which appears inside the extension request justification textfield.">
+      Enter justification...
+    </message>
+    <message name="IDS_ENTERPRISE_EXTENSION_REQUEST_JUSTIFICATION_LENGTH_LIMIT" desc="Text displaying the current number of characters in the extension request justification text box, as well as the maximum character limit. This is used to inform the user when the limit is exceeded.">
+      <ph name="ACTUAL_CHAR_COUNT">$1<ex>10</ex></ph>/<ph name="MAX_CHAR_COUNT">$2<ex>300</ex></ph>
+    </message>
 
     <message name="IDS_NAME_WINDOW_PROMPT_TITLE"
              desc="Title of the prompt to choose a new name for a window.">
