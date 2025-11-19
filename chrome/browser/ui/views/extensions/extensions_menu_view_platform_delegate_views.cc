@@ -184,11 +184,8 @@ ExtensionsMenuViewPlatformDelegateViews::
       extensions_container_(extensions_container),
       bubble_contents_(bubble_contents),
       toolbar_model_(ToolbarActionsModel::Get(browser_->profile())) {
-  browser_->tab_strip_model()->AddObserver(this);
 }
 
-// Note: No need to call TabStripModel::RemoveObserver(), because it's handled
-// directly within TabStripModelObserver::~TabStripModelObserver().
 ExtensionsMenuViewPlatformDelegateViews::
     ~ExtensionsMenuViewPlatformDelegateViews() = default;
 
@@ -202,6 +199,11 @@ void ExtensionsMenuViewPlatformDelegateViews::AttachToModel(
 void ExtensionsMenuViewPlatformDelegateViews::DetachFromModel() {
   CHECK(menu_model_);
   menu_model_ = nullptr;
+}
+
+void ExtensionsMenuViewPlatformDelegateViews::OnActiveWebContentsChanged(
+    content::WebContents* web_contents) {
+  UpdatePage(web_contents);
 }
 
 void ExtensionsMenuViewPlatformDelegateViews::OnHostAccessRequestAddedOrUpdated(
@@ -451,41 +453,6 @@ void ExtensionsMenuViewPlatformDelegateViews::OnShowRequestsTogglePressed(
     const extensions::ExtensionId& extension_id,
     bool is_on) {
   menu_model_->ShowHostAccessRequestsInToolbar(extension_id, is_on);
-}
-
-void ExtensionsMenuViewPlatformDelegateViews::TabChangedAt(
-    content::WebContents* contents,
-    int index,
-    TabChangeType change_type) {
-  bool should_update_page = false;
-  switch (change_type) {
-    case TabChangeType::kAll:
-      should_update_page = true;
-      break;
-    case TabChangeType::kLoadingOnly:
-      should_update_page = false;
-      break;
-  }
-
-  if (!should_update_page || GetActiveWebContents() != contents) {
-    return;
-  }
-
-  UpdatePage(contents);
-}
-
-void ExtensionsMenuViewPlatformDelegateViews::OnTabStripModelChanged(
-    TabStripModel* tab_strip_model,
-    const TabStripModelChange& change,
-    const TabStripSelectionChange& selection) {
-  CHECK_EQ(tab_strip_model, browser_->tab_strip_model());
-  content::WebContents* web_contents = GetActiveWebContents();
-
-  if (!selection.active_tab_changed() || !web_contents) {
-    return;
-  }
-
-  UpdatePage(web_contents);
 }
 
 void ExtensionsMenuViewPlatformDelegateViews::UpdatePage(

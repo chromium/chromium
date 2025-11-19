@@ -6,6 +6,10 @@
 #define CHROME_BROWSER_UI_EXTENSIONS_EXTENSIONS_MENU_VIEW_MODEL_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/ui/extensions/extensions_menu_view_platform_delegate.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
+#include "chrome/browser/ui/tabs/tab_list_interface_observer.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "extensions/browser/permissions_manager.h"
@@ -24,7 +28,9 @@ class ToolbarActionViewModel;
 // TODO(crbug.com/449814184): Move the observers from
 // ExtensionsMenuViewController here.
 class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
-                                public ToolbarActionsModel::Observer {
+                                public ToolbarActionsModel::Observer,
+                                public TabListInterfaceObserver,
+                                public content::WebContentsObserver {
  public:
   // Holds the information about how the extension's menu item should look like.
   // This will be used by the platform delegate as needed.
@@ -132,6 +138,15 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
   void OnToolbarModelInitialized() override;
   void OnToolbarPinnedActionsChanged() override;
 
+  // TabListInterfaceObserver:
+  // Sometimes, menu can stay open when tab changes (e.g keyboard shortcuts) or
+  // due to the extension (e.g extension switching the active tab). Thus, we
+  // listen for active tab changes to properly update the menu content.
+  void OnActiveTabChanged(tabs::TabInterface* tab) override;
+
+  // content::WebContentsObserver:
+  void DidFinishNavigation(content::NavigationHandle* handle) override;
+
  private:
   content::WebContents* GetActiveWebContents();
 
@@ -148,6 +163,9 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
   const raw_ptr<ToolbarActionsModel> toolbar_model_;
   base::ScopedObservation<ToolbarActionsModel, ToolbarActionsModel::Observer>
       toolbar_model_observation_{this};
+
+  base::ScopedObservation<TabListInterface, TabListInterfaceObserver>
+      tab_list_interface_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_EXTENSIONS_EXTENSIONS_MENU_VIEW_MODEL_H_

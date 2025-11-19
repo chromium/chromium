@@ -373,6 +373,8 @@ ExtensionsMenuViewModel::ExtensionsMenuViewModel(
   permissions_manager_observation_.Observe(
       extensions::PermissionsManager::Get(browser_->GetProfile()));
   toolbar_model_observation_.Observe(toolbar_model_.get());
+  auto* tab_list = TabListInterface::From(browser);
+  tab_list_interface_observation_.Observe(tab_list);
 }
 
 ExtensionsMenuViewModel::~ExtensionsMenuViewModel() {
@@ -689,6 +691,17 @@ void ExtensionsMenuViewModel::OnToolbarModelInitialized() {
 
 void ExtensionsMenuViewModel::OnToolbarPinnedActionsChanged() {
   platform_delegate_->OnToolbarPinnedActionsChanged();
+}
+
+void ExtensionsMenuViewModel::OnActiveTabChanged(tabs::TabInterface* tab) {
+  auto* web_contents = tab->GetContents();
+  platform_delegate_->OnActiveWebContentsChanged(web_contents);
+}
+
+void ExtensionsMenuViewModel::DidFinishNavigation(
+    content::NavigationHandle* handle) {
+  auto* web_contents = GetActiveWebContents();
+  platform_delegate_->OnActiveWebContentsChanged(web_contents);
 }
 
 content::WebContents* ExtensionsMenuViewModel::GetActiveWebContents() {

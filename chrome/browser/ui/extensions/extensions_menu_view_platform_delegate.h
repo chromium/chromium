@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_UI_EXTENSIONS_EXTENSIONS_MENU_VIEW_PLATFORM_DELEGATE_H_
 
 #include "chrome/browser/ui/extensions/extensions_menu_view_model.h"
+#include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
+#include "extensions/common/extension_id.h"
 
 namespace content {
 class WebContents;
@@ -24,6 +26,11 @@ class ExtensionsMenuViewPlatformDelegate {
   // Detaches the delegate from a platform-agnostic menu view model. It is
   // called by the model on its destructor.
   virtual void DetachFromModel() = 0;
+
+  // Notifies the delegate that the active web contents changed to
+  // `web_contents`.
+  virtual void OnActiveWebContentsChanged(
+      content::WebContents* web_contents) = 0;
 
   // Notifies the delegate that a new host access request was added or updated
   // for `extension_id` on `web_contents`.

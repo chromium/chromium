@@ -8,7 +8,6 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/extensions/extensions_menu_view_model.h"
 #include "chrome/browser/ui/extensions/extensions_menu_view_platform_delegate.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_handler.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/permissions_manager.h"
@@ -35,8 +34,7 @@ class ToolbarActionsModel;
 // view).
 class ExtensionsMenuViewPlatformDelegateViews
     : public ExtensionsMenuViewPlatformDelegate,
-      public ExtensionsMenuHandler,
-      public TabStripModelObserver {
+      public ExtensionsMenuHandler {
  public:
   ExtensionsMenuViewPlatformDelegateViews(
       Browser* browser,
@@ -51,6 +49,7 @@ class ExtensionsMenuViewPlatformDelegateViews
   // ExtensionsMenuViewPlatformDelegate:
   void AttachToModel(ExtensionsMenuViewModel* model) override;
   void DetachFromModel() override;
+  void OnActiveWebContentsChanged(content::WebContents* web_contents) override;
   void OnHostAccessRequestAddedOrUpdated(
       const extensions::ExtensionId& extension_id,
       content::WebContents* web_contents) override;
@@ -89,18 +88,6 @@ class ExtensionsMenuViewPlatformDelegateViews
       const extensions::ExtensionId& extension_id) override;
   void OnShowRequestsTogglePressed(const extensions::ExtensionId& extension_id,
                                    bool is_on) override;
-
-  // TabStripModelObserver:
-  // Sometimes, menu can stay open when tab changes (e.g keyboard shortcuts) or
-  // due to the extension (e.g extension switching the active tab). Thus, we
-  // listen for tab changes to properly update the menu content.
-  void TabChangedAt(content::WebContents* contents,
-                    int index,
-                    TabChangeType change_type) override;
-  void OnTabStripModelChanged(
-      TabStripModel* tab_strip_model,
-      const TabStripModelChange& change,
-      const TabStripSelectionChange& selection) override;
 
   // Accessors used by tests:
   // Returns the main page iff it's the `current_page_` one.
