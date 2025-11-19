@@ -82,6 +82,12 @@ extern const base::FeatureParam<double> kDevToolsAiCodeCompletionTemperature;
 extern const base::FeatureParam<DevToolsFreestylerUserTier>
     kDevToolsAiCodeCompletionUserTier;
 
+BASE_DECLARE_FEATURE(kDevToolsAiCodeGeneration);
+extern const base::FeatureParam<std::string> kDevToolsAiCodeGenerationModelId;
+extern const base::FeatureParam<double> kDevToolsAiCodeGenerationTemperature;
+extern const base::FeatureParam<DevToolsFreestylerUserTier>
+    kDevToolsAiCodeGenerationUserTier;
+
 BASE_DECLARE_FEATURE(kDevToolsSharedProcessInfobar);
 
 BASE_DECLARE_FEATURE(kDevToolsAnimationStylesInStylesTab);
