@@ -33,6 +33,7 @@ tar = "0.4"
 target-spec = "3.4.2"
 tempfile = "3"
 toml = "0.8"
+toml_edit = "0.23.7"
 
 [dependencies.env_logger]
 version = "0.11"
@@ -47,3 +48,6 @@ prettyplease = "0.2.31"
 proc-macro2 = "1.0.94"
 quote = "1.0.40"
 syn = "2.0.100"
+
+[dev-dependencies]
+pretty_assertions = "1.4.1"

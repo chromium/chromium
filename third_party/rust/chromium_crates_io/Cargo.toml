@@ -9,9 +9,9 @@
 # marked as such in gnrt_config.toml.
 
 [package]
+edition = "2021"
 name = "chromium"
 version = "0.1.0"
-edition = "2021"
 
 [workspace]
 

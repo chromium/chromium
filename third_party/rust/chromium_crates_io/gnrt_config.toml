@@ -96,8 +96,8 @@ removed_cargo_template = "removed_Cargo.toml.hbs"
 removed_librs_template = "removed_lib.rs.hbs"
 
 [resolve]
-root = "chromium"
 remove_crates = []
+root = "chromium"
 
 [crate.adler2.extra_kv]
 allow_unsafe = false
@@ -284,22 +284,22 @@ extra_kv = { allow_unsafe = false }
 [crate.icu_experimental.extra_kv]
 allow_unsafe = true
 
+[crate.icu_experimental_data]
+extra_input_roots = ['../data']
+extra_src_roots = ['../data']
+
 [crate.icu_experimental_data.extra_kv]
 allow_unsafe = false
 
 [crate.icu_list.extra_kv]
 allow_unsafe = true
 
-[crate.icu_list_data.extra_kv]
-allow_unsafe = false
-
-[crate.icu_experimental_data]
-extra_input_roots = ['../data']
-extra_src_roots = ['../data']
-
 [crate.icu_list_data]
 extra_input_roots = ['../data']
 extra_src_roots = ['../data']
+
+[crate.icu_list_data.extra_kv]
+allow_unsafe = false
 
 [crate.icu_locale.extra_kv]
 allow_unsafe = true

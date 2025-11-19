@@ -6,7 +6,8 @@
 #![forbid(unsafe_code)]
 
 mod add;
-mod gen;
+mod fmt;
+mod r#gen;
 mod update;
 mod util;
 mod vendor;
@@ -25,6 +26,8 @@ struct GnrtArgs {
 enum Command {
     #[command(about = "Add a new third-party crate dependency in //third_party/rust")]
     Add(AddCommandArgs),
+    #[command(about = "Format chromium_crates_io/gnrt_config.toml and Cargo.toml")]
+    Fmt,
     #[command(about = "Generate GN build rules from third_party/rust crates")]
     Gen(GenCommandArgs),
     #[command(about = "Update the Cargo.lock to newer versions for //third_party/rust")]
@@ -102,7 +105,8 @@ fn main() -> Result<()> {
 
     match args.command {
         Command::Add(args) => add::add(args, &paths),
-        Command::Gen(args) => gen::generate(args, &paths),
+        Command::Fmt => fmt::format(&paths),
+        Command::Gen(args) => r#gen::generate(args, &paths),
         Command::Update(args) => update::update(args, &paths),
         Command::Vendor(args) => vendor::vendor(args, &paths),
     }

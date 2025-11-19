@@ -19,6 +19,7 @@ use std::process::{Command, Stdio};
 
 use anyhow::{ensure, format_err, Context, Result};
 
+/// Implementation of `gnrt gen ...` command.
 pub fn generate(args: GenCommandArgs, paths: &paths::ChromiumPaths) -> Result<()> {
     if args.for_std.is_some() {
         generate_for_std(args, paths)
