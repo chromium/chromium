@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_PAYMENTS_BROWSER_BINDING_BROWSER_BOUND_KEY_DELETER_SERVICE_DESKTOP_H_
 #define CHROME_BROWSER_PAYMENTS_BROWSER_BINDING_BROWSER_BOUND_KEY_DELETER_SERVICE_DESKTOP_H_
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -39,9 +41,7 @@ class BrowserBoundKeyDeleterServiceDesktop
   // Sets a PasskeyBrowserBinder to be used for testing. If this is not set, a
   // new PasskeyBrowserBinder will be created in `RemoveInvalidBBKs()`.
   void SetPasskeyBrowserBinderForTesting(
-      std::unique_ptr<PasskeyBrowserBinder> passkey_browser_binder) {
-    passkey_browser_binder_for_testing_ = std::move(passkey_browser_binder);
-  }
+      std::unique_ptr<PasskeyBrowserBinder> passkey_browser_binder);
 
  private:
   void FilterAndDeleteInvalidBBKs(

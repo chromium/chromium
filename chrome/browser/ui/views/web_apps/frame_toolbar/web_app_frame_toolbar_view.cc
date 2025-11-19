@@ -35,6 +35,62 @@
 #include "ui/views/view_utils.h"
 #include "ui/views/window/hit_test_utils.h"
 
+// A view targeter delegate for the WebAppFrameToolbarView that
+// allows mouse events to fall through to the underlying WebContents
+// in regions with no interactive UI.
+class WebAppFrameToolbarView::ViewTargeter
+    : public views::ViewTargeterDelegate {
+ public:
+  explicit ViewTargeter(WebAppFrameToolbarView* view) : view_(view) {}
+  ViewTargeter(const ViewTargeter&) = delete;
+  ViewTargeter& operator=(const ViewTargeter&) = delete;
+  ~ViewTargeter() override = default;
+
+  // views::ViewTargeterDelegate:
+  bool DoesIntersectRect(const views::View* target,
+                         const gfx::Rect& rect) const override {
+    CHECK_EQ(target, view_);
+
+    // A custom implementation is needed in one of two cases:
+    // 1. The WindowControlsOverlay is enabled. In this case the
+    // WebAppFrameToolbarView overlaps the WebContents.
+    // 2. In PWAs or ChromeOS System Apps with TabStrip the
+    // WebAppFrameToolbarView overlaps with it.
+    if (!view_->browser_view_->IsWindowControlsOverlayEnabled() &&
+        !view_->browser_view_->tab_strip_view()->GetVisible()) {
+      return views::ViewTargeterDelegate::DoesIntersectRect(view_, rect);
+    }
+
+    // Check the left container if it exists.
+    if (view_->left_container_) {
+      gfx::RectF converted_rect(rect);
+      views::View::ConvertRectToTarget(view_, view_->left_container_,
+                                       &converted_rect);
+      if (view_->left_container_->HitTestRect(
+              gfx::ToEnclosingRect(converted_rect))) {
+        return true;
+      }
+    }
+
+    // Check the right container.
+    CHECK(view_->right_container_);
+    gfx::RectF converted_rect(rect);
+    views::View::ConvertRectToTarget(view_, view_->right_container_,
+                                     &converted_rect);
+    if (view_->right_container_->HitTestRect(
+            gfx::ToEnclosingRect(converted_rect))) {
+      return true;
+    }
+
+    // The event is within the toolbar's bounds but not on any of the visible
+    // button containers, so let it pass through.
+    return false;
+  }
+
+ private:
+  const raw_ptr<WebAppFrameToolbarView> view_;
+};
+
 WebAppFrameToolbarView::WebAppFrameToolbarView(BrowserView* browser_view)
     : browser_view_(browser_view) {
   DCHECK(browser_view_);
@@ -411,62 +467,6 @@ void WebAppFrameToolbarView::UpdateChildrenColor(bool color_changed) {
     SetBackground(views::CreateSolidBackground(background_color));
   }
 }
-
-// A view targeter delegate for the WebAppFrameToolbarView that
-// allows mouse events to fall through to the underlying WebContents
-// in regions with no interactive UI.
-class WebAppFrameToolbarView::ViewTargeter
-    : public views::ViewTargeterDelegate {
- public:
-  explicit ViewTargeter(WebAppFrameToolbarView* view) : view_(view) {}
-  ViewTargeter(const ViewTargeter&) = delete;
-  ViewTargeter& operator=(const ViewTargeter&) = delete;
-  ~ViewTargeter() override = default;
-
-  // views::ViewTargeterDelegate:
-  bool DoesIntersectRect(const views::View* target,
-                         const gfx::Rect& rect) const override {
-    CHECK_EQ(target, view_);
-
-    // A custom implementation is needed in one of two cases:
-    // 1. The WindowControlsOverlay is enabled. In this case the
-    // WebAppFrameToolbarView overlaps the WebContents.
-    // 2. In PWAs or ChromeOS System Apps with TabStrip the
-    // WebAppFrameToolbarView overlaps with it.
-    if (!view_->browser_view_->IsWindowControlsOverlayEnabled() &&
-        !view_->browser_view_->tab_strip_view()->GetVisible()) {
-      return views::ViewTargeterDelegate::DoesIntersectRect(view_, rect);
-    }
-
-    // Check the left container if it exists.
-    if (view_->left_container_) {
-      gfx::RectF converted_rect(rect);
-      views::View::ConvertRectToTarget(view_, view_->left_container_,
-                                       &converted_rect);
-      if (view_->left_container_->HitTestRect(
-              gfx::ToEnclosingRect(converted_rect))) {
-        return true;
-      }
-    }
-
-    // Check the right container.
-    CHECK(view_->right_container_);
-    gfx::RectF converted_rect(rect);
-    views::View::ConvertRectToTarget(view_, view_->right_container_,
-                                     &converted_rect);
-    if (view_->right_container_->HitTestRect(
-            gfx::ToEnclosingRect(converted_rect))) {
-      return true;
-    }
-
-    // The event is within the toolbar's bounds but not on any of the visible
-    // button containers, so let it pass through.
-    return false;
-  }
-
- private:
-  const raw_ptr<WebAppFrameToolbarView> view_ = nullptr;
-};
 
 BEGIN_METADATA(WebAppFrameToolbarView)
 ADD_PROPERTY_METADATA(bool, PaintAsActive)

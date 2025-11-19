@@ -5,6 +5,7 @@
 #include "chrome/browser/payments/browser_binding/browser_bound_key_deleter_service_android.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/barrier_callback.h"
 #include "base/containers/contains.h"
@@ -103,6 +104,16 @@ void BrowserBoundKeyDeleterServiceAndroid::RemoveInvalidBBKs() {
       &BrowserBoundKeyDeleterServiceAndroid::FilterAndDeleteInvalidBBKs,
       weak_ptr_factory_.GetWeakPtr(), std::move(authenticator),
       std::move(passkey_browser_binder)));
+}
+
+void BrowserBoundKeyDeleterServiceAndroid::SetInternalAuthenticatorForTesting(
+    std::unique_ptr<webauthn::InternalAuthenticator> authenticator) {
+  authenticator_for_testing_ = std::move(authenticator);
+}
+
+void BrowserBoundKeyDeleterServiceAndroid::SetPasskeyBrowserBinderForTesting(
+    std::unique_ptr<PasskeyBrowserBinder> passkey_browser_binder) {
+  passkey_browser_binder_for_testing_ = std::move(passkey_browser_binder);
 }
 
 void BrowserBoundKeyDeleterServiceAndroid::FilterAndDeleteInvalidBBKs(

@@ -5,6 +5,7 @@
 #include "chrome/browser/payments/browser_binding/browser_bound_key_deleter_service_desktop.h"
 
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "base/containers/contains.h"
@@ -57,6 +58,11 @@ void BrowserBoundKeyDeleterServiceDesktop::RemoveInvalidBBKs() {
   passkey_browser_binder->GetAllBrowserBoundKeys(base::BindOnce(
       &BrowserBoundKeyDeleterServiceDesktop::FilterAndDeleteInvalidBBKs,
       weak_ptr_factory_.GetWeakPtr(), std::move(passkey_browser_binder)));
+}
+
+void BrowserBoundKeyDeleterServiceDesktop::SetPasskeyBrowserBinderForTesting(
+    std::unique_ptr<PasskeyBrowserBinder> passkey_browser_binder) {
+  passkey_browser_binder_for_testing_ = std::move(passkey_browser_binder);
 }
 
 void BrowserBoundKeyDeleterServiceDesktop::FilterAndDeleteInvalidBBKs(
