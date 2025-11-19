@@ -8,7 +8,7 @@ import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 
 // The parameters to open a PersistentCache instance for read-write access.
-struct ReadWriteBackendParams {
+struct PendingReadWriteBackend {
   mojo_base.mojom.File db_file;
   mojo_base.mojom.File journal_file;
   mojo_base.mojom.UnsafeSharedMemoryRegion shared_lock;

@@ -15,8 +15,8 @@
 #include "base/synchronization/atomic_flag.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/memory_dump_provider.h"
-#include "components/persistent_cache/backend_params.h"
 #include "components/persistent_cache/buffer_provider.h"
+#include "components/persistent_cache/pending_backend.h"
 #include "gpu/command_buffer/common/shm_count.h"
 #include "gpu/gpu_gles2_export.h"
 #include "third_party/skia/include/gpu/ganesh/GrContextOptions.h"
@@ -65,7 +65,7 @@ class GPU_GLES2_EXPORT GpuPersistentCache
   GpuPersistentCache& operator=(const GpuPersistentCache&) = delete;
 
   // This can only be called once but is thread safe w.r.t loads and stores.
-  void InitializeCache(persistent_cache::BackendParams backend_params,
+  void InitializeCache(persistent_cache::PendingBackend pending_backend,
                        scoped_refptr<RefCountedGpuProcessShmCount>
                            use_shader_cache_shm_count = nullptr);
 
@@ -97,6 +97,8 @@ class GPU_GLES2_EXPORT GpuPersistentCache
 
   void OnMemoryDump(const std::string& dump_name,
                     base::trace_event::ProcessMemoryDump* pmd);
+
+  const persistent_cache::PersistentCache& GetPersistentCacheForTesting() const;
 
  private:
   struct DiskCache;

@@ -169,10 +169,10 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
   void SetChannelDiskCacheHandle(
       int32_t client_id,
       const gpu::GpuDiskCacheHandle& handle) override;
-  void SetChannelPersistentCacheParams(
+  void SetChannelPersistentCachePendingBackend(
       int32_t client_id,
       const gpu::GpuDiskCacheHandle& handle,
-      persistent_cache::BackendParams backend_params) override;
+      persistent_cache::PendingBackend pending_backend) override;
   void OnDiskCacheHandleDestoyed(
       const gpu::GpuDiskCacheHandle& handle) override;
   void CloseChannel(int32_t client_id) override;

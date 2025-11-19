@@ -30,7 +30,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
-#include "components/persistent_cache/backend_params.h"
+#include "components/persistent_cache/pending_backend.h"
 #include "components/startup_metric_utils/gpu/startup_metric_utils.h"
 #include "components/version_info/version_info.h"
 #include "components/viz/common/features.h"
@@ -917,11 +917,11 @@ void GpuServiceImpl::SetChannelClientPid(int32_t client_id,
   gpu_channel_manager_->SetChannelClientPid(client_id, client_pid);
 }
 
-void GpuServiceImpl::SetChannelPersistentCacheParams(
+void GpuServiceImpl::SetChannelPersistentCachePendingBackend(
     int32_t client_id,
     const gpu::GpuDiskCacheHandle& handle,
-    persistent_cache::BackendParams backend_params) {
-  TRACE_EVENT2("gpu", "GpuServiceImpl::SetChannelPersistentCacheParams",
+    persistent_cache::PendingBackend pending_backend) {
+  TRACE_EVENT2("gpu", "GpuServiceImpl::SetChannelPersistentCachePendingBackend",
                "client_id", client_id, "handle_type", GetHandleType(handle));
 #if BUILDFLAG(SKIA_USE_DAWN)
   // TODO(399642827): Support other cache types.
@@ -933,7 +933,7 @@ void GpuServiceImpl::SetChannelPersistentCacheParams(
 
   auto* cache = dawn_context_provider_->GetCachingInterface();
   CHECK(cache);
-  cache->InitializePersistentCache(std::move(backend_params),
+  cache->InitializePersistentCache(std::move(pending_backend),
                                    use_shader_cache_shm_count_);
 #endif
 }

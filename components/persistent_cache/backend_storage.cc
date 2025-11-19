@@ -16,6 +16,9 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/persistent_cache/backend.h"
+#include "components/persistent_cache/backend_type.h"
+#include "components/persistent_cache/pending_backend.h"
+#include "components/persistent_cache/persistent_cache.h"
 
 #if !BUILDFLAG(IS_FUCHSIA)
 #include "components/persistent_cache/sqlite/backend_storage_delegate.h"
@@ -24,6 +27,18 @@
 namespace persistent_cache {
 
 namespace {
+
+std::unique_ptr<BackendStorage::Delegate> MakeDelegateOfType(
+    BackendType backend_type) {
+#if BUILDFLAG(IS_FUCHSIA)
+  return nullptr;
+#else
+  switch (backend_type) {
+    case BackendType::kSqlite:
+      return std::make_unique<sqlite::BackendStorageDelegate>();
+  }
+#endif
+}
 
 // Deletes the contents of `directory` without deleting `directory` itself.
 void DeleteDirectoryContents(const base::FilePath& directory) {
@@ -36,15 +51,9 @@ void DeleteDirectoryContents(const base::FilePath& directory) {
 
 }  // namespace
 
-BackendStorage::BackendStorage(base::FilePath directory)
-    : BackendStorage(
-#if BUILDFLAG(IS_FUCHSIA)
-          nullptr,
-#else
-          std::make_unique<sqlite::BackendStorageDelegate>(),
-#endif
-          std::move(directory)) {
-}
+BackendStorage::BackendStorage(BackendType backend_type,
+                               base::FilePath directory)
+    : BackendStorage(MakeDelegateOfType(backend_type), std::move(directory)) {}
 
 BackendStorage::BackendStorage(std::unique_ptr<Delegate> delegate,
                                base::FilePath directory)
@@ -55,9 +64,31 @@ BackendStorage::BackendStorage(std::unique_ptr<Delegate> delegate,
 
 BackendStorage::~BackendStorage() = default;
 
+std::optional<PendingBackend> BackendStorage::MakePendingBackend(
+    const base::FilePath& base_name) {
+  return is_valid_ ? delegate_->MakePendingBackend(directory_, base_name)
+                   : std::nullopt;
+}
+
 std::unique_ptr<Backend> BackendStorage::MakeBackend(
     const base::FilePath& base_name) {
   return is_valid_ ? delegate_->MakeBackend(directory_, base_name) : nullptr;
+}
+
+std::optional<PendingBackend> BackendStorage::ShareReadOnlyConnection(
+    const base::FilePath& base_name,
+    const PersistentCache& cache) {
+  return is_valid_ ? delegate_->ShareReadOnlyConnection(directory_, base_name,
+                                                        cache.backend())
+                   : std::nullopt;
+}
+
+std::optional<PendingBackend> BackendStorage::ShareReadWriteConnection(
+    const base::FilePath& base_name,
+    const PersistentCache& cache) {
+  return is_valid_ ? delegate_->ShareReadWriteConnection(directory_, base_name,
+                                                         cache.backend())
+                   : std::nullopt;
 }
 
 void BackendStorage::DeleteAllFiles() {

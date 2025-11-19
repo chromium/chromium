@@ -15,8 +15,9 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "components/base32/base32.h"
-#include "components/persistent_cache/backend.h"
 #include "components/persistent_cache/backend_storage.h"
+#include "components/persistent_cache/backend_type.h"
+#include "components/persistent_cache/pending_backend.h"
 
 namespace viz {
 
@@ -126,7 +127,7 @@ PersistentCacheSandboxedFileFactory::PersistentCacheSandboxedFileFactory(
 PersistentCacheSandboxedFileFactory::~PersistentCacheSandboxedFileFactory() =
     default;
 
-std::optional<persistent_cache::BackendParams>
+std::optional<persistent_cache::PendingBackend>
 PersistentCacheSandboxedFileFactory::CreateFiles(const CacheIdString& cache_id,
                                                  const std::string& product) {
   background_task_runner_->PostTask(
@@ -135,15 +136,16 @@ PersistentCacheSandboxedFileFactory::CreateFiles(const CacheIdString& cache_id,
 
   base::FilePath cache_dir =
       GetPersistentCacheDirectory(cache_root_dir_, cache_id, product);
-  auto backend = persistent_cache::BackendStorage(cache_dir).MakeBackend(
+  persistent_cache::BackendStorage cache_storage(
+      persistent_cache::BackendType::kSqlite, cache_dir);
+  auto backend = cache_storage.MakePendingBackend(
       base::FilePath(FILE_PATH_LITERAL("cache")));
   if (!backend) {
     PLOG(ERROR) << "Failed to open persistent cache files in directory \""
                 << cache_dir << "\"";
-    return std::nullopt;
   }
 
-  return backend->ExportReadWriteParams();
+  return backend;
 }
 
 void PersistentCacheSandboxedFileFactory::CreateFilesAsync(

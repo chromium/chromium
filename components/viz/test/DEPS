@@ -48,7 +48,7 @@ specific_include_rules = {
   ],
 
   "stub_gpu_service\.cc": [
-    "+components/persistent_cache/backend_params.h",
+    "+components/persistent_cache/pending_backend.h",
   ],
 
   "stub_gpu_service\.h": [

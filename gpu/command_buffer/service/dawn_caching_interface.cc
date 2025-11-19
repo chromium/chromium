@@ -36,7 +36,7 @@ DawnCachingInterface::DawnCachingInterface(
 DawnCachingInterface::~DawnCachingInterface() = default;
 
 void DawnCachingInterface::InitializePersistentCache(
-    persistent_cache::BackendParams backend_params,
+    persistent_cache::PendingBackend pending_backend,
     scoped_refptr<RefCountedGpuProcessShmCount> use_shader_cache_shm_count) {
   CHECK(persistent_cache_);
   // TODO(crbug.com/399642827): PersistentCache's sqlite backend has default
@@ -44,7 +44,7 @@ void DawnCachingInterface::InitializePersistentCache(
   // See https://www.sqlite.org/pragma.html#pragma_cache_size
   // Since we have our own memory cache here, we might want to disable the
   // page cache or at least reduce its max size.
-  persistent_cache_->InitializeCache(std::move(backend_params),
+  persistent_cache_->InitializeCache(std::move(pending_backend),
                                      std::move(use_shader_cache_shm_count));
 }
 

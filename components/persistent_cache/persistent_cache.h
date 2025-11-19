@@ -19,7 +19,6 @@
 #include "base/synchronization/lock.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/types/expected.h"
-#include "components/persistent_cache/backend_params.h"
 #include "components/persistent_cache/buffer_provider.h"
 #include "components/persistent_cache/entry_metadata.h"
 #include "components/persistent_cache/lock_state.h"
@@ -27,17 +26,17 @@
 namespace persistent_cache {
 
 class Backend;
+struct PendingBackend;
 enum class TransactionError;
 
 // Use PersistentCache to store and retrieve key-value pairs across processes or
 // threads.
 //
 // Example:
-//    // Create a persistent cache backend.
-//    BackendParams backend_params = AcquireParams();
-//    auto PersistentCache persistent_cache =
-//      PersistentCache::Open(backend_params);
-//    if(!persistent_cache){
+//    // Acquire a PendingBackend.
+//    PendingBackend pending_backend = AcquirePendingBackend();
+//    auto persistent_cache = PersistentCache::Bind(std::move(pending_backend));
+//    if (!persistent_cache) {
 //      // Handle error.
 //    }
 //
@@ -93,6 +92,10 @@ enum class TransactionError;
 // threads.
 class COMPONENT_EXPORT(PERSISTENT_CACHE) PersistentCache {
  public:
+  // Returns a new instance on success or null on failure. Unconditionally
+  // consumes `pending_backend`.
+  static std::unique_ptr<PersistentCache> Bind(PendingBackend pending_backend);
+
   explicit PersistentCache(std::unique_ptr<Backend> backend);
   ~PersistentCache();
 
@@ -101,10 +104,6 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) PersistentCache {
   PersistentCache(PersistentCache&&) = delete;
   PersistentCache& operator=(const PersistentCache&) = delete;
   PersistentCache& operator=(PersistentCache&&) = delete;
-
-  // Used to open a cache with a backend of type `impl`. Returns nullptr in
-  // case of failure.
-  static std::unique_ptr<PersistentCache> Open(BackendParams backend_params);
 
   // Returns the metadata associated with `key` in the cache, or no value if not
   // found. If `key` is found, `buffer_provider` will be called exactly once
@@ -132,14 +131,6 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) PersistentCache {
       base::span<const uint8_t> content,
       EntryMetadata metadata = EntryMetadata{});
 
-  // Returns params for an independent read-only connection to the instance, or
-  // nothing if its backend is not operating or the params cannot be exported.
-  std::optional<BackendParams> ExportReadOnlyBackendParams();
-
-  // Returns params for an independent read-write connection to the instance, or
-  // nothing if its backend is not operating or the params cannot be exported.
-  std::optional<BackendParams> ExportReadWriteBackendParams();
-
   // Marks the instance as no longer suitable for use. Returns the state of the
   // shared lock at the moment of abandonment. Once an instance is abandoned,
   // all other instances that share a connection with it will report
@@ -149,6 +140,10 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) PersistentCache {
   Backend* GetBackendForTesting();
 
  private:
+  friend class BackendStorage;
+
+  const Backend& backend() const { return *backend_; }
+
   std::optional<base::ElapsedTimer> MaybeGetTimerForHistogram();
   std::string GetFullHistogramName(std::string_view name) const;
 

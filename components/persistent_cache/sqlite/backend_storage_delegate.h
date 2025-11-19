@@ -10,17 +10,25 @@
 
 namespace persistent_cache::sqlite {
 
-// A delegate that emits SqliteBackendImpl instances and manages their
-// storage.
+// A delegate that manages storage on behalf of SqliteBackendImpl.
 class COMPONENT_EXPORT(PERSISTENT_CACHE) BackendStorageDelegate
     : public BackendStorage::Delegate {
  public:
   // BackendStorage::Delegate:
-
-  // Returns a SqliteBackendImpl backend with read-write access to `base_name`.
+  std::optional<PendingBackend> MakePendingBackend(
+      const base::FilePath& directory,
+      const base::FilePath& base_name) override;
   std::unique_ptr<Backend> MakeBackend(
       const base::FilePath& directory,
       const base::FilePath& base_name) override;
+  std::optional<PendingBackend> ShareReadOnlyConnection(
+      const base::FilePath& directory,
+      const base::FilePath& base_name,
+      const Backend& backend) override;
+  std::optional<PendingBackend> ShareReadWriteConnection(
+      const base::FilePath& directory,
+      const base::FilePath& base_name,
+      const Backend& backend) override;
 
   // Returns the basename of `file` without its extension if its extension is
   // ".db".
@@ -30,6 +38,12 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) BackendStorageDelegate
   // .journal files).
   int64_t DeleteFiles(const base::FilePath& directory,
                       const base::FilePath& base_name) override;
+
+ private:
+  std::optional<PendingBackend> ShareConnection(const base::FilePath& directory,
+                                                const base::FilePath& base_name,
+                                                const Backend& backend,
+                                                bool read_write);
 };
 
 }  // namespace persistent_cache::sqlite

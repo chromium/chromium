@@ -78,11 +78,11 @@ interface GpuService {
   SetChannelDiskCacheHandle(
       int32 client_id, gpu.mojom.GpuDiskCacheHandle cache_handle);
 
-  // Sets the persistent cache backend parameters for the given channel.
-  SetChannelPersistentCacheParams(
+  // Sets the persistent cache pending backend for the given channel.
+  SetChannelPersistentCachePendingBackend(
       int32 client_id,
       gpu.mojom.GpuDiskCacheHandle cache_handle,
-      persistent_cache.mojom.ReadWriteBackendParams backend_params);
+      persistent_cache.mojom.PendingReadWriteBackend pending_backend);
 
   // Called by the browser when the last reference to a GPU disk cache handle
   // is gone. Results in the GPU process purging the in memory copy.

@@ -9,7 +9,6 @@
 
 #include "base/component_export.h"
 #include "base/files/file.h"
-#include "base/files/file_path.h"
 #include "base/memory/shared_memory_safety_checker.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "components/persistent_cache/lock_state.h"
@@ -47,12 +46,7 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SandboxedFile
  public:
   enum class AccessRights { kReadWrite, kReadOnly };
 
-  // `file_path` is the optional path to the file. It may be omitted when
-  // `access_rights` is `kReadOnly` or if when `access_rights` is `kReadWrite`
-  // and `DuplicateFiles()` will never be used to obtain a read-only handle to
-  // the file.
   SandboxedFile(base::File file,
-                base::FilePath file_path,
                 AccessRights access_rights,
                 base::WritableSharedMemoryMapping mapped_shared_lock =
                     base::WritableSharedMemoryMapping());
@@ -86,15 +80,10 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SandboxedFile
 
   AccessRights access_rights() const { return access_rights_; }
 
-  // Returns a handle to the file with either read-write or read-only access;
-  // or an invalid File in case of error. To emit a read-only handle from an
-  // instance with read-write access to the file, the path to the underlying
-  // file must have been provided at construction.
-  base::File DuplicateFile(AccessRights access_rights);
-
   // Returns a reference to the instance's file regardless of whether it is
   // open (`IsValid()` returns true) or closed (otherwise). The reference is
   // invalidated upon open/close.
+  const base::File& GetFile() const;
   base::File& GetFile();
 
   // sqlite3_file implementation.
@@ -134,9 +123,6 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SandboxedFile
   // of SandboxedFile via shared memory.
   SharedAtomicLock& GetSharedAtomicLock();
 
-  // The path to the underlying file. Only set for the creator of the file; not
-  // for other consumers to which it has been shared.
-  const base::FilePath file_path_;
   base::File underlying_file_;
   base::File opened_file_;
   const AccessRights access_rights_;

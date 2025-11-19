@@ -14,9 +14,9 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/persistent_cache/backend.h"
-#include "components/persistent_cache/backend_params.h"
 #include "components/persistent_cache/backend_storage.h"
+#include "components/persistent_cache/backend_type.h"
+#include "components/persistent_cache/pending_backend.h"
 #include "components/persistent_cache/sqlite/vfs/sandboxed_file.h"
 #include "gpu/command_buffer/service/gpu_persistent_cache.h"
 #include "gpu/command_buffer/service/mocks.h"
@@ -292,8 +292,6 @@ TEST_F(DawnCachingInterfaceTest, TestAggressiveCacheAndMemoryPressure) {
 #endif
   }
 }
-
-
 
 }  // namespace
 }  // namespace gpu::webgpu

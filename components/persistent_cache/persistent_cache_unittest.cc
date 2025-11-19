@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/containers/span.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/strings/string_number_conversions.h"
@@ -19,10 +20,11 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
-#include "components/persistent_cache/backend_params.h"
+#include "components/persistent_cache/backend_storage.h"
+#include "components/persistent_cache/backend_type.h"
 #include "components/persistent_cache/mock/mock_backend.h"
+#include "components/persistent_cache/pending_backend.h"
 #include "components/persistent_cache/sqlite/sqlite_backend_impl.h"
-#include "components/persistent_cache/sqlite/test_helper.h"
 #include "components/persistent_cache/test_utils.h"
 #include "components/persistent_cache/transaction_error.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -51,8 +53,7 @@ class PersistentCacheMockedBackendTest : public testing::Test {
     backend_ = std::make_unique<persistent_cache::MockBackend>();
   }
 
-  void CreateCache(bool successful) {
-    EXPECT_CALL(*backend_, Initialize()).WillOnce(Return(successful));
+  void CreateCache() {
     cache_ = std::make_unique<persistent_cache::PersistentCache>(
         std::move(backend_));
   }
@@ -64,7 +65,6 @@ class PersistentCacheMockedBackendTest : public testing::Test {
         cache_->GetBackendForTesting());
   }
 
-  persistent_cache::BackendParams params_;
   std::unique_ptr<persistent_cache::MockBackend> backend_;
   std::unique_ptr<persistent_cache::PersistentCache> cache_;
 };
@@ -73,16 +73,8 @@ class PersistentCacheMockedBackendTest : public testing::Test {
 
 namespace persistent_cache {
 
-TEST_F(PersistentCacheMockedBackendTest, CreatingCacheInitializesBackend) {
-  EXPECT_CALL(*backend_, Initialize()).WillOnce(Return(true));
-
-  std::unique_ptr<PersistentCache> cache =
-      std::make_unique<PersistentCache>(std::move(backend_));
-  EXPECT_NE(cache->GetBackendForTesting(), nullptr);
-}
-
 TEST_F(PersistentCacheMockedBackendTest, CacheFindCallsBackendFind) {
-  CreateCache(true);
+  CreateCache();
   EXPECT_CALL(*GetBackend(), Find(kKey, _))
       .WillOnce(Return(base::ok(std::nullopt)));
 
@@ -91,7 +83,7 @@ TEST_F(PersistentCacheMockedBackendTest, CacheFindCallsBackendFind) {
 }
 
 TEST_F(PersistentCacheMockedBackendTest, FindReturnsBackendError) {
-  CreateCache(true);
+  CreateCache();
   EXPECT_CALL(*GetBackend(), Find(kKey, _))
       .WillOnce(Return(base::unexpected(TransactionError::kTransient)));
   EXPECT_THAT(cache_->Find(kKey, [](size_t) { return base::span<uint8_t>(); }),
@@ -99,7 +91,7 @@ TEST_F(PersistentCacheMockedBackendTest, FindReturnsBackendError) {
 }
 
 TEST_F(PersistentCacheMockedBackendTest, InsertReturnsBackendError) {
-  CreateCache(true);
+  CreateCache();
   EXPECT_CALL(*GetBackend(), Insert(_, _, _))
       .WillOnce(Return(base::unexpected(TransactionError::kTransient)));
   EXPECT_THAT(cache_->Insert(kKey, base::byte_span_from_cstring("1")),
@@ -107,22 +99,10 @@ TEST_F(PersistentCacheMockedBackendTest, InsertReturnsBackendError) {
 }
 
 TEST_F(PersistentCacheMockedBackendTest, CacheInsertCallsBackendInsert) {
-  CreateCache(true);
+  CreateCache();
   EXPECT_CALL(*GetBackend(), Insert(kKey, _, _));
   EXPECT_THAT(cache_->Insert(kKey, base::byte_span_from_cstring("1")),
               HasValue());
-}
-
-TEST_F(PersistentCacheMockedBackendTest,
-       FailedBackendInitializationMeansNoFurtherCalls) {
-  EXPECT_CALL(*backend_, Insert(kKey, _, _)).Times(0);
-  EXPECT_CALL(*backend_, Find(kKey, _)).Times(0);
-
-  CreateCache(false);
-  EXPECT_THAT(cache_->Insert(kKey, base::byte_span_from_cstring("1")),
-              ErrorIs(TransactionError::kPermanent));
-  EXPECT_THAT(cache_->Find(kKey, [](size_t) { return base::span<uint8_t>(); }),
-              ErrorIs(TransactionError::kPermanent));
 }
 
 #if !BUILDFLAG(IS_FUCHSIA)
@@ -130,35 +110,51 @@ TEST_F(PersistentCacheMockedBackendTest,
 class PersistentCacheTest : public testing::Test,
                             public testing::WithParamInterface<BackendType> {
  protected:
-  // Used to creates a new cache independent from any other.
-  std::unique_ptr<PersistentCache> OpenCache() {
-    auto backend = params_provider_.CreateBackendWithFiles(GetParam());
-    if (!backend) {
-      ADD_FAILURE() << "Failed to create backend";
-      return nullptr;
+  void SetUp() override {
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    backend_storage_.emplace(GetParam(), temp_dir_.GetPath());
+  }
+
+  // Returns the cache base name for a new cache and the new cache itself.
+  std::pair<base::FilePath, std::unique_ptr<PersistentCache>> OpenCache() {
+    auto [cache_name, pending_backend] = MakePendingBackend();
+    auto cache = PersistentCache::Bind(*std::move(pending_backend));
+    if (!cache) {
+      ADD_FAILURE() << "Failed to bind PersistentCache";
+      return {};
     }
-    return std::make_unique<PersistentCache>(std::move(backend));
+    return {std::move(cache_name), std::move(cache)};
   }
 
-  // Used to create a new cache with provided params. Use with params copied
-  // from the creation of another cache to share backing files between the two.
-  std::unique_ptr<PersistentCache> OpenCache(BackendParams backend_params) {
-    auto cache = PersistentCache::Open(std::move(backend_params));
-    CHECK(cache->GetBackendForTesting());
-    return cache;
+  // Returns the cache base name for a new cache and a pending backend for it.
+  std::pair<base::FilePath, std::optional<PendingBackend>>
+  MakePendingBackend() {
+    auto cache_name = base::FilePath::FromASCII(
+        base::StrCat({"Cache", base::NumberToString(next_backend_index_++)}));
+    auto pending_backend = backend_storage_->MakePendingBackend(cache_name);
+    if (!pending_backend) {
+      ADD_FAILURE() << "Failed to make PendingBackend";
+      return {};
+    }
+    return {std::move(cache_name), std::move(pending_backend)};
   }
 
-  test_support::TestHelper params_provider_;
+  BackendStorage& backend_storage() { return *backend_storage_; }
+
+ private:
+  base::ScopedTempDir temp_dir_;
+  std::optional<BackendStorage> backend_storage_;
+  int next_backend_index_ = 0;
 };
 
 TEST_P(PersistentCacheTest, FindReturnsNullWhenEmpty) {
-  auto cache = OpenCache();
+  auto [cache_name, cache] = OpenCache();
   EXPECT_THAT(cache->Find(kKey, [](size_t) { return base::span<uint8_t>(); }),
               ValueIs(Eq(std::nullopt)));
 }
 
 TEST_P(PersistentCacheTest, FindReturnsValueWhenPresent) {
-  auto cache = OpenCache();
+  auto [cache_name, cache] = OpenCache();
   for (int i = 0; i < 20; ++i) {
     std::string key = base::NumberToString(i);
     auto value = base::as_byte_span(key);
@@ -171,7 +167,7 @@ TEST_P(PersistentCacheTest, FindReturnsValueWhenPresent) {
 }
 
 TEST_P(PersistentCacheTest, EmptyValueIsStorable) {
-  auto cache = OpenCache();
+  auto [cache_name, cache] = OpenCache();
   EXPECT_THAT(cache->Insert(kKey, base::byte_span_from_cstring("")),
               HasValue());
   ASSERT_THAT(FindEntry(*cache, kKey),
@@ -179,7 +175,7 @@ TEST_P(PersistentCacheTest, EmptyValueIsStorable) {
 }
 
 TEST_P(PersistentCacheTest, ValueContainingNullCharIsStorable) {
-  auto cache = OpenCache();
+  auto [cache_name, cache] = OpenCache();
   constexpr std::array<std::uint8_t, 5> value_array{'\0', 'a', 'b', 'c', '\0'};
   const base::span<const std::uint8_t> value_span(value_array);
   CHECK_EQ(value_span.size(), value_array.size())
@@ -191,7 +187,7 @@ TEST_P(PersistentCacheTest, ValueContainingNullCharIsStorable) {
 }
 
 TEST_P(PersistentCacheTest, ValueContainingInvalidUtf8IsStorable) {
-  auto cache = OpenCache();
+  auto [cache_name, cache] = OpenCache();
   constexpr std::array<std::uint8_t, 4> value_array{0x20, 0x0F, 0xFF, 0xFF};
   const base::span<const std::uint8_t> value_span(value_array);
   CHECK(
@@ -204,7 +200,7 @@ TEST_P(PersistentCacheTest, ValueContainingInvalidUtf8IsStorable) {
 }
 
 TEST_P(PersistentCacheTest, OverwritingChangesValue) {
-  auto cache = OpenCache();
+  auto [cache_name, cache] = OpenCache();
   EXPECT_THAT(cache->Insert(kKey, base::byte_span_from_cstring("1")),
               HasValue());
   EXPECT_THAT(cache->Insert(kKey, base::byte_span_from_cstring("2")),
@@ -215,7 +211,7 @@ TEST_P(PersistentCacheTest, OverwritingChangesValue) {
 }
 
 TEST_P(PersistentCacheTest, OverwritingChangesValueVaryingSizes) {
-  auto cache = OpenCache();
+  auto [cache_name, cache] = OpenCache();
   EXPECT_THAT(cache->Insert(kKey, base::byte_span_from_cstring("1")),
               HasValue());
   EXPECT_THAT(
@@ -231,7 +227,7 @@ TEST_P(PersistentCacheTest, MetadataIsRetrievable) {
   EntryMetadata metadata{.input_signature =
                              base::Time::Now().InMillisecondsSinceUnixEpoch()};
 
-  auto cache = OpenCache();
+  auto [cache_name, cache] = OpenCache();
   EXPECT_THAT(cache->Insert(kKey, base::byte_span_from_cstring("1"), metadata),
               HasValue());
 
@@ -254,7 +250,7 @@ TEST_P(PersistentCacheTest, OverwritingChangesMetadata) {
   EntryMetadata metadata{.input_signature =
                              base::Time::Now().InMillisecondsSinceUnixEpoch()};
 
-  auto cache = OpenCache();
+  auto [cache_name, cache] = OpenCache();
   EXPECT_THAT(cache->Insert(kKey, base::byte_span_from_cstring("1"), metadata),
               HasValue());
 
@@ -275,7 +271,7 @@ TEST_P(PersistentCacheTest, OverwritingChangesMetadata) {
 
 TEST_P(PersistentCacheTest, MultipleEphemeralCachesAreIndependent) {
   for (int i = 0; i < 3; ++i) {
-    auto cache = OpenCache();
+    auto [cache_name, cache] = OpenCache();
 
     // `kKey` never inserted in this cache so not found.
     EXPECT_THAT(FindEntry(*cache, kKey), ValueIs(Eq(std::nullopt)));
@@ -291,7 +287,8 @@ TEST_P(PersistentCacheTest, MultipleEphemeralCachesAreIndependent) {
 TEST_P(PersistentCacheTest, MultipleLiveCachesAreIndependent) {
   std::vector<std::unique_ptr<PersistentCache>> caches;
   for (int i = 0; i < 3; ++i) {
-    caches.push_back(OpenCache());
+    auto [cache_name, new_cache] = OpenCache();
+    caches.push_back(std::move(new_cache));
     std::unique_ptr<PersistentCache>& cache = caches.back();
 
     // `kKey` never inserted in this cache so not found.
@@ -305,12 +302,13 @@ TEST_P(PersistentCacheTest, MultipleLiveCachesAreIndependent) {
 }
 
 TEST_P(PersistentCacheTest, EphemeralCachesSharingParamsShareData) {
-  std::unique_ptr<Backend> backend =
-      params_provider_.CreateBackendWithFiles(GetParam());
-  ASSERT_TRUE(backend);
+  auto [cache_name, main_cache] = OpenCache();
+  ASSERT_TRUE(main_cache);
   for (int i = 0; i < 3; ++i) {
-    ASSERT_OK_AND_ASSIGN(auto params, backend->ExportReadWriteParams());
-    auto cache = OpenCache(std::move(params));
+    ASSERT_OK_AND_ASSIGN(
+        auto pending_backend,
+        backend_storage().ShareReadWriteConnection(cache_name, *main_cache));
+    auto cache = PersistentCache::Bind(std::move(pending_backend));
 
     // First run, setup.
     if (i == 0) {
@@ -330,13 +328,14 @@ TEST_P(PersistentCacheTest, EphemeralCachesSharingParamsShareData) {
 }
 
 TEST_P(PersistentCacheTest, LiveCachesSharingParamsShareData) {
-  std::unique_ptr<Backend> backend =
-      params_provider_.CreateBackendWithFiles(GetParam());
+  auto [cache_name, main_cache] = OpenCache();
   std::vector<std::unique_ptr<PersistentCache>> caches;
 
   for (int i = 0; i < 3; ++i) {
-    ASSERT_OK_AND_ASSIGN(auto params, backend->ExportReadWriteParams());
-    caches.push_back(OpenCache(std::move(params)));
+    ASSERT_OK_AND_ASSIGN(
+        auto pending_backend,
+        backend_storage().ShareReadWriteConnection(cache_name, *main_cache));
+    caches.push_back(PersistentCache::Bind(std::move(pending_backend)));
     std::unique_ptr<PersistentCache>& cache = caches.back();
 
     // First run, setup.
@@ -358,15 +357,16 @@ TEST_P(PersistentCacheTest, LiveCachesSharingParamsShareData) {
 // Create an instance and share it for read-only access to others.
 TEST_P(PersistentCacheTest, MultipleInstancesShareData) {
   // The main read-write instance.
-  auto main_cache = OpenCache();
+  auto [cache_name, main_cache] = OpenCache();
 
   std::vector<std::unique_ptr<PersistentCache>> caches;
   for (int i = 0; i < 3; ++i) {
     // Export a read-only view to the main instance.
-    ASSERT_OK_AND_ASSIGN(auto params,
-                         main_cache->ExportReadOnlyBackendParams());
+    ASSERT_OK_AND_ASSIGN(
+        auto pending_backend,
+        backend_storage().ShareReadOnlyConnection(cache_name, *main_cache));
     // Create a new instance that will read from the original.
-    caches.push_back(OpenCache(std::move(params)));
+    caches.push_back(PersistentCache::Bind(std::move(pending_backend)));
     std::unique_ptr<PersistentCache>& ro_cache = caches.back();
 
     if (i == 0) {
@@ -393,15 +393,16 @@ TEST_P(PersistentCacheTest, MultipleInstancesCanWriteData) {
   static constexpr char kOtherKeyPrefix[] = "otherkey-";
 
   // The main read-write instance.
-  auto main_cache = OpenCache();
+  auto [cache_name, main_cache] = OpenCache();
 
   std::vector<std::unique_ptr<PersistentCache>> caches;
   for (int i = 0; i < 3; ++i) {
-    // Export a read-only view to the main instance.
-    ASSERT_OK_AND_ASSIGN(auto params,
-                         main_cache->ExportReadWriteBackendParams());
+    // Share a read-write view to the main instance.
+    ASSERT_OK_AND_ASSIGN(
+        auto pending_backend,
+        backend_storage().ShareReadWriteConnection(cache_name, *main_cache));
     // Create a new instance that will read/write from/to the original.
-    caches.push_back(OpenCache(std::move(params)));
+    caches.push_back(PersistentCache::Bind(std::move(pending_backend)));
     std::unique_ptr<PersistentCache>& rw_cache = caches.back();
 
     // This new cache has access to all previous values.
@@ -447,8 +448,8 @@ TEST_P(PersistentCacheTest, ThreadSafeAccess) {
 
   // Create the cache and insert on this sequence.
   auto value = base::byte_span_from_cstring("1");
-  auto cache = OpenCache();
-  EXPECT_THAT(cache->Insert(kKey, value), HasValue());
+  auto [cache_name, main_cache] = OpenCache();
+  EXPECT_THAT(main_cache->Insert(kKey, value), HasValue());
 
   // FindEntry() on ThreadPool. Result should be expected and there are no
   // sequence checkers tripped.
@@ -464,7 +465,7 @@ TEST_P(PersistentCacheTest, ThreadSafeAccess) {
             auto entry = FindEntry(*cache, kKey);
             std::move(on_entry).Run(std::move(entry));
           },
-          cache.get(), future_entry.GetSequenceBoundCallback()));
+          main_cache.get(), future_entry.GetSequenceBoundCallback()));
 
   // Wait for result availability and check.
   ASSERT_OK_AND_ASSIGN(std::optional<Entry> entry, future_entry.Take());
@@ -472,7 +473,7 @@ TEST_P(PersistentCacheTest, ThreadSafeAccess) {
 }
 
 TEST_P(PersistentCacheTest, MultipleLiveEntries) {
-  auto cache = OpenCache();
+  auto [cache_name, cache] = OpenCache();
   absl::flat_hash_map<std::string, std::optional<Entry>> entries;
 
   for (size_t i = 0; i < 20; ++i) {
@@ -492,7 +493,7 @@ TEST_P(PersistentCacheTest, MultipleLiveEntries) {
 TEST_P(PersistentCacheTest, MultipleLiveEntriesWithVaryingLifetime) {
   static constexpr size_t kNumberOfEntries = 40;
 
-  auto cache = OpenCache();
+  auto [cache_name, cache] = OpenCache();
   absl::flat_hash_map<std::string, std::optional<Entry>> entries;
 
   for (size_t i = 0; i < kNumberOfEntries; ++i) {
@@ -518,7 +519,7 @@ TEST_P(PersistentCacheTest, MultipleLiveEntriesWithVaryingLifetime) {
 }
 
 TEST_P(PersistentCacheTest, AbandonementDetected) {
-  auto cache = OpenCache();
+  auto [cache_name, cache] = OpenCache();
 
   // Value is correctly inserted.
   EXPECT_THAT(
@@ -541,10 +542,11 @@ TEST_P(PersistentCacheTest, AbandonementDetected) {
 }
 
 TEST_P(PersistentCacheTest, RecoveryFromTransientError) {
-  auto cache = OpenCache();
+  auto [cache_name, cache] = OpenCache();
 
-  ASSERT_OK_AND_ASSIGN(auto reader_params,
-                       cache->ExportReadOnlyBackendParams());
+  ASSERT_OK_AND_ASSIGN(
+      auto pending_reader,
+      backend_storage().ShareReadOnlyConnection(cache_name, *cache));
 
   // Baseline insert works.
   EXPECT_THAT(
@@ -552,8 +554,9 @@ TEST_P(PersistentCacheTest, RecoveryFromTransientError) {
       HasValue());
 
   // Lock the db file in shared mode.
-  auto reader_vfs_file_set =
-      SqliteBackendImpl::GetVfsFileSetFromParams(std::move(reader_params));
+  ASSERT_OK_AND_ASSIGN(
+      auto reader_vfs_file_set,
+      SqliteBackendImpl::BindToFileSet(std::move(pending_reader)));
   auto reader_files = reader_vfs_file_set.GetFiles();
   auto reader_db_file = reader_files[0].second;
   ASSERT_EQ(reader_db_file->Lock(SQLITE_LOCK_SHARED), SQLITE_OK);

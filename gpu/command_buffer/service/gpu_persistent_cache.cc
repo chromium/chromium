@@ -168,6 +168,10 @@ struct GpuPersistentCache::DiskCache
             persistent_cache::BufferProvider buffer_provider);
   void Store(scoped_refptr<MemoryCacheEntry> entry);
 
+  const persistent_cache::PersistentCache& persistent_cache() const {
+    return *cache_;
+  }
+
  private:
   friend class base::RefCountedThreadSafe<DiskCache>;
   ~DiskCache();
@@ -378,11 +382,11 @@ GpuPersistentCache::GpuPersistentCache(std::string_view cache_prefix,
 GpuPersistentCache::~GpuPersistentCache() = default;
 
 void GpuPersistentCache::InitializeCache(
-    persistent_cache::BackendParams backend_params,
+    persistent_cache::PendingBackend pending_backend,
     scoped_refptr<RefCountedGpuProcessShmCount> use_shader_cache_shm_count) {
   CHECK(!disk_cache_initialized_.IsSet());
   auto cache =
-      persistent_cache::PersistentCache::Open(std::move(backend_params));
+      persistent_cache::PersistentCache::Bind(std::move(pending_backend));
   if (cache) {
     disk_cache_ = base::MakeRefCounted<DiskCache>(
         cache_prefix_, std::move(cache), async_write_options_,
@@ -504,6 +508,11 @@ void GpuPersistentCache::OnMemoryDump(
   if (memory_cache_) {
     memory_cache_->OnMemoryDump(dump_name, pmd);
   }
+}
+
+const persistent_cache::PersistentCache&
+GpuPersistentCache::GetPersistentCacheForTesting() const {
+  return disk_cache_->persistent_cache();
 }
 
 bool GpuPersistentCache::LoadImpl(

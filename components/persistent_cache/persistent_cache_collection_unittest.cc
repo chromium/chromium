@@ -23,6 +23,7 @@
 #include "components/persistent_cache/backend.h"
 #include "components/persistent_cache/mock/mock_backend.h"
 #include "components/persistent_cache/mock/mock_backend_storage_delegate.h"
+#include "components/persistent_cache/pending_backend.h"
 #include "components/persistent_cache/persistent_cache.h"
 #include "components/persistent_cache/sqlite/constants.h"
 #include "components/persistent_cache/sqlite/sqlite_backend_impl.h"
@@ -31,9 +32,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
-
-using testing::_;
-using testing::Return;
 
 std::vector<base::FilePath> GetPathsInDir(const base::FilePath& directory) {
   std::vector<base::FilePath> paths;
@@ -52,12 +50,16 @@ namespace persistent_cache {
 using base::test::ErrorIs;
 using base::test::HasValue;
 using base::test::ValueIs;
+using testing::_;
 using testing::AnyNumber;
 using testing::Eq;
 using testing::IsEmpty;
+using testing::IsTrue;
 using testing::Ne;
 using testing::Optional;
 using testing::Property;
+using testing::ResultOf;
+using testing::Return;
 using testing::StrEq;
 using testing::UnorderedElementsAre;
 
@@ -268,9 +270,10 @@ TEST_F(PersistentCacheCollectionTest, InstancesAbandonnedOnLRUEviction) {
 
   // Creates caches exactly up to capacity.
   for (size_t i = 0; i < kLruCacheCapacity; ++i) {
-    ASSERT_OK_AND_ASSIGN(auto params, collection.ExportReadWriteBackendParams(
-                                          get_increasing_cache_id()));
-    caches.push_back(PersistentCache::Open(std::move(params)));
+    ASSERT_OK_AND_ASSIGN(
+        auto pending_backend,
+        collection.ShareReadWriteConnection(get_increasing_cache_id()));
+    caches.push_back(PersistentCache::Bind(std::move(pending_backend)));
   }
   ASSERT_NE(caches.front(), nullptr);
 
@@ -278,9 +281,10 @@ TEST_F(PersistentCacheCollectionTest, InstancesAbandonnedOnLRUEviction) {
   EXPECT_THAT(FindEntry(*caches.front(), kKey), HasValue());
 
   // Create one more cache which goes over the limit.
-  ASSERT_OK_AND_ASSIGN(auto params, collection.ExportReadWriteBackendParams(
-                                        get_increasing_cache_id()));
-  caches.emplace_back(PersistentCache::Open(std::move(params)));
+  ASSERT_OK_AND_ASSIGN(
+      auto pending_backend,
+      collection.ShareReadWriteConnection(get_increasing_cache_id()));
+  caches.emplace_back(PersistentCache::Bind(std::move(pending_backend)));
 
   // The first cache has now been evicted and is abandoned.
   EXPECT_THAT(FindEntry(*caches.front(), kKey),
@@ -291,9 +295,9 @@ TEST_F(PersistentCacheCollectionTest, InstancesAbandonnedOnClear) {
   PersistentCacheCollection collection(temp_dir_.GetPath(), kOneHundredMiB);
 
   std::string key("key");
-  ASSERT_OK_AND_ASSIGN(auto params,
-                       collection.ExportReadWriteBackendParams(key));
-  auto cache = PersistentCache::Open(std::move(params));
+  ASSERT_OK_AND_ASSIGN(auto pending_backend,
+                       collection.ShareReadWriteConnection(key));
+  auto cache = PersistentCache::Bind(std::move(pending_backend));
 
   collection.Clear();
   EXPECT_THAT(FindEntry(*cache, key),
@@ -317,9 +321,9 @@ TEST_F(PersistentCacheCollectionTest, AbandonnedErrorsDoNotCauseDeletions) {
           Property(&base::FilePath::Extension,
                    StrEq(sqlite::kJournalFileExtension))));
 
-  ASSERT_OK_AND_ASSIGN(auto params,
-                       collection.ExportReadWriteBackendParams(first_cache_id));
-  auto cache = PersistentCache::Open(std::move(params));
+  ASSERT_OK_AND_ASSIGN(auto pending_backend,
+                       collection.ShareReadWriteConnection(first_cache_id));
+  auto cache = PersistentCache::Bind(std::move(pending_backend));
   EXPECT_EQ(cache->Abandon(), LockState::kNotHeld);
 
   EXPECT_THAT(FindEntry(*cache, first_key),
@@ -338,41 +342,42 @@ TEST_F(PersistentCacheCollectionTest, AbandonnedErrorsDoNotCauseDeletions) {
 
 TEST_F(PersistentCacheCollectionTest, EvictWhileLockedDeletesFiles) {
   auto mock_delegate =
-      std::make_unique<testing::StrictMock<MockBackendStorageDelegate>>();
-  auto backend = std::make_unique<testing::StrictMock<MockBackend>>();
+      std::make_unique<testing::NiceMock<MockBackendStorageDelegate>>();
+  auto backend = std::make_unique<testing::NiceMock<MockBackend>>();
 
   // Backend default behavior.
   ON_CALL(*backend, IsReadOnly()).WillByDefault(Return(false));
-  EXPECT_CALL(*backend, IsReadOnly()).Times(AnyNumber());
-  ON_CALL(*backend, GetType()).WillByDefault(Return(BackendType::kSqlite));
-  EXPECT_CALL(*backend, GetType()).Times(AnyNumber());
-  ON_CALL(*backend, Initialize()).WillByDefault(Return(true));
-  EXPECT_CALL(*backend, Initialize()).Times(AnyNumber());
-  ON_CALL(*backend, ExportReadWriteParams())
-      // Lambda used to nudge the compiler into detecting the right type.
-      .WillByDefault(
-          []() { return std::optional<BackendParams>(BackendParams{}); });
-  EXPECT_CALL(*backend, ExportReadWriteParams()).Times(AnyNumber());
 
   // Simulates the fact that readers are left over on abandonment.
   EXPECT_CALL(*backend, Abandon()).WillOnce(Return(LockState::kReading));
 
-  ON_CALL(*mock_delegate, MakeBackend(_, _)).WillByDefault([&]() {
-    return (std::move(backend));
-  });
-  EXPECT_CALL(*mock_delegate, MakeBackend(_, _)).Times(1);
+  // Return the mock backend from the BackendStorage::Delegate when requested,
+  // and remember the cache base name.
+  base::FilePath saved_base_name;
+  EXPECT_CALL(*mock_delegate, MakeBackend(temp_dir_.GetPath(), _))
+      .WillOnce([&](const base::FilePath& directory,
+                    const base::FilePath& base_name) {
+        saved_base_name = base_name;
+        return (std::move(backend));
+      });
 
   // This call only takes place as a reaction to the reader being left over
   // after abandonment.
-  EXPECT_CALL(*mock_delegate, DeleteFiles(_, _)).Times(1);
+  EXPECT_CALL(
+      *mock_delegate,
+      DeleteFiles(temp_dir_.GetPath(),
+                  ResultOf(
+                      [&saved_base_name](const base::FilePath& base_name) {
+                        return base_name == saved_base_name;
+                      },
+                      IsTrue())));
 
   PersistentCacheCollection collection(temp_dir_.GetPath(), kOneHundredMiB,
                                        std::move(mock_delegate));
   std::string first_cache_id = "first_cache_id";
   // `ExportReadWriteBackendParams` called to force the collection to create a
   // `PersistentCache`.
-  ASSERT_THAT(collection.ExportReadWriteBackendParams(first_cache_id),
-              Ne(std::nullopt));
+  collection.ShareReadWriteConnection(first_cache_id);
   collection.Clear();
 }
 
@@ -383,7 +388,7 @@ TEST_F(PersistentCacheCollectionTest,
 
   // Files exists after creating a params since `ExportReadWriteBackendParams`
   // forces the creation of a `PersistentCache`.
-  ASSERT_THAT(collection.ExportReadWriteBackendParams(first_cache_id),
+  ASSERT_THAT(collection.ShareReadWriteConnection(first_cache_id),
               Ne(std::nullopt));
   EXPECT_THAT(
       GetPathsInDir(temp_dir_.GetPath()),
@@ -397,8 +402,8 @@ TEST_F(PersistentCacheCollectionTest,
   EXPECT_THAT(GetPathsInDir(temp_dir_.GetPath()), IsEmpty());
 
   // It's possible to recreate params/files with the same cache_id.
-  ASSERT_OK_AND_ASSIGN(auto other_params,
-                       collection.ExportReadWriteBackendParams(first_cache_id));
+  ASSERT_OK_AND_ASSIGN(auto other_pending_backend,
+                       collection.ShareReadWriteConnection(first_cache_id));
   EXPECT_THAT(
       GetPathsInDir(temp_dir_.GetPath()),
       UnorderedElementsAre(

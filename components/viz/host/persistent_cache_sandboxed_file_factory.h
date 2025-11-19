@@ -13,7 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/persistent_cache/backend_params.h"
+#include "components/persistent_cache/pending_backend.h"
 #include "components/viz/host/viz_host_export.h"
 
 namespace viz {
@@ -44,12 +44,12 @@ class VIZ_HOST_EXPORT PersistentCacheSandboxedFileFactory
   // `cache_id` is used to uniquely identify the cache type (e.g.,
   // 'dawngraphite'). `product` is used for versioning. Stale files from
   // different versions are automatically deleted.
-  std::optional<persistent_cache::BackendParams> CreateFiles(
+  std::optional<persistent_cache::PendingBackend> CreateFiles(
       const CacheIdString& cache_id,
       const std::string& product);
 
   using CreateFilesCallback =
-      base::OnceCallback<void(std::optional<persistent_cache::BackendParams>)>;
+      base::OnceCallback<void(std::optional<persistent_cache::PendingBackend>)>;
   // Similar to CreateFiles but will do asynchronously using
   // background_task_runner_. The `callback` will be triggered on the current
   // thread's task runner once the deletion is completed.

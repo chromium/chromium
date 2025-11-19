@@ -46,7 +46,7 @@ class GPU_GLES2_EXPORT DawnCachingInterface
   ~DawnCachingInterface() override;
 
   void InitializePersistentCache(
-      persistent_cache::BackendParams backend_params,
+      persistent_cache::PendingBackend pending_backend,
       scoped_refptr<RefCountedGpuProcessShmCount> use_shader_cache_shm_count);
 
   size_t LoadData(const void* key,

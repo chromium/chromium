@@ -27,7 +27,7 @@
 
 namespace persistent_cache {
 
-struct BackendParams;
+struct PendingBackend;
 class PersistentCache;
 
 // Use PersistentCacheCollection to seamlessly access multiple PersistentCache
@@ -94,16 +94,16 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) PersistentCacheCollection {
   // that are not actively in-use.
   void DeleteAllFiles();
 
-  // Returns params for an independent read-only connection to the persistent
-  // cache at `cache_id`, or nothing if the cache's backend is not operating or
-  // the params cannot be exported.
-  std::optional<BackendParams> ExportReadOnlyBackendParams(
+  // Returns a pending backend for an independent read-only connection to the
+  // persistent cache at `cache_id`, or nothing if the cache's backend is not
+  // operating or the params cannot be exported.
+  std::optional<PendingBackend> ShareReadOnlyConnection(
       const std::string& cache_id);
 
-  // Returns params for an independent read-write connection to the persistent
+  // Returns a pending backend for an independent read-write connection to the
   // cache at `cache_id`, or nothing if the cache's backend is not operating or
   // the params cannot be exported.
-  std::optional<BackendParams> ExportReadWriteBackendParams(
+  std::optional<PendingBackend> ShareReadWriteConnection(
       const std::string& cache_id);
 
  private:

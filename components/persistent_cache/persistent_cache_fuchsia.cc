@@ -10,6 +10,7 @@
 #include "base/notreached.h"
 #include "base/types/expected.h"
 #include "components/persistent_cache/backend.h"
+#include "components/persistent_cache/pending_backend.h"
 
 namespace persistent_cache {
 
@@ -17,8 +18,8 @@ namespace persistent_cache {
 // implementation to avoid littering the code with ifdefs.
 
 // static
-std::unique_ptr<PersistentCache> PersistentCache::Open(
-    BackendParams backend_params) {
+std::unique_ptr<PersistentCache> PersistentCache::Bind(
+    PendingBackend pending_backend) {
   NOTREACHED();
 }
 
@@ -39,14 +40,6 @@ base::expected<void, TransactionError> PersistentCache::Insert(
     std::string_view key,
     base::span<const uint8_t> content,
     EntryMetadata metadata) {
-  NOTREACHED();
-}
-
-std::optional<BackendParams> PersistentCache::ExportReadOnlyBackendParams() {
-  NOTREACHED();
-}
-
-std::optional<BackendParams> PersistentCache::ExportReadWriteBackendParams() {
   NOTREACHED();
 }
 

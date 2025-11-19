@@ -4,7 +4,7 @@
 
 #include "components/viz/test/stub_gpu_service.h"
 
-#include "components/persistent_cache/backend_params.h"
+#include "components/persistent_cache/pending_backend.h"
 
 namespace viz {
 
@@ -25,10 +25,10 @@ void StubGpuService::SetChannelDiskCacheHandle(
     int32_t client_id,
     const gpu::GpuDiskCacheHandle& handle) {}
 
-void StubGpuService::SetChannelPersistentCacheParams(
+void StubGpuService::SetChannelPersistentCachePendingBackend(
     int32_t client_id,
     const gpu::GpuDiskCacheHandle& handle,
-    persistent_cache::BackendParams backend_params) {}
+    persistent_cache::PendingBackend pending_backend) {}
 
 void StubGpuService::OnDiskCacheHandleDestoyed(
     const gpu::GpuDiskCacheHandle& handle) {}

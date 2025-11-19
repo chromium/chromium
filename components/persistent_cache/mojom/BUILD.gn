@@ -11,10 +11,10 @@ mojom("mojom") {
     {
       types = [
         {
-          mojom = "persistent_cache.mojom.ReadWriteBackendParams"
-          cpp = "::persistent_cache::BackendParams"
+          mojom = "persistent_cache.mojom.PendingReadWriteBackend"
+          cpp = "::persistent_cache::PendingBackend"
           forward_declaration =
-              "namespace persistent_cache { struct BackendParams; }"
+              "namespace persistent_cache { struct PendingBackend; }"
           move_only = true
         },
       ]

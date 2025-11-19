@@ -8,7 +8,9 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "components/persistent_cache/backend.h"
+#include "components/persistent_cache/pending_backend.h"
 #include "components/persistent_cache/sqlite/constants.h"
+#include "components/persistent_cache/sqlite/sqlite_backend_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace persistent_cache::sqlite {
@@ -41,9 +43,10 @@ TEST_F(SqliteBackendStorageDelegateTest, GetBaseName) {
 
 TEST_F(SqliteBackendStorageDelegateTest, CreateAndDelete) {
   base::FilePath base_name = base::FilePath::FromASCII("base_name");
-  auto backend = delegate().MakeBackend(temp_path(), base_name);
+  auto pending_backend = delegate().MakePendingBackend(temp_path(), base_name);
+  ASSERT_NE(pending_backend, std::nullopt);
+  auto backend = SqliteBackendImpl::Bind(*std::move(pending_backend));
   ASSERT_NE(backend, nullptr);
-  ASSERT_TRUE(backend->Initialize());
 
   // The backend should have created some files.
   ASSERT_FALSE(base::IsDirectoryEmpty(temp_path()));

@@ -9,47 +9,46 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "components/persistent_cache/backend_params.h"
 #include "components/persistent_cache/mojom/persistent_cache.mojom-data-view.h"
+#include "components/persistent_cache/pending_backend.h"
 
 namespace mojo {
 
 template <>
-struct StructTraits<persistent_cache::mojom::ReadWriteBackendParamsDataView,
-                    persistent_cache::BackendParams> {
-  static base::File db_file(persistent_cache::BackendParams& backend_params) {
-    CHECK_EQ(backend_params.type, persistent_cache::BackendType::kSqlite);
-    CHECK_EQ(backend_params.db_file_is_writable, true);
-    // `ReadWriteBackendParams::db_file` is not nullable, so it is not
-    // permissible to serialize `backend_params` if it does not have a valid db
+struct StructTraits<persistent_cache::mojom::PendingReadWriteBackendDataView,
+                    persistent_cache::PendingBackend> {
+  static base::File db_file(persistent_cache::PendingBackend& pending_backend) {
+    CHECK_EQ(pending_backend.read_write, true);
+    // `PendingReadWriteBackend::db_file` is not nullable, so it is not
+    // permissible to serialize `pending_backend` if it does not have a valid db
     // file handle.
-    CHECK(backend_params.db_file.IsValid());
-    return std::move(backend_params.db_file);
+    CHECK(pending_backend.sqlite_data.db_file.IsValid());
+    return std::move(pending_backend.sqlite_data.db_file);
   }
 
   static base::File journal_file(
-      persistent_cache::BackendParams& backend_params) {
-    CHECK_EQ(backend_params.type, persistent_cache::BackendType::kSqlite);
-    CHECK_EQ(backend_params.journal_file_is_writable, true);
-    // `ReadWriteBackendParams::journal_file` is not nullable, so it is not
-    // permissible to serialize `backend_params` if it does not have a valid
+      persistent_cache::PendingBackend& pending_backend) {
+    CHECK_EQ(pending_backend.read_write, true);
+    // `PendingReadWriteBackend::journal_file` is not nullable, so it is not
+    // permissible to serialize `pending_backend` if it does not have a valid
     // journal file handle.
-    CHECK(backend_params.journal_file.IsValid());
-    return std::move(backend_params.journal_file);
+    CHECK(pending_backend.sqlite_data.journal_file.IsValid());
+    return std::move(pending_backend.sqlite_data.journal_file);
   }
 
   static base::UnsafeSharedMemoryRegion shared_lock(
-      persistent_cache::BackendParams& backend_params) {
-    CHECK_EQ(backend_params.type, persistent_cache::BackendType::kSqlite);
-    // `ReadWriteBackendParams::shared_lock` is not nullable, so it is not
-    // permissible to serialize `backend_params` if it does not have a valid
+      persistent_cache::PendingBackend& pending_backend) {
+    CHECK_EQ(pending_backend.read_write, true);
+    // `PendingReadWriteBackend::shared_lock` is not nullable, so it is not
+    // permissible to serialize `pending_backend` if it does not have a valid
     // shared lock handle.
-    CHECK(backend_params.shared_lock.IsValid());
-    return std::move(backend_params.shared_lock);
+    CHECK(pending_backend.sqlite_data.shared_lock.IsValid());
+    return std::move(pending_backend.sqlite_data.shared_lock);
   }
 
-  static bool Read(persistent_cache::mojom::ReadWriteBackendParamsDataView data,
-                   persistent_cache::BackendParams* out_backend_params);
+  static bool Read(
+      persistent_cache::mojom::PendingReadWriteBackendDataView data,
+      persistent_cache::PendingBackend* out_pending_backend);
 };
 
 }  // namespace mojo

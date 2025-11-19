@@ -23,7 +23,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/discardable_memory/public/mojom/discardable_shared_memory_manager.mojom.h"
-#include "components/persistent_cache/backend_params.h"
+#include "components/persistent_cache/pending_backend.h"
 #include "components/viz/common/buildflags.h"
 #include "components/viz/host/viz_host_export.h"
 #include "components/viz/service/debugger/mojom/viz_debugger.mojom.h"
@@ -239,10 +239,10 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost,
 #endif  // BUILDFLAG(IS_OZONE)
 
   void InitPersistentCache();
-  void SetChannelPersistentCacheParams(
+  void SetChannelPersistentCachePendingBackend(
       int client_id,
       const gpu::GpuDiskCacheHandle& handle,
-      std::optional<persistent_cache::BackendParams> backend_params);
+      std::optional<persistent_cache::PendingBackend> pending_backend);
 
   std::string GetShaderPrefixKey();
 
@@ -346,7 +346,7 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost,
   base::OneShotTimer shutdown_timeout_;
 
   // Opened persistent cache files for GraphiteDawn.
-  std::optional<persistent_cache::BackendParams>
+  std::optional<persistent_cache::PendingBackend>
       graphite_dawn_persistent_cache_files_;
   bool pending_graphite_dawn_persistent_cache_files_request_ = false;
 

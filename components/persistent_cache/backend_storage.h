@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 
 #include "base/component_export.h"
 #include "base/files/file_path.h"
@@ -15,6 +16,9 @@
 namespace persistent_cache {
 
 class Backend;
+enum class BackendType;
+class PersistentCache;
+struct PendingBackend;
 
 // Manages the storage of files for backends within a directory. Only one
 // instance per process is permitted to operate on a given directory at a time.
@@ -29,9 +33,32 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) BackendStorage {
 
     // Returns a backend named `base_name` supporting read/write access backed
     // by one or more files in `directory`. Returns null in case of any error.
+    virtual std::optional<PendingBackend> MakePendingBackend(
+        const base::FilePath& directory,
+        const base::FilePath& base_name) = 0;
+
+    // Returns a new read-write backend named `base_name` within `directory`.
+    // Returns no value in case of error (e.g., if the backend's files could not
+    // be opened or created, or if the backend's storage is corrupt).
     virtual std::unique_ptr<Backend> MakeBackend(
         const base::FilePath& directory,
         const base::FilePath& base_name) = 0;
+
+    // Returns a pending backend for a read-only connection to the backend named
+    // `base_name` within `directory`. This allows another party to bind to an
+    // existing backend.
+    virtual std::optional<PendingBackend> ShareReadOnlyConnection(
+        const base::FilePath& directory,
+        const base::FilePath& base_name,
+        const Backend& backend) = 0;
+
+    // Returns a pending backend for a read-write connection to the backend
+    // named `base_name` within `directory`. This allows another party to bind
+    // to an existing backend.
+    virtual std::optional<PendingBackend> ShareReadWriteConnection(
+        const base::FilePath& directory,
+        const base::FilePath& base_name,
+        const Backend& backend) = 0;
 
     // Returns the basename of `file` if it names a file managed by the backend,
     // or an empty path otherwise.
@@ -46,10 +73,10 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) BackendStorage {
     Delegate() = default;
   };
 
-  // Constructs an instance that will use the default backend for file
+  // Constructs an instance that will use the given backend type for file
   // management within `directory`. Creates `directory` if it does not already
   // exist.
-  explicit BackendStorage(base::FilePath directory);
+  BackendStorage(BackendType backend_type, base::FilePath directory);
 
   // Constructs an instance that will use `delegate` for file management within
   // `directory`. Creates `directory` if it does not already exist.
@@ -61,8 +88,32 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) BackendStorage {
   // Returns the directory managed by the instance.
   const base::FilePath& directory() const { return directory_; }
 
-  // Returns a new backend named `base_name` within the instance's directory.
+  // Returns a new pending read-write backend named `base_name` within the
+  // instance's directory. This allows a single read-write connection to be
+  // bound. Returns no value in case of error (e.g., if the backend's files
+  // could not be opened or created).
+  std::optional<PendingBackend> MakePendingBackend(
+      const base::FilePath& base_name);
+
+  // Returns a new read-write backend named `base_name` within the instance's
+  // directory. This allows a single read-write connection to be bound. Returns
+  // no value in case of error (e.g., if the backend's files could not be opened
+  // or created, or if the backend's storage is corrupt).
   std::unique_ptr<Backend> MakeBackend(const base::FilePath& base_name);
+
+  // Returns a pending backend for a read-only connection to the backend named
+  // `base_name` within the instance's directory. This allows another party to
+  // bind to an existing backend.
+  std::optional<PendingBackend> ShareReadOnlyConnection(
+      const base::FilePath& base_name,
+      const PersistentCache& cache);
+
+  // Returns a pending backend for a read-write connection to the backend named
+  // `base_name` within the instance's directory. This allows another party to
+  // bind to an existing backend.
+  std::optional<PendingBackend> ShareReadWriteConnection(
+      const base::FilePath& base_name,
+      const PersistentCache& cache);
 
   // Deletes all files in the instance's directory. Any outstanding backend
   // instances will continue to operate on the deleted files, and no new

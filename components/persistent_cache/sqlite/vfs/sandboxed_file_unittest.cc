@@ -30,8 +30,8 @@ class SandboxedFileTest : public testing::Test {
     base::File file(path, base::File::FLAG_CREATE_ALWAYS |
                               base::File::FLAG_READ | base::File::FLAG_WRITE);
     return std::make_unique<SandboxedFile>(
-        std::move(file), std::move(path),
-        SandboxedFile::AccessRights::kReadWrite, std::move(mapped_shared_lock));
+        std::move(file), SandboxedFile::AccessRights::kReadWrite,
+        std::move(mapped_shared_lock));
   }
 
   // Simulate an OpenFile from the VFS delegate.

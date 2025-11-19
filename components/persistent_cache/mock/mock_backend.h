@@ -15,7 +15,6 @@ class MockBackend : public Backend {
   MockBackend();
   ~MockBackend() override;
 
-  MOCK_METHOD(bool, Initialize, (), (override));
   MOCK_METHOD((base::expected<std::optional<EntryMetadata>, TransactionError>),
               Find,
               (std::string_view, BufferProvider buffer_provider),
@@ -28,14 +27,6 @@ class MockBackend : public Backend {
               (override));
   MOCK_METHOD(BackendType, GetType, (), (const, override));
   MOCK_METHOD(bool, IsReadOnly, (), (const, override));
-  MOCK_METHOD(std::optional<BackendParams>,
-              ExportReadOnlyParams,
-              (),
-              (override));
-  MOCK_METHOD(std::optional<BackendParams>,
-              ExportReadWriteParams,
-              (),
-              (override));
   MOCK_METHOD(LockState, Abandon, (), (override));
 };
 

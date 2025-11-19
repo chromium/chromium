@@ -30,11 +30,9 @@ constexpr uint32_t kAbandonedBit = 0x80000000;
 
 SandboxedFile::SandboxedFile(
     base::File file,
-    base::FilePath file_path,
     AccessRights access_rights,
     base::WritableSharedMemoryMapping mapped_shared_lock)
-    : file_path_(std::move(file_path)),
-      underlying_file_(std::move(file)),
+    : underlying_file_(std::move(file)),
       access_rights_(access_rights),
       mapped_shared_lock_(std::move(mapped_shared_lock)) {}
 SandboxedFile::~SandboxedFile() = default;
@@ -48,48 +46,13 @@ void SandboxedFile::OnFileOpened(base::File file) {
   opened_file_ = std::move(file);
 }
 
-base::File SandboxedFile::DuplicateFile(AccessRights access_rights) {
-  // Can't upgrade from read-only to read-write.
-  CHECK((access_rights == AccessRights::kReadOnly) ||
-        (access_rights_ == AccessRights::kReadWrite));
-  CHECK(underlying_file_.IsValid() || opened_file_.IsValid());
-
-  base::File& source =
-      underlying_file_.IsValid() ? underlying_file_ : opened_file_;
-  if (access_rights == access_rights_) {
-    // Caller requests the same rights. Simple duplication as-is.
-    return source.Duplicate();
-  }
-
-#if BUILDFLAG(IS_WIN)
-  // Duplicate the handle to the file with restricted rights.
-  HANDLE handle = nullptr;
-  if (!::DuplicateHandle(
-          /*hSourceProcessHandle=*/::GetCurrentProcess(),
-          /*hSourceHandle=*/source.GetPlatformFile(),
-          /*hTargetProcessHandle=*/::GetCurrentProcess(),
-          /*lpTargetHandle=*/&handle,
-          /*dwDesiredAccess=*/FILE_GENERIC_READ,
-          /*bInheritHandle=*/FALSE,
-          /*dwOptions=*/0)) {
-    // Duplication failed; return an invalid File.
-    DWORD error = ::GetLastError();
-    return base::File(base::File::OSErrorToFileError(error));
-  }
-  return base::File(handle);
-#else
-  // It's not possible to get a new file descriptor with reduced permissions to
-  // the same file description, so open the file anew with read-only access.
-
-  // It is a programming error to attempt to emit a read-only view to the file
-  // when the path to the file was not provided at construction.
-  CHECK(!file_path_.empty());
-  return base::File(file_path_, base::File::FLAG_OPEN | base::File::FLAG_READ);
-#endif
+const base::File& SandboxedFile::GetFile() const {
+  return underlying_file_.IsValid() ? underlying_file_ : opened_file_;
 }
 
 base::File& SandboxedFile::GetFile() {
-  return underlying_file_.IsValid() ? underlying_file_ : opened_file_;
+  return const_cast<base::File&>(
+      const_cast<const SandboxedFile*>(this)->GetFile());
 }
 
 int SandboxedFile::Close() {

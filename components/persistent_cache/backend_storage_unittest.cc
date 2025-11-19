@@ -26,6 +26,9 @@ namespace persistent_cache {
 namespace {
 
 using testing::EndsWith;
+using testing::Eq;
+using testing::Field;
+using testing::Optional;
 using testing::Property;
 using testing::Return;
 
@@ -63,24 +66,24 @@ TEST_F(BackendStorageTest, ConstructionWorks) {
   ASSERT_PRED1(base::DirectoryExists, GetStorageDir());
 }
 
-TEST_F(BackendStorageTest, MakeBackendFails) {
+TEST_F(BackendStorageTest, MakePendingBackendFails) {
   base::FilePath base_name(FILE_PATH_LITERAL("some_base_name"));
 
-  EXPECT_CALL(mock_delegate(), MakeBackend(GetStorageDir(), base_name))
-      .WillOnce(Return(std::unique_ptr<Backend>()));
-  auto result = backend_storage().MakeBackend(base_name);
-  EXPECT_EQ(result, nullptr);
+  EXPECT_CALL(mock_delegate(), MakePendingBackend(GetStorageDir(), base_name))
+      .WillOnce(Return(std::nullopt));
+  auto result = backend_storage().MakePendingBackend(base_name);
+  EXPECT_EQ(result, std::nullopt);
 }
 
-TEST_F(BackendStorageTest, MakeBackendSucceeds) {
+TEST_F(BackendStorageTest, MakePendingBackendSucceeds) {
   base::FilePath base_name(FILE_PATH_LITERAL("some_base_name"));
 
-  auto backend = std::make_unique<testing::StrictMock<MockBackend>>();
-  auto* backend_raw = backend.get();
-  EXPECT_CALL(mock_delegate(), MakeBackend(GetStorageDir(), base_name))
-      .WillOnce(Return(std::move(backend)));
-  auto result = backend_storage().MakeBackend(base_name);
-  EXPECT_EQ(result.get(), backend_raw);
+  PendingBackend pending_backend;
+  pending_backend.read_write = true;
+  EXPECT_CALL(mock_delegate(), MakePendingBackend(GetStorageDir(), base_name))
+      .WillOnce(Return(std::move(pending_backend)));
+  auto result = backend_storage().MakePendingBackend(base_name);
+  EXPECT_THAT(result, Optional(Field(&PendingBackend::read_write, Eq(true))));
 }
 
 TEST_F(BackendStorageTest, DeleteAllFiles) {

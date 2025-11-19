@@ -7,6 +7,7 @@
 
 #include "components/persistent_cache/backend.h"
 #include "components/persistent_cache/backend_storage.h"
+#include "components/persistent_cache/pending_backend.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace persistent_cache {
@@ -16,17 +17,34 @@ class MockBackendStorageDelegate : public BackendStorage::Delegate {
   MockBackendStorageDelegate();
   ~MockBackendStorageDelegate() override;
 
+  MOCK_METHOD(std::optional<PendingBackend>,
+              MakePendingBackend,
+              (const base::FilePath& directory,
+               const base::FilePath& base_name),
+              (override));
+  MOCK_METHOD(std::unique_ptr<Backend>,
+              MakeBackend,
+              (const base::FilePath& directory,
+               const base::FilePath& base_name),
+              (override));
+  MOCK_METHOD(std::optional<PendingBackend>,
+              ShareReadOnlyConnection,
+              (const base::FilePath& directory,
+               const base::FilePath& base_name,
+               const Backend& backend),
+              (override));
+  MOCK_METHOD(std::optional<PendingBackend>,
+              ShareReadWriteConnection,
+              (const base::FilePath& directory,
+               const base::FilePath& base_name,
+               const Backend& backend),
+              (override));
   MOCK_METHOD(base::FilePath,
               GetBaseName,
               (const base::FilePath& file),
               (override));
   MOCK_METHOD(int64_t,
               DeleteFiles,
-              (const base::FilePath& directory,
-               const base::FilePath& base_name),
-              (override));
-  MOCK_METHOD(std::unique_ptr<Backend>,
-              MakeBackend,
               (const base::FilePath& directory,
                const base::FilePath& base_name),
               (override));

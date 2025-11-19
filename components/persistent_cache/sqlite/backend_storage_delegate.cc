@@ -12,23 +12,125 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/clamped_math.h"
 #include "base/types/expected_macros.h"
+#include "components/persistent_cache/pending_backend.h"
 #include "components/persistent_cache/sqlite/constants.h"
 #include "components/persistent_cache/sqlite/sqlite_backend_impl.h"
 #include "components/persistent_cache/sqlite/vfs/sqlite_database_vfs_file_set.h"
 
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+#endif
+
 namespace persistent_cache::sqlite {
+
+namespace {
+
+// Returns a duplicate of `source_file` (at `source_file_path`) which has either
+// read-only (`source_is_read_write` = false) or read-write (otherwise) access
+// that, itself, has either read-only (`target_read_write` = false) or
+// read-write access.
+base::File DuplicateFile(const base::File& source_file,
+                         const base::FilePath& source_file_path,
+                         bool source_is_read_write,
+                         bool target_read_write) {
+  CHECK(source_file.IsValid());
+  // Can't upgrade from read-only to read-write.
+  CHECK(!target_read_write || source_is_read_write);
+
+  if (source_is_read_write == target_read_write) {
+    // Caller requests the same rights. Simple duplication as-is.
+    return source_file.Duplicate();
+  }
+
+#if BUILDFLAG(IS_WIN)
+  // Duplicate the handle to the file with restricted rights.
+  HANDLE handle = nullptr;
+  if (!::DuplicateHandle(
+          /*hSourceProcessHandle=*/::GetCurrentProcess(),
+          /*hSourceHandle=*/source_file.GetPlatformFile(),
+          /*hTargetProcessHandle=*/::GetCurrentProcess(),
+          /*lpTargetHandle=*/&handle,
+          /*dwDesiredAccess=*/FILE_GENERIC_READ,
+          /*bInheritHandle=*/FALSE,
+          /*dwOptions=*/0)) {
+    // Duplication failed; return an invalid File.
+    DWORD error = ::GetLastError();
+    return base::File(base::File::OSErrorToFileError(error));
+  }
+  return base::File(handle);
+#else
+  // It's not possible to get a new file descriptor with reduced permissions to
+  // the same file description, so open the file anew with read-only access.
+  return base::File(source_file_path,
+                    base::File::FLAG_OPEN | base::File::FLAG_READ);
+#endif
+}
+
+}  // namespace
+
+std::optional<PendingBackend> BackendStorageDelegate::MakePendingBackend(
+    const base::FilePath& directory,
+    const base::FilePath& base_name) {
+  PendingBackend pending_backend;
+
+  uint32_t create_flags = base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_READ |
+                          base::File::FLAG_WRITE |
+                          base::File::FLAG_WIN_SHARE_DELETE |
+                          base::File::FLAG_CAN_DELETE_ON_CLOSE;
+
+  // Make sure handles to these files are safe to pass to untrusted processes.
+  create_flags = base::File::AddFlagsForPassingToUntrustedProcess(create_flags);
+
+  auto db_file_path =
+      directory.Append(base_name).AddExtension(kDbFileExtension);
+  pending_backend.sqlite_data.db_file = base::File(db_file_path, create_flags);
+  if (!pending_backend.sqlite_data.db_file.IsValid()) {
+    return std::nullopt;
+  }
+
+  auto journal_file_path =
+      directory.Append(base_name).AddExtension(kJournalFileExtension);
+  pending_backend.sqlite_data.journal_file =
+      base::File(journal_file_path, create_flags);
+  if (!pending_backend.sqlite_data.journal_file.IsValid()) {
+    return std::nullopt;
+  }
+
+  // TODO(crbug.com/377475540): Do not create the shared lock if the consumer
+  // only requires a single connection to the database.
+  pending_backend.sqlite_data.shared_lock =
+      base::UnsafeSharedMemoryRegion::Create(sizeof(SharedAtomicLock));
+  if (!pending_backend.sqlite_data.shared_lock.IsValid()) {
+    return std::nullopt;
+  }
+
+  pending_backend.read_write = true;
+
+  return pending_backend;
+}
 
 std::unique_ptr<Backend> BackendStorageDelegate::MakeBackend(
     const base::FilePath& directory,
     const base::FilePath& base_name) {
-  ASSIGN_OR_RETURN(
-      auto file_set,
-      SqliteVfsFileSet::Create(
-          directory.Append(base_name).AddExtension(kDbFileExtension),
-          directory.Append(base_name).AddExtension(kJournalFileExtension)),
-      []() -> std::unique_ptr<Backend> { return nullptr; });
+  if (auto pending_backend = MakePendingBackend(directory, base_name);
+      pending_backend.has_value()) {
+    return SqliteBackendImpl::Bind(*std::move(pending_backend));
+  }
+  return nullptr;
+}
 
-  return std::make_unique<SqliteBackendImpl>(std::move(file_set));
+std::optional<PendingBackend> BackendStorageDelegate::ShareReadOnlyConnection(
+    const base::FilePath& directory,
+    const base::FilePath& base_name,
+    const Backend& backend) {
+  return ShareConnection(directory, base_name, backend, /*read_write=*/false);
+}
+
+std::optional<PendingBackend> BackendStorageDelegate::ShareReadWriteConnection(
+    const base::FilePath& directory,
+    const base::FilePath& base_name,
+    const Backend& backend) {
+  return ShareConnection(directory, base_name, backend, /*read_write=*/true);
 }
 
 base::FilePath BackendStorageDelegate::GetBaseName(const base::FilePath& file) {
@@ -61,6 +163,44 @@ int64_t BackendStorageDelegate::DeleteFiles(const base::FilePath& directory,
   // TODO (https://crbug.com/377475540): Cleanup when deletion of journal
   // failed.
   return bytes_recovered;
+}
+
+std::optional<PendingBackend> BackendStorageDelegate::ShareConnection(
+    const base::FilePath& directory,
+    const base::FilePath& base_name,
+    const Backend& backend,
+    bool read_write) {
+  const SqliteBackendImpl& sqlite_backend =
+      static_cast<const SqliteBackendImpl&>(backend);
+  const SqliteVfsFileSet& file_set = sqlite_backend.file_set();
+
+  PendingBackend pending_backend;
+
+  pending_backend.sqlite_data.db_file =
+      DuplicateFile(file_set.GetDbFile(),
+                    directory.Append(base_name).AddExtension(kDbFileExtension),
+                    !file_set.read_only(), read_write);
+  if (!pending_backend.sqlite_data.db_file.IsValid()) {
+    return std::nullopt;
+  }
+
+  pending_backend.sqlite_data.journal_file = DuplicateFile(
+      file_set.GetJournalFile(),
+      directory.Append(base_name).AddExtension(kJournalFileExtension),
+      !file_set.read_only(), read_write);
+  if (!pending_backend.sqlite_data.journal_file.IsValid()) {
+    return std::nullopt;
+  }
+
+  pending_backend.sqlite_data.shared_lock =
+      file_set.GetSharedLock().Duplicate();
+  if (!pending_backend.sqlite_data.shared_lock.IsValid()) {
+    return std::nullopt;
+  }
+
+  pending_backend.read_write = read_write;
+
+  return pending_backend;
 }
 
 }  // namespace persistent_cache::sqlite

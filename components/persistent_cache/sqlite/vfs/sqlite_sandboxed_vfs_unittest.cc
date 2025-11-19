@@ -12,7 +12,10 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/gmock_expected_support.h"
-#include "components/persistent_cache/sqlite/test_helper.h"
+#include "base/types/expected_macros.h"
+#include "components/persistent_cache/pending_backend.h"
+#include "components/persistent_cache/sqlite/backend_storage_delegate.h"
+#include "components/persistent_cache/sqlite/sqlite_backend_impl.h"
 #include "components/persistent_cache/sqlite/vfs/sqlite_database_vfs_file_set.h"
 #include "sql/database.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,13 +31,25 @@ const base::FilePath kNonExistentVirtualFilePath =
 }  // namespace
 
 class SqliteSandboxedVfsTest : public testing::Test {
- public:
+ protected:
+  void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
+
   std::optional<SqliteVfsFileSet> CreateFilesAndBuildVfsFileSet() {
-    return temporary_vfs_file_set_provider_.CreateFilesAndBuildVfsFileSet();
+    std::optional<SqliteVfsFileSet> file_set;
+    if (auto pending_backend = backend_storage_delegate_.MakePendingBackend(
+            temp_dir_.GetPath(), base::FilePath(FILE_PATH_LITERAL("TEST")));
+        !pending_backend.has_value()) {
+      ADD_FAILURE() << "Failed creating pending backend";
+    } else {
+      file_set = SqliteBackendImpl::BindToFileSet(*std::move(pending_backend));
+      EXPECT_NE(file_set, std::nullopt) << "Failed creating pending backend";
+    }
+    return file_set;
   }
 
  private:
-  test_support::TestHelper temporary_vfs_file_set_provider_;
+  base::ScopedTempDir temp_dir_;
+  sqlite::BackendStorageDelegate backend_storage_delegate_;
 };
 
 TEST_F(SqliteSandboxedVfsTest, NoAccessWithoutRegistering) {

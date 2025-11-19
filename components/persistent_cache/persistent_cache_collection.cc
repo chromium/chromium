@@ -17,7 +17,9 @@
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "components/persistent_cache/backend_storage.h"
+#include "components/persistent_cache/backend_type.h"
 #include "components/persistent_cache/lock_state.h"
+#include "components/persistent_cache/pending_backend.h"
 #include "components/persistent_cache/persistent_cache.h"
 #include "components/persistent_cache/transaction_error.h"
 
@@ -27,7 +29,7 @@ PersistentCacheCollection::PersistentCacheCollection(
     base::FilePath top_directory,
     int64_t target_footprint,
     size_t lru_capacity)
-    : backend_storage_(std::move(top_directory)),
+    : backend_storage_(BackendType::kSqlite, std::move(top_directory)),
       target_footprint_(target_footprint),
       lru_capacity_(lru_capacity),
       persistent_caches_(PersistentCacheLRUMap::NO_AUTO_EVICT) {
@@ -122,24 +124,26 @@ void PersistentCacheCollection::AbandonCache(
   }
 }
 
-std::optional<BackendParams>
-PersistentCacheCollection::ExportReadOnlyBackendParams(
+std::optional<PendingBackend>
+PersistentCacheCollection::ShareReadOnlyConnection(
     const std::string& cache_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (auto* cache = GetOrCreateCache(cache_id); cache) {
-    return cache->ExportReadOnlyBackendParams();
+    return backend_storage_.ShareReadOnlyConnection(
+        BaseNameFromCacheId(cache_id), *cache);
   }
   return std::nullopt;
 }
 
-std::optional<BackendParams>
-PersistentCacheCollection::ExportReadWriteBackendParams(
+std::optional<PendingBackend>
+PersistentCacheCollection::ShareReadWriteConnection(
     const std::string& cache_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (auto* cache = GetOrCreateCache(cache_id); cache) {
-    return cache->ExportReadWriteBackendParams();
+    return backend_storage_.ShareReadWriteConnection(
+        BaseNameFromCacheId(cache_id), *cache);
   }
   return std::nullopt;
 }
@@ -209,16 +213,6 @@ PersistentCache* PersistentCacheCollection::GetOrCreateCache(
     return it->second.get();
   }
 
-  base::FilePath base_name = BaseNameFromCacheId(cache_id);
-  // `cache_id` must not contain invalid characters.
-  CHECK(!base_name.empty());
-
-  auto backend = backend_storage_.MakeBackend(base_name);
-  if (!backend) {
-    // Failed to open/create the backend's files.
-    return nullptr;
-  }
-
   // The cache would exceed capacity on next insert. Remove the oldest entry to
   // make room.
   if (persistent_caches_.size() == lru_capacity_) {
@@ -228,9 +222,19 @@ PersistentCache* PersistentCacheCollection::GetOrCreateCache(
     persistent_caches_.Erase(oldest_it);
   }
 
+  base::FilePath base_name = BaseNameFromCacheId(cache_id);
+  // `cache_id` must not contain invalid characters.
+  CHECK(!base_name.empty());
+
+  auto backend = backend_storage_.MakeBackend(base_name);
+  if (!backend) {
+    // Failed to open/create the backend's files or bind to them.
+    return nullptr;
+  }
+
   // Create the cache
   auto inserted_it = persistent_caches_.Put(
-      cache_id, std::make_unique<PersistentCache>((std::move(backend))));
+      cache_id, std::make_unique<PersistentCache>(std::move(backend)));
   return inserted_it->second.get();
 }
 
