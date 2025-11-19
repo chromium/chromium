@@ -14,6 +14,7 @@
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/auto_reset.h"
+#include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
@@ -775,6 +776,14 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
       // NSMenuItems.
       [AppController.sharedController updateMenuItemKeyEquivalents];
     }];
+
+    // Notify BrowserList to keep the application running so it doesn't go away
+    // when all the browser windows get closed. This is done as early as
+    // possible to make sure we even keep the application alive if some other
+    // subsystem creates and destroys a ScopedKeepAlive before the application
+    // finishes launching.
+    _keepAlive = std::make_unique<ScopedKeepAlive>(
+        KeepAliveOrigin::APP_CONTROLLER, KeepAliveRestartOption::DISABLED);
   }
   return self;
 }
@@ -1163,11 +1172,6 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
     // Store the notification as it will be reposted when the dialog is closed.
     return;
   }
-
-  // Notify BrowserList to keep the application running so it doesn't go away
-  // when all the browser windows get closed.
-  _keepAlive = std::make_unique<ScopedKeepAlive>(
-      KeepAliveOrigin::APP_CONTROLLER, KeepAliveRestartOption::DISABLED);
 
   [self setUpdateCheckInterval];
 
@@ -2498,7 +2502,13 @@ void RunInProfileSafely(const base::FilePath& profile_dir,
 }
 
 void AllowApplicationToTerminate() {
-  [AppController.sharedController allowApplicationToTerminate];
+  if (NSApp) {
+    [AppController.sharedController allowApplicationToTerminate];
+  } else {
+    // Some test processes don't initialize NSApp, in which case accessing
+    // sharedController would crash.
+    CHECK_IS_TEST();
+  }
 }
 
 // static

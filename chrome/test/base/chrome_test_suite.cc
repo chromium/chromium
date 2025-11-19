@@ -41,6 +41,7 @@
 #if BUILDFLAG(IS_MAC)
 #include "base/apple/bundle_locations.h"
 #include "base/apple/scoped_nsautorelease_pool.h"
+#include "chrome/browser/app_controller_mac.h"
 #include "chrome/browser/chrome_browser_application_mac.h"
 #endif
 
@@ -66,7 +67,18 @@ ChromeTestSuite::ChromeTestSuite(int argc, char** argv)
     : content::ContentTestSuiteBase(argc, argv) {
 }
 
-ChromeTestSuite::~ChromeTestSuite() = default;
+ChromeTestSuite::~ChromeTestSuite() {
+#if BUILDFLAG(IS_MAC)
+  // In most (browser) tests, closing all Browser windows during test tear down
+  // will trigger an applicationWillTerminate notification which causes
+  // app_controller_mac to release its ScopedKeepAlive. However a select few
+  // browser tests never create any Browser windows, thus never triggering this
+  // logic. Call AllowApplicationToTerminate here explicitly to ensure that in
+  // those tests the ScopedKeepAlive is released as well, allowing the test to
+  // terminate.
+  app_controller_mac::AllowApplicationToTerminate();
+#endif
+}
 
 void ChromeTestSuite::Initialize() {
 #if BUILDFLAG(IS_MAC)
