@@ -128,8 +128,6 @@ def ParseTemplateFile(data):
   raise Exception('Could not find java package.')
 
 
-# TODO(crbug.com/40616187): Work will be needed if we want to annotate specific
-# constants in the file to be parsed.
 class CppConstantParser:
   """Parses C++ constants, retaining their comments.
 
