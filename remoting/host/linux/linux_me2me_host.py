@@ -171,11 +171,6 @@ COMMAND_NOT_FOUND_EXIT_CODE = 127
 # This exit code is returned when a needed binary exists but cannot be executed.
 COMMAND_NOT_EXECUTABLE_EXIT_CODE = 126
 
-# User runtime directory. This is where the wayland socket is created by the
-# wayland compositor/server for clients to connect to.
-# TODO(rkjnsn): Use xdg.BaseDirectory.get_runtime_dir instead
-RUNTIME_DIR_TEMPLATE = "/run/user/%s"
-
 # Binary name for `gnome-session`.
 GNOME_SESSION = "gnome-session"
 
@@ -642,9 +637,13 @@ class Desktop(abc.ABC):
     # with values that may break 'gnome-shell' - see
     # http://crbug.com/431672013.
     self.child_env = {}
-    # These are the values set by the remoting-user-session binary when it
-    # launches this script.
-    for key in ["USER", "LOGNAME", "HOME", "SHELL", "PATH",
+    for key in [
+        # These values are set by the remoting-user-session binary when it
+        # launches this script.
+        "USER", "LOGNAME", "HOME", "SHELL", "PATH",
+        # These values are set by pam_systemd when this script is launched via
+        # systemd.
+        "XDG_SESSION_ID", "XDG_RUNTIME_DIR", "XDG_SESSION_CLASS", "XDG_SEAT",
         # DBUS_SESSION_BUS_ADDRESS is needed by `gnome-session-binary` - see
         # https://crbug.com/432108529 for more details.
         "DBUS_SESSION_BUS_ADDRESS"]:
@@ -1162,7 +1161,6 @@ class WaylandDesktop(Desktop):
   def __init__(self, sizes, host_config):
     self.debug = False
     self._wayland_socket = None
-    self._runtime_dir = None
     super(WaylandDesktop, self).__init__(sizes, host_config)
     self.inhibitors[self.server_inhibitor] \
         = HOST_OFFLINE_REASON_WAYLAND_SERVER_RETRIES_EXCEEDED
@@ -1170,16 +1168,9 @@ class WaylandDesktop(Desktop):
     assert(g_desktop is None)
     g_desktop = self
 
-  @property
-  def runtime_dir(self):
-    if not self._runtime_dir:
-      self._runtime_dir = RUNTIME_DIR_TEMPLATE % os.getuid()
-    return self._runtime_dir
-
   def _init_child_env(self):
     super(WaylandDesktop, self)._init_child_env()
     self.child_env["XDG_SESSION_TYPE"] = "wayland"
-    self.child_env["XDG_RUNTIME_DIR"] = self.runtime_dir
 
     if self.debug:
       self.child_env["G_MESSAGES_DEBUG"] = "all"
@@ -1355,7 +1346,8 @@ class WaylandDesktop(Desktop):
 
     super(WaylandDesktop, self).cleanup()
     if self._wayland_socket:
-      full_socket_path = os.path.join(self.runtime_dir, self._wayland_socket)
+      runtime_dir = xdg.BaseDirectory.get_runtime_dir(strict=True)
+      full_socket_path = os.path.join(runtime_dir, self._wayland_socket)
       for to_remove in (full_socket_path, "%s.lock" % full_socket_path):
         try:
           os.remove(to_remove)
@@ -1371,7 +1363,8 @@ class WaylandDesktop(Desktop):
     """
     try:
       with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as sock:
-        sock.connect(os.path.join(self.runtime_dir, self._wayland_socket))
+        runtime_dir = xdg.BaseDirectory.get_runtime_dir(strict=True)
+        sock.connect(os.path.join(runtime_dir, self._wayland_socket))
         # Asks the server for the global registry object
         # (See: https://wayland-book.com/registry.html)
         sock.sendall(struct.pack("<III", 0x00000001, 0x000C0001, 0x00000002))
