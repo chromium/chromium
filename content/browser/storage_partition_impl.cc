@@ -1310,7 +1310,7 @@ void StoragePartitionImpl::RemoveKeepAliveHandleFromMap(
   auto it = navigation_state_keep_alive_map_.find(frame_token);
   if (it != navigation_state_keep_alive_map_.end() &&
       it->second == keep_alive) {
-    navigation_state_keep_alive_map_.erase(frame_token);
+    navigation_state_keep_alive_map_.erase(it);
   }
 }
 
@@ -3864,7 +3864,7 @@ void StoragePartitionImpl::DecrementActiveDocumentCount(
   CHECK(it != active_document_per_nik_count_.end());
   it->second--;
   if (it->second == 0) {
-    active_document_per_nik_count_.erase(nik);
+    active_document_per_nik_count_.erase(it);
   }
 }
 
