@@ -409,6 +409,21 @@ void ProcessParsedCredential(
   incoming_passwords.add_credentials.push_back(imported_credential);
 }
 
+std::map<std::u16string, std::vector<CredentialUIEntry>>
+GroupCredentialsByUsername(
+    const std::vector<CredentialUIEntry>& saved_passwords,
+    PasswordForm::Store to_store) {
+  std::map<std::u16string, std::vector<CredentialUIEntry>>
+      credentials_by_username;
+  for (const CredentialUIEntry& credential : saved_passwords) {
+    // Don't consider credentials from a store other than the target store.
+    if (credential.stored_in.contains(to_store)) {
+      credentials_by_username[credential.username].push_back(credential);
+    }
+  }
+  return credentials_by_username;
+}
+
 }  // namespace
 
 PasswordImporter::PasswordImporter(SavedPasswordsPresenter* presenter,
@@ -561,13 +576,8 @@ void PasswordImporter::ConsumePasswords(
   base::Time start_time = base::Time::Now();
   // Used to compute conflicts and duplicates.
   std::map<std::u16string, std::vector<CredentialUIEntry>>
-      credentials_by_username;
-  for (const CredentialUIEntry& credential : presenter_->GetSavedPasswords()) {
-    // Don't consider credentials from a store other than the target store.
-    if (credential.stored_in.contains(to_store)) {
-      credentials_by_username[credential.username].push_back(credential);
-    }
-  }
+      credentials_by_username =
+          GroupCredentialsByUsername(presenter_->GetSavedPasswords(), to_store);
 
   NotesImportMetrics notes_metrics;
   size_t duplicates_count = 0;  // Number of duplicates per imported file.
@@ -610,6 +620,17 @@ void PasswordImporter::ConsumePasswords(
     return;
   }
 
+  ShowImportConflicts(std::move(results_callback), std::move(results),
+                      std::move(incoming_passwords), std::move(conflicts),
+                      start_time);
+}
+
+void PasswordImporter::ShowImportConflicts(
+    ImportResultsCallback results_callback,
+    ImportResults results,
+    IncomingPasswords incoming_passwords,
+    std::vector<std::vector<password_manager::PasswordForm>> conflicts,
+    base::Time start_time) {
   state_ = kUserInteractionRequired;
   ImportResults conflicts_results;
   conflicts_results.number_to_import = results.number_imported;

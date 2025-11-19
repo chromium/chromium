@@ -164,6 +164,15 @@ class PasswordImporter {
                         const std::vector<CSVPassword>& csv_passwords,
                         ImportResultsCallback results_callback);
 
+  // Caches the import results and triggers the user interaction flow to resolve
+  // conflicts or confirm the import.
+  void ShowImportConflicts(
+      ImportResultsCallback results_callback,
+      ImportResults results,
+      IncomingPasswords incoming_passwords,
+      std::vector<std::vector<password_manager::PasswordForm>> conflicts,
+      base::Time start_time);
+
   // Triggers the processes for adding and updating `incoming_passwords`.
   void ExecuteImport(ImportResultsCallback results_callback,
                      ImportResults results,
