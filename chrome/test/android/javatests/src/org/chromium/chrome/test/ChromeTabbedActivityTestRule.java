@@ -5,7 +5,6 @@
 package org.chromium.chrome.test;
 
 import android.app.ActivityOptions;
-import android.app.Instrumentation;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -25,7 +24,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
-import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.password_manager.PasswordManagerTestHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -36,7 +34,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
-import org.chromium.chrome.test.util.WaitForFocusHelper;
 
 import java.util.concurrent.TimeoutException;
 
@@ -230,34 +227,5 @@ public class ChromeTabbedActivityTestRule extends ChromeActivityTestRule<ChromeT
 
         Log.d(TAG, "newIncognitoWindowFromMenu <<");
         return chromeTabbedActivities[0];
-    }
-
-    /**
-     * Looks up the Omnibox in the view hierarchy and types the specified text into it, requesting
-     * focus and using an inter-character delay of 200ms.
-     *
-     * @param oneCharAtATime Whether to type text one character at a time or all at once.
-     */
-    public void typeInOmnibox(String text, boolean oneCharAtATime) throws InterruptedException {
-        final UrlBar urlBar = getActivity().findViewById(R.id.url_bar);
-        Assert.assertNotNull(urlBar);
-
-        WaitForFocusHelper.acquireFocusForView(urlBar);
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    if (!oneCharAtATime) {
-                        urlBar.setText(text);
-                    }
-                });
-
-        if (oneCharAtATime) {
-            final Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
-            for (int i = 0; i < text.length(); ++i) {
-                instrumentation.sendStringSync(text.substring(i, i + 1));
-                // Let's put some delay between key strokes to simulate a user pressing the keys.
-                Thread.sleep(20);
-            }
-        }
     }
 }

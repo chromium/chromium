@@ -42,6 +42,8 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.omnibox.OmniboxFacility;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.components.search_engines.TemplateUrl;
@@ -65,16 +67,6 @@ public class OmniboxTest {
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
-
-    private void clearUrlBar() {
-        final UrlBar urlBar = (UrlBar) mActivityTestRule.getActivity().findViewById(R.id.url_bar);
-        Assert.assertNotNull(urlBar);
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    urlBar.setText("");
-                });
-    }
 
     private static final OnSuggestionsReceivedListener sEmptySuggestionListener =
             (result, isFinal) -> {};
@@ -170,7 +162,10 @@ public class OmniboxTest {
      */
     @Test
     @Manual
-    public void manualTestTypingPerformance() throws InterruptedException {
+    public void manualTestTypingPerformance() {
+        WebPageStation page = mActivityTestRule.startOnBlankPage();
+        OmniboxFacility omnibox = page.openOmnibox().first;
+
         final String text = "searching for pizza";
         // Type 10 times something on the omnibox and get the average time with and without instant.
         long instantAverage = 0;
@@ -182,13 +177,13 @@ public class OmniboxTest {
 
             for (int j = 0; j < 10; ++j) {
                 long before = System.currentTimeMillis();
-                mActivityTestRule.typeInOmnibox(text, true);
+                var textEntered = omnibox.typeText(text);
                 if (instantOn) {
                     instantAverage += System.currentTimeMillis() - before;
                 } else {
                     noInstantAverage += System.currentTimeMillis() - before;
                 }
-                clearUrlBar();
+                textEntered.clickDelete();
                 InstrumentationRegistry.getInstrumentation().waitForIdleSync();
             }
         }
