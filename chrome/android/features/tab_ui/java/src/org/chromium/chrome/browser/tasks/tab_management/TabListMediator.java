@@ -628,7 +628,9 @@ class TabListMediator implements TabListNotificationHandler {
                         model = mModelList.getModelFromTabId(updatedTab.getId());
                     }
 
-                    if (model == null) return;
+                    if (model == null || model.get(TabProperties.USE_SHRINK_CLOSE_ANIMATION)) {
+                        return;
+                    }
                     model.set(
                             TabProperties.MEDIA_INDICATOR,
                             getTabGridMediaIndicator(representativeTab));
