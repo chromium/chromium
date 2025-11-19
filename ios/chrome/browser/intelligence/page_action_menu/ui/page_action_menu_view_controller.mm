@@ -34,7 +34,7 @@ const CGFloat kMenuCornerRadiusIOS26 = 28;
 const CGFloat kMenuCornerRadius = 20;
 
 // The spacing between elements in the menu.
-const CGFloat kStackViewMargins = 16;
+const CGFloat kStackViewMargins = 20;
 
 // The padding surrounding the menu's content.
 const CGFloat kMenuSidePadding = 16;
