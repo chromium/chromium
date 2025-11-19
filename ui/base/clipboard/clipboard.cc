@@ -29,6 +29,10 @@
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_LINUX)
+#include "ui/linux/linux_ui.h"
+#endif
+
 namespace ui {
 
 Clipboard::HtmlData::HtmlData() noexcept = default;
@@ -71,6 +75,20 @@ bool Clipboard::IsSupportedClipboardBuffer(ClipboardBuffer buffer) {
       return false;
   }
   NOTREACHED();
+}
+
+// static
+bool Clipboard::IsMiddleClickPasteEnabled() {
+#if BUILDFLAG(IS_LINUX)
+  if (auto* linux_ui = ui::LinuxUi::instance()) {
+    return linux_ui->PrimaryPasteEnabled();
+  }
+#endif
+
+  // This code is most likely never hit on other platforms, but
+  // if it happens to be, let's return `true` to preserve
+  // middle click paste behavior without a preference.
+  return true;
 }
 
 // static

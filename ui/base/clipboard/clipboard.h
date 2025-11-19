@@ -102,6 +102,9 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
 
   static bool IsSupportedClipboardBuffer(ClipboardBuffer buffer);
 
+  // Whether to allow pasting on middle click mouse events.
+  static bool IsMiddleClickPasteEnabled();
+
   // Sets the list of threads that are allowed to access the clipboard.
   static void SetAllowedThreads(
       const std::vector<base::PlatformThreadId>& allowed_threads);
