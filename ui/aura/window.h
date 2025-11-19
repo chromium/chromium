@@ -17,7 +17,6 @@
 #include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/safety_checks.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -46,6 +45,12 @@
 
 #if BUILDFLAG(IS_APPLE)
 #error "This file must not be included on macOS; Chromium Mac doesn't use Aura."
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/376575664): Remove this include directive when the
+// ADVANCED_MEMORY_SAFETY_CHECKS macro is removed.
+#include "base/memory/safety_checks.h"
 #endif
 
 namespace cc {
@@ -111,8 +116,10 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
                            public ui::PropertyHandler,
                            public ui::metadata::MetaDataProvider,
                            public viz::HostFrameSinkClient {
+#if BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/376575664): Remove this macro once the bug gets fixed.
   ADVANCED_MEMORY_SAFETY_CHECKS();
+#endif
 
  public:
   METADATA_HEADER_BASE(Window);
