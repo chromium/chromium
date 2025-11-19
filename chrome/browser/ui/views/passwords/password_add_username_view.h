@@ -21,7 +21,7 @@ class PasswordAddUsernameView : public PasswordBubbleViewBase {
 
  public:
   PasswordAddUsernameView(content::WebContents* web_contents,
-                          views::View* anchor_view,
+                          views::BubbleAnchor anchor_view,
                           DisplayReason reason);
 
  private:

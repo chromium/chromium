@@ -113,7 +113,7 @@ class PasskeyUpgradeBubbleController : public PasswordBubbleControllerBase {
 
 PasskeyUpgradeBubbleView::PasskeyUpgradeBubbleView(
     content::WebContents* web_contents,
-    views::View* anchor,
+    views::BubbleAnchor anchor,
     DisplayReason display_reason,
     std::string passkey_rp_id)
     : PasswordBubbleViewBase(web_contents,

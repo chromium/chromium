@@ -23,7 +23,7 @@ class SuccessfulPasswordChangeView : public PasswordBubbleViewBase {
   static constexpr int kManagePasswordsButtonId = 4;
 
   SuccessfulPasswordChangeView(content::WebContents* web_contents,
-                               views::View* anchor_view);
+                               views::BubbleAnchor anchor_view);
 
  private:
   ~SuccessfulPasswordChangeView() override;

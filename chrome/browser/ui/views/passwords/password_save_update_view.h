@@ -32,7 +32,7 @@ class PasswordSaveUpdateView : public PasswordBubbleViewBase,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kExtraButtonElementId);
 
   PasswordSaveUpdateView(content::WebContents* web_contents,
-                         views::View* anchor_view,
+                         views::BubbleAnchor anchor_view,
                          DisplayReason reason);
 #ifdef UNIT_TEST
   views::EditableCombobox* username_dropdown_for_testing() const {

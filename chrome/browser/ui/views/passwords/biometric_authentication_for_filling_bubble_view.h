@@ -19,7 +19,7 @@ class BiometricAuthenticationForFillingBubbleView
  public:
   BiometricAuthenticationForFillingBubbleView(
       content::WebContents* web_contents,
-      views::View* anchor_view,
+      views::BubbleAnchor anchor_view,
       PrefService* prefs,
       DisplayReason display_reason);
   ~BiometricAuthenticationForFillingBubbleView() override;

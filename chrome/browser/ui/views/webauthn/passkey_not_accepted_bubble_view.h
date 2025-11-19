@@ -19,10 +19,6 @@ namespace ui {
 class ImageModel;
 }
 
-namespace views {
-class View;
-}
-
 // A view informing the user that their passkey was deleted because it was not
 // present on an AllAcceptedCredentials report.
 class PasskeyNotAcceptedBubbleView : public PasswordBubbleViewBase {
@@ -30,7 +26,7 @@ class PasskeyNotAcceptedBubbleView : public PasswordBubbleViewBase {
 
  public:
   PasskeyNotAcceptedBubbleView(content::WebContents* web_contents,
-                               views::View* anchor_view,
+                               views::BubbleAnchor anchor_view,
                                DisplayReason display_reason,
                                std::string passkey_rp_id);
   ~PasskeyNotAcceptedBubbleView() override;

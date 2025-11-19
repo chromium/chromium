@@ -29,7 +29,7 @@
 
 PasskeySavedConfirmationView::PasskeySavedConfirmationView(
     content::WebContents* web_contents,
-    views::View* anchor_view,
+    views::BubbleAnchor anchor_view,
     std::string passkey_rp_id)
     : PasswordBubbleViewBase(web_contents,
                              anchor_view,

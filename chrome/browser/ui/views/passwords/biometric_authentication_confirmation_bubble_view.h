@@ -17,7 +17,7 @@ class BiometricAuthenticationConfirmationBubbleView
  public:
   BiometricAuthenticationConfirmationBubbleView(
       content::WebContents* web_contents,
-      views::View* anchor_view);
+      views::BubbleAnchor anchor_view);
   ~BiometricAuthenticationConfirmationBubbleView() override;
 
  private:

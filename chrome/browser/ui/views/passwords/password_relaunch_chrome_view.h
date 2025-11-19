@@ -15,7 +15,7 @@ class RelaunchChromeView : public PasswordBubbleViewBase {
 
  public:
   RelaunchChromeView(content::WebContents* web_contents,
-                     views::View* anchor_view,
+                     views::BubbleAnchor anchor_view,
                      PrefService* prefs);
   ~RelaunchChromeView() override;
 

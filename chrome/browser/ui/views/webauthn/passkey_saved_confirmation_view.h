@@ -19,7 +19,7 @@ class PasskeySavedConfirmationView : public PasswordBubbleViewBase {
 
  public:
   PasskeySavedConfirmationView(content::WebContents* web_contents,
-                               views::View* anchor_view,
+                               views::BubbleAnchor anchor_view,
                                std::string passkey_rp_id);
   ~PasskeySavedConfirmationView() override;
 
