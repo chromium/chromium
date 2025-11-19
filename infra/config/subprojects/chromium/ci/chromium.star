@@ -621,8 +621,6 @@ ci.builder(
     builderless = False,
     cores = 32,
     gardener_rotations = args.ignore_default(None),
-    # TODO(crbug.com/460375826) Re-enable when fixed.
-    tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "linux",
         short_name = "off",
