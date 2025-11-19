@@ -64,6 +64,10 @@ ConfirmInfoBar::ConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate> delegate)
             .WithWeight(1));
   }
 
+  const views::FlexSpecification kRigidFlex =
+      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+                               views::MaximumFlexSizeRule::kPreferred);
+
   // Create both the ok and cancel buttons.
   const int buttons = delegate_ptr->GetButtons();
   const auto create_button = [&](ConfirmInfoBarDelegate::InfoBarButton type,
@@ -106,6 +110,7 @@ ConfirmInfoBar::ConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate> delegate)
     ok_button_->SetProperty(views::kElementIdentifierKey, kOkButtonElementId);
 
     if (base::FeatureList::IsEnabled(features::kInfobarRefresh)) {
+      ok_button_->SetProperty(views::kFlexBehaviorKey, kRigidFlex);
       // Set the margin for FlexLayout for ok button.
       ok_button_->SetProperty(
           views::kMarginsKey,
@@ -120,6 +125,7 @@ ConfirmInfoBar::ConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate> delegate)
                                 kCancelButtonElementId);
 
     if (base::FeatureList::IsEnabled(features::kInfobarRefresh)) {
+      cancel_button_->SetProperty(views::kFlexBehaviorKey, kRigidFlex);
       // Set the margin for FlexLayout for cancel button.
       cancel_button_->SetProperty(
           views::kMarginsKey,
@@ -130,7 +136,6 @@ ConfirmInfoBar::ConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate> delegate)
                                 0, 0)));
     }
   }
-
   auto link_unique_ptr = CreateLink(delegate_ptr->GetLinkText(),
                                     delegate_ptr->GetLinkAccessibleText());
 
@@ -149,6 +154,7 @@ ConfirmInfoBar::ConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate> delegate)
       AddViewBeforeCloseButton(std::move(link_unique_ptr));
     }
 
+    link_->SetProperty(views::kFlexBehaviorKey, kRigidFlex);
     // Add margins for spacing for flex layout.
     link_->SetProperty(views::kMarginsKey, std::make_unique<gfx::Insets>(
                                                gfx::Insets::TLBR(0, 0, 0, 0)));
@@ -263,6 +269,10 @@ int ConfirmInfoBar::GetContentMinimumWidth() const {
 }
 
 int ConfirmInfoBar::GetContentPreferredWidth() const {
+  if (base::FeatureList::IsEnabled(features::kInfobarRefresh)) {
+    // With using flex layout, no manual calculations are needed.
+    return 0;
+  }
   return label_->GetPreferredSize().width() +
          link_->GetPreferredSize().width() + NonLabelWidth();
 }
