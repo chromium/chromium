@@ -18,14 +18,11 @@
 // UIImageRenderingModeAlwaysTemplate.
 @property(nonatomic, strong) UIImage* image;
 
-// The image view's alpha.
-@property(nonatomic, assign) CGFloat imageViewAlpha;
+// The cell's content view alpha. Default is 1.
+@property(nonatomic, assign) CGFloat alpha;
 
 // The image View's tint color.
 @property(nonatomic, strong) UIColor* imageViewTintColor;
-
-// If true, aligns the image with the first line of text.
-@property(nonatomic, assign) BOOL alignImageWithFirstLineOfText;
 
 // The title text to display.
 @property(nonatomic, copy) NSString* text;

@@ -17,7 +17,6 @@
 #import "ios/chrome/browser/infobars/ui_bundled/modals/autofill_address_profile/infobar_save_address_profile_modal_delegate.h"
 #import "ios/chrome/browser/infobars/ui_bundled/modals/infobar_address_profile_modal_constants.h"
 #import "ios/chrome/browser/infobars/ui_bundled/modals/infobar_modal_constants.h"
-#import "ios/chrome/browser/settings/ui_bundled/cells/settings_image_detail_text_cell.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"
@@ -527,7 +526,6 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
       [[SettingsImageDetailTextItem alloc] initWithType:type];
 
   detailItem.text = text;
-  detailItem.alignImageWithFirstLineOfText = YES;
   if (symbol) {
     detailItem.image = symbol;
     if (imageTintColorIsGrey) {

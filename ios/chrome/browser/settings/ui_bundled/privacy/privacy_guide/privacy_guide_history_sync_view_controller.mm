@@ -6,7 +6,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/settings/ui_bundled/cells/settings_image_detail_text_cell.h"
 #import "ios/chrome/browser/settings/ui_bundled/privacy/privacy_guide/privacy_guide_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/privacy/privacy_guide/privacy_guide_utils.h"
 #import "ios/chrome/browser/settings/ui_bundled/privacy/privacy_guide/privacy_guide_view_controller_presentation_delegate.h"
