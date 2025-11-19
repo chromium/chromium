@@ -9,7 +9,8 @@
 namespace blink {
 
 String BfcOffset::ToString() const {
-  return String::Format("%dx%d", line_offset.ToInt(), block_offset.ToInt());
+  return String::Format("%sx%s", line_offset.ToString().Ascii().c_str(),
+                        block_offset.ToString().Ascii().c_str());
 }
 
 std::ostream& operator<<(std::ostream& os, const BfcOffset& value) {
