@@ -130,6 +130,7 @@ template("compiled_action_foreach") {
   action_foreach(target_name) {
     forward_variables_from(invoker,
                            [
+                             "configs",
                              "deps",
                              "depfile",
                              "inputs",
