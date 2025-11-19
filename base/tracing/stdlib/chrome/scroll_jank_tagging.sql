@@ -5,6 +5,7 @@
 INCLUDE PERFETTO MODULE chrome.chrome_scrolls;
 
 INCLUDE PERFETTO MODULE time.conversion;
+INCLUDE PERFETTO MODULE chrome.graphics_pipeline;
 
 -- A helper table to avoid manually filtering `chrome_scroll_frame_info`
 -- multiple times, as well as containing a few additional statistics.
