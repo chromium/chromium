@@ -103,7 +103,9 @@ struct HostSendMessageRequestStruct {
 struct HostSendMessageResponseStruct {};
 
 // Request sent to `ReceiveClientMessages`.
-struct HostOpenChannelRequestStruct {};
+struct HostOpenChannelRequestStruct {
+  std::string username;
+};
 
 // Response received from the server after calling `ReceiveClientMessages`. Note
 // that because this is a streaming RPC, the host should expect to receive one

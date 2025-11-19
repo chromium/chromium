@@ -34,6 +34,8 @@ using internal::HostSendMessageRequest;
 using internal::HostSendMessageResponse;
 
 constexpr char kFakePayload[] = "fake_payload";
+constexpr char kFakeUsername[] = "fake_user";
+constexpr char kFakeAuthzToken[] = "fake_token";
 
 using StatusCallback = CorpMessagingClient::StatusCallback;
 
@@ -54,14 +56,15 @@ class CorpMessagingClientTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
   ProtobufHttpTestResponder test_responder_;
-  CorpMessagingClient messaging_client_{test_responder_.GetUrlLoaderFactory(),
+  CorpMessagingClient messaging_client_{kFakeUsername,
+                                        test_responder_.GetUrlLoaderFactory(),
                                         CreateClientCertStoreInstance()};
 };
 
 TEST_F(CorpMessagingClientTest, TestSendMessage_Unauthenticated) {
   base::RunLoop run_loop;
   messaging_client_.SendMessage(
-      kFakePayload,
+      kFakeAuthzToken, kFakePayload,
       CheckStatusThenQuitRunLoopCallback(
           FROM_HERE, HttpStatus::Code::UNAUTHENTICATED, &run_loop));
   test_responder_.AddErrorToMostRecentRequestUrl(
@@ -72,8 +75,9 @@ TEST_F(CorpMessagingClientTest, TestSendMessage_Unauthenticated) {
 TEST_F(CorpMessagingClientTest, TestSendMessage_SendOneMessage) {
   base::RunLoop run_loop;
   messaging_client_.SendMessage(
-      kFakePayload, CheckStatusThenQuitRunLoopCallback(
-                        FROM_HERE, HttpStatus::Code::OK, &run_loop));
+      kFakeAuthzToken, kFakePayload,
+      CheckStatusThenQuitRunLoopCallback(FROM_HERE, HttpStatus::Code::OK,
+                                         &run_loop));
 
   HostSendMessageRequest request;
   ASSERT_TRUE(test_responder_.GetMostRecentRequestMessage(&request));

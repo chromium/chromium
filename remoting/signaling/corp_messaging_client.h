@@ -47,6 +47,7 @@ class CorpMessagingClient final {
   using StatusCallback = base::OnceCallback<void(const HttpStatus& status)>;
 
   CorpMessagingClient(
+      const std::string& username,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<net::ClientCertStore> client_cert_store);
 
@@ -58,7 +59,9 @@ class CorpMessagingClient final {
   base::CallbackListSubscription RegisterMessageCallback(
       const MessageCallback& callback);
 
-  void SendMessage(const std::string& payload, StatusCallback on_done);
+  void SendMessage(const std::string& messaging_authz_token,
+                   const std::string& payload,
+                   StatusCallback on_done);
 
   void StartReceivingMessages(base::OnceClosure on_ready,
                               StatusCallback on_closed);
@@ -88,6 +91,7 @@ class CorpMessagingClient final {
 
   void OnMessageReceived(const internal::PeerMessageStruct& message);
 
+  std::string username_;
   std::unique_ptr<ProtobufHttpClient> client_;
   std::unique_ptr<MessageChannel> message_channel_;
   MessageCallbackList callback_list_;

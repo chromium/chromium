@@ -25,7 +25,7 @@ class HttpStatus;
 
 class CorpMessagingPlayground {
  public:
-  CorpMessagingPlayground();
+  explicit CorpMessagingPlayground(const std::string& username);
   ~CorpMessagingPlayground();
 
   CorpMessagingPlayground(const CorpMessagingPlayground&) = delete;
@@ -41,7 +41,7 @@ class CorpMessagingPlayground {
   void OnPeerMessageReceived(const internal::PeerMessageStruct& message);
   void OnCharacterInput(char c);
   void SendMessage(int count = 1);
-  void StartPingPongMatch();
+  void StartPingPongRally();
   void SendLargeMessage();
 
   std::unique_ptr<network::TransitionalURLLoaderFactoryOwner>
@@ -49,6 +49,7 @@ class CorpMessagingPlayground {
   std::unique_ptr<CorpMessagingClient> client_;
   std::unique_ptr<base::RunLoop> run_loop_;
   std::unique_ptr<Core> core_;
+  std::string messaging_authz_token_;
   base::Time last_ping_sent_time_;
   base::TimeDelta ping_total_rtt_;
   base::WeakPtrFactory<CorpMessagingPlayground> weak_factory_{this};

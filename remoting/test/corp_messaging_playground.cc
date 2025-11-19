@@ -29,10 +29,17 @@
 #include "remoting/test/ping_pong_helper.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/transitional_url_loader_factory_owner.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace remoting {
 
 namespace {
+
+using internal::BurstStruct;
+using internal::PingPongStruct;
+using internal::ShareSessionTokenStruct;
+using internal::SimpleStruct;
+
 // Squirrel-related messaging constants.
 constexpr char kSquirrel[] = "🐿️";
 constexpr int kSquirrelCount = 1000000;
@@ -84,7 +91,7 @@ void CorpMessagingPlayground::Core::Start() {
   }
 }
 
-CorpMessagingPlayground::CorpMessagingPlayground() {
+CorpMessagingPlayground::CorpMessagingPlayground(const std::string& username) {
   auto url_request_context_getter =
       base::MakeRefCounted<URLRequestContextGetter>(
           base::SingleThreadTaskRunner::GetCurrentDefault());
@@ -92,7 +99,7 @@ CorpMessagingPlayground::CorpMessagingPlayground() {
       std::make_unique<network::TransitionalURLLoaderFactoryOwner>(
           url_request_context_getter, /* is_trusted= */ true);
   client_ = std::make_unique<CorpMessagingClient>(
-      url_loader_factory_owner_->GetURLLoaderFactory(),
+      username, url_loader_factory_owner_->GetURLLoaderFactory(),
       CreateClientCertStoreInstance());
   core_ = std::make_unique<Core>(base::BindPostTask(
       base::SingleThreadTaskRunner::GetCurrentDefault(),
@@ -143,37 +150,54 @@ void CorpMessagingPlayground::OnPeerMessageReceived(
     return;
   }
 
-  const auto* simple =
-      std::get_if<internal::SimpleStruct>(&system_test->test_message);
-  if (!simple) {
-    LOG(WARNING) << "Received message with unsupported test message type.";
-    return;
-  }
+  std::visit(absl::Overload(
+                 [](const PingPongStruct& message) {
+                   // TODO: joedow - Replace simple message ping-pong with proto
+                   // version.
+                 },
+                 [](const BurstStruct& message) {
+                   // TODO: joedow - Replace simple message burst with proto
+                   // version.
+                 },
+                 [this](const SimpleStruct& simple_message) {
+                   LOG(INFO) << "PeerMessage received: payload="
+                             << simple_message.payload;
 
-  LOG(INFO) << "PeerMessage received: payload=" << simple->payload;
-
-  if (IsPongMessage(simple->payload)) {
-    auto rtt = base::Time::Now() - last_ping_sent_time_;
-    ping_total_rtt_ += rtt;
-    LOG(INFO) << "Current RTT: " << rtt.InMilliseconds()
-              << "ms, Total RTT: " << ping_total_rtt_.InMilliseconds() << "ms";
-    // Now respond with a ping unless we've reached our max count.
-    std::optional<std::string> ping_payload =
-        OnPingPongMessageReceived(simple->payload);
-    if (ping_payload.has_value()) {
-      last_ping_sent_time_ = base::Time::Now();
-    } else {
-      LOG(INFO) << "Ping-pong exchange finished. Total RTT: "
-                << ping_total_rtt_.InMilliseconds() << "ms";
-    }
-  } else if (IsPingMessage(simple->payload)) {
-    std::optional<std::string> pong_payload =
-        OnPingPongMessageReceived(simple->payload);
-    if (pong_payload.has_value()) {
-    } else {
-      LOG(ERROR) << "Failed to generate response for Ping: " << simple->payload;
-    }
-  }
+                   if (IsPongMessage(simple_message.payload)) {
+                     auto rtt = base::Time::Now() - last_ping_sent_time_;
+                     ping_total_rtt_ += rtt;
+                     LOG(INFO) << "Current RTT: " << rtt.InMilliseconds()
+                               << "ms, Total RTT: "
+                               << ping_total_rtt_.InMilliseconds() << "ms";
+                     // Now respond with a ping unless we've reached our max
+                     // count.
+                     std::optional<std::string> ping_payload =
+                         OnPingPongMessageReceived(simple_message.payload);
+                     if (ping_payload.has_value()) {
+                       last_ping_sent_time_ = base::Time::Now();
+                       client_->SendMessage(messaging_authz_token_,
+                                            *ping_payload, base::DoNothing());
+                     } else {
+                       LOG(INFO) << "Ping-pong exchange finished. Total RTT: "
+                                 << ping_total_rtt_.InMilliseconds() << "ms";
+                     }
+                   } else if (IsPingMessage(simple_message.payload)) {
+                     std::optional<std::string> pong_payload =
+                         OnPingPongMessageReceived(simple_message.payload);
+                     if (pong_payload.has_value()) {
+                       client_->SendMessage(messaging_authz_token_,
+                                            *pong_payload, base::DoNothing());
+                     } else {
+                       LOG(ERROR) << "Failed to generate response for Ping: "
+                                  << simple_message.payload;
+                     }
+                   }
+                 },
+                 [this](const ShareSessionTokenStruct& message) {
+                   LOG(INFO) << "ShareSessionToken received.";
+                   messaging_authz_token_ = message.messaging_authz_token;
+                 }),
+             system_test->test_message);
 }
 
 void CorpMessagingPlayground::OnCharacterInput(char c) {
@@ -188,7 +212,7 @@ void CorpMessagingPlayground::OnCharacterInput(char c) {
       SendMessage(100);
       break;
     case '4':
-      StartPingPongMatch();
+      StartPingPongRally();
       break;
     case '5':
       SendLargeMessage();
@@ -200,16 +224,34 @@ void CorpMessagingPlayground::OnCharacterInput(char c) {
 }
 
 void CorpMessagingPlayground::SendMessage(int count) {
+  if (messaging_authz_token_.empty()) {
+    LOG(WARNING) << "No authz token received yet, cannot send message.";
+    return;
+  }
+  for (int i = 0; i < count; i++) {
+    client_->SendMessage(messaging_authz_token_, "Hello from the playground!",
+                         base::DoNothing());
+  }
 }
 
-void CorpMessagingPlayground::StartPingPongMatch() {
-  LOG(INFO) << "Starting a new Ping-Pong match.";
+void CorpMessagingPlayground::StartPingPongRally() {
+  if (messaging_authz_token_.empty()) {
+    LOG(WARNING) << "No authz token received yet, cannot start ping-pong.";
+    return;
+  }
+  LOG(INFO) << "Starting a new Ping-Pong rally.";
   ping_total_rtt_ = {};
   last_ping_sent_time_ = base::Time::Now();
-  client_->SendMessage(CreatePingMessage(1), base::DoNothing());
+  client_->SendMessage(messaging_authz_token_, CreatePingMessage(1),
+                       base::DoNothing());
 }
 
 void CorpMessagingPlayground::SendLargeMessage() {
+  if (messaging_authz_token_.empty()) {
+    LOG(WARNING) << "No authz token received yet, cannot send large message.";
+    return;
+  }
+
   std::string payload(kSquirrelMsgStart);
   payload.reserve((sizeof(kSquirrelMsgStart) - 1) +
                   (sizeof(kSquirrelMsgEnd) - 1) +
@@ -218,6 +260,8 @@ void CorpMessagingPlayground::SendLargeMessage() {
     payload += kSquirrel;
   }
   payload += kSquirrelMsgEnd;
+
+  client_->SendMessage(messaging_authz_token_, payload, base::DoNothing());
 }
 
 }  // namespace remoting

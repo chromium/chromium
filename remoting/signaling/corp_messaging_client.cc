@@ -92,9 +92,11 @@ constexpr net::NetworkTrafficAnnotationTag kSendMessageTrafficAnnotation =
 }  // namespace
 
 CorpMessagingClient::CorpMessagingClient(
+    const std::string& username,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<net::ClientCertStore> client_cert_store)
-    : client_(std::make_unique<ProtobufHttpClient>(
+    : username_(username),
+      client_(std::make_unique<ProtobufHttpClient>(
           ServiceUrls::GetInstance()->remoting_corp_endpoint(),
           /*token_getter=*/nullptr,
           url_loader_factory,
@@ -116,11 +118,11 @@ base::CallbackListSubscription CorpMessagingClient::RegisterMessageCallback(
   return callback_list_.Add(callback);
 }
 
-void CorpMessagingClient::SendMessage(const std::string& payload,
+void CorpMessagingClient::SendMessage(const std::string& messaging_authz_token,
+                                      const std::string& payload,
                                       StatusCallback on_done) {
   internal::HostSendMessageRequestStruct request;
-  // TODO: crbug.com/289122393 - Get this from the `ShareSessionTokenStruct`.
-  request.messaging_authz_token = "placeholder";
+  request.messaging_authz_token = messaging_authz_token;
   request.peer_message.message_id =
       base::Uuid::GenerateRandomV4().AsLowercaseString();
 
@@ -191,7 +193,9 @@ CorpMessagingClient::OpenReceiveMessagesStream(
     base::OnceCallback<void(const HttpStatus&)> on_channel_closed) {
   auto config = std::make_unique<ProtobufHttpRequestConfig>(
       kReceiveMessagesTrafficAnnotation);
-  config->request_message = internal::GetHostOpenChannelRequest({});
+  internal::HostOpenChannelRequestStruct request;
+  request.username = username_;
+  config->request_message = internal::GetHostOpenChannelRequest(request);
   config->path = internal::GetHostOpenChannelPath();
   config->authenticated = false;
   config->api_key = internal::GetRemotingCorpApiKey();
