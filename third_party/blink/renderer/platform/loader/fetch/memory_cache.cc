@@ -205,7 +205,11 @@ MemoryCache* MemoryCache::Get() {
 
 MemoryCache::MemoryCache(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : memory_consumer_registration_(
+    : memory_pressure_listener_registration_(
+          FROM_HERE,
+          base::MemoryPressureListenerTag::kMemoryCache,
+          this),
+      memory_consumer_registration_(
           (base::SingleThreadTaskRunner::GetMainThreadDefault()
                ->RunsTasksInCurrentSequence() &&
            base::MemoryConsumerRegistry::Exists())
@@ -220,7 +224,6 @@ MemoryCache::MemoryCache(
           kMemoryCacheStrongReferencePruneDelay.Get()),
       task_runner_(std::move(task_runner)) {
   MemoryCacheDumpProvider::Instance()->SetMemoryCache(this);
-  MemoryPressureListenerRegistry::Instance().RegisterClient(this);
 }
 
 MemoryCache::~MemoryCache() = default;
@@ -230,7 +233,10 @@ void MemoryCache::Trace(Visitor* visitor) const {
   visitor->Trace(strong_references_);
   visitor->Trace(tiered_strong_references_);
   MemoryCacheDumpClient::Trace(visitor);
-  MemoryPressureListener::Trace(visitor);
+}
+
+void MemoryCache::Dispose() {
+  memory_pressure_listener_registration_.Dispose();
 }
 
 KURL MemoryCache::RemoveFragmentIdentifierIfNeeded(const KURL& original_url) {

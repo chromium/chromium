@@ -27,6 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_MEMORY_CACHE_H_
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/memory_pressure_listener.h"
 #include "base/memory_coordinator/memory_consumer.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -34,6 +35,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/forward.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/memory_cache_dump_provider.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
@@ -71,8 +73,10 @@ class MemoryCacheEntry final : public GarbageCollected<MemoryCacheEntry> {
 // stylesheets, etc.
 class PLATFORM_EXPORT MemoryCache final : public GarbageCollected<MemoryCache>,
                                           public MemoryCacheDumpClient,
-                                          public MemoryPressureListener,
+                                          public base::MemoryPressureListener,
                                           public base::MemoryConsumer {
+  USING_PRE_FINALIZER(MemoryCache, Dispose);
+
  public:
   explicit MemoryCache(scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   MemoryCache(const MemoryCache&) = delete;
@@ -84,6 +88,8 @@ class PLATFORM_EXPORT MemoryCache final : public GarbageCollected<MemoryCache>,
   static MemoryCache* Get();
 
   void Trace(Visitor*) const override;
+
+  void Dispose();
 
   struct TypeStatistic {
     STACK_ALLOCATED();
@@ -166,6 +172,7 @@ class PLATFORM_EXPORT MemoryCache final : public GarbageCollected<MemoryCache>,
   // Take memory usage snapshot for tracing.
   bool OnMemoryDump(WebMemoryDumpLevelOfDetail, WebProcessMemoryDump*) override;
 
+  // base::MemoryPressureListener:
   void OnMemoryPressure(base::MemoryPressureLevel) override;
 
   // base::MemoryConsumer:
@@ -210,6 +217,8 @@ class PLATFORM_EXPORT MemoryCache final : public GarbageCollected<MemoryCache>,
   void SaveTieredStrongReference(Resource* resource);
 
   double CalculateResourceValue(const Resource* resource) const;
+
+  MemoryPressureListenerRegistration memory_pressure_listener_registration_;
 
   std::unique_ptr<base::MemoryConsumerRegistration>
       memory_consumer_registration_;

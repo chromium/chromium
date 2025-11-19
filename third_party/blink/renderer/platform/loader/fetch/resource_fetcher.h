@@ -32,6 +32,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/memory/memory_pressure_listener.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/unguessable_token.h"
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
@@ -101,7 +102,7 @@ struct ResourceLoaderOptions;
 // Document.
 class PLATFORM_EXPORT ResourceFetcher
     : public GarbageCollected<ResourceFetcher>,
-      public MemoryPressureListener {
+      public base::MemoryPressureListener {
   USING_PRE_FINALIZER(ResourceFetcher, ClearPreloads);
 
  public:
@@ -135,7 +136,7 @@ class PLATFORM_EXPORT ResourceFetcher
   ResourceFetcher(const ResourceFetcher&) = delete;
   ResourceFetcher& operator=(const ResourceFetcher&) = delete;
   ~ResourceFetcher() override;
-  void Trace(Visitor*) const override;
+  void Trace(Visitor*) const;
 
   // - This function returns the same object throughout this fetcher's
   //   entire life.
@@ -378,6 +379,7 @@ class PLATFORM_EXPORT ResourceFetcher
   void CancelWebBundleSubresourceLoadersFor(
       const base::UnguessableToken& web_bundle_token);
 
+  // base::MemoryPressureListener:
   void OnMemoryPressure(base::MemoryPressureLevel) override;
 
   void MaybeRecordLCPPSubresourceMetrics(const KURL& document_url);
@@ -735,6 +737,8 @@ class PLATFORM_EXPORT ResourceFetcher
 
   // The accumulated time taken by `DidLoadResourceFromMemoryCache()`.
   base::TimeDelta total_taken_time_for_did_load_resource_from_memory_cache_;
+
+  MemoryPressureListenerRegistration memory_pressure_listener_registration_;
 };
 
 class ResourceCacheValidationSuppressor {

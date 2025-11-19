@@ -30,6 +30,7 @@
 
 #include "base/auto_reset.h"
 #include "base/containers/span.h"
+#include "base/memory/memory_pressure_listener.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/base/big_buffer.h"
@@ -39,6 +40,7 @@
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_counted_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/web_process_memory_dump.h"
 #include "third_party/blink/renderer/platform/loader/fetch/integrity_metadata.h"
@@ -106,7 +108,9 @@ enum class ResourceType : uint8_t {
 // requested data has arrived. This class also does the actual communication
 // with the loader to obtain the resource from the network.
 class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
-                                 public MemoryPressureListener {
+                                 public base::MemoryPressureListener {
+  USING_PRE_FINALIZER(Resource, Dispose);
+
  public:
   // An enum representing whether a resource match with another resource.
   // There are three kinds of status.
@@ -156,7 +160,9 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   Resource& operator=(const Resource&) = delete;
   ~Resource() override;
 
-  void Trace(Visitor*) const override;
+  virtual void Trace(Visitor*) const;
+
+  void Dispose();
 
   virtual TextEncoding Encoding() const { return TextEncoding(); }
   // If a BackgroundResponseProcessor consumed the body data on the background
@@ -624,6 +630,8 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   scoped_refptr<SharedBuffer> data_;
 
   WebScopedVirtualTimePauser virtual_time_pauser_;
+
+  MemoryPressureListenerRegistration memory_pressure_listener_registration_;
 };
 
 class ResourceFactory {

@@ -82,6 +82,12 @@ enum class MemoryPressureListenerTag {
   kMemoryReclaimerPressureListener = 51,
   kSkiaGraphicsPressureListener = 52,
   kBlinkIsolatesPressureListener = 53,
+  kUniqueFontSelector = 54,
+  kParkableStringManager = 55,
+  kPlainTextPainter = 56,
+  kMemoryCache = 57,
+  kResource = 58,
+  kResourceFetcher = 59,
 };
 
 // To start listening, derive from MemoryPressureListener, and use

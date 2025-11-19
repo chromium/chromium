@@ -114,6 +114,8 @@ _CONFIG = [
             'base::MakeRefCounted',
             'base::MatcherStringPattern',
             'base::MatchPattern',
+            'base::MemoryPressureListener',
+            'base::MemoryPressureListenerTag',
             'base::MessagePump',
             'base::MetricsSubSampler',
             'base::MiB',
@@ -1028,14 +1030,6 @@ _CONFIG = [
         ],
     },
     {
-        'paths': [
-            'third_party/blink/renderer/controller/user_level_memory_pressure_signal_generator.cc'
-        ],
-        'allowed': [
-            'base::MemoryPressureListener',
-        ],
-    },
-    {
         'paths': ['third_party/blink/renderer/core/animation'],
         'allowed': [
             '[a-z_]+_functions::.+',
@@ -1198,15 +1192,6 @@ _CONFIG = [
         'allowed': [
             'ui::ImeTextSpan',
             'ui::TextInputAction',
-        ],
-    },
-    {
-        'paths': [
-            'third_party/blink/renderer/core/editing/commands/undo_stack.cc',
-            'third_party/blink/renderer/core/editing/commands/undo_stack.h'
-        ],
-        'allowed': [
-            'base::MemoryPressureListener',
         ],
     },
     {
@@ -2099,6 +2084,15 @@ _CONFIG = [
         'allowed': [
             'base::AsyncMemoryPressureListenerRegistration',
         ]
+    },
+    {
+        'paths': [
+            'third_party/blink/renderer/platform/bindings/parkable_string_manager.h',
+        ],
+        'allowed': [
+            # ParkableStringManager is not garbage-collected, so is safe to use the base version.
+            'base::AsyncMemoryPressureListenerRegistration',
+        ],
     },
     {
         'paths': [

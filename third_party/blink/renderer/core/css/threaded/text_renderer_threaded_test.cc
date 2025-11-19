@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/task_environment.h"
 #include "cc/paint/skottie_wrapper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,6 +29,7 @@ using blink::test::CreateTestFont;
 namespace blink {
 
 TSAN_TEST(TextRendererThreadedTest, MeasureText) {
+  base::test::SingleThreadTaskEnvironment task_environment;
   ScopedNoFontAntialiasingForTest disable_no_font_antialiasing_for_test(false);
 
   RunOnThreads([]() {
@@ -59,6 +61,7 @@ TSAN_TEST(TextRendererThreadedTest, MeasureText) {
 }
 
 TSAN_TEST(TextRendererThreadedTest, DrawText) {
+  base::test::SingleThreadTaskEnvironment task_environment;
   callbacks_per_thread_ = 50;
   RunOnThreads([]() {
     String text = "draw this";

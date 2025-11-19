@@ -34,8 +34,7 @@ TEST_F(PlainTextPainterTest, MemoryPressure) {
   painter->SegmentAndShape(TextRun("text"), *font);
   EXPECT_EQ(1u, CacheMapSizeOf(*painter));
 
-  MemoryPressureListenerRegistry::Instance().OnMemoryPressure(
-      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  painter->OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   EXPECT_EQ(0u, CacheMapSizeOf(*painter));
 }
 

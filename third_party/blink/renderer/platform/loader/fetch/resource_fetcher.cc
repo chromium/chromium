@@ -832,12 +832,15 @@ ResourceFetcher::ResourceFetcher(const ResourceFetcherInit& init)
       context_lifecycle_notifier_(init.context_lifecycle_notifier),
       auto_load_images_(true),
       allow_stale_resources_(false),
-      image_fetched_(false) {
+      image_fetched_(false),
+      memory_pressure_listener_registration_(
+          FROM_HERE,
+          base::MemoryPressureListenerTag::kResourceFetcher,
+          this) {
   InstanceCounters::IncrementCounter(InstanceCounters::kResourceFetcherCounter);
 
   if (IsMainThread()) {
     MainThreadFetchersSet().insert(this);
-    MemoryPressureListenerRegistry::Instance().RegisterClient(this);
   }
 }
 
@@ -2342,8 +2345,8 @@ void ResourceFetcher::ClearContext() {
     // complete or the timer fires.
     keepalive_loaders_task_handle_ = PostDelayedCancellableTask(
         *freezable_task_runner_, FROM_HERE,
-        BindOnce(&ResourceFetcher::StopFetchingIncludingKeepaliveLoaders,
-                 WrapPersistent(this)),
+        blink::BindOnce(&ResourceFetcher::StopFetchingIncludingKeepaliveLoaders,
+                        WrapPersistent(this)),
         kKeepaliveLoadersTimeout);
   }
 }
@@ -2389,6 +2392,8 @@ void ResourceFetcher::ClearPreloads(ClearPreloadsPolicy policy) {
   preloads_.RemoveAll(keys_to_be_removed);
 
   matched_preloads_.clear();
+
+  memory_pressure_listener_registration_.Dispose();
 }
 
 void ResourceFetcher::ScheduleWarnUnusedPreloads(
@@ -2764,17 +2769,17 @@ void ResourceFetcher::ScheduleLoadingPotentiallyUnusedPreload(
           resource, /*is_potentially_unused_preload=*/true);
       break;
     case features::LcppDeferUnusedPreloadTiming::kLcpTimingPredictor:
-      context_->AddLcpPredictedCallback(
-          BindOnce(&ResourceFetcher::StartLoadAndFinishIfFailed,
-                   WrapWeakPersistent(this), WrapWeakPersistent(resource),
-                   /*is_potentially_unused_preload=*/true));
+      context_->AddLcpPredictedCallback(blink::BindOnce(
+          &ResourceFetcher::StartLoadAndFinishIfFailed,
+          WrapWeakPersistent(this), WrapWeakPersistent(resource),
+          /*is_potentially_unused_preload=*/true));
       break;
     case features::LcppDeferUnusedPreloadTiming::
         kLcpTimingPredictorWithPostTask:
-      context_->AddLcpPredictedCallback(
-          BindOnce(&ResourceFetcher::ScheduleStartLoadAndFinishIfFailed,
-                   WrapWeakPersistent(this), WrapWeakPersistent(resource),
-                   /*is_potentially_unused_preload=*/true));
+      context_->AddLcpPredictedCallback(blink::BindOnce(
+          &ResourceFetcher::ScheduleStartLoadAndFinishIfFailed,
+          WrapWeakPersistent(this), WrapWeakPersistent(resource),
+          /*is_potentially_unused_preload=*/true));
       break;
   }
 }
@@ -2806,9 +2811,9 @@ void ResourceFetcher::ScheduleStartLoadAndFinishIfFailed(
     bool is_potentially_unused_preload) {
   freezable_task_runner_->PostTask(
       FROM_HERE,
-      BindOnce(&ResourceFetcher::StartLoadAndFinishIfFailed,
-               WrapWeakPersistent(this), WrapWeakPersistent(resource),
-               is_potentially_unused_preload));
+      blink::BindOnce(&ResourceFetcher::StartLoadAndFinishIfFailed,
+                      WrapWeakPersistent(this), WrapWeakPersistent(resource),
+                      is_potentially_unused_preload));
 }
 
 void ResourceFetcher::RemoveResourceLoader(ResourceLoader* loader) {
@@ -3111,9 +3116,9 @@ void ResourceFetcher::ScheduleStaleRevalidate(Resource* stale_resource) {
   }
   stale_resource->SetStaleRevalidationStarted();
   freezable_task_runner_->PostTask(
-      FROM_HERE,
-      BindOnce(&ResourceFetcher::RevalidateStaleResource,
-               WrapWeakPersistent(this), WrapPersistent(stale_resource)));
+      FROM_HERE, blink::BindOnce(&ResourceFetcher::RevalidateStaleResource,
+                                 WrapWeakPersistent(this),
+                                 WrapPersistent(stale_resource)));
 }
 
 void ResourceFetcher::RevalidateStaleResource(Resource* stale_resource) {
@@ -3255,8 +3260,8 @@ void ResourceFetcher::MaybeSaveResourceToStrongReference(Resource* resource) {
     document_resource_strong_refs_total_size_ += resource_size;
     freezable_task_runner_->PostDelayedTask(
         FROM_HERE,
-        BindOnce(&ResourceFetcher::RemoveResourceStrongReference,
-                 WrapWeakPersistent(this), WrapWeakPersistent(resource)),
+        blink::BindOnce(&ResourceFetcher::RemoveResourceStrongReference,
+                        WrapWeakPersistent(this), WrapWeakPersistent(resource)),
         GetResourceStrongReferenceTimeout(resource));
   } else {
     MemoryCache::Get()->SaveStrongReference(resource);
@@ -3428,7 +3433,6 @@ void ResourceFetcher::Trace(Visitor* visitor) const {
   visitor->Trace(subresource_web_bundles_);
   visitor->Trace(document_resource_strong_refs_);
   visitor->Trace(context_lifecycle_notifier_);
-  MemoryPressureListener::Trace(visitor);
 }
 
 // static

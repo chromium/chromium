@@ -473,10 +473,11 @@ void ImageResource::AppendData(
       DCHECK_LE(last_flush_time_, now);
       base::TimeDelta flush_delay =
           std::max(base::TimeDelta(), last_flush_time_ - now + kFlushDelay);
-      task_runner->PostDelayedTask(FROM_HERE,
-                                   BindOnce(&ImageResource::FlushImageIfNeeded,
-                                            WrapWeakPersistent(this)),
-                                   flush_delay);
+      task_runner->PostDelayedTask(
+          FROM_HERE,
+          blink::BindOnce(&ImageResource::FlushImageIfNeeded,
+                          WrapWeakPersistent(this)),
+          flush_delay);
       is_pending_flushing_ = true;
     }
   }

@@ -21,7 +21,6 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
 #include "third_party/blink/renderer/platform/disk_data_allocator.h"
-#include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
@@ -52,20 +51,6 @@ namespace {
 bool CompressionEnabled() {
   return base::FeatureList::IsEnabled(features::kCompressParkableStrings);
 }
-
-class OnPurgeMemoryListener : public GarbageCollected<OnPurgeMemoryListener>,
-                              public MemoryPressureListener {
-  void OnMemoryPressure(
-      base::MemoryPressureLevel memory_pressure_level) override {
-    if (memory_pressure_level != base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
-      return;
-    }
-    if (!CompressionEnabled()) {
-      return;
-    }
-    ParkableStringManager::Instance().PurgeMemory();
-  }
-};
 
 Vector<ParkableStringImpl*> EnumerateStrings(
     const ParkableStringManager::StringMap& strings) {
@@ -221,17 +206,6 @@ scoped_refptr<ParkableStringImpl> ParkableStringManager::Add(
   auto insert_result =
       unparked_strings_.insert(new_parkable->digest(), new_parkable.get());
   DCHECK(insert_result.is_new_entry);
-
-  // Lazy registration because registering too early can cause crashes on Linux,
-  // see crbug.com/930117, and registering without any strings is pointless
-  // anyway.
-  if (!did_register_memory_pressure_listener_) {
-    // No need to ever unregister, as the only ParkableStringManager instance
-    // lives forever.
-    MemoryPressureListenerRegistry::Instance().RegisterClient(
-        MakeGarbageCollected<OnPurgeMemoryListener>());
-    did_register_memory_pressure_listener_ = true;
-  }
 
   if (!has_posted_unparking_time_accounting_task_) {
     task_runner_->PostDelayedTask(
@@ -470,10 +444,15 @@ void ParkableStringManager::ScheduleAgingTaskIfNeeded() {
   has_pending_aging_task_ = true;
 }
 
-void ParkableStringManager::PurgeMemory() {
+void ParkableStringManager::OnMemoryPressure(
+    base::MemoryPressureLevel memory_pressure_level) {
   DCHECK(IsMainThread());
-  DCHECK(CompressionEnabled());
-
+  if (memory_pressure_level != base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+    return;
+  }
+  if (!CompressionEnabled()) {
+    return;
+  }
   ParkAll(ParkableStringImpl::ParkingMode::kCompress);
 }
 
@@ -559,7 +538,8 @@ void ParkableStringManager::AssertRemoved(ParkableStringImpl* string) {
 void ParkableStringManager::ResetForTesting() {
   has_pending_aging_task_ = false;
   has_posted_unparking_time_accounting_task_ = false;
-  did_register_memory_pressure_listener_ = false;
+  memory_pressure_listener_registration_.emplace(
+      FROM_HERE, base::MemoryPressureListenerTag::kParkableStringManager, this);
   total_unparking_time_ = base::TimeDelta();
   total_parking_thread_time_ = base::TimeDelta();
   total_disk_read_time_ = base::TimeDelta();
@@ -601,7 +581,12 @@ bool ParkableStringManager::IsOnDiskMapForTesting(ParkableStringImpl* string) {
 
 ParkableStringManager::ParkableStringManager()
     : task_runner_(Thread::MainThread()->GetTaskRunner(
-          MainThreadTaskRunnerRestricted())) {
+          MainThreadTaskRunnerRestricted())),
+      memory_pressure_listener_registration_(
+          std::in_place,
+          FROM_HERE,
+          base::MemoryPressureListenerTag::kParkableStringManager,
+          this) {
   // Should unregister in the destructor, but `this` is a NoDestructor static
   // local.
   ThreadScheduler::Current()->ToMainThreadScheduler()->AddRAILModeObserver(

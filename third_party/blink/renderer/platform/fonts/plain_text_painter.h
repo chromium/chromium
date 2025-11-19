@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_PLAIN_TEXT_PAINTER_H_
 
 #include "third_party/blink/renderer/platform/fonts/font.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
 
 namespace gfx {
@@ -39,11 +40,15 @@ class TextRun;
 // PlainTextPainter::Shared().
 class PLATFORM_EXPORT PlainTextPainter
     : public GarbageCollected<PlainTextPainter>,
-      public MemoryPressureListener {
+      public base::MemoryPressureListener {
+  USING_PRE_FINALIZER(PlainTextPainter, Dispose);
+
  public:
   enum Mode { kCanvas, kShared };
   explicit PlainTextPainter(Mode mode);
-  void Trace(Visitor* visitor) const override;
+  void Trace(Visitor* visitor) const;
+
+  void Dispose();
 
   PlainTextPainter(const PlainTextPainter&) = delete;
   PlainTextPainter& operator=(const PlainTextPainter&) = delete;
@@ -97,6 +102,9 @@ class PLATFORM_EXPORT PlainTextPainter
   // don't need to call this for the shared instance.
   void DidSwitchFrame();
 
+  // base::MemoryPressureListener:
+  void OnMemoryPressure(base::MemoryPressureLevel) override;
+
  private:
   friend class PlainTextPainterTest;
 
@@ -105,15 +113,15 @@ class PLATFORM_EXPORT PlainTextPainter
                                   bool supports_bidi = true);
   FrameShapeCache* GetCacheFor(const Font& font);
 
-  // MemoryPressureListener override:
-  void OnMemoryPressure(base::MemoryPressureLevel) override;
-
   // A map from a FontFallbackList to a FrameShapeCache.
   // We don't need to worry about Web Fonts. When a Web Font loading state is
   // changed, affected FontFallbackLists are invalidated, and are disconnected
   // from owner Fonts. They will be removed from `cache_map_` by GC.
   HeapHashMap<WeakMember<FontFallbackList>, Member<FrameShapeCache>> cache_map_;
   const Mode mode_;
+
+  std::optional<MemoryPressureListenerRegistration>
+      memory_pressure_listener_registration_;
 };
 
 }  // namespace blink

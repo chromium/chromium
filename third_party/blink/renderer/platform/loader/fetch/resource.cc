@@ -153,11 +153,12 @@ Resource::Resource(const ResourceRequestHead& request,
       options_(options),
       response_timestamp_(Now()),
       resource_request_(request),
-      overhead_size_(CalculateOverheadSize()) {
+      overhead_size_(CalculateOverheadSize()),
+      memory_pressure_listener_registration_(
+          FROM_HERE,
+          base::MemoryPressureListenerTag::kResource,
+          this) {
   InstanceCounters::IncrementCounter(InstanceCounters::kResourceCounter);
-
-  if (IsMainThread())
-    MemoryPressureListenerRegistry::Instance().RegisterClient(this);
 }
 
 Resource::~Resource() {
@@ -171,7 +172,10 @@ void Resource::Trace(Visitor* visitor) const {
   visitor->Trace(finished_clients_);
   visitor->Trace(finish_observers_);
   visitor->Trace(options_);
-  MemoryPressureListener::Trace(visitor);
+}
+
+void Resource::Dispose() {
+  memory_pressure_listener_registration_.Dispose();
 }
 
 void Resource::SetLoader(ResourceLoader* loader) {
@@ -401,8 +405,8 @@ void Resource::FinishAsError(const ResourceError& error,
   // So if this is an immediate failure (i.e., before NotifyStartLoad()),
   // post a task if the Resource::Type supports it.
   if (failed_during_start && !NeedsSynchronousCacheHit(GetType(), options_)) {
-    task_runner->PostTask(FROM_HERE, BindOnce(&Resource::NotifyFinished,
-                                              WrapWeakPersistent(this)));
+    task_runner->PostTask(FROM_HERE, blink::BindOnce(&Resource::NotifyFinished,
+                                                     WrapWeakPersistent(this)));
   } else {
     NotifyFinished();
   }
@@ -659,9 +663,10 @@ void Resource::AddClient(ResourceClient* client,
       !NeedsSynchronousCacheHit(GetType(), options_)) {
     clients_awaiting_callback_.insert(client);
     if (!async_finish_pending_clients_task_.IsActive()) {
-      async_finish_pending_clients_task_ = PostCancellableTask(
-          *task_runner, FROM_HERE,
-          BindOnce(&Resource::FinishPendingClients, WrapWeakPersistent(this)));
+      async_finish_pending_clients_task_ =
+          PostCancellableTask(*task_runner, FROM_HERE,
+                              blink::BindOnce(&Resource::FinishPendingClients,
+                                              WrapWeakPersistent(this)));
     }
     return;
   }

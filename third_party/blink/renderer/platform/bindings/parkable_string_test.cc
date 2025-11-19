@@ -165,8 +165,6 @@ class ParkableStringTest
         std::make_unique<InMemoryDataAllocator>());
 
     manager.SetRendererBackgrounded(true);
-    // No string yet, should not post a task since there is nothing to do.
-    ASSERT_EQ(0u, task_environment_.GetPendingMainThreadTaskCount());
   }
 
   void TearDown() override {
@@ -1043,7 +1041,7 @@ TEST_P(ParkableStringTest, OnMemoryPressure) {
   String retained = parkable2.ToString();
   EXPECT_TRUE(parkable2.Impl()->has_compressed_data());
 
-  MemoryPressureListenerRegistry::Instance().OnMemoryPressure(
+  ParkableStringManager::Instance().OnMemoryPressure(
       base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   EXPECT_TRUE(parkable1.Impl()->is_parked());  // Parked synchronously.
   EXPECT_FALSE(parkable2.Impl()->is_parked());
@@ -1176,7 +1174,7 @@ TEST_P(ParkableStringTest, CompressionDisabled) {
   WaitForDelayedParking();
   EXPECT_FALSE(parkable.Impl()->may_be_parked());
 
-  MemoryPressureListenerRegistry::Instance().OnMemoryPressure(
+  ParkableStringManager::Instance().OnMemoryPressure(
       base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   EXPECT_FALSE(parkable.Impl()->may_be_parked());
 }
