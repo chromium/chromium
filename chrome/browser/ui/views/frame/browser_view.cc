@@ -2921,6 +2921,11 @@ void BrowserView::TitleWasSet(content::NavigationEntry* entry) {
 }
 
 void BrowserView::TouchModeChanged() {
+  if (ui::TouchUiController::Get()->touch_ui()) {
+    ReparentTabStripToTopContainer();
+  } else {
+    ReparentTabStripToBrowserView();
+  }
   MaybeInitializeWebUITabStrip();
 }
 
@@ -4056,14 +4061,14 @@ void BrowserView::ReparentTopContainerForStartOfImmersive() {
 
 #if BUILDFLAG(IS_MAC)
   if (!UsesImmersiveFullscreenTabbedMode()) {
-    top_container()->AddChildViewAt(tab_strip_region_view_.get(), 0);
+    ReparentTabStripToTopContainer();
   }
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_CHROMEOS)
   top_container()->SetBackground(
       views::CreateSolidBackground(ui::kColorFrameActive));
-  top_container()->AddChildViewAt(tab_strip_region_view_.get(), 0);
+  ReparentTabStripToTopContainer();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (web_app_frame_toolbar_) {
@@ -4093,12 +4098,7 @@ void BrowserView::ReparentTopContainerForEndOfImmersive() {
   DCHECK(top_container_insertion_index_);
   AddChildViewAt(top_container_.get(), top_container_insertion_index_.value());
 
-  // The TabStrip must be placed in the same position before the reparenting to
-  // maintain the correct Z-order to ensure it can receive mouse events. See
-  // crbug.com/454852658.
-  DCHECK(tab_strip_region_insertion_index_);
-  AddChildViewAt(tab_strip_region_view_.get(),
-                 tab_strip_region_insertion_index_.value());
+  ReparentTabStripToBrowserView();
 
   // Reparent PWA views that were moved for immersive mode.
   if (web_app_frame_toolbar_) {
@@ -4109,6 +4109,19 @@ void BrowserView::ReparentTopContainerForEndOfImmersive() {
   }
 
   EnsureFocusOrder();
+}
+
+void BrowserView::ReparentTabStripToTopContainer() {
+  top_container()->AddChildViewAt(tab_strip_region_view_.get(), 0);
+}
+
+void BrowserView::ReparentTabStripToBrowserView() {
+  // The TabStrip must be placed in the same position before the reparenting to
+  // maintain the correct Z-order to ensure it can receive mouse events. See
+  // crbug.com/454852658.
+  DCHECK(tab_strip_region_insertion_index_);
+  AddChildViewAt(tab_strip_region_view_.get(),
+                 tab_strip_region_insertion_index_.value());
 }
 
 void BrowserView::EnsureFocusOrder() {

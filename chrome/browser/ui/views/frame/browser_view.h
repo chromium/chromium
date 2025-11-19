@@ -1036,6 +1036,15 @@ class BrowserView : public BrowserWindow,
   // Reparents |top_container_| to |main_container_|.
   void ReparentTopContainerForEndOfImmersive();
 
+  // In certain situations, such as immersive mode and touch ui mode on
+  // ChromeOS, the tab strip must be parented to the top container in order for
+  // layout and animations to work properly.
+  void ReparentTabStripToTopContainer();
+
+  // Reparent the tab strip back to browser_view at the same index in the tree
+  // as it was before leaving browser_view.
+  void ReparentTabStripToBrowserView();
+
   // Ensures that the correct focus order is set for child views, regardless of
   // the actual child order.
   void EnsureFocusOrder();
