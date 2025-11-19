@@ -134,30 +134,19 @@ webview:not([hidden]) {
   height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: end;
 }
 
 #loadingPanel #sidePanelLoading .p3 {
-  height: 56px;
+  max-height: 244px;
+  flex-basis: 50%;
   border-radius: 12px;
   margin-top: 48px;
   margin-bottom: 18px;
 }
 
 #loadingPanel #sidePanelLoading .p4 {
-  flex: 4;
-  border-radius: 12px;
-  margin-bottom: 18px;
-}
-
-#loadingPanel #sidePanelLoading .p5 {
-  flex: 4;
-  border-radius: 12px;
-  margin-bottom: 18px;
-}
-
-#loadingPanel #sidePanelLoading .p6 {
-  height: 172px;
+  height: 112px;
   border-radius: 12px;
 }
 
