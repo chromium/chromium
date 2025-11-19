@@ -4,9 +4,9 @@ This document describes the tools and workflows for applying local policies to a
 ChromeOS test device using `fake_dmserver`.
 
 There are two primary ways to use these tools:
-1.  **[Automated Usage (Recommended)](#2-automated-usage-recommended):**
+1.  **[Automated Usage (Recommended)](#2_automated-usage-recommended):**
     A simple, one-command process using the `orchestrator.py` script.
-2.  **[Manual Usage (Advanced)](#3-manual-usage-advanced):** A step-by-step
+2.  **[Manual Usage (Advanced)](#3_manual-usage-advanced):** A step-by-step
     process that gives you more control by using the `blob_generator.py` script
     directly.
 
@@ -38,7 +38,7 @@ the UI.
 Create a simple JSON file with the policies you want to test. A good location is
 `/usr/local/tmp/policies.json`.
 
-*(See the section "[How to Set Valid Policies](#4-how-to-set-valid-policies-policiesjson)"
+*(See the section "[How to Set Valid Policies](#4_how-to-set-valid-policies)"
 below for details on the file format.)*
 
 ### Step 2: Run the Orchestrator
@@ -117,9 +117,41 @@ The `policies.json` file has a simple structure. The top-level keys are used to
 configure the `fake_dmserver` itself, while the `user` and `device` sections
 define the actual policies to be applied.
 
-You can create this file manually, or you can generate it from an existing
-device's policy configuration using the [converter script](#6-converting-existing-policies-from-chrome-policy-dump)
+You can create this file manually, or you can generate it by following the
+steps in the [converter script](#6_converting-existing-policies-from-chrome-policy-dump)
 described in the next section.
+
+### Configuration Parameters
+
+*   `user`: (Object) A dictionary where keys are user policy names and values
+    are the policy values.
+*   `device`: (Object) A dictionary where keys are device policy names and
+    values are the policy values.
+*   `policy_user`: (String) The user ID (e.g., email address) to embed in
+    policy responses. This must match the user on the ChromeOS device, or the
+    policy will be rejected.
+*   `managed_users`: (Array of Strings) A list of users that the server should
+    treat as managed. Use `"*"` to treat all users as managed.
+*   `device_affiliation_ids`: (Array of Strings) A list of affiliation IDs for
+    the device.
+*   `user_affiliation_ids`: (Array of Strings) A list of affiliation IDs for
+    the user.
+*   `directory_api_id`: (String) The Directory API ID of the device.
+*   `robot_api_auth_code`: (String) The authorization code for the robot
+    account, used during enterprise enrollment.
+*   `allow_set_device_attributes`: (Boolean) If `true`, allows device
+    attributes to be set by the client. Defaults to `true`.
+*   `use_universal_signing_keys`: (Boolean) If `true`, the server will use a
+    universal test key to sign policy blobs. This is recommended for most local
+    testing scenarios.
+*   `current_key_index`: (Integer) The index of the signing key to use.
+*   `request_errors`: (Object) A dictionary to simulate server errors. The keys
+    are request types (e.g., `"register"`, `"policy"`) and the values are HTTP
+    error codes (e.g., `500`).
+*   `initial_enrollment_state`: (Object) A dictionary defining the initial
+    state for zero-touch enrollment.
+
+### Example `policies.json`
 
 ```json
 {
@@ -210,7 +242,7 @@ python3 /usr/local/share/policy-test-tool/policy_dump_converter.py \
 **Step 3: Use the Generated File**
 The newly created `/usr/local/tmp/policies.json` can now be used with the
 `orchestrator.py` script as described in the "[Automated
-Usage](#2-automated-usage-recommended)" section.
+Usage](#2_automated-usage-recommended)" section.
 
 ## 7. Troubleshooting
 
