@@ -16,11 +16,11 @@ function testNonGridDefinitionsSetJSValues(columnValue, rowValue, computedColumn
     checkGridDefinitionsSetJSValues(false, columnValue, rowValue, computedColumnValue, computedRowValue, jsColumnValue, jsRowValue);
 }
 
-function testMasonryDefinitionsSetJSValues(isRowDirection, trackValue, computedTrackValue, jsTrackValue)
+function testGridLanesDefinitionsSetJSValues(isRowDirection, trackValue, computedTrackValue, jsTrackValue)
 {
     window.element = document.createElement("div");
     document.body.appendChild(element);
-    element.style.display = "masonry";
+    element.style.display = "grid-lanes";
     if (isRowDirection) {
         element.style.masonryDirection = "row";
     }

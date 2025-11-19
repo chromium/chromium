@@ -15,7 +15,7 @@
         margin: 20px;
     }
 
-    .masonry {
+    .grid-lanes {
         display: grid-lanes;
         masonry-direction: row;
         grid-template-rows: 50px 100px 150px;
@@ -25,7 +25,7 @@
         gap: 10px;
     }
 
-    .masonry-item {
+    .grid-lanes-item {
         background: lightgray;
         padding: 10px;
         width: 200px;
@@ -57,14 +57,14 @@
 </head>
 <body>
 <div class="container">
-  <div class="masonry">
-    <div class="masonry-item">
+  <div class="grid-lanes">
+    <div class="grid-lanes-item">
       <div class="nested-container">
         <div class="absolute"></div>
       </div>
     </div>
-    <div class="masonry-item"></div>
-    <div class="masonry-item"></div>
+    <div class="grid-lanes-item"></div>
+    <div class="grid-lanes-item"></div>
     <div class="static-pos"></div>
   </div>
 </div>

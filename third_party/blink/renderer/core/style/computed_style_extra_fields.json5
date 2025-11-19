@@ -53,7 +53,7 @@
         "inline list-item", "flow-root list-item", "inline flow-root list-item",
         "ruby", "block ruby", "ruby-text",
         // Available only if CSSMasonryLayout is enabled:
-        "masonry", "inline-masonry"
+        "grid-lanes", "inline-grid-lanes"
       ],
       default_value: "inline",
     },

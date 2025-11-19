@@ -6,7 +6,7 @@
   size when only a min size is available to compute the number of tracks.">
 <link rel="author" title="Alison Maher" href="mailto:almaher@microsoft.com">
 <style>
-.masonry {
+.grid-lanes {
     position: relative;
     display: inline-grid-lanes;
     masonry-direction: row;
@@ -28,12 +28,12 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/check-layout-th.js"></script>
-<body onload="checkLayout('.masonry');">
+<body onload="checkLayout('.grid-lanes');">
 
   <div id="log"></div>
 
   <div class="wrapper">
-    <div class="masonry" data-expected-width="100" data-expected-height="500">
+    <div class="grid-lanes" data-expected-width="100" data-expected-height="500">
       <div class="item" data-expected-width="100" data-expected-height="100">Cell 1</div>
       <div class="item" data-expected-width="100" data-expected-height="100">Cell 2</div>
       <div class="item" data-expected-width="100" data-expected-height="100">Cell 3</div>

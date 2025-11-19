@@ -62,9 +62,9 @@ LayoutObject* HTMLButtonElement::CreateLayoutObject(
   // https://html.spec.whatwg.org/C/#button-layout
   EDisplay display = style.Display();
   if (display == EDisplay::kInlineGrid || display == EDisplay::kGrid ||
-      display == EDisplay::kInlineMasonry || display == EDisplay::kMasonry ||
-      display == EDisplay::kInlineFlex || display == EDisplay::kFlex ||
-      display == EDisplay::kInlineLayoutCustom ||
+      display == EDisplay::kInlineGridLanes ||
+      display == EDisplay::kGridLanes || display == EDisplay::kInlineFlex ||
+      display == EDisplay::kFlex || display == EDisplay::kInlineLayoutCustom ||
       display == EDisplay::kLayoutCustom) {
     return HTMLFormControlElement::CreateLayoutObject(style);
   }

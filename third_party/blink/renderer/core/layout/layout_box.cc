@@ -588,12 +588,12 @@ void LayoutBox::StyleWillChange(StyleDifference diff,
           SetNeedsLayoutAndIntrinsicWidthsRecalc(
               layout_invalidation_reason::kStyleChange);
 
-          // Grid/Masonry placement is different for out-of-flow elements, so if
-          // the containing block is a grid or masonry, dirty the container's
-          // placement. The converse (going from out of flow to in flow) is
-          // handled in LayoutBox::UpdateGridPositionAfterStyleChange.
+          // Grid/Grid-Lanes placement is different for out-of-flow elements, so
+          // if the containing block is a grid or grid-lanes, dirty the
+          // container's placement. The converse (going from out of flow to in
+          // flow) is handled in LayoutBox::UpdateGridPositionAfterStyleChange.
           LayoutBlock* containing_block = ContainingBlock();
-          if (containing_block && containing_block->IsLayoutGridOrMasonry()) {
+          if (containing_block && containing_block->IsLayoutGridOrGridLanes()) {
             containing_block->SetGridPlacementDirty(true);
           }
 
@@ -828,17 +828,17 @@ void LayoutBox::UpdateGridPositionAfterStyleChange(
   const bool is_out_of_flow = StyleRef().HasOutOfFlowPosition();
 
   LayoutBlock* containing_block = ContainingBlock();
-  if ((containing_block && containing_block->IsLayoutGridOrMasonry()) &&
+  if ((containing_block && containing_block->IsLayoutGridOrGridLanes()) &&
       GridStyleChanged(old_style, StyleRef())) {
-    // Out-of-flow items do not impact grid/masonry placement.
-    // TODO(kschmi): Scope this so that it only dirties the grid/masonry when
+    // Out-of-flow items do not impact grid/grid-lanes placement.
+    // TODO(kschmi): Scope this so that it only dirties the grid/grid-lanes when
     // track sizing depends on item sizes.
     if (!was_out_of_flow || !is_out_of_flow)
       containing_block->SetGridPlacementDirty(true);
 
-    // For out-of-flow elements with grid/masonry container as containing block,
-    // we need to run the entire algorithm to place and size them correctly. As
-    // a result, we trigger a full layout.
+    // For out-of-flow elements with grid/grid-lanes container as containing
+    // block, we need to run the entire algorithm to place and size them
+    // correctly. As a result, we trigger a full layout.
     if (is_out_of_flow) {
       containing_block->SetNeedsLayout(layout_invalidation_reason::kGridChanged,
                                        kMarkContainerChain);
@@ -4641,7 +4641,7 @@ PhysicalRect LayoutBox::BoundingBoxRelativeToFirstFragment() const {
 
 bool LayoutBox::IsReadingFlowContainer() const {
   NOT_DESTROYED();
-  // TODO(almaher): Add reading flow support for masonry.
+  // TODO(almaher): Add reading flow support for grid-lanes.
   const ComputedStyle& style = StyleRef();
   switch (style.ReadingFlow()) {
     case EReadingFlow::kNormal:
@@ -4654,7 +4654,7 @@ bool LayoutBox::IsReadingFlowContainer() const {
     case EReadingFlow::kGridOrder:
       return IsLayoutGrid();
     case EReadingFlow::kSourceOrder:
-      return IsLayoutBlock() || IsFlexibleBox() || IsLayoutGridOrMasonry();
+      return IsLayoutBlock() || IsFlexibleBox() || IsLayoutGridOrGridLanes();
   }
   return false;
 }

@@ -4,20 +4,20 @@
 <link rel="author" title="Alison Maher" href="mailto:almaher@microsoft.com">
 <link rel="match" href="column-auto-repeat-014-ref.html">
 <style>
-.masonry {
+.grid-lanes {
   display: grid-lanes;
   border: solid thick;
   grid-template-columns: 10px 20px repeat(auto-fill, 30px 40px) 50px 60px;
   width: 300px;
   background: pink;
 }
-.masonry > :nth-child(2n) {
+.grid-lanes > :nth-child(2n) {
   background: sienna;
 }
-.masonry > :nth-child(2n+1) {
+.grid-lanes > :nth-child(2n+1) {
   background: orange;
 }
-.masonry > div {
+.grid-lanes > div {
   width: 100%;
   height: 25px;
 }
@@ -29,7 +29,7 @@
 </style>
 <p>The test passes if it has the same visual effect as reference.</p>
 <div class="holder">
-  <div class="masonry">
+  <div class="grid-lanes">
     <div></div>
     <div></div>
     <div></div>
@@ -40,7 +40,7 @@
 </div>
 
 <div class="holder">
-  <div class="masonry">
+  <div class="grid-lanes">
     <div></div>
     <div></div>
     <div></div>
@@ -51,7 +51,7 @@
 </div>
 
 <div class="holder">
-  <div class="masonry">
+  <div class="grid-lanes">
     <div style="grid-column: 2;"></div>
     <div></div>
     <div style="grid-column: 5;"></div>

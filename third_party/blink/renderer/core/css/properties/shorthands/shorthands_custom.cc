@@ -2734,7 +2734,7 @@ bool Grid::ParseShorthand(bool important,
 
 bool Grid::IsLayoutDependent(const ComputedStyle* style,
                              LayoutObject* layout_object) const {
-  return layout_object && layout_object->IsLayoutGridOrMasonry();
+  return layout_object && layout_object->IsLayoutGridOrGridLanes();
 }
 
 const CSSValue* Grid::CSSValueFromComputedStyleInternal(
@@ -2822,7 +2822,7 @@ bool GridTemplate::ParseShorthand(
 
 bool GridTemplate::IsLayoutDependent(const ComputedStyle* style,
                                      LayoutObject* layout_object) const {
-  return layout_object && layout_object->IsLayoutGridOrMasonry();
+  return layout_object && layout_object->IsLayoutGridOrGridLanes();
 }
 
 const CSSValue* GridTemplate::CSSValueFromComputedStyleInternal(
@@ -3265,7 +3265,7 @@ const CSSValue* Masonry::CSSValueFromComputedStyleInternal(
 
 bool Masonry::IsLayoutDependent(const ComputedStyle* style,
                                 LayoutObject* layout_object) const {
-  return layout_object && layout_object->IsLayoutMasonry();
+  return layout_object && layout_object->IsLayoutGridLanes();
 }
 
 bool MasonryFlow::ParseShorthand(

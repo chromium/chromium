@@ -48,7 +48,7 @@ class CORE_EXPORT LayoutMasonry : public LayoutBlock {
   const GridLayoutData* LayoutData() const;
 
  private:
-  bool IsLayoutMasonry() const final {
+  bool IsLayoutGridLanes() const final {
     NOT_DESTROYED();
     return true;
   }
@@ -65,7 +65,7 @@ class CORE_EXPORT LayoutMasonry : public LayoutBlock {
 template <>
 struct DowncastTraits<LayoutMasonry> {
   static bool AllowFrom(const LayoutObject& object) {
-    return object.IsLayoutMasonry();
+    return object.IsLayoutGridLanes();
   }
 };
 

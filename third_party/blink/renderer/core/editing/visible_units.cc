@@ -1169,7 +1169,7 @@ static bool IsVisuallyEquivalentCandidateAlgorithm(
     return false;
 
   if (layout_object->IsLayoutBlockFlow() || layout_object->IsFlexibleBox() ||
-      layout_object->IsLayoutGridOrMasonry()) {
+      layout_object->IsLayoutGridOrGridLanes()) {
     if (To<LayoutBlock>(layout_object)->LogicalHeight() ||
         anchor_node->GetDocument().body() == anchor_node) {
       if (!HasRenderedNonAnonymousDescendantsWithHeight(layout_object))

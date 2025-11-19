@@ -911,9 +911,9 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return Parent() && Parent()->IsLayoutGrid();
   }
 
-  bool IsMasonryItem() const {
+  bool IsGridLanesItem() const {
     NOT_DESTROYED();
-    return Parent() && Parent()->IsLayoutMasonry();
+    return Parent() && Parent()->IsLayoutGridLanes();
   }
 
   bool IsMathItem() const {

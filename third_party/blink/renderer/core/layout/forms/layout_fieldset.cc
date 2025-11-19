@@ -88,9 +88,9 @@ void LayoutFieldset::InsertedIntoTree() {
     case EDisplay::kInlineGrid:
       display = EDisplay::kGrid;
       break;
-    case EDisplay::kMasonry:
-    case EDisplay::kInlineMasonry:
-      display = EDisplay::kMasonry;
+    case EDisplay::kGridLanes:
+    case EDisplay::kInlineGridLanes:
+      display = EDisplay::kGridLanes;
       break;
     default:
       break;

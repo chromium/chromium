@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="/fonts/ahem.css">
 <link rel="match" href="row-track-sizing-002-ref.html">
 <style>
-.masonry {
+.grid-lanes {
     display: grid-lanes;
     masonry-direction: row;
     grid-template-rows: minmax(15px, min-content) max-content auto;
@@ -17,7 +17,7 @@
 </style>
 <body>
   <p>Test that masonry tracks are correctly sized, and auto tracks are stretched.</p>
-  <div class="masonry">
+  <div class="grid-lanes">
     <div style="grid-row: 1; background: green; width: min-content;">XXX XXX</div>
     <div style="grid-row: 1 / 3; background: purple; width: 2em;">X XX X</div>
     <div style="grid-row: 1; height: 100%; width: 1em; background: yellow;"></div>

@@ -622,8 +622,8 @@ PhysicalOffset Transpose(PhysicalOffset& offset) {
 LayoutUnit TranslateRTLCoordinate(const LayoutObject* layout_object,
                                   LayoutUnit position,
                                   const Vector<LayoutUnit>& column_positions) {
-  // This should only be called on grid or masonry layout objects.
-  DCHECK(layout_object->IsLayoutGridOrMasonry());
+  // This should only be called on grid or grid-lanes layout objects.
+  DCHECK(layout_object->IsLayoutGridOrGridLanes());
   DCHECK(!layout_object->StyleRef().IsLeftToRightDirection());
 
   LayoutUnit alignment_offset = column_positions.front();
@@ -1862,7 +1862,7 @@ std::unique_ptr<protocol::DictionaryValue> BuildGridInfo(
     bool isPrimary) {
   DCHECK(element->GetLayoutObject());
 
-  if (element->GetLayoutObject()->IsLayoutMasonry()) {
+  if (element->GetLayoutObject()->IsLayoutGridLanes()) {
     return BuildGridInfoForMasonry(element, grid_highlight_config, scale);
   }
 
@@ -2360,7 +2360,7 @@ void InspectorHighlight::AppendNodeHighlight(
   if (highlight_config.css_grid != Color::kTransparent ||
       highlight_config.grid_highlight_config) {
     grid_info_ = protocol::ListValue::create();
-    if (layout_object->IsLayoutGridOrMasonry()) {
+    if (layout_object->IsLayoutGridOrGridLanes()) {
       grid_info_->pushValue(
           BuildGridInfo(To<Element>(node), highlight_config, scale_, true));
     }
@@ -2584,7 +2584,7 @@ std::unique_ptr<protocol::DictionaryValue> InspectorGridHighlight(
 
   float scale = DeviceScaleFromFrameView(frame_view);
   LayoutObject* layout_object = node->GetLayoutObject();
-  if (!layout_object || !layout_object->IsLayoutGridOrMasonry()) {
+  if (!layout_object || !layout_object->IsLayoutGridOrGridLanes()) {
     return nullptr;
   }
 

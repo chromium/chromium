@@ -8,7 +8,7 @@ html,body {
   color:black; background-color:white; font:15px/1 monospace; padding:0; margin:0;
 }
 
-.masonry {
+.grid-lanes {
     display: grid-lanes;
     background: gray;
     position: relative;
@@ -28,7 +28,7 @@ html,body {
 </style>
 <body>
   <p>Ensure that containers with min and max-content constraints are sized correctly when all items inside are sized as min/max-content.</p>
-  <div class="masonry" style="margin-bottom: 10px; width: min-content;">
+  <div class="grid-lanes" style="margin-bottom: 10px; width: min-content;">
     <div class="first-item invisible" style="width: min-content;">
       Number 1
     </div>
@@ -42,7 +42,7 @@ html,body {
       Number 4
     </div>
   </div>
-  <div class="masonry" style="width: max-content;">
+  <div class="grid-lanes" style="width: max-content;">
     <div class="first-item invisible" style="width: max-content;">
       Number 1
     </div>

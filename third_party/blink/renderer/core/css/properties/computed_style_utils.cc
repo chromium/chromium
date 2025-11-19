@@ -2067,7 +2067,7 @@ ValueForGridTrackList(GridTrackSizingDirection direction,
   const bool is_for_columns = direction == kForColumns;
   const ComputedGridTrackList& computed_grid_track_list =
       is_for_columns ? style.GridTemplateColumns() : style.GridTemplateRows();
-  const bool is_masonry = style.IsDisplayMasonryBox();
+  const bool is_grid_lanes = style.IsDisplayGridLanesBox();
   auto* container = DynamicTo<T>(layout_object);
 
   // Handle the 'none' case.
@@ -2108,7 +2108,7 @@ ValueForGridTrackList(GridTrackSizingDirection direction,
   const GridTrackList& track_list = computed_grid_track_list.GetTrackList();
 
   // Treat repeat(auto-fill, <intrinsic-track-size>) as none in Grid.
-  if (!is_masonry && track_list.HasIntrinsicSizedRepeater()) {
+  if (!is_grid_lanes && track_list.HasIntrinsicSizedRepeater()) {
     return CSSIdentifierValue::Create(CSSValueID::kNone);
   }
 
@@ -2185,7 +2185,7 @@ CSSValue* ComputedStyleUtils::ValueForGridTrackList(
     const LayoutObject* layout_object,
     const ComputedStyle& style,
     bool force_computed_value) {
-  if (style.IsDisplayMasonryBox()) {
+  if (style.IsDisplayGridLanesBox()) {
     return blink::ValueForGridTrackList<LayoutMasonry>(
         direction, layout_object, style, force_computed_value);
   }

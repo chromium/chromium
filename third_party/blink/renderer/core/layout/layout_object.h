@@ -913,13 +913,13 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return false;
   }
-  virtual bool IsLayoutMasonry() const {
+  virtual bool IsLayoutGridLanes() const {
     NOT_DESTROYED();
     return false;
   }
-  bool IsLayoutGridOrMasonry() const {
+  bool IsLayoutGridOrGridLanes() const {
     NOT_DESTROYED();
-    return IsLayoutGrid() || IsLayoutMasonry();
+    return IsLayoutGrid() || IsLayoutGridLanes();
   }
   virtual bool IsLayoutIFrame() const {
     NOT_DESTROYED();

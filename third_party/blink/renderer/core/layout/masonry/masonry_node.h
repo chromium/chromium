@@ -20,7 +20,7 @@ class CORE_EXPORT MasonryNode final : public BlockNode {
  public:
   explicit MasonryNode(LayoutBox* box) : BlockNode(box) {
     DCHECK(box);
-    DCHECK(box->IsLayoutMasonry());
+    DCHECK(box->IsLayoutGridLanes());
   }
 
   const GridPlacementData& CachedPlacementData() const {
@@ -55,7 +55,7 @@ class CORE_EXPORT MasonryNode final : public BlockNode {
 template <>
 struct DowncastTraits<MasonryNode> {
   static bool AllowFrom(const LayoutInputNode& node) {
-    return node.IsMasonry();
+    return node.IsGridLanes();
   }
 };
 

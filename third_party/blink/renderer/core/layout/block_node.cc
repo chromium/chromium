@@ -172,7 +172,7 @@ NOINLINE void DetermineAlgorithmAndRun(const LayoutAlgorithmParams& params,
     DetermineMathMLAlgorithmAndRun(box, params, callback);
   } else if (box.IsLayoutGrid()) {
     CreateAlgorithmAndRun<GridLayoutAlgorithm>(params, callback);
-  } else if (box.IsLayoutMasonry()) {
+  } else if (box.IsLayoutGridLanes()) {
     CreateAlgorithmAndRun<MasonryLayoutAlgorithm>(params, callback);
   } else if (box.IsLayoutReplaced()) {
     CreateAlgorithmAndRun<ReplacedLayoutAlgorithm>(params, callback);
@@ -241,7 +241,7 @@ bool CanUseCachedIntrinsicInlineSizes(const ConstraintSpace& constraint_space,
   // "grid-template-columns: repeat(auto-fill, 50px); min-width: 50%;"
   // In this specific case our min/max sizes are now dependent on what
   // "min-width" resolves to - which is unique to grid.
-  if (node.IsGrid() || node.IsMasonry()) {
+  if (node.IsGrid() || node.IsGridLanes()) {
     if (style.LogicalMinWidth().HasPercentOrStretch() ||
         style.LogicalMaxWidth().HasPercentOrStretch()) {
       return false;
@@ -953,12 +953,12 @@ MinMaxSizesResult BlockNode::ComputeMinMaxSizes(
   };
 
   const bool is_in_perform_layout = box_->GetFrameView()->IsInPerformLayout();
-  // In some scenarios, Grid, Masonry and Flex will run layout on their items
+  // In some scenarios, Grid, Grid-lanes and Flex will run layout on their items
   // during MinMaxSizes computation. Instead of running (and possible caching
   // incorrect results), when we're not performing layout, just use border +
   // padding.
   if (!is_in_perform_layout &&
-      (IsGrid() || IsMasonry() ||
+      (IsGrid() || IsGridLanes() ||
        (IsFlexibleBox() && Style().ResolvedIsColumnFlexDirection()))) {
     const FragmentGeometry& fragment_geometry = IntrinsicFragmentGeometry();
     const BoxStrut border_padding =
@@ -1290,7 +1290,7 @@ bool BlockNode::UseParentPercentageResolutionBlockSizeForChildren() const {
   }
 
   return !block->IsLayoutReplaced() && !block->IsTableCell() &&
-         !block->IsOutOfFlowPositioned() && !block->IsLayoutGridOrMasonry() &&
+         !block->IsOutOfFlowPositioned() && !block->IsLayoutGridOrGridLanes() &&
          !block->IsFlexibleBox() && !block->IsLayoutCustom();
 }
 
@@ -1521,7 +1521,7 @@ void BlockNode::UpdateMarginPaddingInfoIfNeeded(
     // is able to return the correct value. This isn't ideal, but eventually
     // we'll answer these queries from the fragment.
     const auto* containing_block = box_->ContainingBlock();
-    if (containing_block && containing_block->IsLayoutGridOrMasonry())
+    if (containing_block && containing_block->IsLayoutGridOrGridLanes())
         [[unlikely]] {
       box_->SetOverrideContainingBlockContentLogicalWidth(
           space.MarginPaddingPercentageResolutionSize().inline_size);

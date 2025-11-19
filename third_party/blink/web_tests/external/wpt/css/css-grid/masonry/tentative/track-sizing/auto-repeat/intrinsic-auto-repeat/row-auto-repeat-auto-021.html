@@ -6,7 +6,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <style>
-.masonry {
+.grid-lanes {
     display: grid-lanes;
     item-tolerance: 0;
     masonry-direction: row;
@@ -15,12 +15,12 @@
     height: 1000px;
 }
 
-.masonry > div {
+.grid-lanes > div {
     height: 100px;
     width: 100px;
 }
 </style>
-<div class="masonry">
+<div class="grid-lanes">
   <div></div>
   <div></div>
   <div></div>
@@ -29,7 +29,7 @@
 </div>
 <script>
   test(function() {
-    const container = document.querySelector('.masonry');
+    const container = document.querySelector('.grid-lanes');
     const computedStyle = window.getComputedStyle(container);
     assert_equals(computedStyle.getPropertyValue('grid-template-rows'),
       "100px 100px 100px 100px 100px 100px 100px 100px 100px 100px");

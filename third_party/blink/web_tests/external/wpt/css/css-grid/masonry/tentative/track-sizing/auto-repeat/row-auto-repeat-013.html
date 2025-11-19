@@ -4,7 +4,7 @@
 <link rel="author" title="Alison Maher" href="mailto:almaher@microsoft.com">
 <link rel="match" href="row-auto-repeat-013-ref.html">
 <style>
-.masonry {
+.grid-lanes {
   display: grid-lanes;
   border: solid thick;
   masonry-direction: row;
@@ -12,13 +12,13 @@
   height: 300px;
   background: pink;
 }
-.masonry > :nth-child(2n) {
+.grid-lanes > :nth-child(2n) {
   background: sienna;
 }
-.masonry > :nth-child(2n+1) {
+.grid-lanes > :nth-child(2n+1) {
   background: orange;
 }
-.masonry > div {
+.grid-lanes > div {
   width: 25px;
   height: 100%;
 }
@@ -30,7 +30,7 @@
 </style>
 <p>The test passes if it has the same visual effect as reference.</p>
 <div class="holder">
-  <div class="masonry">
+  <div class="grid-lanes">
     <div></div>
     <div></div>
     <div></div>
@@ -41,7 +41,7 @@
 </div>
 
 <div class="holder">
-  <div class="masonry">
+  <div class="grid-lanes">
     <div></div>
     <div></div>
     <div></div>
@@ -52,7 +52,7 @@
 </div>
 
 <div class="holder">
-  <div class="masonry">
+  <div class="grid-lanes">
     <div style="grid-row: 2;"></div>
     <div></div>
     <div style="grid-row: 5;"></div>

@@ -1734,7 +1734,9 @@ class ComputedStyle final : public ComputedStyleBase {
   bool IsDisplayTableBox() const { return IsDisplayTableBox(Display()); }
   bool IsDisplayFlexibleBox() const { return IsDisplayFlexibleBox(Display()); }
   bool IsDisplayGridBox() const { return IsDisplayGridBox(Display()); }
-  bool IsDisplayMasonryBox() const { return IsDisplayMasonryBox(Display()); }
+  bool IsDisplayGridLanesBox() const {
+    return IsDisplayGridLanesBox(Display());
+  }
   bool IsDisplayFlexibleOrGridBox() const {
     return IsDisplayFlexibleBox(Display()) || IsDisplayGridBox(Display());
   }
@@ -1747,7 +1749,7 @@ class ComputedStyle final : public ComputedStyleBase {
   bool IsDisplayMathType() const { return IsDisplayMathBox(Display()); }
 
   bool BlockifiesChildren() const {
-    return IsDisplayFlexibleOrGridBox() || IsDisplayMasonryBox() ||
+    return IsDisplayFlexibleOrGridBox() || IsDisplayGridLanesBox() ||
            IsDisplayMathType() || IsDisplayLayoutCustomBox() ||
            (Display() == EDisplay::kContents && IsInBlockifyingDisplay());
   }
@@ -2641,8 +2643,9 @@ class ComputedStyle final : public ComputedStyleBase {
     return display == EDisplay::kGrid || display == EDisplay::kInlineGrid;
   }
 
-  static bool IsDisplayMasonryBox(EDisplay display) {
-    return display == EDisplay::kMasonry || display == EDisplay::kInlineMasonry;
+  static bool IsDisplayGridLanesBox(EDisplay display) {
+    return display == EDisplay::kGridLanes ||
+           display == EDisplay::kInlineGridLanes;
   }
 
   static bool IsDisplayMathBox(EDisplay display) {
@@ -2660,7 +2663,7 @@ class ComputedStyle final : public ComputedStyleBase {
            display == EDisplay::kInlineFlowRootListItem ||
            display == EDisplay::kInlineGrid ||
            display == EDisplay::kInlineLayoutCustom ||
-           display == EDisplay::kInlineMasonry ||
+           display == EDisplay::kInlineGridLanes ||
            display == EDisplay::kInlineTable || display == EDisplay::kMath ||
            display == EDisplay::kWebkitInlineBox;
   }

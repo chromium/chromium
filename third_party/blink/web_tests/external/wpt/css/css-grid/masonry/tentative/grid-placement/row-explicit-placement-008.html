@@ -4,7 +4,7 @@
 <link rel="match" href="row-explicit-placement-008-ref.html">
 <link rel="author" title="Celeste Pan" href="mailto:celestepan@microsoft.com">
 <style>
-.masonry {
+.grid-lanes {
     display: grid-lanes;
     masonry-direction: row;
     grid-template-rows: repeat(3, 100px);
@@ -35,7 +35,7 @@
 </style>
 <body>
   <p>Test that orthoganal masonry with explicit placement are correctly positioned within the grid axis and that the margins on the orthogonal items correctly affect track sizing.</p>
-  <div class="masonry">
+  <div class="grid-lanes">
     <div class="first-track">This is some text</div>
     <div class="first-track" style="margin-right: 10px;">This is some text</div>
     <div class="first-track" style="writing-mode: horizontal-tb">This is some text</div>

@@ -4,7 +4,7 @@
 <meta name="assert" content="This test checks that auto repeat tracks use percentage min size when available to compute the number of tracks.">
 <link rel="author" title="Alison Maher" href="mailto:almaher@microsoft.com">
 <style>
-.masonry {
+.grid-lanes {
     position: relative;
     display: grid-lanes;
     masonry-direction: row;
@@ -29,30 +29,30 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/check-layout-th.js"></script>
-<body onload="checkLayout('.masonry');">
+<body onload="checkLayout('.grid-lanes');">
 
 <div id="log"></div>
 
 <div class="wrapper">
-  <div class="masonry" data-expected-width="300" data-expected-height="200">
+  <div class="grid-lanes" data-expected-width="300" data-expected-height="200">
     <div class="item" data-offset-x="0" data-offset-y="150" data-expected-width="300" data-expected-height="50"></div>
   </div>
 </div>
 
 <div class="wrapper">
-  <div class="masonry" style="width: 200px; height: 100px;" data-expected-width="300" data-expected-height="200">
+  <div class="grid-lanes" style="width: 200px; height: 100px;" data-expected-width="300" data-expected-height="200">
     <div class="item" data-offset-x="0" data-offset-y="150" data-expected-width="300" data-expected-height="50"></div>
   </div>
 </div>
 
 <div class="wrapper">
-  <div class="masonry" style="width: min-content; height: min-content;" data-expected-width="300" data-expected-height="200">
+  <div class="grid-lanes" style="width: min-content; height: min-content;" data-expected-width="300" data-expected-height="200">
     <div class="item" data-offset-x="0" data-offset-y="150" data-expected-width="300" data-expected-height="50"></div>
   </div>
 </div>
 
 <div class="wrapper">
-  <div class="masonry" style="width: max-content; height: max-content;" data-expected-width="300" data-expected-height="200">
+  <div class="grid-lanes" style="width: max-content; height: max-content;" data-expected-width="300" data-expected-height="200">
     <div class="item" data-offset-x="0" data-offset-y="150" data-expected-width="300" data-expected-height="50"></div>
   </div>
 </div>

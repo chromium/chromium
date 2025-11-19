@@ -262,7 +262,7 @@ static inline bool CanHaveWhitespaceChildren(
   const LayoutObject& parent = *context.parent;
   if (parent.IsTable() || parent.IsTableRow() || parent.IsTableSection() ||
       parent.IsLayoutTableCol() || parent.IsFrameSet() ||
-      parent.IsFlexibleBox() || parent.IsLayoutGridOrMasonry() ||
+      parent.IsFlexibleBox() || parent.IsLayoutGridOrGridLanes() ||
       parent.IsSVGRoot() || parent.IsSVGContainer() || parent.IsSVGImage() ||
       parent.IsSVGShape()) {
     if (!context.use_previous_in_flow || !context.previous_in_flow ||

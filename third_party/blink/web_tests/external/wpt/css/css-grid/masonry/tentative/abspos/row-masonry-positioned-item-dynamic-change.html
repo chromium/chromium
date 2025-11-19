@@ -7,7 +7,7 @@
   <link rel="help" href="https://drafts.csswg.org/css-grid-3/#abspos">
   <link rel="match" href="../../../../reference/ref-filled-green-100px-square-only.html">
   <style>
-    .masonry {
+    .grid-lanes {
         display: grid-lanes;
         masonry-direction: row;
         grid-template-rows: 75px 25px;
@@ -27,7 +27,7 @@
   </style>
 <body>
 <p>Test passes if there is a filled green square.</p>
-<div class="masonry">
+<div class="grid-lanes">
   <div style="background: green; height: 100%; width: 100%"></div>
   <div style="background: red; height: 100%; width: 100%"></div>
   <div id="target" class="absolute"></div>

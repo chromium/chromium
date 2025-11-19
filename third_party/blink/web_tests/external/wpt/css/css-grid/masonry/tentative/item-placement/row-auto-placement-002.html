@@ -5,7 +5,7 @@
 <link rel="match" href="row-auto-placement-002-ref.html">
 <link rel="author" title="Alison Maher" href="mailto:almaher@microsoft.com">
 <style>
-.masonry {
+.grid-lanes {
     display: grid-lanes;
     background: gray;
     item-tolerance: 0;
@@ -17,7 +17,7 @@
     font: 15px/1 "Ahem";
 }
 
-.masonry > div {
+.grid-lanes > div {
     width: max-content;
 }
 
@@ -45,7 +45,7 @@
 </style>
 <body>
   <p>Test that masonry items with auto placement are correctly positioned within the grid axis.</p>
-  <div class="masonry">
+  <div class="grid-lanes">
     <div class="auto-item">This is some text</div>
     <div class="auto-item">Some larger words in this sentence</div>
     <div class="auto-item">The cat cannot be separated from milk</div>

@@ -6,16 +6,16 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <style>
-.masonry {
+.grid-lanes {
     display: grid-lanes;
     grid-template-columns: 100px 100px;
     grid-template-rows: 100px 100px 100px;
 }
 </style>
-<div class="masonry"></div>
+<div class="grid-lanes"></div>
 <script>
   test(function() {
-    const container = document.querySelector('.masonry');
+    const container = document.querySelector('.grid-lanes');
     const computedStyle = window.getComputedStyle(container);
     assert_equals(computedStyle.getPropertyValue('grid-template-columns'),
       "100px 100px");

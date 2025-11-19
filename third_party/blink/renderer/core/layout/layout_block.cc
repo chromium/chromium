@@ -706,9 +706,9 @@ LayoutBlock* LayoutBlock::CreateAnonymousWithParentAndDisplay(
     case EDisplay::kInlineGrid:
       new_display = EDisplay::kGrid;
       break;
-    case EDisplay::kMasonry:
-    case EDisplay::kInlineMasonry:
-      new_display = EDisplay::kMasonry;
+    case EDisplay::kGridLanes:
+    case EDisplay::kInlineGridLanes:
+      new_display = EDisplay::kGridLanes;
       break;
     case EDisplay::kFlowRoot:
       new_display = EDisplay::kFlowRoot;
@@ -734,7 +734,7 @@ LayoutBlock* LayoutBlock::CreateAnonymousWithParentAndDisplay(
     layout_block = MakeGarbageCollected<LayoutFlexibleBox>(/*element=*/nullptr);
   } else if (new_display == EDisplay::kGrid) {
     layout_block = MakeGarbageCollected<LayoutGrid>(/*element=*/nullptr);
-  } else if (new_display == EDisplay::kMasonry) {
+  } else if (new_display == EDisplay::kGridLanes) {
     layout_block = MakeGarbageCollected<LayoutMasonry>(/*element=*/nullptr);
   } else if (new_display == EDisplay::kBlockMath) {
     layout_block = MakeGarbageCollected<LayoutMathMLBlock>(/*element=*/nullptr);

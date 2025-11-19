@@ -1031,7 +1031,7 @@ void GridSizingTrackCollection::BuildSets(
 
   BuildSets(container_style.TemplateTracks(track_direction_).GetTrackList(),
             container_style.AutoTracks(track_direction_),
-            container_style.IsDisplayMasonryBox(),
+            container_style.IsDisplayGridLanesBox(),
             available_size == kIndefiniteSize);
   InitializeSets(available_size);
 }
@@ -1039,7 +1039,7 @@ void GridSizingTrackCollection::BuildSets(
 void GridSizingTrackCollection::BuildSets(
     const GridTrackList& explicit_track_list,
     const GridTrackList& implicit_track_list,
-    bool is_masonry,
+    bool is_grid_lanes,
     bool is_available_size_indefinite) {
   properties_.ResetType();
   sets_.Shrink(0);
@@ -1140,8 +1140,8 @@ void GridSizingTrackCollection::BuildSets(
         if (intrinsic_sized_repeater_set_index_ == kNotFound &&
             range.IsAutoRepeat() &&
             set_track_size.IsTrackDefinitionIntrinsic()) {
-          // This is not yet supported in Grid, only Masonry.
-          CHECK(is_masonry);
+          // This is not yet supported in Grid, only Grid-lanes.
+          CHECK(is_grid_lanes);
 
           // Get the index of the first set of the intrinsic auto repeat. For
           // example, if the track definition was repeat(auto-fill, 50px auto),

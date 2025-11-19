@@ -19,7 +19,7 @@ bool LayoutBlockFlow::CreatesNewFormattingContext() const {
   NOT_DESTROYED();
   if (IsInline() || IsFloatingOrOutOfFlowPositioned() || IsScrollContainer() ||
       IsFlexItem() || IsCustomItem() || IsDocumentElement() || IsGridItem() ||
-      IsMasonryItem() || IsWritingModeRoot() || IsMathItem() ||
+      IsGridLanesItem() || IsWritingModeRoot() || IsMathItem() ||
       StyleRef().Display() == EDisplay::kFlowRoot ||
       StyleRef().Display() == EDisplay::kFlowRootListItem ||
       ShouldApplyPaintContainment() || ShouldApplyLayoutContainment() ||

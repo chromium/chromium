@@ -8,7 +8,7 @@
 <link rel="stylesheet" href="/fonts/ahem.css">
 
 <style>
-.masonry { display: grid-lanes; masonry-direction: row; font: 10px/1 Ahem; }
+.grid-lanes { display: grid-lanes; masonry-direction: row; font: 10px/1 Ahem; }
 
 .minHeight10 { min-height: 10px; }
 .minHeight20 { min-height: 20px; }
@@ -42,60 +42,60 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 
-<div class="masonry gridAuto constrainedContainer" id="gridAuto">
+<div class="grid-lanes gridAuto constrainedContainer" id="gridAuto">
   <div class="firstRowFirstColumn minHeight40">XX<br>XXX<br>XX<br>XXX<br>XXXX</div>
 </div>
 
-<div class="masonry gridAuto constrainedContainer" id="gridAutoItemSmallerThanMinSize">
+<div class="grid-lanes gridAuto constrainedContainer" id="gridAutoItemSmallerThanMinSize">
   <div class="firstRowFirstColumn minHeight40">XX</div>
 </div>
 
-<div class="masonry gridMinMaxAutoAuto constrainedContainer" id="gridMinMaxAutoAuto">
+<div class="grid-lanes gridMinMaxAutoAuto constrainedContainer" id="gridMinMaxAutoAuto">
   <div class="firstRowFirstColumn minHeight40">XX<br>XX</div>
 </div>
 
-<div class="masonry gridMinMaxAutoMaxContent constrainedContainer" id="gridMinMaxAutoMaxContent">
+<div class="grid-lanes gridMinMaxAutoMaxContent constrainedContainer" id="gridMinMaxAutoMaxContent">
   <div class="firstRowFirstColumn minHeight20 height30"></div>
 </div>
 
-<div class="masonry gridMinMaxMinContentAuto constrainedContainer" id="gridMinMaxMinContentAuto">
+<div class="grid-lanes gridMinMaxMinContentAuto constrainedContainer" id="gridMinMaxMinContentAuto">
   <div class="firstRowFirstColumn minHeight60">X</div>
 </div>
 
-<div class="masonry gridAuto constrainedContainer" id="gridAutoMultipleItems">
+<div class="grid-lanes gridAuto constrainedContainer" id="gridAutoMultipleItems">
   <div class="firstRowFirstColumn minHeight60">X<br>X</div>
   <div class="firstRowSecondColumn minHeight20">XXX<br>X<br>XX<br>XX</div>
   <div class="firstRowAutoColumn minConstrainedContainer height50"></div>
 </div>
 
-<div class="masonry gridMinMaxAutoAuto constrainedContainer" id="gridMinMaxAutoAutoMultipleItemsOneWithoutMinHeight">
+<div class="grid-lanes gridMinMaxAutoAuto constrainedContainer" id="gridMinMaxAutoAutoMultipleItemsOneWithoutMinHeight">
   <div class="firstRowFirstColumn height30">X<br>X</div>
   <div class="firstRowSecondColumn minHeight50"></div>
   <div class="firstRowAutoColumn minHeight20">XXXX<br>X<br>XX<br>XXX</div>
 </div>
 
-<div class="masonry gridMinMaxAutoMaxContent constrainedContainer" id="gridMinMaxAutoMaxContentMultipleItemsOneWithAutoMinHeight">
+<div class="grid-lanes gridMinMaxAutoMaxContent constrainedContainer" id="gridMinMaxAutoMaxContentMultipleItemsOneWithAutoMinHeight">
   <div class="firstRowFirstColumn minHeight30">X<br>X</div>
   <div class="firstRowSecondColumn height60">XX</div>
   <div class="firstRowAutoColumn minHeight20">XXX<br>XX<br>XXX<br>XX</div>
 </div>
 
 <div class="constrainedContainer">
-  <div class="masonry gridAutoAndAuto" id="gridAutoAndAutoFixedHeightChildren">
+  <div class="grid-lanes gridAutoAndAuto" id="gridAutoAndAutoFixedHeightChildren">
      <div class="firstRowFirstColumn height200"></div>
      <div class="secondRowFirstColumn height50"></div>
   </div>
 </div>
 
 <div class="constrainedContainer">
-  <div class="masonry gridAutoAndAuto" id="gridAutoAndAutoOneSpanningOneNonSpannig">
+  <div class="grid-lanes gridAutoAndAuto" id="gridAutoAndAutoOneSpanningOneNonSpannig">
     <div class="firstRowFirstColumn">XX XX</div>
     <div class="bothRowFirstColumn minHeight50">XXXXXX X XXX</div>
   </div>
 </div>
 
 <div class="constrainedContainer">
-  <div class="masonry gridAutoAndAuto" id="gridAutoAndAutoOneSpanningMultipleNonSpanning">
+  <div class="grid-lanes gridAutoAndAuto" id="gridAutoAndAutoOneSpanningMultipleNonSpanning">
     <div class="bothRowSecondColumn minHeight60">XX XX XX</div>
     <div class="firstRowFirstColumn">X X X X</div>
     <div class="firstRowFirstColumn">XX XX</div>
@@ -103,21 +103,21 @@
 </div>
 
 <div class="constrainedContainer">
-  <div class="masonry gridAutoAndMinMaxAutoAuto" id="gridAutoAndMinMaxAutoAutoOneSpanningOneNonSpanning">
+  <div class="grid-lanes gridAutoAndMinMaxAutoAuto" id="gridAutoAndMinMaxAutoAutoOneSpanningOneNonSpanning">
     <div class="secondRowFirstColumn">X XXX XX</div>
     <div class="bothRowSecondColumn minHeight70">XXX XXXX</div>
   </div>
 </div>
 
 <div class="constrainedContainer">
-  <div class="masonry gridAutoAndMinMaxAutoAuto" id="gridAutoAndMinMaxAutoAutoMultipleSpanning">
+  <div class="grid-lanes gridAutoAndMinMaxAutoAuto" id="gridAutoAndMinMaxAutoAutoMultipleSpanning">
     <div class="bothRowSecondColumn minHeight70">XX XX XX</div>
     <div class="bothRowFirstColumn">XXXXX X XXXXX</div>
   </div>
 </div>
 
 <div class="constrainedContainer">
-  <div class="masonry gridMinMaxAutoMaxContentAndAuto"
+  <div class="grid-lanes gridMinMaxAutoMaxContentAndAuto"
       id="gridMinMaxAutoMaxContentAndAutoOneSpanningMultipleNonSpanning">
     <div class="secondRowFirstColumn minHeight60">X XXX XX</div>
     <div class="bothRowSecondColumn minHeight90">XXXXX XXXXX</div>
@@ -126,7 +126,7 @@
 </div>
 
 <div class="constrainedContainer">
-  <div class="masonry gridMinMaxAutoMaxContentAndAuto"
+  <div class="grid-lanes gridMinMaxAutoMaxContentAndAuto"
       id="gridMinMaxAutoMaxContentAndAutoMultipleSpanningMultipleNonSpanning">
     <div class="bothRowSecondColumn">XX XX XX XX</div>
     <div class="firstRowFirstColumn minHeight40">XXX</div>
@@ -136,91 +136,91 @@
 </div>
 
 <div class="constrainedContainer">
-  <div class="masonry gridAuto" id="gridAutoWithFixedHeightChild">
+  <div class="grid-lanes gridAuto" id="gridAutoWithFixedHeightChild">
     <div class="firstRowFirstColumn height60">XXX X</div>
   </div>
 </div>
 
 <div class="constrainedContainer">
-  <div class="masonry gridAuto height30" id="gridAutoWithFixedHeightChildAndMinHeight">
+  <div class="grid-lanes gridAuto height30" id="gridAutoWithFixedHeightChildAndMinHeight">
     <div class="firstRowFirstColumn height60 minHeight40">XXX X</div>
   </div>
 </div>
 
 <div class="constrainedContainer">
-  <div class="masonry gridAuto" id="gridAutoWithFixedHeightChildAndHigherMinHeight">
+  <div class="grid-lanes gridAuto" id="gridAutoWithFixedHeightChildAndHigherMinHeight">
     <div class="firstRowFirstColumn height60 minHeight90">XXX X</div>
   </div>
 </div>
 
 <div class="constrainedContainer">
-  <div class="masonry gridAutoAndAuto" id="gridAutoAndAutoOneSpanningFixedHeight">
+  <div class="grid-lanes gridAutoAndAuto" id="gridAutoAndAutoOneSpanningFixedHeight">
     <div class="bothRowFirstColumn height50">XX XXX XX XXX XX XXX</div>
   </div>
 </div>
 
 <div class="constrainedContainer">
-  <div class="masonry gridAutoAndAuto height30" id="gridAutoAndAutoOneSpanningFixedHeightAndMinHeight">
+  <div class="grid-lanes gridAutoAndAuto height30" id="gridAutoAndAutoOneSpanningFixedHeightAndMinHeight">
     <div class="bothRowFirstColumn height60 minHeight50">XX XXX XX</div>
   </div>
 </div>
 
 <div class="constrainedContainer">
-  <div class="masonry gridAutoAndAuto" id="gridAutoAndAutoOneSpanningFixedHeightAndHigherMinHeight">
+  <div class="grid-lanes gridAutoAndAuto" id="gridAutoAndAutoOneSpanningFixedHeightAndHigherMinHeight">
     <div class="bothRowFirstColumn height60 minHeight70">XX XXX XX X XX</div>
   </div>
 </div>
 
 <div class="constrainedContainer">
-  <div class="masonry gridAuto" id="gridAutoFixedMinHeightWithBorder">
+  <div class="grid-lanes gridAuto" id="gridAutoFixedMinHeightWithBorder">
     <div class="firstRowFirstColumn minHeight40 border5">XXXXXX</div>
   </div>
 </div>
 
 <div class="constrainedContainer">
-  <div class="masonry gridAuto" id="gridAutoFixedMinHeightWithPadding">
+  <div class="grid-lanes gridAuto" id="gridAutoFixedMinHeightWithPadding">
     <div class="firstRowFirstColumn minHeight40 padding8">XXXXXX</div>
   </div>
 </div>
 
 <div class="constrainedContainer">
-  <div class="masonry gridAuto" id="gridAutoFixedMinHeightWithBorderAndPadding">
+  <div class="grid-lanes gridAuto" id="gridAutoFixedMinHeightWithBorderAndPadding">
     <div class="firstRowFirstColumn minHeight40 border5 padding8">XXXXXX</div>
   </div>
 </div>
 
 <div class="constrainedContainer">
-  <div class="masonry gridAuto" id="gridAutoAutoMinHeightWithBorder">
+  <div class="grid-lanes gridAuto" id="gridAutoAutoMinHeightWithBorder">
     <div class="firstRowFirstColumn border5">XX<br>XXX X</div>
   </div>
 </div>
 
 <div class="constrainedContainer">
-  <div class="masonry gridAuto" id="gridAutoAutoMinHeightWithPadding">
+  <div class="grid-lanes gridAuto" id="gridAutoAutoMinHeightWithPadding">
     <div class="firstRowFirstColumn padding8">XX<br>XXX X</div>
   </div>
 </div>
 
 <div class="constrainedContainer">
-  <div class="masonry gridAuto" id="gridAutoAutoMinHeightWithBorderAndPadding">
+  <div class="grid-lanes gridAuto" id="gridAutoAutoMinHeightWithBorderAndPadding">
     <div class="firstRowFirstColumn border5 padding8">XX<br>XXX X</div>
   </div>
 </div>
 
 <div class="constrainedContainer">
-  <div class="masonry gridAuto" id="gridAutoMaxContentMinHeightWithBorder">
+  <div class="grid-lanes gridAuto" id="gridAutoMaxContentMinHeightWithBorder">
     <div class="firstRowFirstColumn minHeightMaxContent border5">XXX X</div>
   </div>
 </div>
 
 <div class="constrainedContainer">
-  <div class="masonry gridAuto" id="gridAutoMaxContentMinHeightWithPadding">
+  <div class="grid-lanes gridAuto" id="gridAutoMaxContentMinHeightWithPadding">
     <div class="firstRowFirstColumn minHeightMaxContent padding8">XXX X</div>
   </div>
 </div>
 
 <div class="constrainedContainer">
-  <div class="masonry gridAuto" id="gridAutoMaxContentMinHeightWithBorderAndPadding">
+  <div class="grid-lanes gridAuto" id="gridAutoMaxContentMinHeightWithBorderAndPadding">
     <div class="firstRowFirstColumn border5 padding8 minHeightMaxContent">XXX X</div>
   </div>
 </div>

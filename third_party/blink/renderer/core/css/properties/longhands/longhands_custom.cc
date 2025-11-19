@@ -3857,10 +3857,10 @@ static bool IsDisplayOutside(CSSValueID id) {
 }
 
 static bool IsDisplayInside(CSSValueID id) {
-  if (id == CSSValueID::kMasonry) {
+  if (id == CSSValueID::kGridLanes) {
     return RuntimeEnabledFeatures::CSSMasonryLayoutEnabled();
   }
-  return (id >= CSSValueID::kFlowRoot && id <= CSSValueID::kMasonry) ||
+  return (id >= CSSValueID::kFlowRoot && id <= CSSValueID::kGridLanes) ||
          id == CSSValueID::kMath || id == CSSValueID::kRuby;
 }
 
@@ -3874,7 +3874,7 @@ static bool IsDisplayInternal(CSSValueID id) {
 }
 
 static bool IsDisplayLegacy(CSSValueID id) {
-  if (id == CSSValueID::kInlineMasonry) {
+  if (id == CSSValueID::kInlineGridLanes) {
     return RuntimeEnabledFeatures::CSSMasonryLayoutEnabled();
   }
   return id >= CSSValueID::kInlineBlock && id <= CSSValueID::kWebkitInlineFlex;
@@ -3936,7 +3936,7 @@ void AdjustDisplayKeywords(DisplayValidationResult& result) {
     case CSSValueID::kFlex:
     case CSSValueID::kFlowRoot:
     case CSSValueID::kGrid:
-    case CSSValueID::kMasonry:
+    case CSSValueID::kGridLanes:
     case CSSValueID::kTable:
       if (outside == CSSValueID::kBlock) {
         result.outside = nullptr;
@@ -3948,7 +3948,7 @@ void AdjustDisplayKeywords(DisplayValidationResult& result) {
           new_id = CSSValueID::kInlineBlock;
         } else if (inside == CSSValueID::kGrid) {
           new_id = CSSValueID::kInlineGrid;
-        } else if (inside == CSSValueID::kMasonry) {
+        } else if (inside == CSSValueID::kGridLanes) {
           new_id = CSSValueID::kInlineGrid;
         } else if (inside == CSSValueID::kTable) {
           new_id = CSSValueID::kInlineTable;
@@ -4194,9 +4194,9 @@ void Display::ApplyValue(StyleResolverState& state,
       builder.SetDisplay(is_block ? EDisplay::kFlex : EDisplay::kInlineFlex);
     } else if (inside == CSSValueID::kGrid) {
       builder.SetDisplay(is_block ? EDisplay::kGrid : EDisplay::kInlineGrid);
-    } else if (inside == CSSValueID::kMasonry) {
-      builder.SetDisplay(is_block ? EDisplay::kMasonry
-                                  : EDisplay::kInlineMasonry);
+    } else if (inside == CSSValueID::kGridLanes) {
+      builder.SetDisplay(is_block ? EDisplay::kGridLanes
+                                  : EDisplay::kInlineGridLanes);
     } else if (inside == CSSValueID::kMath) {
       builder.SetDisplay(is_block ? EDisplay::kBlockMath : EDisplay::kMath);
     } else if (inside == CSSValueID::kRuby) {
@@ -5409,7 +5409,7 @@ const CSSValue* GridTemplateColumns::ParseSingleValue(
 
 bool GridTemplateColumns::IsLayoutDependent(const ComputedStyle* style,
                                             LayoutObject* layout_object) const {
-  return layout_object && layout_object->IsLayoutGridOrMasonry();
+  return layout_object && layout_object->IsLayoutGridOrGridLanes();
 }
 
 const CSSValue* GridTemplateColumns::CSSValueFromComputedStyleInternal(
@@ -5435,7 +5435,7 @@ const CSSValue* GridTemplateRows::ParseSingleValue(
 
 bool GridTemplateRows::IsLayoutDependent(const ComputedStyle* style,
                                          LayoutObject* layout_object) const {
-  return layout_object && layout_object->IsLayoutGridOrMasonry();
+  return layout_object && layout_object->IsLayoutGridOrGridLanes();
 }
 
 const CSSValue* GridTemplateRows::CSSValueFromComputedStyleInternal(

@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] .masonry 1
-  assert_equals: \n<div class="masonry" data-expected-width="300" data-expected-height="200">\n      <div class="item" data-expected-width="75">Cell 1</div>\n      <div class="item" data-expected-width="75">Cell 2</div>\n      <div class="item" data-expected-width="75">Cell 3</div>\n      <div class="item" data-expected-width="75">Cell 4</div>\n      <div class="item" data-expected-width="75">Cell 5</div>\n    </div>\nwidth expected 75 but got 300
-Harness: the test ran to completion.
-

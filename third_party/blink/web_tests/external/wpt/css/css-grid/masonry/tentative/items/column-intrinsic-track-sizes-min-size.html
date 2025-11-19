@@ -5,7 +5,7 @@
 <link rel="help" href="https://drafts.csswg.org/css-grid-2/#intrinsic-sizes"/>
 <link rel="author" title="Alison Maher" href="mailto:almaher@microsoft.com">
 <style>
-.masonry{
+.grid-lanes{
   display: inline-grid-lanes;
   grid-template-columns: minmax(auto,0) minmax(auto,0);
   background: red;
@@ -25,6 +25,6 @@
 </style>
 
 <p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
-<div class="masonry">
+<div class="grid-lanes">
   <div class="t"><div class="inner"></div></div>
 </div>

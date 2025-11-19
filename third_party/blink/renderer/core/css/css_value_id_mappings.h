@@ -239,11 +239,11 @@ inline EDisplay CssValueIDToPlatformEnum(CSSValueID v) {
   if (v == CSSValueID::kRubyText) {
     return EDisplay::kRubyText;
   }
-  if (v == CSSValueID::kMasonry) {
-    return EDisplay::kMasonry;
+  if (v == CSSValueID::kGridLanes) {
+    return EDisplay::kGridLanes;
   }
-  if (v == CSSValueID::kInlineMasonry) {
-    return EDisplay::kInlineMasonry;
+  if (v == CSSValueID::kInlineGridLanes) {
+    return EDisplay::kInlineGridLanes;
   }
 
   NOTREACHED();
@@ -337,11 +337,11 @@ inline CSSValueID PlatformEnumToCSSValueID(EDisplay v) {
   if (v == EDisplay::kRubyText) {
     return CSSValueID::kRubyText;
   }
-  if (v == EDisplay::kMasonry) {
-    return CSSValueID::kMasonry;
+  if (v == EDisplay::kGridLanes) {
+    return CSSValueID::kGridLanes;
   }
-  if (v == EDisplay::kInlineMasonry) {
-    return CSSValueID::kInlineMasonry;
+  if (v == EDisplay::kInlineGridLanes) {
+    return CSSValueID::kInlineGridLanes;
   }
 
   NOTREACHED();

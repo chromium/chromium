@@ -12,7 +12,7 @@
       color:black; background-color:white; font:10px/1 monospace; padding:0; margin:0;
     }
 
-    .masonry {
+    .grid-lanes {
       position: relative;
       display: grid-lanes;
       grid-template-columns: 100px 150px;
@@ -24,29 +24,29 @@
       justify-items: start;
     }
 
-    .masonry > div {
+    .grid-lanes > div {
       position: absolute;
     }
 
-    .masonry > :nth-child(1) {
+    .grid-lanes > :nth-child(1) {
       grid-column: 1 / 2;
       align-self: start;
       background: green;
     }
 
-    .masonry > :nth-child(2) {
+    .grid-lanes > :nth-child(2) {
       grid-column: 2 / 3;
       align-self: start;
       background: blue;
     }
 
-    .masonry > :nth-child(3) {
+    .grid-lanes > :nth-child(3) {
       grid-column: 1 / 2;
       align-self: end;
       background: yellow;
     }
 
-    .masonry > :nth-child(4) {
+    .grid-lanes > :nth-child(4) {
       grid-column: 2 / 3;
       align-self: end;
       background: red;
@@ -54,14 +54,14 @@
   </style>
 </head>
 <body>
-<div class="masonry">
+<div class="grid-lanes">
   <div>X XX X</div>
   <div>XX X<br>X XXX X<br>XX XXX</div>
   <div>X XX X</div>
   <div>XX X<br>X XXX<br>X<br>XX XXX</div>
 </div>
 
-<div class="masonry" style="direction: rtl;">
+<div class="grid-lanes" style="direction: rtl;">
   <div>X XX X</div>
   <div>XX X<br>X XXX X<br>XX XXX</div>
   <div>X XX X</div>

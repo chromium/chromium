@@ -49,11 +49,11 @@ AxisEdge AxisEdgeFromItemPosition(GridTrackSizingDirection track_direction,
   *is_overflow_safe = alignment.Overflow() == OverflowAlignment::kSafe;
 
   const bool applies_alignment = ([&]() {
-    if (!parent_grid_style.IsDisplayMasonryBox()) {
+    if (!parent_grid_style.IsDisplayGridLanesBox()) {
       return true;
     }
 
-    // We currently only apply alignment in the grid axis of a masonry
+    // We currently only apply alignment in the grid axis of a grid-lanes
     // container.
     //
     // TODO(almaher): Update alignment logic if needed once we resolve on

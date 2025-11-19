@@ -4,7 +4,7 @@
 <link rel="author" title="Alison Maher" href="mailto:almaher@microsoft.com">
 <link rel="match" href="column-track-sizing-001-ref.html">
 <style>
-.masonry {
+.grid-lanes {
     display: grid-lanes;
     item-tolerance: 0;
     grid-template-columns: 5% repeat(3, 10px 15%) repeat(1, 15px 5px 20px);
@@ -14,7 +14,7 @@
 </style>
 <body>
   <p>Test that masonry tracks are correctly sized.</p>
-  <div class="masonry">
+  <div class="grid-lanes">
     <div style="width: 100%; height: 50px; background: orange;"></div>
     <div style="width: 100%; height: 30px; background: yellow;"></div>
     <div style="width: 100%; height: 25px; background: green;"></div>

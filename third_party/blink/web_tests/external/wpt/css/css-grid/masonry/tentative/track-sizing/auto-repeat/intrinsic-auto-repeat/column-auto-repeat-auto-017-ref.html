@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <style>
-.masonry {
+.grid-lanes {
     display: grid-lanes;
     grid-template-columns: repeat(9, auto);
     height: 200px;
@@ -9,13 +9,13 @@
     gap: 10px;
 }
 
-.masonry > div {
+.grid-lanes > div {
     width: 50px;
     height: 100px;
     background-color: orange;
 }
 </style>
-<div class="masonry">
+<div class="grid-lanes">
   <div style="grid-column: span 4; width: 200px;">1</div>
   <div style="grid-column: 4 / span 2; width: 100px;">2</div>
   <div style="grid-column: 8 / span 2; width: 100px;">3</div>

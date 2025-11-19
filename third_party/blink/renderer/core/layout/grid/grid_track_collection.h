@@ -468,7 +468,7 @@ class CORE_EXPORT GridSizingTrackCollection final
   // These methods are internal implementations also used in testing.
   void BuildSets(const GridTrackList& explicit_track_list,
                  const GridTrackList& implicit_track_list,
-                 bool is_masonry,
+                 bool is_grid_lanes,
                  bool is_available_size_indefinite = true);
   void InitializeSets(LayoutUnit grid_available_size = kIndefiniteSize);
 

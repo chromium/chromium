@@ -5,7 +5,7 @@
 <link rel="author" title="Alison Maher" href="mailto:almaher@microsoft.com">
 <link rel="match" href="column-auto-repeat-021-ref.html">
 <style>
-.masonry {
+.grid-lanes {
     display: grid-lanes;
     item-tolerance: 0;
     grid-template-columns: 50px repeat(5, 50px) repeat(auto-fit, 50px);
@@ -14,13 +14,13 @@
     gap: 10px;
 }
 
-.masonry > div {
+.grid-lanes > div {
     width: 100%;
     height: 100px;
     background-color: orange;
 }
 </style>
-<div class="masonry">
+<div class="grid-lanes">
   <div style="grid-column: span 4;">1</div>
   <div style="grid-column: 4 / span 2;">2</div>
   <div style="grid-column: 9 / span 2;">3</div>

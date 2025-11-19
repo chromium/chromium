@@ -12,7 +12,7 @@
       color:black; background-color:white; font:8px/1 monospace; padding:0; margin:0;
     }
 
-    .masonry {
+    .grid-lanes {
       position: relative;
       display: grid-lanes;
       masonry-direction: row;
@@ -25,7 +25,7 @@
       margin: 10px;
     }
 
-    .masonry > div {
+    .grid-lanes > div {
       position: absolute;
       border: 1px solid #333;
       width: 30px;
@@ -79,7 +79,7 @@
   </style>
 </head>
 <body>
-  <div class="masonry">
+  <div class="grid-lanes">
     <div class="flex-start-item">flex-start</div>
     <div class="flex-end-item">flex-end</div>
     <div class="mixed-legacy">mixed</div>
@@ -88,7 +88,7 @@
     <div class="legacy-center">legacy-center</div>
   </div>
 
-  <div class="masonry" style="direction: rtl;">
+  <div class="grid-lanes" style="direction: rtl;">
     <div class="flex-start-item">flex-start</div>
     <div class="flex-end-item">flex-end</div>
     <div class="mixed-legacy">mixed</div>

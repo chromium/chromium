@@ -11,7 +11,7 @@
       color:black; background-color:white; font:15px/1 monospace; padding:0; margin:0;
     }
 
-    .masonry {
+    .grid-lanes {
       display: grid-lanes;
       gap: 2px;
       grid-template-rows: repeat(3, 40px);
@@ -69,7 +69,7 @@
   </style>
 </head>
 <body>
-<div class="masonry">
+<div class="grid-lanes">
   <item class="start short">S1</item>
   <item class="start medium">S2</item>
   <item class="start tall">S3</item>
@@ -84,7 +84,7 @@
   <item class="stretch">ST3</item>
 </div>
 
-<div class="masonry" style="align-items: start;">
+<div class="grid-lanes" style="align-items: start;">
   <item class="auto short">A1</item>
   <item class="auto medium">A2</item>
   <item class="auto tall">A3</item>
@@ -99,7 +99,7 @@
   <item class="stretch">ST3</item>
 </div>
 
-<div class="masonry" style="align-items: center;">
+<div class="grid-lanes" style="align-items: center;">
   <item class="auto short">A1</item>
   <item class="auto medium">A2</item>
   <item class="auto tall">A3</item>
@@ -114,7 +114,7 @@
   <item class="stretch">ST3</item>
 </div>
 
-<div class="masonry" style="align-items: end;">
+<div class="grid-lanes" style="align-items: end;">
   <item class="auto short">A1</item>
   <item class="auto medium">A2</item>
   <item class="auto tall">A3</item>

@@ -254,7 +254,7 @@ static EDisplay EquivalentBlockDisplay(EDisplay display) {
     case EDisplay::kListItem:
     case EDisplay::kFlowRoot:
     case EDisplay::kLayoutCustom:
-    case EDisplay::kMasonry:
+    case EDisplay::kGridLanes:
       return display;
     case EDisplay::kInlineTable:
       return EDisplay::kTable;
@@ -274,8 +274,8 @@ static EDisplay EquivalentBlockDisplay(EDisplay display) {
       return EDisplay::kListItem;
     case EDisplay::kInlineFlowRootListItem:
       return EDisplay::kFlowRootListItem;
-    case EDisplay::kInlineMasonry:
-      return EDisplay::kMasonry;
+    case EDisplay::kInlineGridLanes:
+      return EDisplay::kGridLanes;
 
     case EDisplay::kContents:
     case EDisplay::kInline:
@@ -312,8 +312,8 @@ static EDisplay EquivalentInlineDisplay(EDisplay display) {
       return EDisplay::kInlineFlex;
     case EDisplay::kGrid:
       return EDisplay::kInlineGrid;
-    case EDisplay::kMasonry:
-      return EDisplay::kInlineMasonry;
+    case EDisplay::kGridLanes:
+      return EDisplay::kInlineGridLanes;
     case EDisplay::kBlockMath:
       return EDisplay::kMath;
     case EDisplay::kBlockRuby:
@@ -328,7 +328,7 @@ static EDisplay EquivalentInlineDisplay(EDisplay display) {
     case EDisplay::kInlineGrid:
     case EDisplay::kInlineLayoutCustom:
     case EDisplay::kInlineListItem:
-    case EDisplay::kInlineMasonry:
+    case EDisplay::kInlineGridLanes:
     case EDisplay::kInlineTable:
     case EDisplay::kMath:
     case EDisplay::kRuby:
@@ -388,7 +388,7 @@ static bool StopPropagateTextDecorations(const ComputedStyleBuilder& builder,
 static bool LayoutParentStyleForcesZIndexToCreateStackingContext(
     const ComputedStyle& layout_parent_style) {
   return layout_parent_style.IsDisplayFlexibleOrGridBox() ||
-         layout_parent_style.IsDisplayMasonryBox();
+         layout_parent_style.IsDisplayGridLanesBox();
 }
 
 void StyleAdjuster::AdjustStyleForEditing(ComputedStyleBuilder& builder,
@@ -747,7 +747,7 @@ void StyleAdjuster::AdjustStyleForDisplay(
       }
     }
     if (layout_parent_style.IsDisplayFlexibleOrGridBox() ||
-        layout_parent_style.IsDisplayMasonryBox() ||
+        layout_parent_style.IsDisplayGridLanesBox() ||
         layout_parent_style.IsDisplayMathType() ||
         force_canvas_child_layout_subtree_styles) {
       builder.SetIsInsideDisplayIgnoringFloatingChildren();

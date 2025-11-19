@@ -7,7 +7,7 @@
 <link rel="stylesheet" type="text/css" href="/fonts/ahem.css" />
 <link rel="match" href="column-intrinsic-maximums-ref.html">
 <style>
-.masonry {
+.grid-lanes {
     display: grid-lanes;
     border: 2px solid black;
     position: relative;
@@ -40,46 +40,46 @@
 .col2 { grid-column: 2 / 3; background: indigo; }
 .col3 { grid-column: 3 / 4; background: green; }
 
-.masonryMinContent { grid-template-columns: minmax(0px, min-content) 5px; }
-.masonryMaxContent { grid-template-columns: 5px minmax(0px, max-content); }
-.masonryMinMaxContent { grid-template-columns: minmax(0px, min-content) 5% minmax(0px, max-content); }
-.masonryAutoMinContent { grid-template-columns: minmax(0px, auto) 5px minmax(0px, min-content); }
-.masonryFitContentAuto { grid-template-columns: fit-content(100px) 5px minmax(0px, auto); }
+.gridMinContent { grid-template-columns: minmax(0px, min-content) 5px; }
+.gridMaxContent { grid-template-columns: 5px minmax(0px, max-content); }
+.gridMinMaxContent { grid-template-columns: minmax(0px, min-content) 5% minmax(0px, max-content); }
+.gridAutoMinContent { grid-template-columns: minmax(0px, auto) 5px minmax(0px, min-content); }
+.gridFitContentAuto { grid-template-columns: fit-content(100px) 5px minmax(0px, auto); }
 </style>
 
 <div class="float">
 
-<div class="masonry masonryMinContent">
+<div class="grid-lanes gridMinContent">
     <div class="item" style="min-width: 15px;">XXXX XXXX</div>
     <div class="abs col1"></div>
     <div class="abs col2"></div>
 </div>
 
-<div class="masonry masonryMinContent">
+<div class="grid-lanes gridMinContent">
     <div class="item" style="min-width: 55px;">XXXX XXXX</div>
     <div class="abs col1"></div>
     <div class="abs col2"></div>
 </div>
 
-<div class="masonry masonryMinContent">
+<div class="grid-lanes gridMinContent">
     <div class="item min-width-max-content">XXXX XXXX</div>
     <div class="abs col1"></div>
     <div class="abs col2"></div>
 </div>
 
-<div class="masonry masonryMaxContent">
+<div class="grid-lanes gridMaxContent">
     <div class="item" style="min-width: 15px;">XXXX XXXX</div>
     <div class="abs col1"></div>
     <div class="abs col2"></div>
 </div>
 
-<div class="masonry masonryMaxContent">
+<div class="grid-lanes gridMaxContent">
     <div class="item" style="min-width: 55px;">XXXX XXXX</div>
     <div class="abs col1"></div>
     <div class="abs col2"></div>
 </div>
 
-<div class="masonry masonryMaxContent">
+<div class="grid-lanes gridMaxContent">
     <div class="item min-width-max-content">XXXX XXXX</div>
     <div class="abs col1"></div>
     <div class="abs col2"></div>
@@ -89,42 +89,42 @@
 
 <div class="float">
 
-<div class="masonry masonryMinMaxContent">
+<div class="grid-lanes gridMinMaxContent">
     <div class="item" style="min-width: 15px;">XXXX XXXX</div>
     <div class="abs col1"></div>
     <div class="abs col2"></div>
     <div class="abs col3"></div>
 </div>
 
-<div class="masonry masonryMinMaxContent">
+<div class="grid-lanes gridMinMaxContent">
     <div class="item" style="min-width: 55px;">XXXX XXXX</div>
     <div class="abs col1"></div>
     <div class="abs col2"></div>
     <div class="abs col3"></div>
 </div>
 
-<div class="masonry masonryMinMaxContent">
+<div class="grid-lanes gridMinMaxContent">
     <div class="item min-width-max-content">XXXX XXXX</div>
     <div class="abs col1"></div>
     <div class="abs col2"></div>
     <div class="abs col3"></div>
 </div>
 
-<div class="masonry masonryAutoMinContent">
+<div class="grid-lanes gridAutoMinContent">
     <div class="item" style="min-width: 15px;">XXXX XXXX</div>
     <div class="abs col1"></div>
     <div class="abs col2"></div>
     <div class="abs col3"></div>
 </div>
 
-<div class="masonry masonryAutoMinContent">
+<div class="grid-lanes gridAutoMinContent">
     <div class="item" style="min-width: 55px;">XXXX XXXX</div>
     <div class="abs col1"></div>
     <div class="abs col2"></div>
     <div class="abs col3"></div>
 </div>
 
-<div class="masonry masonryAutoMinContent" style="justify-items: start">
+<div class="grid-lanes gridAutoMinContent" style="justify-items: start">
     <div class="item min-width-max-content">XXXX XXXX</div>
     <div class="abs col1"></div>
     <div class="abs col2"></div>
@@ -135,21 +135,21 @@
 
 <div class="float">
 
-<div class="masonry masonryFitContentAuto">
+<div class="grid-lanes gridFitContentAuto">
     <div class="item" style="min-width: 15px;">XXXX XXXX</div>
     <div class="abs col1"></div>
     <div class="abs col2"></div>
     <div class="abs col3"></div>
 </div>
 
-<div class="masonry masonryFitContentAuto">
+<div class="grid-lanes gridFitContentAuto">
     <div class="item" style="min-width: 55px;">XXXX XXXX</div>
     <div class="abs col1"></div>
     <div class="abs col2"></div>
     <div class="abs col3"></div>
 </div>
 
-<div class="masonry masonryFitContentAuto">
+<div class="grid-lanes gridFitContentAuto">
     <div class="item min-width-max-content">XXXX XXXX</div>
     <div class="abs col1"></div>
     <div class="abs col2"></div>

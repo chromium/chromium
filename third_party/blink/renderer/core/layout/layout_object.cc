@@ -408,9 +408,9 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
     case EDisplay::kInlineGrid:
       UseCounter::Count(element->GetDocument(), WebFeature::kCSSGridLayout);
       return MakeGarbageCollected<LayoutGrid>(element);
-    case EDisplay::kMasonry:
-    case EDisplay::kInlineMasonry:
-      // TODO(ethavar): Add use counter for CSS Masonry.
+    case EDisplay::kGridLanes:
+    case EDisplay::kInlineGridLanes:
+      // TODO(almaher): Add use counter for CSS Grid Lanes.
       return MakeGarbageCollected<LayoutMasonry>(element);
     case EDisplay::kMath:
     case EDisplay::kBlockMath:
@@ -1364,11 +1364,11 @@ static inline bool ObjectIsRelayoutBoundary(const LayoutObject* object) {
     return false;
   }
 
-  // Similarly to flex items, we can't relayout a grid/masonry item
+  // Similarly to flex items, we can't relayout a grid/grid-lanes item
   // independently of its container. This also applies to out of flow items of
   // the grid, as we need the cached information of the grid to recompute the
   // out of flow item's containing block rect.
-  if (box->ContainingBlock()->IsLayoutGridOrMasonry()) {
+  if (box->ContainingBlock()->IsLayoutGridOrGridLanes()) {
     return false;
   }
 
@@ -1698,10 +1698,10 @@ static inline bool ShouldInvalidateBeyond(LayoutObject* o) {
 
   // Invalidate past any subgrids. NOTE: we do this in both axes as we don't
   // know what writing-mode the root grid is in.
-  if (o->IsLayoutGridOrMasonry()) {
+  if (o->IsLayoutGridOrGridLanes()) {
     const auto& style = o->StyleRef();
-    // TODO(almaher): Masonry can only be subgridded in the grid axis, so we
-    // will only need to check in the grid/track sizing axis for masonry.
+    // TODO(almaher): Grid-lanes can only be subgridded in the grid axis, so we
+    // will only need to check in the grid/track sizing axis for grid-lanes.
     if (style.GridTemplateColumns().IsSubgriddedAxis() ||
         style.GridTemplateRows().IsSubgriddedAxis()) {
       return true;

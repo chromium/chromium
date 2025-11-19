@@ -891,8 +891,8 @@ OutOfFlowLayoutPart::GetContainingBlockInfo(
   bool is_hidden_for_paint =
       container_builder_->GetConstraintSpace().IsHiddenForPaint();
 
-  auto IsPlacedWithinGridOrMasonryArea = [&](const auto* containing_block) {
-    if (!containing_block->IsLayoutGridOrMasonry()) {
+  auto IsPlacedWithinGridOrGridLanesArea = [&](const auto* containing_block) {
+    if (!containing_block->IsLayoutGridOrGridLanes()) {
       return false;
     }
 
@@ -906,7 +906,7 @@ OutOfFlowLayoutPart::GetContainingBlockInfo(
       [&](const LayoutBox& containing_box, const GridLayoutData& layout_data,
           const BoxStrut& borders,
           const LogicalSize& size) -> OutOfFlowLayoutPart::ContainingBlockInfo {
-    DCHECK(containing_box.IsLayoutGrid() || containing_box.IsLayoutMasonry());
+    DCHECK(containing_box.IsLayoutGrid() || containing_box.IsLayoutGridLanes());
 
     const auto& style = containing_box.StyleRef();
     GridItemData* item =
@@ -949,7 +949,7 @@ OutOfFlowLayoutPart::GetContainingBlockInfo(
 
       bool is_placed_within_grid_area =
           containing_block->IsLayoutGrid() &&
-          IsPlacedWithinGridOrMasonryArea(containing_block);
+          IsPlacedWithinGridOrGridLanesArea(containing_block);
       auto it = containing_blocks_map_.find(containing_block);
       if (it != containing_blocks_map_.end() && !is_placed_within_grid_area)
         return it->value;
@@ -965,7 +965,7 @@ OutOfFlowLayoutPart::GetContainingBlockInfo(
                             ->Borders()
                             .ConvertToLogical(writing_direction);
 
-      // TODO(yanlingwang): Add support for masonry fragmentation.
+      // TODO(yanlingwang): Add support for grid-lanes fragmentation.
       if (is_placed_within_grid_area) {
         return GridAreaContainingBlockInfo(
             *To<LayoutGrid>(containing_block),
@@ -992,7 +992,7 @@ OutOfFlowLayoutPart::GetContainingBlockInfo(
     }
   }
 
-  if (IsPlacedWithinGridOrMasonryArea(container_object)) {
+  if (IsPlacedWithinGridOrGridLanesArea(container_object)) {
     return GridAreaContainingBlockInfo(
         *To<LayoutBox>(container_object),
         container_builder_->GetGridLayoutData(), container_builder_->Borders(),

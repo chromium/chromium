@@ -9,7 +9,7 @@
   width: 200px;
   margin-top: 10px;
 }
-.masonry {
+.grid-lanes {
   display: inline-grid-lanes;
   background: blue;
 }
@@ -45,7 +45,7 @@ for (const use_min_width of [false, true]) {
       container.className = "container";
       document.body.appendChild(container);
       const masonry = document.createElement("div");
-      masonry.className = "masonry";
+      masonry.className = "grid-lanes";
       masonry.style.gridTemplateColumns = value;
       container.appendChild(masonry);
       const item = document.createElement("div");
