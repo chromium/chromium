@@ -3775,7 +3775,7 @@ deps = {
 
   'src/remoting/internal': {
       'url': Var('chrome_git') + '/chrome/remoting/internal.git' + '@' +
-        '28b5b9cecb76d936f1f6d4182fa4671f845a74a9',
+        '541223d623707720bd1fa0f55d1554371faa963e',
       'condition': 'checkout_src_internal',
   },
 

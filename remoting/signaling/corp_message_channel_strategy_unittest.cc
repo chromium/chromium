@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -36,13 +37,14 @@ namespace {
 
 using ::testing::_;
 using ::testing::Expectation;
-using ::testing::Field;
 using ::testing::Return;
 
 using remoting::internal::ChannelActiveStruct;
 using remoting::internal::ChannelOpenStruct;
-using remoting::internal::ReceiveClientMessagesResponseStruct;
-using remoting::internal::SimpleMessageStruct;
+using remoting::internal::HostOpenChannelResponseStruct;
+using remoting::internal::PeerMessageStruct;
+using remoting::internal::SimpleStruct;
+using remoting::internal::SystemTestStruct;
 
 using MessageReceivedCallback =
     CorpMessageChannelStrategy::MessageReceivedCallback;
@@ -55,30 +57,43 @@ constexpr base::TimeDelta kTestBackoffMaxDelay =
     FtlServicesContext::kBackoffMaxDelay;
 constexpr base::TimeDelta kInactivityTimeout = base::Seconds(15);
 
-std::unique_ptr<ReceiveClientMessagesResponseStruct>
-CreateChannelActiveMessage() {
-  auto response = std::make_unique<ReceiveClientMessagesResponseStruct>();
+MATCHER_P(PeerMessagePayloadIs, value, "") {
+  const auto* system_test = std::get_if<SystemTestStruct>(&arg.payload);
+  if (!system_test) {
+    return false;
+  }
+  const auto* simple = std::get_if<SimpleStruct>(&system_test->test_message);
+  if (!simple) {
+    return false;
+  }
+  return simple->payload == value;
+}
+
+std::unique_ptr<HostOpenChannelResponseStruct> CreateChannelActiveMessage() {
+  auto response = std::make_unique<HostOpenChannelResponseStruct>();
   response->message.emplace<ChannelActiveStruct>();
   return response;
 }
 
-std::unique_ptr<ReceiveClientMessagesResponseStruct>
-CreateChannelOpenMessage() {
-  auto response = std::make_unique<ReceiveClientMessagesResponseStruct>();
+std::unique_ptr<HostOpenChannelResponseStruct> CreateChannelOpenMessage() {
+  auto response = std::make_unique<HostOpenChannelResponseStruct>();
   response->message.emplace<ChannelOpenStruct>(
       ChannelOpenStruct{.channel_lifetime = base::Minutes(15),
                         .inactivity_timeout = kInactivityTimeout});
   return response;
 }
 
-std::unique_ptr<ReceiveClientMessagesResponseStruct> CreateSimpleMessage(
+std::unique_ptr<HostOpenChannelResponseStruct> CreatePeerMessage(
     std::string message_payload) {
-  SimpleMessageStruct simple_message;
-  simple_message.message_id = "42";
-  simple_message.payload = std::move(message_payload);
-  simple_message.create_time = base::Time::Now();
-  auto response = std::make_unique<ReceiveClientMessagesResponseStruct>();
-  response->message.emplace<SimpleMessageStruct>(std::move(simple_message));
+  PeerMessageStruct peer_message;
+  peer_message.message_id = "42";
+  SystemTestStruct system_test_struct;
+  SimpleStruct simple_struct;
+  simple_struct.payload = std::move(message_payload);
+  system_test_struct.test_message = std::move(simple_struct);
+  peer_message.payload = std::move(system_test_struct);
+  auto response = std::make_unique<HostOpenChannelResponseStruct>();
+  response->message.emplace<PeerMessageStruct>(std::move(peer_message));
   return response;
 }
 
@@ -175,7 +190,7 @@ class CorpMessageChannelStrategyTest : public testing::Test {
   std::unique_ptr<MessageChannel> channel_;
   base::MockCallback<CorpMessageChannelStrategy::StreamOpener>
       mock_stream_opener_;
-  base::MockCallback<base::RepeatingCallback<void(const SimpleMessageStruct&)>>
+  base::MockCallback<base::RepeatingCallback<void(const PeerMessageStruct&)>>
       mock_on_incoming_msg_;
   MockSignalingTracker mock_signaling_tracker_;
   raw_ptr<CorpMessageChannelStrategy> raw_strategy_;
@@ -352,11 +367,11 @@ TEST_F(CorpMessageChannelStrategyTest, StreamsTwoMessages) {
   EXPECT_CALL(mock_signaling_tracker_, OnSignalingActive()).WillOnce(Return());
 
   EXPECT_CALL(mock_on_incoming_msg_,
-              Run(Field(&SimpleMessageStruct::payload, kMessage1Payload)))
+              Run(PeerMessagePayloadIs(kMessage1Payload)))
       .WillOnce(Return());
   EXPECT_CALL(mock_on_incoming_msg_,
-              Run(Field(&SimpleMessageStruct::payload, kMessage2Payload)))
-      .WillOnce([&](const SimpleMessageStruct&) { run_loop.Quit(); });
+              Run(PeerMessagePayloadIs(kMessage2Payload)))
+      .WillOnce([&](const PeerMessageStruct&) { run_loop.Quit(); });
 
   EXPECT_CALL(mock_stream_opener_, Run(_, _, _))
       .WillOnce(StartStream([&](base::OnceClosure on_channel_ready,
@@ -365,8 +380,8 @@ TEST_F(CorpMessageChannelStrategyTest, StreamsTwoMessages) {
         on_incoming_msg.Run(CreateChannelOpenMessage());
         std::move(on_channel_ready).Run();
 
-        on_incoming_msg.Run(CreateSimpleMessage(kMessage1Payload));
-        on_incoming_msg.Run(CreateSimpleMessage(kMessage2Payload));
+        on_incoming_msg.Run(CreatePeerMessage(kMessage1Payload));
+        on_incoming_msg.Run(CreatePeerMessage(kMessage2Payload));
 
         const HttpStatus kCancel(HttpStatus::Code::CANCELLED, "Cancelled");
         std::move(on_channel_closed).Run(kCancel);

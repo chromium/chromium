@@ -116,23 +116,26 @@ base::CallbackListSubscription CorpMessagingClient::RegisterMessageCallback(
   return callback_list_.Add(callback);
 }
 
-void CorpMessagingClient::SendMessage(
-    const internal::EndpointIdStruct& destination_id,
-    const std::string& payload,
-    StatusCallback on_done) {
-  internal::SendHostMessageRequestStruct request;
-  request.destination_id = destination_id;
-  request.simple_message.message_id =
+void CorpMessagingClient::SendMessage(const std::string& payload,
+                                      StatusCallback on_done) {
+  internal::HostSendMessageRequestStruct request;
+  // TODO: crbug.com/289122393 - Get this from the `ShareSessionTokenStruct`.
+  request.messaging_authz_token = "placeholder";
+  request.peer_message.message_id =
       base::Uuid::GenerateRandomV4().AsLowercaseString();
-  request.simple_message.payload = payload;
-  request.simple_message.create_time = base::Time::Now();
+
+  internal::SystemTestStruct system_test_struct;
+  internal::SimpleStruct simple_struct;
+  simple_struct.payload = payload;
+  system_test_struct.test_message = std::move(simple_struct);
+  request.peer_message.payload = std::move(system_test_struct);
 
   // SendHostMessage is non-idempotent (potentially duplicate messages will be
   // sent), so retries may not be safe.
   ExecuteRequest(
       kSendMessageTrafficAnnotation,
-      std::string(internal::GetSendHostMessagePath()),
-      /*enable_retries=*/false, internal::GetSendHostMessageRequest(request),
+      std::string(internal::GetHostSendMessagePath()),
+      /*enable_retries=*/false, internal::GetHostSendMessageRequest(request),
       &CorpMessagingClient::OnSendMessageResponse, std::move(on_done));
 }
 
@@ -177,7 +180,7 @@ void CorpMessagingClient::ExecuteRequest(
 void CorpMessagingClient::OnSendMessageResponse(
     StatusCallback on_done,
     const HttpStatus& status,
-    std::unique_ptr<internal::SendHostMessageResponse> response) {
+    std::unique_ptr<internal::HostSendMessageResponse> response) {
   std::move(on_done).Run(status);
 }
 
@@ -188,8 +191,8 @@ CorpMessagingClient::OpenReceiveMessagesStream(
     base::OnceCallback<void(const HttpStatus&)> on_channel_closed) {
   auto config = std::make_unique<ProtobufHttpRequestConfig>(
       kReceiveMessagesTrafficAnnotation);
-  config->request_message = internal::GetReceiveClientMessagesRequest({});
-  config->path = internal::GetReceiveClientMessagesPath();
+  config->request_message = internal::GetHostOpenChannelRequest({});
+  config->path = internal::GetHostOpenChannelPath();
   config->authenticated = false;
   config->api_key = internal::GetRemotingCorpApiKey();
   config->provide_certificate = true;
@@ -199,9 +202,9 @@ CorpMessagingClient::OpenReceiveMessagesStream(
   stream_request->SetStreamReadyCallback(std::move(on_channel_ready));
   stream_request->SetMessageCallback(base::BindRepeating(
       [](CorpMessageChannelStrategy::MessageReceivedCallback callback,
-         std::unique_ptr<internal::ReceiveClientMessagesResponse> response) {
+         std::unique_ptr<internal::HostOpenChannelResponse> response) {
         std::move(callback).Run(
-            internal::GetReceiveClientMessagesResponseStruct(*response));
+            internal::GetHostOpenChannelResponseStruct(*response));
       },
       on_message));
   stream_request->SetStreamClosedCallback(std::move(on_channel_closed));
@@ -212,7 +215,7 @@ CorpMessagingClient::OpenReceiveMessagesStream(
 }
 
 void CorpMessagingClient::OnMessageReceived(
-    const internal::SimpleMessageStruct& message) {
+    const internal::PeerMessageStruct& message) {
   callback_list_.Notify(message);
 }
 

@@ -40,10 +40,10 @@ class ScopedProtobufHttpRequest;
 // A class for sending and receiving messages via the Corp messaging API.
 class CorpMessagingClient final {
  public:
-  using MessageCallback = base::RepeatingCallback<void(
-      const internal::SimpleMessageStruct& message)>;
+  using MessageCallback =
+      base::RepeatingCallback<void(const internal::PeerMessageStruct& message)>;
   using MessageCallbackList = base::RepeatingCallbackList<void(
-      const internal::SimpleMessageStruct& message)>;
+      const internal::PeerMessageStruct& message)>;
   using StatusCallback = base::OnceCallback<void(const HttpStatus& status)>;
 
   CorpMessagingClient(
@@ -58,9 +58,7 @@ class CorpMessagingClient final {
   base::CallbackListSubscription RegisterMessageCallback(
       const MessageCallback& callback);
 
-  void SendMessage(const internal::EndpointIdStruct& destination_id,
-                   const std::string& payload,
-                   StatusCallback on_done);
+  void SendMessage(const std::string& payload, StatusCallback on_done);
 
   void StartReceivingMessages(base::OnceClosure on_ready,
                               StatusCallback on_closed);
@@ -81,14 +79,14 @@ class CorpMessagingClient final {
   void OnSendMessageResponse(
       StatusCallback on_done,
       const HttpStatus& status,
-      std::unique_ptr<internal::SendHostMessageResponse> response);
+      std::unique_ptr<internal::HostSendMessageResponse> response);
 
   std::unique_ptr<ScopedProtobufHttpRequest> OpenReceiveMessagesStream(
       base::OnceClosure on_channel_ready,
       const CorpMessageChannelStrategy::MessageReceivedCallback& on_message,
       StatusCallback on_channel_closed);
 
-  void OnMessageReceived(const internal::SimpleMessageStruct& message);
+  void OnMessageReceived(const internal::PeerMessageStruct& message);
 
   std::unique_ptr<ProtobufHttpClient> client_;
   std::unique_ptr<MessageChannel> message_channel_;

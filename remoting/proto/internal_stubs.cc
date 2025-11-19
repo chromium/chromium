@@ -198,40 +198,55 @@ std::string_view GetSupportId(const RemoteSupportHost&) {
 // MessagingService helpers
 // ============================
 
-std::string_view GetSendHostMessagePath() {
+std::string_view GetHostSendMessagePath() {
   return "/fake/for_testing/send_host_message";
 }
-std::string_view GetReceiveClientMessagesPath() {
+std::string_view GetHostOpenChannelPath() {
   return "/fake/for_testing/receive_client_messages";
 }
 
-std::unique_ptr<ReceiveClientMessagesRequest> GetReceiveClientMessagesRequest(
-    const ReceiveClientMessagesRequestStruct&) {
-  return std::make_unique<ReceiveClientMessagesRequest>();
+std::unique_ptr<HostOpenChannelRequest> GetHostOpenChannelRequest(
+    const HostOpenChannelRequestStruct&) {
+  return std::make_unique<HostOpenChannelRequest>();
 }
 
-std::unique_ptr<ReceiveClientMessagesResponseStruct>
-GetReceiveClientMessagesResponseStruct(const ReceiveClientMessagesResponse&) {
-  return std::make_unique<ReceiveClientMessagesResponseStruct>();
+std::unique_ptr<HostOpenChannelResponseStruct> GetHostOpenChannelResponseStruct(
+    const HostOpenChannelResponse&) {
+  return std::make_unique<HostOpenChannelResponseStruct>();
 }
 
-std::unique_ptr<SendHostMessageRequest> GetSendHostMessageRequest(
-    const SendHostMessageRequestStruct&) {
-  return std::make_unique<SendHostMessageRequest>();
+std::unique_ptr<HostSendMessageRequest> GetHostSendMessageRequest(
+    const HostSendMessageRequestStruct&) {
+  return std::make_unique<HostSendMessageRequest>();
 }
 
-std::unique_ptr<SendHostMessageResponseStruct> GetSendHostMessageResponseStruct(
-    const SendHostMessageResponse&) {
-  return std::make_unique<SendHostMessageResponseStruct>();
+std::unique_ptr<HostSendMessageResponseStruct> GetHostSendMessageResponseStruct(
+    const HostSendMessageResponse&) {
+  return std::make_unique<HostSendMessageResponseStruct>();
 }
 
-std::unique_ptr<SimpleMessage> GetSimpleMessage(const SimpleMessageStruct&) {
-  return std::make_unique<SimpleMessage>();
+std::unique_ptr<PeerMessage> GetPeerMessage(const PeerMessageStruct&) {
+  return std::make_unique<PeerMessage>();
 }
 
-std::unique_ptr<SimpleMessageStruct> GetSimpleMessageStruct(
-    const SimpleMessage&) {
-  return std::make_unique<SimpleMessageStruct>();
+std::unique_ptr<PeerMessageStruct> GetPeerMessageStruct(const PeerMessage&) {
+  return std::make_unique<PeerMessageStruct>();
+}
+
+std::unique_ptr<IqStanza> GetIqStanza(const IqStanzaStruct&) {
+  return std::make_unique<IqStanza>();
+}
+
+std::unique_ptr<IqStanzaStruct> GetIqStanzaStruct(const IqStanza&) {
+  return std::make_unique<IqStanzaStruct>();
+}
+
+std::unique_ptr<SystemTest> GetSystemTest(const SystemTestStruct&) {
+  return std::make_unique<SystemTest>();
+}
+
+std::unique_ptr<SystemTestStruct> GetSystemTestStruct(const SystemTest&) {
+  return std::make_unique<SystemTestStruct>();
 }
 
 }  // namespace remoting::internal

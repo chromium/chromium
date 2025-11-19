@@ -6,13 +6,24 @@
 
 namespace remoting::internal {
 
-ReceiveClientMessagesResponseStruct::ReceiveClientMessagesResponseStruct() {}
-ReceiveClientMessagesResponseStruct::~ReceiveClientMessagesResponseStruct() {}
+HostOpenChannelResponseStruct::HostOpenChannelResponseStruct() = default;
+HostOpenChannelResponseStruct::~HostOpenChannelResponseStruct() = default;
 
-SimpleMessageStruct::SimpleMessageStruct() = default;
-SimpleMessageStruct::SimpleMessageStruct(const SimpleMessageStruct&) = default;
-SimpleMessageStruct& SimpleMessageStruct::operator=(
-    const SimpleMessageStruct&) = default;
-SimpleMessageStruct::~SimpleMessageStruct() = default;
+IqStanzaStruct::IqStanzaStruct() = default;
+IqStanzaStruct::IqStanzaStruct(const IqStanzaStruct&) = default;
+IqStanzaStruct& IqStanzaStruct::operator=(const IqStanzaStruct&) = default;
+IqStanzaStruct::~IqStanzaStruct() = default;
+
+PeerMessageStruct::PeerMessageStruct() = default;
+PeerMessageStruct::PeerMessageStruct(const PeerMessageStruct&) = default;
+PeerMessageStruct& PeerMessageStruct::operator=(const PeerMessageStruct&) =
+    default;
+PeerMessageStruct::~PeerMessageStruct() = default;
+
+SystemTestStruct::SystemTestStruct() = default;
+SystemTestStruct::SystemTestStruct(const SystemTestStruct&) = default;
+SystemTestStruct& SystemTestStruct::operator=(const SystemTestStruct&) =
+    default;
+SystemTestStruct::~SystemTestStruct() = default;
 
 }  // namespace remoting::internal

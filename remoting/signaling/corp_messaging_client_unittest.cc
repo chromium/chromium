@@ -30,12 +30,9 @@ namespace {
 using ::testing::_;
 using ::testing::Return;
 
-using internal::SendHostMessageRequest;
-using internal::SendHostMessageResponse;
-using internal::SimpleMessageStruct;
+using internal::HostSendMessageRequest;
+using internal::HostSendMessageResponse;
 
-// constexpr char kFakeServerEndpoint[] = "test.com";
-constexpr char kFakeDestinationId[] = "fake_destination_id";
 constexpr char kFakePayload[] = "fake_payload";
 
 using StatusCallback = CorpMessagingClient::StatusCallback;
@@ -63,10 +60,8 @@ class CorpMessagingClientTest : public testing::Test {
 
 TEST_F(CorpMessagingClientTest, TestSendMessage_Unauthenticated) {
   base::RunLoop run_loop;
-  internal::EndpointIdStruct destination_id;
-  destination_id.username = kFakeDestinationId;
   messaging_client_.SendMessage(
-      destination_id, kFakePayload,
+      kFakePayload,
       CheckStatusThenQuitRunLoopCallback(
           FROM_HERE, HttpStatus::Code::UNAUTHENTICATED, &run_loop));
   test_responder_.AddErrorToMostRecentRequestUrl(
@@ -76,17 +71,14 @@ TEST_F(CorpMessagingClientTest, TestSendMessage_Unauthenticated) {
 
 TEST_F(CorpMessagingClientTest, TestSendMessage_SendOneMessage) {
   base::RunLoop run_loop;
-  internal::EndpointIdStruct destination_id;
-  destination_id.username = kFakeDestinationId;
   messaging_client_.SendMessage(
-      destination_id, kFakePayload,
-      CheckStatusThenQuitRunLoopCallback(FROM_HERE, HttpStatus::Code::OK,
-                                         &run_loop));
+      kFakePayload, CheckStatusThenQuitRunLoopCallback(
+                        FROM_HERE, HttpStatus::Code::OK, &run_loop));
 
-  SendHostMessageRequest request;
+  HostSendMessageRequest request;
   ASSERT_TRUE(test_responder_.GetMostRecentRequestMessage(&request));
 
-  test_responder_.AddResponseToMostRecentRequestUrl(SendHostMessageResponse());
+  test_responder_.AddResponseToMostRecentRequestUrl(HostSendMessageResponse());
   run_loop.Run();
 }
 

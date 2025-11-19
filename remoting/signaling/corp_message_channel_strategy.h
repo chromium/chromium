@@ -6,6 +6,7 @@
 #define REMOTING_SIGNALING_CORP_MESSAGE_CHANNEL_STRATEGY_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -17,21 +18,21 @@ namespace remoting {
 class ScopedProtobufHttpRequest;
 
 namespace internal {
-struct ReceiveClientMessagesResponseStruct;
-struct SimpleMessageStruct;
+struct HostOpenChannelResponseStruct;
+struct PeerMessageStruct;
 }  // namespace internal
 
 class CorpMessageChannelStrategy : public MessageChannelStrategy {
  public:
   using MessageReceivedCallback = base::RepeatingCallback<void(
-      std::unique_ptr<internal::ReceiveClientMessagesResponseStruct>)>;
+      std::unique_ptr<internal::HostOpenChannelResponseStruct>)>;
   using StreamOpener =
       base::RepeatingCallback<std::unique_ptr<ScopedProtobufHttpRequest>(
           base::OnceClosure on_channel_ready,
           const MessageReceivedCallback& on_incoming_msg,
           ChannelClosedCallback on_channel_closed)>;
-  using MessageCallback = base::RepeatingCallback<void(
-      const internal::SimpleMessageStruct& message)>;
+  using MessageCallback =
+      base::RepeatingCallback<void(const internal::PeerMessageStruct& message)>;
 
   CorpMessageChannelStrategy();
 
@@ -53,7 +54,7 @@ class CorpMessageChannelStrategy : public MessageChannelStrategy {
 
  private:
   void OnReceiveMessagesResponse(
-      std::unique_ptr<internal::ReceiveClientMessagesResponseStruct> response);
+      std::unique_ptr<internal::HostOpenChannelResponseStruct> response);
 
   StreamOpener stream_opener_;
   MessageCallback on_incoming_msg_;

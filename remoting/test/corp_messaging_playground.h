@@ -38,7 +38,7 @@ class CorpMessagingPlayground {
 
   void OnStreamOpened();
   void OnStreamClosed(const HttpStatus& status);
-  void OnSimpleMessageReceived(const internal::SimpleMessageStruct& message);
+  void OnPeerMessageReceived(const internal::PeerMessageStruct& message);
   void OnCharacterInput(char c);
   void SendMessage(int count = 1);
   void StartPingPongMatch();
@@ -49,7 +49,6 @@ class CorpMessagingPlayground {
   std::unique_ptr<CorpMessagingClient> client_;
   std::unique_ptr<base::RunLoop> run_loop_;
   std::unique_ptr<Core> core_;
-  internal::EndpointIdStruct last_sender_id_;
   base::Time last_ping_sent_time_;
   base::TimeDelta ping_total_rtt_;
   base::WeakPtrFactory<CorpMessagingPlayground> weak_factory_{this};

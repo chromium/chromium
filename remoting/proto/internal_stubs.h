@@ -139,30 +139,37 @@ extern std::string_view GetSupportId(const RemoteSupportHost&);
 // MessagingService helpers
 // ===========================
 
-extern std::string_view GetSendHostMessagePath();
-extern std::string_view GetReceiveClientMessagesPath();
+extern std::string_view GetHostOpenChannelPath();
+extern std::string_view GetHostSendMessagePath();
 
-using ReceiveClientMessagesRequest = DoNothingProto;
-extern std::unique_ptr<ReceiveClientMessagesRequest>
-GetReceiveClientMessagesRequest(const ReceiveClientMessagesRequestStruct&);
+using HostOpenChannelRequest = DoNothingProto;
+extern std::unique_ptr<HostOpenChannelRequest> GetHostOpenChannelRequest(
+    const HostOpenChannelRequestStruct&);
 
-using ReceiveClientMessagesResponse = DoNothingProto;
-extern std::unique_ptr<ReceiveClientMessagesResponseStruct>
-GetReceiveClientMessagesResponseStruct(const ReceiveClientMessagesResponse&);
+using HostOpenChannelResponse = DoNothingProto;
+extern std::unique_ptr<HostOpenChannelResponseStruct>
+GetHostOpenChannelResponseStruct(const HostOpenChannelResponse&);
 
-using SendHostMessageRequest = DoNothingProto;
-extern std::unique_ptr<SendHostMessageRequest> GetSendHostMessageRequest(
-    const SendHostMessageRequestStruct&);
+using HostSendMessageRequest = DoNothingProto;
+extern std::unique_ptr<HostSendMessageRequest> GetHostSendMessageRequest(
+    const HostSendMessageRequestStruct&);
 
-using SendHostMessageResponse = DoNothingProto;
-extern std::unique_ptr<SendHostMessageResponseStruct>
-GetSendHostMessageResponseStruct(const SendHostMessageResponse&);
+using HostSendMessageResponse = DoNothingProto;
+extern std::unique_ptr<HostSendMessageResponseStruct>
+GetHostSendMessageResponseStruct(const HostSendMessageResponse&);
 
-using SimpleMessage = DoNothingProto;
-extern std::unique_ptr<SimpleMessage> GetSimpleMessage(
-    const SimpleMessageStruct&);
-extern std::unique_ptr<SimpleMessageStruct> GetSimpleMessageStruct(
-    const SimpleMessage&);
+using PeerMessage = DoNothingProto;
+extern std::unique_ptr<PeerMessage> GetPeerMessage(const PeerMessageStruct&);
+extern std::unique_ptr<PeerMessageStruct> GetPeerMessageStruct(
+    const PeerMessage&);
+
+using IqStanza = DoNothingProto;
+extern std::unique_ptr<IqStanza> GetIqStanza(const IqStanzaStruct&);
+extern std::unique_ptr<IqStanzaStruct> GetIqStanzaStruct(const IqStanza&);
+
+using SystemTest = DoNothingProto;
+extern std::unique_ptr<SystemTest> GetSystemTest(const SystemTestStruct&);
+extern std::unique_ptr<SystemTestStruct> GetSystemTestStruct(const SystemTest&);
 
 }  // namespace remoting::internal
 

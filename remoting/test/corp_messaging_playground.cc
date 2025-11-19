@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <memory>
+#include <variant>
 
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -107,7 +108,7 @@ void CorpMessagingPlayground::Start() {
   // `callback_subscription` is automatically unregistered after `run_loop_`
   // completes and this function goes out of scope.
   auto callback_subscription = client_->RegisterMessageCallback(
-      base::BindRepeating(&CorpMessagingPlayground::OnSimpleMessageReceived,
+      base::BindRepeating(&CorpMessagingPlayground::OnPeerMessageReceived,
                           base::Unretained(this)));
   client_->StartReceivingMessages(
       base::BindOnce(&CorpMessagingPlayground::OnStreamOpened,
@@ -133,38 +134,44 @@ void CorpMessagingPlayground::OnStreamClosed(const HttpStatus& status) {
   run_loop_->Quit();
 }
 
-void CorpMessagingPlayground::OnSimpleMessageReceived(
-    const internal::SimpleMessageStruct& message) {
-  // `create_time` is not used because it is set on the client and may be out of
-  // sync with the time values set by the server.
-  auto routing_latency = message.deliver_time - message.receive_time;
-  LOG(INFO) << "SimpleMessage received: sender=" << message.sender_id.username
-            << ", routing_latency=" << routing_latency.InMilliseconds()
-            << "ms, payload=" << message.payload;
-  last_sender_id_ = message.sender_id;
+void CorpMessagingPlayground::OnPeerMessageReceived(
+    const internal::PeerMessageStruct& message) {
+  const auto* system_test =
+      std::get_if<internal::SystemTestStruct>(&message.payload);
+  if (!system_test) {
+    LOG(WARNING) << "Received message with unsupported payload type.";
+    return;
+  }
 
-  if (IsPongMessage(message.payload)) {
+  const auto* simple =
+      std::get_if<internal::SimpleStruct>(&system_test->test_message);
+  if (!simple) {
+    LOG(WARNING) << "Received message with unsupported test message type.";
+    return;
+  }
+
+  LOG(INFO) << "PeerMessage received: payload=" << simple->payload;
+
+  if (IsPongMessage(simple->payload)) {
     auto rtt = base::Time::Now() - last_ping_sent_time_;
     ping_total_rtt_ += rtt;
     LOG(INFO) << "Current RTT: " << rtt.InMilliseconds()
               << "ms, Total RTT: " << ping_total_rtt_.InMilliseconds() << "ms";
     // Now respond with a ping unless we've reached our max count.
     std::optional<std::string> ping_payload =
-        OnPingPongMessageReceived(message.payload);
+        OnPingPongMessageReceived(simple->payload);
     if (ping_payload.has_value()) {
       last_ping_sent_time_ = base::Time::Now();
-      client_->SendMessage(last_sender_id_, *ping_payload, base::DoNothing());
     } else {
       LOG(INFO) << "Ping-pong exchange finished. Total RTT: "
                 << ping_total_rtt_.InMilliseconds() << "ms";
     }
-  } else if (IsPingMessage(message.payload)) {
+  } else if (IsPingMessage(simple->payload)) {
     std::optional<std::string> pong_payload =
-        OnPingPongMessageReceived(message.payload);
+        OnPingPongMessageReceived(simple->payload);
     if (pong_payload.has_value()) {
-      client_->SendMessage(last_sender_id_, *pong_payload, base::DoNothing());
     } else {
-      LOG(ERROR) << "Failed to generate response for Ping: " << message.payload;
+      LOG(ERROR) << "Failed to generate response for Ping: " << simple->payload;
     }
   }
 }
@@ -193,34 +200,16 @@ void CorpMessagingPlayground::OnCharacterInput(char c) {
 }
 
 void CorpMessagingPlayground::SendMessage(int count) {
-  if (last_sender_id_.username.empty()) {
-    LOG(WARNING) << "No message received yet, destination ID is unknown.";
-    return;
-  }
-  for (int i = 0; i < count; i++) {
-    client_->SendMessage(last_sender_id_, "Hello from the playground!",
-                         base::DoNothing());
-  }
 }
 
 void CorpMessagingPlayground::StartPingPongMatch() {
-  if (last_sender_id_.username.empty()) {
-    LOG(WARNING) << "No message received yet, destination ID is unknown.";
-    return;
-  }
   LOG(INFO) << "Starting a new Ping-Pong match.";
   ping_total_rtt_ = {};
   last_ping_sent_time_ = base::Time::Now();
-  client_->SendMessage(last_sender_id_, CreatePingMessage(1),
-                       base::DoNothing());
+  client_->SendMessage(CreatePingMessage(1), base::DoNothing());
 }
 
 void CorpMessagingPlayground::SendLargeMessage() {
-  if (last_sender_id_.username.empty()) {
-    LOG(WARNING) << "No message received yet, destination ID is unknown.";
-    return;
-  }
-
   std::string payload(kSquirrelMsgStart);
   payload.reserve((sizeof(kSquirrelMsgStart) - 1) +
                   (sizeof(kSquirrelMsgEnd) - 1) +
@@ -229,8 +218,6 @@ void CorpMessagingPlayground::SendLargeMessage() {
     payload += kSquirrel;
   }
   payload += kSquirrelMsgEnd;
-
-  client_->SendMessage(last_sender_id_, payload, base::DoNothing());
 }
 
 }  // namespace remoting

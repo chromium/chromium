@@ -19,8 +19,8 @@
 
 using remoting::internal::ChannelActiveStruct;
 using remoting::internal::ChannelOpenStruct;
-using remoting::internal::ReceiveClientMessagesResponseStruct;
-using remoting::internal::SimpleMessageStruct;
+using remoting::internal::HostOpenChannelResponseStruct;
+using remoting::internal::PeerMessageStruct;
 
 namespace remoting {
 
@@ -44,7 +44,7 @@ void CorpMessageChannelStrategy::Initialize(
 }
 
 void CorpMessageChannelStrategy::OnReceiveMessagesResponse(
-    std::unique_ptr<ReceiveClientMessagesResponseStruct> response) {
+    std::unique_ptr<HostOpenChannelResponseStruct> response) {
   std::visit(absl::Overload(
                  [this](const ChannelOpenStruct& channel_open_message) {
                    VLOG(0) << "Received channel open";
@@ -55,9 +55,9 @@ void CorpMessageChannelStrategy::OnReceiveMessagesResponse(
                    VLOG(0) << "Received channel active";
                    on_channel_active_.Run();
                  },
-                 [this](const SimpleMessageStruct& simple_message) {
-                   VLOG(0) << "Received simple message";
-                   on_incoming_msg_.Run(simple_message);
+                 [this](const PeerMessageStruct& peer_message) {
+                   VLOG(0) << "Received peer message";
+                   on_incoming_msg_.Run(peer_message);
                  }),
              response->message);
 }
