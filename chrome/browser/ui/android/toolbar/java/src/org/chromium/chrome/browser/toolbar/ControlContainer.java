@@ -9,6 +9,7 @@ import android.view.View;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator.TabStripTransitionDelegate;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
@@ -20,7 +21,7 @@ import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
  * <p>Concrete implementations of this class must extend ViewGroup.
  */
 @NullMarked
-public interface ControlContainer {
+public interface ControlContainer extends TabStripTransitionDelegate {
     /**
      * Initialize the control container with the specified toolbar.
      *

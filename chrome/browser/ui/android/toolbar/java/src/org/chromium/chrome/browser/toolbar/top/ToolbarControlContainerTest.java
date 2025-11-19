@@ -15,6 +15,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
@@ -24,11 +25,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 
+import androidx.annotation.LayoutRes;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -113,6 +119,8 @@ public class ToolbarControlContainerTest {
     @Mock private ThemeColorProvider mThemeColorProvider;
     @Mock private IncognitoStateProvider mIncognitoStateProvider;
     @Mock private NewTabPageDelegate mNewTabPageDelegate;
+    @Captor private ArgumentCaptor<CoordinatorLayout.LayoutParams> mToolbarLayoutParamsCaptor;
+    @Captor private ArgumentCaptor<CoordinatorLayout.LayoutParams> mHairlineLayoutParamsCaptor;
 
     private final Supplier<Tab> mTabSupplier = () -> mTab;
     private final ObservableSupplierImpl<Boolean> mCompositorInMotionSupplier =
@@ -133,6 +141,7 @@ public class ToolbarControlContainerTest {
             new OneshotSupplierImpl<>();
 
     private ToolbarViewResourceAdapter mAdapter;
+    private ToolbarControlContainer mControlContainer;
     private TestActivity mActivity;
 
     private void makeAdapter() {
@@ -166,6 +175,28 @@ public class ToolbarControlContainerTest {
     private void makeAndInitAdapter() {
         makeAdapter();
         initAdapter();
+    }
+
+    private void initControlContainer(@LayoutRes int toolbarLayoutId) {
+        mControlContainer =
+                (ToolbarControlContainer)
+                        mActivity.getLayoutInflater().inflate(R.layout.control_container, null);
+        mControlContainer.initWithToolbar(toolbarLayoutId, R.dimen.toolbar_height_no_shadow);
+        mControlContainer.setToolbarHairlineForTesting(mToolbarHairline);
+        mControlContainer.setPostInitializationDependencies(
+                mToolbar,
+                mToolbarView,
+                false,
+                mConstraintsSupplier,
+                mTabSupplier,
+                mCompositorInMotionSupplier,
+                mBrowserStateBrowserControlsVisibilityDelegate,
+                mLayoutStateProviderSupplier,
+                mFullscreenManager,
+                mToolbarDataProvider);
+        ToolbarControlContainer.ToolbarViewResourceCoordinatorLayout toolbarContainer =
+                mControlContainer.findViewById(R.id.toolbar_container);
+        toolbarContainer.setVisibility(View.GONE);
     }
 
     private boolean didAdapterLockControls() {
@@ -231,6 +262,10 @@ public class ToolbarControlContainerTest {
         when(mToolbarContainer.findViewById(anyInt())).thenReturn(mToolbarHairline);
         when(mToolbarHairline.getHeight()).thenReturn(1);
         doReturn(mProgressBar).when(mToolbar).getProgressBar();
+        doReturn(new CoordinatorLayout.LayoutParams(-1, -1)).when(mToolbarView).getLayoutParams();
+        doReturn(new CoordinatorLayout.LayoutParams(-1, -1))
+                .when(mToolbarHairline)
+                .getLayoutParams();
         mBrowserStateBrowserControlsVisibilityDelegate.set(BrowserControlsState.BOTH);
         mCompositorInMotionSupplier.set(false);
         mBrowserStateBrowserControlsVisibilityDelegate.addObserver(
@@ -765,5 +800,110 @@ public class ToolbarControlContainerTest {
                         .build();
         mAdapter.onContentViewScrollingStateChanged(false);
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testOnHeightTransition_ShowTabStrip() {
+        initControlContainer(R.layout.toolbar_tablet);
+        mControlContainer.setMinimumHeight(0);
+
+        Resources res = mActivity.getResources();
+        int tabStripHeight = res.getDimensionPixelSize(R.dimen.tab_strip_height);
+        int toolbarHeight = res.getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
+        int hairlineHeight = res.getDimensionPixelSize(R.dimen.toolbar_hairline_height);
+        doReturn(0).when(mToolbar).getTabStripHeight();
+        doReturn(toolbarHeight).when(mToolbar).getHeight();
+        doReturn(hairlineHeight).when(mToolbarHairline).getHeight();
+
+        // Start transition
+        mControlContainer.onHeightChanged(tabStripHeight, true);
+
+        verify(mToolbarView).setLayoutParams(mToolbarLayoutParamsCaptor.capture());
+        verify(mToolbarHairline).setLayoutParams(mHairlineLayoutParamsCaptor.capture());
+        assertEquals(
+                "Toolbar top margin is wrong.",
+                tabStripHeight,
+                mToolbarLayoutParamsCaptor.getValue().topMargin);
+        assertEquals(
+                "Hairline top margin is wrong.",
+                tabStripHeight + toolbarHeight,
+                mHairlineLayoutParamsCaptor.getValue().topMargin);
+
+        // Finish transition
+        mControlContainer.onHeightTransitionFinished(true);
+        ShadowLooper.idleMainLooper();
+
+        assertEquals(
+                "MinHeight is not set correctly.",
+                toolbarHeight + tabStripHeight + hairlineHeight,
+                mControlContainer.getMinimumHeight());
+    }
+
+    @Test
+    public void testOnHeightTransition_HideTabStrip() {
+        initControlContainer(R.layout.toolbar_tablet);
+        mControlContainer.setMinimumHeight(0);
+
+        Resources res = mActivity.getResources();
+        int tabStripHeight = res.getDimensionPixelSize(R.dimen.tab_strip_height);
+        int toolbarHeight = res.getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
+        int hairlineHeight = res.getDimensionPixelSize(R.dimen.toolbar_hairline_height);
+        doReturn(tabStripHeight).when(mToolbar).getTabStripHeight();
+        doReturn(toolbarHeight).when(mToolbar).getHeight();
+        doReturn(hairlineHeight).when(mToolbarHairline).getHeight();
+
+        mControlContainer.onHeightChanged(0, true);
+
+        verify(mToolbarView).setLayoutParams(mToolbarLayoutParamsCaptor.capture());
+        verify(mToolbarHairline).setLayoutParams(mHairlineLayoutParamsCaptor.capture());
+
+        assertEquals(
+                "Toolbar top margin is wrong.", 0, mToolbarLayoutParamsCaptor.getValue().topMargin);
+        assertEquals(
+                "Hairline top margin is wrong.",
+                toolbarHeight,
+                mHairlineLayoutParamsCaptor.getValue().topMargin);
+
+        // Finish transition
+        mControlContainer.onHeightTransitionFinished(true);
+        ShadowLooper.idleMainLooper();
+        assertEquals(
+                "MinHeight is not set correctly.",
+                toolbarHeight + hairlineHeight,
+                mControlContainer.getMinimumHeight());
+    }
+
+    @Test
+    public void testOnHeightTransition_TransitionCanceled() {
+        initControlContainer(R.layout.toolbar_tablet);
+        mControlContainer.setMinimumHeight(0);
+
+        Resources res = mActivity.getResources();
+        int tabStripHeight = res.getDimensionPixelSize(R.dimen.tab_strip_height);
+        int toolbarHeight = res.getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
+        int hairlineHeight = res.getDimensionPixelSize(R.dimen.toolbar_hairline_height);
+        doReturn(tabStripHeight).when(mToolbar).getTabStripHeight();
+        doReturn(toolbarHeight).when(mToolbar).getHeight();
+        doReturn(hairlineHeight).when(mToolbarHairline).getHeight();
+
+        mControlContainer.onHeightChanged(0, true);
+
+        verify(mToolbarView).setLayoutParams(mToolbarLayoutParamsCaptor.capture());
+        verify(mToolbarHairline).setLayoutParams(mHairlineLayoutParamsCaptor.capture());
+
+        assertEquals(
+                "Toolbar top margin is wrong.", 0, mToolbarLayoutParamsCaptor.getValue().topMargin);
+        assertEquals(
+                "Hairline top margin is wrong.",
+                toolbarHeight,
+                mHairlineLayoutParamsCaptor.getValue().topMargin);
+
+        // Finish transition
+        mControlContainer.onHeightTransitionFinished(false);
+        ShadowLooper.idleMainLooper();
+        assertEquals(
+                "Transition not finished, so minHeight stays the same.",
+                0,
+                mControlContainer.getMinimumHeight());
     }
 }

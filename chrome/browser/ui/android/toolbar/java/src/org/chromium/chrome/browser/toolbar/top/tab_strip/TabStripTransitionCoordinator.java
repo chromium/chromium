@@ -20,7 +20,6 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityMan
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.R;
-import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
@@ -61,8 +60,12 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
          */
         default void onHeightChanged(int newHeight, boolean applyScrimOverlay) {}
 
-        /** Notify when the tab strip height transition is completed by the browser controls. */
-        default void onHeightTransitionFinished() {}
+        /**
+         * Notify when the tab strip height transition is completed by the browser controls.
+         *
+         * @param success Whether the transition succeeded (true) or was canceled (false).
+         */
+        default void onHeightTransitionFinished(boolean success) {}
 
         /**
          * Called when the tab strip visibility needs to be updated by updating the tab strip scrim
@@ -120,7 +123,6 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
      * @param browserControlsVisibilityManager {@link BrowserControlsVisibilityManager} to observe
      *     browser controls height and animation state.
      * @param controlContainer The {@link ControlContainer} for the containing activity.
-     * @param toolbarLayout {@link ToolbarLayout} for the current toolbar.
      * @param tabStripHeightFromResource The height of the tab strip defined in resource.
      * @param tabObscuringHandler Delegate object handling obscuring views.
      * @param desktopWindowStateManager The {@link DesktopWindowStateManager} instance.
@@ -132,7 +134,6 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
     public TabStripTransitionCoordinator(
             BrowserControlsVisibilityManager browserControlsVisibilityManager,
             ControlContainer controlContainer,
-            View toolbarLayout,
             int tabStripHeightFromResource,
             TabObscuringHandler tabObscuringHandler,
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
@@ -147,7 +148,6 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
                 new HeightTransitionHandler(
                         browserControlsVisibilityManager,
                         controlContainer,
-                        toolbarLayout,
                         tabStripHeightFromResource,
                         mCallbackController,
                         mHandler,

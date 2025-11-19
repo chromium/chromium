@@ -15,6 +15,7 @@ import android.graphics.Region;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
+import android.os.Handler;
 import android.os.Looper;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -309,6 +310,54 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     public void onAppHeaderStateChanged(AppHeaderState newState) {
         maybeUpdateTempTabStripDrawableBackground(mIncognito, newState);
         mAppHeaderState = newState;
+    }
+
+    // implements TabStripTransitionDelegate
+    @Override
+    public void onHeightChanged(int tabStripHeight, boolean applyScrimOverlay) {
+        mutateToolbarLayoutParams().topMargin = tabStripHeight;
+
+        int toolbarAndTabStripHeight = tabStripHeight + getToolbarHeight();
+        mutateHairlineLayoutParams().topMargin = toolbarAndTabStripHeight;
+
+        // Update the find toolbar view or view stub. We only do this for tablets
+        // (find_toolbar_tablet_stub) since find_toolbar_stub is used for phone only.
+        // TODO (crbug.com/1517059): Let FindToolbar itself decide how to set the top margin.
+        {
+            View findToolbar = findViewById(R.id.find_toolbar);
+            if (findToolbar == null) {
+                findToolbar = findViewById(R.id.find_toolbar_tablet_stub);
+            }
+            if (findToolbar == null) return;
+
+            // Tablet FIP is anchored at the bottom of the toolbar.
+            ViewGroup.MarginLayoutParams layoutParams =
+                    (ViewGroup.MarginLayoutParams) findToolbar.getLayoutParams();
+            layoutParams.topMargin = toolbarAndTabStripHeight;
+            findToolbar.setLayoutParams(layoutParams);
+        }
+    }
+
+    @Override
+    public void onHeightTransitionFinished(boolean success) {
+        if (!success) return;
+
+        // Remeasure the control container in the next layout pass if needed. The post is needed due
+        // to the existence of ToolbarProgressBar adjusting its position based on ToolbarLayout's
+        // layout pass. The control container needs to remeasure based on the new margin in order to
+        // retain the up-to-date size with size reduction for the tab strip.
+
+        // This is not done during the transition as it could cause visual glitches.
+        new Handler()
+                .post(
+                        () -> {
+                            setMinimumHeight(
+                                    mToolbar.getTabStripHeight()
+                                            + getToolbarHeight()
+                                            + getToolbarHairlineHeight());
+                            ViewUtils.requestLayout(
+                                    this, "ToolbarControlContainer.onHeightTransitionFinished");
+                        });
     }
 
     private void maybeUpdateTempTabStripDrawableBackground(
@@ -944,6 +993,10 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
 
     void setToolbarForTesting(Toolbar testToolbar) {
         mToolbar = testToolbar;
+    }
+
+    void setToolbarHairlineForTesting(View hairline) {
+        mToolbarHairline = hairline;
     }
 
     ToolbarViewResourceCoordinatorLayout getToolbarContainerForTesting() {

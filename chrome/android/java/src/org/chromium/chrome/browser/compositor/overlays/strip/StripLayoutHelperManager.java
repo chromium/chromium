@@ -1038,7 +1038,7 @@ public class StripLayoutHelperManager
     }
 
     @Override
-    public void onHeightTransitionFinished() {
+    public void onHeightTransitionFinished(boolean success) {
         if (!mIsHeightTransitioning) return;
 
         assert !isFadeTransitionRunning()

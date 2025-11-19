@@ -386,7 +386,6 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
                             new TabStripTransitionCoordinator(
                                     browserControlsVisibilityManager,
                                     mControlContainer,
-                                    mToolbarLayout,
                                     tabStripHeightResource,
                                     mTabObscuringHandler,
                                     mDesktopWindowStateManager,

@@ -733,7 +733,7 @@ public class StripLayoutHelperManagerTest {
         mStripLayoutHelperManager.onAppHeaderStateChanged(appHeaderState);
         mStripLayoutHelperManager.onHeightChanged(
                 TAB_STRIP_HEIGHT_PX + topPaddingPx, /* applyScrimOverlay= */ true);
-        mStripLayoutHelperManager.onHeightTransitionFinished();
+        mStripLayoutHelperManager.onHeightTransitionFinished(true);
 
         // Invoke the method.
         mStripLayoutHelperManager.getUpdatedSceneOverlayTree(
@@ -818,7 +818,7 @@ public class StripLayoutHelperManagerTest {
 
         // With tab strip transition finished, the yOffset will be forced to be the negative of the
         // tab strip height.
-        mStripLayoutHelperManager.onHeightTransitionFinished();
+        mStripLayoutHelperManager.onHeightTransitionFinished(true);
         mStripLayoutHelperManager.getUpdatedSceneOverlayTree(
                 new RectF(), new RectF(), mRenderHost.getResourceManager());
         verify(mTabStripTreeProvider)
@@ -923,7 +923,7 @@ public class StripLayoutHelperManagerTest {
         // and once by #onHeightChanged().
         verify(mStatusBarColorController, times(3)).setTabStripHiddenOnTablet(false);
 
-        mStripLayoutHelperManager.onHeightTransitionFinished();
+        mStripLayoutHelperManager.onHeightTransitionFinished(true);
         mStripLayoutHelperManager.getVirtualViews(views);
         assertFalse("Views are not empty after tab strip transition.", views.isEmpty());
     }
@@ -945,7 +945,7 @@ public class StripLayoutHelperManagerTest {
         // when the yOffset=0, ignore this update.
         actual = mStripLayoutHelperManager.calculateScrimOpacityDuringHeightTransition(0f);
         assertEquals(expected, actual, 0f);
-        mStripLayoutHelperManager.onHeightTransitionFinished();
+        mStripLayoutHelperManager.onHeightTransitionFinished(true);
     }
 
     @Test
@@ -964,7 +964,7 @@ public class StripLayoutHelperManagerTest {
         // when the yOffset=-10, ignore this update.
         actual = mStripLayoutHelperManager.calculateScrimOpacityDuringHeightTransition(30f);
         assertEquals(expected, actual, 0f);
-        mStripLayoutHelperManager.onHeightTransitionFinished();
+        mStripLayoutHelperManager.onHeightTransitionFinished(true);
     }
 
     @SuppressWarnings("DirectInvocationOnMock")
@@ -972,7 +972,7 @@ public class StripLayoutHelperManagerTest {
         // Assume tab strip is hidden from the beginning.
         mTabStripHeightSupplier.set(0);
         mStripLayoutHelperManager.onHeightChanged(0, /* applyScrimOverlay= */ true);
-        mStripLayoutHelperManager.onHeightTransitionFinished();
+        mStripLayoutHelperManager.onHeightTransitionFinished(true);
         mStripLayoutHelperManager.setTabStripTreeProviderForTesting(mTabStripTreeProvider);
 
         // The yOffset will be forced to be reduced by the tab strip height to be kept invisible.
@@ -1025,7 +1025,7 @@ public class StripLayoutHelperManagerTest {
 
         // When transition finished while tabs strip showing, yOffset will be applied by viz, so
         // the layer should be offset to 0.
-        mStripLayoutHelperManager.onHeightTransitionFinished();
+        mStripLayoutHelperManager.onHeightTransitionFinished(true);
         mStripLayoutHelperManager.getUpdatedSceneOverlayTree(
                 new RectF(), new RectF(), mRenderHost.getResourceManager());
         verify(mTabStripTreeProvider)
@@ -1077,7 +1077,7 @@ public class StripLayoutHelperManagerTest {
                         true);
         mStripLayoutHelperManager.onAppHeaderStateChanged(appHeaderState);
         mStripLayoutHelperManager.onHeightChanged(newHeight, /* applyScrimOverlay= */ true);
-        mStripLayoutHelperManager.onHeightTransitionFinished();
+        mStripLayoutHelperManager.onHeightTransitionFinished(true);
         mStripLayoutHelperManager.onSizeChanged(
                 SCREEN_WIDTH, SCREEN_HEIGHT, VISIBLE_VIEWPORT_Y, ORIENTATION);
 
@@ -1111,7 +1111,7 @@ public class StripLayoutHelperManagerTest {
         int topPadding = 10;
         mStripLayoutHelperManager.onHeightChanged(
                 TAB_STRIP_HEIGHT_PX + topPadding, /* applyScrimOverlay= */ true);
-        mStripLayoutHelperManager.onHeightTransitionFinished();
+        mStripLayoutHelperManager.onHeightTransitionFinished(true);
         mStripLayoutHelperManager.onSizeChanged(
                 SCREEN_WIDTH, SCREEN_HEIGHT, VISIBLE_VIEWPORT_Y, ORIENTATION);
 
@@ -1176,7 +1176,7 @@ public class StripLayoutHelperManagerTest {
         mStripLayoutHelperManager.onAppHeaderStateChanged(appHeaderState);
         mStripLayoutHelperManager.onHeightChanged(
                 TAB_STRIP_HEIGHT_PX + topPadding, /* applyScrimOverlay= */ true);
-        mStripLayoutHelperManager.onHeightTransitionFinished();
+        mStripLayoutHelperManager.onHeightTransitionFinished(true);
 
         float newOpacity = showStrip ? 0f : 1f;
         mStripLayoutHelperManager.onFadeTransitionRequested(
@@ -1250,7 +1250,7 @@ public class StripLayoutHelperManagerTest {
         mStripLayoutHelperManager.onAppHeaderStateChanged(appHeaderState);
         mStripLayoutHelperManager.onHeightChanged(
                 TAB_STRIP_HEIGHT_PX + topPadding, /* applyScrimOverlay= */ true);
-        mStripLayoutHelperManager.onHeightTransitionFinished();
+        mStripLayoutHelperManager.onHeightTransitionFinished(true);
         mStripLayoutHelperManager.updateOverlay(0, 0);
 
         verify(mToolbarContainerView)
@@ -1296,7 +1296,7 @@ public class StripLayoutHelperManagerTest {
         mStripLayoutHelperManager.onAppHeaderStateChanged(appHeaderState);
         mStripLayoutHelperManager.onHeightChanged(
                 TAB_STRIP_HEIGHT_PX + topPadding, /* applyScrimOverlay= */ true);
-        mStripLayoutHelperManager.onHeightTransitionFinished();
+        mStripLayoutHelperManager.onHeightTransitionFinished(true);
         mStripLayoutHelperManager.updateOverlay(0, 0);
 
         verify(mToolbarContainerView)
@@ -1372,7 +1372,7 @@ public class StripLayoutHelperManagerTest {
         mStripLayoutHelperManager.onFadeTransitionRequested(1f, 0);
         mStripLayoutHelperManager.onHeightChanged(
                 TAB_STRIP_HEIGHT_PX + newTopPadding, /* applyScrimOverlay= */ false);
-        mStripLayoutHelperManager.onHeightTransitionFinished();
+        mStripLayoutHelperManager.onHeightTransitionFinished(true);
 
         // Verify strip height.
         assertEquals(
@@ -1421,7 +1421,7 @@ public class StripLayoutHelperManagerTest {
     public void testHeightTransitionAcrossWindowingModes() {
         // Simulate a height transition to hide the strip.
         mStripLayoutHelperManager.onHeightChanged(0, /* applyScrimOverlay= */ true);
-        mStripLayoutHelperManager.onHeightTransitionFinished();
+        mStripLayoutHelperManager.onHeightTransitionFinished(true);
         // Verify the strip visibility.
         assertNotEquals(
                 "StripVisibilityState.HIDDEN_BY_HEIGHT_TRANSITION should be set.",
@@ -1433,7 +1433,7 @@ public class StripLayoutHelperManagerTest {
         int topPadding = 5;
         mStripLayoutHelperManager.onHeightChanged(
                 TAB_STRIP_HEIGHT_PX + topPadding, /* applyScrimOverlay= */ false);
-        mStripLayoutHelperManager.onHeightTransitionFinished();
+        mStripLayoutHelperManager.onHeightTransitionFinished(true);
         mStripLayoutHelperManager.onFadeTransitionRequested(1f, 0);
 
         // Verify the strip visibility.
@@ -1463,7 +1463,7 @@ public class StripLayoutHelperManagerTest {
         // Simulate switching out of desktop windowing mode.
         mStripLayoutHelperManager.onHeightChanged(
                 TAB_STRIP_HEIGHT_PX, /* applyScrimOverlay= */ true);
-        mStripLayoutHelperManager.onHeightTransitionFinished();
+        mStripLayoutHelperManager.onHeightTransitionFinished(true);
         // Verify the strip visibility.
         assertEquals(
                 "Strip visibility is incorrect.",
@@ -1539,7 +1539,7 @@ public class StripLayoutHelperManagerTest {
         // Simulate the |mTopPadding| update when switching to a desktop window.
         mStripLayoutHelperManager.onHeightChanged(
                 TAB_STRIP_HEIGHT_PX + topPadding, /* applyScrimOverlay= */ false);
-        mStripLayoutHelperManager.onHeightTransitionFinished();
+        mStripLayoutHelperManager.onHeightTransitionFinished(true);
         // Simulate a window size change in a desktop window.
         var appHeaderState =
                 new AppHeaderState(
