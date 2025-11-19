@@ -10,6 +10,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "build/build_config.h"
@@ -86,11 +87,8 @@ constexpr size_t kCrashKeyStorageValueSize = 128;
 class CRASH_KEY_EXPORT CrashKeyStringImpl {
  public:
   constexpr explicit CrashKeyStringImpl(const char name[],
-                                        size_t* index_array,
-                                        size_t index_array_count)
-      : name_(name),
-        index_array_(index_array),
-        index_array_count_(index_array_count) {}
+                                        base::span<size_t> indexes)
+      : name_(name), indexes_(indexes) {}
 
   CrashKeyStringImpl(const CrashKeyStringImpl&) = delete;
   CrashKeyStringImpl& operator=(const CrashKeyStringImpl&) = delete;
@@ -110,8 +108,7 @@ class CRASH_KEY_EXPORT CrashKeyStringImpl {
   // used to set/clear the key without requiring a linear scan of the storage
   // table. This will be |num_entries| if unset.
   // RAW_PTR_EXCLUSION: #global-scope
-  RAW_PTR_EXCLUSION size_t* index_array_;
-  size_t index_array_count_;
+  RAW_PTR_EXCLUSION base::span<size_t> indexes_;
 };
 
 // This type creates a C array that is initialized with a specific default
@@ -152,7 +149,7 @@ class CrashKeyStringBreakpad : public internal::CrashKeyStringImpl {
   enum class Tag { kArray };
 
   constexpr explicit CrashKeyStringBreakpad(const char name[])
-      : internal::CrashKeyStringImpl(name, indexes_.data, chunk_count) {}
+      : internal::CrashKeyStringImpl(name, indexes_.data) {}
 
   constexpr CrashKeyStringBreakpad(const char name[], Tag tag)
       : CrashKeyStringBreakpad(name) {}
