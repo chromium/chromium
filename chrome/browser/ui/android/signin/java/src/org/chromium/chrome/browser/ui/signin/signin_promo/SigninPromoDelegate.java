@@ -106,6 +106,10 @@ public abstract class SigninPromoDelegate {
         return false;
     }
 
+    boolean shouldDisplaySignedInLayout() {
+        return false;
+    }
+
     String getTextForPrimaryButton(@Nullable DisplayableProfileData profileData) {
         @SigninFeatureMap.SeamlessSigninStringType
         int seamlessSigninStringType = SigninFeatureMap.getInstance().getSeamlessSigninStringType();

@@ -55,19 +55,35 @@ found in the LICENSE file.
 
     </RelativeLayout>
 
-    <TextView
-      android:id="@+id/signin_promo_description"
+    <LinearLayout
+      android:id="@+id/image_description_container"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_marginLeft="20dp"
-      android:layout_marginTop="0dp"
+      android:orientation="horizontal"
+      android:gravity="center_vertical"
       android:layout_marginRight="20dp"
       android:layout_marginBottom="12dp"
-      android:gravity="center"
-      android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
-      android:lineHeight="16sp"
-      android:includeFontPadding="false"
-      tools:text="@string/signin_promo_description_recent_tabs" />
+      android:layout_marginLeft="20dp">
+
+      <ImageView
+        android:id="@+id/signed_in_promo_image"
+        android:layout_width="@dimen/sync_promo_account_image_size"
+        android:layout_height="@dimen/sync_promo_account_image_size"
+        android:importantForAccessibility="no"
+        android:scaleType="fitCenter"
+        android:visibility="gone"
+        android:layout_marginEnd="16dp"/>
+
+      <TextView
+        android:id="@+id/signin_promo_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+        android:lineHeight="16sp"
+        tools:text="@string/signin_promo_description_recent_tabs" />
+
+    </LinearLayout>
 
     <LinearLayout
       android:id="@+id/account_picker_selected_account"
@@ -103,8 +119,7 @@ found in the LICENSE file.
       style="@style/FilledButton"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_marginStart="16dp"
-      android:layout_marginEnd="16dp"
+      android:layout_marginHorizontal="@dimen/signin_promo_button_margin_compact"
       android:ellipsize="end"
       android:singleLine="true"
       android:text="@string/sync_promo_continue_as" />

@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
@@ -30,18 +31,32 @@ public class PersonalizedSigninPromoView extends FrameLayout {
     private ButtonCompat mPrimaryButton;
 
     // TODO(crbug.com/448227402)
-    // This is needed because this field is not supposed to be null, but there's no secondary button
-    // in the seamless sign-in promo `compact`. It should be removed after the end of the experiment
-    // when the final layout will be chosen.
+    // This is needed temporarily because this view exists only in the current implementation and
+    // one of the layouts (SeamlessSigninPromoType.TWO_BUTTONS) we experiment with. We'll remove the
+    // property or the annotation according to the final choice we'll make after the experiment.
     @SuppressWarnings("NullAway")
     private Button mSecondaryButton;
 
     // TODO(crbug.com/448227402)
-    // This is needed because this field is not supposed to be null, but there's no account picker
-    // in the seamless sign-in promo `twoButtons` and in the current promo. It should be removed
-    // after the end of the experiment when the final layout will be chosen.
+    // This is needed temporarily because this view exists only in one of the layouts
+    // (SeamlessSigninPromoType.COMPACT) we experiment with. We'll remove the property or the
+    // annotation according to the final choice we'll make after the experiment.
     @SuppressWarnings("NullAway")
     private View mSelectedAccountView;
+
+    // TODO(crbug.com/448227402)
+    // This is needed temporarily because this view exists only in one of the layouts
+    // (SeamlessSigninPromoType.COMPACT) we experiment with. We'll remove the property or the
+    // annotation according to the final choice we'll make after the experiment.
+    @SuppressWarnings("NullAway")
+    private ImageView mSignedInPromoProfileImage;
+
+    // TODO(crbug.com/448227402)
+    // This is needed temporarily because this view exists only in one of the layouts
+    // (SeamlessSigninPromoType.COMPACT) we experiment with. We'll remove the property or the
+    // annotation according to the final choice we'll make after the experiment.
+    @SuppressWarnings("NullAway")
+    private LinearLayout mImageAndDescriptionContainer;
 
     public PersonalizedSigninPromoView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -81,6 +96,8 @@ public class PersonalizedSigninPromoView extends FrameLayout {
                     == SigninFeatureMap.SeamlessSigninPromoType.COMPACT) {
                 mImage = findViewById(R.id.account_image);
                 mSelectedAccountView = findViewById(R.id.account_picker_selected_account);
+                mSignedInPromoProfileImage = findViewById(R.id.signed_in_promo_image);
+                mImageAndDescriptionContainer = findViewById(R.id.image_description_container);
             } else {
                 mImage = findViewById(R.id.signin_promo_image);
                 mSecondaryButton = findViewById(R.id.signin_promo_secondary_button);
@@ -135,6 +152,23 @@ public class PersonalizedSigninPromoView extends FrameLayout {
      */
     public View getSelectedAccountView() {
         return mSelectedAccountView;
+    }
+
+    /**
+     * @return A reference to the additional profile image (normally hidden) that is used to
+     *     construct the layout for the case when the user is signed in for the `compact` seamless
+     *     sign-in layout.
+     */
+    public ImageView getSignedInPromoProfileImage() {
+        return mSignedInPromoProfileImage;
+    }
+
+    /**
+     * @return A reference to the additional profile image and description container for the
+     *     `compact` seamless sign-in layout.
+     */
+    public LinearLayout getImageAndDescriptionContainer() {
+        return mImageAndDescriptionContainer;
     }
 
     /** Sets the card's background for R.id.signin_promo_view_wrapper. */

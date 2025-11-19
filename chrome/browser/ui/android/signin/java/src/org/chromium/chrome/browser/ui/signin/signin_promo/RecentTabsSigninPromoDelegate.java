@@ -216,6 +216,11 @@ public class RecentTabsSigninPromoDelegate extends SigninPromoDelegate {
         return ChromeSharedPreferences.getInstance().readInt(mPromoShowCountPreferenceName);
     }
 
+    @Override
+    boolean shouldDisplaySignedInLayout() {
+        return mPromoState == PromoState.HISTORY_SYNC;
+    }
+
     private @PromoState int computePromoState() {
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(mProfile);

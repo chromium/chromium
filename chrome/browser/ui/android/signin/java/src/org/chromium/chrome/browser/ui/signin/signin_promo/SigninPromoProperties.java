@@ -50,6 +50,9 @@ final class SigninPromoProperties {
     static final PropertyModel.WritableBooleanPropertyKey SHOULD_HIDE_DISMISS_BUTTON =
             new PropertyModel.WritableBooleanPropertyKey("should_hide_dismiss_button");
 
+    static final PropertyModel.WritableBooleanPropertyKey SHOULD_SHOW_SIGNED_IN_LAYOUT =
+            new PropertyModel.WritableBooleanPropertyKey("should_show_signed_in_layout");
+
     static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 PROFILE_DATA,
@@ -61,7 +64,8 @@ final class SigninPromoProperties {
                 PRIMARY_BUTTON_TEXT,
                 SECONDARY_BUTTON_TEXT,
                 SHOULD_HIDE_SECONDARY_BUTTON,
-                SHOULD_HIDE_DISMISS_BUTTON
+                SHOULD_HIDE_DISMISS_BUTTON,
+                SHOULD_SHOW_SIGNED_IN_LAYOUT
             };
 
     private SigninPromoProperties() {}

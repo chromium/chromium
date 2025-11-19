@@ -13,6 +13,11 @@ found in the LICENSE file.
     <dimen name="seamless_signin_promo_account_image_size_compact">40dp</dimen>
     <dimen name="signin_promo_cold_state_image_size">24dp</dimen>
     <dimen name="seamless_signin_promo_cold_state_image_size">36dp</dimen>
+    <dimen name="signin_promo_desc_margin_top_signed_in_compact">6dp</dimen>
+    <dimen name="signin_promo_desc_margin_end_two_buttons">28dp</dimen>
+    <dimen name="signin_promo_desc_container_margin_horizontal_two_buttons">20dp</dimen>
+    <dimen name="signin_promo_button_margin_two_buttons">20dp</dimen>
+    <dimen name="signin_promo_button_margin_compact">16dp</dimen>
     <!-- Signin fre uma dialog dimensions -->
     <dimen name="signin_fre_uma_dialog_padding">24dp</dimen>
     <dimen name="signin_fre_uma_dialog_button_padding">16dp</dimen>

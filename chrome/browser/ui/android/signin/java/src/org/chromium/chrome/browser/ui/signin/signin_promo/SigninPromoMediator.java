@@ -223,6 +223,9 @@ final class SigninPromoMediator
         mModel.set(
                 SigninPromoProperties.SHOULD_HIDE_DISMISS_BUTTON,
                 mDelegate.shouldHideDismissButton());
+        mModel.set(
+                SigninPromoProperties.SHOULD_SHOW_SIGNED_IN_LAYOUT,
+                mDelegate.shouldDisplaySignedInLayout());
     }
 
     private void updateVisibility() {

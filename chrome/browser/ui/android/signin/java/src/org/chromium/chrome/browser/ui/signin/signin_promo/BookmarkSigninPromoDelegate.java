@@ -269,4 +269,9 @@ public class BookmarkSigninPromoDelegate extends SigninPromoDelegate {
         }
         return false;
     }
+
+    @Override
+    boolean shouldDisplaySignedInLayout() {
+        return mPromoState == PromoState.ACCOUNT_SETTINGS;
+    }
 }

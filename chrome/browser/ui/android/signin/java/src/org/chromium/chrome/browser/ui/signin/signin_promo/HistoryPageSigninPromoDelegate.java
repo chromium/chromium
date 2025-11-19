@@ -162,6 +162,11 @@ public class HistoryPageSigninPromoDelegate extends SigninPromoDelegate {
     }
 
     @Override
+    boolean shouldDisplaySignedInLayout() {
+        return mPromoState == PromoState.HISTORY_SYNC;
+    }
+
+    @Override
     int getPromoShownCount() {
         return ChromeSharedPreferences.getInstance().readInt(mPromoShowCountPreferenceName);
     }

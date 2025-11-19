@@ -6,11 +6,15 @@ package org.chromium.chrome.browser.ui.signin.signin_promo;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.DimenRes;
+import androidx.annotation.Nullable;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
@@ -19,6 +23,7 @@ import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.widget.ButtonCompat;
 
 @NullMarked
 final class SigninPromoViewBinder {
@@ -57,7 +62,7 @@ final class SigninPromoViewBinder {
                     TextView accountTextSecondary = view.findViewById(R.id.account_text_secondary);
                     accountTextPrimary.setText(profileData.getFullName());
                     accountTextSecondary.setText(profileData.getAccountEmail());
-                    view.getSelectedAccountView().setVisibility(View.VISIBLE);
+                    view.getSignedInPromoProfileImage().setImageDrawable(accountImage);
                 }
             }
         } else if (key == SigninPromoProperties.ON_PRIMARY_BUTTON_CLICKED) {
@@ -94,18 +99,26 @@ final class SigninPromoViewBinder {
                         .setClickable(
                                 !model.get(SigninPromoProperties.SHOULD_HIDE_SECONDARY_BUTTON));
             } else {
-                int visibility =
+                int secondaryButtonVisibility =
                         model.get(SigninPromoProperties.SHOULD_HIDE_SECONDARY_BUTTON)
                                 ? View.GONE
                                 : View.VISIBLE;
-                view.getSecondaryButton().setVisibility(visibility);
+                view.getSecondaryButton().setVisibility(secondaryButtonVisibility);
             }
         } else if (key == SigninPromoProperties.SHOULD_HIDE_DISMISS_BUTTON) {
-            view.getDismissButton()
-                    .setVisibility(
-                            model.get(SigninPromoProperties.SHOULD_HIDE_DISMISS_BUTTON)
-                                    ? View.GONE
-                                    : View.VISIBLE);
+            // We use View.INVISIBLE instead of View.GONE to ensure that the layout height remains
+            // consistent even when the button is hidden.
+            int dismissButtonVisibility =
+                    model.get(SigninPromoProperties.SHOULD_HIDE_DISMISS_BUTTON)
+                            ? View.INVISIBLE
+                            : View.VISIBLE;
+            view.getDismissButton().setVisibility(dismissButtonVisibility);
+        } else if (key == SigninPromoProperties.SHOULD_SHOW_SIGNED_IN_LAYOUT) {
+            showSignedInLayout(
+                    model.get(SigninPromoProperties.SHOULD_SHOW_SIGNED_IN_LAYOUT),
+                    seamlessSigninPromoType,
+                    context,
+                    view);
         } else {
             throw new IllegalArgumentException("Unknown property key: " + key);
         }
@@ -129,5 +142,64 @@ final class SigninPromoViewBinder {
         String dismissButtonDescription =
                 promoTitle + " " + view.getContext().getString(R.string.close);
         view.getDismissButton().setContentDescription(dismissButtonDescription);
+    }
+
+    private static void updateViewMargins(
+            View view,
+            @Nullable Integer left,
+            @Nullable Integer top,
+            @Nullable Integer right,
+            @Nullable Integer bottom) {
+        ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+        int leftMargin = left != null ? left : lp.leftMargin;
+        int topMargin = top != null ? top : lp.topMargin;
+        int rightMargin = right != null ? right : lp.rightMargin;
+        int bottomMargin = bottom != null ? bottom : lp.bottomMargin;
+        lp.setMargins(leftMargin, topMargin, rightMargin, bottomMargin);
+        view.setLayoutParams(lp);
+    }
+
+    private static void showSignedInLayout(
+            boolean showLayout,
+            @SigninFeatureMap.SeamlessSigninPromoType int promoType,
+            Context context,
+            PersonalizedSigninPromoView view) {
+        if (promoType != SigninFeatureMap.SeamlessSigninPromoType.COMPACT) {
+            return;
+        }
+        ImageView signedInPromoImage = view.findViewById(R.id.signed_in_promo_image);
+        TextView descriptionText = view.findViewById(R.id.signin_promo_description);
+        View selectedAccountView = view.getSelectedAccountView();
+        LinearLayout compactLayoutImageAndDescriptionContainer =
+                view.getImageAndDescriptionContainer();
+        ButtonCompat primaryButton = view.getPrimaryButton();
+        if (showLayout) {
+            signedInPromoImage.setVisibility(View.VISIBLE);
+            selectedAccountView.setVisibility(View.GONE);
+            int imageAndDescriptionContainerMarginTop =
+                    context.getResources()
+                            .getDimensionPixelSize(
+                                    R.dimen.signin_promo_desc_margin_top_signed_in_compact);
+            updateViewMargins(
+                    compactLayoutImageAndDescriptionContainer,
+                    null,
+                    imageAndDescriptionContainerMarginTop,
+                    null,
+                    null);
+            descriptionText.setGravity(Gravity.CENTER_VERTICAL);
+            int buttonMargins =
+                    context.getResources()
+                            .getDimensionPixelSize(R.dimen.signin_promo_button_margin_two_buttons);
+            updateViewMargins(primaryButton, buttonMargins, null, buttonMargins, null);
+        } else {
+            signedInPromoImage.setVisibility(View.GONE);
+            selectedAccountView.setVisibility(View.VISIBLE);
+            updateViewMargins(compactLayoutImageAndDescriptionContainer, null, 0, null, null);
+            descriptionText.setGravity(Gravity.CENTER);
+            int buttonMargins =
+                    context.getResources()
+                            .getDimensionPixelSize(R.dimen.signin_promo_button_margin_compact);
+            updateViewMargins(primaryButton, buttonMargins, null, buttonMargins, null);
+        }
     }
 }
