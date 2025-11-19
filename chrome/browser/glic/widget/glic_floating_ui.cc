@@ -201,6 +201,11 @@ void GlicFloatingUi::EnableDragResize(bool enabled) {
 }
 
 void GlicFloatingUi::MaybeSetWidgetCanResize() {
+  // During teardown, the widget's delegate is null. Just return early.
+  if (!GetGlicWidget()->widget_delegate()) {
+    return;
+  }
+
   if (GetGlicWidget()->widget_delegate()->CanResize() == user_resizable_ ||
       glic_window_animator_->IsAnimating()) {
     // If the resize state is already correct or the widget is animating do not
