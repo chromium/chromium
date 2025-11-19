@@ -541,58 +541,54 @@ void SidePanel::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   }
 }
 
+void SidePanel::ViewHierarchyChanged(
+    const views::ViewHierarchyChangedDetails& details) {
+  if (details.parent != this) {
+    return;
+  }
+
+  if (details.is_add) {
+    if (details.child == border_view_ || details.child == resize_area_) {
+      return;
+    }
+
+    // Reorder `border_view_` to be last so that it gets painted on top, even if
+    // an added child also paints to a layer.
+    if (border_view_) {
+      ReorderChildView(border_view_, children().size());
+    }
+
+    // Reorder `header_view_` if it exists to get painted on top of the border
+    // view.
+    if (header_view_) {
+      ReorderChildView(header_view_, children().size());
+    }
+    // Reorder `resize_area_` to be last so that it gets painted on top of
+    // `border_view_`, for displaying the resize handle.
+    if (resize_area_) {
+      ReorderChildView(resize_area_, children().size());
+    }
+
+    if (header_view_) {
+      // The header view should come before all other side panel children except
+      // the resize area in focus order.
+      header_view_->InsertBeforeInFocusList(GetChildrenFocusList().front());
+    }
+
+    // The resize area should come before all other side panel children in focus
+    // order.
+    if (resize_area_) {
+      resize_area_->InsertBeforeInFocusList(GetChildrenFocusList().front());
+    }
+  }
+}
+
 double SidePanel::GetAnimationValue() const {
   if (ShouldShowAnimation()) {
     return animation_coordinator_->GetAnimationValueFor(
         kSidePanelBoundsAnimation);
   } else {
     return 1;
-  }
-}
-
-void SidePanel::OnChildViewAdded(View* observed_view, View* child) {
-  if (observed_view != this || child == border_view_ || child == resize_area_) {
-    return;
-  }
-  if (child != header_view_) {
-    content_view_observations_.AddObservation(child);
-  }
-
-  // Reorder `border_view_` to be last so that it gets painted on top, even if
-  // an added child also paints to a layer.
-  if (border_view_) {
-    ReorderChildView(border_view_, children().size());
-  }
-
-  // Reorder `header_view_` if it exists to get painted on top of the border
-  // view.
-  if (header_view_) {
-    ReorderChildView(header_view_, children().size());
-  }
-  // Reorder `resize_area_` to be last so that it gets painted on top of
-  // `border_view_`, for displaying the resize handle.
-  if (resize_area_) {
-    ReorderChildView(resize_area_, children().size());
-  }
-
-  if (header_view_) {
-    // The header view should come before all other side panel children except
-    // the resize area in focus order.
-    header_view_->InsertBeforeInFocusList(GetChildrenFocusList().front());
-  }
-  // The resize area should come before all other side panel children in focus
-  // order.
-  if (resize_area_) {
-    resize_area_->InsertBeforeInFocusList(GetChildrenFocusList().front());
-  }
-}
-
-void SidePanel::OnChildViewRemoved(View* observed_view, View* child) {
-  if (observed_view != this) {
-    return;
-  }
-  if (content_view_observations_.IsObservingSource(child)) {
-    content_view_observations_.RemoveObservation(child);
   }
 }
 

@@ -24,7 +24,6 @@ class BrowserView;
 
 class SidePanel : public views::AccessiblePaneView,
                   public views::ResizeAreaDelegate,
-                  public views::ViewObserver,
                   public SidePanelAnimationCoordinator::Observer {
   METADATA_HEADER(SidePanel, views::AccessiblePaneView)
 
@@ -117,10 +116,8 @@ class SidePanel : public views::AccessiblePaneView,
 
   // views::View:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
-
-  // views::ViewObserver:
-  void OnChildViewAdded(View* observed_view, View* child) override;
-  void OnChildViewRemoved(View* observed_view, View* child) override;
+  void ViewHierarchyChanged(
+      const views::ViewHierarchyChangedDetails& details) override;
 
   // SidePanelAnimationCoordinator::AnimationObserver
   void OnAnimationSequenceProgressed(
@@ -162,11 +159,6 @@ class SidePanel : public views::AccessiblePaneView,
   // Helps to clip layer backed children to their visible bounds.
   // TODO: 344626785 - Remove this once WebView layer behavior has been fixed.
   std::unique_ptr<VisibleBoundsViewClipper> visible_bounds_view_clipper_;
-
-  // Monitors content views so we will be notified if their property
-  // state changes.
-  base::ScopedMultiSourceObservation<View, ViewObserver>
-      content_view_observations_{this};
 
   gfx::RoundedCornersF background_radii_;
 
