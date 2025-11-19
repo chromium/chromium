@@ -121,6 +121,38 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
     }
 
     @Test
+    public void createPendingTask_popupType_createsAndStoresPendingTask() {
+        // Arrange & Act.
+        var mockParams =
+                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams(
+                        BrowserWindowType.POPUP);
+        var task = createPendingTaskWithExistingTask(mockParams);
+
+        // Assert.
+        assertNotNull(task);
+        assertNotNull(task.getPendingTaskInfo());
+        assertNotNull(
+                mChromeAndroidTaskTracker.getPendingTaskForTesting(
+                        task.getPendingTaskInfo().mPendingTaskId));
+        assertEquals(
+                // Creating a pending Task of "POPUP" type requires an existing ChromeAndroidTask.
+                // Therefore, getAllNativeBrowserWindowPtrs().length should be 2:
+                // one pointer is the existing Task and the other is the pending Task.
+                2, mChromeAndroidTaskTracker.getAllNativeBrowserWindowPtrs().length);
+        assertNull(task.getId());
+        assertEquals(mockParams.getProfile(), task.getProfile());
+        assertEquals(mockParams.getWindowType(), task.getBrowserWindowType());
+
+        var intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(mContext).startActivity(intentCaptor.capture());
+        Intent intent = intentCaptor.getValue();
+        assertTrue(intent.hasExtra(EXTRA_PENDING_BROWSER_WINDOW_TASK_ID));
+        assertEquals(
+                9 /* CustomTabsUiType.POPUP */,
+                intent.getIntExtra("org.chromium.chrome.browser.customtabs.EXTRA_UI_TYPE", -1));
+    }
+
+    @Test
     public void createPendingTask_requestsUnsupportedShowState_throwsException() {
         // Arrange.
         var mockParams =

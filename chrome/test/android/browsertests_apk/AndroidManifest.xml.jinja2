@@ -77,6 +77,15 @@
                 android:value="singleInstancePerTask"/>
         </activity>
 
+        <activity android:name="org.chromium.chrome.browser.customtabs.CustomTabActivity"
+          android:theme="@style/Theme.Chromium.Activity"
+          android:exported="false"
+          android:windowSoftInputMode="adjustResize"
+                    android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|navigation|density|touchscreen|colorMode"
+          android:hardwareAccelerated="false"
+          android:process=":test_process">
+        </activity>
+
         <activity android:name="org.chromium.chrome.browser.media.MediaLauncherActivity"
                   android:theme="@android:style/Theme.NoDisplay"
                   android:excludeFromRecents="true"

@@ -230,6 +230,7 @@ if (is_android) {
       "//base:tasks_java",
       "//base:time_utils_java",
       "//build/android:build_java",
+      "//chrome/browser/android/browserservices/intents:java",
       "//chrome/browser/android/lifecycle:java",
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/tab:java",
