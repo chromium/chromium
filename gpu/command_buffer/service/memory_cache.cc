@@ -10,26 +10,29 @@
 
 namespace gpu {
 
-MemoryCache::Entry::Entry(std::string key, const void* value, size_t value_size)
-    : key_(std::move(key)),
-      data_(static_cast<const uint8_t*>(value),
-            UNSAFE_BUFFERS(static_cast<const uint8_t*>(value) + value_size)) {}
+MemoryCacheEntry::MemoryCacheEntry(std::string_view key,
+                                   base::span<const uint8_t> data)
+    : key_(key), data_(base::HeapArray<uint8_t>::CopiedFrom(data)) {}
 
-MemoryCache::Entry::~Entry() = default;
+MemoryCacheEntry::MemoryCacheEntry(std::string_view key,
+                                   base::HeapArray<uint8_t> data)
+    : key_(key), data_(std::move(data)) {}
 
-std::string_view MemoryCache::Entry::Key() const {
+MemoryCacheEntry::~MemoryCacheEntry() = default;
+
+std::string_view MemoryCacheEntry::Key() const {
   return key_;
 }
 
-size_t MemoryCache::Entry::TotalSize() const {
+size_t MemoryCacheEntry::TotalSize() const {
   return key_.length() + data_.size();
 }
 
-size_t MemoryCache::Entry::DataSize() const {
+size_t MemoryCacheEntry::DataSize() const {
   return data_.size();
 }
 
-size_t MemoryCache::Entry::ReadData(void* value_out, size_t value_size) const {
+size_t MemoryCacheEntry::ReadData(void* value_out, size_t value_size) const {
   // First handle "peek" case where use is trying to get the size of the entry.
   if (value_out == nullptr && value_size == 0) {
     return DataSize();
@@ -41,22 +44,22 @@ size_t MemoryCache::Entry::ReadData(void* value_out, size_t value_size) const {
   return value_size;
 }
 
-base::span<const uint8_t> MemoryCache::Entry::Data() const {
+base::span<const uint8_t> MemoryCacheEntry::Data() const {
   return data_;
 }
 
-bool operator<(const std::unique_ptr<MemoryCache::Entry>& lhs,
-               const std::unique_ptr<MemoryCache::Entry>& rhs) {
+bool operator<(const scoped_refptr<MemoryCacheEntry>& lhs,
+               const scoped_refptr<MemoryCacheEntry>& rhs) {
   return lhs->Key() < rhs->Key();
 }
 
-bool operator<(const std::unique_ptr<MemoryCache::Entry>& lhs,
+bool operator<(const scoped_refptr<MemoryCacheEntry>& lhs,
                std::string_view rhs) {
   return lhs->Key() < rhs;
 }
 
 bool operator<(std::string_view lhs,
-               const std::unique_ptr<MemoryCache::Entry>& rhs) {
+               const scoped_refptr<MemoryCacheEntry>& rhs) {
   return lhs < rhs->Key();
 }
 
@@ -66,67 +69,58 @@ MemoryCache::MemoryCache(size_t max_size,
 
 MemoryCache::~MemoryCache() = default;
 
-size_t MemoryCache::LoadData(std::string_view key,
-                             void* value_out,
-                             size_t value_size) {
+scoped_refptr<MemoryCacheEntry> MemoryCache::Find(std::string_view key) {
   // Because we are tracking LRU, even loads modify internal state so mutex is
   // required.
   base::AutoLock lock(mutex_);
 
   auto it = entries_.find(key);
   if (it == entries_.end()) {
-    return 0u;
+    return nullptr;
   }
 
-  if (value_size > 0 && !cache_hit_trace_event_.empty()) {
+  if (!cache_hit_trace_event_.empty()) {
     TRACE_EVENT0("gpu", cache_hit_trace_event_.c_str());
   }
 
   // Even if this was just a "peek" operation to get size, the entry was
   // accessed so move it to the back of the eviction queue.
-  std::unique_ptr<Entry>& entry = *it;
+  scoped_refptr<MemoryCacheEntry>& entry = *it;
   entry->RemoveFromList();
   lru_.Append(entry.get());
-  return entry->ReadData(value_out, value_size);
+  return entry;
 }
 
-void MemoryCache::StoreData(std::string_view key,
-                            const void* value,
-                            size_t value_size) {
-  // Don't need to do anything if we are not storing anything.
-  if (value == nullptr || value_size == 0) {
-    return;
-  }
-
+scoped_refptr<MemoryCacheEntry> MemoryCache::Store(
+    std::string_view key,
+    base::span<const uint8_t> data) {
   base::AutoLock lock(mutex_);
 
-  // If an entry for this key already exists, first evict the existing entry.
-  if (auto it = entries_.find(key); it != entries_.end()) {
-    const std::unique_ptr<Entry>& entry = *it;
-    EvictEntry(entry.get());
+  EvictEntry(key);
+
+  if (!CanFitMemoryCacheEntry(key.size() + data.size())) {
+    return nullptr;
   }
 
-  // If the entry is too large for the cache, we cannot store it so skip. We
-  // avoid creating the entry here early since it would incur unneeded large
-  // copies.
-  size_t entry_size = key.length() + value_size;
-  if (entry_size >= max_size_) {
-    return;
+  auto entry = base::MakeRefCounted<MemoryCacheEntry>(key, data);
+  InsertEntry(entry);
+  return entry;
+}
+
+scoped_refptr<MemoryCacheEntry> MemoryCache::Store(
+    std::string_view key,
+    base::HeapArray<uint8_t> data) {
+  base::AutoLock lock(mutex_);
+
+  EvictEntry(key);
+
+  if (!CanFitMemoryCacheEntry(key.size() + data.size())) {
+    return nullptr;
   }
 
-  // Evict least used entries until we have enough room to add the new entry.
-  auto entry = std::make_unique<Entry>(std::string(key), value, value_size);
-  DCHECK(entry->TotalSize() == entry_size);
-  while (current_size_ + entry_size > max_size_) {
-    EvictEntry(lru_.head()->value());
-  }
-
-  // Add the entry size to the overall size and update the eviction queue.
-  current_size_ += entry->TotalSize();
-  lru_.Append(entry.get());
-
-  auto [it, inserted] = entries_.insert(std::move(entry));
-  DCHECK(inserted);
+  auto entry = base::MakeRefCounted<MemoryCacheEntry>(key, std::move(data));
+  InsertEntry(entry);
+  return entry;
 }
 
 void MemoryCache::PurgeMemory(base::MemoryPressureLevel memory_pressure_level) {
@@ -151,7 +145,14 @@ void MemoryCache::OnMemoryDump(const std::string& dump_name,
                   MemoryAllocatorDump::kUnitsObjects, entries_.size());
 }
 
-void MemoryCache::EvictEntry(MemoryCache::Entry* entry) {
+void MemoryCache::EvictEntry(std::string_view key) {
+  if (auto it = entries_.find(key); it != entries_.end()) {
+    const scoped_refptr<MemoryCacheEntry>& entry = *it;
+    EvictEntry(entry.get());
+  }
+}
+
+void MemoryCache::EvictEntry(MemoryCacheEntry* entry) {
   // Always remove the entry from the LRU first because removing it from the
   // entry map will cause the entry to be destroyed.
   entry->RemoveFromList();
@@ -162,4 +163,34 @@ void MemoryCache::EvictEntry(MemoryCache::Entry* entry) {
   // Finally remove the entry from the map thereby destroying the entry.
   entries_.erase(entry->Key());
 }
+
+void MemoryCache::InsertEntry(scoped_refptr<MemoryCacheEntry> entry) {
+  // Evict least used entries until we have enough room to add the new entry.
+  while (current_size_ + entry->TotalSize() > max_size_) {
+    EvictEntry(lru_.head()->value());
+  }
+
+  // Add the entry size to the overall size and update the eviction queue.
+  current_size_ += entry->TotalSize();
+  lru_.Append(entry.get());
+
+  auto [it, inserted] = entries_.insert(entry);
+  DCHECK(inserted);
+}
+
+bool MemoryCache::CanFitMemoryCacheEntry(size_t data_size) const {
+  // Don't need to do anything if we are not storing anything.
+  if (data_size == 0) {
+    return false;
+  }
+
+  // If this entry is larger than we can make space for, don't allow it to be
+  // stored.
+  if (data_size >= max_size_) {
+    return false;
+  }
+
+  return true;
+}
+
 }  // namespace gpu

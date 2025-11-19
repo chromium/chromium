@@ -15,22 +15,30 @@
 #include "base/trace_event/trace_log.h"
 #include "components/persistent_cache/backend_params.h"
 #include "components/persistent_cache/sqlite/vfs/sandboxed_file.h"
+#include "gpu/command_buffer/service/memory_cache.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace gpu {
+
+namespace {
+static constexpr size_t kDefaultMemoryCacheSizeForTesting = 1 << 16;
+}
 
 class GpuPersistentCacheTest : public testing::Test {
  public:
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    cache_params_ = CreateBackendParams(/*create_new=*/true);
+    cache_params_ = CreateBackendParams("test", /*create_new=*/true);
   }
 
  protected:
-  persistent_cache::BackendParams CreateBackendParams(bool create_new) {
-    base::FilePath db_path = temp_dir_.GetPath().AppendASCII("test.db");
+  persistent_cache::BackendParams CreateBackendParams(
+      const std::string& db_file_name,
+      bool create_new) {
+    base::FilePath db_path =
+        temp_dir_.GetPath().AppendASCII(db_file_name + ".db");
     base::FilePath journal_path =
-        temp_dir_.GetPath().AppendASCII("test.journal");
+        temp_dir_.GetPath().AppendASCII(db_file_name + ".journal");
 
     uint32_t file_flags = base::File::FLAG_READ | base::File::FLAG_WRITE;
     if (create_new) {
@@ -53,6 +61,10 @@ class GpuPersistentCacheTest : public testing::Test {
     return params;
   }
 
+  static scoped_refptr<MemoryCache> MakeDefaultMemoryCache() {
+    return base::MakeRefCounted<MemoryCache>(kDefaultMemoryCacheSizeForTesting);
+  }
+
   void InitializeCache() { cache_.InitializeCache(std::move(cache_params_)); }
 
   void RunStoreAndLoadDataMultiThreaded(int num_threads);
@@ -61,19 +73,24 @@ class GpuPersistentCacheTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::ScopedTempDir temp_dir_;
   persistent_cache::BackendParams cache_params_;
-  GpuPersistentCache cache_{"Test"};
+  GpuPersistentCache cache_{"Test", MakeDefaultMemoryCache()};
 };
 
-TEST_F(GpuPersistentCacheTest, StoreAndLoadDataBeforeInitialize) {
+TEST_F(GpuPersistentCacheTest,
+       StoreAndLoadDataBeforeInitializeWithNoMemoryCache) {
   // Don't initialize cache.
+  GpuPersistentCache cache_with_no_memory_cache{"Test", nullptr};
   const std::string key = "my_key";
   const std::string value = "my_value";
 
   // StoreData() won't do anything but also won't crash.
-  cache_.StoreData(key.c_str(), key.size(), value.c_str(), value.size());
+  cache_with_no_memory_cache.StoreData(key.c_str(), key.size(), value.c_str(),
+                                       value.size());
 
   // LoadData() will return zero size since there is no cache yet.
-  EXPECT_EQ(cache_.LoadData(key.c_str(), key.size(), nullptr, 0), 0u);
+  EXPECT_EQ(
+      cache_with_no_memory_cache.LoadData(key.c_str(), key.size(), nullptr, 0),
+      0u);
 }
 
 // Tests basic store and load functionality on a single thread.
@@ -254,8 +271,8 @@ class GpuPersistentCacheAsyncTest : public GpuPersistentCacheTest {
     GpuPersistentCacheTest::SetUp();
     GpuPersistentCache::AsyncDiskWriteOpts options;
     options.task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
-    async_cache_ =
-        std::make_unique<GpuPersistentCache>("TestAsync", std::move(options));
+    async_cache_ = std::make_unique<GpuPersistentCache>(
+        "TestAsync", MakeDefaultMemoryCache(), std::move(options));
     async_cache_->InitializeCache(std::move(cache_params_));
   }
 
@@ -279,8 +296,8 @@ TEST_F(GpuPersistentCacheAsyncTest, StoreAndLoadDataAsync) {
 
   // To verify that the write is delayed, we can create a new cache that reads
   // from the same files.
-  GpuPersistentCache read_cache("TestRead");
-  read_cache.InitializeCache(CreateBackendParams(/*create_new=*/false));
+  GpuPersistentCache read_cache("TestRead", MakeDefaultMemoryCache());
+  read_cache.InitializeCache(CreateBackendParams("test", /*create_new=*/false));
 
   // Immediately loading should fail.
   std::vector<char> buffer(value.size());
@@ -322,8 +339,8 @@ TEST_F(GpuPersistentCacheAsyncTest, StoreAndLoadDataAsync_IdleReschedule) {
   // Destroy the original cache first.
   async_cache_.reset();
 
-  GpuPersistentCache read_cache("TestRead");
-  read_cache.InitializeCache(CreateBackendParams(/*create_new=*/false));
+  GpuPersistentCache read_cache("TestRead", MakeDefaultMemoryCache());
+  read_cache.InitializeCache(CreateBackendParams("test", /*create_new=*/false));
 
   std::vector<char> buffer(value.size());
   size_t loaded_size = read_cache.LoadData(key.c_str(), key.size(),
@@ -348,9 +365,10 @@ TEST_F(GpuPersistentCacheAsyncTest,
   GpuPersistentCache::AsyncDiskWriteOpts options;
   options.task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
   options.max_pending_bytes_to_write = 10;
-  async_cache_ =
-      std::make_unique<GpuPersistentCache>("TestAsync", std::move(options));
-  async_cache_->InitializeCache(CreateBackendParams(/*create_new=*/false));
+  async_cache_ = std::make_unique<GpuPersistentCache>(
+      "TestAsync", MakeDefaultMemoryCache(), std::move(options));
+  async_cache_->InitializeCache(
+      CreateBackendParams("test", /*create_new=*/false));
 
   const std::string key = "my_key";
   const std::string value = "my_value_is_longer_than_10";
@@ -376,8 +394,8 @@ TEST_F(GpuPersistentCacheAsyncTest,
 
   // The write should have happened. We can verify this by creating a new cache
   // that reads from the same files.
-  GpuPersistentCache read_cache("TestRead");
-  read_cache.InitializeCache(CreateBackendParams(/*create_new=*/false));
+  GpuPersistentCache read_cache("TestRead", MakeDefaultMemoryCache());
+  read_cache.InitializeCache(CreateBackendParams("test", /*create_new=*/false));
 
   // Now loading should succeed.
   std::vector<char> buffer(value.size());
@@ -385,6 +403,111 @@ TEST_F(GpuPersistentCacheAsyncTest,
                                            buffer.data(), buffer.size());
   EXPECT_EQ(loaded_size, value.size());
   EXPECT_EQ(std::string(buffer.begin(), buffer.end()), value);
+}
+
+// Test that the persistent cache uses the memory backing if no database files
+// are set
+TEST_F(GpuPersistentCacheTest, MemoryBackingOnly) {
+  const std::string key = "my_key";
+  const std::string value = "my_value";
+  cache_.StoreData(key.c_str(), key.size(), value.c_str(), value.size());
+
+  // Check that the entry exists in the cache.
+  std::vector<char> buffer(value.size());
+  size_t loaded_size =
+      cache_.LoadData(key.c_str(), key.size(), buffer.data(), buffer.size());
+
+  EXPECT_EQ(loaded_size, value.size());
+  EXPECT_EQ(std::string(buffer.begin(), buffer.end()), value);
+}
+
+// Test that the persistent cache uses the memory backing before the database
+// files are initialized
+TEST_F(GpuPersistentCacheTest, MemoryBackingSyncedToDisk) {
+  const std::string key = "my_key";
+  const std::string value = "my_value";
+
+  {
+    // Store the data to the cache without initializing the database files
+    GpuPersistentCache cache{"Test", MakeDefaultMemoryCache()};
+    cache.StoreData(key.c_str(), key.size(), value.c_str(), value.size());
+
+    // Initialize the cache, the memory storage will be written to disk.
+    cache.InitializeCache(
+        CreateBackendParams("MemoryBackingSyncedToDisk", true));
+  }
+
+  // Reload the same persistent cache from disk
+  {
+    GpuPersistentCache cache{"Test", MakeDefaultMemoryCache()};
+    cache.InitializeCache(
+        CreateBackendParams("MemoryBackingSyncedToDisk", false));
+
+    // Check that the entry exists in the cache.
+    std::vector<char> buffer(value.size());
+    size_t loaded_size =
+        cache.LoadData(key.c_str(), key.size(), buffer.data(), buffer.size());
+
+    EXPECT_EQ(loaded_size, value.size());
+    EXPECT_EQ(std::string(buffer.begin(), buffer.end()), value);
+  }
+}
+
+// Verifies that data stored in a persistent cache can be loaded back.
+TEST_F(GpuPersistentCacheTest, ReOpenCacheFromFile) {
+  const std::string key = "my_key";
+  const std::string value = "my_value";
+
+  // Store data to the persistent cache via store interface.
+  {
+    scoped_refptr<MemoryCache> memory_cache =
+        base::MakeRefCounted<MemoryCache>(1024);
+    GpuPersistentCache cache{"Test", memory_cache};
+    cache.InitializeCache(CreateBackendParams("ReOpenCacheFromFile", true));
+
+    cache.StoreData(key.c_str(), key.size(), value.c_str(), value.size());
+
+    // Check that the entry exists in the memory cache.
+    auto memory_entry = memory_cache->Find(key);
+    EXPECT_NE(nullptr, memory_entry);
+    EXPECT_EQ(value.size(), memory_entry->DataSize());
+    EXPECT_EQ(
+        std::string(memory_entry->Data().begin(), memory_entry->Data().end()),
+        value);
+
+    // Check that the entry exists in the persistent cache.
+    std::vector<char> buffer(value.size());
+    size_t loaded_size =
+        cache.LoadData(key.c_str(), key.size(), buffer.data(), buffer.size());
+
+    EXPECT_EQ(loaded_size, value.size());
+    EXPECT_EQ(std::string(buffer.begin(), buffer.end()), value);
+  }
+
+  // Reload the same persistent cache from disk
+  {
+    scoped_refptr<MemoryCache> memory_cache =
+        base::MakeRefCounted<MemoryCache>(1024);
+    GpuPersistentCache cache{"Test", memory_cache};
+    cache.InitializeCache(CreateBackendParams("ReOpenCacheFromFile", false));
+
+    // Check that the entry exists in the persistent cache.
+    std::vector<char> buffer(value.size());
+    size_t loaded_size =
+        cache.LoadData(key.c_str(), key.size(), buffer.data(), buffer.size());
+
+    EXPECT_EQ(loaded_size, value.size());
+    EXPECT_EQ(std::string(buffer.begin(), buffer.end()), value);
+
+    // Check that the memory cache now contains the same entry after the
+    // LoadData() call above
+    auto memory_entry = memory_cache->Find(key);
+    EXPECT_NE(nullptr, memory_entry);
+    EXPECT_EQ(value.size(), memory_entry->DataSize());
+    EXPECT_EQ(
+        std::string(memory_entry->Data().begin(), memory_entry->Data().end()),
+        value);
+  }
 }
 
 }  // namespace gpu

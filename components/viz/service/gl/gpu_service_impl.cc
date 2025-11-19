@@ -225,6 +225,8 @@ GpuServiceImpl::GpuServiceImpl(
       // outlives the DawnContextProvider.
       std::unique_ptr<gpu::webgpu::DawnCachingInterface> caching_interface;
       if (features::kSkiaGraphiteDawnUsePersistentCache.Get()) {
+        auto memory_cache = base::MakeRefCounted<gpu::MemoryCache>(
+            gpu::GetDefaultGpuDiskCacheSize());
         gpu::GpuPersistentCache::AsyncDiskWriteOpts async_opts;
         async_opts.task_runner = base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
@@ -234,6 +236,7 @@ GpuServiceImpl::GpuServiceImpl(
         caching_interface = dawn_caching_interface_factory_->CreateInstance(
             gpu::kGraphiteDawnGpuDiskCacheHandle,
             std::make_unique<gpu::GpuPersistentCache>("GraphiteDawn",
+                                                      std::move(memory_cache),
                                                       std::move(async_opts)));
       } else {
         auto cache_blob_callback = base::BindRepeating(

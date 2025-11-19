@@ -11,8 +11,10 @@
 #include <memory>
 #include <string_view>
 
+#include "base/memory/memory_pressure_listener.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/trace_event/memory_dump_provider.h"
 #include "components/persistent_cache/backend_params.h"
 #include "components/persistent_cache/buffer_provider.h"
 #include "gpu/command_buffer/common/shm_count.h"
@@ -25,8 +27,12 @@ class PersistentCache;
 
 namespace gpu {
 
+class MemoryCache;
+
 // Wraps a persistent_cache::PersistentCache to be used as a Dawn, Skia or ANGLE
-// cache.
+// cache. Entries are always stored in a MemoryCache and PersistentCache as well
+// once it is initialized. Entries loaded before the PersistentCache is
+// initialized are copied into it on initialization.
 class GPU_GLES2_EXPORT GpuPersistentCache
     : public dawn::platform::CachingInterface,
       public GrContextOptions::PersistentCache {
@@ -51,6 +57,7 @@ class GPU_GLES2_EXPORT GpuPersistentCache
 
   // If `async_write_options.task_runner` is null, then writes are synchronous.
   explicit GpuPersistentCache(std::string_view cache_prefix,
+                              scoped_refptr<MemoryCache> memory_cache,
                               AsyncDiskWriteOpts async_write_options = {});
   ~GpuPersistentCache() override;
 
@@ -86,8 +93,10 @@ class GPU_GLES2_EXPORT GpuPersistentCache
                       const void* value,
                       int64_t value_size);
 
-  bool LoadEntry(std::string_view key,
-                 persistent_cache::BufferProvider buffer_provider);
+  void PurgeMemory(base::MemoryPressureLevel memory_pressure_level);
+
+  void OnMemoryDump(const std::string& dump_name,
+                    base::trace_event::ProcessMemoryDump* pmd);
 
  private:
   struct DiskCache;
@@ -102,7 +111,12 @@ class GPU_GLES2_EXPORT GpuPersistentCache
   std::atomic<size_t> load_count_ = 0;
   std::atomic<size_t> store_count_ = 0;
 
-  base::AtomicFlag initialized_;
+  // A MemoryCache is used for fast access to the most recently used elements of
+  // the cache and allows data to be stored before the persistent_cache is
+  // initialized
+  scoped_refptr<MemoryCache> memory_cache_;
+
+  base::AtomicFlag disk_cache_initialized_;
   scoped_refptr<DiskCache> disk_cache_;
   const AsyncDiskWriteOpts async_write_options_;
 };

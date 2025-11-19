@@ -21,6 +21,7 @@
 #include "base/types/expected_macros.h"
 #include "components/persistent_cache/persistent_cache.h"
 #include "components/persistent_cache/transaction_error.h"
+#include "gpu/command_buffer/service/memory_cache.h"
 #include "ui/gl/gl_bindings.h"
 
 namespace gpu {
@@ -145,15 +146,14 @@ struct GpuPersistentCache::DiskCache
 
   bool Load(std::string_view key,
             persistent_cache::BufferProvider buffer_provider);
-  void Store(std::string_view key, base::span<const uint8_t> value);
+  void Store(scoped_refptr<MemoryCacheEntry> entry);
 
  private:
   friend class base::RefCountedThreadSafe<DiskCache>;
   ~DiskCache();
 
-  void DoStoreToDisk(std::string_view key, base::span<const uint8_t> value);
-  void DoDelayedStoreToDisk(std::string key,
-                            std::vector<uint8_t> value,
+  void DoStoreToDisk(scoped_refptr<MemoryCacheEntry> entry);
+  void DoDelayedStoreToDisk(scoped_refptr<MemoryCacheEntry> entry,
                             uint64_t idle_id);
 
   const std::string cache_prefix_;
@@ -207,8 +207,8 @@ bool GpuPersistentCache::DiskCache::Load(
   return metadata.has_value();  // Hit if present; miss otherwise.
 }
 
-void GpuPersistentCache::DiskCache::Store(std::string_view key,
-                                          base::span<const uint8_t> value) {
+void GpuPersistentCache::DiskCache::Store(
+    scoped_refptr<MemoryCacheEntry> entry) {
   DiskCacheTraceScope trace_scope("GpuPersistentCache::DiskCache::Store");
   const uint64_t idle_id =
       current_idle_id_.fetch_add(1, std::memory_order_relaxed) + 1;
@@ -216,12 +216,12 @@ void GpuPersistentCache::DiskCache::Store(std::string_view key,
 
   if (!disk_write_task_runner_) {
     // No async task runner, write to disk immediately.
-    DoStoreToDisk(key, value);
+    DoStoreToDisk(entry);
     return;
   }
 
   // Increment the pending bytes in write queue.
-  const size_t bytes_to_write = key.size() + value.size();
+  const size_t bytes_to_write = entry->TotalSize();
   const auto pending_bytes = pending_bytes_to_write_.fetch_add(
       bytes_to_write, std::memory_order_relaxed);
 
@@ -230,17 +230,15 @@ void GpuPersistentCache::DiskCache::Store(std::string_view key,
   disk_write_task_runner_->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&GpuPersistentCache::DiskCache::DoDelayedStoreToDisk,
-                     base::WrapRefCounted(this), std::string(key),
-                     std::vector<uint8_t>(value.begin(), value.end()), idle_id),
+                     base::WrapRefCounted(this), std::move(entry), idle_id),
       kDiskWriteDelaySeconds);
 }
 
 void GpuPersistentCache::DiskCache::DoStoreToDisk(
-    std::string_view key,
-    base::span<const uint8_t> value) {
+    scoped_refptr<MemoryCacheEntry> entry) {
   ScopedHistogramTimer timer(GetHistogramName(cache_prefix_, "Store"));
   TRACE_EVENT0("gpu", "GpuPersistentCache::DiskCache::DoStoreToDisk");
-  RETURN_IF_ERROR(cache_->Insert(key, value),
+  RETURN_IF_ERROR(cache_->Insert(entry->Key(), entry->Data()),
                   [&](persistent_cache::TransactionError error) {
                     HandlePersistentCacheError(
                         &use_shader_cache_shm_count_->data, error);
@@ -248,8 +246,7 @@ void GpuPersistentCache::DiskCache::DoStoreToDisk(
 }
 
 void GpuPersistentCache::DiskCache::DoDelayedStoreToDisk(
-    std::string key,
-    std::vector<uint8_t> value,
+    scoped_refptr<MemoryCacheEntry> entry,
     uint64_t idle_id) {
   DiskCacheTraceScope trace_scope(
       "GpuPersistentCache::DiskCache::DoDelayedStoreToDisk");
@@ -273,8 +270,8 @@ void GpuPersistentCache::DiskCache::DoDelayedStoreToDisk(
   trace_scope.SetPendingBytes(pending_bytes);
 
   if (idle_id_match || exceed_max_pending_bytes) {
-    DoStoreToDisk(key, value);
-    pending_bytes_to_write_.fetch_sub(key.size() + value.size(),
+    DoStoreToDisk(entry);
+    pending_bytes_to_write_.fetch_sub(entry->TotalSize(),
                                       std::memory_order_relaxed);
     return;
   }
@@ -283,15 +280,17 @@ void GpuPersistentCache::DiskCache::DoDelayedStoreToDisk(
   disk_write_task_runner_->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&GpuPersistentCache::DiskCache::DoDelayedStoreToDisk,
-                     base::WrapRefCounted(this), std::move(key),
-                     std::move(value), current_idle_id),
+                     base::WrapRefCounted(this), std::move(entry),
+                     current_idle_id),
       kDiskWriteDelaySeconds);
 }
 
 // GpuPersistentCache
 GpuPersistentCache::GpuPersistentCache(std::string_view cache_prefix,
+                                       scoped_refptr<MemoryCache> memory_cache,
                                        AsyncDiskWriteOpts async_write_options)
     : cache_prefix_(cache_prefix),
+      memory_cache_(std::move(memory_cache)),
       async_write_options_(std::move(async_write_options)) {}
 
 GpuPersistentCache::~GpuPersistentCache() = default;
@@ -299,14 +298,28 @@ GpuPersistentCache::~GpuPersistentCache() = default;
 void GpuPersistentCache::InitializeCache(
     persistent_cache::BackendParams backend_params,
     scoped_refptr<RefCountedGpuProcessShmCount> use_shader_cache_shm_count) {
-  CHECK(!initialized_.IsSet());
+  CHECK(!disk_cache_initialized_.IsSet());
   auto cache =
       persistent_cache::PersistentCache::Open(std::move(backend_params));
   if (cache) {
     disk_cache_ = base::MakeRefCounted<DiskCache>(
         cache_prefix_, std::move(cache), async_write_options_,
         std::move(use_shader_cache_shm_count));
-    initialized_.Set();
+    disk_cache_initialized_.Set();
+
+    if (memory_cache_) {
+      // If opening the persistent cache succeeded, copy all entries from the
+      // memory cache into it.
+      memory_cache_->ForEach([this](MemoryCacheEntry* memory_entry) {
+        // Query the existence of the disk cache entry by providing an empty
+        // buffer so no data is copied.
+        bool exists = disk_cache_->Load(
+            memory_entry->Key(), [](size_t) { return base::span<uint8_t>(); });
+        if (!exists) {
+          disk_cache_->Store(memory_entry);
+        }
+      });
+    }
   }
 }
 
@@ -396,32 +409,102 @@ int64_t GpuPersistentCache::GLBlobCacheGet(const void* key,
   return static_cast<GLsizeiptr>(discovered_size);
 }
 
-bool GpuPersistentCache::LoadEntry(
-    std::string_view key,
-    persistent_cache::BufferProvider buffer_provider) {
-  return LoadImpl(key, buffer_provider);
+void GpuPersistentCache::PurgeMemory(
+    base::MemoryPressureLevel memory_pressure_level) {
+  if (memory_cache_) {
+    memory_cache_->PurgeMemory(memory_pressure_level);
+  }
+}
+
+void GpuPersistentCache::OnMemoryDump(
+    const std::string& dump_name,
+    base::trace_event::ProcessMemoryDump* pmd) {
+  if (memory_cache_) {
+    memory_cache_->OnMemoryDump(dump_name, pmd);
+  }
 }
 
 bool GpuPersistentCache::LoadImpl(
     std::string_view key,
     persistent_cache::BufferProvider buffer_provider) {
-  const bool initialized = initialized_.IsSet();
+  const bool disk_cache_initialized = disk_cache_initialized_.IsSet();
   TRACE_EVENT1("gpu", "GpuPersistentCache::LoadImpl", "persistent_cache",
-               initialized);
+               disk_cache_initialized);
 
   // Track cache available for the 1st kMaxLoadStoreForTrackingCacheAvailable
   // loads.
   if (load_count_.fetch_add(1, std::memory_order_relaxed) <
       kMaxLoadStoreForTrackingCacheAvailable) {
     base::UmaHistogramBoolean(
-        GetHistogramName(cache_prefix_, "Load.CacheAvailable"), initialized);
+        GetHistogramName(cache_prefix_, "Load.CacheAvailable"),
+        disk_cache_initialized);
   }
 
-  if (!initialized) {
+  if (memory_cache_) {
+    if (auto memory_entry = memory_cache_->Find(key)) {
+      base::span<uint8_t> output_buffer =
+          buffer_provider(memory_entry->DataSize());
+      return memory_entry->ReadData(output_buffer.data(), output_buffer.size());
+    }
+  }
+
+  if (!disk_cache_initialized) {
     return false;
   }
 
-  return disk_cache_->Load(key, buffer_provider);
+  base::span<uint8_t> provided_buffer;
+  base::HeapArray<uint8_t> local_allocated_buffer;
+
+  // A BufferProvider for PersistentCache that returns one of:
+  // 1.  a view into the buffer at `provided_buffer` if it is big enough
+  // 2.  an empty span if no memory_cache_ exists, or
+  // 3.  a view into a new base::HeapArray (`local_allocated_buffer`)
+  auto wrapped_buffer_provider =
+      [buffer_provider, memory_cache_exists = memory_cache_ != nullptr,
+       &provided_buffer, &local_allocated_buffer](size_t content_size) {
+        // First attempt to use the buffer_provider to allocate a buffer for the
+        // result.
+        provided_buffer = buffer_provider(content_size);
+
+        // If the `provided_buffer` is large enough, simply return it and let
+        // the disk cache write into it
+        if (provided_buffer.size() >= content_size) {
+          return provided_buffer.first(content_size);  // Case 1.
+        }
+
+        if (!memory_cache_exists) {
+          return base::span<uint8_t>();  // Case 2.
+        }
+
+        // Allocate our own buffer into `local_allocated_buffer` so the result
+        // can be put in the memory cache
+        DCHECK(content_size != 0);
+        local_allocated_buffer = base::HeapArray<uint8_t>::Uninit(content_size);
+        return base::span<uint8_t>(local_allocated_buffer);  // Case 3.
+      };
+
+  if (!disk_cache_->Load(key, wrapped_buffer_provider)) {
+    return false;
+  }
+
+  if (memory_cache_) {
+    // Verify the assumptions above. There should always be data in one of the
+    // two buffers if the load was successful and a memory cache exists.
+    DCHECK(!local_allocated_buffer.empty() || !provided_buffer.empty());
+
+    // After loading from the disk cache, copy the entry into the memory cache
+    // for faster access on future loads.
+    if (!local_allocated_buffer.empty()) {
+      // Prefer the `local_allocated_buffer` because it can be moved directly
+      // into the memory cache.
+      memory_cache_->Store(key, std::move(local_allocated_buffer));
+    } else {
+      // Otherwise we need to copy the result from the user provided buffer
+      memory_cache_->Store(key, provided_buffer);
+    }
+  }
+
+  return true;
 }
 
 void GpuPersistentCache::StoreData(const void* key,
@@ -456,23 +539,35 @@ void GpuPersistentCache::GLBlobCacheSet(const void* key,
 
 void GpuPersistentCache::StoreImpl(std::string_view key,
                                    base::span<const uint8_t> value) {
-  const bool initialized = initialized_.IsSet();
+  const bool disk_cache_initialized = disk_cache_initialized_.IsSet();
   TRACE_EVENT1("gpu", "GpuPersistentCache::StoreImpl", "persistent_cache",
-               initialized);
+               disk_cache_initialized);
 
   // Track cache available for the 1st kMaxLoadStoreForTrackingCacheAvailable
   // stores.
   if (store_count_.fetch_add(1, std::memory_order_relaxed) <
       kMaxLoadStoreForTrackingCacheAvailable) {
     base::UmaHistogramBoolean(
-        GetHistogramName(cache_prefix_, "Store.CacheAvailable"), initialized);
+        GetHistogramName(cache_prefix_, "Store.CacheAvailable"),
+        disk_cache_initialized);
   }
 
-  if (!initialized) {
+  scoped_refptr<MemoryCacheEntry> memory_cache_entry;
+  if (memory_cache_) {
+    memory_cache_entry = memory_cache_->Store(key, value);
+  }
+
+  if (!disk_cache_initialized) {
     return;
   }
 
-  disk_cache_->Store(key, value);
+  // If there was no memory cache, wrap the data in a new MemoryCacheEntry for
+  // insertion.
+  if (!memory_cache_entry) {
+    memory_cache_entry = base::MakeRefCounted<MemoryCacheEntry>(key, value);
+  }
+
+  disk_cache_->Store(memory_cache_entry);
 }
 
 void BindCacheToCurrentOpenGLContext(GpuPersistentCache* cache) {

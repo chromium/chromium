@@ -293,66 +293,7 @@ TEST_F(DawnCachingInterfaceTest, TestAggressiveCacheAndMemoryPressure) {
   }
 }
 
-// Verifies that data stored in a persistent cache can be loaded back.
-TEST_F(DawnCachingInterfaceTest, StoreAndLoadWithPersistentCache) {
-  base::ScopedTempDir temp_dir;
-  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  auto OpenPersistentCache =
-      [&temp_dir]() -> std::unique_ptr<GpuPersistentCache> {
-    auto backend = persistent_cache::BackendStorage(temp_dir.GetPath())
-                       .MakeBackend(base::FilePath(FILE_PATH_LITERAL("test")));
-    CHECK(backend);
-    auto params = backend->ExportReadWriteParams();
-    CHECK(params);
-    backend.reset();
-    auto persistent_cache = std::make_unique<GpuPersistentCache>("Test");
-    persistent_cache->InitializeCache(*std::move(params));
-    return persistent_cache;
-  };
 
-  // Store data to the persistent cache via store interface.
-  {
-    scoped_refptr<MemoryCache> memory_cache =
-        base::MakeRefCounted<MemoryCache>(1024);
-    DawnCachingInterfaceFactory store_factory(base::BindRepeating(
-        [](scoped_refptr<MemoryCache> cache) { return cache; }, memory_cache));
-    auto store_interface =
-        store_factory.CreateInstance(handle_, OpenPersistentCache());
-    store_interface->StoreData(kKey.data(), kKeySize, kData.data(), kDataSize);
-
-    // Check that the entry exists in the memory cache.
-    char buffer[kDataSize];
-    EXPECT_EQ(kDataSize, memory_cache->LoadData(std::string(kKey), nullptr, 0));
-    EXPECT_EQ(kDataSize,
-              memory_cache->LoadData(std::string(kKey), buffer, kDataSize));
-    EXPECT_EQ(0, memcmp(buffer, kData.data(), kDataSize));
-  }
-
-  // Use the same persistent cache but with different memory cache.
-  {
-    scoped_refptr<MemoryCache> memory_cache2 =
-        base::MakeRefCounted<MemoryCache>(1024);
-    DawnCachingInterfaceFactory load_factory(base::BindRepeating(
-        [](scoped_refptr<MemoryCache> cache) { return cache; }, memory_cache2));
-    auto load_interface =
-        load_factory.CreateInstance(handle_, OpenPersistentCache());
-
-    EXPECT_EQ(0u, memory_cache2->LoadData(std::string(kKey), nullptr, 0));
-
-    // Verify that we can query the existing entry.
-    char buffer[kDataSize];
-    EXPECT_EQ(kDataSize,
-              load_interface->LoadData(kKey.data(), kKeySize, nullptr, 0));
-    EXPECT_EQ(kDataSize, load_interface->LoadData(kKey.data(), kKeySize, buffer,
-                                                  kDataSize));
-    EXPECT_EQ(0, memcmp(buffer, kData.data(), kDataSize));
-
-    // Check that the memory cache now contains the same entry after the
-    // LoadData() call above
-    EXPECT_EQ(kDataSize,
-              memory_cache2->LoadData(std::string(kKey), nullptr, 0));
-  }
-}
 
 }  // namespace
 }  // namespace gpu::webgpu
