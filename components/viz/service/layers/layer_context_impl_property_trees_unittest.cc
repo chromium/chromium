@@ -2028,8 +2028,10 @@ TEST_F(LayerContextImplUpdateDisplayTreeScrollNodeTest,
                 *inner_scroll_node),
             kDefaultOverscroll);
   // Using the same elastic overscroll again, should result in no change.
+  // Since the elastic overscroll value has not changed, scroll properties
+  // are not marked as changed, MoveChangeTrackingToLayers is not called,
+  // and draw properties do not need an update.
   EXPECT_FALSE(active_tree->needs_update_draw_properties());
-
   // Update to a new non-zero overscroll.
   const gfx::Vector2dF kOverscroll1(10.f, 20.f);
   auto tree_props = mojom::ScrollTreeUpdate::New();

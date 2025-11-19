@@ -417,6 +417,9 @@ TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateDisplayTransformHint) {
   EXPECT_TRUE(
       layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
   EXPECT_EQ(active_tree->display_transform_hint(), kTransform2);
+  // Updating the display transform hint does not affect property trees, so
+  // MoveChangeTrackingToLayers is not called and draw properties do not need
+  // an update.
   EXPECT_FALSE(active_tree->needs_update_draw_properties());
 
   // Update to another transform.
@@ -427,6 +430,9 @@ TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateDisplayTransformHint) {
   EXPECT_TRUE(
       layer_context_impl_->DoUpdateDisplayTree(std::move(update3)).has_value());
   EXPECT_EQ(active_tree->display_transform_hint(), kTransform3);
+  // Updating the display transform hint does not affect property trees, so
+  // MoveChangeTrackingToLayers is not called and draw properties do not need
+  // an update.
   EXPECT_FALSE(active_tree->needs_update_draw_properties());
 
   // Note: No need to test invalid enum values as mojom handles that.
@@ -455,6 +461,9 @@ TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateMaxSafeAreaInsetBottom) {
   EXPECT_TRUE(
       layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
   EXPECT_EQ(active_tree->max_safe_area_inset_bottom(), kInset1);
+  // Updating the max safe area inset does not affect property trees, so
+  // MoveChangeTrackingToLayers is not called and draw properties do not need
+  // an update.
   EXPECT_FALSE(active_tree->needs_update_draw_properties());
 
   // Update to a different non-zero inset (e.g. smaller).
@@ -464,6 +473,9 @@ TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateMaxSafeAreaInsetBottom) {
   EXPECT_TRUE(
       layer_context_impl_->DoUpdateDisplayTree(std::move(update3)).has_value());
   EXPECT_EQ(active_tree->max_safe_area_inset_bottom(), kInset2);
+  // Updating the max safe area inset does not affect property trees, so
+  // MoveChangeTrackingToLayers is not called and draw properties do not need
+  // an update.
   EXPECT_FALSE(active_tree->needs_update_draw_properties());
 }
 TEST_F(LayerContextImplLayerTreePropertiesTest,

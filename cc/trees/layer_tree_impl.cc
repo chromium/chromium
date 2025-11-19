@@ -894,19 +894,34 @@ void LayerTreeImpl::PullLayerTreePropertiesFrom(CommitState& commit_state) {
 
 void LayerTreeImpl::PushPropertyTreesTo(LayerTreeImpl* target_tree) {
   TRACE_EVENT0("cc", "LayerTreeImpl::PushPropertyTreesTo");
-  // Property trees may store damage status. We preserve the active tree
-  // damage status by pushing the damage status from active tree property
-  // trees to pending tree property trees or by moving it onto the layers.
   bool preserve_change_tracking = false;
+
+  // If there is no change in the active tree's property tree, pending tree's
+  // property tree is directly overwritten on active tree via
+  // |target_tree->SetPropertyTrees()|.
   if (target_tree->property_trees()->changed()) {
     if (property_trees()->sequence_number() ==
         target_tree->property_trees()->sequence_number()) {
+      // If active tree's property tree have changed, and both active tree and
+      // pending tree's property tree have same sequence number/structure,
+      // i.e., no new nodes were added or removed, both property trees can
+      // be merged. This is done by setting |preserve_change_tracking| here so
+      // that |target_tree->SetPropertyTrees()| can merge it.
       preserve_change_tracking = true;
     } else {
+      // If active tree's property tree have changed in a way that a new node
+      // was added or removed and the property trees of both pending and active
+      // tree can not be merged, all active tree changes are first moved to
+      // layers to preserve those changes before
+      // |target_tree->SetPropertyTrees()| overwrites the active tree's
+      // property tree with pending tree's property tree.
       target_tree->MoveChangeTrackingToLayers();
     }
   }
 
+  // This either overwrites active tree's property tree completely with pending
+  // tree's property tree OR merge pending tree's property tree on active tree's
+  // property tree depending upon |preserve_change_tracking| flag.
   target_tree->SetPropertyTrees(property_trees_, preserve_change_tracking);
 
   EventMetrics::List events_metrics, raster_event_metrics;
@@ -1037,9 +1052,28 @@ void LayerTreeImpl::PushPropertiesTo(LayerTreeImpl* target_tree) {
     target_tree->AddViewTransitionRequest(std::move(request));
   }
 
-  // Make sure that property tree based changes are moved to layers
-  // and draw properties are invalidated.
-  target_tree->MoveChangeTrackingToLayers();
+  // With TreesInViz, the Viz process is responsible for calling
+  // MoveChangeTrackingToLayers. Calling it here is redundant because the
+  // renderer's active tree is not used for drawing. Also calling it here
+  // causes fanout of property tree to all layers which increases serialization
+  // overhead with TreesInViz. However, it does need to update the top-level
+  // "changed" status of its property trees so that HasDamage() will do damage
+  // calculations as expected. This is achieved by calling
+  // |UpdateChangeTracking()| on property tree.
+  if (!target_tree->settings().TreesInVizInClientProcess()) {
+    target_tree->MoveChangeTrackingToLayers();
+  } else {
+    // Note that both UpdateChangeTracking() and UpdateDrawProperties()
+    // performs property change propagation but there is some difference.
+    // UpdateChangeTracking() is a lightweight operation that updates property
+    // tree damage flags. This is crucial because the Scheduler calls
+    // LayerTreeHostImpl::WillBeginImplFrame(), which in turn calls
+    // HasDamage(). HasDamage() relies on these flags to determine if there is
+    // damage. If there is, the Scheduler proceeds with the frame and
+    // eventually calls the heavyweight UpdateDrawProperties() to perform the
+    // full calculations required for drawing.
+    target_tree->property_trees()->UpdateChangeTracking();
+  }
   target_tree->SetCreatedBeginFrameArgs(std::move(created_begin_frame_args_));
 }
 

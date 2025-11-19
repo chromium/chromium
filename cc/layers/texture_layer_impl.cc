@@ -117,6 +117,18 @@ bool TextureLayerImpl::WillDraw(
       // serialized to Viz on the next frame. Without this, the layer may appear
       // blank when it first becomes visible.
       needs_set_resource_push_ = true;
+
+      // When TreesInViz is enabled, the renderer's active tree no longer runs
+      // MoveChangeTrackingToLayers(). This means that property tree changes
+      // (like a layer becoming visible) no longer implicitly trigger
+      // SetNeedsPushProperties() on individual layers.
+      // For TextureLayerImpl, the resource is imported and becomes valid
+      // *during* WillDraw() on the active tree. To ensure this newly valid
+      // resource is serialized to Viz, we must explicitly call
+      // SetNeedsPushProperties() here. This adds the layer to the list of
+      // layers whose properties need to be pushed in the next frame, allowing
+      // SerializeTextureLayerExtra() to pick up the resource.
+      SetNeedsPushProperties();
     }
     own_resource_ = false;
   }

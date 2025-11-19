@@ -1759,8 +1759,9 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
         *update->transform_tree_update));
   }
 
+  bool scroll_properties_changed = false;
   if (update->scroll_tree_update) {
-    ASSIGN_OR_RETURN(const bool scroll_properties_changed,
+    ASSIGN_OR_RETURN(scroll_properties_changed,
                      UpdateScrollTreeProperties(
                          property_trees, property_trees.scroll_tree_mutable(),
                          *update->scroll_tree_update));
@@ -2011,6 +2012,14 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
   auto* animation_host = static_cast<cc::AnimationHost*>(layers.mutator_host());
   RETURN_IF_ERROR(DeserializeAnimationUpdates(*update, *animation_host));
   host_impl_->ActivateAnimations();
+
+  // Only propagate property tree changes to layers if the property trees
+  // actually changed. This avoids redundant work and prevents incorrectly
+  // flagging draw properties as needing an update when no relevant properties
+  // have changed.
+  if (any_tree_changed || scroll_properties_changed) {
+    layers.MoveChangeTrackingToLayers();
+  }
 
   return base::ok();
 }
