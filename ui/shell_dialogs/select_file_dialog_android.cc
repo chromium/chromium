@@ -4,15 +4,18 @@
 
 #include "select_file_dialog_android.h"
 
+#include "base/android/content_uri_utils.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/check.h"
+#include "base/files/file_util.h"
 #include "base/notimplemented.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/threading/thread_restrictions.h"
 #include "ui/android/window_android.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "ui/shell_dialogs/selected_file_info.h"
@@ -50,6 +53,12 @@ std::string IntentActionFromType(SelectFileDialog::Type type,
   }
 }
 
+bool IsSelectingFolder(SelectFileDialog::Type type) {
+  return type == SelectFileDialog::SELECT_FOLDER ||
+         type == SelectFileDialog::SELECT_UPLOAD_FOLDER ||
+         type == SelectFileDialog::SELECT_EXISTING_FOLDER;
+}
+
 }  // namespace
 
 // static
@@ -69,6 +78,14 @@ void SelectFileDialogImpl::OnFileSelected(
   std::string path = ConvertJavaStringToUTF8(env, filepath);
   std::string file_name = ConvertJavaStringToUTF8(env, display_name);
   base::FilePath file_path = base::FilePath(path);
+
+  if (IsSelectingFolder(select_type_)) {
+    std::optional<base::FilePath> virtual_path =
+        base::ResolveToVirtualDocumentPath(file_path);
+    CHECK(virtual_path);
+    file_path = *virtual_path;
+  }
+
   ui::SelectedFileInfo file_info(file_path);
   if (!file_name.empty())
     file_info.display_name = file_name;
@@ -99,6 +116,13 @@ void SelectFileDialogImpl::OnMultipleFilesSelected(
                  env->GetObjectArrayElement(display_names.obj(), i)));
     std::string display_name =
         ConvertJavaStringToUTF8(env, display_name_ref.obj());
+
+    if (IsSelectingFolder(select_type_)) {
+      std::optional<base::FilePath> virtual_path =
+          base::ResolveToVirtualDocumentPath(file_path);
+      CHECK(virtual_path);
+      file_path = *virtual_path;
+    }
 
     ui::SelectedFileInfo file_info(file_path);
     file_info.display_name = display_name;
@@ -144,9 +168,10 @@ void SelectFileDialogImpl::SelectFileImpl(Type type,
                                           const GURL* caller) {
   JNIEnv* env = base::android::AttachCurrentThread();
 
-  ScopedJavaLocalRef<jstring> intent_action =
+  select_type_ = type;
+  ScopedJavaLocalRef<jstring> intent_action_java =
       base::android::ConvertUTF8ToJavaString(
-          env, IntentActionFromType(type, open_writable_));
+          env, IntentActionFromType(select_type_, open_writable_));
   ScopedJavaLocalRef<jobjectArray> accept_types_java =
       base::android::ToJavaArrayOfStrings(env, accept_types_);
 
@@ -166,9 +191,9 @@ void SelectFileDialogImpl::SelectFileImpl(Type type,
   }
 
   Java_SelectFileDialog_selectFile(
-      env, java_object_, intent_action, accept_types_java, use_media_capture_,
-      accept_multiple_files, default_directory.value(), suggested_name.value(),
-      owning_window->GetJavaObject());
+      env, java_object_, intent_action_java, accept_types_java,
+      use_media_capture_, accept_multiple_files, default_directory.value(),
+      suggested_name.value(), owning_window->GetJavaObject());
 }
 
 SelectFileDialogImpl::~SelectFileDialogImpl() {

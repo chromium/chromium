@@ -61,6 +61,7 @@ class SelectFileDialogImpl : public SelectFileDialog {
   std::vector<std::u16string> accept_types_;
   bool use_media_capture_ = false;
   bool open_writable_ = false;
+  SelectFileDialog::Type select_type_ = SELECT_NONE;
 
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
 };
