@@ -24,6 +24,7 @@
 #include "ipc/constants.mojom.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
+#include "net/ssl/ssl_info.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "url/gurl.h"
@@ -98,6 +99,8 @@ struct WebRequestInfo {
   // Fill in response data for this request.
   void AddResponseInfoFromResourceResponse(
       const network::mojom::URLResponseHead& response);
+
+  void AddSslInfo(const std::optional<net::SSLInfo>& ssl_info);
 
   // Erases all actions in `dnr_actions` that are associated with the given
   // `extension_id`.
@@ -209,6 +212,9 @@ struct WebRequestInfo {
   // TODO(karandeepb, mcnee): For subresources, having "parent" in the name is
   // misleading. This should be renamed to indicate that this is the initiator.
   const content::GlobalRenderFrameHostId parent_routing_id;
+
+  // For SecurityInfo object.
+  std::optional<net::SSLInfo> ssl_info;
 };
 
 }  // namespace extensions

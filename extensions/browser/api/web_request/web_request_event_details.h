@@ -79,6 +79,10 @@ class WebRequestEventDetails {
   void SetResponseHeaders(const WebRequestInfo& request,
                           const net::HttpResponseHeaders* response_headers);
 
+  // Sets the following keys:
+  // - securityInfo
+  void SetSecurityInfo(const WebRequestInfo& request);
+
   // Sets the following key:
   // - fromCache
   // - ip

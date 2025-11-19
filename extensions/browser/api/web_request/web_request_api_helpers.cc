@@ -602,6 +602,11 @@ bool ExtraInfoSpec::InitFromValue(const base::Value& value,
       *extra_info_spec |= REQUEST_BODY;
     } else if (*str == "extraHeaders") {
       *extra_info_spec |= EXTRA_HEADERS;
+    } else if (*str == "securityInfo") {
+      *extra_info_spec |= SECURITY_INFO;
+    } else if (*str == "securityInfoRawDer") {
+      *extra_info_spec |= SECURITY_INFO_RAW_DER;
+      *extra_info_spec |= SECURITY_INFO;
     } else {
       return false;
     }

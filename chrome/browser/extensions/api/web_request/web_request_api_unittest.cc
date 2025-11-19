@@ -285,6 +285,15 @@ TEST_F(ExtensionWebRequestTest, InitFromValue) {
   TestInitFromValue(&profile_, "requestBody", true,
                     ExtraInfoSpec::REQUEST_BODY);
 
+  TestInitFromValue(&profile_, "securityInfo", true,
+                    ExtraInfoSpec::SECURITY_INFO);
+  TestInitFromValue(
+      &profile_, "securityInfo,securityInfoRawDer", true,
+      ExtraInfoSpec::SECURITY_INFO | ExtraInfoSpec::SECURITY_INFO_RAW_DER);
+  TestInitFromValue(
+      &profile_, "securityInfoRawDer", true,
+      ExtraInfoSpec::SECURITY_INFO | ExtraInfoSpec::SECURITY_INFO_RAW_DER);
+
   // Multiple valid values are bitwise-or'ed.
   TestInitFromValue(&profile_, "requestHeaders,blocking", true,
                     ExtraInfoSpec::REQUEST_HEADERS | ExtraInfoSpec::BLOCKING);

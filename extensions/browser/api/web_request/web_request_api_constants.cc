@@ -51,6 +51,12 @@ const char kAuthCredentialsKey[] = "authCredentials";
 const char kUsernameKey[] = "username";
 const char kPasswordKey[] = "password";
 const char kInitiatorKey[] = "initiator";
+const char kSecurityInfoKey[] = "securityInfo";
+const char kCertificatesKey[] = "certificates";
+const char kFingerprintKey[] = "fingerprint";
+const char kRawDerKey[] = "rawDER";
+const char kSha256Key[] = "sha256";
+const char kStateKey[] = "state";
 
 const char kOnBeforeRedirectEvent[] = "webRequest.onBeforeRedirect";
 const char kOnBeforeSendHeadersEvent[] = "webRequest.onBeforeSendHeaders";

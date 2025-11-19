@@ -283,6 +283,11 @@ void WebRequestInfo::AddResponseInfoFromResourceResponse(
   response_from_cache = response.was_fetched_via_cache;
 }
 
+void WebRequestInfo::AddSslInfo(
+    const std::optional<net::SSLInfo>& ssl_info_opt) {
+  ssl_info = ssl_info_opt;
+}
+
 void WebRequestInfo::EraseDNRActionsForExtension(
     const ExtensionId& extension_id) {
   if (dnr_actions.has_value()) {
