@@ -258,6 +258,7 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // factors. This is currently blocked by performance regressions on low-end
   // Android devices.
   feature_overrides.EnableFeature(features::kWebContentsDiscard);
+  feature_overrides.EnableFeature(features::kLazyBrowserInterfaceBroker);
   feature_overrides.EnableFeature(chrome::android::kTabFreezingUsesDiscard);
   feature_overrides.EnableFeature(chrome::android::kLoadAllTabsAtStartup);
 
