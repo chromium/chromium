@@ -56,6 +56,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoWindowNightModeStateProvider;
 import org.chromium.chrome.browser.multiwindow.InstanceInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
@@ -1228,7 +1229,8 @@ public class ChromeTabbedActivityTest {
         // 4. Move tab1 to activity2.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mim1.moveTabsToWindow(instanceInfo2, List.of(tab1), -1);
+                    mim1.moveTabsToWindow(
+                            instanceInfo2, List.of(tab1), -1, NewWindowAppSource.OTHER);
                 });
 
         // 5. Verify tab1 is in activity2.

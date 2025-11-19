@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperMa
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.hub.HubLayout;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
@@ -326,7 +327,8 @@ public class AppHeaderCoordinatorBrowserTest {
                         TabWindowManager.INVALID_WINDOW_ID,
                         true,
                         false,
-                        true);
+                        true,
+                        NewWindowAppSource.OTHER);
         ChromeTabbedActivity secondActivity =
                 ApplicationTestUtils.waitForActivityWithClass(
                         ChromeTabbedActivity.class,

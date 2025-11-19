@@ -214,8 +214,10 @@ public abstract class MultiInstanceManager {
      * @param info {@link InstanceInfo} describing the destination window.
      * @param tabs The list of tabs that is to be moved to the current instance.
      * @param atIndex Tab position index in the destination window instance.
+     * @param source The new window creation source used for metrics.
      */
-    public void moveTabsToWindow(InstanceInfo info, List<Tab> tabs, int atIndex) {
+    public void moveTabsToWindow(
+            InstanceInfo info, List<Tab> tabs, int atIndex, @NewWindowAppSource int source) {
         // Not implemented
     }
 
@@ -251,9 +253,13 @@ public abstract class MultiInstanceManager {
      * @param info {@link InstanceInfo} describing the destination window.
      * @param tabGroupMetadata The object containing the metadata of the tab group.
      * @param atIndex Tab position index in the destination window instance.
+     * @param source The new window creation source used for metrics.
      */
     public void moveTabGroupToWindow(
-            InstanceInfo info, TabGroupMetadata tabGroupMetadata, int atIndex) {
+            InstanceInfo info,
+            TabGroupMetadata tabGroupMetadata,
+            int atIndex,
+            @NewWindowAppSource int source) {
         // Not implemented
     }
 

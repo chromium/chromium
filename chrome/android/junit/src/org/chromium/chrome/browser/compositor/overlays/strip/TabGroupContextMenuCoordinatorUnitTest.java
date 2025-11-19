@@ -616,7 +616,8 @@ public class TabGroupContextMenuCoordinatorUnitTest {
                 .moveTabGroupToWindow(
                         eq(INSTANCE_INFO_2),
                         any(TabGroupMetadata.class),
-                        eq(TabList.INVALID_TAB_INDEX));
+                        eq(TabList.INVALID_TAB_INDEX),
+                        eq(NewWindowAppSource.MENU));
     }
 
     private List<Tab> setUpTabGroupModelFilter() {

@@ -340,11 +340,12 @@ public class MultiInstanceManagerApi31UnitTest {
                 int instanceId,
                 boolean preferNew,
                 boolean openAdjacently,
-                boolean addTrustedIntentExtras) {
+                boolean addTrustedIntentExtras,
+                @NewWindowAppSource int source) {
             // Change the last parameter to false to bypass calling
             // IntentUtils.addTrustedIntentExtras() for testing.
             super.moveAndReparentTabsToNewWindow(
-                    tabs, instanceId, preferNew, openAdjacently, false);
+                    tabs, instanceId, preferNew, openAdjacently, false, source);
         }
 
         @Override
@@ -353,11 +354,12 @@ public class MultiInstanceManagerApi31UnitTest {
                 int instanceId,
                 boolean preferNew,
                 boolean openAdjacently,
-                boolean addTrustedIntentExtras) {
+                boolean addTrustedIntentExtras,
+                @NewWindowAppSource int source) {
             // Change the last parameter to false to bypass calling
             // IntentUtils.addTrustedIntentExtras() for testing.
             super.moveAndReparentTabGroupToNewWindow(
-                    tabGroupMetadata, instanceId, preferNew, openAdjacently, false);
+                    tabGroupMetadata, instanceId, preferNew, openAdjacently, false, source);
         }
 
         @Override
@@ -1370,10 +1372,15 @@ public class MultiInstanceManagerApi31UnitTest {
     @Test
     public void testMoveSingleTabToNewWindow_calledWithDesiredParameters() {
         setupTwoInstances();
-
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                MultiInstanceManager.NEW_WINDOW_APP_SOURCE_HISTOGRAM,
+                                NewWindowAppSource.MENU)
+                        .build();
         // Action
         mMultiInstanceManager.moveTabsToNewWindow(
-                Collections.singletonList(mTab1), NewWindowAppSource.KEYBOARD_SHORTCUT);
+                Collections.singletonList(mTab1), NewWindowAppSource.MENU);
 
         // Verify the call is made with desired parameters. The moveAndReparentTabToNewWindow method
         // is validated in integration test here
@@ -1384,7 +1391,9 @@ public class MultiInstanceManagerApi31UnitTest {
                         eq(INVALID_WINDOW_ID),
                         eq(true),
                         eq(true),
-                        eq(true));
+                        eq(true),
+                        anyInt());
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -1396,7 +1405,7 @@ public class MultiInstanceManagerApi31UnitTest {
 
         verify(mMultiInstanceManager, times(1))
                 .moveAndReparentTabsToNewWindow(
-                        eq(tabs), eq(INVALID_WINDOW_ID), eq(true), eq(true), eq(true));
+                        eq(tabs), eq(INVALID_WINDOW_ID), eq(true), eq(true), eq(true), anyInt());
     }
 
     @Test
@@ -1414,7 +1423,8 @@ public class MultiInstanceManagerApi31UnitTest {
                         eq(INVALID_WINDOW_ID),
                         eq(true),
                         eq(true),
-                        eq(true));
+                        eq(true),
+                        anyInt());
     }
 
     @Test
@@ -1465,6 +1475,12 @@ public class MultiInstanceManagerApi31UnitTest {
     @EnableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL)
     public void testOpenInstance_opensAdjacently_WithRobustWindowManagementExperimental() {
         setupTwoInstances();
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                MultiInstanceManager.NEW_WINDOW_APP_SOURCE_HISTOGRAM,
+                                NewWindowAppSource.WINDOW_MANAGER)
+                        .build();
         FeatureOverrides.overrideParam(
                 ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL,
                 MultiWindowUtils.OPEN_ADJACENTLY_PARAM,
@@ -1473,9 +1489,11 @@ public class MultiInstanceManagerApi31UnitTest {
                 .thenReturn(ContextUtils.getApplicationContext().getPackageName());
         ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
 
-        mMultiInstanceManager.openInstance(INSTANCE_ID_2, INVALID_TASK_ID);
+        mMultiInstanceManager.openInstance(
+                INSTANCE_ID_2, INVALID_TASK_ID, NewWindowAppSource.WINDOW_MANAGER);
 
         verify(mCurrentActivity).startActivity(intentCaptor.capture());
+        histogramWatcher.assertExpected();
         Intent intent = intentCaptor.getValue();
         assertNotEquals("Intent should not be null.", null, intent);
         int flags = intent.getFlags();
@@ -1488,6 +1506,12 @@ public class MultiInstanceManagerApi31UnitTest {
     @EnableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL)
     public void testOpenInstance_opensFullScreen_WithRobustWindowManagementExperimental() {
         setupTwoInstances();
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                MultiInstanceManager.NEW_WINDOW_APP_SOURCE_HISTOGRAM,
+                                NewWindowAppSource.WINDOW_MANAGER)
+                        .build();
         FeatureOverrides.overrideParam(
                 ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL,
                 MultiWindowUtils.OPEN_ADJACENTLY_PARAM,
@@ -1496,9 +1520,11 @@ public class MultiInstanceManagerApi31UnitTest {
                 .thenReturn(ContextUtils.getApplicationContext().getPackageName());
         ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
 
-        mMultiInstanceManager.openInstance(INSTANCE_ID_2, INVALID_TASK_ID);
+        mMultiInstanceManager.openInstance(
+                INSTANCE_ID_2, INVALID_TASK_ID, NewWindowAppSource.WINDOW_MANAGER);
 
         verify(mCurrentActivity).startActivity(intentCaptor.capture());
+        histogramWatcher.assertExpected();
         Intent intent = intentCaptor.getValue();
         assertNotEquals("Intent should not be null.", null, intent);
         int flags = intent.getFlags();
@@ -1522,7 +1548,8 @@ public class MultiInstanceManagerApi31UnitTest {
                         eq(INVALID_WINDOW_ID),
                         eq(true),
                         eq(false),
-                        eq(true));
+                        eq(true),
+                        anyInt());
         verify(mMultiInstanceManager, times(1)).openNewWindow(any(), anyBoolean(), anyInt());
     }
 
@@ -1537,7 +1564,7 @@ public class MultiInstanceManagerApi31UnitTest {
         // Verify only openNewWindow is called and moveAndReparentTabsToNewWindow is not called.
         verify(mMultiInstanceManager, times(0))
                 .moveAndReparentTabsToNewWindow(
-                        any(), anyInt(), anyBoolean(), anyBoolean(), anyBoolean());
+                        any(), anyInt(), anyBoolean(), anyBoolean(), anyBoolean(), anyInt());
         verify(mMultiInstanceManager, times(1)).openNewWindow(any(), anyBoolean(), anyInt());
     }
 
@@ -1552,7 +1579,7 @@ public class MultiInstanceManagerApi31UnitTest {
         // Verify only openNewWindow is called and moveAndReparentTabToNewWindow is not called.
         verify(mMultiInstanceManager, times(0))
                 .moveAndReparentTabGroupToNewWindow(
-                        any(), eq(INVALID_WINDOW_ID), eq(true), eq(false), eq(true));
+                        any(), eq(INVALID_WINDOW_ID), eq(true), eq(false), eq(true), anyInt());
         verify(mMultiInstanceManager, times(1)).openNewWindow(any(), anyBoolean(), anyInt());
     }
 
@@ -1578,7 +1605,11 @@ public class MultiInstanceManagerApi31UnitTest {
                 .getInstanceInfoFor(mTabbedActivityTask63);
         inOrderVerifier
                 .verify(mMultiInstanceManager, times(1))
-                .moveTabsToWindow(instanceInfo, Collections.singletonList(mTab1), tabAtIndex);
+                .moveTabsToWindow(
+                        instanceInfo,
+                        Collections.singletonList(mTab1),
+                        tabAtIndex,
+                        NewWindowAppSource.OTHER);
     }
 
     @Test
@@ -1602,7 +1633,7 @@ public class MultiInstanceManagerApi31UnitTest {
                 .getInstanceInfoFor(mTabbedActivityTask63);
         inOrderVerifier
                 .verify(mMultiInstanceManager, times(1))
-                .moveTabsToWindow(instanceInfo, tabs, tabAtIndex);
+                .moveTabsToWindow(instanceInfo, tabs, tabAtIndex, NewWindowAppSource.OTHER);
     }
 
     @Test
@@ -1628,7 +1659,10 @@ public class MultiInstanceManagerApi31UnitTest {
         // Action
         InstanceInfo info = mMultiInstanceManager.getInstanceInfoFor(mTabbedActivityTask63);
         mMultiInstanceManager.moveTabsToWindow(
-                info, Collections.singletonList(mTab1), /* tabAtIndex= */ 0);
+                info,
+                Collections.singletonList(mTab1),
+                /* tabAtIndex= */ 0,
+                NewWindowAppSource.OTHER);
 
         // Verify reparentTabToRunningActivity is called once.
         verify(mMultiInstanceManager, times(1))
@@ -1639,7 +1673,8 @@ public class MultiInstanceManagerApi31UnitTest {
                         eq(INVALID_WINDOW_ID),
                         eq(false),
                         eq(true),
-                        eq(true));
+                        eq(true),
+                        anyInt());
     }
 
     @Test
@@ -1648,14 +1683,15 @@ public class MultiInstanceManagerApi31UnitTest {
         List<Tab> tabs = List.of(mTab1, mTab2);
         // Action
         InstanceInfo info = mMultiInstanceManager.getInstanceInfoFor(mTabbedActivityTask63);
-        mMultiInstanceManager.moveTabsToWindow(info, tabs, /* tabAtIndex= */ 0);
+        mMultiInstanceManager.moveTabsToWindow(
+                info, tabs, /* tabAtIndex= */ 0, NewWindowAppSource.OTHER);
 
         // Verify reparentTabToRunningActivity is called once.
         verify(mMultiInstanceManager, times(1))
                 .reparentTabsToRunningActivity(any(), eq(tabs), eq(0));
         verify(mMultiInstanceManager, times(0))
                 .moveAndReparentTabsToNewWindow(
-                        eq(tabs), eq(INVALID_WINDOW_ID), eq(false), eq(true), eq(true));
+                        eq(tabs), eq(INVALID_WINDOW_ID), eq(false), eq(true), eq(true), anyInt());
     }
 
     @Test
@@ -1664,7 +1700,8 @@ public class MultiInstanceManagerApi31UnitTest {
 
         // Action
         InstanceInfo info = mMultiInstanceManager.getInstanceInfoFor(mTabbedActivityTask63);
-        mMultiInstanceManager.moveTabGroupToWindow(info, mTabGroupMetadata, /* startIndex= */ 0);
+        mMultiInstanceManager.moveTabGroupToWindow(
+                info, mTabGroupMetadata, /* startIndex= */ 0, NewWindowAppSource.OTHER);
 
         // Verify reparentTabToRunningActivity is called once.
         verify(mMultiInstanceManager, times(1))
@@ -1675,7 +1712,8 @@ public class MultiInstanceManagerApi31UnitTest {
                         eq(INVALID_WINDOW_ID),
                         eq(false),
                         eq(true),
-                        eq(true));
+                        eq(true),
+                        anyInt());
     }
 
     @Test
@@ -1696,7 +1734,10 @@ public class MultiInstanceManagerApi31UnitTest {
                         false,
                         0);
         mMultiInstanceManager.moveTabsToWindow(
-                info, Collections.singletonList(mTab1), /* tabAtIndex= */ 0);
+                info,
+                Collections.singletonList(mTab1),
+                /* tabAtIndex= */ 0,
+                NewWindowAppSource.OTHER);
 
         // Verify moveAndReparentTabToNewWindow is called made with desired parameters once. The
         // method is validated in integration test here
@@ -1708,7 +1749,8 @@ public class MultiInstanceManagerApi31UnitTest {
                         eq(NON_EXISTENT_INSTANCE_ID),
                         eq(false),
                         eq(false),
-                        eq(true));
+                        eq(true),
+                        anyInt());
         verify(mMultiInstanceManager, times(0))
                 .reparentTabsToRunningActivity(any(), eq(Collections.singletonList(mTab1)), eq(0));
     }
@@ -1731,12 +1773,18 @@ public class MultiInstanceManagerApi31UnitTest {
                         0,
                         false,
                         0);
-        mMultiInstanceManager.moveTabsToWindow(info, tabs, /* tabAtIndex= */ 0);
+        mMultiInstanceManager.moveTabsToWindow(
+                info, tabs, /* tabAtIndex= */ 0, NewWindowAppSource.OTHER);
 
         // Verify
         verify(mMultiInstanceManager, times(1))
                 .moveAndReparentTabsToNewWindow(
-                        eq(tabs), eq(NON_EXISTENT_INSTANCE_ID), eq(false), eq(false), eq(true));
+                        eq(tabs),
+                        eq(NON_EXISTENT_INSTANCE_ID),
+                        eq(false),
+                        eq(false),
+                        eq(true),
+                        anyInt());
         verify(mMultiInstanceManager, times(0))
                 .reparentTabsToRunningActivity(any(), eq(tabs), eq(0));
     }
@@ -1758,7 +1806,8 @@ public class MultiInstanceManagerApi31UnitTest {
                         0,
                         false,
                         0);
-        mMultiInstanceManager.moveTabGroupToWindow(info, mTabGroupMetadata, /* startIndex= */ 0);
+        mMultiInstanceManager.moveTabGroupToWindow(
+                info, mTabGroupMetadata, /* startIndex= */ 0, NewWindowAppSource.OTHER);
 
         // Verify moveAndReparentTabToNewWindow is called made with desired parameters once. The
         // method is validated in integration test here
@@ -1770,7 +1819,8 @@ public class MultiInstanceManagerApi31UnitTest {
                         eq(NON_EXISTENT_INSTANCE_ID),
                         eq(false),
                         eq(true),
-                        eq(true));
+                        eq(true),
+                        anyInt());
         verify(mMultiInstanceManager, times(0))
                 .reparentTabGroupToRunningActivity(any(), eq(mTabGroupMetadata), eq(0));
     }
@@ -1790,7 +1840,7 @@ public class MultiInstanceManagerApi31UnitTest {
                 .reparentTabsToRunningActivityAndMergeToDest(any(), eq(tabs), eq(3));
         verify(mMultiInstanceManager, times(0))
                 .moveAndReparentTabsToNewWindow(
-                        eq(tabs), eq(INVALID_WINDOW_ID), eq(false), eq(true), eq(true));
+                        eq(tabs), eq(INVALID_WINDOW_ID), eq(false), eq(true), eq(true), anyInt());
     }
 
     @Test
@@ -2151,7 +2201,7 @@ public class MultiInstanceManagerApi31UnitTest {
         }
 
         // Try to restore the instance in task TASK_ID_63, from |mTabbedActivityTask62|.
-        multiInstanceManager.openInstance(1, TASK_ID_63);
+        multiInstanceManager.openInstance(1, TASK_ID_63, NewWindowAppSource.WINDOW_MANAGER);
 
         if (isActivityAlive) {
             // If |mTabbedActivityTask63| is alive, verify that its instance was restored in the

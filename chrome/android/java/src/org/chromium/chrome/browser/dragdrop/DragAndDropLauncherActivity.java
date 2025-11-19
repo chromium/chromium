@@ -25,6 +25,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.SupportedProfileType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
@@ -201,7 +202,8 @@ public class DragAndDropLauncherActivity extends Activity {
                         destWindowId,
                         /* preferNew= */ true,
                         /* openAdjacently= */ false,
-                        /* addTrustedIntentExtras= */ false);
+                        /* addTrustedIntentExtras= */ false,
+                        NewWindowAppSource.OTHER);
         intent.setClass(context, DragAndDropLauncherActivity.class);
         intent.setAction(DragAndDropLauncherActivity.ACTION_DRAG_DROP_VIEW);
         intent.addCategory(Intent.CATEGORY_BROWSABLE);

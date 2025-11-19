@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.SupportedProfileType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -432,6 +433,7 @@ public class MultiWindowUtils implements ActivityStateListener {
      *         added to the intent to identify it as coming from a trusted source. This should be
      *         set to 'false' if the Intent could be received by an app besides Chrome (e.g. when
      *         attaching to ClipData for a drag event).
+     * @param source The source of the new window intent.
      * @return The created intent.
      */
     public static Intent createNewWindowIntent(
@@ -439,7 +441,8 @@ public class MultiWindowUtils implements ActivityStateListener {
             int instanceId,
             boolean preferNew,
             boolean openAdjacently,
-            boolean addTrustedIntentExtras) {
+            boolean addTrustedIntentExtras,
+            @NewWindowAppSource int source) {
         assert isMultiInstanceApi31Enabled();
         Intent intent = new Intent(context, ChromeTabbedActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -454,6 +457,10 @@ public class MultiWindowUtils implements ActivityStateListener {
         if (addTrustedIntentExtras) {
             IntentUtils.addTrustedIntentExtras(intent);
         }
+        RecordHistogram.recordEnumeratedHistogram(
+                MultiInstanceManager.NEW_WINDOW_APP_SOURCE_HISTOGRAM,
+                source,
+                NewWindowAppSource.NUM_ENTRIES);
         return intent;
     }
 

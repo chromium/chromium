@@ -1183,7 +1183,8 @@ public class TabContextMenuCoordinatorUnitTest {
                 .moveTabsToWindow(
                         INSTANCE_INFO_2,
                         Collections.singletonList(mTabOutsideOfGroup),
-                        TabList.INVALID_TAB_INDEX);
+                        TabList.INVALID_TAB_INDEX,
+                        NewWindowAppSource.MENU);
     }
 
     @Test

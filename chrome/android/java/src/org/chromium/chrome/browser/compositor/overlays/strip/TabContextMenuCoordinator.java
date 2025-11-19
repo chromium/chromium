@@ -774,7 +774,8 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         ungroupTabs(tabs);
         recordMenuAction(R.id.move_to_other_window_sub_menu_id, tabs.size() > 1);
         assumeNonNull(mMultiInstanceManager)
-                .moveTabsToWindow(instanceInfo, tabs, TabList.INVALID_TAB_INDEX);
+                .moveTabsToWindow(
+                        instanceInfo, tabs, TabList.INVALID_TAB_INDEX, NewWindowAppSource.MENU);
     }
 
     private List<ListItem> createReorderItems(AnchorInfo anchorInfo) {
