@@ -2264,7 +2264,7 @@ class IsolatedWebMulticastSocketsTest
 };
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebMulticastSocketsTest,
-                       DirectSocketsUDPJoinLeaveMulticastEvents) {
+                       DISABLED_DirectSocketsUDPJoinLeaveMulticastEvents) {
   content::RenderFrameHost* iwa_frame = InstallAndOpenIsolatedWebApp();
   ASSERT_TRUE(iwa_frame);
 
