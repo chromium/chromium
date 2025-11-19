@@ -138,6 +138,7 @@ if (!is_android) {
       "//base",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/resources/contextual_tasks:resources",
+      "//chrome/browser/signin",
       "//chrome/browser/ui",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/omnibox",

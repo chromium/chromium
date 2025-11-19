@@ -110,6 +110,7 @@ constexpr char kAuthServiceGlanceablesClassroomName[] =
     "auth_service_glanceables_classroom";
 constexpr char kAuthServiceTasksClientName[] = "auth_service_tasks_client";
 constexpr char kYouTubeMusicName[] = "youtube_music";
+constexpr char kContextualTasksName[] = "contextual_tasks";
 
 }  // namespace
 
@@ -478,6 +479,13 @@ OAuthConsumer GetOAuthConsumerFromId(OAuthConsumerId oauth_consumer_id) {
       return OAuthConsumer(
           /*name=*/kYouTubeMusicName,
           /*scopes=*/{GaiaConstants::kYouTubeMusicOAuth2Scope});
+    case OAuthConsumerId::kContextualTasks:
+      // TODO(crbug.com/461578148): Remove kChromeSyncOAuth2Scope once a scope
+      // is created specifically for the search results page.
+      return OAuthConsumer(
+          /*name=*/kContextualTasksName,
+          /*scopes=*/{GaiaConstants::kChromeSyncOAuth2Scope,
+                      GaiaConstants::kClearCutOAuth2Scope});
   }
   NOTREACHED();
 }

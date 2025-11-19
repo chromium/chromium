@@ -10,12 +10,18 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/access_token_info.h"
+#include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_ui.h"
+#include "google_apis/gaia/gaia_constants.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "url/gurl.h"
 
 namespace {
@@ -104,4 +110,42 @@ void ContextualTasksPageHandler::MoveTaskUiToToNewTab() {
   }
 
   ui_service_->MoveTaskUiToToNewTab(task_id.value(), browser);
+}
+
+void ContextualTasksPageHandler::GetOAuthToken(GetOAuthTokenCallback callback) {
+  auto* identity_manager =
+      IdentityManagerFactory::GetForProfile(Profile::FromWebUI(&web_ui_.get()));
+
+  if (!identity_manager ||
+      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    std::move(callback).Run("");
+    return;
+  }
+
+  // TODO(crbug.com/461596823): Currently just grabs the primary account, but
+  // should use the web identity when available. Additionally, the account
+  // should be grabbed once, and used until this WebUI is closed.
+  // TODO(crbug.com/462138963): Add error handling for when the account
+  // identities fail.
+  auto account =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+
+  // A previous fetcher for the same owner will be automatically cancelled.
+  oauth_token_fetcher_ = identity_manager->CreateAccessTokenFetcherForAccount(
+      account.account_id, signin::OAuthConsumerId::kContextualTasks,
+      base::BindOnce(&ContextualTasksPageHandler::OnOAuthTokenReceived,
+                     base::Unretained(this), std::move(callback)),
+      signin::AccessTokenFetcher::Mode::kWaitUntilRefreshTokenAvailable);
+}
+
+void ContextualTasksPageHandler::OnOAuthTokenReceived(
+    GetOAuthTokenCallback callback,
+    GoogleServiceAuthError error,
+    signin::AccessTokenInfo access_token_info) {
+  oauth_token_fetcher_.reset();
+  if (error.state() != GoogleServiceAuthError::NONE) {
+    std::move(callback).Run("");
+    return;
+  }
+  std::move(callback).Run(access_token_info.token);
 }

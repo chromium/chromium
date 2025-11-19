@@ -90,7 +90,8 @@ enum class OAuthConsumerId {
   kAuthServiceGlanceablesClassroom = 75,
   kAuthServiceTasksClient = 76,
   kYouTubeMusic = 77,
-  kMaxValue = kYouTubeMusic,
+  kContextualTasks = 78,
+  kMaxValue = kContextualTasks,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:OAuthConsumerId)
 

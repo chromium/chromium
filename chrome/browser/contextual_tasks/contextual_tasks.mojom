@@ -60,6 +60,9 @@ interface PageHandler {
 
   // Moves the contents of the side panel to a new tab.
   MoveTaskUiToToNewTab();
+
+  // Gets an OAuth token for the search results for the signed-in user.
+  GetOAuthToken() => (string oauth_token);
 };
 
 // The interface that defines the browser process to webui (typescript/renderer)

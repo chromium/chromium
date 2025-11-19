@@ -13,6 +13,8 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
+class GoogleServiceAuthError;
+
 namespace base {
 class Uuid;
 }
@@ -26,6 +28,11 @@ class ContextualTasksUI;
 namespace contextual_tasks {
 class ContextualTasksUiService;
 }  // namespace contextual_tasks
+
+namespace signin {
+class AccessTokenFetcher;
+struct AccessTokenInfo;
+}  // namespace signin
 
 class ContextualTasksPageHandler : public contextual_tasks::mojom::PageHandler {
  public:
@@ -54,12 +61,18 @@ class ContextualTasksPageHandler : public contextual_tasks::mojom::PageHandler {
   void OpenMyActivityUi() override;
   void OpenHelpUi() override;
   void MoveTaskUiToToNewTab() override;
+  void GetOAuthToken(GetOAuthTokenCallback callback) override;
 
  private:
+  void OnOAuthTokenReceived(GetOAuthTokenCallback callback,
+                            GoogleServiceAuthError error,
+                            signin::AccessTokenInfo access_token_info);
+
   mojo::Receiver<contextual_tasks::mojom::PageHandler> page_handler_;
   const raw_ref<content::WebUI> web_ui_;
   const raw_ref<ContextualTasksUI> web_ui_controller_;
   const raw_ptr<contextual_tasks::ContextualTasksUiService> ui_service_;
+  std::unique_ptr<signin::AccessTokenFetcher> oauth_token_fetcher_;
 };
 
 #endif  // CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_PAGE_HANDLER_H_

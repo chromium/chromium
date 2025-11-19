@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
+#include "build/config/coverage/buildflags.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "components/contextual_tasks/public/features.h"
@@ -20,6 +21,19 @@ class ContextualTasksBrowserTest : public WebUIMochaBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, All) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, App) {
   RunTest("contextual_tasks/contextual_tasks_browsertest.js", "mocha.run();");
+}
+
+#if BUILDFLAG(USE_JAVASCRIPT_COVERAGE)
+// TODO(crbug.com/40284073): Test fails with JS coverage turned on. Since the
+// webview needs to make a request to test the request headers, disabling this
+// test on JS coverage for now. Re-enable once bug is fixed.
+#define MAYBE_WebView DISABLED_WebView
+#else
+#define MAYBE_WebView WebView
+#endif
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, MAYBE_WebView) {
+  RunTest("contextual_tasks/contextual_tasks_webview_browsertest.js",
+          "mocha.run();");
 }

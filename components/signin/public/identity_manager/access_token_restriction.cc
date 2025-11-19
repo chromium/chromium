@@ -147,12 +147,14 @@ bool IsUnconsentedSignedInOAuth2Scopes(const std::string& scope) {
       // Required for Save to Drive and ChromeOS.
       GaiaConstants::kDriveOAuth2Scope,
 
+      // Required for Contextual Tasks.
+      GaiaConstants::kClearCutOAuth2Scope,
+
     // Required by ChromeOS only.
 #if BUILDFLAG(IS_CHROMEOS)
       GaiaConstants::kAssistantOAuth2Scope,
       GaiaConstants::kAuditRecordingOAuth2Scope,
       GaiaConstants::kCastBackdropOAuth2Scope,
-      GaiaConstants::kClearCutOAuth2Scope,
       GaiaConstants::kClientChannelOAuth2Scope,
       GaiaConstants::kExperimentsAndConfigsOAuth2Scope,
       GaiaConstants::kGCMGroupServerOAuth2Scope,
