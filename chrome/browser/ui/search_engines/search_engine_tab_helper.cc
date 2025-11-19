@@ -25,6 +25,7 @@
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 
 using content::NavigationController;
 using content::NavigationEntry;

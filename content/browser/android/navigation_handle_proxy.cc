@@ -12,6 +12,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "net/http/http_response_headers.h"
+#include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 

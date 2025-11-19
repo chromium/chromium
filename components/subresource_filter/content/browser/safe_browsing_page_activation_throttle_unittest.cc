@@ -54,6 +54,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/messages/android/mock_message_dispatcher_bridge.h"

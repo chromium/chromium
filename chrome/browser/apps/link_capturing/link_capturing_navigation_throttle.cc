@@ -27,6 +27,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/constants.h"
+#include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 #include "url/origin.h"
 
 namespace apps {

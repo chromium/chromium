@@ -18,6 +18,7 @@
 #include "content/public/browser/preloading_data.h"
 #include "content/public/browser/preloading_trigger_type.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 
 namespace {
 

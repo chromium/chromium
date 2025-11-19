@@ -118,6 +118,7 @@
 #include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 #include "third_party/zlib/google/zip.h"
 #include "url/gurl.h"
 
