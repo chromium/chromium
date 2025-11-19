@@ -5464,6 +5464,18 @@ crbug.com/571722 external/wpt/xhr/preserve-ua-header-on-redirect.htm [ Failure ]
 # disabled, the subtest will pass. 2) Module cases always fail.
 crbug.com/1244145 external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/v8-code-cache.html [ Failure ]
 
+# Temporarily disabled for https://crrev.com/c/7170521 to land.
+crbug.com/451502260 http/tests/devtools/components/widget-focus.js [ Failure Pass ]
+crbug.com/451502260 http/tests/devtools/console/viewport-testing/console-clicking-messages.js [ Failure Pass ]
+crbug.com/451502260 http/tests/devtools/console/viewport-testing/console-key-links.js [ Failure Pass ]
+crbug.com/451502260 http/tests/devtools/elements/edit/edit-after-model-changed.js [ Failure Pass ]
+crbug.com/451502260 http/tests/devtools/elements/navigate-styles-sidebar-with-arrow-keys.js [ Failure Pass ]
+crbug.com/451502260 http/tests/devtools/elements/styles-3/style-autocomplete.js [ Failure Pass ]
+crbug.com/451502260 http/tests/devtools/elements/styles-4/styles-edit-slow-completions.js [ Failure Pass ]
+crbug.com/451502260 http/tests/devtools/elements/styles/styles-mouse-test.js [ Failure Pass ]
+crbug.com/451502260 http/tests/devtools/unit/soft-context-menu.js [ Failure Pass ]
+crbug.com/451502260 http/tests/devtools/unit/soft-drop-down.js [ Failure Pass ]
+
 # ShadowRealm tests that crash in Modulator::From
 crbug.com/376786819 virtual/shadow-realm-enabled/external/wpt/* [ Crash Skip Timeout ]
 crbug.com/376786819 virtual/shadow-realm-enabled/external/wpt/compression/compression-bad-chunks.https.any.shadowrealm-in-audioworklet.html [ Pass Timeout ]
