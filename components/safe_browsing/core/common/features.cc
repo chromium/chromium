@@ -367,6 +367,8 @@ base::Value::List GetFeatureStatusList() {
   const base::Feature* kExperimentalFeatures[] = {
       // keep-sorted start
       &kAutoRevokeSuspiciousNotification,
+      &kBundledSecuritySettings,
+      &kClientSideDetectionClipboardCopyApi,
       &kClientSideDetectionForcedLlamaRedirectChainKillswitch,
       &kClientSideDetectionKillswitch,
       &kClientSideDetectionRedirectChainKillswitch,
@@ -376,6 +378,7 @@ base::Value::List GetFeatureStatusList() {
       &kEnhancedFieldsForSecOps,
       &kEnhancedSafeBrowsingPromo,
       &kEnterprisePasswordReuseUiRefresh,
+      &kEsbAsASyncedSetting,
       &kExtensionTelemetryDeclarativeNetRequestActionSignal,
       &kExternalAppRedirectTelemetry,
       &kHashPrefixRealTimeLookups,
