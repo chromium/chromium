@@ -25,7 +25,10 @@ shared_library("ipcz_shared") {
     "//third_party/abseil-cpp:absl",
   ]
   public_deps = [ ":ipcz_header" ]
-  defines = [ "IPCZ_SHARED_LIBRARY" ]
+  defines = [
+    "IPCZ_SHARED_LIBRARY",
+    "IPCZ_STANDALONE",
+  ]
   public_configs = [ ":ipcz_include_dir" ]
   configs += [ ":ipcz_include_src_dir" ]
 }
