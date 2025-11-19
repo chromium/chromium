@@ -1225,7 +1225,7 @@ BASE_FEATURE(kIsolatedWebAppBundleCache, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // When enabled, allows other features to use the k-Anonymity Service.
-BASE_FEATURE(kKAnonymityService, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kKAnonymityService, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Origin to use for requests to the k-Anonymity Auth server to get trust
 // tokens.
