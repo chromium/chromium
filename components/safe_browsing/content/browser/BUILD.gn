@@ -179,6 +179,7 @@ source_set("unit_tests") {
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/content/browser",
     "//components/safe_browsing/core/browser",
+    "//components/safe_browsing/core/browser:referring_app_info",
     "//components/safe_browsing/core/browser/db:test_database_manager",
     "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
     "//components/safe_browsing/core/common",
@@ -253,6 +254,10 @@ source_set("credit_card_form_event") {
   ]
 
   deps = [ "//base" ]
+
+  if (is_android) {
+    deps += [ "//components/safe_browsing/core/browser:referring_app_info" ]
+  }
 }
 
 if (safe_browsing_mode != 0) {
@@ -327,7 +332,10 @@ if (safe_browsing_mode != 0) {
     ]
 
     if (is_android) {
-      deps += [ "//ui/android" ]
+      deps += [
+        "//components/safe_browsing/core/browser:referring_app_info",
+        "//ui/android",
+      ]
     }
   }
 }

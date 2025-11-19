@@ -95,6 +95,10 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "components/safe_browsing/core/browser/referring_app_info.h"
+#endif
+
 using base::test::RunOnceClosure;
 using base::test::TestFuture;
 using content::BrowserThread;
@@ -286,8 +290,24 @@ class MockClientSideDetectionHostDelegate
 
   void SetInnerText(std::string inner_text) { inner_text_ = inner_text; }
 
+#if BUILDFLAG(IS_ANDROID)
+  internal::ReferringAppInfo GetReferringAppInfo(
+      content::WebContents* web_contents) override {
+    return referring_app_info_;
+  }
+
+  void SetReferringAppName(std::string referring_app_name) {
+    internal::ReferringAppInfo info;
+    info.referring_app_name = referring_app_name;
+    referring_app_info_ = info;
+  }
+#endif
+
  private:
   std::string inner_text_ = "inner text";
+#if BUILDFLAG(IS_ANDROID)
+  internal::ReferringAppInfo referring_app_info_;
+#endif
 };
 
 class MockIntelligentScanDelegate
@@ -308,6 +328,19 @@ class MockIntelligentScanDelegate
               (std::optional<IntelligentScanVerdict>),
               (override));
 };
+
+std::string ToString(credit_card_form::ReferringApp referring_app) {
+  switch (referring_app) {
+    case credit_card_form::kNoReferringApp:
+      return "NoReferringApp";
+    case credit_card_form::kChrome:
+      return "Chrome";
+    case credit_card_form::kSmsApp:
+      return "SmsApp";
+    case credit_card_form::kOtherApp:
+      return "OtherApp";
+  }
+}
 
 }  // namespace
 
@@ -2245,7 +2278,7 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
 
   // The event was not even logged (before pre-classification).
   histogram_tester_.ExpectTotalCount(
-      "SBClientPhishing.CreditCardFormEvent.OnFieldTypesDetermined", 0);
+      "SBClientPhishing.CreditCardFormEvent2.OnFieldTypesDetermined", 0);
 }
 
 TEST_F(ClientSideDetectionHostCreditCardFormTest,
@@ -2276,7 +2309,7 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
 
   // The event was not even logged (before pre-classification).
   histogram_tester_.ExpectTotalCount(
-      "SBClientPhishing.CreditCardFormEvent.OnBeforeFocusOnFormField", 0);
+      "SBClientPhishing.CreditCardFormEvent2.OnBeforeFocusOnFormField", 0);
 }
 
 TEST_F(ClientSideDetectionHostCreditCardFormTest,
@@ -2307,7 +2340,7 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
 
   // The event was not even logged (before pre-classification).
   histogram_tester_.ExpectTotalCount(
-      "SBClientPhishing.CreditCardFormEvent.OnFieldTypesDetermined", 0);
+      "SBClientPhishing.CreditCardFormEvent2.OnFieldTypesDetermined", 0);
 }
 
 TEST_F(ClientSideDetectionHostCreditCardFormTest,
@@ -2340,7 +2373,7 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
 
   // The event was not even logged (before pre-classification).
   histogram_tester_.ExpectTotalCount(
-      "SBClientPhishing.CreditCardFormEvent.OnBeforeFocusOnFormField", 0);
+      "SBClientPhishing.CreditCardFormEvent2.OnBeforeFocusOnFormField", 0);
 }
 
 TEST_F(ClientSideDetectionHostCreditCardFormTest,
@@ -2362,7 +2395,7 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
 
   // Check that histograms haven't been recorded yet.
   histogram_tester_.ExpectTotalCount(
-      "SBClientPhishing.CreditCardFormEvent.OnFieldTypesDetermined", 0);
+      "SBClientPhishing.CreditCardFormEvent2.OnFieldTypesDetermined", 0);
   histogram_tester_.ExpectTotalCount(
       "SBClientPhishing.MatchHighConfidenceAllowlist.CreditCardForm", 0);
   histogram_tester_.ExpectTotalCount(
@@ -2385,7 +2418,7 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
   // The feature to send CSP pings is enabled, but the host is included in the
   // HC allowlist, so classification will not occur.
   ExpectOnlyBucketCount(
-      "SBClientPhishing.CreditCardFormEvent.OnFieldTypesDetermined",
+      "SBClientPhishing.CreditCardFormEvent2.OnFieldTypesDetermined",
       credit_card_form::kNewSiteVisitNoReferringAppAutofillLocalHeuristic, 1);
   ExpectOnlyBucketCount(
       "SBClientPhishing.PreClassificationCheckResult.CreditCardForm",
@@ -2438,7 +2471,7 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
   // The feature to send CSP pings is enabled, but the host is included in the
   // HC allowlist, so classification will not occur.
   ExpectOnlyBucketCount(
-      "SBClientPhishing.CreditCardFormEvent.OnBeforeFocusOnFormField",
+      "SBClientPhishing.CreditCardFormEvent2.OnBeforeFocusOnFormField",
       credit_card_form::kNewSiteVisitNoReferringAppAutofillServerHeuristic, 1);
   ExpectOnlyBucketCount(
       "SBClientPhishing.PreClassificationCheckResult.CreditCardForm",
@@ -2470,7 +2503,7 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
 
   // Check that histograms haven't been recorded yet.
   histogram_tester_.ExpectTotalCount(
-      "SBClientPhishing.CreditCardFormEvent.OnFieldTypesDetermined", 0);
+      "SBClientPhishing.CreditCardFormEvent2.OnFieldTypesDetermined", 0);
   histogram_tester_.ExpectTotalCount(
       "SBClientPhishing.MatchHighConfidenceAllowlist.CreditCardForm", 0);
   histogram_tester_.ExpectTotalCount(
@@ -2493,7 +2526,7 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
   // The feature to send CSP pings is enabled, but because the sample rate
   // to send is 0%, classification does not occur.
   ExpectOnlyBucketCount(
-      "SBClientPhishing.CreditCardFormEvent.OnFieldTypesDetermined",
+      "SBClientPhishing.CreditCardFormEvent2.OnFieldTypesDetermined",
       credit_card_form::kNewSiteVisitNoReferringAppAutofillLocalHeuristic, 1);
   ExpectOnlyBucketCount(
       "SBClientPhishing.PreClassificationCheckResult.CreditCardForm",
@@ -2528,7 +2561,7 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
 
   // Check that histograms haven't been recorded yet.
   histogram_tester_.ExpectTotalCount(
-      "SBClientPhishing.CreditCardFormEvent.OnBeforeFocusOnFormField", 0);
+      "SBClientPhishing.CreditCardFormEvent2.OnBeforeFocusOnFormField", 0);
   histogram_tester_.ExpectTotalCount(
       "SBClientPhishing.MatchHighConfidenceAllowlist.CreditCardForm", 0);
   histogram_tester_.ExpectTotalCount(
@@ -2550,7 +2583,7 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
   // The feature to send CSP pings is enabled, but because the sample rate
   // to send is 0%, classification does not occur.
   ExpectOnlyBucketCount(
-      "SBClientPhishing.CreditCardFormEvent.OnBeforeFocusOnFormField",
+      "SBClientPhishing.CreditCardFormEvent2.OnBeforeFocusOnFormField",
       credit_card_form::kNewSiteVisitNoReferringAppAutofillServerHeuristic, 1);
   ExpectOnlyBucketCount(
       "SBClientPhishing.PreClassificationCheckResult.CreditCardForm",
@@ -2585,7 +2618,7 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
 
   // Check that histograms haven't been recorded yet.
   histogram_tester_.ExpectTotalCount(
-      "SBClientPhishing.CreditCardFormEvent.OnFieldTypesDetermined", 0);
+      "SBClientPhishing.CreditCardFormEvent2.OnFieldTypesDetermined", 0);
   histogram_tester_.ExpectTotalCount(
       "SBClientPhishing.PreClassificationCheckResult.CreditCardForm", 0);
 
@@ -2604,7 +2637,7 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
 
   // Pre-classification should have proceeded to classification.
   ExpectOnlyBucketCount(
-      "SBClientPhishing.CreditCardFormEvent.OnFieldTypesDetermined",
+      "SBClientPhishing.CreditCardFormEvent2.OnFieldTypesDetermined",
       credit_card_form::kNewSiteVisitNoReferringAppAutofillLocalHeuristic, 1);
   ExpectOnlyBucketCount(
       "SBClientPhishing.PreClassificationCheckResult.CreditCardForm",
@@ -2638,7 +2671,7 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
 
   // Check that histograms haven't been recorded yet.
   histogram_tester_.ExpectTotalCount(
-      "SBClientPhishing.CreditCardFormEvent.OnBeforeFocusOnFormField", 0);
+      "SBClientPhishing.CreditCardFormEvent2.OnBeforeFocusOnFormField", 0);
   histogram_tester_.ExpectTotalCount(
       "SBClientPhishing.PreClassificationCheckResult.CreditCardForm", 0);
 
@@ -2656,7 +2689,7 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
 
   // Pre-classification should have proceeded to classification.
   ExpectOnlyBucketCount(
-      "SBClientPhishing.CreditCardFormEvent.OnBeforeFocusOnFormField",
+      "SBClientPhishing.CreditCardFormEvent2.OnBeforeFocusOnFormField",
       credit_card_form::kNewSiteVisitNoReferringAppAutofillServerHeuristic, 1);
   ExpectOnlyBucketCount(
       "SBClientPhishing.PreClassificationCheckResult.CreditCardForm",
@@ -2687,7 +2720,7 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
 
   // Check that histograms haven't been recorded yet.
   histogram_tester_.ExpectTotalCount(
-      "SBClientPhishing.CreditCardFormEvent.OnBeforeFocusOnFormField", 0);
+      "SBClientPhishing.CreditCardFormEvent2.OnBeforeFocusOnFormField", 0);
 
   csd_host_->RegisterAutofillManager();
 
@@ -2703,7 +2736,7 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
   auto form_data = autofill::test::CreateTestCreditCardFormData(
       /*is_https=*/true, /*use_month_type=*/true);
   base::StatisticsRecorder::HistogramWaiter event_waiter(
-      "SBClientPhishing.CreditCardFormEvent.OnBeforeFocusOnFormField");
+      "SBClientPhishing.CreditCardFormEvent2.OnBeforeFocusOnFormField");
   autofill_manager()->OnFocusOnFormField(
       form_data, form_data.fields().begin()->global_id());
   event_waiter.Wait();
@@ -2713,7 +2746,7 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
   EXPECT_FALSE(future.IsReady());
 
   ExpectOnlyBucketCount(
-      "SBClientPhishing.CreditCardFormEvent.OnBeforeFocusOnFormField",
+      "SBClientPhishing.CreditCardFormEvent2.OnBeforeFocusOnFormField",
       credit_card_form::kRepeatSiteVisitNoReferringAppNoDetectionHeuristic, 1);
 }
 
@@ -2747,9 +2780,9 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
 
   // Check that histograms haven't been recorded yet.
   histogram_tester_.ExpectTotalCount(
-      "SBClientPhishing.CreditCardFormEvent.OnFieldTypesDetermined", 0);
+      "SBClientPhishing.CreditCardFormEvent2.OnFieldTypesDetermined", 0);
   histogram_tester_.ExpectTotalCount(
-      "SBClientPhishing.CreditCardFormEvent.OnBeforeFocusOnFormField", 0);
+      "SBClientPhishing.CreditCardFormEvent2.OnBeforeFocusOnFormField", 0);
   histogram_tester_.ExpectTotalCount(
       "SBClientPhishing.PreClassificationCheckResult.CreditCardForm", 0);
   histogram_tester_.ExpectTotalCount(
@@ -2773,10 +2806,10 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
   // Pre-classification should have proceeded to classification
   // for both events.
   ExpectOnlyBucketCount(
-      "SBClientPhishing.CreditCardFormEvent.OnFieldTypesDetermined",
+      "SBClientPhishing.CreditCardFormEvent2.OnFieldTypesDetermined",
       credit_card_form::kNewSiteVisitNoReferringAppAutofillLocalHeuristic, 1);
   ExpectOnlyBucketCount(
-      "SBClientPhishing.CreditCardFormEvent.OnBeforeFocusOnFormField",
+      "SBClientPhishing.CreditCardFormEvent2.OnBeforeFocusOnFormField",
       credit_card_form::kNewSiteVisitNoReferringAppAutofillServerHeuristic, 1);
   ExpectOnlyBucketCount(
       "SBClientPhishing.PreClassificationCheckResult.CreditCardForm",
@@ -2809,7 +2842,7 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
 
   // Check that histograms haven't been recorded yet.
   histogram_tester_.ExpectTotalCount(
-      "SBClientPhishing.CreditCardFormEvent.OnFieldTypesDetermined", 0);
+      "SBClientPhishing.CreditCardFormEvent2.OnFieldTypesDetermined", 0);
   histogram_tester_.ExpectTotalCount(
       "SBClientPhishing.HistoryServiceDuration.GetVisibleVisitCountToHost", 0);
 
@@ -2825,7 +2858,7 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
   WaitAndCheckPreClassificationChecks();
 
   ExpectOnlyBucketCount(
-      "SBClientPhishing.CreditCardFormEvent.OnFieldTypesDetermined",
+      "SBClientPhishing.CreditCardFormEvent2.OnFieldTypesDetermined",
       credit_card_form::kNewSiteVisitNoReferringAppAutofillLocalHeuristic, 1);
 
   // Trigger form field detection a second time, which this time should
@@ -2837,7 +2870,7 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
   EXPECT_FALSE(future.IsReady());
 
   ExpectOnlyBucketCount(
-      "SBClientPhishing.CreditCardFormEvent.OnFieldTypesDetermined",
+      "SBClientPhishing.CreditCardFormEvent2.OnFieldTypesDetermined",
       credit_card_form::kNewSiteVisitNoReferringAppAutofillLocalHeuristic, 1);
 
   // Note also that HistoryService was not called a second time either.
@@ -2870,7 +2903,7 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
 
   // Check that histograms haven't been recorded yet.
   histogram_tester_.ExpectTotalCount(
-      "SBClientPhishing.CreditCardFormEvent.OnBeforeFocusOnFormField", 0);
+      "SBClientPhishing.CreditCardFormEvent2.OnBeforeFocusOnFormField", 0);
   histogram_tester_.ExpectTotalCount(
       "SBClientPhishing.HistoryServiceDuration.GetVisibleVisitCountToHost", 0);
 
@@ -2885,7 +2918,7 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
   WaitAndCheckPreClassificationChecks();
 
   ExpectOnlyBucketCount(
-      "SBClientPhishing.CreditCardFormEvent.OnBeforeFocusOnFormField",
+      "SBClientPhishing.CreditCardFormEvent2.OnBeforeFocusOnFormField",
       credit_card_form::kNewSiteVisitNoReferringAppAutofillServerHeuristic, 1);
 
   // Trigger form field interaction a second time, which this time should
@@ -2898,12 +2931,187 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
   EXPECT_FALSE(future.IsReady());
 
   ExpectOnlyBucketCount(
-      "SBClientPhishing.CreditCardFormEvent.OnBeforeFocusOnFormField",
+      "SBClientPhishing.CreditCardFormEvent2.OnBeforeFocusOnFormField",
       credit_card_form::kNewSiteVisitNoReferringAppAutofillServerHeuristic, 1);
 
   // Note also that HistoryService was not called a second time either.
   histogram_tester_.ExpectTotalCount(
       "SBClientPhishing.HistoryServiceDuration.GetVisibleVisitCountToHost", 1);
+}
+
+struct CreditCardFormReferringAppTestCase {
+  std::string referring_app_name;
+  credit_card_form::ReferringApp expected_referring_app;
+
+  static std::string GetTestName(
+      const testing::TestParamInfo<CreditCardFormReferringAppTestCase>&
+          test_case) {
+    std::string app_name;
+    base::ReplaceChars(test_case.param.referring_app_name, ".", "_", &app_name);
+    return base::StrCat({
+        app_name,
+        "_",
+        ToString(test_case.param.expected_referring_app),
+    });
+  }
+};
+
+class ClientSideDetectionHostCreditCardFormReferringAppTest
+    : public ClientSideDetectionHostCreditCardFormTest,
+      public testing::WithParamInterface<CreditCardFormReferringAppTestCase> {
+ public:
+  void SetUp() override {
+    ClientSideDetectionHostCreditCardFormTest::SetUp();
+
+#if BUILDFLAG(IS_ANDROID)
+    const CreditCardFormReferringAppTestCase& test_case = GetParam();
+    raw_delegate_->SetReferringAppName(test_case.referring_app_name);
+#endif
+  }
+};
+
+const CreditCardFormReferringAppTestCase
+    credit_card_form_referring_app_test_cases[] = {
+        {"", credit_card_form::kNoReferringApp},
+#if BUILDFLAG(IS_ANDROID)
+        {"chrome", credit_card_form::kChrome},
+        {"android.messages", credit_card_form::kSmsApp},
+        {"com.samsung.android.messaging", credit_card_form::kSmsApp},
+        {"com.foo", credit_card_form::kOtherApp},
+#else
+        {"chrome", credit_card_form::kNoReferringApp},
+        {"android.messages", credit_card_form::kNoReferringApp},
+        {"com.samsung.android.messaging", credit_card_form::kNoReferringApp},
+        {"com.foo", credit_card_form::kNoReferringApp},
+#endif
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ClientSideDetectionHostCreditCardFormReferringAppTest,
+    testing::ValuesIn(credit_card_form_referring_app_test_cases),
+    CreditCardFormReferringAppTestCase::GetTestName);
+
+TEST_P(ClientSideDetectionHostCreditCardFormReferringAppTest,
+       DetectionLogsCorrectReferringApp) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  const CreditCardFormReferringAppTestCase& test_case = GetParam();
+
+  // Feature enabled, 0% HC allowlist acceptance, 100% sample rate:
+  feature_list_.InitAndEnableFeatureWithParameters(
+      kClientSideDetectionCreditCardForm,
+      {
+          {kCsdCreditCardFormPingOnDetection.name, "true"},
+          {kCsdCreditCardFormHCAcceptanceRate.name, "0.0"},
+          {kCsdCreditCardFormSampleRate.name, "1.0"},
+      });
+  SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
+
+  base::HistogramTester histogram_tester;
+
+  GURL url("http://host.com/");
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/true);
+
+  NavigateAndCommit(url);
+
+  // Check that histograms haven't been recorded yet.
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.CreditCardFormEvent2.OnFieldTypesDetermined", 0);
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.MatchHighConfidenceAllowlist.CreditCardForm", 0);
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.MatchCSDAllowlistOnCreditCardForm", 0);
+
+  csd_host_->RegisterAutofillManager();
+
+  ExpectPreClassificationChecks(url, &kFalse, &kFalse, nullptr, nullptr,
+                                nullptr);
+  auto form_data = autofill::test::CreateTestCreditCardFormData(
+      /*is_https=*/true, /*use_month_type=*/true);
+  autofill_manager()->OnFormsSeen({form_data}, {});
+  WaitUntilHighConfidenceAllowlistCheckDone();
+  WaitAndCheckPreClassificationChecks();
+
+  // Credit card form event should be logged with correct referring app.
+  credit_card_form::CreditCardFormEvent expected_event =
+      credit_card_form::GetCreditCardFormEvent(
+          credit_card_form::kNewSiteVisit, test_case.expected_referring_app,
+          credit_card_form::kAutofillLocal);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.CreditCardFormEvent2.OnFieldTypesDetermined", 1);
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.CreditCardFormEvent2.OnFieldTypesDetermined",
+      expected_event, 1);
+
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.MatchHighConfidenceAllowlist.CreditCardForm", 1);
+  ExpectOnlyBucketCount("SBClientPhishing.MatchCSDAllowlistOnCreditCardForm",
+                        false, 1);
+}
+
+TEST_P(ClientSideDetectionHostCreditCardFormReferringAppTest,
+       InteractionLogsCorrectReferringApp) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  const CreditCardFormReferringAppTestCase& test_case = GetParam();
+
+  // Feature enabled, 0% HC allowlist acceptance, 100% sample rate:
+  feature_list_.InitAndEnableFeatureWithParameters(
+      kClientSideDetectionCreditCardForm,
+      {
+          {kCsdCreditCardFormPingOnInteraction.name, "true"},
+          {kCsdCreditCardFormHCAcceptanceRate.name, "0.0"},
+          {kCsdCreditCardFormSampleRate.name, "1.0"},
+      });
+  SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
+
+  base::HistogramTester histogram_tester;
+
+  GURL url("http://host.com/");
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/true);
+
+  NavigateAndCommit(url);
+  auto form_data = autofill::test::CreateTestCreditCardFormData(
+      /*is_https=*/true, /*use_month_type=*/true);
+  autofill_manager()->OnFormsSeen({form_data}, {});
+
+  // Check that histograms haven't been recorded yet.
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.CreditCardFormEvent2.OnBeforeFocusOnFormField", 0);
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.MatchHighConfidenceAllowlist.CreditCardForm", 0);
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.MatchCSDAllowlistOnCreditCardForm", 0);
+
+  csd_host_->RegisterAutofillManager();
+
+  ExpectPreClassificationChecks(url, &kFalse, &kFalse, nullptr, nullptr,
+                                nullptr);
+  autofill_manager()->OnFocusOnFormField(
+      form_data, form_data.fields().begin()->global_id());
+  WaitUntilHighConfidenceAllowlistCheckDone();
+  WaitAndCheckPreClassificationChecks();
+
+  // Credit card form event should be logged with correct referring app.
+  credit_card_form::CreditCardFormEvent expected_event =
+      credit_card_form::GetCreditCardFormEvent(
+          credit_card_form::kNewSiteVisit, test_case.expected_referring_app,
+          credit_card_form::kAutofillServer);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.CreditCardFormEvent2.OnBeforeFocusOnFormField", 1);
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.CreditCardFormEvent2.OnBeforeFocusOnFormField",
+      expected_event, 1);
+
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.MatchHighConfidenceAllowlist.CreditCardForm", 1);
+  ExpectOnlyBucketCount("SBClientPhishing.MatchCSDAllowlistOnCreditCardForm",
+                        false, 1);
 }
 
 class ClientSideDetectionHostNotificationTest

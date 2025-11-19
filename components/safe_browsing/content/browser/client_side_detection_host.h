@@ -42,6 +42,10 @@
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "components/safe_browsing/core/browser/referring_app_info.h"  // nogncheck
+#endif
+
 namespace base {
 class TickClock;
 }
@@ -104,6 +108,11 @@ class ClientSideDetectionHost
     // the delegate when the inner text function is completed. This string is
     // then used to provide the on-device model the information about the page.
     virtual void GetInnerText(HostInnerTextCallback callback) = 0;
+
+#if BUILDFLAG(IS_ANDROID)
+    virtual internal::ReferringAppInfo GetReferringAppInfo(
+        content::WebContents* web_contents) = 0;
+#endif
   };
 
   // Delegate for handling intelligent scanning using on-device models. This

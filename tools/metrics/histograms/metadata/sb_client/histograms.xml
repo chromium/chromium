@@ -604,8 +604,8 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="SBClientPhishing.CreditCardFormEvent.{EventName}"
-    enum="CreditCardFormEvent" expires_after="2026-10-20">
+<histogram name="SBClientPhishing.CreditCardFormEvent2.{EventName}"
+    enum="CreditCardFormEvent" expires_after="2026-11-13">
   <owner>andysjlim@chromium.org</owner>
   <owner>bcb@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>

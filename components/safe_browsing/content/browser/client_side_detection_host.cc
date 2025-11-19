@@ -1098,7 +1098,16 @@ void ClientSideDetectionHost::OnCreditCardFormVisitCount(
                      ? credit_card_form::kRepeatSiteVisit
                      : credit_card_form::kNewSiteVisit;
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  credit_card_form::ReferringApp referring_app =
+      credit_card_form::FromReferringAppInfo(
+          delegate_->GetReferringAppInfo(web_contents()));
+  credit_card_form::LogEvent(event_name, site_visit, referring_app,
+                             field_heuristic);
+#else
   credit_card_form::LogEvent(event_name, site_visit, field_heuristic);
+#endif
 
   // After logging, only continue to pre-classification if sending a ping
   // is allowed.

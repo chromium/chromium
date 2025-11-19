@@ -6,10 +6,22 @@
 
 #include <optional>
 
+#include "base/containers/fixed_flat_set.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 
 namespace safe_browsing::credit_card_form {
+
+namespace {
+
+void LogCreditCardFormEvent(std::string_view event_name,
+                            CreditCardFormEvent event) {
+  base::UmaHistogramSparse(
+      base::StrCat({"SBClientPhishing.CreditCardFormEvent2.", event_name}),
+      static_cast<int>(event));
+}
+
+}  // namespace
 
 CreditCardFormEvent GetCreditCardFormEvent(SiteVisit site_visit,
                                            ReferringApp referring_app,
@@ -24,18 +36,46 @@ CreditCardFormEvent GetCreditCardFormEvent(SiteVisit site_visit,
   return static_cast<CreditCardFormEvent>(ordinal);
 }
 
+#if BUILDFLAG(IS_ANDROID)
+ReferringApp FromReferringAppInfo(internal::ReferringAppInfo info) {
+  static constexpr char kAndroidAppPrefix[] = "android-app://";
+  static constexpr auto kSmsApps = base::MakeFixedFlatSet<std::string_view>({
+      "android.messages",
+      "com.samsung.android.messaging",
+  });
+  if (!info.has_referring_app()) {
+    return kNoReferringApp;
+  }
+  std::string_view app_name = info.referring_app_name;
+  if (app_name.starts_with(kAndroidAppPrefix)) {
+    app_name.remove_prefix(strlen(kAndroidAppPrefix));
+  }
+  if (app_name == "chrome") {
+    return kChrome;
+  }
+  if (kSmsApps.contains(app_name)) {
+    return kSmsApp;
+  }
+  return kOtherApp;
+}
+
+void LogEvent(std::string_view event_name,
+              SiteVisit site_visit,
+              ReferringApp referring_app,
+              FieldDetectionHeuristic field_heuristic) {
+  CreditCardFormEvent event =
+      GetCreditCardFormEvent(site_visit, referring_app, field_heuristic);
+  LogCreditCardFormEvent(event_name, event);
+}
+
+#endif
+
 void LogEvent(std::string_view event_name,
               SiteVisit site_visit,
               FieldDetectionHeuristic field_heuristic) {
-  // Use this value until parameters are added to specify the correct value.
-  ReferringApp referring_app = kNoReferringApp;
-
   CreditCardFormEvent event =
-      GetCreditCardFormEvent(site_visit, referring_app, field_heuristic);
-
-  base::UmaHistogramSparse(
-      base::StrCat({"SBClientPhishing.CreditCardFormEvent.", event_name}),
-      static_cast<int>(event));
+      GetCreditCardFormEvent(site_visit, kNoReferringApp, field_heuristic);
+  LogCreditCardFormEvent(event_name, event);
 }
 
 }  // namespace safe_browsing::credit_card_form

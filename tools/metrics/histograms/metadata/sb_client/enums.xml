@@ -148,18 +148,26 @@ chromium-metrics-reviews@google.com.
   <int value="2"
       label="Unknown site visits, no referring app, Autofill server heuristic"/>
   <int value="10"
-      label="Unknown site visits, Chrome referring app, NoDetectionHeuristic"/>
+      label="Unknown site visits, other referring app, NoDetectionHeuristic"/>
   <int value="11"
-      label="Unknown site visits, Chrome referring app, Autofill local
+      label="Unknown site visits, other referring app, Autofill local
              heuristic"/>
   <int value="12"
-      label="Unknown site visits, Chrome referring app, Autofill server
+      label="Unknown site visits, other referring app, Autofill server
              heuristic"/>
   <int value="20"
-      label="Unknown site visits, SMS referring app, NoDetectionHeuristic"/>
+      label="Unknown site visits, Chrome referring app, NoDetectionHeuristic"/>
   <int value="21"
-      label="Unknown site visits, SMS referring app, Autofill local heuristic"/>
+      label="Unknown site visits, Chrome referring app, Autofill local
+             heuristic"/>
   <int value="22"
+      label="Unknown site visits, Chrome referring app, Autofill server
+             heuristic"/>
+  <int value="30"
+      label="Unknown site visits, SMS referring app, NoDetectionHeuristic"/>
+  <int value="31"
+      label="Unknown site visits, SMS referring app, Autofill local heuristic"/>
+  <int value="32"
       label="Unknown site visits, SMS referring app, Autofill server
              heuristic"/>
   <int value="100"
@@ -169,16 +177,22 @@ chromium-metrics-reviews@google.com.
   <int value="102"
       label="First visit, no referring app, Autofill server heuristic"/>
   <int value="110"
-      label="First visit, Chrome referring app, NoDetectionHeuristic"/>
+      label="First visit, other referring app, NoDetectionHeuristic"/>
   <int value="111"
-      label="First visit, Chrome referring app, Autofill local heuristic"/>
+      label="First visit, other referring app, Autofill local heuristic"/>
   <int value="112"
-      label="First visit, Chrome referring app, Autofill server heuristic"/>
+      label="First visit, other referring app, Autofill server heuristic"/>
   <int value="120"
-      label="First visit, SMS referring app, NoDetectionHeuristic"/>
+      label="First visit, Chrome referring app, NoDetectionHeuristic"/>
   <int value="121"
-      label="First visit, SMS referring app, Autofill local heuristic"/>
+      label="First visit, Chrome referring app, Autofill local heuristic"/>
   <int value="122"
+      label="First visit, Chrome referring app, Autofill server heuristic"/>
+  <int value="130"
+      label="First visit, SMS referring app, NoDetectionHeuristic"/>
+  <int value="131"
+      label="First visit, SMS referring app, Autofill local heuristic"/>
+  <int value="132"
       label="First visit, SMS referring app, Autofill server heuristic"/>
   <int value="200"
       label="Repeat visit, no referring app, NoDetectionHeuristic"/>
@@ -187,16 +201,22 @@ chromium-metrics-reviews@google.com.
   <int value="202"
       label="Repeat visit, no referring app, Autofill server heuristic"/>
   <int value="210"
-      label="Repeat visit, Chrome referring app, NoDetectionHeuristic"/>
+      label="Repeat visit, other referring app, NoDetectionHeuristic"/>
   <int value="211"
-      label="Repeat visit, Chrome referring app, Autofill local heuristic"/>
+      label="Repeat visit, other referring app, Autofill local heuristic"/>
   <int value="212"
-      label="Repeat visit, Chrome referring app, Autofill server heuristic"/>
+      label="Repeat visit, other referring app, Autofill server heuristic"/>
   <int value="220"
-      label="Repeat visit, SMS referring app, NoDetectionHeuristic"/>
+      label="Repeat visit, Chrome referring app, NoDetectionHeuristic"/>
   <int value="221"
-      label="Repeat visit, SMS referring app, Autofill local heuristic"/>
+      label="Repeat visit, Chrome referring app, Autofill local heuristic"/>
   <int value="222"
+      label="Repeat visit, Chrome referring app, Autofill server heuristic"/>
+  <int value="230"
+      label="Repeat visit, SMS referring app, NoDetectionHeuristic"/>
+  <int value="231"
+      label="Repeat visit, SMS referring app, Autofill local heuristic"/>
+  <int value="232"
       label="Repeat visit, SMS referring app, Autofill server heuristic"/>
 </enum>
 

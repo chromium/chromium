@@ -9942,6 +9942,10 @@ test("unit_tests") {
       "//components/safe_browsing/core/browser:token_fetcher_testing_helper",
     ]
 
+    if (is_android) {
+      deps += [ "//components/safe_browsing/core/browser:referring_app_info" ]
+    }
+
     if (enterprise_cloud_content_analysis) {
       sources += [
         "../browser/safe_browsing/chrome_enterprise_url_lookup_service_factory_unittest.cc",
