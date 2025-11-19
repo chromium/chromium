@@ -14,7 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/input_method/assistive_suggester_switch.h"
-#include "chrome/browser/ash/input_method/emoji_suggester.h"
 #include "chrome/browser/ash/input_method/longpress_control_v_suggester.h"
 #include "chrome/browser/ash/input_method/longpress_diacritics_suggester.h"
 #include "chrome/browser/ash/input_method/multi_word_suggester.h"
@@ -91,10 +90,6 @@ class AssistiveSuggester : public SuggestionsSource {
   // Check if suggestion is being shown.
   bool IsSuggestionShown();
 
-  EmojiSuggester* get_emoji_suggester_for_testing() {
-    return &emoji_suggester_;
-  }
-
   std::optional<AssistiveSuggesterSwitch::EnabledSuggestions>
   get_enabled_suggestion_from_last_onfocus_for_testing() {
     return enabled_suggestions_from_last_onfocus_;
@@ -157,7 +152,6 @@ class AssistiveSuggester : public SuggestionsSource {
   void OnClipboardHistoryMenuClosing(bool will_paste_item);
 
   raw_ptr<Profile> profile_;
-  EmojiSuggester emoji_suggester_;
   MultiWordSuggester multi_word_suggester_;
   LongpressDiacriticsSuggester longpress_diacritics_suggester_;
   LongpressControlVSuggester longpress_control_v_suggester_;

@@ -51,8 +51,6 @@ namespace input_method {
 
 namespace {
 
-constexpr char kEmojiData[] = "happy,😀;😃;😄";
-
 class TestObserver : public StubInputMethodEngineObserver {
  public:
   TestObserver() = default;
@@ -129,9 +127,6 @@ class NativeInputMethodEngineWithoutImeServiceTest
     prefs_->Set(::prefs::kLanguageInputMethodSpecificSettings,
                 base::Value(base::Value::Type::DICT));
     engine_->Initialize(std::move(observer), /*extension_id=*/"", profile_);
-    engine_->get_assistive_suggester_for_testing()
-        ->get_emoji_suggester_for_testing()
-        ->LoadEmojiMapForTesting(kEmojiData);
 
     // Ensure predictive writing is off to stop tests from attempting to
     // load the shared library.

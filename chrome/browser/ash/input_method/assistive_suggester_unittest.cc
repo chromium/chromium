@@ -56,7 +56,6 @@ using EnabledSuggestions = AssistiveSuggesterSwitch::EnabledSuggestions;
 
 const char kUsEnglishEngineId[] = "xkb:us::eng";
 const char kSpainSpanishEngineId[] = "xkb:es::spa";
-const char kEmojiData[] = "arrow,←;↑;→";
 const TextInputMethod::InputContext empty_context(ui::TEXT_INPUT_TYPE_NONE);
 constexpr size_t kTakeLastNChars = 100;
 
@@ -1097,8 +1096,6 @@ class AssistiveSuggesterEmojiTest : public testing::Test {
         std::make_unique<FakeSuggesterSwitch>(EnabledSuggestions{
             .emoji_suggestions = true,
         }));
-    assistive_suggester_->get_emoji_suggester_for_testing()
-        ->LoadEmojiMapForTesting(kEmojiData);
 
     // Needed to ensure globals accessed by EmojiSuggester are available.
     chrome_keyboard_controller_client_ =
@@ -1141,8 +1138,6 @@ TEST_F(AssistiveSuggesterEmojiTest, ShouldNotSuggestWhenSwitchDisabled) {
       std::make_unique<FakeSuggesterSwitch>(EnabledSuggestions{
           .emoji_suggestions = false,
       }));
-  assistive_suggester_->get_emoji_suggester_for_testing()
-      ->LoadEmojiMapForTesting(kEmojiData);
   assistive_suggester_->OnActivate(kUsEnglishEngineId);
   assistive_suggester_->OnFocus(5, empty_context);
 
