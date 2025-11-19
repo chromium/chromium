@@ -31,6 +31,8 @@ component("fido") {
     "fido_transport_protocol.cc",
     "fido_transport_protocol.h",
     "fido_types.h",
+    "fido_user_verification_requirement.cc",
+    "fido_user_verification_requirement.h",
     "opaque_attestation_statement.cc",
     "opaque_attestation_statement.h",
     "p256_public_key.cc",

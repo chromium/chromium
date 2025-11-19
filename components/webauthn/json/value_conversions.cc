@@ -23,6 +23,7 @@
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
+#include "device/fido/fido_user_verification_requirement.h"
 #include "device/fido/public_key_credential_descriptor.h"
 #include "device/fido/public_key_credential_params.h"
 #include "device/fido/public_key_credential_rp_entity.h"
@@ -170,14 +171,7 @@ base::Value ToValue(
 
 base::Value ToValue(
     const device::UserVerificationRequirement& user_verification_requirement) {
-  switch (user_verification_requirement) {
-    case device::UserVerificationRequirement::kDiscouraged:
-      return base::Value("discouraged");
-    case device::UserVerificationRequirement::kPreferred:
-      return base::Value("preferred");
-    case device::UserVerificationRequirement::kRequired:
-      return base::Value("required");
-  }
+  return base::Value(device::ToString(user_verification_requirement));
 }
 
 base::Value ToValue(
@@ -238,9 +232,9 @@ base::Value ToValue(const device::LargeBlobSupport large_blob) {
     case device::LargeBlobSupport::kNotRequested:
       NOTREACHED();
     case device::LargeBlobSupport::kRequired:
-      return base::Value("required");
+      return base::Value(device::kExtensionLargeBlobSupportRequired);
     case device::LargeBlobSupport::kPreferred:
-      return base::Value("preferred");
+      return base::Value(device::kExtensionLargeBlobSupportPreferred);
   }
 }
 

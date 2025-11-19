@@ -103,6 +103,7 @@
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
+#include "device/fido/fido_user_verification_requirement.h"
 #include "device/fido/filter.h"
 #include "device/fido/large_blob.h"
 #include "device/fido/mock_fido_device.h"
@@ -4865,17 +4866,6 @@ class UVAuthenticatorImplTest : public AuthenticatorImplTest {
     return options;
   }
 
-  static const char* UVToString(device::UserVerificationRequirement uv) {
-    switch (uv) {
-      case device::UserVerificationRequirement::kDiscouraged:
-        return "discouraged";
-      case device::UserVerificationRequirement::kPreferred:
-        return "preferred";
-      case device::UserVerificationRequirement::kRequired:
-        return "required";
-    }
-  }
-
   UVTestAuthenticatorContentBrowserClient test_client_;
 
  private:
@@ -5063,7 +5053,8 @@ static constexpr std::array<device::UserVerificationRequirement, 3> kUVLevel = {
 };
 
 static const std::array<std::string_view, 3> kUVDescription = {
-    "discouraged", "preferred", "required"};
+    device::kUserVerificationDiscouraged, device::kUserVerificationPreferred,
+    device::kUserVerificationRequired};
 
 static const std::array<std::string_view, 3> kPINSupportDescription = {
     "no PIN support", "PIN not set", "PIN set"};
@@ -6062,7 +6053,7 @@ class InternalUVAuthenticatorImplTest : public UVAuthenticatorImplTest {
                                       << test_case.fingerprints_enrolled);
     SCOPED_TRACE(::testing::Message()
                  << "supports_pin=" << test_case.supports_pin);
-    SCOPED_TRACE(UVToString(test_case.uv));
+    SCOPED_TRACE(device::ToString(test_case.uv));
   }
 };
 
@@ -6370,7 +6361,7 @@ TEST_F(UVTokenAuthenticatorImplTest, GetAssertionUVToken) {
     for (auto uv : {device::UserVerificationRequirement::kDiscouraged,
                     device::UserVerificationRequirement::kPreferred,
                     device::UserVerificationRequirement::kRequired}) {
-      SCOPED_TRACE(UVToString(uv));
+      SCOPED_TRACE(device::ToString(uv));
 
       // Without a fingerprint enrolled we assume that a UV=required request
       // cannot be satisfied by an authenticator that cannot do UV. It is
@@ -6492,7 +6483,7 @@ TEST_F(UVTokenAuthenticatorImplTest, MakeCredentialUVToken) {
     for (const auto uv : {device::UserVerificationRequirement::kDiscouraged,
                           device::UserVerificationRequirement::kPreferred,
                           device::UserVerificationRequirement::kRequired}) {
-      SCOPED_TRACE(UVToString(uv));
+      SCOPED_TRACE(device::ToString(uv));
 
       // UV cannot be satisfied without fingerprints.
       const bool should_timeout =
@@ -7759,7 +7750,7 @@ TEST_F(ResidentKeyAuthenticatorImplTest, CredProtectRegistration) {
     virtual_device_factory_->SetCtap2Config(config);
     virtual_device_factory_->mutable_state()->registrations.clear();
 
-    SCOPED_TRACE(::testing::Message() << "uv=" << UVToString(test.uv));
+    SCOPED_TRACE(::testing::Message() << "uv=" << device::ToString(test.uv));
     SCOPED_TRACE(::testing::Message() << "enforce=" << test.enforce);
     SCOPED_TRACE(::testing::Message()
                  << "level=" << ProtectionPolicyDescription(test.protection));
