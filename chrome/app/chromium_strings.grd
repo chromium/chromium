@@ -2051,6 +2051,10 @@ Chromium is unable to recover your settings.
           desc="Label for the Lens overlay command, through which the image will be searched using the Image Search service.">
           Search this image with Image Search
         </message>
+        <message name="IDS_LENS_OVERLAY_TAB_ENTRYPOINT_LABEL"
+          desc="Label for the Lens overlay command, through which the current tab will be searched using the Image Search service.">
+          Search this tab with Image Search
+        </message>
         <message name="IDS_LENS_OVERLAY_VIDEO_ENTRYPOINT_LABEL_ALT1"
           desc="Label for the Lens overlay command, through which the user can ask questions about the video.">
           Ask about this video

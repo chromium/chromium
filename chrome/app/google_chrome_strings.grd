@@ -2057,6 +2057,10 @@ Google Chrome is unable to recover your settings.
           desc="Label for the Lens overlay command, through which the image will be searched using Google Lens.">
           Search this image with Google Lens
         </message>
+        <message name="IDS_LENS_OVERLAY_TAB_ENTRYPOINT_LABEL"
+          desc="Label for the Lens overlay command, through which the current tab will be searched using Google Lens.">
+          Search this tab with Google Lens
+        </message>
         <message name="IDS_LENS_OVERLAY_VIDEO_ENTRYPOINT_LABEL_ALT1"
           desc="Label for the Lens overlay command, through which the user can ask Google questions about the video.">
           Ask Google about this video

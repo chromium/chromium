@@ -21,6 +21,8 @@ int GetLensOverlayEntrypointLabelAltIds(int default_value) {
       return IDS_LENS_OVERLAY_ENTRYPOINT_LABEL_ALT2;
     case 3:
       return IDS_LENS_OVERLAY_ENTRYPOINT_LABEL_ALT3;
+    case 4:
+      return IDS_LENS_OVERLAY_TAB_ENTRYPOINT_LABEL;
     default:
       return default_value;
   }
@@ -37,6 +39,7 @@ int GetLensOverlayImageEntrypointLabelAltIds(int default_value) {
     case 2:
       return IDS_LENS_OVERLAY_IMAGE_ENTRYPOINT_LABEL_ALT2;
     case 3:
+    case 4:
       return IDS_LENS_OVERLAY_IMAGE_ENTRYPOINT_LABEL_ALT3;
     default:
       return default_value;
@@ -54,6 +57,7 @@ int GetLensOverlayVideoEntrypointLabelAltIds(int default_value) {
     case 2:
       return IDS_LENS_OVERLAY_VIDEO_ENTRYPOINT_LABEL_ALT2;
     case 3:
+    case 4:
       return IDS_LENS_OVERLAY_VIDEO_ENTRYPOINT_LABEL_ALT3;
     default:
       return default_value;
