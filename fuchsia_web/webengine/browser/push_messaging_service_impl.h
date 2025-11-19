@@ -28,6 +28,10 @@ namespace os_crypt_async {
 class OSCryptAsync;
 }  // namespace os_crypt_async
 
+namespace network {
+class NetworkConnectionTracker;
+}  // namespace network
+
 // The PushMessagingService implementation dedicated for WebEngine since the
 // //chrome/browser/push_messaging implementation uses Profile which is not a
 // concept in //fuchsia_web.
@@ -48,18 +52,19 @@ class PushMessagingServiceImpl final : public content::PushMessagingService,
                                        public gcm::GCMAppHandler {
  public:
   PushMessagingServiceImpl(content::BrowserContext&,
-                           os_crypt_async::OSCryptAsync&);
+                           os_crypt_async::OSCryptAsync&,
+                           network::NetworkConnectionTracker&);
   ~PushMessagingServiceImpl() override;
 
   // PushMessagingService implementations.
-  void SubscribeFromDocument(const GURL& requesting_origin,
+  void SubscribeFromDocument(const GURL& origin,
                              int64_t service_worker_registration_id,
                              int render_process_id,
                              int render_frame_id,
                              blink::mojom::PushSubscriptionOptionsPtr options,
                              bool user_gesture,
                              RegisterCallback callback) override;
-  void SubscribeFromWorker(const GURL& requesting_origin,
+  void SubscribeFromWorker(const GURL& origin,
                            int64_t service_worker_registration_id,
                            int render_process_id,
                            blink::mojom::PushSubscriptionOptionsPtr options,
@@ -70,7 +75,7 @@ class PushMessagingServiceImpl final : public content::PushMessagingService,
                            const std::string& subscription_id,
                            SubscriptionInfoCallback callback) override;
   void Unsubscribe(blink::mojom::PushUnregistrationReason reason,
-                   const GURL& requesting_origin,
+                   const GURL& origin,
                    int64_t service_worker_registration_id,
                    const std::string& sender_id,
                    UnregisterCallback callback) override;
@@ -91,12 +96,18 @@ class PushMessagingServiceImpl final : public content::PushMessagingService,
       const gcm::GCMClient::SendErrorDetails& send_error_details) override;
   void OnSendAcknowledged(const std::string& app_id,
                           const std::string& message_id) override;
+  bool CanHandle(const std::string& app_id) const override;
 
  private:
   gcm::GCMDriver& GetGCMDriver();
   instance_id::InstanceIDDriver& GetInstanceIDDriver();
 
-  void RequestProxyResolvingSocketFactory(
+  void RequestProxyResolvingSocketFactoryOnUIThread(
+      mojo::PendingReceiver<network::mojom::ProxyResolvingSocketFactory>
+          receiver);
+
+  static void RequestProxyResolvingSocketFactory(
+      base::WeakPtr<PushMessagingServiceImpl> self,
       mojo::PendingReceiver<network::mojom::ProxyResolvingSocketFactory>
           receiver);
 
@@ -109,7 +120,7 @@ class PushMessagingServiceImpl final : public content::PushMessagingService,
 
   // Shared implementation for both SubscribeFromDocument and
   // SubscribeFromWorker.
-  void DoSubscribe(const GURL& requesting_origin,
+  void DoSubscribe(const GURL& origin,
                    int64_t service_worker_registration_id,
                    blink::mojom::PushSubscriptionOptionsPtr options,
                    RegisterCallback callback);
@@ -134,6 +145,10 @@ class PushMessagingServiceImpl final : public content::PushMessagingService,
       std::string p256dh,
       std::string auth_secret);
 
+  void Unsubscribe(const push_messaging::AppIdentifier& app_id,
+                   blink::mojom::PushUnregistrationReason reason,
+                   UnregisterCallback callback);
+
   void DidClearPushSubscriptionId(blink::mojom::PushUnregistrationReason reason,
                                   const push_messaging::AppIdentifier& app_id,
                                   UnregisterCallback callback);
@@ -146,6 +161,22 @@ class PushMessagingServiceImpl final : public content::PushMessagingService,
 
   void DidUnsubscribe(gcm::GCMClient::Result);
 
+  void DidValidateSubscription(const std::string& app_id,
+                               const std::string& sender_id,
+                               const GURL& endpoint,
+                               const std::optional<base::Time>& expiration_time,
+                               SubscriptionInfoCallback callback,
+                               bool is_valid);
+
+  void DidGetEncryptionInfo(const GURL& endpoint,
+                            const std::optional<base::Time>& expiration_time,
+                            SubscriptionInfoCallback callback,
+                            std::string p256dh,
+                            std::string auth_secret) const;
+
+  void DidDeliverMessage(const push_messaging::AppIdentifier& app_id,
+                         blink::mojom::PushEventStatus status);
+
   // Class variables
 
   // Lazy initialized.
@@ -157,6 +188,7 @@ class PushMessagingServiceImpl final : public content::PushMessagingService,
   // Outlive this instance.
   content::BrowserContext& parent_context_;
   os_crypt_async::OSCryptAsync& os_crypt_async_;
+  network::NetworkConnectionTracker& network_connection_tracker_;
 
   // TODO(http://crbug.com/424479300): Implement the persistent storage of the
   // |app_ids_|.

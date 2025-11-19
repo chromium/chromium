@@ -64,18 +64,21 @@ std::unique_ptr<WebEngineBrowserContext>
 WebEngineBrowserContext::CreatePersistent(
     base::FilePath data_directory,
     network::NetworkQualityTracker* network_quality_tracker,
-    os_crypt_async::OSCryptAsync* os_crypt_async) {
+    os_crypt_async::OSCryptAsync* os_crypt_async,
+    network::NetworkConnectionTracker* network_connection_tracker) {
   return base::WrapUnique(new WebEngineBrowserContext(
-      std::move(data_directory), network_quality_tracker, os_crypt_async));
+      std::move(data_directory), network_quality_tracker, os_crypt_async,
+      network_connection_tracker));
 }
 
 // static
 std::unique_ptr<WebEngineBrowserContext>
 WebEngineBrowserContext::CreateIncognito(
     network::NetworkQualityTracker* network_quality_tracker,
-    os_crypt_async::OSCryptAsync* os_crypt_async) {
-  return base::WrapUnique(
-      new WebEngineBrowserContext({}, network_quality_tracker, os_crypt_async));
+    os_crypt_async::OSCryptAsync* os_crypt_async,
+    network::NetworkConnectionTracker* network_connection_tracker) {
+  return base::WrapUnique(new WebEngineBrowserContext(
+      {}, network_quality_tracker, os_crypt_async, network_connection_tracker));
 }
 
 WebEngineBrowserContext::~WebEngineBrowserContext() {
@@ -119,7 +122,11 @@ WebEngineBrowserContext::GetSpecialStoragePolicy() {
 
 content::PlatformNotificationService*
 WebEngineBrowserContext::GetPlatformNotificationService() {
+#ifdef WEB_ENGINE_ENABLE_PUSH_MESSAGING_API
+  return &platform_notification_service_;
+#else
   return nullptr;
+#endif
 }
 
 content::PushMessagingService*
@@ -193,7 +200,8 @@ base::RepeatingCallback<bool(const GURL&)> IsJavaScriptAllowedCallback() {
 WebEngineBrowserContext::WebEngineBrowserContext(
     base::FilePath data_directory,
     network::NetworkQualityTracker* network_quality_tracker,
-    os_crypt_async::OSCryptAsync* os_crypt_async)
+    os_crypt_async::OSCryptAsync* os_crypt_async,
+    network::NetworkConnectionTracker* network_connection_tracker)
     : data_dir_path_(std::move(data_directory)),
       net_log_observer_(CreateNetLogObserver()),
       simple_factory_key_(GetPath(), IsOffTheRecord()),
@@ -203,7 +211,9 @@ WebEngineBrowserContext::WebEngineBrowserContext(
       reduce_accept_language_delegate_(GetAcceptLanguages())
 #ifdef WEB_ENGINE_ENABLE_PUSH_MESSAGING_API
       ,
-      push_messaging_service_(*this, *os_crypt_async)
+      push_messaging_service_(*this,
+                              *os_crypt_async,
+                              *network_connection_tracker)
 #endif
 {
   SimpleKeyMap::GetInstance()->Associate(this, &simple_factory_key_);

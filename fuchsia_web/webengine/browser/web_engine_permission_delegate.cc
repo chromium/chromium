@@ -59,6 +59,14 @@ blink::mojom::PermissionStatus WebEnginePermissionDelegate::GetPermissionStatus(
     const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     const GURL& requesting_origin,
     const GURL& embedding_origin) {
+#ifdef WEB_ENGINE_ENABLE_PUSH_MESSAGING_API
+  // TODO(crbug.com/424479300): This permission needs to be checked against the
+  // same list in PushMessagingServiceImpl.
+  if (blink::PermissionDescriptorToPermissionType(permission_descriptor) ==
+      blink::PermissionType::NOTIFICATIONS) {
+    return blink::mojom::PermissionStatus::GRANTED;
+  }
+#endif
   // Although GetPermissionStatusForCurrentDocument() should be used for most
   // permissions, some use cases (e.g., BACKGROUND_SYNC) do not have a frame.
   //
@@ -82,6 +90,20 @@ WebEnginePermissionDelegate::GetPermissionResultForCurrentDocument(
     const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     content::RenderFrameHost* render_frame_host,
     bool should_include_device_status) {
+#ifdef WEB_ENGINE_ENABLE_PUSH_MESSAGING_API
+  // Most of the push messaging API users would expect the permission of
+  // notifications, or the service worker has no way to notify users. Though
+  // WebEngine does not support platform notifications, to make the behavior as
+  // close as a full Chrome browser, the notification permissions should be
+  // granted to the same set of origins allowing using PushMessagingServiceImpl.
+  // TODO(crbug.com/424479300): This permission needs to be checked against the
+  // same list in PushMessagingServiceImpl.
+  if (blink::PermissionDescriptorToPermissionType(permission_descriptor) ==
+      blink::PermissionType::NOTIFICATIONS) {
+    return content::PermissionResult(blink::mojom::PermissionStatus::GRANTED);
+  }
+#endif
+
   FrameImpl* frame = FrameImpl::FromRenderFrameHost(render_frame_host);
   DCHECK(frame);
   return content::PermissionResult(

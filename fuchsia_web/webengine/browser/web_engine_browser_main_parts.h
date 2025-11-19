@@ -43,6 +43,10 @@ namespace media {
 class FuchsiaCdmManager;
 }
 
+namespace network {
+class NetworkConnectionTracker;
+}
+
 namespace inspect {
 class ComponentInspector;
 }
@@ -57,12 +61,14 @@ class FrameHostImpl final : public fuchsia::web::FrameHost {
       inspect::Node inspect_node,
       WebEngineDevToolsController* devtools_controller,
       network::NetworkQualityTracker* network_quality_tracker,
-      os_crypt_async::OSCryptAsync* os_crypt_async)
-      : context_(
-            WebEngineBrowserContext::CreateIncognito(network_quality_tracker,
-                                                     os_crypt_async),
-            std::move(inspect_node),
-            devtools_controller) {}
+      os_crypt_async::OSCryptAsync* os_crypt_async,
+      network::NetworkConnectionTracker* network_connection_tracker)
+      : context_(WebEngineBrowserContext::CreateIncognito(
+                     network_quality_tracker,
+                     os_crypt_async,
+                     network_connection_tracker),
+                 std::move(inspect_node),
+                 devtools_controller) {}
   ~FrameHostImpl() override = default;
 
   FrameHostImpl(const FrameHostImpl&) = delete;
@@ -160,6 +166,8 @@ class WEB_ENGINE_EXPORT WebEngineBrowserMainParts
       network_quality_observer_;
 
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
+
+  raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_;
 
   // Allows the instance to respond gracefully to explicit teardown via the
   // component framework.

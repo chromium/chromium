@@ -327,6 +327,8 @@ component("web_engine_core") {
     "browser/navigation_policy_handler.h",
     "browser/navigation_policy_throttle.cc",
     "browser/navigation_policy_throttle.h",
+    "browser/platform_notification_service_impl.cc",
+    "browser/platform_notification_service_impl.h",
     "browser/push_messaging_service_impl.cc",
     "browser/push_messaging_service_impl.h",
     "browser/theme_manager.cc",
