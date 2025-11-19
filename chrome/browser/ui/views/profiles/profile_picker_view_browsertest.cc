@@ -4086,3 +4086,69 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerToAllUsersBrowserTest,
   EXPECT_TRUE(ProfilePicker::IsOpen());
   EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
 }
+
+class ProfilePickerWithReducedFrictionBrowserTest
+    : public ProfilePickerCreationFlowBrowserTest {
+ protected:
+  ProfilePickerWithReducedFrictionBrowserTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        switches::kProfileCreationFrictionReductionExperiment,
+        {{"profile-creation-friction-reduction-variation",
+          "remove-signin-step"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ProfilePickerWithReducedFrictionBrowserTest,
+                       CreateLocalProfileWithoutSigninStep) {
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
+  ASSERT_EQ(1u, g_browser_process->profile_manager()
+                    ->GetProfileAttributesStorage()
+                    .GetNumberOfProfiles());
+
+  content::TestNavigationObserver profile_customization_observer(
+      kLocalProfileCreationUrl);
+  profile_customization_observer.StartWatchingNewWebContents();
+  BrowserAddedWaiter waiter = BrowserAddedWaiter(2u);
+
+  ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+      ProfilePicker::EntryPoint::kProfileMenuAddNewProfile));
+  // Wait until webUI is fully initialized.
+  WaitForLoadStop(GURL("chrome://profile-picker/new-profile"));
+
+  // If the signin step is displayed, the test will fail with timeout. There's
+  // no interaction with signin step in this test so it's not passed through.
+  // It's waiting only for profile customization which should be shown directly.
+
+  BrowserWindowInterface* const new_browser = waiter.Wait();
+  profile_customization_observer.Wait();
+
+  content::WebContents* dialog_web_contents =
+      new_browser->GetFeatures()
+          .signin_view_controller()
+          ->GetModalDialogWebContentsForTesting();
+  EXPECT_EQ(dialog_web_contents->GetLastCommittedURL(),
+            kLocalProfileCreationUrl);
+
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(new_browser->GetProfile()->GetPath());
+  ASSERT_TRUE(entry->IsEphemeral());
+  EXPECT_FALSE(ProfilePicker::IsOpen());
+  EXPECT_TRUE(
+      new_browser->GetFeatures().signin_view_controller()->ShowsModalDialog());
+
+  // Simulate clicking the "Done" button on the profile customization dialog.
+  ConfirmLocalProfileCreation(dialog_web_contents);
+
+  ASSERT_FALSE(entry->IsEphemeral());
+  ASSERT_EQ(kLocalProfileName, base::UTF16ToUTF8(entry->GetLocalProfileName()));
+  ASSERT_EQ(2u, g_browser_process->profile_manager()
+                    ->GetProfileAttributesStorage()
+                    .GetNumberOfProfiles());
+  EXPECT_FALSE(
+      new_browser->GetFeatures().signin_view_controller()->ShowsModalDialog());
+}
