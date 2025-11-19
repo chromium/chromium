@@ -423,16 +423,13 @@ void BookmarkMenuDelegate::ExecuteCommand(int id, int mouse_event_flags) {
           GetBookmarkMergedSurfaceService());
   if (base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII("open-bookmark-option") == "foreground") {
     chrome::OpenAllIfAllowed(browser_, selection,
-                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                             false);
+                             WindowOpenDisposition::NEW_FOREGROUND_TAB);
   } else if (base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII("open-bookmark-option") == "background")  {
     chrome::OpenAllIfAllowed(browser_, selection,
-                             WindowOpenDisposition::NEW_BACKGROUND_TAB,
-                             false);
+                             WindowOpenDisposition::NEW_BACKGROUND_TAB);
   } else {
     chrome::OpenAllIfAllowed(browser_, selection,
-                             ui::DispositionFromEventFlags(mouse_event_flags),
-                             false);
+                             ui::DispositionFromEventFlags(mouse_event_flags));
   }
 }
 
