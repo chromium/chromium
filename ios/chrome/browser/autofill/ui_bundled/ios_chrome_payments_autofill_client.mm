@@ -144,6 +144,7 @@ void IOSChromePaymentsAutofillClient::ShowSaveCreditCardLocally(
     const CreditCard& card,
     SaveCreditCardOptions options,
     LocalSaveCardPromptCallback callback) {
+  DCHECK(options.show_prompt);
   CHECK(!card.GetInfo(CREDIT_CARD_EXP_MONTH, client_->GetAppLocale()).empty());
   CHECK(!card.GetInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, client_->GetAppLocale())
              .empty());
