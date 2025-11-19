@@ -28580,6 +28580,7 @@
                 {
                     "name": "Enable",
                     "enable_features": [
+                        "AutofillAiIgnoresWhetherAddressPrefIsEnabled",
                         "YourSavedInfoSettingsPage"
                     ]
                 }
