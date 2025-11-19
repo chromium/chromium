@@ -240,7 +240,7 @@ scoped_refptr<StaticBitmapImage> ApplyTransformsFromOptions(
   params.sampling = options.sampling;
   params.source_rect = options.source_rect;
   params.dest_size = options.dest_size;
-  return StaticBitmapImageTransform::Apply(FlushReason::kOther, source, params);
+  return StaticBitmapImageTransform::Apply(source, params);
 }
 
 scoped_refptr<StaticBitmapImage> MakeBlankImage(

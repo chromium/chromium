@@ -56,7 +56,6 @@ class PLATFORM_EXPORT StaticBitmapImageTransform {
 
   // Apply the specified transform to the indcated image.
   static scoped_refptr<StaticBitmapImage> Apply(
-      FlushReason,
       scoped_refptr<StaticBitmapImage> image,
       const Params& params);
 
