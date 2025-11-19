@@ -2490,6 +2490,33 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReasonV2.MediaPlayback.PlaybackToTotalTimeRatio"
+    units="%" expires_after="2026-09-18">
+  <owner>philyan@google.com</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Records the ratio of watch time (i.e., when the video was actively playing)
+    to total time the Picture-in-Picture window was open, for windows opened
+    automatically for the MediaPlayback reason. Recorded when the window is
+    closed. This helps understand user engagement with auto-PiP windows.
+  </summary>
+</histogram>
+
+<histogram
+    name="Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReasonV2.MediaPlayback.TotalPlaybackTime"
+    units="ms" expires_after="2026-09-18">
+  <owner>philyan@google.com</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Records the cumulative watch time (i.e., when the video was actively
+    playing) within a Picture-in-Picture window that was opened automatically
+    for the MediaPlayback reason. Recorded when the window is closed. To
+    understand the proportion of time spent watching video vs the total time the
+    window was open, see `PlaybackToTotalTimeRatio`.
+  </summary>
+</histogram>
+
+<histogram
     name="Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReasonV2.{AutomaticReason}.PromptResultV2"
     enum="MediaAutoPictureInPicturePromptResult" expires_after="2026-06-18">
   <owner>bkeen@google.com</owner>

@@ -206,6 +206,14 @@ void AutoPictureInPictureTabHelper::MaybeRecordPictureInPictureChanged(
           "MediaPlayback.TotalPlaybackTime",
           total_playback_time.value(), base::Milliseconds(1), base::Hours(10),
           100);
+
+      if (total_pip_time.is_positive()) {
+        base::UmaHistogramPercentage(
+            "Media.AutoPictureInPicture.EnterPictureInPicture."
+            "AutomaticReasonV2."
+            "MediaPlayback.PlaybackToTotalTimeRatio",
+            100 * (total_playback_time.value() / total_pip_time));
+      }
     }
   } else if (auto_pip_trigger_reason_ == media::PictureInPictureEventsInfo::
                                              AutoPipReason::kBrowserInitiated) {
