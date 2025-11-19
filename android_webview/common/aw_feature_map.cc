@@ -44,7 +44,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewCacheSizeLimitDerivedFromAppCacheQuota,
     &features::kWebViewConnectToComponentProviderInBackground,
     &features::kWebViewDoNotSendAccessibilityEventsOnGSU,
-    &features::kWebViewDrainPrefetchQueueDuringInit,
     &features::kWebViewEarlyPerfettoInit,
     &features::kWebViewEarlyStartupTracing,
     &features::kWebViewEnableCrash,

@@ -772,10 +772,6 @@ public final class ProductionSupportedFlagList {
                 AwFeatures.WEBVIEW_DO_NOT_SEND_ACCESSIBILITY_EVENTS_ON_GSU,
                 "Do not send TYPE_VIEW_SCROLLED accessibility events on kGestureScrollUpdate acks,"
                         + " instead send them every 100ms when in a scroll gesture."),
-        Flag.baseFeature(
-                AwFeatures.WEBVIEW_DRAIN_PREFETCH_QUEUE_DURING_INIT,
-                "Drain any prefetches that were triggered on the background thread during WebView"
-                        + " initialization."),
         Flag.baseFeature(BlinkFeatures.STREAMLINE_RENDERER_INIT),
         Flag.baseFeature("LazyBindJsInjection"),
         Flag.baseFeature("WebViewVizUseThreadPool"),
