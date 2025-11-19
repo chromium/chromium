@@ -287,7 +287,7 @@ GPUCanvasContext::PaintRenderingResultsToSnapshot(
   CanvasResourceProviderSharedImage* provider =
       PaintRenderingResultsToCanvas(source_buffer);
 
-  return provider ? provider->Snapshot(FlushReason::kOther) : nullptr;
+  return provider ? provider->Snapshot() : nullptr;
 }
 
 bool GPUCanvasContext::CopyRenderingResultsToVideoFrame(
@@ -1021,7 +1021,7 @@ scoped_refptr<StaticBitmapImage> GPUCanvasContext::SnapshotInternal(
     return nullptr;
   }
 
-  return resource_provider->Snapshot(FlushReason::kOther);
+  return resource_provider->Snapshot();
 }
 
 base::WeakPtr<WebGraphicsContext3DProviderWrapper>

@@ -150,10 +150,9 @@ CanvasResourceProviderBitmap::CanvasResourceProviderBitmap(
                              delegate) {}
 
 scoped_refptr<StaticBitmapImage> CanvasResourceProviderBitmap::Snapshot(
-    FlushReason reason,
     ImageOrientation orientation) {
   TRACE_EVENT0("blink", "CanvasResourceProviderBitmap::Snapshot");
-  return UnacceleratedSnapshot(orientation, reason);
+  return UnacceleratedSnapshot(orientation, FlushReason::kOther);
 }
 
 scoped_refptr<StaticBitmapImage>
@@ -883,7 +882,6 @@ void CanvasResourceProviderSharedImage::ExternalCanvasDrawHelper(
 }
 
 scoped_refptr<StaticBitmapImage> CanvasResourceProviderSharedImage::Snapshot(
-    FlushReason reason,
     ImageOrientation orientation) {
   TRACE_EVENT0("blink", "CanvasResourceProviderSharedImage::Snapshot");
   if (!IsValid()) {
@@ -894,7 +892,7 @@ scoped_refptr<StaticBitmapImage> CanvasResourceProviderSharedImage::Snapshot(
   // rendering results visible on the GpuMemoryBuffer while we return cpu
   // memory, rendererd to by skia, here.
   if (!is_accelerated_) {
-    return UnacceleratedSnapshot(orientation, reason);
+    return UnacceleratedSnapshot(orientation, FlushReason::kOther);
   }
 
   if (!cached_snapshot_) {
@@ -903,7 +901,7 @@ scoped_refptr<StaticBitmapImage> CanvasResourceProviderSharedImage::Snapshot(
     // associated HighEntropyCanvasOpTypes).
     HighEntropyCanvasOpType high_entropy_canvas_op_types =
         GetRecorderHighEntropyCanvasOpTypes();
-    FlushCanvas(reason);
+    FlushCanvas(FlushReason::kOther);
     EndWriteAccess();
     cached_snapshot_ = resource_->Bitmap();
     if (ShouldPropagateHighEntropyCanvasOpTypes(high_entropy_canvas_op_types,

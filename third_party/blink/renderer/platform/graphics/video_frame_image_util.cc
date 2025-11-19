@@ -138,7 +138,6 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
   }
 
   return resource_provider->Snapshot(
-      FlushReason::kOther,
       prefer_tagged_orientation
           ? VideoTransformationToImageOrientation(transform)
           : ImageOrientationEnum::kDefault);

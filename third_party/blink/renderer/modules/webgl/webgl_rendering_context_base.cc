@@ -857,7 +857,7 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage() {
                                                kBackBuffer)) {
       return nullptr;
     }
-    return resource_provider->Snapshot(FlushReason::kOther);
+    return resource_provider->Snapshot();
   } else {
     // Match the SBI configuration to that produced when using GPU compositing:
     // N32 and premul (as set by `CopyRenderingResultsFromDrawingBuffer`) and
@@ -1875,7 +1875,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToSnapshot(
   if (!must_paint_to_canvas_ && !cleared_content) {
     if (resource_provider_.get()) {
       // `resource_provider_` already has the current contents.
-      return resource_provider_->Snapshot(FlushReason::kOther);
+      return resource_provider_->Snapshot();
     }
     if (cached_snapshot_) {
       // `cached_snapshot__` already has the current contents.
@@ -1928,7 +1928,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToSnapshot(
 
   // We successfully painted the canvas' contents.
   must_paint_to_canvas_ = false;
-  return resource_provider->Snapshot(FlushReason::kOther);
+  return resource_provider->Snapshot();
 }
 
 scoped_refptr<CanvasResource>

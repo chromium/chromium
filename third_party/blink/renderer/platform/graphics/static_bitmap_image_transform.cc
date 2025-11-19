@@ -284,8 +284,7 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
       BlitToCanvas(resource_provider->Canvas(), source_paint_image,
                    source_orientation, SkRect::Make(source_rect), dest_size,
                    options);
-      return resource_provider->Snapshot(FlushReason::kOther,
-                                         source_orientation);
+      return resource_provider->Snapshot(source_orientation);
     }
   }
 

@@ -592,10 +592,9 @@ class FakeCanvasResourceProvider : public CanvasResourceProviderSharedImage {
         supports_direct_compositing_(
             compositing_mode == CompositingMode::kSupportsDirectCompositing) {
     ON_CALL(*this, Snapshot)
-        .WillByDefault(
-            [this](FlushReason reason, ImageOrientation orientation) {
-              return UnacceleratedSnapshot(orientation, reason);
-            });
+        .WillByDefault([this](ImageOrientation orientation) {
+          return UnacceleratedSnapshot(orientation, FlushReason::kOther);
+        });
   }
   ~FakeCanvasResourceProvider() override = default;
   scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason) override {
@@ -616,7 +615,7 @@ class FakeCanvasResourceProvider : public CanvasResourceProviderSharedImage {
 
   MOCK_METHOD((scoped_refptr<StaticBitmapImage>),
               Snapshot,
-              (FlushReason reason, ImageOrientation orientation));
+              (ImageOrientation orientation));
 
   MOCK_METHOD(bool,
               WritePixels,
@@ -3213,7 +3212,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, HibernationWithUnclosedLayer) {
   // when getting out of hibernation, so this mock will not see the later calls
   // to `RasterRecord`.
   cc::PaintRecord hibernation_raster;
-  EXPECT_CALL(*provider, Snapshot(FlushReason::kOther, _)).Times(1);
+  EXPECT_CALL(*provider, Snapshot(_)).Times(1);
   EXPECT_CALL(*provider, RasterRecord)
       .Times(1)
       .WillOnce(SaveArg<0>(&hibernation_raster));

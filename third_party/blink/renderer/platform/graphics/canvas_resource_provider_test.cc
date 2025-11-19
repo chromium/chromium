@@ -506,9 +506,9 @@ TEST_F(CanvasResourceProviderTest,
   ASSERT_TRUE(provider->IsValid());
 
   // Same resource returned until the canvas is updated.
-  auto image = provider->Snapshot(FlushReason::kOther);
+  auto image = provider->Snapshot();
   ASSERT_TRUE(image);
-  auto new_image = provider->Snapshot(FlushReason::kOther);
+  auto new_image = provider->Snapshot();
   EXPECT_EQ(image->GetSharedImage(), new_image->GetSharedImage());
   EXPECT_EQ(provider->ProduceCanvasResource(FlushReason::kOther)
                 ->GetClientSharedImage(),
@@ -517,7 +517,7 @@ TEST_F(CanvasResourceProviderTest,
   // Resource updated after draw.
   provider->Canvas().clear(SkColors::kWhite);
   provider->FlushCanvas(FlushReason::kOther);
-  new_image = provider->Snapshot(FlushReason::kOther);
+  new_image = provider->Snapshot();
   EXPECT_NE(new_image->GetSharedImage(), image->GetSharedImage());
 
   // Resource recycled.
@@ -525,8 +525,7 @@ TEST_F(CanvasResourceProviderTest,
   image.reset();
   provider->Canvas().clear(SkColors::kBlack);
   provider->FlushCanvas(FlushReason::kOther);
-  EXPECT_EQ(original_shared_image,
-            provider->Snapshot(FlushReason::kOther)->GetSharedImage());
+  EXPECT_EQ(original_shared_image, provider->Snapshot()->GetSharedImage());
 }
 
 TEST_F(CanvasResourceProviderTest, CanvasResourceProviderBitmap) {
@@ -688,7 +687,7 @@ TEST_F(CanvasResourceProviderTest, FlushForImage) {
   MemoryManagedPaintCanvas& dst_canvas = dst_provider->Canvas();
 
   PaintImage paint_image =
-      src_provider->Snapshot(FlushReason::kOther)->PaintImageForCurrentFrame();
+      src_provider->Snapshot()->PaintImageForCurrentFrame();
   PaintImage::ContentId src_content_id = paint_image.GetContentIdForFrame(0u);
 
   EXPECT_FALSE(dst_canvas.IsCachingImage(src_content_id));

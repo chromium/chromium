@@ -207,12 +207,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // should be derived from the source of the bitmap data.
   virtual scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason) = 0;
   virtual scoped_refptr<StaticBitmapImage> Snapshot(
-      FlushReason,
       ImageOrientation = ImageOrientationEnum::kDefault) = 0;
-  scoped_refptr<StaticBitmapImage> Snapshot(
-      ImageOrientation orientation = ImageOrientationEnum::kDefault) {
-    return Snapshot(FlushReason::kOther, orientation);
-  }
 
   void SetDelegate(Delegate* delegate) { delegate_ = delegate; }
 
@@ -428,7 +423,6 @@ class PLATFORM_EXPORT CanvasResourceProviderBitmap
     draw_callback(Canvas());
   }
   scoped_refptr<StaticBitmapImage> Snapshot(
-      FlushReason reason,
       ImageOrientation = ImageOrientationEnum::kDefault) override;
   scoped_refptr<StaticBitmapImage> DoExternalDrawAndSnapshot(
       base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback,
@@ -545,7 +539,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   void OnFlushForImage(cc::PaintImage::ContentId content_id) final;
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) final;
   scoped_refptr<StaticBitmapImage> Snapshot(
-      FlushReason reason,
       ImageOrientation = ImageOrientationEnum::kDefault) override;
   bool IsSingleBuffered() const final;
   bool WritePixels(const SkImageInfo& orig_info,
