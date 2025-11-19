@@ -486,10 +486,9 @@ void CastAudioRenderer::OnNewBuffer(
   }
 
   last_pushed_timestamp_ = buffer->timestamp() + buffer->duration();
-  UNSAFE_TODO(
-      memcpy(io_buffer->data() +
-                 audio_output_service::OutputSocket::kAudioMessageHeaderSize,
-             buffer->data(), buffer->size()));
+  io_buffer->span()
+      .subspan(audio_output_service::OutputSocket::kAudioMessageHeaderSize)
+      .copy_from(*buffer);
 
   output_connection_
       .AsyncCall(&audio_output_service::OutputStreamConnection::SendAudioBuffer)
