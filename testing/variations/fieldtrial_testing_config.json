@@ -5909,6 +5909,24 @@
             ]
         }
     ],
+    "ChromnientNonBlockingPrivacyNotice": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LensOverlayNonBlockingPrivacyNotice"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromnientOptimizationFilter": [
         {
             "platforms": [

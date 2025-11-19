@@ -762,7 +762,9 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
           }},
          {lens::features::kLensOverlaySurvey, {}},
          {lens::features::kLensOverlaySidePanelOpenInNewTab, {}}},
-        /*disabled_features=*/{lens::features::kLensSearchZeroStateCsb});
+        /*disabled_features=*/{
+            lens::features::kLensSearchZeroStateCsb,
+            lens::features::kLensOverlayNonBlockingPrivacyNotice});
   }
 
   const SkBitmap CreateNonEmptyBitmap(int width, int height) {
@@ -8403,8 +8405,10 @@ class LensOverlayControllerContextualFeaturesDisabledTest
   void SetupFeatureList() override {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
-        /*disabled_features=*/{lens::features::kLensOverlayContextualSearchbox,
-                               lens::features::kLensSearchZeroStateCsb});
+        /*disabled_features=*/{
+            lens::features::kLensOverlayContextualSearchbox,
+            lens::features::kLensSearchZeroStateCsb,
+            lens::features::kLensOverlayNonBlockingPrivacyNotice});
   }
 };
 
