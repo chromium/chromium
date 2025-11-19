@@ -80,14 +80,15 @@ bool AesCbcCrypto::Decrypt(base::span<const uint8_t> encrypted_data,
     return false;
   }
 
-  int out_length;
-  if (!EVP_DecryptUpdate(ctx_.get(), decrypted_data.data(), &out_length,
-                         encrypted_data.data(), encrypted_data.size_bytes())) {
+  size_t out_length;
+  if (!EVP_DecryptUpdate_ex(ctx_.get(), decrypted_data.data(), &out_length,
+                            decrypted_data.size(), encrypted_data.data(),
+                            encrypted_data.size_bytes())) {
     DVLOG(1) << "EVP_DecryptUpdate() failed.";
     return false;
   }
 
-  return encrypted_data.size_bytes() == base::checked_cast<size_t>(out_length);
+  return encrypted_data.size_bytes() == out_length;
 }
 
 }  // namespace media

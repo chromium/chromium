@@ -11,8 +11,6 @@
 
 #include "base/check_op.h"
 #include "base/containers/span.h"
-#include "base/numerics/safe_conversions.h"
-#include "base/numerics/safe_math.h"
 #include "components/webcrypto/algorithms/aes.h"
 #include "components/webcrypto/algorithms/util.h"
 #include "components/webcrypto/blink_key_handle.h"
@@ -48,7 +46,7 @@ Status AesCtrEncrypt128BitCounter(const EVP_CIPHER* cipher,
                                   base::span<const uint8_t, 16> counter,
                                   base::span<uint8_t> output) {
   DCHECK(cipher);
-  DCHECK_EQ(input.size(), output.size());
+  CHECK_EQ(input.size(), output.size());
 
   crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
   bssl::ScopedEVP_CIPHER_CTX context;
@@ -57,22 +55,22 @@ Status AesCtrEncrypt128BitCounter(const EVP_CIPHER* cipher,
     return Status::OperationError();
   }
 
-  int output_len = 0;
-  if (!EVP_CipherUpdate(context.get(), output.data(), &output_len, input.data(),
-                        base::checked_cast<int>(input.size()))) {
+  size_t output_len = 0;
+  if (!EVP_CipherUpdate_ex(context.get(), output.data(), &output_len,
+                           output.size(), input.data(), input.size())) {
     return Status::OperationError();
   }
-  int final_output_chunk_len = 0;
-  if (!EVP_CipherFinal_ex(
-          context.get(),
-          output.subspan(base::checked_cast<size_t>(output_len)).data(),
-          &final_output_chunk_len)) {
+  auto remainder = output.subspan(output_len);
+  size_t final_output_chunk_len = 0;
+  if (!EVP_CipherFinal_ex2(context.get(), remainder.data(),
+                           &final_output_chunk_len, remainder.size())) {
     return Status::OperationError();
   }
 
   output_len += final_output_chunk_len;
-  if (static_cast<size_t>(output_len) != input.size())
+  if (output_len != input.size()) {
     return Status::ErrorUnexpected();
+  }
 
   return Status::Success();
 }
@@ -156,17 +154,12 @@ Status AesCtrEncryptDecrypt(const blink::WebCryptoAlgorithm& algorithm,
   if (counter_length_bits < 1 || counter_length_bits > 128)
     return Status::ErrorInvalidAesCtrCounterLength();
 
-  // The output of AES-CTR is the same size as the input. However BoringSSL
-  // expects buffer sizes as an "int".
-  base::CheckedNumeric<int> output_max_len = data.size();
-  if (!output_max_len.IsValid())
-    return Status::ErrorDataTooLarge();
-
   const EVP_CIPHER* const cipher = GetAESCipherByKeyLength(raw_key.size());
   if (!cipher)
     return Status::ErrorUnexpected();
 
-  buffer->resize(base::ValueOrDieForType<size_t>(output_max_len));
+  // The output of AES-CTR is the same size as the input.
+  buffer->resize(data.size());
   absl::uint128 current_counter =
       GetCounter(counter_block, counter_length_bits);
 

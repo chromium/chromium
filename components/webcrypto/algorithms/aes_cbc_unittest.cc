@@ -95,28 +95,6 @@ std::string DecryptMustFail(blink::WebCryptoKey key,
 
 class WebCryptoAesCbcTest : public WebCryptoTestBase {};
 
-TEST_F(WebCryptoAesCbcTest, InputTooLarge) {
-  std::vector<uint8_t> output;
-
-  std::vector<uint8_t> iv(16);
-
-  // Give an input that is too large. It would cause integer overflow when
-  // narrowing the ciphertext size to an int, since OpenSSL operates on signed
-  // int lengths NOT unsigned.
-  //
-  // Pretend the input is large. Don't pass data pointer as NULL in case that
-  // is special cased; the implementation shouldn't actually dereference the
-  // data.
-  base::span<const uint8_t> UNSAFE_TODO(input(iv.data(), size_t{INT_MAX} - 3));
-
-  EXPECT_EQ(
-      Status::ErrorDataTooLarge(),
-      Encrypt(CreateAesCbcAlgorithm(iv), GetTestAesCbcKey(), input, &output));
-  EXPECT_EQ(
-      Status::ErrorDataTooLarge(),
-      Decrypt(CreateAesCbcAlgorithm(iv), GetTestAesCbcKey(), input, &output));
-}
-
 TEST_F(WebCryptoAesCbcTest, ExportKeyUnsupportedFormat) {
   std::vector<uint8_t> output;
 
