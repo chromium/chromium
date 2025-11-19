@@ -44,6 +44,7 @@ namespace blink {
 class WebKeyboardEvent;
 class WebInputEvent;
 class WebMouseEvent;
+class WebPointerProperties;
 class WebTouchEvent;
 }  // namespace blink
 
@@ -300,13 +301,16 @@ class PdfInkModule {
   // Return values have the same semantics as On{Mouse,Touch}*() above.
   bool StartStroke(const gfx::PointF& position,
                    base::TimeTicks timestamp,
-                   ink::StrokeInput::ToolType tool_type);
+                   ink::StrokeInput::ToolType tool_type,
+                   const blink::WebPointerProperties* properties);
   bool ContinueStroke(const gfx::PointF& position,
                       base::TimeTicks timestamp,
-                      ink::StrokeInput::ToolType tool_type);
+                      ink::StrokeInput::ToolType tool_type,
+                      const blink::WebPointerProperties* properties);
   bool FinishStroke(const gfx::PointF& position,
                     base::TimeTicks timestamp,
-                    ink::StrokeInput::ToolType tool_type);
+                    ink::StrokeInput::ToolType tool_type,
+                    const blink::WebPointerProperties* properties);
 
   // Return values have the same semantics as On{Mouse,Touch}*() above.
   bool StartEraseStroke(const gfx::PointF& position,
@@ -424,12 +428,14 @@ class PdfInkModule {
   gfx::Transform GetCanonicalToEventTransformForPage(int page_index);
 
   // Helper to convert `position` to a canonical position and record it into
-  // `current_tool_state_` for the indicated `timestamp` and `tool_type`.
+  // `current_tool_state_` for the indicated `timestamp`, `tool_type`, and
+  // optional `properties`.
   // Can only be called when drawing. Returns whether the operation succeeded or
   // not.
   bool RecordStrokePosition(const gfx::PointF& position,
                             base::TimeTicks timestamp,
-                            ink::StrokeInput::ToolType tool_type);
+                            ink::StrokeInput::ToolType tool_type,
+                            const blink::WebPointerProperties* properties);
 
   void ApplyUndoRedoCommands(const PdfInkUndoRedoModel::Commands& commands);
   void ApplyUndoRedoCommandsHelper(std::set<PdfInkUndoRedoModel::IdType> ids,

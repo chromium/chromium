@@ -567,6 +567,7 @@ if (enable_pdf) {
       sources += [
         "draw_utils/page_boundary_intersect_unittest.cc",
         "pdf_ink_brush_unittest.cc",
+        "pdf_ink_conversions_unittest.cc",
         "pdf_ink_cursor_unittest.cc",
         "pdf_ink_module_unittest.cc",
         "pdf_ink_transform_unittest.cc",
