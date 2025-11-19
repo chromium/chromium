@@ -352,12 +352,22 @@ struct NSEdgeAndCornerThicknesses {
 }
 
 - (NSRect)constrainFrameRect:(NSRect)frameRect toScreen:(NSScreen*)screen {
-  // AppKit's default implementation moves child windows down to avoid
-  // the menu bar. We don't want that behavior, because widgets like the
-  // Omnibox may have a big shadow that could cause invisible menu bar collision
-  // in fullscreen/maximized state. We override it here to return the original
-  // frameRect before the adjustment.
-  return frameRect;
+  // Headless windows should not be constrained within the physical screen.
+  if (_isHeadless) {
+    return frameRect;
+  }
+
+  if (base::mac::MacOSVersion() >= 26'00'00) {
+    // Since macOS 26.0, when the main window enters full screen, the
+    // overlay child window’s position is automatically adjusted by the system
+    // to just below the menu bar location (even though the menu bar is hidden
+    // at that time). During this process, [NSWindow constrainFrameRect] is
+    // called and returns the system-adjusted position. Override this
+    // function to return the original value frameRect before the adjustment.
+    return frameRect;
+  }
+
+  return [super constrainFrameRect:frameRect toScreen:screen];
 }
 
 // Private methods.
