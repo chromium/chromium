@@ -306,7 +306,8 @@ void PictureLayerImpl::AppendQuadsSpecialization(
         } else if (iter.CurrentTiling()->resolution() == HIGH_RESOLUTION) {
           color = DebugColors::HighResTileBorderColor();
           width = DebugColors::HighResTileBorderWidth(device_scale_factor);
-        } else if (iter->contents_scale_key() > raster_contents_scale_key()) {
+        } else if (iter.CurrentTiling()->contents_scale_key() >
+                   raster_contents_scale_key()) {
           color = DebugColors::AboveHighResTileBorderColor();
           width = DebugColors::AboveHighResTileBorderWidth(device_scale_factor);
         } else {
