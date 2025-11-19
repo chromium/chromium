@@ -511,8 +511,7 @@ scoped_refptr<StaticBitmapImage> ImageBitmap::Transfer() {
     // This approach is slow and wateful but it is only to handle extremely
     // rare edge cases.
     if (!image_->HasOneRef()) {
-      auto copy =
-          StaticBitmapImageTransform::Clone(FlushReason::kOther, image_);
+      auto copy = StaticBitmapImageTransform::Clone(image_);
       if (!copy) {
         return nullptr;
       }

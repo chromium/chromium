@@ -62,7 +62,6 @@ class PLATFORM_EXPORT StaticBitmapImageTransform {
 
   // Create a copy of the input image, with a newly created backing.
   static scoped_refptr<StaticBitmapImage> Clone(
-      FlushReason,
       scoped_refptr<StaticBitmapImage> image);
 
   // Convert `image` to the specified color space.

@@ -362,7 +362,6 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::Apply(
 }
 
 scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::Clone(
-    FlushReason flush_reason,
     scoped_refptr<StaticBitmapImage> source) {
   if (!source) {
     return nullptr;
@@ -372,7 +371,7 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::Clone(
   options.dest_size = GetSourceSize(source, options);
   options.premultiply_alpha = source->GetAlphaType() != kUnpremul_SkAlphaType;
   options.force_copy = true;
-  return Apply(flush_reason, source, options);
+  return Apply(FlushReason::kOther, source, options);
 }
 
 scoped_refptr<StaticBitmapImage>
