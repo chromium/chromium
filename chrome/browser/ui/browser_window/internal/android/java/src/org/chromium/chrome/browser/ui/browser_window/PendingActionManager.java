@@ -12,7 +12,9 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.PendingTaskInfo;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskImpl.State;
+import org.chromium.ui.mojom.WindowShowState;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -196,6 +198,29 @@ final class PendingActionManager {
         }
     }
 
+    /**
+     * Update future states, such as isVisible, isActive based on the current pending task info.
+     *
+     * @param pendingTaskInfo The pending task info when task is created.
+     */
+    void updateFutureStates(PendingTaskInfo pendingTaskInfo) {
+        synchronized (mPendingActionsLock) {
+            // Future states per Android default behavior
+            mIsVisibleFuture = true;
+            mIsActiveFuture = true;
+
+            // Update states based on PendingTaskInfo
+            @WindowShowState.EnumType
+            int initialShowState = pendingTaskInfo.mCreateParams.getInitialShowState();
+            switch (initialShowState) {
+                case WindowShowState.MINIMIZED:
+                    requestGlobalOverrideAction(PendingAction.MINIMIZE);
+                    break;
+                default:
+            }
+        }
+    }
+
     @Nullable Rect getFutureBoundsInDp() {
         synchronized (mPendingActionsLock) {
             return mFutureBoundsInDp;
@@ -229,6 +254,13 @@ final class PendingActionManager {
         }
     }
 
+    /**
+     * Whether isActive will return true when the in-progress event is finished.
+     *
+     * @param state The current state of task.
+     * @return Null if there is no on-going events affecting the result at the current state. True
+     *     when an event will make isActive true when finished; otherwise false.
+     */
     @Nullable Boolean isActiveFuture(@State int state) {
         synchronized (mPendingActionsLock) {
             if (state == State.PENDING_CREATE) {
@@ -240,15 +272,33 @@ final class PendingActionManager {
         }
     }
 
+    /**
+     * Whether isMaximized will return true when the in-progress event is finished.
+     *
+     * @return Null if there is no on-going events affecting the result at the current state. True
+     *     when an event will make isMaximized true when finished; otherwise false.
+     */
     @Nullable Boolean isMaximizedFuture() {
         synchronized (mPendingActionsLock) {
             return mIsMaximizedFuture;
         }
     }
 
-    @Nullable Boolean isVisibleFuture() {
+    /**
+     * Whether isVisible will return true when the in-progress event is finished.
+     *
+     * @param state The current state of task.
+     * @return Null if there is no on-going events affecting the result at the current state. True
+     *     when an event will make isVisible true when finished; otherwise false.
+     */
+    @Nullable Boolean isVisibleFuture(@State int state) {
         synchronized (mPendingActionsLock) {
-            return mIsVisibleFuture;
+            if (state == State.PENDING_CREATE) {
+                return Boolean.TRUE.equals(mIsVisibleFuture);
+            } else if (state == State.PENDING_UPDATE) {
+                return mIsVisibleFuture;
+            }
+            return null;
         }
     }
 
@@ -416,7 +466,6 @@ final class PendingActionManager {
                     mIsVisibleFuture = true;
                     break;
                 case PendingAction.MINIMIZE:
-                case PendingAction.DEACTIVATE:
                 case PendingAction.CLOSE:
                     mIsVisibleFuture = false;
                     break;

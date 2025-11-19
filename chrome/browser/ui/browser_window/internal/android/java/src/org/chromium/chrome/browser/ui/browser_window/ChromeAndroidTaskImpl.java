@@ -29,6 +29,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.ApplicationStatus.TaskVisibilityListener;
 import org.chromium.base.JniOnceCallback;
 import org.chromium.base.Log;
 import org.chromium.base.TimeUtils;
@@ -64,7 +65,8 @@ final class ChromeAndroidTaskImpl
         implements ChromeAndroidTask,
                 ConfigurationChangedObserver,
                 TopResumedActivityChangedWithNativeObserver,
-                TabModelObserver {
+                TabModelObserver,
+                TaskVisibilityListener {
 
     private static final String TAG = "ChromeAndroidTask";
 
@@ -233,6 +235,7 @@ final class ChromeAndroidTaskImpl
         mAndroidBrowserWindow = new AndroidBrowserWindow(/* chromeAndroidTask= */ this);
         mInitialProfile = pendingTaskInfo.mCreateParams.getProfile();
         mState.set(State.PENDING_CREATE);
+        mPendingActionManager.updateFutureStates(mPendingTaskInfo);
     }
 
     @Override
@@ -320,7 +323,9 @@ final class ChromeAndroidTaskImpl
 
     @Override
     public long getOrCreateNativeBrowserWindowPtr() {
-        assert getState() == State.PENDING_CREATE || getState() == State.IDLE
+        assert getState() == State.PENDING_CREATE
+                        || getState() == State.IDLE
+                        || getState() == State.PENDING_UPDATE
                 : "This Task is not pending or alive.";
         return mAndroidBrowserWindow.getOrCreateNativePtr();
     }
@@ -512,13 +517,8 @@ final class ChromeAndroidTaskImpl
 
     @Override
     public boolean isVisible() {
-        if (mState.get() == State.PENDING_CREATE) {
-            return assumeNonNull(mPendingTaskInfo).mCreateParams.getInitialShowState()
-                    != WindowShowState.MINIMIZED;
-        } else if (mState.get() == State.PENDING_UPDATE) {
-            Boolean isVisible = mPendingActionManager.isVisibleFuture();
-            if (isVisible != null) return isVisible;
-        }
+        Boolean isVisible = mPendingActionManager.isVisibleFuture(mState.get());
+        if (isVisible != null) return isVisible;
 
         synchronized (mActivityScopedObjectsLock) {
             var activityWindowAndroid =
@@ -638,6 +638,8 @@ final class ChromeAndroidTaskImpl
             return;
         }
 
+        if (Boolean.FALSE.equals(mPendingActionManager.isVisibleFuture(mState.get()))) return;
+
         if (mState.get() == State.PENDING_CREATE) {
             mPendingActionManager.requestAction(PendingAction.MINIMIZE);
             return;
@@ -705,6 +707,17 @@ final class ChromeAndroidTaskImpl
     }
 
     @Override
+    public void onTaskVisibilityChanged(int taskId, boolean isVisible) {
+        if (mId == null || taskId != mId || mState.get() != State.PENDING_UPDATE) return;
+        if (!isVisible) {
+            @PendingAction
+            int[] actions =
+                    mPendingActionManager.getAndClearTargetPendingActions(PendingAction.MINIMIZE);
+            maybeSetStateIdle(actions);
+        }
+    }
+
+    @Override
     public void didAddTab(
             Tab tab,
             @TabLaunchType int type,
@@ -762,6 +775,9 @@ final class ChromeAndroidTaskImpl
 
             // Register Activity LifecycleObservers
             getActivityLifecycleDispatcher(activityWindowAndroid).register(this);
+
+            // Register Task VisibilityListener
+            ApplicationStatus.registerTaskVisibilityListener(this);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
                     && activityWindowAndroid.getInsetObserver() != null) {
@@ -854,6 +870,10 @@ final class ChromeAndroidTaskImpl
             // Unregister Activity LifecycleObservers.
             var activityWindowAndroid = mActivityScopedObjects.mActivityWindowAndroid;
             getActivityLifecycleDispatcher(activityWindowAndroid).unregister(this);
+
+            // Unregister Task VisibilityListener.
+            ApplicationStatus.unregisterTaskVisibilityListener(this);
+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
                     && activityWindowAndroid.getInsetObserver() != null) {
                 // Unregister WindowInsetsAnimationListener.
@@ -1073,14 +1093,14 @@ final class ChromeAndroidTaskImpl
     @RequiresApi(api = VERSION_CODES.R)
     private void minimizeInternalLocked() {
         var activityWindowAndroid = getActivityWindowAndroidInternalLocked(/* assertAlive= */ true);
-        // https://crbug.com/445247646: minimize an app which is already minimized might make
-        // app unable to be activated again.
         if (activityWindowAndroid == null || isMinimizedInternalLocked(activityWindowAndroid)) {
             return;
         }
         if (isRestoredInternalLocked(activityWindowAndroid)) {
             mRestoredBoundsInPx = getCurrentBoundsInPxLocked(activityWindowAndroid);
         }
+        mPendingActionManager.requestAction(PendingAction.MINIMIZE);
+        mState.set(State.PENDING_UPDATE);
         getActivity(activityWindowAndroid).moveTaskToBack(/* nonRoot= */ true);
     }
 

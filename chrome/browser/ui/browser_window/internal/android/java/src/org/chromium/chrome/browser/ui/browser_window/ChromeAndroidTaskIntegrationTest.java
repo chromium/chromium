@@ -770,7 +770,6 @@ public class ChromeAndroidTaskIntegrationTest {
 
         // Assert.
         var newActivity = waitForNewTabbedActivity(currentTaskIds);
-
         CriteriaHelper.pollUiThread(
                 ChromeTabbedActivity::wasMoveTaskToBackInterceptedForTesting,
                 "Failed to move task to the background.");

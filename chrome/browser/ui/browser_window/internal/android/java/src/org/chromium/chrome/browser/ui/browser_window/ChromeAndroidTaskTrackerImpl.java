@@ -344,8 +344,6 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
                 pendingTask.maximize();
                 break;
             case WindowShowState.MINIMIZED:
-                pendingTask.minimize();
-                break;
             case WindowShowState.DEFAULT:
             case WindowShowState.NORMAL:
                 // No pending action needed.

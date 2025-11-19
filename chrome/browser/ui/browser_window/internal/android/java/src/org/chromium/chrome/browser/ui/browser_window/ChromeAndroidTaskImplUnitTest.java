@@ -146,6 +146,19 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
+    public void constructor_withActivityScopedObjects_registersTaskVisibilityListener() {
+        // Arrange & Act.
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+
+        // Assert.
+        assertTrue(
+                ApplicationStatus.getTaskVisibilityListenersForTesting()
+                        .hasObserver(
+                                (ChromeAndroidTaskImpl)
+                                        chromeAndroidTaskWithMockDeps.mChromeAndroidTask));
+    }
+
+    @Test
     public void constructor_withActivityScopedObjects_registersTabModelObserver() {
         // Arrange & Act.
         var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
@@ -314,6 +327,30 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
+    public void setActivityScopedObjects_previousRefCleared_registersNewTaskVisibilityListener() {
+        // Arrange.
+        int taskId = 1;
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl)
+                        createChromeAndroidTaskWithMockDeps(taskId).mChromeAndroidTask;
+        var newActivityScopedObjects = createActivityScopedObjects(taskId);
+        chromeAndroidTask.clearActivityScopedObjects();
+        assertFalse(
+                "Listener should be removed",
+                ApplicationStatus.getTaskVisibilityListenersForTesting()
+                        .hasObserver(chromeAndroidTask));
+
+        // Act.
+        chromeAndroidTask.setActivityScopedObjects(newActivityScopedObjects);
+
+        // Assert.
+        assertTrue(
+                "Listener should be added",
+                ApplicationStatus.getTaskVisibilityListenersForTesting()
+                        .hasObserver(chromeAndroidTask));
+    }
+
+    @Test
     public void setActivityScopedObjects_previousRefCleared_registersTabModelObserver() {
         // Arrange.
         int taskId = 1;
@@ -422,6 +459,23 @@ public class ChromeAndroidTaskImplUnitTest {
                 .unregister(isA(TopResumedActivityChangedWithNativeObserver.class));
         verify(mockActivityLifecycleDispatcher, times(1))
                 .unregister(isA(ConfigurationChangedObserver.class));
+    }
+
+    @Test
+    public void clearActivityScopedObjects_unregistersTaskVisibilityListener() {
+        // Arrange.
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+
+        // Act.
+        chromeAndroidTask.clearActivityScopedObjects();
+
+        // Assert.
+        Assert.assertFalse(
+                "Listener should be removed",
+                ApplicationStatus.getTaskVisibilityListenersForTesting()
+                        .hasObserver(chromeAndroidTask));
     }
 
     @Test
@@ -1115,7 +1169,7 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    public void show_whenPendingCreate_enqueuesPendingAction() {
+    public void show_whenPendingCreate_enqueuesShowDoesNothing() {
         // Arrange.
         var task =
                 new ChromeAndroidTaskImpl(ChromeAndroidTaskUnitTestSupport.createPendingTaskInfo());
@@ -1126,7 +1180,10 @@ public class ChromeAndroidTaskImplUnitTest {
         // Assert.
         int[] pendingActions =
                 task.getPendingActionManagerForTesting().getPendingActionsForTesting();
-        assertEquals(PendingAction.SHOW, pendingActions[0]);
+        assertEquals(
+                "The task defaults to be visible and so show becomes a no-op",
+                PendingAction.NONE,
+                pendingActions[0]);
     }
 
     @Test
@@ -1196,7 +1253,7 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    public void activate_whenPendingCreate_enqueuesPendingAction() {
+    public void activate_whenPendingCreate_enqueuesActivateDoesNothing() {
         // Arrange.
         var task =
                 new ChromeAndroidTaskImpl(ChromeAndroidTaskUnitTestSupport.createPendingTaskInfo());
@@ -1207,7 +1264,10 @@ public class ChromeAndroidTaskImplUnitTest {
         // Assert.
         int[] pendingActions =
                 task.getPendingActionManagerForTesting().getPendingActionsForTesting();
-        assertEquals(PendingAction.ACTIVATE, pendingActions[0]);
+        assertEquals(
+                "The task defaults to be active and so activate becomes a no-op",
+                PendingAction.NONE,
+                pendingActions[0]);
     }
 
     @Test
@@ -1444,13 +1504,13 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    public void isActive_whenPendingCreate_withNoPendingShowOrActivate_returnsFalse() {
+    public void isActive_whenPendingCreate_withNoPendingShowOrActivate_returnsTrue() {
         // Arrange.
         var task =
                 new ChromeAndroidTaskImpl(ChromeAndroidTaskUnitTestSupport.createPendingTaskInfo());
 
         // Act and Assert.
-        assertFalse(task.isActive());
+        assertTrue("Task defaults to be active when created", task.isActive());
     }
 
     @Test
@@ -1745,21 +1805,55 @@ public class ChromeAndroidTaskImplUnitTest {
 
         // Act.
         chromeAndroidTask.show();
-        Assert.assertTrue(
-                "Show should be pending after #show is triggered",
-                chromeAndroidTask.getPendingActionManagerForTesting().isVisibleFuture());
+        assertEquals(
+                "Future state of isVisible() should be true when show() is pending",
+                true,
+                chromeAndroidTask
+                        .getPendingActionManagerForTesting()
+                        .isVisibleFuture(chromeAndroidTask.getState()));
 
         chromeAndroidTask.onTopResumedActivityChangedWithNative(true);
 
         // Assert.
-        Assert.assertNull(
-                "Show should not be pending after Activity is resumed",
-                chromeAndroidTask.getPendingActionManagerForTesting().isVisibleFuture());
+        assertNull(
+                "Future state of isVisible() should be cleared after show() is completed",
+                chromeAndroidTask
+                        .getPendingActionManagerForTesting()
+                        .isVisibleFuture(chromeAndroidTask.getState()));
         assertTrue(chromeAndroidTask.isVisible());
     }
 
     @Test
-    public void setActivityScopedObjects_fromPendingState_dispatchesPendingShow() {
+    public void isVisible_whenPendingUpdate_withPendingMinimize_returnsFalse() {
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var mockActivity = chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockActivity;
+
+        // Act.
+        chromeAndroidTask.minimize();
+        assertEquals(
+                "Future state of isVisible() should be false when minimize() is pending",
+                false,
+                chromeAndroidTask
+                        .getPendingActionManagerForTesting()
+                        .isVisibleFuture(chromeAndroidTask.getState()));
+
+        chromeAndroidTask.onTaskVisibilityChanged(/* taskId= */ 1, /* isVisible= */ false);
+        ApplicationStatus.onStateChangeForTesting(mockActivity, ActivityState.STOPPED);
+
+        // Assert.
+        assertNull(
+                "Future state of isVisible() should be cleared when minimize() is completed",
+                chromeAndroidTask
+                        .getPendingActionManagerForTesting()
+                        .isVisibleFuture(chromeAndroidTask.getState()));
+        assertTrue("Should be minimized", chromeAndroidTask.isMinimized());
+        assertFalse("Should not be visible", chromeAndroidTask.isVisible());
+    }
+
+    @Test
+    public void setActivityScopedObjects_fromPendingState_NoPendingShowToDispatch() {
         int taskId = 2;
 
         // Arrange: Create pending task.
@@ -1781,7 +1875,8 @@ public class ChromeAndroidTaskImplUnitTest {
         pendingTask.onNativeInitializationFinished();
 
         // Assert.
-        verify(mockActivityManager).moveTaskToFront(taskId, 0);
+        verify(mockActivityManager, never().description("The task defaults to be visible"))
+                .moveTaskToFront(taskId, 0);
     }
 
     @Test
@@ -1809,7 +1904,7 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    public void setActivityScopedObjects_fromPendingState_dispatchesPendingActivate() {
+    public void setActivityScopedObjects_fromPendingState_NoPendingActivateToDispatch() {
         int taskId = 2;
 
         // Arrange: Create pending task.
@@ -1823,15 +1918,14 @@ public class ChromeAndroidTaskImplUnitTest {
         // Arrange: Set up ActivityScopedObjects.
         var activityScopedObjects = chromeAndroidTaskWithMockDeps.mActivityScopedObjects;
         var mockActivity = activityScopedObjects.mActivityWindowAndroid.getActivity().get();
-        var mockActivityManager =
-                (ActivityManager) mockActivity.getSystemService(Context.ACTIVITY_SERVICE);
 
         // Act.
         pendingTask.setActivityScopedObjects(activityScopedObjects);
         pendingTask.onNativeInitializationFinished();
 
         // Assert.
-        verify(mockActivityManager).moveTaskToFront(taskId, 0);
+        verify(mockActivity, never().description("The task defaults to be active"))
+                .moveTaskToBack(true);
     }
 
     @Test

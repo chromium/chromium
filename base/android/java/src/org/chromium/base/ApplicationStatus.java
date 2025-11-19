@@ -852,6 +852,11 @@ public class ApplicationStatus {
         return sApplicationStateListeners == null ? 0 : sApplicationStateListeners.size();
     }
 
+    public static @Nullable ObserverList<TaskVisibilityListener>
+            getTaskVisibilityListenersForTesting() {
+        return sTaskVisibilityListeners;
+    }
+
     @NativeMethods
     interface Natives {
         // Called to notify the native side of state changes.
