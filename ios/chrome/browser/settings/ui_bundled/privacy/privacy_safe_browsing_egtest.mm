@@ -14,7 +14,9 @@
 #import "ios/chrome/browser/settings/ui_bundled/privacy/privacy_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/privacy/safe_browsing/safe_browsing_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -27,6 +29,7 @@
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SettingsMenuPrivacyButton;
+using chrome_test_util::StaticTextWithAccessibilityLabelId;
 using chrome_test_util::WindowWithNumber;
 using l10n_util::GetNSString;
 
@@ -234,7 +237,7 @@ void PressInfoButtonForCell(NSString* cellId) {
       performAction:grey_tap()];
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(
-                                   kSafeBrowsingEnhancedProtectionTableViewId)]
+                                   kSafeBrowsingEnhancedProtectionScrollViewId)]
       assertWithMatcher:grey_notNil()];
 }
 
@@ -244,52 +247,72 @@ void PressInfoButtonForCell(NSString* cellId) {
   OpenPrivacySafeBrowsingSettings();
   PressInfoButtonForCell(kSettingsSafeBrowsingEnhancedProtectionCellId);
 
-  // Check that headers and footer exist.
+  // First section.
   [ElementInteractionWithGreyMatcher(
-      grey_accessibilityID(
-          kSafeBrowsingEnhancedProtectionTableViewFirstHeaderId),
-      grey_accessibilityID(kSafeBrowsingEnhancedProtectionTableViewId))
-      assertWithMatcher:grey_notNil()];
-  [ElementInteractionWithGreyMatcher(
-      grey_accessibilityID(
-          kSafeBrowsingEnhancedProtectionTableViewSecondHeaderId),
-      grey_accessibilityID(kSafeBrowsingEnhancedProtectionTableViewId))
-      assertWithMatcher:grey_notNil()];
-
-  // Check that rows exist
-  [ElementInteractionWithGreyMatcher(
-      grey_accessibilityID(kSafeBrowsingEnhancedProtectionDataCellId),
-      grey_accessibilityID(kSafeBrowsingEnhancedProtectionTableViewId))
-      assertWithMatcher:grey_notNil()];
-  [ElementInteractionWithGreyMatcher(
-      grey_accessibilityID(kSafeBrowsingEnhancedProtectionDownloadCellId),
-      grey_accessibilityID(kSafeBrowsingEnhancedProtectionTableViewId))
-      assertWithMatcher:grey_notNil()];
-  [ElementInteractionWithGreyMatcher(
-      grey_accessibilityID(kSafeBrowsingEnhancedProtectionLinkCellId),
-      grey_accessibilityID(kSafeBrowsingEnhancedProtectionTableViewId))
+      StaticTextWithAccessibilityLabelId(
+          IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_WHEN_ON_HEADER),
+      grey_accessibilityID(kSafeBrowsingEnhancedProtectionScrollViewId))
       assertWithMatcher:grey_notNil()];
 
   [ElementInteractionWithGreyMatcher(
-      grey_accessibilityID(kSafeBrowsingEnhancedProtectionAccountCellId),
-      grey_accessibilityID(kSafeBrowsingEnhancedProtectionTableViewId))
+      StaticTextWithAccessibilityLabelId(
+          IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_DATA_ICON_DESCRIPTION),
+      grey_accessibilityID(kSafeBrowsingEnhancedProtectionScrollViewId))
       assertWithMatcher:grey_notNil()];
   [ElementInteractionWithGreyMatcher(
-      grey_accessibilityID(kSafeBrowsingEnhancedProtectionTableViewFooterId),
-      grey_accessibilityID(kSafeBrowsingEnhancedProtectionTableViewId))
+      StaticTextWithAccessibilityLabelId(
+          IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_DOWNLOAD_ICON_DESCRIPTION),
+      grey_accessibilityID(kSafeBrowsingEnhancedProtectionScrollViewId))
+      assertWithMatcher:grey_notNil()];
+  [ElementInteractionWithGreyMatcher(
+      StaticTextWithAccessibilityLabelId(
+          IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_G_ICON_DESCRIPTION),
+      grey_accessibilityID(kSafeBrowsingEnhancedProtectionScrollViewId))
+      assertWithMatcher:grey_notNil()];
+  [ElementInteractionWithGreyMatcher(
+      StaticTextWithAccessibilityLabelId(
+          IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_GLOBE_ICON_DESCRIPTION),
+      grey_accessibilityID(kSafeBrowsingEnhancedProtectionScrollViewId))
+      assertWithMatcher:grey_notNil()];
+  [ElementInteractionWithGreyMatcher(
+      StaticTextWithAccessibilityLabelId(
+          IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_KEY_ICON_DESCRIPTION),
+      grey_accessibilityID(kSafeBrowsingEnhancedProtectionScrollViewId))
+      assertWithMatcher:grey_notNil()];
+
+  // Second section.
+  [ElementInteractionWithGreyMatcher(
+      StaticTextWithAccessibilityLabelId(
+          IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_THINGS_TO_CONSIDER_HEADER),
+      grey_accessibilityID(kSafeBrowsingEnhancedProtectionScrollViewId))
       assertWithMatcher:grey_notNil()];
 
   [ElementInteractionWithGreyMatcher(
-      grey_accessibilityID(kSafeBrowsingEnhancedProtectionGIconCellId),
-      grey_accessibilityID(kSafeBrowsingEnhancedProtectionTableViewId))
+      StaticTextWithAccessibilityLabelId(
+          IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_LINK_ICON_DESCRIPTION),
+      grey_accessibilityID(kSafeBrowsingEnhancedProtectionScrollViewId))
+      assertWithMatcher:grey_notNil()];
+
+  [ElementInteractionWithGreyMatcher(
+      StaticTextWithAccessibilityLabelId(
+          IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_ACCOUNT_ICON_DESCRIPTION),
+      grey_accessibilityID(kSafeBrowsingEnhancedProtectionScrollViewId))
       assertWithMatcher:grey_notNil()];
   [ElementInteractionWithGreyMatcher(
-      grey_accessibilityID(kSafeBrowsingEnhancedProtectionGlobeCellId),
-      grey_accessibilityID(kSafeBrowsingEnhancedProtectionTableViewId))
+      StaticTextWithAccessibilityLabelId(
+          IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_PERFORMANCE_ICON_DESCRIPTION),
+      grey_accessibilityID(kSafeBrowsingEnhancedProtectionScrollViewId))
       assertWithMatcher:grey_notNil()];
+
+  // Footer.
+  NSString* footerString =
+      ParseStringWithLinks(
+          l10n_util::GetNSString(
+              IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_FOOTER))
+          .string;
   [ElementInteractionWithGreyMatcher(
-      grey_accessibilityID(kSafeBrowsingEnhancedProtectionKeyCellId),
-      grey_accessibilityID(kSafeBrowsingEnhancedProtectionTableViewId))
+      grey_text(footerString),
+      grey_accessibilityID(kSafeBrowsingEnhancedProtectionScrollViewId))
       assertWithMatcher:grey_notNil()];
 }
 

@@ -114,8 +114,8 @@
   }
   self.safeBrowsingEnhancedProtectionCoordinator =
       [[SafeBrowsingEnhancedProtectionCoordinator alloc]
-          initWithBaseNavigationController:self.baseNavigationController
-                                   browser:self.browser];
+          initWithBaseViewController:self.baseNavigationController
+                             browser:self.browser];
   self.safeBrowsingEnhancedProtectionCoordinator.delegate = self;
   [self.safeBrowsingEnhancedProtectionCoordinator start];
 }
