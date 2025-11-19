@@ -17,6 +17,8 @@ namespace {
 // trailing label (25).
 constexpr CGFloat kTitleSubtitleToTrailingWidthRatio = 3;
 
+constexpr CGFloat kLabelVerticalSpacing = 5;
+
 }  // namespace
 
 // Container for the title and subtitle labels. This container's intrinsic width
@@ -45,6 +47,7 @@ constexpr CGFloat kTitleSubtitleToTrailingWidthRatio = 3;
 
     self.axis = UILayoutConstraintAxisVertical;
     self.distribution = UIStackViewDistributionFill;
+    self.spacing = kLabelVerticalSpacing;
 
     [self addArrangedSubview:_topLabel];
     [self addArrangedSubview:_middleLabel];
@@ -241,6 +244,8 @@ constexpr CGFloat kTitleSubtitleToTrailingWidthRatio = 3;
   _trailingLabel.enabled = !_configuration.textDisabled;
 
   [self updateNumberOfLines];
+
+  [_titleSubtitleContainer invalidateIntrinsicContentSize];
 }
 
 // Updates the number of lines of the labels based on the accessibility and the
