@@ -304,7 +304,7 @@ SqlPersistentStore::InitResultOrError SqlPersistentStore::Backend::Initialize(
   }
   std::optional<InMemoryIndexAndDoomedResIds> in_memory_data;
   if (net::features::kSqlDiskCacheLoadIndexOnInit.Get()) {
-    if (auto in_memory_index_result = LoadInMemoryIndexInternal();
+    if (auto in_memory_index_result = LoadInMemoryIndex();
         in_memory_index_result.has_value()) {
       in_memory_data = std::move(in_memory_index_result.value());
     }
