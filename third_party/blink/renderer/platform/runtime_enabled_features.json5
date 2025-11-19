@@ -2130,8 +2130,11 @@
       "status": "stable",
     },
     {
+
+      // Kill-switch for https://chromestatus.com/feature/5153386492198912
+      // Added in M144, can be removed in M146.
       name: "EventTimingInteractionCount",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "EventTimingTargetSelector",
