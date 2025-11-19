@@ -444,6 +444,64 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest,
   EXPECT_FALSE(actor_task().GetLastActedTabs().empty());
 }
 
+// Ensures that a Tool that would normally return !page_stabilization_required
+// still returns the requirement if an out-of-viewport scroll into view was
+// performed.
+IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest,
+                       ScrollIntoViewForcesPageStabilization) {
+  const GURL url = embedded_test_server()->GetURL("/actor/input.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  const std::string_view selector = "#offscreen-disabled-input";
+  std::optional<int> input_id = GetDOMNodeId(*main_frame(), selector);
+  ASSERT_TRUE(input_id);
+
+  // We need an action that normally fails without page stabilization. Ensure
+  // that's the case to show the latter half of the test - which repeats but
+  // with the element offscreen - validates it's the scroll into view causing
+  // the page stability request.
+
+  {
+    // Bring the input into view first to ensure the tool invocation doesn't
+    // request a scroll.
+    ASSERT_TRUE(
+        ExecJs(web_contents(),
+               content::JsReplace("document.querySelector($1).scrollIntoView()",
+                                  selector)));
+    int scroll_before = EvalJs(web_contents(), "window.scrollY").ExtractInt();
+    ASSERT_GT(scroll_before, 0);
+
+    std::unique_ptr<ToolRequest> action =
+        MakeTypeRequest(*main_frame(), input_id.value(), "TEST",
+                        /*follow_by_enter=*/false);
+    ActResultFuture future;
+    actor_task().Act(ToRequestList(action), future.GetCallback());
+    const mojom::ActionResult& result = *(future.Get<0>());
+    ASSERT_EQ(result.code, mojom::ActionResultCode::kElementDisabled);
+    ASSERT_FALSE(result.requires_page_stabilization);
+    ASSERT_EQ(EvalJs(web_contents(), "window.scrollY"), scroll_before);
+  }
+
+  // Reset scroll so that repeating the action does cause a scroll into view.
+  ASSERT_TRUE(ExecJs(web_contents(), "window.scrollTo(0, 0)"));
+
+  {
+    ASSERT_EQ(EvalJs(web_contents(), "window.scrollY"), 0);
+    std::unique_ptr<ToolRequest> action =
+        MakeTypeRequest(*main_frame(), input_id.value(), "TEST",
+                        /*follow_by_enter=*/false);
+    ActResultFuture future;
+    actor_task().Act(ToRequestList(action), future.GetCallback());
+    const mojom::ActionResult& result = *(future.Get<0>());
+    ASSERT_EQ(result.code, mojom::ActionResultCode::kElementDisabled);
+    ASSERT_GT(EvalJs(web_contents(), "window.scrollY"), 0);
+
+    // This time - since a scroll was produced, the result should require page
+    // stabilization.
+    EXPECT_TRUE(result.requires_page_stabilization);
+  }
+}
+
 class ActorToolAgnosticBrowserTestWithCustomDelay
     : public ActorToolAgnosticBrowserTest {
  public:

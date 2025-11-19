@@ -222,16 +222,16 @@ ToolBase::ResolveResult ToolBase::ValidateAndResolveTarget() const {
   return resolved_target.value();
 }
 
-void ToolBase::EnsureTargetInView() {
+bool ToolBase::EnsureTargetInView() {
   if (!target_) {
-    return;
+    return false;
   }
 
   // Scrolling a target into view is only supported for node_id targets since
   // TOCTOU checks cannot be applied to the APC captured at the old scroll
   // offset.
   if (target_->is_coordinate_dip()) {
-    return;
+    return false;
   }
 
   int32_t dom_node_id = target_->get_dom_node_id();
@@ -239,7 +239,10 @@ void ToolBase::EnsureTargetInView() {
                         .DynamicTo<WebElement>();
   if (node && node.VisibleBoundsInWidget().IsEmpty()) {
     node.ScrollIntoViewIfNeeded();
+    return true;
   }
+
+  return false;
 }
 
 mojom::ActionResultPtr ToolBase::ValidateTimeOfUse(

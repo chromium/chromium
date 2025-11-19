@@ -40,6 +40,8 @@ class ToolExecutor {
   void ToolFinished(mojom::ActionResultPtr result);
   void OnCompletion(mojom::ActionResultPtr result);
 
+  bool performed_scroll_into_view_ = false;
+
   // Raw ref since the executor is owned by the RenderFrameObserver which has
   // the same lifetime as RenderFrame.
   base::raw_ref<content::RenderFrame> frame_;

@@ -75,8 +75,8 @@ class ToolBase {
 
   // Scrolls the target element into view if it's not already. If the target is
   // a coordinate, the coordinate is updated to reflect the new location after
-  // scrolling.
-  virtual void EnsureTargetInView();
+  // scrolling. Returns true if a scroll into view was requested.
+  virtual bool EnsureTargetInView();
 
   // Whether or not the tool supports page stability monitoring via paint
   // stability tracking, which is currently only supported on a subset of
