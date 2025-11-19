@@ -899,7 +899,15 @@ struct URLComponentSource {
 template <typename CHAR>
 class Replacements {
  public:
-  Replacements() {}
+  // Creates an empty `Replacements` instance, which indicates that no
+  // components will be replaced.
+  Replacements() = default;
+
+  // Creates a `Replacements` instance from a single spec and its parsed
+  // components. This is used to indicate that all components of a URL should
+  // be replaced.
+  Replacements(std::basic_string_view<CHAR> spec, const Parsed& parsed)
+      : sources_(spec.data()), components_(parsed) {}
 
   // Scheme
   void SetScheme(const CHAR* s, const Component& comp) {
@@ -992,6 +1000,12 @@ class Replacements {
   const Parsed& components() const { return components_; }
 
  private:
+  friend void SetupOverrideComponents(const Replacements<char>& repl,
+                                      Replacements<char>& overridden);
+  friend bool SetupUtf16OverrideComponents(const Replacements<char16_t>& repl,
+                                           CanonOutput& utf8_buffer,
+                                           Replacements<char>& overridden);
+
   // Returns a pointer to a static empty string that is used as a placeholder
   // to indicate a component should be deleted (see below).
   const CHAR* Placeholder() {

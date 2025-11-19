@@ -103,11 +103,10 @@ bool ReplaceMailtoUrl(std::string_view base,
                       const Replacements<char>& replacements,
                       CanonOutput* output,
                       Parsed* new_parsed) {
-  URLComponentSource<char> source(base.data());
-  Parsed parsed(base_parsed);
-  SetupOverrideComponents(base.data(), replacements, &source, &parsed);
-  return DoCanonicalizeMailtoUrl<char, unsigned char>(source, parsed, output,
-                                                      new_parsed);
+  Replacements<char> overridden(base, base_parsed);
+  SetupOverrideComponents(replacements, overridden);
+  return DoCanonicalizeMailtoUrl<char, unsigned char>(
+      overridden.sources(), overridden.components(), output, new_parsed);
 }
 
 bool ReplaceMailtoUrl(std::string_view base,
@@ -118,10 +117,10 @@ bool ReplaceMailtoUrl(std::string_view base,
   RawCanonOutput<1024> utf8;
   URLComponentSource<char> source(base.data());
   Parsed parsed(base_parsed);
-  SetupUTF16OverrideComponents(base.data(), replacements, &utf8, &source,
-                               &parsed);
-  return DoCanonicalizeMailtoUrl<char, unsigned char>(source, parsed, output,
-                                                      new_parsed);
+  Replacements<char> overridden(base, base_parsed);
+  SetupUtf16OverrideComponents(replacements, utf8, overridden);
+  return DoCanonicalizeMailtoUrl<char, unsigned char>(
+      overridden.sources(), overridden.components(), output, new_parsed);
 }
 
 }  // namespace url

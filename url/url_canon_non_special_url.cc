@@ -229,11 +229,11 @@ bool ReplaceNonSpecialUrl(std::string_view base,
                           &new_parsed);
   }
 
-  URLComponentSource<char> source(base.data());
-  Parsed parsed(base_parsed);
-  SetupOverrideComponents(base.data(), replacements, &source, &parsed);
-  return DoCanonicalizeNonSpecialUrl(source, parsed, query_converter, output,
-                                     new_parsed);
+  Replacements<char> overridden(base, base_parsed);
+  SetupOverrideComponents(replacements, overridden);
+  return DoCanonicalizeNonSpecialUrl(overridden.sources(),
+                                     overridden.components(), query_converter,
+                                     output, new_parsed);
 }
 
 // For 16-bit replacements, we turn all the replacements into UTF-8 so the
@@ -253,12 +253,11 @@ bool ReplaceNonSpecialUrl(std::string_view base,
   }
 
   RawCanonOutput<1024> utf8;
-  URLComponentSource<char> source(base.data());
-  Parsed parsed(base_parsed);
-  SetupUTF16OverrideComponents(base.data(), replacements, &utf8, &source,
-                               &parsed);
-  return DoCanonicalizeNonSpecialUrl(source, parsed, query_converter, output,
-                                     new_parsed);
+  Replacements<char> overridden(base, base_parsed);
+  SetupUtf16OverrideComponents(replacements, utf8, overridden);
+  return DoCanonicalizeNonSpecialUrl(overridden.sources(),
+                                     overridden.components(), query_converter,
+                                     output, new_parsed);
 }
 
 }  // namespace url

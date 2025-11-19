@@ -473,19 +473,17 @@ void ConvertUTF16ToQueryEncoding(const char16_t* input,
                                  CharsetConverter* converter,
                                  CanonOutput* output);
 
-// Applies the replacements to the given component source. The component source
-// should be pre-initialized to the "old" base. That is, all pointers will
-// point to the spec of the old URL, and all of the Parsed components will
-// be indices into that string.
+// Applies the replacements `repl` to the given component source `overridden`.
+// The component source should be pre-initialized to the "old" base. That is,
+// all strings will point to the spec of the old URL, and all of the Parsed
+// components will be indices into that string.
 //
-// The pointers and components in the |source| for all non-NULL strings in the
-// |repl| (replacements) will be updated to reference those strings.
-// Canonicalizing with the new |source| and |parsed| can then combine URL
-// components from many different strings.
-void SetupOverrideComponents(const char* base,
-                             const Replacements<char>& repl,
-                             URLComponentSource<char>* source,
-                             Parsed* parsed);
+// The strings and components in the `overridden` for all non-NULL strings in
+// the `repl` (replacements) will be updated to reference those strings.
+// Canonicalizing with the new `overridden` can then combine URL components
+// from many different strings.
+void SetupOverrideComponents(const Replacements<char>& repl,
+                             Replacements<char>& overridden);
 
 // Like the above 8-bit version, except that it additionally converts the
 // UTF-16 input to UTF-8 before doing the overrides.
@@ -497,17 +495,15 @@ void SetupOverrideComponents(const char* base,
 // parameter owned by the caller.
 //
 // THE CALLER MUST NOT ADD TO THE |utf8_buffer| AFTER THIS CALL. Members of
-// |source| will point into this buffer, which could be invalidated if
+// `overridden` will point into this buffer, which could be invalidated if
 // additional data is added and the CanonOutput resizes its buffer.
 //
 // Returns true on success. False means that the input was not valid UTF-16,
 // although we will have still done the override with "invalid characters" in
 // place of errors.
-bool SetupUTF16OverrideComponents(const char* base,
-                                  const Replacements<char16_t>& repl,
-                                  CanonOutput* utf8_buffer,
-                                  URLComponentSource<char>* source,
-                                  Parsed* parsed);
+bool SetupUtf16OverrideComponents(const Replacements<char16_t>& repl,
+                                  CanonOutput& utf8_buffer,
+                                  Replacements<char>& overridden);
 
 // Implemented in url_canon_path.cc, these are required by the relative URL
 // resolver as well, so we declare them here.

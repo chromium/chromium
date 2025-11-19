@@ -193,11 +193,11 @@ bool ReplaceStandardUrl(std::string_view base,
                         CharsetConverter* query_converter,
                         CanonOutput* output,
                         Parsed* new_parsed) {
-  URLComponentSource<char> source(base.data());
-  Parsed parsed(base_parsed);
-  SetupOverrideComponents(base.data(), replacements, &source, &parsed);
-  return DoCanonicalizeStandardUrl(source, parsed, scheme_type, query_converter,
-                                   output, new_parsed);
+  Replacements<char> overridden(base, base_parsed);
+  SetupOverrideComponents(replacements, overridden);
+  return DoCanonicalizeStandardUrl(overridden.sources(),
+                                   overridden.components(), scheme_type,
+                                   query_converter, output, new_parsed);
 }
 
 // For 16-bit replacements, we turn all the replacements into UTF-8 so the
@@ -210,12 +210,11 @@ bool ReplaceStandardUrl(std::string_view base,
                         CanonOutput* output,
                         Parsed* new_parsed) {
   RawCanonOutput<1024> utf8;
-  URLComponentSource<char> source(base.data());
-  Parsed parsed(base_parsed);
-  SetupUTF16OverrideComponents(base.data(), replacements, &utf8, &source,
-                               &parsed);
-  return DoCanonicalizeStandardUrl(source, parsed, scheme_type, query_converter,
-                                   output, new_parsed);
+  Replacements<char> overridden(base, base_parsed);
+  SetupUtf16OverrideComponents(replacements, utf8, overridden);
+  return DoCanonicalizeStandardUrl(overridden.sources(),
+                                   overridden.components(), scheme_type,
+                                   query_converter, output, new_parsed);
 }
 
 }  // namespace url

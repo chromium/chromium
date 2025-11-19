@@ -122,11 +122,10 @@ bool ReplacePathUrl(std::string_view base,
                     const Replacements<char>& replacements,
                     CanonOutput* output,
                     Parsed* new_parsed) {
-  URLComponentSource<char> source(base.data());
-  Parsed parsed(base_parsed);
-  SetupOverrideComponents(base.data(), replacements, &source, &parsed);
-  return DoCanonicalizePathUrl<char, unsigned char>(source, parsed, output,
-                                                    new_parsed);
+  Replacements<char> overridden(base, base_parsed);
+  SetupOverrideComponents(replacements, overridden);
+  return DoCanonicalizePathUrl<char, unsigned char>(
+      overridden.sources(), overridden.components(), output, new_parsed);
 }
 
 bool ReplacePathUrl(std::string_view base,
@@ -135,12 +134,10 @@ bool ReplacePathUrl(std::string_view base,
                     CanonOutput* output,
                     Parsed* new_parsed) {
   RawCanonOutput<1024> utf8;
-  URLComponentSource<char> source(base.data());
-  Parsed parsed(base_parsed);
-  SetupUTF16OverrideComponents(base.data(), replacements, &utf8, &source,
-                               &parsed);
-  return DoCanonicalizePathUrl<char, unsigned char>(source, parsed, output,
-                                                    new_parsed);
+  Replacements<char> overridden(base, base_parsed);
+  SetupUtf16OverrideComponents(replacements, utf8, overridden);
+  return DoCanonicalizePathUrl<char, unsigned char>(
+      overridden.sources(), overridden.components(), output, new_parsed);
 }
 
 }  // namespace url

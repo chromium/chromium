@@ -233,11 +233,11 @@ bool ReplaceFileUrl(std::string_view base,
                     CharsetConverter* query_converter,
                     CanonOutput* output,
                     Parsed* new_parsed) {
-  URLComponentSource<char> source(base.data());
-  Parsed parsed(base_parsed);
-  SetupOverrideComponents(base.data(), replacements, &source, &parsed);
+  Replacements overridden(base, base_parsed);
+  SetupOverrideComponents(replacements, overridden);
   return DoCanonicalizeFileUrl<char, unsigned char>(
-      source, parsed, query_converter, output, new_parsed);
+      overridden.sources(), overridden.components(), query_converter, output,
+      new_parsed);
 }
 
 bool ReplaceFileUrl(std::string_view base,
@@ -247,12 +247,11 @@ bool ReplaceFileUrl(std::string_view base,
                     CanonOutput* output,
                     Parsed* new_parsed) {
   RawCanonOutput<1024> utf8;
-  URLComponentSource<char> source(base.data());
-  Parsed parsed(base_parsed);
-  SetupUTF16OverrideComponents(base.data(), replacements, &utf8, &source,
-                               &parsed);
+  Replacements overridden(base, base_parsed);
+  SetupUtf16OverrideComponents(replacements, utf8, overridden);
   return DoCanonicalizeFileUrl<char, unsigned char>(
-      source, parsed, query_converter, output, new_parsed);
+      overridden.sources(), overridden.components(), query_converter, output,
+      new_parsed);
 }
 
 }  // namespace url

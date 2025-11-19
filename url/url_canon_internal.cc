@@ -249,13 +249,13 @@ bool ConvertUTF8ToUTF16(std::string_view input,
   return success;
 }
 
-void SetupOverrideComponents(const char* base,
-                             const Replacements<char>& repl,
-                             URLComponentSource<char>* source,
-                             Parsed* parsed) {
+void SetupOverrideComponents(const Replacements<char>& repl,
+                             Replacements<char>& overridden) {
   // Get the source and parsed structures of the things we are replacing.
   const URLComponentSource<char>& repl_source = repl.sources();
   const Parsed& repl_parsed = repl.components();
+  URLComponentSource<char>* source = &overridden.sources_;
+  Parsed* parsed = &overridden.components_;
 
   DoOverrideComponent(repl_source.scheme, repl_parsed.scheme, &source->scheme,
                       &parsed->scheme);
@@ -275,69 +275,69 @@ void SetupOverrideComponents(const char* base,
                       &parsed->ref);
 }
 
-bool SetupUTF16OverrideComponents(const char* base,
-                                  const Replacements<char16_t>& repl,
-                                  CanonOutput* utf8_buffer,
-                                  URLComponentSource<char>* source,
-                                  Parsed* parsed) {
+bool SetupUtf16OverrideComponents(const Replacements<char16_t>& repl,
+                                  CanonOutput& utf8_buffer,
+                                  Replacements<char>& overridden) {
   bool success = true;
 
   // Get the source and parsed structures of the things we are replacing.
   const URLComponentSource<char16_t>& repl_source = repl.sources();
   const Parsed& repl_parsed = repl.components();
+  URLComponentSource<char>* source = &overridden.sources_;
+  Parsed* parsed = &overridden.components_;
 
   success &= PrepareUTF16OverrideComponent(
       repl_source.scheme != nullptr,
       repl_parsed.scheme.maybe_as_string_view_on(repl_source.scheme),
-      utf8_buffer, &parsed->scheme);
+      &utf8_buffer, &parsed->scheme);
   success &= PrepareUTF16OverrideComponent(
       repl_source.username != nullptr,
       repl_parsed.username.maybe_as_string_view_on(repl_source.username),
-      utf8_buffer, &parsed->username);
+      &utf8_buffer, &parsed->username);
   success &= PrepareUTF16OverrideComponent(
       repl_source.password != nullptr,
       repl_parsed.password.maybe_as_string_view_on(repl_source.password),
-      utf8_buffer, &parsed->password);
+      &utf8_buffer, &parsed->password);
   success &= PrepareUTF16OverrideComponent(
       repl_source.host != nullptr,
-      repl_parsed.host.maybe_as_string_view_on(repl_source.host), utf8_buffer,
+      repl_parsed.host.maybe_as_string_view_on(repl_source.host), &utf8_buffer,
       &parsed->host);
   success &= PrepareUTF16OverrideComponent(
       repl_source.port != nullptr,
-      repl_parsed.port.maybe_as_string_view_on(repl_source.port), utf8_buffer,
+      repl_parsed.port.maybe_as_string_view_on(repl_source.port), &utf8_buffer,
       &parsed->port);
   success &= PrepareUTF16OverrideComponent(
       repl_source.path != nullptr,
-      repl_parsed.path.maybe_as_string_view_on(repl_source.path), utf8_buffer,
+      repl_parsed.path.maybe_as_string_view_on(repl_source.path), &utf8_buffer,
       &parsed->path);
   success &= PrepareUTF16OverrideComponent(
       repl_source.query != nullptr,
-      repl_parsed.query.maybe_as_string_view_on(repl_source.query), utf8_buffer,
-      &parsed->query);
+      repl_parsed.query.maybe_as_string_view_on(repl_source.query),
+      &utf8_buffer, &parsed->query);
   success &= PrepareUTF16OverrideComponent(
       repl_source.ref != nullptr,
-      repl_parsed.ref.maybe_as_string_view_on(repl_source.ref), utf8_buffer,
+      repl_parsed.ref.maybe_as_string_view_on(repl_source.ref), &utf8_buffer,
       &parsed->ref);
 
   // PrepareUTF16OverrideComponent will not have set the data pointer since the
   // buffer could be resized, invalidating the pointers. We set the data
   // pointers for affected components now that the buffer is finalized.
   if (repl_source.scheme)
-    source->scheme = utf8_buffer->data();
+    source->scheme = utf8_buffer.data();
   if (repl_source.username)
-    source->username = utf8_buffer->data();
+    source->username = utf8_buffer.data();
   if (repl_source.password)
-    source->password = utf8_buffer->data();
+    source->password = utf8_buffer.data();
   if (repl_source.host)
-    source->host = utf8_buffer->data();
+    source->host = utf8_buffer.data();
   if (repl_source.port)
-    source->port = utf8_buffer->data();
+    source->port = utf8_buffer.data();
   if (repl_source.path)
-    source->path = utf8_buffer->data();
+    source->path = utf8_buffer.data();
   if (repl_source.query)
-    source->query = utf8_buffer->data();
+    source->query = utf8_buffer.data();
   if (repl_source.ref)
-    source->ref = utf8_buffer->data();
+    source->ref = utf8_buffer.data();
 
   return success;
 }
