@@ -24,7 +24,7 @@ namespace {
 
 // The feature flag allows us to try using device allocator to create device
 // tensors for EPs, e.g. OpenVINO EP.
-BASE_FEATURE(kUseDeviceTensor, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kUseDeviceTensor, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
 
