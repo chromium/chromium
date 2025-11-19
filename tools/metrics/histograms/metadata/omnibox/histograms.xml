@@ -3164,7 +3164,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.SearchPreload.ResponseDataReaderFinalStatus.Prerender"
-    enum="SearchPrefetchResponseDataReaderStatus" expires_after="2025-11-16">
+    enum="SearchPrefetchResponseDataReaderStatus" expires_after="2026-03-22">
   <owner>lingqi@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
