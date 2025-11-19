@@ -825,6 +825,7 @@ if (is_android) {
     sources = [
       "src/org/chromium/chrome/browser/media/FullscreenVideoPictureInPictureControllerUnitTest.java",
       "src/org/chromium/chrome/browser/media/ui/MediaNotificationActionsUpdatedTest.java",
+      "src/org/chromium/chrome/browser/media/ui/MediaNotificationControllerTest.java",
       "src/org/chromium/chrome/browser/media/ui/MediaNotificationFaviconTest.java",
       "src/org/chromium/chrome/browser/media/ui/MediaNotificationManagerNotificationTest.java",
       "src/org/chromium/chrome/browser/media/ui/MediaNotificationServiceActionsTest.java",
