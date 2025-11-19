@@ -208,8 +208,6 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
 #pragma mark - UIViewController
 
 - (void)loadView {
-  self.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
-
   GridLayout* gridLayout = [[GridLayout alloc] init];
   self.gridLayout = gridLayout;
 

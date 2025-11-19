@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/composebox/ui/composebox_tab_picker_consumer.h"
 
 @class BaseGridViewController;
+@protocol ComposeboxTabPickerCommands;
 @protocol ComposeboxTabPickerMutator;
 
 // The tab picker view controller for AIM.
@@ -21,6 +22,10 @@
 
 /// The tab's picker mutator.
 @property(nonatomic, weak) id<ComposeboxTabPickerMutator> mutator;
+
+/// The handler for ComposeboxTabPickerCommands.
+@property(nonatomic, weak) id<ComposeboxTabPickerCommands>
+    composeboxTabPickerHandler;
 
 @end
 

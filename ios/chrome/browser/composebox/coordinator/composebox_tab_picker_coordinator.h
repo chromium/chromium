@@ -11,6 +11,8 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 #import "ios/web/public/web_state.h"
 
+@protocol ComposeboxTabPickerCommands;
+
 // Responsible for processing the selection of tab picker.
 @protocol ComposeboxTabPickerSelectionDelegate
 
@@ -30,8 +32,12 @@
 // Returns `YES` if the coordinator is started.
 @property(nonatomic, readonly) BOOL started;
 
+// Delegate for tab selection actions.
 @property(nonatomic, weak) id<ComposeboxTabPickerSelectionDelegate> delegate;
 
-@end
+// Handler for composebox tab picker commands.
+@property(nonatomic, weak) id<ComposeboxTabPickerCommands>
+    composeboxTabPickerHandler;
 
+@end
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_COORDINATOR_COMPOSEBOX_TAB_PICKER_COORDINATOR_H_

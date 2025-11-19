@@ -39,6 +39,9 @@
     _gridConsumer = gridConsumer;
     _tabPickerConsumer = tabPickerConsumer;
     _tabsAttachmentDelegate = tabsAttachmentDelegate;
+
+    [_tabPickerConsumer
+        setSelectedTabsCount:self.selectedEditingItems.tabsCount];
   }
 
   return self;

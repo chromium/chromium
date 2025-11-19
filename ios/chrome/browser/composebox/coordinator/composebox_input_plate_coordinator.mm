@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/composebox/coordinator/composebox_input_plate_coordinator.h"
 
+#import <PhotosUI/PhotosUI.h>
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
+
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/omnibox/browser/location_bar_model_impl.h"
 #import "components/omnibox/composebox/ios/composebox_query_controller_ios.h"
@@ -13,6 +16,7 @@
 #import "ios/chrome/browser/composebox/coordinator/composebox_input_plate_mediator.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_omnibox_client.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_tab_picker_coordinator.h"
+#import "ios/chrome/browser/composebox/public/composebox_theme.h"
 #import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_plate_view_controller.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
@@ -111,10 +115,6 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
       [[ComposeboxInputPlateViewController alloc] initWithTheme:_theme];
   _viewController.delegate = self;
 
-  _tabPickerCoordinator = [[ComposeboxTabPickerCoordinator alloc]
-      initWithBaseViewController:_viewController
-                         browser:self.browser];
-
   _voiceSearchController =
       ios::provider::CreateVoiceSearchController(self.browser);
 
@@ -149,7 +149,6 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   _mediator.consumer = _viewController;
   _mediator.delegate = self;
 
-  _tabPickerCoordinator.delegate = _mediator;
   _viewController.mutator = _mediator;
   _voiceSearchController.dispatcher = _mediator;
 
@@ -301,7 +300,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 
 - (void)composeboxViewControllerDidTapAttachTabsButton:
     (ComposeboxInputPlateViewController*)viewController {
-  [_tabPickerCoordinator start];
+  [self showComposeboxTabPicker];
 }
 
 - (void)composeboxViewController:
@@ -410,6 +409,22 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 
 - (LocationBarModel*)locationBarModel {
   return _locationBarModel.get();
+}
+
+#pragma mark - ComposeboxTabPickerCommands
+
+- (void)showComposeboxTabPicker {
+  _tabPickerCoordinator = [[ComposeboxTabPickerCoordinator alloc]
+      initWithBaseViewController:_viewController
+                         browser:self.browser];
+  _tabPickerCoordinator.delegate = _mediator;
+  _tabPickerCoordinator.composeboxTabPickerHandler = self;
+  [_tabPickerCoordinator start];
+}
+
+- (void)hideComposeboxTabPicker {
+  [_tabPickerCoordinator stop];
+  _tabPickerCoordinator = nil;
 }
 
 #pragma mark - Private

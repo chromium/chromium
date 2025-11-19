@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/composebox/coordinator/composebox_tab_picker_coordinator.h"
 
 #import "ios/chrome/browser/composebox/ui/composebox_tab_picker_view_controller.h"
+#import "ios/chrome/browser/shared/public/commands/composebox_tab_picker_commands.h"
 #import "ios/chrome/browser/tab_switcher/tab_grid/base_grid/ui/base_grid_view_controller.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_collection_consumer.h"
 
@@ -20,6 +21,8 @@
   ComposeboxTabPickerMediator* _mediator;
   /// The tab picker view controller.
   ComposeboxTabPickerViewController* _viewController;
+  // The navigation controller displaying the tab picker.
+  UINavigationController* _navigationController;
 }
 
 - (void)start {
@@ -35,8 +38,12 @@
   _viewController.gridViewController.snapshotAndfaviconDataSource = _mediator;
   _viewController.gridViewController.mutator = _mediator;
   _viewController.gridViewController.gridProvider = _mediator;
+  _viewController.composeboxTabPickerHandler = self.composeboxTabPickerHandler;
 
-  [self.baseViewController presentViewController:_viewController
+  _navigationController = [[UINavigationController alloc]
+      initWithRootViewController:_viewController];
+  _navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+  [self.baseViewController presentViewController:_navigationController
                                         animated:YES
                                       completion:nil];
   self.started = YES;
@@ -46,10 +53,13 @@
   if (!self.started) {
     return;
   }
-  [_viewController dismissViewControllerAnimated:YES completion:nil];
+  [_navigationController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:nil];
   [_mediator disconnect];
   _mediator = nil;
   _viewController = nil;
+  _navigationController = nil;
   [super stop];
 }
 
@@ -58,7 +68,6 @@
 - (void)attachSelectedTabs:(ComposeboxTabPickerMediator*)tabPickerMediator
        selectedWebStateIDs:(std::set<web::WebStateID>)selectedWebStateIDs {
   [self.delegate attachSelectedTabsWithWebStateIDs:selectedWebStateIDs];
-  [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (std::set<web::WebStateID>)preselectedWebStateIDs {
