@@ -141,10 +141,8 @@ class IntentChipButtonBrowserTest
   Browser* ClickIntentChip(bool wait_for_browser) {
     ui_test_utils::BrowserCreatedObserver browser_created_observer;
 
-    views::test::ButtonTestApi test_api(GetIntentChip(browser()));
-    ui::MouseEvent e(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
-                     ui::EventTimeForNow(), 0, 0);
-    test_api.NotifyClick(e);
+    views::test::ButtonTestApi(GetIntentChip(browser()))
+        .NotifyDefaultMouseClick();
 
     if (wait_for_browser) {
       return browser_created_observer.Wait();

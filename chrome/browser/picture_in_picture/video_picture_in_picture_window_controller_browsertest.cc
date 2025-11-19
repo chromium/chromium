@@ -346,9 +346,7 @@ class VideoPictureInPictureWindowControllerBrowserTest
   }
 
   void ClickButton(views::Button* button) {
-    const ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(),
-                               gfx::Point(), ui::EventTimeForNow(), 0, 0);
-    views::test::ButtonTestApi(button).NotifyClick(event);
+    views::test::ButtonTestApi(button).NotifyDefaultMouseClick();
   }
 
   MediaEngagementService* GetMediaEngagementService() const {

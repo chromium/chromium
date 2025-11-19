@@ -29,13 +29,6 @@
 #include "content/public/test/browser_test.h"
 #include "ui/views/test/button_test_api.h"
 
-namespace {
-ui::MouseEvent GetDummyEvent() {
-  return ui::MouseEvent(ui::EventType::kMousePressed, gfx::PointF(),
-                        gfx::PointF(), base::TimeTicks::Now(), 0, 0);
-}
-}  // namespace
-
 class TabSearchButtonBrowserTest : public InProcessBrowserTest {
  public:
   TabSearchButtonBrowserTest() {
@@ -77,7 +70,7 @@ class TabSearchButtonBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(TabSearchButtonBrowserTest, ButtonClickCreatesBubble) {
   ASSERT_EQ(nullptr, bubble_manager()->GetBubbleWidget());
-  views::test::ButtonTestApi(tab_search_button()).NotifyClick(GetDummyEvent());
+  views::test::ButtonTestApi(tab_search_button()).NotifyDefaultMouseClick();
   ASSERT_NE(nullptr, bubble_manager()->GetBubbleWidget());
 
   tab_search_bubble_host()->CloseTabSearchBubble();
@@ -103,7 +96,7 @@ class TabSearchButtonBrowserUITest : public DialogBrowserTest {
     auto* tab_search_button =
         BrowserElementsViews::From(browser())->GetViewAs<TabSearchButton>(
             kTabSearchButtonElementId);
-    views::test::ButtonTestApi(tab_search_button).NotifyClick(GetDummyEvent());
+    views::test::ButtonTestApi(tab_search_button).NotifyDefaultMouseClick();
   }
 
   void AppendTab(std::string url) {

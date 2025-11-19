@@ -184,10 +184,8 @@ IN_PROC_BROWSER_TEST_F(ZoomBubbleImmersiveDisabledBrowserTest,
     views::test::WidgetDestroyedWaiter waiter(zoom_bubble->GetWidget());
     // Press the zoom-in button. This will open a new bubble in an un-anchored
     // position.
-    const ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(),
-                               gfx::Point(), ui::EventTimeForNow(), 0, 0);
     views::test::ButtonTestApi(zoom_bubble->GetZoomInButtonForTesting())
-        .NotifyClick(event);
+        .NotifyDefaultMouseClick();
     zoom_bubble = zoom_bubble_coordinator_->bubble();
     EXPECT_NE(org_zoom_bubble, zoom_bubble);
     EXPECT_FALSE(zoom_bubble->GetAnchorView());

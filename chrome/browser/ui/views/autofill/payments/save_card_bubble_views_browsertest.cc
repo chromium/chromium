@@ -744,10 +744,7 @@ class SaveCardBubbleViewsFullFormBrowserTest
 
   void ClickSavePaymentIconView(IconLabelBubbleView* icon_view) {
     CHECK(icon_view);
-    ui::MouseEvent e(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
-                     ui::EventTimeForNow(), 0, 0);
-    views::test::ButtonTestApi test_api(icon_view);
-    test_api.NotifyClick(e);
+    views::test::ButtonTestApi(icon_view).NotifyDefaultMouseClick();
   }
 
   void ClickOnDialogView(views::View* view) {

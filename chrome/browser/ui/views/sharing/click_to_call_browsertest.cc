@@ -436,8 +436,7 @@ IN_PROC_BROWSER_TEST_P(ClickToCallBrowserTest, LeftClick_ChooseDevice) {
   const auto& buttons = dialog->button_list_for_testing()->children();
   ASSERT_GT(buttons.size(), 0u);
   views::test::ButtonTestApi(static_cast<views::Button*>(buttons[0]))
-      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
-                                  gfx::Point(), ui::EventTimeForNow(), 0, 0));
+      .NotifyDefaultMouseClick();
 
   CheckLastReceiver(devices[0]);
   // Defined in tel.html

@@ -98,9 +98,7 @@ void ExtensionsMenuTestUtil::Press(const extensions::ExtensionId& id) {
   ExtensionsMenuButton* primary_button =
       view->primary_action_button_for_testing();
 
-  ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
-                       ui::EventTimeForNow(), 0, 0);
-  views::test::ButtonTestApi(primary_button).NotifyClick(event);
+  views::test::ButtonTestApi(primary_button).NotifyDefaultMouseClick();
 }
 
 gfx::NativeView ExtensionsMenuTestUtil::GetPopupNativeView() {
