@@ -415,6 +415,7 @@ chromium-metrics-reviews@google.com.
   <int value="44" label="Response Stopped"/>
   <int value="45" label="Turn Completed"/>
   <int value="46" label="Reaction Logged on Response"/>
+  <int value="47" label="Shown"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/service/glic_instance_metrics.h:GlicInstanceEvent) -->

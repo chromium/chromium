@@ -1827,6 +1827,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Tab.InstanceBindCount" units="count"
+    expires_after="2026-03-22">
+  <owner>birnie@google.com</owner>
+  <owner>carlosk@chromium.org</owner>
+  <summary>
+    Records the number of unique Glic instances a tab was bound to during its
+    lifetime. Recorded when the tab is destroyed, but only if it was bound to at
+    least one instance.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Tab.InstancePinCount" units="count"
+    expires_after="2026-03-22">
+  <owner>birnie@google.com</owner>
+  <owner>carlosk@chromium.org</owner>
+  <summary>
+    Records the number of unique Glic instances a tab was pinned to during its
+    lifetime. Recorded when the tab is destroyed, but only if it was pinned to
+    at least one instance.
+  </summary>
+</histogram>
+
 <histogram name="Glic.TabContext.PdfContentsRequested" enum="PdfRequestStates"
     expires_after="2026-03-22">
   <owner>carlosk@chromium.org</owner>

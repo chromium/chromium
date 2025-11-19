@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_GLIC_SERVICE_GLIC_INSTANCE_HELPER_H_
 #define CHROME_BROWSER_GLIC_SERVICE_GLIC_INSTANCE_HELPER_H_
 
+#include <optional>
+
 #include "base/callback_list.h"
 #include "chrome/browser/glic/public/glic_instance.h"
+#include "chrome/browser/glic/service/glic_instance_helper_metrics.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
@@ -24,9 +27,9 @@ class GlicInstanceHelper {
   ~GlicInstanceHelper();
 
   std::optional<InstanceId> GetInstanceId() const { return instance_id_; }
-  void SetInstanceId(const InstanceId& instance_id) {
-    instance_id_ = instance_id;
-  }
+  void SetInstanceId(const InstanceId& instance_id);
+
+  void OnPinnedByInstance(const InstanceId& instance_id);
 
   base::CallbackListSubscription SubscribeToDestruction(
       base::RepeatingCallback<void(tabs::TabInterface*, const InstanceId&)>
@@ -34,6 +37,7 @@ class GlicInstanceHelper {
 
  private:
   std::optional<InstanceId> instance_id_;
+  GlicInstanceHelperMetrics metrics_;
   raw_ptr<tabs::TabInterface> tab_;
   ui::ScopedUnownedUserData<GlicInstanceHelper> scoped_unowned_user_data_;
   base::RepeatingCallbackList<void(tabs::TabInterface*, const InstanceId&)>

@@ -238,6 +238,7 @@ void GlicInstanceMetrics::OnShowInSidePanel(tabs::TabInterface* tab) {
   side_panel_open_times_[tab->GetHandle()] = base::TimeTicks::Now();
   base::RecordAction(base::UserMetricsAction("Glic.Instance.Show.SidePanel"));
   LogEvent(GlicInstanceEvent::kSidePanelShown);
+  LogEvent(GlicInstanceEvent::kShown);
 }
 
 void GlicInstanceMetrics::OnShowInFloaty(const ShowOptions& options) {
@@ -259,6 +260,7 @@ void GlicInstanceMetrics::OnShowInFloaty(const ShowOptions& options) {
                                     floaty_options->initial_mode);
     }
   }
+  LogEvent(GlicInstanceEvent::kShown);
 }
 
 void GlicInstanceMetrics::OnFloatyClosed() {
