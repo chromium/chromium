@@ -42,7 +42,8 @@ void ScrollJankV4Processor::ProcessEventsMetricsForPresentedFrame(
     ScrollJankV4FrameStage::List stages =
         ScrollJankV4FrameStage::CalculateStages(
             events_metrics, /* skip_non_damaging_events= */ true);
-    HandleFrame(stages, DamagingFrame(presentation_ts), args,
+    HandleFrame(stages, DamagingFrame(presentation_ts),
+                ScrollJankV4Frame::BeginFrameArgsForScrollJank::From(args),
                 /* counts_towards_histogram_frame_count= */ true);
     return;
   }
@@ -55,7 +56,7 @@ void ScrollJankV4Processor::ProcessEventsMetricsForPresentedFrame(
     bool counts_towards_histogram_frame_count =
         count_non_damaging_frames_towards_histogram_frame_count ||
         std::holds_alternative<DamagingFrame>(frame.damage);
-    HandleFrame(frame.stages, frame.damage, *frame.args,
+    HandleFrame(frame.stages, frame.damage, frame.args,
                 counts_towards_histogram_frame_count);
   }
 }
@@ -63,7 +64,7 @@ void ScrollJankV4Processor::ProcessEventsMetricsForPresentedFrame(
 void ScrollJankV4Processor::HandleFrame(
     ScrollJankV4FrameStage::List& stages,
     const ScrollDamage& damage,
-    const viz::BeginFrameArgs& args,
+    const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args,
     bool counts_towards_histogram_frame_count) {
   for (ScrollJankV4FrameStage& stage : stages) {
     std::visit(absl::Overload{
@@ -86,7 +87,7 @@ void ScrollJankV4Processor::HandleFrame(
 void ScrollJankV4Processor::HandleFrameWithScrollUpdates(
     ScrollJankV4FrameStage::ScrollUpdates& updates,
     const ScrollDamage& damage,
-    const viz::BeginFrameArgs& args,
+    const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args,
     bool counts_towards_histogram_frame_count) {
   ScrollUpdateEventMetrics& earliest_event = *updates.earliest_event;
   base::TimeTicks first_input_generation_ts =

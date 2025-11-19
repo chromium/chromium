@@ -9,7 +9,7 @@
 
 #include "base/time/time.h"
 #include "cc/metrics/event_metrics.h"
-#include "components/viz/common/frame_sinks/begin_frame_args.h"
+#include "cc/metrics/scroll_jank_v4_frame.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -58,15 +58,10 @@ const ::testing::Matcher<const std::optional<ScrollJankV4Result>&>
 class ScrollJankV4DeciderTest : public testing::Test {
  protected:
   ScrollJankV4Decider decider_;
-  int next_begin_frame_sequence_id_ = 1;
 
-  viz::BeginFrameArgs CreateNextBeginFrameArgs(base::TimeTicks begin_frame_ts) {
-    return viz::BeginFrameArgs::Create(
-        BEGINFRAME_FROM_HERE, /* source_id= */ 1,
-        next_begin_frame_sequence_id_++,
-        /* frame_time= */ begin_frame_ts,
-        /* deadline= */ begin_frame_ts + kVsyncInterval / 3, kVsyncInterval,
-        viz::BeginFrameArgs::BeginFrameArgsType::NORMAL);
+  static ScrollJankV4Frame::BeginFrameArgsForScrollJank CreateBeginFrameArgs(
+      base::TimeTicks frame_time) {
+    return {.frame_time = frame_time, .interval = kVsyncInterval};
   }
 };
 
@@ -87,7 +82,7 @@ TEST_F(ScrollJankV4DeciderTest, FrameProducedEveryVsync) {
           /* first_input_generation_ts= */ MillisSinceEpoch(103),
           /* last_input_generation_ts= */ MillisSinceEpoch(111),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(148)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(132)),
+          CreateBeginFrameArgs(MillisSinceEpoch(132)),
           /* has_inertial_input= */ true,
           /* abs_total_raw_delta_pixels= */ 10.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 10.0f);
@@ -98,7 +93,7 @@ TEST_F(ScrollJankV4DeciderTest, FrameProducedEveryVsync) {
           /* first_input_generation_ts= */ MillisSinceEpoch(119),
           /* last_input_generation_ts= */ MillisSinceEpoch(127),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(164)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(148)),
+          CreateBeginFrameArgs(MillisSinceEpoch(148)),
           /* has_inertial_input= */ true,
           /* abs_total_raw_delta_pixels= */ 10.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 10.0f);
@@ -109,7 +104,7 @@ TEST_F(ScrollJankV4DeciderTest, FrameProducedEveryVsync) {
           /* first_input_generation_ts= */ MillisSinceEpoch(135),
           /* last_input_generation_ts= */ MillisSinceEpoch(143),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(180)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(164)),
+          CreateBeginFrameArgs(MillisSinceEpoch(164)),
           /* has_inertial_input= */ true,
           /* abs_total_raw_delta_pixels= */ 10.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 10.0f);
@@ -132,7 +127,7 @@ TEST_F(ScrollJankV4DeciderTest, NoFrameProducedForMissingInput) {
           /* first_input_generation_ts= */ MillisSinceEpoch(103),
           /* last_input_generation_ts= */ MillisSinceEpoch(111),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(148)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(132)),
+          CreateBeginFrameArgs(MillisSinceEpoch(132)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 2.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -143,7 +138,7 @@ TEST_F(ScrollJankV4DeciderTest, NoFrameProducedForMissingInput) {
           /* first_input_generation_ts= */ MillisSinceEpoch(135),
           /* last_input_generation_ts= */ MillisSinceEpoch(143),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(180)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(164)),
+          CreateBeginFrameArgs(MillisSinceEpoch(164)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 2.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -166,7 +161,7 @@ TEST_F(ScrollJankV4DeciderTest, MissedVsyncWhenInputWasPresent) {
           /* first_input_generation_ts= */ MillisSinceEpoch(103),
           /* last_input_generation_ts= */ MillisSinceEpoch(111),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(148)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(132)),
+          CreateBeginFrameArgs(MillisSinceEpoch(132)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 2.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -177,7 +172,7 @@ TEST_F(ScrollJankV4DeciderTest, MissedVsyncWhenInputWasPresent) {
           /* first_input_generation_ts= */ MillisSinceEpoch(119),
           /* last_input_generation_ts= */ MillisSinceEpoch(127),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(196)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(180)),
+          CreateBeginFrameArgs(MillisSinceEpoch(180)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 2.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -191,7 +186,7 @@ TEST_F(ScrollJankV4DeciderTest, MissedVsyncWhenInputWasPresent) {
           /* first_input_generation_ts= */ MillisSinceEpoch(135),
           /* last_input_generation_ts= */ MillisSinceEpoch(143),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(228)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(212)),
+          CreateBeginFrameArgs(MillisSinceEpoch(212)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 2.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -208,7 +203,7 @@ TEST_F(ScrollJankV4DeciderTest, ScrollWithZeroVsyncs) {
           /* first_input_generation_ts= */ MillisSinceEpoch(103),
           /* last_input_generation_ts= */ MillisSinceEpoch(111),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(148)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(132)),
+          CreateBeginFrameArgs(MillisSinceEpoch(132)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 2.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -221,7 +216,7 @@ TEST_F(ScrollJankV4DeciderTest, ScrollWithZeroVsyncs) {
           /* first_input_generation_ts= */ MillisSinceEpoch(119),
           /* last_input_generation_ts= */ MillisSinceEpoch(127),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(149)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(133)),
+          CreateBeginFrameArgs(MillisSinceEpoch(133)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 2.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -249,7 +244,7 @@ TEST_F(ScrollJankV4DeciderTest, InputGeneratedAfterItWasPresented) {
           /* first_input_generation_ts= */ MillisSinceEpoch(100),
           /* last_input_generation_ts= */ MillisSinceEpoch(100),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(180)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(164)),
+          CreateBeginFrameArgs(MillisSinceEpoch(164)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 2.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -263,7 +258,7 @@ TEST_F(ScrollJankV4DeciderTest, InputGeneratedAfterItWasPresented) {
           /* first_input_generation_ts= */ MillisSinceEpoch(148),
           /* last_input_generation_ts= */ MillisSinceEpoch(148),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(132)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(116)),
+          CreateBeginFrameArgs(MillisSinceEpoch(116)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 2.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -276,7 +271,7 @@ TEST_F(ScrollJankV4DeciderTest, InputGeneratedAfterItWasPresented) {
           /* first_input_generation_ts= */ MillisSinceEpoch(164),
           /* last_input_generation_ts= */ MillisSinceEpoch(164),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(244)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(228)),
+          CreateBeginFrameArgs(MillisSinceEpoch(228)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 2.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -303,7 +298,7 @@ TEST_F(ScrollJankV4DeciderTest, OutOfOrderFrameTermination) {
           /* first_input_generation_ts= */ MillisSinceEpoch(100),
           /* last_input_generation_ts= */ MillisSinceEpoch(100),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(180)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(164)),
+          CreateBeginFrameArgs(MillisSinceEpoch(164)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 2.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -316,7 +311,7 @@ TEST_F(ScrollJankV4DeciderTest, OutOfOrderFrameTermination) {
           /* first_input_generation_ts= */ MillisSinceEpoch(116),
           /* last_input_generation_ts= */ MillisSinceEpoch(116),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(148)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(132)),
+          CreateBeginFrameArgs(MillisSinceEpoch(132)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 2.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -329,7 +324,7 @@ TEST_F(ScrollJankV4DeciderTest, OutOfOrderFrameTermination) {
           /* first_input_generation_ts= */ MillisSinceEpoch(132),
           /* last_input_generation_ts= */ MillisSinceEpoch(132),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(212)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(196)),
+          CreateBeginFrameArgs(MillisSinceEpoch(196)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 2.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -365,7 +360,7 @@ TEST_F(ScrollJankV4DeciderTest, EvaluatesEachScrollSeparately) {
           /* first_input_generation_ts= */ MillisSinceEpoch(108),
           /* last_input_generation_ts= */ MillisSinceEpoch(108),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(116)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(100)),
+          CreateBeginFrameArgs(MillisSinceEpoch(100)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 4.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -380,7 +375,7 @@ TEST_F(ScrollJankV4DeciderTest, EvaluatesEachScrollSeparately) {
           /* first_input_generation_ts= */ MillisSinceEpoch(124),
           /* last_input_generation_ts= */ MillisSinceEpoch(124),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(164)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(148)),
+          CreateBeginFrameArgs(MillisSinceEpoch(148)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 4.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -390,7 +385,7 @@ TEST_F(ScrollJankV4DeciderTest, EvaluatesEachScrollSeparately) {
           /* first_input_generation_ts= */ MillisSinceEpoch(140),
           /* last_input_generation_ts= */ MillisSinceEpoch(140),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(180)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(164)),
+          CreateBeginFrameArgs(MillisSinceEpoch(164)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 4.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -408,7 +403,7 @@ TEST_F(ScrollJankV4DeciderTest, EvaluatesEachScrollSeparatelyScrollStartOnly) {
           /* first_input_generation_ts= */ MillisSinceEpoch(108),
           /* last_input_generation_ts= */ MillisSinceEpoch(108),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(116)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(100)),
+          CreateBeginFrameArgs(MillisSinceEpoch(100)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 4.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -422,7 +417,7 @@ TEST_F(ScrollJankV4DeciderTest, EvaluatesEachScrollSeparatelyScrollStartOnly) {
           /* first_input_generation_ts= */ MillisSinceEpoch(124),
           /* last_input_generation_ts= */ MillisSinceEpoch(124),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(164)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(148)),
+          CreateBeginFrameArgs(MillisSinceEpoch(148)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 4.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -432,7 +427,7 @@ TEST_F(ScrollJankV4DeciderTest, EvaluatesEachScrollSeparatelyScrollStartOnly) {
           /* first_input_generation_ts= */ MillisSinceEpoch(140),
           /* last_input_generation_ts= */ MillisSinceEpoch(140),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(180)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(164)),
+          CreateBeginFrameArgs(MillisSinceEpoch(164)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 4.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -450,7 +445,7 @@ TEST_F(ScrollJankV4DeciderTest, EvaluatesEachScrollSeparatelyScrollEndOnly) {
           /* first_input_generation_ts= */ MillisSinceEpoch(108),
           /* last_input_generation_ts= */ MillisSinceEpoch(108),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(116)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(100)),
+          CreateBeginFrameArgs(MillisSinceEpoch(100)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 4.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -464,7 +459,7 @@ TEST_F(ScrollJankV4DeciderTest, EvaluatesEachScrollSeparatelyScrollEndOnly) {
           /* first_input_generation_ts= */ MillisSinceEpoch(124),
           /* last_input_generation_ts= */ MillisSinceEpoch(124),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(164)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(148)),
+          CreateBeginFrameArgs(MillisSinceEpoch(148)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 4.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -474,7 +469,7 @@ TEST_F(ScrollJankV4DeciderTest, EvaluatesEachScrollSeparatelyScrollEndOnly) {
           /* first_input_generation_ts= */ MillisSinceEpoch(140),
           /* last_input_generation_ts= */ MillisSinceEpoch(140),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(180)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(164)),
+          CreateBeginFrameArgs(MillisSinceEpoch(164)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 4.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -509,7 +504,7 @@ TEST_F(ScrollJankV4DeciderTest, MissedVsyncLongAfterQuickInputFrameDelivery) {
           /* first_input_generation_ts= */ MillisSinceEpoch(108),
           /* last_input_generation_ts= */ MillisSinceEpoch(108),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(116)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(100)),
+          CreateBeginFrameArgs(MillisSinceEpoch(100)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 2.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -524,7 +519,7 @@ TEST_F(ScrollJankV4DeciderTest, MissedVsyncLongAfterQuickInputFrameDelivery) {
             /* last_input_generation_ts= */ MillisSinceEpoch(116) + offset,
             ScrollDamage{DamagingFrame{.presentation_ts =
                                            MillisSinceEpoch(132) + offset}},
-            CreateNextBeginFrameArgs(MillisSinceEpoch(116) + offset),
+            CreateBeginFrameArgs(MillisSinceEpoch(116) + offset),
             /* has_inertial_input= */ false,
             /* abs_total_raw_delta_pixels= */ 2.0f,
             /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -542,7 +537,7 @@ TEST_F(ScrollJankV4DeciderTest, MissedVsyncLongAfterQuickInputFrameDelivery) {
           /* last_input_generation_ts= */ MillisSinceEpoch(1132),
           ScrollDamage{
               DamagingFrame{.presentation_ts = MillisSinceEpoch(1156)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(1140)),
+          CreateBeginFrameArgs(MillisSinceEpoch(1140)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 2.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -582,7 +577,7 @@ TEST_F(ScrollJankV4DeciderTest,
             /* last_input_generation_ts= */ MillisSinceEpoch(100) + offset,
             ScrollDamage{DamagingFrame{.presentation_ts =
                                            MillisSinceEpoch(116) + offset}},
-            CreateNextBeginFrameArgs(MillisSinceEpoch(100) + offset),
+            CreateBeginFrameArgs(MillisSinceEpoch(100) + offset),
             /* has_inertial_input= */ false,
             /* abs_total_raw_delta_pixels= */ 2.0f,
             /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -596,7 +591,7 @@ TEST_F(ScrollJankV4DeciderTest,
           /* last_input_generation_ts= */ MillisSinceEpoch(1116),
           ScrollDamage{
               DamagingFrame{.presentation_ts = MillisSinceEpoch(1124)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(1108)),
+          CreateBeginFrameArgs(MillisSinceEpoch(1108)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 2.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -613,7 +608,7 @@ TEST_F(ScrollJankV4DeciderTest,
           /* last_input_generation_ts= */ MillisSinceEpoch(1132),
           ScrollDamage{
               DamagingFrame{.presentation_ts = MillisSinceEpoch(1156)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(1140)),
+          CreateBeginFrameArgs(MillisSinceEpoch(1140)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 2.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -647,7 +642,7 @@ TEST_F(ScrollJankV4DeciderTest, MissedVsyncDuringFastScroll) {
           /* first_input_generation_ts= */ MillisSinceEpoch(100),
           /* last_input_generation_ts= */ MillisSinceEpoch(100),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(340)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(324)),
+          CreateBeginFrameArgs(MillisSinceEpoch(324)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 4.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -658,7 +653,7 @@ TEST_F(ScrollJankV4DeciderTest, MissedVsyncDuringFastScroll) {
           /* first_input_generation_ts= */ MillisSinceEpoch(116),
           /* last_input_generation_ts= */ MillisSinceEpoch(116),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(356)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(340)),
+          CreateBeginFrameArgs(MillisSinceEpoch(340)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 4.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -670,7 +665,7 @@ TEST_F(ScrollJankV4DeciderTest, MissedVsyncDuringFastScroll) {
           /* first_input_generation_ts= */ MillisSinceEpoch(148),
           /* last_input_generation_ts= */ MillisSinceEpoch(148),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(388)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(372)),
+          CreateBeginFrameArgs(MillisSinceEpoch(372)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 4.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -682,7 +677,7 @@ TEST_F(ScrollJankV4DeciderTest, MissedVsyncDuringFastScroll) {
           /* first_input_generation_ts= */ MillisSinceEpoch(164),
           /* last_input_generation_ts= */ MillisSinceEpoch(164),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(404)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(388)),
+          CreateBeginFrameArgs(MillisSinceEpoch(388)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 4.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -694,7 +689,7 @@ TEST_F(ScrollJankV4DeciderTest, MissedVsyncDuringFastScroll) {
           /* first_input_generation_ts= */ MillisSinceEpoch(260),
           /* last_input_generation_ts= */ MillisSinceEpoch(260),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(500)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(484)),
+          CreateBeginFrameArgs(MillisSinceEpoch(484)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 4.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -729,7 +724,7 @@ TEST_F(ScrollJankV4DeciderTest, MissedVsyncOutsideFastScroll) {
           /* first_input_generation_ts= */ MillisSinceEpoch(100),
           /* last_input_generation_ts= */ MillisSinceEpoch(100),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(340)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(324)),
+          CreateBeginFrameArgs(MillisSinceEpoch(324)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 4.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -740,7 +735,7 @@ TEST_F(ScrollJankV4DeciderTest, MissedVsyncOutsideFastScroll) {
           /* first_input_generation_ts= */ MillisSinceEpoch(116),
           /* last_input_generation_ts= */ MillisSinceEpoch(116),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(356)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(340)),
+          CreateBeginFrameArgs(MillisSinceEpoch(340)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 4.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -753,7 +748,7 @@ TEST_F(ScrollJankV4DeciderTest, MissedVsyncOutsideFastScroll) {
           /* first_input_generation_ts= */ MillisSinceEpoch(148),
           /* last_input_generation_ts= */ MillisSinceEpoch(148),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(388)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(372)),
+          CreateBeginFrameArgs(MillisSinceEpoch(372)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 2.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -764,7 +759,7 @@ TEST_F(ScrollJankV4DeciderTest, MissedVsyncOutsideFastScroll) {
           /* first_input_generation_ts= */ MillisSinceEpoch(164),
           /* last_input_generation_ts= */ MillisSinceEpoch(164),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(404)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(388)),
+          CreateBeginFrameArgs(MillisSinceEpoch(388)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 2.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -777,7 +772,7 @@ TEST_F(ScrollJankV4DeciderTest, MissedVsyncOutsideFastScroll) {
           /* first_input_generation_ts= */ MillisSinceEpoch(260),
           /* last_input_generation_ts= */ MillisSinceEpoch(260),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(500)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(484)),
+          CreateBeginFrameArgs(MillisSinceEpoch(484)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 4.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -807,7 +802,7 @@ TEST_F(ScrollJankV4DeciderTest,
           /* first_input_generation_ts= */ MillisSinceEpoch(100),
           /* last_input_generation_ts= */ MillisSinceEpoch(100),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(180)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(164)),
+          CreateBeginFrameArgs(MillisSinceEpoch(164)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 4.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -819,7 +814,7 @@ TEST_F(ScrollJankV4DeciderTest,
           /* first_input_generation_ts= */ MillisSinceEpoch(164),
           /* last_input_generation_ts= */ MillisSinceEpoch(164),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(244)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(228)),
+          CreateBeginFrameArgs(MillisSinceEpoch(228)),
           /* has_inertial_input= */ true,
           /* abs_total_raw_delta_pixels= */ 0.5f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.5f);
@@ -849,7 +844,7 @@ TEST_F(ScrollJankV4DeciderTest,
           /* first_input_generation_ts= */ MillisSinceEpoch(100),
           /* last_input_generation_ts= */ MillisSinceEpoch(100),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(180)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(164)),
+          CreateBeginFrameArgs(MillisSinceEpoch(164)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 2.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -862,7 +857,7 @@ TEST_F(ScrollJankV4DeciderTest,
           /* first_input_generation_ts= */ MillisSinceEpoch(164),
           /* last_input_generation_ts= */ MillisSinceEpoch(164),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(244)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(228)),
+          CreateBeginFrameArgs(MillisSinceEpoch(228)),
           /* has_inertial_input= */ true,
           /* abs_total_raw_delta_pixels= */ 0.5f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.5f);
@@ -891,7 +886,7 @@ TEST_F(ScrollJankV4DeciderTest,
           /* first_input_generation_ts= */ MillisSinceEpoch(100),
           /* last_input_generation_ts= */ MillisSinceEpoch(100),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(180)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(164)),
+          CreateBeginFrameArgs(MillisSinceEpoch(164)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 4.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -904,7 +899,7 @@ TEST_F(ScrollJankV4DeciderTest,
           /* first_input_generation_ts= */ MillisSinceEpoch(164),
           /* last_input_generation_ts= */ MillisSinceEpoch(164),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(244)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(228)),
+          CreateBeginFrameArgs(MillisSinceEpoch(228)),
           /* has_inertial_input= */ true,
           /* abs_total_raw_delta_pixels= */ 0.1f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.1f);
@@ -932,7 +927,7 @@ TEST_F(ScrollJankV4DeciderTest,
           /* first_input_generation_ts= */ MillisSinceEpoch(100),
           /* last_input_generation_ts= */ MillisSinceEpoch(100),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(180)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(164)),
+          CreateBeginFrameArgs(MillisSinceEpoch(164)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 4.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -944,7 +939,7 @@ TEST_F(ScrollJankV4DeciderTest,
           /* first_input_generation_ts= */ MillisSinceEpoch(116),
           /* last_input_generation_ts= */ MillisSinceEpoch(116),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(196)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(180)),
+          CreateBeginFrameArgs(MillisSinceEpoch(180)),
           /* has_inertial_input= */ true,
           /* abs_total_raw_delta_pixels= */ 0.5f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.5f);
@@ -975,7 +970,7 @@ TEST_F(ScrollJankV4DeciderTest, MissedVsyncDuringFastFling) {
           /* first_input_generation_ts= */ MillisSinceEpoch(100),
           /* last_input_generation_ts= */ MillisSinceEpoch(100),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(340)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(324)),
+          CreateBeginFrameArgs(MillisSinceEpoch(324)),
           /* has_inertial_input= */ true,
           /* abs_total_raw_delta_pixels= */ 0.5f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.5f);
@@ -986,7 +981,7 @@ TEST_F(ScrollJankV4DeciderTest, MissedVsyncDuringFastFling) {
           /* first_input_generation_ts= */ MillisSinceEpoch(116),
           /* last_input_generation_ts= */ MillisSinceEpoch(116),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(356)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(340)),
+          CreateBeginFrameArgs(MillisSinceEpoch(340)),
           /* has_inertial_input= */ true,
           /* abs_total_raw_delta_pixels= */ 0.5f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.5f);
@@ -998,7 +993,7 @@ TEST_F(ScrollJankV4DeciderTest, MissedVsyncDuringFastFling) {
           /* first_input_generation_ts= */ MillisSinceEpoch(148),
           /* last_input_generation_ts= */ MillisSinceEpoch(148),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(388)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(372)),
+          CreateBeginFrameArgs(MillisSinceEpoch(372)),
           /* has_inertial_input= */ true,
           /* abs_total_raw_delta_pixels= */ 0.5f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.5f);
@@ -1009,7 +1004,7 @@ TEST_F(ScrollJankV4DeciderTest, MissedVsyncDuringFastFling) {
           /* first_input_generation_ts= */ MillisSinceEpoch(164),
           /* last_input_generation_ts= */ MillisSinceEpoch(164),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(404)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(388)),
+          CreateBeginFrameArgs(MillisSinceEpoch(388)),
           /* has_inertial_input= */ true,
           /* abs_total_raw_delta_pixels= */ 0.1f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.1f);
@@ -1022,7 +1017,7 @@ TEST_F(ScrollJankV4DeciderTest, MissedVsyncDuringFastFling) {
           /* first_input_generation_ts= */ MillisSinceEpoch(260),
           /* last_input_generation_ts= */ MillisSinceEpoch(260),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(500)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(484)),
+          CreateBeginFrameArgs(MillisSinceEpoch(484)),
           /* has_inertial_input= */ true,
           /* abs_total_raw_delta_pixels= */ 0.5f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.5f);
@@ -1055,7 +1050,7 @@ TEST_F(ScrollJankV4DeciderTest, MissedVsyncDuringSlowFling) {
           /* first_input_generation_ts= */ MillisSinceEpoch(100),
           /* last_input_generation_ts= */ MillisSinceEpoch(100),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(300)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(284)),
+          CreateBeginFrameArgs(MillisSinceEpoch(284)),
           /* has_inertial_input= */ true,
           /* abs_total_raw_delta_pixels= */ 0.5f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.5f);
@@ -1066,7 +1061,7 @@ TEST_F(ScrollJankV4DeciderTest, MissedVsyncDuringSlowFling) {
           /* first_input_generation_ts= */ MillisSinceEpoch(116),
           /* last_input_generation_ts= */ MillisSinceEpoch(116),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(316)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(300)),
+          CreateBeginFrameArgs(MillisSinceEpoch(300)),
           /* has_inertial_input= */ true,
           /* abs_total_raw_delta_pixels= */ 0.5f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.5f);
@@ -1079,7 +1074,7 @@ TEST_F(ScrollJankV4DeciderTest, MissedVsyncDuringSlowFling) {
           /* first_input_generation_ts= */ MillisSinceEpoch(148),
           /* last_input_generation_ts= */ MillisSinceEpoch(148),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(348)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(332)),
+          CreateBeginFrameArgs(MillisSinceEpoch(332)),
           /* has_inertial_input= */ true,
           /* abs_total_raw_delta_pixels= */ 0.1f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.1f);
@@ -1090,7 +1085,7 @@ TEST_F(ScrollJankV4DeciderTest, MissedVsyncDuringSlowFling) {
           /* first_input_generation_ts= */ MillisSinceEpoch(164),
           /* last_input_generation_ts= */ MillisSinceEpoch(164),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(364)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(348)),
+          CreateBeginFrameArgs(MillisSinceEpoch(348)),
           /* has_inertial_input= */ true,
           /* abs_total_raw_delta_pixels= */ 0.1f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.1f);
@@ -1103,7 +1098,7 @@ TEST_F(ScrollJankV4DeciderTest, MissedVsyncDuringSlowFling) {
           /* first_input_generation_ts= */ MillisSinceEpoch(260),
           /* last_input_generation_ts= */ MillisSinceEpoch(260),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(460)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(444)),
+          CreateBeginFrameArgs(MillisSinceEpoch(444)),
           /* has_inertial_input= */ true,
           /* abs_total_raw_delta_pixels= */ 0.1f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.1f);
@@ -1121,7 +1116,7 @@ TEST_F(ScrollJankV4DeciderTest,
           /* first_input_generation_ts= */ MillisSinceEpoch(200),
           /* last_input_generation_ts= */ MillisSinceEpoch(100),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(400)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(300)),
+          CreateBeginFrameArgs(MillisSinceEpoch(300)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 5.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -1132,7 +1127,7 @@ TEST_F(ScrollJankV4DeciderTest,
           /* first_input_generation_ts= */ MillisSinceEpoch(200),
           /* last_input_generation_ts= */ MillisSinceEpoch(100),
           ScrollDamage{NonDamagingFrame{}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(300)),
+          CreateBeginFrameArgs(MillisSinceEpoch(300)),
           /* has_inertial_input= */ true,
           /* abs_total_raw_delta_pixels= */ 0.5f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.5f);
@@ -1199,7 +1194,7 @@ TEST_P(ScrollJankV4DeciderRunningConsistentyTests,
           /* first_input_generation_ts= */ MillisSinceEpoch(100),
           /* last_input_generation_ts= */ MicrosSinceEpoch(108100),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(164)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(148)),
+          CreateBeginFrameArgs(MillisSinceEpoch(148)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 0.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -1211,7 +1206,7 @@ TEST_P(ScrollJankV4DeciderRunningConsistentyTests,
           /* first_input_generation_ts= */ MillisSinceEpoch(116),
           /* last_input_generation_ts= */ MillisSinceEpoch(124),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(180)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(164)),
+          CreateBeginFrameArgs(MillisSinceEpoch(164)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 0.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -1223,7 +1218,7 @@ TEST_P(ScrollJankV4DeciderRunningConsistentyTests,
           /* first_input_generation_ts= */ MillisSinceEpoch(132),
           /* last_input_generation_ts= */ MicrosSinceEpoch(139800),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(196)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(180)),
+          CreateBeginFrameArgs(MillisSinceEpoch(180)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 0.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -1264,7 +1259,7 @@ TEST_P(ScrollJankV4DeciderRunningConsistentyTests,
           /* first_input_generation_ts= */ params.input_ts,
           /* last_input_generation_ts= */ params.input_ts,
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(260)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(244)),
+          CreateBeginFrameArgs(MillisSinceEpoch(244)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 0.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -1348,7 +1343,7 @@ TEST_F(ScrollJankV4DeciderTest,
           /* first_input_generation_ts= */ MillisSinceEpoch(103),
           /* last_input_generation_ts= */ MillisSinceEpoch(111),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(148)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(132)),
+          CreateBeginFrameArgs(MillisSinceEpoch(132)),
           /* has_inertial_input= */ true,
           /* abs_total_raw_delta_pixels= */ 10.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 10.0f);
@@ -1358,7 +1353,7 @@ TEST_F(ScrollJankV4DeciderTest,
           /* first_input_generation_ts= */ MillisSinceEpoch(119),
           /* last_input_generation_ts= */ MillisSinceEpoch(127),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(164)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(148)),
+          CreateBeginFrameArgs(MillisSinceEpoch(148)),
           /* has_inertial_input= */ true,
           /* abs_total_raw_delta_pixels= */ 10.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 10.0f);
@@ -1370,7 +1365,7 @@ TEST_F(ScrollJankV4DeciderTest,
           /* first_input_generation_ts= */ MillisSinceEpoch(135),
           /* last_input_generation_ts= */ MillisSinceEpoch(143),
           ScrollDamage{NonDamagingFrame{}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(164)),
+          CreateBeginFrameArgs(MillisSinceEpoch(164)),
           /* has_inertial_input= */ true,
           /* abs_total_raw_delta_pixels= */ 10.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 10.0f);
@@ -1380,7 +1375,7 @@ TEST_F(ScrollJankV4DeciderTest,
           /* first_input_generation_ts= */ MillisSinceEpoch(151),
           /* last_input_generation_ts= */ MillisSinceEpoch(159),
           ScrollDamage{NonDamagingFrame{}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(180)),
+          CreateBeginFrameArgs(MillisSinceEpoch(180)),
           /* has_inertial_input= */ true,
           /* abs_total_raw_delta_pixels= */ 10.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 10.0f);
@@ -1392,7 +1387,7 @@ TEST_F(ScrollJankV4DeciderTest,
           /* first_input_generation_ts= */ MillisSinceEpoch(167),
           /* last_input_generation_ts= */ MillisSinceEpoch(175),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(212)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(196)),
+          CreateBeginFrameArgs(MillisSinceEpoch(196)),
           /* has_inertial_input= */ true,
           /* abs_total_raw_delta_pixels= */ 10.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 10.0f);
@@ -1402,7 +1397,7 @@ TEST_F(ScrollJankV4DeciderTest,
           /* first_input_generation_ts= */ MillisSinceEpoch(183),
           /* last_input_generation_ts= */ MillisSinceEpoch(191),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(228)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(212)),
+          CreateBeginFrameArgs(MillisSinceEpoch(212)),
           /* has_inertial_input= */ true,
           /* abs_total_raw_delta_pixels= */ 10.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 10.0f);
@@ -1431,7 +1426,7 @@ TEST_F(ScrollJankV4DeciderTest, ScrollStartsWithNonDamagingFrames) {
           /* first_input_generation_ts= */ MillisSinceEpoch(103),
           /* last_input_generation_ts= */ MillisSinceEpoch(111),
           ScrollDamage{NonDamagingFrame{}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(132)),
+          CreateBeginFrameArgs(MillisSinceEpoch(132)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 2.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -1441,7 +1436,7 @@ TEST_F(ScrollJankV4DeciderTest, ScrollStartsWithNonDamagingFrames) {
           /* first_input_generation_ts= */ MillisSinceEpoch(119),
           /* last_input_generation_ts= */ MillisSinceEpoch(127),
           ScrollDamage{NonDamagingFrame{}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(148)),
+          CreateBeginFrameArgs(MillisSinceEpoch(148)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 2.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -1453,7 +1448,7 @@ TEST_F(ScrollJankV4DeciderTest, ScrollStartsWithNonDamagingFrames) {
           /* first_input_generation_ts= */ MillisSinceEpoch(135),
           /* last_input_generation_ts= */ MillisSinceEpoch(143),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(180)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(164)),
+          CreateBeginFrameArgs(MillisSinceEpoch(164)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 2.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -1466,7 +1461,7 @@ TEST_F(ScrollJankV4DeciderTest, ScrollStartsWithNonDamagingFrames) {
           /* first_input_generation_ts= */ MillisSinceEpoch(151),
           /* last_input_generation_ts= */ MillisSinceEpoch(159),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(228)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(180)),
+          CreateBeginFrameArgs(MillisSinceEpoch(180)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 2.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -1504,7 +1499,7 @@ TEST_F(ScrollJankV4DeciderTest, JankyNonDamagingFrames) {
           /* first_input_generation_ts= */ MillisSinceEpoch(103),
           /* last_input_generation_ts= */ MillisSinceEpoch(111),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(148)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(132)),
+          CreateBeginFrameArgs(MillisSinceEpoch(132)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 5.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -1515,7 +1510,7 @@ TEST_F(ScrollJankV4DeciderTest, JankyNonDamagingFrames) {
           /* first_input_generation_ts= */ MillisSinceEpoch(119),
           /* last_input_generation_ts= */ MillisSinceEpoch(127),
           ScrollDamage{NonDamagingFrame{}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(148)),
+          CreateBeginFrameArgs(MillisSinceEpoch(148)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 5.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -1526,7 +1521,7 @@ TEST_F(ScrollJankV4DeciderTest, JankyNonDamagingFrames) {
           /* first_input_generation_ts= */ MillisSinceEpoch(151),
           /* last_input_generation_ts= */ MillisSinceEpoch(159),
           ScrollDamage{NonDamagingFrame{}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(180)),
+          CreateBeginFrameArgs(MillisSinceEpoch(180)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 5.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -1538,7 +1533,7 @@ TEST_F(ScrollJankV4DeciderTest, JankyNonDamagingFrames) {
           /* first_input_generation_ts= */ MillisSinceEpoch(196),
           /* last_input_generation_ts= */ MillisSinceEpoch(196),
           ScrollDamage{NonDamagingFrame{}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(196)),
+          CreateBeginFrameArgs(MillisSinceEpoch(196)),
           /* has_inertial_input= */ true,
           /* abs_total_raw_delta_pixels= */ 2.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 2.0f);
@@ -1549,7 +1544,7 @@ TEST_F(ScrollJankV4DeciderTest, JankyNonDamagingFrames) {
           /* first_input_generation_ts= */ MillisSinceEpoch(244),
           /* last_input_generation_ts= */ MillisSinceEpoch(244),
           ScrollDamage{NonDamagingFrame{}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(244)),
+          CreateBeginFrameArgs(MillisSinceEpoch(244)),
           /* has_inertial_input= */ true,
           /* abs_total_raw_delta_pixels= */ 2.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 2.0f);
@@ -1560,7 +1555,7 @@ TEST_F(ScrollJankV4DeciderTest, JankyNonDamagingFrames) {
           /* first_input_generation_ts= */ MillisSinceEpoch(260),
           /* last_input_generation_ts= */ MillisSinceEpoch(260),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(292)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(260)),
+          CreateBeginFrameArgs(MillisSinceEpoch(260)),
           /* has_inertial_input= */ true,
           /* abs_total_raw_delta_pixels= */ 2.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 2.0f);
@@ -1592,7 +1587,7 @@ TEST_F(ScrollJankV4DeciderTest,
           /* first_input_generation_ts= */ MillisSinceEpoch(103),
           /* last_input_generation_ts= */ MillisSinceEpoch(111),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(148)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(132)),
+          CreateBeginFrameArgs(MillisSinceEpoch(132)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 0.1f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -1603,7 +1598,7 @@ TEST_F(ScrollJankV4DeciderTest,
           /* first_input_generation_ts= */ MillisSinceEpoch(119),
           /* last_input_generation_ts= */ MillisSinceEpoch(127),
           ScrollDamage{NonDamagingFrame{}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(164)),
+          CreateBeginFrameArgs(MillisSinceEpoch(164)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 0.1f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -1617,7 +1612,7 @@ TEST_F(ScrollJankV4DeciderTest,
           /* first_input_generation_ts= */ MillisSinceEpoch(151),
           /* last_input_generation_ts= */ MillisSinceEpoch(159),
           ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(196)}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(180)),
+          CreateBeginFrameArgs(MillisSinceEpoch(180)),
           /* has_inertial_input= */ true,
           /* abs_total_raw_delta_pixels= */ 0.1f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -1628,7 +1623,7 @@ TEST_F(ScrollJankV4DeciderTest,
           /* first_input_generation_ts= */ MillisSinceEpoch(167),
           /* last_input_generation_ts= */ MillisSinceEpoch(175),
           ScrollDamage{NonDamagingFrame{}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(196)),
+          CreateBeginFrameArgs(MillisSinceEpoch(196)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 0.1f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
@@ -1639,7 +1634,7 @@ TEST_F(ScrollJankV4DeciderTest,
           /* first_input_generation_ts= */ MillisSinceEpoch(183),
           /* last_input_generation_ts= */ MillisSinceEpoch(191),
           ScrollDamage{NonDamagingFrame{}},
-          CreateNextBeginFrameArgs(MillisSinceEpoch(244)),
+          CreateBeginFrameArgs(MillisSinceEpoch(244)),
           /* has_inertial_input= */ false,
           /* abs_total_raw_delta_pixels= */ 0.1f,
           /* max_abs_inertial_raw_delta_pixels= */ 0.0f);

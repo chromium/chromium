@@ -32,12 +32,12 @@ class CC_EXPORT ScrollJankV4Processor {
  private:
   void HandleFrame(ScrollJankV4FrameStage::List& stages,
                    const ScrollJankV4Frame::ScrollDamage& damage,
-                   const viz::BeginFrameArgs& args,
+                   const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args,
                    bool counts_towards_histogram_frame_count);
   void HandleFrameWithScrollUpdates(
       ScrollJankV4FrameStage::ScrollUpdates& updates,
       const ScrollJankV4Frame::ScrollDamage& damage,
-      const viz::BeginFrameArgs& args,
+      const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args,
       bool counts_towards_histograms);
   void HandleScrollStarted();
   void HandleScrollEnded();

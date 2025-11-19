@@ -14,7 +14,7 @@
 #include "base/time/time.h"
 #include "cc/base/features.h"
 #include "cc/metrics/event_metrics.h"
-#include "components/viz/common/frame_sinks/begin_frame_args.h"
+#include "cc/metrics/scroll_jank_v4_frame.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace cc {
@@ -31,7 +31,7 @@ ScrollJankV4Decider::DecideJankForFrameWithScrollUpdates(
     base::TimeTicks first_input_generation_ts,
     base::TimeTicks last_input_generation_ts,
     const ScrollDamage& damage,
-    const viz::BeginFrameArgs& args,
+    const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args,
     bool has_inertial_input,
     float abs_total_raw_delta_pixels,
     float max_abs_inertial_raw_delta_pixels) {
@@ -126,7 +126,7 @@ bool ScrollJankV4Decider::IsValidFrame(
     base::TimeTicks first_input_generation_ts,
     base::TimeTicks last_input_generation_ts,
     const ScrollDamage& damage,
-    const viz::BeginFrameArgs& args) const {
+    const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args) const {
   if (last_input_generation_ts < first_input_generation_ts) {
     return false;
   }
@@ -163,7 +163,7 @@ JankReasonArray<int> ScrollJankV4Decider::CalculateMissedVsyncsPerReason(
     int vsyncs_since_previous_frame,
     base::TimeTicks first_input_generation_ts,
     const ScrollDamage& damage,
-    const viz::BeginFrameArgs& args,
+    const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args,
     float abs_total_raw_delta_pixels,
     float max_abs_inertial_raw_delta_pixels,
     ScrollUpdateEventMetrics::ScrollJankV4Result& result) const {
@@ -263,7 +263,7 @@ ScrollJankV4Decider::CalculatePresentationData(
     bool is_janky,
     base::TimeTicks last_input_generation_ts,
     const ScrollDamage& damage,
-    const viz::BeginFrameArgs& args,
+    const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args,
     ScrollUpdateEventMetrics::ScrollJankV4Result& result) const {
   // We should consider Chrome's past performance
   // (`prev_frame_data_->presentation_data->running_delivery_cutoff`) to update

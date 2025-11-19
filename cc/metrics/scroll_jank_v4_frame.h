@@ -47,7 +47,23 @@ struct CC_EXPORT ScrollJankV4Frame {
   //      are non-damaging.
   using ScrollDamage = std::variant<DamagingFrame, NonDamagingFrame>;
 
-  base::raw_ref<const viz::BeginFrameArgs> args;
+  // A small number of fields from `viz::BeginFrameArgs` relevant to scroll jank
+  // to avoid copying the whole args (>100 bytes) or holding a reference (and
+  // risking use-after-free).
+  struct CC_EXPORT BeginFrameArgsForScrollJank {
+    // See `viz::BeginFrameArgs::frame_time`.
+    base::TimeTicks frame_time;
+
+    // See `viz::BeginFrameArgs::interval`.
+    base::TimeDelta interval;
+
+    // Note: If this were an explicit constructor, it would prevent us from
+    // using designated initializers (e.g. `{.frame_time = X, .interval = Y}`).
+    static BeginFrameArgsForScrollJank From(const viz::BeginFrameArgs& args);
+
+    bool operator==(const BeginFrameArgsForScrollJank&) const = default;
+  };
+  BeginFrameArgsForScrollJank args;
 
   ScrollDamage damage;
 
@@ -59,11 +75,13 @@ struct CC_EXPORT ScrollJankV4Frame {
   // contains just one frame.
   using Timeline = absl::InlinedVector<ScrollJankV4Frame, 1>;
 
-  ScrollJankV4Frame(base::raw_ref<const viz::BeginFrameArgs> args,
+  ScrollJankV4Frame(BeginFrameArgsForScrollJank args,
                     ScrollDamage damage,
                     ScrollJankV4FrameStage::List stages);
   ScrollJankV4Frame(const ScrollJankV4Frame& frame);
   ~ScrollJankV4Frame();
+
+  bool operator==(const ScrollJankV4Frame&) const = default;
 
   // Calculates the frame timeline (for the purposes of evaluating scroll jank)
   // based on `events_metrics` which were first presented at `presentation_ts`
@@ -157,6 +175,13 @@ struct CC_EXPORT ScrollJankV4Frame {
 
 inline std::ostream& operator<<(
     std::ostream& os,
+    const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args) {
+  return os << "BeginFrameArgsForScrollJank{frame_time: " << args.frame_time
+            << ", interval: " << args.interval << "}";
+}
+
+inline std::ostream& operator<<(
+    std::ostream& os,
     const ScrollJankV4Frame::DamagingFrame& damaging_frame) {
   return os << "DamagingFrame{presentation_ts: "
             << damaging_frame.presentation_ts << "}";
@@ -177,8 +202,8 @@ inline std::ostream& operator<<(std::ostream& os,
 
 inline std::ostream& operator<<(std::ostream& os,
                                 const ScrollJankV4Frame& frame) {
-  os << "ScrollJankV4Frame{args: " << frame.args->ToString() << "@"
-     << &(*frame.args) << ", damage: " << frame.damage << ", stages: [";
+  os << "ScrollJankV4Frame{args: " << frame.args << ", damage: " << frame.damage
+     << ", stages: [";
   bool is_first = true;
   for (const auto& stage : frame.stages) {
     if (is_first) {

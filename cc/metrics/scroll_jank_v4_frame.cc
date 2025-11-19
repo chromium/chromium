@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/memory/raw_ref.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/metrics/scroll_jank_v4_frame_stage.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
@@ -52,7 +51,7 @@ struct FrameBounds {
 
   // Begin frame args associated with an arbitrary scroll update or scroll end
   // in the list.
-  base::raw_ref<const viz::BeginFrameArgs> some_args;
+  ScrollJankV4Frame::BeginFrameArgsForScrollJank some_args;
 
   bool IsDamaging(const viz::BeginFrameId& frame_id) const {
     return min_damaging_id.has_value() && frame_id >= *min_damaging_id;
@@ -101,7 +100,7 @@ std::optional<FrameBounds> GetFrameBounds(
                                  ? std::optional<viz::BeginFrameId>(frame_id)
                                  : std::nullopt,
           .some_args =
-              base::raw_ref<const viz::BeginFrameArgs>::from_ptr(&args),
+              ScrollJankV4Frame::BeginFrameArgsForScrollJank::From(args),
       };
     }
   }
@@ -110,10 +109,16 @@ std::optional<FrameBounds> GetFrameBounds(
 
 }  // namespace
 
-ScrollJankV4Frame::ScrollJankV4Frame(
-    base::raw_ref<const viz::BeginFrameArgs> args,
-    ScrollDamage damage,
-    ScrollJankV4FrameStage::List stages)
+// static
+ScrollJankV4Frame::BeginFrameArgsForScrollJank
+ScrollJankV4Frame::BeginFrameArgsForScrollJank::From(
+    const viz::BeginFrameArgs& args) {
+  return {.frame_time = args.frame_time, .interval = args.interval};
+}
+
+ScrollJankV4Frame::ScrollJankV4Frame(BeginFrameArgsForScrollJank args,
+                                     ScrollDamage damage,
+                                     ScrollJankV4FrameStage::List stages)
     : args(args), damage(damage), stages(stages) {}
 
 ScrollJankV4Frame::ScrollJankV4Frame(const ScrollJankV4Frame& frame) = default;
@@ -145,7 +150,6 @@ ScrollJankV4Frame::Timeline ScrollJankV4Frame::CalculateTimeline(
   // same frame.
   if (!frame_bounds->min_damaging_id.has_value() &&
       frame_bounds->min_id == frame_bounds->max_id) {
-    DCHECK_EQ(frame_bounds->some_args->frame_id, frame_bounds->min_id);
     result.emplace_back(
         frame_bounds->some_args, NonDamagingFrame{},
         ScrollJankV4FrameStage::CalculateStages(
@@ -158,7 +162,7 @@ ScrollJankV4Frame::Timeline ScrollJankV4Frame::CalculateTimeline(
   if (frame_bounds->min_damaging_id.has_value() &&
       *frame_bounds->min_damaging_id == frame_bounds->min_id) {
     result.emplace_back(
-        base::raw_ref<const viz::BeginFrameArgs>::from_ptr(&presented_args),
+        BeginFrameArgsForScrollJank::From(presented_args),
         DamagingFrame{.presentation_ts = presentation_ts},
         ScrollJankV4FrameStage::CalculateStages(
             events_metrics, /* skip_non_damaging_events= */ false));
@@ -168,7 +172,7 @@ ScrollJankV4Frame::Timeline ScrollJankV4Frame::CalculateTimeline(
   // None of the special cases above apply, so we take the generic approach and
   // re-construct the mapping from frames to scroll events.
   struct ArgsAndEvents {
-    base::raw_ref<const viz::BeginFrameArgs> args;
+    BeginFrameArgsForScrollJank args;
     bool is_damaging;
     std::vector<ScrollEventMetrics*> events;
   };
@@ -201,8 +205,7 @@ ScrollJankV4Frame::Timeline ScrollJankV4Frame::CalculateTimeline(
       frame_id_to_args_and_events.emplace_hint(
           it, effective_frame_id,
           ArgsAndEvents{
-              .args = base::raw_ref<const viz::BeginFrameArgs>::from_ptr(
-                  &effective_args),
+              .args = BeginFrameArgsForScrollJank::From(effective_args),
               .is_damaging = is_damaging,
               .events = {scroll_event},
           });

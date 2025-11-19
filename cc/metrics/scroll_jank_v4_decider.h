@@ -12,7 +12,6 @@
 #include "cc/cc_export.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/metrics/scroll_jank_v4_frame.h"
-#include "components/viz/common/frame_sinks/begin_frame_args.h"
 
 namespace cc {
 
@@ -65,7 +64,7 @@ class CC_EXPORT ScrollJankV4Decider {
       base::TimeTicks first_input_generation_ts,
       base::TimeTicks last_input_generation_ts,
       const ScrollJankV4Frame::ScrollDamage& damage,
-      const viz::BeginFrameArgs& args,
+      const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args,
       bool has_inertial_input,
       float abs_total_raw_delta_pixels,
       float max_abs_inertial_raw_delta_pixels);
@@ -169,16 +168,17 @@ class CC_EXPORT ScrollJankV4Decider {
 
   void Reset();
 
-  bool IsValidFrame(base::TimeTicks first_input_generation_ts,
-                    base::TimeTicks last_input_generation_ts,
-                    const ScrollJankV4Frame::ScrollDamage& damage,
-                    const viz::BeginFrameArgs& args) const;
+  bool IsValidFrame(
+      base::TimeTicks first_input_generation_ts,
+      base::TimeTicks last_input_generation_ts,
+      const ScrollJankV4Frame::ScrollDamage& damage,
+      const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args) const;
 
   JankReasonArray<int> CalculateMissedVsyncsPerReason(
       int vsyncs_since_previous_frame,
       base::TimeTicks first_input_generation_ts,
       const ScrollJankV4Frame::ScrollDamage& damage,
-      const viz::BeginFrameArgs& args,
+      const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args,
       float abs_total_raw_delta_pixels,
       float max_abs_inertial_raw_delta_pixels,
       ScrollUpdateEventMetrics::ScrollJankV4Result& result) const;
@@ -188,7 +188,7 @@ class CC_EXPORT ScrollJankV4Decider {
       bool is_janky,
       base::TimeTicks last_input_generation_ts,
       const ScrollJankV4Frame::ScrollDamage& damage,
-      const viz::BeginFrameArgs& args,
+      const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args,
       ScrollUpdateEventMetrics::ScrollJankV4Result& result) const;
 
   // Information about the previous frame, which can be in three states (2A and
