@@ -306,6 +306,17 @@ public object BuildCompat {
                 isAtLeastPreReleaseCodename("Baklava", Build.VERSION.CODENAME))
 
     /**
+     * Checks if the device is running on a release version of Android Baklava minor release 1, or
+     * newer.
+     *
+     * @return `true` if Baklava minor release 1 APIs are available for use, `false` otherwise
+     */
+    @JvmStatic
+    public fun isAtLeastB_1(): Boolean =
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA &&
+            Build.VERSION.SDK_INT_FULL >= Build.VERSION_CODES.BAKLAVA * 100000 + 1;
+
+    /**
      * Experimental feature set for pre-release SDK checks.
      *
      * Pre-release SDK checks **do not** guarantee correctness, as APIs may have been added or
