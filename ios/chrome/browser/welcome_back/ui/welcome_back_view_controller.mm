@@ -110,7 +110,6 @@ constexpr CGFloat kTableViewHorizontalPadding = 6.0f;
   self.customSpacingBeforeImageIfNoNavigationBar = kSpacingBeforeImageNoNav;
 
   // Configure layout preferences.
-  self.showDismissBarButton = NO;
   self.topAlignedLayout = YES;
   self.scrollEnabled = YES;
 

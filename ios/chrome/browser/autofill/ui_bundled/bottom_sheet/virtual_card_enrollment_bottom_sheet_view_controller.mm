@@ -70,9 +70,6 @@ CGFloat const kCreditCardCellHeight = 64;
   // Remove extra space between the scroll view bottom and last legal message.
   self.addsContentViewBottomInset = NO;
 
-  // Hide the "Done" button in the navigation bar.
-  self.showDismissBarButton = NO;
-
   self.aboveTitleView = [self createAboveTitleStackView];
 
   _customUnderTitleView = [self createUnderTitleView];

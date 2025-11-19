@@ -22,6 +22,8 @@ constexpr CGFloat kStackViewSpacingAfterIllustration = 32;
       @"IDS_IOS_CREDENTIAL_PROVIDER_EMPTY_CREDENTIALS_SUBTITLE",
       @"The subtitle in the empty credentials screen.");
 
+  self.showDismissBarButton = YES;
+
   [super loadView];
 }
 

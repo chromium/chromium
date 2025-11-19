@@ -34,7 +34,6 @@ const CGFloat kHeaderImageSize = 80.0;
 
     // Configuration.
     self.scrollEnabled = NO;
-    self.showDismissBarButton = NO;
 
     // Titles.
     self.titleString =

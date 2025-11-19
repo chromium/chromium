@@ -82,7 +82,6 @@ NSString* const kBellIconAccessibilityLabel =
   self.alwaysShowImage = YES;
 
   // Configure layout preferences.
-  self.showDismissBarButton = NO;
   self.topAlignedLayout = YES;
 
   [super viewDidLoad];

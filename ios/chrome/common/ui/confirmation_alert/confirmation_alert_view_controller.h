@@ -131,7 +131,7 @@
 @property(nonatomic, assign) BOOL imageEnclosedWithShadowWithoutBadge;
 
 // Controls if the navigation bar dismiss button is available in the view.
-// Default is YES. Must be set before the view is loaded.
+// Default is NO. Must be set before the view is loaded.
 @property(nonatomic) BOOL showDismissBarButton;
 
 // Allows to modify the system item for the dismiss bar button (defaults to

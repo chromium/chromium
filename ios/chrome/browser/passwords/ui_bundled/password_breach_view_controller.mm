@@ -44,7 +44,6 @@ constexpr CGFloat kHelpSymbolSize = 20;
       password_manager::CreatePasswordManagerTitleView(title);
 
   self.image = [UIImage imageNamed:@"password_breach_illustration"];
-  self.showDismissBarButton = NO;
 
   [super viewDidLoad];
   self.view.accessibilityIdentifier =

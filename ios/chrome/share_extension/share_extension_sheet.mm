@@ -93,12 +93,10 @@ CGFloat const kUpdatedMainViewCornerRadius = 32.0;
   self.configuration.secondaryActionString = _secondaryString;
 
   self.scrollEnabled = NO;
-  self.showDismissBarButton = YES;
   self.alwaysShowImage = YES;
   self.topAlignedLayout = YES;
   self.scrollEnabled = YES;
 
-  self.showDismissBarButton = NO;
 
   self.navigationItem.titleView = [self configureSheetTitleView];
   self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]

@@ -32,8 +32,6 @@
   self.imageHasFixedSize = YES;
   self.customSpacingAfterImage = 30;
 
-  self.showDismissBarButton = NO;
-
   self.dismissBarButtonSystemItem = UIBarButtonSystemItemDone;
 
   self.configuration.primaryActionString =

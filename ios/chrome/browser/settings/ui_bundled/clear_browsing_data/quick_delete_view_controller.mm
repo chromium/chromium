@@ -140,7 +140,6 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   self.underTitleView = _tableView;
 
   self.showsVerticalScrollIndicator = NO;
-  self.showDismissBarButton = NO;
   self.topAlignedLayout = YES;
   self.addsContentViewBottomInset = NO;
   self.actionHandler = self;

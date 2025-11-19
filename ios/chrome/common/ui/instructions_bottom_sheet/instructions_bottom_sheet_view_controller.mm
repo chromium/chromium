@@ -29,7 +29,6 @@
 - (void)viewDidLoad {
   self.topAlignedLayout = YES;
   self.title = _titleString;
-  self.showDismissBarButton = NO;
   self.underTitleView = [self createInstructionView];
   [super viewDidLoad];
 

@@ -98,7 +98,6 @@ UIImage* TabGroupImage(UITraitCollection* trait_collection) {
       l10n_util::GetNSString(IDS_IOS_SHARED_GROUP_USER_EDUCATION_SHEET_TITLE);
   confirmationAlert.subtitleString = l10n_util::GetNSString(
       IDS_IOS_SHARED_GROUP_USER_EDUCATION_SHEET_SUBTITLE);
-  confirmationAlert.showDismissBarButton = NO;
   confirmationAlert.image = TabGroupImage(confirmationAlert.traitCollection);
   confirmationAlert.imageHasFixedSize = YES;
   confirmationAlert.customSpacingBeforeImageIfNoNavigationBar =

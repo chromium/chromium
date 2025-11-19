@@ -108,6 +108,7 @@ UIView* CreateIconContainer() {
       l10n_util::GetNSString(IDS_IOS_AUTO_DELETION_IPH_REJECTION);
   [_iphScreen reloadConfiguration];
   _iphScreen.aboveTitleView = CreateIconContainer();
+  _iphScreen.showDismissBarButton = YES;
   _iphScreen.dismissBarButtonSystemItem = UIBarButtonSystemItemClose;
   _iphScreen.actionHandler = self;
 

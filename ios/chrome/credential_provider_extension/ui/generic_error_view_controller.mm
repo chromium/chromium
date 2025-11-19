@@ -34,6 +34,7 @@ NSString* const kErrorIconSymbol = @"exclamationmark.circle.fill";
   self.titleString = NSLocalizedString(
       @"IDS_IOS_CREDENTIAL_PROVIDER_NEW_PASSWORD_ERROR_MESSAGE",
       @"A generic error message.");
+  self.showDismissBarButton = YES;
 
   [super loadView];
 }

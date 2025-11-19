@@ -94,7 +94,6 @@
   instructionsViewController.subtitleTextStyle = UIFontTextStyleBody;
   instructionsViewController.configuration.secondaryActionString =
       l10n_util::GetNSString(IDS_CLOSE);
-  instructionsViewController.showDismissBarButton = NO;
   instructionsViewController.topAlignedLayout = YES;
   instructionsViewController.imageHasFixedSize = YES;
   instructionsViewController.actionHandler = self.actionHandler;

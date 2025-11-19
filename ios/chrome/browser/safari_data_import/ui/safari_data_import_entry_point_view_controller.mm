@@ -34,7 +34,6 @@
   self.image = [UIImage imageNamed:@"safari_data_import"];
   self.imageHasFixedSize = YES;
   self.topAlignedLayout = YES;
-  self.showDismissBarButton = NO;
   [super viewDidLoad];
   self.view.accessibilityIdentifier =
       GetSafariDataEntryPointAccessibilityIdentifier();

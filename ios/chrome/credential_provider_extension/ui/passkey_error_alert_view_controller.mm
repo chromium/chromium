@@ -126,6 +126,7 @@ NSString* GetSubtitleString(ErrorType error_type) {
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
+  self.showDismissBarButton = YES;
   self.image = GetImage(_errorType);
   self.imageHasFixedSize = YES;
   if (ShouldShowImageAsFavicon(_errorType)) {

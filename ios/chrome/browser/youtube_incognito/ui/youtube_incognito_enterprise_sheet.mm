@@ -28,7 +28,6 @@ CGFloat const kIconSize = 32;
 
 - (void)viewDidLoad {
   self.actionHandler = self;
-  self.showDismissBarButton = NO;
   self.overrideUserInterfaceStyle = UIUserInterfaceStyleLight;
   self.aboveTitleView = [self enterpriseTitleView];
 

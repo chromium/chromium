@@ -21,6 +21,7 @@ constexpr CGFloat kStackViewSpacingAfterIllustration = 32;
   self.subtitleString = NSLocalizedString(
       @"IDS_IOS_CREDENTIAL_PROVIDER_STALE_CREDENTIALS_SUBTITLE",
       @"The subtitle in the stale credentials screen.");
+  self.showDismissBarButton = YES;
 
   [super loadView];
 }

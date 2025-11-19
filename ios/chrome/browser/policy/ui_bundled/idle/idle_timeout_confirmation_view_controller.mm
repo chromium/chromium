@@ -79,9 +79,6 @@ constexpr CGFloat kCustomSpacingAfterImage = 1.0;
   self.imageViewAccessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_IDLE_TIMEOUT_DIALOG_ACCESSIBILITY_LABEL);
 
-  self.showDismissBarButton = NO;
-  self.dismissBarButtonSystemItem = UIBarButtonSystemItemDone;
-
   self.titleTextStyle = UIFontTextStyleTitle2;
   // Icon already contains some spacing for the shadow.
   self.customSpacingBeforeImageIfNoNavigationBar =

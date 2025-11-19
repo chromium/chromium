@@ -67,7 +67,6 @@ constexpr CGFloat customSpacingAfterImage = 1;
   self.image = ios::provider::GetBrandedImage(
       ios::provider::BrandedImage::kPasswordSuggestionKey);
   self.imageHasFixedSize = YES;
-  self.showDismissBarButton = NO;
   self.customSpacingBeforeImageIfNoNavigationBar =
       customSpacingBeforeImageIfNoNavigationBar;
   self.customSpacingAfterImage = customSpacingAfterImage;

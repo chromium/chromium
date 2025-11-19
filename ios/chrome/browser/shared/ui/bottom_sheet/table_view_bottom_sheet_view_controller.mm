@@ -165,7 +165,6 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
   // views in `-[ConfirmationAlertViewController viewDidLoad]`.
   self.imageHasFixedSize = YES;
   self.showsVerticalScrollIndicator = NO;
-  self.showDismissBarButton = NO;
   self.topAlignedLayout = YES;
 
   [super viewDidLoad];

@@ -70,9 +70,6 @@ constexpr CGFloat kCustomTopOffsetForRegularSizeClass = -24;
   alertScreen.configuration.primaryActionString = _primaryActionString;
   alertScreen.configuration.secondaryActionString = _secondaryActionString;
   [alertScreen reloadConfiguration];
-  // The `alertScreen` itself should not show its own dismiss button, as
-  // `AnimatedPromoViewController` will manage one for the whole view.
-  alertScreen.showDismissBarButton = NO;
   alertScreen.actionHandler = _actionHandler;
   alertScreen.shouldFillInformationStack = YES;
   alertScreen.underTitleView = _underTitleView;

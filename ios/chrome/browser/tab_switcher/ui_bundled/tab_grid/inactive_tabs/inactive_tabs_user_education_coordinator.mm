@@ -127,7 +127,6 @@ UIImage* ConfirmationAlertImage() {
   _confirmationAlert.customSpacingAfterImage = kImageBottomSpacing;
   _confirmationAlert.customSpacing = kSpacing;
   _confirmationAlert.topAlignedLayout = YES;
-  _confirmationAlert.showDismissBarButton = NO;
   _confirmationAlert.actionHandler = self;
   _confirmationAlert.presentationController.delegate = self;
   _confirmationAlert.modalPresentationStyle = UIModalPresentationPageSheet;

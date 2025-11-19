@@ -231,7 +231,6 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
   alertScreen.configuration.primaryActionString = l10n_util ::GetNSString(
       IDS_IOS_DEFAULT_BROWSER_PROMO_PRIMARY_BUTTON_TEXT);
   alertScreen.imageHasFixedSize = YES;
-  alertScreen.showDismissBarButton = NO;
   alertScreen.titleTextStyle = UIFontTextStyleTitle2;
   alertScreen.customSpacingBeforeImageIfNoNavigationBar = kSpacing;
   alertScreen.topAlignedLayout = YES;

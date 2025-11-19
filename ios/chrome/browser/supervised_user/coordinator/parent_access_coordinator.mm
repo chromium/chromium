@@ -85,9 +85,6 @@
   _mediator.delegate = self;
   _viewController = [[ParentAccessBottomSheetViewController alloc] init];
 
-  // Do not use the bottom sheet default dismiss button.
-  _viewController.showDismissBarButton = NO;
-
   _viewController.presentationController.delegate = self;
   _viewController.presentationDelegate = self;
 

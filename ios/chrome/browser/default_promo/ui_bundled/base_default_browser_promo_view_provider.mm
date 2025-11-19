@@ -167,7 +167,6 @@ constexpr CGFloat kHelpSymbolSize = 20;
 - (void)setupPromoView {
   _promoViewController.customSpacingAfterImage = 30;
   _promoViewController.imageHasFixedSize = YES;
-  _promoViewController.showDismissBarButton = NO;
   _promoViewController.dismissBarButtonSystemItem = UIBarButtonSystemItemCancel;
 
   _promoViewController.image = [self promoImage];

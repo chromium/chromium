@@ -128,7 +128,6 @@ NSString* const kCredentialProviderPromoAccessibilityId =
 - (void)configureAlertScreen {
   DCHECK(self.alertScreen);
   self.alertScreen.imageHasFixedSize = YES;
-  self.alertScreen.showDismissBarButton = NO;
   self.alertScreen.titleTextStyle = UIFontTextStyleTitle2;
   self.alertScreen.topAlignedLayout = YES;
 

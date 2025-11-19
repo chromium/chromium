@@ -189,11 +189,9 @@ UIImageView* BrandingImageView() {
   [self reloadConfiguration];
   self.addsContentViewBottomInset = NO;
 
-  // Don't show the dismiss bar button (with the secondary button used for
-  // canceling), and ensure there is still sufficient space between the top of
-  // the bottom sheet content and the top of the sheet. This is especially
-  // relevant with larger accessibility text sizes.
-  self.showDismissBarButton = NO;
+  // Ensure there is still sufficient space between the top of the bottom sheet
+  // content and the top of the sheet. This is especially relevant with larger
+  // accessibility text sizes.
   self.topAlignedLayout = YES;
   self.customSpacingBeforeImageIfNoNavigationBar =
       kPlusAddressSheetBeforeImageTopMargin;

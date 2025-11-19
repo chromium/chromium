@@ -43,6 +43,7 @@
   DCHECK(completion);
   self.completion = completion;
   self.viewController = [[PasswordProtectionViewController alloc] init];
+  self.viewController.showDismissBarButton = YES;
   self.viewController.subtitleString = self.warningText;
   self.viewController.actionHandler = self;
   self.viewController.modalPresentationStyle = UIModalPresentationFormSheet;

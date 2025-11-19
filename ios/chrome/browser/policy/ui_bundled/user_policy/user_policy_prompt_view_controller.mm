@@ -44,7 +44,6 @@ constexpr CGFloat kCustomSpacingAfterImage = 1;
 - (void)viewDidLoad {
   self.image = [UIImage imageNamed:@"enterprise_grey_icon_large"];
   self.imageHasFixedSize = YES;
-  self.showDismissBarButton = NO;
   self.dismissBarButtonSystemItem = UIBarButtonSystemItemDone;
 
   self.titleTextStyle = UIFontTextStyleTitle2;
