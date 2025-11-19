@@ -7,12 +7,6 @@
 
 #include "base/files/file_path.h"
 
-// Name of the directory containing the legacy sessions.
-extern const base::FilePath::CharType kLegacySessionsDirname[];
-
-// Name of the directory containing the legacy web sessions.
-extern const base::FilePath::CharType kLegacyWebSessionsDirname[];
-
 // Name of the directory containing the sessions' storage.
 extern const base::FilePath::CharType kSessionRestorationDirname[];
 

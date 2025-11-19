@@ -206,9 +206,7 @@ void LogOptimizationGuideModelDownloadsMetrics(
 // Returns the size of the sessions for `profile_path`, including both the
 // legacy and optimized storage.
 int64_t GetSessionStorageSize(const base::FilePath& profile_path) {
-  return CalculateTotalSize(profile_path.Append(kLegacySessionsDirname)) +
-         CalculateTotalSize(profile_path.Append(kLegacyWebSessionsDirname)) +
-         CalculateTotalSize(profile_path.Append(kSessionRestorationDirname));
+  return CalculateTotalSize(profile_path.Append(kSessionRestorationDirname));
 }
 
 // Logs the total amount of storage used by the regular and OTR tabs for both

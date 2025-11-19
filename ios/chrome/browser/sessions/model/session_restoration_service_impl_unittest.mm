@@ -212,17 +212,10 @@ class FileModificationTracker {
  private:
   using PathToTimeMap = std::map<base::FilePath, base::Time>;
 
-  // Returns a mapping of session files.
+  // Returns a mapping of files to their last modified time.
   PathToTimeMap EnumerateFiles() const {
     PathToTimeMap result;
-    EnumerateFilesInDirectory(result, root_.Append(kLegacySessionsDirname));
-    EnumerateFilesInDirectory(result, root_.Append(kLegacyWebSessionsDirname));
-    EnumerateFilesInDirectory(result, root_.Append(kSessionRestorationDirname));
-    return result;
-  }
-
-  // Returns a mapping of files to their last modified time in `dir`.
-  void EnumerateFilesInDirectory(PathToTimeMap& map, base::FilePath dir) const {
+    const base::FilePath dir = root_.Append(kSessionRestorationDirname);
     base::FileEnumerator e(dir, true, base::FileEnumerator::FileType::FILES);
     for (base::FilePath name = e.Next(); !name.empty(); name = e.Next()) {
       // Workaround for the fact that base::FileEnumerator::FileInfo drops the
@@ -231,8 +224,9 @@ class FileModificationTracker {
       base::File::Info info;
       info.FromStat(e.GetInfo().stat());
 
-      map.insert(std::make_pair(name, info.last_modified));
+      result.insert(std::make_pair(name, info.last_modified));
     }
+    return result;
   }
 
   const base::FilePath root_;

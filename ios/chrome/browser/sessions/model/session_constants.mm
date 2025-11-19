@@ -4,12 +4,6 @@
 
 #import "ios/chrome/browser/sessions/model/session_constants.h"
 
-const base::FilePath::CharType kLegacySessionsDirname[] =
-    FILE_PATH_LITERAL("Sessions");
-
-const base::FilePath::CharType kLegacyWebSessionsDirname[] =
-    FILE_PATH_LITERAL("Web_Sessions");
-
 const base::FilePath::CharType kSessionRestorationDirname[] =
     FILE_PATH_LITERAL("SessionStorage");
 
