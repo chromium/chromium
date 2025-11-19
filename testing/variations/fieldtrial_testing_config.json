@@ -10191,23 +10191,6 @@
             ]
         }
     ],
-    "EncryptedPrefHashing": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EncryptedPrefHashing"
-                    ]
-                }
-            ]
-        }
-    ],
     "EndOfLifeIncentive": [
         {
             "platforms": [
