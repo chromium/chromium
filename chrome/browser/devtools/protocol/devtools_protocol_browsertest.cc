@@ -82,11 +82,16 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
+#include "content/public/browser/devtools_agent_host_client.h"
+#include "content/public/test/browser_test_utils.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -2136,6 +2141,172 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_OpensDevTools,
   const std::string url = *devtools_target.FindString("url");
   EXPECT_TRUE(url.find("panel") == std::string::npos);
 }
+
+class IsolatedWebMulticastSocketsTest
+    : public web_app::IsolatedWebAppBrowserTestHarness,
+      public content::DevToolsAgentHostClient {
+ public:
+  IsolatedWebMulticastSocketsTest() {
+    features_.InitWithFeatures({blink::features::kMulticastInDirectSockets},
+                               {});
+  }
+
+  content::RenderFrameHost* InstallAndOpenIsolatedWebApp() {
+    using PermissionsPolicyFeature = network::mojom::PermissionsPolicyFeature;
+
+    auto manifest_builder =
+        web_app::ManifestBuilder()
+            .AddPermissionsPolicyWildcard(
+                PermissionsPolicyFeature::kDirectSockets)
+            .AddPermissionsPolicyWildcard(
+                PermissionsPolicyFeature::kDirectSocketsPrivate)
+            .AddPermissionsPolicyWildcard(
+                PermissionsPolicyFeature::kMulticastInDirectSockets);
+    auto app = web_app::IsolatedWebAppBuilder(std::move(manifest_builder))
+                   .BuildBundle();
+    web_app::IsolatedWebAppUrlInfo url_info = app->Install(profile()).value();
+    return OpenApp(url_info.app_id());
+  }
+
+  void DispatchProtocolMessage(content::DevToolsAgentHost* agent_host,
+                               base::span<const uint8_t> message) override {
+    std::string_view message_sv(reinterpret_cast<const char*>(message.data()),
+                                message.size());
+    std::optional<base::Value> parsed =
+        base::JSONReader::Read(message_sv, base::JSON_ALLOW_TRAILING_COMMAS);
+    if (!parsed || !parsed->is_dict()) {
+      return;
+    }
+    base::Value::Dict command = std::move(parsed->GetDict());
+    const std::string* method = command.FindString("method");
+    if (!method) {
+      return;
+    }
+    notifications_[*method].push_back(std::move(command));
+    if (wait_for_notification_run_loop_ && method &&
+        *method == wait_for_method_) {
+      wait_for_notification_run_loop_->Quit();
+    }
+  }
+
+  void AgentHostClosed(content::DevToolsAgentHost* agent_host) override {
+    agent_host_ = nullptr;
+  }
+
+ protected:
+  void SetUpOnMainThread() override {
+    IsolatedWebAppBrowserTestHarness::SetUpOnMainThread();
+  }
+
+  void TearDownOnMainThread() override {
+    IsolatedWebAppBrowserTestHarness::TearDownOnMainThread();
+  }
+
+  void Detach() {
+    if (agent_host_) {
+      agent_host_->DetachClient(this);
+      agent_host_ = nullptr;
+    }
+  }
+
+  void AttachToFrame(content::RenderFrameHost* frame_host) {
+    Detach();
+    agent_host_ = content::DevToolsAgentHost::GetOrCreateFor(
+        content::WebContents::FromRenderFrameHost(frame_host));
+    agent_host_->AttachClient(this);
+  }
+
+  void sendCommand(const std::string& method, base::Value::Dict params) {
+    base::Value::Dict command;
+    command.Set("id", ++last_id_);
+    command.Set("method", method);
+    if (!params.empty()) {
+      command.Set("params", std::move(params));
+    }
+    std::string json_command;
+    base::JSONWriter::Write(command, &json_command);
+    agent_host_->DispatchProtocolMessage(
+        this, std::vector<uint8_t>(json_command.begin(), json_command.end()));
+  }
+
+  base::Value::Dict WaitForNotification(const std::string& method,
+                                        bool allow_existing = false) {
+    if (allow_existing) {
+      if (auto it = notifications_.find(method);
+          it != notifications_.end() && !it->second.empty()) {
+        base::Value::Dict notification = std::move(it->second.front());
+        it->second.erase(it->second.begin());
+        return notification;
+      }
+    }
+
+    wait_for_notification_run_loop_ = std::make_unique<base::RunLoop>();
+    wait_for_method_ = method;
+    wait_for_notification_run_loop_->Run();
+    wait_for_notification_run_loop_.reset();
+    wait_for_method_ = "";
+    auto it = notifications_.find(method);
+    EXPECT_TRUE(it != notifications_.end());
+    EXPECT_TRUE(!it->second.empty());
+    base::Value::Dict notification = std::move(it->second.front());
+    it->second.erase(it->second.begin());
+    return notification;
+  }
+
+  scoped_refptr<content::DevToolsAgentHost> agent_host_;
+
+ private:
+  std::map<std::string, std::vector<base::Value::Dict>> notifications_;
+  std::unique_ptr<base::RunLoop> wait_for_notification_run_loop_;
+  std::string wait_for_method_;
+  int last_id_ = 0;
+  base::test::ScopedFeatureList features_;
+};
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebMulticastSocketsTest,
+                       DirectSocketsUDPJoinLeaveMulticastEvents) {
+  content::RenderFrameHost* iwa_frame = InstallAndOpenIsolatedWebApp();
+  ASSERT_TRUE(iwa_frame);
+
+  AttachToFrame(iwa_frame);
+  ASSERT_TRUE(agent_host_);
+
+  sendCommand("Network.enable", base::Value::Dict());
+
+  const std::string multicast_script =
+      R"JS(
+  (async () => {
+    const socket = new UDPSocket({ localAddress: "0.0.0.0" });
+    const { multicastController } = await socket.opened;
+    if (!multicastController) {
+      throw new Error("No multicastController");
+    }
+    await multicastController.joinGroup("224.0.0.1");
+    await multicastController.leaveGroup("224.0.0.1");
+    await socket.close();
+  })()
+  )JS";
+
+  content::EvalJsResult result = content::EvalJs(iwa_frame, multicast_script);
+  ASSERT_TRUE(result.is_ok())
+      << "Connect script failed: " << result.ExtractError();
+
+  // Check for Join event
+  base::Value::Dict joined_params =
+      WaitForNotification("Network.directUDPSocketJoinedMulticastGroup", true);
+  EXPECT_EQ(*joined_params.FindStringByDottedPath("params.IPAddress"),
+            "224.0.0.1");
+
+  // Check for Leave event
+  base::Value::Dict left_params =
+      WaitForNotification("Network.directUDPSocketLeftMulticastGroup", true);
+  EXPECT_EQ(*left_params.FindStringByDottedPath("params.IPAddress"),
+            "224.0.0.1");
+
+  Detach();
+  agent_host_ = nullptr;
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace

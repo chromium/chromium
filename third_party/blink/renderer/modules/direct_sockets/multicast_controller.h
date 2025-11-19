@@ -29,7 +29,9 @@ class MODULES_EXPORT MulticastController final : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit MulticastController(ExecutionContext*, UDPSocketMojoRemote*);
+  explicit MulticastController(ExecutionContext*,
+                               UDPSocketMojoRemote*,
+                               uint64_t inspector_id);
 
   ~MulticastController() override;
 
@@ -74,6 +76,9 @@ class MODULES_EXPORT MulticastController final : public ScriptWrappable,
   Vector<String> joined_groups_;
 
   State state_ = State::kOpen;
+
+  // Unique id for devtools inspector_network_agent.
+  const uint64_t inspector_id_;
 };
 
 }  // namespace blink

@@ -6,7 +6,7 @@
   await dp.Network.enable();
 
   session.evaluate(`
-    new UDPSocket({ remoteAddress: "fakedomain.com", remotePort: 100, dnsQueryType: "ipv6"});
+    new UDPSocket({ remoteAddress: "fakedomain.com", remotePort: 100, dnsQueryType: "ipv6", multicastLoopback: false, multicastTimeToLive: 10 });
     `);
 
   const createdEvent = await dp.Network.onceDirectUDPSocketCreated();

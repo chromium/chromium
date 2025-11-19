@@ -303,6 +303,17 @@ std::unique_ptr<protocol::Network::DirectUDPSocketOptions> MapProbeUDPOptions(
   if (options->hasReceiveBufferSize()) {
     probe_options_builder.setReceiveBufferSize(options->receiveBufferSize());
   }
+  if (options->hasMulticastLoopback()) {
+    probe_options_builder.setMulticastLoopback(options->multicastLoopback());
+  }
+  if (options->hasMulticastTimeToLive()) {
+    probe_options_builder.setMulticastTimeToLive(
+        options->multicastTimeToLive());
+  }
+  if (options->hasMulticastAllowAddressSharing()) {
+    probe_options_builder.setMulticastAllowAddressSharing(
+        options->multicastAllowAddressSharing());
+  }
 
   return probe_options_builder.build();
 }
@@ -464,7 +475,7 @@ void UDPSocket::FinishOpen(
     if (mode == network::mojom::RestrictedUDPSocketMode::BOUND &&
         IsMulticastAllowed(GetExecutionContext())) {
       multicast_controller_ = MakeGarbageCollected<MulticastController>(
-          GetExecutionContext(), udp_socket_.Get());
+          GetExecutionContext(), udp_socket_.Get(), inspector_id_);
       open_info->setMulticastController(multicast_controller_.Get());
     }
 

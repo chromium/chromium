@@ -92,7 +92,7 @@ class MulticastCreator : public GarbageCollected<MulticastCreator> {
                            task_runner);
 
     multicast_controller_ = MakeGarbageCollected<MulticastController>(
-        scope.GetExecutionContext(), udp_socket);
+        scope.GetExecutionContext(), udp_socket, /*inspector_id=*/0);
 
     return multicast_controller_.Get();
   }

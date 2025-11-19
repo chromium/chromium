@@ -2,6 +2,9 @@ UDP DirectSockets success
 socket created
    options: {
     localAddr : 127.0.0.1
+    multicastAllowAddressSharing : true
+    multicastLoopback : true
+    multicastTimeToLive : 64
     receiveBufferSize : 1005
     sendBufferSize : 1002
 }

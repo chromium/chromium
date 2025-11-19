@@ -1706,6 +1706,20 @@ domain Network
       optional number sendBufferSize
       # Expected to be unsigned integer.
       optional number receiveBufferSize
+      optional boolean multicastLoopback
+      # Unsigned int 8.
+      optional integer multicastTimeToLive
+      optional boolean multicastAllowAddressSharing
+
+  experimental event directUDPSocketJoinedMulticastGroup
+    parameters
+      RequestId identifier
+      string IPAddress
+
+  experimental event directUDPSocketLeftMulticastGroup
+    parameters
+      RequestId identifier
+      string IPAddress
 
 
   # Fired upon direct_socket.UDPSocket creation.

@@ -10,6 +10,7 @@
 #include "net/base/net_errors.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/core/core_probes_inl.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/direct_sockets/socket.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -40,8 +41,11 @@ std::optional<net::IPAddress> CreateAndCheckIpAddress(
 }  // namespace
 
 MulticastController::MulticastController(ExecutionContext* execution_context,
-                                         UDPSocketMojoRemote* udp_socket)
-    : ExecutionContextClient(execution_context), udp_socket_(udp_socket) {}
+                                         UDPSocketMojoRemote* udp_socket,
+                                         uint64_t inspector_id)
+    : ExecutionContextClient(execution_context),
+      udp_socket_(udp_socket),
+      inspector_id_(inspector_id) {}
 
 MulticastController::~MulticastController() = default;
 
@@ -160,7 +164,9 @@ void MulticastController::OnJoinedGroup(
   if (net_error == net::OK) {
     // Prevent duplicated entries in corner cases.
     if (!joined_groups_.Contains(normalized_ip_address)) {
-      joined_groups_.push_back(std::move(normalized_ip_address));
+      joined_groups_.push_back(normalized_ip_address);
+      probe::DirectUDPSocketJoinedMulticastGroup(
+          GetExecutionContext(), inspector_id_, normalized_ip_address);
     }
     resolver->Resolve();
   } else {
@@ -178,6 +184,8 @@ void MulticastController::OnLeftGroup(
 
   if (net_error == net::OK) {
     Erase(joined_groups_, normalized_ip_address);
+    probe::DirectUDPSocketLeftMulticastGroup(
+        GetExecutionContext(), inspector_id_, normalized_ip_address);
     resolver->Resolve();
   } else {
     resolver->Reject(Socket::CreateDOMExceptionFromNetErrorCode(net_error));

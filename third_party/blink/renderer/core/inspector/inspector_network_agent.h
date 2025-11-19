@@ -265,6 +265,12 @@ class CORE_EXPORT InspectorNetworkAgent final
                                     std::optional<String> remote_addr,
                                     std::optional<uint16_t> remote_port);
 
+  void DirectUDPSocketJoinedMulticastGroup(uint64_t identifier,
+                                           const String& ip_address);
+
+  void DirectUDPSocketLeftMulticastGroup(uint64_t identifier,
+                                         const String& ip_address);
+
   void SetDevToolsIds(ResourceRequest& request, const FetchInitiatorInfo&);
   void IsCacheDisabled(bool* is_cache_disabled) const;
   void ShouldApplyDevtoolsCookieSettingOverrides(

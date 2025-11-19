@@ -229,6 +229,8 @@
         "DirectUDPSocketClosed",
         "DirectUDPSocketChunkSent",
         "DirectUDPSocketChunkReceived",
+        "DirectUDPSocketJoinedMulticastGroup",
+        "DirectUDPSocketLeftMulticastGroup",
         "WillCreateP2PSocketUdp",
         "WillCreateWebSocket",
         "WillDispatchEventSourceEvent",
