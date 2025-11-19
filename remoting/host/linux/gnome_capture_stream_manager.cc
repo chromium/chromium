@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/linux/pipewire_capture_stream_manager.h"
+#include "remoting/host/linux/gnome_capture_stream_manager.h"
 
 #include <algorithm>
 #include <memory>
@@ -34,40 +34,40 @@ constexpr char kScreenCastBusName[] = "org.gnome.Mutter.ScreenCast";
 
 }  // namespace
 
-PipewireCaptureStreamManager::AddStreamRequest::AddStreamRequest() = default;
-PipewireCaptureStreamManager::AddStreamRequest::AddStreamRequest(
+GnomeCaptureStreamManager::AddStreamRequest::AddStreamRequest() = default;
+GnomeCaptureStreamManager::AddStreamRequest::AddStreamRequest(
     AddStreamRequest&&) = default;
-PipewireCaptureStreamManager::AddStreamRequest::AddStreamRequest(
+GnomeCaptureStreamManager::AddStreamRequest::AddStreamRequest(
     VirtualStreamInfo virtual_stream_info,
     AddStreamCallback callback)
     : virtual_stream_info(std::move(virtual_stream_info)),
       callback(std::move(callback)) {}
-PipewireCaptureStreamManager::AddStreamRequest::AddStreamRequest(
+GnomeCaptureStreamManager::AddStreamRequest::AddStreamRequest(
     MonitorStreamInfo monitor_stream_info,
     AddStreamCallback callback)
     : monitor_stream_info(std::move(monitor_stream_info)),
       callback(std::move(callback)) {}
-PipewireCaptureStreamManager::AddStreamRequest::~AddStreamRequest() = default;
+GnomeCaptureStreamManager::AddStreamRequest::~AddStreamRequest() = default;
 
-PipewireCaptureStreamManager::StreamInfo::StreamInfo() = default;
-PipewireCaptureStreamManager::StreamInfo::StreamInfo(StreamInfo&&) = default;
-PipewireCaptureStreamManager::StreamInfo&
-PipewireCaptureStreamManager::StreamInfo::operator=(StreamInfo&&) = default;
-PipewireCaptureStreamManager::StreamInfo::~StreamInfo() = default;
+GnomeCaptureStreamManager::StreamInfo::StreamInfo() = default;
+GnomeCaptureStreamManager::StreamInfo::StreamInfo(StreamInfo&&) = default;
+GnomeCaptureStreamManager::StreamInfo&
+GnomeCaptureStreamManager::StreamInfo::operator=(StreamInfo&&) = default;
+GnomeCaptureStreamManager::StreamInfo::~StreamInfo() = default;
 
-PipewireCaptureStreamManager::PipewireCaptureStreamManager() = default;
-PipewireCaptureStreamManager::~PipewireCaptureStreamManager() = default;
+GnomeCaptureStreamManager::GnomeCaptureStreamManager() = default;
+GnomeCaptureStreamManager::~GnomeCaptureStreamManager() = default;
 
-PipewireCaptureStreamManager::Observer::Subscription
-PipewireCaptureStreamManager::AddObserver(Observer* observer) {
+GnomeCaptureStreamManager::Observer::Subscription
+GnomeCaptureStreamManager::AddObserver(Observer* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   observers_.AddObserver(observer);
   return Observer::Subscription(base::BindOnce(
-      &PipewireCaptureStreamManager::RemoveObserver, GetWeakPtr(), observer));
+      &GnomeCaptureStreamManager::RemoveObserver, GetWeakPtr(), observer));
 }
 
-void PipewireCaptureStreamManager::Init(
+void GnomeCaptureStreamManager::Init(
     GDBusConnectionRef* connection,
     base::WeakPtr<GnomeDisplayConfigMonitor> display_config_monitor,
     gvariant::ObjectPath screencast_session_path) {
@@ -81,13 +81,13 @@ void PipewireCaptureStreamManager::Init(
   if (display_config_monitor) {
     monitors_changed_subscription_ = display_config_monitor->AddCallback(
         base::BindRepeating(
-            &PipewireCaptureStreamManager::OnGnomeDisplayConfigChanged,
+            &GnomeCaptureStreamManager::OnGnomeDisplayConfigChanged,
             GetWeakPtr()),
         /*call_with_current_config=*/true);
   }
 }
 
-base::WeakPtr<CaptureStream> PipewireCaptureStreamManager::GetStream(
+base::WeakPtr<CaptureStream> GnomeCaptureStreamManager::GetStream(
     webrtc::ScreenId screen_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -98,7 +98,7 @@ base::WeakPtr<CaptureStream> PipewireCaptureStreamManager::GetStream(
   return it->second.stream->GetWeakPtr();
 }
 
-void PipewireCaptureStreamManager::AddVirtualStream(
+void GnomeCaptureStreamManager::AddVirtualStream(
     const ScreenResolution& initial_resolution,
     AddStreamCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -119,14 +119,13 @@ void PipewireCaptureStreamManager::AddVirtualStream(
   }
 }
 
-void PipewireCaptureStreamManager::RemoveVirtualStream(
+void GnomeCaptureStreamManager::RemoveVirtualStream(
     webrtc::ScreenId screen_id) {
   RemoveStream(screen_id, /*can_remove_monitor_stream=*/false);
 }
 
-void PipewireCaptureStreamManager::RemoveStream(
-    webrtc::ScreenId screen_id,
-    bool can_remove_monitor_stream) {
+void GnomeCaptureStreamManager::RemoveStream(webrtc::ScreenId screen_id,
+                                             bool can_remove_monitor_stream) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = streams_.find(screen_id);
   if (it == streams_.end()) {
@@ -147,12 +146,12 @@ void PipewireCaptureStreamManager::RemoveStream(
   // is called.
   connection_->Call<org_gnome_Mutter_ScreenCast_Stream::Stop>(
       kScreenCastBusName, stream_info.stream_path, std::tuple(),
-      base::BindOnce(&PipewireCaptureStreamManager::OnStreamStopped,
-                     GetWeakPtr(), screen_id));
+      base::BindOnce(&GnomeCaptureStreamManager::OnStreamStopped, GetWeakPtr(),
+                     screen_id));
 }
 
 base::flat_map<webrtc::ScreenId, base::WeakPtr<CaptureStream>>
-PipewireCaptureStreamManager::GetActiveStreams() {
+GnomeCaptureStreamManager::GetActiveStreams() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::flat_map<webrtc::ScreenId, base::WeakPtr<CaptureStream>> output;
@@ -162,12 +161,12 @@ PipewireCaptureStreamManager::GetActiveStreams() {
   return output;
 }
 
-base::WeakPtr<PipewireCaptureStreamManager>
-PipewireCaptureStreamManager::GetWeakPtr() {
+base::WeakPtr<GnomeCaptureStreamManager>
+GnomeCaptureStreamManager::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void PipewireCaptureStreamManager::RemoveObserver(Observer* observer) {
+void GnomeCaptureStreamManager::RemoveObserver(Observer* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   observers_.RemoveObserver(observer);
@@ -175,11 +174,11 @@ void PipewireCaptureStreamManager::RemoveObserver(Observer* observer) {
 
 template <typename SuccessType, typename String>
 GDBusConnectionRef::CallCallback<SuccessType>
-PipewireCaptureStreamManager::CheckAddStreamResultAndContinue(
-    void (PipewireCaptureStreamManager::*success_method)(SuccessType),
+GnomeCaptureStreamManager::CheckAddStreamResultAndContinue(
+    void (GnomeCaptureStreamManager::*success_method)(SuccessType),
     String&& error_context) {
   return base::BindOnce(
-      [](base::WeakPtr<PipewireCaptureStreamManager> that,
+      [](base::WeakPtr<GnomeCaptureStreamManager> that,
          decltype(success_method) success_method,
          std::string_view error_context,
          base::expected<SuccessType, Loggable> result) {
@@ -195,7 +194,7 @@ PipewireCaptureStreamManager::CheckAddStreamResultAndContinue(
       GetWeakPtr(), success_method, std::forward<String>(error_context));
 }
 
-void PipewireCaptureStreamManager::MaybeAddStreamForCurrentRequest() {
+void GnomeCaptureStreamManager::MaybeAddStreamForCurrentRequest() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(last_seen_display_config_.has_value());
   DCHECK(!pending_stream_);
@@ -217,7 +216,7 @@ void PipewireCaptureStreamManager::MaybeAddStreamForCurrentRequest() {
             std::pair{"cursor-mode", GVariantFrom(Boxed{kCursorModeMetadata})},
             std::pair{"is-platform", GVariantFrom(Boxed{true})}}},
         CheckAddStreamResultAndContinue(
-            &PipewireCaptureStreamManager::OnStreamCreated,
+            &GnomeCaptureStreamManager::OnStreamCreated,
             "Failed to create and record virtual monitor"));
   } else if (current_request.monitor_stream_info.has_value()) {
     // Add monitor stream.
@@ -228,14 +227,14 @@ void PipewireCaptureStreamManager::MaybeAddStreamForCurrentRequest() {
             std::array{std::pair{"cursor-mode",
                                  GVariantFrom(Boxed{kCursorModeMetadata})}}},
         CheckAddStreamResultAndContinue(
-            &PipewireCaptureStreamManager::OnStreamCreated,
+            &GnomeCaptureStreamManager::OnStreamCreated,
             "Failed to record monitor"));
   } else {
     NOTREACHED();
   }
 }
 
-void PipewireCaptureStreamManager::MaybeAddMonitorStreams() {
+void GnomeCaptureStreamManager::MaybeAddMonitorStreams() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(last_seen_display_config_.has_value());
 
@@ -269,7 +268,7 @@ void PipewireCaptureStreamManager::MaybeAddMonitorStreams() {
   }
 }
 
-void PipewireCaptureStreamManager::RemoveInvalidStreams() {
+void GnomeCaptureStreamManager::RemoveInvalidStreams() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::flat_set<webrtc::ScreenId> unseen_active_screen_ids;
@@ -289,7 +288,7 @@ void PipewireCaptureStreamManager::RemoveInvalidStreams() {
   }
 }
 
-void PipewireCaptureStreamManager::RunCurrentAddStreamCallback(
+void GnomeCaptureStreamManager::RunCurrentAddStreamCallback(
     AddStreamResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!pending_add_stream_requests_.empty());
@@ -305,15 +304,14 @@ void PipewireCaptureStreamManager::RunCurrentAddStreamCallback(
   MaybeAddStreamForCurrentRequest();
 }
 
-void PipewireCaptureStreamManager::OnAddStreamError(
-    std::string_view error_message,
-    Loggable error_context) {
+void GnomeCaptureStreamManager::OnAddStreamError(std::string_view error_message,
+                                                 Loggable error_context) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   RunCurrentAddStreamCallback(base::unexpected(
       base::StrCat({error_message, ": ", error_context.ToString()})));
 }
-void PipewireCaptureStreamManager::OnStreamCreated(
+void GnomeCaptureStreamManager::OnStreamCreated(
     std::tuple<gvariant::ObjectPath> args) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(pending_stream_);
@@ -323,11 +321,11 @@ void PipewireCaptureStreamManager::OnStreamCreated(
   connection_->GetProperty<org_gnome_Mutter_ScreenCast_Stream::Parameters>(
       kScreenCastBusName, pending_stream_path_,
       CheckAddStreamResultAndContinue(
-          &PipewireCaptureStreamManager::OnStreamParameters,
+          &GnomeCaptureStreamManager::OnStreamParameters,
           "Failed to retrieve stream parameters"));
 }
 
-void PipewireCaptureStreamManager::OnStreamParameters(
+void GnomeCaptureStreamManager::OnStreamParameters(
     GVariantRef<"a{sv}"> parameters) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(pending_stream_);
@@ -356,20 +354,20 @@ void PipewireCaptureStreamManager::OnStreamParameters(
   pending_stream_added_signal_ = connection_->SignalSubscribe<
       org_gnome_Mutter_ScreenCast_Stream::PipeWireStreamAdded>(
       kScreenCastBusName, pending_stream_path_,
-      base::BindRepeating(&PipewireCaptureStreamManager::OnPipeWireStreamAdded,
+      base::BindRepeating(&GnomeCaptureStreamManager::OnPipeWireStreamAdded,
                           GetWeakPtr(), std::move(mapping_id)));
   connection_->Call<org_gnome_Mutter_ScreenCast_Stream::Start>(
       kScreenCastBusName, pending_stream_path_, std::tuple(),
       CheckAddStreamResultAndContinue(
-          &PipewireCaptureStreamManager::OnStreamStarted,
+          &GnomeCaptureStreamManager::OnStreamStarted,
           "Failed to start monitor stream"));
 }
 
-void PipewireCaptureStreamManager::OnStreamStarted(std::tuple<> args) {
+void GnomeCaptureStreamManager::OnStreamStarted(std::tuple<> args) {
   // Do nothing. Still need to wait for PipeWire-stream-added signal.
 }
 
-void PipewireCaptureStreamManager::OnStreamStopped(
+void GnomeCaptureStreamManager::OnStreamStopped(
     webrtc::ScreenId screen_id,
     base::expected<std::tuple<>, Loggable> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -383,7 +381,7 @@ void PipewireCaptureStreamManager::OnStreamStopped(
   }
 }
 
-void PipewireCaptureStreamManager::OnPipeWireStreamAdded(
+void GnomeCaptureStreamManager::OnPipeWireStreamAdded(
     std::string mapping_id,
     std::tuple<std::uint32_t> args) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -416,7 +414,7 @@ void PipewireCaptureStreamManager::OnPipeWireStreamAdded(
   }
 }
 
-void PipewireCaptureStreamManager::OnGnomeDisplayConfigChanged(
+void GnomeCaptureStreamManager::OnGnomeDisplayConfigChanged(
     const GnomeDisplayConfig& config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -478,7 +476,7 @@ void PipewireCaptureStreamManager::OnGnomeDisplayConfigChanged(
   AssociatePendingStream(new_screen_ids.front());
 }
 
-void PipewireCaptureStreamManager::AssociatePendingStream(
+void GnomeCaptureStreamManager::AssociatePendingStream(
     webrtc::ScreenId screen_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!pending_add_stream_requests_.empty());
@@ -502,7 +500,7 @@ void PipewireCaptureStreamManager::AssociatePendingStream(
   RunCurrentAddStreamCallback(base::ok(weak_ptr));
 }
 
-void PipewireCaptureStreamManager::SetUseDamageRegion() {
+void GnomeCaptureStreamManager::SetUseDamageRegion() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   for (auto& [screen_id, stream_info] : streams_) {

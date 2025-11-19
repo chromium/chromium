@@ -17,7 +17,7 @@ namespace remoting {
 
 GnomeInputInjector::GnomeInputInjector(
     base::WeakPtr<EiSenderSession> session,
-    base::WeakPtr<const PipewireCaptureStreamManager> stream_manager,
+    base::WeakPtr<const GnomeCaptureStreamManager> stream_manager,
     GDBusConnectionRef dbus_connection,
     gvariant::ObjectPath session_path)
     : ei_session_(session),
@@ -137,7 +137,7 @@ void GnomeInputInjector::InjectMouseEvent(const protocol::MouseEvent& event) {
       event.fractional_coordinate().has_x() &&
       event.fractional_coordinate().has_y()) {
     if (!stream_manager_) {
-      LOG(WARNING) << "PipewireCaptureStreamManager no longer exists.";
+      LOG(WARNING) << "GnomeCaptureStreamManager no longer exists.";
     } else {
       webrtc::ScreenId screen_id = event.fractional_coordinate().screen_id();
       base::WeakPtr<const CaptureStream> stream =

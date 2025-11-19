@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_HOST_LINUX_PIPEWIRE_CAPTURE_STREAM_MANAGER_H_
-#define REMOTING_HOST_LINUX_PIPEWIRE_CAPTURE_STREAM_MANAGER_H_
+#ifndef REMOTING_HOST_LINUX_GNOME_CAPTURE_STREAM_MANAGER_H_
+#define REMOTING_HOST_LINUX_GNOME_CAPTURE_STREAM_MANAGER_H_
 
 #include <memory>
 #include <optional>
@@ -49,17 +49,16 @@ namespace remoting {
 // possibility of race conditions, but virtual or physical monitors that are
 // not managed by this class could potentially still cause issues if they are
 // added during stream creation.
-class PipewireCaptureStreamManager final : public CaptureStreamManager {
+class GnomeCaptureStreamManager final : public CaptureStreamManager {
  public:
   // Inherit overloads from the base class.
   using CaptureStreamManager::GetActiveStreams;
   using CaptureStreamManager::GetStream;
 
-  PipewireCaptureStreamManager();
-  PipewireCaptureStreamManager(const PipewireCaptureStreamManager&) = delete;
-  PipewireCaptureStreamManager& operator=(const PipewireCaptureStreamManager&) =
+  GnomeCaptureStreamManager();
+  GnomeCaptureStreamManager& operator=(const GnomeCaptureStreamManager&) =
       delete;
-  ~PipewireCaptureStreamManager() override;
+  ~GnomeCaptureStreamManager() override;
 
   // CaptureStreamManager implementation:
   [[nodiscard]] Observer::Subscription AddObserver(Observer* observer) override;
@@ -77,7 +76,7 @@ class PipewireCaptureStreamManager final : public CaptureStreamManager {
             gvariant::ObjectPath screencast_session_path);
 
   // Returns a weak pointer to this object.
-  base::WeakPtr<PipewireCaptureStreamManager> GetWeakPtr();
+  base::WeakPtr<GnomeCaptureStreamManager> GetWeakPtr();
 
  private:
   struct AddStreamRequest {
@@ -125,7 +124,7 @@ class PipewireCaptureStreamManager final : public CaptureStreamManager {
 
   template <typename SuccessType, typename String>
   GDBusConnectionRef::CallCallback<SuccessType> CheckAddStreamResultAndContinue(
-      void (PipewireCaptureStreamManager::*success_method)(SuccessType),
+      void (GnomeCaptureStreamManager::*success_method)(SuccessType),
       String&& error_context);
 
   void RemoveStream(webrtc::ScreenId screen_id, bool can_remove_monitor_stream);
@@ -198,9 +197,9 @@ class PipewireCaptureStreamManager final : public CaptureStreamManager {
   base::ObserverList<Observer> observers_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
-  base::WeakPtrFactory<PipewireCaptureStreamManager> weak_ptr_factory_{this};
+  base::WeakPtrFactory<GnomeCaptureStreamManager> weak_ptr_factory_{this};
 };
 
 }  // namespace remoting
 
-#endif  // REMOTING_HOST_LINUX_PIPEWIRE_CAPTURE_STREAM_MANAGER_H_
+#endif  // REMOTING_HOST_LINUX_GNOME_CAPTURE_STREAM_MANAGER_H_

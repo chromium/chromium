@@ -11,7 +11,7 @@
 #include "remoting/host/input_injector.h"
 #include "remoting/host/linux/clipboard_gnome.h"
 #include "remoting/host/linux/gdbus_connection_ref.h"
-#include "remoting/host/linux/pipewire_capture_stream_manager.h"
+#include "remoting/host/linux/gnome_capture_stream_manager.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 
 namespace remoting {
@@ -26,7 +26,7 @@ class GnomeInputInjector : public InputInjector {
   // changes during the connection lifetime.
   GnomeInputInjector(
       base::WeakPtr<EiSenderSession> session,
-      base::WeakPtr<const PipewireCaptureStreamManager> stream_manager,
+      base::WeakPtr<const GnomeCaptureStreamManager> stream_manager,
       GDBusConnectionRef dbus_connection,
       gvariant::ObjectPath session_path);
   ~GnomeInputInjector() override;
@@ -51,7 +51,7 @@ class GnomeInputInjector : public InputInjector {
  private:
   base::WeakPtr<EiSenderSession> ei_session_;
   base::WeakPtr<EiKeymap> keymap_;
-  base::WeakPtr<const PipewireCaptureStreamManager> stream_manager_;
+  base::WeakPtr<const GnomeCaptureStreamManager> stream_manager_;
   ClipboardGnome clipboard_;
   std::set<uint32_t> pressed_keys_;
 

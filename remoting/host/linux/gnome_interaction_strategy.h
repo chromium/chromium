@@ -16,14 +16,14 @@
 #include "base/task/sequenced_task_runner.h"
 #include "remoting/host/desktop_capturer_proxy.h"
 #include "remoting/host/desktop_interaction_strategy.h"
+#include "remoting/host/linux/gnome_capture_stream_manager.h"
 #include "remoting/host/linux/gnome_remote_desktop_session.h"
-#include "remoting/host/linux/pipewire_capture_stream_manager.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 
 namespace remoting {
 
 class GnomeInteractionStrategy : public DesktopInteractionStrategy,
-                                 public PipewireCaptureStreamManager::Observer {
+                                 public GnomeCaptureStreamManager::Observer {
  public:
   GnomeInteractionStrategy(const GnomeInteractionStrategy&) = delete;
   GnomeInteractionStrategy& operator=(const GnomeInteractionStrategy&) = delete;
@@ -64,7 +64,7 @@ class GnomeInteractionStrategy : public DesktopInteractionStrategy,
   void OnInitResult(InitCallback callback,
                     base::expected<void, std::string> result);
 
-  // PipewireCaptureStreamManager::Observer overrides.
+  // GnomeCaptureStreamManager::Observer overrides.
   void OnPipewireCaptureStreamAdded(
       base::WeakPtr<CaptureStream> stream) override;
 
@@ -72,7 +72,7 @@ class GnomeInteractionStrategy : public DesktopInteractionStrategy,
   raw_ptr<GnomeRemoteDesktopSession> remote_desktop_session_ GUARDED_BY_CONTEXT(
       sequence_checker_) = GnomeRemoteDesktopSession::GetInstance();
   gvariant::ObjectPath stream_path_ GUARDED_BY_CONTEXT(sequence_checker_);
-  PipewireCaptureStreamManager::Observer::Subscription
+  GnomeCaptureStreamManager::Observer::Subscription
       capture_stream_manager_subscription_
           GUARDED_BY_CONTEXT(sequence_checker_);
 
