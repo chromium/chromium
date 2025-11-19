@@ -954,7 +954,8 @@ TEST_F(DisplayMediaAccessHandlerTest,
   return;
 #endif
   EXPECT_EQ(blink::mojom::MediaStreamRequestResult::OK, results[0]);
-  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::INVALID_STATE, results[1]);
+  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::INVALID_VIDEO_DEVICE_ID,
+            results[1]);
   EXPECT_EQ(blink::mojom::MediaStreamRequestResult::OK, results[2]);
 }
 

@@ -94,6 +94,22 @@ MediaStreamRequestResult2 MapResultToResult2(
       // TODO(crbug.com/453600255): Add a new value once all new enum values are
       // added.
       return MediaStreamRequestResult2::kPermissionDenied;
+    case MediaStreamRequestResult::INVALID_DISPLAY_CAPTURE_CONSTRAINTS:
+      // TODO(crbug.com/453600255): Add a new value once all new enum values are
+      // added.
+      return MediaStreamRequestResult2::kScreenCaptureFailure;
+    case MediaStreamRequestResult::INVALID_GUM_TAB_CAPTURE_CONSTRAINTS:
+      // TODO(crbug.com/453600255): Add a new value once all new enum values are
+      // added.
+      return MediaStreamRequestResult2::kTabCaptureFailure;
+    case MediaStreamRequestResult::INVALID_GUM_SCREEN_CAPTURE_CONSTRAINTS:
+      // TODO(crbug.com/453600255): Add a new value once all new enum values are
+      // added.
+      return MediaStreamRequestResult2::kScreenCaptureFailure;
+    case MediaStreamRequestResult::INVALID_VIDEO_DEVICE_ID:
+      // TODO(crbug.com/453600255): Add a new value once all new enum values are
+      // added. │
+      return MediaStreamRequestResult2::kInvalidState;
     case MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS:
       break;  // Not a valid enum value.
   }

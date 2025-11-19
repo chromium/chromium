@@ -154,6 +154,14 @@ const char* MediaStreamRequestResultToString(MediaStreamRequestResult value) {
       return "NO_TRANSIENT_ACTIVATION";
     case MediaStreamRequestResult::CAPTURE_NOT_ALLOWED_BY_POLICY:
       return "CAPTURE_NOT_ALLOWED_BY_POLICY";
+    case MediaStreamRequestResult::INVALID_DISPLAY_CAPTURE_CONSTRAINTS:
+      return "INVALID_DISPLAY_CAPTURE_CONSTRAINTS";
+    case MediaStreamRequestResult::INVALID_GUM_TAB_CAPTURE_CONSTRAINTS:
+      return "INVALID_GUM_TAB_CAPTURE_CONSTRAINTS";
+    case MediaStreamRequestResult::INVALID_GUM_SCREEN_CAPTURE_CONSTRAINTS:
+      return "INVALID_GUM_SCREEN_CAPTURE_CONSTRAINTS";
+    case MediaStreamRequestResult::INVALID_VIDEO_DEVICE_ID:
+      return "INVALID_VIDEO_DEVICE_ID";
     case MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS:
       break;
   }
@@ -315,6 +323,7 @@ String ErrorCodeToString(MediaStreamRequestResult result) {
     case MediaStreamRequestResult::PERMISSION_DISMISSED:
       return "Permission dismissed";
     case MediaStreamRequestResult::INVALID_STATE:
+    case MediaStreamRequestResult::INVALID_VIDEO_DEVICE_ID:
       return "Invalid state";
     case MediaStreamRequestResult::NO_HARDWARE:
       return "Requested device not found";
@@ -352,6 +361,10 @@ String ErrorCodeToString(MediaStreamRequestResult result) {
       return "Audio device socket error";
     case MediaStreamRequestResult::NO_TRANSIENT_ACTIVATION:
       return "No transient activation";
+    case MediaStreamRequestResult::INVALID_DISPLAY_CAPTURE_CONSTRAINTS:
+    case MediaStreamRequestResult::INVALID_GUM_TAB_CAPTURE_CONSTRAINTS:
+    case MediaStreamRequestResult::INVALID_GUM_SCREEN_CAPTURE_CONSTRAINTS:
+      return "Invalid capture constraints";
     case MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS:
       break;  // Not a valid enum value.
   }

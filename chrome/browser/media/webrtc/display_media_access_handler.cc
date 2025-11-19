@@ -612,7 +612,8 @@ void DisplayMediaAccessHandler::ProcessQueuedChangeSourceRequest(
   WebContentsMediaCaptureId web_contents_id;
   if (!WebContentsMediaCaptureId::Parse(
           request.requested_video_device_ids.front(), &web_contents_id)) {
-    RejectRequest(web_contents, MediaStreamRequestResult::INVALID_STATE);
+    RejectRequest(web_contents,
+                  MediaStreamRequestResult::INVALID_VIDEO_DEVICE_ID);
     return;
   }
   DesktopMediaID media_id(DesktopMediaID::TYPE_WEB_CONTENTS,

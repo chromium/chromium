@@ -944,6 +944,7 @@ void UserMediaRequest::Fail(Result error, const String& message) {
       result_enum = UserMediaRequestResult::kNotFoundError;
       break;
     case Result::INVALID_STATE:
+    case Result::INVALID_VIDEO_DEVICE_ID:
     case Result::FAILED_DUE_TO_SHUTDOWN:
       // TODO(crbug.com/453600255): Use `result_enum` kContextDestroyed and
       // `exception_code` kInvalidStateError for
@@ -952,6 +953,14 @@ void UserMediaRequest::Fail(Result error, const String& message) {
     case Result::SCREEN_CAPTURE_FAILURE:
     case Result::CAPTURE_FAILURE:
     case Result::START_TIMEOUT:
+    case Result::INVALID_DISPLAY_CAPTURE_CONSTRAINTS:
+    case Result::INVALID_GUM_TAB_CAPTURE_CONSTRAINTS:
+    case Result::INVALID_GUM_SCREEN_CAPTURE_CONSTRAINTS:
+      // TODO(crbug.com/453600255): Use `result_enum` kOverconstrainedError for
+      // INVALID_DISPLAY_CAPTURE_CONSTRAINTS,
+      // INVALID_GUM_TAB_CAPTURE_CONSTRAINTS and
+      // INVALID_GUM_SCREEN_CAPTURE_CONSTRAINTS once all new enum values are
+      // added.
       exception_code = DOMExceptionCode::kAbortError;
       result_enum = UserMediaRequestResult::kAbortError;
       break;
