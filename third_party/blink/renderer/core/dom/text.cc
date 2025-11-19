@@ -85,7 +85,7 @@ Node* Text::MergeNextSiblingNodesIfPossible() {
     unsigned offset = length();
     String next_text_data = next_text->data();
     String old_text_data = data();
-    SetDataWithoutUpdate(data() + next_text_data);
+    SetDataWithoutUpdate(StrCat({data(), next_text_data}));
     UpdateTextLayoutObject(
         TextDiffRange::Insert(old_text_data.length(), next_text_data.length()));
 
@@ -115,8 +115,8 @@ Text* Text::splitText(unsigned offset, ExceptionState& exception_state) {
   if (offset > length()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        "The offset " + String::Number(offset) +
-            " is larger than the Text node's length.");
+        StrCat({"The offset ", String::Number(offset),
+                " is larger than the Text node's length."}));
     return nullptr;
   }
 

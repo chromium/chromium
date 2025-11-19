@@ -3382,7 +3382,7 @@ bool Element::toggleAttribute(const AtomicString& qualified_name,
   if (!is_valid) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidCharacterError,
-        "'" + qualified_name + "' is not a valid attribute name.");
+        StrCat({"'", qualified_name, "' is not a valid attribute name."}));
     return false;
   }
   // 2. If the context object is in the HTML namespace and its node document is
@@ -3425,7 +3425,7 @@ bool Element::toggleAttribute(const AtomicString& qualified_name,
   if (!is_valid) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidCharacterError,
-        "'" + qualified_name + "' is not a valid attribute name.");
+        StrCat({"'", qualified_name, "' is not a valid attribute name."}));
     return false;
   }
   // 2. If the context object is in the HTML namespace and its node document is
@@ -7431,7 +7431,8 @@ std::optional<QualifiedName> Element::ParseAttributeName(
   if (!Document::HasValidNamespaceForAttributes(q_name)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNamespaceError,
-        "'" + namespace_uri + "' is an invalid namespace for attributes.");
+        StrCat(
+            {"'", namespace_uri, "' is an invalid namespace for attributes."}));
     return std::nullopt;
   }
   return q_name;
@@ -12540,7 +12541,7 @@ void Element::SetAttributeHinted(AtomicString local_name,
   if (!is_valid) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidCharacterError,
-        "'" + local_name + "' is not a valid attribute name.");
+        StrCat({"'", local_name, "' is not a valid attribute name."}));
     return;
   }
   SynchronizeAttributeHinted(local_name, hint);
@@ -12583,7 +12584,7 @@ void Element::SetAttributeHinted(AtomicString local_name,
   if (!Document::IsValidName(local_name)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidCharacterError,
-        "'" + local_name + "' is not a valid attribute name.");
+        StrCat({"'", local_name, "' is not a valid attribute name."}));
     return;
   }
   SynchronizeAttributeHinted(local_name, hint);

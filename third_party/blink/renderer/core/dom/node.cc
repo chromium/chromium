@@ -2629,17 +2629,17 @@ std::ostream& operator<<(std::ostream& ostream, const Node* node) {
 
 String Node::ToString() const {
   if (getNodeType() == Node::kProcessingInstructionNode)
-    return "?" + nodeName();
+    return StrCat({"?", nodeName()});
   if (auto* shadow_root = DynamicTo<ShadowRoot>(this)) {
     // nodeName of ShadowRoot is #document-fragment.  It's confused with
     // DocumentFragment.
     std::stringstream shadow_root_type;
     shadow_root_type << shadow_root->GetMode();
     String shadow_root_type_str(shadow_root_type.str().c_str());
-    return "#shadow-root(" + shadow_root_type_str + ")";
+    return StrCat({"#shadow-root(", shadow_root_type_str, ")"});
   }
   if (IsDocumentTypeNode())
-    return "DOCTYPE " + nodeName();
+    return StrCat({"DOCTYPE ", nodeName()});
 
   StringBuilder builder;
   builder.Append(nodeName());
@@ -2895,13 +2895,15 @@ static void PrintSubTreeAcrossFrame(const Node* node,
   stream << indent.Utf8() << *node << "\n";
   if (auto* frame_owner_element = DynamicTo<HTMLFrameOwnerElement>(node)) {
     PrintSubTreeAcrossFrame(frame_owner_element->contentDocument(), marked_node,
-                            indent + "\t", stream);
+                            StrCat({indent, "\t"}), stream);
   }
-  if (ShadowRoot* shadow_root = node->GetShadowRoot())
-    PrintSubTreeAcrossFrame(shadow_root, marked_node, indent + "\t", stream);
+  if (ShadowRoot* shadow_root = node->GetShadowRoot()) {
+    PrintSubTreeAcrossFrame(shadow_root, marked_node, StrCat({indent, "\t"}),
+                            stream);
+  }
   for (const Node* child = node->firstChild(); child;
        child = child->nextSibling())
-    PrintSubTreeAcrossFrame(child, marked_node, indent + "\t", stream);
+    PrintSubTreeAcrossFrame(child, marked_node, StrCat({indent, "\t"}), stream);
 }
 
 void Node::ShowTreeForThisAcrossFrame() const {

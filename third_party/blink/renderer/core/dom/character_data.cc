@@ -75,7 +75,7 @@ String CharacterData::substringData(unsigned offset,
 }
 
 void CharacterData::ParserAppendData(const String& data) {
-  String new_str = this->data() + data;
+  String new_str = StrCat({this->data(), data});
 
   SetDataAndUpdate(new_str,
                    TextDiffRange::Insert(this->data().length(), data.length()),
@@ -83,7 +83,7 @@ void CharacterData::ParserAppendData(const String& data) {
 }
 
 void CharacterData::appendData(const String& data) {
-  String new_str = this->data() + data;
+  String new_str = StrCat({this->data(), data});
 
   SetDataAndUpdate(new_str,
                    TextDiffRange::Insert(this->data().length(), data.length()),
