@@ -810,6 +810,7 @@ public class LocationBarCoordinator
         if (mNavigationAttachmentsCoordinator != null) {
             mNavigationAttachmentsCoordinator.onFuseboxTextWrappingChanged(isWrapping);
         }
+        mLocationBarMediator.updateButtonVisibility();
     }
 
     /**
