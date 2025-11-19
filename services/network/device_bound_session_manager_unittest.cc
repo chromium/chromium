@@ -162,7 +162,7 @@ TEST_F(DeviceBoundSessionManagerTest, ObserverNotifiesChangeOnlyOnSite) {
   EXPECT_THAT(off_site_observer.notifications(), IsEmpty());
 }
 
-TEST_F(DeviceBoundSessionManagerTest, CreateBoundSession) {
+TEST_F(DeviceBoundSessionManagerTest, CreateBoundSessions) {
   GURL url("https://example.com/path");
   std::string session_id = "session123";
 
@@ -195,10 +195,13 @@ TEST_F(DeviceBoundSessionManagerTest, CreateBoundSession) {
   cookie_options.set_same_site_cookie_context(
       net::CookieOptions::SameSiteCookieContext::MakeInclusive());
 
+  std::vector<SessionParams> params_list;
+  params_list.push_back(std::move(params));
+
   base::test::TestFuture<bool> create_future;
-  manager().CreateBoundSession(std::move(params), GetWrappedKey(),
-                               cookies_to_set, cookie_options,
-                               create_future.GetCallback());
+  manager().CreateBoundSessions(std::move(params_list), GetWrappedKey(),
+                                cookies_to_set, cookie_options,
+                                create_future.GetCallback());
   EXPECT_TRUE(create_future.Get());
 
   base::test::TestFuture<const std::vector<SessionKey>&> sessions_future;
@@ -220,7 +223,8 @@ TEST_F(DeviceBoundSessionManagerTest, CreateBoundSession) {
   EXPECT_EQ(cookies[0].cookie.Value(), "value");
 }
 
-TEST_F(DeviceBoundSessionManagerTest, CreateBoundSession_InvalidSessionParams) {
+TEST_F(DeviceBoundSessionManagerTest,
+       CreateBoundSessions_InvalidSessionParams) {
   // `include_site` on a subdomain is forbidden
   GURL url("https://subdomain.example.com/path");
   std::string session_id = "session123";
@@ -254,9 +258,12 @@ TEST_F(DeviceBoundSessionManagerTest, CreateBoundSession_InvalidSessionParams) {
   cookie_options.set_same_site_cookie_context(
       net::CookieOptions::SameSiteCookieContext::MakeInclusive());
 
+  std::vector<SessionParams> params_list;
+  params_list.push_back(std::move(params));
+
   base::test::TestFuture<bool> create_future;
-  manager().CreateBoundSession(
-      std::move(params), /*wrapped_key=*/std::vector<uint8_t>{1, 2, 3, 4},
+  manager().CreateBoundSessions(
+      std::move(params_list), /*wrapped_key=*/std::vector<uint8_t>{1, 2, 3, 4},
       cookies_to_set, cookie_options, create_future.GetCallback());
   EXPECT_FALSE(create_future.Get());
 
@@ -272,7 +279,7 @@ TEST_F(DeviceBoundSessionManagerTest, CreateBoundSession_InvalidSessionParams) {
   EXPECT_EQ(cookies[0].cookie.Value(), "value");
 }
 
-TEST_F(DeviceBoundSessionManagerTest, CreateBoundSession_InvalidCookie) {
+TEST_F(DeviceBoundSessionManagerTest, CreateBoundSessions_InvalidCookie) {
   GURL url("https://example.com/path");
   std::string session_id = "session123";
 
@@ -306,11 +313,66 @@ TEST_F(DeviceBoundSessionManagerTest, CreateBoundSession_InvalidCookie) {
   cookie_options.set_same_site_cookie_context(
       net::CookieOptions::SameSiteCookieContext::MakeInclusive());
 
+  std::vector<SessionParams> params_list;
+  params_list.push_back(std::move(params));
+
   base::test::TestFuture<bool> create_future;
-  manager().CreateBoundSession(
-      std::move(params), /*wrapped_key=*/std::vector<uint8_t>{1, 2, 3, 4},
+  manager().CreateBoundSessions(
+      std::move(params_list), /*wrapped_key=*/std::vector<uint8_t>{1, 2, 3, 4},
       cookies_to_set, cookie_options, create_future.GetCallback());
   EXPECT_FALSE(create_future.Get());
+}
+
+TEST_F(DeviceBoundSessionManagerTest, CreateBoundSessions_MultipleSessions) {
+  GURL url("https://example.com/path");
+  std::string session_id = "session123";
+
+  std::vector<SessionParams> params_list;
+
+  {
+    std::vector<SessionParams::Scope::Specification> specifications;
+    specifications.emplace_back(
+        SessionParams::Scope::Specification::Type::kInclude, "sub.example.com",
+        "/path");
+    SessionParams::Scope scope;
+    scope.include_site = true;
+    scope.specifications = std::move(specifications);
+    scope.origin = url::Origin::Create(url).Serialize();
+
+    params_list.push_back(SessionParams(
+        session_id, url, "https://example.com/refresh", std::move(scope),
+        {SessionParams::Credential{"test_cookie", "SameSite=Strict"}},
+        unexportable_keys::UnexportableKeyId(), {"example.com"}));
+  }
+
+  {
+    SessionParams::Scope scope;
+    scope.include_site = true;
+    scope.origin = url::Origin::Create(url).Serialize();
+    params_list.push_back(SessionParams(
+        "session456", url, "https://example.com/refresh", std::move(scope),
+        {SessionParams::Credential{"test_cookie", "SameSite=Strict"}},
+        unexportable_keys::UnexportableKeyId(), {"example.com"}));
+  }
+
+  net::CookieOptions cookie_options;
+  cookie_options.set_include_httponly();
+  // Permit it to set a SameSite cookie if it wants to.
+  cookie_options.set_same_site_cookie_context(
+      net::CookieOptions::SameSiteCookieContext::MakeInclusive());
+
+  base::test::TestFuture<bool> create_future;
+  manager().CreateBoundSessions(std::move(params_list), GetWrappedKey(), {},
+                                cookie_options, create_future.GetCallback());
+  EXPECT_TRUE(create_future.Get());
+
+  base::test::TestFuture<const std::vector<SessionKey>&> sessions_future;
+  service().GetAllSessionsAsync(sessions_future.GetCallback());
+  EXPECT_THAT(
+      sessions_future.Get(),
+      ElementsAre(
+          SessionKey(net::SchemefulSite(url), Session::Id(session_id)),
+          SessionKey(net::SchemefulSite(url), Session::Id("session456"))));
 }
 
 }  // namespace

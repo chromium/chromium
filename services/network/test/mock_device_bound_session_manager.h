@@ -40,12 +40,12 @@ class MockDeviceBoundSessionManager : public mojom::DeviceBoundSessionManager {
        mojo::PendingRemote<mojom::DeviceBoundSessionAccessObserver> observer),
       (override));
   MOCK_METHOD(void,
-              CreateBoundSession,
-              (net::device_bound_sessions::SessionParams params,
+              CreateBoundSessions,
+              (std::vector<net::device_bound_sessions::SessionParams> params,
                const std::vector<uint8_t>& wrapped_key,
                const std::vector<net::CanonicalCookie>& cookies_to_set,
                const net::CookieOptions& cookie_options,
-               CreateBoundSessionCallback callback),
+               CreateBoundSessionsCallback callback),
               (override));
 };
 
