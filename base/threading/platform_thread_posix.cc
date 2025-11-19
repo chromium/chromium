@@ -374,29 +374,6 @@ bool PlatformThreadBase::CanChangeThreadType(ThreadType from, ThreadType to) {
   return internal::CanLowerNiceTo(internal::ThreadTypeToNiceValue(to));
 }
 
-namespace internal {
-
-void SetCurrentThreadTypeImpl(ThreadType thread_type,
-                              MessagePumpType pump_type_hint) {
-  if (internal::SetCurrentThreadTypeForPlatform(thread_type, pump_type_hint)) {
-    return;
-  }
-
-  // setpriority(2) should change the whole thread group's (i.e. process)
-  // priority. However, as stated in the bugs section of
-  // http://man7.org/linux/man-pages/man2/getpriority.2.html: "under the current
-  // Linux/NPTL implementation of POSIX threads, the nice value is a per-thread
-  // attribute". Also, 0 is prefered to the current thread id since it is
-  // equivalent but makes sandboxing easier (https://crbug.com/399473).
-  const int nice_setting = internal::ThreadTypeToNiceValue(thread_type);
-  if (setpriority(PRIO_PROCESS, 0, nice_setting)) {
-    DVPLOG(1) << "Failed to set nice value of thread ("
-              << PlatformThread::CurrentId() << ") to " << nice_setting;
-  }
-}
-
-}  // namespace internal
-
 // static
 ThreadPriorityForTest PlatformThreadBase::GetCurrentThreadPriorityForTest() {
   // Mirrors SetCurrentThreadPriority()'s implementation.

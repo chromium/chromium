@@ -76,7 +76,6 @@ struct ThreadParams {
   raw_ptr<PlatformThread::Delegate> delegate;
   bool joinable;
   ThreadType thread_type;
-  MessagePumpType message_pump_type;
 };
 
 DWORD __stdcall ThreadFunc(void* params) {
@@ -87,8 +86,7 @@ DWORD __stdcall ThreadFunc(void* params) {
   }
 
   if (thread_params->thread_type != ThreadType::kDefault) {
-    internal::SetCurrentThreadType(thread_params->thread_type,
-                                   thread_params->message_pump_type);
+    PlatformThread::SetCurrentThreadType(thread_params->thread_type);
   }
 
   // Retrieve a copy of the thread handle to use as the key in the
@@ -139,8 +137,7 @@ DWORD __stdcall ThreadFunc(void* params) {
 bool CreateThreadInternal(size_t stack_size,
                           PlatformThread::Delegate* delegate,
                           PlatformThreadHandle* out_thread_handle,
-                          ThreadType thread_type,
-                          MessagePumpType message_pump_type) {
+                          ThreadType thread_type) {
   unsigned int flags = 0;
   if (stack_size > 0) {
     flags = STACK_SIZE_PARAM_IS_A_RESERVATION;
@@ -171,7 +168,6 @@ bool CreateThreadInternal(size_t stack_size,
   params->delegate = delegate;
   params->joinable = out_thread_handle != nullptr;
   params->thread_type = thread_type;
-  params->message_pump_type = message_pump_type;
 
   // Using CreateThread here vs _beginthreadex makes thread creation a bit
   // faster and doesn't require the loader lock to be available.  Our code will
@@ -302,8 +298,7 @@ bool PlatformThread::CreateWithType(size_t stack_size,
                                     ThreadType thread_type,
                                     MessagePumpType pump_type_hint) {
   DCHECK(thread_handle);
-  return CreateThreadInternal(stack_size, delegate, thread_handle, thread_type,
-                              pump_type_hint);
+  return CreateThreadInternal(stack_size, delegate, thread_handle, thread_type);
 }
 
 // static
@@ -317,7 +312,7 @@ bool PlatformThread::CreateNonJoinableWithType(size_t stack_size,
                                                ThreadType thread_type,
                                                MessagePumpType pump_type_hint) {
   return CreateThreadInternal(stack_size, delegate, nullptr /* non-joinable */,
-                              thread_type, pump_type_hint);
+                              thread_type);
 }
 
 // static
@@ -357,8 +352,7 @@ bool PlatformThread::CanChangeThreadType(ThreadType from, ThreadType to) {
 
 namespace {
 
-void SetCurrentThreadPriority(ThreadType thread_type,
-                              MessagePumpType pump_type_hint) {
+void SetCurrentThreadPriority(ThreadType thread_type) {
   PlatformThreadHandle::Handle thread_handle =
       PlatformThread::CurrentHandle().platform_handle();
 
@@ -371,7 +365,7 @@ void SetCurrentThreadPriority(ThreadType thread_type,
     // crbug.com/1340578#c2
   }
 
-  int desired_priority = THREAD_PRIORITY_ERROR_RETURN;
+  int desired_priority;
   switch (thread_type) {
     case ThreadType::kBackground:
       // Using THREAD_MODE_BACKGROUND_BEGIN instead of THREAD_PRIORITY_LOWEST
@@ -399,14 +393,13 @@ void SetCurrentThreadPriority(ThreadType thread_type,
       desired_priority = THREAD_PRIORITY_TIME_CRITICAL;
       break;
   }
-  DCHECK_NE(desired_priority, THREAD_PRIORITY_ERROR_RETURN);
 
   [[maybe_unused]] const BOOL cpu_priority_success =
       ::SetThreadPriority(thread_handle, desired_priority);
   DPLOG_IF(ERROR, !cpu_priority_success)
       << "Failed to set thread priority to " << desired_priority;
 
-  if (desired_priority == THREAD_MODE_BACKGROUND_BEGIN) {
+  if (thread_type == ThreadType::kBackground) {
     // Override the memory priority.
     MEMORY_PRIORITY_INFORMATION memory_priority{.MemoryPriority =
                                                     MEMORY_PRIORITY_NORMAL};
@@ -415,16 +408,12 @@ void SetCurrentThreadPriority(ThreadType thread_type,
                              &memory_priority, sizeof(memory_priority));
     DPLOG_IF(ERROR, !memory_priority_success)
         << "Set thread memory priority failed.";
-  }
 
-  if (thread_type == ThreadType::kBackground) {
     // In a background process, THREAD_MODE_BACKGROUND_BEGIN lowers the memory
     // and I/O priorities but not the CPU priority (kernel bug?). Use
     // THREAD_PRIORITY_LOWEST to also lower the CPU priority.
     // https://crbug.com/901483
-    if (::GetThreadPriority(
-            PlatformThread::CurrentHandle().platform_handle()) >=
-        THREAD_PRIORITY_BELOW_NORMAL) {
+    if (::GetThreadPriority(thread_handle) >= THREAD_PRIORITY_BELOW_NORMAL) {
       ::SetThreadPriority(thread_handle, THREAD_PRIORITY_LOWEST);
       // We used to DCHECK that memory priority is MEMORY_PRIORITY_VERY_LOW
       // here, but found that it is not always the case (e.g. in the installer).
@@ -470,7 +459,7 @@ namespace internal {
 
 void SetCurrentThreadTypeImpl(ThreadType thread_type,
                               MessagePumpType pump_type_hint) {
-  SetCurrentThreadPriority(thread_type, pump_type_hint);
+  SetCurrentThreadPriority(thread_type);
   SetCurrentThreadQualityOfService(thread_type);
 }
 

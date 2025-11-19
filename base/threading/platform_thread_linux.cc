@@ -112,18 +112,16 @@ bool CanSetThreadTypeToRealtimeAudio() {
   return getrlimit(RLIMIT_RTPRIO, &rlim) != 0 && rlim.rlim_cur != 0;
 }
 
-bool SetCurrentThreadTypeForPlatform(ThreadType thread_type,
-                                     MessagePumpType pump_type_hint) {
+void SetCurrentThreadTypeImpl(ThreadType thread_type,
+                              MessagePumpType pump_type_hint) {
   const PlatformThreadId thread_id = PlatformThread::CurrentId();
 
   if (g_thread_type_delegate &&
       g_thread_type_delegate->HandleThreadTypeChange(thread_id, thread_type)) {
-    return true;
+    return;
   }
 
   internal::SetThreadType(getpid(), thread_id, thread_type, IsViaIPC(false));
-
-  return true;
 }
 
 std::optional<ThreadPriorityForTest>
@@ -267,12 +265,7 @@ void SetThreadTypeLinux(ProcessId process_id,
     DPLOG(ERROR) << "Failed to set realtime priority for thread " << thread_id;
   }
 
-  const int nice_setting = ThreadTypeToNiceValue(thread_type);
-  if (setpriority(PRIO_PROCESS, static_cast<id_t>(syscall_tid.raw()),
-                  nice_setting)) {
-    DVPLOG(1) << "Failed to set nice value of thread (" << thread_id << ") to "
-              << nice_setting;
-  }
+  SetThreadNiceFromType(thread_id, thread_type);
 }
 
 int ThreadTypeToNiceValue(const ThreadType thread_type) {

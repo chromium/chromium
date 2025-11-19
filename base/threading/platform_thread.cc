@@ -32,7 +32,9 @@ void PlatformThreadBase::SetCurrentThreadType(ThreadType thread_type) {
   } else if (CurrentUIThread::IsSet()) {
     message_pump_type = MessagePumpType::UI;
   }
-  internal::SetCurrentThreadType(thread_type, message_pump_type);
+  CHECK_LE(thread_type, ThreadType::kMaxValue);
+  internal::SetCurrentThreadTypeImpl(thread_type, message_pump_type);
+  current_thread_type = thread_type;
 }
 
 // static
@@ -58,16 +60,5 @@ std::optional<TimeDelta> PlatformThreadBase::GetThreadLeewayOverride() {
 void PlatformThreadBase::SetNameCommon(const std::string& name) {
   ThreadIdNameManager::GetInstance()->SetName(name);
 }
-
-namespace internal {
-
-void SetCurrentThreadType(ThreadType thread_type,
-                          MessagePumpType pump_type_hint) {
-  CHECK_LE(thread_type, ThreadType::kMaxValue);
-  SetCurrentThreadTypeImpl(thread_type, pump_type_hint);
-  current_thread_type = thread_type;
-}
-
-}  // namespace internal
 
 }  // namespace base

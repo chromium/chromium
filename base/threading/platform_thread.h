@@ -458,29 +458,8 @@ using PlatformThread = PlatformThreadBase;
 
 namespace internal {
 
-void SetCurrentThreadType(ThreadType thread_type,
-                          MessagePumpType pump_type_hint);
-
 void SetCurrentThreadTypeImpl(ThreadType thread_type,
                               MessagePumpType pump_type_hint);
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-void SetThreadTypeLinux(ProcessId process_id,
-                        PlatformThreadId thread_id,
-                        ThreadType thread_type,
-                        IsViaIPC via_ipc);
-#endif
-#if BUILDFLAG(IS_CHROMEOS)
-void SetThreadTypeChromeOS(ProcessId process_id,
-                           PlatformThreadId thread_id,
-                           ThreadType thread_type,
-                           IsViaIPC via_ipc);
-#endif
-#if BUILDFLAG(IS_CHROMEOS)
-inline constexpr auto SetThreadType = SetThreadTypeChromeOS;
-#elif BUILDFLAG(IS_LINUX)
-inline constexpr auto SetThreadType = SetThreadTypeLinux;
-#endif
 
 }  // namespace internal
 

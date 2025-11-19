@@ -88,8 +88,8 @@ bool CanSetThreadTypeToRealtimeAudio() {
   return true;
 }
 
-bool SetCurrentThreadTypeForPlatform(ThreadType thread_type,
-                                     MessagePumpType pump_type_hint) {
+void SetCurrentThreadTypeImpl(ThreadType thread_type,
+                              MessagePumpType pump_type_hint) {
   // We set the Audio priority through JNI as the Java setThreadPriority will
   // put it into a preferable cgroup, whereas the "normal" C++ call wouldn't.
   // However, with
@@ -101,7 +101,7 @@ bool SetCurrentThreadTypeForPlatform(ThreadType thread_type,
     JNIEnv* env = base::android::AttachCurrentThread();
     Java_ThreadUtils_setThreadPriorityAudio(env,
                                             PlatformThread::CurrentId().raw());
-    return true;
+    return;
   }
   // Recent versions of Android (O+) up the priority of the UI thread
   // automatically.
@@ -109,9 +109,9 @@ bool SetCurrentThreadTypeForPlatform(ThreadType thread_type,
       pump_type_hint == MessagePumpType::UI &&
       GetCurrentThreadNiceValue() <=
           ThreadTypeToNiceValue(ThreadType::kDisplayCritical)) {
-    return true;
+    return;
   }
-  return false;
+  SetThreadNiceFromType(PlatformThread::CurrentId(), thread_type);
 }
 
 std::optional<ThreadPriorityForTest>

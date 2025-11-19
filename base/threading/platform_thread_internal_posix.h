@@ -30,16 +30,8 @@ extern const ThreadPriorityToNiceValuePairForTest
 // implementation of kThreadTypeToNiceValueMap.
 int ThreadTypeToNiceValue(ThreadType thread_type);
 
-// Returns whether SetCurrentThreadTypeForPlatform can set a thread as
-// kRealtimeAudio.
+// Returns whether SetCurrentThreadType can set a thread as kRealtimeAudio.
 bool CanSetThreadTypeToRealtimeAudio();
-
-// Allows platform specific tweaks to the generic POSIX solution for
-// SetCurrentThreadType(). Returns true if the platform-specific
-// implementation handled this |thread_type| change, false if the generic
-// implementation should instead proceed.
-bool SetCurrentThreadTypeForPlatform(ThreadType thread_type,
-                                     MessagePumpType pump_type_hint);
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // Current thread id is cached in thread local storage for performance reasons.
@@ -59,6 +51,26 @@ GetCurrentThreadPriorityForPlatformForTest();
 
 int GetCurrentThreadNiceValue();
 int GetThreadNiceValue(PlatformThreadId id);
+
+void SetThreadNiceFromType(PlatformThreadId thread_id, ThreadType thread_type);
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+void SetThreadTypeLinux(ProcessId process_id,
+                        PlatformThreadId thread_id,
+                        ThreadType thread_type,
+                        IsViaIPC via_ipc);
+#endif
+#if BUILDFLAG(IS_CHROMEOS)
+void SetThreadTypeChromeOS(ProcessId process_id,
+                           PlatformThreadId thread_id,
+                           ThreadType thread_type,
+                           IsViaIPC via_ipc);
+#endif
+#if BUILDFLAG(IS_CHROMEOS)
+inline constexpr auto SetThreadType = SetThreadTypeChromeOS;
+#elif BUILDFLAG(IS_LINUX)
+inline constexpr auto SetThreadType = SetThreadTypeLinux;
+#endif
 
 }  // namespace internal
 

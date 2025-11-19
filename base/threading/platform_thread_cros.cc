@@ -313,18 +313,6 @@ void SetThreadRTPrioFromType(ProcessId process_id,
   }
 }
 
-void SetThreadNiceFromType(ProcessId process_id,
-                           PlatformThreadId thread_id,
-                           ThreadType thread_type) {
-  pid_t syscall_tid =
-      thread_id == PlatformThread::CurrentId() ? 0 : thread_id.raw();
-  const int nice_setting = internal::ThreadTypeToNiceValue(thread_type);
-  if (setpriority(PRIO_PROCESS, static_cast<id_t>(syscall_tid), nice_setting)) {
-    DVPLOG(1) << "Failed to set nice value of thread " << thread_id << " to "
-              << nice_setting;
-  }
-}
-
 void PlatformThreadChromeOS::InitializeFeatures() {
   DCHECK(FeatureList::GetInstance());
   g_threads_bg_enabled.store(FeatureList::IsEnabled(kSetThreadBgForBgProcess));
@@ -467,7 +455,7 @@ void SetThreadTypeChromeOS(ProcessId process_id,
                           backgrounded ? ThreadType::kBackground : thread_type);
 
   SetThreadRTPrioFromType(process_id, thread_id, thread_type, backgrounded);
-  SetThreadNiceFromType(process_id, thread_id, thread_type);
+  SetThreadNiceFromType(thread_id, thread_type);
 }
 
 }  // namespace internal
