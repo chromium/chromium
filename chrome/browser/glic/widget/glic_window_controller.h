@@ -85,6 +85,12 @@ class GlicWindowController {
 
   // Close the panel but keep the glic WebContents alive in the background.
   virtual void Close() = 0;
+  // Closes the active embedder of an instance with matching render_frame_host
+  // without resetting webcontents.
+  virtual void CloseInstanceWithFrame(
+      content::RenderFrameHost* render_frame_host) = 0;
+  // Closes the active embedder of an instance with matching render_frame_host
+  // with resetting webcontents.
   virtual void CloseAndShutdownInstanceWithFrame(
       content::RenderFrameHost* render_frame_host) = 0;
 

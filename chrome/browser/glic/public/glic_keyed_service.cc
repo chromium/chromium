@@ -740,12 +740,8 @@ void GlicKeyedService::SendAdditionalContext(
 
 void GlicKeyedService::Close(
     content::RenderFrameHost* outermost_render_frame_host) {
-  for (auto* instance : window_controller().GetInstances()) {
-    if (instance) {
-      instance->host().Close(outermost_render_frame_host);
-    }
+  window_controller().CloseInstanceWithFrame(outermost_render_frame_host);
   }
-}
 
 void GlicKeyedService::OnWebClientCleared() {
   actor_task_manager_->CancelTask();

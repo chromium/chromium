@@ -78,12 +78,6 @@ void Host::SetDelegate(EmbedderDelegate* new_delegate) {
   delegate_ = new_delegate;
 }
 
-void Host::Shutdown(content::RenderFrameHost* render_frame_host) {
-  if (IsWebContentPresentAndMatches(render_frame_host)) {
-    Shutdown();
-  }
-}
-
 void Host::Shutdown() {
   handler_info_.reset();
   contents_.reset();
@@ -104,17 +98,8 @@ bool Host::IsWebContentPresentAndMatches(
   return false;
 }
 
-void Host::Close(content::RenderFrameHost* render_frame_host) {
-  if (IsWebContentPresentAndMatches(render_frame_host)) {
-    delegate_->ClosePanel();
-  }
-}
-
-void Host::Reload(content::RenderFrameHost* render_frame_host) {
-  if (IsWebContentPresentAndMatches(
-          render_frame_host->GetOutermostMainFrame())) {
-    Reload();
-  }
+void Host::Close() {
+  delegate_->ClosePanel();
 }
 
 void Host::Reload() {

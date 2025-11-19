@@ -47,6 +47,10 @@ class MockGlicWindowController
   MOCK_METHOD(void, SetMinimumWidgetSize, (const gfx::Size&), ());
   MOCK_METHOD(void, Close, (), (override));
   MOCK_METHOD(void,
+              CloseInstanceWithFrame,
+              (content::RenderFrameHost * render_frame_host),
+              (override));
+  MOCK_METHOD(void,
               CloseAndShutdownInstanceWithFrame,
               (content::RenderFrameHost * render_frame_host),
               (override));

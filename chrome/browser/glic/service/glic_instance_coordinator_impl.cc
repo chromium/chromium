@@ -230,8 +230,18 @@ void GlicInstanceCoordinatorImpl::CloseAndShutdownInstanceWithFrame(
   for (auto* instance : GetInstances()) {
     if (instance) {
       // These calls only have effect if render_frame_host matches.
-      instance->host().Close(render_frame_host);
-      instance->host().Shutdown(render_frame_host);
+      instance->host().Close();
+      instance->host().Shutdown();
+    }
+  }
+}
+
+void GlicInstanceCoordinatorImpl::CloseInstanceWithFrame(
+    content::RenderFrameHost* render_frame_host) {
+  for (auto& [id, instance] : instances_) {
+    if (instance->host().IsWebContentPresentAndMatches(render_frame_host)) {
+      instance->host().Close();
+      return;
     }
   }
 }
@@ -295,10 +305,11 @@ void GlicInstanceCoordinatorImpl::Preload() {
 
 void GlicInstanceCoordinatorImpl::Reload(
     content::RenderFrameHost* render_frame_host) {
-  for (auto iter = instances_.begin(); iter != instances_.end();) {
-    // Advance iterator now, in case Reload deletes the instance.
-    auto& instance = *iter++;
-    instance.second->host().Reload(render_frame_host);
+  for (auto& [id, instance] : instances_) {
+    if (instance->host().IsWebContentPresentAndMatches(render_frame_host)) {
+      instance->host().Reload();
+      return;
+    }
   }
 }
 

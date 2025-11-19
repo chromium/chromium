@@ -975,6 +975,11 @@ bool GlicWindowControllerImpl::ActivateBrowser() {
   return false;
 }
 
+void GlicWindowControllerImpl::CloseInstanceWithFrame(
+    content::RenderFrameHost* render_frame_host) {
+  NOTREACHED();
+}
+
 void GlicWindowControllerImpl::Close() {
   if (state_ == State::kClosed || state_ == State::kDetaching) {
     return;
@@ -1303,7 +1308,9 @@ void GlicWindowControllerImpl::Preload() {
 
 void GlicWindowControllerImpl::Reload(
     content::RenderFrameHost* render_frame_host) {
-  host().Reload(render_frame_host);
+  if (host().IsWebContentPresentAndMatches(render_frame_host)) {
+    host().Reload();
+  }
 }
 
 bool GlicWindowControllerImpl::IsWarmed() const {
