@@ -14,7 +14,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/ChromeActionModeHandler.java",
   "java/src/org/chromium/chrome/browser/ChromeActivitySessionTracker.java",
   "java/src/org/chromium/chrome/browser/ChromeApplicationImpl.java",
-  "java/src/org/chromium/chrome/browser/ChromeBackgroundServiceImpl.java",
   "java/src/org/chromium/chrome/browser/ChromeBaseAppCompatActivity.java",
   "java/src/org/chromium/chrome/browser/ChromeInactivityTracker.java",
   "java/src/org/chromium/chrome/browser/ChromeKeyboardVisibilityDelegate.java",

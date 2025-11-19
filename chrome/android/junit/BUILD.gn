@@ -411,7 +411,6 @@ if (is_android) {
     sources = [
       "src/org/chromium/chrome/browser/ChromeActionModeHandlerUnitTest.java",
       "src/org/chromium/chrome/browser/ChromeActivityUnitTest.java",
-      "src/org/chromium/chrome/browser/ChromeBackgroundServiceTest.java",
       "src/org/chromium/chrome/browser/ChromeBaseAppCompatActivityUnitTest.java",
       "src/org/chromium/chrome/browser/ChromeLocalizationUtilsTest.java",
       "src/org/chromium/chrome/browser/DeferredStartupHandlerTest.java",

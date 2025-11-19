@@ -1004,14 +1004,6 @@ by a child template that "extends" this file.
             </intent-filter>
       </activity>
 
-        <!-- GcmTaskService for registration for Invalidations. Not actually implemented anymore. -->
-        <service android:name="com.google.ipc.invalidation.ticl.android2.channel.GcmRegistrationTaskService"
-            android:exported="true"
-            android:permission="com.google.android.gms.permission.BIND_NETWORK_TASK_SERVICE" >
-            <intent-filter>
-                <action android:name="com.google.android.gms.gcm.ACTION_TASK_READY"/>
-            </intent-filter>
-        </service>
         <!-- GcmListenerService for messages from GCM. -->
         <service android:name="org.chromium.chrome.browser.services.gcm.ChromeGcmListenerService"
             android:exported="false" >
@@ -1058,15 +1050,6 @@ by a child template that "extends" this file.
         <service android:name="org.chromium.chrome.browser.notifications.NotificationJobService"
             android:exported="false"
             android:permission="android.permission.BIND_JOB_SERVICE"/>
-
-        <!-- GcmTaskService implementation to wake Chrome on scheduled events -->
-        <service android:name="org.chromium.chrome.browser.ChromeBackgroundService"
-            android:permission="com.google.android.gms.permission.BIND_NETWORK_TASK_SERVICE"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="com.google.android.gms.gcm.ACTION_TASK_READY" />
-            </intent-filter>
-        </service>
 
         <service android:name="org.chromium.chrome.browser.customtabs.CustomTabsConnectionService"
             android:exported="true"

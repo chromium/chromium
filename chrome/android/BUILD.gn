@@ -1972,7 +1972,6 @@ if (_is_default_toolchain) {
   generate_jni("test_support_jni_headers") {
     testonly = true
     sources = [
-      "javatests/src/org/chromium/chrome/browser/ServicificationBackgroundService.java",
       "javatests/src/org/chromium/chrome/browser/gesturenav/ScreenshotCaptureTestHelper.java",
       "javatests/src/org/chromium/chrome/browser/offlinepages/OfflineTestUtil.java",
       "javatests/src/org/chromium/chrome/browser/sync/FakeServerHelper.java",
@@ -1985,7 +1984,6 @@ if (_is_default_toolchain) {
     testonly = true
     srcjar_deps = [ ":test_support_jni_headers" ]
     sources = [
-      "javatests/src/org/chromium/chrome/browser/ServicificationBackgroundService.java",
       "javatests/src/org/chromium/chrome/browser/gesturenav/ScreenshotCaptureTestHelper.java",
       "javatests/src/org/chromium/chrome/browser/offlinepages/OfflineTestUtil.java",
       "javatests/src/org/chromium/chrome/browser/sync/FakeServerHelper.java",
@@ -2021,7 +2019,6 @@ if (_is_default_toolchain) {
   static_library("browser_test_support") {
     testonly = true
     sources = [
-      "../browser/android/servicification_background_service_jni.cc",
       "../browser/android/ssl/mock_cert_verifier_rule_android.cc",
       "../browser/android/ssl/mock_cert_verifier_rule_android.h",
       "../browser/gesturenav/android/screenshot_capture_test_helper.cc",
@@ -2104,9 +2101,7 @@ if (_is_default_toolchain) {
   # is in a DFM.
   android_library("base_module_java") {
     sources = [
-      "java/src/com/google/ipc/invalidation/ticl/android2/channel/GcmRegistrationTaskService.java",
       "java/src/org/chromium/chrome/app/TrichromeZygotePreload.java",
-      "java/src/org/chromium/chrome/browser/ChromeBackgroundService.java",
       "java/src/org/chromium/chrome/browser/DeferredStartupHandler.java",
       "java/src/org/chromium/chrome/browser/app/bluetooth/BluetoothNotificationService.java",
       "java/src/org/chromium/chrome/browser/app/serial/SerialNotificationService.java",
@@ -2123,7 +2118,6 @@ if (_is_default_toolchain) {
       "java/src/org/chromium/chrome/browser/base/SplitCompatContentProvider.java",
       "java/src/org/chromium/chrome/browser/base/SplitCompatCustomTabsService.java",
       "java/src/org/chromium/chrome/browser/base/SplitCompatGcmListenerService.java",
-      "java/src/org/chromium/chrome/browser/base/SplitCompatGcmTaskService.java",
       "java/src/org/chromium/chrome/browser/base/SplitCompatIntentService.java",
       "java/src/org/chromium/chrome/browser/base/SplitCompatJobService.java",
       "java/src/org/chromium/chrome/browser/base/SplitCompatMinidumpUploadJobService.java",
@@ -2158,7 +2152,6 @@ if (_is_default_toolchain) {
     deps = [
       ":chrome_base_module_resources",
       "$google_play_services_package:google_firebase_firebase_messaging_java",
-      "$google_play_services_package:google_play_services_gcm_java",
       "//base:base_java",
       "//chrome/browser/autofill/android:third_party_provider_java",
       "//chrome/browser/download/android:file_provider_java",
