@@ -900,7 +900,7 @@ _LINUX_PERF_FYI_BENCHMARK_CONFIGS = PerfSuite([
 LINUX = PerfPlatform('linux-perf',
                      'Ubuntu-22.04, Precision 3930 Rack, NVIDIA GeForce GTX 1660',
                      _LINUX_GPU_BENCHMARK_CONFIGS,
-                     10,
+                     7,
                      'linux',
                      executables=_LINUX_EXECUTABLE_CONFIGS,
                      crossbench=_CROSSBENCH_BENCHMARKS_ALL)
