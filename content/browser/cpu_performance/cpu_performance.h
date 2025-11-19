@@ -5,8 +5,11 @@
 #ifndef CONTENT_BROWSER_CPU_PERFORMANCE_CPU_PERFORMANCE_H_
 #define CONTENT_BROWSER_CPU_PERFORMANCE_CPU_PERFORMANCE_H_
 
+#include <cstdint>
+
+#include "base/gtest_prod_util.h"
 #include "content/common/content_export.h"
-#include "third_party/blink/public/mojom/cpu_performance.mojom-shared.h"
+#include "third_party/blink/public/mojom/cpu_performance.mojom.h"
 
 namespace content::cpu_performance {
 

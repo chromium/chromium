@@ -719,11 +719,7 @@
 
 #if BUILDFLAG(ENABLE_REQUEST_HEADER_INTEGRITY)
 #include "chrome/common/request_header_integrity/request_header_integrity_url_loader_throttle.h"  // nogncheck crbug.com/1125897
-#endif  // BUILDFLAG(ENABLE_REQUEST_HEADER_INTEGRITY)
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chrome/browser/cpu_performance_internal/cpu_performance.h"
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif
 
 #include "base/win/windows_h_disallowed.h"
 
@@ -8944,14 +8940,4 @@ void ChromeContentBrowserClient::RecordAssistedLogin(
       break;
   }
   password_manager::metrics_util::RecordBrowserAssistedLogin(pwm_login_type);
-}
-
-blink::mojom::PerformanceTier
-ChromeContentBrowserClient::GetCpuPerformanceTier() {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (auto tier = cpu_performance::GetTier(); tier.has_value()) {
-    return *tier;
-  }
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return ContentBrowserClient::GetCpuPerformanceTier();
 }

@@ -8386,10 +8386,6 @@ static_library("browser") {
       "//third_party/search_engines_data:search_engines_scaled_resources_grit",
     ]
   }
-
-  if (is_internal_chrome_branded) {
-    deps += [ "//chrome/browser/cpu_performance_internal" ]
-  }
 }
 
 # These are the dependencies for the "browser" target that are outside of
