@@ -12,6 +12,7 @@
 #include "base/strings/strcat.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/ui/waap/waap_ui_metrics_recorder.h"
 #include "chrome/browser/ui/waap/waap_ui_metrics_service_factory.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
@@ -79,7 +80,26 @@ void EmitReloadButtonHistogramWithTraceEvent(const char* event_name,
                                 base::Minutes(3), 100);
 }
 
-void RecordStartupPaintMetric(std::string_view paint_metric_name,
+// Returns a suffix for the startup temperature of the browser.
+const char* GetStartupTemperatureSuffix() {
+  switch (startup_metric_utils::GetBrowser().GetStartupTemperature()) {
+    case startup_metric_utils::COLD_STARTUP_TEMPERATURE:
+      return ".ColdStartup";
+    case startup_metric_utils::WARM_STARTUP_TEMPERATURE:
+      return ".WarmStartup";
+    case startup_metric_utils::LUKEWARM_STARTUP_TEMPERATURE:
+      return "";
+    case startup_metric_utils::UNDETERMINED_STARTUP_TEMPERATURE:
+      return "";
+    case startup_metric_utils::STARTUP_TEMPERATURE_COUNT:
+      NOTREACHED();
+  }
+  return "";
+}
+
+// Records a startup paint metric for the given `paint_metric_base`.
+void RecordStartupPaintMetric(std::string_view paint_metric_base,
+                              bool is_session_restored,
                               base::TimeTicks paint_time) {
   if (!startup_metric_utils::GetBrowser().ShouldLogStartupHistogram()) {
     return;
@@ -91,21 +111,9 @@ void RecordStartupPaintMetric(std::string_view paint_metric_name,
     return;
   }
 
-  std::string histogram_name(paint_metric_name);
-  switch (startup_metric_utils::GetBrowser().GetStartupTemperature()) {
-    case startup_metric_utils::COLD_STARTUP_TEMPERATURE:
-      histogram_name = base::StrCat({paint_metric_name, ".ColdStartup"});
-      break;
-    case startup_metric_utils::WARM_STARTUP_TEMPERATURE:
-      histogram_name = base::StrCat({paint_metric_name, ".WarmStartup"});
-      break;
-    case startup_metric_utils::LUKEWARM_STARTUP_TEMPERATURE:
-      break;
-    case startup_metric_utils::UNDETERMINED_STARTUP_TEMPERATURE:
-      break;
-    case startup_metric_utils::STARTUP_TEMPERATURE_COUNT:
-      NOTREACHED();
-  }
+  std::string histogram_name = base::StrCat(
+      {"InitialWebUI.Startup", (is_session_restored ? ".SessionRestore" : ""),
+       ".", paint_metric_base, GetStartupTemperatureSuffix()});
 
   EmitHistogramWithTraceEvent(histogram_name.c_str(), time_origin, paint_time);
 }
@@ -113,7 +121,9 @@ void RecordStartupPaintMetric(std::string_view paint_metric_name,
 }  // namespace
 
 WaapUIMetricsService::WaapUIMetricsService(
-    base::PassKey<WaapUIMetricsServiceFactory>) {}
+    base::PassKey<WaapUIMetricsServiceFactory>,
+    const Profile* profile)
+    : is_session_restored_(SessionRestore::IsRestoring(profile)) {}
 
 WaapUIMetricsService::~WaapUIMetricsService() = default;
 
@@ -129,7 +139,7 @@ void WaapUIMetricsService::OnBrowserWindowFirstPresentation(
   CHECK(is_first_call);
   is_first_call = false;
 
-  RecordStartupPaintMetric("InitialWebUI.Startup.BrowserWindow.FirstPaint",
+  RecordStartupPaintMetric("BrowserWindow.FirstPaint", is_session_restored_,
                            time);
 }
 
@@ -143,7 +153,7 @@ void WaapUIMetricsService::OnFirstPaint(base::TimeTicks time) {
 
   // For early experiment, this is ReloadButton only.
   // TODO(crbug.com/448794588): Switch to general name after initial phase.
-  RecordStartupPaintMetric("InitialWebUI.Startup.ReloadButton.FirstPaint",
+  RecordStartupPaintMetric("ReloadButton.FirstPaint", is_session_restored_,
                            time);
 }
 
@@ -157,8 +167,8 @@ void WaapUIMetricsService::OnFirstContentfulPaint(base::TimeTicks time) {
 
   // For early experiment, this is ReloadButton only.
   // TODO(crbug.com/448794588): Switch to general name after initial phase.
-  RecordStartupPaintMetric(
-      "InitialWebUI.Startup.ReloadButton.FirstContentfulPaint", time);
+  RecordStartupPaintMetric("ReloadButton.FirstContentfulPaint",
+                           is_session_restored_, time);
 }
 
 void WaapUIMetricsService::OnReloadButtonMousePressToNextPaint(

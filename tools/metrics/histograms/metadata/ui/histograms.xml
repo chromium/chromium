@@ -478,16 +478,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="InitialWebUI.Startup.BrowserWindow.FirstPaint{StartupTemperature}"
+    name="InitialWebUI.Startup{SessionRestore}.BrowserWindow.FirstPaint{StartupTemperature}"
     units="ms" expires_after="2026-04-30">
   <owner>mych@chromium.org</owner>
   <owner>chrome-waap-eng@google.com</owner>
   <summary>
-    Records the time from browser application startup to the first presentation
-    of the browser window onto the screen{StartupTemperature}. This is only
-    recorded for desktop platforms when the InitialWebUIMetrics feature is
-    enabled.
+    Records the time from {SessionRestore} browser application startup to the
+    first presentation of the browser window onto the
+    screen{StartupTemperature}. . This is only recorded for desktop platforms
+    when the InitialWebUIMetrics feature is enabled.
   </summary>
+  <token key="SessionRestore">
+    <variant name="" summary=""/>
+    <variant name=".SessionRestore"
+        summary="session restored (when continue where you left off is on)"/>
+  </token>
   <token key="StartupTemperature">
     <variant name="" summary=""/>
     <variant name=".ColdStartup"
@@ -498,19 +503,25 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="InitialWebUI.Startup.ReloadButton.FirstContentfulPaint{StartupTemperature}"
+    name="InitialWebUI.Startup{SessionRestore}.ReloadButton.FirstContentfulPaint{StartupTemperature}"
     units="ms" expires_after="2026-04-30">
   <owner>mych@chromium.org</owner>
   <owner>chrome-waap-eng@google.com</owner>
   <summary>
     Records the time spent initializing a newly constructed ReloadButton in the
-    pre/post InitialWebUI (WaaP) setup. The timer starts immediately after the
-    browser application startup{StartupTemperature}, and ends immediately after
-    a contentful paint of the view is requested. For browser process (pre-WaaP
-    setup) this is equal to the InitialWebUI.Startup.ReloadButton.FirstPaint
-    metric. For renderer process (post-WaaP setup) this might be slightly
-    different. Only recorded on desktop platforms.
+    {SessionRestore} browser application startup with pre/post InitialWebUI
+    (WaaP) setup. The timer starts immediately after the browser application
+    startup{StartupTemperature}, and ends immediately after a contentful paint
+    of the view is requested. For browser process (pre-WaaP setup) this is equal
+    to the InitialWebUI.Startup.ReloadButton.FirstPaint metric. For renderer
+    process (post-WaaP setup) this might be slightly different. Only recorded on
+    desktop platforms.
   </summary>
+  <token key="SessionRestore">
+    <variant name="" summary=""/>
+    <variant name=".SessionRestore"
+        summary="session restored (when continue where you left off is on)"/>
+  </token>
   <token key="StartupTemperature">
     <variant name="" summary=""/>
     <variant name=".ColdStartup"
@@ -521,18 +532,23 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="InitialWebUI.Startup.ReloadButton.FirstPaint{StartupTemperature}"
+    name="InitialWebUI.Startup{SessionRestore}.ReloadButton.FirstPaint{StartupTemperature}"
     units="ms" expires_after="2026-04-30">
   <owner>mych@chromium.org</owner>
   <owner>chrome-waap-eng@google.com</owner>
   <summary>
     Records the time spent initializing a newly constructed ReloadButton in the
-    pre/post InitialWebUI (WaaP) setup. The timer starts immediately after the
-    browser application startup{StartupTemperature}, and ends immediately after
-    a paint of the view is requested by either the browser process (pre-WaaP) or
-    by the WebUI renderer process (post-WaaP). Only recorded on desktop
-    platforms.
+    {SessionRestore} browser application startup with pre/post InitialWebUI
+    (WaaP) setup. The timer starts immediately after the browser application
+    startup{StartupTemperature}, and ends immediately after a paint of the view
+    is requested by either the browser process (pre-WaaP) or by the WebUI
+    renderer process (post-WaaP). Only recorded on desktop platforms.
   </summary>
+  <token key="SessionRestore">
+    <variant name="" summary=""/>
+    <variant name=".SessionRestore"
+        summary="session restored (when continue where you left off is on)"/>
+  </token>
   <token key="StartupTemperature">
     <variant name="" summary=""/>
     <variant name=".ColdStartup"

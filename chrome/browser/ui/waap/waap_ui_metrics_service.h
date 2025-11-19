@@ -20,7 +20,8 @@ class WaapUIMetricsServiceFactory;
 // all kinds of profiles.
 class WaapUIMetricsService : public KeyedService {
  public:
-  explicit WaapUIMetricsService(base::PassKey<WaapUIMetricsServiceFactory>);
+  WaapUIMetricsService(base::PassKey<WaapUIMetricsServiceFactory>,
+                       const Profile* profile);
 
   // Disallow copy and assign.
   WaapUIMetricsService(const WaapUIMetricsService&) = delete;
@@ -82,6 +83,16 @@ class WaapUIMetricsService : public KeyedService {
       base::TimeTicks start_ticks,
       base::TimeTicks end_ticks,
       WaapUIMetricsRecorder::ReloadButtonMode new_mode);
+
+ private:
+  // On browser startup, whether the browser session is restored from the last
+  // session.
+  // A browser session can be restored in various scenarios, e.g. when the
+  // browser is previously crashed, or when the user manually restores the
+  // session from history, or on browser startup when the user has turned on
+  // "Continue where you left off". But only the last one involves in the
+  // browser startup process.
+  const bool is_session_restored_;
 };
 
 #endif  // CHROME_BROWSER_UI_WAAP_WAAP_UI_METRICS_SERVICE_H_

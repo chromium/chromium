@@ -44,6 +44,7 @@ WaapUIMetricsServiceFactory::~WaapUIMetricsServiceFactory() = default;
 std::unique_ptr<KeyedService>
 WaapUIMetricsServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
+  Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<WaapUIMetricsService>(
-      base::PassKey<WaapUIMetricsServiceFactory>());
+      base::PassKey<WaapUIMetricsServiceFactory>(), profile);
 }
