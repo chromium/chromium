@@ -528,11 +528,7 @@ BrowserViewLayoutImpl::CalculateProposedLayout(
     // to separate it from the tab strip. SidePanel draws the top on top of the
     // top content separator and some units of the toolbar by default, which is
     // not needed for the toolbar height side panel.
-    const int top =
-        params.visual_client_area.y() +
-        std::max(container_inset_padding,
-                 base::ClampCeil(
-                     params.leading_exclusion.ContentWithPadding().height()));
+    const int top = params.visual_client_area.y() + container_inset_padding;
     gfx::Rect toolbar_height_bounds(
         params.visual_client_area.x() - (target_width - visible_width), top,
         target_width, params.visual_client_area.bottom() - top);
