@@ -66,6 +66,12 @@ void ChromeTemplateURLServiceClient::OnURLVisited(
   DCHECK_EQ(history_service_, history_service);
   if (!owner_)
     return;
+  // Filter out 404 visits to prevent them from informing search
+  // recommendations and impacting user journeys.
+  if (visited_url_info.response_code_category ==
+      history::VisitResponseCodeCategory::k404) {
+    return;
+  }
 
   TemplateURLService::URLVisitedDetails visited_details;
   visited_details.url = visited_url_info.url_row.url();
