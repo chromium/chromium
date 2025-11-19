@@ -1555,7 +1555,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/enterprise_companion/chromium_mac_arm64',
-          'version': '66aESdfPvgih65HQ5sRHGGCUgAI81KHyoRVRnANW9zQC',
+          'version': '6wCL0cne8FLzBFKvHLkyClDzUzt2a0BwYgGXtFDa79IC',
         },
       ],
   },
