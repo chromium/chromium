@@ -25,3 +25,15 @@ source_set("eg_test_support+eg2") {
   ]
   deps = [ "//ios/testing/earl_grey:eg_test_support+eg2" ]
 }
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "data_controls_egtest.mm" ]
+  deps = [
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/components/enterprise/data_controls:features",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
