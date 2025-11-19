@@ -2190,7 +2190,16 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest,
   ContinueJsTest();
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testPinTabsStatePersistWhenClientRestarts) {
+// TODO(crbug.com/462121221): Flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_testPinTabsStatePersistWhenClientRestarts \
+  DISABLED_testPinTabsStatePersistWhenClientRestarts
+#else
+#define MAYBE_testPinTabsStatePersistWhenClientRestarts \
+  testPinTabsStatePersistWhenClientRestarts
+#endif
+IN_PROC_BROWSER_TEST_P(GlicApiTest,
+                       MAYBE_testPinTabsStatePersistWhenClientRestarts) {
   NavigateTabAndOpenGlicFloating();
   const int tab_id =
       GetTabId(browser()->tab_strip_model()->GetActiveWebContents());
