@@ -204,6 +204,9 @@ NSString* DisplayName() {
   self.snackbarMessage = messageText;
 }
 
+- (void)showSnackbarMessageAfterDismissingKeyboard:(NSString*)messageText {
+}
+
 - (void)dismissAllSnackbars {
 }
 

@@ -89,6 +89,13 @@
   [self presentSnackbar:message withBottomOffset:offset];
 }
 
+- (void)showSnackbarMessageAfterDismissingKeyboard:(SnackbarMessage*)message {
+  // Dismiss the keybord if present.
+  [self.browser->GetSceneState().window endEditing:YES];
+
+  [self showSnackbarMessage:message];
+}
+
 - (void)showSnackbarWithMessage:(NSString*)messageText
                      buttonText:(NSString*)buttonText
                   messageAction:(void (^)(void))messageAction

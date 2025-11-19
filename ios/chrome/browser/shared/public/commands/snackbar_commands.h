@@ -31,6 +31,10 @@
 - (void)showSnackbarMessage:(SnackbarMessage*)message
                bottomOffset:(CGFloat)offset;
 
+// Shows a snackbar using a SnackbarMessage after dismissing the
+// keyboard if present.
+- (void)showSnackbarMessageAfterDismissingKeyboard:(SnackbarMessage*)message;
+
 // Shows a snackbar displaying a message with `messageText` and a button with
 // `buttonText` which triggers `messageAction` on tap. `completionAction` will
 // be called when the snackbar finishes presenting, BOOL is YES if the dismissal

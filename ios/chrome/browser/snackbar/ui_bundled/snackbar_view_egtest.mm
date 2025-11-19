@@ -109,6 +109,7 @@ void VerifySnackbarUI(NSString* title,
 
 - (void)tearDownHelper {
   DismissSnackbar();
+  [SnackbarViewTestAppInterface removeDummyTextField];
   [super tearDownHelper];
   [ChromeCoordinatorAppInterface reset];
 }
@@ -169,6 +170,37 @@ void VerifySnackbarUI(NSString* title,
                                               kSnackbarTitleAccessibilityId),
                                           grey_text(kTestTitle), nil)]
       assertWithMatcher:grey_nil()];
+}
+
+// Tests that `showSnackbarMessageAfterDismissingKeyboard` displays the snackbar
+// correctly after dismissing the keyboard.
+- (void)testShowSnackbarMessageAfterDismissingKeyboard {
+  // Ensure the dummy text field is in the view hierarchy.
+  [SnackbarViewTestAppInterface makeTextFieldFirstResponder];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"dummyTextField")]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"dummyTextField")]
+      performAction:grey_tap()];
+
+  // Verify keyboard is present.
+  [ChromeEarlGrey waitForKeyboardToAppear];
+
+  [SnackbarViewTestAppInterface
+      showSnackbarMessageAfterDismissingKeyboardWithTitle:kTestTitle];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Verify keyboard is dismissed.
+  [ChromeEarlGrey waitForKeyboardToDisappear];
+
+  // Verify the snackbar is displayed correctly.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:SnackbarViewMatcher()];
+  [[EarlGrey selectElementWithMatcher:SnackBarViewMatcherForAccessibilityId(
+                                          kSnackbarTitleAccessibilityId)]
+      assertWithMatcher:grey_allOf(grey_text(kTestTitle),
+                                   grey_sufficientlyVisible(), nil)];
 }
 
 @end

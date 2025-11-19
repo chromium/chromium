@@ -14,6 +14,13 @@
 
 @implementation SnackbarViewTestAppInterface
 
+static UITextField* gDummyTextField = nil;
+
++ (id<SnackbarCommands>)snackbarCommandsHandler {
+  CommandDispatcher* dispatcher = ChromeCoordinatorAppInterface.dispatcher;
+  return HandlerForProtocol(dispatcher, SnackbarCommands);
+}
+
 + (void)showSnackbarWithTitle:(NSString*)title
                      subtitle:(NSString*)subtitle
             secondarySubtitle:(NSString*)secondarySubtitle
@@ -30,6 +37,7 @@
     action.handler = ^{
       // Do nothing.
     };
+
     message.action = action;
   }
 
@@ -41,10 +49,44 @@
     message.trailingAccessoryImage = [[UIImage alloc] init];
   }
 
-  CommandDispatcher* dispatcher = ChromeCoordinatorAppInterface.dispatcher;
-  id<SnackbarCommands> handler =
-      HandlerForProtocol(dispatcher, SnackbarCommands);
-  [handler showSnackbarMessage:message];
+  [[self snackbarCommandsHandler] showSnackbarMessage:message];
+}
+
++ (void)makeTextFieldFirstResponder {
+  if (!gDummyTextField) {
+    gDummyTextField =
+        [[UITextField alloc] initWithFrame:CGRectMake(0, 0, 100, 30)];
+    // Add the text field to a view hierarchy to make it first responder.
+    UIWindow* keyWindow = nil;
+
+    for (UIScene* scene in [UIApplication sharedApplication].connectedScenes) {
+      if (scene.activationState == UISceneActivationStateForegroundActive &&
+          [scene isKindOfClass:[UIWindowScene class]]) {
+        keyWindow = [(UIWindowScene*)scene keyWindow];
+        break;
+      }
+    }
+
+    [keyWindow addSubview:gDummyTextField];
+    gDummyTextField.accessibilityIdentifier = @"dummyTextField";
+  }
+  [gDummyTextField becomeFirstResponder];
+}
+
++ (void)removeDummyTextField {
+  [gDummyTextField resignFirstResponder];
+  [gDummyTextField removeFromSuperview];
+  gDummyTextField = nil;
+}
+
++ (UITextField*)dummyTextField {
+  return gDummyTextField;
+}
+
++ (void)showSnackbarMessageAfterDismissingKeyboardWithTitle:(NSString*)title {
+  SnackbarMessage* message = [[SnackbarMessage alloc] initWithTitle:title];
+  [[self snackbarCommandsHandler]
+      showSnackbarMessageAfterDismissingKeyboard:message];
 }
 
 @end
