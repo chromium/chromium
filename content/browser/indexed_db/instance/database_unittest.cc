@@ -310,8 +310,7 @@ TEST_P(DatabaseTest, MojomWithInvalidParameter) {
       /*transaction_id=*/2, {}, blink::mojom::IDBTransactionMode::VersionChange,
       blink::mojom::IDBTransactionDurability::Strict);
 
-  EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return bad_message_observer.got_bad_message(); }));
+  EXPECT_EQ("Bad transaction mode", bad_message_observer.WaitForBadMessage());
 
   // This test also verifies that a bad message which is received by the
   // `Connection`, and which leads to killing the renderer, will not leak the
