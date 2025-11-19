@@ -442,6 +442,9 @@ void CreateAndDispatchClick(
 }
 
 std::string NodeToDebugString(const blink::WebNode& node) {
+  if (node.IsNull()) {
+    return "";
+  }
   if (node.IsTextNode()) {
     // Truncate it to 100 characters, enough for debugging.
     return base::StrCat({"text=", node.NodeValue().Substring(0u, 100u).Utf8()});
