@@ -631,8 +631,7 @@ void SessionStorageImpl::OnCommitResult(DbStatus status) {
     // Deleting StorageAreas in here could cause more commits (and commit
     // errors), but those commits won't reach OnCommitResult because the area
     // will have been deleted before the commit finishes.
-    DeleteAndRecreateDatabase(
-        "SessionStorageContext.OpenResultAfterCommitErrors");
+    DeleteAndRecreateDatabase();
   }
 }
 
@@ -772,11 +771,9 @@ void SessionStorageImpl::InitiateConnection(bool in_memory_only) {
 
 void SessionStorageImpl::OnDatabaseOpened(DbStatus status) {
   if (!status.ok()) {
-    LogDatabaseOpenResult(OpenResult::kDatabaseOpenFailed);
     // If we failed to open the database, try to delete and recreate the
     // database, or ultimately fallback to an in-memory database.
-    DeleteAndRecreateDatabase(
-        "SessionStorageContext.OpenResultAfterOpenFailed");
+    DeleteAndRecreateDatabase();
     return;
   }
 
@@ -799,9 +796,7 @@ void SessionStorageImpl::OnGotDatabaseMetadata(
   }
 
   if (!all_metadata.has_value()) {
-    LogDatabaseOpenResult(OpenResult::kNamespacesReadError);
-    DeleteAndRecreateDatabase(
-        "SessionStorageContext.OpenResultAfterReadNamespacesError");
+    DeleteAndRecreateDatabase();
     return;
   }
 
@@ -821,9 +816,6 @@ void SessionStorageImpl::OnConnectionFinished() {
   if (database_)
     tried_to_recreate_during_open_ = false;
 
-  LogDatabaseOpenResult(OpenResult::kSuccess);
-  open_result_histogram_ = nullptr;
-
   // |database_| should be known to either be valid or invalid by now. Run our
   // delayed bindings.
   connection_state_ = CONNECTION_FINISHED;
@@ -842,7 +834,7 @@ void SessionStorageImpl::PurgeAllNamespaces() {
   DCHECK(data_maps_.empty());
 }
 
-void SessionStorageImpl::DeleteAndRecreateDatabase(const char* histogram_name) {
+void SessionStorageImpl::DeleteAndRecreateDatabase() {
   if (connection_state_ == CONNECTION_SHUTDOWN)
     return;
 
@@ -856,7 +848,6 @@ void SessionStorageImpl::DeleteAndRecreateDatabase(const char* histogram_name) {
   receiver_.Pause();
   commit_error_count_ = 0;
   database_.reset();
-  open_result_histogram_ = histogram_name;
 
   bool recreate_in_memory = false;
 
@@ -911,15 +902,6 @@ void SessionStorageImpl::GetStatistics(size_t* total_cache_size,
     *total_cache_size += it.second->storage_area()->memory_used();
     if (it.second->binding_count() == 0)
       (*unused_area_count)++;
-  }
-}
-
-void SessionStorageImpl::LogDatabaseOpenResult(OpenResult result) {
-  if (result != OpenResult::kSuccess) {
-    UMA_HISTOGRAM_ENUMERATION("SessionStorageContext.OpenError", result);
-  }
-  if (open_result_histogram_) {
-    base::UmaHistogramEnumeration(open_result_histogram_, result);
   }
 }
 

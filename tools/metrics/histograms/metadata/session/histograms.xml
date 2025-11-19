@@ -1336,44 +1336,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SessionStorageContext.OpenError" enum="LocalStorageOpenError"
-    expires_after="2024-12-01">
-  <owner>ayui@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    The reason opening the LevelDB database that backs SessionStorage failed.
-    Recorded after an error is encountered after an open operation.
-
-    Warning: Histogram expired between M95-M110. Data may be missing.
-  </summary>
-</histogram>
-
-<histogram
-    name="SessionStorageContext.OpenResultAfter{SessionStorageContextOpenReasons}"
-    enum="LocalStorageOpenError" expires_after="2024-12-01">
-  <owner>ayui@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    The result of opening the LevelDB database that backs SessionStorage.
-    Recorded after an open operation attempt returns an error.
-
-    Warning: Histogram expired between M95-M110. Data may be missing.
-    {SessionStorageContextOpenReasons}
-  </summary>
-  <token key="SessionStorageContextOpenReasons">
-    <variant name="CommitErrors" summary="After too many commit errors."/>
-    <variant name="InvalidVersion"
-        summary="After an invalid version was read."/>
-    <variant name="OpenFailed" summary="After opening the DB failed."/>
-    <variant name="ReadNamespacesError"
-        summary="After reading the namespaces failed."/>
-    <variant name="ReadNextMapIdError"
-        summary="After reading the map id failed."/>
-    <variant name="ReadVersionError"
-        summary="After reading the schema version failed."/>
-  </token>
-</histogram>
-
 <histogram name="SessionStorageDatabase.Open" enum="SessionStorageDatabaseOpen"
     expires_after="never">
 <!-- expires-never: core storage metric; consumed in separate dashboard (go/chrome-storage-dashboard) -->
