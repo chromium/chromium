@@ -46,6 +46,11 @@ PasswordFieldClassificationModelHandlerFactory::
 PasswordFieldClassificationModelHandlerFactory::
     ~PasswordFieldClassificationModelHandlerFactory() = default;
 
+bool PasswordFieldClassificationModelHandlerFactory::
+    ServiceIsCreatedWithBrowserContext() const {
+  return true;
+}
+
 content::BrowserContext*
 PasswordFieldClassificationModelHandlerFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
@@ -82,7 +87,7 @@ PasswordFieldClassificationModelHandlerFactory::GetBrowserContextToUse(
           password_manager::features::kActorLoginLocalClassificationModel)) {
     return context;
   }
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   return nullptr;
 }
