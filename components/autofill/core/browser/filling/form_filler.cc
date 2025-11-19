@@ -1026,12 +1026,13 @@ void FormFiller::MaybeTriggerRefill(
       // Since we won't schedule another refill, we should be cautious not to
       // prematurely schedule refills.
       if (refill_context->filled_form &&
-          std::ranges::equal(refill_context->filled_form->fields(),
-                             form_structure.fields(),
-                             [](const FormFieldData& f,
-                                const std::unique_ptr<AutofillField>& g) {
-                               return FormFieldData::DeepEqual(f, *g);
-                             })) {
+          std::ranges::equal(
+              refill_context->filled_form->fields(), form_structure.fields(),
+              [](const FormFieldData& f,
+                 const std::unique_ptr<AutofillField>& g) {
+                return FormFieldData::IdenticalAndEquivalentDomElements(
+                    f, *g, {FormFieldData::Exclusion::kValue});
+              })) {
         return;
       }
       break;

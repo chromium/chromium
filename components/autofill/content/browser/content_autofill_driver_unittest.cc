@@ -16,6 +16,7 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -735,6 +736,8 @@ TEST_F(ContentAutofillDriverTest, TypePredictionsSentToRendererWhenEnabled) {
       switches::kShowAutofillTypePredictions);
 
   FormData form = test::CreateTestAddressFormData();
+  form.set_is_action_empty(false);
+  form.set_submission_event(mojom::SubmissionIndicatorEvent::NONE);
   std::vector<FormData> augmented_forms;
   EXPECT_CALL(manager(), OnFormsSeen).WillOnce(SaveArg<0>(&augmented_forms));
   driver().renderer_events().FormsSeen(/*updated_forms=*/{form},
@@ -742,7 +745,8 @@ TEST_F(ContentAutofillDriverTest, TypePredictionsSentToRendererWhenEnabled) {
 
   test_api(driver()).LiftForTest(form);
   ASSERT_EQ(augmented_forms.size(), 1u);
-  EXPECT_TRUE(FormData::DeepEqual(augmented_forms.front(), form));
+  EXPECT_EQ(test::WithoutUnserializedData(augmented_forms.front()),
+            test::WithoutUnserializedData(form));
 
   FormStructure form_structure(form);
 

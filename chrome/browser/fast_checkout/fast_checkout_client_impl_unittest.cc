@@ -464,18 +464,11 @@ class DISABLED_FastCheckoutClientImplTest
   FieldGlobalId some_field_ = autofill::test::MakeFieldGlobalId();
 };
 
-MATCHER_P(FormDataEqualTo,
-          form_data,
-          "Compares two autofill::FormData instances with their DeepEqual "
-          "function.") {
-  return FormData::DeepEqual(arg, form_data);
-}
-
 MATCHER_P(FormFieldDataEqualTo,
           form_data,
           "Compares two autofill::FormFieldData instances with their DeepEqual "
           "function.") {
-  return FormFieldData::DeepEqual(arg, form_data);
+  return FormFieldData::IdenticalAndEquivalentDomElements(arg, form_data);
 }
 
 TEST_F(DISABLED_FastCheckoutClientImplTest,
@@ -794,9 +787,8 @@ TEST_F(DISABLED_FastCheckoutClientImplTest,
   EXPECT_CALL(
       *autofill_manager(),
       FillOrPreviewForm(autofill::mojom::ActionPersistence::kFill,
-                        FormDataEqualTo(address_form_data),
-                        address_form_field_data.global_id(), _,
-                        autofill::AutofillTriggerSource::kFastCheckout));
+                        address_form_data, address_form_field_data.global_id(),
+                        _, autofill::AutofillTriggerSource::kFastCheckout));
   EXPECT_CALL(*autofill_manager(),
               SetFastCheckoutRunId(autofill::FieldTypeGroup::kAddress,
                                    fast_checkout_client()->run_id_));
@@ -838,8 +830,7 @@ TEST_F(DISABLED_FastCheckoutClientImplTest,
   EXPECT_CALL(
       *autofill_manager(),
       FillOrPreviewForm(autofill::mojom::ActionPersistence::kFill,
-                        FormDataEqualTo(credit_card_form->ToFormData()),
-                        field.global_id(), _,
+                        credit_card_form->ToFormData(), field.global_id(), _,
                         autofill::AutofillTriggerSource::kFastCheckout));
   EXPECT_CALL(*autofill_manager(),
               SetFastCheckoutRunId(autofill::FieldTypeGroup::kCreditCard,
@@ -1024,8 +1015,7 @@ TEST_F(DISABLED_FastCheckoutClientImplTest,
   EXPECT_CALL(
       *autofill_manager(),
       FillOrPreviewForm(autofill::mojom::ActionPersistence::kFill,
-                        FormDataEqualTo(credit_card_form->ToFormData()),
-                        field.global_id(), _,
+                        credit_card_form->ToFormData(), field.global_id(), _,
                         autofill::AutofillTriggerSource::kFastCheckout));
   EXPECT_CALL(*autofill_manager(),
               SetFastCheckoutRunId(autofill::FieldTypeGroup::kCreditCard,
@@ -1143,8 +1133,7 @@ TEST_F(DISABLED_FastCheckoutClientImplTest,
   EXPECT_CALL(
       *autofill_manager(),
       FillOrPreviewForm(autofill::mojom::ActionPersistence::kFill,
-                        FormDataEqualTo(credit_card_form->ToFormData()),
-                        field.global_id(), _,
+                        credit_card_form->ToFormData(), field.global_id(), _,
                         autofill::AutofillTriggerSource::kFastCheckout));
   StartRunAndSelectOptions({credit_card_form->form_signature()},
                            /*local_card=*/true);

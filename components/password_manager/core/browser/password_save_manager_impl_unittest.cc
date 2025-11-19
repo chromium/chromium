@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/crowdsourcing/mock_autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/test_utils/vote_uploads_test_matchers.h"
+#include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
@@ -38,6 +39,8 @@ using ::autofill::FormFieldData;
 using ::autofill::FormStructure;
 using ::autofill::PasswordFormFillData;
 using ::autofill::mojom::SubmissionIndicatorEvent;
+using ::autofill::test::WithoutUnserializedData;
+using ::autofill::test::WithoutValues;
 using ::autofill::upload_contents_matchers::FieldAutofillTypeIs;
 using ::autofill::upload_contents_matchers::FieldsContain;
 using ::autofill::upload_contents_matchers::FieldSignatureIs;
@@ -101,8 +104,8 @@ void CheckPendingCredentials(const PasswordForm& expected,
             actual.all_alternative_usernames);
   EXPECT_EQ(expected.notes, actual.notes);
   EXPECT_EQ(expected.actor_login_approved, actual.actor_login_approved);
-  EXPECT_TRUE(
-      autofill::FormData::DeepEqual(expected.form_data, actual.form_data));
+  EXPECT_EQ(WithoutUnserializedData(WithoutValues(expected.form_data)),
+            WithoutUnserializedData(WithoutValues(actual.form_data)));
 }
 
 struct ExpectedGenerationUKM {

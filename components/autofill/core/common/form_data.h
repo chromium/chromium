@@ -135,22 +135,30 @@ struct FrameTokenWithPredecessor {
 class FormData {
  public:
   struct FillData;
-  // Returns true if many members of forms |a| and |b| are identical.
+
+  // Returns true if `a` and `b` represent DOM elements that are
+  // - identical: they were computed from the same DOM element; and
+  // - equivalent: they have the same attributes.
   //
-  // "Many" is intended to be "all", but currently the following members are not
-  // being compared:
+  // NOTE: Most usecases should compare FormData::global_id() instead, which
+  // checks for identity.
   //
-  // - FormData::button_titles,
-  // - FormData::full_url,
-  // - FormData::is_action_empty,
-  // - FormData::main_frame_origin,
-  // - FormData::host_frame,
-  // - FormData::version,
-  // - FormData::submission_event,
-  // - FormData::username_predictions,
-  // - FormData::is_gaia_with_skip_save_password_form,
-  // - some fields of FormFieldData (see FormFieldData::Equal()).
-  static bool DeepEqual(const FormData& a, const FormData& b);
+  // Because DOM elements can change dynamically, "identical" and "equivalent"
+  // do not imply one another.
+  //
+  // For example, if `a` and `b` represent the two <form> elements in
+  //   <form> </form>,
+  // then the function returns false because the DOM elements are not identical
+  // (they have different renderer IDs).
+  //
+  // On the other hand, if `a` is the <form> element from
+  //   <form> </form>
+  // and we extract the same form again later as `b` and nothing has changed
+  // dynamically, the function returns true.
+  [[nodiscard]] static bool IdenticalAndEquivalentDomElements(
+      const FormData& a,
+      const FormData& b,
+      DenseSet<FormFieldData::Exclusion> exclusions = {});
 
   FormData();
   FormData(const FormData&);
@@ -350,6 +358,11 @@ class FormData {
  private:
   friend class FormDataTestApi;
 
+  // LINT.IfChange(FormDataMembers)
+  LocalFrameToken host_frame_;
+  FormRendererId renderer_id_;
+  std::vector<FrameTokenWithPredecessor> child_frames_;
+  std::vector<FormFieldData> fields_;
   std::u16string id_attribute_;
   std::u16string name_attribute_;
   std::u16string name_;
@@ -359,16 +372,13 @@ class FormData {
   GURL action_;
   bool is_action_empty_ = false;
   url::Origin main_frame_origin_;
-  LocalFrameToken host_frame_;
-  FormRendererId renderer_id_;
-  FormVersion version_;
-  std::vector<FrameTokenWithPredecessor> child_frames_;
   mojom::SubmissionIndicatorEvent submission_event_ =
       mojom::SubmissionIndicatorEvent::NONE;
-  std::vector<FormFieldData> fields_;
   std::vector<FieldRendererId> username_predictions_;
   bool is_gaia_with_skip_save_password_form_ = false;
   bool likely_contains_captcha_ = false;
+  FormVersion version_;
+  // LINT.ThenChange(form_data.cc:IdenticalAndEquivalentDomElements)
 };
 
 // Whether any of the fields in |form| is a non-empty password field.
@@ -385,7 +395,7 @@ std::ostream& PrintWithIndentation(std::ostream& os,
 
 #if defined(UNIT_TEST)
 inline bool operator==(const FormData& lhs, const FormData& rhs) {
-  return FormData::DeepEqual(lhs, rhs);
+  return FormData::IdenticalAndEquivalentDomElements(lhs, rhs);
 }
 #endif  // defined(UNIT_TEST)
 

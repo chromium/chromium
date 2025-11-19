@@ -81,8 +81,8 @@ bool operator==(const FormFieldDataPredictions& a,
                 const FormFieldDataPredictions& b) = default;
 
 bool operator==(const FormDataPredictions& a, const FormDataPredictions& b) {
-  return FormData::DeepEqual(test::WithoutUnserializedData(a.data),
-                             test::WithoutUnserializedData(b.data)) &&
+  return test::WithoutUnserializedData(test::WithoutValues(a.data)) ==
+             test::WithoutUnserializedData(test::WithoutValues(b.data)) &&
          a.signature == b.signature && a.fields == b.fields;
 }
 

@@ -29,7 +29,6 @@
 namespace autofill {
 namespace {
 
-using ::autofill::test::DeepEqualsFormData;
 using ::testing::_;
 using ::testing::Eq;
 using ::testing::InSequence;
@@ -124,10 +123,10 @@ TEST_F(FormDataAndroidTest, Form) {
   FormData form = CreateTestForm();
   FormDataAndroid form_android(form, kSampleSessionId);
 
-  EXPECT_TRUE(FormData::DeepEqual(form, form_android.form()));
+  EXPECT_EQ(form_android.form(), form);
 
   form.set_name(form.name() + u"x");
-  EXPECT_FALSE(FormData::DeepEqual(form, form_android.form()));
+  EXPECT_NE(form_android.form(), form);
 }
 
 // Tests that form similarity checks include name, name_attribute, id_attribute,
@@ -361,7 +360,7 @@ TEST_F(FormDataAndroidTest, UpdateFieldVisibilities) {
   EXPECT_CALL(*field_bridges()[2], UpdateFocusable).Times(0);
   form_android.UpdateFieldVisibilities(form);
 
-  EXPECT_TRUE(FormData::DeepEqual(form, form_android.form()));
+  EXPECT_EQ(form_android.form(), form);
 }
 
 // Tests that `GetJavaPeer` passes the correct `FormData`, `SessionId` and
@@ -370,7 +369,7 @@ TEST_F(FormDataAndroidTest, GetJavaPeer) {
   FormData form = CreateTestForm();
   FormDataAndroid af(form, kSampleSessionId);
   EXPECT_CALL(form_bridge(),
-              GetOrCreateJavaPeer(DeepEqualsFormData(form), kSampleSessionId,
+              GetOrCreateJavaPeer(Eq(form), kSampleSessionId,
                                   Pointwise(SimilarFieldAs(), form.fields())));
   af.GetJavaPeer();
 }

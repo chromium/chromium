@@ -19,6 +19,7 @@
 #include "base/types/optional_ref.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
+#include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/html_field_types.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/signatures.h"
@@ -108,32 +109,37 @@ class FormFieldData {
 
   struct FillData;
 
-  // Returns true if many members of fields |a| and |b| are identical.
+  enum class Exclusion {
+    // Excludes all attributes related to the field value from the comparison.
+    kValue,
+    kMaxValue = kValue
+  };
+
+  // Returns true if `a` and `b` represent DOM elements that are
+  // - identical: they were computed from the same DOM element; and
+  // - equivalent: they have the same attributes.
   //
-  // "Many" is intended to be "all", but currently the following members are not
-  // being compared:
+  // NOTE: Most usecases should compare FormFieldData::global_id() instead,
+  // which checks for identity.
   //
-  // - FormFieldData::value,
-  // - FormFieldData::aria_label,
-  // - FormFieldData::aria_description,
-  // - FormFieldData::host_frame,
-  // - FormFieldData::host_form_id,
-  // - FormFieldData::host_form_signature,
-  // - FormFieldData::origin,
-  // - FormFieldData::force_override,
-  // - FormFieldData::form_control_ax_id,
-  // - FormFieldData::section,
-  // - FormFieldData::is_autofilled,
-  // - FormFieldData::is_user_edited,
-  // - FormFieldData::properties_mask,
-  // - FormFieldData::is_enabled,
-  // - FormFieldData::is_readonly,
-  // - FormFieldData::user_input,
-  // - FormFieldData::options,
-  // - FormFieldData::label_source,
-  // - FormFieldData::bounds,
-  // - FormFieldData::datalist_options.
-  static bool DeepEqual(const FormFieldData& a, const FormFieldData& b);
+  // Because DOM elements can change dynamically, "identical" and "equivalent"
+  // do not imply one another.
+  //
+  // For example, if `a` and `b` represent the two <input> elements in
+  //   <form> <input name=f> <input name=f> </form>,
+  // then the function returns false because the DOM elements are not identical
+  // (they have different renderer IDs).
+  //
+  // On the other hand, if `a` is the <input> element from
+  //   <form> <input name=f> </form>
+  // and later, the same DOM element has evolved to
+  //   <form> <input name=f value=Foo> </form>
+  // and `b` is that <input>, then the function returns true iff `exclude`
+  // contains `kValue`.
+  [[nodiscard]] static bool IdenticalAndEquivalentDomElements(
+      const FormFieldData& a,
+      const FormFieldData& b,
+      DenseSet<Exclusion> exclude = {});
 
   FormFieldData();
   FormFieldData(const FormFieldData&);
@@ -184,9 +190,6 @@ class FormFieldData {
   // Returns true if the field is focusable to the user.
   // This is an approximation of visibility with false positives.
   bool IsFocusable() const;
-
-  // NOTE: Update `DeepEqual()` and `FormFieldDataAndroid::SimilarFieldAs()`
-  // if needed when adding new a member.
 
   // The name by which autofill knows this field. This is generally either the
   // name attribute or the id_attribute value, which-ever is non-empty with
@@ -477,6 +480,9 @@ class FormFieldData {
   }
 
  private:
+  // Also consider updating `FormFieldDataAndroid::SimilarFieldAs()` when adding
+  // new a member.
+  // LINT.IfChange(FormFieldDataMembers)
   std::u16string name_;
   std::u16string id_attribute_;
   std::u16string name_attribute_;
@@ -517,6 +523,7 @@ class FormFieldData {
   gfx::RectF bounds_;
   std::vector<SelectOption> datalist_options_;
   bool force_override_ = false;
+  // LINT.ThenChange(form_field_data.cc:IdenticalAndEquivalentDomElements)
 };
 
 // Structure containing necessary information to be sent from the browser to the

@@ -1927,7 +1927,7 @@ TEST_F(FormStructureTestImpl, ToFormData) {
   field.set_renderer_id(test::MakeFieldRendererId());
   test_api(form).Append(field);
 
-  EXPECT_TRUE(FormData::DeepEqual(form, FormStructure(form).ToFormData()));
+  EXPECT_EQ(form, FormStructure(form).ToFormData());
 }
 
 // Tests that an Autofill upload for password form with 1 field should not be

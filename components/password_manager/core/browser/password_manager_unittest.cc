@@ -1682,7 +1682,7 @@ TEST_P(PasswordManagerTest, ObservedParsedFormIsAssignedAfterParsing) {
   const PasswordForm* parsed_form = manager()->GetParsedObservedForm(
       &driver_, form_data.fields()[0].renderer_id());
   EXPECT_TRUE(parsed_form != nullptr);
-  EXPECT_TRUE(FormData::DeepEqual(form_data, parsed_form->form_data));
+  EXPECT_EQ(form_data, parsed_form->form_data);
 }
 
 TEST_P(PasswordManagerTest, FormSubmitWhenPasswordsCannotBeSaved) {

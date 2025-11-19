@@ -64,7 +64,7 @@ TEST_F(AutofillRendererTest, SendForms) {
   LoadHTML(R"(<form method='POST'>
                 <input type='text' id='firstname'/>
                 <input type='text' id='middlename'/>
-                <input type='text' id='lastname' autoComplete='off'/>
+                <input type='text' id='lastname' autocomplete='off'/>
                 <input type='hidden' id='email'/>
                 <select id='state'/>
                   <option>?</option>

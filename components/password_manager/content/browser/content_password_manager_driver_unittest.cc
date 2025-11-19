@@ -243,10 +243,6 @@ MATCHER(WerePasswordsCleared, "Passwords not cleared") {
   return true;
 }
 
-MATCHER_P(FormDataEqualTo, form_data, "") {
-  return autofill::FormData::DeepEqual(arg, form_data);
-}
-
 }  // namespace
 
 class ContentPasswordManagerDriverTest
@@ -401,8 +397,7 @@ TEST_F(ContentPasswordManagerDriverURLTest, PasswordFormsParsed) {
   form.set_full_url(GURL("http://evil.com/path"));
 
   EXPECT_CALL(password_manager_,
-              OnPasswordFormsParsed(
-                  _, ElementsAre(FormDataEqualTo(ExpectedFormData()))));
+              OnPasswordFormsParsed(_, ElementsAre(ExpectedFormData())));
 
   driver()->PasswordFormsParsed({form});
 }
@@ -413,8 +408,7 @@ TEST_F(ContentPasswordManagerDriverURLTest, PasswordFormsRendered) {
   form.set_full_url(GURL("http://evil.com/path"));
 
   EXPECT_CALL(password_manager_,
-              OnPasswordFormsRendered(
-                  _, ElementsAre(FormDataEqualTo(ExpectedFormData()))));
+              OnPasswordFormsRendered(_, ElementsAre(ExpectedFormData())));
 
   driver()->PasswordFormsRendered({form});
 }
@@ -425,7 +419,7 @@ TEST_F(ContentPasswordManagerDriverURLTest, PasswordFormSubmitted) {
   form.set_full_url(GURL("http://evil.com/path"));
 
   EXPECT_CALL(password_manager_,
-              OnPasswordFormSubmitted(_, FormDataEqualTo(ExpectedFormData())));
+              OnPasswordFormSubmitted(_, ExpectedFormData()));
 
   driver()->PasswordFormSubmitted(form);
 }
@@ -435,8 +429,7 @@ TEST_F(ContentPasswordManagerDriverURLTest, PasswordFormCleared) {
   form.set_url(GURL("http://evil.com"));
   form.set_full_url(GURL("http://evil.com/path"));
 
-  EXPECT_CALL(password_manager_,
-              OnPasswordFormCleared(_, FormDataEqualTo(ExpectedFormData())));
+  EXPECT_CALL(password_manager_, OnPasswordFormCleared(_, ExpectedFormData()));
 
   driver()->PasswordFormCleared(form);
 }

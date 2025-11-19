@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <string>
-
 #include "components/autofill/content/renderer/password_autofill_agent.h"
 
+#include <string>
 #include <vector>
 
 #include "base/command_line.h"
@@ -36,6 +35,7 @@
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_switches.h"
+#include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
@@ -88,6 +88,8 @@ using testing::AllOf;
 using testing::AtMost;
 using testing::Eq;
 using testing::Field;
+using testing::Optional;
+using testing::ResultOf;
 using testing::Truly;
 
 // The name of the username/password element in the form.
@@ -5317,7 +5319,12 @@ TEST_F(PasswordAutofillAgentTest, FillChangePasswordForm) {
     base::MockCallback<
         base::OnceCallback<void(const std::optional<autofill::FormData>&)>>
         mock_reply;
-    EXPECT_CALL(mock_reply, Run(testing::Optional(parsed_form_data[0])));
+    EXPECT_CALL(mock_reply, Run(Optional(ResultOf(
+                                [](FormData form) {
+                                  return test::WithoutUnserializedData(
+                                      test::WithoutValues(std::move(form)));
+                                },
+                                parsed_form_data[0]))));
 
     password_autofill_agent_->FillChangePasswordForm(
         password_id, new_password_id, password_confirmation, u"qwerty",

@@ -98,6 +98,8 @@ using ::autofill::SINGLE_USERNAME;
 using ::autofill::SINGLE_USERNAME_FORGOT_PASSWORD;
 using ::autofill::UNKNOWN_TYPE;
 using ::autofill::password_generation::PasswordGenerationType;
+using ::autofill::test::WithoutUnserializedData;
+using ::autofill::test::WithoutValues;
 using ::autofill::upload_contents_matchers::FieldAutofillTypeIs;
 using ::autofill::upload_contents_matchers::FieldsContain;
 using ::autofill::upload_contents_matchers::FieldSignatureIs;
@@ -114,6 +116,7 @@ using ::testing::IsNull;
 using ::testing::Mock;
 using ::testing::NiceMock;
 using ::testing::Pointee;
+using ::testing::ResultOf;
 using ::testing::Return;
 using ::testing::ReturnRef;
 using ::testing::SaveArg;
@@ -157,6 +160,14 @@ auto UploadFieldIs(const FormFieldData& field,
                FieldAutofillTypeIs({type}), matchers...);
 }
 
+testing::Matcher<const FormData&> DeepEqualsWithoutUnserializedData(
+    const FormData& expected) {
+  return ResultOf(
+      "WithoutUnserializedData()",
+      [](const FormData& actual) { return WithoutUnserializedData(actual); },
+      WithoutUnserializedData(expected));
+}
+
 // Returns a matcher that checks that a vote upload happened for a form with
 // `kSingleUsernameFormSignature` and a field with
 // `kSingleUsernameFieldSignature` with type `SINGLE_USERNAME`.
@@ -180,10 +191,6 @@ MATCHER_P(FormHasPassword, password_value, "") {
     return arg.password_value == password_value;
   }
   return arg.new_password_value == password_value;
-}
-
-MATCHER_P(FormDataPointeeEqualTo, form_data, "") {
-  return autofill::FormData::DeepEqual(*arg, form_data);
 }
 
 class MockPasswordManagerDriver : public StubPasswordManagerDriver {
@@ -264,7 +271,8 @@ void CheckPendingCredentials(const PasswordForm& expected,
   EXPECT_EQ(expected.username_element, actual.username_element);
   EXPECT_EQ(expected.password_element, actual.password_element);
   EXPECT_EQ(expected.blocked_by_user, actual.blocked_by_user);
-  EXPECT_TRUE(FormData::DeepEqual(expected.form_data, actual.form_data));
+  EXPECT_EQ(WithoutUnserializedData(WithoutValues(expected.form_data)),
+            WithoutUnserializedData(WithoutValues(actual.form_data)));
 }
 
 struct ExpectedGenerationUKM {
@@ -4976,8 +4984,9 @@ TEST_F(PasswordFormManagerTestWithMockedSaver, SaveCredentials) {
   EXPECT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
                                                possible_usernames_));
   PasswordForm updated_form;
-  EXPECT_CALL(*mock_password_save_manager(),
-              Save(FormDataPointeeEqualTo(observed_form_), _))
+  EXPECT_CALL(
+      *mock_password_save_manager(),
+      Save(Pointee(DeepEqualsWithoutUnserializedData(observed_form_)), _))
       .WillOnce(SaveArg<1>(&updated_form));
   EXPECT_CALL(client_, UpdateFormManagers());
   form_manager_->Save();
@@ -5015,7 +5024,7 @@ TEST_F(PasswordFormManagerTestWithMockedSaver,
 
   PasswordForm saved_form;
   EXPECT_CALL(*mock_password_save_manager(),
-              Save(FormDataPointeeEqualTo(observed_form_),
+              Save(Pointee(DeepEqualsWithoutUnserializedData(observed_form_)),
                    FormHasPassword(new_password)))
       .WillOnce(SaveArg<1>(&saved_form));
   EXPECT_CALL(client_, UpdateFormManagers());
@@ -5221,8 +5230,9 @@ TEST_F(PasswordFormManagerTestWithMockedSaver,
               CreatePendingCredentials(_, _, _, _, _));
   EXPECT_TRUE(form_manager_->ProvisionallySave(submitted_form_, &driver_,
                                                possible_usernames_));
-  EXPECT_CALL(*mock_password_save_manager(),
-              Save(FormDataPointeeEqualTo(submitted_form_), _))
+  EXPECT_CALL(
+      *mock_password_save_manager(),
+      Save(Pointee(DeepEqualsWithoutUnserializedData(submitted_form_)), _))
       .WillOnce(SaveArg<1>(&updated_form));
   form_manager_->Save();
   EXPECT_EQ(submitted_form_.fields()[kUsernameFieldIndex].value(),

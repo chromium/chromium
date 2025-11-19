@@ -31,6 +31,7 @@
 #include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
+#include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/signatures.h"
@@ -80,11 +81,7 @@ auto EqualsFieldInfo(size_t index) {
 
 // Creates a matcher that compares a `FormDataAndroid::form()` to `expected`.
 auto EqualsFormData(const FormData& expected) {
-  return ResultOf(
-      [expected](const FormDataAndroid& actual) {
-        return FormData::DeepEqual(expected, actual.form());
-      },
-      true);
+  return Property(&FormDataAndroid::form, expected);
 }
 
 auto EqualsFormDataWithFields(const FormData& form, auto fields_matcher) {
@@ -1163,7 +1160,8 @@ TEST_F(AndroidAutofillProviderPrefillRequestTest, NoSecondPrefillRequest) {
   ASSERT_TRUE(
       android_autofill_manager().FindCachedFormById(login_form2.global_id()));
   // The helper method should generate different ids every time it is called.
-  ASSERT_FALSE(FormData::DeepEqual(login_form1, login_form2));
+  ASSERT_FALSE(
+      FormData::IdenticalAndEquivalentDomElements(login_form1, login_form2));
 
   EXPECT_CALL(provider_bridge(),
               SendPrefillRequest(EqualsFormData(login_form1)));

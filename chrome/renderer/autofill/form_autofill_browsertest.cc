@@ -323,7 +323,8 @@ FormData FindForm(const blink::WebFormControlElement& element) {
   return FormData();
 }
 
-// TODO(crbug.com/40765988): Replace this with FormData::DeepEqual().
+// TODO(crbug.com/40765988): Replace this with
+// FormData::IdenticalAndEquivalentDomElements().
 #define EXPECT_FORM_FIELD_DATA_EQUALS(expected, actual)                      \
   do {                                                                       \
     EXPECT_EQ(expected.label(), actual.label());                             \

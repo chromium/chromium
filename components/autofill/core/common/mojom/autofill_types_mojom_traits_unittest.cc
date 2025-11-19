@@ -123,8 +123,8 @@ void CheckEqualPassPasswordGenerationUIData(
   EXPECT_EQ(expected.is_generation_element_password_type,
             actual.is_generation_element_password_type);
   EXPECT_EQ(expected.text_direction, actual.text_direction);
-  EXPECT_TRUE(FormData::DeepEqual(
-      test::WithoutUnserializedData(expected.form_data), actual.form_data));
+  EXPECT_EQ(test::WithoutUnserializedData(expected.form_data),
+            test::WithoutUnserializedData(actual.form_data));
 }
 
 void CheckEqualTriggeringField(const TriggeringField& expected,
@@ -144,8 +144,8 @@ void CheckEqualPasswordSuggestionRequest(
     const PasswordSuggestionRequest& expected,
     const PasswordSuggestionRequest& actual) {
   CheckEqualTriggeringField(expected.field, actual.field);
-  EXPECT_TRUE(FormData::DeepEqual(
-      test::WithoutUnserializedData(expected.form_data), actual.form_data));
+  EXPECT_EQ(test::WithoutUnserializedData(expected.form_data),
+            test::WithoutUnserializedData(actual.form_data));
   EXPECT_EQ(expected.username_field_index, actual.username_field_index);
   EXPECT_EQ(expected.password_field_index, actual.password_field_index);
 }
@@ -218,10 +218,9 @@ void ExpectFormFieldData(const FormFieldData& expected,
                          base::OnceClosure closure,
                          const FormFieldData& passed) {
   EXPECT_TRUE(passed.host_frame().is_empty());
-  EXPECT_TRUE(FormFieldData::DeepEqual(test::WithoutUnserializedData(expected),
-                                       passed));
-  EXPECT_EQ(expected.value(), passed.value());
-  EXPECT_EQ(expected.user_input(), passed.user_input());
+  EXPECT_TRUE(FormFieldData::IdenticalAndEquivalentDomElements(
+      test::WithoutUnserializedData(expected),
+      test::WithoutUnserializedData(passed)));
   std::move(closure).Run();
 }
 
@@ -229,8 +228,8 @@ void ExpectFormData(const FormData& expected,
                     base::OnceClosure closure,
                     const FormData& passed) {
   EXPECT_TRUE(passed.host_frame().is_empty());
-  EXPECT_TRUE(
-      FormData::DeepEqual(test::WithoutUnserializedData(expected), passed));
+  EXPECT_EQ(test::WithoutUnserializedData(expected),
+            test::WithoutUnserializedData(passed));
   std::move(closure).Run();
 }
 

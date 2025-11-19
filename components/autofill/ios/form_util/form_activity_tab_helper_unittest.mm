@@ -91,6 +91,7 @@ constexpr NSString* kTestHTMLFormWithIframes =
   test_field_data.set_name(u"text");
   test_field_data.set_form_control_type(FormControlType::kInputText);
   test_field_data.set_host_frame(LocalFrameToken(*host_frame));
+  test_field_data.set_host_form_id(test_form_data.renderer_id());
   test_field_data.set_renderer_id(FieldRendererId(2));
   test_field_data.set_id_attribute(u"text");
   // user_edited is true when the sources of inputs are not being tracked.

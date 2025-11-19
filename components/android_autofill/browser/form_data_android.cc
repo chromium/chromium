@@ -52,7 +52,8 @@ void FormDataAndroid::OnFormFieldDidChange(size_t index,
 
 bool FormDataAndroid::GetFieldIndex(const FormFieldData& field, size_t* index) {
   for (size_t i = 0; i < form_.fields().size(); ++i) {
-    if (FormFieldData::DeepEqual(form_.fields()[i], field)) {
+    if (FormFieldData::IdenticalAndEquivalentDomElements(
+            form_.fields()[i], field, {FormFieldData::Exclusion::kValue})) {
       *index = i;
       return true;
     }

@@ -124,7 +124,8 @@ TEST_F(FormFieldDataAndroidTest, OnFormFieldVisibilityDidChange) {
   EXPECT_CALL(bridge(), UpdateFocusable(true));
   field_copy.set_is_focusable(true);
   field_android.OnFormFieldVisibilityDidChange(field_copy);
-  EXPECT_TRUE(FormFieldData::DeepEqual(field, field_copy));
+  EXPECT_TRUE(
+      FormFieldData::IdenticalAndEquivalentDomElements(field, field_copy));
 }
 
 // Tests that field similarity checks include name, name_attribute, id_attribute
