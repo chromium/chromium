@@ -2,18 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/permissions/site_permissions_helper.h"
+#include "extensions/browser/permissions/site_permissions_helper.h"
 
-#include "chrome/browser/extensions/extension_action_runner.h"
-#include "chrome/browser/extensions/extension_util.h"
-#include "chrome/browser/extensions/permissions/active_tab_permission_granter.h"
-#include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
-#include "chrome/browser/extensions/tab_helper.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/blocked_action_type.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extensions_browser_client.h"
+#include "extensions/browser/permissions/active_tab_permission_granter.h"
+#include "extensions/browser/permissions/scripting_permissions_modifier.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
@@ -37,8 +34,9 @@ constexpr int kRefreshRequiredActionsMask =
 
 }  // namespace
 
-SitePermissionsHelper::SitePermissionsHelper(Profile* profile)
-    : profile_(profile) {}
+SitePermissionsHelper::SitePermissionsHelper(
+    content::BrowserContext* browser_context)
+    : browser_context_(browser_context) {}
 
 SitePermissionsHelper::~SitePermissionsHelper() = default;
 
@@ -80,8 +78,8 @@ SitePermissionsHelper::GetSiteInteraction(
     return SiteInteraction::kWithheld;
   }
 
-  if (PermissionsManager::Get(profile_)->HasActiveTabAndCanAccess(extension,
-                                                                  url)) {
+  if (PermissionsManager::Get(browser_context_)
+          ->HasActiveTabAndCanAccess(extension, url)) {
     return SiteInteraction::kActiveTab;
   }
 
@@ -102,9 +100,7 @@ void SitePermissionsHelper::UpdateSiteAccess(
     PermissionsManager::UserSiteAccess new_access) {
   auto current_url = web_contents->GetLastCommittedURL();
 
-  auto* permissions_manager = PermissionsManager::Get(profile_);
-  ExtensionActionRunner* action_runner =
-      ExtensionActionRunner::GetForWebContents(web_contents);
+  auto* permissions_manager = PermissionsManager::Get(browser_context_);
   bool reload_required = false;
 
   for (auto const* extension : extensions) {
@@ -129,7 +125,7 @@ void SitePermissionsHelper::UpdateSiteAccess(
     }
 
     // Update the extension's site access.
-    ScriptingPermissionsModifier modifier(profile_, extension);
+    ScriptingPermissionsModifier modifier(browser_context_, extension);
     switch (new_access) {
       case PermissionsManager::UserSiteAccess::kOnClick:
         if (permissions_manager->HasBroadGrantedHostPermissions(*extension)) {
@@ -176,25 +172,17 @@ void SitePermissionsHelper::UpdateSiteAccess(
       break;
     }
 
-    if (!action_runner) {
-      break;
-    }
-
-    // Run blocked actions when granting user site permissions.
-    int blocked_actions = action_runner->GetBlockedActions(extension->id());
-    if (PageNeedsRefreshToRun(blocked_actions)) {
-      // Show reload bubble when blocked actions mandate a page refresh.
-      // Refreshing the page will run them.
-      reload_required = true;
-    } else if (blocked_actions != BLOCKED_ACTION_NONE) {
-      action_runner->RunBlockedActions(extension);
-    }
+    // Reload bubble will be shown when blocked actions mandate a page refresh.
+    // Refreshing the page will run them.
+    ExtensionsBrowserClient::Get()->RunBlockActionsIfNeeded(
+        extension, web_contents, this, &reload_required);
   }
 
-  if (action_runner && reload_required) {
+  if (reload_required) {
     // Show the reload bubble for all extensions, since it could be confusing to
     // the user why only some of them appear on the dialog.
-    action_runner->ShowReloadPageBubble(extensions);
+    ExtensionsBrowserClient::Get()->ShowReloadBubbleForAllExtensions(
+        extensions, web_contents);
   }
 }
 
@@ -205,9 +193,8 @@ bool SitePermissionsHelper::PageNeedsRefreshToRun(int blocked_actions) {
 bool SitePermissionsHelper::HasBeenBlocked(
     const Extension& extension,
     content::WebContents* web_contents) const {
-  ExtensionActionRunner* action_runner =
-      ExtensionActionRunner::GetForWebContents(web_contents);
-  return action_runner && action_runner->WantsToRun(&extension);
+  return ExtensionsBrowserClient::Get()->HasBeenBlocked(extension,
+                                                        web_contents);
 }
 
 bool SitePermissionsHelper::ShowAccessRequestsInToolbar(
@@ -216,19 +203,21 @@ bool SitePermissionsHelper::ShowAccessRequestsInToolbar(
   // otherwise the user would most likely never grant the extensions access.
   bool show_access_requests = true;
 
-  ExtensionPrefs::Get(profile_)->ReadPrefAsBoolean(
-      extension_id, kPrefShowAccessRequestsInToolbar, &show_access_requests);
+  ExtensionPrefs::Get(browser_context_)
+      ->ReadPrefAsBoolean(extension_id, kPrefShowAccessRequestsInToolbar,
+                          &show_access_requests);
   return show_access_requests;
 }
 
 void SitePermissionsHelper::SetShowAccessRequestsInToolbar(
     const std::string& extension_id,
     bool show_access_requests_in_toolbar) {
-  ExtensionPrefs::Get(profile_)->UpdateExtensionPref(
-      extension_id, kPrefShowAccessRequestsInToolbar,
-      base::Value(show_access_requests_in_toolbar));
-  PermissionsManager::Get(profile_)->NotifyShowAccessRequestsInToolbarChanged(
-      extension_id, show_access_requests_in_toolbar);
+  ExtensionPrefs::Get(browser_context_)
+      ->UpdateExtensionPref(extension_id, kPrefShowAccessRequestsInToolbar,
+                            base::Value(show_access_requests_in_toolbar));
+  PermissionsManager::Get(browser_context_)
+      ->NotifyShowAccessRequestsInToolbarChanged(
+          extension_id, show_access_requests_in_toolbar);
 }
 
 }  // namespace extensions

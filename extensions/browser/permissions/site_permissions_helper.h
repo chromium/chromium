@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_PERMISSIONS_SITE_PERMISSIONS_HELPER_H_
-#define CHROME_BROWSER_EXTENSIONS_PERMISSIONS_SITE_PERMISSIONS_HELPER_H_
+#ifndef EXTENSIONS_BROWSER_PERMISSIONS_SITE_PERMISSIONS_HELPER_H_
+#define EXTENSIONS_BROWSER_PERMISSIONS_SITE_PERMISSIONS_HELPER_H_
 
 #include "base/memory/raw_ptr.h"
 #include "extensions/browser/permissions_manager.h"
@@ -11,11 +11,10 @@
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
-class Profile;
-
 namespace content {
+class BrowserContext;
 class WebContents;
-}
+}  // namespace content
 
 namespace extensions {
 class Extension;
@@ -40,7 +39,7 @@ class SitePermissionsHelper {
     kGranted,
   };
 
-  explicit SitePermissionsHelper(Profile* profile);
+  explicit SitePermissionsHelper(content::BrowserContext* browser_context);
   SitePermissionsHelper(const SitePermissionsHelper&) = delete;
   const SitePermissionsHelper& operator=(const SitePermissionsHelper&) = delete;
   ~SitePermissionsHelper();
@@ -78,9 +77,9 @@ class SitePermissionsHelper {
                                       bool show_access_requests_in_toolbar);
 
  private:
-  raw_ptr<Profile> profile_;
+  raw_ptr<content::BrowserContext> browser_context_;
 };
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_PERMISSIONS_SITE_PERMISSIONS_HELPER_H_
+#endif  // EXTENSIONS_BROWSER_PERMISSIONS_SITE_PERMISSIONS_HELPER_H_

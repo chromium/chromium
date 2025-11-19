@@ -42,6 +42,7 @@
 #include "chrome/browser/extensions/chrome_kiosk_delegate.h"
 #include "chrome/browser/extensions/chrome_url_request_util.h"
 #include "chrome/browser/extensions/event_router_forwarder.h"
+#include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -88,10 +89,12 @@
 #include "extensions/browser/api/core_extensions_browser_api_provider.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/component_extension_resource_manager.h"
+#include "extensions/browser/extension_management_client.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_interface_binders.h"
+#include "extensions/browser/permissions/site_permissions_helper.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/process_manager_delegate.h"
 #include "extensions/browser/safe_browsing_delegate.h"
@@ -897,27 +900,6 @@ void ChromeExtensionsBrowserClient::CheckManagementPolicy(
   ExtensionSystem::Get(context)->extension_service()->CheckManagementPolicy();
 }
 
-bool ChromeExtensionsBrowserClient::IsForceInstalledInLowTrustEnvironment(
-    content::BrowserContext* context,
-    const Extension& extension) {
-  return ExtensionManagementFactory::GetForBrowserContext(context)
-      ->IsForceInstalledInLowTrustEnvironment(extension);
-}
-
-bool ChromeExtensionsBrowserClient::IsInstallationExplicitlyAllowed(
-    content::BrowserContext* context,
-    const ExtensionId& id) {
-  return ExtensionManagementFactory::GetForBrowserContext(context)
-      ->IsInstallationExplicitlyAllowed(id);
-}
-
-bool ChromeExtensionsBrowserClient::UpdatesFromWebstore(
-    content::BrowserContext* context,
-    const Extension& extension) {
-  return ExtensionManagementFactory::GetForBrowserContext(context)
-      ->UpdatesFromWebstore(extension);
-}
-
 scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
 ChromeExtensionsBrowserClient::GetSafeBrowsingDatabaseManager() const {
 #if BUILDFLAG(SAFE_BROWSING_DB_LOCAL)
@@ -939,6 +921,59 @@ ChromeExtensionsBrowserClient::GetV4ProtocolConfig() const {
 #else
   return std::nullopt;
 #endif
+}
+
+void ChromeExtensionsBrowserClient::OnActiveTabPermissionGranted(
+    const Extension* extension,
+    content::WebContents* web_contents) const {
+  ExtensionActionRunner::GetForWebContents(web_contents)
+      ->OnActiveTabPermissionGranted(extension);
+}
+
+ExtensionManagementClient*
+ChromeExtensionsBrowserClient::GetExtensionManagementClient(
+    content::BrowserContext* context) {
+  return ExtensionManagementFactory::GetForBrowserContext(context);
+}
+
+void ChromeExtensionsBrowserClient::RunBlockActionsIfNeeded(
+    const Extension* extension,
+    content::WebContents* web_contents,
+    SitePermissionsHelper* permission_helper,
+    bool* reload_required) {
+  ExtensionActionRunner* action_runner =
+      ExtensionActionRunner::GetForWebContents(web_contents);
+  if (!action_runner) {
+    return;
+  }
+
+  // Run blocked actions when granting user site permissions.
+  int blocked_actions = action_runner->GetBlockedActions(extension->id());
+  if (permission_helper->PageNeedsRefreshToRun(blocked_actions)) {
+    *reload_required = true;
+  } else if (blocked_actions != BLOCKED_ACTION_NONE) {
+    action_runner->RunBlockedActions(extension);
+  }
+}
+
+void ChromeExtensionsBrowserClient::ShowReloadBubbleForAllExtensions(
+    const std::vector<const Extension*>& extensions,
+    content::WebContents* web_contents) {
+  ExtensionActionRunner* action_runner =
+      ExtensionActionRunner::GetForWebContents(web_contents);
+  if (!action_runner) {
+    return;
+  }
+
+  action_runner->ShowReloadPageBubble(extensions);
+}
+
+bool ChromeExtensionsBrowserClient::HasBeenBlocked(
+    const Extension& extension,
+    content::WebContents* web_contents) const {
+  ExtensionActionRunner* action_runner =
+      ExtensionActionRunner::GetForWebContents(web_contents);
+  return action_runner && action_runner->WantsToRun(&extension);
 }
 
 // static

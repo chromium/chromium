@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_PERMISSIONS_ACTIVE_TAB_PERMISSION_GRANTER_H_
-#define CHROME_BROWSER_EXTENSIONS_PERMISSIONS_ACTIVE_TAB_PERMISSION_GRANTER_H_
+#ifndef EXTENSIONS_BROWSER_PERMISSIONS_ACTIVE_TAB_PERMISSION_GRANTER_H_
+#define EXTENSIONS_BROWSER_PERMISSIONS_ACTIVE_TAB_PERMISSION_GRANTER_H_
 
 #include "base/gtest_prod_util.h"
 #include "base/scoped_observation.h"
@@ -16,11 +16,10 @@
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
-class Profile;
-
 namespace content {
+class BrowserContext;
 class WebContents;
-}
+}  // namespace content
 
 namespace extensions {
 
@@ -58,7 +57,7 @@ class ActiveTabPermissionGranter
 
   ActiveTabPermissionGranter(content::WebContents* web_contents,
                              int tab_id,
-                             Profile* profile);
+                             content::BrowserContext* browser_context);
 
   // content::WebContentsObserver implementation.
   void DidFinishNavigation(
@@ -95,4 +94,4 @@ class ActiveTabPermissionGranter
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_PERMISSIONS_ACTIVE_TAB_PERMISSION_GRANTER_H_
+#endif  // EXTENSIONS_BROWSER_PERMISSIONS_ACTIVE_TAB_PERMISSION_GRANTER_H_

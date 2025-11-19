@@ -258,24 +258,6 @@ ExtensionsBrowserClient::GetProtocolHandlerRegistry(
 void ExtensionsBrowserClient::CheckManagementPolicy(
     content::BrowserContext* context) {}
 
-bool ExtensionsBrowserClient::IsForceInstalledInLowTrustEnvironment(
-    content::BrowserContext* context,
-    const Extension& extension) {
-  return true;
-}
-
-bool ExtensionsBrowserClient::IsInstallationExplicitlyAllowed(
-    content::BrowserContext* context,
-    const ExtensionId& id) {
-  return true;
-}
-
-bool ExtensionsBrowserClient::UpdatesFromWebstore(
-    content::BrowserContext* context,
-    const Extension& extension) {
-  return true;
-}
-
 scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
 ExtensionsBrowserClient::GetSafeBrowsingDatabaseManager() const {
   return nullptr;
@@ -284,6 +266,32 @@ ExtensionsBrowserClient::GetSafeBrowsingDatabaseManager() const {
 std::optional<safe_browsing::V4ProtocolConfig>
 ExtensionsBrowserClient::GetV4ProtocolConfig() const {
   return std::nullopt;
+}
+
+void ExtensionsBrowserClient::OnActiveTabPermissionGranted(
+    const Extension* extension,
+    content::WebContents* web_contents) const {}
+
+ExtensionManagementClient*
+ExtensionsBrowserClient::GetExtensionManagementClient(
+    content::BrowserContext* context) {
+  return nullptr;
+}
+
+void ExtensionsBrowserClient::RunBlockActionsIfNeeded(
+    const Extension* extension,
+    content::WebContents* web_contents,
+    SitePermissionsHelper* permission_helper,
+    bool* reload_required) {}
+
+void ExtensionsBrowserClient::ShowReloadBubbleForAllExtensions(
+    const std::vector<const Extension*>& extensions,
+    content::WebContents* web_contents) {}
+
+bool ExtensionsBrowserClient::HasBeenBlocked(
+    const Extension& extension,
+    content::WebContents* web_contents) const {
+  return false;
 }
 
 }  // namespace extensions

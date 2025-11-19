@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/permissions/permissions_updater.h"
+#include "extensions/browser/permissions/permissions_updater.h"
 
 #include <set>
 #include <utility>
@@ -14,9 +14,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
 #include "base/values.h"
-#include "chrome/browser/extensions/extension_management.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/common/webui_url_constants.h"
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
 #include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
 #include "content/public/browser/browser_context.h"
@@ -24,6 +21,7 @@
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/event_router_factory.h"
+#include "extensions/browser/extension_management_client.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system_provider.h"
@@ -53,6 +51,8 @@ using content::RenderProcessHost;
 namespace extensions {
 
 namespace {
+
+constexpr char kChromeUIFaviconHost[] = "favicon";
 
 // A helper class to watch profile lifetime. See `Subscribe()` call below.
 class PermissionsUpdaterShutdownNotifierFactory
@@ -392,7 +392,7 @@ void PermissionsUpdater::RevokeRuntimePermissions(
     // Don't allow removing chrome://favicon, if it was previously granted.
     for (const auto& pattern : active_permissions_to_remove->explicit_hosts()) {
       bool is_chrome_favicon = pattern.scheme() == content::kChromeUIScheme &&
-                               pattern.host() == chrome::kChromeUIFaviconHost;
+                               pattern.host() == kChromeUIFaviconHost;
       if (is_chrome_favicon) {
         explicit_hosts.AddPattern(pattern);
         break;
@@ -440,14 +440,17 @@ void PermissionsUpdater::RevokeRuntimePermissions(
 
 void PermissionsUpdater::ApplyPolicyHostRestrictions(
     const Extension& extension) {
-  ExtensionManagement* management =
-      ExtensionManagementFactory::GetForBrowserContext(browser_context_);
-  if (management->UsesDefaultPolicyHostRestrictions(&extension)) {
+  auto* extension_management_client =
+      ExtensionsBrowserClient::Get()->GetExtensionManagementClient(
+          browser_context_);
+  if (extension_management_client->UsesDefaultPolicyHostRestrictions(
+          &extension)) {
     SetUsesDefaultHostRestrictions(&extension);
   } else {
-    SetPolicyHostRestrictions(&extension,
-                              management->GetPolicyBlockedHosts(&extension),
-                              management->GetPolicyAllowedHosts(&extension));
+    SetPolicyHostRestrictions(
+        &extension,
+        extension_management_client->GetPolicyBlockedHosts(&extension),
+        extension_management_client->GetPolicyAllowedHosts(&extension));
   }
 }
 
@@ -661,8 +664,6 @@ void PermissionsUpdater::NotifyPermissionsUpdated(
   }
 
   PermissionsManager::UpdateReason reason;
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-
   if (event_type == REMOVED) {
     reason = PermissionsManager::UpdateReason::kRemoved;
   } else if (event_type == ADDED) {
@@ -683,8 +684,8 @@ void PermissionsUpdater::NotifyPermissionsUpdated(
          !host_iterator.IsAtEnd(); host_iterator.Advance()) {
       RenderProcessHost* host = host_iterator.GetCurrentValue();
       if (!host->IsInitializedAndNotDead() ||
-          !profile->IsSameOrParent(
-              Profile::FromBrowserContext(host->GetBrowserContext()))) {
+          !ExtensionsBrowserClient::Get()->IsSameContext(
+              browser_context, host->GetBrowserContext())) {
         continue;
       }
 
@@ -732,16 +733,14 @@ void PermissionsUpdater::NotifyDefaultPolicyHostRestrictionsUpdated(
     content::BrowserContext* browser_context,
     const URLPatternSet default_runtime_blocked_hosts,
     const URLPatternSet default_runtime_allowed_hosts) {
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-
   // Send the new policy to the renderers.
   for (RenderProcessHost::iterator host_iterator(
            RenderProcessHost::AllHostsIterator());
        !host_iterator.IsAtEnd(); host_iterator.Advance()) {
     RenderProcessHost* host = host_iterator.GetCurrentValue();
     if (host->IsInitializedAndNotDead() &&
-        profile->IsSameOrParent(
-            Profile::FromBrowserContext(host->GetBrowserContext()))) {
+        ExtensionsBrowserClient::Get()->IsSameContext(
+            browser_context, host->GetBrowserContext())) {
       mojom::Renderer* renderer =
           RendererStartupHelperFactory::GetForBrowserContext(
               host->GetBrowserContext())

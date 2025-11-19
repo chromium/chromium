@@ -21,6 +21,7 @@
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "extensions/browser/extension_management_client.h"
 #include "extensions/browser/management_policy.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
@@ -60,7 +61,8 @@ class PermissionSet;
 // Tracks the management policies that affect extensions and provides interfaces
 // for observing and obtaining the global settings for all extensions, as well
 // as per-extension settings.
-class ExtensionManagement : public KeyedService {
+class ExtensionManagement : public KeyedService,
+                            public ExtensionManagementClient {
  public:
   // Observer class for extension management settings changes.
   class Observer {
@@ -80,6 +82,17 @@ class ExtensionManagement : public KeyedService {
 
   // KeyedService implementations:
   void Shutdown() override;
+
+  // ExtensionManagementClient implementations:
+  bool UpdatesFromWebstore(const Extension& extension) override;
+  bool IsInstallationExplicitlyAllowed(const ExtensionId& id) override;
+  bool IsForceInstalledInLowTrustEnvironment(
+      const Extension& extension) override;
+  const URLPatternSet& GetPolicyBlockedHosts(
+      const Extension* extension) override;
+  const URLPatternSet& GetPolicyAllowedHosts(
+      const Extension* extension) override;
+  bool UsesDefaultPolicyHostRestrictions(const Extension* extension) override;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -130,13 +143,6 @@ class ExtensionManagement : public KeyedService {
   // from the extension manifest, but may be overridden by policies.
   GURL GetEffectiveUpdateURL(const Extension& extension);
 
-  // Returns true if this extension's update URL is from webstore.
-  bool UpdatesFromWebstore(const Extension& extension);
-
-  // Returns if an extension with id `id` is explicitly allowed by enterprise
-  // policy or not.
-  bool IsInstallationExplicitlyAllowed(const ExtensionId& id);
-
   // Returns if an extension with id `id` is explicitly blocked by enterprise
   // policy or not.
   bool IsInstallationExplicitlyBlocked(const ExtensionId& id);
@@ -172,10 +178,6 @@ class ExtensionManagement : public KeyedService {
   bool IsGreylistedForceInstalledInLowTrustEnvironment(
       const ExtensionId& extension_id);
 
-  // Returns true if a force-installed extension is in a low-trust environment.
-  // Only applies to Windows and MacOS.
-  bool IsForceInstalledInLowTrustEnvironment(const Extension& extension);
-
   // Returns true if an off-store extension is force-installed in low trust
   // environments. Only trusted environments like domain-joined devices or
   // cloud-managed user profiles are allowed to force-install off-store
@@ -191,13 +193,6 @@ class ExtensionManagement : public KeyedService {
   APIPermissionSet GetBlockedAPIPermissions(const ExtensionId& extension_id,
                                             const std::string& update_url);
 
-  // Returns the list of hosts blocked by policy for `extension`.
-  const URLPatternSet& GetPolicyBlockedHosts(const Extension* extension);
-
-  // Returns the hosts exempted by policy from the PolicyBlockedHosts for
-  // `extension`.
-  const URLPatternSet& GetPolicyAllowedHosts(const Extension* extension);
-
   // Returns the list of hosts blocked by policy for Default scope. This can be
   // overridden by an individual scope which is queried via
   // GetPolicyBlockedHosts.
@@ -208,12 +203,6 @@ class ExtensionManagement : public KeyedService {
   // queries via GetPolicyAllowedHosts. This should only be used to
   // initialize a new renderer.
   const URLPatternSet& GetDefaultPolicyAllowedHosts() const;
-
-  // Checks if an `extension` has its own runtime_blocked_hosts or
-  // runtime_allowed_hosts defined in the individual scope of the
-  // ExtensionSettings policy.
-  // Returns false if an individual scoped setting isn't defined.
-  bool UsesDefaultPolicyHostRestrictions(const Extension* extension);
 
   // Returns blocked permission set for `extension`.
   std::unique_ptr<const PermissionSet> GetBlockedPermissions(

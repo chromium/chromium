@@ -4,8 +4,6 @@
 
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/extension_action_dispatcher.h"
-#include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
-#include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
@@ -24,6 +22,8 @@
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/install_verifier.h"
+#include "extensions/browser/permissions/scripting_permissions_modifier.h"
+#include "extensions/browser/permissions/site_permissions_helper.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/test/permissions_manager_waiter.h"
 #include "ui/base/l10n/l10n_util.h"

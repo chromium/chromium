@@ -9,7 +9,6 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/commands/command_service.h"
 #include "chrome/browser/extensions/extension_context_menu_model.h"
-#include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_list_interface_observer.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_hover_card_types.h"
@@ -19,6 +18,7 @@
 #include "extensions/browser/extension_action_icon_factory.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_host_observer.h"
+#include "extensions/browser/permissions/site_permissions_helper.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 

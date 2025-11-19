@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
+#include "extensions/browser/permissions/scripting_permissions_modifier.h"
 
 #include "base/functional/callback_helpers.h"
-#include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
+#include "extensions/browser/permissions/permissions_updater.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"

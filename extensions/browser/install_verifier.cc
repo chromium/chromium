@@ -26,6 +26,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_switches.h"
 #include "extensions/browser/disable_reason.h"
+#include "extensions/browser/extension_management_client.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
@@ -135,8 +136,9 @@ bool InstallVerifier::NeedsVerification(const Extension& extension,
 bool InstallVerifier::IsFromStore(const Extension& extension,
                                   content::BrowserContext* context) {
   return extension.from_webstore() ||
-         ExtensionsBrowserClient::Get()->UpdatesFromWebstore(context,
-                                                             extension);
+         ExtensionsBrowserClient::Get()
+             ->GetExtensionManagementClient(context)
+             ->UpdatesFromWebstore(extension);
 }
 
 void InstallVerifier::Init() {
@@ -242,8 +244,9 @@ void InstallVerifier::RemoveMany(const ExtensionIdSet& ids) {
 }
 
 bool InstallVerifier::AllowedByEnterprisePolicy(const std::string& id) const {
-  return ExtensionsBrowserClient::Get()->IsInstallationExplicitlyAllowed(
-      context_, id);
+  return ExtensionsBrowserClient::Get()
+      ->GetExtensionManagementClient(context_)
+      ->IsInstallationExplicitlyAllowed(id);
 }
 
 std::string InstallVerifier::GetDebugPolicyProviderName() const {
@@ -261,8 +264,9 @@ bool InstallVerifier::MustRemainDisabled(
   if (extension->location() == mojom::ManifestLocation::kComponent)
     return false;
   if (AllowedByEnterprisePolicy(extension->id()) &&
-      !ExtensionsBrowserClient::Get()->IsForceInstalledInLowTrustEnvironment(
-          context_, *extension)) {
+      !ExtensionsBrowserClient::Get()
+           ->GetExtensionManagementClient(context_)
+           ->IsForceInstalledInLowTrustEnvironment(*extension)) {
     return false;
   }
 

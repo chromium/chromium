@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/permissions/active_tab_permission_granter.h"
+#include "extensions/browser/permissions/active_tab_permission_granter.h"
 
 #include <set>
 #include <vector>
@@ -11,9 +11,6 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "chrome/browser/extensions/extension_action_runner.h"
-#include "chrome/browser/extensions/extension_util.h"
-#include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -22,6 +19,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/network_permissions_updater.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/process_manager.h"
@@ -122,12 +120,13 @@ void SetCorsOriginAccessList(content::BrowserContext* browser_context,
 ActiveTabPermissionGranter::ActiveTabPermissionGranter(
     content::WebContents* web_contents,
     int tab_id,
-    Profile* profile)
+    content::BrowserContext* browser_context)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<ActiveTabPermissionGranter>(*web_contents),
       tab_id_(tab_id) {
   CHECK_NE(tab_id_, extension_misc::kUnknownTabId);
-  extension_registry_observation_.Observe(ExtensionRegistry::Get(profile));
+  extension_registry_observation_.Observe(
+      ExtensionRegistry::Get(browser_context));
 }
 
 ActiveTabPermissionGranter::~ActiveTabPermissionGranter() = default;
@@ -205,8 +204,8 @@ void ActiveTabPermissionGranter::GrantIfRequested(const Extension* extension) {
       // It's important that this comes after the Mojo message is sent to the
       // renderer, so that any tasks executing in the renderer occur after it
       // has the updated permissions.
-      ExtensionActionRunner::GetForWebContents(web_contents())
-          ->OnActiveTabPermissionGranted(extension);
+      ExtensionsBrowserClient::Get()->OnActiveTabPermissionGranted(
+          extension, web_contents());
 
       auto* permissions_manager =
           PermissionsManager::Get(web_contents()->GetBrowserContext());
