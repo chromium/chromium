@@ -14,6 +14,7 @@
 #import "components/trusted_vault/trusted_vault_server_constants.h"
 #import "ios/chrome/browser/authentication/trusted_vault_reauthentication/coordinator/trusted_vault_reauthentication_coordinator.h"
 #import "ios/chrome/browser/authentication/trusted_vault_reauthentication/coordinator/trusted_vault_reauthentication_coordinator_delegate.h"
+#import "ios/chrome/browser/credential_exchange/coordinator/credential_import_coordinator.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
@@ -112,6 +113,9 @@
   // Displays the Trusted Vault reauthentication dialog.
   TrustedVaultReauthenticationCoordinator*
       _trustedVaultReauthenticationCoordinator;
+
+  // The coordinator for the Credential Exchange feature handling the import.
+  CredentialImportCoordinator* _credentialImportCoordinator;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
@@ -131,6 +135,14 @@
   [self.mediator startPasswordCheck];
 
   password_manager::LogStartPasswordCheckAutomatically();
+}
+
+- (void)startCredentialImport:(NSUUID*)UUID {
+  _credentialImportCoordinator = [[CredentialImportCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                            UUID:UUID];
+  [_credentialImportCoordinator start];
 }
 
 - (UIViewController*)viewController {
@@ -222,6 +234,9 @@
       stopWithUIDismissal:!_authDidFailForChildCoordinator];
   self.addPasswordCoordinator.delegate = nil;
   self.addPasswordCoordinator = nil;
+
+  [_credentialImportCoordinator stop];
+  _credentialImportCoordinator = nil;
 
   [self.reauthCoordinator stop];
   self.reauthCoordinator.delegate = nil;

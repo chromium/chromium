@@ -90,7 +90,6 @@
 #import "ios/chrome/browser/contextual_panel/coordinator/contextual_sheet_coordinator.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper.h"
 #import "ios/chrome/browser/contextual_panel/utils/contextual_panel_metrics.h"
-#import "ios/chrome/browser/credential_exchange/coordinator/credential_import_coordinator.h"
 #import "ios/chrome/browser/credential_provider_promo/ui_bundled/credential_provider_promo_coordinator.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_promo/ui_bundled/default_browser_promo_non_modal_commands.h"
@@ -228,7 +227,6 @@
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_iph_commands.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/browser/shared/public/commands/country_code_picker_commands.h"
-#import "ios/chrome/browser/shared/public/commands/credential_exchange_commands.h"
 #import "ios/chrome/browser/shared/public/commands/data_controls_commands.h"
 #import "ios/chrome/browser/shared/public/commands/download_list_commands.h"
 #import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
@@ -371,7 +369,6 @@ const char kChromeAppStoreUrl[] =
     ContextualPanelEntrypointIPHCommands,
     ContextualSheetCommands,
     CountryCodePickerCommands,
-    CredentialExchangeCommands,
     DataControlsCommands,
     DefaultBrowserGenericPromoCommands,
     DefaultPromoNonModalPresentationDelegate,
@@ -745,9 +742,6 @@ const char kChromeAppStoreUrl[] =
 
   // The coordinator for the Welcome Back promo.
   WelcomeBackCoordinator* _welcomeBackCoordinator;
-
-  // The coordinator for the Credential Exchange feature handling the import.
-  CredentialImportCoordinator* _credentialImportCoordinator;
 
   // The coordinator for displaying Enterprise Data Controls dialogs.
   DataControlsDialogCoordinator* _dataControlsDialogCoordinator;
@@ -1272,7 +1266,6 @@ const char kChromeAppStoreUrl[] =
     @protocol(WhatsNewCommands),
     @protocol(GoogleOneCommands),
     @protocol(WelcomeBackPromoCommands),
-    @protocol(CredentialExchangeCommands),
     @protocol(DataControlsCommands),
   ];
 
@@ -1822,9 +1815,6 @@ const char kChromeAppStoreUrl[] =
 
   [_BWGCoordinator stop];
   _BWGCoordinator = nil;
-
-  [_credentialImportCoordinator stop];
-  _credentialImportCoordinator = nil;
 
   [_dataControlsDialogCoordinator stop];
   _dataControlsDialogCoordinator = nil;
@@ -3113,16 +3103,6 @@ const char kChromeAppStoreUrl[] =
 - (void)hideCountryCodePicker {
   [_countryCodePickerCoordinator stop];
   _countryCodePickerCoordinator = nil;
-}
-
-#pragma mark - CredentialExchangeCommands
-
-- (void)showCredentialExchangeImport:(NSUUID*)UUID {
-  _credentialImportCoordinator = [[CredentialImportCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser
-                            UUID:UUID];
-  [_credentialImportCoordinator start];
 }
 
 #pragma mark - BWGCommands

@@ -20,6 +20,7 @@ source_set("password") {
     "//components/sync/service",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/trusted_vault_reauthentication/coordinator",
+    "//ios/chrome/browser/credential_exchange/coordinator:import_coordinator",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/net/model:crurl",

@@ -150,6 +150,18 @@ extern NSString* const kSettingsDoneButtonId;
                                  (password_manager::CredentialUIEntry)credential
                              inEditMode:(BOOL)editMode;
 
+// Creates a new CredentialImportViewController displayed from a
+// PasswordManagerViewController and the chrome around it. `browser` is the
+// browser where settings are being displayed and should not be nil. `delegate`
+// may be nil. `UUID` is a token received from the OS during app launch needed
+// to receive credentials from an OS library.
++ (instancetype)
+    credentialImportControllerForBrowser:(Browser*)browser
+                                delegate:
+                                    (id<SettingsNavigationControllerDelegate>)
+                                        delegate
+                                    UUID:(NSUUID*)UUID;
+
 // Creates and displays a new UIViewController for user to report an issue.
 // `browser` is the browser where settings are being displayed and should not be
 // nil. `dataSource` is used to populate the UIViewController. `dispatcher`,

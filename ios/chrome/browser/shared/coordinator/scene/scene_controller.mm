@@ -164,7 +164,6 @@
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/shared/public/commands/credential_exchange_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
@@ -2698,6 +2697,24 @@ using UserFeedbackDataCallback =
   }];
 }
 
+- (void)showPasswordManagerForCredentialImport:(NSUUID*)UUID {
+  if (!self.settingsNavigationController) {
+    self.settingsNavigationController = [SettingsNavigationController
+        credentialImportControllerForBrowser:self.mainInterface.browser
+                                    delegate:self
+                                        UUID:UUID];
+    [self.currentInterface.viewController
+        presentViewController:self.settingsNavigationController
+                     animated:YES
+                   completion:nil];
+    return;
+  }
+
+  CHECK(self.settingsNavigationController);
+  [self.settingsNavigationController
+      showPasswordManagerForCredentialImport:UUID];
+}
+
 - (void)dismissModalsAndShowPasswordCheckupPageForReferrer:
     (password_manager::PasswordCheckReferrer)referrer {
   __weak SceneController* weakSelf = self;
@@ -3393,12 +3410,11 @@ using UserFeedbackDataCallback =
 }
 
 - (void)importCredentials {
-  id<CredentialExchangeCommands> credentialExchangeCommands =
-      HandlerForProtocol(self.currentInterface.browser->GetCommandDispatcher(),
-                         CredentialExchangeCommands);
-  [credentialExchangeCommands
-      showCredentialExchangeImport:self.startupParameters
-                                       .credentialExchangeImportUUID];
+  id<SettingsCommands> settingsHandler = HandlerForProtocol(
+      self.currentInterface.browser->GetCommandDispatcher(), SettingsCommands);
+  [settingsHandler
+      showPasswordManagerForCredentialImport:self.startupParameters
+                                                 .credentialExchangeImportUUID];
 }
 
 #pragma mark - TabOpening implementation.

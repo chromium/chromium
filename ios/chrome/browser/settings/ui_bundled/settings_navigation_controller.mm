@@ -387,6 +387,22 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 }
 
 + (instancetype)
+    credentialImportControllerForBrowser:(Browser*)browser
+                                delegate:
+                                    (id<SettingsNavigationControllerDelegate>)
+                                        delegate
+                                    UUID:(NSUUID*)UUID {
+  SettingsNavigationController* navigationController =
+      [[SettingsNavigationController alloc]
+          initWithRootViewController:nil
+                             browser:browser
+                            delegate:delegate];
+  [navigationController showPasswordManagerForCredentialImport:UUID];
+
+  return navigationController;
+}
+
++ (instancetype)
     userFeedbackControllerForBrowser:(Browser*)browser
                             delegate:(id<SettingsNavigationControllerDelegate>)
                                          delegate
@@ -1194,6 +1210,11 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 - (void)showSavedPasswordsSettingsFromViewController:
     (UIViewController*)baseViewController {
   [self showSavedPasswords];
+}
+
+- (void)showPasswordManagerForCredentialImport:(NSUUID*)UUID {
+  [self showSavedPasswords];
+  [self.savedPasswordsCoordinator startCredentialImport:UUID];
 }
 
 - (void)showAddressDetails:(const autofill::AutofillProfile)address
