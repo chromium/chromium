@@ -385,7 +385,9 @@ void VideoCaptureController::ReturnBuffer(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   ControllerClient* client = FindClient(id, event_handler);
-  CHECK(client);
+  if (!client) {
+    return;
+  }
 
   auto buffers_in_use_entry_iter =
       std::ranges::find(client->buffers_in_use, buffer_id);
