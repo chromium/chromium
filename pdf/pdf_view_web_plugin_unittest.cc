@@ -2945,6 +2945,17 @@ class PdfViewWebPluginInkTest
   }
 
  protected:
+  static constexpr gfx::PointF kDiagonalStrokeStartPosition{95.0f, 85.0f};
+  static constexpr gfx::PointF kDiagonalStrokeMiddlePosition{72.5f, 65.0f};
+  static constexpr gfx::PointF kDiagonalStrokeEndPosition{50.0f, 45.0f};
+
+  struct DiagonalStrokeEvents {
+    blink::WebTouchEvent start_event;
+    blink::WebTouchEvent move_event1;
+    blink::WebTouchEvent move_event2;
+    blink::WebTouchEvent end_event;
+  };
+
   bool UseTextAnnotations() const { return GetParam().use_text_annotations; }
   bool UseTextHighlighting() const { return GetParam().use_text_highlighting; }
 
@@ -3071,6 +3082,47 @@ class PdfViewWebPluginInkTest
     EXPECT_TRUE(cc::MatchesBitmap(canvas_.GetBitmap(), blank_bitmap,
                                   cc::ExactPixelComparator()));
     EXPECT_FALSE(plugin_->HasInkInputsSnapshotForTesting());
+  }
+
+  // TODO(thestig): Deduplicate with CreateTouchEvent() code in other tests.
+  static blink::WebTouchEvent CreateTouchEvent(blink::WebInputEvent::Type type,
+                                               const gfx::PointF& point) {
+    constexpr int kNoModifiers = 0;
+    blink::WebTouchEvent touch_event(
+        type, kNoModifiers, blink::WebInputEvent::GetStaticTimeStampForTests());
+    touch_event.touches[0].SetPositionInWidget(point);
+    touch_event.touches_length = 1;
+    return touch_event;
+  }
+
+  static blink::WebTouchEvent CreatePenEvent(blink::WebInputEvent::Type type,
+                                             const gfx::PointF& point) {
+    blink::WebTouchEvent pen_event = CreateTouchEvent(type, point);
+    pen_event.touches[0].pointer_type =
+        blink::WebPointerProperties::PointerType::kPen;
+    return pen_event;
+  }
+
+  DiagonalStrokeEvents CreateInputsForDiagonalInProgressStrokeTest(
+      bool is_touch) {
+    auto create_func = is_touch ? &PdfViewWebPluginInkTest::CreateTouchEvent
+                                : &PdfViewWebPluginInkTest::CreatePenEvent;
+    DiagonalStrokeEvents events{
+        .start_event = create_func(blink::WebInputEvent::Type::kTouchStart,
+                                   kDiagonalStrokeStartPosition),
+        .move_event1 = create_func(blink::WebInputEvent::Type::kTouchMove,
+                                   kDiagonalStrokeMiddlePosition),
+        .move_event2 = create_func(blink::WebInputEvent::Type::kTouchMove,
+                                   kDiagonalStrokeEndPosition),
+        .end_event = create_func(blink::WebInputEvent::Type::kTouchEnd,
+                                 kDiagonalStrokeEndPosition)};
+    events.move_event1.SetTimeStamp(events.start_event.TimeStamp() +
+                                    base::Seconds(0.1f));
+    events.move_event2.SetTimeStamp(events.move_event1.TimeStamp() +
+                                    base::Seconds(0.5f));
+    events.end_event.SetTimeStamp(events.move_event2.TimeStamp() +
+                                  base::Seconds(0.1f));
+    return events;
   }
 
  private:
@@ -3439,17 +3491,73 @@ TEST_P(PdfViewWebPluginInkTest, AnnotationModeSetsFormAndClearsText) {
 TEST_P(PdfViewWebPluginInkTest, DrawInProgressStroke) {
   plugin_->OnMessage(
       CreateSetAnnotationModeMessageForTesting(InkAnnotationMode::kDraw));
-  static constexpr gfx::PointF kStartPosition{95.0f, 85.0f};
-  static constexpr gfx::PointF kEndPosition{50.0f, 45.0f};
   blink::WebMouseEvent start_event =
-      CreateLeftClickWebMouseEventAtPosition(kStartPosition);
+      CreateLeftClickWebMouseEventAtPosition(kDiagonalStrokeStartPosition);
   blink::WebMouseEvent move_event =
-      CreateLeftClickWebMouseMoveEventAtPosition(kEndPosition);
+      CreateLeftClickWebMouseMoveEventAtPosition(kDiagonalStrokeEndPosition);
   blink::WebMouseEvent end_event =
-      CreateLeftClickWebMouseUpEventAtPosition(kEndPosition);
+      CreateLeftClickWebMouseUpEventAtPosition(kDiagonalStrokeEndPosition);
   TestInProgressDraw(
       /*expected_filename=*/FILE_PATH_LITERAL("diagonal_stroke.png"),
       start_event, {&move_event}, end_event);
+}
+
+TEST_P(PdfViewWebPluginInkTest, DrawInProgressStrokeWithTouchWithoutPressure) {
+  plugin_->OnMessage(
+      CreateSetAnnotationModeMessageForTesting(InkAnnotationMode::kDraw));
+  DiagonalStrokeEvents events =
+      CreateInputsForDiagonalInProgressStrokeTest(/*is_touch=*/true);
+  TestInProgressDraw(
+      /*expected_filename=*/FILE_PATH_LITERAL(
+          "diagonal_stroke_pen_without_pressure.png"),
+      events.start_event, {&events.move_event1, &events.move_event2},
+      events.end_event);
+}
+
+TEST_P(PdfViewWebPluginInkTest,
+       DrawInProgressStrokeWithTouchWithIgnoredPressure) {
+  plugin_->OnMessage(
+      CreateSetAnnotationModeMessageForTesting(InkAnnotationMode::kDraw));
+  DiagonalStrokeEvents events =
+      CreateInputsForDiagonalInProgressStrokeTest(/*is_touch=*/true);
+  events.start_event.touches[0].force = 0.1f;
+  events.move_event1.touches[0].force = 1.0f;
+  events.move_event2.touches[0].force = 1.0f;
+  events.end_event.touches[0].force = 0.1f;
+  TestInProgressDraw(
+      /*expected_filename=*/FILE_PATH_LITERAL(
+          "diagonal_stroke_pen_without_pressure.png"),
+      events.start_event, {&events.move_event1, &events.move_event2},
+      events.end_event);
+}
+
+TEST_P(PdfViewWebPluginInkTest, DrawInProgressStrokeWithPenWithoutPressure) {
+  plugin_->OnMessage(
+      CreateSetAnnotationModeMessageForTesting(InkAnnotationMode::kDraw));
+  DiagonalStrokeEvents events =
+      CreateInputsForDiagonalInProgressStrokeTest(/*is_touch=*/false);
+  TestInProgressDraw(
+      /*expected_filename=*/FILE_PATH_LITERAL(
+          "diagonal_stroke_pen_without_pressure.png"),
+      events.start_event, {&events.move_event1, &events.move_event2},
+      events.end_event);
+}
+
+TEST_P(PdfViewWebPluginInkTest, DrawInProgressStrokeWithPenWithPressure) {
+  plugin_->OnMessage(
+      CreateSetAnnotationModeMessageForTesting(InkAnnotationMode::kDraw));
+  DiagonalStrokeEvents events =
+      CreateInputsForDiagonalInProgressStrokeTest(/*is_touch=*/false);
+  events.start_event.touches[0].force = 0.1f;
+  events.move_event1.touches[0].force = 1.0f;
+  events.move_event2.touches[0].force = 1.0f;
+  events.end_event.touches[0].force = 0.1f;
+
+  TestInProgressDraw(
+      /*expected_filename=*/FILE_PATH_LITERAL(
+          "diagonal_stroke_pen_with_pressure.png"),
+      events.start_event, {&events.move_event1, &events.move_event2},
+      events.end_event);
 }
 
 class PdfViewWebPluginInkTextHighlightTest : public PdfViewWebPluginInkTest {
