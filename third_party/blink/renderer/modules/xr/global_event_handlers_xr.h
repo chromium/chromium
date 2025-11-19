@@ -9,10 +9,6 @@
 
 namespace blink {
 
-// TODO(https://crbug.com/1109272): This should be changed to a partial
-// interface mixin once that's supported by the IDL generator. Currently,
-// GlobalEventHandlers is an interface mixin with five separate implementing
-// interfaces.
 class GlobalEventHandlersXR {
   STATIC_ONLY(GlobalEventHandlersXR);
 

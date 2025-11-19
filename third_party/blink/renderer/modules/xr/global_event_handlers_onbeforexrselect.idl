@@ -7,6 +7,6 @@
 [
     ImplementedAs=GlobalEventHandlersXR
 ]
-partial interface MathMLElement {
+partial interface mixin GlobalEventHandlers {
   attribute EventHandler onbeforexrselect;
 };
