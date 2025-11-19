@@ -26,6 +26,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.CommandLine;
 import org.chromium.base.Holder;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.CallbackHelper;
@@ -131,6 +132,7 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
         Tracker tracker = Mockito.mock(Tracker.class);
         when(tracker.shouldTriggerHelpUi(anyString())).thenReturn(false);
         TrackerFactory.setTrackerForTests(tracker);
+        ResettersForTesting.register(() -> Mockito.reset(tracker));
     }
 
     private void slowDownPulseDrawableAnimations() {
