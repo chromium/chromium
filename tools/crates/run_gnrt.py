@@ -19,6 +19,17 @@ GNRT_MANIFEST_PATH = os.path.join(GNRT_DIR, 'Cargo.toml')
 
 from run_cargo import (RunCargo, DEFAULT_SYSROOT)
 
+
+def RunGnrt(rust_sysroot, out_dir, gnrt_args):
+    target_dir = os.path.abspath(os.path.join(out_dir, 'target'))
+    home_dir = os.path.abspath(os.path.join(target_dir, 'cargo_home'))
+    cargo_args = [
+        '--locked', 'run', '--release', '--manifest-path', GNRT_MANIFEST_PATH,
+        '--target-dir', target_dir, '--'
+    ] + gnrt_args
+    return RunCargo(rust_sysroot, home_dir, cargo_args)
+
+
 def main():
     parser = argparse.ArgumentParser(description='build and run gnrt')
     parser.add_argument('--rust-sysroot',
@@ -29,15 +40,7 @@ def main():
                         default='out/gnrt',
                         help='put target and cargo home dir here')
     (args, gnrt_args) = parser.parse_known_args()
-
-    target_dir = os.path.abspath(os.path.join(args.out_dir, 'target'))
-    home_dir = os.path.abspath(os.path.join(target_dir, 'cargo_home'))
-
-    cargo_args = [
-        '--locked', 'run', '--release', '--manifest-path', GNRT_MANIFEST_PATH,
-        '--target-dir', target_dir, '--'
-    ] + gnrt_args
-    return RunCargo(args.rust_sysroot, home_dir, cargo_args)
+    return RunGnrt(args.rust_sysroot, args.out_dir, gnrt_args)
 
 
 if __name__ == '__main__':
