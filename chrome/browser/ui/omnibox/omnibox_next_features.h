@@ -45,10 +45,6 @@ BASE_DECLARE_FEATURE(kWebUIOmniboxPopup);
 BASE_DECLARE_FEATURE(kWebUIOmniboxPopupDebug);
 extern const base::FeatureParam<bool> kWebUIOmniboxPopupDebugSxSParam;
 
-// TODO(b/459836203): Update histogram to a Omnibox-specific one.
-inline constexpr char kConfigParamParseSuccessHistogram[] =
-    "NewTabPage.Composebox.ConfigParseSuccess";
-
 // The serialized base64 encoded `omnibox::NTPComposeboxConfig`.
 extern const base::FeatureParam<std::string> kConfigParam;
 // Whether to exit AI mode when the user clicks outside the composebox.

@@ -358,6 +358,7 @@ std::string ContextualSearchMetricsRecorder::MimeTypeToString(
   }
 }
 
+// static
 std::string ContextualSearchMetricsRecorder::ContextualSearchSourceToString(
     ContextualSearchSource source) {
   switch (source) {
@@ -380,6 +381,16 @@ std::string ContextualSearchMetricsRecorder::SubmissionTypeToString(
     case SubmissionType::kCreateImages:
       return "CreateImages";
   }
+}
+
+// static
+void ContextualSearchMetricsRecorder::RecordConfigParseSuccess(
+    ContextualSearchSource source,
+    bool success) {
+  base::UmaHistogramBoolean(
+      base::StrCat({"ContextualSearch.ConfigParseSuccess", ".",
+                    ContextualSearchSourceToString(source)}),
+      success);
 }
 
 }  // namespace contextual_search

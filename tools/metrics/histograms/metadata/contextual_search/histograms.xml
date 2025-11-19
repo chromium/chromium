@@ -61,6 +61,19 @@ chromium-metrics-reviews@google.com.
   <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
 </histogram>
 
+<histogram name="ContextualSearch.ConfigParseSuccess.{ContextualSearchSource}"
+    enum="Boolean" expires_after="2026-06-17">
+  <owner>mahmadi@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Recorded the first time the contextual search box is accessed and the
+    configuration proto feature parameter is set to a non-empty value. This
+    metric records whether the config proto was successfully parsed from the
+    base64-encoded string.
+  </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
 <histogram
     name="ContextualSearch.DuplicateTabTitlesShownCount.{ContextualSearchSource}"
     units="count" expires_after="2026-06-10">

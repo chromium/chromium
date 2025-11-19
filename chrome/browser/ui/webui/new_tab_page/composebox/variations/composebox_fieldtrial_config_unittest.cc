@@ -18,6 +18,9 @@ namespace ntp_composebox {
 
 namespace {
 
+const char kConfigParamParseSuccessHistogram[] =
+    "ContextualSearch.ConfigParseSuccess.NewTabPage";
+
 std::string SerializeAndBase64EncodeProto(
     const google::protobuf::MessageLite& proto) {
   std::string serialized_proto;

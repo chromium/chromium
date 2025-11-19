@@ -16,9 +16,6 @@ class Profile;
 
 namespace ntp_composebox {
 
-inline constexpr char kConfigParamParseSuccessHistogram[] =
-    "NewTabPage.Composebox.ConfigParseSuccess";
-
 // If overridden to false, disables the feature (kill switch). If true, enables
 // the feature.
 BASE_DECLARE_FEATURE(kNtpComposebox);

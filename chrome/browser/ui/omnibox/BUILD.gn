@@ -132,6 +132,7 @@ source_set("impl") {
       "//chrome/browser/ui/webui:webui_util",
       "//chrome/common",
       "//components/bookmarks/browser",
+      "//components/contextual_search:public",
       "//components/dom_distiller/core",
       "//components/favicon/content",
       "//components/favicon/core",

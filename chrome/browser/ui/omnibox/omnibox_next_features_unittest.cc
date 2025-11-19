@@ -32,6 +32,9 @@ std::string SerializeAndBase64EncodeProto(
   return base::Base64Encode(serialized_proto);
 }
 
+const char kConfigParamParseSuccessHistogram[] =
+    "ContextualSearch.ConfigParseSuccess.Omnibox";
+
 }  // namespace
 
 class OmniboxNextFeaturesTest : public testing::Test {
