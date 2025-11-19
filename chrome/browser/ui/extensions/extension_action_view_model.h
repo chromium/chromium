@@ -48,8 +48,6 @@ class ImageModel;
 // This class doesn't own the extension or extension action in question. It is
 // safe to call methods after the extension is uninstalled, but they will return
 // undefined values, except GetId().
-//
-// TODO(crbug.com/437774758): Enable this class on Desktop Android.
 class ExtensionActionViewModel
     : public ToolbarActionViewModel,
       public content::WebContentsObserver,
@@ -138,12 +136,6 @@ class ExtensionActionViewModel
   // this class.
   bool CanHandleAccelerators() const;
 
-  const extensions::Extension* extension() const { return extension_.get(); }
-  BrowserWindowInterface* browser() { return browser_; }
-  extensions::ExtensionAction* extension_action() { return extension_action_; }
-  const extensions::ExtensionAction* extension_action() const {
-    return extension_action_;
-  }
   ExtensionActionPlatformDelegate* platform_delegate() {
     return platform_delegate_.get();
   }

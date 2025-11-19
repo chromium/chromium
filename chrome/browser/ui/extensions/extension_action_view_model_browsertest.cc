@@ -99,13 +99,23 @@ class ExtensionActionViewModelBrowserTest : public InProcessBrowserTest {
   }
 
   // Sets whether the given |action| wants to run on the |web_contents|.
-  void SetActionWantsToRunOnTab(extensions::ExtensionAction* action,
+  void SetActionWantsToRunOnTab(const std::string& action_id,
                                 content::WebContents* web_contents,
                                 bool wants_to_run) {
+    Profile* profile = browser()->profile();
+    auto* registry = extensions::ExtensionRegistry::Get(profile);
+    scoped_refptr<const extensions::Extension> extension =
+        registry->enabled_extensions().GetByID(action_id);
+    CHECK(extension);
+    extensions::ExtensionAction* action =
+        extensions::ExtensionActionManager::Get(profile)->GetExtensionAction(
+            *extension);
+    CHECK(action);
+
     action->SetIsVisible(
         sessions::SessionTabHelper::IdForTab(web_contents).id(), wants_to_run);
-    extensions::ExtensionActionDispatcher::Get(browser()->profile())
-        ->NotifyChange(action, web_contents, browser()->profile());
+    extensions::ExtensionActionDispatcher::Get(profile)->NotifyChange(
+        action, web_contents, profile);
   }
 
   // Returns the active WebContents for the primary browser.
@@ -218,7 +228,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewModelFeatureRolloutBrowserTest,
   EXPECT_TRUE(image_source->grayscale());
   EXPECT_FALSE(image_source->paint_blocked_actions_decoration());
 
-  SetActionWantsToRunOnTab(model->extension_action(), web_contents, true);
+  SetActionWantsToRunOnTab(model->GetId(), web_contents, true);
   image_source = model->GetIconImageSourceForTesting(web_contents, view_size());
   EXPECT_FALSE(image_source->grayscale());
   EXPECT_FALSE(image_source->paint_blocked_actions_decoration());
@@ -240,7 +250,6 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewModelFeatureRolloutBrowserTest,
 
   ExtensionActionViewModel* const model = GetViewModelForId(extension->id());
   ASSERT_TRUE(model);
-  EXPECT_EQ(extension.get(), model->extension());
 
   content::WebContents* web_contents = GetActiveWebContents();
   ASSERT_TRUE(web_contents);
@@ -285,7 +294,6 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewModelFeatureRolloutBrowserTest,
 
   ExtensionActionViewModel* const model = GetViewModelForId(extension->id());
   ASSERT_TRUE(model);
-  EXPECT_EQ(extension.get(), model->extension());
 
   content::WebContents* web_contents = GetActiveWebContents();
   std::unique_ptr<IconWithBadgeImageSource> image_source =
@@ -340,7 +348,6 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewModelFeatureRolloutBrowserTest,
 
   ExtensionActionViewModel* const model = GetViewModelForId(extension->id());
   ASSERT_TRUE(model);
-  EXPECT_EQ(extension.get(), model->extension());
 
   // Initially load on a site that the extension doesn't have permissions to.
   AddTab(browser(), GURL("https://www.chromium.org/"));
@@ -1191,7 +1198,6 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewModelFeatureRolloutBrowserTest,
 
   ExtensionActionViewModel* const model = GetViewModelForId(extension->id());
   ASSERT_TRUE(model);
-  EXPECT_EQ(extension.get(), model->extension());
 
   AddTab(browser(), GURL("https://www.chromium.org/"));
   content::WebContents* web_contents = GetActiveWebContents();

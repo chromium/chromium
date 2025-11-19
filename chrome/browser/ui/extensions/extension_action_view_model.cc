@@ -251,7 +251,7 @@ std::u16string ExtensionActionViewModel::GetAccessibleName(
   // GetAccessibleName() can (surprisingly) be called during browser
   // teardown. Handle this gracefully.
   if (!web_contents) {
-    return base::UTF8ToUTF16(extension()->name());
+    return base::UTF8ToUTF16(extension_->name());
   }
 
   std::u16string action_title = GetActionTitle(web_contents);
@@ -353,7 +353,7 @@ bool ExtensionActionViewModel::IsEnabled(
   extensions::SidePanelService* side_panel_service =
       extensions::SidePanelService::Get(profile_);
   if (side_panel_service &&
-      side_panel_service->HasSidePanelActionForTab(*extension(), tab_id)) {
+      side_panel_service->HasSidePanelActionForTab(*extension_, tab_id)) {
     return true;
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)}
@@ -383,7 +383,7 @@ ui::MenuModel* ExtensionActionViewModel::GetContextMenu(
 
   // Reconstruct the menu every time because the menu's contents are dynamic.
   context_menu_model_ = std::make_unique<extensions::ExtensionContextMenuModel>(
-      extension(), browser_, is_pinned, this,
+      extension_.get(), browser_, is_pinned, this,
       ToolbarActionsModel::CanShowActionsInToolbar(*browser_),
       context_menu_source);
   return context_menu_model_.get();
@@ -414,7 +414,7 @@ void ExtensionActionViewModel::ExecuteUserAction(InvocationSource source) {
   // always grant tab permissions.
   constexpr bool kGrantTabPermissions = true;
   extensions::ExtensionAction::ShowAction action =
-      action_runner->RunAction(extension(), kGrantTabPermissions);
+      action_runner->RunAction(extension_.get(), kGrantTabPermissions);
 
   if (action == extensions::ExtensionAction::ShowAction::kShowPopup) {
     constexpr bool kByUser = true;
@@ -423,7 +423,7 @@ void ExtensionActionViewModel::ExecuteUserAction(InvocationSource source) {
              extensions::ExtensionAction::ShowAction::kToggleSidePanel) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     extensions::side_panel_util::ToggleExtensionSidePanel(browser_,
-                                                          extension()->id());
+                                                          extension_->id());
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   }
 }
@@ -466,7 +466,7 @@ void ExtensionActionViewModel::OnToolbarActionRemoved(
 
 void ExtensionActionViewModel::OnToolbarActionUpdated(
     const ToolbarActionsModel::ActionId& action_id) {
-  if (action_id != extension()->id()) {
+  if (action_id != extension_->id()) {
     return;
   }
   NotifyObserver();
@@ -479,7 +479,7 @@ void ExtensionActionViewModel::OnToolbarPinnedActionsChanged() {}
 void ExtensionActionViewModel::OnExtensionCommandAdded(
     const std::string& extension_id,
     const std::string& command_name) {
-  if (extension_id != extension()->id()) {
+  if (extension_id != extension_->id()) {
     return;  // Not this action's extension.
   }
 
@@ -493,7 +493,7 @@ void ExtensionActionViewModel::OnExtensionCommandAdded(
 void ExtensionActionViewModel::OnExtensionCommandRemoved(
     const std::string& extension_id,
     const std::string& command_name) {
-  if (extension_id != extension()->id()) {
+  if (extension_id != extension_->id()) {
     return;
   }
 
@@ -544,7 +544,7 @@ extensions::SitePermissionsHelper::SiteInteraction
 ExtensionActionViewModel::GetSiteInteraction(
     content::WebContents* web_contents) const {
   return extensions::SitePermissionsHelper(profile_).GetSiteInteraction(
-      *extension(), web_contents);
+      *extension_, web_contents);
 }
 
 bool ExtensionActionViewModel::ExtensionIsValid() const {
@@ -686,7 +686,7 @@ ExtensionActionViewModel::GetIconImageSource(content::WebContents* web_contents,
       extensions::SidePanelService::Get(profile_);
   bool has_side_panel_action =
       side_panel_service &&
-      side_panel_service->HasSidePanelActionForTab(*extension(), tab_id);
+      side_panel_service->HasSidePanelActionForTab(*extension_, tab_id);
 #else   // BUILDFLAG(ENABLE_EXTENSIONS)
   bool has_side_panel_action = false;
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
@@ -702,7 +702,7 @@ ExtensionActionViewModel::GetIconImageSource(content::WebContents* web_contents,
   }
 
   bool was_blocked = extensions::SitePermissionsHelper(profile_).HasBeenBlocked(
-      *extension(), web_contents);
+      *extension_, web_contents);
   image_source->set_paint_blocked_actions_decoration(was_blocked);
 
   return image_source;
