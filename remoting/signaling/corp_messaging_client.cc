@@ -118,6 +118,25 @@ base::CallbackListSubscription CorpMessagingClient::RegisterMessageCallback(
   return callback_list_.Add(callback);
 }
 
+void CorpMessagingClient::SendTestMessage(
+    const std::string& messaging_authz_token,
+    internal::SystemTestStruct system_test_struct,
+    StatusCallback on_done) {
+  internal::HostSendMessageRequestStruct request;
+  request.messaging_authz_token = messaging_authz_token;
+  request.peer_message.message_id =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
+  request.peer_message.payload = std::move(system_test_struct);
+
+  // SendHostMessage is non-idempotent (potentially duplicate messages will be
+  // sent), so retries may not be safe.
+  ExecuteRequest(
+      kSendMessageTrafficAnnotation,
+      std::string(internal::GetHostSendMessagePath()),
+      /*enable_retries=*/false, internal::GetHostSendMessageRequest(request),
+      &CorpMessagingClient::OnSendMessageResponse, std::move(on_done));
+}
+
 void CorpMessagingClient::SendMessage(const std::string& messaging_authz_token,
                                       const std::string& payload,
                                       StatusCallback on_done) {

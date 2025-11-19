@@ -63,6 +63,10 @@ class CorpMessagingClient final {
                    const std::string& payload,
                    StatusCallback on_done);
 
+  void SendTestMessage(const std::string& messaging_authz_token,
+                       internal::SystemTestStruct system_test_struct,
+                       StatusCallback on_done);
+
   void StartReceivingMessages(base::OnceClosure on_ready,
                               StatusCallback on_closed);
 

@@ -156,8 +156,10 @@ void CorpMessagingPlayground::OnPeerMessageReceived(
                    // version.
                  },
                  [](const BurstStruct& message) {
-                   // TODO: joedow - Replace simple message burst with proto
-                   // version.
+                   LOG(INFO)
+                       << "Burst message received: index=" << message.index
+                       << ", burst_count=" << message.burst_count
+                       << ", payload=" << message.payload;
                  },
                  [this](const SimpleStruct& simple_message) {
                    LOG(INFO) << "PeerMessage received: payload="
@@ -228,10 +230,23 @@ void CorpMessagingPlayground::SendMessage(int count) {
     LOG(WARNING) << "No authz token received yet, cannot send message.";
     return;
   }
-  for (int i = 0; i < count; i++) {
-    client_->SendMessage(messaging_authz_token_, "Hello from the playground!",
-                         base::DoNothing());
+
+  if (count > 1) {
+    for (int i = 0; i < count; i++) {
+      internal::SystemTestStruct message;
+      internal::BurstStruct burst;
+      burst.index = i;
+      burst.burst_count = count;
+      burst.payload = "Burst message #" + base::NumberToString(i + 1) + " of " +
+                      base::NumberToString(count);
+      message.test_message = std::move(burst);
+      client_->SendTestMessage(messaging_authz_token_, std::move(message),
+                               base::DoNothing());
+    }
+    return;
   }
+  client_->SendMessage(messaging_authz_token_, "Hello from the playground!",
+                       base::DoNothing());
 }
 
 void CorpMessagingPlayground::StartPingPongRally() {
