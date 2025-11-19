@@ -8,7 +8,7 @@
 
 import {RENDERER_ID_NOT_SET} from '//components/autofill/ios/form_util/resources/fill_constants.js';
 import {getRemoteFrameToken, getUniqueID} from '//components/autofill/ios/form_util/resources/fill_util.js';
-import {isFormControlElement} from '//components/autofill/ios/form_util/resources/form_utils.js';
+import {getFormIdentifier, isFormControlElement} from '//components/autofill/ios/form_util/resources/form_utils.js';
 import {gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage, trim} from '//ios/web/public/js_messaging/resources/utils.js';
 
@@ -340,44 +340,6 @@ function getFieldName(element: Element|null): string {
 }
 
 /**
- * Returns the form's `name` attribute if non-empty; otherwise the form's `id`
- * attribute, or the index of the form (with prefix) in document.forms.
- *
- * It is partially based on the logic in
- *     const string16 GetFormIdentifier(const blink::WebFormElement& form)
- * in chromium/src/components/autofill/renderer/form_autofill_util.h.
- *
- * @param form An element for which the identifier is returned.
- * @return a string that represents the element's identifier.
- */
-function getFormIdentifier(form: Element|null): string {
-  if (!form) {
-    return '';
-  }
-
-  let name = form.getAttribute('name');
-  if (name && name.length !== 0 &&
-      form.ownerDocument.forms.namedItem(name) === form) {
-    return name;
-  }
-  name = form.getAttribute('id');
-  if (name && name.length !== 0 &&
-      form.ownerDocument.getElementById(name) === form) {
-    return name;
-  }
-  // A form name must be supplied, because the element will later need to be
-  // identified from the name. A last resort is to take the index number of
-  // the form in document.forms. ids are not supposed to begin with digits (by
-  // HTML 4 spec) so this is unlikely to match a true id.
-  for (let idx = 0; idx !== document.forms.length; idx++) {
-    if (document.forms[idx] === form) {
-      return kNamelessFormIDPrefix + idx;
-    }
-  }
-  return '';
-}
-
-/**
  * Returns the form element from an ID obtained from getFormIdentifier.
  *
  * This works on a 'best effort' basis since DOM changes can always change the
@@ -472,7 +434,7 @@ function formSubmittedInternal(
   const message = {
     command: 'form.submit',
     frameID: gCrWeb.getFrameId(),
-    formName: gCrWebLegacy.form.getFormIdentifier(form),
+    formName: getFormIdentifier(form),
     href: getFullyQualifiedUrl(action),
     formData: gCrWebLegacy.fill.autofillSubmissionData(form),
     remoteFrameToken: includeRemoteFrameToken ? getRemoteFrameToken() :
@@ -570,7 +532,6 @@ gCrWebLegacy.form = {
   getIframeElements,
   getFieldIdentifier,
   getFieldName,
-  getFormIdentifier,
   getFormElementFromRendererId,
   fieldWasEditedByUser,
   formSubmitted,

@@ -22,7 +22,7 @@ NSString* const kObfuscatedFieldType = @"password";
 @interface FormSuggestionProviderQuery : NSObject
 
 // Form HTML 'name' attribute. If missing, its 'id' attribute. If also
-// missing, a name assigned by Chrome in __gCrWeb.form.getFormIdentifier.
+// missing, a name assigned by Chrome in getFormIdentifier form utility function.
 @property(readonly, nonatomic, copy) NSString* formName;
 
 // Number ID, unique for a frame.

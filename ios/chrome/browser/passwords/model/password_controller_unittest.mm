@@ -383,15 +383,6 @@ class PasswordControllerTest : public PlatformTest {
     return [suggestion_values copy];
   }
 
-  // Returns an identifier for the `form_number|th form in the page.
-  std::string FormName(int form_number) {
-    NSString* kFormNamingScript =
-        @"__gCrWeb.form.getFormIdentifier("
-         "    document.querySelectorAll('form')[%d]);";
-    return base::SysNSStringToUTF8(ExecuteJavaScriptInFeatureWorld(
-        [NSString stringWithFormat:kFormNamingScript, form_number]));
-  }
-
   void SimulateUserTyping(const std::string& form_name,
                           FormRendererId formRendererID,
                           const std::string& field_identifier,

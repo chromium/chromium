@@ -8,6 +8,7 @@ import * as fillConstants from '//components/autofill/ios/form_util/resources/fi
 import * as inferenceUtil from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
 import {formOrFieldsetsToFormData, getFrameUrlOrOrigin} from '//components/autofill/ios/form_util/resources/fill_web_form.js';
+import {getFormIdentifier} from '//components/autofill/ios/form_util/resources/form_utils.js';
 import {gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {isTextField} from '//ios/web/public/js_messaging/resources/utils.js';
 
@@ -69,7 +70,7 @@ gCrWebLegacy.fill.webFormElementToFormData = function(
     return false;
   }
 
-  form.name = gCrWebLegacy.form.getFormIdentifier(formElement);
+  form.name = getFormIdentifier(formElement);
   form.origin = getFrameUrlOrOrigin(frame);
   form.action = fillUtil.getCanonicalActionForForm(formElement);
 
