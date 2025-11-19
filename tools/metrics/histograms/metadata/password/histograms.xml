@@ -913,7 +913,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.BiometricAuthPwdFillAndroid.CanAuthenticateWithBiometricOrScreenLock"
-    enum="Boolean" expires_after="2025-11-09">
+    enum="Boolean" expires_after="2026-05-09">
   <owner>ioanap@chromium.org</owner>
   <owner>atsvirchkova@google.com</owner>
   <summary>
