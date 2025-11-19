@@ -1407,6 +1407,60 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, WindowMappingHasGroupDataAfterRestart) {
   EXPECT_EQ(expected_visual_data, first_group->visual_data);
 }
 
+IN_PROC_BROWSER_TEST_F(TabRestoreTest,
+                       PRE_RecentlyClosedGroupTimestampPersistsAfterRestart) {
+  // Enable session service in default mode.
+  EnableSessionService();
+
+  // Navigate to url1 in the current tab.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url1_, WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // Add a second tab so the window entry will be logged instead of a single tab
+  // when the browser closes.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url2_, WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // Add the tab to a group.
+  tab_groups::TabGroupId group =
+      browser()->tab_strip_model()->AddToNewGroup({0});
+
+  // Close the group.
+  CloseGroup(group);
+}
+
+IN_PROC_BROWSER_TEST_F(TabRestoreTest,
+                       RecentlyClosedGroupTimestampPersistsAfterRestart) {
+  // Enable session service in default mode.
+  EnableSessionService();
+
+  sessions::TabRestoreService* tab_restore_service =
+      TabRestoreServiceFactory::GetForProfile(browser()->profile());
+  CHECK(tab_restore_service);
+
+  // There should be two entries: a window and a tab group.
+  ASSERT_EQ(2u, tab_restore_service->entries().size());
+  const auto& entries = tab_restore_service->entries();
+  sessions::tab_restore::Entry* window_entry =
+      std::next(entries.begin(), 0)->get();
+  ASSERT_EQ(sessions::tab_restore::WINDOW, window_entry->type);
+  sessions::tab_restore::Entry* group_entry =
+      std::next(entries.begin(), 1)->get();
+  ASSERT_EQ(sessions::tab_restore::GROUP, group_entry->type);
+
+  // Verify the window contains exactly 1 tab and no tab group.
+  auto* window = static_cast<sessions::tab_restore::Window*>(window_entry);
+  ASSERT_EQ(1u, window->tabs.size());
+  ASSERT_EQ(0u, window->tab_groups.size());
+
+  // Verify group entry is valid and timestamp is persisted.
+  ASSERT_FALSE(group_entry->timestamp.is_null());
+  ASSERT_GT(group_entry->timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds(),
+            0);
+}
+
 // Check that TabRestoreService and SessionService do not try to restore the
 // same thing.
 IN_PROC_BROWSER_TEST_F(TabRestoreTest,

@@ -414,6 +414,7 @@ struct GroupCommandFields {
   int browser_id = 0;
   std::u16string title;
   uint32_t color = 0;
+  int64_t timestamp = 0;
   bool is_saved;
   std::string saved_id;
 };
@@ -448,6 +449,10 @@ std::unique_ptr<sessions::tab_restore::Group> CreateGroupEntryFromCommand(
     }
   }
 
+  if (!it.ReadInt64(&parsed_fields.timestamp)) {
+    return nullptr;
+  }
+
   // Copy the parsed data.
   GroupCommandFields fields = parsed_fields;
 
@@ -461,6 +466,8 @@ std::unique_ptr<sessions::tab_restore::Group> CreateGroupEntryFromCommand(
   }
 
   group->browser_id = fields.browser_id;
+  group->timestamp = base::Time::FromDeltaSinceWindowsEpoch(
+      base::Microseconds(fields.timestamp));
   group->visual_data =
       tab_groups::TabGroupVisualData(fields.title, fields.color);
   *session_id = SessionID::FromSerializedValue(fields.session_id);
@@ -553,7 +560,8 @@ class TabRestoreServiceImpl::PersistenceDelegate
       tab_groups::TabGroupId group_id,
       std::optional<base::Uuid> saved_group_id,
       SessionID::id_type browser_id,
-      tab_groups::TabGroupVisualData visual_data);
+      tab_groups::TabGroupVisualData visual_data,
+      base::Time timestamp);
 
   // Creates a tab close command.
   static std::unique_ptr<SessionCommand> CreateSelectedNavigationInTabCommand(
@@ -843,7 +851,7 @@ void TabRestoreServiceImpl::PersistenceDelegate::ScheduleCommandsForGroup(
 
   command_storage_manager_->ScheduleCommand(CreateGroupCommand(
       group.id, group.tabs.size(), group.group_id, group.saved_group_id,
-      group.browser_id, group.visual_data));
+      group.browser_id, group.visual_data, group.timestamp));
   ScheduleCommandsForTabs(group.tabs);
 }
 
@@ -983,7 +991,8 @@ TabRestoreServiceImpl::PersistenceDelegate::CreateGroupCommand(
     tab_groups::TabGroupId tab_group_id,
     std::optional<base::Uuid> saved_group_id,
     SessionID::id_type browser_id,
-    tab_groups::TabGroupVisualData visual_data) {
+    tab_groups::TabGroupVisualData visual_data,
+    base::Time timestamp) {
   static_assert(sizeof(SessionID::id_type) == sizeof(int),
                 "SessionID::id_type has changed size.");
 
@@ -1001,8 +1010,10 @@ TabRestoreServiceImpl::PersistenceDelegate::CreateGroupCommand(
     pickle.WriteString(saved_group_id.value().AsLowercaseString());
   }
 
-  std::unique_ptr<SessionCommand> command(
-      new SessionCommand(kCommandCreateGroup, pickle));
+  pickle.WriteInt64(timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds());
+
+  std::unique_ptr<SessionCommand> command =
+      std::make_unique<SessionCommand>(kCommandCreateGroup, pickle);
   return command;
 }
 
