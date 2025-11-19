@@ -288,9 +288,15 @@ export class TsReadModelImpl implements ReadAloudModelBrowserProxy {
     if (superscriptStartIndex === -1 ||
         currentSentence!.text.substring(0, superscriptStartIndex).trim() !==
             '') {
-      // This isn't a sentence that starts with a superscript, or there's
-      // text before the superscript.
-      return currentSentence;
+      const superscriptIndexInBothSentences: number =
+          (previousSentence.text + currentSentence!.text)
+              .indexOf(superscriptText);
+      if (superscriptIndexInBothSentences <= 0) {
+        // This isn't a sentence that starts with a superscript, or there's
+        // text before the superscript that shouldn't be merged with the current
+        // block of superscript text.
+        return currentSentence;
+      }
     }
 
     // The sentence starts with a superscript. Merge it with the previous

@@ -1240,4 +1240,29 @@ suite('ReadAloudModel', () => {
         assertTextEmpty();
       });
 
+  test(
+      'getCurrentTextSegments superscript with brackets included in current sentence',
+      async () => {
+        // Create a container element to hold the simplified structure
+        const paragraph = document.createElement('p');
+
+        // Text before the citation
+        paragraph.appendChild(document.createTextNode('Doubt comes in.'));
+
+        const superscript = document.createElement('sup');
+        superscript.appendChild(document.createTextNode('[2]'));
+        paragraph.appendChild(superscript);
+
+        document.body.appendChild(paragraph);
+        await microtasksFinished();
+        getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+
+        // The first sentence and its superscript are returned as one segment.
+        assertEquals(
+            'Doubt comes in.[2]',
+            getReadAloudModel().getCurrentTextContent().trim());
+
+        getReadAloudModel().moveSpeechForward();
+        assertTextEmpty();
+      });
 });

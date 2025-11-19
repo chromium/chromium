@@ -2713,24 +2713,6 @@ TEST_F(ReadAnythingAppControllerTest,
 }
 
 TEST_F(ReadAnythingAppControllerTest,
-       GetCurrentText_SuperscriptWithBracketsCombinedWithCurrentSegment) {
-  std::u16string sentence1 = u"And I am almost there.";
-  std::u16string sentence2 = u"[2]";
-  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
-  ui::AXNodeData static_text2 = test::SuperscriptNode(kId2, sentence2);
-
-  SendUpdateAndDistillNodes({std::move(static_text1), std::move(static_text2)});
-
-  std::vector<ReadAloudTextSegment> next_segments = GetCurrentTextSegments();
-
-  ExpectNodesMapToEntireText(next_segments, {kId1, kId2},
-                             {sentence1, sentence2});
-
-  // Nodes are empty at the end of the new tree.
-  MoveToNextAndAssertEmpty();
-}
-
-TEST_F(ReadAnythingAppControllerTest,
        GetCurrentText_SuperscriptIncludedWhenEntireNodeAndMoreTextAfterScript) {
   // Simulate breaking up the brackets across a link.
   std::u16string sentence1 = u"And I am almost there.";
@@ -3041,6 +3023,24 @@ TEST_F(ReadAnythingAppControllerV8SegmentationTest,
   // The first sentence and its superscript are returned as one segment.
   ExpectNodesMapToEntireText(next_segments, {kId1, kId2, kId3, kId4},
                              {sentence1, sentence2, sentence3, sentence4});
+
+  // Nodes are empty at the end of the new tree.
+  MoveToNextAndAssertEmpty();
+}
+
+TEST_F(ReadAnythingAppControllerV8SegmentationTest,
+       GetCurrentText_SuperscriptWithBracketsCombinedWithCurrentSegment) {
+  std::u16string sentence1 = u"And I am almost there.";
+  std::u16string sentence2 = u"[2]";
+  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
+  ui::AXNodeData static_text2 = test::SuperscriptNode(kId2, sentence2);
+
+  SendUpdateAndDistillNodes({std::move(static_text1), std::move(static_text2)});
+
+  std::vector<ReadAloudTextSegment> next_segments = GetCurrentTextSegments();
+
+  ExpectNodesMapToEntireText(next_segments, {kId1, kId2},
+                             {sentence1, sentence2});
 
   // Nodes are empty at the end of the new tree.
   MoveToNextAndAssertEmpty();
