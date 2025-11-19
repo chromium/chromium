@@ -262,8 +262,6 @@ crbug.com/436300892 [ linux amd mesa_ge_24.2 ] WebCodecs_copyTo_hw_decoder [ Fai
 # crbug.com/436300892 [ amd-0x150e linux mesa_ge_24.2 ] WebCodecs_convertToRGB_hw_decoder [ Failure ]
 
 # Android Desktop/Brya Failures
-crbug.com/416483573 [ android android-brya ] WebCodecs_EncodingRateControl_avc1.420034_prefer-hardware_variable_1500000 [ Failure ]
-crbug.com/416483573 [ android android-brya ] WebCodecs_EncodingRateControl_avc1.420034_prefer-software_variable_1500000 [ Failure ]
 crbug.com/459560016 [ android android-brya ] WebCodecs_SVC_avc1.42001E_prefer-hardware_layers_3 [ Failure ]
 crbug.com/459560016 [ android android-brya ] WebCodecs_SVC_vp09.00.10.08_prefer-hardware_layers_2 [ Failure ]
 crbug.com/459560016 [ android android-brya ] WebCodecs_SVC_vp09.00.10.08_prefer-hardware_layers_3 [ Failure ]
