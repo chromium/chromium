@@ -17,6 +17,7 @@
 #include "chrome/browser/password_manager/actor_login/actor_login_service.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_quality_logger_interface.h"
 #include "content/public/browser/render_frame_host.h"
 
@@ -94,6 +95,8 @@ class ActorToolsTest : public InProcessBrowserTest {
   ExecutionEngine& execution_engine();
   ActorTask& actor_task() const;
 
+  void GetPageApc();
+
  protected:
   virtual std::unique_ptr<ExecutionEngine> CreateExecutionEngine(
       Profile* profile);
@@ -103,6 +106,10 @@ class ActorToolsTest : public InProcessBrowserTest {
   virtual bool ShouldForceActOnWeb();
 
   TaskId CreateNewTask();
+
+  void SetPageContent(
+      base::OnceClosure quit_closure,
+      std::optional<optimization_guide::AIPageContentResult> page_content);
 
   TaskId task_id_;
 

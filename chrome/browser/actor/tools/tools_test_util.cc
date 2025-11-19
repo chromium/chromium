@@ -4,12 +4,14 @@
 
 #include "chrome/browser/actor/tools/tools_test_util.h"
 
+#include "base/base64.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_policy_checker.h"
+#include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/site_policy.h"
@@ -195,6 +197,28 @@ TaskId ActorToolsTest::CreateNewTask() {
                                                 std::move(event_dispatcher));
   return ActorKeyedService::Get(browser()->profile())
       ->AddActiveTask(std::move(actor_task));
+}
+
+void ActorToolsTest::SetPageContent(
+    base::OnceClosure quit_closure,
+    std::optional<optimization_guide::AIPageContentResult> page_content) {
+  auto apc = std::move(page_content->proto);
+  auto* tab_data = ActorTabData::From(active_tab());
+  tab_data->DidObserveContent(apc);
+  std::move(quit_closure).Run();
+}
+
+void ActorToolsTest::GetPageApc() {
+  base::RunLoop run_loop;
+  auto options = optimization_guide::ActionableAIPageContentOptions(
+      /*on_critical_path =*/true);
+  options->max_meta_elements = 32;
+  GetAIPageContent(
+      web_contents(), std::move(options),
+      base::BindOnce(&ActorToolsTest::SetPageContent, base::Unretained(this),
+                     run_loop.QuitClosure()));
+
+  run_loop.Run();
 }
 
 gfx::RectF GetBoundingClientRect(content::RenderFrameHost& rfh,
