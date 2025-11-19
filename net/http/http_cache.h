@@ -26,6 +26,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/lru_cache.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
@@ -60,6 +61,8 @@ class Origin;
 }
 
 namespace net {
+
+NET_EXPORT BASE_DECLARE_FEATURE(kHttpCacheInitializeDiskCacheBackendEarly);
 
 class HttpNetworkSession;
 class HttpResponseInfo;
@@ -98,6 +101,8 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
         disk_cache::ApplicationStatusListenerGetter
             app_status_listener_getter) {}
 #endif
+
+    virtual std::optional<CacheType> GetCacheType() const;
   };
 
   // A default backend factory for the common use cases.
@@ -128,6 +133,8 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
     void SetAppStatusListenerGetter(disk_cache::ApplicationStatusListenerGetter
                                         app_status_listener_getter) override;
 #endif
+
+    std::optional<CacheType> GetCacheType() const override;
 
    private:
     CacheType type_;

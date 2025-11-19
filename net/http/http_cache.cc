@@ -66,6 +66,9 @@
 
 namespace net {
 
+BASE_FEATURE(kHttpCacheInitializeDiskCacheBackendEarly,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace {
 // True if any HTTP cache has been initialized.
 bool g_init_cache = false;
@@ -151,6 +154,14 @@ void HttpCache::DefaultBackend::SetAppStatusListenerGetter(
   app_status_listener_getter_ = std::move(app_status_listener_getter);
 }
 #endif
+
+std::optional<CacheType> HttpCache::BackendFactory::GetCacheType() const {
+  return std::nullopt;
+}
+
+std::optional<CacheType> HttpCache::DefaultBackend::GetCacheType() const {
+  return type_;
+}
 
 //-----------------------------------------------------------------------------
 
@@ -459,6 +470,14 @@ HttpCache::HttpCache(
   }
 
   net_log_ = session->net_log();
+  if (base::FeatureList::IsEnabled(kHttpCacheInitializeDiskCacheBackendEarly) &&
+      backend_factory_) {
+    if (auto maybe_cache_type = backend_factory_->GetCacheType()) {
+      if (*maybe_cache_type == CacheType::DISK_CACHE) {
+        CreateBackend(CompletionOnceCallback());
+      }
+    }
+  }
 }
 
 HttpCache::~HttpCache() {

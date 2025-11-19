@@ -9088,7 +9088,8 @@
                         "backend": "sql"
                     },
                     "enable_features": [
-                        "DiskCacheBackendExperiment"
+                        "DiskCacheBackendExperiment",
+                        "HttpCacheInitializeDiskCacheBackendEarly"
                     ]
                 }
             ]

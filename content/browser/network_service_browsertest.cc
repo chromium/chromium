@@ -61,6 +61,7 @@
 #include "net/disk_cache/backend_experiment.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/http/http_cache.h"
 #include "net/http/http_response_headers.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -973,12 +974,18 @@ class MAYBE_NetworkServiceDataMigrationBrowserTest : public ContentBrowserTest {
     win_network_sandbox_feature_.InitAndDisableFeature(
         sandbox::policy::features::kNetworkServiceSandbox);
 #endif
+    // In this experiment, we created a DB file
+    // user_data/xxx/yyyy/Cache/Cache_Data/sqldb1-wal, which we can not copy.
+    // TODO(crbug.com/460304696): Fix this. Might be by shutting down sql?
+    scoped_feature_list_.InitAndDisableFeature(
+        net::kHttpCacheInitializeDiskCacheBackendEarly);
   }
 
 #if BUILDFLAG(IS_WIN)
  private:
   base::test::ScopedFeatureList win_network_sandbox_feature_;
 #endif
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // A parameterized test fixture that can simulate various failures in the
