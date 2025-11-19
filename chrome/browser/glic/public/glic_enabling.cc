@@ -94,15 +94,11 @@ GlicEnabling::ProfileEnablement GlicEnabling::EnablementForProfile(
 
     // Not having a primary account is considered ineligible, as is kUnknown
     // for the required account capability.
-#if !BUILDFLAG(IS_CHROMEOS)
-    // TODO(crbug.com/454738028): Define what `primary_account` and
-    // `model_execution_features` mean on ChromeOS.
     if (primary_account.IsEmpty() ||
         primary_account.capabilities.can_use_model_execution_features() !=
             signin::Tribool::kTrue) {
       result.primary_account_not_capable = true;
     }
-#endif
   }
 
   if (profile->GetPrefs()->GetInteger(::prefs::kGeminiSettings) !=
@@ -139,8 +135,6 @@ GlicEnabling::ProfileEnablement GlicEnabling::EnablementForProfile(
 
 // static
 bool GlicEnabling::IsInRolloutLocation() {
-  // TODO(crbug.com/454702721): Getting the location on ChromeOS is done
-  // differently.
   auto* variations_service = g_browser_process->variations_service();
   return variations_service->GetStoredPermanentCountry() == "us" &&
          g_browser_process->GetApplicationLocale() == "en-US";

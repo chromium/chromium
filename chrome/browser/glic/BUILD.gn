@@ -101,12 +101,6 @@ source_set("glic") {
     "//components/user_education/common",
     "//ui/base/interaction",
   ]
-  if (use_aura) {
-    public_deps += [ "//ui/wm" ]
-  }
-  if (is_chromeos) {
-    public_deps += [ "//chromeos/ash/components/browser_context_helper" ]
-  }
 }
 
 source_set("enum") {

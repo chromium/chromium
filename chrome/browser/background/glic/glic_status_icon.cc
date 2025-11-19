@@ -96,14 +96,6 @@ namespace glic {
 GlicStatusIcon::GlicStatusIcon(GlicController* controller,
                                StatusTray* status_tray)
     : controller_(controller), status_tray_(status_tray) {
-#if BUILDFLAG(IS_CHROMEOS)
-  if (!status_tray_) {
-    // TODO(crbug.com/454734385): Implement StatusTray functionality on
-    // ChromeOS.
-    return;
-  }
-#endif
-
   status_icon_ = status_tray_->CreateStatusIcon(
       StatusTray::GLIC_ICON, GetIcon(),
       l10n_util::GetStringUTF16(GetTooltipMessageId(controller_->IsShowing())));
@@ -275,14 +267,6 @@ void GlicStatusIcon::PanelStateChanged(
 }
 
 void GlicStatusIcon::UpdateHotkey(const ui::Accelerator& hotkey) {
-#if BUILDFLAG(IS_CHROMEOS)
-  if (!context_menu_) {
-    // TODO(crbug.com/454734385): Implement StatusTray functionality on
-    // ChromeOS.
-    return;
-  }
-#endif
-
   CHECK(context_menu_);
   context_menu_->SetAcceleratorForCommandId(IDC_GLIC_STATUS_ICON_MENU_SHOW,
                                             &hotkey);
