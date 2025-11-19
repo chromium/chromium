@@ -7,9 +7,12 @@
 
 #include <string>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/span.h"
+#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/no_destructor.h"
 #include "base/strings/cstring_view.h"
 #include "base/synchronization/lock.h"
 #include "base/types/expected.h"
@@ -88,6 +91,12 @@ class Environment : public base::subtle::RefCountedThreadSafeBase {
   static base::Lock& GetLock();
   // Make `Environment` a singleton to avoid duplicate `OrtEnv` creation.
   static raw_ptr<Environment> instance_ GUARDED_BY(GetLock());
+  // Returns the set of dependent EP package family names to prevent repeated
+  // calls to `AddPackageDependency` for EP packages in the GPU process
+  // whenever an `Environment` is created. This set is only accessed in
+  // `Environment::Create()` that is already protected by `GetLock()`.
+  static base::flat_set<std::wstring>& GetDependentEpPackages()
+      EXCLUSIVE_LOCKS_REQUIRED(GetLock());
 };
 
 }  // namespace webnn::ort

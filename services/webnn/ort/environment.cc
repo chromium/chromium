@@ -558,11 +558,14 @@ base::expected<scoped_refptr<Environment>, std::string> Environment::Create(
     if (specified_ep_path_info && ep_name == specified_ep_path_info->first) {
       ep_library_path = specified_ep_path_info->second;
     } else {
-      base::FilePath ep_package_path =
-          platform_functions->InitializePackageDependency(
-              package_info->family_name, package_info->version);
-      if (ep_package_path.empty()) {
-        continue;
+      if (!GetDependentEpPackages().contains(package_info->family_name)) {
+        if (platform_functions
+                ->InitializePackageDependency(package_info->family_name,
+                                              package_info->version)
+                .empty()) {
+          continue;
+        }
+        GetDependentEpPackages().insert(package_info->family_name);
       }
       ep_library_path = package_info->library_path;
     }
@@ -717,5 +720,11 @@ base::Lock& Environment::GetLock() {
 }
 
 raw_ptr<Environment> Environment::instance_ = nullptr;
+
+// static
+base::flat_set<std::wstring>& Environment::GetDependentEpPackages() {
+  static base::NoDestructor<base::flat_set<std::wstring>> packages;
+  return *packages;
+}
 
 }  // namespace webnn::ort
