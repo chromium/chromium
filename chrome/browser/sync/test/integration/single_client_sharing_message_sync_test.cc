@@ -197,8 +197,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSharingMessageSyncTest,
   // only sign in such that the standalone transport starts.
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitEngineInitialization());
-  ASSERT_TRUE(AwaitQuiescence());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureActive())
       << "Full sync should be disabled";
   ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,

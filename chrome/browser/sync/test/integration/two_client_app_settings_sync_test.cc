@@ -109,9 +109,6 @@ testing::AssertionResult StartWithSameSettingsTest(
   if (!test()->SetupSync()) {
     return testing::AssertionFailure();
   }
-  if (!test()->AwaitQuiescence()) {
-    return testing::AssertionFailure();
-  }
   if (!AllExtensionSettingsSameAsVerifier()) {
     return testing::AssertionFailure();
   }
@@ -165,9 +162,6 @@ testing::AssertionResult StartWithDifferentSettingsTest(
   }
 
   if (!test()->SetupSync()) {
-    return testing::AssertionFailure();
-  }
-  if (!test()->AwaitQuiescence()) {
     return testing::AssertionFailure();
   }
   if (!AllExtensionSettingsSameAsVerifier()) {

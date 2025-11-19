@@ -65,7 +65,6 @@ IN_PROC_BROWSER_TEST_F(TwoClientArcPackageSyncTest,
   ASSERT_FALSE(AllProfilesHaveSameArcPackageDetails());
 
   ASSERT_TRUE(SetupSync());
-  ASSERT_TRUE(AwaitQuiescence());
   ASSERT_TRUE(AllProfilesHaveSameArcPackageDetails());
 }
 
@@ -88,7 +87,6 @@ IN_PROC_BROWSER_TEST_F(TwoClientArcPackageSyncTest,
   ASSERT_FALSE(AllProfilesHaveSameArcPackageDetails());
 
   ASSERT_TRUE(SetupSync());
-  ASSERT_TRUE(AwaitQuiescence());
   EXPECT_TRUE(AllProfilesHaveSameArcPackageDetails());
 }
 
@@ -109,7 +107,6 @@ IN_PROC_BROWSER_TEST_F(TwoClientArcPackageSyncTest,
   EXPECT_FALSE(AllProfilesHaveSameArcPackageDetails());
 
   ASSERT_TRUE(SetupSync());
-  ASSERT_TRUE(AwaitQuiescence());
   EXPECT_TRUE(AllProfilesHaveSameArcPackageDetails());
 }
 

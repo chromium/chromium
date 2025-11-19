@@ -97,7 +97,6 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionSettingsSyncTest,
       extension2, base::Value::Dict().Set("foo", "bar").Set("baz", "qux"));
 
   ASSERT_TRUE(SetupSync());
-  ASSERT_TRUE(AwaitQuiescence());
   ASSERT_TRUE(AllExtensionSettingsSameAsVerifier());
 
   MutateSomeSettings(0, extension0, extension1, extension2);
@@ -136,7 +135,6 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionSettingsSyncTest,
   SetExtensionSettings(test()->GetProfile(1), extension2, settings2);
 
   ASSERT_TRUE(SetupSync());
-  ASSERT_TRUE(AwaitQuiescence());
   ASSERT_TRUE(AllExtensionSettingsSameAsVerifier());
 
   MutateSomeSettings(2, extension0, extension1, extension2);
