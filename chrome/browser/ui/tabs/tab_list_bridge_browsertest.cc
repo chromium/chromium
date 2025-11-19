@@ -9,8 +9,11 @@
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -471,4 +474,45 @@ IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, HighlightTabs) {
   EXPECT_TRUE(tab_strip_model->IsTabSelected(1));
   EXPECT_FALSE(tab_strip_model->IsTabSelected(2));
   EXPECT_TRUE(tab_strip_model->IsTabSelected(3));
+}
+
+IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, AddTabsToGroup) {
+  // Create three tabs.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("about:blank"), WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  ASSERT_TRUE(tab_strip_model);
+
+  // Set the WebContents ID for all three tabs to their respective indices.
+  SetID(tab_strip_model->GetWebContentsAt(0), 0);
+  SetID(tab_strip_model->GetWebContentsAt(1), 1);
+  SetID(tab_strip_model->GetWebContentsAt(2), 2);
+
+  EXPECT_EQ("0 1 2",
+            GetTabStripStateString(tab_strip_model, /*annotate_groups=*/true));
+
+  TabListInterface* tab_list_interface = TabListInterface::From(browser());
+  ASSERT_TRUE(tab_list_interface);
+
+  auto group_id = tab_list_interface->AddTabsToGroup(
+      /*group_id=*/std::nullopt, {tab_list_interface->GetTab(0)->GetHandle(),
+                                  tab_list_interface->GetTab(2)->GetHandle()});
+  ASSERT_TRUE(group_id.has_value());
+  EXPECT_EQ("0g0 2g0 1",
+            GetTabStripStateString(tab_strip_model, /*annotate_groups=*/true));
+
+  // Note: The tab with WebContents ID of 1 is now at index 2 after the
+  // `AddTabsToGroup` call above.
+  auto second_call_group_id = tab_list_interface->AddTabsToGroup(
+      group_id, {tab_list_interface->GetTab(2)->GetHandle()});
+  EXPECT_EQ(group_id, second_call_group_id);
+  EXPECT_EQ("0g0 2g0 1g0",
+            GetTabStripStateString(tab_strip_model, /*annotate_groups=*/true));
 }
