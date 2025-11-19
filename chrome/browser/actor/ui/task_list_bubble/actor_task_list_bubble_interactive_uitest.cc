@@ -80,22 +80,13 @@ IN_PROC_BROWSER_TEST_F(ActorTaskListBubbleInteractiveUiTest,
       InAnyContext(WaitForHide(kActorTaskListBubbleView)));
 }
 
-// TODO(crbug.com/458775033): Fix and re-enable this test on macOS.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_OnTaskInBubbleActuatesTab DISABLED_OnTaskInBubbleActuatesTab
-#else
-#define MAYBE_OnTaskInBubbleActuatesTab OnTaskInBubbleActuatesTab
-#endif
 IN_PROC_BROWSER_TEST_F(ActorTaskListBubbleInteractiveUiTest,
-                       MAYBE_OnTaskInBubbleActuatesTab) {
-  // Anchor to top container for tests.
-  views::View* anchor_view =
-      BrowserView::GetBrowserViewForBrowser(browser())->top_container();
-  ActorTaskListBubbleController* bubble_controller =
-      ActorTaskListBubbleController::From(browser());
+                       ClickingOnTaskInBubbleActuatesTab) {
+  ui::ScopedAnimationDurationScaleMode disable_animations(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
+  auto* tab_one = browser()->GetActiveTabInterface();
   StartActingOnTab();
-  PauseTask();
 
   // Add and activate the non-actuation tab.
   ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 1,
@@ -103,23 +94,25 @@ IN_PROC_BROWSER_TEST_F(ActorTaskListBubbleInteractiveUiTest,
                                      ui::PAGE_TRANSITION_LINK));
   auto* tab_two = browser()->GetTabStripModel()->GetTabAtIndex(1);
   browser()->GetTabStripModel()->ActivateTabAt(1);
-
+  EXPECT_FALSE(tab_one->IsActivated());
   EXPECT_TRUE(tab_two->IsActivated());
 
-  RunTestSequence(WaitForShow(kGlicActorTaskIconElementId));
-  bubble_controller->ShowBubble(anchor_view);
-  EXPECT_NE(bubble_controller->GetBubbleWidget(), nullptr);
-  auto* content_view = bubble_controller->GetBubbleWidget()
-                           ->widget_delegate()
-                           ->AsBubbleDialogDelegate()
-                           ->GetContentsView();
+  const char kFirstTaskItem[] = "FirstTaskItem";
+  RunTestSequence(
+      Do([&]() { PauseTask(); }),
+      InAnyContext(WaitForShow(kActorTaskListBubbleView)),
+      CheckView(
+          kActorTaskListBubbleView,
+          [](views::View* view) { return view->children().size() == 1u; }),
+      InSameContext(NameDescendantViewByType<RichHoverButton>(
+          kActorTaskListBubbleView, kFirstTaskItem, 0)),
+      CheckViewProperty(kFirstTaskItem, &RichHoverButton::GetSubtitleText,
+                        l10n_util::GetStringUTF16(
+                            IDR_ACTOR_TASK_LIST_BUBBLE_CHECK_TASK_SUBTITLE)),
+      PressButton(kFirstTaskItem),
+      InAnyContext(WaitForHide(kActorTaskListBubbleView)));
 
-  EXPECT_EQ(1u, content_view->children().front()->children().size());
-  auto* button = static_cast<RichHoverButton*>(
-      content_view->children().front()->children().front());
-  views::test::InteractionTestUtilSimulatorViews::PressButton(
-      button, ui::test::InteractionTestUtil::InputType::kMouse);
-
+  EXPECT_TRUE(tab_one->IsActivated());
   EXPECT_FALSE(tab_two->IsActivated());
 }
 #endif
