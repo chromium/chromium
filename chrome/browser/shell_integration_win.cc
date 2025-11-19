@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/shell_integration_win.h"
 
 #include <objbase.h>
@@ -25,6 +20,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/files/file_enumerator.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -328,7 +324,7 @@ class OpenSystemSettingsHelper {
   // Begin the monitoring and will call |on_finished_callback| when done.
   // Takes in a null-terminated array of |schemes| whose registry keys must be
   // watched. The array must contain at least one element.
-  static void Begin(const wchar_t* const schemes[],
+  static void Begin(base::span<const std::wstring_view> schemes,
                     base::OnceClosure on_finished_callback) {
     delete instance_;
     instance_ =
@@ -336,13 +332,13 @@ class OpenSystemSettingsHelper {
   }
 
  private:
-  OpenSystemSettingsHelper(const wchar_t* const schemes[],
+  OpenSystemSettingsHelper(base::span<const std::wstring_view> schemes,
                            base::OnceClosure on_finished_callback)
       : on_finished_callback_(std::move(on_finished_callback)) {
-    for (const wchar_t* const* scan = &schemes[0]; *scan != nullptr; ++scan) {
+    for (const std::wstring_view scheme : schemes) {
       AddRegistryWatcher(base::StrCat({L"SOFTWARE\\Microsoft\\Windows\\Shell"
                                        L"\\Associations\\UrlAssociations\\",
-                                       *scan, L"\\UserChoice"})
+                                       scheme, L"\\UserChoice"})
                              .c_str());
     }
     // Only the watchers that were successfully initialized are counted.
@@ -752,7 +748,7 @@ void SetAsDefaultBrowserUsingSystemSettings(
   // The helper manages its own lifetime. Bind the action recorder
   // into the finished callback to keep it alive throughout the
   // interaction.
-  static const wchar_t* const kSchemes[] = {L"http", L"https", nullptr};
+  static constexpr std::wstring_view kSchemes[] = {L"http", L"https"};
   OpenSystemSettingsHelper::Begin(
       kSchemes, base::BindOnce(&OnSettingsAppFinished, std::move(recorder),
                                std::move(on_finished_callback)));
@@ -767,9 +763,8 @@ void SetAsDefaultClientForSchemeUsingSystemSettings(
   }
 
   // The helper manages its own lifetime.
-  std::wstring wscheme(base::UTF8ToWide(scheme));
-  const wchar_t* const kSchemes[] = {wscheme.c_str(), nullptr};
-  OpenSystemSettingsHelper::Begin(kSchemes, std::move(on_finished_callback));
+  const std::wstring wscheme(base::UTF8ToWide(scheme));
+  OpenSystemSettingsHelper::Begin({wscheme}, std::move(on_finished_callback));
 
   ShellUtil::ShowMakeChromeDefaultProtocolClientSystemUI(chrome_exe, wscheme);
 }
