@@ -211,6 +211,7 @@ class InfoBarDelegate {
     PIN_INFOBAR_DELEGATE = 127,
     SESSION_RESTORE_INFOBAR_DELEGATE = 128,
     ROLL_BACK_MODE_B_INFOBAR_DELEGATE = 129,
+    DEV_TOOLS_REMOTE_DEBUGGING_INFOBAR_DELEGATE = 130,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/browser/enums.xml:InfoBarIdentifier)
 

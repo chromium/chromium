@@ -323,6 +323,8 @@ static_library("devtools") {
       "devtools_dock_tile.h",
       "devtools_infobar_delegate.cc",
       "devtools_infobar_delegate.h",
+      "devtools_remote_server_infobar_delegate.cc",
+      "devtools_remote_server_infobar_delegate.h",
       "devtools_targets_ui.cc",
       "devtools_targets_ui.h",
       "devtools_ui_controller.cc",
