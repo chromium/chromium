@@ -55,7 +55,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewLazyFetchHandWritingIcon,
     &features::kWebViewMixedContentAutoupgrades,
     &features::kWebViewMoveWorkToProviderInit,
-    &features::kWebViewMuteAudio,
     &features::kWebViewOptInToGmsBindServiceOptimization,
     &features::kWebViewPrefetchNativeLibrary,
     &features::kWebViewPreloadClasses,

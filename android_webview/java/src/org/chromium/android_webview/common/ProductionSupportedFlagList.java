@@ -781,7 +781,6 @@ public final class ProductionSupportedFlagList {
                         + " initialization."),
         Flag.baseFeature(BlinkFeatures.STREAMLINE_RENDERER_INIT),
         Flag.baseFeature("LazyBindJsInjection"),
-        Flag.baseFeature(AwFeatures.WEBVIEW_MUTE_AUDIO, "Enables WebView audio to be muted."),
         Flag.baseFeature("WebViewVizUseThreadPool"),
         Flag.baseFeature("InProcessGpuUseIOThread"),
         Flag.baseFeature("EnableCustomInputStreamBufferSize"),

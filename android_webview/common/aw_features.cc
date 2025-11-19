@@ -71,9 +71,6 @@ BASE_FEATURE(kWebViewLazyFetchHandWritingIcon,
 BASE_FEATURE(kWebViewMixedContentAutoupgrades,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// This enables WebView audio to be muted using an API.
-BASE_FEATURE(kWebViewMuteAudio, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // A Feature used for WebView variations tests. Not used in production. Please
 // do not clean up this stale feature: we intentionally keep this feature flag
 // around for testing purposes.

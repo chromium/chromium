@@ -28,7 +28,6 @@ BASE_DECLARE_FEATURE(kWebViewIgnoreDuplicateNavs);
 BASE_DECLARE_FEATURE(kWebViewInvokeZoomPickerOnGSU);
 BASE_DECLARE_FEATURE(kWebViewLazyFetchHandWritingIcon);
 BASE_DECLARE_FEATURE(kWebViewMixedContentAutoupgrades);
-BASE_DECLARE_FEATURE(kWebViewMuteAudio);
 BASE_DECLARE_FEATURE(kWebViewRenderDocument);
 BASE_DECLARE_FEATURE(kWebViewTestFeature);
 BASE_DECLARE_FEATURE(kWebViewUseMetricsUploadServiceOnlySdkRuntime);

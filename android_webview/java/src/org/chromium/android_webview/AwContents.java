@@ -3780,16 +3780,11 @@ public class AwContents implements SmartClipProvider {
     }
 
     public void setAudioMuted(boolean mute) {
-        if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_MUTE_AUDIO)) {
-            mWebContents.setAudioMuted(mute);
-        }
+        mWebContents.setAudioMuted(mute);
     }
 
     public boolean isAudioMuted() {
-        if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_MUTE_AUDIO)) {
-            return mWebContents.isAudioMuted();
-        }
-        return false;
+        return mWebContents.isAudioMuted();
     }
 
     public void setRendererPriorityPolicy(
