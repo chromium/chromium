@@ -59,8 +59,14 @@ gfx::QuadF ComputeHullQuad(const ContouredRect::Corner& corner) {
       tangent_line.IntersectionWith({corner.Start(), corner.Center()});
   auto intersection_point_2 =
       tangent_line.IntersectionWith({corner.End(), corner.Center()});
-  CHECK(intersection_point_1.has_value());
-  CHECK(intersection_point_2.has_value());
+  if (!intersection_point_1 || !intersection_point_2) {
+    // See crbug.com/451657549. This dump should help reproduce the crashing
+    // scenario.
+    DUMP_WILL_BE_CHECK(intersection_point_1 && intersection_point_2)
+        << "Invalid corner for hull detection " << corner.ToString();
+    return gfx::QuadF(corner.BoundingBox());
+  }
+
   return gfx::QuadF(corner.Start(), *intersection_point_1,
                     *intersection_point_2, corner.End());
 }
