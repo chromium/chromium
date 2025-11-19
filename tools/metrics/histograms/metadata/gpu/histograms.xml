@@ -1268,6 +1268,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.PersistentCache.StaleCacheDeleted" enum="Boolean"
+    expires_after="2026-03-22">
+  <owner>geofflang@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <owner>mdb.webgpu-dev-team@google.com</owner>
+  <summary>
+    Records if any existing persistent cache databases were deleted due to
+    incompatible versions. Recorded on GPU process launch.
+  </summary>
+</histogram>
+
 <histogram name="GPU.PersistentCache.{GraphiteDawnOrWebGPU}.Load"
     units="microseconds" expires_after="2026-03-22">
   <owner>lehoangquyen@chromium.org</owner>

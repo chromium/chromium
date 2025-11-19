@@ -185,7 +185,11 @@ GpuHostImpl::GpuHostImpl(Delegate* delegate,
       use_shader_cache_shm_count_.CloneRegion(), std::move(gpu_service_params));
   MaybeSendFontRenderParams();
 
-  InitPersistentCache();
+  // The persistent cache is not used by the GPU process for info collection.
+  // Avoid loading the cache files multiple times.
+  if (!params.info_collection_gpu_process) {
+    InitPersistentCache();
+  }
 
 #if BUILDFLAG(IS_OZONE)
   InitOzone();
