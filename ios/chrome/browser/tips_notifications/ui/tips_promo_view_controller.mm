@@ -33,7 +33,6 @@ const CGFloat kAnimationHeightPercent = 0.5;
                            target:self.delegate
                            action:@selector(didDismissViewController)];
   self.navigationItem.rightBarButtonItem = dismissButton;
-  self.layoutBehindNavigationBar = YES;
   self.shouldHideBanner = YES;
   self.headerImageType = PromoStyleImageType::kNone;
 

@@ -59,7 +59,6 @@ const CGFloat kDialogWidthInRegularDisplaySize = 540;
 @dynamic delegate;
 
 - (void)viewDidLoad {
-  self.layoutBehindNavigationBar = YES;
   self.shouldHideBanner = YES;
   self.headerImageType = PromoStyleImageType::kNone;
 

@@ -397,7 +397,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
       [_dismissButton.topAnchor
           constraintEqualToAnchor:self.contentView.topAnchor],
       [_dismissButton.trailingAnchor
-          constraintEqualToAnchor:view.trailingAnchor
+          constraintEqualToAnchor:view.safeAreaLayoutGuide.trailingAnchor
                          constant:-kButtonStackMargin],
     ]];
 
@@ -482,10 +482,11 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 
   // Update the buttons once the layout changes take effect to have the right
   // measurements to evaluate the scroll position.
+  __weak __typeof(self) weakSelf = self;
   void (^transition)(id<UIViewControllerTransitionCoordinatorContext>) =
       ^(id<UIViewControllerTransitionCoordinatorContext> context) {
-        [self updateViewsOnScrollViewUpdate];
-        [self hideHeaderOnTallContentIfNeeded];
+        [weakSelf updateViewsOnScrollViewUpdate];
+        [weakSelf hideHeaderOnTallContentIfNeeded];
       };
   [coordinator animateAlongsideTransition:transition completion:nil];
 }
@@ -1192,12 +1193,12 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 - (void)setupActionButtons {
   // Add learn more button to top left of the view, if requested.
   if (self.shouldShowLearnMoreButton) {
-    [self.view insertSubview:self.learnMoreButton aboveSubview:self.view];
+    [self.view addSubview:self.learnMoreButton];
   }
 
   // Add dismiss button to top right of the view, if requested.
   if (self.shouldShowDismissButton) {
-    [self.view insertSubview:self.dismissButton aboveSubview:self.view];
+    [self.view addSubview:self.dismissButton];
   }
 }
 

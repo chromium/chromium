@@ -104,7 +104,6 @@ bool TooNarrowForBanner(UIView* view) {
   self.titleTopMarginWhenNoHeaderImage = kSpaceAboveTitle;
   [self configureBanner];
   self.shouldBannerFillTopSpace = YES;
-  self.layoutBehindNavigationBar = YES;
   self.view.accessibilityIdentifier = kNotificationsBannerTableViewId;
   _tableView = [self tableView];
   _viewControllerIsBeingDismissed = NO;
