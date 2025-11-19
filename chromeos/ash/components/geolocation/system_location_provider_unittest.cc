@@ -70,11 +70,7 @@ class WirelessTestMonitor : public SimpleGeolocationRequestTestMonitor {
 
 class SystemLocationProviderTestBase {
  public:
-  SystemLocationProviderTestBase()
-      : url_factory_(GURL(utils::kTestGeolocationProviderUrl),
-                     net::HTTP_OK,
-                     utils::kSimpleResponseBody,
-                     0 /* require_retries */) {}
+  SystemLocationProviderTestBase() : interceptor(&url_factory_) {}
 
   ~SystemLocationProviderTestBase() = default;
 
@@ -94,13 +90,17 @@ class SystemLocationProviderTestBase {
         ->GetLocationFetcherForTesting();
   }
 
-  utils::TestGeolocationAPILoaderFactory url_factory_;
+  network::TestURLLoaderFactory url_factory_;
+  utils::GeolocationApiInterceptor interceptor;
 };
 
 class SystemLocationProviderTest : public SystemLocationProviderTestBase,
                                    public testing::Test {
  protected:
   void SetUp() override {
+    url_factory_.SetInterceptor(
+        base::BindRepeating(&utils::GeolocationApiInterceptor::Intercept,
+                            base::Unretained(&interceptor)));
     SystemLocationProvider::Initialize(std::make_unique<LiveLocationProvider>(
         std::make_unique<LocationFetcher>(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
@@ -122,8 +122,7 @@ TEST_F(SystemLocationProviderTest, SystemGeolocationPermissionDenied) {
   WirelessTestMonitor requests_monitor;
 
   SimpleGeolocationRequest::SetTestMonitor(&requests_monitor);
-  url_factory_.Configure(GURL(utils::kTestGeolocationProviderUrl), net::HTTP_OK,
-                         utils::kSimpleResponseBody, 0);
+  interceptor.Configure(net::HTTP_OK, utils::kSimpleResponseBody, 0);
 
   // Set system geolocation permission to disabled.
   DisableGeolocatioUsage();
@@ -140,7 +139,7 @@ TEST_F(SystemLocationProviderTest, SystemGeolocationPermissionDenied) {
       // Waiting is not needed, requests are dropped, thus nothing is pending.
       EXPECT_EQ(0U, requests_monitor.requests_count());
       EXPECT_EQ(std::string(), requests_monitor.last_request_body());
-      EXPECT_EQ(0U, url_factory_.attempts());
+      EXPECT_EQ(0U, interceptor.attempts());
     }
   }
 }
@@ -176,11 +175,11 @@ class SystemLocationProviderAPIKeyTest : public SystemLocationProviderTestBase,
   }
 
   void SetUp() override {
+    url_factory_.SetInterceptor(
+        base::BindRepeating(&utils::GeolocationApiInterceptor::Intercept,
+                            base::Unretained(&interceptor)));
     // Set URL to the production value to let the `SimpleGeolocationRequest`
     // extend it with the API keys.
-    url_factory_.Configure(
-        GURL(LocationFetcher::kDefaultGeolocationProviderUrl), net::HTTP_OK,
-        utils::kSimpleResponseBody, 0);
     SystemLocationProvider::Initialize(std::make_unique<LiveLocationProvider>(
         std::make_unique<LocationFetcher>(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
@@ -228,7 +227,7 @@ TEST_P(SystemLocationProviderAPIKeyTest, TestCorrectAPIKeysAreUsed) {
                 std::string::npos);
   EXPECT_EQ(is_separate_api_keys_enabled_,
             request_url.GetQuery().find(GOOGLE_API_KEY) == std::string::npos);
-  EXPECT_EQ(1U, url_factory_.attempts());
+  EXPECT_EQ(1U, interceptor.attempts());
 }
 
 // GetParam() - `ash::features::kCrosSeparateGeoApiKey` feature state.
@@ -256,9 +255,9 @@ class SystemLocationProviderWirelessTest
     manager_test_ = ShillManagerClient::Get()->GetTestInterface();
     ASSERT_TRUE(manager_test_);
 
-    url_factory_.Configure(GURL(utils::kTestGeolocationProviderUrl),
-                           net::HTTP_OK, utils::kSimpleResponseBody,
-                           0 /* require_retries */);
+    url_factory_.SetInterceptor(
+        base::BindRepeating(&utils::GeolocationApiInterceptor::Intercept,
+                            base::Unretained(&interceptor)));
     geolocation_handler_.reset(new GeolocationHandlerImpl());
     geolocation_handler_->Init();
     SystemLocationProvider::Initialize(std::make_unique<LiveLocationProvider>(
@@ -335,8 +334,8 @@ TEST_P(SystemLocationProviderWirelessTest, WiFiExists) {
   WirelessTestMonitor requests_monitor;
   SimpleGeolocationRequest::SetTestMonitor(&requests_monitor);
 
-  url_factory_.Configure(GURL(utils::kTestGeolocationProviderUrl), net::HTTP_OK,
-                         utils::kSimpleResponseBody, 0 /* require_retries */);
+  interceptor.Configure(net::HTTP_OK, utils::kSimpleResponseBody,
+                        0 /* require_retries */);
   // Set system geolocation permission to allowed. This permission is tested
   // separately.
   EnableGeolocationUsage();
@@ -353,7 +352,7 @@ TEST_P(SystemLocationProviderWirelessTest, WiFiExists) {
 
     EXPECT_EQ(utils::kExpectedPosition, receiver.position().ToString());
     EXPECT_FALSE(receiver.server_error());
-    EXPECT_EQ(1U, url_factory_.attempts());
+    EXPECT_EQ(1U, interceptor.attempts());
   }
 
   // Add cell and wifi to ensure only wifi is sent when cellular disabled.
@@ -390,7 +389,7 @@ TEST_P(SystemLocationProviderWirelessTest, WiFiExists) {
     EXPECT_EQ(utils::kExpectedPosition, receiver.position().ToString());
     EXPECT_FALSE(receiver.server_error());
     // This is total.
-    EXPECT_EQ(2U, url_factory_.attempts());
+    EXPECT_EQ(2U, interceptor.attempts());
   }
 }
 
@@ -416,7 +415,7 @@ TEST_P(SystemLocationProviderWirelessTest, CellularExists) {
 
     EXPECT_EQ(utils::kExpectedPosition, receiver.position().ToString());
     EXPECT_FALSE(receiver.server_error());
-    EXPECT_EQ(1U, url_factory_.attempts());
+    EXPECT_EQ(1U, interceptor.attempts());
   }
 
   AddCellTower(1);
@@ -451,7 +450,7 @@ TEST_P(SystemLocationProviderWirelessTest, CellularExists) {
     EXPECT_EQ(utils::kExpectedPosition, receiver.position().ToString());
     EXPECT_FALSE(receiver.server_error());
     // This is total.
-    EXPECT_EQ(2U, url_factory_.attempts());
+    EXPECT_EQ(2U, interceptor.attempts());
   }
 }
 

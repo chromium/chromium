@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/geolocation/location_fetcher.h"
 
+#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -33,13 +34,12 @@ constexpr base::TimeDelta kRetryDelay = base::Milliseconds(10);
 
 class LocationFetcherTest : public testing::Test {
  public:
-  LocationFetcherTest()
-      : url_factory_(GURL(utils::kTestGeolocationProviderUrl),
-                     net::HTTP_OK,
-                     utils::kSimpleResponseBody,
-                     0 /*require_retries*/) {}
+  LocationFetcherTest() : interceptor(&url_factory_) {}
 
   void SetUp() override {
+    url_factory_.SetInterceptor(
+        base::BindRepeating(&utils::GeolocationApiInterceptor::Intercept,
+                            base::Unretained(&interceptor)));
     location_fetcher = std::make_unique<LocationFetcher>(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &url_factory_),
@@ -78,7 +78,8 @@ class LocationFetcherTest : public testing::Test {
   Geoposition position_;
   bool server_error_;
   utils::FakeNetworkDelegate network_delegate;
-  utils::TestGeolocationAPILoaderFactory url_factory_;
+  network::TestURLLoaderFactory url_factory_;
+  utils::GeolocationApiInterceptor interceptor;
   std::unique_ptr<LocationFetcher> location_fetcher;
 };
 
@@ -91,12 +92,12 @@ TEST_F(LocationFetcherTest, ResponseOK) {
 
   EXPECT_EQ(utils::kExpectedPosition, position_.ToString());
   EXPECT_FALSE(server_error_);
-  EXPECT_EQ(1U, url_factory_.attempts());
+  EXPECT_EQ(1U, interceptor.attempts());
 }
 
 TEST_F(LocationFetcherTest, ResponseOKWithRetries) {
-  url_factory_.Configure(GURL(utils::kTestGeolocationProviderUrl), net::HTTP_OK,
-                         utils::kSimpleResponseBody, 3 /* require_retries */);
+  interceptor.Configure(net::HTTP_OK, utils::kSimpleResponseBody,
+                        3 /* require_retries */);
 
   location_fetcher->RequestGeolocation(
       kRequestTimeout, false, false,
@@ -107,13 +108,12 @@ TEST_F(LocationFetcherTest, ResponseOKWithRetries) {
 
   EXPECT_EQ(utils::kExpectedPosition, position_.ToString());
   EXPECT_FALSE(server_error_);
-  EXPECT_EQ(4U, url_factory_.attempts());
+  EXPECT_EQ(4U, interceptor.attempts());
 }
 
 TEST_F(LocationFetcherTest, ResponseWithErrorTooManyRequestsIsNotRetried) {
-  url_factory_.Configure(GURL(utils::kTestGeolocationProviderUrl),
-                         net::HTTP_TOO_MANY_REQUESTS,
-                         utils::kSimpleResponseBody, 0 /* require_retries */);
+  interceptor.Configure(net::HTTP_TOO_MANY_REQUESTS, utils::kSimpleResponseBody,
+                        0 /* require_retries */);
 
   location_fetcher->RequestGeolocation(
       kRequestTimeout, false, false,
@@ -126,12 +126,12 @@ TEST_F(LocationFetcherTest, ResponseWithErrorTooManyRequestsIsNotRetried) {
   EXPECT_FALSE(position_.Valid());
   EXPECT_EQ(Geoposition::Status::STATUS_SERVER_ERROR, position_.status);
   // Check that the request was not retried.
-  EXPECT_EQ(1U, url_factory_.attempts());
+  EXPECT_EQ(1U, interceptor.attempts());
 }
 
 TEST_F(LocationFetcherTest, InvalidResponse) {
-  url_factory_.Configure(GURL(utils::kTestGeolocationProviderUrl), net::HTTP_OK,
-                         "invalid JSON string", 0 /* require_retries */);
+  interceptor.Configure(net::HTTP_OK, "invalid JSON string",
+                        0 /* require_retries */);
 
   constexpr auto timeout = base::Seconds(1);
   constexpr auto retry_interval = base::Milliseconds(300);
@@ -153,7 +153,7 @@ TEST_F(LocationFetcherTest, InvalidResponse) {
 
   // Number of retries should be within [-1,+1] range of expected_retries.
   size_t expected_retries = timeout / retry_interval;
-  EXPECT_NEAR(url_factory_.attempts(), expected_retries, 1);
+  EXPECT_NEAR(interceptor.attempts(), expected_retries, 1);
 }
 
 // get<0>(GetParam()) - `use_wifi_scan` argument for RequestGeolocation().
@@ -192,7 +192,7 @@ TEST_P(LocationFetcherPreciseLocationTest, OnlyIntendedNetworkSignalsAreUsed) {
 
   // In all cases a successful response should be received.
   EXPECT_FALSE(server_error_);
-  EXPECT_EQ(1U, url_factory_.attempts());
+  EXPECT_EQ(1U, interceptor.attempts());
   EXPECT_EQ(utils::kExpectedPosition, position_.ToString());
 
   // Check that the request body contained the right network signals.

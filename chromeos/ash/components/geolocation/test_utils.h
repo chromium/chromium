@@ -11,6 +11,7 @@
 #include "chromeos/ash/components/geolocation/simple_geolocation_request_test_monitor.h"
 #include "chromeos/ash/components/network/geolocation_handler.h"
 #include "chromeos/ash/components/network/network_util.h"
+#include "net/http/http_status_code.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "url/gurl.h"
 
@@ -32,7 +33,6 @@ inline constexpr char kSimpleResponseBody[] =
     "  },\n"
     "  \"accuracy\": 1200.4\n"
     "}";
-
 inline constexpr char kIPOnlyRequestBody[] = "{\"considerIp\": \"true\"}";
 inline constexpr char kOneWiFiAPRequestBody[] =
     "{"
@@ -85,38 +85,76 @@ inline constexpr char kExpectedPosition[] =
 inline constexpr char kWiFiAP1MacAddress[] = "01:00:00:00:00:00";
 inline constexpr char kCellTower1MNC[] = "101";
 
-// This implements fake Google MAPS Geolocation API remote endpoint.
-class TestGeolocationAPILoaderFactory : public network::TestURLLoaderFactory {
+// Use this for the interceptor hook for the `TestURLLoaderFactory`.
+//
+// Example usage:
+//  class TestFixture {
+//    TestClass() : interceptor(&loader_factory) {}
+//
+//    SetUp() {
+//        url_factory_.SetInterceptor(
+//            base::BindRepeating(&utils::GeolocationApiInterceptor::Intercept,
+//                                base::Unretained(&interceptor)));
+//    }
+//
+//   protected:
+//    TestURLLoaderFactory loader_factory;
+//    GeolocationApiInterceptor interceptor;
+//  };
+//
+//  TEST_T(TestFixture, ...) {
+//    SendRequest(...); // triggers loader_factory.CreateLoaderAndStart(...);
+//    CHECK_EQ(1, interceptor_.attempts());
+//
+//    interceptor.RegisterResponseForQuery(query, position);
+//    SendRequest(query);
+//    CHECK_EQ(position, received_position);
+//  }
+class GeolocationApiInterceptor {
  public:
-  TestGeolocationAPILoaderFactory(const GURL& url,
-                                  const net::HttpStatusCode http_status,
-                                  const std::string& response,
-                                  const size_t require_retries);
+  // Parameters:
+  //  `url_loader` - TestURLLoaderFactory it's intercepting. The factory must
+  //                 outlive this interceptor.
+  //  `status_code` - HTTP status code of all subsequent responses, unless
+  //                  there's a matching response registered by
+  //                  `RegisterResponseForQuery`.
+  //  `response_body` - Content of all subsequent responses, unless there's a
+  //                    matching response registered by
+  //                    `RegisterResponseForQuery`.
+  //  `require_retries` - This many requests will return failure responses with
+  //                      an empty content and HTTP_INTERNAL_SERVER_ERROR status
+  //                      code.
+  explicit GeolocationApiInterceptor(
+      network::TestURLLoaderFactory* url_loader,
+      const net::HttpStatusCode status_code = net::HTTP_OK,
+      const std::string& response_body = kSimpleResponseBody,
+      const size_t require_retries = 0);
+  ~GeolocationApiInterceptor();
 
-  ~TestGeolocationAPILoaderFactory() override;
-
-  TestGeolocationAPILoaderFactory(const TestGeolocationAPILoaderFactory&) =
-      delete;
-  TestGeolocationAPILoaderFactory& operator=(
-      const TestGeolocationAPILoaderFactory&) = delete;
-
-  void Configure(const GURL& url,
-                 const net::HttpStatusCode http_status,
-                 const std::string& response,
-                 const size_t require_retries);
+  void Configure(const net::HttpStatusCode status_code,
+                 const std::string& response_body,
+                 const size_t require_retries) {
+    status_code_ = status_code;
+    response_body_ = response_body;
+    require_retries_ = require_retries;
+  }
 
   void Intercept(const network::ResourceRequest& request);
+
+  // Registers a specific geographical position to be returned when a network
+  // request matches the `query` payload. This allows tests to override
+  // the default response for targeted scenarios.
+  void RegisterResponseForQuery(std::string query, const Geoposition position);
 
   size_t attempts() const { return attempts_; }
 
  private:
-  GURL url_;
-  net::HttpStatusCode http_status_;
-  std::string response_;
-  size_t require_retries_;
+  raw_ptr<network::TestURLLoaderFactory> url_loader_;
+  net::HttpStatusCode status_code_ = net::HTTP_INTERNAL_SERVER_ERROR;
+  std::string response_body_;
+  size_t require_retries_ = 0;
   size_t attempts_ = 0;
-  WifiAccessPointVector wifi_scan_vector_;
-  CellTowerVector cell_scan_vector;
+  std::map<std::string, Geoposition> responses_;
 };
 
 // This class is single-use and can only process one request per instance.
@@ -164,7 +202,8 @@ class RequestTestMonitor : public SimpleGeolocationRequestTestMonitor {
 };
 
 // Fake implementation of `GeolocationHandler`.
-// Returns `wifi_aps_` and `cell_towers_` members as available network signals.
+// Returns `wifi_aps_` and `cell_towers_` members as available network
+// signals.
 class FakeNetworkDelegate : public GeolocationHandler {
  public:
   FakeNetworkDelegate();

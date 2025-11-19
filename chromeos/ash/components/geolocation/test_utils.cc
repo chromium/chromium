@@ -4,53 +4,84 @@
 
 #include "chromeos/ash/components/geolocation/test_utils.h"
 
+#include "base/json/json_writer.h"
 #include "base/run_loop.h"
 #include "chromeos/ash/components/geolocation/location_fetcher.h"
 #include "chromeos/ash/components/geolocation/system_location_provider.h"
+#include "net/http/http_status_code.h"
+#include "services/network/public/cpp/resource_request.h"
+#include "services/network/test/test_url_loader_factory.h"
+#include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::geolocation::test_utils {
+namespace {
 
-// This implements fake Google MAPS Geolocation API remote endpoint.
-TestGeolocationAPILoaderFactory::TestGeolocationAPILoaderFactory(
-    const GURL& url,
-    const net::HttpStatusCode http_status,
-    const std::string& response,
+// Serializes the Geoposition object into the Geolocation API response
+// format:
+// {
+//   "location": {
+//     "lat": <value>
+//     "lng": <value>
+//   },
+//   "accuracy": <value>
+// }
+std::string GeopositionToApiResponseFormat(const Geoposition& position) {
+  // 1. Build the nested "location" dictionary
+  base::Value::Dict location_dict;
+  location_dict.Set("lat", position.latitude);
+  location_dict.Set("lng", position.longitude);
+
+  // 2. Build the root dictionary
+  base::Value::Dict root_dict;
+  root_dict.Set("location", std::move(location_dict));
+  root_dict.Set("accuracy", position.accuracy);
+
+  // 3. Serialize the dictionary to a string
+  std::string json_output;
+  base::JSONWriter::Write(root_dict, &json_output);
+
+  return json_output;
+}
+
+}  // namespace
+
+GeolocationApiInterceptor::GeolocationApiInterceptor(
+    network::TestURLLoaderFactory* url_loader,
+    const net::HttpStatusCode status_code,
+    const std::string& response_body,
     const size_t require_retries)
-    : url_(url),
-      http_status_(http_status),
-      response_(response),
-      require_retries_(require_retries) {
-  SetInterceptor(base::BindRepeating(
-      &TestGeolocationAPILoaderFactory::Intercept, base::Unretained(this)));
-  AddResponse(url_.spec(), "", net::HTTP_INTERNAL_SERVER_ERROR);
-}
+    : url_loader_(url_loader),
+      status_code_(status_code),
+      response_body_(response_body),
+      require_retries_(require_retries) {}
+GeolocationApiInterceptor::~GeolocationApiInterceptor() = default;
 
-TestGeolocationAPILoaderFactory::~TestGeolocationAPILoaderFactory() = default;
-
-void TestGeolocationAPILoaderFactory::Configure(
-    const GURL& url,
-    const net::HttpStatusCode http_status,
-    const std::string& response,
-    const size_t require_retries) {
-  url_ = url;
-  http_status_ = http_status;
-  response_ = response;
-  require_retries_ = require_retries;
-}
-
-void TestGeolocationAPILoaderFactory::Intercept(
+void GeolocationApiInterceptor::Intercept(
     const network::ResourceRequest& request) {
-  // Drop the query component potentially appended by the
-  // `SimpleGeolocationRequest` class.
-  GURL::Replacements replacements;
-  replacements.ClearQuery();
-  EXPECT_EQ(url_.ReplaceComponents(replacements),
-            request.url.ReplaceComponents(replacements));
-
-  if (++attempts_ > require_retries_) {
-    AddResponse(url_.spec(), response_, http_status_);
+  // First `require_retries_` requests should fail.
+  if (++attempts_ <= require_retries_) {
+    url_loader_->AddResponse(request.url.spec(), "",
+                             net::HTTP_INTERNAL_SERVER_ERROR);
+    return;
   }
+
+  // If a specific response is configured, use it for the response.
+  // Otherwise return the default response.
+  auto query = network::GetUploadData(request);
+  auto it = responses_.find(query);
+  if (it != responses_.end()) {
+    url_loader_->AddResponse(request.url.spec(),
+                             GeopositionToApiResponseFormat(it->second),
+                             net::HTTP_OK);
+  } else {
+    url_loader_->AddResponse(request.url.spec(), response_body_, status_code_);
+  }
+}
+void GeolocationApiInterceptor::RegisterResponseForQuery(
+    std::string query,
+    const Geoposition position) {
+  responses_.insert_or_assign(std::move(query), position);
 }
 
 GeolocationReceiver::GeolocationReceiver() : server_error_(false) {}
