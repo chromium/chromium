@@ -303,7 +303,7 @@ void PictureLayerImpl::AppendQuadsSpecialization(
         } else if (mode == TileDrawInfo::OOM_MODE) {
           color = DebugColors::OOMTileBorderColor();
           width = DebugColors::OOMTileBorderWidth(device_scale_factor);
-        } else if (iter.resolution() == HIGH_RESOLUTION) {
+        } else if (iter.CurrentTiling()->resolution() == HIGH_RESOLUTION) {
           color = DebugColors::HighResTileBorderColor();
           width = DebugColors::HighResTileBorderWidth(device_scale_factor);
         } else if (iter->contents_scale_key() > raster_contents_scale_key()) {
