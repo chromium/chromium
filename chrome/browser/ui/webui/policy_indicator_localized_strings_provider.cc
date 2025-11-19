@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/sync/base/features.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/webui/webui_util.h"
@@ -21,6 +22,10 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source) {
 #if BUILDFLAG(IS_CHROMEOS)
   if (ash::demo_mode::IsDeviceInDemoMode()) {
     controlled_setting_policy_id = IDS_CONTROLLED_SETTING_DEMO_SESSION;
+  }
+#else
+  if (base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp)) {
+    controlled_setting_policy_id = IDS_SETTINGS_ACCOUNT_SYNC_DISABLED;
   }
 #endif
   webui::LocalizedString localized_strings[] = {
