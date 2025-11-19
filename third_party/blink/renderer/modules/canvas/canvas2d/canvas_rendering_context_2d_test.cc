@@ -321,7 +321,7 @@ class CanvasRenderingContext2DTestBase : public ::testing::Test,
     Context2D()->FinalizeFrame(FlushReason::kOther);
     CanvasElement().PostFinalizeFrame(FlushReason::kOther);
     // Grabbing an image forces a flush
-    CanvasElement().Snapshot(FlushReason::kOther, kBackBuffer);
+    CanvasElement().Snapshot(kBackBuffer);
   }
 
   enum LatencyMode { kNormalLatency, kLowLatency };

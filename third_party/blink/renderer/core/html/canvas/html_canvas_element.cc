@@ -1173,7 +1173,6 @@ const AtomicString HTMLCanvasElement::ImageSourceURL() const {
 }
 
 scoped_refptr<StaticBitmapImage> HTMLCanvasElement::Snapshot(
-    FlushReason reason,
     SourceDrawingBuffer source_buffer) const {
   if (Size().IsEmpty()) {
     return nullptr;
@@ -1185,8 +1184,8 @@ scoped_refptr<StaticBitmapImage> HTMLCanvasElement::Snapshot(
     image_bitmap = OffscreenCanvasFrame()->Bitmap();
   } else if (IsWebGL()) {
     if (context_->CreationAttributes().premultiplied_alpha) {
-      image_bitmap =
-          context_->PaintRenderingResultsToSnapshot(source_buffer, reason);
+      image_bitmap = context_->PaintRenderingResultsToSnapshot(
+          source_buffer, FlushReason::kOther);
     } else {
       image_bitmap =
           context_->GetRGBAUnacceleratedStaticBitmapImage(source_buffer);
@@ -1194,7 +1193,7 @@ scoped_refptr<StaticBitmapImage> HTMLCanvasElement::Snapshot(
   } else if (context_) {
     DCHECK(IsRenderingContext2D() || IsImageBitmapRenderingContext() ||
            IsWebGPU());
-    image_bitmap = context_->GetImage(reason);
+    image_bitmap = context_->GetImage(FlushReason::kOther);
   }
 
   if (!image_bitmap) {
