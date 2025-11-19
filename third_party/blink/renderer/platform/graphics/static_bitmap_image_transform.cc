@@ -376,7 +376,6 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::Clone(
 
 scoped_refptr<StaticBitmapImage>
 StaticBitmapImageTransform::ConvertToColorSpace(
-    FlushReason flush_reason,
     scoped_refptr<StaticBitmapImage> source,
     sk_sp<SkColorSpace> color_space) {
   StaticBitmapImageTransform::Params options;
@@ -384,7 +383,7 @@ StaticBitmapImageTransform::ConvertToColorSpace(
   options.dest_size = GetSourceSize(source, options);
   options.premultiply_alpha = source->GetAlphaType() != kUnpremul_SkAlphaType;
   options.dest_color_space = color_space;
-  return Apply(flush_reason, source, options);
+  return Apply(FlushReason::kOther, source, options);
 }
 
 }  // namespace blink

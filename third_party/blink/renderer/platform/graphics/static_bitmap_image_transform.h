@@ -66,7 +66,6 @@ class PLATFORM_EXPORT StaticBitmapImageTransform {
 
   // Convert `image` to the specified color space.
   static scoped_refptr<StaticBitmapImage> ConvertToColorSpace(
-      FlushReason,
       scoped_refptr<StaticBitmapImage> image,
       sk_sp<SkColorSpace> color_space);
 
