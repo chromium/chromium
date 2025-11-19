@@ -501,6 +501,8 @@ chrome_java_resources = [
   "java/res/layout/contextual_search_related_searches_view.xml",
   "java/res/layout/contextual_search_term_view.xml",
   "java/res/layout/custom_tab_close_button.xml",
+  "java/res/layout/custom_tab_desktop_popup_header_layout.xml",
+  "java/res/layout/custom_tab_desktop_popup_main_layout.xml",
   "java/res/layout/custom_tab_incognito_icon.xml",
   "java/res/layout/custom_tab_menu_button.xml",
   "java/res/layout/custom_tabs_bottombar.xml",

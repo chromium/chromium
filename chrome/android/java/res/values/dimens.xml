@@ -259,6 +259,16 @@ found in the LICENSE file.
     <dimen name="custom_tabs_toast_branding_padding">16dp</dimen>
     <dimen name="custom_tabs_max_width_bottom_sheet_elev">3dp</dimen>
 
+    <!-- Tab title won't show up in the caption bar of a popup window if the
+         widest unoccludded rect of the caption bar is narrower than this. -->
+    <dimen name="custom_tabs_popup_title_bar_min_width">48sp</dimen>
+
+    <!-- Minimum height of the title bar to satisfy a11y requirements. -->
+    <dimen name="custom_tabs_popup_title_bar_min_height">@dimen/min_touch_target_size</dimen>
+
+    <!-- Minimum height of the title bar to fit the tab title text. -->
+    <dimen name="custom_tabs_popup_title_bar_text_height">24sp</dimen>
+
     <!-- Search in CCT specific dimensions for presenting interactable Omnibox -->
     <dimen name="custom_tabs_location_bar_active_height">40dp</dimen>
     <dimen name="custom_tabs_url_bar_active_height">48dp</dimen>
