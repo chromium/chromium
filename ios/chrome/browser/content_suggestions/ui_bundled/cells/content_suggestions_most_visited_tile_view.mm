@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_module_content_view_delegate.h"
 #import "ios/chrome/browser/favicon/ui_bundled/favicon_attributes_with_payload.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -160,7 +161,9 @@
   UIAccessibilityCustomAction* removeMostVisited =
       [[UIAccessibilityCustomAction alloc]
           initWithName:l10n_util::GetNSString(
-                           IDS_IOS_CONTENT_SUGGESTIONS_REMOVE)
+                           IsContentSuggestionsCustomizable()
+                               ? IDS_IOS_CONTENT_SUGGESTIONS_NEVER_SHOW_SITE
+                               : IDS_IOS_CONTENT_SUGGESTIONS_REMOVE)
                 target:self
               selector:@selector(removeMostVisited)];
 

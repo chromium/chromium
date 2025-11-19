@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/most_visited_tiles_commands.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -33,7 +34,9 @@
   UIAccessibilityCustomAction* removeMostVisited =
       [[UIAccessibilityCustomAction alloc]
           initWithName:l10n_util::GetNSString(
-                           IDS_IOS_CONTENT_SUGGESTIONS_REMOVE)
+                           IsContentSuggestionsCustomizable()
+                               ? IDS_IOS_CONTENT_SUGGESTIONS_NEVER_SHOW_SITE
+                               : IDS_IOS_CONTENT_SUGGESTIONS_REMOVE)
                 target:self
               selector:@selector(removeMostVisited)];
 

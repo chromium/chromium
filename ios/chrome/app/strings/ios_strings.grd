@@ -1633,6 +1633,9 @@
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_MOST_VISITED_MODULE_TITLE" desc="The Most Visited module title on the new tab page [Length: 10em]">
         Your top sites
       </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_NEVER_SHOW_SITE" desc="The name of the 'Never Show this Site' command in the Content Suggestions articles context menu">
+        Never Show This Site
+      </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_UNDELIVERABLE_STATUS" desc="The Parcel Tracking module package delivery undeliverable status description on the Home surface [Length: 10em]">
         Your package can't be delivered
       </message>

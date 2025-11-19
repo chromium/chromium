@@ -10,6 +10,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/menu/ui_bundled/menu_action_type.h"
 #import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/saved_tab_groups/ui/tab_group_utils.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -164,11 +165,14 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
 - (UIAction*)actionToRemoveWithBlock:(ProceduralBlock)block {
   UIImage* image =
       DefaultSymbolWithPointSize(kHideActionSymbol, kSymbolActionPointSize);
-  UIAction* action =
-      [self actionWithTitle:l10n_util::GetNSString(IDS_IOS_REMOVE_ACTION_TITLE)
-                      image:image
-                       type:MenuActionType::Remove
-                      block:block];
+  UIAction* action = [self
+      actionWithTitle:l10n_util::GetNSString(
+                          IsContentSuggestionsCustomizable()
+                              ? IDS_IOS_CONTENT_SUGGESTIONS_NEVER_SHOW_SITE
+                              : IDS_IOS_REMOVE_ACTION_TITLE)
+                image:image
+                 type:MenuActionType::Remove
+                block:block];
   action.attributes = UIMenuElementAttributesDestructive;
   return action;
 }
