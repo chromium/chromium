@@ -27,10 +27,6 @@ constexpr CGFloat kTrashSymbolSize = 32.0;
 constexpr CGFloat kSymbolBackgroundCornerRadius = 15.0;
 // The height and width of the trash symbol's container.
 constexpr CGFloat kSymbolContainerSize = 64;
-// The border radius of the half-sheet.
-constexpr CGFloat kPreferredCornerRadius = 20;
-// The spacing between the top of the half-sheet and the dismiss button.
-constexpr CGFloat kDismissButtonTopPaddng = 8;
 
 // Creates a UIView that contains the the IPH's icon as a subview.
 UIView* CreateIconContainer() {
@@ -57,15 +53,15 @@ UIView* CreateIconContainer() {
   ]];
   AddSameCenterConstraints(symbolBackground, symbolView);
 
+  // Add a container to allow for taking the full width.
   UIView* container = [[UIView alloc] init];
   container.translatesAutoresizingMaskIntoConstraints = NO;
   [container addSubview:symbolBackground];
-  // Center the icon within the container.
   [NSLayoutConstraint activateConstraints:@[
     [container.widthAnchor
         constraintGreaterThanOrEqualToAnchor:symbolBackground.widthAnchor],
     [container.heightAnchor
-        constraintGreaterThanOrEqualToAnchor:symbolBackground.heightAnchor],
+        constraintEqualToAnchor:symbolBackground.heightAnchor],
   ]];
   AddSameCenterConstraints(container, symbolBackground);
 
@@ -108,15 +104,19 @@ UIView* CreateIconContainer() {
       l10n_util::GetNSString(IDS_IOS_AUTO_DELETION_IPH_REJECTION);
   [_iphScreen reloadConfiguration];
   _iphScreen.aboveTitleView = CreateIconContainer();
-  _iphScreen.showDismissBarButton = YES;
-  _iphScreen.dismissBarButtonSystemItem = UIBarButtonSystemItemClose;
   _iphScreen.actionHandler = self;
+
+  self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
+      initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
+                           target:self
+                           action:@selector(dismissIPH)];
 
   [self addChildViewController:_iphScreen];
   [self.view addSubview:_iphScreen.view];
+  _iphScreen.view.translatesAutoresizingMaskIntoConstraints = NO;
+  AddSameConstraints(_iphScreen.view, self.view);
   [_iphScreen didMoveToParentViewController:self];
   [super viewDidLoad];
-  [self layoutAlertScreen];
 }
 
 #pragma mark - ConfirmationAlertActionHandler
@@ -127,15 +127,6 @@ UIView* CreateIconContainer() {
   base::RecordAction(
       base::UserMetricsAction("IOS.AutoDeletion.IPH.EnableButtonTapped"));
   [self.mutator enableAutoDeletion];
-}
-
-// Dismisses the IPH.
-- (void)confirmationAlertDismissAction {
-  base::RecordAction(
-      base::UserMetricsAction("IOS.AutoDeletion.IPH.DismissButtonTapped"));
-  id<AutoDeletionCommands> handler = HandlerForProtocol(
-      _browser->GetCommandDispatcher(), AutoDeletionCommands);
-  [handler dismissAutoDeletionActionSheet];
 }
 
 // Does not enable the Auto-deletion feature and dismisses the IPH.
@@ -158,29 +149,13 @@ UIView* CreateIconContainer() {
 
 #pragma mark - Private
 
-// Sets the layout of the alertScreen view when the promo will be
-// shown without the animation view (half-screen promo).
-- (void)layoutAlertScreen {
-  self.modalPresentationStyle = UIModalPresentationPageSheet;
-  UISheetPresentationController* presentationController =
-      self.sheetPresentationController;
-  presentationController.prefersEdgeAttachedInCompactHeight = YES;
-  presentationController.detents = @[
-    [UISheetPresentationControllerDetent mediumDetent],
-    [UISheetPresentationControllerDetent largeDetent]
-  ];
-  _iphScreen.view.translatesAutoresizingMaskIntoConstraints = NO;
-  [NSLayoutConstraint activateConstraints:@[
-    [_iphScreen.view.topAnchor constraintEqualToAnchor:self.view.topAnchor
-                                              constant:kDismissButtonTopPaddng],
-    [_iphScreen.view.bottomAnchor
-        constraintEqualToAnchor:self.view.bottomAnchor],
-    [_iphScreen.view.leadingAnchor
-        constraintEqualToAnchor:self.view.leadingAnchor],
-    [_iphScreen.view.trailingAnchor
-        constraintEqualToAnchor:self.view.trailingAnchor],
-  ]];
-  presentationController.preferredCornerRadius = kPreferredCornerRadius;
+// Dismisses the IPH.
+- (void)dismissIPH {
+  base::RecordAction(
+      base::UserMetricsAction("IOS.AutoDeletion.IPH.DismissButtonTapped"));
+  id<AutoDeletionCommands> handler = HandlerForProtocol(
+      _browser->GetCommandDispatcher(), AutoDeletionCommands);
+  [handler dismissAutoDeletionActionSheet];
 }
 
 @end

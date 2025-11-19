@@ -18,6 +18,8 @@
   AutoDeletionMediator* _mediator;
   // The task that is downloading the content to the device.
   raw_ptr<web::DownloadTask> _downloadTask;
+  // The navigation controller containing the View Controller.
+  UINavigationController* _navigationController;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
@@ -39,14 +41,30 @@
                                                        browser:self.browser
                                                   downloadTask:_downloadTask];
   _viewController.mutator = _mediator;
-  [self.baseViewController presentViewController:_viewController
+
+  _navigationController = [[UINavigationController alloc]
+      initWithRootViewController:_viewController];
+
+  _navigationController.modalPresentationStyle = UIModalPresentationPageSheet;
+  UISheetPresentationController* presentationController =
+      _navigationController.sheetPresentationController;
+  presentationController.prefersEdgeAttachedInCompactHeight = YES;
+  presentationController.detents = @[
+    [UISheetPresentationControllerDetent mediumDetent],
+    [UISheetPresentationControllerDetent largeDetent]
+  ];
+
+  [self.baseViewController presentViewController:_navigationController
                                         animated:YES
                                       completion:nil];
 }
 
 - (void)stop {
-  [_viewController dismissViewControllerAnimated:YES completion:nil];
+  [_navigationController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:nil];
   _viewController = nullptr;
+  _navigationController = nil;
 }
 
 @end
