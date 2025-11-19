@@ -23,3 +23,9 @@ crbug.com/407988949 wpt_internal/ai/language-model-api-iframe.tentative.https.ht
 
 # Temporarily disable this test that are failing with ChromeML GPU Validation error.
 crbug.com/446717936 external/wpt/ai/proofreader/proofreader-proofread.tentative.https.window.html [ Failure Pass ]
+
+# These tests fail audio input availability preconditions on Mac x64 bots.
+# Disables tests on all platforms, since disabling these tests on Mac x64 only is not supported.
+crbug.com/460555196 external/wpt/ai/language-model/language-model-availability-available-multimodal.tentative.https.window.html [ Failure Pass ]
+crbug.com/460555196 external/wpt/ai/language-model/language-model-create-multimodal.tentative.https.window.html [ Failure Pass ]
+crbug.com/460555196 external/wpt/ai/language-model/language-model-prompt-multimodal.tentative.https.window.html [ Failure Pass ]
