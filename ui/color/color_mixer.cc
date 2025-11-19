@@ -14,9 +14,14 @@
 
 namespace ui {
 
+ColorMixer::ColorMixer() = default;
+
+ColorMixer::ColorMixer(MixerGetter previous_mixer_getter)
+    : previous_mixer_getter_(std::move(previous_mixer_getter)) {}
+
 ColorMixer::ColorMixer(MixerGetter previous_mixer_getter,
                        MixerGetter input_mixer_getter)
-    : previous_mixer_getter_(previous_mixer_getter),
+    : previous_mixer_getter_(std::move(previous_mixer_getter)),
       input_mixer_getter_(std::move(input_mixer_getter)) {}
 
 ColorMixer::ColorMixer(ColorMixer&&) noexcept = default;
