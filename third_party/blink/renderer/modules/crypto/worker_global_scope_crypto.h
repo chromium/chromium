@@ -33,7 +33,6 @@
 
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 

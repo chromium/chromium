@@ -8,7 +8,6 @@
 #include "base/memory/protected_memory.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 

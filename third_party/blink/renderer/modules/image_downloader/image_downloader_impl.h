@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace gfx {
 class Size;

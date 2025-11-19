@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CREDENTIALMANAGEMENT_CREDENTIAL_METRICS_H_
 
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 

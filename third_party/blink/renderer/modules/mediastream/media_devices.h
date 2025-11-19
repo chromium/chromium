@@ -30,7 +30,6 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 

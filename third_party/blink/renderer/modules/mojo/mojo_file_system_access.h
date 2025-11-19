@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/mojo/mojo.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 

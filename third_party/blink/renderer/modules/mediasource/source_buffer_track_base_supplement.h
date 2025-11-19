@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASOURCE_SOURCE_BUFFER_TRACK_BASE_SUPPLEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASOURCE_SOURCE_BUFFER_TRACK_BASE_SUPPLEMENT_H_
 
-#include "third_party/blink/renderer/platform/supplementable.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {

@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 

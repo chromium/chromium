@@ -16,7 +16,6 @@
 #include "third_party/blink/renderer/modules/locks/lock_manager.h"
 #include "third_party/blink/renderer/modules/storage/storage_area.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 

@@ -23,7 +23,6 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 #include "third_party/blink/renderer/platform/peerconnection/webrtc_decoding_info_handler.h"
 #include "third_party/blink/renderer/platform/peerconnection/webrtc_encoding_info_handler.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 

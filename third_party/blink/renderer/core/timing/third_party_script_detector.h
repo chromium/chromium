@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_THIRD_PARTY_SCRIPT_DETECTOR_H_
 
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/re2/src/re2/re2.h"
 

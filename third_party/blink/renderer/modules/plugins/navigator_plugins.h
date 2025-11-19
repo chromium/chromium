@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PLUGINS_NAVIGATOR_PLUGINS_H_
 
 #include "third_party/blink/renderer/core/frame/navigator.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 

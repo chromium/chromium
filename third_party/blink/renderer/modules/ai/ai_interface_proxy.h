@@ -16,7 +16,6 @@
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/language_detection/language_detection_model.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 

@@ -35,7 +35,6 @@
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 

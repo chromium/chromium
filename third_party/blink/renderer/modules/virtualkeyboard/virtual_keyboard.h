@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/frame/virtual_keyboard_overlay_changed_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace gfx {
 class Rect;

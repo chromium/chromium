@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/p2p/port_allocator.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 

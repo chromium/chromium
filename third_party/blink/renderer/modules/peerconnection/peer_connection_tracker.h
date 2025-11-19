@@ -20,7 +20,6 @@
 #include "third_party/blink/renderer/platform/peerconnection/rtc_peer_connection_handler_client.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_rtp_transceiver_platform.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_session_description_platform.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"

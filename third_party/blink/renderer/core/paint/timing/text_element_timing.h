@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/paint/timing/container_timing.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 
 namespace gfx {

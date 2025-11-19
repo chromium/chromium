@@ -32,7 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CRYPTO_DOM_WINDOW_CRYPTO_H_
 
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 

@@ -25,7 +25,6 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver_set.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote_set.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
