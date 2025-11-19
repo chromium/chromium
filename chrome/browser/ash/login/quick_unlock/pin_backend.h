@@ -16,11 +16,8 @@
 #include "components/prefs/pref_service.h"
 
 class AccountId;
-class Profile;
-class ScopedKeepAlive;
 
-namespace ash {
-namespace quick_unlock {
+namespace ash::quick_unlock {
 
 class PinStorageCryptohome;
 enum class Purpose;
@@ -55,9 +52,6 @@ class PinBackend : public ash::auth::PinBackendDelegate {
   // Check to see if the PinBackend supports login. This is true when the
   // cryptohome backend is available.
   void HasLoginSupport(BoolCallback result);
-
-  // Try to migrate a prefs-based PIN to cryptohome.
-  void MigrateToCryptohome(Profile*, std::unique_ptr<UserContext>);
 
   // Check if the given account_id has a PIN registered.
   void IsSet(const AccountId& account_id, BoolCallback result);
@@ -134,12 +128,6 @@ class PinBackend : public ash::auth::PinBackendDelegate {
  private:
   // Called when we know if the cryptohome supports PIN.
   void OnIsCryptohomeBackendSupported(bool is_supported);
-
-  // Called when a migration attempt has completed. If `success` is true the PIN
-  // should be cleared from prefs.
-  void OnPinMigrationAttemptComplete(Profile* profile,
-                                     std::unique_ptr<UserContext>,
-                                     std::optional<AuthenticationError>);
 
   // Actions to be performed after an authentication attempt with Cryptohome.
   // The only use case right now is for PIN auto submit, where we might want to
@@ -219,12 +207,8 @@ class PinBackend : public ash::auth::PinBackendDelegate {
   // Non-null if we should use the cryptohome backend. If null, the prefs
   // backend should be used.
   std::unique_ptr<PinStorageCryptohome> cryptohome_backend_;
-
-  // Blocks chrome from restarting while migrating from prefs to cryptohome PIN.
-  std::unique_ptr<ScopedKeepAlive> scoped_keep_alive_;
 };
 
-}  // namespace quick_unlock
-}  // namespace ash
+}  // namespace ash::quick_unlock
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_QUICK_UNLOCK_PIN_BACKEND_H_
