@@ -905,22 +905,25 @@ public class StripLayoutTab extends StripLayoutView {
     public boolean shouldHideFavicon(boolean mediaIndicatorIsPresent) {
         if (mIsPinned) return mediaIndicatorIsPresent;
 
-        // TODO(crbug.com/439931221): Toggle the favicon visibility based on the close button's
-        // opacity.
         final float width = getWidth();
+        final boolean closeButtonVisible = mCloseButton.getOpacity() > 0.f;
 
         if (mediaIndicatorIsPresent) {
             float widthThreshold =
-                    mIsSelected ? WIDTH_TO_HIDE_FAVICON_FOR_MEDIA_INDICATOR : WIDTH_TO_HIDE_ICON;
+                    closeButtonVisible
+                            ? WIDTH_TO_HIDE_FAVICON_FOR_MEDIA_INDICATOR
+                            : WIDTH_TO_HIDE_ICON;
             return width <= widthThreshold;
         }
-        return mIsSelected && width <= WIDTH_TO_HIDE_ICON;
+
+        return closeButtonVisible && width <= WIDTH_TO_HIDE_ICON;
     }
 
     public boolean shouldHideMediaIndicator() {
         if (!ChromeFeatureList.sMediaIndicatorsAndroid.isEnabled()) return true;
 
-        return mIsSelected && getWidth() <= WIDTH_TO_HIDE_ICON;
+        final boolean closeButtonVisible = mCloseButton.getOpacity() > 0.f;
+        return closeButtonVisible && getWidth() <= WIDTH_TO_HIDE_ICON;
     }
 
     public float getMediaIndicatorWidth() {
