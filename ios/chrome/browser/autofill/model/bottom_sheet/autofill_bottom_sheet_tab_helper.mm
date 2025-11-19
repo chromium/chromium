@@ -223,7 +223,7 @@ void AutofillBottomSheetTabHelper::MaybeShowPaymentsBottomSheet(
   if (!UseV3()) {
     // Use the status quo logic for triggering the payments bottom sheet if
     // V3 isn't enabled.
-    ShowPaymentsBottomSheet(params);
+    ShowPaymentsBottomSheet(params, /*detach=*/true);
     return;
   }
 
@@ -256,6 +256,10 @@ void AutofillBottomSheetTabHelper::MaybeShowPaymentsBottomSheet(
   [provider retrieveSuggestionsForForm:params
                               webState:web_state_
               accessoryViewUpdateBlock:completion];
+
+  // Detach the listeners immediately since there is no guarantee that
+  // ShowPaymentsBottomSheet() will be called to trigger the sheet.
+  DetachPaymentsListenersForAllFrames(/*refocus=*/false);
 }
 
 void AutofillBottomSheetTabHelper::OnSuggestionsRetrievedForPaymentsBottomSheet(
@@ -268,17 +272,22 @@ void AutofillBottomSheetTabHelper::OnSuggestionsRetrievedForPaymentsBottomSheet(
   RecordPaymentsBottomSheetTriggerOutcome(/*did_trigger=*/has_cc_suggestions,
                                           trigger_walltime);
   if (has_cc_suggestions) {
-    ShowPaymentsBottomSheet(params);
+    ShowPaymentsBottomSheet(params, /*detach=*/false);
+  } else {
+    // Give back the preempted focus to the keyboard if the sheet cannot be
+    // triggered.
+    RefocusElementIfNeeded(params.frame_id);
   }
 }
 
 void AutofillBottomSheetTabHelper::ShowPaymentsBottomSheet(
-    const autofill::FormActivityParams& params) {
+    const autofill::FormActivityParams& params,
+    bool detach) {
   for (auto& observer : observers_) {
     observer.WillShowPaymentsBottomSheet(params);
   }
   [commands_handler_ showPaymentsBottomSheet:params];
-  if (base::FeatureList::IsEnabled(kAutofillPaymentsSheetV2Ios)) {
+  if (base::FeatureList::IsEnabled(kAutofillPaymentsSheetV2Ios) && detach) {
     // In V2, detach the listeners right away to make sure they're always
     // cleaned up to avoid issues with rogue listeners, see the
     // documentation in ShowCredentialBottomSheet() for more details. Postpone

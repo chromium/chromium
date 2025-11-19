@@ -113,13 +113,6 @@ id<GREYMatcher> KeyboardAccessoryCreditCardSuggestionChip() {
   config.features_enabled.push_back(
       autofill::features::kAutofillEnableCvcStorageAndFilling);
   if ([self isRunningTest:@selector
-            (testOpenPaymentsBottomSheetShowDetailsEditNickname)] ||
-      [self
-          isRunningTest:@selector(testOpenPaymentsBottomSheetAfterLongPress)]) {
-    // Disable V2 for that test case as it doesn't support the flow tested by
-    // that test case.
-    config.features_disabled.push_back(kAutofillPaymentsSheetV2Ios);
-  } else if ([self isRunningTest:@selector
                    (testOpenPaymentsBottomSheetUseCreditCardOnV3)] ||
              [self
                  isRunningTest:@selector
@@ -565,49 +558,6 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
       @"index");
 }
 
-// Tests that accessing a long press menu does not disable the bottom sheet.
-- (void)testOpenPaymentsBottomSheetAfterLongPress {
-  [self loadPaymentsPage];
-
-  // Open the Payments Bottom Sheet.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormCardName)];
-
-  id<GREYMatcher> continueButton = WaitOnResponsiveContinueButton();
-
-  // Long press to open context menu.
-  id<GREYMatcher> creditCardEntry = grey_text(_lastDigits);
-
-  [[EarlGrey selectElementWithMatcher:creditCardEntry]
-      performAction:grey_longPress()];
-
-  [ChromeEarlGreyUI waitForAppToIdle];
-
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(
-              chrome_test_util::ButtonWithAccessibilityLabel(
-                  l10n_util::GetNSString(
-                      IDS_IOS_PAYMENT_BOTTOM_SHEET_MANAGE_PAYMENT_METHODS)),
-              grey_interactable(), nullptr)] performAction:grey_tap()];
-
-  [ChromeEarlGreyUI waitForAppToIdle];
-
-  // Close the context menu.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
-      performAction:grey_tap()];
-
-  [ChromeEarlGreyUI waitForAppToIdle];
-
-  // Try to open the Payments Bottom Sheet again.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormCardName)];
-
-  // Make sure the bottom sheet re-opens.
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:continueButton];
-}
-
 // Verify that the Payments Bottom Sheet works in incognito mode.
 - (void)testOpenPaymentsBottomSheetIncognito {
   [ChromeEarlGrey openNewIncognitoTab];
@@ -648,59 +598,6 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
       performAction:grey_tap()];
 
   [ChromeEarlGrey waitForKeyboardToAppear];
-}
-
-// Verify that the Payments Bottom Sheet "Show Details" button opens the proper
-// menu and allows the nickname to be edited.
-- (void)testOpenPaymentsBottomSheetShowDetailsEditNickname {
-  [self loadPaymentsPage];
-
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormCardName)];
-
-  WaitOnResponsiveContinueButton();
-
-  // Long press to open context menu.
-  id<GREYMatcher> creditCardEntry = grey_text(_lastDigits);
-
-  [[EarlGrey selectElementWithMatcher:creditCardEntry]
-      performAction:grey_longPress()];
-
-  [ChromeEarlGreyUI waitForAppToIdle];
-
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
-                         IDS_IOS_PAYMENT_BOTTOM_SHEET_SHOW_DETAILS),
-                     grey_interactable(), nullptr)] performAction:grey_tap()];
-
-  [ChromeEarlGreyUI waitForAppToIdle];
-
-  // Edit the card's nickname.
-  [[EarlGrey selectElementWithMatcher:SettingsToolbarEditButton()]
-      performAction:grey_tap()];
-
-  NSString* nickname = @"Card Nickname";
-  [[EarlGrey selectElementWithMatcher:NicknameTextField()]
-      performAction:grey_replaceText(nickname)];
-
-  [[EarlGrey selectElementWithMatcher:SettingToolbarDoneButton()]
-      performAction:grey_tap()];
-
-  // Close the context menu.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
-      performAction:grey_tap()];
-
-  // Reopen the bottom sheet.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormCardName)];
-
-  // Make sure the nickname is active.
-  NSString* nicknameAndCardNumber =
-      [nickname stringByAppendingString:[_lastDigits substringFromIndex:4]];
-  id<GREYMatcher> nicknamedCreditCard = grey_text(nicknameAndCardNumber);
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:nicknamedCreditCard];
 }
 
 // Verify that the Payments Bottom Sheet "Show Details" button opens the proper

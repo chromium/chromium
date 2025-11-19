@@ -12937,7 +12937,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "AutofillPaymentsSheetV3"
+                        "AutofillPaymentsSheetV3Ios"
                     ]
                 }
             ]

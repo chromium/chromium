@@ -205,7 +205,7 @@ void DismissPaymentBottomSheet() {
 
 // Makes sure that the payment suggestions are appearing in the keyboard
 // accessory.
-void MakeSurePaymentMethodSuggestionsAreVisisble() {
+void MakeSurePaymentMethodSuggestionsAreVisible() {
   // Needed in order to see the payment method suggestions.
   [AutofillAppInterface considerCreditCardFormSecureForTesting];
 
@@ -294,6 +294,7 @@ GREYElementInteraction* SearchAutofillFormButton(id<GREYMatcher> scroll_view) {
                                              fieldToFill:
                                                  (std::string)fieldToFill {
   LoadForm(self.testServer, dataType);
+  [AutofillAppInterface considerCreditCardFormSecureForTesting];
   [self openExpandedManualFillViewForDataType:dataType fieldToFill:fieldToFill];
 }
 
@@ -307,7 +308,7 @@ GREYElementInteraction* SearchAutofillFormButton(id<GREYMatcher> scroll_view) {
       performAction:chrome_test_util::TapWebElementWithId(fieldToFill)];
 
   if (dataType == ManualFillDataType::kPaymentMethod) {
-    MakeSurePaymentMethodSuggestionsAreVisisble();
+    MakeSurePaymentMethodSuggestionsAreVisible();
   }
 
   // Open the expanded manual fill view.
