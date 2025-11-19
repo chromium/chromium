@@ -4075,7 +4075,7 @@ class DevToolsConsoleInsightsTest : public DevToolsTest {
     auto* identity_manager =
         IdentityManagerFactory::GetForProfile(browser()->profile());
     auto account_info = signin::MakePrimaryAccountAvailable(
-        identity_manager, "test@example.com", signin::ConsentLevel::kSync);
+        identity_manager, "test@example.com", signin::ConsentLevel::kSignin);
     AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
     mutator.set_can_use_devtools_generative_ai_features(!is_minor);
     signin::UpdateAccountInfoForAccount(identity_manager, account_info);

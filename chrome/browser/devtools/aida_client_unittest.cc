@@ -45,7 +45,7 @@ class AidaClientTest : public testing::Test {
     profile_->GetPrefs()->SetInteger(prefs::kDevToolsGenAiSettings, 0);
 
     auto account_info = identity_test_env_->MakePrimaryAccountAvailable(
-        kEmail, signin::ConsentLevel::kSync);
+        kEmail, signin::ConsentLevel::kSignin);
     AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
     mutator.set_can_use_devtools_generative_ai_features(true);
     signin::UpdateAccountInfoForAccount(identity_test_env_->identity_manager(),

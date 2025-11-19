@@ -188,8 +188,8 @@ TEST_F(DevToolsUIBindingsSyncInfoTest, PreferencesNotSynced) {
 
 TEST_F(DevToolsUIBindingsSyncInfoTest, ImageAlwaysProvided) {
   AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
-      "sync@devtools.dev", signin::ConsentLevel::kSync);
-  sync_service_->SetSignedIn(signin::ConsentLevel::kSync, account_info);
+      "sync@devtools.dev", signin::ConsentLevel::kSignin);
+  sync_service_->SetSignedIn(signin::ConsentLevel::kSignin, account_info);
 
   EXPECT_TRUE(account_info.account_image.IsEmpty());
 
