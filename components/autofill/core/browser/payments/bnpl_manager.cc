@@ -272,17 +272,19 @@ void BnplManager::OnAmountExtractionReturned(
 void BnplManager::OnAmountExtractionReturnedFromAi(
     const std::optional<int64_t>& extracted_amount_in_micros,
     bool timeout_reached) {
-  if (timeout_reached) {
-    // TODO(crbug.com/444684996): Add the logic to handle the amount extraction
-    // from the server-side AI timeout case. Do not show BNPL chip anymore for
-    // this transaction if the previous amount extraction is timeout.
-    NOTREACHED();
-  }
+  if (timeout_reached || !extracted_amount_in_micros.has_value()) {
+    // If an invalid response is received from `AmountExtractionManager`, BNPL
+    // flow will close the current dialog and show the error dialog.
+    payments_autofill_client()
+        .GetBnplUiDelegate()
+        ->RemoveSelectBnplIssuerOrProgressUi();
 
-  if (!extracted_amount_in_micros.has_value()) {
-    // TODO(crbug.com/444684996): Add the logic to handle no checkout amount is
-    // received from the server-side AI case.
-    NOTREACHED();
+    payments_autofill_client().GetBnplUiDelegate()->ShowAutofillErrorUi(
+        AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
+            /*is_permanent_error=*/false));
+
+    Reset();
+    return;
   }
 
   ongoing_flow_state_->final_checkout_amount = extracted_amount_in_micros;
