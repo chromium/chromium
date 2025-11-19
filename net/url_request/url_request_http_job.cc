@@ -119,20 +119,6 @@ namespace net {
 
 namespace {
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class TpcdHeaderStatus {
-  kSet = 0,
-  kNoLabel = 1,
-  kNoCookie = 2,
-  kMaxValue = kNoCookie,
-};
-
-void RecordTpcdHeaderStatus(TpcdHeaderStatus status) {
-  base::UmaHistogramEnumeration("Privacy.3PCD.SecCookieDeprecationHeaderStatus",
-                                status);
-}
-
 base::Value::Dict FirstPartySetMetadataNetLogParams(
     const FirstPartySetMetadata& first_party_set_metadata,
     const int64_t* const fps_cache_filter) {
@@ -882,14 +868,6 @@ void URLRequestHttpJob::SetCookieHeaderAndStart(
     AnnotateAndMoveUserBlockedCookies(maybe_included_cookies, excluded_cookies);
   }
 
-  const bool cookie_deprecation_testing_enabled =
-      request_->context()->cookie_deprecation_label().has_value();
-  const bool cookie_deprecation_testing_has_label =
-      cookie_deprecation_testing_enabled &&
-      !request_->context()->cookie_deprecation_label().value().empty();
-  bool may_set_sec_cookie_deprecation_header =
-      cookie_deprecation_testing_has_label;
-
   if (!maybe_included_cookies.empty()) {
     std::string cookie_line =
         CanonicalCookie::BuildCookieLine(maybe_included_cookies);
@@ -929,30 +907,12 @@ void URLRequestHttpJob::SetCookieHeaderAndStart(
                                 cookie_request_schemes);
       if (c.cookie.IsPartitioned()) {
         ++n_partitioned_cookies;
-
-        if (may_set_sec_cookie_deprecation_header &&
-            c.cookie.Name() == "receive-cookie-deprecation" &&
-            c.cookie.IsHttpOnly() && c.cookie.SecureAttribute()) {
-          request_info_.extra_headers.SetHeader(
-              "Sec-Cookie-Deprecation",
-              *request_->context()->cookie_deprecation_label());
-          may_set_sec_cookie_deprecation_header = false;
-        }
       }
     }
 
     if (ShouldRecordPartitionedCookieUsage()) {
       base::UmaHistogramCounts100("Cookie.PartitionedCookiesInRequest",
                                   n_partitioned_cookies);
-    }
-  }
-  if (cookie_deprecation_testing_enabled) {
-    if (!cookie_deprecation_testing_has_label) {
-      RecordTpcdHeaderStatus(TpcdHeaderStatus::kNoLabel);
-    } else if (may_set_sec_cookie_deprecation_header) {
-      RecordTpcdHeaderStatus(TpcdHeaderStatus::kNoCookie);
-    } else {
-      RecordTpcdHeaderStatus(TpcdHeaderStatus::kSet);
     }
   }
 

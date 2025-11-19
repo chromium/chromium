@@ -511,12 +511,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/privacy_sandbox/roll_back_3pcd_notice_action.h:RollBack3pcdNoticeAction) -->
 
-<enum name="SecCookieDeprecationHeaderStatus">
-  <int value="0" label="kSet"/>
-  <int value="1" label="kNoLabel"/>
-  <int value="2" label="kNoCookie"/>
-</enum>
-
 <enum name="ThirdPartySiteDataAccessType">
   <int value="0" label="Any blocked third-party site data accesses"/>
   <int value="1" label="Any allowed third-party site data accesses"/>

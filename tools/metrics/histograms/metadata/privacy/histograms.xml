@@ -209,23 +209,6 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
   </summary>
 </histogram>
 
-<histogram name="Privacy.3PCD.SecCookieDeprecationHeaderStatus"
-    enum="SecCookieDeprecationHeaderStatus" expires_after="2026-03-22">
-  <owner>linnan@chromium.org</owner>
-  <owner>src/chrome/browser/tpcd/OWNERS</owner>
-  <summary>
-    Recorded only for requests where a 3pcd facilitated testing is enabled (the
-    client is part of the experiment and the profile is not guest or incognito).
-
-    The metrics records `kSet` if the `Sec-Cookie-Deprecation` header is added
-    to the request. It records `kNoLabel` if there is no label available. This
-    happens when the client is ineligible to the experiment or when the label
-    value configured in the experiment is empty &quot;&quot; It records
-    `kNoCookie` if there is a label available but the opt-in cookie is not
-    available.
-  </summary>
-</histogram>
-
 <histogram name="Privacy.AFP.BlockList.CheckResult"
     enum="AntiFingerprintingBlockListResult" expires_after="2024-04-01">
   <owner>thesalsa@google.com</owner>
