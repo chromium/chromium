@@ -8,6 +8,7 @@
 
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/win/windows_version.h"
 #include "chrome/browser/themes/theme_properties.h"

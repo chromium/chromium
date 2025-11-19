@@ -13,6 +13,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/color/color_id.mojom.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_recipe.h"
 #include "ui/gfx/color_palette.h"

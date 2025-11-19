@@ -14,11 +14,12 @@
 #include "base/functional/callback.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
-#include "ui/color/color_id.mojom.h"
-#include "ui/color/color_mixer.h"
+#include "ui/color/color_id.mojom-forward.h"
 #include "ui/color/color_provider_manager.h"
 
 namespace ui {
+
+class ColorMixer;
 
 using RendererColorMap = base::flat_map<color::mojom::RendererColorId, SkColor>;
 

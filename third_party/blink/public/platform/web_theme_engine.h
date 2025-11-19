@@ -42,13 +42,16 @@
 #include "third_party/blink/public/mojom/css/preferred_contrast.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-forward.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/color/color_provider_utils.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace cc {
 class PaintCanvas;
+}
+
+namespace ui {
+class ColorProvider;
 }
 
 namespace blink {
