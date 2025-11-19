@@ -40,7 +40,6 @@ BASE_DECLARE_FEATURE(kWebViewUseStartupTasksLogicP2);
 BASE_DECLARE_FEATURE(kWebViewUseInitialNetworkStateAtStartup);
 BASE_DECLARE_FEATURE(kWebViewReduceUAAndroidVersionDeviceModel);
 BASE_DECLARE_FEATURE(kWebViewEnableCrash);
-BASE_DECLARE_FEATURE(kWebViewPreloadClasses);
 BASE_DECLARE_FEATURE(kWebViewPrefetchNativeLibrary);
 extern const base::FeatureParam<bool> kWebViewPrefetchFromRenderer;
 BASE_DECLARE_FEATURE(kWebViewSkipInterceptsForPrefetch);

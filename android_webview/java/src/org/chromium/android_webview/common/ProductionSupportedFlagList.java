@@ -756,9 +756,6 @@ public final class ProductionSupportedFlagList {
                 "EnableHangWatcher", "Controls whether hooks for hang detection are active"),
         Flag.baseFeature("EnsureExistingRendererAlive"),
         Flag.baseFeature(
-                AwFeatures.WEBVIEW_PRELOAD_CLASSES,
-                "Preloads expensive classes during WebView startup."),
-        Flag.baseFeature(
                 AwFeatures.WEBVIEW_PREFETCH_NATIVE_LIBRARY,
                 "Prefetches the native WebView code to memory during startup."),
         Flag.baseFeature(

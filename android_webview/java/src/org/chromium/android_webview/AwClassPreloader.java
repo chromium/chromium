@@ -4,7 +4,6 @@
 
 package org.chromium.android_webview;
 
-import org.chromium.android_webview.common.AwFeatureMap;
 import org.chromium.base.Log;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -29,9 +28,6 @@ public final class AwClassPreloader {
 
     /** Preloads a set of classes on a background thread. */
     public static void preloadClasses() {
-        if (!AwFeatureMap.isEnabled("WebViewPreloadClasses")) {
-            return;
-        }
         PostTask.postTask(
                 TaskTraits.BEST_EFFORT,
                 () -> {
