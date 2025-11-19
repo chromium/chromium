@@ -318,7 +318,7 @@ export class SettingsYourSavedInfoPageElement extends
     this.autofillAiEntityManager_.loadEntityInstances().then(
         this.onAutofillAiEntitiesChangedListener_);
 
-    if (loadTimeData.getBoolean('showAutofillAiControl')) {
+    if (loadTimeData.getBoolean('userEligibleForAutofillAi')) {
       this.autofillAiEntityManager_.getWritableEntityTypes().then(
           (entityTypes: EntityType[]) => {
             for (const entityType of entityTypes) {

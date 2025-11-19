@@ -4,16 +4,17 @@
 
 import 'chrome://settings/settings.js';
 
-import {AiEnterpriseFeaturePrefName, AutofillManagerImpl, PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
+import {AiEnterpriseFeaturePrefName, AutofillManagerImpl, EntityDataManagerProxyImpl, PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs, ModelExecutionEnterprisePolicyValue} from 'chrome://settings/settings.js';
 import type {SettingsPrefsElement, SettingsYourSavedInfoPageElement} from 'chrome://settings/settings.js';
 import {loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PasswordManagerImpl, PasswordManagerPage, resetRouterForTesting, Router, YourSavedInfoDataCategory, YourSavedInfoDataChip, YourSavedInfoRelatedService} from 'chrome://settings/settings.js';
-import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 
 import {createAddressEntry, createCreditCardEntry, createIbanEntry, createPayOverTimeIssuerEntry, TestAutofillManager, TestPaymentsManager} from './autofill_fake_data.js';
+import {TestEntityDataManagerProxy} from './test_entity_data_manager_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 
@@ -56,7 +57,7 @@ suite('YourSavedInfoPage', function() {
       showIbansSettings: true,
       shouldShowPayOverTimeSettings: true,
       enableLoyaltyCardsFilling: true,
-      showAutofillAiControl: true,
+      userEligibleForAutofillAi: true,
     });
   });
 
@@ -233,10 +234,42 @@ suite('YourSavedInfoPage', function() {
 
 suite('DataChipsVisibility', function() {
   let settingsPrefs: SettingsPrefsElement;
+  let entityDataManager: TestEntityDataManagerProxy;
 
   suiteSetup(function() {
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
+  });
+
+  setup(function() {
+    entityDataManager = new TestEntityDataManagerProxy();
+    entityDataManager.setGetWritableEntityTypesResponse([
+      {
+        typeName: 0,
+        typeNameAsString: 'Passport',
+        addEntityTypeString: 'Add passport',
+        editEntityTypeString: 'Edit passport',
+        deleteEntityTypeString: 'Delete passport',
+        supportsWalletStorage: false,
+      },
+      {
+        typeName: 1,
+        typeNameAsString: 'Driver\'s license',
+        addEntityTypeString: 'Add driver\'s license',
+        editEntityTypeString: 'Edit driver\'s license',
+        deleteEntityTypeString: 'Delete driver\'s license',
+        supportsWalletStorage: false,
+      },
+      {
+        typeName: 2,
+        typeNameAsString: 'Vehicle',
+        addEntityTypeString: 'Add vehicle',
+        editEntityTypeString: 'Edit vehicle',
+        deleteEntityTypeString: 'Delete vehicle',
+        supportsWalletStorage: false,
+      },
+    ]);
+    EntityDataManagerProxyImpl.setInstance(entityDataManager);
   });
 
   async function setupPage(overrides: {[key: string]: boolean}):
@@ -275,8 +308,9 @@ suite('DataChipsVisibility', function() {
       showIbansSettings: true,
       shouldShowPayOverTimeSettings: true,
       enableLoyaltyCardsFilling: true,
-      showAutofillAiControl: true,
+      userEligibleForAutofillAi: true,
     });
+    await entityDataManager.whenCalled('getWritableEntityTypes');
 
     assertDeepEquals(
         [
@@ -287,8 +321,24 @@ suite('DataChipsVisibility', function() {
         ],
         getChipLabels(yourSavedInfoPage, '#paymentManagerButton'));
 
-    assertTrue(isChildVisible(yourSavedInfoPage, '#identityManagerButton'));
-    assertTrue(isChildVisible(yourSavedInfoPage, '#travelManagerButton'));
+    assertTrue(
+        isChildVisible(yourSavedInfoPage, '#identityManagerButton'),
+        'Identity docs category should be visible');
+    assertDeepEquals(
+        [
+          loadTimeData.getString('yourSavedInfoDriverLicenseChip'),
+          loadTimeData.getString('yourSavedInfoPassportChip'),
+        ],
+        getChipLabels(yourSavedInfoPage, '#identityManagerButton'));
+
+    assertTrue(
+        isChildVisible(yourSavedInfoPage, '#travelManagerButton'),
+        'Travel category should be visible');
+    assertDeepEquals(
+        [
+          loadTimeData.getString('yourSavedInfoVehiclesChip'),
+        ],
+        getChipLabels(yourSavedInfoPage, '#travelManagerButton'));
   });
 
   test('DisabledIbans', async function() {
@@ -361,7 +411,7 @@ suite('DataChipsVisibility', function() {
 
   test('DisabledAutofillAi', async function() {
     const yourSavedInfoPage = await setupPage({
-      showAutofillAiControl: false,
+      userEligibleForAutofillAi: false,
     });
     const identityCard =
         yourSavedInfoPage.shadowRoot!.querySelector<HTMLElement>(
@@ -372,6 +422,46 @@ suite('DataChipsVisibility', function() {
         '#travelManagerButton');
     assertTrue(!!travelCard);
     assertTrue(travelCard.hidden);
+  });
+
+  test('PartiallyVisibleAutofillAi', async function() {
+    // Autofill AI is not eligible, but user has stored some data already.
+    const testEntityInstancesWithLabels:
+        chrome.autofillPrivate.EntityInstanceWithLabels[] = [
+      {
+        guid: '1fd09cdc-35b8-4367-8f1a-18c8c0733af0',
+        type: {
+          typeName: 0,
+          typeNameAsString: 'Passport',
+          addEntityTypeString: 'Add passport',
+          editEntityTypeString: 'Edit passport',
+          deleteEntityTypeString: 'Delete passport',
+          supportsWalletStorage: false,
+        },
+        entityInstanceLabel: 'John Doe',
+        entityInstanceSubLabel: 'Passport',
+        storedInWallet: false,
+      },
+    ];
+    entityDataManager.setLoadEntityInstancesResponse(
+        testEntityInstancesWithLabels);
+    const yourSavedInfoPage = await setupPage({
+      userEligibleForAutofillAi: false,
+    });
+    await entityDataManager.whenCalled('loadEntityInstances');
+
+    assertFalse(
+        isChildVisible(yourSavedInfoPage, '#travelManagerButton'),
+        'Travel category should be hidden');
+    assertTrue(
+        isChildVisible(yourSavedInfoPage, '#identityManagerButton'),
+        'Identity docs category should be visible');
+    assertDeepEquals(
+        [
+          loadTimeData.getString('yourSavedInfoPassportChip'),
+        ],
+        getChipLabels(yourSavedInfoPage, '#identityManagerButton'),
+        'Only passports chip should be visible');
   });
 });
 
