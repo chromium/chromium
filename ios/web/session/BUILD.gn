@@ -46,8 +46,5 @@ source_set("unittests") {
     "//net:test_support",
     "//testing/gtest",
   ]
-  sources = [
-    "serializable_user_data_manager_unittest.mm",
-    "session_certificate_policy_cache_impl_unittest.mm",
-  ]
+  sources = [ "session_certificate_policy_cache_impl_unittest.mm" ]
 }
