@@ -40,6 +40,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -72,7 +73,9 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.components.javascript_dialogs.JavascriptTabModalDialog;
@@ -101,8 +104,6 @@ import java.util.concurrent.atomic.AtomicReference;
         reason =
                 "https://crbug.com/1347598: Side effects are causing flakes in CI and failures"
                         + " locally. Unbatched to isolate flakes before batching again.")
-// TODO(crbug.com/439491767): Fix broken tests caused by desktop-like incognito window.
-@DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
 public class TabsTest {
     @Rule
     public AutoResetCtaTransitTestRule mActivityTestRule =
@@ -161,6 +162,8 @@ public class TabsTest {
     @Feature({"Navigation"})
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     @CommandLineFlags.Add(ContentSwitches.DISABLE_POPUP_BLOCKING)
+    // TODO(crbug.com/457847264): Change to @Restriction(DeviceFormFactor.PHONE) after launch
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testSpawnPopupOnBackgroundTab() {
         mActivityTestRule.loadUrl(getUrl(TEST_FILE_PATH));
         final Tab tab = mActivityTestRule.getActivityTab();
@@ -190,6 +193,8 @@ public class TabsTest {
 
     @Test
     @MediumTest
+    // TODO(crbug.com/457847264): Change to @Restriction(DeviceFormFactor.PHONE) after launch
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testAlertDialogDoesNotChangeActiveModel() {
         mActivityTestRule.newIncognitoTabFromMenu();
         mActivityTestRule.loadUrl(getUrl(TEST_FILE_PATH));
@@ -529,11 +534,11 @@ public class TabsTest {
     @MediumTest
     @Feature({"Android-TabSwitcher"})
     public void testOpenIncognitoTab() {
-        mActivityTestRule.newIncognitoTabFromMenu();
-
+        IncognitoNewTabPageStation incognitoNtp =
+                mActivityTestRule.startOnBlankPage().openNewIncognitoTabOrWindowFast();
         assertTrue(
                 "Current Tab should be an incognito tab.",
-                mActivityTestRule.getActivityTab().isIncognito());
+                ThreadUtils.runOnUiThreadBlocking(incognitoNtp::getTab).isIncognitoBranded());
     }
 
     /** Test that orientation changes cause the live tab reflow. */
@@ -870,20 +875,25 @@ public class TabsTest {
     @Test
     @MediumTest
     @Feature({"Android-TabSwitcher"})
-    @DisableFeatures({ChromeFeatureList.ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH})
+    // TODO(crbug.com/461879409): Remove disable Incognito windows when fixed
+    @DisableFeatures({
+        ChromeFeatureList.ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH,
+        ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW
+    })
     public void testIncognitoTabsNotRestoredAfterSwipe() throws Exception {
         mActivityTestRule.loadUrl(getUrl(TEST_PAGE_FILE_PATH));
 
-        mActivityTestRule.newIncognitoTabFromMenu();
+        IncognitoNewTabPageStation incognitoNtp =
+                mActivityTestRule.startOnBlankPage().openNewIncognitoTabOrWindowFast();
         // Tab states are not saved for empty NTP tabs, so navigate to any page to trigger a file
         // to be saved.
-        mActivityTestRule.loadUrl(getUrl(TEST_PAGE_FILE_PATH));
+        WebPageStation incognitoWebPage =
+                incognitoNtp.loadWebPageProgrammatically(getUrl(TEST_PAGE_FILE_PATH));
 
         File tabStateDir = TabStateDirectory.getOrCreateTabbedModeStateDirectory();
         TabModel normalModel =
                 mActivityTestRule.getActivity().getTabModelSelector().getModel(false);
-        TabModel incognitoModel =
-                mActivityTestRule.getActivity().getTabModelSelector().getModel(true);
+        TabModel incognitoModel = incognitoWebPage.getTabModel();
         File normalTabFile =
                 new File(
                         tabStateDir,
@@ -909,6 +919,9 @@ public class TabsTest {
         // Although we're destroying the activity, the Application will still live on since its in
         // the same process as this test.
         ApplicationTestUtils.finishActivity(mActivityTestRule.getActivity());
+        if (incognitoWebPage.getActivity().isIncognitoWindow()) {
+            ApplicationTestUtils.finishActivity(incognitoWebPage.getActivity());
+        }
 
         // Activity will be started without a savedInstanceState.
         mActivityTestRule.getActivityTestRule().startMainActivityOnBlankPage();
