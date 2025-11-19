@@ -15,7 +15,6 @@
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/privacy_sandbox/tpcd_experiment_eligibility.h"
 #include "components/privacy_sandbox/tracking_protection_onboarding.h"
-#include "content/public/browser/cookie_deprecation_label_manager.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -76,8 +75,6 @@ void EligibilityService::BroadcastProfileEligibility() {
 }
 
 void EligibilityService::MarkProfileEligibility(bool is_client_eligible) {
-  UpdateCookieDeprecationLabel();
-
   // Update the eligibility for the onboarding UX flow.
   if (onboarding_service_) {
     if (kDisable3PCookies.Get()) {
@@ -95,19 +92,6 @@ EligibilityService::ProfileEligibility() {
   CHECK(privacy_sandbox_settings_);
   return privacy_sandbox_settings_
       ->GetCookieDeprecationExperimentCurrentEligibility();
-}
-
-void EligibilityService::UpdateCookieDeprecationLabel() {
-  // For each storage partition, update the cookie deprecation label to the
-  // updated value from the CookieDeprecationLabelManager.
-  profile_->ForEachLoadedStoragePartition(
-      [](content::StoragePartition* storage_partition) {
-        if (auto* cookie_deprecation_label_manager =
-                storage_partition->GetCookieDeprecationLabelManager()) {
-          storage_partition->GetNetworkContext()->SetCookieDeprecationLabel(
-              cookie_deprecation_label_manager->GetValue().value_or(""));
-        }
-      });
 }
 
 void EligibilityService::MaybeNotifyManagerTrackingProtectionOnboarded(

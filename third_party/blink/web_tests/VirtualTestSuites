@@ -287,26 +287,6 @@
     "expires": "Jul 1, 2026"
   },
   {
-    "prefix": "cookie-deprecation-label",
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "bases": [
-      "external/wpt/cookie-deprecation-label"
-    ],
-    "exclusive_tests": "ALL",
-    "args": [
-      "--enable-features=CookieDeprecationFacilitatedTesting:label/label_test,CookieDeprecationFacilitatedTestingLabels"
-    ],
-    "expires": "Dec 6, 2025",
-    "owners": [
-      "linnan@chromium.org",
-      "johnidel@chromium.org"
-    ]
-  },
-  {
     "prefix": "cookie-reject-domain-non-ascii",
     "platforms": [
       "Linux",

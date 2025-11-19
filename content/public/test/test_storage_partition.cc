@@ -153,11 +153,6 @@ TestStoragePartition::GetPrivateAggregationDataModel() {
   return nullptr;
 }
 
-CookieDeprecationLabelManager*
-TestStoragePartition::GetCookieDeprecationLabelManager() {
-  return nullptr;
-}
-
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
 CdmStorageDataModel* TestStoragePartition::GetCdmStorageDataModel() {
   return nullptr;

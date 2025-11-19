@@ -602,8 +602,6 @@ void AuctionWorkletManager::WorkletOwner::LoadWorkletIfReady(
       base::BindRepeating(&Delegate::GetTrustedURLLoaderFactory,
                           base::Unretained(delegate)),
       base::BindOnce(&Delegate::PreconnectSocket, base::Unretained(delegate)),
-      base::BindRepeating(&Delegate::GetCookieDeprecationLabel,
-                          base::Unretained(delegate)),
       base::BindRepeating(&WorkletOwner::GetDevtoolsAuctionIds,
                           weak_ptr_factory_.GetWeakPtr()),
       /*force_reload=*/rfh->reload_type() == ReloadType::BYPASSING_CACHE,

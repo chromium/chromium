@@ -3634,7 +3634,6 @@ if (!is_android) {
       "../browser/task_manager/task_manager_browsertest.cc",
       "../browser/themes/theme_service_browsertest.cc",
       "../browser/top_level_storage_access_api/request_storage_access_for_browsertest.cc",
-      "../browser/tpcd/experiment/eligibility_service_browsertest.cc",
       "../browser/tpcd/experiment/experiment_manager_impl_browsertest.cc",
       "../browser/tpcd/experiment/tpcd_mitigations_browsertest.cc",
       "../browser/tpcd/heuristics/opener_heuristic_service_browsertest.cc",

@@ -373,8 +373,6 @@ class TestNetworkContext : public mojom::NetworkContext {
       const scoped_refptr<net::X509Certificate>& certificate) override {}
   void FlushMatchingCachedClientCert(
       const scoped_refptr<net::X509Certificate>& certificate) override {}
-  void SetCookieDeprecationLabel(
-      const std::optional<std::string>& label) override {}
   void RevokeNetworkForNonces(
       const std::vector<base::UnguessableToken>& nonces,
       RevokeNetworkForNoncesCallback callback) override {}

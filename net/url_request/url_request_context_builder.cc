@@ -620,13 +620,7 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
                                     std::move(scheme_handler.second));
   }
   protocol_handlers_.clear();
-
   context->set_job_factory(std::move(job_factory));
-
-  if (cookie_deprecation_label_.has_value()) {
-    context->set_cookie_deprecation_label(*cookie_deprecation_label_);
-  }
-
   return context;
 }
 

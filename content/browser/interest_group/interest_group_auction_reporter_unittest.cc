@@ -473,9 +473,6 @@ class InterestGroupAuctionReporterTest
   network::mojom::ClientSecurityStatePtr GetClientSecurityState() override {
     return frame_client_security_state_.Clone();
   }
-  std::optional<std::string> GetCookieDeprecationLabel() override {
-    return std::nullopt;
-  }
   void GetTrustedKeyValueServerKey(
       const url::Origin& scope_origin,
       const std::optional<url::Origin>& coordinator,

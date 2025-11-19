@@ -53,7 +53,6 @@ class EligibilityService : public KeyedService {
   void MarkProfileEligibility(bool is_client_eligible);
   void BroadcastProfileEligibility();
   privacy_sandbox::TpcdExperimentEligibility ProfileEligibility();
-  void UpdateCookieDeprecationLabel();
   void MaybeNotifyManagerTrackingProtectionOnboarded(
       privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus
           onboarding_status);

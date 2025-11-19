@@ -156,8 +156,6 @@ class TestStoragePartition : public StoragePartition {
 
   PrivateAggregationDataModel* GetPrivateAggregationDataModel() override;
 
-  CookieDeprecationLabelManager* GetCookieDeprecationLabelManager() override;
-
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   CdmStorageDataModel* GetCdmStorageDataModel() override;
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)

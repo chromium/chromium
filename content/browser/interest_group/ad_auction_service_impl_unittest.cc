@@ -20122,7 +20122,6 @@ class AdAuctionServiceImplFacilitatedTestingTest
         /*enabled_features=*/
         {{features::kCookieDeprecationFacilitatedTesting,
           {{"label", "LabelForTesting"}}},
-         {features::kCookieDeprecationFacilitatedTestingLabels, {}},
          {features::kFledgeFacilitatedTestingSignalsHeaders, {}}},
         /*disabled_features=*/{});
   }
@@ -20156,9 +20155,6 @@ function scoreAd(
       kTrustedBiddingSignalsUrlPath,
       base::BindLambdaForTesting(
           [&](URLLoaderInterceptor::RequestParams* params) {
-            EXPECT_THAT(
-                params->url_request.headers.GetHeader("Sec-Cookie-Deprecation"),
-                testing::Optional(std::string("LabelForTesting")));
             bidding_kv_called = true;
             URLLoaderInterceptor::WriteResponse(kFledgeSignalsHeaders, "{}",
                                                 params->client.get());
@@ -20167,9 +20163,6 @@ function scoreAd(
       kTrustedScoringSignalsUrlPath,
       base::BindLambdaForTesting(
           [&](URLLoaderInterceptor::RequestParams* params) {
-            EXPECT_THAT(
-                params->url_request.headers.GetHeader("Sec-Cookie-Deprecation"),
-                testing::Optional(std::string("LabelForTesting")));
             scoring_kv_called = true;
             URLLoaderInterceptor::WriteResponse(kFledgeSignalsHeaders, "{}",
                                                 params->client.get());

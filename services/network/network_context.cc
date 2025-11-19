@@ -3088,10 +3088,6 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
   builder.set_check_cleartext_permitted(params_->check_clear_text_permitted);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  if (params_->cookie_deprecation_label.has_value()) {
-    builder.set_cookie_deprecation_label(*params_->cookie_deprecation_label);
-  }
-
   if (params_->device_bound_sessions_enabled) {
     builder.set_has_device_bound_session_service(true);
 
@@ -3502,12 +3498,6 @@ void NetworkContext::FlushMatchingCachedClientCert(
     http_session->ssl_client_context()->ClearMatchingClientCertificate(
         certificate);
   }
-}
-
-void NetworkContext::SetCookieDeprecationLabel(
-    const std::optional<std::string>& label) {
-  CHECK(url_request_context_);
-  url_request_context_->set_cookie_deprecation_label(label);
 }
 
 void NetworkContext::RevokeNetworkForNonces(

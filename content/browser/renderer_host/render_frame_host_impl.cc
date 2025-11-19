@@ -79,7 +79,6 @@
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/closewatcher/close_listener_host.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
-#include "content/browser/cookie_deprecation_label/cookie_deprecation_label_manager_impl.h"
 #include "content/browser/data_url_loader_factory.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/digital_credentials/digital_identity_request_impl.h"
@@ -16529,18 +16528,6 @@ void RenderFrameHostImpl::SendCommitNavigation(
       navigation_request->browsing_context_group_swap().ShouldSwap()) {
     commit_params->browsing_context_group_token =
         GetSiteInstance()->browsing_instance_token();
-  }
-
-  auto* cookie_deprecation_label_manager =
-      static_cast<CookieDeprecationLabelManagerImpl*>(
-          GetStoragePartition()->GetCookieDeprecationLabelManager());
-  if (cookie_deprecation_label_manager) {
-    url::Origin top_frame_origin =
-        is_main_frame() ? origin_to_commit
-                        : GetMainFrame()->GetLastCommittedOrigin();
-    commit_params->cookie_deprecation_label =
-        cookie_deprecation_label_manager->GetValue(top_frame_origin,
-                                                   origin_to_commit);
   }
 
 #if BUILDFLAG(IS_ANDROID)

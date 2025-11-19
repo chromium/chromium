@@ -1502,10 +1502,6 @@ interface CookieChangeEvent : Event
     getter changed
     getter deleted
     method constructor
-interface CookieDeprecationLabel
-    attribute @@toStringTag
-    method constructor
-    method getValue
 interface CookieStore : EventTarget
     attribute @@toStringTag
     getter onchange
@@ -6770,7 +6766,6 @@ interface Navigator
     getter clipboard
     getter connection
     getter contacts
-    getter cookieDeprecationLabel
     getter cookieEnabled
     getter cpuPerformance
     getter credentials

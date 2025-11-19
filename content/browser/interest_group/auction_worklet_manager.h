@@ -112,9 +112,6 @@ class CONTENT_EXPORT AuctionWorkletManager {
     // bidder worklet and signals fetches.
     virtual network::mojom::ClientSecurityStatePtr GetClientSecurityState() = 0;
 
-    // Returns the cookie deprecation label for facilitated testing.
-    virtual std::optional<std::string> GetCookieDeprecationLabel() = 0;
-
     virtual void GetTrustedKeyValueServerKey(
         const url::Origin& scope_origin,
         const std::optional<url::Origin>& coordinator,

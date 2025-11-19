@@ -566,9 +566,6 @@ struct BLINK_EXPORT WebNavigationParams {
   // renderer-enforced content setting.
   mojom::RendererContentSettingsPtr content_settings;
 
-  // The cookie deprecation label for cookie deprecation facilitated testing.
-  WebString cookie_deprecation_label;
-
   // The :visited link hashtable is stored in shared memory and contains salted
   // hashes for all visits. Each salt corresponds to a unique origin, and
   // renderer processes are only informed of salts that correspond to their

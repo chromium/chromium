@@ -79,7 +79,6 @@ AuctionURLLoaderFactoryProxy::AuctionURLLoaderFactoryProxy(
     GetUrlLoaderFactoryCallback get_frame_url_loader_factory,
     GetUrlLoaderFactoryCallback get_trusted_url_loader_factory,
     PreconnectSocketCallback preconnect_socket_callback,
-    GetCookieDeprecationLabelCallback get_cookie_deprecation_label,
     GetDevtoolsAuctionIdsCallback get_devtools_auction_ids,
     bool force_reload,
     const url::Origin& top_frame_origin,
@@ -96,7 +95,6 @@ AuctionURLLoaderFactoryProxy::AuctionURLLoaderFactoryProxy(
       get_frame_url_loader_factory_(std::move(get_frame_url_loader_factory)),
       get_trusted_url_loader_factory_(
           std::move(get_trusted_url_loader_factory)),
-      get_cookie_deprecation_label_(std::move(get_cookie_deprecation_label)),
       get_devtools_auction_ids_(std::move(get_devtools_auction_ids)),
       top_frame_origin_(top_frame_origin),
       frame_origin_(frame_origin),
@@ -240,13 +238,6 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
   }
 
   if (is_trusted_signals_request) {
-    std::optional<std::string> maybe_deprecation_label =
-        get_cookie_deprecation_label_.Run();
-    if (maybe_deprecation_label) {
-      new_request.headers.SetHeader("Sec-Cookie-Deprecation",
-                                    *maybe_deprecation_label);
-    }
-
     // For cross-origin trusted signals request, the principal is the origin
     // of the script.
     new_request.request_initiator = url::Origin::Create(script_url_);

@@ -250,11 +250,6 @@ const char kCookieDeprecationLabelName[] = "label";
 
 const char kCookieDeprecationTestingDisableAdsAPIsName[] = "disable_ads_apis";
 
-// Kill switch for Cookie Deprecation labels, also gated on
-// kCookieDeprecationFacilitatedTesting.
-BASE_FEATURE(kCookieDeprecationFacilitatedTestingLabels,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Adiitional FeatureParams for CookieDeprecationFacilitatedTesting are defined
 // in chrome/browser/tpcd/experiment/tpcd_experiment_features.cc.
 

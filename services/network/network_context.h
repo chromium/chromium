@@ -565,8 +565,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       const scoped_refptr<net::X509Certificate>& certificate) override;
   void FlushMatchingCachedClientCert(
       const scoped_refptr<net::X509Certificate>& certificate) override;
-  void SetCookieDeprecationLabel(
-      const std::optional<std::string>& label) override;
   void RevokeNetworkForNonces(const std::vector<base::UnguessableToken>& nonces,
                               RevokeNetworkForNoncesCallback callback) override;
   void ClearNonces(const std::vector<base::UnguessableToken>& nonces) override;

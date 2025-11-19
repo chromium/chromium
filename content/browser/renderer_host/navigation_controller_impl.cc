@@ -4440,7 +4440,6 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
           net::StorageAccessApiStatus::kNone,
           /*browsing_context_group_info=*/std::nullopt,
           /*lcpp_hint=*/nullptr, blink::CreateDefaultRendererContentSettings(),
-          /*cookie_deprecation_label=*/std::nullopt,
           /*visited_link_salt=*/std::nullopt,
           /*local_surface_id=*/std::nullopt,
           node->current_frame_host()->GetCachedPermissionStatuses(),

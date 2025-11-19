@@ -1072,10 +1072,6 @@ void FillMiscNavigationParams(
   navigation_params->content_settings =
       std::move(commit_params.content_settings);
 
-  if (commit_params.cookie_deprecation_label.has_value()) {
-    navigation_params->cookie_deprecation_label =
-        WebString::FromASCII(*commit_params.cookie_deprecation_label);
-  }
   navigation_params->initial_permission_statuses =
       std::move(commit_params.initial_permission_statuses);
 

@@ -66,7 +66,6 @@
 #include "content/browser/cache_storage/cache_storage_control_wrapper.h"
 #include "content/browser/code_cache/generated_code_cache.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
-#include "content/browser/cookie_deprecation_label/cookie_deprecation_label_manager_impl.h"
 #include "content/browser/cookie_store/cookie_store_manager.h"
 #include "content/browser/devtools/devtools_background_services_context_impl.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
@@ -1456,20 +1455,6 @@ void StoragePartitionImpl::Initialize(
   bluetooth_allowed_devices_map_ =
       std::make_unique<BluetoothAllowedDevicesMap>();
 
-  // Must be initialized before the
-  // `shared_url_loader_factory_for_browser_process_`. Cookie deprecation
-  // traffic labels should not be sent for off-the-record profiles, unless the
-  // "enable_otr_profiles" feature parameter is true.
-  if (base::FeatureList::IsEnabled(
-          features::kCookieDeprecationFacilitatedTesting) &&
-      base::FeatureList::IsEnabled(
-          features::kCookieDeprecationFacilitatedTestingLabels) &&
-      (!is_in_memory() ||
-       features::kCookieDeprecationFacilitatedTestingEnableOTRProfiles.Get())) {
-    cookie_deprecation_label_manager_ =
-        std::make_unique<CookieDeprecationLabelManagerImpl>(browser_context_);
-  }
-
   shared_url_loader_factory_for_browser_process_ = std::make_unique<
       ReconnectableURLLoaderFactoryForIOThreadWrapper>(base::BindRepeating(
       &StoragePartitionImpl::CreateURLLoaderFactoryForBrowserProcessInternal,
@@ -1972,12 +1957,6 @@ PrivateAggregationDataModel*
 StoragePartitionImpl::GetPrivateAggregationDataModel() {
   DCHECK(initialized_);
   return private_aggregation_manager_.get();
-}
-
-CookieDeprecationLabelManager*
-StoragePartitionImpl::GetCookieDeprecationLabelManager() {
-  CHECK(initialized_);
-  return cookie_deprecation_label_manager_.get();
 }
 
 void StoragePartitionImpl::DeleteStaleSessionData() {
@@ -3672,11 +3651,6 @@ void StoragePartitionImpl::InitNetworkContext() {
       CalculateAndSetSharedDictionaryCacheMaxSize(
           GetWeakPtr(), is_in_memory() ? base::FilePath() : partition_path_);
     }
-  }
-
-  if (cookie_deprecation_label_manager_) {
-    context_params->cookie_deprecation_label =
-        cookie_deprecation_label_manager_->GetValue().value_or("");
   }
 
   network_context_owner_->network_context.reset();

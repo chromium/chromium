@@ -52,7 +52,6 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
-#include "content/public/browser/cookie_deprecation_label_manager.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_client.h"
@@ -766,23 +765,6 @@ AdAuctionServiceImpl::GetClientSecurityState() {
   frame_state->private_network_request_policy =
       network::mojom::PrivateNetworkRequestPolicy::kBlock;
   return frame_state;
-}
-
-std::optional<std::string> AdAuctionServiceImpl::GetCookieDeprecationLabel() {
-  if (!base::FeatureList::IsEnabled(
-          features::kFledgeFacilitatedTestingSignalsHeaders)) {
-    return std::nullopt;
-  }
-
-  CookieDeprecationLabelManager* cdlm =
-      render_frame_host()
-          .GetStoragePartition()
-          ->GetCookieDeprecationLabelManager();
-  if (cdlm) {
-    return cdlm->GetValue();
-  } else {
-    return std::nullopt;
-  }
 }
 
 void AdAuctionServiceImpl::GetTrustedKeyValueServerKey(

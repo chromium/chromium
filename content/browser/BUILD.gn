@@ -828,8 +828,6 @@ source_set("browser") {
     "content_index/content_index_database.h",
     "content_index/content_index_service_impl.cc",
     "content_index/content_index_service_impl.h",
-    "cookie_deprecation_label/cookie_deprecation_label_manager_impl.cc",
-    "cookie_deprecation_label/cookie_deprecation_label_manager_impl.h",
     "cookie_insight_list/cookie_insight_list.cc",
     "cookie_insight_list/cookie_insight_list.h",
     "cookie_insight_list/cookie_insight_list_handler_impl.cc",

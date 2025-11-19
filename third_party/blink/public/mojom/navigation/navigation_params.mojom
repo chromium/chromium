@@ -636,9 +636,6 @@ struct CommitNavigationParams {
   // ContentSettingsType for more details.
   RendererContentSettings content_settings;
 
-  // The cookie deprecation label for cookie deprecation facilitated testing.
-  string? cookie_deprecation_label;
-
   // The :visited link hashtable is stored in shared memory and contains salted
   // hashes for all visits. Each salt corresponds to a unique origin, and
   // renderer processes are only informed of salts that correspond to their

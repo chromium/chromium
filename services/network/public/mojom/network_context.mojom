@@ -587,20 +587,6 @@ struct NetworkContextParams {
   // removed (always enabled) in the future.
   bool acam_preflight_spec_conformant = true;
 
-  // To support 3PCD experimentation, a per-partition `cookie_deprecation_label`
-  // will be sent to developers who opt-in to receiving it. This enables server
-  // side opt-in to testing without cookies. See:
-  // https://developer.chrome.com/en/docs/privacy-sandbox/chrome-testing/#mode-a
-  // A non defined value indicates that the 3PCD experimentation feature is
-  // disabled for this client or that the profile is guest or incognito.
-  // A defined and non-empty value indicates that the 3PCD experiment feature is
-  // enabled, the client is eligible to it and the profile is not guest or
-  // incognito.
-  // A defined but empty value indicates that the 3PCD experimentation feature
-  // is enabled for the client but the client is not eligible for it or the
-  // label value defined by the experiment is empty.
-  string? cookie_deprecation_label;
-
   // Sets the cookie encryption provider to be used by this network context if
   // `enable_encrypted_cookies` is enabled.
   // The `GetEncryptor` method on the supplied `cookie_encryption_provider` is
@@ -1764,9 +1750,6 @@ interface NetworkContext {
   // Flushes a cached client certificate preference if `certificate` matches
   // the cached certificate.
   FlushMatchingCachedClientCert(X509Certificate certificate);
-
-  // Sets cookie deprecation label.
-  SetCookieDeprecationLabel(string? label);
 
   // Clients should revoke network access for nonces using
   // `StoragePartitionImpl::RevokeNetworkForNoncesInNetworkContext` instead of

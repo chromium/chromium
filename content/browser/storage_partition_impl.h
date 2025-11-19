@@ -98,7 +98,6 @@ class CacheStorageControlWrapper;
 class CdmStorageDataModel;
 class CdmStorageManager;
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
-class CookieDeprecationLabelManagerImpl;
 class CookieStoreManager;
 class DevToolsBackgroundServicesContextImpl;
 class FileSystemAccessEntryFactory;
@@ -221,7 +220,6 @@ class CONTENT_EXPORT StoragePartitionImpl
   // Use outside content.
   AttributionDataModel* GetAttributionDataModel() override;
   PrivateAggregationDataModel* GetPrivateAggregationDataModel() override;
-  CookieDeprecationLabelManager* GetCookieDeprecationLabelManager() override;
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   CdmStorageDataModel* GetCdmStorageDataModel() override;
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
@@ -829,9 +827,6 @@ class CONTENT_EXPORT StoragePartitionImpl
   std::unique_ptr<SharedStorageHeaderObserver> shared_storage_header_observer_;
 
   std::unique_ptr<PrivateAggregationManagerImpl> private_aggregation_manager_;
-
-  std::unique_ptr<CookieDeprecationLabelManagerImpl>
-      cookie_deprecation_label_manager_;
 
   // ReceiverSet for DomStorage, using the
   // ChildProcessSecurityPolicyImpl::Handle as the binding context type. The

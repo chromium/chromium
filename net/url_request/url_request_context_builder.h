@@ -392,10 +392,6 @@ class NET_EXPORT URLRequestContextBuilder {
     client_socket_factory_ = std::move(client_socket_factory);
   }
 
-  void set_cookie_deprecation_label(const std::string& label) {
-    cookie_deprecation_label_ = label;
-  }
-
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
   void set_device_bound_session_service(
       std::unique_ptr<device_bound_sessions::SessionService>
@@ -481,8 +477,6 @@ class NET_EXPORT URLRequestContextBuilder {
   std::string accept_language_;
   std::string user_agent_;
   std::unique_ptr<HttpUserAgentSettings> http_user_agent_settings_;
-
-  std::optional<std::string> cookie_deprecation_label_;
 
   bool http_cache_enabled_ = true;
   bool cookie_store_set_by_client_ = false;
