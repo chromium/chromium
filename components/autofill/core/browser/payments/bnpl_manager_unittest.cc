@@ -1759,7 +1759,7 @@ TEST_F(BnplManagerTest, CreateBnplPaymentInstrument_Success) {
               CreateBnplPaymentInstrument(
                   FieldsAre(kAppLocale, kBillingCustomerNumber,
                             autofill::ConvertToBnplIssuerIdString(
-                                ongoing_flow_state->issuer.issuer_id()),
+                                ongoing_flow_state->issuer->issuer_id()),
                             kContextToken, kRiskData),
                   _))
       .WillOnce(base::test::RunOnceCallback<1>(
@@ -1792,7 +1792,7 @@ TEST_F(BnplManagerTest, CreateBnplPaymentInstrument_Failure) {
               CreateBnplPaymentInstrument(
                   FieldsAre(kAppLocale, kBillingCustomerNumber,
                             autofill::ConvertToBnplIssuerIdString(
-                                ongoing_flow_state->issuer.issuer_id()),
+                                ongoing_flow_state->issuer->issuer_id()),
                             kContextToken, kRiskData),
                   _))
       .WillOnce(base::test::RunOnceCallback<1>(
@@ -1830,8 +1830,8 @@ TEST_F(BnplManagerTest, UpdateBnplPaymentInstrument_Failure) {
           FieldsAre(
               kAppLocale, kBillingCustomerNumber,
               autofill::ConvertToBnplIssuerIdString(
-                  ongoing_flow_state->issuer.issuer_id()),
-              ongoing_flow_state->issuer.payment_instrument()->instrument_id(),
+                  ongoing_flow_state->issuer->issuer_id()),
+              ongoing_flow_state->issuer->payment_instrument()->instrument_id(),
               kContextToken, kRiskData,
               /*type=*/kAcceptTos),
           _))
@@ -2211,6 +2211,48 @@ TEST_F(BnplManagerTest,
   bnpl_manager_->OnDidAcceptBnplSuggestion(
       /*final_checkout_amount=*/std::nullopt,
       /*on_bnpl_vcn_fetched_callback=*/base::DoNothing());
+}
+
+// Tests that `OnDidAcceptBnplSuggestion` triggers amount extraction if the
+// user has already seen the terms and the feature is enabled.
+TEST_F(BnplManagerTest,
+       OnDidAcceptBnplSuggestion_TriggersExtractionIfTermsSeen) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillEnableAiBasedAmountExtraction);
+  autofill_client().GetPrefs()->SetBoolean(
+      prefs::kAutofillAmountExtractionAiTermsSeen, true);
+
+  InSequence s;
+  EXPECT_CALL(GetBnplUiDelegate(), ShowSelectBnplIssuerUi);
+  EXPECT_CALL(*mock_amount_extraction_manager_,
+              TriggerCheckoutAmountExtractionWithAi());
+
+  bnpl_manager_->OnDidAcceptBnplSuggestion(
+      /*final_checkout_amount=*/std::nullopt,
+      /*on_bnpl_vcn_fetched_callback=*/base::DoNothing());
+}
+
+TEST_F(BnplManagerTest,
+       OnDidAcceptBnplSuggestion_TriggersExtractionIfTermsNotSeen) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillEnableAiBasedAmountExtraction);
+
+  InSequence s;
+  EXPECT_CALL(GetBnplUiDelegate(), ShowSelectBnplIssuerUi);
+  EXPECT_CALL(*mock_amount_extraction_manager_,
+              TriggerCheckoutAmountExtractionWithAi());
+  EXPECT_CALL(GetBnplUiDelegate(), UpdateBnplIssuerDialogUi);
+
+  bnpl_manager_->OnDidAcceptBnplSuggestion(
+      /*final_checkout_amount=*/std::nullopt,
+      /*on_bnpl_vcn_fetched_callback=*/base::DoNothing());
+
+  test_api(*bnpl_manager_).OnIssuerSelected(test::GetTestUnlinkedBnplIssuer());
+
+  bnpl_manager_->OnAmountExtractionReturnedFromAi(
+      /*extracted_amount_in_micros=*/1'000'000, /*timeout_reached=*/false);
 }
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||

@@ -9,6 +9,7 @@
 
 #include "base/check_deref.h"
 #include "components/autofill/core/browser/payments/bnpl_manager.h"
+#include "components/autofill/core/browser/payments/bnpl_util.h"
 
 namespace autofill::payments {
 
@@ -58,6 +59,10 @@ class BnplManagerTestApi {
 
   void Reset() { bnpl_manager_->Reset(); }
 
+  void OnIssuerSelected(BnplIssuer selected_issuer) {
+    bnpl_manager_->OnIssuerSelected(selected_issuer);
+  }
+
   BnplManager::OngoingFlowState* GetOngoingFlowState() {
     return bnpl_manager_->ongoing_flow_state_.get();
   }
@@ -79,6 +84,10 @@ class BnplManagerTestApi {
 
   void UpdateBnplPaymentInstrument() {
     bnpl_manager_->UpdateBnplPaymentInstrument();
+  }
+
+  std::vector<BnplIssuerContext> GetSortedBnplIssuerContext() {
+    return bnpl_manager_->GetSortedBnplIssuerContext();
   }
 
  private:

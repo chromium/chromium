@@ -140,7 +140,7 @@ class BnplManager {
     // Payments server during the linking will be what is used to retrieve the
     // VCN, and then afterwards the linked version will be synced down to Chrome
     // for future flows.
-    BnplIssuer issuer;
+    std::optional<BnplIssuer> issuer;
 
     // The final checkout amount on the page (in micros), used for the ongoing
     // BNPL flow. It is present if amount extraction has been completed
@@ -171,9 +171,19 @@ class BnplManager {
   // factory.
   void Reset();
 
-  // Runs after users select a BNPL issuer, and will redirect to plan selection
-  // or terms of services depending on the issuer.
+  // Runs after the user selects a BNPL issuer, and will redirect to plan
+  // selection or terms of services depending on the issuer.
   void OnIssuerSelected(BnplIssuer selected_issuer);
+
+  // Runs after the user selects a BNPL issuer and the checkout amount is
+  // within the issuer's range, and will redirect to plan selection or terms of
+  // services depending on the issuer linkage.
+  bool IssuerSelectedAndCheckoutAmountWithinRange();
+
+  // Runs after users select a BNPL issuer and the checkout amount is already
+  // received, and will redirect to plan selection or terms of services
+  // depending on the issuer.
+  void OnIssuerSelectedAndCheckoutAmountAvailable();
 
   // This function makes the appropriate server call to retrieve the ToS legal
   // message for the issuer.

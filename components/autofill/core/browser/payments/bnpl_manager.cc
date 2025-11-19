@@ -129,11 +129,21 @@ void BnplManager::OnDidAcceptBnplSuggestion(
               base::BindOnce(&BnplManager::Reset, weak_factory_.GetWeakPtr()),
               HasSeenAmountExtractionAiTerms());
 
-      if (HasSeenAmountExtractionAiTerms() &&
-          base::FeatureList::IsEnabled(
+      if (base::FeatureList::IsEnabled(
               features::kAutofillEnableAiBasedAmountExtraction)) {
-        browser_autofill_manager_->GetAmountExtractionManager()
-            .TriggerCheckoutAmountExtractionWithAi();
+        if (HasSeenAmountExtractionAiTerms()) {
+          // On BNPL suggestion acceptance, if the user has seen the AI terms,
+          // server-side amount extraction call should be made directly.
+          browser_autofill_manager_->GetAmountExtractionManager()
+              .TriggerCheckoutAmountExtractionWithAi();
+        } else {
+          // On BNPL suggestion acceptance, if the user has not seen the AI
+          // terms, record the user has seen the AI terms after the dialog has
+          // been shown.
+          payments_autofill_client()
+              .GetPaymentsDataManager()
+              .SetAutofillAmountExtractionAiTermsSeen();
+        }
       }
       break;
     }
@@ -276,13 +286,23 @@ void BnplManager::OnAmountExtractionReturnedFromAi(
   }
 
   ongoing_flow_state_->final_checkout_amount = extracted_amount_in_micros;
-  CHECK_DEREF(payments_autofill_client().GetBnplUiDelegate())
-      .UpdateBnplIssuerDialogUi(GetSortedBnplIssuerContext());
+
+  if (IssuerSelectedAndCheckoutAmountWithinRange()) {
+    // If the selected issuer is eligible, continue the BNPL flow with this
+    // issuer.
+    OnIssuerSelectedAndCheckoutAmountAvailable();
+  } else {
+    // If the selected issuer is not eligible, update UI.
+    // This handles both "issuer selected but ineligible" and
+    // "no issuer selected yet" cases.
+    CHECK_DEREF(payments_autofill_client().GetBnplUiDelegate())
+        .UpdateBnplIssuerDialogUi(GetSortedBnplIssuerContext());
+  }
 }
 
 bool BnplManager::AcceptTosActionRequired() const {
-  return ongoing_flow_state_->issuer.payment_instrument().has_value() &&
-         base::Contains(ongoing_flow_state_->issuer.payment_instrument()
+  return ongoing_flow_state_->issuer->payment_instrument().has_value() &&
+         base::Contains(ongoing_flow_state_->issuer->payment_instrument()
                             ->action_required(),
                         PaymentInstrument::ActionRequired::kAcceptTos);
 }
@@ -302,7 +322,7 @@ void BnplManager::FetchVcnDetails(GURL url) {
   request_details.context_token = ongoing_flow_state_->context_token;
   request_details.redirect_url = std::move(url);
   request_details.issuer_id = autofill::ConvertToBnplIssuerIdString(
-      ongoing_flow_state_->issuer.issuer_id());
+      ongoing_flow_state_->issuer->issuer_id());
 
   CHECK_DEREF(payments_autofill_client().GetBnplUiDelegate())
       .ShowProgressUi(AutofillProgressDialogType::kBnplFetchVcnProgressDialog,
@@ -361,9 +381,9 @@ void BnplManager::OnVcnDetailsFetched(
                            base::UTF8ToUTF16(response_details.expiration_year));
     credit_card.set_cvc(base::UTF8ToUTF16(response_details.cvv));
     credit_card.set_issuer_id(autofill::ConvertToBnplIssuerIdString(
-        ongoing_flow_state_->issuer.issuer_id()));
+        ongoing_flow_state_->issuer->issuer_id()));
     credit_card.set_is_bnpl_card(true);
-    credit_card.SetNickname(ongoing_flow_state_->issuer.GetDisplayName());
+    credit_card.SetNickname(ongoing_flow_state_->issuer->GetDisplayName());
     std::move(ongoing_flow_state_->on_bnpl_vcn_fetched_callback)
         .Run(credit_card);
   } else {
@@ -379,15 +399,51 @@ void BnplManager::OnIssuerSelected(BnplIssuer selected_issuer) {
 
   // TODO(crbug.com/424259928): Refactor BnplManager to always use
   // `ongoing_flow_state_->instrument_id` instead of
-  // `ongoing_flow_state_->issuer.payment_instrument()->instrument_id()` to
+  // `ongoing_flow_state_->issuer->payment_instrument()->instrument_id()` to
   // prevent duplicity.
   bool is_linked_issuer =
-      ongoing_flow_state_->issuer.payment_instrument().has_value();
+      ongoing_flow_state_->issuer->payment_instrument().has_value();
   if (is_linked_issuer) {
     ongoing_flow_state_->instrument_id = base::NumberToString(
-        ongoing_flow_state_->issuer.payment_instrument()->instrument_id());
+        ongoing_flow_state_->issuer->payment_instrument()->instrument_id());
   }
 
+  // When an issuer is selected but amount is not received, call server-side AI
+  // to extract the amount.
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableAiBasedAmountExtraction) &&
+      !ongoing_flow_state_->final_checkout_amount) {
+    browser_autofill_manager_->GetAmountExtractionManager()
+        .TriggerCheckoutAmountExtractionWithAi();
+    return;
+  }
+
+  OnIssuerSelectedAndCheckoutAmountAvailable();
+}
+
+bool BnplManager::IssuerSelectedAndCheckoutAmountWithinRange() {
+  // Check eligibility if an issuer was selected.
+  if (!ongoing_flow_state_->issuer) {
+    return false;
+  }
+
+  // TODO(crbug.com/444684996): Pass in currency from
+  // `AmountExtractionManager`.
+  const base::optional_ref<const BnplIssuer::EligiblePriceRange> price_range =
+      ongoing_flow_state_->issuer->GetEligiblePriceRangeForCurrency("USD");
+  CHECK(price_range.has_value());
+  if (ongoing_flow_state_->final_checkout_amount <
+          price_range->price_lower_bound ||
+      ongoing_flow_state_->final_checkout_amount >
+          price_range->price_upper_bound) {
+    return false;
+  }
+  return true;
+}
+
+void BnplManager::OnIssuerSelectedAndCheckoutAmountAvailable() {
+  bool is_linked_issuer =
+      ongoing_flow_state_->issuer->payment_instrument().has_value();
   if (is_linked_issuer && !AcceptTosActionRequired()) {
     LoadRiskDataForFetchingRedirectUrl();
   } else {
@@ -409,7 +465,7 @@ void BnplManager::GetDetailsForCreateBnplPaymentInstrument() {
   request_details.billing_customer_number =
       ongoing_flow_state_->billing_customer_number;
   request_details.issuer_id = autofill::ConvertToBnplIssuerIdString(
-      ongoing_flow_state_->issuer.issuer_id());
+      ongoing_flow_state_->issuer->issuer_id());
 
   payments_autofill_client()
       .GetPaymentsNetworkInterface()
@@ -425,12 +481,12 @@ void BnplManager::GetDetailsForUpdateBnplPaymentInstrument() {
   request_details.billing_customer_number =
       ongoing_flow_state_->billing_customer_number;
   request_details.instrument_id =
-      ongoing_flow_state_->issuer.payment_instrument()->instrument_id();
+      ongoing_flow_state_->issuer->payment_instrument()->instrument_id();
   request_details.type =
       GetDetailsForUpdateBnplPaymentInstrumentRequestDetails::
           GetDetailsForUpdateBnplPaymentInstrumentType::kGetDetailsForAcceptTos;
   request_details.issuer_id = autofill::ConvertToBnplIssuerIdString(
-      ongoing_flow_state_->issuer.issuer_id());
+      ongoing_flow_state_->issuer->issuer_id());
   payments_autofill_client()
       .GetPaymentsNetworkInterface()
       ->GetDetailsForUpdateBnplPaymentInstrument(
@@ -468,7 +524,7 @@ void BnplManager::OnDidGetLegalMessageFromServer(
     CHECK(!legal_message.empty());
     BnplTosModel bnpl_tos_model;
     bnpl_tos_model.legal_message_lines = std::move(legal_message);
-    bnpl_tos_model.issuer = ongoing_flow_state_->issuer;
+    bnpl_tos_model.issuer = ongoing_flow_state_->issuer.value();
 
     payments_autofill_client().GetBnplUiDelegate()->ShowBnplTosUi(
         std::move(bnpl_tos_model),
@@ -559,7 +615,7 @@ void BnplManager::OnRedirectUrlFetched(
   if (payments_autofill_client()
           .GetBnplStrategy()
           ->ShouldRemoveExistingUiOnServerReturn(result)) {
-    if (ongoing_flow_state_->issuer.payment_instrument().has_value() &&
+    if (ongoing_flow_state_->issuer->payment_instrument().has_value() &&
         !AcceptTosActionRequired()) {
       // If the BNPL issuer selected is linked and doesn't require ToS
       // acceptance, then the issuer selection UI or progress UI must be
@@ -582,7 +638,7 @@ void BnplManager::OnRedirectUrlFetched(
 
     PaymentsWindowManager::BnplContext payments_window_bnpl_context;
     payments_window_bnpl_context.issuer_id =
-        ongoing_flow_state_->issuer.issuer_id();
+        ongoing_flow_state_->issuer->issuer_id();
     payments_window_bnpl_context.initial_url =
         ongoing_flow_state_->redirect_url;
     payments_window_bnpl_context.success_url_prefix =
@@ -738,7 +794,7 @@ void BnplManager::CreateBnplPaymentInstrument() {
       ongoing_flow_state_->billing_customer_number;
   request_details.context_token = ongoing_flow_state_->context_token;
   request_details.issuer_id = autofill::ConvertToBnplIssuerIdString(
-      ongoing_flow_state_->issuer.issuer_id());
+      ongoing_flow_state_->issuer->issuer_id());
   request_details.risk_data = ongoing_flow_state_->risk_data;
   payments_autofill_client()
       .GetPaymentsNetworkInterface()
@@ -766,9 +822,9 @@ void BnplManager::UpdateBnplPaymentInstrument() {
       ongoing_flow_state_->billing_customer_number;
   request_details.context_token = ongoing_flow_state_->context_token;
   request_details.issuer_id = autofill::ConvertToBnplIssuerIdString(
-      ongoing_flow_state_->issuer.issuer_id());
+      ongoing_flow_state_->issuer->issuer_id());
   request_details.instrument_id =
-      ongoing_flow_state_->issuer.payment_instrument()->instrument_id();
+      ongoing_flow_state_->issuer->payment_instrument()->instrument_id();
   request_details.risk_data = ongoing_flow_state_->risk_data;
   request_details.type = UpdateBnplPaymentInstrumentRequestDetails::
       UpdateBnplPaymentInstrumentType::kAcceptTos;
