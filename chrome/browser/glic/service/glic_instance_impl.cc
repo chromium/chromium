@@ -730,8 +730,8 @@ GlicUiEmbedder* GlicInstanceImpl::CreateActiveEmbedderForFloaty(
 void GlicInstanceImpl::ShowInactiveSidePanelEmbedderFor(
     tabs::TabInterface* tab) {
   auto& entry = BindTab(tab);
-  entry.embedder = GlicInactiveSidePanelUi::CreateForBackgroundTab(
-      tab->GetWeakPtr(), host().webui_contents(), *this);
+  entry.embedder =
+      GlicInactiveSidePanelUi::CreateForBackgroundTab(tab->GetWeakPtr(), *this);
 }
 
 void GlicInstanceImpl::SetActiveEmbedderAndNotifyStateChange(

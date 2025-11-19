@@ -23,15 +23,10 @@ namespace glic {
 std::unique_ptr<GlicInactiveSidePanelUi>
 GlicInactiveSidePanelUi::CreateForVisibleTab(
     base::WeakPtr<tabs::TabInterface> tab,
-    content::WebContents* glic_webui_contents,
     GlicUiEmbedder::Delegate& delegate) {
   // Using `new` to access a private constructor.
   auto inactive_side_panel =
       base::WrapUnique(new GlicInactiveSidePanelUi(tab, delegate));
-
-  // Capture screenshot asynchronously and update the inactive panel.
-  inactive_side_panel->inactive_view_controller_.CaptureScreenshot(
-      glic_webui_contents);
 
   return inactive_side_panel;
 }
@@ -40,15 +35,12 @@ GlicInactiveSidePanelUi::CreateForVisibleTab(
 std::unique_ptr<GlicInactiveSidePanelUi>
 GlicInactiveSidePanelUi::CreateForBackgroundTab(
     base::WeakPtr<tabs::TabInterface> tab,
-    content::WebContents* glic_webui_contents,
     GlicUiEmbedder::Delegate& delegate) {
   // Using `new` to access a private constructor.
   auto inactive_side_panel =
       base::WrapUnique(new GlicInactiveSidePanelUi(tab, delegate));
   // Mark the side panel for showing next time the tab becomes active.
   inactive_side_panel->Show(ShowOptions::ForSidePanel(*tab));
-  inactive_side_panel->inactive_view_controller_.CaptureScreenshot(
-      glic_webui_contents);
   return inactive_side_panel;
 }
 
@@ -62,6 +54,11 @@ GlicInactiveSidePanelUi::GlicInactiveSidePanelUi(
   }
 
   auto view = inactive_view_controller_.CreateView();
+  // Screenshot must be requested before adding the inactive view to the view
+  // hierarchy. This ensures that the webcontents still has a compositor
+  // attached, which allows us to ensure that the captured screenshot comes from
+  // the instant it was requested, instead of at some point in the future.
+  inactive_view_controller_.CaptureScreenshot(delegate.host().webui_contents());
   scoped_view_observation_.Observe(view.get());
   glic_side_panel_coordinator->SetContentsView(std::move(view));
 }

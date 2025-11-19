@@ -13,10 +13,6 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/view_observer.h"
 
-namespace content {
-class WebContents;
-}  // namespace content
-
 namespace views {
 class View;
 }  // namespace views
@@ -30,11 +26,9 @@ class GlicInactiveSidePanelUi : public GlicUiEmbedder,
  public:
   static std::unique_ptr<GlicInactiveSidePanelUi> CreateForVisibleTab(
       base::WeakPtr<tabs::TabInterface> tab,
-      content::WebContents* glic_webui_contents,
       GlicUiEmbedder::Delegate& delegate);
   static std::unique_ptr<GlicInactiveSidePanelUi> CreateForBackgroundTab(
       base::WeakPtr<tabs::TabInterface> tab,
-      content::WebContents* glic_webui_contents,
       GlicUiEmbedder::Delegate& delegate);
 
   ~GlicInactiveSidePanelUi() override;
