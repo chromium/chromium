@@ -506,6 +506,7 @@
 #include "apps/browser_context_keyed_service_factories.h"
 #include "chrome/browser/apps/platform_apps/api/browser_context_keyed_service_factories.h"
 #include "chrome/browser/apps/platform_apps/browser_context_keyed_service_factories.h"
+#include "chrome/browser/policy/cloud/extension_install_policy_service_factory.h"
 #include "chrome/browser/sync_file_system/sync_file_system_service_factory.h"
 #include "chrome/browser/ui/web_applications/web_app_metrics_factory.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
@@ -1197,6 +1198,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   policy::FilesPolicyNotificationManagerFactory::GetInstance();
   policy::local_user_files::LocalFilesMigrationManagerFactory::GetInstance();
 #endif
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  policy::ExtensionInstallPolicyServiceFactory::GetInstance();
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   policy::ManagementServiceFactory::GetInstance();
 #if BUILDFLAG(IS_CHROMEOS)
   policy::PolicyCertServiceFactory::GetInstance();
