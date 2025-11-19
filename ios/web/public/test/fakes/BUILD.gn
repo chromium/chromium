@@ -17,7 +17,6 @@ source_set("fakes") {
     "//ios/web/public/js_messaging",
     "//ios/web/public/permissions",
     "//ios/web/public/security",
-    "//ios/web/public/session",
     "//ios/web/public/test:util",
     "//ios/web/session",
     "//ios/web/test:test_constants",

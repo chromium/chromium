@@ -115,8 +115,6 @@ source_set("counters") {
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/web/public",
-    "//ios/web/public/session/proto",
-    "//ios/web/public/session/proto:proto_util",
     "//net",
   ]
 }

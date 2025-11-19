@@ -218,7 +218,6 @@ source_set("scene") {
     "//ios/public/provider/chrome/browser/ui_utils:ui_utils_api",
     "//ios/public/provider/chrome/browser/user_feedback:user_feedback_api",
     "//ios/web/public/js_image_transcoder",
-    "//ios/web/public/session",
     "//ios/web/public/session/proto",
     "//ui/base",
   ]

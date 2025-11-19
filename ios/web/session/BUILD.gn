@@ -11,7 +11,7 @@ source_set("session") {
     "//ios/web/public",
     "//ios/web/public/security",
     "//ios/web/public/session",
-    "//ios/web/public/session/proto:proto_util",
+    "//ios/web/public/session/proto",
     "//net",
   ]
   sources = [
@@ -36,7 +36,6 @@ source_set("unittests") {
   deps = [
     "//ios/web/public",
     "//ios/web/public/security",
-    "//ios/web/public/session",
     "//ios/web/public/session/proto",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",

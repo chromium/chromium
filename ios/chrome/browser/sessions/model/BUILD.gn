@@ -68,7 +68,6 @@ source_set("serialisation") {
     "//ios/chrome/browser/start_surface/ui_bundled:feature_flags",
     "//ios/web/public",
     "//ios/web/public/navigation",
-    "//ios/web/public/session",
   ]
 }
 
@@ -302,7 +301,6 @@ source_set("unit_tests") {
     "//ios/web/common:user_agent",
     "//ios/web/navigation:wk_navigation_util",
     "//ios/web/public/navigation",
-    "//ios/web/public/session",
     "//ios/web/public/session/proto",
     "//ios/web/public/session/proto:proto_test_util",
     "//ios/web/public/session/proto:proto_util",

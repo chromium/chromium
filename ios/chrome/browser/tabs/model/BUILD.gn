@@ -151,8 +151,6 @@ source_set("tabs_internal") {
     "//ios/web/common",
     "//ios/web/public/find_in_page",
     "//ios/web/public/security",
-    "//ios/web/public/session",
-    "//ios/web/public/session/proto",
     "//ui/base",
   ]
   frameworks = [
