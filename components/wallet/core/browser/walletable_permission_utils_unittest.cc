@@ -4,9 +4,12 @@
 
 #include "components/wallet/core/browser/walletable_permission_utils.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/wallet/core/browser/country_type.h"
+#include "components/wallet/core/common/wallet_features.h"
 #include "components/wallet/core/common/wallet_prefs.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -96,5 +99,71 @@ TEST_F(WalletablePermissionUtilsTest, OptInStatus_TiedToAccount) {
       GetWalletablePassDetectionOptInStatus(prefs(), identity_manager()));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+// Test fixture for WalletablePermissionUtils eligibility, initializing the
+// `kWalletablePassDetection` feature with a country allowlist.
+class WalletablePermissionUtilsForEligibilityTest
+    : public WalletablePermissionUtilsTest {
+ public:
+  WalletablePermissionUtilsForEligibilityTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{kWalletablePassDetection,
+          {{"walletable_supported_country_allowlist", "US,BR"}}}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(WalletablePermissionUtilsForEligibilityTest,
+       IsEligibleForWalletablePassDetection_NotSignedIn) {
+  EXPECT_FALSE(IsEligibleForWalletablePassDetection(identity_manager(),
+                                                    GeoIpCountryCode("US")));
+}
+
+TEST_F(WalletablePermissionUtilsForEligibilityTest,
+       IsEligibleForWalletablePassDetection_NullIdentityManager) {
+  EXPECT_FALSE(
+      IsEligibleForWalletablePassDetection(nullptr, GeoIpCountryCode("US")));
+}
+
+TEST_F(WalletablePermissionUtilsForEligibilityTest,
+       IsEligibleForWalletablePassDetection_EmptyCountry) {
+  identity_test_env().MakePrimaryAccountAvailable(
+      "test @gmail.com", signin::ConsentLevel::kSignin);
+
+  EXPECT_TRUE(IsEligibleForWalletablePassDetection(identity_manager(),
+                                                   GeoIpCountryCode("")));
+}
+
+TEST_F(WalletablePermissionUtilsForEligibilityTest,
+       IsEligibleForWalletablePassDetection_CountryInAllowlist) {
+  identity_test_env().MakePrimaryAccountAvailable(
+      "test @gmail.com", signin::ConsentLevel::kSignin);
+
+  EXPECT_TRUE(IsEligibleForWalletablePassDetection(identity_manager(),
+                                                   GeoIpCountryCode("US")));
+}
+
+TEST_F(WalletablePermissionUtilsForEligibilityTest,
+       IsEligibleForWalletablePassDetection_CountryNotInAllowlist) {
+  identity_test_env().MakePrimaryAccountAvailable(
+      "test @gmail.com", signin::ConsentLevel::kSignin);
+
+  EXPECT_FALSE(IsEligibleForWalletablePassDetection(identity_manager(),
+                                                    GeoIpCountryCode("CA")));
+}
+
+TEST_F(WalletablePermissionUtilsForEligibilityTest,
+       IsEligibleForWalletablePassDetection_WalletPassDetectionDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kWalletablePassDetection);
+  identity_test_env().MakePrimaryAccountAvailable(
+      "test @gmail.com", signin::ConsentLevel::kSignin);
+
+  EXPECT_FALSE(IsEligibleForWalletablePassDetection(identity_manager(),
+                                                    GeoIpCountryCode("US")));
+}
 
 }  // namespace wallet

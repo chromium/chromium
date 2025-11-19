@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_WALLET_CORE_BROWSER_WALLETABLE_PERMISSION_UTILS_H_
 #define COMPONENTS_WALLET_CORE_BROWSER_WALLETABLE_PERMISSION_UTILS_H_
 
+#include "components/wallet/core/browser/country_type.h"
+
 class PrefService;
 
 namespace signin {
@@ -26,6 +28,11 @@ void SetWalletablePassDetectionOptInStatus(
     PrefService* pref_service,
     const signin::IdentityManager* identity_manager,
     bool opt_in_status);
+
+// Checks whether the user is eligible for walletable pass detection.
+[[nodiscard]] bool IsEligibleForWalletablePassDetection(
+    const signin::IdentityManager* identity_manager,
+    const GeoIpCountryCode& country_code);
 
 }  // namespace wallet
 
