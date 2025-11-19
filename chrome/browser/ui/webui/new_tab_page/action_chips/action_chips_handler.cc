@@ -134,12 +134,14 @@ ActionChipsHandler::ActionChipsHandler(
     mojo::PendingRemote<action_chips::mojom::Page> page,
     Profile* profile,
     content::WebUI* web_ui,
-    const TabIdGenerator* tab_id_generator)
+    const TabIdGenerator* tab_id_generator,
+    const TabReadinessChecker* checker)
     : receiver_(this, std::move(receiver)),
       page_(std::move(page)),
       profile_(profile),
       web_ui_(web_ui),
-      tab_id_generator_(tab_id_generator) {
+      tab_id_generator_(tab_id_generator),
+      tab_readiness_checker_(checker) {
   content::WebContents* web_contents = web_ui_->GetWebContents();
   auto* browser_window_interface =
       webui::GetBrowserWindowInterface(web_contents);
@@ -172,5 +174,9 @@ void ActionChipsHandler::OnTabStripModelChanged(
     TabStripModel*,
     const TabStripModelChange&,
     const TabStripSelectionChange&) {
+  if (!tab_readiness_checker_->IsReadyForActionChipsRetrieval(
+          web_ui_->GetWebContents())) {
+    return;
+  }
   StartActionChipsRetrieval();
 }

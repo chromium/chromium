@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom-forward.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/tab_id_generator.h"
+#include "chrome/browser/ui/webui/new_tab_page/action_chips/tab_readiness_checker.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -29,7 +30,8 @@ class ActionChipsHandler : public action_chips::mojom::ActionChipsHandler,
       mojo::PendingRemote<action_chips::mojom::Page> page,
       Profile* profile,
       content::WebUI* web_ui,
-      const TabIdGenerator* tab_id_generator);
+      const TabIdGenerator* tab_id_generator,
+      const TabReadinessChecker* checker);
   ActionChipsHandler(const ActionChipsHandler&) = delete;
   ActionChipsHandler& operator=(const ActionChipsHandler&) = delete;
   ~ActionChipsHandler() override;
@@ -47,6 +49,7 @@ class ActionChipsHandler : public action_chips::mojom::ActionChipsHandler,
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebUI> web_ui_;
   raw_ptr<const TabIdGenerator> tab_id_generator_;
+  raw_ptr<const TabReadinessChecker> tab_readiness_checker_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_ACTION_CHIPS_ACTION_CHIPS_HANDLER_H_
