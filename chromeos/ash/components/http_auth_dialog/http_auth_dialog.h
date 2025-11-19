@@ -125,9 +125,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_HTTP_AUTH_DIALOG)
   // cancel button or otherwise dismissing the dialog.
   void Cancel();
 
-  static void NotifyShownAsync(content::WebContents* web_contents);
-  static void NotifySuppliedAsync(content::WebContents* web_contents);
-  static void NotifyCancelledAsync(content::WebContents* web_contents);
+  static void NotifyShownAsync(
+      base::WeakPtr<content::WebContents> web_contents);
+  static void NotifySuppliedAsync(
+      base::WeakPtr<content::WebContents> web_contents);
+  static void NotifyCancelledAsync(
+      base::WeakPtr<content::WebContents> web_contents);
 
   net::AuthChallengeInfo auth_info_;
 
@@ -146,7 +149,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_HTTP_AUTH_DIALOG)
   std::unique_ptr<views::Widget> dialog_widget_;
 
   // Tracks the WebContents instance that is showing the dialog.
-  raw_ptr<content::WebContents> web_contents_ = nullptr;
+  base::WeakPtr<content::WebContents> web_contents_;
   base::WeakPtrFactory<HttpAuthDialog> weak_factory_{this};
 };
 
