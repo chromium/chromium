@@ -105,6 +105,15 @@ public class FreshCtaTransitTestRule extends BaseCtaTransitTestRule implements T
     }
 
     /**
+     * Start the test in an incognito blank page.
+     *
+     * @return the active entry {@link CtaPageStation}
+     */
+    public WebPageStation startOnIncognitoBlankPage() {
+        return ChromeTabbedActivityEntryPoints.startOnIncognitoBlankPage(mActivityTestRule);
+    }
+
+    /**
      * Start the test with a url that leads to a web page.
      *
      * @param url the URL of the page to load

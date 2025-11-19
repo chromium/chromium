@@ -36,6 +36,18 @@ public class ChromeTabbedActivityEntryPoints {
                 .arriveAt(WebPageStation.newBuilder().withEntryPoint().build());
     }
 
+    /** Start the ChromeTabbedActivity in an incognito blank page. */
+    public static WebPageStation startOnIncognitoBlankPage(
+            ChromeTabbedActivityTestRule ctaTestRule) {
+        disableFirstRunFlow();
+
+        EntryPointSentinelStation sentinel = new EntryPointSentinelStation();
+        sentinel.setAsEntryPoint();
+
+        return sentinel.runTo(ctaTestRule::startMainActivityOnIncognitoBlankPage)
+                .arriveAt(WebPageStation.newBuilder().withEntryPoint().withIncognito(true).build());
+    }
+
     /** Start the ChromeTabbedActivity in a web page at the given |url|. */
     public static WebPageStation startOnUrl(ChromeTabbedActivityTestRule ctaTestRule, String url) {
         return startOnUrlTo(ctaTestRule, url)

@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.lifecycle.Stage;
 
@@ -17,6 +18,7 @@ import org.junit.Assert;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
@@ -24,6 +26,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.password_manager.PasswordManagerTestHelper;
@@ -96,6 +99,19 @@ public class ChromeTabbedActivityTestRule extends ChromeActivityTestRule<ChromeT
      */
     public void startMainActivityOnBlankPage() {
         startMainActivityWithURL("about:blank");
+    }
+
+    /** Starts the Main activity on a blank page in incognito mode. */
+    public void startMainActivityOnIncognitoBlankPage() {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+        intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, true);
+        prepareUrlIntent(intent, "about:blank");
+        intent.putExtra(
+                android.provider.Browser.EXTRA_APPLICATION_ID,
+                ApplicationProvider.getApplicationContext().getPackageName());
+        IntentUtils.addTrustedIntentExtras(intent);
+        startMainActivityFromIntent(intent, "about:blank");
     }
 
     /**
