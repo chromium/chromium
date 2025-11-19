@@ -185,7 +185,7 @@ const base::FeatureParam<bool> kDevToolsGdpProfilesBadgesEnabled{
 // Whether the starter badge for the Google Developer Program is enabled.
 const base::FeatureParam<bool> kDevToolsGdpProfilesStarterBadgeEnabled{
     &kDevToolsGdpProfiles, "starter_badge_enabled",
-    /*default_value=*/false};
+    /*default_value=*/true};
 
 // Whether DevTools Live Edit (Debugger.setScriptSource usage in CDP) is
 // enabled.
