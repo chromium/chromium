@@ -61,6 +61,7 @@
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/tab_id_generator.h"
+#include "chrome/browser/ui/webui/new_tab_page/action_chips/tab_readiness_checker.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/aim_entrypoint_fieldtrial.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.h"
@@ -656,9 +657,8 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       aim_eligibility_service->IsCreateImagesEligible() &&
       profile->GetPrefs()->GetBoolean(prefs::kNtpToolChipsVisible);
   source->AddBoolean("actionChipsEnabled", show_action_chips);
-  source->AddBoolean(
-      "addTabUploadDelayOnActionChipClick",
-      ntp_features::kAddTabUploadDelayOnActionChipClick.Get());
+  source->AddBoolean("addTabUploadDelayOnActionChipClick",
+                     ntp_features::kAddTabUploadDelayOnActionChipClick.Get());
 
   // User education browser promos.
   int browser_promo_limit = 0;
@@ -1222,7 +1222,7 @@ void NewTabPageUI::CreateActionChipsHandler(
     mojo::PendingRemote<action_chips::mojom::Page> page) {
   action_chips_handler_ = std::make_unique<ActionChipsHandler>(
       std::move(handler), std::move(page), profile_, web_ui(),
-      TabIdGeneratorImpl::Get());
+      TabIdGeneratorImpl::Get(), TabReadinessCheckerImpl::Get());
 }
 
 // OnColorProviderChanged can be called during the destruction process and

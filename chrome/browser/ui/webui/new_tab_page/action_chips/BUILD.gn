@@ -12,6 +12,8 @@ source_set("action_chips") {
     "action_chips_handler.h",
     "tab_id_generator.cc",
     "tab_id_generator.h",
+    "tab_readiness_checker.cc",
+    "tab_readiness_checker.h",
   ]
   public_deps = [ ":mojo_bindings" ]
   deps = [

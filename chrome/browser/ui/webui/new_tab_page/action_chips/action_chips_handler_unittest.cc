@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips_mojo_test_utils.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/fake_tab_id_generator.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/tab_id_generator.h"
+#include "chrome/browser/ui/webui/new_tab_page/action_chips/tab_readiness_checker.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
@@ -56,6 +57,8 @@ using ::testing::ElementsAreArray;
 using ::testing::Eq;
 using ::testing::Matcher;
 using ::testing::Pointee;
+using ::testing::Return;
+using ::testing::ReturnRef;
 
 class MockPage : public action_chips::mojom::Page {
  public:
@@ -74,6 +77,17 @@ class MockPage : public action_chips::mojom::Page {
   mojo::Receiver<action_chips::mojom::Page> receiver_{this};
 };
 
+class MockTabReadinessChecker : public TabReadinessChecker {
+ public:
+  MockTabReadinessChecker() = default;
+  ~MockTabReadinessChecker() override = default;
+
+  MOCK_METHOD(bool,
+              IsReadyForActionChipsRetrieval,
+              (const content::WebContents* web_contents),
+              (const override));
+};
+
 class FakeActionChipsHandler : public ActionChipsHandler {
  public:
   FakeActionChipsHandler(
@@ -82,12 +96,14 @@ class FakeActionChipsHandler : public ActionChipsHandler {
       mojo::PendingRemote<action_chips::mojom::Page> pending_page,
       Profile* profile,
       content::WebUI* web_ui,
-      TabIdGenerator* tab_id_generator)
+      TabIdGenerator* tab_id_generator,
+      TabReadinessChecker* checker)
       : ActionChipsHandler(std::move(pending_receiver),
                            std::move(pending_page),
                            profile,
                            web_ui,
-                           tab_id_generator) {}
+                           tab_id_generator,
+                           checker) {}
 };
 
 struct TabInfoFields {
@@ -153,11 +169,11 @@ class TabStripModelFixture {
     tab_strip_model_ =
         std::make_unique<TabStripModel>(&delegate_, profile_.get());
     ON_CALL(browser_window_interface_, GetTabStripModel())
-        .WillByDefault(::testing::Return(tab_strip_model_.get()));
+        .WillByDefault(Return(tab_strip_model_.get()));
     ON_CALL(browser_window_interface_, GetUnownedUserDataHost)
-        .WillByDefault(::testing::ReturnRef(user_data_host_));
+        .WillByDefault(ReturnRef(user_data_host_));
     ON_CALL(browser_window_interface_, GetProfile())
-        .WillByDefault(::testing::Return(profile_.get()));
+        .WillByDefault(Return(profile_.get()));
     delegate_.SetBrowserWindowInterface(&browser_window_interface_);
   }
 
@@ -205,6 +221,8 @@ class ActionChipsHandlerTest : public testing::Test {
     webui::SetBrowserWindowInterface(
         web_contents(), tab_strip_model_fixture_->browser_window_interface());
     CreateHandler();
+    ON_CALL(tab_readiness_checker_, IsReadyForActionChipsRetrieval(_))
+        .WillByDefault(Return(true));
   }
 
   FakeActionChipsHandler& handler() { return *handler_; }
@@ -235,7 +253,7 @@ class ActionChipsHandlerTest : public testing::Test {
     handler_ = std::make_unique<FakeActionChipsHandler>(
         mojo::PendingReceiver<action_chips::mojom::ActionChipsHandler>(),
         page_.BindAndGetRemote(), profile_.get(), web_ui_.get(),
-        &tab_id_generator_);
+        &tab_id_generator_, &tab_readiness_checker_);
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -247,6 +265,7 @@ class ActionChipsHandlerTest : public testing::Test {
   std::unique_ptr<content::TestWebUI> web_ui_;
   std::unique_ptr<FakeActionChipsHandler> handler_;
   FakeTabIdGenerator tab_id_generator_;
+  MockTabReadinessChecker tab_readiness_checker_;
 
   const tabs::TabModel::PreventFeatureInitializationForTesting prevent_;
   variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
