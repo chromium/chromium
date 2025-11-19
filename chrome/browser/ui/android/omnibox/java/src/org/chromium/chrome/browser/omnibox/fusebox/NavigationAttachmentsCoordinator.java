@@ -178,8 +178,7 @@ public class NavigationAttachmentsCoordinator
             return;
         }
 
-        int pageClass =
-                mLocationBarDataProvider.getPageClassification(AutocompleteRequestType.SEARCH);
+        int pageClass = mLocationBarDataProvider.getPageClassification(/* prefetch= */ false);
 
         boolean isSupportedPageClass =
                 switch (pageClass) {

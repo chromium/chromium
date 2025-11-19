@@ -954,7 +954,8 @@ class AutocompleteMediator
 
     public void onAutocompleteRequestTypeChanged(@AutocompleteRequestType int type) {
         if (mOmniboxFocused) {
-            mAutocompleteInput.setPageClassification(mDataProvider.getPageClassification(type));
+            mAutocompleteInput.setRequestType(type);
+            mAutocompleteInput.setPageClassification(mDataProvider.getPageClassification(false));
             onTextChanged(
                     mUrlBarEditingTextProvider.getTextWithoutAutocomplete(),
                     /* isOnFocusContext= */ false);
@@ -1220,10 +1221,9 @@ class AutocompleteMediator
     @VisibleForTesting
     void initAutocompleteInput() {
         mAutocompleteInput.setPageClassification(
-                mDataProvider.getPageClassification(
-                        mNavigationAttachmentsCoordinator
-                                .getAutocompleteRequestTypeSupplier()
-                                .get()));
+                mDataProvider.getPageClassification(/* prefetch= */ false));
+        mAutocompleteInput.setRequestType(
+                mNavigationAttachmentsCoordinator.getAutocompleteRequestTypeSupplier().get());
         mAutocompleteInput.setPageUrl(mDataProvider.getCurrentGurl());
         mAutocompleteInput.setPageTitle(mDataProvider.getTitle());
 

@@ -80,7 +80,6 @@ import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.S
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
-import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
 import org.chromium.ui.base.ActivityWindowAndroid;
@@ -487,8 +486,7 @@ public class SearchActivity extends AsyncInitializationActivity
     /** Translate current intent origin and extras to a PageClassification. */
     @VisibleForTesting
     /* package */ void refinePageClassWithProfile(Profile profile) {
-        int pageClass =
-                mSearchBoxDataProvider.getPageClassification(AutocompleteRequestType.SEARCH);
+        int pageClass = mSearchBoxDataProvider.getPageClassification(/* prefetch= */ false);
 
         // Verify if the PageClassification can be refined.
         var url = SearchActivityUtils.getIntentUrl(getIntent());

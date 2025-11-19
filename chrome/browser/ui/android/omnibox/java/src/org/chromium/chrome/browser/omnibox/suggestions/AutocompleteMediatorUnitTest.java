@@ -268,9 +268,7 @@ public class AutocompleteMediatorUnitTest {
         lenient().when(mLocationBarDataProvider.getCurrentGurl()).thenReturn(url);
         lenient().when(mLocationBarDataProvider.getTitle()).thenReturn(title);
         lenient()
-                .when(
-                        mLocationBarDataProvider.getPageClassification(
-                                AutocompleteRequestType.SEARCH))
+                .when(mLocationBarDataProvider.getPageClassification(/* prefetch= */ false))
                 .thenReturn(pageClassification);
     }
 

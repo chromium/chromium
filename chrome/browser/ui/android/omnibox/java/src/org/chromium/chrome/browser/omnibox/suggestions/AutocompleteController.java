@@ -114,6 +114,7 @@ public class AutocompleteController {
                         null,
                         input.getPageUrl().getSpec(),
                         input.getPageClassification(),
+                        input.getToolMode(),
                         preventInlineAutocomplete,
                         OmniboxFeatures.sOmniboxSiteSearch.isEnabled(),
                         input.allowExactKeywordMatch(),
@@ -169,6 +170,7 @@ public class AutocompleteController {
                         input.getUserText(),
                         input.getPageUrl().getSpec(),
                         input.getPageClassification(),
+                        input.getToolMode(),
                         input.getPageTitle());
     }
 
@@ -412,7 +414,8 @@ public class AutocompleteController {
                 int cursorPosition,
                 @Nullable String desiredTld,
                 String currentUrl,
-                int pageClassification,
+                @JniType("metrics::OmniboxEventProto::PageClassification") int pageClassification,
+                @JniType("omnibox::ChromeAimToolsAndModels") int toolMode,
                 boolean preventInlineAutocomplete,
                 boolean preferKeyword,
                 boolean allowExactKeywordMatch,
@@ -430,7 +433,7 @@ public class AutocompleteController {
                 int matchIndex,
                 int disposition,
                 String currentPageUrl,
-                int pageClassification,
+                @JniType("metrics::OmniboxEventProto::PageClassification") int pageClassification,
                 long elapsedTimeSinceModified,
                 int completedLength,
                 @Nullable WebContents webContents,
@@ -446,7 +449,8 @@ public class AutocompleteController {
                 long nativeAutocompleteControllerAndroid,
                 String omniboxText,
                 String currentUrl,
-                int pageClassification,
+                @JniType("metrics::OmniboxEventProto::PageClassification") int pageClassification,
+                @JniType("omnibox::ChromeAimToolsAndModels") int toolMode,
                 String currentTitle);
 
         void deleteMatchElement(
@@ -474,7 +478,7 @@ public class AutocompleteController {
         void startPrefetch(
                 long nativeAutocompleteControllerAndroid,
                 String currentUrl,
-                int pageClassification,
+                @JniType("metrics::OmniboxEventProto::PageClassification") int pageClassification,
                 @Nullable WebContents webContents);
 
         // Create a navigation observser.

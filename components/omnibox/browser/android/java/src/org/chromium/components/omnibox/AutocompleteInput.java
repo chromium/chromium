@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
+import org.chromium.components.omnibox.AimToolsAndModelsProto.ChromeAimToolsAndModels;
 import org.chromium.url.GURL;
 
 /** AutocompleteInput encompasses the input to autocomplete. */
@@ -19,6 +20,7 @@ public class AutocompleteInput {
     private String mPageTitle;
     private String mUserText;
     private boolean mAllowExactKeywordMatch;
+    private @AutocompleteRequestType int mRequestType;
 
     public AutocompleteInput() {
         reset();
@@ -37,7 +39,12 @@ public class AutocompleteInput {
 
     /** Returns the current page classification. */
     public int getPageClassification() {
-        return mPageClassification;
+        return switch (mRequestType) {
+            case AutocompleteRequestType.AI_MODE -> PageClassification.NTP_COMPOSEBOX_VALUE;
+            case AutocompleteRequestType.IMAGE_GENERATION ->
+                    PageClassification.NTP_COMPOSEBOX_VALUE;
+            default -> mPageClassification;
+        };
     }
 
     /**
@@ -70,6 +77,25 @@ public class AutocompleteInput {
     /** Returns the current page title. */
     public String getPageTitle() {
         return mPageTitle;
+    }
+
+    /** Set the AutocompleteRequestType */
+    public void setRequestType(@AutocompleteRequestType int type) {
+        mRequestType = type;
+    }
+
+    /** Returns the AutocompleteRequestType value. */
+    public @AutocompleteRequestType int getRequestType() {
+        return mRequestType;
+    }
+
+    /** Returns the Autocomplete Tool to use to fulfill the Request. */
+    public /* ChromeAimToolsAndModels */ int getToolMode() {
+        return switch (mRequestType) {
+            case AutocompleteRequestType.IMAGE_GENERATION ->
+                    ChromeAimToolsAndModels.TOOL_MODE_IMAGE_GEN_VALUE;
+            default -> ChromeAimToolsAndModels.TOOL_MODE_UNSPECIFIED_VALUE;
+        };
     }
 
     /**

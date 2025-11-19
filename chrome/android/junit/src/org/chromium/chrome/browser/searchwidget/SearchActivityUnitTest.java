@@ -87,7 +87,6 @@ import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.R
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
-import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.WebContents;
@@ -432,10 +431,10 @@ public class SearchActivityUnitTest {
 
         assertEquals(
                 PageClassification.ANDROID_HUB_VALUE,
-                mDataProvider.getPageClassification(AutocompleteRequestType.SEARCH_PREFETCH));
+                mDataProvider.getPageClassification(/* prefetch= */ true));
         assertEquals(
                 PageClassification.ANDROID_HUB_VALUE,
-                mDataProvider.getPageClassification(AutocompleteRequestType.SEARCH));
+                mDataProvider.getPageClassification(/* prefetch= */ false));
         assertFalse(mActivity.getEmbedderUiOverridesForTesting().isLensEntrypointAllowed());
         assertFalse(mActivity.getEmbedderUiOverridesForTesting().isVoiceEntrypointAllowed());
 
@@ -500,9 +499,8 @@ public class SearchActivityUnitTest {
 
         mActivity.handleNewIntent(buildTestServiceIntent(IntentOrigin.LAUNCHER), false);
 
-        assertEquals(
-                123, mDataProvider.getPageClassification(AutocompleteRequestType.SEARCH_PREFETCH));
-        assertEquals(123, mDataProvider.getPageClassification(AutocompleteRequestType.SEARCH));
+        assertEquals(123, mDataProvider.getPageClassification(/* prefetch= */ true));
+        assertEquals(123, mDataProvider.getPageClassification(/* prefetch= */ false));
         assertEquals(jumpStartUrl, mDataProvider.getCurrentGurl().getSpec());
     }
 
@@ -516,10 +514,10 @@ public class SearchActivityUnitTest {
 
         assertEquals(
                 PageClassification.ANDROID_SEARCH_WIDGET_VALUE,
-                mDataProvider.getPageClassification(AutocompleteRequestType.SEARCH_PREFETCH));
+                mDataProvider.getPageClassification(/* prefetch= */ true));
         assertEquals(
                 PageClassification.ANDROID_SEARCH_WIDGET_VALUE,
-                mDataProvider.getPageClassification(AutocompleteRequestType.SEARCH));
+                mDataProvider.getPageClassification(/* prefetch= */ false));
         assertFalse(mActivity.getEmbedderUiOverridesForTesting().isLensEntrypointAllowed());
         assertTrue(mActivity.getEmbedderUiOverridesForTesting().isVoiceEntrypointAllowed());
     }
@@ -536,10 +534,10 @@ public class SearchActivityUnitTest {
 
         assertEquals(
                 PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE,
-                mDataProvider.getPageClassification(AutocompleteRequestType.SEARCH_PREFETCH));
+                mDataProvider.getPageClassification(/* prefetch= */ true));
         assertEquals(
                 PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE,
-                mDataProvider.getPageClassification(AutocompleteRequestType.SEARCH));
+                mDataProvider.getPageClassification(/* prefetch= */ false));
         assertTrue(mActivity.getEmbedderUiOverridesForTesting().isLensEntrypointAllowed());
         assertTrue(mActivity.getEmbedderUiOverridesForTesting().isVoiceEntrypointAllowed());
     }
@@ -554,10 +552,10 @@ public class SearchActivityUnitTest {
 
         assertEquals(
                 PageClassification.OTHER_ON_CCT_VALUE,
-                mDataProvider.getPageClassification(AutocompleteRequestType.SEARCH_PREFETCH));
+                mDataProvider.getPageClassification(/* prefetch= */ true));
         assertEquals(
                 PageClassification.OTHER_ON_CCT_VALUE,
-                mDataProvider.getPageClassification(AutocompleteRequestType.SEARCH));
+                mDataProvider.getPageClassification(/* prefetch= */ false));
         assertFalse(mActivity.getEmbedderUiOverridesForTesting().isLensEntrypointAllowed());
         assertFalse(mActivity.getEmbedderUiOverridesForTesting().isVoiceEntrypointAllowed());
 
@@ -668,7 +666,7 @@ public class SearchActivityUnitTest {
 
         assertEquals(
                 PageClassification.ANDROID_SEARCH_WIDGET_VALUE,
-                mDataProvider.getPageClassification(AutocompleteRequestType.SEARCH));
+                mDataProvider.getPageClassification(/* prefetch= */ false));
         verifyNoMoreInteractions(mTemplateUrlSvc);
     }
 
@@ -680,7 +678,7 @@ public class SearchActivityUnitTest {
 
         assertEquals(
                 PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE,
-                mDataProvider.getPageClassification(AutocompleteRequestType.SEARCH));
+                mDataProvider.getPageClassification(/* prefetch= */ false));
         verifyNoMoreInteractions(mTemplateUrlSvc);
     }
 
@@ -696,10 +694,10 @@ public class SearchActivityUnitTest {
             mActivity.handleNewIntent(buildTestServiceIntent(IntentOrigin.CUSTOM_TAB), false);
             assertEquals(
                     PageClassification.SEARCH_RESULT_PAGE_ON_CCT_VALUE,
-                    mDataProvider.getPageClassification(AutocompleteRequestType.SEARCH));
+                    mDataProvider.getPageClassification(/* prefetch= */ false));
             assertEquals(
                     PageClassification.SEARCH_RESULT_PAGE_ON_CCT_VALUE,
-                    mDataProvider.getPageClassification(AutocompleteRequestType.SEARCH_PREFETCH));
+                    mDataProvider.getPageClassification(/* prefetch= */ true));
         }
 
         {
@@ -710,10 +708,10 @@ public class SearchActivityUnitTest {
             mActivity.handleNewIntent(buildTestServiceIntent(IntentOrigin.CUSTOM_TAB), false);
             assertEquals(
                     PageClassification.OTHER_ON_CCT_VALUE,
-                    mDataProvider.getPageClassification(AutocompleteRequestType.SEARCH));
+                    mDataProvider.getPageClassification(/* prefetch= */ false));
             assertEquals(
                     PageClassification.OTHER_ON_CCT_VALUE,
-                    mDataProvider.getPageClassification(AutocompleteRequestType.SEARCH_PREFETCH));
+                    mDataProvider.getPageClassification(/* prefetch= */ true));
         }
     }
 
@@ -728,7 +726,7 @@ public class SearchActivityUnitTest {
 
         assertEquals(
                 PageClassification.OTHER_ON_CCT_VALUE,
-                mDataProvider.getPageClassification(AutocompleteRequestType.SEARCH));
+                mDataProvider.getPageClassification(/* prefetch= */ false));
         verifyNoMoreInteractions(mTemplateUrlSvc);
     }
 
@@ -743,7 +741,7 @@ public class SearchActivityUnitTest {
 
         assertEquals(
                 PageClassification.OTHER_ON_CCT_VALUE,
-                mDataProvider.getPageClassification(AutocompleteRequestType.SEARCH));
+                mDataProvider.getPageClassification(/* prefetch= */ false));
         verifyNoMoreInteractions(mTemplateUrlSvc);
     }
 
@@ -758,7 +756,7 @@ public class SearchActivityUnitTest {
 
         assertEquals(
                 PageClassification.OTHER_ON_CCT_VALUE,
-                mDataProvider.getPageClassification(AutocompleteRequestType.SEARCH));
+                mDataProvider.getPageClassification(/* prefetch= */ false));
         verifyNoMoreInteractions(mTemplateUrlSvc);
     }
 
@@ -770,7 +768,7 @@ public class SearchActivityUnitTest {
 
         assertEquals(
                 PageClassification.OTHER_ON_CCT_VALUE,
-                mDataProvider.getPageClassification(AutocompleteRequestType.SEARCH));
+                mDataProvider.getPageClassification(/* prefetch= */ false));
     }
 
     @Test

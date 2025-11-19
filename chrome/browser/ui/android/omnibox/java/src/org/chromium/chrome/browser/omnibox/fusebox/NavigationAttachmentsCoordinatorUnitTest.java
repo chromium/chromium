@@ -10,7 +10,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
@@ -115,7 +115,7 @@ public class NavigationAttachmentsCoordinatorUnitTest {
         lenient()
                 .doReturn(PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE)
                 .when(mLocationBarDataProvider)
-                .getPageClassification(anyInt());
+                .getPageClassification(anyBoolean());
 
         mCoordinator =
                 new NavigationAttachmentsCoordinator(
@@ -222,7 +222,7 @@ public class NavigationAttachmentsCoordinatorUnitTest {
             reset(mMediator);
             doReturn(pageClass.getNumber())
                     .when(mLocationBarDataProvider)
-                    .getPageClassification(anyInt());
+                    .getPageClassification(anyBoolean());
 
             mCoordinator.onUrlFocusChange(true);
 

@@ -19,6 +19,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
+#include "third_party/omnibox_proto/aim_tools_and_models.pb.h"
 #include "url/gurl.h"
 
 namespace {
@@ -86,7 +87,7 @@ TEST_F(AutocompleteControllerAndroidTest, OnOmniboxFocused_NTP) {
   auto j_omnibox_text = base::android::ConvertUTF16ToJavaString(env, u"");
   auto j_current_url = base::android::ConvertUTF16ToJavaString(env, url);
   auto j_current_title = base::android::ConvertUTF16ToJavaString(env, u"title");
-  jint j_page_classification = OEP::NTP;
+  auto page_classification = OEP::NTP;
 
   EXPECT_CALL(
       *mock(),
@@ -96,8 +97,9 @@ TEST_F(AutocompleteControllerAndroidTest, OnOmniboxFocused_NTP) {
                   Property(&AutocompleteInput::focus_type,
                            Eq(OFT::INTERACTION_FOCUS)))));
 
-  controller()->OnOmniboxFocused(env, j_omnibox_text, j_current_url,
-                                 j_page_classification, j_current_title);
+  controller()->OnOmniboxFocused(
+      env, j_omnibox_text, j_current_url, page_classification,
+      omnibox::TOOL_MODE_UNSPECIFIED, j_current_title);
 }
 
 TEST_F(AutocompleteControllerAndroidTest, OnOmniboxFocused_OTHER) {
@@ -110,7 +112,7 @@ TEST_F(AutocompleteControllerAndroidTest, OnOmniboxFocused_OTHER) {
   auto j_omnibox_text = base::android::ConvertUTF16ToJavaString(env, u"text");
   auto j_current_url = base::android::ConvertUTF16ToJavaString(env, url);
   auto j_current_title = base::android::ConvertUTF16ToJavaString(env, u"title");
-  jint j_page_classification = OEP::OTHER;
+  auto page_classification = OEP::OTHER;
 
   EXPECT_CALL(
       *mock(),
@@ -120,6 +122,7 @@ TEST_F(AutocompleteControllerAndroidTest, OnOmniboxFocused_OTHER) {
                   Property(&AutocompleteInput::focus_type,
                            Eq(OFT::INTERACTION_FOCUS)))));
 
-  controller()->OnOmniboxFocused(env, j_omnibox_text, j_current_url,
-                                 j_page_classification, j_current_title);
+  controller()->OnOmniboxFocused(
+      env, j_omnibox_text, j_current_url, page_classification,
+      omnibox::TOOL_MODE_UNSPECIFIED, j_current_title);
 }

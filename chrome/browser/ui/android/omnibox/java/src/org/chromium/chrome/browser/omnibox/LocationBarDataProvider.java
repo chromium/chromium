@@ -15,7 +15,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.security_state.ConnectionMaliciousContentStatus;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.url.GURL;
@@ -153,10 +152,10 @@ public interface LocationBarDataProvider {
     /**
      * Returns the current page classification.
      *
-     * @param type The requested type of autocomplete request.
+     * @param prefetch whether retrieving page class in prefetch context.
      * @return Integer value representing the {@code OmniboxEventProto.PageClassification}.
      */
-    int getPageClassification(@AutocompleteRequestType int type);
+    int getPageClassification(boolean prefetch);
 
     /**
      * Returns the resource ID of the icon that should be displayed or 0 if no icon should be shown.

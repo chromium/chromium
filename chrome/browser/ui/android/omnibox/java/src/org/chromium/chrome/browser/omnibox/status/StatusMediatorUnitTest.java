@@ -57,7 +57,6 @@ import org.chromium.components.content_settings.CookieControlsBridgeJni;
 import org.chromium.components.content_settings.CookieControlsState;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
-import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -180,7 +179,7 @@ public final class StatusMediatorUnitTest {
     public void testStatusViewHoverActions() {
         doReturn(PageClassification.NTP_VALUE)
                 .when(mLocationBarDataProvider)
-                .getPageClassification(AutocompleteRequestType.SEARCH);
+                .getPageClassification(/* prefetch= */ false);
 
         // Tooltip and background should be set when StatusViewIcon is visible.
         mMediator.setStatusIconShown(true);
@@ -494,7 +493,7 @@ public final class StatusMediatorUnitTest {
         // Test default behaviour first.
         doReturn(PageClassification.NTP_VALUE)
                 .when(mLocationBarDataProvider)
-                .getPageClassification(AutocompleteRequestType.SEARCH);
+                .getPageClassification(/* prefetch= */ false);
         mMediator.updateLocationBarIcon(IconTransitionType.CROSSFADE);
         Assert.assertEquals(
                 R.string.accessibility_toolbar_view_site_info,
@@ -502,7 +501,7 @@ public final class StatusMediatorUnitTest {
 
         doReturn(PageClassification.ANDROID_HUB_VALUE)
                 .when(mLocationBarDataProvider)
-                .getPageClassification(AutocompleteRequestType.SEARCH);
+                .getPageClassification(/* prefetch= */ false);
         mMediator.updateLocationBarIcon(IconTransitionType.CROSSFADE);
 
         Assert.assertTrue(mModel.get(StatusProperties.SHOW_STATUS_ICON));
@@ -522,7 +521,7 @@ public final class StatusMediatorUnitTest {
     public void testSetTooltipText() {
         doReturn(PageClassification.NTP_VALUE)
                 .when(mLocationBarDataProvider)
-                .getPageClassification(AutocompleteRequestType.SEARCH);
+                .getPageClassification(/* prefetch= */ false);
 
         mModel.set(StatusProperties.SHOW_STATUS_ICON, true);
         mMediator.setTooltipText(Resources.ID_NULL);
@@ -537,7 +536,7 @@ public final class StatusMediatorUnitTest {
     public void testSetBackground() {
         doReturn(PageClassification.NTP_VALUE)
                 .when(mLocationBarDataProvider)
-                .getPageClassification(AutocompleteRequestType.SEARCH);
+                .getPageClassification(/* prefetch= */ false);
 
         mModel.set(StatusProperties.SHOW_STATUS_ICON, true);
         mMediator.setBackground();
