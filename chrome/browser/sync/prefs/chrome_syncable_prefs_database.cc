@@ -432,6 +432,8 @@ enum {
   kSelectToSpeakAcceleratorDialogHasBeenAccepted = 100364,
   kAccessibilityScreenMagnifierScale = 100365,
   kIOSPromoReminder = 100366,
+  kClassManagementToolsOOBEAccessCountSetting = 100367,
+  kClassManagementToolsKioskReceiverCodes = 100368,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -815,6 +817,14 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
      {syncable_prefs_ids::kAppNotificationBadgingEnabled,
       syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
+    {ash::prefs::kClassManagementToolsOOBEAccessCountSetting,
+     {syncable_prefs_ids::kClassManagementToolsOOBEAccessCountSetting,
+      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {ash::prefs::kClassManagementToolsKioskReceiverCodes,
+     {syncable_prefs_ids::kClassManagementToolsKioskReceiverCodes,
+      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kMergeableDict}},
     {prefs::kDefaultTasksByMimeType,
      {syncable_prefs_ids::kDefaultTasksByMimeType, syncer::OS_PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,

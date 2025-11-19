@@ -4,9 +4,12 @@
 
 #include "chromeos/ash/components/boca/boca_role_util.h"
 
+#include <array>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -42,6 +45,18 @@ class BocaRoleUtilTest : public testing::Test {
   }
 
  protected:
+  template <size_t N>
+  void CheckPrefsSyncableFlags(const std::array<const char*, N>& pref_names,
+                               bool expect_sync) {
+    for (const char* pref_name : pref_names) {
+      const auto* pref = local_state_.FindPreference(pref_name);
+      ASSERT_TRUE(pref) << pref_name;
+      const uint32_t flags = pref->registration_flags();
+      bool is_syncable =
+          (flags & user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF) != 0;
+      EXPECT_EQ(expect_sync, is_syncable);
+    }
+  }
   const AccountId affiliated_user_account_ =
       AccountId::FromUserEmailGaiaId("user1@gmail.com", GaiaId("fakegaia1"));
   const AccountId unaffiliated_user_account_ =
@@ -52,6 +67,22 @@ class BocaRoleUtilTest : public testing::Test {
   raw_ptr<const user_manager::User> unaffiliated_user_;
   std::unique_ptr<user_manager::FakeUserManager> user_manager_;
 };
+
+TEST_F(BocaRoleUtilTest, TestCheckPrefsSyncableFlags) {
+  constexpr auto kSyncablePrefs = std::to_array<const char*>(
+      {ash::prefs::kClassManagementToolsOOBEAccessCountSetting,
+       ash::prefs::kClassManagementToolsKioskReceiverCodes});
+  CheckPrefsSyncableFlags(kSyncablePrefs, /*expect_sync=*/true);
+
+  constexpr auto kNonSyncablePrefs = std::to_array<const char*>(
+      {ash::prefs::kClassManagementToolsAvailabilitySetting,
+       ash::prefs::kClassManagementToolsNavRuleSetting,
+       ash::prefs::kClassManagementToolsCaptionEnablementSetting,
+       ash::prefs::kClassManagementToolsClassroomEligibilitySetting,
+       ash::prefs::kClassManagementToolsViewScreenEligibilitySetting,
+       ash::prefs::kClassManagementToolsNetworkRestrictionSetting});
+  CheckPrefsSyncableFlags(kNonSyncablePrefs, /*expect_sync=*/false);
+}
 
 TEST_F(BocaRoleUtilTest, TestDisabledForUnAffliatedUser) {
   user_manager_->OnUserProfileCreated(unaffiliated_user_account_,

@@ -792,6 +792,8 @@ chromium-metrics-reviews@google.com.
   <int value="100364" label="SelectToSpeakAcceleratorDialogHasBeenAccepted"/>
   <int value="100365" label="AccessibilityScreenMagnifierScale"/>
   <int value="100366" label="iOSPromoReminder"/>
+  <int value="100367" label="ClassManagementToolsOOBEAccessCountSetting"/>
+  <int value="100368" label="ClassManagementToolsKioskReceiverCodes"/>
 <!-- LINT.ThenChange(/chrome/browser/sync/prefs/chrome_syncable_prefs_database.cc:ChromeSyncablePref)-->
 
 <!-- LINT.IfChange(IosSyncablePref) -->
