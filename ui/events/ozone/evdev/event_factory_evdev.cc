@@ -291,11 +291,6 @@ void EventFactoryEvdev::DispatchMouseMoveEvent(
   event.set_location_f(location);
   event.set_root_location_f(location);
   event.set_source_device_id(params.device_id);
-  if (params.ordinal_delta.has_value() &&
-      base::FeatureList::IsEnabled(kEnableOrdinalMotion)) {
-    ui::MouseEvent::DispatcherApi(&event).set_movement(
-        params.ordinal_delta.value());
-  }
   DispatchUiEvent(&event);
 }
 
