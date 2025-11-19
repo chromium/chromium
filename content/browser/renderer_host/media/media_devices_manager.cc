@@ -871,8 +871,7 @@ void MediaDevicesManager::StartMonitoring(
              video_capture::features::
                  kWinCameraMonitoringInVideoCaptureService) ||
          switches::IsMediaFoundationCameraUsageMonitoringEnabled()) &&
-        !base::FeatureList::IsEnabled(
-            features::kRunVideoCaptureServiceInBrowserProcess)) {
+        features::IsVideoCaptureServiceEnabledForOutOfProcess()) {
       RegisterVideoCaptureDevicesChangedObserver();
     }
 #endif
@@ -1658,8 +1657,7 @@ void MediaDevicesManager::NotifyDeviceChange(
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 void MediaDevicesManager::RegisterVideoCaptureDevicesChangedObserver() {
   CHECK(!video_capture_service_device_changed_observer_);
-  if (base::FeatureList::IsEnabled(
-          features::kRunVideoCaptureServiceInBrowserProcess)) {
+  if (features::IsVideoCaptureServiceEnabledForBrowserProcess()) {
     // Do not create a mojo connection when the video capture service is running
     // in the browser process as the device monitor will send device change
     // notifications directly to the system monitor in the browser process.
