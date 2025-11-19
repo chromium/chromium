@@ -543,8 +543,6 @@ crbug.com/415830130 [ angle-vulkan arm fuchsia fuchsia-board-sherlock no-asan no
 # crbug.com/431824747 [ win ] Pixel_RenderPasses_TreesInViz [ Failure ]
 # crbug.com/431824747 [ android android-chromium no-clang-coverage ] Pixel_RenderPasses_TreesInViz [ Failure ]
 
-# brya/Android Desktop
-crbug.com/437973213 [ android android-brya ] Pixel_Video_Context_Loss_VP9 [ Failure ]
 
 
 # Linux/AMD 780M failures
