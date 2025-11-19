@@ -46,6 +46,11 @@
 #include "ui/views/view_class_properties.h"
 
 namespace glic {
+
+// TODO(crbug.com/461326322): Remove this flag when crbug.com/461326322 is
+// resolved.
+BASE_FEATURE(kGlicButtonHideLabelOnTaskNudge, base::FEATURE_ENABLED_BY_DEFAULT);
+
 namespace {
 
 constexpr int kHighlightMargin = 2;
@@ -241,6 +246,10 @@ void GlicButton::SetNudgeLabel(std::string label) {
 }
 
 void GlicButton::ShowDefaultLabel() {
+  if (!base::FeatureList::IsEnabled(kGlicButtonHideLabelOnTaskNudge)) {
+    return;
+  }
+
   is_animating_text_ = true;
   StartSlidingTextAnimation(/*show=*/true);
 
@@ -259,6 +268,10 @@ void GlicButton::ShowDefaultLabel() {
 }
 
 void GlicButton::SuppressLabel() {
+  if (!base::FeatureList::IsEnabled(kGlicButtonHideLabelOnTaskNudge)) {
+    return;
+  }
+
   StartSlidingTextAnimation(/*show=*/false);
 
   label()->SetPaintToLayer();
