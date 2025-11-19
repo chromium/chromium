@@ -184,7 +184,7 @@
 <translation id="1118738876271697201">ระบบระบุรุ่นหรือหมายเลขซีเรียลของอุปกรณ์ไม่สำเร็จ</translation>
 <translation id="111897705806685148">ใช้พาสคีย์จากอุปกรณ์อื่น</translation>
 <translation id="1119447706177454957">ข้อผิดพลาดภายใน</translation>
-<translation id="1122068467107743258">งาน</translation>
+<translation id="1122068467107743258">ที่ทำงาน</translation>
 <translation id="1122198203221319518">&amp;เครื่องมือ</translation>
 <translation id="1122242684574577509">การตรวจสอบสิทธิ์ล้มเหลว คลิกเพื่อไปที่หน้าการเข้าสู่ระบบสำหรับเครือข่าย Wi-Fi ที่คุณกำลังใช้อยู่ (<ph name="NETWORK_ID" />)</translation>
 <translation id="1122587596907914265">จัดรูปแบบวอลเปเปอร์ที่ไม่เหมือนใคร</translation>
@@ -11892,7 +11892,7 @@
 <translation id="930991362911221750">อนุญาตให้ <ph name="APP_NAME" /> ดูแท็บนี้ไหม</translation>
 <translation id="931273044114601262">อนุญาตในเว็บไซต์นี้</translation>
 <translation id="93140074055951850">แอป Android หยุดทำงาน</translation>
-<translation id="932327136139879170">หน้าแรก</translation>
+<translation id="932327136139879170">บ้าน</translation>
 <translation id="932508678520956232">ไม่สามารถเริ่มพิมพ์</translation>
 <translation id="933427034780221291">{NUM_FILES,plural, =1{ไฟล์นี้ใหญ่เกินไปสำหรับการตรวจสอบความปลอดภัย คุณอัปโหลดไฟล์ได้ไม่เกิน 50 MB}other{ไฟล์เหล่านี้บางไฟล์ใหญ่เกินไปสำหรับการตรวจสอบความปลอดภัย คุณอัปโหลดไฟล์ได้ไม่เกิน 50 MB}}</translation>
 <translation id="93343527085570547">ไปที่<ph name="BEGIN_LINK1" />หน้าความช่วยเหลือทางกฎหมาย<ph name="END_LINK1" />เพื่อขอเปลี่ยนแปลงเนื้อหาด้วยเหตุผลทางกฎหมาย ระบบอาจส่งข้อมูลบัญชีและข้อมูลระบบบางส่วนไปยัง Google เราจะใช้ข้อมูลที่คุณให้มาเพื่อช่วยแก้ปัญหาด้านเทคนิคและปรับปรุงบริการโดยเป็นไปตาม<ph name="BEGIN_LINK2" />นโยบายความเป็นส่วนตัว<ph name="END_LINK2" />และ<ph name="BEGIN_LINK3" />ข้อกำหนดในการให้บริการ<ph name="END_LINK3" /></translation>

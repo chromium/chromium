@@ -6160,7 +6160,7 @@
     نمایان با نام <ph name="DEVICE_TYPE" />…</translation>
 <translation id="5238301240406177137">ذخیره در حساب</translation>
 <translation id="523862956770478816">اجازه‌های سایت</translation>
-<translation id="5240247138804326767">مرتب کردن نمای دونیمه</translation>
+<translation id="5240247138804326767">مرتب کردن «نمای تقسیم‌شده»</translation>
 <translation id="5240931875940563122">‏ورود به سیستم با تلفن Android</translation>
 <translation id="5241689948221696942">برای برخی محصولات، نظرات جمع‌آوری‌شده از سراسر وب به‌صورت خلاصه در جدول‌های مقایسه نمایش داده می‌شود</translation>
 <translation id="5242724311594467048">«<ph name="EXTENSION_NAME" />» فعال شود؟</translation>
@@ -7456,7 +7456,7 @@
 <translation id="6165508094623778733">بیشتر بدانید</translation>
 <translation id="6169040057125497443">لطفاً میکروفون را بررسی کنید.</translation>
 <translation id="6169967265765719844">‏اجازه‌های مربوط به بازی‌ها و برنامه‌های نصب‌شده ازطریق Steam را می‌توان در <ph name="LINK_BEGIN" />تنظیمات برنامه Steam<ph name="LINK_END" /> مدیریت کرد.</translation>
-<translation id="6170313103929479668">مرتب کردن نمای دونیمه</translation>
+<translation id="6170313103929479668">مرتب کردن «نمای تقسیم‌شده»</translation>
 <translation id="6170470584681422115">ساندویچ</translation>
 <translation id="6170498031581934115">‏اشکال‌زدایی ADB (پل اشکال‌زدایی ‌Android) فعال نشد. به تنظیمات بروید و دوباره امتحان کنید.</translation>
 <translation id="6170675927290506430">رفتن به تنظیمات اعلان</translation>
@@ -9606,7 +9606,7 @@
 <translation id="7670434942695515800">‏برای بهترین عملکرد، به آخرین نسخه ارتقا دهید. توصیه می‌کنیم از فایل‌هایتان پشتیبان‌گیری کنید تا اگر ارتقا باموفقیت کامل نشود با مشکل روبرو نشوید. به‌محض شروع ارتقا، Linux خاموش خواهد شد. پیش‌از ادامه دادن، فایل‌های باز را ذخیره کنید. <ph name="LINK_START" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="7670483791111801022">زیرنویس</translation>
 <translation id="7671130400130574146">استفاده از نوار عنوان سیستم و مرزها</translation>
-<translation id="7671139479636735732">برای تصویرسازی آسان از ایده‌هایتان، کلیک راست کنید</translation>
+<translation id="7671139479636735732">برای دیداری‌سازی آسان از ایده‌هایتان، کلیک‌راست کنید</translation>
 <translation id="767127784612208024">برای تأیید بازنشانی، لمس کنید</translation>
 <translation id="7671472752213333268">‫«<ph name="EXTENSION_NAME" />» می‌خواهد ازطریق «<ph name="SCANNER_NAME" />» اسکن کند.</translation>
 <translation id="7672504401554182757">انتخاب کنید کدام دستگاه حاوی گذرکلید <ph name="APP_NAME" /> است</translation>

@@ -37,7 +37,7 @@
 <translation id="1112015203684611006">列印失敗。</translation>
 <translation id="1118569444314402022">歡迎回來，<ph name="USER_NAME" /></translation>
 <translation id="1121850836842642159">相片和圖片</translation>
-<translation id="1122068467107743258">工作</translation>
+<translation id="1122068467107743258">公司</translation>
 <translation id="1126696498560056882">管理這部裝置上的帳戶</translation>
 <translation id="1126809382673880764">無法封鎖不安全的網站、下載內容和擴充功能。在 Gmail 和 Google 搜尋等其他 Google 服務中，安全瀏覽功能的防護機制仍然會發揮作用 (在適用情況下)。</translation>
 <translation id="1136104150802877429">顯示產品評論</translation>
@@ -2173,7 +2173,7 @@
 <translation id="926455622548529175">切換並刪除</translation>
 <translation id="929748059769569925">醒目顯示的文字</translation>
 <translation id="932305336591073205">{count,plural, =1{關閉分頁}other{關閉分頁}}</translation>
-<translation id="932327136139879170">首頁</translation>
+<translation id="932327136139879170">住家</translation>
 <translation id="939472100615258482">目前網站</translation>
 <translation id="939598580284253335">請輸入通關密語</translation>
 <translation id="939736085109172342">新增資料夾</translation>
