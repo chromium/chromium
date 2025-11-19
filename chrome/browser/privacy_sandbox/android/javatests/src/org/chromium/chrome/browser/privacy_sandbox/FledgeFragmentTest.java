@@ -358,6 +358,8 @@ public final class FledgeFragmentTest {
 
     @Test
     @SmallTest
+    // TODO(crbug.com/433576895): Re-enable containment feature once the test is fixed.
+    @DisableFeatures(ChromeFeatureList.ANDROID_SETTINGS_CONTAINMENT)
     public void testMaxDisplayedSites() {
         setFledgePrefEnabled(true);
         for (int i = 0; i < FledgeFragment.MAX_DISPLAYED_SITES + 1; i++) {
@@ -390,6 +392,8 @@ public final class FledgeFragmentTest {
 
     @Test
     @SmallTest
+    // TODO(crbug.com/433576895): Re-enable containment feature once the test is fixed.
+    @DisableFeatures(ChromeFeatureList.ANDROID_SETTINGS_CONTAINMENT)
     public void testBlockSites() {
         setFledgePrefEnabled(true);
         mFakePrivacySandboxBridge.setCurrentFledgeSites(SITE_NAME_1, SITE_NAME_2);

@@ -224,7 +224,12 @@ public class MainSettingsFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
+    // TODO(crbug.com/433576895): Re-enable containment and multi-column feature
+    // once the test is fixed.
+    @DisableFeatures({
+        ChromeFeatureList.ANDROID_SETTINGS_CONTAINMENT,
+        ChromeFeatureList.SETTINGS_MULTI_COLUMN
+    })
     public void testRenderSignedOutAccountManagementRows() throws IOException {
         startSettings();
         waitForOptionsMenu();
@@ -247,7 +252,12 @@ public class MainSettingsFragmentTest {
     @LargeTest
     @Feature({"RenderTest"})
     @Policies.Add({@Policies.Item(key = "BrowserSignin", string = "0")})
-    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
+    // TODO(crbug.com/433576895): Re-enable containment and multi-column feature
+    // once the test is fixed.
+    @DisableFeatures({
+        ChromeFeatureList.ANDROID_SETTINGS_CONTAINMENT,
+        ChromeFeatureList.SETTINGS_MULTI_COLUMN
+    })
     public void testRenderSigninDisabledByPolicyAccountRow() throws IOException {
         startSettings();
         waitForOptionsMenu();
@@ -660,7 +670,7 @@ public class MainSettingsFragmentTest {
                                 hasDescendant(withText(R.string.password_manager_settings_title)),
                                 hasDescendant(managedStrMatcher)))
                 .check(matches(isDisplayed()));
-        ;
+
         Assert.assertTrue(mMainSettings.findPreference(MainSettings.PREF_PASSWORDS).isEnabled());
         Assert.assertNotNull(
                 mMainSettings
