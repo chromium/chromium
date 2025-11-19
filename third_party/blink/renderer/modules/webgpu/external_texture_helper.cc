@@ -7,6 +7,7 @@
 #include "base/debug/crash_logging.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_transformation.h"
+#include "media/base/video_util.h"
 #include "media/renderers/paint_canvas_video_renderer.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
@@ -19,13 +20,72 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
-#include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/skia/include/effects/SkColorMatrix.h"
 #include "third_party/skia/modules/skcms/skcms.h"
 
 namespace blink {
 namespace {
+
+bool DrawVideoFrameIntoResourceProvider(
+    scoped_refptr<media::VideoFrame> frame,
+    CanvasResourceProvider* resource_provider,
+    viz::RasterContextProvider* raster_context_provider,
+    media::PaintCanvasVideoRenderer* video_renderer,
+    bool ignore_video_transformation = false,
+    bool reinterpret_video_as_srgb = false) {
+  DCHECK(frame);
+  DCHECK(resource_provider);
+
+  // This method should only be called with context providers supporting OOP-R.
+  CHECK(!raster_context_provider ||
+        raster_context_provider->ContextCapabilities().gpu_rasterization);
+
+  // If the provider isn't accelerated, avoid GPU round trips to upload frame
+  // data from GpuMemoryBuffer backed frames which aren't mappable.
+  if (frame->HasMappableGpuBuffer() && !frame->IsMappable() &&
+      !resource_provider->IsAccelerated()) {
+    frame = media::ConvertToMemoryMappedFrame(std::move(frame));
+    if (!frame) {
+      DLOG(ERROR) << "Failed to map VideoFrame.";
+      return false;
+    }
+  }
+
+  if (frame->HasSharedImage()) {
+    if (!raster_context_provider) {
+      DLOG(ERROR) << "Unable to process a texture backed VideoFrame w/o a "
+                     "RasterContextProvider.";
+      return false;  // Unable to get/create a shared main thread context.
+    }
+  }
+
+  cc::PaintFlags media_flags;
+  media_flags.setAlphaf(1.0f);
+  media_flags.setFilterQuality(cc::PaintFlags::FilterQuality::kLow);
+  media_flags.setBlendMode(SkBlendMode::kSrc);
+
+  std::unique_ptr<media::PaintCanvasVideoRenderer> local_video_renderer;
+  if (!video_renderer) {
+    local_video_renderer = std::make_unique<media::PaintCanvasVideoRenderer>();
+    video_renderer = local_video_renderer.get();
+  }
+
+  media::PaintCanvasVideoRenderer::PaintParams params;
+  params.dest_rect = gfx::RectF(resource_provider->Size());
+  params.transformation =
+      ignore_video_transformation
+          ? media::kNoTransformation
+          : frame->metadata().transformation.value_or(media::kNoTransformation);
+  params.reinterpret_as_srgb = reinterpret_video_as_srgb;
+  resource_provider->ExternalCanvasDrawHelper(
+      [&](MemoryManagedPaintCanvas& canvas) {
+        video_renderer->Paint(frame.get(), &canvas, media_flags, params,
+                              raster_context_provider);
+      });
+  return true;
+}
+
 wgpu::ExternalTextureRotation FromVideoRotation(media::VideoRotation rotation) {
   switch (rotation) {
     case media::VIDEO_ROTATION_0:
