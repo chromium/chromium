@@ -274,10 +274,21 @@ template("build_webui") {
     }
   }
 
-  # Determine if there is a Lit and/or Polymer dependency, and whether this
-  # corresponds to an Ash WebUI. This information is used for determining
-  # the default template for html_to_wrapper() as well as the default tsconfig
-  # file for ts_library().
+  # Determine whether the current invocation corresponds to an Ash WebUI.
+  is_ash_webui = false
+  if (is_chromeos) {
+    target_dir = get_label_info(":build_ts", "dir")
+
+    foreach(prefix, ash_folders) {
+      if (!is_ash_webui) {
+        is_ash_webui = string_replace(target_dir, prefix, "") != target_dir
+      }
+    }
+  }
+
+  # Determine if there is a Lit and/or Polymer dependency. This information is
+  # used for determining the default template for html_to_wrapper() as well as
+  # the default tsconfig file for ts_library().
   if ((defined(html_files) && !defined(invoker.html_to_wrapper_template)) ||
       (defined(invoker.ts_deps) && !defined(invoker.ts_tsconfig_base))) {
     has_polymer = false
@@ -288,17 +299,6 @@ template("build_webui") {
                          [ "//third_party/polymer/v3_0:library" ]) != []
       has_lit = filter_include(invoker.ts_deps,
                                [ "//third_party/lit/v3_0:build_ts" ]) != []
-    }
-
-    if (is_chromeos) {
-      is_ash_webui = false
-      target_dir = get_label_info(":build_ts", "dir")
-
-      foreach(prefix, ash_folders) {
-        if (!is_ash_webui) {
-          is_ash_webui = string_replace(target_dir, prefix, "") != target_dir
-        }
-      }
     }
   }
 
@@ -509,6 +509,11 @@ template("build_webui") {
         deps += [ ":preprocess_ts_files" ]
       }
 
+      # Enable by default on non-Ash WebUIs.
+      enable_web_component_missing_deps = true
+      if (is_ash_webui) {
+        enable_web_component_missing_deps = false
+      }
       if (defined(invoker.eslint_enable_web_component_missing_deps)) {
         enable_web_component_missing_deps =
             invoker.eslint_enable_web_component_missing_deps
