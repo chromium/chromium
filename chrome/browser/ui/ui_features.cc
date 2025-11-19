@@ -93,19 +93,36 @@ BASE_FEATURE(kPressAndHoldEscToExitBrowserFullscreen,
 // When enabled, reloading using the toolbar button, hotkey, and web contents
 // context menu will only reload the active tab. The tab context menu will still
 // use the selection model to reload.
-BASE_FEATURE(kReloadSelectionModel, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kReloadSelectionModel,
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 // Enforces close tab hotkey to only close the active view of a split tab,
 // when it is the only tab in selection model.
 BASE_FEATURE(kCloseActiveTabInSplitViewViaHotkey,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 #if BUILDFLAG(IS_MAC)
 // Add tab group colours when viewing tab groups using the top mac OS menu bar.
 BASE_FEATURE(kShowTabGroupsMacSystemMenu, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_MAC)
 
-BASE_FEATURE(kSideBySide, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSideBySide,
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 // The delay before showing the drop target for the side-by-side drag-and-drop
 // entrypoint.
@@ -113,7 +130,7 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    kSideBySideShowDropTargetDelay,
                    &kSideBySide,
                    "drop_target_show_delay",
-                   base::Milliseconds(500));
+                   base::Milliseconds(1400));
 BASE_FEATURE_PARAM(base::TimeDelta,
                    kSideBySideShowDropTargetForLinkDelay,
                    &kSideBySide,
@@ -153,7 +170,7 @@ BASE_FEATURE_PARAM(int,
                    kSideBySideDropTargetTargetWidthPercentage,
                    &kSideBySide,
                    "drop_target_width_percentage",
-                   30);
+                   15);
 BASE_FEATURE_PARAM(int,
                    kSideBySideDropTargetForLinkTargetWidthPercentage,
                    &kSideBySide,
@@ -183,7 +200,13 @@ BASE_FEATURE_PARAM(double,
 #endif
 );
 
-BASE_FEATURE(kSideBySideDropTargetNudge, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kSideBySideDropTargetNudge,
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 BASE_FEATURE_PARAM(int,
                    kSideBySideDropTargetNudgeMinWidth,
@@ -204,17 +227,17 @@ BASE_FEATURE_PARAM(int,
                    kSideBySideDropTargetNudgeToFullMinWidth,
                    &kSideBySideDropTargetNudge,
                    "drop_target_nudge_to_full_min_width",
-                   80);
+                   120);
 BASE_FEATURE_PARAM(int,
                    kSideBySideDropTargetNudgeToFullMaxWidth,
                    &kSideBySideDropTargetNudge,
                    "drop_target_nudge_to_full_max_width",
-                   600);
+                   360);
 BASE_FEATURE_PARAM(int,
                    kSideBySideDropTargetNudgeToFullTargetWidthPercentage,
                    &kSideBySideDropTargetNudge,
                    "drop_target_nudge_to_full_width_percentage",
-                   20);
+                   15);
 BASE_FEATURE_PARAM(double,
                    kSideBySideDropTargetNudgeShowRatio,
                    &kSideBySideDropTargetNudge,
@@ -259,14 +282,27 @@ BASE_FEATURE_PARAM(int,
 
 // When enabled along with SideBySide flag, split tabs will be restored on
 // startup.
-BASE_FEATURE(kSideBySideSessionRestore, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSideBySideSessionRestore,
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 bool IsRestoringSplitViewEnabled() {
   return base::FeatureList::IsEnabled(features::kSideBySide) &&
          base::FeatureList::IsEnabled(features::kSideBySideSessionRestore);
 }
 
-BASE_FEATURE(kSideBySideLinkMenuNewBadge, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSideBySideLinkMenuNewBadge,
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 BASE_FEATURE(kSideBySideKeyboardShortcut, base::FEATURE_DISABLED_BY_DEFAULT);
 
