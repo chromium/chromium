@@ -22,6 +22,7 @@
 #include "base/check_op.h"
 #include "base/notimplemented.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -178,9 +179,10 @@ Process GetDebuggerProcess() {
     return Process();
   }
 
-  std::string_view status(buf.data(), static_cast<size_t>(num_read));
-  std::string_view tracer("TracerPid:\t");
+  std::string_view status = base::as_string_view(
+      base::span(buf).first(static_cast<size_t>(num_read)));
 
+  std::string_view tracer("TracerPid:\t");
   std::string_view::size_type pid_index = status.find(tracer);
   if (pid_index == std::string_view::npos) {
     return Process();
@@ -191,8 +193,9 @@ Process GetDebuggerProcess() {
     return Process();
   }
 
-  std::string_view pid_str(base::span<char>(buf).subspan(pid_index).data(),
-                           pid_end_index - pid_index);
+  std::string_view pid_str = base::as_string_view(
+      base::span(buf).subspan(pid_index, pid_end_index - pid_index));
+
   int pid = 0;
   if (!StringToInt(pid_str, &pid)) {
     return Process();
