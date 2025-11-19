@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/command_line.h"
 #include "base/containers/to_vector.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
@@ -420,8 +421,19 @@ void BookmarkMenuDelegate::ExecuteCommand(int id, int mouse_event_flags) {
   std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> selection =
       menu_id_to_node_map_.find(id)->second.GetUnderlyingNodes(
           GetBookmarkMergedSurfaceService());
-  chrome::OpenAllIfAllowed(browser_, selection,
-                           ui::DispositionFromEventFlags(mouse_event_flags));
+  if (base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII("open-bookmark-option") == "foreground") {
+    chrome::OpenAllIfAllowed(browser_, selection,
+                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                             false);
+  } else if (base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII("open-bookmark-option") == "background")  {
+    chrome::OpenAllIfAllowed(browser_, selection,
+                             WindowOpenDisposition::NEW_BACKGROUND_TAB,
+                             false);
+  } else {
+    chrome::OpenAllIfAllowed(browser_, selection,
+                             ui::DispositionFromEventFlags(mouse_event_flags),
+                             false);
+  }
 }
 
 bool BookmarkMenuDelegate::ShouldExecuteCommandWithoutClosingMenu(

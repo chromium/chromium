@@ -18,6 +18,7 @@
 
 #include "base/callback_list.h"
 #include "base/check_op.h"
+#include "base/command_line.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -1389,12 +1390,28 @@ void BookmarkBarView::OnButtonPressed(const bookmarks::BookmarkNode* node,
   // are directed to ::OnMenuButtonPressed().
   DCHECK(node->is_url());
   RecordAppLaunch(browser_->profile(), node->url());
-  chrome::OpenAllIfAllowed(
-      browser_, {node}, ui::DispositionFromEventFlags(event.flags()),
-      bookmarks::OpenAllBookmarksContext::kNone,
-      page_load_metrics::NavigationHandleUserData::InitiatorLocation::
-          kBookmarkBar,
-      {{BookmarkLaunchLocation::kAttachedBar, base::TimeTicks::Now()}});
+  if (base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII("open-bookmark-option") == "foreground") {
+    chrome::OpenAllIfAllowed(
+        browser_, {node}, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        bookmarks::OpenAllBookmarksContext::kNone,
+        page_load_metrics::NavigationHandleUserData::InitiatorLocation::
+            kBookmarkBar,
+        {{BookmarkLaunchLocation::kAttachedBar, base::TimeTicks::Now()}});
+  } else if (base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII("open-bookmark-option") == "background")  {
+    chrome::OpenAllIfAllowed(
+        browser_, {node}, WindowOpenDisposition::NEW_BACKGROUND_TAB,
+        bookmarks::OpenAllBookmarksContext::kNone,
+        page_load_metrics::NavigationHandleUserData::InitiatorLocation::
+            kBookmarkBar,
+        {{BookmarkLaunchLocation::kAttachedBar, base::TimeTicks::Now()}});
+  } else {
+    chrome::OpenAllIfAllowed(
+        browser_, {node}, ui::DispositionFromEventFlags(event.flags()),
+        bookmarks::OpenAllBookmarksContext::kNone,
+        page_load_metrics::NavigationHandleUserData::InitiatorLocation::
+            kBookmarkBar,
+        {{BookmarkLaunchLocation::kAttachedBar, base::TimeTicks::Now()}});
+  }
   RecordBookmarkLaunch(
       BookmarkLaunchLocation::kAttachedBar,
       profile_metrics::GetBrowserProfileType(browser_->profile()));
