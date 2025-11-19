@@ -102,19 +102,39 @@ declare global {
       }
 
       export interface InputMethodSettings {
+        enableCompletion?: boolean;
         enableDoubleSpacePeriod?: boolean;
         enableGestureTyping?: boolean;
+        enablePrediction?: boolean;
         enableSoundOnKeypress?: boolean;
+        physicalKeyboardAutoCorrectionEnabledByDefault?: boolean;
         physicalKeyboardAutoCorrectionLevel?: number;
+        physicalKeyboardEnableCapitalization?: boolean;
+        physicalKeyboardEnableDiacriticsOnLongpress?: boolean;
+        physicalKeyboardEnablePredictiveWriting?: boolean;
         virtualKeyboardAutoCorrectionLevel?: number;
         virtualKeyboardEnableCapitalization?: boolean;
         xkbLayout?: string;
         koreanEnableSyllableInput?: boolean;
         koreanKeyboardLayout?: string;
+        koreanShowHangulCandidate?: boolean;
         pinyinChinesePunctuation?: boolean;
         pinyinDefaultChinese?: boolean;
+        pinyinEnableLowerPaging?: boolean;
+        pinyinEnableUpperPaging?: boolean;
         pinyinFullWidthCharacter?: boolean;
+        zhuyinKeyboardLayout?: string;
         zhuyinPageSize?: number;
+        zhuyinSelectKeys?: string;
+        vietnameseVniAllowFlexibleDiacritics?: boolean;
+        vietnameseVniNewStyleToneMarkPlacement?: boolean;
+        vietnameseVniInsertDoubleHornOnUo?: boolean;
+        vietnameseVniShowUnderline?: boolean;
+        vietnameseTelexAllowFlexibleDiacritics?: boolean;
+        vietnameseTelexNewStyleToneMarkPlacement?: boolean;
+        vietnameseTelexInsertDoubleHornOnUo?: boolean;
+        vietnameseTelexInsertUHornOnW?: boolean;
+        vietnameseTelexShowUnderline?: boolean;
       }
 
       export function getInputMethodConfig(

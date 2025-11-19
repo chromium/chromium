@@ -118,25 +118,45 @@
       {
         "id": "InputMethodSettings",
         "type": "object",
-        "description": "User preference settings for a specific input method. Only entries required by CrOS 1P Virtual Keyboard are declared. Entry names MUST match those defined by CrOS Settings @ https://crsrc.org/c/chrome/browser/resources/ash/settings/os_languages_page/input_method_util.ts",
+        "description": "User preference settings for a specific input method. Japanese input methods are not included because they are managed separately by Mozc module.",
         "properties": {
+          "enableCompletion": { "type": "boolean", "optional": true, "description": "Whether to enable auto completion."},
           "enableDoubleSpacePeriod": { "type": "boolean", "optional": true, "description": "Whether to auto transform double spaces to type period."},
           "enableGestureTyping": { "type": "boolean", "optional": true, "description": "Whether to enable gesture typing."},
+          "enablePrediction": { "type": "boolean", "optional": true, "description": "Whether to enable word prediction."},
           "enableSoundOnKeypress": { "type": "boolean", "optional": true, "description": "Whether to enable sound on keypress."},
+          "physicalKeyboardAutoCorrectionEnabledByDefault": {"type": "boolean", "optional": true, "description": "Whether auto correction should be enabled for physical keyboard by default."},
           "physicalKeyboardAutoCorrectionLevel": { "type": "integer", "optional": true, "description": "The level of auto correction for physical keyboard (0: Off, 1: Modest, 2: Aggressive)."},
+          "physicalKeyboardEnableCapitalization": { "type": "boolean", "optional": true, "description": "Whether to enable auto capitalization for physical keyboard."},
+          "physicalKeyboardEnableDiacriticsOnLongpress": { "type": "boolean", "optional": true, "description": "Whether to enable diacritics on longpress for physical keyboard."},
+          "physicalKeyboardEnablePredictiveWriting" : {"type": "boolean", "optional": true, "description": "Whether to enable physical keyboard predictive writing"},
           "virtualKeyboardAutoCorrectionLevel": { "type": "integer", "optional": true, "description": "The level of auto correction for virtual keyboard (0: Off, 1: Modest, 2: Aggressive)."},
           "virtualKeyboardEnableCapitalization": { "type": "boolean", "optional": true, "description": "Whether enable auto capitalization for virtual keyboard."},
           "xkbLayout": { "type": "string", "optional": true, "description": "The xkb keyboard (system provided keyboard) layout."},
           "koreanEnableSyllableInput": { "type": "boolean", "optional": true, "description": "Whether input one syllable at a time in korean input method."},
           "koreanKeyboardLayout": { "type": "string", "optional": true, "description": "The layout of korean keyboard."},
+          "koreanShowHangulCandidate": { "type": "boolean", "optional": true, "description": "Whether to show hangul candidates in korean input method."},
           "pinyinChinesePunctuation": { "type": "boolean", "optional": true, "description": "Whether to use Chinese punctuations in pinyin."},
           "pinyinDefaultChinese": {
             "type": "boolean",
             "optional": true,
             "description": "User can use shortcuts to switch between Chinese and English quickly when using pinyin, this flag indicates whether the default language is Chinese."
           },
+          "pinyinEnableLowerPaging": { "type": "boolean", "optional": true, "description": "Whether to enable using ','/'.' to page up/down the candidates in pinyin."},
+          "pinyinEnableUpperPaging": { "type": "boolean", "optional": true, "description": "Whether to enable using '-'/'=' to page up/down the candidates in pinyin."},
           "pinyinFullWidthCharacter": { "type": "boolean", "optional": true, "description": "Whether to output full width letters and digits in pinyin."},
-          "zhuyinPageSize": { "type": "integer", "optional": true, "description": "The page size of zhuyin candidate page."}
+          "zhuyinKeyboardLayout": { "type": "string", "optional": true, "description": "The layout of zhuyin keyboard."},
+          "zhuyinPageSize": { "type": "integer", "optional": true, "description": "The page size of zhuyin candidate page."},
+          "zhuyinSelectKeys": { "type": "string", "optional": true, "description": "The keys used to select candidates in zhuyin."},
+          "vietnameseVniAllowFlexibleDiacritics": { "type": "boolean", "optional": true, "description": "Enable VNI flexible Vietnamese typing mode"},
+          "vietnameseVniNewStyleToneMarkPlacement": { "type": "boolean", "optional": true, "description": "Enable VNI modern tone mark placement"},
+          "vietnameseVniInsertDoubleHornOnUo": { "type": "boolean", "optional": true, "description": "Enable VNI insert-double-horn-on-UO shortcut"},
+          "vietnameseVniShowUnderline": { "type": "boolean", "optional": true, "description": "Enable VNI showing underline on composition text"},
+          "vietnameseTelexAllowFlexibleDiacritics": { "type": "boolean", "optional": true, "description": "Enable Telex flexible Vietnamese typing mode"},
+          "vietnameseTelexNewStyleToneMarkPlacement": { "type": "boolean", "optional": true, "description": "Enable Telex modern tone mark placement"},
+          "vietnameseTelexInsertDoubleHornOnUo": { "type": "boolean", "optional": true, "description": "Enable Telex insert-double-horn-on-UO horn shortcut"},
+          "vietnameseTelexInsertUHornOnW": { "type": "boolean", "optional": true, "description": "Enable Telex inser-U-Horn-on-W shortcut"},
+          "vietnameseTelexShowUnderline": { "type": "boolean", "optional": true, "description": "Enable Telex showing underline on composition text"}
         }
       }
     ],
