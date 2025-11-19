@@ -10,10 +10,10 @@ interface HTMLGeolocationElement : HTMLPermissionElement {
 
   attribute EventHandler onlocation;
 
-  readonly attribute GeolocationPosition position;
-  readonly attribute GeolocationPositionError error;
+  readonly attribute GeolocationPosition? position;
+  readonly attribute GeolocationPositionError? error;
 
   [CEReactions, Reflect] attribute DOMString accuracymode;
-  [CEReactions] attribute boolean autolocate;
-  [CEReactions] attribute boolean watch;
+  [CEReactions, Reflect] attribute boolean autolocate;
+  [CEReactions, Reflect] attribute boolean watch;
 };

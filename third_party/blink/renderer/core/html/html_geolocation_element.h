@@ -26,14 +26,9 @@ class CORE_EXPORT HTMLGeolocationElement final : public HTMLPermissionElement {
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(location, kLocation)
 
-  bool precise() const { return precise_; }
-  void setPrecise(bool value) { precise_ = value; }
-
-  bool autolocate() const { return autolocate_; }
-  void setAutolocate(bool value) { autolocate_ = value; }
-
-  bool watch() const { return watch_; }
-  void setWatch(bool value) { watch_ = value; }
+  bool autolocate() const {
+    return FastHasAttribute(html_names::kAutolocateAttr);
+  }
 
   Geoposition* position() const;
   GeolocationPositionError* error() const;
@@ -93,9 +88,6 @@ class CORE_EXPORT HTMLGeolocationElement final : public HTMLPermissionElement {
   void MaybeTriggerAutolocate(ForceAutolocate);
   void UpdateText();
 
-  bool precise_ = false;
-  bool autolocate_ = false;
-  bool watch_ = false;
   // The watch_id_ is used to identify the watcher in the Geolocation object.
   // The ids always start from 1. 0 means that the watch is not set.
   int watch_id_ = 0;

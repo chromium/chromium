@@ -30,8 +30,8 @@ interface mixin InPagePermissionMixin {
 interface HTMLGeolocationElement : HTMLElement {
   [HTMLConstructor] constructor();
 
-  readonly attribute GeolocationPosition position;
-  readonly attribute GeolocationPositionError error;
+  readonly attribute GeolocationPosition? position;
+  readonly attribute GeolocationPositionError? error;
   [CEReactions, Reflect] attribute boolean autolocate;
   [CEReactions, Reflect] attribute boolean watch;
 
