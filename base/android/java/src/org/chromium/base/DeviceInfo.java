@@ -59,6 +59,8 @@ public final class DeviceInfo {
 
     private static final Object CREATION_LOCK = new Object();
 
+    private static boolean sIsNativeLoaded;
+
     // Called by the native code to retrieve field values. There is no easy way to
     // return several fields from Java to native, so instead this calls back into
     // native, passing the fields as parameters to a native function.
@@ -67,6 +69,7 @@ public final class DeviceInfo {
     @CalledByNative
     private static void nativeReadyForFields() {
         sendToNative(getInstance().mIDeviceInfo);
+        sIsNativeLoaded = true;
     }
 
     public static void sendToNative(IDeviceInfo info) {
@@ -100,11 +103,17 @@ public final class DeviceInfo {
         // Every time we call getInstance in a test we reconstruct the mIDeviceInfo object, so we
         // don't need to set mIDeviceInfo's copy here as it'll just get reconstructed.
         ResettersForTesting.register(() -> sGmsVersionCodeForTesting = null);
+        if (sIsNativeLoaded) {
+            sendToNative(getInstance().mIDeviceInfo);
+        }
     }
 
     public static void setIsAutomotiveForTesting(boolean isAutomotive) {
         sIsAutomotiveForTesting = isAutomotive;
         ResettersForTesting.register(() -> sIsAutomotiveForTesting = null);
+        if (sIsNativeLoaded) {
+            sendToNative(getInstance().mIDeviceInfo);
+        }
     }
 
     public static boolean isTV() {
@@ -166,6 +175,9 @@ public final class DeviceInfo {
     public static void setIsXrForTesting(boolean value) {
         sIsXrForTesting = value;
         ResettersForTesting.register(() -> sIsXrForTesting = null);
+        if (sIsNativeLoaded) {
+            sendToNative(getInstance().mIDeviceInfo);
+        }
     }
 
     @CalledByNativeForTesting

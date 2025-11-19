@@ -61,9 +61,6 @@ void Set(const IDeviceInfo& info) {
   base::AutoLock l(*lock);
 
   std::optional<IDeviceInfo>& holder = get_holder();
-  if (holder.has_value()) {
-    return;
-  }
   holder.emplace(info);
 }
 
