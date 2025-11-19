@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/types/expected.h"
 #include "components/legion/legion_common.h"
 #include "components/legion/proto/legion.pb.h"
@@ -43,6 +44,9 @@ class Client {
   using OnGenerateContentRequestCompletedCallback = base::OnceCallback<void(
       base::expected<proto::GenerateContentResponse, ErrorCode> result)>;
 
+  using SecureChannelFactory =
+      base::RepeatingCallback<std::unique_ptr<SecureChannel>()>;
+
   static std::unique_ptr<Client> Create(
       network::mojom::NetworkContext* network_context);
 
@@ -73,7 +77,10 @@ class Client {
  private:
   friend class ClientTest;
 
-  explicit Client(std::unique_ptr<SecureChannel> secure_channel);
+  explicit Client(SecureChannelFactory channel_factory);
+
+  // Recreates the secure channel and sets the response callback.
+  void RecreateSecureChannel();
 
   // Sends a request over the secure channel.
   void SendRequest(int32_t request_id,
@@ -88,6 +95,7 @@ class Client {
   void FailAllPendingRequests(ErrorCode error_code);
 
   std::unique_ptr<SecureChannel> secure_channel_;
+  SecureChannelFactory secure_channel_factory_;
   int32_t next_request_id_{1};
 
   // Callbacks for requests that have been sent to the secure channel but have

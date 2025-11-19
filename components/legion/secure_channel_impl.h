@@ -35,7 +35,8 @@ class SecureChannelImpl : public SecureChannel {
 
   // SecureChannel:
   void SetResponseCallback(ResponseCallback callback) override;
-  bool Write(Request request) override;
+  bool Write(const Request& request) override;
+
 
  private:
  // Stages of the secure channel establishment and write process.
@@ -44,12 +45,12 @@ class SecureChannelImpl : public SecureChannel {
     kPerformingAttestation,
     kPerformingHandshake,
     kEstablished,
-    kPermanentFailure,
+    kClosed,
   };
 
   // Helper function to handle state transitions and errors.
   void FailAllRequests(ErrorCode error_code);
-  void FailAllRequestsAndSetPermanentFailure(ErrorCode error_code);
+  void FailAllRequestsAndClose(ErrorCode error_code);
   void StartSessionEstablishment();
   void ProcessPendingRequests();
 

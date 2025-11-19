@@ -21,8 +21,6 @@
 
 namespace legion {
 
-
-
 SecureChannelImpl::SecureChannelImpl(
     std::unique_ptr<Transport> transport,
     std::unique_ptr<SecureSession> secure_session,
@@ -44,13 +42,13 @@ void SecureChannelImpl::SetResponseCallback(ResponseCallback callback) {
   response_callback_ = std::move(callback);
 }
 
-bool SecureChannelImpl::Write(Request request) {
-  if (state_ == State::kPermanentFailure) {
-    DLOG(ERROR) << "SecureChannel is in a permanent failure state.";
+bool SecureChannelImpl::Write(const Request& request) {
+  if (state_ == State::kClosed) {
+    DLOG(ERROR) << "SecureChannel is closed.";
     return false;
   }
 
-  pending_requests_.emplace_back(std::move(request));
+  pending_requests_.emplace_back(request);
 
   switch (state_) {
     case State::kUninitialized:
@@ -66,7 +64,7 @@ bool SecureChannelImpl::Write(Request request) {
       // no other request in flight.
       ProcessPendingRequests();
       break;
-    case State::kPermanentFailure:
+    case State::kClosed:
       // This case should not be reached because of the check at the top.
       NOTREACHED();
   }
@@ -97,14 +95,14 @@ void SecureChannelImpl::OnResponseReceived(
         error_code = ErrorCode::kNetworkError;
         break;
       case State::kUninitialized:
-      case State::kPermanentFailure:
+      case State::kClosed:
         // Transport error in these states is unexpected because no requests
         // should be in flight.
         NOTREACHED() << "Unexpected transport error in state: "
                      << static_cast<int>(state_);
     }
 
-    FailAllRequestsAndSetPermanentFailure(error_code);
+    FailAllRequestsAndClose(error_code);
     return;
   }
 
@@ -117,7 +115,7 @@ void SecureChannelImpl::OnResponseReceived(
     OnEncryptedResponse(session_response.encrypted_message());
   } else {
     LOG(ERROR) << "Response does not contain any messages";
-    FailAllRequestsAndSetPermanentFailure(ErrorCode::kNetworkError);
+    FailAllRequestsAndClose(ErrorCode::kNetworkError);
   }
 }
 
@@ -128,7 +126,7 @@ void SecureChannelImpl::OnAttestationResponse(
   // Step 2: Verify Attestation Response
   if (!attestation_handler_->VerifyAttestationResponse(response)) {
     DLOG(ERROR) << "Attestation verification failed.";
-    FailAllRequestsAndSetPermanentFailure(ErrorCode::kAttestationFailed);
+    FailAllRequestsAndClose(ErrorCode::kAttestationFailed);
     return;
   }
   DVLOG(1) << "Attestation verified successfully.";
@@ -151,7 +149,7 @@ void SecureChannelImpl::OnHandshakeResponse(
   // Step 4: Process Handshake Response
   if (!secure_session_->ProcessHandshakeResponse(response)) {
     DLOG(ERROR) << "Failed to handle handshake response.";
-    FailAllRequestsAndSetPermanentFailure(ErrorCode::kHandshakeFailed);
+    FailAllRequestsAndClose(ErrorCode::kHandshakeFailed);
     return;
   }
   DVLOG(1) << "Handshake response handled successfully.";
@@ -167,7 +165,7 @@ void SecureChannelImpl::OnEncryptedResponse(
       secure_session_->Decrypt(response);
   if (!decrypted_response.has_value()) {
     DLOG(ERROR) << "Failed to decrypt response.";
-    FailAllRequestsAndSetPermanentFailure(ErrorCode::kDecryptionFailed);
+    FailAllRequestsAndClose(ErrorCode::kDecryptionFailed);
     return;
   }
   DVLOG(1) << "Response decrypted successfully.";
@@ -191,7 +189,7 @@ void SecureChannelImpl::StartSessionEstablishment() {
       attestation_handler_->GetAttestationRequest();
   if (!attestation_req.has_value()) {
     DLOG(ERROR) << "Failed to get attestation request.";
-    FailAllRequestsAndSetPermanentFailure(ErrorCode::kAttestationFailed);
+    FailAllRequestsAndClose(ErrorCode::kAttestationFailed);
     return;
   }
 
@@ -202,10 +200,9 @@ void SecureChannelImpl::StartSessionEstablishment() {
   Send(request);
 }
 
-void SecureChannelImpl::FailAllRequestsAndSetPermanentFailure(
-    ErrorCode error_code) {
+void SecureChannelImpl::FailAllRequestsAndClose(ErrorCode error_code) {
   FailAllRequests(error_code);
-  state_ = State::kPermanentFailure;
+  state_ = State::kClosed;
   CHECK(response_callback_);
   response_callback_.Run(base::unexpected(error_code));
 }
@@ -223,7 +220,7 @@ void SecureChannelImpl::ProcessPendingRequests() {
 
     if (!encrypted_request.has_value()) {
       DLOG(ERROR) << "Failed to encrypt request.";
-      FailAllRequestsAndSetPermanentFailure(ErrorCode::kEncryptionFailed);
+      FailAllRequestsAndClose(ErrorCode::kEncryptionFailed);
       return;
     }
     DVLOG(1) << "Request encrypted successfully.";
@@ -232,8 +229,7 @@ void SecureChannelImpl::ProcessPendingRequests() {
 
     DVLOG(1) << "Sending encrypted request.";
     oak::session::v1::SessionRequest request;
-    *request.mutable_encrypted_message() =
-        std::move(encrypted_request.value());
+    *request.mutable_encrypted_message() = std::move(encrypted_request.value());
     Send(request);
   }
 }

@@ -204,8 +204,8 @@ TEST_F(SecureChannelImplTest, WriteAndEstablishSessionSucceeds) {
   EXPECT_EQ(result.value(), decrypted_response);
 }
 
-// Tests that a permanent failure is reported through the response callback.
-TEST_F(SecureChannelImplTest, PermanentFailureIsReported) {
+// Tests that a closed channel is reported through the response callback.
+TEST_F(SecureChannelImplTest, ChannelClosedIsReported) {
   EXPECT_CALL(*attestation_handler_, GetAttestationRequest())
       .WillOnce(Return(std::nullopt));
 
@@ -489,9 +489,8 @@ TEST_F(SecureChannelImplTest, EmptyResponseFailsRequest) {
   EXPECT_EQ(result.error(), ErrorCode::kNetworkError);
 }
 
-// Tests that `Write` returns false if the channel is in a permanent failure
-// state.
-TEST_F(SecureChannelImplTest, WriteInPermanentFailureState) {
+// Tests that `Write` returns false if the channel is closed.
+TEST_F(SecureChannelImplTest, WriteInClosedState) {
   EXPECT_CALL(*attestation_handler_, GetAttestationRequest())
       .WillOnce(Return(std::nullopt));
 

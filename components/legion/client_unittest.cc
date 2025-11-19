@@ -11,10 +11,10 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "base/task/single_thread_task_runner.h"
 #include "components/legion/proto/legion.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -40,7 +40,25 @@ class MockSecureChannelClient : public SecureChannel {
               SetResponseCallback,
               (ResponseCallback callback),
               (override));
-  MOCK_METHOD(bool, Write, (Request request), (override));
+  MOCK_METHOD(bool, Write, (const Request& request), (override));
+};
+
+class FakeSecureChannelFactory {
+ public:
+  FakeSecureChannelFactory() = default;
+  ~FakeSecureChannelFactory() = default;
+
+  std::unique_ptr<SecureChannel> Create() {
+    auto channel =
+        std::make_unique<testing::StrictMock<MockSecureChannelClient>>();
+    EXPECT_CALL(*channel, SetResponseCallback(_))
+        .WillOnce(testing::SaveArg<0>(&response_callback_));
+    secure_channel_ = channel.get();
+    return channel;
+  }
+
+  raw_ptr<MockSecureChannelClient> secure_channel_ = nullptr;
+  SecureChannel::ResponseCallback response_callback_;
 };
 
 struct ResponseErrorTestParam {
@@ -54,7 +72,7 @@ void SetUpMockWrite(MockSecureChannelClient* mock_secure_channel,
                     const Client::BinaryEncodedProtoResponse& response_template,
                     bool mismatch_request_id = false) {
   EXPECT_CALL(*mock_secure_channel, Write(_))
-      .WillOnce([=, &response_callback](Request request_payload) {
+      .WillOnce([=, &response_callback](const Request& request_payload) {
         proto::LegionRequest request;
         EXPECT_TRUE(request.ParseFromArray(request_payload.data(),
                                            request_payload.size()));
@@ -76,8 +94,8 @@ void SetUpMockWrite(MockSecureChannelClient* mock_secure_channel,
         }
 
         base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE,
-            base::BindOnce(response_callback, base::ok(std::move(response_data))));
+            FROM_HERE, base::BindOnce(response_callback,
+                                      base::ok(std::move(response_data))));
         return true;
       });
 }
@@ -90,21 +108,13 @@ class ClientTest : public ::testing::Test {
   ~ClientTest() override = default;
 
   void SetUp() override {
-    auto mock_secure_channel =
-        std::make_unique<testing::StrictMock<MockSecureChannelClient>>();
-    mock_secure_channel_ = mock_secure_channel.get();
-
-    EXPECT_CALL(*mock_secure_channel_, SetResponseCallback(_))
-        .WillOnce(testing::SaveArg<0>(&response_callback_));
-
-    client_ = base::WrapUnique(new Client(std::move(mock_secure_channel)));
+    client_ = base::WrapUnique(new Client(base::BindRepeating(
+        &FakeSecureChannelFactory::Create, base::Unretained(&factory_))));
   }
 
- protected:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<Client> client_;
-  raw_ptr<MockSecureChannelClient> mock_secure_channel_;  // Owned by client_
-  SecureChannel::ResponseCallback response_callback_;
+  FakeSecureChannelFactory factory_;
 };
 
 // Test the successful request flow.
@@ -125,7 +135,8 @@ TEST_F(ClientTest, SendTextRequestSuccess) {
   Client::BinaryEncodedProtoResponse response_data(serialized_response.begin(),
                                                    serialized_response.end());
 
-  SetUpMockWrite(mock_secure_channel_, response_callback_, response_data);
+  SetUpMockWrite(factory_.secure_channel_, factory_.response_callback_,
+                 response_data);
 
   base::test::TestFuture<base::expected<std::string, ErrorCode>> future;
   client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
@@ -138,7 +149,8 @@ TEST_F(ClientTest, SendTextRequestSuccess) {
 
 // Test that SendRequest fails if SecureChannel::Write fails.
 TEST_F(ClientTest, SendTextRequestWriteFails) {
-  EXPECT_CALL(*mock_secure_channel_, Write(_)).WillOnce(testing::Return(false));
+  EXPECT_CALL(*factory_.secure_channel_, Write(_))
+      .WillOnce(testing::Return(false));
 
   base::test::TestFuture<base::expected<std::string, ErrorCode>> future;
   client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
@@ -168,7 +180,8 @@ TEST_F(ClientTest, IgnoresResponseWithUnknownRequestId) {
                                                    serialized_response.end());
 
   // Set up mock to respond with a mismatched request ID.
-  SetUpMockWrite(mock_secure_channel_, response_callback_, response_data,
+  SetUpMockWrite(factory_.secure_channel_, factory_.response_callback_,
+                 response_data,
                  /*mismatch_request_id=*/true);
 
   base::test::TestFuture<base::expected<std::string, ErrorCode>> future;
@@ -183,6 +196,58 @@ TEST_F(ClientTest, IgnoresResponseWithUnknownRequestId) {
   EXPECT_FALSE(future.IsReady());
 }
 
+// Test that the secure channel is recreated after a permanent failure.
+TEST_F(ClientTest, SecureChannelRecreation) {
+  auto* first_channel = factory_.secure_channel_.get();
+  EXPECT_CALL(*factory_.secure_channel_, Write(_))
+      .WillOnce(testing::Return(true));
+
+  // Send a request that will fail.
+  base::test::TestFuture<base::expected<std::string, ErrorCode>> future;
+  client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
+                           "some text", future.GetCallback());
+
+  // Simulate a network error from the secure channel. This should trigger a
+  // channel recreation.
+  factory_.response_callback_.Run(base::unexpected(ErrorCode::kNetworkError));
+
+  // The request should have failed with the same error.
+  const auto& result = future.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), ErrorCode::kNetworkError);
+
+  // A new channel should have been created.
+  auto second_channel = factory_.secure_channel_;
+  EXPECT_NE(first_channel, second_channel.get());
+
+  // A subsequent request should succeed on the new channel.
+  const std::string kExpectedResponseText = "response text";
+
+  proto::LegionResponse legion_response;
+  auto* generate_content_response =
+      legion_response.mutable_generate_content_response();
+  auto* candidate = generate_content_response->add_candidates();
+  auto* content = candidate->mutable_content();
+  content->set_role("model");
+  auto* part = content->add_parts();
+  part->set_text(kExpectedResponseText);
+
+  std::string serialized_response;
+  legion_response.SerializeToString(&serialized_response);
+  Client::BinaryEncodedProtoResponse response_data(serialized_response.begin(),
+                                                   serialized_response.end());
+
+  SetUpMockWrite(second_channel, factory_.response_callback_, response_data);
+
+  base::test::TestFuture<base::expected<std::string, ErrorCode>> second_future;
+  client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
+                           "some other text", second_future.GetCallback());
+
+  const auto& second_result = second_future.Get();
+  ASSERT_TRUE(second_result.has_value());
+  EXPECT_EQ(second_result.value(), kExpectedResponseText);
+}
+
 // Test fixture for error conditions in SendTextRequest where the
 // SecureChannel returns an error.
 class ClientSendTextRequestSecureChannelErrorTest
@@ -191,10 +256,10 @@ class ClientSendTextRequestSecureChannelErrorTest
 
 TEST_P(ClientSendTextRequestSecureChannelErrorTest, SendTextRequestError) {
   ErrorCode error_code = GetParam();
-  EXPECT_CALL(*mock_secure_channel_, Write(_))
-      .WillOnce([&](Request request) {
+  EXPECT_CALL(*factory_.secure_channel_, Write(_))
+      .WillOnce([&](const Request& request) {
         base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE, base::BindOnce(response_callback_,
+            FROM_HERE, base::BindOnce(factory_.response_callback_,
                                       base::unexpected(error_code)));
         return true;
       });
@@ -222,8 +287,8 @@ class ClientSendTextRequestResponseErrorTest
 TEST_P(ClientSendTextRequestResponseErrorTest, SendTextRequestError) {
   const auto& param = GetParam();
 
-  SetUpMockWrite(mock_secure_channel_, response_callback_, param.response_data,
-                 param.mismatch_request_id);
+  SetUpMockWrite(factory_.secure_channel_, factory_.response_callback_,
+                 param.response_data, param.mismatch_request_id);
 
   base::test::TestFuture<base::expected<std::string, ErrorCode>> future;
   client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
@@ -274,8 +339,8 @@ TEST_P(ClientSendGenerateContentRequestErrorTest,
        SendGenerateContentRequestMalformedResponse) {
   const auto& param = GetParam();
 
-  SetUpMockWrite(mock_secure_channel_, response_callback_, param.response_data,
-                 param.mismatch_request_id);
+  SetUpMockWrite(factory_.secure_channel_, factory_.response_callback_,
+                 param.response_data, param.mismatch_request_id);
 
   base::test::TestFuture<
       base::expected<proto::GenerateContentResponse, ErrorCode>>

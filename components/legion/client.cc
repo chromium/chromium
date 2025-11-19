@@ -85,19 +85,26 @@ std::unique_ptr<Client> Client::CreateWithUrl(
   if (!base::FeatureList::IsEnabled(kLegion)) {
     return nullptr;
   }
-  // Create dependencies for SecureChannelImpl.
-  auto transport = std::make_unique<WebSocketClient>(
-      url, base::BindRepeating(
-               [](network::mojom::NetworkContext* context) { return context; },
-               base::Unretained(network_context)));
-  auto secure_session = std::make_unique<SecureSessionImpl>();
-  auto attestation_handler = std::make_unique<AttestationHandlerImpl>();
 
-  auto secure_channel = std::make_unique<SecureChannelImpl>(
-      std::move(transport), std::move(secure_session),
-      std::move(attestation_handler));
+  auto factory = base::BindRepeating(
+      [](const GURL& url, network::mojom::NetworkContext* context)
+          -> std::unique_ptr<SecureChannel> {
+        auto transport = std::make_unique<WebSocketClient>(
+            url,
+            base::BindRepeating(
+                [](network::mojom::NetworkContext* context) { return context; },
+                base::Unretained(context)));
+        auto secure_session = std::make_unique<SecureSessionImpl>();
+        auto attestation_handler = std::make_unique<AttestationHandlerImpl>();
 
-  return base::WrapUnique(new Client(std::move(secure_channel)));
+        return std::make_unique<SecureChannelImpl>(
+            std::move(transport), std::move(secure_session),
+            std::move(attestation_handler));
+      },
+      url, base::Unretained(network_context));
+
+  // Raw `new` is used here because the constructor is private.
+  return base::WrapUnique(new Client(std::move(factory)));
 }
 
 // static
@@ -105,29 +112,32 @@ GURL Client::FormatUrl(const std::string& url, const std::string& api_key) {
   return GURL(base::StrCat({"wss://", url, "?key=", api_key}));
 }
 
-Client::Client(std::unique_ptr<SecureChannel> secure_channel)
-    : secure_channel_(std::move(secure_channel)) {
-  CHECK(secure_channel_);
-  secure_channel_->SetResponseCallback(
-      base::BindRepeating(&Client::OnResponseReceived, base::Unretained(this)));
+Client::Client(SecureChannelFactory channel_factory)
+    : secure_channel_factory_(std::move(channel_factory)) {
+  RecreateSecureChannel();
 }
 
 Client::~Client() = default;
+
+void Client::RecreateSecureChannel() {
+  secure_channel_ = secure_channel_factory_.Run();
+  secure_channel_->SetResponseCallback(
+      base::BindRepeating(&Client::OnResponseReceived, base::Unretained(this)));
+}
 
 void Client::SendRequest(int32_t request_id,
                          BinaryEncodedProtoRequest request,
                          OnRequestCompletedCallback callback) {
   DVLOG(1) << "SendRequest started.";
 
-  DVLOG(1) << "Calling SecureChannelClient to execute the request.";
-  if (secure_channel_->Write(std::move(request))) {
-    auto [it, inserted] =
-        pending_requests_.emplace(request_id, std::move(callback));
-    CHECK(inserted);
-  } else {
-    // The channel is in a permanent failure state.
-    std::move(callback).Run(base::unexpected(ErrorCode::kError));
+  if (secure_channel_->Write(request)) {
+    pending_requests_.emplace(request_id, std::move(callback));
+    return;
   }
+
+  // The channel is in a permanent failure state, so fail the current request.
+  DVLOG(1) << "Secure channel write failed.";
+  std::move(callback).Run(base::unexpected(ErrorCode::kError));
 }
 
 void Client::SendTextRequest(proto::FeatureName feature_name,
@@ -180,8 +190,11 @@ void Client::FailAllPendingRequests(ErrorCode error_code) {
 void Client::OnResponseReceived(
     base::expected<BinaryEncodedProtoResponse, ErrorCode> result) {
   if (!result.has_value()) {
-    // The secure channel is broken. Fail all pending requests.
+    // The secure channel is broken. Fail all pending requests and recreate the
+    // channel.
+    DVLOG(1) << "Secure channel read failed. Recreating channel.";
     FailAllPendingRequests(result.error());
+    RecreateSecureChannel();
     return;
   }
 

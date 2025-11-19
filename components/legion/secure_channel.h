@@ -28,7 +28,7 @@ class SecureChannel {
 
   // Asynchronously performs the operation over the secure channel.
   // Returns false if the channel is in a permanent failure state.
-  virtual bool Write(Request request) = 0;
+  virtual bool Write(const Request& request) = 0;
 };
 
 }  // namespace legion
