@@ -226,6 +226,7 @@ if (!is_android) {
 
     if (!is_chromeos) {
       sources += [
+        "account_settings_page_pixel_browsertest.cc",
         "chrome_signout_confirmation_prompt_browsertest.cc",
         "cookie_clear_on_exit_migration_notice_browsertest.cc",
       ]
