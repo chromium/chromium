@@ -484,7 +484,7 @@ void GlicPinnedTabManager::OnTabDataChanged(tabs::TabHandle tab_handle,
 
 void GlicPinnedTabManager::OnTabChangedOrigin(tabs::TabHandle tab_handle) {
   CHECK(IsTabPinned(tab_handle));
-  if ((!GlicEnabling::IsMultiInstanceEnabledByFlags() ||
+  if ((!GlicEnabling::IsMultiInstanceEnabled() ||
        base::FeatureList::IsEnabled(kGlicAutoUnpinOnTabChangedOrigin)) &&
       !IsGlicWindowShowing()) {
     UnpinTabs({tab_handle});

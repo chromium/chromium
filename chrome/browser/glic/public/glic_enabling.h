@@ -100,7 +100,8 @@ class GlicEnabling : public signin::IdentityManager::Observer {
   static bool IsUnifiedFreEnabled(Profile* profile);
 
   // Whether the required feature flags for multi-instance - kGlicMultiInstance,
-  // kGlicMultiTab, and kGlicMultitabUnderlines - are enabled.
+  // kGlicMultiTab, and kGlicMultitabUnderlines - are enabled. When calling, be
+  // sure that IsMultiInstanceEnabled() should not be used instead.
   static bool IsMultiInstanceEnabledByFlags();
 
   // Returns true if glic is enabled for the profile, the feature is enabled,
@@ -108,7 +109,9 @@ class GlicEnabling : public signin::IdentityManager::Observer {
   static bool IsShareImageEnabledForProfile(Profile* profile);
 
   // Whether the required feature flags for multi-instance are enabled, or
-  // multi-instance should be enabled due to subscription tier.
+  // multi-instance should be enabled due to subscription tier. This serves as
+  // the default enablement check for the multi-instance feature and should be
+  // used in most cases.
   static bool IsMultiInstanceEnabled();
 
   // Whether the result of
@@ -119,6 +122,9 @@ class GlicEnabling : public signin::IdentityManager::Observer {
   // Whether any loaded profile is, or has ever been, of a subscription tier
   // that should enable multi-instance. `additional_profile` may be provided by
   // the caller in case it has not been fully loaded.
+  // NOTE: new usages of this API should be extremely limited. Checking the
+  // feature enablement of multi-instance should go through
+  // IsMultiInstanceEnabled() instead. Please contact @cuianthony before using.
   static bool GetAndUpdateEligibilityForGlicMultiInstanceTieredRollout(
       Profile* additional_profile);
 
