@@ -116,8 +116,6 @@ class SidePanel : public views::AccessiblePaneView,
 
   // views::View:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
-  void ViewHierarchyChanged(
-      const views::ViewHierarchyChangedDetails& details) override;
 
   // SidePanelAnimationCoordinator::AnimationObserver
   void OnAnimationSequenceProgressed(

@@ -354,6 +354,13 @@ SidePanel::SidePanel(BrowserView* browser_view,
       visible_bounds_view_clipper_(
           std::make_unique<VisibleBoundsViewClipper>(this)),
       horizontal_alignment_(horizontal_alignment) {
+  // The default z-order is the order in which children were added to the
+  // parent view. content_parent_view_ is added first so it exists behind
+  // border_view_ and resize_area_.
+  content_parent_view_ = AddChildView(std::make_unique<ContentParentView>(
+      /*should_round_corners=*/!has_border));
+  content_parent_view_->SetVisible(false);
+
   if (has_border) {
     std::unique_ptr<BorderView> border_view =
         std::make_unique<BorderView>(browser_view);
@@ -391,10 +398,6 @@ SidePanel::SidePanel(BrowserView* browser_view,
   }
 
   SetProperty(views::kElementIdentifierKey, kSidePanelElementId);
-
-  content_parent_view_ = AddChildView(std::make_unique<ContentParentView>(
-      /*should_round_corners=*/!has_border));
-  content_parent_view_->SetVisible(false);
 }
 
 SidePanel::~SidePanel() {
@@ -538,48 +541,6 @@ void SidePanel::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   if (previous_bounds.width() != width() && keyboard_resized_) {
     keyboard_resized_ = false;
     AnnounceResize();
-  }
-}
-
-void SidePanel::ViewHierarchyChanged(
-    const views::ViewHierarchyChangedDetails& details) {
-  if (details.parent != this) {
-    return;
-  }
-
-  if (details.is_add) {
-    if (details.child == border_view_ || details.child == resize_area_) {
-      return;
-    }
-
-    // Reorder `border_view_` to be last so that it gets painted on top, even if
-    // an added child also paints to a layer.
-    if (border_view_) {
-      ReorderChildView(border_view_, children().size());
-    }
-
-    // Reorder `header_view_` if it exists to get painted on top of the border
-    // view.
-    if (header_view_) {
-      ReorderChildView(header_view_, children().size());
-    }
-    // Reorder `resize_area_` to be last so that it gets painted on top of
-    // `border_view_`, for displaying the resize handle.
-    if (resize_area_) {
-      ReorderChildView(resize_area_, children().size());
-    }
-
-    if (header_view_) {
-      // The header view should come before all other side panel children except
-      // the resize area in focus order.
-      header_view_->InsertBeforeInFocusList(GetChildrenFocusList().front());
-    }
-
-    // The resize area should come before all other side panel children in focus
-    // order.
-    if (resize_area_) {
-      resize_area_->InsertBeforeInFocusList(GetChildrenFocusList().front());
-    }
   }
 }
 
