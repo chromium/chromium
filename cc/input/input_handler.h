@@ -404,9 +404,13 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
 
   // Returns a new instance of `EventsMetricsManager::ScopedMonitor` to monitor
   // the scope of handling an event. If `done_callback` is not a null callback,
-  // it will be called when the scope ends. The callback should return
-  // `EventMetrics` associated with the event if it is interested in reporting
-  // event latency metrics for it.
+  // it will be called when the scope ends. If During the lifetime of the scoped
+  // monitor, `SetNeedsOneBeginImplFrame()` or `SetNeedsRedraw()` are called on
+  // `LayerTreeHostImpl` or a scroll animation is updated, the callback will be
+  // called in the end with `handled` argument set to true, denoting that the
+  // event was handled and the client should return `EventMetrics` associated
+  // with the event if it is interested in reporting event latency metrics for
+  // it.
   virtual std::unique_ptr<EventsMetricsManager::ScopedMonitor>
   GetScopedEventMetricsMonitor(
       EventsMetricsManager::ScopedMonitor::DoneCallback done_callback);

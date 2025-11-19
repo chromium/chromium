@@ -9626,11 +9626,13 @@ class LayerTreeHostTestEventsMetrics : public LayerTreeHostTest {
           EventMetrics::DispatchStage::kRendererCompositorStarted);
       auto done_callback = base::BindOnce(
           [](std::unique_ptr<EventMetrics> metrics,
-             base::SimpleTestTickClock* tick_clock) {
+             base::SimpleTestTickClock* tick_clock, bool handled) {
             tick_clock->Advance(base::Microseconds(10));
             metrics->SetDispatchStageTimestamp(
                 EventMetrics::DispatchStage::kRendererCompositorFinished);
-            return metrics;
+            std::unique_ptr<EventMetrics> result =
+                handled ? std::move(metrics) : nullptr;
+            return result;
           },
           std::move(metrics), &tick_clock);
       auto scoped_event_monitor =

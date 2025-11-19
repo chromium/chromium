@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -33,18 +32,19 @@ class EventsMetricsManager::ScopedMonitorImpl
     DCHECK(manager_);
     std::unique_ptr<EventMetrics> metrics;
     if (!done_callback_.is_null()) {
-      metrics = std::move(done_callback_).Run();
-      if (metrics != nullptr && !save_metrics_) {
-        if (EventMetrics::ShouldKeepEvenWithoutCausingFrameUpdate(
-                metrics->type())) {
-          metrics->set_caused_frame_update(false);
-        } else {
-          metrics = nullptr;
-        }
+      const bool handled = save_metrics_;
+      metrics = std::move(done_callback_).Run(handled);
+
+      // If `handled` is false and the metrics don't need to be kept around even
+      // though handling the event didn't cause a frame update, the callback
+      // should return nullptr unless .
+      DCHECK(handled || !metrics ||
+             EventMetrics::ShouldKeepEvenWithoutCausingFrameUpdate(
+                 metrics->type()));
+      if (metrics && !handled) {
+        metrics->set_caused_frame_update(false);
       }
     }
-    DCHECK(metrics == nullptr || save_metrics_ ||
-           !metrics->caused_frame_update());
     manager_->OnScopedMonitorEnded(std::move(metrics));
     manager_ = nullptr;
   }

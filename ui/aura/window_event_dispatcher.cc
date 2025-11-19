@@ -1179,13 +1179,13 @@ WindowEventDispatcher::CreateScropedMetricsMonitorForEvent(
     metrics->SetDispatchStageTimestamp(
         cc::EventMetrics::DispatchStage::kRendererMainStarted);
     done_callback = base::BindOnce(
-        [](std::unique_ptr<cc::EventMetrics> metrics) {
+        [](std::unique_ptr<cc::EventMetrics> metrics, bool handled) {
           // TODO(crbug.com/40208152): The following breakdown has the renderer
           // word in its name, so not the best breakdown to use in the
           // browser. Introduce and use breakdowns specific to the browser.
           metrics->SetDispatchStageTimestamp(
               cc::EventMetrics::DispatchStage::kRendererMainFinished);
-          return metrics;
+          return handled ? std::move(metrics) : nullptr;
         },
         std::move(metrics));
   }

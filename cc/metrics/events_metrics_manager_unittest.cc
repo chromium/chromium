@@ -30,7 +30,11 @@ MATCHER(UniquePtrMatches, negation ? "do not match" : "match") {
 EventsMetricsManager::ScopedMonitor::DoneCallback CreateSimpleDoneCallback(
     std::unique_ptr<EventMetrics> metrics) {
   return base::BindOnce(
-      [](std::unique_ptr<EventMetrics> metrics) { return metrics; },
+      [](std::unique_ptr<EventMetrics> metrics, bool handled) {
+        std::unique_ptr<EventMetrics> result =
+            handled ? std::move(metrics) : nullptr;
+        return result;
+      },
       std::move(metrics));
 }
 
@@ -178,8 +182,14 @@ TEST_F(EventsMetricsManagerTest, ScrollUpdateAndEndSavedEvenWithoutCall) {
 
   for (auto& metrics : events) {
     metrics->set_caused_frame_update(true);
-    auto monitor =
-        manager_.GetScopedMonitor(CreateSimpleDoneCallback(std::move(metrics)));
+    {
+      auto monitor = manager_.GetScopedMonitor(
+          // A `DoneCallback` which ignores `handled` and always returns
+          // `metrics`.
+          base::BindOnce([](std::unique_ptr<EventMetrics> metrics,
+                            bool handled) { return metrics; },
+                         std::move(metrics)));
+    }
   }
 
   // Check saved event metrics are as expected and that they were marked as not

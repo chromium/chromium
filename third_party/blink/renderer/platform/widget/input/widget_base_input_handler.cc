@@ -332,10 +332,12 @@ void WidgetBaseInputHandler::HandleInputEvent(
     metrics->SetDispatchStageTimestamp(
         cc::EventMetrics::DispatchStage::kRendererMainStarted);
     done_callback = base::BindOnce(
-        [](std::unique_ptr<cc::EventMetrics> metrics) {
+        [](std::unique_ptr<cc::EventMetrics> metrics, bool handled) {
           metrics->SetDispatchStageTimestamp(
               cc::EventMetrics::DispatchStage::kRendererMainFinished);
-          return metrics;
+          std::unique_ptr<cc::EventMetrics> result =
+              handled ? std::move(metrics) : nullptr;
+          return result;
         },
         std::move(metrics));
   }
@@ -642,10 +644,12 @@ void WidgetBaseInputHandler::HandleInjectedScrollGestures(
         // processing the event, at least for now), it is safe to move the
         // metrics object to the callback.
         done_callback = base::BindOnce(
-            [](std::unique_ptr<cc::EventMetrics> metrics) {
+            [](std::unique_ptr<cc::EventMetrics> metrics, bool handled) {
               metrics->SetDispatchStageTimestamp(
                   cc::EventMetrics::DispatchStage::kRendererMainFinished);
-              return metrics;
+              std::unique_ptr<cc::EventMetrics> result =
+                  handled ? std::move(metrics) : nullptr;
+              return result;
             },
             std::move(metrics));
       }

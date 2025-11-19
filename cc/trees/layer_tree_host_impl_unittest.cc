@@ -17728,10 +17728,10 @@ TEST_P(LayerTreeHostImplTest, ActivatedPendingTreeRetainsRasterMetrics) {
     // Associate metrics with the scoped metrics monitor by registering a done
     // callback.
     auto done_callback = base::BindOnce(
-        [](std::unique_ptr<EventMetrics> metrics) {
+        [](std::unique_ptr<EventMetrics> metrics, bool handled) {
           metrics->SetDispatchStageTimestamp(
               EventMetrics::DispatchStage::kRendererCompositorStarted);
-          return metrics;
+          return handled ? std::move(metrics) : nullptr;
         },
         std::move(metrics));
     auto scoped_event_monitor =
@@ -18492,7 +18492,15 @@ TEST_P(LayerTreeHostImplEventMetricPreservationTest, PreserveMetrics) {
       EXPECT_NE(metrics, nullptr);
       auto scoped_monitor =
           host_impl_->GetScopedEventMetricsMonitor(base::BindOnce(
-              [](std::unique_ptr<EventMetrics> metrics) { return metrics; },
+              [](std::unique_ptr<EventMetrics> metrics, bool handled) {
+                bool keep_metrics =
+                    handled ||
+                    EventMetrics::ShouldKeepEvenWithoutCausingFrameUpdate(
+                        metrics->type());
+                std::unique_ptr<EventMetrics> result =
+                    keep_metrics ? std::move(metrics) : nullptr;
+                return result;
+              },
               std::move(metrics)));
       scoped_monitor->SetSaveMetrics();
     }
