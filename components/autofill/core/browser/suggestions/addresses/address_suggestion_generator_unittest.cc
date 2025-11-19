@@ -1392,5 +1392,74 @@ TEST_F(AddressSuggestionGeneratorTest, GeneratesSuggestions) {
                                 suggestions_generated_callback.Get());
 }
 
+// Tests that if the `AutofillProfile`s email address is equal to the gaia email
+// and there exists a plus address, it is suggested instead of the
+// `AutofillProfile`s email value.
+TEST_F(AddressSuggestionGeneratorTest,
+       GeneratesSuggestions_UsingFetchedPlusAddressEmailOverride) {
+  base::MockCallback<base::OnceCallback<void(
+      std::pair<SuggestionGenerator::SuggestionDataSource,
+                std::vector<SuggestionGenerator::SuggestionData>>)>>
+      suggestion_data_callback;
+  base::MockCallback<
+      base::OnceCallback<void(SuggestionGenerator::ReturnedSuggestions)>>
+      suggestions_generated_callback;
+
+  AutofillProfile profile1 = test::GetFullProfile();
+  address_data().AddProfile(profile1);
+
+  autofill_client()->identity_test_environment().MakePrimaryAccountAvailable(
+      base::UTF16ToUTF8(profile1.GetRawInfo(EMAIL_ADDRESS)),
+      signin::ConsentLevel::kSignin);
+
+  // Create a form with one field, that expects a full name.
+  FormFieldData field;
+  FormData form_data;
+  test_api(form_data).Append(field);
+  std::unique_ptr<FormStructure> form_structure =
+      std::make_unique<FormStructure>(form_data);
+  test_api(*form_structure).SetFieldTypes({EMAIL_ADDRESS});
+
+  AddressSuggestionGenerator generator(
+      /*plus_address_email_override=*/std::nullopt,
+      /*log_manager=*/nullptr);
+  std::pair<SuggestionGenerator::SuggestionDataSource,
+            std::vector<SuggestionGenerator::SuggestionData>>
+      savedCallbackArgument;
+
+  EXPECT_CALL(
+      suggestion_data_callback,
+      Run(testing::Pair(SuggestionGenerator::SuggestionDataSource::kAddress,
+                        testing::ElementsAre(profile1))))
+      .WillOnce(testing::SaveArg<0>(&savedCallbackArgument));
+  generator.FetchSuggestionData(form_data, field, form_structure.get(),
+                                form_structure->field(0), *autofill_client(),
+                                suggestion_data_callback.Get());
+
+  // Simulate that `PlusAddressSuggestionGenerator` fetched a plus address.
+  std::vector<SuggestionGenerator::SuggestionData> plus_address_data;
+  plus_address_data.emplace_back(PlusAddress("email_override@gmail.com"));
+  base::flat_map<SuggestionGenerator::SuggestionDataSource,
+                 std::vector<SuggestionGenerator::SuggestionData>>
+      all_suggestion_data;
+  all_suggestion_data.insert(savedCallbackArgument);
+  all_suggestion_data.insert(
+      {SuggestionGenerator::SuggestionDataSource::kPlusAddress,
+       std::move(plus_address_data)});
+
+  EXPECT_CALL(suggestions_generated_callback,
+              Run(testing::Pair(
+                  FillingProduct::kAddress,
+                  testing::ElementsAre(
+                      EqualsSuggestion(SuggestionType::kAddressEntry,
+                                       u"email_override@gmail.com"),
+                      EqualsSuggestion(SuggestionType::kSeparator),
+                      EqualsSuggestion(SuggestionType::kManageAddress)))));
+  generator.GenerateSuggestions(form_data, field, form_structure.get(),
+                                form_structure->field(0), *autofill_client(),
+                                all_suggestion_data,
+                                suggestions_generated_callback.Get());
+}
+
 }  // namespace
 }  // namespace autofill

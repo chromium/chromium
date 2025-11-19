@@ -3535,6 +3535,11 @@ void BrowserAutofillManager::InitializeSuggestionGenerators(
               delegate, IsPlusAddressesManuallyTriggered(trigger_source)));
     }
   }
+  if (relevant_filling_products.contains(FillingProduct::kAddress)) {
+    suggestion_generators_.push_back(
+        std::make_unique<AddressSuggestionGenerator>(std::nullopt,
+                                                     log_manager()));
+  }
 }
 
 }  // namespace autofill
