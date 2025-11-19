@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/safety_check_magic_stack_mediator.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/coordinator/safety_check_magic_stack_mediator.h"
 
 #import <optional>
 
@@ -19,13 +19,14 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_consumer.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_view_controller_audience.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_module.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/constants.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/safety_check_audience.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/safety_check_consumer_source.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/safety_check_magic_stack_consumer.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/safety_check_prefs.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/safety_check_state.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/utils.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/coordinator/safety_check_magic_stack_mediator_delegate.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/model/safety_check_prefs.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/model/safety_check_utils.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/public/safety_check_constants.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/ui/safety_check_audience.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/ui/safety_check_consumer_source.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/ui/safety_check_magic_stack_consumer.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/ui/safety_check_state.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"

@@ -12,7 +12,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/bind_post_task.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/utils.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/model/safety_check_utils.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"

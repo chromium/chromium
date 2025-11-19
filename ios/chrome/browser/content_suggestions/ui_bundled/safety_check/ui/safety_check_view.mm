@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/safety_check_view.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/ui/safety_check_view.h"
 
 #import "base/check.h"
 #import "base/strings/string_number_conversions.h"
@@ -11,11 +11,11 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/icon_view.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/multi_row_container_view.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_module_content_view_delegate.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/constants.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/safety_check_audience.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/safety_check_item_type.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/safety_check_state.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/utils.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/model/safety_check_utils.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/public/safety_check_constants.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/ui/safety_check_audience.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/ui/safety_check_item_type.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/ui/safety_check_state.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"

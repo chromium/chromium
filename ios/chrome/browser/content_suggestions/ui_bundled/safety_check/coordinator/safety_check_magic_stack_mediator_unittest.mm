@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/safety_check_magic_stack_mediator.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/coordinator/safety_check_magic_stack_mediator.h"
 
 #import "base/test/bind.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
@@ -10,9 +10,9 @@
 #import "components/prefs/pref_registry_simple.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_consumer.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/safety_check_magic_stack_consumer.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/safety_check_prefs.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/safety_check_state.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/model/safety_check_prefs.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/ui/safety_check_magic_stack_consumer.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/ui/safety_check_state.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"

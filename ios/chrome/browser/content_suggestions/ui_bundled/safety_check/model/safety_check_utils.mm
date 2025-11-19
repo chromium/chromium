@@ -2,17 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/utils.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/model/safety_check_utils.h"
 
 #import "base/check.h"
 #import "base/metrics/user_metrics.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
 #import "components/version_info/version_info.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/constants.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/safety_check_item_type.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/safety_check_state.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/utils.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/public/safety_check_constants.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/ui/safety_check_item_type.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"

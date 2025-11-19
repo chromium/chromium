@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_SAFETY_CHECK_SAFETY_CHECK_MAGIC_STACK_MEDIATOR_H_
-#define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_SAFETY_CHECK_SAFETY_CHECK_MAGIC_STACK_MEDIATOR_H_
+#ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_SAFETY_CHECK_COORDINATOR_SAFETY_CHECK_MAGIC_STACK_MEDIATOR_H_
+#define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_SAFETY_CHECK_COORDINATOR_SAFETY_CHECK_MAGIC_STACK_MEDIATOR_H_
 
 #import <UIKit/UIKit.h>
 
@@ -12,16 +12,8 @@
 class IOSChromeSafetyCheckManager;
 class PrefService;
 @class ProfileState;
-@class SafetyCheckMagicStackMediator;
+@protocol SafetyCheckMagicStackMediatorDelegate;
 @class SafetyCheckState;
-
-// Handles Safety Check Module events.
-@protocol SafetyCheckMagicStackMediatorDelegate
-
-// Indicates to receiver that the Safety Check module should be removed.
-- (void)removeSafetyCheckModule;
-
-@end
 
 // Mediator for managing the state of the Safety Check Magic Stack module
 @interface SafetyCheckMagicStackMediator : NSObject
@@ -59,4 +51,4 @@ class PrefService;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_SAFETY_CHECK_SAFETY_CHECK_MAGIC_STACK_MEDIATOR_H_
+#endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_SAFETY_CHECK_COORDINATOR_SAFETY_CHECK_MAGIC_STACK_MEDIATOR_H_

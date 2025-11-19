@@ -1,0 +1,63 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "safety_check_magic_stack_mediator.h",
+    "safety_check_magic_stack_mediator.mm",
+    "safety_check_magic_stack_mediator_delegate.h",
+  ]
+  deps = [
+    "//base",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/prefs/ios",
+    "//components/safety_check:pref_names",
+    "//ios/chrome/app/profile",
+    "//ios/chrome/browser/content_suggestions/ui_bundled:constants",
+    "//ios/chrome/browser/content_suggestions/ui_bundled:public",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack:public",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/safety_check/model:prefs",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/safety_check/model:utils",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/safety_check/public:constants",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/safety_check/ui",
+    "//ios/chrome/browser/passwords/model:password_checkup_utils",
+    "//ios/chrome/browser/push_notification/model:push_notification_client_id",
+    "//ios/chrome/browser/push_notification/model:push_notification_settings_util_header",
+    "//ios/chrome/browser/safety_check/model",
+    "//ios/chrome/browser/safety_check/model:constants",
+    "//ios/chrome/browser/settings/ui_bundled/notifications:utils",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/features:system_flags",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "safety_check_magic_stack_mediator_unittest.mm" ]
+  deps = [
+    ":coordinator",
+    "//base/test:test_support",
+    "//components/password_manager/core/browser:test_support",
+    "//components/password_manager/core/browser/password_store:test_support",
+    "//components/prefs",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//ios/chrome/browser/content_suggestions/ui_bundled:public",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/safety_check/model:prefs",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/safety_check/ui",
+    "//ios/chrome/browser/passwords/model",
+    "//ios/chrome/browser/passwords/model:store_factory",
+    "//ios/chrome/browser/safety_check/model",
+    "//ios/chrome/browser/safety_check/model:constants",
+    "//ios/chrome/browser/safety_check/model:factory",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

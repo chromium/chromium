@@ -1,0 +1,42 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("prefs") {
+  sources = [
+    "safety_check_prefs.h",
+    "safety_check_prefs.mm",
+  ]
+  deps = [
+    "//components/prefs",
+    "//components/safety_check:pref_names",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
+  ]
+}
+
+source_set("utils") {
+  sources = [
+    "safety_check_utils.h",
+    "safety_check_utils.mm",
+  ]
+  public_deps = [
+    "//base",
+    "//ios/chrome/browser/safety_check/model:constants",
+  ]
+  deps = [
+    "//components/password_manager/core/browser/ui",
+    "//components/password_manager/core/browser/ui:credential_ui_entry",
+    "//components/version_info",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/safety_check/public:constants",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/safety_check/ui:item_types",
+    "//ios/chrome/browser/passwords/model:password_checkup_utils",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/common",
+    "//ui/base",
+    "//url",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
