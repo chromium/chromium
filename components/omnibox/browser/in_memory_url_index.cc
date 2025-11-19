@@ -147,6 +147,10 @@ void InMemoryURLIndex::OnURLVisited(
     history::HistoryService* history_service,
     const history::VisitedURLInfo& visited_url_info) {
   DCHECK_EQ(history_service_, history_service);
+  if (visited_url_info.response_code_category ==
+      history::VisitResponseCodeCategory::k404) {
+    return;
+  }
   private_data_->UpdateURL(history_service_, visited_url_info.url_row,
                            scheme_allowlist_, &private_data_tracker_);
 }

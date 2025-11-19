@@ -112,6 +112,7 @@ class InMemoryURLIndex : public KeyedService,
   friend class history::HQPPerfTestOnePopularURL;
   friend class InMemoryURLIndexTest;
   FRIEND_TEST_ALL_PREFIXES(InMemoryURLIndexTest, ExpireRow);
+  FRIEND_TEST_ALL_PREFIXES(InMemoryURLIndexTest, OnURLVisited);
   FRIEND_TEST_ALL_PREFIXES(LimitedInMemoryURLIndexTest, Initialization);
 
   // HistoryDBTask used to rebuild our private data from the history database.
