@@ -8,8 +8,23 @@ build_webui("build") {
   grd_prefix = "gaia_action_buttons"
   grd_resource_path_prefix = "gaia_action_buttons"
 
-  web_component_files = [ "gaia_action_buttons.js" ]
+  web_component_files = [ "gaia_action_buttons.ts" ]
 
+  webui_context_type = "trusted"
   ts_composite = true
-  ts_deps = [ "//third_party/polymer/v3_0:library" ]
+  ts_deps = [
+    "//ash/webui/common/resources/cr_elements:build_ts",
+    "//third_party/polymer/v3_0:library",
+  ]
+
+  ts_path_mappings =
+      [ "/gaia_auth_host/authenticator.js|" +
+        rebase_path(
+            "//chrome/browser/resources/gaia_auth_host/authenticator.d.ts",
+            target_gen_dir) ]
+
+  ts_definitions = [
+    "//chrome/browser/resources/gaia_auth_host/saml_password_attributes.d.ts",
+    "//chrome/browser/resources/gaia_auth_host/authenticator.d.ts",
+  ]
 }

@@ -7,6 +7,7 @@ import 'chrome://chrome-signin/gaia_action_buttons/gaia_action_buttons.js';
 import type {CrButtonElement} from '//resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {NativeEventTarget} from '//resources/ash/common/event_target.js';
 import type {GaiaActionButtonsElement} from 'chrome://chrome-signin/gaia_action_buttons/gaia_action_buttons.js';
+import type {Authenticator} from 'chrome://chrome-signin/gaia_auth_host/authenticator.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
@@ -14,11 +15,8 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 const primaryActionLabel = 'fakePrimaryActionLabel';
 const secondaryActionLabel = 'fakeSecondaryActionLabel';
 
-class TestAuthenticator extends NativeEventTarget {
-  constructor() {
-    super();
-  }
-}
+
+class TestAuthenticator extends NativeEventTarget {}
 
 function assertVisibleButtonWithLabel(button: HTMLElement, label: string) {
   assertFalse(button.hidden);
@@ -36,7 +34,8 @@ suite('GaiaActionButtonsTest', () => {
     actionButtonsComponent = (document.createElement('gaia-action-buttons'));
     document.body.appendChild(actionButtonsComponent);
     testAuthenticator = new TestAuthenticator();
-    actionButtonsComponent.setAuthenticatorForTest(testAuthenticator);
+    actionButtonsComponent.setAuthenticatorForTest(
+        testAuthenticator as Authenticator);
     flush();
     primaryButton =
         actionButtonsComponent.shadowRoot!.querySelector('.action-button')!;

@@ -4,34 +4,28 @@
 
 import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 
+import type {Authenticator} from '/gaia_auth_host/authenticator.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {Authenticator} from '../gaia_auth_host/authenticator.js';
 
 import {getTemplate} from './gaia_action_buttons.html.js';
 
-/**
- * @typedef {{
- *    primaryActionButtonLabel: string,
- *    primaryActionButtonEnabled: boolean,
- *    secondaryActionButtonLabel: string,
- *    secondaryActionButtonEnabled: boolean,
- * }}
- */
-let ActionButtonsData;
+interface ActionButtonsData {
+  primaryActionButtonLabel: string;
+  primaryActionButtonEnabled: boolean;
+  secondaryActionButtonLabel: string;
+  secondaryActionButtonEnabled: boolean;
+}
 
 /**
  * Event listeners for the events triggered by the authenticator.
- * @type {!Array<!{event: string, field: string}>}
  */
-const authenticatorEventListeners = [
+const authenticatorEventListeners: Array<{event: string, field: string}> = [
   {event: 'setPrimaryActionLabel', field: 'primaryActionButtonLabel'},
   {event: 'setPrimaryActionEnabled', field: 'primaryActionButtonEnabled'},
   {event: 'setSecondaryActionLabel', field: 'secondaryActionButtonLabel'},
   {event: 'setSecondaryActionEnabled', field: 'secondaryActionButtonEnabled'},
 ];
 
-/** @polymer */
 export class GaiaActionButtonsElement extends PolymerElement {
   static get is() {
     return 'gaia-action-buttons';
@@ -69,7 +63,6 @@ export class GaiaActionButtonsElement extends PolymerElement {
 
       /**
        * Controls label and availability on the action buttons.
-       * @private {!ActionButtonsData}
        */
       data_: {
         type: Object,
@@ -85,66 +78,60 @@ export class GaiaActionButtonsElement extends PolymerElement {
     };
   }
 
-  /** @private */
-  authenticatorChanged_() {
+  declare authenticator: Authenticator;
+  declare roundedButton: boolean;
+  declare private actionButtonClasses_: string;
+  declare private secondaryButtonClasses_: string;
+  declare private data_: ActionButtonsData;
+
+  private authenticatorChanged_() {
     if (this.authenticator) {
       this.addAuthenticatorListeners_();
     }
   }
 
-  /** @private */
-  addAuthenticatorListeners_() {
+  private addAuthenticatorListeners_() {
     authenticatorEventListeners.forEach(listenParams => {
       this.authenticator.addEventListener(listenParams.event, e => {
-        this.set(`data_.${listenParams.field}`, e.detail);
+        this.set(
+            `data_.${listenParams.field}`, (e as CustomEvent<string>).detail);
       });
     });
     this.authenticator.addEventListener(
         'setAllActionsEnabled',
-        e => this.onSetAllActionsEnabled_(
-            /** @type {!CustomEvent<boolean>} */ (e)));
+        e => this.onSetAllActionsEnabled_(e as CustomEvent<boolean>));
   }
 
   /**
    * Invoked when the auth host emits 'setAllActionsEnabled' event
-   * @param {!CustomEvent<boolean>} e
-   * @private
    */
-  onSetAllActionsEnabled_(e) {
+  private onSetAllActionsEnabled_(e: CustomEvent<boolean>) {
     this.set('data_.primaryActionButtonEnabled', e.detail);
     this.set('data_.secondaryActionButtonEnabled', e.detail);
   }
 
   /**
    * Handles clicks on "PrimaryAction" button.
-   * @private
    */
-  onPrimaryActionButtonClicked_() {
+  private onPrimaryActionButtonClicked_() {
     this.authenticator.sendMessageToWebview('primaryActionHit');
     this.focusWebview_();
   }
 
   /**
    * Handles clicks on "SecondaryAction" button.
-   * @private
    */
-  onSecondaryActionButtonClicked_() {
+  private onSecondaryActionButtonClicked_() {
     this.authenticator.sendMessageToWebview('secondaryActionHit');
     this.focusWebview_();
   }
 
-  /** @private */
-  focusWebview_() {
+  private focusWebview_() {
     this.dispatchEvent(new CustomEvent(
         'set-focus-to-webview', {bubbles: true, composed: true}));
   }
 
-  /**
-   * @private
-   * @param {boolean} roundedButton
-   * @return {string}
-   */
-  getActionButtonClasses_(roundedButton) {
+  private getActionButtonClasses_(roundedButton: boolean): string {
     const cssClasses = ['action-button'];
     if (roundedButton) {
       cssClasses.push('rounded-button');
@@ -152,12 +139,7 @@ export class GaiaActionButtonsElement extends PolymerElement {
     return cssClasses.join(' ');
   }
 
-  /**
-   * @private
-   * @param {boolean} roundedButton
-   * @return {string}
-   */
-  getSecondaryButtonClasses_(roundedButton) {
+  private getSecondaryButtonClasses_(roundedButton: boolean): string {
     const cssClasses = ['secondary-button'];
     if (roundedButton) {
       cssClasses.push('rounded-button');
@@ -165,10 +147,15 @@ export class GaiaActionButtonsElement extends PolymerElement {
     return cssClasses.join(' ');
   }
 
-  /** @param {Object} authenticator */
-  setAuthenticatorForTest(authenticator) {
-    this.authenticator = /** @type {Authenticator} */ (authenticator);
+  setAuthenticatorForTest(authenticator: Authenticator) {
+    this.authenticator = authenticator;
     this.addAuthenticatorListeners_();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'gaia-action-buttons': GaiaActionButtonsElement;
   }
 }
 
