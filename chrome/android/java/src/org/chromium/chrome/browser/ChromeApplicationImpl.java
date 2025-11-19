@@ -8,6 +8,7 @@ import android.app.Application;
 import android.content.res.Configuration;
 
 import org.chromium.base.BinderCallsListener;
+import org.chromium.base.CommandLine;
 import org.chromium.base.SysUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.version_info.Channel;
@@ -21,6 +22,7 @@ import org.chromium.chrome.browser.base.SplitCompatApplication;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.fonts.FontPreloader;
 import org.chromium.chrome.browser.night_mode.SystemNightModeMonitor;
 import org.chromium.chrome.browser.notifications.chime.ChimeDelegate;
@@ -67,10 +69,9 @@ public class ChromeApplicationImpl extends SplitCompatApplication.Impl {
                 BinderCallsListener.getInstance().installListener();
             }
 
-            // Only load the native library early for non-test builds since some tests use the
-            // "--disable-native-initialization" switch, and the CommandLine is not initialized at
-            // this point to check.
-            if (!BuildConfig.IS_FOR_TEST && !ChromeFeatureList.sLoadNativeEarly.isEnabled()) {
+            if (!ChromeFeatureList.sLoadNativeEarly.isEnabled()
+                    && !CommandLine.getInstance()
+                            .hasSwitch(ChromeSwitches.DISABLE_NATIVE_INITIALIZATION)) {
                 // Kick off library loading in a separate thread so it's ready when we need it.
                 new Thread(() -> LibraryLoader.getInstance().ensureInitialized()).start();
             }

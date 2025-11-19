@@ -10,7 +10,6 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import org.chromium.base.Callback;
-import org.chromium.base.CommandLine;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
@@ -51,7 +50,6 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
 
     @Override
     public Statement apply(final Statement base, Description description) {
-        CommandLine.init(null);
         return super.apply(
                 new Statement() {
                     @Override

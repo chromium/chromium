@@ -47,6 +47,8 @@ public class LaunchFailedActivityTest {
     @Test
     @SmallTest
     public void testLaunchFailedWithoutCallbackRaisesProcessInitException() {
+        LibraryLoader.getInstance().resetForTesting();
+
         LibraryLoader.setLoadFailedCallbackForTesting(null);
         LibraryLoader.setOverrideNativeLibraryCannotBeLoadedForTesting();
 
@@ -62,6 +64,8 @@ public class LaunchFailedActivityTest {
     @Test
     @SmallTest
     public void testLaunchFailedWithCallbackRaisesExceptionAndStartsActivity() {
+        LibraryLoader.getInstance().resetForTesting();
+
         MockContext mockContext = new MockContext(ContextUtils.getApplicationContext());
         ContextUtils.initApplicationContextForTests(mockContext);
         LibraryLoader.setOverrideNativeLibraryCannotBeLoadedForTesting();

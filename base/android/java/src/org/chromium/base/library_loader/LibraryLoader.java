@@ -670,13 +670,17 @@ public class LibraryLoader {
     @GuardedBy("mLock")
     @VisibleForTesting
     protected void loadMainDexAlreadyLocked(ApplicationInfo appInfo, boolean inZygote) {
-        if (mLoadState >= LoadState.MAIN_DEX_LOADED) {
-            if (sEnableStateForTesting && mLoadStateForTesting == LoadState.NOT_LOADED) {
-                mLoadStateForTesting = LoadState.MAIN_DEX_LOADED;
-            }
-            return;
-        }
         try (TraceEvent te = TraceEvent.scoped("LibraryLoader.loadMainDexAlreadyLocked")) {
+            if (mLoadState >= LoadState.MAIN_DEX_LOADED) {
+                if (sEnableStateForTesting && mLoadStateForTesting == LoadState.NOT_LOADED) {
+                    if (sOverrideNativeLibraryCannotBeLoadedForTesting) {
+                        throw new UnsatisfiedLinkError();
+                    }
+                    mLoadStateForTesting = LoadState.MAIN_DEX_LOADED;
+                }
+                return;
+            }
+
             assert !mInitialized;
             assert mLibraryProcessType != LibraryProcessType.PROCESS_UNINITIALIZED || inZygote;
 
