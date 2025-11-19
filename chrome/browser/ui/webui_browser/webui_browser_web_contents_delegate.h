@@ -33,6 +33,8 @@ class WebUIBrowserWebContentsDelegate : public content::WebContentsDelegate,
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  WebUIBrowserWindow* window() { return window_; }
+
  private:
   // WebContentsDelegate implementation.
   void DraggableRegionsChanged(

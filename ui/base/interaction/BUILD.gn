@@ -9,6 +9,7 @@ component("interaction") {
   defines = [ "IS_UI_BASE_INTERACTION_IMPL" ]
 
   public = [
+    "element_events.h",
     "element_identifier.h",
     "element_specifier.h",
     "element_tracker.h",
@@ -27,6 +28,7 @@ component("interaction") {
   ]
 
   sources = [
+    "element_events.cc",
     "element_identifier.cc",
     "element_specifier.cc",
     "element_tracker.cc",

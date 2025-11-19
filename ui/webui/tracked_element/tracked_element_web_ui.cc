@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "ui/base/interaction/element_events.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/framework_specific_implementation.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -55,6 +56,9 @@ void TrackedElementWebUI::SetVisible(bool visible, gfx::RectF bounds) {
   if (visible == visible_) {
     if (visible && last_known_bounds_ != bounds) {
       last_known_bounds_ = bounds;
+      // This event signals that the bounds of the element have been updated.
+      ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
+          this, kElementBoundsChangedEvent);
     }
     return;
   }

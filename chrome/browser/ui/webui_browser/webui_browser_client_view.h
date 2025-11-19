@@ -12,6 +12,10 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/window/client_view.h"
 
+namespace ui {
+class TrackedElement;
+}
+
 class WebUIBrowserClientView
     : public views::ClientView,
       public WebUIBrowserWebContentsDelegate::Observer {
@@ -22,16 +26,22 @@ class WebUIBrowserClientView
                          views::View* view);
   ~WebUIBrowserClientView() override;
 
-  // From WebUIBrowserWebContentsDelegate::Observer
+  // WebUIBrowserWebContentsDelegate::Observer:
   void DraggableRegionsChanged(
       const std::vector<blink::mojom::DraggableRegionPtr>& regions) override;
 
-  // From ClientView:
+  // ClientView:
   int NonClientHitTest(const gfx::Point& point) override;
+  void AddedToWidget() override;
 
  private:
+  void OnLocationIconMoved(ui::TrackedElement* element);
+
   raw_ptr<WebUIBrowserWebContentsDelegate> web_contents_delegate_;
   SkRegion draggable_region_;
+
+  // Subscription for tracking location icon element movements.
+  base::CallbackListSubscription location_icon_moved_subscription_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_BROWSER_WEBUI_BROWSER_CLIENT_VIEW_H_

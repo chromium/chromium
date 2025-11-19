@@ -18,6 +18,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/interaction/element_events.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
@@ -34,6 +35,7 @@ namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestElementIdentifier1);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestElementIdentifier2);
 constexpr gfx::RectF kElementBounds{10, 20, 30, 40};
+constexpr gfx::RectF kElementBounds2{15, 25, 35, 45};
 
 }  // namespace
 
@@ -174,6 +176,87 @@ TEST_F(TrackedElementHandlerTest, ElementCustomEventOnEvent) {
     handler_remote()->TrackedElementCustomEvent(element_name, event_name);
     tracked_element_handler_remote_.FlushForTesting();
   });
+}
+
+TEST_F(TrackedElementHandlerTest,
+       ElementBoundsChangedEventFiredOnBoundsChange) {
+  UNCALLED_MOCK_CALLBACK(ui::ElementTracker::Callback, bounds_changed);
+  const std::string element_name = kTestElementIdentifier1.GetName();
+
+  // Make element visible with initial bounds.
+  handler_remote()->TrackedElementVisibilityChanged(element_name, true,
+                                                    kElementBounds);
+  tracked_element_handler_remote_.FlushForTesting();
+
+  auto* const tracker = ui::ElementTracker::GetElementTracker();
+  auto* const element =
+      tracker->GetElementInAnyContext(kTestElementIdentifier1);
+  ASSERT_TRUE(element);
+
+  // Subscribe to bounds changed event.
+  auto subscription =
+      ui::ElementTracker::GetElementTracker()->AddCustomEventCallback(
+          kElementBoundsChangedEvent, element->context(), bounds_changed.Get());
+
+  // Change bounds - should trigger the event.
+  EXPECT_CALL_IN_SCOPE(bounds_changed, Run(element), {
+    handler_remote()->TrackedElementVisibilityChanged(element_name, true,
+                                                      kElementBounds2);
+    tracked_element_handler_remote_.FlushForTesting();
+  });
+}
+
+TEST_F(TrackedElementHandlerTest,
+       ElementBoundsChangedEventNotFiredWhenBoundsUnchanged) {
+  UNCALLED_MOCK_CALLBACK(ui::ElementTracker::Callback, bounds_changed);
+  const std::string element_name = kTestElementIdentifier1.GetName();
+
+  // Make element visible with initial bounds.
+  handler_remote()->TrackedElementVisibilityChanged(element_name, true,
+                                                    kElementBounds);
+  tracked_element_handler_remote_.FlushForTesting();
+
+  auto* const tracker = ui::ElementTracker::GetElementTracker();
+  auto* const element =
+      tracker->GetElementInAnyContext(kTestElementIdentifier1);
+  ASSERT_TRUE(element);
+
+  // Subscribe to bounds changed event.
+  auto subscription =
+      ui::ElementTracker::GetElementTracker()->AddCustomEventCallback(
+          kElementBoundsChangedEvent, element->context(), bounds_changed.Get());
+
+  // Send same bounds - should NOT trigger the event.
+  EXPECT_CALL(bounds_changed, Run).Times(0);
+  handler_remote()->TrackedElementVisibilityChanged(element_name, true,
+                                                    kElementBounds);
+  tracked_element_handler_remote_.FlushForTesting();
+}
+
+TEST_F(TrackedElementHandlerTest, ElementBoundsChangedEventNotFiredWhenHidden) {
+  UNCALLED_MOCK_CALLBACK(ui::ElementTracker::Callback, bounds_changed);
+  const std::string element_name = kTestElementIdentifier1.GetName();
+
+  // Make element visible with initial bounds.
+  handler_remote()->TrackedElementVisibilityChanged(element_name, true,
+                                                    kElementBounds);
+  tracked_element_handler_remote_.FlushForTesting();
+
+  auto* const tracker = ui::ElementTracker::GetElementTracker();
+  auto* const element =
+      tracker->GetElementInAnyContext(kTestElementIdentifier1);
+  ASSERT_TRUE(element);
+
+  // Subscribe to bounds changed event.
+  auto subscription =
+      ui::ElementTracker::GetElementTracker()->AddCustomEventCallback(
+          kElementBoundsChangedEvent, element->context(), bounds_changed.Get());
+
+  // Hide element - should NOT trigger bounds changed event.
+  EXPECT_CALL(bounds_changed, Run).Times(0);
+  handler_remote()->TrackedElementVisibilityChanged(element_name, false,
+                                                    gfx::RectF());
+  tracked_element_handler_remote_.FlushForTesting();
 }
 
 TEST_F(TrackedElementHandlerTest, MultipleIdentifiers) {
