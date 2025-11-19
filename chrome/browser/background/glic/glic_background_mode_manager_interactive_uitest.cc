@@ -37,6 +37,10 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/shell.h"
+#endif
+
 namespace {
 class TestStartupLaunchManager : public StartupLaunchManager {
  public:
@@ -58,11 +62,19 @@ class GlicBackgroundModeManagerUiTest : public test::InteractiveGlicTest {
   }
 
   bool IsHotkeySupported() {
-    // TODO(crbug.com/461870986): Enable tests for ChromeOS platform.
+    // ChromeOS uses ash's accelerator controller rather than global accelerator
+    // listener.
+#if BUILDFLAG(IS_CHROMEOS)
+    if (ash::Shell::HasInstance()) {
+      return ash::Shell::Get()->accelerator_controller() != nullptr;
+    }
+    return false;
+#else
     auto* const global_shortcut_listener =
         ui::GlobalAcceleratorListener::GetInstance();
     return global_shortcut_listener != nullptr &&
            !global_shortcut_listener->IsRegistrationHandledExternally();
+#endif
   }
 
   void RegisterHotkey(ui::Accelerator updated_hotkey) {

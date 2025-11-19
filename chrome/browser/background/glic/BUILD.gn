@@ -113,4 +113,8 @@ source_set("interactive_ui_tests") {
     "//ui/base/accelerators/global_accelerator_listener",
   ]
   data_deps = [ "//chrome/test/data/webui/glic:generate_test_files" ]
+
+  if (is_chromeos) {
+    deps += [ "//ash" ]
+  }
 }
