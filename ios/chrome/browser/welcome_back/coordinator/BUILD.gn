@@ -22,6 +22,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/first_run/ui_bundled:features",
     "//ios/chrome/browser/first_run/ui_bundled:screen_delegate",
     "//ios/chrome/browser/first_run/ui_bundled/best_features/coordinator",
+    "//ios/chrome/browser/instructions_bottom_sheet/ui",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
@@ -33,7 +34,6 @@ source_set("coordinator") {
     "//ios/chrome/browser/signin/model:constants",
     "//ios/chrome/browser/welcome_back/model",
     "//ios/chrome/browser/welcome_back/model:features",
-    "//ios/chrome/common/ui/instructions_bottom_sheet",
   ]
   frameworks = [ "UIKit.framework" ]
 }

@@ -33,11 +33,11 @@ source_set("ui") {
     "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack:magic_stack_module_content_view_delegate",
     "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack:public",
     "//ios/chrome/browser/content_suggestions/ui_bundled/tips/ui/resources",
+    "//ios/chrome/browser/instructions_bottom_sheet/ui",
     "//ios/chrome/browser/ntp/ui_bundled:theme",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/common/ui/colors",
-    "//ios/chrome/common/ui/instructions_bottom_sheet",
     "//ios/chrome/common/ui/util",
     "//ui/base",
   ]

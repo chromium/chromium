@@ -9,9 +9,9 @@ source_set("shared") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/browser/instructions_bottom_sheet/ui",
     "//ios/chrome/browser/shared/ui/bottom_sheet:bottom_sheet_view_controller",
     "//ios/chrome/common/ui/colors",
-    "//ios/chrome/common/ui/instructions_bottom_sheet",
     "//ios/chrome/common/ui/promo_style",
     "//ios/chrome/common/ui/promo_style:utils",
     "//ios/chrome/common/ui/util",
@@ -30,10 +30,10 @@ source_set("lens_promo") {
   deps = [
     ":shared",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/instructions_bottom_sheet/ui",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/tips_notifications/ui/resources",
     "//ios/chrome/common/ui/button_stack",
-    "//ios/chrome/common/ui/instructions_bottom_sheet",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
@@ -49,9 +49,9 @@ source_set("enhanced_safe_browsing_promo") {
   deps = [
     ":shared",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/instructions_bottom_sheet/ui",
     "//ios/chrome/browser/tips_notifications/ui/resources",
     "//ios/chrome/common/ui/button_stack",
-    "//ios/chrome/common/ui/instructions_bottom_sheet",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
@@ -70,8 +70,8 @@ source_set("search_what_you_see_promo") {
   ]
   deps = [
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/instructions_bottom_sheet/ui",
     "//ios/chrome/common/ui/button_stack",
-    "//ios/chrome/common/ui/instructions_bottom_sheet",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
