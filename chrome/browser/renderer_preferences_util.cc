@@ -39,6 +39,9 @@
 #if defined(USE_AURA) && BUILDFLAG(IS_LINUX)
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#endif
+
+#if BUILDFLAG(IS_LINUX)
 #include "ui/linux/linux_ui.h"
 #endif
 
@@ -135,7 +138,13 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
           &prefs->inactive_selection_fg_color);
     }
   }
-#endif
+#endif  // BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(USE_AURA)
+
+#if BUILDFLAG(IS_LINUX)
+  if (auto* linux_ui = ui::LinuxUi::instance()) {
+    prefs->middle_click_paste_allowed = linux_ui->PrimaryPasteEnabled();
+  }
 #endif
   prefs->caret_blink_interval =
       ui::NativeTheme::GetInstanceForNativeUi()->caret_blink_interval();
