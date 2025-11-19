@@ -11,12 +11,6 @@ enum NavigationTimingType {
     "prerender"
 };
 
-enum NavigationEntropy {
-    "high",
-    "normal",
-    ""
-};
-
 [
     Exposed=Window
 ]  interface PerformanceNavigationTiming : PerformanceResourceTiming {
@@ -31,7 +25,6 @@ enum NavigationEntropy {
     readonly attribute NavigationTimingType type;
     readonly attribute unsigned short redirectCount;
     [RuntimeEnabled=BackForwardCacheNotRestoredReasons, MeasureAs="WebDXFeature::kBfcacheBlockingReasons"] readonly attribute NotRestoredReasons? notRestoredReasons;
-    [RuntimeEnabled=PerformanceNavigateSystemEntropy] readonly attribute NavigationEntropy systemEntropy;
     [RuntimeEnabled=PerformanceNavigationTimingConfidence] readonly attribute PerformanceTimingConfidence confidence;
     [CallWith=ScriptState] readonly attribute DOMHighResTimeStamp criticalCHRestart;
     [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();

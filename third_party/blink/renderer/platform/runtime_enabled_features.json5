@@ -3766,9 +3766,6 @@
       status: "experimental"
     },
     {
-      name: "PerformanceNavigateSystemEntropy",
-    },
-    {
       name: "PerformanceNavigationTimingConfidence",
       origin_trial_feature_name: "PerformanceNavigationTimingConfidence",
       status: "experimental",

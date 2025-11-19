@@ -87,29 +87,6 @@ void PerformanceNavigationTiming::OnBodyLoadFinished(
   UpdateBodySizes(encoded_body_size, decoded_body_size);
 }
 
-V8NavigationEntropy::Enum PerformanceNavigationTiming::GetSystemEntropy()
-    const {
-  DocumentLoader* loader = GetDocumentLoader();
-  switch (document_load_timing_values_->system_entropy_at_navigation_start) {
-    case mojom::blink::SystemEntropy::kHigh:
-      if (loader) {
-        CHECK(loader->GetFrame()->IsOutermostMainFrame());
-      }
-      return V8NavigationEntropy::Enum::kHigh;
-    case mojom::blink::SystemEntropy::kNormal:
-      if (loader) {
-        CHECK(loader->GetFrame()->IsOutermostMainFrame());
-      }
-      return V8NavigationEntropy::Enum::kNormal;
-    case mojom::blink::SystemEntropy::kEmpty:
-      if (loader) {
-        CHECK(!loader->GetFrame()->IsOutermostMainFrame());
-      }
-      return V8NavigationEntropy::Enum::k;
-  }
-  NOTREACHED();
-}
-
 DocumentLoader* PerformanceNavigationTiming::GetDocumentLoader() const {
   return DomWindow() ? DomWindow()->document()->Loader() : nullptr;
 }
@@ -276,15 +253,6 @@ PerformanceTimingConfidence* PerformanceNavigationTiming::confidence() const {
           GetNavigationConfidenceString(confidence->second)));
 }
 
-V8NavigationEntropy PerformanceNavigationTiming::systemEntropy() const {
-  if (DomWindow()) {
-    blink::UseCounter::Count(DomWindow()->document(),
-                             WebFeature::kPerformanceNavigateSystemEntropy);
-  }
-
-  return V8NavigationEntropy(GetSystemEntropy());
-}
-
 DOMHighResTimeStamp PerformanceNavigationTiming::criticalCHRestart(
     ScriptState* script_state) const {
   ExecutionContext::From(script_state)
@@ -372,12 +340,6 @@ void PerformanceNavigationTiming::BuildJSONValue(
     }
     ExecutionContext::From(builder.GetScriptState())
         ->CountUse(WebFeature::kBackForwardCacheNotRestoredReasons);
-  }
-
-  if (RuntimeEnabledFeatures::PerformanceNavigateSystemEntropyEnabled(
-          ExecutionContext::From(builder.GetScriptState()))) {
-    builder.AddString("systemEntropy",
-                      V8NavigationEntropy(GetSystemEntropy()).AsStringView());
   }
 
   if (RuntimeEnabledFeatures::PerformanceNavigationTimingConfidenceEnabled(

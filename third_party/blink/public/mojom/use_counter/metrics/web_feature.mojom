@@ -3852,7 +3852,7 @@ enum WebFeature {
   kV8FileSystemFileHandle_GetFile_Method = 4569,
   kV8FileSystemHandle_GetUniqueId_Method = 4570,
   kV8FileSystemHandle_Remove_Method = 4571,
-  kPerformanceNavigateSystemEntropy = 4572,
+  kOBSOLETE_PerformanceNavigateSystemEntropy = 4572,
   kV8InvalidatedNumberStringNotRegexpLikeProtector = 4573,
   kCriticalCHRestartNavigationTiming = 4574,
   kTopLevelDocumentWithEmbeddedCredentials = 4575,
