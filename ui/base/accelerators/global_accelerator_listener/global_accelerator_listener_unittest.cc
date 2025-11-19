@@ -54,8 +54,6 @@ class BaseGlobalAcceleratorListenerForTesting final
 
 class TestObserver final : public GlobalAcceleratorListener::Observer {
  public:
-  ~TestObserver() = default;
-
   void OnKeyPressed(const ui::Accelerator& accelerator) override {}
 
   void ExecuteCommand(const std::string& accelerator_group_id,

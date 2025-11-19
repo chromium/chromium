@@ -51,6 +51,10 @@ source_set("impl") {
     "//ui/base/accelerators/global_accelerator_listener",
     "//ui/gfx",
   ]
+
+  if (is_chromeos) {
+    deps += [ "//ash" ]
+  }
 }
 
 source_set("unit_tests") {

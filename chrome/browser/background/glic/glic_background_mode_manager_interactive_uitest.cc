@@ -58,6 +58,7 @@ class GlicBackgroundModeManagerUiTest : public test::InteractiveGlicTest {
   }
 
   bool IsHotkeySupported() {
+    // TODO(crbug.com/461870986): Enable tests for ChromeOS platform.
     auto* const global_shortcut_listener =
         ui::GlobalAcceleratorListener::GetInstance();
     return global_shortcut_listener != nullptr &&
@@ -227,7 +228,7 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest, HotkeyPressed) {
   ui::Accelerator default_hotkey =
       GlicLauncherConfiguration::GetDefaultHotkey();
   EXPECT_EQ(default_hotkey, manager->RegisteredHotkeyForTesting());
-  manager->OnKeyPressed(default_hotkey);
+  manager->HandleHotkey(default_hotkey);
   histogram_tester.ExpectBucketCount("Glic.Usage.Hotkey", HotkeyUsage::kDefault,
                                      1);
   histogram_tester.ExpectBucketCount("Glic.Usage.Hotkey", HotkeyUsage::kCustom,
@@ -236,7 +237,7 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest, HotkeyPressed) {
   ui::Accelerator custom_hotkey(ui::VKEY_A, ui::EF_CONTROL_DOWN);
   RegisterHotkey(custom_hotkey);
   EXPECT_EQ(custom_hotkey, manager->RegisteredHotkeyForTesting());
-  manager->OnKeyPressed(custom_hotkey);
+  manager->HandleHotkey(custom_hotkey);
   histogram_tester.ExpectBucketCount("Glic.Usage.Hotkey", HotkeyUsage::kDefault,
                                      1);
   histogram_tester.ExpectBucketCount("Glic.Usage.Hotkey", HotkeyUsage::kCustom,

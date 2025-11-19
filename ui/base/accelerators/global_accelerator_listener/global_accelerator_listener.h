@@ -28,6 +28,9 @@ class GlobalAcceleratorListener {
     // directly.
     virtual void ExecuteCommand(const std::string& accelerator_group_id,
                                 const std::string& command_id) = 0;
+
+   protected:
+    virtual ~Observer() = default;
   };
 
   GlobalAcceleratorListener(const GlobalAcceleratorListener&) = delete;
