@@ -286,7 +286,6 @@
 
   <!-- Share (WiFi) -->
   <template is="dom-if" if="[[shareIsVisible_(managedProperties_, globalPolicy_)]]" restamp>
-    <!-- TODO: b/302726243 - Reuse just one network-config-toggle -->
     <template is="dom-if" if="[[!networkIsEphemeral_(managedProperties_, globalPolicy_)]]" restamp>
       <network-config-toggle id="share" label="[[i18n('networkConfigShare')]]"
           checked="{{shareNetwork_}}" on-change="onShareChanged_"
