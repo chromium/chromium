@@ -85,7 +85,6 @@ OsFeedbackUntrustedUI::OsFeedbackUntrustedUI(content::WebUI* web_ui)
   untrusted_source->AddFrameAncestor(GURL(kChromeUIOSFeedbackUrl));
 
   ash::EnableTrustedTypesCSP(untrusted_source);
-  // TODO(b/194964287): Audit and tighten CSP.
   untrusted_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::DefaultSrc, "");
 
