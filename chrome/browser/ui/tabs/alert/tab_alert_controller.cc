@@ -14,7 +14,6 @@
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
-#include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
@@ -40,16 +39,17 @@ bool CompareAlerts::operator()(TabAlert first, TabAlert second) const {
   // Alerts are ordered from highest priority to be shown to lowest priority.
   static constexpr auto tab_alert_priority =
       base::MakeFixedFlatMap<TabAlert, int>(
-          {{TabAlert::DESKTOP_CAPTURING, 16},
-           {TabAlert::TAB_CAPTURING, 15},
-           {TabAlert::MEDIA_RECORDING, 14},
-           {TabAlert::AUDIO_RECORDING, 13},
-           {TabAlert::VIDEO_RECORDING, 12},
-           {TabAlert::BLUETOOTH_CONNECTED, 11},
-           {TabAlert::BLUETOOTH_SCAN_ACTIVE, 10},
-           {TabAlert::USB_CONNECTED, 9},
-           {TabAlert::HID_CONNECTED, 8},
-           {TabAlert::SERIAL_CONNECTED, 7},
+          {{TabAlert::DESKTOP_CAPTURING, 17},
+           {TabAlert::TAB_CAPTURING, 16},
+           {TabAlert::MEDIA_RECORDING, 15},
+           {TabAlert::AUDIO_RECORDING, 14},
+           {TabAlert::VIDEO_RECORDING, 13},
+           {TabAlert::BLUETOOTH_CONNECTED, 12},
+           {TabAlert::BLUETOOTH_SCAN_ACTIVE, 11},
+           {TabAlert::USB_CONNECTED, 10},
+           {TabAlert::HID_CONNECTED, 9},
+           {TabAlert::SERIAL_CONNECTED, 8},
+           {TabAlert::ACTOR_WAITING_ON_USER, 7},
            {TabAlert::ACTOR_ACCESSING, 6},
            {TabAlert::GLIC_ACCESSING, 5},
            {TabAlert::GLIC_SHARING, 4},
@@ -161,9 +161,10 @@ std::u16string TabAlertController::GetTabAlertStateText(
     case tabs::TabAlert::VR_PRESENTING_IN_HEADSET:
       return l10n_util::GetStringUTF16(
           IDS_TOOLTIP_TAB_ALERT_STATE_VR_PRESENTING);
-    // TODO(crbug.com/422538779) Create new resources for ACTOR_ACCESSING of
+    // TODO(crbug.com/461457730) Create new resources for ACTOR_ACCESSING of
     // relying on GLIC_ACCESSING resources below.
     case tabs::TabAlert::ACTOR_ACCESSING:
+    case tabs::TabAlert::ACTOR_WAITING_ON_USER:
     case tabs::TabAlert::GLIC_ACCESSING:
 #if BUILDFLAG(ENABLE_GLIC)
       return l10n_util::GetStringUTF16(
@@ -323,8 +324,22 @@ void TabAlertController::OnGlicAccessingStateChange(bool is_accessing) {
 }
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
-void TabAlertController::OnActorTabIndicatorStateChanged(bool is_accessing) {
-  UpdateAlertState(TabAlert::ACTOR_ACCESSING, is_accessing);
+void TabAlertController::OnActorTabIndicatorStateChanged(
+    actor::ui::TabIndicatorStatus tab_indicator_status) {
+  switch (tab_indicator_status) {
+    case actor::ui::TabIndicatorStatus::kNone:
+      UpdateAlertState(TabAlert::ACTOR_WAITING_ON_USER, false);
+      UpdateAlertState(TabAlert::ACTOR_ACCESSING, false);
+      break;
+    case actor::ui::TabIndicatorStatus::kDynamic:
+      UpdateAlertState(TabAlert::ACTOR_WAITING_ON_USER, false);
+      UpdateAlertState(TabAlert::ACTOR_ACCESSING, true);
+      break;
+    case actor::ui::TabIndicatorStatus::kStatic:
+      UpdateAlertState(TabAlert::ACTOR_WAITING_ON_USER, true);
+      UpdateAlertState(TabAlert::ACTOR_ACCESSING, false);
+      break;
+  }
 }
 
 void TabAlertController::OnRecentlyAudibleStateChanged(bool was_audible) {

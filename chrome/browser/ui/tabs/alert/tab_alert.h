@@ -26,6 +26,7 @@ enum class TabAlert {
   GLIC_ACCESSING,            // Glic is accessing the tab's contents.
   GLIC_SHARING,              // The tab's contents are shared with glic.
   ACTOR_ACCESSING,           // Actor is accessing the tab's contents.
+  ACTOR_WAITING_ON_USER,     // Actor is waiting on user to respond.
 };
 // Any changes to the TabAlert enum needs to be updated in CompareAlerts as
 // well.

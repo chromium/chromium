@@ -3986,7 +3986,9 @@ int BrowserView::GetAccessibleTabLabelFormatStringForTabAlert(
       return IDS_TAB_AX_LABEL_DESKTOP_CAPTURING_FORMAT;
     case tabs::TabAlert::VR_PRESENTING_IN_HEADSET:
       return IDS_TAB_AX_LABEL_VR_PRESENTING;
+
     case tabs::TabAlert::ACTOR_ACCESSING:
+    case tabs::TabAlert::ACTOR_WAITING_ON_USER:
     case tabs::TabAlert::GLIC_ACCESSING:
 #if BUILDFLAG(ENABLE_GLIC)
       return IDS_TAB_AX_LABEL_GLIC_ACCESSING;

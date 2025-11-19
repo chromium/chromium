@@ -302,18 +302,20 @@ TEST_F(ActorUiTabControllerTest, BorderGlowChangesOnUiTabStateChange) {
   HandoffButtonState handoff_button_state(
       true, HandoffButtonState::ControlOwnership::kActor);
   ActorOverlayState actor_overlay_state{.is_active = true};
-  UiTabState ui_tab_state_glow_on(actor_overlay_state, handoff_button_state,
-                                  /*tab_indicator_visible=*/false,
-                                  /*border_glow_visible=*/true);
+  UiTabState ui_tab_state_glow_on(
+      actor_overlay_state, handoff_button_state,
+      /*tab_indicator_visible=*/TabIndicatorStatus::kNone,
+      /*border_glow_visible=*/true);
 
   EXPECT_CALL(callback, Call(&mock_tab(), true));
   tab_controller()->OnUiTabStateChange(ui_tab_state_glow_on, base::DoNothing());
 
   testing::Mock::VerifyAndClearExpectations(&callback);
 
-  UiTabState ui_tab_state_glow_off(actor_overlay_state, handoff_button_state,
-                                   /*tab_indicator_visible=*/false,
-                                   /*border_glow_visible=*/false);
+  UiTabState ui_tab_state_glow_off(
+      actor_overlay_state, handoff_button_state,
+      /*tab_indicator_visible=*/TabIndicatorStatus::kNone,
+      /*border_glow_visible=*/false);
   EXPECT_CALL(callback, Call(&mock_tab(), false));
   tab_controller()->OnUiTabStateChange(ui_tab_state_glow_off,
                                        base::DoNothing());
@@ -473,7 +475,7 @@ TEST_F(ActorUiTabControllerTest, RegisterCallbackWhileRegisteredDeathTest) {
   auto valid_overlay_state_cb =
       base::BindRepeating([](bool, ActorOverlayState, base::OnceClosure) {});
   auto valid_overlay_bg_cb = base::BindRepeating([](bool) {});
-  auto valid_tab_indicator_cb = base::BindRepeating([](bool) {});
+  auto valid_tab_indicator_cb = base::BindRepeating([](TabIndicatorStatus) {});
 
   // The test fixture's SetUpDefaultOverlayExpectations() method already
   // registers a default overlay callback. This verifies that attempting to

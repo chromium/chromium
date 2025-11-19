@@ -24,6 +24,7 @@ source_set("tab_alert") {
   ]
 
   deps = [
+    "//chrome/browser/actor/ui",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/tabs",
