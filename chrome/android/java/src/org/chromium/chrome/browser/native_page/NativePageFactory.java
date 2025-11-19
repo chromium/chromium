@@ -307,7 +307,8 @@ public class NativePageFactory {
                             tab,
                             mBrowserControlsManager,
                             mTabModelSelector,
-                            mEdgeToEdgeControllerSupplier));
+                            mEdgeToEdgeControllerSupplier),
+                    mBackPressManager);
         }
 
         protected NativePage buildHistoryPage(Tab tab, String url) {

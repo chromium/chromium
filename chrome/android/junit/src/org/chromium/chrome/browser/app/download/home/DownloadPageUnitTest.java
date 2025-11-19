@@ -6,13 +6,16 @@ package org.chromium.chrome.browser.app.download.home;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.graphics.Rect;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -27,12 +30,16 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.DestroyableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactory;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactoryJni;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -42,13 +49,17 @@ import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures(ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES)
 public class DownloadPageUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -74,7 +85,9 @@ public class DownloadPageUnitTest {
 
     // Needed to test edge-to-edge behavior.
     private @Captor ArgumentCaptor<EdgeToEdgePadAdjuster> mPadAdjusterCaptor;
+    private @Captor ArgumentCaptor<BackPressHandler> mHandlerCaptor;
     private @Mock EdgeToEdgeController mEdgeToEdgeController;
+    private @Mock BackPressManager mMockBackPressManager;
     private final ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeSupplier =
             new ObservableSupplierImpl<>();
 
@@ -104,7 +117,8 @@ public class DownloadPageUnitTest {
                         mSnackbarManager,
                         mModalDialogManager,
                         mOtrProfileId,
-                        mNativePageHost);
+                        mNativePageHost,
+                        mMockBackPressManager);
     }
 
     @Test
@@ -127,5 +141,29 @@ public class DownloadPageUnitTest {
 
         mDownloadPage.destroy();
         verify(mEdgeToEdgeController).unregisterAdjuster(padAdjuster);
+    }
+
+    @Test
+    public void testBackPressHandler_IsManagedByBasicNativePage() {
+        final AtomicReference<ViewGroup> decorViewRef = new AtomicReference<>();
+        mActivityScenarios
+                .getScenario()
+                .onActivity(
+                        activity ->
+                                decorViewRef.set((ViewGroup) activity.getWindow().getDecorView()));
+        ViewGroup decorView = decorViewRef.get();
+        View downloadPageView = mDownloadPage.getView();
+
+        ThreadUtils.runOnUiThreadBlocking(() -> decorView.addView(downloadPageView));
+
+        verify(mMockBackPressManager)
+                .addHandler(mHandlerCaptor.capture(), eq(BackPressHandler.Type.NATIVE_PAGE));
+        assertNotNull(
+                "The handler passed to BackPressManager should not be null.",
+                mHandlerCaptor.getValue());
+
+        ThreadUtils.runOnUiThreadBlocking(() -> decorView.removeView(downloadPageView));
+
+        verify(mMockBackPressManager).removeHandler(mHandlerCaptor.getValue());
     }
 }

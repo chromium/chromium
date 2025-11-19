@@ -35,6 +35,8 @@ import org.chromium.components.offline_items_collection.OfflineContentProvider;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.io.Closeable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
 
 /**
@@ -105,10 +107,22 @@ class DownloadManagerCoordinatorImpl
             updateForUrl(Filters.toUrl(Filters.FilterType.PREFETCHED));
         }
         RecordUserAction.record("Android.DownloadManager.Open");
-        mBackPressHandlers =
-                new BackPressHandler[] {
-                    mListCoordinator.getBackPressHandler(), mToolbarCoordinator
-                };
+
+        mBackPressHandlers = createBackPressHandlers();
+    }
+
+    private BackPressHandler[] createBackPressHandlers() {
+        List<BackPressHandler> handlers = new ArrayList<>();
+        BackPressHandler searchHandler = mListCoordinator.getSearchBackPressHandler();
+
+        if (searchHandler != null) {
+            handlers.add(searchHandler);
+        }
+
+        handlers.add(mListCoordinator.getBackPressHandler());
+        handlers.add(mToolbarCoordinator);
+
+        return handlers.toArray(new BackPressHandler[0]);
     }
 
     /**

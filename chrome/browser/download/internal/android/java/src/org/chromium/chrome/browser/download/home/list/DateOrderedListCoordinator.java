@@ -18,6 +18,7 @@ import android.widget.ScrollView;
 import org.chromium.base.Callback;
 import org.chromium.base.DiscardableReferencePool;
 import org.chromium.base.Log;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.dialogs.DownloadWarningBypassDialog;
@@ -96,6 +97,7 @@ public class DateOrderedListCoordinator implements ToolbarCoordinator.ToolbarLis
     private final DownloadHelpPageLauncher mHelpPageLauncher;
     private final RenameDialogManager mRenameDialogManager;
     private final @Nullable SearchBarCoordinator mSearchBarCoordinator;
+    private final @Nullable BackPressHandler mSearchBackPressHandler;
     private ViewGroup mMainView;
     private View mEmptyView;
     private int mWindowHeight;
@@ -185,6 +187,27 @@ public class DateOrderedListCoordinator implements ToolbarCoordinator.ToolbarLis
                     new ViewListItem(StableIds.SEARCH_HEADER, mSearchBarCoordinator.getView()));
         } else {
             mSearchBarCoordinator = null;
+        }
+
+        if (mSearchBarCoordinator != null) {
+            mSearchBackPressHandler =
+                    new BackPressHandler() {
+                        @Override
+                        public int handleBackPress() {
+                            if (mSearchBarCoordinator.hasText()) {
+                                mSearchBarCoordinator.clearText();
+                                return BackPressResult.SUCCESS;
+                            }
+                            return BackPressResult.FAILURE;
+                        }
+
+                        @Override
+                        public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+                            return mSearchBarCoordinator.getHasTextSupplier();
+                        }
+                    };
+        } else {
+            mSearchBackPressHandler = null;
         }
 
         decoratedModel.addHeader(
@@ -368,5 +391,10 @@ public class DateOrderedListCoordinator implements ToolbarCoordinator.ToolbarLis
     /** Returns the {@link DateOrderedListView}. */
     public ViewGroup getListViewForTesting() {
         return (ViewGroup) mListView.getView();
+    }
+
+    @Nullable
+    public BackPressHandler getSearchBackPressHandler() {
+        return mSearchBackPressHandler;
     }
 }
