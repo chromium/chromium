@@ -7232,10 +7232,6 @@ inline constexpr char kEcheSWAName[] = "Enable Eche feature";
 inline constexpr char kEcheSWADescription[] =
     "This is the main flag for enabling Eche.";
 
-inline constexpr char kEcheLauncherName[] = "Enable the Eche launcher";
-inline constexpr char kEcheLauncherDescription[] =
-    "Enables the launcher for all apps for Eche.";
-
 inline constexpr char kEcheSWADebugModeName[] = "Enable Eche Debug Mode";
 inline constexpr char kEcheSWADebugModeDescription[] =
     "Save console logs of Eche in the system log";

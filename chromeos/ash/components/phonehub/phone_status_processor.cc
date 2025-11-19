@@ -406,8 +406,7 @@ void PhoneStatusProcessor::OnPhoneStatusSnapshotReceived(
 
   phone_hub_ui_readiness_recorder_->RecordPhoneStatusSnapShotReceived();
 
-  if (features::IsEcheLauncherEnabled() && features::IsEcheSWAEnabled() &&
-      !has_received_first_app_list_update_ &&
+  if (features::IsEcheSWAEnabled() && !has_received_first_app_list_update_ &&
       connection_initialized_timestamp_ == base::TimeTicks()) {
     connection_initialized_timestamp_ = base::TimeTicks::Now();
   }
@@ -458,7 +457,7 @@ void PhoneStatusProcessor::OnAppListUpdateReceived(
   if (!features::IsEcheSWAEnabled()) {
     return;
   }
-  if (app_list_update.has_all_apps() && features::IsEcheLauncherEnabled()) {
+  if (app_list_update.has_all_apps()) {
     GenerateAppListWithIcons(app_list_update.all_apps(),
                              AppListUpdateType::kOnlyLauncherApps);
   }
@@ -470,10 +469,6 @@ void PhoneStatusProcessor::OnAppListUpdateReceived(
 
 void PhoneStatusProcessor::OnAppListIncrementalUpdateReceived(
     const proto::AppListIncrementalUpdate app_incremental_update) {
-  if (!features::IsEcheLauncherEnabled()) {
-    return;
-  }
-
   if (app_incremental_update.has_removed_apps()) {
     for (const auto& app : app_incremental_update.removed_apps().apps()) {
       if (app_stream_launcher_data_model_) {
@@ -551,7 +546,7 @@ void PhoneStatusProcessor::IconsDecoded(
     recent_apps_interaction_handler_->SetStreamableApps(apps_list);
   }
 
-  if (features::IsEcheLauncherEnabled() && app_stream_launcher_data_model_ &&
+  if (app_stream_launcher_data_model_ &&
       ShouldUpdateLauncher(app_list_update_type)) {
     app_stream_launcher_data_model_->SetAppList(apps_list);
   }
@@ -564,11 +559,9 @@ void PhoneStatusProcessor::IconsDecoded(
     has_received_first_app_list_update_ = true;
   }
 
-  if (features::IsEcheLauncherEnabled() &&
-      IsIncrementalAppUpdate(app_list_update_type)) {
-    if (app_stream_launcher_data_model_) {
-      app_stream_launcher_data_model_->AddAppToList(apps_list.at(0));
-    }
+  if (IsIncrementalAppUpdate(app_list_update_type) &&
+      app_stream_launcher_data_model_) {
+    app_stream_launcher_data_model_->AddAppToList(apps_list.at(0));
   }
 }
 

@@ -53,9 +53,9 @@ using RecentAppsUiState =
 // Appearance constants in DIPs.
 constexpr gfx::Insets kRecentAppButtonFocusPadding(4);
 constexpr int kHeaderLabelLineHeight = 48;
-constexpr int kRecentAppButtonSize = 36;
 constexpr int kMoreAppsButtonSize = 40;
 constexpr int kRecentAppButtonsViewTopPadding = 4;
+constexpr int kRecentAppsHeaderSpacing = 220;
 constexpr int kContentLabelLineHeightDip = 20;
 constexpr int kContentTextLabelExtraMargin = 6;
 constexpr auto kContentTextLabelInsetsDip =
@@ -63,8 +63,6 @@ constexpr auto kContentTextLabelInsetsDip =
 
 // Max number of apps can be shown with more apps button
 constexpr int kMaxAppsWithMoreAppsButton = 5;
-
-constexpr int kRecentAppsHeaderSpacing = 220;
 
 // The app icons in the LoadingView stagger the start of the loading animation
 // to make the appearance of a ripple.
@@ -134,7 +132,6 @@ class PhoneHubRecentAppsView::PlaceholderView : public views::Label {
     SetEnabledColor(cros_tokens::kTextColorPrimary);
     SetMultiLine(true);
     SetBorder(views::CreateEmptyBorder(kContentTextLabelInsetsDip));
-
     TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosBody2,
                                           *this);
     SetLineHeight(kContentLabelLineHeightDip);
@@ -223,13 +220,8 @@ void PhoneHubRecentAppsView::OnRecentAppsUiStateUpdated() {
 gfx::Size PhoneHubRecentAppsView::RecentAppButtonsView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   int width = kTrayMenuWidth - kBubbleHorizontalSidePaddingDip * 2;
-  int height = kRecentAppButtonSize + kRecentAppButtonFocusPadding.height() +
+  int height = kMoreAppsButtonSize + kRecentAppButtonFocusPadding.height() +
                kRecentAppButtonsViewTopPadding;
-  if (features::IsEcheLauncherEnabled()) {
-    height = kMoreAppsButtonSize + kRecentAppButtonFocusPadding.height() +
-             kRecentAppButtonsViewTopPadding;
-  }
-
   return gfx::Size(width, height);
 }
 
@@ -383,8 +375,7 @@ void PhoneHubRecentAppsView::Update() {
                     pressed_callback)));
       }
 
-      if (features::IsEcheLauncherEnabled() &&
-          recent_app_button_list_.size() >= kMaxAppsWithMoreAppsButton) {
+      if (recent_app_button_list_.size() >= kMaxAppsWithMoreAppsButton) {
         recent_app_button_list_.push_back(
             recent_app_buttons_view_->AddRecentAppButton(
                 GenerateMoreAppsButton()));
@@ -458,10 +449,6 @@ void PhoneHubRecentAppsView::FadeOutRecentAppsButtonView() {
 }
 
 void PhoneHubRecentAppsView::SwitchToFullAppsList() {
-  if (!features::IsEcheLauncherEnabled()) {
-    return;
-  }
-
   phone_hub_manager_->GetAppStreamLauncherDataModel()
       ->SetShouldShowMiniLauncher(true);
 }

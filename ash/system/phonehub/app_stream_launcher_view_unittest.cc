@@ -38,13 +38,9 @@ class AppStreamLauncherViewTest : public views::ViewsTestBase {
     CreateWidget();
     generator_ =
         std::make_unique<ui::test::EventGenerator>(GetRootWindow(widget_));
-
-    // All unit tests related to ListView will enable the feature themselves.
-    // Currently keeping the grid view unit tests in the event the design goes
-    // back to it.
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kEcheLauncher, features::kEcheSWA},
-        /*disabled_features=*/{features::kEcheLauncherListView});
+        /*enabled_features=*/{features::kEcheSWA},
+        /*disabled_features=*/{});
   }
 
   // AshTestBase:
@@ -67,12 +63,6 @@ class AppStreamLauncherViewTest : public views::ViewsTestBase {
     widget_->SetContentsView(app_stream_launcher_view_.get());
     widget_->Show();
     widget_->LayoutRootViewIfNecessary();
-  }
-
-  AppStreamLauncherItem* GetItemView(int index) {
-    return static_cast<AppStreamLauncherItem*>(
-        app_stream_launcher_view()->items_container_for_test()->children().at(
-            index));
   }
 
   AppStreamLauncherListItem* GetListItemView(int index) {
@@ -125,43 +115,6 @@ TEST_F(AppStreamLauncherViewTest, AddItems) {
   const int64_t user_id = 1;
   const char16_t app_visible_name[] = u"Fake App";
   const char package_name[] = "com.fakeapp";
-
-  EXPECT_EQ(0U, app_stream_launcher_view()
-                    ->items_container_for_test()
-                    ->children()
-                    .size());
-
-  auto app1 = phonehub::Notification::AppMetadata(
-      app_visible_name, package_name, /*color_icon=*/CreateTestImage(),
-      /*monochrome_icon_mask=*/std::nullopt,
-      /*icon_color=*/std::nullopt, /*icon_is_monochrome=*/true, user_id,
-      phonehub::proto::AppStreamabilityStatus::STREAMABLE);
-  std::vector<phonehub::Notification::AppMetadata> apps;
-  apps.push_back(app1);
-
-  phonehub::AppStreamLauncherDataModel* data_model =
-      fake_phone_hub_manager()->fake_app_stream_launcher_data_model();
-  data_model->SetAppList(apps);
-
-  EXPECT_EQ(1U, app_stream_launcher_view()
-                    ->items_container_for_test()
-                    ->children()
-                    .size());
-
-  EXPECT_EQ(u"Fake App", GetItemView(0)->GetLabelForTest()->GetText());
-}
-
-TEST_F(AppStreamLauncherViewTest, AddItemsListView) {
-  GenerateLauncherView();
-  feature_list_.Reset();
-  feature_list_.InitWithFeatures(
-      /*enabled_features=*/{features::kEcheLauncher, features::kEcheSWA,
-                            features::kEcheLauncherListView},
-      /*disabled_features=*/{});
-
-  const int64_t user_id = 1;
-  const char16_t app_visible_name[] = u"Fake App";
-  const char package_name[] = "com.fakeapp";
   auto app1 = phonehub::Notification::AppMetadata(
       app_visible_name, package_name, /*color_icon=*/CreateTestImage(),
       /*monochrome_icon_mask=*/std::nullopt,
@@ -184,45 +137,6 @@ TEST_F(AppStreamLauncherViewTest, AddItemsListView) {
 
 TEST_F(AppStreamLauncherViewTest, RemoveItem) {
   GenerateLauncherView();
-  const int64_t user_id = 1;
-  const char16_t app_visible_name[] = u"Fake App";
-  const char package_name[] = "com.fakeapp";
-
-  auto app1 = phonehub::Notification::AppMetadata(
-      app_visible_name, package_name, /*color_icon=*/CreateTestImage(),
-      /*monochrome_icon_mask=*/std::nullopt,
-      /*icon_color=*/std::nullopt, /*icon_is_monochrome=*/true, user_id,
-      phonehub::proto::AppStreamabilityStatus::STREAMABLE);
-  std::vector<phonehub::Notification::AppMetadata> apps;
-  apps.push_back(app1);
-
-  phonehub::AppStreamLauncherDataModel* data_model =
-      fake_phone_hub_manager()->fake_app_stream_launcher_data_model();
-  data_model->SetAppList(apps);
-
-  EXPECT_EQ(1U, app_stream_launcher_view()
-                    ->items_container_for_test()
-                    ->children()
-                    .size());
-
-  EXPECT_EQ(u"Fake App", GetItemView(0)->GetLabelForTest()->GetText());
-
-  apps.clear();
-  data_model->SetAppList(apps);
-
-  EXPECT_EQ(0U, app_stream_launcher_view()
-                    ->items_container_for_test()
-                    ->children()
-                    .size());
-}
-
-TEST_F(AppStreamLauncherViewTest, RemoveItemListView) {
-  GenerateLauncherView();
-  feature_list_.Reset();
-  feature_list_.InitWithFeatures(
-      /*enabled_features=*/{features::kEcheLauncher, features::kEcheSWA,
-                            features::kEcheLauncherListView},
-      /*disabled_features=*/{});
 
   const int64_t user_id = 1;
   const char16_t app_visible_name[] = u"Fake App";
@@ -283,53 +197,6 @@ TEST_F(AppStreamLauncherViewTest, ClickOnItem) {
   ui::test::EventGenerator generator(
       GetRootWindow(app_stream_launcher_view()->GetWidget()));
 
-  EXPECT_TRUE(GetItemView(0)->GetVisible());
-  EXPECT_TRUE(GetItemView(0)->GetIconForTest()->GetEnabled());
-  EXPECT_TRUE(GetItemView(0)->GetLabelForTest()->GetEnabled());
-
-  gfx::Point cursor_location =
-      GetItemView(0)->GetIconForTest()->GetBoundsInScreen().CenterPoint();
-  generator.MoveMouseTo(cursor_location);
-  generator.ClickLeftButton();
-
-  EXPECT_EQ(1U, fake_phone_hub_manager()
-                    ->fake_recent_apps_interaction_handler()
-                    ->HandledRecentAppsCount(package_name));
-}
-
-TEST_F(AppStreamLauncherViewTest, ClickOnItemListView) {
-  GenerateLauncherView();
-  feature_list_.Reset();
-  feature_list_.InitWithFeatures(
-      /*enabled_features=*/{features::kEcheLauncher, features::kEcheSWA,
-                            features::kEcheLauncherListView},
-      /*disabled_features=*/{});
-
-  const int64_t user_id = 1;
-  const char16_t app_visible_name[] = u"Fake App";
-  const char package_name[] = "com.fakeapp";
-
-  auto app1 = phonehub::Notification::AppMetadata(
-      app_visible_name, package_name, /*color_icon=*/CreateTestImage(),
-      /*monochrome_icon_mask=*/std::nullopt,
-      /*icon_color=*/std::nullopt, /*icon_is_monochrome=*/true, user_id,
-      phonehub::proto::AppStreamabilityStatus::STREAMABLE);
-  std::vector<phonehub::Notification::AppMetadata> apps;
-  apps.push_back(app1);
-
-  phonehub::AppStreamLauncherDataModel* data_model =
-      fake_phone_hub_manager()->fake_app_stream_launcher_data_model();
-  data_model->SetAppList(apps);
-  widget()->LayoutRootViewIfNecessary();
-
-  EXPECT_EQ(1U, app_stream_launcher_view()
-                    ->items_container_for_test()
-                    ->children()
-                    .size());
-
-  ui::test::EventGenerator generator(
-      GetRootWindow(app_stream_launcher_view()->GetWidget()));
-
   EXPECT_TRUE(GetListItemView(0)->GetVisible());
   EXPECT_TRUE(GetListItemView(0)->GetEnabled());
 
@@ -345,45 +212,6 @@ TEST_F(AppStreamLauncherViewTest, ClickOnItemListView) {
 
 TEST_F(AppStreamLauncherViewTest, DisabledItem) {
   GenerateLauncherView();
-  const int64_t user_id = 1;
-  const char16_t app_visible_name[] = u"Fake App";
-  const char package_name[] = "com.fakeapp";
-
-  auto app1 = phonehub::Notification::AppMetadata(
-      app_visible_name, package_name, /*color_icon=*/CreateTestImage(),
-      /*monochrome_icon_mask=*/std::nullopt,
-      /*icon_color=*/std::nullopt, /*icon_is_monochrome=*/true, user_id,
-      phonehub::proto::AppStreamabilityStatus::BLOCK_LISTED);
-  std::vector<phonehub::Notification::AppMetadata> apps;
-  apps.push_back(app1);
-
-  phonehub::AppStreamLauncherDataModel* data_model =
-      fake_phone_hub_manager()->fake_app_stream_launcher_data_model();
-  data_model->SetAppList(apps);
-  widget()->LayoutRootViewIfNecessary();
-
-  EXPECT_EQ(1U, app_stream_launcher_view()
-                    ->items_container_for_test()
-                    ->children()
-                    .size());
-
-  ui::test::EventGenerator generator(
-      GetRootWindow(app_stream_launcher_view()->GetWidget()));
-
-  EXPECT_TRUE(GetItemView(0)->GetVisible());
-  EXPECT_FALSE(GetItemView(0)->GetIconForTest()->GetEnabled());
-  EXPECT_FALSE(GetItemView(0)->GetLabelForTest()->GetEnabled());
-  EXPECT_EQ(u"Not supported",
-            GetItemView(0)->GetIconForTest()->GetTooltipText());
-}
-
-TEST_F(AppStreamLauncherViewTest, DisabledItemListView) {
-  GenerateLauncherView();
-  feature_list_.Reset();
-  feature_list_.InitWithFeatures(
-      /*enabled_features=*/{features::kEcheLauncher, features::kEcheSWA,
-                            features::kEcheLauncherListView},
-      /*disabled_features=*/{});
 
   const int64_t user_id = 1;
   const char16_t app_visible_name[] = u"Fake App";

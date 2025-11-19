@@ -1336,12 +1336,6 @@ BASE_FEATURE(kModifierSplit, base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables to split left and right modifiers in settings.
 BASE_FEATURE(kMouseImposterCheck, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the full apps list in Phone Hub bubble.
-BASE_FEATURE(kEcheLauncher, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Switch full apps list in Phone Hub from grid view to list view.
-BASE_FEATURE(kEcheLauncherListView, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the Phone Hub recent apps loading and error views based on the
 // connection status with the phone.
 BASE_FEATURE(kEcheNetworkConnectionState, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -3026,16 +3020,6 @@ bool IsMacAddressRandomizationEnabled() {
 
 bool IsMultiCalendarSupportEnabled() {
   return base::FeatureList::IsEnabled(kMultiCalendarSupport);
-}
-
-bool IsEcheLauncherEnabled() {
-  return base::FeatureList::IsEnabled(kEcheLauncher) &&
-         base::FeatureList::IsEnabled(kEcheSWA);
-}
-
-bool IsEcheLauncherListViewEnabled() {
-  return IsEcheLauncherEnabled() &&
-         base::FeatureList::IsEnabled(kEcheLauncherListView);
 }
 
 bool IsEcheNetworkConnectionStateEnabled() {
