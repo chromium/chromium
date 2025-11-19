@@ -34,7 +34,7 @@ class IdentityManager;
 
 namespace optimization_guide {
 
-class ModelExecutionFetcher;
+class ModelExecutionFetcherImpl;
 
 class ModelExecutionManager final {
  public:
@@ -74,7 +74,8 @@ class ModelExecutionManager final {
   using FetcherId = size_t;
 
   // All active executions for a certain feature.
-  using ActiveFeatureExecutions = std::map<FetcherId, ModelExecutionFetcher>;
+  using ActiveFeatureExecutions =
+      std::map<FetcherId, ModelExecutionFetcherImpl>;
 
   // Invoked when the model execution result is available.
   void OnModelExecuteResponse(

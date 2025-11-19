@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/core/model_execution/model_execution_fetcher.h"
+#include "components/optimization_guide/core/model_execution/model_execution_fetcher_impl.h"
 
 #include <memory>
 #include <optional>
@@ -60,23 +60,23 @@ proto::ExecuteResponse BuildTestExecuteResponse(const TestMessage& message) {
 using ModelExecutionError =
     OptimizationGuideModelExecutionError::ModelExecutionError;
 
-class ModelExecutionFetcherTest : public testing::Test {
+class ModelExecutionFetcherImplTest : public testing::Test {
  public:
-  ModelExecutionFetcherTest()
+  ModelExecutionFetcherImplTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::UI,
                           base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         shared_url_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)) {
-    model_execution_fetcher_ = std::make_unique<ModelExecutionFetcher>(
+    model_execution_fetcher_ = std::make_unique<ModelExecutionFetcherImpl>(
         shared_url_loader_factory_, GURL(kOptimizationGuideServiceUrl),
         /*optimization_guide_logger=*/nullptr);
   }
-  ModelExecutionFetcherTest(const ModelExecutionFetcherTest&) = delete;
-  ModelExecutionFetcherTest& operator=(const ModelExecutionFetcherTest&) =
-      delete;
+  ModelExecutionFetcherImplTest(const ModelExecutionFetcherImplTest&) = delete;
+  ModelExecutionFetcherImplTest& operator=(
+      const ModelExecutionFetcherImplTest&) = delete;
 
-  ~ModelExecutionFetcherTest() override = default;
+  ~ModelExecutionFetcherImplTest() override = default;
 
   void ExecuteModel(ModelBasedCapabilityKey feature,
                     const google::protobuf::MessageLite& request_metadata,
@@ -84,7 +84,7 @@ class ModelExecutionFetcherTest : public testing::Test {
     model_execution_fetcher_->ExecuteModel(
         feature, identity_test_env_.identity_manager(), request_metadata,
         timeout,
-        base::BindOnce(&ModelExecutionFetcherTest::OnModelExecutionReceived,
+        base::BindOnce(&ModelExecutionFetcherImplTest::OnModelExecutionReceived,
                        base::Unretained(this)));
     RunUntilIdle();
   }
@@ -162,7 +162,7 @@ class ModelExecutionFetcherTest : public testing::Test {
   signin::IdentityTestEnvironment identity_test_env_;
   variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
-  std::unique_ptr<ModelExecutionFetcher> model_execution_fetcher_;
+  std::unique_ptr<ModelExecutionFetcherImpl> model_execution_fetcher_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   base::HistogramTester histogram_tester_;
@@ -175,7 +175,7 @@ class ModelExecutionFetcherTest : public testing::Test {
   std::string last_server_timeout_header_;
 };
 
-TEST_F(ModelExecutionFetcherTest, TestSuccessfulResponseNoTimeout) {
+TEST_F(ModelExecutionFetcherImplTest, TestSuccessfulResponseNoTimeout) {
   identity_test_env()->MakePrimaryAccountAvailable(
       "test_email", signin::ConsentLevel::kSignin);
   ExecuteModel(ModelBasedCapabilityKey::kWallpaperSearch,
@@ -216,7 +216,7 @@ TEST_F(ModelExecutionFetcherTest, TestSuccessfulResponseNoTimeout) {
       FetcherRequestStatus::kSuccess, 1);
 }
 
-TEST_F(ModelExecutionFetcherTest, TestSuccessfulResponseWithTimeout) {
+TEST_F(ModelExecutionFetcherImplTest, TestSuccessfulResponseWithTimeout) {
   identity_test_env()->MakePrimaryAccountAvailable(
       "test_email", signin::ConsentLevel::kSignin);
   ExecuteModel(ModelBasedCapabilityKey::kWallpaperSearch,
@@ -257,7 +257,7 @@ TEST_F(ModelExecutionFetcherTest, TestSuccessfulResponseWithTimeout) {
       FetcherRequestStatus::kSuccess, 1);
 }
 
-TEST_F(ModelExecutionFetcherTest, TestNetErrorResponse) {
+TEST_F(ModelExecutionFetcherImplTest, TestNetErrorResponse) {
   identity_test_env()->MakePrimaryAccountAvailable(
       "test_email", signin::ConsentLevel::kSignin);
   ExecuteModel(ModelBasedCapabilityKey::kWallpaperSearch,
@@ -284,7 +284,7 @@ TEST_F(ModelExecutionFetcherTest, TestNetErrorResponse) {
             last_execute_response_->error().error());
 }
 
-TEST_F(ModelExecutionFetcherTest, TestBadResponse) {
+TEST_F(ModelExecutionFetcherImplTest, TestBadResponse) {
   identity_test_env()->MakePrimaryAccountAvailable(
       "test_email", signin::ConsentLevel::kSignin);
   ExecuteModel(ModelBasedCapabilityKey::kWallpaperSearch,
@@ -311,7 +311,7 @@ TEST_F(ModelExecutionFetcherTest, TestBadResponse) {
             last_execute_response_->error().error());
 }
 
-TEST_F(ModelExecutionFetcherTest, TestRequestCanceled) {
+TEST_F(ModelExecutionFetcherImplTest, TestRequestCanceled) {
   identity_test_env()->MakePrimaryAccountAvailable(
       "test_email", signin::ConsentLevel::kSignin);
   ExecuteModel(ModelBasedCapabilityKey::kWallpaperSearch,
@@ -329,7 +329,7 @@ TEST_F(ModelExecutionFetcherTest, TestRequestCanceled) {
             last_execute_response_->error().error());
 }
 
-TEST_F(ModelExecutionFetcherTest, TestMultipleParallelRequests) {
+TEST_F(ModelExecutionFetcherImplTest, TestMultipleParallelRequests) {
   identity_test_env()->MakePrimaryAccountAvailable(
       "test_email", signin::ConsentLevel::kSignin);
   ExecuteModel(ModelBasedCapabilityKey::kWallpaperSearch,
@@ -363,7 +363,7 @@ TEST_F(ModelExecutionFetcherTest, TestMultipleParallelRequests) {
       1);
 }
 
-TEST_F(ModelExecutionFetcherTest, TestSuccessfulResponseWithLogin) {
+TEST_F(ModelExecutionFetcherImplTest, TestSuccessfulResponseWithLogin) {
   identity_test_env()->MakePrimaryAccountAvailable(
       "test_email", signin::ConsentLevel::kSignin);
 
@@ -404,7 +404,7 @@ TEST_F(ModelExecutionFetcherTest, TestSuccessfulResponseWithLogin) {
       FetcherRequestStatus::kSuccess, 1);
 }
 
-TEST_F(ModelExecutionFetcherTest, TestAccessTokenFailureWithLogin) {
+TEST_F(ModelExecutionFetcherImplTest, TestAccessTokenFailureWithLogin) {
   identity_test_env()->MakePrimaryAccountAvailable(
       "test_email", signin::ConsentLevel::kSignin);
 
@@ -422,7 +422,7 @@ TEST_F(ModelExecutionFetcherTest, TestAccessTokenFailureWithLogin) {
             last_execute_response_->error().error());
 }
 
-TEST_F(ModelExecutionFetcherTest, TestNoUserSignIn) {
+TEST_F(ModelExecutionFetcherImplTest, TestNoUserSignIn) {
   ExecuteModel(ModelBasedCapabilityKey::kWallpaperSearch,
                BuildTestMessage("foo request"));
 

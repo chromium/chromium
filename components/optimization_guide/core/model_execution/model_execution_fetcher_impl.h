@@ -1,8 +1,8 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_MODEL_EXECUTION_FETCHER_H_
-#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_MODEL_EXECUTION_FETCHER_H_
+#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_MODEL_EXECUTION_FETCHER_IMPL_H_
+#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_MODEL_EXECUTION_FETCHER_IMPL_H_
 
 #include <memory>
 #include <optional>
@@ -37,17 +37,18 @@ using ModelExecuteResponseCallback = base::OnceCallback<void(
     base::expected<const proto::ExecuteResponse,
                    OptimizationGuideModelExecutionError>)>;
 
-class ModelExecutionFetcher {
+class ModelExecutionFetcherImpl {
  public:
-  ModelExecutionFetcher(
+  ModelExecutionFetcherImpl(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& optimization_guide_service_url,
       OptimizationGuideLogger* optimization_guide_logger);
 
-  ModelExecutionFetcher(const ModelExecutionFetcher&) = delete;
-  ModelExecutionFetcher& operator=(const ModelExecutionFetcher&) = delete;
+  ModelExecutionFetcherImpl(const ModelExecutionFetcherImpl&) = delete;
+  ModelExecutionFetcherImpl& operator=(const ModelExecutionFetcherImpl&) =
+      delete;
 
-  ~ModelExecutionFetcher();
+  ~ModelExecutionFetcherImpl();
 
   void ExecuteModel(ModelBasedCapabilityKey feature,
                     signin::IdentityManager* identity_manager,
@@ -92,9 +93,9 @@ class ModelExecutionFetcher {
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Used to get `weak_ptr_` to self.
-  base::WeakPtrFactory<ModelExecutionFetcher> weak_ptr_factory_{this};
+  base::WeakPtrFactory<ModelExecutionFetcherImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace optimization_guide
 
-#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_MODEL_EXECUTION_FETCHER_H_
+#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_MODEL_EXECUTION_FETCHER_IMPL_H_

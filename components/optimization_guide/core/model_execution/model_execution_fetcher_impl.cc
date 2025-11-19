@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/core/model_execution/model_execution_fetcher.h"
+#include "components/optimization_guide/core/model_execution/model_execution_fetcher_impl.h"
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -337,7 +337,7 @@ bool IsAccessTokenRequiredForFeature(ModelBasedCapabilityKey feature) {
 using ModelExecutionError =
     OptimizationGuideModelExecutionError::ModelExecutionError;
 
-ModelExecutionFetcher::ModelExecutionFetcher(
+ModelExecutionFetcherImpl::ModelExecutionFetcherImpl(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const GURL& optimization_guide_service_url,
     OptimizationGuideLogger* optimization_guide_logger)
@@ -349,7 +349,7 @@ ModelExecutionFetcher::ModelExecutionFetcher(
   }
 }
 
-ModelExecutionFetcher::~ModelExecutionFetcher() {
+ModelExecutionFetcherImpl::~ModelExecutionFetcherImpl() {
   if (model_execution_callback_) {
     DCHECK(model_execution_feature_);
     RecordRequestStatusHistogram(*model_execution_feature_,
@@ -361,7 +361,7 @@ ModelExecutionFetcher::~ModelExecutionFetcher() {
   }
 }
 
-void ModelExecutionFetcher::ExecuteModel(
+void ModelExecutionFetcherImpl::ExecuteModel(
     ModelBasedCapabilityKey feature,
     signin::IdentityManager* identity_manager,
     const google::protobuf::MessageLite& request_metadata,
@@ -393,12 +393,12 @@ void ModelExecutionFetcher::ExecuteModel(
   HandleTokenRequestFlow(
       IsAccessTokenRequiredForFeature(feature), identity_manager,
       signin::OAuthConsumerId::kOptimizationGuideModelExecution,
-      base::BindOnce(&ModelExecutionFetcher::OnAccessTokenReceived,
+      base::BindOnce(&ModelExecutionFetcherImpl::OnAccessTokenReceived,
                      weak_ptr_factory_.GetWeakPtr(), feature,
                      serialized_request, timeout));
 }
 
-void ModelExecutionFetcher::OnAccessTokenReceived(
+void ModelExecutionFetcherImpl::OnAccessTokenReceived(
     ModelBasedCapabilityKey feature,
     const std::string& serialized_request,
     std::optional<base::TimeDelta> timeout,
@@ -437,11 +437,11 @@ void ModelExecutionFetcher::OnAccessTokenReceived(
                                             "application/x-protobuf");
   active_url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
-      base::BindOnce(&ModelExecutionFetcher::OnURLLoadComplete,
+      base::BindOnce(&ModelExecutionFetcherImpl::OnURLLoadComplete,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ModelExecutionFetcher::OnURLLoadComplete(
+void ModelExecutionFetcherImpl::OnURLLoadComplete(
     std::unique_ptr<std::string> response_body) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
