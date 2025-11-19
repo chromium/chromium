@@ -71,6 +71,8 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/browser/ui/webui/signin/signin_utils_desktop.h"
+#include "chrome/browser/webauthn/passkey_unlock_manager.h"
+#include "chrome/browser/webauthn/passkey_unlock_manager_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -91,6 +93,7 @@
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/vector_icons/vector_icons.h"
+#include "device/fido/features.h"
 #include "net/base/url_util.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -311,6 +314,14 @@ void ProfileMenuView::OnAccountSettingsButtonClicked() {
     return;
   }
   chrome::ShowSettingsSubPage(&browser(), chrome::kPeopleSubPage);
+}
+
+void ProfileMenuView::OnPasskeyUnlockButtonClicked() {
+  OnActionableItemClicked(ActionableItem::kPasskeyUnlockButton);
+  if (!perform_menu_actions()) {
+    return;
+  }
+  webauthn::PasskeyUnlockManager::OpenTabWithPasskeyUnlockChallenge(&browser());
 }
 
 void ProfileMenuView::OnSyncErrorButtonClicked(
@@ -868,6 +879,32 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
         &ProfileMenuView::OnSigninButtonClicked, base::Unretained(this),
         account_info_for_signin_action, button_type,
         explicit_signin_access_point_.value_or(access_point));
+  }
+
+  // If `button_text` is empty, no button is shown (so there are no actionable
+  // errors, and in this case if needed we can display a passkey unlock button).
+  if (params.button_text.empty() &&
+      base::FeatureList::IsEnabled(device::kPasskeyUnlockErrorUi) &&
+      base::FeatureList::IsEnabled(device::kPasskeyUnlockManager) &&
+      base::FeatureList::IsEnabled(device::kWebAuthnOpportunisticRetrieval)) {
+    webauthn::PasskeyUnlockManager* passkey_unlock_manager =
+        webauthn::PasskeyUnlockManagerFactory::GetForProfile(&profile());
+    if (passkey_unlock_manager->ShouldDisplayErrorUi()) {
+      // TODO(crbug.com/454658811): Add support for other experiment arms.
+      auto experiment_arm =
+          webauthn::PasskeyUnlockManager::ExperimentArm::kVerify;
+      params.subtitle =
+          passkey_unlock_manager->GetPasskeyErrorProfileMenuDetails(
+              experiment_arm);
+      params.button_text =
+          passkey_unlock_manager->GetPasskeyErrorProfileMenuButtonLabel(
+              experiment_arm);
+      params.button_action =
+          base::BindRepeating(&ProfileMenuView::OnPasskeyUnlockButtonClicked,
+                              base::Unretained(this));
+      params.has_dotted_ring = true;
+      return params;
+    }
   }
 
   return params;

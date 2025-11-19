@@ -96,6 +96,7 @@ class ProfileMenuView : public ProfileMenuViewBase {
   void OnGoogleServicesSettingsButtonClicked();
   void OnAccountSettingsButtonClicked();
   void OnSyncErrorButtonClicked(syncer::SyncService::UserActionableError error);
+  void OnPasskeyUnlockButtonClicked();
   void OnSigninButtonClicked(CoreAccountInfo account,
                              ActionableItem button_type,
                              signin_metrics::AccessPoint access_point);

@@ -81,6 +81,8 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/webauthn/passkey_unlock_manager.h"
+#include "chrome/browser/webauthn/passkey_unlock_manager_factory.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -115,6 +117,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
+#include "device/fido/features.h"
 #include "extensions/browser/extension_registry.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_switches.h"
@@ -2251,6 +2254,77 @@ PROFILE_MENU_CLICK_TEST(kActionableItems_GuestProfile,
                         ProfileMenuClickTest_GuestProfile) {
   SetTargetBrowser(CreateGuestBrowser());
 
+  RunTest();
+}
+
+class MockPasskeyUnlockManager : public webauthn::PasskeyUnlockManager {
+ public:
+  MOCK_METHOD(bool, ShouldDisplayErrorUi, (), (const, override));
+};
+
+class ProfileMenuClickTestWithPasskeyError : public ProfileMenuClickTest {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    ProfileMenuClickTest::SetUpInProcessBrowserTestFixture();
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(
+                base::BindRepeating(&ProfileMenuClickTestWithPasskeyError::
+                                        OnWillCreateBrowserContextServices,
+                                    base::Unretained(this)));
+  }
+
+ private:
+  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+    webauthn::PasskeyUnlockManagerFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+          auto passkey_unlock_manager =
+              std::make_unique<MockPasskeyUnlockManager>();
+          ON_CALL(*passkey_unlock_manager, ShouldDisplayErrorUi())
+              .WillByDefault(testing::Return(true));
+          return passkey_unlock_manager;
+        }));
+  }
+
+  base::CallbackListSubscription create_services_subscription_;
+};
+
+// List of actionable items in the correct order as they appear in the menu with
+// Passkey unlock error. If a new button is added to the menu, it should also be
+// added to this list.
+constexpr std::array kActionableItems_PasskeyUnlockError = {
+    ProfileMenuViewBase::ActionableItem::kPasskeyUnlockButton,
+    ProfileMenuViewBase::ActionableItem::kAutofillSettingsButton,
+    ProfileMenuViewBase::ActionableItem::kManageGoogleAccountButton,
+    ProfileMenuViewBase::ActionableItem::kEditProfileButton,
+    ProfileMenuViewBase::ActionableItem::kAccountSettingsButton,
+    ProfileMenuViewBase::ActionableItem::kSignoutButton,
+    ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
+    ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
+    ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
+    // The first button is added again to finish the cycle and test that
+    // there are no other buttons at the end.
+    ProfileMenuViewBase::ActionableItem::kPasskeyUnlockButton};
+
+PROFILE_MENU_CLICK_TEST_WITH_FEATURE_STATES_F(
+    ProfileMenuClickTestWithPasskeyError,
+    kActionableItems_PasskeyUnlockError,
+    ProfileMenuClickTest_PasskeyUnlockError,
+    /*enabled_features=*/
+    std::vector<base::test::FeatureRef>(
+        {device::kPasskeyUnlockErrorUi, device::kPasskeyUnlockManager,
+         device::kWebAuthnOpportunisticRetrieval,
+         // Enabling the feature `ReplaceSyncPromosWithSignInPromos` because it
+         // will be fully rolled-out it soon.
+         syncer::kReplaceSyncPromosWithSignInPromos}),
+    /*disabled_features=*/{}) {
+  // For ensuring that the Passkey unlock card will be displayed we need to
+  // ensure that we are in signed-in state, and that the sync history is
+  // enabled.
+  signin::MakePrimaryAccountAvailable(identity_manager(), "user@example.com",
+                                      signin::ConsentLevel::kSignin);
+  signin_util::EnableHistorySync(sync_service());
   RunTest();
 }
 
