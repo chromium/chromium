@@ -10,6 +10,8 @@
 #include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/foundations/autofill_driver.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/common/aliases.h"
+#include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/compose/core/browser/compose_client.h"
 #include "components/compose/core/browser/compose_manager.h"
@@ -40,10 +42,14 @@ class ComposeManagerImpl : public ComposeManager {
       const autofill::FormFieldData& trigger_field,
       std::optional<PopupScreenLocation> popup_screen_location,
       ComposeCallback callback) override;
-  std::optional<autofill::Suggestion> GetSuggestion(
+  autofill::Suggestion GetSuggestion(
       const autofill::FormData& form,
       const autofill::FormFieldData& field,
       autofill::AutofillSuggestionTriggerSource trigger_source) override;
+  bool ShouldTriggerComposePopup(
+      const autofill::FormData& form,
+      const autofill::FormFieldData& field,
+      autofill::AutofillSuggestionTriggerSource trigger_source) const override;
   void NeverShowComposeForOrigin(const url::Origin& origin) override;
   void DisableCompose() override;
   void GoToSettings() override;

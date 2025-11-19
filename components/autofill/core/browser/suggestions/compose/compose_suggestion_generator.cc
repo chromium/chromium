@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/suggestions/compose_suggestion_generator.h"
+#include "components/autofill/core/browser/suggestions/compose/compose_suggestion_generator.h"
 
 #include "base/containers/to_vector.h"
+#include "components/autofill/core/browser/suggestions/compose/compose_availability.h"
 #include "components/autofill/core/common/autofill_util.h"
 
 namespace autofill {
@@ -62,8 +63,21 @@ void ComposeSuggestionGenerator::FetchSuggestionData(
         void(std::pair<SuggestionDataSource,
                        std::vector<SuggestionGenerator::SuggestionData>>)>
         callback) {
-  // Compose suggestion generator does not fetch any data.
-  callback({SuggestionDataSource::kCompose, {}});
+  if (!compose_delegate_ ||
+      (trigger_field.form_control_type() != FormControlType::kTextArea &&
+       trigger_field.form_control_type() !=
+           FormControlType::kContentEditable)) {
+    callback({SuggestionDataSource::kCompose, {}});
+    return;
+  }
+
+  if (!compose_delegate_->ShouldTriggerComposePopup(form, trigger_field,
+                                                    trigger_source_)) {
+    callback({SuggestionDataSource::kCompose, {}});
+    return;
+  }
+
+  callback({SuggestionDataSource::kCompose, {ComposeAvailability(true)}});
 }
 
 void ComposeSuggestionGenerator::GenerateSuggestions(
@@ -75,30 +89,21 @@ void ComposeSuggestionGenerator::GenerateSuggestions(
     const base::flat_map<SuggestionDataSource, std::vector<SuggestionData>>&
         all_suggestion_data,
     base::FunctionRef<void(ReturnedSuggestions)> callback) {
-  if (!compose_delegate_ ||
-      (trigger_field.form_control_type() != FormControlType::kTextArea &&
-       trigger_field.form_control_type() !=
-           FormControlType::kContentEditable)) {
+  auto it = all_suggestion_data.find(SuggestionDataSource::kCompose);
+  std::vector<SuggestionData> compose_data =
+      it != all_suggestion_data.end() ? it->second
+                                      : std::vector<SuggestionData>();
+  if (compose_data.empty()) {
     callback({FillingProduct::kCompose, {}});
     return;
   }
 
-  bool other_products_have_suggestion_data = std::ranges::any_of(
-      all_suggestion_data,
-      [](const std::pair<SuggestionDataSource, std::vector<SuggestionData>>&
-             data) { return !data.second.empty(); });
-  if (other_products_have_suggestion_data) {
-    callback({FillingProduct::kCompose, {}});
-    return;
-  }
-
-  std::optional<Suggestion> suggestion =
-      compose_delegate_->GetSuggestion(form, trigger_field, trigger_source_);
-  if (!suggestion) {
-    callback({FillingProduct::kCompose, {}});
-    return;
-  }
-  callback({FillingProduct::kCompose, {*suggestion}});
+  CHECK_EQ(compose_data.size(), 1u);
+  CHECK(std::holds_alternative<ComposeAvailability>(compose_data[0]));
+  CHECK(std::get<ComposeAvailability>(compose_data[0]).value());
+  callback({FillingProduct::kCompose,
+            {compose_delegate_->GetSuggestion(form, trigger_field,
+                                              trigger_source_)}});
 }
 
 }  // namespace autofill

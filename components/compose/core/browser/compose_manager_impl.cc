@@ -166,13 +166,10 @@ void ComposeManagerImpl::OpenComposeWithFormFieldData(
                              popup_screen_location, std::move(callback));
 }
 
-std::optional<Suggestion> ComposeManagerImpl::GetSuggestion(
+Suggestion ComposeManagerImpl::GetSuggestion(
     const autofill::FormData& form,
     const autofill::FormFieldData& field,
     AutofillSuggestionTriggerSource trigger_source) {
-  if (!client_->ShouldTriggerPopup(form, field, trigger_source)) {
-    return std::nullopt;
-  }
   std::u16string suggestion_text;
   std::u16string label_text;
   Suggestion suggestion(
@@ -226,6 +223,13 @@ std::optional<Suggestion> ComposeManagerImpl::GetSuggestion(
   }
 
   return suggestion;
+}
+
+bool ComposeManagerImpl::ShouldTriggerComposePopup(
+    const autofill::FormData& form,
+    const autofill::FormFieldData& field,
+    AutofillSuggestionTriggerSource trigger_source) const {
+  return client_->ShouldTriggerPopup(form, field, trigger_source);
 }
 
 void ComposeManagerImpl::NeverShowComposeForOrigin(const url::Origin& origin) {

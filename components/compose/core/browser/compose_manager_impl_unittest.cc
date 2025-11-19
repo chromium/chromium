@@ -278,14 +278,14 @@ TEST_F(ComposeManagerImplTest,
                   Suggestion::Icon::kPenSpark)));
 }
 
-TEST_F(ComposeManagerImplTest,
-       SuggestionGeneration_ShouldNotTriggerPopup_NoSuggestionReturned) {
+TEST_F(ComposeManagerImplTest, ShouldTriggerComposePopup) {
   ON_CALL(mock_compose_client(), ShouldTriggerPopup)
       .WillByDefault(testing::Return(false));
-  std::optional<Suggestion> suggestion = GetSuggestion(
-      autofill::AutofillSuggestionTriggerSource::kFormControlElementClicked,
-      /*has_session=*/false);
-  EXPECT_FALSE(suggestion.has_value());
+  const autofill::FormData form_data = CreateTestFormDataWith3TextAreaFields();
+  const autofill::FormFieldData selected_form_field = form_data.fields()[1];
+  EXPECT_FALSE(compose_manager_impl().ShouldTriggerComposePopup(
+      form_data, selected_form_field,
+      autofill::AutofillSuggestionTriggerSource::kFormControlElementClicked));
 }
 
 TEST_F(ComposeManagerImplTest, TestOpenCompose_Success) {

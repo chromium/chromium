@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_COMPOSE_SUGGESTION_GENERATOR_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_COMPOSE_SUGGESTION_GENERATOR_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_COMPOSE_COMPOSE_SUGGESTION_GENERATOR_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_COMPOSE_COMPOSE_SUGGESTION_GENERATOR_H_
 
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/integrators/compose/autofill_compose_delegate.h"
@@ -70,4 +70,4 @@ class ComposeSuggestionGenerator : public SuggestionGenerator {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_COMPOSE_SUGGESTION_GENERATOR_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_COMPOSE_COMPOSE_SUGGESTION_GENERATOR_H_

@@ -55,12 +55,18 @@ class AutofillComposeDelegate {
   // Navigates the user to the compose settings page.
   virtual void GoToSettings() = 0;
 
-  // Returns a suggestion if the compose service is available for
-  // `field`.
-  virtual std::optional<Suggestion> GetSuggestion(
+  // Returns a compose suggestion for `field`. Assumes that the feature is
+  // enabled and the field is eligible for the suggestion.
+  virtual Suggestion GetSuggestion(
       const FormData& form,
       const FormFieldData& field,
       AutofillSuggestionTriggerSource trigger_source) = 0;
+
+  // Checks if the popup (aka nudge) should be presented for `field` in `form`.
+  virtual bool ShouldTriggerComposePopup(
+      const FormData& form,
+      const FormFieldData& trigger_field,
+      autofill::AutofillSuggestionTriggerSource trigger_source) const = 0;
 
   // Whether the Autofill nudge should be anchored on the caret or on the
   // triggering field.

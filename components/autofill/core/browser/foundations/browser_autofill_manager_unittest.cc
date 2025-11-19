@@ -7558,6 +7558,8 @@ TEST_F(BrowserAutofillManagerTest, ComposeSuggestionsOnFocusWithoutClick) {
   EXPECT_CALL(iban_manager(), OnGetSingleFieldSuggestions).Times(0);
   EXPECT_CALL(autocomplete_history_manager(), OnGetSingleFieldSuggestions)
       .Times(0);
+  EXPECT_CALL(compose_delegate, ShouldTriggerComposePopup)
+      .WillOnce(Return(true));
   EXPECT_CALL(
       compose_delegate,
       GetSuggestion(
@@ -7592,6 +7594,8 @@ TEST_F(BrowserAutofillManagerTest, ComposeSuggestionsAreQueriedForTextareas) {
   EXPECT_CALL(iban_manager(), OnGetSingleFieldSuggestions).Times(0);
   EXPECT_CALL(autocomplete_history_manager(), OnGetSingleFieldSuggestions)
       .Times(0);
+  EXPECT_CALL(compose_delegate, ShouldTriggerComposePopup)
+      .WillOnce(Return(true));
   EXPECT_CALL(
       compose_delegate,
       GetSuggestion(

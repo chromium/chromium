@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/suggestions/compose_suggestion_generator.h"
+#include "components/autofill/core/browser/suggestions/compose/compose_suggestion_generator.h"
 
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -19,6 +19,11 @@ namespace {
 
 using ::testing::_;
 using ::testing::Field;
+using ::testing::IsEmpty;
+using ::testing::Pair;
+using ::testing::Return;
+using ::testing::SaveArg;
+using ::testing::SizeIs;
 
 class ComposeSuggestionGeneratorTest : public testing::Test {
  protected:
@@ -57,9 +62,10 @@ TEST_F(ComposeSuggestionGeneratorTest, GeneratesComposeSuggestion) {
       suggestions_generated_callback;
 
   MockAutofillComposeDelegate compose_delegate;
+  EXPECT_CALL(compose_delegate, ShouldTriggerComposePopup)
+      .WillOnce(Return(true));
   EXPECT_CALL(compose_delegate, GetSuggestion)
-      .WillOnce(
-          testing::Return(Suggestion(SuggestionType::kComposeProactiveNudge)));
+      .WillOnce(Return(Suggestion(SuggestionType::kComposeProactiveNudge)));
 
   ComposeSuggestionGenerator generator(
       &compose_delegate,
@@ -70,23 +76,21 @@ TEST_F(ComposeSuggestionGeneratorTest, GeneratesComposeSuggestion) {
 
   EXPECT_CALL(
       suggestion_data_callback,
-      Run(testing::Pair(SuggestionGenerator::SuggestionDataSource::kCompose,
-                        testing::IsEmpty())))
-      .WillOnce(testing::SaveArg<0>(&savedCallbackArgument));
+      Run(Pair(SuggestionGenerator::SuggestionDataSource::kCompose, SizeIs(1))))
+      .WillOnce(SaveArg<0>(&savedCallbackArgument));
   generator.FetchSuggestionData(form().ToFormData(), field(), &form(), &field(),
                                 client(), suggestion_data_callback.Get());
 
   EXPECT_CALL(suggestions_generated_callback,
-              Run(testing::Pair(FillingProduct::kCompose, testing::SizeIs(1))));
+              Run(Pair(FillingProduct::kCompose, SizeIs(1))));
   generator.GenerateSuggestions(form().ToFormData(), field(), &form(), &field(),
                                 client(), {savedCallbackArgument},
                                 suggestions_generated_callback.Get());
 }
 
-// Checks that no compose suggestion is generated, if other products have some
-// suggestions to offer.
-TEST_F(ComposeSuggestionGeneratorTest,
-       NoComposeSuggestionIfOtherSuggestionsAvailable) {
+// Checks that no compose suggestion are generated, if the feature is not
+// enabled.
+TEST_F(ComposeSuggestionGeneratorTest, NoComposeSuggestionIfFeatureDisabled) {
   base::MockCallback<base::OnceCallback<void(
       std::pair<SuggestionGenerator::SuggestionDataSource,
                 std::vector<SuggestionGenerator::SuggestionData>>)>>
@@ -96,6 +100,8 @@ TEST_F(ComposeSuggestionGeneratorTest,
       suggestions_generated_callback;
 
   MockAutofillComposeDelegate compose_delegate;
+  EXPECT_CALL(compose_delegate, ShouldTriggerComposePopup)
+      .WillOnce(Return(false));
   EXPECT_CALL(compose_delegate, GetSuggestion).Times(0);
 
   ComposeSuggestionGenerator generator(
@@ -103,21 +109,19 @@ TEST_F(ComposeSuggestionGeneratorTest,
       AutofillSuggestionTriggerSource::kTextFieldValueChanged);
   std::pair<SuggestionGenerator::SuggestionDataSource,
             std::vector<SuggestionGenerator::SuggestionData>>
-      other_generated_suggestion_data{
-          SuggestionGenerator::SuggestionDataSource::kAutocomplete,
-          {SuggestionGenerator::SuggestionData(AutocompleteEntry())}};
+      savedCallbackArgument;
 
   EXPECT_CALL(
       suggestion_data_callback,
-      Run(testing::Pair(SuggestionGenerator::SuggestionDataSource::kCompose,
-                        testing::IsEmpty())));
+      Run(Pair(SuggestionGenerator::SuggestionDataSource::kCompose, IsEmpty())))
+      .WillOnce(SaveArg<0>(&savedCallbackArgument));
   generator.FetchSuggestionData(form().ToFormData(), field(), &form(), &field(),
                                 client(), suggestion_data_callback.Get());
 
   EXPECT_CALL(suggestions_generated_callback,
-              Run(testing::Pair(FillingProduct::kCompose, testing::IsEmpty())));
+              Run(Pair(FillingProduct::kCompose, IsEmpty())));
   generator.GenerateSuggestions(form().ToFormData(), field(), &form(), &field(),
-                                client(), {other_generated_suggestion_data},
+                                client(), {savedCallbackArgument},
                                 suggestions_generated_callback.Get());
 }
 
