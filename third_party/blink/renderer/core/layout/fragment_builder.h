@@ -234,14 +234,9 @@ class CORE_EXPORT FragmentBuilder {
   // OutOfFlowLayoutPart(container_style, builder).Run();
   //
   // See layout part for builder interaction.
-  void AddOutOfFlowChildCandidate(
-      BlockNode,
-      const LogicalOffset& child_offset,
-      LogicalStaticPosition::InlineEdge = LogicalStaticPosition::kInlineStart,
-      LogicalStaticPosition::BlockEdge = LogicalStaticPosition::kBlockStart,
-      LogicalStaticPosition::LogicalAlignmentDirection align_self_direction =
-          LogicalStaticPosition::LogicalAlignmentDirection::kBlock,
-      bool allow_top_layer_nodes = false);
+  void AddOutOfFlowChildCandidate(const BlockNode&,
+                                  const LogicalStaticPosition&,
+                                  bool allow_top_layer_nodes = false);
 
   // This should only be used for inline-level OOF-positioned nodes.
   // |inline_container_writing_direction| is the current writing mode direction

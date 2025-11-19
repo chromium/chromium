@@ -532,49 +532,47 @@ void FlexLayoutAlgorithm::HandleOutOfFlowPositionedItems(
     AxisEdge inline_axis_edge = is_column_ ? cross_axis_edge : main_axis_edge;
     AxisEdge block_axis_edge = is_column_ ? main_axis_edge : cross_axis_edge;
 
-    InlineEdge inline_edge;
-    BlockEdge block_edge;
-    LogicalOffset offset = border_scrollbar_padding.StartOffset();
+    LogicalStaticPosition static_pos;
+    static_pos.offset = border_scrollbar_padding.StartOffset();
 
     // Determine the static-position based off the axis-edge.
     if (block_axis_edge == AxisEdge::kStart) {
       DCHECK(!IsBreakInside(GetBreakToken()));
-      block_edge = BlockEdge::kBlockStart;
+      static_pos.block_edge = BlockEdge::kBlockStart;
     } else if (block_axis_edge == AxisEdge::kCenter) {
       if (!should_process_block_center) {
         oof_children.emplace_back(oof_child);
         continue;
       }
-      block_edge = BlockEdge::kBlockCenter;
-      offset.block_offset += total_fragment_size.block_size / 2;
+      static_pos.block_edge = BlockEdge::kBlockCenter;
+      static_pos.offset.block_offset += total_fragment_size.block_size / 2;
     } else {
       if (!should_process_block_end) {
         oof_children.emplace_back(oof_child);
         continue;
       }
-      block_edge = BlockEdge::kBlockEnd;
-      offset.block_offset += total_fragment_size.block_size;
+      static_pos.block_edge = BlockEdge::kBlockEnd;
+      static_pos.offset.block_offset += total_fragment_size.block_size;
     }
 
     if (inline_axis_edge == AxisEdge::kStart) {
-      inline_edge = InlineEdge::kInlineStart;
+      static_pos.inline_edge = InlineEdge::kInlineStart;
     } else if (inline_axis_edge == AxisEdge::kCenter) {
-      inline_edge = InlineEdge::kInlineCenter;
-      offset.inline_offset += total_fragment_size.inline_size / 2;
+      static_pos.inline_edge = InlineEdge::kInlineCenter;
+      static_pos.offset.inline_offset += total_fragment_size.inline_size / 2;
     } else {
-      inline_edge = InlineEdge::kInlineEnd;
-      offset.inline_offset += total_fragment_size.inline_size;
+      static_pos.inline_edge = InlineEdge::kInlineEnd;
+      static_pos.offset.inline_offset += total_fragment_size.inline_size;
     }
 
     // Make the child offset relative to our fragment.
-    offset.block_offset -= previous_consumed_block_size;
+    static_pos.offset.block_offset -= previous_consumed_block_size;
 
-    LogicalAlignmentDirection align_self_direction =
-        is_column_ ? LogicalAlignmentDirection::kInline
-                   : LogicalAlignmentDirection::kBlock;
+    static_pos.align_self_direction = is_column_
+                                          ? LogicalAlignmentDirection::kInline
+                                          : LogicalAlignmentDirection::kBlock;
 
-    container_builder_.AddOutOfFlowChildCandidate(
-        child, offset, inline_edge, block_edge, align_self_direction);
+    container_builder_.AddOutOfFlowChildCandidate(child, static_pos);
   }
 }
 

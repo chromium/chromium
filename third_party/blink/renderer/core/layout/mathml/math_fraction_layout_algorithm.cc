@@ -131,7 +131,8 @@ void MathFractionLayoutAlgorithm::GatherChildren(BlockNode* numerator,
     BlockNode block_child = To<BlockNode>(child);
     if (child.IsOutOfFlowPositioned()) {
       container_builder_.AddOutOfFlowChildCandidate(
-          block_child, BorderScrollbarPadding().StartOffset());
+          block_child,
+          LogicalStaticPosition(BorderScrollbarPadding().StartOffset()));
       continue;
     }
     if (!*numerator) {

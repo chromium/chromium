@@ -2990,23 +2990,20 @@ void GridLayoutAlgorithm::PlaceOutOfFlowItems(
           container_builder_.Borders(), total_fragment_size, out_of_flow_item));
     }
 
-    auto child_offset = containing_block_rect
+    LogicalStaticPosition static_pos;
+    static_pos.offset = containing_block_rect
                             ? containing_block_rect->offset
                             : BorderScrollbarPadding().StartOffset();
     const auto containing_block_size = containing_block_rect
                                            ? containing_block_rect->size
                                            : default_containing_block_size;
 
-    LogicalStaticPosition::InlineEdge inline_edge;
-    LogicalStaticPosition::BlockEdge block_edge;
-
     AlignmentOffsetForOutOfFlow(out_of_flow_item->Alignment(kForColumns),
                                 out_of_flow_item->Alignment(kForRows),
-                                containing_block_size, &inline_edge,
-                                &block_edge, &child_offset);
+                                containing_block_size, &static_pos);
 
     // Make the child offset relative to our fragment.
-    child_offset.block_offset -= previous_consumed_block_size;
+    static_pos.offset.block_offset -= previous_consumed_block_size;
 
     // We will attempt to add OOFs in the fragment in which their static
     // position belongs. However, the last fragment has the most up-to-date grid
@@ -3014,9 +3011,9 @@ void GridLayoutAlgorithm::PlaceOutOfFlowItems(
     // items or items with a grid-area that is not in the first or last
     // fragment, we could end up with an incorrect static position.
     if (should_process_block_end ||
-        child_offset.block_offset <= FragmentainerCapacityForChildren()) {
-      container_builder_.AddOutOfFlowChildCandidate(
-          out_of_flow_item->node, child_offset, inline_edge, block_edge);
+        static_pos.offset.block_offset <= FragmentainerCapacityForChildren()) {
+      container_builder_.AddOutOfFlowChildCandidate(out_of_flow_item->node,
+                                                    static_pos);
     } else {
       oof_children.emplace_back(oof_child);
     }

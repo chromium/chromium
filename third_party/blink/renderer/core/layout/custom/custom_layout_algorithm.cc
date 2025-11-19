@@ -195,7 +195,8 @@ void CustomLayoutAlgorithm::AddAnyOutOfFlowPositionedChildren(
   DCHECK(child);
   while (*child && child->IsOutOfFlowPositioned()) {
     container_builder_.AddOutOfFlowChildCandidate(
-        To<BlockNode>(*child), BorderScrollbarPadding().StartOffset());
+        To<BlockNode>(*child),
+        LogicalStaticPosition(BorderScrollbarPadding().StartOffset()));
     *child = child->NextSibling();
   }
 }

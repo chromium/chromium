@@ -38,7 +38,8 @@ void MathRadicalLayoutAlgorithm::GatherChildren(
     if (child.IsOutOfFlowPositioned()) {
       if (container_builder) {
         container_builder->AddOutOfFlowChildCandidate(
-            block_child, BorderScrollbarPadding().StartOffset());
+            block_child,
+            LogicalStaticPosition(BorderScrollbarPadding().StartOffset()));
       }
       continue;
     }

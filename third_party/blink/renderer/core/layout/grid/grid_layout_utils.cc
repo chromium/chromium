@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/layout/constraint_space.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
+#include "third_party/blink/renderer/core/layout/geometry/static_position.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_item.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_track_collection.h"
 #include "third_party/blink/renderer/core/layout/length_utils.h"
@@ -405,41 +406,39 @@ void ComputeOutOfFlowOffsetAndSize(
 void AlignmentOffsetForOutOfFlow(AxisEdge inline_axis_edge,
                                  AxisEdge block_axis_edge,
                                  LogicalSize container_size,
-                                 LogicalStaticPosition::InlineEdge* inline_edge,
-                                 LogicalStaticPosition::BlockEdge* block_edge,
-                                 LogicalOffset* offset) {
+                                 LogicalStaticPosition* static_pos) {
   using InlineEdge = LogicalStaticPosition::InlineEdge;
   using BlockEdge = LogicalStaticPosition::BlockEdge;
 
   switch (inline_axis_edge) {
     case AxisEdge::kStart:
     case AxisEdge::kFirstBaseline:
-      *inline_edge = InlineEdge::kInlineStart;
+      static_pos->inline_edge = InlineEdge::kInlineStart;
       break;
     case AxisEdge::kCenter:
-      *inline_edge = InlineEdge::kInlineCenter;
-      offset->inline_offset += container_size.inline_size / 2;
+      static_pos->inline_edge = InlineEdge::kInlineCenter;
+      static_pos->offset.inline_offset += container_size.inline_size / 2;
       break;
     case AxisEdge::kEnd:
     case AxisEdge::kLastBaseline:
-      *inline_edge = InlineEdge::kInlineEnd;
-      offset->inline_offset += container_size.inline_size;
+      static_pos->inline_edge = InlineEdge::kInlineEnd;
+      static_pos->offset.inline_offset += container_size.inline_size;
       break;
   }
 
   switch (block_axis_edge) {
     case AxisEdge::kStart:
     case AxisEdge::kFirstBaseline:
-      *block_edge = BlockEdge::kBlockStart;
+      static_pos->block_edge = BlockEdge::kBlockStart;
       break;
     case AxisEdge::kCenter:
-      *block_edge = BlockEdge::kBlockCenter;
-      offset->block_offset += container_size.block_size / 2;
+      static_pos->block_edge = BlockEdge::kBlockCenter;
+      static_pos->offset.block_offset += container_size.block_size / 2;
       break;
     case AxisEdge::kEnd:
     case AxisEdge::kLastBaseline:
-      *block_edge = BlockEdge::kBlockEnd;
-      offset->block_offset += container_size.block_size;
+      static_pos->block_edge = BlockEdge::kBlockEnd;
+      static_pos->offset.block_offset += container_size.block_size;
       break;
   }
 }

@@ -480,11 +480,8 @@ void FragmentBuilder::AddChildInternal(const PhysicalFragment* child,
 }
 
 void FragmentBuilder::AddOutOfFlowChildCandidate(
-    BlockNode child,
-    const LogicalOffset& child_offset,
-    LogicalStaticPosition::InlineEdge inline_edge,
-    LogicalStaticPosition::BlockEdge block_edge,
-    LogicalStaticPosition::LogicalAlignmentDirection align_self_direction,
+    const BlockNode& child,
+    const LogicalStaticPosition& static_pos,
     bool allow_top_layer_nodes) {
   DCHECK(child);
   // Top-layer elements are processed separately in the OutOfFlowLayoutPart.
@@ -493,11 +490,8 @@ void FragmentBuilder::AddOutOfFlowChildCandidate(
   }
 
   oof_candidates_may_have_anchors_ |= child.MayContainAnchor();
-  oof_positioned_candidates_.emplace_back(
-      child,
-      LogicalStaticPosition{child_offset, inline_edge, block_edge,
-                            align_self_direction},
-      RequiresContentBeforeBreaking());
+  oof_positioned_candidates_.emplace_back(child, static_pos,
+                                          RequiresContentBeforeBreaking());
 }
 
 void FragmentBuilder::AddOutOfFlowInlineChildCandidate(
@@ -507,16 +501,16 @@ void FragmentBuilder::AddOutOfFlowInlineChildCandidate(
     LayoutUnit line_box_block_size) {
   DCHECK(node_.IsInline() || layout_object_->IsLayoutInline());
 
-  LogicalOffset static_offset = child_offset;
+  LogicalStaticPosition static_pos(child_offset);
 
   // 'align-items' and 'justify-items' don't apply in inline layout, so don't
   // apply them to OOF items.
-  auto inline_axis_edge = InlineStaticPositionEdge(
+  static_pos.inline_edge = InlineStaticPositionEdge(
       child, /*justify_items_style=*/nullptr,
       inline_container_writing_direction,
       /*should_swap_inline_axis=*/
       !IsLtr(inline_container_writing_direction.Direction()));
-  auto block_axis_edge = BlockStaticPositionEdge(
+  static_pos.block_edge = BlockStaticPositionEdge(
       child, /*align_items_style=*/nullptr, inline_container_writing_direction);
 
   // The alignment container for inline OOF elements is a zero-thickness line in
@@ -525,12 +519,12 @@ void FragmentBuilder::AddOutOfFlowInlineChildCandidate(
   // within its alignment container. The inline offset will not change.
   //
   // https://drafts.csswg.org/css-position-3/#staticpos-rect
-  switch (block_axis_edge) {
+  switch (static_pos.block_edge) {
     case LogicalStaticPosition::BlockEdge::kBlockCenter:
-      static_offset.block_offset += line_box_block_size / 2;
+      static_pos.offset.block_offset += line_box_block_size / 2;
       break;
     case LogicalStaticPosition::BlockEdge::kBlockEnd:
-      static_offset.block_offset += line_box_block_size;
+      static_pos.offset.block_offset += line_box_block_size;
       break;
     case LogicalStaticPosition::BlockEdge::kBlockStart:
       // The static position is already correct in this case.
@@ -540,8 +534,7 @@ void FragmentBuilder::AddOutOfFlowInlineChildCandidate(
   // As all inline-level fragments are built in the line-logical coordinate
   // system (Direction() is kLtr), we need to know the direction of the
   // parent element to correctly determine an OOF childs static position.
-  AddOutOfFlowChildCandidate(child, static_offset, inline_axis_edge,
-                             block_axis_edge);
+  AddOutOfFlowChildCandidate(child, static_pos);
 }
 
 void FragmentBuilder::AddOutOfFlowFragmentainerDescendant(

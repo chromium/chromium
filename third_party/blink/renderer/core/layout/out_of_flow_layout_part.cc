@@ -688,10 +688,7 @@ void OutOfFlowLayoutPart::Run() {
     // https://drafts.csswg.org/css-position-4/#top-styling
     // The static position for top-layer elements is just 0x0.
     container_builder_->AddOutOfFlowChildCandidate(
-        block_child, LogicalOffset(),
-        LogicalStaticPosition::InlineEdge::kInlineStart,
-        LogicalStaticPosition::BlockEdge::kBlockStart,
-        LogicalStaticPosition::LogicalAlignmentDirection::kBlock,
+        block_child, LogicalStaticPosition(),
         /*allow_top_layer_nodes=*/true);
 
     // With one top-layer node added, run through the machinery again. Note that

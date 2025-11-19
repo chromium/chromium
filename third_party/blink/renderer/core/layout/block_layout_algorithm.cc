@@ -1572,13 +1572,16 @@ void BlockLayoutAlgorithm::HandleOutOfFlowPositioned(
   }
 
   DCHECK(child.IsOutOfFlowPositioned());
-  LogicalOffset static_offset = {BorderScrollbarPadding().inline_start,
-                                 previous_inflow_position.logical_block_offset};
+  LogicalStaticPosition static_pos(
+      LogicalOffset(BorderScrollbarPadding().inline_start,
+                    previous_inflow_position.logical_block_offset));
 
   // We only include the margin strut in the OOF static-position if we know we
   // aren't going to be a zero-block-size fragment.
-  if (container_builder_.BfcBlockOffset())
-    static_offset.block_offset += previous_inflow_position.margin_strut.Sum();
+  if (container_builder_.BfcBlockOffset()) {
+    static_pos.offset.block_offset +=
+        previous_inflow_position.margin_strut.Sum();
+  }
 
   if (child.Style().IsOriginalDisplayInlineType()) {
     // The static-position of inline-level OOF-positioned nodes depends on
@@ -1594,26 +1597,25 @@ void BlockLayoutAlgorithm::HandleOutOfFlowPositioned(
     LayoutUnit origin_bfc_block_offset =
         container_builder_.BfcBlockOffset().value_or(
             GetConstraintSpace().ExpectedBfcBlockOffset()) +
-        static_offset.block_offset;
+        static_pos.offset.block_offset;
 
     BfcOffset origin_bfc_offset = {
         GetConstraintSpace().GetBfcOffset().line_offset +
             BorderScrollbarPadding().LineLeft(Style().Direction()),
         origin_bfc_block_offset};
 
-    static_offset.inline_offset += CalculateOutOfFlowStaticInlineLevelOffset(
-        Style(), origin_bfc_offset, GetExclusionSpace(),
-        ChildAvailableSize().inline_size);
-
-    container_builder_.AddOutOfFlowChildCandidate(child, static_offset);
+    static_pos.offset.inline_offset +=
+        CalculateOutOfFlowStaticInlineLevelOffset(
+            Style(), origin_bfc_offset, GetExclusionSpace(),
+            ChildAvailableSize().inline_size);
   } else {
     WritingDirectionMode parent_writing_direction =
         GetConstraintSpace().GetWritingDirection();
-    auto inline_axis_edge = InlineStaticPositionEdge(
+    static_pos.inline_edge = InlineStaticPositionEdge(
         child, /*justify_items_style=*/&Style(), parent_writing_direction);
     // 'align-items' doesn't apply in block layout, so don't apply it to OOF
     // items.
-    auto block_axis_edge = BlockStaticPositionEdge(
+    static_pos.block_edge = BlockStaticPositionEdge(
         child, /*align_items_style=*/nullptr, parent_writing_direction);
 
     // The alignment container for block OOF elements is a zero-thickness line
@@ -1624,21 +1626,20 @@ void BlockLayoutAlgorithm::HandleOutOfFlowPositioned(
     //
     // https://drafts.csswg.org/css-position-3/#staticpos-rect
     LayoutUnit available_inline_size = ChildAvailableSize().inline_size;
-    switch (inline_axis_edge) {
+    switch (static_pos.inline_edge) {
       case LogicalStaticPosition::InlineEdge::kInlineCenter:
-        static_offset.inline_offset += available_inline_size / 2;
+        static_pos.offset.inline_offset += available_inline_size / 2;
         break;
       case LogicalStaticPosition::InlineEdge::kInlineEnd:
-        static_offset.inline_offset += available_inline_size;
+        static_pos.offset.inline_offset += available_inline_size;
         break;
       case LogicalStaticPosition::InlineEdge::kInlineStart:
         // The static position is already correct in this case.
         break;
     }
-
-    container_builder_.AddOutOfFlowChildCandidate(
-        child, static_offset, inline_axis_edge, block_axis_edge);
   }
+
+  container_builder_.AddOutOfFlowChildCandidate(child, static_pos);
 }
 
 void BlockLayoutAlgorithm::HandleFloat(

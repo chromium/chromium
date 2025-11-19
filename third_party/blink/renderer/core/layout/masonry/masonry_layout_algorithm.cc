@@ -544,24 +544,21 @@ void MasonryLayoutAlgorithm::PlaceOutOfFlowItems(
           container_builder_.Borders(), total_fragment_size, out_of_flow_item));
     }
 
-    auto child_offset = containing_block_rect
+    LogicalStaticPosition static_pos;
+    static_pos.offset = containing_block_rect
                             ? containing_block_rect->offset
                             : BorderScrollbarPadding().StartOffset();
     const auto containing_block_size = containing_block_rect
                                            ? containing_block_rect->size
                                            : default_containing_block_size;
 
-    LogicalStaticPosition::InlineEdge inline_edge;
-    LogicalStaticPosition::BlockEdge block_edge;
-
     AlignmentOffsetForOutOfFlow(out_of_flow_item->Alignment(kForColumns),
                                 out_of_flow_item->Alignment(kForRows),
-                                containing_block_size, &inline_edge,
-                                &block_edge, &child_offset);
+                                containing_block_size, &static_pos);
 
     // TODO(kschmi): Handle fragmentation.
-    container_builder_.AddOutOfFlowChildCandidate(
-        out_of_flow_item->node, child_offset, inline_edge, block_edge);
+    container_builder_.AddOutOfFlowChildCandidate(out_of_flow_item->node,
+                                                  static_pos);
   }
 }
 

@@ -269,9 +269,8 @@ const LayoutResult* SimplifiedLayoutAlgorithm::Layout() {
     // calculated it.
     const auto* layer = child.GetLayoutBox()->Layer();
     LogicalStaticPosition position = layer->GetStaticPosition();
-    container_builder_.AddOutOfFlowChildCandidate(
-        To<BlockNode>(child), position.offset, position.inline_edge,
-        position.block_edge, position.align_self_direction);
+    container_builder_.AddOutOfFlowChildCandidate(To<BlockNode>(child),
+                                                  position);
   }
 
   if (previous_fragment.Items()) {
