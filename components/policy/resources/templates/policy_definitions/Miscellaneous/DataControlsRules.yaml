@@ -189,11 +189,10 @@ schema:
         type: object
     type: object
   type: array
-future_on:
-- ios
 supported_on:
 - android:140-
 - chrome.*:128-
 - chrome_os:128-
+- ios:144-
 tags: []
 type: dict
