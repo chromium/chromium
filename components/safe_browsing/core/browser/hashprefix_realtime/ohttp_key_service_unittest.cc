@@ -175,6 +175,9 @@ TEST_F(OhttpKeyServiceTest, GetOhttpKey_Success) {
   EXPECT_EQ(pref_service_.GetTime(
                 prefs::kSafeBrowsingHashRealTimeOhttpExpirationTime),
             base::Time::Now() + base::Days(3));
+  EXPECT_EQ(
+      pref_service_.GetString(prefs::kSafeBrowsingHashRealTimeOhttpKeyFetchUrl),
+      kExpectedKeyFetchServerUrl);
 
   histogram_tester_.ExpectBucketCount(
       "SafeBrowsing.HPRT.OhttpKeyService.FetchKeyTriggerReason",
@@ -200,6 +203,9 @@ TEST_F(OhttpKeyServiceTest, GetOhttpKey_Failure) {
   EXPECT_EQ(pref_service_.GetTime(
                 prefs::kSafeBrowsingHashRealTimeOhttpExpirationTime),
             base::Time());
+  EXPECT_EQ(
+      pref_service_.GetString(prefs::kSafeBrowsingHashRealTimeOhttpKeyFetchUrl),
+      "");
 }
 
 TEST_F(OhttpKeyServiceTest, GetOhttpKey_Backoff) {
@@ -335,6 +341,8 @@ TEST_F(OhttpKeyServiceTest, PopulateKeyFromPref_ValidKey) {
                           kEncodedTestOhttpKey);
   pref_service_.SetTime(prefs::kSafeBrowsingHashRealTimeOhttpExpirationTime,
                         base::Time::Now() + base::Days(10));
+  pref_service_.SetString(prefs::kSafeBrowsingHashRealTimeOhttpKeyFetchUrl,
+                          kExpectedKeyFetchServerUrl);
 
   auto ohttp_key_service = std::make_unique<OhttpKeyService>(
       test_shared_loader_factory_, &pref_service_, &local_state_,
@@ -373,6 +381,46 @@ TEST_F(OhttpKeyServiceTest, PopulateKeyFromPref_EmptyKey) {
   std::optional<OhttpKeyService::OhttpKeyAndExpiration> ohttp_key =
       ohttp_key_service->get_ohttp_key_for_testing();
   EXPECT_FALSE(ohttp_key.has_value());
+}
+
+TEST_F(OhttpKeyServiceTest, PopulateKeyFromPref_KeyFetchUrlChanged) {
+  pref_service_.SetString(prefs::kSafeBrowsingHashRealTimeOhttpKey,
+                          kEncodedTestOhttpKey);
+  pref_service_.SetTime(prefs::kSafeBrowsingHashRealTimeOhttpExpirationTime,
+                        base::Time::Now() + base::Days(10));
+  pref_service_.SetString(prefs::kSafeBrowsingHashRealTimeOhttpKeyFetchUrl,
+                          "https://example.invalid/hpkekeyconfig");
+
+  auto ohttp_key_service = std::make_unique<OhttpKeyService>(
+      test_shared_loader_factory_, &pref_service_, &local_state_,
+      base::BindRepeating(&OhttpKeyServiceTest::GetCountry,
+                          base::Unretained(this)),
+      true);
+
+  std::optional<OhttpKeyService::OhttpKeyAndExpiration> ohttp_key =
+      ohttp_key_service->get_ohttp_key_for_testing();
+  EXPECT_FALSE(ohttp_key.has_value());
+}
+
+TEST_F(OhttpKeyServiceTest, PopulateKeyFromPref_MissingKeyFetchUrlInPrefs) {
+  // TODO(crbug.com/461955661): Change this test to not expect a key once we
+  // remove kHardCodedKeyFetchUrl from OhttpKeyService::PopulateKeyFromPref().
+  pref_service_.SetString(prefs::kSafeBrowsingHashRealTimeOhttpKey,
+                          kEncodedTestOhttpKey);
+  pref_service_.SetTime(prefs::kSafeBrowsingHashRealTimeOhttpExpirationTime,
+                        base::Time::Now() + base::Days(10));
+
+  auto ohttp_key_service = std::make_unique<OhttpKeyService>(
+      test_shared_loader_factory_, &pref_service_, &local_state_,
+      base::BindRepeating(&OhttpKeyServiceTest::GetCountry,
+                          base::Unretained(this)),
+      true);
+
+  std::optional<OhttpKeyService::OhttpKeyAndExpiration> ohttp_key =
+      ohttp_key_service->get_ohttp_key_for_testing();
+  EXPECT_TRUE(ohttp_key.has_value());
+  EXPECT_EQ(ohttp_key.value().expiration, base::Time::Now() + base::Days(10));
+  EXPECT_EQ(ohttp_key.value().key, kTestOhttpKey);
 }
 
 TEST_F(OhttpKeyServiceTest, AsyncFetch) {

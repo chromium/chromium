@@ -244,6 +244,11 @@ constexpr base::FeatureParam<std::string> kHashPrefixRealTimeLookupsRelayUrl{
     "SafeBrowsingHashPrefixRealTimeLookupsRelayUrl",
     /*default_value=*/
     "https://google-ohttp-relay-safebrowsing.fastly-edge.com/"};
+constexpr base::FeatureParam<std::string> kHashPrefixRealTimeLookupsKeyFetchUrl{
+    &kHashPrefixRealTimeLookups,
+    "SafeBrowsingHashPrefixRealTimeLookupsKeyFetchUrl",
+    /*default_value=*/
+    "https://safebrowsingohttpgateway.googleapis.com/v1/ohttp/hpkekeyconfig"};
 
 BASE_FEATURE(kHashPrefixRealTimeLookupsSamplePing,
              "SafeBrowsingHashPrefixRealTimeLookupsSamplePing",
@@ -406,6 +411,8 @@ base::Value::List GetFeatureStatusList() {
   // Manually add experimental features that we want param values for.
   param_list.Append(kHashPrefixRealTimeLookupsRelayUrl.Get());
   param_list.Append(kHashPrefixRealTimeLookupsRelayUrl.name);
+  param_list.Append(kHashPrefixRealTimeLookupsKeyFetchUrl.Get());
+  param_list.Append(kHashPrefixRealTimeLookupsKeyFetchUrl.name);
 
   return param_list;
 }

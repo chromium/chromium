@@ -33,8 +33,6 @@ namespace {
 
 constexpr base::TimeDelta kKeyFetchTimeout = base::Seconds(3);
 
-constexpr char kKeyFetchServerUrl[] =
-    "https://safebrowsingohttpgateway.googleapis.com/v1/ohttp/hpkekeyconfig";
 // Key older than 3 days is considered expired and should be refetched.
 constexpr base::TimeDelta kKeyExpirationDuration = base::Days(3);
 
@@ -63,7 +61,7 @@ constexpr int kServerTriggeredFetchMaxDelayTimeSec = 60;
 
 // Backoff constants
 const size_t kNumFailuresToEnforceBackoff = 3;
-const size_t kMinBackOffResetDurationInSeconds = 5 * 60;   //  5 minutes.
+const size_t kMinBackOffResetDurationInSeconds = 5 * 60;        //  5 minutes.
 const size_t kMaxBackOffResetDurationInSeconds = 24 * 60 * 60;  // 1 day.
 
 constexpr net::NetworkTrafficAnnotationTag kOhttpKeyTrafficAnnotation =
@@ -137,7 +135,7 @@ bool IsEnabled(PrefService* pref_service,
 }
 
 GURL GetKeyFetchingUrl() {
-  GURL url(kKeyFetchServerUrl);
+  GURL url(safe_browsing::kHashPrefixRealTimeLookupsKeyFetchUrl.Get());
   std::string api_key = google_apis::GetAPIKey();
   if (!api_key.empty()) {
     url = url.Resolve("?key=" + base::EscapeQueryParamValue(api_key, true));
@@ -411,7 +409,22 @@ void OhttpKeyService::PopulateKeyFromPref() {
       pref_service_->GetString(prefs::kSafeBrowsingHashRealTimeOhttpKey);
   base::Time expiration_time = pref_service_->GetTime(
       prefs::kSafeBrowsingHashRealTimeOhttpExpirationTime);
-  if (!key.empty() && expiration_time > base::Time::Now()) {
+  std::string key_fetch_url = pref_service_->GetString(
+      prefs::kSafeBrowsingHashRealTimeOhttpKeyFetchUrl);
+  if (!key.empty() && expiration_time > base::Time::Now() &&
+      key_fetch_url.empty()) {
+    // If the key fetch URL is empty, it means the key was saved by a version
+    // of Chrome that used a hardcoded URL. Treat it as such to avoid
+    // unnecessary key fetches.
+    static constexpr char kHardCodedKeyFetchUrl[] =
+        "https://safebrowsingohttpgateway.googleapis.com/v1/ohttp/"
+        "hpkekeyconfig";
+    key_fetch_url = kHardCodedKeyFetchUrl;
+    // TODO(crbug.com/461955661): Remove this entire if statement once the URL
+    // has been saved to preferences for one full Chrome milestone.
+  }
+  if (!key.empty() && expiration_time > base::Time::Now() &&
+      key_fetch_url == kHashPrefixRealTimeLookupsKeyFetchUrl.Get()) {
     std::string decoded_key;
     base::Base64Decode(key, &decoded_key);
     ohttp_key_ = {decoded_key, expiration_time};
@@ -425,6 +438,8 @@ void OhttpKeyService::StoreKeyToPref() {
                              base64_encoded_key);
     pref_service_->SetTime(prefs::kSafeBrowsingHashRealTimeOhttpExpirationTime,
                            ohttp_key_->expiration);
+    pref_service_->SetString(prefs::kSafeBrowsingHashRealTimeOhttpKeyFetchUrl,
+                             kHashPrefixRealTimeLookupsKeyFetchUrl.Get());
   }
 }
 
