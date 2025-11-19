@@ -1625,7 +1625,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2096716221239095980">Alle Daten löschen</translation>
 <translation id="2097950021134740304">Entfernen des Abos abbrechen</translation>
 <translation id="2098805196501063469">Restliche Passwörter prüfen</translation>
-<translation id="2099883893520019102">Letzte 15 Min.</translation>
+<translation id="2099883893520019102">Letzte 15 Minuten</translation>
 <translation id="2101225219012730419">Version:</translation>
 <translation id="2102396546234652240">Websites dürfen mein Mikrofon nicht verwenden</translation>
 <translation id="2102495993840063010">Android-Apps</translation>
@@ -5643,7 +5643,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4878718769565915065">Fehler beim Hinzufügen eines Fingerabdrucks zu diesem Sicherheitsschlüssel</translation>
 <translation id="4879491255372875719">Automatisch (Standard)</translation>
 <translation id="4880315242806573837">Dieses Chromebook erhält bald keine Sicherheitsupdates mehr. Wir empfehlen, auf ein neues umzusteigen.</translation>
-<translation id="4880827082731008257">Im Verlauf suchen</translation>
+<translation id="4880827082731008257">Suchverlauf</translation>
 <translation id="4881685975363383806">Nicht mehr erinnern</translation>
 <translation id="4881695831933465202">Öffnen</translation>
 <translation id="4882312758060467256">Hat Zugriff auf diese Website</translation>
@@ -11890,7 +11890,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="930991362911221750">Darf <ph name="APP_NAME" /> diesen Tab abrufen?</translation>
 <translation id="931273044114601262">Auf dieser Website zugelassen</translation>
 <translation id="93140074055951850">Android-Apps wurden angehalten</translation>
-<translation id="932327136139879170">Startseite</translation>
+<translation id="932327136139879170">Privat</translation>
 <translation id="932508678520956232">Druckvorgang konnte nicht gestartet werden.</translation>
 <translation id="933427034780221291">{NUM_FILES,plural, =1{Diese Datei ist zu groß für eine Sicherheitsprüfung. Du kannst Dateien mit einer Größe von bis zu 50 MB hochladen.}other{Einige dieser Dateien sind zu groß für eine Sicherheitsprüfung. Du kannst Dateien mit einer Größe von bis zu 50 MB hochladen.}}</translation>
 <translation id="93343527085570547">Inhaltsänderungen aus rechtlichen Gründen kannst du auf der <ph name="BEGIN_LINK1" />Seite „Rechtliche Hinweise“<ph name="END_LINK1" /> beantragen. Möglicherweise werden bestimmte Konto- und Systeminformationen an Google gesendet. Mithilfe der von dir übermittelten Daten können wir unter Einhaltung unserer <ph name="BEGIN_LINK2" />Datenschutzerklärung<ph name="END_LINK2" /> und <ph name="BEGIN_LINK3" />Nutzungsbedingungen<ph name="END_LINK3" /> technische Probleme lösen und unsere Dienste verbessern.</translation>

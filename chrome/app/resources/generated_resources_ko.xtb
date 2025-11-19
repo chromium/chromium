@@ -1841,7 +1841,7 @@
 <translation id="224835741840550119">기기 정리</translation>
 <translation id="2249111429176737533">탭 창으로 열기</translation>
 <translation id="2249605167705922988">예: 1-5, 8, 11-13</translation>
-<translation id="2249635629516220541">사이트에서 광고를 표시하는 데 사용하는 정보를 맞춤설정합니다.</translation>
+<translation id="2249635629516220541">사이트에서 광고를 표시하는 데 사용하는 정보를 맞춤설정함</translation>
 <translation id="2250153645770828940">사전 삭제</translation>
 <translation id="22505994009453896">숫자 키패드로 마우스 커서 제어하기</translation>
 <translation id="2250624716625396929">이 탭에서 카메라 및 마이크를 사용 중입니다.</translation>
@@ -5663,7 +5663,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4878718769565915065">보안 키에 지문을 추가할 수 없습니다.</translation>
 <translation id="4879491255372875719">자동(기본값)</translation>
 <translation id="4880315242806573837">보안 업데이트가 곧 종료됩니다. 새 Chromebook으로 업그레이드하세요.</translation>
-<translation id="4880827082731008257">기록 검색</translation>
+<translation id="4880827082731008257">검색 기록</translation>
 <translation id="4881685975363383806">다음번에 알리지 않음</translation>
 <translation id="4881695831933465202">열기</translation>
 <translation id="4882312758060467256">이 사이트의 액세스 권한이 있습니다.</translation>
@@ -7277,7 +7277,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6040756649917982069">{COUNT,plural, =0{인증서 없음}=1{인증서 1개}other{인증서 {COUNT}개}}</translation>
 <translation id="6041046205544295907"><ph name="BEGIN_PARAGRAPH1" />Google의 위치 서비스는 Wi-Fi, 모바일 네트워크, 센서 등의 소스를 활용하여 기기의 위치를 추정합니다.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />기기에서 기본 위치 설정을 사용 중지하여 위치 정보를 끌 수 있습니다. 또한 위치 설정에서 위치 파악에 Wi‑Fi, 모바일 네트워크, 센서의 사용을 중지할 수도 있습니다.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="6042308850641462728">자세히</translation>
+<translation id="6042308850641462728">더보기</translation>
 <translation id="604233217785584041"><ph name="SHARE_STATE" /> 이름이 지정되지 않은 그룹 - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="604388835206766544">설정을 파싱할 수 없습니다.</translation>
 <translation id="6043994281159824495">지금 로그아웃</translation>

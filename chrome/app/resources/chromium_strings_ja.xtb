@@ -594,7 +594,7 @@
 <translation id="8248265253516264921">画像に有効な説明が設定されていない場合に、Chromium で説明を自動的に生成できるよう Google に画像が送信されます。この機能は設定でいつでも無効にできます。</translation>
 <translation id="8254601181414348851">新しいプロフィールで Chromium にログインしますか？</translation>
 <translation id="8286943863733751221">安全でないサイトやダウンロードが見つかると <ph name="BEGIN_LINK" />Chromium が警告<ph name="END_LINK" />します</translation>
-<translation id="8295827201165805317">最近アクセスしていないため、Chromium で <ph name="PERMISSION" /> の権限を削除しました。</translation>
+<translation id="8295827201165805317">最近アクセスしていないため、Chromium で<ph name="PERMISSION" />の権限を削除しました。</translation>
 <translation id="8313851650939857356">起動エラー: <ph name="STARTUP_ERROR" />。</translation>
 <translation id="8318772038038596122"><ph name="TIMEOUT_DURATION" /> 使用しなかったため、Chromium は組織によって終了されます。</translation>
 <translation id="8321888067342493336">画像として保存</translation>

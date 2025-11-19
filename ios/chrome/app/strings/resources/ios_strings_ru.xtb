@@ -37,7 +37,7 @@
 <translation id="1112015203684611006">Ошибка печати</translation>
 <translation id="1118569444314402022">С возвращением, <ph name="USER_NAME" />!</translation>
 <translation id="1121850836842642159">Изображения</translation>
-<translation id="1122068467107743258">Рабочий профиль</translation>
+<translation id="1122068467107743258">Работа</translation>
 <translation id="1126696498560056882">Управление аккаунтами на этом устройстве</translation>
 <translation id="1126809382673880764">Не защищает вас от сайтов, расширений и скачанных файлов, которые могут представлять опасность. Безопасный просмотр по-прежнему будет работать в других сервисах Google, например в Gmail и Поиске.</translation>
 <translation id="1136104150802877429">Показывать отзывы</translation>
@@ -2173,7 +2173,7 @@
 <translation id="926455622548529175">Сменить аккаунт и удалить данные</translation>
 <translation id="929748059769569925">Выделенный текст</translation>
 <translation id="932305336591073205">{count,plural, =1{Закрыть вкладку}one{Закрыть вкладки}few{Закрыть вкладки}many{Закрыть вкладки}other{Закрыть вкладки}}</translation>
-<translation id="932327136139879170">Главная страница</translation>
+<translation id="932327136139879170">Дом</translation>
 <translation id="939472100615258482">Текущий сайт</translation>
 <translation id="939598580284253335">Ввести кодовую фразу</translation>
 <translation id="939736085109172342">Новая папка</translation>

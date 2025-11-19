@@ -1475,7 +1475,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="199191324030140441">Désactiver le mode "Ne pas déranger"</translation>
 <translation id="1992397118740194946">Non défini</translation>
 <translation id="1994173015038366702">URL du site</translation>
-<translation id="1995916364271252349">Permet de contrôler les informations que les sites peuvent utiliser et afficher (position, appareil photo, fenêtres pop-up et plus)</translation>
+<translation id="1995916364271252349">Permet de contrôler les informations que les sites peuvent utiliser et afficher (position, appareil photo, pop-ups et plus)</translation>
 <translation id="199610894463449797">{0,plural, =1{Fermer ce profil}one{Fermer ce profil (# fenêtre)}other{Fermer ce profil (# fenêtres)}}</translation>
 <translation id="1997433994358798851">Vous devez autoriser Chrome à utiliser le Bluetooth pour se connecter à votre appareil</translation>
 <translation id="1997616988432401742">Vos certificats</translation>
@@ -1778,7 +1778,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2209841631181508629">Pour continuer, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> partagera avec ce site <ph name="FIELDS_STRING" />. Consultez les <ph name="BEGIN_LINK" />Conditions d'utilisation<ph name="END_LINK" /> du site.</translation>
 <translation id="2210462644007531147">Impossible de procéder à l'installation</translation>
 <translation id="2211043920024403606">Informations sur le profil</translation>
-<translation id="221297410904507041">Supprimer l'historique et les cookies, vider le cache, etc.</translation>
+<translation id="221297410904507041">Supprimez l'historique et les cookies, videz le cache, etc.</translation>
 <translation id="2213410656650624348">Modéré</translation>
 <translation id="2214018885812055163">Dossiers partagés</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 ligne non affichée&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> ligne non affichée&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> lignes non affichées&gt;}}</translation>
@@ -5477,7 +5477,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4773122030389014189">Partager le groupe d'onglets "<ph name="GROUP_NAME" />"</translation>
 <translation id="4773253008034797668">Autorisés à se connecter à n'importe quel appareil sur votre réseau local</translation>
 <translation id="477548766361111120">Autoriser l'extension à lire et modifier ce site</translation>
-<translation id="4775646243557794597">Suppression réussie sur la période suivante : <ph name="TIME_PERIOD" /></translation>
+<translation id="4775646243557794597">Suppression réussie pour la période : <ph name="TIME_PERIOD" /></translation>
 <translation id="4776311127346151860"><ph name="DEVICE_NAME" /> a été connecté(e)</translation>
 <translation id="4776594120007763294">Pour ajouter une page à lire plus tard, cliquez sur le bouton</translation>
 <translation id="4777458362738635055">Les autres utilisateurs de cet appareil peuvent utiliser ce réseau</translation>
@@ -11901,7 +11901,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="930991362911221750">Autoriser <ph name="APP_NAME" /> à voir cet onglet ?</translation>
 <translation id="931273044114601262">Autorisée sur ce site</translation>
 <translation id="93140074055951850">Les applis Android ont été arrêtées</translation>
-<translation id="932327136139879170">Accueil</translation>
+<translation id="932327136139879170">Domicile</translation>
 <translation id="932508678520956232">Impossible de lancer l'impression.</translation>
 <translation id="933427034780221291">{NUM_FILES,plural, =1{Impossible de vérifier si ce fichier est sûr, car il est trop volumineux. Vous ne pouvez pas importer de fichiers de plus de 50 Mo.}one{Impossible de vérifier si ce fichier est sûr, car il est trop volumineux. Vous ne pouvez pas importer de fichiers de plus de 50 Mo.}other{Impossible de vérifier si ces fichiers sont sûrs, car certains sont trop volumineux. Vous ne pouvez pas importer de fichiers de plus de 50 Mo.}}</translation>
 <translation id="93343527085570547">Accédez à la <ph name="BEGIN_LINK1" />page d'aide concernant les demandes légales<ph name="END_LINK1" /> pour demander des modifications de contenu pour des raisons légales. Certaines informations système et relatives au compte peuvent être envoyées à Google. Nous utilisons les données que vous nous fournissez pour résoudre les problèmes techniques et pour améliorer nos services, conformément à nos <ph name="BEGIN_LINK2" />Règles de confidentialité<ph name="END_LINK2" /> et nos <ph name="BEGIN_LINK3" />Conditions d'utilisation<ph name="END_LINK3" />.</translation>

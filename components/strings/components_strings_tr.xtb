@@ -2360,7 +2360,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4877521229462766300">Yerleştirilmiş içeriğe izin verilsin mi?</translation>
 <translation id="4879491255372875719">Otomatik (varsayılan)</translation>
 <translation id="4880328155169081699">Kimlik kartı güncellensin mi?</translation>
-<translation id="4880827082731008257">Geçmişte arayın</translation>
+<translation id="4880827082731008257">Arama geçmişi</translation>
 <translation id="4881695831933465202">Aç</translation>
 <translation id="4881808915112408168">24 x 31,5 inç</translation>
 <translation id="4882314601499260499">Hiçbir kullanıcı politikası uygulanmadı. Kullanıcı politikaları eklemek için kuruluşunuzun <ph name="LINK_BEGIN" />alanınızı doğrulaması<ph name="LINK_END" /> gerekir.</translation>
@@ -2960,7 +2960,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5898767305816764989">Beğenme düğmesi, <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /> önerisini beğendiğinize dair geri bildirim göndermek için Enter tuşuna basın</translation>
 <translation id="5901630391730855834">Sarı</translation>
 <translation id="5903264686717710770">Başlık:</translation>
-<translation id="5905671155741555195">İş adresiniz, Google hizmetlerinde işlerinizi halletmenize yardımcı olabilir. Örneğin, Google Haritalar'da daha alakalı arama sonuçları ve yol tarifleri alabilirsiniz. Adresinizi <ph name="BEGIN_LINK" />Google Hesabınızda (<ph name="ACCOUNT" />)<ph name="END_LINK" /> düzenleyebilir veya silebilirsiniz.</translation>
+<translation id="5905671155741555195">İş adresiniz, Google hizmetlerinde işlerinizi halletmenize yardımcı olabilir. Örneğin, daha alakalı Arama sonuçları ve Google Haritalar'da daha doğru yol tarifleri alabilirsiniz. Adresinizi <ph name="BEGIN_LINK" />Google Hesabınızda (<ph name="ACCOUNT" />)<ph name="END_LINK" /> düzenleyebilir veya silebilirsiniz.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (senkronize edildi)</translation>
 <translation id="5910140988253729859">Otomatik doldurmayı geri al</translation>
 <translation id="5911020115933784199">Etkinlikler ve Etkinlik İlanları</translation>

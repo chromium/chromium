@@ -5458,7 +5458,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4773122030389014189">Udostępnij grupę kart „<ph name="GROUP_NAME" />”</translation>
 <translation id="4773253008034797668">Zezwolono na łączenie się z dowolnym urządzeniem w sieci lokalnej</translation>
 <translation id="477548766361111120">Zezwól rozszerzeniu na odczyt i zmianę tej witryny</translation>
-<translation id="4775646243557794597">Usunięto dane z <ph name="TIME_PERIOD" /></translation>
+<translation id="4775646243557794597">Usunięto dane z: <ph name="TIME_PERIOD" /></translation>
 <translation id="4776311127346151860">Urządzenie <ph name="DEVICE_NAME" /> zostało podłączone</translation>
 <translation id="4776594120007763294">Aby dodać stronę, którą chcesz przeczytać później, kliknij ten przycisk</translation>
 <translation id="4777458362738635055">Inni użytkownicy tego urządzenia mogą używać tej sieci</translation>
@@ -5628,7 +5628,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4878718769565915065">Nie udało się dodać odcisku do tego klucza bezpieczeństwa</translation>
 <translation id="4879491255372875719">Automatycznie (domyślnie)</translation>
 <translation id="4880315242806573837">Aktualizacje zabezpieczeń wkrótce się zakończą. Przejdź na nowego Chromebooka.</translation>
-<translation id="4880827082731008257">Przeszukaj historię</translation>
+<translation id="4880827082731008257">Historia wyszukiwania</translation>
 <translation id="4881685975363383806">Nie przypominaj mi następnym razem</translation>
 <translation id="4881695831933465202">Otwórz</translation>
 <translation id="4882312758060467256">Ma dostęp do tej strony</translation>

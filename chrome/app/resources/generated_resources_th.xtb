@@ -8400,7 +8400,7 @@
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{นําแท็บออกและลบกลุ่มใช่ไหม}=1{นําแท็บออกและลบกลุ่มใช่ไหม}other{นําแท็บออกและลบกลุ่มใช่ไหม}}</translation>
 <translation id="6833479554815567477">แท็บถูกนำออกจากกลุ่ม <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">สมดุล (แนะนำ)</translation>
-<translation id="6835624277262316125">ที่อยู่ที่ทำงานจะช่วยให้คุณทำสิ่งต่างๆ ให้เสร็จด้วยบริการของ Google ได้ เช่น ผลการค้นหาที่เกี่ยวข้องมากขึ้นและเส้นทางใน Google Maps คุณแก้ไขหรือลบที่อยู่ใน<ph name="BEGIN_LINK" />บัญชี Google <ph name="USERNAME" /><ph name="END_LINK" />ได้</translation>
+<translation id="6835624277262316125">ที่อยู่ที่ทำงานจะช่วยให้คุณทำสิ่งต่างๆ ให้เสร็จด้วยบริการของ Google ได้ เช่น ผลการค้นหาที่เกี่ยวข้องมากขึ้นและเส้นทางใน Google Maps คุณแก้ไขหรือลบที่อยู่ใน<ph name="BEGIN_LINK" />บัญชี Google ของคุณ (<ph name="USERNAME" />)<ph name="END_LINK" /> ได้</translation>
 <translation id="6835762382653651563">โปรดเชื่อมต่ออินเทอร์เน็ตเพื่ออัปเดต <ph name="DEVICE_TYPE" /></translation>
 <translation id="6838992358006915573">แว่นขยายตามโฟกัสของ ChromeVox</translation>
 <translation id="6839916869147598086">มีการเปลี่ยนแปลงการลงชื่อเข้าใช้</translation>
@@ -9767,7 +9767,7 @@
     แสดงให้อุปกรณ์ที่อยู่ใกล้เคียงเห็นในชื่อ <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="7786889348652477777">โ&amp;หลดแอปซ้ำ</translation>
 <translation id="7787308148023287649">แสดงบนหน้าจออื่น</translation>
-<translation id="7789895198197042595">ที่อยู่บ้านจะช่วยให้คุณทำสิ่งต่างๆ ให้เสร็จด้วยบริการของ Google ได้ เช่น ผลการค้นหาที่เกี่ยวข้องมากขึ้นและเส้นทางใน Google Maps คุณแก้ไขหรือลบที่อยู่ใน<ph name="BEGIN_LINK" />บัญชี Google <ph name="USERNAME" /><ph name="END_LINK" />ได้</translation>
+<translation id="7789895198197042595">ที่อยู่บ้านจะช่วยให้คุณทำสิ่งต่างๆ ให้เสร็จด้วยบริการของ Google ได้ เช่น ผลการค้นหาที่เกี่ยวข้องมากขึ้นและเส้นทางใน Google Maps คุณแก้ไขหรือลบที่อยู่ใน<ph name="BEGIN_LINK" />บัญชี Google ของคุณ (<ph name="USERNAME" />)<ph name="END_LINK" /> ได้</translation>
 <translation id="7791269138074599214">วิธีการป้อนข้อมูล</translation>
 <translation id="7791429245559955092">แอปพลิเคชันนี้จะได้รับการติดตั้งในโปรไฟล์ Chrome ที่คุณใช้งานอยู่ในปัจจุบัน</translation>
 <translation id="7791436592012979144">เปิดใช้การเลื่อนแบบย้อนกลับอยู่</translation>
