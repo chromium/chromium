@@ -11,7 +11,7 @@
 import("//buildtools/deps_revisions.gni")
 
 assert(
-    libcxx_revision == "29d97bf40ff6d6f59af9462362ec005c75bdc7b0",
+    libcxx_revision == "be279eb793ebc878dd4a00eaa1f351f7d165d41e",
     "libcxx_headers.gni and third_party/libc++ are out of sync.$0x0A$0x0AIf you were messing around with the libc++ repository, run:$0x0A`buildtools/third_party/libc++/generate_libcxx_headers.py`$0x0A$0x0AIf the script doesn't resolve the error, file a bug to msta@ with reproduction details.$0x0A")
 
 libcxx_headers = [
@@ -345,6 +345,8 @@ libcxx_headers = [
   "//third_party/libc++/src/include/__configuration/abi.h",
   "//third_party/libc++/src/include/__configuration/availability.h",
   "//third_party/libc++/src/include/__configuration/compiler.h",
+  "//third_party/libc++/src/include/__configuration/experimental.h",
+  "//third_party/libc++/src/include/__configuration/hardening.h",
   "//third_party/libc++/src/include/__configuration/language.h",
   "//third_party/libc++/src/include/__configuration/platform.h",
   "//third_party/libc++/src/include/__coroutine/coroutine_handle.h",
@@ -874,7 +876,6 @@ libcxx_headers = [
   "//third_party/libc++/src/include/__type_traits/is_reference.h",
   "//third_party/libc++/src/include/__type_traits/is_reference_wrapper.h",
   "//third_party/libc++/src/include/__type_traits/is_referenceable.h",
-  "//third_party/libc++/src/include/__type_traits/is_replaceable.h",
   "//third_party/libc++/src/include/__type_traits/is_same.h",
   "//third_party/libc++/src/include/__type_traits/is_scalar.h",
   "//third_party/libc++/src/include/__type_traits/is_signed.h",
@@ -1083,7 +1084,6 @@ libcxx_headers = [
   "//third_party/libc++/src/include/sstream",
   "//third_party/libc++/src/include/stack",
   "//third_party/libc++/src/include/stdatomic.h",
-  "//third_party/libc++/src/include/stdbool.h",
   "//third_party/libc++/src/include/stddef.h",
   "//third_party/libc++/src/include/stdexcept",
   "//third_party/libc++/src/include/stdio.h",
