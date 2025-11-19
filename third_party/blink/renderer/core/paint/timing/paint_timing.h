@@ -132,6 +132,11 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming> {
     return paint_details_.first_image_paint_presentation_;
   }
 
+  base::TimeTicks FirstImagePaintRenderedButNotPresentedAsMonotonicTime()
+      const {
+    return paint_details_.first_image_paint_;
+  }
+
   // FirstEligibleToPaint returns the first time that the frame is not
   // throttled and is eligible to paint. A null value indicates throttling.
   base::TimeTicks FirstEligibleToPaint() const {

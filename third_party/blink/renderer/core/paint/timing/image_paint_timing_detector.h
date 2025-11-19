@@ -131,7 +131,11 @@ class CORE_EXPORT ImageRecordsManager {
                                       const gfx::RectF& root_visual_rect,
                                       double entropy_for_lcp,
                                       bool is_recording_lcp);
-  void ReportLargestIgnoredImage(uint32_t current_frame_index,
+  // If `largest_ignored_image_` is non-null and the corresponding node is still
+  // attached to the DOM, this marks first image paint (always) and reports the
+  // image as an LCP candidate (if `is_recording_lcp` is true). Returns true iff
+  // the image record is considered an LCP candidate.
+  bool ReportLargestIgnoredImage(uint32_t current_frame_index,
                                  bool is_recording_lcp);
 
   void AssignPaintTimeToRegisteredQueuedRecords(

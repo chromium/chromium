@@ -475,9 +475,7 @@ void PaintTimingDetector::UpdateLcpCandidate() {
 
 void PaintTimingDetector::ReportIgnoredContent() {
   text_paint_timing_detector_->ReportLargestIgnoredText();
-  if (image_paint_timing_detector_->IsRecordingLargestImagePaint()) {
-    image_paint_timing_detector_->ReportLargestIgnoredImage();
-  }
+  image_paint_timing_detector_->ReportLargestIgnoredImage();
 }
 
 const LargestContentfulPaintDetails&

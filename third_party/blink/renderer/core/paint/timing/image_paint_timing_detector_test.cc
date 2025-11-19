@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/loader/resource/image_resource.h"
 #include "third_party/blink/renderer/core/loader/resource/video_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/largest_contentful_paint_calculator.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_record.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_test_helper.h"
@@ -1252,6 +1253,50 @@ TEST_P(ImagePaintTimingDetectorTest, OpacityZeroHTML2) {
                                                 AtomicString("opacity: 1"));
   UpdateAllLifecyclePhasesAndInvokeCallbackIfAny();
   EXPECT_EQ(CountImageRecords(), 0u);
+}
+
+TEST_P(ImagePaintTimingDetectorTest, OpacityZeroHTMLWithInput) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      :root {
+        opacity: 0;
+        will-change: opacity;
+      }
+    </style>
+    <img id="target"></img>
+  )HTML");
+  SetImageAndPaint("target", 256, 256);
+  UpdateAllLifecyclePhasesAndInvokeCallbackIfAny();
+  EXPECT_EQ(CountImageRecords(), 0u);
+
+  // Simulate input to stop LCP.
+  SimulateKeyDown();
+
+  // Change the opacity of documentElement. The img should not be a candidate
+  // because LCP stops on input.
+  GetDocument().documentElement()->setAttribute(html_names::kStyleAttr,
+                                                AtomicString("opacity: 1"));
+  UpdateAllLifecyclePhasesAndInvokeCallbackIfAny();
+  EXPECT_EQ(CountImageRecords(), 0u);
+  auto largest_contentful_paint_details =
+      GetPerformanceTimingForReporting()
+          .LargestContentfulPaintDetailsForMetrics();
+  EXPECT_EQ(largest_contentful_paint_details.image_paint_size, 0u);
+  EXPECT_EQ(largest_contentful_paint_details.image_paint_time, 0u);
+
+  PaintTiming& paint_timing = PaintTiming::From(GetDocument());
+  // FCP and first image paint, however, should be marked, because that does not
+  // stop on input.
+  //
+  // Note: `PaintTiming` doesn't support `MockPaintTimingCallbackManager`, so
+  // check the paint time instead of presentation time.
+  base::TimeTicks fcp_timestamp =
+      paint_timing.FirstContentfulPaintRenderedButNotPresentedAsMonotonicTime();
+  EXPECT_FALSE(fcp_timestamp.is_null());
+
+  base::TimeTicks image_timestamp =
+      paint_timing.FirstImagePaintRenderedButNotPresentedAsMonotonicTime();
+  EXPECT_FALSE(image_timestamp.is_null());
 }
 
 TEST_P(ImagePaintTimingDetectorTest, LargestImagePaint_FullViewportImage) {

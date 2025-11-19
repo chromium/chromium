@@ -461,9 +461,8 @@ void ImagePaintTimingDetector::NotifyImageFinished(
 }
 
 void ImagePaintTimingDetector::ReportLargestIgnoredImage() {
-  added_entry_in_latest_frame_ = true;
-  records_manager_.ReportLargestIgnoredImage(frame_index_,
-                                             IsRecordingLargestImagePaint());
+  added_entry_in_latest_frame_ |= records_manager_.ReportLargestIgnoredImage(
+      frame_index_, IsRecordingLargestImagePaint());
 }
 
 ImageRecordsManager::ImageRecordsManager(LocalFrameView* frame_view)
@@ -523,29 +522,41 @@ void ImageRecordsManager::OnImageLoaded(MediaRecordIdHash record_id_hash,
   OnImageLoadedInternal(record, current_frame_index);
 }
 
-void ImageRecordsManager::ReportLargestIgnoredImage(
+bool ImageRecordsManager::ReportLargestIgnoredImage(
     uint32_t current_frame_index,
     bool is_recording_lcp) {
-  if (!largest_ignored_image_)
-    return;
+  if (!largest_ignored_image_) {
+    return false;
+  }
   Node* node = largest_ignored_image_->GetNode();
   if (!node || !node->GetLayoutObject() ||
       !largest_ignored_image_->GetMediaTiming()) {
     // The image has been removed, so we have no content to report.
     largest_ignored_image_ = nullptr;
-    return;
+    return false;
   }
 
   // Trigger FCP if it's not already set.
   Document* document = frame_view_->GetFrame().GetDocument();
   DCHECK(document);
-  PaintTiming::From(*document).MarkFirstContentfulPaint();
+  PaintTiming::From(*document).MarkFirstImagePaint();
+
+  // Ignore this image altogether if LCP is no longer being recorded.
+  //
+  // TODO(crbug.com/460180365): This is probably imperfect since this prevents
+  // the image from being marked as recorded for soft navs. Changing this,
+  // however, would break test expectations, and it would only affect this image
+  // record, rather than all images painted while document opacity was 0.
+  if (!is_recording_lcp) {
+    return false;
+  }
 
   ImageRecord* record = largest_ignored_image_.Get();
   CHECK(record);
   recorded_images_.insert(record->Hash());
   AddPendingImage(record, is_recording_lcp);
   OnImageLoadedInternal(record, current_frame_index);
+  return true;
 }
 
 void ImageRecordsManager::OnImageLoadedInternal(ImageRecord* record,
