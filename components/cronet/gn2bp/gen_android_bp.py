@@ -326,6 +326,7 @@ _RUST_FLAGS_TO_REMOVE = [
     "--edition",  # Added to the appropriate field, must be removed from flags.
     "--sysroot",  # Use AOSP's stdlib so we don't need any hacks for sysroot.
     "-Cembed-bitcode=no",  # Not compatible with Thin-LTO which is added by Soong.
+    "-Clinker-plugin-lto",  # Not compatible with AOSP due to Clang and Rust version difference.
     "--cfg",  # Added to the appropriate field.
     "--extern",  # Soong automatically adds that for us when we use proc_macro
     "@",  # Used by build_script outputs to have rustc load flags from a file.
@@ -2770,14 +2771,19 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
   if target.type == "action" and parent_gn_type == "java_library":
     bp_module_name += "__java"
 
-  if target.type in ["rust_library", "rust_proc_macro"]:
+  target_types_to_hash_module_name = [
+    "rust_executable",
+    "rust_library",
+    "rust_proc_macro",
+  ]
+  if target.type in target_types_to_hash_module_name:
     # "lib{crate_name}" must be a prefix of the module name, this is a Soong
     # restriction.
     # https://cs.android.com/android/_/android/platform/build/soong/+/31934a55a8a1f9e4d56d68810f4a646f12ab6eb5:rust/library.go;l=724;drc=fdec8723d574daf54b956cc0f6dc879087da70a6;bpv=0;bpt=0
     # Use the hash of the module_name instead of the entire name otherwise we will
     # exceed the maximum file name length (b/376452102).
     bp_module_hash = hashlib.sha256(
-        bp_module_name.encode('utf-8')).hexdigest()[:16]
+        bp_module_name.encode('utf-8')).hexdigest()[:2]
     bp_module_name = f"lib{target.crate_name}__{bp_module_hash}"
 
   if bp_module_name in blueprint.modules:
