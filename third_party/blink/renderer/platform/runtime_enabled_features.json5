@@ -3849,7 +3849,7 @@
       // When enabled, preserves dropEffect in drag event set during dragover
       // events.
       name: "PreserveDropEffect",
-      status: "stable",
+      status: "test",
     },
     {
       // When enabled, prevents undo to be applied if the enclosing block
