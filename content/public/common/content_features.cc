@@ -597,6 +597,12 @@ BASE_FEATURE(kIsolateFencedFrames, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIsolateOrigins, base::FEATURE_DISABLED_BY_DEFAULT);
 const char kIsolateOriginsFieldTrialParamName[] = "OriginsList";
 
+// When enabled, creation of the BrowserInterfaceBroker on RenderFrameHostImpls
+// becomes lazy. i.e. the BrowserInterfaceBroker is constructed only when it is
+// needed, typically when a renderer process becomes associated with the frame.
+// See https://crbug.com/450912216 for more details.
+BASE_FEATURE(kLazyBrowserInterfaceBroker, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If this is enabled, LoadingPredictor restricts the number of preconnects for
 // the same destination to one.
 BASE_FEATURE(kLoadingPredictorLimitPreconnectSocketCount,

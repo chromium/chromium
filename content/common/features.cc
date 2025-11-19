@@ -315,12 +315,6 @@ BASE_FEATURE(kIOSurfaceCapturer, base::FEATURE_ENABLED_BY_DEFAULT);
 // When enabled, child process will not terminate itself when IPC is reset.
 BASE_FEATURE(kKeepChildProcessAfterIPCReset, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, creation of the BrowserInterfaceBroker on RenderFrameHostImpls
-// becomes lazy. i.e. the BrowserInterfaceBroker is constructed only when it is
-// needed, typically when a renderer process becomes associated with the frame.
-// See https://crbug.com/450912216 for more details.
-BASE_FEATURE(kLazyBrowserInterfaceBroker, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables Local Network Access checks for all types of web workers.
 //
 // The exact checks run are the same as for other document subresources, and
