@@ -326,7 +326,6 @@ public class ToolbarPositionControllerTest {
         doReturn(TOOLBAR_HEIGHT).when(mControlContainer).getToolbarHeight();
         doReturn(mControlContainerLayoutParams).when(mControlContainer).mutateLayoutParams();
         mHairlineLayoutParams.anchorGravity = Gravity.BOTTOM;
-        mHairlineLayoutParams.gravity = Gravity.BOTTOM;
         mToolbarLayoutParams.bottomMargin = 1;
         doReturn(mHairlineLayoutParams).when(mControlContainer).mutateHairlineLayoutParams();
         doReturn(mToolbarLayoutParams).when(mControlContainer).mutateToolbarLayoutParams();
@@ -1123,7 +1122,6 @@ public class ToolbarPositionControllerTest {
         assertEquals(0, mBrowserControlsSizer.getTopControlsHeight());
         assertEquals(TOOLBAR_HEIGHT, mBrowserControlsSizer.getBottomControlsHeight());
         assertEquals(Gravity.TOP, mHairlineLayoutParams.anchorGravity);
-        assertEquals(Gravity.TOP, mHairlineLayoutParams.gravity);
         assertEquals(Gravity.START | Gravity.BOTTOM, mControlContainerLayoutParams.gravity);
         assertEquals(1, mToolbarLayoutParams.topMargin);
         assertEquals(Gravity.BOTTOM, mProgressBarLayoutParams.gravity);
@@ -1136,7 +1134,6 @@ public class ToolbarPositionControllerTest {
         assertEquals(TOOLBAR_HEIGHT, mBrowserControlsSizer.getTopControlsHeight());
         assertEquals(0, mBrowserControlsSizer.getBottomControlsHeight());
         assertEquals(Gravity.BOTTOM, mHairlineLayoutParams.anchorGravity);
-        assertEquals(Gravity.BOTTOM, mHairlineLayoutParams.gravity);
         assertEquals(Gravity.START | Gravity.TOP, mControlContainerLayoutParams.gravity);
         assertEquals(1, mToolbarLayoutParams.bottomMargin);
         assertEquals(Gravity.CENTER, mProgressBarLayoutParams.gravity);
