@@ -35,6 +35,12 @@ const CGFloat kUnreadIndicatorViewHeight = 6.0;
 // Damping ratio of animating a change to the displayed badge.
 const CGFloat kUpdateDisplayedBadgeAnimationDamping = 0.85;
 
+// Height multiplier for the divider relative to the view height.
+CGFloat const kDividerHeightMultiplier = 0.35;
+
+// Width of the divider between badges.
+CGFloat const kDividerWidthConstant = 1;
+
 }  // namespace
 
 @interface BadgeViewController ()
@@ -56,7 +62,14 @@ const CGFloat kUpdateDisplayedBadgeAnimationDamping = 0.85;
 
 @end
 
-@implementation BadgeViewController
+@implementation BadgeViewController {
+  // Array of separator views displayed between badges (Proactive Suggestions
+  // Framework enabled only).
+  NSMutableArray<UIView*>* _separatorViews;
+  // Array of currently displayed badges (Proactive Suggestions Framework
+  // enabled only).
+  NSArray<id<BadgeItem>>* _currentlyDisplayedBadges;
+}
 
 @synthesize forceDisabled = _forceDisabled;
 
@@ -66,6 +79,7 @@ const CGFloat kUpdateDisplayedBadgeAnimationDamping = 0.85;
     DCHECK(buttonFactory);
     _buttonFactory = buttonFactory;
     _stackView = [[UIStackView alloc] init];
+    _separatorViews = [[NSMutableArray alloc] init];
   }
   return self;
 }
@@ -78,19 +92,32 @@ const CGFloat kUpdateDisplayedBadgeAnimationDamping = 0.85;
   AddSameConstraints(self.view, self.stackView);
 }
 
-#pragma mark - Protocols
-
 #pragma mark BadgeConsumer
 
 - (void)setupWithDisplayedBadge:(id<BadgeItem>)displayedBadgeItem {
-  self.displayedBadge = nil;
-  if (displayedBadgeItem) {
-    BadgeButton* newButton =
-        [self.buttonFactory badgeButtonForBadgeType:displayedBadgeItem.badgeType
-                                       usingInfoBar:nil];
-    [newButton setAccepted:displayedBadgeItem.badgeState & BadgeStateAccepted
-                  animated:NO];
-    self.displayedBadge = newButton;
+  if (IsProactiveSuggestionsFrameworkEnabled()) {
+    [self clearAllBadges];
+    if (displayedBadgeItem) {
+      BadgeButton* newButton = [self.buttonFactory
+          badgeButtonForBadgeType:displayedBadgeItem.badgeType
+                     usingInfoBar:nil];
+      [newButton setAccepted:displayedBadgeItem.badgeState & BadgeStateAccepted
+                    animated:NO];
+      [self.stackView addArrangedSubview:newButton];
+      _currentlyDisplayedBadges = @[ displayedBadgeItem ];
+    } else {
+      _currentlyDisplayedBadges = @[];
+    }
+  } else {
+    self.displayedBadge = nil;
+    if (displayedBadgeItem) {
+      BadgeButton* newButton = [self.buttonFactory
+          badgeButtonForBadgeType:displayedBadgeItem.badgeType
+                     usingInfoBar:nil];
+      [newButton setAccepted:displayedBadgeItem.badgeState & BadgeStateAccepted
+                    animated:NO];
+      self.displayedBadge = newButton;
+    }
   }
 
   [self.visibilityDelegate setBadgeViewHidden:!displayedBadgeItem];
@@ -98,37 +125,48 @@ const CGFloat kUpdateDisplayedBadgeAnimationDamping = 0.85;
 
 - (void)updateDisplayedBadge:(id<BadgeItem>)displayedBadgeItem
                      infoBar:(InfoBarIOS*)infoBar {
-  if (displayedBadgeItem) {
-    if (self.displayedBadge &&
-        self.displayedBadge.badgeType == displayedBadgeItem.badgeType) {
-      [self.displayedBadge
-          setAccepted:displayedBadgeItem.badgeState & BadgeStateAccepted
-             animated:YES];
-    } else {
-      BadgeButton* newButton = [self.buttonFactory
-          badgeButtonForBadgeType:displayedBadgeItem.badgeType
-                     usingInfoBar:infoBar];
-      [newButton setAccepted:displayedBadgeItem.badgeState & BadgeStateAccepted
-                    animated:NO];
-      self.displayedBadge = newButton;
-    }
-    if (IsProactiveSuggestionsFrameworkEnabled()) {
-      [self.displayedBadge setEnabled:YES];
-    } else {
-      // Disable button if banner is being displayed.
+  if (IsProactiveSuggestionsFrameworkEnabled()) {
+    NSArray<id<BadgeItem>>* badges =
+        displayedBadgeItem ? @[ displayedBadgeItem ] : @[];
+    [self updateDisplayedBadges:badges];
+  } else {
+    if (displayedBadgeItem) {
+      if (self.displayedBadge &&
+          self.displayedBadge.badgeType == displayedBadgeItem.badgeType) {
+        [self.displayedBadge
+            setAccepted:displayedBadgeItem.badgeState & BadgeStateAccepted
+               animated:YES];
+      } else {
+        BadgeButton* newButton = [self.buttonFactory
+            badgeButtonForBadgeType:displayedBadgeItem.badgeType
+                       usingInfoBar:infoBar];
+        [newButton
+            setAccepted:displayedBadgeItem.badgeState & BadgeStateAccepted
+               animated:NO];
+        self.displayedBadge = newButton;
+      }
       [self.displayedBadge
           setEnabled:!(displayedBadgeItem.badgeState & BadgeStatePresented)];
+    } else {
+      self.displayedBadge = nil;
     }
-  } else {
-    self.displayedBadge = nil;
-  }
 
-  if (!self.forceDisabled) {
-    [self.visibilityDelegate setBadgeViewHidden:!displayedBadgeItem];
+    if (!self.forceDisabled) {
+      [self.visibilityDelegate setBadgeViewHidden:!displayedBadgeItem];
+    }
   }
 }
 
 - (void)markDisplayedBadgeAsRead:(BOOL)read {
+  if (IsProactiveSuggestionsFrameworkEnabled()) {
+    return;
+  }
+
+  BadgeButton* firstBadge = [self badgeButtonAtIndex:0];
+  if (!firstBadge) {
+    return;
+  }
+
   // Lazy init if the unread indicator needs to be shown.
   if (!self.unreadIndicatorView && !read) {
     // Add unread indicator to the displayed badge.
@@ -139,13 +177,13 @@ const CGFloat kUpdateDisplayedBadgeAnimationDamping = 0.85;
     self.unreadIndicatorView.translatesAutoresizingMaskIntoConstraints = NO;
     self.unreadIndicatorView.accessibilityIdentifier =
         kBadgeUnreadIndicatorAccessibilityIdentifier;
-    [_displayedBadge addSubview:self.unreadIndicatorView];
+    [firstBadge addSubview:self.unreadIndicatorView];
     [NSLayoutConstraint activateConstraints:@[
       [self.unreadIndicatorView.trailingAnchor
-          constraintEqualToAnchor:_displayedBadge.trailingAnchor
+          constraintEqualToAnchor:firstBadge.trailingAnchor
                          constant:-kUnreadIndicatorViewSpacing],
       [self.unreadIndicatorView.topAnchor
-          constraintEqualToAnchor:_displayedBadge.topAnchor
+          constraintEqualToAnchor:firstBadge.topAnchor
                          constant:kUnreadIndicatorViewSpacing],
       [self.unreadIndicatorView.heightAnchor
           constraintEqualToConstant:kUnreadIndicatorViewHeight],
@@ -169,10 +207,44 @@ const CGFloat kUpdateDisplayedBadgeAnimationDamping = 0.85;
     // Turning off force disable mode doesn't imply that the badge view will
     // not remain hidden. Check if there is a badge to be displayed to avoid
     // accidentally removing the placeholder as a side effect of unhiding.
-    [self.visibilityDelegate setBadgeViewHidden:!self.displayedBadge];
+    if (!IsProactiveSuggestionsFrameworkEnabled()) {
+      [self.visibilityDelegate setBadgeViewHidden:!self.displayedBadge];
+    } else {
+      [self.visibilityDelegate
+          setBadgeViewHidden:(_currentlyDisplayedBadges.count == 0)];
+    }
   }
 
   _forceDisabled = forceDisabled;
+}
+
+- (void)updateDisplayedBadges:(NSArray<id<BadgeItem>>*)badgesToDisplay {
+  if (!IsProactiveSuggestionsFrameworkEnabled()) {
+    [self updateDisplayedBadge:[badgesToDisplay firstObject] infoBar:nil];
+    return;
+  }
+
+  _currentlyDisplayedBadges = [badgesToDisplay copy];
+  [self clearAllBadges];
+
+  // Iterate through badges and add them with separators.
+  for (NSUInteger i = 0; i < badgesToDisplay.count; i++) {
+    id<BadgeItem> badgeItem = badgesToDisplay[i];
+    if (i > 0) {
+      [self addSeparatorToStackView];
+    }
+
+    BadgeButton* badgeButton =
+        [self.buttonFactory badgeButtonForBadgeType:badgeItem.badgeType
+                                       usingInfoBar:nil];
+    [badgeButton setAccepted:badgeItem.badgeState & BadgeStateAccepted
+                    animated:NO];
+    [badgeButton setEnabled:!(badgeItem.badgeState & BadgeStatePresented)];
+
+    [self.stackView addArrangedSubview:badgeButton];
+  }
+
+  [self.visibilityDelegate setBadgeViewHidden:(badgesToDisplay.count == 0)];
 }
 
 #pragma mark FullscreenUIElement
@@ -180,22 +252,23 @@ const CGFloat kUpdateDisplayedBadgeAnimationDamping = 0.85;
 - (void)updateForFullscreenProgress:(CGFloat)progress {
   BOOL badgeViewShouldCollapse = progress <= kFullScreenProgressThreshold;
   if (badgeViewShouldCollapse) {
-    self.displayedBadge.hidden = YES;
+    self.view.hidden = YES;
   } else {
-    // Fade in/out the FullScreen badge with the FullScreen off configurations
-    // at a speed matching that of the trailing button in the
-    // LocationBarSteadyView.
     CGFloat alphaValue = fmax((progress - kFullScreenProgressThreshold) /
                                   (1 - kFullScreenProgressThreshold),
                               0);
-    self.displayedBadge.hidden = NO;
-    self.displayedBadge.alpha = alphaValue;
+    self.view.hidden = NO;
+    self.view.alpha = alphaValue;
   }
 }
 
 #pragma mark - Getter/Setter
 
 - (void)setDisplayedBadge:(BadgeButton*)badgeButton {
+  if (IsProactiveSuggestionsFrameworkEnabled()) {
+    return;
+  }
+
   if (badgeButton.badgeType == self.displayedBadge.badgeType) {
     return;
   }
@@ -209,10 +282,68 @@ const CGFloat kUpdateDisplayedBadgeAnimationDamping = 0.85;
   }
   _displayedBadge = badgeButton;
 
-  // Configure the initial state of the animation.
+  [self animateViewAppearance];
+  [self.stackView addArrangedSubview:_displayedBadge];
+}
+
+#pragma mark - Private
+
+// Returns the badge button at the specified index from stackView.
+- (BadgeButton*)badgeButtonAtIndex:(NSInteger)index {
+  NSInteger badgeIndex = 0;
+  for (UIView* view in self.stackView.arrangedSubviews) {
+    if ([view isKindOfClass:[BadgeButton class]]) {
+      if (badgeIndex == index) {
+        return (BadgeButton*)view;
+      }
+      badgeIndex++;
+    }
+  }
+  return nil;
+}
+
+// Clears all badges and separators from the stackView.
+- (void)clearAllBadges {
+  for (UIView* view in self.stackView.arrangedSubviews) {
+    [self.stackView removeArrangedSubview:view];
+    [view removeFromSuperview];
+  }
+
+  for (UIView* separator in _separatorViews) {
+    [separator removeFromSuperview];
+  }
+  [_separatorViews removeAllObjects];
+
+  self.unreadIndicatorView = nil;
+}
+
+// Adds separator between badges.
+- (void)addSeparatorToStackView {
+  // TODO(crbug.com/462093487): Alternate badge/separator arranged subviews to
+  // support 3+ badges.
+  UIView* separator = [[UIView alloc] init];
+  separator.translatesAutoresizingMaskIntoConstraints = NO;
+  separator.isAccessibilityElement = NO;
+  separator.backgroundColor = [UIColor colorNamed:kGrey400Color];
+
+  [self.view addSubview:separator];
+  [_separatorViews addObject:separator];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [separator.widthAnchor constraintEqualToConstant:kDividerWidthConstant],
+    [separator.heightAnchor constraintEqualToAnchor:self.stackView.heightAnchor
+                                         multiplier:kDividerHeightMultiplier],
+    [separator.centerXAnchor
+        constraintEqualToAnchor:self.stackView.centerXAnchor],
+    [separator.centerYAnchor
+        constraintEqualToAnchor:self.stackView.centerYAnchor]
+  ]];
+}
+
+// Animates the badge view appearance.
+- (void)animateViewAppearance {
   self.view.alpha = 0;
   self.view.transform = CGAffineTransformMakeScale(0.1, 0.1);
-  [self.stackView addArrangedSubview:_displayedBadge];
   [UIView animateWithDuration:kMaterialDuration2
                         delay:0
        usingSpringWithDamping:kUpdateDisplayedBadgeAnimationDamping

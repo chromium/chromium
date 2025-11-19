@@ -70,6 +70,9 @@ enum class TestParam {
 - (void)markDisplayedBadgeAsRead:(BOOL)read {
   self.hasUnreadBadge = !read;
 }
+- (void)updateDisplayedBadges:(NSArray<id<BadgeItem>>*)badgesToDisplay {
+  self.displayedBadge = [badgesToDisplay firstObject];
+}
 @end
 
 class BadgeMediatorTest : public testing::TestWithParam<TestParam> {

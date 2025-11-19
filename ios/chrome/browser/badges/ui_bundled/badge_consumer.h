@@ -26,6 +26,8 @@ class InfoBarIOS;
 // Notifies the consumer whether or not there are unread badges. See
 // BadgeStateRead for more information.
 - (void)markDisplayedBadgeAsRead:(BOOL)read;
+// Updates the displayed badges with the complete list of badges to show.
+- (void)updateDisplayedBadges:(NSArray<id<BadgeItem>>*)badgesToDisplay;
 
 @end
 

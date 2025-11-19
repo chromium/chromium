@@ -207,24 +207,33 @@ LocationBarBadgeType LocationBarBadgeTypeFromBadgeType(BadgeType badgeType) {
     // of the web state.
     if (infobarTypeBadgeStatePair.first ==
         InfobarType::kInfobarTypePermissions) {
-      badgeType = self.permissionsBadgeType;
-      // TODO(crbug.com/448422022): Remove this permission badge filtering logic
-      // when migrating to LocationBarBadgeViewController.
-      if (IsProactiveSuggestionsFrameworkEnabled()) {
-        if ((badgeType == kBadgeTypePermissionsCamera ||
-             badgeType == kBadgeTypePermissionsMicrophone) &&
-            self.webState) {
-          web::Permission permission =
-              (badgeType == kBadgeTypePermissionsCamera)
-                  ? web::PermissionCamera
-                  : web::PermissionMicrophone;
-          if (self.webState->GetStateForPermission(permission) !=
-              web::PermissionStateAllowed) {
-            continue;
-          }
+      // TODO(crbug.com/458307626): Migrate to LocationBarBadge.
+      if (IsProactiveSuggestionsFrameworkEnabled() && self.webState) {
+        // Check camera permission.
+        if (self.webState->GetStateForPermission(web::PermissionCamera) ==
+            web::PermissionStateAllowed) {
+          BadgeTappableItem* cameraItem = [[BadgeTappableItem alloc]
+              initWithBadgeType:kBadgeTypePermissionsCamera];
+          cameraItem.badgeState = infobarTypeBadgeStatePair.second;
+          [badges addObject:cameraItem];
         }
+
+        // Check microphone permission.
+        if (self.webState->GetStateForPermission(web::PermissionMicrophone) ==
+            web::PermissionStateAllowed) {
+          BadgeTappableItem* microphoneItem = [[BadgeTappableItem alloc]
+              initWithBadgeType:kBadgeTypePermissionsMicrophone];
+          microphoneItem.badgeState = infobarTypeBadgeStatePair.second;
+          [badges addObject:microphoneItem];
+        }
+
+        continue;
+      } else {
+        // Fallback to original behavior when framework is disabled.
+        badgeType = self.permissionsBadgeType;
       }
     }
+
     BadgeTappableItem* item =
         [[BadgeTappableItem alloc] initWithBadgeType:badgeType];
     item.badgeState = infobarTypeBadgeStatePair.second;
@@ -404,16 +413,40 @@ LocationBarBadgeType LocationBarBadgeTypeFromBadgeType(BadgeType badgeType) {
     // currently active WebState.
     return;
   }
+
   NSArray<id<BadgeItem>>* badges = self.badges;
 
-  // The badge to be displayed alongside the fullscreen badge. Logic below
-  // currently assigns it to the last non-fullscreen badge in the list, since it
-  // works if there is only one non-fullscreen badge. Otherwise, where there are
-  // multiple non-fullscreen badges, additional logic below determines what
-  // badge will be shown.
+  if (IsProactiveSuggestionsFrameworkEnabled()) {
+    [self handleMultiBadgeDisplay:badges];
+  } else {
+    [self handleSingleBadgeDisplay:badges];
+  }
+
+  [self updateConsumerReadStatus];
+}
+
+// Handles the multi badge state for proactive suggestions framework.
+- (void)handleMultiBadgeDisplay:(NSArray<id<BadgeItem>>*)badges {
+  NSMutableArray<id<BadgeItem>>* badgesToDisplay =
+      [[NSMutableArray alloc] init];
+
+  if ([badges count] > 2) {
+    // Show first badge + overflow badge.
+    [badgesToDisplay addObject:badges[0]];
+    id<BadgeItem> overflowBadge =
+        [[BadgeTappableItem alloc] initWithBadgeType:kBadgeTypeOverflow];
+    [badgesToDisplay addObject:overflowBadge];
+    base::RecordAction(
+        base::UserMetricsAction(kInfobarOverflowBadgeShownUserAction));
+  } else {
+    [badgesToDisplay addObjectsFromArray:badges];
+  }
+  [self.consumer updateDisplayedBadges:badgesToDisplay];
+}
+
+// Handles original single-badge logic.
+- (void)handleSingleBadgeDisplay:(NSArray<id<BadgeItem>>*)badges {
   id<BadgeItem> displayedBadge;
-  // The badge that is current displaying its banner. This will be set as the
-  // displayedBadge if there are multiple badges.
   id<BadgeItem> presentingBadge;
 
   for (id<BadgeItem> item in badges) {
@@ -423,19 +456,13 @@ LocationBarBadgeType LocationBarBadgeTypeFromBadgeType(BadgeType badgeType) {
     displayedBadge = item;
   }
 
-  // Figure out what displayedBadge should be showing if there are multiple
-  // non-Fullscreen badges.
   NSInteger count = [badges count];
   if (count > 1) {
-    // If a badge's banner is being presented, then show that badge as the
-    // displayed badge. Otherwise, show the overflow badge.
     displayedBadge =
         presentingBadge
             ? presentingBadge
             : [[BadgeTappableItem alloc] initWithBadgeType:kBadgeTypeOverflow];
   } else if (count == 1) {
-    // Since there is only one non-fullscreen badge, it will be fixed as the
-    // displayed badge, so mark it as read.
     [self onBadgeItemRead:displayedBadge];
   }
 
@@ -445,22 +472,13 @@ LocationBarBadgeType LocationBarBadgeTypeFromBadgeType(BadgeType badgeType) {
         base::UserMetricsAction(kInfobarOverflowBadgeShownUserAction));
   }
 
-  InfoBarIOS* infoBar = nullptr;
+  InfoBarIOS* infoBar = nil;
   if (displayedBadge.badgeType == kBadgeTypeSaveAddressProfile) {
     infoBar = [self
         infobarWithType:InfobarTypeForBadgeType(displayedBadge.badgeType)];
   }
 
-  if (IsLocationBarBadgeMigrationEnabled()) {
-    // Update Location Bar Badge with a new badge update.
-    LocationBarBadgeConfiguration* badgeConfig =
-        [self configureLocationBarBadgeConfigurationFromBadgeItem:displayedBadge
-                                                          infoBar:infoBar];
-    [self.dispatcher updateBadgeConfig:badgeConfig];
-  } else {
-    [self.consumer updateDisplayedBadge:displayedBadge infoBar:infoBar];
-  }
-  [self updateConsumerReadStatus];
+  [self.consumer updateDisplayedBadge:displayedBadge infoBar:infoBar];
 }
 
 #pragma mark - OverlayPresenterObserving
