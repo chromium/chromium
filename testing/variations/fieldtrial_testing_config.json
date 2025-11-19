@@ -13153,6 +13153,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "cooldown-days": "14"
+                    },
                     "enable_features": [
                         "DefaultBrowserPromoPropensityModel"
                     ]
