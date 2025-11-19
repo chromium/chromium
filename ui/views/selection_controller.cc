@@ -91,7 +91,9 @@ bool SelectionController::OnMousePressed(
     delegate_->OnBeforePointerAction();
     const bool selection_changed =
         render_text->MoveCursorToPoint(event.location(), false);
-    const bool text_changed = delegate_->PasteSelectionClipboard();
+    const bool text_changed = ui::Clipboard::IsMiddleClickPasteEnabled()
+                                  ? delegate_->PasteSelectionClipboard()
+                                  : false;
     delegate_->OnAfterPointerAction(text_changed,
                                     selection_changed | text_changed);
   }

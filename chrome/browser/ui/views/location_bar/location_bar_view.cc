@@ -2000,6 +2000,7 @@ void LocationBarView::OnLocationIconPressed(const ui::MouseEvent& event) {
   }
 
   if (event.IsOnlyMiddleMouseButton() &&
+      ui::Clipboard::IsMiddleClickPasteEnabled() &&
       ui::Clipboard::IsSupportedClipboardBuffer(
           ui::ClipboardBuffer::kSelection)) {
     std::u16string text;
