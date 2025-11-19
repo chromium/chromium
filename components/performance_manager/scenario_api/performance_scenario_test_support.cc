@@ -40,6 +40,7 @@ PerformanceScenarioTestHelper::Create() {
                                                 std::move(global_region));
   test_helper->process_read_only_memory_.emplace(ScenarioScope::kCurrentProcess,
                                                  std::move(process_region));
+  test_helper->observer_list_.emplace();
   return test_helper;
 }
 

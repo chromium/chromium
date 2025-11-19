@@ -17,6 +17,10 @@ struct ScenarioState;
 // current process as long as it exists.
 class ScopedReadOnlyScenarioMemory;
 
+// A scoped object that owns the PerformanceScenarioObserverList to notify when
+// the scenario state in shared memory changes.
+class ScopedScenarioObserverList;
+
 // Pointers to the mapped shared memory are held in thread-safe scoped_refptr's.
 // The memory will be unmapped when the final reference is dropped. Functions
 // that copy values out of the shared memory must hold a reference to it so that

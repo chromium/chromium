@@ -31,6 +31,7 @@
 #include "base/timer/hi_res_timer_manager.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "components/performance_manager/scenario_api/performance_scenario_memory.h"
 #include "content/child/memory_coordinator/child_memory_consumer_registry.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/content_switches_internal.h"
@@ -206,6 +207,10 @@ int RendererMain(MainFunctionParams parameters) {
   // Force main thread initialization. When the implementation is based on a
   // better means of determining which is the main thread, remove.
   RenderThread::IsMainThread();
+
+  // This must be created before `main_thread_scheduler` because the scheduler
+  // can install observers.
+  performance_scenarios::ScopedScenarioObserverList scenario_observer_list;
 
   blink::Platform::InitializeBlink();
   std::unique_ptr<blink::scheduler::WebThreadScheduler> main_thread_scheduler =

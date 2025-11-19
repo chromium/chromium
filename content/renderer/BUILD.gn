@@ -245,6 +245,7 @@ target(link_target_type, "renderer") {
     "//components/input",
     "//components/metrics",
     "//components/metrics:single_sample_metrics",
+    "//components/performance_manager/scenario_api",
     "//components/services/font_data/public/mojom",
     "//components/startup_metric_utils",
     "//components/url_formatter",

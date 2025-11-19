@@ -65,7 +65,7 @@ class COMPONENT_EXPORT(SCENARIO_API) MatchingScenarioObserver
 
 // Central list of PerformanceScenarioObservers for a scope, wrapping an
 // ObserverListThreadSafe. The lifetime is managed by
-// ScopedReadOnlyScenarioMemory on the main thread, but it's refcounted so
+// ScopedScenarioObserverList on the main thread, but it's refcounted so
 // GetForScope() can be called from any sequence. Callers on other sequences
 // will extend the lifetime until they drop their reference.
 //
@@ -73,8 +73,8 @@ class COMPONENT_EXPORT(SCENARIO_API) MatchingScenarioObserver
 class COMPONENT_EXPORT(SCENARIO_API) PerformanceScenarioObserverList
     : public base::RefCountedThreadSafe<PerformanceScenarioObserverList> {
  public:
-  // Returns the object that notifies observers for `scope`, or nullptr if no
-  // ScopedReadOnlyScenarioMemory exists for `scope`.
+  // Returns the object that notifies observers for `scope`, or nullptr if none
+  // exists.
   static scoped_refptr<PerformanceScenarioObserverList> GetForScope(
       ScenarioScope scope);
 
@@ -107,12 +107,20 @@ class COMPONENT_EXPORT(SCENARIO_API) PerformanceScenarioObserverList
   static void NotifyAllScopes(
       const base::Location& location = base::Location::Current());
 
-  // Lets ScopedReadOnlyScenarioMemory create and destroy the notifier for
+  // Lets ScopedScenarioObserverList create and destroy the notifier for
   // `scope`.
-  static void CreateForScope(base::PassKey<ScopedReadOnlyScenarioMemory>,
+  static void CreateForScope(base::PassKey<ScopedScenarioObserverList>,
                              ScenarioScope scope);
-  static void DestroyForScope(base::PassKey<ScopedReadOnlyScenarioMemory>,
+  static void DestroyForScope(base::PassKey<ScopedScenarioObserverList>,
                               ScenarioScope scope);
+
+  // Lets ScopedReadOnlyScenarioMemory set the initial scenario state. After
+  // this is called, observers will be notified when the state changes.
+  void SetInitialScenarioState(
+      base::PassKey<ScopedReadOnlyScenarioMemory>,
+      scoped_refptr<RefCountedScenarioMapping> initial_mapping);
+
+  bool IsInitializedForTesting();
 
  private:
   friend class base::RefCountedThreadSafe<PerformanceScenarioObserverList>;
@@ -122,10 +130,14 @@ class COMPONENT_EXPORT(SCENARIO_API) PerformanceScenarioObserverList
 
   const ScenarioScope scope_;
 
-  // The last scenario values that were notified.
   base::Lock lock_;
-  LoadingScenario last_loading_scenario_ GUARDED_BY(lock_);
-  InputScenario last_input_scenario_ GUARDED_BY(lock_);
+  bool is_initialized_ GUARDED_BY(lock_) = false;
+
+  // The last scenario values that were notified.
+  LoadingScenario last_loading_scenario_ GUARDED_BY(lock_) =
+      LoadingScenario::kNoPageLoading;
+  InputScenario last_input_scenario_ GUARDED_BY(lock_) =
+      InputScenario::kNoInput;
 
   // kAddingSequenceOnly is safer than the default so use it for all lists.
   template <typename T>
