@@ -4,6 +4,7 @@
 
 #include "chrome/browser/autofill/glic/actor_filling_observer.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/containers/span.h"
@@ -14,6 +15,7 @@
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
 #include "components/autofill/core/browser/integrators/glic/actor_form_filling_types.h"
+#include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
@@ -28,6 +30,7 @@ ActorFillingObserver::ActorFillingObserver(
   autofill_managers_observation_.Observe(
       &autofill_client, ScopedAutofillManagersObservation::
                             InitializationPolicy::kObservePreexistingManagers);
+  credit_card_access_managers_observation_.Observe(&autofill_client);
   // If `remaining_field_ids_` is empty, this will stop the observation and
   // execute `callback_`.
   FinalizeIfComplete();
@@ -44,6 +47,13 @@ ActorFillingObserver::~ActorFillingObserver() {
         base::BindOnce(std::move(callback_),
                        base::unexpected(ActorFormFillingError::kNoForm)));
   }
+}
+
+std::optional<bool> ActorFillingObserver::IsCreditCardFetchOngoing() const {
+  if (!credit_card_access_managers_observation_.IsObserving()) {
+    return std::nullopt;
+  }
+  return ongoing_credit_card_fetches_ > 0;
 }
 
 void ActorFillingObserver::OnFillOrPreviewForm(
@@ -64,6 +74,29 @@ void ActorFillingObserver::OnFillOrPreviewForm(
   FinalizeIfComplete();
 }
 
+void ActorFillingObserver::OnCreditCardFetchStarted(CreditCardAccessManager&,
+                                                    const CreditCard&) {
+  ++ongoing_credit_card_fetches_;
+}
+void ActorFillingObserver::OnCreditCardFetchSucceeded(CreditCardAccessManager&,
+                                                      const CreditCard&) {
+  DecreaseOngoingCreditCardFetches();
+}
+void ActorFillingObserver::OnCreditCardFetchFailed(CreditCardAccessManager&,
+                                                   const CreditCard*) {
+  DecreaseOngoingCreditCardFetches();
+}
+
+void ActorFillingObserver::DecreaseOngoingCreditCardFetches() {
+  // It is extremely unlikely, but theoretically possible that the credit card
+  // access manager was already fetching a card when we started our observation.
+  // When that happens, we accept that we may not signal correctly that there
+  // is now another credit card fetch ongoing.
+  if (ongoing_credit_card_fetches_ > 0) {
+    --ongoing_credit_card_fetches_;
+  }
+}
+
 void ActorFillingObserver::FinalizeIfComplete() {
   if (!remaining_field_ids_.empty()) {
     return;
@@ -71,6 +104,7 @@ void ActorFillingObserver::FinalizeIfComplete() {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback_), base::ok()));
   autofill_managers_observation_.Reset();
+  credit_card_access_managers_observation_.Reset();
 }
 
 }  // namespace autofill

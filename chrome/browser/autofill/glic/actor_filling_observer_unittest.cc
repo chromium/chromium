@@ -7,7 +7,10 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
+#include "components/autofill/core/browser/payments/credit_card_access_manager_test_api.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -42,6 +45,12 @@ class ActorFillingObserverTest : public ::testing::Test,
 
   AddressDataManager& adm() {
     return autofill_client().GetPersonalDataManager().address_data_manager();
+  }
+
+  // Returns the `credit_card_access_manager` of the `AutofillManager` with
+  // this `index`.
+  CreditCardAccessManager& credit_card_access_manager(size_t index = 0) {
+    return *autofill_manager(index).GetCreditCardAccessManager();
   }
 
  private:
@@ -141,6 +150,38 @@ TEST_F(ActorFillingObserverTest, IncompleteMultiFieldFill) {
   observer.reset();
 
   EXPECT_THAT(future.Get(), ErrorIs(ActorFormFillingError::kNoForm));
+}
+
+TEST_F(ActorFillingObserverTest, CreditCardFetch) {
+  CreateAutofillDriver();
+  using Observer = CreditCardAccessManager::Observer;
+  std::vector<FieldGlobalId> field_ids = {MakeFieldGlobalId()};
+  CreditCard card;
+
+  ActorFillingObserver observer(autofill_client(), field_ids,
+                                base::DoNothing());
+  EXPECT_EQ(observer.IsCreditCardFetchOngoing(), false);
+
+  test_api(credit_card_access_manager(0))
+      .NotifyObservers(&Observer::OnCreditCardFetchStarted, card);
+  EXPECT_EQ(observer.IsCreditCardFetchOngoing(), true);
+
+  test_api(credit_card_access_manager(1))
+      .NotifyObservers(&Observer::OnCreditCardFetchStarted, card);
+  EXPECT_EQ(observer.IsCreditCardFetchOngoing(), true);
+
+  test_api(credit_card_access_manager(1))
+      .NotifyObservers(&Observer::OnCreditCardFetchSucceeded, card);
+  EXPECT_EQ(observer.IsCreditCardFetchOngoing(), true);
+
+  test_api(credit_card_access_manager(0))
+      .NotifyObservers(&Observer::OnCreditCardFetchFailed, &card);
+  EXPECT_EQ(observer.IsCreditCardFetchOngoing(), false);
+
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnFillOrPreviewForm, MakeFormGlobalId(),
+      mojom::ActionPersistence::kFill, field_ids, AddProfile());
+  EXPECT_EQ(observer.IsCreditCardFetchOngoing(), std::nullopt);
 }
 
 }  // namespace

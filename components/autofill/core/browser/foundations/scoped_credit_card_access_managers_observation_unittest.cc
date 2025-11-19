@@ -24,6 +24,17 @@ class ScopedCreditCardAccessManagersObservationTest
   base::test::TaskEnvironment task_environment_;
 };
 
+TEST_F(ScopedCreditCardAccessManagersObservationTest, IsObserving) {
+  MockCreditCardAccessManagerObserver observer;
+  ScopedCreditCardAccessManagersObservation observation(&observer);
+
+  EXPECT_FALSE(observation.IsObserving());
+  observation.Observe(&autofill_client());
+  EXPECT_TRUE(observation.IsObserving());
+  observation.Reset();
+  EXPECT_FALSE(observation.IsObserving());
+}
+
 TEST_F(ScopedCreditCardAccessManagersObservationTest, SingleFrameObservation) {
   MockCreditCardAccessManagerObserver observer;
   ScopedCreditCardAccessManagersObservation observation(&observer);

@@ -29,6 +29,9 @@ class ScopedCreditCardAccessManagersObservation final
   // Resets all observations.
   void Reset();
 
+  // Returns whether there is an ongoing `AutofillDriverFactory` observation.
+  bool IsObserving() const { return factory_observation_.IsObserving(); }
+
  private:
   void AddObservation(CreditCardAccessManager* credit_card_access_manager);
 

@@ -5,12 +5,16 @@
 #ifndef CHROME_BROWSER_AUTOFILL_GLIC_ACTOR_FILLING_OBSERVER_H_
 #define CHROME_BROWSER_AUTOFILL_GLIC_ACTOR_FILLING_OBSERVER_H_
 
+#include <optional>
+
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/types/expected.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
+#include "components/autofill/core/browser/foundations/scoped_credit_card_access_managers_observation.h"
 #include "components/autofill/core/browser/integrators/glic/actor_form_filling_types.h"
+#include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
@@ -25,7 +29,8 @@ namespace autofill {
 // `field_ids` have been filled or the `FillingObserver` is destroyed,
 // `callback` is called.
 // `callback` is always called asynchronously.
-class ActorFillingObserver final : public AutofillManager::Observer {
+class ActorFillingObserver final : public AutofillManager::Observer,
+                                   public CreditCardAccessManager::Observer {
  public:
   using Callback =
       base::OnceCallback<void(base::expected<void, ActorFormFillingError>)>;
@@ -35,6 +40,12 @@ class ActorFillingObserver final : public AutofillManager::Observer {
                        Callback callback);
   ~ActorFillingObserver() override;
 
+  // Returns whether there is least one credit card fetch that was started and
+  // that has not yet finished while this observer is active.
+  // Returns `std::nullopt` if the observer if all fills have completed and
+  // the observer has stopped observing credit card fetching.
+  std::optional<bool> IsCreditCardFetchOngoing() const;
+
  private:
   // AutofillManager::Observer:
   void OnFillOrPreviewForm(
@@ -43,6 +54,16 @@ class ActorFillingObserver final : public AutofillManager::Observer {
       mojom::ActionPersistence action_persistence,
       const base::flat_set<FieldGlobalId>& filled_field_ids,
       const FillingPayload&) override;
+
+  // CreditCardAccessManager::Observer:
+  void OnCreditCardFetchStarted(CreditCardAccessManager&,
+                                const CreditCard&) override;
+  void OnCreditCardFetchSucceeded(CreditCardAccessManager&,
+                                  const CreditCard&) override;
+  void OnCreditCardFetchFailed(CreditCardAccessManager&,
+                               const CreditCard*) override;
+
+  void DecreaseOngoingCreditCardFetches();
 
   // Calls callback and stops observing `AutofillManager`s if there are no
   // remaining field ids. Otherwise does nothing.
@@ -56,6 +77,13 @@ class ActorFillingObserver final : public AutofillManager::Observer {
 
   // The observation for the Autofill managers of the relevant tab.
   ScopedAutofillManagersObservation autofill_managers_observation_{this};
+
+  // The observation for the credit card access managers of the relevant tab.
+  ScopedCreditCardAccessManagersObservation
+      credit_card_access_managers_observation_{this};
+
+  // The number of currently ongoing credit card fetches.
+  size_t ongoing_credit_card_fetches_ = 0;
 };
 
 }  // namespace autofill
