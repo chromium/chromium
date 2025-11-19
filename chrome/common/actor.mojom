@@ -97,7 +97,7 @@ struct ScrollAction {
   };
 
   ScrollDirection direction;
-  // Scroll distance in physical pixels, and it should always be positive.
+  // Scroll distance in DIPs, and it should always be positive.
   float distance;
 };
 

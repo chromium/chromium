@@ -21,7 +21,7 @@ class ScrollToolRequest : public PageToolRequest {
 
   // Programmatically scrolls the scroller specified by target a given distance.
   // If Target is a nullopt ContentNodeId, the root viewport is scrolled.
-  // Distance is specified in physical pixels.
+  // Distance is specified in DIPs.
   ScrollToolRequest(tabs::TabHandle tab_handle,
                     const PageTarget& target,
                     Direction direction,

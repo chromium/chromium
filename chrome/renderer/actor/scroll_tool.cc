@@ -21,6 +21,7 @@
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_node.h"
+#include "ui/display/screen_info.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -106,6 +107,34 @@ ScrollTool::ValidatedResult ScrollTool::Validate() const {
                    /*requires_page_stabilization=*/false, "Negative Distance"));
   }
 
+  gfx::Vector2dF offset_dips;
+  switch (action_->direction) {
+    case mojom::ScrollAction::ScrollDirection::kLeft: {
+      offset_dips.set_x(-action_->distance);
+      break;
+    }
+    case mojom::ScrollAction::ScrollDirection::kRight: {
+      offset_dips.set_x(action_->distance);
+      break;
+    }
+    case mojom::ScrollAction::ScrollDirection::kUp: {
+      offset_dips.set_y(-action_->distance);
+      break;
+    }
+    case mojom::ScrollAction::ScrollDirection::kDown: {
+      offset_dips.set_y(action_->distance);
+      break;
+    }
+  }
+
+  // No matter what frame the scroll element is on, it must be on the same
+  // physical screen, so the device scale factor will be the same.
+  const float dsf =
+      base::FeatureList::IsEnabled(features::kGlicActorScrollToolDIP)
+          ? web_frame->FrameWidget()->GetScreenInfo().device_scale_factor
+          : 1.0;
+  gfx::Vector2dF offset_physical = gfx::ScaleVector2d(offset_dips, dsf);
+
   // This is the existing code path when `kGlicActorCoordinateScrollTool` is
   // disabled and can be removed once the flag lands safely.
   if (!base::FeatureList::IsEnabled(features::kGlicActorCoordinateScrollTool)) {
@@ -130,57 +159,17 @@ ScrollTool::ValidatedResult ScrollTool::Validate() const {
       scrolling_element = resolved_target->node.DynamicTo<WebElement>();
     }
 
-    gfx::Vector2dF offset_physical;
-    switch (action_->direction) {
-      case mojom::ScrollAction::ScrollDirection::kLeft: {
-        offset_physical.set_x(-action_->distance);
-        break;
-      }
-      case mojom::ScrollAction::ScrollDirection::kRight: {
-        offset_physical.set_x(action_->distance);
-        break;
-      }
-      case mojom::ScrollAction::ScrollDirection::kUp: {
-        offset_physical.set_y(-action_->distance);
-        break;
-      }
-      case mojom::ScrollAction::ScrollDirection::kDown: {
-        offset_physical.set_y(action_->distance);
-        break;
-      }
-    }
-
-    if ((offset_physical.x() && !scrolling_element.IsUserScrollableX()) ||
-        (offset_physical.y() && !scrolling_element.IsUserScrollableY())) {
+    if ((offset_dips.x() && !scrolling_element.IsUserScrollableX()) ||
+        (offset_dips.y() && !scrolling_element.IsUserScrollableY())) {
       return base::unexpected(
           MakeResult(mojom::ActionResultCode::kScrollTargetNotUserScrollable,
                      /*requires_page_stabilization=*/false,
                      absl::StrFormat("ScrollingElement [%s]",
                                      base::ToString(scrolling_element))));
     }
-
     return ScrollerAndDistance{scrolling_element, offset_physical};
   }
 
-  gfx::Vector2dF offset_physical;
-  switch (action_->direction) {
-    case mojom::ScrollAction::ScrollDirection::kLeft: {
-      offset_physical.set_x(-action_->distance);
-      break;
-    }
-    case mojom::ScrollAction::ScrollDirection::kRight: {
-      offset_physical.set_x(action_->distance);
-      break;
-    }
-    case mojom::ScrollAction::ScrollDirection::kUp: {
-      offset_physical.set_y(-action_->distance);
-      break;
-    }
-    case mojom::ScrollAction::ScrollDirection::kDown: {
-      offset_physical.set_y(action_->distance);
-      break;
-    }
-  }
 
   WebElement scrolling_element;
   if (target_->is_coordinate_dip()) {
