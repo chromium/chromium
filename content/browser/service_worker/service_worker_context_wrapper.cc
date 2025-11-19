@@ -1927,28 +1927,18 @@ ServiceWorkerContextWrapper::GetLoaderFactoryForBrowserInitiatedRequest(
         /*cookie_overrides=*/std::nullopt);
   } else {
     DCHECK(storage_partition());
-    if (base::FeatureList::IsEnabled(
-            features::kPrivateNetworkAccessForWorkers)) {
-      if (url_loader_factory::GetTestingInterceptor()) {
-        url_loader_factory::GetTestingInterceptor().Run(
-            network::mojom::kBrowserProcessId, factory_builder);
-      }
-
-      network::mojom::URLLoaderFactoryParamsPtr params =
-          storage_partition_->CreateURLLoaderFactoryParams();
-      params->client_security_state = std::move(client_security_state);
-      remote =
-          std::move(factory_builder)
-              .Finish<mojo::PendingRemote<network::mojom::URLLoaderFactory>>(
-                  storage_partition_->GetNetworkContext(), std::move(params));
-    } else {
-      // Set up a Mojo connection to the network loader factory if it's not been
-      // created yet.
-      remote =
-          std::move(factory_builder)
-              .Finish<mojo::PendingRemote<network::mojom::URLLoaderFactory>>(
-                  storage_partition_->GetURLLoaderFactoryForBrowserProcess());
+    if (url_loader_factory::GetTestingInterceptor()) {
+      url_loader_factory::GetTestingInterceptor().Run(
+          network::mojom::kBrowserProcessId, factory_builder);
     }
+
+    network::mojom::URLLoaderFactoryParamsPtr params =
+        storage_partition_->CreateURLLoaderFactoryParams();
+    params->client_security_state = std::move(client_security_state);
+    remote =
+        std::move(factory_builder)
+            .Finish<mojo::PendingRemote<network::mojom::URLLoaderFactory>>(
+                storage_partition_->GetNetworkContext(), std::move(params));
   }
 
   // Clone context()->loader_factory_bundle_for_update_check() and set up the

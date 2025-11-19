@@ -87,35 +87,16 @@ FeatureState FeatureStateForContext(RequestContext request_context) {
         return FeatureState::kEnabled;
     }
   } else {
+    // TODO(crbug.com/394636065): clean this up once we remove the
+    // kLocalNetworkAccessChecks feature flag.
     switch (request_context) {
       case RequestContext::kSubresource:
-        return FeatureState::kEnabled;
       case RequestContext::kWorker:
-        if (!base::FeatureList::IsEnabled(
-                features::kPrivateNetworkAccessForWorkers)) {
-          return FeatureState::kDisabled;
-        }
-
-        if (base::FeatureList::IsEnabled(
-                features::kPrivateNetworkAccessForWorkersWarningOnly)) {
-          return FeatureState::kWarningOnly;
-        }
-
         return FeatureState::kEnabled;
       case RequestContext::kMainFrameNavigation:
       case RequestContext::kSubframeNavigation:
       case RequestContext::kFencedFrameNavigation:
-        if (!base::FeatureList::IsEnabled(
-                features::kPrivateNetworkAccessForNavigations)) {
-          return FeatureState::kDisabled;
-        }
-
-        if (base::FeatureList::IsEnabled(
-                features::kPrivateNetworkAccessForNavigationsWarningOnly)) {
-          return FeatureState::kWarningOnly;
-        }
-
-        return FeatureState::kEnabled;
+        return FeatureState::kDisabled;
     }
   }
 }

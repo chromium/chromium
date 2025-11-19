@@ -724,47 +724,6 @@ BASE_FEATURE_PARAM(bool,
 // within these APIs.
 BASE_FEATURE(kPrivacySandboxAdsAPIsOverride, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables Private Network Access checks for all types of web workers.
-//
-// This affects initial worker script fetches, fetches initiated by workers
-// themselves, and service worker update fetches.
-//
-// The exact checks run are the same as for other document subresources, and
-// depend on the state of other Private Network Access feature flags:
-//
-//  - `kBlockInsecurePrivateNetworkRequests`
-//
-BASE_FEATURE(kPrivateNetworkAccessForWorkers, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables Private Network Access checks in warning mode for all types of web
-// workers.
-//
-// Does nothing if `kPrivateNetworkAccessForWorkers` is disabled.
-//
-// If both this and `kPrivateNetworkAccessForWorkers` are enabled, then PNA
-// preflight requests for workers are not required to succeed. If one fails, a
-// warning is simply displayed in DevTools.
-BASE_FEATURE(kPrivateNetworkAccessForWorkersWarningOnly,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables Private Network Access checks for navigations.
-//
-// The exact checks run are the same as for document subresources, and depend on
-// the state of other Private Network Access feature flags:
-//  - `kBlockInsecurePrivateNetworkRequests`
-BASE_FEATURE(kPrivateNetworkAccessForNavigations,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables Private Network Access checks in warning mode for navigations.
-//
-// Does nothing if `kPrivateNetworkAccessForNavigations` is disabled.
-//
-// If both this and `kPrivateNetworkAccessForNavigations` are enabled, then PNA
-// preflight requests for navigations are not required to succeed. If
-// one fails, a warning is simply displayed in DevTools.
-BASE_FEATURE(kPrivateNetworkAccessForNavigationsWarningOnly,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, ProcessSelectionDeferringConditions will be run. This allows
 // the embedder to provide conditions that may delay the final process selection
 // until the conditions have their results.

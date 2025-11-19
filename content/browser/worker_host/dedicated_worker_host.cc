@@ -418,66 +418,46 @@ void DedicatedWorkerHost::DidStartScriptLoad(
   if (result->final_response_url.SchemeIsLocal()) {
     // TODO(crbug.com/40053797): Inherit from the file creator instead
     // once creator policies are persisted through the filesystem store.
-    if (base::FeatureList::IsEnabled(
-            features::kPrivateNetworkAccessForWorkers)) {
-      worker_client_security_state_ = creator_client_security_state_->Clone();
-    } else {
-      // Preserve incorrect functionality if PNA is not enabled.
-      worker_client_security_state_ =
-          ancestor_render_frame_host->BuildClientSecurityState();
-
-      // > 14.5 If response's url's scheme is a local scheme, then set worker
-      // global scope's embedder policy to owner's embedder policy.
-      worker_client_security_state_->cross_origin_embedder_policy =
-          creator_client_security_state_->cross_origin_embedder_policy;
-    }
+    worker_client_security_state_ = creator_client_security_state_->Clone();
   } else {
     CHECK(result->main_script_load_params);
     DCHECK(result->main_script_load_params->response_head);
     DCHECK(result->main_script_load_params->response_head->parsed_headers);
-    if (base::FeatureList::IsEnabled(
-            features::kPrivateNetworkAccessForWorkers)) {
-      worker_client_security_state_ =
-          network::mojom::ClientSecurityState::New();
-      worker_client_security_state_->ip_address_space = CalculateIPAddressSpace(
-          result->final_response_url,
-          result->main_script_load_params->response_head.get(),
-          GetContentClient()->browser());
-      worker_client_security_state_->is_web_secure_context =
-          network::IsUrlPotentiallyTrustworthy(result->final_response_url) &&
-          creator_client_security_state_->is_web_secure_context;
-      // Deprecation trial status allowing LNA requests on non-http
-      bool allow_non_secure_local_network_access =
-          ancestor_render_frame_host->policy_container_host() &&
-          ancestor_render_frame_host->policy_container_host()
-              ->policies()
-              .allow_non_secure_local_network_access;
 
-      worker_client_security_state_->private_network_request_policy =
-          DerivePrivateNetworkRequestPolicy(
-              worker_client_security_state_->ip_address_space,
-              worker_client_security_state_->is_web_secure_context,
-              allow_non_secure_local_network_access,
-              PrivateNetworkRequestContext::kWorker);
+    worker_client_security_state_ = network::mojom::ClientSecurityState::New();
+    worker_client_security_state_->ip_address_space = CalculateIPAddressSpace(
+        result->final_response_url,
+        result->main_script_load_params->response_head.get(),
+        GetContentClient()->browser());
+    worker_client_security_state_->is_web_secure_context =
+        network::IsUrlPotentiallyTrustworthy(result->final_response_url) &&
+        creator_client_security_state_->is_web_secure_context;
+    // Deprecation trial status allowing LNA requests on non-http
+    bool allow_non_secure_local_network_access =
+        ancestor_render_frame_host->policy_container_host() &&
+        ancestor_render_frame_host->policy_container_host()
+            ->policies()
+            .allow_non_secure_local_network_access;
 
-      // Check for policy overrides on LNA. For dedicated workers, we apply
-      // policy based on origin of the document that owns the worker.
-      // TODO(crbug.com/452389539): Centralize these policy overrides.
-      ContentBrowserClient* client = GetContentClient()->browser();
-      BrowserContext* context = ancestor_render_frame_host->GetBrowserContext();
-      url::Origin origin = ancestor_render_frame_host->GetLastCommittedOrigin();
-      ContentBrowserClient::PrivateNetworkRequestPolicyOverride
-          policy_override = client->ShouldOverridePrivateNetworkRequestPolicy(
-              context, origin);
-      worker_client_security_state_->private_network_request_policy =
-          OverrideLocalNetworkAccessPolicy(
-              worker_client_security_state_->private_network_request_policy,
-              policy_override);
-    } else {
-      // Preserve incorrect functionality if PNA is not enabled.
-      worker_client_security_state_ =
-          ancestor_render_frame_host->BuildClientSecurityState();
-    }
+    worker_client_security_state_->private_network_request_policy =
+        DerivePrivateNetworkRequestPolicy(
+            worker_client_security_state_->ip_address_space,
+            worker_client_security_state_->is_web_secure_context,
+            allow_non_secure_local_network_access,
+            PrivateNetworkRequestContext::kWorker);
+
+    // Check for policy overrides on LNA. For dedicated workers, we apply
+    // policy based on origin of the document that owns the worker.
+    // TODO(crbug.com/452389539): Centralize these policy overrides.
+    ContentBrowserClient* client = GetContentClient()->browser();
+    BrowserContext* context = ancestor_render_frame_host->GetBrowserContext();
+    url::Origin origin = ancestor_render_frame_host->GetLastCommittedOrigin();
+    ContentBrowserClient::PrivateNetworkRequestPolicyOverride policy_override =
+        client->ShouldOverridePrivateNetworkRequestPolicy(context, origin);
+    worker_client_security_state_->private_network_request_policy =
+        OverrideLocalNetworkAccessPolicy(
+            worker_client_security_state_->private_network_request_policy,
+            policy_override);
 
     // > 14.6 Otherwise, set worker global scope's embedder policy to the result
     // of obtaining an embedder policy from response.

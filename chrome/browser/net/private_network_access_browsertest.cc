@@ -246,8 +246,6 @@ struct IsWarningOnlyTestData {
   bool is_warning_only;
 };
 
-const IsWarningOnlyTestData kIsWarningOnlyTestData[] = {{false}, {true}};
-
 class PrivateNetworkAccessWithFeatureEnabledBrowserTest
     : public PrivateNetworkAccessBrowserTestBase {
  public:
@@ -257,26 +255,10 @@ class PrivateNetworkAccessWithFeatureEnabledBrowserTest
             {
                 features::kBlockInsecurePrivateNetworkRequests,
                 features::kBlockInsecurePrivateNetworkRequestsFromPrivate,
-                features::kPrivateNetworkAccessForNavigations,
-                features::kPrivateNetworkAccessForWorkers,
             },
-            is_warning_only
-                ? std::vector<base::test::FeatureRef>({
-                      network::features::kLocalNetworkAccessChecks,
-                  })
-                : std::vector<base::test::FeatureRef>({
-                      features::kPrivateNetworkAccessForWorkersWarningOnly,
-                      network::features::kLocalNetworkAccessChecks,
-                  })) {}
-};
-
-class PrivateNetworkAccessWithFeatureEnabledWorkerBrowserTest
-    : public PrivateNetworkAccessWithFeatureEnabledBrowserTest,
-      public testing::WithParamInterface<IsWarningOnlyTestData> {
- public:
-  PrivateNetworkAccessWithFeatureEnabledWorkerBrowserTest()
-      : PrivateNetworkAccessWithFeatureEnabledBrowserTest(
-            GetParam().is_warning_only) {}
+            {
+                network::features::kLocalNetworkAccessChecks,
+            }) {}
 };
 
 // ================
@@ -761,8 +743,8 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureDisabledBrowserTest,
 
 // This test verifies that a UseCounter is recorded when a document makes a
 // private network request to load a worker script from a non-secure context,
-// and the request fails due to PNA unless it's in warning-only mode.
-IN_PROC_BROWSER_TEST_P(PrivateNetworkAccessWithFeatureEnabledWorkerBrowserTest,
+// and the request fails due to LNA.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
                        RecordsFeatureForWorkerScriptFetchFromNonSecure) {
   std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
 
@@ -771,9 +753,8 @@ IN_PROC_BROWSER_TEST_P(PrivateNetworkAccessWithFeatureEnabledWorkerBrowserTest,
 
   WebFeatureHistogramTester feature_histogram_tester;
 
-  EXPECT_EQ(
-      GetParam().is_warning_only,
-      content::EvalJs(web_contents(), FetchWorkerScript(kWorkerScriptPath)));
+  EXPECT_EQ(false, content::EvalJs(web_contents(),
+                                   FetchWorkerScript(kWorkerScriptPath)));
 
   feature_histogram_tester.ExpectCounts(AddFeatureCounts(
       AllZeroFeatureCounts(AllAddressSpaceFeatures()),
@@ -807,7 +788,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureDisabledBrowserTest,
 // private network request to load a worker script from a secure context, does
 // not trigger LNA because the request is same-origin and the origin is
 // potentially trustworthy, and loads the script anyway.
-IN_PROC_BROWSER_TEST_P(PrivateNetworkAccessWithFeatureEnabledWorkerBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
                        RecordsFeatureForWorkerScriptFetchFromSecure) {
   std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
 
@@ -850,8 +831,8 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureDisabledBrowserTest,
 
 // This test verifies that a UseCounter is recorded when a document makes a
 // private network request to load a shared worker script from a non-secure
-// context, and the request fails due to PNA unless it's in warning-only mode.
-IN_PROC_BROWSER_TEST_P(PrivateNetworkAccessWithFeatureEnabledWorkerBrowserTest,
+// context, and the request fails due to LNA.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
                        RecordsFeatureForSharedWorkerScriptFetchFromNonSecure) {
   std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
 
@@ -860,7 +841,7 @@ IN_PROC_BROWSER_TEST_P(PrivateNetworkAccessWithFeatureEnabledWorkerBrowserTest,
 
   WebFeatureHistogramTester feature_histogram_tester;
 
-  EXPECT_EQ(GetParam().is_warning_only,
+  EXPECT_EQ(false,
             content::EvalJs(web_contents(),
                             FetchSharedWorkerScript(kSharedWorkerScriptPath)));
 
@@ -897,7 +878,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureDisabledBrowserTest,
 // private network request to load a shared worker script from a secure context,
 // does not trigger LNA because the request is same-origin and the origin is
 // potentially trustworthy, and loads the script anyway.
-IN_PROC_BROWSER_TEST_P(PrivateNetworkAccessWithFeatureEnabledWorkerBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
                        RecordsFeatureForSharedWorkerScriptFetchFromSecure) {
   std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
 
@@ -915,7 +896,6 @@ IN_PROC_BROWSER_TEST_P(PrivateNetworkAccessWithFeatureEnabledWorkerBrowserTest,
           {WebFeature::kPrivateNetworkAccessFetchedWorkerScript, 1},
       }));
 }
-
 
 // This test verifies that a UseCounter is recorded when a document makes a
 // private network request to load a service worker script from treat-as-public
@@ -1032,7 +1012,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
 #else
 #define MAYBE_FetchNullIpAddressFromWorker FetchNullIpAddressFromWorker
 #endif
-IN_PROC_BROWSER_TEST_P(PrivateNetworkAccessWithFeatureEnabledWorkerBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
                        MAYBE_FetchNullIpAddressFromWorker) {
   WebFeatureHistogramTester feature_histogram_tester;
   std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
@@ -1057,11 +1037,6 @@ IN_PROC_BROWSER_TEST_P(PrivateNetworkAccessWithFeatureEnabledWorkerBrowserTest,
                            {WebFeature::kPrivateNetworkAccessNullIpAddress, 1},
                        }));
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    PrivateNetworkAccessWithFeatureEnabledWorkerBrowserTest,
-    testing::ValuesIn(kIsWarningOnlyTestData));
 
 // ====================
 // SPECIAL SCHEME TESTS
@@ -1261,7 +1236,6 @@ class PrivateNetworkAccessAutoReloadBrowserTest
       : PrivateNetworkAccessBrowserTestBase(
             {
                 features::kBlockInsecurePrivateNetworkRequests,
-                features::kPrivateNetworkAccessForNavigations,
             },
             {
                 network::features::kLocalNetworkAccessChecks,

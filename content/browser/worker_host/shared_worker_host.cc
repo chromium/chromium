@@ -265,18 +265,14 @@ void SharedWorkerHost::Start(
           DeriveClientSecurityState(creator_policy_container_host_->policies(),
                                     PrivateNetworkRequestContext::kWorker);
     } else {
-      auto policy = base::FeatureList::IsEnabled(
-                        features::kPrivateNetworkAccessForWorkers)
-                        ? network::mojom::PrivateNetworkRequestPolicy::kBlock
-                        : network::mojom::PrivateNetworkRequestPolicy::kAllow;
-
       // Create a maximally restricted client security state if the policy
       // container is missing.
       worker_client_security_state_ = network::mojom::ClientSecurityState::New(
           network::CrossOriginEmbedderPolicy(
               network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp),
           /*is_web_secure_context=*/false,
-          network::mojom::IPAddressSpace::kUnknown, policy,
+          network::mojom::IPAddressSpace::kUnknown,
+          network::mojom::PrivateNetworkRequestPolicy::kBlock,
           network::DocumentIsolationPolicy(
               network::mojom::DocumentIsolationPolicyValue::
                   kIsolateAndRequireCorp));
