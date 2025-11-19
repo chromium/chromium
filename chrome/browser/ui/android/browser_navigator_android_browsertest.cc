@@ -355,6 +355,55 @@ IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
   EXPECT_EQ(url1, web_contents_->GetLastCommittedURL());
 }
 
+IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest, Async_Disposition_NewPopup) {
+  const GURL url1 = StartAtURL("/title1.html");
+  ASSERT_EQ(1u, GetAllBrowserWindowInterfaces().size());
+
+  // Prepare and execute a NEW_POPUP navigation.
+  const GURL url2 = embedded_test_server()->GetURL("/title2.html");
+  NavigateParams params(browser_window_, url2, ui::PAGE_TRANSITION_LINK);
+  params.disposition = WindowOpenDisposition::NEW_POPUP;
+
+  base::test::TestFuture<base::WeakPtr<content::NavigationHandle>> future;
+  Navigate(&params, future.GetCallback());
+  base::WeakPtr<content::NavigationHandle> handle = future.Get();
+  ASSERT_TRUE(handle);
+  ASSERT_TRUE(handle->GetWebContents());
+
+  // Observe the navigation in the new tab's WebContents.
+  content::TestNavigationObserver navigation_observer(handle->GetWebContents());
+  navigation_observer.Wait();
+
+  // Verify a new window was created and the navigation occurred in it.
+  std::vector<BrowserWindowInterface*> windows =
+      GetAllBrowserWindowInterfaces();
+  ASSERT_EQ(2u, windows.size());
+  BrowserWindowInterface* new_window =
+      windows[0] == browser_window_ ? windows[1] : windows[0];
+  EXPECT_EQ(new_window->GetType(), BrowserWindowInterface::Type::TYPE_POPUP);
+  TabListInterface* new_tab_list = TabListInterface::From(new_window);
+  EXPECT_EQ(1, new_tab_list->GetTabCount());
+  tabs::TabInterface* new_tab = new_tab_list->GetTab(0);
+  ASSERT_TRUE(new_tab);
+  EXPECT_EQ(url2, new_tab->GetContents()->GetLastCommittedURL());
+
+  // Verify the original window is unchanged.
+  EXPECT_EQ(1, tab_list_->GetTabCount());
+  EXPECT_EQ(url1, web_contents_->GetLastCommittedURL());
+}
+
+IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
+                       Disposition_NewPopup_ReturnsNull) {
+  // Prepare and execute a NEW_POPUP navigation.
+  const GURL url = embedded_test_server()->GetURL("/title1.html");
+  NavigateParams params(browser_window_, url, ui::PAGE_TRANSITION_LINK);
+  params.disposition = WindowOpenDisposition::NEW_POPUP;
+
+  // Synchronous Navigate() should return null for NEW_POPUP.
+  base::WeakPtr<content::NavigationHandle> handle = Navigate(&params);
+  EXPECT_FALSE(handle);
+}
+
 IN_PROC_BROWSER_TEST_F(
     NavigateAndroidBrowserTest,
     Disposition_OffTheRecord_FromRegularProfile_ReturnsNull) {

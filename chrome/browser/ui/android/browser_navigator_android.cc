@@ -63,6 +63,13 @@ void GetOrCreateBrowserWindowForDisposition(
       CreateBrowserWindow(std::move(create_params), std::move(callback));
       break;
     }
+    case WindowOpenDisposition::NEW_POPUP: {
+      BrowserWindowCreateParams create_params(
+          BrowserWindowInterface::Type::TYPE_POPUP, *profile,
+          params->user_gesture);
+      CreateBrowserWindow(std::move(create_params), std::move(callback));
+      break;
+    }
     case WindowOpenDisposition::NEW_BACKGROUND_TAB:
       [[fallthrough]];
     case WindowOpenDisposition::NEW_FOREGROUND_TAB:
@@ -130,6 +137,8 @@ raw_ptr<tabs::TabInterface> GetOrCreateTabForDisposition(
       [[fallthrough]];
     case WindowOpenDisposition::OFF_THE_RECORD:
       // A new incognito window has already been created with a new tab.
+      [[fallthrough]];
+    case WindowOpenDisposition::NEW_POPUP:
       [[fallthrough]];
     case WindowOpenDisposition::NEW_WINDOW: {
       // A new tab is already created when the new window is created on Android.
