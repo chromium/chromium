@@ -20,7 +20,7 @@ namespace {
 // TODO(crbug.com/443286263) allows symbolizations inside sandboxes to be
 // tracked down and fixed. When enabled this prevents prewarming dbghelp.dll
 // before entering lockdown.
-BASE_FEATURE(kWinSboxNoDbghelpWarmup, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kWinSboxNoDbghelpWarmup, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Stores the default lcid.
 LCID g_user_default_lcid = 0;
