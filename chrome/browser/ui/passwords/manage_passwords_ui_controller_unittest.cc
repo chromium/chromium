@@ -38,7 +38,7 @@
 #include "chrome/browser/ui/passwords/manage_passwords_icon_view.h"
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -2331,16 +2331,18 @@ TEST_P(ManagePasswordsUIControllerTest, OnKeychainErrorShouldNotShowBubble) {
 }
 #endif
 
+// TODO(crbug.com/376283921): These tests should be turned into browser tests to avoid
+// using `TestWithBrowserView`.
 class ManagePasswordsUIControllerWithBrowserTest
     : public base::test::WithFeatureOverride,
-      public BrowserWithTestWindowTest {
+      public TestWithBrowserView {
  public:
   explicit ManagePasswordsUIControllerWithBrowserTest(
       base::test::TaskEnvironment::TimeSource time_source =
           base::test::TaskEnvironment::TimeSource::SYSTEM_TIME)
       : base::test::WithFeatureOverride(
             autofill::features::kAutofillShowBubblesBasedOnPriorities),
-        BrowserWithTestWindowTest(time_source) {}
+        TestWithBrowserView(time_source) {}
 
   void SetUp() override;
   content::WebContents* web_contents() {
@@ -2356,7 +2358,7 @@ class ManagePasswordsUIControllerWithBrowserTest
 };
 
 void ManagePasswordsUIControllerWithBrowserTest::SetUp() {
-  BrowserWithTestWindowTest::SetUp();
+  TestWithBrowserView::SetUp();
   AddTab(browser(), GURL(kExampleUrl));
   ManagePasswordsUIController::CreateForWebContents(web_contents());
   controller()->set_client(&client_);
@@ -2379,17 +2381,19 @@ TEST_P(ManagePasswordsUIControllerWithBrowserTest,
 
   std::vector<PasswordForm> forms = {shared_credentials,
                                      non_shared_credentials};
+  EXPECT_FALSE(controller()->IsShowingBubble());
   controller()->OnPasswordAutofilled(
       forms, url::Origin::Create(forms.front().url), {});
 
   ASSERT_EQ(2u, controller()->GetCurrentForms().size());
   EXPECT_EQ(controller()->GetState(),
             password_manager::ui::NOTIFY_RECEIVED_SHARED_CREDENTIALS);
-  EXPECT_TRUE(controller()->IsAutomaticallyOpeningBubble());
+  EXPECT_TRUE(controller()->IsShowingBubble());
   // All interactions with the bubble will close it and invoke OnBubbleHidden().
   controller()->OnBubbleHidden();
   // The bubble should transition to the manage state upon any interaction.
   EXPECT_EQ(controller()->GetState(), password_manager::ui::MANAGE_STATE);
+  EXPECT_FALSE(controller()->IsShowingBubble());
 }
 
 TEST_P(ManagePasswordsUIControllerWithBrowserTest,
@@ -2418,6 +2422,7 @@ TEST_P(ManagePasswordsUIControllerWithBrowserTest,
   // MANAGE_STATE.
   EXPECT_EQ(controller()->GetState(), password_manager::ui::MANAGE_STATE);
   EXPECT_FALSE(controller()->IsAutomaticallyOpeningBubble());
+  EXPECT_FALSE(controller()->IsShowingBubble());
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
