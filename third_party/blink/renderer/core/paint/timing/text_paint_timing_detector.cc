@@ -225,6 +225,8 @@ void TextPaintTimingDetector::ReportLargestIgnoredText() {
   DCHECK(document);
   PaintTiming::From(*document).MarkFirstContentfulPaint();
 
+  recorded_set_.insert(record->GetNode()->GetLayoutObject(),
+                       TextPaintStatus::kPainted);
   // TODO(crbug.com/455791378): Move this to `QueueToMeasurePaintTime` once
   // `kTextPaintTimingFrameIndexInitializationFix` is removed.
   record->SetFrameIndex(frame_index_);

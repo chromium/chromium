@@ -895,6 +895,33 @@ TEST_F(TextPaintTimingDetectorTest, OpacityZeroHTML2) {
   CheckSizeOfTextQueuedForPaintTimeAfterUpdateLifecyclePhases(0u);
 }
 
+TEST_F(TextPaintTimingDetectorTest, OpacityZeroHTMLTextRecordedOnce) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      :root {
+        opacity: 0;
+        will-change: opacity;
+      }
+    </style>
+    <div id="target">Text</div>
+  )HTML");
+  CheckSizeOfTextQueuedForPaintTimeAfterUpdateLifecyclePhases(0u);
+
+  // Change the opacity of documentElement, now the <div> should be a candidate.
+  GetDocument().documentElement()->setAttribute(html_names::kStyleAttr,
+                                                AtomicString("opacity: 1"));
+  UpdateAllLifecyclePhasesAndSimulatePresentationTime();
+  EXPECT_TRUE(TextRecordOfLargestTextPaint());
+
+  // Update the <div>'s text. This should not cause the `target` to be
+  // reconsidered for timing since it was already recorded.
+  Element* target = GetElement("target");
+  To<HTMLElement>(target)->setInnerText("Text Text Text");
+
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(TextQueuedForPaintTimeSize(GetFrameView()), 0);
+}
+
 TEST_F(TextPaintTimingDetectorTest,
        QueuedRecordsWaitForCorrectPresentationFeedback) {
   SetBodyInnerHTML(R"HTML(
