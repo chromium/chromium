@@ -22,6 +22,10 @@ class MockPaymentsWindowDelegate : public PaymentsWindowDelegate {
   MockPaymentsWindowDelegate() = default;
 
   MOCK_METHOD(void, OnDidFinishNavigationForBnpl, (const GURL&), (override));
+  MOCK_METHOD(void,
+              OnWebContentsObservationStarted,
+              (content::WebContents&),
+              (override));
   MOCK_METHOD(void, WebContentsDestroyed, (), (override));
 };
 
@@ -55,6 +59,15 @@ TEST_F(PaymentsWindowBridgeTest, OnNavigationFinished_ForwardsCallToDelegate) {
 
   payments_window_bridge_->OnNavigationFinished(
       env_, url::GURLAndroid::FromNativeGURL(env_, clicked_url));
+}
+
+TEST_F(PaymentsWindowBridgeTest,
+       OnWebContentsObservationStarted_ForwardsCallToDelegate) {
+  EXPECT_CALL(mock_delegate_,
+              OnWebContentsObservationStarted(testing::Ref(*web_contents())));
+
+  payments_window_bridge_->OnWebContentsObservationStarted(
+      env_, web_contents()->GetJavaWebContents());
 }
 
 TEST_F(PaymentsWindowBridgeTest,

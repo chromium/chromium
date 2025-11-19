@@ -14,6 +14,7 @@
 #import "base/memory/ptr_util.h"
 #import "base/memory/raw_ref.h"
 #import "base/memory/weak_ptr.h"
+#import "base/notimplemented.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/autofill_progress_dialog_type.h"
 #import "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
@@ -485,6 +486,10 @@ void IOSChromePaymentsAutofillClient::ShowMandatoryReauthOptInConfirmation() {}
 
 bool IOSChromePaymentsAutofillClient::IsAutofillPaymentMethodsEnabled() const {
   return autofill::prefs::IsAutofillPaymentMethodsEnabled(pref_service_);
+}
+
+void IOSChromePaymentsAutofillClient::DisablePaymentsAutofill() {
+  NOTIMPLEMENTED();
 }
 
 IbanManager* IOSChromePaymentsAutofillClient::GetIbanManager() {

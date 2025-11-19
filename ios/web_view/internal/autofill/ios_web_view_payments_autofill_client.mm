@@ -9,6 +9,7 @@
 #import "base/check_deref.h"
 #import "base/containers/span.h"
 #import "base/functional/callback.h"
+#import "base/notimplemented.h"
 #import "components/autofill/core/browser/autofill_progress_dialog_type.h"
 #import "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #import "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
@@ -335,6 +336,10 @@ void IOSWebViewPaymentsAutofillClient::ShowMandatoryReauthOptInConfirmation() {}
 
 bool IOSWebViewPaymentsAutofillClient::IsAutofillPaymentMethodsEnabled() const {
   return autofill::prefs::IsAutofillPaymentMethodsEnabled(GetPrefService());
+}
+
+void IOSWebViewPaymentsAutofillClient::DisablePaymentsAutofill() {
+  NOTIMPLEMENTED();
 }
 
 IbanManager* IOSWebViewPaymentsAutofillClient::GetIbanManager() {

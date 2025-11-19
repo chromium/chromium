@@ -46,6 +46,11 @@ class PaymentsWindowBridge {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& clicked_url_object);
 
+  // Called when observation has started for the WebContents.
+  void OnWebContentsObservationStarted(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& j_web_contents);
+
   // Called when WebContents is being destroyed.
   void OnWebContentsDestroyed(JNIEnv* env);
 

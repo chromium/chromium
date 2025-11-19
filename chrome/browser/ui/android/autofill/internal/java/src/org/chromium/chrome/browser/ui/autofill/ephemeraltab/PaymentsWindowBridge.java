@@ -54,6 +54,16 @@ class PaymentsWindowBridge {
     }
 
     /**
+     * Called when the observation of the WebContents has started.
+     *
+     * @param webContents The WebContents that is being observed.
+     */
+    public void onWebContentsObservationStarted(WebContents webContents) {
+        PaymentsWindowBridgeJni.get()
+                .onWebContentsObservationStarted(mNativePaymentsWindowBridge, webContents);
+    }
+
+    /**
      * Called when the observed {@code WebContents} is being destroyed.
      *
      * <p>After this call, clients should assume that the observed {@code WebContents} will be
@@ -66,6 +76,9 @@ class PaymentsWindowBridge {
     @NativeMethods
     interface Natives {
         void onNavigationFinished(long nativePaymentsWindowBridge, GURL clickedUrl);
+
+        void onWebContentsObservationStarted(
+                long nativePaymentsWindowBridge, WebContents webContents);
 
         void onWebContentsDestroyed(long nativePaymentsWindowBridge);
     }

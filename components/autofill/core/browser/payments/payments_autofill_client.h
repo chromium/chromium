@@ -572,6 +572,10 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // and the client supports Autofill.
   virtual bool IsAutofillPaymentMethodsEnabled() const = 0;
 
+  // Disables payments autofill support for this client. Used when the client's
+  // WebContents does not support autofill, such as in an Ephemeral Tab.
+  virtual void DisablePaymentsAutofill() = 0;
+
   // Gets the IbanManager instance associated with the client.
   virtual IbanManager* GetIbanManager() = 0;
 

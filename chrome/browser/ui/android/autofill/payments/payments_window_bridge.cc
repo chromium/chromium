@@ -53,6 +53,16 @@ void PaymentsWindowBridge::OnNavigationFinished(
       url::GURLAndroid::ToNativeGURL(env, clicked_url_object));
 }
 
+void PaymentsWindowBridge::OnWebContentsObservationStarted(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_web_contents) {
+  content::WebContents* web_contents =
+      content::WebContents::FromJavaWebContents(j_web_contents);
+  if (web_contents) {
+    payments_window_delegate_->OnWebContentsObservationStarted(*web_contents);
+  }
+}
+
 void PaymentsWindowBridge::OnWebContentsDestroyed(JNIEnv* env) {
   payments_window_delegate_->WebContentsDestroyed();
 }

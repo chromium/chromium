@@ -144,6 +144,7 @@ class IOSWebViewPaymentsAutofillClient : public PaymentsAutofillClient {
       base::RepeatingClosure close_mandatory_reauth_callback) override;
   void ShowMandatoryReauthOptInConfirmation() override;
   bool IsAutofillPaymentMethodsEnabled() const final;
+  void DisablePaymentsAutofill() final;
   IbanManager* GetIbanManager() override;
   IbanAccessManager* GetIbanAccessManager() override;
   MerchantPromoCodeManager* GetMerchantPromoCodeManager() override;

@@ -46,6 +46,17 @@ void AndroidPaymentsWindowManager::InitVcn3dsAuthentication(
   NOTIMPLEMENTED();
 }
 
+void AndroidPaymentsWindowManager::OnWebContentsObservationStarted(
+    content::WebContents& web_contents) {
+  if (ContentAutofillClient* client =
+          ContentAutofillClient::FromWebContents(&web_contents)) {
+    if (payments::PaymentsAutofillClient* payments_client =
+            client->GetPaymentsAutofillClient()) {
+      payments_client->DisablePaymentsAutofill();
+    }
+  }
+}
+
 void AndroidPaymentsWindowManager::WebContentsDestroyed() {
   // If `flow_state_` is not present, then completion flow has already been
   // handled.

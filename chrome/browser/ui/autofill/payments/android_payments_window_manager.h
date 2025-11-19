@@ -41,6 +41,8 @@ class AndroidPaymentsWindowManager : public PaymentsWindowManager,
   void InitVcn3dsAuthentication(Vcn3dsContext context) override;
 
   // PaymentsWindowDelegate:
+  void OnWebContentsObservationStarted(
+      content::WebContents& web_contents) override;
   void WebContentsDestroyed() override;
   void OnDidFinishNavigationForBnpl(const GURL& url) override;
 

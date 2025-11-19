@@ -895,6 +895,16 @@ TEST_F(ChromePaymentsAutofillClientTest, GetBnplUiDelegate) {
   EXPECT_EQ(ui_delegate, chrome_payments_client()->GetBnplUiDelegate());
 }
 
+// Test that `DisablePaymentsAutofill` correctly disables the client's support
+// for autofill payment methods.
+TEST_F(ChromePaymentsAutofillClientTest, DisablePaymentsAutofill) {
+  EXPECT_TRUE(chrome_payments_client()->IsAutofillPaymentMethodsEnabled());
+
+  chrome_payments_client()->DisablePaymentsAutofill();
+
+  EXPECT_FALSE(chrome_payments_client()->IsAutofillPaymentMethodsEnabled());
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 class ChromePaymentsAutofillIOSPromoClientTest
     : public ChromePaymentsAutofillClientTest {

@@ -72,6 +72,12 @@ class PaymentsWindowCoordinator implements EphemeralTabObserver {
 
     // EphemeralTabObserver:
     @Override
+    public void onWebContentsObservationStarted(WebContents webContents) {
+        mPaymentsWindowBridge.onWebContentsObservationStarted(webContents);
+    }
+
+    // EphemeralTabObserver:
+    @Override
     public void onWebContentsDestroyed() {
         if (mEphemeralTabCoordinator != null) {
             mEphemeralTabCoordinator.removeObserver(this);

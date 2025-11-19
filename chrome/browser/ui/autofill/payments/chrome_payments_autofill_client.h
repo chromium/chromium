@@ -192,6 +192,7 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
       base::RepeatingClosure close_mandatory_reauth_callback) override;
   void ShowMandatoryReauthOptInConfirmation() override;
   bool IsAutofillPaymentMethodsEnabled() const final;
+  void DisablePaymentsAutofill() final;
   IbanManager* GetIbanManager() override;
   IbanAccessManager* GetIbanAccessManager() override;
   MerchantPromoCodeManager* GetMerchantPromoCodeManager() override;
@@ -376,6 +377,13 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
   // Used to cache client side risk data. The cache is invalidated when the
   // chrome browser tab is closed.
   std::string risk_data_;
+
+  // Whether autofill payment methods are supported for this client. Is true by
+  // default, and is flipped manually when `DisablePaymentsAutofill` is called.
+  // Intended to be turned off in situations where payments autofill (both
+  // uploading and filling) should be disabled for the given WebContents `this`
+  // is owned by.
+  bool autofill_payment_methods_supported_ = true;
 
   base::OnceCallback<void(const std::string&)>
       cached_risk_data_loaded_callback_for_testing_;

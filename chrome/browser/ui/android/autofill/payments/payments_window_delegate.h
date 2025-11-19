@@ -15,6 +15,10 @@ class PaymentsWindowDelegate {
  public:
   virtual ~PaymentsWindowDelegate() = default;
 
+  // Called when observation has started for the WebContents.
+  virtual void OnWebContentsObservationStarted(
+      content::WebContents& web_contents) = 0;
+
   // Triggered when the web contents of a tab shown as part of a window manager
   // flow was destroyed.
   virtual void WebContentsDestroyed() = 0;

@@ -323,7 +323,12 @@ void TestPaymentsAutofillClient::ShowMandatoryReauthOptInConfirmation() {
 }
 
 bool TestPaymentsAutofillClient::IsAutofillPaymentMethodsEnabled() const {
-  return autofill_payment_methods_enabled_;
+  return autofill_payment_methods_enabled_ &&
+         autofill_payment_methods_supported_;
+}
+
+void TestPaymentsAutofillClient::DisablePaymentsAutofill() {
+  autofill_payment_methods_supported_ = false;
 }
 
 MockIbanManager* TestPaymentsAutofillClient::GetIbanManager() {

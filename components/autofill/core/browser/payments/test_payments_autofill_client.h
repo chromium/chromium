@@ -173,6 +173,7 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
       base::RepeatingClosure close_mandatory_reauth_callback) override;
   void ShowMandatoryReauthOptInConfirmation() override;
   bool IsAutofillPaymentMethodsEnabled() const final;
+  void DisablePaymentsAutofill() final;
   MockIbanManager* GetIbanManager() override;
   MockIbanAccessManager* GetIbanAccessManager() override;
   MockMerchantPromoCodeManager* GetMerchantPromoCodeManager() override;
@@ -401,6 +402,7 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   bool unmask_authenticator_selection_dialog_shown_ = false;
 
   bool autofill_payment_methods_enabled_ = true;
+  bool autofill_payment_methods_supported_ = true;
 
   std::unique_ptr<MockIbanManager> mock_iban_manager_;
 

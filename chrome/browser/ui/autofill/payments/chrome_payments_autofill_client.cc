@@ -840,9 +840,14 @@ void ChromePaymentsAutofillClient::ShowMandatoryReauthOptInConfirmation() {
 }
 
 bool ChromePaymentsAutofillClient::IsAutofillPaymentMethodsEnabled() const {
-  return prefs::IsAutofillPaymentMethodsEnabled(
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext())
-          ->GetPrefs());
+  return autofill_payment_methods_supported_ &&
+         prefs::IsAutofillPaymentMethodsEnabled(
+             Profile::FromBrowserContext(web_contents()->GetBrowserContext())
+                 ->GetPrefs());
+}
+
+void ChromePaymentsAutofillClient::DisablePaymentsAutofill() {
+  autofill_payment_methods_supported_ = false;
 }
 
 IbanManager* ChromePaymentsAutofillClient::GetIbanManager() {

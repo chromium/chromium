@@ -154,6 +154,18 @@ public class PaymentsWindowCoordinatorTest {
     }
 
     @Test
+    public void testEphemeralTabObserver_OnWebContentsObservationStarted_ForwardsCallToBridge() {
+        setUpForEphemeralTabObserverTest();
+        verify(mEphemeralTabCoordinator).addObserver(mEphemeralTabObserverCaptor.capture());
+
+        mEphemeralTabObserverCaptor
+                .getValue()
+                .onWebContentsObservationStarted(mMerchantWebContents);
+
+        verify(mPaymentsWindowBridge).onWebContentsObservationStarted(mMerchantWebContents);
+    }
+
+    @Test
     public void testEphemeralTabObserver_OnWebContentsDestroyed_ForwardsCallToBridge() {
         setUpForEphemeralTabObserverTest();
         verify(mEphemeralTabCoordinator).addObserver(mEphemeralTabObserverCaptor.capture());
