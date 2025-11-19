@@ -23,31 +23,16 @@ namespace blink {
 IDBValue::IDBValue() = default;
 
 IDBValue::~IDBValue() {
-  if (decompression_count_ > 0) {
-    base::UmaHistogramCounts100("IndexedDB.ValueDecompressionCount",
-                                decompression_count_);
-  }
   if (isolate_) {
     external_memory_accounter_.Clear(isolate_.get());
   }
 }
 
 scoped_refptr<SerializedScriptValue> IDBValue::CreateSerializedValue() const {
-  if (base::FeatureList::IsEnabled(kIdbDecompressValuesInPlace)) {
-    SerializedScriptValue::DataBufferPtr decompressed;
-    if (IDBValueUnwrapper::Decompress(Data(), /*out_buffer=*/nullptr,
-                                      /*out_buffer_in_place=*/&decompressed)) {
-      const_cast<IDBValue*>(this)->decompression_count_++;
-      return SerializedScriptValue::Create(std::move(decompressed));
-    }
-  } else {
-    Vector<char> decompressed;
-    if (IDBValueUnwrapper::Decompress(Data(),
-                                      /*out_buffer=*/&decompressed,
-                                      /*out_buffer_in_place=*/nullptr)) {
-      const_cast<IDBValue*>(this)->decompression_count_++;
-      const_cast<IDBValue*>(this)->SetData(std::move(decompressed));
-    }
+  SerializedScriptValue::DataBufferPtr decompressed;
+  if (IDBValueUnwrapper::Decompress(Data(), /*out_buffer=*/nullptr,
+                                    /*out_buffer_in_place=*/&decompressed)) {
+    return SerializedScriptValue::Create(std::move(decompressed));
   }
 
   return SerializedScriptValue::Create(Data());

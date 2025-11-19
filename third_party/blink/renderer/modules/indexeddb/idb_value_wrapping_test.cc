@@ -605,18 +605,6 @@ TEST(IDBValueUnwrapperTest, Compression) {
       ASSERT_EQ(
           test_case.should_compress,
           IDBValueUnwrapper::Decompress(value->Data(), nullptr, &decompressed));
-
-      // ... but not when decompression output overwrites it.
-      base::test::ScopedFeatureList feature_disabler;
-      feature_disabler.InitAndDisableFeature(kIdbDecompressValuesInPlace);
-      serialized_string = value->CreateSerializedValue();
-      EXPECT_FALSE(
-          IDBValueUnwrapper::Decompress(value->Data(), nullptr, &decompressed));
-
-      // Verify round tripping again for good measure, to make sure the code
-      // still works with IdbDecompressValuesInPlace disabled.
-      EXPECT_TRUE(serialized_string->Deserialize(scope.GetIsolate())
-                      ->StrictEquals(v8_value));
     }
   }
 }

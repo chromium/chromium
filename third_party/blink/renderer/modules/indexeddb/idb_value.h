@@ -107,9 +107,6 @@ class MODULES_EXPORT IDBValue final {
   // - in `data_` before writing to the backend via mojo
   Vector<char> data_from_mojo_;
   SerializedScriptValue::DataBufferPtr data_;
-  // The number of times `data_` has been turned into a `SerialiedScriptValue`
-  // and had to be decompressed, tracked for metrics.
-  size_t decompression_count_ = 0;
 
   Vector<WebBlobInfo> blob_info_;
 

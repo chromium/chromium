@@ -26,8 +26,6 @@
 
 namespace blink {
 
-BASE_FEATURE(kIdbDecompressValuesInPlace, base::FEATURE_ENABLED_BY_DEFAULT);
-
 namespace {
 
 // V8 values are stored on disk by IndexedDB using the format implemented in
@@ -81,17 +79,6 @@ bool ShouldTransmitCompressed(size_t uncompressed_length,
                               size_t compressed_length) {
   // Don't keep compressed if compression ratio is poor.
   if (compressed_length > uncompressed_length * 0.9) {
-    return false;
-  }
-
-  // Don't keep compressed if decompressed size is large, unless `kIdbDecompressValuesInPlace`
-  // is enabled. Snappy doesn't have native support for streamed decoding, so decompressing
-  // requires O(uncompressed_length) memory more than handling an uncompressed value would.
-  // TODO(crbug.com/377441266): remove this condition. The value stored in
-  // `IDBValue::data_` is copied when being deserialized, regardless of whether
-  // it's compressed. Thus disabling compression for large values was misguided.
-  if (compressed_length > 256000U &&
-      !base::FeatureList::IsEnabled(kIdbDecompressValuesInPlace)) {
     return false;
   }
 

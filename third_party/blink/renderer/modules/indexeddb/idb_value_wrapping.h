@@ -252,23 +252,6 @@ class MODULES_EXPORT IDBValueUnwrapper {
   scoped_refptr<BlobDataHandle> blob_handle_;
 };
 
-// This flag controls behavior that decompresses
-// `IDBValue::data_` directly into a buffer that's passed by ownership to
-// `SerializedScriptValue`.
-//
-//  * For values that are not compressed, this flag has no effect: `data_` is
-//  always copied on conversion to a script value.
-//  * For values that are compressed,
-//    * Normally `data_` will be decompressed the first time it's serialized,
-//    overwriting `data_`, and *copied* into `SerializedScriptValue` the first
-//    time and every subsequent time one is created.
-//    * When this flag is enabled, `data_` will be decompressed *directly into*
-//    a buffer that's passed off to `SerializedScriptValue`, which avoids a copy
-//    and the memory overhead that entails. However this will happen every time
-//    the value is deserialized, so if that happens more than once, the
-//    decompression routine must run more than once.
-MODULES_EXPORT BASE_DECLARE_FEATURE(kIdbDecompressValuesInPlace);
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_INDEXEDDB_IDB_VALUE_WRAPPING_H_
