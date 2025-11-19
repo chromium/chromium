@@ -801,6 +801,22 @@
       name: "BypassPepcSecurityForTesting",
     },
     {
+      // Enables RFC 7234-compliant Cache-Control header parsing, removing RFC
+      // 2616 separators that are not valid in RFC 7234.
+      // https://crbug.com/42050325
+      name: "CacheControlRFC7234Parsing",
+      status: "experimental",
+    },
+    {
+      // Enables metrics collection comparing RFC 7234 vs RFC 2616 Cache-Control
+      // parsing. Performs double parsing on every Cache-Control header to
+      // measure behavioral differences. Can be disabled as a kill switch if
+      // performance issues arise.
+      // https://crbug.com/42050325
+      name: "CacheControlRFC7234ParsingMetrics",
+      status: "experimental",
+    },
+    {
       name: "CacheStorageCodeCacheHint",
       origin_trial_feature_name: "CacheStorageCodeCacheHint",
       status: "experimental",

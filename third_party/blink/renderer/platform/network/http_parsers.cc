@@ -40,6 +40,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_view_util.h"
 #include "net/http/http_content_disposition.h"
 #include "net/http/http_response_headers.h"
@@ -681,8 +682,11 @@ ContentTypeOptionsDisposition ParseContentTypeOptionsHeader(
   return kContentTypeOptionsNone;
 }
 
-static bool IsCacheHeaderSeparator(UChar c) {
-  // See RFC 2616, Section 2.2
+// Legacy version of IsCacheHeaderSeparator that includes all RFC 2616
+// separators. Used for metrics comparison and when feature is disabled.
+static bool LegacyIsCacheHeaderSeparator(UChar c) {
+  // RFC 2616, Section 2.2: Basic Rules - Separators
+  // https://datatracker.ietf.org/doc/html/rfc2616#section-2.2
   switch (c) {
     case '(':
     case ')':
@@ -713,12 +717,38 @@ static bool IsControlCharacter(UChar c) {
   return c < ' ' || c == 127;
 }
 
-static inline String TrimToNextSeparator(const String& str) {
-  return str.Substring(0, str.Find(IsCacheHeaderSeparator));
+// RFC 7234-compliant version of IsCacheHeaderSeparator that always uses
+// RFC 7234 separators regardless of feature flags. Used for metrics comparison.
+static bool RFC7234IsCacheHeaderSeparator(UChar c) {
+  // RFC 7234, Section 5.2: Cache-Control (uses token from RFC 7230)
+  // https://datatracker.ietf.org/doc/html/rfc7234#section-5.2
+  // RFC 7230, Section 3.2.6: Field Value Components - Tokens
+  // https://datatracker.ietf.org/doc/html/rfc7230#section-3.2.6
+  // Only comma, equals, quote, and whitespace are used as separators
+  // for Cache-Control parsing (not all RFC 7230 delimiters).
+  switch (c) {
+    case ',':
+    case '=':
+    case '"':
+    case ' ':
+    case '\t':
+      return true;
+    default:
+      return false;
+  }
 }
 
-static void ParseCacheHeader(const String& header,
-                             Vector<std::pair<String, String>>& result) {
+// Generic Cache-Control header parser that can use different separator
+// functions. This eliminates code duplication between RFC 7234, RFC 2616,
+// and feature-flag-controlled parsing.
+template <typename SeparatorFunc>
+static void ParseCacheHeaderImpl(const String& header,
+                                 Vector<std::pair<String, String>>& result,
+                                 SeparatorFunc is_separator) {
+  auto trim_to_separator = [&](const String& str) {
+    return str.Substring(0, str.Find(is_separator));
+  };
+
   const String safe_header = header.RemoveCharacters(IsControlCharacter);
   wtf_size_t max = safe_header.length();
   for (wtf_size_t pos = 0; pos < max; /* pos incremented in loop */) {
@@ -729,7 +759,7 @@ static void ParseCacheHeader(const String& header,
          next_comma_position == kNotFound)) {
       // Get directive name, parse right hand side of equal sign, then add to
       // map
-      String directive = TrimToNextSeparator(
+      String directive = trim_to_separator(
           safe_header.Substring(pos, next_equal_sign_position - pos)
               .StripWhiteSpace());
       pos += next_equal_sign_position - pos + 1;
@@ -747,15 +777,16 @@ static void ParseCacheHeader(const String& header,
                  next_double_quote_position + 1;
           // Move past next comma, if there is one
           wtf_size_t next_comma_position2 = safe_header.find(',', pos);
-          if (next_comma_position2 != kNotFound)
+          if (next_comma_position2 != kNotFound) {
             pos += next_comma_position2 - pos + 1;
-          else
+          } else {
             return;  // Parse error if there is anything left with no comma
+          }
         } else {
           // Parse error; just use the rest as the value
           result.push_back(std::pair<String, String>(
               directive,
-              TrimToNextSeparator(
+              trim_to_separator(
                   value.Substring(1, value.length() - 1).StripWhiteSpace())));
           return;
         }
@@ -766,13 +797,13 @@ static void ParseCacheHeader(const String& header,
           // The value is delimited by the next comma
           result.push_back(std::pair<String, String>(
               directive,
-              TrimToNextSeparator(
+              trim_to_separator(
                   value.Substring(0, next_comma_position2).StripWhiteSpace())));
           pos += (safe_header.find(',', pos) - pos) + 1;
         } else {
           // The rest is the value; no change to value needed
           result.push_back(
-              std::pair<String, String>(directive, TrimToNextSeparator(value)));
+              std::pair<String, String>(directive, trim_to_separator(value)));
           return;
         }
       }
@@ -781,7 +812,7 @@ static void ParseCacheHeader(const String& header,
                 next_equal_sign_position == kNotFound)) {
       // Add directive to map with empty string as value
       result.push_back(std::pair<String, String>(
-          TrimToNextSeparator(
+          trim_to_separator(
               safe_header.Substring(pos, next_comma_position - pos)
                   .StripWhiteSpace()),
           ""));
@@ -789,11 +820,20 @@ static void ParseCacheHeader(const String& header,
     } else {
       // Add last directive to map with empty string as value
       result.push_back(std::pair<String, String>(
-          TrimToNextSeparator(
+          trim_to_separator(
               safe_header.Substring(pos, max - pos).StripWhiteSpace()),
           ""));
       return;
     }
+  }
+}
+
+static void ParseCacheHeader(const String& header,
+                             Vector<std::pair<String, String>>& result) {
+  if (RuntimeEnabledFeatures::CacheControlRFC7234ParsingEnabled()) {
+    ParseCacheHeaderImpl(header, result, RFC7234IsCacheHeaderSeparator);
+  } else {
+    ParseCacheHeaderImpl(header, result, LegacyIsCacheHeaderSeparator);
   }
 }
 
@@ -814,6 +854,24 @@ CacheControlHeader ParseCacheControlDirectives(
   if (!cache_control_value.empty()) {
     Vector<std::pair<String, String>> directives;
     ParseCacheHeader(cache_control_value, directives);
+
+    // Compare RFC 7234 vs legacy RFC 2616 parsing for metrics.
+    // TODO(hjanuschka): Remove after gathering sufficient metrics and
+    // completing deprecation process.
+    if (RuntimeEnabledFeatures::CacheControlRFC7234ParsingMetricsEnabled()) {
+      Vector<std::pair<String, String>> rfc7234_directives;
+      Vector<std::pair<String, String>> legacy_directives;
+      ParseCacheHeaderImpl(cache_control_value, rfc7234_directives,
+                           RFC7234IsCacheHeaderSeparator);
+      ParseCacheHeaderImpl(cache_control_value, legacy_directives,
+                           LegacyIsCacheHeaderSeparator);
+
+      bool parsing_differs = rfc7234_directives != legacy_directives;
+
+      // Report metrics: true if behavior would change, false otherwise.
+      UMA_HISTOGRAM_BOOLEAN("Blink.CacheControl.ParsingDifference",
+                            parsing_differs);
+    }
 
     wtf_size_t directives_size = directives.size();
     for (wtf_size_t i = 0; i < directives_size; ++i) {
