@@ -748,30 +748,6 @@ RateLimitResult RateLimitTable::AllowedForReportingOriginLimit(
   return RateLimitResult::kAllowed;
 }
 
-int64_t RateLimitTable::CountUniqueReportingOriginsPerSiteForAttribution(
-    sql::Database* db,
-    const AttributionTrigger& trigger,
-    base::Time trigger_time) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  sql::Statement statement(db->GetCachedStatement(
-      SQL_FROM_HERE,
-      attribution_queries::
-          kRateLimitCountUniqueReportingOriginsPerSiteForAttributionSql));
-  statement.BindString(
-      0, net::SchemefulSite(trigger.destination_origin()).Serialize());
-  statement.BindString(
-      1, net::SchemefulSite(trigger.reporting_origin()).Serialize());
-  statement.BindTime(
-      2, trigger_time - delegate_->GetRateLimits().origins_per_site_window);
-
-  if (!statement.Step()) {
-    return -1;
-  }
-
-  return statement.ColumnInt64(0);
-}
-
 int64_t
 RateLimitTable::CountUniqueDailyReportingOriginsPerReportingSiteForSource(
     sql::Database* db,

@@ -2194,30 +2194,6 @@ TEST_F(AttributionManagerImplTest, SendReport_RecordsExtraReportDelay2) {
       base::Days(3) + kDefaultOfflineReportDelay.min, 1);
 }
 
-TEST_F(AttributionManagerImplTest, SendReport_RecordsSchedulerReportDelay) {
-  base::HistogramTester histograms;
-
-  attribution_manager_->HandleSource(TestAggregatableSourceProvider()
-                                         .GetBuilder()
-                                         .SetExpiry(kImpressionExpiry)
-                                         .Build(),
-                                     kFrameId);
-  attribution_manager_->HandleTrigger(
-      DefaultAggregatableTriggerBuilder().Build(), kFrameId);
-
-  EXPECT_THAT(StoredReports(), SizeIs(2));
-
-  // Deliberately avoid running tasks so that the scheduler is delayed.
-  task_environment_.AdvanceClock(kFirstReportingWindow + base::Seconds(1));
-
-  // Cause any scheduled tasks to run.
-  task_environment_.FastForwardBy(base::TimeDelta());
-
-  histograms.ExpectUniqueTimeSample(
-      "Conversions.AggregatableReport.SchedulerReportDelay", base::Seconds(1),
-      1);
-}
-
 TEST_F(AttributionManagerImplTest, SendReportsFromWebUI_DoesNotRecordMetrics) {
   base::HistogramTester histograms;
 

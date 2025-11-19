@@ -163,16 +163,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.AggregatableReport.NumContributionsPerReport2"
-    units="contribution" expires_after="2025-12-21">
-  <owner>linnan@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Measures the number of aggregatable histogram contributions per report.
-    Recorded when creating the aggregatable histogram.
-  </summary>
-</histogram>
-
 <histogram name="Conversions.AggregatableReport.ReportSendOutcome2"
     enum="ConversionReportSendOutcome" expires_after="never">
 <!-- expires-never: critical system health metric for monitoring -->
@@ -188,20 +178,6 @@ chromium-metrics-reviews@google.com.
     measurement-api-dev+alerts@google.com. Please make sure future versions of
     this histogram are properly set up for alerting, but prefer not to version
     the histogram if possible.
-  </summary>
-</histogram>
-
-<histogram name="Conversions.AggregatableReport.SchedulerReportDelay"
-    units="ms" expires_after="2025-11-30">
-  <owner>linnan@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Records the time difference from when the report was intended to be sent,
-    and the actual report time. This is different from
-    Conversions.AggregatableReport.ExtraReportDelay because it uses the send
-    attempt report time, rather than initial report time assigned by the API.
-    Accounts for any delays in Chrome scheduling the report. Recorded when an
-    aggregatabl report is to be assembled.
   </summary>
 </histogram>
 
@@ -314,7 +290,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.AttributionReportDebugKeyUsage"
-    enum="ConversionReportDebugKeyUsage" expires_after="2025-12-28">
+    enum="ConversionReportDebugKeyUsage" expires_after="2026-06-01">
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -478,28 +454,6 @@ chromium-metrics-reviews@google.com.
     event-level report. The HTTP response code is recorded if there is no net
     error code for the request, or the net error code indicates there was a
     response code failure.
-  </summary>
-</histogram>
-
-<histogram name="Conversions.DebugReport.ReportRetrySucceedAggregatable"
-    enum="BooleanSuccess" expires_after="2025-11-23">
-  <owner>linnan@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Records whether a particular aggregatable debug attribution report was
-    successful. Emitted for all aggregatable debug attribution reports that
-    retry.
-  </summary>
-</histogram>
-
-<histogram name="Conversions.DebugReport.ReportRetrySucceedEventLevel"
-    enum="BooleanSuccess" expires_after="2026-03-08">
-  <owner>apaseltiner@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Records whether a particular event-level debug attribution report was
-    successful. Emitted for all event-level debug attribution reports that
-    retry.
   </summary>
 </histogram>
 
@@ -732,23 +686,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.OsRegistrationItemsPerBatch" units="count"
-    expires_after="2025-12-21">
-  <owner>linnan@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Records the number of registration items submitted to the OS per batch (or
-    registration chain).
-
-    A registration chain might record more than one event if the chain records
-    more than 20 registration items.
-
-    Emitted when submitting OS registrations to the AttributionManager.
-  </summary>
-</histogram>
-
 <histogram name="Conversions.OsRegistrationItemsPerHeader" units="count"
-    expires_after="2025-12-21">
+    expires_after="2026-06-01">
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -776,26 +715,6 @@ chromium-metrics-reviews@google.com.
     the histogram if possible.
   </summary>
   <token key="Type" variants="AttributionReportingRegistrationType"/>
-</histogram>
-
-<histogram name="Conversions.OsRegistrationsBufferFlushReason"
-    enum="ConversionOsRegistrationsBufferFlushReason"
-    expires_after="2025-12-21">
-  <owner>linnan@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    The OS allows associating a navigation's input event to a single call. As a
-    result, all registrations tied to a navigation are buffered before
-    delegating them to the OS.
-
-    To ensure that buffered OS registrations are eventually sent to the OS, we
-    flush the buffer after 20s if we haven't had confirmation yet that the
-    navigation will no longer receive any more registrations.
-
-    When flushing an OS registrations buffer, this histogram emits the reason
-    why the buffer was flushed. It will only emit if there actually are buffered
-    registrations to flush.
-  </summary>
 </histogram>
 
 <histogram name="Conversions.OsRegistrationsSkipBufferRegistrationsSize"
@@ -861,16 +780,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Measures the number of sources or triggers registered per redirect chain.
     Recorded when the corresponding resource client finishes.
-  </summary>
-</histogram>
-
-<histogram name="Conversions.ReportRetrySucceedEventLevel"
-    enum="BooleanSuccess" expires_after="2026-02-22">
-  <owner>apaseltiner@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Records whether a particular event-level attribution report was successful.
-    Emitted for all attribution event-level reports which retry.
   </summary>
 </histogram>
 
@@ -1063,7 +972,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.Storage.Sql.InitStatus2"
-    enum="ConversionStorageSqlInitStatus" expires_after="2025-11-21">
+    enum="ConversionStorageSqlInitStatus" expires_after="2026-06-01">
   <owner>csharrison@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -1086,7 +995,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.TimeFromTriggerToReportSentSuccessfully"
-    units="hours" expires_after="2025-11-30">
+    units="hours" expires_after="2026-06-01">
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -1141,18 +1050,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.UniqueReportingOriginsPerSiteForAttribution"
-    units="reporting origins" expires_after="2025-12-28">
-  <owner>linnan@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Measures the number of unique reporting origins per (destination site,
-    reporting site) within a day for attributions. Recorded once for each
-    trigger registration that creates an event-level or aggregatable attribution
-    report. Not recorded if no attribution report is generated.
-  </summary>
-</histogram>
-
 <histogram name="Conversions.ValidReportsInDatabase" units="Reports"
     expires_after="2026-01-04">
   <owner>tquintanilla@chromium.org</owner>
@@ -1185,18 +1082,6 @@ chromium-metrics-reviews@google.com.
     aggregatable report. The HTTP response code is recorded if there is no net
     error code for the request, or the net error code indicates there was a
     response code failure.
-  </summary>
-  <token key="ContextType"
-      variants="AttributionReportingAggregatableContextType"/>
-</histogram>
-
-<histogram name="Conversions.{ContextType}ReportRetrySucceedAggregatable2"
-    enum="BooleanSuccess" expires_after="2026-02-04">
-  <owner>linnan@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Records whether a particular aggregatable attribution report was successful.
-    Emitted for all conversion aggregatable reports which retry.
   </summary>
   <token key="ContextType"
       variants="AttributionReportingAggregatableContextType"/>

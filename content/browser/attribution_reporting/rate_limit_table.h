@@ -39,7 +39,6 @@ namespace content {
 
 struct AttributionInfo;
 class AttributionResolverDelegate;
-class AttributionTrigger;
 class CommonSourceInfo;
 class StorableSource;
 
@@ -137,12 +136,6 @@ class CONTENT_EXPORT RateLimitTable {
       const AttributionInfo& attribution_info,
       const StoredSource&,
       Scope scope);
-
-  // Returns a negative value on failure.
-  int64_t CountUniqueReportingOriginsPerSiteForAttribution(
-      sql::Database* db,
-      const AttributionTrigger&,
-      base::Time trigger_time);
 
   // Returns a negative value on failure.
   int64_t CountUniqueDailyReportingOriginsPerReportingSiteForSource(

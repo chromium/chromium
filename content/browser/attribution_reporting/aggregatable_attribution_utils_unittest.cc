@@ -132,8 +132,6 @@ TEST(AggregatableAttributionUtilsTest, CreateAggregatableHistogram) {
   histograms.ExpectUniqueSample(
       "Conversions.AggregatableReport.DroppedKeysPercentage", 33, 1);
   histograms.ExpectUniqueSample(
-      "Conversions.AggregatableReport.NumContributionsPerReport2", 2, 1);
-  histograms.ExpectUniqueSample(
       "Conversions.AggregatableReport.TotalBudgetPerReport", 34432, 1);
 }
 
@@ -288,8 +286,6 @@ TEST(AggregatableAttributionUtilsTest,
       "Conversions.AggregatableReport.FilteredTriggerDataPercentage", 0);
   histograms.ExpectUniqueSample(
       "Conversions.AggregatableReport.DroppedKeysPercentage", 100, 1);
-  histograms.ExpectUniqueSample(
-      "Conversions.AggregatableReport.NumContributionsPerReport2", 0, 1);
   histograms.ExpectUniqueSample(
       "Conversions.AggregatableReport.TotalBudgetPerReport", 0, 1);
 }

@@ -386,8 +386,6 @@ TEST_F(AttributionReportNetworkSenderTest,
        ReportRequestFailsDueToNetworkChange_Retries) {
   // Retry fails
   {
-    base::HistogramTester histograms;
-
     EXPECT_CALL(callback_, Run);
 
     auto report = DefaultEventLevelReport();
@@ -414,15 +412,10 @@ TEST_F(AttributionReportNetworkSenderTest,
     // fired once.
     EXPECT_EQ(0, test_url_loader_factory_.NumPending());
     Mock::VerifyAndClear(&callback_);
-
-    histograms.ExpectUniqueSample("Conversions.ReportRetrySucceedEventLevel",
-                                  false, 1);
   }
 
   // Retry succeeds
   {
-    base::HistogramTester histograms;
-
     auto report = DefaultEventLevelReport();
     network_sender_->SendReport(report, /*is_debug_report=*/false,
                                 base::DoNothing());
@@ -440,9 +433,6 @@ TEST_F(AttributionReportNetworkSenderTest,
     // Simulate a second request failure due to network change.
     test_url_loader_factory_.SimulateResponseForPendingRequest(
         kEventLevelReportUrl, "");
-
-    histograms.ExpectUniqueSample("Conversions.ReportRetrySucceedEventLevel",
-                                  true, 1);
   }
 }
 
@@ -578,8 +568,6 @@ TEST_F(AttributionReportNetworkSenderTest,
     ASSERT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
         kEventLevelReportUrl, ""));
 
-    histograms.ExpectUniqueSample("Conversions.ReportRetrySucceedEventLevel",
-                                  true, 1);
     histograms.ExpectTotalCount(kReportSizeMetric, 1);
   }
 }
@@ -627,7 +615,6 @@ TEST_F(AttributionReportNetworkSenderTest,
   }
   // Retried network change error
   {
-    base::HistogramTester histograms;
     auto report = DefaultEventLevelReport();
     network_sender_->SendReport(report, /*is_debug_report=*/true,
                                 base::DoNothing());
@@ -639,9 +626,6 @@ TEST_F(AttributionReportNetworkSenderTest,
 
     ASSERT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
         kDebugEventLevelReportUrl, ""));
-
-    histograms.ExpectUniqueSample(
-        "Conversions.DebugReport.ReportRetrySucceedEventLevel", true, 1);
   }
 }
 
@@ -730,8 +714,6 @@ TEST_F(AttributionReportNetworkSenderTest,
       ASSERT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
           kAggregatableReportUrl, ""));
 
-      verify_histogram(histograms, "ReportRetrySucceedAggregatable2",
-                       has_trigger_context_id, 1, 1);
       histograms.ExpectTotalCount(kReportSizeMetric, 1);
     }
   }
@@ -780,7 +762,6 @@ TEST_F(AttributionReportNetworkSenderTest,
   }
   // Retried network change error
   {
-    base::HistogramTester histograms;
     auto report = DefaultAggregatableReport();
     network_sender_->SendReport(report, /*is_debug_report=*/true,
                                 base::DoNothing());
@@ -792,9 +773,6 @@ TEST_F(AttributionReportNetworkSenderTest,
 
     ASSERT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
         kDebugAggregatableReportUrl, ""));
-
-    histograms.ExpectUniqueSample(
-        "Conversions.DebugReport.ReportRetrySucceedAggregatable2", true, 1);
   }
 }
 

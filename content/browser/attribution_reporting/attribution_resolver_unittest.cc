@@ -5338,42 +5338,6 @@ TEST_F(AttributionResolverTest, DebugKey) {
   }
 }
 
-TEST_F(AttributionResolverTest,
-       UniqueReportingOriginsPerSiteForAttributionMetric) {
-  base::HistogramTester histogram_tester;
-
-  storage()->StoreSource(
-      SourceBuilder()
-          .SetDestinationSites(
-              {net::SchemefulSite::Deserialize("https://d.test")})
-          .SetReportingOrigin(*SuitableOrigin::Deserialize("https://a.r.test"))
-          .Build());
-  storage()->StoreSource(
-      TestAggregatableSourceProvider()
-          .GetBuilder()
-          .SetDestinationSites(
-              {net::SchemefulSite::Deserialize("https://d.test")})
-          .SetReportingOrigin(*SuitableOrigin::Deserialize("https://b.r.test"))
-          .Build());
-
-  storage()->MaybeCreateAndStoreReport(
-      TriggerBuilder()
-          .SetDestinationOrigin(*SuitableOrigin::Deserialize("https://d.test"))
-          .SetReportingOrigin(*SuitableOrigin::Deserialize("https://a.r.test"))
-          .Build());
-  storage()->MaybeCreateAndStoreReport(
-      DefaultAggregatableTriggerBuilder()
-          .SetDestinationOrigin(*SuitableOrigin::Deserialize("https://d.test"))
-          .SetReportingOrigin(*SuitableOrigin::Deserialize("https://b.r.test"))
-          .Build(/*generate_event_trigger_data=*/false));
-  // No histogram recorded as no attribution report was created.
-  storage()->MaybeCreateAndStoreReport(TriggerBuilder().Build());
-
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Conversions.UniqueReportingOriginsPerSiteForAttribution"),
-              base::BucketsAre(base::Bucket(1, 1), base::Bucket(2, 1)));
-}
-
 TEST_F(AttributionResolverTest, SourceAggregatableNamedBudgets_RoundTrips) {
   auto budgets =
       *attribution_reporting::AggregatableNamedBudgetDefs::FromBudgetMap({

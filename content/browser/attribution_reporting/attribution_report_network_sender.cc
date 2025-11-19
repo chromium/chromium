@@ -40,21 +40,22 @@ namespace content {
 
 namespace {
 
-template <typename T>
 void NetworkHistogram(std::string_view suffix,
-                      void (*hist_func)(std::string_view, T value),
                       bool is_debug_report,
                       std::optional<bool> has_trigger_context_id,
-                      T value) {
+                      int value) {
   if (is_debug_report) {
-    hist_func(base::StrCat({"Conversions.DebugReport.", suffix}), value);
+    base::UmaHistogramSparse(base::StrCat({"Conversions.DebugReport.", suffix}),
+                             value);
   } else {
-    hist_func(base::StrCat({"Conversions.", suffix}), value);
+    base::UmaHistogramSparse(base::StrCat({"Conversions.", suffix}), value);
     if (has_trigger_context_id.has_value()) {
       if (*has_trigger_context_id) {
-        hist_func(base::StrCat({"Conversions.ContextID.", suffix}), value);
+        base::UmaHistogramSparse(
+            base::StrCat({"Conversions.ContextID.", suffix}), value);
       } else {
-        hist_func(base::StrCat({"Conversions.NoContextID.", suffix}), value);
+        base::UmaHistogramSparse(
+            base::StrCat({"Conversions.NoContextID.", suffix}), value);
       }
     }
   }
@@ -225,24 +226,12 @@ void AttributionReportNetworkSender::OnReportSent(
   // it is fine to combine these in a single histogram.
   const int response_or_net_error = net_ok ? response_code : net_error;
 
-  std::optional<bool> retry_succeed =
-      loader->GetNumRetries() > 0 ? std::make_optional<bool>(net_ok_and_http_ok)
-                                  : std::nullopt;
-
   std::visit(
       absl::Overload{
           [&](const AttributionReport::EventLevelData&) {
-            NetworkHistogram("HttpResponseOrNetErrorCodeEventLevel",
-                             &base::UmaHistogramSparse, is_debug_report,
-                             /*has_trigger_context_id=*/std::nullopt,
-                             response_or_net_error);
-
-            if (retry_succeed.has_value()) {
-              NetworkHistogram("ReportRetrySucceedEventLevel",
-                               &base::UmaHistogramBoolean, is_debug_report,
-                               /*has_trigger_context_id=*/std::nullopt,
-                               *retry_succeed);
-            }
+            NetworkHistogram(
+                "HttpResponseOrNetErrorCodeEventLevel", is_debug_report,
+                /*has_trigger_context_id=*/std::nullopt, response_or_net_error);
           },
           [&](const AttributionReport::AggregatableData& data) {
             const bool has_trigger_context_id =
@@ -251,14 +240,8 @@ void AttributionReportNetworkSender::OnReportSent(
                     .has_value();
 
             NetworkHistogram("HttpResponseOrNetErrorCodeAggregatable2",
-                             &base::UmaHistogramSparse, is_debug_report,
-                             has_trigger_context_id, response_or_net_error);
-
-            if (retry_succeed.has_value()) {
-              NetworkHistogram("ReportRetrySucceedAggregatable2",
-                               &base::UmaHistogramBoolean, is_debug_report,
-                               has_trigger_context_id, *retry_succeed);
-            }
+                             is_debug_report, has_trigger_context_id,
+                             response_or_net_error);
           },
       },
       report.data());

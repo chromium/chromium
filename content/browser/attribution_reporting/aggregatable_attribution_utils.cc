@@ -136,15 +136,6 @@ CreateAggregatableHistogram(
         "Conversions.AggregatableReport.DroppedKeysPercentage", percentage);
   }
 
-  static_assert(attribution_reporting::kMaxAggregationKeysPerSource == 20,
-                "Bump the version for histogram "
-                "Conversions.AggregatableReport.NumContributionsPerReport2");
-
-  base::UmaHistogramExactLinear(
-      "Conversions.AggregatableReport.NumContributionsPerReport2",
-      base::saturated_cast<int>(contributions.size()),
-      attribution_reporting::kMaxAggregationKeysPerSource + 1);
-
   // If total values exceeds the max, log the metrics as 100,000 to measure
   // how often the max is exceeded.
   static_assert(attribution_reporting::kMaxAggregatableValue == 65536);

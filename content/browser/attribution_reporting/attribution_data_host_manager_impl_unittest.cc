@@ -1901,8 +1901,6 @@ TEST_F(AttributionDataHostManagerImplTest,
 
 TEST_F(AttributionDataHostManagerImplTest,
        FencedFrame_NavigationTiedOsRegistrationsAreBuffered) {
-  base::HistogramTester histograms;
-
   AttributionOsLevelManager::ScopedApiStateForTesting scoped_api_state_setting(
       AttributionOsLevelManager::ApiState::kEnabled);
 
@@ -1967,10 +1965,6 @@ TEST_F(AttributionDataHostManagerImplTest,
       kBeaconId, reporting_url, headers_3.get(),
       /*is_final_response=*/true);
   task_environment_.FastForwardBy(base::TimeDelta());
-
-  // kNavigationDone = 0
-  histograms.ExpectUniqueSample("Conversions.OsRegistrationsBufferFlushReason",
-                                0, 1);
 }
 
 TEST_F(
@@ -2043,9 +2037,6 @@ TEST_F(
   task_environment_.FastForwardBy(base::Seconds(20));
   task_environment_.FastForwardBy(base::TimeDelta());
 
-  // kTimeout = 2
-  histograms.ExpectUniqueSample("Conversions.OsRegistrationsBufferFlushReason",
-                                2, 1);
   checkpoint.Call(2);
 
   // If any additional registrations are received past a timeout, they should
@@ -3553,8 +3544,6 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
 
 TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
        BufferedNavigationTiedOsRegistrations_FlushedUponReachingLimit) {
-  base::HistogramTester histograms;
-
   const blink::AttributionSrcToken attribution_src_token;
 
   const GURL reporting_url("https://report.test");
@@ -3646,9 +3635,6 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
   register_n_os_registrations(20);
   // First buffer is full, it should have processed a first batch of 80.
   checkpoint.Call(1);
-  // kBufferFull = 1
-  histograms.ExpectBucketCount("Conversions.OsRegistrationsBufferFlushReason",
-                               /*sample=*/1, /*expected_count=*/1);
 
   register_n_os_registrations(39);
   // It should have filled the buffer twice and have processed two more batch.
@@ -3661,17 +3647,6 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
   // Fifth and last background registration received. It should process the
   // remaining items.
   register_n_os_registrations(2);
-
-  // kNavigationDone = 0, kBufferFull = 1
-  histograms.ExpectBucketCount("Conversions.OsRegistrationsBufferFlushReason",
-                               /*sample=*/0, /*expected_count=*/1);
-  histograms.ExpectBucketCount("Conversions.OsRegistrationsBufferFlushReason",
-                               /*sample=*/1, /*expected_count=*/4);
-
-  histograms.ExpectBucketCount("Conversions.OsRegistrationItemsPerBatch", 20,
-                               /*expected_count=*/4);
-  histograms.ExpectBucketCount("Conversions.OsRegistrationItemsPerBatch",
-                               /*sample=*/2, /*expected_count=*/1);
 }
 
 TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,

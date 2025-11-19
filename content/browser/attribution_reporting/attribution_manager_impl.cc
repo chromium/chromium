@@ -390,11 +390,6 @@ void LogMetricsOnReportSend(const AttributionReport& report, base::Time now) {
                     .has_value(),
                 now - report.initial_report_time(), base::Seconds(1),
                 base::Days(24), 50);
-
-            UMA_HISTOGRAM_CUSTOM_TIMES(
-                "Conversions.AggregatableReport.SchedulerReportDelay",
-                now - report.report_time(), base::Seconds(1), base::Days(1),
-                50);
           },
       },
       report.data());

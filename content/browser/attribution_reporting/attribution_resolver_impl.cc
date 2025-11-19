@@ -552,18 +552,6 @@ CreateReportResult AttributionResolverImpl::MaybeCreateAndStoreReport(
           RecordDebugKeyUsage(v->new_report);
         }
 
-        if (GetSuccessResult(*event_level_result) ||
-            GetSuccessResult(*aggregatable_result)) {
-          if (int64_t count =
-                  storage_.CountUniqueReportingOriginsPerSiteForAttribution(
-                      trigger, trigger_time);
-              count >= 0) {
-            base::UmaHistogramCounts100(
-                "Conversions.UniqueReportingOriginsPerSiteForAttribution",
-                count);
-          }
-        }
-
         return CreateReportResult(
             trigger_time, std::move(trigger), *std::move(event_level_result),
             *std::move(aggregatable_result),

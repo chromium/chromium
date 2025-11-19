@@ -3138,12 +3138,4 @@ bool AttributionStorageSql::DeleteAttributionRateLimit(
   return rate_limit_table_.DeleteAttributionRateLimit(&db_, scope, report_id);
 }
 
-int64_t AttributionStorageSql::CountUniqueReportingOriginsPerSiteForAttribution(
-    const AttributionTrigger& trigger,
-    const base::Time now) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return rate_limit_table_.CountUniqueReportingOriginsPerSiteForAttribution(
-      &db_, trigger, now);
-}
-
 }  // namespace content

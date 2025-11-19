@@ -977,8 +977,6 @@ class AttributionDataHostManagerImpl::PendingRegistrationData {
   SuitableOrigin reporting_origin_;
 };
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
 enum class AttributionDataHostManagerImpl::OsRegistrationsBufferFlushReason {
   kNavigationDone = 0,
   kBufferFull = 1,
@@ -2329,8 +2327,6 @@ void AttributionDataHostManagerImpl::MaybeFlushOsRegistrationsBuffer(
   }
 
   if (!it->IsEmpty()) {
-    base::UmaHistogramEnumeration(
-        "Conversions.OsRegistrationsBufferFlushReason", reason);
     SubmitOsRegistrations(it->TakeRegistrationItems(), it->context(),
                           RegistrationType::kSource);
   }
@@ -2347,8 +2343,6 @@ void AttributionDataHostManagerImpl::SubmitOsRegistrations(
     const RegistrationContext& registration_context,
     RegistrationType type) {
   std::optional<AttributionInputEvent> input_event;
-  base::UmaHistogramCounts100("Conversions.OsRegistrationItemsPerBatch",
-                              items.size());
 
   AttributionReportingOsRegistrar os_registrar;
 

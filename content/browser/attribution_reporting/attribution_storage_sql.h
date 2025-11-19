@@ -416,11 +416,6 @@ class CONTENT_EXPORT AttributionStorageSql {
                                    uint64_t dedup_key,
                                    AttributionReport::Type);
 
-  // Returns a negative value on failure.
-  int64_t CountUniqueReportingOriginsPerSiteForAttribution(
-      const AttributionTrigger&,
-      base::Time now);
-
  private:
   using ReportCorruptionStatusSet =
       base::EnumSet<ReportCorruptionStatus,
