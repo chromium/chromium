@@ -102,7 +102,7 @@ bool ProtocolParserXML::ParseAction(IXMLDOMNode* node, Results* results) {
     // actions.
     return true;
   } else {
-    VLOG(1) << "Unsupported `event` type in <action>: %s", event.c_str();
+    VLOG(1) << "Unsupported `event` type in <action>:" << event;
     return false;
   }
 }
@@ -169,7 +169,7 @@ bool ProtocolParserXML::ParseResponse(IXMLDOMNode* node, Results* results) {
   std::string protocol_version;
   if (!ReadStringAttribute(node, L"protocol", &protocol_version) ||
       protocol_version != "3.0") {
-    VLOG(1) << "Unsupported protocol version: %s", protocol_version.c_str();
+    VLOG(1) << "Unsupported protocol version:" << protocol_version;
     return false;
   }
 
