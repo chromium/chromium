@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType.ACTIVE;
 import static org.chromium.ui.listmenu.BasicListMenu.buildMenuDivider;
 import static org.chromium.ui.listmenu.ListItemType.MENU_ITEM;
 import static org.chromium.ui.listmenu.ListItemType.MENU_ITEM_WITH_SUBMENU;
@@ -38,6 +37,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.TabGroupContextMenu
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.InstanceInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.tab_ui.R;
@@ -469,7 +469,9 @@ public abstract class TabOverflowMenuCoordinator<T>
                             mActivity
                                     .getResources()
                                     .getQuantityString(
-                                            pluralsRes, MultiWindowUtils.getInstanceCount()))
+                                            pluralsRes,
+                                            MultiWindowUtils.getInstanceCountWithFallback(
+                                                    PersistedInstanceType.ACTIVE)))
                     .withMenuId(menuId)
                     .withIsIncognito(isIncognito)
                     .build();
@@ -487,7 +489,8 @@ public abstract class TabOverflowMenuCoordinator<T>
                                             moveToNewWindow(id);
                                         })
                                 .build()));
-        List<InstanceInfo> activeInstances = mMultiInstanceManager.getInstanceInfo(ACTIVE);
+        List<InstanceInfo> activeInstances =
+                mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ACTIVE);
         if (activeInstances.size() > 1) {
             submenuItems.add(buildMenuDivider(isIncognito));
             for (InstanceInfo instanceInfo : activeInstances) {

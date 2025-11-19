@@ -698,13 +698,16 @@ public class MultiInstanceManagerApi31UnitTest {
         // Trying to allocate a new instance with preferNew should fail.
         when(mActivityTask59.getSystemService(Context.ACTIVITY_SERVICE))
                 .thenReturn(mActivityManager);
+        MultiInstanceManagerApi31 multiInstanceManager =
+                createMultiInstanceManager(mActivityTask59);
+        MultiInstanceManagerApi31.setAppTaskIdsForTesting(
+                new HashSet<>(Arrays.asList(TASK_ID_57, TASK_ID_58, TASK_ID_59)));
         Pair<Integer, Integer> instanceIdInfo =
-                createMultiInstanceManager(mActivityTask59)
-                        .allocInstanceId(
-                                PASSED_ID_INVALID,
-                                TASK_ID_59,
-                                /* preferNew= */ true,
-                                SupportedProfileType.REGULAR);
+                multiInstanceManager.allocInstanceId(
+                        PASSED_ID_INVALID,
+                        TASK_ID_59,
+                        /* preferNew= */ true,
+                        SupportedProfileType.REGULAR);
         assertEquals(
                 "Should not allocate valid instance id when at limit.",
                 INVALID_WINDOW_ID,
@@ -712,6 +715,37 @@ public class MultiInstanceManagerApi31UnitTest {
         assertEquals(
                 "Should return PREFER_NEW_INVALID_INSTANCE.",
                 MultiWindowUtils.InstanceAllocationType.PREFER_NEW_INVALID_INSTANCE,
+                (int) instanceIdInfo.second);
+    }
+
+    @Test
+    public void testAllocInstanceId_preferNew_withInactiveInstance_allocatesNewId() {
+        // Set initial instance limit and allocate ids for max instances.
+        MultiWindowUtils.setMaxInstancesForTesting(3);
+        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
+        assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask57));
+        assertEquals(2, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask58));
+
+        // Make one instance inactive.
+        removeTaskOnRecentsScreen(mActivityTask57);
+
+        // Now we have 2 active instances (0, 2) and 1 inactive instance (1).
+        // Total instances = 3, max instances = 3.
+
+        // Try to allocate a new instance with preferNew. This should succeed and allocate a new
+        // instance ID outside of the mMaxInstances range as we only consider active instances.
+        when(mActivityTask59.getSystemService(Context.ACTIVITY_SERVICE))
+                .thenReturn(mActivityManager);
+        Pair<Integer, Integer> instanceIdInfo =
+                mMultiInstanceManager.allocInstanceId(
+                        PASSED_ID_INVALID,
+                        TASK_ID_59,
+                        /* preferNew= */ true,
+                        SupportedProfileType.REGULAR);
+        assertEquals("Should allocate a new instance id.", 3, (int) instanceIdInfo.first);
+        assertEquals(
+                "Should return PREFER_NEW_INSTANCE_NEW_TASK.",
+                MultiWindowUtils.InstanceAllocationType.PREFER_NEW_INSTANCE_NEW_TASK,
                 (int) instanceIdInfo.second);
     }
 

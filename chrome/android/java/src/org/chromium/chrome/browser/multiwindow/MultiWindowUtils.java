@@ -282,7 +282,7 @@ public class MultiWindowUtils implements ActivityStateListener {
         }
         if (instanceSwitcherEnabled() && isMultiInstanceApi31Enabled()) {
             // Moving tabs should be possible to any other instance.
-            return getInstanceCount() > 1;
+            return getInstanceCountWithFallback(PersistedInstanceType.ANY) > 1;
         } else {
             return isOpenInOtherWindowSupported(activity);
         }
@@ -485,22 +485,6 @@ public class MultiWindowUtils implements ActivityStateListener {
                             && (flags & Intent.FLAG_ACTIVITY_NEW_TASK) != 0;
         }
         return IntentUtils.safeGetBooleanExtra(intent, IntentHandler.EXTRA_PREFER_NEW, preferNew);
-    }
-
-    /**
-     * @deprecated The number of Chrome instances that can switch to or launch.
-     */
-    @Deprecated
-    public static int getInstanceCount() {
-        if (sInstanceCountForTesting != null) return sInstanceCountForTesting;
-        int count = 0;
-        Set<Integer> ids = MultiInstanceManagerApi31.getAllPersistedInstanceIds();
-        for (Integer id : ids) {
-            if (isRestorableInstance(id)) {
-                count++;
-            }
-        }
-        return count;
     }
 
     /**

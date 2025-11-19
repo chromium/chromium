@@ -97,9 +97,4 @@ public interface MultiWindowModeStateDispatcher {
      *     other window.
      */
     @Nullable Intent getOpenInOtherWindowIntent();
-
-    /**
-     * @return The number of Chrome instances that can switch to or launch.
-     */
-    int getInstanceCount();
 }

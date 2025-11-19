@@ -490,31 +490,6 @@ public class MultiWindowUtilsUnitTest {
     ;
 
     @Test
-    public void testGetInstanceCount() {
-        when(mTabModelSelector.getModel(false)).thenReturn(mNormalTabModel);
-        when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);
-
-        // Instance with no tabs (ID_1) still counts as long as it is alive.
-        writeInstanceInfo(
-                INSTANCE_ID_0, URL_1, /* tabCount= */ 3, /* incognitoTabCount= */ 2, TASK_ID_5);
-        writeInstanceInfo(
-                INSTANCE_ID_1, URL_2, /* tabCount= */ 0, /* incognitoTabCount= */ 0, TASK_ID_6);
-        writeInstanceInfo(
-                INSTANCE_ID_2, URL_3, /* tabCount= */ 6, /* incognitoTabCount= */ 2, TASK_ID_7);
-        assertEquals(3, MultiWindowUtils.getInstanceCount());
-
-        // Instance with no running task is not taken into account if there is no normal tab,
-        // regardless of the # of incognito tabs.
-        writeInstanceInfo(
-                INSTANCE_ID_1,
-                URL_2,
-                /* tabCount= */ 0,
-                /* incognitoTabCount= */ 2,
-                MultiWindowUtils.INVALID_TASK_ID);
-        assertEquals(2, MultiWindowUtils.getInstanceCount());
-    }
-
-    @Test
     public void testGetInstanceCountWithFallback() {
         when(mTabModelSelector.getModel(false)).thenReturn(mNormalTabModel);
         when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);

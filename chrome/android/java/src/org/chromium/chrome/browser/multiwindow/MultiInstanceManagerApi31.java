@@ -242,7 +242,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
 
     @Override
     public void moveTabsToOtherWindow(List<Tab> tabs, @NewWindowAppSource int source) {
-        if (MultiWindowUtils.getInstanceCount() == 1) {
+        if (MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ACTIVE) == 1) {
             moveTabsToNewWindow(tabs, source);
 
             // Close the source instance window, if needed.
@@ -280,10 +280,15 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
      * </ul>
      */
     @Override
+    // TODO (crbug.com/460800897): Update conditional logic for opening URLs in other windows.
     public void openUrlInSelectedWindow(
             LoadUrlParams loadUrlParams, int parentTabId, boolean preferNew) {
-        if (MultiWindowUtils.getInstanceCount() == 1 || preferNew) {
-            if (preferNew && mMaxInstances <= MultiWindowUtils.getInstanceCount()) {
+        if (MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ANY) == 1
+                || preferNew) {
+            if (preferNew
+                    && mMaxInstances
+                            <= MultiWindowUtils.getInstanceCountWithFallback(
+                                    PersistedInstanceType.ACTIVE)) {
                 assumeNonNull(mActiveTab);
                 showInstanceCreationLimitMessage(
                         MessageDispatcherProvider.from(mActiveTab.getWindowAndroid()));
@@ -331,7 +336,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     @Override
     public void moveTabGroupToOtherWindow(
             TabGroupMetadata tabGroupMetadata, @NewWindowAppSource int source) {
-        if (MultiWindowUtils.getInstanceCount() == 1) {
+        if (MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ACTIVE) == 1) {
             moveTabGroupToNewWindow(tabGroupMetadata, source);
             return;
         }
@@ -701,8 +706,9 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
             // this case, we want to avoid allocating an available id in the new range if we are at
             // or over instance limit, so that we avoid allowing successful creation of the current
             // activity in this scenario.
-            if (MultiWindowUtils.getInstanceCount() < mMaxInstances) {
-                for (int i = 0; i < mMaxInstances; ++i) {
+            if (MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ACTIVE)
+                    < mMaxInstances) {
+                for (int i = 0; i < TabWindowManager.MAX_SELECTORS; ++i) {
                     if (!instanceEntryExists(i)) {
                         logNewInstanceId(i);
                         return Pair.create(i, InstanceAllocationType.PREFER_NEW_INSTANCE_NEW_TASK);

@@ -98,9 +98,4 @@ public class MultiWindowModeStateDispatcherImpl implements MultiWindowModeStateD
 
         return intent;
     }
-
-    @Override
-    public int getInstanceCount() {
-        return MultiWindowUtils.getInstanceCount();
-    }
 }

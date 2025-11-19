@@ -83,7 +83,6 @@ import org.chromium.chrome.browser.incognito.IncognitoUtilsJni;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
@@ -1909,11 +1908,13 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
             boolean isInMultiWindowMode,
             boolean isInMultiDisplayMode,
             boolean isMultiInstanceRunning) {
+        for (int i = 0; i < currentWindowInstances; ++i) {
+            createInstance(i, "https://url" + i);
+        }
         mShadowPackageManager.setSystemFeature(PackageManager.FEATURE_AUTOMOTIVE, isAutomotive);
         doReturn(isInstanceSwitcherEnabled)
                 .when(mTabbedAppMenuPropertiesDelegate)
                 .instanceSwitcherWithMultiInstanceEnabled();
-        doReturn(currentWindowInstances).when(mTabbedAppMenuPropertiesDelegate).getInstanceCount();
         doReturn(isTabletSizeScreen).when(mTabbedAppMenuPropertiesDelegate).isTabletSizeScreen();
         doReturn(canEnterMultiWindowMode)
                 .when(mMultiWindowModeStateDispatcher)
@@ -2076,7 +2077,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         /* isInMultiDisplayMode= */ false,
                         /* isMultiInstanceRunning= */ true));
         verify(mTabbedAppMenuPropertiesDelegate, never()).isTabletSizeScreen();
-        verify(mTabbedAppMenuPropertiesDelegate, never()).getInstanceCount();
     }
 
     @Test
@@ -2093,7 +2093,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         /* isInMultiDisplayMode= */ false,
                         /* isMultiInstanceRunning= */ false));
         verify(mTabbedAppMenuPropertiesDelegate, atLeastOnce()).isTabletSizeScreen();
-        verify(mTabbedAppMenuPropertiesDelegate, never()).getInstanceCount();
     }
 
     @Test
@@ -2109,7 +2108,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         /* isInMultiWindowMode= */ true,
                         /* isInMultiDisplayMode= */ false,
                         /* isMultiInstanceRunning= */ false));
-        verify(mTabbedAppMenuPropertiesDelegate, never()).getInstanceCount();
     }
 
     @Test
@@ -2125,7 +2123,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         /* isInMultiWindowMode= */ false,
                         /* isInMultiDisplayMode= */ true,
                         /* isMultiInstanceRunning= */ false));
-        verify(mTabbedAppMenuPropertiesDelegate, never()).getInstanceCount();
     }
 
     private boolean doTestShouldShowMoveToOtherWindowMenu(
@@ -2142,7 +2139,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         doReturn(isInstanceSwitcherEnabled)
                 .when(mTabbedAppMenuPropertiesDelegate)
                 .instanceSwitcherWithMultiInstanceEnabled();
-        doReturn(currentWindowInstances).when(mTabbedAppMenuPropertiesDelegate).getInstanceCount();
         doReturn(isTabletSizeScreen).when(mTabbedAppMenuPropertiesDelegate).isTabletSizeScreen();
         doReturn(canEnterMultiWindowMode)
                 .when(mMultiWindowModeStateDispatcher)
@@ -2629,9 +2625,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                 .canEnterMultiWindowMode();
         doReturn(mIsMultiInstance).when(mMultiWindowModeStateDispatcher).isMultiInstanceRunning();
         doReturn(mIsTabletScreen).when(mTabbedAppMenuPropertiesDelegate).isTabletSizeScreen();
-        doReturn(MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ACTIVE))
-                .when(mMultiWindowModeStateDispatcher)
-                .getInstanceCount();
         doReturn(mIsMoveToOtherWindowSupported)
                 .when(mMultiWindowModeStateDispatcher)
                 .isMoveToOtherWindowSupported(mTabModelSelector);
