@@ -14,7 +14,7 @@
 
 namespace cc {
 class SurfaceLayer;
-}
+}  // namespace cc
 
 namespace blink {
 struct WebPluginParams;
@@ -73,13 +73,15 @@ class SecureEmbedWebPlugin : public blink::WebPlugin,
 
   void OnSecureEmbedHostDisconnected();
 
-  void SendVisualProperties();
+  void SynchronizeVisualProperties();
 
   // The guest contents ID parsed from the `data-content-id` attribute.
   int contents_id_ = -1;
 
   raw_ptr<blink::WebPluginContainer> container_ = nullptr;
   scoped_refptr<cc::SurfaceLayer> layer_;
+
+  std::optional<blink::FrameVisualProperties> sent_visual_properties_;
 
   gfx::Rect last_window_rect_;
   gfx::Rect last_clip_rect_;
