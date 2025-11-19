@@ -188,6 +188,8 @@ void RegisterProfilePrefs(
                                 0);
   registry->RegisterIntegerPref(
       prefs::kAddressSignInPromoShownCountPerProfileForLimitsExperiment, 0);
+  registry->RegisterIntegerPref(
+      prefs::kHistoryPageHistorySyncPromoShownCountPerProfile, 0);
 }
 
 }  // namespace signin

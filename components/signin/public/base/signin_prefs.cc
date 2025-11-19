@@ -403,6 +403,18 @@ int SigninPrefs::GetSyncPromoIdentityPillUsedCount(
   return GetIntPrefForAccount(gaia_id, kSyncPromoIdentityPillUsedCount);
 }
 
+void SigninPrefs::IncrementHistoryPageHistorySyncPromoShownCount(
+    const GaiaId& gaia_id) {
+  IncrementIntPrefForAccount(gaia_id,
+                             prefs::kHistoryPageHistorySyncPromoShownCount);
+}
+
+int SigninPrefs::GetHistoryPageHistorySyncPromoShownCount(
+    const GaiaId& gaia_id) const {
+  return GetIntPrefForAccount(gaia_id,
+                              prefs::kHistoryPageHistorySyncPromoShownCount);
+}
+
 void SigninPrefs::IncrementBookmarkBatchUploadPromoDismissCountWithLastTime(
     const GaiaId& gaia_id) {
   IncrementIntPrefForAccount(gaia_id, kBookmarkBatchUploadPromoDismissCount);

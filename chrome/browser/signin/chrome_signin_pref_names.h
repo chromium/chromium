@@ -32,6 +32,10 @@ inline constexpr char kAddressSignInPromoShownCountPerProfile[] =
 inline constexpr char
     kAddressSignInPromoShownCountPerProfileForLimitsExperiment[] =
         "signin.AddressSignInPromoShownCountForLimitsExperiment";
+// Integer pref to store the number of times the history sync promo has been
+// shown on the history page per profile while the user is signed out.
+inline constexpr char kHistoryPageHistorySyncPromoShownCountPerProfile[] =
+    "signin.HistoryPageHistorySyncPromoShownCount";
 // Integer pref to store the number of times any autofill bubble signin promo
 // has been dismissed per profile while the user is signed out.
 inline constexpr char kAutofillSignInPromoDismissCountPerProfile[] =

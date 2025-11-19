@@ -123,6 +123,11 @@ const char kHistorySyncLastDeclinedTimestamp[] =
 const char kHistorySyncSuccessiveDeclineCount[] =
     "signin.history_sync.successive_decline_count";
 
+// An integer preference to store the number of times the history sync promo
+// has been shown on the history page.
+const char kHistoryPageHistorySyncPromoShownCount[] =
+    "history.sync_promo_shown_count";
+
 #if BUILDFLAG(IS_IOS)
 // List of patterns to determine the account visibility, according to the
 // "RestrictAccountsToPatterns" policy. Note that the policy also exists on

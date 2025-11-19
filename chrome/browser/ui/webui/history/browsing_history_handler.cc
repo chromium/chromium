@@ -27,6 +27,7 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/history_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/chrome_signin_pref_names.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
@@ -53,6 +54,7 @@
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/prefs/pref_service.h"
 #include "components/query_parser/snippet.h"
+#include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
@@ -78,6 +80,8 @@ using history::WebHistoryService;
 namespace {
 
 #if !BUILDFLAG(IS_CHROMEOS)
+constexpr int kHistorySyncPromoShownThreshold = 5;
+
 history::mojom::AccountInfoPtr CreateAccountInfoDataMojo(
     const AccountInfo& info) {
   history::mojom::AccountInfoPtr account_info_mojo =
@@ -497,6 +501,34 @@ void BrowsingHistoryHandler::TurnOnHistorySync() {
   NOTREACHED();
 #endif
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+void BrowsingHistoryHandler::ShouldShowHistoryPageHistorySyncPromo(
+    ShouldShowHistoryPageHistorySyncPromoCallback callback) {
+  AccountInfo account =
+      signin_ui_util::GetSingleAccountForPromos(&identity_manager_.get());
+  const int promo_shown_count =
+      account.gaia.empty() ? profile_->GetPrefs()->GetInteger(
+                                 prefs::kHistoryPageHistorySyncPromoShownCountPerProfile)
+                           : SigninPrefs(*profile_->GetPrefs())
+                                 .GetHistoryPageHistorySyncPromoShownCount(account.gaia);
+  std::move(callback).Run(promo_shown_count < kHistorySyncPromoShownThreshold);
+}
+
+void BrowsingHistoryHandler::IncrementHistoryPageHistorySyncPromoShownCount() {
+  AccountInfo account =
+      signin_ui_util::GetSingleAccountForPromos(&identity_manager_.get());
+  if (account.gaia.empty()) {
+    int show_count = profile_->GetPrefs()->GetInteger(
+        prefs::kHistoryPageHistorySyncPromoShownCountPerProfile);
+    profile_->GetPrefs()->SetInteger(
+        prefs::kHistoryPageHistorySyncPromoShownCountPerProfile, show_count + 1);
+  } else {
+    SigninPrefs(*profile_->GetPrefs())
+        .IncrementHistoryPageHistorySyncPromoShownCount(account.gaia);
+  }
+}
+#endif
 
 void BrowsingHistoryHandler::RemoveBookmark(const std::string& url) {
   BookmarkModel* model = BookmarkModelFactory::GetForBrowserContext(profile_);

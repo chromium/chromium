@@ -134,6 +134,10 @@ class SigninPrefs {
   void IncrementSyncPromoIdentityPillUsedCount(const GaiaId& gaia_id);
   int GetSyncPromoIdentityPillUsedCount(const GaiaId& gaia_id) const;
 
+  // History sync promo on the history page.
+  void IncrementHistoryPageHistorySyncPromoShownCount(const GaiaId& gaia_id);
+  int GetHistoryPageHistorySyncPromoShownCount(const GaiaId& gaia_id) const;
+
   // Returns a dictionary of the avatar button promo count for `gaia_id`, if the
   // dictionary didn't exist it will create it.
   // The returned dictionary will not notify observers for underlying pref

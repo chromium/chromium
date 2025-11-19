@@ -93,6 +93,11 @@ class BrowsingHistoryHandler : public history::mojom::PageHandler,
   // history::mojom::PageHandler:
   void RequestAccountInfo(RequestAccountInfoCallback callback) override;
   void TurnOnHistorySync() override;
+#if !BUILDFLAG(IS_CHROMEOS)
+  void ShouldShowHistoryPageHistorySyncPromo(
+      ShouldShowHistoryPageHistorySyncPromoCallback callback) override;
+  void IncrementHistoryPageHistorySyncPromoShownCount() override;
+#endif
 
   // For tests. This does not take the ownership of the clock. |clock| must
   // outlive the BrowsingHistoryHandler instance.
