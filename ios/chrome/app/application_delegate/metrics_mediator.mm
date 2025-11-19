@@ -7,6 +7,9 @@
 #import <mach/mach.h>
 #import <sys/sysctl.h>
 
+#import <set>
+#import <vector>
+
 #import "base/functional/bind.h"
 #import "base/ios/device_util.h"
 #import "base/metrics/histogram_functions.h"
@@ -433,7 +436,7 @@ BOOL _credentialExtensionWasUsed = NO;
   // Amount of time after which a tab is considered as absolutely inactive.
   constexpr base::TimeDelta kAbsoluteInactiveTabThreshold = base::Days(21);
 
-  NSMutableSet* uniqueURLs = [NSMutableSet set];
+  std::set<GURL> uniqueURLs;
   std::vector<base::TimeDelta> timesSinceCreation;
   const base::Time now = base::Time::Now();
 
@@ -476,12 +479,11 @@ BOOL _credentialExtensionWasUsed = NO;
         NTPTabCount++;
       }
 
-      // Count duplicate URLs.
-      NSString* URLString = base::SysUTF8ToNSString(URL.GetWithoutRef().spec());
-      if ([uniqueURLs containsObject:URLString]) {
+      // Count duplicate URLs (if the URL is not inserted, then it is a
+      // duplicate, otherwise it is a new distinct URL).
+      auto [_, inserted] = uniqueURLs.insert(URL.GetWithoutRef());
+      if (!inserted) {
         duplicatedTabCount++;
-      } else {
-        [uniqueURLs addObject:URLString];
       }
 
       // Count old tabs.
