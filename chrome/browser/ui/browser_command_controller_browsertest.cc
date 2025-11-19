@@ -60,6 +60,8 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
 #include "ash/wm/window_pin_util.h"
+#include "chrome/browser/ash/login/test/guest_session_mixin.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "ui/aura/window.h"
 #endif
 
@@ -690,12 +692,14 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestGlic,
       chrome::IsCommandEnabled(incognito_browser, IDC_GLIC_TOGGLE_PIN));
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestGlic,
                        DisabledInGuestProfile) {
   Browser* guest_browser = CreateGuestBrowser();
   EXPECT_TRUE(guest_browser->profile()->IsGuestSession());
   EXPECT_FALSE(chrome::IsCommandEnabled(guest_browser, IDC_GLIC_TOGGLE_PIN));
 }
+#endif  // !BUILDFLAG(IS_CHROME)
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestGlic,
                        ThreeDotMenuItemEnabledInRegularProfile) {
@@ -724,6 +728,43 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestGlic,
       glic::GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile())
           ->IsWindowShowing());
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+class BrowserCommandControllerBrowserTestGlicChromeOSGuest
+    : public MixinBasedInProcessBrowserTest {
+ public:
+  BrowserCommandControllerBrowserTestGlicChromeOSGuest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kGlic, features::kTabstripComboButton}, {});
+  }
+
+  BrowserCommandControllerBrowserTestGlicChromeOSGuest(
+      const BrowserCommandControllerBrowserTestGlicChromeOSGuest&) = delete;
+  BrowserCommandControllerBrowserTestGlicChromeOSGuest& operator=(
+      const BrowserCommandControllerBrowserTestGlicChromeOSGuest&) = delete;
+
+  ~BrowserCommandControllerBrowserTestGlicChromeOSGuest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
+    // Bypass glic eligibility check.
+    command_line->AppendSwitch(::switches::kGlicDev);
+  }
+
+ protected:
+  // Use a ChromeOS guest session mixin instead of a guest browser.
+  ash::GuestSessionMixin guest_session_mixin_{&mixin_host_};
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestGlicChromeOSGuest,
+                       DisabledInGuestProfile) {
+  EXPECT_TRUE(browser()->profile()->IsGuestSession());
+  EXPECT_FALSE(chrome::IsCommandEnabled(browser(), IDC_GLIC_TOGGLE_PIN));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 }  // namespace chrome

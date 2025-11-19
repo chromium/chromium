@@ -274,8 +274,12 @@ void GlicProfileManager::ShowProfilePicker() {
   if (last_active_glic_) {
     last_active_glic_->window_controller().Close();
   }
+
+  // TODO(crbug.com/450679848): Profile Picker doesn't make sense on ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)
   ProfilePicker::Show(
       ProfilePicker::Params::ForGlicManager(std::move(callback)));
+#endif
 }
 
 void GlicProfileManager::DidSelectProfile(Profile* profile) {
