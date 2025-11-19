@@ -69,7 +69,6 @@
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
-#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -702,21 +701,21 @@ TEST_F(ChromePasswordManagerClientTest, PasswordManagerBlocklistPolicy) {
   // Check that the blocklist is initially empty.
   EXPECT_TRUE(profile()
                   ->GetTestingPrefService()
-                  ->GetList(policy::policy_prefs::kPasswordManagerBlocklist)
+                  ->GetList(password_manager::prefs::kPasswordManagerBlocklist)
                   .empty());
   // Add a URL to the blocklist.
   {
     base::Value::List blocked_list;
     blocked_list.Append("https://example.com");
     profile()->GetTestingPrefService()->SetList(
-        policy::policy_prefs::kPasswordManagerBlocklist,
+        password_manager::prefs::kPasswordManagerBlocklist,
         std::move(blocked_list));
   }
 
   // Verify the URL was added.
   EXPECT_FALSE(profile()
                    ->GetTestingPrefService()
-                   ->GetList(policy::policy_prefs::kPasswordManagerBlocklist)
+                   ->GetList(password_manager::prefs::kPasswordManagerBlocklist)
                    .empty());
   // Expect the password manager to be disallowed for the URL
   // and thus saving passwords should be disallowed.
@@ -724,11 +723,11 @@ TEST_F(ChromePasswordManagerClientTest, PasswordManagerBlocklistPolicy) {
       GetClient()->IsSavingAndFillingEnabled(GURL("https://example.com")));
   // Clear the blocklist pref.
   profile()->GetTestingPrefService()->ClearPref(
-      policy::policy_prefs::kPasswordManagerBlocklist);
+      password_manager::prefs::kPasswordManagerBlocklist);
   // Verify blocklist is empty.
   EXPECT_TRUE(profile()
                   ->GetTestingPrefService()
-                  ->GetList(policy::policy_prefs::kPasswordManagerBlocklist)
+                  ->GetList(password_manager::prefs::kPasswordManagerBlocklist)
                   .empty());
   // Password manager and saving passwords should be allowed again
   EXPECT_TRUE(

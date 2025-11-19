@@ -997,7 +997,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     prefs::kSafeBrowsingSurveysEnabled,
     base::Value::Type::BOOLEAN },
   { key::kPasswordManagerBlocklist,
-    policy_prefs::kPasswordManagerBlocklist,
+    password_manager::prefs::kPasswordManagerBlocklist,
     base::Value::Type::LIST },
 #endif  // #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
         // || BUILDFLAG(IS_WIN)  || BUILDFLAG(IS_MAC)

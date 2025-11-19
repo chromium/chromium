@@ -85,6 +85,7 @@
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
+#include "components/password_manager/core/browser/password_manager_blocklist_policy.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_setting.h"
@@ -96,9 +97,7 @@
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
-#include "components/policy/content/password_manager_blocklist_policy.h"
 #include "components/policy/core/browser/url_list/url_blocklist_manager.h"
-#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/safe_browsing/buildflags.h"
@@ -2059,7 +2058,7 @@ bool ChromePasswordManagerClient::IsPasswordManagementEnabledForCurrentPage(
 bool ChromePasswordManagerClient::IsPasswordManagerForUrlDisallowedByPolicy(
     const GURL& url) const {
   if (!GetPrefs() || !GetPrefs()->HasPrefPath(
-                         policy::policy_prefs::kPasswordManagerBlocklist)) {
+                         password_manager::prefs::kPasswordManagerBlocklist)) {
     return false;
   }
   PasswordManagerBlocklistPolicy* blocklist_policy =

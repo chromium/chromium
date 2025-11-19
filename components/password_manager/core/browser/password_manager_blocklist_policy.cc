@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/policy/content/password_manager_blocklist_policy.h"
+#include "components/password_manager/core/browser/password_manager_blocklist_policy.h"
 
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/policy/core/common/policy_pref_names.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -53,7 +53,7 @@ PasswordManagerBlocklistPolicyFactory::BuildServiceInstanceForBrowserContext(
   PrefService* pref_service = user_prefs::UserPrefs::Get(context);
   auto url_blocklist_manager = std::make_unique<policy::URLBlocklistManager>(
       pref_service,
-      std::string(policy::policy_prefs::kPasswordManagerBlocklist),
+      std::string(password_manager::prefs::kPasswordManagerBlocklist),
       std::nullopt);
   return base::WrapUnique<KeyedService>(
       new PasswordManagerBlocklistPolicy(std::move(url_blocklist_manager)));

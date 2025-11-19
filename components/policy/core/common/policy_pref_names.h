@@ -95,11 +95,6 @@ extern const char kAlwaysOnVpnPreConnectUrlAllowlist[];
 extern const char kFloatingWorkspaceEnabled[];
 #endif
 extern const char kBuiltInAIAPIsEnabled[];
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_MAC)
-extern const char kPasswordManagerBlocklist[];
-#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 }  // namespace policy_prefs
 }  // namespace policy
 
