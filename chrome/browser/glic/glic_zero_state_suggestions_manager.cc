@@ -20,7 +20,7 @@ namespace glic {
 
 namespace {
 
-BASE_FEATURE(kCacheZeroStateSuggestions, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCacheZeroStateSuggestions, base::FEATURE_ENABLED_BY_DEFAULT);
 
 std::vector<std::string> EmptySuggestions() {
   return {};

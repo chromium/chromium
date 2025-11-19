@@ -180,10 +180,12 @@ class CachingContextualCueingServiceImpl
                               .request = std::move(request),
                               .result_or_callbacks = std::move(callbacks)});
     if (entries_.size() > kCacheSize) {
-      auto dropped_callbacks = std::exchange(
-          *std::get_if<1>(&entries_.back().result_or_callbacks), {});
-      for (auto& cb : dropped_callbacks) {
-        std::move(cb).Run(EmptySuggestions());
+      auto* dropped_callbacks =
+          std::get_if<1>(&entries_.back().result_or_callbacks);
+      if (dropped_callbacks) {
+        for (auto& cb : std::exchange(*dropped_callbacks, {})) {
+          std::move(cb).Run(EmptySuggestions());
+        }
       }
       entries_.pop_back();
     }
