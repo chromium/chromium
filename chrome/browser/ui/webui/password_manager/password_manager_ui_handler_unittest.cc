@@ -4,23 +4,32 @@
 
 #include "chrome/browser/ui/webui/password_manager/password_manager_ui_handler.h"
 
-#include "base/run_loop.h"
+#include <memory>
+#include <vector>
+
+#include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
-#include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate_factory.h"
 #include "chrome/browser/extensions/api/passwords_private/test_passwords_private_delegate.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/ui/actor_login_permission.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace password_manager {
 
@@ -40,19 +49,33 @@ class MockPage : public mojom::Page {
 
   void FlushForTesting() { receiver_.FlushForTesting(); }
 
+ private:
   mojo::Receiver<mojom::Page> receiver_{this};
 };
 
-class QuitRunLoopObserver : public SavedPasswordsPresenter::Observer {
+// A RAII helper that waits for the SavedPasswordsPresenter to notify that
+// passwords have changed.
+class SavedPasswordsChangedWaiter : public SavedPasswordsPresenter::Observer {
  public:
-  explicit QuitRunLoopObserver(base::RunLoop* run_loop) : run_loop_(run_loop) {}
-  void OnSavedPasswordsChanged(
-      const password_manager::PasswordStoreChangeList& changes) override {
-    run_loop_->Quit();
+  explicit SavedPasswordsChangedWaiter(SavedPasswordsPresenter* presenter)
+      : presenter_(presenter) {
+    presenter_->AddObserver(this);
   }
 
+  ~SavedPasswordsChangedWaiter() override { presenter_->RemoveObserver(this); }
+
+  // Blocks until OnSavedPasswordsChanged is called.
+  void Wait() { ASSERT_TRUE(future_.Wait()); }
+
  private:
-  raw_ptr<base::RunLoop> run_loop_;
+  // SavedPasswordsPresenter::Observer:
+  void OnSavedPasswordsChanged(
+      const PasswordStoreChangeList& changes) override {
+    future_.SetValue();
+  }
+
+  const raw_ptr<SavedPasswordsPresenter> presenter_;
+  base::test::TestFuture<void> future_;
 };
 
 }  // namespace
@@ -61,73 +84,87 @@ class PasswordManagerUIHandlerUnitTest : public testing::Test {
  public:
   PasswordManagerUIHandlerUnitTest()
       : profile_(std::make_unique<TestingProfile>()),
-        web_contents_(factory_.CreateWebContents(profile_.get())) {}
+        web_contents_(factory_.CreateWebContents(profile_.get())),
+        password_store_(CreateAndUseTestPasswordStore(profile_.get())),
+        affiliation_service_(
+            std::make_unique<affiliations::FakeAffiliationService>()) {}
+
   ~PasswordManagerUIHandlerUnitTest() override = default;
 
   void SetUp() override {
-    password_store_ = CreateAndUseTestPasswordStore(profile_.get());
-    affiliation_service_ =
-        std::make_unique<affiliations::FakeAffiliationService>();
+    // Set up the delegate and presenter dependencies.
     auto delegate =
         base::MakeRefCounted<extensions::TestPasswordsPrivateDelegate>();
+    test_delegate_ = delegate.get();
+
     auto presenter = std::make_unique<SavedPasswordsPresenter>(
         affiliation_service_.get(), password_store_,
         /*account_store=*/nullptr);
-    base::RunLoop run_loop;
-    presenter->Init(run_loop.QuitClosure());
-    run_loop.Run();
     presenter_ = presenter.get();
-    delegate->SetSavedPasswordsPresenter(std::move(presenter));
-    test_delegate_ = delegate.get();
 
+    // Initialize the presenter and wait for it to complete.
+    base::test::TestFuture<void> init_future;
+    presenter_->Init(init_future.GetCallback());
+    ASSERT_TRUE(init_future.Wait());
+
+    // Transfer presenter ownership to the delegate.
+    delegate->SetSavedPasswordsPresenter(std::move(presenter));
+
+    // Create the handler under test.
     handler_ = std::make_unique<PasswordManagerUIHandler>(
         mojo::PendingReceiver<mojom::PageHandler>(),
         mock_page_.BindAndGetRemote(), std::move(delegate), web_contents_);
+
+    // Ensure the Mojo connection is established.
     mock_page_.FlushForTesting();
     testing::Mock::VerifyAndClearExpectations(&mock_page_);
   }
 
   void TearDown() override {
     test_delegate_ = nullptr;
+    presenter_ = nullptr;
     testing::Test::TearDown();
   }
 
+  // Helper to inject a password form into the store and wait for the update.
   void CreateAndSeedPasswordForm(const GURL& url,
                                  const std::u16string& username,
                                  bool actor_login_approved) {
     PasswordForm form;
     form.url = url;
+    form.signon_realm = url.spec();
     form.username_value = username;
     form.actor_login_approved = actor_login_approved;
     form.in_store = PasswordForm::Store::kProfileStore;
-    base::RunLoop run_loop;
-    QuitRunLoopObserver observer(&run_loop);
-    presenter().AddObserver(&observer);
-    password_store().AddLogin(form);
-    run_loop.Run();
-    presenter().RemoveObserver(&observer);
+
+    SavedPasswordsChangedWaiter waiter(presenter_);
+    password_store_->AddLogin(form);
+    waiter.Wait();
   }
 
   PasswordManagerUIHandler& handler() { return *handler_; }
   extensions::TestPasswordsPrivateDelegate& test_delegate() {
     return *test_delegate_;
   }
-  SavedPasswordsPresenter& presenter() { return *presenter_; }
-  TestPasswordStore& password_store() { return *password_store_; }
 
  protected:
-  raw_ptr<extensions::TestPasswordsPrivateDelegate> test_delegate_;
-
-  // NOTE: The initialization order of these members matters.
+  // NOTE: The initialization order of these members matters for construction
+  // and destruction.
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   content::TestWebContentsFactory factory_;
-  raw_ptr<content::WebContents> web_contents_;  // Weak. Owned by factory_.
+  // Weak ptr owned by factory_.
+  raw_ptr<content::WebContents> web_contents_;
   testing::NiceMock<MockPage> mock_page_;
-  std::unique_ptr<PasswordManagerUIHandler> handler_;
   scoped_refptr<TestPasswordStore> password_store_;
   std::unique_ptr<affiliations::FakeAffiliationService> affiliation_service_;
+
+  // These are raw pointers to objects owned by the handler_'s delegate.
+  // They are valid between SetUp() and TearDown().
+  raw_ptr<extensions::TestPasswordsPrivateDelegate> test_delegate_;
   raw_ptr<SavedPasswordsPresenter> presenter_;
+
+  std::unique_ptr<PasswordManagerUIHandler> handler_;
 };
 
 TEST_F(PasswordManagerUIHandlerUnitTest,
@@ -170,32 +207,37 @@ TEST_F(PasswordManagerUIHandlerUnitTest, RemoveBackupPassword_CallsDelegate) {
 
 TEST_F(PasswordManagerUIHandlerUnitTest,
        GetActorLoginPermissionSites_CallsPresenter) {
-  base::test::TestFuture<std::vector<mojom::ActorLoginPermissionPtr>> future;
-  CreateAndSeedPasswordForm(GURL("https://test.com"), u"testuser",
+  const GURL kTestUrl("https://test.com");
+  const std::u16string kTestUsername = u"testuser";
+  CreateAndSeedPasswordForm(kTestUrl, kTestUsername,
                             /*actor_login_approved=*/true);
 
+  base::test::TestFuture<std::vector<mojom::ActorLoginPermissionPtr>> future;
   handler().GetActorLoginPermissions(future.GetCallback());
 
-  EXPECT_EQ(future.Get().size(), 1u);
+  const auto& permissions = future.Get();
+  ASSERT_EQ(permissions.size(), 1u);
+  EXPECT_EQ(permissions[0]->url->link, kTestUrl.spec());
 }
 
 TEST_F(PasswordManagerUIHandlerUnitTest,
        RevokeActorLoginPermission_CallsPresenter) {
-  auto site = mojom::ActorLoginPermission::New();
-  site->url = mojom::FormattedUrl::New("test.com", "https://test.com");
-  site->username = "testuser";
-  CreateAndSeedPasswordForm(GURL(site->url->link), u"testuser",
+  const GURL kTestUrl("https://test.com");
+  const std::u16string kTestUsername = u"testuser";
+  CreateAndSeedPasswordForm(kTestUrl, kTestUsername,
                             /*actor_login_approved=*/true);
 
-  base::RunLoop run_loop;
-  QuitRunLoopObserver observer(&run_loop);
-  presenter().AddObserver(&observer);
-  handler().RevokeActorLoginPermission(std::move(site));
-  run_loop.Run();
-  presenter().RemoveObserver(&observer);
+  auto site = mojom::ActorLoginPermission::New();
+  site->url =
+      mojom::FormattedUrl::New(std::string(kTestUrl.host()), kTestUrl.spec());
+  site->username = base::UTF16ToUTF8(kTestUsername);
 
-  ASSERT_EQ(password_store().stored_passwords().size(), 1u);
-  const auto& passwords = password_store().stored_passwords().begin()->second;
+  SavedPasswordsChangedWaiter waiter(presenter_);
+  handler().RevokeActorLoginPermission(std::move(site));
+  waiter.Wait();
+
+  ASSERT_EQ(password_store_->stored_passwords().size(), 1u);
+  const auto& passwords = password_store_->stored_passwords().begin()->second;
   ASSERT_EQ(passwords.size(), 1u);
   EXPECT_FALSE(passwords[0].actor_login_approved);
 }
