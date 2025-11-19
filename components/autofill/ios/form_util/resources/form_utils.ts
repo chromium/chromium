@@ -8,6 +8,13 @@
 const kNamelessFormIDPrefix = 'gChrome~form~';
 
 /**
+ * Prefix used in references to field elements that have no 'id' or 'name' but
+ * are included in a form.
+ */
+const kNamelessFieldIDPrefix = 'gChrome~field~';
+
+
+/**
  * Based on Element::isFormControlElement() (WebKit)
  * @param element A DOM element.
  * @return true if the `element` is a form control element.
@@ -54,4 +61,34 @@ export function getFormIdentifier(form: Element|null): string {
     }
   }
   return '';
+}
+
+/**
+ * Returns the form element from an ID obtained from getFormIdentifier.
+ *
+ * This works on a 'best effort' basis since DOM changes can always change the
+ * actual element that the ID refers to.
+ *
+ * @param name An ID string obtained via getFormIdentifier.
+ * @return The original form element, if it can be determined.
+ */
+export function getFormElementFromIdentifier(name: string): HTMLFormElement|
+    null {
+  // First attempt is from the name / id supplied.
+  const form = document.forms.namedItem(name);
+  if (form) {
+    return form.nodeType === Node.ELEMENT_NODE ? form : null;
+  }
+  // Second attempt is from the prefixed index position of the form in
+  // document.forms.
+  if (name.indexOf(kNamelessFormIDPrefix) === 0) {
+    const nameAsInteger =
+        0 | name.substring(kNamelessFieldIDPrefix.length).length;
+    if (kNamelessFormIDPrefix + nameAsInteger === name &&
+        nameAsInteger < document.forms.length) {
+      const form = document.forms[nameAsInteger];
+      return form ? form : null;
+    }
+  }
+  return null;
 }

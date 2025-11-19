@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {getFormElementFromIdentifier} from '//components/autofill/ios/form_util/resources/form_utils.js';
 import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
-import {getFormElementFromIdentifier} from '//components/autofill/ios/form_util/resources/form.js';
 /**
  * @fileoverview Installs suggestion management functions on the
  * __gCrWeb object.
