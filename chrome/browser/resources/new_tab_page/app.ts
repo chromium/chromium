@@ -304,6 +304,7 @@ export class AppElement extends AppElementBase {
       wasComposeboxOpened_: {type: Boolean},
 
       ntpNextFeaturesEnabled_: {type: Boolean},
+      maxTilesBeforeShowMore_: {type: Number},
 
       searchboxInputFocused_: {type: Boolean},
       composeboxInputFocused_: {type: Boolean},
@@ -386,6 +387,8 @@ export class AppElement extends AppElementBase {
       loadTimeData.getBoolean('searchboxCyclingPlaceholders');
   protected accessor ntpNextFeaturesEnabled_: boolean =
       loadTimeData.getBoolean('ntpNextFeaturesEnabled');
+  protected accessor maxTilesBeforeShowMore_: number =
+      loadTimeData.getInteger('maxTilesBeforeShowMore');
   protected accessor searchboxInputFocused_: boolean = false;
   protected accessor composeboxInputFocused_: boolean = false;
   protected accessor showScrim_: boolean = false;

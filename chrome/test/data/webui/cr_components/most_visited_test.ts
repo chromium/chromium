@@ -168,6 +168,7 @@ interface SetUpTestOptions {
   singleRow: boolean;
   reflowOnOverflow: boolean;
   expandableTilesEnabled: boolean;
+  maxTilesBeforeShowMore: number;
 }
 
 function setUpTest(providedOptions: Partial<SetUpTestOptions> = {}) {
@@ -175,6 +176,7 @@ function setUpTest(providedOptions: Partial<SetUpTestOptions> = {}) {
     singleRow: false,
     reflowOnOverflow: false,
     expandableTilesEnabled: false,
+    maxTilesBeforeShowMore: MAX_TILES_BEFORE_SHOW_MORE,
   };
   const options = {...defaultOptions, ...providedOptions};
   document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -187,6 +189,9 @@ function setUpTest(providedOptions: Partial<SetUpTestOptions> = {}) {
   mostVisited.reflowOnOverflow = options.reflowOnOverflow;
   if (options.expandableTilesEnabled) {
     mostVisited.setAttribute('expandable-tiles-enabled', '');
+    mostVisited.setAttribute(
+        'max-tiles-before-show-more',
+        options.maxTilesBeforeShowMore.toString());
   }
   document.body.appendChild(mostVisited);
   assertEquals(1, handler.getCallCount('updateMostVisitedInfo'));
@@ -289,12 +294,6 @@ suite('ShowAddButton', () => {
 });
 
 suite('ExpandableTiles', () => {
-  suiteSetup(() => {
-    loadTimeData.overrideValues({
-      maxTilesBeforeShowMore: MAX_TILES_BEFORE_SHOW_MORE,
-    });
-  });
-
   test('initializes isExpanded to true from pref', async () => {
     createBrowserProxy();
     handler.setResultFor(

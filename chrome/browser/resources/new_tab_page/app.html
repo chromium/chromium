@@ -90,7 +90,8 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
     ${this.shortcutsEnabled_ ? html`
       <cr-most-visited id="mostVisited" .theme="${this.theme_?.mostVisited || null}"
           single-row reflow-on-overflow
-          ?expandable-tiles-enabled="${this.ntpNextFeaturesEnabled_}">
+          ?expandable-tiles-enabled="${this.ntpNextFeaturesEnabled_}"
+          max-tiles-before-show-more="${this.maxTilesBeforeShowMore_}">
       </cr-most-visited>
     ` : ''}
     ${this.middleSlotPromoEnabled_ ? html`
