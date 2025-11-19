@@ -77,6 +77,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Chrome.FontDataManager.NumMappedFiles" units="files"
+    expires_after="2026-08-31">
+  <owner>andresrperez@chromium.org</owner>
+  <owner>drott@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Records the amount of currently mapped font files in a renderer's Font Data
+    Manager. This is recorded whenever a new mapped file is added to the cache.
+  </summary>
+</histogram>
+
 <histogram name="Chrome.FontDataService.EmptyPathOnGetFileHandle"
     enum="Boolean" expires_after="2026-08-31">
   <owner>andresrperez@chromium.org</owner>

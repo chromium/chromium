@@ -92,11 +92,29 @@ class CONTENT_EXPORT FontDataManager : public SkFontMgr {
 
   // Key of the typeface_cache_.
   struct MatchFamilyRequest {
-    std::string name;
+    MatchFamilyRequest(std::optional<std::string> name,
+                       int weight,
+                       int width,
+                       SkFontStyle::Slant slant);
+    MatchFamilyRequest(const MatchFamilyRequest&);
+    MatchFamilyRequest(MatchFamilyRequest&&);
+    ~MatchFamilyRequest();
+    std::optional<std::string> name;
     int weight;
     int width;
     SkFontStyle::Slant slant;
   };
+
+  // Tries to get the matching typeface from the cache if it exists, returns
+  // nullopt otherwise.
+  std::optional<sk_sp<SkTypeface>> TryGetFromCache(
+      const MatchFamilyRequest& request) const;
+
+  // Adds the specified typeface to the cache for the key represented by the
+  // match request params.
+  void AddToCache(const MatchFamilyRequest& request,
+                  sk_sp<SkTypeface> typeface) const;
+
   struct MatchFamilyRequestHash {
     size_t operator()(const MatchFamilyRequest& key) const {
       return base::HashCombine(0ull, key.name, key.weight, key.width,

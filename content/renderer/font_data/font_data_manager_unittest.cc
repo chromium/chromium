@@ -239,7 +239,14 @@ TEST_F(FontDataManagerUnitTest, MatchFamilyStyle) {
   result = skia_font_manager_->legacyMakeTypeface(family_name.data(), style);
   result->getFamilyName(&result_family_name);
   EXPECT_STREQ(result_family_name.c_str(), family_name.data());
-  EXPECT_EQ(test_font_data_service_app_.match_family_call_count(), 3u);
+  EXPECT_EQ(test_font_data_service_app_.legacy_make_typeface_call_count(), 1u);
+
+  // Test that the cache works.
+  // Same style.
+  result = skia_font_manager_->matchFamilyStyle(family_name.data(), style);
+  result->getFamilyName(&result_family_name);
+  EXPECT_STREQ(result_family_name.c_str(), family_name.data());
+  EXPECT_EQ(test_font_data_service_app_.legacy_make_typeface_call_count(), 1u);
 }
 
 TEST_F(FontDataManagerUnitTest, LegacyMakeTypefaceNullFamilyName) {
