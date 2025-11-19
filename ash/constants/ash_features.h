@@ -1396,6 +1396,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsFeatureAwareDeviceDemoModeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsUseTokenHandleStoreEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool UseMixedFileLauncherContinueSection();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLocalFactorsPasswordComplexityEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsManagedLocalPinAndPasswordEnabled();
 
 // Keep alphabetized.
 
