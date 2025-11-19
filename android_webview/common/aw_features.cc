@@ -160,14 +160,6 @@ BASE_FEATURE(kWebViewUseStartupTasksLogic, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kWebViewRecordAppCacheHistograms,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, WebView changes the default value of the QUIC connection
-// timeout, it uses the value in `WebViewUpdateQuicConnectionTimeoutSeconds`
-BASE_FEATURE(kWebViewQuicConnectionTimeout, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// A parameter to change the quic connection timeout value, this value is in
-// seconds.
-const base::FeatureParam<int> kWebViewQuicConnectionTimeoutSeconds{
-    &kWebViewQuicConnectionTimeout, "WebViewQuicConnectionTimeoutSeconds", 300};
 // When enabled, instead of using the 20MiB as the HTTP cache
 // limit, derive the value from the cache quota allocated to the app by the
 // Android framework.

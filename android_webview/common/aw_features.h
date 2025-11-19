@@ -49,8 +49,6 @@ BASE_DECLARE_FEATURE(kWebViewWebauthn);
 BASE_DECLARE_FEATURE(kWebViewInterceptedCookieHeader);
 BASE_DECLARE_FEATURE(kWebViewInterceptedCookieHeaderReadWrite);
 BASE_DECLARE_FEATURE(kWebViewRecordAppCacheHistograms);
-BASE_DECLARE_FEATURE(kWebViewQuicConnectionTimeout);
-extern const base::FeatureParam<int> kWebViewQuicConnectionTimeoutSeconds;
 BASE_DECLARE_FEATURE(kWebViewCacheSizeLimitDerivedFromAppCacheQuota);
 extern const base::FeatureParam<double> kWebViewCacheSizeLimitMultiplier;
 extern const base::FeatureParam<int> kWebViewCacheSizeLimitMinimum;

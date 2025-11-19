@@ -965,10 +965,6 @@ public final class ProductionSupportedFlagList {
                 NetFeatures.RESTRICT_ABUSE_PORTS_ON_LOCALHOST,
                 "Used to restrict connections to specified ports on localhost."),
         Flag.baseFeature(
-                AwFeatures.WEBVIEW_QUIC_CONNECTION_TIMEOUT,
-                "Enables updating the QUIC connection timeout to a value set by the"
-                        + " WebViewUpdateQuicConnectionTimeoutSeconds feature param."),
-        Flag.baseFeature(
                 NetworkServiceFeatures.SHARED_DICTIONARY_CACHE,
                 "When enabled, keep recently-used compression dictionaries in a memory cache."),
         Flag.baseFeature(

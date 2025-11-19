@@ -596,10 +596,13 @@ void AwBrowserContext::ConfigureNetworkContextParams(
   context_params->check_clear_text_permitted =
       AwContentBrowserClient::get_check_cleartext_permitted();
 
-  if (base::FeatureList::IsEnabled(features::kWebViewQuicConnectionTimeout)) {
-    context_params->quic_idle_connection_timeout_seconds =
-        features::kWebViewQuicConnectionTimeoutSeconds.Get();
-  }
+  // A longer QUIC idle connection timeout (updated from the default 60s) has
+  // shown to be beneficial to page load performance and connection reuse for
+  // Android apps using WebView, based on experiments ran in 2025.
+  //
+  // TODO(crbug.com/446163651): Remove this override if/when the Chromium-wide
+  // default for QUIC's idle connection timeout is updated.
+  context_params->quic_idle_connection_timeout_seconds = 300;
 
   // Add proxy settings
   AwProxyConfigMonitor::GetInstance()->AddProxyToNetworkContextParams(
