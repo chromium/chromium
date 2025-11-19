@@ -19,7 +19,6 @@
 
 #include "base/allocator/allocator_check.h"
 #include "base/allocator/partition_alloc_support.h"
-#include "base/android/background_thread_pool_field_trial.h"
 #include "base/at_exit.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
@@ -187,6 +186,7 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/background_thread_pool_field_trial.h"
 #include "base/system/sys_info.h"
 #include "content/browser/android/battery_metrics.h"
 #include "content/browser/android/browser_startup_controller.h"

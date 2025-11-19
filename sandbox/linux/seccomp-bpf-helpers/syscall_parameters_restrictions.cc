@@ -23,7 +23,6 @@
 #include <unistd.h>
 
 #include "base/allocator/partition_alloc_features.h"
-#include "base/android/background_thread_pool_field_trial.h"
 #include "base/feature_list.h"
 #include "base/features.h"
 #include "base/notreached.h"
@@ -54,6 +53,7 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/background_thread_pool_field_trial.h"
 
 #if !defined(F_DUPFD_CLOEXEC)
 #define F_DUPFD_CLOEXEC (F_LINUX_SPECIFIC_BASE + 6)

@@ -19,8 +19,6 @@ static_library("internal") {
   ]
 
   sources = [
-    "android/fake_preview_server_proxy.cc",
-    "android/fake_preview_server_proxy.h",
     "avatar_fetcher.cc",
     "avatar_fetcher.h",
     "collaboration_group_sync_bridge.cc",
@@ -76,6 +74,8 @@ static_library("internal") {
       "android/data_sharing_sdk_delegate_android.h",
       "android/data_sharing_service_android.cc",
       "android/data_sharing_service_android.h",
+      "android/fake_preview_server_proxy.cc",
+      "android/fake_preview_server_proxy.h",
     ]
 
     deps += [
