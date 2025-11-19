@@ -29,6 +29,7 @@
 #include "mojo/public/cpp/bindings/service_factory.h"
 #include "pdf/buildflags.h"
 #include "printing/buildflags/buildflags.h"
+#include "services/passage_embeddings/passage_embeddings_service.h"
 #include "ui/accessibility/accessibility_features.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -58,7 +59,6 @@
 #include "chrome/common/importer/profile_import.mojom.h"
 #include "chrome/utility/importer/profile_import_impl.h"
 #include "components/mirroring/service/mirroring_service.h"
-#include "services/passage_embeddings/passage_embeddings_service.h"
 #include "services/proxy_resolver/proxy_resolver_factory_impl.h"  // nogncheck
 #include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
 #include "services/screen_ai/public/mojom/screen_ai_factory.mojom.h"  // nogncheck
@@ -243,14 +243,14 @@ auto RunMirroringService(
       std::move(receiver), content::UtilityThread::Get()->GetIOTaskRunner());
 }
 
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 auto RunPassageEmbeddingsService(
     mojo::PendingReceiver<passage_embeddings::mojom::PassageEmbeddingsService>
         receiver) {
   return std::make_unique<passage_embeddings::PassageEmbeddingsService>(
       std::move(receiver));
 }
-
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_BROWSER_SPEECH_SERVICE)
 auto RunSpeechRecognitionService(
@@ -440,11 +440,11 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunWebAppOriginAssociationParser);
   services.Add(RunCSVPasswordParser);
   services.Add(ContentBookmarkParser);
+  services.Add(RunPassageEmbeddingsService);
 
 #if !BUILDFLAG(IS_ANDROID)
   services.Add(RunProfileImporter);
   services.Add(RunMirroringService);
-  services.Add(RunPassageEmbeddingsService);
   services.Add(RunScreenAIServiceFactory);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
