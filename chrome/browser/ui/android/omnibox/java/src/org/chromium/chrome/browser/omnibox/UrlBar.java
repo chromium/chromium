@@ -339,7 +339,16 @@ public class UrlBar extends AutocompleteEditText {
         if (!mFocused) mFocusEventEmitted = false;
         super.onFocusChanged(focused, direction, previouslyFocusedRect);
 
-        setInputIsMultilineEligible(false);
+        if (!mIsInCct && OmniboxFeatures.sMultilineEditField.isEnabled()) {
+            setInputIsMultilineEligible(false);
+            if (focused) {
+                setSingleLine(false);
+                setMaxLines(MULTILINE_EDIT_MAX_LINES);
+            } else {
+                setSingleLine(true);
+                setMaxLines(1);
+            }
+        }
         setHorizontalFadingEdgeEnabled(!focused);
 
         if (focused) {
@@ -492,15 +501,7 @@ public class UrlBar extends AutocompleteEditText {
     public void setInputIsMultilineEligible(boolean isMultilineEligible) {
         isMultilineEligible &= mFocused;
         if (OmniboxFeatures.allowMultilineEditField() && !mIsInCct) {
-            // Only act if the caller wants multiline, but is single line - or the other way around.
-            if (isMultilineEligible != !isSingleLine()) {
-                // Toggling between single- and multi-line edit fields appears to make the EditText
-                // restart and reposition the cursor.
-                int cursor = getSelectionStart();
-                setSingleLine(!isMultilineEligible);
-                setMaxLines(isMultilineEligible ? MULTILINE_EDIT_MAX_LINES : 1);
-                setSelection(cursor);
-            }
+            setHorizontallyScrolling(!isMultilineEligible);
         }
     }
 
@@ -1183,6 +1184,7 @@ public class UrlBar extends AutocompleteEditText {
         // of some urls (e.g. "flipkart.com" -> "flip cart. com" or "flipkart. com") despite
         // TYPE_TEXT_FLAG_NO_SUGGESTIONS and lack of TYPE_TEXT_FLAG_AUTO_CORRECT.
         outAttrs.inputType |= EditorInfo.TYPE_TEXT_VARIATION_URI;
+        outAttrs.inputType &= ~EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE;
         outAttrs.imeOptions &= ~EditorInfo.IME_FLAG_NO_ENTER_ACTION;
         return connection;
     }

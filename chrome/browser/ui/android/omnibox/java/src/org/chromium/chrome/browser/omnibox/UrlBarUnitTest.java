@@ -1033,16 +1033,19 @@ public class UrlBarUnitTest {
         mUrlBar.setInputIsMultilineEligible(true);
         assertEquals(UrlBar.MULTILINE_EDIT_MAX_LINES, mUrlBar.getMaxLines());
         assertFalse(mUrlBar.isSingleLine());
+        assertFalse(mUrlBar.isHorizontallyScrollable());
 
         mUrlBar.setInputIsMultilineEligible(false);
-        assertEquals(1, mUrlBar.getMaxLines());
-        assertTrue(mUrlBar.isSingleLine());
+        assertEquals(UrlBar.MULTILINE_EDIT_MAX_LINES, mUrlBar.getMaxLines());
+        assertFalse(mUrlBar.isSingleLine());
+        assertTrue(mUrlBar.isHorizontallyScrollable());
 
         // Defocused omnibox - never multiline
         mUrlBar.onFocusChanged(false, View.LAYOUT_DIRECTION_LTR, new Rect());
         mUrlBar.setInputIsMultilineEligible(true);
         assertEquals(1, mUrlBar.getMaxLines());
         assertTrue(mUrlBar.isSingleLine());
+        assertTrue(mUrlBar.isHorizontallyScrollable());
     }
 
     @Test

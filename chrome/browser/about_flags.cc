@@ -2103,6 +2103,13 @@ const FeatureEntry::FeatureVariation kOmniboxMultimodalInputVariants[] = {
      std::size(kOmniboxAimMultiContextCompactFusebox), nullptr},
 };
 
+const FeatureEntry::FeatureParam kOmniboxMultilineEditFieldForAutocomplete[] = {
+    {"wrap_autocomplete_text", "true"}};
+
+const FeatureEntry::FeatureVariation kOmniboxMultilineEditFieldVariants[] = {
+    {"For Autocomplete", kOmniboxMultilineEditFieldForAutocomplete,
+     std::size(kOmniboxMultilineEditFieldForAutocomplete), nullptr}};
+
 const FeatureEntry::FeatureParam kOmniboxImprovementForLFFVariationsAll[] = {
     {OmniboxFieldTrial::kOmniboxImprovementForLFFSwitchToTabChip.name, "true"},
     {OmniboxFieldTrial::kOmniboxImprovementForLFFRemoveSuggestionViaButton.name,
@@ -7272,7 +7279,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"omnibox-multiline-edit-field",
      flag_descriptions::kOmniboxMultilineEditFieldName,
      flag_descriptions::kOmniboxMultilineEditFieldDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(omnibox::kMultilineEditField)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kMultilineEditField,
+                                    kOmniboxMultilineEditFieldVariants,
+                                    "BottomToolbarV2")},
 
     {"omnibox-multimodal-input", flag_descriptions::kOmniboxMultimodalInputName,
      flag_descriptions::kOmniboxMultimodalInputDescription, kOsAndroid,
