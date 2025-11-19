@@ -44,42 +44,6 @@ bool SupportsStreamType(const std::optional<base::flat_set<SourceStreamType>>&
 
 }  // namespace
 
-const char HttpRequestHeaders::kConnectMethod[] = "CONNECT";
-const char HttpRequestHeaders::kDeleteMethod[] = "DELETE";
-const char HttpRequestHeaders::kGetMethod[] = "GET";
-const char HttpRequestHeaders::kHeadMethod[] = "HEAD";
-const char HttpRequestHeaders::kOptionsMethod[] = "OPTIONS";
-const char HttpRequestHeaders::kPatchMethod[] = "PATCH";
-const char HttpRequestHeaders::kPostMethod[] = "POST";
-const char HttpRequestHeaders::kPutMethod[] = "PUT";
-const char HttpRequestHeaders::kTraceMethod[] = "TRACE";
-const char HttpRequestHeaders::kTrackMethod[] = "TRACK";
-const char HttpRequestHeaders::kAccept[] = "Accept";
-const char HttpRequestHeaders::kAcceptCharset[] = "Accept-Charset";
-const char HttpRequestHeaders::kAcceptEncoding[] = "Accept-Encoding";
-const char HttpRequestHeaders::kAcceptLanguage[] = "Accept-Language";
-const char HttpRequestHeaders::kAuthorization[] = "Authorization";
-const char HttpRequestHeaders::kCacheControl[] = "Cache-Control";
-const char HttpRequestHeaders::kConnection[] = "Connection";
-const char HttpRequestHeaders::kContentLength[] = "Content-Length";
-const char HttpRequestHeaders::kContentType[] = "Content-Type";
-const char HttpRequestHeaders::kCookie[] = "Cookie";
-const char HttpRequestHeaders::kHost[] = "Host";
-const char HttpRequestHeaders::kIfMatch[] = "If-Match";
-const char HttpRequestHeaders::kIfModifiedSince[] = "If-Modified-Since";
-const char HttpRequestHeaders::kIfNoneMatch[] = "If-None-Match";
-const char HttpRequestHeaders::kIfRange[] = "If-Range";
-const char HttpRequestHeaders::kIfUnmodifiedSince[] = "If-Unmodified-Since";
-const char HttpRequestHeaders::kOrigin[] = "Origin";
-const char HttpRequestHeaders::kPragma[] = "Pragma";
-const char HttpRequestHeaders::kPriority[] = "Priority";
-const char HttpRequestHeaders::kProxyAuthorization[] = "Proxy-Authorization";
-const char HttpRequestHeaders::kProxyConnection[] = "Proxy-Connection";
-const char HttpRequestHeaders::kRange[] = "Range";
-const char HttpRequestHeaders::kReferer[] = "Referer";
-const char HttpRequestHeaders::kTransferEncoding[] = "Transfer-Encoding";
-const char HttpRequestHeaders::kUserAgent[] = "User-Agent";
-
 HttpRequestHeaders::HeaderKeyValuePair::HeaderKeyValuePair() = default;
 
 HttpRequestHeaders::HeaderKeyValuePair::HeaderKeyValuePair(

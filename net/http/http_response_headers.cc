@@ -195,10 +195,6 @@ int ParseStatus(std::string_view status, std::string& append_to) {
 
 }  // namespace
 
-const char HttpResponseHeaders::kContentRange[] = "Content-Range";
-const char HttpResponseHeaders::kLastModified[] = "Last-Modified";
-const char HttpResponseHeaders::kVary[] = "Vary";
-
 struct HttpResponseHeaders::ParsedHeader {
   // A header "continuation" contains only a subsequent value for the
   // preceding header.  (Header values are comma separated.)
@@ -932,9 +928,10 @@ std::optional<base::TimeDelta>
 HttpResponseHeaders::GetCacheControlHeaderValueForTesting(
     const std::string_view directive) const {
   for (size_t iter = 0; auto value = EnumerateHeader(&iter, kCacheControl);) {
-    if (base::StartsWith(*value, directive,
-                         base::CompareCase::INSENSITIVE_ASCII)) {
-      const auto delta = ParseSeconds(value->substr(directive.size()));
+    const std::optional<std::string_view> directive_value = base::RemovePrefix(
+        *value, directive, base::CompareCase::INSENSITIVE_ASCII);
+    if (directive_value.has_value()) {
+      const auto delta = ParseSeconds(*directive_value);
       if (delta.has_value()) {
         return delta;
       }
@@ -1184,18 +1181,20 @@ HttpResponseHeaders::CacheControlFreshnessDirectives
 HttpResponseHeaders::ParseCacheControlDirectivesForFreshness() const {
   CacheControlFreshnessDirectives directives;
   for (size_t iter = 0; auto value = EnumerateHeader(&iter, kCacheControl);) {
+    // Result of calling base::RemovePrefix() for values that have prefixes.
+    // nullopt if the prefix that is searched for is not present.
+    std::optional<std::string_view> with_prefix_removed;
     if (base::EqualsCaseInsensitiveASCII(*value, kMustRevalidate)) {
       directives.must_revalidate = true;
     } else if (!directives.max_age &&
-               base::StartsWith(*value, kMaxAge,
-                                base::CompareCase::INSENSITIVE_ASCII)) {
-      // Extract just the value part after "max-age="
-      directives.max_age = ParseSeconds(value->substr(kMaxAge.size()));
+               (with_prefix_removed = base::RemovePrefix(
+                    *value, kMaxAge, base::CompareCase::INSENSITIVE_ASCII))) {
+      directives.max_age = ParseSeconds(*with_prefix_removed);
     } else if (!directives.stale_while_revalidate &&
-               base::StartsWith(*value, kStaleWhileRevalidate,
-                                base::CompareCase::INSENSITIVE_ASCII)) {
-      directives.stale_while_revalidate =
-          ParseSeconds(value->substr(kStaleWhileRevalidate.size()));
+               (with_prefix_removed =
+                    base::RemovePrefix(*value, kStaleWhileRevalidate,
+                                       base::CompareCase::INSENSITIVE_ASCII))) {
+      directives.stale_while_revalidate = ParseSeconds(*with_prefix_removed);
     }
   }
   return directives;
