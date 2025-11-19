@@ -9423,7 +9423,6 @@
     "DynamicProfileCountry": [
         {
             "platforms": [
-                "android",
                 "chromeos",
                 "linux",
                 "mac",
