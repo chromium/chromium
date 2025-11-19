@@ -19,6 +19,10 @@
 #include "chrome/updater/updater_scope.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
+#if BUILDFLAG(IS_WIN)
+#include <wrl/client.h>
+#endif  // BUILDFLAG(IS_WIN)
+
 namespace mojo {
 class PlatformChannelEndpoint;
 class IsolatedConnection;
@@ -42,9 +46,17 @@ class UpdateServiceInternalProxyMojoImpl
 
   void EnsureConnecting();
   void OnDisconnected();
+
+#if BUILDFLAG(IS_WIN)
+  void OnConnected(
+      mojo::PendingReceiver<mojom::UpdateServiceInternal> pending_receiver,
+      std::optional<mojo::PlatformChannelEndpoint> endpoint,
+      Microsoft::WRL::ComPtr<IUnknown> server);
+#else   // BUILDFLAG(IS_WIN)
   void OnConnected(
       mojo::PendingReceiver<mojom::UpdateServiceInternal> pending_receiver,
       std::optional<mojo::PlatformChannelEndpoint> endpoint);
+#endif  // BUILDFLAG(IS_WIN)
 
   SEQUENCE_CHECKER(sequence_checker_);
   const UpdaterScope scope_;
@@ -52,6 +64,11 @@ class UpdateServiceInternalProxyMojoImpl
       GUARDED_BY_CONTEXT(sequence_checker_);
   mojo::Remote<mojom::UpdateServiceInternal> remote_
       GUARDED_BY_CONTEXT(sequence_checker_);
+
+#if BUILDFLAG(IS_WIN)
+  Microsoft::WRL::ComPtr<IUnknown> server_;
+#endif  // BUILDFLAG(IS_WIN)
+
   base::WeakPtrFactory<UpdateServiceInternalProxyMojoImpl> weak_factory_{this};
 };
 

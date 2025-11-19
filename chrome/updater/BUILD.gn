@@ -616,6 +616,7 @@ if (is_win || is_mac || is_linux) {
         "ipc/ipc_names_win.cc",
         "ipc/proxy_impl_base_win.h",
         "ipc/update_service_dialer_win.cc",
+        "ipc/update_service_dialer_win.h",
         "ipc/update_service_proxy_win.cc",
         "ipc/update_service_proxy_win.h",
         "util/win_util.cc",
@@ -630,6 +631,7 @@ if (is_win || is_mac || is_linux) {
 
       deps += [
         "//chrome/updater/app/server/win:updater_idl",
+        "//chrome/updater/app/server/win:updater_internal_idl",
         "//chrome/windows_services/service_program:common",
       ]
 
@@ -677,6 +679,8 @@ if (is_win || is_mac || is_linux) {
 
     if (is_posix) {
       sources += [
+        "ipc/update_service_dialer_posix.cc",
+        "ipc/update_service_dialer_posix.h",
         "posix/setup.h",
         "util/posix_util.cc",
         "util/posix_util.h",

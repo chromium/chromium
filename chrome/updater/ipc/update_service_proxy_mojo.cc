@@ -49,6 +49,10 @@
 #include "mojo/public/cpp/system/isolated_connection.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 
+#if BUILDFLAG(IS_WIN)
+#include <wrl/client.h>
+#endif  // BUILDFLAG(IS_WIN)
+
 namespace updater {
 namespace {
 
@@ -173,53 +177,6 @@ MakeStateChangeObserver(
       base::BindPostTaskToCurrentDefault(state_change_callback),
       base::BindPostTaskToCurrentDefault(
           ToMojoCallback(std::move(complete_callback))));
-}
-
-std::optional<mojo::PlatformChannelEndpoint> ConnectMojo(UpdaterScope scope,
-                                                         int tries) {
-  if (tries == 1 && !DialUpdateService(scope)) {
-    return std::nullopt;
-  }
-  return named_mojo_ipc_server::ConnectToServer({
-      .server_name = GetUpdateServiceServerName(scope),
-#if BUILDFLAG(IS_WIN)
-      .allow_impersonation = true,
-#endif  // BUILDFLAG(IS_WIN)
-  });
-}
-
-void Connect(
-    UpdaterScope scope,
-    int tries,
-    base::Time deadline,
-    base::OnceCallback<void(std::optional<mojo::PlatformChannelEndpoint>)>
-        connected_callback) {
-  if (base::Time::Now() > deadline) {
-    VLOG(1) << "Failed to connect to UpdateService remote. "
-               "Connection timed out.";
-    std::move(connected_callback).Run(std::nullopt);
-    return;
-  }
-  std::optional<mojo::PlatformChannelEndpoint> endpoint =
-      ConnectMojo(scope, tries);
-
-  if (!endpoint) {
-    VLOG(1) << "Failed to connect to UpdateService remote. "
-               "No updater exists.";
-    std::move(connected_callback).Run(std::nullopt);
-    return;
-  }
-
-  if (endpoint->is_valid()) {
-    std::move(connected_callback).Run(std::move(endpoint));
-    return;
-  }
-
-  base::ThreadPool::PostDelayedTask(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&Connect, scope, tries + 1, deadline,
-                     std::move(connected_callback)),
-      base::Milliseconds(30 * tries));
 }
 
 }  // namespace
@@ -404,9 +361,16 @@ void UpdateServiceProxyMojoImpl::RunInstaller(
       language, MakeStateChangeObserver(state_update, std::move(callback)));
 }
 
+#if BUILDFLAG(IS_WIN)
+void UpdateServiceProxyMojoImpl::OnConnected(
+    mojo::PendingReceiver<mojom::UpdateService> pending_receiver,
+    std::optional<mojo::PlatformChannelEndpoint> endpoint,
+    Microsoft::WRL::ComPtr<IUnknown> server) {
+#else   // BUILDFLAG(IS_WIN)
 void UpdateServiceProxyMojoImpl::OnConnected(
     mojo::PendingReceiver<mojom::UpdateService> pending_receiver,
     std::optional<mojo::PlatformChannelEndpoint> endpoint) {
+#endif  // BUILDFLAG(IS_WIN)
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!endpoint) {
@@ -427,6 +391,10 @@ void UpdateServiceProxyMojoImpl::OnConnected(
   }
 
   connection_ = std::move(connection);
+
+#if BUILDFLAG(IS_WIN)
+  server_ = server;
+#endif  // BUILDFLAG(IS_WIN)
 
   // A weak pointer is used here to prevent remote_ from forming a reference
   // cycle with this object.
@@ -454,7 +422,7 @@ void UpdateServiceProxyMojoImpl::EnsureConnecting() {
   }
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&Connect, scope_, 0,
+      base::BindOnce(&ConnectMojo, scope_, /*internal=*/false,
                      base::Time::Now() + kConnectionTimeout,
                      base::BindPostTaskToCurrentDefault(base::BindOnce(
                          &UpdateServiceProxyMojoImpl::OnConnected,
