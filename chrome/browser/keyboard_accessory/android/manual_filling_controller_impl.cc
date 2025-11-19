@@ -147,13 +147,6 @@ autofill::FieldGlobalId ManualFillingControllerImpl::GetLastFocusedFieldId()
 
 void ManualFillingControllerImpl::ShowAccessorySheetTab(
     const autofill::AccessoryTabType& tab_type) {
-  if (tab_type == autofill::AccessoryTabType::CREDIT_CARDS) {
-    payment_method_controller_->RefreshSuggestions();
-  } else {
-    NOTIMPLEMENTED()
-        << "ShowAccessorySheetTab does not support the given TabType yet "
-        << tab_type;
-  }
   view_->ShowAccessorySheetTab(tab_type);
 }
 

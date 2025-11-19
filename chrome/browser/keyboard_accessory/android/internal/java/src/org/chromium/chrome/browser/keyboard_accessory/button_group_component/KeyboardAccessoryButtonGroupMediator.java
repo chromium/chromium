@@ -112,6 +112,10 @@ class KeyboardAccessoryButtonGroupMediator
             }
             tabPosition++;
         }
+        // TODO(crbug.com/430575808): Add logging here to check how many times we would reach this
+        // condition in production, since asserts are removed in production. If this is still a
+        // recurring issue, we can potentially look into making a synchronous version of
+        // `ManualFillingViewAndroid::OnItemsAvailable` (http://shortn/_6mwstKP5Xs).
         assert tabPosition < tabs.size() : "No tab found for the given tabType: " + tabType;
         mModel.set(ACTIVE_TAB, tabPosition);
     }
