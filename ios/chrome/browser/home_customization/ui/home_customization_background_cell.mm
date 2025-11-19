@@ -105,6 +105,9 @@ const CGFloat kAlphaValueWhenImageBackround = 0.6;
 
   // View representing the feeds.
   UIView* _feedsView;
+
+  // The view holding the default search engine logo.
+  UIView* _logoView;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -177,6 +180,9 @@ const CGFloat kAlphaValueWhenImageBackround = 0.6;
                                                    defaultValue]];
 
   [_backgroundImageView setImage:nil framingCoordinates:nil];
+  _backgroundConfiguration = nil;
+  [_logoView removeFromSuperview];
+  _logoView = nil;
 }
 
 - (void)setupContentView:(UIStackView*)contentView {
@@ -230,20 +236,20 @@ const CGFloat kAlphaValueWhenImageBackround = 0.6;
   }
 
   if (searchEngineLogoMediator && searchEngineLogoMediator.view) {
-    UIView* logoView = searchEngineLogoMediator.view;
-    logoView.translatesAutoresizingMaskIntoConstraints = NO;
-    logoView.userInteractionEnabled = NO;
+    _logoView = searchEngineLogoMediator.view;
+    _logoView.translatesAutoresizingMaskIntoConstraints = NO;
+    _logoView.userInteractionEnabled = NO;
 
     // Insert the logo view right after the spacer.
-    [self.innerContentView insertArrangedSubview:logoView atIndex:1];
+    [self.innerContentView insertArrangedSubview:_logoView atIndex:1];
 
     [NSLayoutConstraint activateConstraints:@[
-      [logoView.widthAnchor constraintEqualToConstant:kLogoWidth],
-      [logoView.heightAnchor constraintEqualToConstant:kLogoHeight],
+      [_logoView.widthAnchor constraintEqualToConstant:kLogoWidth],
+      [_logoView.heightAnchor constraintEqualToConstant:kLogoHeight],
     ]];
 
     [self.innerContentView setCustomSpacing:kOmniboxTopMargin
-                                  afterView:logoView];
+                                  afterView:_logoView];
   }
 
   _backgroundConfiguration = option;
