@@ -18,15 +18,14 @@ namespace blink {
 class ScriptState;
 class WritableStream;
 
-class PatchSupplement : public GarbageCollected<PatchSupplement>,
-                        public GarbageCollectedMixin {
+class PatchSupplement : public GarbageCollected<PatchSupplement> {
  public:
   PatchSupplement() = default;
 
   // Supplement functionality.
   static PatchSupplement* From(Document&);
   static PatchSupplement* FromIfExists(const Document&);
-  void Trace(Visitor*) const override;
+  void Trace(Visitor*) const;
 
   Patch* CurrentPatchFor(const Node&);
   void DidStart(Node&, Patch*);

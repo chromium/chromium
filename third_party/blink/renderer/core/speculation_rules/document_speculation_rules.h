@@ -23,8 +23,7 @@ class SpeculationRuleLoader;
 //
 // Updates are pushed asynchronously.
 class CORE_EXPORT DocumentSpeculationRules
-    : public GarbageCollected<DocumentSpeculationRules>,
-      public GarbageCollectedMixin {
+    : public GarbageCollected<DocumentSpeculationRules> {
  public:
   static DocumentSpeculationRules& From(Document&);
   static DocumentSpeculationRules* FromIfExists(Document&);
@@ -75,7 +74,7 @@ class CORE_EXPORT DocumentSpeculationRules
 
   void FlushMojoMessageForTesting();
 
-  void Trace(Visitor*) const override;
+  void Trace(Visitor*) const;
 
  private:
   // Retrieves a valid proxy to the speculation host in the browser.

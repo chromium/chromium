@@ -25,8 +25,7 @@ class ReportingObserver;
 // ReportingContext processes all reports for an ExecutionContext, and serves as
 // a container for all active ReportingObservers on that ExecutionContext.
 class CORE_EXPORT ReportingContext : public GarbageCollected<ReportingContext>,
-                                     public mojom::blink::ReportingObserver,
-                                     public GarbageCollectedMixin {
+                                     public mojom::blink::ReportingObserver {
  public:
   explicit ReportingContext(ExecutionContext&);
 
@@ -48,7 +47,7 @@ class CORE_EXPORT ReportingContext : public GarbageCollected<ReportingContext>,
   // mojom::blink::ReportingObserver implementation.
   void Notify(mojom::blink::ReportPtr report) override;
 
-  void Trace(Visitor*) const override;
+  void Trace(Visitor*) const;
 
  private:
   // Counts the use of a report type via UseCounter.

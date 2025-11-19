@@ -13,8 +13,7 @@ namespace blink {
 class Document;
 class ProcessingInstruction;
 
-class DocumentXSLT final : public GarbageCollected<DocumentXSLT>,
-                           public GarbageCollectedMixin {
+class DocumentXSLT final : public GarbageCollected<DocumentXSLT> {
  public:
   static void SetHasTransformSource(Document&);
 
@@ -32,7 +31,7 @@ class DocumentXSLT final : public GarbageCollected<DocumentXSLT>,
   DocumentXSLT() = default;
   DocumentXSLT(const DocumentXSLT&) = delete;
   DocumentXSLT& operator=(const DocumentXSLT&) = delete;
-  void Trace(Visitor*) const override;
+  void Trace(Visitor*) const;
 };
 
 }  // namespace blink

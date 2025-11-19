@@ -15,8 +15,7 @@ namespace blink {
 class Navigator;
 
 class CORE_EXPORT ModelContextSupplement final
-    : public GarbageCollected<ModelContextSupplement>,
-      public GarbageCollectedMixin {
+    : public GarbageCollected<ModelContextSupplement> {
  public:
   static ModelContextSupplement& From(Navigator&);
   static ModelContext* GetIfExists(Navigator&);
@@ -27,7 +26,7 @@ class CORE_EXPORT ModelContextSupplement final
   ModelContextSupplement(const ModelContextSupplement&) = delete;
   ModelContextSupplement& operator=(const ModelContextSupplement&) = delete;
 
-  void Trace(Visitor*) const override;
+  void Trace(Visitor*) const;
 
  private:
   ModelContext* modelContext();

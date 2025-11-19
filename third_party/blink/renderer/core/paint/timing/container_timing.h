@@ -19,8 +19,7 @@ namespace blink {
 // ContainerTiming is responsible for aggregating the text and image element
 // timing events for a given window.
 class CORE_EXPORT ContainerTiming final
-    : public GarbageCollected<ContainerTiming>,
-      public GarbageCollectedMixin {
+    : public GarbageCollected<ContainerTiming> {
  public:
   explicit ContainerTiming(LocalDOMWindow&);
   ContainerTiming(const ContainerTiming&) = delete;
@@ -43,7 +42,7 @@ class CORE_EXPORT ContainerTiming final
                         Element* element,
                         const gfx::RectF& intersection_rect);
 
-  void Trace(Visitor* visitor) const override;
+  void Trace(Visitor* visitor) const;
 
  private:
   static Element* GetContainerRoot(Element*);

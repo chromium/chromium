@@ -20,8 +20,7 @@ class LocalFrame;
 // Implementation of mojom::blink::TextSuggestionBackend
 class CORE_EXPORT TextSuggestionBackendImpl final
     : public GarbageCollected<TextSuggestionBackendImpl>,
-      public mojom::blink::TextSuggestionBackend,
-      public GarbageCollectedMixin {
+      public mojom::blink::TextSuggestionBackend {
  public:
   static TextSuggestionBackendImpl* From(LocalFrame&);
   static void Bind(LocalFrame*,
@@ -37,7 +36,7 @@ class CORE_EXPORT TextSuggestionBackendImpl final
   TextSuggestionBackendImpl& operator=(const TextSuggestionBackendImpl&) =
       delete;
 
-  void Trace(Visitor* visitor) const override;
+  void Trace(Visitor* visitor) const;
 
   void ApplySpellCheckSuggestion(const String& suggestion) final;
   void ApplyTextSuggestion(int32_t marker_tag, int32_t suggestion_index) final;

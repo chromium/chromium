@@ -55,8 +55,7 @@ enum class PasteMode;
 // A data object for holding data that would be in a clipboard or moved
 // during a drag-n-drop operation. This is the data that WebCore is aware
 // of and is not specific to a platform.
-class CORE_EXPORT DataObject : public GarbageCollected<DataObject>,
-                               public GarbageCollectedMixin {
+class CORE_EXPORT DataObject : public GarbageCollected<DataObject> {
  public:
   struct CORE_EXPORT Observer : public GarbageCollectedMixin {
     // Called whenever |item_list_| is modified. Note it can be called multiple
@@ -135,7 +134,7 @@ class CORE_EXPORT DataObject : public GarbageCollected<DataObject>,
   // whenever the underlying item_list_ changes.
   void AddObserver(Observer*);
 
-  void Trace(Visitor*) const override;
+  void Trace(Visitor*) const;
 
   WebDragData ToWebDragData();
 
