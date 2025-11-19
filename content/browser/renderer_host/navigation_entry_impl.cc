@@ -73,8 +73,9 @@ void RecursivelyGenerateFrameEntries(
   // TODO(creis): Grant access to this list for each process that renders
   // this page, even for OOPIFs.  Eventually keep track of a verified list of
   // files per frame, so that we only grant access to processes that need it.
-  if (referenced_files.size() > 0)
+  if (referenced_files.size() > 0) {
     page_state.referenced_files = referenced_files;
+  }
 
   page_state.top = state;
   std::string data;
@@ -138,8 +139,9 @@ void RecursivelyGenerateFrameEntries(
 }
 
 std::optional<std::u16string> UrlToOptionalString16(const GURL& url) {
-  if (!url.is_valid())
+  if (!url.is_valid()) {
     return std::nullopt;
+  }
   return base::UTF8ToUTF16(url.spec());
 }
 
@@ -199,8 +201,9 @@ void RecursivelyGenerateFrameState(
   // Copy the frame's files into the PageState's |referenced_files|.
   referenced_files->reserve(referenced_files->size() +
                             exploded_page_state.referenced_files.size());
-  for (auto& file : exploded_page_state.referenced_files)
+  for (auto& file : exploded_page_state.referenced_files) {
     referenced_files->emplace_back(file);
+  }
 
   state->children.resize(node->children.size());
   for (size_t i = 0; i < node->children.size(); ++i) {
@@ -218,8 +221,9 @@ bool InSameTreePosition(FrameTreeNode* frame_tree_node,
   FrameTreeNode* ftn = FrameTreeNode::From(frame_tree_node->parent());
   NavigationEntryImpl::TreeNode* current_node = node->parent;
   while (ftn && current_node) {
-    if (!current_node->MatchesFrame(ftn))
+    if (!current_node->MatchesFrame(ftn)) {
       return false;
+    }
 
     if ((!current_node->parent && ftn->parent()) ||
         (current_node->parent && !ftn->parent())) {
@@ -248,8 +252,9 @@ void RegisterOriginsRecursive(NavigationEntryImpl::TreeNode* node,
     }
   }
 
-  for (auto& child : node->children)
+  for (auto& child : node->children) {
     RegisterOriginsRecursive(child.get(), origin);
+  }
 }
 
 }  // namespace
@@ -269,8 +274,9 @@ NavigationEntryImpl::TreeNode::~TreeNode() {}
 bool NavigationEntryImpl::TreeNode::MatchesFrame(
     const FrameTreeNode* frame_tree_node) const {
   // The root node is for the main frame whether the unique name matches or not.
-  if (!parent)
+  if (!parent) {
     return frame_tree_node->IsMainFrame();
+  }
 
   // Otherwise check the unique name for subframes.
   return !frame_tree_node->IsMainFrame() &&
@@ -313,8 +319,9 @@ NavigationEntryImpl::TreeNode::CloneAndReplace(
     }
     if (!new_entry) {
       new_entry = frame_entry->Clone();
-      if (restore_context)
+      if (restore_context) {
         restore_context->AddFrameNavigationEntry(new_entry.get());
+      }
     }
   }
 
@@ -347,8 +354,9 @@ NavigationEntryImpl::TreeNode::CloneAndReplace(
         size_t index = j;
         // If the two lists of children are the same length, start looking at
         // the same index as |child|.
-        if (children.size() == ftn_child_count)
+        if (children.size() == ftn_child_count) {
           index = (i + j) % ftn_child_count;
+        }
 
         if (current_frame_tree_node->child_at(index)->unique_name() ==
             child->frame_entry->frame_unique_name()) {
@@ -560,8 +568,9 @@ void NavigationEntryImpl::SetPageState(const blink::PageState& state,
   // TODO(creis): It would be good to verify that this NavigationEntry hasn't
   // been loaded yet in cases that SetPageState is called while subframe
   // entries exist, but there's currently no way to check that.
-  if (!frame_tree_->children.empty())
+  if (!frame_tree_->children.empty()) {
     frame_tree_->children.clear();
+  }
 
   // If the PageState can't be parsed, store a clean PageState for the URL
   // without recursively creating subframe entries. This ensures that the
@@ -597,13 +606,15 @@ blink::PageState NavigationEntryImpl::GetPageState() const {
 const std::u16string& NavigationEntryImpl::GetTitleForDisplay() const {
   // Most pages have real titles. Don't even bother caching anything if this is
   // the case.
-  if (!title_.empty())
+  if (!title_.empty()) {
     return title_;
+  }
 
   // More complicated cases will use the URLs as the title. This result we will
   // cache since it's more complicated to compute.
-  if (!cached_display_title_.empty())
+  if (!cached_display_title_.empty()) {
     return cached_display_title_;
+  }
 
   // Use the virtual URL first if any, and fall back on using the real URL.
   std::u16string title;
@@ -624,15 +635,17 @@ const std::u16string& NavigationEntryImpl::GetTitleForDisplay() const {
     std::u16string::size_type refpos = title.find('#');
     std::u16string::size_type querypos = title.find('?');
     std::u16string::size_type lastpos;
-    if (refpos == std::u16string::npos)
+    if (refpos == std::u16string::npos) {
       lastpos = querypos;
-    else if (querypos == std::u16string::npos)
+    } else if (querypos == std::u16string::npos) {
       lastpos = refpos;
-    else
+    } else {
       lastpos = (refpos < querypos) ? refpos : querypos;
+    }
     std::u16string::size_type slashpos = title.rfind('/', lastpos);
-    if (slashpos != std::u16string::npos)
+    if (slashpos != std::u16string::npos) {
       title = title.substr(slashpos + 1);
+    }
 
   } else if (GetURL().SchemeIs(kChromeUIUntrustedScheme)) {
     // For chrome-untrusted:// URLs, leave title blank until the page loads.
@@ -768,8 +781,9 @@ std::string NavigationEntryImpl::GetExtraHeaders() const {
 void NavigationEntryImpl::AddExtraHeaders(
     const std::string& more_extra_headers) {
   DCHECK(!more_extra_headers.empty());
-  if (!extra_headers_.empty())
+  if (!extra_headers_.empty()) {
     extra_headers_ += "\r\n";
+  }
   extra_headers_ += more_extra_headers;
 }
 
@@ -1057,12 +1071,14 @@ const NavigationEntryImpl::TreeNode* NavigationEntryImpl::GetTreeNode(
   while (!work_queue.empty()) {
     node = work_queue.front();
     work_queue.pop();
-    if (node->MatchesFrame(frame_tree_node))
+    if (node->MatchesFrame(frame_tree_node)) {
       return node;
+    }
 
     // Enqueue any children and keep looking.
-    for (const auto& child : node->children)
+    for (const auto& child : node->children) {
       work_queue.push(child.get());
+    }
   }
   return nullptr;
 }
@@ -1153,8 +1169,9 @@ void NavigationEntryImpl::AddOrUpdateFrameEntry(
       // If the document of the FrameNavigationEntry is changing, we must clear
       // any child FrameNavigationEntries.
       if (child->frame_entry->document_sequence_number() !=
-          document_sequence_number)
+          document_sequence_number) {
         child->children.clear();
+      }
 
       // Update the existing FrameNavigationEntry (e.g., for replaceState).
       child->frame_entry->UpdateEntry(
@@ -1200,8 +1217,9 @@ void NavigationEntryImpl::ForEachFrameEntry(
     on_frame_entry(node->frame_entry.get());
 
     // Enqueue any children.
-    for (const auto& child : node->children)
+    for (const auto& child : node->children) {
       work_queue.push(child.get());
+    }
   }
 }
 
@@ -1229,8 +1247,9 @@ base::flat_map<std::string, bool> NavigationEntryImpl::GetSubframeUniqueNames(
               &exploded_page_state)) {
         blink::ExplodedFrameState frame_state = exploded_page_state.top;
         if (UTF16ToUTF8(frame_state.url_string.value_or(std::u16string())) ==
-            url::kAboutBlankURL)
+            url::kAboutBlankURL) {
           is_about_blank = true;
+        }
       }
 
       names[child->frame_entry->frame_unique_name()] = is_about_blank;
@@ -1244,8 +1263,9 @@ void NavigationEntryImpl::RemoveEntryForFrame(FrameTreeNode* frame_tree_node,
   DCHECK(!frame_tree_node->IsMainFrame());
 
   NavigationEntryImpl::TreeNode* node = GetTreeNode(frame_tree_node);
-  if (!node)
+  if (!node) {
     return;
+  }
 
   // Remove the |node| from the tree if either 1) |only_if_different_position|
   // was not asked for or 2) if it is not in the same position in the tree of
