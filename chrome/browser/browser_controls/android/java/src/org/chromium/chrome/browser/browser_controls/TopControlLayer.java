@@ -52,13 +52,6 @@ public interface TopControlLayer {
     default void onTopControlLayerHeightChanged(int topControlsHeight, int topControlsMinHeight) {}
 
     /**
-     * Called when Android controls visibility is changed.
-     *
-     * @see BrowserControlsStateProvider.Observer#onAndroidControlsVisibilityChanged(int)
-     */
-    default void onAndroidControlsVisibilityChanged(int visibility) {}
-
-    /**
      * Interface method to receive OffsetTag updates. Unlike bottom controls, top controls does not
      * have layers that has additional height that draws beyond its allocated height.
      *

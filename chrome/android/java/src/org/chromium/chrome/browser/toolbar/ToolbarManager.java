@@ -66,7 +66,6 @@ import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerT
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlType;
@@ -1188,8 +1187,10 @@ public class ToolbarManager
                         historyDelegate,
                         topControlsStacker,
                         homeButtonDisplay);
-        mTabStripTopControlLayer =
-                new TabStripTopControlLayer(mToolbar.getTabStripHeight(), mTopControlsStacker);
+        mTabStripTopControlLayer = new TabStripTopControlLayer(mToolbar.getTabStripHeight());
+        if (ChromeFeatureList.sTopControlsRefactor.isEnabled()) {
+            mTopControlsStacker.addControl(mTabStripTopControlLayer);
+        }
         mActionModeController =
                 new ActionModeController(
                         mActivity,
@@ -2410,10 +2411,6 @@ public class ToolbarManager
                     drawingInfo.progressBarBackgroundRect.offset(0, yOffset);
                 };
 
-        if (BrowserControlsUtils.isTopControlsRefactorOffsetEnabled()
-                && stripLayoutHelperManager != null) {
-            mTabStripTopControlLayer.initializeWithNative(stripLayoutHelperManager);
-        }
         mToolbar.initializeWithNative(
                 profile,
                 layoutManager::requestUpdate,
@@ -2634,7 +2631,7 @@ public class ToolbarManager
             mToolbar.removeOnAttachStateChangeListener(mAttachStateChangeListener);
             mAttachStateChangeListener = null;
         }
-        mTabStripTopControlLayer.destroy();
+        mTopControlsStacker.removeControl(mTabStripTopControlLayer);
         mToolbar.destroy();
         mToolbarLongPressMenuHandler.destroy();
 

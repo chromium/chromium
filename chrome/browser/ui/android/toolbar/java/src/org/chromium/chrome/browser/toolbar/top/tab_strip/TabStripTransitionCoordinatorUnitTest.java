@@ -1278,7 +1278,7 @@ public class TabStripTransitionCoordinatorUnitTest {
         public int heightRequested = NOTHING_OBSERVED;
 
         @Override
-        public void onTransitionRequested(int newHeight, boolean applyScrimOverlay) {
+        public void onTransitionRequested(int newHeight) {
             heightRequested = newHeight;
         }
 
