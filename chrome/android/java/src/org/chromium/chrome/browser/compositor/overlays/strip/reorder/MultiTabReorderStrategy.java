@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.compositor.overlays.strip.reorder;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.getEffectiveTabWidth;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -184,25 +185,98 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
                             oldIdealX,
                             oldScrollOffset,
                             oldStartMargin);
-
-            for (StripLayoutTab tab : tabsToReorder) {
-                tab.setOffsetX(offset);
-            }
-            // Anchor the rest of tabs around ordered tabs by setting offsetX.
-            setOffsetXForNonReorderedPartition(tabToReorder.getIsPinned());
-        } else {
-            boolean rtl = LocalizationUtils.isLayoutRtl();
-            float scrollOffsetDelta =
-                    MathUtils.flipSignIf(oldScrollOffset - mLastScrollOffset, rtl);
-            for (StripLayoutTab tab : mInteractingTabs) {
-                // If no reorder occurs, simply add deltaX and scrollOffsetDelta(Pinned tab only) to
-                // offsetX.
-                tab.setOffsetX(
-                        tab.getOffsetX() + deltaX + (tab.getIsPinned() ? scrollOffsetDelta : 0f));
-            }
         }
 
-        // TODO(crbug.com/441978834): Trim offsetX around the edges.
+        StripLayoutTab firstTabInBlock = mInteractingTabs.get(0);
+        StripLayoutTab lastTabInBlock = mInteractingTabs.get(mInteractingTabs.size() - 1);
+        if (firstTabInBlock == null || lastTabInBlock == null) return;
+
+        int firstTabIndex = StripLayoutUtils.findIndexForTab(stripTabs, firstTabInBlock.getTabId());
+        int lastTabIndex = StripLayoutUtils.findIndexForTab(stripTabs, lastTabInBlock.getTabId());
+        boolean isRtl = LocalizationUtils.isLayoutRtl();
+        StripLayoutView firstView = stripViews[0];
+        StripLayoutView lastView = stripViews[stripViews.length - 1];
+
+        // Case 1. If the tab block is at the strip's edge (first or last position), trim the
+        // movement offset based on the relevant margin(e.g. start, trailing, or group drag out
+        // threshold).
+        if (firstTabIndex == 0 || lastTabIndex == stripTabs.length - 1) {
+            if (firstTabIndex == 0) {
+                float limit =
+                        (firstView instanceof StripLayoutGroupTitle groupTitle)
+                                ? getDragOutThreshold(groupTitle, /* towardEnd= */ false)
+                                : mScrollDelegate.getReorderStartMargin();
+                offset = isRtl ? Math.min(limit, offset) : Math.max(-limit, offset);
+                for (StripLayoutTab tab : mInteractingTabs) {
+                    if (Boolean.TRUE.equals(mHasMixedPinState)
+                            && tab.getIsPinned() != firstTabInBlock.getIsPinned()) {
+                        setOffsetXForNonReorderedPartition(firstTabInBlock.getIsPinned());
+                        break;
+                    } else {
+                        tab.setOffsetX(offset);
+                    }
+                }
+            }
+            if (lastTabIndex == stripTabs.length - 1) {
+                offset =
+                        isRtl
+                                ? Math.max(-lastTabInBlock.getTrailingMargin(), offset)
+                                : Math.min(lastTabInBlock.getTrailingMargin(), offset);
+                for (int i = mInteractingTabs.size() - 1; i >= 0; i--) {
+                    StripLayoutTab tab = mInteractingTabs.get(i);
+                    if (Boolean.TRUE.equals(mHasMixedPinState)
+                            && tab.getIsPinned() != lastTabInBlock.getIsPinned()) {
+                        setOffsetXForNonReorderedPartition(lastTabInBlock.getIsPinned());
+                        break;
+                    } else {
+                        tab.setOffsetX(offset);
+                    }
+                }
+            }
+        } else {
+            // Case 2. If the tab strip has both pinned and unpinned tabs, clamp the x-offset when
+            // dragging an unpinned block toward the start or a pinned block toward the end. The
+            // limit is determined by the boundary of the respective first or last view on the tab
+            // strip.
+            boolean towardEnd = isOffsetTowardEnd(offset);
+            boolean isDraggingUnpinnedToPinnedStart =
+                    !mInteractingTabs.get(0).getIsPinned() && !towardEnd;
+            boolean isDraggingPinnedToUnpinnedEnd =
+                    mInteractingTabs.get(mInteractingTabs.size() - 1).getIsPinned() && towardEnd;
+            if (isDraggingUnpinnedToPinnedStart) {
+                float limit = getDragOffsetLimit(firstTabInBlock, firstView, offset > 0);
+                offset = isRtl ? Math.min(limit, offset) : Math.max(limit, offset);
+                for (StripLayoutTab tab : mInteractingTabs) {
+                    tab.setOffsetX(offset);
+                }
+            } else if (isDraggingPinnedToUnpinnedEnd) {
+                float limit = getDragOffsetLimit(lastTabInBlock, lastView, offset > 0);
+                offset = isRtl ? Math.max(limit, offset) : Math.min(limit, offset);
+                for (StripLayoutTab tab : mInteractingTabs) {
+                    tab.setOffsetX(offset);
+                }
+            } else {
+                // case 3. Drag is not near a strip edge and not crossing the pinned/unpinned
+                // boundary, so apply the x-offset without clamping.
+                float scrollOffsetDelta =
+                        MathUtils.flipSignIf(oldScrollOffset - mLastScrollOffset, isRtl);
+                if (reordered) {
+                    for (StripLayoutTab tab : tabsToReorder) {
+                        tab.setOffsetX(offset);
+                    }
+                    setOffsetXForNonReorderedPartition(tabToReorder.getIsPinned());
+                } else {
+                    for (StripLayoutTab tab : mInteractingTabs) {
+                        // If no reorder occurs, simply include deltaX and scrollOffsetDelta(Pinned
+                        // tab only) to x-offset.
+                        tab.setOffsetX(
+                                tab.getOffsetX()
+                                        + deltaX
+                                        + (tab.getIsPinned() ? scrollOffsetDelta : 0f));
+                    }
+                }
+            }
+        }
         mLastScrollOffset = oldScrollOffset;
     }
 

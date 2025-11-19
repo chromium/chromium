@@ -152,17 +152,48 @@ public class TabReorderStrategy extends ReorderStrategyBase {
         // out of a group toward the edge of the strip.
         // TODO(crbug.com/331854162): Refactor to set mStripStartMarginForReorder and the final
         //  tab's trailing margin.
+        StripLayoutView firstView = stripViews[0];
+        StripLayoutView lastView = stripViews[stripViews.length - 1];
         int newIndex = StripLayoutUtils.findIndexForTab(stripTabs, mInteractingTab.getTabId());
-        if (newIndex == 0) {
-            float limit =
-                    (stripViews[0] instanceof StripLayoutGroupTitle groupTitle)
-                            ? getDragOutThreshold(groupTitle, /* towardEnd= */ false)
-                            : mScrollDelegate.getReorderStartMargin();
-            offset = isRtl ? Math.min(limit, offset) : Math.max(-limit, offset);
-        }
-        if (newIndex == stripTabs.length - 1) {
-            float limit = stripTabs[newIndex].getTrailingMargin();
-            offset = isRtl ? Math.max(-limit, offset) : Math.min(limit, offset);
+
+        // Case 1. if the tab is at the strip's edge(first or last position) trim the x-offset based
+        // on the relevant margin(e.g. start, trailing, or group drag out threshold).
+        if (newIndex == 0 || newIndex == stripTabs.length - 1) {
+            if (newIndex == 0) {
+                float limit =
+                        (firstView instanceof StripLayoutGroupTitle groupTitle)
+                                ? getDragOutThreshold(groupTitle, /* towardEnd= */ false)
+                                : mScrollDelegate.getReorderStartMargin();
+                offset = isRtl ? Math.min(limit, offset) : Math.max(-limit, offset);
+            }
+            if (newIndex == stripTabs.length - 1) {
+                float limit = stripTabs[newIndex].getTrailingMargin();
+                offset = isRtl ? Math.max(-limit, offset) : Math.min(limit, offset);
+            }
+        } else {
+            // case 2. If the tab strip has both pinned and unpinned tabs, clamp the offset when
+            // dragging an unpinned tab toward the start or a pinned tab toward the end. The
+            // limit is determined by the boundary of the respective first or last view on the tab
+            // strip.
+            boolean towardEnd = isOffsetTowardEnd(offset);
+            boolean isDraggingUnpinnedTabToPinnedStart =
+                    !mInteractingTab.getIsPinned()
+                            && (firstView instanceof StripLayoutTab firstTab
+                                    && firstTab.getIsPinned());
+            if (isDraggingUnpinnedTabToPinnedStart && !towardEnd) {
+                float limit = getDragOffsetLimit(mInteractingTab, firstView, offset > 0);
+                offset = isRtl ? Math.min(limit, offset) : Math.max(limit, offset);
+            }
+            boolean isLastViewGroupOrUnpinnedTab =
+                    lastView instanceof StripLayoutGroupTitle
+                            || (lastView instanceof StripLayoutTab lastTab
+                                    && !lastTab.getIsPinned());
+            boolean isDraggingPinnedTabToUnpinnedEnd =
+                    mInteractingTab.getIsPinned() && isLastViewGroupOrUnpinnedTab;
+            if (isDraggingPinnedTabToUnpinnedEnd && towardEnd) {
+                float limit = getDragOffsetLimit(mInteractingTab, lastView, offset > 0);
+                offset = isRtl ? Math.max(limit, offset) : Math.min(limit, offset);
+            }
         }
         mInteractingTab.setOffsetX(offset);
     }

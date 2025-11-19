@@ -142,11 +142,28 @@ public class GroupReorderStrategy extends ReorderStrategyBase {
         int firstTabIndex =
                 StripLayoutUtils.findIndexForTab(stripTabs, mFirstTabInGroup.getTabId());
         int lastTabIndex = StripLayoutUtils.findIndexForTab(stripTabs, mLastTabInGroup.getTabId());
-        if (firstTabIndex == 0) {
-            offset = LocalizationUtils.isLayoutRtl() ? Math.min(0, offset) : Math.max(0, offset);
-        }
-        if (lastTabIndex == stripTabs.length - 1) {
-            offset = LocalizationUtils.isLayoutRtl() ? Math.max(0, offset) : Math.min(0, offset);
+
+        // Case 1. if the group is at the strip's edge(first or last position) trim the x-offset
+        // based on the relevant margin(e.g. start, trailing, or group drag out threshold).
+        boolean isRtl = LocalizationUtils.isLayoutRtl();
+        if (firstTabIndex == 0 || lastTabIndex == stripTabs.length - 1) {
+            if (firstTabIndex == 0) {
+                offset = isRtl ? Math.min(0, offset) : Math.max(0, offset);
+            }
+            if (lastTabIndex == stripTabs.length - 1) {
+                offset = isRtl ? Math.max(0, offset) : Math.min(0, offset);
+            }
+        } else {
+            // Case 2. If the tab strip has both pinned and unpinned tabs, clamp the offset when
+            // dragging the group toward the start. The limit is determined by the boundary of the
+            // first view on the tab strip.
+            StripLayoutView firstView = stripViews[0];
+            boolean firstTabPinned =
+                    firstView instanceof StripLayoutTab firstTab && firstTab.getIsPinned();
+            if (firstTabPinned && !isOffsetTowardEnd(offset)) {
+                float limit = getDragOffsetLimit(mInteractingViews.get(0), firstView, offset > 0);
+                offset = isRtl ? Math.min(limit, offset) : Math.max(limit, offset);
+            }
         }
         for (StripLayoutView view : mInteractingViews) {
             view.setOffsetX(offset);

@@ -221,6 +221,7 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
 
     private void bringViewOntoStrip(StripLayoutView draggedView) {
         draggedView.setIsDraggedOffStrip(false);
+        draggedView.setDrawY(0f);
         draggedView.setOffsetY(0);
     }
 
@@ -498,8 +499,6 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
             mStripUpdateDelegate.setCompositorButtonsVisible(true);
 
             // 2. Store reorder state, then exit reorder within strip.
-            // TODO(crbug.com/441978834): Ensure the tabs dragged back onto strip are
-            // contiguous.
             mLastOffsetX = mViewBeingDragged.getOffsetX();
             super.stopReorderMode(stripViews, groupTitles);
 

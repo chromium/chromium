@@ -389,6 +389,13 @@ public class MultiTabReorderStrategyTest extends ReorderStrategyTestBase {
         when(mModel.findFirstNonPinnedTabIndex()).thenReturn(firstNonPinnedTabIndex);
         startReorder(mUngroupedTab2);
 
+        // Manually reorders the first tab in block to the second position, this should occur in
+        // MultiTabReorderStrategy#gatherBlock, which triggers the mModel#moveTab to move the pinned
+        // tab to last pinned position and subsequently triggers a #rebuildStripTab.
+        StripLayoutTab temp = mStripTabs[0];
+        mStripTabs[0] = mStripTabs[1];
+        mStripTabs[1] = temp;
+
         // Verify the unpinned tabs are reordered successful and pinned tab offsetX correctly
         // updated(should anchored to the first unpinned tab).
         float rebuildDeltaX = TAB_WIDTH;

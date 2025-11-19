@@ -519,6 +519,22 @@ abstract class ReorderStrategyBase implements ReorderStrategy {
         return (offset >= 0) ^ LocalizationUtils.isLayoutRtl();
     }
 
+    /**
+     * Returns the maximum allowed horizontal drag offset for the interactingView, effectively
+     * clamping its movement so it doesn't move past the start or end view on the tab strip.
+     *
+     * @param interactingView The view currently being dragged.
+     * @param boundaryView The view defining the boundary of the drag (e.g. first view or last view
+     *     on the tab strip).
+     * @param toRight {@code true} if the drag direction is toward the right of the strip.
+     */
+    protected float getDragOffsetLimit(
+            StripLayoutView interactingView, StripLayoutView boundaryView, boolean toRight) {
+        float boundaryX = boundaryView.getIdealX();
+        if (toRight) boundaryX += (boundaryView.getWidth() - interactingView.getWidth());
+        return boundaryX - interactingView.getIdealX();
+    }
+
     // ============================================================================================
     // Animation helpers
     // ============================================================================================
