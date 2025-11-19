@@ -11429,6 +11429,22 @@
             ]
         }
     ],
+    "GlicEnableMultiInstanceBasedOnTier": [
+        {
+            "platforms": [
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GlicEnableMultiInstanceBasedOnTier"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicEntrypointVariations": [
         {
             "platforms": [
