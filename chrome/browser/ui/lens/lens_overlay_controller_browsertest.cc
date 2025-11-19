@@ -1381,7 +1381,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   auto* fake_query_controller =
       static_cast<lens::TestLensOverlayQueryController*>(
-          controller->get_lens_overlay_query_controller_for_testing());
+          GetLensOverlayQueryController());
   EXPECT_TRUE(fake_query_controller->last_queried_region_bytes());
   UNSAFE_TODO(EXPECT_TRUE(
       memcmp(fake_query_controller->last_queried_region_bytes()->getPixels(),
@@ -1681,7 +1681,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   auto* fake_query_controller =
       static_cast<lens::TestLensOverlayQueryController*>(
-          controller->get_lens_overlay_query_controller_for_testing());
+          GetLensOverlayQueryController());
   EXPECT_EQ(fake_query_controller->last_queried_text(), text_query);
   EXPECT_EQ(fake_query_controller->last_lens_selection_type(),
             lens::SELECT_TEXT_HIGHLIGHT);
@@ -1727,7 +1727,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   auto* fake_query_controller =
       static_cast<lens::TestLensOverlayQueryController*>(
-          controller->get_lens_overlay_query_controller_for_testing());
+          GetLensOverlayQueryController());
   EXPECT_EQ(fake_query_controller->last_queried_text(), text_query);
   EXPECT_EQ(fake_query_controller->last_lens_selection_type(),
             lens::SELECT_TRANSLATED_TEXT);
@@ -1777,7 +1777,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   auto* fake_query_controller =
       static_cast<lens::TestLensOverlayQueryController*>(
-          controller->get_lens_overlay_query_controller_for_testing());
+          GetLensOverlayQueryController());
   EXPECT_EQ(fake_query_controller->last_queried_text(), text_query);
   EXPECT_EQ(fake_query_controller->last_lens_selection_type(),
             lens::TRANSLATE_CHIP);
@@ -1835,7 +1835,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   auto* fake_query_controller =
       static_cast<lens::TestLensOverlayQueryController*>(
-          controller->get_lens_overlay_query_controller_for_testing());
+          GetLensOverlayQueryController());
   EXPECT_EQ(fake_query_controller->last_queried_text(), query);
   EXPECT_EQ(fake_query_controller->last_lens_selection_type(),
             lens::SYMBOLIC_MATH_OBJECT);
@@ -1880,7 +1880,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   std::string target = "fr";
   auto* fake_query_controller =
       static_cast<lens::TestLensOverlayQueryController*>(
-          controller->get_lens_overlay_query_controller_for_testing());
+          GetLensOverlayQueryController());
   fake_query_controller->set_fake_objects_response(
       CreateTestObjectsResponse(/*is_translate=*/true));
   controller->IssueTranslateFullPageRequestForTesting(source, target);
@@ -3396,7 +3396,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Verify page content was included as bytes in the query.
   auto* fake_query_controller =
       static_cast<lens::TestLensOverlayQueryController*>(
-          controller->get_lens_overlay_query_controller_for_testing());
+          GetLensOverlayQueryController());
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return fake_query_controller->last_sent_page_content_payload()
                .content()
@@ -3711,7 +3711,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       controller->GetSidePanelWebContentsForTesting());
   auto* fake_query_controller =
       static_cast<lens::TestLensOverlayQueryController*>(
-          controller->get_lens_overlay_query_controller_for_testing());
+          GetLensOverlayQueryController());
   fake_query_controller->ResetTestingState();
   GetLensOverlaySidePanelCoordinator()->PopAndLoadQueryFromHistory();
 
@@ -3797,7 +3797,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_TRUE(controller->GetOverlayViewForTesting()->GetVisible());
   auto* fake_query_controller =
       static_cast<lens::TestLensOverlayQueryController*>(
-          controller->get_lens_overlay_query_controller_for_testing());
+          GetLensOverlayQueryController());
   EXPECT_EQ(fake_query_controller->last_lens_selection_type(),
             lens::INJECTED_IMAGE);
 
@@ -4006,7 +4006,7 @@ IN_PROC_BROWSER_TEST_F(
   // Popping a query with a region should resend a multimodal request.
   auto* fake_query_controller =
       static_cast<lens::TestLensOverlayQueryController*>(
-          controller->get_lens_overlay_query_controller_for_testing());
+          GetLensOverlayQueryController());
   fake_query_controller->ResetTestingState();
 
   content::TestNavigationObserver pop_observer(
@@ -4347,7 +4347,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   auto* fake_query_controller =
       static_cast<lens::TestLensOverlayQueryController*>(
-          controller->get_lens_overlay_query_controller_for_testing());
+          GetLensOverlayQueryController());
   EXPECT_THAT(fake_query_controller->last_user_action(),
               testing::Optional(lens::mojom::UserAction::kRegionSelection));
 }
@@ -4957,7 +4957,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   auto* fake_query_controller =
       static_cast<lens::TestLensOverlayQueryController*>(
-          controller->get_lens_overlay_query_controller_for_testing());
+          GetLensOverlayQueryController());
 
   EXPECT_EQ(fake_query_controller->latency_gen_204_counter(
                 lens::LensOverlayGen204Controller::LatencyType::
@@ -5316,6 +5316,10 @@ class LensOverlayControllerBrowserPDFTest
     return LensSearchController::From(browser()->GetActiveTabInterface());
   }
 
+  lens::LensOverlayQueryController* GetLensOverlayQueryController() {
+    return GetLensSearchController()->lens_overlay_query_controller();
+  }
+
   lens::LensOverlaySidePanelCoordinator* GetLensOverlaySidePanelCoordinator() {
     return GetLensSearchController()->lens_overlay_side_panel_coordinator();
   }
@@ -5431,7 +5435,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFTest,
   // Verify PDF bytes were excluded from the query.
   auto* fake_query_controller =
       static_cast<lens::TestLensOverlayQueryController*>(
-          controller->get_lens_overlay_query_controller_for_testing());
+          GetLensOverlayQueryController());
   EXPECT_THAT(
       lens::Payload(),
       EqualsProto(fake_query_controller->last_sent_page_content_payload()));
@@ -5576,7 +5580,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
   // Verify PDF bytes were included in the query.
   auto* fake_query_controller =
       static_cast<lens::TestLensOverlayQueryController*>(
-          controller->get_lens_overlay_query_controller_for_testing());
+          GetLensOverlayQueryController());
 
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return fake_query_controller->last_sent_page_content_payload()
@@ -5617,7 +5621,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
   // Verify pdf content was included in the query.
   auto* fake_query_controller =
       static_cast<lens::TestLensOverlayQueryController*>(
-          controller->get_lens_overlay_query_controller_for_testing());
+          GetLensOverlayQueryController());
   ASSERT_TRUE(base::test::RunUntil([&] {
     return fake_query_controller->last_sent_partial_content().pages_size() == 1;
   }));
@@ -5648,7 +5652,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
   // Verify PDF bytes were included in the query.
   auto* fake_query_controller =
       static_cast<lens::TestLensOverlayQueryController*>(
-          controller->get_lens_overlay_query_controller_for_testing());
+          GetLensOverlayQueryController());
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return fake_query_controller->last_sent_page_url() == url; }));
 }
@@ -5674,7 +5678,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
   // Verify PDF page number was included in the query.
   auto* fake_query_controller =
       static_cast<lens::TestLensOverlayQueryController*>(
-          controller->get_lens_overlay_query_controller_for_testing());
+          GetLensOverlayQueryController());
   ASSERT_EQ(0, fake_query_controller->sent_full_image_objects_request()
                    .viewport_request_context()
                    .pdf_page_number());
@@ -5710,7 +5714,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
   // Reset mock query controller so we can verify the new request.
   auto* fake_query_controller =
       static_cast<lens::TestLensOverlayQueryController*>(
-          controller->get_lens_overlay_query_controller_for_testing());
+          GetLensOverlayQueryController());
   fake_query_controller->ResetTestingState();
 
   // Change page to new PDF.
@@ -5790,7 +5794,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
   // Verify PDF bytes were not included in the query.
   auto* fake_query_controller =
       static_cast<lens::TestLensOverlayQueryController*>(
-          controller->get_lens_overlay_query_controller_for_testing());
+          GetLensOverlayQueryController());
   EXPECT_THAT(
       lens::Payload(),
       EqualsProto(fake_query_controller->last_sent_page_content_payload()));
@@ -5836,7 +5840,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
   // Grab the fake query controller.
   auto* fake_query_controller =
       static_cast<lens::TestLensOverlayQueryController*>(
-          controller->get_lens_overlay_query_controller_for_testing());
+          GetLensOverlayQueryController());
 
   // Verify the current number of requests is as expected. Both requests happen
   // async, so need to wait for both to be sent before continuing to prevent
@@ -6067,7 +6071,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
 
   auto* fake_query_controller =
       static_cast<lens::TestLensOverlayQueryController*>(
-          controller->get_lens_overlay_query_controller_for_testing());
+          GetLensOverlayQueryController());
   fake_query_controller->ResetTestingState();
 
   // Change page to a PDF.
@@ -6231,7 +6235,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFUpdatedContentFieldsTest,
   // Verify pdf content was included in the query.
   auto* fake_query_controller =
       static_cast<lens::TestLensOverlayQueryController*>(
-          controller->get_lens_overlay_query_controller_for_testing());
+          GetLensOverlayQueryController());
   ASSERT_TRUE(base::test::RunUntil([&] {
     return fake_query_controller->last_sent_partial_content().pages_size() == 1;
   }));
@@ -6286,7 +6290,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFIncreaseLimitTest,
   // Verify the first two pages were sent, excluding the last page of the PDF.
   auto* fake_query_controller =
       static_cast<lens::TestLensOverlayQueryController*>(
-          controller->get_lens_overlay_query_controller_for_testing());
+          GetLensOverlayQueryController());
 
   ASSERT_TRUE(base::test::RunUntil([&] {
     return 2 == fake_query_controller->last_sent_partial_content().pages_size();
@@ -6459,7 +6463,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserWithPixelsTest,
 
   auto* fake_query_controller =
       static_cast<lens::TestLensOverlayQueryController*>(
-          controller->get_lens_overlay_query_controller_for_testing());
+          GetLensOverlayQueryController());
 
   auto& boxes = fake_query_controller->last_sent_significant_region_boxes();
   EXPECT_EQ(boxes.size(), 1UL);
@@ -6603,7 +6607,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Verify inner text was incluced as bytes in the the query.
   auto* fake_query_controller =
       static_cast<lens::TestLensOverlayQueryController*>(
-          controller->get_lens_overlay_query_controller_for_testing());
+          GetLensOverlayQueryController());
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return fake_query_controller->last_sent_page_content_payload()
                .content()
@@ -6650,7 +6654,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Reset mock query controller so we can verify the new request.
   auto* fake_query_controller =
       static_cast<lens::TestLensOverlayQueryController*>(
-          controller->get_lens_overlay_query_controller_for_testing());
+          GetLensOverlayQueryController());
   fake_query_controller->ResetTestingState();
 
   // Change page.
@@ -6712,7 +6716,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Verify page content was included as bytes in the query.
   auto* fake_query_controller =
       static_cast<lens::TestLensOverlayQueryController*>(
-          controller->get_lens_overlay_query_controller_for_testing());
+          GetLensOverlayQueryController());
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return fake_query_controller->last_sent_page_content_payload()
                .content()
@@ -6788,7 +6792,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Verify inner HTML was included as bytes in the the query.
   auto* fake_query_controller =
       static_cast<lens::TestLensOverlayQueryController*>(
-          controller->get_lens_overlay_query_controller_for_testing());
+          GetLensOverlayQueryController());
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return fake_query_controller->last_sent_page_content_payload()
                .content()
@@ -6853,7 +6857,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Verify inner HTML was included as bytes in the the query.
   auto* fake_query_controller =
       static_cast<lens::TestLensOverlayQueryController*>(
-          controller->get_lens_overlay_query_controller_for_testing());
+          GetLensOverlayQueryController());
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return fake_query_controller->last_sent_page_content_payload()
                .content()
@@ -6915,7 +6919,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Verify inner HTML was included as bytes in the the query.
   auto* fake_query_controller =
       static_cast<lens::TestLensOverlayQueryController*>(
-          controller->get_lens_overlay_query_controller_for_testing());
+          GetLensOverlayQueryController());
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return fake_query_controller->last_sent_page_content_payload()
                .content()
@@ -7060,7 +7064,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Verify inner HTML was included as bytes in the the query.
   auto* fake_query_controller =
       static_cast<lens::TestLensOverlayQueryController*>(
-          controller->get_lens_overlay_query_controller_for_testing());
+          GetLensOverlayQueryController());
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return fake_query_controller->last_sent_page_content_payload()
                .content()
@@ -7173,7 +7177,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Verify inner HTML was included as bytes in the the query.
   auto* fake_query_controller =
       static_cast<lens::TestLensOverlayQueryController*>(
-          controller->get_lens_overlay_query_controller_for_testing());
+          GetLensOverlayQueryController());
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return fake_query_controller->last_sent_page_content_payload()
                .content()
@@ -7459,7 +7463,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Reset mock query controller so we can verify the new request.
   auto* fake_query_controller =
       static_cast<lens::TestLensOverlayQueryController*>(
-          controller->get_lens_overlay_query_controller_for_testing());
+          GetLensOverlayQueryController());
   fake_query_controller->ResetTestingState();
 
   // Issue a new searchbox query.
@@ -7521,7 +7525,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // An interaction request should have been sent for each contextualized query.
   auto* fake_query_controller =
       static_cast<lens::TestLensOverlayQueryController*>(
-          controller->get_lens_overlay_query_controller_for_testing());
+          GetLensOverlayQueryController());
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return fake_query_controller->num_interaction_requests_sent() == 3;
   }));
@@ -7585,7 +7589,7 @@ IN_PROC_BROWSER_TEST_F(
   // suppressed.
   auto* fake_query_controller =
       static_cast<lens::TestLensOverlayQueryController*>(
-          controller->get_lens_overlay_query_controller_for_testing());
+          GetLensOverlayQueryController());
   ASSERT_EQ(fake_query_controller->num_interaction_requests_sent(), 0);
 }
 
@@ -7643,7 +7647,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Reset mock query controller so we can verify the new request.
   auto* fake_query_controller =
       static_cast<lens::TestLensOverlayQueryController*>(
-          controller->get_lens_overlay_query_controller_for_testing());
+          GetLensOverlayQueryController());
   fake_query_controller->ResetTestingState();
 
   // Change page.
@@ -7693,7 +7697,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Reset mock query controller so we can verify the new request.
   auto* fake_query_controller =
       static_cast<lens::TestLensOverlayQueryController*>(
-          controller->get_lens_overlay_query_controller_for_testing());
+          GetLensOverlayQueryController());
   fake_query_controller->ResetTestingState();
 
   // Issue a new searchbox query.
@@ -7949,7 +7953,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerTextEnabledSmallByteLimitTest,
   // Verify innerText bytes were not included in the query.
   auto* fake_query_controller =
       static_cast<lens::TestLensOverlayQueryController*>(
-          controller->get_lens_overlay_query_controller_for_testing());
+          GetLensOverlayQueryController());
   EXPECT_THAT(
       lens::Payload(),
       EqualsProto(fake_query_controller->last_sent_page_content_payload()));
@@ -7997,7 +8001,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       embedded_test_server()->GetURL(kDocumentWithNonAsciiCharacters);
   auto* fake_query_controller =
       static_cast<lens::TestLensOverlayQueryController*>(
-          controller->get_lens_overlay_query_controller_for_testing());
+          GetLensOverlayQueryController());
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return fake_query_controller->last_sent_page_url() == expected_url;
   }));
@@ -8181,7 +8185,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerTextAndApc,
   // Verify inner HTML was included as bytes in the the query.
   auto* fake_query_controller =
       static_cast<lens::TestLensOverlayQueryController*>(
-          controller->get_lens_overlay_query_controller_for_testing());
+          GetLensOverlayQueryController());
   // Run until the page content is sent.
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return fake_query_controller->last_sent_page_content_payload()
@@ -8383,7 +8387,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerTextAndApc,
   // No page data or screenshot should have been sent.
   auto* fake_query_controller =
       static_cast<lens::TestLensOverlayQueryController*>(
-          controller->get_lens_overlay_query_controller_for_testing());
+          GetLensOverlayQueryController());
   const auto last_sent_content =
       fake_query_controller->last_sent_page_content_payload().content();
   EXPECT_EQ(last_sent_content.content_data().size(), 0);
@@ -8531,7 +8535,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerContextualFeaturesDisabledTest,
   // Verify no bytes were excluded from the query.
   auto* fake_query_controller =
       static_cast<lens::TestLensOverlayQueryController*>(
-          controller->get_lens_overlay_query_controller_for_testing());
+          GetLensOverlayQueryController());
   EXPECT_THAT(
       lens::Payload(),
       EqualsProto(fake_query_controller->last_sent_page_content_payload()));
@@ -8717,7 +8721,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerOverlaySearchbox,
   // Wait for the bytes to be uploaded before issuing the request.
   auto* fake_query_controller =
       static_cast<lens::TestLensOverlayQueryController*>(
-          controller->get_lens_overlay_query_controller_for_testing());
+          GetLensOverlayQueryController());
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return fake_query_controller->last_sent_page_content_payload()
                .content()
@@ -9476,7 +9480,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerReinvocationBrowserTest,
   // screenshot.
   auto* fake_query_controller =
       static_cast<lens::TestLensOverlayQueryController*>(
-          controller->get_lens_overlay_query_controller_for_testing());
+          GetLensOverlayQueryController());
   fake_query_controller->ResetTestingState();
 
   auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
@@ -9532,7 +9536,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerReinvocationBrowserTest,
       side_panel_web_contents->GetLastCommittedURL();
 
   auto* query_controller = static_cast<lens::TestLensOverlayQueryController*>(
-      controller->get_lens_overlay_query_controller_for_testing());
+      GetLensOverlayQueryController());
   std::optional<lens::LensOverlayVisualSearchInteractionData> vsint_before;
   ASSERT_TRUE(base::test::RunUntil([&]() {
     vsint_before = query_controller->GetVisualSearchInteractionData();
@@ -9798,7 +9802,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerReinvocationBrowserTest,
 
   // The selection type should be REGION_SEARCH at this point.
   auto* query_controller = static_cast<lens::TestLensOverlayQueryController*>(
-      controller->get_lens_overlay_query_controller_for_testing());
+      GetLensOverlayQueryController());
   EXPECT_EQ(query_controller->last_lens_selection_type(), lens::REGION_SEARCH);
   query_controller->ResetTestingState();
 

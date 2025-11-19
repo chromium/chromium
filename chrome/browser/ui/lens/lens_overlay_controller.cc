@@ -363,10 +363,7 @@ void LensOverlayController::CloseUI(
   // it gets cleaned up to prevent dangling ptrs. This needs to be done even
   // when the overlay state is kOff because the overlay may have been used for
   // contextual suggestions.
-  if (lens_overlay_query_controller_) {
-    lens_overlay_query_controller_->ResetPageContentData();
-  }
-  lens_overlay_query_controller_ = nullptr;
+  GetLensOverlayQueryController()->ResetPageContentData();
 
   if (state_ == State::kOff) {
     return;
@@ -683,8 +680,8 @@ void LensOverlayController::IssueTranslateFullPageRequest(
   initialization_data_->translate_options_ =
       lens::TranslateOptions(source_language, target_language);
 
-  lens_overlay_query_controller_->SendFullPageTranslateQuery(source_language,
-                                                             target_language);
+  GetLensOverlayQueryController()->SendFullPageTranslateQuery(source_language,
+                                                              target_language);
   MaybeLaunchSurvey();
 }
 
@@ -700,7 +697,7 @@ void LensOverlayController::IssueEndTranslateModeRequest() {
   lens_selection_type_ = lens::UNKNOWN_SELECTION_TYPE;
   initialization_data_->selected_text_.reset();
   initialization_data_->translate_options_.reset();
-  lens_overlay_query_controller_->SendEndTranslateModeQuery();
+  GetLensOverlayQueryController()->SendEndTranslateModeQuery();
 }
 
 void LensOverlayController::NotifyOverlayInitialized() {
@@ -739,13 +736,13 @@ void LensOverlayController::RecordUkmAndTaskCompletionForLensOverlayInteraction(
   ukm::builders::Lens_Overlay_Overlay_UserAction(source_id)
       .SetUserAction(static_cast<int64_t>(user_action))
       .Record(ukm::UkmRecorder::Get());
-  lens_overlay_query_controller_->SendTaskCompletionGen204IfEnabled(
+  GetLensOverlayQueryController()->SendTaskCompletionGen204IfEnabled(
       user_action);
 }
 
 void LensOverlayController::RecordLensOverlaySemanticEvent(
     lens::mojom::SemanticEvent event) {
-  lens_overlay_query_controller_->SendSemanticEventGen204IfEnabled(event);
+  GetLensOverlayQueryController()->SendSemanticEventGen204IfEnabled(event);
 }
 
 void LensOverlayController::SaveAsImage(
@@ -924,8 +921,7 @@ bool LensOverlayController::IsUrlEligibleForTutorialIPHForTesting(
 }
 
 void LensOverlayController::ShowUI(
-    lens::LensOverlayInvocationSource invocation_source,
-    lens::LensOverlayQueryController* lens_overlay_query_controller) {
+    lens::LensOverlayInvocationSource invocation_source) {
   // If UI is already showing or in the process of showing, do nothing.
   if (state_ != State::kOff && state_ != State::kHidden) {
     return;
@@ -960,7 +956,6 @@ void LensOverlayController::ShowUI(
 
   // Store reference for later use.
   invocation_source_ = invocation_source;
-  lens_overlay_query_controller_ = lens_overlay_query_controller;
 
   Profile* profile =
       Profile::FromBrowserContext(tab_->GetContents()->GetBrowserContext());
@@ -1064,21 +1059,19 @@ void LensOverlayController::ShowUI(
 void LensOverlayController::IssueTextSearchRequest(
     std::string query_text,
     std::map<std::string, std::string> additional_query_parameters,
-    lens::LensOverlayQueryController* lens_overlay_query_controller,
     AutocompleteMatchType::Type match_type,
     bool is_zero_prefix_suggestion,
     lens::LensOverlayInvocationSource invocation_source) {
   IssueTextSearchRequestInner(
       /*query_start_time=*/base::Time::Now(), query_text,
-      additional_query_parameters, lens_overlay_query_controller, match_type,
-      is_zero_prefix_suggestion, invocation_source);
+      additional_query_parameters, match_type, is_zero_prefix_suggestion,
+      invocation_source);
 }
 
 void LensOverlayController::IssueTextSearchRequestInner(
     base::Time query_start_time,
     std::string query_text,
     std::map<std::string, std::string> additional_query_parameters,
-    lens::LensOverlayQueryController* lens_overlay_query_controller,
     AutocompleteMatchType::Type match_type,
     bool is_zero_prefix_suggestion,
     lens::LensOverlayInvocationSource invocation_source) {
@@ -1097,10 +1090,6 @@ void LensOverlayController::IssueTextSearchRequestInner(
     // TODO(crbug.com/439082713) Decouple the contextualization controller from
     // the overlay controller so that the overlay controller is less dependent
     // on it for proper functioning.
-    // Set the query controller if it is not already set. This happens in cases
-    // when a contextual request is made but the overlay is not shown.
-    lens_overlay_query_controller_ = lens_overlay_query_controller;
-    CHECK(lens_overlay_query_controller_);
 
     // If the contextualization controller was already initialized then
     // there is no need to call `StartContextualization` again.
@@ -1126,18 +1115,17 @@ void LensOverlayController::IssueTextSearchRequestInner(
 
   if (IsOverlayInitializing()) {
     // Hold the request until the overlay has finished initializing.
-    pending_contextual_search_request_ = base::BindOnce(
-        &LensOverlayController::IssueTextSearchRequestInner,
-        weak_factory_.GetWeakPtr(), query_start_time, query_text,
-        additional_query_parameters, lens_overlay_query_controller, match_type,
-        is_zero_prefix_suggestion, invocation_source);
+    pending_contextual_search_request_ =
+        base::BindOnce(&LensOverlayController::IssueTextSearchRequestInner,
+                       weak_factory_.GetWeakPtr(), query_start_time, query_text,
+                       additional_query_parameters, match_type,
+                       is_zero_prefix_suggestion, invocation_source);
     return;
   } else if (state_ != State::kOff) {
     // If the state is not off or initializing, the Lens sessions should already
     // be initialized. This means the page could have changed since the last
     // contextualization so it should be updated before issuing the contextual
     // search request.
-    CHECK(lens_overlay_query_controller_);
     GetContextualizationController()->TryUpdatePageContextualization(
         base::BindOnce(
             &LensOverlayController::OnPageContextUpdatedForSuggestion,
@@ -1153,20 +1141,19 @@ void LensOverlayController::IssueTextSearchRequestInner(
 }
 
 void LensOverlayController::ShowUIWithPendingRegion(
-    lens::LensOverlayQueryController* lens_overlay_query_controller,
     lens::LensOverlayInvocationSource invocation_source,
     lens::mojom::CenterRotatedBoxPtr region,
     const SkBitmap& region_bitmap) {
   pending_region_ = std::move(region);
   pending_region_bitmap_ = region_bitmap;
-  ShowUI(invocation_source, lens_overlay_query_controller);
+  ShowUI(invocation_source);
   // Overrides value set in ShowUI since invoking lens overlay with a pending
   // region is considered a search.
   GetLensSessionMetricsLogger()->OnSearchPerformed();
 }
 
 std::string LensOverlayController::GetVsridForNewTab() {
-  return lens_overlay_query_controller_->GetVsridForNewTab();
+  return GetLensOverlayQueryController()->GetVsridForNewTab();
 }
 
 void LensOverlayController::SetTranslateMode(
@@ -1260,7 +1247,7 @@ void LensOverlayController::OnSearchboxFocusChanged(bool focused) {
           lens::LensOverlayNonBlockingPrivacyNoticeUserAction::
               kComposeboxFocused,
           invocation_source_);
-      lens_overlay_query_controller_->MaybeRestartQueryFlow();
+      GetLensOverlayQueryController()->MaybeRestartQueryFlow();
       GetContextualizationController()->TryUpdatePageContextualization(
           base::BindOnce(&LensOverlayController::NotifyPageContentUpdated,
                          weak_factory_.GetWeakPtr()));
@@ -1296,7 +1283,7 @@ void LensOverlayController::IssueLensRequest(
   }
 
   if (GetContextualizationController()->GetCurrentPageContextEligibility()) {
-    lens_overlay_query_controller_->SendRegionSearch(
+    GetLensOverlayQueryController()->SendRegionSearch(
         query_start_time, region.Clone(), selection_type,
         initialization_data_->additional_search_query_params_, region_bytes);
   }
@@ -1323,7 +1310,7 @@ void LensOverlayController::IssueMultimodalRequest(
     lens::LensOverlaySelectionType selection_type,
     std::optional<SkBitmap> region_bitmap) {
   if (GetContextualizationController()->GetCurrentPageContextEligibility()) {
-    lens_overlay_query_controller_->SendMultimodalRequest(
+    GetLensOverlayQueryController()->SendMultimodalRequest(
         query_start_time, std::move(region), text_query, selection_type,
         initialization_data_->additional_search_query_params_, region_bitmap);
   }
@@ -1370,7 +1357,7 @@ void LensOverlayController::IssueContextualTextRequest(
     lens::LensOverlaySelectionType selection_type) {
   if (GetContextualizationController()->GetCurrentPageContextEligibility()) {
     lens_selection_type_ = selection_type;
-    lens_overlay_query_controller_->SendContextualTextQuery(
+    GetLensOverlayQueryController()->SendContextualTextQuery(
         query_start_time, text_query, selection_type,
         initialization_data_->additional_search_query_params_);
   }
@@ -1718,14 +1705,14 @@ void LensOverlayController::InitializeOverlay(
   // Only start the query flow again if there is no full image response and the
   // side panel is not open. The side panel being open indicates that a full
   // image response could have been received and not passed to the overlay.
-  if (lens_overlay_query_controller_->IsOff()) {
+  if (GetLensOverlayQueryController()->IsOff()) {
     if (!GetContextualizationController()->GetCurrentPageContextEligibility()) {
       initialization_data_->initial_screenshot_ = SkBitmap();
       initialization_data_->page_url_ = GURL();
       initialization_data_->page_title_ = "";
     }
 
-    lens_overlay_query_controller_->StartQueryFlow(
+    GetLensOverlayQueryController()->StartQueryFlow(
         initialization_data_->initial_screenshot_,
         initialization_data_->page_url_, initialization_data_->page_title_,
         std::move(initialization_data_->significant_region_boxes_),
@@ -2316,7 +2303,7 @@ void LensOverlayController::IssueTextSelectionRequestInner(
   GetLensSearchboxController()->SetSearchboxInputText(query);
   lens_search_controller_->ClearVisualSelectionThumbnail();
 
-  lens_overlay_query_controller_->SendTextOnlyQuery(
+  GetLensOverlayQueryController()->SendTextOnlyQuery(
       query_start_time, query, lens_selection_type_,
       initialization_data_->additional_search_query_params_);
   MaybeOpenSidePanel();
@@ -2467,14 +2454,14 @@ void LensOverlayController::IssueSearchBoxRequestPart2(
     // Do not send any requests if the page is not context eligible.
   } else if (initialization_data_->selected_region_.is_null() &&
              IsContextualSearchbox()) {
-    lens_overlay_query_controller_->SendContextualTextQuery(
+    GetLensOverlayQueryController()->SendContextualTextQuery(
         query_start_time, search_box_text, lens_selection_type_,
         initialization_data_->additional_search_query_params_);
     GetLensSessionMetricsLogger()->OnContextualSearchboxQueryIssued(
         is_zero_prefix_suggestion,
         /*is_initial_query=*/state_ == State::kOverlay);
   } else if (initialization_data_->selected_region_.is_null()) {
-    lens_overlay_query_controller_->SendTextOnlyQuery(
+    GetLensOverlayQueryController()->SendTextOnlyQuery(
         query_start_time, search_box_text, lens_selection_type_,
         initialization_data_->additional_search_query_params_);
   } else {
@@ -2483,7 +2470,7 @@ void LensOverlayController::IssueSearchBoxRequestPart2(
             ? std::nullopt
             : std::make_optional<SkBitmap>(
                   initialization_data_->selected_region_bitmap_);
-    lens_overlay_query_controller_->SendMultimodalRequest(
+    GetLensOverlayQueryController()->SendMultimodalRequest(
         query_start_time, initialization_data_->selected_region_.Clone(),
         search_box_text, lens_selection_type_,
         initialization_data_->additional_search_query_params_,
@@ -2930,7 +2917,6 @@ void LensOverlayController::OnPageContextUpdatedForSuggestion(
         lens_search_controller_->GetPageTitle());
   }
 
-  CHECK(lens_overlay_query_controller_);
   // TODO(crbug.com/404941800): This flow should not start the overlay once
   // contextualization is separated from the overlay.
   IssueSearchBoxRequest(query_start_time, query, match_type,
@@ -3058,6 +3044,11 @@ LensOverlayController::GetLensOverlaySidePanelCoordinator() {
 lens::LensResultsPanelRouter*
 LensOverlayController::GetLensResultsPanelRouter() {
   return lens_search_controller_->results_panel_router();
+}
+
+lens::LensOverlayQueryController*
+LensOverlayController::GetLensOverlayQueryController() {
+  return lens_search_controller_->lens_overlay_query_controller();
 }
 
 lens::LensSearchContextualizationController*

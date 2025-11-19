@@ -225,8 +225,7 @@ void LensSearchController::OpenLensOverlay(
     StartLensSession(invocation_source);
   }
 
-  lens_overlay_controller_->ShowUI(invocation_source,
-                                   lens_overlay_query_controller_.get());
+  lens_overlay_controller_->ShowUI(invocation_source);
 }
 
 void LensSearchController::OpenLensOverlayWithPendingRegionFromBounds(
@@ -261,8 +260,7 @@ void LensSearchController::OpenLensOverlayWithPendingRegion(
   StartLensSession(invocation_source);
 
   lens_overlay_controller_->ShowUIWithPendingRegion(
-      lens_overlay_query_controller_.get(), invocation_source,
-      std::move(region), region_bitmap);
+      invocation_source, std::move(region), region_bitmap);
 }
 
 void LensSearchController::OpenLensOverlayInCurrentSession() {
@@ -279,8 +277,7 @@ void LensSearchController::OpenLensOverlayInCurrentSession() {
 
   // Otherwise, the overlay must be fully closed. Open the overlay as normal.
   lens_overlay_controller_->ShowUI(
-      lens_session_metrics_logger_->GetInvocationSource(),
-      lens_overlay_query_controller_.get());
+      lens_session_metrics_logger_->GetInvocationSource());
 }
 
 void LensSearchController::StartContextualization(
@@ -350,8 +347,7 @@ void LensSearchController::IssueTextSearchRequest(
   // TODO(crbug.com/404941800): This flow should not start the overlay once
   // contextualization is separated from the overlay.
   lens_overlay_controller_->IssueTextSearchRequest(
-      query_text, additional_query_parameters,
-      lens_overlay_query_controller_.get(), match_type,
+      query_text, additional_query_parameters, match_type,
       is_zero_prefix_suggestion, invocation_source);
 }
 
