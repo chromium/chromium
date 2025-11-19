@@ -252,6 +252,9 @@ need to be translated for each locale.-->
         <message name="IDS_AX_ROLE_BUTTON" desc="Accessibility role description for a button">
           button
         </message>
+        <message name="IDS_AX_ROLE_CAPTION" desc="Accessibility role description for a section whose content represents a caption for a table, image, etc.">
+          caption
+        </message>
         <message name="IDS_AX_ROLE_CODE" desc="Accessibility role description for a section whose content represents a fragment of computer code">
           code
         </message>

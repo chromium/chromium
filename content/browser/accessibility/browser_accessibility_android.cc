@@ -1551,6 +1551,9 @@ std::u16string BrowserAccessibilityAndroid::GetRoleDescription() const {
       NOTREACHED() << "Role: " << static_cast<int>(role);
     }
 
+    case ax::mojom::Role::kCaption:
+      // Default is empty.
+      return GetLocalizedString(IDS_AX_ROLE_CAPTION);
     case ax::mojom::Role::kFigure:
       // Default is IDS_AX_ROLE_FIGURE.
       return GetLocalizedString(IDS_AX_ROLE_GRAPHIC);

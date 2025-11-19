@@ -1,2 +1,2 @@
 android.webkit.WebView focusable focused
-++android.view.View interesting name='Caption'
+++android.view.View role_description='caption' interesting name='Caption'
