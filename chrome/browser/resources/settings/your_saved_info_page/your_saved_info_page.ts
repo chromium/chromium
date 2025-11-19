@@ -318,16 +318,14 @@ export class SettingsYourSavedInfoPageElement extends
     this.autofillAiEntityManager_.loadEntityInstances().then(
         this.onAutofillAiEntitiesChangedListener_);
 
-    if (loadTimeData.getBoolean('userEligibleForAutofillAi')) {
-      this.autofillAiEntityManager_.getWritableEntityTypes().then(
-          (entityTypes: EntityType[]) => {
-            for (const entityType of entityTypes) {
-              this.availableAutofillAiTypes_.add(entityType.typeName);
-            }
-            this.notifyPath('hierarchy_.identityDocs.chips');
-            this.notifyPath('hierarchy_.travel.chips');
-          });
-    }
+    this.autofillAiEntityManager_.getWritableEntityTypes().then(
+        (entityTypes: EntityType[]) => {
+          for (const entityType of entityTypes) {
+            this.availableAutofillAiTypes_.add(entityType.typeName);
+          }
+          this.notifyPath('hierarchy_.identityDocs.chips');
+          this.notifyPath('hierarchy_.travel.chips');
+        });
 
     // Wallet: Loyalty cards count.
     const setLoyaltyCardsCount = (loyaltyCardsCount?: number) => {
