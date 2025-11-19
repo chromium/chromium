@@ -11532,6 +11532,42 @@ IN_PROC_BROWSER_TEST_P(
   }
 }
 
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       FrameNavigationEntry_PushStateIframe) {
+  GURL main_url(embedded_test_server()->GetURL(
+      "/navigation_controller/page_with_iframe_simple.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  NavigationControllerImpl& controller =
+      static_cast<NavigationControllerImpl&>(contents()->GetController());
+  NavigationEntryImpl* entry = controller.GetLastCommittedEntry();
+  ASSERT_EQ(1u, entry->root_node()->children.size());
+
+  // Remove the iframe and then do a pushState.
+  EXPECT_TRUE(ExecJs(shell(), kRemoveFrameScript));
+  {
+    TestNavigationObserver observer(shell()->web_contents());
+    EXPECT_TRUE(ExecJs(shell(), "history.pushState({}, '', 'foo')"));
+    observer.Wait();
+  }
+
+  // The new entry should not have any children for the iframe.
+  entry = controller.GetLastCommittedEntry();
+  EXPECT_TRUE(entry->root_node()->children.empty());
+  EXPECT_EQ(2, controller.GetEntryCount());
+
+  // But going back should restore it.
+  {
+    TestNavigationObserver back_load_observer(shell()->web_contents());
+    controller.GoBack();
+    back_load_observer.Wait();
+  }
+  entry = controller.GetLastCommittedEntry();
+  EXPECT_EQ(1u, entry->root_node()->children.size());
+  EXPECT_EQ(0, controller.GetCurrentEntryIndex());
+  EXPECT_EQ(2, controller.GetEntryCount());
+}
+
 // Verify that restoring a NavigationEntry with cross-site subframes does not
 // create out-of-process iframes unless the current SiteIsolationPolicy says to.
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,

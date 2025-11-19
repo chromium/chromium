@@ -360,11 +360,17 @@ NavigationEntryImpl::TreeNode::CloneAndReplace(
 
         if (current_frame_tree_node->child_at(index)->unique_name() ==
             child->frame_entry->frame_unique_name()) {
-          // Found |child| in the tree.  Clone it and break out of inner loop.
-          copy->children.push_back(child->CloneAndReplace(
-              frame_navigation_entry, clone_children_of_target,
-              target_frame_tree_node, current_frame_tree_node->child_at(index),
-              copy.get(), restore_context, clone_policy));
+          // Found |child| in the tree. Clone it if the RFH isn't pending
+          // deletion and break out of inner loop.
+          if (!current_frame_tree_node->child_at(index)
+                   ->current_frame_host()
+                   ->IsPendingDeletion()) {
+            copy->children.push_back(child->CloneAndReplace(
+                frame_navigation_entry, clone_children_of_target,
+                target_frame_tree_node,
+                current_frame_tree_node->child_at(index), copy.get(),
+                restore_context, clone_policy));
+          }
           break;
         }
       }
