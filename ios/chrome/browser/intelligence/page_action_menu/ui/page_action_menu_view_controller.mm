@@ -981,9 +981,10 @@ const CGFloat kDividerWidth = 1.0;
       [self.mutator allowBlockedPopups];
       break;
     case PageActionMenuPriceTracking: {
-      __weak PageActionMenuViewController* weakSelf = self;
+      // Capture the mutator before dismissal.
+      id<PageActionMenuMutator> mutator = self.mutator;
       [self.pageActionMenuHandler dismissPageActionMenuWithCompletion:^{
-        [weakSelf.mutator openPriceInsightsPanel];
+        [mutator openPriceInsightsPanel];
       }];
       break;
     }
