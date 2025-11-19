@@ -60,10 +60,9 @@ void OmniboxAimPopupWebUIContent::ShowUI() {
 }
 
 void OmniboxAimPopupWebUIContent::CloseUI() {
-  // If the popup state is already kNone, don't take any action. Closing the UI
+  // If the popup state is not shown, don't take any action. Closing the UI
   // multiple times can result in incorrect state transitions from OnClose.
-  if (controller()->popup_state_manager()->popup_state() ==
-      OmniboxPopupState::kNone) {
+  if (!GetVisible()) {
     return;
   }
 
