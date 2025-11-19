@@ -1753,7 +1753,6 @@ TEST_P(WebMediaPlayerMSTest, OnContextLost) {
   compositor_->OnContextLost();
   EXPECT_EQ(non_gpu_frame, compositor_->GetCurrentFrame());
 
-  test_sii_->AlwaysBackMappableSharedImagesWithShMem();
   // Setting some default usage in order to get a mappable shared image.
   const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
                         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;

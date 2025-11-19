@@ -27,7 +27,6 @@ class ConvertToWebRtcVideoFrameBufferTest : public ::testing::Test {
   void SetUp() override {
     resources_ = WebRtcVideoFrameAdapter::SharedResources::Create(nullptr);
     test_sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
-    test_sii_->AlwaysBackMappableSharedImagesWithShMem();
   }
 
   scoped_refptr<WebRtcVideoFrameAdapter::SharedResources> resources_;
@@ -41,7 +40,6 @@ class ConvertToWebRtcVideoFrameBufferParamTest
   void SetUp() override {
     resources_ = WebRtcVideoFrameAdapter::SharedResources::Create(nullptr);
     test_sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
-    test_sii_->AlwaysBackMappableSharedImagesWithShMem();
   }
 
   scoped_refptr<WebRtcVideoFrameAdapter::SharedResources> resources_;

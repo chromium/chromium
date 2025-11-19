@@ -301,7 +301,6 @@ class VideoTrackRecorderTest : public VideoTrackRecorderTestBase {
         .Times(testing::AnyNumber())
         .WillRepeatedly(Return(nullptr));
     test_sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
-    test_sii_->AlwaysBackMappableSharedImagesWithShMem();
   }
 
   VideoTrackRecorderTest(const VideoTrackRecorderTest&) = delete;

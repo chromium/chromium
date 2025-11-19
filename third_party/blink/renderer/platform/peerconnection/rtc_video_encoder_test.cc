@@ -135,8 +135,6 @@ class FakeNativeBufferI420 : public blink::WebRtcVideoFrameAdapter {
     const gfx::Size kSize360p(480, 360);
     const gfx::Rect kRect360p(0, 0, 480, 360);
 
-    test_sii_->AlwaysBackMappableSharedImagesWithShMem();
-
     fake_frame_ = CreateTestFrame(kSize360p, kRect360p, kSize360p,
                                   media::VideoFrame::STORAGE_OWNED_MEMORY,
                                   media::VideoPixelFormat::PIXEL_FORMAT_NV12,

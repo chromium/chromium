@@ -74,7 +74,6 @@ class WebRtcVideoTrackSourceTest
             shared_resources_)) {
     track_source_->AddOrUpdateSink(&mock_sink_, webrtc::VideoSinkWants());
     test_sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
-    test_sii_->AlwaysBackMappableSharedImagesWithShMem();
   }
 
   void ProcessFeedback(const media::VideoCaptureFeedback& feedback) {
