@@ -260,16 +260,16 @@ IN_PROC_BROWSER_TEST_F(ActorScrollToolBrowserTest, ScrollTool_BrowserZoom) {
       embedded_test_server()->GetURL("/actor/scrollable_page.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
-  // 60 physical pixels translates to 40 CSS pixels when the zoom factor is 1.5
-  // (3 physical pixels : 2 CSS Pixels)
-  int scroll_offset_physical = 60;
+  // 60 DIPs translates to 40 CSS pixels when the zoom factor is 1.5
+  // (3 DIPs : 2 CSS Pixels)
+  int scroll_offset_dips = 60;
   int expected_offset_css = 40;
   int scroller = GetDOMNodeId(*main_frame(), "#scroller").value();
 
   {
     std::unique_ptr<ToolRequest> action =
         MakeScrollRequest(*main_frame(), scroller,
-                          /*scroll_offset_x=*/0, scroll_offset_physical);
+                          /*scroll_offset_x=*/0, scroll_offset_dips);
     ActResultFuture result_success;
     actor_task().Act(ToRequestList(action), result_success.GetCallback());
     ExpectOkResult(result_success);
@@ -286,16 +286,16 @@ IN_PROC_BROWSER_TEST_F(ActorScrollToolBrowserTest, ScrollTool_CSSZoom) {
       embedded_test_server()->GetURL("/actor/scrollable_page.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
-  // 60 physical pixels translates to 120 CSS pixels since the scroller is
-  // inside a `zoom:0.5` subtree (1 physical pixels : 2 CSS Pixels)
-  int scroll_offset_physical = 60;
+  // 60 DIPs translates to 120 CSS pixels since the scroller is
+  // inside a `zoom:0.5` subtree (1 DIPs : 2 CSS Pixels)
+  int scroll_offset_dips = 60;
   int expected_offset_css = 120;
   int scroller = GetDOMNodeId(*main_frame(), "#zoomedscroller").value();
 
   {
     std::unique_ptr<ToolRequest> action =
         MakeScrollRequest(*main_frame(), scroller,
-                          /*scroll_offset_x=*/0, scroll_offset_physical);
+                          /*scroll_offset_x=*/0, scroll_offset_dips);
     ActResultFuture result_success;
     actor_task().Act(ToRequestList(action), result_success.GetCallback());
     ExpectOkResult(result_success);
@@ -326,22 +326,76 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestDSF2, ScrollTool_ScrollDSF) {
       embedded_test_server()->GetURL("/actor/scrollable_page.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
-  // 80 physical pixels translates to 40 CSS pixels when the device scale factor
-  // = 2 (2 physical pixels : 1 CSS pixel);
-  int scroll_offset_physical = 80;
+  // 40 dips translates to 40 CSS pixels
+  int scroll_offset_dips = 40;
   int expected_offset_css = 40;
   int scroller = GetDOMNodeId(*main_frame(), "#scroller").value();
 
   {
     std::unique_ptr<ToolRequest> action =
         MakeScrollRequest(*main_frame(), scroller,
-                          /*scroll_offset_x=*/0, scroll_offset_physical);
+                          /*scroll_offset_x=*/0, scroll_offset_dips);
     ActResultFuture result_success;
     actor_task().Act(ToRequestList(action), result_success.GetCallback());
     ExpectOkResult(result_success);
     EXPECT_EQ(expected_offset_css,
               EvalJs(web_contents(),
                      "document.getElementById('scroller').scrollTop"));
+  }
+}
+
+// Ensure scroll distances are correctly scaled when browser zoom is applied.
+IN_PROC_BROWSER_TEST_F(ActorToolsTestDSF2, ScrollTool_BrowserZoom) {
+  // Set the default browser page zoom to 150%.
+  double level = blink::ZoomFactorToZoomLevel(1.5);
+  browser()->profile()->GetZoomLevelPrefs()->SetDefaultZoomLevelPref(level);
+
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/scrollable_page.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // 60 DIPs translates to 40 CSS pixels when the zoom factor is 1.5
+  // (3 DIPs : 2 CSS Pixels)
+  int scroll_offset_dips = 60;
+  int expected_offset_css = 40;
+  int scroller = GetDOMNodeId(*main_frame(), "#scroller").value();
+
+  {
+    std::unique_ptr<ToolRequest> action =
+        MakeScrollRequest(*main_frame(), scroller,
+                          /*scroll_offset_x=*/0, scroll_offset_dips);
+    ActResultFuture result_success;
+    actor_task().Act(ToRequestList(action), result_success.GetCallback());
+    ExpectOkResult(result_success);
+    EXPECT_EQ(expected_offset_css,
+              EvalJs(web_contents(),
+                     "document.getElementById('scroller').scrollTop"));
+  }
+}
+
+// Ensure scroll distances are correctly scaled when applied to a CSS zoomed
+// scroller.
+IN_PROC_BROWSER_TEST_F(ActorToolsTestDSF2, ScrollTool_CSSZoom) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/scrollable_page.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // 60 DIPs translates to 120 CSS pixels since the scroller is
+  // inside a `zoom:0.5` subtree (1 DIPs : 2 CSS Pixels)
+  int scroll_offset_dips = 60;
+  int expected_offset_css = 120;
+  int scroller = GetDOMNodeId(*main_frame(), "#zoomedscroller").value();
+
+  {
+    std::unique_ptr<ToolRequest> action =
+        MakeScrollRequest(*main_frame(), scroller,
+                          /*scroll_offset_x=*/0, scroll_offset_dips);
+    ActResultFuture result_success;
+    actor_task().Act(ToRequestList(action), result_success.GetCallback());
+    ExpectOkResult(result_success);
+    EXPECT_EQ(expected_offset_css,
+              EvalJs(web_contents(),
+                     "document.getElementById('zoomedscroller').scrollTop"));
   }
 }
 
