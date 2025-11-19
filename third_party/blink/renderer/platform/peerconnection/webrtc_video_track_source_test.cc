@@ -309,6 +309,15 @@ TEST_P(WebRtcVideoTrackSourceTest, TestColorSpaceSettings) {
       .storage_type = std::get<0>(GetParam()),
       .pixel_format = std::get<1>(GetParam())};
 
+  if (frame_parameters.pixel_format == media::PIXEL_FORMAT_ABGR ||
+      frame_parameters.pixel_format == media::PIXEL_FORMAT_ARGB ||
+      frame_parameters.pixel_format == media::PIXEL_FORMAT_XBGR ||
+      frame_parameters.pixel_format == media::PIXEL_FORMAT_XRGB) {
+    // RGB frames can't be encoded directly, they will be converted and color
+    // space will change.
+    return;
+  }
+
   Sequence s;
 
   EXPECT_CALL(mock_sink_, OnFrame(_))

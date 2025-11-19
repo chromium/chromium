@@ -498,7 +498,17 @@ void WebRtcVideoTrackSource::DeliverFrame(
 
   if (frame->ColorSpace().IsValid() &&
       base::FeatureList::IsEnabled(media::kWebRTCColorAccuracy)) {
-    frame_builder.set_color_space(GfxToWebRtcColorSpace(frame->ColorSpace()));
+    if (frame->format() == media::PIXEL_FORMAT_ARGB ||
+        frame->format() == media::PIXEL_FORMAT_ABGR ||
+        frame->format() == media::PIXEL_FORMAT_XRGB ||
+        frame->format() == media::PIXEL_FORMAT_XBGR) {
+      // RGB frames can't be encoded directly, there will be conversion in the
+      // encoder, which will produce Rec601.
+      frame_builder.set_color_space(
+          GfxToWebRtcColorSpace(gfx::ColorSpace::CreateREC601()));
+    } else {
+      frame_builder.set_color_space(GfxToWebRtcColorSpace(frame->ColorSpace()));
+    }
   }
   OnFrame(frame_builder.build());
 
