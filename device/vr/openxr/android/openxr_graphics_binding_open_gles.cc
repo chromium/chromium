@@ -239,6 +239,14 @@ void OpenXrGraphicsBindingOpenGLES::ResizeSharedBuffer(
   CHECK(sii);
   const OpenGLESLayerData& open_gles_layer_data = GetOpenGLESLayerData(layer);
   auto transfer_size = layer.GetTransferSize();
+
+  // TODO(crbug.com/459811463): We don't use GL_TEXTURE_CUBE_MAP because
+  // AHARDWAREBUFFER_USAGE_GPU_CUBE_MAP is not always supported. So we put
+  // 6 faces inside a 2D texture aligned from bottom to top.
+  if (layer.type() == OpenXrCompositionLayer::Type::kCube) {
+    transfer_size.set_height(transfer_size.height() * 6);
+  }
+
   if (!open_gles_layer_data.using_shared_images ||
       swap_chain_info.shared_buffer_size == transfer_size) {
     return;
@@ -348,9 +356,6 @@ bool OpenXrGraphicsBindingOpenGLES::RenderLayer(
   }
   glBindFramebufferEXT(GL_FRAMEBUFFER, open_gles_layer_data.back_buffer_fbo);
 
-  glFramebufferTexture2DEXT(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
-                            swap_chain_info->openxr_texture, 0);
-
   glDisable(GL_CULL_FACE);
   glDisable(GL_SCISSOR_TEST);
   glDisable(GL_POLYGON_OFFSET_FILL);
@@ -365,9 +370,21 @@ bool OpenXrGraphicsBindingOpenGLES::RenderLayer(
   float transform_floats[16];
   transform.GetColMajorF(transform_floats);
 
-  if (webxr_visible_) {
-    renderer_->Draw(swap_chain_info->shared_buffer_texture, transform_floats,
-                    layer.mutable_data().opacity);
+  if (layer.type() == OpenXrCompositionLayer::Type::kCube) {
+    if (webxr_visible_) {
+      // We call glFramebufferTexture2DEXT inside DrawCubemap for 6 faces.
+      renderer_->DrawCubemap(swap_chain_info->shared_buffer_texture,
+                             swap_chain_info->openxr_texture, transform_floats,
+                             layer.mutable_data().opacity);
+    }
+  } else {
+    glFramebufferTexture2DEXT(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                              GL_TEXTURE_2D, swap_chain_info->openxr_texture,
+                              0);
+    if (webxr_visible_) {
+      renderer_->Draw(swap_chain_info->shared_buffer_texture, transform_floats,
+                      layer.mutable_data().opacity);
+    }
   }
 
   // The overlay is rendred to the base layer, which has an invalid layer id.

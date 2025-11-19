@@ -153,6 +153,8 @@ blink_modules_sources("xr") {
     "xr_visibility_mask_change_event.h",
     "xr_webgl_binding.cc",
     "xr_webgl_binding.h",
+    "xr_webgl_cubemap_swap_chain.cc",
+    "xr_webgl_cubemap_swap_chain.h",
     "xr_webgl_depth_information.cc",
     "xr_webgl_depth_information.h",
     "xr_webgl_drawing_buffer_swap_chain.cc",

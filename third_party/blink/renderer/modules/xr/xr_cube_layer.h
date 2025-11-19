@@ -29,6 +29,9 @@ class XRCubeLayer : public XRShapedLayer {
   void Trace(Visitor*) const override;
 
  private:
+  device::mojom::blink::XRLayerSpecificDataPtr CreateLayerSpecificData()
+      const override;
+
   Member<DOMPointReadOnly> orientation_{nullptr};
 };
 

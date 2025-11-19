@@ -36,6 +36,7 @@ const gfx::Transform GetNativeOriginFromLayer(
     const OpenXrCompositionLayer& layer) {
   switch (layer.type()) {
     case OpenXrCompositionLayer::Type::kProjection:
+    case OpenXrCompositionLayer::Type::kCube:
       return gfx::Transform();
     case OpenXrCompositionLayer::Type::kQuad:
       return layer.mutable_data()
@@ -152,6 +153,29 @@ XrCompositionLayerEquirect2KHR BuildEquirectLayerData(
   return equirect;
 }
 
+XrCompositionLayerCubeKHR BuildCubeLayerData(
+    const XrLocation& location,
+    const OpenXrCompositionLayer& layer,
+    const void* xr_next_struct) {
+  CHECK(layer.mutable_data().layer_data->is_cube());
+  const auto& layer_specific_data =
+      *layer.mutable_data().layer_data->get_cube();
+
+  // Zero-initialize everything.
+  XrCompositionLayerCubeKHR cube{XR_TYPE_COMPOSITION_LAYER_CUBE_KHR};
+  cube.next = xr_next_struct;
+  cube.space = location.space;
+  cube.swapchain = layer.color_swapchain();
+  cube.orientation =
+      GfxQuaternionToXrQuaternion(layer_specific_data.orientation);
+
+  if (layer.mutable_data().blend_texture_source_alpha) {
+    cube.layerFlags |= XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT;
+  }
+
+  return cube;
+}
+
 }  // namespace
 
 // static
@@ -171,6 +195,9 @@ XrCompositionLayerBaseHeader* OpenXrLayers::GetLayerHeaderFromUnion(
     case OpenXrCompositionLayer::Type::kEquirect:
       return reinterpret_cast<XrCompositionLayerBaseHeader*>(
           &xr_layer_union.equirect);
+    case OpenXrCompositionLayer::Type::kCube:
+      return reinterpret_cast<XrCompositionLayerBaseHeader*>(
+          &xr_layer_union.cube);
     default:
       NOTREACHED();
   }
@@ -275,6 +302,10 @@ void OpenXrLayers::AddCompositionLayer(
       case OpenXrCompositionLayer::Type::kEquirect:
         xr_layer_union.equirect =
             BuildEquirectLayerData(*location, layer, eye, xr_next_struct);
+        break;
+      case OpenXrCompositionLayer::Type::kCube:
+        xr_layer_union.cube =
+            BuildCubeLayerData(*location, layer, xr_next_struct);
         break;
       default:
         NOTREACHED();

@@ -45,6 +45,7 @@ class XRWebGLSwapChain : public XRSwapChain<WebGLUnownedTexture> {
   virtual scoped_refptr<StaticBitmapImage> TransferToStaticBitmapImage() {
     return nullptr;
   }
+  virtual bool IsCube() const { return false; }
 
  protected:
   WebGLFramebuffer* GetFramebuffer();

@@ -23,6 +23,7 @@ class OpenXrCompositionLayer {
     kQuad = 1,
     kCylinder = 2,
     kEquirect = 3,
+    kCube = 4,
   };
 
   // Base class for graphics binding specific layer data.

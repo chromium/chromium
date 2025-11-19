@@ -68,13 +68,19 @@ XrPosef GfxTransformToXrPose(const gfx::Transform& transform) {
   // This pose should always be a simple translation and rotation so this should
   // always be true
   DCHECK(decomposed_transform);
-  return {{static_cast<float>(decomposed_transform->quaternion.x()),
-           static_cast<float>(decomposed_transform->quaternion.y()),
-           static_cast<float>(decomposed_transform->quaternion.z()),
-           static_cast<float>(decomposed_transform->quaternion.w())},
+  return {GfxQuaternionToXrQuaternion(decomposed_transform->quaternion),
           {static_cast<float>(decomposed_transform->translate[0]),
            static_cast<float>(decomposed_transform->translate[1]),
            static_cast<float>(decomposed_transform->translate[2])}};
+}
+
+XrQuaternionf GfxQuaternionToXrQuaternion(const gfx::Quaternion& quaternion) {
+  return {
+      .x = static_cast<float>(quaternion.x()),
+      .y = static_cast<float>(quaternion.y()),
+      .z = static_cast<float>(quaternion.z()),
+      .w = static_cast<float>(quaternion.w()),
+  };
 }
 
 mojom::VRFieldOfViewPtr XrFovToMojomFov(const XrFovf& xr_fov) {

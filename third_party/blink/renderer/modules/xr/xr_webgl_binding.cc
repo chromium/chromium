@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/modules/webgl/webgl_texture.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_unowned_texture.h"
 #include "third_party/blink/renderer/modules/xr/xr_camera.h"
+#include "third_party/blink/renderer/modules/xr/xr_cube_layer.h"
 #include "third_party/blink/renderer/modules/xr/xr_cube_map.h"
 #include "third_party/blink/renderer/modules/xr/xr_cylinder_layer.h"
 #include "third_party/blink/renderer/modules/xr/xr_equirect_layer.h"
@@ -29,6 +30,7 @@
 #include "third_party/blink/renderer/modules/xr/xr_system.h"
 #include "third_party/blink/renderer/modules/xr/xr_utils.h"
 #include "third_party/blink/renderer/modules/xr/xr_viewer_pose.h"
+#include "third_party/blink/renderer/modules/xr/xr_webgl_cubemap_swap_chain.h"
 #include "third_party/blink/renderer/modules/xr/xr_webgl_drawing_buffer_swap_chain.h"
 #include "third_party/blink/renderer/modules/xr/xr_webgl_drawing_context.h"
 #include "third_party/blink/renderer/modules/xr/xr_webgl_frame_transport_context_impl.h"
@@ -295,10 +297,24 @@ XRCubeLayer* XRWebGLBinding::createCubeLayer(const XRCubeLayerInit* init,
     return nullptr;
   }
 
-  // TODO(crbug.com/445772683): create cube layer instance.
-  exception_state.ThrowTypeError(
-      "XRCubeLayer was not implemented for the platform.");
-  return nullptr;
+  // Validating parameters specific to XRCubeLayer.
+  if (init->viewPixelWidth() != init->viewPixelHeight()) {
+    exception_state.ThrowTypeError(
+        "Cube face must be square (width == height).");
+    return nullptr;
+  }
+
+  XRWebGLSwapChain* texture_2d_swapchain = CreateColorSwapchain(
+      init->colorFormat(),
+      gfx::Size(init->viewPixelWidth(), init->viewPixelHeight()));
+
+  XRWebGLSwapChain* cubemap_swap_chain =
+      MakeGarbageCollected<XRWebGLCubemapSwapChain>(texture_2d_swapchain);
+
+  auto* drawing_context =
+      MakeGarbageCollected<XRWebGLDrawingContext>(this, cubemap_swap_chain);
+
+  return MakeGarbageCollected<XRCubeLayer>(init, this, drawing_context);
 }
 
 gfx::Size XRWebGLBinding::GetTextureSizeForLayer(

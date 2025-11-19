@@ -18,6 +18,9 @@ XRCubeLayer::XRCubeLayer(const XRCubeLayerInit* init,
                          XRLayerDrawingContext* drawing_context)
     : XRShapedLayer(init, binding, drawing_context),
       orientation_(init->orientation()) {
+  if (!orientation_) {
+    orientation_ = DOMPointReadOnly::Create(0.0, 0.0, 0.0, 1.0);
+  }
   CreateLayerBackend();
 }
 
@@ -30,6 +33,17 @@ void XRCubeLayer::setOrientation(DOMPointReadOnly* orientation) {
     orientation_ = orientation;
     SetModified(true);
   }
+}
+
+device::mojom::blink::XRLayerSpecificDataPtr
+XRCubeLayer::CreateLayerSpecificData() const {
+  auto cube_layer_data = device::mojom::blink::XRCubeLayerData::New();
+  cube_layer_data->orientation =
+      gfx::Quaternion(orientation_->x(), orientation_->y(), orientation_->z(),
+                      orientation_->w());
+
+  return device::mojom::blink::XRLayerSpecificData::NewCube(
+      std::move(cube_layer_data));
 }
 
 void XRCubeLayer::Trace(Visitor* visitor) const {

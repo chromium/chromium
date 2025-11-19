@@ -748,6 +748,9 @@ struct XREquirectLayerData {
   float upper_vertical_angle;
   float lower_vertical_angle;
 };
+struct XRCubeLayerData {
+  gfx.mojom.Quaternion orientation;
+};
 
 // A union of layer specific mutable data.
 union XRLayerSpecificData {
@@ -755,6 +758,7 @@ union XRLayerSpecificData {
   XRQuadLayerData quad;
   XRCylinderLayerData cylinder;
   XREquirectLayerData equirect;
+  XRCubeLayerData cube;
 };
 
 enum XRLayerLayout {

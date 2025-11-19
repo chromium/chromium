@@ -31,8 +31,6 @@ class XRWebGLDrawingBufferSwapChain final : public XRWebGLSwapChain {
   void Trace(Visitor* visitor) const override;
 
  private:
-  GLuint GetCopyProgram();
-
   scoped_refptr<XRWebGLDrawingBuffer> drawing_buffer_;
 };
 

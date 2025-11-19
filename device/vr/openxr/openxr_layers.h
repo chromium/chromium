@@ -62,6 +62,7 @@ class OpenXrLayers {
     XrCompositionLayerQuad quad;
     XrCompositionLayerCylinderKHR cylinder;
     XrCompositionLayerEquirect2KHR equirect;
+    XrCompositionLayerCubeKHR cube;
   };
 
   static XrCompositionLayerBaseHeader* GetLayerHeaderFromUnion(

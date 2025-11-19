@@ -23,6 +23,8 @@ OpenXrCompositionLayer::Type OpenXrCompositionLayer::GetTypeFromMojomData(
       return Type::kCylinder;
     case mojom::XRLayerSpecificData::Tag::kEquirect:
       return Type::kEquirect;
+    case mojom::XRLayerSpecificData::Tag::kCube:
+      return Type::kCube;
   }
 }
 
@@ -100,7 +102,7 @@ XrResult OpenXrCompositionLayer::CreateSwapchain(XrSession session,
   swapchain_create_info.width = swapchain_image_size_.width();
   swapchain_create_info.height = swapchain_image_size_.height();
   swapchain_create_info.mipCount = 1;
-  swapchain_create_info.faceCount = 1;
+  swapchain_create_info.faceCount = type_ == Type::kCube ? 6 : 1;
   swapchain_create_info.sampleCount = sample_count;
   swapchain_create_info.usageFlags = XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT;
 
