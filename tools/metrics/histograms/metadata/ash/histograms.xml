@@ -1110,52 +1110,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Ash.Birch.Latency{Type}" units="ms" expires_after="2025-12-28">
-  <owner>jamescook@chromium.org</owner>
-  <owner>chromeos-launcher@google.com</owner>
-  <summary>
-    The latency to fetch data of {Type} type via the data provider. Recorded
-    once per fetch (i.e. once per time the birch bar is shown).
-  </summary>
-  <token key="Type">
-    <variant name=".Calendar" summary="calendar"/>
-    <variant name=".Coral" summary="coral"/>
-    <variant name=".File" summary="file"/>
-    <variant name=".LastActive" summary="last active tab"/>
-    <variant name=".LostMedia" summary="lost media tabs"/>
-    <variant name=".MostVisited" summary="most visited URLs"/>
-    <variant name=".ReleaseNotes" summary="release notes"/>
-    <variant name=".SelfShare" summary="self share"/>
-    <variant name=".Tab" summary="recent tab"/>
-    <variant name=".Weather" summary="weather"/>
-  </token>
-</histogram>
-
-<histogram name="Ash.Birch.ProviderHidden{Type}" units="count"
-    expires_after="2025-12-28">
-  <owner>jamescook@chromium.org</owner>
-  <owner>chromeos-launcher@google.com</owner>
-  <summary>
-    Whether the user is hiding birch results of {Type} type. Recorded on
-    startup.
-  </summary>
-  <token key="Type">
-    <variant name=".Calendar" summary="calendar"/>
-    <variant name=".ChromeTabs"
-        summary="recent tabs, last active tab, most visited tab, and
-                 self-share tabs"/>
-    <variant name=".Coral" summary="coral"/>
-    <variant name=".FileSuggest" summary="file suggest"/>
-    <variant name=".LastActive" summary="(obsolete) use ChromeTabs"/>
-    <variant name=".LostMedia" summary="lost media tabs"/>
-    <variant name=".MostVisited" summary="(obsolete) use ChromeTabs"/>
-    <variant name=".RecentTabs" summary="(obsolete) use ChromeTabs"/>
-    <variant name=".ReleaseNotes" summary="release notes"/>
-    <variant name=".SelfShare" summary="(obsolete) use ChromeTabs"/>
-    <variant name=".Weather" summary="weather"/>
-  </token>
-</histogram>
-
 <histogram name="Ash.Birch.Ranking{Time}" units="ranking"
     expires_after="2026-01-18">
   <owner>jamescook@chromium.org</owner>
@@ -1202,16 +1156,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The total latency to fetch all birch data via all data providers. Recorded
     once per fetch (i.e. once per time the birch bar is shown).
-  </summary>
-</histogram>
-
-<histogram name="Ash.Birch.TotalLatencyPostLogin" units="ms"
-    expires_after="2025-12-28">
-  <owner>jamescook@chromium.org</owner>
-  <owner>chromeos-launcher@google.com</owner>
-  <summary>
-    The total latency to fetch all birch data via all data providers on the
-    first fetch post login. Recorded when the birch bar is shown post login.
   </summary>
 </histogram>
 

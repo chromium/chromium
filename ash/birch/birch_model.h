@@ -211,9 +211,7 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   };
 
   template <typename T>
-  void SetItems(DataTypeInfo<T>& data_info,
-                const std::vector<T>& items,
-                bool record_latency);
+  void SetItems(DataTypeInfo<T>& data_info, const std::vector<T>& items);
 
   // Called when a pending data fetch request timeout expires.
   void HandleRequestTimeout(size_t request_id);
@@ -247,9 +245,6 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   void OnWeatherPrefChanged();
   void OnReleaseNotesPrefChanged();
   void OnCoralPrefChanged();
-
-  // Records metrics on which providers are hidden based on prefs.
-  void RecordProviderHiddenHistograms();
 
   // Whether `item_remover_` is created and initialized.
   bool IsItemRemoverInitialized();
