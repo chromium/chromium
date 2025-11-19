@@ -63,16 +63,6 @@ constexpr CGFloat kDefaultSectionFooterHeightPointSize = 10.;
 
 #pragma mark - UITableViewDataSource
 
-- (UITableViewCell*)tableView:(UITableView*)tableView
-        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  UITableViewCell* cell = [super tableView:tableView
-                     cellForRowAtIndexPath:indexPath];
-  if ([cell isKindOfClass:[SettingsImageDetailTextCell class]]) {
-    cell.selectionStyle = UITableViewCellSelectionStyleNone;
-  }
-  return cell;
-}
-
 - (UIView*)tableView:(UITableView*)tableView
     viewForFooterInSection:(NSInteger)section {
   UIView* view = [super tableView:tableView viewForFooterInSection:section];

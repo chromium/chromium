@@ -12,6 +12,7 @@
 - (instancetype)initWithType:(NSInteger)type {
   if ((self = [super initWithType:type])) {
     _useCustomSeparator = NO;
+    _selectionStyle = UITableViewCellSelectionStyleDefault;
 
     self.cellClass = [LegacyTableViewCell class];
   }
@@ -26,6 +27,7 @@
   cell.accessoryType = self.accessoryType;
   cell.editingAccessoryType = self.editingAccessoryType;
   cell.accessoryView = self.accessoryView;
+  cell.selectionStyle = self.selectionStyle;
   cell.useCustomSeparator = self.useCustomSeparator;
   cell.accessibilityTraits = self.accessibilityTraits;
   cell.accessibilityIdentifier = self.accessibilityIdentifier;

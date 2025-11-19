@@ -624,6 +624,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
 - (SettingsImageDetailTextItem*)batchUploadRecommendationItem {
   SettingsImageDetailTextItem* item = [[SettingsImageDetailTextItem alloc]
       initWithType:BatchUploadRecommendationItemType];
+  item.selectionStyle = UITableViewCellSelectionStyleNone;
   item.detailText = [self itemsToUploadRecommendationString];
   item.image = CustomSymbolWithPointSize(kCloudAndArrowUpSymbol,
                                          kBatchUploadSymbolPointSize);
@@ -1158,6 +1159,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   SettingsImageDetailTextItem* syncErrorItem =
       [[SettingsImageDetailTextItem alloc]
           initWithType:AccountErrorMessageItemType];
+  syncErrorItem.selectionStyle = UITableViewCellSelectionStyleNone;
   syncErrorItem.detailText = l10n_util::GetNSString(messageID);
   syncErrorItem.image =
       DefaultSymbolWithPointSize(kErrorCircleFillSymbol, kErrorSymbolPointSize);

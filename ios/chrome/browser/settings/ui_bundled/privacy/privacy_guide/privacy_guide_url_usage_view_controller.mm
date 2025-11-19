@@ -150,7 +150,6 @@ enum ItemIdentifier {
            }];
 
   [TableViewCellContentConfiguration registerCellForTableView:_tableView];
-  RegisterTableViewCell<SettingsImageDetailTextCell>(_tableView);
   RegisterTableViewHeaderFooter<TableViewTextHeaderFooterView>(_tableView);
 
   NSDiffableDataSourceSnapshot* snapshot =

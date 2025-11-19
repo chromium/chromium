@@ -21,10 +21,10 @@
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/policy/model/management_state.h"
 #import "ios/chrome/browser/settings/model/sync/utils/account_error_ui_info.h"
-#import "ios/chrome/browser/settings/ui_bundled/cells/settings_image_detail_text_cell.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/image_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/signin/model/constants.h"
@@ -143,7 +143,6 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   tableView.backgroundColor =
       [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
   RegisterTableViewCell<TableViewAccountCell>(tableView);
-  RegisterTableViewCell<SettingsImageDetailTextCell>(tableView);
   [TableViewCellContentConfiguration registerCellForTableView:tableView];
   [self setUpTopButtons];
   [self setUpTableContent];
@@ -455,17 +454,27 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 // Returns a cell for the error explanation.
 - (UITableViewCell*)cellForErrorExplanationForTableView:
     (UITableView*)tableView {
-  SettingsImageDetailTextCell* cell =
-      DequeueTableViewCell<SettingsImageDetailTextCell>(tableView);
+  TableViewCellContentConfiguration* configuration =
+      [[TableViewCellContentConfiguration alloc] init];
+  configuration.subtitle =
+      l10n_util::GetNSString(self.dataSource.accountErrorUIInfo.messageID);
+
+  ImageContentConfiguration* imageConfiguration =
+      [[ImageContentConfiguration alloc] init];
+  imageConfiguration.image =
+      DefaultSymbolWithPointSize(kErrorCircleFillSymbol, kErrorSymbolSize);
+  imageConfiguration.imageTintColor = [UIColor colorNamed:kRed500Color];
+
+  configuration.leadingConfiguration = imageConfiguration;
+
+  UITableViewCell* cell =
+      [TableViewCellContentConfiguration dequeueTableViewCell:tableView];
+
+  cell.contentConfiguration = configuration;
+
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
   cell.accessibilityIdentifier = kAccountMenuErrorMessageId;
   cell.accessibilityElementsHidden = YES;
-  cell.detailTextLabel.text =
-      l10n_util::GetNSString(self.dataSource.accountErrorUIInfo.messageID);
-  cell.image =
-      DefaultSymbolWithPointSize(kErrorCircleFillSymbol, kErrorSymbolSize);
-  cell.detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
-  [cell setImageViewTintColor:[UIColor colorNamed:kRed500Color]];
   return cell;
 }
 

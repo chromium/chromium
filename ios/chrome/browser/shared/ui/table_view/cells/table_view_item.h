@@ -26,6 +26,10 @@
 // the value of the `accessoryType` property.
 @property(nonatomic, strong) UIView* accessoryView;
 
+// The selection style to be applied to the cell. Default is
+// UITableViewCellSelectionStyleDefault.
+@property(nonatomic, assign) UITableViewCellSelectionStyle selectionStyle;
+
 // Whether custom separator should be used. The separator can replace the
 // separator provided by UITableViewCell. It is a 0.5pt high line. Default is
 // NO.

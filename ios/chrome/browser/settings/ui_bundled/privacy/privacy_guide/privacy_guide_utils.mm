@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/shared/ui/elements/self_sizing_table_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/image_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/switch_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
@@ -22,21 +23,25 @@ const CGFloat kSymbolSize = 20;
 
 }  // namespace
 
-SettingsImageDetailTextCell* PrivacyGuideExplanationCell(
-    UITableView* table_view,
-    int text_id,
-    NSString* symbol_name) {
-  // TODO(crbug.com/41492491): Remove the default insets in the
-  // SettingsImageDetailTextCell.
-  SettingsImageDetailTextCell* cell =
-      DequeueTableViewCell<SettingsImageDetailTextCell>(table_view);
+UITableViewCell* PrivacyGuideExplanationCell(UITableView* table_view,
+                                             int text_id,
+                                             NSString* symbol_name) {
+  UITableViewCell* cell =
+      [TableViewCellContentConfiguration dequeueTableViewCell:table_view];
 
-  cell.image = DefaultSymbolWithPointSize(symbol_name, kSymbolSize);
-  cell.detailTextLabel.text = l10n_util::GetNSString(text_id);
-  cell.detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
-  [cell setImageViewTintColor:[UIColor colorNamed:kTextSecondaryColor]];
-  [cell alignImageWithFirstLineOfText:YES];
-  [cell setUseCustomSeparator:NO];
+  TableViewCellContentConfiguration* configuration =
+      [[TableViewCellContentConfiguration alloc] init];
+  configuration.subtitle = l10n_util::GetNSString(text_id);
+
+  ImageContentConfiguration* image_configuration =
+      [[ImageContentConfiguration alloc] init];
+  image_configuration.image =
+      DefaultSymbolWithPointSize(symbol_name, kSymbolSize);
+  image_configuration.imageTintColor = [UIColor colorNamed:kTextSecondaryColor];
+
+  configuration.leadingConfiguration = image_configuration;
+  cell.contentConfiguration = configuration;
+  cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
   return cell;
 }
