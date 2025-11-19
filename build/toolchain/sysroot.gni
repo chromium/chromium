@@ -1,0 +1,14 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+declare_args() {
+  # Controls default is_linux sysroot. If set to true, and sysroot
+  # is empty, default sysroot is calculated.
+  # Move the argument here to avoid complex dependencies and dependency loop
+  # as this is needed by files in both config and toolchain directories.
+  use_sysroot =
+      current_cpu == "x86" || current_cpu == "x64" || current_cpu == "arm" ||
+      current_cpu == "arm64" || current_cpu == "mipsel" ||
+      current_cpu == "mips64el" || current_cpu == "riscv64"
+}

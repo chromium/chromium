@@ -25,13 +25,6 @@ declare_args() {
       # TODO(https://crbug.com/445896263): Consider whether Cronet should enable
       # this.
       !is_cronet_build
-
-  # Use -MD instead of -MMD for compiler commands. This is useful for tracking
-  # the comprehensive set of dependencies.  It's also required when building
-  # without the sysroot so that updates to system header files trigger a
-  # rebuild (when using the sysroot, the CR_SYSROOT_KEY define takes care of
-  # this already).
-  system_headers_in_deps = !use_sysroot
 }
 
 # When the arg is set via args.gn, it applies to all toolchains. In order to not
