@@ -74,12 +74,6 @@ enum class PromotingMaskCandidates {
 constexpr char kShouldAttemptMultipleOverlaysHistogramName[] =
     "Compositing.Display.OverlayProcessorUsingStrategy."
     "ShouldAttemptMultipleOverlays";
-constexpr char kNumOverlaysPromotedHistogramName[] =
-    "Compositing.Display.OverlayProcessorUsingStrategy.NumOverlaysPromoted";
-constexpr char kNumOverlaysAttemptedHistogramName[] =
-    "Compositing.Display.OverlayProcessorUsingStrategy.NumOverlaysAttempted";
-constexpr char kNumOverlaysFailedHistogramName[] =
-    "Compositing.Display.OverlayProcessorUsingStrategy.NumOverlaysFailed";
 constexpr char kWorkingScaleFactorHistogramName[] =
     "Compositing.Display.OverlayProcessorUsingStrategy."
     "WorkingScaleFactorForRequiredOverlays";
@@ -412,9 +406,6 @@ void OverlayProcessorUsingStrategy::ProcessForOverlays(
   }
 
   DCHECK(candidates->empty() || success);
-  UMA_HISTOGRAM_COUNTS_100(kNumOverlaysPromotedHistogramName,
-                           candidates->size());
-
   UpdateOverlayStatusMap(*candidates);
   UpdateDamageRect(surface_damage_rect_list, *damage_rect);
 
@@ -958,8 +949,6 @@ bool OverlayProcessorUsingStrategy::AttemptMultipleOverlays(
     AggregatedRenderPass* render_pass,
     OverlayCandidateList& candidates) {
   if (sorted_candidates.empty()) {
-    UMA_HISTOGRAM_COUNTS_100(kNumOverlaysAttemptedHistogramName, 0);
-    UMA_HISTOGRAM_COUNTS_100(kNumOverlaysFailedHistogramName, 0);
     return false;
   }
 
@@ -986,8 +975,6 @@ bool OverlayProcessorUsingStrategy::AttemptMultipleOverlays(
           PromotingMaskCandidates::kNoNotRequired);
     }
 
-    UMA_HISTOGRAM_COUNTS_100(kNumOverlaysAttemptedHistogramName, 0);
-    UMA_HISTOGRAM_COUNTS_100(kNumOverlaysFailedHistogramName, 0);
     return false;
   }
 
@@ -1057,7 +1044,6 @@ bool OverlayProcessorUsingStrategy::AttemptMultipleOverlays(
     // Check for support.
     CheckOverlaySupport(new_plane_candidate, &candidates);
   }
-  const int num_overlays_attempted = candidates.size();
 
   // Update the test candidates so we can process the result, use EraseIf below
   // and tell the OverlayCombinationCache which ones succeeded/failed.
@@ -1085,12 +1071,6 @@ bool OverlayProcessorUsingStrategy::AttemptMultipleOverlays(
   std::erase_if(test_candidates, [](auto& proposed) -> bool {
     return !proposed.candidate.overlay_handled;
   });
-  const int num_overlays_promoted = candidates.size();
-
-  UMA_HISTOGRAM_COUNTS_100(kNumOverlaysAttemptedHistogramName,
-                           num_overlays_attempted);
-  UMA_HISTOGRAM_COUNTS_100(kNumOverlaysFailedHistogramName,
-                           num_overlays_attempted - num_overlays_promoted);
 
   if (candidates.empty()) {
     LogStrategyEnumUMA(OverlayStrategy::kNoStrategyAllFail);

@@ -529,27 +529,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Compositing.Display.OverlayProcessorUsingStrategy.NumOverlays{Counted}"
-    units="overlay candidates" expires_after="2025-11-16">
-  <owner>khaslett@chromium.org</owner>
-  <owner>kylechar@chromium.org</owner>
-  <owner>chromeos-gfx-compositor@chromium.org</owner>
-  <summary>
-    Logged once per frame, the number of overlays {Counted}. Note: this metric
-    was expired from 2022-11-30 to 2023-04-13.
-  </summary>
-  <token key="Counted">
-    <variant name="Attempted"
-        summary="attempted. This is only logged when using the
-                 AttemptMultipleOverlays path."/>
-    <variant name="Failed"
-        summary="failed. This is only logged when using the
-                 AttemptMultipleOverlays path."/>
-    <variant name="Promoted" summary="promoted."/>
-  </token>
-</histogram>
-
-<histogram
     name="Compositing.Display.OverlayProcessorUsingStrategy.NumQuadsConsidered"
     units="units" expires_after="2025-05-11">
   <owner>khaslett@chromium.org</owner>
