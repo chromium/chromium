@@ -345,8 +345,6 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
   EXPECT_EQ(GetSystemTrayClient()->show_graphics_tablet_settings_count(), 1);
 }
 
-// TODO(b/279503977): Add test that verifies behavior of clicking on the
-// "Learn more" button.
 TEST_F(InputDeviceSettingsNotificationControllerTest,
        ShowTouchpadSettingsOnRightClickNotificationClick) {
   controller()->NotifyRightClickRewriteBlockedBySetting(
