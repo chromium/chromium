@@ -116,9 +116,6 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
     bool prefer_tagged_orientation,
     bool reinterpret_video_as_srgb) {
   DCHECK(frame);
-  const auto transform =
-      frame->metadata().transformation.value_or(media::kNoTransformation);
-
   if (!resource_provider) {
     DLOG(ERROR) << "An external CanvasResourceProvider must be provided";
     return nullptr;
@@ -129,21 +126,14 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
     prefer_tagged_orientation = false;
   }
 
-  if (!DrawVideoFrameIntoResourceProvider(
-          std::move(frame), resource_provider, raster_context_provider.get(),
-          video_renderer,
-          /*ignore_video_transformation=*/prefer_tagged_orientation,
-          /*reinterpret_video_as_srgb=*/reinterpret_video_as_srgb)) {
-    return nullptr;
-  }
-
-  return resource_provider->Snapshot(
-      prefer_tagged_orientation
-          ? VideoTransformationToImageOrientation(transform)
-          : ImageOrientationEnum::kDefault);
+  return DrawVideoFrameIntoSnapshot(
+      std::move(frame), resource_provider, raster_context_provider.get(),
+      video_renderer,
+      /*ignore_video_transformation=*/prefer_tagged_orientation,
+      /*reinterpret_video_as_srgb=*/reinterpret_video_as_srgb);
 }
 
-bool DrawVideoFrameIntoResourceProvider(
+scoped_refptr<StaticBitmapImage> DrawVideoFrameIntoSnapshot(
     scoped_refptr<media::VideoFrame> frame,
     CanvasResourceProvider* resource_provider,
     viz::RasterContextProvider* raster_context_provider,
@@ -152,6 +142,9 @@ bool DrawVideoFrameIntoResourceProvider(
     bool reinterpret_video_as_srgb) {
   DCHECK(frame);
   DCHECK(resource_provider);
+
+  const auto transform =
+      frame->metadata().transformation.value_or(media::kNoTransformation);
 
   // This method should only be called with context providers supporting OOP-R.
   CHECK(!raster_context_provider ||
@@ -164,7 +157,7 @@ bool DrawVideoFrameIntoResourceProvider(
     frame = media::ConvertToMemoryMappedFrame(std::move(frame));
     if (!frame) {
       DLOG(ERROR) << "Failed to map VideoFrame.";
-      return false;
+      return nullptr;
     }
   }
 
@@ -172,7 +165,7 @@ bool DrawVideoFrameIntoResourceProvider(
     if (!raster_context_provider) {
       DLOG(ERROR) << "Unable to process a texture backed VideoFrame w/o a "
                      "RasterContextProvider.";
-      return false;  // Unable to get/create a shared main thread context.
+      return nullptr;  // Unable to get/create a shared main thread context.
     }
   }
 
@@ -199,7 +192,11 @@ bool DrawVideoFrameIntoResourceProvider(
         video_renderer->Paint(frame.get(), &canvas, media_flags, params,
                               raster_context_provider);
       });
-  return true;
+
+  return resource_provider->Snapshot(
+      ignore_video_transformation
+          ? VideoTransformationToImageOrientation(transform)
+          : ImageOrientationEnum::kDefault);
 }
 
 void DrawVideoFrameIntoCanvas(scoped_refptr<media::VideoFrame> frame,
