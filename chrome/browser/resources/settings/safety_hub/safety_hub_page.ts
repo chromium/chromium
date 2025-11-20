@@ -9,9 +9,15 @@
  */
 
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+// <if expr="not is_chromeos">
+import '../relaunch_confirmation_dialog.js';
+// </if>
 import '../settings_page/settings_subpage.js';
 import './safety_hub_card.js';
 import './safety_hub_module.js';
+import './extensions_module.js';
+import './notification_permissions_module.js';
+import './unused_site_permissions_module.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';

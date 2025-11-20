@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '../settings_page/settings_subpage.js';
+import '../settings_shared.css.js';
 import './settings_category_default_radio_group.js';
 import './site_settings_shared.css.js';
-import '../settings_shared.css.js';
 import './storage_access_site_list.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

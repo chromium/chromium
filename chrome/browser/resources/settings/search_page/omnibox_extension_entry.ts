@@ -6,6 +6,7 @@
  * @fileoverview 'settings-omnibox-extension-entry' is a component for showing
  * an omnibox extension with its name and keyword.
  */
+import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import './search_engine_entry.css.js';

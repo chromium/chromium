@@ -7,6 +7,7 @@
  * 'site-details-permission-device-entry' shows a single device for a given
  * chooser exception.
  */
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '/shared/settings/controls/cr_policy_pref_indicator.js';
 import '../settings_shared.css.js';
 

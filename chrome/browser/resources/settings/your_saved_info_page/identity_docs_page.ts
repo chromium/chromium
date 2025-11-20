@@ -12,6 +12,7 @@
 import '/shared/settings/prefs/prefs.js';
 import '../autofill_page/autofill_ai_entries_list.js';
 import '../autofill_page/your_saved_info_shared.css.js';
+import '../controls/settings_toggle_button.js';
 import '../settings_page/settings_subpage.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';

@@ -10,6 +10,7 @@ import '../controls/settings_toggle_button.js';
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import '../icons.html.js';
+import '../settings_page/settings_subpage.js';
 // <if expr="_google_chrome">
 import '../internal/icons.html.js';
 

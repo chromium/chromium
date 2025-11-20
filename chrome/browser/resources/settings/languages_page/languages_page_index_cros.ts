@@ -4,6 +4,7 @@
 
 import '../settings_page/settings_section.js';
 import '../settings_shared.css.js';
+import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

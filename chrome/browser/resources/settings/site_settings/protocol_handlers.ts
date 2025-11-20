@@ -17,6 +17,7 @@ import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import '../controls/collapse_radio_button.js';
+import '../controls/settings_radio_group.js';
 import '../controls/settings_toggle_button.js';
 import '../privacy_icons.html.js';
 import '../settings_page/settings_subpage.js';

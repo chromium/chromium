@@ -21,6 +21,7 @@ import '../../site_favicon.js';
 import '../../i18n_setup.js';
 import './fingerprint_icons.html.js';
 import './fingerprint_progress_arc.js';
+import './security_keys_pin_field.js';
 
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';

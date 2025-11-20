@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
+import './ai_logging_info_bullet.js';
 import './ai_policy_indicator.js';
 import '../settings_page/settings_subpage.js';
 

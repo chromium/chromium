@@ -10,18 +10,20 @@
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import '/shared/settings/prefs/prefs.js';
 import 'chrome://resources/cr_elements/icons.html.js';
+import '/shared/settings/prefs/prefs.js';
+import '../ai_page/ai_logging_info_bullet.js';
 import '../controls/settings_toggle_button.js';
 import '../icons.html.js';
 import '../settings_columned_section.css.js';
 import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
-import './autofill_ai_entries_list.js';
+import '../settings_shared.css.js';
 // <if expr="_google_chrome">
 import '../internal/icons.html.js';
 
 // </if>
+
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';

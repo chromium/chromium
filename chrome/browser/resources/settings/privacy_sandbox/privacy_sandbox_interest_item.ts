@@ -7,8 +7,10 @@
  * 'privacy-sandbox-interest-item' is the custom element to show a topics or
  * fledge interest in the privacy sandbox.
  */
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import '../site_favicon.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';

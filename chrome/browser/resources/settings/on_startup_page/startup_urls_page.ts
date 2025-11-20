@@ -13,6 +13,7 @@ import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import '/shared/settings/controls/extension_controlled_indicator.js';
 import '../settings_shared.css.js';
 import './startup_url_dialog.js';
+import './startup_url_entry.js';
 
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';

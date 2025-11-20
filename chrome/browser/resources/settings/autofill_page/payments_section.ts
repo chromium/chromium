@@ -7,17 +7,20 @@
  * credit cards for use in autofill and payments APIs.
  */
 
-import '/shared/settings/prefs/prefs.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import '/shared/settings/controls/extension_controlled_indicator.js';
+import '/shared/settings/prefs/prefs.js';
+import '../controls/settings_toggle_button.js';
 import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
-import '../controls/settings_toggle_button.js';
+import '../simple_confirmation_dialog.js';
 import './credit_card_edit_dialog.js';
 import './iban_edit_dialog.js';
-import '../simple_confirmation_dialog.js';
 import './passwords_shared.css.js';
 import './payments_list.js';
 import './virtual_card_unenroll_dialog.js';

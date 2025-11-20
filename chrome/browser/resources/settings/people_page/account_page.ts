@@ -8,7 +8,12 @@
  * manage features related to the user's primary account, such as sync
  * controls and advanced sync settings.
  */
+import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
+import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
+import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import './sync_account_control.js';
+import './sync_controls.js';
 import './sync_encryption_options.js';
 import '../settings_page/settings_subpage.js';
 

@@ -6,6 +6,7 @@
  * @fileoverview 'settings-search-engines-list' is a component for showing a
  * list of search engines.
  */
+import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import '../settings_shared.css.js';

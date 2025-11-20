@@ -11,6 +11,8 @@ import './account_card_element.js';
 import './category_reference_card.js';
 import './collapsible_autofill_settings_card.js';
 import '/shared/settings/prefs/prefs.js';
+import '../settings_page/settings_section.js';
+import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
