@@ -366,7 +366,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     args.test_suite_exceptions_pyl_path = pyl_dir_path(
         'test_suite_exceptions.pyl')
     args.autoshard_exceptions_json_path = os.path.join(
-        args.infra_config_dir, 'targets', 'autoshard_exceptions.json')
+        args.infra_config_dir, 'autoshard_exceptions.json')
 
     if args.pyl_files_dir == THIS_DIR:
 

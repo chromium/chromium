@@ -209,7 +209,7 @@ chromium_luci.configure_gardener_rotations(
 
 chromium_luci.configure_targets(
     generate_pyl_files = True,
-    autoshard_exceptions_file = "//targets/autoshard_exceptions.json",
+    autoshard_exceptions_file = "//autoshard_exceptions.json",
 )
 
 chromium_luci.configure_try(
