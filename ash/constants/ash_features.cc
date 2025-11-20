@@ -266,7 +266,7 @@ BASE_FEATURE(kBocaScreenSharingStudent, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kBocaHostAudio, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables using audio for the Kiosk client in the Boca app.
-BASE_FEATURE(kBocaAudioForKiosk, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kBocaAudioForKiosk, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables setting audio params when sharing from a student device
 // to a remote kiosk receiver.
