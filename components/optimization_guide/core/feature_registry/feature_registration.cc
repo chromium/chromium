@@ -49,6 +49,10 @@ const char kAutomatedPasswordChangeEnterprisePolicyAllowed[] =
 const char kNotificationContentDetectionEnterprisePolicyAllowed[] =
     "optimization_guide.model_execution.notification_content_detection_"
     "enterprise_policy_allowed";
+
+const char kBlingPrototypingEnterprisePolicyAllowed[] =
+    "optimization_guide.model_execution.bling_prototyping_enterprise_policy_"
+    "allowed";
 }  // namespace prefs
 
 namespace features {
@@ -76,6 +80,8 @@ BASE_FEATURE(kPasswordChangeSubmissionMqlsLogging,
 
 BASE_FEATURE(kNotificationContentDetectionMqlsLogging,
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kBlingPrototypingMqlsLogging, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
 
@@ -263,6 +269,16 @@ void RegisterNotificationContentDetection() {
   MqlsFeatureRegistry::GetInstance().Register(std::move(metadata));
 }
 
+void RegisterBlingPrototyping() {
+  MqlsFeatureRegistry::GetInstance().Register(
+      std::make_unique<MqlsFeatureMetadata>(
+          "BlingPrototyping",
+          proto::LogAiDataRequest::FeatureCase::kBlingPrototyping,
+          EnterprisePolicyRegistry::GetInstance().Register(
+              prefs::kBlingPrototypingEnterprisePolicyAllowed),
+          &features::kBlingPrototypingMqlsLogging, FeedbackUnspecified()));
+}
+
 }  // anonymous namespace
 
 void RegisterGenAiFeatures(PrefRegistrySimple* pref_registry) {
@@ -282,6 +298,7 @@ void RegisterGenAiFeatures(PrefRegistrySimple* pref_registry) {
     RegisterAutofillPredictions();
     RegisterPasswordChangeSubmission();
     RegisterNotificationContentDetection();
+    RegisterBlingPrototyping();
     features_registered = true;
   }
   EnterprisePolicyRegistry::GetInstance().RegisterProfilePrefs(pref_registry);
