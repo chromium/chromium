@@ -61,6 +61,7 @@ source_set("actor") {
     "//chrome/browser/page_content_annotations:fetcher",
     "//chrome/browser/password_manager/actor_login:service",
     "//chrome/browser/profiles",
+    "//chrome/browser/search",
     "//chrome/common",
     "//chrome/common:actor_webui_mojom",
     "//components/autofill/core/browser/integrators/glic:actor_form_filling_types",

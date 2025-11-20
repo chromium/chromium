@@ -12,12 +12,16 @@
 #include "chrome/browser/actor/browser_action_util.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/glic/host/glic_actor_interactive_uitest_common.h"
+#include "chrome/browser/search/search.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/gfx/geometry/point.h"
+#include "url/origin.h"
+#include "url/url_constants.h"
 
 namespace glic::test {
 
@@ -39,6 +43,30 @@ class GlicActorGeneralUiTest : public GlicActorUiTest {
                        tabs::TabHandle& observe_tab_handle,
                        ExpectedErrorResult expected_result = {});
   MultiStep WaitAction(ExpectedErrorResult expected_result = {});
+
+  MultiStep CreateActorTab(int initiator_tab,
+                           int initiator_window,
+                           bool open_in_background,
+                           int* out_acting_tab_id) {
+    return Steps(ExecuteInGlic(base::BindLambdaForTesting(
+        [=, this](content::WebContents* glic_contents) {
+          std::string script = content::JsReplace(
+              R"JS(
+                    (async () => {
+                      const result = await client.browser.createActorTab($1, {
+                        openInBackground: $2,
+                        initiatorTabId: ($3).toString(),
+                        initiatorWindowId: ($4).toString()
+                      });
+                      return Number.parseInt(result.tabId, 10);
+                    })()
+                  )JS",
+              task_id_.value(), open_in_background, initiator_tab,
+              initiator_window);
+          *out_acting_tab_id =
+              content::EvalJs(glic_contents, script).ExtractInt();
+        })));
+  }
 
  protected:
   static constexpr base::TimeDelta kWaitTime = base::Milliseconds(1);
@@ -403,38 +431,28 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest, CreateActorTabForeground) {
       embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
   int created_tab_id = -1;
 
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+  const int initiator_tab_id = GetActiveTabHandle().raw_value();
+  const int initiator_window = browser()->session_id().id();
+  const bool open_in_background = false;
+
   RunTestSequence(
       // clang-format off
       InitializeWithOpenGlicWindow(),
       CreateTask(task_id_, ""),
-      ExecuteInGlic(base::BindLambdaForTesting(
-          [&](content::WebContents* glic_contents) {
-            int initiator_tab = GetActiveTabHandle().raw_value();
-            int initiator_window = browser()->session_id().id();
-            bool open_in_background = false;
-            std::string script = content::JsReplace(
-                R"JS(
-                  (async () => {
-                    const result = await client.browser.createActorTab($1, {
-                      openInBackground: $2,
-                      initiatorTabId: ($3).toString(),
-                      initiatorWindowId: ($4).toString()
-                    });
-                    return Number.parseInt(result.tabId, 10);
-                  })()
-                )JS", task_id_.value(), open_in_background, initiator_tab,
-                initiator_window);
-            created_tab_id =
-                content::EvalJs(glic_contents, script).ExtractInt();
-      })),
+      CreateActorTab(initiator_tab_id,
+                     initiator_window,
+                     open_in_background,
+                     &created_tab_id),
       Do([&]() {
         // Ensure the new tab is the active tab
         EXPECT_EQ(created_tab_id, GetActiveTabHandle().raw_value());
 
-        // Ensure the new tab was created but is in the background..
+        // Ensure the new tab was created but is in the foreground.
         tabs::TabInterface* tab = tabs::TabHandle(created_tab_id).Get();
         EXPECT_TRUE(tab);
-        EXPECT_TRUE(tab->IsActivated());
+        EXPECT_TRUE(
+            tab_strip->IsTabInForeground(tab_strip->GetIndexOfTab((tab))));
       })
     );
   // clang-format on
@@ -446,6 +464,11 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest, CreateActorTabBackground) {
   int existing_tab_id = -1;
   int created_tab_id = -1;
 
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+  const int initiator_tab_id = GetActiveTabHandle().raw_value();
+  const int initiator_window = browser()->session_id().id();
+  const bool open_in_background = true;
+
   RunTestSequence(
       // clang-format off
       InitializeWithOpenGlicWindow(),
@@ -453,34 +476,134 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest, CreateActorTabBackground) {
       Do([&]() {
         existing_tab_id = GetActiveTabHandle().raw_value();
       }),
-      ExecuteInGlic(base::BindLambdaForTesting(
-          [&](content::WebContents* glic_contents) {
-            int initiator_tab = GetActiveTabHandle().raw_value();
-            int initiator_window = browser()->session_id().id();
-            bool open_in_background = true;
-            std::string script = content::JsReplace(
-                R"JS(
-                  (async () => {
-                    const result = await client.browser.createActorTab($1, {
-                      openInBackground: $2,
-                      initiatorTabId: ($3).toString(),
-                      initiatorWindowId: ($4).toString()
-                    });
-                    return Number.parseInt(result.tabId, 10);
-                  })()
-                )JS", task_id_.value(), open_in_background, initiator_tab,
-                initiator_window);
-            created_tab_id =
-                content::EvalJs(glic_contents, script).ExtractInt();
-      })),
+      CreateActorTab(initiator_tab_id,
+                     initiator_window,
+                     open_in_background,
+                     &created_tab_id),
       Do([&]() {
         // Ensure the previous tab remains in foreground.
         EXPECT_EQ(existing_tab_id, GetActiveTabHandle().raw_value());
 
-        // Ensure the new tab was created but is in the background..
+        // Ensure the new tab was created and is in the background.
         tabs::TabInterface* tab = tabs::TabHandle(created_tab_id).Get();
         EXPECT_TRUE(tab);
-        EXPECT_FALSE(tab->IsActivated());
+        EXPECT_FALSE(
+            tab_strip->IsTabInForeground(tab_strip->GetIndexOfTab((tab))));
+      })
+    );
+  // clang-format on
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest, CreateActorTabOnNewTabPage) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTabId);
+
+  int acting_tab_id = -1;
+
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+  tabs::TabInterface* ntp_tab;
+
+  const int initiator_tab_id = GetActiveTabHandle().raw_value();
+  const int initiator_window = browser()->session_id().id();
+  const bool open_in_background = true;
+
+  RunTestSequence(
+      // clang-format off
+      InitializeWithOpenGlicWindow(),
+      InstrumentTab(kActiveTabId),
+      NavigateWebContents(kActiveTabId, GURL(chrome::kChromeUINewTabURL)),
+      InAnyContext(WithElement(kActiveTabId, [&, this](ui::TrackedElement* el) {
+        content::WebContents* contents =
+            AsInstrumentedWebContents(el)->web_contents();
+        ntp_tab = tabs::TabInterface::GetFromContents(contents);
+        CHECK(ntp_tab);
+
+        // Create another tab to ensure we're using the initiator tab.
+        ui_test_utils::NavigateToURLWithDisposition(
+            browser(), GURL(url::kAboutBlankURL),
+            WindowOpenDisposition::NEW_FOREGROUND_TAB,
+            ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
+
+        // Sanity check - we'll ensure these won't change after binding to the
+        // NTP.
+        ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
+        ASSERT_FALSE(
+            tab_strip->IsTabInForeground(tab_strip->GetIndexOfTab((ntp_tab))));
+      })),
+      CreateTask(task_id_, ""),
+      CreateActorTab(initiator_tab_id,
+                     initiator_window,
+                     open_in_background,
+                     &acting_tab_id),
+      Do([&]() {
+        // Ensure the tab returned from CreateActorTab binds to the existing
+        // NTP.
+        EXPECT_EQ(acting_tab_id, ntp_tab->GetHandle().raw_value())
+            << "CreateActorTab didn't reuse NTP initiator tab";
+
+        // Ensure no new tab was created.
+        EXPECT_EQ(tab_strip->count(), 2);
+
+        // Ensure the NTP isn't focused since `open_in_background` was set.
+        EXPECT_FALSE(
+            tab_strip->IsTabInForeground(tab_strip->GetIndexOfTab((ntp_tab))));
+      })
+    );
+  // clang-format on
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest,
+                       CreateActorTabOnNewTabPageForeground) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTabId);
+
+  int acting_tab_id = -1;
+
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+  tabs::TabInterface* ntp_tab;
+
+  const int initiator_tab_id = GetActiveTabHandle().raw_value();
+  const int initiator_window = browser()->session_id().id();
+  const bool open_in_background = false;
+
+  RunTestSequence(
+      // clang-format off
+      InitializeWithOpenGlicWindow(),
+      InstrumentTab(kActiveTabId),
+      NavigateWebContents(kActiveTabId, GURL(chrome::kChromeUINewTabURL)),
+      InAnyContext(WithElement(kActiveTabId, [&, this](ui::TrackedElement* el) {
+        content::WebContents* contents =
+            AsInstrumentedWebContents(el)->web_contents();
+        ntp_tab = tabs::TabInterface::GetFromContents(contents);
+        CHECK(ntp_tab);
+
+        // Create another tab to ensure we're using the initiator tab.
+        ui_test_utils::NavigateToURLWithDisposition(
+            browser(), GURL(url::kAboutBlankURL),
+            WindowOpenDisposition::NEW_FOREGROUND_TAB,
+            ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
+
+        // Sanity check - we'll ensure these won't change after binding to the
+        // NTP.
+        ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
+        ASSERT_FALSE(
+            tab_strip->IsTabInForeground(tab_strip->GetIndexOfTab((ntp_tab))));
+      })),
+      CreateTask(task_id_, ""),
+      CreateActorTab(initiator_tab_id,
+                     initiator_window,
+                     open_in_background,
+                     &acting_tab_id),
+      Do([&]() {
+        // Ensure the tab returned from CreateActorTab binds to the existing
+        // NTP.
+        EXPECT_EQ(acting_tab_id, ntp_tab->GetHandle().raw_value())
+            << "CreateActorTab didn't reuse NTP initiator tab";
+
+        // Ensure no new tab was created.
+        EXPECT_EQ(tab_strip->count(), 2);
+
+        // Ensure the NTP is focused since `open_in_background` wasn't set.
+        EXPECT_TRUE(
+            tab_strip->IsTabInForeground(tab_strip->GetIndexOfTab((ntp_tab))));
       })
     );
   // clang-format on
