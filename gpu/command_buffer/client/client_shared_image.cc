@@ -697,9 +697,26 @@ scoped_refptr<ClientSharedImage> ClientSharedImage::CreateForTesting(
 scoped_refptr<ClientSharedImage> ClientSharedImage::CreateForTesting(
     const SharedImageMetadata& metadata,
     uint32_t texture_target) {
-  return ImportUnowned(ExportedSharedImage(
-      Mailbox::Generate(), metadata, SyncToken(), "CSICreateForTesting",
-      std::nullopt, std::nullopt, texture_target));
+  return CreateForTesting(Mailbox::Generate(), metadata,  // IN-TEST
+                          SyncToken(), texture_target);
+}
+
+// static
+scoped_refptr<ClientSharedImage>
+ClientSharedImage::CreateForTesting(  // IN-TEST
+    const Mailbox& mailbox,
+    const SharedImageMetadata& metadata,
+    const SyncToken& sync_token,
+    uint32_t texture_target,
+    bool is_software) {
+  gpu::ExportedSharedImage exported_shared_image = gpu::ExportedSharedImage(
+      mailbox, metadata, sync_token, "CSICreateForTesting",
+      /*buffer_handle=*/std::nullopt, /*buffer_usage=*/std::nullopt,
+      texture_target);
+  auto shared_image =
+      gpu::ClientSharedImage::ImportUnowned(std::move(exported_shared_image));
+  shared_image->is_software_ = is_software;
+  return shared_image;
 }
 
 // static

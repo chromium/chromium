@@ -251,6 +251,12 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
       uint32_t texture_target);
 
   using AsyncMapCompletionCallback = base::OnceCallback<void(bool)>;
+  static scoped_refptr<ClientSharedImage> CreateForTesting(
+      const Mailbox& mailbox,
+      const SharedImageMetadata& metadata,
+      const SyncToken& sync_token,
+      uint32_t texture_target,
+      bool is_software = false);
 
   static scoped_refptr<ClientSharedImage> CreateForTesting(
       const Mailbox& mailbox,
