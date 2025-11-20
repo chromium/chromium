@@ -355,8 +355,7 @@ TEST_F(OnDeviceModelComponentTest, UninstallNeededDueToDiskSpace) {
                                 base::Time::Now());
 
   // 10gb is the default in `IsFreeDiskSpaceTooLowForOnDeviceModelInstall`.
-  broker_.component_state().SetFreeDiskSpace(base::GiB(10) -
-                                             base::ByteCount(1));
+  broker_.component_state().SetFreeDiskSpace(base::GiB(5) - base::ByteCount(1));
 
   // Should uninstall right away. Unlike most install requirements, the disk
   // space requirement is not subject to `GetOnDeviceModelRetentionTime()`.

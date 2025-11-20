@@ -494,7 +494,7 @@ bool IsFreeDiskSpaceTooLowForOnDeviceModelInstall(
   return base::MiB(base::GetFieldTrialParamByFeatureAsInt(
              kOptimizationGuideOnDeviceModel,
              "on_device_model_free_space_mb_required_to_retain",
-             base::GiB(10).InMiB())) >= free_disk_space_bytes;
+             base::GiB(5).InMiB())) >= free_disk_space_bytes;
 }
 
 bool GetOnDeviceModelRetractUnsafeContent() {
