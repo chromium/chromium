@@ -34,11 +34,13 @@ void AddLayers(CascadeLayer* canonical_layer,
   }
 }
 
-void ComputeLayerOrder(CascadeLayer& layer, uint16_t& next) {
+void ComputeLayerOrder(CascadeLayer& layer,
+                       uint16_t& next,
+                       LayerOrderMap& canonical_layer_order_map) {
   for (const auto& sub_layer : layer.GetDirectSubLayers()) {
-    ComputeLayerOrder(*sub_layer, next);
+    ComputeLayerOrder(*sub_layer, next, canonical_layer_order_map);
   }
-  layer.SetOrder(next++);
+  canonical_layer_order_map.insert(&layer, next++);
 }
 
 }  // namespace
@@ -56,15 +58,16 @@ CascadeLayerMap::CascadeLayerMap(const ActiveStyleSheetVector& sheets) {
   }
 
   uint16_t next = 0;
-  ComputeLayerOrder(*canonical_root_layer, next);
+  LayerOrderMap canonical_layer_order_map;
+  ComputeLayerOrder(*canonical_root_layer, next, canonical_layer_order_map);
+  canonical_layer_order_map.Set(canonical_root_layer, kImplicitOuterLayerOrder);
 
-  canonical_root_layer->SetOrder(kImplicitOuterLayerOrder);
   canonical_root_layer_ = canonical_root_layer;
 
   for (const auto& iter : canonical_layer_map) {
     const CascadeLayer* layer_from_sheet = iter.key;
     const CascadeLayer* canonical_layer = iter.value;
-    uint16_t layer_order = canonical_layer->GetOrder().value();
+    uint16_t layer_order = canonical_layer_order_map.at(canonical_layer);
     layer_order_map_.insert(layer_from_sheet, layer_order);
 
 #if DCHECK_IS_ON()

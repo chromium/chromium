@@ -479,7 +479,7 @@ class CORE_EXPORT InspectorCSSAgent final
 
   std::unique_ptr<protocol::CSS::CSSLayerData> BuildLayerDataObject(
       const CascadeLayer* layer,
-      unsigned& max_order);
+      unsigned& order);
 
   // Layers at-rule implementation
   std::unique_ptr<protocol::CSS::CSSLayer> BuildLayerObject(

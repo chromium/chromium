@@ -1226,23 +1226,27 @@ protocol::Response InspectorCSSAgent::getMediaQueries(
 
 std::unique_ptr<protocol::CSS::CSSLayerData>
 InspectorCSSAgent::BuildLayerDataObject(const CascadeLayer* layer,
-                                        unsigned& max_order) {
-  const unsigned order = layer->GetOrder().value_or(0);
-  max_order = max(max_order, order);
+                                        unsigned& order) {
+  // Build sub-layers first, as they are weaker than `layer`, and must
+  // therefore get a smaller `order` value.
+  const HeapVector<Member<CascadeLayer>>& sublayers =
+      layer->GetDirectSubLayers();
+  std::unique_ptr<protocol::Array<protocol::CSS::CSSLayerData>> sublayers_data;
+  if (!sublayers.empty()) {
+    sublayers_data =
+        std::make_unique<protocol::Array<protocol::CSS::CSSLayerData>>();
+    for (const CascadeLayer* sublayer : sublayers) {
+      sublayers_data->emplace_back(BuildLayerDataObject(sublayer, order));
+    }
+  }
   std::unique_ptr<protocol::CSS::CSSLayerData> layer_data =
       protocol::CSS::CSSLayerData::create()
           .setName(layer->GetName())
-          .setOrder(order)
+          .setOrder(order++)
           .build();
-  const auto& sublayers = layer->GetDirectSubLayers();
-  if (sublayers.empty())
-    return layer_data;
-
-  auto sublayers_data =
-      std::make_unique<protocol::Array<protocol::CSS::CSSLayerData>>();
-  for (const CascadeLayer* sublayer : sublayers)
-    sublayers_data->emplace_back(BuildLayerDataObject(sublayer, max_order));
-  layer_data->setSubLayers(std::move(sublayers_data));
+  if (sublayers_data) {
+    layer_data->setSubLayers(std::move(sublayers_data));
+  }
   return layer_data;
 }
 
@@ -1257,7 +1261,7 @@ protocol::Response InspectorCSSAgent::getLayersForNode(
 
   *root_layer = protocol::CSS::CSSLayerData::create()
                     .setName("implicit outer layer")
-                    .setOrder(0)
+                    .setOrder(0)  // Tentative. The final value is set below.
                     .build();
 
   const auto* scoped_resolver =
@@ -1273,12 +1277,17 @@ protocol::Response InspectorCSSAgent::getLayersForNode(
     return protocol::Response::Success();
 
   const CascadeLayer* root = layer_map->GetRootLayer();
-  unsigned max_order = 0;
+  unsigned order = 0;
   auto sublayers_data =
       std::make_unique<protocol::Array<protocol::CSS::CSSLayerData>>();
-  for (const auto& sublayer : root->GetDirectSubLayers())
-    sublayers_data->emplace_back(BuildLayerDataObject(sublayer, max_order));
-  (*root_layer)->setOrder(max_order + 1);
+  for (const auto& sublayer : root->GetDirectSubLayers()) {
+    sublayers_data->emplace_back(BuildLayerDataObject(sublayer, order));
+  }
+  // Note that a mutable reference to `order` was passed to
+  // BuildLayerDataObject() above; its value is now equal to the total
+  // number of layers seen by that call, i.e. bigger than any other
+  // layer order.
+  (*root_layer)->setOrder(order);
   (*root_layer)->setSubLayers(std::move(sublayers_data));
 
   return protocol::Response::Success();
