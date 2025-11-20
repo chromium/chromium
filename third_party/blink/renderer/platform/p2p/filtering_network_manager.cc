@@ -67,8 +67,12 @@ void FilteringNetworkManager::StartUpdating() {
 
   if (!start_updating_called_) {
     start_updating_called_ = true;
-    network_manager_for_signaling_thread_->SignalNetworksChanged.connect(
-        this, &FilteringNetworkManager::OnNetworksChanged);
+    network_manager_for_signaling_thread_->SubscribeNetworksChanged(
+        [that = GetWeakPtr()] {
+          if (that) {
+            that->OnNetworksChanged();
+          }
+        });
   }
 
   // Update |pending_network_update_| and |start_count_| before calling
@@ -229,7 +233,7 @@ void FilteringNetworkManager::FireEventIfStarted() {
 }
 
 void FilteringNetworkManager::SendNetworksChangedSignal() {
-  SignalNetworksChanged();
+  NotifyNetworksChanged();
 }
 
 }  // namespace blink
