@@ -551,7 +551,7 @@ void ExecutionContext::Trace(Visitor* visitor) const {
   visitor->Trace(origin_trial_context_);
   visitor->Trace(content_security_policy_);
   visitor->Trace(runtime_feature_state_override_context_);
-  visitor->Trace(global_indexed_db_impl_);
+  visitor->Trace(global_indexed_db_);
   visitor->Trace(abort_signal_registry_);
   visitor->Trace(context_feature_settings_);
   visitor->Trace(dom_scheduler_);

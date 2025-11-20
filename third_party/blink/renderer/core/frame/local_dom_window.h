@@ -151,8 +151,6 @@ template <typename T>
 class GlobalCookieStoreImpl;
 template <typename T, typename P>
 class GlobalPerformanceImpl;
-template <typename T>
-class GlobalIndexedDBImpl;
 
 namespace scheduler {
 class TaskAttributionInfo;
@@ -659,16 +657,6 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
     global_performance_impl_ = global_performance_impl;
   }
 
-  ForwardDeclaredMember<GlobalIndexedDBImpl<LocalDOMWindow>>
-  GetGlobalIndexedDBImpl() const {
-    return global_indexed_db_impl_;
-  }
-  void SetGlobalIndexedDBImpl(
-      ForwardDeclaredMember<GlobalIndexedDBImpl<LocalDOMWindow>>
-          global_indexed_db_impl) {
-    global_indexed_db_impl_ = global_indexed_db_impl;
-  }
-
   CachedPermissionStatus* GetCachedPermissionStatus() const {
     return cached_permission_status_;
   }
@@ -1157,8 +1145,6 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   ForwardDeclaredMember<
       GlobalPerformanceImpl<LocalDOMWindow, WindowPerformance>>
       global_performance_impl_;
-  ForwardDeclaredMember<GlobalIndexedDBImpl<LocalDOMWindow>>
-      global_indexed_db_impl_;
 
   Member<CachedPermissionStatus> cached_permission_status_;
   Member<ContainerTiming> container_timing_;

@@ -849,9 +849,9 @@ void WorkerGlobalScope::Trace(Visitor* visitor) const {
   visitor->Trace(global_cache_storage_impl_);
   visitor->Trace(global_cookie_store_impl_);
   visitor->Trace(global_performance_impl_);
-  visitor->Trace(global_indexed_db_impl_);
   visitor->Trace(font_face_set_worker_);
   visitor->Trace(worker_global_scope_crypto_);
+  ExecutionContext::Trace(visitor);
   WorkerOrWorkletGlobalScope::Trace(visitor);
 }
 

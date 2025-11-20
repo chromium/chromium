@@ -2551,7 +2551,6 @@ void LocalDOMWindow::Trace(Visitor* visitor) const {
   visitor->Trace(global_cache_storage_impl_);
   visitor->Trace(global_cookie_store_impl_);
   visitor->Trace(global_performance_impl_);
-  visitor->Trace(global_indexed_db_impl_);
   visitor->Trace(cached_permission_status_);
   visitor->Trace(container_timing_);
   visitor->Trace(fullscreen_);
