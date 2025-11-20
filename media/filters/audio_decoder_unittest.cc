@@ -215,12 +215,18 @@ class AudioDecoderTest
 
   void SetReinitializeParams();
 
-  void Initialize() {
+  // Initializes the AudioFileReader from the `filename_` property.
+  void InitializeReader() {
     // Load the test data file.
     data_ = ReadTestDataFile(params_.filename);
     protocol_ = std::make_unique<InMemoryUrlProtocol>(*data_, false);
     reader_ = std::make_unique<AudioFileReader>(protocol_.get());
     ASSERT_TRUE(reader_->OpenDemuxerForTesting());
+  }
+
+  void Initialize() {
+    filename_ = params_.filename;
+    InitializeReader();
 
     // Load the first packet and check its timestamp.
     auto packet = ScopedAVPacket::Allocate();
@@ -229,8 +235,8 @@ class AudioDecoderTest
     start_timestamp_ = ConvertFromTimeBase(
         reader_->GetAVStreamForTesting()->time_base, packet->pts);
 
-    // Seek back to the beginning.
-    ASSERT_TRUE(reader_->SeekForTesting(start_timestamp_));
+    // Reset the reader back to the beginning.
+    InitializeReader();
 
     AudioDecoderConfig config;
     ASSERT_TRUE(AVCodecContextToAudioDecoderConfig(
@@ -310,7 +316,7 @@ class AudioDecoderTest
     DecodeBuffer(std::move(buffer));
   }
 
-  void Reset() {
+  void ResetDecoder() {
     ASSERT_FALSE(pending_reset_);
     pending_reset_ = true;
 
@@ -322,10 +328,10 @@ class AudioDecoderTest
     ASSERT_FALSE(pending_reset_);
   }
 
-  void Seek(base::TimeDelta seek_time) {
-    Reset();
+  void ResetReader() {
+    ResetDecoder();
     decoded_audio_.clear();
-    ASSERT_TRUE(reader_->SeekForTesting(seek_time));
+    InitializeReader();
   }
 
   void OnDecoderOutput(scoped_refptr<AudioBuffer> buffer) {
@@ -428,6 +434,7 @@ class AudioDecoderTest
 
   NullMediaLog media_log_;
   scoped_refptr<DecoderBuffer> data_;
+  const char* filename_ = nullptr;
   std::unique_ptr<InMemoryUrlProtocol> protocol_;
   std::unique_ptr<AudioFileReader> reader_;
 
@@ -681,17 +688,17 @@ TEST_P(AudioDecoderTest, Reinitialize_AfterDecode) {
 TEST_P(AudioDecoderTest, Reinitialize_AfterReset) {
   ASSERT_NO_FATAL_FAILURE(Initialize());
   Decode();
-  Reset();
+  ResetDecoder();
   SetReinitializeParams();
   ASSERT_NO_FATAL_FAILURE(Initialize());
   Decode();
 }
 
-// Verifies decode audio as well as the Decode() -> Reset() sequence.
+// Verifies decode audio as well as the Decode() -> ResetDecoder() sequence.
 TEST_P(AudioDecoderTest, ProduceAudioSamples) {
   ASSERT_NO_FATAL_FAILURE(Initialize());
 
-  // Run the test multiple times with a seek back to the beginning in between.
+  // Run the test multiple times with a reset back to the beginning in between.
   std::vector<std::string> decoded_audio_sha256_hashes;
   for (int i = 0; i < 2; ++i) {
     // Run decoder until we get at least |kDecodeRuns| output buffers.
@@ -722,9 +729,7 @@ TEST_P(AudioDecoderTest, ProduceAudioSamples) {
     }
 
     SendEndOfStream();
-
-    // Seek back to the beginning.  Calls Reset() on the decoder.
-    Seek(start_timestamp());
+    ResetReader();
   }
 }
 
@@ -756,7 +761,7 @@ TEST_P(AudioDecoderTest, DecodeEOSFirst) {
 
 TEST_P(AudioDecoderTest, Reset) {
   ASSERT_NO_FATAL_FAILURE(Initialize());
-  Reset();
+  ResetDecoder();
 }
 
 TEST_P(AudioDecoderTest, NoTimestamp) {

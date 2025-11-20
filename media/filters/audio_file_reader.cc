@@ -383,14 +383,6 @@ bool AudioFileReader::IsMp3File() {
          container_names::MediaContainerName::kContainerMP3;
 }
 
-bool AudioFileReader::SeekForTesting(base::TimeDelta seek_time) {
-  // Use the AVStream's time_base, since |codec_context_| does not have
-  // time_base populated until after OpenDecoder().
-  return av_seek_frame(glue_->format_context(), *stream_index_,
-                       ConvertToTimeBase(stream()->time_base, seek_time),
-                       AVSEEK_FLAG_BACKWARD) >= 0;
-}
-
 const AVStream* AudioFileReader::stream() const {
   return AVFormatContextToSpan(glue_->format_context())[*stream_index_];
 }

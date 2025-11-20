@@ -343,15 +343,6 @@ bool LegacyAudioFileReader::IsMp3File() {
          container_names::MediaContainerName::kContainerMP3;
 }
 
-bool LegacyAudioFileReader::SeekForTesting(base::TimeDelta seek_time) {
-  // Use the AVStream's time_base, since |codec_context_| does not have
-  // time_base populated until after OpenDecoder().
-  return av_seek_frame(
-             glue_->format_context(), stream_index_,
-             ConvertToTimeBase(GetAVStreamForTesting()->time_base, seek_time),
-             AVSEEK_FLAG_BACKWARD) >= 0;
-}
-
 const AVStream* LegacyAudioFileReader::GetAVStreamForTesting() const {
   return UNSAFE_TODO(glue_->format_context()->streams[stream_index_]);
 }

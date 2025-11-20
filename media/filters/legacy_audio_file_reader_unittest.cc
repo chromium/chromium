@@ -27,11 +27,13 @@ class LegacyAudioFileReaderTest : public testing::Test {
   LegacyAudioFileReaderTest() : packet_verification_disabled_(false) {}
 
   LegacyAudioFileReaderTest(const LegacyAudioFileReaderTest&) = delete;
-  LegacyAudioFileReaderTest& operator=(const LegacyAudioFileReaderTest&) = delete;
+  LegacyAudioFileReaderTest& operator=(const LegacyAudioFileReaderTest&) =
+      delete;
 
   ~LegacyAudioFileReaderTest() override = default;
 
   void Initialize(const char* filename) {
+    filename_ = filename;
     data_ = ReadTestDataFile(filename);
     protocol_ = std::make_unique<InMemoryUrlProtocol>(*data_, false);
     reader_ = std::make_unique<LegacyAudioFileReader>(protocol_.get());
@@ -57,6 +59,12 @@ class LegacyAudioFileReaderTest : public testing::Test {
     AudioHash audio_hash;
     audio_hash.Update(decoded_audio_data.get(), actual_frames);
     EXPECT_EQ(expected_audio_hash, audio_hash.ToString());
+  }
+
+  void ResetReader() {
+    ASSERT_TRUE(filename_);
+    Initialize(filename_);
+    ASSERT_TRUE(reader_->Open());
   }
 
   // Verify packets are consistent across demuxer runs.  Reads the first few
@@ -92,7 +100,7 @@ class LegacyAudioFileReaderTest : public testing::Test {
 
         av_packet_unref(packet.get());
       }
-      ASSERT_TRUE(reader_->SeekForTesting(start_timestamp));
+      ResetReader();
     }
   }
 
@@ -116,8 +124,9 @@ class LegacyAudioFileReaderTest : public testing::Test {
     } else {
       EXPECT_EQ(reader_->HasKnownDuration(), false);
     }
-    if (!packet_verification_disabled_)
+    if (!packet_verification_disabled_) {
       ASSERT_NO_FATAL_FAILURE(VerifyPackets(packet_reads));
+    }
     ReadAndVerify(hash, expected_frames);
   }
 
@@ -145,6 +154,7 @@ class LegacyAudioFileReaderTest : public testing::Test {
   void disable_packet_verification() { packet_verification_disabled_ = true; }
 
  protected:
+  const char* filename_ = nullptr;
   scoped_refptr<DecoderBuffer> data_;
   std::unique_ptr<InMemoryUrlProtocol> protocol_;
   std::unique_ptr<LegacyAudioFileReader> reader_;

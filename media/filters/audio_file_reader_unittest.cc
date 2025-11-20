@@ -42,6 +42,7 @@ class AudioFileReaderTest : public testing::TestWithParam<bool> {
   ~AudioFileReaderTest() override = default;
 
   void Initialize(const char* filename) {
+    filename_ = filename;
     data_ = ReadTestDataFile(filename);
     protocol_ = std::make_unique<InMemoryUrlProtocol>(*data_, false);
     reader_ = std::make_unique<AudioFileReader>(protocol_.get());
@@ -71,28 +72,28 @@ class AudioFileReaderTest : public testing::TestWithParam<bool> {
     EXPECT_STREQ(expected_audio_hash, audio_hash.ToString().c_str());
   }
 
+  void ResetReader() {
+    ASSERT_TRUE(filename_);
+    Initialize(filename_);
+    ASSERT_TRUE(reader_->Open());
+  }
+
   // Verify packets are consistent across demuxer runs.  Reads the first few
   // packets and then seeks back to the start timestamp and verifies that the
   // hashes match on the packets just read.
-  void VerifyPackets(int packet_reads) {
+  void VerifyPackets(const char* filename, int packet_reads) {
     auto packet = ScopedAVPacket::Allocate();
     std::vector<std::array<uint8_t, crypto::hash::kSha256Size>> packet_hashes;
 
     // First, populate the packet hashes.
-    std::optional<base::TimeDelta> start_timestamp;
     for (int i = 0; i < packet_reads; ++i) {
       ASSERT_TRUE(reader_->ReadPacketForTesting(packet.get())) << "i = " << i;
-      if (!start_timestamp) {
-        start_timestamp = ConvertFromTimeBase(
-            reader_->GetAVStreamForTesting()->time_base, packet->pts);
-      }
       packet_hashes.push_back(crypto::hash::Sha256(AVPacketData(*packet)));
       av_packet_unref(packet.get());
     }
 
-    // Then seek to the beginning.
-    ASSERT_TRUE(start_timestamp);
-    ASSERT_TRUE(reader_->SeekForTesting(start_timestamp.value()));
+    // Then re-initialize the reader to seek to the beginning.
+    ResetReader();
 
     // Then validate the hashes.
     for (int i = 0; i < packet_reads; ++i) {
@@ -102,9 +103,8 @@ class AudioFileReaderTest : public testing::TestWithParam<bool> {
       av_packet_unref(packet.get());
     }
 
-    // Finally, seek to the beginning again.
-    ASSERT_TRUE(start_timestamp);
-    ASSERT_TRUE(reader_->SeekForTesting(start_timestamp.value()));
+    // Finally, re-initialize the reader to seek to the beginning again.
+    ResetReader();
   }
 
   void RunTest(const char* fn,
@@ -127,8 +127,9 @@ class AudioFileReaderTest : public testing::TestWithParam<bool> {
     } else {
       EXPECT_EQ(reader_->HasKnownDuration(), false);
     }
-    if (!packet_verification_disabled_)
-      ASSERT_NO_FATAL_FAILURE(VerifyPackets(packet_reads));
+    if (!packet_verification_disabled_) {
+      ASSERT_NO_FATAL_FAILURE(VerifyPackets(fn, packet_reads));
+    }
     ReadAndVerify(hash, expected_frames);
   }
 
@@ -157,6 +158,7 @@ class AudioFileReaderTest : public testing::TestWithParam<bool> {
 
  protected:
   base::test::ScopedFeatureList feature_list_;
+  const char* filename_ = nullptr;
   scoped_refptr<DecoderBuffer> data_;
   std::unique_ptr<InMemoryUrlProtocol> protocol_;
   std::unique_ptr<AudioFileReader> reader_;
@@ -260,8 +262,8 @@ TEST_P(AudioFileReaderTest, ReadPartialMP3) {
 }
 
 TEST_P(AudioFileReaderTest, OpusOutputsF32Samples) {
-  RunTest("bear-opus.ogg", "3.64,0.30,0.34,-0.25,1.70,1.68,", 2, 48000,
-          base::Microseconds(2767022), 132818, 132169);
+  RunTest("bear-opus.ogg", "2.72,1.22,1.47,0.24,1.20,0.55,", 2, 48000,
+          base::Microseconds(2767022), 132818, 131857);
 }
 
 TEST_P(AudioFileReaderTest, OpusTrimmingTest) {
@@ -270,8 +272,8 @@ TEST_P(AudioFileReaderTest, OpusTrimmingTest) {
 }
 
 TEST_P(AudioFileReaderTest, OpusDecodeTest) {
-  RunTest("opus-test.opus", "0.67,-0.92,4.13,1.95,4.16,-1.02,", 2, 48000,
-          base::Microseconds(1016480), 48792, 48479);
+  RunTest("opus-test.opus", "1.35,-1.25,3.07,0.87,3.91,0.09,", 2, 48000,
+          base::Microseconds(1016480), 48792, 48167);
 }
 
 // If Symphonia build support is enabled, test with both the Symphonia

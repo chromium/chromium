@@ -88,10 +88,6 @@ class MEDIA_EXPORT LegacyAudioFileReader {
   // the file, |output_packet| will contain the demuxed packet then.
   bool ReadPacketForTesting(AVPacket* output_packet);
 
-  // Seeks to the given point and returns true if successful.  |seek_time| will
-  // be converted to the stream's time base automatically.
-  bool SeekForTesting(base::TimeDelta seek_time);
-
   const AVStream* GetAVStreamForTesting() const;
   const AVCodecContext* codec_context_for_testing() const {
     return codec_context_.get();
