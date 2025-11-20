@@ -35,6 +35,15 @@ extern char const
 extern char const
     kActorRendererPageStabilityTimeFromMonitoringToNetworkAndMainThreadIdleMetricName
         [];
+extern char const
+    kActorRendererPaintStabilityTimeToFirstInteractionContentfulPaintMetricName
+        [];
+extern char const
+    kActorRendererPaintTabilityTimeBetweenInteractionContentfulPaintsMetricName
+        [];
+extern char const
+    kActorRendererPaintStabilitySubsequentInteractionContentfulPaintCountMetricName
+        [];
 
 }  // namespace actor
 

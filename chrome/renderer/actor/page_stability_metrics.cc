@@ -16,7 +16,17 @@ namespace actor {
 
 PageStabilityMetrics::PageStabilityMetrics() = default;
 
-PageStabilityMetrics::~PageStabilityMetrics() = default;
+PageStabilityMetrics::~PageStabilityMetrics() {
+  if (subsequent_contentful_paint_count_ > 0) {
+    base::UmaHistogramTimes(
+        kActorRendererPaintTabilityTimeBetweenInteractionContentfulPaintsMetricName,
+        total_time_between_interaction_contentful_paints_ /
+            subsequent_contentful_paint_count_);
+    base::UmaHistogramCounts100(
+        kActorRendererPaintStabilitySubsequentInteractionContentfulPaintCountMetricName,
+        subsequent_contentful_paint_count_);
+  }
+}
 
 void PageStabilityMetrics::Start() {
   CHECK(start_waiting_time_.is_null());
@@ -137,6 +147,22 @@ void PageStabilityMetrics::RecordTimingMetrics() {
       // recorded.
       break;
   }
+}
+
+void PageStabilityMetrics::OnInteractionContentfulPaint() {
+  const base::TimeTicks now = base::TimeTicks::Now();
+
+  if (last_interaction_contentful_paint_time_.is_null()) {
+    base::UmaHistogramTimes(
+        kActorRendererPaintStabilityTimeToFirstInteractionContentfulPaintMetricName,
+        now - start_waiting_time_);
+  } else {
+    subsequent_contentful_paint_count_++;
+    total_time_between_interaction_contentful_paints_ +=
+        now - last_interaction_contentful_paint_time_;
+  }
+
+  last_interaction_contentful_paint_time_ = now;
 }
 
 }  // namespace actor

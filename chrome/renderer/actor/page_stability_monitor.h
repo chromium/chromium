@@ -191,12 +191,12 @@ class PageStabilityMonitor : public content::RenderFrameObserver,
 
   base::raw_ref<Journal> journal_;
 
+  std::unique_ptr<PageStabilityMetrics> metrics_;
+
   // This will be null if paint stability monitoring is disabled, or if we're
   // monitoring an unsupported interaction. This must be destroyed before
   // `journal_entry_` to avoid a dangling pointer.
   std::unique_ptr<PaintStabilityMonitor> paint_stability_monitor_;
-
-  std::unique_ptr<PageStabilityMetrics> metrics_;
 
   bool render_frame_did_go_away_ = false;
 

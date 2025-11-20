@@ -28,4 +28,19 @@ const char
         [] = "Actor.RendererPageStability."
              "TimeFromMonitoringToNetworkAndMainThreadIdle";
 
+const char
+    kActorRendererPaintStabilityTimeToFirstInteractionContentfulPaintMetricName
+        [] = "Actor.RendererPaintStability."
+             "TimeToFirstInteractionContentfulPaint";
+
+const char
+    kActorRendererPaintTabilityTimeBetweenInteractionContentfulPaintsMetricName
+        [] = "Actor.RendererPaintStability."
+             "TimeBetweenInteractionContentfulPaints";
+
+const char
+    kActorRendererPaintStabilitySubsequentInteractionContentfulPaintCountMetricName
+        [] = "Actor.RendererPaintStability."
+             "SubsequentInteractionContentfulPaintCount";
+
 }  // namespace actor

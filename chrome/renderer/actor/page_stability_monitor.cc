@@ -104,7 +104,7 @@ void PageStabilityMonitor::NotifyWhenStable(base::TimeDelta observation_delay,
   monitoring_start_delay_ = observation_delay;
 
   if (paint_stability_monitor_) {
-    paint_stability_monitor_->Start();
+    paint_stability_monitor_->Start(metrics_.get());
   }
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -359,8 +359,6 @@ PageStabilityMonitor::PostCancelableMoveToStateClosure(State new_state,
 }
 
 void PageStabilityMonitor::OnPaintStabilityReached() {
-  paint_stability_monitor_.reset();
-
   CHECK(metrics_);
   metrics_->OnPaintStabilityReached();
 

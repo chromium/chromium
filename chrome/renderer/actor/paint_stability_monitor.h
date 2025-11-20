@@ -25,6 +25,7 @@ class RenderFrame;
 }  // namespace content
 
 namespace actor {
+class PageStabilityMetrics;
 class ToolBase;
 
 // Helper class for monitoring paint stability after tool usage using
@@ -52,7 +53,7 @@ class PaintStabilityMonitor
   // allows clients to enforce a minimum stability timeout threshold and tie
   // paint stability to other signals, while allowing this monitor to observe
   // all relevant paints.
-  void Start();
+  void Start(PageStabilityMetrics* metrics = nullptr);
 
   // Wait for paint stability and invoke `callback` once reached. `callback`
   // will only be invoked if `mode_` is enabled and not log-only. `callback`
@@ -73,6 +74,8 @@ class PaintStabilityMonitor
 
   bool is_started_ = false;
 
+  bool is_wait_for_stable_started_ = false;
+
   // Whether or not paint stability has been reached. This will be reset if new
   // contentful paints are detected after reaching stability, which can happen
   // between `Start()` and `WaitForStable()`.
@@ -87,6 +90,9 @@ class PaintStabilityMonitor
   // The journal for logging. The journal is owned by the render frame observer
   // which owns PageStabilityMonitor so it never outlives this class.
   raw_ref<Journal> journal_;
+
+  // This is owned by the PageStabilityMonitor and it never outlives this class.
+  raw_ptr<PageStabilityMetrics> metrics_;
 
   std::unique_ptr<blink::WebInteractionEffectsMonitor>
       interaction_effects_monitor_;

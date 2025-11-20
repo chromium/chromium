@@ -155,7 +155,7 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, NetworkAndMainThreadIdle) {
       kActorRendererPageStabilityTimeFromMonitoringToNetworkAndMainThreadIdleMetricName,
       1);
 
-  // Now verify that paint stability metric was still recorded when paint
+  // Now verify that paint stability metrics were still recorded when paint
   // stability was reached after callback invocation.
   histogram_tester.ExpectTotalCount(
       kActorRendererPageStabilityTimeFromMonitoringToPaintStabilityMetricName,
@@ -164,9 +164,13 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, NetworkAndMainThreadIdle) {
   content::SimulateMouseClickOrTapElementWithId(web_contents(), "btnPaint");
   ASSERT_TRUE(EnsureHistogramsRecorded(
       histogram_tester,
-      {kActorRendererPageStabilityTimeFromMonitoringToPaintStabilityMetricName}));
+      {kActorRendererPageStabilityTimeFromMonitoringToPaintStabilityMetricName,
+       kActorRendererPaintStabilityTimeToFirstInteractionContentfulPaintMetricName}));
   histogram_tester.ExpectTotalCount(
       kActorRendererPageStabilityTimeFromMonitoringToPaintStabilityMetricName,
+      1);
+  histogram_tester.ExpectTotalCount(
+      kActorRendererPaintStabilityTimeToFirstInteractionContentfulPaintMetricName,
       1);
 }
 
@@ -218,6 +222,12 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, Paint) {
   histogram_tester.ExpectTotalCount(
       kActorRendererPageStabilityTimeFromMonitoringToNetworkAndMainThreadIdleMetricName,
       0);
+  histogram_tester.ExpectTotalCount(
+      kActorRendererPaintStabilityTimeToFirstInteractionContentfulPaintMetricName,
+      1);
+  histogram_tester.ExpectTotalCount(
+      kActorRendererPaintTabilityTimeBetweenInteractionContentfulPaintsMetricName,
+      0);
 
   Respond("NETWORK DONE");
   ASSERT_TRUE(EnsureHistogramsRecorded(
@@ -226,6 +236,26 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, Paint) {
   histogram_tester.ExpectTotalCount(
       kActorRendererPageStabilityTimeFromMonitoringToNetworkAndMainThreadIdleMetricName,
       1);
+
+  // Verify that the metrics for subsequent interaction contentful paints were
+  // still recorded after paint stability.
+  content::SimulateMouseClickOrTapElementWithId(web_contents(), "btnPaint");
+  content::SimulateMouseClickOrTapElementWithId(web_contents(), "btnPaint");
+
+  // Navigate to a different page to cause the RenderFrame to be destroyed.
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), embedded_test_server()->GetURL("/title1.html")));
+
+  ASSERT_TRUE(EnsureHistogramsRecorded(
+      histogram_tester,
+      {kActorRendererPaintTabilityTimeBetweenInteractionContentfulPaintsMetricName,
+       kActorRendererPaintStabilitySubsequentInteractionContentfulPaintCountMetricName}));
+  histogram_tester.ExpectTotalCount(
+      kActorRendererPaintTabilityTimeBetweenInteractionContentfulPaintsMetricName,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      kActorRendererPaintStabilitySubsequentInteractionContentfulPaintCountMetricName,
+      /*sample=*/2, /*expected_bucket_count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, Timeout) {
@@ -276,12 +306,16 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, Timeout) {
   ASSERT_TRUE(EnsureHistogramsNotRecorded(
       histogram_tester,
       {kActorRendererPageStabilityTimeFromMonitoringToPaintStabilityMetricName,
-       kActorRendererPageStabilityTimeFromMonitoringToNetworkAndMainThreadIdleMetricName}));
+       kActorRendererPageStabilityTimeFromMonitoringToNetworkAndMainThreadIdleMetricName,
+       kActorRendererPaintStabilityTimeToFirstInteractionContentfulPaintMetricName}));
   histogram_tester.ExpectTotalCount(
       kActorRendererPageStabilityTimeFromMonitoringToPaintStabilityMetricName,
       0);
   histogram_tester.ExpectTotalCount(
       kActorRendererPageStabilityTimeFromMonitoringToNetworkAndMainThreadIdleMetricName,
+      0);
+  histogram_tester.ExpectTotalCount(
+      kActorRendererPaintStabilityTimeToFirstInteractionContentfulPaintMetricName,
       0);
 }
 
@@ -334,6 +368,12 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, RenderFrameGoingAway) {
   histogram_tester.ExpectTotalCount(
       kActorRendererPageStabilityTimeFromMonitoringToNetworkAndMainThreadIdleMetricName,
       0);
+  histogram_tester.ExpectTotalCount(
+      kActorRendererPaintStabilityTimeToFirstInteractionContentfulPaintMetricName,
+      0);
+  histogram_tester.ExpectTotalCount(
+      kActorRendererPaintTabilityTimeBetweenInteractionContentfulPaintsMetricName,
+      0);
 }
 
 IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, MojoDisconnected) {
@@ -382,12 +422,16 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, MojoDisconnected) {
   ASSERT_TRUE(EnsureHistogramsRecorded(
       histogram_tester,
       {kActorRendererPageStabilityTimeFromMonitoringToPaintStabilityMetricName,
-       kActorRendererPageStabilityTimeFromMonitoringToNetworkAndMainThreadIdleMetricName}));
+       kActorRendererPageStabilityTimeFromMonitoringToNetworkAndMainThreadIdleMetricName,
+       kActorRendererPaintStabilityTimeToFirstInteractionContentfulPaintMetricName}));
   histogram_tester.ExpectTotalCount(
       kActorRendererPageStabilityTimeFromMonitoringToPaintStabilityMetricName,
       1);
   histogram_tester.ExpectTotalCount(
       kActorRendererPageStabilityTimeFromMonitoringToNetworkAndMainThreadIdleMetricName,
+      1);
+  histogram_tester.ExpectTotalCount(
+      kActorRendererPaintStabilityTimeToFirstInteractionContentfulPaintMetricName,
       1);
 }
 
@@ -440,12 +484,16 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, MojoDisconnectedAndTimeout) {
   ASSERT_TRUE(EnsureHistogramsNotRecorded(
       histogram_tester,
       {kActorRendererPageStabilityTimeFromMonitoringToPaintStabilityMetricName,
-       kActorRendererPageStabilityTimeFromMonitoringToNetworkAndMainThreadIdleMetricName}));
+       kActorRendererPageStabilityTimeFromMonitoringToNetworkAndMainThreadIdleMetricName,
+       kActorRendererPaintStabilityTimeToFirstInteractionContentfulPaintMetricName}));
   histogram_tester.ExpectTotalCount(
       kActorRendererPageStabilityTimeFromMonitoringToPaintStabilityMetricName,
       0);
   histogram_tester.ExpectTotalCount(
       kActorRendererPageStabilityTimeFromMonitoringToNetworkAndMainThreadIdleMetricName,
+      0);
+  histogram_tester.ExpectTotalCount(
+      kActorRendererPaintStabilityTimeToFirstInteractionContentfulPaintMetricName,
       0);
 }
 
