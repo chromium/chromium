@@ -33,8 +33,7 @@ void PluginRegistryImpl::GetPlugins(GetPluginsCallback callback) {
   }
 
   auto* plugin_service = PluginServiceImpl::GetInstance();
-  plugin_service->RefreshPlugins();
-  PluginServiceFilter* filter = PluginServiceImpl::GetInstance()->GetFilter();
+  PluginServiceFilter* filter = plugin_service->GetFilter();
   std::vector<blink::mojom::PluginInfoPtr> plugins;
   const base::flat_set<std::string> mime_handler_view_mime_types =
       GetContentClient()->browser()->GetPluginMimeTypesWithExternalHandlers(

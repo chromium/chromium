@@ -1530,12 +1530,9 @@ void NavigationURLLoaderImpl::CheckPluginAndCallOnReceiveResponse(
   // Refresh the plugins.
   PluginService::GetInstance()->GetPlugins();
 
-  bool stale;
   WebPluginInfo unused_info;
   bool has_plugin = PluginService::GetInstance()->GetPluginInfo(
-      browser_context_, resource_request_->url, head->mime_type, &stale,
-      &unused_info);
-  CHECK(!stale);
+      browser_context_, resource_request_->url, head->mime_type, &unused_info);
 
   bool is_download = !has_plugin;
   CallOnReceivedResponse(std::move(head),

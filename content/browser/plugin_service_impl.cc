@@ -76,29 +76,24 @@ void PluginServiceImpl::Init() {
   RegisterPlugins();
 }
 
-bool PluginServiceImpl::GetPluginInfoArray(
+void PluginServiceImpl::GetPluginInfoArray(
     const GURL& url,
     const std::string& mime_type,
     std::vector<WebPluginInfo>* plugins,
     std::vector<std::string>* actual_mime_types) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  return PluginList::Singleton()->GetPluginInfoArray(url, mime_type, plugins,
-                                                     actual_mime_types);
+  PluginList::Singleton()->GetPluginInfoArray(url, mime_type, plugins,
+                                              actual_mime_types);
 }
 
 bool PluginServiceImpl::GetPluginInfo(content::BrowserContext* browser_context,
                                       const GURL& url,
                                       const std::string& mime_type,
-                                      bool* is_stale,
                                       WebPluginInfo* info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::vector<WebPluginInfo> plugins;
-  bool stale = GetPluginInfoArray(url, mime_type, &plugins,
-                                  /*actual_mime_types=*/nullptr);
-  if (is_stale) {
-    *is_stale = stale;
-  }
+  GetPluginInfoArray(url, mime_type, &plugins, /*actual_mime_types=*/nullptr);
 
   for (size_t i = 0; i < plugins.size(); ++i) {
     if (!filter_ || filter_->IsPluginAvailable(browser_context, plugins[i])) {
@@ -153,11 +148,6 @@ void PluginServiceImpl::SetFilter(PluginServiceFilter* filter) {
 PluginServiceFilter* PluginServiceImpl::GetFilter() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return filter_;
-}
-
-void PluginServiceImpl::RefreshPlugins() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  PluginList::Singleton()->RefreshPlugins();
 }
 
 void PluginServiceImpl::RegisterInternalPlugin(const WebPluginInfo& info) {

@@ -776,43 +776,18 @@ void DownloadTargetDeterminer::DetermineMimeTypeDone(
 // file type is handled by a sandboxed plugin.
 namespace {
 
-void InvokeClosureAfterGetPluginCallback(
-    base::OnceClosure closure,
-    const std::vector<content::WebPluginInfo>& unused) {
-  std::move(closure).Run();
-}
-
-enum ActionOnStalePluginList {
-  RETRY_IF_STALE_PLUGIN_LIST,
-  IGNORE_IF_STALE_PLUGIN_LIST
-};
-
 void IsHandledBySafePlugin(content::BrowserContext* browser_context,
                            const GURL& url,
                            const std::string& mime_type,
-                           ActionOnStalePluginList stale_plugin_action,
                            base::OnceCallback<void(bool)> callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!mime_type.empty());
   using content::WebPluginInfo;
 
-  bool is_stale = false;
   WebPluginInfo plugin_info;
   auto* plugin_service = content::PluginService::GetInstance();
-  bool plugin_found = plugin_service->GetPluginInfo(
-      browser_context, url, mime_type, &is_stale, &plugin_info);
-  if (is_stale && stale_plugin_action == RETRY_IF_STALE_PLUGIN_LIST) {
-    // The GetPluginsAsync call causes the plugin list to be refreshed. Once
-    // that's done we can retry the GetPluginInfo call. We break out of this
-    // cycle after a single retry in order to avoid retrying indefinitely.
-    plugin_service->GetPluginsAsync(base::BindOnce(
-        &InvokeClosureAfterGetPluginCallback,
-        base::BindOnce(&IsHandledBySafePlugin, browser_context, url, mime_type,
-                       IGNORE_IF_STALE_PLUGIN_LIST, std::move(callback))));
-    return;
-  }
-  // In practice, we assume that retrying once is enough.
-  DCHECK(!is_stale);
+  bool plugin_found = plugin_service->GetPluginInfo(browser_context, url,
+                                                    mime_type, &plugin_info);
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback),
                                 /*is_handled_safely=*/plugin_found));
@@ -825,21 +800,12 @@ bool IsHandledBySafePluginSynchronous(content::BrowserContext* browser_context,
   DCHECK(!mime_type.empty());
   using content::WebPluginInfo;
 
-  bool is_stale = false;
   WebPluginInfo plugin_info;
 
-  content::PluginService* plugin_service =
-      content::PluginService::GetInstance();
-  bool plugin_found = plugin_service->GetPluginInfo(
-      browser_context, url, mime_type, &is_stale, &plugin_info);
-  if (is_stale) {
-    plugin_service->GetPlugins();
-    plugin_found = plugin_service->GetPluginInfo(
-        browser_context, url, mime_type, &is_stale, &plugin_info);
-  }
-  // In practice, we assume that retrying once is enough.
-  DCHECK(!is_stale);
-  return plugin_found;
+  auto* plugin_service = content::PluginService::GetInstance();
+  plugin_service->GetPlugins();
+  return plugin_service->GetPluginInfo(browser_context, url, mime_type,
+                                       &plugin_info);
 }
 
 }  // namespace
@@ -858,7 +824,7 @@ void DownloadTargetDeterminer::DetermineIfHandledSafelyHelper(
 #if BUILDFLAG(ENABLE_PLUGINS)
   IsHandledBySafePlugin(content::DownloadItemUtils::GetBrowserContext(download),
                         net::FilePathToFileURL(local_path), mime_type,
-                        RETRY_IF_STALE_PLUGIN_LIST, std::move(callback));
+                        std::move(callback));
 
 #else
   std::move(callback).Run(false);

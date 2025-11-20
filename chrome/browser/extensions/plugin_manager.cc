@@ -62,8 +62,8 @@ void PluginManager::OnExtensionLoaded(content::BrowserContext* browser_context,
       info.mime_types.push_back(mime_type_info);
     }
 
-    PluginService::GetInstance()->RefreshPlugins();
     PluginService::GetInstance()->RegisterInternalPlugin(info);
+    PluginService::GetInstance()->GetPlugins();
     PluginService::GetInstance()->PurgePluginListCache(profile_);
   }
 }
@@ -76,7 +76,7 @@ void PluginManager::OnExtensionUnloaded(
   if (handler && handler->HasPlugin()) {
     base::FilePath path = handler->GetPluginPath();
     PluginService::GetInstance()->UnregisterInternalPlugin(path);
-    PluginService::GetInstance()->RefreshPlugins();
+    PluginService::GetInstance()->GetPlugins();
     PluginService::GetInstance()->PurgePluginListCache(profile_);
   }
 }

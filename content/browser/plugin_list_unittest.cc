@@ -84,10 +84,7 @@ TEST_F(PluginListTest, BadPluginDescription) {
   WebPluginInfo plugin_3043(
       std::u16string(), base::FilePath(FILE_PATH_LITERAL("/myplugin.3.0.43")),
       std::u16string(), std::u16string());
-  // Simulate loading of the plugins.
   plugin_list_->RegisterInternalPlugin(plugin_3043);
-  // Now we should have them in the state we specified above.
-  plugin_list_->RefreshPlugins();
   const std::vector<WebPluginInfo>& plugins = plugin_list_->GetPlugins();
   ASSERT_TRUE(Contains(plugins, plugin_3043));
 }
@@ -97,44 +94,46 @@ TEST_F(PluginListTest, GetPluginInfoArray) {
   GURL target_url(kTargetUrl);
   std::vector<WebPluginInfo> plugins;
   std::vector<std::string> actual_mime_types;
-  bool is_stale;
 
-  // The PluginList starts out in a stale state.
-  is_stale = plugin_list_->GetPluginInfoArray(
-      target_url, "application/octet-stream", &plugins, &actual_mime_types);
-  EXPECT_TRUE(is_stale);
+  // Without a GetPlugins() call, the PluginList starts out in an empty state.
+  plugin_list_->GetPluginInfoArray(target_url, "application/octet-stream",
+                                   &plugins, &actual_mime_types);
   EXPECT_EQ(0u, plugins.size());
   EXPECT_EQ(0u, actual_mime_types.size());
 
-  // Refresh it.
-  plugin_list_->GetPlugins();
-
-  // The file type of the URL is supported by |foo_plugin_|. However,
-  // GetPluginInfoArray should not match |foo_plugin_| because the MIME type is
-  // application/octet-stream.
-  is_stale = plugin_list_->GetPluginInfoArray(
-      target_url, "application/octet-stream", &plugins, &actual_mime_types);
-  EXPECT_FALSE(is_stale);
-  EXPECT_EQ(0u, plugins.size());
-  EXPECT_EQ(0u, actual_mime_types.size());
-
-  // |foo_plugin_| matches due to the MIME type.
+  // Even with the correct MIME type, the empty state means there is no result.
   plugins.clear();
   actual_mime_types.clear();
-  is_stale = plugin_list_->GetPluginInfoArray(target_url, kFooMimeType,
-                                              &plugins, &actual_mime_types);
-  EXPECT_FALSE(is_stale);
+  plugin_list_->GetPluginInfoArray(target_url, kFooMimeType, &plugins,
+                                   &actual_mime_types);
+  EXPECT_EQ(0u, plugins.size());
+  EXPECT_EQ(0u, actual_mime_types.size());
+
+  plugin_list_->GetPlugins();
+
+  // The file type of the URL is supported by `foo_plugin_`. However,
+  // GetPluginInfoArray should not match `foo_plugin_` because the MIME type is
+  // application/octet-stream.
+  plugin_list_->GetPluginInfoArray(target_url, "application/octet-stream",
+                                   &plugins, &actual_mime_types);
+  EXPECT_EQ(0u, plugins.size());
+  EXPECT_EQ(0u, actual_mime_types.size());
+
+  // `foo_plugin_` matches due to the MIME type.
+  plugins.clear();
+  actual_mime_types.clear();
+  plugin_list_->GetPluginInfoArray(target_url, kFooMimeType, &plugins,
+                                   &actual_mime_types);
   EXPECT_EQ(1u, plugins.size());
   EXPECT_TRUE(Contains(plugins, foo_plugin_));
   ASSERT_EQ(1u, actual_mime_types.size());
   EXPECT_EQ(kFooMimeType, actual_mime_types.front());
 
-  // |foo_plugin_| matches due to the file type and empty MIME type.
+  // `foo_plugin_` matches due to the file type and empty MIME type.
   plugins.clear();
   actual_mime_types.clear();
-  is_stale = plugin_list_->GetPluginInfoArray(target_url, "",
-                                              &plugins, &actual_mime_types);
-  EXPECT_FALSE(is_stale);
+  plugin_list_->GetPluginInfoArray(target_url, "", &plugins,
+                                   &actual_mime_types);
   EXPECT_EQ(1u, plugins.size());
   EXPECT_TRUE(Contains(plugins, foo_plugin_));
   ASSERT_EQ(1u, actual_mime_types.size());

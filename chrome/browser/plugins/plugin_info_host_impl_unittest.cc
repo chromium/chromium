@@ -122,8 +122,6 @@ class PluginInfoHostImplTest : public ::testing::Test {
   }
 
   void RefreshPlugins() {
-    PluginService::GetInstance()->RefreshPlugins();
-
 #if !BUILDFLAG(IS_WIN)
     // Can't go out of process in unit tests.
     content::RenderProcessHost::SetRunRendererInProcess(true);

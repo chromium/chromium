@@ -2792,13 +2792,11 @@ class ScopedRegisterInternalPlugin {
     plugin_info.type = type;
 
     plugin_service->RegisterInternalPlugin(plugin_info);
-    plugin_service->RefreshPlugins();
     ForceRefreshOfPlugins();
   }
 
   ~ScopedRegisterInternalPlugin() {
     plugin_service_->UnregisterInternalPlugin(plugin_path_);
-    plugin_service_->RefreshPlugins();
     ForceRefreshOfPlugins();
   }
 
@@ -2866,8 +2864,7 @@ TEST_F(DownloadTargetDeterminerTestWithPlugin, CheckForSecureHandling_PPAPI) {
   {
     ForceRefreshOfPlugins();
     std::vector<content::WebPluginInfo> info;
-    ASSERT_FALSE(plugin_service->GetPluginInfoArray(GURL(), kTestMIMEType,
-                                                    &info, nullptr));
+    plugin_service->GetPluginInfoArray(GURL(), kTestMIMEType, &info, nullptr);
     ASSERT_EQ(0u, info.size())
         << "Name: " << info[0].name << ", Path: " << info[0].path.value();
   }
@@ -2933,8 +2930,7 @@ TEST_F(DownloadTargetDeterminerTestWithPlugin,
   {
     ForceRefreshOfPlugins();
     std::vector<content::WebPluginInfo> info;
-    ASSERT_FALSE(plugin_service->GetPluginInfoArray(GURL(), kTestMIMEType,
-                                                    &info, nullptr));
+    plugin_service->GetPluginInfoArray(GURL(), kTestMIMEType, &info, nullptr);
     ASSERT_EQ(0u, info.size())
         << "Name: " << info[0].name << ", Path: " << info[0].path.value();
   }

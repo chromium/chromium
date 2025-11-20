@@ -35,10 +35,6 @@ class CONTENT_EXPORT PluginList {
   PluginList(const PluginList&) = delete;
   PluginList& operator=(const PluginList&) = delete;
 
-  // Cause the plugin list to refresh next time they are accessed, regardless
-  // of whether they are already loaded.
-  void RefreshPlugins();
-
   // Register an internal plugin with the specified plugin information.
   // An internal plugin must be registered before it can
   // be loaded using PluginList::LoadPlugin().
@@ -67,8 +63,7 @@ class CONTENT_EXPORT PluginList {
   // The `info` parameter is required to be non-NULL.
   // The list is in order of "most desirable" to "least desirable".
   // This will load the plugin list if necessary.
-  // The return value indicates whether the plugin list was stale.
-  bool GetPluginInfoArray(const GURL& url,
+  void GetPluginInfoArray(const GURL& url,
                           const std::string& mime_type,
                           std::vector<WebPluginInfo>* info,
                           std::vector<std::string>* actual_mime_types);
@@ -89,9 +84,6 @@ class CONTENT_EXPORT PluginList {
   //
   // Internals
   //
-
-  // States whether the plugin list is stale or not.
-  bool list_is_stale_ = true;
 
   // Holds information about internal plugins.
   std::vector<WebPluginInfo> internal_plugins_;
