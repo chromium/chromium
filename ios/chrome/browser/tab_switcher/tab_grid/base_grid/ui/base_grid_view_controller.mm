@@ -710,7 +710,8 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
     // This is important to prevent cells from animating indefinitely. This is
     // safe because the animation state of GridCells is set in
     // `configureCell:withItem:atIndex:` whenever a cell is used.
-    [ObjCCastStrict<GridCell>(cell) hideActivityIndicator];
+    [ObjCCastStrict<GridCell>(cell) hideFaviconActivityIndicator];
+    [ObjCCastStrict<GridCell>(cell) hideSnapshotActivityIndicator];
   }
 }
 
@@ -1927,9 +1928,12 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
                   }];
   cell.opacity = 1.0f;
   if (item.showsActivity) {
-    [cell showActivityIndicator];
+    cell.snapshot = nil;
+    [cell showSnapshotActivityIndicator];
+    [cell showFaviconActivityIndicator];
   } else {
-    [cell hideActivityIndicator];
+    [cell hideSnapshotActivityIndicator];
+    [cell hideFaviconActivityIndicator];
   }
 
   cell.activityLabelData =

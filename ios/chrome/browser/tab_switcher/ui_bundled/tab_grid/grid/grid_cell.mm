@@ -98,6 +98,7 @@ NSString* GridCellSnapshotAccessibilityIdentifier(NSUInteger index) {
 @property(nonatomic, weak) UIImageView* closeIconView;
 @property(nonatomic, weak) UIImageView* selectIconView;
 @property(nonatomic, weak) UIActivityIndicatorView* activityIndicator;
+@property(nonatomic, weak) UIActivityIndicatorView* snapshotActivityIndicator;
 // Since the close icon dimensions are smaller than the recommended tap target
 // size, use an overlaid tap target button.
 @property(nonatomic, weak) UIButton* closeTapTargetButton;
@@ -188,11 +189,18 @@ NSString* GridCellSnapshotAccessibilityIdentifier(NSUInteger index) {
     }
     PriceCardView* priceCardView = [[PriceCardView alloc] init];
     [snapshotView addSubview:priceCardView];
+
+    UIActivityIndicatorView* snapshotActivityIndicator =
+        [[UIActivityIndicatorView alloc] init];
+    snapshotActivityIndicator.translatesAutoresizingMaskIntoConstraints = NO;
+    [snapshotView addSubview:snapshotActivityIndicator];
+
     [contentContainer addSubview:closeTapTargetButton];
     _topBar = topBar;
     _snapshotView = snapshotView;
     _closeTapTargetButton = closeTapTargetButton;
     _priceCardView = priceCardView;
+    _snapshotActivityIndicator = snapshotActivityIndicator;
     _opacity = 1.0;
 
     self.contentView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
@@ -241,6 +249,10 @@ NSString* GridCellSnapshotAccessibilityIdentifier(NSUInteger index) {
       [priceCardView.trailingAnchor
           constraintLessThanOrEqualToAnchor:snapshotView.trailingAnchor
                                    constant:-kGridCellPriceDropTrailingSpacing],
+      [snapshotActivityIndicator.centerXAnchor
+          constraintEqualToAnchor:snapshotView.centerXAnchor],
+      [snapshotActivityIndicator.centerYAnchor
+          constraintEqualToAnchor:snapshotView.centerYAnchor],
     ];
     [NSLayoutConstraint activateConstraints:constraints];
 
@@ -309,7 +321,8 @@ NSString* GridCellSnapshotAccessibilityIdentifier(NSUInteger index) {
   self.priceCardView.hidden = YES;
   self.opacity = 1.0;
   self.hidden = NO;
-  [self hideActivityIndicator];
+  [self hideFaviconActivityIndicator];
+  [self hideSnapshotActivityIndicator];
   if (IsTabGridDragAndDropEnabled()) {
     [self setHighlightForGrouping:NO];
   }
@@ -376,16 +389,27 @@ NSString* GridCellSnapshotAccessibilityIdentifier(NSUInteger index) {
   _icon = icon;
 }
 
-- (void)showActivityIndicator {
+- (void)showFaviconActivityIndicator {
   [self.activityIndicator startAnimating];
   [self.activityIndicator setHidden:NO];
   [self.iconView setHidden:YES];
 }
 
-- (void)hideActivityIndicator {
+- (void)hideFaviconActivityIndicator {
   [self.activityIndicator stopAnimating];
   [self.activityIndicator setHidden:YES];
   [self.iconView setHidden:NO];
+}
+
+- (void)showSnapshotActivityIndicator {
+  [self.snapshotActivityIndicator startAnimating];
+  [self.snapshotActivityIndicator setHidden:NO];
+  [self.emptyView setHidden:YES];
+}
+
+- (void)hideSnapshotActivityIndicator {
+  [self.snapshotActivityIndicator stopAnimating];
+  [self.snapshotActivityIndicator setHidden:YES];
 }
 
 - (CGRect)snapshotFrame {

@@ -88,7 +88,7 @@
       return _validAPCwebStatesIDs.contains(
           base::NumberToString(webState->GetUniqueIdentifier().identifier()));
     }
-    return webState->IsRealized();
+    return webState->IsRealized() && !webState->IsLoading();
   }
   return [super shouldShowSnapshotForItem:itemID];
 }
