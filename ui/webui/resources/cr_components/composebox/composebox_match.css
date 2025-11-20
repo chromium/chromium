@@ -85,7 +85,7 @@
       var(--color-searchbox-results-background-hovered);
   display: none;
   position: absolute;
-  top: 6px;
+  top: var(--cr-composebox-match-remove-button-top, 6px);
   right: 12px;
 }
 
