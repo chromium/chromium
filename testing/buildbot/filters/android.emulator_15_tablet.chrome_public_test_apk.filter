@@ -26,12 +26,6 @@
 -org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.testAllInternalStatesVisitedResolvingTap
 -org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.testResolveGestureSelects
 
-# crbug.com/408273437
--org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxDialogV3Test.testEeaNoticeOnlyPrivacyPolicyShownWhenClicked
--org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxDialogV3Test.testEeaConsentActionButtonIsStickyAfterVisitingPrivacyPolicy
--org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxDialogV3Test.testEeaConsentOnlyPrivacyPolicyShownWhenClicked
--org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxDialogV3Test.testEeaNoticeActionButtonIsStickyAfterVisitingPrivacyPolicy
-
 # crbug.com/393388366
 -org.chromium.chrome.browser.desktop_windowing.AppHeaderCoordinatorBrowserTest.testKeyboardInDesktopWindow_RootViewPadded
 
