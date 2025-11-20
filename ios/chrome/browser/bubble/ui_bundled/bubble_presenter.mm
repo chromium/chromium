@@ -563,10 +563,8 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   }
   const base::Feature& backForwardSwipeFeature =
       feature_engagement::kIPHiOSSwipeBackForwardFeature;
-  BOOL userEligible =
-      IsFirstRunRecent(base::Days(60)) &&
-      _engagementTracker->WouldTriggerHelpUI(backForwardSwipeFeature);
-  if (!userEligible) {
+
+  if (!_engagementTracker->WouldTriggerHelpUI(backForwardSwipeFeature)) {
     return;
   }
 
@@ -614,9 +612,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   }
   const base::Feature& feature =
       feature_engagement::kIPHiOSSwipeToolbarToChangeTabFeature;
-  BOOL userEligible = IsFirstRunRecent(base::Days(60)) &&
-                      _engagementTracker->WouldTriggerHelpUI(feature);
-  if (!userEligible) {
+  if (!_engagementTracker->WouldTriggerHelpUI(feature)) {
     return;
   }
   web::WebState* currentWebState = _webStateList->GetActiveWebState();
