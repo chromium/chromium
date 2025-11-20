@@ -23,7 +23,7 @@ in [`partition_alloc_config.h`][partition-alloc-config].
 ***
 
 *** promo
-PartitionAlloc targets C++17. As the team develops standalone
+PartitionAlloc targets C++20. As the team develops standalone
 PartitionAlloc, this may diverge from what the rest of Chrome browser
 does, as we will be obligated to support external clients that
 may not yet support newer C++ standards.

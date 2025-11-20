@@ -15,7 +15,6 @@
 
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
-#include "partition_alloc/partition_alloc_base/cxx20_is_constant_evaluated.h"
 #include "partition_alloc/partition_alloc_forward.h"
 
 #if !PA_BUILDFLAG(USE_RAW_PTR_ASAN_UNOWNED_IMPL)
@@ -44,7 +43,7 @@ struct RawPtrAsanUnownedImpl {
   // Notifies the allocator when a wrapped pointer is being removed or replaced.
   template <typename T>
   PA_ALWAYS_INLINE static constexpr void ReleaseWrappedPtr(T* wrapped_ptr) {
-    if (!partition_alloc::internal::base::is_constant_evaluated()) {
+    if (!std::is_constant_evaluated()) {
       ProbeForLowSeverityLifetimeIssue(wrapped_ptr);
     }
   }
@@ -63,7 +62,7 @@ struct RawPtrAsanUnownedImpl {
   template <typename T>
   PA_ALWAYS_INLINE static constexpr T* SafelyUnwrapPtrForExtraction(
       T* wrapped_ptr) {
-    if (!partition_alloc::internal::base::is_constant_evaluated()) {
+    if (!std::is_constant_evaluated()) {
       ProbeForLowSeverityLifetimeIssue(wrapped_ptr);
     }
     return wrapped_ptr;

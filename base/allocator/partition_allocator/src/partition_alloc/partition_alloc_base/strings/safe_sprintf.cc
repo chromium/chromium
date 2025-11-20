@@ -118,14 +118,9 @@ class Buffer {
   // the trailing NUL that will be added by the destructor. The buffer also
   // must be smaller or equal to kSSizeMax in size.
   Buffer(char* buffer, size_t size) : buffer_(buffer), size_(size - 1) {
-// MSVS2013's standard library doesn't mark max() as constexpr yet. cl.exe
-// supports static_cast but doesn't really implement constexpr yet so it doesn't
-// complain, but clang does.
-#if __cplusplus >= 201103 && !(defined(__clang__) && PA_BUILDFLAG(IS_WIN))
     static_assert(kSSizeMaxConst ==
                       static_cast<size_t>(std::numeric_limits<ssize_t>::max()),
                   "kSSizeMaxConst should be the max value of an ssize_t");
-#endif
     DEBUG_CHECK(size > 0);
     DEBUG_CHECK(size <= kSSizeMax);
   }
