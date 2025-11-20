@@ -298,10 +298,10 @@ bool ShouldThrottleCaptureNavigation(
       web_app::ChromeOsWebAppExperiments::ShouldLaunchForRedirectedNavigation(
           launch_app_id);
   debug_dict->Set("is_for_cros_experiment_app", is_for_cros_experiment_app);
-  if (app_type == AppType::kWeb) {
+  if (app_type == AppType::kWeb && !is_for_projector_swa) {
     if (!base::FeatureList::IsEnabled(
             features::kNavigationCapturingOnExistingFrames) &&
-        !is_for_cros_experiment_app && !is_for_projector_swa) {
+        !is_for_cros_experiment_app) {
       debug_dict->Set("!result", "existing frame disabled");
       return false;
     }

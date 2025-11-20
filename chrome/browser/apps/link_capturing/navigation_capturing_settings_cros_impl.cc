@@ -14,6 +14,20 @@
 
 namespace web_app {
 
+namespace {
+bool IsSystemWebApp(Profile* profile, const std::string& app_id) {
+  bool is_system_web_app = false;
+  apps::AppServiceProxyFactory::GetForProfile(profile)
+      ->AppRegistryCache()
+      .ForOneApp(app_id, [&is_system_web_app](const apps::AppUpdate& update) {
+        if (update.InstallReason() == apps::InstallReason::kSystem) {
+          is_system_web_app = true;
+        }
+      });
+  return is_system_web_app;
+}
+}  // namespace
+
 std::unique_ptr<NavigationCapturingSettings>
 NavigationCapturingSettings::Create(Profile& profile) {
   return std::make_unique<NavigationCapturingSettingsCrosImpl>(profile);
@@ -46,7 +60,8 @@ NavigationCapturingSettingsCrosImpl::GetCapturingWebAppForUrl(const GURL& url) {
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(&profile_.get());
   auto app_id = apps::FindAppIdsToLaunchForUrl(proxy, url).preferred;
   if (!app_id.has_value() ||
-      proxy->AppRegistryCache().GetAppType(*app_id) != apps::AppType::kWeb) {
+      proxy->AppRegistryCache().GetAppType(*app_id) != apps::AppType::kWeb ||
+      IsSystemWebApp(&profile_.get(), *app_id)) {
     return std::nullopt;
   }
   return app_id;
