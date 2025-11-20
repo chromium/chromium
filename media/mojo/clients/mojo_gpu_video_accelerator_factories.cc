@@ -223,19 +223,7 @@ MojoGpuVideoAcceleratorFactories::IsDecoderConfigSupported(
     return Supported::kFalse;
   }
 
-  auto supported_decoder_configs =
-      codec_factory_->GetSupportedVideoDecoderConfigs();
-  if (!supported_decoder_configs) {
-    return Supported::kUnknown;
-  }
-
-  // Iterate over the supported configs.
-  for (const auto& supported : *supported_decoder_configs) {
-    if (supported.Matches(config)) {
-      return Supported::kTrue;
-    }
-  }
-  return Supported::kFalse;
+  return codec_factory_->IsDecoderConfigSupported(config);
 }
 
 media::VideoDecoderType MojoGpuVideoAcceleratorFactories::GetDecoderType() {
