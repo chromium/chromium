@@ -2,11 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "partition_alloc/partition_alloc_base/strings/cstring_builder.h"
 
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/buildflags.h"
-#include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/strings/safe_sprintf.h"
 
 #if !PA_BUILDFLAG(IS_WIN)
@@ -143,8 +147,7 @@ CStringBuilder& CStringBuilder::operator<<(std::nullptr_t) {
 }
 
 const char* CStringBuilder::c_str() {
-  PA_UNSAFE_TODO(
-      PA_RAW_DCHECK(buffer_ <= ptr_ && ptr_ < buffer_ + kBufferSize));
+  PA_RAW_DCHECK(buffer_ <= ptr_ && ptr_ < buffer_ + kBufferSize);
   *ptr_ = '\0';
   return buffer_;
 }
@@ -191,7 +194,7 @@ void CStringBuilder::PutNormalFloatingPoint(double value,
   PutText(buffer, 1);
   if (n > 1) {
     PutText(".", 1);
-    PutText(PA_UNSAFE_TODO(buffer + 1), n - 1);
+    PutText(buffer + 1, n - 1);
   }
   if (exponent != 0) {
     n = base::strings::SafeSPrintf(buffer, "e%s%d", exponent > 0 ? "+" : "",
@@ -207,11 +210,9 @@ void CStringBuilder::PutText(const char* text) {
 }
 
 void CStringBuilder::PutText(const char* text, size_t length) {
-  PA_UNSAFE_TODO(
-      PA_RAW_DCHECK(buffer_ <= ptr_ && ptr_ < buffer_ + kBufferSize));
-  while (ptr_ < PA_UNSAFE_TODO(buffer_ + kBufferSize - 1 && length > 0 &&
-                               *text != '\0')) {
-    *PA_UNSAFE_TODO(ptr_++) = *PA_UNSAFE_TODO(text++);
+  PA_RAW_DCHECK(buffer_ <= ptr_ && ptr_ < buffer_ + kBufferSize);
+  while (ptr_ < buffer_ + kBufferSize - 1 && length > 0 && *text != '\0') {
+    *ptr_++ = *text++;
     --length;
   }
 }

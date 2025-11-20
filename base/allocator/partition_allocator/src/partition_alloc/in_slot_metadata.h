@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef PARTITION_ALLOC_IN_SLOT_METADATA_H_
 #define PARTITION_ALLOC_IN_SLOT_METADATA_H_
 
@@ -558,7 +563,7 @@ PA_ALWAYS_INLINE InSlotMetadata* InSlotMetadataPointer(uintptr_t slot_start,
     PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
     PA_CHECK(sizeof(InSlotMetadata) * index <= SystemPageSize());
 #endif
-    return PA_UNSAFE_TODO(table_base + index);
+    return table_base + index;
   }
 }
 

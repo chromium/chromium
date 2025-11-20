@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 // This header file contains macro definitions for thread safety annotations
 // that allow developers to document the locking policies of multi-threaded
 // code. The annotations can also help program analysis tools to identify

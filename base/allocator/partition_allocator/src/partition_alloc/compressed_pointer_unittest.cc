@@ -2,11 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "partition_alloc/compressed_pointer.h"
 
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc.h"
-#include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_root.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -346,42 +350,42 @@ template <template <typename> class PointerType,
           typename U>
 void CompareTest(U* array) {
   PointerType<T1> p0 = static_cast<PointerType<T1>>(&array[0]);
-  PointerType<T2> p1 = static_cast<PointerType<T2>>(&PA_UNSAFE_TODO(array[1]));
+  PointerType<T2> p1 = static_cast<PointerType<T2>>(&array[1]);
   {
-    EXPECT_NE(p0, &PA_UNSAFE_TODO(array[1]));
+    EXPECT_NE(p0, &array[1]);
     EXPECT_NE(p0, p1);
     EXPECT_NE(p1, &array[0]);
     EXPECT_NE(p1, p0);
   }
   {
-    EXPECT_LT(p0, &PA_UNSAFE_TODO(array[1]));
+    EXPECT_LT(p0, &array[1]);
     EXPECT_LT(&array[0], p1);
     EXPECT_LT(p0, p1);
   }
   {
     EXPECT_LE(p0, &array[0]);
-    EXPECT_LE(p0, &PA_UNSAFE_TODO(array[1]));
+    EXPECT_LE(p0, &array[1]);
     EXPECT_LE(&array[0], p0);
 
-    EXPECT_LE(&PA_UNSAFE_TODO(array[1]), p1);
-    EXPECT_LE(p1, &PA_UNSAFE_TODO(array[1]));
+    EXPECT_LE(&array[1], p1);
+    EXPECT_LE(p1, &array[1]);
 
     auto p2 = p0;
     EXPECT_LE(p0, p2);
     EXPECT_LE(p2, p1);
   }
   {
-    EXPECT_GT(&PA_UNSAFE_TODO(array[1]), p0);
+    EXPECT_GT(&array[1], p0);
     EXPECT_GT(p1, &array[0]);
     EXPECT_GT(p1, p0);
   }
   {
     EXPECT_GE(&array[0], p0);
-    EXPECT_GE(&PA_UNSAFE_TODO(array[1]), p0);
+    EXPECT_GE(&array[1], p0);
     EXPECT_GE(p0, &array[0]);
 
-    EXPECT_GE(p1, &PA_UNSAFE_TODO(array[1]));
-    EXPECT_GE(&PA_UNSAFE_TODO(array[1]), p1);
+    EXPECT_GE(p1, &array[1]);
+    EXPECT_GE(&array[1], p1);
 
     auto p2 = p1;
     EXPECT_GE(p1, p2);

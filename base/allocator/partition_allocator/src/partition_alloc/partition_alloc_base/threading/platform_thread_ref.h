@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 // WARNING: *DO NOT* use this class directly. base::PlatformThreadRef is a
 // low-level platform-specific abstraction to the OS's threading interface.
 // Instead, consider using a message-loop driven base::Thread, see

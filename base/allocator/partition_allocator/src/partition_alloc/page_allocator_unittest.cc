@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "partition_alloc/page_allocator.h"
 
 #include <algorithm>
@@ -15,7 +20,6 @@
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/page_allocator_constants.h"
-#include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/cpu.h"
 #include "partition_alloc/partition_alloc_base/logging.h"
 #include "partition_alloc/partition_alloc_base/notreached.h"
@@ -248,9 +252,8 @@ TEST(PartitionAllocPageAllocatorTest,
   ptrdiff_t invalid_offset =
       reinterpret_cast<char*>(arm_bti_test_function_invalid_offset) -
       reinterpret_cast<char*>(arm_bti_test_function);
-  PA_UNSAFE_TODO(memcpy(reinterpret_cast<void*>(buffer),
-                        reinterpret_cast<void*>(arm_bti_test_function),
-                        function_range));
+  memcpy(reinterpret_cast<void*>(buffer),
+         reinterpret_cast<void*>(arm_bti_test_function), function_range);
 
   // Next re-protect the page.
   SetSystemPagesAccess(
@@ -562,7 +565,7 @@ TEST(PartitionAllocPageAllocatorTest, DecommitErasesMemory) {
                                 PageTag::kChromium);
   ASSERT_TRUE(buffer);
 
-  PA_UNSAFE_TODO(memset(reinterpret_cast<void*>(buffer), 42, size));
+  memset(reinterpret_cast<void*>(buffer), 42, size);
 
   DecommitSystemPages(buffer, size,
                       PageAccessibilityDisposition::kAllowKeepForPerf);
@@ -574,7 +577,7 @@ TEST(PartitionAllocPageAllocatorTest, DecommitErasesMemory) {
   uint8_t* recommitted_buffer = reinterpret_cast<uint8_t*>(buffer);
   uint32_t sum = 0;
   for (size_t i = 0; i < size; i++) {
-    sum += PA_UNSAFE_TODO(recommitted_buffer[i]);
+    sum += recommitted_buffer[i];
   }
   EXPECT_EQ(0u, sum) << "Data was not erased";
 
@@ -589,7 +592,7 @@ TEST(PartitionAllocPageAllocatorTest, DecommitAndZero) {
                                 PageTag::kChromium);
   ASSERT_TRUE(buffer);
 
-  PA_UNSAFE_TODO(memset(reinterpret_cast<void*>(buffer), 42, size));
+  memset(reinterpret_cast<void*>(buffer), 42, size);
 
   DecommitAndZeroSystemPages(buffer, size);
 
@@ -618,7 +621,7 @@ TEST(PartitionAllocPageAllocatorTest, DecommitAndZero) {
   uint8_t* recommitted_buffer = reinterpret_cast<uint8_t*>(buffer);
   uint32_t sum = 0;
   for (size_t i = 0; i < size; i++) {
-    sum += PA_UNSAFE_TODO(recommitted_buffer[i]);
+    sum += recommitted_buffer[i];
   }
   EXPECT_EQ(0u, sum) << "Data was not erased";
 

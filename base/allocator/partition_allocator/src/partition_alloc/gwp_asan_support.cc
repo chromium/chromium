@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "partition_alloc/gwp_asan_support.h"
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
 
-#include "partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "partition_alloc/gwp_asan_support.h"
 
 #if PA_BUILDFLAG(ENABLE_GWP_ASAN_SUPPORT)
 
@@ -48,7 +51,7 @@ void* GwpAsanSupport::MapRegion(size_t slot_count,
   const size_t kSlotSize = 2 * internal::SystemPageSize();
   uint16_t bucket_index = PartitionRoot::SizeToBucketIndex(
       kSlotSize, root->GetBucketDistribution());
-  auto* bucket = PA_UNSAFE_TODO(root->buckets + bucket_index);
+  auto* bucket = root->buckets + bucket_index;
 
   const size_t kSuperPagePayloadStartOffset =
       internal::SuperPagePayloadStartOffset();
@@ -100,8 +103,7 @@ void* GwpAsanSupport::MapRegion(size_t slot_count,
            internal::NumPartitionPagesPerSuperPage();
            partition_page_idx += bucket->get_pages_per_slot_span()) {
         auto* slot_span_metadata =
-            &PA_UNSAFE_TODO(page_metadata[partition_page_idx])
-                 .slot_span_metadata;
+            &page_metadata[partition_page_idx].slot_span_metadata;
         bucket->InitializeSlotSpanForGwpAsan(slot_span_metadata);
         auto slot_span_start = internal::SlotSpanMetadata::ToSlotSpanStart(
             slot_span_metadata, root);

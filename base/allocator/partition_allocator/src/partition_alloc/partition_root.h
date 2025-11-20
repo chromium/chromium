@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef PARTITION_ALLOC_PARTITION_ROOT_H_
 #define PARTITION_ALLOC_PARTITION_ROOT_H_
 
@@ -871,7 +876,7 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   PA_NO_SANITIZE("undefined")
   PA_ALWAYS_INLINE const Bucket& bucket_at(size_t i) const {
     PA_DCHECK(i <= BucketIndexLookup::kNumBuckets);
-    return PA_UNSAFE_TODO(buckets[i]);
+    return buckets[i];
   }
 
   // Returns whether a |bucket| from |this| root is direct-mapped. This function
@@ -1073,8 +1078,8 @@ PartitionAllocGetDirectMapSlotStartAndSizeInBRPPool(uintptr_t address) {
   // to where direct map metadata, and thus direct map start, are located.
   auto* first_page_metadata = PartitionPageMetadata::FromAddr(
       reservation_start + PartitionPageSize(), metadata_offset);
-  auto* page_metadata = PA_UNSAFE_TODO(
-      first_page_metadata + first_page_metadata->slot_span_metadata_offset);
+  auto* page_metadata =
+      first_page_metadata + first_page_metadata->slot_span_metadata_offset;
   PA_DCHECK(page_metadata->is_valid);
   PA_DCHECK(!page_metadata->slot_span_metadata_offset);
   auto* slot_span = &page_metadata->slot_span_metadata;
@@ -1459,8 +1464,8 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooksImmediate(
     // Verify the cookie after the allocated region.
     // If this assert fires, you probably corrupted memory.
     const size_t usable_size = GetSlotUsableSize(slot_span);
-    internal::PartitionCookieCheckValue(
-        PA_UNSAFE_TODO(slot_start.ToObject() + usable_size), usable_size);
+    internal::PartitionCookieCheckValue(slot_start.ToObject() + usable_size,
+                                        usable_size);
   }
 #endif  // PA_BUILDFLAG(USE_PARTITION_COOKIE)
 
@@ -1549,7 +1554,7 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeAfterBRPQuarantine(
   if (!hook) [[likely]] {
     unsigned char* object = slot_start.Tag().ToObject();
     for (size_t i = 0; i < root->GetSlotUsableSize(slot_span); ++i) {
-      PA_UNSAFE_TODO(PA_DCHECK(object[i] == internal::kQuarantinedByte));
+      PA_DCHECK(object[i] == internal::kQuarantinedByte);
     }
   }
   internal::DebugMemset(slot_start.Tag().ToObject(), internal::kFreedByte,
@@ -2123,14 +2128,14 @@ PA_ALWAYS_INLINE void* PartitionRoot::AllocInternalNoHooks(
       PA_DCHECK(!slot_span->bucket->is_direct_mapped());
 #endif
     } else {
-      slot_start = RawAlloc<flags>(PA_UNSAFE_TODO(buckets + bucket_index),
-                                   raw_size, slot_span_alignment, &usable_size,
-                                   &slot_size, &is_already_zeroed);
+      slot_start =
+          RawAlloc<flags>(buckets + bucket_index, raw_size, slot_span_alignment,
+                          &usable_size, &slot_size, &is_already_zeroed);
     }
   } else {
-    slot_start = RawAlloc<flags>(PA_UNSAFE_TODO(buckets + bucket_index),
-                                 raw_size, slot_span_alignment, &usable_size,
-                                 &slot_size, &is_already_zeroed);
+    slot_start =
+        RawAlloc<flags>(buckets + bucket_index, raw_size, slot_span_alignment,
+                        &usable_size, &slot_size, &is_already_zeroed);
   }
 
   if (!slot_start.value()) [[unlikely]] {
@@ -2185,8 +2190,8 @@ PA_ALWAYS_INLINE void* PartitionRoot::AllocInternalNoHooks(
   // Add the cookie after the allocation.
 #if PA_BUILDFLAG(USE_PARTITION_COOKIE)
   if (settings.use_cookie) {
-    internal::PartitionCookieWriteValue(
-        PA_UNSAFE_TODO(static_cast<unsigned char*>(object) + usable_size));
+    internal::PartitionCookieWriteValue(static_cast<unsigned char*>(object) +
+                                        usable_size);
   }
 #endif  // PA_BUILDFLAG(USE_PARTITION_COOKIE)
 
@@ -2200,7 +2205,7 @@ PA_ALWAYS_INLINE void* PartitionRoot::AllocInternalNoHooks(
     internal::DebugMemset(object, internal::kUninitializedByte, usable_size);
 #endif
   } else if (!is_already_zeroed) {
-    PA_UNSAFE_TODO(memset(object, 0, usable_size));
+    memset(object, 0, usable_size);
   }
 
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
@@ -2421,7 +2426,7 @@ void* PartitionRoot::ReallocInline(void* ptr,
     internal::PartitionExcessiveAllocationSize(new_size);
   }
 
-  PA_UNSAFE_TODO(memcpy(ret, ptr, std::min(old_usable_size, new_size)));
+  memcpy(ret, ptr, std::min(old_usable_size, new_size));
   FreeInUnknownRoot<free_flags>(
       ptr);  // Implicitly protects the old ptr on MTE systems.
   return ret;

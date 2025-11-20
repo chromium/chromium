@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "partition_alloc/partition_alloc_base/log_message.h"
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
 
-#include "partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "partition_alloc/partition_alloc_base/log_message.h"
 
 // TODO(crbug.com/40158212): After finishing copying //base files to PA library,
 // remove defined(BASE_CHECK_H_) from here.
@@ -55,7 +58,7 @@ static_assert(LOGGING_NUM_SEVERITIES == std::size(log_severity_names),
 
 const char* log_severity_name(int severity) {
   if (severity >= 0 && severity < LOGGING_NUM_SEVERITIES) {
-    return PA_UNSAFE_TODO(log_severity_names[severity]);
+    return log_severity_names[severity];
   }
   return "UNKNOWN";
 }
@@ -135,8 +138,7 @@ LogMessage::~LogMessage() {
 // writes the common header info to the stream
 void LogMessage::Init(const char* file, int line) {
   const char* last_slash_pos = base::strings::FindLastOf(file, "\\/");
-  const char* filename =
-      last_slash_pos ? PA_UNSAFE_TODO(last_slash_pos + 1 : file);
+  const char* filename = last_slash_pos ? last_slash_pos + 1 : file;
 
   {
     // TODO(darin): It might be nice if the columns were fixed width.
@@ -182,7 +184,7 @@ void SystemErrorCodeToStream(base::strings::CStringBuilder& os,
     const char* whitespace_pos = base::strings::FindLastNotOf(msgbuf, "\n\r ");
     if (whitespace_pos) {
       size_t whitespace_index = whitespace_pos - msgbuf + 1;
-      PA_UNSAFE_TODO(msgbuf[whitespace_index]) = '\0';
+      msgbuf[whitespace_index] = '\0';
     }
     base::strings::SafeSPrintf(buffer, "%s (0x%x)", msgbuf, error_code);
     os << buffer;

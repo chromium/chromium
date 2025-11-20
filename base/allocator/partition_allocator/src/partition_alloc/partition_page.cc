@@ -3,6 +3,10 @@
 // found in the LICENSE file.
 
 #include "partition_alloc/slot_start.h"
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
 
 #include "partition_alloc/partition_page.h"
 
@@ -103,7 +107,7 @@ PA_ALWAYS_INLINE void SlotSpanMetadata::RegisterEmpty() {
             root->global_empty_slot_span_ring_size);
   int16_t current_index = root->global_empty_slot_span_ring_index;
   SlotSpanMetadata* slot_span_to_decommit =
-      PA_UNSAFE_TODO(root->global_empty_slot_span_ring[current_index]);
+      root->global_empty_slot_span_ring[current_index];
   // The slot span might well have been re-activated, filled up, etc. before we
   // get around to looking at it here.
   if (slot_span_to_decommit) {
@@ -112,13 +116,13 @@ PA_ALWAYS_INLINE void SlotSpanMetadata::RegisterEmpty() {
 
   // There should not be a slot span in the buffer at the position this is
   // going into.
-  PA_UNSAFE_TODO(PA_DCHECK(!root->global_empty_slot_span_ring[current_index]));
+  PA_DCHECK(!root->global_empty_slot_span_ring[current_index]);
 
   // We put the empty slot span on our global list of "slot spans that were once
   // empty", thus providing it a bit of breathing room to get re-used before we
   // really free it. This reduces the number of system calls. Otherwise any
   // free() from a single-slot slot span would lead to a syscall, for instance.
-  PA_UNSAFE_TODO(root->global_empty_slot_span_ring[current_index]) = this;
+  root->global_empty_slot_span_ring[current_index] = this;
   empty_cache_index_ = current_index;
   in_empty_cache_ = 1;
   ++current_index;
@@ -258,14 +262,12 @@ void SlotSpanMetadata::DecommitIfPossible(PartitionRoot* root) {
   PartitionRootLock(root).AssertAcquired();
   PA_DCHECK(in_empty_cache_);
   PA_DCHECK(empty_cache_index_ < kMaxEmptySlotSpanRingSize);
-  PA_UNSAFE_TODO(
-      PA_DCHECK(this == root->global_empty_slot_span_ring[empty_cache_index_]));
+  PA_DCHECK(this == root->global_empty_slot_span_ring[empty_cache_index_]);
   in_empty_cache_ = 0;
   if (is_empty()) {
     Decommit(root);
   }
-  PA_UNSAFE_TODO(root->global_empty_slot_span_ring[empty_cache_index_]) =
-      nullptr;
+  root->global_empty_slot_span_ring[empty_cache_index_] = nullptr;
 }
 
 void SlotSpanMetadata::SortFreelist(

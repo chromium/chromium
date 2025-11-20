@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "partition_alloc/partition_bucket.h"
 
 #include <cstdint>
@@ -321,8 +326,8 @@ SlotSpanMetadata* PartitionDirectMap(PartitionRoot* root,
     PA_DCHECK(!super_page_extent->number_of_consecutive_super_pages);
     PA_DCHECK(!super_page_extent->next);
 
-    PartitionPageMetadata* first_page_metadata = PA_UNSAFE_TODO(
-        reinterpret_cast<PartitionPageMetadata*>(super_page_extent) + 1);
+    PartitionPageMetadata* first_page_metadata =
+        reinterpret_cast<PartitionPageMetadata*>(super_page_extent) + 1;
     page_metadata = PartitionPageMetadata::FromAddr(slot_start.value(), root);
     // |first_page_metadata| and |page_metadata| may be equal, if there is no
     // alignment padding.
@@ -626,8 +631,7 @@ PA_ALWAYS_INLINE SlotSpanMetadata* PartitionBucket::AllocNewSlotSpan(
       PartitionPageMetadata::FromAddr(root->next_partition_page, root);
   auto* gap_end_page =
       PartitionPageMetadata::FromAddr(adjusted_next_partition_page, root);
-  for (auto* page = gap_start_page; page < gap_end_page;
-       PA_UNSAFE_TODO(++page)) {
+  for (auto* page = gap_start_page; page < gap_end_page; ++page) {
     PA_DCHECK(!page->is_valid);
     page->has_valid_span_after_this = true;
   }
@@ -861,8 +865,7 @@ PA_ALWAYS_INLINE void PartitionBucket::InitializeSlotSpan(
 
   uint16_t num_partition_pages = get_pages_per_slot_span();
   auto* page_metadata = reinterpret_cast<PartitionPageMetadata*>(slot_span);
-  for (uint16_t i = 0; i < num_partition_pages;
-       ++i, PA_UNSAFE_TODO(++page_metadata)) {
+  for (uint16_t i = 0; i < num_partition_pages; ++i, ++page_metadata) {
     PA_DCHECK(i <= PartitionPageMetadata::kMaxSlotSpanMetadataOffset);
     page_metadata->slot_span_metadata_offset = i;
     page_metadata->is_valid = true;
@@ -1215,7 +1218,7 @@ void PartitionBucket::SortActiveSlotSpans() {
   for (auto* slot_span = active_slot_spans_head; slot_span;
        slot_span = slot_span->next_slot_span) {
     if (index < kMaxSlotSpansToSort) {
-      PA_UNSAFE_TODO(active_spans_array[index++]) = slot_span;
+      active_spans_array[index++] = slot_span;
     } else {
       // Starting from this one, not sorting the slot spans.
       overflow_spans_start = slot_span;
@@ -1242,22 +1245,19 @@ void PartitionBucket::SortActiveSlotSpans() {
   // it may not throw std::bad_alloc, which constrains the implementation. In
   // addition, this is protected by the reentrancy guard, so we would detect
   // such an allocation.
-  std::sort(active_spans_array, PA_UNSAFE_TODO(active_spans_array + index),
-            CompareSlotSpans);
+  std::sort(active_spans_array, active_spans_array + index, CompareSlotSpans);
 
   active_slot_spans_head = overflow_spans_start;
 
   // Reverse order, since we insert at the head of the list.
   for (int i = index - 1; i >= 0; i--) {
-    if (PA_UNSAFE_TODO(active_spans_array[i]) ==
-        SlotSpanMetadata::get_sentinel_slot_span()) {
+    if (active_spans_array[i] == SlotSpanMetadata::get_sentinel_slot_span()) {
       // The sentinel is const, don't try to write to it.
       PA_DCHECK(active_slot_spans_head == nullptr);
     } else {
-      PA_UNSAFE_TODO(active_spans_array[i]->next_slot_span =
-                         active_slot_spans_head);
+      active_spans_array[i]->next_slot_span = active_slot_spans_head;
     }
-    active_slot_spans_head = PA_UNSAFE_TODO(active_spans_array[i]);
+    active_slot_spans_head = active_spans_array[i];
   }
 }
 

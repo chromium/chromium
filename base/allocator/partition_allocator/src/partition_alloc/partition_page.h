@@ -4,6 +4,11 @@
 
 #include <cstddef>
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef PARTITION_ALLOC_PARTITION_PAGE_H_
 #define PARTITION_ALLOC_PARTITION_PAGE_H_
 
@@ -430,12 +435,12 @@ PA_ALWAYS_INLINE PartitionPageMetadata* PartitionSuperPageToMetadataArea(
 
 PA_ALWAYS_INLINE const SubsequentPageMetadata* GetSubsequentPageMetadata(
     const PartitionPageMetadata* page_metadata) {
-  return &(PA_UNSAFE_TODO(page_metadata + 1))->subsequent_page_metadata;
+  return &(page_metadata + 1)->subsequent_page_metadata;
 }
 
 PA_ALWAYS_INLINE SubsequentPageMetadata* GetSubsequentPageMetadata(
     PartitionPageMetadata* page_metadata) {
-  return &(PA_UNSAFE_TODO(page_metadata + 1))->subsequent_page_metadata;
+  return &(page_metadata + 1)->subsequent_page_metadata;
 }
 
 PA_ALWAYS_INLINE PartitionSuperPageExtentEntry* PartitionSuperPageToExtent(
@@ -533,9 +538,8 @@ PA_ALWAYS_INLINE PartitionPageMetadata* PartitionPageMetadata::FromAddr(
   // for other exclusions.
   PA_DCHECK(partition_page_index);
   PA_DCHECK(partition_page_index < NumPartitionPagesPerSuperPage() - 1);
-  return PA_UNSAFE_TODO(
-      PartitionSuperPageToMetadataArea(super_page, metadata_offset) +
-      partition_page_index);
+  return PartitionSuperPageToMetadataArea(super_page, metadata_offset) +
+         partition_page_index;
 }
 
 // Converts from a pointer to the SlotSpanMetadata object (within a super
@@ -611,7 +615,7 @@ PA_ALWAYS_INLINE SlotSpanMetadata* SlotSpanMetadata::FromAddr(
   // Partition pages in the same slot span share the same SlotSpanMetadata
   // object (located in the first PartitionPageMetadata object of that span).
   // Adjust for that.
-  PA_UNSAFE_TODO(page_metadata -= page_metadata->slot_span_metadata_offset);
+  page_metadata -= page_metadata->slot_span_metadata_offset;
   PA_DCHECK(page_metadata->is_valid);
   PA_DCHECK(!page_metadata->slot_span_metadata_offset);
   auto* slot_span = &page_metadata->slot_span_metadata;
@@ -631,7 +635,7 @@ PA_ALWAYS_INLINE SlotSpanMetadata* SlotSpanMetadata::FromAddr(
   // Partition pages in the same slot span share the same SlotSpanMetadata
   // object (located in the first PartitionPageMetadata object of that span).
   // Adjust for that.
-  PA_UNSAFE_TODO(page_metadata -= page_metadata->slot_span_metadata_offset);
+  page_metadata -= page_metadata->slot_span_metadata_offset;
   PA_DCHECK(page_metadata->is_valid);
   PA_DCHECK(!page_metadata->slot_span_metadata_offset);
   auto* slot_span = &page_metadata->slot_span_metadata;

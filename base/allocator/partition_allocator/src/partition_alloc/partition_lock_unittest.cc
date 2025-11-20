@@ -2,13 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "partition_alloc/partition_lock.h"
 
 #include <algorithm>
 #include <atomic>
 #include <cstddef>
-
-#include "partition_alloc/partition_alloc_base/compiler_specific.h"
 
 #if PA_BUILDFLAG(IS_POSIX)
 #include <sys/resource.h>
@@ -449,8 +452,8 @@ bool PriorityInheritanceLocksSupported() {
   struct utsname info;
 
   EXPECT_EQ(uname(&info), 0);
-  int num_read = PA_UNSAFE_TODO(sscanf(info.release, "%d.%d.%d", &major_version,
-                                       &minor_version, &bugfix_version));
+  int num_read = sscanf(info.release, "%d.%d.%d", &major_version,
+                        &minor_version, &bugfix_version);
   if (num_read < 1) {
     major_version = 0;
   }

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "partition_alloc/partition_alloc_base/debug/stack_trace.h"
 
 #include <cstdint>
@@ -64,7 +69,7 @@ uintptr_t GetNextStackFrame(uintptr_t fp) {
 uintptr_t GetStackFramePC(uintptr_t fp) {
   const uintptr_t* fp_addr = reinterpret_cast<const uintptr_t*>(fp);
   PA_MSAN_UNPOISON(&fp_addr[1], sizeof(uintptr_t));
-  return StripPointerAuthenticationBits(PA_UNSAFE_TODO(fp_addr[1]));
+  return StripPointerAuthenticationBits(fp_addr[1]);
 }
 
 bool IsStackFrameValid(uintptr_t fp, uintptr_t prev_fp, uintptr_t stack_end) {
@@ -167,7 +172,7 @@ __attribute__((always_inline)) size_t TraceStackFramePointersInternal(
     if (skip_initial != 0) {
       skip_initial--;
     } else {
-      PA_UNSAFE_TODO(out_trace[depth++]) = reinterpret_cast<const void*>(pc);
+      out_trace[depth++] = reinterpret_cast<const void*>(pc);
     }
 
     uintptr_t next_fp = GetNextStackFrame(fp);

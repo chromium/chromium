@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "partition_alloc/thread_isolation/thread_isolation.h"
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
 
-#include "partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "partition_alloc/thread_isolation/thread_isolation.h"
 
 #if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
 
@@ -54,8 +57,7 @@ void WriteProtectThreadIsolatedVariable(ThreadIsolationOption thread_isolation,
                                         T& var,
                                         size_t offset = 0,
                                         bool read_only = false) {
-  WriteProtectThreadIsolatedMemory(thread_isolation,
-                                   PA_UNSAFE_TODO((char*)&var + offset),
+  WriteProtectThreadIsolatedMemory(thread_isolation, (char*)&var + offset,
                                    sizeof(T) - offset, read_only);
 }
 

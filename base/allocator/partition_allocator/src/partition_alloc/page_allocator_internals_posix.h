@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef PARTITION_ALLOC_PAGE_ALLOCATOR_INTERNALS_POSIX_H_
 #define PARTITION_ALLOC_PAGE_ALLOCATOR_INTERNALS_POSIX_H_
 
@@ -19,7 +24,6 @@
 #include "partition_alloc/oom.h"
 #include "partition_alloc/page_allocator.h"
 #include "partition_alloc/page_allocator_constants.h"
-#include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/posix/eintr_wrapper.h"
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/thread_isolation/thread_isolation.h"
@@ -222,7 +226,7 @@ void DecommitSystemPagesInternal(
     size_t size = std::min(length, 2 * SystemPageSize());
     void* ptr = reinterpret_cast<void*>(address);
     PA_CHECK(mprotect(ptr, size, PROT_WRITE) == 0);
-    PA_UNSAFE_TODO(memset(ptr, 0xcc, size));
+    memset(ptr, 0xcc, size);
   }
 #endif
 

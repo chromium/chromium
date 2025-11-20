@@ -3,6 +3,10 @@
 // found in the LICENSE file.
 
 #include "partition_alloc/slot_start.h"
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
 
 // Scheduler-loop Quarantine is a quarantine pool behind PartitionAlloc with
 // Advanced Checks and `ADVANCED_MEMORY_SAFETY_CHECKS()`.

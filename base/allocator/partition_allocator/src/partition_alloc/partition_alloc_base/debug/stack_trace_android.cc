@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "partition_alloc/partition_alloc_base/debug/stack_trace.h"
 
 #include <unistd.h>
@@ -9,7 +14,6 @@
 
 #include <cstring>
 
-#include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/logging.h"
 #include "partition_alloc/partition_alloc_base/strings/safe_sprintf.h"
 
@@ -40,7 +44,7 @@ _Unwind_Reason_Code TraceStackFrame(_Unwind_Context* context, void* arg) {
     return _URC_NO_REASON;
   }
 
-  PA_UNSAFE_TODO(state->frames[state->frame_count++]) = ip;
+  state->frames[state->frame_count++] = ip;
   if (state->frame_count >= state->max_depth) {
     return _URC_END_OF_STACK;
   }
@@ -64,7 +68,7 @@ void OutputStackTrace(unsigned index,
 
   char buffer[256];
   if (module_name_len > 4 &&
-      !PA_UNSAFE_TODO(strcmp(module_name + module_name_len - 4, ".apk"))) {
+      !strcmp(module_name + module_name_len - 4, ".apk")) {
     strings::SafeSPrintf(buffer, "#%02d pc 0x%0x %s (offset 0x%0x)\n", index,
                          address - base_address, module_name, offset);
   } else {

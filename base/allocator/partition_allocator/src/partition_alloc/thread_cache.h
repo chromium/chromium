@@ -3,6 +3,10 @@
 // found in the LICENSE file.
 
 #include "partition_alloc/slot_start.h"
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
 
 #ifndef PARTITION_ALLOC_THREAD_CACHE_H_
 #define PARTITION_ALLOC_THREAD_CACHE_H_
@@ -307,7 +311,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
     return thread_alloc_stats_;
   }
   size_t bucket_count_for_testing(size_t index) const {
-    return PA_UNSAFE_TODO(buckets_[index]).count;
+    return buckets_[index].count;
   }
 
   internal::base::PlatformThreadId thread_id() const { return thread_id_; }
@@ -360,9 +364,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
 
   PartitionRoot* GetRoot();
 
-  Bucket& bucket_for_testing(size_t index) {
-    return PA_UNSAFE_TODO(buckets_[index]);
-  }
+  Bucket& bucket_for_testing(size_t index) { return buckets_[index]; }
   void ClearBucketForTesting(Bucket& bucket, size_t limit) {
     ClearBucket(bucket, limit);
   }
@@ -469,7 +471,7 @@ PA_ALWAYS_INLINE std::optional<size_t> ThreadCache::MaybePutInCache(
     return std::nullopt;
   }
 
-  auto& bucket = PA_UNSAFE_TODO(buckets_[bucket_index]);
+  auto& bucket = buckets_[bucket_index];
 
   PA_DCHECK(bucket.count != 0 || bucket.freelist_head == nullptr);
 
@@ -498,7 +500,7 @@ PA_ALWAYS_INLINE internal::UntaggedSlotStart ThreadCache::GetFromCache(
     size_t bucket_index,
     size_t* slot_size) {
 #if PA_CONFIG(THREAD_CACHE_ALLOC_STATS)
-  PA_UNSAFE_TODO(stats_.allocs_per_bucket_[bucket_index])++;
+  stats_.allocs_per_bucket_[bucket_index]++;
 #endif
 
   PA_REENTRANCY_GUARD(is_in_thread_cache_);
@@ -510,7 +512,7 @@ PA_ALWAYS_INLINE internal::UntaggedSlotStart ThreadCache::GetFromCache(
     return internal::UntaggedSlotStart();
   }
 
-  auto& bucket = PA_UNSAFE_TODO(buckets_[bucket_index]);
+  auto& bucket = buckets_[bucket_index];
   if (bucket.freelist_head) [[likely]] {
     PA_INCREMENT_COUNTER(stats_.alloc_hits);
   } else {
@@ -615,9 +617,8 @@ PA_ALWAYS_INLINE void ThreadCache::PutInBucket(
   uint32_t* address_aligned = static_cast<uint32_t*>(slot_start_tagged);
   for (int i = 0; i < slot_size_remaining_in_16_bytes; i++) {
     // Clang will expand the memcpy to a 16-byte write (movups on x86).
-    PA_UNSAFE_TODO(
-        memcpy(address_aligned, poison_16_bytes, sizeof(poison_16_bytes)));
-    PA_UNSAFE_TODO(address_aligned += 4);
+    memcpy(address_aligned, poison_16_bytes, sizeof(poison_16_bytes));
+    address_aligned += 4;
   }
 #endif  // PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY) &&
         // PA_BUILDFLAG(PA_ARCH_CPU_X86_64) && PA_BUILDFLAG(HAS_64_BIT_POINTERS)

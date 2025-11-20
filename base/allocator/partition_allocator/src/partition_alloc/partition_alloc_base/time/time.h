@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 // `Time` represents an absolute point in coordinated universal time (UTC),
 // internally represented as microseconds (s/1,000,000) since the Windows epoch
 // (1601-01-01 00:00:00 UTC). System-dependent clock interface routines are

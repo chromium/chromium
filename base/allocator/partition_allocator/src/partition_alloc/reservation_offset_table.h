@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef PARTITION_ALLOC_RESERVATION_OFFSET_TABLE_H_
 #define PARTITION_ALLOC_RESERVATION_OFFSET_TABLE_H_
 
@@ -134,7 +139,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ReservationOffsetTable {
       : table_begin_(table.offsets)
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
         ,
-        table_end_(PA_UNSAFE_TODO(table.offsets + length))
+        table_end_(table.offsets + length)
 #endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
 #if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
         ,
@@ -195,7 +200,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ReservationOffsetTable {
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
       PA_DCHECK(offset_ptr < table_end_);
 #endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
-      *PA_UNSAFE_TODO(offset_ptr++) = kOffsetTagNotAllocated;
+      *offset_ptr++ = kOffsetTagNotAllocated;
     }
   }
 
@@ -220,7 +225,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ReservationOffsetTable {
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
       PA_DCHECK(offset_ptr < table_end_);
 #endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
-      *PA_UNSAFE_TODO(offset_ptr++) = offset;
+      *offset_ptr++ = offset;
     }
   }
 
@@ -289,7 +294,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ReservationOffsetTable {
 #else
     size_t table_index = address >> kSuperPageShift;
 #endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
-    uint16_t* offset_ptr = &PA_UNSAFE_TODO(table_begin_[table_index]);
+    uint16_t* offset_ptr = &table_begin_[table_index];
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
     PA_DCHECK(offset_ptr < table_end_);
 #endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
