@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/commands/data_controls_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
 #import "ios/chrome/test/fakes/fake_data_controls_commands_handler.h"
@@ -384,11 +385,13 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowCopy_Blocked) {
   web_state_->SetCurrentURL(GURL(kDataControlsBlockedUrl));
   id snackbar_handler = OCMStrictProtocolMock(@protocol(SnackbarCommands));
   OCMExpect([snackbar_handler
-      showSnackbarWithMessage:l10n_util::GetNSString(
-                                  IDS_POLICY_ACTION_BLOCKED_BY_ORGANIZATION)
-                   buttonText:nil
-                messageAction:nil
-             completionAction:OCMOCK_ANY]);
+      showSnackbarMessageAfterDismissingKeyboard:[OCMArg checkWithBlock:^BOOL(
+                                                             SnackbarMessage*
+                                                                 obj) {
+        return [obj.title
+            isEqualToString:l10n_util::GetNSString(
+                                IDS_POLICY_ACTION_BLOCKED_BY_ORGANIZATION)];
+      }]]);
   tab_helper()->SetSnackbarHandler(snackbar_handler);
   EXPECT_CALL(*reporting_router_, ReportCopy(_, _)).Times(1);
   base::RunLoop run_loop;
@@ -414,12 +417,14 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowCopy_Blocked_WithDomain) {
   web_state_->SetCurrentURL(GURL(kDataControlsBlockedUrl));
   id snackbar_handler = OCMStrictProtocolMock(@protocol(SnackbarCommands));
   OCMExpect([snackbar_handler
-      showSnackbarWithMessage:l10n_util::GetNSStringF(
-                                  IDS_DATA_CONTROLS_BLOCKED_LABEL_WITH_DOMAIN,
-                                  std::u16string(kOrganizationDomain))
-                   buttonText:nil
-                messageAction:nil
-             completionAction:OCMOCK_ANY]);
+      showSnackbarMessageAfterDismissingKeyboard:[OCMArg checkWithBlock:^BOOL(
+                                                             SnackbarMessage*
+                                                                 obj) {
+        return [obj.title
+            isEqualToString:l10n_util::GetNSStringF(
+                                IDS_DATA_CONTROLS_BLOCKED_LABEL_WITH_DOMAIN,
+                                std::u16string(kOrganizationDomain))];
+      }]]);
   tab_helper()->SetSnackbarHandler(snackbar_handler);
   EXPECT_CALL(*reporting_router_, ReportCopy(_, _)).Times(1);
   base::RunLoop run_loop;
@@ -627,11 +632,13 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_Blocked) {
   web_state_->SetCurrentURL(GURL(kDataControlsBlockedUrl));
   id snackbar_handler = OCMStrictProtocolMock(@protocol(SnackbarCommands));
   OCMExpect([snackbar_handler
-      showSnackbarWithMessage:l10n_util::GetNSString(
-                                  IDS_POLICY_ACTION_BLOCKED_BY_ORGANIZATION)
-                   buttonText:nil
-                messageAction:nil
-             completionAction:OCMOCK_ANY]);
+      showSnackbarMessageAfterDismissingKeyboard:[OCMArg checkWithBlock:^BOOL(
+                                                             SnackbarMessage*
+                                                                 obj) {
+        return [obj.title
+            isEqualToString:l10n_util::GetNSString(
+                                IDS_POLICY_ACTION_BLOCKED_BY_ORGANIZATION)];
+      }]]);
   tab_helper()->SetSnackbarHandler(snackbar_handler);
   EXPECT_CALL(*reporting_router_, ReportPaste(_, _)).Times(1);
   base::RunLoop run_loop;
@@ -673,12 +680,14 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_Blocked_WithDomain) {
   web_state_->SetCurrentURL(GURL(kDataControlsBlockedUrl));
   id snackbar_handler = OCMStrictProtocolMock(@protocol(SnackbarCommands));
   OCMExpect([snackbar_handler
-      showSnackbarWithMessage:l10n_util::GetNSStringF(
-                                  IDS_DATA_CONTROLS_BLOCKED_LABEL_WITH_DOMAIN,
-                                  std::u16string(kOrganizationDomain))
-                   buttonText:nil
-                messageAction:nil
-             completionAction:OCMOCK_ANY]);
+      showSnackbarMessageAfterDismissingKeyboard:[OCMArg checkWithBlock:^BOOL(
+                                                             SnackbarMessage*
+                                                                 obj) {
+        return [obj.title
+            isEqualToString:l10n_util::GetNSStringF(
+                                IDS_DATA_CONTROLS_BLOCKED_LABEL_WITH_DOMAIN,
+                                std::u16string(kOrganizationDomain))];
+      }]]);
   EXPECT_CALL(*reporting_router_, ReportPaste(_, _)).Times(1);
   tab_helper()->SetSnackbarHandler(snackbar_handler);
   base::RunLoop run_loop;
@@ -1005,11 +1014,13 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowCut) {
   web_state_->SetCurrentURL(GURL(kDataControlsBlockedUrl));
   id snackbar_handler = OCMStrictProtocolMock(@protocol(SnackbarCommands));
   OCMExpect([snackbar_handler
-      showSnackbarWithMessage:l10n_util::GetNSString(
-                                  IDS_POLICY_ACTION_BLOCKED_BY_ORGANIZATION)
-                   buttonText:nil
-                messageAction:nil
-             completionAction:OCMOCK_ANY]);
+      showSnackbarMessageAfterDismissingKeyboard:[OCMArg checkWithBlock:^BOOL(
+                                                             SnackbarMessage*
+                                                                 obj) {
+        return [obj.title
+            isEqualToString:l10n_util::GetNSString(
+                                IDS_POLICY_ACTION_BLOCKED_BY_ORGANIZATION)];
+      }]]);
   tab_helper()->SetSnackbarHandler(snackbar_handler);
   base::RunLoop run_loop;
   tab_helper()->ShouldAllowCut(base::BindLambdaForTesting([&](bool allowed) {

@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/enterprise/data_controls/utils/data_controls_utils.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/components/enterprise/data_controls/features.h"
 #import "ios/web/public/web_state.h"
@@ -293,23 +294,13 @@ void DataControlsTabHelper::ShowWarningDialog(
 }
 
 void DataControlsTabHelper::ShowRestrictSnackbar(std::string_view org_domain) {
-  // Hide the keyboard to prevent it from covering the snack bar.
-  // TODO(crbug.com/457472925): Replace temporary fix with snack bar command
-  // that removes the keyboard before presenting it.
-  UIWindow* window = web_state_->GetView().window;
-  UIResponder* firstResponder =
-      GetFirstResponderInWindowScene(window.windowScene);
-  [firstResponder resignFirstResponder];
-
-  NSString* message =
+  NSString* title =
       org_domain.empty()
           ? l10n_util::GetNSString(IDS_POLICY_ACTION_BLOCKED_BY_ORGANIZATION)
           : l10n_util::GetNSStringF(IDS_DATA_CONTROLS_BLOCKED_LABEL_WITH_DOMAIN,
                                     base::UTF8ToUTF16(org_domain));
-  [snackbar_handler_ showSnackbarWithMessage:message
-                                  buttonText:nil
-                               messageAction:nil
-                            completionAction:nil];
+  SnackbarMessage* message = [[SnackbarMessage alloc] initWithTitle:title];
+  [snackbar_handler_ showSnackbarMessageAfterDismissingKeyboard:message];
 }
 
 std::string DataControlsTabHelper::GetManagementDomain(ProfileIOS* profile) {
