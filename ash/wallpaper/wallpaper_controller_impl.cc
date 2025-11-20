@@ -2643,8 +2643,6 @@ void WallpaperControllerImpl::OnDevicePolicyWallpaperDecoded(
         WallpaperType::kDevice, SetWallpaperResult::kDecodingError);
     // If device policy wallpaper failed decoding, fall back to the default
     // wallpaper.
-    // TODO(crbug.com/1329567): Decide if the regular default is correct.  But
-    // this is the current behavior for EmptyAccountId.
     SetDefaultWallpaperImpl(user_manager::UserType::kRegular,
                             /*show_wallpaper=*/true, base::DoNothing());
   } else {
