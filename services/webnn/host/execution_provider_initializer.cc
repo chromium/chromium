@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/queue.h"
 #include "base/files/file_path.h"
@@ -34,6 +35,7 @@
 #include "services/webnn/public/cpp/execution_providers_info.h"
 #include "services/webnn/public/cpp/platform_functions_win.h"
 #include "services/webnn/public/cpp/win_app_runtime_package_info.h"
+#include "services/webnn/webnn_switches.h"
 #include "third_party/windows_app_sdk_headers/src/inc/abi/winml/Microsoft.Windows.AI.MachineLearning.h"
 
 namespace webnn {
@@ -117,6 +119,11 @@ std::string GetProviderName(abi_winml::IExecutionProvider* provider) {
 std::vector<Microsoft::WRL::ComPtr<abi_winml::IExecutionProvider>>
 ActivateCatalogAndGetAvailableEps() {
   HRESULT hr = S_OK;
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
+  const bool ignore_ep_blocklist =
+      command_line->HasSwitch(switches::kWebNNOrtIgnoreEpBlocklist);
+
   Microsoft::WRL::ComPtr<abi_winml::IExecutionProviderCatalogStatics>
       catalog_statics;
   {
@@ -163,8 +170,13 @@ ActivateCatalogAndGetAvailableEps() {
     Microsoft::WRL::ComPtr<abi_winml::IExecutionProvider> provider;
     provider.Attach(provider_ptr);
 
+    const std::string provider_name = GetProviderName(provider.Get());
+    const auto known_it = kKnownEPs.find(provider_name);
     // If the name is not recognized in `kKnownEPs`, skip this EP.
-    if (!kKnownEPs.contains(GetProviderName(provider.Get()))) {
+    if (known_it == kKnownEPs.end()) {
+      continue;
+    }
+    if (!ignore_ep_blocklist && !known_it->second.enabled) {
       continue;
     }
     providers.push_back(provider);

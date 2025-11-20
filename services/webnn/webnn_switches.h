@@ -75,6 +75,10 @@ inline constexpr char kWebNNOrtEpLibraryPathForTesting[] =
 // --webnn-ort-ep-device=OpenVINOExecutionProvider,0x8086,0x4680
 inline constexpr char kWebNNOrtEpDevice[] = "webnn-ort-ep-device";
 
+// Enable all execution providers, ignoring the enabled flag blocklist.
+inline constexpr char kWebNNOrtIgnoreEpBlocklist[] =
+    "webnn-ort-ignore-ep-blocklist";
+
 // Configure the graph optimization level of ONNX Runtime.
 // Usage: --webnn-ort-graph-optimization-level=DISABLE_ALL
 // Other levels could be "BASIC", "EXTENDED" and "ALL".

@@ -46,6 +46,10 @@ struct EpInfo {
   // Represents the vendor id of the hardware device used by the execution
   // provider.
   uint32_t vendor_id;
+  // Controls whether the execution provider is enabled or not. Disabled
+  // execution providers can be enabled all at once via the
+  // --webnn-ort-ignore-ep-blocklist command line switch.
+  bool enabled;
   EpWorkarounds workarounds;
   base::raw_span<const SessionConfigEntry> config_entries;
 };
@@ -55,6 +59,36 @@ struct EpInfo {
 // tools/metrics/histograms/metadata/webnn/histograms.xml.
 inline constexpr auto kKnownEPs = base::MakeFixedFlatMap<base::cstring_view,
                                                          EpInfo>({
+    // AMD
+    {
+        "MIGraphXExecutionProvider",
+        {
+            .min_package_version =
+                {
+                    .Major = 1,
+                    .Minor = 8,
+                    .Build = 35,
+                    .Revision = 0,
+                },
+            .vendor_id = 0x1002,
+            .enabled = false,
+        },
+    },
+    // NVidia
+    {
+        "NvTensorRTRTXExecutionProvider",
+        {
+            .min_package_version =
+                {
+                    .Major = 1,
+                    .Minor = 8,
+                    .Build = 14,
+                    .Revision = 0,
+                },
+            .vendor_id = 0x10de,
+            .enabled = true,
+        },
+    },
     // Intel
     {
         kOpenVINOExecutionProvider,
@@ -67,6 +101,7 @@ inline constexpr auto kKnownEPs = base::MakeFixedFlatMap<base::cstring_view,
                     .Revision = 0,
                 },
             .vendor_id = 0x8086,
+            .enabled = true,
             .workarounds =
                 {
                     .resample2d_limit_to_nchw = true,
@@ -88,8 +123,7 @@ inline constexpr auto kKnownEPs = base::MakeFixedFlatMap<base::cstring_view,
             // `INFERENCE_PRECISION_HINT` can override the `ACCURACY` mode set
             // by `EXECUTION_MODE_HINT`. To improve robustness and ensure
             // accurate inference results, we explicitly set
-            // `INFERENCE_PRECISION_HINT`
-            //  to `dynamic`.
+            // `INFERENCE_PRECISION_HINT` to `dynamic`.
             .config_entries =
                 (const SessionConfigEntry[]){
                     {.key = "ep.openvinoexecutionprovider.load_config",
@@ -105,20 +139,6 @@ inline constexpr auto kKnownEPs = base::MakeFixedFlatMap<base::cstring_view,
                 },
         },
     },
-    // NVidia
-    {
-        "NvTensorRTRTXExecutionProvider",
-        {
-            .min_package_version =
-                {
-                    .Major = 1,
-                    .Minor = 8,
-                    .Build = 14,
-                    .Revision = 0,
-                },
-            .vendor_id = 0x10de,
-        },
-    },
     // Qualcomm
     {
         "QNNExecutionProvider",
@@ -131,6 +151,22 @@ inline constexpr auto kKnownEPs = base::MakeFixedFlatMap<base::cstring_view,
                     .Revision = 0,
                 },
             .vendor_id = 0x4d4f4351,
+            .enabled = false,
+        },
+    },
+    // AMD
+    {
+        "VitisAIExecutionProvider",
+        {
+            .min_package_version =
+                {
+                    .Major = 1,
+                    .Minor = 8,
+                    .Build = 31,
+                    .Revision = 0,
+                },
+            .vendor_id = 0x1022,
+            .enabled = false,
         },
     },
 });
