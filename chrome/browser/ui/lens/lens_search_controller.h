@@ -26,6 +26,7 @@ class LensOverlayGen204Controller;
 class LensOverlaySidePanelCoordinator;
 class LensPermissionBubbleController;
 class LensComposeboxController;
+class LensQueryFlowRouter;
 class LensResultsPanelRouter;
 class LensSearchboxController;
 class LensSearchContextualizationController;
@@ -211,6 +212,9 @@ class LensSearchController {
 
   // Returns the LensOverlayQueryController.
   lens::LensOverlayQueryController* lens_overlay_query_controller();
+
+  // Returns the LensQueryFlowRouter.
+  lens::LensQueryFlowRouter* query_router();
 
   // Returns the LensOverlaySidePanelCoordinator.
   lens::LensOverlaySidePanelCoordinator* lens_overlay_side_panel_coordinator();
@@ -448,6 +452,10 @@ class LensSearchController {
   // duration of a Lens feature being active on this tab.
   std::unique_ptr<lens::LensOverlayQueryController>
       lens_overlay_query_controller_;
+
+  // The query router for the Lens Search feature on this tab. Lives for the
+  // duration of a Lens feature being active on this tab.
+  std::unique_ptr<lens::LensQueryFlowRouter> query_router_;
 
   std::unique_ptr<lens::LensPermissionBubbleController>
       lens_permission_bubble_controller_;

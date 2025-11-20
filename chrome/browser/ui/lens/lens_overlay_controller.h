@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_languages_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_translate_options.h"
+#include "chrome/browser/ui/lens/lens_query_flow_router.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/webui/searchbox/lens_searchbox_client.h"
@@ -974,6 +975,9 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
 
   // Shorthand to grab the LensOverlayQueryController for this instance of Lens.
   lens::LensOverlayQueryController* GetLensOverlayQueryController();
+
+  // Shorthand to grab the LensQueryFlowRouter for this instance of Lens.
+  lens::LensQueryFlowRouter* GetLensQueryFlowRouter();
 
   // Shorthand to grab the LensSearchContextualizationController for this
   // instance of Lens.

@@ -1,0 +1,90 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_LENS_LENS_QUERY_FLOW_ROUTER_H_
+#define CHROME_BROWSER_UI_LENS_LENS_QUERY_FLOW_ROUTER_H_
+
+#include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
+#include "chrome/browser/ui/lens/lens_search_controller.h"
+#include "components/lens/lens_overlay_invocation_source.h"
+#include "components/lens/lens_overlay_mime_type.h"
+
+namespace lens {
+
+// A router for queries that Lens should perform.
+class LensQueryFlowRouter {
+ public:
+  explicit LensQueryFlowRouter(LensSearchController* lens_search_controller);
+  ~LensQueryFlowRouter();
+
+  // Whether the query router is in an off state.
+  bool IsOff() const;
+
+  // Starts a query flow by sending a request to Lens using the viewport
+  // screenshot. This is called by the the overlay when it is first initialized.
+  // This is not called when the overlay is reshown. If there is a pending
+  // contextual or region search that should be requested immediately, it will
+  // be called after this function.
+  void StartQueryFlow(
+      const SkBitmap& screenshot,
+      GURL page_url,
+      std::optional<std::string> page_title,
+      std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes,
+      base::span<const PageContent> underlying_page_contents,
+      lens::MimeType primary_content_type,
+      std::optional<uint32_t> pdf_current_page,
+      float ui_scale_factor,
+      base::TimeTicks invocation_time);
+
+  // Restarts the query flow if its in a state where no cluster info is
+  // available or permissions were not granted.
+  void MaybeRestartQueryFlow();
+
+  // Sends a region search interaction. Expected to be called multiple times. If
+  // region_bytes are included, those will be sent to Lens instead of cropping
+  // the region out of the screenshot. This should be used to provide a higher
+  // definition image than image cropping would provide.
+  void SendRegionSearch(
+      base::Time query_start_time,
+      lens::mojom::CenterRotatedBoxPtr region,
+      lens::LensOverlaySelectionType lens_selection_type,
+      std::map<std::string, std::string> additional_search_query_params,
+      std::optional<SkBitmap> region_bytes);
+
+  // Sends a text-only interaction. Expected to be called multiple times.
+  void SendTextOnlyQuery(
+      base::Time query_start_time,
+      const std::string& query_text,
+      lens::LensOverlaySelectionType lens_selection_type,
+      std::map<std::string, std::string> additional_search_query_params);
+
+  // Sends a text query interaction contextualized to the current page. Expected
+  // to be called multiple times.
+  void SendContextualTextQuery(
+      base::Time query_start_time,
+      const std::string& query_text,
+      lens::LensOverlaySelectionType lens_selection_type,
+      std::map<std::string, std::string> additional_search_query_params);
+
+  // Sends a multimodal interaction. Expected to be called multiple times.
+  void SendMultimodalRequest(
+      base::Time query_start_time,
+      lens::mojom::CenterRotatedBoxPtr region,
+      const std::string& query_text,
+      lens::LensOverlaySelectionType lens_selection_type,
+      std::map<std::string, std::string> additional_search_query_params,
+      std::optional<SkBitmap> region_bytes);
+
+ private:
+  raw_ptr<LensOverlayQueryController> lens_overlay_query_controller() const {
+    return lens_search_controller_->lens_overlay_query_controller();
+  }
+
+  raw_ptr<LensSearchController> lens_search_controller_;
+};
+
+}  // namespace lens
+
+#endif  // CHROME_BROWSER_UI_LENS_LENS_QUERY_FLOW_ROUTER_H_

@@ -1247,7 +1247,7 @@ void LensOverlayController::OnSearchboxFocusChanged(bool focused) {
           lens::LensOverlayNonBlockingPrivacyNoticeUserAction::
               kComposeboxFocused,
           invocation_source_);
-      GetLensOverlayQueryController()->MaybeRestartQueryFlow();
+      GetLensQueryFlowRouter()->MaybeRestartQueryFlow();
       GetContextualizationController()->TryUpdatePageContextualization(
           base::BindOnce(&LensOverlayController::NotifyPageContentUpdated,
                          weak_factory_.GetWeakPtr()));
@@ -1283,7 +1283,7 @@ void LensOverlayController::IssueLensRequest(
   }
 
   if (GetContextualizationController()->GetCurrentPageContextEligibility()) {
-    GetLensOverlayQueryController()->SendRegionSearch(
+    GetLensQueryFlowRouter()->SendRegionSearch(
         query_start_time, region.Clone(), selection_type,
         initialization_data_->additional_search_query_params_, region_bytes);
   }
@@ -1310,7 +1310,7 @@ void LensOverlayController::IssueMultimodalRequest(
     lens::LensOverlaySelectionType selection_type,
     std::optional<SkBitmap> region_bitmap) {
   if (GetContextualizationController()->GetCurrentPageContextEligibility()) {
-    GetLensOverlayQueryController()->SendMultimodalRequest(
+    GetLensQueryFlowRouter()->SendMultimodalRequest(
         query_start_time, std::move(region), text_query, selection_type,
         initialization_data_->additional_search_query_params_, region_bitmap);
   }
@@ -1357,7 +1357,7 @@ void LensOverlayController::IssueContextualTextRequest(
     lens::LensOverlaySelectionType selection_type) {
   if (GetContextualizationController()->GetCurrentPageContextEligibility()) {
     lens_selection_type_ = selection_type;
-    GetLensOverlayQueryController()->SendContextualTextQuery(
+    GetLensQueryFlowRouter()->SendContextualTextQuery(
         query_start_time, text_query, selection_type,
         initialization_data_->additional_search_query_params_);
   }
@@ -1705,14 +1705,14 @@ void LensOverlayController::InitializeOverlay(
   // Only start the query flow again if there is no full image response and the
   // side panel is not open. The side panel being open indicates that a full
   // image response could have been received and not passed to the overlay.
-  if (GetLensOverlayQueryController()->IsOff()) {
+  if (GetLensQueryFlowRouter()->IsOff()) {
     if (!GetContextualizationController()->GetCurrentPageContextEligibility()) {
       initialization_data_->initial_screenshot_ = SkBitmap();
       initialization_data_->page_url_ = GURL();
       initialization_data_->page_title_ = "";
     }
 
-    GetLensOverlayQueryController()->StartQueryFlow(
+    GetLensQueryFlowRouter()->StartQueryFlow(
         initialization_data_->initial_screenshot_,
         initialization_data_->page_url_, initialization_data_->page_title_,
         std::move(initialization_data_->significant_region_boxes_),
@@ -2303,7 +2303,7 @@ void LensOverlayController::IssueTextSelectionRequestInner(
   GetLensSearchboxController()->SetSearchboxInputText(query);
   lens_search_controller_->ClearVisualSelectionThumbnail();
 
-  GetLensOverlayQueryController()->SendTextOnlyQuery(
+  GetLensQueryFlowRouter()->SendTextOnlyQuery(
       query_start_time, query, lens_selection_type_,
       initialization_data_->additional_search_query_params_);
   MaybeOpenSidePanel();
@@ -2454,14 +2454,14 @@ void LensOverlayController::IssueSearchBoxRequestPart2(
     // Do not send any requests if the page is not context eligible.
   } else if (initialization_data_->selected_region_.is_null() &&
              IsContextualSearchbox()) {
-    GetLensOverlayQueryController()->SendContextualTextQuery(
+    GetLensQueryFlowRouter()->SendContextualTextQuery(
         query_start_time, search_box_text, lens_selection_type_,
         initialization_data_->additional_search_query_params_);
     GetLensSessionMetricsLogger()->OnContextualSearchboxQueryIssued(
         is_zero_prefix_suggestion,
         /*is_initial_query=*/state_ == State::kOverlay);
   } else if (initialization_data_->selected_region_.is_null()) {
-    GetLensOverlayQueryController()->SendTextOnlyQuery(
+    GetLensQueryFlowRouter()->SendTextOnlyQuery(
         query_start_time, search_box_text, lens_selection_type_,
         initialization_data_->additional_search_query_params_);
   } else {
@@ -2470,7 +2470,7 @@ void LensOverlayController::IssueSearchBoxRequestPart2(
             ? std::nullopt
             : std::make_optional<SkBitmap>(
                   initialization_data_->selected_region_bitmap_);
-    GetLensOverlayQueryController()->SendMultimodalRequest(
+    GetLensQueryFlowRouter()->SendMultimodalRequest(
         query_start_time, initialization_data_->selected_region_.Clone(),
         search_box_text, lens_selection_type_,
         initialization_data_->additional_search_query_params_,
@@ -3049,6 +3049,10 @@ LensOverlayController::GetLensResultsPanelRouter() {
 lens::LensOverlayQueryController*
 LensOverlayController::GetLensOverlayQueryController() {
   return lens_search_controller_->lens_overlay_query_controller();
+}
+
+lens::LensQueryFlowRouter* LensOverlayController::GetLensQueryFlowRouter() {
+  return lens_search_controller_->query_router();
 }
 
 lens::LensSearchContextualizationController*

@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/lens/lens_composebox_controller.h"
-#include "chrome/browser/ui/lens/lens_results_panel_router.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_event_handler.h"
 #include "chrome/browser/ui/lens/lens_overlay_image_helper.h"
@@ -25,6 +24,8 @@
 #include "chrome/browser/ui/lens/lens_overlay_theme_utils.h"
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
 #include "chrome/browser/ui/lens/lens_permission_bubble_controller.h"
+#include "chrome/browser/ui/lens/lens_query_flow_router.h"
+#include "chrome/browser/ui/lens/lens_results_panel_router.h"
 #include "chrome/browser/ui/lens/lens_search_contextualization_controller.h"
 #include "chrome/browser/ui/lens/lens_search_feature_flag_utils.h"
 #include "chrome/browser/ui/lens/lens_searchbox_controller.h"
@@ -555,6 +556,11 @@ LensSearchController::lens_overlay_query_controller() {
   return lens_overlay_query_controller_.get();
 }
 
+lens::LensQueryFlowRouter* LensSearchController::query_router() {
+  CheckInitialized(initialized_);
+  return query_router_.get();
+}
+
 lens::LensOverlaySidePanelCoordinator*
 LensSearchController::lens_overlay_side_panel_coordinator() {
   CheckInitialized(initialized_);
@@ -688,6 +694,7 @@ void LensSearchController::StartLensSession(
   // Create the query controller to be used for the current invocation.
   CHECK(!lens_overlay_query_controller_);
   lens_overlay_query_controller_ = CreateLensQueryController(invocation_source);
+  query_router_ = std::make_unique<lens::LensQueryFlowRouter>(this);
 
   // Start the current metrics logger session.
   lens_session_metrics_logger_->OnSessionStart(invocation_source,
@@ -780,6 +787,7 @@ void LensSearchController::CloseLensPart2(
   // Cleanup the query controller after the overlay controller to prevent
   // dangling ptrs.
   lens_overlay_query_controller_.reset();
+  query_router_.reset();
 
   // Record end of session metrics.
   lens_session_metrics_logger_->RecordEndOfSessionMetrics(dismissal_source);
