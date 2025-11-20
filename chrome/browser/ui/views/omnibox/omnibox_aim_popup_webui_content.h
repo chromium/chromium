@@ -34,6 +34,9 @@ class OmniboxAimPopupWebUIContent : public OmniboxPopupWebUIBaseContent {
   // Called when the popup is closed with a non-empty input value that should
   // persist in the omnibox.
   void OnClosedWithInput(const std::string& input);
+
+  private:
+  bool is_shown_ = false;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */,
