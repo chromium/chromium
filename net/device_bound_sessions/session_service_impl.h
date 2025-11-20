@@ -255,10 +255,14 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   // null, does nothing.
   void RemoveFetcher(RegistrationFetcher* fetcher);
 
-  // Get the federated provider session specified by
+  // Asynchronously get the federated provider session specified by
   // `registration_params`, if allowed.
-  base::expected<Session*, SessionError> GetFederatedProviderSessionIfValid(
-      const RegistrationFetcherParam& registration_params);
+  void GetFederatedProviderSessionIfValid(
+      GURL provider_url,
+      Session::Id provider_session_id,
+      std::string provider_key_thumbprint,
+      base::OnceCallback<void(base::expected<Session*, SessionError>)>
+          callback);
 
   void OnAddSessionKeyRestored(
       const SchemefulSite& site,
@@ -275,7 +279,18 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
       const SessionKey& session_key,
       base::TimeDelta minimum_cookie_lifetime);
 
-  // Whether we are waiting on the initial load of saved sessions to complete.
+  // Helper function for common behavior from federated and regular
+  // session registration.
+  void RegisterBoundSessionInternal(
+      OnAccessCallback on_access_callback,
+      RegistrationFetcherParam registration_params,
+      const IsolationInfo& isolation_info,
+      const NetLogWithSource& net_log,
+      const std::optional<url::Origin>& original_request_initiator,
+      base::expected<Session*, SessionError> federated_provider_session);
+
+  // Whether we are waiting on the initial load of saved sessions to
+  // complete.
   bool pending_initialization_ = false;
   // Functions to call once initialization completes.
   std::vector<base::OnceClosure> queued_operations_;

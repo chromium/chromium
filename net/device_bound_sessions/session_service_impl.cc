@@ -185,9 +185,6 @@ void SessionServiceImpl::RegisterBoundSession(
     const IsolationInfo& isolation_info,
     const NetLogWithSource& net_log,
     const std::optional<url::Origin>& original_request_initiator) {
-  Session* federated_provider_session = nullptr;
-  bool is_google_subdomain_for_histograms = IsSubdomainOf(
-      registration_params.registration_endpoint().host(), "google.com");
   if (registration_params.provider_session_id().has_value()) {
     if (!base::FeatureList::IsEnabled(
             features::kDeviceBoundSessionsFederatedRegistration)) {
@@ -196,17 +193,47 @@ void SessionServiceImpl::RegisterBoundSession(
       return;
     }
 
-    base::expected<Session*, SessionError> provider_session_or_error =
-        GetFederatedProviderSessionIfValid(registration_params);
-    if (!provider_session_or_error.has_value()) {
-      OnRegistrationComplete(
-          std::move(on_access_callback), is_google_subdomain_for_histograms,
-          /*fetcher=*/nullptr,
-          RegistrationResult(std::move(provider_session_or_error.error())));
-      return;
-    }
+    // RegistrationFetcherParam::ParseItem ensures that all three of
+    // these are present.
+    GURL provider_url = std::move(*registration_params.provider_url());
+    Session::Id provider_session_id =
+        std::move(*registration_params.provider_session_id());
+    std::string provider_key = std::move(*registration_params.provider_key());
+    GetFederatedProviderSessionIfValid(
+        std::move(provider_url), std::move(provider_session_id),
+        std::move(provider_key),
+        base::BindOnce(
+            &SessionServiceImpl::RegisterBoundSessionInternal,
+            weak_factory_.GetWeakPtr(), std::move(on_access_callback),
+            std::move(registration_params), std::move(isolation_info),
+            std::move(net_log), std::move(original_request_initiator)));
+    return;
+  }
 
-    federated_provider_session = provider_session_or_error.value();
+  RegisterBoundSessionInternal(std::move(on_access_callback),
+                               std::move(registration_params),
+                               std::move(isolation_info), std::move(net_log),
+                               std::move(original_request_initiator),
+                               /*federated_provider_session=*/nullptr);
+}
+
+void SessionServiceImpl::RegisterBoundSessionInternal(
+    OnAccessCallback on_access_callback,
+    RegistrationFetcherParam registration_params,
+    const IsolationInfo& isolation_info,
+    const NetLogWithSource& net_log,
+    const std::optional<url::Origin>& original_request_initiator,
+    base::expected<Session*, SessionError> federated_provider_session) {
+  bool is_google_subdomain_for_histograms = IsSubdomainOf(
+      registration_params.registration_endpoint().host(), "google.com");
+
+  // A federated session was attempted but had an error.
+  if (!federated_provider_session.has_value()) {
+    OnRegistrationComplete(
+        std::move(on_access_callback), is_google_subdomain_for_histograms,
+        /*fetcher=*/nullptr,
+        RegistrationResult(std::move(federated_provider_session.error())));
+    return;
   }
 
   net::NetLogSource net_log_source_for_registration = net::NetLogSource(
@@ -231,9 +258,9 @@ void SessionServiceImpl::RegisterBoundSession(
   auto callback = base::BindOnce(
       &SessionServiceImpl::OnRegistrationComplete, weak_factory_.GetWeakPtr(),
       std::move(on_access_callback), is_google_subdomain_for_histograms);
-  if (federated_provider_session) {
+  if (*federated_provider_session) {
     fetcher_raw->StartFetchWithFederatedKey(
-        request_params, *federated_provider_session->unexportable_key_id(),
+        request_params, *(*federated_provider_session)->unexportable_key_id(),
         *provider_url, std::move(callback));
     // `fetcher_raw` may be deleted.
   } else {
@@ -243,33 +270,39 @@ void SessionServiceImpl::RegisterBoundSession(
   }
 }
 
-base::expected<Session*, SessionError>
-SessionServiceImpl::GetFederatedProviderSessionIfValid(
-    const RegistrationFetcherParam& registration_params) {
+void SessionServiceImpl::GetFederatedProviderSessionIfValid(
+    GURL provider_url,
+    Session::Id provider_session_id,
+    std::string provider_key_thumbprint,
+    base::OnceCallback<void(base::expected<Session*, SessionError>)> callback) {
   // This is a federated session registration.
-  GURL provider_url = *registration_params.provider_url();
   if (!provider_url.is_valid() || url::Origin::Create(provider_url).opaque()) {
-    return base::unexpected(
-        SessionError(SessionError::kInvalidFederatedSessionUrl));
+    std::move(callback).Run(base::unexpected(
+        SessionError(SessionError::kInvalidFederatedSessionUrl)));
+    return;
   }
 
-  SessionKey provider_key{SchemefulSite(provider_url),
-                          *registration_params.provider_session_id()};
+  SessionKey provider_key{SchemefulSite(provider_url), provider_session_id};
   Session* provider_session = GetSession(provider_key);
 
   if (!provider_session) {
     // Provider session not found, fail the registration.
-    return base::unexpected(SessionError(
-        SessionError::kInvalidFederatedSessionProviderSessionMissing));
+    std::move(callback).Run(base::unexpected(SessionError(
+        SessionError::kInvalidFederatedSessionProviderSessionMissing)));
+    return;
   }
 
   if (url::Origin::Create(provider_url) != provider_session->origin()) {
-    return base::unexpected(SessionError(
-        SessionError::kInvalidFederatedSessionWrongProviderOrigin));
+    std::move(callback).Run(base::unexpected(SessionError(
+        SessionError::kInvalidFederatedSessionWrongProviderOrigin)));
+    return;
   }
 
   if (!provider_session->unexportable_key_id().has_value()) {
-    return base::unexpected(SessionError(SessionError::kInvalidFederatedKey));
+    // TODO(crbug.com/462003255): Restore the key
+    std::move(callback).Run(
+        base::unexpected(SessionError(SessionError::kInvalidFederatedKey)));
+    return;
   }
 
   unexportable_keys::ServiceErrorOr<
@@ -277,23 +310,28 @@ SessionServiceImpl::GetFederatedProviderSessionIfValid(
       algorithm =
           key_service_->GetAlgorithm(*provider_session->unexportable_key_id());
   if (!algorithm.has_value()) {
-    return base::unexpected(SessionError(SessionError::kInvalidFederatedKey));
+    std::move(callback).Run(
+        base::unexpected(SessionError(SessionError::kInvalidFederatedKey)));
+    return;
   }
 
   unexportable_keys::ServiceErrorOr<std::vector<uint8_t>> pub_key =
       key_service_->GetSubjectPublicKeyInfo(
           *provider_session->unexportable_key_id());
   if (!pub_key.has_value()) {
-    return base::unexpected(SessionError(SessionError::kInvalidFederatedKey));
+    std::move(callback).Run(
+        base::unexpected(SessionError(SessionError::kInvalidFederatedKey)));
+    return;
   }
 
   std::string thumbprint = CreateJwkThumbprint(*algorithm, *pub_key);
-  if (thumbprint != *registration_params.provider_key()) {
-    return base::unexpected(
-        SessionError(SessionError::kFederatedKeyThumbprintMismatch));
+  if (thumbprint != provider_key_thumbprint) {
+    std::move(callback).Run(base::unexpected(
+        SessionError(SessionError::kFederatedKeyThumbprintMismatch)));
+    return;
   }
 
-  return provider_session;
+  std::move(callback).Run(provider_session);
 }
 
 SessionServiceImpl::Observer::Observer(
