@@ -70,10 +70,17 @@ class OmniboxTextControllerTest : public PlatformTest {
     RegisterLocalStatePrefs(local_state_->registry());
     TestingApplicationContext::GetGlobal()->SetLocalState(local_state_.get());
 
+    autocomplete_controller_ = std::make_unique<AutocompleteController>(
+        omnibox_client_->CreateAutocompleteProviderClient(),
+        AutocompleteControllerConfig{
+            .provider_types =
+                AutocompleteClassifier::DefaultOmniboxProviders()});
+
     omnibox_autocomplete_controller_ = [[OmniboxAutocompleteController alloc]
-        initWithOmniboxClient:omnibox_client_.get()
-             omniboxTextModel:omnibox_text_model_.get()
-          presentationContext:OmniboxPresentationContext::kLocationBar];
+         initWithOmniboxClient:omnibox_client_.get()
+        autocompleteController:autocomplete_controller_.get()
+              omniboxTextModel:omnibox_text_model_.get()
+           presentationContext:OmniboxPresentationContext::kLocationBar];
 
     omnibox_text_controller_ = [[TestOmniboxTextController alloc]
         initWithOmniboxClient:omnibox_client_.get()
@@ -89,6 +96,7 @@ class OmniboxTextControllerTest : public PlatformTest {
     omnibox_text_controller_ = nil;
     [omnibox_autocomplete_controller_ disconnect];
     omnibox_autocomplete_controller_ = nil;
+    autocomplete_controller_.reset();
     omnibox_client_.reset();
     TestingApplicationContext::GetGlobal()->SetLocalState(nullptr);
     local_state_.reset();
@@ -114,6 +122,7 @@ class OmniboxTextControllerTest : public PlatformTest {
  protected:
   base::test::TaskEnvironment environment_;
 
+  std::unique_ptr<AutocompleteController> autocomplete_controller_;
   OmniboxAutocompleteController* omnibox_autocomplete_controller_;
   TestOmniboxTextController* omnibox_text_controller_;
   std::unique_ptr<OmniboxTextModel> omnibox_text_model_;

@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/autocomplete/model/autocomplete_classifier_factory.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_provider_client_impl.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_scoring_model_service_factory.h"
+#import "ios/chrome/browser/autocomplete/model/autocomplete_service_factory.h"
 #import "ios/chrome/browser/autocomplete/model/in_memory_url_index_factory.h"
 #import "ios/chrome/browser/autocomplete/model/on_device_tail_model_service_factory.h"
 #import "ios/chrome/browser/autocomplete/model/prototype/gemini_prototype_omnibox_service_factory.h"
@@ -268,6 +269,7 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   AcceptLanguagesServiceFactory::GetInstance();
   AppStoreBundleServiceFactory::GetInstance();
   AuthenticationServiceFactory::GetInstance();
+  AutocompleteServiceFactory::GetInstance();
   BackgroundDownloadServiceFactory::GetInstance();
   BookmarkModelMetricsServiceFactory::GetInstance();
   BreadcrumbManagerKeyedServiceFactory::GetInstance();

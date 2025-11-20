@@ -63,10 +63,11 @@ struct OmniboxTextModel;
 @property(nonatomic, assign, readonly)
     AutocompleteProviderClient* autocompleteProviderClient;
 
-- (instancetype)initWithOmniboxClient:(OmniboxClient*)omniboxClient
-                     omniboxTextModel:(OmniboxTextModel*)omniboxTextModel
-                  presentationContext:
-                      (OmniboxPresentationContext)presentationContext
+- (instancetype)
+     initWithOmniboxClient:(OmniboxClient*)omniboxClient
+    autocompleteController:(AutocompleteController*)autocompleteController
+          omniboxTextModel:(OmniboxTextModel*)omniboxTextModel
+       presentationContext:(OmniboxPresentationContext)presentationContext
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

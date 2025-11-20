@@ -29,7 +29,8 @@
   OmniboxInttestViewController* _viewController;
   raw_ptr<FakeOmniboxClient> _fakeOmniboxClient;
   raw_ptr<FakeSuggestionsBuilder> _fakeSuggestionsBuilder;
-  raw_ptr<OmniboxInttestAutocompleteController> _autocompleteController;
+  // TODO(crbug.com/462066136): Move to a TestAutocompleteService.
+  std::unique_ptr<OmniboxInttestAutocompleteController> _autocompleteController;
 }
 
 - (void)start {
@@ -58,14 +59,12 @@
   omniboxCoordinator.searchOnlyUI = YES;
   [omniboxCoordinator start];
 
-  auto fakeAutocompleteController =
+  _autocompleteController =
       std::make_unique<OmniboxInttestAutocompleteController>();
-  _autocompleteController = fakeAutocompleteController.get();
-  _fakeSuggestionsBuilder =
-      fakeAutocompleteController->fake_suggestions_builder();
+  _fakeSuggestionsBuilder = _autocompleteController->fake_suggestions_builder();
 
   [omniboxCoordinator.omniboxAutocompleteController
-      setAutocompleteController:std::move(fakeAutocompleteController)];
+      setAutocompleteController:_autocompleteController.get()];
 
   [omniboxCoordinator.managedViewController
       willMoveToParentViewController:_viewController];
@@ -84,9 +83,9 @@
 - (void)stop {
   _fakeOmniboxClient = nullptr;
   _fakeSuggestionsBuilder = nullptr;
-  _autocompleteController = nullptr;
   [self.omniboxCoordinator stop];
   self.omniboxCoordinator = nil;
+  _autocompleteController = nullptr;
 
   _viewController.delegate = nil;
   [_viewController.presentingViewController dismissViewControllerAnimated:NO

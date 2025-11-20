@@ -114,8 +114,7 @@ class OmniboxAutocompleteControllerTest : public PlatformTest {
 
     omnibox_client_ = std::make_unique<TestOmniboxClient>();
 
-    auto autocomplete = std::make_unique<MockAutocompleteController>();
-    autocomplete_controller_ = autocomplete.get();
+    autocomplete_controller_ = std::make_unique<MockAutocompleteController>();
 
     omnibox_text_model_ =
         std::make_unique<OmniboxTextModel>(omnibox_client_.get());
@@ -124,11 +123,11 @@ class OmniboxAutocompleteControllerTest : public PlatformTest {
         OCMProtocolMock(@protocol(OmniboxAutocompleteControllerDelegate));
 
     controller_ = [[TestOmniboxAutocompleteController alloc]
-        initWithOmniboxClient:omnibox_client_.get()
-             omniboxTextModel:omnibox_text_model_.get()
-          presentationContext:OmniboxPresentationContext::kLocationBar];
+         initWithOmniboxClient:omnibox_client_.get()
+        autocompleteController:autocomplete_controller_.get()
+              omniboxTextModel:omnibox_text_model_.get()
+           presentationContext:OmniboxPresentationContext::kLocationBar];
     controller_.delegate = controller_delegate_;
-    [controller_ setAutocompleteController:std::move(autocomplete)];
 
     omnibox_metrics_recorder_ = [[OmniboxMetricsRecorder alloc]
         initWithClient:omnibox_client_.get()
@@ -192,8 +191,7 @@ class OmniboxAutocompleteControllerTest : public PlatformTest {
   // Application pref service.
   std::unique_ptr<TestingPrefServiceSimple> local_state_;
   TestOmniboxAutocompleteController* controller_;
-  raw_ptr<MockAutocompleteController, DanglingUntriaged>
-      autocomplete_controller_;
+  std::unique_ptr<MockAutocompleteController> autocomplete_controller_;
   std::unique_ptr<TestOmniboxClient> omnibox_client_;
   raw_ptr<FakeClipboardRecentContent> clipboard_;
   std::unique_ptr<OmniboxTextModel> omnibox_text_model_;

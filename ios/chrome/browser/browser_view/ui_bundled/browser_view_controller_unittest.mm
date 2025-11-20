@@ -17,6 +17,8 @@
 #import "components/open_from_clipboard/fake_clipboard_recent_content.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/supervised_user/core/common/features.h"
+#import "ios/chrome/browser/autocomplete/model/autocomplete_service.h"
+#import "ios/chrome/browser/autocomplete/model/autocomplete_service_factory.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/home/bookmarks_coordinator.h"
 #import "ios/chrome/browser/browser_container/ui_bundled/browser_container_view_controller.h"
@@ -97,6 +99,21 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/device_form_factor.h"
+
+// Scoped clipboard recent content so its destroyed after the profile. This
+// allows the autocomplete keyed service to cleanup before the clipboard
+// dependency is destroyed.
+class ScopedClipboardRecentContentInstaller {
+ public:
+  ScopedClipboardRecentContentInstaller(
+      std::unique_ptr<ClipboardRecentContent> instance) {
+    ClipboardRecentContent::SetInstance(std::move(instance));
+  }
+
+  ~ScopedClipboardRecentContentInstaller() {
+    ClipboardRecentContent::SetInstance(nullptr);
+  }
+};
 
 class BrowserViewControllerTest : public BlockCleanupTest {
  public:
@@ -261,8 +278,9 @@ class BrowserViewControllerTest : public BlockCleanupTest {
         ios::TemplateURLServiceFactory::GetForProfile(GetProfile());
     template_url_service->Load();
 
-    ClipboardRecentContent::SetInstance(
-        std::make_unique<FakeClipboardRecentContent>());
+    clipboard_installer_ =
+        std::make_unique<ScopedClipboardRecentContentInstaller>(
+            std::make_unique<FakeClipboardRecentContent>());
 
     container_ = [[BrowserContainerViewController alloc] init];
     key_commands_provider_ =
@@ -353,7 +371,6 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     [popup_menu_coordinator_ stop];
     [NTPCoordinator_ stop];
     [side_swipe_coordinator_ stop];
-    ClipboardRecentContent::SetInstance(nullptr);
 
     BlockCleanupTest::TearDown();
   }
@@ -429,6 +446,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
 
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  std::unique_ptr<ScopedClipboardRecentContentInstaller> clipboard_installer_;
   TestProfileManagerIOS profile_manager_;
   raw_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;

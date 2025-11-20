@@ -61,7 +61,7 @@ using base::UserMetricsAction;
   raw_ptr<OmniboxTextModel, DanglingUntriaged> _omniboxTextModel;
 
   /// The autocomplete controller.
-  std::unique_ptr<AutocompleteController> _autocompleteController;
+  raw_ptr<AutocompleteController> _autocompleteController;
   /// Autocomplete controller observer.
   std::unique_ptr<AutocompleteControllerObserverBridge>
       _autocompleteControllerObserverBridge;
@@ -73,21 +73,17 @@ using base::UserMetricsAction;
   OmniboxPresentationContext _omniboxPresentationContext;
 }
 
-- (instancetype)initWithOmniboxClient:(OmniboxClient*)omniboxClient
-                     omniboxTextModel:(OmniboxTextModel*)omniboxTextModel
-                  presentationContext:
-                      (OmniboxPresentationContext)presentationContext {
+- (instancetype)
+     initWithOmniboxClient:(OmniboxClient*)omniboxClient
+    autocompleteController:(AutocompleteController*)autocompleteController
+          omniboxTextModel:(OmniboxTextModel*)omniboxTextModel
+       presentationContext:(OmniboxPresentationContext)presentationContext {
   self = [super init];
   if (self) {
     _omniboxClient = omniboxClient;
+    _autocompleteController = autocompleteController;
     _omniboxTextModel = omniboxTextModel;
     _omniboxPresentationContext = presentationContext;
-
-    _autocompleteController = std::make_unique<AutocompleteController>(
-        _omniboxClient->CreateAutocompleteProviderClient(),
-        AutocompleteControllerConfig{
-            .provider_types =
-                AutocompleteClassifier::DefaultOmniboxProviders()});
 
     _autocompleteControllerObserverBridge =
         std::make_unique<AutocompleteControllerObserverBridge>(self);
@@ -115,13 +111,13 @@ using base::UserMetricsAction;
   [_bottomOmniboxEnabled setObserver:nil];
   _bottomOmniboxEnabled = nil;
   _autocompleteResultWrapper = nil;
-  _autocompleteController.reset();
+  _autocompleteController = nullptr;
   _omniboxTextModel = nullptr;
   _omniboxClient = nullptr;
 }
 
 - (AutocompleteController*)autocompleteController {
-  return _autocompleteController.get();
+  return _autocompleteController;
 }
 
 - (void)updatePopupSuggestions {
@@ -198,7 +194,7 @@ using base::UserMetricsAction;
 - (void)autocompleteController:(AutocompleteController*)autocompleteController
     didUpdateResultChangingDefaultMatch:(BOOL)defaultMatchChanged {
   TRACE_EVENT0("omnibox", "OmniboxAutocompleteController::OnResultChanged");
-  DCHECK(autocompleteController == _autocompleteController.get());
+  DCHECK(autocompleteController == _autocompleteController);
   DCHECK(_omniboxClient);
 
   const bool popup_was_open = self.hasSuggestions;
@@ -914,8 +910,7 @@ using base::UserMetricsAction;
 
 #pragma mark - Testing
 
-- (void)setAutocompleteController:
-    (std::unique_ptr<AutocompleteController>)controller {
+- (void)setAutocompleteController:(AutocompleteController*)controller {
   CHECK(_autocompleteControllerObserverBridge);
   // Remove observation on old controller.
   if (_autocompleteController) {
@@ -923,7 +918,7 @@ using base::UserMetricsAction;
         _autocompleteControllerObserverBridge.get());
   }
   // Set new controller.
-  _autocompleteController = std::move(controller);
+  _autocompleteController = controller;
   // Observe new controller.
   if (_autocompleteController) {
     _autocompleteController->AddObserver(
@@ -932,7 +927,7 @@ using base::UserMetricsAction;
     // Update the autocomplete controller in the metrics recorder and the text
     // controller.
     [self.omniboxMetricsRecorder
-        setAutocompleteController:_autocompleteController.get()];
+        setAutocompleteController:_autocompleteController];
   }
 }
 

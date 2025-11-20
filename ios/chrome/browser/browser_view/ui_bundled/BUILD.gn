@@ -355,6 +355,7 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/trusted_vault_reauthentication/coordinator",
+    "//ios/chrome/browser/autocomplete/model",
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/bookmarks/model:test_support",
     "//ios/chrome/browser/bookmarks/ui_bundled/home",

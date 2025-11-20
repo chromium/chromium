@@ -16,6 +16,8 @@
 #import "components/open_from_clipboard/clipboard_recent_content.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/autocomplete/model/autocomplete_service.h"
+#import "ios/chrome/browser/autocomplete/model/autocomplete_service_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
@@ -182,18 +184,22 @@
   _omniboxTextModel = std::make_unique<OmniboxTextModel>(_client.get());
   id<OmniboxTextInput> textInput = viewController.textInput;
 
+  AutocompleteService* autocompleteService =
+      AutocompleteServiceFactory::GetForProfile(profile);
+  AutocompleteController* autocompleteController =
+      autocompleteService->GetAutocompleteController(_presentationContext);
+
   _omniboxAutocompleteController = [[OmniboxAutocompleteController alloc]
-      initWithOmniboxClient:_client.get()
-           omniboxTextModel:_omniboxTextModel.get()
-        presentationContext:_presentationContext];
+       initWithOmniboxClient:_client.get()
+      autocompleteController:autocompleteController
+            omniboxTextModel:_omniboxTextModel.get()
+         presentationContext:_presentationContext];
 
   _omniboxMetricsRecorder =
       [[OmniboxMetricsRecorder alloc] initWithClient:_client.get()
                                            textModel:_omniboxTextModel.get()];
   viewController.metricsRecorder = _omniboxMetricsRecorder;
-  [_omniboxMetricsRecorder
-      setAutocompleteController:[_omniboxAutocompleteController
-                                    autocompleteController]];
+  [_omniboxMetricsRecorder setAutocompleteController:autocompleteController];
 
   self.pasteDelegate = [[OmniboxTextFieldPasteDelegate alloc] init];
   [textInput setPasteDelegate:self.pasteDelegate];
