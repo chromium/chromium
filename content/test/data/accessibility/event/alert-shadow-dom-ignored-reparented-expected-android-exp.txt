@@ -1,0 +1,2 @@
+TYPE_WINDOW_STATE_CHANGED - [contentTypes=16]
+TYPE_WINDOW_CONTENT_CHANGED - [contentTypes=1]

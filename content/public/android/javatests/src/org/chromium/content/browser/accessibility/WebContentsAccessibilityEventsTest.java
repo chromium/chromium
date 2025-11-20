@@ -177,6 +177,48 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    @DisableFeatures({
+        ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE,
+        ContentFeatureList.ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE
+    })
+    public void test_alertShadowDomIgnoredChanged() {
+        performTest(
+                "alert-shadow-dom-ignored-changed.html",
+                "alert-shadow-dom-ignored-changed-expected-android.txt");
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE)
+    public void test_alertShadowDomIgnoredChanged_exp() {
+        performTest(
+                "alert-shadow-dom-ignored-changed.html",
+                "alert-shadow-dom-ignored-changed-expected-android-exp.txt");
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures({
+        ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE,
+        ContentFeatureList.ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE
+    })
+    public void test_alertShadowDomIgnoredReparented() {
+        performTest(
+                "alert-shadow-dom-ignored-reparented.html",
+                "alert-shadow-dom-ignored-reparented-expected-android.txt");
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE)
+    public void test_alertShadowDomIgnoredReparented_exp() {
+        performTest(
+                "alert-shadow-dom-ignored-reparented.html",
+                "alert-shadow-dom-ignored-reparented-expected-android-exp.txt");
+    }
+
+    @Test
+    @SmallTest
     public void test_addChild() {
         performTest("add-child.html", "add-child-expected-android.txt");
     }

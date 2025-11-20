@@ -1,0 +1,4 @@
+EVENT_OBJECT_REORDER on <#document> role=ROLE_SYSTEM_DOCUMENT name="Add Alert with Shadow DOM Test" value~=[doc-url] FOCUSED,FOCUSABLE
+EVENT_OBJECT_REORDER on <test-alert#alert> role=ROLE_SYSTEM_GROUPING
+EVENT_OBJECT_SHOW on <test-alert#alert> role=ROLE_SYSTEM_GROUPING
+IA2_EVENT_TEXT_INSERTED on <#document> role=ROLE_SYSTEM_DOCUMENT name="Add Alert with Shadow DOM Test" value~=[doc-url] FOCUSED,FOCUSABLE new_text={'<obj>' start=0 end=1}

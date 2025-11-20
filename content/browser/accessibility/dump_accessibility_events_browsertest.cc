@@ -604,6 +604,16 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+                       AccessibilityEventsAlertShadowDomIgnoredReparented) {
+  RunEventTest(FILE_PATH_LITERAL("alert-shadow-dom-ignored-reparented.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+                       AccessibilityEventsAlertShadowDomIgnoredChanged) {
+  RunEventTest(FILE_PATH_LITERAL("alert-shadow-dom-ignored-changed.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsAddChild) {
   RunEventTest(FILE_PATH_LITERAL("add-child.html"));
 }
