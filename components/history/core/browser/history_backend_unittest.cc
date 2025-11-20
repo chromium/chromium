@@ -110,10 +110,13 @@ struct ClusterExpectation {
 using SimulateNotificationCallback =
     base::RepeatingCallback<void(const URLRow*, const URLRow*, const URLRow*)>;
 
-void SimulateNotificationURLVisited(HistoryServiceObserver* observer,
-                                    const URLRow* row1,
-                                    const URLRow* row2,
-                                    const URLRow* row3) {
+void SimulateNotificationURLVisited(
+    HistoryServiceObserver* observer,
+    const URLRow* row1,
+    const URLRow* row2,
+    const URLRow* row3,
+    VisitResponseCodeCategory response_code_category =
+        VisitResponseCodeCategory::kNot404) {
   std::vector<URLRow> rows;
   rows.push_back(*row1);
   if (row2)
@@ -123,12 +126,11 @@ void SimulateNotificationURLVisited(HistoryServiceObserver* observer,
 
   for (const URLRow& row : rows) {
     observer->OnURLVisited(
-        nullptr, std::move(VisitedURLInfo(row, VisitRow(),
-                                          VisitResponseCodeCategory::kNot404)));
+        nullptr,
+        std::move(VisitedURLInfo(row, VisitRow(), response_code_category)));
     observer->OnURLVisitedWithNavigationId(
-        nullptr, std::move(VisitedURLInfo(row, VisitRow(),
-                                          VisitResponseCodeCategory::kNot404,
-                                          std::nullopt)));
+        nullptr, std::move(VisitedURLInfo(
+                     row, VisitRow(), response_code_category, std::nullopt)));
   }
 }
 
@@ -3733,9 +3735,35 @@ TEST_F(InMemoryHistoryBackendTest, OnURLsModified) {
       &SimulateNotificationURLsModified, base::Unretained(mem_backend_.get())));
 }
 
-TEST_F(InMemoryHistoryBackendTest, OnURLsVisisted) {
+TEST_F(InMemoryHistoryBackendTest, OnURLVisited) {
   TestAddingAndChangingURLRows(base::BindRepeating(
-      &SimulateNotificationURLVisited, base::Unretained(mem_backend_.get())));
+      [](HistoryServiceObserver* observer, const URLRow* row1,
+         const URLRow* row2, const URLRow* row3) {
+        SimulateNotificationURLVisited(observer, row1, row2, row3);
+      },
+      base::Unretained(mem_backend_.get())));
+}
+
+TEST_F(InMemoryHistoryBackendTest, OnURLVisitedWith404DoesNotUpdateExisting) {
+  // Add a typed URL.
+  URLRow row1 = CreateTestTypedURL();
+  SimulateNotificationURLVisited(mem_backend_.get(), &row1, nullptr, nullptr,
+                                 VisitResponseCodeCategory::kNot404);
+
+  URLDatabase* url_db = mem_backend_->db();
+  URLRow db_row;
+  EXPECT_TRUE(url_db->GetRowForURL(row1.url(), &db_row));
+  EXPECT_EQ(row1.title(), db_row.title());
+
+  // Simulate a 404 visit to the same URL with a different title.
+  URLRow row2 = row1;
+  row2.set_title(u"Google Search Again");
+  SimulateNotificationURLVisited(mem_backend_.get(), &row2, nullptr, nullptr,
+                                 VisitResponseCodeCategory::k404);
+
+  // Expect that the URL was not updated.
+  EXPECT_TRUE(url_db->GetRowForURL(row1.url(), &db_row));
+  EXPECT_EQ(row1.title(), db_row.title());
 }
 
 TEST_F(InMemoryHistoryBackendTest, OnURLsDeletedPiecewise) {

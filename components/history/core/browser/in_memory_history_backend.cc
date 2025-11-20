@@ -41,6 +41,12 @@ void InMemoryHistoryBackend::DeleteAllSearchTermsForKeyword(
 void InMemoryHistoryBackend::OnURLVisited(
     history::HistoryService* history_service,
     const VisitedURLInfo& visited_url_info) {
+  // Filter out 404 visits to prevent them from impacting user
+  // journeys on search.
+  if (visited_url_info.response_code_category ==
+      history::VisitResponseCodeCategory::k404) {
+    return;
+  }
   OnURLVisitedOrModified(visited_url_info.url_row);
 }
 
