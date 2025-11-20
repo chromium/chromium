@@ -58,5 +58,6 @@ dictionary RtcDtlsParameters {
   readonly attribute DOMString fingerprintDigestAlgorithm;
   readonly attribute ArrayBuffer fingerprint;
 
+  attribute EventHandler onwritablechange;
   [CallWith=ScriptState] Promise<boolean> writable();
 };

@@ -267,6 +267,22 @@ TEST_F(RtcTransportTest, WritableUninitialized) {
   EXPECT_FALSE(tester.Value().V8Value()->IsTrue());
 }
 
+TEST_F(RtcTransportTest, OnWritableChange) {
+  CreateInitializedTransport();
+
+  // Register a listener for the writablechange event.
+  auto* wait = MakeGarbageCollected<WaitForEvent>();
+  base::RunLoop run_loop;
+  wait->AddEventListener(transport_, event_type_names::kWritablechange);
+  wait->AddCompletionClosure(run_loop.QuitClosure());
+
+  // Notify of a writable change.
+  transport_->OnWritableChangeOnMainThread();
+
+  // Wait for event to be fired.
+  run_loop.Run();
+}
+
 // Regression test for crbug.com/455519961
 TEST_F(RtcTransportTest, NoCrashReceivingPacketsAfterContextDestroyed) {
   CreateInitializedTransport();

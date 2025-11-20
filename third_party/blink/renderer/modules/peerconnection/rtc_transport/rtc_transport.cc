@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_stringsequence.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_ice_server.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_transport_config.h"
+#include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
@@ -76,7 +77,12 @@ class DatagramConnectionObserver : public webrtc::DatagramConnection::Observer {
   // includes them.
   void OnSendError() override {}
   void OnConnectionError() override {}
-  void OnWritableChange() override {}
+  void OnWritableChange() override {
+    PostCrossThreadTask(
+        *main_task_runner_, FROM_HERE,
+        CrossThreadBindOnce(&RtcTransport::OnWritableChangeOnMainThread,
+                            MakeUnwrappingCrossThreadWeakHandle(transport_)));
+  }
 
  private:
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
@@ -530,6 +536,10 @@ ScriptPromise<IDLBoolean> RtcTransport::writable(ScriptState* script_state) {
   }
 
   return resolver->Promise();
+}
+
+void RtcTransport::OnWritableChangeOnMainThread() {
+  DispatchEvent(*Event::Create(event_type_names::kWritablechange));
 }
 
 void RtcTransport::Trace(Visitor* visitor) const {

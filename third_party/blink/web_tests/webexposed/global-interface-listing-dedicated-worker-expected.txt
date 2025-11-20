@@ -1957,6 +1957,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter fingerprint
 [Worker]     getter fingerprintDigestAlgorithm
 [Worker]     getter onicecandidate
+[Worker]     getter onwritablechange
 [Worker]     method addRemoteCandidate
 [Worker]     method constructor
 [Worker]     method getReceivedPackets
@@ -1964,6 +1965,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method setRemoteDtlsParameters
 [Worker]     method writable
 [Worker]     setter onicecandidate
+[Worker]     setter onwritablechange
 [Worker] interface RtcTransportIceCandidate
 [Worker]     attribute @@toStringTag
 [Worker]     getter address

@@ -1814,6 +1814,7 @@ interface RtcTransport
     getter fingerprint
     getter fingerprintDigestAlgorithm
     getter onicecandidate
+    getter onwritablechange
     method addRemoteCandidate
     method constructor
     method getReceivedPackets
@@ -1821,6 +1822,7 @@ interface RtcTransport
     method setRemoteDtlsParameters
     method writable
     setter onicecandidate
+    setter onwritablechange
 interface RtcTransportIceCandidate
     attribute @@toStringTag
     getter address

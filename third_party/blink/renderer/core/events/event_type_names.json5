@@ -376,6 +376,7 @@
     "webkitspeechchange",
     "webkitvisibilitychange",
     "wheel",
+    "writablechange",
     "write",
     "writeend",
     "writestart",

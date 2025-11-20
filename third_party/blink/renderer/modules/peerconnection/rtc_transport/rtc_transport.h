@@ -98,10 +98,12 @@ class MODULES_EXPORT RtcTransport final
   DOMArrayBuffer* fingerprint() { return DOMArrayBuffer::Create(digest_); }
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(icecandidate, kIcecandidate)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(writablechange, kWritablechange)
 
   void OnPacketReceivedOnMainThread(Vector<uint8_t> data,
                                     webrtc::Timestamp receive_time);
   void OnCandidateGatheredOnMainThread(webrtc::Candidate candidate);
+  void OnWritableChangeOnMainThread();
 
   // ScriptWrappable implementation
   void Trace(Visitor* visitor) const override;
