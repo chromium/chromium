@@ -63,6 +63,16 @@ struct CrossThreadCopier<scoped_refptr<T>> {
 };
 
 template <typename T>
+struct CrossThreadCopier<base::internal::RetainedRefWrapper<T>>
+    : public CrossThreadCopierByValuePassThrough<
+          base::internal::RetainedRefWrapper<T>> {
+  STATIC_ONLY(CrossThreadCopier);
+  static_assert(IsSubclassOfTemplate<T, base::RefCountedThreadSafe>::value,
+                "scoped_refptr<T> can be passed across threads only if T is "
+                "ThreadSafeRefCounted or base::RefCountedThreadSafe.");
+};
+
+template <typename T>
 struct CrossThreadCopier<base::FileErrorOr<T>>
     : public CrossThreadCopierPassThrough<base::FileErrorOr<T>> {
   STATIC_ONLY(CrossThreadCopier);
