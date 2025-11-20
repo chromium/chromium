@@ -1328,8 +1328,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     }
 
     private void maybeShowTipsOptInPromo(long timeSinceLastBackgroundedMs) {
-        // Only trigger the promo if the user has been 3 hours inactive and has not seen it before
-        // and the notifications toggle is not enabled, or a testing param is enabled.
+        // Only trigger the promo if the user has been 4 hours inactive and has not seen the promo
+        // before. The notifications toggle cannot enabled, or a testing param is enabled. The time
+        // limit ensures that the promo only shows on a cold startup, defined as the app being
+        // backgrounded by 4 hours or more and opening on an NTP to avoid clashes with other promos.
         if (ChromeFeatureList.sAndroidTipsNotifications.isEnabled()) {
             TipsUtils.areTipsNotificationsEnabled(
                     (enabled) -> {
@@ -1339,7 +1341,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                                         ChromePreferenceKeys
                                                                 .TIPS_NOTIFICATIONS_OPT_IN_PROMO_SHOWN,
                                                         false)
-                                        && timeSinceLastBackgroundedMs > TimeUnit.HOURS.toMillis(3))
+                                        && timeSinceLastBackgroundedMs > TimeUnit.HOURS.toMillis(4))
                                 || TipsUtils.shouldAlwaysShowOptInPromo()) {
                             if (mActivity == null
                                     || mActivity.isFinishing()
