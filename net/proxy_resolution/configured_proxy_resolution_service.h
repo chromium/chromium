@@ -185,6 +185,11 @@ class NET_EXPORT ConfiguredProxyResolutionService
   // to downloading and testing the PAC files.
   void ForceReloadProxyConfig();
 
+  // Returns true if the service is fully ready to handle proxy resolution
+  // requests and is not, e.g., currently fetching and resolving a new
+  // configuration.
+  bool IsReady() const;
+
   // ProxyResolutionService
   base::Value::Dict GetProxyNetLogValues() override;
 
@@ -299,6 +304,8 @@ class NET_EXPORT ConfiguredProxyResolutionService
 
   ProxyResolver* GetProxyResolver() const;
 
+  HostResolver* GetHostResolverForOverrideRules() const;
+
   // Resets all the variables associated with the current proxy configuration,
   // and rewinds the current state to |STATE_NONE|. Returns the previous value
   // of |current_state_|. If |reset_fetched_config| is true then
@@ -320,9 +327,15 @@ class NET_EXPORT ConfiguredProxyResolutionService
   void OnInitProxyResolverComplete(int result);
 
   // Returns ERR_IO_PENDING if the request cannot be completed synchronously.
-  // Otherwise it fills |result| with the proxy information for |url|.
+  // Otherwise it fills `result` with the proxy information for `url`.
+  // `bypass_override_rules` dictates whether proxy override rules should also
+  // be evaluated or not. Currently used by ConfiguredProxyResolutionRequest to
+  // re-evaluate synchronous rules after having evaluated override rules with
+  // none of them applying.
   // Completing synchronously means we don't need to query ProxyResolver.
-  int TryToCompleteSynchronously(const GURL& url, ProxyInfo* result);
+  int TryToCompleteSynchronously(const GURL& url,
+                                 bool bypass_override_rules,
+                                 ProxyInfo* result);
 
   // Cancels all of the requests sent to the ProxyResolver. These will be
   // restarted when calling SetReady().
@@ -381,7 +394,9 @@ class NET_EXPORT ConfiguredProxyResolutionService
   std::unique_ptr<ProxyConfigService> config_service_;
   std::unique_ptr<ProxyResolverFactory> resolver_factory_;
 
-  // If non-null, the initialized ProxyResolver to use for requests.
+  // Initialized when the effective configuration has an automatic setting (i.e.
+  // uses a PAC script). Will then be used by applicable proxy resolution
+  // requests.
   std::unique_ptr<ProxyResolver> resolver_;
 
   // Not owned, must outlive the service when override rules can be configured.

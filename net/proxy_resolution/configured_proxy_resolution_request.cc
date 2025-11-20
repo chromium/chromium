@@ -4,7 +4,9 @@
 
 #include "net/proxy_resolution/configured_proxy_resolution_request.h"
 
+#include <optional>
 #include <utility>
+#include <variant>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -12,6 +14,7 @@
 #include "net/log/net_log_event_type.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/proxy_resolution/proxy_info.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace net {
 
@@ -22,7 +25,8 @@ ConfiguredProxyResolutionRequest::ConfiguredProxyResolutionRequest(
     const NetworkAnonymizationKey& network_anonymization_key,
     ProxyInfo* results,
     CompletionOnceCallback user_callback,
-    const NetLogWithSource& net_log)
+    const NetLogWithSource& net_log,
+    RequestPriority priority)
     : service_(service),
       user_callback_(std::move(user_callback)),
       results_(results),
@@ -30,8 +34,9 @@ ConfiguredProxyResolutionRequest::ConfiguredProxyResolutionRequest(
       method_(method),
       network_anonymization_key_(network_anonymization_key),
       net_log_(net_log),
+      priority_(priority),
       creation_time_(base::TimeTicks::Now()) {
-  DCHECK(!user_callback_.is_null());
+  CHECK(!user_callback_.is_null());
 }
 
 ConfiguredProxyResolutionRequest::~ConfiguredProxyResolutionRequest() {
@@ -39,10 +44,11 @@ ConfiguredProxyResolutionRequest::~ConfiguredProxyResolutionRequest() {
     service_->RemovePendingRequest(this);
     net_log_.AddEvent(NetLogEventType::CANCELLED);
 
-    if (is_started())
-      CancelResolveJob();
+    if (is_started()) {
+      Cancel();
+    }
 
-    // This should be emitted last, after any message |CancelResolveJob()| may
+    // This should be emitted last, after any message `Cancel()` may
     // trigger.
     net_log_.EndEvent(NetLogEventType::PROXY_RESOLUTION_SERVICE);
   }
@@ -50,47 +56,83 @@ ConfiguredProxyResolutionRequest::~ConfiguredProxyResolutionRequest() {
 
 // Starts the resolve proxy request.
 int ConfiguredProxyResolutionRequest::Start() {
-  DCHECK(!was_completed());
-  DCHECK(!is_started());
+  CHECK(!was_completed());
+  CHECK(!is_started());
 
-  DCHECK(service_->config_);
+  CHECK(service_->config_);
   traffic_annotation_ = MutableNetworkTrafficAnnotationTag(
       service_->config_->traffic_annotation());
 
-  if (service_->ApplyPacBypassRules(url_, results_))
-    return OK;
+  if (!service_->config_->value().proxy_override_rules().empty()) {
+    auto* host_resolver = service_->GetHostResolverForOverrideRules();
+    DCHECK(host_resolver);
 
-  return service_->GetProxyResolver()->GetProxyForURL(
-      url_, network_anonymization_key_, results_,
-      base::BindOnce(&ConfiguredProxyResolutionRequest::QueryComplete,
-                     base::Unretained(this)),
-      &resolve_job_, net_log_);
+    for (const auto& rule : service_->config_->value().proxy_override_rules()) {
+      if (rule.destination_matchers.Matches(url_)) {
+        // TODO(crbug.com/454638342): Add optimization to skip marking a rule as
+        // applicable if we can already discard it based on cached DNS
+        // resolution state (and avoid starting actual DNS resolution that is
+        // not needed).
+        applicable_override_rules_.push(rule);
+
+        for (const auto& dns_condition : rule.dns_conditions) {
+          if (!dns_results_.contains(dns_condition.host)) {
+            HostResolver::ResolveHostParameters parameters;
+            parameters.initial_priority = priority_;
+            auto request = host_resolver->CreateRequest(
+                dns_condition.host, network_anonymization_key_, net_log_,
+                parameters);
+
+            int rv = request->Start(base::BindOnce(
+                &ConfiguredProxyResolutionRequest::OnDnsHostResolved,
+                base::Unretained(this), dns_condition.host));
+            if (rv != ERR_IO_PENDING) {
+              dns_results_.emplace(dns_condition.host,
+                                   ResolveHostResult(rv, *request));
+            } else {
+              dns_results_.emplace(dns_condition.host, std::move(request));
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return ContinueProxyResolution();
 }
 
 void ConfiguredProxyResolutionRequest::
     StartAndCompleteCheckingForSynchronous() {
-  int rv = service_->TryToCompleteSynchronously(url_, results_);
-  if (rv == ERR_IO_PENDING)
+  int rv = service_->TryToCompleteSynchronously(
+      url_, /*bypass_override_rules=*/false, results_);
+  if (rv == ERR_IO_PENDING) {
     rv = Start();
-  if (rv != ERR_IO_PENDING)
+  }
+
+  if (rv != ERR_IO_PENDING) {
     QueryComplete(rv);
+  }
 }
 
-void ConfiguredProxyResolutionRequest::CancelResolveJob() {
-  DCHECK(is_started());
+void ConfiguredProxyResolutionRequest::Cancel() {
+  CHECK(is_started());
   // The request may already be running in the resolver.
   resolve_job_.reset();
-  DCHECK(!is_started());
+  applicable_override_rules_ = base::queue<ProxyConfig::ProxyOverrideRule>();
+  dns_results_.clear();
+  CHECK(!is_started());
 }
 
 int ConfiguredProxyResolutionRequest::QueryDidComplete(int result_code) {
-  DCHECK(!was_completed());
+  CHECK(!was_completed());
 
-  // Clear |resolve_job_| so is_started() returns false while
+  // Clear state so that `is_started()` returns false while
   // DidFinishResolvingProxy() runs.
-  resolve_job_.reset();
+  if (is_started()) {
+    Cancel();
+  }
 
-  // Note that DidFinishResolvingProxy might modify |results_|.
+  // Note that DidFinishResolvingProxy might modify `results_`.
   int rv = service_->DidFinishResolvingProxy(url_, network_anonymization_key_,
                                              method_, results_, result_code,
                                              net_log_);
@@ -107,7 +149,7 @@ int ConfiguredProxyResolutionRequest::QueryDidComplete(int result_code) {
 
   // If proxy is set without error, ensure that an annotation is provided.
   if (result_code != ERR_ABORTED && !rv)
-    DCHECK(results_->traffic_annotation().is_valid());
+    CHECK(results_->traffic_annotation().is_valid());
 
   // Reset the state associated with in-progress-resolve.
   traffic_annotation_.reset();
@@ -142,6 +184,115 @@ void ConfiguredProxyResolutionRequest::QueryComplete(int result_code) {
   service_ = nullptr;
   user_callback_.Reset();
   std::move(callback).Run(result_code);
+}
+
+ConfiguredProxyResolutionRequest::ResolveHostResult::ResolveHostResult(
+    int result_code,
+    const HostResolver::ResolveHostRequest& completed_request)
+    : result_code(result_code),
+      is_address_list_empty(completed_request.GetAddressResults().empty()) {}
+
+int ConfiguredProxyResolutionRequest::ContinueProxyResolution() {
+  if (!applicable_override_rules_.empty()) {
+    int rv = EvaluateApplicableOverrideRules();
+    if (rv == ERR_IO_PENDING || !results_->is_empty()) {
+      return rv;
+    }
+  }
+
+  if (service_->ApplyPacBypassRules(url_, results_)) {
+    return OK;
+  }
+
+  // Required in case some override rules needed to run asynchronously, but
+  // ended up not applying, and there are e.g. manual proxy settings as
+  // fallback.
+  int rv = service_->TryToCompleteSynchronously(
+      url_, /*bypass_override_rules=*/true, results_);
+  if (rv != ERR_IO_PENDING) {
+    return rv;
+  }
+
+  return service_->GetProxyResolver()->GetProxyForURL(
+      url_, network_anonymization_key_, results_,
+      base::BindOnce(&ConfiguredProxyResolutionRequest::QueryComplete,
+                     base::Unretained(this)),
+      &resolve_job_, net_log_);
+}
+
+void ConfiguredProxyResolutionRequest::OnDnsHostResolved(
+    const url::SchemeHostPort& host,
+    int result_code) {
+  // TODO(crbug.com/454638342): Capture error result codes in NetLog.
+  auto dns_result_it = dns_results_.find(host);
+  CHECK(
+      std::holds_alternative<std::unique_ptr<HostResolver::ResolveHostRequest>>(
+          dns_result_it->second));
+  auto request =
+      std::move(std::get<std::unique_ptr<HostResolver::ResolveHostRequest>>(
+          dns_result_it->second));
+  CHECK(request);
+  dns_result_it->second.emplace<ResolveHostResult>(result_code, *request);
+
+  if (!service_ || !service_->IsReady()) {
+    // Something happened during DNS resolution which invalidated the
+    // service's state (e.g. config update). The service will resume
+    // the current request if/when needed.
+    return;
+  }
+
+  int rv = ContinueProxyResolution();
+  if (rv == ERR_IO_PENDING) {
+    // Missing a required DNS resolution.
+    return;
+  }
+
+  QueryComplete(rv);
+}
+
+int ConfiguredProxyResolutionRequest::EvaluateApplicableOverrideRules() {
+  while (!applicable_override_rules_.empty()) {
+    const auto& applicable_rule = applicable_override_rules_.front();
+
+    // Not having any conditions means they are all satisfied.
+    bool conditions_satisfied = true;
+    for (const auto& dns_condition : applicable_rule.dns_conditions) {
+      const auto& dns_result = dns_results_.at(dns_condition.host);
+      if (std::holds_alternative<
+              std::unique_ptr<HostResolver::ResolveHostRequest>>(dns_result)) {
+        return ERR_IO_PENDING;
+      }
+      conditions_satisfied =
+          conditions_satisfied &&
+          CheckDnsCondition(dns_condition,
+                            std::get<ResolveHostResult>(dns_result));
+    }
+
+    if (conditions_satisfied) {
+      // TODO(crbug.com/454638342): Capture applicable rule in NetLog.
+      results_->UseProxyList(applicable_rule.proxy_list);
+      break;
+    }
+
+    // Conditions were evaluated successfully, but are not satisfied. This
+    // current rule is therefore no longer applicable.
+    applicable_override_rules_.pop();
+  }
+
+  dns_results_.clear();
+  return OK;
+}
+
+// static
+bool ConfiguredProxyResolutionRequest::CheckDnsCondition(
+    const ProxyConfig::ProxyOverrideRule::DnsProbeCondition& dns_condition,
+    const ConfiguredProxyResolutionRequest::ResolveHostResult& dns_result) {
+  switch (dns_condition.result) {
+    case ProxyConfig::ProxyOverrideRule::DnsProbeCondition::Result::kNotFound:
+      return dns_result.is_address_list_empty;
+    case ProxyConfig::ProxyOverrideRule::DnsProbeCondition::Result::kResolves:
+      return !dns_result.is_address_list_empty;
+  }
 }
 
 }  // namespace net

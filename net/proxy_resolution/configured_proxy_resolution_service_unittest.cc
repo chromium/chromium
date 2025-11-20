@@ -66,7 +66,22 @@ using net::test::IsOk;
 // TODO(eroman): Write a test which exercises
 //              ConfiguredProxyResolutionService::SuspendAllPendingRequests().
 namespace net {
+
 namespace {
+
+using ProxyOverrideRule = ProxyConfig::ProxyOverrideRule;
+
+constexpr std::string_view kMatchingRule = "https://example.test";
+constexpr std::string_view kNonMatchingRule = "https://testing.test";
+
+constexpr std::string_view kMatchingUrl = "https://example.test/some/path";
+constexpr std::string_view kSanitizedMatchingUrl = "https://example.test";
+
+constexpr std::string_view kDnsHost1 = "https://host1.test:443";
+constexpr std::string_view kDnsHost2 = "https://host2.test:443";
+
+constexpr std::string_view kProxy1 = "HTTPS bar:333";
+constexpr std::string_view kProxy2 = "HTTPS foo:333";
 
 // This polling policy will decide to poll every 1 ms.
 class ImmediatePollPolicy
@@ -155,6 +170,14 @@ class ConfiguredProxyResolutionServiceTest : public ::testing::Test,
     ConfiguredProxyResolutionService::set_pac_script_poll_policy(
         previous_policy_);
     testing::Test::TearDown();
+  }
+
+  void AddDnsEntry(const GURL& dns_host, std::string_view result) {
+    mock_host_resolver_->rules()->AddRule(dns_host.GetHost(), result);
+  }
+
+  void AddDnsEntry(const GURL& dns_host, Error error) {
+    mock_host_resolver_->rules()->AddRule(dns_host.GetHost(), error);
   }
 
   std::unique_ptr<MockHostResolverBase> mock_host_resolver_{nullptr};
@@ -420,6 +443,28 @@ JobMap GetCancelledJobsForURLs(const MockAsyncProxyResolver& resolver,
   }
 
   return GetJobsForURLs(map, urls);
+}
+
+ProxyOverrideRule CreateOverrideRule(
+    std::string_view destination_matcher,
+    const ProxyList& proxy_list,
+    std::optional<std::string_view> dns_host = std::nullopt,
+    ProxyOverrideRule::DnsProbeCondition::Result dns_condition_result =
+        ProxyOverrideRule::DnsProbeCondition::Result::kResolves) {
+  ProxyConfig::ProxyOverrideRule override_rule;
+  override_rule.destination_matchers.AddRuleFromString(destination_matcher);
+  override_rule.proxy_list = proxy_list;
+  if (dns_host) {
+    override_rule.dns_conditions.emplace_back(
+        url::SchemeHostPort(GURL(dns_host.value())), dns_condition_result);
+  }
+  return override_rule;
+}
+
+ProxyList CreateProxyList(std::string_view pac_result_string) {
+  ProxyList proxy_list;
+  proxy_list.SetFromPacString(std::string(pac_result_string));
+  return proxy_list;
 }
 
 }  // namespace
@@ -4705,5 +4750,1264 @@ TEST_F(ConfiguredProxyResolutionServiceTest,
   EXPECT_TRUE(service.CastToConfiguredProxyResolutionService(&casted_service));
   EXPECT_EQ(&service, casted_service);
 }
+
+TEST_F(ConfiguredProxyResolutionServiceTest,
+       OverrideRuleWithHostAppliedSyncWhenHostIsCached) {
+  auto proxy_list = CreateProxyList(kProxy1);
+  auto config = ProxyConfig::CreateDirect();
+  config.set_proxy_override_rules(
+      {CreateOverrideRule(kMatchingRule, proxy_list, kDnsHost1)});
+
+  mock_host_resolver_ = std::make_unique<MockCachingHostResolver>();
+  mock_host_resolver_->set_synchronous_mode(true);
+  AddDnsEntry(GURL(kDnsHost1), "1.2.3.4");
+
+  auto config_service =
+      std::make_unique<MockProxyConfigService>(std::move(config));
+  auto factory = std::make_unique<MockAsyncProxyResolverFactory>(false);
+
+  ConfiguredProxyResolutionService service(
+      std::move(config_service), std::move(factory), mock_host_resolver_.get(),
+      /*net_log=*/nullptr,
+      /*quick_check_enabled=*/true);
+
+  ProxyInfo info;
+  TestCompletionCallback callback;
+  std::unique_ptr<ProxyResolutionRequest> request;
+  int rv = service.ResolveProxy(
+      GURL(kMatchingUrl), std::string(), NetworkAnonymizationKey(), &info,
+      callback.callback(), &request, NetLogWithSource(), DEFAULT_PRIORITY);
+  EXPECT_THAT(rv, IsOk());
+  EXPECT_FALSE(request);
+  EXPECT_FALSE(callback.have_result());
+  EXPECT_TRUE(info.proxy_list().Equals(proxy_list));
+}
+
+TEST_F(ConfiguredProxyResolutionServiceTest,
+       OverrideRuleAppliedFixedServerFallbackSync) {
+  ProxyConfig config;
+  config.proxy_rules().ParseFromString("http=foopy1:8080");
+  config.set_auto_detect(false);
+
+  auto proxy_list = CreateProxyList(kProxy1);
+  config.set_proxy_override_rules(
+      {CreateOverrideRule(kMatchingRule, proxy_list)});
+
+  auto config_service =
+      std::make_unique<MockProxyConfigService>(std::move(config));
+  auto factory = std::make_unique<MockAsyncProxyResolverFactory>(false);
+
+  mock_host_resolver_ = std::make_unique<MockHostResolver>();
+  ConfiguredProxyResolutionService service(
+      std::move(config_service), std::move(factory), mock_host_resolver_.get(),
+      /*net_log=*/nullptr,
+      /*quick_check_enabled=*/true);
+
+  ProxyInfo info;
+  TestCompletionCallback callback;
+  std::unique_ptr<ProxyResolutionRequest> request;
+  int rv = service.ResolveProxy(
+      GURL(kMatchingUrl), std::string(), NetworkAnonymizationKey(), &info,
+      callback.callback(), &request, NetLogWithSource(), DEFAULT_PRIORITY);
+  EXPECT_THAT(rv, IsOk());
+  EXPECT_FALSE(request);
+  EXPECT_FALSE(callback.have_result());
+  EXPECT_TRUE(info.proxy_list().Equals(proxy_list));
+}
+
+TEST_F(ConfiguredProxyResolutionServiceTest,
+       OverrideRuleNotAppliedFallbackFixedServerSync) {
+  ProxyConfig config;
+  config.proxy_rules().ParseFromString("https=foopy1:8080");
+  config.set_auto_detect(false);
+  config.set_proxy_override_rules(
+      {CreateOverrideRule(kNonMatchingRule, CreateProxyList(kProxy1))});
+
+  auto config_service =
+      std::make_unique<MockProxyConfigService>(std::move(config));
+  auto factory = std::make_unique<MockAsyncProxyResolverFactory>(false);
+
+  mock_host_resolver_ = std::make_unique<MockHostResolver>();
+  ConfiguredProxyResolutionService service(
+      std::move(config_service), std::move(factory), mock_host_resolver_.get(),
+      /*net_log=*/nullptr,
+      /*quick_check_enabled=*/true);
+
+  ProxyInfo info;
+  TestCompletionCallback callback;
+  std::unique_ptr<ProxyResolutionRequest> request;
+  int rv = service.ResolveProxy(
+      GURL(kMatchingUrl), std::string(), NetworkAnonymizationKey(), &info,
+      callback.callback(), &request, NetLogWithSource(), DEFAULT_PRIORITY);
+  EXPECT_THAT(rv, IsOk());
+  EXPECT_FALSE(request);
+  EXPECT_FALSE(callback.have_result());
+  EXPECT_EQ(info.proxy_chain().ToDebugString(), "[foopy1:8080]");
+}
+
+TEST_F(ConfiguredProxyResolutionServiceTest,
+       OverrideRuleWithHostNotAppliedFixedServerFallbackSync) {
+  ProxyConfig config;
+  config.proxy_rules().ParseFromString("https=foopy1:8080");
+  config.set_auto_detect(false);
+  config.set_proxy_override_rules(
+      {CreateOverrideRule(kMatchingRule, CreateProxyList(kProxy1), kDnsHost1)});
+
+  auto config_service =
+      std::make_unique<MockProxyConfigService>(std::move(config));
+  auto factory = std::make_unique<MockAsyncProxyResolverFactory>(false);
+
+  mock_host_resolver_ = std::make_unique<MockHostResolver>();
+  AddDnsEntry(GURL(kDnsHost1), ERR_NAME_NOT_RESOLVED);
+  ConfiguredProxyResolutionService service(
+      std::move(config_service), std::move(factory), mock_host_resolver_.get(),
+      /*net_log=*/nullptr,
+      /*quick_check_enabled=*/true);
+
+  ProxyInfo info;
+  TestCompletionCallback callback;
+  std::unique_ptr<ProxyResolutionRequest> request;
+  int rv = service.ResolveProxy(
+      GURL(kMatchingUrl), std::string(), NetworkAnonymizationKey(), &info,
+      callback.callback(), &request, NetLogWithSource(), DEFAULT_PRIORITY);
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  EXPECT_TRUE(request);
+
+  ASSERT_FALSE(callback.have_result());
+  EXPECT_THAT(callback.WaitForResult(), IsOk());
+  EXPECT_EQ(info.proxy_chain().ToDebugString(), "[foopy1:8080]");
+}
+
+TEST_F(ConfiguredProxyResolutionServiceTest,
+       OverrideRuleWithHostMatchWithAutoConfig) {
+  ProxyConfig config = ProxyConfig::CreateAutoDetect();
+  auto proxy_list = CreateProxyList(kProxy1);
+  config.set_proxy_override_rules(
+      {CreateOverrideRule(kMatchingRule, proxy_list, kDnsHost1)});
+
+  mock_host_resolver_ = std::make_unique<MockHostResolver>();
+  AddDnsEntry(GURL(kDnsHost1), "1.2.3.4");
+
+  auto config_service =
+      std::make_unique<MockProxyConfigService>(std::move(config));
+  MockAsyncProxyResolver resolver;
+  auto factory = std::make_unique<MockAsyncProxyResolverFactory>(true);
+  auto* factory_ptr = factory.get();
+  ConfiguredProxyResolutionService service(
+      std::move(config_service), std::move(factory), mock_host_resolver_.get(),
+      /*net_log=*/nullptr,
+      /*quick_check_enabled=*/true);
+
+  auto fetcher = std::make_unique<MockPacFileFetcher>();
+  auto* fetcher_ptr = fetcher.get();
+  service.SetPacFileFetchers(std::move(fetcher),
+                             std::make_unique<DoNothingDhcpPacFileFetcher>());
+
+  ProxyInfo info;
+  TestCompletionCallback callback;
+  std::unique_ptr<ProxyResolutionRequest> request;
+  int rv = service.ResolveProxy(
+      GURL(kMatchingUrl), std::string(), NetworkAnonymizationKey(), &info,
+      callback.callback(), &request, NetLogWithSource(), DEFAULT_PRIORITY);
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  EXPECT_TRUE(request);
+  ASSERT_FALSE(callback.have_result());
+
+  EXPECT_TRUE(fetcher_ptr->has_pending_request());
+  EXPECT_EQ(GURL("http://wpad/wpad.dat"), fetcher_ptr->pending_request_url());
+  fetcher_ptr->NotifyFetchCompletion(OK, kValidPacScript1);
+
+  EXPECT_EQ(kValidPacScript116,
+            factory_ptr->pending_requests()[0]->script_data()->utf16());
+  factory_ptr->pending_requests()[0]->CompleteNowWithForwarder(OK, &resolver);
+
+  EXPECT_THAT(callback.WaitForResult(), IsOk());
+  EXPECT_TRUE(info.proxy_list().Equals(proxy_list));
+}
+
+TEST_F(ConfiguredProxyResolutionServiceTest,
+       OverrideRuleWithHostNoMatchWithAutoConfig) {
+  ProxyConfig config = ProxyConfig::CreateAutoDetect();
+  auto proxy_list = CreateProxyList(kProxy1);
+  config.set_proxy_override_rules(
+      {CreateOverrideRule(kNonMatchingRule, proxy_list, kDnsHost1)});
+
+  mock_host_resolver_ = std::make_unique<MockHostResolver>();
+  AddDnsEntry(GURL(kDnsHost1), "1.2.3.4");
+
+  auto config_service =
+      std::make_unique<MockProxyConfigService>(std::move(config));
+  MockAsyncProxyResolver resolver;
+  auto factory = std::make_unique<MockAsyncProxyResolverFactory>(true);
+  auto* factory_ptr = factory.get();
+  ConfiguredProxyResolutionService service(
+      std::move(config_service), std::move(factory), mock_host_resolver_.get(),
+      /*net_log=*/nullptr,
+      /*quick_check_enabled=*/true);
+
+  auto fetcher = std::make_unique<MockPacFileFetcher>();
+  auto* fetcher_ptr = fetcher.get();
+  service.SetPacFileFetchers(std::move(fetcher),
+                             std::make_unique<DoNothingDhcpPacFileFetcher>());
+
+  ProxyInfo info;
+  TestCompletionCallback callback;
+  std::unique_ptr<ProxyResolutionRequest> request;
+  int rv = service.ResolveProxy(
+      GURL(kMatchingUrl), std::string(), NetworkAnonymizationKey(), &info,
+      callback.callback(), &request, NetLogWithSource(), DEFAULT_PRIORITY);
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  EXPECT_TRUE(request);
+  ASSERT_FALSE(callback.have_result());
+
+  EXPECT_TRUE(fetcher_ptr->has_pending_request());
+  EXPECT_EQ(GURL("http://wpad/wpad.dat"), fetcher_ptr->pending_request_url());
+  fetcher_ptr->NotifyFetchCompletion(OK, kValidPacScript1);
+
+  EXPECT_EQ(kValidPacScript116,
+            factory_ptr->pending_requests()[0]->script_data()->utf16());
+  factory_ptr->pending_requests()[0]->CompleteNowWithForwarder(OK, &resolver);
+
+  GURL sanitized_matching_url(kSanitizedMatchingUrl);
+  JobMap jobs = GetPendingJobsForURLs(resolver, sanitized_matching_url);
+  jobs[sanitized_matching_url]->results()->UseNamedProxy("request1:80");
+  jobs[sanitized_matching_url]->CompleteNow(OK);
+
+  EXPECT_THAT(callback.WaitForResult(), IsOk());
+  EXPECT_EQ(info.proxy_chain().ToDebugString(), "[request1:80]");
+}
+
+TEST_F(ConfiguredProxyResolutionServiceTest,
+       OverrideRuleWithHostNoApplyWithPacInBackoffWindow) {
+  GURL pac_url("http://foopy/proxy.pac");
+  ProxyConfig config = ProxyConfig::CreateFromCustomPacURL(pac_url);
+  config.set_pac_mandatory(true);
+  auto proxy_list = CreateProxyList(kProxy1);
+  config.set_proxy_override_rules(
+      {CreateOverrideRule(kMatchingRule, proxy_list, kDnsHost1)});
+
+  mock_host_resolver_ = std::make_unique<MockHostResolver>();
+  AddDnsEntry(GURL(kDnsHost1), ERR_NAME_NOT_RESOLVED);
+
+  auto config_service =
+      std::make_unique<MockProxyConfigService>(std::move(config));
+  MockAsyncProxyResolver resolver;
+  auto factory = std::make_unique<MockAsyncProxyResolverFactory>(true);
+  ConfiguredProxyResolutionService service(
+      std::move(config_service), std::move(factory), mock_host_resolver_.get(),
+      /*net_log=*/nullptr,
+      /*quick_check_enabled=*/true);
+  service.set_enable_pac_runtime_backoff_for_testing(true);
+
+  // Make first request skip override rules altogether and yield a PAC failure.
+  ProxyInfo info;
+  TestCompletionCallback callback;
+  std::unique_ptr<ProxyResolutionRequest> request;
+  int rv = service.ResolveProxy(
+      GURL(kMatchingUrl), std::string(), NetworkAnonymizationKey(), &info,
+      callback.callback(), &request, NetLogWithSource(), DEFAULT_PRIORITY);
+
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  EXPECT_TRUE(request);
+  ASSERT_FALSE(callback.have_result());
+
+  EXPECT_EQ(callback.WaitForResult(), ERR_MANDATORY_PROXY_CONFIGURATION_FAILED);
+  EXPECT_FALSE(info.is_direct());
+}
+
+TEST_F(ConfiguredProxyResolutionServiceTest, OverrideRuleWithHostCancelled) {
+  auto config = ProxyConfig::CreateDirect();
+  config.set_proxy_override_rules(
+      {CreateOverrideRule(kMatchingRule, CreateProxyList(kProxy1), kDnsHost1)});
+
+  mock_host_resolver_ = std::make_unique<MockHostResolver>();
+  mock_host_resolver_->set_ondemand_mode(true);
+
+  RecordingNetLogObserver net_log_observer;
+  auto config_service =
+      std::make_unique<MockProxyConfigService>(std::move(config));
+  auto factory = std::make_unique<MockAsyncProxyResolverFactory>(false);
+  ConfiguredProxyResolutionService service(
+      std::move(config_service), std::move(factory), mock_host_resolver_.get(),
+      /*net_log=*/nullptr,
+      /*quick_check_enabled=*/true);
+
+  ProxyInfo info;
+  TestCompletionCallback callback;
+  std::unique_ptr<ProxyResolutionRequest> request;
+  auto nak = net::NetworkAnonymizationKey::CreateCrossSite(
+      net::SchemefulSite(GURL("https://top.test")));
+  int rv = service.ResolveProxy(
+      GURL(kMatchingUrl), std::string(), nak, &info, callback.callback(),
+      &request, NetLogWithSource::Make(NetLogSourceType::NONE), MEDIUM);
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  EXPECT_TRUE(request);
+
+  ASSERT_TRUE(mock_host_resolver_->has_pending_requests());
+
+  // Verify the pending request's parameters.
+  size_t request_id = mock_host_resolver_->last_id();
+  EXPECT_EQ(mock_host_resolver_->request_network_anonymization_key(request_id),
+            nak);
+  EXPECT_EQ(mock_host_resolver_->request_priority(request_id), MEDIUM);
+
+  // Cancel the request.
+  request.reset();
+
+  EXPECT_FALSE(mock_host_resolver_->has_pending_requests());
+
+  auto entries = net_log_observer.GetEntries();
+  EXPECT_EQ(entries.size(), 3u);
+  EXPECT_TRUE(LogContainsBeginEvent(entries, 0,
+                                    NetLogEventType::PROXY_RESOLUTION_SERVICE));
+  EXPECT_TRUE(LogContainsEvent(entries, 1, NetLogEventType::CANCELLED,
+                               NetLogEventPhase::NONE));
+  EXPECT_TRUE(LogContainsEndEvent(entries, 2,
+                                  NetLogEventType::PROXY_RESOLUTION_SERVICE));
+}
+
+TEST_F(
+    ConfiguredProxyResolutionServiceTest,
+    OverrideRuleWithHostConfigChangedToDifferentOverrideRuleWithHostDuringDnsResolution) {
+  ProxyConfig config = ProxyConfig::CreateDirect();
+  auto proxy_list1 = CreateProxyList(kProxy1);
+  config.set_proxy_override_rules(
+      {CreateOverrideRule(kMatchingRule, proxy_list1, kDnsHost1)});
+
+  ProxyConfig new_config = ProxyConfig::CreateDirect();
+  auto proxy_list2 = CreateProxyList(kProxy2);
+  new_config.set_proxy_override_rules(
+      {CreateOverrideRule(kMatchingRule, proxy_list2, kDnsHost2)});
+
+  mock_host_resolver_ = std::make_unique<MockHostResolver>();
+  mock_host_resolver_->set_ondemand_mode(true);
+
+  auto config_service =
+      std::make_unique<MockProxyConfigService>(std::move(config));
+  auto factory = std::make_unique<MockAsyncProxyResolverFactory>(false);
+  auto* config_service_ptr = config_service.get();
+  ConfiguredProxyResolutionService service(
+      std::move(config_service), std::move(factory), mock_host_resolver_.get(),
+      /*net_log=*/nullptr,
+      /*quick_check_enabled=*/true);
+
+  ProxyInfo info;
+  TestCompletionCallback callback;
+  std::unique_ptr<ProxyResolutionRequest> request;
+  int rv = service.ResolveProxy(
+      GURL(kMatchingUrl), std::string(), NetworkAnonymizationKey(), &info,
+      callback.callback(), &request, NetLogWithSource(), DEFAULT_PRIORITY);
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  EXPECT_TRUE(request);
+  ASSERT_FALSE(callback.have_result());
+
+  ASSERT_TRUE(mock_host_resolver_->has_pending_requests());
+  ASSERT_EQ(mock_host_resolver_->last_id(), 1U);
+
+  // Update config.
+  config_service_ptr->SetConfig(
+      ProxyConfigWithAnnotation(new_config, TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  AddDnsEntry(GURL(kDnsHost2), "2.3.4.5");
+  ASSERT_EQ(mock_host_resolver_->last_id(), 2U);
+  mock_host_resolver_->ResolveOnlyRequestNow();
+
+  EXPECT_THAT(callback.WaitForResult(), IsOk());
+  EXPECT_TRUE(info.proxy_list().Equals(proxy_list2));
+}
+
+TEST_F(ConfiguredProxyResolutionServiceTest,
+       OverrideRuleWithHostAndPacFallbackConfigChangedToDirectDuringExecution) {
+  ProxyConfig config = ProxyConfig::CreateAutoDetect();
+  auto proxy_list = CreateProxyList(kProxy1);
+  config.set_proxy_override_rules(
+      {CreateOverrideRule(kMatchingRule, proxy_list, kDnsHost1)});
+
+  ProxyConfig new_config = ProxyConfig::CreateDirect();
+  new_config.set_proxy_override_rules(config.proxy_override_rules());
+
+  mock_host_resolver_ = std::make_unique<MockHostResolver>();
+  mock_host_resolver_->set_ondemand_mode(true);
+
+  auto config_service =
+      std::make_unique<MockProxyConfigService>(std::move(config));
+  auto* config_service_ptr = config_service.get();
+  MockAsyncProxyResolver resolver;
+  auto factory = std::make_unique<MockAsyncProxyResolverFactory>(true);
+  auto* factory_ptr = factory.get();
+  ConfiguredProxyResolutionService service(
+      std::move(config_service), std::move(factory), mock_host_resolver_.get(),
+      /*net_log=*/nullptr,
+      /*quick_check_enabled=*/true);
+
+  auto fetcher = std::make_unique<MockPacFileFetcher>();
+  auto* fetcher_ptr = fetcher.get();
+  service.SetPacFileFetchers(std::move(fetcher),
+                             std::make_unique<DoNothingDhcpPacFileFetcher>());
+
+  ProxyInfo info;
+  TestCompletionCallback callback;
+  std::unique_ptr<ProxyResolutionRequest> request;
+  int rv = service.ResolveProxy(
+      GURL(kMatchingUrl), std::string(), NetworkAnonymizationKey(), &info,
+      callback.callback(), &request, NetLogWithSource(), DEFAULT_PRIORITY);
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  EXPECT_TRUE(request);
+  ASSERT_FALSE(callback.have_result());
+
+  EXPECT_TRUE(fetcher_ptr->has_pending_request());
+  EXPECT_EQ(GURL("http://wpad/wpad.dat"), fetcher_ptr->pending_request_url());
+  fetcher_ptr->NotifyFetchCompletion(OK, kValidPacScript1);
+
+  EXPECT_EQ(kValidPacScript116,
+            factory_ptr->pending_requests()[0]->script_data()->utf16());
+  factory_ptr->pending_requests()[0]->CompleteNowWithForwarder(OK, &resolver);
+
+  ASSERT_TRUE(mock_host_resolver_->has_pending_requests());
+  ASSERT_EQ(mock_host_resolver_->last_id(), 1U);
+
+  // Update config.
+  config_service_ptr->SetConfig(
+      ProxyConfigWithAnnotation(new_config, TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  AddDnsEntry(GURL(kDnsHost1), ERR_NAME_NOT_RESOLVED);
+  ASSERT_EQ(mock_host_resolver_->last_id(), 2U);
+  mock_host_resolver_->ResolveOnlyRequestNow();
+
+  EXPECT_THAT(callback.WaitForResult(), IsOk());
+  EXPECT_TRUE(info.is_direct());
+}
+
+TEST_F(ConfiguredProxyResolutionServiceTest,
+       OverrideRuleWithHostAndPacFallbackConfigChangedToMatchingOverrideRule) {
+  ProxyConfig config = ProxyConfig::CreateAutoDetect();
+  auto proxy_list = CreateProxyList(kProxy1);
+  config.set_proxy_override_rules(
+      {CreateOverrideRule(kNonMatchingRule, proxy_list, kDnsHost1)});
+
+  ProxyConfig new_config = ProxyConfig::CreateAutoDetect();
+  new_config.set_proxy_override_rules(
+      {CreateOverrideRule(kMatchingRule, proxy_list, kDnsHost1)});
+
+  mock_host_resolver_ = std::make_unique<MockHostResolver>();
+  mock_host_resolver_->set_ondemand_mode(true);
+
+  auto config_service =
+      std::make_unique<MockProxyConfigService>(std::move(config));
+  auto* config_service_ptr = config_service.get();
+  MockAsyncProxyResolver resolver;
+  auto factory = std::make_unique<MockAsyncProxyResolverFactory>(true);
+  auto* factory_ptr = factory.get();
+  ConfiguredProxyResolutionService service(
+      std::move(config_service), std::move(factory), mock_host_resolver_.get(),
+      /*net_log=*/nullptr,
+      /*quick_check_enabled=*/true);
+
+  auto fetcher = std::make_unique<MockPacFileFetcher>();
+  auto* fetcher_ptr = fetcher.get();
+  service.SetPacFileFetchers(std::move(fetcher),
+                             std::make_unique<DoNothingDhcpPacFileFetcher>());
+
+  ProxyInfo info;
+  TestCompletionCallback callback;
+  std::unique_ptr<ProxyResolutionRequest> request;
+  int rv = service.ResolveProxy(
+      GURL(kMatchingUrl), std::string(), NetworkAnonymizationKey(), &info,
+      callback.callback(), &request, NetLogWithSource(), DEFAULT_PRIORITY);
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  EXPECT_TRUE(request);
+  ASSERT_FALSE(callback.have_result());
+
+  EXPECT_TRUE(fetcher_ptr->has_pending_request());
+  EXPECT_EQ(GURL("http://wpad/wpad.dat"), fetcher_ptr->pending_request_url());
+  fetcher_ptr->NotifyFetchCompletion(OK, kValidPacScript1);
+
+  EXPECT_EQ(kValidPacScript116,
+            factory_ptr->pending_requests()[0]->script_data()->utf16());
+  factory_ptr->pending_requests()[0]->CompleteNowWithForwarder(OK, &resolver);
+
+  // Override rule was not matching, so not DNS request should be pending.
+  ASSERT_FALSE(mock_host_resolver_->has_pending_requests());
+
+  GURL sanitized_matching_url(kSanitizedMatchingUrl);
+  JobMap jobs = GetPendingJobsForURLs(resolver, sanitized_matching_url);
+  ASSERT_EQ(jobs.size(), 1U);
+
+  // Update config.
+  config_service_ptr->SetConfig(
+      ProxyConfigWithAnnotation(new_config, TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  // Job was cancelled.
+  EXPECT_TRUE(resolver.pending_jobs().empty());
+
+  // PAC script gets downloaded again.
+  EXPECT_TRUE(fetcher_ptr->has_pending_request());
+  EXPECT_EQ(GURL("http://wpad/wpad.dat"), fetcher_ptr->pending_request_url());
+  fetcher_ptr->NotifyFetchCompletion(OK, kValidPacScript1);
+
+  EXPECT_EQ(kValidPacScript116,
+            factory_ptr->pending_requests()[0]->script_data()->utf16());
+  factory_ptr->pending_requests()[0]->CompleteNowWithForwarder(OK, &resolver);
+
+  AddDnsEntry(GURL(kDnsHost1), "1.2.3.4");
+  ASSERT_EQ(mock_host_resolver_->last_id(), 1U);
+  mock_host_resolver_->ResolveOnlyRequestNow();
+
+  EXPECT_THAT(callback.WaitForResult(), IsOk());
+  EXPECT_TRUE(info.proxy_list().Equals(proxy_list));
+}
+
+TEST_F(
+    ConfiguredProxyResolutionServiceTest,
+    OverrideRuleWithHostConfigChangedToAdditionalPacFallbackDuringExecution) {
+  ProxyConfig config = ProxyConfig::CreateDirect();
+  auto proxy_list = CreateProxyList(kProxy1);
+  config.set_proxy_override_rules(
+      {CreateOverrideRule(kMatchingRule, proxy_list, kDnsHost1)});
+
+  ProxyConfig new_config = ProxyConfig::CreateAutoDetect();
+  new_config.set_proxy_override_rules(config.proxy_override_rules());
+
+  mock_host_resolver_ = std::make_unique<MockHostResolver>();
+  mock_host_resolver_->set_ondemand_mode(true);
+
+  auto config_service =
+      std::make_unique<MockProxyConfigService>(std::move(config));
+  auto* config_service_ptr = config_service.get();
+  MockAsyncProxyResolver resolver;
+  auto factory = std::make_unique<MockAsyncProxyResolverFactory>(true);
+  auto* factory_ptr = factory.get();
+  ConfiguredProxyResolutionService service(
+      std::move(config_service), std::move(factory), mock_host_resolver_.get(),
+      /*net_log=*/nullptr,
+      /*quick_check_enabled=*/true);
+
+  auto fetcher = std::make_unique<MockPacFileFetcher>();
+  auto* fetcher_ptr = fetcher.get();
+  service.SetPacFileFetchers(std::move(fetcher),
+                             std::make_unique<DoNothingDhcpPacFileFetcher>());
+
+  ProxyInfo info;
+  TestCompletionCallback callback;
+  std::unique_ptr<ProxyResolutionRequest> request;
+  int rv = service.ResolveProxy(
+      GURL(kMatchingUrl), std::string(), NetworkAnonymizationKey(), &info,
+      callback.callback(), &request, NetLogWithSource(), DEFAULT_PRIORITY);
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  EXPECT_TRUE(request);
+  ASSERT_FALSE(callback.have_result());
+
+  ASSERT_TRUE(mock_host_resolver_->has_pending_requests());
+  ASSERT_EQ(mock_host_resolver_->last_id(), 1U);
+
+  // Update config.
+  config_service_ptr->SetConfig(
+      ProxyConfigWithAnnotation(new_config, TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  EXPECT_TRUE(fetcher_ptr->has_pending_request());
+  EXPECT_EQ(GURL("http://wpad/wpad.dat"), fetcher_ptr->pending_request_url());
+  fetcher_ptr->NotifyFetchCompletion(OK, kValidPacScript1);
+
+  EXPECT_EQ(kValidPacScript116,
+            factory_ptr->pending_requests()[0]->script_data()->utf16());
+  factory_ptr->pending_requests()[0]->CompleteNowWithForwarder(OK, &resolver);
+
+  AddDnsEntry(GURL(kDnsHost1), ERR_NAME_NOT_RESOLVED);
+  ASSERT_EQ(mock_host_resolver_->last_id(), 2U);
+  mock_host_resolver_->ResolveOnlyRequestNow();
+
+  GURL sanitized_matching_url(kSanitizedMatchingUrl);
+  JobMap jobs = GetPendingJobsForURLs(resolver, sanitized_matching_url);
+  jobs[sanitized_matching_url]->results()->UseNamedProxy("request1:80");
+  jobs[sanitized_matching_url]->CompleteNow(OK);
+
+  EXPECT_THAT(callback.WaitForResult(), IsOk());
+  EXPECT_EQ(info.proxy_chain().ToDebugString(), "[request1:80]");
+}
+
+TEST_F(
+    ConfiguredProxyResolutionServiceTest,
+    OverrideRuleWithHostAndPacFallbackConfigChangedToDifferentPacFallbackDuringExecution) {
+  GURL pac_url("http://foopy/proxy.pac");
+  ProxyConfig config = ProxyConfig::CreateFromCustomPacURL(pac_url);
+  auto proxy_list = CreateProxyList(kProxy1);
+  config.set_proxy_override_rules(
+      {CreateOverrideRule(kMatchingRule, proxy_list, kDnsHost1)});
+
+  ProxyConfig new_config = ProxyConfig::CreateAutoDetect();
+  new_config.set_proxy_override_rules(config.proxy_override_rules());
+
+  mock_host_resolver_ = std::make_unique<MockHostResolver>();
+  mock_host_resolver_->set_ondemand_mode(true);
+
+  auto config_service =
+      std::make_unique<MockProxyConfigService>(std::move(config));
+  auto* config_service_ptr = config_service.get();
+  MockAsyncProxyResolver resolver;
+  auto factory = std::make_unique<MockAsyncProxyResolverFactory>(true);
+  auto* factory_ptr = factory.get();
+  ConfiguredProxyResolutionService service(
+      std::move(config_service), std::move(factory), mock_host_resolver_.get(),
+      /*net_log=*/nullptr,
+      /*quick_check_enabled=*/true);
+
+  auto fetcher = std::make_unique<MockPacFileFetcher>();
+  auto* fetcher_ptr = fetcher.get();
+  service.SetPacFileFetchers(std::move(fetcher),
+                             std::make_unique<DoNothingDhcpPacFileFetcher>());
+
+  ProxyInfo info;
+  TestCompletionCallback callback;
+  std::unique_ptr<ProxyResolutionRequest> request;
+  int rv = service.ResolveProxy(
+      GURL(kMatchingUrl), std::string(), NetworkAnonymizationKey(), &info,
+      callback.callback(), &request, NetLogWithSource(), DEFAULT_PRIORITY);
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  EXPECT_TRUE(request);
+  ASSERT_FALSE(callback.have_result());
+
+  EXPECT_TRUE(fetcher_ptr->has_pending_request());
+  EXPECT_EQ(GURL("http://foopy/proxy.pac"), fetcher_ptr->pending_request_url());
+  fetcher_ptr->NotifyFetchCompletion(OK, kValidPacScript1);
+
+  EXPECT_EQ(kValidPacScript116,
+            factory_ptr->pending_requests()[0]->script_data()->utf16());
+  factory_ptr->pending_requests()[0]->CompleteNowWithForwarder(OK, &resolver);
+
+  ASSERT_TRUE(mock_host_resolver_->has_pending_requests());
+  ASSERT_EQ(mock_host_resolver_->last_id(), 1U);
+
+  // Update config.
+  config_service_ptr->SetConfig(
+      ProxyConfigWithAnnotation(new_config, TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  EXPECT_TRUE(fetcher_ptr->has_pending_request());
+  EXPECT_EQ(GURL("http://wpad/wpad.dat"), fetcher_ptr->pending_request_url());
+  fetcher_ptr->NotifyFetchCompletion(OK, kValidPacScript2);
+
+  EXPECT_EQ(kValidPacScript216,
+            factory_ptr->pending_requests()[0]->script_data()->utf16());
+  factory_ptr->pending_requests()[0]->CompleteNowWithForwarder(OK, &resolver);
+
+  AddDnsEntry(GURL(kDnsHost1), ERR_NAME_NOT_RESOLVED);
+  ASSERT_EQ(mock_host_resolver_->last_id(), 2U);
+  mock_host_resolver_->ResolveOnlyRequestNow();
+
+  GURL sanitized_matching_url(kSanitizedMatchingUrl);
+  JobMap jobs = GetPendingJobsForURLs(resolver, sanitized_matching_url);
+  jobs[sanitized_matching_url]->results()->UseNamedProxy("request1:80");
+  jobs[sanitized_matching_url]->CompleteNow(OK);
+
+  EXPECT_THAT(callback.WaitForResult(), IsOk());
+  EXPECT_EQ(info.proxy_chain().ToDebugString(), "[request1:80]");
+}
+
+TEST_F(
+    ConfiguredProxyResolutionServiceTest,
+    OverrideRuleWithHostAndPacFallbackConfigChangedToDifferentPacFallbackWithDelayDuringExecution) {
+  GURL pac_url("http://foopy/proxy.pac");
+  ProxyConfig config = ProxyConfig::CreateFromCustomPacURL(pac_url);
+  auto proxy_list = CreateProxyList(kProxy1);
+  config.set_proxy_override_rules(
+      {CreateOverrideRule(kMatchingRule, proxy_list, kDnsHost1)});
+
+  ProxyConfig new_config = ProxyConfig::CreateAutoDetect();
+  new_config.set_proxy_override_rules(config.proxy_override_rules());
+
+  mock_host_resolver_ = std::make_unique<MockHostResolver>();
+  mock_host_resolver_->set_ondemand_mode(true);
+
+  auto config_service =
+      std::make_unique<MockProxyConfigService>(std::move(config));
+  auto* config_service_ptr = config_service.get();
+  MockAsyncProxyResolver resolver;
+  auto factory = std::make_unique<MockAsyncProxyResolverFactory>(true);
+  auto* factory_ptr = factory.get();
+  ConfiguredProxyResolutionService service(
+      std::move(config_service), std::move(factory), mock_host_resolver_.get(),
+      /*net_log=*/nullptr,
+      /*quick_check_enabled=*/true);
+
+  auto fetcher = std::make_unique<MockPacFileFetcher>();
+  auto* fetcher_ptr = fetcher.get();
+  service.SetPacFileFetchers(std::move(fetcher),
+                             std::make_unique<DoNothingDhcpPacFileFetcher>());
+
+  ProxyInfo info;
+  TestCompletionCallback callback;
+  std::unique_ptr<ProxyResolutionRequest> request;
+  int rv = service.ResolveProxy(
+      GURL(kMatchingUrl), std::string(), NetworkAnonymizationKey(), &info,
+      callback.callback(), &request, NetLogWithSource(), DEFAULT_PRIORITY);
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  EXPECT_TRUE(request);
+  ASSERT_FALSE(callback.have_result());
+
+  EXPECT_TRUE(fetcher_ptr->has_pending_request());
+  EXPECT_EQ(GURL("http://foopy/proxy.pac"), fetcher_ptr->pending_request_url());
+  fetcher_ptr->NotifyFetchCompletion(OK, kValidPacScript1);
+
+  EXPECT_EQ(kValidPacScript116,
+            factory_ptr->pending_requests()[0]->script_data()->utf16());
+  factory_ptr->pending_requests()[0]->CompleteNowWithForwarder(OK, &resolver);
+
+  ASSERT_TRUE(mock_host_resolver_->has_pending_requests());
+  ASSERT_EQ(mock_host_resolver_->last_id(), 1U);
+
+  // Update config.
+  config_service_ptr->SetConfig(
+      ProxyConfigWithAnnotation(new_config, TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  // Delay the second PAC's fetch.
+  EXPECT_TRUE(fetcher_ptr->has_pending_request());
+
+  // All DNS resolution requests should have been cancelled.
+  ASSERT_FALSE(mock_host_resolver_->has_pending_requests());
+  ASSERT_FALSE(callback.have_result());
+
+  EXPECT_EQ(GURL("http://wpad/wpad.dat"), fetcher_ptr->pending_request_url());
+  fetcher_ptr->NotifyFetchCompletion(OK, kValidPacScript2);
+
+  EXPECT_EQ(kValidPacScript216,
+            factory_ptr->pending_requests()[0]->script_data()->utf16());
+  factory_ptr->pending_requests()[0]->CompleteNowWithForwarder(OK, &resolver);
+
+  // New config's PAC file was fetched, so the request was restarted and a new
+  // DNS resolution request was sent.
+  ASSERT_TRUE(mock_host_resolver_->has_pending_requests());
+  ASSERT_EQ(mock_host_resolver_->last_id(), 2U);
+
+  AddDnsEntry(GURL(kDnsHost1), ERR_NAME_NOT_RESOLVED);
+  mock_host_resolver_->ResolveOnlyRequestNow();
+
+  GURL sanitized_matching_url(kSanitizedMatchingUrl);
+  JobMap jobs = GetPendingJobsForURLs(resolver, sanitized_matching_url);
+  jobs[sanitized_matching_url]->results()->UseNamedProxy("request1:80");
+  jobs[sanitized_matching_url]->CompleteNow(OK);
+
+  EXPECT_THAT(callback.WaitForResult(), IsOk());
+  EXPECT_EQ(info.proxy_chain().ToDebugString(), "[request1:80]");
+}
+
+struct TwoDnsConditionsTestCase {
+  bool first_condition_resolves;
+  bool first_host_found;
+
+  bool second_condition_resolves;
+  bool second_host_found;
+
+  bool resolution_completed_in_order = true;
+
+  bool is_resolution_sync = false;
+
+  bool is_rule_applied = false;
+};
+
+class TwoDnsConditionsConfiguredProxyResolutionServiceTest
+    : public ConfiguredProxyResolutionServiceTest,
+      public testing::WithParamInterface<TwoDnsConditionsTestCase> {
+ protected:
+  TwoDnsConditionsConfiguredProxyResolutionServiceTest() = default;
+  ~TwoDnsConditionsConfiguredProxyResolutionServiceTest() override = default;
+};
+
+TEST_P(TwoDnsConditionsConfiguredProxyResolutionServiceTest,
+       OverrideRuleWithTwoDnsConditionsParameterizedTest) {
+  auto params = GetParam();
+
+  auto proxy_list = CreateProxyList(kProxy1);
+  auto config = ProxyConfig::CreateDirect();
+
+  auto override_rule = CreateOverrideRule(
+      kMatchingRule, proxy_list, kDnsHost1,
+      params.first_condition_resolves
+          ? ProxyOverrideRule::DnsProbeCondition::Result::kResolves
+          : ProxyOverrideRule::DnsProbeCondition::Result::kNotFound);
+  override_rule.dns_conditions.push_back(
+      ProxyConfig::ProxyOverrideRule::DnsProbeCondition{
+          .host = url::SchemeHostPort(GURL(kDnsHost2)),
+          .result =
+              params.second_condition_resolves
+                  ? ProxyOverrideRule::DnsProbeCondition::Result::kResolves
+                  : ProxyOverrideRule::DnsProbeCondition::Result::kNotFound});
+  config.set_proxy_override_rules({std::move(override_rule)});
+
+  mock_host_resolver_ = std::make_unique<MockHostResolver>();
+  if (params.is_resolution_sync) {
+    mock_host_resolver_->set_synchronous_mode(true);
+  } else {
+    mock_host_resolver_->set_ondemand_mode(true);
+  }
+
+  if (params.first_host_found) {
+    AddDnsEntry(GURL(kDnsHost1), "1.2.3.4");
+  } else {
+    AddDnsEntry(GURL(kDnsHost1), ERR_NAME_NOT_RESOLVED);
+  }
+
+  if (params.second_host_found) {
+    AddDnsEntry(GURL(kDnsHost2), "2.3.4.5");
+  } else {
+    AddDnsEntry(GURL(kDnsHost2), ERR_NAME_NOT_RESOLVED);
+  }
+
+  auto config_service =
+      std::make_unique<MockProxyConfigService>(std::move(config));
+  auto factory = std::make_unique<MockAsyncProxyResolverFactory>(false);
+
+  ConfiguredProxyResolutionService service(
+      std::move(config_service), std::move(factory), mock_host_resolver_.get(),
+      /*net_log=*/nullptr,
+      /*quick_check_enabled=*/true);
+
+  ProxyInfo info;
+  TestCompletionCallback callback;
+  std::unique_ptr<ProxyResolutionRequest> request;
+  int rv = service.ResolveProxy(
+      GURL(kMatchingUrl), std::string(), NetworkAnonymizationKey(), &info,
+      callback.callback(), &request, NetLogWithSource(), DEFAULT_PRIORITY);
+
+  if (params.is_resolution_sync) {
+    EXPECT_THAT(rv, IsOk());
+  } else {
+    EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+    EXPECT_TRUE(request);
+    ASSERT_FALSE(callback.have_result());
+
+    ASSERT_EQ(mock_host_resolver_->last_id(), 2u);
+    if (params.resolution_completed_in_order) {
+      mock_host_resolver_->ResolveNow(1u);
+      mock_host_resolver_->ResolveNow(2u);
+    } else {
+      mock_host_resolver_->ResolveNow(2u);
+      mock_host_resolver_->ResolveNow(1u);
+    }
+
+    EXPECT_THAT(callback.WaitForResult(), IsOk());
+  }
+
+  if (params.is_rule_applied) {
+    EXPECT_TRUE(info.proxy_list().Equals(proxy_list));
+  } else {
+    EXPECT_TRUE(info.is_direct());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    TwoDnsConditionsConfiguredProxyResolutionServiceTest,
+    ::testing::ValuesIn({
+        // All DNS hosts found, and conditions fulfilled.
+        // Rule applied.
+        TwoDnsConditionsTestCase{.first_condition_resolves = true,
+                                 .first_host_found = true,
+                                 .second_condition_resolves = true,
+                                 .second_host_found = true,
+                                 .is_rule_applied = true},
+
+        // First host not found, as expected.
+        // Second host found, as expected.
+        // Rule applied.
+        TwoDnsConditionsTestCase{.first_condition_resolves = false,
+                                 .first_host_found = false,
+                                 .second_condition_resolves = true,
+                                 .second_host_found = true,
+                                 .is_rule_applied = true},
+
+        // First host found, as expected.
+        // Second host not found, as expected.
+        // Rule applied.
+        TwoDnsConditionsTestCase{.first_condition_resolves = true,
+                                 .first_host_found = true,
+                                 .second_condition_resolves = false,
+                                 .second_host_found = false,
+                                 .is_rule_applied = true},
+
+        // First host not found, as expected.
+        // Second host not found, as expected.
+        // Rule applied.
+        TwoDnsConditionsTestCase{.first_condition_resolves = false,
+                                 .first_host_found = false,
+                                 .second_condition_resolves = false,
+                                 .second_host_found = false,
+                                 .is_rule_applied = true},
+
+        // First host not found, not expected.
+        // Second host found, as expected.
+        // Rule not applied.
+        TwoDnsConditionsTestCase{.first_condition_resolves = true,
+                                 .first_host_found = false,
+                                 .second_condition_resolves = true,
+                                 .second_host_found = true,
+                                 .is_rule_applied = false},
+
+        // First host found, not expected.
+        // Second host found, as expected.
+        // Rule not applied.
+        TwoDnsConditionsTestCase{.first_condition_resolves = false,
+                                 .first_host_found = true,
+                                 .second_condition_resolves = true,
+                                 .second_host_found = true,
+                                 .is_rule_applied = false},
+
+        // First host found, as expected.
+        // Second host not found, not expected.
+        // Rule not applied.
+        TwoDnsConditionsTestCase{.first_condition_resolves = true,
+                                 .first_host_found = true,
+                                 .second_condition_resolves = true,
+                                 .second_host_found = false,
+                                 .is_rule_applied = false},
+
+        // First host found, as expected.
+        // Second host found, not expected.
+        // Rule not applied.
+        TwoDnsConditionsTestCase{.first_condition_resolves = true,
+                                 .first_host_found = true,
+                                 .second_condition_resolves = false,
+                                 .second_host_found = true,
+                                 .is_rule_applied = false},
+
+        // Both hosts found, not expected.
+        // Rule not applied.
+        TwoDnsConditionsTestCase{.first_condition_resolves = false,
+                                 .first_host_found = true,
+                                 .second_condition_resolves = false,
+                                 .second_host_found = true,
+                                 .is_rule_applied = false},
+
+        // Both hosts found synchronously, as expected.
+        // Rule applied.
+        TwoDnsConditionsTestCase{.first_condition_resolves = true,
+                                 .first_host_found = true,
+                                 .second_condition_resolves = true,
+                                 .second_host_found = true,
+                                 .is_resolution_sync = true,
+                                 .is_rule_applied = true},
+
+        // Both hosts found synchronously, second unexpected.
+        // Rule not applied.
+        TwoDnsConditionsTestCase{.first_condition_resolves = true,
+                                 .first_host_found = true,
+                                 .second_condition_resolves = true,
+                                 .second_host_found = false,
+                                 .is_resolution_sync = true,
+                                 .is_rule_applied = false},
+
+        // Both hosts found synchronously, first unexpected.
+        // Rule not applied.
+        TwoDnsConditionsTestCase{.first_condition_resolves = true,
+                                 .first_host_found = false,
+                                 .second_condition_resolves = true,
+                                 .second_host_found = true,
+                                 .is_resolution_sync = true,
+                                 .is_rule_applied = false},
+
+        // Both hosts found, as expected.
+        // DNS resolution in order.
+        // Rule applied.
+        TwoDnsConditionsTestCase{.first_condition_resolves = true,
+                                 .first_host_found = true,
+                                 .second_condition_resolves = true,
+                                 .second_host_found = true,
+                                 .resolution_completed_in_order = true,
+                                 .is_rule_applied = true},
+
+        // Second host not found, unexpected.
+        // DNS resolution in order.
+        // Rule not applied.
+        TwoDnsConditionsTestCase{.first_condition_resolves = true,
+                                 .first_host_found = true,
+                                 .second_condition_resolves = true,
+                                 .second_host_found = false,
+                                 .resolution_completed_in_order = true,
+                                 .is_rule_applied = false},
+
+        // Both hosts found, as expected.
+        // DNS resolution out of order.
+        // Rule applied.
+        TwoDnsConditionsTestCase{.first_condition_resolves = true,
+                                 .first_host_found = true,
+                                 .second_condition_resolves = true,
+                                 .second_host_found = true,
+                                 .resolution_completed_in_order = false,
+                                 .is_rule_applied = true},
+
+        // Second host not found, unexpected.
+        // DNS resolution out of order.
+        // Rule not applied.
+        TwoDnsConditionsTestCase{.first_condition_resolves = true,
+                                 .first_host_found = true,
+                                 .second_condition_resolves = true,
+                                 .second_host_found = false,
+                                 .resolution_completed_in_order = false,
+                                 .is_rule_applied = false},
+    }));
+
+struct TwoRulesTestCase {
+  bool first_rule_matches;
+  bool first_rule_has_host;
+  bool first_dns_host_resolves = false;
+  bool result_is_first_rule = false;
+
+  bool second_rule_matches;
+  bool second_rule_has_host;
+  bool second_dns_host_resolves = false;
+  bool result_is_second_rule = false;
+
+  bool completes_synchronously = false;
+};
+
+class TwoRulesConfiguredProxyResolutionServiceTest
+    : public ConfiguredProxyResolutionServiceTest,
+      public testing::WithParamInterface<TwoRulesTestCase> {
+ protected:
+  TwoRulesConfiguredProxyResolutionServiceTest() = default;
+  ~TwoRulesConfiguredProxyResolutionServiceTest() override = default;
+};
+
+TEST_P(TwoRulesConfiguredProxyResolutionServiceTest,
+       TwoOverrideRulesParameterizedTest) {
+  auto params = GetParam();
+
+  auto proxy_list1 = CreateProxyList(kProxy1);
+  auto override_rule1 = CreateOverrideRule(
+      params.first_rule_matches ? kMatchingRule : kNonMatchingRule,
+      proxy_list1);
+  if (params.first_rule_has_host) {
+    override_rule1.dns_conditions.emplace_back(
+        url::SchemeHostPort(GURL(kDnsHost1)),
+        params.first_dns_host_resolves
+            ? ProxyOverrideRule::DnsProbeCondition::Result::kResolves
+            : ProxyOverrideRule::DnsProbeCondition::Result::kNotFound);
+  }
+
+  auto proxy_list2 = CreateProxyList(kProxy2);
+  auto override_rule2 = CreateOverrideRule(
+      params.second_rule_matches ? kMatchingRule : kNonMatchingRule,
+      proxy_list2);
+  if (params.second_rule_has_host) {
+    override_rule2.dns_conditions.emplace_back(
+        url::SchemeHostPort(GURL(kDnsHost2)),
+        params.second_dns_host_resolves
+            ? ProxyOverrideRule::DnsProbeCondition::Result::kResolves
+            : ProxyOverrideRule::DnsProbeCondition::Result::kNotFound);
+  }
+
+  auto config = ProxyConfig::CreateDirect();
+  config.set_proxy_override_rules(
+      {std::move(override_rule1), std::move(override_rule2)});
+
+  mock_host_resolver_ = std::make_unique<MockHostResolver>();
+  AddDnsEntry(GURL(kDnsHost1), "1.2.3.4");
+  AddDnsEntry(GURL(kDnsHost2), "2.3.4.5");
+
+  auto config_service =
+      std::make_unique<MockProxyConfigService>(std::move(config));
+  auto factory = std::make_unique<MockAsyncProxyResolverFactory>(false);
+
+  ConfiguredProxyResolutionService service(
+      std::move(config_service), std::move(factory), mock_host_resolver_.get(),
+      /*net_log=*/nullptr,
+      /*quick_check_enabled=*/true);
+
+  ProxyInfo info;
+  TestCompletionCallback callback;
+  std::unique_ptr<ProxyResolutionRequest> request;
+  int rv = service.ResolveProxy(
+      GURL(kMatchingUrl), std::string(), NetworkAnonymizationKey(), &info,
+      callback.callback(), &request, NetLogWithSource(), DEFAULT_PRIORITY);
+
+  if (params.completes_synchronously) {
+    EXPECT_THAT(rv, IsOk());
+  } else {
+    EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+    EXPECT_TRUE(request);
+
+    ASSERT_FALSE(callback.have_result());
+    EXPECT_THAT(callback.WaitForResult(), IsOk());
+  }
+
+  if (params.result_is_first_rule) {
+    EXPECT_TRUE(info.proxy_list().Equals(proxy_list1));
+  } else if (params.result_is_second_rule) {
+    EXPECT_TRUE(info.proxy_list().Equals(proxy_list2));
+  } else {
+    EXPECT_TRUE(info.is_direct());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         TwoRulesConfiguredProxyResolutionServiceTest,
+                         ::testing::ValuesIn({
+                             // Sync first rule applied.
+                             // Sync second rule skipped.
+                             TwoRulesTestCase{.first_rule_matches = true,
+                                              .first_rule_has_host = false,
+                                              .result_is_first_rule = true,
+                                              .second_rule_matches = true,
+                                              .second_rule_has_host = false,
+                                              .result_is_second_rule = false,
+                                              .completes_synchronously = true},
+
+                             // Sync first rule doesn't match.
+                             // Sync second rule applied.
+                             TwoRulesTestCase{.first_rule_matches = false,
+                                              .first_rule_has_host = false,
+                                              .result_is_first_rule = false,
+                                              .second_rule_matches = true,
+                                              .second_rule_has_host = false,
+                                              .result_is_second_rule = true,
+                                              .completes_synchronously = true},
+
+                             // Both sync rules don't match.
+                             TwoRulesTestCase{.first_rule_matches = false,
+                                              .first_rule_has_host = false,
+                                              .result_is_first_rule = false,
+                                              .second_rule_matches = false,
+                                              .second_rule_has_host = false,
+                                              .result_is_second_rule = false,
+                                              .completes_synchronously = true},
+
+                             // Async first rule applied.
+                             // Sync second rule skipped.
+                             TwoRulesTestCase{.first_rule_matches = true,
+                                              .first_rule_has_host = true,
+                                              .first_dns_host_resolves = true,
+                                              .result_is_first_rule = true,
+                                              .second_rule_matches = true,
+                                              .second_rule_has_host = false,
+                                              .result_is_second_rule = false},
+
+                             // Async first rule doesn't match.
+                             // Sync second rule applied.
+                             TwoRulesTestCase{.first_rule_matches = false,
+                                              .first_rule_has_host = true,
+                                              .first_dns_host_resolves = true,
+                                              .result_is_first_rule = false,
+                                              .second_rule_matches = true,
+                                              .second_rule_has_host = false,
+                                              .result_is_second_rule = true,
+                                              .completes_synchronously = true},
+
+                             // Async first rule matches, but doesn't apply.
+                             // Sync second rule applied.
+                             TwoRulesTestCase{.first_rule_matches = true,
+                                              .first_rule_has_host = true,
+                                              .first_dns_host_resolves = false,
+                                              .result_is_first_rule = false,
+                                              .second_rule_matches = true,
+                                              .second_rule_has_host = false,
+                                              .result_is_second_rule = true},
+
+                             // Async first rule doesn't match.
+                             // Sync second rule doesn't match.
+                             TwoRulesTestCase{.first_rule_matches = false,
+                                              .first_rule_has_host = true,
+                                              .first_dns_host_resolves = false,
+                                              .result_is_first_rule = false,
+                                              .second_rule_matches = false,
+                                              .second_rule_has_host = false,
+                                              .result_is_second_rule = false,
+                                              .completes_synchronously = true},
+
+                             // Sync first rule applied.
+                             // Async second rule skipped.
+                             TwoRulesTestCase{.first_rule_matches = true,
+                                              .first_rule_has_host = false,
+                                              .result_is_first_rule = true,
+                                              .second_rule_matches = true,
+                                              .second_rule_has_host = true,
+                                              .second_dns_host_resolves = true,
+                                              .result_is_second_rule = false,
+                                              .completes_synchronously = true},
+
+                             // Sync first rule doesn't match.
+                             // Async second rule applied.
+                             TwoRulesTestCase{.first_rule_matches = false,
+                                              .first_rule_has_host = false,
+                                              .result_is_first_rule = false,
+                                              .second_rule_matches = true,
+                                              .second_rule_has_host = true,
+                                              .second_dns_host_resolves = true,
+                                              .result_is_second_rule = true},
+
+                             // Sync first rule doesn't match.
+                             // Async second rule matches, but doesn't apply.
+                             TwoRulesTestCase{.first_rule_matches = false,
+                                              .first_rule_has_host = false,
+                                              .result_is_first_rule = false,
+                                              .second_rule_matches = true,
+                                              .second_rule_has_host = true,
+                                              .second_dns_host_resolves = false,
+                                              .result_is_second_rule = false},
+
+                             // Sync first rule doesn't match.
+                             // Async second rule doesn't match.
+                             TwoRulesTestCase{.first_rule_matches = false,
+                                              .first_rule_has_host = false,
+                                              .result_is_first_rule = false,
+                                              .second_rule_matches = false,
+                                              .second_rule_has_host = true,
+                                              .second_dns_host_resolves = true,
+                                              .result_is_second_rule = false,
+                                              .completes_synchronously = true},
+
+                             // Async first rule applied.
+                             // Async second rule skipped.
+                             TwoRulesTestCase{.first_rule_matches = true,
+                                              .first_rule_has_host = true,
+                                              .first_dns_host_resolves = true,
+                                              .result_is_first_rule = true,
+                                              .second_rule_matches = true,
+                                              .second_rule_has_host = true,
+                                              .second_dns_host_resolves = true,
+                                              .result_is_second_rule = false},
+
+                             // Async first rule match, but not applied.
+                             // Async second rule applied.
+                             TwoRulesTestCase{.first_rule_matches = true,
+                                              .first_rule_has_host = true,
+                                              .first_dns_host_resolves = false,
+                                              .result_is_first_rule = false,
+                                              .second_rule_matches = true,
+                                              .second_rule_has_host = true,
+                                              .second_dns_host_resolves = true,
+                                              .result_is_second_rule = true},
+
+                             // Async first rule doesn't match.
+                             // Async second rule applied.
+                             TwoRulesTestCase{.first_rule_matches = false,
+                                              .first_rule_has_host = true,
+                                              .first_dns_host_resolves = true,
+                                              .result_is_first_rule = false,
+                                              .second_rule_matches = true,
+                                              .second_rule_has_host = true,
+                                              .second_dns_host_resolves = true,
+                                              .result_is_second_rule = true},
+
+                             // Async first rule match, but not applied.
+                             // Async second rule match, but not applied.
+                             TwoRulesTestCase{.first_rule_matches = true,
+                                              .first_rule_has_host = true,
+                                              .first_dns_host_resolves = false,
+                                              .result_is_first_rule = false,
+                                              .second_rule_matches = true,
+                                              .second_rule_has_host = true,
+                                              .second_dns_host_resolves = false,
+                                              .result_is_second_rule = false},
+
+                             // Both async rules don't match.
+                             TwoRulesTestCase{.first_rule_matches = false,
+                                              .first_rule_has_host = true,
+                                              .first_dns_host_resolves = true,
+                                              .result_is_first_rule = false,
+                                              .second_rule_matches = false,
+                                              .second_rule_has_host = true,
+                                              .second_dns_host_resolves = true,
+                                              .result_is_second_rule = false,
+                                              .completes_synchronously = true},
+
+                         }));
 
 }  // namespace net

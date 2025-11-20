@@ -982,22 +982,22 @@ int ConfiguredProxyResolutionService::ResolveProxy(
   if (current_state_ == STATE_NONE)
     ApplyProxyConfigIfAvailable();
 
-  // TODO(crbug.com/419548922): Remove this once override rules are supported.
-  // This is just to ensure nothing starts relying on these override rule APIs
-  // until they are fully implemented.
-  if (fetched_config_) {
-    CHECK(fetched_config_->value().proxy_override_rules().empty());
-  }
-
   // Sanitize the URL before passing it on to the proxy resolver (i.e. PAC
   // script). The goal is to remove sensitive data (like embedded user names
   // and password), and local data (i.e. reference fragment) which does not need
   // to be disclosed to the resolver.
   GURL url = SanitizeUrl(raw_url);
 
+  if (config_ && !host_resolver_for_override_rules_) {
+    // A host resolver should always be configured in services which may receive
+    // configurations with override rules.
+    CHECK(config_->value().proxy_override_rules().empty());
+  }
+
   // Check if the request can be completed right away. (This is the case when
   // using a direct connection for example).
-  int rv = TryToCompleteSynchronously(url, result);
+  int rv =
+      TryToCompleteSynchronously(url, /*bypass_override_rules=*/false, result);
   if (rv != ERR_IO_PENDING) {
     rv = DidFinishResolvingProxy(url, network_anonymization_key, method, result,
                                  rv, net_log);
@@ -1006,9 +1006,9 @@ int ConfiguredProxyResolutionService::ResolveProxy(
 
   auto req = std::make_unique<ConfiguredProxyResolutionRequest>(
       this, url, method, network_anonymization_key, result, std::move(callback),
-      net_log);
+      net_log, priority);
 
-  if (current_state_ == STATE_READY) {
+  if (IsReady()) {
     // Start the resolve request.
     rv = req->Start();
     if (rv != ERR_IO_PENDING)
@@ -1030,13 +1030,36 @@ int ConfiguredProxyResolutionService::ResolveProxy(
 
 int ConfiguredProxyResolutionService::TryToCompleteSynchronously(
     const GURL& url,
+    bool bypass_override_rules,
     ProxyInfo* result) {
   DCHECK_NE(STATE_NONE, current_state_);
 
-  if (current_state_ != STATE_READY)
+  if (!IsReady()) {
     return ERR_IO_PENDING;  // Still initializing.
+  }
 
   DCHECK(config_);
+
+  if (!bypass_override_rules &&
+      !config_->value().proxy_override_rules().empty()) {
+    // Override rules are prioritized in the order that they are defined.
+    for (const auto& rule : config_->value().proxy_override_rules()) {
+      if (rule.destination_matchers.Matches(url)) {
+        if (rule.dns_conditions.empty()) {
+          // TODO(crbug.com/454638342): Capture applicable rule in NetLog.
+          result->UseProxyList(rule.proxy_list);
+          result->set_traffic_annotation(MutableNetworkTrafficAnnotationTag(
+              config_->traffic_annotation()));
+          return OK;
+        }
+
+        // If the first matching rule requires any DNS resolution, go to the
+        // asynchronous path.
+        return ERR_IO_PENDING;
+      }
+    }
+  }
+
   // If it was impossible to fetch or parse the PAC script, we cannot complete
   // the request here and bail out.
   if (permanent_error_ != OK) {
@@ -1095,7 +1118,7 @@ ConfiguredProxyResolutionService::~ConfiguredProxyResolutionService() {
 void ConfiguredProxyResolutionService::SuspendAllPendingRequests() {
   for (ConfiguredProxyResolutionRequest* req : pending_requests_) {
     if (req->is_started()) {
-      req->CancelResolveJob();
+      req->Cancel();
 
       req->net_log()->BeginEvent(
           NetLogEventType::PROXY_RESOLUTION_SERVICE_WAITING_FOR_INIT_PAC);
@@ -1370,6 +1393,11 @@ ProxyResolver* ConfiguredProxyResolutionService::GetProxyResolver() const {
   return resolver_.get();
 }
 
+HostResolver*
+ConfiguredProxyResolutionService::GetHostResolverForOverrideRules() const {
+  return host_resolver_for_override_rules_.get();
+}
+
 ConfiguredProxyResolutionService::State
 ConfiguredProxyResolutionService::ResetProxyConfig(bool reset_fetched_config,
                                                    bool reset_pac_retry_state) {
@@ -1460,6 +1488,10 @@ void ConfiguredProxyResolutionService::ForceReloadProxyConfig() {
   preserve_pac_retry_state_for_next_reset_ = true;
   ResetProxyConfig(false, /*reset_pac_retry_state=*/false);
   ApplyProxyConfigIfAvailable();
+}
+
+bool ConfiguredProxyResolutionService::IsReady() const {
+  return current_state_ == STATE_READY;
 }
 
 base::Value::Dict ConfiguredProxyResolutionService::GetProxyNetLogValues() {
