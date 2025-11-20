@@ -335,21 +335,36 @@ ItemPosition FlexLayoutAlgorithm::ResolvedAlignSelf(
 LayoutUnit FlexLayoutAlgorithm::MainAxisContentExtent(
     LayoutUnit sum_hypothetical_main_size) const {
   if (is_column_) {
-    // Even though we only pass border_padding in the third parameter, the
-    // return value includes scrollbar, so subtract scrollbar to get content
-    // size.
-    // We add |border_scrollbar_padding| to the fourth parameter because
-    // |content_size| needs to be the size of the border box. We've overloaded
-    // the term "content".
     const LayoutUnit border_scrollbar_padding =
         BorderScrollbarPadding().BlockSum();
-    return ComputeBlockSizeForFragment(
-               GetConstraintSpace(), Node(), BorderPadding(),
-               sum_hypothetical_main_size.ClampNegativeToZero() +
-                   border_scrollbar_padding,
-               container_builder_.InlineSize()) -
-           border_scrollbar_padding;
+
+    // Ensure the intrinsic-size include the border/scrollbar/padding.
+    const LayoutUnit intrinsic_size =
+        sum_hypothetical_main_size == kIndefiniteSize
+            ? kIndefiniteSize
+            : sum_hypothetical_main_size + border_scrollbar_padding;
+
+    // First attempt to resolve the block-size using the (potentially
+    // indefinite) intrinsic-size.
+    const LayoutUnit block_size = ComputeBlockSizeForFragment(
+        GetConstraintSpace(), Node(), BorderPadding(), intrinsic_size,
+        container_builder_.InlineSize());
+    if (block_size != kIndefiniteSize) {
+      return (block_size - border_scrollbar_padding).ClampNegativeToZero();
+    }
+
+    // The block-size was indefinite, use the max block-size instead.
+    const LayoutUnit max_block_size =
+        ComputeInitialMinMaxBlockSizes(GetConstraintSpace(), Node(),
+                                       BorderPadding())
+            .max_size;
+    if (max_block_size != LayoutUnit::Max()) {
+      return (max_block_size - border_scrollbar_padding).ClampNegativeToZero();
+    }
+
+    return LayoutUnit::Max();
   }
+
   return ChildAvailableSize().inline_size;
 }
 
@@ -1317,7 +1332,7 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
   DCHECK(oof_children || phase != Phase::kLayout);
   ConstructAndAppendFlexItems(phase, oof_children);
 
-  const LayoutUnit line_break_size = MainAxisContentExtent(LayoutUnit::Max());
+  const LayoutUnit line_break_size = MainAxisContentExtent();
   const FlexLineBreakerResult result = BreakFlexItemsIntoLines(
       base::span(flex_items_), line_break_size, gap_between_items_,
       is_multi_line_, balance_min_line_count_);

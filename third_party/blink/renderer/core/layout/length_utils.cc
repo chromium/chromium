@@ -848,10 +848,7 @@ LayoutUnit ComputeBlockSizeForFragmentInternal(
   // Check if we should apply the automatic minimum size.
   // https://drafts.csswg.org/css-sizing-4/#aspect-ratio-minimum
   bool apply_automatic_min_size = ([&]() {
-    // We check for LayoutUnit::Max() as flexbox uses this as a "placeholder"
-    // to compute the flex line length while still respecting max-block-size.
-    if (intrinsic_size == kIndefiniteSize ||
-        intrinsic_size == LayoutUnit::Max()) {
+    if (intrinsic_size == kIndefiniteSize) {
       return false;
     }
     if (style.IsScrollContainer()) {

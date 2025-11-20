@@ -110,7 +110,8 @@ class CORE_EXPORT FlexLayoutAlgorithm
 
   // This is same method as FlexItem but we need that logic before FlexItem is
   // constructed.
-  LayoutUnit MainAxisContentExtent(LayoutUnit sum_hypothetical_main_size) const;
+  LayoutUnit MainAxisContentExtent(
+      LayoutUnit sum_hypothetical_main_size = kIndefiniteSize) const;
 
   // Returns the position of the baseline, given a physical fragment.
   LayoutUnit BaselineAscent(const FlexItem&, const PhysicalBoxFragment&) const;
