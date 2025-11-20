@@ -524,4 +524,43 @@ TEST_F(AppShimRegistryTest, CodeDirectoryHashesCaching) {
   }
 }
 
+TEST_F(AppShimRegistryTest, CdHashKnownAnswers) {
+  const std::string app_id("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+  const auto cd_hash = std::to_array<uint8_t>({0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
+  base::FilePath profile_path("/x/y/z/Profile");
+
+  const auto fixed_key = std::to_array<uint8_t>({
+      0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a,
+      0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15,
+      0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f,
+  });
+
+  const auto encrypted = *GetEncryptor().EncryptString(
+      std::string(base::as_string_view(fixed_key)));
+  local_state_->SetString("app_shims_cdhash_hmac_key",
+                          base::Base64Encode(encrypted));
+
+  // Pull the HMAC key back out and ensure it matches; this is required for the
+  // known answers below to be correct.
+  const auto decrypted = *GetEncryptor().DecryptData(*base::Base64Decode(
+      local_state_->GetString("app_shims_cdhash_hmac_key")));
+  EXPECT_EQ(base::as_byte_span(fixed_key), base::as_byte_span(decrypted));
+
+  // Now save an app's CdHash, then pull the saved CdHash out of the backing
+  // dict and check that the HMAC has the expected value:
+  registry_->OnAppInstalledForProfile(app_id, profile_path);
+  SaveCdHashForAppSync(app_id, cd_hash);
+
+  const auto dict = registry_->AsDebugDict();
+  const auto* app_dict = dict.FindDict(app_id);
+  ASSERT_TRUE(app_dict);
+  const auto* app_hmac = app_dict->FindString("cdhash_hmac");
+  ASSERT_TRUE(app_hmac);
+
+  // Since this test installed a fixed HMAC key above, and the data being signed
+  // is also fixed, the base64ed HMAC should always exactly match this, which is
+  // just base64(HMAC(fixed_key, cd_hash)).
+  EXPECT_EQ(*app_hmac, "Do/4zxXTbETfH7WtoKyq+ffhSfgFt1M61QNE/YLB+bk=");
+}
+
 }  // namespace
