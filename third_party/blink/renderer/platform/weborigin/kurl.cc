@@ -34,6 +34,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "third_party/blink/renderer/platform/weborigin/known_ports.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -77,12 +78,13 @@ std::string_view AsURLChar8Subtle(const String& spec) {
   return std::string_view(span.begin(), span.end());
 }
 
-// Returns the characters for the given string, or a pointer to a static empty
+// Returns a string_view on the given string, or a string_view on a static empty
 // string if the input string is null. This will always ensure we have a non-
 // null character pointer since ReplaceComponents has special meaning for null.
-const char* CharactersOrEmpty(const StringUtf8Adaptor& string) {
+std::string_view CharactersOrEmpty(const StringUtf8Adaptor& string) {
   static const char kZero = 0;
-  return string.data() ? string.data() : &kZero;
+  // NOLINTNEXTLINE(bugprone-string-constructor)
+  return string.data() ? string.AsStringView() : std::string_view(&kZero, 0u);
 }
 
 bool IsSchemeFirstChar(char c) {
@@ -529,8 +531,7 @@ bool KURL::SetProtocol(const String& protocol) {
   }
 
   url::Replacements<char> replacements;
-  replacements.SetScheme(CharactersOrEmpty(new_protocol_utf8),
-                         url::Component(0, new_protocol_utf8.size()));
+  replacements.SetSchemeStr(CharactersOrEmpty(new_protocol_utf8));
   ReplaceComponents(replacements);
 
   // isValid could be false but we still return true here. This is because
@@ -581,8 +582,7 @@ void KURL::SetHost(const String& input) {
   String truncated_host = host.Substring(0, value_end);
   StringUtf8Adaptor host_utf8(truncated_host);
   url::Replacements<char> replacements;
-  replacements.SetHost(CharactersOrEmpty(host_utf8),
-                       url::Component(0, host_utf8.size()));
+  replacements.SetHostStr(CharactersOrEmpty(host_utf8));
   ReplaceComponents(replacements);
 }
 
@@ -627,8 +627,7 @@ void KURL::SetHostAndPort(const String& input) {
   {
     url::Replacements<char> replacements;
     StringUtf8Adaptor host_utf8(host);
-    replacements.SetHost(CharactersOrEmpty(host_utf8),
-                         url::Component(0, host_utf8.size()));
+    replacements.SetHostStr(CharactersOrEmpty(host_utf8));
     ReplaceComponents(replacements);
   }
 
@@ -636,8 +635,7 @@ void KURL::SetHostAndPort(const String& input) {
   if (is_valid_ && !port.empty()) {
     url::Replacements<char> replacements;
     StringUtf8Adaptor port_utf8(port);
-    replacements.SetPort(CharactersOrEmpty(port_utf8),
-                         url::Component(0, port_utf8.size()));
+    replacements.SetPortStr(CharactersOrEmpty(port_utf8));
     ReplaceComponents(replacements, /*preserve_validity=*/true);
   }
 }
@@ -675,8 +673,7 @@ void KURL::SetPort(uint16_t port) {
   DCHECK(port_string.Is8Bit());
 
   url::Replacements<char> replacements;
-  replacements.SetPort(base::as_chars(port_string.Span8()).data(),
-                       url::Component(0, port_string.length()));
+  replacements.SetPortStr(base::as_string_view(port_string.Span8()));
   ReplaceComponents(replacements);
 }
 
@@ -693,8 +690,7 @@ void KURL::SetUser(const String& user) {
   // https://url.spec.whatwg.org/#dom-url-username
   StringUtf8Adaptor user_utf8(user);
   url::Replacements<char> replacements;
-  replacements.SetUsername(CharactersOrEmpty(user_utf8),
-                           url::Component(0, user_utf8.size()));
+  replacements.SetUsernameStr(CharactersOrEmpty(user_utf8));
   ReplaceComponents(replacements);
 }
 
@@ -711,8 +707,7 @@ void KURL::SetPass(const String& pass) {
   // https://url.spec.whatwg.org/#dom-url-password
   StringUtf8Adaptor pass_utf8(pass);
   url::Replacements<char> replacements;
-  replacements.SetPassword(CharactersOrEmpty(pass_utf8),
-                           url::Component(0, pass_utf8.size()));
+  replacements.SetPasswordStr(CharactersOrEmpty(pass_utf8));
   ReplaceComponents(replacements);
 }
 
@@ -729,8 +724,7 @@ void KURL::SetFragmentIdentifier(const String& input) {
   if (fragment.IsNull()) {
     replacements.ClearRef();
   } else {
-    replacements.SetRef(CharactersOrEmpty(fragment_utf8),
-                        url::Component(0, fragment_utf8.size()));
+    replacements.SetRefStr(CharactersOrEmpty(fragment_utf8));
   }
   ReplaceComponents(replacements);
 }
@@ -749,19 +743,17 @@ void KURL::SetQuery(const String& input) {
     // KURL.cpp sets to null to clear any query.
     replacements.ClearQuery();
   } else if (query.length() > 0 && query[0] == '?') {
-    // WebCore expects the query string to begin with a question mark, but
+    // Blink expects the query string to begin with a question mark, but
     // GoogleURL doesn't. So we trim off the question mark when setting.
-    replacements.SetQuery(CharactersOrEmpty(query_utf8),
-                          url::Component(1, query_utf8.size() - 1));
+    replacements.SetQueryStr(CharactersOrEmpty(query_utf8).substr(1u));
   } else {
     // When set with the empty string or something that doesn't begin with
-    // a question mark, KURL.cpp will add a question mark for you. The only
+    // a question mark, kurl.cc will add a question mark for you. The only
     // way this isn't compatible is if you call this function with an empty
-    // string. KURL.cpp will leave a '?' with nothing following it in the
+    // string. kurl.cc will leave a '?' with nothing following it in the
     // URL, whereas we'll clear it.
     // FIXME We should eliminate this difference.
-    replacements.SetQuery(CharactersOrEmpty(query_utf8),
-                          url::Component(0, query_utf8.size()));
+    replacements.SetQueryStr(CharactersOrEmpty(query_utf8));
   }
   ReplaceComponents(replacements);
 }
@@ -772,8 +764,7 @@ void KURL::SetPath(const String& input) {
   String path = RemoveURLWhitespace(input);
   StringUtf8Adaptor path_utf8(path);
   url::Replacements<char> replacements;
-  replacements.SetPath(CharactersOrEmpty(path_utf8),
-                       url::Component(0, path_utf8.size()));
+  replacements.SetPathStr(CharactersOrEmpty(path_utf8));
   ReplaceComponents(replacements);
 }
 

@@ -438,12 +438,8 @@ void V4ProtocolManagerUtil::CanonicalizeUrl(const GURL& url,
   std::string path_without_consecutive_slash(RemoveConsecutiveChars(path, '/'));
 
   url::Replacements<char> hp_replacements;
-  hp_replacements.SetHost(
-      host_without_consecutive_dots.data(),
-      url::Component(0, host_without_consecutive_dots.length()));
-  hp_replacements.SetPath(
-      path_without_consecutive_slash.data(),
-      url::Component(0, path_without_consecutive_slash.length()));
+  hp_replacements.SetHostStr(host_without_consecutive_dots);
+  hp_replacements.SetPathStr(path_without_consecutive_slash);
 
   std::string url_unescaped_with_can_hostpath;
   url::StdStringCanonOutput output(&url_unescaped_with_can_hostpath);

@@ -200,12 +200,12 @@ TEST_F(URLUtilTest, ReplaceComponents) {
 
   // Check that the following calls do not cause crash
   Replacements<char> replacements;
-  replacements.SetRef("test", Component(0, 4));
+  replacements.SetRefStr("test");
   ReplaceComponents(std::string_view(), parsed, replacements, nullptr, &output,
                     &new_parsed);
   ReplaceComponents("", parsed, replacements, nullptr, &output, &new_parsed);
   replacements.ClearRef();
-  replacements.SetHost("test", Component(0, 4));
+  replacements.SetHostStr("test");
   ReplaceComponents(std::string_view(), parsed, replacements, nullptr, &output,
                     &new_parsed);
   ReplaceComponents("", parsed, replacements, nullptr, &output, &new_parsed);
@@ -227,7 +227,7 @@ static std::string CheckReplaceScheme(const char* base_url,
   Canonicalize(base_url, true, nullptr, &original, &original_parsed);
 
   Replacements<char> replacements;
-  replacements.SetScheme(scheme, Component(0, strlen(scheme)));
+  replacements.SetSchemeStr(scheme);
 
   std::string output_string;
   StdStringCanonOutput output(&output_string);
@@ -465,7 +465,7 @@ TEST_F(URLUtilTest, PotentiallyDanglingMarkupAfterSchemeOnlyReplacement) {
   // flag carried over to the new Parsed object.
   Replacements<char> replacements;
   const char* new_scheme = "https";
-  replacements.SetScheme(new_scheme, Component(0, strlen(new_scheme)));
+  replacements.SetSchemeStr(new_scheme);
   Parsed replaced_parsed;
   RawCanonOutput<32> replaced;
   ReplaceComponents(original.view(), original_parsed, replacements, nullptr,

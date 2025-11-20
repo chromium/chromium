@@ -92,16 +92,16 @@ const char kDeleteComp[] = "|";
 // This template is currently used only for the 8-bit case, and the strlen
 // causes it to fail in other cases. It is left a template in case we have
 // tests for wide replacements.
-template<typename CHAR>
+template <typename CHAR>
 void SetupReplComp(
-    void (Replacements<CHAR>::*set)(const CHAR*, const Component&),
+    void (Replacements<CHAR>::*set)(std::basic_string_view<CHAR>),
     void (Replacements<CHAR>::*clear)(),
     Replacements<CHAR>* rep,
     const CHAR* str) {
   if (str && str[0] == kDeleteComp[0]) {
     (rep->*clear)();
   } else if (str) {
-    (rep->*set)(str, Component(0, static_cast<int>(strlen(str))));
+    (rep->*set)(str);
   }
 }
 
@@ -1941,14 +1941,14 @@ TEST_F(URLCanonTest, ReplaceStandardUrl) {
 
     // Note that for the scheme we pass in a different clear function since
     // there is no function to clear the scheme.
-    SetupReplComp(&R::SetScheme, &R::ClearRef, &r, cur.scheme);
-    SetupReplComp(&R::SetUsername, &R::ClearUsername, &r, cur.username);
-    SetupReplComp(&R::SetPassword, &R::ClearPassword, &r, cur.password);
-    SetupReplComp(&R::SetHost, &R::ClearHost, &r, cur.host);
-    SetupReplComp(&R::SetPort, &R::ClearPort, &r, cur.port);
-    SetupReplComp(&R::SetPath, &R::ClearPath, &r, cur.path);
-    SetupReplComp(&R::SetQuery, &R::ClearQuery, &r, cur.query);
-    SetupReplComp(&R::SetRef, &R::ClearRef, &r, cur.ref);
+    SetupReplComp(&R::SetSchemeStr, &R::ClearRef, &r, cur.scheme);
+    SetupReplComp(&R::SetUsernameStr, &R::ClearUsername, &r, cur.username);
+    SetupReplComp(&R::SetPasswordStr, &R::ClearPassword, &r, cur.password);
+    SetupReplComp(&R::SetHostStr, &R::ClearHost, &r, cur.host);
+    SetupReplComp(&R::SetPortStr, &R::ClearPort, &r, cur.port);
+    SetupReplComp(&R::SetPathStr, &R::ClearPath, &r, cur.path);
+    SetupReplComp(&R::SetQueryStr, &R::ClearQuery, &r, cur.query);
+    SetupReplComp(&R::SetRefStr, &R::ClearRef, &r, cur.ref);
 
     std::string out_str;
     StdStringCanonOutput output(&out_str);
@@ -2034,14 +2034,14 @@ TEST_F(URLCanonTest, ReplaceFileUrl) {
 
     Replacements<char> r;
     typedef Replacements<char> R;  // Clean up syntax.
-    SetupReplComp(&R::SetScheme, &R::ClearRef, &r, cur.scheme);
-    SetupReplComp(&R::SetUsername, &R::ClearUsername, &r, cur.username);
-    SetupReplComp(&R::SetPassword, &R::ClearPassword, &r, cur.password);
-    SetupReplComp(&R::SetHost, &R::ClearHost, &r, cur.host);
-    SetupReplComp(&R::SetPort, &R::ClearPort, &r, cur.port);
-    SetupReplComp(&R::SetPath, &R::ClearPath, &r, cur.path);
-    SetupReplComp(&R::SetQuery, &R::ClearQuery, &r, cur.query);
-    SetupReplComp(&R::SetRef, &R::ClearRef, &r, cur.ref);
+    SetupReplComp(&R::SetSchemeStr, &R::ClearRef, &r, cur.scheme);
+    SetupReplComp(&R::SetUsernameStr, &R::ClearUsername, &r, cur.username);
+    SetupReplComp(&R::SetPasswordStr, &R::ClearPassword, &r, cur.password);
+    SetupReplComp(&R::SetHostStr, &R::ClearHost, &r, cur.host);
+    SetupReplComp(&R::SetPortStr, &R::ClearPort, &r, cur.port);
+    SetupReplComp(&R::SetPathStr, &R::ClearPath, &r, cur.path);
+    SetupReplComp(&R::SetQueryStr, &R::ClearQuery, &r, cur.query);
+    SetupReplComp(&R::SetRefStr, &R::ClearRef, &r, cur.ref);
 
     std::string out_str;
     StdStringCanonOutput output(&out_str);
@@ -2100,14 +2100,14 @@ TEST_F(URLCanonTest, ReplaceFileSystemUrl) {
 
     Replacements<char> r;
     typedef Replacements<char> R;  // Clean up syntax.
-    SetupReplComp(&R::SetScheme, &R::ClearRef, &r, cur.scheme);
-    SetupReplComp(&R::SetUsername, &R::ClearUsername, &r, cur.username);
-    SetupReplComp(&R::SetPassword, &R::ClearPassword, &r, cur.password);
-    SetupReplComp(&R::SetHost, &R::ClearHost, &r, cur.host);
-    SetupReplComp(&R::SetPort, &R::ClearPort, &r, cur.port);
-    SetupReplComp(&R::SetPath, &R::ClearPath, &r, cur.path);
-    SetupReplComp(&R::SetQuery, &R::ClearQuery, &r, cur.query);
-    SetupReplComp(&R::SetRef, &R::ClearRef, &r, cur.ref);
+    SetupReplComp(&R::SetSchemeStr, &R::ClearRef, &r, cur.scheme);
+    SetupReplComp(&R::SetUsernameStr, &R::ClearUsername, &r, cur.username);
+    SetupReplComp(&R::SetPasswordStr, &R::ClearPassword, &r, cur.password);
+    SetupReplComp(&R::SetHostStr, &R::ClearHost, &r, cur.host);
+    SetupReplComp(&R::SetPortStr, &R::ClearPort, &r, cur.port);
+    SetupReplComp(&R::SetPathStr, &R::ClearPath, &r, cur.path);
+    SetupReplComp(&R::SetQueryStr, &R::ClearQuery, &r, cur.query);
+    SetupReplComp(&R::SetRefStr, &R::ClearRef, &r, cur.ref);
 
     std::string out_str;
     StdStringCanonOutput output(&out_str);
@@ -2141,14 +2141,14 @@ TEST_F(URLCanonTest, ReplacePathUrl) {
 
     Replacements<char> r;
     typedef Replacements<char> R;  // Clean up syntax.
-    SetupReplComp(&R::SetScheme, &R::ClearRef, &r, cur.scheme);
-    SetupReplComp(&R::SetUsername, &R::ClearUsername, &r, cur.username);
-    SetupReplComp(&R::SetPassword, &R::ClearPassword, &r, cur.password);
-    SetupReplComp(&R::SetHost, &R::ClearHost, &r, cur.host);
-    SetupReplComp(&R::SetPort, &R::ClearPort, &r, cur.port);
-    SetupReplComp(&R::SetPath, &R::ClearPath, &r, cur.path);
-    SetupReplComp(&R::SetQuery, &R::ClearQuery, &r, cur.query);
-    SetupReplComp(&R::SetRef, &R::ClearRef, &r, cur.ref);
+    SetupReplComp(&R::SetSchemeStr, &R::ClearRef, &r, cur.scheme);
+    SetupReplComp(&R::SetUsernameStr, &R::ClearUsername, &r, cur.username);
+    SetupReplComp(&R::SetPasswordStr, &R::ClearPassword, &r, cur.password);
+    SetupReplComp(&R::SetHostStr, &R::ClearHost, &r, cur.host);
+    SetupReplComp(&R::SetPortStr, &R::ClearPort, &r, cur.port);
+    SetupReplComp(&R::SetPathStr, &R::ClearPath, &r, cur.path);
+    SetupReplComp(&R::SetQueryStr, &R::ClearQuery, &r, cur.query);
+    SetupReplComp(&R::SetRefStr, &R::ClearRef, &r, cur.ref);
 
     std::string out_str;
     StdStringCanonOutput output(&out_str);
@@ -2201,14 +2201,14 @@ TEST_F(URLCanonTest, ReplaceMailtoUrl) {
 
     Replacements<char> r;
     typedef Replacements<char> R;
-    SetupReplComp(&R::SetScheme, &R::ClearRef, &r, cur.scheme);
-    SetupReplComp(&R::SetUsername, &R::ClearUsername, &r, cur.username);
-    SetupReplComp(&R::SetPassword, &R::ClearPassword, &r, cur.password);
-    SetupReplComp(&R::SetHost, &R::ClearHost, &r, cur.host);
-    SetupReplComp(&R::SetPort, &R::ClearPort, &r, cur.port);
-    SetupReplComp(&R::SetPath, &R::ClearPath, &r, cur.path);
-    SetupReplComp(&R::SetQuery, &R::ClearQuery, &r, cur.query);
-    SetupReplComp(&R::SetRef, &R::ClearRef, &r, cur.ref);
+    SetupReplComp(&R::SetSchemeStr, &R::ClearRef, &r, cur.scheme);
+    SetupReplComp(&R::SetUsernameStr, &R::ClearUsername, &r, cur.username);
+    SetupReplComp(&R::SetPasswordStr, &R::ClearPassword, &r, cur.password);
+    SetupReplComp(&R::SetHostStr, &R::ClearHost, &r, cur.host);
+    SetupReplComp(&R::SetPortStr, &R::ClearPort, &r, cur.port);
+    SetupReplComp(&R::SetPathStr, &R::ClearPath, &r, cur.path);
+    SetupReplComp(&R::SetQueryStr, &R::ClearQuery, &r, cur.query);
+    SetupReplComp(&R::SetRefStr, &R::ClearRef, &r, cur.ref);
 
     std::string out_str;
     StdStringCanonOutput output(&out_str);
@@ -2880,9 +2880,8 @@ TEST_F(URLCanonTest, ReplacementOverflow) {
     new_query.push_back('a');
 
   std::u16string new_path(test_utils::TruncateWStringToUTF16(L"/foo"));
-  repl.SetPath(new_path.c_str(), Component(0, 4));
-  repl.SetQuery(new_query.c_str(),
-                Component(0, static_cast<int>(new_query.length())));
+  repl.SetPathStr(new_path);
+  repl.SetQueryStr(new_query);
 
   // Call ReplaceComponents on the string. It doesn't matter if we call it for
   // standard URLs, file URLs, etc, since they will go to the same replacement

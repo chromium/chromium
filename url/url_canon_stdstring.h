@@ -64,55 +64,53 @@ class COMPONENT_EXPORT(URL) StdStringCanonOutput : public CanonOutput {
 // references to std::strings.
 // Note: Extra const char* overloads are necessary to break ambiguities that
 // would otherwise exist for char literals.
+//
+// TODO(crbug.com/350788890): Merge this to Replacements, which now accepts
+// string_views.
 template <typename CharT>
 class StringViewReplacements : public Replacements<CharT> {
  private:
   using StringT = std::basic_string<CharT>;
-  using StringViewT = std::basic_string_view<CharT>;
   using ParentT = Replacements<CharT>;
-  using SetterFun = void (ParentT::*)(const CharT*, const Component&);
-
-  void SetImpl(SetterFun fun, StringViewT str) {
-    (this->*fun)(str.data(), Component(0, static_cast<int>(str.size())));
-  }
+  using StringViewT = ParentT::StringViewT;
 
  public:
-  void SetSchemeStr(const CharT* str) { SetImpl(&ParentT::SetScheme, str); }
-  void SetSchemeStr(StringViewT str) { SetImpl(&ParentT::SetScheme, str); }
+  void SetSchemeStr(const CharT* str) { SetSchemeStr(StringViewT(str)); }
+  using ParentT::SetSchemeStr;
   void SetSchemeStr(const StringT&&) = delete;
 
-  void SetUsernameStr(const CharT* str) { SetImpl(&ParentT::SetUsername, str); }
-  void SetUsernameStr(StringViewT str) { SetImpl(&ParentT::SetUsername, str); }
+  void SetUsernameStr(const CharT* str) { SetUsernameStr(StringViewT(str)); }
+  using ParentT::SetUsernameStr;
   void SetUsernameStr(const StringT&&) = delete;
   using ParentT::ClearUsername;
 
-  void SetPasswordStr(const CharT* str) { SetImpl(&ParentT::SetPassword, str); }
-  void SetPasswordStr(StringViewT str) { SetImpl(&ParentT::SetPassword, str); }
+  void SetPasswordStr(const CharT* str) { SetPasswordStr(StringViewT(str)); }
+  using ParentT::SetPasswordStr;
   void SetPasswordStr(const StringT&&) = delete;
   using ParentT::ClearPassword;
 
-  void SetHostStr(const CharT* str) { SetImpl(&ParentT::SetHost, str); }
-  void SetHostStr(StringViewT str) { SetImpl(&ParentT::SetHost, str); }
+  void SetHostStr(const CharT* str) { SetHostStr(StringViewT(str)); }
+  using ParentT::SetHostStr;
   void SetHostStr(const StringT&&) = delete;
   using ParentT::ClearHost;
 
-  void SetPortStr(const CharT* str) { SetImpl(&ParentT::SetPort, str); }
-  void SetPortStr(StringViewT str) { SetImpl(&ParentT::SetPort, str); }
+  void SetPortStr(const CharT* str) { SetPortStr(StringViewT(str)); }
+  using ParentT::SetPortStr;
   void SetPortStr(const StringT&&) = delete;
   using ParentT::ClearPort;
 
-  void SetPathStr(const CharT* str) { SetImpl(&ParentT::SetPath, str); }
-  void SetPathStr(StringViewT str) { SetImpl(&ParentT::SetPath, str); }
+  void SetPathStr(const CharT* str) { SetPathStr(StringViewT(str)); }
+  using ParentT::SetPathStr;
   void SetPathStr(const StringT&&) = delete;
   using ParentT::ClearPath;
 
-  void SetQueryStr(const CharT* str) { SetImpl(&ParentT::SetQuery, str); }
-  void SetQueryStr(StringViewT str) { SetImpl(&ParentT::SetQuery, str); }
+  void SetQueryStr(const CharT* str) { SetQueryStr(StringViewT(str)); }
+  using ParentT::SetQueryStr;
   void SetQueryStr(const StringT&&) = delete;
   using ParentT::ClearQuery;
 
-  void SetRefStr(const CharT* str) { SetImpl(&ParentT::SetRef, str); }
-  void SetRefStr(StringViewT str) { SetImpl(&ParentT::SetRef, str); }
+  void SetRefStr(const CharT* str) { SetRefStr(StringViewT(str)); }
+  using ParentT::SetRefStr;
   void SetRefStr(const StringT&&) = delete;
   using ParentT::ClearRef;
 

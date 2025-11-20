@@ -898,6 +898,9 @@ struct URLComponentSource {
 // Prefer the 8-bit replacement version if possible since it is more efficient.
 template <typename CHAR>
 class Replacements {
+ protected:
+  using StringViewT = std::basic_string_view<CHAR>;
+
  public:
   // Creates an empty `Replacements` instance, which indicates that no
   // components will be replaced.
@@ -906,7 +909,7 @@ class Replacements {
   // Creates a `Replacements` instance from a single spec and its parsed
   // components. This is used to indicate that all components of a URL should
   // be replaced.
-  Replacements(std::basic_string_view<CHAR> spec, const Parsed& parsed)
+  Replacements(StringViewT spec, const Parsed& parsed)
       : sources_(spec.data()), components_(parsed) {}
 
   // Scheme
@@ -914,6 +917,7 @@ class Replacements {
     sources_.scheme = s;
     components_.scheme = comp;
   }
+  void SetSchemeStr(StringViewT str) { SetScheme(str.data(), Component(str)); }
   // Note: we don't have a ClearScheme since this doesn't make any sense.
   bool IsSchemeOverridden() const { return sources_.scheme != NULL; }
 
@@ -921,6 +925,9 @@ class Replacements {
   void SetUsername(const CHAR* s, const Component& comp) {
     sources_.username = s;
     components_.username = comp;
+  }
+  void SetUsernameStr(StringViewT str) {
+    SetUsername(str.data(), Component(str));
   }
   void ClearUsername() {
     sources_.username = Placeholder();
@@ -933,6 +940,9 @@ class Replacements {
     sources_.password = s;
     components_.password = comp;
   }
+  void SetPasswordStr(StringViewT str) {
+    SetPassword(str.data(), Component(str));
+  }
   void ClearPassword() {
     sources_.password = Placeholder();
     components_.password = Component();
@@ -944,6 +954,7 @@ class Replacements {
     sources_.host = s;
     components_.host = comp;
   }
+  void SetHostStr(StringViewT str) { SetHost(str.data(), Component(str)); }
   void ClearHost() {
     sources_.host = Placeholder();
     components_.host = Component();
@@ -955,6 +966,7 @@ class Replacements {
     sources_.port = s;
     components_.port = comp;
   }
+  void SetPortStr(StringViewT str) { SetPort(str.data(), Component(str)); }
   void ClearPort() {
     sources_.port = Placeholder();
     components_.port = Component();
@@ -966,6 +978,7 @@ class Replacements {
     sources_.path = s;
     components_.path = comp;
   }
+  void SetPathStr(StringViewT str) { SetPath(str.data(), Component(str)); }
   void ClearPath() {
     sources_.path = Placeholder();
     components_.path = Component();
@@ -977,6 +990,7 @@ class Replacements {
     sources_.query = s;
     components_.query = comp;
   }
+  void SetQueryStr(StringViewT str) { SetQuery(str.data(), Component(str)); }
   void ClearQuery() {
     sources_.query = Placeholder();
     components_.query = Component();
@@ -988,6 +1002,7 @@ class Replacements {
     sources_.ref = s;
     components_.ref = comp;
   }
+  void SetRefStr(StringViewT str) { SetRef(str.data(), Component(str)); }
   void ClearRef() {
     sources_.ref = Placeholder();
     components_.ref = Component();
