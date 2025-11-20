@@ -1084,19 +1084,24 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
             AccountExtensionTracker::Get(browser()->profile())
                 ->GetAccountExtensionType(extension->id()));
 
-  ExtensionInstallUIDesktop::ShowBubble(extension, browser(), SkBitmap());
+  ExtensionInstallUIDesktop::ShowBubble(extension, browser(),
+                                        browser()->profile(), SkBitmap());
 
   // Click the sign in button.
   RunTestSequence(
-      WaitForShow(kExtensionBubbleFrameViewId),
+      // We cannot add an element identifier to the dialog when it's built using
+      // DialogModel::Builder. Thus, we check for its existence by checking the
+      // visibility of one of its elements.
+      WaitForShow(BubbleSignInPromoSignInButtonView::kPromoSignInButton),
       SetOnIncompatibleAction(
           OnIncompatibleAction::kIgnoreAndContinue,
           "Screenshot can only run in pixel_tests on Windows."),
-      Screenshot(kExtensionBubbleFrameViewId, std::string(), "7148104"),
+      ScreenshotSurface(BubbleSignInPromoSignInButtonView::kPromoSignInButton,
+                        std::string(), "7141450"),
       NameChildViewByType<views::MdTextButton>(
           BubbleSignInPromoSignInButtonView::kPromoSignInButton, kButton),
       PressButton(kButton).SetMustRemainVisible(false),
-      EnsureNotPresent(kExtensionBubbleFrameViewId));
+      EnsureNotPresent(BubbleSignInPromoSignInButtonView::kPromoSignInButton));
 
   // Check that clicking the sign in button navigated to a sign in page.
   EXPECT_TRUE(IsSignInURL());
@@ -1162,7 +1167,8 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
             AccountExtensionTracker::Get(browser()->profile())
                 ->GetAccountExtensionType(extension->id()));
 
-  ExtensionInstallUIDesktop::ShowBubble(extension, browser(), SkBitmap());
+  ExtensionInstallUIDesktop::ShowBubble(extension, browser(),
+                                        browser()->profile(), SkBitmap());
 
   // This would move the extension to account storage.
   std::vector<syncer::LocalDataItemModel::DataId> items{extension->id()};
@@ -1173,15 +1179,19 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
   // the extension to account storage.
   ActivateSyncService();
   RunTestSequence(
-      WaitForShow(kExtensionBubbleFrameViewId),
+      // We cannot add an element identifier to the dialog when it's built using
+      // DialogModel::Builder. Thus, we check for its existence by checking the
+      // visibility of one of its elements.
+      WaitForShow(BubbleSignInPromoSignInButtonView::kPromoSignInButton),
       SetOnIncompatibleAction(
           OnIncompatibleAction::kIgnoreAndContinue,
           "Screenshot can only run in pixel_tests on Windows."),
-      Screenshot(kExtensionBubbleFrameViewId, std::string(), "7148104"),
+      ScreenshotSurface(BubbleSignInPromoSignInButtonView::kPromoSignInButton,
+                        std::string(), "7141450"),
       NameChildViewByType<views::MdTextButton>(
           BubbleSignInPromoSignInButtonView::kPromoSignInButton, kButton),
       PressButton(kButton).SetMustRemainVisible(false),
-      EnsureNotPresent(kExtensionBubbleFrameViewId));
+      EnsureNotPresent(BubbleSignInPromoSignInButtonView::kPromoSignInButton));
 
   // Check that there is no helper attached to the sign in tab, because the
   // extension was already moved.
@@ -1237,19 +1247,24 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
             AccountExtensionTracker::Get(browser()->profile())
                 ->GetAccountExtensionType(extension->id()));
 
-  ExtensionInstallUIDesktop::ShowBubble(extension, browser(), SkBitmap());
+  ExtensionInstallUIDesktop::ShowBubble(extension, browser(),
+                                        browser()->profile(), SkBitmap());
 
   // Click the sign in button.
   RunTestSequence(
-      WaitForShow(kExtensionBubbleFrameViewId),
+      // We cannot add an element identifier to the dialog when it's built using
+      // DialogModel::Builder. Thus, we check for its existence by checking the
+      // visibility of one of its elements.
+      WaitForShow(BubbleSignInPromoSignInButtonView::kPromoSignInButton),
       SetOnIncompatibleAction(
           OnIncompatibleAction::kIgnoreAndContinue,
           "Screenshot can only run in pixel_tests on Windows."),
-      Screenshot(kExtensionBubbleFrameViewId, std::string(), "7146763"),
+      ScreenshotSurface(BubbleSignInPromoSignInButtonView::kPromoSignInButton,
+                        std::string(), "7141450"),
       NameChildViewByType<views::MdTextButton>(
           BubbleSignInPromoSignInButtonView::kPromoSignInButton, kButton),
       PressButton(kButton).SetMustRemainVisible(false),
-      EnsureNotPresent(kExtensionBubbleFrameViewId));
+      EnsureNotPresent(BubbleSignInPromoSignInButtonView::kPromoSignInButton));
 
   // Check that clicking the sign in button navigated to a sign in page.
   EXPECT_TRUE(IsSignInURL());

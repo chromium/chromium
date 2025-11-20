@@ -17,8 +17,8 @@
 #include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/extensions/extension_dialog_utils.h"
 #include "chrome/browser/ui/extensions/extension_install_ui_desktop.h"
@@ -26,10 +26,8 @@
 #include "chrome/browser/ui/extensions/extension_installed_waiter.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -37,6 +35,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/service/local_data_description.h"
+#include "content/public/browser/web_contents.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -52,35 +51,9 @@
 #include "chrome/browser/ui/signin/promos/bubble_signin_promo_view.h"
 #endif
 
-DEFINE_ELEMENT_IDENTIFIER_VALUE(kExtensionBubbleFrameViewId);
-
 namespace {
 
 constexpr gfx::Size kMaxIconSize{43, 43};
-
-views::View* AnchorViewForBrowser(const ExtensionInstalledBubbleModel* model,
-                                  Browser* browser) {
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  views::View* reference_view = nullptr;
-
-  if (model->anchor_to_action()) {
-    ExtensionsToolbarContainer* const container =
-        browser_view->toolbar_button_provider()
-            ->GetExtensionsToolbarContainer();
-    if (container) {
-      reference_view = container->GetViewForId(model->extension_id());
-    }
-  } else if (model->anchor_to_omnibox()) {
-    reference_view = browser_view->GetLocationBarView()->location_icon_view();
-  }
-
-  // Default case.
-  if (!reference_view || !reference_view->GetVisible()) {
-    return browser_view->toolbar_button_provider()
-        ->GetDefaultExtensionDialogAnchorView();
-  }
-  return reference_view;
-}
 
 #if !BUILDFLAG(IS_CHROMEOS)
 std::unique_ptr<views::View> CreateSigninPromoFootnoteView(
@@ -112,9 +85,9 @@ std::unique_ptr<views::View> CreateSigninPromoFootnoteView(
 
 }  // namespace
 
-// static
-void ExtensionInstalledBubbleView::Show(
-    Browser* browser,
+void ShowExtensionPostInstallDialog(
+    Profile* profile,
+    content::WebContents* web_contents,
     std::unique_ptr<ExtensionInstalledBubbleModel> model) {
   // The Extension Installed bubble is a dialog that informs the user that an
   // extension has been installed. It is constructed using ui::DialogModel,
@@ -129,8 +102,13 @@ void ExtensionInstalledBubbleView::Show(
   //   - Information on how to manage the extension.
   // - A footer area that may contain a sign-in or sync promo, added as a
   //   custom view.
-  auto delegate =
-      std::make_unique<ExtensionInstalledBubbleView>(browser, std::move(model));
+  auto delegate = std::make_unique<ExtensionInstalledBubbleView>(
+      web_contents, std::move(model));
+  gfx::NativeWindow native_window = web_contents->GetTopLevelNativeWindow();
+  if (!native_window) {
+    return;
+  }
+
   auto* weak_delegate = delegate.get();
 
   ui::DialogModel::Builder dialog_model_builder(std::move(delegate));
@@ -166,86 +144,82 @@ void ExtensionInstalledBubbleView::Show(
 #if !BUILDFLAG(IS_CHROMEOS)
   // Add a sync or sign in promo in the footer if it should be shown.
   extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(browser->profile());
+      extensions::ExtensionRegistry::Get(profile);
   const extensions::Extension* extension =
       registry->enabled_extensions().GetByID(
           weak_delegate->model()->extension_id());
 
-  if (signin::ShouldShowExtensionSignInPromo(*browser->profile(), *extension) ||
-      (signin::ShouldShowExtensionSyncPromo(*browser->profile(), *extension) &&
+  if (signin::ShouldShowExtensionSignInPromo(*profile, *extension) ||
+      (signin::ShouldShowExtensionSyncPromo(*profile, *extension) &&
        !switches::IsExtensionsExplicitBrowserSigninEnabled())) {
     // We use a custom field instead of a footnote because footnote doesn't
     // support complex views.
     dialog_model_builder.AddCustomField(
         std::make_unique<views::BubbleDialogModelHost::CustomView>(
             CreateSigninPromoFootnoteView(
-                browser->tab_strip_model()->GetActiveWebContents(),
-                weak_delegate->model()->extension_id()),
+                web_contents, weak_delegate->model()->extension_id()),
             views::BubbleDialogModelHost::FieldType::kMenuItem));
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
   std::unique_ptr<ui::DialogModel> dialog_model = dialog_model_builder.Build();
 
-  auto bubble = std::make_unique<views::BubbleDialogModelHost>(
-      std::move(dialog_model),
-      AnchorViewForBrowser(weak_delegate->model(), browser),
-      weak_delegate->model()->anchor_to_omnibox()
-          ? views::BubbleBorder::TOP_LEFT
-          : views::BubbleBorder::TOP_RIGHT);
-  views::BubbleDialogDelegate* bubble_delegate =
-      bubble->AsBubbleDialogDelegate();
-  views::Widget* const widget =
-      views::BubbleDialogDelegate::CreateBubble(std::move(bubble));
-  CHECK(widget);
-  CHECK(widget->GetRootView());
-  widget->GetRootView()->SetProperty(views::kElementIdentifierKey,
-                                     kExtensionBubbleFrameViewId);
-  // When the extension is installed to the ExtensionsToolbarContainer, use the
-  // container to pop out the extension icon and show the widget.
-  if (weak_delegate->model()->anchor_to_action()) {
-    ExtensionsToolbarContainer* const container =
-        BrowserView::GetBrowserViewForBrowser(browser)
-            ->toolbar_button_provider()
-            ->GetExtensionsToolbarContainer();
-    container->ShowWidgetForExtension(widget,
-                                      weak_delegate->model()->extension_id());
-  } else {
+  // TODO(crbug.com/460843305): Decide how to handle the dialog anchored to
+  // omnibox case. Getting the browser view is just temporary as we are moving
+  // away from using browser.
+  if (weak_delegate->model()->anchor_to_omnibox()) {
+    BrowserView* browser_view =
+        BrowserView::GetBrowserViewForNativeWindow(native_window);
+    views::View* anchor_view =
+        browser_view->GetLocationBarView()->location_icon_view();
+    auto bubble = std::make_unique<views::BubbleDialogModelHost>(
+        std::move(dialog_model), std::move(anchor_view),
+        views::BubbleBorder::TOP_LEFT);
+    views::Widget* widget =
+        views::BubbleDialogDelegate::CreateBubble(std::move(bubble));
     widget->Show();
+  } else {
+    ShowDialog(native_window, weak_delegate->model()->extension_id(),
+               std::move(dialog_model));
   }
-
-  bubble_delegate->GetBubbleFrameView()->SetProperty(
-      views::kElementIdentifierKey, kExtensionBubbleFrameViewId);
 }
 
 ExtensionInstalledBubbleView::ExtensionInstalledBubbleView(
-    Browser* browser,
+    content::WebContents* web_contents,
     std::unique_ptr<ExtensionInstalledBubbleModel> model)
-    : browser_(browser), model_(std::move(model)) {}
+    : web_contents_(web_contents->GetWeakPtr()), model_(std::move(model)) {}
 
 ExtensionInstalledBubbleView::~ExtensionInstalledBubbleView() = default;
 
 void ExtensionInstalledBubbleView::LinkClicked() {
-  const GURL kUrl(base::StrCat({chrome::kChromeUIExtensionsURL,
-                                chrome::kExtensionConfigureCommandsSubPage}));
-  NavigateParams params = GetSingletonTabNavigateParams(browser_, kUrl);
-  Navigate(&params);
-  dialog_model()->host()->Close();
-}
+  if (web_contents_) {
+    const GURL kUrl(base::StrCat({chrome::kChromeUIExtensionsURL,
+                                  chrome::kExtensionConfigureCommandsSubPage}));
+    content::OpenURLParams params(
+        kUrl, content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false);
+    web_contents_->OpenURL(params, {});
+  }
 
-void ShowUiOnToolbarMenu(scoped_refptr<const extensions::Extension> extension,
-                         Browser* browser,
-                         const SkBitmap& icon) {
-  ExtensionInstalledBubbleView::Show(
-      browser, std::make_unique<ExtensionInstalledBubbleModel>(
-                   browser->profile(), extension.get(), icon));
+  dialog_model()->host()->Close();
 }
 
 void ExtensionInstallUIDesktop::ShowBubble(
     scoped_refptr<const extensions::Extension> extension,
     Browser* browser,
+    Profile* profile,
     const SkBitmap& icon) {
+  content::WebContents* web_contents =
+      browser->tab_strip_model()->GetActiveWebContents();
   ExtensionInstalledWaiter::WaitForInstall(
       extension, browser,
-      base::BindOnce(&ShowUiOnToolbarMenu, extension, browser, icon));
+      base::BindOnce(
+          [](Profile* profile, scoped_refptr<const extensions::Extension> ext,
+             content::WebContents* contents, const SkBitmap& image) {
+            ShowExtensionPostInstallDialog(
+                profile, contents,
+                std::make_unique<ExtensionInstalledBubbleModel>(
+                    profile, ext.get(), image));
+          },
+          profile, extension, web_contents, icon));
 }

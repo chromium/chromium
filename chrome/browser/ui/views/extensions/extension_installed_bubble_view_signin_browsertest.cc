@@ -61,7 +61,8 @@ class ExtensionInstalledBubbleViewsSignInBrowserTest
     views::Widget::Widgets old_widgets =
         views::test::WidgetTest::GetAllWidgets();
 
-    ExtensionInstallUIDesktop::ShowBubble(extension, browser(), SkBitmap());
+    ExtensionInstallUIDesktop::ShowBubble(extension, browser(), profile(),
+                                          SkBitmap());
 
     views::Widget::Widgets new_widgets =
         views::test::WidgetTest::GetAllWidgets();

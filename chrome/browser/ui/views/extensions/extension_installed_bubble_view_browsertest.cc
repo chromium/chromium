@@ -65,7 +65,8 @@ void ExtensionInstalledBubbleViewsBrowserTest::ShowUi(const std::string& name) {
       MakeExtensionOfType(name);
 
   views::Widget::Widgets old_widgets = views::test::WidgetTest::GetAllWidgets();
-  ExtensionInstallUIDesktop::ShowBubble(extension, browser(), SkBitmap());
+  ExtensionInstallUIDesktop::ShowBubble(extension, browser(), profile(),
+                                        SkBitmap());
   views::Widget::Widgets new_widgets = views::test::WidgetTest::GetAllWidgets();
   views::Widget::Widgets added_widgets;
   std::set_difference(new_widgets.begin(), new_widgets.end(),

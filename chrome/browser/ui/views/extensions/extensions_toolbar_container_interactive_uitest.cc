@@ -1513,7 +1513,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionsToolbarContainerFeatureRolloutInteractiveTest,
       // Trigger post-install dialog. We do manually since loading an
       // extension in the test doesn't go through the full install flow.
       Do([&]() {
-        ExtensionInstallUIDesktop::ShowBubble(extension, browser(), SkBitmap());
+        ExtensionInstallUIDesktop::ShowBubble(extension, browser(),
+                                              browser()->profile(), SkBitmap());
       }),
       WaitForShow(kToolbarActionViewElementId));
 }

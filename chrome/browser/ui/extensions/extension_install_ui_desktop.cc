@@ -110,7 +110,7 @@ void ExtensionInstallUIDesktop::OnInstallSuccess(
   CHECK(browser);
 
   if (!extension->is_app()) {
-    ShowBubble(extension, browser, *icon);
+    ShowBubble(extension, browser, profile(), *icon);
     return;
   }
 

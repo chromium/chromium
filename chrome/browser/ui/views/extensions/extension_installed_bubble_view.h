@@ -8,15 +8,16 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/extensions/extension_installed_bubble_model.h"
 #include "chrome/browser/ui/extensions/extension_installed_waiter.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "extensions/common/extension.h"
 #include "ui/base/models/dialog_model.h"
-
-DECLARE_ELEMENT_IDENTIFIER_VALUE(kExtensionBubbleFrameViewId);
 
 // Provides feedback to the user upon successful installation of an
 // extension. Depending on the type of extension, the Bubble will
@@ -30,7 +31,7 @@ DECLARE_ELEMENT_IDENTIFIER_VALUE(kExtensionBubbleFrameViewId);
 class ExtensionInstalledBubbleView : public ui::DialogModelDelegate {
  public:
   ExtensionInstalledBubbleView(
-      Browser* browser,
+      content::WebContents* web_contents,
       std::unique_ptr<ExtensionInstalledBubbleModel> model);
   ExtensionInstalledBubbleView(const ExtensionInstalledBubbleView&) = delete;
   ExtensionInstalledBubbleView& operator=(const ExtensionInstalledBubbleView&) =
@@ -42,10 +43,11 @@ class ExtensionInstalledBubbleView : public ui::DialogModelDelegate {
 
   const ExtensionInstalledBubbleModel* model() const { return model_.get(); }
 
- private:
   void LinkClicked();
 
-  const raw_ptr<Browser> browser_;
+ private:
+  base::WeakPtr<content::WebContents> web_contents_;
+
   const std::unique_ptr<ExtensionInstalledBubbleModel> model_;
 };
 
