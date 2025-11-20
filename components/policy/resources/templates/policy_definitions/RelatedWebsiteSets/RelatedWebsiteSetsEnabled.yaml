@@ -1,5 +1,6 @@
 caption: Enable Related Website Sets
 default: true
+deprecated: true
 desc: |-
   This policy allows to control the Related Website Sets feature enablement.
 
@@ -8,6 +9,8 @@ desc: |-
   When this policy is unset or set to True, the Related Website Sets feature is enabled.
 
   When this policy is set to False, the Related Website Sets feature is disabled.
+
+  This policy is deprecated as of <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 144 with the deprecation of Related Website Sets.
 example_value: false
 features:
   dynamic_refresh: true
