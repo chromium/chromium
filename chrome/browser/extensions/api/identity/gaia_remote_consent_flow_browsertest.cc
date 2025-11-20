@@ -32,10 +32,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/ash/components/network/portal_detector/mock_network_portal_detector.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 namespace extensions {
 
 namespace {
@@ -73,14 +69,6 @@ class GaiaRemoteConsentFlowParamBrowserTest : public InProcessBrowserTest {
  public:
   GaiaRemoteConsentFlowParamBrowserTest()
       : fake_gaia_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-#if BUILDFLAG(IS_CHROMEOS)
-    std::unique_ptr<ash::MockNetworkPortalDetector>
-        mock_network_portal_detector_ =
-            std::make_unique<ash::MockNetworkPortalDetector>();
-
-    ash::network_portal_detector::InitializeForTesting(
-        mock_network_portal_detector_.release());
-#endif  // BUILDFLAG(IS_CHROMEOS)
     fake_gaia_test_server()->AddDefaultHandlers(GetChromeTestDataDir());
     fake_gaia_test_server_.RegisterRequestHandler(base::BindRepeating(
         &FakeGaia::HandleRequest, base::Unretained(&fake_gaia_)));

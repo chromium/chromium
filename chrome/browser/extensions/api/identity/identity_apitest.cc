@@ -122,7 +122,6 @@
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ash/net/network_portal_detector_test_impl.h"
 #include "chrome/browser/ash/test/kiosk_app_logged_in_browser_test_mixin.h"
 #include "chrome/browser/ash/test/public_account_logged_in_browser_test_mixin.h"
 #include "chrome/browser/ash/test/web_kiosk_app_logged_in_browser_test_mixin.h"
@@ -166,18 +165,6 @@ const char kGetAuthTokenResultAfterConsentApprovedHistogramName[] =
 const char kLaunchWebAuthFlowResultHistogramName[] =
     "Signin.Extensions.LaunchWebAuthFlowResult";
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
-#if BUILDFLAG(IS_CHROMEOS)
-void InitNetwork() {
-  const ash::NetworkState* default_network =
-      ash::NetworkHandler::Get()->network_state_handler()->DefaultNetwork();
-
-  auto* portal_detector = new ash::NetworkPortalDetectorTestImpl();
-  portal_detector->SetDefaultNetworkForTesting(default_network->guid());
-
-  ash::network_portal_detector::InitializeForTesting(portal_detector);
-}
-#endif
 
 // Asynchronous function runner allows tests to manipulate the browser window
 // after the call happens.
@@ -618,11 +605,6 @@ class IdentityTestWithSignin : public AsyncExtensionBrowserTest {
 
   void SetUpOnMainThread() override {
     AsyncExtensionBrowserTest::SetUpOnMainThread();
-
-#if BUILDFLAG(IS_CHROMEOS)
-    // Fake the network online state so that Gaia requests can come through.
-    InitNetwork();
-#endif
 
     identity_test_env_profile_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
