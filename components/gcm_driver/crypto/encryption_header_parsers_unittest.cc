@@ -65,23 +65,24 @@ TEST(EncryptionHeaderParsersTest, ParseValidMultiValueEncryptionHeaders) {
 
   struct ExpectedResults {
     const char* const header;
-    struct {
+    struct ParsedValues {
       const char* const keyid;
       const char* const salt;
       uint64_t rs;
-    } parsed_values[kNumberOfValues];
+    };
+    std::array<ParsedValues, kNumberOfValues> parsed_values;
   };
   auto expected_results = std::to_array<ExpectedResults>({
       {"keyid=foo;salt=c2l4dGVlbmNvb2xieXRlcw;rs=1024,keyid=foo;salt=c2l4dGVlbm"
        "Nvb2xieXRlcw;rs=1024",
-       {{"foo", "sixteencoolbytes", 1024}, {"foo", "sixteencoolbytes", 1024}}},
+       {{{"foo", "sixteencoolbytes", 1024}, {"foo", "sixteencoolbytes", 1024}}}},
       {"keyid=foo,salt=c2l4dGVlbmNvb2xieXRlcw;rs=1024",
-       {{"foo", "", kDefaultRecordSize}, {"", "sixteencoolbytes", 1024}}},
+       {{{"foo", "", kDefaultRecordSize}, {"", "sixteencoolbytes", 1024}}}},
       {"keyid=foo,keyid=bar;salt=c2l4dGVlbmNvb2xieXRlcw;rs=1024",
-       {{"foo", "", kDefaultRecordSize}, {"bar", "sixteencoolbytes", 1024}}},
+       {{{"foo", "", kDefaultRecordSize}, {"bar", "sixteencoolbytes", 1024}}}},
       {"keyid=\"foo,keyid=bar\",salt=c2l4dGVlbmNvb2xieXRlcw",
-       {{"foo,keyid=bar", "", kDefaultRecordSize},
-        {"", "sixteencoolbytes", kDefaultRecordSize}}},
+       {{{"foo,keyid=bar", "", kDefaultRecordSize},
+         {"", "sixteencoolbytes", kDefaultRecordSize}}}},
   });
 
   for (size_t i = 0; i < std::size(expected_results); i++) {
@@ -93,12 +94,9 @@ TEST(EncryptionHeaderParsersTest, ParseValidMultiValueEncryptionHeaders) {
     for (size_t j = 0; j < kNumberOfValues; ++j) {
       ASSERT_TRUE(iterator.GetNext());
 
-      UNSAFE_TODO(EXPECT_EQ(expected_results[i].parsed_values[j].keyid,
-                            iterator.keyid()));
-      UNSAFE_TODO(EXPECT_EQ(expected_results[i].parsed_values[j].salt,
-                            iterator.salt()));
-      UNSAFE_TODO(
-          EXPECT_EQ(expected_results[i].parsed_values[j].rs, iterator.rs()));
+      EXPECT_EQ(expected_results[i].parsed_values[j].keyid, iterator.keyid());
+      EXPECT_EQ(expected_results[i].parsed_values[j].salt, iterator.salt());
+      EXPECT_EQ(expected_results[i].parsed_values[j].rs, iterator.rs());
     }
 
     EXPECT_FALSE(iterator.GetNext());
@@ -215,23 +213,24 @@ TEST(EncryptionHeaderParsersTest, ParseValidMultiValueCryptoKeyHeaders) {
 
   struct ExpectedResults {
     const char* const header;
-    struct {
+    struct ParsedValues {
       const char* const keyid;
       const char* const aesgcm128;
       const char* const dh;
-    } parsed_values[kNumberOfValues];
+    };
+    std::array<ParsedValues, kNumberOfValues> parsed_values;
   };
   auto expected_results = std::to_array<ExpectedResults>({
       {"keyid=foo;aesgcm128=c2l4dGVlbmNvb2xieXRlcw;dh=dHdlbHZlY29vbGJ5dGVz,"
        "keyid=bar;aesgcm128=dHdlbHZlY29vbGJ5dGVz;dh=c2l4dGVlbmNvb2xieXRlcw",
-       {{"foo", "sixteencoolbytes", "twelvecoolbytes"},
-        {"bar", "twelvecoolbytes", "sixteencoolbytes"}}},
+       {{{"foo", "sixteencoolbytes", "twelvecoolbytes"},
+         {"bar", "twelvecoolbytes", "sixteencoolbytes"}}}},
       {"keyid=foo,aesgcm128=c2l4dGVlbmNvb2xieXRlcw",
-       {{"foo", "", ""}, {"", "sixteencoolbytes", ""}}},
+       {{{"foo", "", ""}, {"", "sixteencoolbytes", ""}}}},
       {"keyid=foo,keyid=bar;dh=dHdlbHZlY29vbGJ5dGVz",
-       {{"foo", "", ""}, {"bar", "", "twelvecoolbytes"}}},
+       {{{"foo", "", ""}, {"bar", "", "twelvecoolbytes"}}}},
       {"keyid=\"foo,keyid=bar\",aesgcm128=c2l4dGVlbmNvb2xieXRlcw",
-       {{"foo,keyid=bar", "", ""}, {"", "sixteencoolbytes", ""}}},
+       {{{"foo,keyid=bar", "", ""}, {"", "sixteencoolbytes", ""}}}},
   });
 
   for (size_t i = 0; i < std::size(expected_results); i++) {
@@ -243,12 +242,10 @@ TEST(EncryptionHeaderParsersTest, ParseValidMultiValueCryptoKeyHeaders) {
     for (size_t j = 0; j < kNumberOfValues; ++j) {
       ASSERT_TRUE(iterator.GetNext());
 
-      UNSAFE_TODO(EXPECT_EQ(expected_results[i].parsed_values[j].keyid,
-                            iterator.keyid()));
-      UNSAFE_TODO(EXPECT_EQ(expected_results[i].parsed_values[j].aesgcm128,
-                            iterator.aesgcm128()));
-      UNSAFE_TODO(
-          EXPECT_EQ(expected_results[i].parsed_values[j].dh, iterator.dh()));
+      EXPECT_EQ(expected_results[i].parsed_values[j].keyid, iterator.keyid());
+      EXPECT_EQ(expected_results[i].parsed_values[j].aesgcm128,
+                iterator.aesgcm128());
+      EXPECT_EQ(expected_results[i].parsed_values[j].dh, iterator.dh());
     }
 
     EXPECT_FALSE(iterator.GetNext());
