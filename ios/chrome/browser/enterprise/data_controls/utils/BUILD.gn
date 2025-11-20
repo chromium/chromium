@@ -40,6 +40,7 @@ source_set("unit_tests") {
     "//components/enterprise/data_controls/core/browser",
     "//components/keyed_service/core",
     "//components/strings",
+    "//ios/chrome/browser/enterprise/common/test",
     "//ios/chrome/browser/enterprise/connectors/reporting",
     "//ios/chrome/browser/enterprise/data_controls/model:ios_rules_service",
     "//ios/chrome/browser/shared/model/profile",

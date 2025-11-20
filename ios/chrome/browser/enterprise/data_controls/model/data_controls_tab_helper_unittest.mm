@@ -19,6 +19,7 @@
 #import "components/signin/public/identity_manager/identity_test_utils.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
+#import "ios/chrome/browser/enterprise/common/test/mock_reporting_event_router.h"
 #import "ios/chrome/browser/enterprise/connectors/reporting/ios_realtime_reporting_client.h"
 #import "ios/chrome/browser/enterprise/connectors/reporting/ios_realtime_reporting_client_factory.h"
 #import "ios/chrome/browser/enterprise/connectors/reporting/ios_reporting_event_router_factory.h"
@@ -56,39 +57,6 @@ const char kWarnUrl[] = "https://warn.com";
 const char kOtherUrl[] = "https://other.com";
 inline constexpr std::u16string_view kOrganizationDomain = u"google.com";
 
-class MockReportingEventRouter
-    : public enterprise_connectors::ReportingEventRouter {
- public:
-  explicit MockReportingEventRouter(
-      enterprise_connectors::IOSRealtimeReportingClient* reporting_client)
-      : ReportingEventRouter(reporting_client) {}
-  ~MockReportingEventRouter() override = default;
-
-  MOCK_METHOD(void,
-              ReportPaste,
-              (const data_controls::ClipboardContext&, const Verdict&),
-              (override));
-  MOCK_METHOD(void,
-              ReportPasteWarningBypassed,
-              (const data_controls::ClipboardContext&, const Verdict&),
-              (override));
-  MOCK_METHOD(void,
-              ReportCopy,
-              (const data_controls::ClipboardContext&, const Verdict&),
-              (override));
-  MOCK_METHOD(void,
-              ReportCopyWarningBypassed,
-              (const data_controls::ClipboardContext&, const Verdict&),
-              (override));
-};
-
-std::unique_ptr<KeyedService> BuildMockReportingEventRouter(
-    ProfileIOS* profile) {
-  return std::make_unique<MockReportingEventRouter>(
-      enterprise_connectors::IOSRealtimeReportingClientFactory::GetForProfile(
-          profile));
-}
-
 }  // namespace
 
 // Unit tests for DataControlsTabHelper.
@@ -103,7 +71,8 @@ class DataControlsTabHelperTest : public PlatformTest {
                                 BuildIdentityManagerForTests));
     builder.AddTestingFactory(
         enterprise_connectors::IOSReportingEventRouterFactory::GetInstance(),
-        base::BindOnce(&BuildMockReportingEventRouter));
+        base::BindOnce(
+            &MockReportingEventRouter::BuildMockReportingEventRouter));
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
     reporting_router_ = static_cast<MockReportingEventRouter*>(
         enterprise_connectors::IOSReportingEventRouterFactory::GetForProfile(

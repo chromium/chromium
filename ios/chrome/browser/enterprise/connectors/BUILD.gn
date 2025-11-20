@@ -107,6 +107,7 @@ source_set("unit_tests") {
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
+    "//ios/chrome/browser/enterprise/common/test",
     "//ios/chrome/browser/enterprise/connectors/reporting",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/shared/model/application_context",

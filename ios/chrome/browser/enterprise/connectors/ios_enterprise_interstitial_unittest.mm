@@ -12,10 +12,10 @@
 #import "components/enterprise/connectors/core/features.h"
 #import "components/enterprise/connectors/core/reporting_event_router.h"
 #import "components/keyed_service/core/keyed_service.h"
-#import "components/safe_browsing/core/common/proto/csd.pb.h"
 #import "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
 #import "components/security_interstitials/core/metrics_helper.h"
+#import "ios/chrome/browser/enterprise/common/test/mock_reporting_event_router.h"
 #import "ios/chrome/browser/enterprise/connectors/reporting/ios_realtime_reporting_client.h"
 #import "ios/chrome/browser/enterprise/connectors/reporting/ios_realtime_reporting_client_factory.h"
 #import "ios/chrome/browser/enterprise/connectors/reporting/ios_reporting_event_router_factory.h"
@@ -53,37 +53,14 @@ constexpr char kWarnInteractionHistogram[] =
 constexpr char kTestUrl[] = "http://example.com";
 constexpr char kTestMessage[] = "Test message";
 
-class MockReportingEventRouter : public ReportingEventRouter {
-  using ReferrerChain =
-      google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>;
-
- public:
-  explicit MockReportingEventRouter(
-      IOSRealtimeReportingClient* reporting_client)
-      : ReportingEventRouter(reporting_client) {}
-
-  MOCK_METHOD(void,
-              OnUrlFilteringInterstitial,
-              (const GURL& url,
-               const std::string& threat_type,
-               const safe_browsing::RTLookupResponse& response,
-               const ReferrerChain& referrer_chain),
-              (override));
-};
-
-std::unique_ptr<KeyedService> BuildTestingReportingEventRouter(
-    ProfileIOS* profile) {
-  return std::make_unique<MockReportingEventRouter>(
-      IOSRealtimeReportingClientFactory::GetForProfile(profile));
-}
-
 class IOSEnterpriseInterstitialTest : public PlatformTest {
  public:
   IOSEnterpriseInterstitialTest() {
     TestProfileIOS::Builder builder = TestProfileIOS::Builder();
     builder.AddTestingFactory(
         IOSReportingEventRouterFactory::GetInstance(),
-        base::BindRepeating(&BuildTestingReportingEventRouter));
+        base::BindOnce(
+            &MockReportingEventRouter::BuildMockReportingEventRouter));
 
     profile_ = std::move(builder).Build();
 

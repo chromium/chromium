@@ -7,6 +7,7 @@
 #import "components/enterprise/connectors/core/reporting_event_router.h"
 #import "components/enterprise/data_controls/core/browser/verdict.h"
 #import "components/keyed_service/core/keyed_service.h"
+#import "ios/chrome/browser/enterprise/common/test/mock_reporting_event_router.h"
 #import "ios/chrome/browser/enterprise/connectors/reporting/ios_realtime_reporting_client.h"
 #import "ios/chrome/browser/enterprise/connectors/reporting/ios_realtime_reporting_client_factory.h"
 #import "ios/chrome/browser/enterprise/connectors/reporting/ios_reporting_event_router_factory.h"
@@ -54,39 +55,6 @@ std::unique_ptr<KeyedService> BuildMockIOSRulesService(ProfileIOS* profile) {
   return std::make_unique<MockIOSRulesService>(profile);
 }
 
-class MockReportingEventRouter
-    : public enterprise_connectors::ReportingEventRouter {
- public:
-  explicit MockReportingEventRouter(
-      enterprise_connectors::IOSRealtimeReportingClient* reporting_client)
-      : ReportingEventRouter(reporting_client) {}
-  ~MockReportingEventRouter() override = default;
-
-  MOCK_METHOD(void,
-              ReportPaste,
-              (const data_controls::ClipboardContext&, const Verdict&),
-              (override));
-  MOCK_METHOD(void,
-              ReportPasteWarningBypassed,
-              (const data_controls::ClipboardContext&, const Verdict&),
-              (override));
-  MOCK_METHOD(void,
-              ReportCopy,
-              (const data_controls::ClipboardContext&, const Verdict&),
-              (override));
-  MOCK_METHOD(void,
-              ReportCopyWarningBypassed,
-              (const data_controls::ClipboardContext&, const Verdict&),
-              (override));
-};
-
-std::unique_ptr<KeyedService> BuildMockReportingEventRouter(
-    ProfileIOS* profile) {
-  return std::make_unique<MockReportingEventRouter>(
-      enterprise_connectors::IOSRealtimeReportingClientFactory::GetForProfile(
-          profile));
-}
-
 }  // namespace
 
 class ClipboardUtilsTest : public PlatformTest {
@@ -97,7 +65,8 @@ class ClipboardUtilsTest : public PlatformTest {
                               base::BindOnce(&BuildMockIOSRulesService));
     builder.AddTestingFactory(
         enterprise_connectors::IOSReportingEventRouterFactory::GetInstance(),
-        base::BindOnce(&BuildMockReportingEventRouter));
+        base::BindOnce(
+            &MockReportingEventRouter::BuildMockReportingEventRouter));
     profile_ = std::move(builder).Build();
     rules_service_ = static_cast<MockIOSRulesService*>(
         IOSRulesServiceFactory::GetForProfile(profile_.get()));
@@ -110,7 +79,8 @@ class ClipboardUtilsTest : public PlatformTest {
                                base::BindOnce(&BuildMockIOSRulesService));
     builder2.AddTestingFactory(
         enterprise_connectors::IOSReportingEventRouterFactory::GetInstance(),
-        base::BindRepeating(&BuildMockReportingEventRouter));
+        base::BindOnce(
+            &MockReportingEventRouter::BuildMockReportingEventRouter));
     profile2_ = std::move(builder2).Build();
     rules_service2_ = static_cast<MockIOSRulesService*>(
         IOSRulesServiceFactory::GetForProfile(profile2_.get()));

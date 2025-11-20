@@ -95,6 +95,7 @@ source_set("unit_tests") {
     "//components/signin/public/identity_manager:test_support",
     "//components/strings",
     "//components/sync_preferences:test_support",
+    "//ios/chrome/browser/enterprise/common/test",
     "//ios/chrome/browser/enterprise/connectors/reporting",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/commands",
