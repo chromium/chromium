@@ -26,6 +26,7 @@ import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.RippleBackgroundHelper;
 
 /** Binds the Navigation Attachments properties to the view and component. */
@@ -147,52 +148,53 @@ class NavigationAttachmentsViewBinder {
 
         views.addButton.setVisibility(showFuseboxToolbar ? View.VISIBLE : View.GONE);
 
+        ButtonCompat typeButton = views.requestType;
         if (showFuseboxToolbar && (isCustomModeUsed || showDedicatedModeButton)) {
-            views.requestType.setVisibility(View.VISIBLE);
+            typeButton.setVisibility(View.VISIBLE);
 
             if (isAiModeUsed) {
                 String hint = res.getString(R.string.ai_mode_entrypoint_label);
-                views.requestType.setText(hint);
-                views.requestType.setContentDescription(
+                typeButton.setText(hint);
+                typeButton.setContentDescription(
                         res.getString(R.string.accessibility_omnibox_reset_mode, hint));
             } else if (isImageGenerationUsed) {
                 String hint = res.getString(R.string.omnibox_create_image);
-                views.requestType.setText(hint);
-                views.requestType.setContentDescription(
+                typeButton.setText(hint);
+                typeButton.setContentDescription(
                         res.getString(R.string.accessibility_omnibox_reset_mode, hint));
             } else if (OmniboxFeatures.sShowTryAiModeHintInDedicatedModeButton.getValue()) {
                 String hint = res.getString(R.string.ai_mode_entrypoint_hint);
-                views.requestType.setText(hint);
-                views.requestType.setContentDescription(hint);
+                typeButton.setText(hint);
+                typeButton.setContentDescription(hint);
             } else /* dedicated button with aimode off, no hint text changes. */ {
                 String hint = res.getString(R.string.accessibility_omnibox_enable_ai_mode);
-                views.requestType.setText(R.string.ai_mode_entrypoint_label);
-                views.requestType.setContentDescription(hint);
+                typeButton.setText(R.string.ai_mode_entrypoint_label);
+                typeButton.setContentDescription(hint);
             }
 
-            views.requestType.setButtonColor(
+            typeButton.setButtonColor(
                     isCustomModeUsed
                             ? context.getColorStateList(R.color.gm3_baseline_surface_container)
                             : context.getColorStateList(android.R.color.transparent));
 
-            views.requestType.setBorderStyle(
+            typeButton.setBorderStyle(
                     isCustomModeUsed
                             ? RippleBackgroundHelper.BorderType.SOLID
                             : RippleBackgroundHelper.BorderType.DASHED);
 
-            views.requestType.setCompoundDrawablesRelativeWithIntrinsicBounds(
+            typeButton.setCompoundDrawablesRelativeWithIntrinsicBounds(
                     isImageGenerationUsed
                             ? context.getDrawable(R.drawable.create_image_24dp)
                             : context.getDrawable(R.drawable.search_spark_black_24dp),
                     null,
                     isCustomModeUsed ? context.getDrawable(R.drawable.btn_close) : null,
                     null);
-            views.requestType.setCompoundDrawableTintList(
+            typeButton.setCompoundDrawableTintList(
                     isImageGenerationUsed
                             ? null
                             : ColorStateList.valueOf(SemanticColorUtils.getColorPrimary(context)));
         } else {
-            views.requestType.setVisibility(View.GONE);
+            typeButton.setVisibility(View.GONE);
         }
 
         boolean isAiModeButtonVisible = isRequestTypeChangeable && !showDedicatedModeButton;
