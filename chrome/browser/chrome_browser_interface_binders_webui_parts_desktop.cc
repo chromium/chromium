@@ -579,7 +579,8 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
               render_frame_host->GetProcess()->GetBrowserContext()));
   if (contextual_tasks_context_service) {
     RegisterWebUIControllerInterfaceBinder<
-        contextual_tasks::mojom::ContextualTasksInternalsPageHandlerFactory,
+        contextual_tasks_internals::mojom::
+            ContextualTasksInternalsPageHandlerFactory,
         ContextualTasksUI>(map);
   }
 }

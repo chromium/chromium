@@ -19,9 +19,10 @@ ContextualTasksInternalsPageHandler::ContextualTasksInternalsPageHandler(
     contextual_tasks::ContextualTasksContextService* context_service,
     OptimizationGuideKeyedService* optimization_guide_keyed_service,
     mojo::PendingReceiver<
-        contextual_tasks::mojom::ContextualTasksInternalsPageHandler> receiver,
-    mojo::PendingRemote<contextual_tasks::mojom::ContextualTasksInternalsPage>
-        page)
+        contextual_tasks_internals::mojom::ContextualTasksInternalsPageHandler>
+        receiver,
+    mojo::PendingRemote<
+        contextual_tasks_internals::mojom::ContextualTasksInternalsPage> page)
     : context_service_(context_service),
       optimization_guide_logger_(
           optimization_guide_keyed_service->GetOptimizationGuideLogger()),
@@ -39,11 +40,11 @@ ContextualTasksInternalsPageHandler::~ContextualTasksInternalsPageHandler() {
 }
 
 void ContextualTasksInternalsPageHandler::GetRelevantContext(
-    contextual_tasks::mojom::GetRelevantContextRequestPtr request,
+    contextual_tasks_internals::mojom::GetRelevantContextRequestPtr request,
     GetRelevantContextCallback callback) {
   if (!context_service_) {
     std::move(callback).Run(
-        contextual_tasks::mojom::GetRelevantContextResponse::New());
+        contextual_tasks_internals::mojom::GetRelevantContextResponse::New());
     return;
   }
 
@@ -57,10 +58,10 @@ void ContextualTasksInternalsPageHandler::GetRelevantContext(
       base::BindOnce(
           [](GetRelevantContextCallback callback,
              std::vector<content::WebContents*> relevant_tabs) {
-            auto result =
-                contextual_tasks::mojom::GetRelevantContextResponse::New();
+            auto result = contextual_tasks_internals::mojom::
+                GetRelevantContextResponse::New();
             for (content::WebContents* web_contents : relevant_tabs) {
-              auto tab = contextual_tasks::mojom::Tab::New();
+              auto tab = contextual_tasks_internals::mojom::Tab::New();
               tab->title = base::UTF16ToUTF8(web_contents->GetTitle());
               tab->url = web_contents->GetLastCommittedURL();
               result->relevant_tabs.push_back(std::move(tab));

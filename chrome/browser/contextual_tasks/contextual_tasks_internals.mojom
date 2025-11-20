@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module contextual_tasks.mojom;
+module contextual_tasks_internals.mojom;
 
 import "chrome/browser/contextual_tasks/contextual_tasks_types.mojom";
 import "mojo/public/mojom/base/time.mojom";
@@ -12,7 +12,7 @@ struct GetRelevantContextRequest {
   // The query to get relevant context for.
   string query;
   // The mode to use for tab selection.
-  TabSelectionMode tab_selection_mode;
+  contextual_tasks.mojom.TabSelectionMode tab_selection_mode;
   // The minimum model score to use for tab selection. Must be a value between 0
   // and 1, inclusive.
   float min_model_score;

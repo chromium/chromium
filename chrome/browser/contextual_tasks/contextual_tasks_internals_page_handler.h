@@ -18,16 +18,17 @@ class ContextualTasksContextService;
 }  // namespace contextual_tasks
 
 class ContextualTasksInternalsPageHandler
-    : public contextual_tasks::mojom::ContextualTasksInternalsPageHandler,
+    : public contextual_tasks_internals::mojom::
+          ContextualTasksInternalsPageHandler,
       public OptimizationGuideLogger::Observer {
  public:
   ContextualTasksInternalsPageHandler(
       contextual_tasks::ContextualTasksContextService* context_service,
       OptimizationGuideKeyedService* optimization_guide_keyed_service,
-      mojo::PendingReceiver<
-          contextual_tasks::mojom::ContextualTasksInternalsPageHandler>
-          receiver,
-      mojo::PendingRemote<contextual_tasks::mojom::ContextualTasksInternalsPage>
+      mojo::PendingReceiver<contextual_tasks_internals::mojom::
+                                ContextualTasksInternalsPageHandler> receiver,
+      mojo::PendingRemote<
+          contextual_tasks_internals::mojom::ContextualTasksInternalsPage>
           page);
   ~ContextualTasksInternalsPageHandler() override;
 
@@ -36,9 +37,9 @@ class ContextualTasksInternalsPageHandler
   ContextualTasksInternalsPageHandler& operator=(
       const ContextualTasksInternalsPageHandler&) = delete;
 
-  // contextual_tasks::mojom::ContextualTasksInternalsPageHandler:
+  // contextual_tasks_internals::mojom::ContextualTasksInternalsPageHandler:
   void GetRelevantContext(
-      contextual_tasks::mojom::GetRelevantContextRequestPtr request,
+      contextual_tasks_internals::mojom::GetRelevantContextRequestPtr request,
       GetRelevantContextCallback callback) override;
 
   // OptimizationGuideLogger::Observer:
@@ -51,9 +52,11 @@ class ContextualTasksInternalsPageHandler
  private:
   raw_ptr<contextual_tasks::ContextualTasksContextService> context_service_;
   raw_ptr<OptimizationGuideLogger> optimization_guide_logger_;
-  mojo::Receiver<contextual_tasks::mojom::ContextualTasksInternalsPageHandler>
+  mojo::Receiver<
+      contextual_tasks_internals::mojom::ContextualTasksInternalsPageHandler>
       receiver_;
-  mojo::Remote<contextual_tasks::mojom::ContextualTasksInternalsPage> page_;
+  mojo::Remote<contextual_tasks_internals::mojom::ContextualTasksInternalsPage>
+      page_;
 };
 
 #endif  // CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_INTERNALS_PAGE_HANDLER_H_

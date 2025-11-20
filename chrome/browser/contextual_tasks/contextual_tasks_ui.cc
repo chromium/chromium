@@ -379,18 +379,18 @@ void ContextualTasksUI::InnerFrameCreationObvserver::InnerWebContentsCreated(
 }
 
 void ContextualTasksUI::BindInterface(
-    mojo::PendingReceiver<
-        contextual_tasks::mojom::ContextualTasksInternalsPageHandlerFactory>
+    mojo::PendingReceiver<contextual_tasks_internals::mojom::
+                              ContextualTasksInternalsPageHandlerFactory>
         receiver) {
   contextual_tasks_internals_page_handler_receiver_.reset();
   contextual_tasks_internals_page_handler_receiver_.Bind(std::move(receiver));
 }
 
 void ContextualTasksUI::CreatePageHandler(
-    mojo::PendingRemote<contextual_tasks::mojom::ContextualTasksInternalsPage>
-        page,
+    mojo::PendingRemote<
+        contextual_tasks_internals::mojom::ContextualTasksInternalsPage> page,
     mojo::PendingReceiver<
-        contextual_tasks::mojom::ContextualTasksInternalsPageHandler>
+        contextual_tasks_internals::mojom::ContextualTasksInternalsPageHandler>
         receiver) {
   Profile* profile = Profile::FromWebUI(web_ui());
   auto* context_service =

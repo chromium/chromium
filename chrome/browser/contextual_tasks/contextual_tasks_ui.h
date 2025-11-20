@@ -61,7 +61,7 @@ class ContextualTasksUI : public TaskInfoDelegate,
                           public TopChromeWebUIController,
                           public contextual_tasks::mojom::PageHandlerFactory,
                           public composebox::mojom::PageHandlerFactory,
-                          public contextual_tasks::mojom::
+                          public contextual_tasks_internals::mojom::
                               ContextualTasksInternalsPageHandlerFactory {
  public:
   // A WebContentsObserver used to observe navigations or URL changes in the
@@ -135,17 +135,17 @@ class ContextualTasksUI : public TaskInfoDelegate,
   // ContextualTasksInternalsPageHandlerFactory mojo interface passing the
   // pending receiver that will be internally bound.
   void BindInterface(
-      mojo::PendingReceiver<
-          contextual_tasks::mojom::ContextualTasksInternalsPageHandlerFactory>
+      mojo::PendingReceiver<contextual_tasks_internals::mojom::
+                                ContextualTasksInternalsPageHandlerFactory>
           pending_receiver);
 
   // contextual_tasks::mojom::ContextualTasksInternalsPageHandlerFactory:
   void CreatePageHandler(
-      mojo::PendingRemote<contextual_tasks::mojom::ContextualTasksInternalsPage>
-          page,
-      mojo::PendingReceiver<
-          contextual_tasks::mojom::ContextualTasksInternalsPageHandler>
-          receiver) override;
+      mojo::PendingRemote<
+          contextual_tasks_internals::mojom::ContextualTasksInternalsPage> page,
+      mojo::PendingReceiver<contextual_tasks_internals::mojom::
+                                ContextualTasksInternalsPageHandler> receiver)
+      override;
 
   static constexpr std::string_view GetWebUIName() { return "ContextualTasks"; }
 
@@ -216,8 +216,8 @@ class ContextualTasksUI : public TaskInfoDelegate,
 
   mojo::Remote<contextual_tasks::mojom::Page> page_;
 
-  mojo::Receiver<
-      contextual_tasks::mojom::ContextualTasksInternalsPageHandlerFactory>
+  mojo::Receiver<contextual_tasks_internals::mojom::
+                     ContextualTasksInternalsPageHandlerFactory>
       contextual_tasks_internals_page_handler_receiver_{this};
 
   std::unique_ptr<ContextualTasksInternalsPageHandler>
