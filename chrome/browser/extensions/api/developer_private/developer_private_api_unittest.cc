@@ -1301,8 +1301,6 @@ TEST_F(DeveloperPrivateApiUnitTest, LoadUnpackedRetryId) {
   }
 }
 
-// TODO(crbug.com/439448250): Enable on desktop android.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests calling "reload" on an unpacked extension with a manifest error,
 // resulting in the reload failing. The reload call should then respond with
 // the load error, which includes a retry GUID to be passed to loadUnpacked().
@@ -1429,6 +1427,11 @@ TEST_F(DeveloperPrivateApiUnitTest, ReloadBadExtensionToLoadUnpackedRetry) {
   }
 }
 
+// On Android, file information cannot be directly accessed from the **drag
+// event**. We must instead use the **drop event** to retrieve the file data.
+// See {@link DeveloperPrivateNotifyDragInstallInProgressFunction} for detailed
+// information.
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(DeveloperPrivateApiUnitTest,
        DeveloperPrivateNotifyDragInstallInProgress) {
   std::unique_ptr<content::WebContents> web_contents(
@@ -1517,7 +1520,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
   api::DeveloperPrivateNotifyDragInstallInProgressFunction::
       SetDropFileForTesting(nullptr);
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif
 
 // Test developerPrivate.requestFileSource.
 TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateRequestFileSource) {
@@ -1746,8 +1749,6 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateDevMode) {
   }
 }
 
-// TODO(crbug.com/439448250): Enable on desktop android.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 TEST_F(DeveloperPrivateApiUnitTest, LoadUnpackedFailsWithoutDevMode) {
   std::unique_ptr<content::WebContents> web_contents(
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
@@ -1791,7 +1792,6 @@ TEST_F(DeveloperPrivateApiUnitTest, LoadUnpackedFailsWithBlocklistingPolicy) {
       function.get(), "[]", profile());
   EXPECT_THAT(error, testing::HasSubstr("policy"));
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 TEST_F(DeveloperPrivateApiUnitTest,
        LoadUnpackedWorksWithBlocklistingPolicyAlongAllowlistingPolicy) {
