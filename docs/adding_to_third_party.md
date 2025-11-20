@@ -400,6 +400,10 @@ If the library will never be shipped as a part of Chrome (e.g. build-time tools,
 testing tools), make sure to set the "Shipped" field to "no" so that the license
 is not included in about:credits page ([more on this below](#credits)).
 
+README.chromium files contain a 'License Android Compatible' field indicating whether
+the package's license is compatible with Android. This is optional if the package is
+not shipped, or uses a standard license.
+
 When a dependency allows a choice of license, OWNERS should choose the least
 restrictive license that meets Chromium's needs and document only the chosen
 license(s) in the README.chromium file.
