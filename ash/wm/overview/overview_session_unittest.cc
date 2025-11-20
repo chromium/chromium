@@ -9389,8 +9389,6 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
   SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kPrimarySnapped,
                     chromeos::kDefaultSnapRatio);
   VerifySplitViewOverviewSession(w1.get());
-
-  // TODO(b/313505530): Determine when to show the widget.
   EXPECT_FALSE(GetOverviewGridForRoot(root_windows[0])->no_windows_widget());
   EXPECT_FALSE(GetOverviewGridForRoot(root_windows[1])->no_windows_widget());
 
@@ -9405,8 +9403,6 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
   ASSERT_EQ(chromeos::WindowStateType::kPrimarySnapped,
             window_state->GetStateType());
   VerifySplitViewOverviewSession(w1.get());
-
-  // TODO(b/313505530): Determine when to show the widget.
   EXPECT_FALSE(GetOverviewGridForRoot(root_windows[0])->no_windows_widget());
   EXPECT_FALSE(GetOverviewGridForRoot(root_windows[1])->no_windows_widget());
 }
@@ -9710,7 +9706,6 @@ TEST_F(OverviewWallpaperTest, NoWindowsWidget) {
   std::unique_ptr<aura::Window> w2(CreateAppWindow(gfx::Rect(0, 0, 200, 200)));
   ToggleOverview();
   ASSERT_TRUE(IsInOverviewSession());
-  // TODO(b/313505530): Determine whether to show the widget.
   auto* grid0 = GetOverviewGridForRoot(root_windows[0]);
   auto* grid1 = GetOverviewGridForRoot(root_windows[1]);
   EXPECT_FALSE(grid0->no_windows_widget());
