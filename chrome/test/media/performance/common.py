@@ -39,7 +39,7 @@ CFT_JSON_URL = "https://googlechromelabs.github.io/chrome-for-testing/known-good
 CHROMEDRIVER_PORT = int(os.environ.get('CHROMEDRIVER_PORT', '49573'))
 SERVER_PORT = int(os.environ.get('SERVER_PORT', '8000'))
 
-RECORDINGS_DIR = os.path.join(os.environ.get('TMPDIR', '/tmp'), 'recordings')
+RECORDINGS_DIR = os.path.join(os.environ.get('ISOLATED_OUTDIR', '/tmp'), 'recordings')
 REMOTE_URL = f'http://127.0.0.1:{CHROMEDRIVER_PORT}'
 
 # This code is used as the default failure value for recordings in the case that
