@@ -17230,23 +17230,6 @@ void RenderFrameHostImpl::LogCannotCommitUrlCrashKeys(
                                    navigation_request->GetStartingSiteInstance()
                                        ->GetSiteInfo()
                                        .GetDebugString());
-
-    // Recompute the target SiteInstance to see if it matches the current
-    // one at commit time.
-    BrowsingContextGroupSwap ignored_bcg_swap_info =
-        BrowsingContextGroupSwap::CreateDefault();
-    scoped_refptr<SiteInstance> dest_instance =
-        navigation_request->frame_tree_node()
-            ->render_manager()
-            ->GetSiteInstanceForNavigationRequest(navigation_request,
-                                                  &ignored_bcg_swap_info);
-    static auto* const does_recomputed_site_instance_match_key =
-        base::debug::AllocateCrashKeyString(
-            "does_recomputed_site_instance_match",
-            base::debug::CrashKeySize::Size32);
-    base::debug::SetCrashKeyString(
-        does_recomputed_site_instance_match_key,
-        base::ToString(dest_instance == GetSiteInstance()));
   }
 }
 
