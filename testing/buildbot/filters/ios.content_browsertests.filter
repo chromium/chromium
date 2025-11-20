@@ -351,41 +351,26 @@
 # TODO(crbug.com/369224662): These tests have been failing since
 # https://crrev.com/c/5831814 and https://crrev.com/c/5840289.
 -All/DumpAccessibilityTreeTest.AccessibilityInputColorWithPopupOpen/blink
--All/DumpAccessibilityTreeTest.AccessibilityInputColorWithPopupOpen/blink
--All/DumpAccessibilityTreeTest.AccessibilityInputDateWithPopupOpen/blink
 -All/DumpAccessibilityTreeTest.AccessibilityInputDateWithPopupOpen/blink
 -All/DumpAccessibilityTreeTest.AccessibilityInputTypes/blink
--All/DumpAccessibilityTreeTest.AccessibilityInputTypes/blink
--All/DumpAccessibilityTreeTest.AccessibilityMultiSelectable/blink
 -All/DumpAccessibilityTreeTest.AccessibilityOptgroupMenulist/blink
--All/DumpAccessibilityTreeTest.AccessibilityOptgroupMenulist/blink
--All/DumpAccessibilityTreeTest.AccessibilitySelectOpen/blink
 -All/DumpAccessibilityTreeTest.AccessibilitySelectOpen/blink
 -All/OnScreenModeDumpAccessibilityTreeTest.ContentWith3ViewPortScrollsForOnScreenMode/blink
 
 # TODO(crbug.com/368335261): These tests have been failing since
 # https://crrev.com/c/5464569.
 -SensorBackForwardCacheBrowserTest.AccelerometerPausedWhileCached
--SensorBackForwardCacheBrowserTest.AccelerometerPausedWhileCached
--SensorBackForwardCacheBrowserTest.AmbientLightPausedWhileCached
 -SensorBackForwardCacheBrowserTest.AmbientLightPausedWhileCached
 -SensorBackForwardCacheBrowserTest.GravityPausedWhileCached
--SensorBackForwardCacheBrowserTest.GravityPausedWhileCached
 -SensorBackForwardCacheBrowserTest.GyroscopePausedWhileCached
--SensorBackForwardCacheBrowserTest.GyroscopePausedWhileCached
--SensorBackForwardCacheBrowserTest.LinearAccelerationPausedWhileCached
 -SensorBackForwardCacheBrowserTest.LinearAccelerationPausedWhileCached
 
 # TODO(crbug.com/370751355): These tests have been failing since
 # https://crrev.com/c/5642354.
 -All/SitePerProcessWithMainFrameThresholdLocalhostTest.AllowReuseLocalHost/1
 -All/SitePerProcessWithMainFrameThresholdTest.ReuseProcessUpToThreshold/0
--All/SitePerProcessWithMainFrameThresholdTest.ReuseProcessUpToThreshold/0
--All/SitePerProcessWithMainFrameThresholdTest.ReuseProcessUpToThreshold/1
 -All/SitePerProcessWithMainFrameThresholdTest.ReuseProcessUpToThreshold/1
 -All/SitePerProcessWithMainFrameThresholdWithTotalLimitTest.ExcessiveAllocation/0
--All/SitePerProcessWithMainFrameThresholdWithTotalLimitTest.ExcessiveAllocation/0
--All/SitePerProcessWithMainFrameThresholdWithTotalLimitTest.ExcessiveAllocation/1
 -All/SitePerProcessWithMainFrameThresholdWithTotalLimitTest.ExcessiveAllocation/1
 
 # TODO(crbug.com/373461927): This test has been failing since
@@ -400,8 +385,6 @@
 # TODO(crbug.com/381282539): This test has been failing since
 # https://crrev.com/c/6013928.
 -ContentBrowserTest.BrowserCrashCallStack
--ContentBrowserTest.BrowserCrashCallStack
--ContentBrowserTest.MANUAL_BrowserCrash
 -ContentBrowserTest.MANUAL_BrowserCrash
 
 # TODO(crbug.com/382303507): This test has been failing since
