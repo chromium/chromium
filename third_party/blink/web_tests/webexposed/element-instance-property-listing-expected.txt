@@ -701,7 +701,6 @@ html element geolocation
     property onvalidationstatuschange
     property permissionStatus
     property position
-    property type
     property watch
 html element h1
     property align

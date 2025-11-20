@@ -4304,18 +4304,28 @@ interface HTMLFrameSetElement : HTMLElement
     setter onunhandledrejection
     setter onunload
     setter rows
-interface HTMLGeolocationElement : HTMLPermissionElement
+interface HTMLGeolocationElement : HTMLElement
     attribute @@toStringTag
     getter accuracymode
     getter autolocate
     getter error
+    getter initialPermissionStatus
+    getter invalidReason
+    getter isValid
     getter onlocation
+    getter onpromptaction
+    getter onpromptdismiss
+    getter onvalidationstatuschange
+    getter permissionStatus
     getter position
     getter watch
     method constructor
     setter accuracymode
     setter autolocate
     setter onlocation
+    setter onpromptaction
+    setter onpromptdismiss
+    setter onvalidationstatuschange
     setter watch
 interface HTMLHRElement : HTMLElement
     attribute @@toStringTag
