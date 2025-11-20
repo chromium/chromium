@@ -248,8 +248,6 @@ class AwContents : public FindHelper::Listener,
   void RequestMIDISysexPermission(const GURL& origin,
                                   PermissionCallback callback) override;
   void CancelMIDISysexPermissionRequests(const GURL& origin) override;
-  void RequestStorageAccess(const url::Origin& top_level_origin,
-                            PermissionCallback callback) override;
 
   // Find-in-page API and related methods.
   void FindAllAsync(JNIEnv* env,
@@ -360,14 +358,6 @@ class AwContents : public FindHelper::Listener,
 
   void SetDipScaleInternal(float dip_scale);
 
-  // Callback for RequestStorageAccess to continue once the app_domain_list has
-  // been loaded.
-  void GrantRequestStorageAccessIfOriginIsAppDefined(
-      const url::Origin top_level_origin,
-      base::TimeTicks time_requested,
-      PermissionCallback callback,
-      bool is_app_defined);
-
   JavaObjectWeakGlobalRef java_ref_;
   BrowserViewRenderer browser_view_renderer_;  // Must outlive |web_contents_|.
   std::unique_ptr<content::WebContents> web_contents_;
@@ -382,10 +372,6 @@ class AwContents : public FindHelper::Listener,
   std::unique_ptr<AwPdfExporter> pdf_exporter_;
   std::unique_ptr<PermissionRequestHandler> permission_request_handler_;
   std::unique_ptr<js_injection::JsCommunicationHost> js_communication_host_;
-  scoped_refptr<network::SharedURLLoaderFactory>
-      storage_access_url_loader_factory_;
-  std::unique_ptr<content_relationship_verification::DigitalAssetLinksHandler>
-      asset_link_handler_;
 
   base::circular_deque<std::unique_ptr<content::PrerenderHandle>>
       prerender_handles_;

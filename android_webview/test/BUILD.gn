@@ -843,8 +843,6 @@ test("android_webview_unittests") {
   data = [ "data/" ]
 
   sources = [
-    "../browser/aw_app_defined_websites_unittest.cc",
-    "../browser/aw_asset_domain_list_include_handler_unittest.cc",
     "../browser/aw_browser_context_unittest.cc",
     "../browser/aw_client_hints_controller_delegate_unittest.cc",
     "../browser/aw_content_browser_client_unittest.cc",

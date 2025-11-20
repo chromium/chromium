@@ -9,7 +9,6 @@
 #include <unordered_map>
 #include <utility>
 
-#include "android_webview/browser/aw_app_defined_websites.h"
 #include "android_webview/browser/aw_browser_permission_request_delegate.h"
 #include "android_webview/browser/aw_contents.h"
 #include "android_webview/browser/aw_context_permissions_delegate.h"
@@ -73,7 +72,6 @@ class LastRequestResultCache {
 
     switch (permission) {
       case PermissionType::PROTECTED_MEDIA_IDENTIFIER:
-      case PermissionType::STORAGE_ACCESS_GRANT:
       case PermissionType::TOP_LEVEL_STORAGE_ACCESS:
         break;
       // Other permissions are not cached.
@@ -104,13 +102,12 @@ class LastRequestResultCache {
         blink::PermissionDescriptorToPermissionType(permission_descriptor);
     switch (permission) {
       case PermissionType::PROTECTED_MEDIA_IDENTIFIER:
-      case PermissionType::STORAGE_ACCESS_GRANT:
       case PermissionType::TOP_LEVEL_STORAGE_ACCESS:
         break;
       // Other permissions are not cached.
       default:
         NOTREACHED()
-            << "Results are only cached for PROTECTED_MEDIA_IDENTIFIER AND SAA";
+            << "Results are only cached for PROTECTED_MEDIA_IDENTIFIER";
     }
 
     std::string key = GetCacheKey(requesting_origin, embedding_origin);
@@ -248,18 +245,10 @@ class AwPermissionManager::PendingRequest {
   bool cancelled_;
 };
 
-// Regarding the saa_cache_ size: 99% of WebView site visits fall
-// into this count (based on Android.WebView.SitesVisitedWeekly) in a week so we
-// will cache those for revisits but not going above it to avoid using up too
-// much memory for any heavy case. This will cache in memory so every app reload
-// will require a new request. This will also be duplicated across profiles
-// which may be a useful property in the future so we aren't going to design
-// around that.
 AwPermissionManager::AwPermissionManager(
     const AwContextPermissionsDelegate& context_delegate)
     : context_delegate_(context_delegate),
-      result_cache_(new LastRequestResultCache),
-      saa_cache_(10) {}
+      result_cache_(new LastRequestResultCache) {}
 
 AwPermissionManager::~AwPermissionManager() {
   CancelPermissionRequests();
@@ -383,38 +372,14 @@ void AwPermissionManager::RequestPermissions(
       case PermissionType::POINTER_LOCK:
       case PermissionType::AUTOMATIC_FULLSCREEN:
       case PermissionType::WEB_APP_INSTALLATION:
+      case PermissionType::STORAGE_ACCESS_GRANT:
+      case PermissionType::TOP_LEVEL_STORAGE_ACCESS:
         NOTIMPLEMENTED() << "RequestPermissions is not implemented for "
                          << static_cast<int>(permissions[i]);
         pending_request_raw->SetPermissionResult(
             permissions[i],
             content::PermissionResult(PermissionStatus::DENIED));
         break;
-      case PermissionType::STORAGE_ACCESS_GRANT:
-      case PermissionType::TOP_LEVEL_STORAGE_ACCESS: {
-        const url::Origin& outer_origin =
-            render_frame_host->GetOutermostMainFrame()
-                ->GetLastCommittedOrigin();
-
-        auto cached_value = saa_cache_->Get(outer_origin.Serialize());
-        if (cached_value != saa_cache_->end()) {
-          auto is_granted = cached_value->second ? PermissionStatus::GRANTED
-                                                 : PermissionStatus::DENIED;
-          pending_request_raw->SetPermissionResult(
-              permissions[i], content::PermissionResult(is_granted));
-          break;
-        }
-
-        auto on_saa_response =
-            base::BindOnce(&CacheAutoSAA, weak_ptr_factory_.GetWeakPtr(),
-                           outer_origin)
-                .Then(base::BindOnce(&OnRequestResponse,
-                                     weak_ptr_factory_.GetWeakPtr(), request_id,
-                                     permissions[i]));
-
-        delegate->RequestStorageAccess(outer_origin,
-                                       std::move(on_saa_response));
-        break;
-      }
       case PermissionType::MIDI:
       case PermissionType::SENSORS:
       case PermissionType::WAKE_LOCK_SCREEN:
@@ -462,27 +427,6 @@ void AwPermissionManager::RequestPermissions(
     pending_requests_.Remove(request_id);
     std::move(completed_callback).Run(results);
   }
-}
-
-// static
-bool AwPermissionManager::CacheAutoSAA(
-    const base::WeakPtr<AwPermissionManager>& manager,
-    const url::Origin& origin,
-    bool allowed) {
-  // All delegate functions should be cancelled when the manager runs
-  // destructor. Therefore |manager| should be always valid here.
-  CHECK(manager);
-  DCHECK_CALLED_ON_VALID_SEQUENCE(manager->sequence_checker_);
-
-  DVLOG(1) << "Caching auto granted SAA result " << allowed << " for origin "
-           << origin;
-
-  manager->saa_cache_->Put({
-      origin.Serialize(),
-      allowed,
-  });
-
-  return allowed;
 }
 
 // static
@@ -565,16 +509,6 @@ PermissionStatus AwPermissionManager::GetPermissionStatusInternal(
   const blink::PermissionType permission_type =
       blink::PermissionDescriptorToPermissionType(permission_descriptor);
   switch (permission_type) {
-    // Setting results is called outside the Permissions API only for these
-    // permissions.
-    case blink::PermissionType::STORAGE_ACCESS_GRANT:
-    case blink::PermissionType::TOP_LEVEL_STORAGE_ACCESS: {
-      if (!base::FeatureList::IsEnabled(features::kWebViewAutoSAA)) {
-        return PermissionStatus::DENIED;
-      }
-      return result_cache_->GetResult(permission_descriptor, requesting_origin,
-                                      embedding_origin);
-    }
     case blink::PermissionType::PROTECTED_MEDIA_IDENTIFIER:
       return result_cache_->GetResult(permission_descriptor, requesting_origin,
                                       embedding_origin);
@@ -622,6 +556,8 @@ PermissionStatus AwPermissionManager::GetPermissionStatusInternal(
     case blink::PermissionType::WEB_APP_INSTALLATION:
     case blink::PermissionType::WEB_PRINTING:
     case blink::PermissionType::WINDOW_MANAGEMENT:
+    case blink::PermissionType::STORAGE_ACCESS_GRANT:
+    case blink::PermissionType::TOP_LEVEL_STORAGE_ACCESS:
       return PermissionStatus::DENIED;
   }
   NOTREACHED() << "Unhandled permission type: "

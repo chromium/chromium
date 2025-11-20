@@ -602,10 +602,6 @@ public final class ProductionSupportedFlagList {
                 "Enables a browser intervention which silently ignores input events "
                         + "targeting a cross-origin iframe which has moved within its "
                         + "embedding page recently."),
-        Flag.baseFeature(
-                AwFeatures.WEBVIEW_AUTO_SAA,
-                "Enable auto granting storage access API requests. This will be done "
-                        + "if a relationship is detected between the app and the website."),
         Flag.baseFeature(GwpAsanFeatures.GWP_ASAN_MALLOC, "GWP-ASan for `malloc()`."),
         Flag.baseFeature(GwpAsanFeatures.GWP_ASAN_PARTITION_ALLOC, "GWP-ASan for PartitionAlloc."),
         Flag.baseFeature(
@@ -836,9 +832,6 @@ public final class ProductionSupportedFlagList {
                 "Enables Write-Ahead Logging (WAL) mode for the SQLite database used by the"
                         + " Chromium components that WebView relies on"),
         Flag.baseFeature("ServiceWorkerAvoidMainThreadForInitialization"),
-        Flag.baseFeature(
-                AwFeatures.WEBVIEW_DIGITAL_ASSET_LINKS_LOAD_INCLUDES,
-                "Enable loading include statements when checking digital asset links."),
         Flag.baseFeature("DirectCompositorThreadIpc"),
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_WEBAUTHN,

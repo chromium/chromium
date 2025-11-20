@@ -464,7 +464,6 @@ if (_is_default_toolchain) {
   android_library("browser_java") {
     sources = [
       "java/src/org/chromium/android_webview/AndroidProtocolHandler.java",
-      "java/src/org/chromium/android_webview/AppDefinedDomains.java",
       "java/src/org/chromium/android_webview/AwActionModeCallback.java",
       "java/src/org/chromium/android_webview/AwBackForwardCacheSettings.java",
       "java/src/org/chromium/android_webview/AwBrowserContext.java",
@@ -1211,7 +1210,6 @@ generate_jni("common_jni") {
 generate_jni("browser_jni_headers") {
   sources = [
     "java/src/org/chromium/android_webview/AndroidProtocolHandler.java",
-    "java/src/org/chromium/android_webview/AppDefinedDomains.java",
     "java/src/org/chromium/android_webview/AwBackForwardCacheSettings.java",
     "java/src/org/chromium/android_webview/AwBrowserContext.java",
     "java/src/org/chromium/android_webview/AwBrowserContextStore.java",

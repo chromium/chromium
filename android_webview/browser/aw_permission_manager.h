@@ -10,7 +10,6 @@
 
 #include "android_webview/browser/aw_context_permissions_delegate.h"
 #include "base/containers/id_map.h"
-#include "base/containers/lru_cache.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -116,15 +115,6 @@ class AwPermissionManager : public content::PermissionControllerDelegate {
       blink::PermissionType permission,
       bool allowed);
 
-  // A little helper func to cache storage access API grants. It will associate
-  // them with the top level origin since we currently only grant SAA results
-  // based off of top level DALs.
-  // The bool |allowed| is returned again by this function so that we can
-  // chain it with OnRequestResponse to resolve permission requests.
-  static bool CacheAutoSAA(const base::WeakPtr<AwPermissionManager>& manager,
-                           const url::Origin& origin,
-                           bool allowed);
-
   base::raw_ref<const AwContextPermissionsDelegate> context_delegate_;
   PendingRequestsMap pending_requests_;
   std::unique_ptr<LastRequestResultCache> result_cache_;
@@ -132,10 +122,6 @@ class AwPermissionManager : public content::PermissionControllerDelegate {
   // The pair is ordered as (Audio, Video).
   std::map<url::Origin, std::pair<bool, bool>> enumerate_devices_labels_cache_;
 
-  // Given that the status of the grant is unlikely to change in an app's
-  // lifecycle, we cache this result after retrieving it from the
-  // delegate.
-  base::NoDestructor<base::LRUCache<std::string, bool>> saa_cache_;
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<AwPermissionManager> weak_ptr_factory_{this};

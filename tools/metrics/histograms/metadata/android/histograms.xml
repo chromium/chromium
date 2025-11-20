@@ -7264,99 +7264,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.WebView.DigitalAssetLinks.AssetIncludes.FileSize"
-    units="bytes" expires_after="2026-06-01">
-  <owner>bewise@chromium.org</owner>
-  <owner>pbirk@chromium.org</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <summary>
-    Logs the size of loaded asset link include files (see
-    https://developers.google.com/digital-asset-links/v1/statements#scaling-to-dozens-of-statements-or-more).
-    These files are loaded to determine the full set of domains an app declares
-    a relationship with, and are currently loaded into an unbounded memory
-    buffer. This histogram will help us determine if we can apply a bounded
-    memory buffer.
-
-    The histogram is logged when an asset include file is successfully fetched,
-    but before it is parsed.
-  </summary>
-</histogram>
-
-<histogram
-    name="Android.WebView.DigitalAssetLinks.AssetIncludes.LinksInManifest"
-    units="statements" expires_after="2026-06-01">
-  <owner>bewise@chromium.org</owner>
-  <owner>pbirk@chromium.org</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <summary>
-    Records how many &quot;include&quot; links an app has declared in their
-    asset_statemenets in the app manifest. The documentation states that apps
-    can only have 10 links. This histogram logs the actual number of statements.
-
-    We want to log this to see if there are apps that define more than 10
-    include links despite the specified limit, as we truncate the list of
-    returned links to the first 10.
-
-    The histogram is logged the first time asset_statements are read, and only
-    if the kWebViewDigitalAssetLinksLoadIncludes flag is enabled.
-  </summary>
-</histogram>
-
-<histogram
-    name="Android.WebView.DigitalAssetLinks.AssetIncludes.NetworkLoadResult"
-    enum="BooleanSuccess" expires_after="2026-06-01">
-  <owner>bewise@chromium.org</owner>
-  <owner>pbirk@chromium.org</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <summary>
-    Logs whether the network load of the asset link include file succeded or
-    not. (see
-    https://developers.google.com/digital-asset-links/v1/statements#scaling-to-dozens-of-statements-or-more).
-    These files are loaded to determine the full set of domains an app declares
-    a relationship with, and are currently loaded into an unbounded memory
-    buffer.
-
-    The histogram is logged when an asset include file load attempt returns.
-  </summary>
-</histogram>
-
-<histogram name="Android.WebView.DigitalAssetLinks.AssetIncludes.ParseSuccess"
-    enum="BooleanSuccess" expires_after="2026-06-01">
-  <owner>bewise@chromium.org</owner>
-  <owner>pbirk@chromium.org</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <summary>
-    Logs whether an loaded asset link include files is successfully parsed and
-    contained at least one &quot;web&quot; relation with a valid site target.
-    (see
-    https://developers.google.com/digital-asset-links/v1/statements#scaling-to-dozens-of-statements-or-more).
-    These files are loaded to determine the full set of domains an app declares
-    a relationship with, and are currently loaded into an unbounded memory
-    buffer.
-
-    The histogram is logged when an asset include file is successfully parsed
-    but only if it was already valid JSON.
-  </summary>
-</histogram>
-
-<histogram name="Android.WebView.DigitalAssetLinks.AssetIncludes.ValidJson"
-    enum="BooleanSuccess" expires_after="2026-06-01">
-  <owner>bewise@chromium.org</owner>
-  <owner>pbirk@chromium.org</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <summary>
-    Logs whether an loaded asset link include files is successfully parsed as
-    JSON (see
-    https://developers.google.com/digital-asset-links/v1/statements#scaling-to-dozens-of-statements-or-more).
-    These files are loaded to determine the full set of domains an app declares
-    a relationship with, and are currently loaded into an unbounded memory
-    buffer.
-
-    The histogram is logged when an asset include file is successfully parsed as
-    JSON, but before the contents are inspected.
-  </summary>
-</histogram>
-
 <histogram name="Android.WebView.EnableTVSmoothing" enum="Boolean"
     expires_after="2026-08-01">
   <owner>alexmitra@chromium.org</owner>
@@ -8273,18 +8180,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.WebView.RelatedSitesVisitedWeekly" units="sites"
-    expires_after="2026-01-15">
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <summary>
-    This is the same as Android.WebView.SitesVisitedWeekly. The only difference
-    is this metric is filtered to only be reported for sites where the app
-    declared it has a relationship with the site. A site is considered related
-    if the app references it in its manifest through web links or app links.
-  </summary>
-</histogram>
-
 <histogram name="Android.WebView.RendererLibraryPrefetchMode"
     enum="RendererLibraryPrefetchMode" expires_after="2026-03-01">
   <owner>ashleynewson@chromium.org</owner>
@@ -9081,42 +8976,6 @@ chromium-metrics-reviews@google.com.
     <variant name="MetricsBridgeService"/>
     <variant name="VariationsSeedServer"/>
   </token>
-</histogram>
-
-<histogram name="Android.WebView.StorageAccessAutoGrantTime" units="ms"
-    expires_after="2025-07-26">
-  <owner>bewise@chromium.org</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <summary>
-    Records the time it takes to auto grant a storage access request for calls
-    to requestStorageAccess and requestStorageAccess for.
-
-    Specifically used for WebView storage access auto grant checks which are
-    checked against asset statements. We need to make a network call to request
-    the asset statement from websites for this check. We only record this metric
-    after we have attempted to make that network call.
-  </summary>
-</histogram>
-
-<histogram name="Android.WebView.StorageAccessRelation2"
-    enum="WebViewStorageAccessAppRelation" expires_after="2026-04-05">
-  <owner>bewise@chromium.org</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <summary>
-    Records the relation the top level origin has to the WebView application
-    when requesting storage access. Recorded for both requestStorageAccess and
-    requestStorageAccessFor.
-
-    This metric can help inform future decisions for the storage access API
-    shape in Android WebView.
-
-    We deprecated Android.WebView.StorageAccessRelation in favor of this because
-    that metric checked for any manfiest reference but we only want to compare
-    storage access requests against manifest metadata moving forwards.
-
-    Note: We cache our storage access request results so this metric is only
-    recorded the first time SAA is requested pre-cache.
-  </summary>
 </histogram>
 
 <histogram name="Android.WebView.SupervisedUser.UrlCheckResult"

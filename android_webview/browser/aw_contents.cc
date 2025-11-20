@@ -10,7 +10,6 @@
 #include <string_view>
 #include <utility>
 
-#include "android_webview/browser/aw_app_defined_websites.h"
 #include "android_webview/browser/aw_browser_context.h"
 #include "android_webview/browser/aw_browser_main_parts.h"
 #include "android_webview/browser/aw_browser_permission_request_delegate.h"
@@ -114,7 +113,6 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
-#include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "third_party/blink/public/common/navigation/navigation_params.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/skia/include/core/SkPicture.h"
@@ -168,14 +166,6 @@ std::string* g_locale_list() {
   static base::NoDestructor<std::string> locale_list;
   return locale_list.get();
 }
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused
-enum class StorageAccessAppDefinedType {
-  kAppDefined = 0,
-  kExternal = 1,
-  kMaxValue = kExternal,
-};
 
 const void* const kAwContentsUserDataKey = &kAwContentsUserDataKey;
 const void* const kComputedRendererPriorityUserDataKey =
@@ -317,19 +307,6 @@ AwContents::AwContents(std::unique_ptr<WebContents> web_contents)
 
   permission_request_handler_ =
       std::make_unique<PermissionRequestHandler>(this, web_contents_.get());
-
-  auto* browser_context =
-      AwBrowserContext::FromWebContents(web_contents_.get());
-
-  // Using a separate URLLoaderFactory is preferable as this is an internal
-  // request made by Android WebView that should not be subject to attribution
-  // and interception logic common for navigation-related network activity.
-  storage_access_url_loader_factory_ = network::SharedURLLoaderFactory::Create(
-      std::make_unique<network::WrapperPendingSharedURLLoaderFactory>(
-          browser_context->CreateURLLoaderFactory()));
-  asset_link_handler_ = std::make_unique<
-      content_relationship_verification::DigitalAssetLinksHandler>(
-      storage_access_url_loader_factory_);
 
   content::SynchronousCompositor::SetClientForWebContents(
       web_contents_.get(), &browser_view_renderer_);
@@ -774,67 +751,6 @@ void AwContents::RequestMIDISysexPermission(const GURL& origin,
 void AwContents::CancelMIDISysexPermissionRequests(const GURL& origin) {
   permission_request_handler_->CancelRequest(
       origin, AwPermissionRequest::AwPermissionRequest::MIDISysex);
-}
-
-
-void AwContents::RequestStorageAccess(const url::Origin& top_level_origin,
-                                      PermissionCallback callback) {
-  base::TimeTicks time_requested = base::TimeTicks::Now();
-
-  AppDefinedWebsites::GetInstance()->AppDeclaresDomainInAssetStatements(
-      std::make_unique<AssetDomainListIncludeHandler>(
-          storage_access_url_loader_factory_),
-      top_level_origin,
-      base::BindOnce(&AwContents::GrantRequestStorageAccessIfOriginIsAppDefined,
-                     weak_ptr_factory_.GetWeakPtr(), top_level_origin,
-                     time_requested, std::move(callback)));
-}
-
-void AwContents::GrantRequestStorageAccessIfOriginIsAppDefined(
-    const url::Origin top_level_origin,
-    base::TimeTicks time_requested,
-    PermissionCallback callback,
-    bool is_defined) {
-  base::UmaHistogramEnumeration("Android.WebView.StorageAccessRelation2",
-                                is_defined
-                                    ? StorageAccessAppDefinedType::kAppDefined
-                                    : StorageAccessAppDefinedType::kExternal);
-
-  if (!base::FeatureList::IsEnabled(features::kWebViewAutoSAA)) {
-    NOTIMPLEMENTED()
-        << "RequestPermissions is not implemented for storage access";
-    std::move(callback).Run(false);
-    return;
-  }
-
-  if (!is_defined) {
-    std::move(callback).Run(false);
-    return;
-  }
-
-  // TODO(crbug.com/355460995): We should investigate if we should have a
-  // particular relation string from the android app side as well. For the
-  // moment, we will just accept any string that the app declares, and then
-  // verify the relation on the website's side.
-  constexpr char kRelationship[] = "delegate_permission/common.handle_all_urls";
-  asset_link_handler_->CheckDigitalAssetLinkRelationshipForAndroidApp(
-      top_level_origin, kRelationship,
-      std::vector<std::string>{
-          base::android::apk_info::host_signing_cert_sha256()},
-      base::android::apk_info::host_package_name(),
-      base::BindOnce(
-          [](base::TimeTicks time_requested, PermissionCallback callback,
-             content_relationship_verification::RelationshipCheckResult
-                 result) {
-            const base::TimeTicks time_answered = base::TimeTicks::Now();
-            base::UmaHistogramTimes(
-                "Android.WebView.StorageAccessAutoGrantTime",
-                time_answered - time_requested);
-            std::move(callback).Run(result ==
-                                    content_relationship_verification::
-                                        RelationshipCheckResult::kSuccess);
-          },
-          time_requested, std::move(callback)));
 }
 
 void AwContents::FindAllAsync(JNIEnv* env,
@@ -1682,44 +1598,20 @@ void JNI_AwContents_SetShouldDownloadFavicons(JNIEnv* env) {
 
 namespace {
 
-// Returns true if any of the `domains` match the `etld_plus1`.
-bool IncludesETLDPlusOne(const std::string& etld_plus1,
-                         const std::vector<std::string>& domains) {
-  return std::find_if(
-             domains.begin(), domains.end(), [&](const std::string& domain) {
-               return etld_plus1 ==
-                      net::registry_controlled_domains::GetDomainAndRegistry(
-                          domain, net::registry_controlled_domains::
-                                      INCLUDE_PRIVATE_REGISTRIES);
-             }) != domains.end();
-}
-
 // Post a task to a background thread to log a site visit.
-void LogSiteVisitOnBackgroundThread(jlong site_hash, bool is_related_site) {
+void LogSiteVisitOnBackgroundThread(jlong site_hash) {
   // Logging a site visit involves writing to shared preferences, which should
   // not be done on the main thread.
-  base::ThreadPool::PostTask(FROM_HERE,
-                             base::BindOnce(
-                                 [](jlong site_hash, bool is_related_site) {
-                                   JNIEnv* env = AttachCurrentThread();
-                                   Java_AwSiteVisitLogger_logVisit(
-                                       env, site_hash, is_related_site);
-                                 },
-                                 site_hash, is_related_site));
+  base::ThreadPool::PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](jlong site_hash) {
+                       JNIEnv* env = AttachCurrentThread();
+                       Java_AwSiteVisitLogger_logVisit(env, site_hash);
+                     },
+                     site_hash));
 }
-}  // namespace
 
-void LogSiteVisit(std::string etld_plus1, jlong site_hash) {
-  AppDefinedWebsites::GetInstance()->GetAppDefinedDomains(
-      AppDefinedDomainCriteria::kAndroidAssetStatementsAndWebLinks,
-      base::BindOnce(
-          [](std::string etld_plus1, jlong site_hash,
-             const std::vector<std::string>& domains) {
-            LogSiteVisitOnBackgroundThread(
-                site_hash, IncludesETLDPlusOne(etld_plus1, domains));
-          },
-          std::move(etld_plus1), site_hash));
-}
+}  // namespace
 
 void AwContents::PrimaryPageChanged(content::Page& page) {
   // TODO(https://crbug.com/378601799): Consider allowing prerendered pages
@@ -1751,7 +1643,7 @@ void AwContents::PrimaryPageChanged(content::Page& page) {
 
       Java_AwContents_logOriginVisit(env, j_ref, j_origin_hash);
 
-      LogSiteVisit(std::move(etld_plus1), j_etld_plus1_hash);
+      LogSiteVisitOnBackgroundThread(j_etld_plus1_hash);
     }
   }
 

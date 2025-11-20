@@ -16,12 +16,10 @@ namespace android_webview::features {
 
 // Alphabetical:
 BASE_DECLARE_FEATURE(kWebViewAddQuicHints);
-BASE_DECLARE_FEATURE(kWebViewAutoSAA);
 BASE_DECLARE_FEATURE(kWebViewBackForwardCache);
 // TODO(crbug.com/455296998): Remove this code for M145.
 BASE_DECLARE_FEATURE(kWebViewBypassHttpCacheForPrefetchFromHeader);
 BASE_DECLARE_FEATURE(kWebViewConfigurableLibraryPrefetch);
-BASE_DECLARE_FEATURE(kWebViewDigitalAssetLinksLoadIncludes);
 BASE_DECLARE_FEATURE(kWebViewFileSystemAccess);
 BASE_DECLARE_FEATURE(kWebViewIgnoreDuplicateNavs);
 BASE_DECLARE_FEATURE(kWebViewInvokeZoomPickerOnGSU);

@@ -26909,11 +26909,6 @@ This is true even if the type has been removed from the mojom file.
   <int value="3" label="Revoked ephemeral permission by website"/>
 </enum>
 
-<enum name="WebViewStorageAccessAppRelation">
-  <int value="0" label="The request was made under a URL defined by the app"/>
-  <int value="1" label="The request was made under a URL unrelated to the app"/>
-</enum>
-
 <enum name="WhatsNewLoadEvent">
   <int value="0" label="Load started"/>
   <int value="1" label="Load succeeded"/>

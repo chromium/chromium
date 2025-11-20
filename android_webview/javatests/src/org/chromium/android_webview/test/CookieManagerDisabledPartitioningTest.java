@@ -21,12 +21,10 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwCookieManager;
-import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.test.CookieManagerTest.IframeCookieSupplier;
 import org.chromium.android_webview.test.util.CookieUtils;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.net.test.util.TestWebServer;
 
@@ -189,14 +187,14 @@ public class CookieManagerDisabledPartitioningTest extends AwParameterizedTest {
 
             String iframeWithNetRequest =
                     """
-                <html>
-                <body>
-                <!-- Force a network request to happen from the iframe with a navigation so -->
-                <!-- that we can intercept it and see which cookies were attached -->
-                <img src="/path_to_intercept" >
-                </body>
-                </html>
-                """;
+                    <html>
+                    <body>
+                    <!-- Force a network request to happen from the iframe with a navigation so -->
+                    <!-- that we can intercept it and see which cookies were attached -->
+                    <img src="/path_to_intercept" >
+                    </body>
+                    </html>
+                    """;
             String iframeUrl = webServer.setResponse("/", iframeWithNetRequest, responseHeaders);
             // We don't need this to do anything fancy, we just need the path to exist
             webServer.setResponse("/path_to_intercept", "hello", responseHeaders);
@@ -238,7 +236,6 @@ public class CookieManagerDisabledPartitioningTest extends AwParameterizedTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView", "Privacy"})
-    @Features.EnableFeatures({AwFeatures.WEBVIEW_AUTO_SAA})
     public void testDisabledPartitionedJSCookies() throws Throwable {
         String partitionedCookie = "partitioned-cookie=123";
         String unpartitionedCookie = "regular-cookie=456";
@@ -266,13 +263,12 @@ public class CookieManagerDisabledPartitioningTest extends AwParameterizedTest {
                     "cookieResults");
 
             IframeCookieSupplier iframeCookiesSupplier =
-                    (boolean requestStorageAccess) -> {
+                    () -> {
                         String iframeUrl =
                                 CookieManagerTest.toThirdPartyUrl(
                                         CookieManagerTest.makeCookieScriptResultsUrl(
                                                 webServer,
                                                 "/iframe.html",
-                                                requestStorageAccess,
                                                 partitionedCookie
                                                         + "; Secure; Path=/; SameSite=None;"
                                                         + " Partitioned;",
@@ -301,24 +297,19 @@ public class CookieManagerDisabledPartitioningTest extends AwParameterizedTest {
             Assert.assertEquals(
                     "Partitioned cookies should not be returned while CHIPS is disabled",
                     "",
-                    iframeCookiesSupplier.get(/* requestStorageAccess= */ false));
-
-            Assert.assertEquals(
-                    "All cookies should be returned when SAA is requested.",
-                    partitionedCookie + "; " + unpartitionedCookie,
-                    iframeCookiesSupplier.get(/* requestStorageAccess= */ true));
+                    iframeCookiesSupplier.get());
 
             allowThirdPartyCookies(mAwContents);
             Assert.assertEquals(
                     "All cookies should be returned when 3PCs are enabled",
                     partitionedCookie + "; " + unpartitionedCookie,
-                    iframeCookiesSupplier.get(/* requestStorageAccess= */ false));
+                    iframeCookiesSupplier.get());
 
             blockAllCookies();
             Assert.assertEquals(
                     "No cookies should ever be returned if all cookies are disabled",
                     "",
-                    iframeCookiesSupplier.get(/* requestStorageAccess= */ false));
+                    iframeCookiesSupplier.get());
         } finally {
             webServer.shutdown();
         }
