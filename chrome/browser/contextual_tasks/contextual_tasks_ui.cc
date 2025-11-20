@@ -102,7 +102,7 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   source->AddInteger("composeboxFileMaxCount", 0);
   source->AddBoolean("composeboxNoFlickerSuggestionsFix", false);
   // Enable typed suggest.
-  source->AddBoolean("composeboxShowTypedSuggest", true);
+  source->AddBoolean("composeboxShowTypedSuggest", false);
   source->AddBoolean("composeboxShowTypedSuggestWithContext", false);
   // Disable ZPS.
   source->AddBoolean("composeboxShowZps", false);
