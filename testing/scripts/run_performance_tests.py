@@ -754,6 +754,7 @@ class CrossbenchTest(object):
       'speedometer_2': 'third_party/speedometer/v2.1',
       'jetstream_2.2': 'third_party/jetstream/v2.2',
       'jetstream_2': 'third_party/jetstream/v2.2',
+      'jetstream_main': 'third_party/jetstream/main',
       'motionmark_1.3': 'third_party/blink/perf_tests/MotionMark'
   }
 
