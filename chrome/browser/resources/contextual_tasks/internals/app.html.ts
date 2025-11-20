@@ -37,6 +37,28 @@ export function getHtml(this: ContextualTasksInternalsAppElement) {
   `)}
   </ul>
 </div>
+<div>
+  <div>Log Messages:</div>
+  <table>
+    <thead>
+      <tr>
+        <th class="time">Time</th>
+        <th class="source-location">Source Location</th>
+        <th class="message">Log Message</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${this.eventLogMessages_.map(item => html`
+        <tr>
+          <td class="time">${item.eventTime.toLocaleTimeString()}</td>
+          <td class="source-location">
+            <a href="${item.sourceLinkURL}">${item.sourceLinkText}</a>
+          </td>
+          <td class="message">${item.message}</td>
+        </tr>`)}
+    </tbody>
+  </table>
+</div>
 `;
   // clang-format on
 }

@@ -17,6 +17,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -373,15 +374,28 @@ void ContextualTasksUI::InnerFrameCreationObvserver::InnerWebContentsCreated(
 
 void ContextualTasksUI::BindInterface(
     mojo::PendingReceiver<
+        contextual_tasks::mojom::ContextualTasksInternalsPageHandlerFactory>
+        receiver) {
+  contextual_tasks_internals_page_handler_receiver_.reset();
+  contextual_tasks_internals_page_handler_receiver_.Bind(std::move(receiver));
+}
+
+void ContextualTasksUI::CreatePageHandler(
+    mojo::PendingRemote<contextual_tasks::mojom::ContextualTasksInternalsPage>
+        page,
+    mojo::PendingReceiver<
         contextual_tasks::mojom::ContextualTasksInternalsPageHandler>
         receiver) {
   Profile* profile = Profile::FromWebUI(web_ui());
   auto* context_service =
       contextual_tasks::ContextualTasksContextServiceFactory::GetForProfile(
           profile);
+  auto* optimization_guide_keyed_service =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
   contextual_tasks_internals_page_handler_ =
       std::make_unique<ContextualTasksInternalsPageHandler>(
-          context_service, std::move(receiver));
+          context_service, optimization_guide_keyed_service,
+          std::move(receiver), std::move(page));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ContextualTasksUI)

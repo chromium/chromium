@@ -5,6 +5,7 @@
 module contextual_tasks.mojom;
 
 import "chrome/browser/contextual_tasks/contextual_tasks_types.mojom";
+import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/url.mojom";
 
 struct GetRelevantContextRequest {
@@ -27,9 +28,29 @@ struct GetRelevantContextResponse {
   array<Tab> relevant_tabs;
 };
 
+// Lives in the browser process. A renderer uses this to link itself with
+// a page handler.
+interface ContextualTasksInternalsPageHandlerFactory {
+  // Create a page handler and link it to the UI.
+  CreatePageHandler(
+      pending_remote<ContextualTasksInternalsPage> page,
+      pending_receiver<ContextualTasksInternalsPageHandler> handler);
+};
+
 // PageHandler for ContextualTasksInternals page.
 interface ContextualTasksInternalsPageHandler {
   // Returns the relevant context for the given request.
   GetRelevantContext(GetRelevantContextRequest request) =>
       (GetRelevantContextResponse response);
+};
+
+// Renderer-side handler for internals WebUI page to process the updates from
+// the service.
+interface ContextualTasksInternalsPage {
+  // Notifies the page of a contextual tasks context log event from the
+  // Optimization Guide service.
+  OnLogMessageAdded(mojo_base.mojom.Time event_time,
+                    string source_file,
+                    int64 source_line,
+                    string message);
 };

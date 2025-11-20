@@ -11,17 +11,32 @@
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 ContextualTasksInternalsPageHandler::ContextualTasksInternalsPageHandler(
     contextual_tasks::ContextualTasksContextService* context_service,
+    OptimizationGuideKeyedService* optimization_guide_keyed_service,
     mojo::PendingReceiver<
-        contextual_tasks::mojom::ContextualTasksInternalsPageHandler> receiver)
-    : context_service_(context_service), receiver_(this, std::move(receiver)) {}
+        contextual_tasks::mojom::ContextualTasksInternalsPageHandler> receiver,
+    mojo::PendingRemote<contextual_tasks::mojom::ContextualTasksInternalsPage>
+        page)
+    : context_service_(context_service),
+      optimization_guide_logger_(
+          optimization_guide_keyed_service->GetOptimizationGuideLogger()),
+      receiver_(this, std::move(receiver)),
+      page_(std::move(page)) {
+  if (optimization_guide_logger_) {
+    optimization_guide_logger_->AddObserver(this);
+  }
+}
 
-ContextualTasksInternalsPageHandler::~ContextualTasksInternalsPageHandler() =
-    default;
+ContextualTasksInternalsPageHandler::~ContextualTasksInternalsPageHandler() {
+  if (optimization_guide_logger_) {
+    optimization_guide_logger_->RemoveObserver(this);
+  }
+}
 
 void ContextualTasksInternalsPageHandler::GetRelevantContext(
     contextual_tasks::mojom::GetRelevantContextRequestPtr request,
@@ -52,4 +67,16 @@ void ContextualTasksInternalsPageHandler::GetRelevantContext(
             std::move(callback).Run(std::move(result));
           },
           std::move(callback)));
+}
+
+void ContextualTasksInternalsPageHandler::OnLogMessageAdded(
+    base::Time event_time,
+    optimization_guide_common::mojom::LogSource log_source,
+    const std::string& source_file,
+    int source_line,
+    const std::string& message) {
+  if (page_ && log_source ==
+      optimization_guide_common::mojom::LogSource::CONTEXTUAL_TASKS_CONTEXT) {
+    page_->OnLogMessageAdded(event_time, source_file, source_line, message);
+  }
 }

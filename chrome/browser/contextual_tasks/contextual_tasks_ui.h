@@ -60,7 +60,9 @@ class TaskInfoDelegate {
 class ContextualTasksUI : public TaskInfoDelegate,
                           public TopChromeWebUIController,
                           public contextual_tasks::mojom::PageHandlerFactory,
-                          public composebox::mojom::PageHandlerFactory {
+                          public composebox::mojom::PageHandlerFactory,
+                          public contextual_tasks::mojom::
+                              ContextualTasksInternalsPageHandlerFactory {
  public:
   // A WebContentsObserver used to observe navigations or URL changes in the
   // frame being hosted by this WebUI. Top-level navigations are ignored since
@@ -129,10 +131,21 @@ class ContextualTasksUI : public TaskInfoDelegate,
   void BindInterface(
       mojo::PendingReceiver<composebox::mojom::PageHandlerFactory> receiver);
 
+  // Instantiates the implementor of the contextual_tasks::mojom::
+  // ContextualTasksInternalsPageHandlerFactory mojo interface passing the
+  // pending receiver that will be internally bound.
   void BindInterface(
       mojo::PendingReceiver<
-          contextual_tasks::mojom::ContextualTasksInternalsPageHandler>
+          contextual_tasks::mojom::ContextualTasksInternalsPageHandlerFactory>
           pending_receiver);
+
+  // contextual_tasks::mojom::ContextualTasksInternalsPageHandlerFactory:
+  void CreatePageHandler(
+      mojo::PendingRemote<contextual_tasks::mojom::ContextualTasksInternalsPage>
+          page,
+      mojo::PendingReceiver<
+          contextual_tasks::mojom::ContextualTasksInternalsPageHandler>
+          receiver) override;
 
   static constexpr std::string_view GetWebUIName() { return "ContextualTasks"; }
 
@@ -202,6 +215,10 @@ class ContextualTasksUI : public TaskInfoDelegate,
   std::optional<std::string> thread_title_;
 
   mojo::Remote<contextual_tasks::mojom::Page> page_;
+
+  mojo::Receiver<
+      contextual_tasks::mojom::ContextualTasksInternalsPageHandlerFactory>
+      contextual_tasks_internals_page_handler_receiver_{this};
 
   std::unique_ptr<ContextualTasksInternalsPageHandler>
       contextual_tasks_internals_page_handler_;

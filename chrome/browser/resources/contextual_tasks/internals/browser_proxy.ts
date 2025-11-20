@@ -2,21 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {ContextualTasksInternalsPageHandlerRemote} from '../contextual_tasks_internals.mojom-webui.js';
-import {ContextualTasksInternalsPageHandler} from '../contextual_tasks_internals.mojom-webui.js';
+import {ContextualTasksInternalsPageCallbackRouter, ContextualTasksInternalsPageHandlerFactory, ContextualTasksInternalsPageHandlerRemote} from '../contextual_tasks_internals.mojom-webui.js';
 
 /**
  * @fileoverview A browser proxy for the ContextualTasks Internals page.
  */
 export class BrowserProxy {
   handler: ContextualTasksInternalsPageHandlerRemote;
+  callbackRouter: ContextualTasksInternalsPageCallbackRouter;
 
-  constructor() {
-    this.handler = ContextualTasksInternalsPageHandler.getRemote();
+  constructor(
+      handler: ContextualTasksInternalsPageHandlerRemote,
+      callbackRouter: ContextualTasksInternalsPageCallbackRouter) {
+    this.handler = handler;
+    this.callbackRouter = callbackRouter;
   }
 
   static getInstance(): BrowserProxy {
-    return instance || (instance = new BrowserProxy());
+    if (!instance) {
+      const handler = new ContextualTasksInternalsPageHandlerRemote();
+      const callbackRouter = new ContextualTasksInternalsPageCallbackRouter();
+      ContextualTasksInternalsPageHandlerFactory.getRemote().createPageHandler(
+          callbackRouter.$.bindNewPipeAndPassRemote(),
+          handler.$.bindNewPipeAndPassReceiver());
+      instance = new BrowserProxy(handler, callbackRouter);
+    }
+    return instance;
   }
 }
 
