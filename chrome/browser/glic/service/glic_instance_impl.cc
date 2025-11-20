@@ -554,6 +554,12 @@ void GlicInstanceImpl::UnbindEmbedder(EmbedderKey key) {
   // Avoid dangling raw_ptr.
   host_.SetDelegate(&empty_embedder_delegate_);
   embedders_.erase(key);
+
+  // Remove the instance if all embedders are gone.
+  if (embedders_.empty() && coordinator_delegate_) {
+    // This call will delete `this`.
+    coordinator_delegate_->RemoveInstance(this);
+  }
 }
 
 Host& GlicInstanceImpl::host() {
@@ -775,11 +781,8 @@ void GlicInstanceImpl::MaybeShowHostUi(GlicUiEmbedder* embedder) {
 void GlicInstanceImpl::OnBoundTabDestroyed(tabs::TabInterface* tab,
                                            const InstanceId& instance_id) {
   instance_metrics_.OnBoundTabDestroyed();
+  // This call may delete `this`.
   UnbindEmbedder(tab);
-  if (embedders_.empty() && coordinator_delegate_) {
-    // This call will delete `this`.
-    coordinator_delegate_->RemoveInstance(this);
-  }
 }
 
 void GlicInstanceImpl::OnBoundTabActivated(tabs::TabInterface* tab) {
@@ -988,11 +991,8 @@ void GlicInstanceImpl::MaybeRemoveBlankInstanceOnClose() {
     return;
   }
 
+  // This call will delete `this`.
   UnbindEmbedder(*tab);
-  if (coordinator_delegate_) {
-    // This call will delete `this`.
-    coordinator_delegate_->RemoveInstance(this);
-  }
 }
 
 void GlicInstanceImpl::NotifyInstanceActivationChanged(bool is_active) {

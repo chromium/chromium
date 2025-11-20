@@ -548,6 +548,7 @@ GlicInstanceCoordinatorImpl::GetRecentlyActiveConversations() {
 void GlicInstanceCoordinatorImpl::UnbindTabFromAnyInstance(
     tabs::TabInterface* tab) {
   if (auto* instance = GetInstanceImplForTab(tab)) {
+    // `instance` may be deleted after this call.
     instance->UnbindEmbedder(EmbedderKey(tab));
   }
 }

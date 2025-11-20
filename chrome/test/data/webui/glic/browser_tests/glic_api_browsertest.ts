@@ -2293,10 +2293,15 @@ class ApiTests extends ApiTestFixtureBase {
       assertEquals(
           undefined,
           this.client.panelOpenData.getCurrentValue()?.conversationId);
-      await this.host.switchConversation(
-          {conversationTitle: 'Hello', conversationId: 'id_hello'});
-      // Note that switchConversation does resolve, even though this instance
-      // will be destroyed very soon.
+
+      // Return and then switch conversation to ensure that ExecuteJsTest
+      // completes before the instance is deleted. The instance is deleted
+      // during the `switchConversation` call.
+      sleep(100).then(() => {
+        assertDefined(this.host.switchConversation);
+        this.host.switchConversation(
+            {conversationTitle: 'Hello', conversationId: 'id_hello'});
+      });
     }
   }
 

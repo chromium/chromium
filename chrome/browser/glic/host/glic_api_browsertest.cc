@@ -2682,6 +2682,11 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
                                  GlicInstrumentMode::kHostAndContents));
   ExecuteJsTest({.params = base::Value("second")});
 
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return GetService()->window_controller().GetInstances().size() == 1u;
+  }));
+  ASSERT_EQ("id_hello", GetGlicInstanceImpl()->conversation_id());
+
   // This should continue the test in the first instance, because tab 2 is now
   // bound to that instance.
   ContinueJsTest();
