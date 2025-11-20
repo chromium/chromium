@@ -8,7 +8,6 @@
 #endif
 
 #include "media/audio/mac/audio_loopback_input_mac.h"
-#include "media/audio/mac/audio_loopback_input_mac_impl.h"
 
 #include <ScreenCaptureKit/ScreenCaptureKit.h>
 
@@ -23,6 +22,8 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "media/audio/audio_io.h"
+#include "media/audio/mac/audio_loopback_input_mac_impl.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/limits.h"
 #include "testing/gmock/include/gmock/gmock.h"

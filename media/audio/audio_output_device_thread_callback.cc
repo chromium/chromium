@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "media/audio/audio_device_stats_reporter.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_glitch_info.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 

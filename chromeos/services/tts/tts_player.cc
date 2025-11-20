@@ -5,6 +5,7 @@
 #include "chromeos/services/tts/tts_player.h"
 
 #include "base/task/single_thread_task_runner.h"
+#include "media/base/audio_bus.h"
 
 namespace chromeos {
 namespace tts {

@@ -5,12 +5,15 @@
 #ifndef MEDIA_BASE_AMPLITUDE_PEAK_DETECTOR_H_
 #define MEDIA_BASE_AMPLITUDE_PEAK_DETECTOR_H_
 
+#include "base/functional/callback.h"
 #include "base/synchronization/lock.h"
-#include "media/base/audio_bus.h"
 #include "media/base/media_export.h"
 #include "media/base/sample_format.h"
 
 namespace media {
+
+class AudioBus;
+
 // Helper class which acts as a filter to detect jumps in audio signal
 // amplitude. When there is a large increase in amplitude, it will run its
 // provided callback.

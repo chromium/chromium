@@ -27,6 +27,7 @@
 #include "media/audio/null_audio_sink.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_buffer_converter.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_latency.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/channel_mixing_matrix.h"

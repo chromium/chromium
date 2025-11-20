@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/containers/heap_array.h"
-#include "media/base/audio_bus.h"
 #include "media/base/audio_converter.h"
 #include "media/base/audio_encoder.h"
 #include "media/base/audio_timestamp_helper.h"
@@ -18,6 +17,7 @@
 
 namespace media {
 
+class AudioBus;
 class ChannelMixer;
 class ConvertingAudioFifo;
 

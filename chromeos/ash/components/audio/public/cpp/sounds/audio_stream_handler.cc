@@ -26,6 +26,7 @@
 #include "media/audio/audio_handler.h"
 #include "media/audio/flac_audio_handler.h"
 #include "media/audio/wav_audio_handler.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/channel_layout.h"
 #include "media/mojo/mojom/audio_output_stream.mojom.h"

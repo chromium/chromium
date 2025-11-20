@@ -27,6 +27,7 @@
 #include "content/public/renderer/render_frame.h"
 #include "media/audio/audio_features.h"
 #include "media/audio/null_audio_sink.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_glitch_info.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/limits.h"
