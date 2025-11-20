@@ -56,27 +56,6 @@ gfx::GpuMemoryBufferType GetNativeBufferType() {
 #endif
 }
 
-// Creates a shared memory region and returns a handle to it.
-gfx::GpuMemoryBufferHandle CreateGMBHandle(const viz::SharedImageFormat& format,
-                                           const gfx::Size& size,
-                                           gfx::BufferUsage buffer_usage) {
-  size_t buffer_size =
-      viz::SharedMemorySizeForSharedImageFormat(format, size).value();
-  CHECK(buffer_size);
-  auto shared_memory_region =
-      base::UnsafeSharedMemoryRegion::Create(buffer_size);
-  CHECK(shared_memory_region.IsValid());
-
-  gfx::GpuMemoryBufferHandle handle(std::move(shared_memory_region));
-  handle.offset = 0;
-  handle.stride =
-      static_cast<uint32_t>(viz::SharedMemoryRowSizeForSharedImageFormat(
-                                format, /*plane*/ 0, size.width())
-                                .value());
-
-  return handle;
-}
-
 }  // namespace
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -152,6 +131,27 @@ TestSharedImageInterface::TestSharedImageInterface() {
 }
 
 TestSharedImageInterface::~TestSharedImageInterface() = default;
+
+// static
+gfx::GpuMemoryBufferHandle TestSharedImageInterface::CreateGMBHandle(
+    const viz::SharedImageFormat& format,
+    const gfx::Size& size) {
+  size_t buffer_size =
+      viz::SharedMemorySizeForSharedImageFormat(format, size).value();
+  CHECK(buffer_size);
+  auto shared_memory_region =
+      base::UnsafeSharedMemoryRegion::Create(buffer_size);
+  CHECK(shared_memory_region.IsValid());
+
+  gfx::GpuMemoryBufferHandle handle(std::move(shared_memory_region));
+  handle.offset = 0;
+  handle.stride =
+      static_cast<uint32_t>(viz::SharedMemoryRowSizeForSharedImageFormat(
+                                format, /*plane*/ 0, size.width())
+                                .value());
+
+  return handle;
+}
 
 // static
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -232,8 +232,8 @@ scoped_refptr<ClientSharedImage> TestSharedImageInterface::CreateSharedImage(
     si_info_copy.meta.format.ClearPrefersExternalSampler();
   }
 
-  auto gmb_handle = CreateGMBHandle(si_info.meta.format, si_info_copy.meta.size,
-                                    buffer_usage);
+  auto gmb_handle =
+      CreateGMBHandle(si_info.meta.format, si_info_copy.meta.size);
 
   auto client_si = base::MakeRefCounted<ClientSharedImage>(
       mailbox, si_info_copy, sync_token,
@@ -261,6 +261,15 @@ TestSharedImageInterface::CreateSharedImage(
   if (always_use_shmem_for_mappable_si_) {
     return ClientSharedImage::CreateForTesting(
         mailbox, si_info_copy.meta, sync_token, buffer_usage, holder_);
+  }
+
+  // If the GMB handle passed here is shared memory (e.g. because it was created
+  // by a unittest that is simulating a production flow with native handles),
+  // clear the external sampler prefs to avoid a CHECK within ClientSI that
+  // external sampling is set only with a native GMB handle.
+  if (buffer_handle.type == gfx::SHARED_MEMORY_BUFFER &&
+      si_info_copy.meta.format.PrefersExternalSampler()) {
+    si_info_copy.meta.format.ClearPrefersExternalSampler();
   }
 
   return base::MakeRefCounted<ClientSharedImage>(

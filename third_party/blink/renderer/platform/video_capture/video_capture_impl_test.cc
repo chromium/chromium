@@ -69,9 +69,6 @@ TestingPlatformSupportWithGpuFactories::TestingPlatformSupportWithGpuFactories()
     : sii_(base::MakeRefCounted<gpu::TestSharedImageInterface>()),
       gpu_factories_(new media::MockGpuVideoAcceleratorFactories(sii_.get())),
       media_thread_("TestingMediaThread") {
-  // Ensure that any mappable SharedImages created via this testing platform
-  // create fake GMBs internally.
-  sii_->AlwaysBackMappableSharedImagesWithShMem();
   gpu_factories_->SetVideoFrameOutputFormat(
       media::GpuVideoAcceleratorFactories::OutputFormat::NV12);
   media_thread_.Start();
@@ -520,11 +517,11 @@ TEST_F(VideoCaptureImplTest, BufferReceived_GpuMemoryBufferHandle) {
   //   2. create a SharedImage from the GpuMemoryBuffer on |media_thread_|
   //   3. invoke OnFrameReady callback on |testing_io_thread|
   auto create_and_queue_buffer = [&]() {
-    gfx::GpuMemoryBufferHandle gmb_handle;
-    gmb_handle.type = gfx::SHARED_MEMORY_BUFFER;
-
     StartCapture(0, params_small_);
-    SimulateGpuMemoryBufferCreated(kArbitraryBufferId, std::move(gmb_handle));
+    SimulateGpuMemoryBufferCreated(
+        kArbitraryBufferId, gpu::TestSharedImageInterface::CreateGMBHandle(
+                                viz::MultiPlaneFormat::kNV12,
+                                params_small_.requested_format.frame_size));
     SimulateBufferReceived(BufferDescription(
         kArbitraryBufferId, params_small_.requested_format.frame_size,
         media::PIXEL_FORMAT_NV12));

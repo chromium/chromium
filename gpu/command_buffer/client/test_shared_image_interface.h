@@ -37,6 +37,11 @@ class TestSharedImageInterface : public SharedImageInterface {
  public:
   TestSharedImageInterface();
 
+  // Creates a shared memory region and returns a handle to it.
+  static gfx::GpuMemoryBufferHandle CreateGMBHandle(
+      const viz::SharedImageFormat& format,
+      const gfx::Size& size);
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // TODO(blundell): Fold this inside of a TestSII::CreateSI() variant and have
   // test clients that need the handle grab it from the created SI.
