@@ -210,10 +210,7 @@ class NavigationAttachmentsViewBinder {
 
     static void reanchorViewsForCompactFusebox(
             PropertyModel model, NavigationAttachmentsViewHolder views) {
-        boolean shouldShowCompactUi =
-                model.get(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE)
-                                == AutocompleteRequestType.SEARCH
-                        && model.get(NavigationAttachmentsProperties.COMPACT_UI);
+        boolean shouldShowCompactUi = model.get(NavigationAttachmentsProperties.COMPACT_UI);
 
         int topToTop = shouldShowCompactUi ? R.id.url_bar : ConstraintSet.UNSET;
         int topToBottom = shouldShowCompactUi ? ConstraintSet.UNSET : R.id.url_bar;

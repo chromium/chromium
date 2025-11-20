@@ -48,6 +48,7 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.android.controller.ActivityController;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.Nullable;
@@ -57,6 +58,7 @@ import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.omnibox.AutocompleteRequestType;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.MimeTypeUtils;
@@ -94,6 +96,9 @@ public class NavigationAttachmentsMediatorUnitTest {
     private ObservableSupplierImpl<TabModelSelector> mTabModelSelectorSupplier;
     private ObservableSupplierImpl<@AutocompleteRequestType Integer>
             mAutocompleteRequestTypeSupplier;
+    private final ObservableSupplierImpl<Boolean> mOnCompactModeChangedSupplier =
+            new ObservableSupplierImpl<>(false);
+    private boolean mCompactModeEnabled;
     private final Bitmap mBitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
 
     @Before
@@ -123,7 +128,8 @@ public class NavigationAttachmentsMediatorUnitTest {
                                 mAttachments,
                                 mAutocompleteRequestTypeSupplier,
                                 mTabModelSelectorSupplier,
-                                mComposeBoxQueryControllerBridge));
+                                mComposeBoxQueryControllerBridge,
+                                mOnCompactModeChangedSupplier));
         Clipboard.setInstanceForTesting(mClipboard);
         OmniboxResourceProvider.setTabFaviconFactory(mTabFaviconFactory);
         doReturn(mBitmap).when(mTabFaviconFactory).apply(any());
@@ -148,7 +154,8 @@ public class NavigationAttachmentsMediatorUnitTest {
                         new FuseboxAttachmentModelList(),
                         mAutocompleteRequestTypeSupplier,
                         mTabModelSelectorSupplier,
-                        mComposeBoxQueryControllerBridge);
+                        mComposeBoxQueryControllerBridge,
+                        mOnCompactModeChangedSupplier);
     }
 
     private void addAttachment(String title) {
@@ -363,7 +370,8 @@ public class NavigationAttachmentsMediatorUnitTest {
                         new FuseboxAttachmentModelList(),
                         new ObservableSupplierImpl<>(),
                         mTabModelSelectorSupplier,
-                        mComposeBoxQueryControllerBridge);
+                        mComposeBoxQueryControllerBridge,
+                        mOnCompactModeChangedSupplier);
 
         // The bridge is not initialized, so no native calls should be made.
         mediator.setToolbarVisible(true);
@@ -561,5 +569,29 @@ public class NavigationAttachmentsMediatorUnitTest {
         assertEquals(0, mAttachments.size());
         mModel.get(NavigationAttachmentsProperties.BUTTON_ADD_CLICKED).run();
         assertTrue(mModel.get(NavigationAttachmentsProperties.POPUP_CREATE_IMAGE_BUTTON_ENABLED));
+    }
+
+    @Test
+    public void testCompactMode() {
+        OmniboxFeatures.sCompactFusebox.setForTesting(true);
+        recreateMediator();
+        Callback<Boolean> compactModeCallback = (val) -> mCompactModeEnabled = val;
+        mOnCompactModeChangedSupplier.addObserver(compactModeCallback);
+
+        mMediator.setToolbarVisible(true);
+        assertTrue(mModel.get(NavigationAttachmentsProperties.COMPACT_UI));
+        assertTrue(mCompactModeEnabled);
+
+        mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.AI_MODE);
+        assertFalse(mModel.get(NavigationAttachmentsProperties.COMPACT_UI));
+        assertFalse(mCompactModeEnabled);
+
+        mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.SEARCH);
+        assertTrue(mModel.get(NavigationAttachmentsProperties.COMPACT_UI));
+        assertTrue(mCompactModeEnabled);
+
+        mMediator.setUseCompactUi(false);
+        assertFalse(mModel.get(NavigationAttachmentsProperties.COMPACT_UI));
+        assertFalse(mCompactModeEnabled);
     }
 }
