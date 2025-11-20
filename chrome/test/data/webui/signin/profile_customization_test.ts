@@ -253,3 +253,40 @@ suite(`LocalProfileCreationTest`, function() {
     return browserProxy.whenCalled('deleteProfile');
   });
 });
+
+suite('ProfileCustomizationLocalProfileFrictionReductionExp', function() {
+  let app: ProfileCustomizationAppElement;
+  let browserProxy: TestProfileCustomizationBrowserProxy;
+
+  setup(function() {
+    loadTimeData.overrideValues({
+      profileName: 'TestNameLocalProfile',
+      isLocalProfileCreation: true,
+      shouldShowDefaultProfileName: true,
+    });
+    browserProxy = new TestProfileCustomizationBrowserProxy();
+    ProfileCustomizationBrowserProxyImpl.setInstance(browserProxy);
+  });
+
+  async function initializeApp() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    app = document.createElement('profile-customization-app');
+    document.body.append(app);
+    await browserProxy.whenCalled('initialized');
+  }
+
+  test('PrefillProfileNameInFrictionReductionExp', async function() {
+    await initializeApp();
+    await app.$.nameInput.updateComplete;
+    await app.$.nameInput.updateComplete;
+
+    const doneButton = app.$.doneButton;
+    assertFalse(doneButton.disabled);
+    doneButton.click();
+
+    const profileName = await browserProxy.whenCalled('done');
+    assertEquals('TestNameLocalProfile', profileName);
+
+    return microtasksFinished();
+  });
+});

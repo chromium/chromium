@@ -108,6 +108,13 @@ ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
   source->AddBoolean("isLocalProfileCreation",
                      GetProfileCustomizationStyle(url) ==
                          ProfileCustomizationStyle::kLocalProfileCreation);
+  source->AddBoolean(
+      "shouldShowDefaultProfileName",
+      base::FeatureList::IsEnabled(
+          switches::kProfileCreationFrictionReductionExperiment) &&
+          switches::kProfileCreationFrictionReductionVariation.Get() ==
+              switches::ProfileCreationFrictionReductionVariation::
+                  kPrefillNameRequirement);
 
   if (url.GetQuery() == "debug") {
     // Not intended to be hooked to anything. The bubble will not initialize it

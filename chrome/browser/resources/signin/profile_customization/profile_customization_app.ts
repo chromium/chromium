@@ -81,6 +81,8 @@ export class ProfileCustomizationAppElement extends
       selectedAvatar_: {type: Object},
 
       isLocalProfileCreation_: {type: Boolean},
+
+      shouldShowDefaultProfileName_: {type: Boolean},
     };
   }
 
@@ -94,13 +96,16 @@ export class ProfileCustomizationAppElement extends
   private confirmedAvatar_: AvatarIcon|null = null;
   protected accessor isLocalProfileCreation_: boolean =
       loadTimeData.getBoolean('isLocalProfileCreation');
+  protected accessor shouldShowDefaultProfileName_: boolean =
+      loadTimeData.getBoolean('shouldShowDefaultProfileName');
   private profileCustomizationBrowserProxy_: ProfileCustomizationBrowserProxy =
       ProfileCustomizationBrowserProxyImpl.getInstance();
 
   override firstUpdated() {
     // profileName_ is only set now, because it triggers a validation of the
     // input which crashes if it's done too early.
-    if (!this.isLocalProfileCreation_) {
+    // set profileName_ for local profiles in friction reduction experiment.
+    if (!this.isLocalProfileCreation_ || this.shouldShowDefaultProfileName_) {
       this.profileName_ = loadTimeData.getString('profileName');
     }
     this.addWebUiListener(
