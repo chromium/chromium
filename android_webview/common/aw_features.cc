@@ -118,15 +118,6 @@ BASE_FEATURE(kWebViewPrefetchNativeLibrary, base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<bool> kWebViewPrefetchFromRenderer{
     &kWebViewPrefetchNativeLibrary, "WebViewPrefetchFromRenderer", true};
 
-// If enabled TYPE_SCROLLED accessibility events are sent every 100ms when user
-// is scrolling irrespective of GestureScrollUpdate being consumed or not.
-// If disabled events are sent on GSU consumed ack.
-// Planning to keep it as kill switch in case we need to revert back to old
-// default behavior.
-// TODO(b/328601354): Cleanup after the change has been in stable for some time.
-BASE_FEATURE(kWebViewDoNotSendAccessibilityEventsOnGSU,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // This enables WebView's hyperlink context menu.
 BASE_FEATURE(kWebViewHyperlinkContextMenu, base::FEATURE_DISABLED_BY_DEFAULT);
 
