@@ -124,8 +124,7 @@ class TestUtilityServiceImpl : public mojom::TestService {
     auto mapping = region.Map();
     auto new_region = base::UnsafeSharedMemoryRegion::Create(region.GetSize());
     auto new_mapping = new_region.Map();
-    UNSAFE_TODO(
-        memcpy(new_mapping.memory(), mapping.memory(), region.GetSize()));
+    base::span(new_mapping).copy_from(mapping);
     std::move(callback).Run(std::move(new_region));
   }
 
