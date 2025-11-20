@@ -393,7 +393,9 @@ static bool TimeComparator(scoped_refptr<DevToolsAgentHost> host1,
 // DevToolsHttpHandler -------------------------------------------------------
 
 DevToolsHttpHandler::~DevToolsHttpHandler() {
-  if (delegate_) {
+  if (delegate_ &&
+      mode_ ==
+          DevToolsAgentHost::RemoteDebuggingServerMode::kWithApprovalOnly) {
     delegate_->SetActiveWebSocketConnections(0);
   }
   // Disconnecting sessions might lead to the last minute messages generated
@@ -871,8 +873,10 @@ void DevToolsHttpHandler::OnWebSocketMessage(int connection_id,
 }
 
 void DevToolsHttpHandler::OnClose(int connection_id) {
-  connection_to_client_.erase(connection_id);
-  if (delegate_) {
+  auto removed_count = connection_to_client_.erase(connection_id);
+  if (delegate_ && removed_count > 0 &&
+      mode_ ==
+          DevToolsAgentHost::RemoteDebuggingServerMode::kWithApprovalOnly) {
     delegate_->SetActiveWebSocketConnections(connection_to_client_.size());
   }
 }
@@ -997,7 +1001,10 @@ void DevToolsHttpHandler::AcceptWebSocket(
     const net::HttpServerRequestInfo& request) {
   if (!thread_)
     return;
-  delegate_->SetActiveWebSocketConnections(connection_to_client_.size());
+  if (mode_ ==
+      DevToolsAgentHost::RemoteDebuggingServerMode::kWithApprovalOnly) {
+    delegate_->SetActiveWebSocketConnections(connection_to_client_.size());
+  }
   thread_->task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&ServerWrapper::AcceptWebSocket,
                                 base::Unretained(server_wrapper_.get()),

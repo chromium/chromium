@@ -70,5 +70,5 @@ bool DevToolsRemoteServerInfobarDelegate::Accept() {
   NavigateParams params(browser_, internal_url, ui::PAGE_TRANSITION_LINK);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   Navigate(&params);
-  return false;
+  return ConfirmInfoBarDelegate::Accept();
 }

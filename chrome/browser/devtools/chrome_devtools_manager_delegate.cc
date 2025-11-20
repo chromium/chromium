@@ -19,6 +19,8 @@
 #include "chrome/browser/devtools/device/tcp_device_provider.h"
 #include "chrome/browser/devtools/devtools_availability_checker.h"
 #include "chrome/browser/devtools/devtools_browser_context_manager.h"
+#include "chrome/browser/devtools/devtools_connection_dialog.h"
+#include "chrome/browser/devtools/devtools_remote_server_infobar_delegate.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/protocol/target_handler.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -28,6 +30,7 @@
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/webui_browser/webui_browser.h"
@@ -209,6 +212,9 @@ ChromeDevToolsManagerDelegate::ChromeDevToolsManagerDelegate() {
 ChromeDevToolsManagerDelegate::~ChromeDevToolsManagerDelegate() {
   DCHECK(g_instance == this);
   g_instance = nullptr;
+  if (infobar_) {
+    infobar_->Close();
+  }
 }
 
 void ChromeDevToolsManagerDelegate::Inspect(
@@ -436,6 +442,34 @@ void ChromeDevToolsManagerDelegate::UpdateDeviceDiscovery() {
                             base::Unretained(this)));
   }
   remote_locations_.swap(remote_locations);
+}
+
+void ChromeDevToolsManagerDelegate::AcceptDebugging(AcceptCallback callback) {
+  DevToolsConnectionDialog::Show(chrome::FindLastActive(), std::move(callback));
+}
+
+void ChromeDevToolsManagerDelegate::SetActiveWebSocketConnections(
+    size_t count) {
+  if (count == 0 && infobar_) {
+    // We need to reset the pointer to the infobar before closing it because
+    // closing the infobar deletes it.
+    auto* infobar = infobar_.get();
+    infobar_ = nullptr;
+    infobar->Close();
+  } else if (count > 0 && !infobar_) {
+    auto delegate = std::make_unique<DevToolsRemoteServerInfobarDelegate>(
+        chrome::FindLastActive());
+    delegate->AddObserver(this);
+    infobar_ = GlobalConfirmInfoBar::Show(std::move(delegate));
+  }
+}
+
+void ChromeDevToolsManagerDelegate::OnAccept() {
+  infobar_ = nullptr;
+}
+
+void ChromeDevToolsManagerDelegate::OnDismiss() {
+  infobar_ = nullptr;
 }
 
 void ChromeDevToolsManagerDelegate::ResetAndroidDeviceManagerForTesting() {

@@ -232,6 +232,34 @@ RemoteDebuggingServer::GetInstance(PrefService* local_state) {
         debug_frontend_dir);
   }
 
+  // `--remote-debugging-port` and `--remote-debugging-pipe`
+  // take precedence over the new mode.
+  if (!being_debugged && base::FeatureList::IsEnabled(
+                             ::features::kDevToolsAcceptDebuggingConnections)) {
+    // TODO(crbug.com/460665929): Here the preferences set by the
+    // chrome://inspect page should be checked to determine whether the server
+    // should be started.
+    wanted_debugging = true;
+    // TODO(crbug.com/460665929): If the default 9222 is taken,
+    // we should find a free port and report it via the chrome://inspect page.
+    port = 9222;
+    // Used to write the selected port to a well-known location in the profile
+    // directory to bootstrap the connection process.
+    base::FilePath output_dir;
+    {
+      bool result = base::PathService::Get(chrome::DIR_USER_DATA, &output_dir);
+      DCHECK(result);
+    }
+    being_debugged = true;
+    // We do not support hosting DevTools in this mode, therefore,
+    // not passing the value of the kCustomDevtoolsFrontend switch.
+    content::DevToolsAgentHost::StartRemoteDebuggingServer(
+        std::make_unique<TCPServerSocketFactory>(port), output_dir,
+        /*debug_frontend_dir=*/base::FilePath(),
+        content::DevToolsAgentHost::RemoteDebuggingServerMode::
+            kWithApprovalOnly);
+  }
+
   if (being_debugged) {
     return base::WrapUnique(new RemoteDebuggingServer);
   }
