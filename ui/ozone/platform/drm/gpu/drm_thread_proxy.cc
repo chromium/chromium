@@ -83,8 +83,7 @@ void DrmThreadProxy::CreateBuffer(gfx::AcceleratedWidget widget,
   base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
   base::OnceClosure task = base::BindOnce(
       &DrmThread::CreateBuffer, base::Unretained(&drm_thread_), widget, size,
-      framebuffer_size, viz::SharedImageFormatToBufferFormat(format), usage,
-      flags, buffer, framebuffer);
+      framebuffer_size, format, usage, flags, buffer, framebuffer);
   PostSyncTask(drm_thread_.task_runner(),
                base::BindOnce(&DrmThread::RunTaskAfterDeviceReady,
                               base::Unretained(&drm_thread_), std::move(task)));

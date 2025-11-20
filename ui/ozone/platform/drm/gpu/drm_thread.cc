@@ -127,7 +127,7 @@ void DrmThread::CleanUp() {
 void DrmThread::CreateBuffer(gfx::AcceleratedWidget widget,
                              const gfx::Size& size,
                              const gfx::Size& framebuffer_size,
-                             gfx::BufferFormat format,
+                             viz::SharedImageFormat format,
                              NativePixmapUsageSet usage,
                              uint32_t client_flags,
                              std::unique_ptr<GbmBuffer>* buffer,
@@ -138,7 +138,7 @@ void DrmThread::CreateBuffer(gfx::AcceleratedWidget widget,
 
   DrmWindow* window = screen_manager_->GetWindow(widget);
   uint32_t flags = NativePixmapUsageToGbmFlags(usage);
-  uint32_t fourcc_format = GetFourCCFormatFromBufferFormat(format);
+  uint32_t fourcc_format = GetFourCCFormatFromSharedImageFormat(format);
 
   // Some modifiers are incompatible with some gbm_bo_flags.  If we give
   // modifiers to the GBM allocator, then GBM ignores the flags, and therefore
