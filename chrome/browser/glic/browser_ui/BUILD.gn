@@ -52,6 +52,10 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//ui/gfx",
   ]
+
+  if (is_chromeos) {
+    deps += [ "//chrome/browser/ash/test:test_support" ]
+  }
 }
 
 source_set("interactive_ui_tests") {

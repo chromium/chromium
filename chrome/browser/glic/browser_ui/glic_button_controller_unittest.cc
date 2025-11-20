@@ -34,6 +34,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/vector_icon_types.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ash/test/glic_user_session_test_helper.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace glic {
 namespace {
 
@@ -85,6 +89,12 @@ class GlicButtonControllerTest : public testing::Test {
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(testing_profile_manager_->SetUp());
     TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
+
+#if BUILDFLAG(IS_CHROMEOS)
+    glic_user_session_test_helper_.PreProfileSetUp(
+        testing_profile_manager_->profile_manager());
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
     profile_ = testing_profile_manager_->CreateTestingProfile("profile");
 
     actor_keyed_service_ =
@@ -107,7 +117,18 @@ class GlicButtonControllerTest : public testing::Test {
 
   void TearDown() override {
     glic_button_controller_.reset();
+    mock_browser_window_interface_.reset();
+
     TestingBrowserProcess::GetGlobal()->GetFeatures()->Shutdown();
+
+    mock_glic_service_.reset();
+    actor_keyed_service_.reset();
+    profile_ = nullptr;
+    testing_profile_manager_.reset();
+
+#if BUILDFLAG(IS_CHROMEOS)
+    glic_user_session_test_helper_.PostProfileTearDown();
+#endif  // BUILDFLAG(IS_CHROMEOS)
     scoped_feature_list_.Reset();
   }
 
@@ -124,6 +145,12 @@ class GlicButtonControllerTest : public testing::Test {
 
   GlicUnitTestEnvironment glic_test_env_;
   content::BrowserTaskEnvironment task_environment;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // glic can run only in User session, so it needs to set up user session
+  // manually on ChromeOS.
+  ash::GlicUserSessionTestHelper glic_user_session_test_helper_;
+#endif  // BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
   raw_ptr<Profile> profile_ = nullptr;
   signin::IdentityTestEnvironment identity_test_environment;
@@ -138,13 +165,7 @@ class GlicButtonControllerTest : public testing::Test {
 
 // Test that settings changes are reflected in the show state of the controller
 // delegate.
-// TODO(crbug.com/461128291): Enable on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_GlicSettings DISABLED_GlicSettings
-#else
-#define MAYBE_GlicSettings GlicSettings
-#endif
-TEST_F(GlicButtonControllerTest, MAYBE_GlicSettings) {
+TEST_F(GlicButtonControllerTest, GlicSettings) {
   PrefService* prefs = profile()->GetPrefs();
 
   prefs->SetInteger(
