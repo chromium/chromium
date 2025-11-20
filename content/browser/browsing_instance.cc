@@ -13,7 +13,6 @@
 #include "content/browser/site_instance_group.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/browser_or_resource_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/common/content_features.h"
@@ -34,7 +33,7 @@ BrowsingInstance::BrowsingInstance(
     bool is_fixed_storage_partition)
     : isolation_context_(
           BrowsingInstanceId::FromUnsafeValue(next_browsing_instance_id_++),
-          BrowserOrResourceContext(browser_context),
+          browser_context,
           is_guest,
           is_fenced,
           OriginAgentClusterIsolationState::CreateForDefaultIsolation(
@@ -51,7 +50,7 @@ BrowsingInstance::BrowsingInstance(
 }
 
 BrowserContext* BrowsingInstance::GetBrowserContext() const {
-  return isolation_context_.browser_or_resource_context().ToBrowserContext();
+  return isolation_context_.browser_context();
 }
 
 bool BrowsingInstance::HasSiteInstance(const SiteInfo& site_info) {

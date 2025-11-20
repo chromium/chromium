@@ -188,8 +188,7 @@ SiteInfo SiteInfo::CreateForDefaultSiteInstance(
         cross_origin_isolation_key) {
   // Get default JIT policy for this browser_context by passing in an empty
   // site_url.
-  BrowserContext* browser_context =
-      isolation_context.browser_or_resource_context().ToBrowserContext();
+  BrowserContext* browser_context = isolation_context.browser_context();
   bool is_jit_disabled = GetContentClient()->browser()->IsJitDisabledForSite(
       browser_context, GURL());
   bool are_v8_optimizations_disabled = CheckShouldDisableV8Optimization(
@@ -265,8 +264,7 @@ SiteInfo SiteInfo::Create(const IsolationContext& isolation_context,
 
   std::optional<GURL> effective_url =
       GetContentClient()->browser()->GetEffectiveURL(
-          isolation_context.browser_or_resource_context().ToBrowserContext(),
-          url_info.url);
+          isolation_context.browser_context(), url_info.url);
 
   // In the case of WebUIs, pass the real URL as an effective URL. It will be
   // used to compute a SiteInfo's site URL which is the complete WebUI URL,
@@ -288,8 +286,7 @@ SiteInfo SiteInfo::Create(const IsolationContext& isolation_context,
             .GetURL();
   }
 
-  BrowserContext* browser_context =
-      isolation_context.browser_or_resource_context().ToBrowserContext();
+  BrowserContext* browser_context = isolation_context.browser_context();
 
   // If the SiteInfo is for a site that does not require a dedicated process
   // (and will end up in the default SiteInstanceGroup), then we should use
@@ -467,11 +464,10 @@ SiteInfo SiteInfo::GetNonOriginKeyedEquivalentForMetrics(
     // SiteInfo.
     GURL process_lock_url;
     if (policy->GetMatchingProcessIsolatedOrigin(
-            IsolationContext(BrowsingInstanceId(0),
-                             isolation_context.browser_or_resource_context(),
-                             isolation_context.is_guest(),
-                             isolation_context.is_fenced(),
-                             isolation_context.default_isolation_state()),
+            IsolationContext(
+                BrowsingInstanceId(0), isolation_context.browser_context(),
+                isolation_context.is_guest(), isolation_context.is_fenced(),
+                isolation_context.default_isolation_state()),
             agent_cluster_key_.GetOrigin(),
             false /* origin_requests_isolation */, &result_origin)) {
       process_lock_url = result_origin.GetURL();
@@ -666,10 +662,8 @@ std::ostream& operator<<(std::ostream& out, const SiteInfo& site_info) {
 bool SiteInfo::RequiresDedicatedProcess(
     const IsolationContext& isolation_context) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(isolation_context.browser_or_resource_context());
-
-  BrowserContext* browser_context =
-      isolation_context.browser_or_resource_context().ToBrowserContext();
+  BrowserContext* browser_context = isolation_context.browser_context();
+  DCHECK(browser_context);
   return RequiresDedicatedProcessInternal(
       site_url_, isolation_context, browser_context,
       does_site_request_dedicated_process_for_coop_,
@@ -679,8 +673,7 @@ bool SiteInfo::RequiresDedicatedProcess(
 bool SiteInfo::ShouldLockProcessToSite(
     const IsolationContext& isolation_context) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  BrowserContext* browser_context =
-      isolation_context.browser_or_resource_context().ToBrowserContext();
+  BrowserContext* browser_context = isolation_context.browser_context();
   DCHECK(browser_context);
 
   // Don't lock to origin in --single-process mode, since this mode puts
@@ -1152,8 +1145,7 @@ GURL SiteInfo::GetSiteForURLForTest(const IsolationContext& isolation_context,
   std::optional<GURL> effective_url;
   if (should_use_effective_urls) {
     effective_url = GetContentClient()->browser()->GetEffectiveURL(
-        isolation_context.browser_or_resource_context().ToBrowserContext(),
-        url_info.url);
+        isolation_context.browser_context(), url_info.url);
   }
   return GetAgentClusterKeyForURL(isolation_context, url_info, effective_url)
       .GetURL();

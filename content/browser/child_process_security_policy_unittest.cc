@@ -189,8 +189,8 @@ class ChildProcessSecurityPolicyTest
         SiteInfo::GetSiteForOrigin(origin),
         {IsolatedOriginEntry(
             origin, true /* applies_to_future_browsing_instances */,
-            browsing_instance_id, nullptr, nullptr, isolate_all_subdomains,
-            IsolatedOriginSource::TEST)});
+            browsing_instance_id, /*browser_context=*/nullptr,
+            isolate_all_subdomains, IsolatedOriginSource::TEST)});
   }
   auto GetIsolatedOriginEntry(int browsing_instance_id,
                               const url::Origin& origin,
@@ -208,11 +208,10 @@ class ChildProcessSecurityPolicyTest
                               const url::Origin& origin) {
     return std::pair<GURL, std::vector<IsolatedOriginEntry>>(
         SiteInfo::GetSiteForOrigin(origin),
-        {IsolatedOriginEntry(
-            origin, applies_to_future_browsing_instances, browsing_instance_id,
-            browser_context,
-            browser_context ? browser_context->GetResourceContext() : nullptr,
-            false /* isolate_all_subdomains */, IsolatedOriginSource::TEST)});
+        {IsolatedOriginEntry(origin, applies_to_future_browsing_instances,
+                             browsing_instance_id, browser_context,
+                             false /* isolate_all_subdomains */,
+                             IsolatedOriginSource::TEST)});
   }
   // Converts |origin| -> (site_url, {entry})
   //     where site_url is created from |origin| and
@@ -238,12 +237,14 @@ class ChildProcessSecurityPolicyTest
         SiteInfo::GetSiteForOrigin(origin1),
         {IsolatedOriginEntry(
              origin1, true /* applies_to_future_browsing_contexts */,
-             SiteInstanceImpl::NextBrowsingInstanceId(), nullptr, nullptr,
-             origin1_isolate_all_subdomains, IsolatedOriginSource::TEST),
+             SiteInstanceImpl::NextBrowsingInstanceId(),
+             /*browser_context=*/nullptr, origin1_isolate_all_subdomains,
+             IsolatedOriginSource::TEST),
          IsolatedOriginEntry(
              origin2, true /* applies_to_future_browsing_contexts */,
-             SiteInstanceImpl::NextBrowsingInstanceId(), nullptr, nullptr,
-             origin2_isolate_all_subdomains, IsolatedOriginSource::TEST)});
+             SiteInstanceImpl::NextBrowsingInstanceId(),
+             /*browser_context=*/nullptr, origin2_isolate_all_subdomains,
+             IsolatedOriginSource::TEST)});
   }
 
   bool IsIsolatedOrigin(BrowserContext* context,
@@ -2371,9 +2372,7 @@ TEST_P(ChildProcessSecurityPolicyTest,
             foo_instance->GetIsolationContext().browsing_instance_id());
   EXPECT_EQ(BrowsingInstanceId::FromUnsafeValue(initial_id.value() + 1),
             SiteInstanceImpl::NextBrowsingInstanceId());
-  EXPECT_EQ(&context1, foo_instance->GetIsolationContext()
-                           .browser_or_resource_context()
-                           .ToBrowserContext());
+  EXPECT_EQ(&context1, foo_instance->GetIsolationContext().browser_context());
 
   // Isolating foo.com in |context1| is allowed and should add a new
   // IsolatedOriginEntry.  This wouldn't introduce any additional isolation,

@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include "base/check.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "content/browser/browsing_instance.h"
 #include "content/browser/isolation_context.h"

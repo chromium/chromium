@@ -37,13 +37,11 @@
 #include "content/common/content_navigation_policy.h"
 #include "content/common/features.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/browser_or_resource_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_data.h"
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/browser/resource_context.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/storage_partition.h"
@@ -259,12 +257,6 @@ bool AllowProcessLockMismatchForNTP(const ProcessLock& expected_lock,
       expected_lock.GetProcessLockURL(), actual_lock.site_url());
 }
 
-base::WeakPtr<ResourceContext> GetResourceContext(
-    BrowserContext* browser_context) {
-  ResourceContext* resource_context = browser_context->GetResourceContext();
-  return resource_context ? resource_context->GetWeakPtr() : nullptr;
-}
-
 }  // namespace
 
 ChildProcessSecurityPolicyImpl::Handle::Handle()
@@ -369,8 +361,7 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
       : can_read_raw_cookies_(false),
         can_send_midi_(false),
         can_send_midi_sysex_(false),
-        browser_context_(browser_context),
-        resource_context_(GetResourceContext(browser_context)) {
+        browser_context_(browser_context) {
     if (!base::FeatureList::IsEnabled(blink::features::kBlockMidiByDefault)) {
       can_send_midi_ = true;
     }
@@ -744,16 +735,9 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
     return can_send_midi_sysex_;
   }
 
-  BrowserOrResourceContext GetBrowserOrResourceContext() const {
-    if (BrowserThread::CurrentlyOn(BrowserThread::UI) && browser_context_) {
-      return BrowserOrResourceContext(browser_context_);
-    }
-
-    if (BrowserThread::CurrentlyOn(BrowserThread::IO) && resource_context_) {
-      return BrowserOrResourceContext(resource_context_.get());
-    }
-
-    return BrowserOrResourceContext();
+  BrowserContext* browser_context() const {
+    CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
+    return browser_context_;
   }
 
   void ClearBrowserContextIfMatches(const BrowserContext* browser_context) {
@@ -864,7 +848,6 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
   FileSystemMap filesystem_permissions_;
 
   raw_ptr<BrowserContext> browser_context_;
-  base::WeakPtr<ResourceContext> resource_context_;
 };
 
 // IsolatedOriginEntry implementation.
@@ -873,7 +856,6 @@ ChildProcessSecurityPolicyImpl::IsolatedOriginEntry::IsolatedOriginEntry(
     bool applies_to_future_browsing_instances,
     BrowsingInstanceId browsing_instance_id,
     BrowserContext* browser_context,
-    ResourceContext* resource_context,
     bool isolate_all_subdomains,
     IsolatedOriginSource source)
     : origin_(origin),
@@ -881,13 +863,8 @@ ChildProcessSecurityPolicyImpl::IsolatedOriginEntry::IsolatedOriginEntry(
           applies_to_future_browsing_instances),
       browsing_instance_id_(browsing_instance_id),
       browser_context_(browser_context),
-      resource_context_(resource_context),
       isolate_all_subdomains_(isolate_all_subdomains),
-      source_(source) {
-  // If there is a BrowserContext, there must also be a ResourceContext
-  // associated with this entry.
-  DCHECK_EQ(!browser_context, !resource_context);
-}
+      source_(source) {}
 
 ChildProcessSecurityPolicyImpl::IsolatedOriginEntry::IsolatedOriginEntry(
     const IsolatedOriginEntry& other) = default;
@@ -912,8 +889,8 @@ bool ChildProcessSecurityPolicyImpl::IsolatedOriginEntry::
 }
 
 bool ChildProcessSecurityPolicyImpl::IsolatedOriginEntry::MatchesProfile(
-    const BrowserOrResourceContext& browser_or_resource_context) const {
-  DCHECK(IsRunningOnExpectedThread());
+    BrowserContext* browser_context) const {
+  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
 
   // Globally isolated origins aren't associated with any particular profile
   // and should apply to all profiles.
@@ -921,12 +898,7 @@ bool ChildProcessSecurityPolicyImpl::IsolatedOriginEntry::MatchesProfile(
     return true;
   }
 
-  if (BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    return browser_context_ == browser_or_resource_context.ToBrowserContext();
-  } else if (BrowserThread::CurrentlyOn(BrowserThread::IO)) {
-    return resource_context_ == browser_or_resource_context.ToResourceContext();
-  }
-  NOTREACHED();
+  return browser_context_ == browser_context;
 }
 
 bool ChildProcessSecurityPolicyImpl::IsolatedOriginEntry::
@@ -2071,10 +2043,9 @@ bool ChildProcessSecurityPolicyImpl::PerformJailAndCitadelChecks(
 
   ProcessLock actual_process_lock = security_state->process_lock();
 
-  BrowserOrResourceContext browser_or_resource_context =
-      security_state->GetBrowserOrResourceContext();
-  // The caller ensures that the `browser_or_resource_context` is valid.
-  CHECK(browser_or_resource_context);
+  BrowserContext* browser_context = security_state->browser_context();
+  // The caller ensures that the `browser_context` is valid.
+  CHECK(browser_context);
 
   // Loop over all BrowsingInstanceIDs in the SecurityState, and return true if
   // any of them would return true, otherwise return false. This allows the
@@ -2154,9 +2125,8 @@ bool ChildProcessSecurityPolicyImpl::PerformJailAndCitadelChecks(
     // StoragePartition, but this is enforced by other means (e.g., resource
     // access APIs can't name an alternate StoragePartition).
     IsolationContext isolation_context(
-        browsing_instance_id, browser_or_resource_context,
-        actual_process_lock.is_guest(), actual_process_lock.is_fenced(),
-        default_isolation_state);
+        browsing_instance_id, browser_context, actual_process_lock.is_guest(),
+        actual_process_lock.is_fenced(), default_isolation_state);
 
     // NOTE: If we're on the IO thread, the call to ProcessLock::Create() below
     // will return a ProcessLock with an (internally) identical site_url, one
@@ -2377,8 +2347,8 @@ bool ChildProcessSecurityPolicyImpl::CanAccessMaybeOpaqueOrigin(
 
   if (!security_state) {
     failure_reason = "no_security_state";
-  } else if (!security_state->GetBrowserOrResourceContext()) {
-    failure_reason = "no_browser_or_resource_context";
+  } else if (!security_state->browser_context()) {
+    failure_reason = "no_browser_context";
   } else {
     ProcessLock actual_process_lock = security_state->process_lock();
 
@@ -2714,12 +2684,9 @@ void ChildProcessSecurityPolicyImpl::AddIsolatedOriginInternal(
   }
 
   if (should_add) {
-    ResourceContext* resource_context =
-        browser_context ? browser_context->GetResourceContext() : nullptr;
-    IsolatedOriginEntry entry(std::move(origin_to_add),
-                              applies_to_future_browsing_instances,
-                              browsing_instance_id, browser_context,
-                              resource_context, isolate_all_subdomains, source);
+    IsolatedOriginEntry entry(
+        std::move(origin_to_add), applies_to_future_browsing_instances,
+        browsing_instance_id, browser_context, isolate_all_subdomains, source);
     isolated_origins_[key].emplace_back(std::move(entry));
   }
 }
@@ -2766,13 +2733,7 @@ bool ChildProcessSecurityPolicyImpl::IsIsolatedOrigin(
 
 bool ChildProcessSecurityPolicyImpl::IsGloballyIsolatedOriginForTesting(
     const url::Origin& origin) {
-  BrowserOrResourceContext no_browser_context;
-  BrowsingInstanceId null_browsing_instance_id;
-  IsolationContext isolation_context(
-      null_browsing_instance_id, no_browser_context, /*is_guest=*/false,
-      /*is_fenced=*/false,
-      OriginAgentClusterIsolationState::CreateNonIsolatedByDefault());
-  return IsIsolatedOrigin(isolation_context, origin, false);
+  return base::Contains(GetIsolatedOrigins(), origin);
 }
 
 std::vector<url::Origin> ChildProcessSecurityPolicyImpl::GetIsolatedOrigins(
@@ -2791,9 +2752,9 @@ std::vector<url::Origin> ChildProcessSecurityPolicyImpl::GetIsolatedOrigins(
       // not associated with a profile (i.e., which apply globally to the
       // entire browser).
       bool matches_profile =
-          browser_context ? isolated_origin_entry.MatchesProfile(
-                                BrowserOrResourceContext(browser_context))
-                          : isolated_origin_entry.AppliesToAllBrowserContexts();
+          browser_context
+              ? isolated_origin_entry.MatchesProfile(browser_context)
+              : isolated_origin_entry.AppliesToAllBrowserContexts();
       if (!matches_profile) {
         continue;
       }
@@ -2850,7 +2811,7 @@ bool ChildProcessSecurityPolicyImpl::GetMatchingProcessIsolatedOrigin(
     bool requests_origin_keyed_process,
     const GURL& site_url,
     url::Origin* result) {
-  DCHECK(IsRunningOnExpectedThread());
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
 
   *result = url::Origin();
   base::AutoLock isolated_origins_lock(isolated_origins_lock_);
@@ -2925,7 +2886,7 @@ bool ChildProcessSecurityPolicyImpl::GetMatchingProcessIsolatedOrigin(
       // If this isolated origin applies only to a specific profile, don't
       // use it for a different profile.
       if (!isolated_origin_entry.MatchesProfile(
-              isolation_context.browser_or_resource_context())) {
+              isolation_context.browser_context())) {
         continue;
       }
 
@@ -3050,8 +3011,7 @@ void ChildProcessSecurityPolicyImpl::AddDefaultIsolatedOriginIfNeeded(
       isolation_context.browsing_instance_id());
   // All callers to this function live on the UI thread, so the IsolationContext
   // should contain a BrowserContext*.
-  BrowserContext* browser_context =
-      isolation_context.browser_or_resource_context().ToBrowserContext();
+  BrowserContext* browser_context = isolation_context.browser_context();
   DCHECK(browser_context);
   CHECK(!browsing_instance_id.is_null());
 
@@ -3190,11 +3150,10 @@ void ChildProcessSecurityPolicyImpl::AddCoopIsolatedOriginForBrowsingInstance(
   // ones.  Note that it's possible for `origin` to also become isolated for
   // future BrowsingInstances if AddFutureIsolatedOrigins() is called for it
   // later.
-  AddIsolatedOriginInternal(
-      isolation_context.browser_or_resource_context().ToBrowserContext(),
-      origin, false /* applies_to_future_browsing_instances */,
-      isolation_context.browsing_instance_id(),
-      false /* isolate_all_subdomains */, source);
+  AddIsolatedOriginInternal(isolation_context.browser_context(), origin,
+                            false /* applies_to_future_browsing_instances */,
+                            isolation_context.browsing_instance_id(),
+                            false /* isolate_all_subdomains */, source);
 }
 
 void ChildProcessSecurityPolicyImpl::
@@ -3211,8 +3170,7 @@ void ChildProcessSecurityPolicyImpl::
          (oac_isolation_state.logical_oac_status() ==
               AgentClusterKey::OACStatus::kSiteKeyedByHeader &&
           SiteIsolationPolicy::AreOriginAgentClustersEnabledByDefault(
-              isolation_context.browser_or_resource_context()
-                  .ToBrowserContext())));
+              isolation_context.browser_context())));
 
   // We ought to have validated the origin prior to getting here.  If the
   // origin isn't valid at this point, something has gone wrong.
@@ -3383,7 +3341,7 @@ std::string ChildProcessSecurityPolicyImpl::GetKilledProcessOriginLock(
     return "(child id not found)";
   }
 
-  if (!security_state->GetBrowserOrResourceContext()) {
+  if (!security_state->browser_context()) {
     return "(empty and null context)";
   }
 

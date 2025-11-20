@@ -51,7 +51,6 @@ namespace content {
 class BrowserContext;
 class IsolationContext;
 class ProcessLock;
-class ResourceContext;
 struct UrlInfo;
 
 class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
@@ -674,7 +673,6 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
                         bool applies_to_future_browsing_instances,
                         BrowsingInstanceId browsing_instance_id,
                         BrowserContext* browser_context,
-                        ResourceContext* resource_context,
                         bool isolate_all_subdomains,
                         IsolatedOriginSource source);
     // Copyable and movable.
@@ -688,12 +686,11 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
     bool operator<(const IsolatedOriginEntry& other) const {
       return std::tie(origin_, applies_to_future_browsing_instances_,
                       browsing_instance_id_, browser_context_,
-                      resource_context_, isolate_all_subdomains_, source_) <
+                      isolate_all_subdomains_, source_) <
              std::tie(other.origin_,
                       other.applies_to_future_browsing_instances_,
                       other.browsing_instance_id_, other.browser_context_,
-                      other.resource_context_, other.isolate_all_subdomains_,
-                      source_);
+                      other.isolate_all_subdomains_, source_);
     }
 
     bool operator==(const IsolatedOriginEntry& other) const {
@@ -702,7 +699,6 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
                  other.applies_to_future_browsing_instances_ &&
              browsing_instance_id_ == other.browsing_instance_id_ &&
              browser_context_ == other.browser_context_ &&
-             resource_context_ == other.resource_context_ &&
              isolate_all_subdomains_ == other.isolate_all_subdomains_ &&
              source_ == other.source_;
     }
@@ -711,10 +707,9 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
     bool AppliesToAllBrowserContexts() const;
 
     // True if (1) this entry is associated with the same profile as
-    // |browser_or_resource_context|, or (2) this entry applies to all
-    // profiles.  May be used on UI or IO threads.
-    bool MatchesProfile(
-        const BrowserOrResourceContext& browser_or_resource_context) const;
+    // |browser_context|, or (2) this entry applies to all profiles.  May be
+    // used on UI or IO threads.
+    bool MatchesProfile(BrowserContext* browser_context) const;
 
     // True if this entry applies to the BrowsingInstance specified by
     // `browsing_instance_id`.  See `applies_to_future_browsing_instances_` and
@@ -757,11 +752,9 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
     BrowsingInstanceId browsing_instance_id_;
 
     // Optional information about the profile where the isolated origin
-    // applies.  |browser_context_| may be used on the UI thread, and
-    // |resource_context_| may be used on the IO thread.  If these are null,
+    // applies. This may only be used on the UI thread. If this is null,
     // then the isolated origin applies globally to all profiles.
     raw_ptr<BrowserContext> browser_context_;
-    raw_ptr<ResourceContext> resource_context_;
 
     // True if origins at this or lower level should be treated as distinct
     // isolated origins, effectively isolating all domains below a given domain,
@@ -1007,8 +1000,6 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   //   2. Optionally, which BrowserContext (profile) it applies to.  When the
   //      |browser_context| field in the IsolatedOriginEntry is non-null, a
   //      particular isolated origin entry only applies to that BrowserContext.
-  //      A ResourceContext, BrowserContext's representation on the IO thread,
-  //      is also stored in the entry to facilitate checks on the IO thread.
   //      Note that the same origin may be isolated in different profiles,
   //      possibly with different BrowsingInstance ID cut-offs.  For example:
   //        https://foo.com -> { [https://test.foo.com profile1 4],
