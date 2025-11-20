@@ -35,8 +35,8 @@ class TensorImplOrt final : public WebNNTensorImpl {
   void WriteTensorImpl(mojo_base::BigBuffer src_buffer) override;
   bool ImportTensorImpl() override;
   void ExportTensorImpl(
-      std::unique_ptr<gpu::WebNNTensorRepresentation::ScopedAccess> access)
-      override;
+      std::unique_ptr<gpu::WebNNTensorRepresentation::ScopedAccess> access,
+      ExportTensorCallback callback) override;
 
   base::span<uint8_t> AsSpan() const;
 

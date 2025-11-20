@@ -50,8 +50,8 @@ class TensorImplTflite final : public WebNNTensorImpl {
   void WriteTensorImpl(mojo_base::BigBuffer src_buffer) override;
   bool ImportTensorImpl() override;
   void ExportTensorImpl(
-      std::unique_ptr<gpu::WebNNTensorRepresentation::ScopedAccess> access)
-      override;
+      std::unique_ptr<gpu::WebNNTensorRepresentation::ScopedAccess> access,
+      ExportTensorCallback callback) override;
 
   scoped_refptr<QueueableResourceState<BufferContent>> buffer_state_
       GUARDED_BY_CONTEXT(gpu_sequence_checker_);

@@ -95,8 +95,8 @@ class FakeWebNNTensorImpl final : public WebNNTensorImpl {
   // Interop is not required by tests.
   bool ImportTensorImpl() override { return false; }
   void ExportTensorImpl(
-      std::unique_ptr<gpu::WebNNTensorRepresentation::ScopedAccess> access)
-      override {}
+      std::unique_ptr<gpu::WebNNTensorRepresentation::ScopedAccess> access,
+      ExportTensorCallback callback) override {}
 };
 
 // Helper class to create the FakeWebNNGraphImpl that is intended to test

@@ -86,7 +86,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNTensorImpl
   // Backend subclasses implement this to perform any necessary
   // device synchronization.
   virtual void ExportTensorImpl(
-      std::unique_ptr<gpu::WebNNTensorRepresentation::ScopedAccess> access) = 0;
+      std::unique_ptr<gpu::WebNNTensorRepresentation::ScopedAccess> access,
+      ExportTensorCallback callback) = 0;
 
   base::WeakPtr<WebNNContextImpl> context_;
 

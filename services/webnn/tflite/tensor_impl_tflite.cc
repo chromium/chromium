@@ -140,7 +140,8 @@ bool TensorImplTflite::ImportTensorImpl() {
 }
 
 void TensorImplTflite::ExportTensorImpl(
-    std::unique_ptr<gpu::WebNNTensorRepresentation::ScopedAccess> access) {
+    std::unique_ptr<gpu::WebNNTensorRepresentation::ScopedAccess> access,
+    ExportTensorCallback callback) {
   NOTIMPLEMENTED();
 }
 

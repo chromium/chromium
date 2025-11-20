@@ -70,8 +70,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) TensorImplDml final
   void WriteTensorImpl(mojo_base::BigBuffer src_buffer) override;
   bool ImportTensorImpl() override;
   void ExportTensorImpl(
-      std::unique_ptr<gpu::WebNNTensorRepresentation::ScopedAccess> access)
-      override;
+      std::unique_ptr<gpu::WebNNTensorRepresentation::ScopedAccess> access,
+      ExportTensorCallback callback) override;
 
   // The D3D12 resource that holds the tensor data.
   // The buffer must always remain valid after creation and could outlive

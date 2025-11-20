@@ -171,11 +171,8 @@ void WebNNTensorImpl::ExportTensor(ExportTensorCallback callback) {
             }
 
             // End WebNN access which makes the tensor be exported.
-            self->ExportTensorImpl(std::move(self->representation_access_));
-
-            // Output a fence which must be waited to ensure WebNN has completed
-            // execution.
-            std::move(callback).Run(context->GenVerifiedSyncToken());
+            self->ExportTensorImpl(std::move(self->representation_access_),
+                                   std::move(callback));
           },
           // Safe to use base::Unretained because this context owns the sequence
           // used by the task runner to run this task.

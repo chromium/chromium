@@ -106,8 +106,8 @@ class FakeWebNNTensorImpl final : public WebNNTensorImpl {
   // Interop is not required by tests.
   bool ImportTensorImpl() override { return false; }
   void ExportTensorImpl(
-      std::unique_ptr<gpu::WebNNTensorRepresentation::ScopedAccess> access)
-      override {}
+      std::unique_ptr<gpu::WebNNTensorRepresentation::ScopedAccess> access,
+      ExportTensorCallback callback) override {}
 };
 
 // A fake WebNNContext Mojo interface implementation that binds a pipe for

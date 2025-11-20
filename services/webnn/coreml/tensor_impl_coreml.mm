@@ -13,6 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "mojo/public/cpp/base/big_buffer.h"
@@ -365,8 +366,41 @@ bool TensorImplCoreml::ImportTensorImpl() {
 }
 
 void TensorImplCoreml::ExportTensorImpl(
-    std::unique_ptr<gpu::WebNNTensorRepresentation::ScopedAccess> access) {
-  // Empty since CoreML requires no device synchronization.
+    std::unique_ptr<gpu::WebNNTensorRepresentation::ScopedAccess> access,
+    ExportTensorCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
+  // Take an exclusive lock to the buffer contents to wait for all existing
+  // operations to finish.
+  std::vector<scoped_refptr<QueueableResourceStateBase>> exclusive_resources = {
+      buffer_state_};
+
+  auto task = base::MakeRefCounted<ResourceTask>(
+      /*shared_resources=*/
+      std::vector<scoped_refptr<QueueableResourceStateBase>>(),
+      std::move(exclusive_resources),
+      base::BindOnce(
+          [](base::WeakPtr<WebNNContextImpl> context,
+             ExportTensorCallback callback,
+             base::OnceClosure completion_closure) {
+            std::move(completion_closure).Run();
+            if (!context) {
+              return;
+            }
+
+            context->scheduler_task_runner()->PostTask(
+                FROM_HERE,
+                base::BindOnce(
+                    [](base::WeakPtr<WebNNContextImpl> context,
+                       ExportTensorCallback callback) {
+                      if (!context) {
+                        return;
+                      }
+                      std::move(callback).Run(context->GenVerifiedSyncToken());
+                    },
+                    context, std::move(callback)));
+          },
+          context_, std::move(callback)));
+  task->Enqueue();
 }
 
 }  // namespace webnn::coreml

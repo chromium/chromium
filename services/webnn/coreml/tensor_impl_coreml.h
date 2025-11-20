@@ -52,8 +52,8 @@ class API_AVAILABLE(macos(12.3)) TensorImplCoreml final
   void WriteTensorImpl(mojo_base::BigBuffer src_buffer) override;
   bool ImportTensorImpl() override;
   void ExportTensorImpl(
-      std::unique_ptr<gpu::WebNNTensorRepresentation::ScopedAccess> access)
-      override;
+      std::unique_ptr<gpu::WebNNTensorRepresentation::ScopedAccess> access,
+      ExportTensorCallback callback) override;
 
   const scoped_refptr<QueueableResourceState<BufferContent>>& GetBufferState()
       const;
