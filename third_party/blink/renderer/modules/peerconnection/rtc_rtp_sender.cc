@@ -60,15 +60,6 @@
 
 namespace blink {
 
-namespace features {
-
-// Killswitch for requesting key frames via setParameterOptions.
-// TODO(crbug.com/1354101): remove after rollout.
-BASE_FEATURE(kWebRtcRequestKeyFrameViaSetParameterOptions,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-}  // namespace features
-
 namespace {
 
 webrtc::RtpCodec ToWebrtcRtpCodec(const RTCRtpCodec* codec);
@@ -856,18 +847,15 @@ ScriptPromise<IDLUndefined> RTCRtpSender::setParameters(
       ToRtpParameters(pc_->GetExecutionContext(), parameters, kind_);
 
   // If present, encode options must match the number of encodings.
-  if (base::FeatureList::IsEnabled(
-          features::kWebRtcRequestKeyFrameViaSetParameterOptions)) {
-    const auto& encoding_options = options->encodingOptions();
-    if (!encoding_options.empty()) {
-      if (encoding_options.size() != encodings.size()) {
-        resolver->RejectWithDOMException(
-            DOMExceptionCode::kInvalidModificationError,
-            "encodingOptions size must match number of encodings.");
-      }
-      for (wtf_size_t i = 0; i < encoding_options.size(); i++) {
-        encodings[i].request_key_frame = encoding_options[i]->keyFrame();
-      }
+  const auto& encoding_options = options->encodingOptions();
+  if (!encoding_options.empty()) {
+    if (encoding_options.size() != encodings.size()) {
+      resolver->RejectWithDOMException(
+          DOMExceptionCode::kInvalidModificationError,
+          "encodingOptions size must match number of encodings.");
+    }
+    for (wtf_size_t i = 0; i < encoding_options.size(); i++) {
+      encodings[i].request_key_frame = encoding_options[i]->keyFrame();
     }
   }
 
