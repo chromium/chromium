@@ -88,7 +88,7 @@ class PinnedTabStripAnimationManager {
         boolean currentlyVisible = recyclerView.getVisibility() == View.VISIBLE;
 
         boolean visibleOrShowing = currentlyVisible && !mIsHiding;
-        boolean hiddenOrHiding = !currentlyVisible || (currentlyVisible && mIsHiding);
+        boolean hiddenOrHiding = !currentlyVisible || mIsHiding;
         // We are already in the right state (or transitioning to it) so no-op.
         if ((shouldBeVisible && visibleOrShowing) || (!shouldBeVisible && hiddenOrHiding)) {
             return;
@@ -96,37 +96,28 @@ class PinnedTabStripAnimationManager {
 
         mPinnedTabBarVisibilityAnimationHandler.forceFinishAnimation();
 
-        float startAlpha;
-        float endAlpha;
         Rect startRect;
         Rect endRect;
         int width = recyclerView.getMeasuredWidth();
         int height = recyclerView.getMeasuredHeight();
         if (shouldBeVisible) {
-            startAlpha = 0.0f;
-            endAlpha = 1.0f;
             startRect = new Rect(0, 0, width, 1);
             endRect = new Rect(0, 0, width, height);
             mIsHiding = false;
         } else {
-            startAlpha = 1.0f;
-            endAlpha = 0.0f;
             startRect = new Rect(0, 0, width, height);
             endRect = new Rect(0, 0, width, 1);
             mIsHiding = true;
         }
 
-        recyclerView.setAlpha(startAlpha);
+        recyclerView.setAlpha(1.0f);
         recyclerView.setClipBounds(startRect);
         recyclerView.setVisibility(View.VISIBLE);
         ValueAnimator animator = ValueAnimator.ofFloat(0f, 1f);
-        float alphaRange = endAlpha - startAlpha;
         RectEvaluator rectEvaluator = new RectEvaluator();
         animator.addUpdateListener(
                 animation -> {
                     float t = animation.getAnimatedFraction();
-                    float interpolatedAlpha = startAlpha + alphaRange * t;
-                    recyclerView.setAlpha(interpolatedAlpha);
                     Rect interpolatedRect = rectEvaluator.evaluate(t, startRect, endRect);
                     recyclerView.setClipBounds(interpolatedRect);
                 });
