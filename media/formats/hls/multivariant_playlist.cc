@@ -85,7 +85,7 @@ MultivariantPlaylist::Parse(std::string_view source,
   std::vector<VariantStream> variants;
   base::flat_map<std::string_view, scoped_refptr<RenditionGroup>>
       audio_rendition_groups;
-  uint64_t rendition_unique_id = 0;
+  RenditionGroup::RenditionTrackId::Generator rendition_id_generator;
 
   // Get variants out of the playlist
   while (true) {
@@ -158,7 +158,7 @@ MultivariantPlaylist::Parse(std::string_view source,
                   {}, audio_rendition_groups, media_tag.group_id.Str());
               auto rendition_result = group->AddRendition(
                   base::PassKey<MultivariantPlaylist>(), std::move(media_tag),
-                  uri, ++rendition_unique_id);
+                  uri, rendition_id_generator.GenerateNextId());
               if (!rendition_result.has_value()) {
                 return std::move(rendition_result).error();
               }
@@ -230,8 +230,8 @@ MultivariantPlaylist::Parse(std::string_view source,
         base::MakeRefCounted<RenditionGroup>(
             base::PassKey<MultivariantPlaylist>{}, "DEFAULT");
     RenditionGroup::RenditionTrack implicit_rendition =
-        video_renditions->MakeImplicitRendition({}, variant_uri,
-                                                ++rendition_unique_id);
+        video_renditions->MakeImplicitRendition(
+            {}, variant_uri, rendition_id_generator.GenerateNextId());
 
     variants.emplace_back(
         std::move(variant_uri), inf_tag->bandwidth, inf_tag->average_bandwidth,

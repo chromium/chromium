@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/types/id_type.h"
 #include "base/types/pass_key.h"
 #include "media/base/media_export.h"
 #include "media/base/media_track.h"
@@ -37,6 +38,7 @@ class MEDIA_EXPORT RenditionGroup : public base::RefCounted<RenditionGroup> {
   RenditionGroup& operator=(RenditionGroup&&) = delete;
 
   using RenditionTrack = std::tuple<MediaTrack, raw_ptr<const Rendition>>;
+  using RenditionTrackId = base::IdType<class RenditionTrackIdTag, uint64_t, 0>;
 
   // Adds a rendition specified by the given `XMediaTag` to this group. The
   // caller is responsible for ensuring that the rendition passed in is
@@ -47,13 +49,13 @@ class MEDIA_EXPORT RenditionGroup : public base::RefCounted<RenditionGroup> {
       base::PassKey<MultivariantPlaylist>,
       XMediaTag tag,
       const GURL& playlist_uri,
-      uint64_t rendition_unique_id);
+      RenditionTrackId rendition_unique_id);
 
   // Adds the "virtual" rendition created from the required default URL in a
   // VariantStream. The label, ID, and name are all "default".
   RenditionTrack MakeImplicitRendition(base::PassKey<MultivariantPlaylist>,
                                        const GURL& default_rendition_uri,
-                                       uint64_t rendition_unique_id);
+                                       RenditionTrackId rendition_unique_id);
 
   // Given a rendition track, try to find the track in this group which best
   // matches it's characteristics. If the provided rendition is a member of

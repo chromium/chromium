@@ -27,7 +27,7 @@ ParseStatus::Or<std::monostate> RenditionGroup::AddRendition(
     base::PassKey<MultivariantPlaylist>,
     XMediaTag tag,
     const GURL& playlist_uri,
-    uint64_t rendition_unique_id) {
+    RenditionTrackId rendition_unique_id) {
   DCHECK(tag.group_id.Str() == id_);
   DCHECK(playlist_uri.is_valid());
 
@@ -79,7 +79,7 @@ ParseStatus::Or<std::monostate> RenditionGroup::AddRendition(
           /*label = */ name,
           /*language = */ language.value_or(""),
           /*enabled = */ false,
-          /*stream_id =*/rendition_unique_id,
+          /*stream_id =*/rendition_unique_id.value(),
           /*exclusive =*/true);
       break;
     }
@@ -90,7 +90,7 @@ ParseStatus::Or<std::monostate> RenditionGroup::AddRendition(
           /*label = */ name,
           /*language = */ language.value_or(""),
           /*enabled = */ false,
-          /*stream_id =*/rendition_unique_id);
+          /*stream_id =*/rendition_unique_id.value());
       break;
     }
     default: {
@@ -128,7 +128,7 @@ ParseStatus::Or<std::monostate> RenditionGroup::AddRendition(
 RenditionGroup::RenditionTrack RenditionGroup::MakeImplicitRendition(
     base::PassKey<MultivariantPlaylist>,
     const GURL& default_rendition_uri,
-    uint64_t rendition_unique_id) {
+    RenditionTrackId rendition_unique_id) {
   auto& rendition =
       renditions_.emplace_back(base::PassKey<RenditionGroup>(),
                                Rendition::CtorArgs{
@@ -146,7 +146,7 @@ RenditionGroup::RenditionTrack RenditionGroup::MakeImplicitRendition(
       /*label = */ rendition.GetName(),
       /*language = */ "",
       /*enabled = */ true,
-      /*stream_id =*/rendition_unique_id);
+      /*stream_id =*/rendition_unique_id.value());
   return std::make_tuple(track, &rendition);
 }
 
