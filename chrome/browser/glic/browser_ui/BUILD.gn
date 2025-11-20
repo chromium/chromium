@@ -6,18 +6,74 @@ import("//chrome/common/features.gni")
 
 assert(enable_glic)
 
-source_set("browser_ui") {
+source_set("glow_controller") {
+  sources = [
+    "context_sharing_border_view_controller_impl.h",
+    "tab_underline_view_controller_impl.h",
+  ]
+  deps = [
+    ":glow",
+    "//chrome/browser/actor/ui",
+    "//chrome/browser/glic",
+    "//chrome/browser/themes",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/user_education",
+    "//components/feature_engagement/public",
+  ]
+}
+
+source_set("glow_controller_impl") {
+  sources = [
+    "context_sharing_border_view_controller_impl.cc",
+    "tab_underline_view_controller_impl.cc",
+  ]
+  deps = [
+    ":glow",
+    ":glow_controller",
+    "//chrome/browser/actor/ui",
+    "//chrome/browser/glic",
+    "//chrome/browser/themes",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/user_education",
+    "//components/feature_engagement/public",
+  ]
+}
+
+source_set("glow") {
+  sources = [
+    "animated_effect_view.h",
+    "context_sharing_border_view.h",
+    "context_sharing_border_view_controller.h",
+    "tab_underline_view.h",
+    "tab_underline_view_controller.h",
+  ]
+  deps = [
+    "//chrome/browser/themes",
+    "//chrome/browser/ui/tabs:tab_strip",
+  ]
+}
+
+source_set("glow_impl") {
   sources = [
     "animated_effect_view.cc",
     "context_sharing_border_view.cc",
-    "context_sharing_border_view_controller_impl.cc",
+    "tab_underline_view.cc",
+  ]
+  deps = [
+    ":glow",
+    "//chrome/browser/glic/resources:browser_resources",
+    "//chrome/browser/themes",
+    "//chrome/browser/ui/tabs:tab_strip",
+  ]
+}
+
+source_set("browser_ui") {
+  sources = [
     "glic_button_controller.cc",
     "glic_iph_controller.cc",
     "glic_tab_indicator_helper.cc",
     "glic_vector_icon_manager.cc",
     "scoped_glic_button_indicator.cc",
-    "tab_underline_view.cc",
-    "tab_underline_view_controller_impl.cc",
   ]
   deps = [
     "//chrome/browser/actor/ui",
@@ -69,6 +125,8 @@ source_set("interactive_ui_tests") {
   ]
   deps = [
     ":browser_ui",
+    ":glow",
+    ":glow_controller",
     "//base",
     "//chrome/browser/actor",
     "//chrome/browser/actor:test_support",

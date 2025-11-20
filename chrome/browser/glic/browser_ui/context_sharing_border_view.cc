@@ -7,7 +7,6 @@
 #include <math.h>
 
 #include "base/debug/crash_logging.h"
-#include "chrome/browser/actor/ui/actor_border_view_controller.h"
 #include "chrome/browser/glic/browser_ui/context_sharing_border_view_controller.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/browser.h"
