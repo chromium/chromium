@@ -442,8 +442,7 @@ class BookmarkModelMatchesFakeServerChecker
  public:
   BookmarkModelMatchesFakeServerChecker(bookmarks::BookmarkModel* model,
                                         syncer::SyncServiceImpl* service,
-                                        fake_server::FakeServer* fake_server,
-                                        bool is_transport_mode = false);
+                                        fake_server::FakeServer* fake_server);
   ~BookmarkModelMatchesFakeServerChecker() override;
 
   bool IsExitConditionSatisfied(std::ostream* os) override;

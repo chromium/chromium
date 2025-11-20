@@ -474,13 +474,13 @@ void TriggerAllFaviconLoading(BookmarkModel* model) {
 
 std::unique_ptr<sync_bookmarks::BookmarkModelView> CreateBookmarkModelView(
     bookmarks::BookmarkModel* model,
-    bool is_transport_mode) {
-  if (is_transport_mode) {
-    return std::make_unique<sync_bookmarks::BookmarkModelViewUsingAccountNodes>(
-        model);
+    syncer::SyncServiceImpl* service) {
+  if (service->HasSyncConsent()) {
+    return std::make_unique<
+        sync_bookmarks::BookmarkModelViewUsingLocalOrSyncableNodes>(model);
   }
-  return std::make_unique<
-      sync_bookmarks::BookmarkModelViewUsingLocalOrSyncableNodes>(model);
+  return std::make_unique<sync_bookmarks::BookmarkModelViewUsingAccountNodes>(
+      model);
 }
 
 }  // namespace
@@ -1109,11 +1109,10 @@ BookmarksUuidChecker::~BookmarksUuidChecker() = default;
 BookmarkModelMatchesFakeServerChecker::BookmarkModelMatchesFakeServerChecker(
     bookmarks::BookmarkModel* model,
     syncer::SyncServiceImpl* service,
-    fake_server::FakeServer* fake_server,
-    bool is_transport_mode)
+    fake_server::FakeServer* fake_server)
     : SingleClientStatusChangeChecker(service),
       fake_server_(fake_server),
-      model_view_(CreateBookmarkModelView(model, is_transport_mode)) {}
+      model_view_(CreateBookmarkModelView(model, service)) {}
 
 BookmarkModelMatchesFakeServerChecker::
     ~BookmarkModelMatchesFakeServerChecker() = default;
