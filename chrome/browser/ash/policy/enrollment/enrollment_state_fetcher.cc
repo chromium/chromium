@@ -868,7 +868,6 @@ class EnrollmentStateFetcherImpl::Sequence {
       return ReportResult(AutoEnrollmentResult::kNoEnrollment);
     }
 
-    step_started_ = base::TimeTicks::Now();
     ownership_.Check(context_.device_settings_service,
                      base::BindOnce(&Sequence::OnOwnershipChecked,
                                     weak_factory_.GetWeakPtr()));
@@ -876,7 +875,6 @@ class EnrollmentStateFetcherImpl::Sequence {
 
  private:
   void OnOwnershipChecked(ash::DeviceSettingsService::OwnershipStatus status) {
-    ReportStepDurationAndResetTimer(kUMASuffixOwnershipCheck);
     base::UmaHistogramEnumeration(kUMAStateDeterminationOwnershipStatus,
                                   status);
     if (status ==
@@ -896,7 +894,6 @@ class EnrollmentStateFetcherImpl::Sequence {
   }
 
   void OnOprfRequestDone(RlweOprf::Result result) {
-    ReportStepDurationAndResetTimer(kUMASuffixOPRFRequest);
     if (!result.has_value()) {
       StorePsmError(local_state_);
       if (std::holds_alternative<AutoEnrollmentPsmError>(result.error())) {
@@ -911,7 +908,6 @@ class EnrollmentStateFetcherImpl::Sequence {
   }
 
   void OnQueryRequestDone(RlweQuery::Result result) {
-    ReportStepDurationAndResetTimer(kUMASuffixQueryRequest);
 
     if (!result.has_value()) {
       StorePsmError(local_state_);
@@ -958,7 +954,6 @@ class EnrollmentStateFetcherImpl::Sequence {
   void OnStateKeyRetrieved(
       base::expected<std::optional<std::string>,
                      ServerBackedStateKeysBroker::ErrorType> state_key) {
-    ReportStepDurationAndResetTimer(kUMASuffixStateKeysRetrieval);
     base::UmaHistogramEnumeration(
         kUMAStateDeterminationStateKeysRetrievalErrorType,
         state_key.error_or(ServerBackedStateKeysBroker::ErrorType::kNoError));
@@ -977,7 +972,6 @@ class EnrollmentStateFetcherImpl::Sequence {
   }
 
   void OnStateRequestDone(EnrollmentState::Result result) {
-    ReportStepDurationAndResetTimer(kUMASuffixStateRequest);
     base::UmaHistogramBoolean(kUMAStateDeterminationStateReturned,
                               result.state.has_value());
     if (result.state.has_value()) {
@@ -999,13 +993,6 @@ class EnrollmentStateFetcherImpl::Sequence {
         fetch_duration);
   }
 
-  void ReportStepDurationAndResetTimer(std::string_view uma_step_suffix) {
-    base::UmaHistogramTimes(
-        base::StrCat({kUMAStateDeterminationStepDuration, uma_step_suffix}),
-        base::TimeTicks::Now() - step_started_);
-    step_started_ = base::TimeTicks::Now();
-  }
-
   void ReportResult(AutoEnrollmentState state) {
     ReportTotalDuration(base::TimeTicks::Now() - fetch_started_, state);
     std::move(report_result_).Run(state);
@@ -1017,7 +1004,6 @@ class EnrollmentStateFetcherImpl::Sequence {
 
   // Time at which overall fetch or individual step has been started.
   base::TimeTicks fetch_started_;
-  base::TimeTicks step_started_;
 
   // Used to store the initial enrollment state (if available) in a dict at
   // `prefs::kServerBackedDeviceState`.

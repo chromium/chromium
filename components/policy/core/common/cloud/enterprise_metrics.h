@@ -455,8 +455,6 @@ inline constexpr char kUMAStateDeterminationStateRequestNetworkErrorCode[] =
     "Enterprise.StateDetermination.StateRequest.NetworkErrorCode";
 inline constexpr char kUMAStateDeterminationStateReturned[] =
     "Enterprise.StateDetermination.StateReturned";
-inline constexpr char kUMAStateDeterminationStepDuration[] =
-    "Enterprise.StateDetermination.StepDuration";
 inline constexpr char kUMAStateDeterminationTotalDurationByState[] =
     "Enterprise.StateDetermination.TotalDurationByState";
 inline constexpr char kUMAStateDeterminationTotalDuration[] =
@@ -477,13 +475,6 @@ inline constexpr char kUMASuffixDisabled[] = ".Disabled";
 inline constexpr char kUMASuffixEnrollment[] = ".Enrollment";
 inline constexpr char kUMASuffixNoEnrollment[] = ".NoEnrollment";
 inline constexpr char kUMASuffixServerError[] = ".ServerError";
-
-// Suffixes added to kUMAStateDeterminationStepDuration.
-inline constexpr char kUMASuffixOPRFRequest[] = ".OPRFRequest";
-inline constexpr char kUMASuffixOwnershipCheck[] = ".OwnershipCheck";
-inline constexpr char kUMASuffixQueryRequest[] = ".QueryRequest";
-inline constexpr char kUMASuffixStateKeysRetrieval[] = ".StateKeysRetrieval";
-inline constexpr char kUMASuffixStateRequest[] = ".StateRequest";
 
 // Histograms for the promotion banner on chrome://policy
 inline constexpr char kUMAPolicyBannerDisplayed[] =
