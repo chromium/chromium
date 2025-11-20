@@ -5,16 +5,21 @@
 #include "chrome/browser/startup/startup_launch_manager.h"
 
 #include <memory>
+#include <optional>
 
+#include "chrome/installer/util/auto_launch_util.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using auto_launch_util::StartupLaunchMode;
 
 namespace {
 class TestStartupLaunchManager : public StartupLaunchManager {
  public:
   TestStartupLaunchManager() = default;
-  MOCK_METHOD1(UpdateLaunchOnStartup, void(bool should_launch_on_startup));
+  MOCK_METHOD1(UpdateLaunchOnStartup,
+               void(std::optional<StartupLaunchMode> startup_mode));
 };
 }  // namespace
 
@@ -35,7 +40,8 @@ class StartupLaunchManagerTest : public testing::Test {
 
 TEST_F(StartupLaunchManagerTest, RegisterLaunchOnStartup) {
   TestStartupLaunchManager* const launch_manager = launch_on_startup_manager();
-  EXPECT_CALL(*launch_manager, UpdateLaunchOnStartup(true))
+  EXPECT_CALL(*launch_manager,
+              UpdateLaunchOnStartup({StartupLaunchMode::kBackground}))
       .Times(testing::Exactly(1));
   launch_manager->RegisterLaunchOnStartup(StartupLaunchReason::kExtensions);
   testing::Mock::VerifyAndClearExpectations(launch_manager);
@@ -49,7 +55,8 @@ TEST_F(StartupLaunchManagerTest, RegisterLaunchOnStartup) {
 
 TEST_F(StartupLaunchManagerTest, UnregisterLaunchOnStartup) {
   TestStartupLaunchManager* const launch_manager = launch_on_startup_manager();
-  EXPECT_CALL(*launch_manager, UpdateLaunchOnStartup(true))
+  EXPECT_CALL(*launch_manager,
+              UpdateLaunchOnStartup({StartupLaunchMode::kBackground}))
       .Times(testing::Exactly(1));
   launch_manager->RegisterLaunchOnStartup(StartupLaunchReason::kExtensions);
   testing::Mock::VerifyAndClearExpectations(launch_manager);
@@ -63,14 +70,15 @@ TEST_F(StartupLaunchManagerTest, UnregisterLaunchOnStartup) {
 
   // The launch manager shouldn't launch on start up anymore after extensions is
   // unregistered.
-  EXPECT_CALL(*launch_manager, UpdateLaunchOnStartup(false))
+  EXPECT_CALL(*launch_manager, UpdateLaunchOnStartup({std::nullopt}))
       .Times(testing::Exactly(1));
   launch_manager->UnregisterLaunchOnStartup(StartupLaunchReason::kExtensions);
 }
 
 TEST_F(StartupLaunchManagerTest, RegisterMultipleReasons) {
   TestStartupLaunchManager* const launch_manager = launch_on_startup_manager();
-  EXPECT_CALL(*launch_manager, UpdateLaunchOnStartup(true))
+  EXPECT_CALL(*launch_manager,
+              UpdateLaunchOnStartup({StartupLaunchMode::kBackground}))
       .Times(testing::Exactly(1));
   launch_manager->RegisterLaunchOnStartup(StartupLaunchReason::kExtensions);
   testing::Mock::VerifyAndClearExpectations(launch_manager);
@@ -88,7 +96,7 @@ TEST_F(StartupLaunchManagerTest, RegisterMultipleReasons) {
   testing::Mock::VerifyAndClearExpectations(launch_manager);
 
   // Unregister glic so the launch manager shouldn't launch on startup anymore.
-  EXPECT_CALL(*launch_manager, UpdateLaunchOnStartup(false))
+  EXPECT_CALL(*launch_manager, UpdateLaunchOnStartup({std::nullopt}))
       .Times(testing::Exactly(1));
   launch_manager->UnregisterLaunchOnStartup(StartupLaunchReason::kGlic);
   testing::Mock::VerifyAndClearExpectations(launch_manager);

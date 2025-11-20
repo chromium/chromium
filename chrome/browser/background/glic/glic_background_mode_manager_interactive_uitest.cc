@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/status_icons/status_tray.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/installer/util/auto_launch_util.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
@@ -41,11 +43,14 @@
 #include "ash/shell.h"
 #endif
 
+using auto_launch_util::StartupLaunchMode;
+
 namespace {
 class TestStartupLaunchManager : public StartupLaunchManager {
  public:
   TestStartupLaunchManager() = default;
-  MOCK_METHOD1(UpdateLaunchOnStartup, void(bool should_launch_on_startup));
+  MOCK_METHOD1(UpdateLaunchOnStartup,
+               void(std::optional<StartupLaunchMode> startup_mode));
 };
 }  // namespace
 
@@ -213,12 +218,13 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest, LaunchOnStartup) {
   auto launch_manager = std::make_unique<TestStartupLaunchManager>();
   StartupLaunchManager::SetInstanceForTesting(launch_manager.get());
 
-  EXPECT_CALL(*launch_manager, UpdateLaunchOnStartup(true))
+  EXPECT_CALL(*launch_manager,
+              UpdateLaunchOnStartup({StartupLaunchMode::kBackground}))
       .Times(testing::Exactly(1));
   g_browser_process->local_state()->SetBoolean(prefs::kGlicLauncherEnabled,
                                                true);
   testing::Mock::VerifyAndClearExpectations(launch_manager.get());
-  EXPECT_CALL(*launch_manager, UpdateLaunchOnStartup(false))
+  EXPECT_CALL(*launch_manager, UpdateLaunchOnStartup({std::nullopt}))
       .Times(testing::Exactly(1));
   g_browser_process->local_state()->SetBoolean(prefs::kGlicLauncherEnabled,
                                                false);

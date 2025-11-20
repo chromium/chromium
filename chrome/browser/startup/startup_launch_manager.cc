@@ -11,11 +11,12 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/installer/util/auto_launch_util.h"
 
 namespace {
 StartupLaunchManager* g_instance_for_testing = nullptr;
 }
+
+using auto_launch_util::StartupLaunchMode;
 
 // static
 StartupLaunchManager* StartupLaunchManager::GetInstance() {
@@ -29,19 +30,33 @@ void StartupLaunchManager::SetInstanceForTesting(
   g_instance_for_testing = manager;
 }
 
+std::optional<StartupLaunchMode> StartupLaunchManager::GetStartupLaunchMode()
+    const {
+  if (registered_launch_reasons_.empty()) {
+    return std::nullopt;
+  }
+  return StartupLaunchMode::kBackground;
+}
+
 void StartupLaunchManager::RegisterLaunchOnStartup(StartupLaunchReason reason) {
-  const bool was_empty = registered_launch_reasons_.empty();
+  const auto previous_startup_mode = GetStartupLaunchMode();
   registered_launch_reasons_.insert(reason);
-  if (was_empty) {
-    UpdateLaunchOnStartup(true);
+  const auto current_startup_mode = GetStartupLaunchMode();
+
+  if (previous_startup_mode != current_startup_mode) {
+    UpdateLaunchOnStartup(current_startup_mode);
   }
 }
 
 void StartupLaunchManager::UnregisterLaunchOnStartup(
     StartupLaunchReason reason) {
+  const auto previous_startup_mode = GetStartupLaunchMode();
   registered_launch_reasons_.erase(reason);
-  if (registered_launch_reasons_.empty()) {
-    UpdateLaunchOnStartup(false);
+  const auto current_startup_mode = GetStartupLaunchMode();
+
+  if (!current_startup_mode.has_value() ||
+      previous_startup_mode != current_startup_mode) {
+    UpdateLaunchOnStartup(current_startup_mode);
   }
 }
 
@@ -57,7 +72,7 @@ StartupLaunchManager::~StartupLaunchManager() {
 }
 
 void StartupLaunchManager::UpdateLaunchOnStartup(
-    bool should_launch_on_startup) {
+    std::optional<StartupLaunchMode> startup_launch_mode) {
 #if BUILDFLAG(IS_WIN)
   // This functionality is only defined for default profile, currently.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -65,10 +80,10 @@ void StartupLaunchManager::UpdateLaunchOnStartup(
     return;
   }
   task_runner_->PostTask(
-      FROM_HERE,
-      should_launch_on_startup
-          ? base::BindOnce(auto_launch_util::EnableBackgroundStartAtLogin)
-          : base::BindOnce(auto_launch_util::DisableBackgroundStartAtLogin));
+      FROM_HERE, startup_launch_mode.has_value()
+                     ? base::BindOnce(auto_launch_util::EnableStartAtLogin,
+                                      *startup_launch_mode)
+                     : base::BindOnce(auto_launch_util::DisableStartAtLogin));
 #elif BUILDFLAG(IS_MAC)
 // Mac does not support forcing launch on startup.
 #else

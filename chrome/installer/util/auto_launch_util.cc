@@ -10,6 +10,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -51,24 +52,30 @@ std::wstring GetAutoLaunchKeyName() {
                        base::ASCIIToWide(base::HexEncode(truncated_hash))});
 }
 
-void EnableBackgroundStartAtLogin() {
+void EnableStartAtLogin(StartupLaunchMode startup_launch_mode) {
   base::FilePath application_dir;
   if (!base::PathService::Get(base::DIR_EXE, &application_dir)) {
     return;
   }
 
   base::CommandLine cmd_line(application_dir.Append(installer::kChromeExe));
-  cmd_line.AppendSwitch(switches::kNoStartupWindow);
-  cmd_line.AppendArgNative(app_launch_prefetch::GetPrefetchSwitch(
-      app_launch_prefetch::SubprocessType::kBrowserBackground));
 
+  switch (startup_launch_mode) {
+    case StartupLaunchMode::kBackground:
+      cmd_line.AppendSwitch(switches::kNoStartupWindow);
+      cmd_line.AppendArgNative(app_launch_prefetch::GetPrefetchSwitch(
+          app_launch_prefetch::SubprocessType::kBrowserBackground));
+      break;
+    default:
+      NOTREACHED();
+  }
   if (auto key_name = GetAutoLaunchKeyName(); !key_name.empty()) {
     base::win::AddCommandToAutoRun(HKEY_CURRENT_USER, key_name,
                                    cmd_line.GetCommandLineString());
   }
 }
 
-void DisableBackgroundStartAtLogin() {
+void DisableStartAtLogin() {
   if (auto key_name = GetAutoLaunchKeyName(); !key_name.empty()) {
     base::win::RemoveCommandFromAutoRun(HKEY_CURRENT_USER, key_name);
   }

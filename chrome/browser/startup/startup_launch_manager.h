@@ -5,18 +5,20 @@
 #ifndef CHROME_BROWSER_STARTUP_STARTUP_LAUNCH_MANAGER_H_
 #define CHROME_BROWSER_STARTUP_STARTUP_LAUNCH_MANAGER_H_
 
+#include <optional>
 #include <set>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/installer/util/auto_launch_util.h"
 
 // Reason why a Chrome should be launched on startup.
 enum class StartupLaunchReason { kExtensions, kGlic };
 
 // StartupLaunchManager registers with the OS so that Chrome
-// launches in the background on device startup when there is at least one
-// reason why Chrome should launch on startup.
+// launches on device startup depending on the the reason why Chrome should
+// launch on startup.
 class StartupLaunchManager {
  public:
   static StartupLaunchManager* GetInstance();
@@ -30,10 +32,15 @@ class StartupLaunchManager {
   StartupLaunchManager();
   virtual ~StartupLaunchManager();
 
-  virtual void UpdateLaunchOnStartup(bool should_launch_on_startup);
+  virtual void UpdateLaunchOnStartup(
+      std::optional<auto_launch_util::StartupLaunchMode> startup_launch_mode);
 
  private:
   friend class base::NoDestructor<StartupLaunchManager>;
+
+  // Returns `std::nullopt` if startup launch should be disabled.
+  std::optional<auto_launch_util::StartupLaunchMode> GetStartupLaunchMode()
+      const;
 
   // Task runner for making startup/login configuration changes that may
   // require file system or registry access.

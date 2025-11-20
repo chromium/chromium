@@ -913,7 +913,7 @@ InstallStatus UninstallProduct(const ModifyParams& modify_params,
   // in case of errors.
   ClearRlzProductState();
 
-  auto_launch_util::DisableBackgroundStartAtLogin();
+  auto_launch_util::DisableStartAtLogin();
 
   base::FilePath chrome_proxy_exe(
       installer_state.target_path().Append(installer::kChromeProxyExe));
