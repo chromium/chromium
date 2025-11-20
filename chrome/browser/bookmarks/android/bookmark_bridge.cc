@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/bookmarks/android/bookmark_bridge.h"
 
 #include <stddef.h>
@@ -25,6 +20,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/containers/adapters.h"
 #include "base/containers/stack.h"
 #include "base/functional/bind.h"
@@ -1735,11 +1731,12 @@ void BookmarkBridge::ReorderChildren(
 
   // iterate through array, adding the BookmarkNode*s of the objects
   for (int i = 0; i < arraySize; ++i) {
-    const BookmarkNode* child_node = GetNodeByID(elements[i], bookmark_type);
+    const BookmarkNode* child_node =
+        GetNodeByID(UNSAFE_TODO(elements[i]), bookmark_type);
     CHECK(child_node->parent() == parent_node);
     CHECK(base::checked_cast<jsize>(parent_node->children().size()) ==
           arraySize);
-    ordered_nodes.push_back(GetNodeByID(elements[i], 0));
+    ordered_nodes.push_back(GetNodeByID(UNSAFE_TODO(elements[i]), 0));
   }
 
   bookmark_model_->ReorderChildren(parent_node, ordered_nodes);

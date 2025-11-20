@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/install_static/install_modes.h"
 
 #include <windows.h>
 
 #include <cguid.h>
 
+#include "base/compiler_specific.h"
 #include "base/strings/string_util.h"
 #include "chrome/install_static/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -36,7 +32,7 @@ namespace {
 MATCHER(ContainsIllegalProgIdChar, "") {
   const wchar_t* scan = arg;
   wchar_t c;
-  while ((c = *scan++) != 0) {
+  while ((c = *UNSAFE_TODO(scan++)) != 0) {
     if (!base::IsAsciiAlphaNumeric(c) && c != L'.') {
       return true;
     }

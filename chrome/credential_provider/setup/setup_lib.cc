@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/credential_provider/setup/setup_lib.h"
 
 #include <shlobj.h>
@@ -15,6 +10,7 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/file_version_info.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
@@ -68,23 +64,24 @@ HRESULT InstallFiles(const base::FilePath& src_path,
                      const base::FilePath::StringType names[],
                      size_t length) {
   for (size_t i = 0; i < length; ++i) {
-    base::FilePath src = src_path.Append(names[i]);
-    base::FilePath dest = dest_path.Append(names[i]);
+    base::FilePath src = src_path.Append(UNSAFE_TODO(names[i]));
+    base::FilePath dest = dest_path.Append(UNSAFE_TODO(names[i]));
 
     // Make sure parent of destination file exists.
     if (!base::CreateDirectory(dest.DirName())) {
       HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
       LOGFN(ERROR) << "CreateDirectory hr=" << putHR(hr)
-                   << " name=" << names[i];
+                   << " name=" << UNSAFE_TODO(names[i]);
       return hr;
     }
 
     if (!base::CopyFile(src, dest)) {
       HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
-      LOGFN(ERROR) << "CopyFile hr=" << putHR(hr) << " name=" << names[i];
+      LOGFN(ERROR) << "CopyFile hr=" << putHR(hr)
+                   << " name=" << UNSAFE_TODO(names[i]);
       return hr;
     }
-    LOGFN(INFO) << "Installed name=" << names[i];
+    LOGFN(INFO) << "Installed name=" << UNSAFE_TODO(names[i]);
   }
 
   return S_OK;
@@ -101,7 +98,7 @@ HRESULT RegisterDlls(const base::FilePath& dest_path,
   bool has_failures = false;
 
   for (size_t i = 0; i < length; ++i) {
-    base::ScopedNativeLibrary library(dest_path.Append(names[i]));
+    base::ScopedNativeLibrary library(dest_path.Append(UNSAFE_TODO(names[i])));
 
     if (fakes) {
       SetFakesForTestingFn set_fakes_for_testing_fn =
@@ -117,9 +114,10 @@ HRESULT RegisterDlls(const base::FilePath& dest_path,
 
     if (register_server_fn) {
       hr = static_cast<HRESULT>((*register_server_fn)());
-      LOGFN(VERBOSE) << "Registered name=" << names[i] << " hr=" << putHR(hr);
+      LOGFN(VERBOSE) << "Registered name=" << UNSAFE_TODO(names[i])
+                     << " hr=" << putHR(hr);
     } else {
-      LOGFN(ERROR) << "Failed to register name=" << names[i];
+      LOGFN(ERROR) << "Failed to register name=" << UNSAFE_TODO(names[i]);
       hr = E_NOTIMPL;
     }
     has_failures |= FAILED(hr);
@@ -139,7 +137,7 @@ HRESULT UnregisterDlls(const base::FilePath& dest_path,
   bool has_failures = false;
 
   for (size_t i = 0; i < length; ++i) {
-    base::ScopedNativeLibrary library(dest_path.Append(names[i]));
+    base::ScopedNativeLibrary library(dest_path.Append(UNSAFE_TODO(names[i])));
 
     if (fakes) {
       SetFakesForTestingFn pmfn = reinterpret_cast<SetFakesForTestingFn>(
@@ -151,7 +149,8 @@ HRESULT UnregisterDlls(const base::FilePath& dest_path,
     FARPROC pfn = reinterpret_cast<FARPROC>(
         library.GetFunctionPointer("DllUnregisterServer"));
     HRESULT hr = pfn ? static_cast<HRESULT>((*pfn)()) : E_UNEXPECTED;
-    LOGFN(VERBOSE) << "Unregistered name=" << names[i] << " hr=" << putHR(hr);
+    LOGFN(VERBOSE) << "Unregistered name=" << UNSAFE_TODO(names[i])
+                   << " hr=" << putHR(hr);
     has_failures |= FAILED(hr);
   }
 

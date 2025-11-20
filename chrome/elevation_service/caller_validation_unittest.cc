@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/elevation_service/caller_validation.h"
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -313,9 +309,9 @@ TEST_F(CallerValidationTest, TrimProcessPath) {
   };
 
   for (size_t i = 0; i < std::size(cases); ++i) {
-    base::FilePath input(cases[i].input);
+    base::FilePath input(UNSAFE_TODO(cases[i]).input);
     auto output = MaybeTrimProcessPathForTesting(input);
-    EXPECT_EQ(output.value(), cases[i].expected);
+    EXPECT_EQ(output.value(), UNSAFE_TODO(cases[i]).expected);
   }
 }
 

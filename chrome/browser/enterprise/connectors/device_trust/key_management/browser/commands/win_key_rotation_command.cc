@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/win_key_rotation_command.h"
 
 #include <comutil.h>
@@ -20,6 +15,7 @@
 
 #include "base/base64.h"
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/syslog_logging.h"
 #include "base/task/single_thread_task_runner.h"
@@ -62,7 +58,7 @@ HRESULT RunGoogleUpdateElevatedCommand(const wchar_t* command,
       get_command_result.value();
   _variant_t vargs[kMaxCommandArgs];
   for (size_t i = 0; i < args.size(); ++i) {
-    vargs[i] = args[i].c_str();
+    UNSAFE_TODO(vargs[i]) = args[i].c_str();
   }
 
   HRESULT hr =

@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 #include "chrome/services/sharing/nearby/platform/ble_v2_medium.h"
 
+#include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
 #include "base/notimplemented.h"
@@ -195,7 +192,8 @@ bool BleV2Medium::StartAdvertising(
         "{UUID:" + std::string(it->first) +
         ",data size:" + base::NumberToString(it->second.size()) + ",data=0x" +
         base::HexEncode(std::vector<uint8_t>(
-            it->second.data(), it->second.data() + it->second.size())) +
+            it->second.data(),
+            UNSAFE_TODO(it->second.data() + it->second.size()))) +
         (std::next(it) == advertising_data.service_data.end() ? "}" : "}, ");
   }
   VLOG(1) << __func__
@@ -257,8 +255,9 @@ bool BleV2Medium::StartAdvertising(
     mojo::PendingRemote<bluetooth::mojom::Advertisement> pending_advertisement;
     bool success = adapter_->RegisterAdvertisement(
         service_uuid,
-        std::vector<uint8_t>(entry.second.data(),
-                             entry.second.data() + entry.second.size()),
+        std::vector<uint8_t>(
+            entry.second.data(),
+            UNSAFE_TODO(entry.second.data() + entry.second.size())),
         /*use_scan_data=*/use_scan_response,
         /*connectable=*/advertise_set_parameters.is_connectable,
         &pending_advertisement);

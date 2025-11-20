@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/credential_provider/gaiacp/gcp_utils.h"
 
 #include <string_view>
@@ -92,7 +87,7 @@ bool GcpProcHelperTest::TestPipe(
     const base::win::ScopedHandle::Handle& writing) {
   char input_buffer[8];
   char output_buffer[8];
-  strcpy_s(input_buffer, std::size(input_buffer), "hello");
+  UNSAFE_TODO(strcpy_s(input_buffer, std::size(input_buffer), "hello"));
   const DWORD kExpectedDataLength = strlen(input_buffer) + 1;
 
   // Make sure what is written can be read.
@@ -105,11 +100,12 @@ bool GcpProcHelperTest::TestPipe(
   EXPECT_TRUE(ReadFile(reading, output_buffer, std::size(output_buffer), &read,
                        nullptr));
   EXPECT_EQ(kExpectedDataLength, read);
-  return strcmp(input_buffer, output_buffer) == 0;
+  return UNSAFE_TODO(strcmp(input_buffer, output_buffer)) == 0;
 }
 
 void GcpProcHelperTest::StripCrLf(char* buffer) {
-  for (char* p = buffer + strlen(buffer) - 1; p >= buffer; --p) {
+  for (char* p = UNSAFE_TODO(buffer + strlen(buffer) - 1); p >= buffer;
+       UNSAFE_TODO(--p)) {
     if (*p == '\n' || *p == '\r')
       *p = 0;
   }
@@ -412,7 +408,7 @@ TEST_F(GcpProcHelperTest, WaitForProcess) {
   // Write to stdin of the child process.
   const int kBufferSize = 16;
   char input_buffer[kBufferSize];
-  strcpy_s(input_buffer, std::size(input_buffer), "hello");
+  UNSAFE_TODO(strcpy_s(input_buffer, std::size(input_buffer), "hello"));
   const DWORD kExpectedDataLength = strlen(input_buffer) + 1;
   DWORD written;
   ASSERT_TRUE(::WriteFile(parent_handles.hstdin_write.Get(), input_buffer,

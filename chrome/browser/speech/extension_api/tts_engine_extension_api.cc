@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/speech/extension_api/tts_engine_extension_api.h"
 
 #include <stddef.h>
@@ -15,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -681,8 +677,9 @@ ExtensionTtsEngineSendTtsAudioFunction::Run() {
   size_t sample_count = audio_buffer_blob->size() / 4;
   std::vector<float> audio_buffer(sample_count);
   const float* view = reinterpret_cast<const float*>(&(*audio_buffer_blob)[0]);
-  for (size_t i = 0; i < sample_count; i++, view++)
+  for (size_t i = 0; i < sample_count; i++, UNSAFE_TODO(view++)) {
     audio_buffer[i] = *view;
+  }
 
   int char_index = 0;
   const base::Value* char_index_value =

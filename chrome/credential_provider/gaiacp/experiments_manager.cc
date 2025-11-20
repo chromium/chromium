@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/credential_provider/gaiacp/experiments_manager.h"
 
 #include <string_view>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/json/json_reader.h"
 #include "base/strings/string_util.h"
@@ -74,7 +70,7 @@ bool ExperimentsManager::ReloadExperiments(const std::wstring& sid) {
   }
 
   std::vector<char> buffer(experiments_file->GetLength());
-  experiments_file->Read(0, buffer.data(), buffer.size());
+  UNSAFE_TODO(experiments_file->Read(0, buffer.data(), buffer.size()));
   experiments_file.reset();
 
   std::optional<base::Value::Dict> experiments_data =

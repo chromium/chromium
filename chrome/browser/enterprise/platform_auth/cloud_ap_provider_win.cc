@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/enterprise/platform_auth/cloud_ap_provider_win.h"
 
 #include <objbase.h>
@@ -27,6 +22,7 @@
 
 #include "base/callback_list.h"
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -197,7 +193,7 @@ void ParseCookieInfo(const ProofOfPossessionCookieInfo* cookie_info,
   // new header. Otherwise, append it to the existing list of cookies.
   static constexpr std::string_view kHeaderPrefix("x-ms-");
   for (DWORD i = 0; i < cookie_info_count; ++i) {
-    const ProofOfPossessionCookieInfo& cookie = cookie_info[i];
+    const ProofOfPossessionCookieInfo& cookie = UNSAFE_TODO(cookie_info[i]);
     auto ascii_cookie_name = base::WideToASCII(cookie.name);
     // TODO(b/425887809): Remove after debugging.
     VLOG_POLICY(1, EXTENSIBLE_SSO)

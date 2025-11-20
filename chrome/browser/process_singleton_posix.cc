@@ -205,6 +205,7 @@ int WaitSocketForRead(int fd, const base::TimeDelta& timeout) {
   // will always be valid.
   // See https://linux.die.net/man/3/fd_zero
   UNSAFE_BUFFERS(FD_ZERO(&read_fds));
+
   // SAFETY: FD_SET adds fd to the set read_fds, which was just cleared before.
   // See https://linux.die.net/man/3/fd_set
   UNSAFE_BUFFERS(FD_SET(fd, &read_fds));

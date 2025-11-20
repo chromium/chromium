@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/clipboard/clipboard_history.h"
 
 #include <iterator>
@@ -26,6 +21,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_util.h"
 #include "ash/test/view_drawn_waiter.h"
+#include "base/compiler_specific.h"
 #include "base/containers/adapters.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -185,7 +181,7 @@ bool VerifyClipboardTextData(const std::initializer_list<std::string>& texts) {
       return false;
     }
     ++items_iter;
-    ++texts_iter;
+    UNSAFE_TODO(++texts_iter);
   }
 
   return true;

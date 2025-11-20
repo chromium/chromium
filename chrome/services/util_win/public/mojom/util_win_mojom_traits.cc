@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/services/util_win/public/mojom/util_win_mojom_traits.h"
 
 #include <limits.h> /* UINT_MAX */
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_util.h"
@@ -224,7 +220,8 @@ bool StructTraits<
 // static
 base::span<const uint8_t> StructTraits<chrome::mojom::ClsIdDataView,
                                        ::CLSID>::bytes(const ::CLSID& input) {
-  return base::span(reinterpret_cast<const uint8_t*>(&input), sizeof(input));
+  return UNSAFE_TODO(
+      base::span(reinterpret_cast<const uint8_t*>(&input), sizeof(input)));
 }
 
 // static
@@ -237,7 +234,7 @@ bool StructTraits<chrome::mojom::ClsIdDataView, ::CLSID>::Read(
 
   const ::CLSID* cls_id = reinterpret_cast<const ::CLSID*>(bytes_view.data());
 
-  memcpy(out, cls_id, sizeof(*out));
+  UNSAFE_TODO(memcpy(out, cls_id, sizeof(*out)));
   return true;
 }
 

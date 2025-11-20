@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/media/router/discovery/discovery_network_list_win.h"
 
 #include <windows.h>
@@ -22,6 +17,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -59,7 +55,7 @@ void IfTable2Deleter(PMIB_IF_TABLE2 interface_table) {
 }  // namespace
 
 bool GuidOperatorLess::operator()(const GUID& guid1, const GUID& guid2) const {
-  return memcmp(&guid1, &guid2, sizeof(GUID)) < 0;
+  return UNSAFE_TODO(memcmp(&guid1, &guid2, sizeof(GUID))) < 0;
 }
 
 typedef DWORD(WINAPI* WlanOpenHandleFunction)(DWORD dwClientVersion,
@@ -172,7 +168,7 @@ GetInterfaceGuidMacMap() {
 
   base::small_map<std::map<GUID, std::string, GuidOperatorLess>> guid_mac_map;
   for (ULONG i = 0; i < interface_table->NumEntries; ++i) {
-    const auto* interface_row = &interface_table->Table[i];
+    const auto* interface_row = &UNSAFE_TODO(interface_table->Table[i]);
     guid_mac_map.emplace(interface_row->InterfaceGuid,
                          std::string{reinterpret_cast<const char*>(
                                          interface_row->PhysicalAddress),
@@ -248,7 +244,8 @@ base::small_map<std::map<std::string, std::string>> GetMacSsidMap() {
   // GUID which we can use to get its MAC address via |guid_mac_map| and its
   // associated SSID via WlanQueryInterface.
   for (DWORD i = 0; i < wlan_interface_list->dwNumberOfItems; ++i) {
-    const auto* interface_info = &wlan_interface_list->InterfaceInfo[i];
+    const auto* interface_info =
+        &UNSAFE_TODO(wlan_interface_list->InterfaceInfo[i]);
     const auto mac_entry = guid_mac_map.find(interface_info->InterfaceGuid);
     if (mac_entry == guid_mac_map.end()) {
       continue;

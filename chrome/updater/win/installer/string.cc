@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/updater/win/installer/string.h"
 
 #include <windows.h>
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "base/strings/string_number_conversions.h"
 
 namespace {
@@ -40,7 +36,7 @@ bool HexEncode(const void* bytes, size_t size, wchar_t* str, size_t str_size) {
   }
 
   std::ranges::copy(base::HexEncode(bytes, size), str);
-  str[size * 2] = L'\0';
+  UNSAFE_TODO(str[size * 2]) = L'\0';
   return true;
 }
 
@@ -49,7 +45,7 @@ size_t SafeStrLen(const wchar_t* str, size_t alloc_size) {
     return 0;
   }
   size_t len = 0;
-  while (--alloc_size && str[len] != L'\0') {
+  while (--alloc_size && UNSAFE_TODO(str[len]) != L'\0') {
     ++len;
   }
   return len;
@@ -62,7 +58,7 @@ bool SafeStrCopy(wchar_t* dest, size_t dest_size, const wchar_t* src) {
 
   wchar_t* write = dest;
   for (size_t remaining = dest_size; remaining != 0; --remaining) {
-    if ((*write++ = *src++) == L'\0') {
+    if ((*UNSAFE_TODO(write++) = *UNSAFE_TODO(src++)) == L'\0') {
       return true;
     }
   }
@@ -90,7 +86,7 @@ bool SafeStrCat(wchar_t* dest, size_t dest_size, const wchar_t* src) {
   // Use SafeStrLen instead of lstrlen just in case the |dest| buffer isn't
   // terminated.
   size_t str_len = SafeStrLen(dest, dest_size);
-  return SafeStrCopy(dest + str_len, dest_size - str_len, src);
+  return SafeStrCopy(UNSAFE_TODO(dest + str_len), dest_size - str_len, src);
 }
 
 bool StrStartsWith(const wchar_t* str, const wchar_t* start_str) {
@@ -98,8 +94,8 @@ bool StrStartsWith(const wchar_t* str, const wchar_t* start_str) {
     return false;
   }
 
-  for (int i = 0; start_str[i] != L'\0'; ++i) {
-    if (!EqualASCIICharI(str[i], start_str[i])) {
+  for (int i = 0; UNSAFE_TODO(start_str[i]) != L'\0'; ++i) {
+    if (!EqualASCIICharI(UNSAFE_TODO(str[i]), UNSAFE_TODO(start_str[i]))) {
       return false;
     }
   }
@@ -112,14 +108,16 @@ const wchar_t* GetNameFromPathExt(const wchar_t* path, size_t size) {
     return path;
   }
 
-  const wchar_t* current = &path[size - 1];
+  const wchar_t* current = &UNSAFE_TODO(path[size - 1]);
   while (current != path && L'\\' != *current) {
-    --current;
+    UNSAFE_TODO(--current);
   }
 
   // If no path separator found, just return |path|.
   // Otherwise, return a pointer right after the separator.
-  return ((current == path) && (L'\\' != *current)) ? current : (current + 1);
+  return ((current == path) && (L'\\' != *current))
+             ? current
+             : (UNSAFE_TODO(current + 1));
 }
 
 wchar_t* GetNameFromPathExt(wchar_t* path, size_t size) {

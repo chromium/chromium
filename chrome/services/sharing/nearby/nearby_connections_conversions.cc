@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/services/sharing/nearby/nearby_connections_conversions.h"
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
@@ -84,8 +80,8 @@ ResultCallback ResultCallbackFromMojom(StatusCallback callback) {
 }
 
 std::vector<uint8_t> ByteArrayToMojom(const ByteArray& byte_array) {
-  return std::vector<uint8_t>(byte_array.data(),
-                              byte_array.data() + byte_array.size());
+  return std::vector<uint8_t>(
+      byte_array.data(), UNSAFE_TODO(byte_array.data() + byte_array.size()));
 }
 
 ByteArray ByteArrayFromMojom(const std::vector<uint8_t>& byte_array) {

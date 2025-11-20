@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/installer/setup/install.h"
 
 #include <stddef.h>
@@ -16,6 +11,7 @@
 #include <tuple>
 
 #include "base/base_paths.h"
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -301,9 +297,9 @@ class InstallShortcutTest : public testing::Test {
     std::string initial_prefs("{\"distribution\":{");
     for (size_t i = 0; i < std::size(desired_prefs); ++i) {
       initial_prefs += (i == 0 ? "\"" : ",\"");
-      initial_prefs += desired_prefs[i].pref_name;
+      initial_prefs += UNSAFE_TODO(desired_prefs[i]).pref_name;
       initial_prefs += "\":";
-      initial_prefs += base::ToString(desired_prefs[i].is_desired);
+      initial_prefs += base::ToString(UNSAFE_TODO(desired_prefs[i]).is_desired);
     }
     initial_prefs += "}}";
 

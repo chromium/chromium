@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/installer/util/scoped_token_privilege.h"
 
 #include <shlobj.h>
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/logging.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -57,12 +53,12 @@ bool CurrentProcessHasPrivilege(const wchar_t* privilege_name) {
   const DWORD buffer_size = desired_size + 1;
   auto name_buffer = base::HeapArray<wchar_t>::WithSize(buffer_size);
   for (int i = privileges->PrivilegeCount - 1; i >= 0; --i) {
-    LUID_AND_ATTRIBUTES& luid_and_att = privileges->Privileges[i];
+    LUID_AND_ATTRIBUTES& luid_and_att = UNSAFE_TODO(privileges->Privileges[i]);
     size = buffer_size;
     ::LookupPrivilegeName(nullptr, &luid_and_att.Luid, name_buffer.data(),
                           &size);
     if (size == desired_size &&
-        wcscmp(name_buffer.data(), privilege_name) == 0) {
+        UNSAFE_TODO(wcscmp(name_buffer.data(), privilege_name)) == 0) {
       return luid_and_att.Attributes == SE_PRIVILEGE_ENABLED;
     }
   }

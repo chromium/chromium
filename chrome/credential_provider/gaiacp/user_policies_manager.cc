@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/credential_provider/gaiacp/user_policies_manager.h"
 
 #include <limits>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -254,8 +250,8 @@ HRESULT UserPoliciesManager::FetchAndStorePolicies(
     return (fetch_status_ = E_FAIL);
   }
 
-  int num_bytes_written =
-      policy_file->Write(0, policy_data.c_str(), policy_data.size());
+  int num_bytes_written = UNSAFE_TODO(
+      policy_file->Write(0, policy_data.c_str(), policy_data.size()));
 
   policy_file.reset();
 
@@ -288,7 +284,7 @@ bool UserPoliciesManager::GetUserPolicies(const std::wstring& sid,
   }
 
   std::vector<char> buffer(policy_file->GetLength());
-  policy_file->Read(0, buffer.data(), buffer.size());
+  UNSAFE_TODO(policy_file->Read(0, buffer.data(), buffer.size()));
   policy_file.reset();
 
   std::optional<base::Value::Dict> policy_data =

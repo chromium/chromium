@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/installer/util/delete_reg_key_work_item.h"
 
 #include <windows.h>
@@ -15,6 +10,7 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/win/registry.h"
 #include "base/win/security_descriptor.h"
@@ -43,7 +39,7 @@ TEST_F(DeleteRegKeyWorkItemTest, TestNoKey) {
       std::wstring(test_data_.base_path() + L"\\NoKeyHere\\OrHere")};
   RegKey key;
   for (size_t i = 0; i < std::size(key_paths); ++i) {
-    const std::wstring& key_path = key_paths[i];
+    const std::wstring& key_path = UNSAFE_TODO(key_paths[i]);
     std::unique_ptr<DeleteRegKeyWorkItem> item(
         WorkItem::CreateDeleteRegKeyWorkItem(test_data_.root_key(), key_path,
                                              WorkItem::kWow64Default));

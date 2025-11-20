@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 
 #include <memory>
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -1069,14 +1065,14 @@ class MultiProfileDownloadNotificationTest
 
     // Add all users, except the first one, which is already logged in.
     for (size_t i = 1; i < std::size(kTestAccounts); ++i) {
-      AddUser(kTestAccounts[i]);
+      AddUser(UNSAFE_TODO(kTestAccounts[i]));
     }
   }
 
   Profile* GetProfileByIndex(int index) {
     return g_browser_process->profile_manager()->GetProfileByPath(
         ash::ProfileHelper::GetProfilePathByUserIdHash(
-            kTestAccounts[index].hash));
+            UNSAFE_TODO(kTestAccounts[index]).hash));
   }
 
   // Adds a new user for testing to the current session.

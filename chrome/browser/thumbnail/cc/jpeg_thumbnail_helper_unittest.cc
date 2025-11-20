@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/thumbnail/cc/jpeg_thumbnail_helper.h"
 
 #include <cstring>
@@ -15,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -153,8 +149,8 @@ TEST_F(JpegThumbnailHelperTest, ReadThumbnail) {
   base::FilePath file_path = GetFile(tab_id);
   base::File file(file_path,
                   base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
-  file.Write(0, reinterpret_cast<const char*>(data.value().data()),
-             data.value().size());
+  UNSAFE_TODO(file.Write(0, reinterpret_cast<const char*>(data.value().data()),
+                         data.value().size()));
 
   // Read the image
   base::RunLoop loop1;
@@ -191,7 +187,8 @@ TEST_F(JpegThumbnailHelperTest, DeleteThumbnail) {
   base::FilePath file_path = GetFile(tab_id);
   base::File file(file_path,
                   base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
-  file.Write(0, reinterpret_cast<const char*>(data->data()), data->size());
+  UNSAFE_TODO(
+      file.Write(0, reinterpret_cast<const char*>(data->data()), data->size()));
 
   // Delete the image
   GetInterface().Delete(tab_id);

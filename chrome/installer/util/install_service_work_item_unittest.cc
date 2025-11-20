@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "chrome/installer/util/install_service_work_item.h"
 
 #include <shlobj.h>
@@ -15,6 +10,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/strings/strcat_win.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -212,7 +208,8 @@ TEST_F(InstallServiceWorkItemTest, Do_MultiSzToVector) {
   constexpr wchar_t kZeroMultiSz[] = L"";
   std::vector<wchar_t> vec =
       InstallServiceWorkItemImpl::MultiSzToVector(kZeroMultiSz);
-  EXPECT_TRUE(!memcmp(vec.data(), &kZeroMultiSz, sizeof(kZeroMultiSz)));
+  EXPECT_TRUE(
+      !UNSAFE_TODO(memcmp(vec.data(), &kZeroMultiSz, sizeof(kZeroMultiSz))));
   EXPECT_EQ(vec.size(), std::size(kZeroMultiSz));
 
   vec = InstallServiceWorkItemImpl::MultiSzToVector(nullptr);
@@ -220,12 +217,13 @@ TEST_F(InstallServiceWorkItemTest, Do_MultiSzToVector) {
 
   constexpr wchar_t kRpcMultiSz[] = L"RPCSS\0";
   vec = InstallServiceWorkItemImpl::MultiSzToVector(kRpcMultiSz);
-  EXPECT_TRUE(!memcmp(vec.data(), &kRpcMultiSz, sizeof(kRpcMultiSz)));
+  EXPECT_TRUE(
+      !UNSAFE_TODO(memcmp(vec.data(), &kRpcMultiSz, sizeof(kRpcMultiSz))));
   EXPECT_EQ(vec.size(), std::size(kRpcMultiSz));
 
   constexpr wchar_t kMultiSz[] = L"RPCSS\0LSASS\0";
   vec = InstallServiceWorkItemImpl::MultiSzToVector(kMultiSz);
-  EXPECT_TRUE(!memcmp(vec.data(), &kMultiSz, sizeof(kMultiSz)));
+  EXPECT_TRUE(!UNSAFE_TODO(memcmp(vec.data(), &kMultiSz, sizeof(kMultiSz))));
   EXPECT_EQ(vec.size(), std::size(kMultiSz));
 }
 

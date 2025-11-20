@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/installer/util/google_update_settings.h"
 
 #include <windows.h>
@@ -17,6 +12,7 @@
 #include <string_view>
 
 #include "base/base_paths.h"
+#include "base/compiler_specific.h"
 #include "base/hash/hash.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
@@ -192,8 +188,8 @@ TEST_F(GoogleUpdateSettingsTest, UpdateGoogleUpdateApKey) {
 
     for (const wchar_t* const* inputs : input_arrays) {
       for (size_t input_idx = 0; input_idx < std::size(plain); ++input_idx) {
-        const wchar_t* input = inputs[input_idx];
-        const wchar_t* output = outputs[input_idx];
+        const wchar_t* input = UNSAFE_TODO(inputs[input_idx]);
+        const wchar_t* output = UNSAFE_TODO(outputs[input_idx]);
         SCOPED_TRACE(::testing::Message() << "input=\"" << input << "\"");
         SCOPED_TRACE(::testing::Message() << "output=\"" << output << "\"");
 

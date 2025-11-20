@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/installer/util/install_service_work_item_impl.h"
 
 #include <cguid.h>
@@ -18,6 +13,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -556,10 +552,10 @@ std::vector<wchar_t> InstallServiceWorkItemImpl::MultiSzToVector(
   // strings in the multi-sz.
   const wchar_t* scan = multi_sz;
   do {
-    scan += wcslen(scan) + 1;
+    UNSAFE_TODO(scan += wcslen(scan) + 1);
   } while (*scan);
 
-  return std::vector<wchar_t>(multi_sz, scan + 1);
+  return std::vector<wchar_t>(multi_sz, UNSAFE_TODO(scan + 1));
 }
 
 // static

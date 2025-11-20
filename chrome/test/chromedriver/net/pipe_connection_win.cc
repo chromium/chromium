@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/test/chromedriver/net/pipe_connection_win.h"
 
 #include <windows.h>
@@ -18,6 +13,7 @@
 #include <memory>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
@@ -182,8 +178,8 @@ class PipeReader {
     }
     while (bytes_read < size) {
       DWORD size_read = 0;
-      bool had_error = !ReadFile(file, buffer + bytes_read, size - bytes_read,
-                                 &size_read, nullptr);
+      bool had_error = !ReadFile(file, UNSAFE_TODO(buffer + bytes_read),
+                                 size - bytes_read, &size_read, nullptr);
       if (had_error) {
         if (!shutting_down_.IsSet()) {
           VLOG(logging::LOGGING_ERROR)
@@ -365,8 +361,8 @@ class PipeWriter {
       }
       DWORD bytes_written = 0;
       bool had_error =
-          !WriteFile(file, bytes + total_written, static_cast<DWORD>(length),
-                     &bytes_written, nullptr);
+          !WriteFile(file, UNSAFE_TODO(bytes + total_written),
+                     static_cast<DWORD>(length), &bytes_written, nullptr);
       if (had_error) {
         if (!shutting_down_.IsSet()) {
           VLOG(logging::LOGGING_ERROR) << "Could not write into pipe";

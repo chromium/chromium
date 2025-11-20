@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -94,10 +95,6 @@ const char kDefaultMseOnlyEmePlayer[] = "mse_different_containers.html";
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_PROPRIETARY_CODECS) && \
     BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 static constexpr wchar_t kDolbyVisionProfile5[] = L"dvhe.05";
 static constexpr wchar_t kDolbyVisionProfile8[] = L"dvhe.08";
 #endif
@@ -1577,7 +1574,7 @@ class MediaFoundationEncryptedMediaTest : public EncryptedMediaTestBase {
 
     // Clean up the activates
     for (unsigned int i = 0; i < numActivates; ++i) {
-      activates[i]->Release();
+      UNSAFE_TODO(activates[i]->Release());
     }
 
     return true;
@@ -1598,11 +1595,11 @@ class MediaFoundationEncryptedMediaTest : public EncryptedMediaTestBase {
     for (unsigned int i = 0; i < numActivates && !supported; i++) {
       PROPVARIANT var;
       PropVariantInit(&var);
-      auto hr = activates[i]->GetItem(MFT_ENUM_VIDEO_RENDERER_EXTENSION_PROFILE,
-                                      &var);
+      auto hr = UNSAFE_TODO(activates[i]->GetItem(
+          MFT_ENUM_VIDEO_RENDERER_EXTENSION_PROFILE, &var));
       if (hr == S_OK && var.vt == VARTYPE(VT_VECTOR | VT_LPWSTR)) {
         for (unsigned long j = 0; j < var.calpwstr.cElems; j++) {
-          auto elem = *(var.calpwstr.pElems + j);
+          auto elem = *(UNSAFE_TODO(var.calpwstr.pElems + j));
           if (_wcsicmp(elem, profile) == 0) {
             supported = true;
             break;
@@ -1615,7 +1612,7 @@ class MediaFoundationEncryptedMediaTest : public EncryptedMediaTestBase {
 
     // Clean up the activates
     for (unsigned int i = 0; i < numActivates; ++i) {
-      activates[i]->Release();
+      UNSAFE_TODO(activates[i]->Release());
     }
 
     return supported;

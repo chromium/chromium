@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/credential_provider/gaiacp/gaia_credential_provider.h"
 
 #include <credentialprovider.h>
@@ -17,6 +12,7 @@
 #include <string>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
@@ -806,7 +802,7 @@ HRESULT CGaiaCredentialProvider::GetFieldDescriptorAt(
     *ppcpfd = reinterpret_cast<CREDENTIAL_PROVIDER_FIELD_DESCRIPTOR*>(
         ::CoTaskMemAlloc(sizeof(**ppcpfd)));
     if (*ppcpfd) {
-      **ppcpfd = g_field_desc[index];
+      **ppcpfd = UNSAFE_TODO(g_field_desc[index]);
       // The password field has special greyed out text that is not set through
       // calls to ICredentialProviderCredential::GetStringValue so we need to
       // localize it manually here.

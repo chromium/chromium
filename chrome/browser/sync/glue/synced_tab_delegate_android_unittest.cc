@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/sync/glue/synced_tab_delegate_android.h"
 
 #include <cstddef>
@@ -15,6 +10,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/compiler_specific.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/android/tab_android_data_provider.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
@@ -77,7 +73,8 @@ class SyncedTabDelegateAndroidTest : public testing::Test {
   }
 
   void MockBufferFromPickle(const base::Pickle& pickle) {
-    base::raw_span<const uint8_t> nav_span{pickle.data(), pickle.size()};
+    base::raw_span<const uint8_t> UNSAFE_TODO(
+        nav_span{pickle.data(), pickle.size()});
     std::unique_ptr<WebContentsStateByteBuffer> buffer =
         std::make_unique<WebContentsStateByteBuffer>(nav_span, kVersion);
     EXPECT_CALL(mock_tab_android_data_provider_, GetWebContentsByteBuffer())

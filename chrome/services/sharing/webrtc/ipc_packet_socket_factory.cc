@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/services/sharing/webrtc/ipc_packet_socket_factory.h"
 
 #include <stddef.h>
@@ -405,7 +400,8 @@ int IpcPacketSocket::SendTo(const void* data,
   send_bytes_available_ -= data_size;
 
   uint64_t packet_id = client_->Send(
-      address_chrome, base::span(static_cast<const uint8_t*>(data), data_size),
+      address_chrome,
+      UNSAFE_TODO(base::span(static_cast<const uint8_t*>(data), data_size)),
       options);
 
   // Ensure packet_id is not 0. It can't be the case according to
@@ -460,7 +456,7 @@ int IpcPacketSocket::GetOption(webrtc::Socket::Option option, int* value) {
     return -1;
   }
 
-  *value = options_[p2p_socket_option];
+  *value = UNSAFE_TODO(options_[p2p_socket_option]);
   return 0;
 }
 
@@ -473,7 +469,7 @@ int IpcPacketSocket::SetOption(webrtc::Socket::Option option, int value) {
     return -1;
   }
 
-  options_[p2p_socket_option] = value;
+  UNSAFE_TODO(options_[p2p_socket_option]) = value;
 
   if (state_ == IS_OPEN) {
     // Options will be applied when state becomes IS_OPEN in OnOpen.
@@ -513,8 +509,10 @@ void IpcPacketSocket::OnOpen(const net::IPEndPoint& local_address,
 
   // Set all pending options if any.
   for (int i = 0; i < network::P2P_SOCKET_OPT_MAX; ++i) {
-    if (options_[i] != kDefaultNonSetOptionValue)
-      DoSetOption(static_cast<network::P2PSocketOption>(i), options_[i]);
+    if (UNSAFE_TODO(options_[i]) != kDefaultNonSetOptionValue) {
+      DoSetOption(static_cast<network::P2PSocketOption>(i),
+                  UNSAFE_TODO(options_[i]));
+    }
   }
 
   NotifyAddressReady(this, local_address_);

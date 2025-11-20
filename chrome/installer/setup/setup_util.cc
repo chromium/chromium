@@ -4,11 +4,6 @@
 //
 // This file declares util functions for setup project.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/installer/setup/setup_util.h"
 
 #include <objbase.h>
@@ -30,6 +25,7 @@
 #include "base/base64.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/cpu.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
@@ -267,8 +263,9 @@ bool ContainsUnsupportedSwitch(const base::CommandLine& cmd_line) {
       "app-launcher",
   };
   for (size_t i = 0; i < std::size(kLegacySwitches); ++i) {
-    if (cmd_line.HasSwitch(kLegacySwitches[i]))
+    if (cmd_line.HasSwitch(UNSAFE_TODO(kLegacySwitches[i]))) {
       return true;
+    }
   }
   return false;
 }

@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/policy/messaging_layer/upload/file_upload_impl.h"
 
 #include <string>
 #include <string_view>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
@@ -695,7 +691,8 @@ class FileUploadDelegate::NextStepContext
     // Load into buffer.
     buffer.resize(
         size);  // Initialization is redundant, but std::string mandates it.
-    const int read_size = handle->Read(offset, buffer.data(), size);
+    const int read_size =
+        UNSAFE_TODO(handle->Read(offset, buffer.data(), size));
     if (read_size < 0) {
       base::UmaHistogramEnumeration(reporting::kUmaDataLossErrorReason,
                                     DataLossErrorReason::CANNOT_READ_FILE,

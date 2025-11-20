@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/webauthn/android/cable_module_android.h"
 
 #include <variant>
 
 #include "base/android/jni_array.h"
 #include "base/base64.h"
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -304,11 +300,12 @@ std::optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo> PaaskInfoFromCBOR(
       info.peer_public_key_x962->size() != peer_public_key_x962.size()) {
     return std::nullopt;
   }
-  memcpy(&pairing_id, info.pairing_id->data(), sizeof(pairing_id));
+  UNSAFE_TODO(memcpy(&pairing_id, info.pairing_id->data(), sizeof(pairing_id)));
 
-  memcpy(secret.data(), info.secret->data(), secret.size());
-  memcpy(peer_public_key_x962.data(), info.peer_public_key_x962->data(),
-         peer_public_key_x962.size());
+  UNSAFE_TODO(memcpy(secret.data(), info.secret->data(), secret.size()));
+  UNSAFE_TODO(memcpy(peer_public_key_x962.data(),
+                     info.peer_public_key_x962->data(),
+                     peer_public_key_x962.size()));
 
   syncer::DeviceInfo::PhoneAsASecurityKeyInfo paask_info;
   paask_info.tunnel_server_domain = device::cablev2::kTunnelServer.value();
@@ -330,7 +327,7 @@ std::vector<uint8_t> CBORFromPaaskInfo(
 
   const uint64_t pairing_id = paask_info.id;
   uint8_t pairing_id_bytes[sizeof(pairing_id)];
-  memcpy(pairing_id_bytes, &pairing_id, sizeof(pairing_id));
+  UNSAFE_TODO(memcpy(pairing_id_bytes, &pairing_id, sizeof(pairing_id)));
   map.emplace(2, std::vector<uint8_t>(std::begin(pairing_id_bytes),
                                       std::end(pairing_id_bytes)));
 
@@ -367,9 +364,9 @@ syncer::DeviceInfo::PhoneAsASecurityKeyInfo::StatusOrInfo CacheResult(
     }
 
     std::optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo> paask_info =
-        internal::PaaskInfoFromCBOR(base::as_bytes(
+        internal::PaaskInfoFromCBOR(base::as_bytes(UNSAFE_TODO(
             base::span<const char>(previous_result_serialized.begin(),
-                                   previous_result_serialized.end())));
+                                   previous_result_serialized.end()))));
     if (!paask_info) {
       return result;
     }

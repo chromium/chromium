@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/elevation_service/elevated_recovery_impl.h"
 
 #include <objbase.h>
@@ -16,6 +11,7 @@
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -136,7 +132,7 @@ HRESULT CopyFileImpersonated(const base::FilePath from,
 
   for (uint64_t total_bytes_read = 0;;) {
     const int bytes_read =
-        from_file.ReadAtCurrentPos(buffer.data(), buffer.size());
+        UNSAFE_TODO(from_file.ReadAtCurrentPos(buffer.data(), buffer.size()));
     if (bytes_read < 0)
       return HRESULTFromLastError();
     if (bytes_read == 0)
@@ -146,7 +142,8 @@ HRESULT CopyFileImpersonated(const base::FilePath from,
     if (total_bytes_read > kMaxFileSize)
       return E_INVALIDARG;
 
-    const int bytes_written = to_file.WriteAtCurrentPos(&buffer[0], bytes_read);
+    const int bytes_written =
+        UNSAFE_TODO(to_file.WriteAtCurrentPos(&buffer[0], bytes_read));
     if (bytes_written < 0)
       return HRESULTFromLastError();
     if (bytes_written != bytes_read)

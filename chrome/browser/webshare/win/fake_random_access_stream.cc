@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/webshare/win/fake_random_access_stream.h"
 
 #include <robuffer.h>
+
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
@@ -254,7 +251,7 @@ class StreamData final : public base::RefCountedThreadSafe<StreamData> {
     // length
     EXPECT_HRESULT_SUCCEEDED(buffer->put_Length(count));
     for (UINT32 i = 0; i < count; i++) {
-      raw_buffer[i] = data_[position->data + i];
+      UNSAFE_TODO(raw_buffer[i]) = data_[position->data + i];
     }
     position->data += count;
 
@@ -284,7 +281,7 @@ class StreamData final : public base::RefCountedThreadSafe<StreamData> {
 
     // Write the buffer to our inner |data_| and update the position.
     for (UINT32 i = 0; i < length; i++) {
-      data_[position->data + i] = raw_buffer[i];
+      data_[position->data + i] = UNSAFE_TODO(raw_buffer[i]);
     }
     position->data += length;
 

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/policy/messaging_layer/upload/file_upload_impl.h"
 
 #include <cstddef>
@@ -16,6 +11,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/files/file.h"
@@ -274,7 +270,8 @@ class FileUploadDelegateTest : public ::testing::Test {
     ASSERT_TRUE(file.IsValid());
     ASSERT_THAT(file.error_details(), Eq(base::File::FILE_OK));
 
-    const int bytes_written = file.Write(0, kTestData, kTestDataSize);
+    const int bytes_written =
+        UNSAFE_TODO(file.Write(0, kTestData, kTestDataSize));
     EXPECT_THAT(bytes_written, Eq(static_cast<int>(kTestDataSize)));
   }
 

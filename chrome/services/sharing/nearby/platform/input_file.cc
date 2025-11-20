@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/services/sharing/nearby/platform/input_file.h"
 
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/notimplemented.h"
 #include "third_party/abseil-cpp/absl/time/time.h"
@@ -48,7 +44,7 @@ ExceptionOr<ByteArray> InputFile::Read(std::int64_t size) {
   }
 
   std::vector<char> buf(size);
-  int num_bytes_read = file_.ReadAtCurrentPos(buf.data(), size);
+  int num_bytes_read = UNSAFE_TODO(file_.ReadAtCurrentPos(buf.data(), size));
 
   if (num_bytes_read < 0 || num_bytes_read > GetTotalSize())
     return Exception::kIo;

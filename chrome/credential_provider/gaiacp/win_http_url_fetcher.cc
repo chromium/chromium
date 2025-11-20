@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/credential_provider/gaiacp/win_http_url_fetcher.h"
 
 #include <Windows.h>
@@ -19,6 +14,7 @@
 #include <string_view>
 
 #include "base/base64.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/json/json_reader.h"
@@ -409,7 +405,7 @@ HRESULT WinHttpUrlFetcher::Fetch(std::vector<char>* response) {
 
     size_t current_size = response->size();
     response->resize(response->size() + actual);
-    memcpy(response->data() + current_size, buffer.get(), actual);
+    UNSAFE_TODO(memcpy(response->data() + current_size, buffer.get(), actual));
     if (response->size() >= kMaxResponseSize) {
       LOGFN(ERROR) << "Response has exceeded max size=" << kMaxResponseSize;
       return E_OUTOFMEMORY;

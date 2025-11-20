@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/media_galleries/mtp_device_object_enumerator.h"
 
 #include <stddef.h>
@@ -14,6 +9,7 @@
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -56,24 +52,25 @@ TEST_F(MTPDeviceObjectEnumeratorTest, Traversal) {
   std::vector<device::mojom::MtpFileEntryPtr> entries;
   for (size_t i = 0; i < std::size(kTestCases); ++i) {
     auto entry = device::mojom::MtpFileEntry::New();
-    entry->file_name = kTestCases[i].name;
-    entry->file_size = kTestCases[i].size;
+    entry->file_name = UNSAFE_TODO(kTestCases[i]).name;
+    entry->file_size = UNSAFE_TODO(kTestCases[i]).size;
     entry->file_type =
-        kTestCases[i].is_directory
+        UNSAFE_TODO(kTestCases[i]).is_directory
             ? device::mojom::MtpFileEntry::FileType::FILE_TYPE_FOLDER
             : device::mojom::MtpFileEntry::FileType::FILE_TYPE_OTHER;
-    entry->modification_time = kTestCases[i].modification_time;
+    entry->modification_time = UNSAFE_TODO(kTestCases[i]).modification_time;
     entries.push_back(std::move(entry));
   }
   MTPDeviceObjectEnumerator enumerator(std::move(entries));
   TestEnumeratorIsEmpty(&enumerator);
   TestEnumeratorIsEmpty(&enumerator);
   for (size_t i = 0; i < std::size(kTestCases); ++i) {
-    EXPECT_EQ(kTestCases[i].name, enumerator.Next().value());
-    EXPECT_EQ(kTestCases[i].size, enumerator.Size());
-    EXPECT_EQ(kTestCases[i].is_directory, enumerator.IsDirectory());
-    EXPECT_EQ(kTestCases[i].modification_time,
-              enumerator.LastModifiedTime().ToTimeT());
+    UNSAFE_TODO(EXPECT_EQ(kTestCases[i].name, enumerator.Next().value()));
+    UNSAFE_TODO(EXPECT_EQ(kTestCases[i].size, enumerator.Size()));
+    UNSAFE_TODO(
+        EXPECT_EQ(kTestCases[i].is_directory, enumerator.IsDirectory()));
+    UNSAFE_TODO(EXPECT_EQ(kTestCases[i].modification_time,
+                          enumerator.LastModifiedTime().ToTimeT()));
   }
   TestNextEntryIsEmpty(&enumerator);
   TestNextEntryIsEmpty(&enumerator);

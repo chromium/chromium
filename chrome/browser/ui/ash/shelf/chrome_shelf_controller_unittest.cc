@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 
 #include <stddef.h>
@@ -40,6 +35,7 @@
 #include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
@@ -3659,7 +3655,7 @@ void CheckAppMenu(ChromeShelfController* controller,
   auto items = controller->GetAppMenuItemsForTesting(item);
   ASSERT_EQ(expected_item_count, items.size());
   for (size_t i = 0; i < expected_item_count; i++) {
-    EXPECT_EQ(expected_item_titles[i], items[i].title);
+    UNSAFE_TODO(EXPECT_EQ(expected_item_titles[i], items[i].title));
   }
 }
 

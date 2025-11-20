@@ -7,11 +7,6 @@
 // work is done by the local functions defined in anonymous namespace in
 // this class.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/installer/util/shell_util.h"
 
 #include <objbase.h>
@@ -30,6 +25,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -482,19 +478,23 @@ void GetShellIntegrationEntries(
   const std::wstring html_prog_id(GetBrowserProgId(suffix));
   // Register HTML and PDF Prog IDs (e.g., ChromePDF) with the corresponding
   // file association.
-  for (int i = 0; ShellUtil::kPotentialFileAssociations[i] != nullptr; i++) {
+  for (int i = 0;
+       UNSAFE_TODO(ShellUtil::kPotentialFileAssociations[i]) != nullptr; i++) {
     entries->push_back(std::make_unique<RegistryEntry>(
         capabilities + L"\\FileAssociations",
-        ShellUtil::kPotentialFileAssociations[i],
-        wcscmp(ShellUtil::kPotentialFileAssociations[i], L".pdf") == 0
+        UNSAFE_TODO(ShellUtil::kPotentialFileAssociations[i]),
+        UNSAFE_TODO(
+            wcscmp(ShellUtil::kPotentialFileAssociations[i], L".pdf")) == 0
             ? GetPDFProgId(suffix)
             : html_prog_id));
   }
-  for (int i = 0; ShellUtil::kPotentialProtocolAssociations[i] != nullptr;
+  for (int i = 0;
+       UNSAFE_TODO(ShellUtil::kPotentialProtocolAssociations[i]) != nullptr;
        i++) {
     entries->push_back(std::make_unique<RegistryEntry>(
         capabilities + L"\\URLAssociations",
-        ShellUtil::kPotentialProtocolAssociations[i], html_prog_id));
+        UNSAFE_TODO(ShellUtil::kPotentialProtocolAssociations[i]),
+        html_prog_id));
   }
 }
 
@@ -536,9 +536,11 @@ void GetChromeAppRegistrationEntries(
       chrome_exe.DirName().value()));
 
   const std::wstring html_prog_id(GetBrowserProgId(suffix));
-  for (int i = 0; ShellUtil::kPotentialFileAssociations[i] != nullptr; i++) {
+  for (int i = 0;
+       UNSAFE_TODO(ShellUtil::kPotentialFileAssociations[i]) != nullptr; i++) {
     GetAppExtRegistrationEntries(
-        html_prog_id, ShellUtil::kPotentialFileAssociations[i], entries);
+        html_prog_id, UNSAFE_TODO(ShellUtil::kPotentialFileAssociations[i]),
+        entries);
   }
 }
 
@@ -614,18 +616,23 @@ void GetXPStyleDefaultBrowserUserEntries(
     std::vector<std::unique_ptr<RegistryEntry>>* entries) {
   // File extension associations.
   std::wstring html_prog_id(GetBrowserProgId(suffix));
-  for (int i = 0; ShellUtil::kDefaultFileAssociations[i] != nullptr; i++) {
+  for (int i = 0;
+       UNSAFE_TODO(ShellUtil::kDefaultFileAssociations[i]) != nullptr; i++) {
     GetAppDefaultRegistrationEntries(
-        html_prog_id, ShellUtil::kDefaultFileAssociations[i], true, entries);
+        html_prog_id, UNSAFE_TODO(ShellUtil::kDefaultFileAssociations[i]), true,
+        entries);
   }
 
   // Protocols associations.
   std::wstring chrome_open = ShellUtil::GetChromeShellOpenCmd(chrome_exe);
   std::wstring chrome_icon = ShellUtil::FormatIconLocation(
       chrome_exe, install_static::GetAppIconResourceIndex());
-  for (int i = 0; ShellUtil::kBrowserProtocolAssociations[i] != nullptr; i++) {
-    GetXPStyleUserProtocolEntries(ShellUtil::kBrowserProtocolAssociations[i],
-                                  chrome_icon, chrome_open, entries);
+  for (int i = 0;
+       UNSAFE_TODO(ShellUtil::kBrowserProtocolAssociations[i]) != nullptr;
+       i++) {
+    GetXPStyleUserProtocolEntries(
+        UNSAFE_TODO(ShellUtil::kBrowserProtocolAssociations[i]), chrome_icon,
+        chrome_open, entries);
   }
 
   // start->Internet shortcut.
@@ -1053,14 +1060,17 @@ ShellUtil::DefaultState ProbeCurrentDefaultHandlers(
           if (base::StartsWith(current_app.get(), mode_browser_prog_id_prefix,
                                base::CompareCase::SENSITIVE)) {
             return current_app_len == mode_browser_prog_id_prefix.length() ||
-                   current_app[mode_browser_prog_id_prefix.length()] == L'.';
+                   UNSAFE_TODO(
+                       current_app[mode_browser_prog_id_prefix.length()]) ==
+                       L'.';
           }
           if (is_pdf) {
             const std::wstring mode_pdf_prog_id_prefix(mode.pdf_prog_id_prefix);
             if (base::StartsWith(current_app.get(), mode_pdf_prog_id_prefix,
                                  base::CompareCase::SENSITIVE)) {
               return current_app_len == mode_pdf_prog_id_prefix.length() ||
-                     current_app[mode_pdf_prog_id_prefix.length()] == L'.';
+                     UNSAFE_TODO(
+                         current_app[mode_pdf_prog_id_prefix.length()]) == L'.';
             }
           }
           return false;

@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/services/media_gallery_util/media_parser_android.h"
 
 #include <memory>
 #include <optional>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
@@ -44,7 +40,7 @@ bool HasH26xStartCode(const std::vector<uint8_t>& data) {
 bool HasValidYUVData(const media::VideoFrame& frame) {
   bool valid = false;
   for (size_t i = 0; i < 8; ++i) {
-    valid |= *(frame.data(media::VideoFrame::Plane::kY) + i);
+    valid |= *(UNSAFE_TODO(frame.data(media::VideoFrame::Plane::kY) + i));
     if (valid)
       break;
   }
@@ -72,7 +68,8 @@ class TestMediaDataSource : public chrome::mojom::MediaDataSource {
     base::File file(file_path_, base::File::Flags::FLAG_OPEN |
                                     base::File::Flags::FLAG_READ);
     auto buffer = std::vector<uint8_t>(length);
-    int bytes_read = file.Read(position, (char*)(buffer.data()), length);
+    int bytes_read =
+        UNSAFE_TODO(file.Read(position, (char*)(buffer.data()), length));
     if (bytes_read < length)
       buffer.resize(bytes_read);
 

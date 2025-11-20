@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/installer/util/registry_key_backup.h"
 
 #include <stdint.h>
@@ -18,6 +13,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/win/registry.h"
 
@@ -111,7 +107,7 @@ void ValueData::Initialize(const wchar_t* name_buffer,
                            DWORD data_size) {
   name_.assign(name_buffer, name_size);
   type_ = type;
-  data_.assign(data, data + data_size);
+  data_.assign(data, UNSAFE_TODO(data + data_size));
 }
 
 RegistryKeyBackup::KeyData::KeyData() = default;

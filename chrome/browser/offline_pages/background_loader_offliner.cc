@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/offline_pages/background_loader_offliner.h"
 
 #include <memory>
@@ -14,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
@@ -83,8 +79,8 @@ BackgroundLoaderOffliner::BackgroundLoaderOffliner(
     load_termination_listener_->set_offliner(this);
 
   for (int i = 0; i < ResourceDataType::RESOURCE_DATA_TYPE_COUNT; ++i) {
-    stats_[i].requested = 0;
-    stats_[i].completed = 0;
+    UNSAFE_TODO(stats_[i]).requested = 0;
+    UNSAFE_TODO(stats_[i]).completed = 0;
   }
 }
 
@@ -312,7 +308,7 @@ void BackgroundLoaderOffliner::ObserveResourceLoading(
     bool started) {
   // Add the signal to extra data, and use for tracking.
 
-  RequestStats& found_stats = stats_[type];
+  RequestStats& found_stats = UNSAFE_TODO(stats_[type]);
   if (started)
     ++found_stats.requested;
   else
@@ -458,8 +454,8 @@ void BackgroundLoaderOffliner::ResetState() {
   loader_.reset();
 
   for (int i = 0; i < ResourceDataType::RESOURCE_DATA_TYPE_COUNT; ++i) {
-    stats_[i].requested = 0;
-    stats_[i].completed = 0;
+    UNSAFE_TODO(stats_[i]).requested = 0;
+    UNSAFE_TODO(stats_[i]).completed = 0;
   }
 }
 

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/install_static/policy_path_parser.h"
 
 #include <assert.h>
@@ -17,6 +12,7 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 
 namespace {
@@ -56,9 +52,10 @@ struct ScopedFunctionHelper {
     if (library_) {
       // Strip off any leading :: that may have come from stringifying the
       // function's name.
-      if (function_name[0] == ':' && function_name[1] == ':' &&
-          function_name[2] && function_name[2] != ':') {
-        function_name += 2;
+      if (function_name[0] == ':' && UNSAFE_TODO(function_name[1]) == ':' &&
+          UNSAFE_TODO(function_name[2]) &&
+          UNSAFE_TODO(function_name[2]) != ':') {
+        UNSAFE_TODO(function_name += 2);
       }
       function_ = reinterpret_cast<FunctionType*>(
           GetProcAddress(library_, function_name));
@@ -111,12 +108,12 @@ std::wstring ExpandPathVariables(const std::wstring& untranslated_string) {
       SCOPED_LOAD_FUNCTION(L"shell32.dll", ::SHGetSpecialFolderPathW);
   // First translate all path variables we recognize.
   for (size_t i = 0; i < _countof(kWinFolderMapping); ++i) {
-    size_t position = result.find(kWinFolderMapping[i].name);
+    size_t position = result.find(UNSAFE_TODO(kWinFolderMapping[i]).name);
     if (position != std::wstring::npos) {
-      size_t variable_length = wcslen(kWinFolderMapping[i].name);
+      size_t variable_length = wcslen(UNSAFE_TODO(kWinFolderMapping[i]).name);
       WCHAR path[MAX_PATH];
-      if (!sh_get_special_folder_path(nullptr, path, kWinFolderMapping[i].id,
-                                      false)) {
+      if (!sh_get_special_folder_path(
+              nullptr, path, UNSAFE_TODO(kWinFolderMapping[i]).id, false)) {
         path[0] = 0;
       }
       std::wstring path_string(path);
