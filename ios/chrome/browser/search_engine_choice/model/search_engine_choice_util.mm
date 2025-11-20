@@ -6,6 +6,7 @@
 
 #import "base/check_deref.h"
 #import "base/command_line.h"
+#import "components/regional_capabilities/regional_capabilities_metrics.h"
 #import "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #import "components/search_engines/search_engines_switches.h"
 #import "ios/chrome/app/tests_hook.h"

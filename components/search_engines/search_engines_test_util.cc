@@ -9,6 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/country_codes/country_codes.h"
 #include "components/search_engines/default_search_manager.h"
+#include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_data_util.h"

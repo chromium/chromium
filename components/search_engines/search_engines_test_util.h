@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/time/time.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 
 struct TemplateURLData;

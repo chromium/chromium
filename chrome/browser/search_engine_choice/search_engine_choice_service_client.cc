@@ -9,6 +9,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/metrics/cloned_install_detector.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
+#include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/variations/service/variations_service.h"
 
 #if BUILDFLAG(IS_CHROMEOS)

@@ -14,7 +14,6 @@
 #include "components/country_codes/country_codes.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/regional_capabilities/program_settings.h"
-#include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 
 namespace policy {
 class ManagementService;
@@ -40,9 +39,20 @@ class PrefRegistrySyncable;
 
 class PrefRegistrySimple;
 class PrefService;
+class SearchTermsData;
+class TemplateURL;
 class TemplateURLService;
 
 namespace search_engines {
+
+class ChoiceScreenData;
+class SearchEngineChoiceService;
+enum class ChoiceMadeLocation;
+enum class SearchEngineChoiceScreenConditions;
+enum class SearchEngineChoiceScreenEvents;
+enum class SearchEngineChoiceWipeReason;
+struct ChoiceCompletionMetadata;
+struct ChoiceScreenDisplayState;
 
 // `KeyedService` for managing the state related to Search Engine Choice (mostly
 // for the country information).

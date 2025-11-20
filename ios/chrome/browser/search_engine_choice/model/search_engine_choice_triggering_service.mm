@@ -6,6 +6,7 @@
 
 #import "components/policy/core/common/policy_service.h"
 #import "components/prefs/pref_service.h"
+#import "components/regional_capabilities/regional_capabilities_metrics.h"
 #import "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #import "components/search_engines/search_engines_pref_names.h"
 #import "components/search_engines/template_url_service.h"

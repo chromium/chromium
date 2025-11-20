@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ntp/search_engine_logo/mediator/search_engine_logo_mediator.h"
 
 #import "base/memory/raw_ptr.h"
+#import "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/search_provider_logos/logo_common.h"
 #import "ios/chrome/browser/google/model/google_logo_service.h"

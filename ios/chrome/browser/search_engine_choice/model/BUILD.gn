@@ -14,6 +14,7 @@ source_set("model") {
   deps = [
     "//base",
     "//components/keyed_service/core",
+    "//components/regional_capabilities",
     "//components/search_engines",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/policy/model",
