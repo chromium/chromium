@@ -63,6 +63,15 @@
 #define _LIBCPP_PSTL_BACKEND_STD_THREAD
 #endif
 
+// _LIBCPP_HARDENING_MODE_DEFAULT is not defined here. Instead, we define
+// _LIBCPP_HARDENING_MODE in build/config/compiler/BUILD.gn.
+
+// Define _LIBCPP_ASSERTION_SEMANTIC_DEFAULT instead of
+// _LIBCPP_ASSERTION_SEMANTIC because the latter requires setting
+// _LIBCPP_HAS_EXPERIMENTAL_LIBRARY too.
+#define _LIBCPP_ASSERTION_SEMANTIC_DEFAULT \
+    _LIBCPP_ASSERTION_SEMANTIC_HARDENING_DEPENDENT
+
 // Settings below aren't part of __config_site upstream.
 // We set them here since we want them to take effect everywhere,
 // unconditionally.
