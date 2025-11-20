@@ -18,20 +18,6 @@ constexpr CGFloat kCurrentDefaultPillHorizontalMargin = 5.;
 // Border width for the current default pill.
 constexpr CGFloat kCurrentDefaultPillBorderWidth = 1.;
 
-// Returns just "Current default".
-// TODO(crbug.com/458252292): Need to add "Current default" string.
-NSString* GetCurrentDefaultString() {
-  NSString* string = l10n_util::GetNSStringF(
-      IDS_SEARCH_ENGINE_CHOICE_CURRENT_DEFAULT_SEARCH_ENGINE_PREPEND,
-      std::u16string());
-  StringWithTag parsed_string =
-      ParseStringWithTag(string, @"BEGIN_BOLD[ \t]*", @"[ \t]*END_BOLD");
-  if (parsed_string.range.location == NSNotFound) {
-    return string;
-  }
-  return [parsed_string.string substringWithRange:parsed_string.range];
-}
-
 }  // namespace
 
 @implementation SearchEngineCurrentDefaultPillView
@@ -44,7 +30,11 @@ NSString* GetCurrentDefaultString() {
     label.translatesAutoresizingMaskIntoConstraints = NO;
     label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2];
     label.adjustsFontForContentSizeCategory = YES;
-    label.text = GetCurrentDefaultString();
+    // TODO(crbug.com/458252292): Need to remove
+    // IDS_SEARCH_ENGINE_CHOICE_CURRENT_DEFAULT_SEARCH_ENGINE_PREPEND string, in
+    // M145.
+    label.text = l10n_util::GetNSString(
+        IDS_SEARCH_ENGINE_CHOICE_CURRENT_DEFAULT_SEARCH_ENGINE);
     label.textColor = [UIColor colorNamed:kTextSecondaryColor];
     AddSameConstraintsWithInsets(
         label, self,
