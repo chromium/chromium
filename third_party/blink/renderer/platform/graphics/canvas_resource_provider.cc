@@ -171,7 +171,32 @@ CanvasResourceProviderBitmap::DoExternalDrawAndSnapshot(
   HighEntropyCanvasOpType high_entropy_canvas_op_types =
       GetRecorderHighEntropyCanvasOpTypes();
 
-  FlushCanvas(FlushReason::kOther);
+  if (recorder_->HasReleasableDrawOps()) {
+    FlushReason reason = FlushReason::kOther;
+    ScopedRasterTimer timer(IsAccelerated() ? RasterInterface() : nullptr,
+                            *this, always_enable_raster_timers_for_testing_);
+    bool want_to_print = (IsPrinting() && reason != FlushReason::kClear) ||
+                         reason == FlushReason::kPrinting ||
+                         reason == FlushReason::kCanvasPushFrameWhilePrinting;
+    bool preserve_recording = want_to_print && clear_frame_;
+
+    // If a previous flush rasterized some paint ops, we lost part of the
+    // recording and must fallback to raster printing instead of vectorial
+    // printing.
+    clear_frame_ = false;
+    if (reason == FlushReason::kClear) {
+      clear_frame_ = true;
+    }
+    cc::PaintRecord recording;
+    recording = recorder_->ReleaseMainRecording();
+    RasterRecord(recording);
+    // Images are locked for the duration of the rasterization, in case they get
+    // used multiple times. We can unlock them once the rasterization is
+    // complete.
+    ReleaseLockedImages();
+    last_recording_ =
+        preserve_recording ? std::optional(recording) : std::nullopt;
+  }
 
   cc::PaintImage paint_image;
 

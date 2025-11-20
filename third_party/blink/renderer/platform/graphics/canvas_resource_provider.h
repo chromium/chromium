@@ -334,6 +334,8 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   HighEntropyCanvasOpType GetRecorderHighEntropyCanvasOpTypes() const;
 
+  void ReleaseLockedImages();
+
  private:
   friend class FlushForImageListener;
 
@@ -353,8 +355,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // only needed for ganesh.
   void DisableLineDrawingAsPathsIfNecessary();
 
-  void ReleaseLockedImages();
-
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
   // Note that `info_` should be const, but the relevant SkImageInfo
   // constructors do not exist.
@@ -366,17 +366,17 @@ class PLATFORM_EXPORT CanvasResourceProvider
   std::unique_ptr<CanvasImageProvider> canvas_image_provider_;
   std::unique_ptr<cc::SkiaPaintCanvas> skia_canvas_;
   raw_ptr<Delegate> delegate_ = nullptr;
+
+ protected:
   // Recording accumulating draw ops. This pointer is always valid and safe to
   // dereference.
   std::unique_ptr<MemoryManagedPaintRecorder> recorder_;
 
- protected:
   const cc::PaintImage::Id snapshot_paint_image_id_;
   cc::PaintImage::ContentId snapshot_paint_image_content_id_ =
       cc::PaintImage::kInvalidContentId;
   uint32_t snapshot_sk_image_id_ = 0u;
 
- private:
   bool always_enable_raster_timers_for_testing_ = false;
 
   // The maximum number of draw ops executed on the canvas, after which the
