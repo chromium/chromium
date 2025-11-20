@@ -144,7 +144,7 @@ using segmentation_platform::TipIdentifier;
       l10n_util::GetNSString(
           IDS_IOS_MAGIC_STACK_TIP_SAVE_PASSWORDS_TUTORIAL_STEP_2),
       l10n_util::GetNSString(
-          IDS_IOS_MAGIC_STACK_TIP_SAVE_PASSWORDS_TUTORIAL_STEP_1),
+          IDS_IOS_MAGIC_STACK_TIP_SAVE_PASSWORDS_TUTORIAL_STEP_3),
     ];
   }
   return @[
