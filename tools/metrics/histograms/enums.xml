@@ -8836,6 +8836,7 @@ from previous Chrome versions.
       label="AccessibilityManifestV3SelectToSpeak:disabled"/>
   <int value="-1872989945" label="enable-webview-based-signin"/>
   <int value="-1872867546" label="EnumerateAudioDevices:disabled"/>
+  <int value="-1872694596" label="ChromeItemPickerUi:disabled"/>
   <int value="-1872205507" label="ShelfNewUi:enabled"/>
   <int value="-1871987704" label="OpenXrSpatialEntities:disabled"/>
   <int value="-1871552967" label="DesktopPWAsTabStrip:disabled"/>
@@ -9113,6 +9114,7 @@ from previous Chrome versions.
   <int value="-1775183049" label="NewTabPageCustomization:enabled"/>
   <int value="-1774921110" label="ServiceWorkerStaticRouter:enabled"/>
   <int value="-1774818943" label="VrWebInputEditing:enabled"/>
+  <int value="-1774490877" label="ChromeItemPickerUi:enabled"/>
   <int value="-1774392993"
       label="CompressionDictionaryTransportOverHttp2:disabled"/>
   <int value="-1774290918" label="webview-shadow-dom-fenced-frames"/>
@@ -11028,6 +11030,7 @@ from previous Chrome versions.
   <int value="-1111056156" label="AdvancedPeripheralsSupportTabStrip:enabled"/>
   <int value="-1110928012" label="force-companion-pinned-state"/>
   <int value="-1110240043" label="FastPairSoftwareScanningSupport:disabled"/>
+  <int value="-1109969457" label="AnnotatedPageContentExtraction:enabled"/>
   <int value="-1109826787" label="AccessibilityExposeDisplayNone:enabled"/>
   <int value="-1109559578" label="FeedContainment:enabled"/>
   <int value="-1109489088" label="LauncherFuzzyMatchForOmnibox:disabled"/>
@@ -11419,6 +11422,7 @@ from previous Chrome versions.
   <int value="-977770313" label="AndroidSurfaceControl:enabled"/>
   <int value="-977655711" label="CCTPageInsightsHubPeek:disabled"/>
   <int value="-977476498" label="disable-eol-notification"/>
+  <int value="-977291248" label="AnnotatedPageContentExtraction:disabled"/>
   <int value="-976514241" label="AutofillEnableCardBenefitsIph:enabled"/>
   <int value="-976421766" label="AutofillEnableManualFallbackIPH:enabled"/>
   <int value="-976400334"
@@ -12527,6 +12531,7 @@ from previous Chrome versions.
   <int value="-577443556" label="kTearOffWebAppTabOpensWebAppWindow:disabled"/>
   <int value="-576759065" label="HoldingSpaceInProgressAnimationV2:disabled"/>
   <int value="-576475188" label="BorealisForceDoubleScale:disabled"/>
+  <int value="-576462208" label="PageContentCache:enabled"/>
   <int value="-575139778" label="NtpDriveModuleNoSyncRequirement:enabled"/>
   <int value="-575081438"
       label="OmniboxMostVisitedTilesFadingOnTablet:disabled"/>
@@ -14937,6 +14942,7 @@ from previous Chrome versions.
   <int value="280459238" label="ChromeSharingHubLaunchAdjacent:disabled"/>
   <int value="280644887" label="mash"/>
   <int value="280925459" label="LiveCaption:disabled"/>
+  <int value="280973880" label="PageContentCache:disabled"/>
   <int value="281024089" label="AppServiceExternalProtocol:disabled"/>
   <int value="281209060" label="ZeroSuggestPrefetchDebouncing:enabled"/>
   <int value="281528483" label="MediaAppPdfA11yOcr:disabled"/>

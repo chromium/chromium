@@ -491,6 +491,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "annotated-page-content-extraction",
+    "owners": [ "haileywang@google.com", "ssid@chromium.org" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "apn-policies",
     "owners": [ "nikhilcn@google.com", "hsuregan@google.com", "cros-device-enablement@google.com" ],
     "expiry_milestone": 138
@@ -1749,6 +1754,11 @@
     "name": "change-unfocused-priority",
     "owners": [ "asriniva@google.com"],
     "expiry_milestone": 140
+  },
+  {
+    "name": "chrome-item-picker-ui",
+    "owners": [ "haileywang@google.com", "ssid@chromium.org" ],
+    "expiry_milestone": 150
   },
   {
     "name": "chrome-labs",
@@ -8057,6 +8067,11 @@
   {
     "name": "page-content-annotations-remote-page-metadata",
     "owners": [ "sophiechang@chromium.org", "chrome-intelligence-core@google.com"],
+    "expiry_milestone": 150
+  },
+  {
+    "name": "page-content-cache",
+    "owners": [ "haileywang@google.com", "ssid@chromium.org" ],
     "expiry_milestone": 150
   },
   {

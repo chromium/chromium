@@ -2582,6 +2582,11 @@ inline constexpr char kJumpStartOmniboxDescription[] =
     "process on low-end devices to reduce the time to active Omnibox, while "
     "completing core systems initialization in the background.";
 
+inline constexpr char kAnnotatedPageContentExtractionName[] =
+    "Enables annotated page content extraction";
+inline constexpr char kAnnotatedPageContentExtractionDescription[] =
+    "Enables annotated page content to be extracted";
+
 inline constexpr char kExtractRelatedSearchesFromPrefetchedZPSResponseName[] =
     "Extract Related Searches from Prefetched ZPS Response";
 inline constexpr char
@@ -3360,6 +3365,10 @@ inline constexpr char kPageContentAnnotationsRemotePageMetadataName[] =
     "Page content annotations - Remote page metadata";
 inline constexpr char kPageContentAnnotationsRemotePageMetadataDescription[] =
     "Enables fetching of page load metadata to be persisted on-device.";
+
+inline constexpr char kPageContentCacheName[] = "Page content cache";
+inline constexpr char kPageContentCacheDescription[] =
+    "Enables caching of the annotated page content and screenshot";
 
 inline constexpr char kPageEmbeddedPermissionControlName[] =
     "Page embedded permission control (permission element)";
@@ -5308,6 +5317,10 @@ inline constexpr char kChangeUnfocusedPriorityName[] =
 inline constexpr char kChangeUnfocusedPriorityDescription[] =
     "Lower process priority for processes with only unfocused windows, "
     "allowing them to be discarded sooner.";
+
+inline constexpr char kChromeItemPickerUiName[] = "Chrome Item Picker Ui";
+inline constexpr char kChromeItemPickerUiDescription[] =
+    "Enable the Chrome item picker to show";
 
 inline constexpr char kChimeAlwaysShowNotificationDescription[] =
     "A debug flag to always show Chime notification after receiving a payload.";

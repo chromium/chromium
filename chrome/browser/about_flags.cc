@@ -6996,6 +6996,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kChangeUnfocusedPriorityName,
      flag_descriptions::kChangeUnfocusedPriorityDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kChangeUnfocusedPriority)},
+
+    {"chrome-item-picker-ui", flag_descriptions::kChromeItemPickerUiName,
+     flag_descriptions::kChromeItemPickerUiDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kChromeItemPickerUi)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"most-visited-tiles-new-scoring",
@@ -7513,6 +7517,12 @@ const FeatureEntry kFeatureEntries[] = {
                                     kJourneysVariations,
                                     "HistoryJourneys")},
 
+    {"annotated-page-content-extraction",
+     flag_descriptions::kAnnotatedPageContentExtractionName,
+     flag_descriptions::kAnnotatedPageContentExtractionDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         page_content_annotations::features::kAnnotatedPageContentExtraction)},
+
     {"extract-related-searches-from-prefetched-zps-response",
      flag_descriptions::kExtractRelatedSearchesFromPrefetchedZPSResponseName,
      flag_descriptions::
@@ -7537,6 +7547,10 @@ const FeatureEntry kFeatureEntries[] = {
          page_content_annotations::features::kRemotePageMetadata,
          kRemotePageMetadataVariations,
          "RemotePageMetadata")},
+
+    {"page-content-cache", flag_descriptions::kPageContentCacheName,
+     flag_descriptions::kPageContentCacheDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(page_content_annotations::features::kPageContentCache)},
 
     {"page-visibility-page-content-annotations",
      flag_descriptions::kPageVisibilityPageContentAnnotationsName,
