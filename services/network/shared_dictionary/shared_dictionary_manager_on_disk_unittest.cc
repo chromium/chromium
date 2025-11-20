@@ -352,6 +352,8 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
                   kTestData1);
   WriteDictionary(storage.get(), GURL("https://origin.test/dict"),
                   "othertestfile*", kTestData1);
+  WriteDictionary(storage.get(), GURL("https://origin.test/dict"),
+                  "thirdtestfile*", kTestData1);
 
   FlushCacheTasks();
 
@@ -369,10 +371,13 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
               })));
     run_loop.Run();
   }
-  // Request a second dictionary to push the first one out of the LRU cache
-  // so it will fall back to the ref-counted cache.
+  // Request a second and third dictionary to push the first one out of the
+  // 2-entry LRU cache so it will fall back to the ref-counted cache.
   scoped_refptr<net::SharedDictionary> unused_dict =
       storage->GetDictionarySync(GURL("https://origin.test/othertestfile?1"),
+                                 mojom::RequestDestination::kDocument);
+  scoped_refptr<net::SharedDictionary> unused_dict2 =
+      storage->GetDictionarySync(GURL("https://origin.test/thirdtestfile?1"),
                                  mojom::RequestDestination::kDocument);
   scoped_refptr<net::SharedDictionary> dict2 =
       storage->GetDictionarySync(GURL("https://origin.test/testfile?2"),
@@ -396,7 +401,7 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
           base::Bucket(
               static_cast<int>(
                   SharedDictionaryStorageOnDisk::CacheResult::kCacheMiss),
-              2),
+              3),
           base::Bucket(
               static_cast<int>(
                   SharedDictionaryStorageOnDisk::CacheResult::kCacheHitActive),

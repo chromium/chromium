@@ -581,12 +581,12 @@ BASE_FEATURE_PARAM(std::string,
                    /*name=*/"url_patterns",
                    /*default_value=*/"");
 
-BASE_FEATURE(kSharedDictionaryCache, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSharedDictionaryCache, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(size_t,
                    kSharedDictionaryCacheSize,
                    &kSharedDictionaryCache,
                    /*name=*/"cache_size",
-                   1);
+                   2);
 BASE_FEATURE_PARAM(size_t,
                    kSharedDictionaryCacheMaxSizeBytes,
                    &kSharedDictionaryCache,
