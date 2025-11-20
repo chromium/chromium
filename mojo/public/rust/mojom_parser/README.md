@@ -21,14 +21,58 @@ describe. For each Mojom file, the bindings generator will be responsible for
 generating a corresponding rust type, and mapping it to/from the enums, but the
 generator will not have to write any parsing code itself.
 
-## Crate structure
+## Wire Format
+If you want to understand the behavior of this crate, it is highly recommended
+that you first read (or at least skim) the
+[Mojom Wire Format Specification](https://docs.google.com/document/d/1YyCtD2-TtBsvhV8k53N3yGrWHVMcKumFnhHxUoXyQU0/edit?usp=sharing)
+document, which describes how types are laid out after serialization. All parts
+of the crate assume familiarity with the basic concepts described there.
 
-* lib.rs: The crate root, which serves only to define the API of the crate
-  via exports.
+However, note that the document was written well after the wire format
+was implemented in practice, so it may not perfectly reflect actual behavior
+of other bindings generators (C++ in particular). If you notice something wrong,
+leave a comment!
+
+## Directory structure
+
+Logically, this directory contains a single `mojom_parser` crate, but it's
+split into several internal crates for build-system reasons.
+
+The crates are:
+
+`mojom_parser`:
+* lib_pub.rs: The only file in this crate, which re-exports only the things that
+  outside users should have access to.
+
+`mojom_parser_core`:
+* lib_core.rs: The crate root, which serves only to list the other files.
+* api.rs: Defines functions which are meant to be called by external users to
+  serialize/deserialize data.
 * ast.rs: Defines the abstract syntax of mojom types and values.
+* errors.rs: Defines error and result types for the parser and deparser functions.
 * pack.rs: Translates mojom types to their wire format.
-* parse_*: Defines various levels of parsing functionality:
-  * parse_primitives: Basic parsers, which return primitive datatypes
-  * parse_values: Parsers which take a single encoded datatype (possibly a
+* parse_*.rs: Defines various levels of functionality for deserializing binary data:
+  * parse_primitives.rs: Basic parsers, which return primitive datatypes
+  * parse_values.rs: Parsers which take a single encoded value (possibly a
     recursive one like a struct) and return a mojom value.
-  * parser_messages: Parsers for entire mojom messages.
+  * parse_messages.rs: Functionality for parsing entire mojom messages.
+* deparse_*:  Defines various levels of functionality for serializing binary data:
+  * deparse_values.rs: Serializers which take a mojom value and return its binary
+    representation.
+* parsing_trait.rs: Defines traits for rust types that enable them to be
+  serialized/deserialized.
+
+`parsing_attribute`:
+* parsing_attribute.rs: Defines proc macros for deriving the traits defined in
+  `parsing_trait.rs`.
+
+`mojom_parser_unittests`:
+* test/
+  * lib.rs: The crate root, which serves only to list the other files
+  * test_mojomparse.rs: Tests for the parsing trait and its derivation.
+  * test_parser.rs: Tests that ensure the parser and deparser produce the
+    expected output.
+* test_util/
+  * cxx.rs: FFI bindings for calling a C++ function needed by `test_mojomparse.rs`
+  * parser_unittests.test-mojom: Contains the mojom definitions used by the
+    testing functions.
