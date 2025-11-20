@@ -46,7 +46,7 @@ class CONTENT_EXPORT PluginService {
   // Must be called on the instance to finish initialization.
   virtual void Init() = 0;
 
-  // Gets the plugin in the list of plugins that matches the given url and mime
+  // Gets the plugin in the list of plugins that matches the given URL and mime
   // type.
   virtual void GetPluginInfoArray(
       const GURL& url,
@@ -54,12 +54,11 @@ class CONTENT_EXPORT PluginService {
       std::vector<WebPluginInfo>* info,
       std::vector<std::string>* actual_mime_types) = 0;
 
-  // Gets plugin info for an individual plugin and filters the plugins using
-  // the |browser_context|. This returns whether or not the plugin can be found.
-  virtual bool GetPluginInfo(content::BrowserContext* browser_context,
-                             const GURL& url,
-                             const std::string& mime_type,
-                             WebPluginInfo* info) = 0;
+  // Filters the plugins list using `browser_context` and returns if there
+  // exists a plugin that matches the given URL and mime type.
+  virtual bool HasPlugin(content::BrowserContext* browser_context,
+                         const GURL& url,
+                         const std::string& mime_type) = 0;
 
   // Gets plugin info by plugin path (including disabled plugins). This will use
   // cached data in the plugin list.

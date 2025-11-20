@@ -130,14 +130,10 @@ void FilterURLsForDropability(
 
     // Check whether the mime types, if given, are known to be supported or
     // whether there is a plugin that supports the mime type (e.g. PDF).
-    // TODO(bauerb): This possibly uses stale information, but it's guaranteed
-    // not to do disk access.
     bool supported = mime_type.empty() || blink::IsSupportedMimeType(mime_type);
 #if BUILDFLAG(ENABLE_PLUGINS)
-    content::WebPluginInfo plugin;
-    supported =
-        supported || content::PluginService::GetInstance()->GetPluginInfo(
-                         browser_context, url, mime_type, &plugin);
+    supported = supported || content::PluginService::GetInstance()->HasPlugin(
+                                 browser_context, url, mime_type);
 #endif
 
     if (supported) {

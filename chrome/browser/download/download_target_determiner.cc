@@ -790,10 +790,9 @@ bool DownloadTargetDeterminer::DetermineIfHandledSafelyHelper(
   DCHECK(!mime_type.empty());
   auto* plugin_service = content::PluginService::GetInstance();
   plugin_service->GetPlugins();
-  content::WebPluginInfo unused_plugin_info;
-  return plugin_service->GetPluginInfo(
+  return plugin_service->HasPlugin(
       content::DownloadItemUtils::GetBrowserContext(download),
-      net::FilePathToFileURL(local_path), mime_type, &unused_plugin_info);
+      net::FilePathToFileURL(local_path), mime_type);
 #else
   return false;
 #endif

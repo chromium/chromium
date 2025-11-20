@@ -59,17 +59,15 @@ void PluginServiceImpl::GetPluginInfoArray(
                                               actual_mime_types);
 }
 
-bool PluginServiceImpl::GetPluginInfo(content::BrowserContext* browser_context,
-                                      const GURL& url,
-                                      const std::string& mime_type,
-                                      WebPluginInfo* info) {
+bool PluginServiceImpl::HasPlugin(content::BrowserContext* browser_context,
+                                  const GURL& url,
+                                  const std::string& mime_type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::vector<WebPluginInfo> plugins;
   GetPluginInfoArray(url, mime_type, &plugins, /*actual_mime_types=*/nullptr);
 
-  for (size_t i = 0; i < plugins.size(); ++i) {
-    if (!filter_ || filter_->IsPluginAvailable(browser_context, plugins[i])) {
-      *info = plugins[i];
+  for (const auto& plugin : plugins) {
+    if (!filter_ || filter_->IsPluginAvailable(browser_context, plugin)) {
       return true;
     }
   }

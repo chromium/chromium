@@ -57,12 +57,11 @@ class PdfWebContentsLifetimeHelper
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PdfWebContentsLifetimeHelper);
 
 #if BUILDFLAG(ENABLE_PLUGINS)
-// Returns true if the PDF plugin for |navigation_handle| is enabled.
+// Returns true if the PDF plugin for `navigation_handle` is enabled.
 bool IsPDFPluginEnabled(content::NavigationHandle* navigation_handle) {
-  content::WebPluginInfo unused_info;
-  return content::PluginService::GetInstance()->GetPluginInfo(
+  return content::PluginService::GetInstance()->HasPlugin(
       navigation_handle->GetWebContents()->GetBrowserContext(),
-      navigation_handle->GetURL(), pdf::kPDFMimeType, &unused_info);
+      navigation_handle->GetURL(), pdf::kPDFMimeType);
 }
 #endif
 
