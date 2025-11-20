@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_manager.h"
 #include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
@@ -55,8 +56,14 @@ infobars::InfoBar* SessionRestoreInfoBarDelegate::Show(
     Profile& profile,
     base::OnceCallback<void()> close_cb,
     SessionRestoreInfoBarDelegate::InfobarMessageType message_type) {
-  RecordInfoBarAction(message_type,
-                      SessionRestoreInfoBarDelegate::InfobarAction::kShown);
+  auto* manager = SessionRestoreInfoBarManager::GetInstance();
+  if (!manager->shown_metric_recorded_for_session()) {
+    manager->set_shown_metric_recorded_for_session(true);
+    manager->set_ignored_metric_recorded_for_session(false);
+    manager->set_action_taken_for_session(false);
+    RecordInfoBarAction(message_type,
+                        SessionRestoreInfoBarDelegate::InfobarAction::kShown);
+  }
   std::unique_ptr<SessionRestoreInfoBarDelegate> delegate =
       std::make_unique<SessionRestoreInfoBarDelegate>(
           profile, std::move(close_cb), message_type);
@@ -79,21 +86,31 @@ SessionRestoreInfoBarDelegate::SessionRestoreInfoBarDelegate(
 }
 
 SessionRestoreInfoBarDelegate::~SessionRestoreInfoBarDelegate() {
+  auto* manager = SessionRestoreInfoBarManager::GetInstance();
   if (!action_taken_) {
-    RecordInfoBarAction(message_type_,
-                        SessionRestoreInfoBarDelegate::InfobarAction::kIgnored);
-    if (profile_->GetPrefs()->GetInteger(
-            prefs::kSessionRestoreInfoBarTimesShown) ==
-        kSessionRestoreInfoBarMaxTimesToShow) {
-      //  The session restore infobar will be shown
-      // on 3 different browser sessions. And false will be recorded once if no
-      // action was taken to change the setting.
-      RecordSettingChanged(false, message_type_);
+    if (manager->action_taken_for_session()) {
+      return;
+    }
+    if (!manager->ignored_metric_recorded_for_session()) {
+      manager->set_ignored_metric_recorded_for_session(true);
+      RecordInfoBarAction(
+          message_type_,
+          SessionRestoreInfoBarDelegate::InfobarAction::kIgnored);
+      if (profile_->GetPrefs()->GetInteger(
+              prefs::kSessionRestoreInfoBarTimesShown) ==
+          kSessionRestoreInfoBarMaxTimesToShow) {
+        // The session restore infobar will be shown
+        // on 3 different browser sessions. And false will be recorded once if
+        // no action was taken to change the setting.
+        RecordSettingChanged(false, message_type_);
+      }
     }
   }
 }
 
 void SessionRestoreInfoBarDelegate::OnSessionRestorePrefChanged() {
+  SessionRestoreInfoBarManager::GetInstance()->set_action_taken_for_session(
+      true);
   RecordSettingChanged(true, message_type_);
   infobar()->RemoveSelf();
 }
@@ -166,6 +183,8 @@ int SessionRestoreInfoBarDelegate::GetLinkSpacingWhenPositionedBeforeButton()
 
 void SessionRestoreInfoBarDelegate::InfoBarDismissed() {
   action_taken_ = true;
+  SessionRestoreInfoBarManager::GetInstance()->set_action_taken_for_session(
+      true);
   RecordInfoBarAction(message_type_,
                       SessionRestoreInfoBarDelegate::InfobarAction::kDismissed);
   if (close_cb_) {
@@ -189,6 +208,8 @@ GURL SessionRestoreInfoBarDelegate::GetLinkURL() const {
 bool SessionRestoreInfoBarDelegate::LinkClicked(
     WindowOpenDisposition disposition) {
   action_taken_ = true;
+  SessionRestoreInfoBarManager::GetInstance()->set_action_taken_for_session(
+      true);
   RecordInfoBarAction(
       message_type_,
       SessionRestoreInfoBarDelegate::InfobarAction::kLinkClicked);

@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -319,6 +320,69 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreInfobarInteractiveTest,
                   AddInstrumentedTab(kSecondTabContents, GURL("about:blank")),
                   // Ensure the infobar is not present on the new tab.
                   EnsureNotPresent(ConfirmInfoBar::kInfoBarElementId));
+}
+IN_PROC_BROWSER_TEST_P(SessionRestoreInfobarInteractiveTest, MultipleMetrics) {
+  base::HistogramTester histogram_tester;
+  CreateInfobar(browser(), false);
+  RunTestSequence(WaitForShow(ConfirmInfoBar::kInfoBarElementId),
+
+                  // Open 2 more tabs.
+                  AddInstrumentedTab(kSecondTabContents, GURL("about:blank")),
+                  WaitForShow(ConfirmInfoBar::kInfoBarElementId),
+                  AddInstrumentedTab(kThirdTabContents, GURL("about:blank")),
+                  WaitForShow(ConfirmInfoBar::kInfoBarElementId),
+
+                  // Dismiss the infobar
+                  PressButton(ConfirmInfoBar::kDismissButtonElementId),
+
+                  // The infobars should be hidden.
+                  WaitForHide(ConfirmInfoBar::kInfoBarElementId));
+
+  const std::string histogram_name =
+      IsDefaultContinueSession()
+          ? "SessionRestore.InfoBar.TurnOffFromRestart"
+          : "SessionRestore.InfoBar.TurnOnSessionRestore";
+
+  histogram_tester.ExpectBucketCount(
+      histogram_name, SessionRestoreInfoBarDelegate::InfobarAction::kShown, 1);
+
+  histogram_tester.ExpectBucketCount(
+      histogram_name, SessionRestoreInfoBarDelegate::InfobarAction::kDismissed,
+      1);
+
+  histogram_tester.ExpectBucketCount(
+      histogram_name, SessionRestoreInfoBarDelegate::InfobarAction::kIgnored,
+      0);
+}
+
+IN_PROC_BROWSER_TEST_P(SessionRestoreInfobarInteractiveTest, MetricsIgnored) {
+  base::HistogramTester histogram_tester;
+  CreateInfobar(browser(), false);
+  RunTestSequence(WaitForShow(ConfirmInfoBar::kInfoBarElementId),
+
+                  // Open 2 more tabs.
+                  AddInstrumentedTab(kSecondTabContents, GURL("about:blank")),
+                  WaitForShow(ConfirmInfoBar::kInfoBarElementId),
+                  AddInstrumentedTab(kThirdTabContents, GURL("about:blank")),
+                  WaitForShow(ConfirmInfoBar::kInfoBarElementId));
+
+  CloseBrowserSynchronously(browser());
+
+  const std::string histogram_name =
+      IsDefaultContinueSession()
+          ? "SessionRestore.InfoBar.TurnOffFromRestart"
+          : "SessionRestore.InfoBar.TurnOnSessionRestore";
+
+  histogram_tester.ExpectBucketCount(
+      histogram_name, SessionRestoreInfoBarDelegate::InfobarAction::kShown, 1);
+
+  histogram_tester.ExpectBucketCount(
+      histogram_name, SessionRestoreInfoBarDelegate::InfobarAction::kDismissed,
+      0);
+
+  histogram_tester.ExpectBucketCount(
+      histogram_name, SessionRestoreInfoBarDelegate::InfobarAction::kIgnored,
+      1);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

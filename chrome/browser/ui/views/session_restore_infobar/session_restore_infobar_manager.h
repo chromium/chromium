@@ -55,6 +55,28 @@ class SessionRestoreInfoBarManager : public BrowserTabStripTrackerDelegate,
   // Closes all visible session restore infobars.
   void CloseAllInfoBars();
 
+  bool shown_metric_recorded_for_session() const {
+    return shown_metric_recorded_for_session_;
+  }
+
+  void set_shown_metric_recorded_for_session(bool value) {
+    shown_metric_recorded_for_session_ = value;
+  }
+
+  bool ignored_metric_recorded_for_session() const {
+    return ignored_metric_recorded_for_session_;
+  }
+
+  void set_ignored_metric_recorded_for_session(bool value) {
+    ignored_metric_recorded_for_session_ = value;
+  }
+
+  bool action_taken_for_session() const { return action_taken_for_session_; }
+
+  void set_action_taken_for_session(bool value) {
+    action_taken_for_session_ = value;
+  }
+
  private:
   friend struct base::DefaultSingletonTraits<SessionRestoreInfoBarManager>;
 
@@ -94,6 +116,10 @@ class SessionRestoreInfoBarManager : public BrowserTabStripTrackerDelegate,
       SessionRestoreInfoBarDelegate::InfobarMessageType::kNone;
 
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
+
+  bool shown_metric_recorded_for_session_ = false;
+  bool ignored_metric_recorded_for_session_ = false;
+  bool action_taken_for_session_ = false;
 };
 
 }  // namespace session_restore_infobar
