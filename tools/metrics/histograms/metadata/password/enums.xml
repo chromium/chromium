@@ -822,9 +822,11 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="OTP detected"/>
   <int value="8" label="Canceled by the user"/>
   <int value="9" label="No state. The feature wasn't offered"/>
-  <int value="10" label="Login form detected in an ongoing flow"/>
+  <int value="10"
+      label="Login is unfinished. Prompting user to complete sign in."/>
   <int value="11"
-      label="Login form detected in an ongoing flow. Continue button shown."/>
+      label="Login form detected in an ongoing flow. Continue button shown.
+             (Deprecated)"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/password_manager/password_change_delegate.h) -->
@@ -856,6 +858,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Canceled"/>
   <int value="2" label="Continue"/>
   <int value="3" label="Open password change tab"/>
+  <int value="4" label="Retry"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/passwords/password_change_ui_controller.h:PasswordChangeToastEvent) -->

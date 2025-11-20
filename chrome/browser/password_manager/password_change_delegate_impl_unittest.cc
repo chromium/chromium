@@ -9,6 +9,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_change/change_password_form_finder.h"
+#include "chrome/browser/password_manager/password_change/login_state_checker.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/passwords/password_change_ui_controller.h"
 #include "chrome/browser/ui/passwords/passwords_leak_dialog_delegate_mock.h"
@@ -206,7 +207,9 @@ TEST_F(PasswordChangeDelegateImplTest, PasswordChangeFormNotFound) {
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
 
   delegate()->StartPasswordChangeFlow();
-  delegate()->OnUserSkippedLoginCheck();
+  static_cast<PasswordChangeDelegateImpl*>(delegate())
+      ->login_checker()
+      ->RespondWithLoginStatus(LoginCheckResult::kLoggedIn);
 
   EXPECT_EQ(delegate()->GetCurrentState(),
             PasswordChangeDelegate::State::kWaitingForChangePasswordForm);

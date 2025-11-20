@@ -26,6 +26,12 @@ namespace password_manager {
 class PasswordManagerClient;
 }  // namespace password_manager
 
+enum class LoginCheckResult {
+  kLoggedIn = 0,
+  kLoggedOut = 1,
+  kError = 2,
+};
+
 // Helper class which checks if the user is fully signed in on the main tab
 // before starting a password change flow in a background tab.
 // If the initial check fails, it waits for a navigation to occur before
@@ -34,10 +40,8 @@ class LoginStateChecker : public content::WebContentsObserver {
  public:
   // Maximum amount of login state checks.
   static constexpr int kMaxLoginChecks = 5;
-  using LoginStateResultCallback = base::RepeatingCallback<void(bool)>;
-  using QualityStatus = optimization_guide::proto::
-      PasswordChangeQuality_StepQuality_SubmissionStatus;
-  using IsLoggedIn = base::StrongAlias<class IsLoggedInTag, bool>;
+  using LoginStateResultCallback =
+      base::RepeatingCallback<void(LoginCheckResult)>;
 
   LoginStateChecker(content::WebContents* web_contents,
                     ModelQualityLogsUploader* logs_uploader,
@@ -48,20 +52,22 @@ class LoginStateChecker : public content::WebContentsObserver {
 
   bool ReachedAttemptsLimit() const;
 
+  void RetryLoginCheck();
+
 #if defined(UNIT_TEST)
   AnnotatedPageContentCapturer* capturer() { return capturer_.get(); }
-  void RespondWithLoginStatus(IsLoggedIn is_logged_in) {
+  void RespondWithLoginStatus(LoginCheckResult result) {
     std::unique_ptr<
         optimization_guide::proto::PasswordChangeSubmissionLoggingData>
         logging_data = std::make_unique<
             optimization_guide::proto::PasswordChangeSubmissionLoggingData>();
     logging_data->mutable_response()
         ->mutable_is_logged_in_data()
-        ->set_is_logged_in(is_logged_in.value());
+        ->set_is_logged_in(result == LoginCheckResult::kLoggedIn);
     logs_uploader_->SetLoggedInCheckQuality(state_checks_count_,
                                             std::move(logging_data));
     state_checks_count_++;
-    result_check_callback_.Run(is_logged_in.value());
+    result_check_callback_.Run(result);
   }
 #endif
 
@@ -81,7 +87,7 @@ class LoginStateChecker : public content::WebContentsObserver {
   // Checks if the user is fully signed in on the site.
   // The result will be passed to the callback on success, otherwise it will
   // set up a retry on the next navigation.
-  void CheckLoginState();
+  void CheckLoginState(bool ignore_attempts_limit);
 
   // content::WebContentsObserver:
   void DidFinishNavigation(

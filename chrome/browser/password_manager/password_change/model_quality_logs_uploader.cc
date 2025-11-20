@@ -429,13 +429,6 @@ void ModelQualityLogsUploader::RecordButtonClickFailure(
   GetStepQuality(step, final_log_data_)->set_status(GetStepStatus(failure));
 }
 
-void ModelQualityLogsUploader::LoginCheckSkipped() {
-  final_log_data_.mutable_password_change_submission()
-      ->mutable_quality()
-      ->mutable_logged_in_check()
-      ->set_classification_overridden_by_user(true);
-}
-
 void ModelQualityLogsUploader::SetLoginPasswordFormInfo(
     const password_manager::PasswordForm& password_form) {
   optimization_guide::proto::PasswordChangeQuality* quality =

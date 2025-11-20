@@ -40,7 +40,8 @@ enum class PasswordChangeToastEvent {
   kCanceled = 1,
   kContinue = 2,
   kOpenPasswordChangeTab = 3,
-  kMaxValue = kOpenPasswordChangeTab,
+  kRetry = 4,
+  kMaxValue = kRetry,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/password/enums.xml:PasswordChangeToastEvent)
 
@@ -78,7 +79,7 @@ class PasswordChangeUIController {
   void OnPrivacyNoticeAccepted();
   void ShowPasswordDetails();
   void NavigateToPasswordChangeSettings();
-  void SkipLoginCheck();
+  void RetryLoginCheck();
 
   // Closes the dialog or widget and logs the `reason`.
   // TODO(crbug.com/407504591): Actually log the reason.

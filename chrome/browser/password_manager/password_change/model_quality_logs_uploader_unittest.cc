@@ -457,17 +457,6 @@ TEST_F(ModelQualityLogsUploaderTest, MergeLogsDoesNotOverwrite) {
       FinalModelStatus::FINAL_MODEL_STATUS_SUCCESS);
 }
 
-TEST_F(ModelQualityLogsUploaderTest, LoginCheckSkipped) {
-  ModelQualityLogsUploader logs_uploader(web_contents(), GURL());
-  logs_uploader.LoginCheckSkipped();
-  VerifyLoginCheckStep(
-      logs_uploader.GetFinalLog(),
-      QualityStatus::
-          PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS,
-      /*expected_retry_count=*/0,
-      /*was_skipped=*/true);
-}
-
 TEST_F(ModelQualityLogsUploaderTest, LoginCheckRetryCountSet) {
   const int login_state_checks = 3;
   ModelQualityLogsUploader logs_uploader(web_contents(), GURL());

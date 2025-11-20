@@ -84,11 +84,6 @@ class ModelQualityLogsUploader {
   void RecordButtonClickFailure(FlowStep step,
                                 actor::mojom::ActionResultCode failure);
 
-  // Called when the user clicks 'continue' during the login check step
-  // to begin the password change flow, which may indicate an incorrect
-  // classification of the user's login state by the model.
-  void LoginCheckSkipped();
-
   // Called when the leak check is shown to the user. Sets information about the
   // password form which triggered the leak check.
   void SetLoginPasswordFormInfo(

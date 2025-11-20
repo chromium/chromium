@@ -34,6 +34,7 @@ class PasswordFormManager;
 class ChangePasswordFormFillingSubmissionHelper;
 class ChangePasswordFormFinder;
 class CrossOriginNavigationObserver;
+enum class LoginCheckResult;
 class LoginStateChecker;
 class PasswordChangeHats;
 class Profile;
@@ -96,7 +97,7 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate {
   void OnPasswordFormSubmission(content::WebContents* web_contents) override;
   void OnPrivacyNoticeAccepted() override;
   void OnPasswordChangeDeclined() override;
-  void OnUserSkippedLoginCheck() override;
+  void RetryLoginCheck() override;
   void AddObserver(PasswordChangeDelegate::Observer* observer) override;
   void RemoveObserver(PasswordChangeDelegate::Observer* observer) override;
 
@@ -107,7 +108,7 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate {
   void OnTabWillDetach(tabs::TabInterface* tab_interface,
                        tabs::TabInterface::DetachReason reason);
 
-  void OnLoginStateCheckResult(bool is_logged_in);
+  void OnLoginStateCheckResult(LoginCheckResult login_status);
   // Updates `current_state_` and notifies `observers_`.
   void UpdateState(State new_state);
 

@@ -81,7 +81,6 @@ void LogDialogAction(PasswordChangeDelegate::State state,
     case PasswordChangeDelegate::State::kCanceled:
     case PasswordChangeDelegate::State::kNoState:
     case PasswordChangeDelegate::State::kLoginFormDetected:
-    case PasswordChangeDelegate::State::kLoginFormDetectedUserCanContinue:
       NOTREACHED();
   }
 }
@@ -101,12 +100,6 @@ void LogToastEvent(PasswordChangeDelegate::State state,
     case PasswordChangeDelegate::State::kLoginFormDetected:
       base::UmaHistogramEnumeration(
           "PasswordManager.PasswordChange.WaitingForUserSignInToast", event);
-      return;
-    case PasswordChangeDelegate::State::kLoginFormDetectedUserCanContinue:
-      base::UmaHistogramEnumeration(
-          "PasswordManager.PasswordChange."
-          "WaitingForUserSignInToastWithContinue",
-          event);
       return;
     case PasswordChangeDelegate::State::kCanceled:
       base::UmaHistogramEnumeration(
@@ -369,14 +362,10 @@ PasswordChangeUIController::GetDialogOrToastConfiguration(
       return ToastOptions(
           l10n_util::GetStringUTF16(
               IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_TOAST_SIGN_IN_TO_CONTINUE),
-          views::kInfoChromeRefreshIcon, std::move(cancel_toast_callback));
-    case PasswordChangeDelegate::State::kLoginFormDetectedUserCanContinue:
-      return ToastOptions(
-          l10n_util::GetStringUTF16(
-              IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_TOAST_SIGN_IN_TO_CONTINUE),
           views::kInfoChromeRefreshIcon, std::move(cancel_toast_callback),
-          l10n_util::GetStringUTF16(IDS_CONTINUE),
-          base::BindOnce(&PasswordChangeUIController::SkipLoginCheck,
+          l10n_util::GetStringUTF16(
+              IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_TOAST_RETRY_BUTTON),
+          base::BindOnce(&PasswordChangeUIController::RetryLoginCheck,
                          weak_ptr_factory_.GetWeakPtr()));
     case PasswordChangeDelegate::State::kNoState:
       NOTREACHED();
@@ -528,12 +517,11 @@ void PasswordChangeUIController::NavigateToPasswordChangeSettings() {
       NavigateParams::IGNORE_AND_NAVIGATE);
 }
 
-void PasswordChangeUIController::SkipLoginCheck() {
+void PasswordChangeUIController::RetryLoginCheck() {
   CHECK(password_change_delegate_);
-  LogToastEvent(
-      PasswordChangeDelegate::State::kLoginFormDetectedUserCanContinue,
-      PasswordChangeToastEvent::kContinue);
-  password_change_delegate_->OnUserSkippedLoginCheck();
+  LogToastEvent(PasswordChangeDelegate::State::kLoginFormDetected,
+                PasswordChangeToastEvent::kRetry);
+  password_change_delegate_->RetryLoginCheck();
 }
 
 void PasswordChangeUIController::CloseDialogWidget(

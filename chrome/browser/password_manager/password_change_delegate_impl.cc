@@ -212,7 +212,6 @@ PasswordChangeDelegate::CoarseFinalPasswordChangeState GetCoarseState(
     case PasswordChangeDelegate::State::kWaitingForChangePasswordForm:
     case PasswordChangeDelegate::State::kChangingPassword:
     case PasswordChangeDelegate::State::kLoginFormDetected:
-    case PasswordChangeDelegate::State::kLoginFormDetectedUserCanContinue:
       return PasswordChangeDelegate::CoarseFinalPasswordChangeState::kCanceled;
 
     case PasswordChangeDelegate::State::kPasswordSuccessfullyChanged:
@@ -359,7 +358,6 @@ PasswordChangeDelegateImpl::~PasswordChangeDelegateImpl() {
     case State::kOtpDetected:
     case State::kCanceled:
     case State::kLoginFormDetected:
-    case State::kLoginFormDetectedUserCanContinue:
       // Set time to throttle APC offering, as we don't want to overprompt in
       // case of a negative experience.
       profile_->GetPrefs()->SetTime(
@@ -404,23 +402,22 @@ void PasswordChangeDelegateImpl::StartPasswordChangeFlow() {
   }
 }
 
-void PasswordChangeDelegateImpl::OnLoginStateCheckResult(bool is_logged_in) {
-  if (is_logged_in) {
-    // User is logged in, start password change process.
-    ProceedToChangePassword();
-    return;
+void PasswordChangeDelegateImpl::OnLoginStateCheckResult(
+    LoginCheckResult login_status) {
+  switch (login_status) {
+    case LoginCheckResult::kLoggedIn:
+      // User is logged in, start password change process.
+      ProceedToChangePassword();
+      return;
+    case LoginCheckResult::kLoggedOut:
+      blocking_challenge_detected_ = true;
+      UpdateState(State::kLoginFormDetected);
+      return;
+    case LoginCheckResult::kError:
+      UpdateState(State::kChangePasswordFormNotFound);
+      login_state_checker_.reset();
+      return;
   }
-
-  blocking_challenge_detected_ = true;
-  if (!login_state_checker_->ReachedAttemptsLimit()) {
-    // Update the UI to encourage user to complete sign in.
-    UpdateState(State::kLoginFormDetected);
-    return;
-  }
-
-  // Maximum number of retries reached, convert to terminal state.
-  UpdateState(State::kChangePasswordFormNotFound);
-  login_state_checker_.reset();
 }
 
 void PasswordChangeDelegateImpl::CancelPasswordChangeFlow() {
@@ -616,9 +613,10 @@ void PasswordChangeDelegateImpl::OnPasswordChangeDeclined() {
                          ->GetModelDelegateProxy()));
 }
 
-void PasswordChangeDelegateImpl::OnUserSkippedLoginCheck() {
-  logs_uploader_->LoginCheckSkipped();
-  ProceedToChangePassword();
+void PasswordChangeDelegateImpl::RetryLoginCheck() {
+  CHECK(login_state_checker_);
+  login_state_checker_->RetryLoginCheck();
+  UpdateState(State::kWaitingForChangePasswordForm);
 }
 
 void PasswordChangeDelegateImpl::AddObserver(

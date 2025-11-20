@@ -2756,20 +2756,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram
-    name="PasswordManager.PasswordChange.WaitingForUserSignInToastWithContinue"
-    enum="PasswordChangeToastEvent" expires_after="2026-05-30">
-  <owner>vsemeniuk@google.com</owner>
-  <owner>rgod@google.com</owner>
-  <summary>
-    Records password change toast events. This toast is diplayed during password
-    change flow when the user initiated the flow, but there is still some 2FA
-    visible on screen that user has to resolve before the flow can continue.
-    Users have an option to Continue. This metric can include user interactions
-    with the toast or events that happen automatically.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.PasswordChangeAvailability"
     enum="PasswordChangeAvailability" expires_after="2026-04-05">
   <owner>vsemeniuk@google.com</owner>
