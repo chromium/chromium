@@ -397,8 +397,6 @@ public class TabListEditorCoordinator {
                             .findViewById(R.id.selectable_list);
             mModel = new PropertyModel.Builder(TabListEditorProperties.ALL_KEYS).build();
 
-            // TODO(crbug.com/40881091): Refactor SnackbarManager to support multiple overridden
-            // parentViews in a stack to avoid contention and using new snackbar managers.
             mTabListEditorMediator =
                     new TabListEditorMediator(
                             activity,
