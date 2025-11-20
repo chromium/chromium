@@ -34,8 +34,11 @@ import Foundation
   /// app launch.
   @available(iOS 26, *)
   @objc public func prepareImport(_ uuid: NSUUID) {
-    let importManager = ASCredentialImportManager()
     Task {
+      // Initialize an import manager within the scope of Task to prevent an instance from crossing
+      // boundaries.
+      let importManager = ASCredentialImportManager()
+
       do {
         let credentialData = try await importManager.importCredentials(token: uuid as UUID)
         let translatedData = translateCredentialData(credentialData)

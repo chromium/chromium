@@ -7,6 +7,7 @@ import Foundation
 import UIKit
 
 /// Handles exporting user credentials through ASCredentialExportManager.
+@MainActor
 @objc public class CredentialExportManager: NSObject {
   private struct ExportablePassword {
     let url: URL
@@ -144,12 +145,14 @@ import UIKit
     passwords: [CredentialExchangePassword], passkeys: [CredentialExchangePasskey],
     window: UIWindow
   ) {
-    let exportManager = ASCredentialExportManager(presentationAnchor: window)
-    let exportablePasswords = passwords.compactMap(ExportablePassword.init)
-    let exportablePasskeys = passkeys.compactMap(ExportablePasskey.init)
-
     Task { @MainActor in
       do {
+        // Initialize an export manager within the scope of Task to prevent an instance from
+        // crossing boundaries.
+        let exportManager = ASCredentialExportManager(presentationAnchor: window)
+        let exportablePasswords = passwords.compactMap(ExportablePassword.init)
+        let exportablePasskeys = passkeys.compactMap(ExportablePasskey.init)
+
         let _ = try await exportManager.requestExport(for: nil)
 
         let exportedData = await CredentialExportManager.buildExportData(
