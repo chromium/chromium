@@ -8,8 +8,6 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -76,15 +74,6 @@ class AnnotatePageContentRequestTest : public ChromeRenderViewHostTestHarness {
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 
-    PageContentExtractionServiceFactory::GetInstance()->SetTestingFactory(
-        profile(), base::BindRepeating(&BuildTestPageContentExtractionService));
-
-    OptimizationGuideKeyedServiceFactory::GetInstance()->SetTestingFactory(
-        profile(), base::BindRepeating([](content::BrowserContext* context)
-                                           -> std::unique_ptr<KeyedService> {
-          return std::make_unique<OptimizationGuideKeyedService>(context);
-        }));
-
     request_ = AnnotatedPageContentRequest::Create(web_contents());
 
     request_->SetGetAIPageContentCallbackForTesting(base::BindRepeating(
@@ -95,6 +84,14 @@ class AnnotatePageContentRequestTest : public ChromeRenderViewHostTestHarness {
               std::make_optional<optimization_guide::AIPageContentResult>();
           std::move(callback).Run(std::move(result));
         }));
+  }
+
+  TestingProfile::TestingFactories GetTestingFactories() const override {
+    return {
+        TestingProfile::TestingFactory{
+            PageContentExtractionServiceFactory::GetInstance(),
+            base::BindRepeating(&BuildTestPageContentExtractionService)},
+    };
   }
 
   void TearDown() override {
