@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/css/css_font_style_range_value.h"
 #include "third_party/blink/renderer/core/css/css_font_variation_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
+#include "third_party/blink/renderer/core/css/css_markup.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_unicode_range_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
@@ -55,6 +56,7 @@
 #include "third_party/blink/renderer/core/css/offscreen_font_selector.h"
 #include "third_party/blink/renderer/core/css/parser/at_rule_descriptor_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
+#include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/remote_font_face_source.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -160,6 +162,7 @@ FontFace* FontFace::Create(ExecutionContext* context,
                            const FontFaceDescriptors* descriptors) {
   FontFace* font_face =
       MakeGarbageCollected<FontFace>(context, family, descriptors);
+  font_face->SetIsInvalidFontFamilyIfNeeded(family);
 
   const CSSValue* src = ParseCSSValue(context, source, AtRuleDescriptorID::Src);
   if (!src || !src->IsValueList()) {
@@ -279,6 +282,11 @@ FontFace::FontFace(ExecutionContext* context,
 }
 
 FontFace::~FontFace() = default;
+
+AtomicString FontFace::family() const {
+  return is_invalid_font_family_ ? AtomicString(SerializeFontFamily(family_))
+                                 : family_;
+}
 
 String FontFace::style() const {
   return style_ ? style_->CssText() : "normal";
@@ -489,6 +497,10 @@ bool FontFace::SetPropertyValue(const CSSValue* value,
 
 void FontFace::SetFamilyValue(const CSSFontFamilyValue& family_value) {
   family_ = family_value.Value();
+}
+
+void FontFace::SetIsInvalidFontFamilyIfNeeded(const AtomicString& family_name) {
+  is_invalid_font_family_ = css_parsing_utils::IsInvalidFontFamily(family_name);
 }
 
 V8FontFaceLoadStatus FontFace::status() const {

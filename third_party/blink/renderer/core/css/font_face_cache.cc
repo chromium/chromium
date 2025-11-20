@@ -52,7 +52,7 @@ void FontFaceCache::Add(const StyleRuleFontFace* font_face_rule,
 
 void FontFaceCache::SegmentedFacesByFamily::AddFontFace(FontFace* font_face,
                                                         bool css_connected) {
-  const auto result = map_.insert(font_face->family(), nullptr);
+  const auto result = map_.insert(font_face->familyNameUnquoted(), nullptr);
   if (result.is_new_entry) {
     result.stored_value->value = MakeGarbageCollected<CapabilitiesSet>();
   }
@@ -71,7 +71,7 @@ void FontFaceCache::AddFontFace(FontFace* font_face, bool css_connected) {
     css_connected_font_faces_.insert(font_face);
   }
 
-  font_selection_query_cache_.Remove(font_face->family());
+  font_selection_query_cache_.Remove(font_face->familyNameUnquoted());
   IncrementVersion();
 }
 
@@ -103,7 +103,7 @@ void FontFaceCache::Remove(const StyleRuleFontFace* font_face_rule) {
 
 bool FontFaceCache::SegmentedFacesByFamily::RemoveFontFace(
     FontFace* font_face) {
-  const auto it = map_.find(font_face->family());
+  const auto it = map_.find(font_face->familyNameUnquoted());
   if (it == map_.end()) {
     return false;
   }
@@ -120,7 +120,7 @@ void FontFaceCache::RemoveFontFace(FontFace* font_face, bool css_connected) {
     return;
   }
 
-  font_selection_query_cache_.Remove(font_face->family());
+  font_selection_query_cache_.Remove(font_face->familyNameUnquoted());
 
   if (css_connected) {
     css_connected_font_faces_.erase(font_face);

@@ -236,8 +236,8 @@ bool CSSFontFace::MaybeLoadFont(const FontDescription& font_description,
 
 void CSSFontFace::Load() {
   FontDescription font_description;
-  font_description.SetFamily(
-      FontFamily(font_face_->family(), FontFamily::Type::kFamilyName));
+  font_description.SetFamily(FontFamily(font_face_->familyNameUnquoted(),
+                                        FontFamily::Type::kFamilyName));
   Load(font_description);
 }
 

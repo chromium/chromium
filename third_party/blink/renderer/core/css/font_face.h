@@ -87,7 +87,16 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
   FontFace& operator=(const FontFace&) = delete;
   ~FontFace() override;
 
-  const AtomicString& family() const { return family_; }
+  // Stores the authored family name exactly as provided (unquoted). We keep
+  // this raw form for internal matching and caching, where the exact family
+  // name must not change.
+  const AtomicString& familyNameUnquoted() const { return family_; }
+
+  // Returns the CSS-exposed family name. Serialization applies <family-name>
+  // rules and may require quoting names that are invalid. This is kept separate
+  // from the raw authored name so that serialization does not affect matching
+  // or caching behavior.
+  AtomicString family() const;
   String style() const;
   String weight() const;
   String stretch() const;
@@ -190,6 +199,7 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
   bool SetPropertyFromStyle(const CSSPropertyValueSet&, AtRuleDescriptorID);
   bool SetPropertyValue(const CSSValue*, AtRuleDescriptorID);
   void SetFamilyValue(const CSSFontFamilyValue&);
+  void SetIsInvalidFontFamilyIfNeeded(const AtomicString&);
   ScriptPromise<FontFace> FontStatusPromise(ScriptState*);
   void RunCallbacks();
 
@@ -197,6 +207,7 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
 
   HeapVector<Member<LoadFontCallback>> callbacks_;
   AtomicString family_;
+  bool is_invalid_font_family_;
   String ots_parse_message_;
   Member<const CSSValue> style_;
   Member<const CSSValue> weight_;

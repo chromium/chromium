@@ -971,7 +971,7 @@ void InspectorCSSAgent::FontsUpdated(
   // so we don't perform null checks here.
   std::unique_ptr<protocol::CSS::FontFace> font_face =
       protocol::CSS::FontFace::create()
-          .setFontFamily(font->family())
+          .setFontFamily(font->familyNameUnquoted())
           .setFontStyle(font->style())
           .setFontVariant(font->variant())
           .setFontWeight(font->weight())

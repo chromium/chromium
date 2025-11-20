@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/css/css_inherited_value.h"
 #include "third_party/blink/renderer/core/css/css_initial_value.h"
 #include "third_party/blink/renderer/core/css/css_light_dark_value_pair.h"
+#include "third_party/blink/renderer/core/css/css_markup.h"
 #include "third_party/blink/renderer/core/css/css_math_expression_node.h"
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
@@ -4117,6 +4118,13 @@ bool IsCSSWideKeyword(StringView keyword) {
          (EqualIgnoringASCIICase(keyword, "revert-rule") &&
           RuntimeEnabledFeatures::CSSRevertRuleEnabled());
   // This function should match the overload before it.
+}
+
+bool IsInvalidFontFamily(const AtomicString& string) {
+  return (IsCSSWideKeyword(string) || IsDefaultKeyword(string) ||
+          FontFamily::InferredTypeFor(string) ==
+              FontFamily::Type::kGenericFamily ||
+          !IsCSSTokenizerIdentifier(string));
 }
 
 // https://drafts.csswg.org/css-cascade/#default

@@ -40,7 +40,7 @@
 namespace blink {
 
 // "ident" from the CSS tokenizer, minus backslash-escape sequences
-static bool IsCSSTokenizerIdentifier(const StringView& string) {
+bool IsCSSTokenizerIdentifier(const StringView& string) {
   unsigned length = string.length();
 
   if (!length) {
@@ -155,11 +155,7 @@ String SerializeURI(const String& string) {
 String SerializeFontFamily(const AtomicString& string) {
   // Some <font-family> values are serialized without quotes.
   // See https://github.com/w3c/csswg-drafts/issues/5846
-  return (css_parsing_utils::IsCSSWideKeyword(string) ||
-          css_parsing_utils::IsDefaultKeyword(string) ||
-          FontFamily::InferredTypeFor(string) ==
-              FontFamily::Type::kGenericFamily ||
-          !IsCSSTokenizerIdentifier(string))
+  return css_parsing_utils::IsInvalidFontFamily(string)
              ? SerializeString(string)
              : string;
 }
