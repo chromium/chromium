@@ -123,7 +123,6 @@ let appTitle: string|undefined;
 
 /**
  * The current sort order.
- * TODO(crbug.com/40384768): Match the file manager order when launched that way.
  * Note currently this is reassigned in tests.
  */
 
