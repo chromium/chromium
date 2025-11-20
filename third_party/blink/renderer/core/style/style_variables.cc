@@ -62,10 +62,14 @@ std::ostream& operator<<(std::ostream& stream,
                          const StyleVariables& variables) {
   stream << "[";
   variables.data_root_->Serialize(
-      [](const CSSVariableData* data) { return data->Serialize(); }, stream);
+      [](const CSSVariableData* data) {
+        return data ? data->Serialize() : "(null)";
+      },
+      stream);
   stream << "][";
   variables.values_root_->Serialize(
-      [](const CSSValue* value) { return value->CssText(); }, stream);
+      [](const CSSValue* value) { return value ? value->CssText() : "(null)"; },
+      stream);
   return stream << "]";
 }
 
