@@ -57,6 +57,14 @@ constexpr auto kPageActionProperties =
             },
         },
         {
+            kActionShowJsOptimizationsIcon,
+            {
+                .histogram_name = "JsOptimizations",
+                .type = PageActionIconType::kJsOptimizations,
+                .element_identifier = kJsOptimizationsIconElementId,
+            },
+        },
+        {
             kActionShowIntentPicker,
             {
                 .histogram_name = "IntentPicker",

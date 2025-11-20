@@ -10,6 +10,9 @@
 #include "components/content_settings/core/common/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 
 namespace site_protection {
@@ -61,6 +64,27 @@ ComputeDefaultJavascriptOptimizerSetting(Profile* profile) {
              ? content_settings::JavascriptOptimizerSetting::
                    kBlockedForUnfamiliarSites
              : content_settings::JavascriptOptimizerSetting::kAllowed;
+}
+
+std::optional<bool> AreV8OptimizationsDisabled(
+    content::WebContents* web_contents) {
+  if (!web_contents) {
+    return std::nullopt;
+  }
+
+  content::RenderFrameHost* render_frame_host =
+      web_contents->GetPrimaryMainFrame();
+  if (!render_frame_host) {
+    return std::nullopt;
+  }
+
+  content::RenderProcessHost* render_process_host =
+      render_frame_host->GetProcess();
+  if (!render_process_host) {
+    return std::nullopt;
+  }
+
+  return render_process_host->AreV8OptimizationsDisabled();
 }
 
 }  // namespace site_protection

@@ -27,6 +27,7 @@ class MemorySaverChipTabHelper;
 class PinnedTranslateActionListener;
 class Profile;
 class PwaInstallPageActionController;
+class JsOptimizationsPageActionController;
 class ReadAnythingController;
 class ReadAnythingSidePanelController;
 class RollBackModeBInfoBarController;
@@ -207,6 +208,11 @@ class TabFeatures {
 
   page_actions::PageActionController* page_action_controller() {
     return page_action_controller_.get();
+  }
+
+  JsOptimizationsPageActionController*
+  js_optimizations_page_action_controller() {
+    return js_optimizations_page_action_controller_.get();
   }
 
   IntentPickerViewPageActionController*
@@ -404,6 +410,10 @@ class TabFeatures {
 
   // Responsible for managing the "Zoom" page action and bubble.
   std::unique_ptr<zoom::ZoomViewController> zoom_view_controller_;
+
+  // Responsible for managing the "JS Optimizations" page action.
+  std::unique_ptr<JsOptimizationsPageActionController>
+      js_optimizations_page_action_controller_;
 
   // Responsible for managing the commerce "Price insights" page action.
   std::unique_ptr<commerce::PriceInsightsPageActionViewController>

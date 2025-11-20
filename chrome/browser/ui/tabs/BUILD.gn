@@ -595,7 +595,10 @@ if (!is_android) {
     }
 
     if (!is_android) {
-      deps += [ "//chrome/browser/ui/views/zoom" ]
+      deps += [
+        "//chrome/browser/ui/views/js_optimization:impl",
+        "//chrome/browser/ui/views/zoom",
+      ]
     }
 
     if (is_win || is_mac || is_linux || is_chromeos) {

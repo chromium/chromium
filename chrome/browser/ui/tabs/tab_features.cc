@@ -71,6 +71,7 @@
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_page_action_controller.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_page_action_controller.h"
 #include "chrome/browser/ui/views/intent_picker/intent_picker_view_page_action_controller.h"
+#include "chrome/browser/ui/views/js_optimization/js_optimizations_page_action_controller.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_page_action_controller.h"
 #include "chrome/browser/ui/views/location_bar/lens_overlay_homework_page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/action_ids.h"
@@ -242,6 +243,10 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
           GetUserDataFactory()
               .CreateInstance<ContextualTasksPageActionController>(tab, &tab);
     }
+
+    js_optimizations_page_action_controller_ =
+        std::make_unique<JsOptimizationsPageActionController>(
+            tab, *page_action_controller_);
   }
 
   // Features that are only enabled for normal browser windows. By default most

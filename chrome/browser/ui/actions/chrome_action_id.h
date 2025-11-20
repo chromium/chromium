@@ -91,6 +91,7 @@
   E(kActionProfileMenuInAppMenu, IDC_PROFILE_MENU_IN_APP_MENU) \
   E(kActionPasswordsAndAutofillMenu, IDC_PASSWORDS_AND_AUTOFILL_MENU) \
   E(kActionShowMemorySaverChip) \
+  E(kActionShowJsOptimizationsIcon) \
   E(kActionShowCookieControls) \
   E(kActionContextualPanelPageActionChip) \
   /* Page-manipulation commands that target a specified tab, which may not */ \

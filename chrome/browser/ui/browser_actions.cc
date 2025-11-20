@@ -89,6 +89,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/collaboration/public/messaging/activity_log.h"
 #include "components/commerce/core/metrics/discounts_metric_collector.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/lens/lens_features.h"
 #include "components/media_router/browser/media_router_dialog_controller.h"
@@ -390,6 +391,28 @@ void BrowserActions::InitializeBrowserActions() {
               ui::SimpleMenuModel::kDefaultIconSize))
           .SetEnabled(true)
           .Build());
+
+  if (base::FeatureList::IsEnabled(
+          content_settings::features::
+              kBlockV8OptimizerOnUnfamiliarSitesSetting)) {
+    root_action_item_->AddChild(
+        actions::ActionItem::Builder(
+            base::BindRepeating(
+                [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                   actions::ActionInvocationContext context) {
+                  // TODO(crbug.com/458711797): Show bubble on click.
+                },
+                bwi))
+            .SetActionId(kActionShowJsOptimizationsIcon)
+            .SetTooltipText(l10n_util::GetStringUTF16(
+                IDS_JS_OPTIMIZATIONS_DISABLED_ICON_TOOLTIP))
+            .SetImage(ui::ImageModel::FromVectorIcon(
+                // TODO(crbug.com/457422266): Use v8 icon.
+                vector_icons::kCodeIcon, ui::kColorIcon,
+                ui::SimpleMenuModel::kDefaultIconSize))
+            .SetEnabled(true)
+            .Build());
+  }
 
   root_action_item_->AddChild(
       actions::ActionItem::Builder(

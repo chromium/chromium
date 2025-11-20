@@ -80,6 +80,7 @@ source_set("impl") {
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search_engines",
+    "//chrome/browser/site_protection",
     "//chrome/browser/ui/tabs:utils",
     "//components/content_settings/browser",
     "//components/content_settings/core/browser",

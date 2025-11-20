@@ -4154,6 +4154,11 @@ are declared in tools/grit/grit_args.gni.
         See how
       </message>
 
+      <!-- JS optimizations bubble -->
+      <message name="IDS_JS_OPTIMIZATIONS_DISABLED_ICON_TOOLTIP" desc="Tooltip for the JS Optimizations chip in the toolbar when it's disabled.">
+        JavaScript optimizations are disabled.
+      </message>
+
       <!-- Win certificate selector dialog strings.  -->
       <if expr="toolkit_views">
         <message name="IDS_CERT_SELECTOR_SUBJECT_COLUMN" desc="The text of the header for the certificate subject column in the certificate selector dialog.">
