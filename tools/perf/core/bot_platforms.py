@@ -556,7 +556,6 @@ _CROSSBENCH_ANDROID = frozenset([
     _speedometer3_crossbench(arguments=['--fileserver']),
     _loadline_phone_crossbench(arguments=[
         '--cool-down-threshold=moderate',
-        '--no-splash',
     ]),
 ])
 
@@ -569,7 +568,6 @@ _CROSSBENCH_PIXEL9 = frozenset([
     _speedometer3_a11y_crossbench(arguments=['--fileserver', '--debug']),
     _loadline_phone_crossbench(arguments=[
         '--cool-down-threshold=moderate',
-        '--no-splash',
         '--debug',
     ]),
 ])
@@ -586,7 +584,6 @@ _CROSSBENCH_ANDROID_AL = frozenset([
 _CROSSBENCH_TANGOR = frozenset([
     _loadline_tablet_crossbench(arguments=[
         '--cool-down-threshold=moderate',
-        '--no-splash',
     ]),
 ])
 

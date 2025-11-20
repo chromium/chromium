@@ -80,8 +80,7 @@
             "loadline-tablet-fast": {
                 "display_name": "loadline_tablet.crossbench",
                 "arguments": [
-                    "--cool-down-threshold=moderate",
-                    "--no-splash"
+                    "--cool-down-threshold=moderate"
                 ]
             }
         }
