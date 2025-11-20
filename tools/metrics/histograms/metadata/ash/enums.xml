@@ -2034,8 +2034,12 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
       label="CalculateRequiredSpace@chrome/browser/ash/login/screens/drive_pinning_screen.cc"/>
   <int value="-2092499396"
       label="GetNightLightTemperaturePercent@chrome/browser/ash/power/ml/adaptive_screen_brightness_manager.cc"/>
+  <int value="-1903493274"
+      label="GetPrefService@chrome/browser/ash/events/event_rewriter_delegate_impl.cc"/>
   <int value="-1890949485"
       label="GetProfile@chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.cc"/>
+  <int value="-1837780760"
+      label="GetProfile@chrome/browser/ash/growth/campaigns_manager_client_impl.cc"/>
   <int value="-1693908690"
       label="TriggerAccessibilityAlertWithMessage@chrome/browser/ui/ash/accessibility/accessibility_controller_client.cc"/>
   <int value="-1619333235"
@@ -2048,6 +2052,8 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
       label="SetApplicationLocale@chrome/browser/ash/login/screens/welcome_screen.cc"/>
   <int value="-940486992"
       label="GetPrimaryUserProfile@chrome/browser/extensions/profile_util.cc"/>
+  <int value="-913390141"
+      label="GetAccessibilityOffscreenDocumentHost@chrome/browser/ash/accessibility/event_handler_common.cc"/>
   <int value="-870974028"
       label="GetForPrimaryProfile@chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.cc"/>
   <int value="-731617597"
@@ -2056,6 +2062,8 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
       label="TriggerShowLoginWizardFinish@chrome/browser/ui/ash/login/login_display_host_webui.cc"/>
   <int value="-626911301"
       label="CreateKeyboardUI@chrome/browser/ui/ash/keyboard/chrome_keyboard_ui_factory.cc"/>
+  <int value="-585170740"
+      label="IsConsumerAutoUpdateToggleEligible@chrome/browser/metrics/update_engine_metrics_provider.cc"/>
   <int value="-536788605"
       label="OnSessionStateChanged@chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.cc"/>
   <int value="-209803414"
@@ -2080,6 +2088,10 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
       label="OnLoginOrLockScreenVisible@chrome/browser/ash/accessibility/magnification_manager.cc"/>
   <int value="874944526"
       label="HandleMediaAction@chrome/browser/ui/ash/media_client/media_client_impl.cc"/>
+  <int value="930273683"
+      label="IsDriveFsBulkPinningAvailable@chrome/browser/ash/drive/file_system_util.cc"/>
+  <int value="1049620263"
+      label="QuickStartController@chrome/browser/ash/login/quickstart_controller.cc"/>
   <int value="1242947673"
       label="ReportUsageOptIn@chrome/browser/ash/login/screens/consolidated_consent_screen.cc"/>
   <int value="1243596510"
@@ -2102,6 +2114,8 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
       label="GetNetworkContext@chrome/browser/ash/dbus/proxy_resolution_service_provider.cc"/>
   <int value="1962236236"
       label="UpdateAndGetSmartDimDecision@chrome/browser/ash/power/ml/user_activity_manager.cc"/>
+  <int value="1971066465"
+      label="ShowDialog@chrome/browser/ui/webui/ash/diagnostics_dialog/diagnostics_dialog.cc"/>
   <int value="2000962309"
       label="Uses24HourFormat@chrome/browser/ui/ash/capture_mode/chrome_capture_mode_delegate.cc"/>
 </enum>
