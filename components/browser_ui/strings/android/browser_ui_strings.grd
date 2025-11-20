@@ -1202,6 +1202,9 @@
       <message name="IDS_HOME_MODULES_CONFIGURATION" desc="The title for the configuration page which customizes the home modules settings.">
         New tab page cards
       </message>
+      <message name="IDS_HOME_MODULES_MANAGE_CARDS_TITLE" desc="The title for the section of the page which allows the user to manage their NTP magic stack cards.">
+        Manage your cards
+      </message>
       <message name="IDS_HOME_MODULES_SINGLE_TAB_TITLE" desc="Title for the single tab modul.">
          Continue with this tab
       </message>

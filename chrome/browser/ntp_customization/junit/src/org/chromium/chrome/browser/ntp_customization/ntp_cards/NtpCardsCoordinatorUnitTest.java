@@ -9,8 +9,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
+import android.view.ContextThemeWrapper;
 
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
@@ -21,11 +21,13 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
+import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.profiles.Profile;
 
 /** Unit tests for {@link NtpCardsCoordinator} */
@@ -38,13 +40,16 @@ public class NtpCardsCoordinatorUnitTest {
     @Mock private Profile mProfile;
 
     private NtpCardsCoordinator mCoordinator;
+    private Context mContext;
 
     @Before
     public void setUp() {
-        Context context = ApplicationProvider.getApplicationContext();
+        mContext =
+                new ContextThemeWrapper(
+                        ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
         mCoordinator =
                 new NtpCardsCoordinator(
-                        context, mBottomSheetDelegate, new ObservableSupplierImpl<>(mProfile));
+                        mContext, mBottomSheetDelegate, new ObservableSupplierImpl<>(mProfile));
     }
 
     @Test
