@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
 import * as Platform from 'devtools/core/platform/platform.js';
+import * as UI from 'devtools/ui/legacy/legacy.js';
 import * as Console from 'devtools/panels/console/console.js';
 
 (async function() {
@@ -131,7 +132,7 @@ import * as Console from 'devtools/panels/console/console.js';
       TestRunner.addResult(`Is group expanded: ${expanded ? 'YES' : 'NO'}`);
     }
 
-    var element = Platform.DOMUtilities.deepActiveElement(document);
+    var element = UI.DOMUtilities.deepActiveElement(document);
     if (!element) {
       TestRunner.addResult('null');
       return;

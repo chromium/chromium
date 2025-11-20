@@ -96,7 +96,7 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
   TestRunner.completeTest();
 
   function dumpFocus() {
-    var focused = Platform.DOMUtilities.deepActiveElement(document);
+    var focused = UI.DOMUtilities.deepActiveElement(document);
     var id = focused ? focused.id : '';
     TestRunner.addResult(id ? id + ' Focused' : 'No focus');
   }

@@ -60,7 +60,7 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
   TestRunner.completeTest();
 
   function pressKey(key) {
-    var element = Platform.DOMUtilities.deepActiveElement(document);
+    var element = UI.DOMUtilities.deepActiveElement(document);
     if (!element)
       return;
     element.dispatchEvent(TestRunner.createKeyEvent(key));
@@ -77,7 +77,7 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
     }
     var selection = '';
     var subMenu = menu;
-    var activeElement = Platform.DOMUtilities.deepActiveElement(document);
+    var activeElement = UI.DOMUtilities.deepActiveElement(document);
     do {
       if (selection)
         selection += ' -> ';
