@@ -15,6 +15,7 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/strings/cstring_view.h"
@@ -77,6 +78,7 @@ class SkiaFontMapper {
   ~SkiaFontMapper() = delete;
 
   void EnumFonts(FPDF_SYSFONTINFO* sysfontinfo, void* mapper) {
+    SCOPED_UMA_HISTOGRAM_TIMER("PDF.SkiaFontMapperWindows.EnumFontsTime");
     const int count = manager_->countFamilies();
     for (int i = 0; i < count; ++i) {
       SkString family;

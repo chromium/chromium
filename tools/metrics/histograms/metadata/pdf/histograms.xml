@@ -416,6 +416,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PDF.SkiaFontMapperWindows.EnumFontsTime" units="ms"
+    expires_after="2026-11-20">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>ajgo@chromium.org</owner>
+  <summary>
+    Records the time spent in SkiaFontMapper's EnumFonts on Windows. This
+    operation iterates over all installed system fonts, which may be inefficient
+    and long on some devices (particularly slow disks and machines with large
+    amounts of installed fonts).
+  </summary>
+</histogram>
+
 <histogram name="PDF.Version" enum="PDFVersion" expires_after="2026-03-22">
   <owner>dhoss@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
