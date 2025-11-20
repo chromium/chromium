@@ -183,6 +183,6 @@ namespace sidePanel {
     static void onOpened(PanelOpenedInfo info);
 
     // Fired when the extension's side panel is closed.
-    [nodoc] static void onClosed(PanelClosedInfo info);
+    static void onClosed(PanelClosedInfo info);
   };
 };
