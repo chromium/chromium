@@ -25,6 +25,7 @@
 #include "content/test/test_web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/android/test_view_android_delegate.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
@@ -1772,6 +1773,34 @@ TEST_F(RenderWidgetHostViewAndroidMixedOrientationStartupTest,
   OnPhysicalBackingSizeChanged(fullscreen_portrait_physical_backing);
   EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
   GetLocalSurfaceIdAndConfirmNewerThan(initial_local_surface_id);
+}
+
+TEST_F(RenderWidgetHostViewAndroidTest, LockUnlockPointer) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(blink::features::kPointerLockOnAndroid);
+  RenderWidgetHostViewAndroid* rwhva = render_widget_host_view_android();
+
+  // Create a window and attach, so that GetWindowAndroid() doesn't return
+  // null.
+  auto window = ui::WindowAndroid::CreateForTesting();
+  window->get()->AddChild(GetParentView());
+
+  ui::TestViewAndroidDelegate test_view_android_delegate;
+  test_view_android_delegate.SetupTestDelegate(rwhva->GetNativeView());
+  rwhva->Focus();
+
+  EXPECT_FALSE(rwhva->IsPointerLocked());
+
+  EXPECT_EQ(rwhva->LockPointer(false),
+            blink::mojom::PointerLockResult::kSuccess);
+  EXPECT_TRUE(rwhva->IsPointerLocked());
+
+  EXPECT_EQ(rwhva->ChangePointerLock(false),
+            blink::mojom::PointerLockResult::kSuccess);
+  EXPECT_TRUE(rwhva->IsPointerLocked());
+
+  rwhva->UnlockPointer();
+  EXPECT_FALSE(rwhva->IsPointerLocked());
 }
 
 }  // namespace content
