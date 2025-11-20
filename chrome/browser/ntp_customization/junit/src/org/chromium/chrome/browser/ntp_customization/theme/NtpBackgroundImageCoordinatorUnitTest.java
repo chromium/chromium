@@ -8,6 +8,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.IMAGE_FROM_DISK;
@@ -77,9 +79,24 @@ public class NtpBackgroundImageCoordinatorUnitTest {
 
     @Test
     public void testConstructor() {
-        verify(mUiConfig).addObserver(any(DisplayStyleObserver.class));
+        verify(mUiConfig, never()).addObserver(any(DisplayStyleObserver.class));
         assertEquals(COLOR, mPropertyModel.get(NtpBackgroundImageProperties.BACKGROUND_COLOR));
         verify(mRootView).addView(any(View.class));
+    }
+
+    @Test
+    public void testMaybeAddDisplayStyleObserver() {
+        verify(mUiConfig, never()).addObserver(any(DisplayStyleObserver.class));
+
+        mCoordinator.setBackground(
+                mBitmap, mBackgroundImageInfo, NtpBackgroundImageType.THEME_COLLECTION);
+        verify(mUiConfig).addObserver(any(DisplayStyleObserver.class));
+
+        clearInvocations(mUiConfig);
+        // Verifies observer won't be added again.
+        mCoordinator.setBackground(
+                mBitmap, mBackgroundImageInfo, NtpBackgroundImageType.IMAGE_FROM_DISK);
+        verify(mUiConfig, never()).addObserver(any(DisplayStyleObserver.class));
     }
 
     @Test
@@ -110,11 +127,22 @@ public class NtpBackgroundImageCoordinatorUnitTest {
 
     @Test
     public void testDestroy() {
+        mCoordinator.setBackground(
+                mBitmap, mBackgroundImageInfo, NtpBackgroundImageType.THEME_COLLECTION);
         verify(mUiConfig).addObserver(mDisplayStyleObserverArgumentCaptor.capture());
         mCoordinator.destroy();
 
         // Verify that UiConfig.removeObserver() was called with the exact same observer instance.
         verify(mUiConfig).removeObserver(eq(mDisplayStyleObserverArgumentCaptor.getValue()));
+    }
+
+    @Test
+    public void testDestroy_noObserverAddedBefore() {
+        verify(mUiConfig, never()).addObserver(any(DisplayStyleObserver.class));
+        mCoordinator.destroy();
+
+        // Verify that UiConfig.removeObserver() wasn't called since no observer was added before.
+        verify(mUiConfig, never()).removeObserver(any(DisplayStyleObserver.class));
     }
 
     @Test

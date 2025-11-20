@@ -46,6 +46,7 @@ public class NtpBackgroundImageCoordinator {
     private final PropertyModel mPropertyModel;
 
     private int mBackgroundImageType;
+    private boolean mIsObservingDisplayChange;
     private @Nullable Bitmap mOriginalBitmap;
     private @Nullable BackgroundImageInfo mBackgroundImageInfo;
 
@@ -60,7 +61,6 @@ public class NtpBackgroundImageCoordinator {
         mContext = context;
         mUiConfig = uiConfig;
         mDisplayStyleObserver = (newDisplayStyle) -> setImageBackgroundWithMatrices();
-        mUiConfig.addObserver(mDisplayStyleObserver);
 
         FrameLayout backgroundImageLayout =
                 (FrameLayout)
@@ -97,6 +97,7 @@ public class NtpBackgroundImageCoordinator {
                         NtpBackgroundImageProperties.IMAGE_SCALE_TYPE,
                         ImageView.ScaleType.CENTER_CROP);
                 mPropertyModel.set(NtpBackgroundImageProperties.BACKGROUND_IMAGE, originalBitmap);
+                maybeAddDisplayStyleObserver();
                 break;
 
             case IMAGE_FROM_DISK:
@@ -104,6 +105,7 @@ public class NtpBackgroundImageCoordinator {
                 mPropertyModel.set(
                         NtpBackgroundImageProperties.IMAGE_SCALE_TYPE, ImageView.ScaleType.MATRIX);
                 mPropertyModel.set(NtpBackgroundImageProperties.BACKGROUND_IMAGE, originalBitmap);
+                maybeAddDisplayStyleObserver();
                 setImageBackgroundWithMatrices();
                 break;
 
@@ -115,6 +117,7 @@ public class NtpBackgroundImageCoordinator {
     /** Clears the background image. */
     public void clearBackground() {
         mPropertyModel.set(NtpBackgroundImageProperties.BACKGROUND_IMAGE, null);
+        maybeRemoveDisplayStyleObserver();
     }
 
     /**
@@ -122,6 +125,28 @@ public class NtpBackgroundImageCoordinator {
      * registered observers.
      */
     public void destroy() {
+        maybeRemoveDisplayStyleObserver();
+    }
+
+    /**
+     * Adds the DisplayStyleObserver if hasn't yet, and set the flag mIsObservingDisplayChange to be
+     * true.
+     */
+    private void maybeAddDisplayStyleObserver() {
+        if (mIsObservingDisplayChange) return;
+
+        mIsObservingDisplayChange = true;
+        mUiConfig.addObserver(mDisplayStyleObserver);
+    }
+
+    /**
+     * Removes the DisplayStyleObserver if has been added before, and reset the flag
+     * mIsObservingDisplayChange.
+     */
+    private void maybeRemoveDisplayStyleObserver() {
+        if (!mIsObservingDisplayChange) return;
+
+        mIsObservingDisplayChange = false;
         mUiConfig.removeObserver(mDisplayStyleObserver);
     }
 
