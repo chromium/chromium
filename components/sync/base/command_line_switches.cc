@@ -11,7 +11,8 @@
 namespace syncer {
 
 bool IsSyncAllowedByFlag() {
-  return !base::CommandLine::ForCurrentProcess()->HasSwitch(kDisableSync);
+  return !base::CommandLine::ForCurrentProcess()->HasSwitch(kDisableSync) &&
+         !base::CommandLine::ForCurrentProcess()->HasSwitch("ungoogled-supermium");
 }
 
 }  // namespace syncer

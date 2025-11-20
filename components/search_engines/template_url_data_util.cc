@@ -7,6 +7,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/command_line.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -316,6 +317,11 @@ base::Value::Dict TemplateURLDataToDictionary(const TemplateURLData& data) {
 std::unique_ptr<TemplateURLData> TemplateURLDataFromPrepopulatedEngine(
     const TemplateURLPrepopulateData::PrepopulatedEngine& engine) {
   std::vector<std::string> search_intent_params;
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("ungoogled-supermium") &&
+          engine.name == std::u16string(u"Google")) {
+    return TemplateURLDataFromPrepopulatedEngine(TemplateURLPrepopulateData::nosearch);
+  }
+
   for (const auto* search_intent_param : engine.search_intent_params) {
     search_intent_params.emplace_back(search_intent_param);
   }

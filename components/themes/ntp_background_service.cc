@@ -88,6 +88,9 @@ void NtpBackgroundService::Shutdown() {
 }
 
 void NtpBackgroundService::FetchCollectionInfo() {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("ungoogled-supermium")) {
+	  return;
+  }
   // If a request is currently in progress, drop the new request.
   if (collections_loader_ != nullptr) {
     return;
