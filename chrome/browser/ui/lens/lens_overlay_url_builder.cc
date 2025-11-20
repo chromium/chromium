@@ -33,9 +33,6 @@
 namespace lens {
 namespace {
 
-// Query parameter for denoting a search companion request.
-inline constexpr char kChromeSidePanelParameterKey[] = "gsc";
-
 // Query parameter for the search session id.
 inline constexpr char kSearchSessionIdParameterKey[] = "gsessionid";
 
@@ -56,9 +53,6 @@ inline constexpr char kShoppingModeParameterValue[] = "28";
 inline constexpr char kUnimodalModeParameterValue[] = "26";
 inline constexpr char kMultimodalModeParameterValue[] = "24";
 inline constexpr char kAimModeParameterValue[] = "50";
-
-// Query parameter for the language code.
-inline constexpr char kLanguageCodeParameterKey[] = "hl";
 
 // Query parameter for the lens mode.
 inline constexpr char kLensModeParameterKey[] = "lns_mode";
@@ -101,11 +95,6 @@ inline constexpr std::string kIgnoredSearchUrlQueryParameters[] = {
     kViewportWidthQueryParamKey, kViewportHeightQueryParamKey,
     kXSRFTokenQueryParamKey,     kSecActQueryParamKey,
     kModeParameterKey,           kToolbeltModeParameterKey};
-
-// Query parameter for dark mode.
-inline constexpr char kDarkModeParameterKey[] = "cs";
-inline constexpr char kDarkModeParameterLightValue[] = "0";
-inline constexpr char kDarkModeParameterDarkValue[] = "1";
 
 // Query parameter for the Lens footprint.
 inline constexpr char kLensFootprintParameterKey[] = "lns_fp";
@@ -229,15 +218,8 @@ void AppendStickinessSignalForFormula(
 
 GURL AppendCommonSearchParametersToURL(const GURL& url_to_modify,
                                        bool use_dark_mode) {
-  GURL new_url = url_to_modify;
-  new_url = net::AppendOrReplaceQueryParameter(
-      new_url, kChromeSidePanelParameterKey,
-      lens::features::GetLensOverlayGscQueryParamValue());
-  new_url = net::AppendOrReplaceQueryParameter(
-      new_url, kLanguageCodeParameterKey,
-      g_browser_process->GetApplicationLocale());
-  new_url = AppendDarkModeParamToURL(new_url, use_dark_mode);
-  return new_url;
+  return AppendCommonSearchParametersToURL(
+      url_to_modify, g_browser_process->GetApplicationLocale(), use_dark_mode);
 }
 
 GURL AppendInvocationSourceParamToURL(
@@ -287,13 +269,6 @@ GURL AppendInvocationSourceParamToURL(
   }
   return net::AppendOrReplaceQueryParameter(
       url_to_modify, kInvocationSourceParameterKey, param_value);
-}
-
-GURL AppendDarkModeParamToURL(const GURL& url_to_modify, bool use_dark_mode) {
-  return net::AppendOrReplaceQueryParameter(
-      url_to_modify, kDarkModeParameterKey,
-      use_dark_mode ? kDarkModeParameterDarkValue
-                    : kDarkModeParameterLightValue);
 }
 
 GURL AppendQuerySubmissionTimeAndClientUploadDurationParamToURL(
@@ -440,17 +415,6 @@ bool AreSearchUrlsEquivalent(const GURL& a, const GURL& b) {
   // All search params, in order, need to have the same keys and the same
   // values.
   return a_search_params.params() == b_search_params.params();
-}
-
-bool HasCommonSearchQueryParameters(const GURL& url) {
-  // Needed to prevent memory leaks even though we do not use the output.
-  std::string temp_output_string;
-  return net::GetValueForKeyInQuery(url, kChromeSidePanelParameterKey,
-                                    &temp_output_string) &&
-         net::GetValueForKeyInQuery(url, kLanguageCodeParameterKey,
-                                    &temp_output_string) &&
-         net::GetValueForKeyInQuery(url, kDarkModeParameterKey,
-                                    &temp_output_string);
 }
 
 bool IsValidSearchResultsUrl(const GURL& url) {

@@ -148,6 +148,7 @@ if (!is_android) {
       "//chrome/browser/ui/webui:webui_util",
       "//components/contextual_tasks/public:feature_list",
       "//components/keyed_service/core",
+      "//components/lens",
       "//components/omnibox/browser:mojo_bindings",
       "//url",
     ]

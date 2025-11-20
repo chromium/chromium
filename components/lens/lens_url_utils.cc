@@ -184,4 +184,35 @@ std::map<std::string, std::string> GetParametersMapWithoutQuery(
   return additional_query_parameters;
 }
 
+GURL AppendCommonSearchParametersToURL(const GURL& url_to_modify,
+                                       const std::string& country_code,
+                                       bool use_dark_mode) {
+  GURL new_url = url_to_modify;
+  new_url = net::AppendOrReplaceQueryParameter(
+      new_url, kChromeSidePanelParameterKey,
+      lens::features::GetLensOverlayGscQueryParamValue());
+  new_url = net::AppendOrReplaceQueryParameter(
+      new_url, kLanguageCodeParameterKey, country_code);
+  new_url = AppendDarkModeParamToURL(new_url, use_dark_mode);
+  return new_url;
+}
+
+bool HasCommonSearchQueryParameters(const GURL& url) {
+  // Needed to prevent memory leaks even though we do not use the output.
+  std::string temp_output_string;
+  return net::GetValueForKeyInQuery(url, kChromeSidePanelParameterKey,
+                                    &temp_output_string) &&
+         net::GetValueForKeyInQuery(url, kLanguageCodeParameterKey,
+                                    &temp_output_string) &&
+         net::GetValueForKeyInQuery(url, kDarkModeParameterKey,
+                                    &temp_output_string);
+}
+
+GURL AppendDarkModeParamToURL(const GURL& url_to_modify, bool use_dark_mode) {
+  return net::AppendOrReplaceQueryParameter(
+      url_to_modify, kDarkModeParameterKey,
+      use_dark_mode ? kDarkModeParameterDarkValue
+                    : kDarkModeParameterLightValue);
+}
+
 }  // namespace lens

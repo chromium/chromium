@@ -11,6 +11,7 @@
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/uuid.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
@@ -25,6 +26,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/lens/lens_url_utils.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
@@ -44,14 +46,6 @@ constexpr char kTaskQueryParam[] = "task";
 bool IsContextualTasksHost(const GURL& url) {
   return url.scheme() == content::kChromeUIScheme &&
          url.host() == chrome::kChromeUIContextualTasksHost;
-}
-
-GURL AppendCommonUrlParams(GURL url) {
-  url = net::AppendQueryParameter(url, "gsc", "2");
-  // TODO(crbug.com/454388385): Remove this param once authentication flow is
-  // implemented.
-  url = net::AppendQueryParameter(url, "gl", "us");
-  return url;
 }
 
 bool IsSignInDomain(const GURL& url) {
@@ -288,7 +282,9 @@ GURL ContextualTasksUiService::GetInitialUrlForTask(const base::Uuid& uuid) {
 }
 
 GURL ContextualTasksUiService::GetDefaultAiPageUrl() {
-  return AppendCommonUrlParams(GURL(GetContextualTasksAiPageUrl()));
+  return lens::AppendCommonSearchParametersToURL(
+      GURL(GetContextualTasksAiPageUrl()),
+      g_browser_process->GetApplicationLocale(), false);
 }
 
 void ContextualTasksUiService::OnTaskChangedInPanel(
