@@ -31,7 +31,7 @@ bool AddRulesToPolicy(int ruleset_fd,
   for (const auto& path : paths) {
     base::ScopedFD parent_fd(open(path.c_str(), O_PATH | O_CLOEXEC));
     if (!parent_fd.is_valid()) {
-      PLOG(ERROR) << "open failed for " << path;
+      PLOG(ERROR) << "Could not add rule for path, because open failed for " << path;
       continue;
     }
     struct landlock_path_beneath_attr path_beneath = {
