@@ -53,8 +53,24 @@ NavigationInterceptor::NavigationInterceptor(
 
 NavigationInterceptor::~NavigationInterceptor() = default;
 
-content::NavigationThrottle::ThrottleCheckResult
+NavigationThrottle::ThrottleCheckResult
+NavigationInterceptor::WillStartRequest() {
+  // navigation_handle()->GetRenderFrameHost() points to the new RFH that the
+  // navigation would commit to, but we will abort that navigation, so we want
+  // to initiate the request in the current RFH for the target frame, so we look
+  // that up here.
+  content::RenderFrameHost* rfh = RenderFrameHost::FromID(
+      navigation_handle()->GetPreviousRenderFrameHostId());
+  document_ = rfh->GetWeakDocumentPtr();
+  return PROCEED;
+}
+
+NavigationThrottle::ThrottleCheckResult
 NavigationInterceptor::WillProcessResponse() {
+  if (!document_.AsRenderFrameHostIfValid()) {
+    // Some other navigation has happened in the meantime.
+    return PROCEED;
+  }
   if (!navigation_handle()->IsInPrimaryMainFrame()) {
     // Only top level navigations can be intercepted.
     return PROCEED;
@@ -80,12 +96,15 @@ NavigationInterceptor::WillProcessResponse() {
     return PROCEED;
   }
 
-  content::RenderFrameHost* rfh = navigation_handle()->GetRenderFrameHost();
+  content::RenderFrameHost* rfh = document_.AsRenderFrameHostIfValid();
+
+  if (!rfh) {
+    return PROCEED;
+  }
 
   data_decoder::DataDecoder::ParseStructuredHeaderDictionaryIsolated(
       *header, base::BindOnce(&NavigationInterceptor::OnHeaderParsed,
-                              weak_ptr_factory_.GetWeakPtr(),
-                              rfh->GetWeakDocumentPtr()));
+                              weak_ptr_factory_.GetWeakPtr()));
 
   // TODO(http://crbug.com/455614294): Ideally, we'd like to cancel the
   // navigation early on so that the spinner stops. However, we need to
@@ -96,13 +115,11 @@ NavigationInterceptor::WillProcessResponse() {
 }
 
 void NavigationInterceptor::OnHeaderParsed(
-    content::WeakDocumentPtr doc_ptr,
     base::expected<net::structured_headers::Dictionary, std::string> result) {
-  content::RenderFrameHost* rfh = doc_ptr.AsRenderFrameHostIfValid();
-
+  content::RenderFrameHost* rfh = document_.AsRenderFrameHostIfValid();
   if (!rfh) {
-    // The document is no longer valid, likely because the page initiated a new
-    // navigation in the meantime.
+    // The document is no longer valid, likely because the target frame has
+    // navigated in the meantime.
     // Resume the deferred navigation without cancelling.
     Resume();
     return;

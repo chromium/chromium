@@ -15,6 +15,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/mock_navigation_throttle_registry.h"
 #include "content/public/test/test_renderer_host.h"
@@ -28,7 +29,8 @@
 #include "url/gurl.h"
 
 using ::testing::_;
-using testing::WithArgs;
+using ::testing::Return;
+using ::testing::WithArgs;
 
 namespace content::webid {
 
@@ -172,6 +174,22 @@ class NavigationStartObserver : public WebContentsObserver {
   GURL started_url_;
 };
 
+class NavigationFinishObserver : public WebContentsObserver {
+ public:
+  explicit NavigationFinishObserver(WebContents* web_contents)
+      : WebContentsObserver(web_contents) {}
+  ~NavigationFinishObserver() override = default;
+
+  void DidFinishNavigation(NavigationHandle* navigation_handle) override {
+    wait_loop_.Quit();
+  }
+
+  void Wait() { wait_loop_.Run(); }
+
+ private:
+  base::RunLoop wait_loop_;
+};
+
 class NavigationInterceptorTest : public RenderViewHostTestHarness {
  public:
   NavigationInterceptorTest() = default;
@@ -203,6 +221,9 @@ TEST_F(NavigationInterceptorTest, WillProcessResponse) {
 
   NavigateAndCommit(GURL("https://rp.example/"));
   InterceptorMockNavigationHandle mock_navigation_handle(web_contents());
+  EXPECT_CALL(mock_navigation_handle, GetPreviousRenderFrameHostId)
+      .WillRepeatedly(
+          Return(web_contents()->GetPrimaryMainFrame()->GetGlobalId()));
   mock_navigation_handle.set_render_frame_host(
       web_contents()->GetPrimaryMainFrame());
   mock_navigation_handle.set_is_in_primary_main_frame(true);
@@ -244,6 +265,7 @@ TEST_F(NavigationInterceptorTest, WillProcessResponse) {
           }));
 
   NavigationStartObserver observer(web_contents());
+  interceptor.WillStartRequest();
   auto result = interceptor.WillProcessResponse();
   EXPECT_EQ(result, content::NavigationThrottle::DEFER);
 
@@ -261,6 +283,9 @@ TEST_F(NavigationInterceptorTest, WillProcessResponseNoActivation) {
   // MockNavigationHandle (as opposed to InterceptorNavigationHandle) does not
   // have activation.
   MockNavigationHandle mock_navigation_handle(web_contents());
+  EXPECT_CALL(mock_navigation_handle, GetPreviousRenderFrameHostId)
+      .WillRepeatedly(
+          Return(web_contents()->GetPrimaryMainFrame()->GetGlobalId()));
   mock_navigation_handle.set_render_frame_host(
       web_contents()->GetPrimaryMainFrame());
   mock_navigation_handle.set_is_in_primary_main_frame(true);
@@ -289,6 +314,49 @@ TEST_F(NavigationInterceptorTest, WillProcessResponseNoActivation) {
   EXPECT_EQ(result, content::NavigationThrottle::PROCEED);
 }
 
+TEST_F(NavigationInterceptorTest, NavigationAfterStartRequest) {
+  // Uses an in-process data decoder service for testing.
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
+
+  // TODO(crbug.com/462217238): Make interception work with bfcache.
+  DisableBackForwardCacheForTesting(
+      web_contents(),
+      BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
+
+  NavigateAndCommit(GURL("https://rp.example/"));
+  InterceptorMockNavigationHandle mock_navigation_handle(web_contents());
+  EXPECT_CALL(mock_navigation_handle, GetPreviousRenderFrameHostId)
+      .WillRepeatedly(
+          Return(web_contents()->GetPrimaryMainFrame()->GetGlobalId()));
+  mock_navigation_handle.set_render_frame_host(
+      web_contents()->GetPrimaryMainFrame());
+  mock_navigation_handle.set_is_in_primary_main_frame(true);
+
+  auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+  headers->AddHeader("FedCM-Intercept-Navigation",
+                     net::structured_headers::SerializeDictionary(
+                         webid::EncodeParams({
+                             {"config_url", "https://idp.example/fedcm.json"},
+                             {"client_id", "1234"},
+                         }))
+                         .value());
+  mock_navigation_handle.set_response_headers(headers);
+
+  content::MockNavigationThrottleRegistry registry(&mock_navigation_handle);
+
+  webid::NavigationInterceptor interceptor(
+      registry,
+      base::BindLambdaForTesting(
+          [](RenderFrameHost* rfh) -> RequestService* { return nullptr; }));
+
+  NavigationFinishObserver observer(web_contents());
+  interceptor.WillStartRequest();
+  NavigateAndCommit(GURL("https://foo.example/"), ui::PAGE_TRANSITION_TYPED);
+  observer.Wait();
+  auto result = interceptor.WillProcessResponse();
+  EXPECT_EQ(result, content::NavigationThrottle::PROCEED);
+}
+
 TEST_F(NavigationInterceptorTest, WillProcessResponseTokenRequestFails) {
   // Uses an in-process data decoder service for testing.
   data_decoder::test::InProcessDataDecoder in_process_data_decoder;
@@ -298,6 +366,9 @@ TEST_F(NavigationInterceptorTest, WillProcessResponseTokenRequestFails) {
 
   NavigateAndCommit(GURL("https://rp.example/"));
   InterceptorMockNavigationHandle mock_navigation_handle(web_contents());
+  EXPECT_CALL(mock_navigation_handle, GetPreviousRenderFrameHostId)
+      .WillRepeatedly(
+          Return(web_contents()->GetPrimaryMainFrame()->GetGlobalId()));
   mock_navigation_handle.set_render_frame_host(
       web_contents()->GetPrimaryMainFrame());
   mock_navigation_handle.set_is_in_primary_main_frame(true);
@@ -345,6 +416,7 @@ TEST_F(NavigationInterceptorTest, WillProcessResponseTokenRequestFails) {
             run_loop.Quit();
           }));
 
+  interceptor.WillStartRequest();
   auto result = interceptor.WillProcessResponse();
   EXPECT_EQ(result, content::NavigationThrottle::DEFER);
 
