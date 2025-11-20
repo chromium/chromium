@@ -517,6 +517,8 @@ third_party/libpng/contrib/oss-fuzz
 third_party/liburlpattern
 third_party/libusb/src/libusb
 third_party/libusb/src/libusb/os
+third_party/libdmg-hfsplus/src/dmg
+third_party/libdmg-hfsplus/src/docs
 third_party/libxml/chromium
 third_party/libxml/fuzz/seed_corpus
 third_party/libxml/src
