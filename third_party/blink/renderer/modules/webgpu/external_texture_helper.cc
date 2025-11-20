@@ -31,8 +31,7 @@ bool DrawVideoFrameIntoResourceProvider(
     scoped_refptr<media::VideoFrame> frame,
     CanvasResourceProvider* resource_provider,
     viz::RasterContextProvider* raster_context_provider,
-    media::PaintCanvasVideoRenderer* video_renderer,
-    bool ignore_video_transformation = false) {
+    media::PaintCanvasVideoRenderer* video_renderer) {
   DCHECK(frame);
   DCHECK(resource_provider);
 
@@ -72,10 +71,6 @@ bool DrawVideoFrameIntoResourceProvider(
 
   media::PaintCanvasVideoRenderer::PaintParams params;
   params.dest_rect = gfx::RectF(resource_provider->Size());
-  params.transformation =
-      ignore_video_transformation
-          ? media::kNoTransformation
-          : frame->metadata().transformation.value_or(media::kNoTransformation);
   resource_provider->ExternalCanvasDrawHelper(
       [&](MemoryManagedPaintCanvas& canvas) {
         video_renderer->Paint(frame.get(), &canvas, media_flags, params,
@@ -489,8 +484,7 @@ ExternalTexture CreateExternalTexture(
     // Delegate video transformation to Dawn.
     if (!DrawVideoFrameIntoResourceProvider(
             std::move(media_video_frame), resource_provider,
-            raster_context_provider, video_renderer,
-            /* ignore_video_transformation */ true)) {
+            raster_context_provider, video_renderer)) {
       return {};
     }
   }
