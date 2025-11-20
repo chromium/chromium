@@ -362,4 +362,10 @@ std::unique_ptr<UnexportableKeyProviderMac> GetUnexportableKeyProviderMac(
   return std::make_unique<UnexportableKeyProviderMac>(std::move(config));
 }
 
+std::optional<size_t> UnexportableKeyProviderMac::DeleteAllSigningKeysSlowly() {
+  // TODO(crbug.com/455539044): Implement this.
+  NOTIMPLEMENTED();
+  return std::nullopt;
+}
+
 }  // namespace crypto::apple

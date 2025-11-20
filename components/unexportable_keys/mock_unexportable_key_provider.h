@@ -5,6 +5,13 @@
 #ifndef COMPONENTS_UNEXPORTABLE_KEYS_MOCK_UNEXPORTABLE_KEY_PROVIDER_H_
 #define COMPONENTS_UNEXPORTABLE_KEYS_MOCK_UNEXPORTABLE_KEY_PROVIDER_H_
 
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <optional>
+#include <vector>
+
+#include "base/containers/span.h"
 #include "crypto/signature_verifier.h"
 #include "crypto/unexportable_key.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -46,6 +53,10 @@ class MockUnexportableKeyProvider
   MOCK_METHOD(bool,
               DeleteSigningKeySlowly,
               (base::span<const uint8_t> wrapped_key),
+              (override));
+  MOCK_METHOD(std::optional<size_t>,
+              DeleteAllSigningKeysSlowly,
+              (),
               (override));
 };
 

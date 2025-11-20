@@ -5,7 +5,12 @@
 #include "crypto/unexportable_key_metrics.h"
 
 #include <memory>
+#include <optional>
+#include <set>
+#include <utility>
+#include <vector>
 
+#include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "crypto/signature_verifier.h"
@@ -72,6 +77,9 @@ class MockTrackingUnexportableKeyProvider
     }
     return keys_.erase(
         std::vector<uint8_t>(wrapped_key.begin(), wrapped_key.end()));
+  }
+  std::optional<size_t> DeleteAllSigningKeysSlowly() override {
+    return std::exchange(keys_, {}).size();
   }
 
  private:
