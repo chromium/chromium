@@ -775,7 +775,7 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       break;
 #endif  // !BUILDFLAG(IS_CHROMEOS)
     case IDC_SHOW_CONTEXTUAL_TASKS_SIDE_PANEL:
-      ShowContextualTasksSidePanel(browser_);
+      ToggleContextualTasksSidePanel(browser_);
       break;
     case IDC_TURN_ON_SYNC:
       signin_ui_util::EnableSyncFromSingleAccountPromo(

@@ -44,19 +44,11 @@ ContextualTasksPageActionController* ContextualTasksPageActionController::From(
   return Get(tab_interface->GetUnownedUserDataHost());
 }
 
-void ContextualTasksPageActionController::InvokePageAction() {
-  tab_interface_->GetBrowserWindowInterface()
-      ->GetFeatures()
-      .side_panel_ui()
-      ->Toggle(SidePanelEntryKey(SidePanelEntryId::kContextualTasks),
-               SidePanelOpenTrigger::kAppMenu);
-}
-
 void ContextualTasksPageActionController::OnTaskAdded(
     const contextual_tasks::ContextualTask& task,
     contextual_tasks::ContextualTasksService::TriggerSource source) {
   tab_interface_->GetTabFeatures()->page_action_controller()->Show(
-      kActionContextualPanelPageActionChip);
+      kActionSidePanelShowContextualTasks);
 }
 
 void ContextualTasksPageActionController::OnTaskUpdated(
@@ -69,11 +61,11 @@ void ContextualTasksPageActionController::OnTaskRemoved(
     const base::Uuid& task_id,
     contextual_tasks::ContextualTasksService::TriggerSource source) {
   tab_interface_->GetTabFeatures()->page_action_controller()->Hide(
-      kActionContextualPanelPageActionChip);
+      kActionSidePanelShowContextualTasks);
 }
 
 void ContextualTasksPageActionController::OnWillBeDestroyed() {
   tab_interface_->GetTabFeatures()->page_action_controller()->Hide(
-      kActionContextualPanelPageActionChip);
+      kActionSidePanelShowContextualTasks);
   contextual_task_observation_.Reset();
 }

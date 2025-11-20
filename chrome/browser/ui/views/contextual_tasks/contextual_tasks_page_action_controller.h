@@ -26,8 +26,6 @@ class ContextualTasksPageActionController
   static ContextualTasksPageActionController* From(
       tabs::TabInterface* tab_interface);
 
-  void InvokePageAction();
-
   void OnTaskAdded(
       const contextual_tasks::ContextualTask& task,
       contextual_tasks::ContextualTasksService::TriggerSource source) override;

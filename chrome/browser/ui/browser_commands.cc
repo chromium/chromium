@@ -2172,7 +2172,7 @@ void CloseTabSearch(Browser* browser) {
   browser->window()->CloseTabSearchBubble();
 }
 
-void ShowContextualTasksSidePanel(BrowserWindowInterface* browser) {
+void ToggleContextualTasksSidePanel(BrowserWindowInterface* browser) {
   auto* coordinator =
       contextual_tasks::ContextualTasksSidePanelCoordinator::From(browser);
   CHECK(coordinator);

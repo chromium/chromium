@@ -209,7 +209,7 @@ constexpr auto kPageActionProperties =
             },
         },
         {
-            kActionContextualPanelPageActionChip,
+            kActionSidePanelShowContextualTasks,
             {
                 .histogram_name = "ContextualSidePanel",
                 .type = PageActionIconType::kContextualSidePanel,

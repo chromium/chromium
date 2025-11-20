@@ -39,7 +39,7 @@ inline constexpr std::array<actions::ActionId, 24> kActionIds = {
     kActionVirtualCardEnroll,
     kActionFilledCardInformation,
     kActionShowPaymentsBubbleOrPage,
-    kActionContextualPanelPageActionChip,
+    kActionSidePanelShowContextualTasks,
 };
 
 static_assert(kActionIds[0] == kActionAiMode,
