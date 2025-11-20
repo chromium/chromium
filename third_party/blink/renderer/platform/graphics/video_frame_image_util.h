@@ -82,26 +82,6 @@ PLATFORM_EXPORT scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
     bool prefer_tagged_orientation = true,
     bool reinterpret_video_as_srgb = false);
 
-// Helper for the above.
-//
-// |video_renderer| may optionally be provided in cases where the same frame may
-// end up repeatedly drawn.
-//
-// A |raster_context_provider| is required to convert texture backed frames.
-//
-// If |ignore_video_transformation| is true, the media::VideoTransformation on
-// the |frame| will be ignored.
-//
-// If `reinterpret_video_as_srgb` true, then the video will be reinterpreted as
-// being originally having been in sRGB.
-PLATFORM_EXPORT scoped_refptr<StaticBitmapImage> DrawVideoFrameIntoSnapshot(
-    scoped_refptr<media::VideoFrame> frame,
-    CanvasResourceProvider* resource_provider,
-    viz::RasterContextProvider* raster_context_provider,
-    media::PaintCanvasVideoRenderer* video_renderer = nullptr,
-    bool ignore_video_transformation = false,
-    bool reinterpret_video_as_srgb = false);
-
 PLATFORM_EXPORT void DrawVideoFrameIntoCanvas(
     scoped_refptr<media::VideoFrame> frame,
     cc::PaintCanvas* canvas,

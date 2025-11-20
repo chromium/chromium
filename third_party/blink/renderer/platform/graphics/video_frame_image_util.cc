@@ -126,23 +126,6 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
     prefer_tagged_orientation = false;
   }
 
-  return DrawVideoFrameIntoSnapshot(
-      std::move(frame), resource_provider, raster_context_provider.get(),
-      video_renderer,
-      /*ignore_video_transformation=*/prefer_tagged_orientation,
-      /*reinterpret_video_as_srgb=*/reinterpret_video_as_srgb);
-}
-
-scoped_refptr<StaticBitmapImage> DrawVideoFrameIntoSnapshot(
-    scoped_refptr<media::VideoFrame> frame,
-    CanvasResourceProvider* resource_provider,
-    viz::RasterContextProvider* raster_context_provider,
-    media::PaintCanvasVideoRenderer* video_renderer,
-    bool ignore_video_transformation,
-    bool reinterpret_video_as_srgb) {
-  DCHECK(frame);
-  DCHECK(resource_provider);
-
   const auto transform =
       frame->metadata().transformation.value_or(media::kNoTransformation);
 
@@ -183,18 +166,18 @@ scoped_refptr<StaticBitmapImage> DrawVideoFrameIntoSnapshot(
   media::PaintCanvasVideoRenderer::PaintParams params;
   params.dest_rect = gfx::RectF(resource_provider->Size());
   params.transformation =
-      ignore_video_transformation
+      prefer_tagged_orientation
           ? media::kNoTransformation
           : frame->metadata().transformation.value_or(media::kNoTransformation);
   params.reinterpret_as_srgb = reinterpret_video_as_srgb;
   resource_provider->ExternalCanvasDrawHelper(
       [&](MemoryManagedPaintCanvas& canvas) {
         video_renderer->Paint(frame.get(), &canvas, media_flags, params,
-                              raster_context_provider);
+                              raster_context_provider.get());
       });
 
   return resource_provider->Snapshot(
-      ignore_video_transformation
+      prefer_tagged_orientation
           ? VideoTransformationToImageOrientation(transform)
           : ImageOrientationEnum::kDefault);
 }
