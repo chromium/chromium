@@ -85,3 +85,24 @@ struct TenBoolsAndTwoBytes {
   bool b8;
   bool b9;
 };
+
+enum TestEnum {
+    Zero,
+    Three = 3,
+    Four,
+    Seven = 7,
+};
+
+enum TestEnum2 {
+  Eleven = 11,
+  Twelve,
+  Four = 4,
+  FourtyTwo = 42
+};
+
+// Packing: e1 e2 n1
+struct SomeEnums {
+  TestEnum e1;
+  uint64 n1;
+  TestEnum2 e2;
+};

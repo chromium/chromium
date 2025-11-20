@@ -34,7 +34,8 @@ fn check_value_has_expected_type(value: &MojomValue, expected_type: &MojomWireTy
             | (PackedLeafType::Int32, MojomValue::Int32(_))
             | (PackedLeafType::UInt32, MojomValue::UInt32(_))
             | (PackedLeafType::Int64, MojomValue::Int64(_))
-            | (PackedLeafType::UInt64, MojomValue::UInt64(_)) => true,
+            | (PackedLeafType::UInt64, MojomValue::UInt64(_))
+            | (PackedLeafType::Enum { .. }, MojomValue::Enum(_)) => true,
             _ => false,
         },
         (MojomWireType::Bitfield { .. }, MojomValue::Bool(_)) => true,
@@ -72,6 +73,7 @@ fn deparse_leaf_value(data: &mut Vec<u8>, value: &MojomValue) -> Result<()> {
         MojomValue::UInt32(value) => data.extend(value.to_le_bytes()),
         MojomValue::Int64(value) => data.extend(value.to_le_bytes()),
         MojomValue::UInt64(value) => data.extend(value.to_le_bytes()),
+        MojomValue::Enum(value) => data.extend(value.to_le_bytes()),
         _ => bail!("deparse_leaf_value: {:?} is not a leaf value", value),
     }
     Ok(())

@@ -27,7 +27,8 @@ _mojom_primitive_type_to_rust_type = {
 
 def _MojomTypeToRustType(ty: mojom.Kind) -> str:
   '''Return the name of the input type in rust syntax'''
-  if mojom.IsStructKind(ty):
+  # FOR_RELEASE: We don't support nested enums yet
+  if mojom.IsStructKind(ty) or mojom.IsEnumKind(ty):
     return ty.name
 
   if mojom.IsArrayKind(ty):

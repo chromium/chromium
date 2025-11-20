@@ -38,6 +38,8 @@ pub enum MojomType {
     Int64,
     UInt64,
     String,
+    // FOR_RELEASE: Consider if we want to unify enums and unions, as rust does
+    Enum { is_valid: Predicate<u32> },
     Struct { fields: Vec<(String, MojomType)> },
     // Mojom has separate sized/unsized array types; we could have two variants here, but
     // rust's type system can't enforce that the length is correct so there's little point.
@@ -61,13 +63,14 @@ pub enum MojomValue {
     Int64(i64),
     UInt64(u64),
     String(String),
+    Enum(u32),
     Struct(Vec<(String, MojomValue)>),
     // Invariant: all MojomValues in the array are the same type.
     Array(Vec<MojomValue>),
 }
 
 /**************************************************************** */
-// All the following types relate to how Mojom values are laid
+// The following types relate to how Mojom values are laid
 // out when serialized to be sent in a message.
 /*************************************************************** */
 
@@ -115,6 +118,7 @@ pub enum PackedLeafType {
     UInt32,
     Int64,
     UInt64,
+    Enum { is_valid: Predicate<u32> },
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -143,6 +147,7 @@ impl MojomWireType {
                 PackedLeafType::Int16 | PackedLeafType::UInt16 => 2,
                 PackedLeafType::Int32 | PackedLeafType::UInt32 => 4,
                 PackedLeafType::Int64 | PackedLeafType::UInt64 => 8,
+                PackedLeafType::Enum { .. } => 4,
             },
             MojomWireType::Bitfield { .. } => 1,
             // Structs and arrays are stored as 64-bit pointers
@@ -153,5 +158,40 @@ impl MojomWireType {
     /// The alignment requirement for each type is equal to its size in bytes.
     pub fn alignment(&self) -> usize {
         return self.size();
+    }
+}
+
+/**************************************************************** */
+// Helper types that don't logically appear as part of the AST,
+// but which are needed to satisfy the compiler
+/*************************************************************** */
+
+/// A function which returns boolean. This is its own type so that
+/// we can derive our own equality function for it, since function
+/// pointer comparison is unreliable.
+#[derive(Debug, Clone, Copy)]
+pub struct Predicate<T>
+where
+    T: 'static,
+{
+    f: &'static fn(T) -> bool,
+    /// An identifier saying where this function came from.
+    /// Only useful for equality checking
+    id: std::any::TypeId,
+}
+
+impl<T> PartialEq for Predicate<T> {
+    fn eq(&self, other: &Self) -> bool {
+        self.id == other.id
+    }
+}
+
+impl<T> Predicate<T> {
+    pub const fn new<SrcTy: 'static>(f: &'static fn(T) -> bool) -> Predicate<T> {
+        Predicate { f, id: std::any::TypeId::of::<SrcTy>() }
+    }
+
+    pub fn call(&self, arg: T) -> bool {
+        (self.f)(arg)
     }
 }

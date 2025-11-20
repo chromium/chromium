@@ -1,3 +1,4 @@
+{%- from "enum.tmpl" import declare_enum -%}
 {%- from "struct.tmpl" import declare_struct -%}
 {%- from "interface.tmpl" import declare_interface -%}
 
@@ -12,6 +13,10 @@ chromium::import! {
 }
 
 use mojom_parser::*;
+
+{%- for enum in module.enums %}
+{{declare_enum(enum.name, enum)}}
+{% endfor %}
 
 {%- for struct in module.structs %}
 {{declare_struct(struct.name, struct, true)}}

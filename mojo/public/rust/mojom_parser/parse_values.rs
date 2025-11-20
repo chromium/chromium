@@ -32,6 +32,15 @@ fn parse_leaf_element(data: &mut ParserData, ty: &PackedLeafType) -> ParsingResu
         PackedLeafType::Int16 => Ok(MojomValue::Int16(parse_i16(data)?)),
         PackedLeafType::Int32 => Ok(MojomValue::Int32(parse_i32(data)?)),
         PackedLeafType::Int64 => Ok(MojomValue::Int64(parse_i64(data)?)),
+        PackedLeafType::Enum { is_valid } => {
+            let value = parse_u32(data)?;
+            if is_valid.call(value) {
+                Ok(MojomValue::Enum(value))
+            } else {
+                // Report the error starting before the 32 bits we just parsed
+                Err(ParsingError::invalid_enum(data.bytes_parsed() - 4, value))
+            }
+        }
     }
 }
 

@@ -1,0 +1,12 @@
+{% macro declare_enum(name, enum) -%}
+
+{%set pub = "pub " if is_pub else ""%}
+
+#[derive(Debug, PartialEq, Clone, PrimitiveEnum)]
+pub enum {{name}} {
+{%- for field in enum.fields %}
+  {{field.name}} = {{field.numeric_value}},
+{%- endfor %}
+}
+
+{%- endmacro -%}

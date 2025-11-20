@@ -561,3 +561,75 @@ fn test_bad_conversion() {
     expect_true!(Empty::try_from(ten_bools_byte).is_err());
     expect_true!(Empty::try_from(four_ints).is_err());
 }
+
+// Mojom Definition:
+// struct SomeEnums {
+//   TestEnum e1;
+//   uint16 n1;
+//   TestEnum2 e2;
+// }
+const TEST_ENUM_PRED: Predicate<u32> =
+    Predicate::new::<TestEnum>(&(TestEnum::is_valid as fn(u32) -> bool));
+const TEST_ENUM2_PRED: Predicate<u32> =
+    Predicate::new::<TestEnum2>(&(TestEnum2::is_valid as fn(u32) -> bool));
+
+static SOME_ENUMS_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
+    type_name: "SomeEnums",
+    base_type: MojomType::Struct {
+        fields: vec![
+            ("e1".to_string(), MojomType::Enum { is_valid: TEST_ENUM_PRED }),
+            ("n1".to_string(), MojomType::UInt64),
+            ("e2".to_string(), MojomType::Enum { is_valid: TEST_ENUM2_PRED }),
+        ],
+    },
+    expected_packed_fields: vec![
+        (
+            "e1".to_string(),
+            MojomWireType::Leaf {
+                ordinal: 0,
+                leaf_type: PackedLeafType::Enum { is_valid: TEST_ENUM_PRED },
+            },
+        ),
+        (
+            "e2".to_string(),
+            MojomWireType::Leaf {
+                ordinal: 2,
+                leaf_type: PackedLeafType::Enum { is_valid: TEST_ENUM2_PRED },
+            },
+        ),
+        ("n1".to_string(), MojomWireType::Leaf { ordinal: 1, leaf_type: PackedLeafType::UInt64 }),
+    ],
+});
+
+fn some_enums_mojom(e1: u32, n1: u64, e2: u32) -> MojomValue {
+    MojomValue::Struct(vec![
+        ("e1".to_string(), MojomValue::Enum(e1)),
+        ("n1".to_string(), MojomValue::UInt64(n1)),
+        ("e2".to_string(), MojomValue::Enum(e2)),
+    ])
+}
+
+#[gtest(MojomParser, TestEnums)]
+fn test_enums() {
+    SOME_ENUMS_TY.validate_mojomparse(
+        SomeEnums { e1: TestEnum::Four, n1: 42, e2: TestEnum2::Eleven },
+        some_enums_mojom(4, 42, 11),
+    );
+    SOME_ENUMS_TY.validate_mojomparse(
+        SomeEnums { e1: TestEnum::Zero, n1: 0, e2: TestEnum2::Twelve },
+        some_enums_mojom(0, 0, 12),
+    );
+    SOME_ENUMS_TY.validate_mojomparse(
+        SomeEnums { e1: TestEnum::Three, n1: 3, e2: TestEnum2::Four },
+        some_enums_mojom(3, 3, 4),
+    );
+    SOME_ENUMS_TY.validate_mojomparse(
+        SomeEnums { e1: TestEnum::Seven, n1: 7, e2: TestEnum2::FourtyTwo },
+        some_enums_mojom(7, 7, 42),
+    );
+
+    expect_true!(TestEnum::try_from(8).is_err());
+    expect_true!(TestEnum::try_from(11).is_err());
+    expect_true!(TestEnum2::try_from(0).is_err());
+    expect_true!(TestEnum2::try_from(99).is_err());
+}

@@ -173,6 +173,9 @@ pub fn pack_mojom_type(ty: &MojomType, ordinal: Ordinal) -> MojomWireType {
         MojomType::UInt16 => MojomWireType::Leaf { ordinal, leaf_type: PackedLeafType::UInt16 },
         MojomType::UInt32 => MojomWireType::Leaf { ordinal, leaf_type: PackedLeafType::UInt32 },
         MojomType::UInt64 => MojomWireType::Leaf { ordinal, leaf_type: PackedLeafType::UInt64 },
+        MojomType::Enum { is_valid } => {
+            MojomWireType::Leaf { ordinal, leaf_type: PackedLeafType::Enum { is_valid: *is_valid } }
+        }
         MojomType::Bool => MojomWireType::Bitfield {
             ordinals: [Some(ordinal), None, None, None, None, None, None, None],
         },

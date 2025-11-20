@@ -323,3 +323,16 @@ fn test_bools() -> anyhow::Result<()> {
 
     Ok(())
 }
+
+#[gtest(MojomParser, TestEnumParsing)]
+fn test_enums() -> anyhow::Result<()> {
+    validate_parsing(
+        SomeEnums { e1: TestEnum::Seven, n1: 98765, e2: TestEnum2::FourtyTwo },
+        "[u4]24 [u4]0 [u4]7 [u4]42 [u8]98765",
+    )?;
+
+    validate_parsing_failure::<SomeEnums>("[u4]24 [u4]0 [u4]5 [u4]42 [u8]98765")?;
+    validate_parsing_failure::<SomeEnums>("[u4]24 [u4]0 [u4]7 [u4]99 [u8]98765")?;
+
+    Ok(())
+}

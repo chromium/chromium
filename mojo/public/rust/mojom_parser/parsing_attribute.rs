@@ -8,7 +8,7 @@ use quote::quote;
 use syn::{parse_macro_input, DeriveInput};
 
 #[proc_macro_derive(MojomParse)]
-pub fn derive(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
+pub fn derive_mojomparse(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
     let name = input.ident;
 
@@ -123,5 +123,99 @@ pub fn derive(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
 
     // Excellent for debugging, prints out the entire generated code
     // println!("{}", &quoted);
+    return proc_macro::TokenStream::from(quoted);
+}
+
+#[proc_macro_derive(PrimitiveEnum)]
+pub fn derive_primitiveenum(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
+    let input = parse_macro_input!(input as DeriveInput);
+    let name = input.ident;
+
+    let variants = match input.data {
+        syn::Data::Enum(syn::DataEnum { variants, .. }) => variants,
+        _ => panic!("No structs or unions allowed!"),
+    };
+
+    let mut next_discriminant: u32 = 0;
+    let mut default_variant: Option<syn::Ident> = None;
+    let generate_branch = |variant: syn::Variant| {
+        if !variant.fields.is_empty() {
+            panic!("Mojom enums must not have any variants with fields!")
+        }
+
+        // FOR_RELEASE: See if any variants have a "default" attribute
+        default_variant = None; // Silence compiler until we do that
+
+        let discriminant = match variant.discriminant {
+            Some((_, syn::Expr::Lit(syn::ExprLit { lit: syn::Lit::Int(n), .. }))) => {
+                let discriminant = n
+                    .base10_parse::<u32>()
+                    .expect("Enum discriminants must be a 32-bit integer literal.");
+                discriminant
+            }
+            None => next_discriminant,
+            _ => panic!("Enum discriminants must be a 32-bit integer literal."),
+        };
+        next_discriminant = discriminant + 1;
+
+        let variant_name = variant.ident;
+
+        quote! {
+            #discriminant => Ok(#name::#variant_name)
+        }
+    };
+
+    let mut branches = variants.into_iter().map(generate_branch).collect::<Vec<_>>();
+    if let Some(default) = default_variant {
+        branches.push(quote! { _ => Ok(#default)})
+    } else {
+        branches.push(quote! { _ => Err(anyhow::anyhow!(
+            "Invalid discriminant {value} for type {}",
+            std::any::type_name::<#name>()
+        ))})
+    }
+
+    let quoted = quote! {
+        const _ : () = {
+            chromium::import! {
+                "//mojo/public/rust/mojom_parser:mojom_parser_core";
+            }
+
+            use mojom_parser_core::*;
+
+            impl From<#name> for u32 {
+                fn from(value: #name) -> u32 { value as u32 }
+            }
+
+            impl TryFrom<u32> for #name {
+                type Error = ::anyhow::Error;
+
+                fn try_from(value : u32) -> ::anyhow::Result<Self> {
+                    match value {
+                        #(#branches),*
+                    }
+                }
+            }
+
+            impl TryFrom<MojomValue> for #name {
+                type Error = ::anyhow::Error;
+
+                fn try_from(value: MojomValue) -> ::anyhow::Result<Self> {
+                    if let MojomValue::Enum(v) = value {
+                        Ok(Self::try_from(v)?)
+                    } else {
+                        ::anyhow::bail!(
+                            "Cannot construct a value of type {} from non-enum MojomValue {:?}",
+                            std::any::type_name::<#name>(),
+                            value
+                        )
+                    }
+                }
+            }
+
+            impl PrimitiveEnum for #name {}
+        };
+    };
+
     return proc_macro::TokenStream::from(quoted);
 }

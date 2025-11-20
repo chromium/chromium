@@ -104,3 +104,27 @@ mojom_parse_leaf_impl!(i64, Int64);
 
 mojom_parse_leaf_impl!(bool, Bool);
 mojom_parse_leaf_impl!(String, String);
+
+// FOR_RELEASE: We could replace this with one of a number of crates. num_enum
+// seems closest, though it doesn't have quite the API we want (we want
+// from_primitive to return an option but respect default values if they exist)
+pub trait PrimitiveEnum: Into<u32> + TryFrom<u32, Error = anyhow::Error> + Sized {
+    fn is_valid(value: u32) -> bool {
+        Self::try_from(value).is_ok()
+    }
+}
+
+impl<T: PrimitiveEnum> From<T> for MojomValue {
+    fn from(value: T) -> MojomValue {
+        MojomValue::Enum(value.into())
+    }
+}
+
+// Logically we could implement TryFrom<MojomValue> for T here, but the
+// compiler won't let us since T is uncovered, so we derive it instead.
+
+impl<T: PrimitiveEnum + TryFrom<MojomValue, Error = anyhow::Error> + 'static> MojomParse for T {
+    fn mojom_type() -> MojomType {
+        MojomType::Enum { is_valid: Predicate::new::<T>(&(Self::is_valid as fn(u32) -> bool)) }
+    }
+}
