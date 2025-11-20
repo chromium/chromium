@@ -209,6 +209,22 @@ chromium-metrics-reviews@google.com.
       summary="SRR attachment and outgoing request signing"/>
 </variants>
 
+<!-- LINT.IfChange(UnexportableKeysBackgroundTaskType) -->
+
+<variants name="UnexportableKeysBackgroundTaskType">
+  <variant name=".DeleteKey"
+      summary="operations to delete a single signing key"/>
+  <variant name=".FromWrappedKey"
+      summary="operations to create a signing key from a wrapped key"/>
+  <variant name=".GenerateKey"
+      summary="operations to generate a new signing key"/>
+  <variant name=".GetAllKeys"
+      summary="operations to get all keys known to the platform"/>
+  <variant name=".Sign" summary="signing operations"/>
+</variants>
+
+<!-- LINT.ThenChange(//components/unexportable_keys/background_task_type.h:BackgroundTaskType) -->
+
 <variants name="URLLoaderThrottleStages">
   <variant name="BeforeWillProcessResponse"/>
   <variant name="WillOnCompleteWithError"/>
@@ -524,13 +540,7 @@ chromium-metrics-reviews@google.com.
     Recorded right after a TPM operation completes. Recorded only for
     {TaskType}.
   </summary>
-  <token key="TaskType">
-    <variant name=".FromWrappedKey"
-        summary="operations to create a signing key from a wrapped key"/>
-    <variant name=".GenerateKey"
-        summary="operations to generate a new signing key"/>
-    <variant name=".Sign" summary="signing operations"/>
-  </token>
+  <token key="TaskType" variants="UnexportableKeysBackgroundTaskType"/>
 </histogram>
 
 <histogram
@@ -547,13 +557,7 @@ chromium-metrics-reviews@google.com.
     Recorded right after a TPM operation completes. Recorded only for
     {TaskType}.
   </summary>
-  <token key="TaskType">
-    <variant name=".FromWrappedKey"
-        summary="operations to create a signing key from a wrapped key"/>
-    <variant name=".GenerateKey"
-        summary="operations to generate a new signing key"/>
-    <variant name=".Sign" summary="signing operations"/>
-  </token>
+  <token key="TaskType" variants="UnexportableKeysBackgroundTaskType"/>
   <token key="Success">
     <variant name=".Failure" summary="failure"/>
     <variant name=".Success" summary="success"/>
@@ -582,13 +586,8 @@ chromium-metrics-reviews@google.com.
 
     Recorded right after a TPM operation completes.
   </summary>
-  <token key="TaskType">
+  <token key="TaskType" variants="UnexportableKeysBackgroundTaskType">
     <variant name="" summary="all operation types"/>
-    <variant name=".FromWrappedKey"
-        summary="only operations to create a signing key from a wrapped key"/>
-    <variant name=".GenerateKey"
-        summary="only operations to generate a new signing key"/>
-    <variant name=".Sign" summary="only signing operations"/>
   </token>
 </histogram>
 

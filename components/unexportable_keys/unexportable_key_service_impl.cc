@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "components/unexportable_keys/unexportable_key_task_manager.h"
@@ -142,8 +143,12 @@ void UnexportableKeyServiceImpl::
         BackgroundTaskPriority priority,
         base::OnceCallback<void(ServiceErrorOr<std::vector<UnexportableKeyId>>)>
             callback) {
-  // TODO: crbug.com/455538141 - Implement key retrieval in the task manager.
-  std::move(callback).Run(std::vector<UnexportableKeyId>());
+  task_manager_->GetAllSigningKeysForGarbageCollectionSlowlyAsync(
+      config_, priority,
+      base::BindOnce(&UnexportableKeyServiceImpl::
+                         OnGetAllSigningKeysForGarbageCollectionSlowly,
+                     get_all_keys_weak_ptr_factory_.GetWeakPtr(),
+                     std::move(callback)));
 }
 
 void UnexportableKeyServiceImpl::SignSlowlyAsync(
@@ -213,7 +218,8 @@ void UnexportableKeyServiceImpl::DeleteAllKeysSlowlyAsync(
     }
   }
 
-  // Invalidate weak pointers to cancel pending from wrapped key requests.
+  // Invalidate weak pointers to cancel pending key lookup requests.
+  get_all_keys_weak_ptr_factory_.InvalidateWeakPtrs();
   from_wrapped_key_weak_ptr_factory_.InvalidateWeakPtrs();
 
   // TODO: crbug.com/455538141 - Implement deletion in the task manager.
@@ -248,30 +254,88 @@ UnexportableKeyServiceImpl::GetAlgorithm(UnexportableKeyId key_id) const {
   return it->second->key().Algorithm();
 }
 
+void UnexportableKeyServiceImpl::OnGetAllSigningKeysForGarbageCollectionSlowly(
+    base::OnceCallback<void(ServiceErrorOr<std::vector<UnexportableKeyId>>)>
+        client_callback,
+    ServiceErrorOr<std::vector<scoped_refptr<RefCountedUnexportableSigningKey>>>
+        keys_or_error) {
+  std::move(client_callback)
+      .Run(OnGetAllSigningKeysForGarbageCollectionSlowlyImpl(
+          std::move(keys_or_error)));
+}
+
+ServiceErrorOr<std::vector<UnexportableKeyId>>
+UnexportableKeyServiceImpl::OnGetAllSigningKeysForGarbageCollectionSlowlyImpl(
+    ServiceErrorOr<std::vector<scoped_refptr<RefCountedUnexportableSigningKey>>>
+        keys_or_error) {
+  ASSIGN_OR_RETURN(
+      std::vector<scoped_refptr<RefCountedUnexportableSigningKey>> keys,
+      std::move(keys_or_error));
+
+  std::vector<UnexportableKeyId> key_ids;
+  key_ids.reserve(keys.size());
+  for (scoped_refptr<RefCountedUnexportableSigningKey>& key : keys) {
+    CHECK(key);
+    UnexportableKeyId key_id = key->id();
+    auto [it, inserted] =
+        key_id_by_wrapped_key_.try_emplace(key->key().GetWrappedKey(), key_id);
+
+    if (!inserted) {
+      // If insertion failed, it means that there were pending callbacks
+      // waiting for the key to be created from the wrapped key.
+      MaybePendingUnexportableKeyId& maybe_pending_key_id = it->second;
+
+      if (!maybe_pending_key_id.HasKeyId()) {
+        // If there is no key ID yet, it means there are still
+        // `FromWrappedKey` requests in flight. In this case, we need set
+        // the key ID and run callbacks.
+        maybe_pending_key_id.SetKeyIdAndRunCallbacks(key_id);
+      } else {
+        // Otherwise, this wrapped key has already been assigned to a key
+        // ID, and we need to use the existing key ID.
+        key_id = maybe_pending_key_id.GetKeyId();
+      }
+    }
+
+    if (key_id == key->id()) {
+      // A newly generated key ID must be unique.
+      CHECK(key_by_key_id_.try_emplace(key_id, std::move(key)).second);
+    }
+
+    key_ids.push_back(key_id);
+  }
+
+  return key_ids;
+}
+
 void UnexportableKeyServiceImpl::OnKeyGenerated(
     base::OnceCallback<void(ServiceErrorOr<UnexportableKeyId>)> client_callback,
     ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>
         key_or_error) {
-  std::move(client_callback).Run([&]() -> ServiceErrorOr<UnexportableKeyId> {
-    if (!key_or_error.has_value()) {
-      return base::unexpected(key_or_error.error());
-    }
-    scoped_refptr<RefCountedUnexportableSigningKey>& key = key_or_error.value();
-    // `key` must be non-null if `key_or_error` holds a value.
-    CHECK(key);
-    UnexportableKeyId key_id = key->id();
-    if (!key_id_by_wrapped_key_.try_emplace(key->key().GetWrappedKey(), key_id)
-             .second) {
-      // Drop a newly generated key in the case of a key collision. This should
-      // be extremely rare.
-      DVLOG(1) << "Collision between an existing and a newly generated key "
-                  "detected.";
-      return base::unexpected(ServiceError::kKeyCollision);
-    }
-    // A newly generated key ID must be unique.
-    CHECK(key_by_key_id_.try_emplace(key_id, std::move(key)).second);
-    return key_id;
-  }());
+  return std::move(client_callback)
+      .Run(OnKeyGeneratedImpl(std::move(key_or_error)));
+}
+
+ServiceErrorOr<UnexportableKeyId>
+UnexportableKeyServiceImpl::OnKeyGeneratedImpl(
+    ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>
+        key_or_error) {
+  ASSIGN_OR_RETURN(scoped_refptr<RefCountedUnexportableSigningKey> key,
+                   std::move(key_or_error));
+  // `key` must be non-null if `key_or_error` holds a value.
+  CHECK(key);
+  UnexportableKeyId key_id = key->id();
+  if (!key_id_by_wrapped_key_.try_emplace(key->key().GetWrappedKey(), key_id)
+           .second) {
+    // Drop a newly generated key in the case of a key collision. This should
+    // be extremely rare.
+    DVLOG(1) << "Collision between an existing and a newly generated key "
+                "detected.";
+    return base::unexpected(ServiceError::kKeyCollision);
+  }
+  // A newly generated key ID must be unique.
+  CHECK(key_by_key_id_.try_emplace(key_id, std::move(key)).second);
+  return key_id;
 }
 
 void UnexportableKeyServiceImpl::OnKeyCreatedFromWrappedKey(
@@ -279,17 +343,24 @@ void UnexportableKeyServiceImpl::OnKeyCreatedFromWrappedKey(
     ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>
         key_or_error) {
   auto it = key_id_by_wrapped_key_.find(wrapped_key);
+  // TODO(crbug.com/455538141): Handle the case where the key is not found due
+  // to an intermediate call to `DeleteKeySlowlyAsync()`.
   CHECK(it != key_id_by_wrapped_key_.end());
 
-  auto& [_, pending_callbacks] = *it;
-  CHECK(!pending_callbacks.HasKeyId());
-
-  if (!key_or_error.has_value()) {
-    auto node = key_id_by_wrapped_key_.extract(it);
-    node.mapped().RunCallbacksWithFailure(key_or_error.error());
+  MaybePendingUnexportableKeyId& maybe_pending_callbacks = it->second;
+  if (maybe_pending_callbacks.HasKeyId()) {
+    // If there is already a key ID for this wrapped key, it means that the key
+    // id has been resolved in the meantime, for example through
+    // `GetAllSigningKeys...`. In this case, there is nothing to do and we can
+    // return immediately.
     return;
   }
-  scoped_refptr<RefCountedUnexportableSigningKey>& key = key_or_error.value();
+
+  ASSIGN_OR_RETURN(scoped_refptr<RefCountedUnexportableSigningKey> key,
+                   std::move(key_or_error), [&](ServiceError error) {
+                     auto node = key_id_by_wrapped_key_.extract(it);
+                     node.mapped().RunCallbacksWithFailure(error);
+                   });
   // `key` must be non-null if `key_or_error` holds a value.
   CHECK(key);
   DCHECK(wrapped_key == key->key().GetWrappedKey());
@@ -297,7 +368,7 @@ void UnexportableKeyServiceImpl::OnKeyCreatedFromWrappedKey(
   UnexportableKeyId key_id = key->id();
   // A newly created key ID must be unique.
   CHECK(key_by_key_id_.try_emplace(key_id, std::move(key)).second);
-  pending_callbacks.SetKeyIdAndRunCallbacks(key_id);
+  maybe_pending_callbacks.SetKeyIdAndRunCallbacks(key_id);
 }
 
 }  // namespace unexportable_keys

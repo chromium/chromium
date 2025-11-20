@@ -103,10 +103,26 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyServiceImpl
       absl::flat_hash_map<UnexportableKeyId,
                           scoped_refptr<RefCountedUnexportableSigningKey>>;
 
+  // Callback for `GetAllSigningKeysForGarbageCollectionSlowlyAsync()`.
+  void OnGetAllSigningKeysForGarbageCollectionSlowly(
+      base::OnceCallback<void(ServiceErrorOr<std::vector<UnexportableKeyId>>)>
+          client_callback,
+      ServiceErrorOr<
+          std::vector<scoped_refptr<RefCountedUnexportableSigningKey>>>
+          keys_or_error);
+  ServiceErrorOr<std::vector<UnexportableKeyId>>
+  OnGetAllSigningKeysForGarbageCollectionSlowlyImpl(
+      ServiceErrorOr<
+          std::vector<scoped_refptr<RefCountedUnexportableSigningKey>>>
+          keys_or_error);
+
   // Callback for `GenerateSigningKeySlowlyAsync()`.
   void OnKeyGenerated(
       base::OnceCallback<void(ServiceErrorOr<UnexportableKeyId>)>
           client_callback,
+      ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>
+          key_or_error);
+  ServiceErrorOr<UnexportableKeyId> OnKeyGeneratedImpl(
       ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>
           key_or_error);
 
@@ -128,6 +144,8 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyServiceImpl
   // session.
   KeyIdMap key_by_key_id_;
 
+  base::WeakPtrFactory<UnexportableKeyServiceImpl>
+      get_all_keys_weak_ptr_factory_{this};
   base::WeakPtrFactory<UnexportableKeyServiceImpl>
       generate_key_weak_ptr_factory_{this};
   base::WeakPtrFactory<UnexportableKeyServiceImpl>

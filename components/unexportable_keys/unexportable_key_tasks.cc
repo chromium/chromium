@@ -8,9 +8,11 @@
 #include <optional>
 
 #include "base/check_deref.h"
+#include "base/containers/to_vector.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "base/types/optional_util.h"
 #include "components/unexportable_keys/background_task_type.h"
 #include "components/unexportable_keys/ref_counted_unexportable_signing_key.h"
@@ -30,6 +32,24 @@ MakeSigningKeyRefCounted(std::unique_ptr<crypto::UnexportableSigningKey> key) {
 
   return base::MakeRefCounted<RefCountedUnexportableSigningKey>(
       std::move(key), UnexportableKeyId());
+}
+
+ServiceErrorOr<std::vector<scoped_refptr<RefCountedUnexportableSigningKey>>>
+GetAllSigningKeysSlowly(crypto::UnexportableKeyProvider* key_provider,
+                        void* task_ptr_for_tracing) {
+  TRACE_EVENT("browser", "unexportable_keys::GetAllSigningKeysSlowly",
+              perfetto::Flow::FromPointer(task_ptr_for_tracing));
+  CHECK(key_provider);
+
+  ASSIGN_OR_RETURN(
+      std::vector<std::unique_ptr<crypto::UnexportableSigningKey>> keys,
+      CHECK_DEREF(key_provider->AsStatefulUnexportableKeyProvider())
+          .GetAllSigningKeysSlowly(),
+      [] { return ServiceError::kCryptoApiFailed; });
+
+  return base::ToVector(keys, [](auto& key) {
+    return MakeSigningKeyRefCounted(std::move(key)).value();
+  });
 }
 
 ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>
@@ -99,6 +119,19 @@ ServiceErrorOr<void> DeleteSigningKeySlowly(
 }
 
 }  // namespace
+
+GetAllKeysTask::GetAllKeysTask(
+    std::unique_ptr<crypto::UnexportableKeyProvider> key_provider,
+    BackgroundTaskPriority priority,
+    base::OnceCallback<void(GetAllKeysTask::ReturnType, size_t)> callback)
+    : internal::BackgroundTaskImpl<GetAllKeysTask::ReturnType>(
+          base::BindRepeating(&GetAllSigningKeysSlowly,
+                              base::Owned(std::move(key_provider)),
+                              this),
+          std::move(callback),
+          priority,
+          BackgroundTaskType::kGetAllKeys,
+          /*max_retries=*/0) {}
 
 GenerateKeyTask::GenerateKeyTask(
     std::unique_ptr<crypto::UnexportableKeyProvider> key_provider,
