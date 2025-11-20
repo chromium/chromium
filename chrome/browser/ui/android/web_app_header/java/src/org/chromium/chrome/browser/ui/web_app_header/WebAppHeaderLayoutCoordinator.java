@@ -4,15 +4,18 @@
 
 package org.chromium.chrome.browser.ui.web_app_header;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.SystemClock;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
@@ -30,6 +33,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
@@ -44,6 +48,7 @@ import org.chromium.chrome.browser.web_app_header.R;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayUtil;
@@ -64,7 +69,7 @@ import java.util.function.Supplier;
  */
 @NullMarked
 @RequiresApi(api = Build.VERSION_CODES.VANILLA_ICE_CREAM)
-public class WebAppHeaderLayoutCoordinator
+public class WebAppHeaderLayoutCoordinator extends EmptyTabObserver
         implements DesktopWindowStateManager.AppHeaderObserver,
                 WebAppHeaderDelegate,
                 BrowserControlsStateProvider.Observer,
@@ -107,6 +112,9 @@ public class WebAppHeaderLayoutCoordinator
     private @Nullable View mMenuButtonContainer;
     private final @Nullable String mClientPackageName;
     private @Nullable ChromeImageButton mToggleButtonView;
+    private @Nullable TextView mAppOriginView;
+    private @Nullable String mAppOrigin;
+    private final Callback<@Nullable Tab> mOnTabUpdate;
 
     /**
      * Creates an instance of {@link WebAppHeaderLayoutCoordinator}.
@@ -180,11 +188,20 @@ public class WebAppHeaderLayoutCoordinator
         if (appHeaderState != null) {
             onAppHeaderStateChanged(appHeaderState);
         }
+
+        mOnTabUpdate = this::onTabUpdate;
+        mTabSupplier.addObserver(mOnTabUpdate);
     }
 
     @Override
     public void onAppHeaderStateChanged(AppHeaderState newState) {
         ensureInitialized();
+    }
+
+    private void onTabUpdate(@Nullable Tab tab) {
+        if (tab != null) {
+            tab.addObserver(this);
+        }
     }
 
     private void ensureInitialized() {
@@ -221,6 +238,10 @@ public class WebAppHeaderLayoutCoordinator
         onAndroidControlsVisibilityChanged(
                 mBrowserControlsStateProvider.getAndroidControlsVisibility());
 
+        if (mIsTWA && ChromeFeatureList.sAndroidTwaOriginDisplay.isEnabled()) {
+            mAppOriginView = (TextView) mView.findViewById(R.id.origin);
+        }
+
         mMediator.getUnoccludedWidthSupplier().addObserver(mOnUnoccludedWidthCallback);
         if (mDisplayMode == DisplayMode.MINIMAL_UI) {
             initMinUiControls();
@@ -234,6 +255,7 @@ public class WebAppHeaderLayoutCoordinator
         mUIControlsMinWidthPx = calculateUIControlsMinWidth();
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void initWCOControls() {
         assert mView != null;
         assert mMediator != null;
@@ -241,12 +263,18 @@ public class WebAppHeaderLayoutCoordinator
         mToggleButtonView = mView.findViewById(R.id.wco_toggle_button);
         mToggleButtonView.setVisibility(View.VISIBLE);
         syncToggleButtonView();
-        mToggleButtonView.setOnClickListener(
-                v -> {
-                    assert mMediator != null;
-                    mMediator.setUserToggleHeaderAsOverlay(
-                            !mMediator.getUserToggleHeaderAsOverlay());
-                    syncToggleButtonView();
+        mToggleButtonView.setOnTouchListener(
+                new View.OnTouchListener() {
+                    @SuppressLint("ClickableViewAccessibility")
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        if (event.getAction() == MotionEvent.ACTION_DOWN) return false;
+                        assert mMediator != null;
+                        mMediator.setUserToggleHeaderAsOverlay(
+                                !mMediator.getUserToggleHeaderAsOverlay());
+                        syncToggleButtonView();
+                        return false;
+                    }
                 });
         mToggleButtonView.setForegroundTintList(mThemeColorProvider.getTint());
 
@@ -286,6 +314,9 @@ public class WebAppHeaderLayoutCoordinator
             @BrandedColorScheme int brandedColorScheme) {
         if (mToggleButtonView != null) {
             mToggleButtonView.setImageTintList(activityFocusTint);
+        }
+        if (mAppOriginView != null) {
+            mAppOriginView.setTextColor(activityFocusTint);
         }
     }
 
@@ -358,6 +389,11 @@ public class WebAppHeaderLayoutCoordinator
 
         if (wasShowingButtons == mShowButtons) return;
 
+        int visibility = mShowButtons ? View.VISIBLE : View.GONE;
+        if (mAppOriginView != null) {
+            mAppOriginView.setVisibility(visibility);
+        }
+
         if (mReloadButtonCoordinator != null) {
             mReloadButtonCoordinator.setVisibility(mShowButtons);
         }
@@ -367,11 +403,11 @@ public class WebAppHeaderLayoutCoordinator
         if (mMenuButtonCoordinator != null) {
             mMenuButtonCoordinator.setVisibility(mShowButtons);
             if (mMenuButtonContainer != null) {
-                mMenuButtonContainer.setVisibility(mShowButtons ? View.VISIBLE : View.GONE);
+                mMenuButtonContainer.setVisibility(visibility);
             }
         }
         if (mToggleButtonView != null) {
-            mToggleButtonView.setVisibility(mShowButtons ? View.VISIBLE : View.GONE);
+            mToggleButtonView.setVisibility(visibility);
             assert mMediator != null;
             mMediator.didChangeToggleButtonVisiblity(mShowButtons);
         }
@@ -400,6 +436,8 @@ public class WebAppHeaderLayoutCoordinator
 
     @VisibleForTesting
     List<Rect> collectControlPositions() {
+        assert mView != null;
+
         final var areas = new ArrayList<Rect>();
         if (mReloadButtonCoordinator != null && mReloadButtonCoordinator.isVisible()) {
             areas.add(mReloadButtonCoordinator.getHitRect());
@@ -409,16 +447,28 @@ public class WebAppHeaderLayoutCoordinator
             areas.add(mBackButtonCoordinator.getHitRect());
         }
 
+        // getHitRect() provides coordinates relative to its parent View. Use
+        // offsetDescendantRectToMyCoords() to take ancestor(s) into account.
+        View rightAlignedWrapper = mView.findViewById(R.id.right_aligned_wrapper);
         if (mMenuButtonCoordinator != null && mMenuButtonCoordinator.isVisible()) {
-            assert mView != null;
             Rect rect = mMenuButtonCoordinator.getHitRect();
             View menuDescendent = mView.findViewById(R.id.menu_button_wrapper);
             mView.offsetDescendantRectToMyCoords(menuDescendent, rect);
+            mView.offsetDescendantRectToMyCoords(rightAlignedWrapper, rect);
             areas.add(rect);
         }
+
+        if (mAppOriginView != null && mAppOriginView.getVisibility() == View.VISIBLE) {
+            final var rect = new Rect();
+            mAppOriginView.getHitRect(rect);
+            mView.offsetDescendantRectToMyCoords(rightAlignedWrapper, rect);
+            areas.add(rect);
+        }
+
         if (mToggleButtonView != null && mToggleButtonView.getVisibility() == View.VISIBLE) {
             final var rect = new Rect();
             mToggleButtonView.getHitRect(rect);
+            mView.offsetDescendantRectToMyCoords(rightAlignedWrapper, rect);
             areas.add(rect);
         }
 
@@ -449,6 +499,10 @@ public class WebAppHeaderLayoutCoordinator
 
         // Add button padding.
         totalWidthDp += mHeaderButtonPaddingDp;
+
+        if (mAppOriginView != null) {
+            totalWidthDp += mAppOriginView.getWidth();
+        }
 
         if (mToggleButtonView != null) {
             // If mToggleButtonView is non-null, we're in WINDOW_CONTROLS_OVERLAY mode. In addition
@@ -559,6 +613,12 @@ public class WebAppHeaderLayoutCoordinator
             mMenuButtonCoordinator.destroy();
             mMenuButtonCoordinator = null;
         }
+
+        final var tab = mTabSupplier.get();
+        if (tab != null) {
+            tab.removeObserver(this);
+        }
+        mTabSupplier.removeObserver(mOnTabUpdate);
     }
 
     @VisibleForTesting
@@ -577,6 +637,29 @@ public class WebAppHeaderLayoutCoordinator
                 mToggleButtonView.setVisibility(View.VISIBLE);
             }
         }
+        if (mAppOriginView != null) {
+            if (isVisible) {
+                mAppOriginView.setVisibility(View.GONE);
+            } else {
+                mAppOriginView.setVisibility(View.VISIBLE);
+            }
+        }
         mMediator.setBrowserControlsVisible(isVisible);
+    }
+
+    @Override
+    public void onDidFinishNavigationInPrimaryMainFrame(
+            Tab tab, NavigationHandle navigationHandle) {
+        if (mAppOriginView == null) return;
+        String origin = navigationHandle.getUrl().getOrigin().getSpec();
+        if (origin.equals(mAppOrigin)) return;
+        mAppOrigin = origin;
+
+        final ColorStateList textColorList =
+                mThemeColorProvider.getActivityFocusTint() == null
+                        ? mAppOriginView.getTextColors()
+                        : mThemeColorProvider.getActivityFocusTint();
+        mAppOriginView.setTextColor(textColorList);
+        mAppOriginView.setText(mAppOrigin);
     }
 }

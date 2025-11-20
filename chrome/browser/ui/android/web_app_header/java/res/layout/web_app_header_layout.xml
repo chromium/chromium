@@ -36,21 +36,34 @@ found in the LICENSE file.
         android:layout_gravity="start|center_vertical"
         app:tint="@color/default_icon_color_tint_list" />
 
-    <FrameLayout
-        android:id="@+id/web_app_menu_button_wrapper"
-        style="@style/HeaderButton"
-        android:layout_gravity="end|center_vertical"
-        android:visibility="gone">
-        <include
-            layout="@layout/menu_button" />
-    </FrameLayout>
+    <LinearLayout
+        android:id="@+id/right_aligned_wrapper"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="end|center_vertical">
+        <!-- The origin of the web app, displayed for security purposes. -->
+        <TextView
+            android:id="@+id/origin"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:visibility="gone"
+            app:tint="@color/default_text_color_list" />
 
-    <org.chromium.ui.widget.ChromeImageButton
-        android:id="@+id/wco_toggle_button"
-        style="@style/HeaderButton"
-        android:src="@drawable/window_controls_overlay_toggle"
-        android:contentDescription="@string/web_app_enable_window_controls_overlay_tooltip"
-        android:visibility="gone"
-        android:layout_gravity="end|center_vertical"
-        app:tint="@color/default_icon_color_tint_list" />
+        <FrameLayout
+            android:id="@+id/web_app_menu_button_wrapper"
+            style="@style/HeaderButton"
+            android:visibility="gone">
+            <include
+                layout="@layout/menu_button" />
+        </FrameLayout>
+
+        <org.chromium.ui.widget.ChromeImageButton
+            android:id="@+id/wco_toggle_button"
+            style="@style/HeaderButton"
+            android:src="@drawable/window_controls_overlay_toggle"
+            android:contentDescription="@string/web_app_enable_window_controls_overlay_tooltip"
+            android:visibility="gone"
+            app:tint="@color/default_icon_color_tint_list" />
+    </LinearLayout>
 </org.chromium.chrome.browser.ui.web_app_header.WebAppHeaderLayout>
