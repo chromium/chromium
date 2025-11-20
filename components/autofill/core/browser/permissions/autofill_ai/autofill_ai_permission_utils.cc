@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -562,6 +563,10 @@ bool GetAutofillAiOptInStatus(const PrefService* prefs,
                               const signin::IdentityManager* identity_manager) {
   if (!prefs) {
     return false;
+  }
+
+  if (base::FeatureList::IsEnabled(features::debug::kAutofillAiForceOptIn)) {
+    return true;
   }
 
   if (base::FeatureList::IsEnabled(
