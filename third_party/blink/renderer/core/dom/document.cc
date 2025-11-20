@@ -65,8 +65,6 @@
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy_features.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_sample_collector.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink.h"
 #include "third_party/blink/public/mojom/css/preferred_contrast.mojom-blink.h"
@@ -2351,16 +2349,6 @@ void Document::DidChangeVisibilityState() {
     interactive_detector->OnPageHiddenChanged(hidden());
   }
 
-  // Don't create a |ukm_recorder_| and |ukm_source_id_| unless necessary.
-  if (hidden() && IdentifiabilityStudySettings::Get()->IsActive()) {
-    // Flush UKM data here in addition to Document::Shutdown(). We want to flush
-    // the UKM data before this document becomes invisible (e.g. before entering
-    // back/forward cache) because we want to send the UKM data before the
-    // renderer process is killed.
-    IdentifiabilitySampleCollector::Get()->FlushSource(UkmRecorder(),
-                                                       UkmSourceID());
-  }
-
   GetViewTransitions().DidChangeVisibilityState();
 }
 
@@ -3462,12 +3450,6 @@ void Document::Shutdown() {
 
   lifecycle_.AdvanceTo(DocumentLifecycle::kStopped);
   DCHECK(!View()->IsAttached());
-
-  // Don't create a |ukm_recorder_| and |ukm_source_id_| unless necessary.
-  if (IdentifiabilityStudySettings::Get()->IsActive()) {
-    IdentifiabilitySampleCollector::Get()->FlushSource(UkmRecorder(),
-                                                       UkmSourceID());
-  }
 
   mime_handler_view_before_unload_event_listener_ = nullptr;
 
