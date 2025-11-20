@@ -4,6 +4,8 @@
 #ifndef CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_SIDE_PANEL_COORDINATOR_H_
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_SIDE_PANEL_COORDINATOR_H_
 
+#include <map>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
@@ -34,19 +36,13 @@ class ContextualTasksSidePanelCoordinator {
  public:
   // A data structure to hold the cache and state of the side panel per thread.
   struct WebContentsCacheItem {
-    WebContentsCacheItem(std::unique_ptr<content::WebContents> wc,
-                         std::optional<base::Uuid> task,
-                         bool open);
+    WebContentsCacheItem(std::unique_ptr<content::WebContents> wc, bool open);
     ~WebContentsCacheItem();
     WebContentsCacheItem(const WebContentsCacheItem&) = delete;
     WebContentsCacheItem& operator=(const WebContentsCacheItem&) = delete;
 
     // Own the WebContents from the side panel.
     std::unique_ptr<content::WebContents> web_contents;
-
-    // The cached WebContents can be either associated with a task, or without a
-    // task in zero state.
-    std::optional<base::Uuid> task_id;
 
     // Whether the side panel is open.
     bool is_open;
@@ -125,6 +121,10 @@ class ContextualTasksSidePanelCoordinator {
   void Hide();
   void Unhide();
 
+  // Called before a WebContents is moved or destroyed to make sure the side
+  // panel does not attach to it any more.
+  void MaybeDetachWebContentsFromWebView(content::WebContents* web_contents);
+
   // Browser window of the current side panel.
   const raw_ptr<BrowserWindowInterface> browser_window_ = nullptr;
 
@@ -144,7 +144,7 @@ class ContextualTasksSidePanelCoordinator {
   // WebContents cache for each task.
   // It's okay to assume there is only 1 WebContents per task per window.
   // Different windows do not share the WebContents with the same task.
-  std::vector<std::unique_ptr<WebContentsCacheItem>>
+  std::map<base::Uuid, std::unique_ptr<WebContentsCacheItem>>
       task_id_to_web_contents_cache_;
 
   // Finds a WebContentsCacheItem by task_id. Returns nullptr if not found.
