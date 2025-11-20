@@ -5,8 +5,11 @@
 #import "ios/chrome/browser/webauthn/model/ios_chrome_passkey_client.h"
 
 #import "base/functional/callback.h"
+#import "components/password_manager/core/browser/password_manager_client.h"
+#import "components/password_manager/ios/ios_password_manager_driver.h"
 #import "components/webauthn/ios/features.h"
 #import "ios/chrome/browser/credential_provider/model/credential_provider_buildflags.h"
+#import "ios/chrome/browser/passwords/model/password_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -57,4 +60,19 @@ void IOSChromePasskeyClient::AllowPasskeyCreationInfobar(bool allowed) {
     }
   }
 #endif  // BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
+}
+
+password_manager::WebAuthnCredentialsDelegate*
+IOSChromePasskeyClient::GetWebAuthnCredentialsDelegateForDriver(
+    IOSPasswordManagerDriver* driver) {
+  PasswordTabHelper* password_tab_helper =
+      PasswordTabHelper::FromWebState(web_state_.get());
+  if (!password_tab_helper) {
+    return nullptr;
+  }
+
+  password_manager::PasswordManagerClient* client =
+      password_tab_helper->GetPasswordManagerClient();
+  CHECK(client);
+  return client->GetWebAuthnCredentialsDelegateForDriver(driver);
 }

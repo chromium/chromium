@@ -84,6 +84,11 @@ class FakeIOSPasskeyClient : public IOSPasskeyClient {
   }
   void ShowSuggestionBottomSheet() override {}
   void AllowPasskeyCreationInfobar(bool allowed) override {}
+  password_manager::WebAuthnCredentialsDelegate*
+  GetWebAuthnCredentialsDelegateForDriver(
+      IOSPasswordManagerDriver* driver) override {
+    return nullptr;
+  }
 };
 
 class PasskeyTabHelperTest : public PlatformTest {

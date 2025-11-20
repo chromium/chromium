@@ -24,6 +24,9 @@ class IOSChromePasskeyClient : public IOSPasskeyClient {
                  webauthn::KeysFetchedCallback callback) override;
   void ShowSuggestionBottomSheet() override;
   void AllowPasskeyCreationInfobar(bool allowed) override;
+  password_manager::WebAuthnCredentialsDelegate*
+  GetWebAuthnCredentialsDelegateForDriver(
+      IOSPasswordManagerDriver* driver) override;
 
  private:
   // Weak WebState.

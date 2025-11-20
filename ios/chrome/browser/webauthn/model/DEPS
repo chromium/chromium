@@ -3,7 +3,8 @@ include_rules = [
   "+components/webauthn/core/browser",
   "+ios/chrome/browser/affiliations/model",
   "+ios/chrome/browser/credential_provider/model",
-  "+ios/chrome/browser/sync/model",
+  "+ios/chrome/browser/passwords/model",
   "+ios/chrome/browser/shared/model/browser",
   "+ios/chrome/browser/shared/model/profile",
+  "+ios/chrome/browser/sync/model",
 ]

@@ -9,6 +9,7 @@
 #import "base/check_deref.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
+#import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 #import "components/webauthn/core/browser/passkey_model.h"
 #import "components/webauthn/ios/passkey_java_script_feature.h"
 #import "ios/web/public/js_messaging/script_message.h"
@@ -130,6 +131,17 @@ void PasskeyTabHelper::HandleGetRequestedEvent(AssertionRequestParams params) {
                                       params.request_params_.rp_entity_.id)) {
     PasskeyJavaScriptFeature::GetInstance()->DeferToRenderer(web_frame);
     return;
+  }
+
+  IOSPasswordManagerDriver* driver =
+      IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(web_state_.get(),
+                                                               web_frame);
+  CHECK(driver);
+
+  password_manager::WebAuthnCredentialsDelegate* delegate =
+      client_->GetWebAuthnCredentialsDelegateForDriver(driver);
+  if (delegate) {
+    // TODO(crbug.com/462121114): Pass filtered passkeys to the delegate.
   }
 
   // TODO(crbug.com/385174410): Handle this event.
