@@ -344,8 +344,6 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
   private async onClickDeleteWallpaper_(event: Event&{
     model: {index: number, image: SeaPenImageId},
   }) {
-    // TODO (b/315069374): confirm if currently set Sea Pen wallpaper can be
-    // removed.
     assert(
         isSeaPenImageId(event.model.image),
         'selected Sea Pen image is a positive number');
