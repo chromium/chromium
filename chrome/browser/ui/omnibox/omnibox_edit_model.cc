@@ -2779,16 +2779,14 @@ bool OmniboxEditModel::CreatedKeywordSearchByInsertingSpaceInMiddle(
     return false;
   }
 
-  // Then check if the text before the inserted space matches a keyword.
-  std::u16string keyword;
-  base::TrimWhitespace(new_text.substr(0, space_position), base::TRIM_LEADING,
-                       &keyword);
-  return !keyword.empty() &&
-         !autocomplete_controller()
-              ->keyword_provider()
-              ->GetKeywordForText(
-                  keyword, controller_->client()->GetTemplateURLService())
-              .empty();
+  // Check there aren't multiple words preceding the space. E.g.
+  // 'youtube google |query' shouldn't accept the 'youtube' keyword.
+  if (new_text.substr(0, space_position)
+          .find_first_of(base::kWhitespaceUTF16) != std::u16string_view::npos) {
+    return false;
+  }
+
+  return true;
 }
 
 //  static
