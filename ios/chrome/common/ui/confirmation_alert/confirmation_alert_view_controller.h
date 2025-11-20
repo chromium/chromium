@@ -158,15 +158,6 @@
 // nothing.
 - (void)customizeSubtitle:(UITextView*)subtitle;
 
-// Detent that attempts to fit the preferred height of the content. Detent may
-// be inactive in some size classes, so it should be used together with at
-// least one other detent.
-- (UISheetPresentationControllerDetent*)
-    preferredHeightDetent API_AVAILABLE(ios(16));
-
-// Calculates the preferred height of the content.
-- (CGFloat)preferredHeightForContent;
-
 @end
 
 #endif  // IOS_CHROME_COMMON_UI_CONFIRMATION_ALERT_CONFIRMATION_ALERT_VIEW_CONTROLLER_H_

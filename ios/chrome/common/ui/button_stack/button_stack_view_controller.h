@@ -54,10 +54,6 @@
 // custom content.
 @property(nonatomic, strong, readonly) UIView* contentView;
 
-// The width layout guide for the content. Subclasses can use this guide's
-// `layoutFrame` to get a reliable content width for height calculations.
-@property(nonatomic, strong, readonly) UILayoutGuide* widthLayoutGuide;
-
 // Set to NO to prevent the scroll view from scrolling. Default is YES.
 @property(nonatomic, assign) BOOL scrollEnabled;
 
@@ -91,11 +87,20 @@
 // Scrolls the view to the end.
 - (void)scrollToBottom;
 
-// Returns the height of the button stack view.
-- (CGFloat)buttonStackHeight;
-
 // Returns YES if at least one button is visible.
 - (BOOL)hasVisibleButtons;
+
+// Detent that attempts to fit the preferred height of the content. Detent may
+// be inactive in some size classes, so it should be used together with at
+// least one other detent.
+- (UISheetPresentationControllerDetent*)preferredHeightDetent;
+
+// Calculates the preferred height of the content.
+// Subclasses should override this method to include the height of any
+// additional views they add outside of the `contentView` (e.g., navigation
+// bars, headers), while calling `super` to include the base content and button
+// stack height.
+- (CGFloat)preferredHeightForContent;
 
 @end
 

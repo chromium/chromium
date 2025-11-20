@@ -249,36 +249,8 @@ const CGFloat kFaviconBadgeSideLength = 24;
   // Do nothing by default. Subclasses can override this.
 }
 
-- (UISheetPresentationControllerDetent*)preferredHeightDetent {
-  __typeof(self) __weak weakSelf = self;
-  auto resolver = ^CGFloat(
-      id<UISheetPresentationControllerDetentResolutionContext> context) {
-    return [weakSelf detentForPreferredHeightInContext:context];
-  };
-  return [UISheetPresentationControllerDetent
-      customDetentWithIdentifier:@"preferred_height"
-                        resolver:resolver];
-}
-
 - (CGFloat)preferredHeightForContent {
-  // Calculate the available width for the content from the layout guide.
-  // This is more reliable than self.stackView.bounds.size.width before a layout
-  // pass.
-  CGFloat availableWidth = self.widthLayoutGuide.layoutFrame.size.width;
-  CGSize fittingSize =
-      CGSizeMake(availableWidth, UILayoutFittingCompressedSize.height);
-
-  // Calculate the height of the content view constrained by the available
-  // width.
-  CGFloat height =
-      [self.contentView
-            systemLayoutSizeFittingSize:fittingSize
-          withHorizontalFittingPriority:UILayoutPriorityRequired
-                verticalFittingPriority:UILayoutPriorityFittingSizeLevel]
-          .height;
-
-  // Add the height of the button stack.
-  height += [super buttonStackHeight];
+  CGFloat height = [super preferredHeightForContent];
 
   // Add the height of the navigation bar if present.
   if (self.navigationBar) {
@@ -288,21 +260,11 @@ const CGFloat kFaviconBadgeSideLength = 24;
                   systemLayoutSizeFittingSize:UILayoutFittingCompressedSize]
                   .height;
   } else {
-    // If no navigation bar, account for the top safe area and custom spacing.
-    height += CGRectGetMaxY(self.navigationController.navigationBar.frame);
+    // If no navigation bar, account for the custom spacing.
     height += self.customSpacingBeforeImageIfNoNavigationBar;
   }
 
   return height;
-}
-
-- (void)viewIsAppearing:(BOOL)animated {
-  [super viewIsAppearing:animated];
-  if (self.navigationController.navigationBar) {
-    // On iOS 26, the navigation bar is positioned differently in viewDidLoad
-    // and after. Make sure that the right position is taken into account.
-    [self.sheetPresentationController invalidateDetents];
-  }
 }
 
 #pragma mark - ButtonStackActionDelegate
@@ -335,28 +297,6 @@ const CGFloat kFaviconBadgeSideLength = 24;
 }
 
 #pragma mark - Private
-
-- (CGFloat)detentForPreferredHeightInContext:
-    (id<UISheetPresentationControllerDetentResolutionContext>)context
-    API_AVAILABLE(ios(16)) {
-  // Only activate this detent in portrait orientation on iPhone.
-  UITraitCollection* traitCollection = context.containerTraitCollection;
-  if (traitCollection.horizontalSizeClass != UIUserInterfaceSizeClassCompact ||
-      traitCollection.verticalSizeClass != UIUserInterfaceSizeClassRegular) {
-    return UISheetPresentationControllerDetentInactive;
-  }
-
-  CGFloat height = [self preferredHeightForContent];
-
-  // Make sure detent is not larger than 75% of the maximum detent value but at
-  // least as large as a standard medium detent.
-  height = MIN(height, 0.75 * context.maximumDetentValue);
-  CGFloat mediumDetentHeight =
-      [[UISheetPresentationControllerDetent mediumDetent]
-          resolvedValueInContext:context];
-  height = MAX(height, mediumDetentHeight);
-  return height;
-}
 
 // Handle taps on the dismiss button.
 - (void)didTapDismissBarButton {

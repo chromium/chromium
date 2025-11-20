@@ -32,6 +32,12 @@ const CGFloat kContentViewBottomInset = 20;
 // Height of the gradient view above the action buttons.
 const CGFloat kGradientHeight = 30;
 
+// Max multiplier for the detent height.
+const CGFloat kMaxDetentMultiplier = 0.75;
+
+// Min multiplier for the detent height.
+const CGFloat kMinDetentMultiplier = 0.25;
+
 // The position of a button in the stack.
 typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
   ButtonStackButtonPositionPrimary,
@@ -72,6 +78,8 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
   CAGradientLayer* _gradientMask;
   // Whether the gradient view is shown.
   BOOL _showsGradientView;
+  // The width layout guide for the content.
+  UILayoutGuide* _widthLayoutGuide;
 }
 
 - (instancetype)init {
@@ -112,6 +120,15 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
   [self setupConstraints];
   [self reconfigureButtons];
   [self updateButtonState];
+}
+
+- (void)viewIsAppearing:(BOOL)animated {
+  [super viewIsAppearing:animated];
+  if (self.navigationController.navigationBar) {
+    // On iOS 26, the navigation bar is positioned differently in viewDidLoad
+    // and after. Make sure that the right position is taken into account.
+    [self.sheetPresentationController invalidateDetents];
+  }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -174,24 +191,51 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
   [_scrollView setContentOffset:CGPointMake(0, scrollLimit) animated:YES];
 }
 
-- (CGFloat)buttonStackHeight {
-  // Calculate the size the stack view needs without forcing a full layout pass.
-  CGFloat stackHeight =
-      [_actionStackView
-          systemLayoutSizeFittingSize:UILayoutFittingCompressedSize]
-          .height;
-  if (stackHeight > 0) {
-    stackHeight += [self contentViewBottomInset];
-  }
-  return stackHeight + self.actionStackBottomMargin;
-}
-
 - (BOOL)hasVisibleButtons {
   if (self.configuration.hideButtons) {
     return NO;
   }
   return !(_primaryActionButton.hidden && _secondaryActionButton.hidden &&
            _tertiaryActionButton.hidden);
+}
+
+- (UISheetPresentationControllerDetent*)preferredHeightDetent {
+  __typeof(self) __weak weakSelf = self;
+  auto resolver = ^CGFloat(
+      id<UISheetPresentationControllerDetentResolutionContext> context) {
+    return [weakSelf detentForPreferredHeightInContext:context];
+  };
+  return [UISheetPresentationControllerDetent
+      customDetentWithIdentifier:@"preferred_height"
+                        resolver:resolver];
+}
+
+- (CGFloat)preferredHeightForContent {
+  // Calculate the available width for the content from the layout guide.
+  // This is more reliable than self.stackView.bounds.size.width before a layout
+  // pass.
+  CGFloat availableWidth = _widthLayoutGuide.layoutFrame.size.width;
+  CGSize fittingSize =
+      CGSizeMake(availableWidth, UILayoutFittingCompressedSize.height);
+
+  // Calculate the height of the content view constrained by the available
+  // width.
+  CGFloat height =
+      [self.contentView
+            systemLayoutSizeFittingSize:fittingSize
+          withHorizontalFittingPriority:UILayoutPriorityRequired
+                verticalFittingPriority:UILayoutPriorityFittingSizeLevel]
+          .height;
+
+  // Add the height of the button stack.
+  height += [self buttonStackHeight];
+
+  // Add the height of the navigation bar if it exists.
+  if (self.navigationController) {
+    height += CGRectGetMaxY(self.navigationController.navigationBar.frame);
+  }
+
+  return height;
 }
 
 #pragma mark - ButtonStackConsumer
@@ -256,6 +300,19 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
 }
 
 #pragma mark - Private
+
+// Returns the height of the button stack view.
+- (CGFloat)buttonStackHeight {
+  // Calculate the size the stack view needs without forcing a full layout pass.
+  CGFloat stackHeight =
+      [_actionStackView
+          systemLayoutSizeFittingSize:UILayoutFittingCompressedSize]
+          .height;
+  if (stackHeight > 0) {
+    stackHeight += [self contentViewBottomInset];
+  }
+  return stackHeight + self.actionStackBottomMargin;
+}
 
 // Returns the bottom inset for the content view.
 - (CGFloat)contentViewBottomInset {
@@ -546,6 +603,25 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
 // Handles the tap event for the tertiary action button.
 - (void)handleTertiaryAction {
   [self.actionDelegate didTapTertiaryActionButton];
+}
+
+// Calculates the detent height for the given context.
+- (CGFloat)detentForPreferredHeightInContext:
+    (id<UISheetPresentationControllerDetentResolutionContext>)context {
+  // Only activate this detent in portrait orientation on iPhone.
+  UITraitCollection* traitCollection = context.containerTraitCollection;
+  if (traitCollection.horizontalSizeClass != UIUserInterfaceSizeClassCompact ||
+      traitCollection.verticalSizeClass != UIUserInterfaceSizeClassRegular) {
+    return UISheetPresentationControllerDetentInactive;
+  }
+
+  CGFloat height = [self preferredHeightForContent];
+
+  // Make sure detent is not larger than 75% of the maximum detent value but at
+  // least as large as 25% of the maximum detent value.
+  height = MIN(height, kMaxDetentMultiplier * context.maximumDetentValue);
+  height = MAX(height, kMinDetentMultiplier * context.maximumDetentValue);
+  return height;
 }
 
 @end
