@@ -34,7 +34,7 @@ class IdentityManager;
 
 namespace optimization_guide {
 
-class ModelExecutionFetcherImpl;
+class ModelExecutionFetcher;
 
 class ModelExecutionManager final {
  public:
@@ -75,7 +75,11 @@ class ModelExecutionManager final {
 
   // All active executions for a certain feature.
   using ActiveFeatureExecutions =
-      std::map<FetcherId, ModelExecutionFetcherImpl>;
+      std::map<FetcherId, std::unique_ptr<ModelExecutionFetcher>>;
+
+  // Creates a new ModelExecutionFetcher for |feature|.
+  std::unique_ptr<ModelExecutionFetcher> CreateModelExecutionFetcher(
+      ModelBasedCapabilityKey feature);
 
   // Invoked when the model execution result is available.
   void OnModelExecuteResponse(

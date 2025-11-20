@@ -216,14 +216,22 @@ void ModelExecutionManager::ExecuteModel(
   }
   FetcherId fetcher_id = next_model_execution_fetcher_id++;
   auto fetcher_it = fetchers_for_feature.emplace(
-      std::piecewise_construct, std::forward_as_tuple(fetcher_id),
-      std::forward_as_tuple(url_loader_factory_, model_execution_service_url_,
-                            optimization_guide_logger_));
-  fetcher_it.first->second.ExecuteModel(
+      fetcher_id, CreateModelExecutionFetcher(feature));
+  fetcher_it.first->second->ExecuteModel(
       feature, identity_manager_, request_metadata, timeout,
       base::BindOnce(&ModelExecutionManager::OnModelExecuteResponse,
                      weak_ptr_factory_.GetWeakPtr(), feature, fetcher_id,
                      std::move(log_ai_data_request), std::move(callback)));
+}
+
+std::unique_ptr<ModelExecutionFetcher>
+ModelExecutionManager::CreateModelExecutionFetcher(
+    ModelBasedCapabilityKey feature) {
+  // TODO(crbug.com/460052805): Add PI fetcher implementation depending on
+  // ModelBasedCapabilityKey and feature flags.
+  return std::make_unique<ModelExecutionFetcherImpl>(
+      url_loader_factory_, model_execution_service_url_,
+      optimization_guide_logger_);
 }
 
 void ModelExecutionManager::OnModelExecuteResponse(

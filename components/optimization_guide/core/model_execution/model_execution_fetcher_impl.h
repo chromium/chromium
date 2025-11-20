@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/model_execution/model_execution_fetcher.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "url/gurl.h"
@@ -33,11 +34,7 @@ class IdentityManager;
 
 namespace optimization_guide {
 
-using ModelExecuteResponseCallback = base::OnceCallback<void(
-    base::expected<const proto::ExecuteResponse,
-                   OptimizationGuideModelExecutionError>)>;
-
-class ModelExecutionFetcherImpl {
+class ModelExecutionFetcherImpl : public ModelExecutionFetcher {
  public:
   ModelExecutionFetcherImpl(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -48,13 +45,13 @@ class ModelExecutionFetcherImpl {
   ModelExecutionFetcherImpl& operator=(const ModelExecutionFetcherImpl&) =
       delete;
 
-  ~ModelExecutionFetcherImpl();
+  ~ModelExecutionFetcherImpl() override;
 
   void ExecuteModel(ModelBasedCapabilityKey feature,
                     signin::IdentityManager* identity_manager,
                     const google::protobuf::MessageLite& request_metadata,
                     std::optional<base::TimeDelta> timeout,
-                    ModelExecuteResponseCallback callback);
+                    ModelExecuteResponseCallback callback) override;
 
  private:
   // Invoked when the access token is received, to continue with the model
