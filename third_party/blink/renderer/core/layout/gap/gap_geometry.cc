@@ -509,12 +509,19 @@ GapSegmentState GapGeometry::GetIntersectionGapSegmentState(
     return GapSegmentState(GapSegmentState::kNone);
   }
 
-  // TODO(samomekarajr): Can likely use std::binary_search or an iterator since
+  // Binary search to find the range containing secondary_index.
   // `ranges` is sorted and processed in order at paint time.
-  for (const auto& range : *gap_segment_state_ranges) {
-    if (secondary_index >= range.start && secondary_index < range.end) {
-      return range.state;
-    }
+  //
+  // TODO(crbug.com/440123087): Since these are access in order we could
+  // potentially do it through an iterator to make this O(1).
+  auto it = std::lower_bound(
+      gap_segment_state_ranges->begin(), gap_segment_state_ranges->end(),
+      secondary_index,
+      [](const auto& range, wtf_size_t index) { return range.end <= index; });
+
+  if (it != gap_segment_state_ranges->end() && secondary_index >= it->start &&
+      secondary_index < it->end) {
+    return it->state;
   }
 
   return GapSegmentState(GapSegmentState::kNone);
