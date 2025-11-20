@@ -559,8 +559,6 @@ public class TabGroupUiMediator implements BackPressHandler {
     }
 
     public boolean onBackPressed() {
-        // TODO(crbug.com/40099884): add a regression test to make sure that the back button closes
-        // the dialog when the dialog is showing.
         @Nullable DialogController controller = getTabGridDialogControllerIfExists();
         return controller != null ? controller.handleBackPressed() : false;
     }
