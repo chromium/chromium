@@ -567,6 +567,7 @@ ci.builder(
             "x86",
             "dcheck_always_on",
             "use_clang_coverage",
+            "remoteexec",
         ],
     ),
     targets = targets.bundle(
@@ -579,6 +580,7 @@ ci.builder(
         short_name = "and",
     ),
     contact_team_email = "lexan@google.com",
+    siso_remote_jobs = min(siso.remote_jobs.HIGH_JOBS_FOR_CI, 400),
 )
 
 ci.builder(
@@ -1101,10 +1103,12 @@ clang_tot_linux_builder(
             "minimal_symbols",
             "release",
             "x64",
+            "remoteexec",
         ],
     ),
     category = "ToT Code Coverage",
     short_name = "linux",
+    siso_remote_jobs = min(siso.remote_jobs.HIGH_JOBS_FOR_CI, 400),
 )
 
 clang_tot_linux_builder(
@@ -2235,6 +2239,7 @@ ci.builder(
             "debug",
             "x64",
             "linux",
+            "remoteexec",
         ],
     ),
     targets = targets.bundle(
@@ -2252,6 +2257,7 @@ ci.builder(
         short_name = "lin",
     ),
     contact_team_email = "lexan@google.com",
+    siso_remote_jobs = min(siso.remote_jobs.HIGH_JOBS_FOR_CI, 400),
 )
 
 ci.builder(
