@@ -196,6 +196,11 @@ class OptimizationGuideService
   std::unique_ptr<optimization_guide::ModelExecutionManager>
       model_execution_manager_;
 
+  // Manages the model quality logs uploader service. Not created for off the
+  // record profiles.
+  std::unique_ptr<optimization_guide::ModelQualityLogsUploaderService>
+      model_quality_logs_uploader_service_;
+
   // The PrefService of the profile this service is linked to.
   const raw_ptr<PrefService> pref_service_ = nullptr;
 

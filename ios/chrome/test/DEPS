@@ -13,6 +13,7 @@ include_rules = [
   "+components/keyed_service/core",
   "+components/language",
   "+components/metrics",
+  "+components/metrics_services_manager",
   "+components/network_time",
   "+components/os_crypt/async",
   "+components/password_manager/core/common",

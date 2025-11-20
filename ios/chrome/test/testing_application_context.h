@@ -12,6 +12,10 @@
 #include "base/sequence_checker.h"
 #include "ios/chrome/browser/shared/model/application_context/application_context.h"
 
+namespace metrics_services_manager {
+class MetricsServicesManager;
+}  // namespace metrics_services_manager
+
 namespace network {
 class TestNetworkConnectionTracker;
 class TestURLLoaderFactory;
@@ -52,6 +56,10 @@ class TestingApplicationContext : public ApplicationContext {
 
   // Sets the VariationsService.
   void SetVariationsService(variations::VariationsService* variations_service);
+
+  // Sets the MetricsServicesManager.
+  void SetMetricsServicesManager(
+      metrics_services_manager::MetricsServicesManager* manager);
 
   // Sets the SystemIdentityManager.
   // Must be set before `GetSystemIdentityManager` is called (i.e. before
@@ -136,6 +144,8 @@ class TestingApplicationContext : public ApplicationContext {
   std::unique_ptr<AccountProfileMapper> default_account_profile_mapper_;
   std::unique_ptr<PushNotificationService> push_notification_service_;
   raw_ptr<variations::VariationsService> variations_service_;
+  raw_ptr<metrics_services_manager::MetricsServicesManager>
+      metrics_services_manager_;
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
   std::unique_ptr<AdditionalFeaturesController> additional_features_controller_;
   raw_ptr<IOSChromeIOThread> ios_chrome_io_thread_;

@@ -30,6 +30,7 @@
 #import "components/variations/synthetic_trials.h"
 #import "ios/chrome/browser/metrics/model/ios_chrome_metrics_service_accessor.h"
 #import "ios/chrome/browser/optimization_guide/model/ios_chrome_hints_manager.h"
+#import "ios/chrome/browser/optimization_guide/model/ios_model_quality_logs_uploader_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/model/tab_url_provider_impl.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -86,10 +87,18 @@ OptimizationGuideService::OptimizationGuideService(
       identity_manager, optimization_guide_logger_.get());
 
   if (!off_the_record_) {
+    if (optimization_guide::features::IsModelQualityLoggingEnabled()) {
+      model_quality_logs_uploader_service_ =
+          std::make_unique<IOSModelQualityLogsUploaderService>(
+              url_loader_factory, pref_service);
+    }
     model_execution_manager_ =
         std::make_unique<optimization_guide::ModelExecutionManager>(
             url_loader_factory, identity_manager,
-            optimization_guide_logger_.get(), nullptr);
+            optimization_guide_logger_.get(),
+            model_quality_logs_uploader_service_
+                ? model_quality_logs_uploader_service_->GetWeakPtr()
+                : nullptr);
   }
 
   OPTIMIZATION_GUIDE_LOG(

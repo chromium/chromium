@@ -11,6 +11,7 @@
 #import "base/time/default_clock.h"
 #import "base/time/default_tick_clock.h"
 #import "components/application_locale_storage/application_locale_storage.h"
+#import "components/metrics_services_manager/metrics_services_manager.h"
 #import "components/network_time/network_time_tracker.h"
 #import "components/os_crypt/async/browser/test_utils.h"
 #import "components/variations/service/variations_service.h"
@@ -41,6 +42,7 @@ TestingApplicationContext::TestingApplicationContext()
       test_network_connection_tracker_(
           network::TestNetworkConnectionTracker::CreateInstance()),
       variations_service_(nullptr),
+      metrics_services_manager_(nullptr),
       application_locale_storage_(
           std::make_unique<ApplicationLocaleStorage>()) {
   DCHECK(!GetApplicationContext());
@@ -97,6 +99,12 @@ void TestingApplicationContext::SetVariationsService(
     variations::VariationsService* variations_service) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   variations_service_ = variations_service;
+}
+
+void TestingApplicationContext::SetMetricsServicesManager(
+    metrics_services_manager::MetricsServicesManager* manager) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  metrics_services_manager_ = manager;
 }
 
 void TestingApplicationContext::SetSystemIdentityManager(
@@ -184,7 +192,7 @@ ProfileManagerIOS* TestingApplicationContext::GetProfileManager() {
 metrics_services_manager::MetricsServicesManager*
 TestingApplicationContext::GetMetricsServicesManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return nullptr;
+  return metrics_services_manager_;
 }
 
 metrics::MetricsService* TestingApplicationContext::GetMetricsService() {
