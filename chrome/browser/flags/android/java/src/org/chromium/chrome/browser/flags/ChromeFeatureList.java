@@ -770,7 +770,10 @@ public abstract class ChromeFeatureList {
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sAndroidSettingsContainment =
-            newCachedFlag(ANDROID_SETTINGS_CONTAINMENT, false);
+            newCachedFlag(
+                    ANDROID_SETTINGS_CONTAINMENT,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sAndroidSurfaceColorUpdate =
             newCachedFlag(
                     ANDROID_SURFACE_COLOR_UPDATE,

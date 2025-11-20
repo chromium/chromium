@@ -64,6 +64,7 @@ import java.util.Set;
 @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
 public class AccountManagementFragmentTest {
     private final SyncTestRule mSyncTestRule = new SyncTestRule();
+    private static final int RENDER_TEST_REVISION = 1;
 
     private final SettingsActivityTestRule<AccountManagementFragment> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(AccountManagementFragment.class);
@@ -79,6 +80,7 @@ public class AccountManagementFragmentTest {
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
+                    .setRevision(RENDER_TEST_REVISION)
                     .setBugComponent(ChromeRenderTestRule.Component.SERVICES_SYNC)
                     .build();
 

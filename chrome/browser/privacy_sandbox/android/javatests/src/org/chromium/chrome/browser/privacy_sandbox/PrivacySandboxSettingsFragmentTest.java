@@ -55,10 +55,12 @@ import java.io.IOException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public final class PrivacySandboxSettingsFragmentTest {
     @Rule public ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
+    private static final int RENDER_TEST_REVISION = 1;
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
+                    .setRevision(RENDER_TEST_REVISION)
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_PRIVACY_SANDBOX)
                     .build();
 

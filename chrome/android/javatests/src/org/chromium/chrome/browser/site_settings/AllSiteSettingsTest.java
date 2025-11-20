@@ -59,12 +59,14 @@ public class AllSiteSettingsTest {
     private static final String B_GITHUB_IO = "b.github.io";
     private static final String C_GITHUB_IO = "c.github.io";
     private static final String D_GITHUB_IO = "d.github.io";
+    private static final int RENDER_TEST_REVISION = 1;
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
     public RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
+                    .setRevision(RENDER_TEST_REVISION)
                     .setBugComponent(Component.UI_BROWSER_MOBILE_SETTINGS)
                     .build();
 

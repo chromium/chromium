@@ -229,6 +229,7 @@ public final class SafetyHubTest {
             NotificationPermissions.create("http://example2.com", "*", 8);
 
     private static final String PREF_NOTIFICATIONS_REVIEW = "notifications_review";
+    private static final int RENDER_TEST_REVISION = 2;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -248,7 +249,7 @@ public final class SafetyHubTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(RenderTestRule.Component.UI_SETTINGS_PRIVACY)
-                    .setRevision(1)
+                    .setRevision(RENDER_TEST_REVISION)
                     .build();
 
     @Rule

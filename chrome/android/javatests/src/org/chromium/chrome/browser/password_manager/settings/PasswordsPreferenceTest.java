@@ -52,6 +52,8 @@ import java.io.IOException;
                 "The tests can't be batched because the functionality under test is set up during"
                         + " Chrome start up.")
 public class PasswordsPreferenceTest {
+    private static final int RENDER_TEST_REVISION = 2;
+
     @ClassRule
     public static SettingsActivityTestRule<MainSettings> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(MainSettings.class);
@@ -60,7 +62,7 @@ public class PasswordsPreferenceTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(Component.UI_BROWSER_MOBILE_SETTINGS)
-                    .setRevision(1)
+                    .setRevision(RENDER_TEST_REVISION)
                     .build();
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

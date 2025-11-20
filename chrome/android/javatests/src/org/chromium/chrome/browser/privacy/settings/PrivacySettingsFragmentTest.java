@@ -105,6 +105,7 @@ public class PrivacySettingsFragmentTest {
             new SettingsActivityTestRule<>(PrivacySettings.class);
 
     public final SigninTestRule mSigninTestRule = new SigninTestRule();
+    private static final int RENDER_TEST_REVISION = 2;
 
     @Rule
     public final AdvancedProtectionTestRule mAdvancedProtectionRule =
@@ -118,7 +119,7 @@ public class PrivacySettingsFragmentTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_SETTINGS_PRIVACY)
-                    .setRevision(1)
+                    .setRevision(RENDER_TEST_REVISION)
                     .build();
 
     @Rule public MockitoRule mockito = MockitoJUnit.rule();

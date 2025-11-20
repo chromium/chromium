@@ -45,7 +45,7 @@ import org.chromium.ui.test.util.RenderTestRule;
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PersonalizeGoogleServicesSettingsTest {
-    private static final int RENDER_TEST_REVISION = 0;
+    private static final int RENDER_TEST_REVISION = 1;
 
     private final SyncTestRule mSyncTestRule = new SyncTestRule();
 

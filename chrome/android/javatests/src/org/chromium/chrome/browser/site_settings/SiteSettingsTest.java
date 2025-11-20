@@ -180,7 +180,7 @@ import java.util.concurrent.TimeoutException;
 })
 // TODO(crbug.com/344672098): Failing when batched, batch this again.
 public class SiteSettingsTest {
-
+    private static final int RENDER_TEST_REVISION = 5;
     @ClassRule public static PermissionTestRule mPermissionRule = new PermissionTestRule(true);
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -188,7 +188,7 @@ public class SiteSettingsTest {
     @Rule
     public RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(4)
+                    .setRevision(RENDER_TEST_REVISION)
                     .setBugComponent(Component.UI_BROWSER_MOBILE_SETTINGS)
                     .build();
 
@@ -2327,13 +2327,13 @@ public class SiteSettingsTest {
         ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON
     })
     public void testOnlyExpectedPreferencesNotificationsWithToggle() {
-        String[] notifications_enabled = new String[] {"binary_toggle", "notifications_quiet_ui"};
-        String[] notifications_disabled = BINARY_TOGGLE;
+        String[] notificationsEnabled = new String[] {"binary_toggle", "notifications_quiet_ui"};
+        String[] notificationsDisabled = BINARY_TOGGLE;
 
         testExpectedPreferences(
                 SiteSettingsCategory.Type.NOTIFICATIONS,
-                notifications_disabled,
-                notifications_enabled);
+                notificationsDisabled,
+                notificationsEnabled);
     }
 
     @Test
@@ -2345,14 +2345,14 @@ public class SiteSettingsTest {
     })
     @DisableFeatures(ChromeFeatureList.PERMISSION_DEDICATED_CPSS_SETTING_ANDROID)
     public void testOnlyExpectedPreferencesNotifications() {
-        String[] notifications_enabled =
+        String[] notificationsEnabled =
                 new String[] {"info_text", "binary_radio_button", "notifications_quiet_ui"};
-        String[] notifications_disabled = BINARY_RADIO_BUTTON_AND_INFO_TEXT;
+        String[] notificationsDisabled = BINARY_RADIO_BUTTON_AND_INFO_TEXT;
 
         testExpectedPreferences(
                 SiteSettingsCategory.Type.NOTIFICATIONS,
-                notifications_disabled,
-                notifications_enabled);
+                notificationsDisabled,
+                notificationsEnabled);
     }
 
     @Test
@@ -2829,6 +2829,8 @@ public class SiteSettingsTest {
         ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON,
         PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION
     })
+    // TODO(crbug.com/433576895): Re-enable containment feature once the test is fixed.
+    @DisableFeatures(ChromeFeatureList.ANDROID_SETTINGS_CONTAINMENT)
     public void testChangeGeolocationWithOptions() {
         String url = "https://example.com";
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);

@@ -100,6 +100,7 @@ public class PrivacyGuideFragmentTest {
     private static final String SETTINGS_STATES_HISTOGRAM = "Settings.PrivacyGuide.SettingsStates";
     private static final String NEXT_NAVIGATION_HISTOGRAM = "Settings.PrivacyGuide.NextNavigation";
     private static final String ENTRY_EXIT_HISTOGRAM = "Settings.PrivacyGuide.EntryExit";
+    private static final int RENDER_TEST_REVISION = 2;
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule public ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
@@ -116,7 +117,7 @@ public class PrivacyGuideFragmentTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_SETTINGS_PRIVACY)
-                    .setRevision(1)
+                    .setRevision(RENDER_TEST_REVISION)
                     .build();
 
     @Mock private PrivacyGuideMetricsDelegate mPrivacyGuideMetricsDelegateMock;

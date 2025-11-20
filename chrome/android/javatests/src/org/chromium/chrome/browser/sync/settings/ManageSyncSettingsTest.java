@@ -137,7 +137,7 @@ import java.util.Set;
 @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
 @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
 public class ManageSyncSettingsTest {
-    private static final int RENDER_TEST_REVISION = 7;
+    private static final int RENDER_TEST_REVISION = 8;
 
     /** Maps selected types to their Account UI element IDs. */
     private static final Map<Integer, String> ACCOUNT_UI_DATATYPES =
@@ -376,7 +376,7 @@ public class ManageSyncSettingsTest {
         startManageSyncPreferences();
 
         onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.scrollToLastPosition());
-        onView(withText(R.string.sign_out)).perform(click());
+        onView(withId(R.id.sign_out_button)).perform(click());
         Assert.assertNull(mSyncTestRule.getSigninTestRule().getPrimaryAccount(ConsentLevel.SIGNIN));
     }
 

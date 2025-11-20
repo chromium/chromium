@@ -74,6 +74,7 @@ import java.io.IOException;
 public final class FledgeFragmentTest {
     private static final String SITE_NAME_1 = "first.com";
     private static final String SITE_NAME_2 = "second.com";
+    private static final int RENDER_TEST_REVISION = 2;
     private String mSeeAllSitesLabel;
 
     @Rule public ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
@@ -82,7 +83,7 @@ public final class FledgeFragmentTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_PRIVACY_SANDBOX)
-                    .setRevision(1)
+                    .setRevision(RENDER_TEST_REVISION)
                     .build();
 
     @Rule
