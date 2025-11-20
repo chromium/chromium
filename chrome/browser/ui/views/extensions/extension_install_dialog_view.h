@@ -98,6 +98,12 @@ class ExtensionInstallDialogView : public views::BubbleDialogDelegateView,
   [[nodiscard]] std::unique_ptr<views::BoxLayoutView>
   CreateWebstoreDataContainer();
 
+  // Returns the extension info container, which contains extension permissions
+  // and/or justification views.
+  [[nodiscard]] std::unique_ptr<views::ScrollView> CreateExtensionInfoContainer(
+      bool has_permissions,
+      bool requires_justification);
+
   // views::TextfieldController:
   void ContentsChanged(views::Textfield* sender,
                        const std::u16string& new_contents) override;

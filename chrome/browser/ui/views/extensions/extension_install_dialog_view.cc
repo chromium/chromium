@@ -571,6 +571,21 @@ void ExtensionInstallDialogView::CreateContents() {
   set_margins(
       gfx::Insets::TLBR(content_insets.top(), 0, content_insets.bottom(), 0));
 
+  std::unique_ptr<views::ScrollView> scroll_view =
+      CreateExtensionInfoContainer(has_permissions, requires_justification);
+  scroll_view_ = scroll_view.get();
+  AddChildView(std::move(scroll_view));
+}
+
+std::unique_ptr<views::ScrollView>
+ExtensionInstallDialogView::CreateExtensionInfoContainer(
+    bool has_permissions,
+    bool requires_justification) {
+  CHECK(has_permissions || requires_justification);
+  const ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
+  const gfx::Insets content_insets = provider->GetDialogInsetsForContentType(
+      views::DialogContentType::kControl, views::DialogContentType::kControl);
+
   auto extension_info_container =
       views::Builder<views::BoxLayoutView>()
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
@@ -607,17 +622,12 @@ void ExtensionInstallDialogView::CreateContents() {
             std::move(justification_view)));
   }
 
-  auto scroll_view =
-      views::Builder<views::ScrollView>()
-          .SetHorizontalScrollBarMode(
-              views::ScrollView::ScrollBarMode::kDisabled)
-          .ClipHeightTo(0,
-                        provider->GetDistanceMetric(
-                            views::DISTANCE_DIALOG_SCROLLABLE_AREA_MAX_HEIGHT))
-          .SetContents(extension_info_container)
-          .Build();
-  scroll_view_ = scroll_view.get();
-  AddChildView(std::move(scroll_view));
+  return views::Builder<views::ScrollView>()
+      .SetHorizontalScrollBarMode(views::ScrollView::ScrollBarMode::kDisabled)
+      .ClipHeightTo(0, provider->GetDistanceMetric(
+                           views::DISTANCE_DIALOG_SCROLLABLE_AREA_MAX_HEIGHT))
+      .SetContents(extension_info_container)
+      .Build();
 }
 
 std::unique_ptr<views::BoxLayoutView>
