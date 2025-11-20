@@ -150,7 +150,8 @@ void MayActOnUrlInternal(
     Profile* profile,
     const std::optional<absl::flat_hash_set<url::Origin>>& allowed_origins,
     std::unique_ptr<DecisionWrapper> decision_wrapper) {
-  if (net::IsLocalhost(url) || url.IsAboutBlank()) {
+  if ((net::IsLocalhost(url) && url.SchemeIsHTTPOrHTTPS()) ||
+      url.IsAboutBlank()) {
     decision_wrapper->Accept();
     return;
   }

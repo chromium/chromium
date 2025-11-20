@@ -150,6 +150,7 @@ TEST_F(ActorSitePolicyTest, BlockIpAddress) {
 
 TEST_F(ActorSitePolicyTest, BlockNonHTTPScheme) {
   CheckUrl(GURL("file:///my_file"), false);
+  CheckUrl(GURL("file://localhost/tmp"), false);
   CheckUrl(GURL(chrome::kChromeUIVersionURL), false);
 }
 
