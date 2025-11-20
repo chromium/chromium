@@ -68,18 +68,32 @@ ui::ImageModel CreateQrCodeImage(const std::string& qr_code_url) {
   return ui::ImageModel::FromImageSkia(qr_image.value());
 }
 
+// Sets the shared configuration for the "reminder sent" confirmation bubble.
+void SetUpBaseReminderConfirmationConfig(
+    IOSPromoConstants::IOSPromoTypeConfigs& config) {
+  config.promo_title_id =
+      IDS_IOS_DESKTOP_PROMO_BUBBLE_REMINDER_CONFIRMATION_TITLE;
+  config.accept_button_text_id =
+      IDS_IOS_DESKTOP_PROMO_BUBBLE_REMINDER_CONFIRMATION_BUTTON;
+  config.decline_button_text_id = 0;
+  ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
+  config.promo_image = ui::ImageModel::FromImageSkia(
+      *bundle.GetImageSkiaNamed(IDR_SUCCESS_GREEN_CHECKMARK));
+}
+
 // Creates and returns IOSPromoTypeConfigs for the Password bubble.
 IOSPromoConstants::IOSPromoTypeConfigs SetUpPasswordBubble(
     IOSPromoBubbleType bubble_type) {
   IOSPromoConstants::IOSPromoTypeConfigs config;
   config.with_header = true;
-  config.promo_title_id = IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_FOOTER_TITLE;
   config.bubble_title_id = IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_TITLE;
   config.bubble_subtitle_id = IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_SUBTITLE;
   config.decline_button_text_id =
       IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_BUTTON_DECLINE;
   switch (bubble_type) {
     case IOSPromoBubbleType::kQRCode:
+      config.promo_title_id =
+          IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_FOOTER_TITLE;
       config.promo_description_id =
           IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_FOOTER_DESCRIPTION_QR;
       config.accept_button_text_id =
@@ -88,11 +102,19 @@ IOSPromoConstants::IOSPromoTypeConfigs SetUpPasswordBubble(
           IOSPromoConstants::kIOSPromoPasswordBubbleQRCodeURL);
       break;
     case IOSPromoBubbleType::kReminder:
+      config.promo_title_id =
+          IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_FOOTER_TITLE_REMINDER;
       config.accept_button_text_id =
           IDS_IOS_DESKTOP_PROMO_BUBBLE_BUTTON_ACCEPT_REMINDER;
       config.promo_description_id =
           IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_FOOTER_DESCRIPTION_REMINDER;
       break;
+    case IOSPromoBubbleType::kReminderConfirmation: {
+      SetUpBaseReminderConfirmationConfig(config);
+      config.promo_description_id =
+          IDS_IOS_DESKTOP_PASSWORD_PROMO_REMINDER_CONFIRMATION;
+      break;
+    }
   }
   return config;
 }
@@ -163,6 +185,13 @@ IOSPromoConstants::IOSPromoTypeConfigs SetUpEnhancedBrowsingBubble(
       config.promo_image =
           ui::ImageModel::FromVectorIcon(kEnhancedBrowsingOnIosIcon);
       break;
+    case IOSPromoBubbleType::kReminderConfirmation: {
+      SetUpBaseReminderConfirmationConfig(config);
+      config.feature_name_id =
+          IDS_IOS_DESKTOP_PROMO_BUBBLE_ENHANCED_BROWSING_FEATURE_NAME;
+      config.promo_description_id = IDS_IOS_DESKTOP_PROMO_REMINDER_CONFIRMATION;
+      break;
+    }
   }
   return config;
 }
@@ -172,11 +201,12 @@ IOSPromoConstants::IOSPromoTypeConfigs SetUpLensBubble(
     IOSPromoBubbleType bubble_type) {
   IOSPromoConstants::IOSPromoTypeConfigs config;
   config.with_header = false;
-  config.promo_description_id = IDS_IOS_DESKTOP_LENS_PROMO_BUBBLE_DESCRIPTION;
   config.decline_button_text_id = IDS_IOS_DESKTOP_PROMO_BUBBLE_BUTTON_DECLINE;
   switch (bubble_type) {
     case IOSPromoBubbleType::kQRCode:
       config.promo_title_id = IDS_IOS_DESKTOP_LENS_PROMO_BUBBLE_TITLE_QR;
+      config.promo_description_id =
+          IDS_IOS_DESKTOP_LENS_PROMO_BUBBLE_DESCRIPTION;
       config.accept_button_text_id =
           IDS_IOS_DESKTOP_PROMO_BUBBLE_BUTTON_ACCEPT_QR;
       // TODO(crbug.com/442562546): Placeholder, set URL for kLens promo.
@@ -185,12 +215,20 @@ IOSPromoConstants::IOSPromoTypeConfigs SetUpLensBubble(
       break;
     case IOSPromoBubbleType::kReminder:
       config.promo_title_id = IDS_IOS_DESKTOP_LENS_PROMO_BUBBLE_TITLE_REMINDER;
+      config.promo_description_id =
+          IDS_IOS_DESKTOP_LENS_PROMO_BUBBLE_DESCRIPTION;
       config.accept_button_text_id =
           IDS_IOS_DESKTOP_PROMO_BUBBLE_BUTTON_ACCEPT_REMINDER;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       config.promo_image = ui::ImageModel::FromResourceId(IDR_LENS_ON_IOS_ICON);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
       break;
+    case IOSPromoBubbleType::kReminderConfirmation: {
+      SetUpBaseReminderConfirmationConfig(config);
+      config.feature_name_id = IDS_IOS_DESKTOP_PROMO_BUBBLE_LENS_FEATURE_NAME;
+      config.promo_description_id = IDS_IOS_DESKTOP_PROMO_REMINDER_CONFIRMATION;
+      break;
+    }
   }
   return config;
 }
@@ -373,6 +411,7 @@ std::unique_ptr<views::View> IOSPromoBubble::CreateImageAndBodyTextView(
   if (!ios_promo_config.promo_image.IsEmpty()) {
     auto image_view_builder =
         views::Builder<views::ImageView>()
+            .SetID(IOSPromoConstants::kImageViewID)
             .SetImage(ios_promo_config.promo_image)
             .SetImageSize(gfx::Size(IOSPromoConstants::kImageSize,
                                     IOSPromoConstants::kImageSize))
@@ -398,6 +437,7 @@ std::unique_ptr<views::View> IOSPromoBubble::CreateImageAndBodyTextView(
 
   auto description_label =
       views::Builder<views::Label>()
+          .SetID(IOSPromoConstants::kDescriptionLabelID)
           .SetText(
               l10n_util::GetStringUTF16(ios_promo_config.promo_description_id))
           .SetTextContext(views::style::CONTEXT_BUBBLE_FOOTER)

@@ -13,6 +13,6 @@ enum class IOSPromoType {
   kLens
 };
 
-enum class IOSPromoBubbleType { kQRCode, kReminder };
+enum class IOSPromoBubbleType { kQRCode, kReminder, kReminderConfirmation };
 
 #endif  // CHROME_BROWSER_PROMOS_PROMOS_TYPES_H_

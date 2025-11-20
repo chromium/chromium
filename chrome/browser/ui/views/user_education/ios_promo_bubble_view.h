@@ -16,6 +16,10 @@
 
 class Profile;
 
+namespace syncer {
+class DeviceInfo;
+}  // namespace syncer
+
 // A view for the bubble promo that encourages feature usage on iOS. This is
 // intended to be used with the user education service.
 class IOSPromoBubbleView : public views::BubbleDialogDelegateView,
@@ -51,10 +55,21 @@ class IOSPromoBubbleView : public views::BubbleDialogDelegateView,
   // Called when the bubble is dismissed.
   void OnDismissal();
 
+  // Updates the bubble content to show the reminder confirmation message.
+  void ShowReminderConfirmation();
+
+  // Returns the formatted description string for the reminder confirmation
+  // view.
+  std::u16string GetConfirmationDescriptionText(
+      const std::u16string& device_name);
+
   const raw_ptr<Profile> profile_;
   const IOSPromoType promo_type_;
-  const IOSPromoBubbleType promo_bubble_type_;
-  const IOSPromoConstants::IOSPromoTypeConfigs config_;
+  raw_ptr<const syncer::DeviceInfo> ios_device_info_;
+  // The type of bubble being displayed. Can be changed from kReminder to
+  // kReminderConfirmation.
+  IOSPromoBubbleType promo_bubble_type_;
+  IOSPromoConstants::IOSPromoTypeConfigs config_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_IOS_PROMO_BUBBLE_VIEW_H_

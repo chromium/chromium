@@ -23,6 +23,10 @@ inline constexpr char kIOSPromoPaymentBubbleQRCodeURL[] =
 
 // Size of the image view (QR code or otherwise) in the promos.
 inline constexpr int kImageSize = 80;
+// Element identifiers for the promo bubble. Used to update the promo bubble in
+// place.
+inline constexpr int kDescriptionLabelID = 1;
+inline constexpr int kImageViewID = 2;
 
 struct IOSPromoTypeConfigs {
   IOSPromoTypeConfigs();
@@ -36,6 +40,7 @@ struct IOSPromoTypeConfigs {
   int promo_description_id = -1;
   int decline_button_text_id = -1;
   int accept_button_text_id = -1;
+  int feature_name_id = -1;
   ui::ImageModel promo_image;
   bool with_header;
 };
