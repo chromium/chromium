@@ -187,7 +187,7 @@ GpuHostImpl::GpuHostImpl(Delegate* delegate,
 
   // The persistent cache is not used by the GPU process for info collection.
   // Avoid loading the cache files multiple times.
-  if (!params.info_collection_gpu_process) {
+  if (!params_.info_collection_gpu_process) {
     InitPersistentCache();
   }
 
