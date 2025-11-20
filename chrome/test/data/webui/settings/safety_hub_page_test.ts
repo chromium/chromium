@@ -179,7 +179,7 @@ suite('SafetyHubPage', function() {
   test('Unused Site Permissions Module Visibility', async function() {
     // The element is not visible when there is nothing to review.
     const unusedSitePermissionsElementTag =
-        'settings-safety-hub-unused-site-permissions';
+        'settings-safety-hub-unused-site-permissions-module';
     assertFalse(isChildVisible(testElement, unusedSitePermissionsElementTag));
 
     // The element becomes visible if the list of permissions is no longer

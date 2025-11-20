@@ -26,7 +26,7 @@ import {loadTimeData} from '../i18n_setup.js';
 import {getLanguageHelperInstance} from '../languages_page/languages.js';
 import {isTranslateBaseLanguage} from '../languages_page/languages_util.js';
 
-import {getTemplate} from './live_translate_section.html.js';
+import {getTemplate} from './live_translate.html.js';
 
 const SettingsLiveTranslateElementBase =
     WebUiListenerMixin(PrefsMixin(PolymerElement));

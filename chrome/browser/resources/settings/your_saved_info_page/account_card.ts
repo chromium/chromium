@@ -43,7 +43,9 @@ import {AccountManagerBrowserProxyImpl} from '../people_page/account_manager_bro
 // </if>
 // clang-format on
 
-import {getTemplate} from './account_card_element.html.js';
+
+
+import {getTemplate} from './account_card.html.js';
 
 const SettingsAccountCardElementBase = WebUiListenerMixin(PolymerElement);
 

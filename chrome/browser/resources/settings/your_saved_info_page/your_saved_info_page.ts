@@ -7,7 +7,7 @@
  * 'settings-your-saved-info-page' is the entry point for users to see
  * and manage their saved info.
  */
-import './account_card_element.js';
+import './account_card.js';
 import './category_reference_card.js';
 import './collapsible_autofill_settings_card.js';
 import '/shared/settings/prefs/prefs.js';

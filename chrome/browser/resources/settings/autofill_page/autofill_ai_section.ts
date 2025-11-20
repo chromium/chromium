@@ -21,9 +21,9 @@ import '../settings_shared.css.js';
 import '../settings_shared.css.js';
 // <if expr="_google_chrome">
 import '../internal/icons.html.js';
-
 // </if>
 
+import './autofill_ai_entries_list.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';

@@ -72,7 +72,7 @@ function doNothing() {}
 export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
     SettingsSafetyHubUnusedSitePermissionsModuleElementBase {
   static get is() {
-    return 'settings-safety-hub-unused-site-permissions';
+    return 'settings-safety-hub-unused-site-permissions-module';
   }
 
   static get template() {
@@ -486,7 +486,7 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
 
 declare global {
   interface HTMLElementTagNameMap {
-    'settings-safety-hub-unused-site-permissions':
+    'settings-safety-hub-unused-site-permissions-module':
         SettingsSafetyHubUnusedSitePermissionsModuleElement;
   }
 }

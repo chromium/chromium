@@ -26,7 +26,7 @@ import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
 
-import {getTemplate} from './live_caption_section.html.js';
+import {getTemplate} from './live_caption.html.js';
 
 // clang-format off
 // <if expr="not is_chromeos">
@@ -36,7 +36,7 @@ import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 
-import './live_translate_section.js';
+import './live_translate.js';
 import '../languages_page/add_languages_dialog.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';

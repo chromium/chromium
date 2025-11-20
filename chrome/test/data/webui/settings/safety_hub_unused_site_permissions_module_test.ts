@@ -138,8 +138,8 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
 
   async function createPage() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    testElement =
-        document.createElement('settings-safety-hub-unused-site-permissions');
+    testElement = document.createElement(
+        'settings-safety-hub-unused-site-permissions-module');
     Router.getInstance().navigateTo(routes.SAFETY_HUB);
     document.body.appendChild(testElement);
     // Wait until the element has asked for the list of revoked permissions

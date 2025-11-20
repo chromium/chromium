@@ -284,12 +284,12 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, Languages) {
   RunTest("settings/languages_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsTest, LiveCaptionSection) {
-  RunTest("settings/live_caption_section_test.js", "mocha.run()");
+IN_PROC_BROWSER_TEST_F(SettingsTest, LiveCaption) {
+  RunTest("settings/live_caption_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsTest, LiveTranslateSection) {
-  RunTest("settings/live_translate_section_test.js", "mocha.run()");
+IN_PROC_BROWSER_TEST_F(SettingsTest, LiveTranslate) {
+  RunTest("settings/live_translate_test.js", "mocha.run()");
 }
 #endif
 

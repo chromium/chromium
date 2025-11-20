@@ -7,7 +7,7 @@ import '/shared/settings/prefs/prefs.js';
 import './a11y_page.js';
 import '../settings_shared.css.js';
 // <if expr="is_linux">
-import './captions_subpage.js';
+import './captions_page.js';
 
 // </if>
 

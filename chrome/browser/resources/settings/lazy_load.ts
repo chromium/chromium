@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 // Subpages
+import './ai_page/ai_compare_subpage.js';
 import './ai_page/ai_tab_organization_subpage.js';
 import './ai_page/history_search_page.js';
 import './ai_page/offer_writing_help_page.js';
@@ -19,6 +20,7 @@ import './clear_browsing_data_dialog/clear_browsing_data_account_indicator.js';
 import './clear_browsing_data_dialog/clear_browsing_data_dialog.js';
 import './clear_browsing_data_dialog/clear_browsing_data_dialog_v2.js';
 import './clear_browsing_data_dialog/clear_browsing_data_time_picker.js';
+import './privacy_page/cookies_page.js';
 import './privacy_page/privacy_guide/privacy_guide_dialog.js';
 import './privacy_page/privacy_guide/privacy_guide_page.js';
 import './privacy_page/security/security_keys_subpage.js';
@@ -90,7 +92,7 @@ import './site_settings/web_printing_page.js';
 import './site_settings/window_management_page.js';
 import './site_settings/zoom_levels.js';
 // <if expr="not is_chromeos">
-import './a11y_page/live_caption_section.js';
+import './a11y_page/live_caption.js';
 import './people_page/import_data_dialog.js';
 import './people_page/account_page.js';
 import './people_page/google_services_page.js';
@@ -112,7 +114,6 @@ import './languages_page/languages_page_index.js';
 import './reset_page/reset_page.js';
 // <if expr="not is_chromeos">
 import './system_page/system_page.js';
-
 // </if>
 import './your_saved_info_page/identity_docs_page.js';
 import './your_saved_info_page/travel_page.js';
@@ -144,8 +145,8 @@ export {SettingsA11yPageElement, ToastAlertLevel} from './a11y_page/a11y_page.js
 export {SettingsAxAnnotationsSectionElement} from './a11y_page/ax_annotations_section.js';
 // </if>
 // <if expr="not is_chromeos">
-export {SettingsLiveCaptionElement} from './a11y_page/live_caption_section.js';
-export {SettingsLiveTranslateElement} from './a11y_page/live_translate_section.js';
+export {SettingsLiveCaptionElement} from './a11y_page/live_caption.js';
+export {SettingsLiveTranslateElement} from './a11y_page/live_translate.js';
 // </if>
 
 export {SettingsAiCompareSubpageElement} from './ai_page/ai_compare_subpage.js';
@@ -308,7 +309,6 @@ export {ZoomLevelsElement} from './site_settings/zoom_levels.js';
 // <if expr="not is_chromeos">
 export {SettingsSystemPageElement} from './system_page/system_page.js';
 export {SystemPageBrowserProxy, SystemPageBrowserProxyImpl} from './system_page/system_page_browser_proxy.js';
-
 // </if>
 export {SettingsIdentityDocsPageElement} from './your_saved_info_page/identity_docs_page.js';
 export {SettingsTravelPageElement} from './your_saved_info_page/travel_page.js';

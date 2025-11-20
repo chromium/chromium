@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview 'settings-captions' is a component for showing captions
+ * @fileoverview 'settings-captions-page' is a component for showing captions
  * settings on chrome://settings/captions.
  */
 
@@ -12,7 +12,7 @@ import '../controls/settings_dropdown_menu.js';
 import '../controls/settings_slider.js';
 import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
-import './live_caption_section.js';
+import './live_caption.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {FontsData} from '/shared/settings/appearance_page/fonts_browser_proxy.js';
@@ -24,14 +24,14 @@ import type {SettingsToggleButtonElement} from '../controls/settings_toggle_butt
 import {loadTimeData} from '../i18n_setup.js';
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
-import {getTemplate} from './captions_subpage.html.js';
+import {getTemplate} from './captions_page.html.js';
 
 const SettingsCaptionsElementBase =
     SettingsViewMixin(PrefsMixin(PolymerElement));
 
 export class SettingsCaptionsElement extends SettingsCaptionsElementBase {
   static get is() {
-    return 'settings-captions';
+    return 'settings-captions-page';
   }
 
   static get template() {
@@ -317,7 +317,7 @@ export class SettingsCaptionsElement extends SettingsCaptionsElementBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'settings-captions': SettingsCaptionsElement;
+    'settings-captions-page': SettingsCaptionsElement;
   }
 }
 
