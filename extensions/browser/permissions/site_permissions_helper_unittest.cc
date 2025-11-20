@@ -7,16 +7,15 @@
 #include <memory>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/extensions/extension_action_runner.h"
-#include "chrome/browser/extensions/extension_service_test_with_install.h"
-#include "chrome/browser/extensions/tab_helper.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/extension_registrar.h"
+#include "extensions/browser/extensions_test.h"
+#include "extensions/browser/permissions/active_tab_permission_granter.h"
 #include "extensions/browser/permissions/permissions_updater.h"
 #include "extensions/browser/permissions/scripting_permissions_modifier.h"
 #include "extensions/browser/permissions_manager.h"
@@ -25,6 +24,7 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/test/permissions_manager_waiter.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -33,7 +33,63 @@ namespace extensions {
 using UserSiteAccess = PermissionsManager::UserSiteAccess;
 using SiteInteraction = SitePermissionsHelper::SiteInteraction;
 
-class SitePermissionsHelperUnitTest : public ExtensionServiceTestWithInstall {
+namespace {
+class TestExtensionRegistrarDelegate : public ExtensionRegistrar::Delegate {
+ public:
+  explicit TestExtensionRegistrarDelegate(
+      content::BrowserContext* browser_context)
+      : browser_context_(browser_context) {}
+
+  TestExtensionRegistrarDelegate(const TestExtensionRegistrarDelegate&) =
+      delete;
+  TestExtensionRegistrarDelegate& operator=(
+      const TestExtensionRegistrarDelegate&) = delete;
+
+  ~TestExtensionRegistrarDelegate() override = default;
+
+  // ExtensionRegistrar::Delegate:
+  void PreAddExtension(const Extension* extension,
+                       const Extension* old_extension) override {
+    PermissionsUpdater(browser_context_).GrantActivePermissions(extension);
+  }
+
+  void ShutDown() { browser_context_ = nullptr; }
+
+  MOCK_METHOD1(OnAddNewOrUpdatedExtension, void(const Extension* extension));
+  MOCK_METHOD1(PostActivateExtension,
+               void(scoped_refptr<const Extension> extension));
+  MOCK_METHOD1(PostDeactivateExtension,
+               void(scoped_refptr<const Extension> extension));
+  MOCK_METHOD1(PreUninstallExtension,
+               void(scoped_refptr<const Extension> extension));
+  MOCK_METHOD2(PostUninstallExtension,
+               void(scoped_refptr<const Extension> extension,
+                    base::OnceClosure done_callback));
+  MOCK_METHOD2(LoadExtensionForReload,
+               void(const ExtensionId& extension_id,
+                    const base::FilePath& path));
+  MOCK_METHOD2(LoadExtensionForReloadWithQuietFailure,
+               void(const ExtensionId& extension_id,
+                    const base::FilePath& path));
+  MOCK_METHOD2(ShowExtensionDisabledError, void(const Extension*, bool));
+  MOCK_METHOD1(CanEnableExtension, bool(const Extension* extension));
+  MOCK_METHOD1(CanDisableExtension, bool(const Extension* extension));
+  MOCK_METHOD1(ShouldBlockExtension, bool(const Extension* extension));
+  MOCK_METHOD1(GrantActivePermissions, void(const Extension* extension));
+  MOCK_METHOD0(UpdateExternalExtensionAlert, void());
+  MOCK_METHOD4(OnExtensionInstalled,
+               void(const Extension* extension,
+                    const syncer::StringOrdinal& page_ordinal,
+                    int install_flags,
+                    base::Value::Dict ruleset_install_prefs));
+
+ private:
+  raw_ptr<content::BrowserContext> browser_context_;
+};
+
+}  // namespace
+
+class SitePermissionsHelperUnitTest : public ExtensionsTest {
  public:
   scoped_refptr<const Extension> InstallExtension(const std::string& name);
 
@@ -50,6 +106,7 @@ class SitePermissionsHelperUnitTest : public ExtensionServiceTestWithInstall {
     return permissions_helper_.get();
   }
   PermissionsManager* permissions_manager() { return permissions_manager_; }
+  TestExtensionRegistrarDelegate* delegate() { return delegate_.get(); }
 
   // ExtensionServiceTestBase:
   void SetUp() override;
@@ -63,6 +120,8 @@ class SitePermissionsHelperUnitTest : public ExtensionServiceTestWithInstall {
   std::unique_ptr<SitePermissionsHelper> permissions_helper_;
 
   raw_ptr<PermissionsManager> permissions_manager_;
+
+  std::unique_ptr<testing::NiceMock<TestExtensionRegistrarDelegate>> delegate_;
 };
 
 scoped_refptr<const Extension> SitePermissionsHelperUnitTest::InstallExtension(
@@ -80,17 +139,19 @@ SitePermissionsHelperUnitTest::InstallExtensionWithPermissions(
                        .AddAPIPermissions(permissions)
                        .SetID(crx_file::id_util::GenerateId(name))
                        .Build();
-  registrar()->AddExtension(extension);
+  ExtensionRegistrar::Get(browser_context())->AddExtension(extension);
 
   return extension;
 }
 
 content::WebContents* SitePermissionsHelperUnitTest::AddTab(const GURL& url) {
   std::unique_ptr<content::WebContents> web_contents(
-      content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
+      content::WebContentsTester::CreateTestWebContents(browser_context(),
+                                                        nullptr));
   content::WebContents* raw_contents = web_contents.get();
-  TabHelper::CreateForWebContents(raw_contents);
 
+  ActiveTabPermissionGranter::CreateForWebContents(
+      raw_contents, tabs_.size() + 1, browser_context());
   tabs_.push_back(std::move(web_contents));
 
   content::NavigationSimulator::NavigateAndCommitFromBrowser(raw_contents, url);
@@ -100,11 +161,19 @@ content::WebContents* SitePermissionsHelperUnitTest::AddTab(const GURL& url) {
 }
 
 void SitePermissionsHelperUnitTest::SetUp() {
-  ExtensionServiceTestBase::SetUp();
-  InitializeEmptyExtensionService();
+  ExtensionsTest::SetUp();
 
-  permissions_helper_ = std::make_unique<SitePermissionsHelper>(profile());
-  permissions_manager_ = PermissionsManager::Get(profile());
+  permissions_helper_ =
+      std::make_unique<SitePermissionsHelper>(browser_context());
+  permissions_manager_ = PermissionsManager::Get(browser_context());
+  delegate_ =
+      std::make_unique<testing::NiceMock<TestExtensionRegistrarDelegate>>(
+          browser_context());
+
+  ExtensionRegistrar::Get(browser_context())
+      ->Init(delegate(), /*extensions_enabled=*/true,
+             base::CommandLine::ForCurrentProcess(), base::FilePath(),
+             base::FilePath());
 }
 
 void SitePermissionsHelperUnitTest::TearDown() {
@@ -112,8 +181,9 @@ void SitePermissionsHelperUnitTest::TearDown() {
   tabs_.clear();
   permissions_manager_ = nullptr;
   permissions_helper_.reset();
+  delegate_->ShutDown();
 
-  ExtensionServiceTestBase::TearDown();
+  ExtensionsTest::TearDown();
 }
 
 // TODO(crbug.com/40817514): Move test that verify SiteAccess and
@@ -239,7 +309,7 @@ TEST_F(SitePermissionsHelperUnitTest,
         SiteInteraction::kGranted);
   }
 
-  ScriptingPermissionsModifier(profile(), extension.get())
+  ScriptingPermissionsModifier(browser_context(), extension.get())
       .RemoveAllGrantedHostPermissions();
 
   {
@@ -282,8 +352,6 @@ TEST_F(SitePermissionsHelperUnitTest, UpdateSiteAccess_OnlySiteSelected) {
 
   // Open a site requested by both extensions.
   content::WebContents* site_contents = AddTab(requested_site);
-  auto reload_page_dialog_reset =
-      ReloadPageDialogController::AcceptDialogForTesting(true);
 
   // Extension A should have 'on site' access for the site it requested and 'on
   // click' for a site it didn't request. Extension A should have 'on all sites'
@@ -404,8 +472,6 @@ TEST_F(SitePermissionsHelperWithUserHostControlsUnitTest,
 
   {
     // Switch the extension from on all sites to on-click.
-    auto reload_page_dialog_reset =
-        ReloadPageDialogController::AcceptDialogForTesting(true);
     PermissionsManagerWaiter waiter(permissions_manager());
     permissions_helper()->UpdateSiteAccess(
         *extension, non_user_permitted_contents, UserSiteAccess::kOnClick);

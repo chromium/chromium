@@ -11,8 +11,8 @@
 
 #include "base/json/json_reader.h"
 #include "base/values.h"
-#include "chrome/browser/extensions/permissions/permissions_test_util.h"
 #include "chrome/common/extensions/api/permissions.h"
+#include "extensions/browser/permissions/permissions_test_util.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/permissions/permission_set.h"

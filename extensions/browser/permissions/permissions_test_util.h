@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_PERMISSIONS_PERMISSIONS_TEST_UTIL_H_
-#define CHROME_BROWSER_EXTENSIONS_PERMISSIONS_PERMISSIONS_TEST_UTIL_H_
+#ifndef EXTENSIONS_BROWSER_PERMISSIONS_PERMISSIONS_TEST_UTIL_H_
+#define EXTENSIONS_BROWSER_PERMISSIONS_PERMISSIONS_TEST_UTIL_H_
 
 #include <string>
 #include <vector>
@@ -53,4 +53,4 @@ void RevokeRuntimePermissionsAndWaitForCompletion(
 }  // namespace permissions_test_util
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_PERMISSIONS_PERMISSIONS_TEST_UTIL_H_
+#endif  // EXTENSIONS_BROWSER_PERMISSIONS_PERMISSIONS_TEST_UTIL_H_
