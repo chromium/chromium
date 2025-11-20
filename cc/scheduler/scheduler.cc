@@ -374,6 +374,7 @@ void Scheduler::OnBeginFrameSourcePausedChanged(bool paused) {
     TRACE_EVENT_INSTANT1("cc", "Scheduler::SetBeginFrameSourcePaused",
                          TRACE_EVENT_SCOPE_THREAD, "paused", paused);
     state_machine_.SetBeginFrameSourcePaused(paused);
+    client_->DidChangeBeginFrameSourcePaused(paused);
   }
   ProcessScheduledActions();
 }

@@ -513,6 +513,12 @@ void ProxyImpl::SetVideoNeedsBeginFrames(bool needs_begin_frames) {
     scheduler_->SetVideoNeedsBeginFrames(needs_begin_frames);
 }
 
+void ProxyImpl::DidChangeBeginFrameSourcePaused(bool paused) {
+  MainThreadTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce(&ProxyMain::DidChangeBeginFrameSourcePaused,
+                                proxy_main_weak_ptr_, paused));
+}
+
 bool ProxyImpl::IsInsideDraw() {
   return inside_draw_;
 }

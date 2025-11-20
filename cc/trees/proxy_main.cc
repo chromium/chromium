@@ -493,6 +493,21 @@ void ProxyMain::BeginMainFrame(
       begin_main_frame_state->active_sequence_trackers);
 }
 
+void ProxyMain::DidChangeBeginFrameSourcePaused(bool paused) {
+  DCHECK(IsMainThread());
+  if (paused_ == paused) {
+    return;
+  }
+  paused_ = paused;
+  if (paused_) {
+    TRACE_EVENT_BEGIN("cc", "ProxyMain::SetBeginFrameSourcePaused",
+                      perfetto::Track::FromPointer(this));
+  } else {
+    TRACE_EVENT_END("cc", /*"ProxyMain::SetBeginFrameSourcePaused"*/
+                    perfetto::Track::FromPointer(this));
+  }
+}
+
 void ProxyMain::DidCompleteCommit(int source_frame_number,
                                   CommitTimestamps commit_timestamps) {
   if (layer_tree_host_)
@@ -944,7 +959,7 @@ double ProxyMain::GetAverageThroughput() const {
 }
 
 bool ProxyMain::IsRenderingPaused() const {
-  return pause_rendering_;
+  return pause_rendering_ || paused_;
 }
 
 void ProxyMain::NotifyNewLocalSurfaceIdExpectedWhilePaused() {

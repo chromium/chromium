@@ -3761,6 +3761,10 @@ void LayerTreeHostImpl::DidNotProduceFrame(const viz::BeginFrameAck& ack,
   }
 }
 
+void LayerTreeHostImpl::DidChangeBeginFrameSourcePaused(bool paused) {
+  client_->DidChangeBeginFrameSourcePaused(paused);
+}
+
 void LayerTreeHostImpl::OnBeginImplFrameDeadline() {
   if (!input_delegate_) {
     return;

@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -167,6 +168,7 @@ class FakeSchedulerClient : public SchedulerClient,
   }
 
   void OnBeginImplFrameDeadline() override {}
+  void DidChangeBeginFrameSourcePaused(bool paused) override {}
 
   const viz::BeginFrameArgs& last_begin_main_frame_args() {
     return last_begin_main_frame_args_;
@@ -4249,6 +4251,36 @@ TEST_P(SchedulerTest, SetShouldWarmUpWillStartLayerTreeFrameSinkCreation) {
   client_->Reset();
   scheduler_->DidCreateAndInitializeLayerTreeFrameSink();
   EXPECT_NO_ACTION();
+}
+
+class SchedulerClientTracksBeginFramePaused : public FakeSchedulerClient {
+ public:
+  // SchedulerClientTracksBeginFramePaused() : FakeSchedulerClient() {}
+  void DidChangeBeginFrameSourcePaused(bool paused) override {
+    num_time_changed_++;
+    is_paused_ = paused;
+  }
+
+  bool is_paused() { return is_paused_; }
+  int num_time_changed() { return num_time_changed_; }
+
+ protected:
+  int num_time_changed_ = 0;
+  bool is_paused_ = false;
+};
+
+TEST_P(SchedulerTest, SchedulerClientShouldSendBeginMainFrameSourcePaused) {
+  SchedulerClientTracksBeginFramePaused* client =
+      new SchedulerClientTracksBeginFramePaused;
+  SetUpScheduler(EXTERNAL_BFS, base::WrapUnique(client));
+
+  scheduler_->OnBeginFrameSourcePausedChanged(true);
+  // Expect client to pick up this change.
+  EXPECT_TRUE(client->is_paused());
+
+  scheduler_->OnBeginFrameSourcePausedChanged(false);
+  EXPECT_FALSE(client->is_paused());
+  EXPECT_EQ(client->num_time_changed(), 2);
 }
 
 INSTANTIATE_TEST_SUITE_P(,

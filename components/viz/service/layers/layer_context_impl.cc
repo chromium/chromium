@@ -1569,6 +1569,7 @@ void LayerContextImpl::SetNeedsCommitOnImplThread(bool urgent) {
 }
 
 void LayerContextImpl::SetVideoNeedsBeginFrames(bool needs_begin_frames) {}
+void LayerContextImpl::DidChangeBeginFrameSourcePaused(bool paused) {}
 
 void LayerContextImpl::SetDeferBeginMainFrameFromImpl(
     bool defer_begin_main_frame) {}

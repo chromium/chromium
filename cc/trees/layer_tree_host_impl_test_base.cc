@@ -177,6 +177,7 @@ void LayerTreeHostImplTestBase::SetNeedsCommitOnImplThread(bool urgent) {
 }
 void LayerTreeHostImplTestBase::SetVideoNeedsBeginFrames(
     bool needs_begin_frames) {}
+void LayerTreeHostImplTestBase::DidChangeBeginFrameSourcePaused(bool paused) {}
 void LayerTreeHostImplTestBase::SetDeferBeginMainFrameFromImpl(
     bool defer_begin_main_frame) {}
 bool LayerTreeHostImplTestBase::IsInsideDraw() {
