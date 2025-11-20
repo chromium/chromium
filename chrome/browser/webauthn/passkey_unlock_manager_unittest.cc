@@ -5,6 +5,7 @@
 #include "chrome/browser/webauthn/passkey_unlock_manager.h"
 
 #include "base/rand_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
@@ -112,8 +113,13 @@ class PasskeyUnlockManagerTest : public testing::Test {
     passkey_unlock_manager_->AddObserver(observer_.get());
   }
 
+  void AdvanceClock(base::TimeDelta delta) {
+    task_environment_.FastForwardBy(delta);
+  }
+
  private:
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList feature_list_{device::kPasskeyUnlockManager};
   raw_ptr<PasskeyUnlockManager> passkey_unlock_manager_;
   raw_ptr<syncer::TestSyncService> test_sync_service_;
@@ -223,6 +229,25 @@ TEST_F(PasskeyUnlockManagerTest, MAYBE_ErrorUiHiddenWithoutUVKeys) {
   SetUpPasskeyUnlockManager();
 
   EXPECT_FALSE(passkey_unlock_manager()->ShouldDisplayErrorUi());
+}
+
+TEST_F(PasskeyUnlockManagerTest, LogsPasskeyCountHistogramWithoutPasskeys) {
+  // The histogram should be logged on startup even if there are no passkeys.
+  base::HistogramTester histogram_tester;
+  SetUpPasskeyUnlockManager();
+
+  AdvanceClock(base::Seconds(31));
+  histogram_tester.ExpectUniqueSample("WebAuthentication.PasskeyCount", 0, 1);
+}
+
+TEST_F(PasskeyUnlockManagerTest, LogsPasskeyCountHistogramWithPasskeys) {
+  // The histogram should be logged on startup.
+  passkey_model()->AddNewPasskeyForTesting(CreatePasskey());
+  base::HistogramTester histogram_tester;
+  SetUpPasskeyUnlockManager();
+
+  AdvanceClock(base::Seconds(31));
+  histogram_tester.ExpectUniqueSample("WebAuthentication.PasskeyCount", 1, 1);
 }
 
 }  // namespace

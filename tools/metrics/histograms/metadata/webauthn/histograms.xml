@@ -529,6 +529,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAuthentication.PasskeyCount" units="count"
+    expires_after="2026-03-22">
+  <owner>izuzic@google.com</owner>
+  <owner>ylahodiuk@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records the number of passkeys stored in Google Password Manager. Recorded
+    on desktop, 30s after Chrome startup.
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.PinRenewalEvent"
     enum="WebAuthenticationPinRenewalEvent" expires_after="2026-03-22">
   <owner>agl@google.com</owner>

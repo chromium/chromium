@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
@@ -46,6 +47,7 @@ PasskeyUnlockManager::PasskeyUnlockManager(Profile* profile) {
                                          weak_ptr_factory_.GetWeakPtr()));
   }
   UpdateHasPasskeys();
+  MaybeRecordDelayedPasskeyCountHistogram();
   UpdateSyncState();
   AsynchronouslyCheckSystemUVAvailability();
 }
@@ -214,6 +216,7 @@ void PasskeyUnlockManager::Shutdown() {
   enclave_manager_observation_.Reset();
   passkey_model_observation_.Reset();
   sync_service_observation_.Reset();
+  weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void PasskeyUnlockManager::OnStateUpdated() {
@@ -244,5 +247,22 @@ void PasskeyUnlockManager::OnSyncShutdown(syncer::SyncService* sync) {
 }
 
 PasskeyUnlockManager::PasskeyUnlockManager() = default;
+
+void PasskeyUnlockManager::MaybeRecordDelayedPasskeyCountHistogram() {
+  if (passkey_count_recorded_on_startup_ || !passkey_model()->IsReady()) {
+    return;
+  }
+  passkey_count_recorded_on_startup_ = true;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&PasskeyUnlockManager::RecordPasskeyCountHistogram,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::Seconds(30));
+}
+
+void PasskeyUnlockManager::RecordPasskeyCountHistogram() {
+  base::UmaHistogramCounts1000("WebAuthentication.PasskeyCount",
+                               passkey_model()->GetAllPasskeys().size());
+}
 
 }  // namespace webauthn

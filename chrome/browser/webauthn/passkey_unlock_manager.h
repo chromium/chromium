@@ -142,6 +142,12 @@ class PasskeyUnlockManager : public KeyedService,
   void OnStateChanged(syncer::SyncService* sync) override;
   void OnSyncShutdown(syncer::SyncService* sync) override;
 
+  // Schedules recording the `WebAuthentication.PasskeyCount` histogram if it
+  // hasn't been recorded yet.
+  void MaybeRecordDelayedPasskeyCountHistogram();
+  // Records the `WebAuthentication.PasskeyCount` histogram.
+  void RecordPasskeyCountHistogram();
+
   std::optional<bool> has_passkeys_;
   std::optional<bool> enclave_ready_;
   std::optional<bool> has_gpm_pin_;
@@ -150,6 +156,11 @@ class PasskeyUnlockManager : public KeyedService,
   bool should_display_error_ui_ = false;
 
   base::ObserverList<Observer> observer_list_;
+
+  // Used for UMA to determine whether `WebAuthentication.PasskeyCount`
+  // histogram needs to recorded. Set to true iff histogram was already
+  // recorded.
+  bool passkey_count_recorded_on_startup_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
