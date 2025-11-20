@@ -69,7 +69,23 @@ luci.realm(
             roles = "role/resultdb.invocationCreator",
             groups = "luci-resultdb-access",
         ),
+        # Allow everyone to view Turbo CI workflows
+        luci.binding(
+            roles = "role/turboci.graph.reader",
+            groups = "all",
+        ),
         # Other roles are inherited from @root which grants them to group:all.
+    ],
+)
+
+luci.realm(
+    name = "try",
+    bindings = [
+        # Allow everyone to view Turbo CI workflows
+        luci.binding(
+            roles = "role/turboci.graph.reader",
+            groups = "all",
+        ),
     ],
 )
 

@@ -241,6 +241,11 @@ luci.realm(
             roles = "role/resultdb.invocationCreator",
             groups = "project-chromium-tryjob-access",
         ),
+        # Allow everyone to view Turbo CI workflows
+        luci.binding(
+            roles = "role/turboci.graph.reader",
+            groups = "all",
+        ),
         # Other roles are inherited from @root which grants them to group:all.
     ],
 )
@@ -273,6 +278,11 @@ luci.realm(
                 "chromium-led-users",
                 "project-chromium-tryjob-access",
             ],
+        ),
+        # Allow everyone to view Turbo CI workflows
+        luci.binding(
+            roles = "role/turboci.graph.reader",
+            groups = "all",
         ),
     ],
 )
