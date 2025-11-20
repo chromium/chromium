@@ -512,6 +512,15 @@
       ],
     },
     {
+      name: "RelatedWebsiteSets",
+      message: "`Related Website Sets` is deprecated and will be removed. See https://privacysandbox.com/news/update-on-plans-for-privacy-sandbox-technologies/ for more details.",
+      translation_note: "A deprecation warning shown in the DevTools Issues tab. It's shown when the Storage Access API is automatically granted by Related Website Sets. The placeholder will always be the string `Related Website Sets`.",
+      chrome_status_feature: 5194473869017088,
+      web_features: [
+        // This deprecation is unique and is not dispatched from the renderer.
+      ],
+    },
+    {
       name: "RequestedSubresourceWithEmbeddedCredentials",
       message: "Subresource requests whose URLs contain embedded credentials (e.g. `https://user:pass@host/`) are blocked.",
       translation_note: "This warning occurs when a subresource loaded by a page has a URL with an authority portion. These are disallowed.",

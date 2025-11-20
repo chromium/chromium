@@ -2449,6 +2449,58 @@ class StorageAccessAPIWithFirstPartySetsBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithFirstPartySetsBrowserTest,
+                       StorageAccessWithFirstPartySetsDevToolsIssue) {
+  SetBlockThirdPartyCookies(true);
+
+  // Note: kHostA and kHostB are considered same-party due to the use of
+  // `network::switches::kUseRelatedWebsiteSet`.
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(EchoCookiesURL(kHostB));
+
+  content::TestDevToolsProtocolClient devtools_client;
+  devtools_client.AttachToFrameTreeHost(ChildFrameAt(GetPrimaryMainFrame(), 0));
+  devtools_client.SendCommandSync("Audits.enable");
+  devtools_client.ClearNotifications();
+
+  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), kNoCookiesWithContent);
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+
+  EXPECT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+
+  auto matcher = [](const base::Value::Dict& params) {
+    const std::string* maybe_issue_code =
+        params.FindStringByDottedPath("issue.code");
+    if (!maybe_issue_code || *maybe_issue_code != "DeprecationIssue") {
+      return false;
+    }
+    const std::string* maybe_type = params.FindStringByDottedPath(
+        "issue.details.deprecationIssueDetails.type");
+    return maybe_type && *maybe_type == "RelatedWebsiteSets";
+  };
+
+  base::Value::Dict notification = devtools_client.WaitForMatchingNotification(
+      "Audits.issueAdded", base::BindRepeating(matcher));
+
+  // Verify that the issue is reported again when the permission is reused.
+  NavigateFrameTo(EchoCookiesURL(kHostB));
+
+  devtools_client.DetachProtocolClient();
+  devtools_client.AttachToFrameTreeHost(ChildFrameAt(GetPrimaryMainFrame(), 0));
+  devtools_client.SendCommandSync("Audits.enable");
+  devtools_client.ClearNotifications();
+
+  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), kNoCookiesWithContent);
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+
+  EXPECT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+
+  notification = devtools_client.WaitForMatchingNotification(
+      "Audits.issueAdded", base::BindRepeating(matcher));
+
+  devtools_client.DetachProtocolClient();
+}
+
+IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithFirstPartySetsBrowserTest,
                        Permission_AutograntedWithinFirstPartySet) {
   base::HistogramTester histogram_tester;
   // Note: kHostA and kHostB are considered same-party due to the use of

@@ -139,6 +139,8 @@ class StorageAccessGrantPermissionContext
       permissions::BrowserPermissionCallback callback,
       bool had_top_level_user_interaction);
 
+  void ReportRelatedWebsiteSetsDeprecation(content::RenderFrameHost* rfh);
+
   base::WeakPtrFactory<StorageAccessGrantPermissionContext> weak_factory_{this};
 };
 

@@ -59,6 +59,7 @@
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_read_context.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
+#include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 
 namespace {
 
@@ -646,6 +647,24 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSet(
       decision, outcome);
 }
 
+void StorageAccessGrantPermissionContext::ReportRelatedWebsiteSetsDeprecation(
+    content::RenderFrameHost* rfh) {
+  auto deprecation_details = blink::mojom::DeprecationIssueDetails::New();
+  deprecation_details->type =
+      blink::mojom::DeprecationIssueType::kRelatedWebsiteSets;
+  deprecation_details->affected_location =
+      blink::mojom::AffectedLocation::New();
+  deprecation_details->affected_location->url =
+      rfh->GetLastCommittedURL().spec();
+
+  auto details = blink::mojom::InspectorIssueDetails::New();
+  details->deprecation_issue_details = std::move(deprecation_details);
+
+  auto issue_info = blink::mojom::InspectorIssueInfo::New(
+      blink::mojom::InspectorIssueCode::kDeprecationIssue, std::move(details));
+  rfh->ReportInspectorIssue(std::move(issue_info));
+}
+
 void StorageAccessGrantPermissionContext::NotifyPermissionSetInternal(
     const permissions::PermissionRequestData& request_data,
     permissions::BrowserPermissionCallback callback,
@@ -687,6 +706,28 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSetInternal(
       content_settings->OnTwoSitePermissionChanged(
           ContentSettingsType::STORAGE_ACCESS,
           net::SchemefulSite(request_data.requesting_origin), content_setting);
+    }
+  }
+
+  bool was_granted_by_first_party_set =
+      outcome == RequestOutcome::kGrantedByFirstPartySet;
+  if (outcome == RequestOutcome::kReusedImplicitGrant) {
+    content_settings::SettingInfo info;
+    HostContentSettingsMapFactory::GetForProfile(browser_context())
+        ->GetContentSetting(request_data.requesting_origin,
+                            request_data.embedding_origin,
+                            ContentSettingsType::STORAGE_ACCESS, &info);
+    bool decided_by_rws = info.metadata.decided_by_related_website_sets();
+    if (decided_by_rws) {
+      was_granted_by_first_party_set = true;
+    }
+  }
+
+  if (was_granted_by_first_party_set) {
+    content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
+        request_data.id.global_render_frame_host_id());
+    if (rfh) {
+      ReportRelatedWebsiteSetsDeprecation(rfh);
     }
   }
 

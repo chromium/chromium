@@ -77,6 +77,7 @@ namespace AttributionReportingIssueTypeEnum =
     protocol::Audits::AttributionReportingIssueTypeEnum;
 
 const char kPrivacySandboxExtensionsAPI[] = "PrivacySandboxExtensionsAPI";
+const char kRelatedWebsiteSets[] = "RelatedWebsiteSets";
 
 template <typename Handler, typename... MethodArgs, typename... Args>
 void DispatchToAgents(DevToolsAgentHostImpl* host,
@@ -512,6 +513,8 @@ const char* DeprecationIssueTypeToProtocol(
   switch (error_type) {
     case blink::mojom::DeprecationIssueType::kPrivacySandboxExtensionsAPI:
       return kPrivacySandboxExtensionsAPI;
+    case blink::mojom::DeprecationIssueType::kRelatedWebsiteSets:
+      return kRelatedWebsiteSets;
   }
 }
 
