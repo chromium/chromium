@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <windows.h>
 
 #include <memory>
@@ -14,6 +9,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
@@ -85,11 +81,12 @@ void CheckToken(const std::optional<base::win::AccessToken>& token,
   ASSERT_EQ(capabilities.size(), security_capabilities->CapabilityCount)
       << TokenTypeToName(impersonation);
   for (size_t index = 0; index < capabilities.size(); ++index) {
-    EXPECT_EQ(capabilities[index].GetAttributes(),
-              security_capabilities->Capabilities[index].Attributes)
+    EXPECT_EQ(
+        capabilities[index].GetAttributes(),
+        UNSAFE_TODO(security_capabilities->Capabilities[index]).Attributes)
         << TokenTypeToName(impersonation);
     EXPECT_TRUE(capabilities[index].GetSid().Equal(
-        security_capabilities->Capabilities[index].Sid))
+        UNSAFE_TODO(security_capabilities->Capabilities[index]).Sid))
         << TokenTypeToName(impersonation);
   }
 }

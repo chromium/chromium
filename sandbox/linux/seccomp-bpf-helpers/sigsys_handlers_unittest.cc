@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "sandbox/linux/seccomp-bpf-helpers/sigsys_handlers.h"
 
 #include <fcntl.h>
@@ -21,6 +16,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/strings/safe_sprintf.h"
@@ -188,7 +184,8 @@ int g_syscall_no;
 SANDBOX_EXPORT intptr_t
 SIGSYSDirectSocketSyscallHandler(const struct arch_seccomp_data& args, void*) {
   // Record syscall args.
-  memcpy(g_syscall_args, args.args, kNumArgsToCopy * sizeof(uint64_t));
+  UNSAFE_TODO(
+      memcpy(g_syscall_args, args.args, kNumArgsToCopy * sizeof(uint64_t)));
   g_syscall_no = args.nr;
   return kDirectSocketSyscallRetVal;
 }
@@ -239,8 +236,8 @@ void CheckArgsMatch(long current_socketcall,
   // If the args don't match, crash to fail the test.
   for (size_t i = 0; i < N; i++) {
     unsigned long rewritten_socketcall_arg =
-        *reinterpret_cast<unsigned long*>(&g_syscall_args[i]);
-    CHECK_EQ(rewritten_socketcall_arg, expected_args[i])
+        *reinterpret_cast<unsigned long*>(&UNSAFE_TODO(g_syscall_args[i]));
+    UNSAFE_TODO(CHECK_EQ(rewritten_socketcall_arg, expected_args[i]))
         << "Socketcall " << current_socketcall << " differs at argument " << i;
   }
 }

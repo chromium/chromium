@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // Note: any code in this file MUST be async-signal safe.
 
 #include "sandbox/linux/seccomp-bpf-helpers/sigsys_handlers.h"
@@ -89,7 +84,7 @@ void WriteToStdErr(const char* error_message, size_t size) {
       break;
     }
     size -= ret;
-    error_message += ret;
+    UNSAFE_TODO(error_message += ret);
   }
 }
 
@@ -499,35 +494,44 @@ intptr_t SIGSYSSocketcallHandler(const struct arch_seccomp_data& args,
   uint64_t call = args.args[0];
   if (args.nr == __NR_socketcall && 0 < call && call <= kLastSocketcall) {
     const size_t real_args_arr_len =
-        socketcall_args[call].num_args + socketcall_args[call].num_zeroes;
+        UNSAFE_TODO(socketcall_args[call]).num_args +
+        UNSAFE_TODO(socketcall_args[call]).num_zeroes;
 // The length of this array is bounded by the entries in the array above,
 // but the compiler isn't smart enough to figure that out.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wvla-extension"
     unsigned long real_args_arr[real_args_arr_len];
 #pragma clang diagnostic pop
-    memcpy(real_args_arr, reinterpret_cast<unsigned long*>(args.args[1]),
-           real_args_arr_len * sizeof(unsigned long));
-    memset(real_args_arr + socketcall_args[call].num_args, 0,
-           socketcall_args[call].num_zeroes * sizeof(unsigned long));
+    UNSAFE_TODO(memcpy(real_args_arr,
+                       reinterpret_cast<unsigned long*>(args.args[1]),
+                       real_args_arr_len * sizeof(unsigned long)));
+    UNSAFE_TODO(
+        memset(real_args_arr + socketcall_args[call].num_args, 0,
+               socketcall_args[call].num_zeroes * sizeof(unsigned long)));
     switch (real_args_arr_len) {
       case 2:
-        return syscall(socketcall_args[call].sysno, real_args_arr[0],
-                       real_args_arr[1]);
+        return syscall(UNSAFE_TODO(socketcall_args[call]).sysno,
+                       real_args_arr[0], UNSAFE_TODO(real_args_arr[1]));
       case 3:
-        return syscall(socketcall_args[call].sysno, real_args_arr[0],
-                       real_args_arr[1], real_args_arr[2]);
+        return syscall(UNSAFE_TODO(socketcall_args[call]).sysno,
+                       real_args_arr[0], UNSAFE_TODO(real_args_arr[1]),
+                       UNSAFE_TODO(real_args_arr[2]));
       case 4:
-        return syscall(socketcall_args[call].sysno, real_args_arr[0],
-                       real_args_arr[1], real_args_arr[2], real_args_arr[3]);
+        return syscall(UNSAFE_TODO(socketcall_args[call]).sysno,
+                       real_args_arr[0], UNSAFE_TODO(real_args_arr[1]),
+                       UNSAFE_TODO(real_args_arr[2]),
+                       UNSAFE_TODO(real_args_arr[3]));
       case 5:
-        return syscall(socketcall_args[call].sysno, real_args_arr[0],
-                       real_args_arr[1], real_args_arr[2], real_args_arr[3],
-                       real_args_arr[4]);
+        return syscall(
+            UNSAFE_TODO(socketcall_args[call]).sysno, real_args_arr[0],
+            UNSAFE_TODO(real_args_arr[1]), UNSAFE_TODO(real_args_arr[2]),
+            UNSAFE_TODO(real_args_arr[3]), UNSAFE_TODO(real_args_arr[4]));
       case 6:
-        return syscall(socketcall_args[call].sysno, real_args_arr[0],
-                       real_args_arr[1], real_args_arr[2], real_args_arr[3],
-                       real_args_arr[4], real_args_arr[5]);
+        return syscall(
+            UNSAFE_TODO(socketcall_args[call]).sysno, real_args_arr[0],
+            UNSAFE_TODO(real_args_arr[1]), UNSAFE_TODO(real_args_arr[2]),
+            UNSAFE_TODO(real_args_arr[3]), UNSAFE_TODO(real_args_arr[4]),
+            UNSAFE_TODO(real_args_arr[5]));
       default:
         break;
     }

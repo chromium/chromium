@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "sandbox/win/src/win_utils.h"
 
 #include <windows.h>
@@ -23,6 +18,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_util.h"
@@ -115,7 +111,7 @@ std::optional<std::wstring> GetPathFromHandle(HANDLE handle) {
   if (!buffer)
     return std::nullopt;
   OBJECT_NAME_INFORMATION* name =
-      reinterpret_cast<OBJECT_NAME_INFORMATION*>(buffer->data());
+      UNSAFE_TODO(reinterpret_cast<OBJECT_NAME_INFORMATION*>(buffer->data()));
   return std::wstring(
       name->ObjectName.Buffer,
       name->ObjectName.Length / sizeof(name->ObjectName.Buffer[0]));
@@ -128,7 +124,7 @@ std::optional<std::wstring> GetTypeNameFromHandle(HANDLE handle) {
   if (!buffer)
     return std::nullopt;
   OBJECT_TYPE_INFORMATION* name =
-      reinterpret_cast<OBJECT_TYPE_INFORMATION*>(buffer->data());
+      UNSAFE_TODO(reinterpret_cast<OBJECT_TYPE_INFORMATION*>(buffer->data()));
   return std::wstring(name->Name.Buffer,
                       name->Name.Length / sizeof(name->Name.Buffer[0]));
 }

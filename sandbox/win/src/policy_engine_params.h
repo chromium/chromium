@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef SANDBOX_WIN_SRC_POLICY_ENGINE_PARAMS_H_
 #define SANDBOX_WIN_SRC_POLICY_ENGINE_PARAMS_H_
 
@@ -14,6 +9,7 @@
 
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "sandbox/win/src/internal_types.h"
 #include "sandbox/win/src/nt_internals.h"
@@ -175,7 +171,9 @@ template <typename T>
 struct CountedParameterSet {
   CountedParameterSet() : count(T::PolParamLast) {}
 
-  ParameterSet& operator[](typename T::Args n) { return parameters[n]; }
+  ParameterSet& operator[](typename T::Args n) {
+    return UNSAFE_TODO(parameters[n]);
+  }
 
   CountedParameterSetBase* GetBase() {
     return reinterpret_cast<CountedParameterSetBase*>(this);

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "sandbox/win/src/policy_low_level.h"
 
 #include <stddef.h>
@@ -82,8 +77,8 @@ bool LowLevelPolicy::Done() {
   }
 
   PolicyBuffer* current_buffer = &policy_store_->data[0];
-  char* buffer_end =
-      reinterpret_cast<char*>(current_buffer) + policy_store_->data_size;
+  char* buffer_end = UNSAFE_TODO(reinterpret_cast<char*>(current_buffer) +
+                                 policy_store_->data_size);
   size_t avail_size = policy_store_->data_size;
 
   for (Mmap::iterator it = mmap.begin(); it != mmap.end(); ++it) {
@@ -91,7 +86,8 @@ bool LowLevelPolicy::Done() {
     if (service > IpcTag::kMaxValue) {
       return false;
     }
-    policy_store_->entry[static_cast<size_t>(service)] = current_buffer;
+    UNSAFE_TODO(policy_store_->entry[static_cast<size_t>(service)]) =
+        current_buffer;
 
     RuleList::iterator rules_it = (*it).second.begin();
     RuleList::iterator rules_it_end = (*it).second.end();
@@ -107,13 +103,14 @@ bool LowLevelPolicy::Done() {
         return false;
       }
       size_t data_size = avail_size - opcodes_size;
-      PolicyOpcode* opcodes_start = &current_buffer->opcodes[svc_opcode_count];
+      PolicyOpcode* opcodes_start =
+          &UNSAFE_TODO(current_buffer->opcodes[svc_opcode_count]);
       if (!rule->RebindCopy(opcodes_start, opcodes_size, buffer_end,
                             &data_size)) {
         return false;
       }
       size_t used = avail_size - data_size;
-      buffer_end -= used;
+      UNSAFE_TODO(buffer_end -= used);
       avail_size -= used;
       svc_opcode_count += op_count;
     }
@@ -121,7 +118,7 @@ bool LowLevelPolicy::Done() {
     current_buffer->opcode_count = svc_opcode_count;
     size_t policy_buffers_occupied =
         (svc_opcode_count * sizeof(PolicyOpcode)) / sizeof(current_buffer[0]);
-    current_buffer = &current_buffer[policy_buffers_occupied + 1];
+    current_buffer = &UNSAFE_TODO(current_buffer[policy_buffers_occupied + 1]);
   }
 
   return true;
@@ -143,10 +140,11 @@ PolicyRule::PolicyRule(const PolicyRule& other) {
   size_t buffer_size = sizeof(PolicyBuffer) + kRuleBufferSize;
   char* memory = new char[buffer_size];
   buffer_ = reinterpret_cast<PolicyBuffer*>(memory);
-  memcpy(buffer_, other.buffer_, buffer_size);
+  UNSAFE_TODO(memcpy(buffer_, other.buffer_, buffer_size));
 
   char* opcode_buffer = reinterpret_cast<char*>(&buffer_->opcodes[0]);
-  char* next_opcode = &opcode_buffer[GetOpcodeCount() * sizeof(PolicyOpcode)];
+  char* next_opcode =
+      &UNSAFE_TODO(opcode_buffer[GetOpcodeCount() * sizeof(PolicyOpcode)]);
   opcode_factory_ =
       new OpcodeFactory(next_opcode, other.opcode_factory_->memory_size());
 }
@@ -189,7 +187,7 @@ bool PolicyRule::GenStringOpcode(RuleType rule_type,
     // the previous opcode because it was really the last but we did not know
     // it at that time.
     if (last_call && (buffer_->opcode_count > 0)) {
-      op = &buffer_->opcodes[buffer_->opcode_count - 1];
+      op = &UNSAFE_TODO(buffer_->opcodes[buffer_->opcode_count - 1]);
       op->SetOptions(options);
     }
     return true;
@@ -244,13 +242,13 @@ bool PolicyRule::AddStringMatch(RuleType rule_type,
         break;
       case L'/':
         // Check that someone isn't using the old syntax.
-        CHECK(L'?' != current_char[1]);
+        CHECK(L'?' != UNSAFE_TODO(current_char[1]));
         [[fallthrough]];
       default:
         fragment += *current_char;
         last_char = kLastCharIsAlpha;
     }
-    ++current_char;
+    UNSAFE_TODO(++current_char);
   }
 
   return GenStringOpcode(rule_type, parameter, state, true, &skip_count,
@@ -298,7 +296,7 @@ bool PolicyRule::RebindCopy(PolicyOpcode* opcode_start,
     if (opcode_size < sizeof(PolicyOpcode)) {
       return false;
     }
-    PolicyOpcode& opcode = buffer_->opcodes[ix];
+    PolicyOpcode& opcode = UNSAFE_TODO(buffer_->opcodes[ix]);
     *opcode_start = opcode;
     if (OP_WSTRING_MATCH == opcode.GetID()) {
       // For this opcode argument 0 is a delta to the string and argument 1
@@ -311,13 +309,13 @@ bool PolicyRule::RebindCopy(PolicyOpcode* opcode_start,
         return false;
       }
       *data_size -= str_len;
-      data_start -= str_len;
-      memcpy(data_start, str, str_len);
+      UNSAFE_TODO(data_start -= str_len);
+      UNSAFE_TODO(memcpy(data_start, str, str_len));
       // Recompute the string displacement
       ptrdiff_t delta = data_start - reinterpret_cast<char*>(opcode_start);
       opcode_start->SetArgument(0, delta);
     }
-    ++opcode_start;
+    UNSAFE_TODO(++opcode_start);
     opcode_size -= sizeof(PolicyOpcode);
   }
 

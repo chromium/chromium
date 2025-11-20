@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <windows.h>
 #include <winternl.h>
 
@@ -15,6 +10,7 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/memory/page_size.h"
 #include "base/win/windows_handle_util.h"
 #include "sandbox/win/src/crosscall_client.h"
@@ -46,7 +42,7 @@ PolicyGlobal* MakePolicyMemory() {
   // Should not exceed kPolMemSize from |sandbox_policy_base.cc|.
   const size_t kTotalPolicySz = 4096 * 6;
   char* mem = new char[kTotalPolicySz];
-  memset(mem, 0, kTotalPolicySz);
+  UNSAFE_TODO(memset(mem, 0, kTotalPolicySz));
   PolicyGlobal* policy = reinterpret_cast<PolicyGlobal*>(mem);
   policy->data_size = kTotalPolicySz - sizeof(PolicyGlobal);
   return policy;
@@ -155,17 +151,18 @@ PolicyGlobal* GenerateBlankPolicy() {
 void CopyPolicyToTarget(const void* source, size_t size, void* dest) {
   if (!source || !size)
     return;
-  memcpy(dest, source, size);
+  UNSAFE_TODO(memcpy(dest, source, size));
   sandbox::PolicyGlobal* policy =
       reinterpret_cast<sandbox::PolicyGlobal*>(dest);
 
   size_t offset = reinterpret_cast<size_t>(source);
 
   for (size_t i = 0; i < kSandboxIpcCount; i++) {
-    size_t buffer = reinterpret_cast<size_t>(policy->entry[i]);
+    size_t buffer = reinterpret_cast<size_t>(UNSAFE_TODO(policy->entry[i]));
     if (buffer) {
       buffer -= offset;
-      policy->entry[i] = reinterpret_cast<sandbox::PolicyBuffer*>(buffer);
+      UNSAFE_TODO(policy->entry[i]) =
+          reinterpret_cast<sandbox::PolicyBuffer*>(buffer);
     }
   }
 }
@@ -184,7 +181,7 @@ SBOX_TESTS_COMMAND int IPC_Leak(int argc, wchar_t** argv) {
   CopyPolicyToTarget(policy, policy->data_size + sizeof(PolicyGlobal),
                      current_policy);
 
-  int test = wcstol(argv[0], nullptr, 10);
+  int test = UNSAFE_TODO(wcstol(argv[0], nullptr, 10));
 
   static_assert(TESTIPC_NTOPENFILE == 0,
                 "TESTIPC_NTOPENFILE must be first in enum.");
@@ -228,7 +225,7 @@ SBOX_TESTS_COMMAND int IPC_Leak(int argc, wchar_t** argv) {
   };
 
   auto* ipc_data = reinterpret_cast<ipc_internal*>(
-      reinterpret_cast<char*>(memory) + base_start);
+      UNSAFE_TODO(reinterpret_cast<char*>(memory) + base_start));
 
   return base::win::HandleToUint32(ipc_data->answer.handle);
 }

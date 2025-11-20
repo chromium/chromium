@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // For information about interceptions as a whole see
 // http://dev.chromium.org/developers/design-documents/sandbox .
 
@@ -20,6 +15,7 @@
 
 #include "base/bits.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
@@ -271,7 +267,7 @@ bool InterceptionManager::SetupDllInfo(const InterceptionData& data,
     return false;
 
   *buffer_bytes -= required;
-  *buffer = reinterpret_cast<char*>(*buffer) + required;
+  *buffer = UNSAFE_TODO(reinterpret_cast<char*>(*buffer) + required);
 
   // set up the dll info to be what we know about it at this time
   dll_info->unload_module = (data.type == INTERCEPTION_UNLOAD_MODULE);
@@ -279,7 +275,7 @@ bool InterceptionManager::SetupDllInfo(const InterceptionData& data,
   dll_info->offset_to_functions = required;
   dll_info->num_functions = 0;
   data.dll.copy(dll_info->dll_name, data.dll.size());
-  dll_info->dll_name[data.dll.size()] = L'\0';
+  UNSAFE_TODO(dll_info->dll_name[data.dll.size()]) = L'\0';
 
   return true;
 }
@@ -311,7 +307,7 @@ bool InterceptionManager::SetupInterceptionInfo(const InterceptionData& data,
 
   // update the caller's values
   *buffer_bytes -= required;
-  *buffer = reinterpret_cast<char*>(*buffer) + required;
+  *buffer = UNSAFE_TODO(reinterpret_cast<char*>(*buffer) + required);
 
   function->record_bytes = required;
   function->type = data.type;
@@ -320,13 +316,13 @@ bool InterceptionManager::SetupInterceptionInfo(const InterceptionData& data,
   char* names = function->function;
 
   data.function.copy(names, name_bytes);
-  names += name_bytes;
-  *names++ = '\0';
+  UNSAFE_TODO(names += name_bytes);
+  *UNSAFE_TODO(names++) = '\0';
 
   // interceptor follows the function_name
   data.interceptor.copy(names, interceptor_bytes);
-  names += interceptor_bytes;
-  *names++ = '\0';
+  UNSAFE_TODO(names += interceptor_bytes);
+  *UNSAFE_TODO(names++) = '\0';
 
   // update the dll table
   dll_info->num_functions++;
@@ -375,7 +371,7 @@ ResultCode InterceptionManager::PatchNtdll(bool hot_patch_needed) {
   size_t thunk_offset = internal::GetGranularAlignedRandomOffset(thunk_bytes);
 
   // Split the base and offset along page boundaries.
-  thunk_base += thunk_offset & ~(kPageSize - 1);
+  UNSAFE_TODO(thunk_base += thunk_offset & ~(kPageSize - 1));
   thunk_offset &= kPageSize - 1;
 
   // Make an aligned, padded allocation, and move the pointer to our chunk.
@@ -384,8 +380,8 @@ ResultCode InterceptionManager::PatchNtdll(bool hot_patch_needed) {
       ::VirtualAllocEx(child, thunk_base, thunk_bytes_padded, MEM_COMMIT,
                        PAGE_EXECUTE_READWRITE));
   CHECK(thunk_base);  // If this fails we'd crash anyway on an invalid access.
-  DllInterceptionData* thunks =
-      reinterpret_cast<DllInterceptionData*>(thunk_base + thunk_offset);
+  DllInterceptionData* thunks = reinterpret_cast<DllInterceptionData*>(
+      UNSAFE_TODO(thunk_base + thunk_offset));
 
   // this should write all the individual thunks to the child's memory
   base::expected<PatchClientResultData, ResultCode> patch =
@@ -443,16 +439,16 @@ InterceptionManager::PatchClientFunctions(DllInterceptionData* thunks,
     NTSTATUS ret = thunk.Setup(
         ntdll_base, nullptr, interception.function.c_str(),
         interception.interceptor.c_str(), interception.interceptor_address,
-        &thunks->thunks[patch.dll_data.num_thunks],
+        &UNSAFE_TODO(thunks->thunks[patch.dll_data.num_thunks]),
         thunk_bytes - patch.dll_data.used_bytes, nullptr);
     if (!NT_SUCCESS(ret)) {
       ::SetLastError(GetLastErrorFromNtStatus(ret));
       return base::unexpected(SBOX_ERROR_CANNOT_SETUP_INTERCEPTION_THUNK);
     }
 
-    DCHECK(!patch.originals.functions[interception.id]);
-    patch.originals.functions[interception.id] =
-        &thunks->thunks[patch.dll_data.num_thunks];
+    DCHECK(!UNSAFE_TODO(patch.originals.functions[interception.id]));
+    UNSAFE_TODO(patch.originals.functions[interception.id]) =
+        &UNSAFE_TODO(thunks->thunks[patch.dll_data.num_thunks]);
 
     patch.dll_data.num_thunks++;
     patch.dll_data.used_bytes += sizeof(ThunkData);

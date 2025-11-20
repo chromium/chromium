@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef SANDBOX_WIN_SRC_POLICY_LOW_LEVEL_H_
 #define SANDBOX_WIN_SRC_POLICY_LOW_LEVEL_H_
 
@@ -14,9 +9,9 @@
 #include <stdint.h>
 
 #include <list>
-
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "sandbox/win/src/ipc_tags.h"
 #include "sandbox/win/src/policy_engine_opcodes.h"
@@ -77,7 +72,7 @@ struct PolicyGlobal {
   // Returns true if the IPC for `service` should be registered for the target.
   // Should only be called after Done() has been called to finalize the setup.
   bool NeedsIpc(IpcTag service) {
-    return entry[static_cast<size_t>(service)] != nullptr;
+    return UNSAFE_TODO(entry[static_cast<size_t>(service)]) != nullptr;
   }
 
   PolicyBuffer* entry[kSandboxIpcCount];

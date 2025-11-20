@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "sandbox/win/src/policy_engine_opcodes.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "sandbox/win/src/sandbox_nt_types.h"
 #include "sandbox/win/src/sandbox_nt_util.h"
 #include "sandbox/win/src/sandbox_types.h"
@@ -313,7 +309,7 @@ PolicyOpcode* OpcodeFactory::MakeBase(OpcodeID opcode_id, uint32_t options) {
   PolicyOpcode* opcode = new (memory_top_) PolicyOpcode();
 
   // Fill in the standard fields, that every opcode has.
-  memory_top_ += sizeof(PolicyOpcode);
+  UNSAFE_TODO(memory_top_ += sizeof(PolicyOpcode));
   opcode->opcode_id_ = opcode_id;
   opcode->SetOptions(options);
   opcode->has_param_ = 0;
@@ -336,12 +332,12 @@ ptrdiff_t OpcodeFactory::AllocRelative(void* start, std::wstring_view str) {
   size_t bytes = str.size() * sizeof(wchar_t);
   if (memory_size() < bytes)
     return 0;
-  memory_bottom_ -= bytes;
+  UNSAFE_TODO(memory_bottom_ -= bytes);
   if (reinterpret_cast<UINT_PTR>(memory_bottom_.get()) & 1) {
     // TODO(cpu) replace this for something better.
     ::DebugBreak();
   }
-  memcpy(memory_bottom_, str.data(), bytes);
+  UNSAFE_TODO(memcpy(memory_bottom_, str.data(), bytes));
   ptrdiff_t delta = memory_bottom_ - reinterpret_cast<char*>(start);
   return delta;
 }
@@ -366,7 +362,7 @@ EvalResult PolicyOpcode::Evaluate(const ParameterSet* call_params,
     if (parameter_ >= param_count) {
       return EVAL_ERROR;
     }
-    selected_param = &call_params[parameter_];
+    selected_param = &UNSAFE_TODO(call_params[parameter_]);
   }
   EvalResult result = EvaluateHelper(selected_param, match);
 

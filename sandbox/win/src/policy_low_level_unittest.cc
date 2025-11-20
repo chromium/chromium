@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "sandbox/win/src/policy_low_level.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/compiler_specific.h"
 #include "sandbox/win/src/policy_engine_params.h"
 #include "sandbox/win/src/policy_engine_processor.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -43,7 +39,7 @@ TEST(PolicyEngineTest, StringPatternsBAD) {
 PolicyGlobal* MakePolicyMemory() {
   const size_t kTotalPolicySz = 4096 * 8;
   char* mem = new char[kTotalPolicySz];
-  memset(mem, 0, kTotalPolicySz);
+  UNSAFE_TODO(memset(mem, 0, kTotalPolicySz));
   PolicyGlobal* policy = reinterpret_cast<PolicyGlobal*>(mem);
   policy->data_size = kTotalPolicySz - sizeof(PolicyGlobal);
   return policy;
@@ -384,22 +380,25 @@ TEST(PolicyEngineTest, ThreeRulesTest) {
   EXPECT_EQ(
       OP_NUMBER_AND_MATCH,
       policy->entry[static_cast<size_t>(kNtFakeNone)]->opcodes[0].GetID());
-  EXPECT_EQ(OP_ACTION, policy->entry[static_cast<size_t>(kNtFakeNone)]
-                           ->opcodes[tc1 - 1]
-                           .GetID());
+  EXPECT_EQ(OP_ACTION,
+            UNSAFE_TODO(policy->entry[static_cast<size_t>(kNtFakeNone)])
+                ->opcodes[tc1 - 1]
+                .GetID());
   EXPECT_EQ(OP_WSTRING_MATCH,
             policy->entry[static_cast<size_t>(kNtFakeCreateFile)]
                 ->opcodes[0]
                 .GetID());
-  EXPECT_EQ(OP_ACTION, policy->entry[static_cast<size_t>(kNtFakeCreateFile)]
-                           ->opcodes[tc2 - 1]
-                           .GetID());
+  EXPECT_EQ(OP_ACTION,
+            UNSAFE_TODO(policy->entry[static_cast<size_t>(kNtFakeCreateFile)])
+                ->opcodes[tc2 - 1]
+                .GetID());
   EXPECT_EQ(
       OP_WSTRING_MATCH,
       policy->entry[static_cast<size_t>(kNtFakeOpenFile)]->opcodes[0].GetID());
-  EXPECT_EQ(OP_ACTION, policy->entry[static_cast<size_t>(kNtFakeOpenFile)]
-                           ->opcodes[tc3 - 1]
-                           .GetID());
+  EXPECT_EQ(OP_ACTION,
+            UNSAFE_TODO(policy->entry[static_cast<size_t>(kNtFakeOpenFile)])
+                ->opcodes[tc3 - 1]
+                .GetID());
 
   // Test the policy evaluation.
 

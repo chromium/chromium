@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "sandbox/linux/seccomp-bpf/trap.h"
 
 #include <errno.h>
@@ -231,7 +226,7 @@ void Trap::SigSys(int nr, LinuxSigInfo* info, ucontext_t* ctx) {
                        SECCOMP_PARM6(ctx));
 #endif  // defined(__mips__)
   } else {
-    const auto& trap = trap_array_[info->si_errno - 1];
+    const auto& trap = UNSAFE_TODO(trap_array_[info->si_errno - 1]);
     if (!trap.safe) {
       SetIsInSigHandler();
     }
@@ -338,7 +333,7 @@ uint16_t Trap::Add(const Handler& handler) {
 
   uint16_t id = trap_array_size_ + 1;
   trap_ids_[handler] = id;
-  trap_array_[trap_array_size_] = handler;
+  UNSAFE_TODO(trap_array_[trap_array_size_]) = handler;
   trap_array_size_++;
   return id;
 }

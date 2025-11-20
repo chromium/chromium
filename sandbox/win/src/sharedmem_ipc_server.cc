@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "sandbox/win/src/sharedmem_ipc_server.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
@@ -105,7 +101,8 @@ bool SharedMemIPCServer::Init(void* shared_mem,
   // 4) initialize the server side of the channel (service_context).
   // 5) call the thread provider RegisterWait to register the ping events.
   for (size_t ix = 0; ix != channel_count; ++ix) {
-    ChannelControl* client_context = &client_control_->channels[ix];
+    ChannelControl* client_context =
+        &UNSAFE_TODO(client_control_->channels[ix]);
     ServerControl* service_context = new ServerControl;
     server_contexts_.push_back(base::WrapUnique(service_context));
 
@@ -125,8 +122,8 @@ bool SharedMemIPCServer::Init(void* shared_mem,
     service_context->shared_base = reinterpret_cast<char*>(shared_mem);
     service_context->channel_size = channel_size;
     service_context->channel = client_context;
-    service_context->channel_buffer =
-        service_context->shared_base + client_context->channel_base;
+    service_context->channel_buffer = UNSAFE_TODO(service_context->shared_base +
+                                                  client_context->channel_base);
     service_context->dispatcher = call_dispatcher_;
     service_context->target_info.process = target_process_;
     service_context->target_info.process_id = target_process_id_;
@@ -277,12 +274,13 @@ bool SharedMemIPCServer::InvokeCallback(const ServerControl* service_context,
     if (handler)
       SetCallError(SBOX_ERROR_FAILED_IPC, call_result);
   } else {
-    memcpy(call_result, &ipc_info.return_info, sizeof(*call_result));
+    UNSAFE_TODO(
+        memcpy(call_result, &ipc_info.return_info, sizeof(*call_result)));
     SetCallSuccess(call_result);
     if (params->IsInOut()) {
       // Maybe the params got changed by the broker. We need to upadte the
       // memory section.
-      memcpy(ipc_buffer, params.get(), output_size);
+      UNSAFE_TODO(memcpy(ipc_buffer, params.get(), output_size));
     }
   }
 
@@ -320,7 +318,8 @@ void __stdcall SharedMemIPCServer::ThreadPingEventReady(void* context,
   // Copy the answer back into the channel and signal the pong event. This
   // should wake up the client so it can finish the ipc cycle.
   CrossCallParams* call_params = reinterpret_cast<CrossCallParams*>(buffer);
-  memcpy(call_params->GetCallReturn(), &call_result, sizeof(call_result));
+  UNSAFE_TODO(
+      memcpy(call_params->GetCallReturn(), &call_result, sizeof(call_result)));
   ::InterlockedExchange(&service_context->channel->state, kAckChannel);
   ::SetEvent(service_context->pong_event.get());
 }

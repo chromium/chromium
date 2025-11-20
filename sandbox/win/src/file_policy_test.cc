@@ -2,19 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <windows.h>
+#include <winternl.h>
 
 #include <ntstatus.h>
 #include <winioctl.h>
-#include <winternl.h>
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_number_conversions_win.h"
 #include "base/strings/string_util_win.h"
@@ -52,10 +48,12 @@ SBOX_TESTS_COMMAND int File_Create(int argc, wchar_t** argv) {
   std::wstring operation(argv[0]);
 
   if (operation == L"Read") {
-    base::win::ScopedHandle file1(CreateFile(
-        argv[1], GENERIC_READ, kSharing, nullptr, OPEN_EXISTING, 0, nullptr));
-    base::win::ScopedHandle file2(CreateFile(
-        argv[1], FILE_EXECUTE, kSharing, nullptr, OPEN_EXISTING, 0, nullptr));
+    base::win::ScopedHandle file1(CreateFile(UNSAFE_TODO(argv[1]), GENERIC_READ,
+                                             kSharing, nullptr, OPEN_EXISTING,
+                                             0, nullptr));
+    base::win::ScopedHandle file2(CreateFile(UNSAFE_TODO(argv[1]), FILE_EXECUTE,
+                                             kSharing, nullptr, OPEN_EXISTING,
+                                             0, nullptr));
 
     if (file1.is_valid() == file2.is_valid()) {
       return file1.is_valid() ? SBOX_TEST_SUCCEEDED : SBOX_TEST_DENIED;
@@ -63,12 +61,12 @@ SBOX_TESTS_COMMAND int File_Create(int argc, wchar_t** argv) {
     return file1.is_valid() ? SBOX_TEST_FIRST_ERROR : SBOX_TEST_SECOND_ERROR;
 
   } else if (operation == L"Write") {
-    base::win::ScopedHandle file1(
-        CreateFile(argv[1], GENERIC_READ | GENERIC_WRITE | GENERIC_EXECUTE,
-                   kSharing, nullptr, OPEN_EXISTING, 0, nullptr));
+    base::win::ScopedHandle file1(CreateFile(
+        UNSAFE_TODO(argv[1]), GENERIC_READ | GENERIC_WRITE | GENERIC_EXECUTE,
+        kSharing, nullptr, OPEN_EXISTING, 0, nullptr));
     base::win::ScopedHandle file2(
-        CreateFile(argv[1], GENERIC_READ | FILE_WRITE_DATA, kSharing, nullptr,
-                   OPEN_EXISTING, 0, nullptr));
+        CreateFile(UNSAFE_TODO(argv[1]), GENERIC_READ | FILE_WRITE_DATA,
+                   kSharing, nullptr, OPEN_EXISTING, 0, nullptr));
 
     if (file1.is_valid() == file2.is_valid()) {
       return file1.is_valid() ? SBOX_TEST_SUCCEEDED : SBOX_TEST_DENIED;
@@ -76,10 +74,12 @@ SBOX_TESTS_COMMAND int File_Create(int argc, wchar_t** argv) {
     return file1.is_valid() ? SBOX_TEST_FIRST_ERROR : SBOX_TEST_SECOND_ERROR;
 
   } else if (operation == L"ReadCreate") {
-    base::win::ScopedHandle file2(CreateFile(argv[1], GENERIC_READ, kSharing,
-                                             nullptr, CREATE_NEW, 0, nullptr));
-    base::win::ScopedHandle file1(CreateFile(
-        argv[1], GENERIC_READ, kSharing, nullptr, CREATE_ALWAYS, 0, nullptr));
+    base::win::ScopedHandle file2(CreateFile(UNSAFE_TODO(argv[1]), GENERIC_READ,
+                                             kSharing, nullptr, CREATE_NEW, 0,
+                                             nullptr));
+    base::win::ScopedHandle file1(CreateFile(UNSAFE_TODO(argv[1]), GENERIC_READ,
+                                             kSharing, nullptr, CREATE_ALWAYS,
+                                             0, nullptr));
 
     if (file1.is_valid() == file2.is_valid()) {
       return file1.is_valid() ? SBOX_TEST_SUCCEEDED : SBOX_TEST_DENIED;
@@ -138,7 +138,7 @@ SBOX_TESTS_COMMAND int File_CreateSys32(int argc, wchar_t** argv) {
                              OBJ_CASE_INSENSITIVE, nullptr, nullptr);
 
   unsigned options = 0;
-  if (argc == 2 && !base::StringToUint(argv[1], &options)) {
+  if (argc == 2 && !base::StringToUint(UNSAFE_TODO(argv[1]), &options)) {
     return SBOX_TEST_FAILED_TO_EXECUTE_COMMAND;
   }
 
@@ -179,7 +179,7 @@ SBOX_TESTS_COMMAND int File_OpenSys32(int argc, wchar_t** argv) {
                              OBJ_CASE_INSENSITIVE, nullptr, nullptr);
 
   unsigned options = 0;
-  if (argc == 2 && !base::StringToUint(argv[1], &options)) {
+  if (argc == 2 && !base::StringToUint(UNSAFE_TODO(argv[1]), &options)) {
     return SBOX_TEST_FAILED_TO_EXECUTE_COMMAND;
   }
 
@@ -227,8 +227,9 @@ SBOX_TESTS_COMMAND int File_Rename(int argc, wchar_t** argv) {
   if (argc != 2)
     return SBOX_TEST_FAILED_TO_EXECUTE_COMMAND;
 
-  if (::MoveFileEx(argv[0], argv[1], 0))
+  if (::MoveFileEx(argv[0], UNSAFE_TODO(argv[1]), 0)) {
     return SBOX_TEST_SUCCEEDED;
+  }
 
   if (::GetLastError() != ERROR_ACCESS_DENIED)
     return SBOX_TEST_FAILED;
@@ -251,7 +252,7 @@ SBOX_TESTS_COMMAND int File_QueryAttributes(int argc, wchar_t** argv) {
   if (argc != 2)
     return SBOX_TEST_FAILED_TO_EXECUTE_COMMAND;
 
-  bool expect_directory = (L'd' == argv[1][0]);
+  bool expect_directory = (L'd' == UNSAFE_TODO(argv[1])[0]);
 
   UNICODE_STRING object_name;
   std::wstring file = MakePathToSys(argv[0], true);
@@ -423,7 +424,7 @@ TEST(FilePolicyTest, AllowWildcard) {
   ASSERT_NE(::GetTempPath(MAX_PATH, temp_directory), 0u);
   ASSERT_NE(::GetTempFileName(temp_directory, L"test", 0, temp_file_name), 0u);
 
-  wcscat_s(temp_directory, MAX_PATH, L"*");
+  UNSAFE_TODO(wcscat_s(temp_directory, MAX_PATH, L"*"));
   EXPECT_TRUE(runner.AllowFileAccess(FileSemantics::kAllowAny, temp_directory));
 
   wchar_t command_write[MAX_PATH + 20] = {};

@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <limits.h>
 #include <stddef.h>
 
+#include "base/compiler_specific.h"
 #include "base/strings/string_util.h"
 #include "base/win/scoped_handle.h"
 #include "sandbox/win/src/handle_closer_agent.h"
@@ -64,7 +60,8 @@ SBOX_TESTS_COMMAND int CheckForFileHandles(int argc, wchar_t** argv) {
     return SBOX_TEST_FAILED_TO_RUN_TEST;
   }
   bool should_find = argv[0][0] == L'Y';
-  if (argv[0][1] != L'\0' || (!should_find && argv[0][0] != L'N')) {
+  if (UNSAFE_TODO(argv[0][1]) != L'\0' ||
+      (!should_find && argv[0][0] != L'N')) {
     return SBOX_TEST_FAILED_TO_RUN_TEST;
   }
 
@@ -94,7 +91,7 @@ SBOX_TESTS_COMMAND int CheckForFileHandles(int argc, wchar_t** argv) {
         auto handle_name = GetPathFromHandle(handle);
         if (handle_name) {
           for (int i = 1; i < argc; ++i) {
-            if (handle_name.value() == argv[i]) {
+            if (handle_name.value() == UNSAFE_TODO(argv[i])) {
               return should_find ? SBOX_TEST_SUCCEEDED : SBOX_TEST_FAILED;
             }
           }
@@ -205,12 +202,12 @@ SBOX_TESTS_COMMAND int RunThreadPool(int argc, wchar_t** argv) {
     CHECK(event);
     CHECK(::RegisterWaitForSingleObject(&pool, event, ThreadPoolTask, event,
                                         INFINITE, WT_EXECUTEONLYONCE));
-    wait_list[i] = event;
+    UNSAFE_TODO(wait_list[i]) = event;
   }
 
   // Signal all the waiters.
   for (int i = 0; i < kWaitCount; ++i)
-    CHECK(::SetEvent(wait_list[i]));
+    CHECK(::SetEvent(UNSAFE_TODO(wait_list[i])));
 
   CHECK_EQ(::WaitForSingleObject(finish_event, INFINITE), WAIT_OBJECT_0);
   CHECK(::CloseHandle(finish_event));

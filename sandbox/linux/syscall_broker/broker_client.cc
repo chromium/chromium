@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "sandbox/linux/syscall_broker/broker_client.h"
 
 #include <errno.h>
@@ -20,6 +15,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "sandbox/linux/syscall_broker/broker_channel.h"
 #include "sandbox/linux/syscall_broker/broker_command.h"
@@ -121,7 +117,7 @@ int BrokerClient::Readlink(const char* path, char* buf, size_t bufsize) const {
   if (return_length > bufsize) {
     return_length = bufsize;
   }
-  memcpy(buf, return_data, return_length);
+  UNSAFE_TODO(memcpy(buf, return_data, return_length));
   return return_length;
 }
 
@@ -230,7 +226,8 @@ int BrokerClient::InotifyAddWatch(int fd,
 
   BrokerSimpleMessage reply;
   ssize_t msg_len = message.SendRecvMsgWithFlagsMultipleFds(
-      ipc_channel_.get(), 0, base::span<const int>(&fd, 1u), {}, &reply);
+      ipc_channel_.get(), 0, UNSAFE_TODO(base::span<const int>(&fd, 1u)), {},
+      &reply);
 
   if (msg_len < 0)
     return msg_len;
@@ -369,7 +366,7 @@ int BrokerClient::StatFamilySyscall(BrokerCommand syscall_type,
     return -ENOMEM;
   if (static_cast<size_t>(return_length) != expected_result_size)
     return -ENOMEM;
-  memcpy(result_ptr, return_data, expected_result_size);
+  UNSAFE_TODO(memcpy(result_ptr, return_data, expected_result_size));
   return return_value;
 }
 
