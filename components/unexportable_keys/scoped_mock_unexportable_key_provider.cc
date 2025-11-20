@@ -45,8 +45,9 @@ class ForwardingUnexportableKeyProvider
     return provider_->FromWrappedSigningKeySlowly(wrapped_key);
   }
 
-  bool DeleteSigningKeySlowly(base::span<const uint8_t> wrapped_key) override {
-    return provider_->DeleteSigningKeySlowly(wrapped_key);
+  crypto::StatefulUnexportableKeyProvider* AsStatefulUnexportableKeyProvider()
+      override {
+    return provider_->AsStatefulUnexportableKeyProvider();
   }
 
  private:

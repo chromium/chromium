@@ -311,6 +311,11 @@ UnexportableKeyProviderMac::FromWrappedSigningKeySlowly(
                                                      key_attributes);
 }
 
+StatefulUnexportableKeyProvider*
+UnexportableKeyProviderMac::AsStatefulUnexportableKeyProvider() {
+  return this;
+}
+
 bool UnexportableKeyProviderMac::DeleteSigningKeySlowly(
     base::span<const uint8_t> wrapped_key) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,

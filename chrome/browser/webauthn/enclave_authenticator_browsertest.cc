@@ -3558,7 +3558,8 @@ class BlockingUnexportableKeyProvider : public crypto::UnexportableKeyProvider {
     NOTREACHED();
   }
 
-  bool DeleteSigningKeySlowly(base::span<const uint8_t> wrapped_key) override {
+  crypto::StatefulUnexportableKeyProvider* AsStatefulUnexportableKeyProvider()
+      override {
     NOTREACHED();
   }
 };

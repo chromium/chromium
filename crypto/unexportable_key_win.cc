@@ -669,9 +669,10 @@ class UnexportableKeyProviderWin : public UnexportableKeyProvider {
     return nullptr;
   }
 
-  bool DeleteSigningKeySlowly(base::span<const uint8_t> wrapped) override {
+  StatefulUnexportableKeyProvider* AsStatefulUnexportableKeyProvider()
+      override {
     // Unexportable keys are stateless on Windows.
-    return true;
+    return nullptr;
   }
 
  private:

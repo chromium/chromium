@@ -190,7 +190,10 @@ TEST_P(UnexportableKeySigningTest, RoundTrip) {
   verifier2.VerifyUpdate(msg);
   ASSERT_TRUE(verifier2.VerifyFinal());
 
-  EXPECT_TRUE(provider->DeleteSigningKeySlowly(wrapped));
+  crypto::StatefulUnexportableKeyProvider* stateful_provider =
+      provider->AsStatefulUnexportableKeyProvider();
+  EXPECT_TRUE(stateful_provider == nullptr ||
+              stateful_provider->DeleteSigningKeySlowly(wrapped));
 }
 
 #if BUILDFLAG(IS_WIN)

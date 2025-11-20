@@ -482,6 +482,8 @@ TEST_F(UnexportableKeyTaskManagerTest, DeleteKeyAsync) {
   // Second, delete the key.
   base::HistogramTester histogram_tester;
   base::test::TestFuture<ServiceErrorOr<void>> delete_future;
+  EXPECT_CALL(SwitchToMockKeyProvider().mock(), DeleteSigningKeySlowly)
+      .WillOnce(Return(true));
   task_manager().DeleteSigningKeySlowlyAsync(
       crypto::UnexportableKeyProvider::Config(), std::move(wrapped_key),
       BackgroundTaskPriority::kBestEffort, delete_future.GetCallback());

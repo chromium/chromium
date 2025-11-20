@@ -18,7 +18,8 @@ namespace {
 // Mock that wraps the stateless software unexportable key provider while
 // tracking key creation and removal. CHECKs if there are keys left that have
 // not been removed when destroyed.
-class MockTrackingUnexportableKeyProvider : public UnexportableKeyProvider {
+class MockTrackingUnexportableKeyProvider
+    : public StatefulUnexportableKeyProvider {
  public:
   MockTrackingUnexportableKeyProvider()
       : key_provider_(GetSoftwareUnsecureUnexportableKeyProvider()) {}
@@ -50,8 +51,18 @@ class MockTrackingUnexportableKeyProvider : public UnexportableKeyProvider {
         << "Attempted to delete non existing key";
     return key_provider_->FromWrappedSigningKeySlowly(wrapped_key);
   }
+
+  StatefulUnexportableKeyProvider* AsStatefulUnexportableKeyProvider()
+      override {
+    return this;
+  }
+
+  // StatefulUnexportableKeyProvider:
   bool DeleteSigningKeySlowly(base::span<const uint8_t> wrapped_key) override {
-    key_provider_->DeleteSigningKeySlowly(wrapped_key);
+    if (StatefulUnexportableKeyProvider* stateful_key_provider =
+            key_provider_->AsStatefulUnexportableKeyProvider()) {
+      stateful_key_provider->DeleteSigningKeySlowly(wrapped_key);
+    }
     return keys_.erase(
         std::vector<uint8_t>(wrapped_key.begin(), wrapped_key.end()));
   }

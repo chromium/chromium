@@ -4296,8 +4296,13 @@ void EnclaveManager::ClearRegistration() {
       FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
       base::BindOnce(
           [](std::vector<uint8_t> wrapped_identity_private_key) {
-            if (auto provider = GetWebAuthnUnexportableKeyProvider()) {
-              provider->DeleteSigningKeySlowly(wrapped_identity_private_key);
+            std::unique_ptr<crypto::UnexportableKeyProvider> provider =
+                GetWebAuthnUnexportableKeyProvider();
+            if (crypto::StatefulUnexportableKeyProvider* stateful_provider =
+                    provider ? provider->AsStatefulUnexportableKeyProvider()
+                             : nullptr) {
+              stateful_provider->DeleteSigningKeySlowly(
+                  wrapped_identity_private_key);
             }
           },
           ToVector(user_->wrapped_identity_private_key())));

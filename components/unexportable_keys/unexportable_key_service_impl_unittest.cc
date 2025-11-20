@@ -408,6 +408,8 @@ TEST_F(UnexportableKeyServiceImplTest, DeleteKey) {
   ASSERT_OK(service().GetWrappedKey(key_id));
 
   base::test::TestFuture<ServiceErrorOr<void>> delete_future;
+  EXPECT_CALL(SwitchToMockKeyProvider().mock(), DeleteSigningKeySlowly)
+      .WillOnce(Return(true));
   service().DeleteKeySlowlyAsync(key_id, kTaskPriority,
                                  delete_future.GetCallback());
   RunBackgroundTasks();
@@ -459,6 +461,8 @@ TEST_F(UnexportableKeyServiceImplTest, SignWithDeletedKey) {
   ASSERT_OK_AND_ASSIGN(UnexportableKeyId key_id, generate_future.Get());
 
   base::test::TestFuture<ServiceErrorOr<void>> delete_future;
+  EXPECT_CALL(SwitchToMockKeyProvider().mock(), DeleteSigningKeySlowly)
+      .WillOnce(Return(true));
   service().DeleteKeySlowlyAsync(key_id, kTaskPriority,
                                  delete_future.GetCallback());
   RunBackgroundTasks();
@@ -485,7 +489,7 @@ TEST_F(UnexportableKeyServiceImplTest, FromWrappedKeyAfterDeletingOriginalKey) {
   service().DeleteKeySlowlyAsync(key_id, kTaskPriority,
                                  delete_future.GetCallback());
   RunBackgroundTasks();
-  ASSERT_OK(delete_future.Get());
+  ASSERT_TRUE(delete_future.IsReady());
 
   // Do NOT reset the service. The key should be gone from the service's maps.
 
@@ -510,6 +514,8 @@ TEST_F(UnexportableKeyServiceImplTest, DeleteKeyTwice) {
 
   // The first deletion should succeed.
   base::test::TestFuture<ServiceErrorOr<void>> delete_future;
+  EXPECT_CALL(SwitchToMockKeyProvider().mock(), DeleteSigningKeySlowly)
+      .WillOnce(Return(true));
   service().DeleteKeySlowlyAsync(key_id, kTaskPriority,
                                  delete_future.GetCallback());
   RunBackgroundTasks();

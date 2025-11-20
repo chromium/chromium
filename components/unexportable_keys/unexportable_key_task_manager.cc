@@ -181,7 +181,7 @@ void UnexportableKeyTaskManager::DeleteSigningKeySlowlyAsync(
   std::unique_ptr<crypto::UnexportableKeyProvider> key_provider =
       GetUnexportableKeyProvider(std::move(config));
 
-  if (!key_provider) {
+  if (!key_provider || !key_provider->AsStatefulUnexportableKeyProvider()) {
     std::move(callback_wrapper)
         .Run(base::unexpected(ServiceError::kNoKeyProvider), /*retry_count=*/0);
     return;

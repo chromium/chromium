@@ -79,8 +79,10 @@ BrowserBoundKeyStoreDesktop::GetOrCreateBrowserBoundKeyForCredentialId(
 
 void BrowserBoundKeyStoreDesktop::DeleteBrowserBoundKey(
     std::vector<uint8_t> bbk_id) {
-  if (key_provider_) {
-    key_provider_->DeleteSigningKeySlowly(bbk_id);
+  if (crypto::StatefulUnexportableKeyProvider* stateful_provider =
+          key_provider_ ? key_provider_->AsStatefulUnexportableKeyProvider()
+                        : nullptr) {
+    stateful_provider->DeleteSigningKeySlowly(bbk_id);
   }
 }
 

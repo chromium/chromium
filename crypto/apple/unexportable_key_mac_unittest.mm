@@ -48,14 +48,17 @@ TEST_F(UnexportableKeyMacTest, DeleteSigningKey) {
       provider_->GenerateSigningKeySlowly(kAcceptableAlgos);
   ASSERT_TRUE(key);
   ASSERT_TRUE(provider_->FromWrappedSigningKeySlowly(key->GetWrappedKey()));
-  EXPECT_TRUE(provider_->DeleteSigningKeySlowly(key->GetWrappedKey()));
+  EXPECT_TRUE(
+      provider_->AsStatefulUnexportableKeyProvider()->DeleteSigningKeySlowly(
+          key->GetWrappedKey()));
   EXPECT_FALSE(provider_->FromWrappedSigningKeySlowly(key->GetWrappedKey()));
   EXPECT_TRUE(scoped_fake_keychain_.keychain()->items().empty());
 }
 
 TEST_F(UnexportableKeyMacTest, DeleteUnknownSigningKey) {
   EXPECT_FALSE(
-      provider_->DeleteSigningKeySlowly(std::vector<uint8_t>{1, 2, 3}));
+      provider_->AsStatefulUnexportableKeyProvider()->DeleteSigningKeySlowly(
+          std::vector<uint8_t>{1, 2, 3}));
 }
 
 TEST_F(UnexportableKeyMacTest, DeleteSigningKeyWithWrongApplicationTag) {
@@ -75,14 +78,18 @@ TEST_F(UnexportableKeyMacTest, DeleteSigningKeyWithWrongApplicationTag) {
   ASSERT_TRUE(new_provider);
 
   // Deleting with the wrong provider should fail.
-  EXPECT_FALSE(new_provider->DeleteSigningKeySlowly(key->GetWrappedKey()));
+  EXPECT_FALSE(
+      new_provider->AsStatefulUnexportableKeyProvider()->DeleteSigningKeySlowly(
+          key->GetWrappedKey()));
 
   // The key should still exist and be loadable by the original provider.
   EXPECT_TRUE(provider_->FromWrappedSigningKeySlowly(key->GetWrappedKey()));
   EXPECT_FALSE(scoped_fake_keychain_.keychain()->items().empty());
 
   // Deleting with the correct provider should succeed.
-  EXPECT_TRUE(provider_->DeleteSigningKeySlowly(key->GetWrappedKey()));
+  EXPECT_TRUE(
+      provider_->AsStatefulUnexportableKeyProvider()->DeleteSigningKeySlowly(
+          key->GetWrappedKey()));
   EXPECT_FALSE(provider_->FromWrappedSigningKeySlowly(key->GetWrappedKey()));
   EXPECT_TRUE(scoped_fake_keychain_.keychain()->items().empty());
 }

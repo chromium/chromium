@@ -200,9 +200,10 @@ class SoftwareProvider : public UnexportableKeyProvider {
     return nullptr;
   }
 
-  bool DeleteSigningKeySlowly(base::span<const uint8_t> wrapped_key) override {
+  StatefulUnexportableKeyProvider* AsStatefulUnexportableKeyProvider()
+      override {
     // Unexportable software keys are stateless.
-    return true;
+    return nullptr;
   }
 };
 

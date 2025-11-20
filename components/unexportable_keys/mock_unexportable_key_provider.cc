@@ -4,9 +4,15 @@
 
 #include "components/unexportable_keys/mock_unexportable_key_provider.h"
 
+#include "testing/gmock/include/gmock/gmock.h"
+
 namespace unexportable_keys {
 
-MockUnexportableKeyProvider::MockUnexportableKeyProvider() = default;
+using ::testing::Return;
+
+MockUnexportableKeyProvider::MockUnexportableKeyProvider() {
+  ON_CALL(*this, AsStatefulUnexportableKeyProvider).WillByDefault(Return(this));
+}
 MockUnexportableKeyProvider::~MockUnexportableKeyProvider() = default;
 
 }  // namespace unexportable_keys

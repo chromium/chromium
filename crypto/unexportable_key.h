@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "crypto/crypto_export.h"
 #include "crypto/signature_verifier.h"
@@ -74,6 +75,8 @@ class CRYPTO_EXPORT UnexportableSigningKey {
   virtual SecKeyRef GetSecKeyRef() const = 0;
 #endif  // BUILDFLAG(IS_MAC)
 };
+
+class StatefulUnexportableKeyProvider;
 
 // UnexportableKeyProvider creates |UnexportableSigningKey|s.
 class CRYPTO_EXPORT UnexportableKeyProvider {
@@ -146,13 +149,20 @@ class CRYPTO_EXPORT UnexportableKeyProvider {
   virtual std::unique_ptr<UnexportableSigningKey> FromWrappedSigningKeySlowly(
       base::span<const uint8_t> wrapped_key) = 0;
 
-  // Unexportable key implementations may be stateful. This is the case for
-  // macOS. |DeleteSigningKey| deletes all state associated with a given signing
-  // key on such implementations. For stateless implementations, this is a
-  // no-op.
-  // Returns true on successful deletion, false otherwise.
-  // This can sometimes block, and therefore must not be called from the UI
-  // thread.
+  // Typesafe downcast to `StatefulUnexportableKeyProvider`. Returns nullptr if
+  // the provider is not stateful.
+  virtual StatefulUnexportableKeyProvider* AsStatefulUnexportableKeyProvider()
+      LIFETIME_BOUND = 0;
+};
+
+// StatefulUnexportableKeyProvider provides an interface for managing keys that
+// are backed by some permanent state, such as the keychain on macOS.
+class CRYPTO_EXPORT StatefulUnexportableKeyProvider
+    : public UnexportableKeyProvider {
+ public:
+  // Deletes all state associated with a given signing key. Returns true on
+  // successful deletion, false otherwise. This can sometimes block, and
+  // therefore must not be called from the UI thread.
   virtual bool DeleteSigningKeySlowly(
       base::span<const uint8_t> wrapped_key) = 0;
 };

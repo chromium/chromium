@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/check_deref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/types/expected.h"
@@ -89,7 +90,8 @@ ServiceErrorOr<void> DeleteSigningKeySlowly(
     void* task_ptr_for_tracing) {
   TRACE_EVENT("browser", "unexportable_keys::DeleteSigningKeySlowly",
               perfetto::Flow::FromPointer(task_ptr_for_tracing));
-  if (!key_provider->DeleteSigningKeySlowly(wrapped_key)) {
+  if (!CHECK_DEREF(key_provider->AsStatefulUnexportableKeyProvider())
+           .DeleteSigningKeySlowly(wrapped_key)) {
     return base::unexpected(ServiceError::kCryptoApiFailed);
   }
 

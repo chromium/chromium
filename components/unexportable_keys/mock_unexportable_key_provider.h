@@ -11,7 +11,8 @@
 
 namespace unexportable_keys {
 
-class MockUnexportableKeyProvider : public crypto::UnexportableKeyProvider {
+class MockUnexportableKeyProvider
+    : public crypto::StatefulUnexportableKeyProvider {
  public:
   MockUnexportableKeyProvider();
   ~MockUnexportableKeyProvider() override;
@@ -31,6 +32,12 @@ class MockUnexportableKeyProvider : public crypto::UnexportableKeyProvider {
               FromWrappedSigningKeySlowly,
               (base::span<const uint8_t> wrapped_key),
               (override));
+  MOCK_METHOD(crypto::StatefulUnexportableKeyProvider*,
+              AsStatefulUnexportableKeyProvider,
+              (),
+              (override));
+
+  // crypto::StatefulUnexportableKeyProvider:
   MOCK_METHOD(bool,
               DeleteSigningKeySlowly,
               (base::span<const uint8_t> wrapped_key),
