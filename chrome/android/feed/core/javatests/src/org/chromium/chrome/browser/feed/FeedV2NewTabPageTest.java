@@ -269,7 +269,6 @@ public class FeedV2NewTabPageTest {
     @DisableIf.Build(
             sdk_is_greater_than = Build.VERSION_CODES.Q,
             message = "crbug.com/1276402 crbug.com/345352689")
-    @DisableIf.Build(supported_abis_includes = "x86", message = "crbug.com/1276402")
     public void testNavigateBackToNTPWithFeeds() throws TimeoutException, InterruptedException {
         openNewTabPage();
 

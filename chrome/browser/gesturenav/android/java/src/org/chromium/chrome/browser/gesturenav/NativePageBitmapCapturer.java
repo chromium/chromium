@@ -99,13 +99,12 @@ public class NativePageBitmapCapturer {
                     },
                     callback,
                     destination);
-        } else if (destination == ScreenshotResult.Destination.BITMAP) {
+        } else {
+            assert destination == ScreenshotResult.Destination.BITMAP;
             Bitmap bitmap = capture(tab, false, 0);
             PostTask.postTask(
                     TaskTraits.UI_USER_VISIBLE,
                     () -> callback.onResult(new ScreenshotResult(bitmap)));
-        } else {
-            PostTask.postTask(TaskTraits.UI_USER_VISIBLE, () -> callback.onResult(null));
         }
         return true;
     }
@@ -218,6 +217,9 @@ public class NativePageBitmapCapturer {
     }
 
     private static boolean enableHardwareDraw() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.S;
+        // LINT.IfChange(minSupportedVersion)
+        final var minSupportedVersion = Build.VERSION_CODES.S;
+        // LINT.ThenChange(//content/browser/renderer_host/navigation_transitions/navigation_transition_utils.cc:min_supported_version)
+        return Build.VERSION.SDK_INT >= minSupportedVersion;
     }
 }

@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/navigation_transitions/navigation_transition_utils.h"
 
+#include "base/android/android_info.h"
 #include "base/android/scoped_hardware_buffer_handle.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -265,6 +266,15 @@ void CacheScreenshotSharedImageImpl(
           std::move(shared_image), std::move(release_callback)));
 }
 
+bool EnableNativePageScreenshotIntoHardwareBuffer() {
+  // LINT.IfChange(min_supported_version)
+  const auto min_supported_version = base::android::android_info::SDK_VERSION_S;
+  // LINT.ThenChange(//chrome/browser/gesturenav/android/java/src/org/chromium/chrome/browser/gesturenav/NativePageBitmapCapturer.java:minSupportedVersion)
+  return base::android::android_info::sdk_int() >= min_supported_version &&
+         base::FeatureList::IsEnabled(
+             features::kBackForwardTransitionsNativePageSharedImage);
+}
+
 void CacheScreenshotHardwareBufferImpl(
     base::WeakPtr<NavigationControllerImpl> controller,
     base::WeakPtr<NavigationRequest> navigation_request,
@@ -286,6 +296,12 @@ void CacheScreenshotHardwareBufferImpl(
     int entry_index =
         NavigationTransitionUtils::FindEntryIndexForNavigationTransitionID(
             controller.get(), screenshot_id);
+    auto& screenshot_callback = GetTestScreenshotCallback();
+    if (screenshot_callback) {
+      SkBitmap override_unused;
+      std::move(screenshot_callback)
+          .Run(entry_index, {}, false, override_unused);
+    }
     NavigationEntryImpl* entry = controller->GetEntryAtIndex(entry_index);
     if (entry) {
       entry->navigation_transition_data().set_cache_hit_or_miss_reason(
@@ -568,8 +584,7 @@ bool NavigationTransitionUtils::
   int request_sequence = last_committed_entry->navigation_transition_data()
                              .copy_output_request_sequence();
   bool copied_via_delegate;
-  if (base::FeatureList::IsEnabled(
-          features::kBackForwardTransitionsNativePageSharedImage)) {
+  if (EnableNativePageScreenshotIntoHardwareBuffer()) {
     auto context_provider = GetRasterContextProviderOrSetMissReason(
         rwhv, navigation_request, last_committed_entry);
     if (!context_provider) {
