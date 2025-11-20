@@ -343,9 +343,10 @@ void UnexportableKeyServiceImpl::OnKeyCreatedFromWrappedKey(
     ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>
         key_or_error) {
   auto it = key_id_by_wrapped_key_.find(wrapped_key);
-  // TODO(crbug.com/455538141): Handle the case where the key is not found due
-  // to an intermediate call to `DeleteKeySlowlyAsync()`.
-  CHECK(it != key_id_by_wrapped_key_.end());
+  if (it == key_id_by_wrapped_key_.end()) {
+    DVLOG(1) << "`wrapped_key` is unknown, did the key get deleted?";
+    return;
+  }
 
   MaybePendingUnexportableKeyId& maybe_pending_callbacks = it->second;
   if (maybe_pending_callbacks.HasKeyId()) {
