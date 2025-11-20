@@ -61,34 +61,33 @@ namespace {
 
 typedef int (*MainRoutineFn)();
 
-const char kUsageMessage[] =
-    "Usage: %s [options]\n"
-    "\n"
-    "Options:\n"
+void Usage(const base::FilePath& program_name) {
+  printf(
+      "Usage: %s [options]\n"
+      "\n"
+      "Options:\n"
 
 #if BUILDFLAG(IS_LINUX)
-    "  --audio-pipe-name=<pipe> - Sets the pipe name to capture audio on "
-    "Linux.\n"
+      "  --audio-pipe-name=<pipe> - Sets the pipe name to capture audio on "
+      "Linux.\n"
 #endif  // BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_APPLE)
-    "  --list-audio-devices     - List all audio devices and their device "
-    "UID.\n"
+      "  --list-audio-devices     - List all audio devices and their device "
+      "UID.\n"
 #endif  // BUILDFLAG(IS_APPLE)
 
-    "  --console                - Runs the daemon interactively.\n"
-    "  --elevate=<binary>       - Runs <binary> elevated.\n"
-    "  --host-config=<config>   - Specifies the host configuration.\n"
-    "  --help, -?               - Prints this message.\n"
-    "  --type                   - Specifies process type.\n"
-    "  --version                - Prints the host version and exits.\n"
-    "  --evaluate-type=<type>   - Evaluates the capability of the host.\n"
-    "  --enable-wtmpdb          - Enables recording to wtmpdb on Linux.\n"
-    "  --webrtc-trace-event-file=<path> - Enables logging webrtc trace events "
-    "to a file.\n";
-
-void Usage(const base::FilePath& program_name) {
-  UNSAFE_TODO(printf(kUsageMessage, program_name.MaybeAsASCII().c_str()));
+      "  --console                - Runs the daemon interactively.\n"
+      "  --elevate=<binary>       - Runs <binary> elevated.\n"
+      "  --host-config=<config>   - Specifies the host configuration.\n"
+      "  --help, -?               - Prints this message.\n"
+      "  --type                   - Specifies process type.\n"
+      "  --version                - Prints the host version and exits.\n"
+      "  --evaluate-type=<type>   - Evaluates the capability of the host.\n"
+      "  --enable-wtmpdb          - Enables recording to wtmpdb on Linux.\n"
+      "  --webrtc-trace-event-file=<path> - Enables logging webrtc trace events"
+      " to a file.\n",
+      program_name.MaybeAsASCII().c_str());
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -122,8 +121,7 @@ int RunElevated() {
       command_line.GetCommandLineString();
 
   // Launch the child process requesting elevation.
-  SHELLEXECUTEINFO info;
-  UNSAFE_TODO(memset(&info, 0, sizeof(info)));
+  SHELLEXECUTEINFO info = {};
   info.cbSize = sizeof(info);
   info.lpVerb = L"runas";
   info.lpFile = binary.value().c_str();
