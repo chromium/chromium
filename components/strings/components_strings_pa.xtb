@@ -662,6 +662,7 @@
 <translation id="2085876078937250610">ਰੱਖਿਅਤ ਕਰੋ…</translation>
 <translation id="2088913896151127116">ਲਿਖਤ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="2090451897496479509">ਹੋਰ ਜਾਣਕਾਰੀ ਲਈ ਪ੍ਰਦਾਨਕ ਨਾਲ ਸੰਪਰਕ ਕਰੋ</translation>
+<translation id="2090686487550343086">IBANs</translation>
 <translation id="2091887806945687916">ਧੁਨੀ</translation>
 <translation id="2093184051799735948"><ph name="ENGINE_NAME" /> ਖੋਜੋ ਜਾਂ URL ਟਾਈਪ ਕਰੋ</translation>
 <translation id="2093982008204312032">Google Chrome ਪਾਸਵਰਡ ਭਰਨ ਲਈ Windows Hello ਨੂੰ ਬੰਦ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਿਹਾ ਹੈ।</translation>
@@ -799,6 +800,7 @@
 <translation id="2283340219607151381">ਪਤੇ ਰੱਖਿਅਤ ਕਰੋ ਅਤੇ ਭਰੋ</translation>
 <translation id="2283447177162560884">'<ph name="PAGE_TITLE" />' ਨੂੰ ਮਿਟਾਇਆ ਗਿਆ</translation>
 <translation id="2283599456633275070">ਯਾਤਰਾ</translation>
+<translation id="2285709459648658719">ਪਾਸਪੋਰਟ</translation>
 <translation id="2286383991450886080">34 x 44 ਇੰਚ</translation>
 <translation id="2288422996159078444">ਤੁਸੀਂ ਜੋ ਵੀ ਟਾਈਪ ਕਰਦੇ ਹੋ, ਤੁਸੀਂ ਜੋ ਵੀ ਪੰਨੇ ਦੇਖਦੇ ਹੋ ਜਾਂ ਵੈੱਬ 'ਤੇ ਕੋਈ ਵੀ ਹੋਰ ਸਰਗਰਮੀ ਕਰਦੇ ਹੋ, ਉਸ 'ਤੇ ਨਜ਼ਰ ਰੱਖੀ ਜਾਂਦੀ ਹੈ। ਸਾਈਟਾਂ 'ਤੇ ਸਮੱਗਰੀ ਨੂੰ ਤੁਹਾਡੀ ਜਾਣਕਾਰੀ ਤੋਂ ਬਿਨਾਂ ਬਦਲਿਆ ਜਾ ਸਕਦਾ ਹੈ।</translation>
 <translation id="2289385804009217824">ਕਟਾਈ</translation>
@@ -2548,6 +2550,7 @@
 <translation id="5137761395480718572">ਇਹ ਐਪ ਵਾਈ-ਫਾਈ ਕ੍ਰੀਡੈਂਸ਼ੀਅਲਾਂ ਨੂੰ ਸਥਾਪਤ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਲਈ ਬੇਨਤੀ ਕਰ ਰਹੀ ਹੈ। ਸੈੱਟਅੱਪ ਤੋਂ ਬਾਅਦ, ਤੁਹਾਡਾ <ph name="DEVICE_TYPE" /> ਆਪਣੇ ਆਪ ਭਾਗ ਲੈਣ ਵਾਲੇ ਵਾਈ-ਫਾਈ ਨੈੱਟਵਰਕਾਂ ਨਾਲ ਕਨੈਕਟ ਹੋ ਜਾਵੇਗਾ। ਇਨ੍ਹਾਂ ਕ੍ਰੀਡੈਂਸ਼ੀਅਲਾਂ ਨੂੰ ਹਟਾਉਣ ਲਈ, ਐਪ ਨੂੰ ਅਣਸਥਾਪਤ ਕਰੋ। <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">ਇਸ ਸਮੇਂ ਆਭਾਸੀ ਕਾਰਡ ਉਪਲਬਧ ਨਹੀਂ ਹੈ, ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਬੈਂਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ</translation>
 <translation id="5138227688689900538">ਘੱਟ ਦਿਖਾਓ</translation>
+<translation id="5140155249377545621">ਡਰਾਈਵਿੰਗ ਲਾਇਸੰਸ</translation>
 <translation id="5144613843429436866">ਤੁਸੀਂ ਇਸ ਸਾਈਟ ਲਈ <ph name="PERMISSION" /> ਸੰਬੰਧੀ ਆਗਿਆ ਦਿੱਤੀ ਹੈ</translation>
 <translation id="5145883236150621069">ਨੀਤੀ ਜਵਾਬ ਵਿੱਚ ਗੜਬੜ ਕੋਡ ਹੈ</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> ਦੀਆਂ ਸੂਚਨਾਵਾਂ ਬਲਾਕ ਹਨ</translation>

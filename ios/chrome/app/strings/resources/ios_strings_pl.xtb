@@ -596,6 +596,7 @@
 <translation id="3277021493514034324">Skopiowano adres strony</translation>
 <translation id="3280562213547448728">Wyszukiwanie głosowe</translation>
 <translation id="3289505634533552500">Wyszukiwanie głosowe</translation>
+<translation id="3293080634164207409">Dodaj karty</translation>
 <translation id="3295904109373959849">Siatka grup kart</translation>
 <translation id="3302837541200840455"><ph name="TAB_TITLE" />, nowa aktywność</translation>
 <translation id="3305294846493618482">więcej</translation>
@@ -2005,7 +2006,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="8545276357312221485">Sprawdź ustawienia przeglądarki domyślnej</translation>
 <translation id="854938212724803178">Masz 1 przejęte hasło. Dla bezpieczeństwa zmień je jak najszybciej.</translation>
 <translation id="8551311254462607218">Na pasku adresu kliknij ikonę aparatu Obiektywu Google</translation>
-<translation id="8556590991644167667">{count,plural, =1{Odrzuciłeś(-aś) {count} ostrzeżenie}few{Odrzuciłeś(-aś) {count} ostrzeżenia}many{Odrzuciłeś(-aś) {count} ostrzeżeń}other{Odrzuciłeś(-aś) {count} ostrzeżenia}}</translation>
+<translation id="8556590991644167667">{count,plural, =1{Odrzucono {count} ostrzeżenie}few{Odrzucono {count} ostrzeżenia}many{Odrzucono {count} ostrzeżeń}other{Odrzucono {count} ostrzeżenia}}</translation>
 <translation id="8558046478684552694">Zamknij grupę.</translation>
 <translation id="8559858985063901027">Klucze dostępu</translation>
 <translation id="8560253818350321773">Najpierw pokazuj elementy często używane.</translation>

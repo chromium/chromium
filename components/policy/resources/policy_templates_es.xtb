@@ -1844,6 +1844,7 @@ Esta política solo afecta al modo Incógnito. Para bloquear URLs en todos los p
 <translation id="2258126710006312594">Permite que los usuarios con acceso remoto transfieran archivos al host y desde el host</translation>
 <translation id="225830954785359083">Impedir que las páginas muestren ventanas emergentes durante la descarga</translation>
 <translation id="2261648512244797294">Inhabilitar el protocolo Privet de impresión obsoleto</translation>
+<translation id="2262701937800507517">Usar el orden del algoritmo de cifrado predeterminado de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="2263881357524831360">Permitir el uso de gestores de contraseñas de terceros en <ph name="PRODUCT_NAME" /> para <ph name="ANDROID_NAME" /></translation>
 <translation id="2266422599396179941">Permitir que los usuarios envíen sugerencias
 </translation>
@@ -2386,13 +2387,6 @@ El usuario puede tener la seguridad de que ninguna otra aplicación podrá captu
 <translation id="2614156176932194496">Configuración de las integraciones de Modo IA de Google en la barra de direcciones y en el cuadro de búsqueda de la página Nueva pestaña.</translation>
 <translation id="2615240493030733717">Informar sobre la zona horaria</translation>
 <translation id="2619258867868873629">El destino de Guardar como PDF y de Guardar en Google Drive en dispositivos <ph name="PRODUCT_OS_NAME" /></translation>
-<translation id="262035875928535253">Configura la lista de dominios en los que <ph name="PRODUCT_NAME" /> debe inhabilitar <ph name="PASSWORD_MANAGER_NAME" />. Esto significa que los flujos de trabajo de guardar y rellenar se desactivarán, lo que asegura que las contraseñas de esos sitios web no se puedan guardar ni rellenar automáticamente en formularios web.
-
-Si un dominio está en la lista, se inhabilitará <ph name="PASSWORD_MANAGER_NAME" /> en dicho dominio.
-
-Si no aparece en la lista, <ph name="PASSWORD_MANAGER_NAME" /> estará disponible en el dominio en cuestión.
-
-Si no se define esta política, <ph name="PASSWORD_MANAGER_NAME" /> estará disponible en todos los dominios.</translation>
 <translation id="2621290137818374425">Si se establece esta política, se desactivarán los requisitos de divulgación de transparencia en los certificados para los nombres de host de las URLs especificadas. Aunque resulte más difícil detectar certificados que se hayan publicado incorrectamente, los hosts pueden seguir usando certificados que, de lo contrario, no serían de confianza (por no haberse comunicado públicamente de forma correcta).
 
       Si no se asigna ningún valor a esta política, los certificados que se deban comunicar a través de la transparencia en los certificados no serán de confianza para <ph name="PRODUCT_NAME" /> si no se comunican.
@@ -2603,6 +2597,23 @@ Si no se establece, se aplicará la política <ph name="BLOCK_POPUPS_POLICY_NAME
 <translation id="2812417768214606683">Esta política especifica una lista de dispositivos de almacenamiento USB que están exentos de las políticas <ph name="EXTERNAL_STORAGE_DISABLED_POLICY_NAME" /> y <ph name="EXTERNAL_STORAGE_READ_ONLY_POLICY_NAME" />.
 
 Las entradas son pares de identificador de proveedor del USB e identificador de producto que permiten identificar el modelo específico del dispositivo USB.</translation>
+<translation id="2816735327277809365">Esta política configura <ph name="PRODUCT_OS_NAME" /> para que ordene sus algoritmos de cifrado preferidos en TLS 1.3 de forma que se refleje una preferencia por los algoritmos que hayan sido aprobados por un régimen de cumplimiento específico al hacer solicitudes de red desde la pantalla de inicio de sesión.
+
+Si se define esta política, no se garantiza que se negocien algoritmos específicos.
+
+Esta política permite que los operadores de servidores que quieran admitir clientes con y sin requisitos de cumplimiento normativo distingan entre esos clientes y solo usen determinados algoritmos no predeterminados con mayor potencia criptográfica para aquellos que estén configurados explícitamente para preferirlos.
+
+Si se asigna el valor <ph name="CNSA_NAME" /> a esta política, se configura <ph name="PRODUCT_OS_NAME" /> para que prefiera los algoritmos de cifrado necesarios para cumplir los requisitos de las versiones 1.0 y 2.0 del Commercial National Security Algorithm Suite (CNSA 1.0 y 2.0).
+
+Si no se define esta política o se le asigna el valor <ph name="DEFAULT_NAME" />, <ph name="PRODUCT_OS_NAME" /> se configurará para que use sus algoritmos de cifrado predeterminados.
+
+No es necesario definir esta política por motivos de seguridad. La criptografía predeterminada que usa <ph name="PRODUCT_OS_NAME" /> es lo suficientemente potente como para resistir un ataque de fuerza bruta que utilice toda la energía del Sol.
+
+Si se define esta política, <ph name="PRODUCT_OS_NAME" /> será más lento al hacer solicitudes de red desde la pantalla de inicio de sesión.
+
+Esta política solo afecta a TLS 1.3 y QUIC, no a versiones anteriores de TLS.
+
+Esta política de dispositivos es equivalente a la política de usuarios <ph name="PREFER_SLOW_CIPHERS_POLICY_NAME" />, pero, en su lugar, se aplica al perfil de inicio de sesión en la pantalla de inicio de sesión.</translation>
 <translation id="2816964824289752181">Habilitar <ph name="DESK_API_NAME" /> para el control de terceros de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="2818074121667686266">Si se asigna el valor "Habilitada" a esta política o no se le asigna ninguno, significa que, con la excepción de las URL que se hayan incluido en la lista AudioCaptureAllowedUrls, se solicitará a los usuarios acceso a la captura de audio.
 
@@ -4984,6 +4995,25 @@ Si no se le asigna ningún valor, los orígenes de aplicaciones web aisladas pod
 
       Para obtener información detallada sobre los patrones de URL válidos, consulta https://chromeenterprise.google/policies/url-patterns.</translation>
 <translation id="4485425108474077672">Configurar la URL de la página Nueva pestaña</translation>
+<translation id="4485667899983529614">Esta política configura <ph name="PRODUCT_OS_NAME" /> para que ordene sus algoritmos de acuerdo de claves preferidos (grupos admitidos) en TLS 1.3 de forma que se refleje una preferencia por los algoritmos que hayan sido aprobados por un régimen de cumplimiento específico al hacer solicitudes de red desde la pantalla de inicio de sesión.
+
+Si se define esta política, no se garantiza que se negocien algoritmos específicos.
+
+Esta política permite que los operadores de servidores que quieran admitir clientes con y sin requisitos de cumplimiento normativo distingan entre esos clientes y solo usen determinados algoritmos no predeterminados con mayor potencia criptográfica para aquellos que estén configurados explícitamente para preferirlos.
+
+Si se asigna el valor <ph name="CNSA2_NAME" /> a esta política, se configura <ph name="PRODUCT_OS_NAME" /> para que prefiera los métodos de intercambio de claves necesarios para cumplir los requisitos del Commercial National Security Algorithm Suite 2.0 (CNSA 2.0).
+
+Si no se define esta política o se le asigna el valor <ph name="DEFAULT_NAME" />, <ph name="PRODUCT_OS_NAME" /> se configura para que use sus métodos predeterminados de intercambio de claves.
+
+Si se asigna a esta política un valor que configure <ph name="PRODUCT_OS_NAME" /> para que prefiera un algoritmo de acuerdo de claves poscuántico, pero <ph name="DEVICE_POST_QUANTUM_KEY_AGREEMENT_ENABLED_POLICY_NAME" /> está inhabilitado, el ajuste de <ph name="DEVICE_POST_QUANTUM_KEY_AGREEMENT_ENABLED_POLICY_NAME" /> tendrá prioridad.
+
+No es necesario definir esta política por motivos de seguridad. La criptografía predeterminada que usa <ph name="PRODUCT_OS_NAME" /> es lo suficientemente potente como para resistir un ataque de fuerza bruta que utilice toda la energía del Sol.
+
+Si se define esta política, <ph name="PRODUCT_OS_NAME" /> será más lento al hacer solicitudes de red desde la pantalla de inicio de sesión.
+
+Esta política solo afecta a TLS 1.3 y QUIC, no a versiones anteriores de TLS.
+
+Esta política de dispositivos es equivalente a la política de usuarios <ph name="PREFER_SLOW_KEX_ALGORITHMS_POLICY_NAME" />, pero, en su lugar, se aplica al perfil de inicio de sesión en la pantalla de inicio de sesión.</translation>
 <translation id="4488959486611931919">Nota: No se ha notificado ningún fallo del sitio desde que Chrome empezó a bloquear estas cookies de forma predeterminada a partir de la versión M118, por lo que esta función no se podrá configurar (y esta política no tendrá ningún efecto) a partir de la versión M127.
 
 Esta política inhabilita temporalmente los cambios en la forma en que Chrome gestiona las cookies configuradas mediante JavaScript que contienen determinados caracteres de control (NULL, retorno de carro y salto de línea).
@@ -5510,6 +5540,7 @@ Esta política es temporal y se eliminará en cuanto se lance la cancelación de
 <translation id="4802905909524200151">Configurar comportamiento de actualización del firmware de <ph name="TPM_FIRMWARE_UPDATE_TPM" /></translation>
 <translation id="4804828344300125154">Reiniciar siempre cuando el usuario cierre sesión.</translation>
 <translation id="4807950475297505572">Eliminar usuarios utilizados hace más tiempo hasta que haya suficiente espacio libre</translation>
+<translation id="4808129082654355104">Dar prioridad a los algoritmos de cifrado específicos para TLS en la pantalla de inicio de sesión del dispositivo</translation>
 <translation id="4812270373673968774">Si se asigna el valor "Siempre" a esta política, se ocultará automáticamente la estantería de <ph name="PRODUCT_OS_NAME" />. Si se le asigna el valor "Nunca", la estantería nunca se ocultará automáticamente.
 
       Si le asignas un valor a esta política, los usuarios no podrán cambiarlo. Si no se le asigna ninguno, los usuarios decidirán si la estantería se oculta automáticamente.</translation>
@@ -6355,6 +6386,7 @@ Si se inhabilita esta política, los usuarios no podrán enviar contraseñas a o
 La función no está disponible si la sincronización de contraseñas está desactivada (ya sea mediante la configuración del usuario o porque la política <ph name="SYNC_DISABLED" /> esté habilitada).
 
 Las cuentas gestionadas no pueden unirse ni crear grupos familiares, por lo que no pueden compartir contraseñas.</translation>
+<translation id="5326771913945855850">Usar los grupos admitidos predeterminados de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="532848608876725157">Habilitar DNS-over-HTTPS con alternativa no segura</translation>
 <translation id="5328965694451556034">Informar de inicio o cierre de sesión</translation>
 <translation id="5329018127554115226">El modo Alta eficiencia se inhabilitará.</translation>
@@ -10024,6 +10056,7 @@ Si no se establece esta política, el navegador seleccionará el renderizador de
 <translation id="7712245244073542805">Impresión de plataforma mediante proceso de navegador.</translation>
 <translation id="7713608076604149344">Restricciones de descarga</translation>
 <translation id="7713845740295404764">Informar de eventos de inicio o cierre de sesión</translation>
+<translation id="7715155449217638248">Dar prioridad a los algoritmos de intercambio de claves específicos para TLS en la pantalla de inicio de sesión del dispositivo</translation>
 <translation id="7715711044277116530">Porcentaje que permite ajustar el retraso de inactividad de la pantalla en el modo de presentación</translation>
 <translation id="7715838249298819250">No permitir el uso de Captura de texto.</translation>
 <translation id="7716020145539921591">Esta política está obsoleta. Se debe usar la política <ph name="PROXY_SETTINGS_POLICY_NAME" /> en su lugar.

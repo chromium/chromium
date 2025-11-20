@@ -148,7 +148,6 @@
 <translation id="2681444469812712297">在 Google Chrome 的新分頁中開啟 <ph name="URL" />。</translation>
 <translation id="2699790011615497488">開啟 Chrome 內建 Gemini (Beta 版)</translation>
 <translation id="2712141162840347885">選取任何要使用 Google 智慧鏡頭搜尋的內容，按下 Esc 鍵即可退出 Google 智慧鏡頭</translation>
-<translation id="2723860029395667894">一律顯示 Google AI 模式捷徑</translation>
 <translation id="2738871930057338499">無法連線至網際網路。發生 HTTP 403 禁止錯誤，請檢查 Proxy 設定。</translation>
 <translation id="2742320827292110288">警告：Google Chrome 無法禁止擴充功能記錄你的瀏覽記錄。如要在無痕模式中停用這個擴充功能，請取消選取這個選項。</translation>
 <translation id="2753623023919742414">按一下即可搜尋</translation>
@@ -685,7 +684,6 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="8647930742055103497">用 Chrome 集中管理所有內容</translation>
 <translation id="8656634243791296665">開啟 Chrome 內建 Gemini (開發人員版)</translation>
 <translation id="8669527147644353129">Google Chrome 小幫手</translation>
-<translation id="8677922833187616101">一律顯示 Google AI 模式捷徑</translation>
 <translation id="8679801911857917785">這個擴充功能也會控管 Chrome 啟動時所顯示的網頁。</translation>
 <translation id="8712637175834984815">我瞭解了</translation>
 <translation id="8712767363896337380">即將更新為最新版本！重新啟動 Chrome 即可完成更新程序。</translation>

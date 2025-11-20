@@ -662,6 +662,7 @@
 <translation id="2085876078937250610">حفظ…</translation>
 <translation id="2088913896151127116">إضافة نص</translation>
 <translation id="2090451897496479509">يُرجى التواصل مع مقدِّم الخدمة للحصول على مزيد من المعلومات</translation>
+<translation id="2090686487550343086">‏أرقام الحسابات بصيغة IBAN</translation>
 <translation id="2091887806945687916">الصوت</translation>
 <translation id="2093184051799735948">‏ابحث في <ph name="ENGINE_NAME" /> أو اكتب عنوان URL</translation>
 <translation id="2093982008204312032">‏يحاول Google Chrome إيقاف استخدام Windows Hello لملء كلمات المرور.</translation>
@@ -799,6 +800,7 @@
 <translation id="2283340219607151381">حفظ العناوين وملؤها</translation>
 <translation id="2283447177162560884">تم حذف "<ph name="PAGE_TITLE" />".</translation>
 <translation id="2283599456633275070">السفر</translation>
+<translation id="2285709459648658719">جوازات السفر</translation>
 <translation id="2286383991450886080">34 × 44 بوصة</translation>
 <translation id="2288422996159078444">تتم مراقبة أي نص تكتبه أو أي صفحات تطّلع عليها أو أي نشاط آخر تجريه على الإنترنت، ويمكن أن يتم تغيير المحتوى على المواقع الإلكترونية بدون معرفتك.</translation>
 <translation id="2289385804009217824">قطع</translation>
@@ -2551,6 +2553,7 @@
 <translation id="5137761395480718572">‏يطلب هذا التطبيق إذنًا لتثبيت بيانات اعتماد شبكات Wi-Fi. بعد الإعداد، سيتم تلقائيًا توصيل جهاز <ph name="DEVICE_TYPE" /> بشبكات Wi-Fi المُستخدَمة. لإزالة بيانات الاعتماد هذه، عليك إلغاء تثبيت التطبيق. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">البطاقة الافتراضية غير متوفّرة حاليًا. يُرجى التواصل مع المصرف.</translation>
 <translation id="5138227688689900538">عرض أقل</translation>
+<translation id="5140155249377545621">رُخص القيادة</translation>
 <translation id="5144613843429436866">لقد منحت إذن الوصول إلى <ph name="PERMISSION" /> على هذا الموقع الإلكتروني</translation>
 <translation id="5145883236150621069">يوجد رمز خطأ في استجابة السياسة</translation>
 <translation id="5146995429444047494">يتم حظر الإشعارات للنطاق <ph name="ORIGIN" /></translation>
@@ -2600,7 +2603,7 @@
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
 <translation id="5233071178832586743">يمكن للمشرف الوصول إلى الملف الشخصي المُدار والمتصفّح وبعض معلومات الجهاز. ويمكنه الاطّلاع على معلومات مثل:</translation>
-<translation id="5234764350956374838">تجاهل</translation>
+<translation id="5234764350956374838">إغلاق</translation>
 <translation id="5238301240406177137">الحفظ في الحساب</translation>
 <translation id="5239119062986868403">السعر العادي</translation>
 <translation id="5239623327352565343">تمت الموافقة على طلب الوصول إلى الموقع الجغرافي.</translation>
@@ -4237,6 +4240,7 @@
 <translation id="7886897188117641322">اختَر فئات المواضيع المتنوعة التي يمكن استخدامها للمساعدة في تخصيص الإعلانات</translation>
 <translation id="7887683347370398519">‏تحقق من رمز التحقق من البطاقة (CVC) ثم أعد المحاولة.</translation>
 <translation id="7887885240995164102">الدخول في وضع "نافذة ضمن نافذة"</translation>
+<translation id="7888367499748383555">‏بدون رسوم وبنسبة APR تصل إلى %0 (وفقًا للأهلية)</translation>
 <translation id="7888575728750733395">تحديد لون الصورة</translation>
 <translation id="7890748547282909375">‏سجِّل الدخول إلى Microsoft OneDrive لحفظ لقطة الشاشة</translation>
 <translation id="7890755620327858054">خيار "الدفع الآجل" غير متاح في الوقت الحالي. يُرجى إعادة المحاولة أو اختيار طريقة دفع أخرى.</translation>

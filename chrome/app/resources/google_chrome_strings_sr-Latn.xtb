@@ -152,7 +152,6 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="2681444469812712297">Otvorite <ph name="URL" /> na novoj kartici u Google Chrome-u.</translation>
 <translation id="2699790011615497488">Otvorite Gemini u Chrome beta verziji</translation>
 <translation id="2712141162840347885">Izaberite bilo šta za pretragu pomoću Google objektiva ili pritisnite Escape da biste izašli iz Google objektiva</translation>
-<translation id="2723860029395667894">Uvek prikazuj prečicu za Google AI režim</translation>
 <translation id="2738871930057338499">Povezivanje sa internetom nije uspelo. Zabranjen je pristup (HTTP 403). Proverite konfiguraciju proksija.</translation>
 <translation id="2742320827292110288">Upozorenje: Google Chrome ne može da spreči dodatke da snimaju vašu istoriju pregledanja. Da biste onemogućili ovaj dodatak u režimu bez arhiviranja, poništite izbor ove opcije.</translation>
 <translation id="2747021967398957654">{count,plural, =1{Neki Chrome podaci još nisu sačuvani na Google nalogu. Sačekajte nekoliko minuta pre nego što se odjavite. Ako se odjavite odmah, ovi podaci (1 stavka) će se izbrisati.}one{Neki Chrome podaci još nisu sačuvani na Google nalogu. Sačekajte nekoliko minuta pre nego što se odjavite. Ako se odjavite odmah, ovi podaci ({count} stavka) će se izbrisati.}few{Neki Chrome podaci još nisu sačuvani na Google nalogu. Sačekajte nekoliko minuta pre nego što se odjavite. Ako se odjavite odmah, ovi podaci ({count} stavke) će se izbrisati.}other{Neki Chrome podaci još nisu sačuvani na Google nalogu. Sačekajte nekoliko minuta pre nego što se odjavite. Ako se odjavite odmah, ovi podaci ({count} stavki) će se izbrisati.}}</translation>
@@ -694,7 +693,6 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="8647930742055103497">Čuvajte sve u Chrome-u</translation>
 <translation id="8656634243791296665">Otvorite Gemini u Chrome Dev-u</translation>
 <translation id="8669527147644353129">Google Chrome pomoćnik</translation>
-<translation id="8677922833187616101">Uvek prikazuj prečicu za Google AI režim</translation>
 <translation id="8679801911857917785">Kontroliše i stranicu koja se prikazuje kada pokrenete Chrome.</translation>
 <translation id="8712637175834984815">Važi</translation>
 <translation id="8712767363896337380">Skoro je ažuriran! Ponovo pokrenite Chrome da biste završili ažuriranje.</translation>

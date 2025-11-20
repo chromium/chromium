@@ -662,6 +662,7 @@
 <translation id="2085876078937250610">บันทึก…</translation>
 <translation id="2088913896151127116">เพิ่มข้อความ</translation>
 <translation id="2090451897496479509">โปรดติดต่อผู้ให้บริการเพื่อขอข้อมูลเพิ่มเติม</translation>
+<translation id="2090686487550343086">IBAN</translation>
 <translation id="2091887806945687916">เสียง</translation>
 <translation id="2093184051799735948">ค้นหา <ph name="ENGINE_NAME" /> หรือพิมพ์ URL</translation>
 <translation id="2093982008204312032">Google Chrome กำลังพยายามปิด Windows Hello เพื่อป้อนรหัสผ่าน</translation>
@@ -799,6 +800,7 @@
 <translation id="2283340219607151381">บันทึกและกรอกที่อยู่</translation>
 <translation id="2283447177162560884">ลบ "<ph name="PAGE_TITLE" />" แล้ว</translation>
 <translation id="2283599456633275070">การเดินทาง</translation>
+<translation id="2285709459648658719">หนังสือเดินทาง</translation>
 <translation id="2286383991450886080">34 x 44 นิ้ว</translation>
 <translation id="2288422996159078444">มีการสอดแนมทุกอย่างที่คุณพิมพ์ หน้าที่คุณเข้าชม หรือกิจกรรมอื่นใดที่คุณทำในหน้าเว็บ อาจมีการเปลี่ยนแปลงเนื้อหาในเว็บไซต์โดยไม่แจ้งให้คุณทราบ</translation>
 <translation id="2289385804009217824">ตัด</translation>
@@ -2550,6 +2552,7 @@
 <translation id="5137761395480718572">แอปนี้กำลังขอสิทธิ์ในการติดตั้งข้อมูลเข้าสู่ระบบ Wi-Fi หลังตั้งค่าแล้ว <ph name="DEVICE_TYPE" /> จะเชื่อมต่อกับเครือข่าย Wi-Fi ที่เข้าร่วมโดยอัตโนมัติ หากต้องการนำข้อมูลเข้าสู่ระบบเหล่านี้ออก ให้ถอนการติดตั้งแอป <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">บัตรเสมือนไม่พร้อมใช้งานในขณะนี้ โปรดติดต่อธนาคาร</translation>
 <translation id="5138227688689900538">แสดงน้อยลง</translation>
+<translation id="5140155249377545621">ใบขับขี่</translation>
 <translation id="5144613843429436866">คุณอนุญาตให้ใช้<ph name="PERMISSION" />ในเว็บไซต์นี้</translation>
 <translation id="5145883236150621069">มีรหัสข้อผิดพลาดในการตอบกลับนโยบาย</translation>
 <translation id="5146995429444047494">บล็อกการแจ้งเตือนของ <ph name="ORIGIN" /> ไว้</translation>
@@ -3232,7 +3235,7 @@
 <translation id="6284449872909111707">การส่ง SMS และการรับส่งข้อความโต้ตอบแบบทันที</translation>
 <translation id="6284517535531159884">ประเภท Seed ของรูปแบบ</translation>
 <translation id="6287197303017372967">ขอเส้นทางไปยังจุดหมายของคุณพร้อมคำแนะนำแบบเลี้ยวต่อเลี้ยวโดยใช้ฟีเจอร์การนำทาง</translation>
-<translation id="6288559570252410796">ถามโหมด AI ของ Google</translation>
+<translation id="6288559570252410796">ถามโหมด Google AI</translation>
 <translation id="628877850550444614">พบส่วนลด</translation>
 <translation id="6289939620939689042">สีของหน้าเว็บ</translation>
 <translation id="6292819926564202163">เครื่องมือค้นหาใน Chrome</translation>
@@ -4045,7 +4048,7 @@
 <translation id="7569490014721427265">กอล์ฟ</translation>
 <translation id="7569952961197462199">นำบัตรเครดิตออกจาก Chrome ไหม</translation>
 <translation id="7569983096843329377">สีดำ</translation>
-<translation id="7571813784389228510">โหมด AI ของ Google</translation>
+<translation id="7571813784389228510">โหมด Google AI</translation>
 <translation id="7574998639136359461">อุปกรณ์กีฬาฤดูหนาว</translation>
 <translation id="7575207903026901870">ปุ่ม "นำคำแนะนำออก" กด Enter เพื่อนำคำแนะนำนี้ออก</translation>
 <translation id="7575800019233204241">"การเชื่อมต่อของคุณไม่เป็นส่วนตัว" หรือ "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" หรือ "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" หรือ "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" หรือ "ข้อผิดพลาดของใบรับรอง SSL"</translation>
@@ -4236,6 +4239,7 @@
 <translation id="7886897188117641322">เลือกหมวดหมู่กว้างๆ ของหัวข้อที่สามารถใช้ในการปรับโฆษณาตามโปรไฟล์ของผู้ใช้</translation>
 <translation id="7887683347370398519">ตรวจสอบ CVC และลองอีกครั้ง</translation>
 <translation id="7887885240995164102">เข้าสู่การแสดงภาพซ้อนภาพ</translation>
+<translation id="7888367499748383555">ไม่มีค่าธรรมเนียม อัตราดอกเบี้ยต่อปี (APR) ต่ำสุด 0% (ขึ้นอยู่กับการมีสิทธิ์)</translation>
 <translation id="7888575728750733395">การปรับค่าสีการพิมพ์</translation>
 <translation id="7890748547282909375">ลงชื่อเข้าใช้ Microsoft OneDrive เพื่อบันทึกภาพหน้าจอ</translation>
 <translation id="7890755620327858054">ฟีเจอร์จ่ายทีหลังไม่พร้อมให้บริการในขณะนี้ โปรดลองอีกครั้งหรือเลือกวิธีการชำระเงินอื่น</translation>
@@ -4499,7 +4503,7 @@
 <translation id="831997045666694187">ตอนเย็น</translation>
 <translation id="8321448084834652864">คุณเปลี่ยนเครื่องมือค้นหาได้ตลอดเวลาในการตั้งค่าของ Chromium</translation>
 <translation id="8321476692217554900">การแจ้งเตือน</translation>
-<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Enter เพื่อถามโหมด AI ของ Google</translation>
+<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Enter เพื่อถามโหมด Google AI</translation>
 <translation id="8322402665880479974">เตียงและหัวเตียง</translation>
 <translation id="8323505966575306467">เพิ่มการปกป้องให้รหัสผ่านของคุณ</translation>
 <translation id="832547548543012337">ลบหนังสือเดินทาง</translation>
@@ -5061,7 +5065,7 @@
 <translation id="950926967802086924">พาสคีย์ • เครื่องมือจัดการรหัสผ่านบน Google</translation>
 <translation id="955429569736351433">อนุญาต VR</translation>
 <translation id="955627189349169688">คุณเลือกไม่รับนโยบายนี้ได้ใน<ph name="BEGIN_LINK" />การตั้งค่าการซิงค์ของ Chrome<ph name="END_LINK" /></translation>
-<translation id="95676157383774931">ปุ่มโหมด AI เปิดใช้งานเพื่อถามโหมด AI ของ Google</translation>
+<translation id="95676157383774931">ปุ่มโหมด AI เปิดใช้งานเพื่อถามโหมด Google AI</translation>
 <translation id="95721182352849470">เหลือง 2</translation>
 <translation id="961663415146723894">เย็บเล่มด้านล่าง</translation>
 <translation id="961856697154696964">ลบข้อมูลการท่องเว็บ</translation>

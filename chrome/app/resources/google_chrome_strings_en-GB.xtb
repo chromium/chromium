@@ -152,9 +152,9 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2681444469812712297">Open <ph name="URL" /> in a new tab in Google Chrome.</translation>
 <translation id="2699790011615497488">Open Gemini in Chrome Beta</translation>
 <translation id="2712141162840347885">Select anything to search with Google Lens or press escape to exit Google Lens</translation>
-<translation id="2723860029395667894">Always show Google AI Mode shortcut</translation>
 <translation id="2738871930057338499">Unable to connect to the Internet. HTTP 403 Forbidden. Please check your proxy configuration.</translation>
 <translation id="2742320827292110288">Warning: Google Chrome cannot prevent extensions from recording your browsing history. To disable this extension in Incognito mode, unselect this option.</translation>
+<translation id="2747021967398957654">{count,plural, =1{Some of your Chrome data hasn't been saved in your Google Account yet. Try waiting a few minutes before signing out. If you sign out now, this data (1 item) will be deleted.}other{Some of your Chrome data hasn't been saved in your Google Account yet. Try waiting a few minutes before signing out. If you sign out now, this data ({count} items) will be deleted.}}</translation>
 <translation id="2753623023919742414">Click to search</translation>
 <translation id="2757826245013442432">{COUNT,plural, =0{Advanced Protection requires that you relaunch Chrome to apply an update}=1{Advanced Protection requires that you relaunch Chrome to apply an update. Your Incognito window won't reopen.}other{Advanced Protection requires that you relaunch Chrome to apply an update. Your # Incognito windows won't reopen.}}</translation>
 <translation id="2765403129283291972">Chrome needs permission to access your microphone for this site</translation>
@@ -514,6 +514,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6676384891291319759">Access the Internet</translation>
 <translation id="6679975945624592337">Let Google Chrome Run in the Background</translation>
 <translation id="6696915334902295848">Chrome needs microphone permission for this site</translation>
+<translation id="6706525880530967390">{count,plural, =1{Chrome needs to verify that it's you before some data can be saved in your Google Account and used on all your devices. If you sign out now, this data (1 item) will be deleted.}other{Chrome needs to verify that it's you before some data can be saved in your Google Account and used on all your devices. If you sign out now, this data ({count} items) will be deleted.}}</translation>
 <translation id="6712881677154121168">Download error: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Make Chrome faster</translation>
 <translation id="6734827584173583205">You haven't visited recently. Chrome removed <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> and <ph name="COUNT" /> more.</translation>
@@ -692,7 +693,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8647930742055103497">Keep everything in Chrome</translation>
 <translation id="8656634243791296665">Open Gemini in Chrome Dev</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
-<translation id="8677922833187616101">Always show Google AI mode shortcut</translation>
 <translation id="8679801911857917785">It also controls what page is shown when you start Chrome.</translation>
 <translation id="8712637175834984815">Got it</translation>
 <translation id="8712767363896337380">Nearly up to date! Relaunch Chrome to finish updating.</translation>

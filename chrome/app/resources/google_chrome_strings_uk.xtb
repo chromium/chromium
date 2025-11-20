@@ -148,7 +148,6 @@
 <translation id="2681444469812712297">Відкрити сторінку <ph name="URL" /> у новій вкладці в Google Chrome.</translation>
 <translation id="2699790011615497488">Відкрити Gemini у бета-версії Chrome</translation>
 <translation id="2712141162840347885">Виберіть об’єкт, за яким хочете виконати пошук через Google Об’єктив, або натисніть клавішу Escape, щоб вийти</translation>
-<translation id="2723860029395667894">Завжди показувати ярлик режиму ШІ від Google</translation>
 <translation id="2738871930057338499">Не вдалося підключитися до Інтернету. Помилка "HTTP 403 заборонено". Перевірте конфігурацію свого проксі-сервера.</translation>
 <translation id="2742320827292110288">Попередження. Google Chrome не може заборонити розширенням записувати вашу історію веб-перегляду. Щоб розширення не працювало в режимі анонімного перегляду, зніміть прапорець біля цієї опції.</translation>
 <translation id="2753623023919742414">Натисніть, щоб шукати</translation>
@@ -684,7 +683,6 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="8647930742055103497">Зберігайте все в Chrome</translation>
 <translation id="8656634243791296665">Відкрити Gemini у Chrome для розробників</translation>
 <translation id="8669527147644353129">Помічник Google Chrome</translation>
-<translation id="8677922833187616101">Завжди показувати ярлик режиму ШІ від Google</translation>
 <translation id="8679801911857917785">Розширення також змінило сторінку, яка відкривається під час запуску Chrome.</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8712767363896337380">Майже готово. Перезапустіть Chrome, щоб завершити оновлення.</translation>

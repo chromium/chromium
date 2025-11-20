@@ -152,7 +152,6 @@
 <translation id="2718390899429598676">Per maggiore sicurezza, Chromium cripterà i tuoi dati.</translation>
 <translation id="2721354645805494590">Esci per rimuovere il tuo Account Google da Chromium</translation>
 <translation id="2722636413143664436">Accedi a Chromium per trovare le password, i preferiti e altri dati su tutti i dispositivi</translation>
-<translation id="2723860029395667894">Mostra sempre la scorciatoia di Google AI Mode</translation>
 <translation id="2738871930057338499">Impossibile connettersi a internet. HTTP 403 Accesso negato. Controlla la configurazione del proxy.</translation>
 <translation id="2753623023919742414">Fai clic per cercare</translation>
 <translation id="2768103863314748511">Imposta Chromium come visualizzatore PDF predefinito</translation>
@@ -647,7 +646,6 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="8619360774459241877">Avvio di Chromium...</translation>
 <translation id="8624541899164515475">Impostazioni, si apre in una nuova scheda.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing non può essere impostato come browser predefinito.</translation>
-<translation id="8677922833187616101">Mostra sempre la scorciatoia di Google AI Mode</translation>
 <translation id="8697124171261953979">Controlla anche la pagina visualizzata all'avvio di Chromium o quando esegui ricerche dalla Omnibox.</translation>
 <translation id="8704119203788522458">Questo è il tuo account Chromium</translation>
 <translation id="8712637175834984815">Ok</translation>

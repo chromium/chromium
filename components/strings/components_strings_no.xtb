@@ -662,6 +662,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2085876078937250610">Lagre …</translation>
 <translation id="2088913896151127116">Legg til tekst</translation>
 <translation id="2090451897496479509">Kontakt leverandøren for å få mer informasjon</translation>
+<translation id="2090686487550343086">IBAN-numre</translation>
 <translation id="2091887806945687916">Lyd</translation>
 <translation id="2093184051799735948">Søk <ph name="ENGINE_NAME" /> eller skriv inn nettadresse</translation>
 <translation id="2093982008204312032">Google Chrome prøver å slå av Windows Hello for utfylling av passord.</translation>
@@ -799,6 +800,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2283340219607151381">Lagre og fyll inn adresser</translation>
 <translation id="2283447177162560884">«<ph name="PAGE_TITLE" />» er slettet</translation>
 <translation id="2283599456633275070">Reise</translation>
+<translation id="2285709459648658719">Pass</translation>
 <translation id="2286383991450886080">34 x 44 tommer</translation>
 <translation id="2288422996159078444">Alt du skriver, alle sider du besøker, og all annen aktivitet på nettet blir overvåket. Innholdet på nettsteder kan bli endret uten at du vet om det.</translation>
 <translation id="2289385804009217824">Beskjær</translation>
@@ -2551,6 +2553,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5137761395480718572">Denne appen ber om tillatelse til å installere wifi-legitimasjon. Etter konfigurering kobles <ph name="DEVICE_TYPE" /> automatisk til deltakende wifi-nettverk. For å fjerne denne legitimasjonen, avinstaller appen. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">Virtuelt kort er ikke tilgjengelig akkurat nå – kontakt banken</translation>
 <translation id="5138227688689900538">Vis færre</translation>
+<translation id="5140155249377545621">Førerkort</translation>
 <translation id="5144613843429436866">Du har gitt dette nettstedet tillatelse til å bruke <ph name="PERMISSION" /></translation>
 <translation id="5145883236150621069">Feilkode i responsen for enhetsinnstillinger</translation>
 <translation id="5146995429444047494">Varsler for <ph name="ORIGIN" /> er blokkert</translation>
@@ -4236,6 +4239,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7886897188117641322">Velg hvilke generelle emnekategorier som kan brukes til å tilpasse annonser personlig</translation>
 <translation id="7887683347370398519">Kontroller CVC-koden din, og prøv igjen.</translation>
 <translation id="7887885240995164102">Start bilde-i-bilde</translation>
+<translation id="7888367499748383555">Ingen gebyrer og en årlig rentesats på 0 % (forutsetter at du er kvalifisert)</translation>
 <translation id="7888575728750733395">Gjengivelsesintensjon for utskrift</translation>
 <translation id="7890748547282909375">Logg på Microsoft OneDrive for å lagre skjermbildet</translation>
 <translation id="7890755620327858054">Betal senere er ikke tilgjengelig akkurat nå. Prøv på nytt, eller velg en annen betalingsmåte.</translation>

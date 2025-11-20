@@ -152,7 +152,6 @@
 <translation id="2718390899429598676">为了提高安全性，Chromium 将对您的数据进行加密。</translation>
 <translation id="2721354645805494590">若要从 Chromium 中移除您的 Google 账号，请退出账号</translation>
 <translation id="2722636413143664436">如需在您的所有设备上获取密码、书签等信息，请登录 Chromium</translation>
-<translation id="2723860029395667894">始终显示 Google AI 模式快捷方式</translation>
 <translation id="2738871930057338499">无法连接到互联网。发生 HTTP 403 Forbidden 错误，请检查您的代理配置。</translation>
 <translation id="2753623023919742414">点击即可搜索</translation>
 <translation id="2768103863314748511">将 Chromium 设为默认 PDF 查看器</translation>
@@ -647,7 +646,6 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8619360774459241877">正在启动 Chromium…</translation>
 <translation id="8624541899164515475">“设置”页面，在新标签页中打开。</translation>
 <translation id="8648201657708811153">您无法将 Google Chrome for Testing 设为默认浏览器。</translation>
-<translation id="8677922833187616101">始终显示 Google AI 模式快捷方式</translation>
 <translation id="8697124171261953979">它还能够控制您启动Chromium后或通过多功能框进行搜索时系统显示的页面。</translation>
 <translation id="8704119203788522458">这是您的专属Chromium</translation>
 <translation id="8712637175834984815">知道了</translation>

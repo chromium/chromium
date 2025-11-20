@@ -2443,13 +2443,6 @@ L'utente avrà la certezza che, dopo l'accesso, le altre app non saranno in grad
 <translation id="2614156176932194496">Impostazioni per le integrazioni di AI Mode di Google nella barra degli indirizzi e nella casella di ricerca della pagina Nuova scheda.</translation>
 <translation id="2615240493030733717">Segnala informazioni sul fuso orario</translation>
 <translation id="2619258867868873629">La destinazione "Salva come PDF" e la destinazione "Salva su Google Drive" sui dispositivi <ph name="PRODUCT_OS_NAME" /></translation>
-<translation id="262035875928535253">Configura l'elenco di domini in cui <ph name="PRODUCT_NAME" /> deve disattivare <ph name="PASSWORD_MANAGER_NAME" />. Ciò significa che i workflow di salvataggio e compilazione verranno disattivati, in modo che le password di questi siti web non possano essere salvate o compilate automaticamente nei moduli web.
-
-Se un dominio è presente nell'elenco, <ph name="PASSWORD_MANAGER_NAME" /> verrà disattivato per quel dominio.
-
-Se un dominio non è presente nell'elenco, <ph name="PASSWORD_MANAGER_NAME" /> sarà disponibile per il dominio.
-
-Se la policy non viene configurata, <ph name="PASSWORD_MANAGER_NAME" /> sarà disponibile per tutti i domini.</translation>
 <translation id="2621290137818374425">La configurazione della policy consente di disattivare i requisiti relativi alle informative di Certificate Transparency per i nomi host negli URL specificati. Anche se rilevare certificati emessi in modo scorretto diventa più difficile, gli host possono continuare a utilizzare certificati che altrimenti non verrebbero ritenuti attendibili, in quanto non resi pubblici in modo appropriato.
 
       Se la policy non viene configurata e se i certificati che richiedono informative tramite Certificate Transparency non vengono comunicati, <ph name="PRODUCT_NAME" /> non ritiene attendibili questi certificati.
@@ -2484,7 +2477,7 @@ Se questa policy non viene configurata, l'impostazione predefinita dipende da fa
 Se la policy viene impostata su false o se non viene configurata, il controllo della connettività IPv6 non viene sostituito.
 Il sistema eseguirà una query sui record AAAA soltanto quando può essere connesso a un host IPv6 globale.</translation>
 <translation id="2647069081229792812">Attiva o disattiva la funzione di modifica dei preferiti</translation>
-<translation id="264771271300359481">Non consentire ai siti di usare l'autorizzazione di accesso dei siti agli appunti</translation>
+<translation id="264771271300359481">Non consentire ai siti di usare l'autorizzazione di accesso agli appunti</translation>
 <translation id="2649537800219643135">Origine immagine schermata di blocco schermo utente.</translation>
 <translation id="2649896281375932517">Consenti agli utenti di decidere</translation>
 <translation id="2650049181907741121">Azione da compiere quando l'utente chiude lo schermo</translation>
@@ -5698,7 +5691,7 @@ Se la policy viene disattivata, <ph name="PRODUCT_OS_NAME" /> disattiva il Bluet
 <translation id="4860900625632464759">Consenti agli utenti di sincronizzare i messaggi SMS tra il telefono e Chromebook</translation>
 <translation id="486146220825734683">Non consentire agli utenti di memorizzare le password Kerberos</translation>
 <translation id="4861767323695239729">Configura i metodi di immissione consentiti in una sessione utente</translation>
-<translation id="4866159293453405598">La configurazione della policy consente di impostare un elenco di pattern URL che specificano i siti che non possono usare l'autorizzazione per il sito ad accedere agli appunti. Tutte le operazioni relative agli appunti nelle origini corrispondenti ai pattern non sono incluse. Ad esempio, gli utenti potranno ancora incollare usando scorciatoie da tastiera perché questa operazione non è controllata dall'autorizzazione per il sito ad accedere agli appunti.
+<translation id="4866159293453405598">La configurazione della policy consente di impostare un elenco di pattern URL che specificano i siti che non possono usare l'autorizzazione di accesso agli appunti. Tutte le operazioni relative agli appunti nelle origini corrispondenti ai pattern non sono incluse. Ad esempio, gli utenti potranno ancora incollare usando scorciatoie da tastiera perché questa operazione non è controllata dall'autorizzazione di accesso agli appunti.
 
       Se la policy non viene configurata, <ph name="DEFAULT_CLIPBOARD_SETTING" /> si applica per tutti i siti, se impostata. In caso contrario, viene applicata l'impostazione personale dell'utente.
 
@@ -6323,7 +6316,7 @@ Si tratta di una misura temporanea e verrà rimossa nelle future versioni di <ph
 
       Se la policy viene impostata su Disabled o se non viene configurata, lo stato dell'attività del dispositivo non verrà segnalato.
       Se la policy viene impostata su Enabled, lo stato dell'attività del dispositivo verrà segnalato al server, che potrà rilevare se il dispositivo è offline, purché l'utente sia affiliato.</translation>
-<translation id="5237063248422984115">La configurazione della policy consente di impostare un elenco di pattern URL che specificano i siti che possono usare l'autorizzazione per il sito ad accedere agli appunti. Tutte le operazioni relative agli appunti nelle origini corrispondenti ai pattern non sono incluse. Ad esempio, gli utenti potranno ancora incollare usando scorciatoie da tastiera perché questa operazione non è controllata dall'autorizzazione di accesso dei siti agli appunti.
+<translation id="5237063248422984115">La configurazione della policy consente di impostare un elenco di pattern URL che specificano i siti che possono usare l'autorizzazione di accesso agli appunti. Tutte le operazioni relative agli appunti nelle origini corrispondenti ai pattern non sono incluse. Ad esempio, gli utenti potranno ancora incollare usando scorciatoie da tastiera perché questa operazione non è controllata dall'autorizzazione di accesso agli appunti.
 
 
       Se la policy non viene configurata, <ph name="DEFAULT_CLIPBOARD_SETTING" /> si applica per tutti i siti, se impostata. In caso contrario, viene applicata l'impostazione personale dell'utente.
@@ -7040,11 +7033,11 @@ Se non viene configurata o se la durata della release non può essere determinat
 <translation id="5649046890958064703">Se per la policy <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> viene scelta l'opzione <ph name="PRINTERS_BLACKLIST" />, la configurazione della policy <ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST_POLICY_NAME" /> consente di specificare le stampanti che gli utenti non possono usare. Gli utenti avranno a disposizione tutte le stampanti, tranne quelle i cui ID sono elencati in questa policy. Gli ID devono corrispondere ai campi <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> del file specificato nella policy <ph name="DEVICE_PRINTERS_POLICY_NAME" />.
 
       Questa policy è deprecata. Usa la policy <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />.</translation>
-<translation id="5649773663020498924">Se questa policy viene impostata su 2, i siti non possono usare l'autorizzazione di accesso dei siti agli appunti. Se la policy viene impostata su 3 o se non viene configurata, l'utente può cambiare l'impostazione e stabilire se le API Clipboard sono disponibili quando un sito vuole usarne una.
+<translation id="5649773663020498924">Se questa policy viene impostata su 2, i siti non possono usare l'autorizzazione di accesso agli appunti. Se la policy viene impostata su 3 o se non viene configurata, l'utente può cambiare l'impostazione e stabilire se le API Clipboard sono disponibili quando un sito vuole usarne una.
 
       È possibile eseguire l'override della policy per pattern URL specifici utilizzando le policy <ph name="CLIPBOARD_ALLOWED_FOR_URLS_POLICY_NAME" /> e <ph name="CLIPBOARD_BLOCKED_FOR_URLS_POLICY_NAME" />.
 
-      Questa policy incide soltanto sulle operazioni relative agli appunti controllate dall'autorizzazione di accesso dei siti agli appunti e non sulle scritture di appunti purificate o sulle operazioni di copia e incolla affidabili.</translation>
+      Questa policy incide soltanto sulle operazioni relative agli appunti controllate dall'autorizzazione di accesso agli appunti e non sulle scritture di appunti purificate o sulle operazioni di copia e incolla affidabili.</translation>
 <translation id="5649788773465136073">Disattiva l'uso degli identificatori di contenuti protetti con i siti, il che potrebbe comportare una qualità inferiore della riproduzione dei contenuti protetti.</translation>
 <translation id="5650256117857913687">Non consente agli utenti che accedono da remoto di aprire gli URL lato host nel browser client locale</translation>
 <translation id="5650716720715977549">Applica limitazioni alle richieste agli endpoint di rete con un livello di protezione più alto</translation>
@@ -8331,7 +8324,7 @@ NOTA: il comportamento predefinito per i dispositivi di consumatori e aziende è
       1) Le impostazioni internazionali specificate dall'utente (se configurate).
       2) Le impostazioni internazionali di sistema.
       3) Le impostazioni internazionali di riserva (en-US).</translation>
-<translation id="6493089139124468815">Consenti ai siti di chiedere all'utente di concedere l'autorizzazione di accesso dei siti agli appunti</translation>
+<translation id="6493089139124468815">Consenti ai siti di chiedere all'utente di concedere l'autorizzazione di accesso agli appunti</translation>
 <translation id="6493918190032622602">Versione minima consentita di <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="6495337487202227251">Tieni presente che questa policy è obsoleta e verrà rimossa nella versione 85 di <ph name="PRODUCT_OS_NAME" />. Usa la policy <ph name="SCREEN_LOCK_DELAYS_POLICY_NAME" />.
 

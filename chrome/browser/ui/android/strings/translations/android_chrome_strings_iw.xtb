@@ -622,6 +622,7 @@
 <translation id="3710560693796335511">שיתוף פעולה</translation>
 <translation id="3718765429352682176">‏יכול להיות שתוצג היסטוריה מאפליקציות אחרות שפותחות קישורים ב-Chrome.</translation>
 <translation id="3721119614952978349">‏ההגדרות שלך ב-Google</translation>
+<translation id="3727000368239390918">לאחר הכניסה לחשבון, הכרטיסיות ונתונים נוספים יופיעו בכל המכשירים שלך</translation>
 <translation id="3737319253362202215">הגדרות התרגום</translation>
 <translation id="3738139272394829648">חיפוש בנגיעה</translation>
 <translation id="3739455665973395693">‏אין סיסמאות שנחשפו בחשבון שלך ב-Google</translation>
@@ -1054,9 +1055,9 @@
 <translation id="5596627076506792578">אפשרויות נוספות</translation>
 <translation id="5599455543593328020">מצב אנונימי</translation>
 <translation id="5601180634394228718">‏כדי לראות אילו הגדרות נוספות מתבססות על נתונים לצורך שיפור חוויית השימוש ב-Chrome, אפשר לעבור אל <ph name="BEGIN_LINK" />שירותי Google<ph name="END_LINK" />.</translation>
-<translation id="5601924940067278327">אפשר לקבל גישה לכרטיסיות ולנתונים נוספים בכל המכשירים שלך</translation>
+<translation id="5601924940067278327">אפשר לקבל גישה לכרטיסיות ולפריטים נוספים בכל המכשירים</translation>
 <translation id="5611398002774823980">שמירה בחשבון</translation>
-<translation id="5613381935190035031">‏כדי לקבל גישה לכרטיסיות ולנתונים נוספים בכל המכשירים שלך, כדאי להיכנס ל-Chrome עם <ph name="EMAIL" /></translation>
+<translation id="5613381935190035031">‏כדי לקבל גישה לכרטיסיות ולפריטים נוספים בכל המכשירים שלך, כדאי להיכנס ל-Chrome עם <ph name="EMAIL" /></translation>
 <translation id="5614625640221885312">לאחר הכניסה לחשבון, הסימניות, הסיסמאות ונתונים נוספים יופיעו בכל המכשירים שלך</translation>
 <translation id="5619633276517849615">הארגון שלך הפעיל את הגלישה הבטוחה</translation>
 <translation id="5620163320393916465">אין סיסמאות שמורות</translation>
@@ -1702,7 +1703,7 @@
 <translation id="8110024788458304985">‏עזרה בשיפור התכונות והביצועים של Chrome</translation>
 <translation id="8110087112193408731">‏להציג את הפעילות שלך ב-Chrome ב'שימוש חכם בדיגיטל'?</translation>
 <translation id="8118117428362942925">אם צריך עזרה, אפשר לבקש עזרה מהורה (<ph name="PARENT_NAME" />)</translation>
-<translation id="8118151008374483324">‏כדי לקבל גישה לכרטיסיות ולנתונים נוספים בכל המכשירים שלך, כדאי להיכנס ל-Chrome</translation>
+<translation id="8118151008374483324">‏כדי לקבל גישה לכרטיסיות ולפריטים נוספים בכל המכשירים שלך, כדאי להיכנס ל-Chrome</translation>
 <translation id="8120286190326371840">אין במכשיר הזה סיסמאות שנחשפו</translation>
 <translation id="8122623268651408616">בתהליך מיון לפי הפריט החדש ביותר</translation>
 <translation id="8127542551745560481">עריכת דף הבית</translation>
@@ -1960,7 +1961,7 @@
 <translation id="9212845824145208577">אי אפשר לזוז למטה יותר. יש לנסות להתחיל מחלק נמוך יותר בדף.</translation>
 <translation id="9218430445555521422">הגדרה כברירת מחדל</translation>
 <translation id="9219103736887031265">תמונות</translation>
-<translation id="9222198206152536936">כדי לקבל גישה לכרטיסיות ולנתונים נוספים בכל המכשירים שלך, כדאי להיכנס לחשבון <ph name="EMAIL" /></translation>
+<translation id="9222198206152536936">כדי לקבל גישה לכרטיסיות ולפריטים נוספים בכל המכשירים שלך, כדאי להיכנס לחשבון <ph name="EMAIL" /></translation>
 <translation id="924447568950697217">‏הגדר את Chrome בתור דפדפן ברירת המחדל</translation>
 <translation id="926205370408745186">‏הסרת הפעילות שלך ב-Chrome מ'שימוש חכם בדיגיטל'.</translation>
 <translation id="927968626442779827">‏כדאי להשתמש במצב הטעינה המהירה ב-Google Chrome</translation>

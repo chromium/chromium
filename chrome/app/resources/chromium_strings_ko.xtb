@@ -154,7 +154,6 @@
 <translation id="2718390899429598676">보안 강화를 위해 Chromium에서 사용자 데이터를 암호화합니다.</translation>
 <translation id="2721354645805494590">Chromium에서 Google 계정을 삭제하려면 로그아웃하세요.</translation>
 <translation id="2722636413143664436">모든 기기에서 비밀번호, 북마크 등을 사용하려면 Chromium에 로그인하세요</translation>
-<translation id="2723860029395667894">Google AI 모드 바로가기 항상 표시</translation>
 <translation id="2738871930057338499">인터넷에 연결할 수 없습니다(HTTP 403 Forbidden). 프록시 설정을 확인하시기 바랍니다.</translation>
 <translation id="2753623023919742414">클릭하여 검색</translation>
 <translation id="2768103863314748511">Chromium을 기본 PDF 뷰어로 설정</translation>
@@ -649,7 +648,6 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8619360774459241877">Chromium 실행 중...</translation>
 <translation id="8624541899164515475">설정, 새 탭에서 열립니다.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing을 기본 브라우저로 설정할 수 없습니다.</translation>
-<translation id="8677922833187616101">Google AI 모드 바로가기 항상 표시</translation>
 <translation id="8697124171261953979">또한 Chromium을 시작하거나 검색주소창에서 검색할 때 표시되는 페이지를 설정합니다.</translation>
 <translation id="8704119203788522458">나만의 Chromium</translation>
 <translation id="8712637175834984815">확인</translation>

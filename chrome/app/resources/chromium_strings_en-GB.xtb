@@ -155,7 +155,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2718390899429598676">For added security, Chromium will encrypt your data.</translation>
 <translation id="2721354645805494590">To remove your Google Account from Chromium, sign out</translation>
 <translation id="2722636413143664436">To get your passwords, bookmarks and more on all your devices, sign in to Chromium</translation>
-<translation id="2723860029395667894">Always show Google AI Mode shortcut</translation>
 <translation id="2738871930057338499">Unable to connect to the Internet. HTTP 403 Forbidden. Please check your proxy configuration.</translation>
 <translation id="2753623023919742414">Click to search</translation>
 <translation id="2768103863314748511">Set Chromium as your default PDF viewer</translation>
@@ -180,6 +179,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2977506796191543575">If a site tries to steal your password, or when you download a harmful file, Chromium may also send URLs, including bits of page content, to Safe Browsing</translation>
 <translation id="2981563588585023386">To stay safer online with your parent's choices, sign in to Chromium</translation>
 <translation id="3003694935412297923">All tasks</translation>
+<translation id="3012615494352020668">{count,plural, =1{Chromium needs to verify that it's you before some data can be saved in your Google Account and used on all your devices. If you sign out now, this data (1 item) will be deleted.}other{Chromium needs to verify that it's you before some data can be saved in your Google Account and used on all your devices. If you sign out now, this data ({count} items) will be deleted.}}</translation>
 <translation id="3013473503895162900">Open <ph name="URL" /> in a new tab in Chromium.</translation>
 <translation id="3032706164202344641">Chromium can't check your passwords. Try again later.</translation>
 <translation id="3032787606318309379">Adding to Chromium ...</translation>
@@ -496,6 +496,7 @@ Some features may be unavailable. Please specify a different profile directory o
 <translation id="6729124504294600478">To get personalisation and other features, include Chromium in Web &amp; App Activity and linked Google services</translation>
 <translation id="6734291798041940871">Chromium is already installed for all users on your computer.</translation>
 <translation id="6751374565094704799">Speeds up sites with Chromium's V8 engine but makes Chromium slightly less resistant to attacks. This setting is on.</translation>
+<translation id="6754665438209053659">{count,plural, =1{Some of your Chromium data hasn't been saved in your Google Account yet. Try waiting a few minutes before signing out. If you sign out now, this data (1 item) will be deleted.}other{Some of your Chromium data hasn't been saved in your Google Account yet. Try waiting a few minutes before signing out. If you sign out now, this data ({count} items) will be deleted.}}</translation>
 <translation id="67706546131546258">Chromium recommends scanning this file because it may be dangerous.</translation>
 <translation id="6779406956731413166">Chromium OS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS" />open-source software<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6831043979455480757">Translate</translation>
@@ -650,7 +651,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8619360774459241877">Launching Chromium...</translation>
 <translation id="8624541899164515475">Settings, opens in new tab.</translation>
 <translation id="8648201657708811153">Google Chrome for testing cannot be made your default browser.</translation>
-<translation id="8677922833187616101">Always show Google AI mode shortcut</translation>
 <translation id="8697124171261953979">It also controls what page is shown when you start Chromium or search from the Omnibox.</translation>
 <translation id="8704119203788522458">This is your Chromium</translation>
 <translation id="8712637175834984815">Got it</translation>

@@ -2503,13 +2503,6 @@ Pengguna dapat memastikan bahwa tidak ada aplikasi tambahan yang dapat merekam l
 <translation id="2614156176932194496">Setelan untuk integrasi Mode AI Google di kolom URL dan kotak penelusuran halaman Tab Baru.</translation>
 <translation id="2615240493030733717">Melaporkan Info Zona waktu</translation>
 <translation id="2619258867868873629">Tujuan 'Simpan sebagai PDF', serta tujuan 'Simpan ke Google Drive' di perangkat <ph name="PRODUCT_OS_NAME" /></translation>
-<translation id="262035875928535253">Konfigurasi daftar domain tempat <ph name="PRODUCT_NAME" /> harus menonaktifkan <ph name="PASSWORD_MANAGER_NAME" />. Artinya, alur kerja Simpan dan Isi Otomatis akan dinonaktifkan, sehingga sandi untuk situs tersebut tidak dapat disimpan atau diisi otomatis ke formulir web.
-
-Jika ada domain dalam daftar, <ph name="PASSWORD_MANAGER_NAME" /> akan dinonaktifkan untuk domain tersebut.
-
-Jika domain tidak ada dalam daftar, <ph name="PASSWORD_MANAGER_NAME" /> akan tersedia untuk domain tersebut.
-
-Jika kebijakan ini tidak disetel, <ph name="PASSWORD_MANAGER_NAME" /> akan tersedia untuk semua domain.</translation>
 <translation id="2621290137818374425">Menyetel kebijakan akan menonaktifkan persyaratan pengungkapan Transparansi Sertifikat untuk nama host di URL yang ditentukan. Meskipun mempersulit deteksi salah terbit sertifikat, host tetap dapat menggunakan sertifikat yang tidak tepercaya (karena tidak diungkapkan secara publik dengan sesuai).
 
       Jika kebijakan ini tidak disetel, berarti saat sertifikat yang memerlukan pengungkapan melalui Transparansi Sertifikat tidak diungkapkan, <ph name="PRODUCT_NAME" /> tidak akan memercayai sertifikat tersebut.

@@ -148,7 +148,6 @@
 <translation id="2681444469812712297">Buka <ph name="URL" /> di tab baru di Google Chrome.</translation>
 <translation id="2699790011615497488">Buka Gemini di Chrome Beta</translation>
 <translation id="2712141162840347885">Pilih item untuk ditelusuri dengan Google Lens atau tekan escape untuk keluar dari Google Lens</translation>
-<translation id="2723860029395667894">Selalu tampilkan pintasan Mode AI Google</translation>
 <translation id="2738871930057338499">Tidak dapat terhubung ke internet. HTTP 403 Terlarang. Periksa konfigurasi proxy Anda.</translation>
 <translation id="2742320827292110288">Peringatan: Google Chrome tidak dapat mencegah ekstensi merekam histori penjelajahan Anda. Untuk menonaktifkan ekstensi ini dalam mode Samaran, batalkan pilihan opsi ini.</translation>
 <translation id="2753623023919742414">Klik untuk menelusuri</translation>
@@ -684,7 +683,6 @@
 <translation id="8647930742055103497">Simpan semuanya di Chrome</translation>
 <translation id="8656634243791296665">Buka Gemini di Chrome Dev</translation>
 <translation id="8669527147644353129">Pembantu Google Chrome</translation>
-<translation id="8677922833187616101">Selalu Tampilkan Pintasan Mode AI Google</translation>
 <translation id="8679801911857917785">Juga mengontrol halaman apa yang ditampilkan saat Anda memulai Chrome.</translation>
 <translation id="8712637175834984815">Mengerti</translation>
 <translation id="8712767363896337380">Update hampir selesai. Luncurkan kembali Chrome untuk menyelesaikan update.</translation>

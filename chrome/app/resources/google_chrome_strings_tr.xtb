@@ -148,7 +148,6 @@
 <translation id="2681444469812712297">Google Chrome'da yeni bir sekmede <ph name="URL" /> adresini açın.</translation>
 <translation id="2699790011615497488">Chrome Beta'da Gemini'ı aç</translation>
 <translation id="2712141162840347885">Google Lens ile aramak istediğiniz öğeyi seçin veya Google Lens'ten çıkmak için Escape tuşuna basın</translation>
-<translation id="2723860029395667894">Google AI Modu kısayolunu her zaman göster</translation>
 <translation id="2738871930057338499">İnternet'e bağlanılamadı. HTTP 403 Yasak. Lütfen proxy yapılandırmanızı kontrol edin.</translation>
 <translation id="2742320827292110288">Uyarı: Google Chrome, uzantıların tarama geçmişinizi kaydetmesini önleyemez. Gizli modda bu uzantıyı devre dışı bırakmak için bu seçeneğin onay işaretini kaldırın.</translation>
 <translation id="2753623023919742414">Aramak için tıklayın</translation>
@@ -685,7 +684,6 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="8647930742055103497">Her şeyi Chrome'da tutun</translation>
 <translation id="8656634243791296665">Chrome Dev'de Gemini'ı aç</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
-<translation id="8677922833187616101">Google AI Modu Kısayolunu Her Zaman Göster</translation>
 <translation id="8679801911857917785">Ayrıca Chrome'u başlattığınızda gösterilecek sayfayı da denetler.</translation>
 <translation id="8712637175834984815">Anladım</translation>
 <translation id="8712767363896337380">Güncel hale gelmek üzere. Güncellemenin tamamlanması için Chrome'u yeniden başlatın.</translation>

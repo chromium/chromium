@@ -152,7 +152,6 @@
 <translation id="2718390899429598676">為了提升安全性，Chromium 會將您的資料加密保護。</translation>
 <translation id="2721354645805494590">如要從 Chromium 中移除 Google 帳戶，請登出 Chromium</translation>
 <translation id="2722636413143664436">如要在所有裝置上使用你的密碼、書籤和其他資料，請登入 Chromium</translation>
-<translation id="2723860029395667894">一律顯示 Google AI 模式捷徑</translation>
 <translation id="2738871930057338499">無法連線至網際網路。發生 HTTP 403 禁止錯誤，請檢查 Proxy 設定。</translation>
 <translation id="2753623023919742414">按一下即可搜尋</translation>
 <translation id="2768103863314748511">將 Chromium 設為預設 PDF 檢視器</translation>
@@ -647,7 +646,6 @@ Chromium 無法復原你的設定。</translation>
 <translation id="8619360774459241877">正在啟動 Chromium…</translation>
 <translation id="8624541899164515475">設定，在新分頁中開啟。</translation>
 <translation id="8648201657708811153">Google Chrome for Testing 無法設為預設瀏覽器。</translation>
-<translation id="8677922833187616101">一律顯示 Google AI 模式捷徑</translation>
 <translation id="8697124171261953979">這個擴充功能也會控管 Chromium 啟動時或你使用網址列搜尋時所顯示的網頁。</translation>
 <translation id="8704119203788522458">這是你專屬的 Chromium</translation>
 <translation id="8712637175834984815">我瞭解了</translation>

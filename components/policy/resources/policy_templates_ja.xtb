@@ -2291,13 +2291,6 @@ URL パターンは、<ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_ALLOWED_FO
 <translation id="2614156176932194496">アドレスバーと新しいタブページの検索ボックスでの Google AI モード統合の設定。</translation>
 <translation id="2615240493030733717">タイムゾーン情報を報告する</translation>
 <translation id="2619258867868873629"><ph name="PRODUCT_OS_NAME" /> デバイスの [PDF に保存] の保存先と [Google ドライブに保存] の保存先</translation>
-<translation id="262035875928535253"><ph name="PRODUCT_NAME" /> で <ph name="PASSWORD_MANAGER_NAME" /> を必ず無効にするドメインのリストを設定します。これにより、保存と入力のワークフローが無効になり、これらのウェブサイトのパスワードを保存したり、ウェブフォームに自動入力したりできなくなります。
-
-リストに含めたドメインでは、<ph name="PASSWORD_MANAGER_NAME" /> が無効になります。
-
-リストに含めていないドメインでは、<ph name="PASSWORD_MANAGER_NAME" /> を使用できます。
-
-このポリシーを未設定のままにした場合、<ph name="PASSWORD_MANAGER_NAME" /> はすべてのドメインで使用できます。</translation>
 <translation id="2621290137818374425">このポリシーを設定した場合、指定した URL 内のホスト名について、Certificate Transparency（証明書の透明性）の開示要件が無効になります。ホストに対して間違って発行された証明書は検出が難しくなりますが、適切に公開されていないことを理由に通常であれば信頼できないものとして扱われる証明書でも、引き続き使用できるようになります。ポリシーを未設定のままにした場合、Certificate Transparency（証明書の透明性）に基づき開示が必要な証明書が開示されていなければ、<ph name="PRODUCT_NAME" /> で信頼されません。
 
       URL のパターンは、https://support.google.com/chrome/a?p=url_blocklist_filter_format の形式で指定します。ただし、スキーム、ポート、パスに関係なく特定のホスト名に対して証明書が有効になるため、<ph name="PRODUCT_NAME" /> で考慮されるのは URL のホスト名の部分のみです。ワイルドカードを使ったホストの指定はサポートされていません。</translation>

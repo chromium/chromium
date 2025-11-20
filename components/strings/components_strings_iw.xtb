@@ -447,7 +447,7 @@
 <translation id="1717218214683051432">חיישני תנועה</translation>
 <translation id="1717494416764505390">תיבת דואר 3</translation>
 <translation id="1717688554309417925">שירותי חיוב ובדיקת אשראי</translation>
-<translation id="1717882880162336471">‏כדאי לנסות את מצב AI</translation>
+<translation id="1717882880162336471">‏רוצה לנסות את מצב AI?</translation>
 <translation id="1719434663396780149">ההתראות על הנחות מופעלות. אפשר לשנות זאת ב<ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">‏24x30 אינץ'</translation>
 <translation id="1720941539803966190">סגירת המדריך</translation>
@@ -521,7 +521,7 @@
 <translation id="1823768272150895732">גופן</translation>
 <translation id="1824402189105105503">גליל שמיני</translation>
 <translation id="1826516787628120939">מתבצעת בדיקה</translation>
-<translation id="1829026591231985685">‏המידע נשמר ב-Google Wallet בהגדרות</translation>
+<translation id="1829026591231985685">‏שמירת מידע ב-Google Wallet בהגדרות</translation>
 <translation id="1832730227369924598">סנכרון שולחן העבודה הווירטואלי</translation>
 <translation id="1834452765064623979">בניין ותחזוקה</translation>
 <translation id="1838374766361614909">ניקוי חיפוש</translation>
@@ -662,6 +662,7 @@
 <translation id="2085876078937250610">שמירה…</translation>
 <translation id="2088913896151127116">הוספת טקסט</translation>
 <translation id="2090451897496479509">כדי לקבל מידע נוסף, אפשר לפנות לספק</translation>
+<translation id="2090686487550343086">‏מספרי IBAN</translation>
 <translation id="2091887806945687916">צליל</translation>
 <translation id="2093184051799735948">‏אפשר לחפש ב-<ph name="ENGINE_NAME" /> או להזין כתובת URL</translation>
 <translation id="2093982008204312032">‏Google Chrome מנסה לכבות את Windows Hello כדי למלא סיסמאות.</translation>
@@ -799,6 +800,7 @@
 <translation id="2283340219607151381">שמירה ומילוי של כתובות</translation>
 <translation id="2283447177162560884">בוצעה מחיקה של '<ph name="PAGE_TITLE" />'</translation>
 <translation id="2283599456633275070">נסיעות</translation>
+<translation id="2285709459648658719">דרכונים</translation>
 <translation id="2286383991450886080">‏34x44 אינץ'</translation>
 <translation id="2288422996159078444">כל הקלדת טקסט, הצגת דף או פעילות אחרת באינטרנט נמצאת במעקב. בנוסף, התוכן באתרים עשוי להשתנות ללא ידיעתך.</translation>
 <translation id="2289385804009217824">חיתוך</translation>
@@ -1889,7 +1891,7 @@
 <translation id="4073797364926776829">הצגת הכרטיס</translation>
 <translation id="4075732493274867456">‏הלקוח והשרת אינם תומכים בגרסה נפוצה של פרוטוקול SSL או בחבילת הצפנה.</translation>
 <translation id="4079302484614802869">‏תצורת ה-Proxy מוגדרת להשתמש בכתובת אתר של סקריפט מסוג ‎.Pac ולא בשרתי Proxy קבועים.</translation>
-<translation id="4080668349181235831">‏כדי לקבל הצעות ולשפר את התכונה הזו, כתובת ה-URL ותוכן הדף המלא של האתר שבו ביקרת יישלחו אל Google. מידע נוסף על <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
+<translation id="4080668349181235831">‏כדי לתת לך הצעות ולשפר את התכונה הזו, כתובת ה-URL ותוכן הדף המלא של האתר שבו ביקרת יישלחו אל Google. מידע נוסף על <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">גלילה ושינוי מרחק התצוגה של הכרטיסיות המשותפות</translation>
 <translation id="4082333119419111506">Paper (Preprinted)</translation>
 <translation id="4082393374666368382">הגדרות - ניהול</translation>
@@ -2022,7 +2024,7 @@
 <translation id="4258748452823770588">חתימה שגויה</translation>
 <translation id="4265635050210404830">כרטיסי מועדון הלקוחות שלך</translation>
 <translation id="4265872034478892965">אושרה על-ידי מנהל המערכת</translation>
-<translation id="4267590181863312380">‏כדי לקבל את ההיסטוריה מהמכשירים האחרים שלך, צריך להיכנס לחשבון ולסנכרן את ההיסטוריה. סיסמאות ונתונים נוספים יופיעו בכל המכשירים שלך. בהגדרות אפשר תמיד להפסיק את הסנכרון. ‫Google עשויה להתאים אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
+<translation id="4267590181863312380">‏כדי לקבל את ההיסטוריה מהמכשירים האחרים שלך, צריך להיכנס לחשבון ולסנכרן את ההיסטוריה. סיסמאות ופריטים נוספים יופיעו בכל המכשירים שלך. בהגדרות אפשר תמיד להפסיק את הסנכרון. ‫Google עשויה להתאים אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
 <translation id="4269029136757623689">מאווררים לבית</translation>
 <translation id="4269264543938335308">בגדי ים</translation>
 <translation id="4269599248168651462">אישור השרת מונפק לשם לא ייחודי.</translation>
@@ -2555,6 +2557,7 @@ Del</translation>
 <translation id="5137761395480718572">‏האפליקציה הזו מבקשת הרשאה להתקין פרטי כניסה ל-Wi-Fi. לאחר ההגדרה, <ph name="DEVICE_TYPE" /> יתחבר באופן אוטומטי לרשתות ה-Wi-Fi הקיימות. כדי להסיר את פרטי הכניסה האלה, צריך להסיר את האפליקציה. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">הכרטיס הווירטואלי לא זמין כרגע. עליך לפנות לבנק</translation>
 <translation id="5138227688689900538">פחות מידע</translation>
+<translation id="5140155249377545621">רישיונות נהיגה</translation>
 <translation id="5144613843429436866">נתת הרשאה של <ph name="PERMISSION" /> לאתר הזה</translation>
 <translation id="5145883236150621069">קיים קוד שגיאה בתגובת המדיניות</translation>
 <translation id="5146995429444047494">התראות של <ph name="ORIGIN" /> נחסמו</translation>
@@ -3471,7 +3474,7 @@ Del</translation>
 <translation id="6652101503459149953">‏שימוש ב-Windows Hello</translation>
 <translation id="6654224358955673568">יצירת סגנון רשמי</translation>
 <translation id="6654244995031366386">Glass (Textured)</translation>
-<translation id="6655085656059574817">כדי לשלם מהר יותר עם <ph name="BNPL_ISSUER_NAME" />, כדאי להשאיר את החשבון מקושר. אבל אפשר גם לבטל את הקישור בכתובת <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
+<translation id="6655085656059574817">התשלום עם <ph name="BNPL_ISSUER_NAME" /> מהיר יותר כשהחשבון מקושר. אם רוצים, אפשר לבטל את הקישור בכתובת <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6656935431494847393">כולל מידע כמו הזמנת טיסות ופרטי רכב</translation>
 <translation id="6657585470893396449">סיסמה</translation>
 <translation id="6659246032834639189">המחיר הזה נמוך</translation>
@@ -4242,6 +4245,7 @@ Del</translation>
 <translation id="7886897188117641322">אפשר לבחור קטגוריות רחבות של נושאים שיוכלו לשמש להתאמה אישית של מודעות</translation>
 <translation id="7887683347370398519">‏יש לבדוק את ה-CVC ולנסות שוב</translation>
 <translation id="7887885240995164102">מעבר אל מצב 'תמונה בתוך תמונה'</translation>
+<translation id="7888367499748383555">ללא עמלות, ריבית שנתית בשיעור של 0% (בכפוף לזכאות)</translation>
 <translation id="7888575728750733395">‏Rendering Intent בהדפסה</translation>
 <translation id="7890748547282909375">‏צריך להיכנס לחשבון ב-Microsoft OneDrive כדי לשמור צילום מסך</translation>
 <translation id="7890755620327858054">האפשרות "תשלום אחר כך" לא זמינה כרגע. אפשר לנסות שוב או לבחור אמצעי תשלום אחר.</translation>
@@ -4259,7 +4263,7 @@ Del</translation>
 <translation id="7916162853251942238">Flexo Base</translation>
 <translation id="791698251820376781">הארגון שלך לא מאפשר לך להיכנס</translation>
 <translation id="7926503317156566022">תעשייה אווירית</translation>
-<translation id="7927046851848613453">‏אפשר לשמור כרטיסים, אירועים ומידע אחר מדפים שצפית בהם – לא רק מטפסים שמילאת. כך ניתן לגשת במהירות לכרטיסים, כמו כרטיסים לאירועים וכרטיסי מועדון לקוחות. הפרטים השמורים שלך יכולים להופיע במכשירים שלך ובכל מוצרי Google.</translation>
+<translation id="7927046851848613453">‏אפשר לשמור כרטיסים, אירועים ומידע אחר מדפים שצופים בהם – ולא רק מטפסים שממלאים. כך ניתן לגשת במהירות לכרטיסים, כמו כרטיסים לאירועים וכרטיסי מועדון לקוחות. הפרטים השמורים יכולים להופיע במכשירים שלך ובמוצרים שונים של Google.</translation>
 <translation id="7930282586031445870">‏מסך התנאים וההגבלות של "קונים עכשיו, משלמים אחר כך (BNPL)" סגור.</translation>
 <translation id="7932035970207573919">כתובת בעבודה, <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">לעדכן את הכתובת?</translation>

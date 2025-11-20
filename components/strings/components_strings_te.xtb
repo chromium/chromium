@@ -657,6 +657,7 @@
 <translation id="2085876078937250610">సేవ్ చేయండి…</translation>
 <translation id="2088913896151127116">టెక్స్ట్‌ను జోడించండి</translation>
 <translation id="2090451897496479509">మరిన్ని వివరాల కోసం ప్రొవైడర్‌ను సంప్రదించండి</translation>
+<translation id="2090686487550343086">IBANలు</translation>
 <translation id="2091887806945687916">ధ్వని</translation>
 <translation id="2093184051799735948"><ph name="ENGINE_NAME" />‌లో సెర్చ్ చేయండి లేదా URLను టైప్ చేయండి</translation>
 <translation id="2093982008204312032">పాస్‌వర్డ్‌లను పూరించడం కోసం Windows Helloను ఆఫ్ చేయడానికి Google Chrome ట్రై చేస్తోంది.</translation>
@@ -794,6 +795,7 @@
 <translation id="2283340219607151381">అడ్రస్‌లను సేవ్ చేసి, పూరించండి</translation>
 <translation id="2283447177162560884">'<ph name="PAGE_TITLE" />' తొలగించబడింది</translation>
 <translation id="2283599456633275070">ప్రయాణం</translation>
+<translation id="2285709459648658719">పాస్‌పోర్ట్‌లు</translation>
 <translation id="2286383991450886080">34 x 44 అంగుళాలు</translation>
 <translation id="2288422996159078444">మీరు ఏదైనా టైప్ చేసినా, ఏవైనా పేజీలు వీక్షించినా లేదా వెబ్‌లో ఇతర యాక్టివిటీ ఏదైనా చూసినా. సైట్‌లలోని కంటెంట్ మీకు తెలియకుండానే మారిపోవచ్చు.</translation>
 <translation id="2289385804009217824">కత్తిరించండి</translation>
@@ -2546,6 +2548,7 @@
 <translation id="5137761395480718572">ఈ యాప్ Wi-Fi ఆధారాలను ఇన్‌స్టాల్ చేయడానికి అనుమతిని రిక్వెస్ట్ చేస్తోంది. సెటప్ చేసిన తర్వాత, మీ <ph name="DEVICE_TYPE" /> ఆటోమేటిక్‌గా పాల్గొనే Wi-Fi నెట్‌వర్క్‌లకు కనెక్ట్ అవుతుంది. ఈ ఆధారాలను తీసివేయడానికి, యాప్‌ను అన్‌ఇన్‌స్టాల్ చేయండి. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">ప్రస్తుతానికి వర్చువల్ కార్డ్ అందుబాటులో లేదు, దయచేసి మీ బ్యాంకును సంప్రదించండి</translation>
 <translation id="5138227688689900538">తక్కువ చూపు</translation>
+<translation id="5140155249377545621">డ్రైవర్ లైసెన్స్‌లు</translation>
 <translation id="5144613843429436866">మీరు ఈ సైట్‌కు <ph name="PERMISSION" />‌ను అనుమతించారు</translation>
 <translation id="5145883236150621069">విధాన ప్రతిస్పందనలో ఎర్రర్ కోడ్ ఉంది</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> కోసం నోటిఫికేషన్‌లు బ్లాక్ చేయబడ్డాయి</translation>

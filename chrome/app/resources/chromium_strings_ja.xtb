@@ -152,7 +152,6 @@
 <translation id="2718390899429598676">セキュリティ強化のため、Chromium ではデータが暗号化されます。</translation>
 <translation id="2721354645805494590">Chromium から Google アカウントを削除するには、ログアウトしてください</translation>
 <translation id="2722636413143664436">すべてのデバイスで同じパスワード、ブックマーク、その他の設定を使用するには、Chromium にログインしてください</translation>
-<translation id="2723860029395667894">Google AI モードのショートカットを常に表示する</translation>
 <translation id="2738871930057338499">インターネットに接続できません。HTTP 403 アクセス不可エラーが発生しました。プロキシ設定をご確認ください。</translation>
 <translation id="2753623023919742414">クリックして検索</translation>
 <translation id="2768103863314748511">Chromium をデフォルトの PDF ビューアに設定する</translation>
@@ -177,6 +176,7 @@
 <translation id="2977506796191543575">サイトがパスワードを不正に取得しようとしている場合や、ユーザーが安全でないファイルをダウンロードしようとした場合は、URL とページ コンテンツの一部をセーフ ブラウジングに送信することがあります</translation>
 <translation id="2981563588585023386">保護者の方が指定した設定でインターネットをより安全に利用するには、Chromium にログインしてください</translation>
 <translation id="3003694935412297923">すべてのタスク</translation>
+<translation id="3012615494352020668">{count,plural, =1{Google アカウントに一部のデータを保存して、すべてのデバイスで使用できるようにするには、Chromium で本人確認を行う必要があります。今すぐログアウトすると、このデータ（1 個のアイテム）は削除されます。}other{Google アカウントに一部のデータを保存して、すべてのデバイスで使用できるようにするには、Chromium で本人確認を行う必要があります。今すぐログアウトすると、このデータ（{count} 個のアイテム）は削除されます。}}</translation>
 <translation id="3013473503895162900">Chromium の新しいタブで <ph name="URL" /> を開きます。</translation>
 <translation id="3032706164202344641">Chromium でパスワードを確認できません。しばらくしてからもう一度お試しください。</translation>
 <translation id="3032787606318309379">Chromium に追加...</translation>
@@ -487,6 +487,7 @@
 <translation id="6729124504294600478">パーソナライズなどの機能を利用するには、Chromium をウェブとアプリのアクティビティと、リンクされた Google サービスに追加します</translation>
 <translation id="6734291798041940871">Chromium は既にパソコンのすべてのユーザーに対してインストールされています。</translation>
 <translation id="6751374565094704799">Chromium の V8 エンジンでサイトを高速化する（攻撃に対する Chromium の耐性は若干低下します）。この設定はオンになっています。</translation>
+<translation id="6754665438209053659">{count,plural, =1{Chromium データの一部が Google アカウントにまだ保存されていません。数分待ってからログアウトしてください。今すぐログアウトすると、このデータ（1 個のアイテム）は削除されます。}other{Chromium データの一部が Google アカウントにまだ保存されていません。数分待ってからログアウトしてください。今すぐログアウトすると、このデータ（{count} 個のアイテム）は削除されます。}}</translation>
 <translation id="67706546131546258">このファイルは危害を及ぼす可能性があるため、スキャンすることをおすすめします。</translation>
 <translation id="6779406956731413166">Chromium OS は、追加の<ph name="BEGIN_LINK_CROS_OSS" />オープンソース ソフトウェア<ph name="END_LINK_CROS_OSS" />によって実現しました。</translation>
 <translation id="6831043979455480757">翻訳</translation>
@@ -641,7 +642,6 @@
 <translation id="8619360774459241877">Chromium を起動しています...</translation>
 <translation id="8624541899164515475">設定、新しいタブで開きます。</translation>
 <translation id="8648201657708811153">Google Chrome for Testing は、既定のブラウザには設定できません。</translation>
-<translation id="8677922833187616101">Google AI モードのショートカットを常に表示する</translation>
 <translation id="8697124171261953979">この拡張機能では、Chromium の起動時、またはアドレスバーからの検索時に表示されるページも制御されます。</translation>
 <translation id="8704119203788522458">自分好みに設定</translation>
 <translation id="8712637175834984815">理解しました</translation>

@@ -662,6 +662,7 @@
 <translation id="2085876078937250610">Enregistrer…</translation>
 <translation id="2088913896151127116">Ajouter du texte</translation>
 <translation id="2090451897496479509">Contactez le fournisseur pour plus d'informations</translation>
+<translation id="2090686487550343086">IBAN</translation>
 <translation id="2091887806945687916">Son</translation>
 <translation id="2093184051799735948">Recherchez sur <ph name="ENGINE_NAME" /> ou entrez une URL</translation>
 <translation id="2093982008204312032">Google Chrome essaie de désactiver Windows Hello pour remplir les mots de passe.</translation>
@@ -799,6 +800,7 @@
 <translation id="2283340219607151381">Enregistrer et remplir les adresses</translation>
 <translation id="2283447177162560884">« <ph name="PAGE_TITLE" /> » supprimé</translation>
 <translation id="2283599456633275070">Voyage</translation>
+<translation id="2285709459648658719">Passeports</translation>
 <translation id="2286383991450886080">34 po x 44 po</translation>
 <translation id="2288422996159078444">Tout ce que vous écrivez, toutes les pages que vous consultez ou toute autre activité sur le Web sont sous surveillance, et le contenu des sites peut être changé sans que vous le sachiez.</translation>
 <translation id="2289385804009217824">Découper</translation>
@@ -2551,6 +2553,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5137761395480718572">Cette application demande l'autorisation d'installer les authentifiants Wi-Fi. Après la configuration, votre <ph name="DEVICE_TYPE" /> se connectera automatiquement aux réseaux Wi-Fi participants. Pour supprimer ces authentifiants, désinstallez l'application. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">Votre carte virtuelle n'est pas accessible pour le moment, veuillez communiquer avec votre banque</translation>
 <translation id="5138227688689900538">Afficher moins</translation>
+<translation id="5140155249377545621">Permis de conduire</translation>
 <translation id="5144613843429436866">Vous avez autorisé <ph name="PERMISSION" /> pour ce site</translation>
 <translation id="5145883236150621069">Code d'erreur présent dans la réponse de la politique</translation>
 <translation id="5146995429444047494">Les notifications pour <ph name="ORIGIN" /> sont bloquées</translation>

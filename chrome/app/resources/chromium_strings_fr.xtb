@@ -153,7 +153,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="2718390899429598676">Pour plus de sécurité, vos données seront chiffrées dans Chromium.</translation>
 <translation id="2721354645805494590">Pour supprimer votre compte Google de Chromium, déconnectez-vous</translation>
 <translation id="2722636413143664436">Pour accéder à vos mots de passe, vos favoris et plus sur tous vos appareils, connectez-vous à Chromium</translation>
-<translation id="2723860029395667894">Toujours afficher le raccourci vers le Mode IA de Google</translation>
 <translation id="2738871930057338499">Impossible de se connecter à Internet : erreur HTTP 403 (accès interdit). Veuillez vérifier la configuration de votre proxy.</translation>
 <translation id="2753623023919742414">Cliquer pour rechercher</translation>
 <translation id="2768103863314748511">Définir Chromium comme visionneuse de PDF par défaut</translation>
@@ -648,7 +647,6 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="8619360774459241877">Lancement de Chromium…</translation>
 <translation id="8624541899164515475">Paramètres, s'ouvre dans un nouvel onglet.</translation>
 <translation id="8648201657708811153">Impossible de définir Google Chrome for Testing comme navigateur par défaut.</translation>
-<translation id="8677922833187616101">Toujours afficher le raccourci vers le Mode IA de Google</translation>
 <translation id="8697124171261953979">Elle contrôle également la page qui s'affiche au démarrage de Chromium ou lorsque vous effectuez une recherche dans l'omnibox.</translation>
 <translation id="8704119203788522458">Voici votre Chromium</translation>
 <translation id="8712637175834984815">OK</translation>

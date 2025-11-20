@@ -152,9 +152,9 @@
 <translation id="2681444469812712297">在 Google Chrome 中的新分頁開啟 <ph name="URL" />。</translation>
 <translation id="2699790011615497488">開啟 Chrome Beta 版 Gemini</translation>
 <translation id="2712141162840347885">揀任何要用「Google 智能鏡頭」搜尋嘅內容，㩒 Esc 掣就可以退出「Google 智能鏡頭」</translation>
-<translation id="2723860029395667894">一律顯示 Google AI 模式捷徑</translation>
 <translation id="2738871930057338499">無法連線至互聯網。發生 HTTP 403 禁止錯誤，請檢查 Proxy 設定。</translation>
 <translation id="2742320827292110288">警告：Google Chrome 無法阻止擴充程式記錄您的瀏覽活動。如要在無痕模式中停用這個擴充程式，請取消選取這個選項。</translation>
+<translation id="2747021967398957654">{count,plural, =1{部分 Chrome 資料尚未儲存至 Google 帳戶。請等待幾分鐘後再嘗試登出。如果你現在登出，系統將刪除有關資料 (1 個項目)。}other{部分 Chrome 資料尚未儲存至 Google 帳戶。請等待幾分鐘後再嘗試登出。如果你現在登出，系統將刪除有關資料 ({count} 個項目)。}}</translation>
 <translation id="2753623023919742414">按一下即可搜尋</translation>
 <translation id="2757826245013442432">{COUNT,plural, =0{「進階保護功能」要求你重新啟動 Chrome 以套用更新}=1{「進階保護功能」要求你重新啟動 Chrome 以套用更新。無痕式視窗不會重新開啟。}other{「進階保護功能」要求你重新啟動 Chrome 以套用更新。# 個無痕式視窗不會重新開啟。}}</translation>
 <translation id="2765403129283291972">Chrome 需要取得權限，才能讓這個網站存取您的麥克風</translation>
@@ -513,6 +513,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="6676384891291319759">連線到互聯網</translation>
 <translation id="6679975945624592337">讓 Google Chrome 在背景執行</translation>
 <translation id="6696915334902295848">Chrome 需要麥克風權限，才能執行此網站要求的功能</translation>
+<translation id="6706525880530967390">{count,plural, =1{Chrome 需要先驗證身分，才能將部分資料儲存至 Google 帳戶，並在所有裝置上使用。如果你現在登出，系統將刪除有關資料 (1 個項目)。}other{Chrome 需要先驗證身分，才能將部分資料儲存至 Google 帳戶，並在所有裝置上使用。如果你現在登出，系統將刪除有關資料 ({count} 個項目)。}}</translation>
 <translation id="6712881677154121168">下載錯誤：<ph name="DOWNLOAD_ERROR" />。</translation>
 <translation id="6718739135284199302">加快 Chrome 的運作速度</translation>
 <translation id="6734827584173583205">由於最近沒有瀏覽記錄，Chrome 已移除<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />和另外 <ph name="COUNT" /> 項權限。</translation>
@@ -691,7 +692,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8647930742055103497">將一切保留在 Chrome 中</translation>
 <translation id="8656634243791296665">開啟 Chrome 開發人員版 Gemini</translation>
 <translation id="8669527147644353129">Google Chrome 輔助工具</translation>
-<translation id="8677922833187616101">一律顯示 Google AI 模式捷徑</translation>
 <translation id="8679801911857917785">這個擴充功能也會管制 Chrome 啟動時所顯示的網頁。</translation>
 <translation id="8712637175834984815">我知道了</translation>
 <translation id="8712767363896337380">即將更新至最新版本！重新啟動 Chrome 即可完成更新程序。</translation>

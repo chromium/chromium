@@ -662,6 +662,7 @@
 <translation id="2085876078937250610">儲存…</translation>
 <translation id="2088913896151127116">新增文字</translation>
 <translation id="2090451897496479509">詳情請聯絡供應商</translation>
+<translation id="2090686487550343086">IBAN</translation>
 <translation id="2091887806945687916">音效</translation>
 <translation id="2093184051799735948">搜尋 <ph name="ENGINE_NAME" /> 或輸入網址</translation>
 <translation id="2093982008204312032">Google Chrome 正在嘗試關閉 Windows Hello，以便填入密碼。</translation>
@@ -799,6 +800,7 @@
 <translation id="2283340219607151381">儲存和填入地址</translation>
 <translation id="2283447177162560884">刪除咗「<ph name="PAGE_TITLE" />」</translation>
 <translation id="2283599456633275070">旅遊</translation>
+<translation id="2285709459648658719">護照</translation>
 <translation id="2286383991450886080">34 x 44 吋</translation>
 <translation id="2288422996159078444">您輸入的內容、瀏覽的網頁或其他網絡活動都會被監視，且網站內容可能會在您不知情的情況下變更。</translation>
 <translation id="2289385804009217824">修剪</translation>
@@ -2550,6 +2552,7 @@
 <translation id="5137761395480718572">此應用程式現要求您授權安裝 Wi-Fi 憑證。設定完成後，您的 <ph name="DEVICE_TYPE" /> 將會自動連線至參與的 Wi-Fi 網絡。如要移除這些憑證，請解除安裝該應用程式。<ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">目前無法使用虛擬卡，請聯絡您的銀行</translation>
 <translation id="5138227688689900538">顯示較少</translation>
+<translation id="5140155249377545621">駕駛執照</translation>
 <translation id="5144613843429436866">你已向此網站授予<ph name="PERMISSION" />存取權</translation>
 <translation id="5145883236150621069">政策回應中存在錯誤代碼</translation>
 <translation id="5146995429444047494">已封鎖 <ph name="ORIGIN" /> 的通知</translation>
@@ -4236,6 +4239,7 @@
 <translation id="7886897188117641322">選擇系統可根據哪些廣泛的主題類別放送個人化廣告</translation>
 <translation id="7887683347370398519">請檢查您的 CVC，然後再試一次</translation>
 <translation id="7887885240995164102">進入畫中畫</translation>
+<translation id="7888367499748383555">免手續費，年利率低至 0% (須符合資格)</translation>
 <translation id="7888575728750733395">列印輸出意圖</translation>
 <translation id="7890748547282909375">登入 Microsoft OneDrive 即可儲存螢幕截圖</translation>
 <translation id="7890755620327858054">稍後付款暫時不適用。請再試一次，或改選其他付款方法。</translation>

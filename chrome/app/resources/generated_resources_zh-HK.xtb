@@ -1068,6 +1068,7 @@
     即表示您同意 Google 可能會使用您所提供的意見改善
     任何 Google 產品或服務。</translation>
 <translation id="17081583771848899">啟動器 + Alt + <ph name="TOP_ROW_KEY" /> 鍵</translation>
+<translation id="170825127491242914">儲存至雲端儲存空間</translation>
 <translation id="1708291623166985230">停用咗熱點</translation>
 <translation id="1708338024780164500">(無法使用)</translation>
 <translation id="1708563369218024896">沒有選取資料收集器。請選取至少一個資料收集器。</translation>
@@ -6668,6 +6669,7 @@
 <translation id="5585912436068747822">無法格式化</translation>
 <translation id="5587765208077583036">如要共用資料夾，請在「檔案」應用程式中的資料夾上按一下右鍵，然後選取 [與 <ph name="SPECIFIC_NAME" /> 共用]。</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
+<translation id="5588712142463367677">篩選頁面上的網站</translation>
 <translation id="558918721941304263">正在載入應用程式…</translation>
 <translation id="5590418976913374224">在裝置啟動時播放音效</translation>
 <translation id="5591465468509111843">字間距很寬</translation>
@@ -8055,6 +8057,7 @@
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - 已共用桌面內容</translation>
 <translation id="6580060371127789208">已完成 <ph name="PERCENTAGE_COMPLETE" />%</translation>
 <translation id="6580203076670148210">掃瞄速度</translation>
+<translation id="6580676117087365538">如要在所有電腦上使用此擴充程式，請先驗證身分</translation>
 <translation id="6581356304040102696">無法匯入密碼，檔案大小不得超過 1 MB。</translation>
 <translation id="6582080224869403177">重設您的 <ph name="DEVICE_TYPE" />，以進行安全性升級。</translation>
 <translation id="6582274660680936615">您目前是以訪客身分瀏覽</translation>
@@ -9575,6 +9578,7 @@
 <translation id="7647403192093989392">最近沒有任何活動</translation>
 <translation id="7648023614017258011">Chrome 正在驗證安裝套件</translation>
 <translation id="7648048654005891115">按鍵對應配置樣式</translation>
+<translation id="7648180062672842917">此檔案含有敏感或危險的內容。你的機構允許你將檔案儲存至雲端儲存空間或捨棄</translation>
 <translation id="7649070708921625228">說明</translation>
 <translation id="7649954700951153978">在 iOS 上提醒我</translation>
 <translation id="7650141368285545431">使用另一部裝置的密鑰</translation>
@@ -10901,6 +10905,7 @@
 <translation id="8535005006684281994">Netscape 憑證更新網址</translation>
 <translation id="8536810348276651776">您會登出大多數網站，但會保持登入 Google 帳戶，以便系統套用 Family Link 的設定。</translation>
 <translation id="8536956381488731905">按鍵音效</translation>
+<translation id="8537854269962256103">你的 Gemini 對話目前在彈出式對話框中。按一下側面板的任何一處，即可將對話移到這裡。</translation>
 <translation id="8539727552378197395">否 (限 Http)</translation>
 <translation id="8539766201049804895">升級</translation>
 <translation id="8540136935098276800">請輸入正確格式的網址</translation>
@@ -11148,6 +11153,7 @@
 <translation id="8703766890819308134">顯示搜尋捷徑</translation>
 <translation id="8704662571571150811">網域</translation>
 <translation id="8705331520020532516">序號</translation>
+<translation id="870536819717176711">當你選擇與 Gemini 分享當前分頁，分頁的完整內容、媒體和網址會傳送到 Google。</translation>
 <translation id="8705580154597116082">可透過手機使用 Wi-Fi</translation>
 <translation id="8705629851992224300">無法讀取您的安全密鑰</translation>
 <translation id="8706111173576263877">掃瞄咗 QR 碼。</translation>

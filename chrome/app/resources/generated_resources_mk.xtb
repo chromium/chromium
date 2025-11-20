@@ -1070,6 +1070,7 @@
     се согласувате дека Google може да ги користи за подобрување
     на кој било производ или услуга на Google.</translation>
 <translation id="17081583771848899">launcher + alt + <ph name="TOP_ROW_KEY" /></translation>
+<translation id="170825127491242914">Зачувајте во просторот во облакот</translation>
 <translation id="1708291623166985230">Точката на пристап е оневозможена</translation>
 <translation id="1708338024780164500">(Неактивна)</translation>
 <translation id="1708563369218024896">Не е избран прибирач на податоци. Изберете најмалку еден прибирач на податоци.</translation>
@@ -8067,6 +8068,7 @@
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - содржините од работната површина се споделени</translation>
 <translation id="6580060371127789208">Завршено: <ph name="PERCENTAGE_COMPLETE" /> %</translation>
 <translation id="6580203076670148210">Брзина на скенирање</translation>
+<translation id="6580676117087365538">За да ја добиете екстензијава на сите ваши компјутери, потврдете дека сте вие</translation>
 <translation id="6581356304040102696">Не може да се увезат лозинките. Големината на датотеката треба да биде под 1 MB.</translation>
 <translation id="6582080224869403177">Ресетирајте го <ph name="DEVICE_TYPE" /> за да ја надградите безбедноста.</translation>
 <translation id="6582274660680936615">Прелистувате како гостин</translation>
@@ -9589,6 +9591,7 @@
 <translation id="7647403192093989392">Нема неодамнешни активности</translation>
 <translation id="7648023614017258011">Chrome го потврдува пакетот за инсталација</translation>
 <translation id="7648048654005891115">Стил Keymap</translation>
+<translation id="7648180062672842917">Датотекава содржи чувствителни или опасни податоци. Вашата организација ќе ви дозволи да го зачувате во просторот во облакот или да го отфрлите</translation>
 <translation id="7649070708921625228">Помош</translation>
 <translation id="7649954700951153978">Потсети ме на iOS</translation>
 <translation id="7650141368285545431">Користете криптографски клуч од друг уред</translation>
@@ -10919,6 +10922,7 @@
 <translation id="8535005006684281994">URL за обновување сертификат на Netscape</translation>
 <translation id="8536810348276651776">Ќе ве одјави од повеќето сајтови. Ќе останете најавени на вашата сметка на Google, па важат вашите поставки на Family Link за Chrome.</translation>
 <translation id="8536956381488731905">Звук на притискање копче</translation>
+<translation id="8537854269962256103">Вашиот разговор со Gemini е во одвоен разговор. Кликнете каде било во страничнава табла за да го преместите овде.</translation>
 <translation id="8539727552378197395">Не (HttpOnly)</translation>
 <translation id="8539766201049804895">Надгради</translation>
 <translation id="8540136935098276800">Внесете правилно форматирана URL-адреса</translation>
@@ -11166,6 +11170,7 @@
 <translation id="8703766890819308134">Прикажи ги кратенките за пребарување</translation>
 <translation id="8704662571571150811">Домени</translation>
 <translation id="8705331520020532516">Сериски број</translation>
+<translation id="870536819717176711">Кога ќе изберете да ја споделите тековната картичка со Gemini, сите содржини, аудиовизуелни содржини и URL-адресата на картичката се испраќаат до Google.</translation>
 <translation id="8705580154597116082">Wi-Fi е достапно преку телефон</translation>
 <translation id="8705629851992224300">Не може да се прочита безбедносниот клуч</translation>
 <translation id="8706111173576263877">QR-кодот е скениран.</translation>

@@ -662,6 +662,7 @@
 <translation id="2085876078937250610">સાચવો…</translation>
 <translation id="2088913896151127116">ટેક્સ્ટ ઉમેરો</translation>
 <translation id="2090451897496479509">વધુ માહિતી માટે પ્રદાતાનો સંપર્ક કરો</translation>
+<translation id="2090686487550343086">IBANs</translation>
 <translation id="2091887806945687916">ધ્વનિ</translation>
 <translation id="2093184051799735948"><ph name="ENGINE_NAME" /> શોધો અથવા URL ટાઇપ કરો</translation>
 <translation id="2093982008204312032">Google Chrome પાસવર્ડ ભરવા માટે Windows Hello બંધ કરવાનો પ્રયાસ કરી રહ્યું છે.</translation>
@@ -799,6 +800,7 @@
 <translation id="2283340219607151381">સરનામાં સાચવો અને ભરો</translation>
 <translation id="2283447177162560884">'<ph name="PAGE_TITLE" />' ડિલીટ કર્યું</translation>
 <translation id="2283599456633275070">મુસાફરી</translation>
+<translation id="2285709459648658719">પાસપોર્ટ</translation>
 <translation id="2286383991450886080">34 x 44 ઇંચ</translation>
 <translation id="2288422996159078444">તમે જે કંઈપણ ટાઇપ કરશો તે, તમે જોશો તે કોઈપણ પેજ અથવા વેબ પરની અન્ય કોઈપણ પ્રવૃત્તિ પર નજર રાખવામાં આવી રહી છે. સાઇટ પરના કન્ટેન્ટમાં તમારી જાણ વિના ફેરફાર કરવામાં આવી શકે છે.</translation>
 <translation id="2289385804009217824">ટ્રિમ કરો</translation>
@@ -2551,6 +2553,7 @@
 <translation id="5137761395480718572">આ ઍપ વાઇ-ફાઇની લૉગ ઇન વિગતો ઇન્સ્ટૉલ કરવાની પરવાનગી માટે વિનંતી કરી રહી છે. સેટઅપ પછી, તમારું <ph name="DEVICE_TYPE" /> સહભાગી વાઇ-ફાઇ નેટવર્ક સાથે ઑટોમૅટિક રીતે કનેક્ટ થઈ જશે. લૉગ ઇનની આ વિગતો કાઢી નાખવા માટે, ઍપને અનઇન્સ્ટૉલ કરો. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">હમણાં વર્ચ્યુઅલ કાર્ડ ઉપલબ્ધ નથી, કૃપા કરીને તમારી બેંકનો સંપર્ક કરો</translation>
 <translation id="5138227688689900538">ઓછું બતાવો</translation>
+<translation id="5140155249377545621">ડ્રાઇવિંગ લાઇસન્સ</translation>
 <translation id="5144613843429436866">તમે આ સાઇટ માટે <ph name="PERMISSION" />ને મંજૂરી આપી છે</translation>
 <translation id="5145883236150621069">પૉલિસી પ્રતિક્રિયામાં ભૂલ કોડ હાજર</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> માટેના નોટિફિકેશન બ્લૉક કર્યા છે</translation>

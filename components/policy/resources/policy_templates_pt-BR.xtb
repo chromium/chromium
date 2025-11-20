@@ -2497,13 +2497,6 @@ Se a captura de tela não tiver sido permitida no início da sessão, nenhum out
 <translation id="2614156176932194496">Configurações das integrações do Modo IA do Google na barra de endereço e na caixa de pesquisa da página "Nova guia".</translation>
 <translation id="2615240493030733717">Enviar informações de fuso horário</translation>
 <translation id="2619258867868873629">Os destinos "Salvar como PDF" e "Salvar no Google Drive" em dispositivos <ph name="PRODUCT_OS_NAME" /></translation>
-<translation id="262035875928535253">Configure a lista de domínios em que <ph name="PRODUCT_NAME" /> precisa desativar <ph name="PASSWORD_MANAGER_NAME" />. Isso significa que os fluxos de trabalho de salvar e preencher serão desativados, garantindo que as senhas desses sites não sejam salvas nem preenchidas automaticamente em formulários on-line.
-
-Se um domínio estiver na lista, <ph name="PASSWORD_MANAGER_NAME" /> será desativado para ele.
-
-Se um domínio não estiver na lista, <ph name="PASSWORD_MANAGER_NAME" /> vai estar disponível para ele.
-
-Se a política for deixada sem definição, <ph name="PASSWORD_MANAGER_NAME" /> vai ficar disponível para todos os domínios.</translation>
 <translation id="2621290137818374425">A definição da política desativa os requisitos de divulgação de Transparência dos certificados para os nomes de host nos URLs especificados. Embora dificultem a detecção de certificados incorretos, os hosts podem continuar usando certificados que, de outro modo, não seriam confiáveis, já que não foram divulgados publicamente de maneira adequada.
 
       Deixar esta política sem definição significa que, se os certificados que precisam ser divulgados pela Transparência dos certificados não forem, o <ph name="PRODUCT_NAME" /> não confiará nesses certificados.
@@ -3634,11 +3627,11 @@ Se a política for deixada sem definição, a navegação no navegador será blo
       Se você desativar ou não definir esta configuração, o novo fluxo de login in-line será usado por padrão. Os usuários podem ativar o antigo fluxo de login baseado na Web com a flag de linha de comando --enable-web-based-signin.
 
       A configuração experimental será removida no futuro, quando o login in-line for compatível com todos os fluxos de login SSO.</translation>
-<translation id="3435229811562571593">Define uma lista de padrões de URL especificando sites que negam permissão a fontes locais automaticamente. Isso limita a capacidade dos sites de ver informações sobre fontes locais.
+<translation id="3435229811562571593">Define uma lista de padrões de URL que especificam quais sites negam permissão a fontes locais automaticamente. Isso limita a capacidade dos sites de ver informações sobre fontes locais.
 
-      Para saber mais sobre padrões de URL válidos, consulte https://chromeenterprise.google/policies/url-patterns. Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos. A política só faz a correspondência de origens, então os caminhos no padrão do URL serão ignorados.
+      Para informações mais detalhadas sobre padrões de URL válidos, consulte https://chromeenterprise.google/policies/url-patterns. Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos. A política só faz a correspondência de origens, então os caminhos no padrão do URL serão ignorados.
 
-      Se esta política for deixada sem definição para um site, a política de <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> será aplicada, quando configurada. Caso contrário, a permissão vai seguir os padrões do navegador e autorizar a escolha dos usuários para cada site.</translation>
+      Se esta política não for definida para um site, a política de <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> será aplicada, quando configurada. Caso contrário, a permissão vai seguir os padrões do navegador e autorizar a escolha dos usuários para cada site.</translation>
 <translation id="3435796032110614169">Permite a exclusão do histórico de trabalhos de impressão</translation>
 <translation id="3436217793443508863">O tempo, em milissegundos, sem entrada do usuário até que a tela seja bloqueada quando o dispositivo estiver funcionando com energia da bateria.</translation>
 <translation id="3437391374720747482">Preferir métodos de troca de chaves que atendam aos requisitos do CNSA 2.0</translation>
@@ -4763,11 +4756,11 @@ Consulte https://github.com/WICG/direct-sockets (link em inglês) para saber mai
 Se a política for definida, será possível listar os padrões de URL que especificam quais sites não têm permissão para se comunicar usando a API Direct Sockets.
 Os padrões válidos são limitados a Apps Isolados da Web.
 
-Se a política não tiver definição, <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida.
+Se a política não for definida, <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se esta estiver configurada.
 
 Os padrões de URL não podem entrar em conflito com <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" />. Nenhuma política terá precedência se um URL tiver correspondência com ambas.
 
-Para saber mais sobre padrões de URL válidos, consulte https://chromeenterprise.google/policies/url-patterns. O valor <ph name="WILDCARD_VALUE" /> não é aceito para esta política.</translation>
+Para informações mais detalhadas sobre padrões de URL válidos, consulte https://chromeenterprise.google/policies/url-patterns. O valor <ph name="WILDCARD_VALUE" /> não é aceito para esta política.</translation>
 <translation id="4192388905594723944">URL para validação do token de autenticação do cliente de acesso remoto</translation>
 <translation id="4195119404667420672">A pré-busca de SpeculationRules pode ser enviada para URLs controlados pelo ServiceWorkers.</translation>
 <translation id="4195698007674066525">Usar o teclado numérico por padrão para a entrada de senhas</translation>
@@ -10610,7 +10603,7 @@ essa API sem uma interação anterior do usuário, conforme descrito em
 Esta política substitui as configurações pessoais dos usuários e permite que origens correspondentes
 chamem a API sem uma interação anterior do usuário.
 
-Para saber mais sobre padrões de URL válidos, consulte
+Para informações mais detalhadas sobre os padrões de URL válidos, consulte
 https://chromeenterprise.google/policies/url-patterns.
 Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.
 
@@ -10752,13 +10745,13 @@ Esta política é temporária e será removida.</translation>
 <translation id="7974114691960514888">Esta política não é mais suportada. Ativa o uso de servidores STUN e de retransmissão ao estabelecer conexão a um cliente remoto. Se esta configuração estiver ativada, este computador pode descobrir e conectar-se a computadores host remotos mesmo se separados por um firewall. Se esta configuração estiver desativada e conexões de UDP enviadas forem filtradas pelo firewall, este computador só poderá estabelecer conexões a computadores host na rede local.</translation>
 <translation id="7975777377454336782">Esta política permite definir uma lista de padrões de URL que especificam as origens de nível superior em que o particionamento de armazenamento de terceiros (do iframe de origem cruzada) precisa ser desativado.
 
-Se ela for deixada sem definição ou se uma origem de nível superior não corresponder a um dos padrões de URL, <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" /> será aplicada.
+Se ela não for definida ou se uma origem de nível superior não corresponder a um dos padrões de URL, <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" /> será aplicada.
 
-Para saber mais sobre padrões válidos, consulte https://chromeenterprise.google/policies/url-patterns. Os padrões listados aqui são tratados como origens, não URLs. Assim, recomendamos que você não especifique um caminho.
+Para informações mais detalhadas sobre padrões válidos, consulte https://chromeenterprise.google/policies/url-patterns. Os padrões listados aqui são tratados como origens, não URLs. Assim, recomendamos que você não especifique um caminho.
 
 Para conferir informações detalhadas sobre o particionamento de armazenamento de terceiros, consulte https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.
 
-Isso será removido no Chrome 145, e é recomendável usar o método requestStorageAccess: https://developer.mozilla.org/en-US/docs/Web/API/Document/requestStorageAccess (em inglês). Você pode enviar feedback em https://crbug.com/425248669 (em inglês).</translation>
+Ele será removido no Chrome 145, e é recomendável usar o método requestStorageAccess: https://developer.mozilla.org/en-US/docs/Web/API/Document/requestStorageAccess (em inglês). Você pode enviar feedback em https://crbug.com/425248669 (em inglês).</translation>
 <translation id="7976103461034266553">Quando esta política estiver ativada, a função setTimeout() do JavaScript com um tempo limite de 0ms não vai ser limitada a 1ms.
           Quando ela estiver desativada, a função setTimeout() do JavaScript com um tempo limite de 0ms será limitada a 1ms.
           Se a política for deixada sem definição, use o comportamento padrão do navegador para o limite da função setTimeout().
@@ -11396,11 +11389,11 @@ Se ela não for definida ou for definida como "0", a navegação para um URL des
 Se a política for definida como <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_DISABLED" /> (valor 0) ou deixada sem definição, o <ph name="PRODUCT_NAME" /> não vai solicitar o certificado do cliente. Esta política foi ativada anteriormente. Assim, se o certificado do cliente gerenciado de um navegador já tiver sido provisionado, ele não será excluído, mas não vai ficar disponível para conexões mTLS nem será renovado quando expirar.</translation>
 <translation id="8401567123761348600">Se a política for definida, será possível configurar uma lista de padrões de URL que especifique os sites que podem acessar sensores de luz e movimento.
 
-      Se a política não tiver definição, <ph name="DEFAULT_SENSORS_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
+      Se a política não for definida, <ph name="DEFAULT_SENSORS_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se esta estiver configurada. Caso contrário, a configuração pessoal do usuário será aplicada.
 
-      Se o mesmo padrão de URL existir nesta política e na política <ph name="SENSORS_BLOCKED_FOR_URLS_POLICY_NAME" />, a segunda terá prioridade e o acesso a sensores de luz e movimento será bloqueado.
+      Se o mesmo padrão de URL existir nesta política e na política <ph name="SENSORS_BLOCKED_FOR_URLS_POLICY_NAME" />, a segunda terá prioridade, e o acesso a sensores de luz e movimento será bloqueado.
 
-      Para saber mais sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://chromeenterprise.google/policies/url-patterns. Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.</translation>
+      Para informações mais detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://chromeenterprise.google/policies/url-patterns. Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.</translation>
 <translation id="8402079500086185021">Sempre abrir arquivos em PDF externamente</translation>
 <translation id="8402357110539568621">Ativar o recurso de acessibilidade do teclado virtual.
 

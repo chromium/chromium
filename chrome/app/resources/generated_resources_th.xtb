@@ -1060,6 +1060,7 @@
 <translation id="1706586824377653884">เพิ่มโดยผู้ดูแลระบบ</translation>
 <translation id="170658918174941828">นอกเหนือจากข้อมูลที่คุณเลือกให้รวมไว้ข้างต้น จะมีการส่งเวอร์ชัน Chrome, เวอร์ชันระบบปฏิบัติการ, การตั้งค่า Cast, สถิติประสิทธิภาพการมิเรอร์ และบันทึกการวินิจฉัยช่องทางการสื่อสารด้วย ความคิดเห็นนี้จะใช้เพื่อวินิจฉัยปัญหาและช่วยปรับปรุงฟีเจอร์ ทั้งนี้ข้อมูลส่วนบุคคลที่ส่งมาไม่ว่าจะโดยชัดแจ้งหรือโดยไม่ตั้งใจจะได้รับการปกป้องตามนโยบายความเป็นส่วนตัว การส่งความคิดเห็นนี้เป็นการยอมรับว่า Google สามารถใช้ความคิดเห็นเพื่อปรับปรุงผลิตภัณฑ์หรือบริการได้</translation>
 <translation id="17081583771848899">Launcher + Alt + <ph name="TOP_ROW_KEY" /></translation>
+<translation id="170825127491242914">บันทึกลงในพื้นที่เก็บข้อมูลระบบคลาวด์</translation>
 <translation id="1708291623166985230">ปิดใช้ฮอตสปอตแล้ว</translation>
 <translation id="1708338024780164500">(ไม่ใช้งาน)</translation>
 <translation id="1708563369218024896">ไม่ได้เลือกเครื่องมือรวบรวมข้อมูล โปรดเลือกเครื่องมือรวบรวมข้อมูลอย่างน้อย 1 อย่าง</translation>
@@ -1361,7 +1362,7 @@
 <translation id="1918141783557917887">เ&amp;ล็กลง</translation>
 <translation id="1918281588461452432">ขณะที่คุณท่องเว็บ ระบบจะเข้ารหัสและบันทึกเนื้อหาในหน้าเว็บไว้ในอุปกรณ์ของคุณ</translation>
 <translation id="1918761619391445601">ปักหมุด <ph name="EXTENSION_NAME" /> แล้ว ดูตัวเลือกเพิ่มเติม</translation>
-<translation id="1919096511823372013">แทรกลิงก์ อีโมจิ และอื่นๆ คุณยังใช้ AI ของ Google เพื่อช่วยเขียนและสร้างรูปภาพได้ด้วย</translation>
+<translation id="1919096511823372013">แทรกลิงก์ อีโมจิ และอื่นๆ คุณยังใช้ Google AI เพื่อช่วยเขียนและสร้างรูปภาพได้ด้วย</translation>
 <translation id="1919872106782726755">หากต้องการตั้งค่าลายนิ้วมือ ให้บุตรหลานแตะเซ็นเซอร์ลายนิ้วมือที่มุมขวาบนของแป้นพิมพ์ ข้างปุ่มเปิด/ปิด ข้อมูลลายนิ้วมือของบุตรหลานจะจัดเก็บไว้อย่างปลอดภัยและอยู่ใน <ph name="DEVICE_TYPE" /> นี้เสมอ</translation>
 <translation id="192015196730532810">คุณสร้างกลุ่มแท็บของตัวเองได้</translation>
 <translation id="1920314570001095522">ไม่มีแท็บที่คล้ายกันให้จัดระเบียบ แต่คุณอาจชอบกลุ่มเหล่านี้</translation>
@@ -6659,6 +6660,7 @@
 <translation id="5585912436068747822">การจัดรูปแบบล้มเหลว</translation>
 <translation id="5587765208077583036">หากต้องการแชร์ ให้คลิกขวาที่โฟลเดอร์ในแอป Files แล้วเลือก "แชร์กับ <ph name="SPECIFIC_NAME" />"</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
+<translation id="5588712142463367677">กรองเว็บไซต์ในหน้า</translation>
 <translation id="558918721941304263">กำลังโหลดแอป...</translation>
 <translation id="5590418976913374224">เล่นเสียงเมื่อเริ่มต้นใช้งานอุปกรณ์</translation>
 <translation id="5591465468509111843">ห่างมาก</translation>
@@ -7649,7 +7651,7 @@
 <translation id="628726841779494414">จัดการเครื่องพิมพ์ของคุณในการตั้งค่าเครื่องพิมพ์</translation>
 <translation id="6287288864483377583">รองรับการนำเข้าใบรับรองฉบับเดียวเท่านั้น</translation>
 <translation id="6287828400772161253">โทรศัพท์ Android (<ph name="HOST_DEVICE_NAME" />)</translation>
-<translation id="6288559570252410796">ถามโหมด AI ของ Google</translation>
+<translation id="6288559570252410796">ถามโหมด Google AI</translation>
 <translation id="6290613030083731160">ไม่มีอุปกรณ์ที่กำลังแชร์อยู่ใกล้เคียง <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">กู้คืนไม่ได้เนื่องจากมีพื้นที่เก็บข้อมูลไม่เพียงพอ</translation>
 <translation id="6291741848715722067">รหัสยืนยัน</translation>
@@ -8046,6 +8048,7 @@
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - แชร์เนื้อหาบนเดสก์ท็อปอยู่</translation>
 <translation id="6580060371127789208">เสร็จแล้ว <ph name="PERCENTAGE_COMPLETE" />%</translation>
 <translation id="6580203076670148210">ความเร็วในการสแกน</translation>
+<translation id="6580676117087365538">หากต้องการรับส่วนขยายนี้ในคอมพิวเตอร์ทุกเครื่อง โปรดยืนยันว่าเป็นคุณ</translation>
 <translation id="6581356304040102696">นำเข้ารหัสผ่านไม่ได้ ไฟล์ควรมีขนาดไม่เกิน 1 MB</translation>
 <translation id="6582080224869403177">รีเซ็ต <ph name="DEVICE_TYPE" /> เพื่ออัปเกรดความปลอดภัย</translation>
 <translation id="6582274660680936615">คุณกำลังเรียกดูในฐานะผู้มาเยือน</translation>
@@ -8840,7 +8843,7 @@
 <translation id="713122686776214250">เพิ่มห&amp;น้า...</translation>
 <translation id="7131431455372521159">เลิกเชื่อมต่อ TrackPoint ทั้งหมดแล้ว</translation>
 <translation id="7131896909366247105"><ph name="APP_NAME" /> กำลังรอ</translation>
-<translation id="7132886488919643383">ใช้ AI ของ Google เพื่อรับความช่วยเหลือในการอ่าน เขียน และสร้างสรรค์</translation>
+<translation id="7132886488919643383">ใช้ Google AI เพื่อรับความช่วยเหลือในการอ่าน เขียน และสร้างสรรค์</translation>
 <translation id="7134098520442464001">ทำให้ข้อความเล็กลง</translation>
 <translation id="7134951043985383439">ดาวน์โหลดไฟล์อันตรายแล้ว</translation>
 <translation id="7135729336746831607">เปิดบลูทูธไหม</translation>
@@ -9566,6 +9569,7 @@
 <translation id="7647403192093989392">ไม่มีกิจกรรมล่าสุด</translation>
 <translation id="7648023614017258011">Chrome กำลังยืนยันแพ็กเกจการติดตั้ง</translation>
 <translation id="7648048654005891115">รูปแบบ Keymap</translation>
+<translation id="7648180062672842917">ไฟล์นี้มีข้อมูลที่ละเอียดอ่อนหรือเป็นอันตราย องค์กรจะอนุญาตให้คุณบันทึกลงในพื้นที่เก็บข้อมูลระบบคลาวด์หรือทิ้ง</translation>
 <translation id="7649070708921625228">ความช่วยเหลือ</translation>
 <translation id="7649954700951153978">เตือนฉันบน iOS</translation>
 <translation id="7650141368285545431">ใช้พาสคีย์จากอุปกรณ์อื่น</translation>
@@ -10894,6 +10898,7 @@
 <translation id="8535005006684281994">URL การต่ออายุใบรับรองของ Netscape</translation>
 <translation id="8536810348276651776">นำคุณออกจากระบบของเว็บไซต์ส่วนใหญ่ แต่คุณจะยังลงชื่อเข้าใช้บัญชี Google อยู่เพื่อใช้การตั้งค่า Family Link สำหรับ Chrome</translation>
 <translation id="8536956381488731905">ส่งเสียงเมื่อกดปุ่ม</translation>
+<translation id="8537854269962256103">บทสนทนากับ Gemini อยู่ในแชทแบบเปิดหน้าต่างใหม่ คลิกที่ใดก็ได้ในแผงด้านข้างนี้เพื่อย้ายมาที่นี่</translation>
 <translation id="8539727552378197395">ไม่มี (HttpOnly)</translation>
 <translation id="8539766201049804895">อัปเกรด</translation>
 <translation id="8540136935098276800">ป้อน URL ที่มีรูปแบบที่ถูกต้อง</translation>
@@ -11141,6 +11146,7 @@
 <translation id="8703766890819308134">แสดงทางลัดการค้นหา</translation>
 <translation id="8704662571571150811">โดเมน</translation>
 <translation id="8705331520020532516">หมายเลขซีเรียล</translation>
+<translation id="870536819717176711">เมื่อคุณเลือกแชร์แท็บปัจจุบันกับ Gemini ระบบจะส่งเนื้อหาทั้งหมด สื่อ และ URL ของแท็บไปยัง Google</translation>
 <translation id="8705580154597116082">มี Wi-Fi พร้อมให้บริการผ่านโทรศัพท์</translation>
 <translation id="8705629851992224300">อ่านคีย์ความปลอดภัยของคุณไม่ได้</translation>
 <translation id="8706111173576263877">สแกนคิวอาร์โค้ดแล้ว</translation>

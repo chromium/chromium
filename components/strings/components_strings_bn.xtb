@@ -663,6 +663,7 @@
 <translation id="2085876078937250610">সেভ করুন…</translation>
 <translation id="2088913896151127116">টেক্সট যোগ করুন</translation>
 <translation id="2090451897496479509">আরও তথ্যের জন্য প্রদানকারীর সাথে যোগাযোগ করুন</translation>
+<translation id="2090686487550343086">IBAN</translation>
 <translation id="2091887806945687916">আওয়াজ</translation>
 <translation id="2093184051799735948"><ph name="ENGINE_NAME" />-এ খুঁজুন বা URL টাইপ করুন</translation>
 <translation id="2093982008204312032">Google Chrome পাসওয়ার্ড পূরণ করার জন্য Windows Hello বন্ধ করার চেষ্টা করছে।</translation>
@@ -800,6 +801,7 @@
 <translation id="2283340219607151381">অ্যাড্রেস পূরণ করে সেভ করুন</translation>
 <translation id="2283447177162560884">'<ph name="PAGE_TITLE" />' মুছে ফেলা হয়েছে</translation>
 <translation id="2283599456633275070">ভ্রমণ</translation>
+<translation id="2285709459648658719">পাসপোর্ট</translation>
 <translation id="2286383991450886080">৩৪ x ৪৪ ইঞ্চি</translation>
 <translation id="2288422996159078444">আপনি যা লিখছেন, যে পৃষ্ঠাগুলি দেখছেন বা ওয়েবে আপনার অন্যান্য অ্যাক্টিভিটি, সব কিছুতেই নজর রাখা হচ্ছে। আপনাকে না জানিয়ে সাইটের কন্টেন্টে পরিবর্তন করা হতে পারে।</translation>
 <translation id="2289385804009217824">ট্রিম করুন</translation>
@@ -2552,6 +2554,7 @@
 <translation id="5137761395480718572">এই অ্যাপটি ওয়াই-ফাই ক্রেডেনশিয়াল ইনস্টল করার জন্য অনুমতি চাইছে। সেট-আপ হয়ে গেলে, আপনার <ph name="DEVICE_TYPE" /> অটোমেটিক অংশগ্রহণকারী ওয়াই ফাই নেটওয়ার্কের সাথে কানেক্ট হয়ে যাবে। এই ক্রেডেনশিয়ালগুলি সরিয়ে দেওয়ার জন্য, অ্যাপ আনইনস্টল করুন। <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">ভার্চুয়াল কার্ড এই মুহূর্তে উপলভ্য নেই, আপনার ব্যাঙ্কের সাথে যোগাযোগ করুন</translation>
 <translation id="5138227688689900538">কম দেখুন</translation>
+<translation id="5140155249377545621">ড্রাইভিং লাইসেন্স</translation>
 <translation id="5144613843429436866">এই সাইটের জন্য আপনি <ph name="PERMISSION" />-এর অনুমতি দিয়েছেন</translation>
 <translation id="5145883236150621069">নীতি প্রতিক্রিয়ার মধ্যে ত্রুটি কোড উপস্থিত</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" />-এর বিজ্ঞপ্তি ব্লক করা হয়েছে</translation>

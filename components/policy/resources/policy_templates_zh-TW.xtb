@@ -2343,13 +2343,6 @@ Chrome 政策的優先順序高於這項政策，例如擴充功能是否列在 
 <translation id="2614156176932194496">網址列和新分頁搜尋框的 Google AI 模式整合設定。</translation>
 <translation id="2615240493030733717">回報時區資訊</translation>
 <translation id="2619258867868873629"><ph name="PRODUCT_OS_NAME" /> 裝置上的「另存為 PDF」目的地和「儲存至 Google 雲端硬碟」目的地</translation>
-<translation id="262035875928535253">設定 <ph name="PRODUCT_NAME" /> 應停用<ph name="PASSWORD_MANAGER_NAME" />的網域清單。這表示系統會停用「儲存及填入」工作流程，確保不會儲存用於這些網站的密碼，也不會在網頁表單中自動填入密碼。
-
-系統會針對清單中的網域停用<ph name="PASSWORD_MANAGER_NAME" />。
-
-如果是未列在清單中的網域，則可使用<ph name="PASSWORD_MANAGER_NAME" />。
-
-如果不設定這項政策，所有網域都可使用<ph name="PASSWORD_MANAGER_NAME" />。</translation>
 <translation id="2621290137818374425">設定這項政策後，系統不會要求指定網址中的主機名稱依憑證透明化揭露規定公開憑證。雖然這會讓系統更難以偵測到誤用憑證的情形，但也因此可讓主機繼續使用因為未依規定對外公開而不受信任的憑證。
 
       如果未設定這項政策，凡是應依憑證透明化規定公開而未公開的憑證，<ph name="PRODUCT_NAME" /> 都會將其視為不受信任的憑證。

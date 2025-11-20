@@ -2498,13 +2498,6 @@ Podemos garantizar al usuario que ninguna app adicional capturará las pantallas
 <translation id="2614156176932194496">Configuración de las integraciones del Modo IA de Google en la barra de direcciones y el cuadro de búsqueda de la página Nueva pestaña.</translation>
 <translation id="2615240493030733717">Envía información sobre la zona horaria</translation>
 <translation id="2619258867868873629">El destino de "Guardar como PDF" y el destino de "Guardar en Google Drive" en dispositivos <ph name="PRODUCT_OS_NAME" /></translation>
-<translation id="262035875928535253">Configura la lista de dominios en los que <ph name="PRODUCT_NAME" /> debe inhabilitar el <ph name="PASSWORD_MANAGER_NAME" />. Esto significa que se inhabilitarán los flujos de trabajo de guardar y completar, lo que garantiza que las contraseñas de esos sitios web no se puedan guardar ni completar automáticamente en formularios web.
-
-Si un dominio está presente en la lista, se inhabilitará el <ph name="PASSWORD_MANAGER_NAME" />.
-
-Si un dominio no está presente en la lista, el <ph name="PASSWORD_MANAGER_NAME" /> estará disponible para él.
-
-Si no estableces la política, el <ph name="PASSWORD_MANAGER_NAME" /> estará disponible para todos los dominios.</translation>
 <translation id="2621290137818374425">Si estableces la política, se desactivarán los requisitos de divulgación del Certificado de transparencia para los nombres de host en las URLs especificadas. Si bien esta acción dificulta la detección de los certificados que se usan de forma incorrecta, los hosts pueden seguir usando certificados que, de otra manera, no serían de confianza (porque no se divulgaron correctamente a nivel público).
 
       Si no estableces esta política, <ph name="PRODUCT_NAME" /> considerará que no son de confianza los certificados que requieran divulgación mediante el Certificado de transparencia y, a pesar de ello, no se hayan divulgado.

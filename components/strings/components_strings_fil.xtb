@@ -662,6 +662,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2085876078937250610">I-save…</translation>
 <translation id="2088913896151127116">Magdagdag ng text</translation>
 <translation id="2090451897496479509">Makipag-ugnayan sa provider para sa higit pang impormasyon</translation>
+<translation id="2090686487550343086">Mga IBAN</translation>
 <translation id="2091887806945687916">Tunog</translation>
 <translation id="2093184051799735948">Hanapin ang <ph name="ENGINE_NAME" /> o mag-type ng URL</translation>
 <translation id="2093982008204312032">Sinusubukan ng Google Chrome na i-off ang Windows Hello para sa paglalagay ng mga password.</translation>
@@ -799,6 +800,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2283340219607151381">I-save at punan ang mga address</translation>
 <translation id="2283447177162560884">Na-delete ang '<ph name="PAGE_TITLE" />'</translation>
 <translation id="2283599456633275070">Paglalakbay</translation>
+<translation id="2285709459648658719">Mga passport</translation>
 <translation id="2286383991450886080">34 x 44 in</translation>
 <translation id="2288422996159078444">Binabantayan ang anumang bagay na tina-type mo, ang anumang page na iyong tinitingnan, o ang anupamang aktibidad mo sa web. Puwedeng mabago ang content sa mga site nang hindi mo alam.</translation>
 <translation id="2289385804009217824">Paikliin</translation>
@@ -2551,6 +2553,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5137761395480718572">Nagre-request ang app na ito ng pahintulot na i-install ang mga kredensyal ng Wi-Fi. Pagkatapos ng pag-set up, awtomatikong makokonekta ang iyong <ph name="DEVICE_TYPE" /> sa mga kalahok na Wi-Fi network. Para alisin ang mga kredensyal na ito, i-uninstall ang app. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">Hindi available sa ngayon ang virtual card, makipag-ugnayan sa iyong bangko</translation>
 <translation id="5138227688689900538">Magpakita ng mas kaunti</translation>
+<translation id="5140155249377545621">Mga lisensya sa pagmamaneho</translation>
 <translation id="5144613843429436866">Pinayagan mo ang <ph name="PERMISSION" /> para sa site na ito</translation>
 <translation id="5145883236150621069">May code ng error sa tugon sa patakaran</translation>
 <translation id="5146995429444047494">Naka-block ang mga notification para sa <ph name="ORIGIN" /></translation>

@@ -1070,6 +1070,7 @@
     এই মতামত জমা দেওয়ার অর্থ, Google-এর যেকোনও প্রোডাক্ট
     বা পরিষেবার উন্নতির জন্য সেটি ব্যবহার করার ব্যাপারে আপনি সম্মতি জানাচ্ছেন।</translation>
 <translation id="17081583771848899">লঞ্চার + alt + <ph name="TOP_ROW_KEY" /></translation>
+<translation id="170825127491242914">ক্লাউড স্টোরেজে সেভ করুন</translation>
 <translation id="1708291623166985230">হটস্পট বন্ধ আছে</translation>
 <translation id="1708338024780164500">(নিষ্ক্রিয়)</translation>
 <translation id="1708563369218024896">কোনও ডেটা সোর্স বেছে নেওয়া হয়নি। অন্তত একটি ডেটা সোর্স বেছে নিন।</translation>
@@ -8068,6 +8069,7 @@
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - ডেস্কটপ কন্টেন্ট শেয়ার করেছে</translation>
 <translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% সম্পূর্ণ হয়েছে</translation>
 <translation id="6580203076670148210">স্ক্যানিং স্পিড</translation>
+<translation id="6580676117087365538">আপনার সব কম্পিউটারে এই এক্সটেনশন পেতে, নিজের পরিচয় যাচাই করিয়ে নিন</translation>
 <translation id="6581356304040102696">পাসওয়ার্ড ইমপোর্ট করা যাচ্ছে না। ফাইলের সাইজ ১ এমবির কম হতে হবে।</translation>
 <translation id="6582080224869403177">আপনার নিরাপত্তা আপগ্রেড করতে <ph name="DEVICE_TYPE" /> রিসেট করুন।</translation>
 <translation id="6582274660680936615">আপনি গেস্ট হিসেবে ব্রাউজ করছেন</translation>
@@ -9591,6 +9593,7 @@
 <translation id="7647403192093989392">সাম্প্রতিক কোনও অ্যাক্টিভিটি নেই</translation>
 <translation id="7648023614017258011">Chrome ইনস্টলেশন বান্ডেল যাচাই করছে</translation>
 <translation id="7648048654005891115">কীম্যাপ ধরন</translation>
+<translation id="7648180062672842917">এই ফাইলে সংবেদনশীল বা বিপজ্জনক ডেটা রয়েছে। ক্লাউড স্টোরেজে এটি সেভ করতে বা এটি বাতিল করতে আপনার সংস্থার কাছ থেকে অনুমতি নিতে হবে</translation>
 <translation id="7649070708921625228">সহায়তা</translation>
 <translation id="7649954700951153978">iOS-এ রিমাইন্ডার দিন</translation>
 <translation id="7650141368285545431">অন্য ডিভাইস থেকে পাসকী ব্যবহার করুন</translation>
@@ -10919,6 +10922,7 @@
 <translation id="8535005006684281994">Netscape সার্টিফিকেট পুনর্নবীকরণ ইউআরএল</translation>
 <translation id="8536810348276651776">বেশিরভাগ সাইট থেকে আপনাকে সাইন-আউট করিয়ে দেয়। নিজের Google অ্যাকাউন্টে সাইন-ইন করে থাকবেন তাই Chrome-এর জন্য আপনার Family Link সেটিংস প্রযোজ্য হবে।</translation>
 <translation id="8536956381488731905">কী প্রেস করার সময় যে শব্দ হয়</translation>
+<translation id="8537854269962256103">পপ-আউট চ্যাটে রয়েছে আপনার Gemini কথোপকথন। এখানে সরাতে এই সাইড প্যানেলটির যেকোনও জায়গায় ক্লিক করুন।</translation>
 <translation id="8539727552378197395">না (কেবলমাত্র Http)</translation>
 <translation id="8539766201049804895">আপগ্রেড করুন</translation>
 <translation id="8540136935098276800">সঠিকভাবে ফর্ম্যাট করা একটি ইউআরএল লিখুন</translation>
@@ -11166,6 +11170,7 @@
 <translation id="8703766890819308134">সার্চ শর্টকাট দেখুন</translation>
 <translation id="8704662571571150811">ডোমেন</translation>
 <translation id="8705331520020532516">ক্রমিক সংখ্যা</translation>
+<translation id="870536819717176711">আপনি Gemini-র সাথে বর্তমান ট্যাব শেয়ার করার বিকল্প বেছে নিলে Google-এর সাথে ট্যাবের সব কন্টেন্ট, মিডিয়া ও URL শেয়ার করা হয়।</translation>
 <translation id="8705580154597116082">ফোন থেকে ওয়াই ফাই পাওয়া যাচ্ছে</translation>
 <translation id="8705629851992224300">আপনার নিরাপত্তা কী পড়া যায়নি</translation>
 <translation id="8706111173576263877">QR কোড স্ক্যান করা হয়েছে।</translation>

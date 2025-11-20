@@ -2383,13 +2383,6 @@ Cela permettra à l'utilisateur de s'assurer qu'aucune appli supplémentaire ne 
 <translation id="2614156176932194496">Paramètres des intégrations du Mode IA de Google dans la barre d'adresse et le champ de recherche de la page "Nouvel onglet".</translation>
 <translation id="2615240493030733717">Transmettre le fuseau horaire</translation>
 <translation id="2619258867868873629">Destinations "Enregistrer au format PDF" et "Enregistrer dans Google Drive" sur les appareils <ph name="PRODUCT_OS_NAME" /></translation>
-<translation id="262035875928535253">Configurez la liste des domaines sur lesquels <ph name="PRODUCT_NAME" /> doit désactiver le <ph name="PASSWORD_MANAGER_NAME" />. Cela signifie que les workflows d'enregistrement et de remplissage seront désactivés, de sorte que les mots de passe de ces sites Web ne pourront pas être enregistrés ou remplis automatiquement dans des formulaires Web.
-
-Si un domaine figure dans la liste, le <ph name="PASSWORD_MANAGER_NAME" /> sera désactivé pour ce domaine.
-
-Si un domaine n'est pas présent dans la liste, le <ph name="PASSWORD_MANAGER_NAME" /> sera disponible pour ce domaine.
-
-Si cette règle n'est pas configurée, le <ph name="PASSWORD_MANAGER_NAME" /> sera disponible pour tous les domaines.</translation>
 <translation id="2621290137818374425">Permet de désactiver l'application des exigences de divulgation stipulées dans les règles de transparence des certificats pour les noms d'hôte dans la liste d'URL spécifiées. Même si cela complique la détection des certificats qui ne sont pas émis correctement, les hôtes peuvent continuer d'utiliser des certificats qui ne seraient sinon pas jugés fiables (pour ne pas avoir été communiqués au public comme il se doit).
 
       Si cette règle n'est pas configurée, cela signifie que si les certificats ne sont pas communiqués tel que le prévoient les règles de transparence des certificats, <ph name="PRODUCT_NAME" /> considère alors qu'ils ne sont pas fiables.
@@ -3841,7 +3834,7 @@ Si le résultat de la vérification n'est pas concluant pour une connexion, l'er
 
       Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_GEOLOCATION_SETTING" /> s'applique pour tous les sites, à condition qu'elle soit définie. Si ce n'est pas le cas, le paramètre défini par l'utilisateur s'applique.
 
-      Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter https://chromeenterprise.google/policies/url-patterns. Les caractères génériques (<ph name="WILDCARD_VALUE" />) sont autorisés.</translation>
+      Pour en savoir plus sur les formats d‘<ph name="URL_LABEL" /> valides, veuillez consulter https://chromeenterprise.google/policies/url-patterns. Les caractères génériques (<ph name="WILDCARD_VALUE" />) sont autorisés.</translation>
 <translation id="3675303748198647471">setTimeout(…, 0) est souvent utilisée pour décomposer les longues tâches JavaScript.
           Lorsque cette règle est activée, les fonctions setTimeouts et setIntervals ayant un intervalle inférieur à 4 ms ne sont pas limitées de façon aussi agressive.
           Les performances à court terme sont alors meilleures, mais les fonctions setTimeouts des sites abusant de l'API seront finalement encore limitées.
@@ -11864,13 +11857,13 @@ Remarque : Pour le moment, seule la première entrée est prise en compte. Les 
        Notez également qu'elle ne sera plus applicable à compter de la version 84 de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="9010080992450148617">Autoriser les utilisateurs inscrits au Programme Protection Avancée à envoyer leurs téléchargements à Google pour une analyse approfondie</translation>
 <translation id="9012101302849557459">Étendre la compatibilité pour les applis Chrome sur <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> et <ph name="LINUX_OS_NAME" />.</translation>
-<translation id="9012332684658600011">Lorsque cette règle est activée, la requête principale est bloquée chaque fois qu'un avertissement est censé s'afficher dans les <ph name="CHROME_DEVTOOLS_NAME" /> en raison de l'échec des vérifications <ph name="LOCAL_NETWORK_ACCESS" />.
+<translation id="9012332684658600011">Lorsque cette règle est activée, la requête principale est bloquée chaque fois qu'un avertissement est censé s'afficher dans les <ph name="CHROME_DEVTOOLS_NAME" /> en raison de l'échec des vérifications "<ph name="LOCAL_NETWORK_ACCESS" />".
 
-Si cette règle est désactivée ou n'est pas configurée, les requêtes <ph name="LOCAL_NETWORK_ACCESS" /> utiliseront le traitement par défaut.
+Si cette règle est désactivée ou n'est pas configurée, les requêtes "<ph name="LOCAL_NETWORK_ACCESS" />" utiliseront le traitement par défaut.
 
-Pour connaître les restrictions concernant <ph name="LOCAL_NETWORK_ACCESS" />, consultez https://wicg.github.io/local-network-access/.
+Pour connaître les restrictions concernant "<ph name="LOCAL_NETWORK_ACCESS" />", consultez https://wicg.github.io/local-network-access/.
 
-Cette règle est obsolète, car <ph name="LOCAL_NETWORK_ACCESS" /> a été lancée par défaut. La règle sera supprimée dans une prochaine version.</translation>
+Cette règle est obsolète, car "<ph name="LOCAL_NETWORK_ACCESS" />" a été lancée par défaut. La règle sera supprimée dans une prochaine version.</translation>
 <translation id="9013875414788074110">Lors de la connexion, l'authentification dans <ph name="PRODUCT_OS_NAME" /> peut être effectuée sur un serveur (en ligne) ou à l'aide d'un mot de passe en cache (hors connexion).
 
       Si cette règle est définie sur la valeur -1, l'utilisateur peut s'authentifier hors connexion sans limite de temps. Si elle est définie sur une autre valeur, celle-ci indique le délai suite à une authentification en ligne après lequel l'utilisateur doit à nouveau procéder à cette authentification.

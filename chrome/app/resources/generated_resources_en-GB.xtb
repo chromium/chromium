@@ -1069,6 +1069,7 @@ Permissions that you've already given to apps may apply to this account. You can
     you agree that Google may use feedback that you provide to improve
     any Google product or service.</translation>
 <translation id="17081583771848899">launcher + alt + <ph name="TOP_ROW_KEY" /></translation>
+<translation id="170825127491242914">Save to cloud storage</translation>
 <translation id="1708291623166985230">Hotspot disabled</translation>
 <translation id="1708338024780164500">(Inactive)</translation>
 <translation id="1708563369218024896">No data collector selected. Please select at least one data collector.</translation>
@@ -8066,6 +8067,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> – Desktop content shared</translation>
 <translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% completed</translation>
 <translation id="6580203076670148210">Scanning speed</translation>
+<translation id="6580676117087365538">To get this extension on all your computers, verify that it's you</translation>
 <translation id="6581356304040102696">Can't import passwords. The file size should be less than 1 MB.</translation>
 <translation id="6582080224869403177">Reset your <ph name="DEVICE_TYPE" /> to upgrade your security.</translation>
 <translation id="6582274660680936615">You're browsing as a Guest</translation>
@@ -9587,6 +9589,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7647403192093989392">No recent activities</translation>
 <translation id="7648023614017258011">Chrome is verifying the installation bundle</translation>
 <translation id="7648048654005891115">Keymap style</translation>
+<translation id="7648180062672842917">This file has sensitive or dangerous data. Your organisation will let you save it to cloud storage or discard it</translation>
 <translation id="7649070708921625228">Help</translation>
 <translation id="7649954700951153978">Remind me on iOS</translation>
 <translation id="7650141368285545431">Use passkey from another device</translation>
@@ -10915,6 +10918,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8535005006684281994">Netscape Certificate Renewal URL</translation>
 <translation id="8536810348276651776">Signs you out of most sites. You'll stay signed in to your Google Account so your Family Link settings for Chrome apply.</translation>
 <translation id="8536956381488731905">Sound on key-press</translation>
+<translation id="8537854269962256103">Your Gemini conversation is in a pop-out chat. Click anywhere on this side panel to move it here.</translation>
 <translation id="8539727552378197395">No (HttpOnly)</translation>
 <translation id="8539766201049804895">Upgrade</translation>
 <translation id="8540136935098276800">Enter a correctly formatted URL</translation>
@@ -11162,6 +11166,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8703766890819308134">Show search shortcuts</translation>
 <translation id="8704662571571150811">Domains</translation>
 <translation id="8705331520020532516">Serial Number</translation>
+<translation id="870536819717176711">When you choose to share the current tab with Gemini, the tab's full content, media and URL are sent to Google.</translation>
 <translation id="8705580154597116082">Wi-Fi available via phone</translation>
 <translation id="8705629851992224300">Your security key couldn't be read</translation>
 <translation id="8706111173576263877">QR code has been scanned.</translation>

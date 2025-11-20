@@ -154,7 +154,6 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="2718390899429598676">Segurtasun gehiago izateko, Chromium-ek datuak enkriptatuko ditu.</translation>
 <translation id="2721354645805494590">Zure Google-ko kontua Chromium-etik kentzeko, amaitu saioa</translation>
 <translation id="2722636413143664436">Pasahitzak, laster-markak eta bestelako datuak zure gailu guztietan gordeta edukitzeko, hasi saioa Chromium-en</translation>
-<translation id="2723860029395667894">Erakutsi beti Google-ren AA moduaren lasterbidea</translation>
 <translation id="2738871930057338499">Ezin da konektatu Internetera. HTTP 403 (debekatuta). Egiaztatu proxyaren konfigurazioa.</translation>
 <translation id="2753623023919742414">Sakatu bilatzeko</translation>
 <translation id="2768103863314748511">Ezarri Chromium PDFen ikustaile lehenetsi gisa</translation>
@@ -522,6 +521,7 @@ Baliteke eginbide batzuk erabilgarri ez egotea. Adierazi beste profil-direktorio
 <translation id="705851970750939768">Eguneratu Chromium</translation>
 <translation id="7067091210845072982">Irudiren batek ez badu azalpen lagungarririk, halako bat lortzen ahaleginduko da Chromium. Azalpen horiek sortzeko, irudiak Google-ri bidaltzen zaizkio.</translation>
 <translation id="7141270731789036260">Pertsonalizatu Chrome for Testing</translation>
+<translation id="7147227333672430807">Chromium erabili ahalko duzu mezu, dokumentu eta aplikazioetako estekak sakatzen dituzunean</translation>
 <translation id="7163519456498498587">Kendu <ph name="EXTENSION_NAME" /> Chromium-etik</translation>
 <translation id="7173822816570314652">Erakundeak Chromium-eko datuak ezabatzen ditu <ph name="TIMEOUT_DURATION" />z erabiltzen ez denean. Arakatze-datuen barnean daude historia, automatikoki betetako datuak eta deskargak.</translation>
 <translation id="718435575166326686">Chromium-ek kamera erabiltzeko baimena behar du webgune honetan</translation>
@@ -636,6 +636,7 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="8471947159125090285">Chromium-eko datuak Google-ko kontuan gordetzeko eta erabiltzeko, egiaztatu zeu zarela</translation>
 <translation id="8482493977473846331">Chrome-n saioa hasteko eskaera-mezuak erakusten ditu</translation>
 <translation id="8493179195440786826">Chromium zaharkituta dago</translation>
+<translation id="850264194101621529">Eskerrik asko Chromium arakatzaile lehenetsi gisa aukeratzeagatik!</translation>
 <translation id="8522801943730206384">Gordetzen dituzun pasahitzak egiaztatzeko gai da Chromium</translation>
 <translation id="8555465886620020932">Zerbitzuaren errorea: <ph name="SERVICE_ERROR" /></translation>
 <translation id="8556420416730706394">Irudi-bilaketa erraz erabiltzeko, aingura ezazu. Horretarako, sakatu ainguratzeko botoia alboko panelaren goialdean.</translation>
@@ -647,7 +648,6 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="8619360774459241877">Chromium abiarazten…</translation>
 <translation id="8624541899164515475">Ezarpenak, beste fitxa batean irekitzen da.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing ezin da ezarri arakatzaile lehenetsi gisa.</translation>
-<translation id="8677922833187616101">Erakutsi beti Google-ren AA moduaren lasterbidea</translation>
 <translation id="8697124171261953979">Chromium hasten duzunean edo Omnibox-etik bilaketak egiten dituzunean erakusten den orria ere kontrolatzen du.</translation>
 <translation id="8704119203788522458">Hau da zure Chromium arakatzailea</translation>
 <translation id="8712637175834984815">Ados</translation>

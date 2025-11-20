@@ -1167,6 +1167,7 @@
 <translation id="2922792708490674">{0,plural, =1{ໄຟລ໌ຖືກບລັອກບໍ່ໃຫ້ດາວໂຫຼດ}other{<ph name="FILE_COUNT" /> ໄຟລ໌ຖືກບລັອກບໍ່ໃຫ້ດາວໂຫຼດ}}</translation>
 <translation id="2923275635648511531">ຜະລິດຕະພັນກັນແດດ ແລະ ສີແທນ</translation>
 <translation id="292371311537977079">ການຕັ້ງຄ່າ Chrome</translation>
+<translation id="2925032407415783182">ບັນທຶກປີ້ເຂົ້າງານໃສ່ Wallet</translation>
 <translation id="2925454999967523701">ປຸ່ມສ້າງເອກະສານ, ເປີດນຳໃຊ້ເພື່ອສ້າງ Google Doc ໃໝ່ຢ່າງວ່ອງໄວ</translation>
 <translation id="2925673989565098301">ວິທີການຈັດສົ່ງ</translation>
 <translation id="2928426578619531300">ຜູ້ໃຊ້ທີ່ກ່ຽວຂ້ອງ</translation>
@@ -4236,6 +4237,7 @@
 <translation id="7886897188117641322">ເລືອກໝວດໝູ່ກວ້າງໆຂອງຫົວຂໍ້ທີ່ສາມາດໃຊ້ໃນການຊ່ວຍປັບແຕ່ງໂຄສະນາໃຫ້ເປັນແບບສ່ວນຕົວ</translation>
 <translation id="7887683347370398519">ກວດ​ເບິ່ງ CVC ຂອງ​ທ່ານ ແລະ​ລອງ​ໃໝ່​ອີກ</translation>
 <translation id="7887885240995164102">ເຂົ້າໂໝດສະແດງຜົນຊ້ອນກັນ</translation>
+<translation id="7888367499748383555">ບໍ່ມີຄ່າບໍລິການ, ອັດຕາດອກເບ້ຍຕໍ່ປີຕ່ຳສຸດ 0% (ຂຶ້ນຢູ່ກັບການມີສິດ)</translation>
 <translation id="7888575728750733395">ກົນໄກປະສານການສະແດງພາບການພິມ</translation>
 <translation id="7890748547282909375">ເຂົ້າສູ່ລະບົບ Microsoft OneDrive ເພື່ອບັນທຶກຮູບໜ້າຈໍ</translation>
 <translation id="7890755620327858054">ຈ່າຍພາຍຫຼັງບໍ່ມີໃຫ້ໃຊ້ໃນເວລານີ້. ລອງໃໝ່ ຫຼື ເລືອກວິທີການຈ່າຍເງິນອື່ນ.</translation>

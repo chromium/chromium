@@ -547,7 +547,7 @@
 <translation id="3080525922482950719">Þú getur vistað síður til að lesa þær síðar eða án nettengingar</translation>
 <translation id="3081338492074632642">Gakktu úr skugga um að aðgangsorðið sem þú ert að vista passi við aðgangsorðið fyrir <ph name="WEBSITE" />.</translation>
 <translation id="3087734570205094154">Neðst</translation>
-<translation id="309710370695886264">Þú ert með 1 endurnýtt aðgangsorð. Lagfærðu það núna til að gæta öryggis.</translation>
+<translation id="309710370695886264">Þú ert með eitt endurnýtt aðgangsorð. Lagfærðu það núna til að gæta öryggis.</translation>
 <translation id="3099402981545350675">Þetta eyðir vistuðum heimilisföngum í þessu tæki. Þetta fjarlægir einnig valdar upplýsingar úr Chrome, en eyðir þessum upplýsingum ekki af Google-reikningnum þínum.</translation>
 <translation id="3106258548858559536">Slökkva á lesstillingu</translation>
 <translation id="3106690631878101882">Fela „Þýða“</translation>
@@ -596,6 +596,7 @@
 <translation id="3277021493514034324">Veffang afritað</translation>
 <translation id="3280562213547448728">Raddleit</translation>
 <translation id="3289505634533552500">Raddleit</translation>
+<translation id="3293080634164207409">Bæta við flipum</translation>
 <translation id="3295904109373959849">Töfluyfirlit yfir flipahópa</translation>
 <translation id="3302837541200840455"><ph name="TAB_TITLE" />, ný virkni</translation>
 <translation id="3305294846493618482">meira</translation>

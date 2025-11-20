@@ -1060,6 +1060,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1706586824377653884">Añadido por tu administrador</translation>
 <translation id="170658918174941828">Se enviará la versión de Chrome, la versión del sistema operativo, la configuración de envío, las estadísticas de rendimiento de proyección y los registros de diagnóstico de canales de comunicación, así como la información que selecciones más arriba. Tus comentarios se utilizarán para diagnosticar problemas y ayudarán a mejorar la función. La información personal que envíes, ya sea intencionadamente o por error, se protegerá de acuerdo con nuestras políticas de privacidad. Al enviar estos comentarios, aceptas que Google pueda utilizarlos para mejorar sus productos o servicios.</translation>
 <translation id="17081583771848899">tecla del menú de aplicaciones + Alt + <ph name="TOP_ROW_KEY" /></translation>
+<translation id="170825127491242914">Guardar en almacenamiento en la nube</translation>
 <translation id="1708291623166985230">Punto de acceso inhabilitado</translation>
 <translation id="1708338024780164500">(Inactiva)</translation>
 <translation id="1708563369218024896">No se han seleccionado fuentes de recogida de datos. Selecciona al menos una.</translation>
@@ -6661,6 +6662,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5585912436068747822">Error de formato</translation>
 <translation id="5587765208077583036">Para compartir una carpeta, haz clic en ella con el botón derecho en la aplicación Archivos y selecciona Compartir con <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
+<translation id="5588712142463367677">Filtrar sitios en la página</translation>
 <translation id="558918721941304263">Cargando aplicaciones...</translation>
 <translation id="5590418976913374224">Reproducir sonido al iniciar el dispositivo</translation>
 <translation id="5591465468509111843">Muy ancho</translation>
@@ -8051,6 +8053,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - Contenido del ordenador compartido</translation>
 <translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" /> % completado</translation>
 <translation id="6580203076670148210">Velocidad de búsqueda</translation>
+<translation id="6580676117087365538">Para obtener esta extensión en todos tus ordenadores, verifica que eres tú</translation>
 <translation id="6581356304040102696">No se pueden importar las contraseñas. El tamaño del archivo debe ser inferior a 1 MB.</translation>
 <translation id="6582080224869403177">Restablece tu <ph name="DEVICE_TYPE" /> para actualizar la seguridad.</translation>
 <translation id="6582274660680936615">Estás navegando como invitado</translation>
@@ -9572,6 +9575,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7647403192093989392">Ninguna actividad reciente</translation>
 <translation id="7648023614017258011">Chrome está verificando el paquete de instalación</translation>
 <translation id="7648048654005891115">Estilo de mapa de teclado</translation>
+<translation id="7648180062672842917">Este archivo contiene datos sensibles o peligrosos. Tu organización te permitirá guardarlo en almacenamiento en la nube o descartarlo.</translation>
 <translation id="7649070708921625228">Ayuda</translation>
 <translation id="7649954700951153978">Recuérdamelo en iOS</translation>
 <translation id="7650141368285545431">Usar la llave de acceso de otro dispositivo</translation>
@@ -10900,6 +10904,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8535005006684281994">URL de renovación de certificado de Netscape</translation>
 <translation id="8536810348276651776">Cierra tu sesión en la mayoría de los sitios. La sesión de tu cuenta de Google seguirá abierta para que se apliquen los ajustes de Family Link en Chrome.</translation>
 <translation id="8536956381488731905">Sonido al pulsar tecla</translation>
+<translation id="8537854269962256103">Tu conversación con Gemini está en un chat emergente. Haz clic en cualquier parte de este panel lateral para moverlo aquí.</translation>
 <translation id="8539727552378197395">No (HttpOnly)</translation>
 <translation id="8539766201049804895">Actualizar</translation>
 <translation id="8540136935098276800">Introduce una URL con el formato correcto</translation>
@@ -11147,6 +11152,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8703766890819308134">Mostrar atajos de búsqueda</translation>
 <translation id="8704662571571150811">Dominios</translation>
 <translation id="8705331520020532516">Número de serie</translation>
+<translation id="870536819717176711">Cuando decides compartir la pestaña actual con Gemini, el contenido completo, el contenido multimedia y la URL de la pestaña se envían a Google.</translation>
 <translation id="8705580154597116082">Wi-Fi disponible a través del teléfono</translation>
 <translation id="8705629851992224300">No se ha podido leer tu llave de seguridad</translation>
 <translation id="8706111173576263877">Se ha escaneado el código QR.</translation>

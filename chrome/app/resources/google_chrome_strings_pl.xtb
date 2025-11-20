@@ -148,7 +148,6 @@
 <translation id="2681444469812712297">Otwórz nową kartę <ph name="URL" /> w Google Chrome.</translation>
 <translation id="2699790011615497488">Otwórz Gemini w Chrome Beta</translation>
 <translation id="2712141162840347885">Wybierz, co chcesz wyszukać go za pomocą Obiektywu Google, lub naciśnij Escape, aby zamknąć Obiektyw</translation>
-<translation id="2723860029395667894">Zawsze pokazuj skrót do trybu AI od Google</translation>
 <translation id="2738871930057338499">Nie można połączyć się z internetem. Kod HTTP 403 (Zabroniony). Sprawdź konfigurację proxy.</translation>
 <translation id="2742320827292110288">Ostrzeżenie: Google Chrome nie może uniemożliwić rozszerzeniom zapisywania historii przeglądania. Aby wyłączyć to rozszerzenie w trybie incognito, odznacz tę opcję.</translation>
 <translation id="2747021967398957654">{count,plural, =1{Niektóre dane z Chrome nie zostały jeszcze zapisane na Twoim koncie Google. Zanim się wylogujesz, odczekaj kilka minut. Jeśli wylogujesz się teraz, te dane (1 element) zostaną usunięte.}few{Niektóre dane z Chrome nie zostały jeszcze zapisane na Twoim koncie Google. Zanim się wylogujesz, odczekaj kilka minut. Jeśli wylogujesz się teraz, te dane ({count} elementy) zostaną usunięte.}many{Niektóre dane z Chrome nie zostały jeszcze zapisane na Twoim koncie Google. Zanim się wylogujesz, odczekaj kilka minut. Jeśli wylogujesz się teraz, te dane ({count} elementów) zostaną usunięte.}other{Niektóre dane z Chrome nie zostały jeszcze zapisane na Twoim koncie Google. Zanim się wylogujesz, odczekaj kilka minut. Jeśli wylogujesz się teraz, te dane ({count} elementu) zostaną usunięte.}}</translation>
@@ -685,7 +684,6 @@
 <translation id="8647930742055103497">Przechowuj wszystko w Chrome</translation>
 <translation id="8656634243791296665">Otwórz Gemini w wersji deweloperskiej Chrome</translation>
 <translation id="8669527147644353129">Pomoc Google Chrome</translation>
-<translation id="8677922833187616101">Zawsze pokazuj skrót do trybu AI od Google</translation>
 <translation id="8679801911857917785">Kontroluje także to, jaka strona wyświetla się po uruchomieniu Chrome.</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8712767363896337380">Prawie gotowe. Aby dokończyć aktualizowanie, uruchom ponownie Chrome.</translation>

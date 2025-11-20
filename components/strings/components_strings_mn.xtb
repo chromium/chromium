@@ -662,6 +662,7 @@
 <translation id="2085876078937250610">Хадгалах…</translation>
 <translation id="2088913896151127116">Текст нэмэх</translation>
 <translation id="2090451897496479509">Үйлчилгээ үзүүлэгчтэй холбогдож нэмэлт мэдээлэл авна уу</translation>
+<translation id="2090686487550343086">IBAN</translation>
 <translation id="2091887806945687916">Дуу</translation>
 <translation id="2093184051799735948"><ph name="ENGINE_NAME" />-с хайх эсвэл URL-г бичих</translation>
 <translation id="2093982008204312032">Google Chrome нууц үгийг бөглөхөд Windows Hello-г унтраахаар оролдож байна.</translation>
@@ -799,6 +800,7 @@
 <translation id="2283340219607151381">Хаягийг хадгалах болон бөглөх</translation>
 <translation id="2283447177162560884">'<ph name="PAGE_TITLE" />'-г устгасан</translation>
 <translation id="2283599456633275070">Аялал</translation>
+<translation id="2285709459648658719">Паспорт</translation>
 <translation id="2286383991450886080">34 x 44 инч</translation>
 <translation id="2288422996159078444">Таны бичдэг дурын зүйл, таны үздэг дурын хуудас эсвэл веб дээрх бусад дурын үйл ажиллагааг хянан үзэж байна. Сайтуудын контентыг танд мэдэгдэлгүйгээр өөрчилж болзошгүй.</translation>
 <translation id="2289385804009217824">Тайрах</translation>
@@ -2552,6 +2554,7 @@
 <translation id="5137761395480718572">Энэ апп Wi-Fi-н мандат үнэмлэхүүдийг суулгах зөвшөөрөл хүсэж байна. Тохируулсны дараа таны <ph name="DEVICE_TYPE" /> оролцож буй Wi-Fi сүлжээнүүдэд автоматаар холбогдоно. Эдгээр мандат үнэмлэхийг хасахын тулд аппыг устгана уу. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">Виртуал карт яг одоо боломжгүй байна. Банктайгаа холбогдоно уу</translation>
 <translation id="5138227688689900538">Хураангуйлж харуулах</translation>
+<translation id="5140155249377545621">Жолооны үнэмлэх</translation>
 <translation id="5144613843429436866">Та энэ сайтад <ph name="PERMISSION" />-г зөвшөөрсөн</translation>
 <translation id="5145883236150621069">удирдамжийн хариулт дахь алдааны код</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" />-н мэдэгдлийг хориглосон</translation>
@@ -4236,6 +4239,7 @@
 <translation id="7886897188117641322">Зарыг хувийн болгоход туслахын тулд ямар сэдвүүдийн өргөн хүрээтэй ангиллыг ашиглаж болохыг сонгоно уу</translation>
 <translation id="7887683347370398519">CVC-гээ шалгаад дахин оролдоно уу</translation>
 <translation id="7887885240995164102">Дэлгэц доторх дэлгэц горимд орох</translation>
+<translation id="7888367499748383555">Ямар ч хураамжгүй, жилийн хүү 0%-иас эхэлнэ (зохих шаардлага хангасан байх)</translation>
 <translation id="7888575728750733395">Хэвлэхэд өнгө буулгах тодорхойлолт</translation>
 <translation id="7890748547282909375">Дэлгэцийн агшныг хадгалахын тулд Microsoft OneDrive-д нэвтэрнэ үү</translation>
 <translation id="7890755620327858054">Одоогоор дараа төлөхийг ашиглах боломжгүй байна. Дахин оролдох эсвэл өөр төлбөрийн хэрэгсэл сонгоно уу.</translation>

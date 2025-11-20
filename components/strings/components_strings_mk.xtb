@@ -662,6 +662,7 @@
 <translation id="2085876078937250610">Зачувај…</translation>
 <translation id="2088913896151127116">Додајте текст</translation>
 <translation id="2090451897496479509">За повеќе детали, контактирајте со давателот на услугата</translation>
+<translation id="2090686487550343086">IBAN</translation>
 <translation id="2091887806945687916">Звук</translation>
 <translation id="2093184051799735948">Пребарајте <ph name="ENGINE_NAME" /> или внесете URL-адреса</translation>
 <translation id="2093982008204312032">Google Chrome се обидува да го исклучи Windows Hello за пополнување лозинки.</translation>
@@ -799,6 +800,7 @@
 <translation id="2283340219607151381">Зачувувај и пополнувај адреси</translation>
 <translation id="2283447177162560884">Избришано: „<ph name="PAGE_TITLE" />“</translation>
 <translation id="2283599456633275070">Патување</translation>
+<translation id="2285709459648658719">Пасоши</translation>
 <translation id="2286383991450886080">34 x 44 инчи</translation>
 <translation id="2288422996159078444">Сѐ што ќе напишете, сите страници што ќе ги прегледате или секоја друга активност на интернет се надгледува, а содржините на сајтовите може да се променат без ваше знаење.</translation>
 <translation id="2289385804009217824">Кратење</translation>
@@ -2551,6 +2553,7 @@
 <translation id="5137761395480718572">Апликацијава бара дозвола за инсталирање акредитиви за Wi-Fi. По поставувањето, вашиот уред <ph name="DEVICE_TYPE" /> ќе се поврзе автоматски на поставените Wi-Fi мрежи. За да ги отстраните акредитививе, деинсталирајте ја апликацијата. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">Виртуелната картичка не е достапна во моментов, контактирајте со банката</translation>
 <translation id="5138227688689900538">Прикажи помалку</translation>
+<translation id="5140155249377545621">Возачки дозволи</translation>
 <translation id="5144613843429436866">Дозволивте <ph name="PERMISSION" /> за сајтов</translation>
 <translation id="5145883236150621069">Присутен е код на грешка во одговорот на правилото</translation>
 <translation id="5146995429444047494">Известувањата за <ph name="ORIGIN" /> се блокирани</translation>

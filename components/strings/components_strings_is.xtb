@@ -96,7 +96,7 @@
 <translation id="11635448457105324">Hnappurinn „Stjórna heimilisföngum“, virkjaðu til að bæta við og stjórna vefslóðum í stillingum Chrome</translation>
 <translation id="1165039591588034296">Villa</translation>
 <translation id="1165174597379888365">Síða var opnuð</translation>
-<translation id="1165813024716836071">{COUNT,plural, =0{Ekkert}=1{Af 1 vefsvæði (þú verður áfram skráð(ur) inn á Google-reikninginn þinn)}one{Af # vefsvæði (þú verður áfram skráð(ur) inn á Google-reikninginn þinn)}other{Af # vefsvæðum (þú verður áfram skráð(ur) inn á Google-reikninginn þinn)}}</translation>
+<translation id="1165813024716836071">{COUNT,plural, =0{Ekkert}=1{Af einu vefsvæði (þú verður áfram skráð(ur) inn á Google-reikninginn þinn)}one{Af # vefsvæði (þú verður áfram skráð(ur) inn á Google-reikninginn þinn)}other{Af # vefsvæðum (þú verður áfram skráð(ur) inn á Google-reikninginn þinn)}}</translation>
 <translation id="1167877250265821930">Ekki tókst að sækja „<ph name="LANGUAGE" />“</translation>
 <translation id="1173894706177603556">Endurnefna</translation>
 <translation id="1174644974616730562">Umslag: kínverskt #1</translation>
@@ -1514,7 +1514,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3474392552865647225">Hnappurinn „Sérsníða leturgerðir í Chrome“, virkjaðu til að sérsníða leturstærðir og leturgerðir í Chrome</translation>
 <translation id="3478033058537426179">Eftir hópi</translation>
 <translation id="3479552764303398839">Ekki núna</translation>
-<translation id="3484560055331845446">Þú gætir glatað aðganginum að Google reikningnum þínum. Chrome mælir með því að þú skiptir um aðgangsorð núna. Þú verður beðin(n) um að skrá þig inn.</translation>
+<translation id="3484560055331845446">Þú gætir glatað aðganginum að Google-reikningnum þínum. Chrome mælir með því að þú skiptir um aðgangsorð núna. Þú verður beðin(n) um að skrá þig inn.</translation>
 <translation id="3484861421501147767">Áminning: Vistaður kynningarkóði tiltækur</translation>
 <translation id="3485901585646640838">Til að nota aðgangsorðin og fleira sem er vistað á Google-reikningnum þínum skaltu staðfesta að þetta sért þú</translation>
 <translation id="3486406746948052912">Svitalyktareyðar og líkamsúði</translation>
@@ -3490,7 +3490,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6688775486821967877">Sýndarkort er ekki tiltækt eins og er, reyndu aftur síðar</translation>
 <translation id="6688851075017682769">Prufuheimilisföng eftir löndum</translation>
 <translation id="6689249931105087298">Háð með þjöppun svartra punkta</translation>
-<translation id="6689271823431384964">Chrome býður þér að vista kortin þín á Google reikningnum vegna þess að þú ert innskráð(ur). Þú getur breytt þessu í stillingunum. Nafn korthafa er sótt af reikningnum þínum.</translation>
+<translation id="6689271823431384964">Chrome býður þér að vista kortin þín á Google-reikningnum vegna þess að þú ert innskráð(ur). Þú getur breytt þessu í stillingunum. Nafn korthafa er sótt af reikningnum þínum.</translation>
 <translation id="6691397311652656001">Losaðu um meira en <ph name="REQUIRED_FREE_DISK_SPACE" /> af plássi</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á Tab og svo Enter til að leita að tækinu þínu á Google reikningnum</translation>
 <translation id="6695428916538794739">Hasar- og ævintýramyndir</translation>
@@ -4992,7 +4992,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> gæti innihaldið viðkvæmt efni}one{<ph name="FILE_COUNT" /> skrá gæti innihaldið viðkvæmt efni}other{<ph name="FILE_COUNT" /> skrár gætu innihaldið viðkvæmt efni}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – Til að loka öllum skjánum skaltu ýta á |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">Slack-skilaboð</translation>
-<translation id="9165305804774426672">Vefsvæði sem þú heimsækir geta einnig áætlað hvað höfðar til þín út frá virkni þinni á vefsvæðinu. Ef þú heimsækir til dæmis vefsvæði sem selur hlaupaskó fyrir langhlaup, gæti vefsvæðið áætlað að þú hafir áhuga á að hlaupa maraþon.</translation>
+<translation id="9165305804774426672">Vefsvæði sem þú heimsækir geta einnig áætlað hvað höfðar til þín út frá virkni þinni á vefsvæðinu. Ef þú heimsækir til dæmis vefsvæði sem selur hlaupaskó fyrir langhlaup gæti vefsvæðið áætlað að þú hafir áhuga á að hlaupa maraþon.</translation>
 <translation id="9166851138617700776">Nánar um auglýsingatillögur vefsvæða og auglýsingamælingar</translation>
 <translation id="9167054383925257837">Upplýsingar um vafra og stýrikerfi tækis (s.s. útgáfa vafra og stýrikerfis)</translation>
 <translation id="9167594211215946097">Fáðu beinan aðgang að prenturunum þínum</translation>

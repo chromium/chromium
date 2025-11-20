@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="eu">
+<translation id="1004825134262590729">{count,plural, =1{{count} sarbide-gako}other{{count} sarbide-gako}}</translation>
 <translation id="1005023885865154304">Ireki pasahitzak automatikoki betetzeko ezarpenak</translation>
 <translation id="1005230401424685968">UUUU</translation>
 <translation id="1013952917065545813">Itzuli hona duela gutxi itxi dituzun fitxak berriro irekitzeko</translation>
@@ -595,6 +596,7 @@
 <translation id="3277021493514034324">Kopiatu da webgunearen helbidea</translation>
 <translation id="3280562213547448728">Ahozko bilaketa</translation>
 <translation id="3289505634533552500">Ahozko bilaketa</translation>
+<translation id="3293080634164207409">Gehitu fitxak</translation>
 <translation id="3295904109373959849">Fitxa taldeen sareta</translation>
 <translation id="3302837541200840455"><ph name="TAB_TITLE" />, jarduera berria</translation>
 <translation id="3305294846493618482">gehiago</translation>
@@ -2218,5 +2220,6 @@
 <translation id="984275831282074731">Ordainketa-metodoak</translation>
 <translation id="985379595344853742">Itxi ezkutuko moduko fitxa guztiak</translation>
 <translation id="988141524645182168">Bestelakoak</translation>
+<translation id="995174784802614337">{count,plural, =1{{count} sarbide-gako inportatu da}other{{count} sarbide-gako inportatu dira}}</translation>
 <translation id="999768147936949692">Oraingoz, familiako kideekin soilik parteka ditzakezu pasahitzak. <ph name="BEGIN_LINK" />Gonbidatu familiako kideak<ph name="END_LINK" /> taldera eta atera etekin handiagoa Google-ren produktu eta harpidetzei.</translation>
 </translationbundle>

@@ -663,6 +663,7 @@
 <translation id="2085876078937250610">सेव करें…</translation>
 <translation id="2088913896151127116">टेक्स्ट जोड़ें</translation>
 <translation id="2090451897496479509">ज़्यादा जानकारी के लिए, सेवा देने वाली कंपनी से संपर्क करें</translation>
+<translation id="2090686487550343086">आईबीएएन</translation>
 <translation id="2091887806945687916">आवाज़</translation>
 <translation id="2093184051799735948"><ph name="ENGINE_NAME" /> पर खोजें या यूआरएल टाइप करें</translation>
 <translation id="2093982008204312032">Google Chrome, Windows Hello को बंद करने की कोशिश कर रहा है, ताकि पासवर्ड डाला जा सके.</translation>
@@ -800,6 +801,7 @@
 <translation id="2283340219607151381">पतों की जानकारी सेव करें और फ़ॉर्म में भरें</translation>
 <translation id="2283447177162560884">'<ph name="PAGE_TITLE" />' मिटाया गया</translation>
 <translation id="2283599456633275070">यात्रा</translation>
+<translation id="2285709459648658719">पासपोर्ट</translation>
 <translation id="2286383991450886080">34 x 44 इंच</translation>
 <translation id="2288422996159078444">आप जो भी लिखते हैं, जो भी पेज देखते हैं या वेब पर जो भी गतिविधि करते हैं उस पर नज़र रखी जा रही है. साइटों की सामग्री में आपको बिना बताए बदलाव किया जा सकता है.</translation>
 <translation id="2289385804009217824">ट्रिम करें</translation>
@@ -2551,6 +2553,7 @@
 <translation id="5137761395480718572">यह ऐप्लिकेशन वाई-फ़ाई क्रेडेंशियल इंस्टॉल करने की अनुमति मांग रहा है. सेटअप हो जाने के बाद, आपका <ph name="DEVICE_TYPE" /> अपने-आप वाई-फ़ाई नेटवर्क से कनेक्ट हो जाएगा. इन क्रेडेंशियल को हटाने के लिए, ऐप्लिकेशन को अनइंस्टॉल करें. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">इस समय वर्चुअल कार्ड उपलब्ध नहीं है, कृपया अपने बैंक से संपर्क करें</translation>
 <translation id="5138227688689900538">कम दिखाएं</translation>
+<translation id="5140155249377545621">ड्राइविंग लाइसेंस</translation>
 <translation id="5144613843429436866">आपने इस साइट के लिए, <ph name="PERMISSION" /> इस्तेमाल करने की अनुमति दी है</translation>
 <translation id="5145883236150621069">नीति प्रतिसाद में गड़बड़ी कोड मौजूद है</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> के लिए सूचनाओं को ब्लॉक किया गया है</translation>

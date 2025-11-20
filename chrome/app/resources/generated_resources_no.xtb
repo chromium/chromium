@@ -1064,6 +1064,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
     du at Google bruker informasjonen du sender inn, til å forbedre
     Google-produkter og -tjenester.</translation>
 <translation id="17081583771848899">Appoversikt-tasten + Alt + <ph name="TOP_ROW_KEY" /></translation>
+<translation id="170825127491242914">Lagre i nettskyen</translation>
 <translation id="1708291623166985230">Wifi-sone er slått av</translation>
 <translation id="1708338024780164500">(Inaktiv)</translation>
 <translation id="1708563369218024896">Ingen datasamler er valgt. Velg minst én datasamler.</translation>
@@ -6665,6 +6666,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5585912436068747822">Formateringen mislyktes</translation>
 <translation id="5587765208077583036">For å dele en mappe, høyreklikk på den i Filer-appen, og velg «Del med <ph name="SPECIFIC_NAME" />».</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
+<translation id="5588712142463367677">Filtrer nettsteder på siden</translation>
 <translation id="558918721941304263">Laster inn apper …</translation>
 <translation id="5590418976913374224">Spill av lyd ved oppstart av enheten</translation>
 <translation id="5591465468509111843">Svært bred</translation>
@@ -8055,6 +8057,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> – skrivebordinnholdet er delt</translation>
 <translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" /> % fullført</translation>
 <translation id="6580203076670148210">Skannehastighet</translation>
+<translation id="6580676117087365538">Bekreft at det er deg for å få denne utvidelsen på alle datamaskinene dine.</translation>
 <translation id="6581356304040102696">Kan ikke importere passordene. Filstørrelsen må være mindre enn 1 MB.</translation>
 <translation id="6582080224869403177">Tilbakestill <ph name="DEVICE_TYPE" /> for å oppgradere sikkerheten din.</translation>
 <translation id="6582274660680936615">Du surfer som gjest</translation>
@@ -9576,6 +9579,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7647403192093989392">Ingen nylige aktiviteter</translation>
 <translation id="7648023614017258011">Chrome bekrefter installeringspakken</translation>
 <translation id="7648048654005891115">Keymap-stil</translation>
+<translation id="7648180062672842917">Denne filen har sensitive eller farlige data. Organisasjonen din lar deg lagre den i skylagring eller forkaste den</translation>
 <translation id="7649070708921625228">Hjelp</translation>
 <translation id="7649954700951153978">Minn meg på dette i iOS</translation>
 <translation id="7650141368285545431">Bruk passnøkkel fra en annen enhet</translation>
@@ -10904,6 +10908,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8535005006684281994">Fornying av Netscape-sertifikat for nettadresse</translation>
 <translation id="8536810348276651776">Logger deg av de fleste nettsteder. Du forblir pålogget Google-kontoen din, slik at Family Link-innstillingene for Chrome fortsetter å gjelde.</translation>
 <translation id="8536956381488731905">Lyd ved tastetrykk</translation>
+<translation id="8537854269962256103">Gemini-samtalen din er i en chat i et eget vindu. Klikk hvor som helst i dette sidepanelet for å flytte den hit.</translation>
 <translation id="8539727552378197395">Nei (kun http)</translation>
 <translation id="8539766201049804895">Oppgrader</translation>
 <translation id="8540136935098276800">Skriv inn en riktig formatert nettadresse</translation>
@@ -11151,6 +11156,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8703766890819308134">Vis søkesnarveier</translation>
 <translation id="8704662571571150811">Domener</translation>
 <translation id="8705331520020532516">Serienummer</translation>
+<translation id="870536819717176711">Når du velger å dele den aktive fanen med Gemini, sendes hele innholdet, media og nettadressen til Google.</translation>
 <translation id="8705580154597116082">Wifi er tilgjengelig via telefon</translation>
 <translation id="8705629851992224300">Kunne ikke lese sikkerhetsnøkkelen</translation>
 <translation id="8706111173576263877">QR-koden er skannet.</translation>

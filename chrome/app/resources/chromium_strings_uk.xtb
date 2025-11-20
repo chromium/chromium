@@ -153,7 +153,6 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="2718390899429598676">Задля підвищення безпеки Chromium шифруватиме ваші дані.</translation>
 <translation id="2721354645805494590">Щоб вилучити обліковий запис Google, вийдіть із Chromium</translation>
 <translation id="2722636413143664436">Щоб отримати доступ до паролів, закладок і інших даних на всіх своїх пристроях, увійдіть у Chromium</translation>
-<translation id="2723860029395667894">Завжди показувати ярлик режиму ШІ від Google</translation>
 <translation id="2738871930057338499">Не вдалося підключитися до Інтернету. Помилка "HTTP 403 заборонено". Перевірте конфігурацію свого проксі-сервера.</translation>
 <translation id="2753623023919742414">Натисніть, щоб шукати</translation>
 <translation id="2768103863314748511">Зробіть Chromium засобом перегляду файлів PDF за умовчанням</translation>
@@ -648,7 +647,6 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="8619360774459241877">Запускається Chromium…</translation>
 <translation id="8624541899164515475">Налаштування (відкриється в новій вкладці).</translation>
 <translation id="8648201657708811153">Google Chrome for Testing не можна зробити веб-переглядачем за умовчанням.</translation>
-<translation id="8677922833187616101">Завжди показувати ярлик режиму ШІ від Google</translation>
 <translation id="8697124171261953979">Розширення також змінило сторінку, яка відкривається під час запуску Chromium або пошуку в універсальному вікні пошуку.</translation>
 <translation id="8704119203788522458">Це ваш Chromium</translation>
 <translation id="8712637175834984815">OK</translation>

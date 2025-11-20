@@ -662,6 +662,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2085876078937250610">Guardar…</translation>
 <translation id="2088913896151127116">Añadir texto</translation>
 <translation id="2090451897496479509">Ponte en contacto con el proveedor para obtener más información</translation>
+<translation id="2090686487550343086">IBANs</translation>
 <translation id="2091887806945687916">Sonido</translation>
 <translation id="2093184051799735948">Busca en <ph name="ENGINE_NAME" /> o escribe una URL</translation>
 <translation id="2093982008204312032">Google Chrome está intentando desactivar Windows Hello para completar contraseñas.</translation>
@@ -799,6 +800,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2283340219607151381">Guardar y autocompletar direcciones</translation>
 <translation id="2283447177162560884">"<ph name="PAGE_TITLE" />" eliminado</translation>
 <translation id="2283599456633275070">Viajes</translation>
+<translation id="2285709459648658719">Pasaportes</translation>
 <translation id="2286383991450886080">34x44 pulgadas</translation>
 <translation id="2288422996159078444">Se está vigilando todo lo que escribes, las páginas que visitas y el resto de la actividad que realizas en Internet. Es posible que se modifique el contenido de los sitios sin que lo sepas.</translation>
 <translation id="2289385804009217824">Recortar</translation>
@@ -2551,6 +2553,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5137761395480718572">Esta aplicación solicita permiso para instalar credenciales de Wi‐Fi. Después, tu <ph name="DEVICE_TYPE" /> se conectará automáticamente a las redes Wi-Fi configuradas. Para quitar estas credenciales, desinstala la aplicación. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">La tarjeta virtual no está disponible en estos momentos, contacta con tu banco</translation>
 <translation id="5138227688689900538">Mostrar menos</translation>
+<translation id="5140155249377545621">Carnés de conducir</translation>
 <translation id="5144613843429436866">Has dado permiso de <ph name="PERMISSION" /> a este sitio</translation>
 <translation id="5145883236150621069">Código de error presente en respuesta de la política</translation>
 <translation id="5146995429444047494">Las notificaciones de <ph name="ORIGIN" /> están bloqueadas</translation>
@@ -4237,6 +4240,7 @@ Más información:
 <translation id="7886897188117641322">Elige qué categorías amplias de temas se pueden usar para personalizar los anuncios</translation>
 <translation id="7887683347370398519">Comprueba el código CVC y vuelve a intentarlo</translation>
 <translation id="7887885240995164102">Activar el modo imagen en imagen</translation>
+<translation id="7888367499748383555">Sin comisiones, TAE del 0 % (sujeto a requisitos)</translation>
 <translation id="7888575728750733395">Imprimir intent de renderizado</translation>
 <translation id="7890748547282909375">Inicia sesión en Microsoft OneDrive para guardar la captura de pantalla</translation>
 <translation id="7890755620327858054">El pago aplazado no está disponible en este momento. Inténtalo de nuevo o selecciona otro método de pago.</translation>

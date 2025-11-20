@@ -662,6 +662,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2085876078937250610">Save…</translation>
 <translation id="2088913896151127116">Add text</translation>
 <translation id="2090451897496479509">Contact the provider for more information</translation>
+<translation id="2090686487550343086">IBANs</translation>
 <translation id="2091887806945687916">Sound</translation>
 <translation id="2093184051799735948">Search <ph name="ENGINE_NAME" /> or type URL</translation>
 <translation id="2093982008204312032">Google Chrome is trying to turn off Windows Hello for filling passwords.</translation>
@@ -799,6 +800,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2283340219607151381">Save and fill addresses</translation>
 <translation id="2283447177162560884">'<ph name="PAGE_TITLE" />' deleted</translation>
 <translation id="2283599456633275070">Travel</translation>
+<translation id="2285709459648658719">Passports</translation>
 <translation id="2286383991450886080">34 in x 44 in</translation>
 <translation id="2288422996159078444">Anything that you type, any pages that you view or any other activity on the web is being watched. Content on sites may be changed without your knowledge.</translation>
 <translation id="2289385804009217824">Trim</translation>
@@ -2551,6 +2553,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5137761395480718572">This app is requesting permission to install Wi-Fi credentials. After setup, your <ph name="DEVICE_TYPE" /> will automatically connect to participating Wi-Fi networks. To remove these credentials, uninstall the app. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">Virtual card is not available at the moment; please contact your bank</translation>
 <translation id="5138227688689900538">Show less</translation>
+<translation id="5140155249377545621">Driving licences</translation>
 <translation id="5144613843429436866">You have allowed <ph name="PERMISSION" /> for this site</translation>
 <translation id="5145883236150621069">Error code present in the policy response</translation>
 <translation id="5146995429444047494">Notifications for <ph name="ORIGIN" /> are blocked</translation>

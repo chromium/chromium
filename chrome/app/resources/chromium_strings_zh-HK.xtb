@@ -154,7 +154,6 @@
 <translation id="2718390899429598676">為提高安全性，Chromium 會將您的資料加密。</translation>
 <translation id="2721354645805494590">如要從 Chromium 中移除 Google 帳戶，請登出 Chromium</translation>
 <translation id="2722636413143664436">如要在你的所有裝置上取用密碼、書籤和其他資料，請登入 Chromium</translation>
-<translation id="2723860029395667894">一律顯示 Google AI 模式捷徑</translation>
 <translation id="2738871930057338499">無法連線至互聯網。發生 HTTP 403 禁止錯誤，請檢查 Proxy 設定。</translation>
 <translation id="2753623023919742414">按一下即可搜尋</translation>
 <translation id="2768103863314748511">將 Chromium 設定為預設 PDF 檢視器</translation>
@@ -179,6 +178,7 @@
 <translation id="2977506796191543575">如果有網站試圖盜取您的密碼，或當您下載有害檔案時，Chromium 亦可能將網址 (包括部分網頁內容) 傳送至「安全瀏覽」功能</translation>
 <translation id="2981563588585023386">如要按家長所選設定加強網上安全，請登入 Chromium</translation>
 <translation id="3003694935412297923">所有工作</translation>
+<translation id="3012615494352020668">{count,plural, =1{Chromium 需要先驗證身分，才能將部分資料儲存至 Google 帳戶，並在所有裝置上使用。如果你現在登出，系統將刪除有關資料 (1 個項目)。}other{Chromium 需要先驗證身分，才能將部分資料儲存至 Google 帳戶，並在所有裝置上使用。如果你現在登出，系統將刪除有關資料 ({count} 個項目)。}}</translation>
 <translation id="3013473503895162900">在 Chromium 中的新分頁開啟 <ph name="URL" />。</translation>
 <translation id="3032706164202344641">Chromium 無法檢查密碼，請稍後再試。</translation>
 <translation id="3032787606318309379">正在新增至 Chromium…</translation>
@@ -493,6 +493,7 @@
 <translation id="6729124504294600478">如要取得個人化和其他功能，請將 Chromium 加入「網絡和應用程式活動記錄」以及連結的 Google 服務</translation>
 <translation id="6734291798041940871">已為您電腦上的所有使用者安裝 Chromium。</translation>
 <translation id="6751374565094704799">使用 Chromium 的 V8 引擎加快網站速度，但 Chromium 防攻擊的能力會略為下降。此設定已開啟。</translation>
+<translation id="6754665438209053659">{count,plural, =1{部分 Chromium 資料尚未儲存至 Google 帳戶，請等待幾分鐘後再嘗試登出。如果你現在登出，系統將刪除有關資料 (1 個項目)。}other{部分 Chromium 資料尚未儲存至 Google 帳戶，請等待幾分鐘後再嘗試登出。如果你現在登出，系統將刪除有關資料 ({count} 個項目)。}}</translation>
 <translation id="67706546131546258">此檔案可能不安全，因此 Chromium 建議掃瞄檔案。</translation>
 <translation id="6779406956731413166">Chromium 作業系統得以面世，有賴其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟件<ph name="END_LINK_CROS_OSS" />。</translation>
 <translation id="6831043979455480757">翻譯</translation>
@@ -647,7 +648,6 @@ Chromium 無法復原您的設定。</translation>
 <translation id="8619360774459241877">正在啟動 Chromium…</translation>
 <translation id="8624541899164515475">設定，喺新分頁打開。</translation>
 <translation id="8648201657708811153">Google Chrome for Testing 無法設為預設瀏覽器。</translation>
-<translation id="8677922833187616101">一律顯示 Google AI 模式捷徑</translation>
 <translation id="8697124171261953979">這個擴充功能也會控管 Chromium 啟動時或您使用網址列搜尋時所顯示的網頁。</translation>
 <translation id="8704119203788522458">這是您專屬的 Chromium</translation>
 <translation id="8712637175834984815">我知道了</translation>

@@ -549,7 +549,7 @@
 <translation id="3087734570205094154">پایین</translation>
 <translation id="309710370695886264">۱ گذرواژه دوباره‌استفاده‌شده دارید. همین‌حالا مشکل را برطرف کنید تا ایمن بمانید.</translation>
 <translation id="3099402981545350675">‏این کار نشانی‌های ذخیره‌شده در این دستگاه را حذف می‌کند. این کار همچنین اطلاعات انتخاب‌شده را از Chrome برمی‌دارد اما این اطلاعات از «حساب Google» شما حذف نمی‌شود.</translation>
-<translation id="3106258548858559536">خاموش کردن «حالت مطالعه»</translation>
+<translation id="3106258548858559536">خاموش کردن «حالت خواندن»</translation>
 <translation id="3106690631878101882">‏پنهان کردن «ترجمه Google»</translation>
 <translation id="310900540163454140">گذرواژه مربوط به <ph name="WEBSITE" /> حذف شود؟</translation>
 <translation id="3112556859945124369">علامت‌گذاری...</translation>
@@ -596,6 +596,7 @@
 <translation id="3277021493514034324">نشانی سایت کپی شد</translation>
 <translation id="3280562213547448728">جستجوی گفتاری</translation>
 <translation id="3289505634533552500">جستجوی گفتاری</translation>
+<translation id="3293080634164207409">افزودن زبانه</translation>
 <translation id="3295904109373959849">جدول گروه زبانه‌ها</translation>
 <translation id="3302837541200840455">‫<ph name="TAB_TITLE" />، فعالیت جدید</translation>
 <translation id="3305294846493618482">بیشتر</translation>
@@ -1386,7 +1387,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6247557882553405851">‏مدیر گذرواژه Google</translation>
 <translation id="6251835855431997163">تکمیل خودکار <ph name="VALUE" /></translation>
 <translation id="6254066287920239840">پیوندها به‌جای مرورگر در برنامه باز شوند.</translation>
-<translation id="6259928806013786178">«حالت مطالعه» فعال نشد</translation>
+<translation id="6259928806013786178">«حالت خواندن» فعال نشد</translation>
 <translation id="6268773951964630964">جستجوی تصویر کپی‌شده</translation>
 <translation id="6271462272606946663">پنهان کردن «درخواست سایت ویژه تلفن همراه»</translation>
 <translation id="6271824294945464304">هم‌رسانی گذرواژه</translation>
@@ -1542,7 +1543,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6791425686608802741">روی «افزودن زبانه به گروه جدید» تک‌ضرب بزنید</translation>
 <translation id="6794476726485507147">تاریخ و ساعتی برای دریافت اعلان یادآور جهت بازدید مجدد از این صفحه انتخاب کنید.</translation>
 <translation id="6795481620482106033">داده‌های نامعتبر</translation>
-<translation id="6797543908718012274">روشن کردن «حالت مطالعه»</translation>
+<translation id="6797543908718012274">روشن کردن «حالت خواندن»</translation>
 <translation id="6806550742467879742">ابزارهای صفحه</translation>
 <translation id="6807287147325542056">گذرواژه‌ها در برنامه‌های دیگر</translation>
 <translation id="681368974849482173">مورد ایجاد شد</translation>
@@ -2081,7 +2082,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8786100550345425552">ویرایش کردن اجازه‌ها</translation>
 <translation id="878871978861915380">پنهان کردن «ردگیری قیمت»</translation>
 <translation id="8792626944327216835">میکروفون</translation>
-<translation id="8796634520835503150">حالت مطالعه دردسترس است</translation>
+<translation id="8796634520835503150">«حالت خواندن» دردسترس است</translation>
 <translation id="8803526663383843427">وقتی روشن است</translation>
 <translation id="8803639129939845298">ایمن</translation>
 <translation id="8813277370772331957">بعداً به من یادآوری شود</translation>
@@ -2173,7 +2174,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="913036870884277353">پیوندها را به‌سادگی در برنامه‌های دیگر باز کنید.</translation>
 <translation id="9137013805542155359">نمایش مورد اصلی</translation>
 <translation id="9140888637198815199">A</translation>
-<translation id="9144152097013965297">روشن کردن «حالت مطالعه»</translation>
+<translation id="9144152097013965297">روشن کردن «حالت خواندن»</translation>
 <translation id="9144230693397287797">برای یادآورهایی که تنظیم کرده‌اید و برگه‌های سایر دستگاه‌ها به‌روزرسانی دریافت کنید</translation>
 <translation id="914781932147356857">علامت‌گذاری همه…</translation>
 <translation id="9148126808321036104">ورود مجدد به سیستم</translation>

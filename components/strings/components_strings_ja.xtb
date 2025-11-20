@@ -662,6 +662,7 @@
 <translation id="2085876078937250610">保存…</translation>
 <translation id="2088913896151127116">テキストを追加</translation>
 <translation id="2090451897496479509">詳しくはプロバイダにお問い合わせください</translation>
+<translation id="2090686487550343086">IBAN</translation>
 <translation id="2091887806945687916">音声</translation>
 <translation id="2093184051799735948"><ph name="ENGINE_NAME" /> で検索するか URL を入力してください</translation>
 <translation id="2093982008204312032">Google Chrome がパスワード入力で Windows Hello を無効にしようとしています。</translation>
@@ -799,6 +800,7 @@
 <translation id="2283340219607151381">住所の保存と入力</translation>
 <translation id="2283447177162560884">「<ph name="PAGE_TITLE" />」を削除しました</translation>
 <translation id="2283599456633275070">旅行</translation>
+<translation id="2285709459648658719">パスポート</translation>
 <translation id="2286383991450886080">34x44 インチ</translation>
 <translation id="2288422996159078444">ウェブで入力した情報やアクセスしたページ、その他のアクティビティがすべて監視され、知らない間にサイトのコンテンツが改変されるおそれがあります。</translation>
 <translation id="2289385804009217824">トリミング</translation>
@@ -2551,6 +2553,7 @@
 <translation id="5137761395480718572">このアプリは Wi-Fi 認証情報のインストール権限をリクエストしています。セットアップが完了すると、<ph name="DEVICE_TYPE" /> は登録されている Wi-Fi ネットワークに自動的に接続します。これらの認証情報を削除するには、アプリをアンインストールします。<ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">仮想カードは現在ご利用いただけません。銀行にお問い合わせください</translation>
 <translation id="5138227688689900538">一部を表示</translation>
+<translation id="5140155249377545621">運転免許証</translation>
 <translation id="5144613843429436866">このサイトに <ph name="PERMISSION" /> の使用を許可しています</translation>
 <translation id="5145883236150621069">ポリシー応答内にエラー コードがあります</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> の通知をブロックしました</translation>
@@ -4238,6 +4241,7 @@
 <translation id="7886897188117641322">広告のパーソナライズに使用できるトピックの大まかなカテゴリを選択します</translation>
 <translation id="7887683347370398519">CVC を確認してからもう一度お試しください</translation>
 <translation id="7887885240995164102">ピクチャー イン ピクチャーを開始</translation>
+<translation id="7888367499748383555">手数料なし、年利 0% の分割払い（利用条件があります）</translation>
 <translation id="7888575728750733395">印刷時のレンダリング インテント</translation>
 <translation id="7890748547282909375">スクリーンショットを保存するには、Microsoft OneDrive にログインしてください</translation>
 <translation id="7890755620327858054">後払いは現在ご利用いただけません。もう一度お試しいただくか、別のお支払い方法を選択してください。</translation>

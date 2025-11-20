@@ -1061,6 +1061,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1706586824377653884">Ajouté par votre administrateur</translation>
 <translation id="170658918174941828">Nous recevrons la version de Chrome, la version de votre système d'exploitation, les paramètres de diffusion, les statistiques des performances de duplication d'écran et les journaux des diagnostics de votre canal de communication ainsi que toute autre information que vous choisirez d'inclure ci-dessus. Vos commentaires nous servent à diagnostiquer les problèmes et à améliorer la fonctionnalité. Les renseignements personnels que vous nous envoyez, de manière explicite ou accessoire, sont protégés conformément à nos politiques de confidentialité. En nous envoyant ces commentaires, vous acceptez que Google les utilise pour améliorer ses produits ou ses services.</translation>
 <translation id="17081583771848899">lanceur+alt+<ph name="TOP_ROW_KEY" /></translation>
+<translation id="170825127491242914">Enregistrer dans l'espace de stockage infonuagique</translation>
 <translation id="1708291623166985230">Point d'accès sans fil désactivé</translation>
 <translation id="1708338024780164500">(Inactive)</translation>
 <translation id="1708563369218024896">Aucun collecteur de données n'a été sélectionné. Veuillez sélectionner au moins un collecteur de données.</translation>
@@ -8055,6 +8056,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> – Contenu du bureau partagé</translation>
 <translation id="6580060371127789208">Terminé à <ph name="PERCENTAGE_COMPLETE" /> %</translation>
 <translation id="6580203076670148210">Vitesse de recherche</translation>
+<translation id="6580676117087365538">Pour obtenir cette extension sur tous vos ordinateurs, confirmez votre identité</translation>
 <translation id="6581356304040102696">Impossible d'importer les mots de passe. La taille du fichier doit être inférieure à 1 Mo.</translation>
 <translation id="6582080224869403177">Réinitialisez votre <ph name="DEVICE_TYPE" /> pour effectuer une mise à niveau de la sécurité.</translation>
 <translation id="6582274660680936615">Vous naviguez en tant qu'invité</translation>
@@ -9577,6 +9579,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7647403192093989392">Aucune activité récente</translation>
 <translation id="7648023614017258011">Chrome vérifie l'ensemble d'installation</translation>
 <translation id="7648048654005891115">Style de mappage du clavier</translation>
+<translation id="7648180062672842917">Ce fichier contient des données sensibles ou dangereuses. Votre organisation vous permettra de l'enregistrer dans l'espace de stockage infonuagique ou de le supprimer</translation>
 <translation id="7649070708921625228">Aide</translation>
 <translation id="7649954700951153978">M'envoyer un rappel sur iOS</translation>
 <translation id="7650141368285545431">Utiliser la clé d'accès d'un autre appareil</translation>
@@ -10904,6 +10907,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8535005006684281994">URL de renouvellement du certificat Netscape</translation>
 <translation id="8536810348276651776">Cette option vous déconnectera de la plupart des sites. Vous resterez connecté à votre compte Google, donc vos paramètres Family Link pour Chrome s'appliqueront toujours.</translation>
 <translation id="8536956381488731905">Son à chaque touche</translation>
+<translation id="8537854269962256103">Votre conversation Gemini se trouve dans une fenêtre de clavardage. Cliquez n'importe où sur ce panneau latéral pour la déplacer ici.</translation>
 <translation id="8539727552378197395">Non (HttpOnly)</translation>
 <translation id="8539766201049804895">Mettre à niveau</translation>
 <translation id="8540136935098276800">Entrez une URL au format correct</translation>
@@ -11151,6 +11155,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="8703766890819308134">Afficher les raccourcis de recherche</translation>
 <translation id="8704662571571150811">Domaines</translation>
 <translation id="8705331520020532516">Numéro de série</translation>
+<translation id="870536819717176711">Lorsque vous choisissez de partager l'onglet actuel avec Gemini, le contenu complet, les éléments multimédias et l'URL de l'onglet sont envoyés à Google.</translation>
 <translation id="8705580154597116082">Connexion Wi-Fi possible à l'aide d'un téléphone</translation>
 <translation id="8705629851992224300">Impossible de lire votre clé de sécurité</translation>
 <translation id="8706111173576263877">Le code QR a été numérisé.</translation>

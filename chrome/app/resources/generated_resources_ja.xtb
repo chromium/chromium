@@ -1059,6 +1059,7 @@
 <translation id="1706586824377653884">管理者により追加</translation>
 <translation id="170658918174941828">上記で送信するよう選択した情報に加えて、お使いの Chrome のバージョン、オペレーティング システムのバージョン、キャストの設定、ミラーリングのパフォーマンス統計情報、通信チャンネルの診断ログが送信されます。お寄せいただいたフィードバックは、問題の診断と機能の改善に使用されます。送信していただいた個人情報は、直接の送信、他の情報に付随しての送信を問わず、Google のプライバシー ポリシーに従って保護されます。このフィードバックを送信すると、Google がその内容を Google のプロダクトまたはサービスの改善のため使用することについて同意したことになります。</translation>
 <translation id="17081583771848899">ランチャー+Alt+<ph name="TOP_ROW_KEY" /></translation>
+<translation id="170825127491242914">クラウド ストレージに保存</translation>
 <translation id="1708291623166985230">アクセス ポイントを無効にしました</translation>
 <translation id="1708338024780164500">（無効）</translation>
 <translation id="1708563369218024896">データ収集ツールが選択されていません。データ収集ツールを少なくとも 1 つ選択してください。</translation>
@@ -6648,6 +6649,7 @@
 <translation id="5585912436068747822">フォーマット エラー</translation>
 <translation id="5587765208077583036">共有するには、ファイルアプリ内でフォルダを右クリックし、[<ph name="SPECIFIC_NAME" /> と共有] を選択します。</translation>
 <translation id="5588033542900357244">（<ph name="RATING_COUNT" />）</translation>
+<translation id="5588712142463367677">ページ上のサイトをフィルタ</translation>
 <translation id="558918721941304263">アプリを読み込んでいます...</translation>
 <translation id="5590418976913374224">デバイスの起動時に音を鳴らす</translation>
 <translation id="5591465468509111843">かなり広くする</translation>
@@ -8037,6 +8039,7 @@
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - パソコンのコンテンツが共有されています</translation>
 <translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% 完了しました</translation>
 <translation id="6580203076670148210">スキャンの速度</translation>
+<translation id="6580676117087365538">すべてのパソコンでこの拡張機能を使用するには、本人確認を行ってください</translation>
 <translation id="6581356304040102696">パスワードをインポートできません。ファイルサイズを 1 MB より小さくしてください。</translation>
 <translation id="6582080224869403177">セキュリティをアップグレードするには <ph name="DEVICE_TYPE" /> をリセットしてください。</translation>
 <translation id="6582274660680936615">ゲスト モードでブラウジング中</translation>
@@ -9557,6 +9560,7 @@
 <translation id="7647403192093989392">最近のアクティビティはありません</translation>
 <translation id="7648023614017258011">Chrome がインストールするバンドルを確認しています</translation>
 <translation id="7648048654005891115">キーマップのスタイル</translation>
+<translation id="7648180062672842917">このファイルにはデリケートなデータまたは危険なデータが含まれています。組織の設定では、このデータをクラウド ストレージに保存するか破棄することができます。</translation>
 <translation id="7649070708921625228">ヘルプ</translation>
 <translation id="7649954700951153978">iOS で通知</translation>
 <translation id="7650141368285545431">別のデバイスのパスキーを使用</translation>
@@ -10884,6 +10888,7 @@
 <translation id="8535005006684281994">Netscape 証明書更新 URL</translation>
 <translation id="8536810348276651776">ほとんどのサイトからログアウトします。ただし、Google アカウントへのログイン状態は維持されるため、Chrome のファミリー リンクの設定は適用されます。</translation>
 <translation id="8536956381488731905">キー操作音</translation>
+<translation id="8537854269962256103">Gemini との会話はポップアウト チャットに表示されます。このサイドパネルの任意の場所をクリックすると、チャットをここに移動します。</translation>
 <translation id="8539727552378197395">いいえ（HTTP のみ）</translation>
 <translation id="8539766201049804895">アップグレード</translation>
 <translation id="8540136935098276800">正しい形式の URL を入力してください</translation>
@@ -11131,6 +11136,7 @@
 <translation id="8703766890819308134">検索ショートカットを表示</translation>
 <translation id="8704662571571150811">ドメイン</translation>
 <translation id="8705331520020532516">シリアル番号</translation>
+<translation id="870536819717176711">現在のタブを Gemini と共有すると、タブのコンテンツ全体、メディア、URL が Google に送信されます。</translation>
 <translation id="8705580154597116082">スマートフォンから Wi-Fi に接続できます</translation>
 <translation id="8705629851992224300">セキュリティ キーを読み取れませんでした</translation>
 <translation id="8706111173576263877">QR コードをスキャンしました。</translation>

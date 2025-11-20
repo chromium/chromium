@@ -596,6 +596,7 @@
 <translation id="3277021493514034324">تم نسخ عنوان الموقع</translation>
 <translation id="3280562213547448728">بحث صوتي</translation>
 <translation id="3289505634533552500">البحث الصوتي</translation>
+<translation id="3293080634164207409">إضافة علامات تبويب</translation>
 <translation id="3295904109373959849">شبكة مجموعة علامات التبويب</translation>
 <translation id="3302837541200840455">علامة التبويب "<ph name="TAB_TITLE" />" بها نشاط جديد</translation>
 <translation id="3305294846493618482">عرض المزيد</translation>
@@ -1101,7 +1102,7 @@
 <translation id="5225388483876575107">A</translation>
 <translation id="5233638681132016545">علامة تبويب جديدة</translation>
 <translation id="5234094073825090254">{count,plural, =1{‏تم حفظ الإشارة المرجعية في حسابك على Google‏ ({email}).}zero{‏تم حفظ الإشارات المرجعية في حسابك على Google‏ ({email}).}two{‏تم حفظ الإشارتَين المرجعيّتَين في حسابك على Google‏ ({email}).}few{‏تم حفظ الإشارات المرجعية في حسابك على Google‏ ({email}).}many{‏تم حفظ الإشارات المرجعية في حسابك على Google‏ ({email}).}other{‏تم حفظ الإشارات المرجعية في حسابك على Google‏ ({email}).}}</translation>
-<translation id="5234764350956374838">تجاهل</translation>
+<translation id="5234764350956374838">إغلاق</translation>
 <translation id="5238596603078743134">‏بإمكان "<ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" />" حاليًا استخدام اسم المستخدم وكلمة المرور عند استخدام "مدير كلمات المرور في Google" لتسجيل الدخول إلى <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5241106044372754566">حساب "<ph name="NAME" />" (<ph name="EMAIL" />) الذي تديره مؤسستك هو الذي تم اختياره حاليًا. يُرجى اختيار حساب.</translation>
 <translation id="5242899254250321823">تغيير كلمة المرور على الموقع الإلكتروني</translation>

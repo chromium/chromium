@@ -148,7 +148,6 @@
 <translation id="2681444469812712297">Åbn <ph name="URL" /> på en ny fane i Google Chrome.</translation>
 <translation id="2699790011615497488">Åbn Gemini i Chrome Beta</translation>
 <translation id="2712141162840347885">Vælg det, du vil søge efter med Google Lens, eller tryk på Escape for at lukke Google Lens</translation>
-<translation id="2723860029395667894">Vis altid genvejen til Google AI-tilstand</translation>
 <translation id="2738871930057338499">Der kan ikke oprettes forbindelse til internettet. HTTP 403 (forbudt). Tjek din proxykonfiguration.</translation>
 <translation id="2742320827292110288">Advarsel! Google Chrome kan ikke forhindre udvidelser i at registrere din browserhistorik. Fjern markeringen af denne valgmulighed for at deaktivere denne udvidelse i inkognitotilstand.</translation>
 <translation id="2753623023919742414">Klik for at søge</translation>
@@ -684,7 +683,6 @@
 <translation id="8647930742055103497">Hold alting samlet i Chrome</translation>
 <translation id="8656634243791296665">Åbn Gemini i Chrome Dev</translation>
 <translation id="8669527147644353129">Hjælp til Google Chrome</translation>
-<translation id="8677922833187616101">Vis altid genvejen til Google AI-tilstand</translation>
 <translation id="8679801911857917785">Den styrer også, hvilken side der vises, når du åbner Chrome.</translation>
 <translation id="8712637175834984815">Forstået</translation>
 <translation id="8712767363896337380">Næsten opdateret! Genstart Chrome for at fuldføre opdateringen.</translation>

@@ -243,7 +243,7 @@
 <translation id="3611658447322220736">אתרים שנסגרו לאחרונה יכולים לסיים שליחה וקבלה של נתונים</translation>
 <translation id="3619294456800709762">אתרים יכולים להפעיל את מצב 'תמונה בתוך תמונה' אוטומטית</translation>
 <translation id="3628308229821498208">הצעות לחיפוש</translation>
-<translation id="363748948745453283">המערכת משתמשת במיקום המשוער</translation>
+<translation id="363748948745453283">האתר משתמש במיקום המשוער</translation>
 <translation id="3641456520301071208">אתרים יכולים לבקש הרשאת גישה למיקומך</translation>
 <translation id="3658847490588580244">גיליון תחתון של דפדפן ברירת המחדל</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{אתר אחד (<ph name="RWS_MEMBERS_COUNT" />) בקבוצת האתרים של <ph name="RWS_OWNER" /> שיש לו הרשאה לראות את הפעילות שלך בקבוצה}one{‫<ph name="RWS_MEMBERS_COUNT" /> אתרים בקבוצת האתרים של <ph name="RWS_OWNER" /> שיש להם הרשאה לראות את הפעילות שלך בקבוצה}two{‫<ph name="RWS_MEMBERS_COUNT" /> אתרים בקבוצת האתרים של <ph name="RWS_OWNER" /> שיש להם הרשאה לראות את הפעילות שלך בקבוצה}other{‫<ph name="RWS_MEMBERS_COUNT" /> אתרים בקבוצת האתרים של <ph name="RWS_OWNER" /> שיש להם הרשאה לראות את הפעילות שלך בקבוצה}}</translation>

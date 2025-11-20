@@ -148,7 +148,6 @@
 <translation id="2681444469812712297">Obre <ph name="URL" /> en una pestanya nova a Google Chrome.</translation>
 <translation id="2699790011615497488">Obre Gemini a Chrome Beta</translation>
 <translation id="2712141162840347885">Selecciona el que vulguis per cercar-ho amb Google Lens o prem Esc per sortir de Google Lens</translation>
-<translation id="2723860029395667894">Mostra sempre la drecera del mode IA de Google</translation>
 <translation id="2738871930057338499">No es pot connectar a Internet. Error d'HTTP "403 Forbidden". Comprova la configuració del servidor intermediari.</translation>
 <translation id="2742320827292110288">Advertiment: Google Chrome no pot evitar que les extensions registrin l'historial de navegació. Per desactivar aquesta extensió en mode d'incògnit, desselecciona aquesta opció.</translation>
 <translation id="2753623023919742414">Fes clic per cercar</translation>
@@ -684,7 +683,6 @@
 <translation id="8647930742055103497">Mantén-ho tot a Chrome</translation>
 <translation id="8656634243791296665">Obre Gemini a Chrome Dev</translation>
 <translation id="8669527147644353129">Aplicació d'ajuda de Google Chrome</translation>
-<translation id="8677922833187616101">Mostra sempre la drecera del mode IA de Google</translation>
 <translation id="8679801911857917785">També controla la pàgina que es mostra quan inicieu Chrome.</translation>
 <translation id="8712637175834984815">Entesos</translation>
 <translation id="8712767363896337380">Gairebé has acabat amb l'actualització. Reinicia Chrome per acabar l'actualització.</translation>

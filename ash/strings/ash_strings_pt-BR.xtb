@@ -1058,7 +1058,7 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="4545950850562423083">Salvar a página atual como favorita</translation>
 <translation id="4548482551627849548">Mover a janela ativa para o espaço de trabalho à esquerda</translation>
 <translation id="4552748006424994716">Para evitar eco, ouça o microfone apenas quando estiver usando um fone de ouvido com fio.</translation>
-<translation id="4556953949326137018">Quando você usa ações sugeridas, como "adicionar à Agenda" ou "criar um Documentos Google", o conteúdo da área selecionada é enviado aos servidores do Google para sugerir ações e está sujeito aos <ph name="LINK_TO_SERVICE_TERMS" />. Não inclua informações pessoais, sensíveis ou confidenciais.</translation>
+<translation id="4556953949326137018">Quando você usa ações sugeridas, como "adicionar à Agenda" ou "criar um Google Docs", o conteúdo da área selecionada é enviado aos servidores do Google para sugerir ações e está sujeito aos <ph name="LINK_TO_SERVICE_TERMS" />. Não inclua informações pessoais, sensíveis ou confidenciais.</translation>
 <translation id="4560576029703263363">Ativado</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Ocultar senha</translation>
@@ -2375,7 +2375,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8926951137623668982">Estante sempre oculta</translation>
 <translation id="8929566928381252430">Quer usar a tecla Caps Lock? Use</translation>
 <translation id="8929623844713377237">Contato criado</translation>
-<translation id="8934418770423095813">Criar um arquivo do Documentos Google</translation>
+<translation id="8934418770423095813">Criar um arquivo do Google Docs</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 arquivo}one{# arquivo}other{# arquivos}}</translation>
 <translation id="8936501819958976551">desativado</translation>
 <translation id="8938800817013097409">Dispositivo USB-C (porta traseira da direita)</translation>
@@ -2444,7 +2444,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="9168436347345867845">Mais tarde</translation>
 <translation id="9178475906033259337">Exibindo 1 resultado para <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Este recurso permite acessar rapidamente qualquer usuário conectado sem a necessidade de uma senha. Use esse recurso somente com contas em que você confia.</translation>
-<translation id="9183302530794969518">Documentos Google</translation>
+<translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183456764293710005">Lupa de tela cheia</translation>
 <translation id="9192133205265227850">Usar "<ph name="DEVICE_NAME" />"</translation>
 <translation id="9193626018745640770">Transmitindo para um destinatário desconhecido</translation>

@@ -1066,6 +1066,7 @@
     Google таны өгсөн санал хүсэлтийг Google-н аливаа бүтээгдэхүүн
     эсвэл үйлчилгээг сайжруулахад ашиглаж болохыг зөвшөөрч байна.</translation>
 <translation id="17081583771848899">эхлүүлэгч + alt + <ph name="TOP_ROW_KEY" /></translation>
+<translation id="170825127491242914">Үүлэн хадгалах санд хадгалах</translation>
 <translation id="1708291623166985230">Сүлжээний цэгийг идэвхгүй болгосон</translation>
 <translation id="1708338024780164500">(Идэвхигүй)</translation>
 <translation id="1708563369218024896">Ямар ч өгөгдөл цуглуулагч сонгоогүй. Дор хаяж нэг өгөгдөл цуглуулагч сонгоно уу.</translation>
@@ -6672,6 +6673,7 @@
 <translation id="5585912436068747822">Форматлах явц амжилтгүй боллоо</translation>
 <translation id="5587765208077583036">Хуваалцахын тулд Файлс аппын фолдерын баруун талыг товшоод дараа нь "<ph name="SPECIFIC_NAME" />-тай хуваалцах"-ыг сонгоно уу.</translation>
 <translation id="5588033542900357244">( <ph name="RATING_COUNT" /> )</translation>
+<translation id="5588712142463367677">Хуудсан дээрх сайтуудыг шүүх</translation>
 <translation id="558918721941304263">Аппыг ачаалж байна...</translation>
 <translation id="5590418976913374224">Төхөөрөмжийн эхлэлд дуу тоглуулах</translation>
 <translation id="5591465468509111843">Маш өргөн</translation>
@@ -8062,6 +8064,7 @@
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - Дэлгэцийн агуулгыг хуваалцаж байна</translation>
 <translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />%-ийг гүйцээсэн</translation>
 <translation id="6580203076670148210">Скан хийх хурд</translation>
+<translation id="6580676117087365538">Энэ өргөтгөлийг бүх компьютер дээрээ авахын тулд өөрийгөө мөн болохыг баталгаажуулна уу</translation>
 <translation id="6581356304040102696">Нууц үгийг импортлох боломжгүй. Файлын хэмжээ 1 МБ-аас бага байх ёстой.</translation>
 <translation id="6582080224869403177">Аюулгүй байдлаа сайжруулахын тулд <ph name="DEVICE_TYPE" />-ээ шинэчилнэ үү.</translation>
 <translation id="6582274660680936615">Та Зочноор үзэж байна</translation>
@@ -9582,6 +9585,7 @@
 <translation id="7647403192093989392">Саяхны үйл ажиллагаа байхгүй</translation>
 <translation id="7648023614017258011">Chrome суулгах багцыг баталгаажуулж байна</translation>
 <translation id="7648048654005891115">Гарын товчлууруудын байрлалын загвар</translation>
+<translation id="7648180062672842917">Энэ файл эмзэг, аюултай өгөгдөлтэй байна. Танай байгууллага танд үүнийг үүлэн хадгалах санд хадгалах, устгахыг зөвшөөрнө</translation>
 <translation id="7649070708921625228">Тусламж</translation>
 <translation id="7649954700951153978">iOS дээр надад сануул</translation>
 <translation id="7650141368285545431">Өөр төхөөрөмжөөс нэвтрэх түлхүүр ашиглах</translation>
@@ -10908,6 +10912,7 @@
 <translation id="8535005006684281994">Нетскейп гэрчилгээг шинэчлэх холбоос</translation>
 <translation id="8536810348276651776">Таныг ихэнх сайтаас гаргана. Та Google Бүртгэлдээ нэвтэрсэн хэвээр байх бөгөөд ингэснээр таны Chrome-н Family Link-н тохиргоо хэрэгжинэ.</translation>
 <translation id="8536956381488731905">Товч дарахад дуу гарах</translation>
+<translation id="8537854269962256103">Таны Gemini-тай хийсэн харилцан яриа попап чатад байна. Энэ хажуугийн самбарыг ийш зөөхийн тулд самбарын дурын хэсэгт товшино уу.</translation>
 <translation id="8539727552378197395">Үгүй (HttpOnly)</translation>
 <translation id="8539766201049804895">Дэвшүүлэх</translation>
 <translation id="8540136935098276800">Зөв форматтай URL оруулна уу</translation>
@@ -11155,6 +11160,7 @@
 <translation id="8703766890819308134">Хайлтын товчлолыг харуулах</translation>
 <translation id="8704662571571150811">Домэйнүүд</translation>
 <translation id="8705331520020532516">Сери дугаар</translation>
+<translation id="870536819717176711">Таныг одоогийн табыг Gemini-тай хуваалцахаар сонгох үед тухайн табын бүрэн агуулга, медиа, URL-г Google-д илгээнэ.</translation>
 <translation id="8705580154597116082">Wi-Fi-д утсаар холбогдох боломжтой</translation>
 <translation id="8705629851992224300">Таны аюулгүй байдлын түлхүүрийг унших боломжгүй байна</translation>
 <translation id="8706111173576263877">QR кодыг скан хийсэн.</translation>

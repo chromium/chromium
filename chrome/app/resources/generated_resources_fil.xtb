@@ -1070,6 +1070,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
     sumasang-ayon kang puwedeng gamitin ng Google ang feedback na ibibigay mo para mapahusay
     ang anumang produkto o serbisyo ng Google.</translation>
 <translation id="17081583771848899">launcher + alt + <ph name="TOP_ROW_KEY" /></translation>
+<translation id="170825127491242914">I-save sa cloud storage</translation>
 <translation id="1708291623166985230">Naka-disable ang hotspot</translation>
 <translation id="1708338024780164500">(Hindi aktibo)</translation>
 <translation id="1708563369218024896">Walang piniling collector ng data Pumili ng kahit isang collector ng data.</translation>
@@ -8067,6 +8068,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - Ibinabahagi ang content ng desktop</translation>
 <translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% na ang natapos</translation>
 <translation id="6580203076670148210">Bilis ng pag-scan</translation>
+<translation id="6580676117087365538">Para makuha ang extension na ito sa lahat ng iyong computer, i-verify na ikaw ito</translation>
 <translation id="6581356304040102696">Hindi ma-import ang mga password. Dapat ay wala pang 1 MB ang laki ng file.</translation>
 <translation id="6582080224869403177">I-reset ang iyong <ph name="DEVICE_TYPE" /> para i-upgrade ang iyong seguridad.</translation>
 <translation id="6582274660680936615">Nagba-browse ka bilang isang Bisita</translation>
@@ -9590,6 +9592,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7647403192093989392">Walang kamakailang aktibidad</translation>
 <translation id="7648023614017258011">Vine-verify ng Chrome ang bundle ng pag-install</translation>
 <translation id="7648048654005891115">Estilo ng Keymap</translation>
+<translation id="7648180062672842917">May sensitibo o mapanganib na data ang file na ito. Hahayaan ka ng iyong organisasyon na i-save ito sa cloud storage o i-discard ito</translation>
 <translation id="7649070708921625228">Tulong</translation>
 <translation id="7649954700951153978">Paalalahanan ako sa iOS</translation>
 <translation id="7650141368285545431">Gumamit ng passkey mula sa ibang device</translation>
@@ -10919,6 +10922,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8535005006684281994">URL ng Pag-renew ng Netscape Certificate</translation>
 <translation id="8536810348276651776">Isa-sign out ka sa karamihan ng mga site. Mananatili kang naka-sign in sa iyong Google Account kaya malalapat ang mga setting mo ng Family Link para sa Chrome.</translation>
 <translation id="8536956381488731905">Tunog sa keypress</translation>
+<translation id="8537854269962256103">Nasa pop-out na chat ang iyong interaction sa Gemini. Mag-click sa kahit saan sa panel sa gilid na ito para ilipat ito rito.</translation>
 <translation id="8539727552378197395">Hindi (HttpOnly)</translation>
 <translation id="8539766201049804895">I-upgrade</translation>
 <translation id="8540136935098276800">Maglagay ng URL na tama ang pag-format</translation>
@@ -11166,6 +11170,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8703766890819308134">Magpakita ng mga shortcut ng paghahanap</translation>
 <translation id="8704662571571150811">Mga Domain</translation>
 <translation id="8705331520020532516">Serial Number</translation>
+<translation id="870536819717176711">Kapag pinili mong i-share ang kasalukuyang tab sa Gemini, ipapadala sa Google ang buong content, media, at URL ng tab.</translation>
 <translation id="8705580154597116082">Available ang Wi-Fi sa pamamagitan ng telepono</translation>
 <translation id="8705629851992224300">Hindi mabasa ang iyong security key</translation>
 <translation id="8706111173576263877">Na-scan na ang QR Code.</translation>
