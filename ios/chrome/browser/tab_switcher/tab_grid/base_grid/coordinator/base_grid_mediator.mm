@@ -2026,6 +2026,10 @@ web::WebState* WebStateWithSnapshotID(WebStateList& web_state_list,
   return [_selectedEditingItems containItem:itemID];
 }
 
+- (BOOL)shouldShowSnapshotForItem:(GridItemIdentifier*)itemID {
+  return YES;
+}
+
 - (ActivityLabelData*)activityLabelDataForItem:(GridItemIdentifier*)itemID {
   switch (itemID.type) {
     case GridItemType::kTab:

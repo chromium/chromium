@@ -1904,8 +1904,9 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
     // item.
     if ([cell.itemIdentifier.tabSwitcherItem isEqual:innerItem]) {
       cell.icon = tabSnapshotAndFavicon.favicon;
-      cell.snapshot =
-          innerItem.hidesSnapshot ? nil : tabSnapshotAndFavicon.snapshot;
+      BOOL shouldShowSnapshot =
+          [self.gridProvider shouldShowSnapshotForItem:cell.itemIdentifier];
+      cell.snapshot = shouldShowSnapshot ? tabSnapshotAndFavicon.snapshot : nil;
     }
   };
   [self.snapshotAndfaviconDataSource fetchTabSnapshotAndFavicon:item

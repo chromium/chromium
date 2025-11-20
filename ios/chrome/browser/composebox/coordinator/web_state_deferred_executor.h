@@ -16,6 +16,10 @@
 - (void)webState:(web::WebState*)webState
     executeOnceLoaded:(ProceduralBlock)completion;
 
+// Executes the given `completion` once the web state is realized.
+- (void)webState:(web::WebState*)webState
+    executeOnceRealized:(ProceduralBlock)completion;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_COORDINATOR_WEB_STATE_DEFERRED_EXECUTOR_H_

@@ -5,16 +5,19 @@
 #import "ios/chrome/browser/composebox/coordinator/composebox_tab_picker_mediator.h"
 
 #import "base/strings/string_number_conversions.h"
+#import "ios/chrome/browser/composebox/coordinator/web_state_deferred_executor.h"
 #import "ios/chrome/browser/composebox/ui/composebox_tab_picker_consumer.h"
 #import "ios/chrome/browser/intelligence/persist_tab_context/model/persist_tab_context_browser_agent.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_collection_consumer.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_item_identifier.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_utils.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/selected_grid_items.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_mode_holder.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_switcher_item.h"
+#import "ios/chrome/browser/web/model/page_placeholder_tab_helper.h"
 #import "ios/web/public/web_state.h"
 
 @implementation ComposeboxTabPickerMediator {
@@ -24,6 +27,11 @@
   __weak id<ComposeboxTabPickerConsumer> _tabPickerConsumer;
   /// The delegate for tabs attachment.
   __weak id<ComposeboxTabsAttachmentDelegate> _tabsAttachmentDelegate;
+  /// Stores the unique identifiers of web states that have valid cached APC
+  /// (Annotated Page Content) data.
+  std::set<std::string> _validAPCwebStatesIDs;
+  /// Utility to delay execution of blocks until a web state is loaded.
+  WebStateDeferredExecutor* _webStateDeferredExecutor;
 }
 
 - (instancetype)initWithGridConsumer:(id<TabCollectionConsumer>)gridConsumer
@@ -42,6 +50,8 @@
 
     [_tabPickerConsumer
         setSelectedTabsCount:self.selectedEditingItems.tabsCount];
+
+    _webStateDeferredExecutor = [[WebStateDeferredExecutor alloc] init];
   }
 
   return self;
@@ -66,6 +76,23 @@
 
 #pragma mark - parent class methods
 
+- (BOOL)shouldShowSnapshotForItem:(GridItemIdentifier*)itemID {
+  CHECK(self.modeHolder.mode == TabGridMode::kSelection);
+  if (itemID.type == GridItemType::kTab) {
+    web::WebState* webState = GetWebState(
+        self.webStateList,
+        WebStateSearchCriteria{
+            .identifier = itemID.tabSwitcherItem.identifier,
+            .pinned_state = WebStateSearchCriteria::PinnedState::kNonPinned});
+    if (IsComposeboxTabPickerCachedAPCEnabled()) {
+      return _validAPCwebStatesIDs.contains(
+          base::NumberToString(webState->GetUniqueIdentifier().identifier()));
+    }
+    return webState->IsRealized();
+  }
+  return [super shouldShowSnapshotForItem:itemID];
+}
+
 - (void)configureToolbarsButtons {
   // NO-OP
 }
@@ -78,6 +105,38 @@
 - (void)removeFromSelectionItemID:(GridItemIdentifier*)itemID {
   [super removeFromSelectionItemID:itemID];
   [_tabPickerConsumer setSelectedTabsCount:self.selectedEditingItems.tabsCount];
+}
+
+- (void)userTappedOnItemID:(GridItemIdentifier*)itemID {
+  CHECK(self.modeHolder.mode == TabGridMode::kSelection);
+  if (itemID.type == GridItemType::kTab) {
+    web::WebState* webState = GetWebState(
+        self.webStateList,
+        WebStateSearchCriteria{
+            .identifier = itemID.tabSwitcherItem.identifier,
+            .pinned_state = WebStateSearchCriteria::PinnedState::kNonPinned});
+    if (webState && !webState->IsRealized()) {
+      // If the web state is not realized, force it to realize in order to have
+      // the latest content and updated snapshot.
+      webState->ForceRealized();
+      __weak ComposeboxTabPickerMediator* weakSelf = self;
+      [_webStateDeferredExecutor
+                     webState:webState
+          executeOnceRealized:^{
+            [weakSelf
+                cancelPlaceholderForRealizedWebState:webState->GetWeakPtr()];
+          }];
+      // Defer snapshot update and item reconfiguration until the web state is
+      // fully loaded.
+      [_webStateDeferredExecutor webState:webState
+                        executeOnceLoaded:^{
+                          [weakSelf
+                              updateSnapshotForWebState:webState->GetWeakPtr()
+                                                 itemID:itemID];
+                        }];
+    }
+  }
+  [super userTappedOnItemID:itemID];
 }
 
 #pragma mark - ComposeboxTabPickerMutator
@@ -103,8 +162,6 @@
     for (int i = 0; i < self.webStateList->count(); i++) {
       web::WebState* webState = self.webStateList->GetWebStateAt(i);
       GridItemIdentifier* item = [GridItemIdentifier tabIdentifier:webState];
-      item.tabSwitcherItem.hidesSnapshot =
-          !webState->IsRealized() || webState->IsLoading();
       [items addObject:item];
     }
     completion(items);
@@ -150,15 +207,10 @@
     }
   }
 
+  _validAPCwebStatesIDs = validCachedwebStatesIDs;
   for (int i = 0; i < self.webStateList->count(); ++i) {
     web::WebState* webState = self.webStateList->GetWebStateAt(i);
     GridItemIdentifier* item = [GridItemIdentifier tabIdentifier:webState];
-    if (validCachedwebStatesIDs.contains(base::NumberToString(
-            webState->GetUniqueIdentifier().identifier()))) {
-      item.tabSwitcherItem.hidesSnapshot = NO;
-    } else {
-      item.tabSwitcherItem.hidesSnapshot = YES;
-    }
     [items addObject:item];
   }
 
@@ -186,6 +238,35 @@
   }
 
   [_gridConsumer populateItems:items selectedItemIdentifier:nil];
+}
+
+- (void)cancelPlaceholderForRealizedWebState:
+    (base::WeakPtr<web::WebState>)weakWebState {
+  web::WebState* webState = weakWebState.get();
+  if (!webState) {
+    return;
+  }
+  PagePlaceholderTabHelper::FromWebState(webState)
+      ->CancelPlaceholderForNextNavigation();
+}
+
+// Updates the snapshot for the given web state and reconfigures the grid item.
+- (void)updateSnapshotForWebState:(base::WeakPtr<web::WebState>)weakWebState
+                           itemID:(GridItemIdentifier*)itemID {
+  web::WebState* webState = weakWebState.get();
+  if (!webState) {
+    return;
+  }
+  __weak ComposeboxTabPickerMediator* weakSelf = self;
+  SnapshotTabHelper::FromWebState(webState)->UpdateSnapshotWithCallback(
+      ^(UIImage* image) {
+        [weakSelf reconfigureGridItem:itemID];
+      });
+}
+
+// Reconfigures the grid item to reflect updated state (e.g., new snapshot).
+- (void)reconfigureGridItem:(GridItemIdentifier*)itemID {
+  [_gridConsumer replaceItem:itemID withReplacementItem:itemID];
 }
 
 @end

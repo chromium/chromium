@@ -90,6 +90,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/url_loading/model:url_loading_params_header",
     "//ios/chrome/browser/variations/model/client",
     "//ios/chrome/browser/web/model",
+    "//ios/chrome/browser/web/model:page_placeholder",
     "//ios/chrome/common",
     "//ios/chrome/common:string_conversions",
     "//ios/chrome/common/ui/favicon",
