@@ -1084,7 +1084,7 @@ if (!limit_android_deps) {
     info_path = "../androidx/committed/libs/androidx_mediarouter_mediarouter/androidx_mediarouter_mediarouter.info"
     enable_bytecode_checks = false
     deps = [
-      ":androidx_annotation_annotation_experimental_java",
+      ":androidx_annotation_annotation_java",
       ":androidx_appcompat_appcompat_java",
       ":androidx_appcompat_appcompat_resources_java",
       ":androidx_core_core_java",

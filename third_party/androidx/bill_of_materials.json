@@ -917,22 +917,22 @@
     {
         "name": "room-common",
         "group": "androidx.room",
-        "version": "2.8.3"
+        "version": "2.8.4"
     },
     {
         "name": "room-common-jvm",
         "group": "androidx.room",
-        "version": "2.8.3"
+        "version": "2.8.4"
     },
     {
         "name": "room-runtime",
         "group": "androidx.room",
-        "version": "2.8.3"
+        "version": "2.8.4"
     },
     {
         "name": "room-runtime-android",
         "group": "androidx.room",
-        "version": "2.8.3"
+        "version": "2.8.4"
     },
     {
         "name": "savedstate",
@@ -967,22 +967,22 @@
     {
         "name": "sqlite",
         "group": "androidx.sqlite",
-        "version": "2.6.1"
+        "version": "2.6.2"
     },
     {
         "name": "sqlite-android",
         "group": "androidx.sqlite",
-        "version": "2.6.1"
+        "version": "2.6.2"
     },
     {
         "name": "sqlite-framework",
         "group": "androidx.sqlite",
-        "version": "2.6.1"
+        "version": "2.6.2"
     },
     {
         "name": "sqlite-framework-android",
         "group": "androidx.sqlite",
-        "version": "2.6.1"
+        "version": "2.6.2"
     },
     {
         "name": "startup-runtime",
@@ -1077,17 +1077,17 @@
     {
         "name": "tracing-perfetto",
         "group": "androidx.tracing",
-        "version": "1.0.1-SNAPSHOT"
+        "version": "1.0.1"
     },
     {
         "name": "tracing-perfetto-binary",
         "group": "androidx.tracing",
-        "version": "1.0.1-SNAPSHOT"
+        "version": "1.0.1"
     },
     {
         "name": "tracing-perfetto-handshake",
         "group": "androidx.tracing",
-        "version": "1.0.1-SNAPSHOT"
+        "version": "1.0.1"
     },
     {
         "name": "transition",
