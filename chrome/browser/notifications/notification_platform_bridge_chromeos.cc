@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/callback_list.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/chrome_ash_message_center_client.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/system/holding_space/holding_space_tray_child_bubble.h"
+#include "base/functional/callback_helpers.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {

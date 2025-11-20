@@ -6,6 +6,7 @@
 
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/no_destructor.h"
 
 namespace content {
 

@@ -7,6 +7,7 @@
 #include "base/i18n/time_formatting.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
+#include "base/time/time.h"
 #include "content/public/browser/page.h"
 
 namespace enterprise_data_protection {

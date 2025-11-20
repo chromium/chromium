@@ -7,6 +7,7 @@
 #include <map>
 #include <vector>
 
+#include "base/no_destructor.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"

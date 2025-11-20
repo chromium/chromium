@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/functional/callback_helpers.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"

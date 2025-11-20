@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "base/callback_list.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/compositor_metrics_tracker.h"
