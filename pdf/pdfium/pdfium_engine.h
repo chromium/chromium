@@ -603,9 +603,10 @@ class PDFiumEngine : public DocumentLoader::Client,
                          AddSearchResultCallback add_result_callback);
 
   // Sets whether caret browsing is enabled or not. Initializes `caret_` if it
-  // is the first time enabling caret browsing mode. If `enabled` is true, then
-  // moves the caret to the start of the first visible text run. If there is no
-  // visible text, the caret will not move. Virtual to support testing.
+  // is the first time enabling caret browsing mode. If the caret was disabled
+  // and is now enabled, then moves the caret to the start of the first visible
+  // text run. If there is no visible text, the caret will not move. Virtual to
+  // support testing.
   virtual void SetCaretBrowsingEnabled(bool enabled);
 
  private:

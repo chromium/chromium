@@ -1219,33 +1219,31 @@ void PDFiumEngine::SetCaretBrowsingEnabled(bool enabled) {
   CHECK(features::kPdfInk2TextHighlighting.Get());
   CHECK(!client_->IsPrintPreview());
 
-  if (pages_.empty()) {
-    return;
-  }
-
-  if (!enabled) {
-    if (caret_) {
-      caret_->SetEnabled(false);
-    }
+  if (pages_.empty() || (caret_ && caret_->enabled() == enabled)) {
     return;
   }
 
   if (!caret_) {
+    if (!enabled) {
+      return;
+    }
     caret_ = std::make_unique<PdfCaret>(this);
     caret_->SetVisible(has_focus_);
   }
 
   // TODO(crbug.com/427778119): Set caret blink interval.
-  caret_->SetEnabled(true);
+  caret_->SetEnabled(enabled);
 
-  // Move the caret to the first visible text run. If there is no visible text,
-  // leave the caret at its original position.
-  for (auto page_index : visible_pages_) {
-    std::optional<AccessibilityTextRunInfo> text_run =
-        GetFirstVisibleTextRun(page_index);
-    if (text_run.has_value()) {
-      caret_->SetCharAndDraw({page_index, text_run->start_index});
-      break;
+  if (enabled) {
+    // Move the caret to the first visible text run. If there is no visible
+    // text, leave the caret at its original position.
+    for (auto page_index : visible_pages_) {
+      std::optional<AccessibilityTextRunInfo> text_run =
+          GetFirstVisibleTextRun(page_index);
+      if (text_run.has_value()) {
+        caret_->SetCharAndDraw({page_index, text_run->start_index});
+        break;
+      }
     }
   }
 }

@@ -2995,6 +2995,7 @@ class PDFiumEngineCaretTest : public PDFiumDrawSelectionTestBase {
  public:
   static constexpr gfx::Size kAnnotationFormFieldsVisiblePageSize{816, 1056};
   static constexpr gfx::Size kHelloWorldExpectedVisiblePageSize{266, 266};
+  static constexpr gfx::PointF kHelloWorldGoodbyeWorldCharB{85.0f, 118.0f};
   PDFiumEngineCaretTest() = default;
   PDFiumEngineCaretTest(const PDFiumEngineCaretTest&) = delete;
   PDFiumEngineCaretTest& operator=(const PDFiumEngineCaretTest&) = delete;
@@ -3083,6 +3084,27 @@ TEST_P(PDFiumEngineCaretTest, SetCaretBrowsingEnabled) {
 
   DrawCaretAndCompareWithPlatformExpectations(*engine, /*page_index=*/0,
                                               "hello_world_caret.png");
+}
+
+TEST_P(PDFiumEngineCaretTest, SetCaretBrowsingEnabledNoOp) {
+  PDFiumEngine* engine =
+      CreateEngineWithCaret(FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  DrawCaretAndCompareWithPlatformExpectations(*engine, /*page_index=*/0,
+                                              "hello_world_caret.png");
+
+  EXPECT_TRUE(engine->HandleInputEvent(
+      CreateLeftClickWebMouseEventAtPosition(kHelloWorldGoodbyeWorldCharB)));
+
+  DrawCaretAndCompareWithPlatformExpectations(*engine, /*page_index=*/0,
+                                              "hello_world_caret_1.png");
+
+  // Already enabled. Caret should not move.
+  engine->SetCaretBrowsingEnabled(true);
+
+  DrawCaretAndCompareWithPlatformExpectations(*engine, /*page_index=*/0,
+                                              "hello_world_caret_1.png");
 }
 
 TEST_P(PDFiumEngineCaretTest,
@@ -3184,7 +3206,7 @@ TEST_P(PDFiumEngineCaretTest, TextClick) {
 
   // The "b" in "Goodbye, world!".
   EXPECT_TRUE(engine->HandleInputEvent(
-      CreateLeftClickWebMouseEventAtPosition(gfx::PointF(85, 118))));
+      CreateLeftClickWebMouseEventAtPosition(kHelloWorldGoodbyeWorldCharB)));
 
   DrawCaretAndCompareWithPlatformExpectations(*engine, /*page_index=*/0,
                                               "hello_world_caret_1.png");
