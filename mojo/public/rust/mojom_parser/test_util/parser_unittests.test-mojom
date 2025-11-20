@@ -106,3 +106,46 @@ struct SomeEnums {
   uint64 n1;
   TestEnum2 e2;
 };
+
+union BaseUnion {
+  int8 n1;
+  uint64 u1;
+  TestEnum e1;
+  bool b1;
+  bool b2;
+  Empty em1;
+  FourInts f1;
+};
+
+union NestedUnion {
+  int32 n;
+  BaseUnion u; // Represented as a pointer
+};
+
+// Packing: n1 u n2 [pad 32]
+struct WithNestedUnion {
+  int64 n1;
+  NestedUnion u; // Represented as itself
+  int32 n2;
+};
+
+union NestederUnion {
+  bool b;
+  int8 n;
+  NestedUnion u;
+  WithNestedUnion w;
+};
+
+// This is extra complicated to make sure nested union pointers work from
+// various positions in the struct
+// Packing: u1 i1 i3 [pad 24] u2 i2 u3 u4
+struct WithManyUnions {
+  NestedUnion u1;
+  int8 i1;
+  NestederUnion u2;
+  int64 i2;
+  BaseUnion u3;
+  NestederUnion u4;
+  int32 i3;
+  int32 i4;
+};

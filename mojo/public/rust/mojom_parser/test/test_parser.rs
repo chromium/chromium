@@ -336,3 +336,166 @@ fn test_enums() -> anyhow::Result<()> {
 
     Ok(())
 }
+
+#[gtest(MojomParser, TestUnionParsing)]
+fn test_unions() -> anyhow::Result<()> {
+    // BaseUnion
+    validate_parsing(BaseUnion::n1(10), "[u4]16 [u4]0 [u8]10")?;
+    validate_parsing(BaseUnion::u1(987654321), "[u4]16 [u4]1 [u8]987654321")?;
+    validate_parsing(BaseUnion::e1(TestEnum::Three), "[u4]16 [u4]2 [u8]3")?;
+    validate_parsing(BaseUnion::b1(false), "[u4]16 [u4]3 [u8]0")?;
+    validate_parsing(BaseUnion::b2(true), "[u4]16 [u4]4 [u8]1")?;
+    validate_parsing(
+        BaseUnion::em1(Empty {}),
+        "[u4]16 [u4]5 [dist8]em1_ptr [anchr]em1_ptr [u4]8 [u4]0",
+    )?;
+    validate_parsing(
+        BaseUnion::f1(FourInts { a: 5, b: 6, c: 7, d: 8 }),
+        concat!(
+            "[u4]16 [u4]6 [dist8]f1_ptr ",                              // BaseUnion
+            "[anchr]f1_ptr [u4]24 [u4]0 [s1]5 [u1]0 [s2]6 [s4]7 [s8]8", // FourInts
+        ),
+    )?;
+
+    validate_parsing_failure::<BaseUnion>("[u4]16 [u4]99 [u8]0")?;
+    validate_parsing_failure::<BaseUnion>("[u4]16 [u4]6 [u8]0")?;
+
+    // NestedUnion
+    validate_parsing(NestedUnion::n(99), "[u4]16 [u4]0 [u8]99")?;
+    validate_parsing(
+        NestedUnion::u(BaseUnion::e1(TestEnum::Three)),
+        "[u4]16 [u4]1 [dist8]u_ptr [anchr]u_ptr [u4]16 [u4]2 [u8]3",
+    )?;
+    validate_parsing(
+        NestedUnion::u(BaseUnion::f1(FourInts { a: 1, b: 2, c: 3, d: 4 })),
+        concat!(
+            "[u4]16 [u4]1 [dist8]u_ptr ",               // NestedUnion
+            "[anchr]u_ptr [u4]16 [u4]6 [dist8]f1_ptr ", // BaseUnion
+            "[anchr]f1_ptr [u4]24 [u4]0 [s1]1 [u1]0 [s2]2 [s4]3 [s8]4", // FourInts
+        ),
+    )?;
+
+    // Should be encoded as a pointer
+    validate_parsing_failure::<NestedUnion>("[u4]16 [u4]1 [u4]16 [u4]2 [u8]3")?;
+
+    // WithNestedUnion
+    validate_parsing(
+        WithNestedUnion { n1: 17, u: NestedUnion::n(18), n2: 19 },
+        concat!(
+            "[u4]40 [u4]0 [s8]17 ", // WithNestedUnion Header + n1
+            "[u4]16 [u4]0 [u8]18 ", // NestedUnion
+            "[u4]19 [u4]0",         // n2
+        ),
+    )?;
+    validate_parsing(
+        WithNestedUnion { n1: 99, u: NestedUnion::u(BaseUnion::b1(true)), n2: 100 },
+        concat!(
+            "[u4]40 [u4]0 [s8]99 ",            // WithNestedUnion Header + n1
+            "[u4]16 [u4]1 [dist8]u_ptr ",      // NestedUnion
+            "[u4]100 [u4]0 ",                  // n2
+            "[anchr]u_ptr [u4]16 [u4]3 [u8]1", // BaseUnion
+        ),
+    )?;
+
+    // NestederUnion
+    validate_parsing(NestederUnion::b(false), "[u4]16 [u4]0 [u8]0")?;
+    validate_parsing(NestederUnion::n(-1), "[u4]16 [u4]1 [s1]-1 [u1]0 [u2]0 [u4]0")?;
+    validate_parsing(
+        NestederUnion::u(NestedUnion::n(123)),
+        "[u4]16 [u4]2 [dist8]u_ptr [anchr]u_ptr [u4]16 [u4]0 [u8]123",
+    )?;
+    validate_parsing(
+        NestederUnion::u(NestedUnion::u(BaseUnion::b2(true))),
+        concat!(
+            "[u4]16 [u4]2 [dist8]u_ptr ",               // NestederUnion
+            "[anchr]u_ptr [u4]16 [u4]1 [dist8]u_ptr2 ", // NestedUnion
+            "[anchr]u_ptr2 [u4]16 [u4]4 [u8]1",         // BaseUnion
+        ),
+    )?;
+    validate_parsing(
+        NestederUnion::w(WithNestedUnion { n1: 1000, u: NestedUnion::n(-50), n2: 200 }),
+        concat!(
+            "[u4]16 [u4]3 [dist8]w_ptr ",          // NestederUnion
+            "[anchr]w_ptr [u4]40 [u4]0 [s8]1000 ", // WithNestedUnion Header + n1
+            "[u4]16 [u4]0 [s4]-50 [u4]0 ",         // NestedUnion
+            "[u4]200 [u4]0",                       // n2
+        ),
+    )?;
+    validate_parsing(
+        NestederUnion::w(WithNestedUnion {
+            n1: 999,
+            u: NestedUnion::u(BaseUnion::f1(FourInts { a: 101, b: -102, c: 103, d: -104 })),
+            n2: -211,
+        }),
+        concat!(
+            "[u4]16 [u4]3 [dist8]w_ptr ",               // NestederUnion
+            "[anchr]w_ptr [u4]40 [u4]0 [s8]999 ",       // WithNestedUnion Header + n1
+            "[u4]16 [u4]1 [dist8]u_ptr ",               // NestedUnion
+            "[s4]-211 [u4]0 ",                          // n2
+            "[anchr]u_ptr [u4]16 [u4]6 [dist8]f1_ptr ", // BaseUnion
+            "[anchr]f1_ptr [u4]24 [u4]0 [s1]101 [u1]0 [s2]-102 [s4]103 [s8]-104"  // FourInts
+        ),
+    )?;
+
+    // WithManyUnions
+    validate_parsing(
+        WithManyUnions {
+            u1: NestedUnion::n(50),
+            i1: 11,
+            u2: NestederUnion::b(false),
+            i2: 22,
+            u3: BaseUnion::n1(55),
+            u4: NestederUnion::n(12),
+            i3: 33,
+            i4: 44,
+        },
+        concat!(
+            "[u4]96 [u4]0 ",              // WithManyUnions Header
+            "[u4]16 [u4]0 [u8]50 ",       // NestedUnion::n(50)
+            "[s1]11 [u1]0 [u2]0 [s4]33 ", // i1, i3
+            "[u4]16 [u4]0 [u8]0 ",        // NestederUnion::b(false)
+            "[s8]22 ",                    // i2
+            "[u4]16 [u4]0 [u8]55 ",       // BaseUnion::n1(55)
+            "[u4]16 [u4]1 [u8]12 ",       // NestederUnion::n(12)
+            "[s4]44 [u4]0",               // i4
+        ),
+    )?;
+
+    // ALL the nesting!
+    validate_parsing(
+        WithManyUnions {
+            u1: NestedUnion::u(BaseUnion::b1(true)),
+            i1: -1,
+            u2: NestederUnion::u(NestedUnion::u(BaseUnion::e1(TestEnum::Seven))),
+            i2: -2,
+            u3: BaseUnion::b2(false),
+            u4: NestederUnion::w(WithNestedUnion {
+                n1: 2000,
+                u: NestedUnion::u(BaseUnion::f1(FourInts { a: 12, b: 13, c: 14, d: 15 })),
+                n2: 3000,
+            }),
+            i3: -3,
+            i4: -4,
+        },
+        concat!(
+            "[u4]96 [u4]0 ",                                    // WithManyUnions Header
+            "[u4]16 [u4]1 [dist8]u1_ptr ",                      // NestedUnion::u
+            "[s1]-1 [u1]0 [u2]0 [s4]-3 ",                       // i1, i3
+            "[u4]16 [u4]2 [dist8]u2_ptr ",                      // NestederUnion::u
+            "[s8]-2 ",                                          // i2
+            "[u4]16 [u4]4 [u8]0 ",                              // BaseUnion::b2(false)
+            "[u4]16 [u4]3 [dist8]u4_ptr ",                      // NestederUnion::w
+            "[s4]-4 [u4]0 ",                                    // i4
+            "[anchr]u1_ptr [u4]16 [u4]3 [u8]1 ",                // BaseUnion::b1(true) - u1.u
+            "[anchr]u2_ptr [u4]16 [u4]1 [dist8]u2_u_ptr ",      // NestedUnion::u - u2.u
+            "[anchr]u2_u_ptr [u4]16 [u4]2 [u8]7 ",              // BaseUnion::e1(...) - u2.u.e1
+            "[anchr]u4_ptr [u4]40 [u4]0 [s8]2000 ",             // WithNestedUnion Header + n1
+            "[u4]16 [u4]1 [dist8]u4_w_u_ptr ",                  // NestedUnion::u - u4.w.u
+            "[s4]3000 [u4]0 ",                                  // WithNestedUnion.n2
+            "[anchr]u4_w_u_ptr [u4]16 [u4]6 [dist8]u4_f1_ptr ", // BaseUnion::f1 - u4.w.u.u
+            "[anchr]u4_f1_ptr [u4]24 [u4]0 [s1]12 [u1]0 [s2]13 [s4]14 [s8]15"  // FourInts
+        ),
+    )?;
+
+    Ok(())
+}
