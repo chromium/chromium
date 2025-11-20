@@ -61,6 +61,9 @@ class HistoryServiceObserver {
   // `changed_urls` lists the information for each of the URLs affected. The
   // rows will have the IDs that are currently in effect in the main history
   // database.
+  //
+  // Callers may receive URLRows that contain 404 visits and thus have
+  // visit counts or times that take 404 errors into account.
   virtual void OnURLsModified(HistoryService* history_service,
                               const URLRows& changed_urls) {}
 

@@ -43,6 +43,9 @@ class HistoryBackendObserver {
   // database. `is_from_expiration` is true if the modification is caused by
   // automatic history expiration (the visit count got reduced by expiring some
   // of the visits); it is false if the modification is caused by user action.
+  //
+  // Callers may receive URLRows that contain 404 visits and thus have visit
+  // counts or times that take 404 errors into account.
   virtual void OnURLsModified(HistoryBackend* history_backend,
                               const URLRows& changed_urls,
                               bool is_from_expiration) = 0;
