@@ -6025,7 +6025,7 @@
     {
       name: "WebXRVisibilityMask",
       depends_on: ["WebXR"],
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "WidthAndHeightAsPresentationAttributesOnNestedSvg",
