@@ -1173,4 +1173,11 @@ BASE_DECLARE_FEATURE(kComposeboxIOS);
 // Returns true if the Composebox feature is enabled.
 bool IsComposeboxIOSEnabled();
 
+// The feature to enable or disable the group color on the tab group and tab
+// grid surfaces.
+BASE_DECLARE_FEATURE(kTabGroupColorOnSurface);
+
+// Returns true if the TabGroupColorOnSurface feature is enabled.
+bool IsTabGroupColorOnSurfaceEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

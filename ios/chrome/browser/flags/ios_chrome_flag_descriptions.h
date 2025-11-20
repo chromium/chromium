@@ -954,6 +954,9 @@ extern const char kTabGridEmptyThumbnailDescription[];
 extern const char kTabGridNewTransitionsName[];
 extern const char kTabGridNewTransitionsDescription[];
 
+extern const char kTabGroupColorOnSurfaceName[];
+extern const char kTabGroupColorOnSurfaceDescription[];
+
 extern const char kTabGroupInOverflowMenuName[];
 extern const char kTabGroupInOverflowMenuDescription[];
 

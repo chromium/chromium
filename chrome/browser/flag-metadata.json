@@ -9778,6 +9778,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "tab-group-color-on-surface",
+    "owners": [ "bling-meridian@google.com", "bling-flags@google.com" ],
+    "expiry_milestone": 147
+  },
+  {
     "name": "tab-group-entry-points-android",
     "owners": [ "mfiaz@google.com", "clank-tab-dev@google.com" ],
     "expiry_milestone": 143

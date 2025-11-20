@@ -2866,6 +2866,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kMostVisitedTilesCustomizationName,
      flag_descriptions::kMostVisitedTilesCustomizationDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kMostVisitedTilesCustomizationIOS)},
+    {"tab-group-color-on-surface",
+     flag_descriptions::kTabGroupColorOnSurfaceName,
+     flag_descriptions::kTabGroupColorOnSurfaceDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kTabGroupColorOnSurface)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

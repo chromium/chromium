@@ -1601,6 +1601,10 @@ const char kTabGridNewTransitionsDescription[] =
     "When enabled, the new Tab Grid to Browser (and vice versa) transitions"
     "are used.";
 
+const char kTabGroupColorOnSurfaceName[] = "Tab group color on surfaces";
+const char kTabGroupColorOnSurfaceDescription[] =
+    "Adds the tab group color to the tab group and tab grid surfaces.";
+
 const char kTabGroupInOverflowMenuName[] =
     "Enable the Tab Group button in the overflow menu";
 const char kTabGroupInOverflowMenuDescription[] =

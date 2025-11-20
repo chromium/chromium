@@ -1247,3 +1247,9 @@ bool IsComposeboxIOSEnabled() {
   }
   return base::FeatureList::IsEnabled(kComposeboxIOS);
 }
+
+BASE_FEATURE(kTabGroupColorOnSurface, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsTabGroupColorOnSurfaceEnabled() {
+  return base::FeatureList::IsEnabled(kTabGroupColorOnSurface);
+}
