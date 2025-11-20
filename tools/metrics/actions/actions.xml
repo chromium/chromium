@@ -30405,10 +30405,22 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileToolbarPinnedOnlyTabStrip">
+  <obsolete>
+    Deprecated in favor of MobileToolbarPinnedOnlyTabStripSkipInit below.
+  </obsolete>
   <owner>zheliooo@google.com</owner>
   <description>
     User entered a state where pinned tabs occupy the entire visible area of
     tablet tab strip; record at most once per session. Android only.
+  </description>
+</action>
+
+<action name="MobileToolbarPinnedOnlyTabStripSkipInit">
+  <owner>zheliooo@google.com</owner>
+  <description>
+    User entered a state where pinned tabs occupy the entire visible area of
+    tablet tab strip; record at most once per session. Skips recording if tab
+    strip has not yet finished initialization. Android only.
   </description>
 </action>
 

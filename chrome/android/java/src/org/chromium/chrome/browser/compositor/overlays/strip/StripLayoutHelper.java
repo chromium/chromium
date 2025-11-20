@@ -1054,7 +1054,10 @@ public class StripLayoutHelper
     }
 
     private boolean doPinnedTabsOccupyEntireVisibleArea() {
-        return getAvailableTabWidthForResizing() < mCachedTabWidthSupplier.get();
+        // Return false if tab strip is still initializing and `mWidth` is 0.
+        if (mWidth == 0) return false;
+        return getStripWidthForResizing() - getTotalPinnedTabsWidth()
+                < mCachedTabWidthSupplier.get();
     }
 
     /**
@@ -1542,7 +1545,7 @@ public class StripLayoutHelper
                 && !mIsPinnedOnlyStripRecorded
                 && doPinnedTabsOccupyEntireVisibleArea()) {
             mIsPinnedOnlyStripRecorded = true;
-            RecordUserAction.record("MobileToolbarPinnedOnlyTabStrip");
+            RecordUserAction.record("MobileToolbarPinnedOnlyTabStripSkipInit");
         }
     }
 
