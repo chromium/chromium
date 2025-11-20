@@ -141,7 +141,7 @@ class CORE_EXPORT ScrollbarTheme {
   // scroll position.
   virtual int ThumbPosition(const Scrollbar&, float scroll_position) const;
   // The length of the thumb along the axis of the scrollbar.
-  virtual int ThumbLength(const Scrollbar&) const;
+  int ThumbLength(const Scrollbar&) const;
   // The position of the track relative to the scrollbar.
   virtual int TrackPosition(const Scrollbar&) const;
   // The length of the track along the axis of the scrollbar.

@@ -108,20 +108,6 @@ base::TimeDelta ScrollbarThemeOverlay::OverlayScrollbarFadeOutDuration() const {
   return style.fade_out_duration;
 }
 
-int ScrollbarThemeOverlay::ThumbLength(const Scrollbar& scrollbar) const {
-  int track_len = TrackLength(scrollbar);
-
-  if (!scrollbar.TotalSize())
-    return track_len;
-
-  float proportion =
-      static_cast<float>(scrollbar.VisibleSize()) / scrollbar.TotalSize();
-  int length = round(proportion * track_len);
-  int min_len = std::min(MinimumThumbLength(scrollbar), track_len);
-  length = ClampTo(length, min_len, track_len);
-  return length;
-}
-
 int ScrollbarThemeOverlay::ThumbThickness(
     float scale_from_dip,
     EScrollbarWidth scrollbar_width) const {
