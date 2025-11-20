@@ -214,6 +214,7 @@ def apt_update(options):
 # Packages needed for development
 def dev_list():
   packages = [
+      "autoconf",
       "binutils",
       "bison",
       "bzip2",
@@ -533,7 +534,6 @@ def backwards_compatible_list(options):
 
   packages = [
       "7za",
-      "autoconf",
       "fonts-indic",
       "fonts-ipafont",
       "fonts-stix",
