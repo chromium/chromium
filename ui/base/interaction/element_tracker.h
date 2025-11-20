@@ -214,9 +214,23 @@ class COMPONENT_EXPORT(UI_BASE_INTERACTION) ElementTracker
                                       Callback callback);
 
   // Adds a callback that will be called whenever an event of `event_type` is
-  // generated within any context.
+  // generated within any context by any element.
   Subscription AddCustomEventInAnyContextCallback(
       CustomElementEventType event_type,
+      Callback callback);
+
+  // Adds a callback that will be called whenever an event of `event_type` is
+  // generated within `context` by an element with identifier `id`.
+  Subscription AddCustomEventCallback(CustomElementEventType event_type,
+                                      ElementIdentifier id,
+                                      ElementContext context,
+                                      Callback callback);
+
+  // Adds a callback that will be called whenever an event of `event_type` is
+  // generated within any context by an element with identifier `id`.
+  Subscription AddCustomEventInAnyContextCallback(
+      CustomElementEventType event_type,
+      ElementIdentifier id,
       Callback callback);
 
   // Returns all known contexts.

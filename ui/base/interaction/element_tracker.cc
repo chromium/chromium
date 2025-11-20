@@ -21,6 +21,22 @@
 
 namespace ui {
 
+namespace {
+
+ElementTracker::Callback FilterCallback(ElementTracker::Callback callback,
+                                        ElementIdentifier id) {
+  return base::BindRepeating(
+      [](const ElementTracker::Callback& callback, ElementIdentifier id,
+         TrackedElement* el) {
+        if (el->identifier() == id) {
+          callback.Run(el);
+        }
+      },
+      std::move(callback), id);
+}
+
+}  // namespace
+
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ElementTracker, kTemporaryIdentifier);
 
 class ElementTracker::ElementData {
@@ -380,6 +396,32 @@ ElementTracker::Subscription ElementTracker::AddCustomEventInAnyContextCallback(
   // can store both in the same lookup table.
   return GetOrAddElementData(event_type, ElementContext())
       ->AddCustomEventCallback(callback);
+}
+
+ElementTracker::Subscription ElementTracker::AddCustomEventCallback(
+    CustomElementEventType event_type,
+    ElementIdentifier id,
+    ElementContext context,
+    Callback callback) {
+  DCHECK(event_type);
+  DCHECK(context);
+  // Because custom event callbacks are indexed by event type (and because we
+  // use the same underlying type for both element ids and custom events), we
+  // can store both in the same lookup table.
+  return GetOrAddElementData(event_type, context)
+      ->AddCustomEventCallback(FilterCallback(std::move(callback), id));
+}
+
+ElementTracker::Subscription ElementTracker::AddCustomEventInAnyContextCallback(
+    CustomElementEventType event_type,
+    ElementIdentifier id,
+    Callback callback) {
+  DCHECK(event_type);
+  // Because custom event callbacks are indexed by event type (and because we
+  // use the same underlying type for both element ids and custom events), we
+  // can store both in the same lookup table.
+  return GetOrAddElementData(event_type, ElementContext())
+      ->AddCustomEventCallback(FilterCallback(std::move(callback), id));
 }
 
 ElementTracker::ElementTracker()
