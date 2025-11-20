@@ -88,4 +88,14 @@ void unexportable_keys::UnexportableKeyServiceProxyImpl::FromWrappedSigningKey(
       base::BindOnce(PopulateNewKeyData, std::ref(*unexportable_key_service_))
           .Then(std::move(callback)));
 }
+
+void unexportable_keys::UnexportableKeyServiceProxyImpl::Sign(
+    const UnexportableKeyId& key_id,
+    const std::vector<uint8_t>& data,
+    BackgroundTaskPriority priority,
+    SignCallback callback) {
+  unexportable_key_service_->SignSlowlyAsync(key_id, data, priority,
+                                             std::move(callback));
+}
+
 }  // namespace unexportable_keys

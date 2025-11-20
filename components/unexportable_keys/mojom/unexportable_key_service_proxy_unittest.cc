@@ -38,6 +38,7 @@ namespace unexportable_keys {
 using ::base::test::ErrorIs;
 using ::base::test::RunOnceCallback;
 using ::base::test::TestFuture;
+using ::base::test::ValueIs;
 using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::Eq;
@@ -418,5 +419,58 @@ TEST(UnexportableKeyServiceProxyTest, TooLongWrappedSigningKey) {
   EXPECT_TRUE(bad_message_observer.got_bad_message())
       << "Expected mojo::ReportBadMessage to be called for a too-long wrapped "
          "key.";
+}
+
+TEST(UnexportableKeyServiceProxyTest, SignSuccess) {
+  base::test::TaskEnvironment task_environment;
+  mojo::Remote<mojom::UnexportableKeyService> uks_remote;
+  mojo::PendingReceiver<mojom::UnexportableKeyService> receiver =
+      uks_remote.BindNewPipeAndPassReceiver();
+
+  MockUnexportableKeyService mock_uks;
+  UnexportableKeyServiceProxyImpl proxy_impl(&mock_uks, std::move(receiver));
+  const base::UnguessableToken test_token = base::UnguessableToken::Create();
+  const UnexportableKeyId key_id(test_token);
+  const std::vector<uint8_t> test_data = {0x01, 0x02, 0x03};
+  const std::vector<uint8_t> expected_signature = {0xAA, 0xBB, 0xCC, 0xDD};
+  const BackgroundTaskPriority test_priority =
+      BackgroundTaskPriority::kUserVisible;
+
+  EXPECT_CALL(mock_uks,
+              SignSlowlyAsync(Eq(key_id), Eq(test_data), test_priority, _))
+      .WillOnce(RunOnceCallback<3>(base::ok(expected_signature)));
+
+  TestFuture<base::expected<std::vector<uint8_t>, ServiceError>> future;
+  uks_remote->Sign(key_id, test_data, test_priority, future.GetCallback());
+
+  const auto& result = future.Get();
+  EXPECT_THAT(result, ValueIs(expected_signature));
+}
+
+TEST(UnexportableKeyServiceProxyTest, SignError) {
+  base::test::TaskEnvironment task_environment;
+  mojo::Remote<mojom::UnexportableKeyService> uks_remote;
+  mojo::PendingReceiver<mojom::UnexportableKeyService> receiver =
+      uks_remote.BindNewPipeAndPassReceiver();
+
+  MockUnexportableKeyService mock_uks;
+  UnexportableKeyServiceProxyImpl proxy_impl(&mock_uks, std::move(receiver));
+
+  const base::UnguessableToken test_token = base::UnguessableToken::Create();
+  const UnexportableKeyId key_id(test_token);
+  const std::vector<uint8_t> test_data = {0xFF, 0xEE};
+  const BackgroundTaskPriority test_priority =
+      BackgroundTaskPriority::kBestEffort;
+  const ServiceError expected_error = ServiceError::kKeyNotFound;
+
+  EXPECT_CALL(mock_uks,
+              SignSlowlyAsync(Eq(key_id), Eq(test_data), test_priority, _))
+      .WillOnce(RunOnceCallback<3>(base::unexpected(expected_error)));
+
+  TestFuture<base::expected<std::vector<uint8_t>, ServiceError>> future;
+  uks_remote->Sign(key_id, test_data, test_priority, future.GetCallback());
+
+  const auto& result = future.Get();
+  EXPECT_THAT(result, ErrorIs(expected_error));
 }
 }  // namespace unexportable_keys

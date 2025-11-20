@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <limits>
+#include <vector>
 
 #include "components/unexportable_keys/mojom/unexportable_key_service.mojom.h"
 #include "components/unexportable_keys/unexportable_key_service_impl.h"
@@ -53,6 +54,11 @@ class UnexportableKeyServiceProxyImpl : public mojom::UnexportableKeyService {
   void FromWrappedSigningKey(const std::vector<uint8_t>& wrapped_key,
                              BackgroundTaskPriority priority,
                              FromWrappedSigningKeyCallback callback) override;
+
+  void Sign(const UnexportableKeyId& token,
+            const std::vector<uint8_t>& data,
+            BackgroundTaskPriority priority,
+            SignCallback callback) override;
 
  private:
   mojo::Receiver<mojom::UnexportableKeyService> receiver_;

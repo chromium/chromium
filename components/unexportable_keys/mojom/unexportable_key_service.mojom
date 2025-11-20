@@ -80,4 +80,12 @@ interface UnexportableKeyService {
   FromWrappedSigningKey(
       array<uint8> wrapped_key, BackgroundTaskPriority priority)
       => result<NewKeyData, ServiceError>;
+
+  // Signs the data using the key identified by key_id, at the requested
+  // priority. Retries up to max_retries times before returning an error. In
+  // success the serialized signature will be returned. If there was a
+  // failure a ServiceError will be returned instead.
+  Sign(UnexportableKeyId key_id,
+       array<uint8> data,
+       BackgroundTaskPriority priority) => result<array<uint8>, ServiceError>;
 };
