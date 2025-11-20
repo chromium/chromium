@@ -31,9 +31,10 @@ FocusedTabData GlicDelegatingSharingManagerBase::GetFocusedTabData() {
 }
 
 bool GlicDelegatingSharingManagerBase::PinTabs(
-    base::span<const tabs::TabHandle> tab_handles) {
+    base::span<const tabs::TabHandle> tab_handles,
+    GlicPinTrigger trigger) {
   return sharing_manager_delegate_
-             ? sharing_manager_delegate_->PinTabs(tab_handles)
+             ? sharing_manager_delegate_->PinTabs(tab_handles, trigger)
              : false;
 }
 

@@ -172,21 +172,20 @@ class GlicPinnedTabManager::PinnedTabObserver
 
 GlicPinnedTabManager::PinnedTabEntry::PinnedTabEntry(
     tabs::TabHandle tab_handle,
-    std::unique_ptr<PinnedTabObserver> tab_observer)
-    : tab_handle(tab_handle), tab_observer(std::move(tab_observer)) {}
+    std::unique_ptr<PinnedTabObserver> tab_observer,
+    GlicPinnedTabUsage usage)
+    : tab_handle(tab_handle),
+      tab_observer(std::move(tab_observer)),
+      usage(usage) {}
 
 GlicPinnedTabManager::PinnedTabEntry::~PinnedTabEntry() = default;
 
-GlicPinnedTabManager::PinnedTabEntry::PinnedTabEntry(PinnedTabEntry&& other) {
-  *this = std::move(other);
-}
+GlicPinnedTabManager::PinnedTabEntry::PinnedTabEntry(PinnedTabEntry&& other) =
+    default;
 
 GlicPinnedTabManager::PinnedTabEntry&
-GlicPinnedTabManager::PinnedTabEntry::operator=(PinnedTabEntry&& other) {
-  tab_handle = std::move(other.tab_handle);
-  tab_observer = std::move(other.tab_observer);
-  return *this;
-}
+GlicPinnedTabManager::PinnedTabEntry::operator=(PinnedTabEntry&& other) =
+    default;
 
 // A helper class to throttle updates using exponential backoff. It coalesces
 // multiple requests into a single callback execution. The delay increases
@@ -267,7 +266,10 @@ GlicPinnedTabManager::AddTabPinningStatusChangedCallback(
 }
 
 bool GlicPinnedTabManager::PinTabs(
-    base::span<const tabs::TabHandle> tab_handles) {
+    base::span<const tabs::TabHandle> tab_handles,
+    GlicPinTrigger trigger) {
+  base::TimeTicks pin_timestamp = base::TimeTicks::Now();
+
   bool pinning_fully_succeeded = true;
   for (const auto tab_handle : tab_handles) {
     if (pinned_tabs_.size() == static_cast<size_t>(max_pinned_tabs_)) {
@@ -296,8 +298,9 @@ bool GlicPinnedTabManager::PinTabs(
       tab->GetContents()->GetController().LoadIfNecessary();
     }
 
-    pinned_tabs_.emplace_back(tab_handle, std::make_unique<PinnedTabObserver>(
-                                              this, tab_handle.Get()));
+    pinned_tabs_.emplace_back(
+        tab_handle, std::make_unique<PinnedTabObserver>(this, tab_handle.Get()),
+        GlicPinnedTabUsage(trigger, pin_timestamp));
     pinning_status_changed_callback_list_.Notify(tab_handle.Get(), true);
     metrics_->OnTabPinnedForSharing(
         GlicTabPinnedForSharingResult::kPinTabForSharingSucceeded);

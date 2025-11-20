@@ -56,7 +56,8 @@ class GlicPinnedTabManager : public TabStripModelObserver {
   // tab handles correspond to a tab that either doesn't exist or is already
   // pinned, it will be skipped and we will similarly return false to indicate
   // that the function was not fully successful.
-  bool PinTabs(base::span<const tabs::TabHandle> tab_handles);
+  bool PinTabs(base::span<const tabs::TabHandle> tab_handles,
+               GlicPinTrigger trigger = GlicPinTrigger::kUnknown);
 
   // Unins the specified tabs. If any of the tab handles correspond to a tab
   // that either doesn't exist or is not pinned, it will be skipped and we will
@@ -122,7 +123,8 @@ class GlicPinnedTabManager : public TabStripModelObserver {
   friend PinnedTabObserver;
   struct PinnedTabEntry {
     PinnedTabEntry(tabs::TabHandle tab_handle,
-                   std::unique_ptr<PinnedTabObserver> tab_observer);
+                   std::unique_ptr<PinnedTabObserver> tab_observer,
+                   GlicPinnedTabUsage usage);
     ~PinnedTabEntry();
     PinnedTabEntry(PinnedTabEntry&& other);
     PinnedTabEntry& operator=(PinnedTabEntry&& other);
@@ -130,6 +132,7 @@ class GlicPinnedTabManager : public TabStripModelObserver {
     PinnedTabEntry& operator=(const PinnedTabEntry&) = delete;
     tabs::TabHandle tab_handle;
     std::unique_ptr<PinnedTabObserver> tab_observer;
+    GlicPinnedTabUsage usage;
   };
 
   // Sends an update to the web client with the full set of pinned tabs.

@@ -53,6 +53,10 @@ enum class GlicUnpinTrigger {
 };
 
 struct GlicPinEvent {
+  GlicPinEvent(GlicPinTrigger trigger, base::TimeTicks timestamp);
+
+  ~GlicPinEvent();
+
   GlicPinTrigger trigger = GlicPinTrigger::kUnknown;
   base::TimeTicks timestamp;
 };
@@ -65,6 +69,15 @@ struct GlicContextSharingStats {
 };
 
 struct GlicPinnedTabUsage {
+  explicit GlicPinnedTabUsage(GlicPinEvent pin_event);
+  GlicPinnedTabUsage(GlicPinTrigger trigger, base::TimeTicks timestamp);
+  GlicPinnedTabUsage(GlicPinnedTabUsage&& other);
+  GlicPinnedTabUsage(const GlicPinnedTabUsage&);
+  GlicPinnedTabUsage& operator=(GlicPinnedTabUsage&& other);
+  GlicPinnedTabUsage& operator=(const GlicPinnedTabUsage&);
+
+  ~GlicPinnedTabUsage();
+
   GlicPinEvent pin_event;
 
   int times_conversation_turn_submitted_while_pinned = 0;
@@ -85,6 +98,12 @@ struct GlicPinnedTabUsage {
 };
 
 struct GlicUnpinEvent {
+  GlicUnpinEvent(GlicUnpinTrigger trigger,
+                 GlicPinnedTabUsage usage,
+                 base::TimeTicks timestamp);
+
+  ~GlicUnpinEvent();
+
   GlicUnpinTrigger trigger = GlicUnpinTrigger::kUnknown;
   GlicPinnedTabUsage usage;
   base::TimeTicks timestamp;
@@ -163,7 +182,11 @@ class GlicSharingManager {
   // any of the tab handles correspond to a tab that either doesn't exist or
   // is already pinned, it will be skipped and we will similarly return
   // false to indicate that the function was not fully successful.
-  virtual bool PinTabs(base::span<const tabs::TabHandle> tab_handles) = 0;
+  virtual bool PinTabs(base::span<const tabs::TabHandle> tab_handles,
+                       GlicPinTrigger trigger) = 0;
+
+  // Forwarding overload for legacy calls. Calls PinTabs with kUnknown trigger.
+  bool PinTabs(base::span<const tabs::TabHandle> tab_handles);
 
   // Unpins the specified tabs. If any of the tab handles correspond to a tab
   // that either doesn't exist or is not pinned, it will be skipped and we will

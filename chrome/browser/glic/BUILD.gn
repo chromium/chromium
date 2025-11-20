@@ -181,6 +181,7 @@ source_set("impl") {
     "host/page_metadata_manager.h",
     "host/webui_contents_container.cc",
     "host/webui_contents_container.h",
+    "public/context/glic_sharing_manager.cc",
     "public/glic_enabling.cc",
     "public/glic_keyed_service.cc",
     "public/glic_keyed_service_factory.cc",

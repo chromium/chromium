@@ -77,7 +77,8 @@ class GlicSharingManagerImpl : public GlicSharingManager {
   base::CallbackListSubscription AddPinnedTabDataChangedCallback(
       PinnedTabDataChangedCallback callback) override;
 
-  bool PinTabs(base::span<const tabs::TabHandle> tab_handles) override;
+  bool PinTabs(base::span<const tabs::TabHandle> tab_handles,
+               GlicPinTrigger trigger) override;
 
   bool UnpinTabs(base::span<const tabs::TabHandle> tab_handles) override;
 
