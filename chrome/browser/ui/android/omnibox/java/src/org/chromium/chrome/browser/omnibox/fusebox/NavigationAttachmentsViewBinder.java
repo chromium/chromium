@@ -152,25 +152,23 @@ class NavigationAttachmentsViewBinder {
         if (showFuseboxToolbar && (isCustomModeUsed || showDedicatedModeButton)) {
             typeButton.setVisibility(View.VISIBLE);
 
+            final String text;
+            final String description;
             if (isAiModeUsed) {
-                String hint = res.getString(R.string.ai_mode_entrypoint_label);
-                typeButton.setText(hint);
-                typeButton.setContentDescription(
-                        res.getString(R.string.accessibility_omnibox_reset_mode, hint));
+                text = res.getString(R.string.ai_mode_entrypoint_label);
+                description = res.getString(R.string.accessibility_omnibox_reset_mode, text);
             } else if (isImageGenerationUsed) {
-                String hint = res.getString(R.string.omnibox_create_image);
-                typeButton.setText(hint);
-                typeButton.setContentDescription(
-                        res.getString(R.string.accessibility_omnibox_reset_mode, hint));
+                text = res.getString(R.string.omnibox_create_image);
+                description = res.getString(R.string.accessibility_omnibox_reset_mode, text);
             } else if (OmniboxFeatures.sShowTryAiModeHintInDedicatedModeButton.getValue()) {
-                String hint = res.getString(R.string.ai_mode_entrypoint_hint);
-                typeButton.setText(hint);
-                typeButton.setContentDescription(hint);
+                text = res.getString(R.string.ai_mode_entrypoint_hint);
+                description = text;
             } else /* dedicated button with aimode off, no hint text changes. */ {
-                String hint = res.getString(R.string.accessibility_omnibox_enable_ai_mode);
-                typeButton.setText(R.string.ai_mode_entrypoint_label);
-                typeButton.setContentDescription(hint);
+                text = res.getString(R.string.ai_mode_entrypoint_label);
+                description = res.getString(R.string.accessibility_omnibox_enable_ai_mode);
             }
+            typeButton.setText(text);
+            typeButton.setContentDescription(description);
 
             typeButton.setButtonColor(
                     isCustomModeUsed
