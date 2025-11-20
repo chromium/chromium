@@ -7,10 +7,20 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/waap/waap_ui_metrics_service.h"
 #include "chrome/browser/ui/waap/waap_utils.h"
+#include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
+#include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer_delegate.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+
+namespace {
+// Measurement marks.
+constexpr char kInputMouseReleaseStartMark[] =
+    "ReloadButton.Input.MouseRelease.Start";
+constexpr char kInputKeyPressStartMark[] = "ReloadButton.Input.KeyPress.Start";
+
+}  // namespace
 
 InitialWebUIPageLoadMetricsObserver::InitialWebUIPageLoadMetricsObserver() =
     default;
@@ -43,6 +53,22 @@ void InitialWebUIPageLoadMetricsObserver::OnMonotonicFirstContentfulPaintInPage(
       timing.monotonic_paint_timing->first_contentful_paint.value());
 }
 
+void InitialWebUIPageLoadMetricsObserver::OnUserInput(
+    const blink::WebInputEvent& event,
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  auto& metrics_reporter = GetMetricsReporter();
+  switch (event.GetType()) {
+    case blink::WebInputEvent::Type::kMouseUp:
+      metrics_reporter.Mark(kInputMouseReleaseStartMark, event.TimeStamp());
+      break;
+    case blink::WebInputEvent::Type::kRawKeyDown:
+      metrics_reporter.Mark(kInputKeyPressStartMark, event.TimeStamp());
+      break;
+    default:
+      break;
+  }
+}
+
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 InitialWebUIPageLoadMetricsObserver::OnFencedFramesStart(
     content::NavigationHandle* navigation_handle,
@@ -67,6 +93,15 @@ WaapUIMetricsService* InitialWebUIPageLoadMetricsObserver::service() const {
   auto* service = WaapUIMetricsService::Get(profile);
   CHECK(service);
   return service;
+}
+
+MetricsReporter& InitialWebUIPageLoadMetricsObserver::GetMetricsReporter() {
+  MetricsReporterService* service = MetricsReporterService::GetFromWebContents(
+      GetDelegate().GetWebContents());
+  // The service must exist for InitialWebUI web contents.
+  CHECK(service);
+  CHECK(service->metrics_reporter());
+  return *service->metrics_reporter();
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy

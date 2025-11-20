@@ -26,16 +26,12 @@
 
 namespace {
 // Measurement marks.
-const char kChangeVisibleModeToReloadStartMark[] =
+constexpr char kChangeVisibleModeToReloadStartMark[] =
     "ReloadButton.ChangeVisibleModeToReload.Start";
-const char kChangeVisibleModeToStopStartMark[] =
+constexpr char kChangeVisibleModeToStopStartMark[] =
     "ReloadButton.ChangeVisibleModeToStop.Start";
 constexpr char kInputMouseReleaseStartMark[] =
     "ReloadButton.Input.MouseRelease.Start";
-constexpr char kReloadForMouseReleaseEndMark[] =
-    "ReloadButton.Reload.MouseRelease.End";
-constexpr char kStopForMouseReleaseEndMark[] =
-    "ReloadButton.Stop.MouseRelease.End";
 
 // Histogram names.
 constexpr char kInputToReloadMouseReleaseHistogram[] =
@@ -68,21 +64,42 @@ MetricsReporter* ReloadButtonPageHandler::GetMetricsReporter() {
 void ReloadButtonPageHandler::Reload(bool ignore_cache) {
   command_updater_->ExecuteCommand(ignore_cache ? IDC_RELOAD_BYPASSING_CACHE
                                                 : IDC_RELOAD);
+  // Gets the current time immediately after executing the command.
+  const base::TimeTicks now = base::TimeTicks::Now();
 
-  if (auto* metrics_reporter = GetMetricsReporter()) {
-    metrics_reporter->Mark(kReloadForMouseReleaseEndMark);
-    MaybeRecordInputToReloadMetric(metrics_reporter);
+  auto* metrics_reporter = GetMetricsReporter();
+  if (!metrics_reporter) {
+    return;
   }
+
+  // MouseRelease
+  metrics_reporter->Measure(
+      kInputMouseReleaseStartMark, now,
+      base::BindOnce(&ReloadButtonPageHandler::OnMeasureResultAndClearMark,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     kInputToReloadMouseReleaseHistogram,
+                     kInputMouseReleaseStartMark));
+  // TODO(crbug.com/448794588): Handle KeyPress events.
 }
 
 void ReloadButtonPageHandler::StopReload() {
   command_updater_->ExecuteCommand(IDC_STOP);
+  // Gets the current time immediately after executing the command.
+  const base::TimeTicks now = base::TimeTicks::Now();
 
-  // TODO(crbug.com/448794588): Handle key press metric marks.
-  if (auto* metrics_reporter = GetMetricsReporter()) {
-    metrics_reporter->Mark(kStopForMouseReleaseEndMark);
-    MaybeRecordInputToStopMetric(metrics_reporter);
+  auto* metrics_reporter = GetMetricsReporter();
+  if (!metrics_reporter) {
+    return;
   }
+
+  // MouseRelease
+  metrics_reporter->Measure(
+      kInputMouseReleaseStartMark, now,
+      base::BindOnce(&ReloadButtonPageHandler::OnMeasureResultAndClearMark,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     kInputToStopMouseReleaseHistogram,
+                     kInputMouseReleaseStartMark));
+  // TODO(crbug.com/448794588): Handle KeyPress events.
 }
 
 void ReloadButtonPageHandler::ShowContextMenu(int32_t offset_x,
@@ -107,53 +124,13 @@ void ReloadButtonPageHandler::SetReloadButtonState(bool is_loading,
   }
 }
 
-void ReloadButtonPageHandler::MaybeRecordInputToReloadMetric(
-    MetricsReporter* metrics_reporter) {
-  metrics_reporter->HasMark(
-      kInputMouseReleaseStartMark,
-      base::BindOnce(&ReloadButtonPageHandler::OnHasStartMarkResult,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     kInputMouseReleaseStartMark, kReloadForMouseReleaseEndMark,
-                     kInputToReloadMouseReleaseHistogram));
-  // TODO(crbug.com/448794588): Handle key press metrics.
-}
-
-void ReloadButtonPageHandler::MaybeRecordInputToStopMetric(
-    MetricsReporter* metrics_reporter) {
-  metrics_reporter->HasMark(
-      kInputMouseReleaseStartMark,
-      base::BindOnce(&ReloadButtonPageHandler::OnHasStartMarkResult,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     kInputMouseReleaseStartMark, kStopForMouseReleaseEndMark,
-                     kInputToStopMouseReleaseHistogram));
-
-  // TODO(crbug.com/448794588): Handle key press metrics.
-}
-
-void ReloadButtonPageHandler::OnHasStartMarkResult(
-    const std::string& start_mark,
-    const std::string& end_mark,
+void ReloadButtonPageHandler::OnMeasureResultAndClearMark(
     const std::string& histogram_name,
-    bool has_start_mark) {
-  auto* metrics_reporter = GetMetricsReporter();
-  if (!metrics_reporter) {
-    return;
-  }
-
-  if (!has_start_mark) {
-    metrics_reporter->ClearMark(end_mark);
-    return;
-  }
-  metrics_reporter->Measure(
-      start_mark, end_mark,
-      base::BindOnce(&ReloadButtonPageHandler::OnMeasureResult,
-                     weak_ptr_factory_.GetWeakPtr(), histogram_name));
-  metrics_reporter->ClearMark(start_mark);
-  metrics_reporter->ClearMark(end_mark);
-}
-
-void ReloadButtonPageHandler::OnMeasureResult(const std::string& histogram_name,
-                                              base::TimeDelta duration) {
+    const std::string& start_mark,
+    base::TimeDelta duration) {
   base::UmaHistogramCustomTimes(histogram_name, duration, base::Milliseconds(1),
                                 base::Minutes(3), 100);
+  if (auto* metrics_reporter = GetMetricsReporter()) {
+    metrics_reporter->ClearMark(start_mark);
+  }
 }

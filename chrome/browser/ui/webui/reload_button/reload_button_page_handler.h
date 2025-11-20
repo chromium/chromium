@@ -50,23 +50,11 @@ class ReloadButtonPageHandler : public reload_button::mojom::PageHandler {
   // destroyed earlier than this ReloadButtonPageHandler.
   MetricsReporter* GetMetricsReporter();
 
-  // Checks for start marks and records InputToReload metrics.
-  void MaybeRecordInputToReloadMetric(MetricsReporter* metrics_reporter);
-
-  // Checks for start marks and records InputToStop metrics.
-  void MaybeRecordInputToStopMetric(MetricsReporter* metrics_reporter);
-
-  // Callback for MetricsReporter::HasMark. If the start_mark exists, it
-  // proceeds to measure the duration.
-  void OnHasStartMarkResult(const std::string& start_mark,
-                            const std::string& end_mark,
-                            const std::string& histogram_name,
-                            bool has_start_mark);
-
-  // Callback for MetricsReporter::Measure. Records the resulting
-  // base::TimeDelta to the given UMA histogram.
-  void OnMeasureResult(const std::string& histogram_name,
-                       base::TimeDelta duration);
+  // Callback for `MetricsReporter::Measure()`. Records the resulting
+  // base::TimeDelta to the given UMA histogram and clears the start mark.
+  void OnMeasureResultAndClearMark(const std::string& histogram_name,
+                                   const std::string& start_mark,
+                                   base::TimeDelta duration);
 
   mojo::Receiver<reload_button::mojom::PageHandler> receiver_;
   mojo::Remote<reload_button::mojom::Page> page_;

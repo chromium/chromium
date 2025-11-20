@@ -40,9 +40,6 @@ const MOUSE_PRESS_TO_NEXT_PAINT_HISTOGRAM_ =
 const INPUT_TO_NEXT_PAINT_MOUSE_RELEASE_HISTOGRAM_ =
     'InitialWebUI.ReloadButton.InputToNextPaint.MouseRelease';
 
-// Measurement marks.
-const INPUT_MOUSE_RELEASE_START_MARK_ = 'ReloadButton.Input.MouseRelease.Start';
-
 /**
  * Class responsible for recording metrics related to the ReloadButton WebUI.
  */
@@ -112,10 +109,9 @@ export class MetricsRecorder {
     // TODO(crbug.com/448794588): The C++ side is currently recorded with
     // mouserelease. Need to unify them.
     if (event instanceof PointerEvent) {
-      this.metricsReporter_.mark(INPUT_MOUSE_RELEASE_START_MARK_);
       inputType = ReloadButtonInputType.MOUSE_RELEASE;
     } else if (event instanceof KeyboardEvent) {
-      // TODO(crbug.com/448794588): Marks INPUT_KEY_PRESS_START_MARK_.
+      // TODO(crbug.com/448794588): Need an event listener for keypress.
       inputType = ReloadButtonInputType.KEY_PRESS;
     } else {
       return;
