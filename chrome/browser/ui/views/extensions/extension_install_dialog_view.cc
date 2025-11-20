@@ -75,119 +75,18 @@ namespace {
 // Time delay before the install button is enabled after initial display.
 int g_install_delay_in_ms = 500;
 
-// A custom view to contain the ratings information (stars, ratings count, etc).
-// With screen readers, this will handle conveying the information properly
-// (i.e., "Rated 4.2 stars by 379 reviews" rather than "image image...379").
-class RatingsView : public views::View {
-  METADATA_HEADER(RatingsView, views::View)
-
- public:
-  RatingsView(double rating, int rating_count)
-      : rating_(rating), rating_count_(rating_count) {
-    SetID(ExtensionInstallDialogView::kRatingsViewId);
-    SetLayoutManager(std::make_unique<views::BoxLayout>(
-        views::BoxLayout::Orientation::kHorizontal));
-
-    GetViewAccessibility().SetRole(ax::mojom::Role::kStaticText);
-    UpdateAccessibleName();
+// Returns the accessible name for the ratings view, which will convey the
+// information properly (i.e., "Rated 4.2 stars by 379 reviews" rather than
+// "image image...379").
+std::u16string GetRatingAccessibleName(double rating, int rating_count) {
+  if (rating_count == 0) {
+    return l10n_util::GetStringUTF16(
+        IDS_EXTENSION_PROMPT_NO_RATINGS_ACCESSIBLE_TEXT);
   }
-  RatingsView(const RatingsView&) = delete;
-  RatingsView& operator=(const RatingsView&) = delete;
-  ~RatingsView() override = default;
-
-  void UpdateAccessibleName() {
-    std::u16string accessible_text;
-    if (rating_count_ == 0) {
-      accessible_text = l10n_util::GetStringUTF16(
-          IDS_EXTENSION_PROMPT_NO_RATINGS_ACCESSIBLE_TEXT);
-    } else {
-      accessible_text = base::i18n::MessageFormatter::FormatWithNumberedArgs(
-          l10n_util::GetStringUTF16(
-              IDS_EXTENSION_PROMPT_RATING_ACCESSIBLE_TEXT),
-          rating_, rating_count_);
-    }
-    GetViewAccessibility().SetName(accessible_text);
-  }
-
- private:
-  double rating_;
-  int rating_count_;
-};
-
-BEGIN_METADATA(RatingsView)
-END_METADATA
-
-// A custom view for the ratings star image that will be ignored by screen
-// readers (since the RatingsView handles the context).
-class RatingStar : public views::ImageView {
-  METADATA_HEADER(RatingStar, views::ImageView)
-
- public:
-  explicit RatingStar(const ui::ImageModel& image) {
-    SetImage(image);
-    GetViewAccessibility().SetRole(ax::mojom::Role::kNone);
-  }
-  RatingStar(const RatingStar&) = delete;
-  RatingStar& operator=(const RatingStar&) = delete;
-  ~RatingStar() override = default;
-};
-
-BEGIN_METADATA(RatingStar)
-END_METADATA
-
-// A custom view for the ratings label that will be ignored by screen readers
-// (since the RatingsView handles the context).
-class RatingLabel : public views::Label {
-  METADATA_HEADER(RatingLabel, views::Label)
-
- public:
-  RatingLabel(const std::u16string& text, int text_context)
-      : views::Label(text, text_context, views::style::STYLE_PRIMARY) {
-    GetViewAccessibility().SetRole(ax::mojom::Role::kNone);
-    GetViewAccessibility().SetName(
-        std::string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
-  }
-
-  RatingLabel(const RatingLabel&) = delete;
-  RatingLabel& operator=(const RatingLabel&) = delete;
-  ~RatingLabel() override = default;
-
-  void AdjustAccessibleName(std::u16string& new_name,
-                            ax::mojom::NameFrom& name_from) override {
-    // Override and do nothing so that the name set from
-    // Label::AdjustAccessibleName isn't used.
-  }
-};
-
-BEGIN_METADATA(RatingLabel)
-END_METADATA
-
-// TODO(crbug.com/355018927): Remove this when we implement in views::Label.
-class TitleLabelWrapper : public views::View {
-  METADATA_HEADER(TitleLabelWrapper, views::View)
-
- public:
-  explicit TitleLabelWrapper(std::unique_ptr<views::View> title) {
-    SetUseDefaultFillLayout(true);
-    title_ = AddChildView(std::move(title));
-  }
-
- private:
-  // View:
-  gfx::Size CalculatePreferredSize(
-      const views::SizeBounds& available_size) const override {
-    gfx::Size preferred_size = title_->GetPreferredSize(available_size);
-    if (!available_size.width().is_bounded()) {
-      preferred_size.set_width(title_->GetMinimumSize().width());
-    }
-    return preferred_size;
-  }
-
-  raw_ptr<views::View> title_ = nullptr;
-};
-
-BEGIN_METADATA(TitleLabelWrapper)
-END_METADATA
+  return base::i18n::MessageFormatter::FormatWithNumberedArgs(
+      l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_RATING_ACCESSIBLE_TEXT),
+      rating, rating_count);
+}
 
 void ShowExtensionInstallDialogImpl(
     std::unique_ptr<ExtensionInstallPromptShowParams> show_params,
@@ -311,6 +210,38 @@ END_VIEW_BUILDER
 DEFINE_VIEW_BUILDER(/* No Export */, ExtensionJustificationView)
 
 BEGIN_METADATA(, ExtensionJustificationView)
+END_METADATA
+
+// TODO(crbug.com/355018927): Remove this when we implement in views::Label.
+class TitleLabelWrapper : public views::View {
+  METADATA_HEADER(TitleLabelWrapper, views::View)
+
+ public:
+  explicit TitleLabelWrapper(std::unique_ptr<views::View> title) {
+    SetUseDefaultFillLayout(true);
+    title_ = AddChildView(std::move(title));
+  }
+
+ private:
+  // View:
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
+    gfx::Size preferred_size = title_->GetPreferredSize(available_size);
+    if (!available_size.width().is_bounded()) {
+      preferred_size.set_width(title_->GetMinimumSize().width());
+    }
+    return preferred_size;
+  }
+
+  raw_ptr<views::View> title_ = nullptr;
+};
+
+BEGIN_VIEW_BUILDER(/* No Export */, TitleLabelWrapper, views::View)
+END_VIEW_BUILDER
+
+DEFINE_VIEW_BUILDER(/* No Export */, TitleLabelWrapper)
+
+BEGIN_METADATA(TitleLabelWrapper)
 END_METADATA
 
 ExtensionInstallDialogView::ExtensionInstallDialogView(
@@ -449,7 +380,6 @@ void ExtensionInstallDialogView::VisibilityChanged(views::View* starting_from,
 void ExtensionInstallDialogView::AddedToWidget() {
   auto title_container = std::make_unique<views::View>();
 
-  ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
   views::TableLayout* layout =
       title_container->SetLayoutManager(std::make_unique<views::TableLayout>());
   constexpr int icon_size = extension_misc::EXTENSION_ICON_SMALL;
@@ -459,6 +389,7 @@ void ExtensionInstallDialogView::AddedToWidget() {
                     views::TableLayout::ColumnSize::kFixed, icon_size, 0);
 
   // Equalize padding on the left and the right of the icon.
+  ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
   layout->AddPaddingColumn(
       views::TableLayout::kFixedSize,
       provider->GetInsetsMetric(views::INSETS_DIALOG).left());
@@ -479,46 +410,13 @@ void ExtensionInstallDialogView::AddedToWidget() {
   layout->AddRows(1, views::TableLayout::kFixedSize);
   title_container->AddChildView(std::move(icon));
 
-  auto title_label = std::make_unique<TitleLabelWrapper>(
-      views::BubbleFrameView::CreateDefaultTitleLabel(title_));
   if (prompt_->has_webstore_data()) {
-    auto webstore_data_container = std::make_unique<views::View>();
-    webstore_data_container->SetLayoutManager(
-        std::make_unique<views::BoxLayout>(
-            views::BoxLayout::Orientation::kVertical, gfx::Insets(),
-            provider->GetDistanceMetric(
-                DISTANCE_RELATED_CONTROL_VERTICAL_SMALL)));
-
-    webstore_data_container->AddChildView(std::move(title_label));
-
-    auto rating_container = std::make_unique<views::View>();
-    rating_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
-        views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
-        provider->GetDistanceMetric(views::DISTANCE_RELATED_LABEL_HORIZONTAL)));
-    auto rating = std::make_unique<RatingsView>(prompt_->average_rating(),
-                                                prompt_->rating_count());
-    std::vector<const gfx::ImageSkia*> rating_stars = prompt_->GetRatingStars();
-    for (auto star : rating_stars) {
-      rating->AddChildView(
-          std::make_unique<RatingStar>(ui::ImageModel::FromImageSkia(*star)));
-    }
-
-    rating_container->AddChildView(std::move(rating));
-    auto rating_count = std::make_unique<RatingLabel>(
-        prompt_->GetRatingCount(), views::style::CONTEXT_DIALOG_BODY_TEXT);
-    rating_count->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    rating_container->AddChildView(std::move(rating_count));
-    webstore_data_container->AddChildView(std::move(rating_container));
-
-    auto user_count = std::make_unique<views::Label>(
-        prompt_->GetUserCount(), CONTEXT_DIALOG_BODY_TEXT_SMALL,
-        views::style::STYLE_SECONDARY);
-    user_count->SetAutoColorReadabilityEnabled(false);
-    user_count->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    webstore_data_container->AddChildView(std::move(user_count));
-
+    std::unique_ptr<views::BoxLayoutView> webstore_data_container =
+        CreateWebstoreDataContainer();
     title_container->AddChildView(std::move(webstore_data_container));
   } else {
+    auto title_label = std::make_unique<TitleLabelWrapper>(
+        views::BubbleFrameView::CreateDefaultTitleLabel(title_));
     title_container->AddChildView(std::move(title_label));
   }
 
@@ -720,6 +618,66 @@ void ExtensionInstallDialogView::CreateContents() {
           .Build();
   scroll_view_ = scroll_view.get();
   AddChildView(std::move(scroll_view));
+}
+
+std::unique_ptr<views::BoxLayoutView>
+ExtensionInstallDialogView::CreateWebstoreDataContainer() {
+  ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
+
+  // Title
+  auto title_label_builder =
+      views::Builder<TitleLabelWrapper>(std::make_unique<TitleLabelWrapper>(
+          views::BubbleFrameView::CreateDefaultTitleLabel(
+              prompt_->GetDialogTitle())));
+
+  // Rating
+  auto rating_builder =
+      views::Builder<views::BoxLayoutView>()
+          .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
+          .SetID(ExtensionInstallDialogView::kRatingsViewId)
+          .SetAccessibleRole(ax::mojom::Role::kStaticText)
+          .SetAccessibleName(GetRatingAccessibleName(prompt_->average_rating(),
+                                                     prompt_->rating_count()));
+  std::vector<const gfx::ImageSkia*> rating_stars = prompt_->GetRatingStars();
+  for (auto star : rating_stars) {
+    rating_builder.AddChild(views::Builder<views::ImageView>()
+                                .SetImage(ui::ImageModel::FromImageSkia(*star))
+                                .SetAccessibleRole(ax::mojom::Role::kNone));
+  }
+
+  auto rating_count_builder =
+      views::Builder<views::Label>()
+          .SetText(prompt_->GetRatingCount())
+          .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
+          .SetTextStyle(views::style::STYLE_PRIMARY)
+          .SetAccessibleRole(ax::mojom::Role::kNone)
+          .SetAccessibleName(std::u16string(),
+                             ax::mojom::NameFrom::kAttributeExplicitlyEmpty)
+          .SetHorizontalAlignment(gfx::ALIGN_LEFT);
+
+  auto rating_container_builder =
+      views::Builder<views::BoxLayoutView>()
+          .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
+          .SetBetweenChildSpacing(provider->GetDistanceMetric(
+              views::DISTANCE_RELATED_LABEL_HORIZONTAL))
+          .AddChildren(rating_builder, rating_count_builder);
+
+  // User count
+  auto user_count_builder = views::Builder<views::Label>()
+                                .SetText(prompt_->GetUserCount())
+                                .SetTextContext(CONTEXT_DIALOG_BODY_TEXT_SMALL)
+                                .SetTextStyle(views::style::STYLE_SECONDARY)
+                                .SetAutoColorReadabilityEnabled(false)
+                                .SetHorizontalAlignment(gfx::ALIGN_LEFT);
+
+  return views::Builder<views::BoxLayoutView>()
+      .SetOrientation(views::BoxLayout::Orientation::kVertical)
+      .SetInsideBorderInsets(gfx::Insets())
+      .SetBetweenChildSpacing(
+          provider->GetDistanceMetric(DISTANCE_RELATED_CONTROL_VERTICAL_SMALL))
+      .AddChildren(title_label_builder, rating_container_builder,
+                   user_count_builder)
+      .Build();
 }
 
 void ExtensionInstallDialogView::ContentsChanged(

@@ -93,6 +93,11 @@ class ExtensionInstallDialogView : public views::BubbleDialogDelegateView,
   // info.
   void CreateContents();
 
+  // Returns the webstore data builder, which contains information about the
+  // extension on the webstore.
+  [[nodiscard]] std::unique_ptr<views::BoxLayoutView>
+  CreateWebstoreDataContainer();
+
   // views::TextfieldController:
   void ContentsChanged(views::Textfield* sender,
                        const std::u16string& new_contents) override;
