@@ -98,6 +98,8 @@ public class NavigationAttachmentsCoordinator
                         AppCompatResources.getDrawable(context, R.drawable.menu_bg_baseline),
                         popupView,
                         rectProvider);
+        popupWindow.setOutsideTouchable(true);
+        popupWindow.setAnimateFromAnchor(true);
 
         var popup = new NavigationAttachmentsPopup(mContext, popupWindow, popupView);
         mViewHolder = new NavigationAttachmentsViewHolder(parent, popup);
