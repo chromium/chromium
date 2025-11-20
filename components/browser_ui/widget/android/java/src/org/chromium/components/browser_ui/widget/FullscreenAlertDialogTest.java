@@ -12,6 +12,7 @@ import android.widget.FrameLayout;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
@@ -52,6 +53,8 @@ public class FullscreenAlertDialogTest {
         var fragment = new TestDialogFragment();
         fragment.show(sActivity.getSupportFragmentManager(), "");
 
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
         CriteriaHelper.pollUiThread(
                 () -> Criteria.checkThat(fragment.mDialog.isShowing(), Matchers.is(true)));
     }
@@ -67,6 +70,8 @@ public class FullscreenAlertDialogTest {
                     callbackHelper.notifyCalled(dialog);
                     dialog.show();
                 });
+
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         CriteriaHelper.pollUiThread(
                 () ->

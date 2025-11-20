@@ -16,6 +16,7 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -84,6 +85,8 @@ public class RichRadioButtonListUnitTest {
                     mRecyclerView = mRichRadioButtonList.getRecyclerViewForTesting();
                 });
 
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
         Assert.assertNotNull(
                 "RichRadioButtonList should not be null after setup.", mRichRadioButtonList);
         Assert.assertNotNull("RecyclerView should not be null after setup.", mRecyclerView);
@@ -100,6 +103,7 @@ public class RichRadioButtonListUnitTest {
                             viewHolder);
                     viewHolder.itemView.performClick();
                 });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
     private @Nullable String getSelectedItemIdFromAdapter() {
@@ -203,6 +207,7 @@ public class RichRadioButtonListUnitTest {
                             mMockListener);
                     mRichRadioButtonList.setSelectedItem("id_optA");
                 });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         Assert.assertEquals(
                 "Initial selected item ID should be 'id_optA'.",
@@ -260,6 +265,7 @@ public class RichRadioButtonListUnitTest {
                             options, RichRadioButtonList.LayoutMode.TWO_COLUMN_GRID, mMockListener);
                     mRichRadioButtonList.setSelectedItem("grid_top_left");
                 });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         Assert.assertEquals(
                 "Initial selected item ID should be 'grid_top_left'.",
@@ -317,6 +323,7 @@ public class RichRadioButtonListUnitTest {
                     clearInvocations(mMockListener);
                     mRichRadioButtonList.setSelectedItem("item1");
                 });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         // Click on the already selected item.
         performClickOnItem(0);

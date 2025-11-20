@@ -16,6 +16,7 @@ import static org.mockito.Mockito.verify;
 import android.app.Activity;
 import android.view.View;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
@@ -94,6 +95,8 @@ public class ContextMenuChipControllerTest {
                     sActivity.setContentView(R.layout.context_menu_fullscreen_container);
                     mAnchorView = sActivity.findViewById(R.id.context_menu_chip_anchor_point);
                 });
+
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
     @Test
@@ -154,6 +157,8 @@ public class ContextMenuChipControllerTest {
                     chipController.showChip(chipRenderParams);
                     chipController.clickChipForTesting();
                 });
+
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         verify(mMockDismissRunnable, times(1)).run();
         verify(mMockChipClickRunnable, times(1)).run();

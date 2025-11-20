@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -126,6 +127,7 @@ public class ImprovedBookmarkSaveFlowRenderTest {
                     PropertyModelChangeProcessor.create(
                             mModel, mView, ImprovedBookmarkSaveFlowViewBinder::bind);
                 });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
     @Test
@@ -147,6 +149,7 @@ public class ImprovedBookmarkSaveFlowRenderTest {
                             BookmarkSaveFlowMediator.createHighlightedCharSequence(
                                     mActivity, new FolderText(folderText, 3, 51)));
                 });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         mRenderTestRule.render(mContentView, "long_text");
     }
 
@@ -163,6 +166,7 @@ public class ImprovedBookmarkSaveFlowRenderTest {
                             ImprovedBookmarkSaveFlowProperties.BOOKMARK_ROW_ICON,
                             new BitmapDrawable(mActivity.getResources(), bitmap));
                 });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         mRenderTestRule.render(mContentView, "favicon");
     }
 
@@ -176,6 +180,7 @@ public class ImprovedBookmarkSaveFlowRenderTest {
                     mModel.set(
                             ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_SWITCH_CHECKED, true);
                 });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         mRenderTestRule.render(mContentView, "price_tracking");
     }
 
@@ -190,6 +195,7 @@ public class ImprovedBookmarkSaveFlowRenderTest {
                             ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_SWITCH_CHECKED,
                             false);
                 });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         mRenderTestRule.render(mContentView, "price_tracking_switch_unchecked");
     }
 
@@ -204,6 +210,7 @@ public class ImprovedBookmarkSaveFlowRenderTest {
                             ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_SWITCH_CHECKED, true);
                     mModel.set(ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_ENABLED, false);
                 });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         mRenderTestRule.render(mContentView, "price_tracking_visible_not_enabled");
     }
 
@@ -219,6 +226,7 @@ public class ImprovedBookmarkSaveFlowRenderTest {
                                     mActivity, new FolderText("Saved in Mobile bookmarks", 9, 16)));
                     mModel.set(ImprovedBookmarkSaveFlowProperties.SUBTITLE, "On this device ");
                 });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         mRenderTestRule.render(mContentView, "title_and_subtitle");
     }
 
@@ -235,6 +243,7 @@ public class ImprovedBookmarkSaveFlowRenderTest {
                                     mActivity, new FolderText("Saved in Mobile bookmarks", 9, 16)));
                     mModel.set(ImprovedBookmarkSaveFlowProperties.SUBTITLE, "On this device ");
                 });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         mRenderTestRule.render(mContentView, "rtl_chevron");
         ThreadUtils.runOnUiThreadBlocking(() -> LocalizationUtils.setRtlForTesting(true));
@@ -258,6 +267,7 @@ public class ImprovedBookmarkSaveFlowRenderTest {
                             true);
                     mModel.set(ImprovedBookmarkSaveFlowProperties.SUBTITLE, "test@gmail.com");
                 });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         mRenderTestRule.render(mContentView, "rtl_with_account_bookmark_subtitle");
         ThreadUtils.runOnUiThreadBlocking(() -> LocalizationUtils.setRtlForTesting(true));

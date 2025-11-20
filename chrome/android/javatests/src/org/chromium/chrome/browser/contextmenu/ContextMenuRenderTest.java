@@ -17,6 +17,7 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewStub;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.LargeTest;
 
 import org.junit.After;
@@ -110,6 +111,7 @@ public class ContextMenuRenderTest {
                     ContextMenuListView listView = mView.findViewById(R.id.context_menu_list_view);
                     listView.setAdapter(mAdapter);
                 });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
     @After

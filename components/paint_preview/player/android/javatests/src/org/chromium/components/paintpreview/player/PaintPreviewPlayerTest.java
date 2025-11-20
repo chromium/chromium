@@ -107,6 +107,7 @@ public class PaintPreviewPlayerTest {
                     mLayout = new FrameLayout(mActivityTestRule.getActivity());
                     mActivityTestRule.getActivity().setContentView(mLayout);
                 });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         AccountManagerFacadeProvider.setInstanceForTests(new FakeAccountManagerFacade());
         NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
     }

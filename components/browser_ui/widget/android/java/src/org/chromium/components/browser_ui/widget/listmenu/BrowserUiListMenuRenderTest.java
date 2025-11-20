@@ -18,6 +18,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.ListView;
 
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -109,6 +110,7 @@ public class BrowserUiListMenuRenderTest {
                             activity.getResources().getDimensionPixelSize(R.dimen.list_menu_width);
                     activity.setContentView(mView, new LayoutParams(width, WRAP_CONTENT));
                 });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
     @After
@@ -154,6 +156,7 @@ public class BrowserUiListMenuRenderTest {
                     item.model.get(CLICK_LISTENER).onClick(mView);
                     contentView.scrollListBy(5);
                 });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         mRenderTestRule.render(mView, "basic_list_menu_submenu_scroll");
     }
 

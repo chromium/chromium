@@ -15,6 +15,7 @@ import android.widget.TextView;
 import androidx.annotation.IntDef;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -94,6 +95,7 @@ public class DragReorderableRecyclerViewAdapterTest {
 
                     mAdapter.enableDrag();
                 });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
     @After
@@ -175,6 +177,8 @@ public class DragReorderableRecyclerViewAdapterTest {
                     mModelList.add(buildListItem("draggable_1", Type.DRAGGABLE));
                 });
 
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mAdapter.simulateDragForTests(1, 0);
@@ -193,6 +197,8 @@ public class DragReorderableRecyclerViewAdapterTest {
                     mModelList.add(buildListItem("draggable_1", Type.DRAGGABLE));
                     mModelList.add(buildListItem("draggable_2", Type.DRAGGABLE));
                 });
+
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -214,6 +220,8 @@ public class DragReorderableRecyclerViewAdapterTest {
                             buildListItem("passively_draggable_1", Type.PASSIVELY_DRAGGABLE));
                     mModelList.add(buildListItem("draggable_2", Type.DRAGGABLE));
                 });
+
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

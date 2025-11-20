@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -174,6 +175,8 @@ public class ImprovedBookmarkRowRenderTest {
                     PropertyModelChangeProcessor.create(
                             mModel, mImprovedBookmarkRow, ImprovedBookmarkRowViewBinder::bind);
                 });
+
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
     ListMenu buildListMenu() {

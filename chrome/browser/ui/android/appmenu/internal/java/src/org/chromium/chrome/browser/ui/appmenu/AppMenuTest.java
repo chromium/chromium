@@ -23,6 +23,7 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
@@ -611,6 +612,7 @@ public class AppMenuTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mAppMenuHandler.getModelListForTesting().removeAt(1));
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         itemView = getViewAtPosition(1);
         Assert.assertEquals(
@@ -646,6 +648,7 @@ public class AppMenuTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mAppMenuHandler.getModelListForTesting().removeRange(0, 2));
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         Assert.assertEquals(1, mAppMenuHandler.getModelListForTesting().size());
         itemView = getViewAtPosition(0);
@@ -1295,6 +1298,7 @@ public class AppMenuTest {
     private void showMenuAndAssert(AppMenuHandlerImpl handler) throws TimeoutException {
         int currentCallCount = mMenuObserver.menuShownCallback.getCallCount();
         ThreadUtils.runOnUiThreadBlocking(() -> mAppMenuCoordinator.showAppMenuForKeyboardEvent());
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         waitForMenuToShow(currentCallCount, handler);
     }
 

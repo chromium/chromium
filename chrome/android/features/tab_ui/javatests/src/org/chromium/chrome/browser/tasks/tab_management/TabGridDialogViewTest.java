@@ -26,6 +26,7 @@ import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
@@ -358,6 +359,7 @@ public class TabGridDialogViewTest {
                     mSourceView = new View(sActivity);
                     mTestParent.addView(mSourceView, 0, new FrameLayout.LayoutParams(100, 100));
                 });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabGridDialogView.setupDialogAnimation(mSourceView);
@@ -444,6 +446,7 @@ public class TabGridDialogViewTest {
                     mSourceView = new View(sActivity);
                     mTestParent.addView(mSourceView, 0, new FrameLayout.LayoutParams(100, 100));
                 });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabGridDialogView.setupDialogAnimation(mSourceView);

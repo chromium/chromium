@@ -28,6 +28,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import androidx.preference.Preference;
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assume;
@@ -163,6 +164,8 @@ public class SingleWebsiteSettingsTest {
                                     SingleWebsiteSettings.getPreferenceKey(
                                             ContentSettingsType.NOTIFICATIONS)));
                 });
+
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         settingsActivity.finish();
     }
@@ -568,6 +571,7 @@ public class SingleWebsiteSettingsTest {
                                     SingleWebsiteSettings.getPreferenceKey(
                                             ContentSettingsType.REQUEST_DESKTOP_SITE)));
                 });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         settingsActivity.finish();
     }
 
@@ -694,6 +698,7 @@ public class SingleWebsiteSettingsTest {
                                     primaryUrl,
                                     secondaryUrl);
                 });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         return result[0];
     }
 
@@ -749,6 +754,8 @@ public class SingleWebsiteSettingsTest {
                         doTest(websitePreferences);
                     });
 
+            InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
             mSettingsActivity.finish();
         }
 
@@ -795,6 +802,7 @@ public class SingleWebsiteSettingsTest {
                 () ->
                         info.setGeolocationSetting(
                                 ProfileManager.getLastUsedRegularProfile(), setting));
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         website.setPermissionInfo(info);
         return website;
     }
@@ -812,6 +820,7 @@ public class SingleWebsiteSettingsTest {
                         sessionModel);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> info.setContentSetting(ProfileManager.getLastUsedRegularProfile(), setting));
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         website.setPermissionInfo(info);
         return website;
     }
@@ -834,6 +843,7 @@ public class SingleWebsiteSettingsTest {
                 () -> {
                     info.setContentSetting(ProfileManager.getLastUsedRegularProfile(), setting);
                 });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         website.addEmbeddedPermission(info);
         return website;
     }

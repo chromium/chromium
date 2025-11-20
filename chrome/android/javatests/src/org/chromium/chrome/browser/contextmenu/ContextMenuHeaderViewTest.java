@@ -24,6 +24,7 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -359,6 +360,7 @@ public class ContextMenuHeaderViewTest {
     public void testAccessibility() {
         setupForCollapsedState(/* longTitle= */ true, /* longUrl= */ false);
         ThreadUtils.runOnUiThreadBlocking(mHeaderTextView::callOnClick);
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         CriteriaHelper.pollUiThread(
                 () -> mTitle.getLayout().getEllipsisCount(mTitle.getLineCount() - 1) == 0);
         verifyExpandedState();
@@ -372,6 +374,7 @@ public class ContextMenuHeaderViewTest {
                 info.getActionList(),
                 hasItem(ACTION_COLLAPSE));
         ThreadUtils.runOnUiThreadBlocking(mHeaderTextView::callOnClick);
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         CriteriaHelper.pollUiThread(
                 () -> mTitle.getLayout().getEllipsisCount(mTitle.getLineCount() - 1) > 0);
         verifyCollapsedState();

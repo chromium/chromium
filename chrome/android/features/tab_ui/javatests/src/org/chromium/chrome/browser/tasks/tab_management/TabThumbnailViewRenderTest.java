@@ -16,6 +16,7 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.ColorInt;
 import androidx.core.view.ViewCompat;
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -113,6 +114,7 @@ public class TabThumbnailViewRenderTest {
                                     ViewGroup.LayoutParams.WRAP_CONTENT);
                     mActivityTestRule.getActivity().setContentView(mContentView, params);
                 });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     final int cardWidthPx = mContentView.getMeasuredWidth() / 2;
@@ -127,6 +129,7 @@ public class TabThumbnailViewRenderTest {
                     mTabCard.getLayoutParams().height = cardHeightPx;
                     mTabCard.setLayoutParams(mTabCard.getLayoutParams());
                 });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mBitmap = createBitmapFourColor();

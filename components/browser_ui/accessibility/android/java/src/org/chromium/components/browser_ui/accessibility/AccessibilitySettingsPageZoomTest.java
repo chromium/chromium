@@ -14,6 +14,7 @@ import static org.mockito.Mockito.when;
 
 import android.view.View;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.filters.SmallTest;
@@ -109,6 +110,8 @@ public class AccessibilitySettingsPageZoomTest {
                 (fragment) -> ((AccessibilitySettings) fragment).setDelegate(mDelegate));
         mAccessibilitySettings =
                 (AccessibilitySettings) mSettingsActivityTestRule.getPreferenceFragment();
+
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
     @After

@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Rule;
@@ -135,6 +136,8 @@ public class TouchTrackingListViewTest {
                                 //     OnItemClickListener.
                             });
                 });
+
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         return touchTrackingListView;
     }
