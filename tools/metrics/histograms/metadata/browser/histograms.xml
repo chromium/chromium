@@ -2058,13 +2058,39 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="InfoBar.QueueSize" units="InfoBars" expires_after="2026-06-30">
+<histogram name="InfoBar.Prioritization.QueueSize" units="InfoBars"
+    expires_after="2026-06-30">
   <owner>koretadaniel@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Records the infobars pending queue size at a time of showing a new infobar.
     The maximum bucket for this metric is set to 50.
   </summary>
+</histogram>
+
+<histogram name="InfoBar.Prioritization.StarvedCount" units="InfoBars"
+    expires_after="2026-06-30">
+  <owner>koretadaniel@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Records the number of pending infobars that were discarded (starved) when
+    the InfobarManager was reset or the tab was closed.
+  </summary>
+</histogram>
+
+<histogram name="InfoBar.Prioritization.{Priority}WaitTime" units="ms"
+    expires_after="2026-06-30">
+  <owner>koretadaniel@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    The time elapsed between an infobar being added to the prioritization queue
+    and it being promoted to visible status.
+  </summary>
+  <token key="Priority">
+    <variant name="CriticalSecurity" summary="Critical Security priority"/>
+    <variant name="Default" summary="Default priority"/>
+    <variant name="Low" summary="Low priority"/>
+  </token>
 </histogram>
 
 <histogram name="InfoBar.Shown" enum="InfoBarIdentifier" expires_after="never">

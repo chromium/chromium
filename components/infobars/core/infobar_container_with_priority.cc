@@ -6,6 +6,7 @@
 
 #include "base/auto_reset.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "components/infobars/core/features.h"
 #include "components/infobars/core/infobar.h"
 
@@ -23,6 +24,20 @@ size_t GetInfoBarPriorityCapFor(InfoBarDelegate::InfobarPriority priority) {
       return caps->max_visible_default;
     case InfoBarDelegate::InfobarPriority::kLow:
       return caps->max_visible_low;
+  }
+
+  NOTREACHED();
+}
+
+// Helper to get histogram suffix based on priority.
+std::string GetPrioritySuffix(InfoBarDelegate::InfobarPriority priority) {
+  switch (priority) {
+    case InfoBarDelegate::InfobarPriority::kCriticalSecurity:
+      return "CriticalSecurity";
+    case InfoBarDelegate::InfobarPriority::kDefault:
+      return "Default";
+    case InfoBarDelegate::InfobarPriority::kLow:
+      return "Low";
   }
 
   NOTREACHED();
@@ -49,6 +64,13 @@ void InfoBarContainerWithPriority::ChangeInfoBarManager(
     // infobar triggers its removal from the container.
     while (!infobars().empty()) {
       infobars().front()->Hide(false);
+    }
+
+    // If there are items left in the queue when the manager changes/shuts down,
+    // they are considered "starved".
+    if (!pending_infobars_.empty()) {
+      base::UmaHistogramCounts100("InfoBar.Prioritization.StarvedCount",
+                                  pending_infobars_.size());
     }
 
     pending_infobars_.clear();
@@ -228,6 +250,13 @@ void InfoBarContainerWithPriority::PromoteInfobarsOfPriority(
     if (it == pending_infobars_.end()) {
       break;
     }
+
+    const base::TimeDelta wait_time = base::TimeTicks::Now() - it->enqueued_at;
+    base::UmaHistogramMediumTimes(
+        base::StrCat({"InfoBar.Prioritization.", GetPrioritySuffix(priority),
+                      "WaitTime"}),
+        wait_time);
+
     InfoBar* bar_to_promote = it->infobar;
     pending_infobars_.erase(it);
     AddInfoBarAndTrack(bar_to_promote, infobars().size(), /*animate=*/true,
@@ -287,7 +316,7 @@ bool InfoBarContainerWithPriority::HasPendingOfPriority(
 }
 
 void InfoBarContainerWithPriority::RecordInfoBarPendingQueueSize() {
-  base::UmaHistogramExactLinear("InfoBar.QueueSize",
+  base::UmaHistogramExactLinear("InfoBar.Prioritization.QueueSize",
                                 static_cast<int>(pending_infobars_.size()), 50);
 }
 

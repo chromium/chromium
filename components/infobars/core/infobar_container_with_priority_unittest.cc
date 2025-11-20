@@ -126,7 +126,8 @@ static void EnableWithCaps(base::test::ScopedFeatureList& feature_list,
 
 class InfoBarContainerWithPriorityTest : public testing::Test {
  protected:
-  base::test::TaskEnvironment task_env_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestPriorityContainer::MockDelegate delegate_;
   base::HistogramTester histogram_tester_;
 };
@@ -162,7 +163,7 @@ TEST_F(InfoBarContainerWithPriorityTest, DefaultIsSingleVisibleThenFIFO) {
   manager.RemoveInfoBar(third_default);
   EXPECT_EQ(0u, container.visible_count());
 
-  histogram_tester_.ExpectTotalCount("InfoBar.QueueSize", 3);
+  histogram_tester_.ExpectTotalCount("InfoBar.Prioritization.QueueSize", 3);
 }
 
 TEST_F(InfoBarContainerWithPriorityTest,
@@ -403,23 +404,22 @@ TEST_F(InfoBarContainerWithPriorityTest, UmaQueueSizeRecorded) {
 
   // At this point, only the first infobar's add triggered a sample.
   // The queue has [default_infobar_2, low_priority_infobar].
-  histogram_tester_.ExpectTotalCount("InfoBar.QueueSize", 1);
-  histogram_tester_.ExpectBucketCount("InfoBar.QueueSize", 0,
+  histogram_tester_.ExpectTotalCount("InfoBar.Prioritization.QueueSize", 1);
+  histogram_tester_.ExpectBucketCount("InfoBar.Prioritization.QueueSize", 0,
                                       1);  // Queue was empty.
 
   // Removing default_infobar_1 promotes default_infobar_2. The queue now has
   // [low_priority_infobar]. This promotion triggers a second sample.
   manager.RemoveInfoBar(default_infobar_1);
-  histogram_tester_.ExpectTotalCount("InfoBar.QueueSize", 2);
-  histogram_tester_.ExpectBucketCount(
-      "InfoBar.QueueSize", 1, 1);  // Queue had 1 item when d2 was promoted.
-
+  histogram_tester_.ExpectTotalCount("InfoBar.Prioritization.QueueSize", 2);
+  // Queue had 1 item when d2 was promoted.
+  histogram_tester_.ExpectBucketCount("InfoBar.Prioritization.QueueSize", 1, 1);
   // Removing default_infobar_2 promotes low_priority_infobar. The queue is now
   // empty. This promotion triggers a third sample.
   manager.RemoveInfoBar(default_infobar_2);
-  histogram_tester_.ExpectTotalCount("InfoBar.QueueSize", 3);
-  histogram_tester_.ExpectBucketCount(
-      "InfoBar.QueueSize", 0, 2);  // Queue was empty when l1 was promoted.
+  histogram_tester_.ExpectTotalCount("InfoBar.Prioritization.QueueSize", 3);
+  // Queue was empty when l1 was promoted.
+  histogram_tester_.ExpectBucketCount("InfoBar.Prioritization.QueueSize", 0, 2);
 
   manager.RemoveInfoBar(low_priority_infobar);
 }
@@ -461,6 +461,72 @@ TEST_F(InfoBarContainerWithPriorityTest, ReplaceDoesNotPromoteFromQueue) {
   EXPECT_EQ(1u, container.visible_count());
 
   manager.RemoveInfoBar(low_priority_infobar);
+}
+
+TEST_F(InfoBarContainerWithPriorityTest, UmaWaitTimeRecorded) {
+  base::test::ScopedFeatureList feature_list;
+  EnableWithCaps(feature_list, /*critical_cap=*/1, /*default_cap=*/1,
+                 /*low_cap=*/1);
+
+  TestPriorityContainer container(&delegate_);
+  TestManager manager;
+  container.ChangeInfoBarManager(&manager);
+
+  auto* blocking_infobar =
+      AddInfoBar(&manager, InfoBarDelegate::InfobarPriority::kDefault);
+  auto* queued_default =
+      AddInfoBar(&manager, InfoBarDelegate::InfobarPriority::kDefault);
+
+  auto* queued_low =
+      AddInfoBar(&manager, InfoBarDelegate::InfobarPriority::kLow);
+
+  task_environment_.FastForwardBy(base::Seconds(2));
+
+  // Remove blocking infobar. This should promote `queued_default`. Wait time
+  // for Default should be approx 2 seconds.
+  manager.RemoveInfoBar(blocking_infobar);
+
+  histogram_tester_.ExpectUniqueTimeSample(
+      "InfoBar.Prioritization.DefaultWaitTime", base::Seconds(2), 1);
+
+  // `queued_low` is still in the queue.
+  // We wait another 3 seconds (Total wait for low = 5 seconds).
+  task_environment_.FastForwardBy(base::Seconds(3));
+
+  // 5. Remove the promoted default infobar.
+  // This should promote `queued_low`.
+  manager.RemoveInfoBar(queued_default);
+
+  histogram_tester_.ExpectUniqueTimeSample("InfoBar.Prioritization.LowWaitTime",
+                                           base::Seconds(5), 1);
+
+  manager.RemoveInfoBar(queued_low);
+}
+
+TEST_F(InfoBarContainerWithPriorityTest, UmaStarvedCountRecorded) {
+  base::test::ScopedFeatureList feature_list;
+  EnableWithCaps(feature_list, /*critical_cap=*/1, /*default_cap=*/1,
+                 /*low_cap=*/1);
+
+  TestPriorityContainer container(&delegate_);
+  TestManager manager;
+  container.ChangeInfoBarManager(&manager);
+
+  // 1. Fill the slots so subsequent adds are queued.
+  AddInfoBar(&manager, InfoBarDelegate::InfobarPriority::kDefault);
+
+  // 2. Add 3 queued infobars.
+  AddInfoBar(&manager, InfoBarDelegate::InfobarPriority::kDefault);
+  AddInfoBar(&manager, InfoBarDelegate::InfobarPriority::kLow);
+  AddInfoBar(&manager, InfoBarDelegate::InfobarPriority::kLow);
+
+  // 3. Simulate Tab Close / Manager Switch.
+  // This triggers ChangeInfoBarManager(nullptr), which clears the queue.
+  // The metric should record the number of items dropped (starved).
+  container.ChangeInfoBarManager(nullptr);
+
+  histogram_tester_.ExpectUniqueSample("InfoBar.Prioritization.StarvedCount", 3,
+                                       1);
 }
 
 }  // namespace
