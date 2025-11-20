@@ -61,6 +61,17 @@ TEST(WaylandExchangeDataProviderTest, ExtractPickledData) {
   EXPECT_EQ("pickled-str", read_pickled_str);
 }
 
+TEST(WaylandExchangeDataProviderTest, FileNameAsUriList) {
+  WaylandExchangeDataProvider provider;
+  std::string extracted;
+  EXPECT_FALSE(provider.ExtractData(kMimeTypeUriList, &extracted));
+
+  extracted.clear();
+  provider.AddData(ToClipboardData("file:///dev/null"), kMimeTypeUriList);
+  EXPECT_TRUE(provider.ExtractData(kMimeTypeUriList, &extracted));
+  EXPECT_EQ("file:///dev/null", extracted);
+}
+
 TEST(WaylandExchangeDataProviderTest, FileContents) {
   constexpr std::string kName("filename");
   constexpr std::string kContents("contents");
