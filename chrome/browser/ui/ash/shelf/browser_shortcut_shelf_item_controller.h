@@ -55,6 +55,8 @@ class BrowserShortcutShelfItemController : public ash::ShelfItemDelegate,
   void Close() override;
 
  private:
+  class ShelfItemBrowsers;
+
   // Activate a browser - or advance to the next one on the list.
   // Returns the action performed. Should be one of SHELF_ACTION_NONE,
   // SHELF_ACTION_WINDOW_ACTIVATED, or SHELF_ACTION_NEW_WINDOW_CREATED.
@@ -67,6 +69,9 @@ class BrowserShortcutShelfItemController : public ash::ShelfItemDelegate,
   void OnBrowserDidClose(BrowserWindowInterface* browser_window_interface);
 
   raw_ptr<ash::ShelfModel> shelf_model_;
+
+  // Helper that maintains browsers ordered by creation time.
+  std::unique_ptr<ShelfItemBrowsers> shelf_browsers_;
 
   // The cached browser windows and tab indices shown in an application menu.
   std::vector<std::pair<Browser*, size_t>> app_menu_items_;

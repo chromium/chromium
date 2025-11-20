@@ -50,6 +50,59 @@
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/image/image.h"
 
+// Maintains an ordered list of browsers for shelf operations.
+class BrowserShortcutShelfItemController::ShelfItemBrowsers
+    : public ash::BrowserController::Observer {
+ public:
+  explicit ShelfItemBrowsers(const ash::ShelfModel* shelf_model)
+      : shelf_model_(shelf_model) {
+    browser_observation_.Observe(ash::BrowserController::GetInstance());
+
+    // Capture initial browser list ordered by activation time. Browser
+    // iterator APIs do not support creation order.
+    ash::BrowserController::GetInstance()->ForEachBrowser(
+        ash::BrowserController::BrowserOrder::kAscendingActivationTime,
+        [&](ash::BrowserDelegate& delegate) {
+          ordered_browsers_.push_back(&delegate);
+          return ash::BrowserController::kContinueIteration;
+        });
+  }
+
+  ShelfItemBrowsers(const ShelfItemBrowsers&) = delete;
+  ShelfItemBrowsers& operator=(const ShelfItemBrowsers&) = delete;
+  ~ShelfItemBrowsers() override = default;
+
+  // Returns all available browsers, filtered for shelf representation. The
+  // order is maintained consistently between calls.
+  std::vector<BrowserWindowInterface*> GetFilteredBrowsers() const {
+    std::vector<BrowserWindowInterface*> result;
+    for (ash::BrowserDelegate* delegate : ordered_browsers_) {
+      BrowserWindowInterface* browser = &delegate->GetBrowser();
+      if (IsBrowserRepresentedInBrowserList(browser, shelf_model_)) {
+        result.push_back(browser);
+      }
+    }
+    return result;
+  }
+
+  // ash::BrowserController::Observer:
+  void OnBrowserCreated(ash::BrowserDelegate* browser) override {
+    // New browsers are most recently activated, add to end.
+    ordered_browsers_.push_back(browser);
+  }
+
+  void OnBrowserClosed(ash::BrowserDelegate* browser) override {
+    std::erase(ordered_browsers_, browser);
+  }
+
+ private:
+  const raw_ptr<const ash::ShelfModel> shelf_model_;
+  std::vector<raw_ptr<ash::BrowserDelegate>> ordered_browsers_;
+  base::ScopedObservation<ash::BrowserController,
+                          ash::BrowserController::Observer>
+      browser_observation_{this};
+};
+
 namespace {
 
 // The tab-index flag for browser window menu items that do not specify a tab.
@@ -94,7 +147,8 @@ bool ShouldRecordLaunchTime(Browser* browser, const ash::ShelfModel* model) {
 BrowserShortcutShelfItemController::BrowserShortcutShelfItemController(
     ash::ShelfModel* shelf_model)
     : ash::ShelfItemDelegate(ash::ShelfID(app_constants::kChromeAppId)),
-      shelf_model_(shelf_model) {
+      shelf_model_(shelf_model),
+      shelf_browsers_(std::make_unique<ShelfItemBrowsers>(shelf_model)) {
   BrowserList::AddObserver(this);
 
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
@@ -339,57 +393,49 @@ bool BrowserShortcutShelfItemController::IsListOfActiveBrowserEmpty(
 
 ash::ShelfAction
 BrowserShortcutShelfItemController::ActivateOrAdvanceToNextBrowser() {
-  // Create a list of all suitable running browsers.
-  std::vector<Browser*> items;
-  // We use the list in the order of how the browsers got created - not the LRU
-  // order.
-  ash::BrowserController::GetInstance()->ForEachBrowser(
-      ash::BrowserController::BrowserOrder::kAscendingCreationTime,
-      [&](ash::BrowserDelegate& delegate) {
-        Browser* browser = &delegate.GetBrowser();
-        if (IsBrowserRepresentedInBrowserList(browser, shelf_model_)) {
-          items.push_back(browser);
-        }
-        return ash::BrowserController::kContinueIteration;
-      });
+  std::vector<BrowserWindowInterface*> browsers =
+      shelf_browsers_->GetFilteredBrowsers();
+
   // If there are no suitable browsers we create a new one.
-  if (items.empty()) {
+  if (browsers.empty()) {
     ash::NewWindowDelegate::GetInstance()->NewWindow(
         /*incognito=*/false,
         /*should_trigger_session_restore=*/true);
     return ash::SHELF_ACTION_NEW_WINDOW_CREATED;
   }
-  Browser* browser = GetLastActiveBrowserWindowInterfaceWithAnyProfile()
-                         ->GetBrowserForMigrationOnly();
-  if (items.size() == 1) {
+
+  BrowserWindowInterface* browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+  if (browsers.size() == 1) {
     // If there is only one suitable browser, we can either activate it, or
     // bounce it (if it is already active).
-    if (items[0]->window()->IsActive()) {
-      ash::BounceWindow(items[0]->window()->GetNativeWindow());
+    if (browsers[0]->GetWindow()->IsActive()) {
+      ash::BounceWindow(browsers[0]->GetWindow()->GetNativeWindow());
       return ash::SHELF_ACTION_NONE;
     }
-    browser = items[0];
+    browser = browsers[0];
   } else {
     // If there is more than one suitable browser, we advance to the next if
     // |browser| is already active - or - check the last used browser if it can
     // be used.
-    std::vector<Browser*>::iterator i = std::ranges::find(items, browser);
-    if (i != items.end()) {
-      if (browser->window()->IsActive()) {
-        browser = (++i == items.end()) ? items[0] : *i;
+    std::vector<BrowserWindowInterface*>::iterator i =
+        std::ranges::find(browsers, browser);
+    if (i != browsers.end()) {
+      if (browser->GetWindow()->IsActive()) {
+        browser = (++i == browsers.end()) ? browsers[0] : *i;
       }
     } else {
       browser = chrome::FindTabbedBrowser(
           ChromeShelfController::instance()->profile(), true);
       if (!browser ||
           !IsBrowserRepresentedInBrowserList(browser, shelf_model_)) {
-        browser = items[0];
+        browser = browsers[0];
       }
     }
   }
   DCHECK(browser);
-  browser->window()->Show();
-  browser->window()->Activate();
+  browser->GetWindow()->Show();
+  browser->GetWindow()->Activate();
   return ash::SHELF_ACTION_WINDOW_ACTIVATED;
 }
 
