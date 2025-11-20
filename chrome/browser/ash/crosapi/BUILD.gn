@@ -141,7 +141,6 @@ static_library("crosapi") {
     "//chromeos/ash/components/nearby/common/connections_manager",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/network:vpn_providers_observer",
-    "//chromeos/ash/components/network/portal_detector",
     "//chromeos/ash/components/osauth/public",
     "//chromeos/ash/components/platform_keys",
     "//chromeos/ash/components/settings",
