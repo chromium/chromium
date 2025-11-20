@@ -231,7 +231,7 @@ bool IsTabGridDragAndDropEnabled() {
   return base::FeatureList::IsEnabled(kTabGridDragAndDrop);
 }
 
-BASE_FEATURE(kTabGridEmptyThumbnail, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTabGridEmptyThumbnail, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsTabGridEmptyThumbnailUIEnabled() {
   return base::FeatureList::IsEnabled(kTabGridEmptyThumbnail);
