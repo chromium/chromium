@@ -44,6 +44,7 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"
+#include "components/safe_browsing/core/browser/download_check_result.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -659,7 +660,25 @@ void DeepScanningRequest::OnEnterpriseScanComplete(
   CHECK(IsEnterpriseTriggered());
 
   DownloadCheckResult download_result = DownloadCheckResult::UNKNOWN;
-  if (result == enterprise_connectors::ScanRequestUploadResult::SUCCESS) {
+
+  if (result ==
+          enterprise_connectors::ScanRequestUploadResult::FILE_TOO_LARGE &&
+      analysis_settings_.block_large_files) {
+    download_result = DownloadCheckResult::BLOCKED_TOO_LARGE;
+  } else if (result == enterprise_connectors::ScanRequestUploadResult::
+                           FILE_ENCRYPTED &&
+             analysis_settings_.block_password_protected_files) {
+    download_result = DownloadCheckResult::BLOCKED_PASSWORD_PROTECTED;
+    // WebProtect could still issue a block or warn verdict based on the
+    // metadata of large or encrypted files. Therefore we should check the
+    // `response` for these two cases as well.
+  } else if (result == enterprise_connectors::ScanRequestUploadResult::
+                           FILE_TOO_LARGE ||
+             result == enterprise_connectors::ScanRequestUploadResult::
+                           FILE_ENCRYPTED) {
+    MaybeUpdateDownloadCheckResult(response, download_result);
+  } else if (result ==
+             enterprise_connectors::ScanRequestUploadResult::SUCCESS) {
     request_tokens_.push_back(response.request_token());
     download_result = ResponseToDownloadCheckResult(response);
     if (download_result == DownloadCheckResult::FORCE_SAVE_TO_GDRIVE) {
@@ -694,14 +713,6 @@ void DeepScanningRequest::OnEnterpriseScanComplete(
         return;
       }
     }
-  } else if (result == enterprise_connectors::ScanRequestUploadResult::
-                           FILE_TOO_LARGE &&
-             analysis_settings_.block_large_files) {
-    download_result = DownloadCheckResult::BLOCKED_TOO_LARGE;
-  } else if (result == enterprise_connectors::ScanRequestUploadResult::
-                           FILE_ENCRYPTED &&
-             analysis_settings_.block_password_protected_files) {
-    download_result = DownloadCheckResult::BLOCKED_PASSWORD_PROTECTED;
   } else if (enterprise_connectors::ResultIsFailClosed(result) &&
              analysis_settings_.default_action ==
                  enterprise_connectors::DefaultAction::kBlock) {
@@ -936,6 +947,16 @@ void DeepScanningRequest::CallbackAndCleanup(DownloadCheckResult result) {
   download_observation_.reset();
   metadata_.reset();
   download_service_->RequestFinished(this);
+}
+
+void DeepScanningRequest::MaybeUpdateDownloadCheckResult(
+    const enterprise_connectors::ContentAnalysisResponse& response,
+    DownloadCheckResult& download_result) {
+  auto result_from_response = ResponseToDownloadCheckResult(response);
+  if (result_from_response != DownloadCheckResult::DEEP_SCANNED_SAFE) {
+    request_tokens_.push_back(response.request_token());
+    download_result = result_from_response;
+  }
 }
 
 bool DeepScanningRequest::ReportOnlyScan() {

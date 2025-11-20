@@ -218,6 +218,12 @@ class DeepScanningRequest : public download::DownloadItem::Observer,
   // Provides scan result to `callback_` and clean up.
   void CallbackAndCleanup(DownloadCheckResult result);
 
+  // If enterprise scan finds something, update the download check result for
+  // large or encrypted files.
+  void MaybeUpdateDownloadCheckResult(
+      const enterprise_connectors::ContentAnalysisResponse& response,
+      DownloadCheckResult& result);
+
   // Metadata for the item being scanned. This is owned by `DeepScanningRequest`
   // and provides an abstraction layer over different types of scan sources
   // (download items, file system access writes).
