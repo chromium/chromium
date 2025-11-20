@@ -12845,24 +12845,6 @@
             ]
         }
     ],
-    "HttpsFirstDialogUi": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "HttpsFirstDialogUi"
-                    ]
-                }
-            ]
-        }
-    ],
     "HttpsFirstModeV2ForTypicallySecureUsers": [
         {
             "platforms": [
