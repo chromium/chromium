@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -74,6 +75,10 @@ class ReadAnythingSidePanelController : public SidePanelEntryObserver,
       const ReadAnythingSidePanelController&) = delete;
   ~ReadAnythingSidePanelController() override;
 
+  // Delay before showing the ominbox entrypoint to ensure the user is actually
+  // attempting to read the page.
+  static const int kShowPageActionDelayMs = 3000;
+
   // TODO(https://crbug.com/347770670): remove this.
   void ResetForTabDiscard();
 
@@ -122,10 +127,20 @@ class ReadAnythingSidePanelController : public SidePanelEntryObserver,
   // show the omnibox entrypoint for RM.
   void CheckIfGoodCandidateForReadingMode();
 
-  // Show or hide the omnibox entry point.
+  // Called with the results of CheckIfGoodCandidateForReadingMode.
   void OnReadabilityResult(bool should_show);
 
+  // Show or hide the omnibox entry point.
+  void UpdateOmniboxEntryPoint(bool should_show);
+
   std::string default_language_code_;
+
+  // The time when CheckIfGoodCandidateForReadingMode was triggered.
+  base::TimeTicks candidate_check_triggered_time_ms_;
+
+  // A timer for delaying showing the ominbox entrypoint to ensure the user is
+  // actually attempting to read the page.
+  std::unique_ptr<base::RetainingOneShotTimer> page_dwell_timer_;
 
   base::ObserverList<ReadAnythingSidePanelController::Observer> observers_;
 

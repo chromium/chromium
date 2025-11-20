@@ -10,6 +10,8 @@
 #include <optional>
 
 #include "base/check_is_test.h"
+#include "base/functional/bind.h"
+#include "base/time/time.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/dom_distiller/tab_utils.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
@@ -293,8 +295,10 @@ void ReadAnythingSidePanelController::CheckIfGoodCandidateForReadingMode() {
 
   // Readability will callback with whether or not the current contents are a
   // good candidate for distillation.
-  // TODO(crbug.com/c/455640523): Show this entrypoint max 3 times in 3 days if
-  // it's not clicked.
+  candidate_check_triggered_time_ms_ = base::TimeTicks::Now();
+  if (page_dwell_timer_) {
+    page_dwell_timer_->Stop();
+  }
   RunReadabilityHeuristicsOnWebContents(
       tab_->GetContents(),
       base::BindOnce(&ReadAnythingSidePanelController::OnReadabilityResult,
@@ -302,6 +306,40 @@ void ReadAnythingSidePanelController::CheckIfGoodCandidateForReadingMode() {
 }
 
 void ReadAnythingSidePanelController::OnReadabilityResult(bool should_show) {
+  if (!features::IsReadAnythingOmniboxChipEnabled() ||
+      (!tab_->IsActivated() && should_show)) {
+    return;
+  }
+
+  base::TimeDelta time_since_page_shown_ =
+      base::TimeTicks::Now() - candidate_check_triggered_time_ms_;
+  // Always hide the omnibox immediately when it should be hidden. Use a delay
+  // to show the omnibox to ensure the user intends to consume this page.
+  if (!should_show ||
+      time_since_page_shown_.InMilliseconds() >= kShowPageActionDelayMs) {
+    UpdateOmniboxEntryPoint(should_show);
+  } else if (should_show) {
+    auto timer_length =
+        base::Milliseconds(kShowPageActionDelayMs) - time_since_page_shown_;
+    if (!page_dwell_timer_) {
+      page_dwell_timer_ = std::make_unique<base::RetainingOneShotTimer>();
+    }
+    page_dwell_timer_->Start(
+        FROM_HERE, timer_length,
+        base::BindRepeating(
+            &ReadAnythingSidePanelController::UpdateOmniboxEntryPoint,
+            base::Unretained(this), should_show));
+  }
+}
+
+void ReadAnythingSidePanelController::UpdateOmniboxEntryPoint(
+    bool should_show) {
+  // Don't show the entrypoint if the tab is no longer active.
+  if (!features::IsReadAnythingOmniboxChipEnabled() ||
+      (!tab_->IsActivated() && should_show)) {
+    return;
+  }
+
   read_anything::ReadAnythingEntryPointController::UpdatePageActionVisibility(
       should_show, tab_->GetBrowserWindowInterface());
 }
