@@ -111,7 +111,6 @@ void DOMPluginArray::refresh(bool reload) {
   if (!window_) {
     return;
   }
-  PluginData::RefreshBrowserSidePluginCache();
   if (PluginData* data = GetPluginData()) {
     data->ResetPluginData();
   }

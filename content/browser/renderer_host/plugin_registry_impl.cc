@@ -15,10 +15,6 @@
 
 namespace content {
 
-namespace {
-constexpr auto kPluginRefreshThreshold = base::Seconds(3);
-}  // namespace
-
 PluginRegistryImpl::PluginRegistryImpl(int render_process_id)
     : render_process_id_(render_process_id) {}
 
@@ -29,7 +25,7 @@ void PluginRegistryImpl::Bind(
   receivers_.Add(this, std::move(receiver));
 }
 
-void PluginRegistryImpl::GetPlugins(bool refresh, GetPluginsCallback callback) {
+void PluginRegistryImpl::GetPlugins(GetPluginsCallback callback) {
   RenderProcessHost* rph = RenderProcessHost::FromID(render_process_id_);
   if (!rph) {
     std::move(callback).Run(std::vector<blink::mojom::PluginInfoPtr>());
@@ -37,22 +33,7 @@ void PluginRegistryImpl::GetPlugins(bool refresh, GetPluginsCallback callback) {
   }
 
   auto* plugin_service = PluginServiceImpl::GetInstance();
-
-  // Don't refresh if the specified threshold has not been passed.  Note that
-  // this check is performed before off-loading to the file thread.  The reason
-  // we do this is that some pages tend to request that the list of plugins be
-  // refreshed at an excessive rate.  This instigates disk scanning, as the list
-  // is accumulated by doing multiple reads from disk.  This effect is
-  // multiplied when we have several pages requesting this operation.
-  if (refresh) {
-    const base::TimeTicks now = base::TimeTicks::Now();
-    if (now - last_plugin_refresh_time_ >= kPluginRefreshThreshold) {
-      // Only refresh if the threshold hasn't been exceeded yet.
-      plugin_service->RefreshPlugins();
-      last_plugin_refresh_time_ = now;
-    }
-  }
-
+  plugin_service->RefreshPlugins();
   PluginServiceFilter* filter = PluginServiceImpl::GetInstance()->GetFilter();
   std::vector<blink::mojom::PluginInfoPtr> plugins;
   const base::flat_set<std::string> mime_handler_view_mime_types =

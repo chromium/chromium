@@ -87,18 +87,11 @@ void PluginData::Trace(Visitor* visitor) const {
   visitor->Trace(mimes_);
 }
 
-// static
-void PluginData::RefreshBrowserSidePluginCache() {
-  mojo::Remote<mojom::blink::PluginRegistry> registry;
-  Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
-      registry.BindNewPipeAndPassReceiver());
-  Vector<mojom::blink::PluginInfoPtr> plugins;
-  registry->GetPlugins(true, &plugins);
-}
-
 void PluginData::UpdatePluginList() {
-  if (updated_)
+  if (updated_) {
     return;
+  }
+
   ResetPluginData();
   updated_ = true;
 
@@ -106,7 +99,7 @@ void PluginData::UpdatePluginList() {
   Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
       registry.BindNewPipeAndPassReceiver());
   Vector<mojom::blink::PluginInfoPtr> plugins;
-  registry->GetPlugins(false, &plugins);
+  registry->GetPlugins(&plugins);
   for (const auto& plugin : plugins) {
     auto* plugin_info = MakeGarbageCollected<PluginInfo>(
         std::move(plugin->name), FilePathToWebString(plugin->filename),

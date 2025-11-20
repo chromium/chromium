@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_PLUGIN_REGISTRY_IMPL_H_
 #define CONTENT_BROWSER_RENDERER_HOST_PLUGIN_REGISTRY_IMPL_H_
 
-#include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/mojom/plugins/plugin_registry.mojom.h"
@@ -20,12 +19,11 @@ class PluginRegistryImpl : public blink::mojom::PluginRegistry {
   void Bind(mojo::PendingReceiver<blink::mojom::PluginRegistry> receiver);
 
   // blink::mojom::PluginRegistry
-  void GetPlugins(bool refresh, GetPluginsCallback callback) override;
+  void GetPlugins(GetPluginsCallback callback) override;
 
  private:
   const int render_process_id_;
   mojo::ReceiverSet<PluginRegistry> receivers_;
-  base::TimeTicks last_plugin_refresh_time_;
 };
 
 }  // namespace content

@@ -19,12 +19,12 @@ namespace {
 
 class MockPluginRegistry : public mojom::blink::PluginRegistry {
  public:
-  void GetPlugins(bool refresh, GetPluginsCallback callback) override {
-    DidGetPlugins(refresh);
+  void GetPlugins(GetPluginsCallback callback) override {
+    DidGetPlugins();
     std::move(callback).Run(Vector<mojom::blink::PluginInfoPtr>());
   }
 
-  MOCK_METHOD(void, DidGetPlugins, (bool));
+  MOCK_METHOD(void, DidGetPlugins, ());
 };
 
 TEST(PluginDataTest, UpdatePluginList) {
@@ -48,7 +48,7 @@ TEST(PluginDataTest, UpdatePluginList) {
           },
           Unretained(&registry_receiver)));
 
-  EXPECT_CALL(mock_plugin_registry, DidGetPlugins(false));
+  EXPECT_CALL(mock_plugin_registry, DidGetPlugins());
 
   auto* plugin_data = MakeGarbageCollected<PluginData>();
   plugin_data->UpdatePluginList();
