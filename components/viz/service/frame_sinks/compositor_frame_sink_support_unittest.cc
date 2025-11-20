@@ -161,10 +161,10 @@ class CompositorFrameSinkSupportTestBase : public testing::Test {
   void AddResourcesToFrame(CompositorFrame* frame,
                            base::span<ResourceId> resource_ids) {
     for (ResourceId resource_id : resource_ids) {
-      TransferableResource resource;
+      TransferableResource resource = TransferableResource::Make(
+          gpu::ClientSharedImage::CreateForTesting(),
+          TransferableResource::ResourceSource::kTest, frame_sync_token_);
       resource.id = resource_id;
-      resource.set_texture_target(GL_TEXTURE_2D);
-      resource.set_sync_token(frame_sync_token_);
       frame->resource_list.push_back(resource);
     }
   }
@@ -836,9 +836,10 @@ TEST_P(AckOnSurfaceActivationWhenInteractiveTest, EvictLastActivatedSurface) {
   LocalSurfaceId local_surface_id(7, kArbitraryToken);
   SurfaceId id(kAnotherArbitraryFrameSinkId, local_surface_id);
 
-  TransferableResource resource;
+  TransferableResource resource = TransferableResource::Make(
+      gpu::ClientSharedImage::CreateForTesting(),
+      TransferableResource::ResourceSource::kTest, gpu::SyncToken());
   resource.id = ResourceId(1);
-  resource.set_texture_target(GL_TEXTURE_2D);
   auto frame = CompositorFrameBuilder()
                    .AddDefaultRenderPass()
                    .AddTransferableResource(resource)

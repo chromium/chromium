@@ -65,11 +65,12 @@ bool DisplayResourceProvider::OnMemoryDump(
     const auto& resource = resource_entry.second;
 
     bool backing_memory_allocated = false;
-    if (resource.transferable.is_software)
+    if (resource.transferable.GetIsSoftware()) {
       backing_memory_allocated =
           resource.shared_image_representation_created_and_set;
-    else
+    } else {
       backing_memory_allocated = !!resource.image_context;
+    }
 
     if (!backing_memory_allocated) {
       // Don't log unallocated resources - they have no backing memory.
@@ -171,7 +172,7 @@ int DisplayResourceProvider::GetChildId(ResourceId id) const {
 }
 
 bool DisplayResourceProvider::IsResourceSoftwareBacked(ResourceId id) const {
-  return GetResource(id)->transferable.is_software;
+  return GetResource(id)->transferable.GetIsSoftware();
 }
 
 const gfx::Size DisplayResourceProvider::GetResourceBackedSize(
@@ -185,8 +186,7 @@ SharedImageFormat DisplayResourceProvider::GetSharedImageFormat(
   return resource->transferable.GetFormat();
 }
 
-const gfx::ColorSpace& DisplayResourceProvider::GetColorSpace(
-    ResourceId id) const {
+gfx::ColorSpace DisplayResourceProvider::GetColorSpace(ResourceId id) const {
   const ChildResource* resource = GetResource(id);
   return resource->transferable.GetColorSpace();
 }
@@ -251,7 +251,7 @@ void DisplayResourceProvider::ReceiveFromChild(
       continue;
     }
 
-    if (transferable_resource.is_software != IsSoftware() ||
+    if (transferable_resource.GetIsSoftware() != IsSoftware() ||
         transferable_resource.is_empty()) {
       TRACE_EVENT0(
           "viz", "DisplayResourceProvider::ReceiveFromChild dropping invalid");
