@@ -21,6 +21,9 @@ const GPM_AAGUID = new Uint8Array([
   // clang-format on
 ]);
 
+// The algorithm supported for passkey registration or attestation.
+const ES256 = -7;
+
 // Checks whether provided aaguid is equal to Google Password Manager's aaguid.
 function isGpmAaguid(aaguid: Uint8Array): boolean {
   if (aaguid.byteLength !== GPM_AAGUID.byteLength) {
@@ -54,8 +57,9 @@ function isConditionalMediation(
 }
 
 // Converts an array buffer to a base 64 encoded (forgiving policy) string.
+// base64 spec: https://datatracker.ietf.org/doc/html/rfc4648#autoid-9
 function arrayBufferToBase64(buffer: ArrayBufferLike): string {
-  // TODO(crbug.com/385174410): replace with binary.toBase64() on WebKit 18.2+.
+  // TODO(crbug.com/460485333): replace with binary.toBase64() on WebKit 18.2+.
   const binary = new Uint8Array(buffer);
   let base64 = '';
   binary.forEach((byte) => {
@@ -63,6 +67,47 @@ function arrayBufferToBase64(buffer: ArrayBufferLike): string {
   });
 
   return btoa(base64);
+}
+
+// Converts an array buffer to a base 64 encoded (strict policy) string.
+// base64url spec: https://datatracker.ietf.org/doc/html/rfc4648#autoid-10
+function arrayBufferToBase64URL(buffer: ArrayBufferLike): string {
+  // URL-Safe substitutions.
+  let urlSafeBase64 = arrayBufferToBase64(buffer)
+                          .replace(/\+/g, '-')   // Replace + with -
+                          .replace(/\//g, '_');  // Replace / with _
+
+  // Remove padding characters (=).
+  urlSafeBase64 = urlSafeBase64.replace(/={1,2}$/, '');
+
+  return urlSafeBase64;
+}
+
+// Converts a string to array buffer.
+function stringToArrayBuffer(str: string): ArrayBuffer {
+  const len = str.length;
+  const bytes = new Uint8Array(len);
+
+  for (let i = 0; i < len; i++) {
+    bytes[i] = str.charCodeAt(i);
+  }
+
+  return bytes.buffer;
+}
+
+// Converts a base 64 encoded string (strict policy) to an array buffer.
+// base64url spec: https://datatracker.ietf.org/doc/html/rfc4648#autoid-10
+function decodeBase64URLToArrayBuffer(base64: string): ArrayBuffer {
+  // Reverse URL-Safe substitutions.
+  let standardBase64 = base64
+                           .replace(/-/g, '+')   // Replace - with +
+                           .replace(/_/g, '/');  // Replace _ with /
+
+  // Re-add padding characters (=).
+  const paddingLength = (4 - standardBase64.length % 4) % 4;
+  standardBase64 += '==='.substring(0, paddingLength);
+
+  return stringToArrayBuffer(atob(standardBase64));
 }
 
 // Converts a buffer source to a base 64 encoded (forgiving policy) string.
@@ -179,7 +224,7 @@ function createPublicKeyCredential(
     rawId: rawId,
     response: response,
     getClientExtensionResults(): AuthenticationExtensionsClientOutputs {
-      // TODO(crbug.com/385174410): implement when adding extension support.
+      // TODO(crbug.com/460485679): implement when adding extension support.
       return {};
     },
     toJSON(): any {
@@ -190,6 +235,34 @@ function createPublicKeyCredential(
         rawId: this.rawId,
         response: this.response,
       };
+    },
+  };
+}
+
+function createAuthenticatorAttestationResponse(
+    attestationObj: ArrayBuffer,
+    clientDataJson: string): AuthenticatorAttestationResponse {
+  return {
+    attestationObject: attestationObj,
+    clientDataJSON: stringToArrayBuffer(clientDataJson),
+    getAuthenticatorData(): ArrayBuffer {
+      // TODO(crbug.com/460485333): Check if we need a real implementation.
+      // If so, provide output of AuthenticatorData::SerializeToByteArray()
+      // from MakeAttestationObjectForCreation() here.
+      return new ArrayBuffer(0);
+    },
+    getPublicKey(): ArrayBuffer |
+        null {
+          // TODO(crbug.com/460485333): Check if we need a real implementation.
+          // If so, provide `public_key_spki_der` here.
+          return null;
+        },
+    getPublicKeyAlgorithm(): number {
+      return ES256;
+    },
+    getTransports(): string[] {
+      // Passkeys created by GPM have the 'hybrid' and 'internal' transports.
+      return ['hybrid', 'internal'];
     },
   };
 }
@@ -207,7 +280,7 @@ class DeferredPublicKeyCredentialPromise {
   public resolve!: ResolveFunction<PublicKeyCredential>;
   // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
   public reject!: RejectFunction;
-  // TODO(crbug.com/385174410): keep a map of promises with unique ids instead
+  // TODO(crbug.com/460485333): keep a map of promises with unique ids instead
   // of a single promise.
   static ongoingPromise: DeferredPublicKeyCredentialPromise|null = null;
 
@@ -336,6 +409,7 @@ const credentialsContainer: CredentialsContainer = {
     if (shouldHandleModalPasskeyRequests() &&
         !isConditionalMediation(options) && options.publicKey.challenge) {
       return createAttestationRequest(options.publicKey).then(_ => {
+        // TODO(crbug.com/460485333): validate result and return if valid.
         return createPassthroughAttestationRequest(options);
       });
     } else {
@@ -353,6 +427,7 @@ const credentialsContainer: CredentialsContainer = {
         !isConditionalMediation(options) && options.publicKey.challenge &&
         options.publicKey.user && options.publicKey.user.id) {
       return createRegistrationRequest(options.publicKey).then(_ => {
+        // TODO(crbug.com/460485333): validate result and return if valid.
         return createPassthroughRegistrationRequest(options);
       });
     } else {
@@ -381,8 +456,24 @@ function deferToRenderer(): void {
   DeferredPublicKeyCredentialPromise.ongoingPromise?.resolve(emptyCredential);
 }
 
+// Function called from C++ to resolve the deferred promise with a valid
+// attestation credential.
+function resolveAttestationRequest(
+    id64: string, attestationObject64: string, clientDataJson: string): void {
+  const attestationObj = decodeBase64URLToArrayBuffer(attestationObject64);
+  const response: AuthenticatorAttestationResponse =
+      createAuthenticatorAttestationResponse(attestationObj, clientDataJson);
+
+  const id = decodeBase64URLToArrayBuffer(id64);
+  const credential: PublicKeyCredential = createPublicKeyCredential(
+      arrayBufferToBase64URL(id), 'platform', id, response);
+
+  DeferredPublicKeyCredentialPromise.ongoingPromise?.resolve(credential);
+}
+
 const passkey = new CrWebApi();
 
 passkey.addFunction('deferToRenderer', deferToRenderer);
+passkey.addFunction('resolveAttestationRequest', resolveAttestationRequest);
 
 gCrWeb.registerApi('passkey', passkey);

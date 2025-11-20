@@ -9,6 +9,7 @@
 #import <vector>
 
 #import "base/memory/weak_ptr.h"
+#import "components/webauthn/core/browser/passkey_model.h"
 #import "components/webauthn/ios/ios_passkey_client.h"
 #import "device/fido/public_key_credential_descriptor.h"
 #import "device/fido/public_key_credential_rp_entity.h"
@@ -19,10 +20,6 @@
 namespace sync_pb {
 class WebauthnCredentialSpecifics;
 }  // namespace sync_pb
-
-namespace webauthn {
-class PasskeyModel;
-}  // namespace webauthn
 
 namespace web {
 class WebFrame;
@@ -48,7 +45,8 @@ class PasskeyTabHelper : public web::WebStateObserver,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml)
 
-  struct RequestParams {
+  class RequestParams {
+   public:
     RequestParams();
     RequestParams(const std::string& frame_id,
                   device::PublicKeyCredentialRpEntity rp_entity,
@@ -63,7 +61,8 @@ class PasskeyTabHelper : public web::WebStateObserver,
     const device::UserVerificationRequirement user_verification_;
   };
 
-  struct AssertionRequestParams {
+  class AssertionRequestParams {
+   public:
     AssertionRequestParams(
         RequestParams request_params,
         std::vector<device::PublicKeyCredentialDescriptor> allow_credentials);
@@ -73,11 +72,17 @@ class PasskeyTabHelper : public web::WebStateObserver,
     // Returns the credential ids contained in `allow_credentials_`.
     const std::set<std::string> GetAllowCredentialIds() const;
 
+    // Returns the relying party identifier.
+    const std::string& RpId() const;
+
     RequestParams request_params_;
+
+   private:
     const std::vector<device::PublicKeyCredentialDescriptor> allow_credentials_;
   };
 
-  struct RegistrationRequestParams {
+  class RegistrationRequestParams {
+   public:
     RegistrationRequestParams(
         RequestParams request_params,
         device::PublicKeyCredentialUserEntity user_entity,
@@ -88,7 +93,15 @@ class PasskeyTabHelper : public web::WebStateObserver,
     // Returns the credential ids contained in `exclude_credentials_`.
     const std::set<std::string> GetExcludeCredentialIds() const;
 
+    // Returns the relying party identifier.
+    const std::string& RpId() const;
+
+    // Converts `user_entity_` to webauthn::PasskeyModel::UserEntity.
+    webauthn::PasskeyModel::UserEntity UserEntity() const;
+
     RequestParams request_params_;
+
+   private:
     const device::PublicKeyCredentialUserEntity user_entity_;
     const std::vector<device::PublicKeyCredentialDescriptor>
         exclude_credentials_;
@@ -129,6 +142,19 @@ class PasskeyTabHelper : public web::WebStateObserver,
   std::vector<sync_pb::WebauthnCredentialSpecifics> GetFilteredPasskeys(
       const AssertionRequestParams& params) const;
 
+  // Requests a passkey to be created given the provided params.
+  // Fetches the shared keys list and calls the CompletePasskeyCreation
+  // callback.
+  void StartPasskeyCreation(RegistrationRequestParams params);
+
+  // Callback which creates a passkey given the provided shared keys list and
+  // params. The newly created passkey is added to the passkey model and the
+  // parameters required to resolve the PublicKeyCredential request are sent to
+  // PasskeyJavaScriptFeature.
+  void CompletePasskeyCreation(RegistrationRequestParams params,
+                               std::string client_data_json,
+                               const webauthn::SharedKeyList& shared_key_list);
+
   // Adds a passkey to the passkey model while enabling the passkey creation
   // infobar to be displayed if possible.
   void AddNewPasskey(sync_pb::WebauthnCredentialSpecifics& passkey);
@@ -139,6 +165,9 @@ class PasskeyTabHelper : public web::WebStateObserver,
   // WebStateObserver:
   void WebStateDestroyed(web::WebState* web_state) override;
 
+  // Gets a weak pointer to this object.
+  base::WeakPtr<PasskeyTabHelper> AsWeakPtr();
+
   // Provides access to stored WebAuthn credentials.
   const raw_ref<webauthn::PasskeyModel> passkey_model_;
 
@@ -147,6 +176,10 @@ class PasskeyTabHelper : public web::WebStateObserver,
 
   // The client used to perform user facing tasks for the PasskeyTabHelper.
   std::unique_ptr<IOSPasskeyClient> client_;
+
+  // This is necessary because this object could be deleted during any callback,
+  // and we don't want to risk a UAF if that happens.
+  base::WeakPtrFactory<PasskeyTabHelper> weak_factory_{this};
 };
 
 #endif  // COMPONENTS_WEBAUTHN_IOS_PASSKEY_TAB_HELPER_H_

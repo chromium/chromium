@@ -27,19 +27,19 @@ IOSChromePasskeyClient::IOSChromePasskeyClient(web::WebState* web_state) {
 IOSChromePasskeyClient::~IOSChromePasskeyClient() {}
 
 bool IOSChromePasskeyClient::PerformUserVerification() {
-  // TODO(crbug.com/385174410): Perform user verification.
+  // TODO(crbug.com/460484682): Perform user verification.
   // See PasskeyKeychainProvider::Reauthenticate and ReauthenticationModule.
   return false;
 }
 
 void IOSChromePasskeyClient::FetchKeys(webauthn::ReauthenticatePurpose purpose,
                                        webauthn::KeysFetchedCallback callback) {
-  // TODO(crbug.com/385174410): Fetch the keys. See PasskeyKeychainProvider.
+  // TODO(crbug.com/460485614): Fetch the keys. See PasskeyKeychainProvider.
   std::move(callback).Run({});
 }
 
 void IOSChromePasskeyClient::ShowSuggestionBottomSheet() {
-  // TODO(crbug.com/385174410): Open the suggestion bottom sheet.
+  // TODO(crbug.com/460486095): Open the suggestion bottom sheet.
   // See CredentialSuggestionBottomSheet* classes.
 }
 

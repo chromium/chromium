@@ -200,7 +200,7 @@ device::PublicKeyCredentialRpEntity ExtractRpEntity(
 // Converts the provided string to a UserVerificationRequirement enum.
 device::UserVerificationRequirement ExtractUserVerification(
     const std::string* user_verification) {
-  // TODO(crbug.com/385174410): Verifiy that this is the correct default value.
+  // TODO(crbug.com/460484682): Verify that this is the correct default value.
   device::UserVerificationRequirement user_verification_requirement =
       device::UserVerificationRequirement::kPreferred;
 
@@ -208,7 +208,7 @@ device::UserVerificationRequirement ExtractUserVerification(
     return user_verification_requirement;
   }
 
-  // TODO(crbug.com/385174410): Merge this code with
+  // TODO(crbug.com/460484682): Merge this code with
   // UserVerificationPreferenceFromString().
   NSString* user_verification_preference_string =
       base::SysUTF8ToNSString(*user_verification);
@@ -339,6 +339,19 @@ PasskeyJavaScriptFeature::~PasskeyJavaScriptFeature() = default;
 
 void PasskeyJavaScriptFeature::DeferToRenderer(web::WebFrame* web_frame) {
   CallJavaScriptFunction(web_frame, "passkey.deferToRenderer", {});
+}
+
+void PasskeyJavaScriptFeature::ResolveAttestationRequest(
+    web::WebFrame* web_frame,
+    const std::string& credential_id,
+    std::vector<uint8_t> attestation_object,
+    std::string_view client_data_json) {
+  base::Value::List parameters;
+  parameters.Append(base::Base64Encode(credential_id));
+  parameters.Append(base::Base64Encode(attestation_object));
+  parameters.Append(client_data_json);
+  CallJavaScriptFunction(web_frame, "passkey.resolveAttestationRequest",
+                         parameters);
 }
 
 std::optional<std::string>

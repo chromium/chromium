@@ -25,6 +25,12 @@ class PasskeyJavaScriptFeature : public web::JavaScriptFeature {
   // Yields the current attestation or registration request back to the OS.
   void DeferToRenderer(web::WebFrame* web_frame);
 
+  // Resolves the attestation request with a valid passkey.
+  void ResolveAttestationRequest(web::WebFrame* web_frame,
+                                 const std::string& credential_id,
+                                 std::vector<uint8_t> attestation_object,
+                                 std::string_view client_data_json);
+
  private:
   friend class base::NoDestructor<PasskeyJavaScriptFeature>;
 

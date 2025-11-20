@@ -17,7 +17,7 @@
 // Class to manage passkey vault keys.
 class PasskeyKeychainProvider {
  public:
-  // TODO(crbug.com/385174410): Remove these 4 type aliases once everything else
+  // TODO(crbug.com/460485614): Remove these 4 type aliases once everything else
   // uses the webauthn types directly.
   using ReauthenticatePurpose = webauthn::ReauthenticatePurpose;
   using SharedKey = webauthn::SharedKey;

@@ -10,7 +10,8 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
 #import "components/password_manager/ios/ios_password_manager_driver_factory.h"
-#import "components/webauthn/core/browser/passkey_model.h"
+#import "components/webauthn/core/browser/client_data_json.h"
+#import "components/webauthn/core/browser/passkey_model_utils.h"
 #import "components/webauthn/ios/passkey_java_script_feature.h"
 #import "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
@@ -59,6 +60,31 @@ std::set<std::string> GetIdsFromDescriptors(
   return descriptor_ids;
 }
 
+// Utility function to create a passkey and an attestation object from the
+// provided parameters.
+// TODO(crbug.com/460485333): Merge this code with PerformPasskeyCreation.
+std::pair<sync_pb::WebauthnCredentialSpecifics, std::vector<uint8_t>>
+CreatePasskeyAndAttestationObject(
+    const webauthn::SharedKey& trusted_vault_key,
+    std::string_view rp_id,
+    const webauthn::PasskeyModel::UserEntity& user_entity,
+    const webauthn::passkey_model_utils::ExtensionInputData&
+        extension_input_data,
+    webauthn::passkey_model_utils::ExtensionOutputData* extension_output_data) {
+  auto [passkey, public_key_spki_der] =
+      webauthn::passkey_model_utils::GeneratePasskeyAndEncryptSecrets(
+          rp_id, user_entity, trusted_vault_key,
+          /*trusted_vault_key_version=*/0, extension_input_data,
+          extension_output_data);
+
+  // TODO(crbug.com/460485333): use the real value for `did_complete_uv`.
+  return {
+      std::move(passkey),
+      webauthn::passkey_model_utils::MakeAttestationObjectForCreation(
+          rp_id, /*did_complete_uv=*/false,
+          base::as_byte_span(passkey.credential_id()), public_key_spki_der)};
+}
+
 }  // namespace
 
 PasskeyTabHelper::RequestParams::RequestParams()
@@ -93,6 +119,10 @@ PasskeyTabHelper::AssertionRequestParams::GetAllowCredentialIds() const {
   return GetIdsFromDescriptors(allow_credentials_);
 }
 
+const std::string& PasskeyTabHelper::AssertionRequestParams::RpId() const {
+  return request_params_.rp_entity_.id;
+}
+
 PasskeyTabHelper::AssertionRequestParams::~AssertionRequestParams() {}
 
 PasskeyTabHelper::RegistrationRequestParams::RegistrationRequestParams(
@@ -109,6 +139,17 @@ PasskeyTabHelper::RegistrationRequestParams::RegistrationRequestParams(
 const std::set<std::string>
 PasskeyTabHelper::RegistrationRequestParams::GetExcludeCredentialIds() const {
   return GetIdsFromDescriptors(exclude_credentials_);
+}
+
+const std::string& PasskeyTabHelper::RegistrationRequestParams::RpId() const {
+  return request_params_.rp_entity_.id;
+}
+
+webauthn::PasskeyModel::UserEntity
+PasskeyTabHelper::RegistrationRequestParams::UserEntity() const {
+  return webauthn::PasskeyModel::UserEntity(
+      user_entity_.id, user_entity_.name.has_value() ? *user_entity_.name : "",
+      user_entity_.display_name.has_value() ? *user_entity_.display_name : "");
 }
 
 PasskeyTabHelper::RegistrationRequestParams::~RegistrationRequestParams() {}
@@ -128,7 +169,7 @@ void PasskeyTabHelper::HandleGetRequestedEvent(AssertionRequestParams params) {
   }
 
   if (!IsOriginValidForRelyingPartyId(web_frame->GetSecurityOrigin(),
-                                      params.request_params_.rp_entity_.id)) {
+                                      params.RpId())) {
     PasskeyJavaScriptFeature::GetInstance()->DeferToRenderer(web_frame);
     return;
   }
@@ -144,7 +185,7 @@ void PasskeyTabHelper::HandleGetRequestedEvent(AssertionRequestParams params) {
     // TODO(crbug.com/462121114): Pass filtered passkeys to the delegate.
   }
 
-  // TODO(crbug.com/385174410): Handle this event.
+  // TODO(crbug.com/460485333): Handle this event.
   PasskeyJavaScriptFeature::GetInstance()->DeferToRenderer(web_frame);
 }
 
@@ -156,13 +197,13 @@ void PasskeyTabHelper::HandleCreateRequestedEvent(
   }
 
   if (!IsOriginValidForRelyingPartyId(web_frame->GetSecurityOrigin(),
-                                      params.request_params_.rp_entity_.id) ||
+                                      params.RpId()) ||
       HasExcludedPasskey(params)) {
     PasskeyJavaScriptFeature::GetInstance()->DeferToRenderer(web_frame);
     return;
   }
 
-  // TODO(crbug.com/385174410): Handle this event.
+  // TODO(crbug.com/460485333): Handle this event.
   PasskeyJavaScriptFeature::GetInstance()->DeferToRenderer(web_frame);
 }
 
@@ -199,14 +240,13 @@ web::WebFrame* PasskeyTabHelper::GetWebFrame(
 
 bool PasskeyTabHelper::HasExcludedPasskey(
     const RegistrationRequestParams& params) const {
-  if (params.exclude_credentials_.empty()) {
+  std::set<std::string> exclude_credentials = params.GetExcludeCredentialIds();
+  if (exclude_credentials.empty()) {
     return false;
   }
 
-  std::set<std::string> exclude_credentials = params.GetExcludeCredentialIds();
   std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys =
-      passkey_model_->GetPasskeysForRelyingPartyId(
-          params.request_params_.rp_entity_.id);
+      passkey_model_->GetPasskeysForRelyingPartyId(params.RpId());
   for (const auto& passkey : passkeys) {
     if (exclude_credentials.contains(passkey.credential_id())) {
       return true;
@@ -219,19 +259,18 @@ std::vector<sync_pb::WebauthnCredentialSpecifics>
 PasskeyTabHelper::GetFilteredPasskeys(
     const AssertionRequestParams& params) const {
   std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys =
-      passkey_model_->GetPasskeysForRelyingPartyId(
-          params.request_params_.rp_entity_.id);
+      passkey_model_->GetPasskeysForRelyingPartyId(params.RpId());
   if (passkeys.empty()) {
     return passkeys;
   }
 
   // If the allowed credentials array is empty, then the relying party accepts
   // any passkey credential.
-  if (params.allow_credentials_.empty()) {
+  std::set<std::string> allow_credentials = params.GetAllowCredentialIds();
+  if (allow_credentials.empty()) {
     return passkeys;
   }
 
-  std::set<std::string> allow_credentials = params.GetAllowCredentialIds();
   std::erase_if(passkeys, [&](sync_pb::WebauthnCredentialSpecifics cred) {
     return !allow_credentials.contains(cred.credential_id());
   });
@@ -246,8 +285,70 @@ void PasskeyTabHelper::AddNewPasskey(
   passkey_model_->CreatePasskey(passkey);
 }
 
+void PasskeyTabHelper::StartPasskeyCreation(RegistrationRequestParams params) {
+  web::WebFrame* web_frame = GetWebFrame(params.request_params_);
+  if (!web_frame) {
+    return;
+  }
+
+  // TODO(crbug.com/460485333): Use proper top origin.
+  std::string client_data_json = webauthn::BuildClientDataJson(
+      {webauthn::ClientDataRequestType::kWebAuthnCreate,
+       web_frame->GetSecurityOrigin(),
+       /*top_origin=*/url::Origin(), params.request_params_.challenge_,
+       /*is_cross_origin_iframe=*/false},
+      /*payment_json=*/std::nullopt);
+
+  if (client_data_json.empty()) {
+    PasskeyJavaScriptFeature::GetInstance()->DeferToRenderer(web_frame);
+    return;
+  }
+
+  client_->FetchKeys(webauthn::ReauthenticatePurpose::kEncrypt,
+                     base::BindOnce(&PasskeyTabHelper::CompletePasskeyCreation,
+                                    this->AsWeakPtr(), std::move(params),
+                                    std::move(client_data_json)));
+}
+
+void PasskeyTabHelper::CompletePasskeyCreation(
+    RegistrationRequestParams params,
+    std::string client_data_json,
+    const webauthn::SharedKeyList& shared_key_list) {
+  web::WebFrame* web_frame = GetWebFrame(params.request_params_);
+  if (!web_frame) {
+    return;
+  }
+
+  // `hw_protected` security domain currently supports a single secret.
+  if (shared_key_list.size() != 1) {
+    PasskeyJavaScriptFeature::GetInstance()->DeferToRenderer(web_frame);
+    return;
+  }
+
+  // TODO(crbug.com/460485679) : Implement extension support.
+  webauthn::passkey_model_utils::ExtensionInputData extension_input_data;
+  webauthn::passkey_model_utils::ExtensionOutputData extension_output_data;
+
+  // Create passkey and attestation object.
+  auto [passkey, attestation_object] = CreatePasskeyAndAttestationObject(
+      shared_key_list[0], params.RpId(), params.UserEntity(),
+      extension_input_data, &extension_output_data);
+
+  // Add passkey to the passkey model and present the confirmation infobar.
+  AddNewPasskey(passkey);
+
+  // Resolve the PublicKeyCredential promise.
+  PasskeyJavaScriptFeature::GetInstance()->ResolveAttestationRequest(
+      web_frame, passkey.credential_id(), std::move(attestation_object),
+      client_data_json);
+}
+
 // WebStateObserver
 
 void PasskeyTabHelper::WebStateDestroyed(web::WebState* web_state) {
   web_state->RemoveObserver(this);
+}
+
+base::WeakPtr<PasskeyTabHelper> PasskeyTabHelper::AsWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
