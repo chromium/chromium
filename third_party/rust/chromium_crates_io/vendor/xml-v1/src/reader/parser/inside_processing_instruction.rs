@@ -80,8 +80,8 @@ impl PullParser {
                 },
 
                 _ => {
-                    let buf = self.take_buf();
-                    Some(self.error(SyntaxError::UnexpectedProcessingInstruction(buf.into(), t)))
+                    let buf = self.take_buf_boxed();
+                    Some(self.error(SyntaxError::UnexpectedProcessingInstruction(buf, t)))
                 },
             },
 

@@ -1,5 +1,6 @@
 //! Contains an implementation of pull-based XML parser.
 
+use crate::reader::DoctypeRef;
 use crate::common::{is_xml10_char, is_xml11_char, is_xml11_char_not_restricted, is_name_char, is_name_start_char, is_whitespace_char};
 use crate::common::{Position, TextPosition, XmlVersion};
 use crate::name::OwnedName;
@@ -124,6 +125,9 @@ impl PullParser {
             data: MarkupData {
                 name: String::new(),
                 doctype: None,
+                doctype_name: None,
+                doctype_public_id: None,
+                doctype_system_id: None,
                 version: None,
                 encoding: None,
                 standalone: None,
@@ -153,6 +157,15 @@ impl PullParser {
     #[deprecated(note = "there is `XmlEvent::Doctype` now")]
     pub fn doctype(&self) -> Option<&str> {
         self.data.doctype.as_deref()
+    }
+
+    pub fn doctype_ids(&self) -> Option<DoctypeRef<'_>> {
+        Some(DoctypeRef {
+            syntax: self.data.doctype.as_deref()?,
+            name: self.data.doctype_name.as_deref()?,
+            public_id: self.data.doctype_public_id.as_deref(),
+            system_id: self.data.doctype_system_id.as_deref(),
+        })
     }
 
     #[inline(never)]
@@ -214,7 +227,17 @@ pub(crate) enum State {
 
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub(crate) enum DoctypeSubstate {
+    BeforeDoctypeName,
+    DoctypeName,
     Outside,
+    // PUBLIC ... SYSTEM... public and system literal parts.
+    ExternalIdKeyword,
+    BeforeSystemLiteral,
+    SystemLiteral,
+    BeforePubId,
+    PubId,
+    // Internal Subset related bits, parts inside [...].
+    InternalSubset,
     String,
     InsideName,
     BeforeEntityName,
@@ -229,6 +252,7 @@ pub(crate) enum DoctypeSubstate {
     /// name definition
     PEReferenceDefinitionStart,
     PEReferenceDefinition,
+    IgnorePI,
     SkipDeclaration,
     Comment,
 }
@@ -321,6 +345,9 @@ struct MarkupData {
     ref_data: String,  // used for reference content
 
     doctype: Option<String>, // keeps a copy of the original doctype
+    doctype_name: Option<Box<str>>,
+    doctype_public_id: Option<Box<str>>,
+    doctype_system_id: Option<Box<str>>,
     version: Option<XmlVersion>,  // used for XML declaration version
     encoding: Option<String>,  // used for XML declaration encoding
     standalone: Option<bool>,  // used for XML declaration standalone parameter
@@ -474,6 +501,13 @@ impl PullParser {
     #[inline]
     fn take_buf(&mut self) -> String {
         std::mem::take(&mut self.buf)
+    }
+
+    #[inline]
+    fn take_buf_boxed(&mut self) -> Box<str> {
+        let res = self.buf.as_str().into();
+        self.buf.clear();
+        res
     }
 
     #[inline]

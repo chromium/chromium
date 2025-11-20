@@ -91,12 +91,25 @@ pub enum XmlVersion {
     Version11,
 }
 
-impl fmt::Display for XmlVersion {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match *self {
+impl XmlVersion {
+    /// Convenience helper which returns a string representation of the given version.
+    ///
+    /// ```
+    /// # use xml::common::XmlVersion;
+    /// assert_eq!(XmlVersion::Version10.as_str(), "1.0");
+    /// assert_eq!(XmlVersion::Version11.as_str(), "1.1");
+    /// ```
+    pub fn as_str(self) -> &'static str {
+        match self {
             Self::Version10 => "1.0",
             Self::Version11 => "1.1",
-        }.fmt(f)
+        }
+    }
+}
+
+impl fmt::Display for XmlVersion {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        self.as_str().fmt(f)
     }
 }
 
@@ -114,6 +127,13 @@ impl fmt::Debug for XmlVersion {
 #[inline]
 pub const fn is_whitespace_char(c: char) -> bool {
     matches!(c, '\x20' | '\x0a' | '\x09' | '\x0d')
+}
+
+/// Matches the PubIdChar production.
+pub (crate) fn is_pubid_char(c: char) -> bool {
+    matches!(c, '\x20' | '\x0D' | '\x0A' | 'a'..='z' | 'A'..='Z' | '0'..='9' |
+        '-' | '\'' | '(' | ')' | '+' | ',' | '.' | '/' | ':' | '=' | '?' | ';' |
+        '!' | '*' | '#' | '@' | '$' | '_' | '%')
 }
 
 /// Checks whether the given string is compound only by white space

@@ -1,0 +1,833 @@
+From 85c90b779f6ac46ab8f8f97c427b7a7f778831de Mon Sep 17 00:00:00 2001
+From: Dominik Röttsches <drott@chromium.org>
+Date: Thu, 20 Nov 2025 04:59:15 -0800
+Subject: [PATCH] Make XML modifcations
+
+Change-Id: Icc58864e4393fe2725f9137f52cf92c23a5f3ba7
+---
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/xml-v1/src/common.rs b/third_party/rust/chromium_crates_io/vendor/xml-v1/src/common.rs
+index bef8e2de..bbfa23b 100644
+--- a/third_party/rust/chromium_crates_io/vendor/xml-v1/src/common.rs
++++ b/third_party/rust/chromium_crates_io/vendor/xml-v1/src/common.rs
+@@ -91,12 +91,25 @@
+     Version11,
+ }
+
+-impl fmt::Display for XmlVersion {
+-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+-        match *self {
++impl XmlVersion {
++    /// Convenience helper which returns a string representation of the given version.
++    ///
++    /// ```
++    /// # use xml::common::XmlVersion;
++    /// assert_eq!(XmlVersion::Version10.as_str(), "1.0");
++    /// assert_eq!(XmlVersion::Version11.as_str(), "1.1");
++    /// ```
++    pub fn as_str(self) -> &'static str {
++        match self {
+             Self::Version10 => "1.0",
+             Self::Version11 => "1.1",
+-        }.fmt(f)
++        }
++    }
++}
++
++impl fmt::Display for XmlVersion {
++    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
++        self.as_str().fmt(f)
+     }
+ }
+
+@@ -116,6 +129,13 @@
+     matches!(c, '\x20' | '\x0a' | '\x09' | '\x0d')
+ }
+
++/// Matches the PubIdChar production.
++pub (crate) fn is_pubid_char(c: char) -> bool {
++    matches!(c, '\x20' | '\x0D' | '\x0A' | 'a'..='z' | 'A'..='Z' | '0'..='9' |
++        '-' | '\'' | '(' | ')' | '+' | ',' | '.' | '/' | ':' | '=' | '?' | ';' |
++        '!' | '*' | '#' | '@' | '$' | '_' | '%')
++}
++
+ /// Checks whether the given string is compound only by white space
+ /// characters (`S`) using the previous `is_whitespace_char` to check
+ /// all characters of this string
+diff --git a/third_party/rust/chromium_crates_io/vendor/xml-v1/src/name.rs b/third_party/rust/chromium_crates_io/vendor/xml-v1/src/name.rs
+index c3075046..97caa18 100644
+--- a/third_party/rust/chromium_crates_io/vendor/xml-v1/src/name.rs
++++ b/third_party/rust/chromium_crates_io/vendor/xml-v1/src/name.rs
+@@ -177,15 +177,39 @@
+ #[derive(Clone, PartialEq, Eq, Hash, Debug)]
+ pub struct OwnedName {
+     /// A local name, e.g. `string` in `xsi:string`.
++    ///
++    /// Local name is ambiguous, because multiple namespaces can share the same name.
++    /// Always check `namespace` too.
+     pub local_name: String,
+
+     /// A namespace URI, e.g. `http://www.w3.org/2000/xmlns/`.
++    ///
++    /// `None` for default namespace.
++    ///
++    /// Note that in XML attributes don't inherit element's namespace
++    /// and are in the default namespace unless they have a prefix.
+     pub namespace: Option<String>,
+
+-    /// A name prefix, e.g. `xsi` in `xsi:string`.
++    /// Semantically meaningless name prefix, e.g. `xsi` in `xsi:string`.
++    ///
++    /// Prefixes are just a syntactic detail used for decoration or to avoid repetition.
++    /// Only `namespace` matters for identity of the element.
+     pub prefix: Option<String>,
+ }
+
++impl PartialEq<(&str, &str)> for OwnedName {
++    /// Compare `(namespaceURI, localName)`. Default namespace is `""`.
++    fn eq(&self, other: &(&str, &str)) -> bool {
++        other.1.eq(&self.local_name) && other.0.eq(self.namespace.as_deref().unwrap_or_default())
++    }
++}
++impl PartialEq<OwnedName> for (&str, &str) {
++    /// Compare `(namespaceURI, localName)`. Default namespace is `""`.
++    fn eq(&self, other: &OwnedName) -> bool {
++        other.eq(self)
++    }
++}
++
+ impl fmt::Display for OwnedName {
+     #[inline]
+     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+diff --git a/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader.rs b/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader.rs
+index a6aff18e..e318398 100644
+--- a/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader.rs
++++ b/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader.rs
+@@ -11,7 +11,7 @@
+
+ pub use self::config::ParserConfig;
+ pub use self::error::{Error, ErrorKind};
+-pub use self::events::XmlEvent;
++pub use events::{XmlEvent, DoctypeRef};
+
+ // back compat
+ #[doc(hidden)]
+@@ -109,7 +109,7 @@
+
+     /// Returns the DOCTYPE of the document if it has already been seen
+     ///
+-    /// Available only after the root `StartElement` event
++    /// Available only after the `Doctype` event
+     #[inline]
+     #[deprecated(note = "there is `XmlEvent::Doctype` now")]
+     #[allow(deprecated)]
+@@ -117,6 +117,14 @@
+         self.parser.doctype()
+     }
+
++    /// Returns PUBLIC/SYSTEM DOCTYPE IDs if it has already been seen
++    ///
++    /// Available only after the `Doctype` event
++    #[inline]
++    pub fn doctype_ids(&self) -> Option<DoctypeRef<'_>> {
++        self.parser.doctype_ids()
++    }
++
+     /// Add new entity definitions **before any XML elements have been parsed**.
+     ///
+     /// ## Errors
+diff --git a/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/events.rs b/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/events.rs
+index b027fcca..22b02d9 100644
+--- a/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/events.rs
++++ b/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/events.rs
+@@ -117,6 +117,43 @@
+     },
+ }
+
++/// Supplement to the Doctype event (use the event if you want the full syntax)
++pub struct DoctypeRef<'tmp> {
++    pub(crate) syntax: &'tmp str,
++    /// Doctype name, following <?DOCTYPE ...
++    pub(crate) name: &'tmp str,
++    /// Public id of Doctype, if available. See https://www.w3.org/TR/xml/#NT-ExternalID
++    pub(crate) public_id: Option<&'tmp str>,
++    /// System id of Doctype, if available See https://www.w3.org/TR/xml/#NT-ExternalID
++    pub(crate) system_id: Option<&'tmp str>,
++}
++
++impl DoctypeRef<'_> {
++    /// Doctype name, following <?DOCTYPE ...
++    pub fn name(&self) -> &str {
++        self.name
++    }
++
++    /// Public id of Doctype, if available. See https://www.w3.org/TR/xml/#NT-ExternalID
++    pub fn public_id(&self) -> Option<&str> {
++        self.public_id
++    }
++
++    /// System id of Doctype, if available See https://www.w3.org/TR/xml/#NT-ExternalID
++    pub fn system_id(&self) -> Option<&str> {
++        self.system_id
++    }
++}
++
++impl std::ops::Deref for DoctypeRef<'_> {
++    type Target = str;
++
++    /// Don't use it. It's for back-compat with v0.8
++    fn deref(&self) -> &Self::Target {
++        self.syntax
++    }
++}
++
+ impl fmt::Debug for XmlEvent {
+     #[cold]
+     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+@@ -223,7 +260,7 @@
+             Self::CData(data) => Some(crate::writer::events::XmlEvent::CData(data)),
+             Self::Characters(data) |
+             Self::Whitespace(data) => Some(crate::writer::events::XmlEvent::Characters(data)),
+-            Self::Doctype { syntax } => Some(crate::writer::events::XmlEvent::Doctype(syntax)),
++            Self::Doctype { syntax, .. } => Some(crate::writer::events::XmlEvent::Doctype(syntax)),
+             Self::EndDocument => None,
+         }
+     }
+diff --git a/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser.rs b/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser.rs
+index 3b78f56..e60db8b 100644
+--- a/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser.rs
++++ b/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser.rs
+@@ -1,5 +1,6 @@
+ //! Contains an implementation of pull-based XML parser.
+
++use crate::reader::DoctypeRef;
+ use crate::common::{is_xml10_char, is_xml11_char, is_xml11_char_not_restricted, is_name_char, is_name_start_char, is_whitespace_char};
+ use crate::common::{Position, TextPosition, XmlVersion};
+ use crate::name::OwnedName;
+@@ -124,6 +125,9 @@
+             data: MarkupData {
+                 name: String::new(),
+                 doctype: None,
++                doctype_name: None,
++                doctype_public_id: None,
++                doctype_system_id: None,
+                 version: None,
+                 encoding: None,
+                 standalone: None,
+@@ -155,6 +159,15 @@
+         self.data.doctype.as_deref()
+     }
+
++    pub fn doctype_ids(&self) -> Option<DoctypeRef<'_>> {
++        Some(DoctypeRef {
++            syntax: self.data.doctype.as_deref()?,
++            name: self.data.doctype_name.as_deref()?,
++            public_id: self.data.doctype_public_id.as_deref(),
++            system_id: self.data.doctype_system_id.as_deref(),
++        })
++    }
++
+     #[inline(never)]
+     fn set_encountered(&mut self, new_encounter: Encountered) -> Option<Result> {
+         if new_encounter <= self.encountered {
+@@ -214,7 +227,17 @@
+
+ #[derive(Copy, Clone, PartialEq, Debug)]
+ pub(crate) enum DoctypeSubstate {
++    BeforeDoctypeName,
++    DoctypeName,
+     Outside,
++    // PUBLIC ... SYSTEM... public and system literal parts.
++    ExternalIdKeyword,
++    BeforeSystemLiteral,
++    SystemLiteral,
++    BeforePubId,
++    PubId,
++    // Internal Subset related bits, parts inside [...].
++    InternalSubset,
+     String,
+     InsideName,
+     BeforeEntityName,
+@@ -229,6 +252,7 @@
+     /// name definition
+     PEReferenceDefinitionStart,
+     PEReferenceDefinition,
++    IgnorePI,
+     SkipDeclaration,
+     Comment,
+ }
+@@ -321,6 +345,9 @@
+     ref_data: String,  // used for reference content
+
+     doctype: Option<String>, // keeps a copy of the original doctype
++    doctype_name: Option<Box<str>>,
++    doctype_public_id: Option<Box<str>>,
++    doctype_system_id: Option<Box<str>>,
+     version: Option<XmlVersion>,  // used for XML declaration version
+     encoding: Option<String>,  // used for XML declaration encoding
+     standalone: Option<bool>,  // used for XML declaration standalone parameter
+@@ -477,6 +504,13 @@
+     }
+
+     #[inline]
++    fn take_buf_boxed(&mut self) -> Box<str> {
++        let res = self.buf.as_str().into();
++        self.buf.clear();
++        res
++    }
++
++    #[inline]
+     #[allow(clippy::wrong_self_convention)]
+     fn into_state(&mut self, st: State, ev: Option<Result>) -> Option<Result> {
+         self.st = st;
+diff --git a/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser/inside_doctype.rs b/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser/inside_doctype.rs
+index c33ba38e..662b75d 100644
+--- a/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser/inside_doctype.rs
++++ b/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser/inside_doctype.rs
+@@ -1,6 +1,6 @@
+ use std::fmt::Write;
+
+-use crate::common::{is_name_char, is_name_start_char, is_whitespace_char};
++use crate::common::{is_name_char, is_name_start_char, is_pubid_char, is_whitespace_char};
+ use crate::reader::error::SyntaxError;
+ use crate::reader::lexer::Token;
+ use crate::reader::XmlEvent;
+@@ -17,32 +17,177 @@
+         }
+
+         match substate {
++            DoctypeSubstate::BeforeDoctypeName => match t {
++                Token::Character(c) if is_whitespace_char(c) => None,
++                Token::Character(c) if is_name_start_char(c) => {
++                    self.buf.push(c);
++                    self.into_state_continue(State::InsideDoctype(DoctypeSubstate::DoctypeName))
++                }
++                _ => Some(self.error(SyntaxError::UnexpectedToken(t))),
++            },
++            DoctypeSubstate::DoctypeName => match t {
++                Token::TagEnd => {
++                    self.data.doctype_name = Some(self.take_buf_boxed());
++                    let event = XmlEvent::Doctype {
++                        syntax: self.data.doctype.clone().unwrap_or_default(),
++                    };
++                    self.into_state_emit(State::OutsideTag, Ok(event))
++                }
++                Token::Character(c) if is_whitespace_char(c) => {
++                    self.data.doctype_name = Some(self.take_buf_boxed());
++                    self.into_state_continue(State::InsideDoctype(DoctypeSubstate::Outside))
++                }
++                Token::Character(c) if is_name_char(c) => {
++                    self.buf.push(c);
++                    if self.buf.len() > self.config.max_name_length {
++                        return Some(self.error(SyntaxError::ExceededConfiguredLimit));
++                    }
++                    None
++                }
++                _ => Some(self.error(SyntaxError::UnexpectedToken(t))),
++            },
++            DoctypeSubstate::ExternalIdKeyword => match t {
++                Token::Character(c @ 'A'..='Z') => {
++                    self.buf.push(c);
++                    if self.buf == "SYSTEM" {
++                        self.buf.clear();
++                        return self.into_state_continue(State::InsideDoctype(
++                            DoctypeSubstate::BeforeSystemLiteral,
++                        ));
++                    }
++                    if self.buf == "PUBLIC" {
++                        self.buf.clear();
++                        return self.into_state_continue(State::InsideDoctype(
++                            DoctypeSubstate::BeforePubId,
++                        ));
++                    }
++                    if "PUBLIC".starts_with(&self.buf) || "SYSTEM".starts_with(&self.buf) {
++                        return None;
++                    }
++                    Some(self.error(SyntaxError::UnexpectedToken(t)))
++                }
++                _ => Some(self.error(SyntaxError::UnexpectedToken(t))),
++            },
++            DoctypeSubstate::BeforeSystemLiteral => match t {
++                Token::Character(c) if is_whitespace_char(c) => None,
++                Token::SingleQuote | Token::DoubleQuote => {
++                    self.data.quote = super::QuoteToken::from_token(t);
++                    self.buf.clear();
++                    self.into_state_continue(State::InsideDoctype(DoctypeSubstate::SystemLiteral))
++                }
++                _ => Some(self.error(SyntaxError::UnexpectedToken(t))),
++            },
++            DoctypeSubstate::SystemLiteral => match t {
++                Token::SingleQuote if self.data.quote != Some(QuoteToken::SingleQuoteToken) => {
++                    self.buf.push('\'');
++                    None
++                }
++                Token::DoubleQuote if self.data.quote != Some(QuoteToken::DoubleQuoteToken) => {
++                    self.buf.push('"');
++                    None
++                }
++                Token::SingleQuote | Token::DoubleQuote => {
++                    self.data.quote = None;
++                    self.data.doctype_system_id = Some(self.take_buf_boxed());
++                    self.into_state_continue(State::InsideDoctype(DoctypeSubstate::Outside))
++                }
++                Token::Character(c) => {
++                    self.buf.push(c);
++                    None
++                }
++                _ => Some(self.error(SyntaxError::UnexpectedToken(t))),
++            },
++            DoctypeSubstate::BeforePubId => match t {
++                Token::Character(c) if is_whitespace_char(c) => None,
++                Token::SingleQuote | Token::DoubleQuote => {
++                    self.data.quote = super::QuoteToken::from_token(t);
++                    self.buf.clear();
++                    self.into_state_continue(State::InsideDoctype(DoctypeSubstate::PubId))
++                }
++                _ => Some(self.error(SyntaxError::UnexpectedToken(t))),
++            },
++            DoctypeSubstate::PubId => match t {
++                Token::SingleQuote if self.data.quote != Some(QuoteToken::SingleQuoteToken) => {
++                    self.buf.push('\'');
++                    None
++                }
++                Token::DoubleQuote if self.data.quote != Some(QuoteToken::DoubleQuoteToken) => {
++                    self.buf.push('"');
++                    None
++                }
++                Token::SingleQuote | Token::DoubleQuote => {
++                    self.data.quote = None;
++                    self.data.doctype_public_id = Some(self.take_buf_boxed());
++                    self.into_state_continue(State::InsideDoctype(
++                        DoctypeSubstate::BeforeSystemLiteral,
++                    ))
++                }
++                Token::Character(c) if is_pubid_char(c) => {
++                    self.buf.push(c);
++                    None
++                }
++                Token::ReferenceEnd => {
++                    self.buf.push(';');
++                    None
++                }
++                _ => Some(self.error(SyntaxError::UnexpectedToken(t))),
++            },
+             DoctypeSubstate::Outside => match t {
+                 Token::TagEnd => {
+                     let event = XmlEvent::Doctype {
+                         syntax: self.data.doctype.clone().unwrap_or_default(),
+                     };
+                     self.into_state_emit(State::OutsideTag, Ok(event))
+-                },
+-                Token::MarkupDeclarationStart => {
+-                    self.buf.clear();
+-                    self.into_state_continue(State::InsideDoctype(DoctypeSubstate::InsideName))
+-                },
+-                Token::Character('%') => {
+-                    self.data.ref_data.clear();
+-                    self.data.ref_data.push('%');
+-                    self.into_state_continue(State::InsideDoctype(DoctypeSubstate::PEReferenceInDtd))
+-                },
+-                Token::CommentStart => {
+-                    self.into_state_continue(State::InsideDoctype(DoctypeSubstate::Comment))
+-                },
++                }
++                Token::CDataEnd | Token::CDataStart => {
++                    Some(self.error(SyntaxError::UnexpectedToken(t)))
++                }
++                Token::Character(c) if c == '[' => {
++                    self.into_state_continue(State::InsideDoctype(DoctypeSubstate::InternalSubset))
++                }
++                Token::Character(c) if c == 'S' || c == 'P' => {
++                    self.buf.push(c);
++                    self.into_state_continue(State::InsideDoctype(
++                        DoctypeSubstate::ExternalIdKeyword,
++                    ))
++                }
++                Token::Character(c) if is_whitespace_char(c) => None,
++                _ => Some(self.error(SyntaxError::UnexpectedToken(t))),
++            },
++            DoctypeSubstate::InternalSubset => match t {
++                Token::Character(c) if c == ']' => {
++                    self.into_state_continue(State::InsideDoctype(DoctypeSubstate::Outside))
++                }
++
+                 Token::SingleQuote | Token::DoubleQuote => {
+                     // just discard string literals
+                     self.data.quote = super::QuoteToken::from_token(t);
+                     self.into_state_continue(State::InsideDoctype(DoctypeSubstate::String))
+-                },
+-                Token::CDataEnd | Token::CDataStart => Some(self.error(SyntaxError::UnexpectedToken(t))),
+-                // TODO: parse SYSTEM, and [
++                }
++                Token::CommentStart => {
++                    self.into_state_continue(State::InsideDoctype(DoctypeSubstate::Comment))
++                }
++                Token::Character('%') => {
++                    self.data.ref_data.clear();
++                    self.data.ref_data.push('%');
++                    self.into_state_continue(State::InsideDoctype(
++                        DoctypeSubstate::PEReferenceInDtd,
++                    ))
++                }
++                Token::MarkupDeclarationStart => {
++                    self.buf.clear();
++                    self.into_state_continue(State::InsideDoctype(DoctypeSubstate::InsideName))
++                }
++                Token::Character(c) if is_whitespace_char(c) => None,
++                Token::ProcessingInstructionStart => {
++                    self.into_state_continue(State::InsideDoctype(DoctypeSubstate::IgnorePI))
++                }
++                _ => Some(self.error(SyntaxError::UnexpectedToken(t))),
++            },
++            DoctypeSubstate::IgnorePI => match t {
++                Token::ProcessingInstructionEnd => {
++                    self.into_state_continue(State::InsideDoctype(DoctypeSubstate::InternalSubset))
++                }
+                 _ => None,
+             },
+             DoctypeSubstate::String => match t {
+@@ -50,62 +195,67 @@
+                 Token::DoubleQuote if self.data.quote != Some(QuoteToken::DoubleQuoteToken) => None,
+                 Token::SingleQuote | Token::DoubleQuote => {
+                     self.data.quote = None;
+-                    self.into_state_continue(State::InsideDoctype(DoctypeSubstate::Outside))
+-                },
++                    self.into_state_continue(State::InsideDoctype(DoctypeSubstate::InternalSubset))
++                }
+                 _ => None,
+             },
+             DoctypeSubstate::Comment => match t {
+                 Token::CommentEnd => {
+-                    self.into_state_continue(State::InsideDoctype(DoctypeSubstate::Outside))
+-                },
++                    self.into_state_continue(State::InsideDoctype(DoctypeSubstate::InternalSubset))
++                }
+                 _ => None,
+             },
+             DoctypeSubstate::InsideName => match t {
+                 Token::Character(c @ 'A'..='Z') => {
+                     self.buf.push(c);
+                     None
+-                },
++                }
+                 Token::Character(c) if is_whitespace_char(c) => {
+-                    let buf = self.take_buf();
+-                    match buf.as_str() {
+-                        "ENTITY" => self.into_state_continue(State::InsideDoctype(DoctypeSubstate::BeforeEntityName)),
+-                        "NOTATION" | "ELEMENT" | "ATTLIST" => {
+-                            self.into_state_continue(State::InsideDoctype(DoctypeSubstate::SkipDeclaration))
+-                        },
+-                        _ => Some(self.error(SyntaxError::UnknownMarkupDeclaration(buf.into()))),
+-                    }
+-                },
++                    let state = match self.buf.as_str() {
++                        "ENTITY" => self.into_state_continue(State::InsideDoctype(
++                            DoctypeSubstate::BeforeEntityName,
++                        )),
++                        "NOTATION" | "ELEMENT" | "ATTLIST" => self.into_state_continue(
++                            State::InsideDoctype(DoctypeSubstate::SkipDeclaration),
++                        ),
++                        _ => Some(self.error(SyntaxError::UnknownMarkupDeclaration(self.buf.as_str().into()))),
++                    };
++                    self.buf.clear();
++                    state
++                }
+                 _ => Some(self.error(SyntaxError::UnexpectedToken(t))),
+             },
+             DoctypeSubstate::BeforeEntityName => {
+                 self.data.name.clear();
+                 match t {
+                     Token::Character(c) if is_whitespace_char(c) => None,
+-                    Token::Character('%') => { // % is for PEDecl
++                    Token::Character('%') => {
++                        // % is for PEDecl
+                         self.data.name.push('%');
+-                        self.into_state_continue(State::InsideDoctype(DoctypeSubstate::PEReferenceDefinitionStart))
+-                    },
++                        self.into_state_continue(State::InsideDoctype(
++                            DoctypeSubstate::PEReferenceDefinitionStart,
++                        ))
++                    }
+                     Token::Character(c) if is_name_start_char(c) => {
+                         if self.data.name.len() > self.config.max_name_length {
+                             return Some(self.error(SyntaxError::ExceededConfiguredLimit));
+                         }
+                         self.data.name.push(c);
+                         self.into_state_continue(State::InsideDoctype(DoctypeSubstate::EntityName))
+-                    },
++                    }
+                     _ => Some(self.error(SyntaxError::UnexpectedTokenInEntity(t))),
+                 }
+-            },
++            }
+             DoctypeSubstate::EntityName => match t {
+-                Token::Character(c) if is_whitespace_char(c) => {
+-                    self.into_state_continue(State::InsideDoctype(DoctypeSubstate::BeforeEntityValue))
+-                },
++                Token::Character(c) if is_whitespace_char(c) => self
++                    .into_state_continue(State::InsideDoctype(DoctypeSubstate::BeforeEntityValue)),
+                 Token::Character(c) if is_name_char(c) => {
+                     if self.data.name.len() > self.config.max_name_length {
+                         return Some(self.error(SyntaxError::ExceededConfiguredLimit));
+                     }
+                     self.data.name.push(c);
+                     None
+-                },
++                }
+                 _ => Some(self.error(SyntaxError::UnexpectedTokenInEntity(t))),
+             },
+             DoctypeSubstate::BeforeEntityValue => {
+@@ -117,41 +267,54 @@
+                         let name = self.data.take_name();
+                         self.entities.entry(name).or_default(); // Dummy value, but at least the name is recognized
+
+-                        self.into_state_continue(State::InsideDoctype(DoctypeSubstate::SkipDeclaration))
+-                    },
++                        self.into_state_continue(State::InsideDoctype(
++                            DoctypeSubstate::SkipDeclaration,
++                        ))
++                    }
+                     Token::SingleQuote | Token::DoubleQuote => {
+                         self.data.quote = super::QuoteToken::from_token(t);
+                         self.into_state_continue(State::InsideDoctype(DoctypeSubstate::EntityValue))
+-                    },
++                    }
+                     _ => Some(self.error(SyntaxError::UnexpectedTokenInEntity(t))),
+                 }
+-            },
++            }
+             DoctypeSubstate::EntityValue => match t {
+-                Token::SingleQuote if self.data.quote != Some(QuoteToken::SingleQuoteToken) => { self.buf.push('\''); None },
+-                Token::DoubleQuote if self.data.quote != Some(QuoteToken::DoubleQuoteToken) => { self.buf.push('"'); None },
++                Token::SingleQuote if self.data.quote != Some(QuoteToken::SingleQuoteToken) => {
++                    self.buf.push('\'');
++                    None
++                }
++                Token::DoubleQuote if self.data.quote != Some(QuoteToken::DoubleQuoteToken) => {
++                    self.buf.push('"');
++                    None
++                }
+                 Token::SingleQuote | Token::DoubleQuote => {
+                     self.data.quote = None;
+                     let name = self.data.take_name();
+                     let val = self.take_buf();
+                     self.entities.entry(name).or_insert(val); // First wins
+-                    self.into_state_continue(State::InsideDoctype(DoctypeSubstate::SkipDeclaration)) // FIXME
+-                },
++                    self.into_state_continue(State::InsideDoctype(DoctypeSubstate::SkipDeclaration))
++                    // FIXME
++                }
+                 Token::ReferenceStart | Token::Character('&') => {
+                     self.data.ref_data.clear();
+-                    self.into_state_continue(State::InsideDoctype(DoctypeSubstate::NumericReferenceStart))
+-                },
++                    self.into_state_continue(State::InsideDoctype(
++                        DoctypeSubstate::NumericReferenceStart,
++                    ))
++                }
+                 Token::Character('%') => {
+                     self.data.ref_data.clear();
+                     self.data.ref_data.push('%'); // include literal % in the name to distinguish from regular entities
+-                    self.into_state_continue(State::InsideDoctype(DoctypeSubstate::PEReferenceInValue))
+-                },
++                    self.into_state_continue(State::InsideDoctype(
++                        DoctypeSubstate::PEReferenceInValue,
++                    ))
++                }
+                 Token::Character(c) if !self.is_valid_xml_char(c) => {
+                     Some(self.error(SyntaxError::InvalidCharacterEntity(c as u32)))
+-                },
++                }
+                 Token::Character(c) => {
+                     self.buf.push(c);
+                     None
+-                },
++                }
+                 _ => Some(self.error(SyntaxError::UnexpectedTokenInEntity(t))),
+             },
+             DoctypeSubstate::PEReferenceDefinitionStart => match t {
+@@ -159,8 +322,10 @@
+                 Token::Character(c) if is_name_start_char(c) => {
+                     debug_assert_eq!(self.data.name, "%");
+                     self.data.name.push(c);
+-                    self.into_state_continue(State::InsideDoctype(DoctypeSubstate::PEReferenceDefinition))
+-                },
++                    self.into_state_continue(State::InsideDoctype(
++                        DoctypeSubstate::PEReferenceDefinition,
++                    ))
++                }
+                 _ => Some(self.error(SyntaxError::UnexpectedTokenInEntity(t))),
+             },
+             DoctypeSubstate::PEReferenceDefinition => match t {
+@@ -170,17 +335,16 @@
+                     }
+                     self.data.name.push(c);
+                     None
+-                },
+-                Token::Character(c) if is_whitespace_char(c) => {
+-                    self.into_state_continue(State::InsideDoctype(DoctypeSubstate::BeforeEntityValue))
+-                },
++                }
++                Token::Character(c) if is_whitespace_char(c) => self
++                    .into_state_continue(State::InsideDoctype(DoctypeSubstate::BeforeEntityValue)),
+                 _ => Some(self.error(SyntaxError::UnexpectedTokenInEntity(t))),
+             },
+             DoctypeSubstate::PEReferenceInDtd => match t {
+                 Token::Character(c) if is_name_char(c) => {
+                     self.data.ref_data.push(c);
+                     None
+-                },
++                }
+                 Token::ReferenceEnd | Token::Character(';') => {
+                     let name = self.data.take_ref_data();
+                     match self.entities.get(&name) {
+@@ -188,43 +352,46 @@
+                             if let Err(e) = self.lexer.reparse(ent) {
+                                 return Some(Err(e));
+                             }
+-                            self.into_state_continue(State::InsideDoctype(DoctypeSubstate::Outside))
+-                        },
++                            self.into_state_continue(State::InsideDoctype(
++                                DoctypeSubstate::InternalSubset,
++                            ))
++                        }
+                         None => Some(self.error(SyntaxError::UndefinedEntity(name.into()))),
+                     }
+-                },
++                }
+                 _ => Some(self.error(SyntaxError::UnexpectedTokenInEntity(t))),
+             },
+             DoctypeSubstate::PEReferenceInValue => match t {
+                 Token::Character(c) if is_name_char(c) => {
+                     self.data.ref_data.push(c);
+                     None
+-                },
++                }
+                 Token::ReferenceEnd | Token::Character(';') => {
+                     let name = self.data.take_ref_data();
+                     match self.entities.get(&name) {
+                         Some(ent) => {
+                             self.buf.push_str(ent);
+-                            self.into_state_continue(State::InsideDoctype(DoctypeSubstate::EntityValue))
+-                        },
++                            self.into_state_continue(State::InsideDoctype(
++                                DoctypeSubstate::EntityValue,
++                            ))
++                        }
+                         None => Some(self.error(SyntaxError::UndefinedEntity(name.into()))),
+                     }
+-                },
++                }
+                 _ => Some(self.error(SyntaxError::UnexpectedTokenInEntity(t))),
+             },
+             DoctypeSubstate::NumericReferenceStart => match t {
+-                Token::Character('#') => {
+-                    self.into_state_continue(State::InsideDoctype(DoctypeSubstate::NumericReference))
+-                },
++                Token::Character('#') => self
++                    .into_state_continue(State::InsideDoctype(DoctypeSubstate::NumericReference)),
+                 Token::Character(c) if !self.is_valid_xml_char(c) => {
+                     Some(self.error(SyntaxError::InvalidCharacterEntity(c as u32)))
+-                },
++                }
+                 Token::Character(c) => {
+                     self.buf.push('&');
+                     self.buf.push(c);
+                     // named entities are not expanded inside doctype
+                     self.into_state_continue(State::InsideDoctype(DoctypeSubstate::EntityValue))
+-                },
++                }
+                 _ => Some(self.error(SyntaxError::UnexpectedTokenInEntity(t))),
+             },
+             DoctypeSubstate::NumericReference => match t {
+@@ -234,24 +401,26 @@
+                     match self.numeric_reference_from_str(&r) {
+                         Ok(c) => {
+                             self.buf.push(c);
+-                            self.into_state_continue(State::InsideDoctype(DoctypeSubstate::EntityValue))
+-                        },
++                            self.into_state_continue(State::InsideDoctype(
++                                DoctypeSubstate::EntityValue,
++                            ))
++                        }
+                         Err(e) => Some(self.error(e)),
+                     }
+-                },
++                }
+                 Token::Character(c) if !self.is_valid_xml_char(c) => {
+                     Some(self.error(SyntaxError::InvalidCharacterEntity(c as u32)))
+-                },
++                }
+                 Token::Character(c) => {
+                     self.data.ref_data.push(c);
+                     None
+-                },
++                }
+                 _ => Some(self.error(SyntaxError::UnexpectedTokenInEntity(t))),
+             },
+             DoctypeSubstate::SkipDeclaration => match t {
+                 Token::TagEnd => {
+-                    self.into_state_continue(State::InsideDoctype(DoctypeSubstate::Outside))
+-                },
++                    self.into_state_continue(State::InsideDoctype(DoctypeSubstate::InternalSubset))
++                }
+                 _ => None,
+             },
+         }
+diff --git a/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser/inside_processing_instruction.rs b/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser/inside_processing_instruction.rs
+index 4a020065..cba1eb4c 100644
+--- a/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser/inside_processing_instruction.rs
++++ b/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser/inside_processing_instruction.rs
+@@ -80,8 +80,8 @@
+                 },
+
+                 _ => {
+-                    let buf = self.take_buf();
+-                    Some(self.error(SyntaxError::UnexpectedProcessingInstruction(buf.into(), t)))
++                    let buf = self.take_buf_boxed();
++                    Some(self.error(SyntaxError::UnexpectedProcessingInstruction(buf, t)))
+                 },
+             },
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser/outside_tag.rs b/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser/outside_tag.rs
+index a81f5f44..73b739d 100644
+--- a/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser/outside_tag.rs
++++ b/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser/outside_tag.rs
+@@ -139,7 +139,7 @@
+                         self.data.doctype = Some(Token::DoctypeStart.to_string());
+
+                         self.push_pos();
+-                        self.into_state(State::InsideDoctype(DoctypeSubstate::Outside), next_event)
++                        self.into_state(State::InsideDoctype(DoctypeSubstate::BeforeDoctypeName), next_event)
+                     },
+
+                     Token::ProcessingInstructionStart => self.into_state(
+@@ -196,7 +196,7 @@
+                 self.data.doctype = Some(Token::DoctypeStart.to_string());
+
+                 self.push_pos();
+-                self.into_state(State::InsideDoctype(DoctypeSubstate::Outside), next_event)
++                self.into_state(State::InsideDoctype(DoctypeSubstate::BeforeDoctypeName), next_event)
+             },
+
+             Token::ProcessingInstructionStart => {
+diff --git a/third_party/rust/chromium_crates_io/vendor/xml-v1/tests/util/assert_match.rs b/third_party/rust/chromium_crates_io/vendor/xml-v1/tests/util/assert_match.rs
+new file mode 100644
+index 0000000..bcc23c2d
+--- /dev/null
++++ b/third_party/rust/chromium_crates_io/vendor/xml-v1/tests/util/assert_match.rs
+@@ -0,0 +1,14 @@
++#[macro_export]
++macro_rules! assert_match {
++    ($actual:expr, $( $expected:pat_param )|+ $( if $guard: expr )? $(,)?) => {
++        assert_match!($actual, $( $expected )|+ $( if $guard )?, "assert_match failed");
++    };
++    ($actual:expr, $( $expected:pat_param )|+ $( if $guard: expr )?, $($arg:tt)+) => {
++        #[allow(unused)]
++        match $actual {
++            $( $expected )|+ $( if $guard )? => {},
++            ref actual => panic!("{msg}\nexpect: `{expected}`\nactual: `{actual:?}`",
++                msg = format_args!($($arg)+), expected = stringify!($( $expected )|+ $( if $guard: expr )?), actual = actual),
++        };
++    };
++}

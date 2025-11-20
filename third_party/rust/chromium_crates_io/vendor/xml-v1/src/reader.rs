@@ -11,7 +11,7 @@ use crate::common::{Position, TextPosition};
 
 pub use self::config::ParserConfig;
 pub use self::error::{Error, ErrorKind};
-pub use self::events::XmlEvent;
+pub use events::{XmlEvent, DoctypeRef};
 
 // back compat
 #[doc(hidden)]
@@ -109,12 +109,20 @@ impl<R: Read> EventReader<R> {
 
     /// Returns the DOCTYPE of the document if it has already been seen
     ///
-    /// Available only after the root `StartElement` event
+    /// Available only after the `Doctype` event
     #[inline]
     #[deprecated(note = "there is `XmlEvent::Doctype` now")]
     #[allow(deprecated)]
     pub fn doctype(&self) -> Option<&str> {
         self.parser.doctype()
+    }
+
+    /// Returns PUBLIC/SYSTEM DOCTYPE IDs if it has already been seen
+    ///
+    /// Available only after the `Doctype` event
+    #[inline]
+    pub fn doctype_ids(&self) -> Option<DoctypeRef<'_>> {
+        self.parser.doctype_ids()
     }
 
     /// Add new entity definitions **before any XML elements have been parsed**.

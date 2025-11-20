@@ -139,7 +139,7 @@ impl PullParser {
                         self.data.doctype = Some(Token::DoctypeStart.to_string());
 
                         self.push_pos();
-                        self.into_state(State::InsideDoctype(DoctypeSubstate::Outside), next_event)
+                        self.into_state(State::InsideDoctype(DoctypeSubstate::BeforeDoctypeName), next_event)
                     },
 
                     Token::ProcessingInstructionStart => self.into_state(
@@ -196,7 +196,7 @@ impl PullParser {
                 self.data.doctype = Some(Token::DoctypeStart.to_string());
 
                 self.push_pos();
-                self.into_state(State::InsideDoctype(DoctypeSubstate::Outside), next_event)
+                self.into_state(State::InsideDoctype(DoctypeSubstate::BeforeDoctypeName), next_event)
             },
 
             Token::ProcessingInstructionStart => {

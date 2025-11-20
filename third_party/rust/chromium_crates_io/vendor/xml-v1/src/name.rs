@@ -177,13 +177,37 @@ impl<'a, 'b: 'a> fmt::Display for ReprDisplay<'a, 'b> {
 #[derive(Clone, PartialEq, Eq, Hash, Debug)]
 pub struct OwnedName {
     /// A local name, e.g. `string` in `xsi:string`.
+    ///
+    /// Local name is ambiguous, because multiple namespaces can share the same name.
+    /// Always check `namespace` too.
     pub local_name: String,
 
     /// A namespace URI, e.g. `http://www.w3.org/2000/xmlns/`.
+    ///
+    /// `None` for default namespace.
+    ///
+    /// Note that in XML attributes don't inherit element's namespace
+    /// and are in the default namespace unless they have a prefix.
     pub namespace: Option<String>,
 
-    /// A name prefix, e.g. `xsi` in `xsi:string`.
+    /// Semantically meaningless name prefix, e.g. `xsi` in `xsi:string`.
+    ///
+    /// Prefixes are just a syntactic detail used for decoration or to avoid repetition.
+    /// Only `namespace` matters for identity of the element.
     pub prefix: Option<String>,
+}
+
+impl PartialEq<(&str, &str)> for OwnedName {
+    /// Compare `(namespaceURI, localName)`. Default namespace is `""`.
+    fn eq(&self, other: &(&str, &str)) -> bool {
+        other.1.eq(&self.local_name) && other.0.eq(self.namespace.as_deref().unwrap_or_default())
+    }
+}
+impl PartialEq<OwnedName> for (&str, &str) {
+    /// Compare `(namespaceURI, localName)`. Default namespace is `""`.
+    fn eq(&self, other: &OwnedName) -> bool {
+        other.eq(self)
+    }
 }
 
 impl fmt::Display for OwnedName {
