@@ -85,13 +85,13 @@ std::optional<FilePath> GetVirtualDocumentPathFromCacheDirDirectory(
   return base::ResolveToVirtualDocumentPath(*content_url);
 }
 
-std::optional<FilePath> CreateCacheCopyAndGetContentUri(
+std::optional<FilePath> CreateCacheCopyAndGetVirtualDocumentPath(
     const FilePath& source_path,
     const ScopedTempDir& temp_dir) {
   if (!base::CopyDirectory(source_path, temp_dir.GetPath(), true)) {
     return std::nullopt;
   }
-  return GetInMemoryContentTreeUriFromCacheDirDirectory(
+  return GetVirtualDocumentPathFromCacheDirDirectory(
       temp_dir.GetPath().Append(source_path.BaseName()));
 }
 

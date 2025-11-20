@@ -41,14 +41,14 @@ std::optional<FilePath> GetInMemoryContentTreeUriFromCacheDirDirectory(
 std::optional<FilePath> GetVirtualDocumentPathFromCacheDirDirectory(
     const FilePath& path);
 
-// Copies a source directory into an existing ScopedTempDir and generates a
-// content URI for it.
+// Copies a source directory into an existing ScopedTempDir and return the
+// virtual document path for it.
 //
 // This is a workaround for Android security policies that prevent loading
 // extensions directly from the file system. This function enables tests by
 // copying the extension directory to a temporary location and resolving it to
 // a content URI, which can then be used for extension packing.
-std::optional<FilePath> CreateCacheCopyAndGetContentUri(
+std::optional<FilePath> CreateCacheCopyAndGetVirtualDocumentPath(
     const FilePath& source_path,
     const ScopedTempDir& temp_dir);
 
