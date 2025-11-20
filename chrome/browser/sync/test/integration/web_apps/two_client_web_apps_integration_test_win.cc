@@ -23,6 +23,7 @@ IN_PROC_BROWSER_TEST_F(
   // `docs/webapps/integration-testing-framework` for more info.
   // Gardeners: Disabling this test is supported.
   helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
   helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
   helper_.CheckWindowCreated();
   helper_.CheckAppInListWindowed(Site::kStandalone);
@@ -46,6 +47,7 @@ IN_PROC_BROWSER_TEST_F(
   // `docs/webapps/integration-testing-framework` for more info.
   // Gardeners: Disabling this test is supported.
   helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
   helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
   helper_.CheckWindowCreated();
   helper_.CheckAppInListWindowed(Site::kStandalone);
@@ -71,6 +73,7 @@ IN_PROC_BROWSER_TEST_F(
   // `docs/webapps/integration-testing-framework` for more info.
   // Gardeners: Disabling this test is supported.
   helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
   helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
   helper_.CheckWindowCreated();
   helper_.CheckAppInListWindowed(Site::kStandalone);
@@ -94,6 +97,7 @@ IN_PROC_BROWSER_TEST_F(
   // `docs/webapps/integration-testing-framework` for more info.
   // Gardeners: Disabling this test is supported.
   helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
   helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
   helper_.CheckWindowCreated();
   helper_.CheckAppInListWindowed(Site::kStandalone);

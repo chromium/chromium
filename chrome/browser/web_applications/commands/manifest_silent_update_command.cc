@@ -404,13 +404,10 @@ void ManifestSilentUpdateCommand::StartManifestToInstallInfoJob(
   if (!is_trusted_app_for_manifest_installs &&
       !app_lock_->registrar().AppMatches(
           app_id_, WebAppFilter::OpensInDedicatedWindow())) {
-    LOG(ERROR) << "Not reaching here";
     CompleteCommandAndSelfDestruct(
         FROM_HERE, ManifestSilentUpdateCheckResult::kAppNotAllowedToUpdate);
     return;
   }
-
-  LOG(ERROR) << "Triggered manifest update " << app_id_;
 
   WebAppInstallInfoConstructOptions construct_options;
   construct_options.fail_all_if_any_fail = true;

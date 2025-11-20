@@ -38,6 +38,7 @@ The tables in this file are parsed as action templates for critical user journey
 | ShortcutOptions | WithShortcut | NoShortcut |
 | WindowOptions | Windowed | Browser |
 | InstallMode | WebApp* | WebShortcut |
-| UpdateDialogResponse | AcceptUpdate | CancelDialogAndUninstall | CancelUninstallAndAcceptUpdate | SkipDialog |
+| UpdateDialogResponse | AcceptUpdate | CancelDialogAndUninstall | IgnoreDialog | | |
 | SubAppInstallDialogOptions | UserAllow* | UserDeny | PolicyOverride |
 | ProfileName | Default | Profile2 |
+| MenuButtonState | ExpandedUpdateAvailable | NotExpanded |

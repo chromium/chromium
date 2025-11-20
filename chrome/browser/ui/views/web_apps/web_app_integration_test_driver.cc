@@ -83,6 +83,7 @@
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/window_controls_overlay_toggle_button.h"
 #include "chrome/browser/ui/views/web_apps/web_app_link_capturing_test_utils.h"
+#include "chrome/browser/ui/views/web_apps/web_app_update_review_dialog.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/sub_apps_install_dialog_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -163,8 +164,11 @@
 #include "third_party/re2/src/re2/re2.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_action_data.h"
+#include "ui/events/test/test_event.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/test/button_test_api.h"
 #include "ui/views/test/dialog_test.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
@@ -789,6 +793,37 @@ void LoadResponseFromDisk(const base::FilePath& root,
                      std::move(callback)));
 }
 
+// Listen to the three dot menu button for whether the button label is expanded
+// or not in the web app window, passed in via `should_expect_expanded`.
+class MenuButtonUpdateListener {
+ public:
+  MenuButtonUpdateListener(Browser& app_browser, bool should_expect_expanded) {
+    BrowserView& browser_view = app_browser.GetBrowserView();
+    WebAppMenuButton* menu_button = views::AsViewClass<WebAppMenuButton>(
+        browser_view.toolbar_button_provider()->GetAppMenuButton());
+    if (menu_button->IsLabelPresentAndVisible() == should_expect_expanded) {
+      return;
+    }
+    list_subscription_ = menu_button->AwaitLabelTextUpdated(
+        menu_update_future_.GetRepeatingCallback());
+  }
+
+  void Await() {
+    if (!list_subscription_) {
+      return;
+    }
+
+    // Wait for the menu button to be updated.
+    if (!menu_update_future_.IsReady()) {
+      CHECK(menu_update_future_.Wait());
+    }
+  }
+
+ private:
+  base::CallbackListSubscription list_subscription_;
+  base::test::TestFuture<void> menu_update_future_;
+};
+
 }  // anonymous namespace
 
 BrowserState::BrowserState(
@@ -921,9 +956,7 @@ std::ostream& operator<<(std::ostream& os, const StateSnapshot& snapshot) {
 }
 
 WebAppIntegrationTestDriver::WebAppIntegrationTestDriver(TestDelegate* delegate)
-    : delegate_(delegate),
-      update_dialog_scope_(web_app::SetIdentityUpdateDialogActionForTesting(
-          web_app::AppIdentityUpdate::kSkipped)) {}
+    : delegate_(delegate) {}
 
 WebAppIntegrationTestDriver::~WebAppIntegrationTestDriver() = default;
 
@@ -1033,51 +1066,49 @@ void WebAppIntegrationTestDriver::TearDownOnMainThread() {
 }
 
 void WebAppIntegrationTestDriver::HandleAppIdentityUpdateDialogResponse(
-    UpdateDialogResponse response) {
-  // This is used to test the silent updating of policy installed apps
-  // which do not trigger the manifest update dialog to be shown.
-  if (response == UpdateDialogResponse::kSkipDialog) {
-    return;
-  }
-
-  // Resetting the global test state for app identity update dialogs so that
-  // tests can accept/cancel the app identity update dialog.
-  update_dialog_scope_ =
-      web_app::SetIdentityUpdateDialogActionForTesting(std::nullopt);
+    UpdateDialogResponse response,
+    std::unique_ptr<WebAppMenuModel> menu_model) {
   views::Widget* manifest_update_widget =
       app_id_update_dialog_waiter_->WaitIfNeededAndGet();
   ASSERT_TRUE(manifest_update_widget != nullptr);
-  auto uninstall_dialog_view = std::make_unique<views::NamedWidgetShownWaiter>(
-      views::test::AnyWidgetTestPasskey{}, "WebAppUninstallDialogDelegateView");
-  views::Widget* uninstall_dialog_widget = nullptr;
   switch (response) {
     case UpdateDialogResponse::kAcceptUpdate:
       views::test::AcceptDialog(manifest_update_widget);
       break;
-    case UpdateDialogResponse::kCancelDialogAndUninstall:
-      manifest_update_widget->widget_delegate()
-          ->AsDialogDelegate()
-          ->CancelDialog();
-      uninstall_dialog_widget = uninstall_dialog_view->WaitIfNeededAndGet();
-      ASSERT_NE(uninstall_dialog_widget, nullptr);
-      views::test::AcceptDialog(uninstall_dialog_widget);
-      break;
-    case UpdateDialogResponse::kCancelUninstallAndAcceptUpdate: {
-      manifest_update_widget->widget_delegate()
-          ->AsDialogDelegate()
-          ->CancelDialog();
-      uninstall_dialog_widget = uninstall_dialog_view->WaitIfNeededAndGet();
+    case UpdateDialogResponse::kCancelDialogAndUninstall: {
+      // The `menu_model` is being reset in the beginning for this use-case,
+      // since the `AppMenuModel` holds a raw_ptr to a `Browser`, that starts
+      // dangling as soon as the browser is shutdown as a result of
+      // uninstallation.
+      menu_model.reset();
+      auto uninstall_dialog_view =
+          std::make_unique<views::NamedWidgetShownWaiter>(
+              views::test::AnyWidgetTestPasskey{},
+              "WebAppUninstallDialogDelegateView");
+      views::test::CancelDialog(manifest_update_widget);
+      views::Widget* uninstall_dialog_widget = uninstall_dialog_widget =
+          uninstall_dialog_view->WaitIfNeededAndGet();
       ASSERT_NE(uninstall_dialog_widget, nullptr);
       views::test::WidgetDestroyedWaiter uninstall_destroyed(
           uninstall_dialog_widget);
-      views::test::CancelDialog(uninstall_dialog_widget);
+      views::test::AcceptDialog(uninstall_dialog_widget);
       uninstall_destroyed.Wait();
-      views::test::AcceptDialog(manifest_update_widget);
-      break;
+    } break;
+    case UpdateDialogResponse::kIgnoreDialog:
+      views::test::WidgetDestroyedWaiter destroyed_waiter(
+          manifest_update_widget);
+      views::ElementTrackerViews* tracker_views =
+          views::ElementTrackerViews::GetInstance();
+      ui::ElementContext context =
+          views::ElementTrackerViews::GetContextForWidget(
+              manifest_update_widget);
+      views::Button* button =
+          tracker_views->GetFirstMatchingViewAs<views::Button>(
+              kWebAppUpdateReviewIgnoreButton, context);
+      ASSERT_NE(nullptr, button);
+      views::test::ButtonTestApi(button).NotifyClick(ui::test::TestEvent());
+      destroyed_waiter.Wait();
     }
-    case UpdateDialogResponse::kSkipDialog:
-      NOTREACHED();
-  }
 }
 
 void WebAppIntegrationTestDriver::AwaitManifestUpdate(Site site) {
@@ -1101,7 +1132,10 @@ void WebAppIntegrationTestDriver::AwaitManifestUpdate(Site site) {
     apps::WebAppScopeWaiter(profile(), app_id,
                             provider()->registrar_unsafe().GetAppScope(app_id))
         .Await();
+    post_update_start_urls_[site] =
+        provider()->registrar_unsafe().GetAppStartUrl(app_id);
   }
+
   AfterStateChangeAction();
 }
 
@@ -2274,35 +2308,32 @@ void WebAppIntegrationTestDriver::NewAppTab(Site site) {
   AfterStateChangeAction();
 }
 
-void WebAppIntegrationTestDriver::ManifestUpdateIcon(
-    Site site,
-    UpdateDialogResponse response) {
+void WebAppIntegrationTestDriver::ManifestUpdateIcon(Site site) {
   if (!BeforeStateChangeAction(__FUNCTION__)) {
     return;
   }
+
   ASSERT_EQ(Site::kStandalone, site)
       << "Only site mode of 'Standalone' is supported";
-
-  app_id_update_dialog_waiter_ =
-      std::make_unique<views::NamedWidgetShownWaiter>(
-          views::test::AnyWidgetTestPasskey{},
-          "WebAppIdentityUpdateConfirmationView");
+  ASSERT_NE(app_browser(), nullptr)
+      << " manifest updates require the app browser to be launched!";
 
   // After launching the trusted icon architecture, the icon of largest size of
   // purpose any is going to be preferred.
   GURL url = GetUrlForSite(
       site, base::StringPrintf("?manifest=manifest_icon_red_%u.json",
                                kLauncherIconSize));
+  webapps::AppId app_id = GetAppIdBySiteMode(site);
 
-  ForceUpdateManifestContents(site, url);
-  HandleAppIdentityUpdateDialogResponse(response);
+  // Security sensitive updates to apps that are considered installed from
+  // trusted sources happen silently without UX intervention.
+  ForceUpdateManifestContents(site, url,
+                              !provider()->registrar_unsafe().AppMatches(
+                                  app_id, WebAppFilter::IsTrusted()));
   AfterStateChangeAction();
 }
 
-void WebAppIntegrationTestDriver::ManifestUpdateTitle(
-    Site site,
-    Title title,
-    UpdateDialogResponse response) {
+void WebAppIntegrationTestDriver::ManifestUpdateTitle(Site site, Title title) {
   if (!BeforeStateChangeAction(__FUNCTION__)) {
     return;
   }
@@ -2310,16 +2341,18 @@ void WebAppIntegrationTestDriver::ManifestUpdateTitle(
       << "Only site mode of 'Standalone' is supported";
   ASSERT_EQ(Title::kStandaloneUpdated, title)
       << "Only site mode of 'kStandaloneUpdated' is supported";
-
-  app_id_update_dialog_waiter_ =
-      std::make_unique<views::NamedWidgetShownWaiter>(
-          views::test::AnyWidgetTestPasskey{},
-          "WebAppIdentityUpdateConfirmationView");
+  ASSERT_NE(app_browser(), nullptr)
+      << " manifest updates require the app browser to be launched!";
 
   auto relative_url_path = GetSiteConfiguration(site).relative_url;
   GURL url = GetUrlForSite(site, "?manifest=manifest_title.json");
-  ForceUpdateManifestContents(site, url);
-  HandleAppIdentityUpdateDialogResponse(response);
+  webapps::AppId app_id = GetAppIdBySiteMode(site);
+
+  // Security sensitive updates to apps that are considered installed from
+  // trusted sources happen silently without UX intervention.
+  ForceUpdateManifestContents(site, url,
+                              !provider()->registrar_unsafe().AppMatches(
+                                  app_id, WebAppFilter::IsTrusted()));
   AfterStateChangeAction();
 }
 
@@ -2329,12 +2362,15 @@ void WebAppIntegrationTestDriver::ManifestUpdateDisplay(Site site,
     return;
   }
 
+  ASSERT_NE(app_browser(), nullptr)
+      << " manifest updates require the app browser to be launched!";
   std::string relative_url_path = GetSiteConfiguration(site).relative_url;
   std::string manifest_url_param =
       GetDisplayUpdateConfiguration(display).manifest_url_param;
   GURL url = GetUrlForSite(site, manifest_url_param);
 
-  ForceUpdateManifestContents(site, url);
+  ForceUpdateManifestContents(site, url,
+                              /*wait_for_pending_updates_to_arrive=*/false);
   AfterStateChangeAction();
 }
 
@@ -2342,13 +2378,17 @@ void WebAppIntegrationTestDriver::ManifestUpdateScopeTo(Site app, Site scope) {
   if (!BeforeStateChangeAction(__FUNCTION__)) {
     return;
   }
+
+  ASSERT_NE(app_browser(), nullptr)
+      << " manifest updates require the app browser to be launched!";
   // The `scope_mode` would be changing the scope set in the manifest file. For
   // simplicity, right now only Standalone is supported, so that is just
   // hardcoded in manifest_scope_Standalone.json, which is specified in the URL.
   auto relative_url_path = GetSiteConfiguration(app).relative_url;
   GURL url =
       GetUrlForSite(app, GetScopeUpdateConfiguration(scope).manifest_url_param);
-  ForceUpdateManifestContents(app, url);
+  ForceUpdateManifestContents(app, url,
+                              /*wait_for_pending_updates_to_arrive=*/false);
   AfterStateChangeAction();
 }
 
@@ -2789,6 +2829,30 @@ void WebAppIntegrationTestDriver::QuitAppShim(Site site) {
   AfterStateChangeAction();
 }
 #endif
+
+void WebAppIntegrationTestDriver::TriggerUpdateDialogAndHandleResponse(
+    UpdateDialogResponse response) {
+  if (!BeforeStateChangeAction(__FUNCTION__)) {
+    return;
+  }
+  ASSERT_TRUE(app_browser());
+  auto app_menu_model =
+      std::make_unique<WebAppMenuModel>(/*provider=*/nullptr, app_browser());
+  app_menu_model->Init();
+  ui::MenuModel* model = app_menu_model.get();
+  size_t index = 0;
+  const bool found = app_menu_model->GetModelAndIndexForCommandId(
+      IDC_WEB_APP_UPGRADE_DIALOG, &model, &index);
+  EXPECT_TRUE(found);
+  EXPECT_TRUE(model->IsEnabledAt(index));
+
+  app_id_update_dialog_waiter_ =
+      std::make_unique<views::NamedWidgetShownWaiter>(
+          views::test::AnyWidgetTestPasskey{}, "WebAppUpdateReviewDialog");
+  app_menu_model->ExecuteCommand(IDC_WEB_APP_UPGRADE_DIALOG, /*event_flags=*/0);
+  HandleAppIdentityUpdateDialogResponse(response, std::move(app_menu_model));
+  AfterStateChangeAction();
+}
 
 void WebAppIntegrationTestDriver::CheckAppListEmpty() {
   if (!BeforeStateCheckAction(__FUNCTION__)) {
@@ -3929,6 +3993,22 @@ void WebAppIntegrationTestDriver::CheckSiteLoadedInTab(Site site) {
   AfterStateCheckAction();
 }
 
+void WebAppIntegrationTestDriver::CheckMenuButtonPendingUpdate(
+    MenuButtonState state) {
+  if (!BeforeStateCheckAction(__FUNCTION__)) {
+    return;
+  }
+
+  ASSERT_NE(app_browser(), nullptr)
+      << " manifest updates require the app browser to be launched!";
+  BrowserView& app_browser_view = app_browser()->GetBrowserView();
+  WebAppMenuButton* const menu_button = views::AsViewClass<WebAppMenuButton>(
+      app_browser_view.toolbar_button_provider()->GetAppMenuButton());
+  EXPECT_EQ(state == MenuButtonState::kExpandedUpdateAvailable,
+            menu_button->IsLabelPresentAndVisible());
+  AfterStateCheckAction();
+}
+
 void WebAppIntegrationTestDriver::OnWebAppManifestUpdated(
     const webapps::AppId& app_id) {
   LOG(INFO) << "Manifest update received for " << app_id << ".";
@@ -4100,9 +4180,6 @@ void WebAppIntegrationTestDriver::AwaitManifestSystemIdle() {
   }
   // Wait till all manifest update data fetch commands have completed.
   command_manager.AwaitAllCommandsCompleteForTesting();
-
-  // Wait till all manifest update finalize commands have completed (if any).
-  command_manager.AwaitAllCommandsCompleteForTesting();
 }
 
 webapps::AppId GetAppIdForIsolatedSite(Site site) {
@@ -4148,6 +4225,13 @@ webapps::AppId WebAppIntegrationTestDriver::GetAppIdBySiteMode(Site site) {
 
 GURL WebAppIntegrationTestDriver::GetUrlForSite(Site site,
                                                 const std::string& suffix) {
+  // Read from cache if needed, to see if the site has undergone a manifest
+  // update and has an updated start url.
+  auto it = post_update_start_urls_.find(site);
+  if (it != post_update_start_urls_.end()) {
+    return it->second;
+  }
+
   auto site_config = GetSiteConfiguration(site);
   if (site_config.base_url.empty()) {
     return GetTestServerForSiteMode(site).GetURL(
@@ -4419,17 +4503,13 @@ void WebAppIntegrationTestDriver::UninstallPolicyAppById(
 
 void WebAppIntegrationTestDriver::ForceUpdateManifestContents(
     Site site,
-    const GURL& app_url_with_manifest_param) {
-  auto app_id = GetAppIdBySiteMode(site);
-  active_app_id_ = app_id;
-  // Manifest updates must occur as the first navigation after a webapp is
-  // installed, otherwise the throttle is tripped.
-  ASSERT_FALSE(provider()->manifest_update_manager().IsUpdateConsumed(
-      app_id, base::Time::Now()));
-  ASSERT_FALSE(
-      provider()->manifest_update_manager().IsUpdateCommandPending(app_id));
-  NavigateTabbedBrowserToSite(app_url_with_manifest_param,
-                              NavigationMode::kCurrentTab);
+    const GURL& app_url_with_manifest_param,
+    bool wait_for_pending_updates_to_arrive) {
+  active_app_id_ = GetAppIdBySiteMode(site);
+  EXPECT_TRUE(
+      ui_test_utils::NavigateToURL(app_browser(), app_url_with_manifest_param));
+  MenuButtonUpdateListener(*app_browser(), wait_for_pending_updates_to_arrive)
+      .Await();
   is_performing_manifest_update_ = true;
 }
 
@@ -4804,12 +4884,10 @@ WebAppIntegrationTest::WebAppIntegrationTest() : helper_(this) {
   // TODO(b/313492499): Update test driver to work with new intent picker UI.
   enabled_features.push_back(features::kPwaNavigationCapturing);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+  enabled_features.push_back(features::kWebAppPredictableAppUpdating);
+  enabled_features.push_back(features::kSilentPolicyAndDefaultAppUpdating);
 
-  // TODO(b/452009643): Update integration test driver to work with new
-  // predictable app updating.
-  std::vector<base::test::FeatureRef> disabled_features;
-  disabled_features.push_back(features::kWebAppPredictableAppUpdating);
-  scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  scoped_feature_list_.InitWithFeatures(enabled_features, {});
 }
 
 WebAppIntegrationTest::~WebAppIntegrationTest() = default;

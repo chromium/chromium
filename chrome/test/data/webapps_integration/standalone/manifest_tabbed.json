@@ -24,9 +24,9 @@
     ],
   "id": "webapps_integration/standalone/basic.html",
   "start_url": "/webapps_integration/standalone/basic.html?manifest=manifest_tabbed.json",
-    "scope": "/webapps_integration/standalone/",
-    "display": "standalone",
-    "display_override": [
-      "tabbed"
-    ]
-  }
+  "scope": "/webapps_integration/standalone/",
+  "display": "standalone",
+  "display_override": [
+    "tabbed"
+  ]
+}

@@ -109,3 +109,5 @@ new_app_tab,                                           🌕, 🌕,  🌕,   🌕
 check_app_tab_is_site,                                 🌕, 🌕,  🌕,   🌕,
 check_app_tab_created,                                 🌕, 🌕,  🌕,   🌕,
 check_site_loaded_in_tab,                              🌕, 🌕,  🌕,   🌕,
+check_menu_button_pending_update,                      🌕, 🌕,  🌕,   🌕,
+trigger_update_dialog_and_handle_response,             🌕, 🌕,  🌕,   🌕,
