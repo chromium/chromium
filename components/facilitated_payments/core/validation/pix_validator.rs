@@ -23,11 +23,26 @@ pub enum PixQrCodeType {
     Static,
 }
 
+pub enum PixQrCodeError {
+    NotPaymentCode,
+    MissingPayloadFormatIndicator,
+    InvalidMerchantPresentedCode,
+    MissingGloballyUniqueIdentifier,
+    NonPixMerchantPresentedCode,
+    EmptyAdditionalDataFieldTemplate,
+    NonFinalCrc,
+    UnknownPixCodeType,
+}
+
+pub type PixQrCodeResult = Result<PixQrCodeType, PixQrCodeError>;
+
 /// Parses and determines the `PixQrCodeType` that `code` represents, or `None`
 /// if `code` is not a valid Pix code.
-pub fn get_pix_qr_code_type(code: &[u8]) -> Option<PixQrCodeType> {
+pub fn get_pix_qr_code_type(code: &[u8]) -> PixQrCodeResult {
+    type Error = PixQrCodeError;
+
     if code.is_empty() {
-        return None;
+        return Err(Error::NotPaymentCode);
     }
 
     // Per the specification, EMV Merchant-Presented QR codes can contain three
@@ -41,22 +56,25 @@ pub fn get_pix_qr_code_type(code: &[u8]) -> Option<PixQrCodeType> {
     // - Unicode: encoded as UTF-8
     //
     // So any `code` that is not valid UTF-8 can be ignored.
-    let code = str::from_utf8(code).ok()?;
+    let code = match str::from_utf8(code) {
+        Ok(code) => code,
+        Err(_) => return Err(Error::NotPaymentCode),
+    };
 
     // 4.6.1.1 The Payload Format Indicator (ID "00") shall be the first data object
     // in the QR Code.
     let Some((first_data_object, mut rest)) = parse_next_data_object(code) else {
-        return None;
+        return Err(Error::NotPaymentCode);
     };
     if first_data_object.id != PAYLOAD_FORMAT_INDICATOR_DATA_OBJECT_ID {
-        return None;
+        return Err(Error::MissingPayloadFormatIndicator);
     }
 
     let mut detected_qr_code_type = None;
 
     loop {
         let Some((next_data_object, next_rest)) = parse_next_data_object(rest) else {
-            return None;
+            return Err(Error::InvalidMerchantPresentedCode);
         };
         match next_data_object.id {
             MERCHANT_ACCOUNT_INFORMATION_DATA_OBJECT_ID => {
@@ -70,15 +88,18 @@ pub fn get_pix_qr_code_type(code: &[u8]) -> Option<PixQrCodeType> {
                 // 4.8.1.1: If present, the Additional Data Field Template shall contain at
                 // least 1 data object.
                 if !contains_valid_data_objects(next_data_object.value) {
-                    return None;
+                    return Err(Error::EmptyAdditionalDataFieldTemplate);
                 }
             }
             CRC16_DATA_OBJECT_ID => {
                 // 4.6.1.2 The CRC (ID "63") shall be the last data object in the QR Code
                 if !next_rest.is_empty() {
-                    return None;
+                    return Err(Error::NonFinalCrc);
                 }
-                return detected_qr_code_type;
+                // If the `detected_qr_code_type` is still `None`, that means the parser never
+                // saw a merchant account info data object. Assume this is a
+                // non-Pix merchant-presented code.
+                return detected_qr_code_type.ok_or(Error::NonPixMerchantPresentedCode);
             }
             _ => (),
         }
@@ -122,30 +143,36 @@ fn contains_valid_data_objects(input: &str) -> bool {
 /// Given a merchant account information `data_object`, returns the
 /// PixQrCodeType it represents or None if the `data_object` is invalid or it
 /// does not represent a Pix code.
-fn get_type_from_merchant_account_info_data_object(data_object: Section) -> Option<PixQrCodeType> {
+fn get_type_from_merchant_account_info_data_object(
+    data_object: Section,
+) -> Result<PixQrCodeType, PixQrCodeError> {
+    type Error = PixQrCodeError;
+
     // 4.7.11.2: If present, a Merchant Account Information template shall contain a
     // primitive Globally Unique Identifier data object with a data object ID
     // "00", as defined in Table 4.2.
     let Some((gui_data_object, rest)) = parse_next_data_object(data_object.value) else {
-        return None;
+        return Err(Error::InvalidMerchantPresentedCode);
     };
-    if gui_data_object.id != "00"
-        || !gui_data_object.value.eq_ignore_ascii_case(PIX_GLOBALLY_UNIQUE_IDENTIFIER)
-    {
-        return None;
+    if gui_data_object.id != "00" {
+        return Err(Error::MissingGloballyUniqueIdentifier);
+    }
+
+    if !gui_data_object.value.eq_ignore_ascii_case(PIX_GLOBALLY_UNIQUE_IDENTIFIER) {
+        return Err(Error::NonPixMerchantPresentedCode);
     }
 
     // 4.7.11.2: The value of the Globally Unique Identifier sets the context for
     // the remainder of the template and the meaning of the other data objects
     // in the template are context specific and outside of the scope of EMVCo.
     let Some((next_data_object, rest)) = parse_next_data_object(rest) else {
-        return None;
+        return Err(Error::InvalidMerchantPresentedCode);
     };
 
     // Make sure the remainder consists of valid data_objects if there is still
     // unparsed content.
     if !rest.is_empty() && !contains_valid_data_objects(rest) {
-        return None;
+        return Err(Error::InvalidMerchantPresentedCode);
     }
 
     // According to EMVCo:
@@ -157,8 +184,8 @@ fn get_type_from_merchant_account_info_data_object(data_object: Section) -> Opti
     // Unique Identifier to indicate whether the Pix code is static or dynamic.
     // If it does not, treat the Pix code as malformed.
     match next_data_object.id {
-        MERCHANT_ACCOUNT_INFORMATION_DYNAMIC_URL_DATA_OBJECT_ID => Some(PixQrCodeType::Dynamic),
-        MERCHANT_ACCOUNT_INFORMATION_STATIC_KEY_DATA_OBJECT_ID => Some(PixQrCodeType::Static),
-        _ => None,
+        MERCHANT_ACCOUNT_INFORMATION_DYNAMIC_URL_DATA_OBJECT_ID => Ok(PixQrCodeType::Dynamic),
+        MERCHANT_ACCOUNT_INFORMATION_STATIC_KEY_DATA_OBJECT_ID => Ok(PixQrCodeType::Static),
+        _ => Err(Error::UnknownPixCodeType),
     }
 }
