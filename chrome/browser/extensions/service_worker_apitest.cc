@@ -2833,8 +2833,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerWebRequestPersistFilteredEventsTest,
   base::FilePath extension_path = test_data_dir_.AppendASCII("service_worker")
                                       .AppendASCII("worker_based_background")
                                       .AppendASCII("web_request_after_restart");
-  const Extension* extension =
-      LoadExtension(extension_path, {.wait_for_registration_stored = true});
+  const Extension* extension = LoadExtension(
+      extension_path,
+      {.allow_in_incognito = true, .wait_for_registration_stored = true});
   ASSERT_TRUE(extension);
   EXPECT_TRUE(WaitForMessage());
 
@@ -2859,12 +2860,34 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerWebRequestPersistFilteredEventsTest,
                     profile(), "webRequest.onBeforeRequest"));
   EXPECT_EQ(0u, web_request_router()->GetListenerCountForTesting(
                     profile(), "webRequest.onBeforeRequest"));
-
   // Navigate and expect the listener in the extension to be triggered.
   ResultCatcher catcher;
+  catcher.RestrictToBrowserContext(profile());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/empty.html")));
   EXPECT_TRUE(catcher.GetNextResult()) << message_;
+
+  // Verify behavior for Incognito (OTR) requests.
+  // TODO(crbug.com/448893426): support restoring listeners in OTR contexts.
+  // Once that's implemented, we won't have to wait for the listener to be
+  // added, and the inactive listener will be added as soon as the incognito
+  // browser is created.
+  ExtensionTestMessageListener incognito_listener_added(kListenerAdded);
+  ResultCatcher incognito_catcher;
+  incognito_catcher.RestrictToBrowserContext(
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
+  Browser* incognito_browser =
+      OpenURLOffTheRecord(profile(), GURL("about:blank"));
+  content::BrowserContext* incognito_profile = incognito_browser->profile();
+  EXPECT_EQ(0u, web_request_router()->GetInactiveListenerCountForTesting(
+                    incognito_profile, "webRequest.onBeforeRequest"));
+  EXPECT_EQ(0u, web_request_router()->GetListenerCountForTesting(
+                    incognito_profile, "webRequest.onBeforeRequest"));
+  ASSERT_TRUE(incognito_listener_added.WaitUntilSatisfied());
+  // Navigate and expect the listener in the extension to be triggered.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      incognito_browser, embedded_test_server()->GetURL("/empty.html")));
+  EXPECT_TRUE(incognito_catcher.GetNextResult()) << message_;
 
   // NOTE: the task to remove listeners from `ExtensionWebRequestEventRouter`
   // is async; run to flush the posted task.

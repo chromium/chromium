@@ -7,5 +7,6 @@
   "background": {
     "service_worker": "service_worker_background.js"
   },
-  "host_permissions": ["<all_urls>"]
+  "host_permissions": ["<all_urls>"],
+  "incognito": "split"
 }

@@ -2146,6 +2146,11 @@ void WebRequestEventRouter::AddPersistedLazyListener(
           extensions_features::kWebRequestPersistFilteredEvents)) {
     return;
   }
+  // Do not persist listeners from incognito contexts.
+  // TODO(crbug.com/448893426): support OTR contexts.
+  if (browser_context->IsOffTheRecord()) {
+    return;
+  }
 
   ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context);
   const base::Value::List* existing_listeners =
@@ -2168,6 +2173,9 @@ void WebRequestEventRouter::RemovePersistedLazyListener(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!base::FeatureList::IsEnabled(
           extensions_features::kWebRequestPersistFilteredEvents)) {
+    return;
+  }
+  if (browser_context->IsOffTheRecord()) {
     return;
   }
 
@@ -2323,6 +2331,8 @@ void WebRequestEventRouter::LoadPersistedLazyListeners(
     content::BrowserContext* browser_context,
     const ExtensionId& extension_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  // TODO(crbug.com/448893426): support OTR contexts.
+  DCHECK(!browser_context->IsOffTheRecord());
 
   ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context);
   if (!base::FeatureList::IsEnabled(
