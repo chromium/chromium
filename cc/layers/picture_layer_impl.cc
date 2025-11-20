@@ -1835,6 +1835,12 @@ void PictureLayerImpl::SanityCheckTilingState() const {
   if (tilings_->num_tilings() == 0)
     return;
 
+  if (layer_tree_impl()->settings().TreesInVizInClientProcess()) {
+    // In TreesInViz mode, we clean up tilings in a deferred fashion, so the
+    // following DCHECK is invalid.
+    return;
+  }
+
   // We should only have one high res tiling.
   DCHECK_EQ(1, tilings_->NumHighResTilings());
 #endif
