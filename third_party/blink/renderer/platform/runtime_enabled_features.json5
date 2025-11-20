@@ -3558,7 +3558,8 @@
       // This is a spec change since anchor positioning was shipped in Blink.
       // https://issues.chromium.org/issues/408223892
       name: "OriginatingElementIsImplicitAnchor",
-      status: "experimental",
+      depends_on: ["CSSPositionAnchorNone"],
+      status: "stable",
     },
     {
       name: "OriginIsolationHeader",
