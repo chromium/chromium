@@ -232,17 +232,9 @@ std::string set_up_client_side_model() {
 }  // namespace
 
 class ClientSideDetectionHostPrerenderBrowserTest
-    : public InProcessBrowserTest,
-      public ::testing::WithParamInterface<bool> {
+    : public InProcessBrowserTest {
  public:
   ClientSideDetectionHostPrerenderBrowserTest() {
-    if (GetParam()) {
-      scoped_feature_list_.InitWithFeatures(
-          {kClientSideDetectionOnlyExtractVisualFeatures}, {});
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          {}, {kClientSideDetectionOnlyExtractVisualFeatures});
-    }
     prerender_helper_ = std::make_unique<content::test::PrerenderTestHelper>(
         base::BindRepeating(
             &ClientSideDetectionHostPrerenderBrowserTest::GetWebContents,
@@ -327,11 +319,7 @@ class ClientSideDetectionHostPrerenderExclusiveAccessBrowserTest
   std::string flatbuffer_model_str_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         ClientSideDetectionHostPrerenderBrowserTest,
-                         testing::Bool());
-
-IN_PROC_BROWSER_TEST_P(ClientSideDetectionHostPrerenderBrowserTest,
+IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
                        PrerenderShouldNotAffectClientSideDetection) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
@@ -385,7 +373,7 @@ IN_PROC_BROWSER_TEST_P(ClientSideDetectionHostPrerenderBrowserTest,
       .Run(page_url, true, net::HTTP_OK, std::nullopt);
 }
 
-IN_PROC_BROWSER_TEST_P(ClientSideDetectionHostPrerenderBrowserTest,
+IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
                        ClassifyPrerenderedPageAfterActivation) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
@@ -434,7 +422,7 @@ IN_PROC_BROWSER_TEST_P(ClientSideDetectionHostPrerenderBrowserTest,
       .Run(prerender_url, true, net::HTTP_OK, std::nullopt);
 }
 
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     ClientSideDetectionHostPrerenderBrowserTest,
     ClassifyPrerenderedPageAfterActivationAndCheckDebuggingMetadataCache) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
@@ -502,7 +490,7 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_TRUE(debugging_metadata->local_model_detects_phishing());
 }
 
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     ClientSideDetectionHostPrerenderBrowserTest,
     CheckDebuggingMetadataCacheAfterClearingCacheAfterNavigation) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {

@@ -25,9 +25,4 @@ specific_include_rules = {
     "+chrome/browser/ui/tabs/tab_strip_model.h",
     "+content/public/browser",
   ],
-  "phishing_dom_feature_extractor_browsertest\.cc": [
-    "+chrome/browser/ui/browser.h",
-    "+chrome/browser/ui/tabs/tab_strip_model.h",
-    "+content/public/browser",
-  ],
 }

@@ -71,10 +71,12 @@ class PhishingClassifierDelegate : public content::RenderFrameObserver,
   ~PhishingClassifierDelegate() override;
 
   // Called by the RenderFrame once a page has finished loading.  Updates the
-  // last-loaded URL and page text, then starts classification if all other
+  // last-loaded URL, then starts classification if all other
   // conditions are met (see MaybeStartClassification for details).
   // We ignore preliminary captures, since these happen before the page has
-  // finished loading.
+  // finished loading. The page_text was used for DOM classification, which is
+  // now deprecated. This observer function will stay to update the last loaded
+  // URL until further changes.
   void PageCaptured(scoped_refptr<const base::RefCountedString16> page_text,
                     bool preliminary_capture);
 
@@ -84,9 +86,6 @@ class PhishingClassifierDelegate : public content::RenderFrameObserver,
   // WebFrame.  Typically, this will cause any pending classification to be
   // cancelled.
   void DidCommitProvisionalLoad(ui::PageTransition transition) override;
-  // Called by the RenderFrame when the same-document navigation has been
-  // committed. We continue running the current classification.
-  void DidFinishSameDocumentNavigation() override;
 
   bool is_ready();
 
@@ -114,7 +113,7 @@ class PhishingClassifierDelegate : public content::RenderFrameObserver,
   void PhishingDetectorReceiver(
       mojo::PendingAssociatedReceiver<mojom::PhishingDetector> receiver);
 
-  // Cancels any pending classification and frees the page text.
+  // Cancels any pending classification.
   void CancelPendingClassification(CancelClassificationReason reason);
 
   // Records in UMA of a specific event that happens in the phishing classifier.
@@ -155,7 +154,6 @@ class PhishingClassifierDelegate : public content::RenderFrameObserver,
   GURL last_url_received_from_browser_;
 
   // The last top-level URL that has finished loading in the RenderFrame.
-  // This corresponds to the text in classifier_page_text_.
   GURL last_finished_load_url_;
 
   // The transition type for the last load in the main frame.  We use this
@@ -168,13 +166,6 @@ class PhishingClassifierDelegate : public content::RenderFrameObserver,
   // This is used to suppress phishing classification on subframe navigation
   // and back and forward navigations in history.
   GURL last_url_sent_to_classifier_;
-
-  // The page text that will be analyzed by the phishing classifier.  This is
-  // set by OnNavigate and cleared when the classifier finishes.  Note that if
-  // there is no Scorer yet when OnNavigate is called, or the browser has not
-  // instructed us to classify the page, the page text will be cached until
-  // these conditions are met.
-  scoped_refptr<const base::RefCountedString16> classifier_page_text_;
 
   // Set to true if the classifier is currently running.
   bool is_classifying_;

@@ -96,9 +96,6 @@ BASE_DECLARE_FEATURE(kClientSideDetectionKillswitch);
 BASE_DECLARE_FEATURE(
     kClientSideDetectionLlamaForcedTriggerInfoForScamDetection);
 
-// Extract only the visual features during the phishing classifier.
-BASE_DECLARE_FEATURE(kClientSideDetectionOnlyExtractVisualFeatures);
-
 // Killswitch for force request redirect chain check.
 BASE_DECLARE_FEATURE(kClientSideDetectionRedirectChainKillswitch);
 
