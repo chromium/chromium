@@ -74,7 +74,7 @@ class OffscreenCanvasPlaceholderTest : public Test {
   test::TaskEnvironment task_environment_;
   OffscreenCanvasPlaceholder placeholder_;
   std::unique_ptr<MockCanvasResourceDispatcher> dispatcher_;
-  std::unique_ptr<CanvasResourceProvider> resource_provider_;
+  std::unique_ptr<CanvasResourceProviderSharedImage> resource_provider_;
   std::unique_ptr<WebGraphicsSharedImageInterfaceProvider>
       test_web_shared_image_interface_provider_;
   unsigned placeholder_id_ = 0;

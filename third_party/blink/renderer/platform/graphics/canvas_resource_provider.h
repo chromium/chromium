@@ -298,15 +298,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
     return last_recording_;
   }
 
-  // ExternalCanvasDrawHelper() is used by clients that require the invocation
-  // of WillDrawIfNeeded() before obtaining a canvas and drawing on it. All
-  // meaningful ExternalCanvasDrawHelper() implementations should call
-  // WillDrawIfNeeded() first, and then invoke `draw_ballback`.
-  virtual void ExternalCanvasDrawHelper(
-      base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback) {
-    NOTREACHED();
-  }
-
  protected:
   class CanvasImageProvider;
 
@@ -419,11 +410,6 @@ class PLATFORM_EXPORT CanvasResourceProviderBitmap
   bool IsAccelerated() const override { return false; }
   bool SupportsDirectCompositing() const override { return false; }
   bool IsSingleBuffered() const override { return false; }
-  void ExternalCanvasDrawHelper(
-      base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback)
-      override {
-    draw_callback(Canvas());
-  }
   scoped_refptr<StaticBitmapImage> Snapshot(
       ImageOrientation = ImageOrientationEnum::kDefault) override;
   scoped_refptr<StaticBitmapImage> DoExternalDrawAndSnapshot(
@@ -534,8 +520,12 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
       FlushReason reason) override;
   bool IsValid() const override;
   bool IsSoftwareSharedImageGpuChannelLost() const final;
+
+  // ExternalCanvasDrawHelper() is used by clients that require the invocation
+  // of WillDrawIfNeeded() before obtaining a canvas and drawing on it.
   void ExternalCanvasDrawHelper(
-      base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback) final;
+      base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback);
+
   scoped_refptr<StaticBitmapImage> DoExternalDrawAndSnapshot(
       base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback,
       ImageOrientation orientation = ImageOrientationEnum::kDefault) final;

@@ -29,7 +29,7 @@ namespace {
 
 bool DrawVideoFrameIntoResourceProvider(
     scoped_refptr<media::VideoFrame> frame,
-    CanvasResourceProvider* resource_provider,
+    CanvasResourceProviderSharedImage* resource_provider,
     viz::RasterContextProvider* raster_context_provider,
     media::PaintCanvasVideoRenderer* video_renderer) {
   DCHECK(frame);
