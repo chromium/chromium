@@ -35,7 +35,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -1039,18 +1038,13 @@ class CaptivePortalBrowserTest : public InProcessBrowserTest {
       CloseBrowserSynchronously(browser());
       browser_closed_ = true;
       initial_tab_count = 0;
-
-      // Ensure current browser is not opened.
-      for (Browser* b : *browser_list_) {
-        ASSERT_NE(b, browser());
-      }
     } else {
       TabStripModel* tab_strip_model = browser()->tab_strip_model();
       ASSERT_FALSE(tab_strip_model->GetActiveWebContents()->IsLoading());
       initial_tab_count = tab_strip_model->count();
     }
 
-    size_t initial_browser_count = browser_list_->size();
+    size_t initial_browser_count = chrome::GetTotalBrowserCount();
 
     // This starts navigation in embedded frame and waits for it to finish.
     ui_test_utils::BrowserCreatedObserver browser_created_observer;
@@ -1080,14 +1074,14 @@ class CaptivePortalBrowserTest : public InProcessBrowserTest {
     TabStripModel* tab_strip_model = nullptr;
 
     if (should_open_new_browser) {
-      ASSERT_EQ(initial_browser_count + 1, browser_list_->size());
+      ASSERT_EQ(initial_browser_count + 1, chrome::GetTotalBrowserCount());
       BrowserWindowInterface* const new_browser =
           browser_created_observer.Wait();
       ASSERT_TRUE(new_browser);
 
       tab_strip_model = new_browser->GetTabStripModel();
     } else {
-      EXPECT_EQ(initial_browser_count, browser_list_->size());
+      EXPECT_EQ(initial_browser_count, chrome::GetTotalBrowserCount());
       tab_strip_model = browser()->tab_strip_model();
     }
 
@@ -1115,21 +1109,19 @@ class CaptivePortalBrowserTest : public InProcessBrowserTest {
   std::vector<mojo::ScopedMessagePipeHandle> abandoned_client_pipes_;
   std::atomic<bool> behind_captive_portal_;
 #if BUILDFLAG(IS_WIN)
-  base::win::ScopedDomainStateForTesting scoped_domain_;
+  std::optional<base::win::ScopedDomainStateForTesting> scoped_domain_;
 #endif
-  raw_ptr<const BrowserList> browser_list_;
   bool intercept_bad_cert_ = true;
   bool browser_closed_ = false;
 };
 
 CaptivePortalBrowserTest::CaptivePortalBrowserTest()
-    : behind_captive_portal_(true),
+    : behind_captive_portal_(true) {
 #if BUILDFLAG(IS_WIN)
       // Mark as not enterprise managed to prevent the secure DNS mode from
       // being downgraded to off.
-      scoped_domain_(false),
+      scoped_domain_.emplace(false);
 #endif
-      browser_list_(BrowserList::GetInstance()) {
 }
 
 CaptivePortalBrowserTest::~CaptivePortalBrowserTest() = default;
@@ -1518,7 +1510,7 @@ void CaptivePortalBrowserTest::SlowLoadBehindCaptivePortal(
   int initial_active_index = tab_strip_model->active_index();
   int initial_loading_tabs = NumLoadingTabs();
   int expected_broken_tabs = NumBrokenTabs();
-  size_t initial_browser_count = browser_list_->size();
+  size_t initial_browser_count = chrome::GetTotalBrowserCount();
   if (captive_portal::CaptivePortalTabReloader::STATE_BROKEN_BY_PORTAL !=
       GetStateOfTabReloader(tab_strip_model->GetActiveWebContents())) {
     ++expected_broken_tabs;
@@ -1539,7 +1531,7 @@ void CaptivePortalBrowserTest::SlowLoadBehindCaptivePortal(
     WebContents* login_tab;
 
     if (expect_new_login_browser) {
-      ASSERT_EQ(initial_browser_count + 1, browser_list_->size());
+      ASSERT_EQ(initial_browser_count + 1, chrome::GetTotalBrowserCount());
 
       // Check the original browser
       ASSERT_EQ(initial_tab_count, tab_strip_model->count());
@@ -1555,7 +1547,7 @@ void CaptivePortalBrowserTest::SlowLoadBehindCaptivePortal(
       EXPECT_EQ(base::ASCIIToUTF16(kLoginSecureDnsDisabledTitle),
                 login_tab->GetTitle());
     } else {
-      ASSERT_EQ(initial_browser_count, browser_list_->size());
+      ASSERT_EQ(initial_browser_count, chrome::GetTotalBrowserCount());
       ASSERT_EQ(initial_tab_count + 1, tab_strip_model->count());
       EXPECT_EQ(initial_tab_count, tab_strip_model->active_index());
       login_tab = tab_strip_model->GetWebContentsAt(initial_tab_count);
@@ -1568,7 +1560,7 @@ void CaptivePortalBrowserTest::SlowLoadBehindCaptivePortal(
               GetStateOfTabReloader(login_tab));
     EXPECT_TRUE(IsLoginTab(login_tab));
   } else {
-    ASSERT_EQ(initial_browser_count, browser_list_->size());
+    ASSERT_EQ(initial_browser_count, chrome::GetTotalBrowserCount());
     EXPECT_EQ(0, navigation_observer.num_navigations());
     EXPECT_EQ(initial_active_index, tab_strip_model->active_index());
     ASSERT_EQ(initial_tab_count, tab_strip_model->count());
@@ -1632,7 +1624,7 @@ void CaptivePortalBrowserTest::FastErrorBehindCaptivePortal(
   int initial_active_index = tab_strip_model->active_index();
   int initial_loading_tabs = NumLoadingTabs();
   int expected_broken_tabs = NumBrokenTabs();
-  size_t initial_browser_count = browser_list_->size();
+  size_t initial_browser_count = chrome::GetTotalBrowserCount();
   if (captive_portal::CaptivePortalTabReloader::STATE_BROKEN_BY_PORTAL !=
       GetStateOfTabReloader(tab_strip_model->GetActiveWebContents())) {
     ++expected_broken_tabs;
@@ -1654,7 +1646,7 @@ void CaptivePortalBrowserTest::FastErrorBehindCaptivePortal(
 
     if (expect_new_login_browser) {
       login_browser = browser_created_observer.Wait();
-      ASSERT_EQ(initial_browser_count + 1, browser_list_->size());
+      ASSERT_EQ(initial_browser_count + 1, chrome::GetTotalBrowserCount());
 
       // Check the original browser
       ASSERT_EQ(initial_tab_count, tab_strip_model->count());
@@ -1669,7 +1661,7 @@ void CaptivePortalBrowserTest::FastErrorBehindCaptivePortal(
       EXPECT_EQ(base::ASCIIToUTF16(kLoginSecureDnsDisabledTitle),
                 login_tab->GetTitle());
     } else {
-      ASSERT_EQ(initial_browser_count, browser_list_->size());
+      ASSERT_EQ(initial_browser_count, chrome::GetTotalBrowserCount());
       ASSERT_EQ(initial_tab_count + 1, tab_strip_model->count());
       EXPECT_EQ(initial_tab_count, tab_strip_model->active_index());
       login_tab = tab_strip_model->GetWebContentsAt(initial_tab_count);
@@ -1684,7 +1676,7 @@ void CaptivePortalBrowserTest::FastErrorBehindCaptivePortal(
     EXPECT_TRUE(IsLoginTab(login_tab));
   } else {
     navigation_observer.WaitForNavigations(1);
-    ASSERT_EQ(initial_browser_count, browser_list_->size());
+    ASSERT_EQ(initial_browser_count, chrome::GetTotalBrowserCount());
     EXPECT_EQ(initial_active_index, tab_strip_model->active_index());
     EXPECT_EQ(1, navigation_observer.NumNavigationsForTab(
                      tab_strip_model->GetWebContentsAt(initial_active_index)));
@@ -1782,7 +1774,7 @@ void CaptivePortalBrowserTest::Login(Browser* captive_portal_browser,
   CaptivePortalObserver portal_observer(captive_portal_browser->profile());
 
   TabStripModel* tab_strip_model = captive_portal_browser->tab_strip_model();
-  size_t initial_browser_count = browser_list_->size();
+  size_t initial_browser_count = chrome::GetTotalBrowserCount();
   int initial_tab_count = NumTabs();
   ASSERT_EQ(num_loading_tabs, NumLoadingTabs());
   EXPECT_EQ(num_timed_out_tabs, NumBrokenTabs() - NumLoadingTabs());
@@ -1825,7 +1817,7 @@ void CaptivePortalBrowserTest::Login(Browser* captive_portal_browser,
 
   // Make sure that the broken tabs have reloaded, and there's no more
   // captive portal tab.
-  EXPECT_EQ(initial_browser_count, browser_list_->size());
+  EXPECT_EQ(initial_browser_count, chrome::GetTotalBrowserCount());
   EXPECT_EQ(initial_tab_count, NumTabs());
   EXPECT_EQ(captive_portal::CaptivePortalTabReloader::STATE_NONE,
             GetStateOfTabReloaderAt(captive_portal_browser, login_tab_index));
@@ -3454,7 +3446,7 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
   EXPECT_EQ(1, navigation_observer.NumNavigationsForTab(tab));
   EXPECT_TRUE(tab->GetController().GetLastCommittedEntry()->GetPageType() ==
               content::PAGE_TYPE_ERROR);
-  EXPECT_EQ(2u, browser_list_->size());
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
   EXPECT_EQ(2, NumTabs());
 }
 
@@ -3502,7 +3494,7 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
   EXPECT_EQ(1, navigation_observer.NumNavigationsForTab(tab));
   EXPECT_TRUE(tab->GetController().GetLastCommittedEntry()->GetPageType() ==
               content::PAGE_TYPE_NORMAL);
-  EXPECT_EQ(2u, browser_list_->size());
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
   EXPECT_EQ(2, NumTabs());
 }
 
