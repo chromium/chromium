@@ -229,8 +229,9 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyInclusion"
     enum="SecurePaymentConfirmationBrowserBoundKeyInclusionResult"
-    expires_after="2025-12-04">
+    expires_after="2026-11-01">
   <owner>slobodan@chromium.org</owner>
+  <owner>darwinyang@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
     Whether and how browser bound key will be included in a secure payment
@@ -243,7 +244,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyMetadataUpdate"
-    enum="Boolean" expires_after="2026-09-01">
+    enum="Boolean" expires_after="2026-11-01">
   <owner>darwinyang@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
@@ -255,8 +256,9 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStoreCreate"
     enum="SecurePaymentConfirmationBrowserBoundKeyDeviceResult"
-    expires_after="2026-04-05">
+    expires_after="2026-11-01">
   <owner>slobodan@chromium.org</owner>
+  <owner>darwinyang@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
     Whether the creation of a browser bound key succeeded or failed and whether
@@ -268,8 +270,9 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStoreRetrieve"
     enum="SecurePaymentConfirmationBrowserBoundKeyDeviceResult"
-    expires_after="2025-12-04">
+    expires_after="2026-11-01">
   <owner>slobodan@chromium.org</owner>
+  <owner>darwinyang@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
     Whether the retrieval of a browser bound key succeeded or failed and whether
@@ -302,7 +305,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SecurePaymentRequest.Fallback.Outcome"
-    enum="SecurePaymentRequestOutcome" expires_after="2025-12-31">
+    enum="SecurePaymentRequestOutcome" expires_after="2026-11-01">
   <owner>darwinyang@google.com</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
@@ -318,7 +321,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SecurePaymentRequest.Transaction.Outcome"
-    enum="SecurePaymentRequestOutcome" expires_after="2026-05-10">
+    enum="SecurePaymentRequestOutcome" expires_after="2026-11-01">
   <owner>darwinyang@google.com</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
