@@ -53,6 +53,49 @@
 
 namespace blink {
 
+namespace {
+
+// Conditionally extracts a length valued property as an integer multiple
+// of the quantization limit for layout-units.
+std::optional<int> GetQuantizedLength(const CSSValue& value) {
+  std::optional<int> result;
+  const CSSPrimitiveValue* primitive = DynamicTo<CSSPrimitiveValue>(&value);
+  if (!primitive) {
+    return result;
+  }
+  if (!primitive->IsPx()) {
+    return result;
+  }
+  std::optional<double> primitive_value = primitive->GetValueIfKnown();
+  if (!primitive_value) {
+    return result;
+  }
+
+  result = static_cast<int>(
+      std::round(LayoutUnit::kFixedPointDenominator * primitive_value.value()));
+  return result;
+}
+
+// Determine if a property value from the base computed style is equivalent to
+// the target value. Special provision for matching lengths the handle
+// quantization when converting to and from layout units.
+bool AreEquivalent(const CSSValue& underlying_value,
+                   const CSSValue& target_value) {
+  if (underlying_value == target_value) {
+    return true;
+  }
+
+  std::optional<int> target_length = GetQuantizedLength(target_value);
+  if (!target_length) {
+    return false;
+  }
+
+  std::optional<int> underlying_length = GetQuantizedLength(underlying_value);
+  return target_length == underlying_length;
+}
+
+}  // end namespace
+
 KeyframeEffectModelBase::KeyframeProperties::Iterator&
 KeyframeEffectModelBase::KeyframeProperties::Iterator::operator++() {
   if (++(*current_property_) == keyframe_properties_->end()) {
@@ -716,7 +759,8 @@ bool KeyframeEffectModelBase::PropertySpecificKeyframeGroup::
       const CSSValue* underlying_value =
           ComputedStyleUtils::ComputedPropertyValue(property.GetCSSProperty(),
                                                     *base_style);
-      if (!underlying_value || *target_value != *underlying_value) {
+      if (!underlying_value ||
+          !AreEquivalent(*underlying_value, *target_value)) {
         static_check_result_ = StaticCheckResult::kDynamic;
         return false;
       }
