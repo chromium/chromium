@@ -14,6 +14,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/service/display/direct_renderer.h"
 #include "components/viz/service/display/display_resource_provider_skia.h"
 #include "components/viz/service/display_embedder/buffer_queue.h"
@@ -471,15 +472,18 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
       return resource_lock->sync_token();
     }
 
-    void SetReleaseFence(gfx::GpuFenceHandle release_fence) {
-      if (resource_lock.has_value()) {
-        resource_lock->SetReleaseFence(std::move(release_fence));
+    void MaybeCopyReleaseFence(const gfx::GpuFenceHandle& release_fence) {
+      if (resource_lock.has_value() &&
+          resource_lock->SynchronizationType() ==
+              TransferableResource::SynchronizationType::kReleaseFence) {
+        resource_lock->SetReleaseFence(release_fence.Clone());
       }
     }
 
     bool HasReadLockFence() {
       if (resource_lock.has_value()) {
-        return resource_lock->HasReadLockFence();
+        return resource_lock->SynchronizationType() ==
+               TransferableResource::SynchronizationType::kGpuCommandsCompleted;
       }
       return false;
     }

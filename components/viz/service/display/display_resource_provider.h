@@ -149,8 +149,8 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
     // This is propagated to ReturnedResource when the resource is freed.
     void SetReleaseFence(gfx::GpuFenceHandle release_fence);
 
-    // Returns true iff this resource has a read lock fence set.
-    bool HasReadLockFence() const;
+    // Returns the synchronization type for the underlying resource.
+    TransferableResource::SynchronizationType SynchronizationType() const;
 
    protected:
     ChildResource* resource() { return resource_; }

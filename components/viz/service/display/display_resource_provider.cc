@@ -520,14 +520,16 @@ DisplayResourceProvider::ScopedReadLockSharedImage::operator=(
 void DisplayResourceProvider::ScopedReadLockSharedImage::SetReleaseFence(
     gfx::GpuFenceHandle release_fence) {
   DCHECK(resource_);
+  DCHECK_EQ(SynchronizationType(),
+            TransferableResource::SynchronizationType::kReleaseFence);
   resource_->release_fence = std::move(release_fence);
 }
 
-bool DisplayResourceProvider::ScopedReadLockSharedImage::HasReadLockFence()
+TransferableResource::SynchronizationType
+DisplayResourceProvider::ScopedReadLockSharedImage::SynchronizationType()
     const {
   DCHECK(resource_);
-  return resource_->transferable.synchronization_type ==
-         TransferableResource::SynchronizationType::kGpuCommandsCompleted;
+  return resource_->transferable.synchronization_type;
 }
 
 void DisplayResourceProvider::ScopedReadLockSharedImage::Reset() {
