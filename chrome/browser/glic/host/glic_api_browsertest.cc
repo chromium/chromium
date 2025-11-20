@@ -2162,8 +2162,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testUnpinTabsWhileClosing) {
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testPinTabsWithTwoTabs) {
-  // TODO(b/452687492): This crashes with multi-instance.
-  SKIP_TEST_FOR_MULTI_INSTANCE();
   NavigateTabAndOpenGlicFloating();
   RunTestSequence(AddInstrumentedTab(kSecondTab, page_url()));
   ExecuteJsTest();
