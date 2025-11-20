@@ -36,10 +36,17 @@ void FjordOobeServiceProvider::OnExported(const std::string& interface_name,
 void FjordOobeServiceProvider::ExitTouchControllerScreen(
     dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender response_sender) {
+  bool is_success = false;
   WizardController* wizard_controller = WizardController::default_controller();
   if (wizard_controller) {
-    wizard_controller->ExitFjordTouchControllerScreen();
+    is_success = wizard_controller->ExitFjordTouchControllerScreen();
   }
-  std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
+
+  std::unique_ptr<dbus::Response> response =
+      dbus::Response::FromMethodCall(method_call);
+  dbus::MessageWriter writer(response.get());
+  writer.AppendBool(is_success);
+
+  std::move(response_sender).Run(std::move(response));
 }
 }  // namespace ash
