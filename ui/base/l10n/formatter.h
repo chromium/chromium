@@ -8,6 +8,7 @@
 #ifndef UI_BASE_L10N_FORMATTER_H_
 #define UI_BASE_L10N_FORMATTER_H_
 
+#include <array>
 #include <memory>
 
 #include "base/component_export.h"
@@ -65,6 +66,7 @@ class Formatter {
 
   Formatter(const Formatter&) = delete;
   Formatter& operator=(const Formatter&) = delete;
+  ~Formatter();
 
   void Format(Unit unit, int value, icu::UnicodeString* formatted_string) const;
 
@@ -83,8 +85,10 @@ class Formatter {
   std::unique_ptr<icu::MessageFormat> InitFormat(
       const Pluralities& pluralities);
 
-  std::unique_ptr<icu::MessageFormat> simple_format_[UNIT_COUNT];
-  std::unique_ptr<icu::MessageFormat> detailed_format_[TWO_UNITS_COUNT][2];
+  std::array<std::unique_ptr<icu::MessageFormat>, UNIT_COUNT> simple_format_;
+  std::array<std::array<std::unique_ptr<icu::MessageFormat>, 2>,
+             TWO_UNITS_COUNT>
+      detailed_format_;
 };
 
 COMPONENT_EXPORT(UI_BASE)

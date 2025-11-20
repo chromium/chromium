@@ -36,7 +36,7 @@ class FormatterContainer {
 
   const Formatter* Get(TimeFormat::Format format,
                        TimeFormat::Length length) const {
-    return UNSAFE_TODO(formatter_[format][length].get());
+    return formatter_[format][length].get();
   }
 
   void ResetForTesting() {
@@ -48,8 +48,9 @@ class FormatterContainer {
   void Initialize();
   void Shutdown();
 
-  std::unique_ptr<Formatter> formatter_[TimeFormat::FORMAT_COUNT]
-                                       [TimeFormat::LENGTH_COUNT];
+  std::array<std::array<std::unique_ptr<Formatter>, TimeFormat::LENGTH_COUNT>,
+             TimeFormat::FORMAT_COUNT>
+      formatter_;
 };
 
 FormatterContainer& GetFormatterContainer() {
@@ -308,14 +309,15 @@ Formatter::Formatter(const Pluralities& sec_pluralities,
   detailed_format_[TWO_UNITS_DAY_HOUR][1] = InitFormat(day_hour_pluralities2);
 }
 
+Formatter::~Formatter() = default;
+
 void Formatter::Format(Unit unit,
                        int value,
                        icu::UnicodeString* formatted_string) const {
-  UNSAFE_TODO(DCHECK(simple_format_[unit]));
+  DCHECK(simple_format_[unit]);
   DCHECK(formatted_string->isEmpty());
   UErrorCode error = U_ZERO_ERROR;
-  FormatNumberInPlural(*UNSAFE_TODO(simple_format_[unit]), value,
-                       formatted_string, &error);
+  FormatNumberInPlural(*simple_format_[unit], value, formatted_string, &error);
   DCHECK(U_SUCCESS(error)) << "Error in icu::PluralFormat::format().";
   return;
 }
@@ -324,17 +326,17 @@ void Formatter::Format(TwoUnits units,
                        int value_1,
                        int value_2,
                        icu::UnicodeString* formatted_string) const {
-  UNSAFE_TODO(DCHECK(detailed_format_[units][0]))
+  DCHECK(detailed_format_[units][0])
       << "Detailed() not implemented for your (format, length) combination!";
-  UNSAFE_TODO(DCHECK(detailed_format_[units][1]))
+  DCHECK(detailed_format_[units][1])
       << "Detailed() not implemented for your (format, length) combination!";
   DCHECK(formatted_string->isEmpty());
   UErrorCode error = U_ZERO_ERROR;
-  FormatNumberInPlural(*UNSAFE_TODO(detailed_format_[units])[0], value_1,
-                       formatted_string, &error);
+  FormatNumberInPlural(*detailed_format_[units][0], value_1, formatted_string,
+                       &error);
   DCHECK(U_SUCCESS(error));
-  FormatNumberInPlural(*UNSAFE_TODO(detailed_format_[units])[1], value_2,
-                       formatted_string, &error);
+  FormatNumberInPlural(*detailed_format_[units][1], value_2, formatted_string,
+                       &error);
   DCHECK(U_SUCCESS(error));
   return;
 }
@@ -410,9 +412,9 @@ void FormatterContainer::Initialize() {
 }
 
 void FormatterContainer::Shutdown() {
-  for (int format = 0; format < TimeFormat::FORMAT_COUNT; ++format) {
-    for (int length = 0; length < TimeFormat::LENGTH_COUNT; ++length) {
-      UNSAFE_TODO(formatter_[format][length]).reset();
+  for (auto& format : formatter_) {
+    for (auto& length : format) {
+      length.reset();
     }
   }
 }
