@@ -398,7 +398,7 @@ suite('NewTabPageComposeboxTest', () => {
               assertEquals(
                   1,
                   metrics.count(
-                      'NewTabPage.Composebox.File.WebUI.UploadAttemptFailure',
+                      'ContextualSearch.File.WebUI.UploadAttemptFailure.NewTabPage',
                       0));
             });
       });
@@ -421,7 +421,7 @@ suite('NewTabPageComposeboxTest', () => {
     assertEquals(
         1,
         metrics.count(
-            'NewTabPage.Composebox.File.WebUI.UploadAttemptFailure', 2));
+            'ContextualSearch.File.WebUI.UploadAttemptFailure.NewTabPage', 2));
   });
 
   test('upload large file fails', async () => {
@@ -447,7 +447,7 @@ suite('NewTabPageComposeboxTest', () => {
     assertEquals(
         1,
         metrics.count(
-            'NewTabPage.Composebox.File.WebUI.UploadAttemptFailure', 3));
+            'ContextualSearch.File.WebUI.UploadAttemptFailure.NewTabPage', 3));
   });
 
   [[
@@ -1957,8 +1957,7 @@ suite('NewTabPageComposeboxTest', () => {
     assertEquals(
         1,
         metrics.count(
-            'NewTabPage.Composebox.File.WebUI.UploadAttemptFailure',
-            1));
+            'ContextualSearch.File.WebUI.UploadAttemptFailure.NewTabPage', 1));
 
     // Check that the paste event was prevented.
     assertTrue(pasteEvent.defaultPrevented);
@@ -2131,8 +2130,7 @@ suite('NewTabPageComposeboxTest', () => {
     assertEquals(
         1,
         metrics.count(
-            'NewTabPage.Composebox.File.WebUI.UploadAttemptFailure',
-             1));
+            'ContextualSearch.File.WebUI.UploadAttemptFailure.NewTabPage', 1));
   });
 
 test('upload mixed files over limit prioritizes max files error and uploads valid ones', async () => {
@@ -2183,8 +2181,7 @@ test('upload mixed files over limit prioritizes max files error and uploads vali
     assertEquals(
         1,
         metrics.count(
-            'NewTabPage.Composebox.File.WebUI.UploadAttemptFailure',
-            1));
+            'ContextualSearch.File.WebUI.UploadAttemptFailure.NewTabPage', 1));
   });
 
   test('isCollapsible attribute sets expanding state when true', async () => {

@@ -59,6 +59,8 @@ const FILE_VALIDATION_ERRORS_MAP = new Map<FileUploadErrorType, string>([
   ],
 ]);
 
+// LINT.IfChange(FileValidationError)
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 const enum ComposeboxFileValidationError {
@@ -68,6 +70,8 @@ const enum ComposeboxFileValidationError {
   FILE_SIZE_TOO_LARGE = 3,
   MAX_VALUE = FILE_SIZE_TOO_LARGE,
 }
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_search/enums.xml:FileValidationError)
 
 // These values are sorted by precedence. The error with the highest value
 // will be the one shown to the user if multiple errors apply.
@@ -193,6 +197,8 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       loadTimeData.getInteger('composeboxFileMaxSize');
   private createImageModeEnabled_: boolean =
       loadTimeData.getBoolean('composeboxShowCreateImageButton');
+  private composeboxSource_: string =
+      loadTimeData.getString('composeboxSource');
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
@@ -573,8 +579,9 @@ protected processFiles_(files: FileList|null) {
   private recordFileValidationMetric_(
       enumValue: ComposeboxFileValidationError) {
     chrome.metricsPrivate.recordEnumerationValue(
-        'NewTabPage.Composebox.File.WebUI.UploadAttemptFailure', enumValue,
-        ComposeboxFileValidationError.MAX_VALUE + 1);
+        'ContextualSearch.File.WebUI.UploadAttemptFailure.' +
+            this.composeboxSource_,
+        enumValue, ComposeboxFileValidationError.MAX_VALUE + 1);
   }
 }
 

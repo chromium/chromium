@@ -29,10 +29,17 @@ chromium-metrics-reviews@google.com.
   <variant name="Pdf"/>
 </variants>
 
+<!-- LINT.IfChange(ContextualSearchSource) -->
+
 <variants name="ContextualSearchSource">
+  <variant name="ContextualTasks"/>
+  <variant name="Lens"/>
   <variant name="NewTabPage"/>
+  <variant name="Omnibox"/>
   <variant name="Unknown"/>
 </variants>
+
+<!-- LINT.ThenChange(//components/contextual_search/contextual_search_metrics_recorder.h:ContextualSearchSource) -->
 
 <histogram
     name="ContextualSearch.ActiveTabsCountOnContextMenuOpen.{ContextualSearchSource}"
@@ -98,6 +105,19 @@ chromium-metrics-reviews@google.com.
   <token key="ContextualSearchFileTypes" variants="ContextualSearchFileTypes">
     <variant name=""/>
   </token>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
+<histogram
+    name="ContextualSearch.File.WebUI.UploadAttemptFailure.{ContextualSearchSource}"
+    enum="ContextualSearchFileValidationError" expires_after="2026-05-17">
+  <owner>hujasonx@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Records the validation error hit on the WebUI side when a file is uploaded.
+    If no error occurred, this is logged as &quot;No error.&quot; Recorded when
+    a file upload is attempted.
+  </summary>
   <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
 </histogram>
 

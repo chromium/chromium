@@ -35,6 +35,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/contextual_search/contextual_search_types.h:AimToolState) -->
 
+<!-- LINT.IfChange(FileValidationError) -->
+
+<enum name="ContextualSearchFileValidationError">
+  <int value="0" label="No error"/>
+  <int value="1" label="Too many files uploaded"/>
+  <int value="2" label="File is empty"/>
+  <int value="3" label="File size is too large"/>
+</enum>
+
+<!-- LINT.ThenChange(//ui/webui/resources/cr_components/composebox/contextual_entrypoint_and_carousel.ts:FileValidationError) -->
+
 <enum name="ContextualSearchMultimodalState">
   <int value="0" label="Text Only"/>
   <int value="1" label="File Only"/>

@@ -90,6 +90,7 @@
 #include "chrome/grit/theme_resources.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/google/core/common/google_util.h"
@@ -569,6 +570,11 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
                      composebox_config.attachment_upload().max_size_bytes());
   source->AddInteger("composeboxFileMaxCount",
                      composebox_config.max_num_files());
+  source->AddString(
+      "composeboxSource",
+      contextual_search::ContextualSearchMetricsRecorder::
+          ContextualSearchSourceToString(
+              contextual_search::ContextualSearchSource::kNewTabPage));
 
   source->AddBoolean(
       "searchboxShowComposeEntrypoint",

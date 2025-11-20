@@ -28,6 +28,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/omnibox_popup_resources.h"
 #include "chrome/grit/omnibox_popup_resources_map.h"
+#include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -139,6 +140,11 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
           omnibox::kWebUIOmniboxAimPopupAddContextButtonVariantParam.Get());
   source->AddString("searchboxLayoutMode", searchbox_layout_mode);
   source->AddBoolean("steadyComposeboxShowVoiceSearch", false);
+  source->AddString(
+      "composeboxSource",
+      contextual_search::ContextualSearchMetricsRecorder::
+          ContextualSearchSourceToString(
+              contextual_search::ContextualSearchSource::kOmnibox));
 
   webui::SetupWebUIDataSource(
       source, kOmniboxPopupResources,

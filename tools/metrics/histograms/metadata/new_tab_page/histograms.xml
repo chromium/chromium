@@ -276,18 +276,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NewTabPage.Composebox.File.WebUI.UploadAttemptFailure"
-    enum="ComposeboxFileValidationError" expires_after="2026-05-17">
-  <owner>jennserrano@google.com</owner>
-  <owner>chrome-desktop-ntp@google.com</owner>
-  <owner>chrome-desktop-search@google.com</owner>
-  <summary>
-    Records the validation error hit on the WebUI side when a file is uploaded.
-    If no error occurred, this is logged as &quot;No error.&quot; Recorded when
-    a file upload is attempted.
-  </summary>
-</histogram>
-
 <histogram name="NewTabPage.Composebox.FromNTPLoadToSessionStart" units="ms"
     expires_after="2026-06-17">
   <owner>niharm@google.com</owner>

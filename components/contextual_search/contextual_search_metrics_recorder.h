@@ -22,11 +22,17 @@ enum class MimeType;
 
 namespace contextual_search {
 
+// LINT.IfChange(ContextualSearchSource)
+
 enum class ContextualSearchSource {
   kUnknown,
   kNewTabPage,
   kOmnibox,
+  kContextualTasks,
+  kLens,
 };
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_search/histograms.xml:ContextualSearchSource)
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

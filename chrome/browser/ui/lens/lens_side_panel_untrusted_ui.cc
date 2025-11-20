@@ -24,6 +24,7 @@
 #include "chrome/grit/lens_shared_resources_map.h"
 #include "chrome/grit/lens_untrusted_resources.h"
 #include "chrome/grit/lens_untrusted_resources_map.h"
+#include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/lens/lens_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
@@ -194,6 +195,12 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
   // Enables a fix that causes no flickering when transitioning between ZPS and
   // typed suggestions.
   html_source->AddBoolean("composeboxNoFlickerSuggestionsFix", true);
+  // Specify metrics source.
+  html_source->AddString(
+      "composeboxSource",
+      contextual_search::ContextualSearchMetricsRecorder::
+          ContextualSearchSourceToString(
+              contextual_search::ContextualSearchSource::kLens));
 
   // Add strings for post message communication with the remote UI.
   lens::ClientToAimMessage handshake_ping;

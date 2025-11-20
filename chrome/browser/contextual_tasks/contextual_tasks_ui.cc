@@ -29,6 +29,7 @@
 #include "chrome/grit/contextual_tasks_resources.h"
 #include "chrome/grit/contextual_tasks_resources_map.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/lens/lens_features.h"
@@ -141,6 +142,11 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   source->AddBoolean("expandedComposeboxShowVoiceSearch", false);
   source->AddBoolean("composeboxShowContextMenuTabPreviews", false);
   source->AddBoolean("composeboxContextMenuEnableMultiTabSelection", false);
+  source->AddString(
+      "composeboxSource",
+      contextual_search::ContextualSearchMetricsRecorder::
+          ContextualSearchSourceToString(
+              contextual_search::ContextualSearchSource::kContextualTasks));
 
   // Set up chrome://contextual-tasks/internals debug UI.
   source->AddResourcePath(

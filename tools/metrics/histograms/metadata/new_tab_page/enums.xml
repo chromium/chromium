@@ -42,13 +42,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom:ChipType) -->
 
-<enum name="ComposeboxFileValidationError">
-  <int value="0" label="No error"/>
-  <int value="1" label="Too many files uploaded"/>
-  <int value="2" label="File is empty"/>
-  <int value="3" label="File size is too large"/>
-</enum>
-
 <enum name="FailToShowHomeSurfaceReason">
   <int value="0" label="Fail to create a NTP Tab"/>
   <int value="1" label="Fail to find a NTP Tab"/>
