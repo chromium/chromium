@@ -1989,7 +1989,7 @@ public class ToolbarManager
                         mExtensionToolbarCoordinator,
                         topControlsStacker,
                         mBrowserControlsSizer,
-                        () -> MultiWindowUtils.getIncognitoInstanceCount(/* activeOnly= */ false));
+                        () -> MultiWindowUtils.getIncognitoInstanceCount(/* activeOnly= */ true));
 
         mHomepageStateListener =
                 () -> {
