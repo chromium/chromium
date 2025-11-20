@@ -148,15 +148,6 @@ class AutocompleteInput {
   };
   static FeaturedKeywordMode GetFeaturedKeywordMode(std::u16string_view text);
 
-  // If the input is in the keyword mode for a starter pack engine, returns the
-  // starter pack's `TemplateURL` or nullptr. E.g. for "@Gemini text", Gemini
-  // `TemplateURL` is returned. If the matching keyword was found, updates
-  // `input` with the keyword stripped.
-  // `model` must be non-null.
-  static const TemplateURL* AdjustInputForStarterPackEngines(
-      TemplateURLService* model,
-      AutocompleteInput* input);
-
   // Returns the matching substituting keyword for `input`, or NULL if there
   // is no keyword for the specified input.  If the matching keyword was found,
   // updates `input`'s text and cursor position.

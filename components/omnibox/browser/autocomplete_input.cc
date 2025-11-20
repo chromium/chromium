@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "components/omnibox/browser/autocomplete_input.h"
 
 #include <string_view>
@@ -745,30 +744,6 @@ AutocompleteInput::GetFeaturedKeywordMode(std::u16string_view text) {
   if (text.starts_with(u'@'))
     return FeaturedKeywordMode::kPrefix;
   return FeaturedKeywordMode::kFalse;
-}
-
-// static
-const TemplateURL* AutocompleteInput::AdjustInputForStarterPackEngines(
-    TemplateURLService* model,
-    AutocompleteInput* input) {
-  DCHECK(model);
-
-  // If not in keyword mode, then `input` is definitely not in a starter pack
-  // scope, so early exit.
-  if (!input->prefer_keyword()) {
-    return nullptr;
-  }
-
-  // If in a starter pack scope, should run the provider with only
-  // the user text AFTER the keyword.  E.g. if the input is "@history text",
-  // set the autocomplete input to just "text".
-  const TemplateURL* template_url =
-      AutocompleteInput::GetSubstitutingTemplateURLForInput(model, input);
-  if (template_url && template_url->starter_pack_id() > 0) {
-    return template_url;
-  }
-
-  return nullptr;
 }
 
 // static
