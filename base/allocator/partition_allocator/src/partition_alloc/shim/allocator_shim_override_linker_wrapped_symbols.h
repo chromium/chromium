@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifdef PARTITION_ALLOC_SHIM_ALLOCATOR_SHIM_OVERRIDE_LINKER_WRAPPED_SYMBOLS_H_
 #error This header is meant to be included only once by allocator_shim.cc
 #endif
@@ -21,6 +16,7 @@
 // linker as references to __wrap_malloc, __wrap_free, which are defined here.
 
 #include "partition_alloc/buildflags.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
 
 #if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 #include <stdlib.h>
@@ -104,7 +100,8 @@ SHIM_ALWAYS_EXPORT char* __wrap_strdup(const char* str) {
   if (!buffer) {
     return nullptr;
   }
-  return reinterpret_cast<char*>(std::memcpy(buffer, str, length));
+  return reinterpret_cast<char*>(
+      PA_UNSAFE_TODO(std::memcpy(buffer, str, length)));
 }
 
 SHIM_ALWAYS_EXPORT char* __wrap_strndup(const char* str, size_t n) {
@@ -113,8 +110,8 @@ SHIM_ALWAYS_EXPORT char* __wrap_strndup(const char* str, size_t n) {
   if (!buffer) {
     return nullptr;
   }
-  std::memcpy(buffer, str, length);
-  buffer[length] = '\0';
+  PA_UNSAFE_TODO(std::memcpy(buffer, str, length));
+  PA_UNSAFE_TODO(buffer[length]) = '\0';
   return buffer;
 }
 
@@ -154,7 +151,8 @@ SHIM_ALWAYS_EXPORT int __wrap_vasprintf(char** strp,
   *strp = static_cast<char*>(
       malloc(kInitialSize));  // Our malloc() doesn't return nullptr.
 
-  int actual_size = vsnprintf(*strp, kInitialSize, fmt, va_args);
+  int actual_size =
+      PA_UNSAFE_TODO(vsnprintf(*strp, kInitialSize, fmt, va_args));
   if (actual_size < 0) {
     va_end(va_args_copy);
     return actual_size;
@@ -169,8 +167,8 @@ SHIM_ALWAYS_EXPORT int __wrap_vasprintf(char** strp,
   // This is very lightly used in Chromium in practice, see crbug.com/116558 for
   // details.
   if (actual_size >= kInitialSize) {
-    int ret = vsnprintf(*strp, static_cast<size_t>(actual_size + 1), fmt,
-                        va_args_copy);
+    int ret = PA_UNSAFE_TODO(vsnprintf(
+        *strp, static_cast<size_t>(actual_size + 1), fmt, va_args_copy));
     va_end(va_args_copy);
     return ret;
   }
@@ -182,7 +180,7 @@ SHIM_ALWAYS_EXPORT int __wrap_vasprintf(char** strp,
 SHIM_ALWAYS_EXPORT int __wrap_asprintf(char** strp, const char* fmt, ...) {
   va_list va_args;
   va_start(va_args, fmt);
-  int retval = vasprintf(strp, fmt, va_args);
+  int retval = PA_UNSAFE_TODO(vasprintf(strp, fmt, va_args));
   va_end(va_args);
   return retval;
 }

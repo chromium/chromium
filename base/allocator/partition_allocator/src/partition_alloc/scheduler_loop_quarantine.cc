@@ -2,21 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "partition_alloc/slot_start.h"
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "partition_alloc/scheduler_loop_quarantine.h"
 
 #include <atomic>
 
 #include "partition_alloc/internal_allocator.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/partition_page.h"
 #include "partition_alloc/partition_root.h"
 #include "partition_alloc/scheduler_loop_quarantine_support.h"
+#include "partition_alloc/slot_start.h"
 #include "partition_alloc/thread_cache.h"
 
 namespace partition_alloc::internal {
@@ -93,8 +89,8 @@ void SchedulerLoopQuarantineBranch<thread_bound>::Configure(
   largest_bucket_index_ =
       BucketIndexLookup::GetIndexForDenserBuckets(config.max_quarantine_size);
   PA_CHECK(largest_bucket_index_ < BucketIndexLookup::kNumBuckets);
-  PA_CHECK(&allocator_root_->buckets[largest_bucket_index_] <=
-           &allocator_root_->sentinel_bucket);
+  PA_UNSAFE_TODO(PA_CHECK(&allocator_root_->buckets[largest_bucket_index_] <=
+                          &allocator_root_->sentinel_bucket));
 }
 
 template <bool thread_bound>
@@ -146,8 +142,8 @@ void SchedulerLoopQuarantineBranch<thread_bound>::Quarantine(
   }
 
   if (slot_span->bucket < &allocator_root_->buckets[0] ||
-      &allocator_root_->buckets[largest_bucket_index_] < slot_span->bucket)
-      [[unlikely]] {
+      &PA_UNSAFE_TODO(allocator_root_->buckets[largest_bucket_index_]) <
+          slot_span->bucket) [[unlikely]] {
     // The allocation is direct-mapped or larger than `largest_bucket_index_`.
     return allocator_root_->RawFreeWithThreadCache(slot_start, slot_span);
   }

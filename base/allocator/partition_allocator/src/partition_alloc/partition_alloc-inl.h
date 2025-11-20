@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef PARTITION_ALLOC_PARTITION_ALLOC_INL_H_
 #define PARTITION_ALLOC_PARTITION_ALLOC_INL_H_
 
@@ -49,7 +44,7 @@ namespace partition_alloc::internal {
 #pragma optimize("", off)
 #endif
 PA_ALWAYS_INLINE void SecureMemset(void* ptr, uint8_t value, size_t size) {
-  memset(ptr, value, size);
+  PA_UNSAFE_TODO(memset(ptr, value, size));
 
 #if !PA_CONFIG(IS_NONCLANG_MSVC)
   // As best as we can tell, this is sufficient to break any optimisations that
@@ -74,7 +69,7 @@ PA_ALWAYS_INLINE void DebugMemset(void* ptr, int value, size_t size) {
   LiftThreadIsolationScope lift_thread_isolation_restrictions;
 #endif
   size_t size_to_memset = std::min(size, size_t{1} << 19);
-  memset(ptr, value, size_to_memset);
+  PA_UNSAFE_TODO(memset(ptr, value, size_to_memset));
 }
 #endif  // PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
 

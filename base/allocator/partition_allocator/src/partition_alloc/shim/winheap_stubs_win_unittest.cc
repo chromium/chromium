@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "partition_alloc/shim/winheap_stubs_win.h"
 
 #include "partition_alloc/partition_alloc_base/bits.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_check.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -56,13 +52,13 @@ TEST(WinHeapStubs, AlignedReallocationsCorrectlyCopyData) {
   for (size_t size : kSizes) {
     SCOPED_TRACE(size);
 
-    memset(ptr, kMagicByte, old_size);
+    PA_UNSAFE_TODO(memset(ptr, kMagicByte, old_size));
     ptr = WinHeapAlignedRealloc(ptr, size, kAlignment);
     ASSERT_NE(ptr, nullptr);
 
     for (size_t i = 0; i < std::min(size, old_size); i++) {
       SCOPED_TRACE(i);
-      ASSERT_EQ(reinterpret_cast<uint8_t*>(ptr)[i], kMagicByte);
+      ASSERT_EQ(PA_UNSAFE_TODO(reinterpret_cast<uint8_t*>(ptr)[i]), kMagicByte);
     }
 
     old_size = size;

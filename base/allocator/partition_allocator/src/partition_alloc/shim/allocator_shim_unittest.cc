@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "partition_alloc/shim/allocator_shim.h"
 
 #include <atomic>
@@ -25,6 +20,7 @@
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc.h"
 #include "partition_alloc/partition_alloc_base/bits.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/memory/page_size.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -255,7 +251,8 @@ class AllocatorShimTest : public testing::Test {
                             void* context) {
     if (instance_) {
       for (unsigned i = 0; i < num_to_be_freed; ++i) {
-        ++instance_->batch_frees_intercepted_by_addr[Hash(to_be_freed[i])];
+        ++instance_->batch_frees_intercepted_by_addr[Hash(
+            PA_UNSAFE_TODO(to_be_freed[i]))];
       }
     }
     g_mock_dispatch.next->batch_free_function(to_be_freed, num_to_be_freed,
@@ -525,12 +522,12 @@ TEST_F(AllocatorShimTest, InterceptLibcSymbols) {
 #endif  // !BUILDFLAG(IS_APPLE)
 
   char* realloc_ptr = static_cast<char*>(malloc(10));
-  strcpy(realloc_ptr, "foobar");
+  PA_UNSAFE_TODO(strcpy(realloc_ptr, "foobar"));
   void* old_realloc_ptr = realloc_ptr;
   realloc_ptr = static_cast<char*>(realloc(realloc_ptr, 73));
   ASSERT_GE(reallocs_intercepted_by_size[73], 1u);
   ASSERT_GE(reallocs_intercepted_by_addr[Hash(old_realloc_ptr)], 1u);
-  ASSERT_EQ(0, strcmp(realloc_ptr, "foobar"));
+  ASSERT_EQ(0, PA_UNSAFE_TODO(strcmp(realloc_ptr, "foobar")));
 
   free(alloc_ptr);
   ASSERT_GE(frees_intercepted_by_addr[Hash(alloc_ptr)], 1u);
@@ -770,7 +767,7 @@ TEST_F(AllocatorShimTest, InterceptCLibraryFunctions) {
   EXPECT_GT(counts_after, counts_before);
 
   counts_before = counts_after;
-  ptr = strndup("hello, world", 5);
+  ptr = PA_UNSAFE_TODO(strndup("hello, world", 5));
   EXPECT_NE(nullptr, ptr);
   free(ptr);
   counts_after = total_counts(allocs_intercepted_by_size);

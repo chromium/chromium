@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "partition_alloc/thread_cache.h"
 
 #include <algorithm>
@@ -18,6 +13,7 @@
 #include "partition_alloc/extended_api.h"
 #include "partition_alloc/internal_allocator.h"
 #include "partition_alloc/partition_address_space.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/thread_annotations.h"
 #include "partition_alloc/partition_alloc_base/threading/platform_thread_for_testing.h"
 #include "partition_alloc/partition_alloc_config.h"
@@ -163,7 +159,7 @@ class PartitionAllocThreadCacheTest
   size_t GetBucketSizeForThreadCache() {
     size_t tc_bucket_index = PartitionRoot::SizeToBucketIndex(
         sizeof(ThreadCache), PartitionRoot::BucketDistribution::kNeutral);
-    auto* tc_bucket = &root()->buckets[tc_bucket_index];
+    auto* tc_bucket = &PA_UNSAFE_TODO(root()->buckets[tc_bucket_index]);
     return tc_bucket->slot_size;
   }
 
@@ -623,8 +619,9 @@ TEST_P(PartitionAllocThreadCacheTest, RecordStats) {
   size_t expected_count =
       kDefaultCountForMediumBucket / 2 - 1 +
       (1 + allocations / kFillCountForMediumBucket) * kFillCountForMediumBucket;
-  EXPECT_EQ(root()->buckets[bucket_index].slot_size * expected_count,
-            stats.bucket_total_memory);
+  EXPECT_EQ(
+      PA_UNSAFE_TODO(root()->buckets[bucket_index]).slot_size * expected_count,
+      stats.bucket_total_memory);
   EXPECT_EQ(sizeof(ThreadCache), stats.metadata_overhead);
 }
 
@@ -651,9 +648,9 @@ class ThreadDelegateForMultipleThreadCachesAccounting
     ThreadCacheStats stats;
     ThreadCacheRegistry::Instance().DumpStats(false, &stats);
     // 2* for this thread and the parent one.
-    EXPECT_EQ(
-        2 * root_->buckets[bucket_index].slot_size * kFillCountForMediumBucket,
-        stats.bucket_total_memory - wqthread_stats_.bucket_total_memory);
+    EXPECT_EQ(2 * PA_UNSAFE_TODO(root_->buckets[bucket_index]).slot_size *
+                  kFillCountForMediumBucket,
+              stats.bucket_total_memory - wqthread_stats_.bucket_total_memory);
     EXPECT_EQ(2 * sizeof(ThreadCache),
               stats.metadata_overhead - wqthread_stats_.metadata_overhead);
 
@@ -1006,7 +1003,8 @@ TEST_P(PartitionAllocThreadCacheTest, DynamicCountPerBucketClamping) {
   for (size_t i = 0; i < ThreadCache::kBucketCount; i++) {
     // Invalid bucket.
     if (!tcache->bucket_for_testing(i).limit.load(std::memory_order_relaxed)) {
-      EXPECT_EQ(root()->buckets[i].active_slot_spans_head, nullptr);
+      EXPECT_EQ(PA_UNSAFE_TODO(root()->buckets[i]).active_slot_spans_head,
+                nullptr);
       continue;
     }
     EXPECT_GE(
@@ -1019,7 +1017,8 @@ TEST_P(PartitionAllocThreadCacheTest, DynamicCountPerBucketClamping) {
   for (size_t i = 0; i < ThreadCache::kBucketCount; i++) {
     // Invalid bucket.
     if (!tcache->bucket_for_testing(i).limit.load(std::memory_order_relaxed)) {
-      EXPECT_EQ(root()->buckets[i].active_slot_spans_head, nullptr);
+      EXPECT_EQ(PA_UNSAFE_TODO(root()->buckets[i]).active_slot_spans_head,
+                nullptr);
       continue;
     }
     EXPECT_LT(
@@ -1223,7 +1222,8 @@ TEST_P(PartitionAllocThreadCacheTest, Bookkeeping) {
   void* ptr =
       root()->Alloc(root()->AdjustSizeForExtrasSubtract(kMediumSize), "");
 
-  auto* medium_bucket = root()->buckets + SizeToIndex(kMediumSize);
+  auto* medium_bucket =
+      PA_UNSAFE_TODO(root()->buckets + SizeToIndex(kMediumSize));
   size_t medium_alloc_size = medium_bucket->slot_size;
   expected_allocated_size += medium_alloc_size;
   expected_committed_size += kUseLazyCommit
@@ -1240,7 +1240,7 @@ TEST_P(PartitionAllocThreadCacheTest, Bookkeeping) {
 
   // These allocations all come from the thread-cache.
   for (size_t i = 0; i < kFillCountForMediumBucket; i++) {
-    arr[i] =
+    PA_UNSAFE_TODO(arr[i]) =
         root()->Alloc(root()->AdjustSizeForExtrasSubtract(kMediumSize), "");
     EXPECT_EQ(expected_committed_size, root()->total_size_of_committed_pages);
     EXPECT_EQ(expected_committed_size, root()->max_size_of_committed_pages);

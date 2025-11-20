@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "partition_alloc/stack/stack.h"
 
 #include <cstdint>
@@ -66,7 +61,7 @@ void* GetStackTop() {
     error = pthread_attr_getstack(&attr, &base, &size);
     PA_CHECK(!error);
     pthread_attr_destroy(&attr);
-    return reinterpret_cast<uint8_t*>(base) + size;
+    return PA_UNSAFE_TODO(reinterpret_cast<uint8_t*>(base) + size);
   }
 
 #if PA_BUILDFLAG(PA_LIBC_GLIBC)

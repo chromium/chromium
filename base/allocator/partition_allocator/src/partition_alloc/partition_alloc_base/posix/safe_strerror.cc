@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "partition_alloc/partition_alloc_base/posix/safe_strerror.h"
 
 #include <cerrno>
@@ -14,6 +9,7 @@
 #include <cstring>
 
 #include "partition_alloc/build_config.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
 
 namespace partition_alloc::internal::base {
 
@@ -43,7 +39,7 @@ namespace partition_alloc::internal::base {
     // glibc did not use buf and returned a static string instead. Copy it
     // into buf.
     buf[0] = '\0';
-    strncat(buf, rc, len - 1);
+    PA_UNSAFE_TODO(strncat(buf, rc, len - 1));
   }
   // The GNU version never fails. Unknown errors get an "unknown error" message.
   // The result is always null terminated.
@@ -72,7 +68,7 @@ namespace partition_alloc::internal::base {
     // it indirectly implies that typically ERANGE will be returned, instead
     // of truncating the string. We play it safe by always terminating the
     // string explicitly.
-    buf[len - 1] = '\0';
+    PA_UNSAFE_TODO(buf[len - 1]) = '\0';
   } else {
     // Error. POSIX is vague about whether the return value is itself a system
     // error code or something else. On Linux currently it is -1 and errno is
@@ -91,8 +87,8 @@ namespace partition_alloc::internal::base {
       strerror_error = result;
     }
     // snprintf truncates and always null-terminates.
-    snprintf(buf, len, "Error %d while retrieving error %d", strerror_error,
-             err);
+    PA_UNSAFE_TODO(snprintf(buf, len, "Error %d while retrieving error %d",
+                            strerror_error, err));
   }
   errno = old_errno;
 }

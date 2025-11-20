@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "partition_alloc/partition_alloc_base/logging.h"
+
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
 
 // TODO(crbug.com/40158212): After finishing copying //base files to PA library,
 // remove defined(BASE_CHECK_H_) from here.
@@ -53,7 +50,7 @@ void WriteToStderr(const char* data, size_t length) {
   size_t bytes_written = 0;
   int rv;
   while (bytes_written < length) {
-    rv = WrapEINTR(write)(STDERR_FILENO, data + bytes_written,
+    rv = WrapEINTR(write)(STDERR_FILENO, PA_UNSAFE_TODO(data + bytes_written),
                           length - bytes_written);
     if (rv < 0) {
       // Give up, nothing we can do now.
@@ -66,7 +63,7 @@ void WriteToStderr(const char* data, size_t length) {
 void WriteToStderr(const char* data, size_t length) {
   HANDLE handle = ::GetStdHandle(STD_ERROR_HANDLE);
   const char* ptr = data;
-  const char* ptr_end = data + length;
+  const char* ptr_end = PA_UNSAFE_TODO(data + length);
   while (ptr < ptr_end) {
     DWORD bytes_written = 0;
     if (!::WriteFile(handle, ptr, ptr_end - ptr, &bytes_written, nullptr) ||
@@ -74,7 +71,7 @@ void WriteToStderr(const char* data, size_t length) {
       // Give up, nothing we can do now.
       break;
     }
-    ptr += bytes_written;
+    PA_UNSAFE_TODO(ptr += bytes_written);
   }
 }
 #endif  // !PA_BUILDFLAG(IS_WIN)
@@ -111,7 +108,7 @@ void RawLog(int level, const char* message) {
 #endif  // !PA_BUILDFLAG(IS_WIN)
     WriteToStderr(message, message_len);
 
-    if (message_len > 0 && message[message_len - 1] != '\n') {
+    if (message_len > 0 && PA_UNSAFE_TODO(message[message_len - 1]) != '\n') {
       WriteToStderr("\n", 1);
     }
   }
