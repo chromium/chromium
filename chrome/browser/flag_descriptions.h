@@ -5355,11 +5355,6 @@ inline constexpr char kClankDefaultBrowserPromoRoleManagerDescription[] =
     "Sets the Role Manager Default Browser Promo for testing the new "
     "Default Browser Promo Feature";
 
-inline constexpr char kCleanupLegacyTabStateName[] = "Cleanup Legacy TabState";
-inline constexpr char kCleanupLegacyTabStateDescription[] =
-    "When enabled, delete legacy TabState files for Tabs which "
-    "have been migrated to the new FlatBuffer format";
-
 inline constexpr char kClientSideDetectionSendIntelligentScanInfoAndroidName[] =
     "Client Side Detection Send Brand and Intent on Android";
 inline constexpr char
@@ -5551,12 +5546,6 @@ inline constexpr char kHubBackButtonDescription[] =
 inline constexpr char kHubSlideAnimationName[] = "Hub Slide Animation";
 inline constexpr char kHubSlideAnimationDescription[] =
     "Enables the slide animation on the hub when panes are switched.";
-
-inline constexpr char kLegacyTabStateDeprecationName[] =
-    "Enable Legacy TabState Deprecation";
-inline constexpr char kLegacyTabStateDeprecationDescription[] =
-    "Deprecates the legacy pickle based TabState format following the launch "
-    "of the FlatBuffer based schema.";
 
 inline constexpr char kMagicStackAndroidName[] = "Magic Stack Android";
 inline constexpr char kMagicStackAndroidDescription[] =

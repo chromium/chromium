@@ -18,11 +18,9 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.chrome.browser.crypto.CipherFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
@@ -155,7 +153,6 @@ public class TabStateFlatBufferTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.LEGACY_TAB_STATE_DEPRECATION)
     public void testLegacyTabStateFileDeletion() throws ExecutionException {
         TabState state = getTestTabState(/* isIncognito= */ true);
         File legacyTabStateFile =
@@ -192,7 +189,6 @@ public class TabStateFlatBufferTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.CLEANUP_LEGACY_TABSTATE)
     public void testLegacyTabStateFileMarkedForDeletion() throws ExecutionException {
         TabState state = getTestTabState(/* isIncognito= */ false);
         File legacyTabStateFile =
@@ -223,7 +219,6 @@ public class TabStateFlatBufferTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.CLEANUP_LEGACY_TABSTATE)
     public void testUnmigratedLegacyTabStateFileNotMarkedForDeletion() throws ExecutionException {
         TabState state = getTestTabState(/* isIncognito= */ false);
         File legacyTabStateFile =

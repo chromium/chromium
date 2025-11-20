@@ -306,7 +306,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kClampAutomotiveScaling,
     &kClankStartupLatencyInjection,
     &kClankWhatsNew,
-    &kCleanupLegacyTabState,
     &kClearBrowsingDataAndroidSurvey,
     &kClearInstanceInfoWhenClosedIntentionally,
     &kClearIntentWhenRecreated,
@@ -351,7 +350,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kIncognitoThemeOverlayTesting,
     &kInstanceSwitcherV2,
     &kKeyboardEscBackNavigation,
-    &kLegacyTabStateDeprecation,
     &kLensOnQuickActionSearchWidget,
     &kLinkHoverStatusBar,
     &kLoadAllTabsAtStartup,
@@ -657,7 +655,6 @@ BASE_FEATURE(kChromeSurveyNextAndroid, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kClampAutomotiveScaling, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kClankStartupLatencyInjection, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kClankWhatsNew, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kCleanupLegacyTabState, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kClearBrowsingDataAndroidSurvey, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kClearInstanceInfoWhenClosedIntentionally, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kClearIntentWhenRecreated, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -705,7 +702,6 @@ BASE_FEATURE(kIncognitoScreenshot, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIncognitoThemeOverlayTesting, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kInstanceSwitcherV2, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kKeyboardEscBackNavigation, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kLegacyTabStateDeprecation, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kLensOnQuickActionSearchWidget, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kLinkHoverStatusBar, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kLoadAllTabsAtStartup, base::FEATURE_DISABLED_BY_DEFAULT);

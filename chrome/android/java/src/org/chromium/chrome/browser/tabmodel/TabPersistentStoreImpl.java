@@ -90,6 +90,8 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
     private static final String TAG = "tabmodel";
     private static final String TAG_MIGRATION = "fb_migration";
     private static final long INVALID_TIME = -1;
+    private static final int CLEANUP_LEGACY_TABSTATE_BATCH_SIZE = 5;
+    private static final int MAX_FILES_DELETED_PER_SESSION_LEGACY_TABSTATE = 100;
 
     /**
      * Determined experimentally to balance load speed and UI thread congestion. The optimal value
@@ -382,21 +384,6 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
                 }
                 mMigrateTabTask = null;
             }
-            // Don't want any new save below to trigger new migrations which are unnecessary. Only
-            // want to update any migrations for which Tabs have already migrated (so the
-            // migrated TabState file is not out of date, which would lead to an old snapshot
-            // of the Tab being restored upon restart). If the Tab hasn't migrated yet,
-            // the legacy TabState file will be used upon a restart.
-            // mTabsToMigrate does not need to be modified in this method when the legacy
-            // TabState deprecation flag is turned on because when the flag is turned on the
-            // migration queue only handles migrations of Tabs that were on legacy TabState at
-            // startup. Previously it also handled migrations of all Tab saves, after the legacy
-            // TabState file had been saved.
-            ArrayDeque<Tab> tabsToMigrateCopy = new ArrayDeque<>();
-            if (!ChromeFeatureList.sLegacyTabStateDeprecation.isEnabled()) {
-                tabsToMigrateCopy = mTabsToMigrate.clone();
-                mTabsToMigrate.clear();
-            }
 
             // The list of tabs should be saved first in case our activity is terminated early.
             // Explicitly toss out any existing SaveListTask because they only save the TabModel as
@@ -446,17 +433,6 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
                     if (state != null) {
                         TabStateFileManager.saveState(
                                 getStateDirectory(), state, id, incognito, mCipherFactory);
-                        if (!ChromeFeatureList.sLegacyTabStateDeprecation.isEnabled()
-                                && TabStateFileManager.isMigrated(
-                                        getStateDirectory(), id, incognito)) {
-                            // Ensure parity between the FlatBuffer TabState file and legacy.
-                            // Otherwise if the user restarts and is in the experiment, they may
-                            // have the Tab restored using an out of date FlatBuffer file.
-                            TabStateFileManager.migrateTabState(
-                                    getStateDirectory(), state, id, incognito, mCipherFactory);
-                            // No longer need to migrate the Tab as it was just migrated.
-                            tabsToMigrateCopy.remove(tab);
-                        }
                     }
                 } catch (OutOfMemoryError e) {
                     Log.e(TAG, "Out of memory error while attempting to save tab state. Erasing.");
@@ -464,9 +440,6 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
                     TabStateFileManager.deleteMigratedFile(getStateDirectory(), id, incognito);
                 }
             }
-            // Now all pending saves (and migrations, if applicable) are complete we are ok to
-            // resume any migrations which would be triggered by another Tab save.
-            mTabsToMigrate.addAll(tabsToMigrateCopy);
             updateMigratedFiles();
             mTabsToSave.clear();
         } finally {
@@ -800,8 +773,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
 
             if (tabState.legacyFileToDelete != null
                     && mLegacyTabStateFilesToDelete.size()
-                            < ChromeFeatureList.sMaxLegacyTabStateFilesCleanedUpPerSession
-                                    .getValue()) {
+                            < MAX_FILES_DELETED_PER_SESSION_LEGACY_TABSTATE) {
                 mLegacyTabStateFilesToDelete.add(tabState.legacyFileToDelete);
                 tabState.legacyFileToDelete = null;
             }
@@ -1179,15 +1151,6 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
             Tab tab = mTabsToSave.removeFirst();
             mSaveTabTask = new SaveTabTask(tab);
             mSaveTabTask.executeOnTaskRunner(mSequencedTaskRunner);
-            // With legacy TabState deprecated, FlatBuffer saves are the default so there is no
-            // need for new Tab saves to be added to the migration queue. The migration queue
-            // services Tabs which were on legacy TabState at startup.
-            if (!ChromeFeatureList.sLegacyTabStateDeprecation.isEnabled()) {
-                // Ensure Tab is moved to the front of the migration queue to ensure the two
-                // versions of the TabState file are kept in sync.
-                mTabsToMigrate.remove(tab);
-                mTabsToMigrate.addFirst(tab);
-            }
             migrateNextTabIfApplicable(1);
             deleteLegacyTabStateFilesIfApplicable();
         } else {
@@ -1216,8 +1179,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
         }
         List<File> filesToDelete = new ArrayList<>();
         for (int i = 0;
-                !mLegacyTabStateFilesToDelete.isEmpty()
-                        && i < ChromeFeatureList.sCleanupLegacyTabStateBatchSize.getValue();
+                !mLegacyTabStateFilesToDelete.isEmpty() && i < CLEANUP_LEGACY_TABSTATE_BATCH_SIZE;
                 i++) {
             filesToDelete.add(mLegacyTabStateFilesToDelete.poll());
         }

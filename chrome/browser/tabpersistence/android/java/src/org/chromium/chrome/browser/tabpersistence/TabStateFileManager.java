@@ -23,7 +23,6 @@ import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.crypto.CipherFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
@@ -241,7 +240,7 @@ public class TabStateFileManager {
         if (tabState != null) {
             RecordHistogram.recordTimesHistogram(
                     "Tabs.TabState.LoadTime", SystemClock.elapsedRealtime() - startTime);
-            if (useFlatBuffer && ChromeFeatureList.sCleanupLegacyTabState.isEnabled()) {
+            if (useFlatBuffer) {
                 tabState.legacyFileToDelete =
                         getTabStateFile(stateFolder, id, encrypted, /* isFlatbuffer= */ false);
             }
@@ -552,25 +551,22 @@ public class TabStateFileManager {
         // off.
         // We must always have a safe fallback to hand-written based TabState to be able to roll out
         // FlatBuffers safely.
-        // When ChromeFeatureList.sLegacyTabStateDeprecation is turned on, the default is to save
-        // to the FlatBuffer format and delete the corresponding legacy TabState file.
         saveStateInternal(
                 getTabStateFile(
                         directory,
                         tabId,
                         isEncrypted,
-                        ChromeFeatureList.sLegacyTabStateDeprecation.isEnabled()),
+                        /** isFlatbuffer= */
+                        true),
                 tabState,
                 isEncrypted,
                 cipherFactory);
-        if (ChromeFeatureList.sLegacyTabStateDeprecation.isEnabled()) {
-            PostTask.runOrPostTask(
-                    TaskTraits.BEST_EFFORT_MAY_BLOCK,
-                    () -> {
-                        ThreadUtils.assertOnBackgroundThread();
-                        deleteLegacyTabStateIfExists(directory, tabId, isEncrypted);
-                    });
-        }
+        PostTask.runOrPostTask(
+                TaskTraits.BEST_EFFORT_MAY_BLOCK,
+                () -> {
+                    ThreadUtils.assertOnBackgroundThread();
+                    deleteLegacyTabStateIfExists(directory, tabId, isEncrypted);
+                });
     }
 
     /**

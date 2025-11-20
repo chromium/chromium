@@ -367,7 +367,6 @@ public abstract class ChromeFeatureList {
     public static final String CLAMP_AUTOMOTIVE_SCALING = "ClampAutomotiveScaling";
     public static final String CLANK_STARTUP_LATENCY_INJECTION = "ClankStartupLatencyInjection";
     public static final String CLANK_WHATS_NEW = "ClankWhatsNew";
-    public static final String CLEANUP_LEGACY_TABSTATE = "CleanupLegacyTabState";
     public static final String CLEAR_BROWSING_DATA_ANDROID_SURVEY =
             "ClearBrowsingDataAndroidSurvey";
     public static final String CLEAR_INSTANCE_INFO_WHEN_CLOSED_INTENTIONALLY =
@@ -480,7 +479,6 @@ public abstract class ChromeFeatureList {
     public static final String INSTANCE_SWITCHER_V2 = "InstanceSwitcherV2";
     public static final String IP_PROTECTION_UX = "IpProtectionUx";
     public static final String KEYBOARD_ESC_BACK_NAVIGATION = "KeyboardEscBackNavigation";
-    public static final String LEGACY_TAB_STATE_DEPRECATION = "LegacyTabStateDeprecation";
     public static final String LENS_ON_QUICK_ACTION_SEARCH_WIDGET = "LensOnQuickActionSearchWidget";
     public static final String LINK_HOVER_STATUS_BAR = "LinkHoverStatusBar";
     public static final String LOADING_PREDICTOR_LIMIT_PRECONNECT_SOCKET_COUNT =
@@ -892,11 +890,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(CLAMP_AUTOMOTIVE_SCALING, true);
     public static final CachedFlag sClankStartupLatencyInjection =
             newCachedFlag(CLANK_STARTUP_LATENCY_INJECTION, false);
-    public static final CachedFlag sCleanupLegacyTabState =
-            newCachedFlag(
-                    CLEANUP_LEGACY_TABSTATE,
-                    /* defaultValue= */ false,
-                    /* defaultValueInTests= */ true);
     public static final CachedFlag sClearIntentWhenRecreated =
             newCachedFlag(CLEAR_INTENT_WHEN_RECREATED, /* defaultValue= */ true);
     public static final CachedFlag sCommandLineOnNonRooted =
@@ -968,11 +961,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(INCOGNITO_THEME_OVERLAY_TESTING, false);
     public static final CachedFlag sKeyboardEscBackNavigation =
             newCachedFlag(KEYBOARD_ESC_BACK_NAVIGATION, true);
-    public static final CachedFlag sLegacyTabStateDeprecation =
-            newCachedFlag(
-                    LEGACY_TAB_STATE_DEPRECATION,
-                    /* defaultValue= */ true,
-                    /* defaultValueInTests= */ true);
     public static final CachedFlag sLoadAllTabsAtStartup =
             newCachedFlag(
                     LOAD_ALL_TABS_AT_STARTUP,
@@ -1205,7 +1193,6 @@ public abstract class ChromeFeatureList {
                     sChromeNativeUrlOverriding,
                     sClampAutomotiveScaling,
                     sClankStartupLatencyInjection,
-                    sCleanupLegacyTabState,
                     sClearIntentWhenRecreated,
                     sCommandLineOnNonRooted,
                     sContextMenuPictureInPictureAndroid,
@@ -1237,7 +1224,6 @@ public abstract class ChromeFeatureList {
                     sHomepageIsNewTabPagePolicyAndroid,
                     sIncognitoThemeOverlayTesting,
                     sKeyboardEscBackNavigation,
-                    sLegacyTabStateDeprecation,
                     sLoadAllTabsAtStartup,
                     sLoadNativeEarly,
                     sLockBackPressHandlerAtStart,
@@ -1578,18 +1564,6 @@ public abstract class ChromeFeatureList {
             newIntCachedFeatureParam(
                     CLANK_STARTUP_LATENCY_INJECTION, "latency_injection_amount_millis", 0);
 
-    /** Batch size for number of legacy TabState files that should be deleted in a batch. */
-    public static final IntCachedFeatureParam sCleanupLegacyTabStateBatchSize =
-            newIntCachedFeatureParam(
-                    CLEANUP_LEGACY_TABSTATE, "cleanup_legacy_tab_state_batch_size", 5);
-
-    /** Maximum number of legacy TabState files that can be deleted per session. */
-    public static final IntCachedFeatureParam sMaxLegacyTabStateFilesCleanedUpPerSession =
-            newIntCachedFeatureParam(
-                    CLEANUP_LEGACY_TABSTATE,
-                    "max_legacy_tab_state_files_cleaned_up_per_session",
-                    100);
-
     /**
      * Cached param whether we disable animations for color changes to the edge-to-edge bottom chin.
      */
@@ -1789,7 +1763,6 @@ public abstract class ChromeFeatureList {
                     sCctResizableForThirdPartiesDenylistEntries,
                     sClampAutomotiveScalingMaxScalingPercentage,
                     sClankStartupLatencyInjectionAmountMs,
-                    sCleanupLegacyTabStateBatchSize,
                     sDesktopUAAllowedOnExternalDisplayForOem,
                     sEdgeToEdgeBottomChinOemList,
                     sEdgeToEdgeBottomChinOemMinVersions,
@@ -1803,7 +1776,6 @@ public abstract class ChromeFeatureList {
                     sLowMemoryDeviceThresholdMb,
                     sMagicStackAndroidShowAllModules,
                     sMaliciousApkDownloadCheckTelemetryOnly,
-                    sMaxLegacyTabStateFilesCleanedUpPerSession,
                     sMostVisitedTilesReselectLaxPath,
                     sMostVisitedTilesReselectLaxQuery,
                     sMostVisitedTilesReselectLaxRef,
