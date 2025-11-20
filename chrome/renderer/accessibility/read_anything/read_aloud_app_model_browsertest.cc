@@ -84,14 +84,6 @@ class ReadAnythingReadAloudAppModelTest : public ChromeRenderViewTest {
                                           {features::kReadAnythingReadAloud});
   }
 
-  void EnablePhraseHighlighting() {
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitWithFeatures(
-        {features::kReadAnythingReadAloud,
-         features::kReadAnythingReadAloudPhraseHighlighting},
-        {});
-  }
-
   std::vector<ui::AXNodeID> MoveToNextGranularityAndGetText(
       const std::set<ui::AXNodeID>* current_nodes) {
     model().MovePositionToNextGranularity();
@@ -206,7 +198,7 @@ class ReadAnythingReadAloudAppModelTest : public ChromeRenderViewTest {
   static constexpr ui::AXNodeID kId2 = 3;
   static constexpr ui::AXNodeID kId3 = 4;
 
- private:
+ protected:
   // ReadAloudAppModel constructor and destructor are private so it's
   // not accessible by std::make_unique.
   raw_ptr<ReadAloudAppModel> model_ = nullptr;
@@ -829,125 +821,6 @@ TEST_F(ReadAnythingReadAloudAppModelTest,
   ExpectHighlightAtIndexEmpty(sentence1.length() + sentence2.length() + 1);
 }
 
-TEST_F(
-    ReadAnythingReadAloudAppModelTest,
-    GetHighlightForCurrentSegmentIndex_PhrasesEnabled_NoModel_SentenceSpansMultipleNodes_ReturnsCorrectNodes) {
-  EnablePhraseHighlighting();
-
-  // Text indices:             0123456789012345678901234567890
-  std::u16string sentence1 = u"Never feel heavy ";
-  std::u16string sentence2 = u"or earthbound, ";
-  std::u16string sentence3 = u"no worries or doubts interfere.";
-
-  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
-  ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
-  ui::AXNodeData static_text3 = test::TextNode(kId3, sentence3);
-
-  const std::set<ui::AXNodeID> current_nodes = InitializeWithAndProcessNodes(
-      {std::move(static_text1), std::move(static_text2),
-       std::move(static_text3)});
-  model().PreprocessTextForSpeech(false, false, &current_nodes);
-
-  std::vector<ui::AXNodeID> node_ids =
-      model().GetCurrentText(false, false, &current_nodes).node_ids;
-  EXPECT_EQ(node_ids.size(), 3u);
-
-  // Spot check that indices 0->sentence1.length() map to the first node id.
-  ExpectPhraseHighlightAtIndexMatches(0, {{kId1, 0, 17}});
-  ExpectPhraseHighlightAtIndexMatches(7, {{kId1, 0, 17}});
-  ExpectPhraseHighlightAtIndexMatches(sentence1.length() - 1, {{kId1, 0, 17}});
-
-  int base_length = sentence1.length();
-  ExpectPhraseHighlightAtIndexMatches(base_length,
-                                      {{kId2, 0, 15}, {kId3, 0, 3}});
-
-  // Spot check that indices in sentence 2 map to the second node id.
-  ExpectPhraseHighlightAtIndexMatches(base_length + 1,
-                                      {{kId2, 0, 15}, {kId3, 0, 3}});
-  ExpectPhraseHighlightAtIndexMatches(26, {{kId2, 0, 15}, {kId3, 0, 3}});
-
-  base_length += sentence2.length();
-  ExpectPhraseHighlightAtIndexMatches(base_length - 1,
-                                      {{kId2, 0, 15}, {kId3, 0, 3}});
-  ExpectPhraseHighlightAtIndexMatches(base_length,
-                                      {{kId2, 0, 15}, {kId3, 0, 3}});
-
-  // Spot check that indices in sentence 3 map to the third node id.
-  ExpectPhraseHighlightAtIndexMatches(base_length + 1,
-                                      {{kId2, 0, 15}, {kId3, 0, 3}});
-  ExpectPhraseHighlightAtIndexMatches(40, {{kId3, 3, 21}});
-
-  ExpectPhraseHighlightAtIndexMatches(base_length + sentence3.length() - 1,
-                                      {{kId3, 21, 31}});
-  ExpectPhraseHighlightAtIndexEmpty(base_length + sentence3.length());
-
-  // Out-of-bounds nodes return an empty array.
-  ExpectPhraseHighlightAtIndexEmpty(base_length + sentence3.length() + 1);
-  ExpectPhraseHighlightAtIndexEmpty(535);
-  ExpectPhraseHighlightAtIndexEmpty(-10);
-}
-
-TEST_F(
-    ReadAnythingReadAloudAppModelTest,
-    GetHighlightForCurrentSegmentIndex_PhrasesEnabled_ValidModel_SentenceSpansMultipleNodes_ReturnsCorrectNodes) {
-  EnablePhraseHighlighting();
-
-  model().GetDependencyParserModel().UpdateWithFile(test::GetValidModelFile());
-  DependencyParserModel& phrase_model = model().GetDependencyParserModel();
-
-  EXPECT_TRUE(phrase_model.IsAvailable());
-
-  // Text indices:             0123456789012345678901234567890
-  std::u16string sentence1 = u"Never feel heavy or ";
-  std::u16string sentence2 = u"earthbound, no ";
-  std::u16string sentence3 = u"worries or doubts interfere.";
-
-  // Expected phrases:
-  // Never feel heavy or earthbound, /no worries or doubts interfere.
-  // Expected phrase breaks: 0, 32
-
-  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
-  ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
-  ui::AXNodeData static_text3 = test::TextNode(kId3, sentence3);
-
-  const std::set<ui::AXNodeID> current_nodes = InitializeWithAndProcessNodes(
-      {std::move(static_text1), std::move(static_text2),
-       std::move(static_text3)});
-  model().PreprocessTextForSpeech(false, false, &current_nodes);
-
-  // Wait till all async calculations complete.
-  task_environment_.RunUntilIdle();
-
-  std::vector<ui::AXNodeID> node_ids =
-      model().GetCurrentText(false, false, &current_nodes).node_ids;
-  EXPECT_EQ(node_ids.size(), 3u);
-
-  // First character (N) => first phrase
-  ExpectPhraseHighlightAtIndexMatches(0, {{kId1, 0, 20}, {kId2, 0, 12}});
-
-  // 20th character (e of earthbound) => first phrase
-  ExpectPhraseHighlightAtIndexMatches(20, {{kId1, 0, 20}, {kId2, 0, 12}});
-
-  // 31st character (space before "no") => first phrase
-  ExpectPhraseHighlightAtIndexMatches(31, {{kId1, 0, 20}, {kId2, 0, 12}});
-
-  // 32nd character (n of no) => second phrase
-  ExpectPhraseHighlightAtIndexMatches(32, {{kId2, 12, 15}, {kId3, 0, 28}});
-
-  // 35th character (w of worries) => second phrase
-  ExpectPhraseHighlightAtIndexMatches(35, {{kId2, 12, 15}, {kId3, 0, 28}});
-
-  // 62nd character (final .) => second phrase
-  ExpectPhraseHighlightAtIndexMatches(62, {{kId2, 12, 15}, {kId3, 0, 28}});
-
-  // 63rd character (past the end of the sentence) => empty
-  ExpectPhraseHighlightAtIndexEmpty(63);
-
-  // Invalid indices.
-  ExpectPhraseHighlightAtIndexEmpty(535);
-  ExpectPhraseHighlightAtIndexEmpty(-10);
-}
-
 TEST_F(ReadAnythingReadAloudAppModelTest,
        GetCurrentTextSegments_ReturnsCorrectSegments) {
   std::u16string sentence = u"I broke into a million pieces";
@@ -1194,4 +1067,135 @@ TEST_F(ReadAnythingReadAloudAppModelTest,
   ui::AXNodePosition::AXPositionInstance new_position =
       GetNextNodePosition(&current_nodes, current_granularity);
   EXPECT_TRUE(new_position->IsNullPosition());
+}
+
+// TODO: crbug.com/440400392 - Ensure that phrase highlighting works with the
+// TS text segmentation implementation.
+class ReadAnythingReadAloudAppModelV8SegmentationTest
+    : public ReadAnythingReadAloudAppModelTest {
+ public:
+  void SetUp() override {
+    // Phrase highlighting currently doesn't work with the TS text segmentation
+    // implementation, so we need to disable it to test phrase highlighting.
+    scoped_feature_list_.InitWithFeatures(
+        {features::kReadAnythingReadAloud,
+         features::kReadAnythingReadAloudPhraseHighlighting},
+        {features::kReadAnythingReadAloudTSTextSegmentation});
+    ReadAnythingReadAloudAppModelTest::SetUp();
+  }
+};
+
+TEST_F(
+    ReadAnythingReadAloudAppModelV8SegmentationTest,
+    GetHighlightForCurrentSegmentIndex_PhrasesEnabled_NoModel_SentenceSpansMultipleNodes_ReturnsCorrectNodes) {
+  // Text indices:             0123456789012345678901234567890
+  std::u16string sentence1 = u"Never feel heavy ";
+  std::u16string sentence2 = u"or earthbound, ";
+  std::u16string sentence3 = u"no worries or doubts interfere.";
+
+  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
+  ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
+  ui::AXNodeData static_text3 = test::TextNode(kId3, sentence3);
+
+  const std::set<ui::AXNodeID> current_nodes = InitializeWithAndProcessNodes(
+      {std::move(static_text1), std::move(static_text2),
+       std::move(static_text3)});
+  model().PreprocessTextForSpeech(false, false, &current_nodes);
+
+  std::vector<ui::AXNodeID> node_ids =
+      model().GetCurrentText(false, false, &current_nodes).node_ids;
+  EXPECT_EQ(node_ids.size(), 3u);
+
+  // Spot check that indices 0->sentence1.length() map to the first node id.
+  ExpectPhraseHighlightAtIndexMatches(0, {{kId1, 0, 17}});
+  ExpectPhraseHighlightAtIndexMatches(7, {{kId1, 0, 17}});
+  ExpectPhraseHighlightAtIndexMatches(sentence1.length() - 1, {{kId1, 0, 17}});
+
+  int base_length = sentence1.length();
+  ExpectPhraseHighlightAtIndexMatches(base_length,
+                                      {{kId2, 0, 15}, {kId3, 0, 3}});
+
+  // Spot check that indices in sentence 2 map to the second node id.
+  ExpectPhraseHighlightAtIndexMatches(base_length + 1,
+                                      {{kId2, 0, 15}, {kId3, 0, 3}});
+  ExpectPhraseHighlightAtIndexMatches(26, {{kId2, 0, 15}, {kId3, 0, 3}});
+
+  base_length += sentence2.length();
+  ExpectPhraseHighlightAtIndexMatches(base_length - 1,
+                                      {{kId2, 0, 15}, {kId3, 0, 3}});
+  ExpectPhraseHighlightAtIndexMatches(base_length,
+                                      {{kId2, 0, 15}, {kId3, 0, 3}});
+
+  // Spot check that indices in sentence 3 map to the third node id.
+  ExpectPhraseHighlightAtIndexMatches(base_length + 1,
+                                      {{kId2, 0, 15}, {kId3, 0, 3}});
+  ExpectPhraseHighlightAtIndexMatches(40, {{kId3, 3, 21}});
+
+  ExpectPhraseHighlightAtIndexMatches(base_length + sentence3.length() - 1,
+                                      {{kId3, 21, 31}});
+  ExpectPhraseHighlightAtIndexEmpty(base_length + sentence3.length());
+
+  // Out-of-bounds nodes return an empty array.
+  ExpectPhraseHighlightAtIndexEmpty(base_length + sentence3.length() + 1);
+  ExpectPhraseHighlightAtIndexEmpty(535);
+  ExpectPhraseHighlightAtIndexEmpty(-10);
+}
+
+TEST_F(
+    ReadAnythingReadAloudAppModelV8SegmentationTest,
+    GetHighlightForCurrentSegmentIndex_PhrasesEnabled_ValidModel_SentenceSpansMultipleNodes_ReturnsCorrectNodes) {
+  model().GetDependencyParserModel().UpdateWithFile(test::GetValidModelFile());
+  DependencyParserModel& phrase_model = model().GetDependencyParserModel();
+
+  EXPECT_TRUE(phrase_model.IsAvailable());
+
+  // Text indices:             0123456789012345678901234567890
+  std::u16string sentence1 = u"Never feel heavy or ";
+  std::u16string sentence2 = u"earthbound, no ";
+  std::u16string sentence3 = u"worries or doubts interfere.";
+
+  // Expected phrases:
+  // Never feel heavy or earthbound, /no worries or doubts interfere.
+  // Expected phrase breaks: 0, 32
+
+  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
+  ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
+  ui::AXNodeData static_text3 = test::TextNode(kId3, sentence3);
+
+  const std::set<ui::AXNodeID> current_nodes = InitializeWithAndProcessNodes(
+      {std::move(static_text1), std::move(static_text2),
+       std::move(static_text3)});
+  model().PreprocessTextForSpeech(false, false, &current_nodes);
+
+  // Wait till all async calculations complete.
+  task_environment_.RunUntilIdle();
+
+  std::vector<ui::AXNodeID> node_ids =
+      model().GetCurrentText(false, false, &current_nodes).node_ids;
+  EXPECT_EQ(node_ids.size(), 3u);
+
+  // First character (N) => first phrase
+  ExpectPhraseHighlightAtIndexMatches(0, {{kId1, 0, 20}, {kId2, 0, 12}});
+
+  // 20th character (e of earthbound) => first phrase
+  ExpectPhraseHighlightAtIndexMatches(20, {{kId1, 0, 20}, {kId2, 0, 12}});
+
+  // 31st character (space before "no") => first phrase
+  ExpectPhraseHighlightAtIndexMatches(31, {{kId1, 0, 20}, {kId2, 0, 12}});
+
+  // 32nd character (n of no) => second phrase
+  ExpectPhraseHighlightAtIndexMatches(32, {{kId2, 12, 15}, {kId3, 0, 28}});
+
+  // 35th character (w of worries) => second phrase
+  ExpectPhraseHighlightAtIndexMatches(35, {{kId2, 12, 15}, {kId3, 0, 28}});
+
+  // 62nd character (final .) => second phrase
+  ExpectPhraseHighlightAtIndexMatches(62, {{kId2, 12, 15}, {kId3, 0, 28}});
+
+  // 63rd character (past the end of the sentence) => empty
+  ExpectPhraseHighlightAtIndexEmpty(63);
+
+  // Invalid indices.
+  ExpectPhraseHighlightAtIndexEmpty(535);
+  ExpectPhraseHighlightAtIndexEmpty(-10);
 }
