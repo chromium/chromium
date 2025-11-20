@@ -11403,7 +11403,8 @@
             "platforms": [
                 "mac",
                 "windows",
-                "linux"
+                "linux",
+                "chromeos"
             ],
             "experiments": [
                 {
