@@ -11,7 +11,7 @@
 import("//buildtools/deps_revisions.gni")
 
 assert(
-    libcxx_revision == "be279eb793ebc878dd4a00eaa1f351f7d165d41e",
+    libcxx_revision == "0e3285ac398e8769e3496d077ecfe10d51cd3c53",
     "libcxx_headers.gni and third_party/libc++ are out of sync.$0x0A$0x0AIf you were messing around with the libc++ repository, run:$0x0A`buildtools/third_party/libc++/generate_libcxx_headers.py`$0x0A$0x0AIf the script doesn't resolve the error, file a bug to msta@ with reproduction details.$0x0A")
 
 libcxx_headers = [
@@ -839,7 +839,6 @@ libcxx_headers = [
   "//third_party/libc++/src/include/__type_traits/is_array.h",
   "//third_party/libc++/src/include/__type_traits/is_assignable.h",
   "//third_party/libc++/src/include/__type_traits/is_base_of.h",
-  "//third_party/libc++/src/include/__type_traits/is_bounded_array.h",
   "//third_party/libc++/src/include/__type_traits/is_callable.h",
   "//third_party/libc++/src/include/__type_traits/is_char_like_type.h",
   "//third_party/libc++/src/include/__type_traits/is_class.h",
@@ -889,7 +888,6 @@ libcxx_headers = [
   "//third_party/libc++/src/include/__type_traits/is_trivially_destructible.h",
   "//third_party/libc++/src/include/__type_traits/is_trivially_lexicographically_comparable.h",
   "//third_party/libc++/src/include/__type_traits/is_trivially_relocatable.h",
-  "//third_party/libc++/src/include/__type_traits/is_unbounded_array.h",
   "//third_party/libc++/src/include/__type_traits/is_union.h",
   "//third_party/libc++/src/include/__type_traits/is_unqualified.h",
   "//third_party/libc++/src/include/__type_traits/is_unsigned.h",
