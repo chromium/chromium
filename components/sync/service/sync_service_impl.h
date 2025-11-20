@@ -32,6 +32,7 @@
 #include "components/sync/engine/shutdown_reason.h"
 #include "components/sync/engine/sync_engine.h"
 #include "components/sync/engine/sync_engine_host.h"
+#include "components/sync/service/bookmark_sync_error_state.h"
 #include "components/sync/service/data_type_controller.h"
 #include "components/sync/service/data_type_manager.h"
 #include "components/sync/service/data_type_manager_observer.h"
@@ -175,6 +176,7 @@ class SyncServiceImpl : public SyncService,
   void SelectTypeAndMigrateLocalDataItemsWhenActive(
       DataType data_type,
       std::vector<LocalDataItemModel::DataId> items) override;
+  void AcknowledgeBookmarksLimitExceededError() override;
 
   // SyncEngineHost implementation.
   void OnEngineInitialized(bool success,
@@ -408,6 +410,8 @@ class SyncServiceImpl : public SyncService,
 
   // This profile's SyncClient.
   const std::unique_ptr<SyncClient> sync_client_;
+
+  BookmarkSyncErrorState bookmark_sync_error_state_;
 
   // Callback used to create network connections.
   const CreateHttpPostProviderFactory create_http_post_provider_factory_;

@@ -98,6 +98,14 @@ GetUIInfoForTrustedVaultRecoverabilityDegradedErrorForEverything() {
   return errorInfo;
 }
 
+// Gets the AccountErrorUIInfo data representing the kBookmarksLimitExceeded
+// error.
+AccountErrorUIInfo* GetUIInfoForBookmarksLimitExceededError() {
+  // TODO(crbug.com/452968646): forward to  the concrete help center article
+  // link.
+  return nil;
+}
+
 }  // namespace
 
 AccountErrorUIInfo* GetAccountErrorUIInfo(syncer::SyncService* sync_service) {
@@ -123,6 +131,8 @@ AccountErrorUIInfo* GetAccountErrorUIInfo(syncer::SyncService* sync_service) {
     case syncer::SyncService::UserActionableError::
         kTrustedVaultRecoverabilityDegradedForEverything:
       return GetUIInfoForTrustedVaultRecoverabilityDegradedErrorForEverything();
+    case syncer::SyncService::UserActionableError::kBookmarksLimitExceeded:
+      return GetUIInfoForBookmarksLimitExceededError();
     case syncer::SyncService::UserActionableError::kNone:
       break;
 

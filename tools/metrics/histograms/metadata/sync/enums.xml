@@ -1064,6 +1064,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Sync settings not confirmed"/>
   <int value="6" label="Sync needs trusted vault key"/>
   <int value="7" label="Sync trusted vault recoverability degraded"/>
+  <int value="8" label="Bookmarks limit exceeded"/>
 </enum>
 
 <!-- LINT.ThenChange(/ios/chrome/browser/settings/model/sync/utils/sync_util.mm:SyncErrorInfobarTypes) -->
@@ -1624,6 +1625,7 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Unrecoverable error"/>
   <int value="9" label="Needs UPM backend upgrade"/>
   <int value="10" label="Needs client upgrade"/>
+  <int value="11" label="Bookmarks limit exceeded"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/sync/service/sync_service.h:UserActionableError) -->

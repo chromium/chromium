@@ -54,6 +54,7 @@ class DataTypeManagerImpl : public DataTypeManager,
   DataTypeSet GetActiveProxyDataTypes() const override;
   DataTypeSet GetTypesWithPendingDownloadForInitialSync() const override;
   DataTypeSet GetDataTypesWithPermanentErrors() const override;
+  DataTypeStatusTable::TypeErrorMap GetDataTypeErrors() const override;
   void GetTypesWithUnsyncedData(
       DataTypeSet requested_types,
       base::OnceCallback<void(absl::flat_hash_map<DataType, size_t>)> callback)

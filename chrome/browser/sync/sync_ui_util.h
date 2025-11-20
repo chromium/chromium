@@ -49,6 +49,8 @@ enum class SyncStatusActionType {
   kRetrieveTrustedVaultKeys,
   // User needs to confirm sync settings.
   kConfirmSyncSettings,
+  // User needs to see the help article for bookmarks limit.
+  kShowBookmarksLimitHelpArticle,
 };
 
 struct SyncStatusLabels {

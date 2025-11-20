@@ -891,6 +891,11 @@ DataTypeSet DataTypeManagerImpl::GetDataTypesWithPermanentErrors() const {
   return data_type_status_table_.GetFatalErrorTypes();
 }
 
+DataTypeStatusTable::TypeErrorMap DataTypeManagerImpl::GetDataTypeErrors()
+    const {
+  return data_type_status_table_.GetAllErrors();
+}
+
 DataTypeSet DataTypeManagerImpl::GetStoppedDataTypesExcludingNigori() const {
   DataTypeSet stopped_types;
 

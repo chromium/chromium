@@ -75,6 +75,10 @@ inline constexpr base::FeatureParam<size_t> kSyncBookmarksLimitValue{
 // last initial merge is reset after a certain period.
 BASE_DECLARE_FEATURE(kSyncResetBookmarksInitialMergeLimitExceededError);
 
+// If enabled, shows a user-actionable error when the bookmarks count limit is
+// exceeded.
+BASE_DECLARE_FEATURE(kSyncShowBookmarksLimitExceededError);
+
 BASE_DECLARE_FEATURE(kSyncEnableContactInfoDataTypeForCustomPassphraseUsers);
 BASE_DECLARE_FEATURE(kSyncEnableContactInfoDataTypeForDasherUsers);
 

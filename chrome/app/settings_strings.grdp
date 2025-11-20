@@ -4485,4 +4485,7 @@
   <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_OFF_TOAST_MESSAGE" desc="When Chrome shows a toast notification after the user turned off the Enhanced Protection setting, this is the text on the toast letting the user know that the Enhanced Protection setting is off.">
     Enhanced protection is off
   </message>
+  <message name="IDS_SYNC_ERROR_BOOKMARKS_LIMIT_EXCEEDED_DESCRIPTION" desc="Description of the sync error when the user has exceeded the bookmarks limit.">
+    To save bookmarks in your account, delete your unused bookmarks
+  </message>
 </grit-part>

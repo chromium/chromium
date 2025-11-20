@@ -676,6 +676,10 @@ bool ProfileSubMenuModel::BuildSyncSection() {
           command_id = IDC_SHOW_SYNC_SETTINGS;
           icon = &vector_icons::kErrorOutlineIcon;
           break;
+        case syncer::SyncService::UserActionableError::kBookmarksLimitExceeded:
+          // TODO(crbug.com/452968646): Adjust this with providing the concrete
+          // help center article link.
+          break;
       }
       AddItemWithStringIdAndVectorIcon(this, command_id, button_string_id,
                                        *icon);

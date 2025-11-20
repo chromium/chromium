@@ -146,6 +146,10 @@ int GetSyncErrorButtonStringId(syncer::SyncService::UserActionableError error,
       // Only shown for "Sync-the-feature".
       return support_title_case ? IDS_SYNC_RELOGIN_BUTTON_MAYBE_TITLE_CASE
                                 : IDS_SYNC_RELOGIN_BUTTON;
+    case syncer::SyncService::UserActionableError::kBookmarksLimitExceeded:
+      // TODO(crbug.com/452968646): Consider title casing the "Learn more"
+      // button label.
+      return IDS_LEARN_MORE;
   }
 }
 
@@ -221,6 +225,11 @@ SyncStatusLabels GetAvatarSyncErrorLabelsForSettings(
               IDS_SYNC_STATUS_UNRECOVERABLE_ERROR, button_string_id,
               IDS_PROFILES_ACCOUNT_REMOVAL_TITLE,
               SyncStatusActionType::kReauthenticate};
+    case syncer::SyncService::UserActionableError::kBookmarksLimitExceeded:
+      return {SyncStatusMessageType::kSyncError,
+              IDS_SYNC_ERROR_BOOKMARKS_LIMIT_EXCEEDED_DESCRIPTION,
+              button_string_id, IDS_SETTINGS_PEOPLE_SIGN_OUT,
+              SyncStatusActionType::kShowBookmarksLimitHelpArticle};
   }
 }
 
@@ -263,6 +272,9 @@ std::u16string GetAvatarSyncErrorDescription(
     case syncer::SyncService::UserActionableError::kNeedsSettingsConfirmation:
     case syncer::SyncService::UserActionableError::kUnrecoverableError:
       return l10n_util::GetStringUTF16(IDS_SYNC_ERROR_USER_MENU_TITLE);
+    case syncer::SyncService::UserActionableError::kBookmarksLimitExceeded:
+      return l10n_util::GetStringUTF16(
+          IDS_SYNC_ERROR_BOOKMARKS_LIMIT_EXCEEDED_DESCRIPTION);
   }
 }
 #endif  // !BUILDFLAG(IS_ANDROID)

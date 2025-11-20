@@ -7,6 +7,8 @@ static_library("service") {
     "active_devices_provider.h",
     "backend_migrator.cc",
     "backend_migrator.h",
+    "bookmark_sync_error_state.cc",
+    "bookmark_sync_error_state.h",
     "configure_context.cc",
     "configure_context.h",
     "data_type_controller.cc",

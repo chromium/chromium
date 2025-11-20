@@ -19,6 +19,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -38,6 +39,7 @@
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/engine/sync_status.h"
+#include "components/sync/service/bookmark_sync_error_state.h"
 #include "components/sync/service/sync_service_observer.h"
 #include "components/sync/service/sync_token_status.h"
 #include "components/sync/service/trusted_vault_synthetic_field_trial.h"
@@ -258,6 +260,17 @@ class SyncServiceImplTest : public ::testing::Test {
   void TriggerPassphraseRequired() {
     service_->GetEncryptionObserverForTest()->OnPassphraseRequired(
         KeyDerivationParams::CreateForPbkdf2(), sync_pb::EncryptedData());
+  }
+
+  void RunUntilSyncTransportState(SyncService::TransportState expected_state) {
+    ASSERT_TRUE(base::test::RunUntil(
+        [&] { return service()->GetTransportState() == expected_state; }));
+  }
+
+  void RunUntilUserActionableError(
+      SyncService::UserActionableError expected_error) {
+    ASSERT_TRUE(base::test::RunUntil(
+        [&] { return service()->GetUserActionableError() == expected_error; }));
   }
 
   signin::IdentityManager* identity_manager() {
@@ -891,6 +904,81 @@ TEST_F(
       UserSelectableType::kAutofill));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+class SyncServiceImplBookmarksLimitExceededErrorTest
+    : public SyncServiceImplTest {
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      kSyncShowBookmarksLimitExceededError};
+};
+
+TEST_F(SyncServiceImplBookmarksLimitExceededErrorTest,
+       ShouldShowBookmarksLimitExceededError) {
+  PopulatePrefsForInitialSyncFeatureSetupComplete();
+  SignInWithSyncConsent();
+  InitializeService();
+  RunUntilSyncTransportState(SyncService::TransportState::ACTIVE);
+  ASSERT_EQ(SyncService::UserActionableError::kNone,
+            service()->GetUserActionableError());
+
+  // Induce a bookmark limit exceeded error.
+  get_controller(BOOKMARKS)->model()->SimulateModelError(ModelError(
+      FROM_HERE,
+      ModelError::Type::kBookmarksLocalCountExceededLimitOnSyncStart));
+  RunUntilUserActionableError(
+      SyncService::UserActionableError::kBookmarksLimitExceeded);
+
+  EXPECT_EQ(SyncService::UserActionableError::kBookmarksLimitExceeded,
+            service()->GetUserActionableError());
+
+  // Acknowledge the error.
+  service()->AcknowledgeBookmarksLimitExceededError();
+  EXPECT_EQ(SyncService::UserActionableError::kNone,
+            service()->GetUserActionableError());
+}
+
+TEST_F(SyncServiceImplBookmarksLimitExceededErrorTest,
+       ShouldPrioritizeAuthErrorOverBookmarkError) {
+  PopulatePrefsForInitialSyncFeatureSetupComplete();
+  SignInWithSyncConsent();
+  InitializeService();
+  RunUntilSyncTransportState(SyncService::TransportState::ACTIVE);
+
+  ASSERT_EQ(SyncService::TransportState::ACTIVE,
+            service()->GetTransportState());
+  ASSERT_EQ(SyncService::UserActionableError::kNone,
+            service()->GetUserActionableError());
+
+  // Induce a bookmark limit exceeded error.
+  get_controller(BOOKMARKS)->model()->SimulateModelError(ModelError(
+      FROM_HERE,
+      ModelError::Type::kBookmarksLocalCountExceededLimitOnSyncStart));
+  RunUntilUserActionableError(
+      SyncService::UserActionableError::kBookmarksLimitExceeded);
+
+  // The bookmark error should be visible.
+  EXPECT_EQ(SyncService::UserActionableError::kBookmarksLimitExceeded,
+            service()->GetUserActionableError());
+
+  // Mimic entering Sync paused state.
+  identity_test_env()->SetInvalidRefreshTokenForPrimaryAccount();
+  RunUntilSyncTransportState(SyncService::TransportState::PAUSED);
+  ASSERT_EQ(SyncService::TransportState::PAUSED,
+            service()->GetTransportState());
+  // The auth error should have priority over the bookmark error.
+  ASSERT_EQ(SyncService::UserActionableError::kSignInNeedsUpdate,
+            service()->GetUserActionableError());
+
+  // Resolve the auth error. This will restart the sync engine, which clears
+  // any existing data type errors.
+  identity_test_env()->SetRefreshTokenForPrimaryAccount();
+  RunUntilSyncTransportState(SyncService::TransportState::ACTIVE);
+  ASSERT_EQ(SyncService::TransportState::ACTIVE,
+            service()->GetTransportState());
+  // After the restart, no error should be reported initially.
+  ASSERT_EQ(SyncService::UserActionableError::kNone,
+            service()->GetUserActionableError());
+}
 
 TEST_F(SyncServiceImplTest, GetSyncTokenStatus) {
   PopulatePrefsForInitialSyncFeatureSetupComplete();

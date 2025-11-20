@@ -1316,6 +1316,9 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
     case syncer::SyncService::UserActionableError::
         kTrustedVaultRecoverabilityDegradedForEverything:
       return SyncTrustedVaultRecoverabilityDegradedErrorItemType;
+    case syncer::SyncService::UserActionableError::kBookmarksLimitExceeded:
+      // TODO(crbug.com/452968646) Add item for kBookmarksLimitExceeded.
+      return std::nullopt;
     case syncer::SyncService::UserActionableError::kNone:
     // UI not implemented for this case.
     case syncer::SyncService::UserActionableError::kNeedsClientUpgrade:

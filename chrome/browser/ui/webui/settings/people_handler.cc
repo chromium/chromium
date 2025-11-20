@@ -207,6 +207,8 @@ std::string GetSyncErrorAction(SyncStatusActionType action_type) {
       return "retrieveTrustedVaultKeys";
     case SyncStatusActionType::kConfirmSyncSettings:
       return "confirmSyncSettings";
+    case SyncStatusActionType::kShowBookmarksLimitHelpArticle:
+      return "showBookmarksLimitHelpArticle";
     case SyncStatusActionType::kNoAction:
       return "noAction";
   }

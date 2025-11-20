@@ -80,6 +80,7 @@ class TestSyncService : public SyncService {
   void SetInitialSyncFeatureSetupComplete(
       bool initial_sync_feature_setup_complete);
   void SetFailedDataTypes(const DataTypeSet& types);
+  void SetBookmarksLimitExceeded(bool exceeded);
 
   void SetLastCycleSnapshot(const SyncCycleSnapshot& snapshot);
   // Convenience versions of the above, for when the caller doesn't care about
@@ -183,6 +184,7 @@ class TestSyncService : public SyncService {
   void SelectTypeAndMigrateLocalDataItemsWhenActive(
       DataType data_type,
       std::vector<LocalDataItemModel::DataId> items) override;
+  void AcknowledgeBookmarksLimitExceededError() override;
 
   // KeyedService implementation.
   void Shutdown() override;
@@ -200,6 +202,8 @@ class TestSyncService : public SyncService {
   int outstanding_setup_in_progress_handles_ = 0;
 
   DataTypeSet failed_data_types_;
+
+  bool bookmarks_limit_exceeded_ = false;
 
   std::map<DataType, DataTypeDownloadStatus> download_statuses_;
 

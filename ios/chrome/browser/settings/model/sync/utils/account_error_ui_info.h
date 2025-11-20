@@ -20,6 +20,8 @@ enum class AccountErrorUserActionableType {
   kReauthForFetchKeys,
   // User needs to reauthenticate for degraded recoverability.
   kReauthForDegradedRecoverability,
+  // User needs to acknowledge their bookmark error.
+  kAcknowledgeBookmarkError,
 };
 
 // Contains the information of the account error UI item.

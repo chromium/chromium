@@ -164,6 +164,10 @@ bool SyncErrorInfoBarDelegate::Accept() {
       [presenter_ showTrustedVaultReauthForDegradedRecoverabilityWithTrigger:
                       TrustedVaultTriggerFromInfoBarTrigger(trigger_)];
       break;
+    case syncer::SyncService::UserActionableError::kBookmarksLimitExceeded:
+      // TODO(crbug.com/452968646): Navigate to the concrete help center
+      // article.
+      break;
   }
 
   return false;
@@ -231,6 +235,7 @@ bool SyncErrorInfoBarDelegate::DisplayPasswordErrorIcon() const {
         kNeedsTrustedVaultKeyForEverything:
     case syncer::SyncService::UserActionableError::
         kTrustedVaultRecoverabilityDegradedForEverything:
+    case syncer::SyncService::UserActionableError::kBookmarksLimitExceeded:
       return false;
   }
   NOTREACHED();

@@ -155,6 +155,7 @@ class AvatarToolbarButtonStateManager
     kSyncPaused,
     kUpgradeClientError,
     kPassphraseError,
+    kBookmarksLimitExceeded,
     // Catch-all for remaining errors in sync-the-feature or sync-the-transport.
     kSyncError,
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

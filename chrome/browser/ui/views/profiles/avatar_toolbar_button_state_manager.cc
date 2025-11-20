@@ -877,6 +877,7 @@ class HistorySyncOptinCoordinator
         return;
       case ButtonState::kUpgradeClientError:
       case ButtonState::kPassphraseError:
+      case ButtonState::kBookmarksLimitExceeded:
       case ButtonState::kSyncError:
       case ButtonState::kSigninPending:
       case ButtonState::kSyncPaused:
@@ -916,6 +917,7 @@ class HistorySyncOptinCoordinator
       case ButtonState::kUpgradeClientError:
       case ButtonState::kPasskeysLockedError:
       case ButtonState::kPassphraseError:
+      case ButtonState::kBookmarksLimitExceeded:
         break;
     }
   }
@@ -1424,6 +1426,25 @@ class PassphraseErrorStateProvider : public SyncErrorBaseStateProvider {
   ~PassphraseErrorStateProvider() override = default;
 };
 
+class BookmarksLimitExceededStateProvider : public SyncErrorBaseStateProvider {
+ public:
+  explicit BookmarksLimitExceededStateProvider(Profile* profile,
+                                               StateObserver* state_observer)
+      : SyncErrorBaseStateProvider(
+            profile,
+            state_observer,
+            syncer::SyncService::UserActionableError::kBookmarksLimitExceeded) {
+  }
+
+  ~BookmarksLimitExceededStateProvider() override = default;
+
+  // StateProvider:
+  std::u16string GetText() const override {
+    return l10n_util::GetStringUTF16(
+        IDS_AVATAR_BUTTON_SYNC_ERROR_BOOKMARKS_LIMIT_EXCEEDED);
+  }
+};
+
 class GenericSyncErrorStateProvider : public SyncErrorBaseStateProvider {
  public:
   explicit GenericSyncErrorStateProvider(Profile* profile,
@@ -1930,6 +1951,10 @@ void AvatarToolbarButtonStateManager::CreateStatesAndListeners(
     states_[ButtonState::kPassphraseError] =
         std::make_unique<PassphraseErrorStateProvider>(profile,
                                                        /*state_observer=*/this);
+
+    states_[ButtonState::kBookmarksLimitExceeded] =
+        std::make_unique<BookmarksLimitExceededStateProvider>(
+            profile, /*state_observer=*/this);
 
     if (AccountConsistencyModeManager::IsDiceEnabledForProfile(profile)) {
       states_[ButtonState::kSyncPaused] =

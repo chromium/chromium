@@ -11,10 +11,11 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/progress_marker_map.h"
 #include "components/sync/engine/cycle/model_neutral_state.h"
-#include "components/sync/model/type_entities_count.h"
 #include "components/sync/protocol/sync_enums.pb.h"
+#include "components/sync/service/sync_error.h"
 #include "components/sync/service/sync_token_status.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -131,6 +132,10 @@ void TestSyncService::SetInitialSyncFeatureSetupComplete(
 
 void TestSyncService::SetFailedDataTypes(const DataTypeSet& types) {
   failed_data_types_ = types;
+}
+
+void TestSyncService::SetBookmarksLimitExceeded(bool exceeded) {
+  bookmarks_limit_exceeded_ = exceeded;
 }
 
 void TestSyncService::SetLastCycleSnapshot(const SyncCycleSnapshot& snapshot) {
@@ -261,6 +266,10 @@ SyncService::UserActionableError TestSyncService::GetUserActionableError()
                      kTrustedVaultRecoverabilityDegradedForEverything
                : UserActionableError::
                      kTrustedVaultRecoverabilityDegradedForPasswords;
+  }
+
+  if (bookmarks_limit_exceeded_) {
+    return UserActionableError::kBookmarksLimitExceeded;
   }
 
   return UserActionableError::kNone;
@@ -482,6 +491,10 @@ void TestSyncService::TriggerLocalDataMigrationForItems(
 void TestSyncService::SelectTypeAndMigrateLocalDataItemsWhenActive(
     DataType data_type,
     std::vector<LocalDataItemModel::DataId> items) {}
+
+void TestSyncService::AcknowledgeBookmarksLimitExceededError() {
+  bookmarks_limit_exceeded_ = false;
+}
 
 void TestSyncService::SetTriggerRefreshCallback(
     const base::RepeatingCallback<

@@ -215,6 +215,8 @@ std::string GetUserActionableErrorString(
 #endif  // BUILDFLAG(IS_ANDROID)
     case SyncService::UserActionableError::kNeedsClientUpgrade:
       return "Client version is too old and needs upgrade";
+    case SyncService::UserActionableError::kBookmarksLimitExceeded:
+      return "Bookmarks limit exceeded";
   }
 
   NOTREACHED();

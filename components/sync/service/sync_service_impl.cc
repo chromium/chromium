@@ -51,8 +51,10 @@
 #include "components/sync/engine/sync_encryption_handler.h"
 #include "components/sync/invalidations/sync_invalidations_service.h"
 #include "components/sync/service/backend_migrator.h"
+#include "components/sync/service/bookmark_sync_error_state.h"
 #include "components/sync/service/configure_context.h"
 #include "components/sync/service/data_type_manager_impl.h"
+#include "components/sync/service/data_type_status_table.h"
 #include "components/sync/service/local_data_description.h"
 #include "components/sync/service/local_data_migration_item_queue.h"
 #include "components/sync/service/sync_auth_manager.h"
@@ -940,6 +942,18 @@ SyncService::UserActionableError SyncServiceImpl::GetUserActionableError()
     return UserActionableError::kNeedsUPMBackendUpgrade;
   }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+  // This error should ideally be the last one to be checked. Any new identity
+  // errors should be handled before this.
+  if (base::FeatureList::IsEnabled(kSyncShowBookmarksLimitExceededError)) {
+    const DataTypeStatusTable::TypeErrorMap data_type_errors =
+        data_type_manager_->GetDataTypeErrors();
+    auto it = data_type_errors.find(BOOKMARKS);
+    if (it != data_type_errors.end() &&
+        bookmark_sync_error_state_.IsActionableError(it->second)) {
+      return UserActionableError::kBookmarksLimitExceeded;
+    }
+  }
 
   return UserActionableError::kNone;
 }
@@ -2465,6 +2479,11 @@ void SyncServiceImpl::SelectTypeAndMigrateLocalDataItemsWhenActive(
   local_data_migration_item_queue_
       ->TriggerLocalDataMigrationForItemsWhenTypeBecomesActive(
           data_type, std::move(items));
+}
+
+void SyncServiceImpl::AcknowledgeBookmarksLimitExceededError() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  bookmark_sync_error_state_.AcknowledgeError();
 }
 
 }  // namespace syncer

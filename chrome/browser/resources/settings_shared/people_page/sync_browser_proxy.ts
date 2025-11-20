@@ -65,6 +65,9 @@ export enum StatusAction {
   RETRIEVE_TRUSTED_VAULT_KEYS = 'retrieveTrustedVaultKeys',
   CONFIRM_SYNC_SETTINGS =
       'confirmSyncSettings',  // User needs to confirm sync settings.
+  SHOW_BOOKMARKS_LIMIT_HELP_ARTICLE =
+      'showBookmarksLimitHelpArticle',  // User needs to see bookmarks limit
+                                        // help article.
 }
 
 /**

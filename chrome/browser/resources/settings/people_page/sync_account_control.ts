@@ -606,6 +606,10 @@ export class SettingsSyncAccountControlElement extends
       case StatusAction.ENTER_PASSPHRASE:
         this.syncBrowserProxy_.showSyncPassphraseDialog();
         break;
+      case StatusAction.SHOW_BOOKMARKS_LIMIT_HELP_ARTICLE:
+        // TODO(crbug.com/452968646): Adjust this with providing the concrete
+        // help center article link.
+        break;
       case StatusAction.CONFIRM_SYNC_SETTINGS:
       default:
         router.navigateTo(routes.SYNC);
