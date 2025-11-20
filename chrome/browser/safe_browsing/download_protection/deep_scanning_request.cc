@@ -685,8 +685,13 @@ void DeepScanningRequest::OnEnterpriseScanComplete(
       if (!base::FeatureList::IsEnabled(
               enterprise_data_protection::kEnableForceDownloadToCloud)) {
         download_result = DownloadCheckResult::SENSITIVE_CONTENT_BLOCK;
-      } else {
-        // ProcessEnterpriseDownloadResult will run via dialog callback
+      } else if (web_contents()) {
+        // `web_contents()` may be nullptr in several cases, if the tab owning
+        // the download was opened by a download link, a restored page, or an
+        // external application. For those cases, download to drive directly.
+        //
+        // ProcessEnterpriseDownloadResult will run via
+        // dialog callback.
         base::OnceClosure keep_closure = base::BindOnce(
             &DeepScanningRequest::ProcessEnterpriseDownloadResult,
             weak_ptr_factory_.GetWeakPtr(),
