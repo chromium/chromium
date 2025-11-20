@@ -253,7 +253,6 @@ ExtensionInstallDialogView::ExtensionInstallDialogView(
       show_params_(std::move(show_params)),
       done_callback_(std::move(done_callback)),
       prompt_(std::move(prompt)),
-      title_(prompt_->GetDialogTitle()),
       scroll_view_(nullptr),
       install_button_enabled_(false),
       grant_permissions_checkbox_(nullptr) {
@@ -442,7 +441,7 @@ bool ExtensionInstallDialogView::IsDialogButtonEnabled(
 }
 
 std::u16string ExtensionInstallDialogView::GetAccessibleWindowTitle() const {
-  return title_;
+  return prompt_->GetDialogTitle();
 }
 
 bool ExtensionInstallDialogView::ShouldIgnoreButtonPressedEventHandling(
