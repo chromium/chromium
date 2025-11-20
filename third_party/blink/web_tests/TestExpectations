@@ -1485,10 +1485,6 @@ crbug.com/248894 external/wpt/css/css-typed-om/the-stylepropertymap/properties/t
 crbug.com/248894 external/wpt/css/css-typed-om/the-stylepropertymap/properties/text-justify.html [ Failure ]
 crbug.com/248894 external/wpt/web-animations/responsive/textIndent.html [ Failure ]
 
-crbug.com/1377648 external/wpt/css/selectors/media/media-loading-state.html [ Skip Timeout ]
-crbug.com/1377648 external/wpt/css/selectors/media/media-playback-state.html [ Timeout ]
-crbug.com/1383480 external/wpt/css/selectors/invalidation/media-pseudo-classes-in-has.html [ Timeout ]
-crbug.com/1383480 external/wpt/css/selectors/invalidation/media-loading-pseudo-classes-in-has.html [ Skip Timeout ]
 crbug.com/1475378 external/wpt/css/css-color/currentcolor-004.html [ Failure ]
 
 crbug.com/1491198 external/wpt/css/selectors/selectors-4/lang-002.html [ Failure ]

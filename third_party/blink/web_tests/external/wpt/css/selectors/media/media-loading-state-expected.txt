@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] Test :pseudo-class syntax is supported without throwing a SyntaxError
+  assert_unreached: :buffering is not supported Reached unreachable code
+[FAIL] Test :stalled pseudo-class
+  assert_implements: :stalled is not supported undefined
+[FAIL] Test :buffering pseudo-class
+  assert_implements: :buffering is not supported undefined
+Harness: the test ran to completion.
+
