@@ -421,6 +421,7 @@ void BrowsingHistoryHandler::SendHistoryQuery(
   options.max_count = max_count;
   options.policy_for_404_visits = history::VisitQuery404sPolicy::kExclude404s;
   options.duplicate_policy = history::QueryOptions::REMOVE_DUPLICATES_PER_DAY;
+  options.include_actor_visits = true;
   std::string query_without_prefix = query;
 
   const std::string kHostPrefix = "host:";

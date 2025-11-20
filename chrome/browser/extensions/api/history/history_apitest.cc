@@ -145,6 +145,24 @@ class SyncEnabledHistoryApiTest : public HistoryApiTest {
   }
 };
 
+class AddPageTask : public history::HistoryDBTask {
+ public:
+  AddPageTask(base::RunLoop* run_loop, const history::HistoryAddPageArgs& args)
+      : run_loop_(run_loop), args_(args) {}
+
+  bool RunOnDBThread(history::HistoryBackend* backend,
+                     history::HistoryDatabase* db) override {
+    backend->AddPage(args_);
+    return true;
+  }
+
+  void DoneRunOnMainThread() override { run_loop_->QuitWhenIdle(); }
+
+ private:
+  raw_ptr<base::RunLoop> run_loop_;
+  const history::HistoryAddPageArgs args_;
+};
+
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
                          SyncEnabledHistoryApiTest,
                          ::testing::Values(ContextType::kPersistentBackground));
@@ -312,6 +330,61 @@ IN_PROC_BROWSER_TEST_P(SyncEnabledHistoryApiTest, GetVisits_Foreign) {
   TestExtensionDir test_dir;
   test_dir.WriteManifest(kManifest);
   test_dir.WriteFile(FILE_PATH_LITERAL("get_visits_foreign.js"), kBackgroundJs);
+
+  ASSERT_TRUE(RunExtensionTest(test_dir.UnpackedPath(), {}, {})) << message_;
+}
+
+IN_PROC_BROWSER_TEST_P(SyncEnabledHistoryApiTest, SearchIncludesActorVisits) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  history::HistoryService* history_service =
+      HistoryServiceFactory::GetForProfile(profile(),
+                                           ServiceAccessType::EXPLICIT_ACCESS);
+
+  const GURL actor_url("https://actor-visit.com/");
+  history::HistoryAddPageArgs add_page_args;
+  add_page_args.url = actor_url;
+  add_page_args.time = base::Time::Now();
+  add_page_args.transition = ui::PAGE_TRANSITION_LINK;
+  add_page_args.visit_source = history::VisitSource::SOURCE_ACTOR;
+
+  base::CancelableTaskTracker tracker;
+  base::RunLoop run_loop;
+
+  // Schedule the `AddPageTask()` to run on the `HistoryService`'s DB thread.
+  // The test must wait for this task to complete before checking the DB.
+  history_service->ScheduleDBTask(
+      FROM_HERE, std::make_unique<AddPageTask>(&run_loop, add_page_args),
+      &tracker);
+  run_loop.Run();
+
+  // Load the extension to execute history.search().
+  static constexpr char kManifest[] =
+      R"({
+         "name": "chrome.history.actor",
+         "version": "0.1",
+         "manifest_version": 2,
+         "permissions": ["history"],
+         "background": {
+           "scripts": ["search_actor.js"],
+           "persistent": true
+         }
+       })";
+  static constexpr char kBackgroundJs[] =
+      R"(chrome.test.runTests([
+           function searchActorVisit() {
+             var query = {text: 'actor-visit'};
+             chrome.history.search(query, function(results) {
+               // The actor visit should be included.
+               chrome.test.assertEq(1, results.length);
+               chrome.test.assertEq('https://actor-visit.com/', results[0].url);
+               chrome.test.succeed();
+             });
+           }
+         ]);)";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("search_actor.js"), kBackgroundJs);
 
   ASSERT_TRUE(RunExtensionTest(test_dir.UnpackedPath(), {}, {})) << message_;
 }

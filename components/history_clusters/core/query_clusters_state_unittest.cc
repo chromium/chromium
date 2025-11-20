@@ -390,6 +390,7 @@ TEST_F(QueryClustersStateTest, GetUngroupedVisits) {
                     MockHistoryService::GetAnnotatedVisitsCallback callback,
                     base::CancelableTaskTracker* tracker) {
         get_annotated_visits_options = options;
+        EXPECT_TRUE(get_annotated_visits_options.include_actor_visits);
         get_ungrouped_visits_loop_1.Quit();
         return base::CancelableTaskTracker::kBadTaskId;
       })
@@ -399,6 +400,7 @@ TEST_F(QueryClustersStateTest, GetUngroupedVisits) {
                     MockHistoryService::GetAnnotatedVisitsCallback callback,
                     base::CancelableTaskTracker* tracker) {
         get_annotated_visits_options = options;
+        EXPECT_TRUE(get_annotated_visits_options.include_actor_visits);
         get_ungrouped_visits_loop_2.Quit();
         return base::CancelableTaskTracker::kBadTaskId;
       });

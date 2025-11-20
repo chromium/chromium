@@ -158,7 +158,7 @@ class BrowsingHistoryHandlerTest : public ChromeRenderViewHostTestHarness {
                 /*host_only=*/options.host_only,
                 /*visit_order=*/options.visit_order,
                 /*app_id=*/options.app_id,
-                /*include_actor_visits=*/options.include_actor_visits)))
+                /*include_actor_visits=*/true)))
         .Times(1)
         .WillOnce([&, mock_results](const std::u16string& search_text,
                                     const QueryOptions& options) {
@@ -368,6 +368,15 @@ TEST_F(BrowsingHistoryHandlerTest, SendsUpdatedInfoOnAccountChange) {
   signin::UpdateAccountInfoForAccount(identity_manager, account_info);
 
   mock_page()->FlushForTesting();
+}
+
+TEST_F(BrowsingHistoryHandlerTest, IncludeActorVisits) {
+  std::u16string query = u"test";
+  QueryOptions options;
+  options.include_actor_visits = true;
+
+  MockHistoryServiceCall(query, options);
+  RunQueryHistory("test");
 }
 #endif
 
