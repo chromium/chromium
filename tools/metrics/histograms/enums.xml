@@ -11648,6 +11648,7 @@ from previous Chrome versions.
   <int value="-887094098" label="ForcedColors:enabled"/>
   <int value="-886912558" label="ChromeHomePromo:enabled"/>
   <int value="-886593945" label="AutofillSharedStorageServerCardData:disabled"/>
+  <int value="-886561064" label="AutofillEnableNewFopDisplayAndroid:enabled"/>
   <int value="-886509859" label="DefaultChromeAppUninstallSync:enabled"/>
   <int value="-886296821"
       label="NtpHistoryClustersModuleUseModelRanking:disabled"/>
@@ -12266,6 +12267,7 @@ from previous Chrome versions.
   <int value="-672212526"
       label="ClientSideDetectionShowScamVerdictWarningAndroid:enabled"/>
   <int value="-672179392" label="CCTAdaptiveButton:disabled"/>
+  <int value="-672174604" label="AutofillEnableNewFopDisplayAndroid:disabled"/>
   <int value="-672031550" label="HttpsFirstModeV2ForEngagedSites:enabled"/>
   <int value="-671992446" label="TranslateRankerEnforcement:disabled"/>
   <int value="-670732156" label="PeripheralsLogging:enabled"/>

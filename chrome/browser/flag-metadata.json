@@ -971,6 +971,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "autofill-enable-new-fop-display-android",
+    "owners": [ "kschen@google.com", "qihuizhao@google.com", "osaul@google.com"],
+    "expiry_milestone": 155
+  },
+  {
     "name": "autofill-enable-new-fop-display-desktop",
     "owners": [ "qihuizhao@google.com", "osaul@google.com"],
     "expiry_milestone": 145

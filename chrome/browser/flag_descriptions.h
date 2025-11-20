@@ -907,6 +907,12 @@ inline constexpr char
              "enrollment earlier in the flow with the multiple server request "
              "support.";
 
+inline constexpr char kAutofillEnableNewFopDisplayAndroidName[] =
+    "Enable Autofill new FOP display on Android";
+inline constexpr char kAutofillEnableNewFopDisplayAndroidDescription[] =
+    "When enabled, updates payment method Autofill suggestions and settings "
+    "UI.";
+
 inline constexpr char kAutofillEnableNewFopDisplayDesktopName[] =
     "Enable Autofill new FOP display on Desktop";
 inline constexpr char kAutofillEnableNewFopDisplayDesktopDescription[] =
