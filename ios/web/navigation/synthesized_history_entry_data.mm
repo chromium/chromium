@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import "ios/web/navigation/synthesized_history_entry_data.h"
 
+#import "base/check_op.h"
 #import "base/strings/utf_string_conversions.h"
 
 namespace web {
@@ -50,7 +46,7 @@ NSData* SynthesizedHistoryEntryData::AsNSData() {
   // This is based off the current size of all the elements (mostly zero) being
   // written to the buffer.
   std::size_t reserved_size = sizeof(DataPart1) + sizeof(DataPart2);
-  DCHECK(reserved_size == 125);
+  DCHECK_EQ(reserved_size, 125u);
 
   DataPart1 data_part_1 = {};
   data_part_1.version = 2;
@@ -65,24 +61,20 @@ NSData* SynthesizedHistoryEntryData::AsNSData() {
   // The only variable sized element is currently the referrer_
   uint64_t referrer_spec_len = referrer_.spec().length();
   referrer_spec_len += referrer_spec_len % 2;  // round up to even.
-  reserved_size += (referrer_spec_len) ? (16 + (referrer_spec_len * 2)) : 4;
+  reserved_size += referrer_spec_len ? (16 + (referrer_spec_len * 2)) : 4;
 
   buffer_.reserve(reserved_size);
-  PushBack(data_part_1);
+  PushBackValue(data_part_1);
   PushBackGURL(referrer_);
-  PushBack(data_part_2);
-  DCHECK(buffer_.size() == reserved_size);
+  PushBackValue(data_part_2);
+  DCHECK_EQ(buffer_.size(), reserved_size);
   return [NSData dataWithBytes:buffer_.data() length:buffer_.size()];
-}
-
-void SynthesizedHistoryEntryData::PushBack(const uint8_t* data, size_t size) {
-  buffer_.insert(buffer_.end(), data, data + size);
 }
 
 void SynthesizedHistoryEntryData::PushBackGURL(const GURL& url) {
   if (url.spec().length() == 0) {
     static constexpr uint32_t kEmptyString = 0xFFFFFFFF;
-    PushBack(kEmptyString);
+    PushBackValue(kEmptyString);
     return;
   }
 
@@ -96,16 +88,21 @@ void SynthesizedHistoryEntryData::PushBackGURL(const GURL& url) {
   // This mean that if length % 2 == 1, then padding will
   // be two bytes, otherwise there is no need for padding.
   std::u16string url_u16 = base::UTF8ToUTF16(url.spec());
-  PushBack(url_u16.size());
-  PushBack(url_u16.size() * (sizeof(char16_t) / sizeof(char)));
-  PushBack(reinterpret_cast<const uint8_t*>(url_u16.data()),
-           url_u16.size() * (sizeof(char16_t) / sizeof(char)));
+  PushBackValue(url_u16.size());
+  PushBackValue(url_u16.size() * (sizeof(char16_t) / sizeof(char)));
+  PushBackBytes(base::as_bytes(base::span(url_u16)));
 
-  static constexpr uint16_t kAlignment = 0;
   if (url_u16.size() % 2 != 0) {
-    PushBack(kAlignment);
+    static constexpr uint16_t kAlignment = 0;
+    PushBackValue(kAlignment);
   }
-  DCHECK((buffer_.size() - original_size) % 2 == 0);
+
+  DCHECK_EQ((buffer_.size() - original_size) % 2, 0u);
+}
+
+void SynthesizedHistoryEntryData::PushBackBytes(
+    base::span<const uint8_t> bytes) {
+  buffer_.insert(buffer_.end(), bytes.begin(), bytes.end());
 }
 
 }  // namespace web
