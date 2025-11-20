@@ -110,7 +110,6 @@ export class SettingsBluetoothRequestCodePageElement extends
   private onPairClicked_(event: Event): void {
     event.stopPropagation();
 
-    // TODO(crbug.com/1010321): Show spinner while pairing.
     if (!this.pinCode_) {
       return;
     }
