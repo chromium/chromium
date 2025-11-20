@@ -2416,8 +2416,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
                             1)))));
 }
 
+// TODO(crbug.com/457020736): Flaky on multiple platforms.
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
-                       testGetContextFromTabFailsIfDoesNotExist) {
+                       DISABLED_testGetContextFromTabFailsIfDoesNotExist) {
   ExecuteJsTest();
 
   // TODO(b/450026474): Multi-instance fails the metrics check because the
