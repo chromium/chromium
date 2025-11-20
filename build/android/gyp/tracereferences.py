@@ -51,7 +51,7 @@ _SUPPRESSION_PATTERN = '|'.join([
     # android.jar. Not in the above list so as to not match parameter types.
     # E.g. Missing method void android.media.MediaRouter2$RouteCallback
     # E.g. Missing class android.util.StatsEvent$Builder
-    r'Missing method \S+ android\.',
+    r'Missing (?:field|method) \S+ android\.',
     r'Missing class android\.',
 
     # The follow classes are from Android XR system libraries and used on
