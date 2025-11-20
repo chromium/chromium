@@ -19,6 +19,7 @@
 use crate::ast::*;
 use crate::errors::*;
 use crate::parse_primitives::*;
+use std::collections::HashMap;
 
 /// Parse a type without nested data, i.e. anything but a struct or array
 fn parse_leaf_element(data: &mut ParserData, ty: &PackedLeafType) -> ParsingResult<MojomValue> {
@@ -38,7 +39,7 @@ fn parse_leaf_element(data: &mut ParserData, ty: &PackedLeafType) -> ParsingResu
                 Ok(MojomValue::Enum(value))
             } else {
                 // Report the error starting before the 32 bits we just parsed
-                Err(ParsingError::invalid_enum(data.bytes_parsed() - 4, value))
+                Err(ParsingError::invalid_discriminant(data.bytes_parsed() - 4, value))
             }
         }
     }
@@ -74,12 +75,15 @@ struct NestedDataInfo<'a> {
     /// The expected location of the nested data, as an offset in bytes from the
     /// start of the enclosing struct
     expected_offset: usize,
+    /// Tracks whether this pointer was contained in a union, and if so what
+    /// its discriminant was.
+    union_discriminant: Option<u32>,
 }
 
 /// Return the highest ordinal that appears in a packed struct.
 // FOR_RELEASE: It would be nicer to store this in the wire type so we
 // don't need to compute it each time.
-fn get_max_ordinal(fields: &Vec<(String, MojomWireType)>) -> Option<Ordinal> {
+fn get_max_ordinal(fields: &[(String, MojomWireType)]) -> Option<Ordinal> {
     use std::cmp::max;
     if fields.is_empty() {
         return None;
@@ -88,8 +92,9 @@ fn get_max_ordinal(fields: &Vec<(String, MojomWireType)>) -> Option<Ordinal> {
     let mut max_so_far: Ordinal = 0;
     for (_, wire_type) in fields.into_iter() {
         match wire_type {
-            MojomWireType::Leaf { ordinal, .. } => max_so_far = max(max_so_far, *ordinal),
-            MojomWireType::Pointer { ordinal, .. } => max_so_far = max(max_so_far, *ordinal),
+            MojomWireType::Leaf { ordinal, .. }
+            | MojomWireType::Pointer { ordinal, .. }
+            | MojomWireType::Union { ordinal, .. } => max_so_far = max(max_so_far, *ordinal),
             MojomWireType::Bitfield { ordinals } => {
                 let mut iter = ordinals.into_iter();
                 while let Some(Some(ordinal)) = iter.next() {
@@ -127,15 +132,106 @@ pub fn parse_pointer(data: &mut ParserData, may_be_null: bool) -> ParsingResult<
 
 pub fn parse_struct(
     data: &mut ParserData,
-    fields: &Vec<(String, MojomWireType)>,
-) -> ParsingResult<Vec<(String, MojomValue)>> {
-    let initial_bytes_parsed = data.bytes_parsed();
-
+    fields: &[(String, MojomWireType)],
+) -> ParsingResult<MojomValue> {
     // Parse the struct header
     let size_in_bytes = parse_size(data)?;
     let _version_number = parse_u32(data)?; // We're ignoring versioning for now
+    let parsed_fields = parse_structured_body(data, None, size_in_bytes, fields)?;
+    Ok(MojomValue::Struct(parsed_fields))
+}
 
-    let mut nested_data_list: Vec<NestedDataInfo> = vec![];
+/// Parse a union value.
+///
+/// Despite being structured data, union values might be packed directly in the
+/// body of a struct or array, instead of being behind a pointer. This can cause
+/// problems if the union itself contains a pointer.
+///
+/// Specifically, if a union (1) contains a pointer and (2) is packed directly
+/// into an enclosing body, then then the pointed-to data will appear at the end
+/// of the enclosing body instead of the end of the union.
+///
+/// The `enclosing_nested_data_list` argument to this function tracks which case
+/// we are in. If the union value we are parsing appears in an enclosing body,
+/// then it should be Some; otherwise, it should be None.
+///
+/// If `enclosing_nested_data_list` is Some and the union contains a pointer,
+/// then pointer's information will be appended to the contained list, and the
+/// returned MojomValue will be None. The actual union value will have to be
+/// constructed later.
+///
+/// Otherwise, the returned MojomValue will be Some, and no further work is
+/// required.
+///
+/// This function also returns the union's discriminant value.
+fn parse_union<'a>(
+    data: &mut ParserData,
+    enclosing_nested_data_list: Option<&mut Vec<NestedDataInfo<'a>>>,
+    variants: &'a HashMap<u32, MojomWireType>,
+) -> ParsingResult<(u32, Option<MojomValue>)> {
+    // Parse the union header
+    let size_in_bytes = parse_size(data)?;
+    let tag = parse_u32(data)?;
+    let field_ty = match variants.get(&tag) {
+        Some(wire_ty) => wire_ty,
+        None => return Err(ParsingError::invalid_discriminant(data.bytes_parsed() - 4, tag)),
+    };
+
+    let in_enclosing_body = enclosing_nested_data_list.is_some();
+
+    // A union is structured data with a single, variable field.
+    // Make up a dummy field name for debugging.
+    let field_name = format!("Union_Tag{tag}");
+
+    // FOR_RELEASE: This is a terrible memory leak to deal with the
+    // fact that we need a _tuple_ of field_name and field_ty.
+    // Once we remove/separate the field names, we can just use
+    // std::slice::from_ref(field_ty). Don't let this live to production!
+    let field = Box::leak(Box::new((field_name, field_ty.clone())));
+    let mut parsed_fields = parse_structured_body(
+        data,
+        // Hack to pass enclosing_nested_data_list without consuming it
+        enclosing_nested_data_list,
+        size_in_bytes,
+        std::slice::from_ref(field),
+    )?;
+    assert_eq!(parsed_fields.len(), 1);
+
+    let ret = match (in_enclosing_body, field_ty) {
+        // If the union contained a pointer and we were in an enclosing body,
+        // then it appended nested data info instead of constructing a union value
+        (true, MojomWireType::Pointer { .. }) => None,
+        (_, MojomWireType::Union { .. }) => {
+            // Sanity check because unions are really complicated
+            unreachable!("Unions should never be packed directly in other unions")
+        }
+        // If the union contained a non-pointer value, or it was standalone,
+        // then the union value has already been fully constructed.
+        _ => Some(MojomValue::Union(tag, Box::new(parsed_fields.pop().unwrap().1))),
+    };
+
+    Ok((tag, ret))
+}
+
+/// Parse the body of a struct, array, or union, having already consumed its
+/// header to figure out its expected size and what fields it has.
+///
+/// The enclosing_nested_data_list argument is only used for a special case
+/// involving unions. See the documentation of parse_union for details.
+fn parse_structured_body<'a>(
+    data: &mut ParserData,
+    enclosing_nested_data_list: Option<&mut Vec<NestedDataInfo<'a>>>,
+    expected_size_in_bytes: usize,
+    fields: &'a [(String, MojomWireType)],
+) -> ParsingResult<Vec<(String, MojomValue)>> {
+    // Start counting from the beginning of the header which we already parsed
+    let initial_bytes_parsed = data.bytes_parsed() - 8;
+
+    let mut local_nested_data_list: Vec<NestedDataInfo> = vec![];
+    let nested_data_list = match enclosing_nested_data_list {
+        Some(list) => list,
+        None => &mut local_nested_data_list,
+    };
 
     // Pre-allocate space for the parsed values, so we can write directly into them
     // by index. We have to provide dummy values since rust won't allow
@@ -160,6 +256,8 @@ pub fn parse_struct(
                     expected_offset: data.bytes_parsed() - initial_bytes_parsed
                         - 8 // Don't count the bytes we just parsed
                         + pointer_value,
+                    // We'll fill this in later if necessary (in the Union branch below)
+                    union_discriminant: None,
                 };
                 nested_data_list.push(nested_info);
             }
@@ -176,23 +274,49 @@ pub fn parse_struct(
                     ret[*ordinal] = (name.clone(), MojomValue::Bool(bit == 1))
                 }
             }
+            MojomWireType::Union { ordinal, variants } => {
+                let bytes_parsed_at_union_start = data.bytes_parsed() - initial_bytes_parsed;
+                match parse_union(data, Some(nested_data_list), variants)? {
+                    // If we have a complete value, we can just store it as usual.
+                    (_, Some(parsed_value)) => ret[*ordinal] = (name.clone(), parsed_value),
+                    // Otherwise, the union contained a pointer, and its info was appended to
+                    // nested_data_list. We need to adjust the appended info so that it's
+                    // relative to the enclosing struct, instead of this union.
+                    (tag, None) => {
+                        // We just pushed an entry, so we know it exists.
+                        // We know no elements are later than it because unions cannot nest
+                        // directly in other unions, so we'll never recurse more than once.
+                        let nested_data_info = nested_data_list.last_mut().unwrap();
+                        // This was previously None
+                        nested_data_info.union_discriminant = Some(tag);
+                        // This was previously the ordinal in the _union_ (i.e. 0)
+                        nested_data_info.ordinal = *ordinal;
+                        // This was previously the distance from the start of the _union_ body
+                        // We need it to be the distance from the start of _this_ body
+                        nested_data_info.expected_offset += bytes_parsed_at_union_start;
+                    }
+                }
+            }
         };
     }
 
     // We've reached the end of the struct (not including nested data!)
     // Make sure we parsed the expected number of bytes.
     let bytes_parsed_so_far = data.bytes_parsed() - initial_bytes_parsed;
-    if bytes_parsed_so_far > size_in_bytes {
+    if bytes_parsed_so_far > expected_size_in_bytes {
         return Err(ParsingError::wrong_size(
             data.bytes_parsed(),
-            size_in_bytes,
+            expected_size_in_bytes,
             bytes_parsed_so_far,
         ));
-    } else if bytes_parsed_so_far < size_in_bytes {
-        parse_padding(data, size_in_bytes - bytes_parsed_so_far)?
+    } else if bytes_parsed_so_far < expected_size_in_bytes {
+        parse_padding(data, expected_size_in_bytes - bytes_parsed_so_far)?
     }
 
-    for nested_data in nested_data_list {
+    // At this point, we'll only parse nested things if we didn't have an eclosing
+    // nested data list; if we did, then the nested things will be at the end of the
+    // enclosing object instead.
+    for nested_data in local_nested_data_list {
         // Nested data is required to appear in the same order as the (packed) fields
         // of the struct. So the expected offset is only useful for validation.
         let bytes_parsed_so_far = data.bytes_parsed() - initial_bytes_parsed;
@@ -203,14 +327,19 @@ pub fn parse_struct(
                 bytes_parsed_so_far,
             ));
         }
-        let parsed_data = match nested_data.ty {
+        let mut parsed_data = match nested_data.ty {
             PackedStructuredType::Struct { packed_field_types } => {
-                let parsed_fields = parse_struct(data, packed_field_types)?;
-                MojomValue::Struct(parsed_fields)
+                parse_struct(data, packed_field_types)?
             }
             PackedStructuredType::Array { .. } => {
                 panic!("Arrays are not yet implemented");
             }
+            PackedStructuredType::Union { variants } => parse_union(data, None, variants)?
+                .1
+                .expect("Parsing nested union should always return a value"),
+        };
+        if let Some(tag) = nested_data.union_discriminant {
+            parsed_data = MojomValue::Union(tag, Box::new(parsed_data))
         };
         ret[nested_data.ordinal] = (nested_data.field_name, parsed_data);
     }
@@ -231,12 +360,17 @@ pub fn parse_single_value_for_testing(
         MojomWireType::Bitfield { .. } => unimplemented!("Bitfields cannot be parsed individually"),
         MojomWireType::Pointer { nested_data_type, .. } => match nested_data_type {
             PackedStructuredType::Struct { packed_field_types } => {
-                let parsed_fields = parse_struct(&mut data, &packed_field_types)?;
-                Ok(MojomValue::Struct(parsed_fields))
+                parse_struct(&mut data, packed_field_types)
             }
             PackedStructuredType::Array { .. } => {
                 panic!("Arrays are not yet implemented");
             }
+            PackedStructuredType::Union { .. } => {
+                panic!("Standalone unions are never behind pointers")
+            }
         },
+        MojomWireType::Union { variants, .. } => Ok(parse_union(&mut data, None, variants)?
+            .1
+            .expect("Parsing standalone union should always return a value")),
     }
 }

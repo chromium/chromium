@@ -75,7 +75,7 @@ pub fn parse_message(data_slice: &[u8], ty: &MojomWireType) -> ParsingResult<Moj
                 // We don't support the interface ID struct yet
                 Err(ParsingError::too_much_data(data.bytes_parsed(), data.remaining_bytes()))
             } else {
-                Ok(MojomValue::Struct(ret))
+                Ok(ret)
             }
         }
         _ => panic!("All message bodies are structs"),

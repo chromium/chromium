@@ -7,6 +7,8 @@
 //! This module provides the ability to represent Mojom types and values as
 //! rust enums.
 
+use std::collections::HashMap;
+
 // FOR_RELEASE: The current AST is dead simple: standard recursive data
 // structures. We'll probably need an intermediate one as well to represent data
 // on the wire, since it doesn't quite match the MojomValue structure (e.g.
@@ -38,8 +40,8 @@ pub enum MojomType {
     Int64,
     UInt64,
     String,
-    // FOR_RELEASE: Consider if we want to unify enums and unions, as rust does
     Enum { is_valid: Predicate<u32> },
+    Union { variants: HashMap<u32, MojomType> },
     Struct { fields: Vec<(String, MojomType)> },
     // Mojom has separate sized/unsized array types; we could have two variants here, but
     // rust's type system can't enforce that the length is correct so there's little point.
@@ -64,6 +66,7 @@ pub enum MojomValue {
     UInt64(u64),
     String(String),
     Enum(u32),
+    Union(u32, Box<MojomValue>),
     Struct(Vec<(String, MojomValue)>),
     // Invariant: all MojomValues in the array are the same type.
     Array(Vec<MojomValue>),
@@ -82,13 +85,16 @@ pub type Ordinal = usize;
 /// Representation of a Mojom type that has been packed into the wire format. It
 /// contains enough information to both parse and deparse the associated type.
 ///
-/// Every value in a message corresponds to a member of some struct. To map
+/// Every value in a message corresponds to a member of some struct/array/union.
+/// We will assume struct members without loss of generality. To map
 /// values to their associated struct field, the wire type for that value tracks
 /// that field's ordinal. The ordinal is used as an index into the vector of
-/// fields during parsing and deparsing.
+/// fields during parsing and deparsing. For non-structs the ordinal is ignored.
 ///
 /// Bitfields are a special case; since they can contain values from multiple
 /// fields of the struct, each bit of the field is associated with an ordinal.
+///
+/// Unions can be represented as either a direct value, or a pointer.
 pub enum MojomWireType {
     /// A single value with no additional structure, which is encoded directly
     /// at this location.
@@ -102,9 +108,12 @@ pub enum MojomWireType {
         // The associated data is always a single byte, so no need to store a
         // type here.
     },
-    /// A 64-bit pointer to either an array or struct, which will appear at the
-    /// end of the containing struct.
+    /// A 64-bit pointer to an array, struct, or union, which will appear at the
+    /// end of the containing value.
     Pointer { ordinal: Ordinal, nested_data_type: PackedStructuredType },
+    /// A 128-bit value (not a pointer!) which contains a tag and a 64-bit value
+    /// (which may be a pointer).
+    Union { ordinal: Ordinal, variants: HashMap<u32, MojomWireType> },
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -125,6 +134,7 @@ pub enum PackedLeafType {
 pub enum PackedStructuredType {
     Struct { packed_field_types: Vec<(String, MojomWireType)> },
     Array { element_type: Box<MojomWireType>, array_type: PackedArrayType },
+    Union { variants: HashMap<u32, MojomWireType> },
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -152,12 +162,18 @@ impl MojomWireType {
             MojomWireType::Bitfield { .. } => 1,
             // Structs and arrays are stored as 64-bit pointers
             MojomWireType::Pointer { .. } => 8,
+            MojomWireType::Union { .. } => 16,
         }
     }
 
-    /// The alignment requirement for each type is equal to its size in bytes.
+    /// The alignment requirement for leaf data and pointers is equal to the
+    /// value's size in bytes. The alignment requirement for structured data
+    /// is always 8 bytes.
     pub fn alignment(&self) -> usize {
-        return self.size();
+        match self {
+            MojomWireType::Union { .. } => 8,
+            _ => self.size(),
+        }
     }
 }
 

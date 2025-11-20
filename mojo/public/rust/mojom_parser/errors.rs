@@ -40,8 +40,8 @@ pub enum ParsingErrorType {
     /// Indicates that a struct or array had more bytes than its header claimed
     WrongSize { expected_size: usize, actual_size: usize },
     /// Indicates that the message contained an invalid discriminant for a
-    /// non-extensible enum type
-    InvalidEnum { value: u32 },
+    /// non-extensible enum or union type
+    InvalidDiscriminant { value: u32 },
 }
 
 impl ParsingError {
@@ -84,8 +84,8 @@ impl ParsingError {
         ParsingError { offset, ty: ParsingErrorType::WrongSize { expected_size, actual_size } }
     }
 
-    pub fn invalid_enum(offset: usize, value: u32) -> ParsingError {
-        ParsingError { offset, ty: ParsingErrorType::InvalidEnum { value } }
+    pub fn invalid_discriminant(offset: usize, value: u32) -> ParsingError {
+        ParsingError { offset, ty: ParsingErrorType::InvalidDiscriminant { value } }
     }
 }
 
@@ -147,8 +147,8 @@ impl std::fmt::Display for ParsingError {
                      but we parsed {actual_size} bytes."
                 )
             }
-            ParsingErrorType::InvalidEnum { value } => {
-                write!(f, "Enum value {value} is not a valid discriminant for its type.")
+            ParsingErrorType::InvalidDiscriminant { value } => {
+                write!(f, "Enum/Union value {value} is not a valid discriminant for its type.")
             }
         }
     }
