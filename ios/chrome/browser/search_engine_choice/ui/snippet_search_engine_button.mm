@@ -10,6 +10,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/search_engine_choice/ui/search_engine_choice_constants.h"
 #import "ios/chrome/browser/search_engine_choice/ui/search_engine_current_default_pill_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -638,11 +639,24 @@ UIColor* GetCheckedTintColor() {
 #pragma mark - UIAccessibility
 
 - (NSString*)accessibilityLabel {
+  CHECK_NE(self.searchEngineName.length, 0ul)
+      << base::SysNSStringToUTF8(self.searchEngineKeyword);
   CHECK_NE(self.snippetText.length, 0ul)
-      << base::SysNSStringToUTF8(self.searchEngineName) << " "
-      << base::SysNSStringToUTF8(self.snippetText);
-  return [NSString
-      stringWithFormat:@"%@. %@", self.searchEngineName, self.snippetText];
+      << base::SysNSStringToUTF8(self.searchEngineKeyword);
+  switch (_currentDefaultState) {
+    case CurrentDefaultState::kNoCurrentDefault:
+    case CurrentDefaultState::kHasCurrentDefault:
+      return l10n_util::GetNSStringF(
+          IDS_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_VOICEOVER,
+          base::SysNSStringToUTF16(self.searchEngineName),
+          base::SysNSStringToUTF16(self.snippetText));
+    case CurrentDefaultState::kIsCurrentDefault:
+      return l10n_util::GetNSStringF(
+          IDS_SEARCH_ENGINE_CHOICE_CURRENT_DEFAULT_SEARCH_ENGINE_VOICEOVER,
+          base::SysNSStringToUTF16(self.searchEngineName),
+          base::SysNSStringToUTF16(self.snippetText));
+  }
+  NOTREACHED();
 }
 
 - (NSArray<NSString*>*)accessibilityUserInputLabels {
