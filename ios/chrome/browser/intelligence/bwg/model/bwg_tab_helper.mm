@@ -369,7 +369,7 @@ void BwgTabHelper::DidFinishNavigation(
   if (IsAskGeminiChipEnabled()) {
     optimization_guide_decider_->CanApplyOptimization(
         current_url, optimization_guide::proto::GLIC_CONTEXTUAL_CUEING,
-        base::BindOnce(&BwgTabHelper::OnOptimizationGuideDecision,
+        base::BindOnce(&BwgTabHelper::OnCanApplyContextualCueingDecision,
                        weak_ptr_factory_.GetWeakPtr(), current_url));
   }
 }
@@ -493,7 +493,7 @@ void BwgTabHelper::UpdateWebStateSnapshotInStorage() {
   snapshot_tab_helper->UpdateSnapshotStorageWithImage(cached_snapshot_);
 }
 
-void BwgTabHelper::OnOptimizationGuideDecision(
+void BwgTabHelper::OnCanApplyContextualCueingDecision(
     const GURL& main_frame_url,
     optimization_guide::OptimizationGuideDecision decision,
     const optimization_guide::OptimizationMetadata& metadata) {

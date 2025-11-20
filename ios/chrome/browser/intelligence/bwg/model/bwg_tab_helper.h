@@ -128,7 +128,7 @@ class BwgTabHelper : public web::WebStateObserver,
       const optimization_guide::OptimizationMetadata& metadata);
 
   // Callback from OptimizationGuide metadata request.
-  void OnOptimizationGuideDecision(
+  void OnCanApplyContextualCueingDecision(
       const GURL& main_frame_url,
       optimization_guide::OptimizationGuideDecision decision,
       const optimization_guide::OptimizationMetadata& metadata);
