@@ -4,6 +4,8 @@
 
 /** @fileoverview Handles Happiness Tracking Surveys for the settings pages. */
 
+import type {SafeBrowsingSetting} from './safe_browsing_types.js';
+
 /**
  * All Trust & Safety based interactions which may result in a HaTS survey.
  *
@@ -35,17 +37,6 @@ export enum SecurityPageInteraction {
   EXPAND_BUTTON_ENHANCED_CLICK = 3,
   EXPAND_BUTTON_STANDARD_CLICK = 4,
   NO_INTERACTION = 5,
-}
-
-/**
- * Enumeration of all safe browsing modes. Must be kept in sync with the enum
- * of the same name located in:
- * chrome/browser/safe_browsing/generated_safe_browsing_pref.h
- */
-export enum SafeBrowsingSetting {
-  ENHANCED = 0,
-  STANDARD = 1,
-  DISABLED = 2,
 }
 
 /**

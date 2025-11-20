@@ -25,12 +25,15 @@
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 using ::testing::_;
 
 class Profile;
+
+using safe_browsing::SafeBrowsingState;
 
 namespace settings {
 
@@ -164,7 +167,8 @@ TEST_F(HatsHandlerTest,
   base::Value::List args;
   args.Append(static_cast<int>(
       HatsHandler::SecurityPageInteraction::RADIO_BUTTON_ENHANCED_CLICK));
-  args.Append(static_cast<int>(HatsHandler::SafeBrowsingSetting::STANDARD));
+  args.Append(
+      static_cast<int>(safe_browsing::SafeBrowsingState::STANDARD_PROTECTION));
   // Set the time spent on the page to 20,000 milliseconds, which is longer than
   // the configured value from Finch, 15,000 milliseconds.
   args.Append(20000);
@@ -205,7 +209,8 @@ TEST_F(
   base::Value::List args;
   args.Append(
       static_cast<int>(HatsHandler::SecurityPageInteraction::NO_INTERACTION));
-  args.Append(static_cast<int>(HatsHandler::SafeBrowsingSetting::STANDARD));
+  args.Append(
+      static_cast<int>(safe_browsing::SafeBrowsingState::STANDARD_PROTECTION));
   args.Append(20000);
 
   profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);

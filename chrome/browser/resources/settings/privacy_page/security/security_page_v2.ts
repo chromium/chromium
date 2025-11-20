@@ -18,6 +18,7 @@ import type {ControlledRadioButtonElement} from '../../controls/controlled_radio
 import type {SettingsRadioGroupElement} from '../../controls/settings_radio_group.js';
 import {loadTimeData} from '../../i18n_setup.js';
 import {SettingsViewMixin} from '../../settings_page/settings_view_mixin.js';
+import {SafeBrowsingSetting} from '../safe_browsing_types.js';
 
 import type {SecurityPageFeatureRowElement} from './security_page_feature_row.js';
 import {getTemplate} from './security_page_v2.html.js';
@@ -29,19 +30,6 @@ export enum SecuritySettingsBundleSetting {
   ENHANCED = 1,
 }
 // LINT.ThenChange(/components/safe_browsing/core/common/safe_browsing_prefs.h:SecuritySettingsBundleSetting)
-
-/**
- * Enumeration of all Safe Browsing modes. Must be kept in sync with the enum
- * of the same name located in:
- * chrome/browser/safe_browsing/generated_safe_browsing_pref.h
- */
-// LINT.IfChange(SafeBrowsingSetting)
-export enum SafeBrowsingSetting {
-  ENHANCED = 0,
-  STANDARD = 1,
-  DISABLED = 2,
-}
-// LINT.ThenChange(/chrome/browser/safe_browsing/generated_safe_browsing_pref.h:SafeBrowsingSetting)
 
 export interface SettingsSecurityPageV2Element {
   $: {

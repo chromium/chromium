@@ -379,6 +379,11 @@ enum PasswordProtectionTrigger {
 // numeric values should never be reused.
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.safe_browsing
+//
+// Must be kept in sync with the SafeBrowsingSetting enum located in
+// chrome/browser/resources/settings/privacy_page/security/security_page.ts
+// and chrome/browser/resources/settings/privacy_page/safe_browsing_types.ts
+// LINT.IfChange(SafeBrowsingState)
 enum class SafeBrowsingState {
   // The user is not opted into Safe Browsing.
   NO_SAFE_BROWSING = 0,
@@ -389,6 +394,8 @@ enum class SafeBrowsingState {
 
   kMaxValue = ENHANCED_PROTECTION,
 };
+
+// LINT.ThenChange(/chrome/browser/resources/settings/privacy_page/security/security_page.ts:SafeBrowsingSetting,chrome/browser/resources/settings/privacy_page/safe_browsing_types.ts:SafeBrowsingSetting)
 
 // Must be kept in sync with the SecuritySettingsBundle enum located in
 // chrome/browser/resources/settings/privacy_page/security/security_page_v2.js.

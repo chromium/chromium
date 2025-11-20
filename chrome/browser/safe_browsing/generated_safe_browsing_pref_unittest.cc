@@ -27,7 +27,7 @@ namespace {
 void ValidateGeneratedPrefSetting(
     sync_preferences::TestingPrefServiceSyncable* prefs,
     GeneratedSafeBrowsingPref* generated_pref,
-    SafeBrowsingSetting pref_value,
+    SafeBrowsingState pref_value,
     bool expected_safe_browsing_enabled,
     bool expected_safe_browsing_enhanced) {
   EXPECT_EQ(
@@ -38,17 +38,16 @@ void ValidateGeneratedPrefSetting(
             expected_safe_browsing_enabled);
   EXPECT_EQ(prefs->GetUserPref(prefs::kSafeBrowsingEnhanced)->GetBool(),
             expected_safe_browsing_enhanced);
-  EXPECT_EQ(static_cast<SafeBrowsingSetting>(
+  EXPECT_EQ(static_cast<SafeBrowsingState>(
                 generated_pref->GetPrefObject().value->GetInt()),
             pref_value);
 }
 
-// Define additional value for SafeBrowsingSetting to support testing a not
+// Define additional value for SafeBrowsingState to support testing a not
 // set recommended value or not enforced value.
-const SafeBrowsingSetting kNoRecommendedValue =
-    static_cast<SafeBrowsingSetting>(-1);
-const SafeBrowsingSetting kNoEnforcedValue =
-    static_cast<SafeBrowsingSetting>(-2);
+const SafeBrowsingState kNoRecommendedValue =
+    static_cast<SafeBrowsingState>(-1);
+const SafeBrowsingState kNoEnforcedValue = static_cast<SafeBrowsingState>(-2);
 
 struct SafeBrowsingManagementTestCase {
   settings_private::PrefSetting safe_browsing_enabled;
@@ -58,9 +57,9 @@ struct SafeBrowsingManagementTestCase {
   settings_private::PrefSource reporting_preference_source;
   settings_api::ControlledBy expected_controlled_by;
   settings_api::Enforcement expected_enforcement;
-  SafeBrowsingSetting expected_enforced_value;
-  SafeBrowsingSetting expected_recommended_value;
-  std::vector<SafeBrowsingSetting> expected_user_selectable_values;
+  SafeBrowsingState expected_enforced_value;
+  SafeBrowsingState expected_recommended_value;
+  std::vector<SafeBrowsingState> expected_user_selectable_values;
 };
 
 const std::vector<SafeBrowsingManagementTestCase> kManagedTestCases = {
@@ -81,7 +80,7 @@ const std::vector<SafeBrowsingManagementTestCase> kManagedTestCases = {
      settings_private::PrefSource::kNone,
      settings_api::ControlledBy::kExtension,
      settings_api::Enforcement::kEnforced,
-     SafeBrowsingSetting::ENHANCED,
+     SafeBrowsingState::ENHANCED_PROTECTION,
      kNoRecommendedValue,
      {}},
     {settings_private::PrefSetting::kEnforcedOff,
@@ -91,7 +90,7 @@ const std::vector<SafeBrowsingManagementTestCase> kManagedTestCases = {
      settings_private::PrefSource::kNone,
      settings_api::ControlledBy::kDevicePolicy,
      settings_api::Enforcement::kEnforced,
-     SafeBrowsingSetting::DISABLED,
+     SafeBrowsingState::NO_SAFE_BROWSING,
      kNoRecommendedValue,
      {}},
     {settings_private::PrefSetting::kEnforcedOn,
@@ -101,7 +100,7 @@ const std::vector<SafeBrowsingManagementTestCase> kManagedTestCases = {
      settings_private::PrefSource::kNone,
      settings_api::ControlledBy::kExtension,
      settings_api::Enforcement::kEnforced,
-     SafeBrowsingSetting::STANDARD,
+     SafeBrowsingState::STANDARD_PROTECTION,
      kNoRecommendedValue,
      {}},
     {settings_private::PrefSetting::kRecommendedOn,
@@ -112,7 +111,7 @@ const std::vector<SafeBrowsingManagementTestCase> kManagedTestCases = {
      settings_api::ControlledBy::kNone,
      settings_api::Enforcement::kRecommended,
      kNoEnforcedValue,
-     SafeBrowsingSetting::ENHANCED,
+     SafeBrowsingState::ENHANCED_PROTECTION,
      {}},
     {settings_private::PrefSetting::kRecommendedOn,
      settings_private::PrefSetting::kRecommendedOff,
@@ -122,7 +121,7 @@ const std::vector<SafeBrowsingManagementTestCase> kManagedTestCases = {
      settings_api::ControlledBy::kNone,
      settings_api::Enforcement::kRecommended,
      kNoEnforcedValue,
-     SafeBrowsingSetting::STANDARD,
+     SafeBrowsingState::STANDARD_PROTECTION,
      {}},
     {settings_private::PrefSetting::kRecommendedOff,
      settings_private::PrefSetting::kRecommendedOff,
@@ -132,7 +131,7 @@ const std::vector<SafeBrowsingManagementTestCase> kManagedTestCases = {
      settings_api::ControlledBy::kNone,
      settings_api::Enforcement::kRecommended,
      kNoEnforcedValue,
-     SafeBrowsingSetting::DISABLED,
+     SafeBrowsingState::NO_SAFE_BROWSING,
      {}},
     {settings_private::PrefSetting::kNotSet,
      settings_private::PrefSetting::kNotSet,
@@ -143,7 +142,8 @@ const std::vector<SafeBrowsingManagementTestCase> kManagedTestCases = {
      settings_api::Enforcement::kEnforced,
      kNoEnforcedValue,
      kNoRecommendedValue,
-     {SafeBrowsingSetting::STANDARD, SafeBrowsingSetting::DISABLED}},
+     {SafeBrowsingState::STANDARD_PROTECTION,
+      SafeBrowsingState::NO_SAFE_BROWSING}},
     {settings_private::PrefSetting::kRecommendedOff,
      settings_private::PrefSetting::kRecommendedOff,
      settings_private::PrefSetting::kEnforcedOff,
@@ -152,8 +152,9 @@ const std::vector<SafeBrowsingManagementTestCase> kManagedTestCases = {
      settings_api::ControlledBy::kDevicePolicy,
      settings_api::Enforcement::kEnforced,
      kNoEnforcedValue,
-     SafeBrowsingSetting::DISABLED,
-     {SafeBrowsingSetting::STANDARD, SafeBrowsingSetting::DISABLED}},
+     SafeBrowsingState::NO_SAFE_BROWSING,
+     {SafeBrowsingState::STANDARD_PROTECTION,
+      SafeBrowsingState::NO_SAFE_BROWSING}},
     {settings_private::PrefSetting::kRecommendedOn,
      settings_private::PrefSetting::kRecommendedOff,
      settings_private::PrefSetting::kEnforcedOff,
@@ -162,8 +163,9 @@ const std::vector<SafeBrowsingManagementTestCase> kManagedTestCases = {
      settings_api::ControlledBy::kDevicePolicy,
      settings_api::Enforcement::kEnforced,
      kNoEnforcedValue,
-     SafeBrowsingSetting::STANDARD,
-     {SafeBrowsingSetting::STANDARD, SafeBrowsingSetting::DISABLED}},
+     SafeBrowsingState::STANDARD_PROTECTION,
+     {SafeBrowsingState::STANDARD_PROTECTION,
+      SafeBrowsingState::NO_SAFE_BROWSING}},
 };
 
 void SetupManagedTestConditions(
@@ -188,24 +190,23 @@ void ValidateManagedPreference(
   EXPECT_EQ(pref.enforcement, test_case.expected_enforcement);
 
   if (test_case.expected_enforced_value != kNoEnforcedValue) {
-    EXPECT_EQ(static_cast<SafeBrowsingSetting>(pref.value->GetInt()),
+    EXPECT_EQ(static_cast<SafeBrowsingState>(pref.value->GetInt()),
               test_case.expected_enforced_value);
   }
 
   if (test_case.expected_recommended_value == kNoRecommendedValue) {
     EXPECT_FALSE(pref.recommended_value);
   } else {
-    EXPECT_EQ(
-        static_cast<SafeBrowsingSetting>(pref.recommended_value->GetInt()),
-        test_case.expected_recommended_value);
+    EXPECT_EQ(static_cast<SafeBrowsingState>(pref.recommended_value->GetInt()),
+              test_case.expected_recommended_value);
   }
 
   // Ensure the user selectable values for the preference are correct.
-  std::vector<SafeBrowsingSetting> pref_user_selectable_values;
+  std::vector<SafeBrowsingState> pref_user_selectable_values;
   if (pref.user_selectable_values) {
     for (const auto& value : *pref.user_selectable_values) {
       pref_user_selectable_values.push_back(
-          static_cast<SafeBrowsingSetting>(value.GetInt()));
+          static_cast<SafeBrowsingState>(value.GetInt()));
     }
   }
 
@@ -230,13 +231,13 @@ TEST_F(GeneratedSafeBrowsingPrefTest, UpdatePreference) {
   // Check all possible settings both correctly update preferences and are
   // correctly returned by the generated preference.
   ValidateGeneratedPrefSetting(prefs(), pref.get(),
-                               SafeBrowsingSetting::ENHANCED,
+                               SafeBrowsingState::ENHANCED_PROTECTION,
                                /* enabled */ true, /* enhanced */ true);
   ValidateGeneratedPrefSetting(prefs(), pref.get(),
-                               SafeBrowsingSetting::STANDARD,
+                               SafeBrowsingState::STANDARD_PROTECTION,
                                /* enabled */ true, /* enhanced */ false);
   ValidateGeneratedPrefSetting(prefs(), pref.get(),
-                               SafeBrowsingSetting::DISABLED,
+                               SafeBrowsingState::NO_SAFE_BROWSING,
                                /* enabled */ false, /* enhanced */ false);
 
   // Confirm that a type mismatch is reported as such.
@@ -244,18 +245,20 @@ TEST_F(GeneratedSafeBrowsingPrefTest, UpdatePreference) {
             settings_private::SetPrefResult::PREF_TYPE_MISMATCH);
   // Check a numerical value outside of the acceptable range.
   EXPECT_EQ(
-      pref->SetPref(std::make_unique<base::Value>(
-                        static_cast<int>(SafeBrowsingSetting::DISABLED) + 1)
-                        .get()),
+      pref->SetPref(
+          std::make_unique<base::Value>(
+              static_cast<int>(SafeBrowsingState::ENHANCED_PROTECTION) + 1)
+              .get()),
       settings_private::SetPrefResult::PREF_TYPE_MISMATCH);
 
   // Confirm when SBER is forcefully disabled, setting the preference to
   // enhanced is reported as invalid.
   prefs()->SetManagedPref(prefs::kSafeBrowsingScoutReportingEnabled,
                           std::make_unique<base::Value>(false));
-  EXPECT_EQ(pref->SetPref(std::make_unique<base::Value>(
-                              static_cast<int>(SafeBrowsingSetting::ENHANCED))
-                              .get()),
+  EXPECT_EQ(pref->SetPref(
+                std::make_unique<base::Value>(
+                    static_cast<int>(SafeBrowsingState::ENHANCED_PROTECTION))
+                    .get()),
             settings_private::SetPrefResult::PREF_NOT_MODIFIABLE);
 }
 

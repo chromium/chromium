@@ -83,17 +83,6 @@ class HatsHandler : public SettingsPageUIHandler {
     NO_INTERACTION = 5,
   };
 
-  /**
-   * Enumeration of all safe browsing modes. Must be kept in sync with the enum
-   * of the same name located in:
-   * chrome/browser/safe_browsing/generated_safe_browsing_pref.h
-   */
-  enum class SafeBrowsingSetting {
-    ENHANCED = 0,
-    STANDARD = 1,
-    DISABLED = 2,
-  };
-
   // Requests the appropriate HaTS survey, which may be none, for |interaction|.
   void RequestHatsSurvey(TrustSafetyInteraction interaction);
 
@@ -108,7 +97,7 @@ class HatsHandler : public SettingsPageUIHandler {
    * Generate the Product Specific string data from |profile| and |args| for
    * chrome://settings/security page HaTS.
    * - First arg in the list indicates the SecurityPageInteraction.
-   * - Second arg in the list indicates the SafeBrowsingSetting.
+   * - Second arg in the list indicates the SafeBrowsingState.
    */
   SurveyStringData GetSecurityPageProductSpecificStringData(
       Profile* profile,

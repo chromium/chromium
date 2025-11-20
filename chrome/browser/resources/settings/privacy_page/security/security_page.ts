@@ -52,13 +52,13 @@ import {getTemplate} from './security_page.html.js';
 /**
  * Enumeration of all safe browsing modes. Must be kept in sync with the enum
  * of the same name located in:
- * chrome/browser/safe_browsing/generated_safe_browsing_pref.h
+ * components/safe_browsing/core/common/safe_browsing_prefs.h
  */
 // LINT.IfChange(SafeBrowsingSetting)
 export enum SafeBrowsingSetting {
-  ENHANCED = 0,
+  DISABLED = 0,
   STANDARD = 1,
-  DISABLED = 2,
+  ENHANCED = 2,
 }
 // LINT.ThenChange(/chrome/browser/safe_browsing/generated_safe_browsing_pref.h:SafeBrowsingSetting)
 
@@ -89,6 +89,19 @@ export interface SettingsSecurityPageElement {
 const SettingsSecurityPageElementBase =
     HelpBubbleMixin(RouteObserverMixin(SettingsViewMixin(
         WebUiListenerMixin(I18nMixin(PrefsMixin(PolymerElement))))));
+
+
+function toSecurityPageInteraction(setting: SafeBrowsingSetting):
+    SecurityPageInteraction {
+  switch (setting) {
+    case SafeBrowsingSetting.ENHANCED:
+      return SecurityPageInteraction.RADIO_BUTTON_ENHANCED_CLICK;
+    case SafeBrowsingSetting.STANDARD:
+      return SecurityPageInteraction.RADIO_BUTTON_STANDARD_CLICK;
+    case SafeBrowsingSetting.DISABLED:
+      return SecurityPageInteraction.RADIO_BUTTON_DISABLE_CLICK;
+  }
+}
 
 export class SettingsSecurityPageElement extends
     SettingsSecurityPageElementBase {
@@ -395,7 +408,7 @@ export class SettingsSecurityPageElement extends
     if (prefValue !== selected) {
       this.recordInteractionHistogramOnRadioChange_(selected);
       this.recordActionOnRadioChange_(selected);
-      this.interactedWithPage_(selected);
+      this.interactedWithPage_(toSecurityPageInteraction(selected));
     }
     if (selected === SafeBrowsingSetting.DISABLED) {
       this.showDisableSafebrowsingDialog_ = true;

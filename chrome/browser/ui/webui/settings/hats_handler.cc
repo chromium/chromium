@@ -22,9 +22,12 @@
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
+
+using safe_browsing::SafeBrowsingState;
 
 namespace {
 
@@ -60,7 +63,7 @@ void HatsHandler::RegisterMessages() {
 
 /**
  * First arg in the list indicates the SecurityPageInteraction.
- * Second arg in the list indicates the SafeBrowsingSetting.
+ * Second arg in the list indicates the SafeBrowsingState.
  */
 void HatsHandler::HandleSecurityPageHatsRequest(const base::Value::List& args) {
   AllowJavascript();
@@ -119,7 +122,7 @@ void HatsHandler::HandleSecurityPageHatsRequest(const base::Value::List& args) {
 /**
  * Generate the Product Specific string data from |profile| and |args|.
  * - First arg in the list indicates the SecurityPageInteraction.
- * - Second arg in the list indicates the SafeBrowsingSetting.
+ * - Second arg in the list indicates the SafeBrowsingState.
  * - Third arg in the list indicates the amount of time user spent on the
  * security page in focus.
  */
@@ -127,8 +130,7 @@ SurveyStringData HatsHandler::GetSecurityPageProductSpecificStringData(
     Profile* profile,
     const base::Value::List& args) {
   auto interaction = static_cast<SecurityPageInteraction>(args[0].GetInt());
-  auto safe_browsing_setting =
-      static_cast<SafeBrowsingSetting>(args[1].GetInt());
+  auto safe_browsing_state = static_cast<SafeBrowsingState>(args[1].GetInt());
 
   std::string security_page_interaction_type = "";
   std::string safe_browsing_setting_before = "";
@@ -165,16 +167,16 @@ SurveyStringData HatsHandler::GetSecurityPageProductSpecificStringData(
     }
   }
 
-  switch (safe_browsing_setting) {
-    case SafeBrowsingSetting::ENHANCED: {
+  switch (safe_browsing_state) {
+    case SafeBrowsingState::ENHANCED_PROTECTION: {
       safe_browsing_setting_before = "enhanced_protection";
       break;
     }
-    case SafeBrowsingSetting::STANDARD: {
+    case SafeBrowsingState::STANDARD_PROTECTION: {
       safe_browsing_setting_before = "standard_protection";
       break;
     }
-    case SafeBrowsingSetting::DISABLED: {
+    case SafeBrowsingState::NO_SAFE_BROWSING: {
       safe_browsing_setting_before = "no_protection";
       break;
     }
