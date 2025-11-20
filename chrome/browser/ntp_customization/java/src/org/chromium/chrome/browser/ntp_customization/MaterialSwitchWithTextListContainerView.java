@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.ntp_customization.ntp_cards;
+package org.chromium.chrome.browser.ntp_customization;
 
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.LinearLayout;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -16,19 +17,16 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
-import org.chromium.chrome.browser.ntp_customization.BottomSheetListContainerView;
-import org.chromium.chrome.browser.ntp_customization.ListContainerViewDelegate;
-import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtils;
-import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
-import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
 
 import java.util.List;
 
 /** The view which holds a list of items in the "New tab page cards" bottom sheet. */
 @NullMarked
-public class NtpCardsListContainerView extends BottomSheetListContainerView {
-    public NtpCardsListContainerView(Context context, @Nullable AttributeSet attrs) {
+public class MaterialSwitchWithTextListContainerView extends LinearLayout
+        implements ListContainerView {
+
+    public MaterialSwitchWithTextListContainerView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 
@@ -46,7 +44,7 @@ public class NtpCardsListContainerView extends BottomSheetListContainerView {
             Integer type = types.get(i);
             MaterialSwitchWithText listItemView = (MaterialSwitchWithText) createListItemView();
 
-            listItemView.setText(delegate.getListItemTitle(type, mContext));
+            listItemView.setText(delegate.getListItemTitle(type, getContext()));
             listItemView.setBackground(
                     AppCompatResources.getDrawable(
                             getContext(), NtpCustomizationUtils.getBackground(types.size(), i)));
@@ -57,10 +55,9 @@ public class NtpCardsListContainerView extends BottomSheetListContainerView {
     }
 
     /** Returns a view representing a single list item in this container. */
-    @Override
     @VisibleForTesting
-    protected View createListItemView() {
-        return LayoutInflater.from(mContext)
+    View createListItemView() {
+        return LayoutInflater.from(getContext())
                 .inflate(R.layout.ntp_customization_ntp_cards_list_item_layout, this, false);
     }
 
@@ -93,10 +90,12 @@ public class NtpCardsListContainerView extends BottomSheetListContainerView {
      * container view.
      */
     @Override
-    protected void destroy() {
+    public void destroy() {
         for (int i = 0; i < getChildCount(); i++) {
             MaterialSwitchWithText child = (MaterialSwitchWithText) getChildAt(i);
             child.setOnCheckedChangeListener(null);
         }
+
+        removeAllViews();
     }
 }

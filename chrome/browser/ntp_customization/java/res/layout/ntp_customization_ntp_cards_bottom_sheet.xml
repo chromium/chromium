@@ -80,7 +80,7 @@ found in the LICENSE file.
         android:accessibilityHeading="true"
         android:visibility="gone"/> <!-- TODO(crbug.com/458409311): Make this always visible -->
 
-    <org.chromium.chrome.browser.ntp_customization.ntp_cards.NtpCardsListContainerView
+    <org.chromium.chrome.browser.ntp_customization.MaterialSwitchWithTextListContainerView
         android:id="@+id/ntp_cards_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -89,7 +89,7 @@ found in the LICENSE file.
         android:layout_marginHorizontal="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom"
         app:layout_constraintTop_toBottomOf="@id/cards_section_title"
         app:layout_constraintStart_toStartOf="parent">
-    </org.chromium.chrome.browser.ntp_customization.ntp_cards.NtpCardsListContainerView>
+    </org.chromium.chrome.browser.ntp_customization.MaterialSwitchWithTextListContainerView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

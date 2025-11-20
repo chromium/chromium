@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.ntp_customization.ntp_cards;
+package org.chromium.chrome.browser.ntp_customization;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -41,16 +41,13 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
-import org.chromium.chrome.browser.ntp_customization.ListContainerViewDelegate;
-import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtils;
-import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
 
 import java.util.List;
 
-/** Unit tests for {@link NtpCardsListContainerView}. */
+/** Unit tests for {@link MaterialSwitchWithTextListContainerView}. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class NtpCardsListContainerViewUnitTest {
+public class MaterialSwitchWithTextListContainerViewUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock ListContainerViewDelegate mDelegate;
@@ -59,7 +56,7 @@ public class NtpCardsListContainerViewUnitTest {
     @Captor
     private ArgumentCaptor<CompoundButton.OnCheckedChangeListener> mOnCheckedChangeListenerCaptor;
 
-    private NtpCardsListContainerView mContainerView;
+    private MaterialSwitchWithTextListContainerView mContainerView;
     private List<Integer> mListContent;
 
     @Before

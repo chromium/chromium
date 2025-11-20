@@ -19,12 +19,10 @@ import java.util.List;
 
 /** The view holding {@link BottomSheetListItemView} in a bottom sheet. */
 @NullMarked
-public class BottomSheetListContainerView extends LinearLayout {
-    protected final Context mContext;
+public class BottomSheetListContainerView extends LinearLayout implements ListContainerView {
 
     public BottomSheetListContainerView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        mContext = context;
     }
 
     /**
@@ -32,14 +30,15 @@ public class BottomSheetListContainerView extends LinearLayout {
      *
      * @param delegate The delegate contains the content for each list item view.
      */
+    @Override
     public void renderAllListItems(ListContainerViewDelegate delegate) {
         List<Integer> types = delegate.getListItems();
         for (int i = 0; i < types.size(); i++) {
             Integer type = types.get(i);
             BottomSheetListItemView listItemView = (BottomSheetListItemView) createListItemView();
             listItemView.setId(delegate.getListItemId(type));
-            listItemView.setTitle(delegate.getListItemTitle(type, mContext));
-            listItemView.setSubtitle(delegate.getListItemSubtitle(type, mContext));
+            listItemView.setTitle(delegate.getListItemTitle(type, getContext()));
+            listItemView.setSubtitle(delegate.getListItemSubtitle(type, getContext()));
             listItemView.setBackground(NtpCustomizationUtils.getBackground(types.size(), i));
             listItemView.setTrailingIcon(delegate.getTrailingIcon(type));
             listItemView.setOnClickListener(delegate.getListener(type));
@@ -54,16 +53,19 @@ public class BottomSheetListContainerView extends LinearLayout {
 
     /** Returns a {@link BottomSheetListItemView}. */
     @VisibleForTesting
-    protected View createListItemView() {
-        return LayoutInflater.from(mContext)
+    View createListItemView() {
+        return LayoutInflater.from(getContext())
                 .inflate(R.layout.bottom_sheet_list_item_view, this, false);
     }
 
     /** Clears {@link View.OnClickListener} of each list item inside this container view. */
-    protected void destroy() {
+    @Override
+    public void destroy() {
         for (int i = 0; i < getChildCount(); i++) {
             BottomSheetListItemView child = (BottomSheetListItemView) getChildAt(i);
             child.setOnClickListener(null);
         }
+
+        removeAllViews();
     }
 }

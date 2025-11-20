@@ -24,9 +24,9 @@ public class BottomSheetListContainerViewBinder {
         if (propertyKey == LIST_CONTAINER_VIEW_DELEGATE) {
             ListContainerViewDelegate delegate = model.get(LIST_CONTAINER_VIEW_DELEGATE);
             if (delegate == null) {
-                ((BottomSheetListContainerView) view).destroy();
+                ((ListContainerView) view).destroy();
             } else {
-                ((BottomSheetListContainerView) view).renderAllListItems(delegate);
+                ((ListContainerView) view).renderAllListItems(delegate);
             }
         } else if (propertyKey == MAIN_BOTTOM_SHEET_FEED_SECTION_SUBTITLE) {
             BottomSheetListItemView feedListItem = view.findViewById(R.id.feed_settings);
