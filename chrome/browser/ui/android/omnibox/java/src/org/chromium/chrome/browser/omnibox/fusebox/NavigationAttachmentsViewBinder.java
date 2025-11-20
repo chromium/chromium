@@ -167,8 +167,6 @@ class NavigationAttachmentsViewBinder {
                 String hint = res.getString(R.string.accessibility_omnibox_enable_ai_mode);
                 views.requestType.setText(R.string.ai_mode_entrypoint_label);
                 views.requestType.setContentDescription(hint);
-                views.requestType.setContentDescription(
-                        res.getString(R.string.accessibility_omnibox_enable_ai_mode));
             }
 
             views.requestType.setButtonColor(
