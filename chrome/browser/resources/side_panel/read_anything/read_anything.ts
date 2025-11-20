@@ -34,7 +34,7 @@ export {AncestorNode, AxReadAloudNode, DomReadAloudNode, ReadAloudNode, Segment}
 export {SpeechBrowserProxy, SpeechBrowserProxyImpl} from './read_aloud/speech_browser_proxy.js';
 export {MAX_SPEECH_LENGTH, SpeechController, SpeechListener} from './read_aloud/speech_controller.js';
 export {PauseActionSource, SpeechEngineState, SpeechModel} from './read_aloud/speech_model.js';
-export {getCurrentSpeechRate, isInvalidHighlightForWordHighlighting} from './read_aloud/speech_presentation_rules.js';
+export {getCurrentSpeechRate, isInvalidHighlightForWordHighlighting, textEndsWithOpeningPunctuation} from './read_aloud/speech_presentation_rules.js';
 export {TextSegmenter} from './read_aloud/text_segmenter.js';
 export {TsReadModelImpl} from './read_aloud/ts_model_impl.js';
 export {V8ModelImpl} from './read_aloud/v8_model_impl.js';

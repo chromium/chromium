@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import type {Sentence} from './read_aloud_types.js';
+import {textEndsWithOpeningPunctuation} from './speech_presentation_rules.js';
 
 // Wrapper class for Intl.Segmenter that manages Intl.Segmenter instances to
 // be used to segment text.
@@ -54,15 +55,49 @@ export class TextSegmenter {
     return 0;
   }
 
-
   getSentences(text: string): Sentence[] {
     const segments = this.sentenceSegmenter_.segment(text);
+    const initialSentences: Sentence[] = Array.from(
+        segments, (segment) => ({text: segment.segment, index: segment.index}));
+
+    return this.processSentences(initialSentences);
+  }
+
+  // Filter sentences where the rules for Intl.Segmenter don't quite match
+  // what is needed for reading mode.
+  // e.g. Intl.Segmenter will segment "Hello(Goodbye)" into "Hello("
+  // and "goodbye)" but for reading mode (especially sentence highlighting), it
+  // makes more sense for the trailing parenthesis to be grouped later such
+  // that the sentences are "Hello" and "(goodbye)".
+  private processSentences(initialSentences: Sentence[]): Sentence[] {
+    const finalSentences: Sentence[] = [];
+
+    for (let i = 0; i < initialSentences.length; i++) {
+      const sentence = initialSentences[i];
+      if (!sentence) {
+        continue;
+      }
+
+      // If there's a sentence that ends with opening punctuation and there's
+      // another sentence after it, group the opening punctuation with the
+      // next sentence instead.
+      const match = textEndsWithOpeningPunctuation(sentence.text);
+      if (match) {
+        const openingPunctuation = match[0];
+        const openingPunctuationLength = openingPunctuation.length;
+        sentence.text = sentence.text.slice(0, -openingPunctuationLength);
+        if (i + 1 < initialSentences.length && initialSentences[i + 1]) {
+          initialSentences[i + 1]!.text =
+              openingPunctuation + initialSentences[i + 1]!.text;
+          initialSentences[i + 1]!.index -= openingPunctuationLength;
+        }
+      }
+      finalSentences.push({text: sentence.text, index: sentence.index});
+    }
+
     // TODO: crbug.com/440400392- Filter out "sentences" that are just
     // punctuation.
-    // Map the iterable returned by Intl.Segmenter.segment to the Sentence
-    // custom type.
-    return Array.from(
-        segments, (segment) => ({text: segment.segment, index: segment.index}));
+    return finalSentences;
   }
 
   getAccessibleBoundary(text: string, maxTextLength: number): number {

@@ -2639,79 +2639,6 @@ TEST_F(ReadAnythingAppControllerTest, DisplayNodes_WithMultipleTrees) {
   EXPECT_EQ(sentence2, controller().GetTextContent(kId2));
 }
 
-TEST_F(ReadAnythingAppControllerTest,
-       GetCurrentText_OpeningPunctuationIgnored) {
-  std::u16string sentence1 = u"And I am almost there.";
-  std::u16string sentence2 = u"[2]";
-  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
-  ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
-
-  SendUpdateAndDistillNodes({std::move(static_text1), std::move(static_text2)});
-
-  std::vector<ReadAloudTextSegment> next_segments = GetCurrentTextSegments();
-
-  // The first segment was returned correctly.
-  ExpectNodesMapToEntireText(next_segments, {kId1}, {sentence1});
-
-  // The parenthetical expression is returned as a single separate segment.
-  next_segments = MoveToNextGranularityAndGetSegments();
-  ExpectNodesMapToEntireText(next_segments, {kId2}, {sentence2});
-
-  // Nodes are empty at the end of the new tree.
-  MoveToNextAndAssertEmpty();
-}
-
-TEST_F(ReadAnythingAppControllerTest,
-       GetCurrentText_OpeningPunctuationIncludedWhenEntireNode) {
-  // Simulate breaking up the brackets across a link.
-  std::u16string sentence1 = u"And I am almost there.";
-  std::u16string sentence2 = u"[";
-  std::u16string sentence3 = u"2";
-  std::u16string sentence4 = u"]";
-  ui::AXTreeUpdate update;
-  ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
-  test::SetUpdateTreeID(&update, id_1);
-
-  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
-  ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
-  ui::AXNodeData static_text3 = test::TextNode(kId3, sentence3);
-  ui::AXNodeData static_text4 = test::TextNode(kId4, sentence4);
-
-  static constexpr ui::AXNodeID kSuperscriptId = 13;
-  ui::AXNodeData superscript = test::GenericContainerNode(kSuperscriptId);
-  superscript.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "<p>");
-  superscript.child_ids = {kId2, kId3, kId4};
-
-  ui::AXNodeData root;
-  static constexpr ui::AXNodeID kRootId = 10;
-  root.id = kRootId;
-  root.child_ids = {kId1, superscript.id};
-  update.root_id = root.id;
-
-  update.nodes = {std::move(root),         std::move(static_text1),
-                  std::move(superscript),  std::move(static_text2),
-                  std::move(static_text3), std::move(static_text4)};
-  controller().OnActiveAXTreeIDChanged(id_1, ukm::kInvalidSourceId, false);
-  AccessibilityEventReceived({std::move(update)});
-  controller().OnAXTreeDistilled(
-      id_1, {kRootId, kId1, kSuperscriptId, kId2, kId3, kId4});
-  controller().InitAXPositionWithNode(kId1);
-
-  std::vector<ReadAloudTextSegment> next_segments = GetCurrentTextSegments();
-
-  // The first segment was returned correctly.
-  ExpectNodesMapToEntireText(next_segments, {kId1}, {sentence1});
-
-  // The next segment contains the entire bracketed statement '[2]' with both
-  // opening and closing brackets so neither bracket is read out-of-context.
-  next_segments = MoveToNextGranularityAndGetSegments();
-  ExpectNodesMapToEntireText(next_segments, {kId2, kId3, kId4},
-                             {sentence2, sentence3, sentence4});
-
-  // Nodes are empty at the end of the new tree.
-  MoveToNextAndAssertEmpty();
-}
-
 TEST_F(ReadAnythingAppControllerTest, GetCurrentText_EmptyTree) {
   // If InitAXPosition hasn't been called, GetCurrentText should return nothing.
   EXPECT_THAT(GetCurrentTextSegments(), IsEmpty());
@@ -4029,6 +3956,79 @@ TEST_F(ReadAnythingAppControllerV8SegmentationTest,
   // skipped.
   next_segments = MoveToNextGranularityAndGetSegments();
   ExpectNodesMapToEntireText(next_segments, {kId3}, {sentence3});
+
+  // Nodes are empty at the end of the new tree.
+  MoveToNextAndAssertEmpty();
+}
+
+TEST_F(ReadAnythingAppControllerV8SegmentationTest,
+       GetCurrentText_OpeningPunctuationIgnored) {
+  std::u16string sentence1 = u"And I am almost there.";
+  std::u16string sentence2 = u"[2]";
+  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
+  ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
+
+  SendUpdateAndDistillNodes({std::move(static_text1), std::move(static_text2)});
+
+  std::vector<ReadAloudTextSegment> next_segments = GetCurrentTextSegments();
+
+  // The first segment was returned correctly.
+  ExpectNodesMapToEntireText(next_segments, {kId1}, {sentence1});
+
+  // The parenthetical expression is returned as a single separate segment.
+  next_segments = MoveToNextGranularityAndGetSegments();
+  ExpectNodesMapToEntireText(next_segments, {kId2}, {sentence2});
+
+  // Nodes are empty at the end of the new tree.
+  MoveToNextAndAssertEmpty();
+}
+
+TEST_F(ReadAnythingAppControllerV8SegmentationTest,
+       GetCurrentText_OpeningPunctuationIncludedWhenEntireNode) {
+  // Simulate breaking up the brackets across a link.
+  std::u16string sentence1 = u"And I am almost there.";
+  std::u16string sentence2 = u"[";
+  std::u16string sentence3 = u"2";
+  std::u16string sentence4 = u"]";
+  ui::AXTreeUpdate update;
+  ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
+  test::SetUpdateTreeID(&update, id_1);
+
+  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
+  ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
+  ui::AXNodeData static_text3 = test::TextNode(kId3, sentence3);
+  ui::AXNodeData static_text4 = test::TextNode(kId4, sentence4);
+
+  static constexpr ui::AXNodeID kSuperscriptId = 13;
+  ui::AXNodeData superscript = test::GenericContainerNode(kSuperscriptId);
+  superscript.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "<p>");
+  superscript.child_ids = {kId2, kId3, kId4};
+
+  ui::AXNodeData root;
+  static constexpr ui::AXNodeID kRootId = 10;
+  root.id = kRootId;
+  root.child_ids = {kId1, superscript.id};
+  update.root_id = root.id;
+
+  update.nodes = {std::move(root),         std::move(static_text1),
+                  std::move(superscript),  std::move(static_text2),
+                  std::move(static_text3), std::move(static_text4)};
+  controller().OnActiveAXTreeIDChanged(id_1, ukm::kInvalidSourceId, false);
+  AccessibilityEventReceived({std::move(update)});
+  controller().OnAXTreeDistilled(
+      id_1, {kRootId, kId1, kSuperscriptId, kId2, kId3, kId4});
+  controller().InitAXPositionWithNode(kId1);
+
+  std::vector<ReadAloudTextSegment> next_segments = GetCurrentTextSegments();
+
+  // The first segment was returned correctly.
+  ExpectNodesMapToEntireText(next_segments, {kId1}, {sentence1});
+
+  // The next segment contains the entire bracketed statement '[2]' with both
+  // opening and closing brackets so neither bracket is read out-of-context.
+  next_segments = MoveToNextGranularityAndGetSegments();
+  ExpectNodesMapToEntireText(next_segments, {kId2, kId3, kId4},
+                             {sentence2, sentence3, sentence4});
 
   // Nodes are empty at the end of the new tree.
   MoveToNextAndAssertEmpty();

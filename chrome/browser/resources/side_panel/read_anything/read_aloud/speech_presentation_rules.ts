@@ -7,6 +7,12 @@
 // by other characters.
 const IGNORED_HIGHLIGHT_CHARACTERS_REGEX: RegExp = /^[.,!?'"(){}\[\]]+$/;
 
+// Opening punctuation characters that text segmentation should not end a
+// sentence on if there's a valid sentence after the current sentence. This
+// reduces the risk of opening punctuation characters being read out loud
+// by read aloud.
+const OPENING_PUNCTUATION_CHARACTERS_REGEX: RegExp = /[({<[]+$/;
+
 export function getCurrentSpeechRate(): number {
   return parseFloat(chrome.readingMode.speechRate.toFixed(1));
 }
@@ -17,4 +23,10 @@ export function isInvalidHighlightForWordHighlighting(textToHighlight?: string):
     boolean {
   const text = textToHighlight?.trim();
   return !text || text === '' || IGNORED_HIGHLIGHT_CHARACTERS_REGEX.test(text);
+}
+
+// If the given text ends with opening punctuation.
+export function textEndsWithOpeningPunctuation(text: string): RegExpMatchArray|
+    null {
+  return text.match(OPENING_PUNCTUATION_CHARACTERS_REGEX);
 }

@@ -146,4 +146,45 @@ suite('TextSegmenter', () => {
     assertEquals(text.length, endIndex);
     assertEquals(text, text.slice(0, endIndex));
   });
+
+  test(
+      'getSentences groups trailing opening punctuation with next sentence',
+      () => {
+        const textSegmenter = TextSegmenter.getInstance();
+        const text = 'hello.[2]';
+        const sentences = textSegmenter.getSentences(text);
+        assertEquals(2, sentences.length);
+        assertEquals('hello.', sentences[0]!.text);
+        assertEquals('[2]', sentences[1]!.text);
+      });
+
+  test(
+      'getSentences groups trailing duplicate opening punctuation with next sentence',
+      () => {
+        const textSegmenter = TextSegmenter.getInstance();
+        const text = 'hello.[[[2]';
+        const sentences = textSegmenter.getSentences(text);
+        assertEquals(2, sentences.length);
+        assertEquals('hello.', sentences[0]!.text);
+        assertEquals('[[[2]', sentences[1]!.text);
+      });
+
+  test('getSentences does not adjust mid-sentence punctuation', () => {
+    const textSegmenter = TextSegmenter.getInstance();
+    const text = 'hello, (goodbye)- how are you?';
+    const sentences = textSegmenter.getSentences(text);
+    assertEquals(1, sentences.length);
+    assertEquals('hello, (goodbye)- how are you?', sentences[0]!.text);
+  });
+
+  test(
+      'getSentences does not adjust mid-sentence punctuation with ending opening punctuation',
+      () => {
+        const textSegmenter = TextSegmenter.getInstance();
+        const text = 'hello, [goodbye]- what\'s up?[2]';
+        const sentences = textSegmenter.getSentences(text);
+        assertEquals(2, sentences.length);
+        assertEquals('hello, [goodbye]- what\'s up?', sentences[0]!.text);
+        assertEquals('[2]', sentences[1]!.text);
+      });
 });

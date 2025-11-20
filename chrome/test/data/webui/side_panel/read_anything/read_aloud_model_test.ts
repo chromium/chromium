@@ -55,6 +55,136 @@ suite('ReadAloudModel', () => {
     setInstance(null);
   });
 
+  test('getCurrentText opening punctuation ignored', async () => {
+    const paragraph = document.createElement('p');
+
+    const sentence = document.createTextNode('Run, take cover.');
+    const parenthetical =
+        document.createTextNode('(I\'m gonna come up with a plan.)');
+
+    paragraph.appendChild(sentence);
+    paragraph.appendChild(parenthetical);
+    document.body.appendChild(paragraph);
+
+    await microtasksFinished();
+
+    getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+
+    assertEquals(
+        sentence.textContent.trim(),
+        getReadAloudModel().getCurrentTextContent().trim());
+
+    getReadAloudModel().moveSpeechForward();
+    assertEquals(
+        parenthetical.textContent.trim(),
+        getReadAloudModel().getCurrentTextContent().trim());
+
+    getReadAloudModel().moveSpeechForward();
+    assertTextEmpty();
+  });
+
+  test('getCurrentText multiple opening punctuation ignored', async () => {
+    const paragraph = document.createElement('p');
+
+    const sentence = document.createTextNode('Run, take cover.');
+    const parenthetical =
+        document.createTextNode('[{<(((I\'m gonna come up with a plan.)');
+
+    paragraph.appendChild(sentence);
+    paragraph.appendChild(parenthetical);
+    document.body.appendChild(paragraph);
+
+    await microtasksFinished();
+
+    getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+
+    assertEquals(
+        sentence.textContent.trim(),
+        getReadAloudModel().getCurrentTextContent().trim());
+
+    getReadAloudModel().moveSpeechForward();
+    assertEquals(
+        parenthetical.textContent.trim(),
+        getReadAloudModel().getCurrentTextContent().trim());
+
+    getReadAloudModel().moveSpeechForward();
+    assertTextEmpty();
+  });
+
+  test(
+      'getCurrentText opening punctuation included when entire node',
+      async () => {
+        const paragraph = document.createElement('p');
+
+        const sentence = document.createTextNode('And I am almost there.');
+        const parenthetical = document.createElement('b');
+        parenthetical.appendChild(document.createTextNode('['));
+        parenthetical.appendChild(document.createTextNode('2'));
+        parenthetical.appendChild(document.createTextNode(']'));
+
+        paragraph.appendChild(sentence);
+        paragraph.appendChild(parenthetical);
+        document.body.appendChild(paragraph);
+
+        await microtasksFinished();
+
+        getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+
+        assertEquals(
+            sentence.textContent.trim(),
+            getReadAloudModel().getCurrentTextContent().trim());
+
+        // The next segment contains the entire bracketed statement '[2]' with
+        // both opening and closing brackets so neither bracket is read
+        // out-of-context.
+        getReadAloudModel().moveSpeechForward();
+        assertEquals(
+            parenthetical.textContent.trim(),
+            getReadAloudModel().getCurrentTextContent().trim());
+
+        getReadAloudModel().moveSpeechForward();
+        assertTextEmpty();
+      });
+
+  test(
+      'getCurrentText with multiple opening punctuation characters',
+      async () => {
+        const paragraph = document.createElement('p');
+
+        const sentence = document.createTextNode('And I am almost there.');
+        const parenthetical = document.createElement('b');
+        parenthetical.appendChild(document.createTextNode('['));
+        parenthetical.appendChild(document.createTextNode('('));
+        parenthetical.appendChild(document.createTextNode('{'));
+        parenthetical.appendChild(document.createTextNode('<'));
+        parenthetical.appendChild(document.createTextNode('2'));
+        parenthetical.appendChild(document.createTextNode(')'));
+        parenthetical.appendChild(document.createTextNode(']'));
+
+        paragraph.appendChild(sentence);
+        paragraph.appendChild(parenthetical);
+        document.body.appendChild(paragraph);
+
+        await microtasksFinished();
+
+        getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+
+        assertEquals(
+            sentence.textContent.trim(),
+            getReadAloudModel().getCurrentTextContent().trim());
+
+        // The next segment contains the entire bracketed statement '[2]' with
+        // both opening and closing brackets so neither bracket is read
+        // out-of-context.
+        getReadAloudModel().moveSpeechForward();
+        assertEquals(
+            parenthetical.textContent.trim(),
+            getReadAloudModel().getCurrentTextContent().trim());
+
+        getReadAloudModel().moveSpeechForward();
+        assertTextEmpty();
+      });
+
   test(
       'getCurrentTextContent when called many times returns same text',
       async () => {

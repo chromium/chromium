@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {getCurrentSpeechRate, isInvalidHighlightForWordHighlighting} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {getCurrentSpeechRate, isInvalidHighlightForWordHighlighting, textEndsWithOpeningPunctuation} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {FakeReadingMode} from './fake_reading_mode.js';
 
@@ -33,5 +33,16 @@ suite('SpeechPresentationRules', () => {
     assertTrue(isInvalidHighlightForWordHighlighting('()?!?'));
     assertFalse(isInvalidHighlightForWordHighlighting('hello !!!'));
     assertFalse(isInvalidHighlightForWordHighlighting('(psst);'));
+  });
+
+  test('speechEndsWithOpeningPunctuation', () => {
+    assertNull(textEndsWithOpeningPunctuation(' '));
+    assertNull(textEndsWithOpeningPunctuation('how()'));
+    assertEquals('[', textEndsWithOpeningPunctuation('[')![0]);
+    assertEquals('[', textEndsWithOpeningPunctuation('hello[')![0]);
+    assertEquals('{', textEndsWithOpeningPunctuation('goodbye{')![0]);
+    assertEquals('<', textEndsWithOpeningPunctuation('where?<')![0]);
+    assertEquals('(', textEndsWithOpeningPunctuation('why(')![0]);
+    assertEquals('((', textEndsWithOpeningPunctuation('when((')![0]);
   });
 });
