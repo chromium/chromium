@@ -117,6 +117,14 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyTaskManager {
       BackgroundTaskPriority priority,
       base::OnceCallback<void(ServiceErrorOr<void>)> callback);
 
+  // Deletes all signing keys asynchronously matching the given config.
+  // Invokes `callback` with a `ServiceError` if an error occurs during deletion
+  // and the number of deleted keys otherwise.
+  void DeleteAllSigningKeysSlowlyAsync(
+      crypto::UnexportableKeyProvider::Config config,
+      BackgroundTaskPriority priority,
+      base::OnceCallback<void(ServiceErrorOr<size_t>)> callback);
+
  private:
   // Scheduler to run long tasks in background.
   BackgroundLongTaskScheduler task_scheduler_{

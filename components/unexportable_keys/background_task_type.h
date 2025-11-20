@@ -21,6 +21,7 @@ enum class BackgroundTaskType {
   kFromWrappedKey,
   kSign,
   kDeleteKey,
+  kDeleteAllKeys,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/net/histograms.xml:UnexportableKeysBackgroundTaskType)
 

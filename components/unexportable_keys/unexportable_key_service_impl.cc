@@ -206,7 +206,7 @@ void UnexportableKeyServiceImpl::CopyKeyFromOtherService(
 
 void UnexportableKeyServiceImpl::DeleteAllKeysSlowlyAsync(
     BackgroundTaskPriority priority,
-    base::OnceCallback<void(ServiceErrorOr<void>)> callback) {
+    base::OnceCallback<void(ServiceErrorOr<size_t>)> callback) {
   key_by_key_id_.clear();
 
   // Clear the in-memory cache of pending key IDs by moving it to a local
@@ -222,8 +222,8 @@ void UnexportableKeyServiceImpl::DeleteAllKeysSlowlyAsync(
   get_all_keys_weak_ptr_factory_.InvalidateWeakPtrs();
   from_wrapped_key_weak_ptr_factory_.InvalidateWeakPtrs();
 
-  // TODO: crbug.com/455538141 - Implement deletion in the task manager.
-  std::move(callback).Run(base::ok());
+  task_manager_->DeleteAllSigningKeysSlowlyAsync(config_, priority,
+                                                 std::move(callback));
 }
 
 ServiceErrorOr<std::vector<uint8_t>>

@@ -212,6 +212,8 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(UnexportableKeysBackgroundTaskType) -->
 
 <variants name="UnexportableKeysBackgroundTaskType">
+  <variant name=".DeleteAllKeys"
+      summary="operations to delete all signing keys"/>
   <variant name=".DeleteKey"
       summary="operations to delete a single signing key"/>
   <variant name=".FromWrappedKey"

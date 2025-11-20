@@ -49,6 +49,8 @@ constexpr std::string_view kDeleteKeyTaskResultHistogramName =
     "Crypto.UnexportableKeys.BackgroundTaskResult.DeleteKey";
 constexpr std::string_view kGetAllKeysTaskResultHistogramName =
     "Crypto.UnexportableKeys.BackgroundTaskResult.GetAllKeys";
+constexpr std::string_view kDeleteAllKeysTaskResultHistogramName =
+    "Crypto.UnexportableKeys.BackgroundTaskResult.DeleteAllKeys";
 // Retries histograms:
 constexpr std::string_view kGenerateKeyTaskRetriesSuccessHistogramName =
     "Crypto.UnexportableKeys.BackgroundTaskRetries.GenerateKey.Success";
@@ -70,6 +72,10 @@ constexpr std::string_view kGetAllKeysTaskRetriesSuccessHistogramName =
     "Crypto.UnexportableKeys.BackgroundTaskRetries.GetAllKeys.Success";
 constexpr std::string_view kGetAllKeysTaskRetriesFailureHistogramName =
     "Crypto.UnexportableKeys.BackgroundTaskRetries.GetAllKeys.Failure";
+constexpr std::string_view kDeleteAllKeysTaskRetriesSuccessHistogramName =
+    "Crypto.UnexportableKeys.BackgroundTaskRetries.DeleteAllKeys.Success";
+constexpr std::string_view kDeleteAllKeysTaskRetriesFailureHistogramName =
+    "Crypto.UnexportableKeys.BackgroundTaskRetries.DeleteAllKeys.Failure";
 }  // namespace
 
 class UnexportableKeyTaskManagerTest : public testing::Test {
@@ -546,6 +552,72 @@ TEST_F(UnexportableKeyTaskManagerTest, DeleteKeyAsyncFailureNoKeyProvider) {
   EXPECT_THAT(
       histogram_tester.GetAllSamples(kDeleteKeyTaskRetriesFailureHistogramName),
       ElementsAre(base::Bucket(0, 1)));
+}
+
+TEST_F(UnexportableKeyTaskManagerTest, DeleteAllKeysAsync) {
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<ServiceErrorOr<size_t>> delete_all_future;
+
+  EXPECT_CALL(SwitchToMockKeyProvider().mock(), DeleteAllSigningKeysSlowly())
+      .WillOnce(Return(1u));
+
+  task_manager().DeleteAllSigningKeysSlowlyAsync(
+      crypto::UnexportableKeyProvider::Config(),
+      BackgroundTaskPriority::kBestEffort, delete_all_future.GetCallback());
+  EXPECT_FALSE(delete_all_future.IsReady());
+  RunBackgroundTasks();
+
+  EXPECT_TRUE(delete_all_future.IsReady());
+  EXPECT_THAT(delete_all_future.Get(), ValueIs(1u));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kDeleteAllKeysTaskResultHistogramName),
+      ElementsAre(base::Bucket(kNoServiceErrorForMetrics, 1)));
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  kDeleteAllKeysTaskRetriesSuccessHistogramName),
+              ElementsAre(base::Bucket(0, 1)));
+}
+
+TEST_F(UnexportableKeyTaskManagerTest,
+       DeleteAllKeysAsyncFailureCryptoApiFailed) {
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<ServiceErrorOr<size_t>> delete_all_future;
+
+  EXPECT_CALL(SwitchToMockKeyProvider().mock(), DeleteAllSigningKeysSlowly())
+      .WillOnce(Return(std::nullopt));
+
+  task_manager().DeleteAllSigningKeysSlowlyAsync(
+      crypto::UnexportableKeyProvider::Config(),
+      BackgroundTaskPriority::kBestEffort, delete_all_future.GetCallback());
+  EXPECT_FALSE(delete_all_future.IsReady());
+  RunBackgroundTasks();
+
+  EXPECT_TRUE(delete_all_future.IsReady());
+  EXPECT_THAT(delete_all_future.Get(), ErrorIs(ServiceError::kCryptoApiFailed));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kDeleteAllKeysTaskResultHistogramName),
+      ElementsAre(base::Bucket(ServiceError::kCryptoApiFailed, 1)));
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  kDeleteAllKeysTaskRetriesFailureHistogramName),
+              ElementsAre(base::Bucket(0, 1)));
+}
+
+TEST_F(UnexportableKeyTaskManagerTest, DeleteAllKeysAsyncFailureNoKeyProvider) {
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<ServiceErrorOr<size_t>> delete_all_future;
+
+  DisableKeyProvider();
+  task_manager().DeleteAllSigningKeysSlowlyAsync(
+      crypto::UnexportableKeyProvider::Config(),
+      BackgroundTaskPriority::kBestEffort, delete_all_future.GetCallback());
+  RunBackgroundTasks();
+
+  EXPECT_THAT(delete_all_future.Get(), ErrorIs(ServiceError::kNoKeyProvider));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kDeleteAllKeysTaskResultHistogramName),
+      ElementsAre(base::Bucket(ServiceError::kNoKeyProvider, 1)));
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  kDeleteAllKeysTaskRetriesFailureHistogramName),
+              ElementsAre(base::Bucket(0, 1)));
 }
 
 TEST_F(UnexportableKeyTaskManagerTest,

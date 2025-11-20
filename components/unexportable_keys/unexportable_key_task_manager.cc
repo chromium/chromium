@@ -218,4 +218,25 @@ void UnexportableKeyTaskManager::DeleteSigningKeySlowlyAsync(
   task_scheduler_.PostTask(std::move(task));
 }
 
+void UnexportableKeyTaskManager::DeleteAllSigningKeysSlowlyAsync(
+    crypto::UnexportableKeyProvider::Config config,
+    BackgroundTaskPriority priority,
+    base::OnceCallback<void(ServiceErrorOr<size_t>)> callback) {
+  auto callback_wrapper = WrapCallbackWithMetrics(
+      BackgroundTaskType::kDeleteAllKeys, std::move(callback));
+
+  std::unique_ptr<crypto::UnexportableKeyProvider> key_provider =
+      GetUnexportableKeyProvider(std::move(config));
+
+  if (!key_provider || !key_provider->AsStatefulUnexportableKeyProvider()) {
+    std::move(callback_wrapper)
+        .Run(base::unexpected(ServiceError::kNoKeyProvider), /*retry_count=*/0);
+    return;
+  }
+
+  auto task = std::make_unique<DeleteAllKeysTask>(
+      std::move(key_provider), priority, std::move(callback_wrapper));
+  task_scheduler_.PostTask(std::move(task));
+}
+
 }  // namespace unexportable_keys

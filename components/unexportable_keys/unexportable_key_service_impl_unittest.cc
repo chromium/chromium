@@ -754,17 +754,62 @@ TEST_F(UnexportableKeyServiceImplTest, DeleteAllKeys) {
   }
 
   // Delete all keys.
-  base::test::TestFuture<ServiceErrorOr<void>> delete_all_future;
+  EXPECT_CALL(SwitchToMockKeyProvider().mock(), DeleteAllSigningKeysSlowly)
+      .WillOnce(Return(kKeysToGenerate));
+
+  base::test::TestFuture<ServiceErrorOr<size_t>> delete_all_future;
   service().DeleteAllKeysSlowlyAsync(kTaskPriority,
                                      delete_all_future.GetCallback());
   RunBackgroundTasks();
-  EXPECT_OK(delete_all_future.Get());
+  EXPECT_THAT(delete_all_future.Get(), ValueIs(kKeysToGenerate));
 
   // Verify all keys are deleted.
   for (const auto& key_id : key_ids) {
     EXPECT_THAT(service().GetWrappedKey(key_id),
                 ErrorIs(ServiceError::kKeyNotFound));
   }
+}
+
+TEST_F(UnexportableKeyServiceImplTest, DeleteAllKeysWithPendingFromWrappedKey) {
+  std::vector<uint8_t> wrapped_key =
+      GenerateSigningKey()->key().GetWrappedKey();
+
+  base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> from_wrapped_future;
+  service().FromWrappedSigningKeySlowlyAsync(wrapped_key, kTaskPriority,
+                                             from_wrapped_future.GetCallback());
+
+  base::test::TestFuture<ServiceErrorOr<size_t>> delete_all_future;
+  service().DeleteAllKeysSlowlyAsync(kTaskPriority,
+                                     delete_all_future.GetCallback());
+
+  RunBackgroundTasks();
+  EXPECT_THAT(from_wrapped_future.Get(), ErrorIs(ServiceError::kKeyNotFound));
+}
+
+TEST_F(UnexportableKeyServiceImplTest, DeleteAllKeysWithPendingGenerateKey) {
+  base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> generate_future;
+  service().GenerateSigningKeySlowlyAsync(kAcceptableAlgorithms, kTaskPriority,
+                                          generate_future.GetCallback());
+
+  base::test::TestFuture<ServiceErrorOr<size_t>> delete_all_future;
+  service().DeleteAllKeysSlowlyAsync(kTaskPriority,
+                                     delete_all_future.GetCallback());
+
+  RunBackgroundTasks();
+
+  ASSERT_OK_AND_ASSIGN(UnexportableKeyId key_id, generate_future.Get());
+
+  // The newly generated key should NOT have been deleted from the service
+  // cache.
+  EXPECT_OK(service().GetWrappedKey(key_id));
+}
+
+TEST_F(UnexportableKeyServiceImplTest, DeleteAllKeysNoKeys) {
+  base::test::TestFuture<ServiceErrorOr<size_t>> delete_all_future;
+  service().DeleteAllKeysSlowlyAsync(kTaskPriority,
+                                     delete_all_future.GetCallback());
+  RunBackgroundTasks();
+  EXPECT_THAT(delete_all_future.Get(), ErrorIs(ServiceError::kNoKeyProvider));
 
   // Service should be usable after deleting all keys.
   base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> generate_future;
@@ -774,50 +819,55 @@ TEST_F(UnexportableKeyServiceImplTest, DeleteAllKeys) {
   EXPECT_OK(generate_future.Get());
 }
 
-TEST_F(UnexportableKeyServiceImplTest, DeleteAllKeysWithPendingFromWrappedKey) {
+TEST_F(UnexportableKeyServiceImplTest, DeleteAllKeysProviderFails) {
+  // Generate a key to make sure there is at least one key to delete from the
+  // service's perspective.
   base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> generate_future;
   service().GenerateSigningKeySlowlyAsync(kAcceptableAlgorithms, kTaskPriority,
                                           generate_future.GetCallback());
   RunBackgroundTasks();
-  ASSERT_OK_AND_ASSIGN(UnexportableKeyId key_id, generate_future.Get());
-  ASSERT_OK_AND_ASSIGN(std::vector<uint8_t> wrapped_key,
-                       service().GetWrappedKey(key_id));
+  ASSERT_OK(generate_future.Get());
 
-  ResetService();
+  EXPECT_CALL(SwitchToMockKeyProvider().mock(), DeleteAllSigningKeysSlowly())
+      .WillOnce(Return(std::nullopt));
 
-  base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> from_wrapped_future;
-  service().FromWrappedSigningKeySlowlyAsync(wrapped_key, kTaskPriority,
-                                             from_wrapped_future.GetCallback());
-
-  base::test::TestFuture<ServiceErrorOr<void>> delete_all_future;
+  base::test::TestFuture<ServiceErrorOr<size_t>> delete_all_future;
   service().DeleteAllKeysSlowlyAsync(kTaskPriority,
                                      delete_all_future.GetCallback());
-
   RunBackgroundTasks();
-  EXPECT_THAT(from_wrapped_future.Get(), ErrorIs(ServiceError::kKeyNotFound));
-  EXPECT_OK(delete_all_future.Get());
+  EXPECT_THAT(delete_all_future.Get(), ErrorIs(ServiceError::kCryptoApiFailed));
 }
 
-TEST_F(UnexportableKeyServiceImplTest, DeleteAllKeysWithPendingGenerateKey) {
+TEST_F(UnexportableKeyServiceImplTest, DeleteAllKeysWithPendingSign) {
   base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> generate_future;
   service().GenerateSigningKeySlowlyAsync(kAcceptableAlgorithms, kTaskPriority,
                                           generate_future.GetCallback());
-
-  base::test::TestFuture<ServiceErrorOr<void>> delete_all_future;
-  service().DeleteAllKeysSlowlyAsync(kTaskPriority,
-                                     delete_all_future.GetCallback());
-
   RunBackgroundTasks();
-
-  // The delete all request should complete successfully.
-  EXPECT_OK(delete_all_future.Get());
-
-  // The generate request should also complete successfully.
   ASSERT_OK_AND_ASSIGN(UnexportableKeyId key_id, generate_future.Get());
 
-  // The newly generated key should NOT have been deleted from the service
-  // cache.
-  EXPECT_OK(service().GetWrappedKey(key_id));
+  base::test::TestFuture<ServiceErrorOr<std::vector<uint8_t>>> sign_future;
+  std::vector<uint8_t> data = {1, 2, 3};
+  service().SignSlowlyAsync(key_id, data, kTaskPriority,
+                            sign_future.GetCallback());
+  // The sign task is now pending in the task manager.
+  EXPECT_FALSE(sign_future.IsReady());
+
+  service().DeleteAllKeysSlowlyAsync(kTaskPriority, base::DoNothing());
+
+  // After deletion, signing with the same key ID should fail synchronously.
+  base::test::TestFuture<ServiceErrorOr<std::vector<uint8_t>>>
+      sign_after_delete_future;
+  service().SignSlowlyAsync(key_id, data, kTaskPriority,
+                            sign_after_delete_future.GetCallback());
+
+  EXPECT_TRUE(sign_after_delete_future.IsReady());
+  EXPECT_THAT(sign_after_delete_future.Get(),
+              ErrorIs(ServiceError::kKeyNotFound));
+
+  // DeleteAllKeys clears the service's key maps synchronously, but all
+  // previously scheduled tasks will be still executed.
+  RunBackgroundTasks();
+  EXPECT_OK(sign_future.Get());
 }
 
 TEST_F(UnexportableKeyServiceImplTest, CopyKeyFromOtherService) {
