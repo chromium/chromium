@@ -2712,60 +2712,6 @@ TEST_F(ReadAnythingAppControllerTest,
   MoveToNextAndAssertEmpty();
 }
 
-TEST_F(ReadAnythingAppControllerTest,
-       GetCurrentText_SuperscriptIncludedWhenEntireNodeAndMoreTextAfterScript) {
-  // Simulate breaking up the brackets across a link.
-  std::u16string sentence1 = u"And I am almost there.";
-  std::u16string sentence2 = u"[";
-  std::u16string sentence3 = u"2";
-  std::u16string sentence4 = u"]";
-  std::u16string sentence5 = u"People gon' come here from everywhere.";
-  ui::AXTreeUpdate update;
-  ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
-  test::SetUpdateTreeID(&update, id_1);
-
-  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
-  ui::AXNodeData static_text2 = test::SuperscriptNode(kId2, sentence2);
-  ui::AXNodeData static_text3 = test::SuperscriptNode(kId3, sentence3);
-  ui::AXNodeData static_text4 = test::SuperscriptNode(kId4, sentence4);
-
-  ui::AXNodeData superscript;
-  static constexpr ui::AXNodeID kSuperscriptId = 13;
-  superscript.id = kSuperscriptId;
-  superscript.role = ax::mojom::Role::kSuperscript;
-  superscript.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "<p>");
-  superscript.child_ids = {kId2, kId3, kId4};
-
-  ui::AXNodeData static_text5 = test::TextNode(kId5, sentence5);
-
-  ui::AXNodeData root;
-  static constexpr ui::AXNodeID kRootId = 10;
-  root.id = kRootId;
-  root.child_ids = {kId1, kSuperscriptId, kId5};
-  update.root_id = kRootId;
-
-  update.nodes = {std::move(root),         std::move(static_text1),
-                  std::move(superscript),  std::move(static_text2),
-                  std::move(static_text3), std::move(static_text4),
-                  std::move(static_text5)};
-  controller().OnActiveAXTreeIDChanged(id_1, ukm::kInvalidSourceId, false);
-  AccessibilityEventReceived({std::move(update)});
-  controller().OnAXTreeDistilled(
-      id_1, {kRootId, kId1, kSuperscriptId, kId2, kId3, kId4, kId5});
-  controller().InitAXPositionWithNode(kId1);
-
-  std::vector<ReadAloudTextSegment> next_segments = GetCurrentTextSegments();
-
-  ExpectNodesMapToEntireText(next_segments, {kId1, kId2, kId3, kId4},
-                             {sentence1, sentence2, sentence3, sentence4});
-
-  next_segments = MoveToNextGranularityAndGetSegments();
-  ExpectNodesMapToEntireText(next_segments, {kId5}, {sentence5});
-
-  // Nodes are empty at the end of the new tree.
-  MoveToNextAndAssertEmpty();
-}
-
 TEST_F(ReadAnythingAppControllerTest, GetCurrentText_EmptyTree) {
   // If InitAXPosition hasn't been called, GetCurrentText should return nothing.
   EXPECT_THAT(GetCurrentTextSegments(), IsEmpty());
@@ -2979,6 +2925,60 @@ class ReadAnythingAppControllerV8SegmentationTest
         {features::kReadAnythingReadAloudTSTextSegmentation});
   }
 };
+
+TEST_F(ReadAnythingAppControllerV8SegmentationTest,
+       GetCurrentText_SuperscriptIncludedWhenEntireNodeAndMoreTextAfterScript) {
+  // Simulate breaking up the brackets across a link.
+  std::u16string sentence1 = u"And I am almost there.";
+  std::u16string sentence2 = u"[";
+  std::u16string sentence3 = u"2";
+  std::u16string sentence4 = u"]";
+  std::u16string sentence5 = u"People gon' come here from everywhere.";
+  ui::AXTreeUpdate update;
+  ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
+  test::SetUpdateTreeID(&update, id_1);
+
+  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
+  ui::AXNodeData static_text2 = test::SuperscriptNode(kId2, sentence2);
+  ui::AXNodeData static_text3 = test::SuperscriptNode(kId3, sentence3);
+  ui::AXNodeData static_text4 = test::SuperscriptNode(kId4, sentence4);
+
+  ui::AXNodeData superscript;
+  static constexpr ui::AXNodeID kSuperscriptId = 13;
+  superscript.id = kSuperscriptId;
+  superscript.role = ax::mojom::Role::kSuperscript;
+  superscript.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "<p>");
+  superscript.child_ids = {kId2, kId3, kId4};
+
+  ui::AXNodeData static_text5 = test::TextNode(kId5, sentence5);
+
+  ui::AXNodeData root;
+  static constexpr ui::AXNodeID kRootId = 10;
+  root.id = kRootId;
+  root.child_ids = {kId1, kSuperscriptId, kId5};
+  update.root_id = kRootId;
+
+  update.nodes = {std::move(root),         std::move(static_text1),
+                  std::move(superscript),  std::move(static_text2),
+                  std::move(static_text3), std::move(static_text4),
+                  std::move(static_text5)};
+  controller().OnActiveAXTreeIDChanged(id_1, ukm::kInvalidSourceId, false);
+  AccessibilityEventReceived({std::move(update)});
+  controller().OnAXTreeDistilled(
+      id_1, {kRootId, kId1, kSuperscriptId, kId2, kId3, kId4, kId5});
+  controller().InitAXPositionWithNode(kId1);
+
+  std::vector<ReadAloudTextSegment> next_segments = GetCurrentTextSegments();
+
+  ExpectNodesMapToEntireText(next_segments, {kId1, kId2, kId3, kId4},
+                             {sentence1, sentence2, sentence3, sentence4});
+
+  next_segments = MoveToNextGranularityAndGetSegments();
+  ExpectNodesMapToEntireText(next_segments, {kId5}, {sentence5});
+
+  // Nodes are empty at the end of the new tree.
+  MoveToNextAndAssertEmpty();
+}
 
 TEST_F(ReadAnythingAppControllerV8SegmentationTest,
        GetCurrentText_SuperscriptIncludedWhenEntireNode) {

@@ -1265,4 +1265,43 @@ suite('ReadAloudModel', () => {
         getReadAloudModel().moveSpeechForward();
         assertTextEmpty();
       });
+
+  test(
+      'getCurrentTextSegments superscript included when entire node and more text is after superscript',
+      async () => {
+        // Create a container element to hold the simplified structure
+        const paragraph = document.createElement('p');
+
+        // Text before the citation
+        paragraph.appendChild(
+            document.createTextNode('And I am almost there.'));
+
+        const superscript = document.createElement('sup');
+        superscript.appendChild(document.createTextNode('['));
+        superscript.appendChild(document.createTextNode('23'));
+        superscript.appendChild(document.createTextNode(']'));
+        paragraph.appendChild(superscript);
+
+        // Text after the citation
+        paragraph.appendChild(
+            document.createTextNode('People gon\' come here from everywhere.'));
+
+        document.body.appendChild(paragraph);
+        await microtasksFinished();
+        getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+
+        // The first sentence and its superscript are returned as one segment.
+        assertEquals(
+            'And I am almost there.[23]',
+            getReadAloudModel().getCurrentTextContent().trim());
+
+        // The next sentence and is returned on its own.
+        getReadAloudModel().moveSpeechForward();
+        assertEquals(
+            'People gon\' come here from everywhere.',
+            getReadAloudModel().getCurrentTextContent().trim());
+
+        getReadAloudModel().moveSpeechForward();
+        assertTextEmpty();
+      });
 });
