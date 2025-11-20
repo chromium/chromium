@@ -31,6 +31,7 @@ import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -191,6 +192,7 @@ public class MultiInstanceManagerApi31Test {
 
     @Test
     @SmallTest
+    @DisableIf.Build(supported_abis_includes = "arm64-v8a", message = "https://crbug.com/454379518")
     public void moveTabsToOtherWindow_singleWindowOpen() {
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
@@ -215,6 +217,7 @@ public class MultiInstanceManagerApi31Test {
 
     @Test
     @SmallTest
+    @DisableIf.Build(supported_abis_includes = "arm64-v8a", message = "https://crbug.com/454379518")
     public void moveTabGroupToOtherWindow_singleWindowOpen() {
         verifyInstanceState(/* expectedActiveInstances= */ 1, /* expectedTotalInstances= */ 1);
         TabGroupMetadata tabGroupMetadata = getTabGroupMetaData();
@@ -264,6 +267,7 @@ public class MultiInstanceManagerApi31Test {
 
     @Test
     @SmallTest
+    @DisableIf.Build(supported_abis_includes = "arm64-v8a", message = "https://crbug.com/454379518")
     public void openUrlInSelectedWindow_singleWindowOpen() {
         LoadUrlParams urlParams = new LoadUrlParams(new GURL("about:blank"));
         verifyInstanceState(/* expectedActiveInstances= */ 1, /* expectedTotalInstances= */ 1);
