@@ -31,6 +31,7 @@ androidx_android_aar_prebuilt("androidx_window_sidecar_sidecar_java") {
   deps = [
     ":androidx_annotation_annotation_java",
     "//third_party/android_deps:org_jspecify_jspecify_java",
+    "//third_party/kotlin_stdlib:kotlin_stdlib_java",
   ]
 }
 
@@ -151,6 +152,7 @@ if (!limit_android_deps) {
       "//third_party/android_deps:com_google_auto_service_auto_service_annotations_java",
       "//third_party/android_deps:guava_java",
       "//third_party/android_deps:org_jspecify_jspecify_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
 
@@ -165,6 +167,7 @@ if (!limit_android_deps) {
       ":androidx_appsearch_appsearch_java",
       ":androidx_core_core_java",
       "//third_party/android_deps:org_jspecify_jspecify_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
 
@@ -181,6 +184,7 @@ if (!limit_android_deps) {
       ":androidx_concurrent_concurrent_futures_java",
       ":androidx_core_core_java",
       "//third_party/android_deps:org_jspecify_jspecify_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
 
@@ -335,6 +339,7 @@ if (!limit_android_deps) {
       ":androidx_interpolator_interpolator_java",
       "//third_party/android_deps:guava_java",
       "//third_party/android_deps:org_jspecify_jspecify_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
 
@@ -347,6 +352,7 @@ if (!limit_android_deps) {
       ":androidx_annotation_annotation_java",
       ":androidx_core_core_java",
       "//third_party/android_deps:org_jspecify_jspecify_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
 
@@ -432,7 +438,10 @@ if (!limit_android_deps) {
     info_path = "../androidx/committed/libs/androidx_compose_ui_ui_test_manifest/androidx_compose_ui_ui_test_manifest.info"
     enable_bytecode_checks = false
     testonly = true
-    deps = [ ":androidx_activity_activity_java" ]
+    deps = [
+      ":androidx_activity_activity_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -488,6 +497,7 @@ if (!limit_android_deps) {
       ":androidx_constraintlayout_constraintlayout_core_java",
       ":androidx_core_core_java",
       "//third_party/android_deps:org_jspecify_jspecify_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
 
@@ -706,6 +716,7 @@ if (!limit_android_deps) {
       ":androidx_collection_collection_java",
       ":androidx_core_core_java",
       "//third_party/android_deps:org_jspecify_jspecify_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
 
@@ -794,7 +805,10 @@ if (!limit_android_deps) {
     aar_path = "../androidx/cipd/libs/androidx_interpolator_interpolator/interpolator.aar"
     info_path = "../androidx/committed/libs/androidx_interpolator_interpolator/androidx_interpolator_interpolator.info"
     enable_bytecode_checks = false
-    deps = [ ":androidx_annotation_annotation_java" ]
+    deps = [
+      ":androidx_annotation_annotation_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1074,6 +1088,7 @@ if (!limit_android_deps) {
       ":androidx_collection_collection_java",
       ":androidx_core_core_java",
       "//third_party/android_deps:org_jspecify_jspecify_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
 
@@ -1092,6 +1107,7 @@ if (!limit_android_deps) {
       ":androidx_palette_palette_java",
       ":androidx_recyclerview_recyclerview_java",
       "//third_party/android_deps:guava_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
 
@@ -1344,6 +1360,7 @@ if (!limit_android_deps) {
       ":androidx_core_core_java",
       ":androidx_interpolator_interpolator_java",
       "//third_party/android_deps:org_jspecify_jspecify_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
 
@@ -1629,6 +1646,7 @@ if (!limit_android_deps) {
       ":androidx_annotation_annotation_java",
       ":androidx_core_core_java",
       "//third_party/android_deps:org_jspecify_jspecify_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
 
@@ -1761,6 +1779,7 @@ if (!limit_android_deps) {
       ":androidx_annotation_annotation_java",
       ":androidx_arch_core_core_common_java",
       "//third_party/android_deps:org_jspecify_jspecify_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
 
@@ -2503,6 +2522,7 @@ if (!limit_android_deps) {
     deps = [
       ":androidx_annotation_annotation_java",
       "//third_party/android_deps:org_jspecify_jspecify_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
 
@@ -3145,6 +3165,7 @@ if (!limit_android_deps) {
       ":androidx_lifecycle_lifecycle_livedata_core_java",
       ":androidx_lifecycle_lifecycle_viewmodel_java",
       "//third_party/android_deps:org_jspecify_jspecify_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
 
@@ -3428,6 +3449,7 @@ if (!limit_android_deps) {
       ":androidx_collection_collection_java",
       ":androidx_core_core_java",
       "//third_party/android_deps:org_jspecify_jspecify_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
 
@@ -3450,6 +3472,7 @@ if (!limit_android_deps) {
       ":androidx_startup_startup_runtime_java",
       "//third_party/android_deps:guava_java",
       "//third_party/android_deps:org_jspecify_jspecify_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
 
