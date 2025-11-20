@@ -3488,7 +3488,7 @@ deps = {
 
   'src/chrome/browser/cpu_performance_internal': {
       'url': Var('chrome_git') + '/chrome/browser/cpu_performance_internal.git' + '@' +
-        '535741498d440ae5518159e23b523553e3279974',
+        'dfe1ccf3c2a93128082bb1d955517b4a6489ba62',
       'condition': 'checkout_src_internal',
   },
 
