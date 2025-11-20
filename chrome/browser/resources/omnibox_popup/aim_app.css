@@ -40,7 +40,7 @@ cr-composebox {
   --color-composebox-hover: unset; /* Lens only */
   --color-composebox-input-icon: var(--color-omnibox-results-icon);
   --color-composebox-lens-button: unset; /* Lens only */
-  --color-composebox-pdf-chip-icon: var(--color-omnibox-text-subtle);
+  --color-composebox-pdf-chip-icon: var(--color-omnibox-text-dimmed);
   --color-composebox-recent-tab-chip-outline: unset; /* Omnibox has no recent tab chip. */
   --color-composebox-scrim-background: unset; /* No scrim. */
   --color-composebox-submit-button-background: var(--color-omnibox-composebox-submit-button-background);
