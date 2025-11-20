@@ -16,6 +16,10 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ash/test/glic_user_session_test_helper.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 using base::test::FeatureRef;
 
 namespace glic {
@@ -58,6 +62,59 @@ TEST_F(GlicEnablingTest, TabStripComboButtonFeatureNotEnabledTest) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeatures({}, {features::kTabstripComboButton});
   EXPECT_EQ(GlicEnabling::IsEnabledByFlags(), false);
+}
+
+// Test for `glic::GlicEnabling::IsProfileEligible`.
+class GlicEnablingProfileEligibilityTest : public testing::Test {
+ public:
+  GlicEnablingProfileEligibilityTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kGlic, features::kTabstripComboButton},
+        /*disabled_features=*/{});
+  }
+  ~GlicEnablingProfileEligibilityTest() override = default;
+
+  void SetUp() override {
+    testing_profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    ASSERT_TRUE(testing_profile_manager_->SetUp());
+    TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
+
+#if BUILDFLAG(IS_CHROMEOS)
+    glic_user_session_test_helper_.PreProfileSetUp(
+        testing_profile_manager_->profile_manager());
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+    profile_ = testing_profile_manager_->CreateTestingProfile(
+        TestingProfile::kDefaultProfileUserName);
+  }
+
+  void TearDown() override {
+    TestingBrowserProcess::GetGlobal()->GetFeatures()->Shutdown();
+
+    profile_ = nullptr;
+    testing_profile_manager_.reset();
+
+#if BUILDFLAG(IS_CHROMEOS)
+    glic_user_session_test_helper_.PostProfileTearDown();
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  }
+
+ protected:
+  Profile* profile() { return profile_.get(); }
+
+ private:
+  content::BrowserTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+#if BUILDFLAG(IS_CHROMEOS)
+  ash::GlicUserSessionTestHelper glic_user_session_test_helper_;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  std::unique_ptr<TestingProfileManager> testing_profile_manager_;
+  raw_ptr<TestingProfile> profile_ = nullptr;
+};
+
+TEST_F(GlicEnablingProfileEligibilityTest, Eligible) {
+  EXPECT_TRUE(GlicEnabling::IsProfileEligible(profile()));
 }
 
 }  // namespace
