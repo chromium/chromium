@@ -12,7 +12,6 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/forcedark/forcedark_switches.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_settings.h"
 
 namespace blink {
@@ -20,8 +19,6 @@ namespace blink {
 namespace {
 
 // Default values for dark mode settings.
-const constexpr DarkModeInversionAlgorithm kDefaultDarkModeInversionAlgorithm =
-    DarkModeInversionAlgorithm::kInvertLightnessLAB;
 const constexpr int kDefaultForegroundBrightnessThreshold = 150;
 const constexpr int kDefaultBackgroundBrightnessThreshold = 205;
 
@@ -62,18 +59,6 @@ T GetIntegerSwitchParamValue(const SwitchParams& switch_params,
                                                 : default_value;
 }
 
-DarkModeInversionAlgorithm GetMode(const SwitchParams& switch_params) {
-  switch (features::kForceDarkInversionMethodParam.Get()) {
-    case ForceDarkInversionMethod::kUseBlinkSettings:
-      return GetIntegerSwitchParamValue<DarkModeInversionAlgorithm>(
-          switch_params, "InversionAlgorithm",
-          kDefaultDarkModeInversionAlgorithm);
-    case ForceDarkInversionMethod::kCielabBased:
-      return DarkModeInversionAlgorithm::kInvertLightnessLAB;
-  }
-  NOTREACHED();
-}
-
 int GetForegroundBrightnessThreshold(const SwitchParams& switch_params) {
   const int flag_value =
       features::kForceDarkForegroundLightnessThresholdParam.Get();
@@ -101,9 +86,6 @@ DarkModeSettings BuildDarkModeSettings() {
   SwitchParams switch_params = ParseDarkModeSettings();
 
   DarkModeSettings settings;
-  settings.mode = Clamp<DarkModeInversionAlgorithm>(
-      GetMode(switch_params), DarkModeInversionAlgorithm::kFirst,
-      DarkModeInversionAlgorithm::kLast);
   settings.foreground_brightness_threshold =
       Clamp<int>(GetForegroundBrightnessThreshold(switch_params), 0, 255);
   settings.background_brightness_threshold =

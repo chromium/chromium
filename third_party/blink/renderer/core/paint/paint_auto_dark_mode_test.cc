@@ -14,7 +14,6 @@ class PaintAutoDarkModeTest : public testing::Test {};
 
 TEST_F(PaintAutoDarkModeTest, ShouldApplyFilterToImage) {
   DarkModeSettings settings;
-  settings.mode = DarkModeInversionAlgorithm::kSimpleInvertForTesting;
   DarkModeFilter filter(settings);
 
   display::ScreenInfo screen_info;
@@ -60,7 +59,6 @@ TEST_F(PaintAutoDarkModeTest, ShouldApplyFilterToImage) {
 // Test for mobile display configuration
 TEST_F(PaintAutoDarkModeTest, ShouldApplyFilterToImageOnMobile) {
   DarkModeSettings settings;
-  settings.mode = DarkModeInversionAlgorithm::kSimpleInvertForTesting;
   DarkModeFilter filter(settings);
 
   display::ScreenInfo screen_info;

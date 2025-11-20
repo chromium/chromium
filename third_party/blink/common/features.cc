@@ -14,7 +14,6 @@
 #include "build/chromecast_buildflags.h"
 #include "net/http/http_cache.h"
 #include "third_party/blink/public/common/features_generated.h"
-#include "third_party/blink/public/common/forcedark/forcedark_switches.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 #include "third_party/blink/public/common/switches.h"
 
@@ -903,20 +902,6 @@ BASE_FEATURE(kForceOffTextAutosizing, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kForceWebContentsDarkMode,
              "WebContentsForceDark",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Which algorithm should be used for color inversion?
-const base::FeatureParam<ForceDarkInversionMethod>::Option
-    forcedark_inversion_method_options[] = {
-        {ForceDarkInversionMethod::kUseBlinkSettings,
-         "use_blink_settings_for_method"},
-        {ForceDarkInversionMethod::kCielabBased, "cielab_based"}};
-
-BASE_FEATURE_ENUM_PARAM(ForceDarkInversionMethod,
-                        kForceDarkInversionMethodParam,
-                        &kForceWebContentsDarkMode,
-                        "inversion_method",
-                        ForceDarkInversionMethod::kUseBlinkSettings,
-                        &forcedark_inversion_method_options);
 
 // Do not invert text lighter than this.
 // Range: 0 (do not invert any text) to 255 (invert all text)

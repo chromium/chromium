@@ -190,23 +190,8 @@ TEST_F(GraphicsContextDarkModeTest, DarkModeOff) {
   EXPECT_EQ(SK_ColorGRAY, bitmap_.getColor(3, 0));
 }
 
-// Simple invert for testing. Each color component |c|
-// is replaced with |255 - c| for easy testing.
-TEST_F(GraphicsContextDarkModeTest, SimpleInvertForTesting) {
-  DarkModeSettings settings;
-  settings.mode = DarkModeInversionAlgorithm::kSimpleInvertForTesting;
-
-  DrawColorsToContext(true, settings);
-
-  EXPECT_EQ(SK_ColorWHITE, bitmap_.getColor(0, 0));
-  EXPECT_EQ(SK_ColorBLACK, bitmap_.getColor(1, 0));
-  EXPECT_EQ(SK_ColorCYAN, bitmap_.getColor(2, 0));
-  EXPECT_EQ(0xff777777, bitmap_.getColor(3, 0));
-}
-
 TEST_F(GraphicsContextDarkModeTest, InvertLightnessLAB) {
   DarkModeSettings settings;
-  settings.mode = DarkModeInversionAlgorithm::kInvertLightnessLAB;
 
   DrawColorsToContext(true, settings);
 

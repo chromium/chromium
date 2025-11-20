@@ -7,21 +7,9 @@
 
 namespace blink {
 
-enum class DarkModeInversionAlgorithm {
-  // For testing only, does a simple 8-bit invert of every RGB pixel component.
-  kSimpleInvertForTesting,
-  kInvertLightnessLAB,
-
-  kFirst = kSimpleInvertForTesting,  // First enum value.
-  kLast = kInvertLightnessLAB,       // Last enum value.
-};
-
 // New variables added to this struct should be considered in
 // third_party/blink/renderer/platform/graphics/dark_mode_settings_builder.h
 struct DarkModeSettings {
-  DarkModeInversionAlgorithm mode =
-      DarkModeInversionAlgorithm::kInvertLightnessLAB;
-
   // Foreground colors with brightness below this threshold will be inverted,
   // and above it will be left as in the original, non-dark-mode page.  Set to
   // 255 to always invert foreground color or to 0 to never invert text color.

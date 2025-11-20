@@ -22,7 +22,6 @@ namespace {
 
 constexpr flags_ui::FeatureEntry::FeatureParam
     kForceDark_SelectiveImageInversion[] = {
-        {"inversion_method", "cielab_based"},
         {"foreground_lightness_threshold", "150"},
         {"background_lightness_threshold", "205"}};
 
