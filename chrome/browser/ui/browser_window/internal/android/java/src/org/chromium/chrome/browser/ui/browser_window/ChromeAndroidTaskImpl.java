@@ -604,12 +604,22 @@ final class ChromeAndroidTaskImpl
 
     @Override
     public void deactivate() {
+        if (Boolean.FALSE.equals(mPendingActionManager.isActiveFuture(mState.get()))) return;
+
         if (mState.get() == State.PENDING_CREATE) {
             mPendingActionManager.requestAction(PendingAction.DEACTIVATE);
             return;
         }
 
-        if (!isActive()) return;
+        synchronized (mActivityScopedObjectsLock) {
+            var activityWindowAndroid =
+                    getActivityWindowAndroidInternalLocked(/* assertAlive= */ true);
+            if (activityWindowAndroid == null || !isActiveInternalLocked(activityWindowAndroid)) {
+                return;
+            }
+            mPendingActionManager.requestAction(PendingAction.DEACTIVATE);
+            mState.set(State.PENDING_UPDATE);
+        }
         ChromeAndroidTaskTrackerImpl.getInstance().activatePenultimatelyActivatedTask();
     }
 
@@ -691,12 +701,14 @@ final class ChromeAndroidTaskImpl
                 ChromeAndroidTaskTrackerImpl.getInstance().activatePenultimatelyActivatedTask();
                 mShouldDispatchPendingDeactivate = false;
             }
-            if (mState.get() == State.PENDING_UPDATE) {
-                var actions =
-                        mPendingActionManager.getAndClearTargetPendingActions(
-                                PendingAction.ACTIVATE, PendingAction.SHOW);
-                maybeSetStateIdle(actions);
-            }
+        }
+        if (mState.get() == State.PENDING_UPDATE) {
+            var actions =
+                    mPendingActionManager.getAndClearTargetPendingActions(
+                            isTopResumedActivity
+                                    ? new int[] {PendingAction.ACTIVATE, PendingAction.SHOW}
+                                    : new int[] {PendingAction.DEACTIVATE});
+            maybeSetStateIdle(actions);
         }
 
         synchronized (mFeaturesLock) {
