@@ -1466,6 +1466,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerFjordOOBETest,
 
   EXPECT_TRUE(wizard_controller->ExitFjordTouchControllerScreen());
   CheckCurrentScreen(FjordStationSetupScreenView::kScreenId);
+  EXPECT_TRUE(wizard_controller->ExitFjordTouchControllerScreen());
 }
 
 IN_PROC_BROWSER_TEST_F(WizardControllerFjordOOBETest,

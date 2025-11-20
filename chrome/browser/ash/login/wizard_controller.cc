@@ -2945,6 +2945,12 @@ bool WizardController::ExitFjordTouchControllerScreen() {
     ShowFjordStationSetupScreen();
     return true;
   }
+  // Return true if Station setup screen is showing because this means the TC
+  // setup screen was shown before this. This ensures that if the TC goes
+  // offline and online again, it can know if the TC setup screen was exited.
+  if (current_screen()->screen_id() == FjordStationSetupScreenView::kScreenId) {
+    return true;
+  }
 
   LOG(ERROR) << "Can't exit: Fjord touch controller screen is not showing.";
   return false;
