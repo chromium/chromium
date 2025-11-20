@@ -291,7 +291,7 @@ void Connection::RenameObjectStore(int64_t transaction_id,
 
   (*transaction)
       ->ScheduleTask(
-          blink::mojom::IDBTaskType::Preemptive,
+          blink::mojom::IDBTaskType::Preemptive, "RenameObjectStore",
           base::BindOnce(
               [](int64_t object_store_id, const std::u16string& new_name,
                  Transaction* transaction) {
@@ -385,6 +385,7 @@ void Connection::Get(int64_t transaction_id,
 
   (*transaction)
       ->ScheduleTask(
+          "GetRecord",
           BindWeakOperation(&Database::GetOperation, database_, object_store_id,
                             index_id, std::move(key_range),
                             key_only ? indexed_db::CursorType::kKeyOnly
@@ -418,6 +419,7 @@ void Connection::GetAll(int64_t transaction_id,
 
   (*transaction)
       ->ScheduleTask(
+          "GetAllRecords",
           database_->CreateGetAllOperation(
               object_store_id, index_id, std::move(key_range), result_type,
               max_count, direction, std::move(callback), *transaction),
@@ -473,6 +475,7 @@ void Connection::OpenCursor(
   params->callback = std::move(aborting_callback);
   (*transaction)
       ->ScheduleTask(
+          "OpenCursor",
           BindWeakOperation(&Database::OpenCursorOperation, database_,
                             std::move(params), GetBucketLocator()),
           Transaction::ObjectStoreAndIndexMustExist(object_store_id,
@@ -497,6 +500,7 @@ void Connection::Count(int64_t transaction_id,
 
   (*transaction)
       ->ScheduleTask(
+          "CountRecords",
           BindWeakOperation(&Database::CountOperation, database_,
                             object_store_id, index_id, std::move(key_range),
                             std::move(wrapped_callback)),
@@ -521,6 +525,7 @@ void Connection::DeleteRange(int64_t transaction_id,
 
   (*transaction)
       ->ScheduleTask(
+          "DeleteRecordRange",
           BindWeakOperation(&Database::DeleteRangeOperation, database_,
                             object_store_id, std::move(key_range),
                             std::move(wrapped_callback)),
@@ -550,6 +555,7 @@ void Connection::GetKeyGeneratorCurrentNumber(
 
   (*transaction)
       ->ScheduleTask(
+          "GetKeyGeneratorCurrentNumber",
           BindWeakOperation(&Database::GetKeyGeneratorCurrentNumberOperation,
                             database_, object_store_id,
                             std::move(wrapped_callback)),
@@ -571,6 +577,7 @@ void Connection::Clear(int64_t transaction_id,
 
   (*transaction)
       ->ScheduleTask(
+          "ClearObjectStore",
           BindWeakOperation(&Database::ClearOperation, database_,
                             object_store_id, std::move(wrapped_callback)),
           Transaction::ObjectStoreMustExist(object_store_id));
@@ -590,7 +597,7 @@ void Connection::CreateIndex(int64_t transaction_id,
 
   (*transaction)
       ->ScheduleTask(
-          blink::mojom::IDBTaskType::Preemptive,
+          blink::mojom::IDBTaskType::Preemptive, "CreateIndex",
           base::BindOnce(
               [](int64_t object_store_id, IndexedDBIndexMetadata index,
                  Transaction* transaction) {
@@ -638,6 +645,7 @@ void Connection::DeleteIndex(int64_t transaction_id,
 
   (*transaction)
       ->ScheduleTask(
+          "DeleteIndex",
           base::BindOnce(
               [](int64_t object_store_id, int64_t index_id,
                  Transaction* transaction) {
@@ -663,6 +671,7 @@ void Connection::RenameIndex(int64_t transaction_id,
 
   (*transaction)
       ->ScheduleTask(
+          "RenameIndex",
           base::BindOnce(
               [](int64_t object_store_id, int64_t index_id,
                  std::u16string new_name, Transaction* transaction) {

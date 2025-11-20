@@ -239,8 +239,10 @@ TEST_P(TransactionTest, Timeout) {
   EXPECT_EQ(0, transaction->diagnostics().tasks_completed);
 
   // Schedule a task - timer won't be started until it's processed.
-  transaction->ScheduleTask(base::BindOnce(
-      &TransactionTest::DummyOperation, base::Unretained(this), Status::OK()));
+  transaction->ScheduleTask(
+      /*operation_name_for_metrics=*/{},
+      base::BindOnce(&TransactionTest::DummyOperation, base::Unretained(this),
+                     Status::OK()));
   EXPECT_FALSE(transaction->IsTimeoutTimerRunning());
   EXPECT_EQ(1, transaction->diagnostics().tasks_scheduled);
   EXPECT_EQ(0, transaction->diagnostics().tasks_completed);
@@ -275,8 +277,10 @@ TEST_P(TransactionTest, Timeout) {
   EXPECT_EQ(1, transaction->diagnostics().tasks_completed);
 
   // This task will be ignored.
-  transaction->ScheduleTask(base::BindOnce(
-      &TransactionTest::DummyOperation, base::Unretained(this), Status::OK()));
+  transaction->ScheduleTask(
+      /*operation_name_for_metrics=*/{},
+      base::BindOnce(&TransactionTest::DummyOperation, base::Unretained(this),
+                     Status::OK()));
   EXPECT_EQ(Transaction::FINISHED, transaction->state());
   EXPECT_FALSE(transaction->IsTimeoutTimerRunning());
   EXPECT_EQ(1, transaction->diagnostics().tasks_scheduled);
@@ -297,7 +301,7 @@ TEST_P(TransactionTest, TimeoutPreemptive) {
 
   // Add a preemptive task.
   transaction->ScheduleTask(
-      blink::mojom::IDBTaskType::Preemptive,
+      blink::mojom::IDBTaskType::Preemptive, /*operation_name_for_metrics=*/{},
       base::BindOnce(&TransactionTest::DummyOperation, base::Unretained(this),
                      Status::OK()));
   transaction->AddPreemptiveEvent();
@@ -316,8 +320,10 @@ TEST_P(TransactionTest, TimeoutPreemptive) {
   EXPECT_TRUE(transaction->preemptive_task_queue_.empty());
 
   // Schedule a task - timer won't be started until preemptive tasks are done.
-  transaction->ScheduleTask(base::BindOnce(
-      &TransactionTest::DummyOperation, base::Unretained(this), Status::OK()));
+  transaction->ScheduleTask(
+      /*operation_name_for_metrics=*/{},
+      base::BindOnce(&TransactionTest::DummyOperation, base::Unretained(this),
+                     Status::OK()));
   EXPECT_FALSE(transaction->IsTimeoutTimerRunning());
   EXPECT_EQ(1, transaction->diagnostics().tasks_scheduled);
   EXPECT_EQ(0, transaction->diagnostics().tasks_completed);
@@ -366,9 +372,10 @@ TEST_P(TransactionTest, TimeoutWithPriorities) {
     EXPECT_EQ(Transaction::STARTED, transaction->state());
     EXPECT_FALSE(transaction->IsTimeoutTimerRunning());
     // Schedule a task - timer won't be started until it's processed.
-    transaction->ScheduleTask(base::BindOnce(&TransactionTest::DummyOperation,
-                                             base::Unretained(this),
-                                             Status::OK()));
+    transaction->ScheduleTask(
+        /*operation_name_for_metrics=*/{},
+        base::BindOnce(&TransactionTest::DummyOperation, base::Unretained(this),
+                       Status::OK()));
     EXPECT_TRUE(base::test::RunUntil(
         [&]() { return transaction->IsTimeoutTimerRunning(); }));
 
@@ -505,7 +512,7 @@ TEST_P(TransactionTestMode, ScheduleNormalTask) {
   EXPECT_EQ(0, transaction->diagnostics().tasks_completed);
 
   transaction->ScheduleTask(
-      blink::mojom::IDBTaskType::Normal,
+      blink::mojom::IDBTaskType::Normal, /*operation_name_for_metrics=*/{},
       base::BindOnce(&TransactionTest::DummyOperation, base::Unretained(this),
                      Status::OK()));
 
@@ -548,7 +555,7 @@ TEST_P(TransactionTestMode, TaskFails) {
   db_ = nullptr;
 
   transaction->ScheduleTask(
-      blink::mojom::IDBTaskType::Normal,
+      blink::mojom::IDBTaskType::Normal, /*operation_name_for_metrics=*/{},
       base::BindOnce(&TransactionTest::DummyOperation, base::Unretained(this),
                      Status::IOError("error")));
 
@@ -600,7 +607,7 @@ TEST_P(TransactionTest, SchedulePreemptiveTask) {
   EXPECT_EQ(0, transaction->diagnostics().tasks_completed);
 
   transaction->ScheduleTask(
-      blink::mojom::IDBTaskType::Preemptive,
+      blink::mojom::IDBTaskType::Preemptive, /*operation_name_for_metrics=*/{},
       base::BindOnce(&TransactionTest::DummyOperation, base::Unretained(this),
                      Status::OK()));
   transaction->AddPreemptiveEvent();
@@ -647,7 +654,7 @@ TEST_P(TransactionTestMode, AbortPreemptive) {
   EXPECT_FALSE(transaction->IsTimeoutTimerRunning());
 
   transaction->ScheduleTask(
-      blink::mojom::IDBTaskType::Preemptive,
+      blink::mojom::IDBTaskType::Preemptive, /*operation_name_for_metrics=*/{},
       base::BindOnce(&TransactionTest::DummyOperation, base::Unretained(this),
                      Status::OK()));
   EXPECT_EQ(0, transaction->pending_preemptive_events_);
@@ -671,8 +678,10 @@ TEST_P(TransactionTestMode, AbortPreemptive) {
   EXPECT_FALSE(transaction->is_commit_pending_);
 
   // This task will be ignored.
-  transaction->ScheduleTask(base::BindOnce(
-      &TransactionTest::DummyOperation, base::Unretained(this), Status::OK()));
+  transaction->ScheduleTask(
+      /*operation_name_for_metrics=*/{},
+      base::BindOnce(&TransactionTest::DummyOperation, base::Unretained(this),
+                     Status::OK()));
   EXPECT_EQ(Transaction::FINISHED, transaction->state());
   EXPECT_FALSE(transaction->IsTimeoutTimerRunning());
   EXPECT_FALSE(transaction->HasPendingTasks());

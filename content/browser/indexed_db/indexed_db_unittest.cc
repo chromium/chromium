@@ -2359,7 +2359,10 @@ TEST_P(IndexedDBTest, TransactionHistograms) {
         "IndexedDB.BackingStore.BeginTransaction.OnDisk",
         0 /*Status::Type::kOk*/, 1);
     histogram_tester.ExpectUniqueSample(
-        "IndexedDB.BackingStore.SetDatabaseVersion.OnDisk",
+        "IndexedDB.BackingStore.ChangeDatabaseVersion.OnDisk",
+        0 /*Status::Type::kOk*/, 1);
+    histogram_tester.ExpectUniqueSample(
+        "IndexedDB.BackingStore.CreateObjectStore.OnDisk",
         0 /*Status::Type::kOk*/, 1);
     histogram_tester.ExpectUniqueSample(
         "IndexedDB.BackingStore.CommitPhaseOne.OnDisk", 0 /*Status::Type::kOk*/,
@@ -2424,6 +2427,8 @@ TEST_P(IndexedDBTest, TransactionHistograms) {
     histogram_tester.ExpectUniqueSample(
         "IndexedDB.BackingStore.BeginTransaction.OnDisk",
         0 /*Status::Type::kOk*/, 1);
+    histogram_tester.ExpectUniqueSample(
+        "IndexedDB.BackingStore.PutRecord.OnDisk", 0 /*Status::Type::kOk*/, 1);
     histogram_tester.ExpectUniqueSample(
         "IndexedDB.BackingStore.CommitPhaseOne.OnDisk", 0 /*Status::Type::kOk*/,
         1);

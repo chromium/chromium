@@ -119,15 +119,22 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
   // detected at the point of running the operation. For example, a Mojo message
   // that specifies an object store ID may arrive before the task that created
   // that object store actually runs.
+  // If `operation_name_for_metrics` is non-empty, the result of the operation
+  // (if run) is logged to the histogram
+  // "IndexedDB.BackingStore.`operation_name_for_metrics`".
   using Operation = base::OnceCallback<Status(Transaction*)>;
   using VerificationCallback = base::OnceCallback<Status(Transaction&)>;
 
-  void ScheduleTask(Operation task, VerificationCallback verify = {}) {
-    ScheduleTask(blink::mojom::IDBTaskType::Normal, std::move(task),
+  void ScheduleTask(std::string operation_name_for_metrics,
+                    Operation operation,
+                    VerificationCallback verify = {}) {
+    ScheduleTask(blink::mojom::IDBTaskType::Normal,
+                 std::move(operation_name_for_metrics), std::move(operation),
                  std::move(verify));
   }
-  void ScheduleTask(blink::mojom::IDBTaskType,
-                    Operation task,
+  void ScheduleTask(blink::mojom::IDBTaskType type,
+                    std::string operation_name_for_metrics,
+                    Operation operation,
                     VerificationCallback verify = {});
   void RegisterOpenCursor(Cursor* cursor);
   void UnregisterOpenCursor(Cursor* cursor);
@@ -304,27 +311,22 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
 
   base::CheckedNumeric<size_t> in_flight_memory_ = 0;
 
-  class TaskQueue {
-   public:
-    typedef std::tuple<Operation, VerificationCallback> Task;
+  struct Task {
+    Task(std::string operation_name_for_metrics,
+         Operation operation,
+         VerificationCallback verify);
+    Task(const Task&) = delete;
+    Task& operator=(const Task&) = delete;
+    Task(Task&&);
+    Task& operator=(Task&&);
 
-    TaskQueue();
+    ~Task();
 
-    TaskQueue(const TaskQueue&) = delete;
-    TaskQueue& operator=(const TaskQueue&) = delete;
-
-    ~TaskQueue();
-    bool empty() const { return queue_.empty(); }
-    void push(Operation task, VerificationCallback verify) {
-      queue_.push(std::make_tuple(std::move(task), std::move(verify)));
-    }
-    Task pop();
-    void clear();
-    size_t size() const { return queue_.size(); }
-
-   private:
-    base::queue<Task> queue_;
+    std::string operation_name_for_metrics;
+    Operation operation;
+    VerificationCallback verify;
   };
+  typedef base::queue<Task> TaskQueue;
 
   TaskQueue task_queue_;
   TaskQueue preemptive_task_queue_;

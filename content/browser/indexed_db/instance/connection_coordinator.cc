@@ -376,6 +376,7 @@ class ConnectionCoordinator::OpenRequest
     pending_->transaction = transaction->AsWeakPtr();
 
     transaction->ScheduleTask(
+        "ChangeDatabaseVersion",
         BindWeakOperation(&Database::VersionChangeOperation, db_->AsWeakPtr(),
                           pending_->version));
     transaction->mutable_locks_receiver()->locks =

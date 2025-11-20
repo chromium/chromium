@@ -307,14 +307,32 @@ chromium-metrics-reviews@google.com.
     Collectively, these histograms gate rollout of the SQLite backing store.
   </summary>
   <token key="Operation">
+    <variant name="AdvanceCursor"/>
     <variant name="BeginTransaction"/>
+    <variant name="ChangeDatabaseVersion"/>
+    <variant name="ClearObjectStore"/>
     <variant name="CommitPhaseOne"/>
     <variant name="CommitPhaseTwo"/>
+    <variant name="ContinueCursor"/>
+    <variant name="CountRecords"/>
     <variant name="CreateIfMissing"/>
+    <variant name="CreateIndex"/>
+    <variant name="CreateObjectStore"/>
     <variant name="CreateOrOpenDatabase"/>
     <variant name="DeleteDatabase"/>
+    <variant name="DeleteIndex"/>
+    <variant name="DeleteObjectStore"/>
+    <variant name="DeleteRecordRange"/>
+    <variant name="GetAllRecords"/>
     <variant name="GetDatabaseNamesAndVersions"/>
-    <variant name="SetDatabaseVersion"/>
+    <variant name="GetKeyGeneratorCurrentNumber"/>
+    <variant name="GetRecord"/>
+    <variant name="OpenCursor"/>
+    <variant name="PrefetchCursor"/>
+    <variant name="PutRecord"/>
+    <variant name="RenameIndex"/>
+    <variant name="RenameObjectStore"/>
+    <variant name="SetIndexKeys"/>
   </token>
 </histogram>
 

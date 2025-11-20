@@ -25,6 +25,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -122,21 +123,16 @@ UmaIDBException ExceptionCodeToUmaEnum(blink::mojom::IDBException code) {
 
 }  // namespace
 
-Transaction::TaskQueue::TaskQueue() = default;
-Transaction::TaskQueue::~TaskQueue() = default;
+Transaction::Task::Task(std::string operation_name_for_metrics,
+                        Operation operation,
+                        VerificationCallback verify)
+    : operation_name_for_metrics(std::move(operation_name_for_metrics)),
+      operation(std::move(operation)),
+      verify(std::move(verify)) {}
 
-void Transaction::TaskQueue::clear() {
-  while (!queue_.empty()) {
-    queue_.pop();
-  }
-}
-
-Transaction::TaskQueue::Task Transaction::TaskQueue::pop() {
-  DCHECK(!queue_.empty());
-  Task task = std::move(queue_.front());
-  queue_.pop();
-  return task;
-}
+Transaction::Task::Task(Task&&) = default;
+Transaction::Task& Transaction::Task::operator=(Task&&) = default;
+Transaction::Task::~Task() = default;
 
 Transaction::Transaction(
     int64_t id,
@@ -212,7 +208,8 @@ void Transaction::SetCommitFlag() {
 }
 
 void Transaction::ScheduleTask(blink::mojom::IDBTaskType type,
-                               Operation task,
+                               std::string operation_name_for_metrics,
+                               Operation operation,
                                VerificationCallback verify) {
   TRACE_EVENT0("IndexedDB", "Transaction::ScheduleTask");
 
@@ -224,11 +221,13 @@ void Transaction::ScheduleTask(blink::mojom::IDBTaskType type,
   ResetTimeoutTimer();
   used_ = true;
   if (type == blink::mojom::IDBTaskType::Normal) {
-    task_queue_.push(std::move(task), std::move(verify));
+    task_queue_.emplace(std::move(operation_name_for_metrics),
+                        std::move(operation), std::move(verify));
     ++diagnostics_.tasks_scheduled;
     NotifyOfIdbInternalsRelevantChange();
   } else {
-    preemptive_task_queue_.push(std::move(task), std::move(verify));
+    preemptive_task_queue_.emplace(std::move(operation_name_for_metrics),
+                                   std::move(operation), std::move(verify));
   }
   if (state() == STARTED) {
     bucket_context_->QueueRunTasks();
@@ -255,10 +254,9 @@ Status Transaction::Abort(const DatabaseError& error) {
     backing_store_transaction_->Rollback();
   }
 
-  preemptive_task_queue_.clear();
+  preemptive_task_queue_ = {};
   pending_preemptive_events_ = 0;
-
-  task_queue_.clear();
+  task_queue_ = {};
 
   // Backing store resources (held via cursors) must be released
   // before script callbacks are fired, as the script callbacks may
@@ -433,7 +431,7 @@ void Transaction::CreateObjectStore(int64_t object_store_id,
   }
 
   ScheduleTask(
-      blink::mojom::IDBTaskType::Preemptive,
+      blink::mojom::IDBTaskType::Preemptive, "CreateObjectStore",
       base::BindOnce(
           [](int64_t object_store_id, const std::u16string& name,
              const IndexedDBKeyPath& key_path, bool auto_increment,
@@ -472,6 +470,7 @@ void Transaction::DeleteObjectStore(int64_t object_store_id) {
   }
 
   ScheduleTask(
+      "DeleteObjectStore",
       base::BindOnce(
           [](int64_t object_store_id, Transaction* transaction) {
             return transaction->BackingStoreTransaction()->DeleteObjectStore(
@@ -533,6 +532,7 @@ void Transaction::Put(int64_t object_store_id,
   // This is decremented in DoPut.
   in_flight_memory_ += value.SizeEstimate();
   ScheduleTask(
+      "PutRecord",
       base::BindOnce(&Transaction::DoPut, base::Unretained(this),
                      object_store_id, std::move(value), std::move(key), mode,
                      std::move(index_keys), std::move(wrapped_callback)),
@@ -678,7 +678,7 @@ void Transaction::SetIndexKeys(int64_t object_store_id,
     return;
   }
 
-  ScheduleTask(blink::mojom::IDBTaskType::Preemptive,
+  ScheduleTask(blink::mojom::IDBTaskType::Preemptive, "SetIndexKeys",
                base::BindOnce(&Transaction::DoSetIndexKeys,
                               base::Unretained(this), object_store_id,
                               std::move(primary_key), std::move(index_keys)),
@@ -743,6 +743,7 @@ void Transaction::SetIndexKeysDone() {
   }
 
   ScheduleTask(blink::mojom::IDBTaskType::Preemptive,
+               /*operation_name_for_metrics=*/{},
                base::BindOnce([](Transaction* transaction) {
                  transaction->DidCompletePreemptiveEvent();
                  return Status::OK();
@@ -844,7 +845,8 @@ Status Transaction::BlobWriteComplete(
       return Status::OK();
     }
     case BlobWriteResult::kRunPhaseTwoAsync:
-      ScheduleTask(base::BindOnce(&CommitPhaseTwoProxy));
+      ScheduleTask(/*operation_name_for_metrics=*/{},
+                   base::BindOnce(&CommitPhaseTwoProxy));
       bucket_context_->QueueRunTasks();
       return Status::OK();
     case BlobWriteResult::kRunPhaseTwoAndReturnResult: {
@@ -1073,10 +1075,20 @@ Status Transaction::RunTasks() {
       run_preemptive_queue ? &preemptive_task_queue_ : &task_queue_;
   while (!task_queue->empty() && state_ != FINISHED) {
     CHECK(state_ == STARTED || state_ == COMMITTING) << state_;
-    auto [operation, verify] = task_queue->pop();
-    Status result = verify ? std::move(verify).Run(*this) : Status::OK();
+    Task task = std::move(task_queue->front());
+    task_queue->pop();
+    Status result =
+        task.verify ? std::move(task.verify).Run(*this) : Status::OK();
     if (result.ok()) {
-      result = std::move(operation).Run(this);
+      // The operation may invalidate the bucket context handle.
+      bool in_memory = bucket_context_->in_memory();
+      result = std::move(task.operation).Run(this);
+      if (!task.operation_name_for_metrics.empty()) {
+        LogStatus(result,
+                  base::StrCat({"IndexedDB.BackingStore.",
+                                task.operation_name_for_metrics}),
+                  in_memory);
+      }
     }
     if (!run_preemptive_queue) {
       CHECK(diagnostics_.tasks_completed < diagnostics_.tasks_scheduled);

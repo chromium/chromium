@@ -440,10 +440,8 @@ Status Database::VersionChangeOperation(int64_t version,
   int64_t old_version = metadata().version;
   CHECK_GT(version, old_version);
 
-  IDB_RETURN_IF_ERROR(LogStatus(
-      transaction->BackingStoreTransaction()->SetDatabaseVersion(version),
-      "IndexedDB.BackingStore.SetDatabaseVersion",
-      bucket_context_->in_memory()));
+  IDB_RETURN_IF_ERROR(
+      transaction->BackingStoreTransaction()->SetDatabaseVersion(version));
 
   connection_coordinator_.BindVersionChangeTransactionReceiver();
   connection_coordinator_.OnUpgradeTransactionStarted(old_version);

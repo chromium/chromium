@@ -108,9 +108,10 @@ void Cursor::Advance(uint32_t count,
           std::move(callback), transaction_);
 
   transaction_->ScheduleTask(
-      task_type_, BindWeakOperation<Cursor>(&Cursor::AdvanceOperation,
-                                            ptr_factory_.GetWeakPtr(), count,
-                                            std::move(aborting_callback)));
+      task_type_, "AdvanceCursor",
+      BindWeakOperation<Cursor>(&Cursor::AdvanceOperation,
+                                ptr_factory_.GetWeakPtr(), count,
+                                std::move(aborting_callback)));
 }
 
 Status Cursor::AdvanceOperation(
@@ -183,7 +184,7 @@ void Cursor::Continue(IndexedDBKey key,
           std::move(callback), transaction_);
 
   transaction_->ScheduleTask(
-      task_type_,
+      task_type_, "ContinueCursor",
       BindWeakOperation<Cursor>(
           &Cursor::ContinueOperation, ptr_factory_.GetWeakPtr(), std::move(key),
           std::move(primary_key), std::move(aborting_callback)));
@@ -260,7 +261,7 @@ void Cursor::Prefetch(int number_to_fetch,
           std::move(callback), transaction_);
 
   transaction_->ScheduleTask(
-      task_type_,
+      task_type_, "PrefetchCursor",
       BindWeakOperation<Cursor>(&Cursor::PrefetchIterationOperation,
                                 ptr_factory_.GetWeakPtr(), number_to_fetch,
                                 std::move(aborting_callback)));
