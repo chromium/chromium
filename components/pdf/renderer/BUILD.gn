@@ -22,6 +22,8 @@ static_library("renderer") {
     "pdf_accessibility_tree.cc",
     "pdf_accessibility_tree_builder.cc",
     "pdf_accessibility_tree_builder.h",
+    "pdf_accessibility_tree_builder_heuristic.cc",
+    "pdf_accessibility_tree_builder_heuristic.h",
     "pdf_ax_action_target.cc",
     "pdf_view_web_plugin_client.cc",
     "pdf_view_web_plugin_client.h",

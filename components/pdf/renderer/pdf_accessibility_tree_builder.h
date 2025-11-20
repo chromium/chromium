@@ -13,7 +13,6 @@
 #include "components/pdf/renderer/pdf_accessibility_tree.h"
 #include "pdf/accessibility_structs.h"
 #include "pdf/page_character_index.h"
-#include "services/screen_ai/buildflags/buildflags.h"
 #include "third_party/blink/public/web/web_ax_object.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 
@@ -53,11 +52,11 @@ class PdfAccessibilityTreeBuilder {
   void BuildPageTree();
 
  private:
+  friend class PdfAccessibilityTreeBuilderHeuristic;
+
   void AddWordStartsAndEnds(ui::AXNodeData* inline_text_box);
   ui::AXNodeData* CreateAndAppendNode(ax::mojom::Role role,
                                       ax::mojom::Restriction restriction);
-  ui::AXNodeData* CreateBlockLevelNode(const std::string& text_run_type,
-                                       float font_size);
   ui::AXNodeData* CreateStaticTextNode();
   ui::AXNodeData* CreateStaticTextNode(
       const chrome_pdf::PageCharacterIndex& page_char_index);
@@ -91,45 +90,6 @@ class PdfAccessibilityTreeBuilder {
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   ui::AXNodeData* CreateOcrWrapperNode(const gfx::PointF& position, bool start);
 #endif
-  void AddTextToAXNode(size_t start_text_run_index,
-                       uint32_t end_text_run_index,
-                       ui::AXNodeData* ax_node,
-                       ui::AXNodeData** previous_on_line_node);
-  void AddTextToObjectNode(size_t object_text_run_index,
-                           uint32_t object_text_run_count,
-                           ui::AXNodeData* object_node,
-                           ui::AXNodeData* para_node,
-                           ui::AXNodeData** previous_on_line_node,
-                           size_t* text_run_index);
-  void AddLinkToParaNode(const chrome_pdf::AccessibilityLinkInfo& link,
-                         ui::AXNodeData* para_node,
-                         ui::AXNodeData** previous_on_line_node,
-                         size_t* text_run_index);
-  void AddImageToParaNode(const chrome_pdf::AccessibilityImageInfo& image,
-                          ui::AXNodeData* para_node,
-                          size_t* text_run_index);
-  void AddHighlightToParaNode(
-      const chrome_pdf::AccessibilityHighlightInfo& highlight,
-      ui::AXNodeData* para_node,
-      ui::AXNodeData** previous_on_line_node,
-      size_t* text_run_index);
-  void AddTextFieldToParaNode(
-      const chrome_pdf::AccessibilityTextFieldInfo& text_field,
-      ui::AXNodeData* para_node,
-      size_t* text_run_index);
-  void AddButtonToParaNode(const chrome_pdf::AccessibilityButtonInfo& button,
-                           ui::AXNodeData* para_node,
-                           size_t* text_run_index);
-  void AddChoiceFieldToParaNode(
-      const chrome_pdf::AccessibilityChoiceFieldInfo& choice_field,
-      ui::AXNodeData* para_node,
-      size_t* text_run_index);
-  void AddRemainingAnnotations(ui::AXNodeData* para_node
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-                               ,
-                               bool ocr_applied
-#endif
-  );
 
   const bool mark_headings_using_heuristic_;
   std::vector<uint32_t> text_run_start_indices_;
@@ -137,21 +97,16 @@ class PdfAccessibilityTreeBuilder {
       text_runs_;
   const raw_ref<const std::vector<chrome_pdf::AccessibilityCharInfo>> chars_;
   const raw_ref<const std::vector<chrome_pdf::AccessibilityLinkInfo>> links_;
-  uint32_t current_link_index_ = 0;
   const raw_ref<const std::vector<chrome_pdf::AccessibilityImageInfo>> images_;
-  uint32_t current_image_index_ = 0;
   const raw_ref<const std::vector<chrome_pdf::AccessibilityHighlightInfo>>
       highlights_;
-  uint32_t current_highlight_index_ = 0;
   const raw_ref<const std::vector<chrome_pdf::AccessibilityTextFieldInfo>>
       text_fields_;
-  uint32_t current_text_field_index_ = 0;
   const raw_ref<const std::vector<chrome_pdf::AccessibilityButtonInfo>>
       buttons_;
-  uint32_t current_button_index_ = 0;
   const raw_ref<const std::vector<chrome_pdf::AccessibilityChoiceFieldInfo>>
       choice_fields_;
-  uint32_t current_choice_field_index_ = 0;
+
   uint32_t page_index_;
   raw_ptr<ui::AXNodeData> root_node_;
   raw_ptr<ui::AXNodeData> page_node_;
@@ -161,8 +116,6 @@ class PdfAccessibilityTreeBuilder {
       node_id_to_page_char_index_;
   raw_ptr<std::map<int32_t, PdfAccessibilityTree::AnnotationInfo>>
       node_id_to_annotation_info_;
-  float heading_font_size_threshold_ = 0;
-  float paragraph_spacing_threshold_ = 0;
 };
 
 }  // namespace pdf
