@@ -318,6 +318,10 @@ UIButton* CreateClearButton() {
   [self updateLeadingConstraint];
 }
 
+- (void)setLeadingImageAlpha:(BOOL)alpha {
+  _leadingImageView.alpha = alpha;
+}
+
 - (void)updateLeadingConstraint {
   _textInputViewLeadingConstraint.active = NO;
 

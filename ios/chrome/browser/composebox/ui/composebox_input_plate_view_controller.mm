@@ -74,9 +74,11 @@ const CGFloat kGenericButtonHeight = 32.0f;
 const CGFloat kSendButtonDimension = 32.0f;
 
 /// The duration for the glow effect.
-const CGFloat kGlowEffectDuration = 1.0f;
+const CGFloat kGlowEffectDuration = 0.9;
 /// The width of the glow effect border.
-const CGFloat kGlowEffectWidth = 40.0f;
+const CGFloat kGlowEffectWidth = 2.0f;
+/// Duration of a change in compact mode.
+const CGFloat kCompactModeAnimationDuration = 0.1;
 
 /// The fade view width.
 const CGFloat kFadeViewWidth = 30.0f;
@@ -101,6 +103,12 @@ const CGFloat kFadeViewWidth = 30.0f;
 /// Whether the UI is in compact (single line) mode.
 @property(nonatomic, assign) BOOL isCompactMode;
 
+/// The send button.
+@property(nonatomic, strong) UIButton* sendButton;
+
+/// The stack view for the input plate.
+@property(nonatomic, strong) UIStackView* inputPlateStackView;
+
 @end
 
 @implementation ComposeboxInputPlateViewController {
@@ -111,9 +119,6 @@ const CGFloat kFadeViewWidth = 30.0f;
       _dataSource;
   /// The view containing the input text field and action buttons.
   UIView* _inputPlateContainerView;
-  /// The stack view for the input plate.
-  UIStackView* _inputPlateStackView;
-
   /// The button to toggle AI mode.
   UIButton* _aimButton;
   /// The glow effect around the input plate container.
@@ -124,8 +129,6 @@ const CGFloat kFadeViewWidth = 30.0f;
   UIButton* _micButton;
   /// The lens button.
   UIButton* _lensButton;
-  /// The send button.
-  UIButton* _sendButton;
   /// The fade view for the carousel's leading edge.
   UIView* _leadingCarouselFadeView;
   /// The fade view for the carousel's trailing edge.
@@ -188,7 +191,7 @@ const CGFloat kFadeViewWidth = 30.0f;
                                   kInputPlateStackViewVerticalPadding,
                                   kInputPlateStackViewTrailingPadding));
 
-  [self updateInputPlateStackView];
+  [self updateInputPlateStackViewAnimated:NO];
 
   [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
                      withAction:@selector(userInterfaceStyleChanged)];
@@ -295,7 +298,7 @@ const CGFloat kFadeViewWidth = 30.0f;
     return;
   }
 
-  [self updateInputPlateStackView];
+  [self updateInputPlateStackViewAnimated:YES];
 }
 
 - (void)setCurrentTabFavicon:(UIImage*)favicon {
@@ -416,13 +419,7 @@ const CGFloat kFadeViewWidth = 30.0f;
 
 /// Called after a delay to transition the glow effect to its next state.
 - (void)updateGlow {
-  if (self.AIModeEnabled) {
-    // If the mode is still enabled, stop the rotation but keep the glow.
-    [_glowEffectView stopRotation];
-  } else {
-    // If the mode has been disabled, stop the glow entirely.
-    [_glowEffectView stopGlow];
-  }
+  [_glowEffectView stopGlow];
 }
 
 - (void)userInterfaceStyleChanged {
@@ -518,6 +515,8 @@ const CGFloat kFadeViewWidth = 30.0f;
   if (self.AIModeEnabled) {
     config.background.backgroundColor = [UIColor colorNamed:kBlueHaloColor];
     config.baseForegroundColor = [UIColor colorNamed:kBlue600Color];
+
+    _aimButton.hidden = NO;
   } else {
     config.background.backgroundColor =
         [UIColor colorNamed:kSecondaryBackgroundColor];
@@ -527,6 +526,8 @@ const CGFloat kFadeViewWidth = 30.0f;
       _aimButton.layer.borderWidth = 1;
       _aimButton.layer.borderColor = [UIColor colorNamed:kGrey200Color].CGColor;
     }
+
+    _aimButton.hidden = YES;
   }
   _aimButton.configuration = config;
 }
@@ -821,20 +822,17 @@ const CGFloat kFadeViewWidth = 30.0f;
 
   _glowEffectView = ios::provider::CreateGlowEffect(
       CGRectZero, kInputPlateCornerRadius, kGlowEffectWidth);
-  // Temporarily remove the glow effect view while its broken (the effect
-  // doesn't stop rotating).
-  _glowEffectView = nil;
   if (_glowEffectView) {
     _glowEffectView.translatesAutoresizingMaskIntoConstraints = NO;
     _glowEffectView.userInteractionEnabled = NO;
     [self.view insertSubview:_glowEffectView
-                belowSubview:_inputPlateContainerView];
+                aboveSubview:_inputPlateContainerView];
     AddSameConstraintsWithInset(_inputPlateContainerView, _glowEffectView,
                                 kGlowEffectWidth);
   }
 }
 
-- (void)updateInputPlateStackView {
+- (void)updateInputPlateStackViewContent {
   for (UIView* arrangedSubview in _inputPlateStackView.arrangedSubviews) {
     if (arrangedSubview != _omniboxContainer) {
       [_inputPlateStackView removeArrangedSubview:arrangedSubview];
@@ -860,8 +858,47 @@ const CGFloat kFadeViewWidth = 30.0f;
     _inputPlateStackView.axis = UILayoutConstraintAxisVertical;
     _inputPlateStackView.spacing = kInputPlateStackViewSpacing;
   }
+}
 
-  [_editView hideLeadingImage:self.isCompactMode];
+- (void)updateInputPlateStackViewAnimated:(BOOL)animated {
+  if (!animated) {
+    [self updateInputPlateStackViewContent];
+    [self.editView hideLeadingImage:self.isCompactMode];
+    return;
+  }
+
+  CGFloat initialAlpha = self.isCompactMode ? 1 : 0;
+  CGFloat finalAlpha = 1 - initialAlpha;
+  [self.editView setLeadingImageAlpha:initialAlpha];
+  self.sendButton.alpha = initialAlpha;
+
+  [self.editView hideLeadingImage:self.isCompactMode];
+
+  auto animations = ^() {
+    [UIView addKeyframeWithRelativeStartTime:0
+                            relativeDuration:1.0
+                                  animations:^{
+                                    [self updateInputPlateStackViewContent];
+                                    [self.editView
+                                        hideLeadingImage:self.isCompactMode];
+                                    [self.inputPlateStackView layoutIfNeeded];
+                                    [self.view layoutIfNeeded];
+                                  }];
+    [UIView
+        addKeyframeWithRelativeStartTime:0.6
+                        relativeDuration:0.4
+                              animations:^{
+                                [self.editView setLeadingImageAlpha:finalAlpha];
+                                self.sendButton.alpha = finalAlpha;
+                              }];
+  };
+
+  auto animationOptions = UIViewKeyframeAnimationOptionCalculationModeLinear;
+  [UIView animateKeyframesWithDuration:kCompactModeAnimationDuration
+                                 delay:0
+                               options:animationOptions
+                            animations:animations
+                            completion:nil];
 }
 
 - (UIImage*)bananaIcon {

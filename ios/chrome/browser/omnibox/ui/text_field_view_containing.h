@@ -29,6 +29,7 @@
 @property(nonatomic, readonly) NSUInteger numberOfLines;
 
 - (void)hideLeadingImage:(BOOL)hideLeadingImage;
+- (void)setLeadingImageAlpha:(BOOL)alpha;
 
 @end
 
