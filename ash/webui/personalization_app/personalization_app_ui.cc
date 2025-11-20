@@ -338,7 +338,6 @@ void AddStrings(content::WebUIDataSource* source) {
       {"keyboardZonesTitle", IDS_PERSONALIZATION_APP_KEYBOARD_ZONES_TITLE},
 
       // Google Photos strings
-      // TODO(b/229149314): Finalize error and retry strings.
       {"googlePhotosLabel", IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS},
       {"googlePhotosError", IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_ERROR},
       {"googlePhotosTryAgain", IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_TRY_AGAIN},
