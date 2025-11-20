@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_CONTEXT_SERVICE_H_
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_CONTEXT_SERVICE_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -48,6 +49,10 @@ enum class ContextDeterminationStatus {
 struct TabSelectionOptions {
   mojom::TabSelectionMode tab_selection_mode =
       mojom::TabSelectionMode::kEmbeddingsMatch;
+
+  // If set, only tabs with a model score of at least `min_model_score` will be
+  // selected.
+  std::optional<float> min_model_score;
 };
 
 // A service used to determine the relevant context for a given task.
@@ -83,8 +88,8 @@ class ContextualTasksContextService
   // Callback invoked when the embedding for `query` is ready.
   void OnQueryEmbeddingReady(
       const std::string& query,
+      const TabSelectionOptions& options,
       base::TimeTicks start_time,
-      mojom::TabSelectionMode tab_selection_mode,
       const std::vector<GURL>& explicit_urls,
       base::OnceCallback<void(std::vector<content::WebContents*>)> callback,
       std::vector<std::string> passages,
@@ -95,13 +100,14 @@ class ContextualTasksContextService
   // Returns the relevant tabs for `query` based on given `tab_selection_mode`.
   std::vector<content::WebContents*> SelectRelevantTabs(
       const std::string& query,
+      const TabSelectionOptions& options,
       const passage_embeddings::Embedding& query_embedding,
-      const std::vector<content::WebContents*>& all_tabs,
-      mojom::TabSelectionMode tab_selection_mode);
+      const std::vector<content::WebContents*>& all_tabs);
 
   // Selects tabs based on embeddings match.
   std::vector<content::WebContents*> SelectTabsByEmbeddingsMatch(
       const std::string& query,
+      const TabSelectionOptions& options,
       const passage_embeddings::Embedding& query_embedding,
       const std::vector<content::WebContents*>& all_tabs);
 
@@ -109,6 +115,7 @@ class ContextualTasksContextService
   // tab recency etc.
   std::vector<content::WebContents*> SelectTabsByMultiSignalScore(
       const std::string& query,
+      const TabSelectionOptions& options,
       const passage_embeddings::Embedding& query_embedding,
       const std::vector<content::WebContents*>& all_tabs);
 

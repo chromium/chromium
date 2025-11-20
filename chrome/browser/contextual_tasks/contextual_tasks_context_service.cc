@@ -200,9 +200,8 @@ void ContextualTasksContextService::GetRelevantTabsForQuery(
   embedder_->ComputePassagesEmbeddings(
       passage_embeddings::PassagePriority::kUrgent, {query},
       base::BindOnce(&ContextualTasksContextService::OnQueryEmbeddingReady,
-                     weak_ptr_factory_.GetWeakPtr(), query, now,
-                     options.tab_selection_mode, explicit_urls,
-                     std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), query, options, now,
+                     explicit_urls, std::move(callback)));
 }
 
 void ContextualTasksContextService::EmbedderMetadataUpdated(
@@ -212,8 +211,8 @@ void ContextualTasksContextService::EmbedderMetadataUpdated(
 
 void ContextualTasksContextService::OnQueryEmbeddingReady(
     const std::string& query,
+    const TabSelectionOptions& options,
     base::TimeTicks start_time,
-    mojom::TabSelectionMode tab_selection_mode,
     const std::vector<GURL>& explicit_urls,
     base::OnceCallback<void(std::vector<content::WebContents*>)> callback,
     std::vector<std::string> passages,
@@ -247,7 +246,7 @@ void ContextualTasksContextService::OnQueryEmbeddingReady(
   passage_embeddings::Embedding query_embedding = embeddings[0];
   std::vector<content::WebContents*> all_tabs = GetAllTabsForProfile(profile_);
   std::vector<content::WebContents*> relevant_tabs =
-      SelectRelevantTabs(query, query_embedding, all_tabs, tab_selection_mode);
+      SelectRelevantTabs(query, options, query_embedding, all_tabs);
 
   AUTO_CONTEXT_LOG(base::StringPrintf("Number of open tabs for query %s: %d",
                                       query, all_tabs.size()));
@@ -275,20 +274,23 @@ void ContextualTasksContextService::OnQueryEmbeddingReady(
 std::vector<content::WebContents*>
 ContextualTasksContextService::SelectRelevantTabs(
     const std::string& query,
+    const TabSelectionOptions& options,
     const passage_embeddings::Embedding& query_embedding,
-    const std::vector<content::WebContents*>& all_tabs,
-    mojom::TabSelectionMode tab_selection_mode) {
-  switch (tab_selection_mode) {
+    const std::vector<content::WebContents*>& all_tabs) {
+  switch (options.tab_selection_mode) {
     case mojom::TabSelectionMode::kMultiSignalScoring:
-      return SelectTabsByMultiSignalScore(query, query_embedding, all_tabs);
+      return SelectTabsByMultiSignalScore(query, options, query_embedding,
+                                          all_tabs);
     case mojom::TabSelectionMode::kEmbeddingsMatch:
-      return SelectTabsByEmbeddingsMatch(query, query_embedding, all_tabs);
+      return SelectTabsByEmbeddingsMatch(query, options, query_embedding,
+                                         all_tabs);
   }
 }
 
 std::vector<content::WebContents*>
 ContextualTasksContextService::SelectTabsByMultiSignalScore(
     const std::string& query,
+    const TabSelectionOptions& options,
     const passage_embeddings::Embedding& query_embedding,
     const std::vector<content::WebContents*>& all_tabs) {
   std::vector<content::WebContents*> relevant_tabs;
@@ -323,7 +325,7 @@ ContextualTasksContextService::SelectTabsByMultiSignalScore(
 
     // Score and select qualifying tabs.
     double score = GetTabScore(tab_signals);
-    if (score >= kMinMultiSignalScore.Get()) {
+    if (score >= options.min_model_score.value_or(kMinMultiSignalScore.Get())) {
       relevant_tabs.push_back(tab_signals.web_contents);
     }
 
@@ -347,6 +349,7 @@ ContextualTasksContextService::SelectTabsByMultiSignalScore(
 std::vector<content::WebContents*>
 ContextualTasksContextService::SelectTabsByEmbeddingsMatch(
     const std::string& query,
+    const TabSelectionOptions& options,
     const passage_embeddings::Embedding& query_embedding,
     const std::vector<content::WebContents*>& all_tabs) {
   std::vector<content::WebContents*> relevant_tabs;
@@ -366,7 +369,8 @@ ContextualTasksContextService::SelectTabsByEmbeddingsMatch(
       AUTO_CONTEXT_LOG(
           base::StringPrintf("Similarity with passage %s and query %s: %f",
                              embedding.passage.first, query, similarity_score));
-      if (similarity_score >= kMinEmbeddingSimilarityScore.Get()) {
+      if (similarity_score >= options.min_model_score.value_or(
+                                  kMinEmbeddingSimilarityScore.Get())) {
         relevant_tabs.push_back(web_contents);
         AUTO_CONTEXT_LOG(
             base::StringPrintf("Adding %s to relevant set",

@@ -13,6 +13,9 @@ struct GetRelevantContextRequest {
   string query;
   // The mode to use for tab selection.
   TabSelectionMode tab_selection_mode;
+  // The minimum model score to use for tab selection. Must be a value between 0
+  // and 1, inclusive.
+  float min_model_score;
 };
 
 // Represents the tab.

@@ -11,23 +11,32 @@ export function getHtml(this: ContextualTasksInternalsAppElement) {
   return html`
 <h1>Contextual Tasks Internals</h1>
 <div class="model-options">
-  <select id="tabSelectionModeSelect" class="md-select"
-      value="${this.tabSelectionMode_}" @change="${this.onTabSelectionModeChanged_}">
-    <option value="kEmbeddingsMatch">Embeddings Match</option>
-    <option value="kMultiSignalScoring">Multi Signal Scoring</option>
-  </select>
+  <div class="container">
+    <span class="mode-label">Tab selection mode: </span>
+    <select id="tabSelectionModeSelect" class="md-select"
+        value="${this.tabSelectionMode_}" @change="${this.onTabSelectionModeChanged_}">
+      <option value="kEmbeddingsMatch">Embeddings Match</option>
+      <option value="kMultiSignalScoring">Multi Signal Scoring</option>
+    </select>
+  </div>
+  <div class="container">
+    <span class="slider-percentage">Min model score: ${this.minModelScore_}</span>
+    <cr-slider id="minModelScoreSlider" aria-label="Min model score"
+        min="0" max="1.0"
+        .value="${this.minModelScore_}"
+        @cr-slider-value-changed="${this.onMinModelScoreChanged_}">
+    </cr-slider>
+  </div>
 </div>
-<cr-textarea type="text" id="textInput" label="Query"
+<cr-textarea type="text" id="textInput" label=""
     placeholder="Type query here..."
     .value="${this.query_}" @value-changed="${this.onQueryChanged_}">
 </cr-textarea>
-<div>
-  <cr-button class="action-button" ?disabled="${this.isQueryPending_}"
-      @click="${this.onSubmitClick_}">
+<cr-button class="action-button" ?disabled="${this.isQueryPending_}"
+    @click="${this.onSubmitClick_}">
     Submit
-  </cr-button>
-</div>
-<div>
+</cr-button>
+<div class="container">
   <div>Relevant Tabs:</div>
   <ul>
   ${this.relevantTabs_.map(item => html`

@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_button/cr_button.js';
+import '//resources/cr_elements/cr_slider/cr_slider.js';
 import '//resources/cr_elements/cr_textarea/cr_textarea.js';
 import '/strings.m.js';
 
+import type {CrSliderElement} from '//resources/cr_elements/cr_slider/cr_slider.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {Time} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
@@ -76,6 +78,7 @@ export class EventLogMessage {
 export interface ContextualTasksInternalsAppElement {
   $: {
     tabSelectionModeSelect: HTMLSelectElement,
+    minModelScoreSlider: CrSliderElement,
   };
 }
 
@@ -98,6 +101,8 @@ export class ContextualTasksInternalsAppElement extends CrLitElement {
       query_: {type: String},
       isQueryPending_: {type: Boolean},
       tabSelectionMode_: {type: String},
+      minModelScore_: {type: Number},
+      minModelScoreTicks_: {type: Array},
       eventLogMessages_: {type: Array},
     };
   }
@@ -106,6 +111,7 @@ export class ContextualTasksInternalsAppElement extends CrLitElement {
   protected accessor query_: string = '';
   protected accessor isQueryPending_: boolean = false;
   protected accessor tabSelectionMode_: string = 'kEmbeddingsMatch';
+  protected accessor minModelScore_: number = 0.8;
   protected accessor eventLogMessages_: EventLogMessage[] = [];
 
   private proxy_: BrowserProxy = BrowserProxy.getInstance();
@@ -120,6 +126,10 @@ export class ContextualTasksInternalsAppElement extends CrLitElement {
     this.tabSelectionMode_ = this.$.tabSelectionModeSelect.value;
   }
 
+  protected onMinModelScoreChanged_() {
+    this.minModelScore_ = this.$.minModelScoreSlider.value;
+  }
+
   protected onQueryChanged_(e: CustomEvent<{value: string}>) {
     this.query_ = e.detail.value;
   }
@@ -131,6 +141,7 @@ export class ContextualTasksInternalsAppElement extends CrLitElement {
       query: this.query_,
       tabSelectionMode: TabSelectionMode
           [this.tabSelectionMode_ as keyof typeof TabSelectionMode],
+      minModelScore: this.minModelScore_,
     });
     this.relevantTabs_ = response.response.relevantTabs;
     this.isQueryPending_ = false;
