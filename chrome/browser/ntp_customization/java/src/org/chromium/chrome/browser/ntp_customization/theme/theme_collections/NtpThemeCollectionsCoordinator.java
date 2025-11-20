@@ -243,12 +243,6 @@ public class NtpThemeCollectionsCoordinator {
         launchUriActivity(view.getContext(), LEARN_MORE_CLICK_URL);
     }
 
-    /** Clears the theme collection selection. */
-    public void clearThemeCollectionSelection() {
-        mNtpThemeBridge.setSelectedTheme(
-                /* themeCollectionId= */ null, /* themeCollectionImageUrl= */ null);
-    }
-
     void setNtpThemeCollectionsAdapterForTesting(NtpThemeCollectionsAdapter adapter) {
         mNtpThemeCollectionsAdapter = adapter;
         mThemeCollectionsBottomSheetRecyclerView.setAdapter(adapter);

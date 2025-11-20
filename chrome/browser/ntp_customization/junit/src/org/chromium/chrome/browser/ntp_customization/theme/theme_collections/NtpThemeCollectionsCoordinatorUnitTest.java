@@ -242,13 +242,6 @@ public class NtpThemeCollectionsCoordinatorUnitTest {
     }
 
     @Test
-    public void testClearThemeSelection() {
-        mCoordinator.clearThemeCollectionSelection();
-
-        verify(mNtpThemeBridge).setSelectedTheme(eq(null), eq(null));
-    }
-
-    @Test
     public void testConfigurationChanged() {
         verify(mContextSpy).registerComponentCallbacks(mComponentCallbacksCaptor.capture());
         ComponentCallbacks componentCallbacks = mComponentCallbacksCaptor.getValue();

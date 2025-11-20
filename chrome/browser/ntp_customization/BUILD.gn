@@ -36,6 +36,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeBottomSheetView.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeBridge.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeCoordinator.java",
+    "java/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeDelegate.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeListItemView.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeListThemeCollectionItemIconView.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeMediator.java",

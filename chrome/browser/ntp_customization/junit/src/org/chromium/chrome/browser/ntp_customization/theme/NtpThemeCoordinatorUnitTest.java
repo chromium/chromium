@@ -8,11 +8,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME;
 
 import android.content.Context;
 import android.view.ContextThemeWrapper;
@@ -23,15 +25,20 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
 import org.chromium.chrome.browser.ntp_customization.R;
+import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CustomBackgroundInfo;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.url.GURL;
 
 /** Unit tests for {@link NtpThemeCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -42,9 +49,12 @@ public class NtpThemeCoordinatorUnitTest {
     @Mock private Profile mProfile;
     @Mock private Runnable mDismissBottomSheet;
     @Mock private NtpThemeBridge.Natives mNtpThemeBridgeJniMock;
+    @Mock private NtpCustomizationConfigManager mNtpCustomizationConfigManager;
+    @Mock private NtpThemeBottomSheetView mNtpThemeBottomSheetView;
 
     private Context mContext;
     private NtpThemeCoordinator mCoordinator;
+    private NtpThemeMediator mMediator;
 
     @Before
     public void setUp() {
@@ -54,9 +64,15 @@ public class NtpThemeCoordinatorUnitTest {
                         R.style.Theme_BrowserUI_DayNight);
         NtpThemeBridgeJni.setInstanceForTesting(mNtpThemeBridgeJniMock);
         when(mNtpThemeBridgeJniMock.init(any(), any())).thenReturn(1L);
+        NtpCustomizationConfigManager.setInstanceForTesting(mNtpCustomizationConfigManager);
+
         mCoordinator =
                 new NtpThemeCoordinator(
                         mContext, mBottomSheetDelegate, mProfile, mDismissBottomSheet);
+
+        mMediator = mCoordinator.getMediatorForTesting();
+        mCoordinator.setMediatorForTesting(mMediator);
+        mCoordinator.setNtpThemeBottomSheetViewForTesting(mNtpThemeBottomSheetView);
     }
 
     @Test
@@ -66,21 +82,14 @@ public class NtpThemeCoordinatorUnitTest {
 
     @Test
     public void testRegisterBottomSheetLayout() {
-        verify(mBottomSheetDelegate)
-                .registerBottomSheetLayout(eq(NtpBackgroundImageType.THEME_COLLECTION), any());
+        verify(mBottomSheetDelegate).registerBottomSheetLayout(eq(THEME), any());
     }
 
     @Test
     public void testDestroy() {
-        NtpThemeMediator mediator = mock(NtpThemeMediator.class);
-        mCoordinator.setMediatorForTesting(mediator);
         mCoordinator.destroy();
-        verify(mediator).destroy();
 
-        NtpThemeBottomSheetView ntpThemeBottomSheetView = mock(NtpThemeBottomSheetView.class);
-        mCoordinator.setNtpThemeBottomSheetViewForTesting(ntpThemeBottomSheetView);
-        mCoordinator.destroy();
-        verify(ntpThemeBottomSheetView).destroy();
+        verify(mNtpThemeBottomSheetView).destroy();
     }
 
     @Test
@@ -96,5 +105,39 @@ public class NtpThemeCoordinatorUnitTest {
 
         verify(mBottomSheetDelegate).onNewColorSelected(eq(true));
         verify(mDismissBottomSheet, times(2)).run();
+    }
+
+    @Test
+    public void testOnChromeColorsClicked() {
+        mCoordinator.getNtpThemeDelegateForTesting().onChromeColorsClicked();
+        verify(mBottomSheetDelegate).showBottomSheet(eq(BottomSheetType.CHROME_COLORS));
+    }
+
+    @Test
+    public void onThemeCollectionsClicked() {
+        mCoordinator.getNtpThemeDelegateForTesting().onThemeCollectionsClicked();
+        verify(mBottomSheetDelegate).showBottomSheet(eq(BottomSheetType.THEME_COLLECTIONS));
+    }
+
+    @Test
+    public void testOnThemeImageSelectedCallback() {
+        ArgumentCaptor<NtpThemeBridge> ntpThemeBridgeCaptor =
+                ArgumentCaptor.forClass(NtpThemeBridge.class);
+        verify(mNtpThemeBridgeJniMock).init(any(), ntpThemeBridgeCaptor.capture());
+        NtpThemeBridge ntpThemeBridge = ntpThemeBridgeCaptor.getValue();
+        mMediator = spy(mCoordinator.getMediatorForTesting());
+        mCoordinator.setMediatorForTesting(mMediator);
+
+        when(mNtpThemeBridgeJniMock.getCustomBackgroundInfo(1L))
+                .thenReturn(
+                        new CustomBackgroundInfo(
+                                new GURL("http://test.com"), "collection", false, false));
+
+        ntpThemeBridge.onCustomBackgroundImageUpdated();
+
+        verify(mBottomSheetDelegate).onNewColorSelected(eq(true));
+        verify(mMediator)
+                .updateTrailingIconVisibilityForSectionType(
+                        NtpBackgroundImageType.THEME_COLLECTION);
     }
 }
