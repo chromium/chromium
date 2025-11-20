@@ -113,7 +113,7 @@ void OmniboxPopupWebUIBaseContent::ResizeDueToAutoResize(
     const gfx::Size& new_size) {
   WebView::ResizeDueToAutoResize(source, new_size);
   if (GetVisible()) {
-    popup_presenter_->SetWidgetContentHeight(new_size.height());
+    popup_presenter_->SetWidgetBounds(new_size.height());
   }
 }
 

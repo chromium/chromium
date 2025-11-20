@@ -42,7 +42,7 @@ void OmniboxPopupPresenterBase::Show() {
   widget_->ShowInactive();
 
   if (auto* content = GetWebUIContent()) {
-    SetWidgetContentHeight(content->GetPreferredSize().height());
+    SetWidgetBounds(content->GetPreferredSize().height());
     content->GetWebContents()->WasShown();
     if (ShouldReceiveFocus()) {
       widget_->Activate();
@@ -67,7 +67,7 @@ bool OmniboxPopupPresenterBase::IsShown() const {
   return widget_ && widget_->IsVisible();
 }
 
-void OmniboxPopupPresenterBase::SetWidgetContentHeight(int content_height) {
+void OmniboxPopupPresenterBase::SetWidgetBounds(int content_height) {
   if (widget_) {
     // The width is known, and is the basis for consistent web content rendering
     // so width is specified exactly; then only height adjusts dynamically.

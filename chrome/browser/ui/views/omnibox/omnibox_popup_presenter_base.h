@@ -46,7 +46,10 @@ class OmniboxPopupPresenterBase {
   // Tells whether the popup widget exists.
   bool IsShown() const;
 
-  void SetWidgetContentHeight(int content_height);
+  // Updates the widget's bounds to anchor it to the LocationBarView. The width
+  // is determined by the location bar's width, while the height is
+  // provided by the WebUI content.
+  void SetWidgetBounds(int content_height);
 
   // Returns the currently "active" Popup content, whichever one is visible or
   // going to be visible within the popup.
