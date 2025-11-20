@@ -39,15 +39,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DevTools.AnimationPlaybackRateChanged"
-    enum="DevToolsAnimationPlaybackRateChanged" expires_after="2025-11-30">
-  <owner>yangguo@google.com</owner>
-  <owner>changhaohan@google.com</owner>
-  <owner>ergunsh@google.com</owner>
-  <component>1559716</component>
-  <summary>Playback rate is changed in Animations panel in DevTools.</summary>
-</histogram>
-
 <histogram name="DevTools.BuiltInAiAvailability"
     enum="DevToolsBuiltInAiAvailability" expires_after="2026-10-24">
   <owner>wolfi@google.com</owner>

@@ -852,13 +852,6 @@ Called by update_protocol_commands_enum.py.-->
   <int value="194" label="Teaser for Console Insight - Generation errored"/>
 </enum>
 
-<enum name="DevToolsAnimationPlaybackRateChanged">
-  <int value="0" label="100%"/>
-  <int value="1" label="25%"/>
-  <int value="2" label="10%"/>
-  <int value="3" label="Other"/>
-</enum>
-
 <enum name="DevToolsBuiltInAiAvailability">
   <int value="0" label="LanguageModel unavailable, has GPU"/>
   <int value="1" label="LanguageModel downloadable, has GPU"/>
