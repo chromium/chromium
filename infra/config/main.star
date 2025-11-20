@@ -345,15 +345,8 @@ exec("//swarming.star")
 
 exec("//recipes.star")
 exec("//gn_args/gn_args.star")
-exec("//targets/basic_suites.star")
-exec("//targets/binaries.star")
-exec("//targets/bundles.star")
-exec("//targets/compile_targets.star")
-exec("//targets/compound_suites.star")
-exec("//targets/matrix_compound_suites.star")
-exec("//targets/mixins.star")
-exec("//targets/tests.star")
-exec("//targets/variants.star")
+
+exec("@chromium-targets//declarations.star")
 
 exec("//notifiers.star")
 

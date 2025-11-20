@@ -32,6 +32,10 @@ not end in -dev.cfg as well as the markdown file
 directories are consumed by the configuration:
 
 * lib - Utilities for defining LUCI entities.
+* targets - A local lucicfg package containing definitions of chromium targets
+  and tests that will be executed by builders. See
+  [its README.md](targets/README.md) for information on how to use the package
+  in other projects.
 * subprojects - Definitions of LUCI entities.
 * generators - Definitions of lucicfg generators that do various things to
   post-process the LUCI configuration before the output files are generated.
