@@ -433,7 +433,7 @@ extern const base::FeatureParam<ProfileCreationFrictionReductionVariation>
 
 // Returns if the current browser supports an explicit sign in (signs the user
 // into transport mode, as defined above) for extension access points (e.g. the
-// `ExtensionInstalledBubbleView`).
+// `ExtensionPostInstallDialogDelegate`).
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 bool IsExtensionsExplicitBrowserSigninEnabled();
 

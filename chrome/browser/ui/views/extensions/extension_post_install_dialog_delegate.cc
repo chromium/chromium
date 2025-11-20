@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/extensions/extension_installed_bubble_view.h"
+#include "chrome/browser/ui/views/extensions/extension_post_install_dialog_delegate.h"
 
 #include <string>
 
@@ -64,10 +64,9 @@ std::unique_ptr<views::View> CreateSigninPromoFootnoteView(
       syncer::LocalDataItemModel::DataId(extension_id));
 
   // Add color and insets to mimic the footnote view on the dialog. We cannot
-  // add the footnote using ui::Dialog
-  because it doesn't support
-      // complex footers.
-      auto wrapper_view = std::make_unique<views::BoxLayoutView>();
+  // add the footnote using ui::DialogModel because it doesn't support
+  // complex footers.
+  auto wrapper_view = std::make_unique<views::BoxLayoutView>();
   wrapper_view->SetBackground(
       views::CreateSolidBackground(ui::kColorBubbleFooterBackground));
   const auto& layout_provider = *views::LayoutProvider::Get();
@@ -103,7 +102,7 @@ void ShowExtensionPostInstallDialog(
   //   - Information on how to manage the extension.
   // - A footer area that may contain a sign-in or sync promo, added as a
   //   custom view.
-  auto delegate = std::make_unique<ExtensionInstalledBubbleView>(
+  auto delegate = std::make_unique<ExtensionPostInstallDialogDelegate>(
       web_contents, std::move(model));
   gfx::NativeWindow native_window = web_contents->GetTopLevelNativeWindow();
   if (!native_window) {
@@ -134,8 +133,9 @@ void ShowExtensionPostInstallDialog(
             IDS_EXTENSION_INSTALLED_MANAGE_SHORTCUTS,
             ui::DialogModelLabel::CreateLink(
                 IDS_EXTENSION_INSTALLED_MANAGE_SHORTCUTS_LINK_TEXT,
-                base::BindRepeating(&ExtensionInstalledBubbleView::LinkClicked,
-                                    base::Unretained(weak_delegate)))));
+                base::BindRepeating(
+                    &ExtensionPostInstallDialogDelegate::LinkClicked,
+                    base::Unretained(weak_delegate)))));
   }
 
   if (weak_delegate->model()->show_how_to_manage()) {
@@ -185,14 +185,15 @@ void ShowExtensionPostInstallDialog(
   }
 }
 
-ExtensionInstalledBubbleView::ExtensionInstalledBubbleView(
+ExtensionPostInstallDialogDelegate::ExtensionPostInstallDialogDelegate(
     content::WebContents* web_contents,
     std::unique_ptr<ExtensionPostInstallDialogModel> model)
     : web_contents_(web_contents->GetWeakPtr()), model_(std::move(model)) {}
 
-ExtensionInstalledBubbleView::~ExtensionInstalledBubbleView() = default;
+ExtensionPostInstallDialogDelegate::~ExtensionPostInstallDialogDelegate() =
+    default;
 
-void ExtensionInstalledBubbleView::LinkClicked() {
+void ExtensionPostInstallDialogDelegate::LinkClicked() {
   if (web_contents_) {
     const GURL kUrl(base::StrCat({chrome::kChromeUIExtensionsURL,
                                   chrome::kExtensionConfigureCommandsSubPage}));

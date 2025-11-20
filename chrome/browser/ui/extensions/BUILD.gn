@@ -61,8 +61,8 @@ source_set("extensions") {
       "application_launch.h",
       "extension_action_platform_delegate.h",
       "extension_enable_flow.h",
-      "extension_installed_bubble_model.h",
       "extension_installed_waiter.h",
+      "extension_post_install_dialog_model.h",
       "extension_side_panel_utils.h",
       "extensions_container.h",
       "extensions_overrides/simple_overrides.h",
@@ -168,8 +168,8 @@ source_set("impl") {
       "app_launch_params.cc",
       "application_launch.cc",
       "extension_enable_flow.cc",
-      "extension_installed_bubble_model.cc",
       "extension_installed_waiter.cc",
+      "extension_post_install_dialog_model.cc",
       "extension_settings_overridden_dialog.cc",
       "extensions_overrides/simple_overrides.cc",
       "hosted_app_browser_controller.cc",
@@ -230,7 +230,7 @@ source_set("unit_tests") {
   if (!is_android) {
     sources += [
       "controlled_home_dialog_controller_unittest.cc",
-      "extension_installed_bubble_model_unittest.cc",
+      "extension_post_install_dialog_model_unittest.cc",
       "extension_settings_overridden_dialog_unittest.cc",
       "extensions_overrides/simple_overrides_unittest.cc",
       "settings_api_bubble_helpers_unittest.cc",

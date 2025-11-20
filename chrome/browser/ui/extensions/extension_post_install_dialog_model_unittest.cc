@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/extensions/extension_installed_bubble_model.h"
+#include "chrome/browser/ui/extensions/extension_post_install_dialog_model.h"
 
 #include "base/command_line.h"
 #include "base/values.h"
@@ -21,12 +21,12 @@
 
 using extensions::Extension;
 
-class ExtensionInstalledBubbleModelTest
+class ExtensionPostInstallDialogModelTest
     : public extensions::ExtensionServiceTestWithInstall {
  public:
-  ExtensionInstalledBubbleModelTest() = default;
+  ExtensionPostInstallDialogModelTest() = default;
 
-  ~ExtensionInstalledBubbleModelTest() override = default;
+  ~ExtensionPostInstallDialogModelTest() override = default;
 
   void SetUp() override {
     InitializeEmptyExtensionService();
@@ -59,13 +59,13 @@ class ExtensionInstalledBubbleModelTest
   }
 };
 
-TEST_F(ExtensionInstalledBubbleModelTest, SyntheticPageActionExtension) {
+TEST_F(ExtensionPostInstallDialogModelTest, SyntheticPageActionExtension) {
   // An extension with no action info in the manifest at all gets a synthesized
   // page action.
   auto extension = extensions::ExtensionBuilder("Foo").Build();
   registrar()->AddExtension(extension);
 
-  ExtensionInstalledBubbleModel model(profile(), extension.get(), SkBitmap());
+  ExtensionPostInstallDialogModel model(profile(), extension.get(), SkBitmap());
 
   // It should anchor to the synthesized action...
   EXPECT_TRUE(model.anchor_to_action());
@@ -78,7 +78,7 @@ TEST_F(ExtensionInstalledBubbleModelTest, SyntheticPageActionExtension) {
   EXPECT_FALSE(model.show_key_binding());
 }
 
-TEST_F(ExtensionInstalledBubbleModelTest, OmniboxExtension) {
+TEST_F(ExtensionPostInstallDialogModelTest, OmniboxExtension) {
   // An extension with a regular action and an omnibox keyword...
   auto builder = extensions::ExtensionBuilder("Foo");
   AddOmniboxKeyword(&builder, "fookey");
@@ -86,7 +86,7 @@ TEST_F(ExtensionInstalledBubbleModelTest, OmniboxExtension) {
   auto extension = builder.Build();
   registrar()->AddExtension(extension);
 
-  ExtensionInstalledBubbleModel model(profile(), extension.get(), SkBitmap());
+  ExtensionPostInstallDialogModel model(profile(), extension.get(), SkBitmap());
 
   // ... should be anchored to the omnibox, not to the action ...
   EXPECT_FALSE(model.anchor_to_action());
@@ -99,7 +99,7 @@ TEST_F(ExtensionInstalledBubbleModelTest, OmniboxExtension) {
   EXPECT_FALSE(model.show_key_binding());
 }
 
-TEST_F(ExtensionInstalledBubbleModelTest, PageActionExtension) {
+TEST_F(ExtensionPostInstallDialogModelTest, PageActionExtension) {
   // An extension with a page action...
   auto extension = extensions::ExtensionBuilder("Foo")
                        .SetManifestVersion(2)
@@ -107,7 +107,7 @@ TEST_F(ExtensionInstalledBubbleModelTest, PageActionExtension) {
                        .Build();
   registrar()->AddExtension(extension);
 
-  ExtensionInstalledBubbleModel model(profile(), extension.get(), SkBitmap());
+  ExtensionPostInstallDialogModel model(profile(), extension.get(), SkBitmap());
 
   // should anchor to that action
   EXPECT_TRUE(model.anchor_to_action());
@@ -122,13 +122,13 @@ TEST_F(ExtensionInstalledBubbleModelTest, PageActionExtension) {
 
 // TODO(crbug.com/405148986): Modify this test once the appropriate how to use
 // text is decided for extensions with actions.
-TEST_F(ExtensionInstalledBubbleModelTest, ActionExtension) {
+TEST_F(ExtensionPostInstallDialogModelTest, ActionExtension) {
   auto extension = extensions::ExtensionBuilder("Foo")
                        .SetAction(extensions::ActionInfo::Type::kAction)
                        .Build();
   registrar()->AddExtension(extension);
 
-  ExtensionInstalledBubbleModel model(profile(), extension.get(), SkBitmap());
+  ExtensionPostInstallDialogModel model(profile(), extension.get(), SkBitmap());
 
   // should anchor to that action
   EXPECT_TRUE(model.anchor_to_action());
@@ -140,7 +140,7 @@ TEST_F(ExtensionInstalledBubbleModelTest, ActionExtension) {
   EXPECT_FALSE(model.show_key_binding());
 }
 
-TEST_F(ExtensionInstalledBubbleModelTest, ExtensionWithKeyBinding) {
+TEST_F(ExtensionPostInstallDialogModelTest, ExtensionWithKeyBinding) {
   // An extension with a browser action and a key binding...
   auto builder = extensions::ExtensionBuilder("Foo");
   builder.SetAction(extensions::ActionInfo::Type::kBrowser);
@@ -152,7 +152,7 @@ TEST_F(ExtensionInstalledBubbleModelTest, ExtensionWithKeyBinding) {
   // - hotkeys are picked up at install time, not add time.
   registrar()->OnExtensionInstalled(extension.get(), syncer::StringOrdinal());
 
-  ExtensionInstalledBubbleModel model(profile(), extension.get(), SkBitmap());
+  ExtensionPostInstallDialogModel model(profile(), extension.get(), SkBitmap());
 
   // Should have a how-to-use that lists the key, but *not* a how-to-manage,
   // since it crowds the UI.
@@ -168,14 +168,14 @@ TEST_F(ExtensionInstalledBubbleModelTest, ExtensionWithKeyBinding) {
             model.GetHowToUseText().find(accelerator.GetShortcutText()));
 }
 
-TEST_F(ExtensionInstalledBubbleModelTest, OmniboxKeywordAndSyntheticAction) {
+TEST_F(ExtensionPostInstallDialogModelTest, OmniboxKeywordAndSyntheticAction) {
   auto builder = extensions::ExtensionBuilder("Foo");
   AddOmniboxKeyword(&builder, "fookey");
   auto extension = builder.Build();
 
   registrar()->AddExtension(extension);
 
-  ExtensionInstalledBubbleModel model(profile(), extension.get(), SkBitmap());
+  ExtensionPostInstallDialogModel model(profile(), extension.get(), SkBitmap());
 
   // This extension has a synthesized action and an omnibox keyword. It should
   // have how-to-use text, and be anchored to its (synthesized) page action.

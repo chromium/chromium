@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_INSTALLED_BUBBLE_VIEW_H_
-#define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_INSTALLED_BUBBLE_VIEW_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_POST_INSTALL_DIALOG_DELEGATE_H_
+#define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_POST_INSTALL_DIALOG_DELEGATE_H_
 
 #include <string>
 
@@ -12,8 +12,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/extensions/extension_installed_bubble_model.h"
 #include "chrome/browser/ui/extensions/extension_installed_waiter.h"
+#include "chrome/browser/ui/extensions/extension_post_install_dialog_model.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/common/extension.h"
@@ -28,27 +28,28 @@
 //                      bar which is shown while the Bubble is shown.
 //    GENERIC        -> The app menu. This case includes pageActions that don't
 //                      specify a default icon.
-class ExtensionInstalledBubbleView : public ui::DialogModelDelegate {
+class ExtensionPostInstallDialogDelegate : public ui::DialogModelDelegate {
  public:
-  ExtensionInstalledBubbleView(
+  ExtensionPostInstallDialogDelegate(
       content::WebContents* web_contents,
-      std::unique_ptr<ExtensionInstalledBubbleModel> model);
-  ExtensionInstalledBubbleView(const ExtensionInstalledBubbleView&) = delete;
-  ExtensionInstalledBubbleView& operator=(const ExtensionInstalledBubbleView&) =
-      delete;
-  ~ExtensionInstalledBubbleView() override;
+      std::unique_ptr<ExtensionPostInstallDialogModel> model);
+  ExtensionPostInstallDialogDelegate(
+      const ExtensionPostInstallDialogDelegate&) = delete;
+  ExtensionPostInstallDialogDelegate& operator=(
+      const ExtensionPostInstallDialogDelegate&) = delete;
+  ~ExtensionPostInstallDialogDelegate() override;
 
   static void Show(Browser* browser,
-                   std::unique_ptr<ExtensionInstalledBubbleModel> model);
+                   std::unique_ptr<ExtensionPostInstallDialogModel> model);
 
-  const ExtensionInstalledBubbleModel* model() const { return model_.get(); }
+  const ExtensionPostInstallDialogModel* model() const { return model_.get(); }
 
   void LinkClicked();
 
  private:
   base::WeakPtr<content::WebContents> web_contents_;
 
-  const std::unique_ptr<ExtensionInstalledBubbleModel> model_;
+  const std::unique_ptr<ExtensionPostInstallDialogModel> model_;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_INSTALLED_BUBBLE_VIEW_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_POST_INSTALL_DIALOG_DELEGATE_H_

@@ -30,7 +30,7 @@
 #include "chrome/browser/ui/views/autofill/address_sign_in_promo_view.h"
 #include "chrome/browser/ui/views/autofill/save_address_profile_view.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
-#include "chrome/browser/ui/views/extensions/extension_installed_bubble_view.h"
+#include "chrome/browser/ui/views/extensions/extension_post_install_dialog_delegate.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "chrome/browser/ui/views/passwords/password_save_update_view.h"
 #include "chrome/browser/ui/webui/signin/signin_utils_desktop.h"

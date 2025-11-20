@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_INSTALLED_BUBBLE_MODEL_H_
-#define CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_INSTALLED_BUBBLE_MODEL_H_
+#ifndef CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_POST_INSTALL_DIALOG_MODEL_H_
+#define CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_POST_INSTALL_DIALOG_MODEL_H_
 
 #include <string>
 
@@ -17,19 +17,19 @@ namespace extensions {
 class Extension;
 }  // namespace extensions
 
-// An ExtensionInstalledBubbleModel represents the state of an
+// An ExtensionPostInstallDialogModel represents the state of an
 // "extension installed" bubble. Instances of this class are entirely immutable
 // after construction.
-class ExtensionInstalledBubbleModel {
+class ExtensionPostInstallDialogModel {
  public:
-  ExtensionInstalledBubbleModel(Profile* profile,
-                                const extensions::Extension* extension,
-                                const SkBitmap& icon);
-  ~ExtensionInstalledBubbleModel();
-  ExtensionInstalledBubbleModel(const ExtensionInstalledBubbleModel& other) =
-      delete;
-  ExtensionInstalledBubbleModel& operator=(
-      const ExtensionInstalledBubbleModel& other) = delete;
+  ExtensionPostInstallDialogModel(Profile* profile,
+                                  const extensions::Extension* extension,
+                                  const SkBitmap& icon);
+  ~ExtensionPostInstallDialogModel();
+  ExtensionPostInstallDialogModel(
+      const ExtensionPostInstallDialogModel& other) = delete;
+  ExtensionPostInstallDialogModel& operator=(
+      const ExtensionPostInstallDialogModel& other) = delete;
 
   bool anchor_to_action() const { return anchor_to_action_; }
   bool anchor_to_omnibox() const { return anchor_to_omnibox_; }
@@ -67,4 +67,4 @@ class ExtensionInstalledBubbleModel {
   const std::string extension_name_;
 };
 
-#endif  // CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_INSTALLED_BUBBLE_MODEL_H_
+#endif  // CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_POST_INSTALL_DIALOG_MODEL_H_

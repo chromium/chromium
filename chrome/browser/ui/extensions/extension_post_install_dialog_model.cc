@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/extensions/extension_installed_bubble_model.h"
+#include "chrome/browser/ui/extensions/extension_post_install_dialog_model.h"
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/commands/command_service.h"
@@ -81,7 +81,7 @@ std::u16string MakeHowToUseText(const extensions::ActionInfo* action,
 
 }  // namespace
 
-ExtensionInstalledBubbleModel::ExtensionInstalledBubbleModel(
+ExtensionPostInstallDialogModel::ExtensionPostInstallDialogModel(
     Profile* profile,
     const extensions::Extension* extension,
     const SkBitmap& icon)
@@ -114,14 +114,14 @@ ExtensionInstalledBubbleModel::ExtensionInstalledBubbleModel(
   }
 }
 
-ExtensionInstalledBubbleModel::~ExtensionInstalledBubbleModel() = default;
+ExtensionPostInstallDialogModel::~ExtensionPostInstallDialogModel() = default;
 
-std::u16string ExtensionInstalledBubbleModel::GetHowToUseText() const {
+std::u16string ExtensionPostInstallDialogModel::GetHowToUseText() const {
   DCHECK(show_how_to_use_);
   return how_to_use_text_;
 }
 
-gfx::ImageSkia ExtensionInstalledBubbleModel::MakeIconOfSize(
+gfx::ImageSkia ExtensionPostInstallDialogModel::MakeIconOfSize(
     const gfx::Size& wanted) const {
   gfx::Size size(icon_.width(), icon_.height());
   if (size.width() > wanted.width() || size.height() > wanted.height()) {

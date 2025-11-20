@@ -5118,7 +5118,7 @@ if (!is_android) {
         "../browser/ui/views/extensions/device_chooser_extension_browsertest.cc",
         "../browser/ui/views/extensions/dialogs/mv2_deprecation_reenable_dialog_browsertest.cc",
         "../browser/ui/views/extensions/extension_install_dialog_view_browsertest.cc",
-        "../browser/ui/views/extensions/extension_installed_bubble_view_browsertest.cc",
+        "../browser/ui/views/extensions/extension_post_install_dialog_delegate_browsertest.cc",
         "../browser/ui/views/extensions/extensions_dialogs_browsertest.cc",
         "../browser/ui/views/extensions/extensions_dialogs_browsertest.h",
         "../browser/ui/views/extensions/extensions_request_access_hover_card_coordinator_browsertest.cc",
@@ -5265,7 +5265,7 @@ if (!is_android) {
       } else {
         sources += [
           "../browser/ui/views/extensions/dialogs/upload_extension_to_account_dialog_browsertest.cc",
-          "../browser/ui/views/extensions/extension_installed_bubble_view_signin_browsertest.cc",
+          "../browser/ui/views/extensions/extension_post_install_dialog_delegate_signin_browsertest.cc",
           "../browser/ui/views/frame/opaque_browser_frame_view_browsertest.cc",
           "../browser/ui/views/performance_controls/battery_saver_button_browsertest.cc",
           "../browser/ui/views/policy/enterprise_startup_dialog_view_browsertest.cc",

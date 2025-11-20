@@ -17,7 +17,7 @@
 #include "chrome/browser/ui/extensions/extension_install_ui_desktop.h"
 #include "chrome/browser/ui/signin/promos/bubble_signin_promo_delegate.h"
 #include "chrome/browser/ui/singleton_tabs.h"
-#include "chrome/browser/ui/views/extensions/extension_installed_bubble_view.h"
+#include "chrome/browser/ui/views/extensions/extension_post_install_dialog_delegate.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -32,15 +32,15 @@
 #include "ui/views/widget/widget.h"
 
 // Tests sign in behavior from the extension installed bubble.
-class ExtensionInstalledBubbleViewsSignInBrowserTest
+class ExtensionPostInstallDialogDelegateSignInBrowserTest
     : public extensions::ExtensionBrowserTest {
  public:
-  ExtensionInstalledBubbleViewsSignInBrowserTest() {
+  ExtensionPostInstallDialogDelegateSignInBrowserTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
         /*disabled_features=*/{syncer::kUnoPhase2FollowUp});
   }
-  ~ExtensionInstalledBubbleViewsSignInBrowserTest() override = default;
+  ~ExtensionPostInstallDialogDelegateSignInBrowserTest() override = default;
 
  protected:
   extensions::AccountExtensionTracker* account_extension_tracker() {
@@ -109,7 +109,7 @@ class ExtensionInstalledBubbleViewsSignInBrowserTest
 
 // Test that by default, signing in from the extension installed bubble will
 // sign the user into sync.
-IN_PROC_BROWSER_TEST_F(ExtensionInstalledBubbleViewsSignInBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionPostInstallDialogDelegateSignInBrowserTest,
                        BubbleSignsIntoSync) {
   // The default browser created for tests start with one tab open on
   // about:blank.  The sign-in page is a singleton that will replace this tab.
@@ -144,7 +144,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstalledBubbleViewsSignInBrowserTest,
 
 // Test that users can perform an explicit sign in through the extension
 // installed promo in transport mode.
-IN_PROC_BROWSER_TEST_F(ExtensionInstalledBubbleViewsSignInBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionPostInstallDialogDelegateSignInBrowserTest,
                        BubbleExplicitSignin) {
   // Load three extensions.
   auto old_extension = LoadPackedExtension("simple_with_file");
@@ -214,7 +214,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstalledBubbleViewsSignInBrowserTest,
 // extension installed promo should still promote the extension to an account
 // extension.
 // This tests the fix for crbug.com/400522723
-IN_PROC_BROWSER_TEST_F(ExtensionInstalledBubbleViewsSignInBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionPostInstallDialogDelegateSignInBrowserTest,
                        BubbleExplicitSigninWithAccount) {
   auto extension = LoadPackedExtension("simple_with_file");
   ASSERT_TRUE(extension);

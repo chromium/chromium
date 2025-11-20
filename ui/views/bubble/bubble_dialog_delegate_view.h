@@ -57,7 +57,6 @@ class CrostiniUpdateFilesystemView;
 class DiceWebSigninInterceptionBubbleView;
 class ExtensionInstallDialogView;
 class ExtensionInstallFrictionDialogView;
-class ExtensionInstalledBubbleView;
 class ExtensionPopup;
 class ExtensionsMenuView;
 class FlyingIndicator;
@@ -814,7 +813,6 @@ class VIEWS_EXPORT BubbleDialogDelegateView : public View,
   friend class ::DiceWebSigninInterceptionBubbleView;
   friend class ::ExtensionInstallDialogView;
   friend class ::ExtensionInstallFrictionDialogView;
-  friend class ::ExtensionInstalledBubbleView;
   friend class ::ExtensionPopup;
   friend class ::ExtensionsMenuView;
   friend class ::FlyingIndicator;

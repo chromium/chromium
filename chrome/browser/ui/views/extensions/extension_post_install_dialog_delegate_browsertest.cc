@@ -18,11 +18,11 @@
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 
-class ExtensionInstalledBubbleViewsBrowserTest
+class ExtensionPostInstallDialogDelegateBrowserTest
     : public SupportsTestDialog<extensions::ExtensionBrowserTest> {
  public:
-  ExtensionInstalledBubbleViewsBrowserTest() = default;
-  ~ExtensionInstalledBubbleViewsBrowserTest() override = default;
+  ExtensionPostInstallDialogDelegateBrowserTest() = default;
+  ~ExtensionPostInstallDialogDelegateBrowserTest() override = default;
 
   void ShowUi(const std::string& name) override;
   bool VerifyUi() override;
@@ -60,7 +60,8 @@ class ExtensionInstalledBubbleViewsBrowserTest
   raw_ptr<views::Widget, AcrossTasksDanglingUntriaged> bubble_widget_;
 };
 
-void ExtensionInstalledBubbleViewsBrowserTest::ShowUi(const std::string& name) {
+void ExtensionPostInstallDialogDelegateBrowserTest::ShowUi(
+    const std::string& name) {
   scoped_refptr<const extensions::Extension> extension =
       MakeExtensionOfType(name);
 
@@ -80,11 +81,11 @@ void ExtensionInstalledBubbleViewsBrowserTest::ShowUi(const std::string& name) {
   views::test::WidgetVisibleWaiter(bubble_widget_).Wait();
 }
 
-bool ExtensionInstalledBubbleViewsBrowserTest::VerifyUi() {
+bool ExtensionPostInstallDialogDelegateBrowserTest::VerifyUi() {
   return bubble_widget_->IsVisible();
 }
 
-void ExtensionInstalledBubbleViewsBrowserTest::WaitForUserDismissal() {
+void ExtensionPostInstallDialogDelegateBrowserTest::WaitForUserDismissal() {
   views::test::WidgetDestroyedWaiter observer(bubble_widget_);
   observer.Wait();
 }
@@ -107,27 +108,27 @@ void ExtensionInstalledBubbleViewsBrowserTest::WaitForUserDismissal() {
 #define MAYBE_InvokeUi_Omnibox InvokeUi_Omnibox
 #endif
 
-IN_PROC_BROWSER_TEST_F(ExtensionInstalledBubbleViewsBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionPostInstallDialogDelegateBrowserTest,
                        MAYBE_InvokeUi_default) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionInstalledBubbleViewsBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionPostInstallDialogDelegateBrowserTest,
                        MAYBE_InvokeUi_BrowserAction) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionInstalledBubbleViewsBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionPostInstallDialogDelegateBrowserTest,
                        MAYBE_InvokeUi_PageAction) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionInstalledBubbleViewsBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionPostInstallDialogDelegateBrowserTest,
                        MAYBE_InvokeUi_SignInPromo) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionInstalledBubbleViewsBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionPostInstallDialogDelegateBrowserTest,
                        MAYBE_InvokeUi_Omnibox) {
   ShowAndVerifyUi();
 }
