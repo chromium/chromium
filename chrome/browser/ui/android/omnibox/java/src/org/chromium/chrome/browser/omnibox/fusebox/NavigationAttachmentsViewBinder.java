@@ -142,7 +142,8 @@ class NavigationAttachmentsViewBinder {
                 model.get(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE)
                         == AutocompleteRequestType.IMAGE_GENERATION;
         boolean isCustomModeUsed = isAiModeUsed || isImageGenerationUsed;
-        Resources res = views.parentView.getResources();
+        Context context = views.parentView.getContext();
+        Resources res = context.getResources();
 
         views.addButton.setVisibility(showFuseboxToolbar ? View.VISIBLE : View.GONE);
 
@@ -171,8 +172,8 @@ class NavigationAttachmentsViewBinder {
 
             views.requestType.setButtonColor(
                     isCustomModeUsed
-                            ? res.getColorStateList(R.color.gm3_baseline_surface_container)
-                            : res.getColorStateList(android.R.color.transparent));
+                            ? context.getColorStateList(R.color.gm3_baseline_surface_container)
+                            : context.getColorStateList(android.R.color.transparent));
 
             views.requestType.setBorderStyle(
                     isCustomModeUsed
@@ -181,17 +182,15 @@ class NavigationAttachmentsViewBinder {
 
             views.requestType.setCompoundDrawablesRelativeWithIntrinsicBounds(
                     isImageGenerationUsed
-                            ? res.getDrawable(R.drawable.create_image_24dp)
-                            : res.getDrawable(R.drawable.search_spark_black_24dp),
+                            ? context.getDrawable(R.drawable.create_image_24dp)
+                            : context.getDrawable(R.drawable.search_spark_black_24dp),
                     null,
-                    isCustomModeUsed ? res.getDrawable(R.drawable.btn_close) : null,
+                    isCustomModeUsed ? context.getDrawable(R.drawable.btn_close) : null,
                     null);
             views.requestType.setCompoundDrawableTintList(
                     isImageGenerationUsed
                             ? null
-                            : ColorStateList.valueOf(
-                                    SemanticColorUtils.getColorPrimary(
-                                            views.parentView.getContext())));
+                            : ColorStateList.valueOf(SemanticColorUtils.getColorPrimary(context)));
         } else {
             views.requestType.setVisibility(View.GONE);
         }
