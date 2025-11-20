@@ -55,6 +55,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
+import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.DirectionalScrollListener;
@@ -911,7 +912,15 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     }
 
     private void onContextMenuFocusableChanged(boolean focusable) {
-        assumeNonNull(mContextMenuCoordinator);
+        if (mContextMenuCoordinator == null) {
+            boolean isTabModelIncognito =
+                    mTabGroupModelFilterSupplier.get().getTabModel().isOffTheRecord();
+            String logMessage =
+                    "ContextMenuCoordinator is null due to null profile. isTabModelIncognito = "
+                            + isTabModelIncognito;
+            ChromePureJavaExceptionReporter.reportJavaException(new Throwable(logMessage));
+            return;
+        }
         mContextMenuCoordinator.setMenuFocusable(focusable);
     }
 
