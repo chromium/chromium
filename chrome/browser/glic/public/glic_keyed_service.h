@@ -352,7 +352,8 @@ class GlicKeyedService : public KeyedService,
       std::vector<std::string> returned_suggestions);
 
   void FinishPreload(GlicPrewarmingChecksResult reason);
-  void FinishPreloadFre(GlicPrewarmingFreSource source, bool should_preload);
+  void FinishPreloadFre(GlicPrewarmingFreSource source,
+                        GlicPrewarmingChecksResult result);
 
   // List of callbacks to be notified when the client requests a change to the
   // context access indicator status.

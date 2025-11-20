@@ -505,6 +505,7 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="Under Memory Pressure"/>
   <int value="13" label="Cellular Connection"/>
   <int value="14" label="Browser app is shutting down"/>
+  <int value="15" label="User already went through the FRE"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/glic_profile_manager.h:GlicPrewarmingChecksResult) -->

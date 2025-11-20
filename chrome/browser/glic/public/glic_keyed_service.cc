@@ -624,12 +624,6 @@ void GlicKeyedService::TryPreloadAfterDelay() {
 }
 
 void GlicKeyedService::TryPreloadFre(GlicPrewarmingFreSource source) {
-  if (!base::FeatureList::IsEnabled(features::kGlicFreWarming)) {
-    // Early/duplicate FRE warming enabling check just to record this metric.
-    base::UmaHistogramEnumeration(
-        "Glic.PrewarmingFre.DisabledShouldNotPreloadFreForSource", source);
-    return;
-  }
   GlicProfileManager* glic_profile_manager = GlicProfileManager::GetInstance();
   CHECK(glic_profile_manager);
 
@@ -690,16 +684,20 @@ void GlicKeyedService::FinishPreload(GlicPrewarmingChecksResult result) {
 }
 
 void GlicKeyedService::FinishPreloadFre(GlicPrewarmingFreSource source,
-                                        bool should_preload) {
-  if (!should_preload) {
+                                        GlicPrewarmingChecksResult result) {
+  if (result != GlicPrewarmingChecksResult::kSuccess) {
+    // If FRE preloading was rejected, log error metrics and return.
     base::UmaHistogramEnumeration(
         "Glic.PrewarmingFre.ShouldNotPreloadFreForSource", source);
+    if (result == GlicPrewarmingChecksResult::kWarmingDisabled) {
+      base::UmaHistogramEnumeration(
+          "Glic.PrewarmingFre.DisabledShouldNotPreloadFreForSource", source);
+    }
     return;
   }
 
   base::UmaHistogramEnumeration("Glic.PrewarmingFre.ShouldPreloadFreForSource",
                                 source);
-
   fre_controller().TryPreload();
 }
 
@@ -743,7 +741,7 @@ void GlicKeyedService::SendAdditionalContext(
 void GlicKeyedService::Close(
     content::RenderFrameHost* outermost_render_frame_host) {
   window_controller().CloseInstanceWithFrame(outermost_render_frame_host);
-  }
+}
 
 void GlicKeyedService::OnWebClientCleared() {
   actor_task_manager_->CancelTask();
