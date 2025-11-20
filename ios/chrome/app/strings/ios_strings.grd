@@ -7944,9 +7944,6 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_WELCOME_BACK_TITLE_SIGNED_IN" desc="The title of the Welcome Back promo for users who are signed in">
         Welcome back, <ph name="USER_NAME">$1<ex>John</ex></ph>
       </message>
-      <message name="IDS_IOS_WHATS_HOW_TO_ENABLE_TITLE" desc="Title of a section in What's New that show users the instructions to enable the feature.">
-        How do I enable this feature?
-      </message>
       <message name="IDS_IOS_WHATS_NEW_CALENDAR_SCREENSHOT_TEXT_ADD_TITLE" desc="Text in image displaying a placeholder for the title of the Google calendar event. [iOS only]">
         Add title
       </message>
@@ -8100,8 +8097,8 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_WHATS_NEW_SECTION_NEW_TITLE" desc="Title of a section in a table view to inform users about new features.">
         New
       </message>
-      <message name="IDS_IOS_WHATS_NEW_SHOW_INSTRUCTIONS_TITLE" desc="Title of a secondary button in What's New to show instructions.">
-        Show instructions
+      <message name="IDS_IOS_WHATS_NEW_SHOW_INSTRUCTIONS_TITLE" desc="Title used for both the secondary button and the section header in the What's New screen that displays instructions on how to enable the feature.">
+        Show me how
       </message>
       <message name="IDS_IOS_WHATS_NEW_TITLE" desc="Title of the What's new Feature">
         What's New
