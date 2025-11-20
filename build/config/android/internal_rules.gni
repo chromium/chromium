@@ -1119,7 +1119,6 @@ if (enable_java_templates) {
         "--lint-gen-dir",
         rebase_path(_lint_gen_dir, root_build_dir),
         "--android-sdk-version=${lint_android_sdk_version}",
-        "--min-sdk-version=$_min_sdk_version",
         "--android-sdk-root",
         rebase_path(lint_android_sdk_root, root_build_dir),
         "--backported-methods",
@@ -1192,8 +1191,10 @@ if (enable_java_templates) {
         inputs += [ _lint_json ]
         _rebased_lint_json = rebase_path(_lint_json, root_build_dir)
 
+        inputs += [ invoker.manifest ]
         args += [
-          "--manifest-paths=@FileArg($_rebased_lint_json:android_manifests)",
+          "--manifest",
+          rebase_path(invoker.manifest, root_build_dir),
 
           # Lint requires all source and all resource files to be passed in the
           # same invocation for checks like UnusedResources.

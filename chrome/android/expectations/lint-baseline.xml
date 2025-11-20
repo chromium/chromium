@@ -598,12 +598,12 @@
     <issue
         id="DataExtractionRules"
         message="The attribute `android:allowBackup` is deprecated from Android 12 and higher and may be removed in future versions. Consider adding the attribute `android:dataExtractionRules` specifying an `@xml` resource which configures cloud backups and device transfers on Android 12 and higher."
-        errorLine1="  &lt;application android:name=&quot;org.chromium.chrome.browser.base.SplitChromeApplication&quot; android:icon=&quot;@drawable/ic_launcher&quot; android:roundIcon=&quot;@drawable/ic_launcher_round&quot; android:label=&quot;@string/app_name&quot; android:memtagMode=&quot;async&quot; android:largeHeap=&quot;false&quot; android:manageSpaceActivity=&quot;@string/manage_space_activity&quot; android:supportsRtl=&quot;true&quot; android:zygotePreloadName=&quot;org.chromium.content_public.app.ZygotePreload&quot; android:allowBackup=&quot;false&quot; android:networkSecurityConfig=&quot;@xml/network_security_config&quot; android:allowAudioPlaybackCapture=&quot;false&quot; android:appComponentFactory=&quot;org.chromium.chrome.browser.base.SplitCompatAppComponentFactory&quot; android:enableOnBackInvokedCallback=&quot;true&quot;>"
-        errorLine2="  ^">
+        errorLine1="    &lt;application />"
+        errorLine2="    ~~~~~~~~~~~~~~~">
         <location
-            file="gen/chrome/android/chrome_public_apk__lint/AndroidManifest.xml"
-            line="274"
-            column="3"/>
+            file="android_lint_cache/aars/lottie.aar/AndroidManifest.xml"
+            line="7"
+            column="5"/>
     </issue>
 
     <issue
@@ -839,6 +839,211 @@
 
     <issue
         id="UnusedResources"
+        message="The resource `R.xml.ad_services_config` appears to be unused"
+        errorLine1="&lt;ad-services-config>"
+        errorLine2="^">
+        <location
+            file="../../chrome/android/java/res/xml/ad_services_config.xml"
+            line="8"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.fre_activity_label` appears to be unused"
+        errorLine1="&lt;string name=&quot;fre_activity_label&quot;>&quot;Chrome se eerste laatloopervaring&quot;&lt;/string>"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/chrome/browser/ui/android/strings/ui_strings_grd.resources.zip/values-af/android_chrome_strings.xml"
+            line="1141"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.bookmark_choose_folder` appears to be unused"
+        errorLine1="&lt;string name=&quot;bookmark_choose_folder&quot;>&quot;Kies vouer&quot;&lt;/string>"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/chrome/browser/ui/android/strings/ui_strings_grd.resources.zip/values-af/android_chrome_strings.xml"
+            line="1463"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.bookmark_widget_description` appears to be unused"
+        errorLine1="&lt;string name=&quot;bookmark_widget_description&quot;>&quot;Kry maklik toegang tot jou boekmerke&quot;&lt;/string>"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/chrome/browser/ui/android/strings/ui_strings_grd.resources.zip/values-af/android_chrome_strings.xml"
+            line="1480"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.content_provider_search_description` appears to be unused"
+        errorLine1="&lt;string name=&quot;content_provider_search_description&quot;>&quot;Boekmerke en webgeskiedenis&quot;&lt;/string>"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/chrome/browser/ui/android/strings/ui_strings_grd.resources.zip/values-af/android_chrome_strings.xml"
+            line="1576"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.webapp_activity_title` appears to be unused"
+        errorLine1="&lt;string name=&quot;webapp_activity_title&quot;>&quot;Webprogram&quot;&lt;/string>"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/chrome/browser/ui/android/strings/ui_strings_grd.resources.zip/values-af/android_chrome_strings.xml"
+            line="1736"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.search_widget_description` appears to be unused"
+        errorLine1="&lt;string name=&quot;search_widget_description&quot;>&quot;Begin vinnig ’n soektog in Chrome&quot;&lt;/string>"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/chrome/browser/ui/android/strings/ui_strings_grd.resources.zip/values-af/android_chrome_strings.xml"
+            line="1985"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.quick_action_search_widget_description` appears to be unused"
+        errorLine1="&lt;string name=&quot;quick_action_search_widget_description&quot;>&quot;Soek met behulp van sleutelbord, stem, Incognito of kamera&quot;&lt;/string>"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/chrome/browser/ui/android/strings/ui_strings_grd.resources.zip/values-af/android_chrome_strings.xml"
+            line="1991"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.dino_widget_description` appears to be unused"
+        errorLine1="&lt;string name=&quot;dino_widget_description&quot;>&quot;Spring in ’n lekker Dino-speletjie&quot;&lt;/string>"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/chrome/browser/ui/android/strings/ui_strings_grd.resources.zip/values-af/android_chrome_strings.xml"
+            line="1993"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.disabled_incognito_launcher_shortcut_message` appears to be unused"
+        errorLine1="&lt;string name=&quot;disabled_incognito_launcher_shortcut_message&quot;>&quot;Verwyder hierdie kortpad en skep dit weer&quot;&lt;/string>"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/chrome/browser/ui/android/strings/ui_strings_grd.resources.zip/values-af/android_chrome_strings.xml"
+            line="1994"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.xml.app_restrictions` appears to be unused"
+        errorLine1="&lt;restrictions xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;>"
+        errorLine2="^">
+        <location
+            file="gen/chrome/app/policy/android/xml-v21/app_restrictions.xml"
+            line="8"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.xml.bookmark_widget_info` appears to be unused"
+        errorLine1="&lt;appwidget-provider"
+        errorLine2="^">
+        <location
+            file="../../chrome/android/java/res/xml/bookmark_widget_info.xml"
+            line="9"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.bookmark_widget_layout_preview` appears to be unused"
+        errorLine1="&lt;vector xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot; xmlns:aapt=&quot;http://schemas.android.com/aapt&quot;"
+        errorLine2="^">
+        <location
+            file="../../chrome/android/java/res/drawable/bookmark_widget_layout_preview.xml"
+            line="8"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.bookmark_widget_preview` appears to be unused">
+        <location
+            file="../../chrome/android/java/res/drawable-nodpi/bookmark_widget_preview.png"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.layout.bookmark_widget_preview_layout` appears to be unused"
+        errorLine1="&lt;FrameLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
+        errorLine2="^">
+        <location
+            file="../../chrome/android/java/res/layout/bookmark_widget_preview_layout.xml"
+            line="8"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.decoder_description` appears to be unused"
+        errorLine1="&lt;string name=&quot;decoder_description&quot;>&quot;Prentdekodeerder&quot;&lt;/string>"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/components/browser_ui/strings/android/browser_ui_strings_grd.resources.zip/values-af/browser_ui_strings.xml"
+            line="653"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.bookmark_widget_title` appears to be unused"
+        errorLine1="    &lt;string name=&quot;bookmark_widget_title&quot; translatable=&quot;false&quot;>Chromium bookmarks&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res_chromium_base/values/channel_constants.xml"
+            line="11"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.search_widget_title` appears to be unused"
+        errorLine1="    &lt;string name=&quot;search_widget_title&quot; translatable=&quot;false&quot;>Chromium search&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res_chromium_base/values/channel_constants.xml"
+            line="12"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.quick_action_search_widget_title` appears to be unused"
+        errorLine1="    &lt;string name=&quot;quick_action_search_widget_title&quot; translatable=&quot;false&quot;>Chromium quick action search&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res_chromium_base/values/channel_constants.xml"
+            line="13"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
         message="The resource `R.drawable.color_button_background` appears to be unused"
         errorLine1="&lt;layer-list xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;>"
         errorLine2="^">
@@ -960,6 +1165,39 @@
 
     <issue
         id="UnusedResources"
+        message="The resource `R.color.dark_action_bar_color` appears to be unused"
+        errorLine1="    &lt;color name=&quot;dark_action_bar_color&quot;>@color/google_blue_grey_900&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res/values/colors.xml"
+            line="13"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.dark_status_bar_color` appears to be unused"
+        errorLine1="    &lt;color name=&quot;dark_status_bar_color&quot;>#161E21&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res/values/colors.xml"
+            line="14"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.dimen.quick_action_search_widget_width` appears to be unused"
+        errorLine1="    &lt;dimen name=&quot;quick_action_search_widget_width&quot;>300dp&lt;/dimen>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/browser/ui/android/quickactionsearchwidget/java/res/values/dimens.xml"
+            line="10"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
         message="The resource `R.dimen.autofill_dropdown_icon_margin` appears to be unused"
         errorLine1="    &lt;dimen name=&quot;autofill_dropdown_icon_margin&quot;>8dp&lt;/dimen>"
         errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
@@ -1059,6 +1297,17 @@
 
     <issue
         id="UnusedResources"
+        message="The resource `R.dimen.quick_action_search_widget_dino_min_size` appears to be unused"
+        errorLine1="    &lt;dimen name=&quot;quick_action_search_widget_dino_min_size&quot;>110dp&lt;/dimen>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/browser/ui/android/quickactionsearchwidget/java/res/values/dimens.xml"
+            line="82"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
         message="The resource `R.dimen.list_menu_popup_min_width` appears to be unused"
         errorLine1="    &lt;dimen name=&quot;list_menu_popup_min_width&quot;>112dp&lt;/dimen>"
         errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
@@ -1092,11 +1341,113 @@
 
     <issue
         id="UnusedResources"
+        message="The resource `R.xml.file_paths` appears to be unused"
+        errorLine1="&lt;paths xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;>"
+        errorLine2="^">
+        <location
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/chrome/android/chrome_public_apk_template_resources.resources.zip/xml/file_paths.xml"
+            line="11"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.hairline_border` appears to be unused"
+        errorLine1="&lt;shape xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;>"
+        errorLine2="^">
+        <location
+            file="../../chrome/browser/ui/android/quickactionsearchwidget/java/res/drawable/hairline_border.xml"
+            line="8"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
         message="The resource `R.drawable.ic_apps_blue_24dp` appears to be unused"
         errorLine1="&lt;vector xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
         errorLine2="^">
         <location
             file="../../ui/android/java/res/drawable/ic_apps_blue_24dp.xml"
+            line="8"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.ic_launcher` appears to be unused"
+        errorLine1="&lt;adaptive-icon xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot; >"
+        errorLine2="^">
+        <location
+            file="../../chrome/android/java/res_base/drawable/ic_launcher.xml"
+            line="8"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.ic_launcher_round` appears to be unused"
+        errorLine1="&lt;adaptive-icon xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot; >"
+        errorLine2="^">
+        <location
+            file="../../chrome/android/java/res_base/drawable/ic_launcher_round.xml"
+            line="8"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.xml.launchershortcuts` appears to be unused"
+        errorLine1="&lt;shortcuts xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot; >"
+        errorLine2="^">
+        <location
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/chrome/android/chrome_public_apk_template_resources.resources.zip/xml/launchershortcuts.xml"
+            line="8"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.mipmap.layered_app_icon` appears to be unused">
+        <location
+            file="../../chrome/android/java/res_chromium_base/mipmap-hdpi/layered_app_icon.png"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.mipmap.layered_app_icon_background` appears to be unused">
+        <location
+            file="../../chrome/android/java/res_chromium_base/mipmap-hdpi/layered_app_icon_background.png"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.mipmap.layered_app_icon_foreground` appears to be unused"
+        errorLine1="&lt;shape xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;>"
+        errorLine2="^">
+        <location
+            file="../../chrome/android/java/res_chromium_base/mipmap-nodpi/layered_app_icon_foreground.xml"
+            line="8"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.list_divider` appears to be unused"
+        errorLine1="&lt;shape"
+        errorLine2="^">
+        <location
+            file="../../components/browser_ui/settings/android/java/res/drawable/list_divider.xml"
+            line="11"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.xml.network_security_config` appears to be unused"
+        errorLine1="&lt;network-security-config>"
+        errorLine2="^">
+        <location
+            file="../../chrome/android/java/res_base/xml/network_security_config.xml"
             line="8"
             column="1"/>
     </issue>
@@ -1110,6 +1461,86 @@
             file="../../ui/android/java/res/values/one_off_colors.xml"
             line="24"
             column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.xml.quick_action_search_widget_dino_info` appears to be unused"
+        errorLine1="&lt;appwidget-provider"
+        errorLine2="^">
+        <location
+            file="../../chrome/browser/ui/android/quickactionsearchwidget/java/res/xml/quick_action_search_widget_dino_info.xml"
+            line="8"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.quick_action_search_widget_dino_preview` appears to be unused">
+        <location
+            file="../../chrome/browser/ui/android/quickactionsearchwidget/java/res/drawable-nodpi/quick_action_search_widget_dino_preview.png"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.layout.quick_action_search_widget_dino_preview_layout` appears to be unused"
+        errorLine1="&lt;FrameLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
+        errorLine2="^">
+        <location
+            file="../../chrome/browser/ui/android/quickactionsearchwidget/java/res/layout/quick_action_search_widget_dino_preview_layout.xml"
+            line="8"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.xml.quick_action_search_widget_small_info` appears to be unused"
+        errorLine1="&lt;appwidget-provider xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
+        errorLine2="^">
+        <location
+            file="../../chrome/browser/ui/android/quickactionsearchwidget/java/res/xml/quick_action_search_widget_small_info.xml"
+            line="8"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.quick_action_search_widget_small_preview` appears to be unused">
+        <location
+            file="../../chrome/browser/ui/android/quickactionsearchwidget/java/res/drawable-nodpi/quick_action_search_widget_small_preview.png"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.layout.quick_action_search_widget_small_preview_layout` appears to be unused"
+        errorLine1="&lt;FrameLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
+        errorLine2="^">
+        <location
+            file="../../chrome/browser/ui/android/quickactionsearchwidget/java/res/layout/quick_action_search_widget_small_preview_layout.xml"
+            line="7"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.xml.search_widget_info` appears to be unused"
+        errorLine1="&lt;appwidget-provider"
+        errorLine2="^">
+        <location
+            file="../../chrome/android/java/res/xml/search_widget_info.xml"
+            line="9"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.xml.searchable` appears to be unused"
+        errorLine1="&lt;searchable xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
+        errorLine2="^">
+        <location
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/chrome/android/chrome_public_apk_template_resources.resources.zip/xml/searchable.xml"
+            line="8"
+            column="1"/>
     </issue>
 
     <issue
@@ -1356,12 +1787,217 @@
 
     <issue
         id="UnusedResources"
+        message="The resource `R.drawable.shortcut_newtab` appears to be unused">
+        <location
+            file="../../chrome/android/java/res/drawable-hdpi/shortcut_newtab.png"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
         message="The resource `R.style.DropdownPopupWindow` appears to be unused"
         errorLine1="    &lt;style name=&quot;DropdownPopupWindow&quot; parent=&quot;@android:style/Widget.ListPopupWindow&quot;>"
         errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../ui/android/java/res/values/styles.xml"
             line="10"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.LauncherTheme` appears to be unused"
+        errorLine1="    &lt;style name=&quot;LauncherTheme&quot; parent=&quot;Theme.BrowserUI.NoDisplay&quot; />"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res/values/styles.xml"
+            line="11"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Theme_Chromium` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Theme.Chromium&quot; parent=&quot;Base.Theme.Chromium&quot; />"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res/values/styles.xml"
+            line="31"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.PreferenceTheme` appears to be unused"
+        errorLine1="    &lt;style name=&quot;PreferenceTheme&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/browser_ui/settings/android/java/res/values/styles.xml"
+            line="35"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Theme_Chromium_Activity` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Theme.Chromium.Activity&quot; parent=&quot;Theme.Chromium.WithWindowAnimation&quot; />"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res/values/styles.xml"
+            line="39"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Base_Theme_Chromium_Activity_Fullscreen` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Base.Theme.Chromium.Activity.Fullscreen&quot; parent=&quot;Theme.BrowserUI.DayNight&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res/values/styles.xml"
+            line="42"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.SettingsFragment` appears to be unused"
+        errorLine1="    &lt;style name=&quot;SettingsFragment&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/browser_ui/settings/android/java/res/values/styles.xml"
+            line="45"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.SettingsFragmentList` appears to be unused"
+        errorLine1="    &lt;style name=&quot;SettingsFragmentList&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/browser_ui/settings/android/java/res/values/styles.xml"
+            line="49"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Theme_Chromium_Activity_Fullscreen` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Theme.Chromium.Activity.Fullscreen&quot; parent=&quot;Base.Theme.Chromium.Activity.Fullscreen&quot; />"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res/values/styles.xml"
+            line="49"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Theme_Chromium_Activity_Fullscreen_Transparent` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Theme.Chromium.Activity.Fullscreen.Transparent&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res/values/styles.xml"
+            line="51"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.PreferenceItem` appears to be unused"
+        errorLine1="    &lt;style name=&quot;PreferenceItem&quot; parent=&quot;Preference.Material&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/browser_ui/settings/android/java/res/values/styles.xml"
+            line="54"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.DialogPreference` appears to be unused"
+        errorLine1="    &lt;style name=&quot;DialogPreference&quot; parent=&quot;PreferenceItem&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/browser_ui/settings/android/java/res/values/styles.xml"
+            line="60"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Theme_Chromium_Activity_FakeTranslucent` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Theme.Chromium.Activity.FakeTranslucent&quot; parent=&quot;Theme.Chromium.Activity&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res/values/styles.xml"
+            line="60"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.CheckBoxPreference` appears to be unused"
+        errorLine1="    &lt;style name=&quot;CheckBoxPreference&quot; parent=&quot;Preference.CheckBoxPreference.Material&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/browser_ui/settings/android/java/res/values/styles.xml"
+            line="64"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Theme_Chromium_SearchActivity` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Theme.Chromium.SearchActivity&quot; parent=&quot;Theme.Chromium.WithWindowAnimation&quot; />"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res/values/styles.xml"
+            line="72"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Theme_Chromium_Webapp` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Theme.Chromium.Webapp&quot; parent=&quot;Theme.Chromium.WithWindowAnimation&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res/values/styles.xml"
+            line="75"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Theme_Chromium_Webapp_Translucent` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Theme.Chromium.Webapp.Translucent&quot; parent=&quot;Theme.Chromium.Webapp&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res/values/styles.xml"
+            line="80"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Base_Theme_Chromium_Settings` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Base.Theme.Chromium.Settings&quot; parent=&quot;Theme.Chromium&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res/values/styles.xml"
+            line="84"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Theme_Chromium_Settings` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Theme.Chromium.Settings&quot; parent=&quot;Base.Theme.Chromium.Settings&quot; />"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res/values/styles.xml"
+            line="102"
             column="12"/>
     </issue>
 
@@ -1378,12 +2014,78 @@
 
     <issue
         id="UnusedResources"
+        message="The resource `R.style.Theme_Chromium_Settings_ManageSpace` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Theme.Chromium.Settings.ManageSpace&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res/values/styles.xml"
+            line="120"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Base_Theme_Chromium_SigninAndHistorySyncActivity` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Base.Theme.Chromium.SigninAndHistorySyncActivity&quot;"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res/values/styles.xml"
+            line="139"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Theme_Chromium_SigninAndHistorySyncActivity` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Theme.Chromium.SigninAndHistorySyncActivity&quot;"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res/values/styles.xml"
+            line="146"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.SigninAndHistorySyncActivityAnimation` appears to be unused"
+        errorLine1="    &lt;style name=&quot;SigninAndHistorySyncActivityAnimation&quot; parent=&quot;@android:style/Animation.Dialog&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res/values/styles.xml"
+            line="154"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Theme_Chromium_ClearDataDialogActivity` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Theme.Chromium.ClearDataDialogActivity&quot;"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res/values/styles.xml"
+            line="160"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
         message="The resource `R.style.TextAppearance_TextSmallThick_Secondary_Baseline_Light` appears to be unused"
         errorLine1="    &lt;style name=&quot;TextAppearance.TextSmallThick.Secondary.Baseline.Light&quot;"
         errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../ui/android/java/res/values/styles.xml"
             line="188"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.SettingsToolbarStyle` appears to be unused"
+        errorLine1="    &lt;style name=&quot;SettingsToolbarStyle&quot; parent=&quot;Widget.Material3Expressive.Toolbar&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res/values/styles.xml"
+            line="232"
             column="12"/>
     </issue>
 
@@ -1406,6 +2108,39 @@
         <location
             file="../../ui/android/java/res/values/styles.xml"
             line="244"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.ManageSpaceActionBarModern` appears to be unused"
+        errorLine1="    &lt;style name=&quot;ManageSpaceActionBarModern&quot; parent=&quot;Widget.MaterialComponents.ActionBar.Primary&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res/values/styles.xml"
+            line="245"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.ManageSpaceActionBarTheme` appears to be unused"
+        errorLine1="    &lt;style name=&quot;ManageSpaceActionBarTheme&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res/values/styles.xml"
+            line="251"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.ManageSpaceToolbarStyle` appears to be unused"
+        errorLine1="    &lt;style name=&quot;ManageSpaceToolbarStyle&quot; parent=&quot;SettingsToolbarStyle&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res/values/styles.xml"
+            line="256"
             column="12"/>
     </issue>
 
@@ -1451,6 +2186,101 @@
             file="../../ui/android/java/res/values/styles.xml"
             line="357"
             column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.themed_app_icon` appears to be unused"
+        errorLine1="&lt;vector xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
+        errorLine2="^">
+        <location
+            file="../../chrome/android/java/res_chromium_base/drawable/themed_app_icon.xml"
+            line="8"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Theme_BrowserUI_DayNight_AlertDialog_NoActionBar` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Theme.BrowserUI.DayNight.AlertDialog.NoActionBar&quot; parent=&quot;Theme.BrowserUI.Dark.AlertDialog.NoActionBar&quot;/>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/browser_ui/theme/android/java/res/values-night/themes.xml"
+            line="11"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Theme_BrowserUI_Light_AlertDialog_NoActionBar` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Theme.BrowserUI.Light.AlertDialog.NoActionBar&quot; parent=&quot;Theme.Material3Expressive.Light.Dialog.Alert&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/components/browser_ui/theme/android/theme_template_resources.resources.zip/values/themes.xml"
+            line="363"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Theme_BrowserUI_Dark_AlertDialog_NoActionBar` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Theme.BrowserUI.Dark.AlertDialog.NoActionBar&quot; parent=&quot;Theme.Material3Expressive.Dark.Dialog.Alert&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/components/browser_ui/theme/android/theme_template_resources.resources.zip/values/themes.xml"
+            line="875"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Theme_BrowserUI_NoDisplay` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Theme.BrowserUI.NoDisplay&quot; parent=&quot;Theme.BrowserUI.DayNight&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/components/browser_ui/theme/android/theme_template_resources.resources.zip/values/themes.xml"
+            line="1054"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Theme_BrowserUI_Translucent` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Theme.BrowserUI.Translucent&quot; parent=&quot;Theme.BrowserUI.DayNight&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/components/browser_ui/theme/android/theme_template_resources.resources.zip/values/themes.xml"
+            line="1065"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Theme_BrowserUI_Translucent_NoTitleBar` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Theme.BrowserUI.Translucent.NoTitleBar&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/components/browser_ui/theme/android/theme_template_resources.resources.zip/values/themes.xml"
+            line="1071"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.manage_space_activity` appears to be unused"
+        errorLine1="    &lt;string translatable=&quot;false&quot; name=&quot;manage_space_activity&quot;>org.chromium.chrome.browser.site_settings.ManageSpaceActivity&lt;/string>"
+        errorLine2="                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res_base/values/values.xml"
+            line="8"
+            column="34"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.widget_preview` appears to be unused">
+        <location
+            file="../../chrome/android/java/res/drawable-nodpi/widget_preview.png"/>
     </issue>
 
     <issue

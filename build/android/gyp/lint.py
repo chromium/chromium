@@ -15,7 +15,6 @@ from xml.dom import minidom
 from xml.etree import ElementTree
 
 from util import build_utils
-from util import manifest_utils
 from util import server_utils
 import action_helpers  # build_utils adds //build to sys.path.
 
@@ -54,7 +53,6 @@ _DISABLED_ALWAYS = [
 
 _RES_ZIP_DIR = 'RESZIPS'
 _SRCJAR_DIR = 'SRCJARS'
-_AAR_DIR = 'AARS'
 
 
 def _SrcRelative(path):
@@ -94,8 +92,10 @@ def _GenerateProjectFile(android_manifest,
   main_module.set('partial-results-dir', partials_dir)
   if android_sdk_version:
     main_module.set('compile_sdk_version', android_sdk_version)
-  manifest = ElementTree.SubElement(main_module, 'manifest')
-  manifest.set('file', android_manifest)
+  # Cache task has no manifest.
+  if android_manifest:
+    manifest = ElementTree.SubElement(main_module, 'merged-manifest')
+    manifest.set('file', android_manifest)
   if srcjar_sources:
     srcjar_sources = sorted(set(srcjar_sources))  # Ensure these are unique.
     for srcjar_file in srcjar_sources:
@@ -155,46 +155,6 @@ def _GenerateConfigXmlTree(orig_config_path, backported_methods):
   return root_node
 
 
-def _GenerateAndroidManifest(manifest_paths, min_sdk_version,
-                             android_sdk_version):
-
-  if not manifest_paths:
-    root_manifest = os.path.join(build_utils.DIR_SOURCE_ROOT, 'build',
-                                 'android', 'AndroidManifest.xml')
-  else:
-    root_manifest = manifest_paths[0]
-    manifest_paths = manifest_paths[1:]
-  # Set minSdkVersion in the manifest to the correct value.
-  doc, manifest, app_node = manifest_utils.ParseManifest(root_manifest)
-
-  # TODO(crbug.com/40148088): Should this be done using manifest merging?
-  # Add anything in the application node of the extra manifests to the main
-  # manifest to prevent unused resource errors.
-  for path in manifest_paths:
-    _, _, extra_app_node = manifest_utils.ParseManifest(path)
-    for node in extra_app_node:
-      app_node.append(node)
-
-  # Remove FingerprintDialogActivity, since it is not used. A hack until
-  # https://crbug.com/457436186 is fixed in a better way.
-  for activity in app_node.findall('activity'):
-    if activity.get(
-        '{%s}name' %
-        manifest_utils.ANDROID_NAMESPACE) == ('androidx.biometric.internal.ui'
-                                              '.FingerprintDialogActivity'):
-      app_node.remove(activity)
-
-  uses_sdk = manifest.find('./uses-sdk')
-  if uses_sdk is None:
-    uses_sdk = ElementTree.Element('uses-sdk')
-    manifest.insert(0, uses_sdk)
-  uses_sdk.set('{%s}minSdkVersion' % manifest_utils.ANDROID_NAMESPACE,
-               min_sdk_version)
-  uses_sdk.set('{%s}targetSdkVersion' % manifest_utils.ANDROID_NAMESPACE,
-               android_sdk_version)
-  return doc
-
-
 def _WriteXmlFile(root, path):
   logging.info('Writing xml file %s', path)
   build_utils.MakeDirectory(os.path.dirname(path))
@@ -209,20 +169,19 @@ def _WriteXmlFile(root, path):
 def _RunLint(lint_jar_path,
              backported_methods_path,
              config_path,
-             manifest_paths,
              sources,
              classpath,
              cache_dir,
              android_sdk_version,
              aars,
              srcjars,
-             min_sdk_version,
              resource_sources,
              resource_zips,
              android_sdk_root,
              lint_gen_dir,
              baseline,
              create_cache,
+             manifest_path,
              warnings_as_errors=False):
   logging.info('Lint starting')
   if not cache_dir:
@@ -242,8 +201,7 @@ def _RunLint(lint_jar_path,
     creating_baseline = False
     lint_xmx = '4G'
 
-  # Lint requires this directory to exist and be cleared.
-  # See b/324598620
+  # Lint requires this directory to exist and be cleared. See b/324598620.
   partials_dir = os.path.join(lint_gen_dir, 'partials')
   shutil.rmtree(partials_dir, ignore_errors=True)
   os.makedirs(partials_dir)
@@ -287,16 +245,6 @@ def _RunLint(lint_jar_path,
   _WriteXmlFile(config_xml_node, generated_config_path)
   cmd.extend(['--config', generated_config_path])
 
-  logging.info('Generating Android manifest file')
-  android_manifest_tree = _GenerateAndroidManifest(manifest_paths,
-                                                   min_sdk_version,
-                                                   android_sdk_version)
-  # Just use a hardcoded name, since we may have different target names (and
-  # thus different manifest_paths) using the same lint baseline. Eg.
-  # trichrome_chrome_bundle and trichrome_chrome_32_64_bundle.
-  lint_android_manifest_path = os.path.join(lint_gen_dir, 'AndroidManifest.xml')
-  _WriteXmlFile(android_manifest_tree.getroot(), lint_android_manifest_path)
-
   resource_root_dir = os.path.join(lint_gen_dir, _RES_ZIP_DIR)
   shutil.rmtree(resource_root_dir, True)
   # These are zip files with generated resources (e. g. strings from GRD).
@@ -325,11 +273,11 @@ def _RunLint(lint_jar_path,
       srcjar_sources.extend(build_utils.ExtractAll(srcjar, path=srcjar_dir))
 
   logging.info('Generating project file')
-  project_file_root = _GenerateProjectFile(lint_android_manifest_path,
-                                           android_sdk_root, cache_dir,
-                                           partials_dir, sources, classpath,
-                                           srcjar_sources, resource_sources,
-                                           aars, android_sdk_version, baseline)
+  project_file_root = _GenerateProjectFile(manifest_path, android_sdk_root,
+                                           cache_dir, partials_dir, sources,
+                                           classpath, srcjar_sources,
+                                           resource_sources, aars,
+                                           android_sdk_version, baseline)
 
   project_xml_path = os.path.join(lint_gen_dir, 'project.xml')
   _WriteXmlFile(project_file_root, project_xml_path)
@@ -349,13 +297,6 @@ def _RunLint(lint_jar_path,
     ]
     return build_utils.FilterLines(output, '|'.join(filter_patterns))
 
-  def stderr_filter(output):
-    output = build_utils.FilterReflectiveAccessJavaWarnings(output)
-    # Presumably a side-effect of our manual manifest merging, but does not
-    # seem to actually break anything:
-    # "Manifest merger failed with multiple errors, see logs"
-    return build_utils.FilterLines(output, 'Manifest merger failed')
-
   start = time.time()
   failed = False
 
@@ -369,7 +310,6 @@ def _RunLint(lint_jar_path,
     build_utils.CheckOutput(cmd,
                             print_stdout=True,
                             stdout_filter=stdout_filter,
-                            stderr_filter=stderr_filter,
                             fail_on_output=warnings_as_errors,
                             fail_func=fail_func)
   except build_utils.CalledProcessError as e:
@@ -425,9 +365,6 @@ def _ParseArgs(argv):
   parser.add_argument('--android-sdk-version',
                       help='Version (API level) of the Android SDK used for '
                       'building.')
-  parser.add_argument('--min-sdk-version',
-                      required=True,
-                      help='Minimal SDK version to lint against.')
   parser.add_argument('--android-sdk-root',
                       required=True,
                       help='Lint needs an explicit path to the android sdk.')
@@ -442,9 +379,8 @@ def _ParseArgs(argv):
                       'files.')
   parser.add_argument('--aars', help='GN list of included aars.')
   parser.add_argument('--srcjars', help='GN list of included srcjars.')
-  parser.add_argument('--manifest-paths',
-                      action='append',
-                      help='GYP-list of manifest paths, with base being first')
+  parser.add_argument('--manifest',
+                      help='Path to the merged AndroidManifest.xml.')
   parser.add_argument('--resource-sources',
                       default=[],
                       action='append',
@@ -466,7 +402,6 @@ def _ParseArgs(argv):
   args.aars = action_helpers.parse_gn_list(args.aars)
   args.srcjars = action_helpers.parse_gn_list(args.srcjars)
   args.resource_sources = action_helpers.parse_gn_list(args.resource_sources)
-  args.manifest_paths = action_helpers.parse_gn_list(args.manifest_paths)
   args.resource_zips = action_helpers.parse_gn_list(args.resource_zips)
   args.classpath = action_helpers.parse_gn_list(args.classpath)
 
@@ -491,16 +426,12 @@ def main():
     resource_sources.extend(build_utils.ReadSourcesList(resource_sources_file))
 
   possible_depfile_deps = (args.srcjars + args.resource_zips + sources +
-                           resource_sources + args.manifest_paths + [
-                               args.baseline,
-                           ])
+                           resource_sources + [args.baseline, args.manifest])
   depfile_deps = [p for p in possible_depfile_deps if p]
 
   if args.depfile:
     action_helpers.write_depfile(args.depfile, args.stamp, depfile_deps)
 
-  # TODO(wnwen): Consider removing lint cache now that there are only two lint
-  #              invocations.
   # Avoid parallelizing cache creation since lint runs without the cache defeat
   # the purpose of creating the cache in the first place. Forward the command
   # after the depfile has been written as siso requires it.
@@ -514,20 +445,19 @@ def main():
   _RunLint(args.lint_jar_path,
            args.backported_methods,
            args.config_path,
-           args.manifest_paths,
            sources,
            args.classpath,
            args.cache_dir,
            args.android_sdk_version,
            args.aars,
            args.srcjars,
-           args.min_sdk_version,
            resource_sources,
            args.resource_zips,
            args.android_sdk_root,
            args.lint_gen_dir,
            args.baseline,
            args.create_cache,
+           args.manifest,
            warnings_as_errors=args.warnings_as_errors)
   logging.info('Creating stamp file')
   server_utils.MaybeTouch(args.stamp)

@@ -3257,21 +3257,21 @@ if (!is_robolectric && enable_java_templates) {
                                  "lint_gen_dir",
                                  "lint_jar_path",
                                  "lint_suppressions_file",
-                                 "min_sdk_version",
                                ])
         build_config = _build_config
         build_config_dep = ":$_build_config_target"
+        manifest = _android_manifest
 
         # This will use library subtargets under-the-hood
-        deps = [ ":$_java_target_name" ]
+        deps = [
+          ":$_java_target_name",
+          ":$_merge_manifest_target",
+        ]
         if (defined(invoker.lint_suppressions_dep)) {
           deps += [ invoker.lint_suppressions_dep ]
         }
         if (defined(invoker.asset_deps)) {
           deps += invoker.asset_deps
-        }
-        if (defined(invoker.lint_min_sdk_version)) {
-          min_sdk_version = invoker.lint_min_sdk_version
         }
       }
     } else {
@@ -3280,7 +3280,6 @@ if (!is_robolectric && enable_java_templates) {
                    "lint_baseline_file",
                    "lint_gen_dir",
                    "lint_jar_path",
-                   "lint_min_sdk_version",
                    "lint_suppressions_dep",
                    "lint_suppressions_file",
                  ])
@@ -5239,39 +5238,6 @@ if (!is_robolectric && enable_java_templates) {
       if (is_official_build) {
         args += [ "--is-official-build" ]
       }
-    }
-
-    if (_enable_lint) {
-      android_lint("${target_name}__lint") {
-        forward_variables_from(invoker,
-                               [
-                                 "lint_baseline_file",
-                                 "lint_gen_dir",
-                                 "lint_jar_path",
-                                 "lint_suppressions_file",
-                               ])
-        build_config = _build_config
-        build_config_dep = _build_config_target
-        deps = _module_java_targets
-        if (defined(invoker.lint_suppressions_dep)) {
-          deps += [ invoker.lint_suppressions_dep ]
-        }
-        if (defined(invoker.lint_min_sdk_version)) {
-          min_sdk_version = invoker.lint_min_sdk_version
-        } else {
-          min_sdk_version = _min_sdk_version
-        }
-      }
-    } else {
-      not_needed(invoker,
-                 [
-                   "lint_baseline_file",
-                   "lint_gen_dir",
-                   "lint_jar_path",
-                   "lint_min_sdk_version",
-                   "lint_suppressions_dep",
-                   "lint_suppressions_file",
-                 ])
     }
 
     group(_target_name) {
