@@ -76,7 +76,7 @@ NSString* const kDarkModeAnimationSuffix = @"_darkmode";
   [super viewDidLoad];
 
   self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
-      initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+      initWithBarButtonSystemItem:UIBarButtonSystemItemClose
                            target:self
                            action:@selector(dismiss)];
 

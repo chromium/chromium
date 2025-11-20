@@ -344,7 +344,8 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
                      IDS_IOS_CONTENT_SUGGESTIONS_WHATS_NEW)]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kWhatsNewTableViewNavigationDismissButtonId)]
       performAction:grey_tap()];
 
   // Check the ReadingList.

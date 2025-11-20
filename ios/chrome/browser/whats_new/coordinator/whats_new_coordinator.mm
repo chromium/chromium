@@ -23,14 +23,8 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/whats_new/coordinator/whats_new_detail_coordinator.h"
 #import "ios/chrome/browser/whats_new/coordinator/whats_new_mediator.h"
+#import "ios/chrome/browser/whats_new/public/constants.h"
 #import "ios/chrome/browser/whats_new/ui/whats_new_table_view_controller.h"
-
-namespace {
-
-NSString* const kTableViewNavigationDismissButtonId =
-    @"kWhatsNewTableViewNavigationDismissButtonId";
-
-}  // namespace
 
 @interface WhatsNewCoordinator () <UINavigationControllerDelegate,
                                    UIAdaptivePresentationControllerDelegate>
@@ -208,10 +202,11 @@ NSString* const kTableViewNavigationDismissButtonId =
 
 - (UIBarButtonItem*)dismissButton {
   UIBarButtonItem* button = [[UIBarButtonItem alloc]
-      initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+      initWithBarButtonSystemItem:UIBarButtonSystemItemClose
                            target:self
                            action:@selector(dismiss)];
-  [button setAccessibilityIdentifier:kTableViewNavigationDismissButtonId];
+  [button
+      setAccessibilityIdentifier:kWhatsNewTableViewNavigationDismissButtonId];
   return button;
 }
 
