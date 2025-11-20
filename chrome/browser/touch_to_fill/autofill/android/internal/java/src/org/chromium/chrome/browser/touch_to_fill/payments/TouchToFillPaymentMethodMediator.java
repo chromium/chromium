@@ -547,8 +547,10 @@ class TouchToFillPaymentMethodMediator {
         return sheetItems;
     }
 
-    void updateBnplPaymentMethod(
-            @Nullable Long extractedAmount, boolean isAmountSupportedByAnyIssuer) {
+    void onPurchaseAmountExtracted(
+            List<BnplIssuerContext> bnplIssuerContexts,
+            @Nullable Long extractedAmount,
+            boolean isAmountSupportedByAnyIssuer) {
         assert mSuggestions != null;
         // `bnplSuggestion` contains the raw data for the BNPL suggestion.
         // It is decoupled from its presentation in the UI.
@@ -559,30 +561,45 @@ class TouchToFillPaymentMethodMediator {
                 break;
             }
         }
-        // `bnplModel` holds the properties needed to render the BNPL chip on the bottom sheet.
-        // It acts as a bridge between the data and the view.
-        PropertyModel bnplModel = null;
-        ModelList sheetItems = mModel.get(SHEET_ITEMS);
-        for (int i = 0; i < sheetItems.size(); ++i) {
-            if (sheetItems.get(i).type == ItemType.BNPL) {
-                bnplModel = sheetItems.get(i).model;
-                break;
+        if (mModel.get(CURRENT_SCREEN) == PROGRESS_SCREEN) {
+            assert bnplSuggestion != null;
+            if (isAmountSupportedByAnyIssuer) {
+                assert !bnplIssuerContexts.isEmpty();
+                bnplSuggestion.getPaymentsPayload().setExtractedAmount(extractedAmount);
+                showBnplIssuers(bnplIssuerContexts);
+            } else {
+                // TODO(crbug.com/438784412): If the amount exists but is not supported by any
+                // issuer, we still need to show the BNPL issuer screen with gray out issuers.
+                // Also, we need to ensure the BNPL chip on the Home page is disabled when the user
+                // uses the back button to go to the home screen.
+                // If the amount is null, we need to show the error screen.
             }
-        }
-
-        if (bnplSuggestion == null || bnplModel == null) return;
-
-        if (isAmountSupportedByAnyIssuer) {
-            bnplSuggestion.getPaymentsPayload().setExtractedAmount(extractedAmount);
-            bnplModel.set(IS_ENABLED, true);
-            bnplModel.set(SECONDARY_TEXT, bnplSuggestion.getSublabel());
         } else {
-            bnplSuggestion.getPaymentsPayload().setExtractedAmount(null);
-            bnplModel.set(IS_ENABLED, false);
-            bnplModel.set(
-                    SECONDARY_TEXT,
-                    mContext.getString(
-                            R.string.autofill_bnpl_suggestion_label_for_unavailable_purchase));
+            // `bnplModel` holds the properties needed to render the BNPL chip on the bottom sheet.
+            // It acts as a bridge between the data and the view.
+            PropertyModel bnplModel = null;
+            ModelList sheetItems = mModel.get(SHEET_ITEMS);
+            for (int i = 0; i < sheetItems.size(); ++i) {
+                if (sheetItems.get(i).type == ItemType.BNPL) {
+                    bnplModel = sheetItems.get(i).model;
+                    break;
+                }
+            }
+
+            if (bnplSuggestion == null || bnplModel == null) return;
+
+            if (isAmountSupportedByAnyIssuer) {
+                bnplSuggestion.getPaymentsPayload().setExtractedAmount(extractedAmount);
+                bnplModel.set(IS_ENABLED, true);
+                bnplModel.set(SECONDARY_TEXT, bnplSuggestion.getSublabel());
+            } else {
+                bnplSuggestion.getPaymentsPayload().setExtractedAmount(null);
+                bnplModel.set(IS_ENABLED, false);
+                bnplModel.set(
+                        SECONDARY_TEXT,
+                        mContext.getString(
+                                R.string.autofill_bnpl_suggestion_label_for_unavailable_purchase));
+            }
         }
     }
 

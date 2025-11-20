@@ -66,15 +66,27 @@ class TouchToFillPaymentMethodController
       base::span<const LoyaltyCard> all_loyalty_cards,
       bool first_time_usage) = 0;
 
-  // Updates the BNPL payment method option on the Touch To Fill suggestion
-  // view. If the `extracted_amount` is null, the option is grayed out and its
-  // message text is updated to inform users that the purchase is not
-  // available. If the amount is present but not supported by any issuer, the
-  // UI is updated with a grayed-out BNPL option. If the amount is available
-  // and supported by at least one issuer, it is set to continue the flow.
-  virtual bool UpdateBnplPaymentMethod(
+  // If the user is on the credit card suggestion screen and amount extraction
+  // is completed, this updates the BNPL payment method option on the Touch To
+  // Fill suggestion view. If the `extracted_amount` is null, the option is
+  // grayed out and its message text is updated to inform users that the
+  // purchase is not available. If the amount is present but not supported by
+  // any issuer, the UI is updated with a grayed out BNPL option. If the amount
+  // is available and supported by at least one issuer, it is set to continue
+  // the flow. If the user clicks on the BNPL suggestion before amount
+  // extraction is completed, the user is shown the progress screen. If amount
+  // extraction then returns with a valid amount, the progress screen is
+  // updated with the issuer selection screen. If the amount is not null but
+  // not supported by any issuer, the selection screen is shown with grayed out
+  // issuers, and when the user returns to the home screen, the BNPL suggestion
+  // is grayed out as well. If the amount is null, an error screen is shown.
+  virtual bool OnPurchaseAmountExtracted(
+      base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts,
       std::optional<int64_t> extracted_amount,
-      bool is_amount_supported_by_any_issuer) = 0;
+      bool is_amount_supported_by_any_issuer,
+      const std::optional<std::string>& app_locale,
+      base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
+      base::OnceClosure cancel_callback) = 0;
 
   // Shows the Touch To Fill progress screen. If the TTF surface is already
   // being shown when this is called, `view` is optional and will override the

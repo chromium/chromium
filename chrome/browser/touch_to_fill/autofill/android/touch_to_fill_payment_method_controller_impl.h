@@ -62,8 +62,13 @@ class TouchToFillPaymentMethodControllerImpl
                         base::span<const LoyaltyCard> affiliated_loyalty_cards,
                         base::span<const LoyaltyCard> all_loyalty_cards,
                         bool first_time_usage) override;
-  bool UpdateBnplPaymentMethod(std::optional<int64_t> extracted_amount,
-                               bool is_amount_supported_by_any_issuer) override;
+  bool OnPurchaseAmountExtracted(
+      base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts,
+      std::optional<int64_t> extracted_amount,
+      bool is_amount_supported_by_any_issuer,
+      const std::optional<std::string>& app_locale,
+      base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
+      base::OnceClosure cancel_callback) override;
   bool ShowProgressScreen(std::unique_ptr<TouchToFillPaymentMethodView> view,
                           base::OnceClosure cancel_callback) override;
   bool ShowBnplIssuers(

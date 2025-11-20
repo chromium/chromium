@@ -1224,7 +1224,8 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
     }
 
     @Test
-    public void testUpdateBnplPaymentMethodWithUnSupportedAmount() throws TimeoutException {
+    public void testOnPurchaseAmountExtractedWithUnSupportedAmountOnHomeScreen()
+            throws TimeoutException {
         mCoordinator.showPaymentMethods(
                 List.of(VISA_SUGGESTION, BNPL_SUGGESTION), /* shouldShowScanCreditCard= */ false);
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
@@ -1238,8 +1239,10 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         assertTrue(bnplSuggestionModel.get().get(IS_ENABLED));
         assertNull(BNPL_SUGGESTION.getPaymentsPayload().getExtractedAmount());
 
-        mCoordinator.updateBnplPaymentMethod(
-                /* extractedAmount= */ 5L, /* isAmountSupportedByAnyIssuer= */ false);
+        mCoordinator.onPurchaseAmountExtracted(
+                Collections.emptyList(),
+                /* extractedAmount= */ 5L,
+                /* isAmountSupportedByAnyIssuer= */ false);
 
         assertThat(bnplSuggestionModel.get().get(PRIMARY_TEXT), is(BNPL_SUGGESTION.getLabel()));
         String expectedSecondaryText =
@@ -1253,7 +1256,8 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
     }
 
     @Test
-    public void testUpdateBnplPaymentMethodWithInvalidAmount() throws TimeoutException {
+    public void testOnPurchaseAmountExtractedWithInvalidAmountOnHomeScreen()
+            throws TimeoutException {
         mCoordinator.showPaymentMethods(
                 List.of(VISA_SUGGESTION, BNPL_SUGGESTION), /* shouldShowScanCreditCard= */ false);
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
@@ -1267,8 +1271,10 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         assertTrue(bnplSuggestionModel.get().get(IS_ENABLED));
         assertNull(BNPL_SUGGESTION.getPaymentsPayload().getExtractedAmount());
 
-        mCoordinator.updateBnplPaymentMethod(
-                /* extractedAmount= */ null, /* isAmountSupportedByAnyIssuer= */ false);
+        mCoordinator.onPurchaseAmountExtracted(
+                Collections.emptyList(),
+                /* extractedAmount= */ null,
+                /* isAmountSupportedByAnyIssuer= */ false);
 
         assertThat(bnplSuggestionModel.get().get(PRIMARY_TEXT), is(BNPL_SUGGESTION.getLabel()));
         String expectedSecondaryText =
@@ -1282,7 +1288,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
     }
 
     @Test
-    public void testUpdateBnplPaymentMethodWithValidAmount() throws TimeoutException {
+    public void testOnPurchaseAmountExtractedWithValidAmountOnHomeScreen() throws TimeoutException {
         long extractedAmount = 100L;
         mCoordinator.showPaymentMethods(
                 List.of(VISA_SUGGESTION, BNPL_SUGGESTION), /* shouldShowScanCreditCard= */ false);
@@ -1297,14 +1303,49 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         assertTrue(bnplSuggestionModel.get().get(IS_ENABLED));
         assertNull(BNPL_SUGGESTION.getPaymentsPayload().getExtractedAmount());
 
-        mCoordinator.updateBnplPaymentMethod(
-                extractedAmount, /* isAmountSupportedByAnyIssuer= */ true);
+        mCoordinator.onPurchaseAmountExtracted(
+                Collections.emptyList(), extractedAmount, /* isAmountSupportedByAnyIssuer= */ true);
 
         assertThat(bnplSuggestionModel.get().get(PRIMARY_TEXT), is(BNPL_SUGGESTION.getLabel()));
         assertThat(
                 bnplSuggestionModel.get().get(SECONDARY_TEXT), is(BNPL_SUGGESTION.getSublabel()));
         assertThat(bnplSuggestionModel.get().get(BNPL_ICON_ID), is(BNPL_SUGGESTION.getIconId()));
         assertTrue(bnplSuggestionModel.get().get(IS_ENABLED));
+        assertThat(BNPL_SUGGESTION.getPaymentsPayload().getExtractedAmount(), is(extractedAmount));
+    }
+
+    @Test
+    public void testOnPurchaseAmountExtractedWithValidAmountOnProgressScreen()
+            throws TimeoutException {
+        long extractedAmount = 100L;
+        mCoordinator.showPaymentMethods(
+                List.of(VISA_SUGGESTION, BNPL_SUGGESTION), /* shouldShowScanCreditCard= */ false);
+        Optional<PropertyModel> bnplSuggestionModel =
+                getBnplSuggestionModel(
+                        mTouchToFillPaymentMethodModel.get(SHEET_ITEMS), BNPL_SUGGESTION);
+        assertTrue(bnplSuggestionModel.isPresent());
+        assertNull(BNPL_SUGGESTION.getPaymentsPayload().getExtractedAmount());
+        mCoordinator.getMediatorForTesting().showProgressScreen();
+        assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(PROGRESS_SCREEN));
+        assertThat(mTouchToFillPaymentMethodModel.get(VISIBLE), is(true));
+
+        mCoordinator.onPurchaseAmountExtracted(
+                List.of(
+                        BNPL_ISSUER_CONTEXT_AFFIRM_LINKED,
+                        BNPL_ISSUER_CONTEXT_KLARNA_LINKED,
+                        BNPL_ISSUER_CONTEXT_ZIP_LINKED),
+                extractedAmount,
+                /* isAmountSupportedByAnyIssuer= */ true);
+
+        assertThat(
+                mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN),
+                is(BNPL_ISSUER_SELECTION_SCREEN));
+        assertThat(mTouchToFillPaymentMethodModel.get(VISIBLE), is(true));
+        ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
+        assertThat(getModelsOfType(itemList, BNPL_ISSUER).size(), is(3));
+        assertBnplIssuerContextModelMatches(itemList, BNPL_ISSUER_CONTEXT_AFFIRM_LINKED);
+        assertBnplIssuerContextModelMatches(itemList, BNPL_ISSUER_CONTEXT_KLARNA_LINKED);
+        assertBnplIssuerContextModelMatches(itemList, BNPL_ISSUER_CONTEXT_ZIP_LINKED);
         assertThat(BNPL_SUGGESTION.getPaymentsPayload().getExtractedAmount(), is(extractedAmount));
     }
 

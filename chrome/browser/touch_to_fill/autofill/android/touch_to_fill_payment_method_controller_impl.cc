@@ -145,12 +145,21 @@ bool TouchToFillPaymentMethodControllerImpl::ShowLoyaltyCards(
   return true;
 }
 
-bool TouchToFillPaymentMethodControllerImpl::UpdateBnplPaymentMethod(
+bool TouchToFillPaymentMethodControllerImpl::OnPurchaseAmountExtracted(
+    base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts,
     std::optional<int64_t> extracted_amount,
-    bool is_amount_supported_by_any_issuer) {
-  if (!view_ || !view_->UpdateBnplPaymentMethod(
-                    extracted_amount, is_amount_supported_by_any_issuer)) {
+    bool is_amount_supported_by_any_issuer,
+    const std::optional<std::string>& app_locale,
+    base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
+    base::OnceClosure cancel_callback) {
+  if (!view_ || !view_->OnPurchaseAmountExtracted(
+                    *this, bnpl_issuer_contexts, extracted_amount,
+                    is_amount_supported_by_any_issuer, app_locale)) {
     return false;
+  }
+  if (delegate_) {
+    delegate_->SetCancelCallback(std::move(cancel_callback));
+    delegate_->SetSelectedIssuerCallback(std::move(selected_issuer_callback));
   }
   return true;
 }

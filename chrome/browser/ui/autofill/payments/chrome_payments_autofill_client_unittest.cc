@@ -785,6 +785,32 @@ TEST_F(ChromePaymentsAutofillClientTest, ShowTouchToFillBnplIssuers) {
       /*cancel_callback=*/base::DoNothing());
 }
 
+TEST_F(ChromePaymentsAutofillClientTest, OnPurchaseAmountExtracted) {
+  MockTouchToFillPaymentMethodController* ttf_payment_method_controller =
+      InjectMockTouchToFillPaymentMethodController();
+  std::optional<int64_t> extracted_amount = 12345;
+  std::optional<std::string> app_locale = "en-US";
+  const std::vector<payments::BnplIssuerContext> issuer_context = {
+      payments::BnplIssuerContext(
+          test::GetTestLinkedBnplIssuer(),
+          payments::BnplIssuerEligibilityForPage::kIsEligible)};
+
+  EXPECT_CALL(
+      *ttf_payment_method_controller,
+      OnPurchaseAmountExtracted(ElementsAre(EqualsBnplIssuerContext(
+                                    issuer_context[0].issuer.issuer_id(),
+                                    issuer_context[0].eligibility)),
+                                extracted_amount,
+                                /*is_amount_supported_by_any_issuer=*/true,
+                                /*app_locale=*/app_locale, _, _));
+
+  chrome_payments_client()->OnPurchaseAmountExtracted(
+      issuer_context, extracted_amount,
+      /*is_amount_supported_by_any_issuer=*/true, app_locale,
+      /*selected_issuer_callback=*/base::DoNothing(),
+      /*cancel_callback=*/base::DoNothing());
+}
+
 #else   // !BUILDFLAG(IS_ANDROID)
 
 // TODO(crbug.com/410047802): Disable test on Linux TSan due to flakiness/issue.

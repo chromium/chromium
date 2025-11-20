@@ -94,10 +94,12 @@ class TouchToFillPaymentMethodViewBridge {
     }
 
     @CalledByNative
-    private void updateBnplPaymentMethod(
+    private void onPurchaseAmountExtracted(
+            @JniType("std::vector") List<BnplIssuerContext> bnplIssuerContexts,
             @JniType("std::optional<int64_t>") @Nullable Long extractedAmount,
             boolean isAmountSupportedByAnyIssuer) {
-        mComponent.updateBnplPaymentMethod(extractedAmount, isAmountSupportedByAnyIssuer);
+        mComponent.onPurchaseAmountExtracted(
+                bnplIssuerContexts, extractedAmount, isAmountSupportedByAnyIssuer);
     }
 
     @CalledByNative

@@ -54,13 +54,16 @@ namespace {
 // `bnpl_issuers`.
 bool IsExtractedAmountSupportedByAnyBnplIssuer(
     const std::vector<BnplIssuer>& bnpl_issuers,
-    int64_t extracted_amount_in_micros) {
+    std::optional<int64_t> extracted_amount_in_micros) {
+  if (!extracted_amount_in_micros) {
+    return false;
+  }
   return std::any_of(
       bnpl_issuers.begin(), bnpl_issuers.end(),
       [extracted_amount_in_micros](const BnplIssuer& bnpl_issuer) {
         // For MVP, BNPL will only target US users and support
         // USD.
-        return bnpl_issuer.IsEligibleAmount(extracted_amount_in_micros,
+        return bnpl_issuer.IsEligibleAmount(extracted_amount_in_micros.value(),
                                             /*currency=*/"USD");
       });
 }
@@ -101,7 +104,6 @@ void BnplManager::OnDidAcceptBnplSuggestion(
     std::optional<int64_t> final_checkout_amount,
     OnBnplVcnFetchedCallback on_bnpl_vcn_fetched_callback) {
   ongoing_flow_state_ = std::make_unique<OngoingFlowState>();
-
   ongoing_flow_state_->final_checkout_amount = std::move(final_checkout_amount);
   ongoing_flow_state_->app_locale =
       browser_autofill_manager_->client().GetAppLocale();
@@ -253,17 +255,48 @@ void BnplManager::OnAmountExtractionReturned(
       }
       break;
     case kNotifyUiOfAmountExtractionReturnedResponse:
-      if (timeout_reached || !extracted_amount.has_value()) {
-        payments_autofill_client().UpdateTouchToFillBnplPaymentMethod(
-            /*extracted_amount=*/std::nullopt,
-            /*is_amount_supported_by_any_issuer=*/false);
+      // `ongoing_flow_state_` being present indicates the user accepted the
+      //  BNPL suggestion.
+      if (ongoing_flow_state_) {
+        // Notify the UI when amount extraction completes while the progress
+        // screen is currently visible following the BNPL chip click. The UI
+        // will then update its state based on the result of amount extraction.
+        ongoing_flow_state_->final_checkout_amount = extracted_amount;
+        // TODO(crbug.com/438784412): Handle cases where the amount is present
+        // but unsupported by all issuers, or if the amount is null.
+        payments_autofill_client().OnPurchaseAmountExtracted(
+            extracted_amount.has_value() ? GetSortedBnplIssuerContext()
+                                         : std::vector<BnplIssuerContext>(),
+            extracted_amount,
+            IsExtractedAmountSupportedByAnyBnplIssuer(
+                payments_autofill_client()
+                    .GetPaymentsDataManager()
+                    .GetBnplIssuers(),
+                extracted_amount),
+            ongoing_flow_state_->app_locale,
+            base::BindOnce(&BnplManager::OnIssuerSelected,
+                           weak_factory_.GetWeakPtr()),
+            base::BindOnce(&BnplManager::Reset, weak_factory_.GetWeakPtr()));
+
       } else {
-        payments_autofill_client().UpdateTouchToFillBnplPaymentMethod(
-            extracted_amount.value(), IsExtractedAmountSupportedByAnyBnplIssuer(
-                                          payments_autofill_client()
-                                              .GetPaymentsDataManager()
-                                              .GetBnplIssuers(),
-                                          extracted_amount.value()));
+        // Notify the UI when amount extraction completes while BNPL payment
+        // method is visible. The UI will then update the BNPL chip based on
+        // the result of amount extraction.
+        // TODO(crbug.com/438784412): When the amount exists, pass the BNPL
+        // issuer context instead of an empty list. The Java side should cache
+        // this context, allowing us to remove the bnpl issuer context
+        // parameter from the showBnplIssuer method.
+        payments_autofill_client().OnPurchaseAmountExtracted(
+            /*bnpl_issuer_contexts=*/std::vector<BnplIssuerContext>(),
+            extracted_amount,
+            IsExtractedAmountSupportedByAnyBnplIssuer(
+                payments_autofill_client()
+                    .GetPaymentsDataManager()
+                    .GetBnplIssuers(),
+                extracted_amount),
+            /*app_locale=*/std::nullopt,
+            /*selected_issuer_callback=*/base::DoNothing(),
+            /*cancel_callback=*/base::DoNothing());
       }
       break;
   }
@@ -722,7 +755,7 @@ void BnplManager::MaybeUpdateDesktopSuggestionsWithBnpl(
       payments_autofill_client().GetPaymentsDataManager().GetBnplIssuers();
 
   if (!IsExtractedAmountSupportedByAnyBnplIssuer(bnpl_issuers,
-                                                 extracted_amount->value())) {
+                                                 *extracted_amount)) {
     // If the extracted amount is not supported by any issuer, no need to update
     // the suggestion list.
     if (!has_logged_bnpl_suggestion_not_shown_reason_) {
@@ -890,7 +923,6 @@ std::vector<BnplIssuerContext> BnplManager::GetSortedBnplIssuerContext() {
         } else {
           eligibility = BnplIssuerEligibilityForPage::kIsEligible;
         }
-
         return {issuer, eligibility};
       });
 

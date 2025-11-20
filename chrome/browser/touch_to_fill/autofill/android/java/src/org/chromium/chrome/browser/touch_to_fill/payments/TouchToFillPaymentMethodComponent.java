@@ -146,17 +146,21 @@ interface TouchToFillPaymentMethodComponent {
             boolean firstTimeUsage);
 
     /**
-     * Updates BNPL suggestions on payment methods bottom sheet based on the results of amount
+     * Updates BNPL suggestions or BNPL screen on the bottom sheet based on the results of amount
      * extraction.
      *
+     * @param bnplIssuerContexts A list of {@link BnplIssuerContext} objects, each representing a
+     *     BNPL issuer context, to be displayed on the bottom sheet for the user to select from.
      * @param extractedAmount The amount extracted from the checkout page, or {@code null} if
      *     extraction failed or timed out.
      * @param isAmountSupportedByAnyIssuer Whether the {@code extractedAmount} is supported by at
      *     least one BNPL issuer. This is only relevant if {@code extractedAmount} is not {@code
      *     null}.
      */
-    void updateBnplPaymentMethod(
-            @Nullable Long extractedAmount, boolean isAmountSupportedByAnyIssuer);
+    void onPurchaseAmountExtracted(
+            List<BnplIssuerContext> bnplIssuerContexts,
+            @Nullable Long extractedAmount,
+            boolean isAmountSupportedByAnyIssuer);
 
     /** Displays a progress screen bottom sheet. */
     void showProgressScreen();

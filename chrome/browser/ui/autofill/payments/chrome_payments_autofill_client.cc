@@ -1001,12 +1001,18 @@ bool ChromePaymentsAutofillClient::ShowTouchToFillLoyaltyCard(
 #endif
 }
 
-bool ChromePaymentsAutofillClient::UpdateTouchToFillBnplPaymentMethod(
+bool ChromePaymentsAutofillClient::OnPurchaseAmountExtracted(
+    base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts,
     std::optional<int64_t> extracted_amount,
-    bool is_amount_supported_by_any_issuer) {
+    bool is_amount_supported_by_any_issuer,
+    const std::optional<std::string>& app_locale,
+    base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
+    base::OnceClosure cancel_callback) {
 #if BUILDFLAG(IS_ANDROID)
-  return GetTouchToFillPaymentMethodController()->UpdateBnplPaymentMethod(
-      extracted_amount, is_amount_supported_by_any_issuer);
+  return GetTouchToFillPaymentMethodController()->OnPurchaseAmountExtracted(
+      bnpl_issuer_contexts, extracted_amount, is_amount_supported_by_any_issuer,
+      app_locale, std::move(selected_issuer_callback),
+      std::move(cancel_callback));
 #else
   // Touch To Fill is not supported on Desktop.
   NOTREACHED();

@@ -38,9 +38,12 @@ class TouchToFillPaymentMethodView {
       base::span<const LoyaltyCard> affiliated_loyalty_cards,
       base::span<const LoyaltyCard> all_loyalty_cards,
       bool first_time_usage) = 0;
-  virtual bool UpdateBnplPaymentMethod(
+  virtual bool OnPurchaseAmountExtracted(
+      const TouchToFillPaymentMethodViewController& controller,
+      base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts,
       std::optional<int64_t> extracted_amount,
-      bool is_amount_supported_by_any_issuer) = 0;
+      bool is_amount_supported_by_any_issuer,
+      const std::optional<std::string>& app_locale);
   virtual bool ShowProgressScreen(
       TouchToFillPaymentMethodViewController* controller) = 0;
   virtual bool ShowBnplIssuers(
