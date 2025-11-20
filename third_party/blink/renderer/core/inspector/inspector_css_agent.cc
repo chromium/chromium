@@ -557,7 +557,7 @@ class InspectorCSSAgent::ModifyRuleAction final
                                              nullptr, exception_state);
       case kSetStyleText:
         return style_sheet_->SetStyleText(new_range_, old_text_, nullptr,
-                                          nullptr, exception_state);
+                                          nullptr, nullptr, exception_state);
       case kSetMediaRuleText:
         return style_sheet_->SetMediaRuleText(new_range_, old_text_, nullptr,
                                               nullptr, exception_state);
@@ -589,7 +589,8 @@ class InspectorCSSAgent::ModifyRuleAction final
         break;
       case kSetStyleText:
         css_rule_ = style_sheet_->SetStyleText(
-            old_range_, new_text_, &new_range_, &old_text_, exception_state);
+            old_range_, new_text_, &new_range_, &old_text_, &font_feature_type_,
+            exception_state);
         break;
       case kSetMediaRuleText:
         css_rule_ = style_sheet_->SetMediaRuleText(
@@ -648,6 +649,15 @@ class InspectorCSSAgent::ModifyRuleAction final
       return style_sheet_->BuildObjectForStyle(position_try_rule->style(),
                                                nullptr);
     }
+    if (auto* font_face_rule = DynamicTo<CSSFontFaceRule>(rule)) {
+      return style_sheet_->BuildObjectForStyle(font_face_rule->style(),
+                                               nullptr);
+    }
+    if (auto* font_feature_values_rule =
+            DynamicTo<CSSFontFeatureValuesRule>(rule)) {
+      return style_sheet_->BuildStyleObjectForFontFeatureRule(
+          font_feature_values_rule, font_feature_type_);
+    }
     return nullptr;
   }
 
@@ -679,6 +689,7 @@ class InspectorCSSAgent::ModifyRuleAction final
   String new_text_;
   SourceRange old_range_;
   SourceRange new_range_;
+  StyleRuleFontFeature::FeatureType font_feature_type_;
   Member<CSSRule> css_rule_;
 };
 

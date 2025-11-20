@@ -1261,13 +1261,18 @@ CSSKeyframeRule* InspectorStyleSheet::SetKeyframeKey(
   return keyframe_rule;
 }
 
-CSSRule* InspectorStyleSheet::SetStyleText(const SourceRange& range,
-                                           const String& text,
-                                           SourceRange* new_range,
-                                           String* old_text,
-                                           ExceptionState& exception_state) {
+CSSRule* InspectorStyleSheet::SetStyleText(
+    const SourceRange& range,
+    const String& text,
+    SourceRange* new_range,
+    String* old_text,
+    StyleRuleFontFeature::FeatureType* font_feature_type,
+    ExceptionState& exception_state) {
+
   CSSRuleSourceData* source_data = FindRuleByDeclarationsRange(range);
-  if (!source_data || !source_data->HasProperties()) {
+  if (!source_data ||
+      !(source_data->HasProperties() ||
+        source_data->type == StyleRule::RuleType::kFontFeatureValues)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotFoundError,
         "Source range didn't match existing style source range");
@@ -1296,32 +1301,101 @@ CSSRule* InspectorStyleSheet::SetStyleText(const SourceRange& range,
   if (!rule || !rule->parentStyleSheet() ||
       (!IsA<CSSStyleRule>(rule) && !IsA<CSSKeyframeRule>(rule) &&
        !IsA<CSSPropertyRule>(rule) && !IsA<CSSFontPaletteValuesRule>(rule) &&
-       !IsA<CSSPositionTryRule>(rule))) {
+       !IsA<CSSPositionTryRule>(rule) && !IsA<CSSFontFeatureValuesRule>(rule) &&
+       !IsA<CSSFontFaceRule>(rule))) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotFoundError,
         "Source range didn't match existing style source range");
     return nullptr;
   }
 
-  CSSStyleDeclaration* style = nullptr;
-  if (auto* style_rule = DynamicTo<CSSStyleRule>(rule)) {
-    style = style_rule->style();
-  } else if (auto* property_rule = DynamicTo<CSSPropertyRule>(rule)) {
-    style = property_rule->Style();
-  } else if (auto* font_palette_values_rule =
-                 DynamicTo<CSSFontPaletteValuesRule>(rule)) {
-    style = font_palette_values_rule->Style();
-  } else if (auto* position_try_rule = DynamicTo<CSSPositionTryRule>(rule)) {
-    style = position_try_rule->style();
+  if (auto* font_feature_values_rule =
+          DynamicTo<CSSFontFeatureValuesRule>(rule)) {
+    if (font_feature_type) {
+      *font_feature_type = source_data->font_feature_type;
+    }
+    // Get the source data for the @font-feature-values rule instead of the
+    // subsection.
+    CSSRuleSourceData* parent_source_data = SourceDataForRule(rule);
+    if (!parent_source_data) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kNotFoundError,
+          "Source range didn't match existing style source range");
+      return nullptr;
+    }
+
+    // Between the header range and the body range, we can make a range covering
+    // most of the rule's text. The ranges mark the text as:
+    // @font-feature-values [FontFamilyName] {[ @subsection { prop: 1; } ]}
+    // so if we extract the text from the start of the header to the end of the
+    // body, we only need to add `@font-feature-values ` and `}` to have the
+    // full rule text.
+    auto old_prefix = text_.Substring(
+        parent_source_data->rule_header_range.start,
+        range.start - parent_source_data->rule_header_range.start);
+    auto old_suffix = text_.Substring(
+        range.end, parent_source_data->rule_body_range.end - range.end);
+
+    if (!(old_prefix.EndsWith("{") && old_suffix.StartsWith("}"))) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kSyntaxError,
+          "Source range didn't match existing style source range");
+      return nullptr;
+    }
+
+    auto new_text =
+        String("@font-feature-values ") + old_prefix + text + old_suffix + "}";
+
+    // @font-feature-values rules don't support text replacement. Instead, we
+    // find the old rule's index in the style sheet, insert a new rule, and
+    // delete the old rule, returning the new rule.
+    CSSStyleSheet* style_sheet = font_feature_values_rule->parentStyleSheet();
+    unsigned index = kNotFound;
+    for (unsigned i = 0; i < style_sheet->length(); ++i) {
+      if (style_sheet->ItemInternal(i) == font_feature_values_rule) {
+        index = i;
+        break;
+      }
+    }
+    if (index == kNotFound ||
+        index != style_sheet->insertRule(new_text, index, exception_state) ||
+        style_sheet->ItemInternal(index) == rule ||
+        style_sheet->ItemInternal(index + 1) != rule ||
+        !DynamicTo<CSSFontFeatureValuesRule>(
+            style_sheet->ItemInternal(index))) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kNotFoundError,
+          "Source range didn't match existing style source range");
+      return nullptr;
+    }
+
+    // Delete the original rule and return its replacement.
+    rule = style_sheet->ItemInternal(index);
+    style_sheet->deleteRule(index + 1, exception_state);
+
   } else {
-    style = To<CSSKeyframeRule>(rule)->style();
+    CSSStyleDeclaration* style = nullptr;
+    if (auto* style_rule = DynamicTo<CSSStyleRule>(rule)) {
+      style = style_rule->style();
+    } else if (auto* property_rule = DynamicTo<CSSPropertyRule>(rule)) {
+      style = property_rule->Style();
+    } else if (auto* font_palette_values_rule =
+                   DynamicTo<CSSFontPaletteValuesRule>(rule)) {
+      style = font_palette_values_rule->Style();
+    } else if (auto* position_try_rule = DynamicTo<CSSPositionTryRule>(rule)) {
+      style = position_try_rule->style();
+    } else if (auto* font_face_rule = DynamicTo<CSSFontFaceRule>(rule)) {
+      style = font_face_rule->style();
+    } else {
+      style = To<CSSKeyframeRule>(rule)->style();
+    }
+
+    Document* owner_document = page_style_sheet_->OwnerDocument();
+    ExecutionContext* execution_context =
+        owner_document ? owner_document->GetExecutionContext() : nullptr;
+
+    style->setCSSText(execution_context, text, exception_state);
   }
-
-  Document* owner_document = page_style_sheet_->OwnerDocument();
-  ExecutionContext* execution_context =
-      owner_document ? owner_document->GetExecutionContext() : nullptr;
-
-  style->setCSSText(execution_context, text, exception_state);
 
   ReplaceText(source_data->rule_declarations_range, text, new_range, old_text);
   OnStyleSheetTextChanged();
@@ -2190,8 +2264,8 @@ InspectorStyleSheet::BuildAtRuleObjectForFontFaceRule(
   return result;
 }
 
-std::unique_ptr<protocol::CSS::CSSAtRule>
-InspectorStyleSheet::BuildAtRuleObjectForFontFeatureValuesRule(
+std::unique_ptr<protocol::CSS::CSSStyle>
+InspectorStyleSheet::BuildStyleObjectForFontFeatureRule(
     CSSFontFeatureValuesRule* values_rule,
     StyleRuleFontFeature::FeatureType feature_type) {
   CSSRuleSourceData* source_data = SourceDataForRule(values_rule);
@@ -2209,6 +2283,28 @@ InspectorStyleSheet::BuildAtRuleObjectForFontFeatureValuesRule(
     }
   }
   if (!subsection_data) {
+    return {};
+  }
+
+  InspectorStyle* style =
+      MakeGarbageCollected<InspectorStyle>(nullptr, subsection_data, this);
+  return style->BuildObjectForStyle(nullptr, kPseudoIdNone, g_null_atom);
+}
+
+std::unique_ptr<protocol::CSS::CSSAtRule>
+InspectorStyleSheet::BuildAtRuleObjectForFontFeatureValuesRule(
+    CSSFontFeatureValuesRule* values_rule,
+    StyleRuleFontFeature::FeatureType feature_type) {
+  CSSRuleSourceData* source_data = SourceDataForRule(values_rule);
+  if (!source_data) {
+    // We can only build the @font-feature-values rule if we have source data
+    // for it.
+    return {};
+  }
+
+  std::unique_ptr<protocol::CSS::CSSStyle> style =
+      BuildStyleObjectForFontFeatureRule(values_rule, feature_type);
+  if (!style) {
     return {};
   }
 
@@ -2247,10 +2343,7 @@ InspectorStyleSheet::BuildAtRuleObjectForFontFeatureValuesRule(
           .setSubsection(type)
           .setName(std::move(name_text))
           .setOrigin(origin_)
-          .setStyle(
-              MakeGarbageCollected<InspectorStyle>(nullptr, subsection_data,
-                                                   this)
-                  ->BuildObjectForStyle(nullptr, kPseudoIdNone, g_null_atom))
+          .setStyle(std::move(style))
           .build();
   if (CanBindOrigin() && !Id().empty()) {
     result->setStyleSheetId(Id());
@@ -2458,6 +2551,16 @@ CSSRuleSourceData* InspectorStyleSheet::FindRuleByDeclarationsRange(
         rule_source_data->rule_declarations_range.end == source_range.end) {
       return rule_source_data;
     }
+    if (rule_source_data->type == StyleRule::kFontFeatureValues &&
+        rule_source_data->rule_body_range.start < source_range.start &&
+        rule_source_data->rule_body_range.end > source_range.end) {
+      for (auto& child : rule_source_data->child_rules) {
+        if (child->rule_declarations_range.start == source_range.start &&
+            child->rule_declarations_range.end == source_range.end) {
+          return child.Get();
+        }
+      }
+    }
   }
   return nullptr;
 }
@@ -2471,6 +2574,18 @@ CSSRule* InspectorStyleSheet::RuleForSourceData(
   RemapSourceDataToCSSOMIfNecessary();
 
   wtf_size_t index = source_data_->Find(source_data);
+  if (index == kNotFound && source_data->type == StyleRule::kFontFeature) {
+    // Find the parent @font-feature-values rule, as there is no CSSOM object
+    // for the feature subsection.
+    for (wtf_size_t i = 0; i < source_data_->size(); ++i) {
+      CSSRuleSourceData* rule_source_data = source_data_->at(i).Get();
+      if (rule_source_data->type == StyleRule::kFontFeatureValues &&
+          rule_source_data->child_rules.Find(source_data) != kNotFound) {
+        index = i;
+        break;
+      }
+    }
+  }
   if (index == kNotFound) {
     return nullptr;
   }
