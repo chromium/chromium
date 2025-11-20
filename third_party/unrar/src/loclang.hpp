@@ -5,7 +5,7 @@
 #define   MContinueQuit      L"_Continue_Quit"
 #define   MRetryAbort        L"_Retry_Abort"
 #define   MIgnoreAllRetryQuit L"_Ignore_iGnore all_Retry_Quit"
-#define   MCopyright         L"\nRAR %s   Copyright (c) 1993-%d Alexander Roshal   %d %s %d"
+#define   MCopyright         L"\nRAR %s   Copyright (c) 1993-%d Alexander Roshal   %d %.3s %d"
 #define   MRegTo             L"\nRegistered to %s\n"
 #define   MShare             L"\nTrial version             Type 'rar -?' for help\n"
 #define   MRegKeyWarning     L"\nAvailable license key is valid only for %s\n"

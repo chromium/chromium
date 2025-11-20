@@ -68,7 +68,8 @@ enum UIMESSAGE_CODE {
 
 // Flags for uiAskReplace function.
 enum UIASKREP_FLAGS {
-  UIASKREP_F_NORENAME=1,UIASKREP_F_EXCHSRCDEST=2,UIASKREP_F_SHOWNAMEONLY=4
+  UIASKREP_F_NORENAME=1,UIASKREP_F_EXCHSRCDEST=2,UIASKREP_F_SHOWNAMEONLY=4,
+  UIASKREP_F_SINGLEFILE=8
 };
 
 // Codes returned by uiAskReplace. Note that uiAskReplaceEx returns only
@@ -80,6 +81,7 @@ enum UIASKREP_RESULT {
 
 UIASKREP_RESULT uiAskReplace(std::wstring &Name,int64 FileSize,RarTime *FileTime,uint Flags);
 UIASKREP_RESULT uiAskReplaceEx(CommandData *Cmd,std::wstring &Name,int64 FileSize,RarTime *FileTime,uint Flags);
+bool GetAutoRenamedName(std::wstring &Name);
 
 void uiInit(SOUND_NOTIFY_MODE Sound);
 
