@@ -17,7 +17,6 @@ namespace ash {
 // A selection view that allows users to pick which tabs and apps they want to
 // move to a new desk. Its main child is a scroll view that contains many
 // `TabAppSelectionItemView`'s representing tabs and apps.
-// TODO(http://b/361326120): Add the experimental features view.
 class ASH_EXPORT TabAppSelectionView : public views::BoxLayoutView {
   METADATA_HEADER(TabAppSelectionView, views::BoxLayoutView)
 
