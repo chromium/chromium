@@ -2,24 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_SHOP_CARD_SHOP_CARD_MEDIATOR_TESTING_H_
-#define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_SHOP_CARD_SHOP_CARD_MEDIATOR_TESTING_H_
+#ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_SHOP_CARD_COORDINATOR_SHOP_CARD_MEDIATOR_TESTING_H_
+#define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_SHOP_CARD_COORDINATOR_SHOP_CARD_MEDIATOR_TESTING_H_
 
-#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_mediator.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/coordinator/shop_card_mediator.h"
 
 @class ShopCardItem;
 
 namespace commerce {
 class ShoppingService;
 }  // namespace commerce
-
-namespace bookmarks {
-class BookmarkModel;
-}  // namespace bookmarks
-
-namespace image_fetcher {
-class ImageDataFetcher;
-}  // namespace image_fetcher
 
 // Category for exposing internal state for testing.
 @interface ShopCardMediator (ForTesting)
@@ -46,4 +38,4 @@ class ImageDataFetcher;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_SHOP_CARD_SHOP_CARD_MEDIATOR_TESTING_H_
+#endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_SHOP_CARD_COORDINATOR_SHOP_CARD_MEDIATOR_TESTING_H_

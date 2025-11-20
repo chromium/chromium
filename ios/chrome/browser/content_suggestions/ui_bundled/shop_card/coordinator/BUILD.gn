@@ -1,0 +1,79 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "shop_card_action_delegate.h",
+    "shop_card_mediator.h",
+    "shop_card_mediator.mm",
+    "shop_card_mediator_delegate.h",
+  ]
+  public_deps = [
+    "//components/image_fetcher/core",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/shop_card/ui",
+  ]
+  deps = [
+    "//components/application_locale_storage",
+    "//components/bookmarks/browser",
+    "//components/commerce/core:commerce_constants",
+    "//components/commerce/core:feature_list",
+    "//components/commerce/core:pref_names",
+    "//components/commerce/core:shopping_service",
+    "//components/payments/core:currency_formatter",
+    "//components/power_bookmarks/core",
+    "//components/power_bookmarks/core:proto",
+    "//components/prefs",
+    "//components/prefs/ios",
+    "//components/url_formatter",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/content_suggestions/ui_bundled:constants",
+    "//ios/chrome/browser/content_suggestions/ui_bundled:metrics",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/impression_limits/model",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/impression_limits/model:observer_bridge",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/shop_card/model:prefs",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/shop_card/public:constants",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/shop_card/ui:card_data",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/ntp/ui_bundled",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/favicon:favicon_constants",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "shop_card_mediator+testing.h",
+    "shop_card_mediator_unittest.mm",
+  ]
+  public_deps = [ ":coordinator" ]
+  deps = [
+    "//base/test:test_support",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/test",
+    "//components/commerce/core:feature_list",
+    "//components/commerce/core:pref_names",
+    "//components/commerce/core:shopping_service_test_support",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//ios/chrome/browser/commerce/model:shopping_service",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/impression_limits/model",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/shop_card/model:prefs",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/shop_card/ui:card_data",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/history/model",
+    "//ios/chrome/browser/ntp_tiles/model/tab_resumption:tab_resumption_prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

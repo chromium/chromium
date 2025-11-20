@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_mediator.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/coordinator/shop_card_mediator.h"
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
@@ -19,10 +19,11 @@
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/impression_limits/model/impression_limit_service.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/impression_limits/model/impression_limit_service_factory.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_data.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_item.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_mediator+testing.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_prefs.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/coordinator/shop_card_mediator+testing.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/coordinator/shop_card_mediator_delegate.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/model/shop_card_prefs.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/ui/shop_card_data.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/ui/shop_card_item.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"

@@ -26,7 +26,7 @@
 #include "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #include "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #include "ios/chrome/browser/content_suggestions/ui_bundled/impression_limits/model/impression_limit_service_factory.h"
-#include "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_prefs.h"
+#include "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/model/shop_card_prefs.h"
 #include "ios/chrome/browser/history/model/history_service_factory.h"
 #include "ios/chrome/browser/ntp_tiles/model/tab_resumption/tab_resumption_prefs.h"
 #include "ios/chrome/browser/shared/model/prefs/pref_names.h"

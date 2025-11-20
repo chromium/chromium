@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_prefs.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/model/shop_card_prefs.h"
 
 #import "components/prefs/pref_registry_simple.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"

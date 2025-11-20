@@ -21,7 +21,7 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_module_container.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_utils.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/placeholder_config.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_item.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/ui/shop_card_item.h"
 #import "ios/chrome/browser/ntp/shared/metrics/home_metrics.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 

@@ -8,7 +8,7 @@
 
 #import "base/time/time.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_data.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/ui/shop_card_data.h"
 #import "url/gurl.h"
 
 @implementation TabResumptionItem {

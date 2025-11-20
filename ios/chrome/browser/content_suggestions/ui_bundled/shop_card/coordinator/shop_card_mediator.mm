@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_mediator.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/coordinator/shop_card_mediator.h"
 
 #import <optional>
 
@@ -34,13 +34,14 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/impression_limits/model/impression_limit_service.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/impression_limits/model/impression_limit_service_observer_bridge.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_action_delegate.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_constants.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_data.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_favicon_consumer.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_favicon_consumer_source.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_item.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_prefs.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/coordinator/shop_card_action_delegate.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/coordinator/shop_card_mediator_delegate.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/model/shop_card_prefs.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/public/shop_card_constants.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/ui/shop_card_data.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/ui/shop_card_favicon_consumer.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/ui/shop_card_favicon_consumer_source.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/ui/shop_card_item.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_actions_delegate.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"

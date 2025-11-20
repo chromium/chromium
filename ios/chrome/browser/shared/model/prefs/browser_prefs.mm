@@ -107,7 +107,7 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_mediator.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/price_tracking_promo/model/price_tracking_promo_prefs.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/model/safety_check_prefs.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_prefs.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/model/shop_card_prefs.h"
 #import "ios/chrome/browser/cross_platform_promos/model/cross_platform_promos_service.h"
 #import "ios/chrome/browser/download/model/auto_deletion/auto_deletion_service.h"
 #import "ios/chrome/browser/drive/model/drive_policy.h"

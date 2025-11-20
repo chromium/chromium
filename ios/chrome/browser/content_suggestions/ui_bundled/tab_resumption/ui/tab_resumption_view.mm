@@ -10,7 +10,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/time/time.h"
 #import "components/url_formatter/elide_url.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_data.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/ui/shop_card_data.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/public/tab_resumption_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/ui/tab_resumption_commands.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/ui/tab_resumption_item.h"
