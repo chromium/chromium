@@ -23,7 +23,6 @@
 #include "components/performance_manager/public/resource_attribution/queries.h"
 #include "components/performance_manager/public/resource_attribution/query_results.h"
 #include "components/system_cpu/cpu_probe.h"
-#include "content/public/browser/resource_context.h"
 
 namespace performance_manager::user_tuning {
 

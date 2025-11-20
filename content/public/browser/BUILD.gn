@@ -378,7 +378,6 @@ source_set("browser_sources") {
     "renderer_preferences_util.cc",
     "renderer_preferences_util.h",
     "replaced_navigation_entry_data.h",
-    "resource_context.h",
     "resource_coordinator_service.h",
     "responsiveness_calculator_delegate.h",
     "restore_type.h",

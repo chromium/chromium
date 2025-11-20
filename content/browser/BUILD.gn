@@ -2056,8 +2056,6 @@ source_set("browser") {
     "renderer_host/view_transition_opt_in_state.h",
     "renderer_host/visible_time_request_trigger.cc",
     "renderer_host/visible_time_request_trigger.h",
-    "resource_context_impl.cc",
-    "resource_context_impl.h",
     "resource_coordinator_service.cc",
     "scheduler/browser_io_thread_delegate.cc",
     "scheduler/browser_io_thread_delegate.h",

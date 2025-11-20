@@ -352,10 +352,6 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // to the declaration of ChromeBrowserContext proto.
   void WriteIntoTrace(perfetto::TracedProto<TraceProto> context) const;
 
-  // Deprecated. Do not add new callers.
-  // TODO(crbug.com/40604019): Get rid of ResourceContext.
-  ResourceContext* GetResourceContext() const;
-
   // Grant third-party cookie access to certain sites that the user visited in
   // the past, according to the popup heuristics described at
   // https://github.com/amaliev/3pcd-exemption-heuristics/blob/main/explainer.md

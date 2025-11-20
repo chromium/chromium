@@ -382,10 +382,6 @@ void BrowserContext::WriteIntoTrace(
   perfetto::WriteIntoTracedProto(std::move(proto), impl());
 }
 
-ResourceContext* BrowserContext::GetResourceContext() const {
-  return impl()->GetResourceContext();
-}
-
 void BrowserContext::BackfillPopupHeuristicGrants(
     base::OnceCallback<void(bool)> callback) {
   return impl_->BackfillPopupHeuristicGrants(std::move(callback));

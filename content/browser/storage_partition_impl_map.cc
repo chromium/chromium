@@ -30,7 +30,6 @@
 #include "content/browser/cookie_store/cookie_store_manager.h"
 #include "content/browser/file_system/browser_file_system_helper.h"
 #include "content/browser/loader/subresource_proxying_url_loader_service.h"
-#include "content/browser/resource_context_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/webui/url_data_manager_backend.h"
 #include "content/public/browser/browser_context.h"
@@ -318,8 +317,7 @@ StoragePartitionImplMap::StoragePartitionImplMap(
     BrowserContext* browser_context)
     : browser_context_(browser_context),
       file_access_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT})),
-      resource_context_initialized_(false) {}
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT})) {}
 
 StoragePartitionImplMap::~StoragePartitionImplMap() {
 }
@@ -453,16 +451,6 @@ void StoragePartitionImplMap::ForEach(
 void StoragePartitionImplMap::PostCreateInitialization(
     StoragePartitionImpl* partition,
     bool in_memory) {
-  // TODO(ajwong): ResourceContexts no longer have any storage related state.
-  // We should move this into a place where it is called once per
-  // BrowserContext creation rather than piggybacking off the default context
-  // creation.
-  // Note: moving this into Get() before partitions_[] is set causes reentrency.
-  if (!resource_context_initialized_) {
-    resource_context_initialized_ = true;
-    InitializeResourceContext(browser_context_);
-  }
-
   if (!in_memory) {
     // Clean up any lingering WebSQL user data on disk, now that WebSQL
     // has been deprecated and removed for all platforms.

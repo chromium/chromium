@@ -15,7 +15,6 @@
 #include "build/build_config.h"
 #include "content/browser/btm/btm_service_impl.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/resource_context.h"
 #include "content/public/browser/shared_cors_origin_access_list.h"
 
 namespace media {
@@ -112,10 +111,6 @@ class CONTENT_EXPORT BrowserContextImpl {
   // Write a representation of this object into a trace.
   void WriteIntoTrace(perfetto::TracedProto<TraceProto> context) const;
 
-  ResourceContext* GetResourceContext() const {
-    return resource_context_.get();
-  }
-
   BtmServiceImpl* GetBtmService();
   // If the BTM database file should be deleted, wait for it. Otherwise, return
   // immediately.
@@ -179,12 +174,6 @@ class CONTENT_EXPORT BrowserContextImpl {
   // TODO: crbug.com/356624038 - delete this when the BTM feature flag is
   // removed.
   base::RunLoop btm_cleanup_loop_;
-
-  // TODO(crbug.com/40604019): Get rid of ResourceContext.
-  // Created on the UI thread, otherwise lives on and is destroyed on the IO
-  // thread.
-  std::unique_ptr<ResourceContext> resource_context_ =
-      std::make_unique<ResourceContext>();
 
 #if BUILDFLAG(IS_CHROMEOS)
   scoped_refptr<storage::ExternalMountPoints> external_mount_points_;

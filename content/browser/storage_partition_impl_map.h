@@ -91,10 +91,6 @@ class CONTENT_EXPORT StoragePartitionImplMap
   raw_ptr<BrowserContext> browser_context_;  // Not Owned.
   scoped_refptr<base::SequencedTaskRunner> file_access_runner_;
   PartitionMap partitions_;
-
-  // Set to true when the ResourceContext for the associated |browser_context_|
-  // is initialized. Can never return to false.
-  bool resource_context_initialized_;
 };
 
 }  // namespace content

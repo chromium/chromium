@@ -1823,9 +1823,11 @@ RenderFrameHostManager::GetFrameHostForNavigation(
   // Get ready to compute the SiteInstance to use for navigation.
   SiteInstanceImpl* current_site_instance =
       render_frame_host_->GetSiteInstance();
+  BrowserContext* browser_context =
+      current_site_instance->GetIsolationContext().browser_context();
   // Notify the embedder that the SiteInstance will be computed soon.
   GetContentClient()->browser()->WillComputeSiteForNavigation(
-      current_site_instance->GetBrowserContext(), request->GetURL());
+      browser_context, request->GetURL());
   bool is_same_site =
       render_frame_host_->IsNavigationSameSite(request->GetUrlInfo());
 

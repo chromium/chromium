@@ -31,7 +31,6 @@
 #include "components/user_manager/user.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/resource_context.h"
 #include "net/cert/nss_cert_database.h"
 #include "net/ssl/client_cert_store_nss.h"
 

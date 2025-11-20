@@ -28,7 +28,10 @@ namespace content {
 class CONTENT_EXPORT IsolationContext {
  public:
   // Normal use cases should create an IsolationContext associated with both a
-  // BrowsingInstance and a BrowserContext (profile).
+  // BrowsingInstance and a BrowserContext (profile).  The constructor that
+  // takes in a BrowserContext* may only be used on the UI thread; when
+  // creating this object on the IO thread, the BrowserOrResourceContext
+  // version should be used instead.
   IsolationContext(BrowsingInstanceId browsing_instance_id,
                    BrowserContext* browser_context,
                    bool is_guest,

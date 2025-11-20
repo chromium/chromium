@@ -156,11 +156,6 @@ BrowserContextImpl::~BrowserContextImpl() {
 
   TtsControllerImpl::GetInstance()->OnBrowserContextDestroyed(self_);
 
-  if (BrowserThread::IsThreadInitialized(BrowserThread::IO)) {
-    GetIOThreadTaskRunner({})->DeleteSoon(FROM_HERE,
-                                          std::move(resource_context_));
-  }
-
   // Corresponds to the TRACE_EVENT_BEGIN in NotifyWillBeDestroyed.
   TRACE_EVENT_END("shutdown", perfetto::Track::FromPointer(this),
                   "browser_context_impl", static_cast<void*>(this));
