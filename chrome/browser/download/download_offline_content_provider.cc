@@ -26,6 +26,7 @@
 #include "components/download/public/common/download_item.h"
 #include "components/safe_browsing/buildflags.h"
 #include "content/public/browser/browser_context.h"
+#include "extensions/buildflags/buildflags.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -44,6 +45,11 @@
 #include "content/public/browser/download_manager_delegate.h"
 #include "content/public/common/content_features.h"
 #include "ui/base/device_form_factor.h"
+
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+#include "chrome/browser/download/download_core_service.h"
+#include "chrome/browser/download/download_core_service_factory.h"
+#endif
 
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 #include "chrome/browser/download/download_ui_safe_browsing_util.h"
@@ -483,6 +489,21 @@ void DownloadOfflineContentProvider::OnDownloadUpdated(DownloadItem* item) {
   if (!should_notify && !ShouldShowDownloadItem(item)) {
     return;
   }
+
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+  // On desktop Android, the extensions chrome.download.setUiOptions() function
+  // can disable UI updates.
+  // TODO(crbug.com/459823225): Expand the IsDangerous() check to other
+  // situations where UI should be forced on.
+  const bool always_show_ui = item->IsDangerous();
+  if (!should_notify && !always_show_ui && profile_) {
+    DownloadCoreService* service =
+        DownloadCoreServiceFactory::GetForBrowserContext(profile_);
+    if (service && !service->IsDownloadUiEnabled()) {
+      return;
+    }
+  }
+#endif
 
   UpdateDelta update_delta;
   auto offline_item = OfflineItemUtils::CreateOfflineItem(name_space_, item);

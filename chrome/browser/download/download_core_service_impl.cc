@@ -155,11 +155,22 @@ void DownloadCoreServiceImpl::SetDownloadHistoryForTesting(
   download_history_ = std::move(download_history);
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+void DownloadCoreServiceImpl::SetDownloadUiEnabledForTest(bool enabled) {
+  is_download_ui_enabled_for_test_ = enabled;
+}
+#endif
+
 bool DownloadCoreServiceImpl::IsDownloadUiEnabled() {
-#if BUILDFLAG(IS_ANDROID)
-  return true;
-#else
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  if (is_download_ui_enabled_for_test_.has_value()) {
+    return *is_download_ui_enabled_for_test_;
+  }
   return !extension_event_router_ || extension_event_router_->IsUiEnabled();
+#else
+  // On platforms like non-desktop Android that don't support extensions, always
+  // enable the downloads UI.
+  return true;
 #endif
 }
 

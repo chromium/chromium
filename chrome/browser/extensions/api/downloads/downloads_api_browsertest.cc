@@ -4624,22 +4624,6 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 
 // TODO(benjhayden) Test that the shelf is shown for download() both with and
 // without a WebContents.
-//
-// Desktop Android does not use the download shelf UI.
-IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
-                       DownloadExtensionTest_SetUiOptions) {
-  LoadExtension("downloads_split");
-  EXPECT_TRUE(RunFunction(base::MakeRefCounted<DownloadsSetUiOptionsFunction>(),
-                          R"([{"enabled": false}])"));
-  EXPECT_FALSE(
-      DownloadCoreServiceFactory::GetForBrowserContext(current_profile())
-          ->IsDownloadUiEnabled());
-  EXPECT_TRUE(RunFunction(base::MakeRefCounted<DownloadsSetUiOptionsFunction>(),
-                          R"([{"enabled": true}])"));
-  EXPECT_TRUE(
-      DownloadCoreServiceFactory::GetForBrowserContext(current_profile())
-          ->IsDownloadUiEnabled());
-}
 
 void OnDangerPromptCreated(DownloadDangerPrompt* prompt) {
   prompt->InvokeActionForTesting(DownloadDangerPrompt::ACCEPT);
@@ -4842,6 +4826,21 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionBubbleEnabledTest,
 #endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
+                       DownloadExtensionTest_SetUiOptions) {
+  LoadExtension("downloads_split");
+  EXPECT_TRUE(RunFunction(base::MakeRefCounted<DownloadsSetUiOptionsFunction>(),
+                          R"([{"enabled": false}])"));
+  EXPECT_FALSE(
+      DownloadCoreServiceFactory::GetForBrowserContext(current_profile())
+          ->IsDownloadUiEnabled());
+  EXPECT_TRUE(RunFunction(base::MakeRefCounted<DownloadsSetUiOptionsFunction>(),
+                          R"([{"enabled": true}])"));
+  EXPECT_TRUE(
+      DownloadCoreServiceFactory::GetForBrowserContext(current_profile())
+          ->IsDownloadUiEnabled());
+}
 
 class DownloadsApiTest : public ExtensionApiTest {
  public:
