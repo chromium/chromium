@@ -258,15 +258,11 @@ aggregate_vector_icons("chrome_vector_icons") {
 
   if (is_win) {
     sources += [
-      "back_arrow_windows.icon",
-      "back_arrow_windows_touch.icon",
       "navigate_stop_windows.icon",
       "navigate_stop_windows_touch.icon",
       "open_in_phone.icon",
       "payments/secure_payment_confirmation_face.icon",
       "payments/secure_payment_confirmation_face_dark.icon",
-      "reload_windows.icon",
-      "reload_windows_touch.icon",
     ]
   } else {
     sources += [
