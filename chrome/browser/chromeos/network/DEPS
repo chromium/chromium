@@ -28,7 +28,4 @@ specific_include_rules = {
   "network_portal_signin_window\.cc": [
     "+chromeos/ash/components/network",
   ],
-  "network_portal_signin_window_ash_browsertest\.cc": [
-    "+chrome/browser/ash/net/network_portal_detector_test_impl.h",
-  ],
 }

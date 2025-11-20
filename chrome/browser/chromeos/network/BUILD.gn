@@ -44,7 +44,6 @@ source_set("browser_tests") {
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/test:test_support_ui",
-    "//chromeos/ash/components/network/portal_detector",
     "//components/captive_portal/content",
     "//content/test:test_support",
     "//testing/gtest",
