@@ -365,6 +365,18 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // * same page history navigation
   virtual bool IsSameDocument() const = 0;
 
+  // Uniquely identifies a committed same-document navigation.  This is used for
+  // attributing soft navigation metrics to the correct UKM Source ID. Note:
+  // * The value is set by the renderer process, and thus not trustworthy for
+  //   security critical uses. It's OK only for the metrics use case.
+  // * The value is set at "did commit" time. This means any browser-initiated
+  //   same-document navigations will not have this value set for most of the
+  //   life of the NavigationHandle.
+  // * This is different from the "item sequence number" in the session history
+  //   item, because it must be unique for each visit and not per history item.
+  virtual std::optional<base::UnguessableToken> GetSameDocumentMetricsToken()
+      const = 0;
+
   // Whether the navigation is a history traversal navigation, which navigates
   // to a pre-existing NavigationEntry. Note that this will return false for
   // reloads, and return true for session restore navigations.

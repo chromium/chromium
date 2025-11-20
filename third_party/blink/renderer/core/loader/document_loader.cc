@@ -46,6 +46,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/time/default_tick_clock.h"
 #include "base/types/optional_util.h"
+#include "base/unguessable_token.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "net/storage_access_api/status.h"
@@ -1093,9 +1094,16 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
   frame_->GetFrameScheduler()->DidCommitProvisionalLoad(
       commit_type == kWebHistoryInertCommit,
       FrameScheduler::NavigationType::kSameDocument);
+  // We attach this token to the committed navigation so that the browser-side
+  // has it and may later record soft navigation metrics to the correct UKM
+  // Source id for this same document navigation, in case it turns out to be a
+  // soft navigation as well. To make this work, we also pass this token to
+  // heuristics->SameDocumentNavigationCommitted (see below).
+  auto same_document_metrics_token = base::UnguessableToken::Create();
   GetLocalFrameClient().DidFinishSameDocumentNavigation(
       commit_type, is_synchronously_committed, same_document_navigation_type,
-      is_client_redirect_, is_browser_initiated, should_skip_screenshot);
+      is_client_redirect_, is_browser_initiated, should_skip_screenshot,
+      same_document_metrics_token);
   probe::DidNavigateWithinDocument(frame_, same_document_navigation_type);
 
   // If intercept() was called during this same-document navigation's
@@ -1188,8 +1196,8 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
     //
     // TODO(crbug.com/1521100): `heuristics` existing does not imply this
     // navigation was initiated in the main world.
-    heuristics->SameDocumentNavigationCommitted(new_url,
-                                                soft_navigation_context);
+    heuristics->SameDocumentNavigationCommitted(
+        new_url, same_document_metrics_token, soft_navigation_context);
   }
 }
 

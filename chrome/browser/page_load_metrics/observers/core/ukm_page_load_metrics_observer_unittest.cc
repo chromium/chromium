@@ -18,6 +18,7 @@
 #include "base/test/trace_test_utils.h"
 #include "base/time/time.h"
 #include "base/trace_event/traced_value.h"
+#include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
@@ -1852,13 +1853,15 @@ TEST_F(UkmPageLoadMetricsObserverTest, SoftNavigationCount) {
 
   auto soft_navigation_metrics =
       page_load_metrics::mojom::SoftNavigationMetrics(
-          1, base::Milliseconds(12), 42000,
+          1, base::Milliseconds(12), 42000, base::UnguessableToken::Create(),
           page_load_metrics::mojom::LargestContentfulPaintTiming::New());
 
   content::MockNavigationHandle navigation_handle;
   navigation_handle.set_has_committed(true);
   navigation_handle.set_is_in_primary_main_frame(true);
   navigation_handle.set_is_same_document(true);
+  navigation_handle.set_same_document_metrics_token(
+      base::UnguessableToken::Create());
 
   // Simulate the detection of soft navigation so that the ukm source id for
   // soft navigation is initialized.

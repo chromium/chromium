@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/run_loop.h"
+#include "base/unguessable_token.h"
 #include "base/uuid.h"
 #include "content/browser/fenced_frame/fenced_frame.h"
 #include "content/browser/renderer_host/frame_tree.h"
@@ -433,6 +434,8 @@ void TestRenderFrameHost::SendDidCommitSameDocumentNavigation(
     params->commit_navigation_start = base::TimeTicks::Now();
     params->commit_navigation_end = base::TimeTicks::Now();
   }
+  same_doc_params->same_document_metrics_token =
+      base::UnguessableToken::Create();
   DidCommitSameDocumentNavigation(std::move(params),
                                   std::move(same_doc_params));
 }

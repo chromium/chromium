@@ -7751,6 +7751,11 @@ bool NavigationRequest::IsSameDocument() const {
   return NavigationTypeUtils::IsSameDocument(common_params_->navigation_type);
 }
 
+std::optional<base::UnguessableToken>
+NavigationRequest::GetSameDocumentMetricsToken() const {
+  return same_document_metrics_token_;
+}
+
 bool NavigationRequest::IsHistory() const {
   return NavigationTypeUtils::IsHistory(common_params_->navigation_type);
 }

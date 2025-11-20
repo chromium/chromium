@@ -10,6 +10,7 @@
 #include "base/functional/function_ref.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/stack_allocated.h"
+#include "base/unguessable_token.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -97,8 +98,10 @@ class CORE_EXPORT SoftNavigationHeuristics
 
   void Shutdown();
 
-  void SameDocumentNavigationCommitted(const String& url,
-                                       SoftNavigationContext*);
+  void SameDocumentNavigationCommitted(
+      const String& url,
+      base::UnguessableToken same_document_metrics_token,
+      SoftNavigationContext*);
   bool ModifiedDOM(Node* node);
   uint32_t SoftNavigationCount() { return soft_navigation_count_; }
 

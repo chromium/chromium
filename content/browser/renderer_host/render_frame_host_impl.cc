@@ -15711,6 +15711,14 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
   VerifyThatBrowserAndRendererCalculatedDidCommitParamsMatch(
       navigation_request.get(), *params, same_document_params.Clone());
 
+  // This token is generated in the renderer at commit time; it uniquely
+  // identifies a committed same-document navigation. This is used for
+  // attributing soft navigation metrics to the correct UKM Source ID.
+  if (is_same_document_navigation) {
+    navigation_request->set_same_document_metrics_token(
+        same_document_params->same_document_metrics_token);
+  }
+
   // Update the page transition. For subframe navigations, the renderer process
   // only gives the correct page transition at commit time.
   // TODO(clamy): We should get the correct page transition when starting the

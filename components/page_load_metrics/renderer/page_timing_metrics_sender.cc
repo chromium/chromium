@@ -140,6 +140,9 @@ void PageTimingMetricsSender::DidObserveSoftNavigation(
 
   soft_navigation_metrics_->navigation_id = new_metrics.navigation_id;
 
+  soft_navigation_metrics_->same_document_metrics_token =
+      new_metrics.same_document_metrics_token;
+
   EnsureSendTimer();
 }
 

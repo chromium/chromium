@@ -35,6 +35,7 @@
 #include <optional>
 
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -155,7 +156,8 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
       mojom::blink::SameDocumentNavigationType,
       bool is_client_redirect,
       bool is_browser_initiated,
-      bool should_skip_screenshot) {}
+      bool should_skip_screenshot,
+      base::UnguessableToken same_document_metrics_token) {}
   virtual void DidFailAsyncSameDocumentCommit() {}
   virtual void DispatchDidOpenDocumentInputStream(const KURL&) {}
   virtual void DispatchDidReceiveTitle(const String&) = 0;

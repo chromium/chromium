@@ -205,13 +205,8 @@ FakePageLoadMetricsObserverDelegate::GetSoftNavigationMetrics() const {
 }
 
 ukm::SourceId
-FakePageLoadMetricsObserverDelegate::GetUkmSourceIdForSoftNavigation() const {
-  return ukm::kInvalidSourceId;
-}
-
-ukm::SourceId
-FakePageLoadMetricsObserverDelegate::GetPreviousUkmSourceIdForSoftNavigation()
-    const {
+FakePageLoadMetricsObserverDelegate::GetUkmSourceIdForSameDocumentNavigation(
+    base::UnguessableToken same_document_metrics_token) const {
   return ukm::kInvalidSourceId;
 }
 

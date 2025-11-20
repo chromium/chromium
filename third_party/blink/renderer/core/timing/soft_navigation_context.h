@@ -8,6 +8,7 @@
 #include <cstdint>
 
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/web/web_performance_metrics_for_reporting.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -86,13 +87,18 @@ class CORE_EXPORT SoftNavigationContext
 
   // First Url and Last Url help for cases with multiple client-side redirects.
   const String& InitialUrl() const { return initial_url_; }
-  void AddUrl(const String& url) {
+  void AddUrl(const String& url,
+              base::UnguessableToken same_document_metrics_token) {
     if (initial_url_.empty()) {
       initial_url_ = url;
+      same_document_metrics_token_ = same_document_metrics_token;
     }
     most_recent_url_ = url;
   }
   bool HasUrl() const { return !initial_url_.empty(); }
+  base::UnguessableToken SameDocumentMetricsToken() const {
+    return same_document_metrics_token_;
+  }
 
   void AddModifiedNode(Node* node);
   // Returns true if this paint updated the attributed area, and so we should
@@ -143,6 +149,7 @@ class CORE_EXPORT SoftNavigationContext
   base::TimeTicks first_input_or_scroll_time_;
 
   String initial_url_;
+  base::UnguessableToken same_document_metrics_token_;
   String most_recent_url_;
 
   blink::HeapHashSet<WeakMember<Node>> modified_nodes_;

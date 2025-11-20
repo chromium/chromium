@@ -81,8 +81,8 @@ class FakePageLoadMetricsObserverDelegate
   GetExperimentalLargestContentfulPaintHandler() const override;
   ukm::SourceId GetPageUkmSourceId() const override;
   mojom::SoftNavigationMetrics& GetSoftNavigationMetrics() const override;
-  ukm::SourceId GetUkmSourceIdForSoftNavigation() const override;
-  ukm::SourceId GetPreviousUkmSourceIdForSoftNavigation() const override;
+  ukm::SourceId GetUkmSourceIdForSameDocumentNavigation(
+      base::UnguessableToken same_document_metrics_token) const override;
   bool IsFirstNavigationInWebContents() const override;
   bool IsOriginVisit() const override;
   bool IsTerminalVisit() const override;

@@ -553,7 +553,8 @@ class CONTENT_EXPORT RenderFrameImpl
       blink::mojom::SameDocumentNavigationType same_document_navigation_type,
       bool is_client_redirect,
       const std::optional<blink::SameDocNavigationScreenshotDestinationToken>&
-          screenshot_destination) override;
+          screenshot_destination,
+      base::UnguessableToken same_document_metrics_token) override;
   void DidFailAsyncSameDocumentCommit() override;
   void WillFreezePage() override;
   void DidOpenDocumentInputStream(const blink::WebURL& url) override;

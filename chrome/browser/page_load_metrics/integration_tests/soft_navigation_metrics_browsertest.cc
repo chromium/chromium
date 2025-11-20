@@ -650,6 +650,91 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, TextLargestContentfulPaint) {
   EXPECT_TRUE(lcp_type_2 == flag_set || lcp_type_2 == flag_set_with_mouseover);
 }
 
+// This test verifies that we support soft navs triggered by the browser's
+// back button, including recording to UKM. While other soft navs have
+// underlying same-document navigations that originate in the renderer,
+// the back-button starts a same-document navigation in the browser.
+IN_PROC_BROWSER_TEST_P(SoftNavigationTest, BackButton) {
+  // Load soft_navigation_basics.html and wait for lcp.
+  Start();
+  auto waiter = CreatePageLoadMetricsTestWaiter("waiter");
+  waiter->AddPageExpectation(TimingField::kLargestContentfulPaint);
+  Load("/soft_navigation_basics.html#text");
+  waiter->Wait();
+
+  // 1st soft navigation: click on the next page button.
+  waiter->AddSoftNavigationCountExpectation(1);
+  waiter->AddSoftNavigationTextLCPExpectation(1);
+  WaitForFrameReady();
+  content::SimulateMouseClickOrTapElementWithId(web_contents(), "next-page");
+  waiter->Wait();
+
+  // 2nd soft navigation: click on the next page button.
+  waiter->AddSoftNavigationCountExpectation(2);
+  waiter->AddSoftNavigationTextLCPExpectation(2);
+  WaitForFrameReady();
+  content::SimulateMouseClickOrTapElementWithId(web_contents(), "next-page");
+  waiter->Wait();
+
+  // Now we simulate the back button. However, a regular back-button click or
+  // content::HistoryGoBack would trigger this intervention:
+  // https://chromium.googlesource.com/chromium/src/+/main/docs/history_manipulation_intervention.md
+  // Therefore we use -1 history offsets, which are like long-press back-button
+  // menu clicks. This is simpler (and perhaps slightly more robust) than
+  // avoiding the intervention by adding a user activation to the page.
+
+  // 3rd soft navigation: going backwards in history.
+  waiter->AddSoftNavigationCountExpectation(3);
+  waiter->AddSoftNavigationTextLCPExpectation(3);
+  WaitForFrameReady();
+  ASSERT_TRUE(content::HistoryGoToOffset(web_contents(), -1));
+  waiter->Wait();
+
+  // 4th soft navigation: going backwards in history.
+  waiter->AddSoftNavigationCountExpectation(4);
+  waiter->AddSoftNavigationTextLCPExpectation(4);
+  WaitForFrameReady();
+  ASSERT_TRUE(content::HistoryGoToOffset(web_contents(), -1));
+  waiter->Wait();
+
+  base::Value::List soft_nav_lcp_list;
+  if (GetParam()) {
+    soft_nav_lcp_list = EvalJs(web_contents()->GetPrimaryMainFrame(),
+                               JsSnippetGetSoftLcpStartTimes())
+                            .TakeValue()
+                            .TakeList();
+    EXPECT_EQ(soft_nav_lcp_list.size(), 4ul);
+  }
+
+  // Navigate to about:blank (untracked) to ensure all UKM are recorded.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  VerifySoftNavigationCount(/*expected_count=*/4);
+
+  VerifySoftNavIdsAndSoftLcpStartTimes(soft_nav_lcp_list,
+                                       /*expected_soft_nav_count=*/4);
+
+  // Verify the UKM recorded URLs for the soft navigations.
+  auto source_id_to_start_time = GetSoftNavigationMetrics(
+      ukm_recorder(), ukm::builders::SoftNavigation::kStartTimeName);
+  EXPECT_EQ(source_id_to_start_time.size(), 4);
+
+  std::vector<std::string> urls;
+  int port = 0;
+  for (const auto& [source_id, start_time] : source_id_to_start_time) {
+    const ukm::UkmSource* s = ukm_recorder().GetSourceForSourceId(source_id);
+    port = s->url().IntPort();
+    urls.push_back(s->url().spec());
+  }
+  EXPECT_THAT(
+      urls,
+      testing::ElementsAre(
+          absl::StrFormat("http://example.com:%d/page.html?id=1#text", port),
+          absl::StrFormat("http://example.com:%d/page.html?id=2#text", port),
+          absl::StrFormat("http://example.com:%d/page.html?id=1#text", port),
+          absl::StrFormat("http://example.com:%d/page.html?id=0#text", port)));
+}
+
 // TODO(crbug.com/334416161): Re-enable this test.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_NoSoftNavigation DISABLED_NoSoftNavigation

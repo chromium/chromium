@@ -216,6 +216,11 @@ struct DidCommitSameDocumentNavigationParams {
   // screenshot sent by Viz to the corresponding navigation entry.
   blink.mojom.SameDocNavigationScreenshotDestinationToken?
     navigation_entry_screenshot_destination;
+
+  // Uniquely identifies a committed same-document navigation.
+  // This is used for attributing soft navigation metrics to the
+  // correct UKM Source ID.
+  mojo_base.mojom.UnguessableToken same_document_metrics_token;
 };
 
 struct CookieManagerInfo {

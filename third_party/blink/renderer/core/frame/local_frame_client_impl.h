@@ -36,6 +36,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
@@ -99,12 +100,14 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
   void DispatchDidLoadResourceFromMemoryCache(const ResourceRequest&,
                                               const ResourceResponse&) override;
   void DispatchDidHandleOnloadEvents() override;
-  void DidFinishSameDocumentNavigation(WebHistoryCommitType,
-                                       bool is_handled_within_agent,
-                                       mojom::blink::SameDocumentNavigationType,
-                                       bool is_client_redirect,
-                                       bool is_browser_initiated,
-                                       bool should_skip_screenshot) override;
+  void DidFinishSameDocumentNavigation(
+      WebHistoryCommitType,
+      bool is_handled_within_agent,
+      mojom::blink::SameDocumentNavigationType,
+      bool is_client_redirect,
+      bool is_browser_initiated,
+      bool should_skip_screenshot,
+      base::UnguessableToken same_document_metrics_token) override;
   void DidFailAsyncSameDocumentCommit() override;
   void DispatchDidOpenDocumentInputStream(const KURL& url) override;
   void DispatchDidReceiveTitle(const String&) override;

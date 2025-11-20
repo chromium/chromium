@@ -11,6 +11,7 @@ import "services/network/public/mojom/request_priority.mojom";
 import "third_party/blink/public/mojom/loader/javascript_framework_detection.mojom";
 import "third_party/blink/public/mojom/use_counter/use_counter_feature.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
 
 // TimeDeltas below relative to navigation start.
 struct DocumentTiming {
@@ -647,6 +648,12 @@ struct SoftNavigationMetrics {
   // The renderer side navigation id that increments when a soft navigation
   // happens.
   uint32 navigation_id;
+
+  // Identifies the same document navigation for the initial URL change.
+  // This allows us to map to the UKM Source ID in the browser side,
+  // and therefore attribute the metrics to the correct URL
+  // when any corresponding soft navigation completes.
+  mojo_base.mojom.UnguessableToken? same_document_metrics_token;
 
   // The LargestContentfulPaint of a soft navigation, that is, the largest
   // contentful paint that happened after a soft navigation is detected and

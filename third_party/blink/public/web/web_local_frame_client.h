@@ -464,7 +464,8 @@ class BLINK_EXPORT WebLocalFrameClient {
       mojom::SameDocumentNavigationType,
       bool is_client_redirect,
       const std::optional<blink::SameDocNavigationScreenshotDestinationToken>&
-          screenshot_destination) {}
+          screenshot_destination,
+      base::UnguessableToken same_document_metrics_token) {}
 
   // Called when an async same-document navigation fails before commit. This is
   // used in the case where a same-document navigation was instructed to commit

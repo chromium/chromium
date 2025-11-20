@@ -306,6 +306,7 @@ SoftNavigationHeuristics::GetSoftNavigationContextForCurrentTask() const {
 
 void SoftNavigationHeuristics::SameDocumentNavigationCommitted(
     const String& url,
+    base::UnguessableToken same_document_metrics_token,
     SoftNavigationContext* context) {
   context = EnsureContextForCurrentWindow(context);
   if (!context && !context_for_current_url_) {
@@ -324,7 +325,7 @@ void SoftNavigationHeuristics::SameDocumentNavigationCommitted(
     // the emitting of existing contexts.
     // TODO(crbug.com/353043684, crbug.com/40943017): Perhaps there should be
     // limits to how long we will keep the current context as active.
-    context_for_current_url_->AddUrl(url);
+    context_for_current_url_->AddUrl(url, same_document_metrics_token);
 
     TRACE_EVENT_INSTANT("loading",
                         "SoftNavigationHeuristics::"
@@ -337,7 +338,7 @@ void SoftNavigationHeuristics::SameDocumentNavigationCommitted(
         SoftNavigationOutcome::
             kNoSoftNavContextDuringUrlChangeButMergingIntoPreviousContext);
   } else {
-    context->AddUrl(url);
+    context->AddUrl(url, same_document_metrics_token);
     // TODO(crbug.com/416705860): If we replace a previous context that is for a
     // previous URL change, maybe we should check if it was emitted?  If not,
     // we will no longer be attributing paints to it and so it will never meet
@@ -573,7 +574,9 @@ void SoftNavigationHeuristics::ReportSoftNavigationToMetrics(
         .first_contentful_paint =
             loader->GetTiming().MonotonicTimeToPseudoWallTime(
                 context->FirstContentfulPaint()),
-        .navigation_id = context->NavigationId()};
+        .navigation_id = context->NavigationId(),
+        .same_document_metrics_token = context->SameDocumentMetricsToken(),
+    };
     // This notifies UKM about this soft navigation.
     frame_client->DidObserveSoftNavigation(metrics);
   }

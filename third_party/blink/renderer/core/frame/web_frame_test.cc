@@ -8152,7 +8152,8 @@ class TestDidNavigateCommitTypeWebFrameClient
       mojom::blink::SameDocumentNavigationType,
       bool is_client_redirect,
       const std::optional<blink::SameDocNavigationScreenshotDestinationToken>&
-          screenshot_destination) override {
+          screenshot_destination,
+      base::UnguessableToken same_document_metrics_token) override {
     last_commit_type_ = type;
   }
 

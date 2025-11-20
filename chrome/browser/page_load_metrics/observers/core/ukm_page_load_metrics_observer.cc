@@ -639,7 +639,11 @@ void UkmPageLoadMetricsObserver::RecordSiteEngagement() const {
 
 void UkmPageLoadMetricsObserver::RecordSoftNavigationMetrics(
     ukm::SourceId ukm_source_id,
-    page_load_metrics::mojom::SoftNavigationMetrics& soft_navigation_metrics) {
+    const page_load_metrics::mojom::SoftNavigationMetrics&
+        soft_navigation_metrics) {
+  if (ukm_source_id == ukm::kInvalidSourceId) {
+    return;
+  }
   ukm::builders::SoftNavigation builder(ukm_source_id);
   builder.SetNavigationId(soft_navigation_metrics.navigation_id);
 
@@ -851,7 +855,8 @@ void UkmPageLoadMetricsObserver::OnSoftNavigationUpdated(
     // metrics are recorded in `RecordTimingMetrics` at the end of the page
     // load.
     RecordSoftNavigationMetrics(
-        GetDelegate().GetPreviousUkmSourceIdForSoftNavigation(),
+        GetDelegate().GetUkmSourceIdForSameDocumentNavigation(
+            *current_soft_navigation_metrics->same_document_metrics_token),
         *current_soft_navigation_metrics);
   }
 }
@@ -1039,25 +1044,28 @@ void UkmPageLoadMetricsObserver::RecordTimingMetrics(
   builder.SetNet_MediaBytes2(
       ukm::GetExponentialBucketMinForBytes(media_bytes_.InBytes()));
 
-  builder.SetSoftNavigationCount(
-      GetDelegate().GetSoftNavigationMetrics().count);
+  const auto& soft_navigation_metrics =
+      GetDelegate().GetSoftNavigationMetrics();
+  builder.SetSoftNavigationCount(soft_navigation_metrics.count);
 
-  if (main_frame_timing_)
+  if (main_frame_timing_) {
     ReportMainResourceTimingMetrics(builder);
+  }
 
   builder.Record(ukm::UkmRecorder::Get());
 
   // Record last soft navigation metrics; note that 0 is the absent navigation
   // id, see third_party/blink/renderer/core/timing/navigation_id_generator.h.
-  if (GetDelegate().GetSoftNavigationMetrics().count &&
-      GetDelegate().GetSoftNavigationMetrics().navigation_id) {
-    RecordSoftNavigationMetrics(GetDelegate().GetUkmSourceIdForSoftNavigation(),
-                                GetDelegate().GetSoftNavigationMetrics());
+  if (soft_navigation_metrics.count && soft_navigation_metrics.navigation_id) {
+    RecordSoftNavigationMetrics(
+        GetDelegate().GetUkmSourceIdForSameDocumentNavigation(
+            *soft_navigation_metrics.same_document_metrics_token),
+        soft_navigation_metrics);
   }
 
   // Record soft navigation count histogram to UMA.
   base::UmaHistogramCounts100(kHistogramSoftNavigationCount,
-                              GetDelegate().GetSoftNavigationMetrics().count);
+                              soft_navigation_metrics.count);
 }
 
 void UkmPageLoadMetricsObserver::RecordInternalTimingMetrics(
