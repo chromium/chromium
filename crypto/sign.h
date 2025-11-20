@@ -16,9 +16,15 @@ namespace crypto::sign {
 enum SignatureKind {
   RSA_PKCS1_SHA1,
   RSA_PKCS1_SHA256,
-  // RSA-PSS with SHA-256 as both the signing hash and the MGF-1 hash, with a
-  // salt length of 32.
+  RSA_PKCS1_SHA384,
+  RSA_PKCS1_SHA512,
+
+  // These RSA-PSS SignatureKinds use the named hash function as both the hash
+  // function and the MGF, and use the default salt length.
   RSA_PSS_SHA256,
+  RSA_PSS_SHA384,
+  RSA_PSS_SHA512,
+
   ECDSA_SHA256,
 
   // Note: Ed25519 cannot be used in streaming modes and has to be passed the

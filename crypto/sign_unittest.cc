@@ -47,7 +47,12 @@ TEST(Sign, RoundTripSignVerify) {
 
   expect_roundtrip(rsa_priv, rsa_pub, SignatureKind::RSA_PKCS1_SHA1);
   expect_roundtrip(rsa_priv, rsa_pub, SignatureKind::RSA_PKCS1_SHA256);
+  expect_roundtrip(rsa_priv, rsa_pub, SignatureKind::RSA_PKCS1_SHA384);
+  expect_roundtrip(rsa_priv, rsa_pub, SignatureKind::RSA_PKCS1_SHA512);
+
   expect_roundtrip(rsa_priv, rsa_pub, SignatureKind::RSA_PSS_SHA256);
+  expect_roundtrip(rsa_priv, rsa_pub, SignatureKind::RSA_PSS_SHA384);
+  expect_roundtrip(rsa_priv, rsa_pub, SignatureKind::RSA_PSS_SHA512);
 
   auto ec_priv = PrivateKey::GenerateEcP256();
   auto ec_pub = PublicKey::FromPrivateKey(ec_priv);

@@ -28,7 +28,11 @@ bool CanUseKeyForSignatureKind(SignatureKind kind,
   switch (kind) {
     case RSA_PKCS1_SHA1:
     case RSA_PKCS1_SHA256:
+    case RSA_PKCS1_SHA384:
+    case RSA_PKCS1_SHA512:
     case RSA_PSS_SHA256:
+    case RSA_PSS_SHA384:
+    case RSA_PSS_SHA512:
       // There exists an EVP_PKEY_RSA_PSS key type for RSA-PSS-specific keys,
       // but BoringSSL doesn't implement it and Chromium doesn't use it.
       return id == EVP_PKEY_RSA;
@@ -46,18 +50,23 @@ const EVP_MD* DigestForSignatureKind(SignatureKind kind) {
     case RSA_PKCS1_SHA1:
       return EVP_sha1();
     case RSA_PKCS1_SHA256:
-      return EVP_sha256();
     case RSA_PSS_SHA256:
-      return EVP_sha256();
     case ECDSA_SHA256:
       return EVP_sha256();
+    case RSA_PKCS1_SHA384:
+    case RSA_PSS_SHA384:
+      return EVP_sha384();
+    case RSA_PKCS1_SHA512:
+    case RSA_PSS_SHA512:
+      return EVP_sha512();
     case ED25519:
       return nullptr;
   }
 }
 
 void ConfigurePkeyCtx(EVP_PKEY_CTX* pkctx, SignatureKind kind) {
-  if (kind == RSA_PSS_SHA256) {
+  if (kind == RSA_PSS_SHA256 || kind == RSA_PSS_SHA384 ||
+      kind == RSA_PSS_SHA512) {
     CHECK(EVP_PKEY_CTX_set_rsa_padding(pkctx, RSA_PKCS1_PSS_PADDING));
     CHECK(EVP_PKEY_CTX_set_rsa_mgf1_md(pkctx, DigestForSignatureKind(kind)));
     CHECK(EVP_PKEY_CTX_set_rsa_pss_saltlen(pkctx, RSA_PSS_SALTLEN_DIGEST));
