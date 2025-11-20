@@ -44,7 +44,10 @@ class TabUnderlineView : public AnimatedEffectView {
   // Allows the test to inject the tester at the border's creation.
   class Factory {
    public:
-    static std::unique_ptr<TabUnderlineView> Create(Browser* browser, Tab* tab);
+    static std::unique_ptr<TabUnderlineView> Create(
+        std::unique_ptr<TabUnderlineViewController> controller,
+        Browser* browser,
+        Tab* tab);
     static void set_factory(Factory* factory) { factory_ = factory; }
 
    protected:
@@ -53,6 +56,7 @@ class TabUnderlineView : public AnimatedEffectView {
 
     // For tests to override.
     virtual std::unique_ptr<TabUnderlineView> CreateUnderlineView(
+        std::unique_ptr<TabUnderlineViewController> controller,
         Browser* browser,
         Tab* tab) = 0;
 
@@ -72,9 +76,11 @@ class TabUnderlineView : public AnimatedEffectView {
 
  protected:
   friend class Factory;
-  explicit TabUnderlineView(Browser* browser,
-                            Tab* tab,
-                            std::unique_ptr<Tester> tester);
+  explicit TabUnderlineView(
+      std::unique_ptr<TabUnderlineViewController> controller,
+      Browser* browser,
+      Tab* tab,
+      std::unique_ptr<Tester> tester);
 
  private:
   // `AnimatedEffectView`:

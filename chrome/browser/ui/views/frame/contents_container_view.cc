@@ -45,6 +45,7 @@
 
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/browser_ui/context_sharing_border_view.h"
+#include "chrome/browser/glic/browser_ui/context_sharing_border_view_controller_impl.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #endif
 
@@ -120,13 +121,15 @@ ContentsContainerView::ContentsContainerView(BrowserView* browser_view)
 
 #if BUILDFLAG(ENABLE_GLIC)
   if (glic::GlicEnabling::IsProfileEligible(browser_view->GetProfile())) {
-    glic_border_ =
-        AddChildView(views::Builder<glic::ContextSharingBorderView>(
-                         glic::ContextSharingBorderView::Factory::Create(
-                             browser_view->browser(), contents_view_))
-                         .SetVisible(false)
-                         .SetCanProcessEventsWithinSubtree(false)
-                         .Build());
+    glic_border_ = AddChildView(
+        views::Builder<glic::ContextSharingBorderView>(
+            glic::ContextSharingBorderView::Factory::Create(
+                std::make_unique<
+                    glic::ContextSharingBorderViewControllerImpl>(),
+                browser_view->browser(), contents_view_))
+            .SetVisible(false)
+            .SetCanProcessEventsWithinSubtree(false)
+            .Build());
   }
 #endif
 

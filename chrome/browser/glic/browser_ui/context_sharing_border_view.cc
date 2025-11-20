@@ -8,7 +8,7 @@
 
 #include "base/debug/crash_logging.h"
 #include "chrome/browser/actor/ui/actor_border_view_controller.h"
-#include "chrome/browser/glic/browser_ui/context_sharing_border_view_controller_impl.h"
+#include "chrome/browser/glic/browser_ui/context_sharing_border_view_controller.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -67,22 +67,26 @@ ContextSharingBorderView::Factory* ContextSharingBorderView::Factory::factory_ =
     nullptr;
 
 std::unique_ptr<ContextSharingBorderView>
-ContextSharingBorderView::Factory::Create(Browser* browser,
-                                          ContentsWebView* contents_web_view) {
+ContextSharingBorderView::Factory::Create(
+    std::unique_ptr<ContextSharingBorderViewController> controller,
+    Browser* browser,
+    ContentsWebView* contents_web_view) {
   if (factory_) [[unlikely]] {
-    return factory_->CreateBorderView(browser, contents_web_view);
+    return factory_->CreateBorderView(std::move(controller), browser,
+                                      contents_web_view);
   }
-  return base::WrapUnique(new ContextSharingBorderView(browser,
-                                                       contents_web_view,
-                                                       /*tester=*/nullptr));
+  return base::WrapUnique(new ContextSharingBorderView(
+      std::move(controller), browser, contents_web_view,
+      /*tester=*/nullptr));
 }
 
 ContextSharingBorderView::ContextSharingBorderView(
+    std::unique_ptr<ContextSharingBorderViewController> controller,
     Browser* browser,
     ContentsWebView* contents_web_view,
     std::unique_ptr<Tester> tester)
     : AnimatedEffectView(browser, std::move(tester)),
-      controller_(std::make_unique<ContextSharingBorderViewControllerImpl>()) {
+      controller_(std::move(controller)) {
   // Post-initialization updates. Don't do the update in the controller's ctor
   // because at that time BorderView isn't fully initialized, which can lead to
   // undefined behavior.
@@ -282,7 +286,8 @@ gfx::RoundedCornersF ContextSharingBorderView::GetContentBorderRadius() const {
   // If GlicMultiInstance is enabled, have all corners be rounded.
   // TODO(https://crbug.com/457452232): Update rounded corner radiuses for
   // different OS's.
-  if (glic::GlicEnabling::IsMultiInstanceEnabled()) {
+  // TODO(crbug.com/462446138): Rename this to IsSidePanelOpen.
+  if (controller_->IsMultiInstanceMode()) {
     return gfx::RoundedCornersF(kCornerRadius, kCornerRadius, kCornerRadius,
                                 kCornerRadius);
   }

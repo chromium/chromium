@@ -28,8 +28,10 @@ class ContextSharingBorderView : public AnimatedEffectView {
   // Allows the test to inject the tester at the border's creation.
   class Factory {
    public:
-    static std::unique_ptr<ContextSharingBorderView> Create(Browser*,
-                                                            ContentsWebView*);
+    static std::unique_ptr<ContextSharingBorderView> Create(
+        std::unique_ptr<ContextSharingBorderViewController> controller,
+        Browser*,
+        ContentsWebView*);
     static void set_factory(Factory* factory) { factory_ = factory; }
 
    protected:
@@ -38,6 +40,7 @@ class ContextSharingBorderView : public AnimatedEffectView {
 
     // For tests to override.
     virtual std::unique_ptr<ContextSharingBorderView> CreateBorderView(
+        std::unique_ptr<ContextSharingBorderViewController> controller,
         Browser* browser,
         ContentsWebView* contents_web_view) = 0;
 
@@ -55,9 +58,11 @@ class ContextSharingBorderView : public AnimatedEffectView {
 
  protected:
   friend class Factory;
-  explicit ContextSharingBorderView(Browser* browser,
-                                    ContentsWebView* contents_web_view,
-                                    std::unique_ptr<Tester> tester);
+  explicit ContextSharingBorderView(
+      std::unique_ptr<ContextSharingBorderViewController> controller,
+      Browser* browser,
+      ContentsWebView* contents_web_view,
+      std::unique_ptr<Tester> tester);
 
  private:
   // `AnimatedEffectView`:

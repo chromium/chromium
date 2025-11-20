@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_GLIC_BROWSER_UI_CONTEXT_SHARING_BORDER_VIEW_CONTROLLER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 
 class Browser;
 class ContentsWebView;
@@ -25,6 +26,11 @@ class ContextSharingBorderViewController {
 
   // Returns the ContentWebView around which the border is to be created.
   virtual ContentsWebView* contents_web_view() = 0;
+
+  // Returns whether the currently shown UI is in side panel mode.
+  // For contextual tasks, it will be always true. For glic, it will return
+  // GlicEnabling::IsMultiInstanceEnabled.
+  virtual bool IsMultiInstanceMode() const = 0;
 };
 
 }  // namespace glic

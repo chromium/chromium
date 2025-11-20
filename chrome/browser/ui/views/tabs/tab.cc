@@ -107,6 +107,7 @@
 
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/browser_ui/tab_underline_view.h"
+#include "chrome/browser/glic/browser_ui/tab_underline_view_controller_impl.h"
 #endif
 
 using base::UserMetricsAction;
@@ -263,8 +264,9 @@ Tab::Tab(TabSlotController* controller)
           controller_->GetBrowser()->GetProfile())) {
     glic_tab_underline_view_ = AddChildView(
         views::Builder<glic::TabUnderlineView>(
-            glic::TabUnderlineView::Factory::Create(controller->GetBrowser(),
-                                                    this))
+            glic::TabUnderlineView::Factory::Create(
+                std::make_unique<glic::TabUnderlineViewControllerImpl>(),
+                controller->GetBrowser(), this))
             // Needed so that expectations of visibility that
             // inform underline updates are correct on first show.
             .SetVisible(false)

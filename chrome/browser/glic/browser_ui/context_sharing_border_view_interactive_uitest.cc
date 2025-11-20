@@ -15,6 +15,7 @@
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
 #include "chrome/browser/glic/browser_ui/context_sharing_border_view.h"
+#include "chrome/browser/glic/browser_ui/context_sharing_border_view_controller_impl.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/ui/browser.h"
@@ -190,10 +191,12 @@ class TesterImpl : public ContextSharingBorderView::Tester {
 
 class TestBorderView : public ContextSharingBorderView {
  public:
-  TestBorderView(Browser* browser,
+  TestBorderView(std::unique_ptr<ContextSharingBorderViewController> controller,
+                 Browser* browser,
                  ContentsWebView* contents_web_view,
                  std::unique_ptr<Tester> tester)
-      : ContextSharingBorderView(browser,
+      : ContextSharingBorderView(std::move(controller),
+                                 browser,
                                  contents_web_view,
                                  std::move(tester)) {}
   ~TestBorderView() override = default;
@@ -208,10 +211,12 @@ class TestFactory : public ContextSharingBorderView::Factory {
 
  protected:
   std::unique_ptr<ContextSharingBorderView> CreateBorderView(
+      std::unique_ptr<ContextSharingBorderViewController> controller,
       Browser* browser,
       ContentsWebView* contents_web_view) override {
-    ContextSharingBorderView* new_border = new TestBorderView(
-        browser, contents_web_view, std::make_unique<TesterImpl>());
+    ContextSharingBorderView* new_border =
+        new TestBorderView(std::move(controller), browser, contents_web_view,
+                           std::make_unique<TesterImpl>());
     TesterImpl* tester = static_cast<TesterImpl*>(new_border->tester());
     tester->set_border(new_border);
     return base::WrapUnique(new_border);

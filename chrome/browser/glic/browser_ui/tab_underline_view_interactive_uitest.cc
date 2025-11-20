@@ -7,6 +7,7 @@
 #include "base/numerics/ranges.h"
 #include "cc/test/pixel_test_utils.h"
 #include "chrome/browser/glic/browser_ui/tab_underline_view.h"
+#include "chrome/browser/glic/browser_ui/tab_underline_view_controller_impl.h"
 #include "chrome/browser/glic/host/glic_features.mojom.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
@@ -133,8 +134,14 @@ class TesterImpl : public TabUnderlineView::Tester {
 
 class TestUnderlineView : public TabUnderlineView {
  public:
-  TestUnderlineView(Browser* browser, Tab* tab, std::unique_ptr<Tester> tester)
-      : TabUnderlineView(browser, tab, std::move(tester)) {}
+  TestUnderlineView(std::unique_ptr<TabUnderlineViewController> controller,
+                    Browser* browser,
+                    Tab* tab,
+                    std::unique_ptr<Tester> tester)
+      : TabUnderlineView(std::move(controller),
+                         browser,
+                         tab,
+                         std::move(tester)) {}
   ~TestUnderlineView() override = default;
 };
 
@@ -144,10 +151,12 @@ class TestFactory : public TabUnderlineView::Factory {
   ~TestFactory() override { TabUnderlineView::Factory::set_factory(nullptr); }
 
  protected:
-  std::unique_ptr<TabUnderlineView> CreateUnderlineView(Browser* browser,
-                                                        Tab* tab) override {
-    TabUnderlineView* new_underline =
-        new TestUnderlineView(browser, tab, std::make_unique<TesterImpl>());
+  std::unique_ptr<TabUnderlineView> CreateUnderlineView(
+      std::unique_ptr<TabUnderlineViewController> controller,
+      Browser* browser,
+      Tab* tab) override {
+    TabUnderlineView* new_underline = new TestUnderlineView(
+        std::move(controller), browser, tab, std::make_unique<TesterImpl>());
     TesterImpl* tester = static_cast<TesterImpl*>(new_underline->tester());
     tester->set_underline(new_underline);
     return base::WrapUnique(new_underline);

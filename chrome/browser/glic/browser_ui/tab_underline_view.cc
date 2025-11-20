@@ -6,7 +6,7 @@
 
 #include "base/debug/crash_logging.h"
 #include "cc/paint/paint_flags.h"
-#include "chrome/browser/glic/browser_ui/tab_underline_view_controller_impl.h"
+#include "chrome/browser/glic/browser_ui/tab_underline_view_controller.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -47,20 +47,23 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabUnderlineView,
 TabUnderlineView::Factory* TabUnderlineView::Factory::factory_ = nullptr;
 
 std::unique_ptr<TabUnderlineView> TabUnderlineView::Factory::Create(
+    std::unique_ptr<TabUnderlineViewController> controller,
     Browser* browser,
     Tab* tab) {
   if (factory_) [[unlikely]] {
-    return factory_->CreateUnderlineView(browser, tab);
+    return factory_->CreateUnderlineView(std::move(controller), browser, tab);
   }
-  return base::WrapUnique(
-      new TabUnderlineView(browser, tab, /*tester=*/nullptr));
+  return base::WrapUnique(new TabUnderlineView(std::move(controller), browser,
+                                               tab, /*tester=*/nullptr));
 }
 
-TabUnderlineView::TabUnderlineView(Browser* browser,
-                                   Tab* tab,
-                                   std::unique_ptr<Tester> tester)
+TabUnderlineView::TabUnderlineView(
+    std::unique_ptr<TabUnderlineViewController> controller,
+    Browser* browser,
+    Tab* tab,
+    std::unique_ptr<Tester> tester)
     : AnimatedEffectView(browser, std::move(tester)),
-      controller_(std::make_unique<TabUnderlineViewControllerImpl>()),
+      controller_(std::move(controller)),
       tab_(tab) {
   SetProperty(views::kElementIdentifierKey, kGlicTabUnderlineElementId);
 
