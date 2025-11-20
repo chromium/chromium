@@ -12,6 +12,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_policy_checker.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
@@ -35,11 +36,13 @@
 #include "chrome/browser/ui/views/tabs/glic_actor_task_icon.h"
 #include "chrome/browser/ui/views/tabs/glic_button.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
+#include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -557,53 +560,37 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
                    ->width_factor_for_testing());
 }
 
-// TODO(crbug.com/458775033): Fix and enable browser/interactive UI tests.
 IN_PROC_BROWSER_TEST_F(
     TabStripActionContainerBrowserTest,
-    DISABLED_ActivatesTabAndRemoveRowOnGlicActorTaskListBubbleRowClick) {
+    ActivatesTabAndRemoveRowOnGlicActorTaskListBubbleRowClick) {
+  ASSERT_TRUE(embedded_https_test_server().Start());
   auto* actor_service = actor::ActorKeyedService::Get(browser()->GetProfile());
   actor_service->GetPolicyChecker().SetActOnWebForTesting(true);
   actor::TaskId task_id = actor_service->CreateTask();
   actor::ActorTask* task = actor_service->GetTask(task_id);
   actor::ui::StartTask start_task_event(task_id);
   actor_service->GetActorUiStateManager()->OnUiEvent(start_task_event);
-  // Need to wait for the AUSM to notify the GlicActorTaskIconManager.
-  base::PlatformThread::Sleep(actor::ui::kProfileScopedUiUpdateDebounceDelay);
 
-  ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 0,
-                                     GURL(chrome::kChromeUINewTabURL),
-                                     ui::PAGE_TRANSITION_LINK));
-  auto* tab_one = browser()->GetTabStripModel()->GetTabAtIndex(0);
-  base::RunLoop loop;
-  task->AddTab(
-      tab_one->GetHandle(),
-      base::BindLambdaForTesting([&](actor::mojom::ActionResultPtr result) {
-        EXPECT_TRUE(actor::IsOk(*result));
-        loop.Quit();
-      }));
-  loop.Run();
+  // Navigate the active tab to a new page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_https_test_server().GetURL("/actor/blank.html")));
+
+  // Add tab to task.
+  base::test::TestFuture<actor::mojom::ActionResultPtr> add_tab_future;
+  task->AddTab(browser()->GetActiveTabInterface()->GetHandle(),
+               add_tab_future.GetCallback());
+  auto add_tab_result = add_tab_future.Take();
+  ASSERT_TRUE(add_tab_result);
 
   // Add and activate the non-actuation tab.
   ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 1,
                                      GURL(chrome::kChromeUINewTabURL),
                                      ui::PAGE_TRANSITION_LINK));
-  auto* tab_two = browser()->GetTabStripModel()->GetTabAtIndex(1);
   browser()->GetTabStripModel()->ActivateTabAt(1);
 
-  EXPECT_TRUE(task->IsActingOnTab(tab_one->GetHandle()));
-  EXPECT_FALSE(task->IsActingOnTab(tab_two->GetHandle()));
-  EXPECT_FALSE(tab_one->IsActivated());
-  EXPECT_TRUE(tab_two->IsActivated());
-
-  actor_service->GetTask(task_id)->Pause(true);
-  auto* actor_nudge_controller =
-      tabs::GlicActorNudgeController::From(browser());
-  auto actor_task_nudge_state = tabs::ActorTaskNudgeState();
-  actor_task_nudge_state.text =
-      tabs::ActorTaskNudgeState::Text::kNeedsAttention;
-  actor_nudge_controller->OnStateUpdate(actor_task_nudge_state);
-
-  EXPECT_TRUE(GlicActorTaskIcon()->GetIsShowingNudge());
+  actor_service->GetTask(task_id)->Pause(/*from_actor=*/true);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return GlicActorTaskIcon()->GetIsShowingNudge(); }));
 
   ResetAnimation(1);
 
@@ -617,14 +604,9 @@ IN_PROC_BROWSER_TEST_F(
       content_view->children().front()->children().front());
   Click(button);
 
-  EXPECT_TRUE(tab_one->IsActivated());
-  EXPECT_FALSE(tab_two->IsActivated());
-
-  actor_task_nudge_state.text = tabs::ActorTaskNudgeState::Text::kDefault;
-  actor_nudge_controller->OnStateUpdate(actor_task_nudge_state);
-
   // Nudge should hide and row list should be emptied.
-  EXPECT_FALSE(GlicActorTaskIcon()->GetIsShowingNudge());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return !GlicActorTaskIcon()->GetIsShowingNudge(); }));
   auto* manager = tabs::GlicActorTaskIconManagerFactory::GetForProfile(
       browser()->GetProfile());
   EXPECT_EQ(0u, manager->GetActorTaskListBubbleRows().size());

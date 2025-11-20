@@ -4077,6 +4077,7 @@ if (!is_android) {
       "//chrome/browser/webauthn",
       "//chrome/browser/webauthn:unexportable_key_utils",
       "//chrome/browser/webdata_services",
+      "//chrome/common:mojo_bindings",
       "//components/contextual_tasks/public:feature_list",
       "//components/enterprise/connectors/core:cloud_content_scanning",
       "//components/live_caption:live_translate",
