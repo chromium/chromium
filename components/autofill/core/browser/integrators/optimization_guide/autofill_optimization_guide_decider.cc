@@ -261,13 +261,7 @@ AutofillOptimizationGuideDecider::~AutofillOptimizationGuideDecider() = default;
 
 void AutofillOptimizationGuideDecider::OnPaymentsDataLoaded(
     const PaymentsDataManager& payments_data_manager) {
-  // Currently this function is only introduced for BNPL allowlists, and no
-  // further steps should be processed if flag
-  // `kAutofillEnableLoadBnplAllowlistAfterSyncing` is disabled.
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnableLoadBnplAllowlistAfterSyncing)) {
-    return;
-  }
+
 
   // This flat set represents all of the optimization types that we need to
   // register after loading payments data.

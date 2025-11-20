@@ -178,10 +178,6 @@ BASE_FEATURE(kAutofillEnableFpanRiskBasedAuthentication,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// When enabled, Buy now pay later issuer allow lists will be loaded after
-// payment data syncing instead of credit card form parsing.
-BASE_FEATURE(kAutofillEnableLoadBnplAllowlistAfterSyncing,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, virtual card downstream enrollment will support multiple
 // requests at a time.

@@ -780,8 +780,7 @@ TEST_P(BuyNowPayLaterAutofillOptimizationGuideDeciderTest,
   base::test::ScopedFeatureList feature_list;
 
   std::vector<base::test::FeatureRef> enabled_features = {
-      features::kAutofillEnableBuyNowPayLaterSyncing,
-      features::kAutofillEnableLoadBnplAllowlistAfterSyncing};
+      features::kAutofillEnableBuyNowPayLaterSyncing};
 
   if (IsBlocklistFlagEnabled()) {
     enabled_features.push_back(
@@ -808,8 +807,7 @@ TEST_P(BuyNowPayLaterAutofillOptimizationGuideDeciderTest,
   base::test::ScopedFeatureList feature_list;
 
   std::vector<base::test::FeatureRef> enabled_features = {
-      features::kAutofillEnableBuyNowPayLaterSyncing,
-      features::kAutofillEnableLoadBnplAllowlistAfterSyncing};
+      features::kAutofillEnableBuyNowPayLaterSyncing};
 
   if (IsBlocklistFlagEnabled()) {
     enabled_features.push_back(
@@ -836,8 +834,7 @@ TEST_P(BuyNowPayLaterAutofillOptimizationGuideDeciderTest,
   base::test::ScopedFeatureList feature_list;
 
   std::vector<base::test::FeatureRef> enabled_features = {
-      features::kAutofillEnableBuyNowPayLaterSyncing,
-      features::kAutofillEnableLoadBnplAllowlistAfterSyncing};
+      features::kAutofillEnableBuyNowPayLaterSyncing};
 
   if (IsBlocklistFlagEnabled()) {
     enabled_features.push_back(
@@ -852,38 +849,6 @@ TEST_P(BuyNowPayLaterAutofillOptimizationGuideDeciderTest,
   // Ensure that on registration the right optimization type is registered.
   EXPECT_CALL(decider(), RegisterOptimizationTypes(testing::IsSupersetOf(
                              {GetKlarnaOptimizationType()})));
-
-  guide().OnPaymentsDataLoaded(payments_data_manager());
-}
-
-// Test the `BUY_NOW_PAY_LATER_ALLOWLIST_KLARNA` optimization type is not
-// registered when there is at least one Klarna BNPL issuer with
-// `OnPaymentsDataLoaded()` call if flag
-// `features::kAutofillEnableLoadBnplAllowlistAfterSyncing` is disabled.
-TEST_P(
-    BuyNowPayLaterAutofillOptimizationGuideDeciderTest,
-    OnPaymentsDataLoaded_BuyNowPayLaterProviderKlarna_LoadAllowListAfterSyncingDisabled) {
-  base::test::ScopedFeatureList feature_list;
-
-  std::vector<base::test::FeatureRef> enabled_features = {
-      features::kAutofillEnableBuyNowPayLaterSyncing};
-
-  if (IsBlocklistFlagEnabled()) {
-    enabled_features.push_back(
-        features::kAutofillPreferBuyNowPayLaterBlocklists);
-  }
-
-  feature_list.InitWithFeatures(
-      enabled_features,
-      {features::kAutofillEnableLoadBnplAllowlistAfterSyncing});
-
-  payments_data_manager().AddBnplIssuer(
-      test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplKlarna));
-
-  // Ensure optimization type for Klarna allowlist is not registered.
-  EXPECT_CALL(decider(), RegisterOptimizationTypes(testing::IsSupersetOf(
-                             {GetKlarnaOptimizationType()})))
-      .Times(0);
 
   guide().OnPaymentsDataLoaded(payments_data_manager());
 }
@@ -931,9 +896,7 @@ TEST_P(BuyNowPayLaterAutofillOptimizationGuideDeciderTest,
         features::kAutofillPreferBuyNowPayLaterBlocklists);
   }
 
-  feature_list.InitWithFeatures(
-      enabled_features,
-      {features::kAutofillEnableLoadBnplAllowlistAfterSyncing});
+  feature_list.InitWithFeatures(enabled_features, {});
 
   FormStructure form_structure{CreateTestCreditCardFormData(
       /*is_https=*/true, /*use_month_type=*/true)};
@@ -964,9 +927,7 @@ TEST_P(BuyNowPayLaterAutofillOptimizationGuideDeciderTest,
         features::kAutofillPreferBuyNowPayLaterBlocklists);
   }
 
-  feature_list.InitWithFeatures(
-      enabled_features,
-      {features::kAutofillEnableLoadBnplAllowlistAfterSyncing});
+  feature_list.InitWithFeatures(enabled_features, {});
 
   FormStructure form_structure{CreateTestCreditCardFormData(
       /*is_https=*/true, /*use_month_type=*/true)};
@@ -997,9 +958,7 @@ TEST_P(BuyNowPayLaterAutofillOptimizationGuideDeciderTest,
         features::kAutofillPreferBuyNowPayLaterBlocklists);
   }
 
-  feature_list.InitWithFeatures(
-      enabled_features,
-      {features::kAutofillEnableLoadBnplAllowlistAfterSyncing});
+  feature_list.InitWithFeatures(enabled_features, {});
 
   FormStructure form_structure{CreateTestCreditCardFormData(
       /*is_https=*/true, /*use_month_type=*/true)};
