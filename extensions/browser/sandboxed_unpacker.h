@@ -26,7 +26,6 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
 class SkBitmap;

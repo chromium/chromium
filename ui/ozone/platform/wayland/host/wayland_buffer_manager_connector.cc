@@ -5,6 +5,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_connector.h"
 
 #include "base/functional/bind.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_wp_color_manager.h"

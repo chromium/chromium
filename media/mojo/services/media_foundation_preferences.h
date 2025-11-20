@@ -8,7 +8,6 @@
 #include "base/functional/callback_forward.h"
 #include "media/mojo/mojom/media_foundation_preferences.mojom.h"
 #include "media/mojo/services/media_mojo_export.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "url/gurl.h"
 
 class MEDIA_MOJO_EXPORT MediaFoundationPreferencesImpl final

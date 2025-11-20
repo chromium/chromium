@@ -16,8 +16,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/mock_quota_manager.h"

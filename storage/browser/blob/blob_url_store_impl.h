@@ -11,7 +11,6 @@
 #include "base/functional/callback.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "storage/browser/blob/blob_storage_constants.h"
 #include "storage/browser/blob/blob_url_registry.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"

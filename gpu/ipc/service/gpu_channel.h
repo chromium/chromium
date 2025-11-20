@@ -31,7 +31,6 @@
 #include "gpu/ipc/service/shared_image_stub.h"
 #include "ipc/ipc_sync_channel.h"
 #include "mojo/public/cpp/bindings/generic_pending_associated_receiver.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_extra_info.h"
 #include "ui/gfx/native_ui_types.h"

@@ -15,7 +15,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
 #include "base/values.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace extensions {
 

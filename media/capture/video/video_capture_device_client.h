@@ -20,8 +20,6 @@
 #include "media/capture/capture_export.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video/video_frame_receiver.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace gpu {
 class ClientSharedImage;

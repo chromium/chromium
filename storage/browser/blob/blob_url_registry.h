@@ -12,7 +12,6 @@
 #include "base/sequence_checker.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/unique_associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "storage/browser/blob/blob_storage_constants.h"

@@ -16,7 +16,6 @@
 #include "media/base/audio_renderer_sink.h"
 #include "media/mojo/mojom/cast_application_media_info_manager.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromecast {
 namespace media {

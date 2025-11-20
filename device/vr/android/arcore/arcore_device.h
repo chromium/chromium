@@ -20,7 +20,6 @@
 #include "device/vr/public/cpp/xr_frame_sink_client.h"
 #include "device/vr/vr_device_base.h"
 #include "gpu/ipc/common/surface_handle.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/native_ui_types.h"
 

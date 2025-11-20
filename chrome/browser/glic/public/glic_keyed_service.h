@@ -31,7 +31,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 class BrowserWindowInterface;
 class Profile;

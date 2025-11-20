@@ -25,7 +25,6 @@
 #include "ipc/ipc.mojom.h"
 #include "ipc/ipc_message_pipe_reader.h"
 #include "mojo/public/cpp/bindings/generic_pending_associated_receiver.h"
-#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "mojo/public/cpp/system/message_pipe.h"

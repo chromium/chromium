@@ -10,7 +10,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/browser/url_fetcher.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "url/gurl.h"
 

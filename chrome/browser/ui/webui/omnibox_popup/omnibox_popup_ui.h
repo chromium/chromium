@@ -19,7 +19,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom-forward.h"
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"

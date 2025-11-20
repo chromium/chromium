@@ -9,9 +9,7 @@
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 class GoogleServiceAuthError;
 

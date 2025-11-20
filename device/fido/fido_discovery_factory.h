@@ -24,7 +24,6 @@
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/hid/fido_hid_discovery.h"
 #include "device/fido/network_context_factory.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/usb_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 

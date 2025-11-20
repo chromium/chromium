@@ -24,7 +24,6 @@
 #include "extensions/common/api/socket.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/permissions/api_permission.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"

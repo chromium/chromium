@@ -6,11 +6,10 @@
 #define UI_ACCESSIBILITY_PLATFORM_AUTOMATION_AUTOMATION_TREE_MANAGER_OWNER_H_
 
 #include <vector>
+
 #include "base/component_export.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "services/accessibility/public/mojom/automation.mojom.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_event.h"

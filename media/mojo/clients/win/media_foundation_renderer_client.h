@@ -21,9 +21,7 @@
 #include "media/mojo/clients/mojo_renderer.h"
 #include "media/mojo/mojom/dcomp_surface_registry.mojom.h"
 #include "media/mojo/mojom/renderer_extensions.mojom.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace media {

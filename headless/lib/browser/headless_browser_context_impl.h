@@ -20,7 +20,6 @@
 #include "headless/lib/browser/headless_request_context_manager.h"
 #include "headless/public/headless_browser_context.h"
 #include "headless/public/headless_export.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
 class WebContents;

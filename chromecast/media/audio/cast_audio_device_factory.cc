@@ -20,6 +20,8 @@
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_renderer_sink.h"
 #include "media/base/output_device_info.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/web/modules/media/audio/audio_output_ipc_factory.h"
 #include "third_party/blink/public/web/web_local_frame.h"

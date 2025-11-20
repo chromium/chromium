@@ -20,7 +20,6 @@
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "storage/browser/quota/quota_settings.h"

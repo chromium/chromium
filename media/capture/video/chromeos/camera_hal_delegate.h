@@ -23,7 +23,6 @@
 #include "media/capture/video/video_capture_device_factory.h"
 #include "media/capture/video_capture_types.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
-#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"

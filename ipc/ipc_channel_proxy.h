@@ -26,7 +26,6 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/generic_pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
-#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "mojo/public/cpp/bindings/shared_associated_remote.h"
 

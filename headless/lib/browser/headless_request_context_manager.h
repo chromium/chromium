@@ -12,7 +12,6 @@
 #include "build/build_config.h"
 #include "content/public/browser/browser_context.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom-forward.h"
 #include "services/network/public/cpp/cookie_encryption_provider_impl.h"
 #include "services/network/public/mojom/network_context.mojom.h"
