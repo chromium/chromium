@@ -43,8 +43,9 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
          * Called when the tab strip requests an update when control container changes its width.
          *
          * @param newHeight The expected height tab strip will be changed into.
+         * @param applyScrimOverlay Whether the strip scrim should be updated during the transition.
          */
-        default void onTransitionRequested(int newHeight) {}
+        default void onTransitionRequested(int newHeight, boolean applyScrimOverlay) {}
     }
 
     /** Delegate to enforce tab strip updates when strip transition is requested. */

@@ -1173,6 +1173,7 @@ if (_is_default_toolchain) {
       "//chrome/browser/ui/android/searchactivityutils:junit",
       "//chrome/browser/ui/android/settings_promo_card:junit",
       "//chrome/browser/ui/android/signin:junit",
+      "//chrome/browser/ui/android/tabstrip:junit",
       "//chrome/browser/ui/android/theme:junit",
       "//chrome/browser/ui/android/toolbar:junit",
       "//chrome/browser/ui/android/web_app_header:junit",

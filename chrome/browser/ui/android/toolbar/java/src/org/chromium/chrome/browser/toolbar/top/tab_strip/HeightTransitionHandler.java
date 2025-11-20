@@ -343,7 +343,7 @@ class HeightTransitionHandler {
             recordTabStripTransitionFinished(false);
         }
 
-        mTabStripTransitionHandler.onTransitionRequested(newHeight);
+        mTabStripTransitionHandler.onTransitionRequested(newHeight, mUpdateStripVisibility);
 
         // If the browser control is performing an browser initiated animation, we should update the
         // view margins right away. This will make sure the toolbar stays in the same place with
