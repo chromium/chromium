@@ -669,11 +669,15 @@ BASE_FEATURE_PARAM(bool,
                    &kPageActionsMigration,
                    "save_payments",
                    false);
-
 BASE_FEATURE_PARAM(bool,
                    kPageActionsMigrationLensOverlayHomework,
                    &kPageActionsMigration,
                    "lens_overlay_homework",
+                   false);
+BASE_FEATURE_PARAM(bool,
+                   kPageActionsMigrationBookmarkStar,
+                   &kPageActionsMigration,
+                   "bookmark_star",
                    false);
 
 BASE_FEATURE(kSavePasswordsContextualUi, base::FEATURE_DISABLED_BY_DEFAULT);

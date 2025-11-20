@@ -14,6 +14,7 @@
 #include "ui/base/unowned_user_data/user_data_factory.h"
 
 class AskBeforeHttpDialogController;
+class BookmarkPageActionController;
 class CollaborationMessagingPageActionController;
 class ContextualTasksPageActionController;
 class CookieControlsPageActionController;
@@ -443,6 +444,10 @@ class TabFeatures {
   // Manages the Lens Overlay Homework page action.
   std::unique_ptr<LensOverlayHomeworkPageActionController>
       lens_overlay_homework_page_action_controller_;
+
+  // Manages the Bookmark page action.
+  std::unique_ptr<BookmarkPageActionController>
+      bookmark_page_action_controller_;
 
 #if BUILDFLAG(ENABLE_GLIC)
   std::unique_ptr<glic::GlicInstanceHelper> glic_instance_helper_;

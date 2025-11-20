@@ -688,7 +688,7 @@ void ToolbarView::ShowIntentPickerBubble(
 void ToolbarView::ShowBookmarkBubble(const GURL& url, bool already_bookmarked) {
   views::View* const anchor_view = location_bar();
   views::Button* const bookmark_star_icon =
-      GetPageActionIconView(PageActionIconType::kBookmarkStar);
+      GetPageActionView(kActionBookmarkThisTab);
   CHECK(bookmark_star_icon);
   BookmarkBubbleView::ShowBubble(anchor_view, GetWebContents(),
                                  bookmark_star_icon, browser_, url,

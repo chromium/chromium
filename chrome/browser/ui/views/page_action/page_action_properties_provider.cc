@@ -216,6 +216,15 @@ constexpr auto kPageActionProperties =
                 .element_identifier = kContextualTasksPageActionElementId,
             },
         },
+        {
+            kActionBookmarkThisTab,
+            {
+                .histogram_name = "BookmarksStar",
+                .is_ephemeral = false,
+                .type = PageActionIconType::kBookmarkStar,
+                .element_identifier = kBookmarkStarViewElementId,
+            },
+        },
     });
 
 constexpr bool CheckIgnoreFlagUsage() {

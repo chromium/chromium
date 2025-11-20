@@ -4,7 +4,10 @@
 
 #include "chrome/browser/ui/views/bookmarks/bookmark_page_action_controller.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/bookmarks/bookmark_stats.h"
+#include "chrome/browser/ui/views/page_action/page_action_triggers.h"
 #include "chrome/browser/ui/views/page_action/test_support/mock_page_action_controller.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
@@ -82,7 +85,7 @@ TEST_F(BookmarkPageActionControllerTest, URLStarredChangedUpdatesImageAndName) {
               OverrideTooltip(kActionBookmarkThisTab, _))
       .Times(1);
   EXPECT_CALL(page_action_controller(),
-              OverrideImage(kActionBookmarkThisTab, _))
+              OverrideImage(kActionBookmarkThisTab, _, _))
       .Times(1);
 
   bookmark_page_action_controller().URLStarredChanged(tab().GetContents(),
@@ -95,7 +98,7 @@ TEST_F(BookmarkPageActionControllerTest, URLStarredChangedUpdatesImageAndName) {
               OverrideTooltip(kActionBookmarkThisTab, _))
       .Times(1);
   EXPECT_CALL(page_action_controller(),
-              OverrideImage(kActionBookmarkThisTab, _))
+              OverrideImage(kActionBookmarkThisTab, _, _))
       .Times(1);
 
   bookmark_page_action_controller().URLStarredChanged(tab().GetContents(),
@@ -108,4 +111,24 @@ TEST_F(BookmarkPageActionControllerTest, EditBookmarkPrefControlsVisibility) {
 
   EXPECT_CALL(page_action_controller(), Hide(kActionBookmarkThisTab)).Times(1);
   pref_service().SetBoolean(bookmarks::prefs::kEditBookmarksEnabled, false);
+}
+
+TEST_F(BookmarkPageActionControllerTest,
+       RecordPageActionExecutionRecordsHistogram) {
+  base::HistogramTester histogram_tester;
+
+  BookmarkPageActionController::RecordPageActionExecution(
+      page_actions::PageActionTrigger::kMouse);
+  histogram_tester.ExpectUniqueSample("Bookmarks.EntryPoint",
+                                      BookmarkEntryPoint::kStarMouse, 1);
+
+  BookmarkPageActionController::RecordPageActionExecution(
+      page_actions::PageActionTrigger::kKeyboard);
+  histogram_tester.ExpectBucketCount("Bookmarks.EntryPoint",
+                                     BookmarkEntryPoint::kStarKey, 1);
+
+  BookmarkPageActionController::RecordPageActionExecution(
+      page_actions::PageActionTrigger::kGesture);
+  histogram_tester.ExpectBucketCount("Bookmarks.EntryPoint",
+                                     BookmarkEntryPoint::kStarGesture, 1);
 }

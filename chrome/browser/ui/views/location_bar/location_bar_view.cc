@@ -443,6 +443,10 @@ void LocationBarView::Init() {
     }
   }
 
+  // We don't need to bridge the new page action container with the legacy one
+  // if all page actions (i.e. up to bookmark star) are migrated.
+  const bool should_bridge_containers =
+      !IsPageActionMigrated(PageActionIconType::kBookmarkStar);
   static constexpr int kBetweenIconSpacing = 8;
   const page_actions::PageActionViewParams page_action_params{
       .icon_size = GetLayoutConstant(LOCATION_BAR_TRAILING_ICON_SIZE),
@@ -450,6 +454,7 @@ void LocationBarView::Init() {
       .between_icon_spacing = kBetweenIconSpacing,
       .icon_label_bubble_delegate = this,
       .font_list = &page_action_font_list,
+      .should_bridge_containers = should_bridge_containers,
       .hide_icon_on_space_constraint = false};
   page_action_container_ =
       AddChildView(std::make_unique<page_actions::PageActionContainerView>(
@@ -961,8 +966,16 @@ void LocationBarView::Layout(PassKey) {
   // When the AIM page action is shown as the right-most page action in the
   // location bar, it should be positioned flush against the right edge of the
   // location bar.
+  // If all page actions are migrated (i.e. up to bookmark star), then the extra
+  // padding that is usually added to bridge the new and legacy containers can
+  // be discounted.
+  const bool all_page_actions_migrated =
+      IsPageActionMigrated(PageActionIconType::kBookmarkStar);
   const int kTrailingEdgePaddingForAim =
-      IsPageActionMigrated(PageActionIconType::kAiMode) ? -3 : 5;
+      IsPageActionMigrated(PageActionIconType::kAiMode) &&
+              !all_page_actions_migrated
+          ? -3
+          : 5;
   add_trailing_decoration(page_action_icon_container_,
                           /*intra_item_padding=*/0,
                           /*edge_padding=*/

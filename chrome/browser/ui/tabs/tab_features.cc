@@ -66,6 +66,7 @@
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_translate_action_listener.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/bookmarks/bookmark_page_action_controller.h"
 #include "chrome/browser/ui/views/commerce/discounts_page_action_view_controller.h"
 #include "chrome/browser/ui/views/commerce/price_insights_page_action_view_controller.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_page_action_controller.h"
@@ -242,6 +243,14 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
       contextual_tasks_page_action_controller_ =
           GetUserDataFactory()
               .CreateInstance<ContextualTasksPageActionController>(tab, &tab);
+    }
+
+    if (IsPageActionMigrated(PageActionIconType::kBookmarkStar) &&
+        tab.GetBrowserWindowInterface()->GetType() ==
+            BrowserWindowInterface::TYPE_NORMAL) {
+      bookmark_page_action_controller_ =
+          GetUserDataFactory().CreateInstance<BookmarkPageActionController>(
+              tab, tab, profile->GetPrefs(), *page_action_controller_);
     }
 
     js_optimizations_page_action_controller_ =

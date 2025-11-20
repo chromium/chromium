@@ -91,6 +91,7 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
+#include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
@@ -119,6 +120,7 @@
 #include "chrome/browser/ui/views/autofill/autofill_bubble_handler_impl.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
+#include "chrome/browser/ui/views/bookmarks/bookmark_page_action_controller.h"
 #include "chrome/browser/ui/views/color_provider_browser_helper.h"
 #include "chrome/browser/ui/views/download/download_in_progress_dialog_view.h"
 #include "chrome/browser/ui/views/exclusive_access_bubble_views.h"
@@ -1736,6 +1738,11 @@ bool BrowserView::IsLoadingAnimationRunning() const {
 }
 
 void BrowserView::SetStarredState(bool is_starred) {
+  if (IsPageActionMigrated(PageActionIconType::kBookmarkStar)) {
+    // `BookmarkPageActionController` directly observes for changes.
+    return;
+  }
+
   PageActionIconView* star_icon =
       toolbar_button_provider_->GetPageActionIconView(
           PageActionIconType::kBookmarkStar);

@@ -59,6 +59,7 @@
 #include "chrome/browser/ui/toolbar/cast/cast_toolbar_button_util.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/bookmarks/bookmark_page_action_controller.h"
 #include "chrome/browser/ui/views/commerce/discounts_page_action_view_controller.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_bubble_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -66,6 +67,7 @@
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_page_action_controller.h"
 #include "chrome/browser/ui/views/location_bar/lens_overlay_homework_page_action_controller.h"
 #include "chrome/browser/ui/views/media_router/cast_browser_controller.h"
+#include "chrome/browser/ui/views/page_action/page_action_triggers.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_controller.h"
 #include "chrome/browser/ui/views/side_panel/comments/comments_side_panel_coordinator.h"
@@ -778,6 +780,27 @@ void BrowserActions::InitializeBrowserActions() {
               },
               bwi))
           .SetActionId(kActionShowCookieControls)
+          .Build());
+
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                std::underlying_type_t<page_actions::PageActionTrigger>
+                    page_action_trigger = context.GetProperty(
+                        page_actions::kPageActionTriggerKey);
+                if (page_action_trigger !=
+                    page_actions::kInvalidPageActionTrigger) {
+                  BookmarkPageActionController::RecordPageActionExecution(
+                      static_cast<page_actions::PageActionTrigger>(
+                          page_action_trigger));
+                }
+
+                chrome::ExecuteCommand(bwi, IDC_BOOKMARK_THIS_TAB);
+              },
+              bwi))
+          .SetActionId(kActionBookmarkThisTab)
           .Build());
 
   root_action_item_->AddChild(
