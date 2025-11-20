@@ -1377,6 +1377,16 @@ public class WindowAndroid
         mPointerLockingViewPrvFocusChangeListener = null;
     }
 
+    @VisibleForTesting(otherwise = PRIVATE)
+    @Nullable View getPointerLockChangeViewForTesting() {
+        return mPointerLockChangeView;
+    }
+
+    @VisibleForTesting(otherwise = PRIVATE)
+    View.@Nullable OnFocusChangeListener getPointerLockingViewFocusChangeListenerForTesting() {
+        return mPointerLockingViewFocusChangeListener;
+    }
+
     @CalledByNative
     private boolean setHasKeyboardCapture(boolean hasCapture) {
         Window window = getWindow();
