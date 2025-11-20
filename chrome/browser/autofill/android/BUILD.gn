@@ -40,6 +40,8 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/autofill/PersonalDataManagerFactory.java",
     "java/src/org/chromium/chrome/browser/autofill/PhoneNumberUtil.java",
     "java/src/org/chromium/chrome/browser/autofill/SubKeyRequesterFactory.java",
+    "java/src/org/chromium/chrome/browser/autofill/autofill_ai/EntityDataManager.java",
+    "java/src/org/chromium/chrome/browser/autofill/autofill_ai/EntityDataManagerFactory.java",
     "java/src/org/chromium/chrome/browser/autofill/editors/AddressEditorCoordinator.java",
     "java/src/org/chromium/chrome/browser/autofill/editors/AddressEditorMediator.java",
     "java/src/org/chromium/chrome/browser/autofill/editors/DropdownFieldAdapter.java",
@@ -168,6 +170,7 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/chrome/browser/autofill/PersonalDataManager.java",
     "java/src/org/chromium/chrome/browser/autofill/PhoneNumberUtil.java",
     "java/src/org/chromium/chrome/browser/autofill/SubKeyRequesterFactory.java",
+    "java/src/org/chromium/chrome/browser/autofill/autofill_ai/EntityDataManager.java",
   ]
 }
 
