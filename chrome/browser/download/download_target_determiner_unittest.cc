@@ -21,7 +21,6 @@
 #include "base/memory/raw_ref.h"
 #include "base/observer_list.h"
 #include "base/path_service.h"
-#include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -2748,22 +2747,13 @@ TEST_F(DownloadTargetDeterminerTest, TestSanitizeEnvVariable) {
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 
-void DummyGetPluginsCallback(
-    base::OnceClosure closure,
-    const std::vector<content::WebPluginInfo>& plugins) {
-  std::move(closure).Run();
-}
-
 void ForceRefreshOfPlugins() {
 #if !BUILDFLAG(IS_WIN)
   // Prevent creation of a utility process for loading plugins. Doing so breaks
   // unit_tests since /proc/self/exe can't be run as a utility process.
   content::RenderProcessHost::SetRunRendererInProcess(true);
 #endif
-  base::RunLoop run_loop;
-  content::PluginService::GetInstance()->GetPluginsAsync(
-      base::BindOnce(&DummyGetPluginsCallback, run_loop.QuitClosure()));
-  run_loop.Run();
+  content::PluginService::GetInstance()->GetPlugins();
 #if !BUILDFLAG(IS_WIN)
   content::RenderProcessHost::SetRunRendererInProcess(false);
 #endif
