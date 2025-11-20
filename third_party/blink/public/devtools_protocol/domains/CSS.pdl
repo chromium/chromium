@@ -500,20 +500,6 @@ experimental domain CSS
       boolean inherits
       string syntax
 
-
-  # CSS font-palette-values rule representation.
-  type CSSFontPaletteValuesRule extends object
-    properties
-      # The css style sheet identifier (absent for user agent stylesheet and user-specified
-      # stylesheet rules) this rule came from.
-      optional StyleSheetId styleSheetId
-      # Parent stylesheet's origin.
-      StyleSheetOrigin origin
-      # Associated font palette name.
-      Value fontPaletteName
-      # Associated style declaration.
-      CSSStyle style
-
   # CSS generic @rule representation.
   type CSSAtRule extends object
     properties
@@ -800,8 +786,6 @@ experimental domain CSS
       optional array of CSSPropertyRule cssPropertyRules
       # A list of CSS property registrations matching this node.
       optional array of CSSPropertyRegistration cssPropertyRegistrations
-      # A font-palette-values rule matching this node.
-      optional CSSFontPaletteValuesRule cssFontPaletteValuesRule
       # A list of simple @rules matching this node or its pseudo-elements.
       optional array of CSSAtRule cssAtRules
       # Id of the first parent element that does not have display: contents.

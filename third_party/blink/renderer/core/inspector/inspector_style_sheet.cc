@@ -2206,27 +2206,6 @@ InspectorStyleSheet::BuildObjectForPositionTryRule(
   return result;
 }
 
-std::unique_ptr<protocol::CSS::CSSFontPaletteValuesRule>
-InspectorStyleSheet::BuildObjectForFontPaletteValuesRule(
-    CSSFontPaletteValuesRule* values_rule) {
-  std::unique_ptr<protocol::CSS::Value> name_text =
-      protocol::CSS::Value::create().setText(values_rule->name()).build();
-  CSSRuleSourceData* source_data = SourceDataForRule(values_rule);
-  if (source_data) {
-    name_text->setRange(BuildSourceRangeObject(source_data->rule_header_range));
-  }
-  std::unique_ptr<protocol::CSS::CSSFontPaletteValuesRule> result =
-      protocol::CSS::CSSFontPaletteValuesRule::create()
-          .setFontPaletteName(std::move(name_text))
-          .setOrigin(origin_)
-          .setStyle(BuildObjectForStyle(values_rule->Style(), nullptr))
-          .build();
-  if (CanBindOrigin() && !Id().empty()) {
-    result->setStyleSheetId(Id());
-  }
-  return result;
-}
-
 std::unique_ptr<protocol::CSS::CSSAtRule>
 InspectorStyleSheet::BuildAtRuleObjectForFontPaletteValuesRule(
     CSSFontPaletteValuesRule* values_rule) {

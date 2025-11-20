@@ -1445,8 +1445,6 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
         css_property_rules,
     std::unique_ptr<protocol::Array<protocol::CSS::CSSPropertyRegistration>>*
         css_property_registrations,
-    std::unique_ptr<protocol::CSS::CSSFontPaletteValuesRule>*
-        css_font_palette_values_rule,
     std::unique_ptr<protocol::Array<protocol::CSS::CSSAtRule>>* css_at_rules,
     std::optional<int>* parent_layout_node_id,
     std::unique_ptr<protocol::Array<protocol::CSS::CSSFunctionRule>>*
@@ -1622,10 +1620,6 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
   }
   *css_position_try_rules =
       PositionTryRulesForElement(element, successful_position_fallback_index);
-
-  if (auto rule = FontPalettesForNode(*element)) {
-    *css_font_palette_values_rule = std::move(rule);
-  }
 
   if (auto rules = FontAtRulesForNodes(elements_to_inspect)) {
     *css_at_rules = std::move(rules);
@@ -2104,39 +2098,6 @@ InspectorCSSAgent::FontAtRulesForNodes(HeapVector<Member<Element>>& elements) {
   }
 
   return result;
-}
-
-// TODO(crbug.com/408969009): Delete this in favor of FontAtRulesForNode once
-// the devtools frontend is updated to use the new method.
-std::unique_ptr<protocol::CSS::CSSFontPaletteValuesRule>
-InspectorCSSAgent::FontPalettesForNode(Element& element) {
-  const ComputedStyle* style = element.EnsureComputedStyle();
-  const FontPalette* palette = style ? style->GetFontPalette() : nullptr;
-  if (!palette || !palette->IsCustomPalette()) {
-    return {};
-  }
-  Document& document = element.GetDocument();
-  StyleRuleFontPaletteValues* rule =
-      document.GetStyleEngine().FontPaletteValuesForNameAndFamily(
-          palette->GetPaletteValuesName(),
-          style->GetFontDescription().Family().FamilyName());
-  if (!rule) {
-    return {};
-  }
-
-  auto style_sheets = document_to_css_style_sheets_.find(&document);
-  if (style_sheets == document_to_css_style_sheets_.end()) {
-    return {};
-  }
-
-  // Find CSSOM wrapper.
-  CSSFontPaletteValuesRule* values_rule =
-      FindFontPaletteValuesRule(*style_sheets->value, rule);
-
-  InspectorStyleSheet* inspector_style_sheet =
-      BindStyleSheet(values_rule->parentStyleSheet());
-  return inspector_style_sheet->BuildObjectForFontPaletteValuesRule(
-      values_rule);
 }
 
 CSSKeyframesRule*

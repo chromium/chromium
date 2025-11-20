@@ -192,7 +192,6 @@ class CORE_EXPORT InspectorCSSAgent final
       std::optional<int>*,
       std::unique_ptr<protocol::Array<protocol::CSS::CSSPropertyRule>>*,
       std::unique_ptr<protocol::Array<protocol::CSS::CSSPropertyRegistration>>*,
-      std::unique_ptr<protocol::CSS::CSSFontPaletteValuesRule>*,
       std::unique_ptr<protocol::Array<protocol::CSS::CSSAtRule>>*,
       std::optional<int>* parent_layout_node_id,
       std::unique_ptr<protocol::Array<protocol::CSS::CSSFunctionRule>>*)
@@ -403,8 +402,6 @@ class CORE_EXPORT InspectorCSSAgent final
       std::unique_ptr<protocol::Array<protocol::CSS::CSSPropertyRule>>,
       std::unique_ptr<protocol::Array<protocol::CSS::CSSPropertyRegistration>>>
   CustomPropertiesForNode(Element* element);
-  std::unique_ptr<protocol::CSS::CSSFontPaletteValuesRule> FontPalettesForNode(
-      Element& element);
   std::unique_ptr<protocol::Array<protocol::CSS::CSSAtRule>>
   FontAtRulesForNodes(HeapVector<Member<Element>>& elements);
 
