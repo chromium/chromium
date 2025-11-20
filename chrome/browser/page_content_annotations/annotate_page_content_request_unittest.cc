@@ -34,8 +34,10 @@ class TestPageContentExtractionService : public PageContentExtractionService {
       content::Page& page,
       const optimization_guide::proto::AnnotatedPageContent&
           annotated_page_content,
+      const std::vector<uint8_t>& screenshot_data,
       std::optional<int> tab_id) override {
-    last_extracted_content_ = annotated_page_content;
+    last_extracted_content_ = ExtractedPageContentResult(
+        annotated_page_content, base::Time::Now(), false, screenshot_data);
     extraction_count_++;
     if (quit_closure_) {
       std::move(quit_closure_).Run();
@@ -43,8 +45,8 @@ class TestPageContentExtractionService : public PageContentExtractionService {
   }
 
   int extraction_count() const { return extraction_count_; }
-  const std::optional<optimization_guide::proto::AnnotatedPageContent>&
-  last_extracted_content() const {
+  const std::optional<ExtractedPageContentResult>& last_extracted_content()
+      const {
     return last_extracted_content_;
   }
 
@@ -54,8 +56,7 @@ class TestPageContentExtractionService : public PageContentExtractionService {
 
  private:
   int extraction_count_ = 0;
-  std::optional<optimization_guide::proto::AnnotatedPageContent>
-      last_extracted_content_;
+  std::optional<ExtractedPageContentResult> last_extracted_content_;
 
   base::OnceClosure quit_closure_;
 };
@@ -75,13 +76,15 @@ class AnnotatePageContentRequestTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::SetUp();
 
     request_ = AnnotatedPageContentRequest::Create(web_contents());
-
-    request_->SetGetAIPageContentCallbackForTesting(base::BindRepeating(
-        [](content::WebContents* web_contents,
-           blink::mojom::AIPageContentOptionsPtr options,
-           optimization_guide::OnAIPageContentDone callback) {
-          auto result =
-              std::make_optional<optimization_guide::AIPageContentResult>();
+    request_->SetFetchPageContextCallbackForTesting(base::BindRepeating(
+        [](content::WebContents&, const FetchPageContextOptions&,
+           std::unique_ptr<FetchPageProgressListener>,
+           FetchPageContextResultCallback callback) {
+          auto page_content =
+              std::make_unique<optimization_guide::AIPageContentResult>();
+          auto result = std::make_unique<FetchPageContextResult>();
+          result->annotated_page_content_result =
+              PageContentResultWithEndTime(std::move(*page_content));
           std::move(callback).Run(std::move(result));
         }));
   }

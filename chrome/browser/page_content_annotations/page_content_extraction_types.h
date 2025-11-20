@@ -11,6 +11,20 @@
 namespace page_content_annotations {
 
 struct ExtractedPageContentResult {
+  ExtractedPageContentResult();
+  ~ExtractedPageContentResult();
+
+  ExtractedPageContentResult(
+      optimization_guide::proto::AnnotatedPageContent page_content,
+      base::Time extraction_timestamp,
+      bool is_eligible_for_server_upload,
+      std::vector<uint8_t> screenshot_data);
+
+  ExtractedPageContentResult(const ExtractedPageContentResult&);
+  ExtractedPageContentResult& operator=(const ExtractedPageContentResult&);
+  ExtractedPageContentResult(ExtractedPageContentResult&&);
+  ExtractedPageContentResult& operator=(ExtractedPageContentResult&&);
+
   // The AnnotatedPageContent proto that represents the page content.
   optimization_guide::proto::AnnotatedPageContent page_content;
 
@@ -19,6 +33,8 @@ struct ExtractedPageContentResult {
 
   // Whether the content is eligible for server upload.
   bool is_eligible_for_server_upload = false;
+
+  std::vector<uint8_t> screenshot_data;
 };
 
 }  // namespace page_content_annotations

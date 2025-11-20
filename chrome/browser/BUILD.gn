@@ -839,6 +839,7 @@ static_library("browser") {
     "origin_trials/origin_trials_factory.h",
     "page_content_annotations/annotate_page_content_request.cc",
     "page_content_annotations/annotate_page_content_request.h",
+    "page_content_annotations/multi_source_page_context_fetcher.cc",
     "page_content_annotations/page_content_annotations_service_factory.cc",
     "page_content_annotations/page_content_annotations_service_factory.h",
     "page_content_annotations/page_content_annotations_web_contents_observer.cc",
@@ -1918,6 +1919,7 @@ static_library("browser") {
     "//chrome/browser/optimization_guide",
     "//chrome/browser/optimization_guide:impl",
     "//chrome/browser/page_content_annotations:extraction_service",
+    "//chrome/browser/page_content_annotations:fetcher",
     "//chrome/browser/page_info",
     "//chrome/browser/page_info:impl",
     "//chrome/browser/passage_embeddings",
@@ -2634,7 +2636,10 @@ static_library("browser") {
   ]
 
   if (!is_android) {
-    deps += [ "//chrome/browser/ui/webui/omnibox_popup/mojom" ]
+    deps += [
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/webui/omnibox_popup/mojom",
+    ]
   }
 
   # Platforms that have a network diagnostics dialog. All others fall through
@@ -4034,7 +4039,6 @@ static_library("browser") {
       "notifications/screen_capture_notification_blocker.cc",
       "notifications/screen_capture_notification_blocker.h",
       "obsolete_system/obsolete_system.h",
-      "page_content_annotations/multi_source_page_context_fetcher.cc",
       "page_info/web_view_side_panel_throttle.cc",
       "page_info/web_view_side_panel_throttle.h",
       "page_load_metrics/observers/initial_webui_page_load_metrics_observer.cc",

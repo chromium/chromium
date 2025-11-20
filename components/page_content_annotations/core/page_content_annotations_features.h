@@ -35,6 +35,10 @@ BASE_DECLARE_FEATURE(kPageContentCache);
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 extern const base::FeatureParam<int> kPageContentCacheMaxCacheAgeInDays;
 
+// Whether to enable taking screenshots for page content cache.
+COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
+extern const base::FeatureParam<bool> kPageContentCacheEnableScreenshot;
+
 // The maximum number of "related searches" entries allowed to be maintained in
 // a least-recently-used cache for "related searches" data obtained via ZPS
 // prefetch logic.

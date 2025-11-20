@@ -11,6 +11,7 @@
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_types.h"
@@ -93,8 +94,8 @@ AnnotatedPageContentRequest::AnnotatedPageContentRequest(
       delay_(features::GetAnnotatedPageContentCaptureDelay()),
       include_inner_text_(
           features::ShouldAnnotatedPageContentStudyIncludeInnerText()),
-      get_ai_page_content_callback_(
-          base::BindRepeating(&optimization_guide::GetAIPageContent)) {
+      fetch_page_context_callback_(
+          base::BindRepeating(&page_content_annotations::FetchPageContext)) {
   // Post to a background thread to avoid blocking the set up of the overlay.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
@@ -240,9 +241,17 @@ void AnnotatedPageContentRequest::ExtractPageContent() {
 void AnnotatedPageContentRequest::RequestAnnotatedPageContentSync() {
   TRACE_EVENT0("browser",
                "AnnotatedPageContentRequest::RequestAnnotatedPageContentSync");
-  get_ai_page_content_callback_.Run(
-      web_contents_, request_->Clone(),
-      base::BindOnce(&AnnotatedPageContentRequest::OnPageContentReceived,
+
+  // Note: This is not fetching pdfs since we do not want to cache pdfs in disk
+  // in PageContentCache.
+  FetchPageContextOptions options;
+  options.annotated_page_content_options = request_->Clone();
+  if (features::kPageContentCacheEnableScreenshot.Get()) {
+    options.screenshot_options = ScreenshotOptions::ViewportOnly(std::nullopt);
+  }
+  fetch_page_context_callback_.Run(
+      *web_contents_, options, /*progress_listener=*/nullptr,
+      base::BindOnce(&AnnotatedPageContentRequest::OnPageContextFetched,
                      weak_factory_.GetWeakPtr()));
 
   if (include_inner_text_) {
@@ -253,9 +262,9 @@ void AnnotatedPageContentRequest::RequestAnnotatedPageContentSync() {
   }
 }
 
-void AnnotatedPageContentRequest::SetGetAIPageContentCallbackForTesting(
-    GetAIPageContentCallback callback) {
-  get_ai_page_content_callback_ = std::move(callback);
+void AnnotatedPageContentRequest::SetFetchPageContextCallbackForTesting(
+    FetchPageContextCallback callback) {
+  fetch_page_context_callback_ = std::move(callback);
 }
 
 bool AnnotatedPageContentRequest::ShouldScheduleExtraction() const {
@@ -296,8 +305,8 @@ bool AnnotatedPageContentRequest::ShouldScheduleExtraction() const {
   return false;
 }
 
-void AnnotatedPageContentRequest::OnPageContentReceived(
-    std::optional<optimization_guide::AIPageContentResult> page_content) {
+void AnnotatedPageContentRequest::OnPageContextFetched(
+    FetchPageContextResultCallbackArg result) {
   if (is_hidden_) {
     lifecycle_ = Lifecycle::kFinal;
   } else {
@@ -305,30 +314,40 @@ void AnnotatedPageContentRequest::OnPageContentReceived(
     // extraction when backgrounded when background trigger is also needed.
     lifecycle_ = Lifecycle::kExtractedAtPageLoad;
   }
-  if (!page_content) {
+
+  if (!result.has_value() || !result.value() ||
+      !result.value()->annotated_page_content_result) {
     return;
   }
-
   base::Time extraction_time = base::Time::Now();
+  std::vector<uint8_t> screenshot_data;
+  if (result.value()->screenshot_result.has_value()) {
+    screenshot_data =
+        std::move(result.value()->screenshot_result.value().screenshot_data);
+  }
+
+  auto page_content_result =
+      std::move(result.value()->annotated_page_content_result);
+
   Profile* profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
   auto* page_content_extraction_service =
       PageContentExtractionServiceFactory::GetForProfile(profile);
   page_content_extraction_service->OnPageContentExtracted(
-      web_contents_->GetPrimaryPage(), page_content->proto,
-      GetTabId(web_contents_));
+      web_contents_->GetPrimaryPage(), page_content_result->proto,
+      screenshot_data, GetTabId(web_contents_));
 
   GURL url = web_contents_->GetLastCommittedURL();
   bool is_eligible_for_server_upload =
       !page_context_eligibility_ ||
       optimization_guide::IsPageContextEligible(
           url.GetHost(), url.GetPath(),
-          optimization_guide::GetFrameMetadataFromPageContent(*page_content),
+          optimization_guide::GetFrameMetadataFromPageContent(
+              *page_content_result),
           page_context_eligibility_);
-  cached_content_ = ExtractedPageContentResult{
-      .page_content = std::move(page_content->proto),
-      .extraction_timestamp = extraction_time,
-      .is_eligible_for_server_upload = is_eligible_for_server_upload};
+  cached_content_ = ExtractedPageContentResult(
+      std::move(page_content_result->proto), extraction_time,
+      is_eligible_for_server_upload, std::move(screenshot_data));
 }
 
 void AnnotatedPageContentRequest::OnInnerTextReceived(

@@ -7,11 +7,14 @@
 
 #include <set>
 
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/supports_user_data.h"
 #include "base/time/time.h"
+#include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/page_content_annotations/core/web_state_wrapper.h"
 #include "content/public/browser/visibility.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -101,7 +104,9 @@ class PageContentExtractionService : public KeyedService,
   // observers. `tab_id` for the tab where page is loaded, if available.
   virtual void OnPageContentExtracted(
       content::Page& page,
-      const optimization_guide::proto::AnnotatedPageContent& page_content,
+      const optimization_guide::proto::AnnotatedPageContent&
+          annotated_page_content,
+      const std::vector<uint8_t>& screenshot_data,
       std::optional<int> tab_id);
 
   std::optional<ExtractedPageContentResult> GetCachedContentsFromWebContents(
@@ -111,6 +116,9 @@ class PageContentExtractionService : public KeyedService,
 
   const bool is_page_content_cache_enabled_;
   const std::unique_ptr<PageContentCacheHandler> page_content_cache_handler_;
+
+ private:
+  base::WeakPtrFactory<PageContentExtractionService> weak_ptr_factory_{this};
 };
 
 }  // namespace page_content_annotations

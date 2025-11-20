@@ -4,6 +4,7 @@
 
 #include "chrome/browser/page_content_annotations/page_content_extraction_service.h"
 
+#include "base/base64.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
@@ -37,12 +38,16 @@ WebStateWrapper ToWebStateWrapper(content::WebContents* web_contents) {
 }
 
 optimization_guide::proto::PageContext ToPageContext(
-    optimization_guide::proto::AnnotatedPageContent apc,
-    content::WebContents* web_contents) {
+    const optimization_guide::proto::AnnotatedPageContent& apc,
+    content::WebContents* web_contents,
+    const std::vector<uint8_t>& screenshot_data) {
   optimization_guide::proto::PageContext page_context;
-  *page_context.mutable_annotated_page_content() = std::move(apc);
+  *page_context.mutable_annotated_page_content() = apc;
   page_context.set_url(web_contents->GetLastCommittedURL().spec());
   page_context.set_title(base::UTF16ToUTF8(web_contents->GetTitle()));
+  if (!screenshot_data.empty()) {
+    page_context.set_tab_screenshot(base::Base64Encode(screenshot_data));
+  }
   return page_context;
 }
 
@@ -81,10 +86,12 @@ bool PageContentExtractionService::ShouldEnablePageContentExtraction() const {
 
 void PageContentExtractionService::OnPageContentExtracted(
     content::Page& page,
-    const optimization_guide::proto::AnnotatedPageContent& page_content,
+    const optimization_guide::proto::AnnotatedPageContent&
+        annotated_page_content,
+    const std::vector<uint8_t>& screenshot_data,
     std::optional<int> tab_id) {
   for (auto& observer : observers_) {
-    observer.OnPageContentExtracted(page, page_content);
+    observer.OnPageContentExtracted(page, annotated_page_content);
   }
 
   if (!is_page_content_cache_enabled_) {
@@ -99,7 +106,8 @@ void PageContentExtractionService::OnPageContentExtracted(
 
   page_content_cache_handler_->ProcessPageContentExtraction(
       tab_id, ToWebStateWrapper(web_contents),
-      ToPageContext(page_content, web_contents), base::Time::Now());
+      ToPageContext(annotated_page_content, web_contents, screenshot_data),
+      base::Time::Now());
 }
 
 std::optional<ExtractedPageContentResult>
@@ -131,8 +139,8 @@ void PageContentExtractionService::OnVisibilityChanged(
     if (extracted_result) {
       page_content_cache_handler_->OnVisibilityChanged(
           tab_id, ToWebStateWrapper(web_contents),
-          ToPageContext(std::move(extracted_result->page_content),
-                        web_contents),
+          ToPageContext(std::move(extracted_result->page_content), web_contents,
+                        std::move(extracted_result->screenshot_data)),
           extracted_result->extraction_timestamp);
     }
   }

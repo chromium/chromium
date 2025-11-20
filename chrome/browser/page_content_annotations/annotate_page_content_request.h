@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PAGE_CONTENT_ANNOTATIONS_PAGE_CONTENT_ANNOTATIONS_ANNOTATE_PAGE_CONTENT_REQUEST_H_
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_types.h"
 #include "components/content_extraction/content/browser/inner_text.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
@@ -23,13 +24,14 @@ namespace page_content_annotations {
 // extracts page content.
 class AnnotatedPageContentRequest {
  public:
-  using GetAIPageContentCallback =
-      base::RepeatingCallback<void(content::WebContents*,
-                                   blink::mojom::AIPageContentOptionsPtr,
-                                   optimization_guide::OnAIPageContentDone)>;
+  using FetchPageContextCallback =
+      base::RepeatingCallback<void(content::WebContents&,
+                                   const FetchPageContextOptions&,
+                                   std::unique_ptr<FetchPageProgressListener>,
+                                   FetchPageContextResultCallback)>;
 
   static std::unique_ptr<AnnotatedPageContentRequest> Create(
-                                 content::WebContents* web_contents);
+      content::WebContents* web_contents);
 
   AnnotatedPageContentRequest(content::WebContents* web_contents,
                               blink::mojom::AIPageContentOptionsPtr request);
@@ -53,7 +55,7 @@ class AnnotatedPageContentRequest {
   // server upload. Will return nullopt if not available.
   std::optional<ExtractedPageContentResult> GetCachedContentAndEligibility();
 
-  void SetGetAIPageContentCallbackForTesting(GetAIPageContentCallback callback);
+  void SetFetchPageContextCallbackForTesting(FetchPageContextCallback callback);
 
  private:
   void ResetForNewNavigation();
@@ -65,8 +67,7 @@ class AnnotatedPageContentRequest {
 
   bool ShouldScheduleExtraction() const;
 
-  void OnPageContentReceived(
-      std::optional<optimization_guide::AIPageContentResult> page_content);
+  void OnPageContextFetched(FetchPageContextResultCallbackArg result);
 
   void OnInnerTextReceived(
       base::TimeTicks start_time,
@@ -113,7 +114,7 @@ class AnnotatedPageContentRequest {
 
   std::optional<ExtractedPageContentResult> cached_content_;
 
-  GetAIPageContentCallback get_ai_page_content_callback_;
+  FetchPageContextCallback fetch_page_context_callback_;
 
   base::WeakPtrFactory<AnnotatedPageContentRequest> weak_factory_{this};
 };
