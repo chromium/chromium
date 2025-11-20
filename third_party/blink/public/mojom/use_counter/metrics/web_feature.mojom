@@ -5034,6 +5034,8 @@ enum WebFeature {
   kAttributionReportingXhr = 5718,
   kDidUseServerHttpAuthOnCrossPartitionRequest = 5719,
   kLcpCandidateRemovedWhilePaintTimePending = 5720,
+  kGetBBoxForElementWithZeroWidthOrHeight = 5721,
+  kGetBBoxForNestedSVGElementWithZeroWidthOrHeight = 5722,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

@@ -23,7 +23,13 @@
 
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_container.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_foreign_object.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_image.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_shape.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_text.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_viewport_container.h"
 #include "third_party/blink/renderer/core/svg/svg_foreign_object_element.h"
 #include "third_party/blink/renderer/core/svg/svg_image_element.h"
 #include "third_party/blink/renderer/core/svg/svg_matrix_tear_off.h"
@@ -35,6 +41,31 @@
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 
 namespace blink {
+
+namespace {
+
+bool HasValidBoundingBoxForContainer(const LayoutObject* object) {
+  if (auto* svg_shape = DynamicTo<LayoutSVGShape>(object)) {
+    return !svg_shape->IsShapeEmpty();
+  }
+  if (auto* text = DynamicTo<LayoutSVGText>(object)) {
+    return text->IsObjectBoundingBoxValid();
+  }
+  if (auto* svg_container = DynamicTo<LayoutSVGContainer>(object)) {
+    return svg_container->IsObjectBoundingBoxValid() &&
+           !svg_container->IsSVGHiddenContainer();
+  }
+  if (auto* foreign_object = DynamicTo<LayoutSVGForeignObject>(object)) {
+    return foreign_object->IsObjectBoundingBoxValid();
+  }
+  if (auto* svg_image = DynamicTo<LayoutSVGImage>(object)) {
+    return svg_image->IsObjectBoundingBoxValid();
+  }
+
+  return false;
+}
+
+}  // namespace
 
 SVGGraphicsElement::SVGGraphicsElement(const QualifiedName& tag_name,
                                        Document& document,
@@ -154,8 +185,33 @@ SVGElement* SVGGraphicsElement::farthestViewportElement() const {
 }
 
 gfx::RectF SVGGraphicsElement::GetBBox() {
-  DCHECK(GetLayoutObject());
-  return GetLayoutObject()->ObjectBoundingBox();
+  auto* layout_object = GetLayoutObject();
+  DCHECK(layout_object);
+  gfx::RectF bbox = layout_object->ObjectBoundingBox();
+
+  if (bbox != gfx::RectF(0, 0, 0, 0) &&
+      (!HasValidBoundingBoxForContainer(layout_object) ||
+       IsNonRendered(layout_object))) {
+    UseCounter::Count(GetDocument(),
+                      WebFeature::kGetBBoxForElementWithZeroWidthOrHeight);
+  }
+
+  // TODO: Having zero width or height in viewport makes the container element
+  // non-rendered, currently we return the bbox of its contents, which can
+  // change if we decided to return an empty bbox for such cases. Depending on
+  // the count of `kGetBBoxForNestedSVGElementWithZeroWidthOrHeight` it might be
+  // safe to not consider this case at all.
+  if (auto* svg_viewport_container =
+          DynamicTo<LayoutSVGViewportContainer>(layout_object)) {
+    if (bbox != gfx::RectF(0, 0, 0, 0) &&
+        svg_viewport_container->Viewport().IsEmpty()) {
+      UseCounter::Count(
+          GetDocument(),
+          WebFeature::kGetBBoxForNestedSVGElementWithZeroWidthOrHeight);
+    }
+  }
+
+  return bbox;
 }
 
 SVGRectTearOff* SVGGraphicsElement::getBBoxFromJavascript() {
