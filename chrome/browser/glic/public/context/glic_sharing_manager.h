@@ -7,6 +7,7 @@
 
 #include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/host/context/glic_focused_browser_manager_interface.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
@@ -23,6 +24,76 @@ struct GlicGetContextError {
 // The result passed from the sharing manager up to the page handler.
 using GlicGetContextResult =
     base::expected<mojom::GetContextResultPtr, GlicGetContextError>;
+
+// Metadata pertaining to tab pinning.
+enum class GlicPinTrigger {
+  kUnknown,
+  kInstanceCreation,
+  kDaisyChain,
+  kConversationChange,
+  kRestore,
+  kContextMenu,
+  kCandidatesToggle,
+  kAtMention,
+  kActuation,
+  kWebClientUnknown
+};
+
+enum class GlicUnpinTrigger {
+  kUnknown,
+  kInstanceDestruction,
+  kConversationChangeBeforeContextShared,
+  kContextMenu,
+  kTabClose,
+  kTabNavigationWhileInstanceFrozen,
+  kCandidatesToggle,
+  kChip,
+  kActuation,
+  kWebClientUnknown
+};
+
+struct GlicPinEvent {
+  GlicPinTrigger trigger = GlicPinTrigger::kUnknown;
+  base::TimeTicks timestamp;
+};
+
+struct GlicContextSharingStats {
+  int times_requested = 0;
+  int times_returned = 0;
+  base::TimeTicks last_requested_timestamp;
+  base::TimeTicks last_returned_timestamp;
+};
+
+struct GlicPinnedTabUsage {
+  GlicPinEvent pin_event;
+
+  int times_conversation_turn_submitted_while_pinned = 0;
+  int times_navigated_across_origin_while_pinned = 0;
+
+  // Context requested/returned metadata is broken down by type below. This
+  // counts overall requests (a single context fetch can request multiple types,
+  // so these aren't just a sum of the breakdowns below).
+  GlicContextSharingStats overall_stats;
+
+  // Breakdowns by type. One context fetch can trigger multiple of these.
+  GlicContextSharingStats apc_stats;
+  GlicContextSharingStats inner_text_stats;
+  GlicContextSharingStats screenshot_stats;
+  // Note: PDF context is only returned when requested AND the top level
+  // document is a PDF.
+  GlicContextSharingStats pdf_stats;
+};
+
+struct GlicUnpinEvent {
+  GlicUnpinTrigger trigger = GlicUnpinTrigger::kUnknown;
+  GlicPinnedTabUsage usage;
+  base::TimeTicks timestamp;
+};
+
+// Represents a change in pinning status, used for callbacks.
+using PinningStatusChange = std::variant<GlicPinEvent, GlicUnpinEvent>;
+
+// TODO(crbug.com/461849870): Add metadata to the api below.
 
 // Responsible for managing all shared context (focused tabs, explicitly-shared
 // tabs).
