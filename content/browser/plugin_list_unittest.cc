@@ -4,6 +4,7 @@
 
 #include "content/browser/plugin_list.h"
 
+#include <memory>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -51,13 +52,16 @@ class PluginListTest : public testing::Test {
   }
 
   void SetUp() override {
+    // Needed because `PluginList` is normally a singleton and has a private
+    // ctor. Also, `plugin_list_` uses a custom deleter.
     plugin_list_.reset(new PluginList());
-    plugin_list_->RegisterInternalPlugin(bar_plugin_, false);
     foo_plugin_.mime_types.emplace_back(kFooMimeType, kFooFileType,
                                         std::string());
-    plugin_list_->RegisterInternalPlugin(foo_plugin_, false);
+    plugin_list_->RegisterInternalPlugin(foo_plugin_);
+    plugin_list_->RegisterInternalPlugin(bar_plugin_);
   }
 
+  // Needed because `PluginList` is normally a singleton and has a private dtor.
   static void PluginListDeleter(PluginList* plugin_list) { delete plugin_list; }
 
  protected:
@@ -81,7 +85,7 @@ TEST_F(PluginListTest, BadPluginDescription) {
       std::u16string(), base::FilePath(FILE_PATH_LITERAL("/myplugin.3.0.43")),
       std::u16string(), std::u16string());
   // Simulate loading of the plugins.
-  plugin_list_->RegisterInternalPlugin(plugin_3043, false);
+  plugin_list_->RegisterInternalPlugin(plugin_3043);
   // Now we should have them in the state we specified above.
   plugin_list_->RefreshPlugins();
   const std::vector<WebPluginInfo>& plugins = plugin_list_->GetPlugins();

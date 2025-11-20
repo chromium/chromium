@@ -1843,7 +1843,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, DownloadOctetStream) {
   plugin_info.mime_types.push_back(
       WebPluginMimeType(kTestMimeType, kTestFileType, ""));
   plugin_info.type = WebPluginInfo::PLUGIN_TYPE_BROWSER_INTERNAL_PLUGIN;
-  PluginServiceImpl::GetInstance()->RegisterInternalPlugin(plugin_info, false);
+  PluginServiceImpl::GetInstance()->RegisterInternalPlugin(plugin_info);
 
   // The following is served with a Content-Type of application/octet-stream.
   NavigateToURLAndWaitForDownload(
@@ -1870,7 +1870,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest,
   plugin_info.mime_types.push_back(
       WebPluginMimeType(kTestMimeType, kTestFileType, ""));
   plugin_info.type = WebPluginInfo::PLUGIN_TYPE_BROWSER_INTERNAL_PLUGIN;
-  PluginServiceImpl::GetInstance()->RegisterInternalPlugin(plugin_info, false);
+  PluginServiceImpl::GetInstance()->RegisterInternalPlugin(plugin_info);
 
   // The following is served with a Content-Type of application/octet-stream.
   NavigateToURLAndWaitForDownload(
@@ -1896,7 +1896,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest,
   plugin_info.mime_types.push_back(
       WebPluginMimeType(kTestMimeType, kTestFileType, ""));
   plugin_info.type = WebPluginInfo::PLUGIN_TYPE_BROWSER_INTERNAL_PLUGIN;
-  PluginServiceImpl::GetInstance()->RegisterInternalPlugin(plugin_info, false);
+  PluginServiceImpl::GetInstance()->RegisterInternalPlugin(plugin_info);
 
   // The following is served with a Content-Type of application/octet-stream.
   NavigateToURLAndWaitForDownload(
@@ -1923,7 +1923,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest,
   plugin_info.mime_types.push_back(
       WebPluginMimeType(kTestMimeType, kTestFileType, ""));
   plugin_info.type = WebPluginInfo::PLUGIN_TYPE_BROWSER_INTERNAL_PLUGIN;
-  PluginServiceImpl::GetInstance()->RegisterInternalPlugin(plugin_info, false);
+  PluginServiceImpl::GetInstance()->RegisterInternalPlugin(plugin_info);
 
   // The following is served with a Content-Type of application/octet-stream.
   NavigateToURLAndWaitForDownload(

@@ -38,7 +38,7 @@ class PluginServiceImplBrowserTest : public ContentBrowserTest {
     fake_info.path = plugin_path_;
 
     PluginServiceImpl* service = PluginServiceImpl::GetInstance();
-    service->RegisterInternalPlugin(fake_info, true);
+    service->RegisterInternalPlugin(fake_info);
     service->Init();
 
     // Force plugins to load and wait for completion.

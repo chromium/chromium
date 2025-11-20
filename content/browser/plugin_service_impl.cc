@@ -141,7 +141,7 @@ void PluginServiceImpl::RegisterPlugins() {
 
   GetContentClient()->AddPlugins(&plugins_);
   for (const auto& plugin : plugins_) {
-    RegisterInternalPlugin(plugin, /*add_at_beginning=*/true);
+    RegisterInternalPlugin(plugin);
   }
 }
 
@@ -160,11 +160,9 @@ void PluginServiceImpl::RefreshPlugins() {
   PluginList::Singleton()->RefreshPlugins();
 }
 
-void PluginServiceImpl::RegisterInternalPlugin(
-    const WebPluginInfo& info,
-    bool add_at_beginning) {
+void PluginServiceImpl::RegisterInternalPlugin(const WebPluginInfo& info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  PluginList::Singleton()->RegisterInternalPlugin(info, add_at_beginning);
+  PluginList::Singleton()->RegisterInternalPlugin(info);
 }
 
 void PluginServiceImpl::UnregisterInternalPlugin(const base::FilePath& path) {

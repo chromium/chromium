@@ -52,8 +52,7 @@ class CONTENT_EXPORT PluginServiceImpl : public PluginService {
   void SetFilter(PluginServiceFilter* filter) override;
   PluginServiceFilter* GetFilter() override;
   void RefreshPlugins() override;
-  void RegisterInternalPlugin(const WebPluginInfo& info,
-                              bool add_at_beginning) override;
+  void RegisterInternalPlugin(const WebPluginInfo& info) override;
   void UnregisterInternalPlugin(const base::FilePath& path) override;
   std::vector<WebPluginInfo> GetInternalPluginsForTesting() override;
 

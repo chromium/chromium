@@ -137,7 +137,7 @@ void RegisterFakePlugin() {
   plugin_info.mime_types.emplace_back(kPdfMimeType, kPdfFileType,
                                       std::string());
   auto* plugin_service = PluginService::GetInstance();
-  plugin_service->RegisterInternalPlugin(plugin_info, false);
+  plugin_service->RegisterInternalPlugin(plugin_info);
   plugin_service->RefreshPlugins();
 }
 

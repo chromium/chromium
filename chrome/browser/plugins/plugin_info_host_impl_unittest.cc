@@ -92,22 +92,22 @@ class PluginInfoHostImplTest : public ::testing::Test {
     PluginService::GetInstance()->Init();
     PluginService::GetInstance()->SetFilter(&filter_);
 
-    content::WebPluginInfo foo_plugin(u"Foo Plugin", foo_plugin_path_, u"1",
-                                      u"The Foo plugin.");
-    content::WebPluginMimeType mime_type;
-    mime_type.mime_type = "foo/bar";
-    foo_plugin.mime_types.push_back(mime_type);
-    foo_plugin.type =
-        content::WebPluginInfo::PLUGIN_TYPE_BROWSER_INTERNAL_PLUGIN;
-    PluginService::GetInstance()->RegisterInternalPlugin(foo_plugin, false);
-
     content::WebPluginInfo bar_plugin(u"Bar Plugin", bar_plugin_path_, u"1",
                                       u"The Bar plugin.");
+    content::WebPluginMimeType mime_type;
     mime_type.mime_type = "foo/bar";
     bar_plugin.mime_types.push_back(mime_type);
     bar_plugin.type =
         content::WebPluginInfo::PLUGIN_TYPE_BROWSER_INTERNAL_PLUGIN;
-    PluginService::GetInstance()->RegisterInternalPlugin(bar_plugin, false);
+    PluginService::GetInstance()->RegisterInternalPlugin(bar_plugin);
+
+    content::WebPluginInfo foo_plugin(u"Foo Plugin", foo_plugin_path_, u"1",
+                                      u"The Foo plugin.");
+    mime_type.mime_type = "foo/bar";
+    foo_plugin.mime_types.push_back(mime_type);
+    foo_plugin.type =
+        content::WebPluginInfo::PLUGIN_TYPE_BROWSER_INTERNAL_PLUGIN;
+    PluginService::GetInstance()->RegisterInternalPlugin(foo_plugin);
 
     RefreshPlugins();
   }
@@ -135,8 +135,7 @@ class PluginInfoHostImplTest : public ::testing::Test {
   }
 
   void RegisterAndRefreshPlugin(const content::WebPluginInfo& plugin) {
-    PluginService::GetInstance()->RegisterInternalPlugin(
-        plugin, /*add_at_beginning=*/false);
+    PluginService::GetInstance()->RegisterInternalPlugin(plugin);
     RefreshPlugins();
     filter_.set_plugin_enabled(plugin.path, true);
   }

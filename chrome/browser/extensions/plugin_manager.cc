@@ -63,7 +63,7 @@ void PluginManager::OnExtensionLoaded(content::BrowserContext* browser_context,
     }
 
     PluginService::GetInstance()->RefreshPlugins();
-    PluginService::GetInstance()->RegisterInternalPlugin(info, true);
+    PluginService::GetInstance()->RegisterInternalPlugin(info);
     PluginService::GetInstance()->PurgePluginListCache(profile_);
   }
 }

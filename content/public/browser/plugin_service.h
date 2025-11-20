@@ -91,10 +91,9 @@ class CONTENT_EXPORT PluginService {
   // Register an internal plugin with the specified plugin information.
   // An internal plugin must be registered before it can
   // be loaded using PluginList::LoadPlugin().
-  // If |add_at_beginning| is true the plugin will be added earlier in
-  // the list so that it can override the MIME types of older registrations.
-  virtual void RegisterInternalPlugin(const WebPluginInfo& info,
-                                      bool add_at_beginning) = 0;
+  // New plugins get added earlier in the list so that they can override the
+  // MIME types of older registrations.
+  virtual void RegisterInternalPlugin(const WebPluginInfo& info) = 0;
 
   // Removes a specified internal plugin from the list. The search will match
   // on the path from the version info previously registered.

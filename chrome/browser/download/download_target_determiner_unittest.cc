@@ -1137,8 +1137,7 @@ TEST_F(DownloadTargetDeterminerTest,
   plugin_info.name = kPluginName;
   plugin_info.mime_types.emplace_back(kPdfMimeType, kPdfFileType,
                                       std::string());
-  content::PluginService::GetInstance()->RegisterInternalPlugin(plugin_info,
-                                                                false);
+  content::PluginService::GetInstance()->RegisterInternalPlugin(plugin_info);
 
   const DownloadTestCase download_test_case = {
       AUTOMATIC,
@@ -2802,7 +2801,7 @@ class ScopedRegisterInternalPlugin {
     plugin_info.mime_types.push_back(plugin_mime_type);
     plugin_info.type = type;
 
-    plugin_service->RegisterInternalPlugin(plugin_info, true);
+    plugin_service->RegisterInternalPlugin(plugin_info);
     plugin_service->RefreshPlugins();
     ForceRefreshOfPlugins();
   }

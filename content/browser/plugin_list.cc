@@ -77,17 +77,10 @@ void PluginList::RefreshPlugins() {
   list_is_stale_ = true;
 }
 
-void PluginList::RegisterInternalPlugin(const WebPluginInfo& info,
-                                        bool add_at_beginning) {
+void PluginList::RegisterInternalPlugin(const WebPluginInfo& info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (add_at_beginning) {
-    // Newer registrations go earlier in the list so they can override the MIME
-    // types of older registrations.
-    internal_plugins_.insert(internal_plugins_.begin(), info);
-  } else {
-    internal_plugins_.push_back(info);
-  }
+  internal_plugins_.insert(internal_plugins_.begin(), info);
 }
 
 void PluginList::UnregisterInternalPlugin(const base::FilePath& path) {
