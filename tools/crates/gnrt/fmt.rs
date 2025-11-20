@@ -27,7 +27,7 @@ pub fn format(paths: &paths::ChromiumPaths) -> Result<()> {
 fn format_file(path: &Path, options: &FormatOptions) -> Result<()> {
     let input = fs::read_to_string(path)?;
     let mut doc = input.parse::<DocumentMut>()?;
-    toml_edit_utils::format(&mut doc, options)?;
+    toml_edit_utils::format(&mut doc, options);
     write!(File::create(path)?, "{doc}")?;
     Ok(())
 }

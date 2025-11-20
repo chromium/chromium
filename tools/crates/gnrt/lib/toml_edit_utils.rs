@@ -4,7 +4,6 @@
 
 //! Utilities for editing `.toml` files.
 
-use anyhow::Result;
 use itertools::Itertools;
 use std::collections::HashMap;
 use toml_edit::visit_mut::VisitMut;
@@ -14,7 +13,7 @@ pub struct FormatOptions {
     pub toplevel_table_order: &'static [&'static str],
 }
 
-pub fn format(doc: &mut DocumentMut, format_options: &FormatOptions) -> Result<()> {
+pub fn format(doc: &mut DocumentMut, format_options: &FormatOptions) {
     // Sort top-level tables based on `format_options.toplevel_table_order`.
     let key_to_desired_position: HashMap<&'static str, usize> = format_options
         .toplevel_table_order
@@ -56,8 +55,6 @@ pub fn format(doc: &mut DocumentMut, format_options: &FormatOptions) -> Result<(
         table.sort_values();
         sorter.visit_table_mut(table)
     }
-
-    Ok(())
 }
 
 #[cfg(test)]
@@ -77,7 +74,7 @@ mod test {
 
     fn sort(input: &str, toplevel_table_order: &'static [&'static str]) -> String {
         let mut doc = input.parse::<DocumentMut>().unwrap();
-        format(&mut doc, &FormatOptions { toplevel_table_order }).unwrap();
+        format(&mut doc, &FormatOptions { toplevel_table_order });
         doc.to_string()
     }
 
