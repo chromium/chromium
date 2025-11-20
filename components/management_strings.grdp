@@ -395,6 +395,33 @@
   <message name="IDS_MANAGEMENT_BROWSER_REPORTING" desc="Title of the types of browser reporting section of the page" formatter_data="android_java">
     Browser
   </message>
+  <if expr="is_ios">
+    <message name="IDS_MANAGEMENT_BROWSER_REPORTING_EXPLANATION" desc="Message explaining to users what browser information is being reported that admins can access">
+      Profile, browser, and device information is accessible to your administrator. They can see:
+    </message>
+    <message name="IDS_MANAGEMENT_BROWSER_REPORTING_OVERVIEW" desc="Item in a list of information viewable by the enterprise admin, indicating that the admin can view the user's browser and work profile overview.">
+      Browser overview
+    </message>
+    <message name="IDS_MANAGEMENT_BROWSER_REPORTING_DEVICE_INFORMATION" desc="Item in a list of information viewable by the enterprise admin, indicating that the admin can view the user's device information.">
+      Device information
+    </message>
+    <message name="IDS_MANAGEMENT_BROWSER_REPORTING_DEVICE_INFORMATION_CONTINUED" desc="Item in a list of information viewable by the enterprise admin, clarifying what 'device information' means.">
+      Such as device ID, name, OS version and OS username
+    </message>
+    <message name="IDS_MANAGEMENT_BROWSER_REPORTING_BROWSER_AND_PROFILES" desc="Item in a list of information viewable by the enterprise admin, indicating that the admin can view browser and profile information.">
+      Browsers &amp; profiles information (including personal and work profiles)
+    </message>
+    <message name="IDS_MANAGEMENT_BROWSER_REPORTING_BROWSER_AND_PROFILES_CONTINUED" desc="Item in a list of information viewable by the enterprise admin, clarifying what 'browser &amp; profiles information' means.">
+      Such as profile usernames &amp; browser versions
+    </message>
+    <message name="IDS_MANAGEMENT_BROWSER_REPORTING_POLICY" desc="Item in a list of information viewable by the enterprise admin, indicating that the admin can view the user's browser and work profile policies.">
+      Applied browser policies (machine and profile policies)
+    </message>
+    <message name="IDS_MANAGEMENT_BROWSER_REPORTING_LEARN_MORE" desc="Learn more link for profile reporting management information to provide additional informaiton">
+      <ph name="BEGIN_LINK">&lt;a target="_blank" href="https://support.google.com/chrome/a/answer/9227157"&gt;</ph>More details<ph name="END_LINK">&lt;/a&gt;</ph>
+    </message>
+  </if>
+
 
   <!-- Profile reporting management message-->
   <message name="IDS_MANAGEMENT_PROFILE_REPORTING_EXPLANATION" desc="Message explaining browser reporting" formatter_data="android_java">

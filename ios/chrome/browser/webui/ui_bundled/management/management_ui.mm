@@ -84,6 +84,12 @@ std::optional<std::u16string> GetManagementMessage(web::WebUIIOS* web_ui) {
   return std::nullopt;
 }
 
+// Whether the Browser Reporting section should be displayed. This section is
+// visible if reporting is enabled at the browser level.
+bool IsBrowserReportingEnabled(PrefService* local_state) {
+  return local_state->GetBoolean(enterprise_reporting::kCloudReportingEnabled);
+}
+
 // Whether the Profile Reporting section should be displayed. This section is
 // visible if reporting is enabled at the profile level.
 bool IsProfileReportingEnabled(PrefService* profile_prefs) {
@@ -181,6 +187,33 @@ web::WebUIIOSDataSource* CreateManagementUIHTMLSource(web::WebUIIOS* web_ui) {
   ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui)->GetOriginalProfile();
   source->AddLocalizedString("browserReporting",
                              IDS_MANAGEMENT_BROWSER_REPORTING);
+
+  // Browser reporting
+  source->AddBoolean(
+      "browserReportingEnabled",
+      IsBrowserReportingEnabled(GetApplicationContext()->GetLocalState()));
+  source->AddLocalizedString("browserReportingExplanation",
+                             IDS_MANAGEMENT_BROWSER_REPORTING_EXPLANATION);
+  source->AddLocalizedString("browserReportingOverview",
+                             IDS_MANAGEMENT_BROWSER_REPORTING_OVERVIEW);
+  source->AddLocalizedString(
+      "browserReportingDeviceInformation",
+      IDS_MANAGEMENT_BROWSER_REPORTING_DEVICE_INFORMATION);
+  source->AddLocalizedString(
+      "browserReportingDeviceInformationContinued",
+      IDS_MANAGEMENT_BROWSER_REPORTING_DEVICE_INFORMATION_CONTINUED);
+  source->AddLocalizedString(
+      "browserReportingBrowserAndProfiles",
+      IDS_MANAGEMENT_BROWSER_REPORTING_BROWSER_AND_PROFILES);
+  source->AddLocalizedString(
+      "browserReportingBrowserAndProfilesContinued",
+      IDS_MANAGEMENT_BROWSER_REPORTING_BROWSER_AND_PROFILES_CONTINUED);
+  source->AddLocalizedString("browserReportingPolicy",
+                             IDS_MANAGEMENT_BROWSER_REPORTING_POLICY);
+  source->AddLocalizedString("browserReportingLearnMore",
+                             IDS_MANAGEMENT_BROWSER_REPORTING_LEARN_MORE);
+
+  // Profile reporting
   source->AddBoolean("profileReportingEnabled",
                      IsProfileReportingEnabled(profile->GetPrefs()));
   source->AddLocalizedString("profileReportingExplanation",

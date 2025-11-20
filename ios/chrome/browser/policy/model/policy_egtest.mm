@@ -576,6 +576,18 @@ constexpr char kEnrollmentToken[] = "fake-enrollment-token";
       @"Profile reporting section is visible.");
 }
 
+// Tests the chrome://management page when browser reporting is enabled.
+- (void)testManagementPageManagedWithBrowserReporting {
+  // Set up profile reporting.
+  SetPolicy(true, policy::key::kCloudReportingEnabled);
+
+  // Open the management page and check if the content is expected.
+  [ChromeEarlGrey loadURL:GURL(kChromeUIManagementURL)];
+  [ChromeEarlGrey waitForWebStateContainingText:
+                      l10n_util::GetStringUTF8(
+                          IDS_MANAGEMENT_BROWSER_REPORTING_EXPLANATION)];
+}
+
 // Tests the chrome://management page when profile reporting is enabled.
 - (void)testManagementPageManagedWithProfileReporting {
   // Set up profile reporting.
@@ -586,6 +598,24 @@ constexpr char kEnrollmentToken[] = "fake-enrollment-token";
   [ChromeEarlGrey waitForWebStateContainingText:
                       l10n_util::GetStringUTF8(
                           IDS_MANAGEMENT_PROFILE_REPORTING_EXPLANATION)];
+}
+
+// Tests the chrome://management page when browser reporting is enabled.
+- (void)testManagementPageManagedWithBrowserAndProfileReporting {
+  // Set up profile reporting.
+  SetPolicy(true, policy::key::kCloudReportingEnabled);
+
+  // Open the management page and check if the content is expected.
+  [ChromeEarlGrey loadURL:GURL(kChromeUIManagementURL)];
+  [ChromeEarlGrey waitForWebStateContainingText:
+                      l10n_util::GetStringUTF8(
+                          IDS_MANAGEMENT_BROWSER_REPORTING_EXPLANATION)];
+
+  // If both are enabled, only show the browser reporting section.
+  GREYAssertFalse(
+      [ChromeEarlGrey webStateContainsElement:VisibleElementSelector(
+                                                  @"profile-reporting-info")],
+      @"Profile reporting section is visible.");
 }
 
 // Tests the chrome://management page when there are machine level policies and
