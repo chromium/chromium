@@ -2984,10 +2984,7 @@ EnclaveManager::EnclaveManager(
   // Automatically load the enclave state shortly after startup so that any
   // renewals will be considered without the user having to do something to
   // trigger a WebAuthn operation.
-  load_timer_.Start(
-      FROM_HERE, base::Minutes(4),
-      base::BindOnce(&EnclaveManager::Load, weak_ptr_factory_.GetWeakPtr(),
-                     base::DoNothing()));
+  LoadAfterDelay(base::Minutes(4), base::DoNothing());
   // Also consider renewing the PIN every day, for users who keep Chrome open
   // for long periods.
   renewal_timer_.Start(FROM_HERE, base::Hours(24),
@@ -3028,6 +3025,14 @@ bool EnclaveManager::is_ready() const {
 
 unsigned EnclaveManager::store_keys_count() const {
   return store_keys_count_;
+}
+
+void EnclaveManager::LoadAfterDelay(base::TimeDelta delay,
+                                    base::OnceClosure closure) {
+  load_timer_.Start(
+      FROM_HERE, delay,
+      base::BindOnce(&EnclaveManager::Load, weak_ptr_factory_.GetWeakPtr(),
+                     std::move(closure)));
 }
 
 void EnclaveManager::Load(base::OnceClosure closure) {

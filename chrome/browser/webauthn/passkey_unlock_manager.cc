@@ -4,8 +4,11 @@
 
 #include "chrome/browser/webauthn/passkey_unlock_manager.h"
 
+#include <optional>
+
 #include "base/memory/weak_ptr.h"
 #include "base/notimplemented.h"
+#include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -38,7 +41,9 @@ PasskeyUnlockManager::PasskeyUnlockManager(Profile* profile) {
   if (enclave_manager->is_loaded()) {
     enclave_ready_ = enclave_manager->is_ready();
   } else {
-    AsynchronouslyLoadEnclaveManager();
+    enclave_manager->LoadAfterDelay(
+        base::Minutes(4), base::BindOnce(&PasskeyUnlockManager::OnStateUpdated,
+                                         weak_ptr_factory_.GetWeakPtr()));
   }
   UpdateHasPasskeys();
   UpdateSyncState();
@@ -58,7 +63,33 @@ void PasskeyUnlockManager::RemoveObserver(Observer* observer) {
 }
 
 bool PasskeyUnlockManager::ShouldDisplayErrorUi() const {
-  return ArePasskeysLocked() && ArePasskeysUnlockable();
+  return should_display_error_ui_;
+}
+
+void PasskeyUnlockManager::ComputeShouldDisplayErrorUiAndNotifyObservers() {
+  bool previous_value = should_display_error_ui_;
+  // Compute the new value of `should_display_error_ui_`.
+  std::optional<bool> passkeys_are_locked = ArePasskeysLocked();
+  std::optional<bool> passkeys_are_unlockable = ArePasskeysUnlockable();
+  if (!passkeys_are_locked.has_value() ||
+      !passkeys_are_unlockable.has_value()) {
+    // If we don't have sufficient information to decide whether passkeys are
+    // locked and unlockable, we don't want to display the error UI.
+    should_display_error_ui_ = false;
+  } else {
+    should_display_error_ui_ =
+        passkeys_are_locked.value() && passkeys_are_unlockable.value();
+  }
+  // If `should_display_error_ui_` changed - notify observers.
+  if (should_display_error_ui_ != previous_value) {
+    NotifyObservers();
+  }
+}
+
+void PasskeyUnlockManager::NotifyObservers() {
+  for (Observer& observer : observer_list_) {
+    observer.OnPasskeyUnlockManagerStateChanged();
+  }
 }
 
 void PasskeyUnlockManager::OpenTabWithPasskeyUnlockChallenge(Browser* browser) {
@@ -144,12 +175,6 @@ void PasskeyUnlockManager::UpdateSyncState() {
           syncer::SyncService::UserActionableError::kNone;
 }
 
-void PasskeyUnlockManager::NotifyObservers() {
-  for (Observer& observer : observer_list_) {
-    observer.OnPasskeyUnlockManagerStateChanged();
-  }
-}
-
 void PasskeyUnlockManager::AsynchronouslyCheckGpmPinAvailability() {
   // TODO(crbug.com/449948649): Implement and call in the constructor.
   NOTIMPLEMENTED();
@@ -161,34 +186,25 @@ void PasskeyUnlockManager::AsynchronouslyCheckSystemUVAvailability() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 void PasskeyUnlockManager::OnHaveSystemUVAvailability(bool has_system_uv) {
-  bool error_ui_was_visible = ShouldDisplayErrorUi();
   has_system_uv_ = has_system_uv;
-  if (error_ui_was_visible != ShouldDisplayErrorUi()) {
-    NotifyObservers();
+  ComputeShouldDisplayErrorUiAndNotifyObservers();
+}
+
+std::optional<bool> PasskeyUnlockManager::ArePasskeysLocked() const {
+  if (!has_passkeys_.has_value()) {
+    return std::nullopt;
   }
-}
-
-void PasskeyUnlockManager::AsynchronouslyLoadEnclaveManager() {
-  auto callback = base::BindOnce(&PasskeyUnlockManager::OnStateUpdated,
-                                 weak_ptr_factory_.GetWeakPtr());
-  scoped_refptr<base::SequencedTaskRunner> task_runner =
-      base::SequencedTaskRunner::GetCurrentDefault();
-  auto delayed_task =
-      base::BindOnce(&EnclaveManager::Load, enclave_manager()->GetWeakPtr(),
-                     std::move(callback));
-  task_runner->PostDelayedTask(FROM_HERE, std::move(delayed_task),
-                               base::Minutes(4));
-}
-
-bool PasskeyUnlockManager::ArePasskeysLocked() const {
   // TODO(crbug.com/450238902): Also check enclave manager readiness.
-  return has_passkeys_.value_or(false) && sync_active_;
+  return has_passkeys_.value() && sync_active_;
 }
 
-bool PasskeyUnlockManager::ArePasskeysUnlockable() const {
+std::optional<bool> PasskeyUnlockManager::ArePasskeysUnlockable() const {
+  if (!has_system_uv_.has_value()) {
+    return std::nullopt;
+  }
   // TODO(crbug.com/450238902): Also check GPM PIN availability.
   // TODO(crbug.com/450551870): Check for more verification methods.
-  return has_system_uv_.value_or(false);
+  return has_system_uv_;
 }
 
 void PasskeyUnlockManager::Shutdown() {
@@ -202,29 +218,25 @@ void PasskeyUnlockManager::Shutdown() {
 
 void PasskeyUnlockManager::OnStateUpdated() {
   enclave_ready_ = enclave_manager()->is_ready();
-  NotifyObservers();
+  ComputeShouldDisplayErrorUiAndNotifyObservers();
 }
 
 void PasskeyUnlockManager::OnPasskeysChanged(
     const std::vector<webauthn::PasskeyModelChange>& changes) {
   UpdateHasPasskeys();
-  NotifyObservers();
+  ComputeShouldDisplayErrorUiAndNotifyObservers();
 }
 
 void PasskeyUnlockManager::OnPasskeyModelShuttingDown() {}
 
 void PasskeyUnlockManager::OnPasskeyModelIsReady(bool is_ready) {
   UpdateHasPasskeys();
-  NotifyObservers();
+  ComputeShouldDisplayErrorUiAndNotifyObservers();
 }
 
 void PasskeyUnlockManager::OnStateChanged(syncer::SyncService* sync) {
-  bool error_ui_was_visible = ShouldDisplayErrorUi();
   UpdateSyncState();
-  if (error_ui_was_visible != ShouldDisplayErrorUi()) {
-    // Only notify observers if the sync state changed.
-    NotifyObservers();
-  }
+  ComputeShouldDisplayErrorUiAndNotifyObservers();
 }
 
 void PasskeyUnlockManager::OnSyncShutdown(syncer::SyncService* sync) {

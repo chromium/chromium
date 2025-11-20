@@ -41,6 +41,8 @@ class PasskeyUnlockManager : public KeyedService,
   class Observer : public base::CheckedObserver {
    public:
     // Notifies the observer that state has changed.
+    // TODO(crbug.com/461806010): Rename this method. The more suitable name for
+    // this method would be something like `OnPasskeyErrorUiStateChanged()`.
     virtual void OnPasskeyUnlockManagerStateChanged() = 0;
 
     // Notifies the observer that the passkey unlock manager is shutting down.
@@ -59,6 +61,7 @@ class PasskeyUnlockManager : public KeyedService,
   void RemoveObserver(Observer* observer);
 
   // Synchronously tells whether the passkey error UI should be displayed.
+  // Returns the value cached in `should_display_error_ui_`.
   virtual bool ShouldDisplayErrorUi() const;
 
   // Opens a browser tab with a challenge for unlocking passkeys.
@@ -96,8 +99,12 @@ class PasskeyUnlockManager : public KeyedService,
   void UpdateHasPasskeys();
 
   // Updates the cached value of `sync_active_`. Checks the sync state and
-  // user actionable errors
+  // user actionable errors.
   void UpdateSyncState();
+
+  // Recomputes `should_display_error_ui_` and notifies observers if its value
+  // changed.
+  void ComputeShouldDisplayErrorUiAndNotifyObservers();
 
   // Used for notifying observers.
   void NotifyObservers();
@@ -108,12 +115,14 @@ class PasskeyUnlockManager : public KeyedService,
   void AsynchronouslyCheckSystemUVAvailability();
   // Callback for `AsynchronouslyCheckSystemUVAvailability`.
   void OnHaveSystemUVAvailability(bool has_system_uv);
-  // Caches `enclave_ready_`.
-  void AsynchronouslyLoadEnclaveManager();
 
-  // Helpers for ShouldDisplayErrorUi().
-  bool ArePasskeysLocked() const;
-  bool ArePasskeysUnlockable() const;
+  // A helper for `ComputeShouldDisplayErrorUi()`. Checks whether passkeys are
+  // in the locked state. If this information can't be computed returns
+  // `std::nullopt`.
+  std::optional<bool> ArePasskeysLocked() const;
+  // A helper for `ComputeShouldDisplayErrorUi()`. Checks whether passkeys could
+  // be unlocked. If this information can't be computed returns `std::nullopt`.
+  std::optional<bool> ArePasskeysUnlockable() const;
 
   void Shutdown() override;
 
@@ -138,6 +147,7 @@ class PasskeyUnlockManager : public KeyedService,
   std::optional<bool> has_gpm_pin_;
   std::optional<bool> has_system_uv_;
   bool sync_active_ = false;
+  bool should_display_error_ui_ = false;
 
   base::ObserverList<Observer> observer_list_;
 

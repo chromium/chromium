@@ -20,6 +20,7 @@
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/webauthn/enclave_manager_interface.h"
@@ -258,6 +259,8 @@ class EnclaveManager : public EnclaveManagerInterface {
 
   // Load the persisted state from disk. Harmless to call if `is_loaded`.
   void Load(base::OnceClosure closure);
+  // Preforms `Load` after the given delay,
+  void LoadAfterDelay(base::TimeDelta delay, base::OnceClosure closure);
   // Register with the enclave if not already registered.
   void RegisterIfNeeded(Callback callback);
   // Set up an account with a newly-created PIN.

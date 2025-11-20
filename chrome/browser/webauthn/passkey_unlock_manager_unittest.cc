@@ -218,15 +218,10 @@ TEST_F(PasskeyUnlockManagerTest, ErrorUiHiddenWhenPasskeysNotSynced) {
 #endif
 
 TEST_F(PasskeyUnlockManagerTest, MAYBE_ErrorUiHiddenWithoutUVKeys) {
+  passkey_model()->AddNewPasskeyForTesting(CreatePasskey());
   DisableUVKeySupport();
   SetUpPasskeyUnlockManager();
 
-  EXPECT_CALL(observer(), OnPasskeyUnlockManagerStateChanged());
-  passkey_model()->AddNewPasskeyForTesting(CreatePasskey());
-
-  // With passkeys and active sync, the passkey unlock manager should notify its
-  // observers and the error UI should be shown, but doesn't show when there is
-  // no UV key support.
   EXPECT_FALSE(passkey_unlock_manager()->ShouldDisplayErrorUi());
 }
 
