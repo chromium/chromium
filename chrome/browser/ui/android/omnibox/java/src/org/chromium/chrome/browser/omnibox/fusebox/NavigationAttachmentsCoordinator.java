@@ -95,7 +95,7 @@ public class NavigationAttachmentsCoordinator
                 new AnchoredPopupWindow(
                         mContext,
                         contextButton.getRootView(),
-                        AppCompatResources.getDrawable(context, R.drawable.menu_bg_baseline),
+                        AppCompatResources.getDrawable(context, R.drawable.menu_bg_tinted),
                         popupView,
                         rectProvider);
         popupWindow.setOutsideTouchable(true);
