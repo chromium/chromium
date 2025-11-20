@@ -68,6 +68,7 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
      * and add the ID to the LEGACY_CHANNELS_ID array below. See the README in this directory for
      * more detailed instructions.
      */
+    // LINT.IfChange(ChannelId)
     @StringDef({
         ChannelId.BROWSER,
         ChannelId.COLLABORATION,
@@ -131,6 +132,9 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
         String SERIAL = "serial";
         String TIPS = "tips";
     }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/mobile/histograms.xml:NotificationChannelId)
+    // LINT.ThenChange(//chrome/browser/notifications/android/java/src/org/chromium/chrome/browser/notifications/NotificationUmaTracker.java:NotificationChannelId)
 
     @StringDef({ChannelGroupId.GENERAL, ChannelGroupId.SITES})
     @Retention(RetentionPolicy.SOURCE)
