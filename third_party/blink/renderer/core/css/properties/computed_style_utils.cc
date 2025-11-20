@@ -4804,16 +4804,16 @@ CSSValue* ComputedStyleUtils::ValueForIntrinsicLength(
     return CSSIdentifierValue::Create(CSSValueID::kFromElement);
   }
 
+  const std::optional<Length>& length = intrinsic_length.GetLength();
+  CSSValue* length_value = length
+                               ? ZoomAdjustedPixelValueForLength(*length, style)
+                               : CSSIdentifierValue::Create(CSSValueID::kNone);
+  if (!intrinsic_length.HasAuto()) {
+    return length_value;
+  }
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-  if (intrinsic_length.HasAuto()) {
-    list->Append(*CSSIdentifierValue::Create(CSSValueID::kAuto));
-  }
-
-  if (const std::optional<Length>& length = intrinsic_length.GetLength()) {
-    list->Append(*ZoomAdjustedPixelValueForLength(*length, style));
-  } else {
-    list->Append(*CSSIdentifierValue::Create(CSSValueID::kNone));
-  }
+  list->Append(*CSSIdentifierValue::Create(CSSValueID::kAuto));
+  list->Append(*length_value);
   return list;
 }
 

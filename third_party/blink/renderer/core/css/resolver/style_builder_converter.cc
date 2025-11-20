@@ -3670,10 +3670,9 @@ StyleIntrinsicLength StyleBuilderConverter::ConvertIntrinsicDimension(
     const StyleResolverState& state,
     const CSSValue& value) {
   // The valid grammar for this value is the following:
-  // none | <length> | auto && <length> | auto && none.
+  // `auto? [ none | <length [0,∞]> ] | from-element`.
 
-  auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
-  if (identifier_value) {
+  if (const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     if (identifier_value->GetValueID() == CSSValueID::kNone) {
       return StyleIntrinsicLength(/*has_auto=*/false, /*matches_element=*/false,
                                   std::nullopt);
@@ -3684,35 +3683,28 @@ StyleIntrinsicLength StyleBuilderConverter::ConvertIntrinsicDimension(
                                   std::nullopt);
     }
   }
-
-  // Handle "<length> | auto && <length> | auto && none, which will all come
-  // from a list.
-  const CSSValueList* list = DynamicTo<CSSValueList>(value);
-  DCHECK(list);
-  DCHECK_GT(list->length(), 0u);
-
-  // Handle "<length>".
-  if (auto* primitive_value = DynamicTo<CSSPrimitiveValue>(list->Item(0))) {
-    DCHECK_EQ(list->length(), 1u);
+  if (const auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value)) {
     return StyleIntrinsicLength(
         /*has_auto=*/false, /*matches_element=*/false,
         ConvertLength(state, *primitive_value));
   }
 
-  // The rest of the syntax will have "auto" as the first keyword.
+  // Handle `auto [ none | <length [0,∞]> ]`, which will all come from a list.
+  const CSSValueList* list = DynamicTo<CSSValueList>(value);
+  DCHECK(list);
   DCHECK_EQ(list->length(), 2u);
   DCHECK(IsA<CSSIdentifierValue>(list->Item(0)));
   DCHECK(To<CSSIdentifierValue>(list->Item(0)).GetValueID() ==
          CSSValueID::kAuto);
 
-  // Handle "auto && <length>"
+  // Handle "auto <length>"
   if (auto* primitive_value = DynamicTo<CSSPrimitiveValue>(list->Item(1))) {
     return StyleIntrinsicLength(
         /*has_auto=*/true, /*matches_element=*/false,
         ConvertLength(state, *primitive_value));
   }
 
-  // The only grammar left is "auto && none".
+  // The only grammar left is "auto none".
   DCHECK(IsA<CSSIdentifierValue>(list->Item(1)));
   DCHECK(To<CSSIdentifierValue>(list->Item(1)).GetValueID() ==
          CSSValueID::kNone);

@@ -3242,23 +3242,23 @@ CSSValue* ConsumeIntrinsicSizeLonghand(CSSParserTokenStream& stream,
     return css_parsing_utils::ConsumeIdent(stream);
   }
 
-  if (css_parsing_utils::IdentMatches<CSSValueID::kNone>(stream.Peek().Id())) {
-    return css_parsing_utils::ConsumeIdent(stream);
-  }
-  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-  if (css_parsing_utils::IdentMatches<CSSValueID::kAuto>(stream.Peek().Id())) {
-    list->Append(*css_parsing_utils::ConsumeIdent(stream));
-  }
-  if (css_parsing_utils::IdentMatches<CSSValueID::kNone>(stream.Peek().Id())) {
-    list->Append(*css_parsing_utils::ConsumeIdent(stream));
-  } else {
-    CSSValue* length = css_parsing_utils::ConsumeLength(
-        stream, context, CSSPrimitiveValue::ValueRange::kNonNegative);
-    if (!length) {
+  // `auto? [ none | <length [0,∞]> ]`
+  CSSValue* auto_or_null =
+      css_parsing_utils::ConsumeIdent<CSSValueID::kAuto>(stream);
+  CSSValue* length_or_none = css_parsing_utils::ConsumeLength(
+      stream, context, CSSPrimitiveValue::ValueRange::kNonNegative);
+  if (!length_or_none) {
+    length_or_none = css_parsing_utils::ConsumeIdent<CSSValueID::kNone>(stream);
+    if (!length_or_none) {
       return nullptr;
     }
-    list->Append(*length);
   }
+  if (!auto_or_null) {
+    return length_or_none;
+  }
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  list->Append(*auto_or_null);
+  list->Append(*length_or_none);
   return list;
 }
 
