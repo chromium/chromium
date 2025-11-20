@@ -97,6 +97,10 @@ def split_description(description: str) -> tuple[str, dict[str, list[str]]]:
   """Splits a description into the description and git trailers."""
   trailers = collections.defaultdict(list)
   user_desc, sep, trailer_paragraph = description.rstrip().rpartition('\n\n')
+  # If the description has only a single paragraph, we should interpret it as
+  # a user description (eg. "WIP: blah" is not a trailer).
+  if not user_desc and not sep:
+    return trailer_paragraph, {}
 
   trailer_lines = trailer_paragraph.lstrip().split('\n')
   # Note: for multiline values, we only retrieve the first line here.

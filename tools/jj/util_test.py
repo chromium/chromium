@@ -1,8 +1,8 @@
+#!/usr/bin/env python3
 # Copyright 2025 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import textwrap
 import unittest
 import util
 
@@ -22,13 +22,19 @@ TRAILERS_DICT = {
 
 class TestUtil(unittest.TestCase):
 
+  def test_split_description_interprets_single_line_trailer_as_desc(self):
+    want_desc = 'WIP: blah'
+    desc, trailers = util.split_description(want_desc)
+    self.assertEqual(desc, want_desc)
+    self.assertEqual(trailers, {})
+
   def test_split_description_no_trailers(self):
     desc, trailers = util.split_description(TWO_PARAGRAPHS)
     self.assertEqual(desc, TWO_PARAGRAPHS)
     self.assertEqual(trailers, {})
 
   def test_split_description_only_trailers(self):
-    desc, trailers = util.split_description(TRAILERS_TEXT)
+    desc, trailers = util.split_description('\n\n' + TRAILERS_TEXT)
     self.assertEqual(desc, '')
     self.assertEqual(trailers, TRAILERS_DICT)
 
