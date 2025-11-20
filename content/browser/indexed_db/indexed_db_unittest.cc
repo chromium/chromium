@@ -35,9 +35,11 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
 #include "base/test/test_future.h"
@@ -2186,6 +2188,9 @@ TEST_P(IndexedDBTest, DeleteDatabase_Cold) {
     histogram_tester.ExpectUniqueSample(
         "IndexedDB.BackingStore.CreateOrOpenDatabase.OnDisk",
         0 /*Status::Type::kOk*/, 1);
+    histogram_tester.ExpectUniqueSample(
+        "IndexedDB.BackingStore.DeleteDatabase.OnDisk", 0 /*Status::Type::kOk*/,
+        1);
   }
 }
 
@@ -2296,6 +2301,136 @@ TEST_P(IndexedDBTest, UpdatePriorityAfterForceClose) {
   connection.FlushForTesting();
 
   // Not crashing indicates success.
+}
+
+TEST_P(IndexedDBTest, TransactionHistograms) {
+  constexpr int64_t kObjectStoreId = 1;
+  int64_t transaction_id = 0;
+
+  const blink::StorageKey storage_key =
+      blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
+  BucketLocator bucket_locator = BucketLocator();
+  bucket_locator.storage_key = storage_key;
+
+  // Bind the IDBFactory.
+  mojo::Remote<blink::mojom::IDBFactory> factory_remote;
+  mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
+      checker_remote;
+  BindFactory(std::move(checker_remote),
+              factory_remote.BindNewPipeAndPassReceiver(),
+              ToBucketInfo(bucket_locator));
+
+  // Create a database with a valid version so that a version change transaction
+  // is created.
+  MockMojoFactoryClient client;
+  MockMojoDatabaseCallbacks database_callbacks;
+  mojo::AssociatedRemote<blink::mojom::IDBDatabase> connection;
+  {
+    base::HistogramTester histogram_tester;
+    mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending_database;
+    base::RunLoop upgrade_run_loop;
+    EXPECT_CALL(client, MockedUpgradeNeeded)
+        .WillOnce(testing::DoAll(
+            MoveArgPointee<0>(&pending_database),
+            ::base::test::RunClosure(upgrade_run_loop.QuitClosure())));
+    mojo::AssociatedRemote<blink::mojom::IDBTransaction> transaction;
+    factory_remote->Open(client.CreateInterfacePtrAndBind(),
+                         database_callbacks.CreateInterfacePtrAndBind(), u"db",
+                         /*version=*/1,
+                         transaction.BindNewEndpointAndPassReceiver(),
+                         ++transaction_id, /*priority=*/0);
+    upgrade_run_loop.Run();
+    connection.Bind(std::move(pending_database));
+
+    // Create an object store and commit the version change transaction.
+    transaction->CreateObjectStore(kObjectStoreId, u"store",
+                                   blink::IndexedDBKeyPath(),
+                                   /*auto_increment=*/true);
+    transaction->Commit(0);
+
+    // Wait for the transaction to complete.
+    base::RunLoop loop;
+    EXPECT_CALL(database_callbacks, Complete(transaction_id))
+        .WillOnce(base::test::RunClosure(loop.QuitClosure()));
+    loop.Run();
+    EXPECT_CALL(client, MockedOpenSuccess);
+
+    histogram_tester.ExpectUniqueSample(
+        "IndexedDB.BackingStore.BeginTransaction.OnDisk",
+        0 /*Status::Type::kOk*/, 1);
+    histogram_tester.ExpectUniqueSample(
+        "IndexedDB.BackingStore.SetDatabaseVersion.OnDisk",
+        0 /*Status::Type::kOk*/, 1);
+    histogram_tester.ExpectUniqueSample(
+        "IndexedDB.BackingStore.CommitPhaseOne.OnDisk", 0 /*Status::Type::kOk*/,
+        1);
+    histogram_tester.ExpectUniqueSample(
+        "IndexedDB.BackingStore.CommitPhaseTwo.OnDisk", 0 /*Status::Type::kOk*/,
+        1);
+  }
+
+  // Create a transaction and commit it without issuing any request.
+  {
+    base::HistogramTester histogram_tester;
+    mojo::AssociatedRemote<blink::mojom::IDBTransaction> transaction;
+    connection->CreateTransaction(
+        transaction.BindNewEndpointAndPassReceiver(), ++transaction_id,
+        {kObjectStoreId}, blink::mojom::IDBTransactionMode::ReadWrite,
+        blink::mojom::IDBTransactionDurability::Relaxed);
+    transaction->Commit(0);
+
+    // Wait for the transaction to complete.
+    base::RunLoop loop;
+    EXPECT_CALL(database_callbacks, Complete(transaction_id))
+        .WillOnce(base::test::RunClosure(loop.QuitClosure()));
+    loop.Run();
+
+    histogram_tester.ExpectUniqueSample(
+        "IndexedDB.BackingStore.BeginTransaction.OnDisk",
+        0 /*Status::Type::kOk*/, 1);
+    // The commit does not propagate to the BackingStore since no requests were
+    // issued to the transaction.
+    histogram_tester.ExpectTotalCount(
+        "IndexedDB.BackingStore.CommitPhaseOne.OnDisk", 0);
+    histogram_tester.ExpectTotalCount(
+        "IndexedDB.BackingStore.CommitPhaseTwo.OnDisk", 0);
+  }
+
+  // Create another transaction and issue some requests.
+  {
+    base::HistogramTester histogram_tester;
+    mojo::AssociatedRemote<blink::mojom::IDBTransaction> transaction;
+    connection->CreateTransaction(
+        transaction.BindNewEndpointAndPassReceiver(), ++transaction_id,
+        {kObjectStoreId}, blink::mojom::IDBTransactionMode::ReadWrite,
+        blink::mojom::IDBTransactionDurability::Relaxed);
+
+    transaction->Put(kObjectStoreId,
+                     blink::mojom::IDBValuePtr(blink::mojom::IDBValue::New()),
+                     blink::IndexedDBKey(), blink::mojom::IDBPutMode::AddOnly,
+                     /*index_keys=*/{},
+                     base::BindLambdaForTesting(
+                         [&](blink::mojom::IDBTransactionPutResultPtr result) {
+                           EXPECT_FALSE(result->is_error_result());
+                         }));
+    transaction->Commit(0);
+
+    // Wait for the transaction to complete.
+    base::RunLoop loop;
+    EXPECT_CALL(database_callbacks, Complete(transaction_id))
+        .WillOnce(base::test::RunClosure(loop.QuitClosure()));
+    loop.Run();
+
+    histogram_tester.ExpectUniqueSample(
+        "IndexedDB.BackingStore.BeginTransaction.OnDisk",
+        0 /*Status::Type::kOk*/, 1);
+    histogram_tester.ExpectUniqueSample(
+        "IndexedDB.BackingStore.CommitPhaseOne.OnDisk", 0 /*Status::Type::kOk*/,
+        1);
+    histogram_tester.ExpectUniqueSample(
+        "IndexedDB.BackingStore.CommitPhaseTwo.OnDisk", 0 /*Status::Type::kOk*/,
+        1);
+  }
 }
 
 TEST_P(IndexedDBTest, QuotaErrorOnDbOpenError) {

@@ -119,10 +119,11 @@ inline void LogDuration(const base::TimeDelta& duration,
 
 // Logs `status` to `histogram_name` suffixed with a variant indicating whether
 // the backing store is `in_memory` or on-disk.
-inline void LogStatus(const Status& status,
-                      std::string_view histogram_name,
-                      bool in_memory) {
+inline Status LogStatus(Status status,
+                        std::string_view histogram_name,
+                        bool in_memory) {
   status.Log(base::StrCat({histogram_name, ToVariantSuffix(in_memory)}));
+  return status;
 }
 
 // Performs `action` and logs its result (expected to be a `StatusOr<>`) to

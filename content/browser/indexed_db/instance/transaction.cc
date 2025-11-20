@@ -37,6 +37,7 @@
 #include "components/services/storage/public/mojom/blob_storage_context.mojom-shared.h"
 #include "content/browser/indexed_db/indexed_db_external_object.h"
 #include "content/browser/indexed_db/indexed_db_external_object_storage.h"
+#include "content/browser/indexed_db/indexed_db_reporting.h"
 #include "content/browser/indexed_db/instance/bucket_context.h"
 #include "content/browser/indexed_db/instance/bucket_context_handle.h"
 #include "content/browser/indexed_db/instance/callback_helpers.h"
@@ -892,50 +893,50 @@ Status Transaction::DoPendingCommit() {
 
   SetState(COMMITTING);
 
-  Status s;
   if (!used_) {
-    s = CommitPhaseTwo();
-  } else {
-    // CommitPhaseOne will call the callback synchronously if there are no blobs
-    // to write.
-    s = backing_store_transaction_->CommitPhaseOne(
-        /*blob_write_callback=*/
-        base::BindOnce(
-            [](base::WeakPtr<Transaction> transaction, BlobWriteResult result,
-               storage::mojom::WriteBlobToFileResult error) {
-              if (!transaction) {
-                return Status::OK();
-              }
-              return transaction->BlobWriteComplete(result, error);
-            },
-            ptr_factory_.GetWeakPtr()),
-        // This callback is only used by SQLite. The LevelDB version of this
-        // code lives in `BackingStore::Transaction::WriteNewBlobs`.
-        /*serialize_fsa_callback=*/
-        base::BindRepeating(
-            [](base::WeakPtr<Transaction> transaction,
-               blink::mojom::FileSystemAccessTransferToken& token_remote,
-               base::OnceCallback<void(const std::vector<uint8_t>&)>
-                   deliver_serialized_token) {
-              if (!transaction) {
-                return;
-              }
-
-              // TODO(dmurph): Refactor IndexedDBExternalObject to not use a
-              // SharedRemote, so this code can just move the remote, instead of
-              // cloning.
-              mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>
-                  token_clone;
-              token_remote.Clone(token_clone.InitWithNewPipeAndPassReceiver());
-              transaction->bucket_context()
-                  ->file_system_access_context()
-                  ->SerializeHandle(std::move(token_clone),
-                                    std::move(deliver_serialized_token));
-            },
-            ptr_factory_.GetWeakPtr()));
+    return CommitPhaseTwo();
   }
 
-  return s;
+  // CommitPhaseOne will call the callback synchronously if there are no blobs
+  // to write.
+  return LogStatus(
+      backing_store_transaction_->CommitPhaseOne(
+          /*blob_write_callback=*/
+          base::BindOnce(
+              [](base::WeakPtr<Transaction> transaction, BlobWriteResult result,
+                 storage::mojom::WriteBlobToFileResult error) {
+                if (!transaction) {
+                  return Status::OK();
+                }
+                return transaction->BlobWriteComplete(result, error);
+              },
+              ptr_factory_.GetWeakPtr()),
+          // This callback is only used by SQLite. The LevelDB version of this
+          // code lives in `BackingStore::Transaction::WriteNewBlobs`.
+          /*serialize_fsa_handle=*/
+          base::BindRepeating(
+              [](base::WeakPtr<Transaction> transaction,
+                 blink::mojom::FileSystemAccessTransferToken& token_remote,
+                 base::OnceCallback<void(const std::vector<uint8_t>&)>
+                     deliver_serialized_token) {
+                if (!transaction) {
+                  return;
+                }
+
+                // TODO(dmurph): Refactor IndexedDBExternalObject to not use a
+                // SharedRemote, so this code can just move the remote, instead
+                // of cloning.
+                mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>
+                    token_clone;
+                token_remote.Clone(
+                    token_clone.InitWithNewPipeAndPassReceiver());
+                transaction->bucket_context()
+                    ->file_system_access_context()
+                    ->SerializeHandle(std::move(token_clone),
+                                      std::move(deliver_serialized_token));
+              },
+              ptr_factory_.GetWeakPtr())),
+      "IndexedDB.BackingStore.CommitPhaseOne", bucket_context_->in_memory());
 }
 
 Status Transaction::CommitPhaseTwo() {
@@ -955,7 +956,9 @@ Status Transaction::CommitPhaseTwo() {
   if (!used_) {
     committed = true;
   } else {
-    s = backing_store_transaction_->CommitPhaseTwo();
+    s = LogStatus(backing_store_transaction_->CommitPhaseTwo(),
+                  "IndexedDB.BackingStore.CommitPhaseTwo",
+                  bucket_context_->in_memory());
 
     // This measurement includes the time it takes to commit to the backing
     // store (i.e. LevelDB), not just the blobs.
@@ -1055,8 +1058,10 @@ Status Transaction::RunTasks() {
   }
 
   if (!backing_store_transaction_begun_) {
-    IDB_RETURN_IF_ERROR(
-        backing_store_transaction_->Begin(std::move(locks_receiver_.locks)));
+    IDB_RETURN_IF_ERROR(LogStatus(
+        backing_store_transaction_->Begin(std::move(locks_receiver_.locks)),
+        "IndexedDB.BackingStore.BeginTransaction",
+        bucket_context_->in_memory()));
     backing_store_transaction_begun_ = true;
   }
 

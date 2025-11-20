@@ -234,8 +234,10 @@ StatusOr<int64_t> Database::DeleteDatabase(std::vector<PartitionedLock> locks,
   }
 
   const int64_t old_version = version();
-  Status s = backing_store_db_->DeleteDatabase(std::move(locks),
-                                               std::move(on_complete));
+  Status s = LogStatus(backing_store_db_->DeleteDatabase(
+                           std::move(locks), std::move(on_complete)),
+                       "IndexedDB.BackingStore.DeleteDatabase",
+                       bucket_context_->in_memory());
   backing_store_db_.reset();
   if (!s.ok()) {
     return base::unexpected(s);
@@ -438,8 +440,10 @@ Status Database::VersionChangeOperation(int64_t version,
   int64_t old_version = metadata().version;
   CHECK_GT(version, old_version);
 
-  IDB_RETURN_IF_ERROR(
-      transaction->BackingStoreTransaction()->SetDatabaseVersion(version));
+  IDB_RETURN_IF_ERROR(LogStatus(
+      transaction->BackingStoreTransaction()->SetDatabaseVersion(version),
+      "IndexedDB.BackingStore.SetDatabaseVersion",
+      bucket_context_->in_memory()));
 
   connection_coordinator_.BindVersionChangeTransactionReceiver();
   connection_coordinator_.OnUpgradeTransactionStarted(old_version);

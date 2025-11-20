@@ -21,7 +21,8 @@ Status::Status(const Status& rhs) = default;
 Status::Status(Status&& rhs) noexcept = default;
 
 Status::Status(leveldb::Status&& status) noexcept
-    : type_(Type::kDatabaseEngine), leveldb_status_(std::move(status)) {}
+    : type_(status.ok() ? Type::kOk : Type::kDatabaseEngine),
+      leveldb_status_(std::move(status)) {}
 
 Status::Status(sql::Database& db) noexcept
     : type_(Type::kDatabaseEngine),

@@ -294,42 +294,28 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="IndexedDB.BackingStore.CreateIfMissing.{IndexedDBBackingStoreType}"
+    name="IndexedDB.BackingStore.{Operation}.{IndexedDBBackingStoreType}"
     enum="IndexedDbStatusType" expires_after="2026-10-01">
   <owner>leimy@chromium.org</owner>
   <owner>evanstade@microsoft.com</owner>
   <owner>abhishek.shanthkumar@microsoft.com</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
-    Logs the result of each attempt to initialize the backing store with
-    create_if_missing=true, i.e., when serving an IDBFactory::Open() request.
+    Logs the result of the operation {Operation} on an
+    {IndexedDBBackingStoreType} backing store. An operation is a group of one or
+    more calls into the backing store performed together (i.e., synchronously).
+    Collectively, these histograms gate rollout of the SQLite backing store.
   </summary>
-</histogram>
-
-<histogram
-    name="IndexedDB.BackingStore.CreateOrOpenDatabase.{IndexedDBBackingStoreType}"
-    enum="IndexedDbStatusType" expires_after="2026-10-01">
-  <owner>leimy@chromium.org</owner>
-  <owner>evanstade@microsoft.com</owner>
-  <owner>abhishek.shanthkumar@microsoft.com</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Logs the result of the call to BackingStore::CreateOrOpenDatabase() when
-    serving an IDBFactory::Open() or ::DeleteDatabase() request.
-  </summary>
-</histogram>
-
-<histogram
-    name="IndexedDB.BackingStore.GetDatabaseNamesAndVersions.{IndexedDBBackingStoreType}"
-    enum="IndexedDbStatusType" expires_after="2026-10-01">
-  <owner>leimy@chromium.org</owner>
-  <owner>evanstade@microsoft.com</owner>
-  <owner>abhishek.shanthkumar@microsoft.com</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Logs the result of the call to BackingStore::GetDatabaseNamesAndVersions()
-    when serving an IDBFactory::GetDatabaseInfo() request.
-  </summary>
+  <token key="Operation">
+    <variant name="BeginTransaction"/>
+    <variant name="CommitPhaseOne"/>
+    <variant name="CommitPhaseTwo"/>
+    <variant name="CreateIfMissing"/>
+    <variant name="CreateOrOpenDatabase"/>
+    <variant name="DeleteDatabase"/>
+    <variant name="GetDatabaseNamesAndVersions"/>
+    <variant name="SetDatabaseVersion"/>
+  </token>
 </histogram>
 
 <histogram name="IndexedDB.BackingStoreCloseDuration" units="ms"
