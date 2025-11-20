@@ -12,6 +12,7 @@ namespace unexportable_keys {
 // Various errors returned by this component.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange
 enum class ServiceError {
   // Reserved for histograms.
   // kNone = 0
@@ -33,6 +34,7 @@ enum class ServiceError {
 
   kMaxValue = kVerifySignatureFailed
 };
+// LINT.ThenChange(/components/unexportable_keys/mojom/unexportable_key_service.mojom)
 
 // Fake `ServiceError` value that can be used for metrics to signify that no
 // error has occurred.
