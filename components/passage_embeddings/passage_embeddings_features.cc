@@ -10,7 +10,18 @@
 
 namespace passage_embeddings {
 
-BASE_FEATURE(kPassageEmbedder, base::FEATURE_DISABLED_BY_DEFAULT);
+namespace {
+
+constexpr auto enabled_by_default_desktop_only =
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+    base::FEATURE_DISABLED_BY_DEFAULT;
+#else
+    base::FEATURE_ENABLED_BY_DEFAULT;
+#endif
+
+}  // namespace
+
+BASE_FEATURE(kPassageEmbedder, enabled_by_default_desktop_only);
 
 const base::FeatureParam<int> kUserInitiatedPriorityNumThreads(
     &kPassageEmbedder,

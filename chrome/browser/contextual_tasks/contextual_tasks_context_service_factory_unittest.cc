@@ -27,8 +27,7 @@ class ContextualTasksContextServiceFactoryTest : public testing::Test {
 };
 
 TEST_F(ContextualTasksContextServiceFactoryTest, CreatesServiceForProfile) {
-  feature_list_.InitWithFeatures(
-      {kContextualTasksContext, passage_embeddings::kPassageEmbedder}, {});
+  feature_list_.InitAndEnableFeature(kContextualTasksContext);
   std::unique_ptr<TestingProfile> profile = TestingProfile::Builder().Build();
   ContextualTasksContextService* service =
       ContextualTasksContextServiceFactory::GetForProfile(profile.get());
