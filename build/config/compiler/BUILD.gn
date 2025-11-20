@@ -1852,17 +1852,6 @@ config("sanitize_c_array_bounds") {
       "-fsanitize=array-bounds",
       "-fsanitize-trap=array-bounds",
     ]
-
-    # TODO(https://crbug.com/457303640): Like the warning_suppression.txt
-    # distribution issue, it appears that ICECC also does not distribute the
-    # array_bounds_ignorelist.txt file. Therefore, we temporarily disable the
-    # suppression/ignore lists for the sanitizer tools. Also we reported this
-    # issue to the icecc github repo -
-    # https://github.com/icecc/icecream/issues/649.
-    if (defined(ubsan_array_bounds_ignorelist_path) && cc_wrapper != "icecc") {
-      rebased = rebase_path(ubsan_array_bounds_ignorelist_path, root_build_dir)
-      cflags += [ "-fsanitize-ignorelist=$rebased" ]
-    }
   }
 }
 

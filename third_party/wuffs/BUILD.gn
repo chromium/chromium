@@ -83,6 +83,15 @@ static_library("wuffs") {
   visibility = [ "//skia" ]
 
   sources = [ "src/release/c/wuffs-v0.3.c" ]
+
+  # Wuffs is said to be memory-safe. Its array bounds safety checks are
+  # proved entirely at-compile-time (when compiling either Wuffs itself
+  # or `*.wuffs` source code to `*.c` generated code). There should be
+  # no need to add the extra instrumentation of `-fsanitize=array-bounds`.
+  #
+  # TODO(crbug.com/455614314): consider building a fix directly into
+  # Wuffs to pacify the compiler.
+  configs -= [ "//build/config/compiler:sanitize_c_array_bounds" ]
 }
 # Do not add build targets, or change their configuration or visibility,
 # without considering the "consult ENG_REVIEW_OWNERS" comment at the top of
