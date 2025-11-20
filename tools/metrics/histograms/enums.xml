@@ -24904,7 +24904,7 @@ Called by update_net_error_codes.py.-->
       label="Opened from a pinned side panel feature's toolbar button"/>
   <int value="13" label="Opened from App Menu"/>
   <int value="14" label="Opened from a link in side panel"/>
-  <int value="15" label="Opened from Read Anything omnibox icon"/>
+  <int value="15" label="Opened from Read Anything omnibox icon (deprecated)"/>
   <int value="16" label="Opened from Read Anything via address bar"/>
   <int value="17" label="Opened from toolbar overflow menu"/>
   <int value="18" label="Opened from an extension"/>
@@ -24914,6 +24914,7 @@ Called by update_net_error_codes.py.-->
   <int value="22" label="Opened from the New Tab Page customization promo"/>
   <int value="23"
       label="Opened Customize Chrome from the New Tab Page automatically"/>
+  <int value="24" label="Opened from Read Anything omnibox chip"/>
 </enum>
 
 <enum name="SignedExchangeLoadResult">
