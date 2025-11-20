@@ -32,8 +32,7 @@ bool DrawVideoFrameIntoResourceProvider(
     CanvasResourceProvider* resource_provider,
     viz::RasterContextProvider* raster_context_provider,
     media::PaintCanvasVideoRenderer* video_renderer,
-    bool ignore_video_transformation = false,
-    bool reinterpret_video_as_srgb = false) {
+    bool ignore_video_transformation = false) {
   DCHECK(frame);
   DCHECK(resource_provider);
 
@@ -77,7 +76,6 @@ bool DrawVideoFrameIntoResourceProvider(
       ignore_video_transformation
           ? media::kNoTransformation
           : frame->metadata().transformation.value_or(media::kNoTransformation);
-  params.reinterpret_as_srgb = reinterpret_video_as_srgb;
   resource_provider->ExternalCanvasDrawHelper(
       [&](MemoryManagedPaintCanvas& canvas) {
         video_renderer->Paint(frame.get(), &canvas, media_flags, params,
