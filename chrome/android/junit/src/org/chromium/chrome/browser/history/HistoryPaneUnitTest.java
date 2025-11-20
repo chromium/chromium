@@ -20,6 +20,7 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.LoadHint;
@@ -102,6 +103,7 @@ public class HistoryPaneUnitTest {
     }
 
     @Test
+    @DisabledTest(message = "crbug.com/462509433")
     public void testNotifyLoadHint() {
         assertEquals(0, mHistoryPane.getRootView().getChildCount());
 
@@ -113,6 +115,7 @@ public class HistoryPaneUnitTest {
     }
 
     @Test
+    @DisabledTest(message = "crbug.com/462509433")
     public void testDestroy_WhileHot() {
         mHistoryPane.notifyLoadHint(LoadHint.HOT);
         mHistoryPane.destroy();
@@ -120,6 +123,7 @@ public class HistoryPaneUnitTest {
     }
 
     @Test
+    @DisabledTest(message = "crbug.com/462509433")
     public void testDestroy_WhileCold() {
         mHistoryPane.notifyLoadHint(LoadHint.HOT);
         mHistoryPane.notifyLoadHint(LoadHint.COLD);

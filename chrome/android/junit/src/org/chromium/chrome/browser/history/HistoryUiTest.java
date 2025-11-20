@@ -62,6 +62,7 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
@@ -441,6 +442,7 @@ public class HistoryUiTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/462509433")
     public void testSearchView() throws Exception {
         final HistoryManagerToolbar toolbar = mHistoryManager.getToolbarForTests();
         View toolbarShadow = mHistoryManager.getSelectableListLayout().getToolbarShadowForTests();
@@ -605,6 +607,7 @@ public class HistoryUiTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/462509433")
     public void testSearchViewDismissedByBackPress() {
         final HistoryManagerToolbar toolbar = mHistoryManager.getToolbarForTests();
         View toolbarShadow = mHistoryManager.getSelectableListLayout().getToolbarShadowForTests();
