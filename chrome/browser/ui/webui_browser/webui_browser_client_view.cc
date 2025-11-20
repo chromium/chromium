@@ -43,7 +43,7 @@ void WebUIBrowserClientView::AddedToWidget() {
   // Track location icon element to trigger relayouting when its bounds change.
   location_icon_moved_subscription_ =
       ui::ElementTracker::GetElementTracker()->AddCustomEventCallback(
-          ui::kElementBoundsChangedEvent, context,
+          ui::kElementBoundsChangedEvent, kLocationIconElementId, context,
           base::BindRepeating(&WebUIBrowserClientView::OnLocationIconMoved,
                               base::Unretained(this)));
 }
@@ -56,10 +56,6 @@ int WebUIBrowserClientView::NonClientHitTest(const gfx::Point& point) {
 }
 
 void WebUIBrowserClientView::OnLocationIconMoved(ui::TrackedElement* element) {
-  if (element->identifier() != kLocationIconElementId) {
-    return;
-  }
-
   BrowserWindowInterface* const browser =
       web_contents_delegate_->window()->browser();
   CHECK(browser);
