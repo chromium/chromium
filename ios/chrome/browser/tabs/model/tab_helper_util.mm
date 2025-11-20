@@ -144,254 +144,346 @@ constexpr bool IsTabHelperFilterMaskSet(TabHelperFilter mask,
   return (mask & flag) == flag;
 }
 
+// A builder class to declaratively attach tab helpers to a WebState.
+class TabHelperAttacher {
+ public:
+  template <typename T>
+  class [[nodiscard]] TypedTabHelperAttacher {
+   public:
+    TypedTabHelperAttacher(bool condition,
+                           const raw_ref<web::WebState> web_state,
+                           TabHelperAttacher& attacher)
+        : condition_(condition), web_state_(web_state), attacher_(attacher) {}
+
+    template <typename... Args>
+    void operator()(Args&&... args) {
+      if (condition_) {
+        T::CreateForWebState(&*web_state_, std::forward<Args>(args)...);
+      }
+    }
+
+    template <typename... Factories>
+    void WithFactory(ProfileIOS* profile) {
+      if (condition_) {
+        T::CreateForWebState(&*web_state_,
+                             Factories::GetForProfile(profile)...);
+      }
+    }
+
+    template <typename... Functors>
+    void With(Functors... functors) {
+      if (condition_) {
+        T::CreateForWebState(&*web_state_, functors()...);
+      }
+    }
+
+   private:
+    bool condition_;
+    const raw_ref<web::WebState> web_state_;
+    const raw_ref<TabHelperAttacher> attacher_;
+  };
+
+  TabHelperAttacher(web::WebState* web_state, TabHelperFilter filter_flags)
+      : web_state_(CHECK_DEREF(web_state)),
+        profile_(CHECK_DEREF(
+            ProfileIOS::FromBrowserState(web_state->GetBrowserState()))),
+        is_off_the_record_(profile_->IsOffTheRecord()),
+        for_prerender_(IsTabHelperFilterMaskSet(filter_flags,
+                                                TabHelperFilter::kPrerender)),
+        for_lens_overlay_(
+            IsTabHelperFilterMaskSet(filter_flags,
+                                     TabHelperFilter::kLensOverlay)),
+        for_reader_mode_(
+            IsTabHelperFilterMaskSet(filter_flags,
+                                     TabHelperFilter::kReaderMode)) {}
+
+  // APIs for usage in `AttachTabHelpers`.
+
+  // Creates a tab helper with all of the provided arguments initialized.
+  // Example usage:
+  //     TabHelperAttacher attacher;
+  //     attacher.Create<TabHelper>(arg1, arg2);
+  template <typename T, typename... Args>
+  void Create(Args&&... args) {
+    TypedTabHelperAttacher<T>(true, web_state_,
+                              *this)(std::forward<Args>(args)...);
+  }
+
+  // Creates a tab helper with all of the provided arguments initialized if the
+  // provided condition is met.
+  // Example usage:
+  //     TabHelperAttacher attacher;
+  //     attacher.CreateWhen<TabHelper>(condition, arg1, arg2);
+  template <typename T, typename... Args>
+  void CreateWhen(bool condition, Args&&... args) {
+    TypedTabHelperAttacher<T>(condition, web_state_,
+                              *this)(std::forward<Args>(args)...);
+  }
+
+  // Creates a tab helper if the provided condition is met. Requires providing
+  // additional specification to initialize deferred arguments.
+  // Example usage:
+  //     TabHelperAttacher attacher;
+  //     attacher.CreateDeferredWhen<TabHelper>(condition)
+  //             .With([&](){ return service; });
+  //     attacher.CreateDeferredWhen<TabHelper2>(condition)
+  //             .WithFactory<TabHelperServiceFactory>(profile);
+  template <typename T>
+  TypedTabHelperAttacher<T> CreateDeferredWhen(bool condition) {
+    return TypedTabHelperAttacher<T>(condition, web_state_, *this);
+  }
+
+  // Getters for properties that might be needed for complex conditions.
+  ProfileIOS* GetProfile() const { return &*profile_; }
+  bool IsOffTheRecord() const { return is_off_the_record_; }
+  bool IsForPrerender() const { return for_prerender_; }
+  bool IsForLensOverlay() const { return for_lens_overlay_; }
+  bool IsForReaderMode() const { return for_reader_mode_; }
+  bool IsForStandardNavigation() const {
+    return !for_lens_overlay_ && !for_reader_mode_;
+  }
+  bool IsNotInTabHelperFilter() const {
+    return !for_prerender_ && !for_lens_overlay_ && !for_reader_mode_;
+  }
+
+ private:
+  const raw_ref<web::WebState> web_state_;
+  const raw_ref<ProfileIOS> profile_;
+  const bool is_off_the_record_;
+  const bool for_prerender_;
+  const bool for_lens_overlay_;
+  const bool for_reader_mode_;
+};
+
 }  // namespace
 
 void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
-  ProfileIOS* const profile =
-      ProfileIOS::FromBrowserState(web_state->GetBrowserState());
-  const bool is_off_the_record = profile->IsOffTheRecord();
-  const bool for_prerender =
-      IsTabHelperFilterMaskSet(filter_flags, TabHelperFilter::kPrerender);
-  const bool for_lens_overlay =
-      IsTabHelperFilterMaskSet(filter_flags, TabHelperFilter::kLensOverlay);
-  const bool for_reader_mode =
-      IsTabHelperFilterMaskSet(filter_flags, TabHelperFilter::kReaderMode);
+  TabHelperAttacher attacher(web_state, filter_flags);
+  ProfileIOS* const profile = attacher.GetProfile();
+  ProfileIOS* original_profile = profile->GetOriginalProfile();
 
   // When adding a new tab helper, please consider whether it should be filtered
   // out when the web_state is presented in the following context:
   // - kPrerender: Tab helpers that are not required or not used for navigation
   // should be filtered out.
-  // - kBottomSheet: The bottom sheet is overlayed on the BVC, tab helpers that
-  // rely on BVC's toolbar entry points should be filtered out.
+  // - kLensOverlay: Tab helpers that are required for Lens UI.
+  // - kReaderMode: Tab helpers that are required for Reader Mode UI.
   //
   // When a web state is presented by the BVC, AttachTabHelpers is called to
   // attach all tab helpers. (the method is idempotent, so it is okay to call it
   // multiple times for the same WebState).
 
-  OverlayRequestQueue::CreateForWebState(web_state);
+  attacher.Create<OverlayRequestQueue>();
+  attacher.Create<VoiceSearchNavigationTabHelper>();
+  attacher.Create<InfoBarManagerImpl>();
+  attacher.Create<FindTabHelper>();
 
-  VoiceSearchNavigationTabHelper::CreateForWebState(web_state);
-  InfoBarManagerImpl::CreateForWebState(web_state);
-
-  FindTabHelper::CreateForWebState(web_state);
-
-  if (!for_reader_mode) {
-    if (!for_lens_overlay) {
-      HistoryTabHelper::CreateForWebState(web_state);
-    } else if (base::FeatureList::IsEnabled(kLensOverlayNavigationHistory)) {
-      HistoryTabHelper::CreateForWebState(web_state);
-      HistoryTabHelper::FromWebState(web_state)->EnableLensURLProcessing();
-    }
+  bool should_create_history_tab_helper =
+      !attacher.IsForReaderMode() &&
+      (!attacher.IsForLensOverlay() ||
+       base::FeatureList::IsEnabled(kLensOverlayNavigationHistory));
+  attacher.CreateWhen<HistoryTabHelper>(should_create_history_tab_helper);
+  if (should_create_history_tab_helper && attacher.IsForLensOverlay()) {
+    HistoryTabHelper::FromWebState(web_state)->EnableLensURLProcessing();
   }
 
-  LoadTimingTabHelper::CreateForWebState(web_state);
-  OverscrollActionsTabHelper::CreateForWebState(web_state);
-  IOSTaskTabHelper::CreateForWebState(web_state);
-  if (!for_lens_overlay && !for_reader_mode &&
-      IsPriceAlertsEligibleForWebState(web_state)) {
-    ShoppingPersistedDataTabHelper::CreateForWebState(web_state);
-  }
-  commerce::CommerceTabHelper::CreateForWebState(
-      web_state, is_off_the_record,
+  attacher.Create<LoadTimingTabHelper>();
+  attacher.Create<OverscrollActionsTabHelper>();
+  attacher.Create<IOSTaskTabHelper>();
+
+  attacher.CreateWhen<ShoppingPersistedDataTabHelper>(
+      attacher.IsForStandardNavigation() &&
+      IsPriceAlertsEligibleForWebState(web_state));
+
+  attacher.Create<commerce::CommerceTabHelper>(
+      attacher.IsOffTheRecord(),
       commerce::ShoppingServiceFactory::GetForProfile(profile));
 
-  if (!for_lens_overlay && !for_reader_mode && !for_prerender) {
-    // Since LensTabHelper listens for a custom scheme, it needs to be
-    // created before AppLauncherTabHelper, which will filter out
-    // unhandled schemes.
-    LensTabHelper::CreateForWebState(web_state);
-    if (IsLensOverlayAvailable(profile->GetPrefs())) {
-      LensOverlayTabHelper::CreateForWebState(web_state);
-    }
-    AppLauncherTabHelper::CreateForWebState(
-        web_state, [[AppLauncherAbuseDetector alloc] init], is_off_the_record);
+  // Since LensTabHelper listens for a custom scheme, it needs to be
+  // created before AppLauncherTabHelper, which will filter out
+  // unhandled schemes.
+  attacher.CreateWhen<LensTabHelper>(attacher.IsNotInTabHelperFilter());
+  attacher.CreateWhen<LensOverlayTabHelper>(
+      attacher.IsNotInTabHelperFilter() &&
+      IsLensOverlayAvailable(profile->GetPrefs()));
+  attacher
+      .CreateDeferredWhen<AppLauncherTabHelper>(
+          attacher.IsNotInTabHelperFilter())
+      .With([&]() { return [[AppLauncherAbuseDetector alloc] init]; },
+            [&]() { return attacher.IsOffTheRecord(); });
+  attacher
+      .CreateDeferredWhen<ReaderModeTabHelper>(
+          attacher.IsNotInTabHelperFilter() && IsReaderModeAvailable())
+      .WithFactory<DistillerServiceFactory>(profile);
 
-    if (IsReaderModeAvailable()) {
-      ReaderModeTabHelper::CreateForWebState(
-          web_state, DistillerServiceFactory::GetForProfile(profile));
-    }
-  }
-  security_interstitials::IOSBlockingPageTabHelper::CreateForWebState(
-      web_state);
-  password_manager::WellKnownChangePasswordTabHelper::CreateForWebState(
-      web_state);
+  attacher.Create<security_interstitials::IOSBlockingPageTabHelper>();
+  attacher.Create<password_manager::WellKnownChangePasswordTabHelper>();
+  attacher.Create<InvalidUrlTabHelper>();
 
-  InvalidUrlTabHelper::CreateForWebState(web_state);
+  attacher.CreateWhen<InfobarOverlayRequestInserter>(
+      attacher.IsForStandardNavigation(), &DefaultInfobarOverlayRequestFactory);
+  attacher.CreateWhen<InfobarOverlayTabHelper>(
+      attacher.IsForStandardNavigation());
+  attacher.CreateWhen<TranslateOverlayTabHelper>(
+      attacher.IsForStandardNavigation());
 
-  if (!for_lens_overlay && !for_reader_mode) {
-    InfobarOverlayRequestInserter::CreateForWebState(
-        web_state, &DefaultInfobarOverlayRequestFactory);
-    InfobarOverlayTabHelper::CreateForWebState(web_state);
-    TranslateOverlayTabHelper::CreateForWebState(web_state);
-  }
+  attacher.CreateWhen<FontSizeTabHelper>(ios::provider::IsTextZoomEnabled());
+  attacher.CreateWhen<BreadcrumbManagerTabHelper>(
+      breadcrumbs::IsEnabled(GetApplicationContext()->GetLocalState()));
 
-  if (ios::provider::IsTextZoomEnabled()) {
-    FontSizeTabHelper::CreateForWebState(web_state);
-  }
+  attacher.Create<AnnotationsTabHelper>();
 
-  if (breadcrumbs::IsEnabled(GetApplicationContext()->GetLocalState())) {
-    BreadcrumbManagerTabHelper::CreateForWebState(web_state);
-  }
+  // Safe Browsing helpers are not created for reader mode.
+  attacher
+      .CreateDeferredWhen<SafeBrowsingQueryManager>(!attacher.IsForReaderMode())
+      .WithFactory<SafeBrowsingClientFactory>(profile);
+  attacher
+      .CreateDeferredWhen<SafeBrowsingTabHelper>(!attacher.IsForReaderMode())
+      .WithFactory<SafeBrowsingClientFactory>(profile);
+  attacher.CreateWhen<SafeBrowsingUrlAllowList>(!attacher.IsForReaderMode());
+  attacher.CreateWhen<SafeBrowsingUnsafeResourceContainer>(
+      !attacher.IsForReaderMode());
 
-  AnnotationsTabHelper::CreateForWebState(web_state);
+  attacher.Create<TailoredSecurityTabHelper>(
+      TailoredSecurityServiceFactory::GetForProfile(profile));
+  attacher.Create<PolicyUrlBlockingTabHelper>();
 
-  if (!for_reader_mode) {
-    SafeBrowsingClient* client =
-        SafeBrowsingClientFactory::GetForProfile(profile);
-    SafeBrowsingQueryManager::CreateForWebState(web_state, client);
-    SafeBrowsingTabHelper::CreateForWebState(web_state, client);
-    SafeBrowsingUrlAllowList::CreateForWebState(web_state);
-    SafeBrowsingUnsafeResourceContainer::CreateForWebState(web_state);
-  }
+  // Supervised user services are not supported for off-the-record.
+  attacher.CreateWhen<SupervisedUserURLFilterTabHelper>(
+      !attacher.IsOffTheRecord());
+  attacher.CreateWhen<SupervisedUserErrorContainer>(!attacher.IsOffTheRecord());
 
-  TailoredSecurityTabHelper::CreateForWebState(
-      web_state, TailoredSecurityServiceFactory::GetForProfile(profile));
+  attacher.Create<ImageFetchTabHelper>();
+  attacher.Create<NewTabPageTabHelper>();
+  attacher.Create<ShareFileDownloadTabHelper>();
+  attacher.Create<OptimizationGuideTabHelper>();
+  attacher.Create<OptimizationGuideValidationTabHelper>();
 
-  PolicyUrlBlockingTabHelper::CreateForWebState(web_state);
-
-  // Supervised user services are not supported for off-the-record browser
-  // state.
-  if (!is_off_the_record) {
-    SupervisedUserURLFilterTabHelper::CreateForWebState(web_state);
-    SupervisedUserErrorContainer::CreateForWebState(web_state);
-  }
-
-  ImageFetchTabHelper::CreateForWebState(web_state);
-
-  NewTabPageTabHelper::CreateForWebState(web_state);
-  ShareFileDownloadTabHelper::CreateForWebState(web_state);
-  OptimizationGuideTabHelper::CreateForWebState(web_state);
-  OptimizationGuideValidationTabHelper::CreateForWebState(web_state);
-  ProfileIOS* original_profile = profile->GetOriginalProfile();
-  favicon::WebFaviconDriver::CreateForWebState(
-      web_state, ios::FaviconServiceFactory::GetForProfile(
-                     original_profile, ServiceAccessType::IMPLICIT_ACCESS));
-  history::WebStateTopSitesObserver::CreateForWebState(
-      web_state, ios::TopSitesFactory::GetForProfile(original_profile).get());
+  attacher.Create<favicon::WebFaviconDriver>(
+      ios::FaviconServiceFactory::GetForProfile(
+          original_profile, ServiceAccessType::IMPLICIT_ACCESS));
+  attacher.Create<history::WebStateTopSitesObserver>(
+      ios::TopSitesFactory::GetForProfile(original_profile).get());
 
   // Depends on favicon::WebFaviconDriver, must be created after it.
-  SearchEngineTabHelper::CreateForWebState(web_state);
+  attacher.Create<SearchEngineTabHelper>();
 
   ukm::InitializeSourceUrlRecorderForWebState(web_state);
 
   // Download tab helpers.
-  DownloadManagerTabHelper::CreateForWebState(web_state);
-  SafariDownloadTabHelper::CreateForWebState(web_state);
-  VcardTabHelper::CreateForWebState(web_state);
-  DocumentDownloadTabHelper::CreateForWebState(web_state);
+  attacher.Create<DownloadManagerTabHelper>();
+  attacher.Create<SafariDownloadTabHelper>();
+  attacher.Create<VcardTabHelper>();
+  attacher.Create<DocumentDownloadTabHelper>();
 
-  PageloadForegroundDurationTabHelper::CreateForWebState(web_state);
+  attacher.Create<PageloadForegroundDurationTabHelper>();
 
-  LookalikeUrlTabHelper::CreateForWebState(web_state);
-  LookalikeUrlTabAllowList::CreateForWebState(web_state);
-  LookalikeUrlContainer::CreateForWebState(web_state);
+  attacher.Create<LookalikeUrlTabHelper>();
+  attacher.Create<LookalikeUrlTabAllowList>();
+  attacher.Create<LookalikeUrlContainer>();
 
   // TODO(crbug.com/41360476): pre-rendered WebState have lots of unnecessary
   // tab helpers for historical reasons. For the moment, AttachTabHelpers
   // allows to inhibit the creation of some of them.
-  if (!for_lens_overlay && !for_reader_mode && !for_prerender) {
-    SadTabTabHelper::CreateForWebState(
-        web_state, SadTabTabHelper::kDefaultRepeatFailureInterval);
-    SnapshotTabHelper::CreateForWebState(web_state);
-    SnapshotSourceTabHelper::CreateForWebState(web_state);
-    PagePlaceholderTabHelper::CreateForWebState(web_state);
+  attacher.CreateWhen<SadTabTabHelper>(
+      attacher.IsNotInTabHelperFilter(),
+      SadTabTabHelper::kDefaultRepeatFailureInterval);
+  attacher.CreateWhen<SnapshotTabHelper>(attacher.IsNotInTabHelperFilter());
+  attacher.CreateWhen<SnapshotSourceTabHelper>(
+      attacher.IsNotInTabHelperFilter());
+  attacher.CreateWhen<PagePlaceholderTabHelper>(
+      attacher.IsNotInTabHelperFilter());
+  attacher.CreateWhen<PasswordTabHelper>(attacher.IsNotInTabHelperFilter());
+  attacher.CreateWhen<AutofillBottomSheetTabHelper>(
+      attacher.IsNotInTabHelperFilter());
+  attacher.CreateWhen<AutofillTabHelper>(attacher.IsNotInTabHelperFilter());
 
-    PasswordTabHelper::CreateForWebState(web_state);
-    AutofillBottomSheetTabHelper::CreateForWebState(web_state);
-    AutofillTabHelper::CreateForWebState(web_state);
-  }
+  attacher.CreateWhen<ChromeIOSTranslateClient>(
+      attacher.IsNotInTabHelperFilter(),
+      InfoBarManagerImpl::FromWebState(web_state));
 
-  if (!for_lens_overlay && !for_prerender && !for_reader_mode) {
-    ChromeIOSTranslateClient::CreateForWebState(
-        web_state, InfoBarManagerImpl::FromWebState(web_state));
-  }
-
-  if (!for_lens_overlay && !for_reader_mode) {
+  // Special case for use of GetOrCreateForWebState.
+  if (!attacher.IsForStandardNavigation()) {
     InfobarBadgeTabHelper::GetOrCreateForWebState(web_state);
-    if (base::FeatureList::IsEnabled(kIOSPasskeyShim)) {
-      PasskeyTabHelper::CreateForWebState(
-          web_state, IOSPasskeyModelFactory::GetForProfile(profile),
-          std::make_unique<IOSChromePasskeyClient>(web_state));
-    }
   }
 
-  if (base::FeatureList::IsEnabled(kSharedHighlightingIOS)) {
-    LinkToTextTabHelper::CreateForWebState(web_state);
-  }
+  attacher
+      .CreateDeferredWhen<PasskeyTabHelper>(
+          attacher.IsForStandardNavigation() &&
+          base::FeatureList::IsEnabled(kIOSPasskeyShim))
+      .With([&]() { return IOSPasskeyModelFactory::GetForProfile(profile); },
+            [&]() {
+              return std::make_unique<IOSChromePasskeyClient>(web_state);
+            });
 
-  WebSelectionTabHelper::CreateForWebState(web_state);
+  attacher.CreateWhen<LinkToTextTabHelper>(
+      base::FeatureList::IsEnabled(kSharedHighlightingIOS));
 
-  WebPerformanceMetricsTabHelper::CreateForWebState(web_state);
+  attacher.Create<WebSelectionTabHelper>();
+  attacher.Create<WebPerformanceMetricsTabHelper>();
+  attacher.Create<OfflinePageTabHelper>(
+      ReadingListModelFactory::GetForProfile(profile));
+  attacher.Create<PermissionsTabHelper>();
+  attacher.Create<RepostFormTabHelper>();
+  attacher.Create<HttpsOnlyModeUpgradeTabHelper>(
+      profile->GetPrefs(), HttpsUpgradeServiceFactory::GetForProfile(profile));
+  attacher.Create<HttpsOnlyModeContainer>();
 
-  OfflinePageTabHelper::CreateForWebState(
-      web_state, ReadingListModelFactory::GetForProfile(profile));
-  PermissionsTabHelper::CreateForWebState(web_state);
+  attacher
+      .CreateDeferredWhen<TypedNavigationUpgradeTabHelper>(
+          !attacher.IsForPrerender() &&
+          base::FeatureList::IsEnabled(
+              omnibox::kDefaultTypedNavigationsToHttps))
+      .WithFactory<HttpsUpgradeServiceFactory>(profile);
 
-  RepostFormTabHelper::CreateForWebState(web_state);
+  attacher.CreateWhen<PriceNotificationsTabHelper>(
+      attacher.IsForStandardNavigation() && !attacher.IsOffTheRecord());
 
-  HttpsOnlyModeUpgradeTabHelper::CreateForWebState(
-      web_state, profile->GetPrefs(),
-      HttpsUpgradeServiceFactory::GetForProfile(profile));
-  HttpsOnlyModeContainer::CreateForWebState(web_state);
+  attacher
+      .CreateDeferredWhen<ContextualPanelTabHelper>(
+          attacher.IsForStandardNavigation() && IsContextualPanelEnabled())
+      .With([&]() {
+        ContextualPanelModelService* model_service =
+            ContextualPanelModelServiceFactory::GetForProfile(profile);
+        // Revert back to model_service->models() once DanglingUntriaged is
+        // removed.
+        std::map<ContextualPanelItemType,
+                 raw_ptr<ContextualPanelModel, DanglingUntriaged>>
+            models;
+        for (auto const& [key, val] : model_service->models()) {
+          models.emplace(key, val);
+        }
+        return models;
+      });
 
-  if (!for_prerender &&
-      base::FeatureList::IsEnabled(omnibox::kDefaultTypedNavigationsToHttps)) {
-    TypedNavigationUpgradeTabHelper::CreateForWebState(
-        web_state, HttpsUpgradeServiceFactory::GetForProfile(profile));
-  }
+  auto* optimization_guide_decider =
+      OptimizationGuideServiceFactory::GetForProfile(profile);
+  attacher.CreateWhen<AboutThisSiteTabHelper>(
+      attacher.IsForStandardNavigation() && !attacher.IsOffTheRecord() &&
+          IsAboutThisSiteFeatureEnabled() && optimization_guide_decider,
+      optimization_guide_decider);
 
-  if (!for_lens_overlay && !for_reader_mode && !is_off_the_record) {
-    PriceNotificationsTabHelper::CreateForWebState(web_state);
-  }
+  attacher.CreateWhen<DataSharingTabHelper>(
+      !attacher.IsOffTheRecord() && !attacher.IsForPrerender() &&
+      data_sharing::features::ShouldInterceptUrlForVersioning());
 
-  if (!for_lens_overlay && !for_reader_mode && IsContextualPanelEnabled()) {
-    ContextualPanelModelService* model_service =
-        ContextualPanelModelServiceFactory::GetForProfile(profile);
-    // Revert back to model_service->models() once DanglingUntriaged is removed.
-    std::map<ContextualPanelItemType,
-             raw_ptr<ContextualPanelModel, DanglingUntriaged>>
-        models;
-    for (auto const& [key, val] : model_service->models()) {
-      models.emplace(key, val);
-    }
-    ContextualPanelTabHelper::CreateForWebState(web_state, models);
-  }
+  attacher.Create<EditMenuTabHelper>();
 
-  if (!for_lens_overlay && !for_reader_mode && !is_off_the_record &&
-      IsAboutThisSiteFeatureEnabled()) {
-    if (auto* optimization_guide_decider =
-            OptimizationGuideServiceFactory::GetForProfile(profile)) {
-      AboutThisSiteTabHelper::CreateForWebState(web_state,
-                                                optimization_guide_decider);
-    }
-  }
+  attacher.CreateWhen<MiniMapTabHelper>(
+      !attacher.IsOffTheRecord() &&
+      base::FeatureList::IsEnabled(kIOSMiniMapUniversalLink));
 
-  if (!is_off_the_record && !for_prerender) {
-    if (data_sharing::features::ShouldInterceptUrlForVersioning()) {
-      DataSharingTabHelper::CreateForWebState(web_state);
-    }
-  }
+  attacher.CreateWhen<BwgTabHelper>(!attacher.IsOffTheRecord() &&
+                                    !attacher.IsForPrerender() &&
+                                    IsPageActionMenuEnabled());
 
-  EditMenuTabHelper::CreateForWebState(web_state);
+  attacher.Create<WebViewProxyTabHelper>();
 
-  if (!is_off_the_record &&
-      base::FeatureList::IsEnabled(kIOSMiniMapUniversalLink)) {
-    MiniMapTabHelper::CreateForWebState(web_state);
-  }
-
-  if (!is_off_the_record && !for_prerender && IsPageActionMenuEnabled()) {
-    BwgTabHelper::CreateForWebState(web_state);
-  }
-
-  WebViewProxyTabHelper::CreateForWebState(web_state);
-
-  if (!for_prerender && !for_reader_mode && !for_lens_overlay &&
+  attacher.CreateWhen<ChooseFileTabHelper>(
+      attacher.IsNotInTabHelperFilter() &&
       (base::FeatureList::IsEnabled(kIOSChooseFromDrive) ||
-       base::FeatureList::IsEnabled(kIOSCustomFileUploadMenu))) {
-    ChooseFileTabHelper::CreateForWebState(web_state);
-  }
-  if (!for_prerender && !for_reader_mode && !for_lens_overlay &&
-      base::FeatureList::IsEnabled(kIOSCustomFileUploadMenu)) {
-    LastTapLocationTabHelper::CreateForWebState(web_state);
-  }
+       base::FeatureList::IsEnabled(kIOSCustomFileUploadMenu)));
+  attacher.CreateWhen<LastTapLocationTabHelper>(
+      attacher.IsNotInTabHelperFilter() &&
+      base::FeatureList::IsEnabled(kIOSCustomFileUploadMenu));
 }
