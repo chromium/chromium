@@ -30,6 +30,7 @@ class ChromiumTrustedVaultClientBackend final
   CancelDialogCallback Reauthentication(
       id<SystemIdentity> identity,
       trusted_vault::SecurityDomainId security_domain_id,
+      trusted_vault::TrustedVaultUserActionTriggerForUMA trigger,
       UIViewController* presenting_view_controller,
       CompletionBlock completion) final;
   CancelDialogCallback FixDegradedRecoverability(
@@ -75,6 +76,7 @@ TrustedVaultClientBackend::CancelDialogCallback
 ChromiumTrustedVaultClientBackend::Reauthentication(
     id<SystemIdentity> identity,
     trusted_vault::SecurityDomainId security_domain_id,
+    trusted_vault::TrustedVaultUserActionTriggerForUMA trigger,
     UIViewController* presenting_view_controller,
     CompletionBlock completion) {
   NOTREACHED();

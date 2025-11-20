@@ -77,6 +77,7 @@ class MockTrustedVaultClientBackend : public TrustedVaultClientBackend {
               Reauthentication,
               (id<SystemIdentity> identity,
                trusted_vault::SecurityDomainId security_domain_id,
+               trusted_vault::TrustedVaultUserActionTriggerForUMA trigger,
                UIViewController* presenting_view_controller,
                CompletionBlock completion),
               (override));

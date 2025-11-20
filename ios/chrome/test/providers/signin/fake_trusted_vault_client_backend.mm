@@ -102,6 +102,7 @@ FakeTrustedVaultClientBackend::CancelDialogCallback
 FakeTrustedVaultClientBackend::Reauthentication(
     id<SystemIdentity> identity,
     trusted_vault::SecurityDomainId security_domain_id,
+    trusted_vault::TrustedVaultUserActionTriggerForUMA trigger,
     UIViewController* presenting_view_controller,
     CompletionBlock completion) {
   DCHECK(!view_controller_);

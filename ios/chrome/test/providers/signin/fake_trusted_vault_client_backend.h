@@ -29,6 +29,7 @@ class FakeTrustedVaultClientBackend final : public TrustedVaultClientBackend {
   CancelDialogCallback Reauthentication(
       id<SystemIdentity> identity,
       trusted_vault::SecurityDomainId security_domain_id,
+      trusted_vault::TrustedVaultUserActionTriggerForUMA trigger,
       UIViewController* presenting_view_controller,
       CompletionBlock completion) final;
   CancelDialogCallback FixDegradedRecoverability(
