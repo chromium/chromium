@@ -5,10 +5,8 @@
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "save_passwords_instructional_overlay_view_controller_unittest.mm",
     "save_passwords_instructional_view_controller_unittest.mm",
     "tips_module_view_unittest.mm",
-    "use_autofill_instructional_overlay_view_controller_unittest.mm",
     "use_autofill_instructional_view_controller_unittest.mm",
   ]
   deps = [

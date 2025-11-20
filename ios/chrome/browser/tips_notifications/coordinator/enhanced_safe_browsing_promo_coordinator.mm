@@ -23,6 +23,7 @@
   EnhancedSafeBrowsingPromoViewController* _viewController;
   EnhancedSafeBrowsingPromoInstructionsViewController*
       _instructionsViewController;
+  UINavigationController* _instructionsNavigationController;
   BOOL _showSettingsOnDismiss;
 }
 
@@ -45,6 +46,7 @@
 - (void)stop {
   _instructionsViewController.actionHandler = nil;
   _instructionsViewController = nil;
+  _instructionsNavigationController = nil;
   ProceduralBlock completion = nil;
   if (_showSettingsOnDismiss) {
     completion = ^{
@@ -68,8 +70,15 @@
   _instructionsViewController =
       [[EnhancedSafeBrowsingPromoInstructionsViewController alloc] init];
   _instructionsViewController.actionHandler = self;
-  _instructionsViewController.presentationController.delegate = self;
-  [_viewController presentViewController:_instructionsViewController
+  _instructionsNavigationController = [[UINavigationController alloc]
+      initWithRootViewController:_instructionsViewController];
+  _instructionsViewController.navigationItem.rightBarButtonItem =
+      [[UIBarButtonItem alloc]
+          initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
+                               target:self
+                               action:@selector(dismissInstructions)];
+  _instructionsNavigationController.presentationController.delegate = self;
+  [_viewController presentViewController:_instructionsNavigationController
                                 animated:YES
                               completion:nil];
 }
@@ -85,19 +94,13 @@
   [self dismissScreen];
 }
 
-- (void)confirmationAlertDismissAction {
-  [_instructionsViewController.presentingViewController
-      dismissViewControllerAnimated:YES
-                         completion:nil];
-  _instructionsViewController = nil;
-}
-
 #pragma mark - UIAdaptivePresentationControllerDelegate
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
   if (presentationController.presentedViewController ==
-      _instructionsViewController) {
+      _instructionsNavigationController) {
+    _instructionsNavigationController = nil;
     _instructionsViewController = nil;
   } else {
     // The UINavigationController was dismissed.
@@ -106,6 +109,13 @@
 }
 
 #pragma mark - Private methods
+
+// Dismisses the instruction sheet.
+- (void)dismissInstructions {
+  [_instructionsNavigationController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:nil];
+}
 
 // Sends a command that will stop this coordinator and dismiss the screen.
 - (void)dismissScreen {

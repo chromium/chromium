@@ -4,8 +4,6 @@
 
 source_set("ui") {
   sources = [
-    "save_passwords_instructional_overlay_view_controller.h",
-    "save_passwords_instructional_overlay_view_controller.mm",
     "save_passwords_instructional_view_controller.h",
     "save_passwords_instructional_view_controller.mm",
     "tips_magic_stack_consumer.h",
@@ -15,8 +13,6 @@ source_set("ui") {
     "tips_module_state.mm",
     "tips_module_view.h",
     "tips_module_view.mm",
-    "use_autofill_instructional_overlay_view_controller.h",
-    "use_autofill_instructional_overlay_view_controller.mm",
     "use_autofill_instructional_view_controller.h",
     "use_autofill_instructional_view_controller.mm",
   ]
