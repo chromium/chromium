@@ -44,7 +44,6 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
-#include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "components/consent_auditor/consent_auditor.h"
@@ -558,7 +557,6 @@ void ConsolidatedConsentScreen::ExitScreenWithAcceptedResult() {
     RecordRecoveryOptinResult(context()->recovery_setup);
   }
   StartupUtils::MarkEulaAccepted();
-  network_portal_detector::GetInstance()->Enable();
 
   const DemoSetupController* const demo_setup_controller =
       WizardController::default_controller()->demo_setup_controller();

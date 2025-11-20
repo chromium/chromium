@@ -23,7 +23,6 @@
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/version_updater/version_updater.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/ash/net/network_portal_detector_test_impl.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/policy/handlers/minimum_version_policy_test_helpers.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
@@ -217,10 +216,6 @@ IN_PROC_BROWSER_TEST_F(UpdateRequiredScreenTest, TestCaptivePortal) {
   std::string wifi_path =
       network_state_test_helper_->ConfigureWiFi(shill::kStateRedirectFound);
 
-  network_portal_detector::InitializeForTesting(
-      new NetworkPortalDetectorTestImpl());
-  network_portal_detector::GetInstance()->Enable();
-
   static_cast<UpdateRequiredScreen*>(
       WizardController::default_controller()->current_screen())
       ->SetErrorMessageDelayForTesting(base::Milliseconds(10));
@@ -255,7 +250,6 @@ IN_PROC_BROWSER_TEST_F(UpdateRequiredScreenTest, TestCaptivePortal) {
 
   test::OobeJS().ExpectVisiblePath(kUpdateRequiredScreen);
   test::OobeJS().ExpectVisiblePath(kUpdateProcessStep);
-  network_portal_detector::Shutdown();
 }
 
 IN_PROC_BROWSER_TEST_F(UpdateRequiredScreenTest, TestEolReached) {

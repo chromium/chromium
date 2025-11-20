@@ -105,7 +105,6 @@ static_library("test_support") {
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/components/login/auth",
     "//chromeos/ash/components/login/auth/public:authpublic",
-    "//chromeos/ash/components/network/portal_detector",
     "//chromeos/ash/components/osauth/public",
     "//components/account_id",
     "//components/policy/core/common:test_support",

@@ -146,7 +146,6 @@
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/login/auth/stub_authenticator_builder.h"
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
-#include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/tpm/prepare_tpm.h"
@@ -546,7 +545,6 @@ bool MaybeShowNewTermsAfterUpdateToFlex(Profile* profile) {
   // mark it here.
   if (ash::InstallAttributes::Get()->IsEnterpriseManaged()) {
     StartupUtils::MarkEulaAccepted();
-    network_portal_detector::GetInstance()->Enable();
     return false;
   }
   if (!IsRevenUpdatedToFlex()) {

@@ -40,7 +40,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
-#include "chromeos/ash/components/network/portal_detector/mock_network_portal_detector.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/prefs/pref_service.h"
@@ -70,18 +69,9 @@ class ScopedNetworkInitializer {
  public:
   ScopedNetworkInitializer() {
     network_handler_test_helper_.AddDefaultProfiles();
-    // Will be deleted in `network_portal_detector::Shutdown()`.
-    MockNetworkPortalDetector* mock_network_portal_detector =
-        new MockNetworkPortalDetector();
-    network_portal_detector::SetNetworkPortalDetector(
-        mock_network_portal_detector);
-
-    EXPECT_CALL(*mock_network_portal_detector, IsEnabled())
-        .Times(AnyNumber())
-        .WillRepeatedly(testing::Return(false));
   }
 
-  ~ScopedNetworkInitializer() { network_portal_detector::Shutdown(); }
+  ~ScopedNetworkInitializer() = default;
 
  private:
   // Initializes NetworkHandler and required DBus clients.

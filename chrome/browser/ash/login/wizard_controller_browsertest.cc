@@ -66,7 +66,6 @@
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
-#include "chrome/browser/ash/login/test/network_portal_detector_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_configuration_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"
@@ -74,7 +73,6 @@
 #include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 #include "chrome/browser/ash/login/test/test_predicate_waiter.h"
 #include "chrome/browser/ash/login/test/user_auth_config.h"
-#include "chrome/browser/ash/net/network_portal_detector_test_impl.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_controller.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_state.h"
@@ -668,18 +666,6 @@ class WizardControllerFlowTest : public WizardControllerTest {
         policy::AutoEnrollmentTypeChecker::kUnifiedStateDeterminationNever);
   }
 
-  void InitNetworkPortalDetector() {
-    network_portal_detector_ = new NetworkPortalDetectorTestImpl();
-    network_portal_detector::InitializeForTesting(network_portal_detector_);
-
-    // Default networks defaults to "eth1" in tests.
-    const NetworkState* default_network =
-        NetworkHandler::Get()->network_state_handler()->DefaultNetwork();
-    ASSERT_TRUE(default_network);
-    network_portal_detector_->SetDefaultNetworkForTesting(
-        default_network->guid());
-  }
-
   void WaitUntilTimezoneResolved() {
     base::RunLoop loop;
     if (!WizardController::default_controller()
@@ -722,8 +708,6 @@ class WizardControllerFlowTest : public WizardControllerTest {
 
     CheckCurrentScreen(NetworkScreenView::kScreenId);
     EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
-
-    InitNetworkPortalDetector();
 
     EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
     mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
@@ -806,8 +790,6 @@ class WizardControllerFlowTest : public WizardControllerTest {
   network::TestURLLoaderFactory test_url_loader_factory_;
 
  private:
-  raw_ptr<NetworkPortalDetectorTestImpl, DanglingUntriaged>
-      network_portal_detector_ = nullptr;
   std::unique_ptr<base::AutoReset<bool>> branded_build_override_;
 };
 
@@ -876,8 +858,6 @@ IN_PROC_BROWSER_TEST_F(WizardControllerFlowTest,
 }
 
 IN_PROC_BROWSER_TEST_F(WizardControllerFlowTest, ControlFlowSkipUpdateEnroll) {
-  InitNetworkPortalDetector();
-
   CheckCurrentScreen(WelcomeView::kScreenId);
   EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(0);
   EXPECT_CALL(*mock_network_screen_, ShowImpl()).Times(1);

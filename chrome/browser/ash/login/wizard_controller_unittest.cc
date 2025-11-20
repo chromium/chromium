@@ -23,7 +23,6 @@
 #include "chrome/browser/ash/login/enrollment/mock_enrollment_launcher.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/wizard_context.h"
-#include "chrome/browser/ash/net/network_portal_detector_test_impl.h"
 #include "chrome/browser/ash/net/rollback_network_config/fake_rollback_network_config.h"
 #include "chrome/browser/ash/net/rollback_network_config/rollback_network_config_service.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
@@ -238,7 +237,6 @@ class WizardControllerTestBase : public ::testing::Test {
         std::make_unique<ScopedEnrollmentLauncherFactoryOverrideForTesting>(
             base::BindRepeating(FakeEnrollmentLauncher::Create,
                                 &mock_enrollment_launcher_));
-    network_portal_detector::InitializeForTesting(&network_portal_detector_);
     chromeos::TpmManagerClient::InitializeFake();
     StatsReportingController::Initialize(
         TestingBrowserProcess::GetGlobal()->local_state());
@@ -258,7 +256,6 @@ class WizardControllerTestBase : public ::testing::Test {
     auth_events_recorder_.reset();
     StatsReportingController::Shutdown();
     chromeos::TpmManagerClient::Shutdown();
-    network_portal_detector::InitializeForTesting(nullptr);
     enrollment_launcher_factory_.reset();
     OobeConfigurationClient::Shutdown();
     DBusThreadManager::Shutdown();
@@ -321,7 +318,6 @@ class WizardControllerTestBase : public ::testing::Test {
   ash::system::ScopedFakeStatisticsProvider statistics_provider_;
   std::unique_ptr<ScopedEnrollmentLauncherFactoryOverrideForTesting>
       enrollment_launcher_factory_;
-  NetworkPortalDetectorTestImpl network_portal_detector_;
   std::unique_ptr<AuthEventsRecorder> auth_events_recorder_;
   std::unique_ptr<WallpaperControllerClientImpl> wallpaper_controller_client_;
 };

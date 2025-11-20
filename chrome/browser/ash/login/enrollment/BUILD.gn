@@ -165,7 +165,6 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//chromeos/ash/components/install_attributes:test_support",
     "//chromeos/ash/components/network:test_support",
-    "//chromeos/ash/components/network/portal_detector:test_support",
     "//chromeos/ash/components/system",
     "//components/policy/core/common:common_constants",
     "//components/prefs:test_support",
