@@ -14,7 +14,8 @@
 namespace one_time_tokens {
 
 OneTimeTokenServiceImpl::OneTimeTokenServiceImpl(SmsOtpBackend* sms_otp_backend)
-    : sms_{false, sms_otp_backend}, cache_(kCacheDurationForOldTokens) {}
+    : sms_{.has_pending_request = false, .backend = sms_otp_backend},
+      cache_(kCacheDurationForOldTokens) {}
 OneTimeTokenServiceImpl::~OneTimeTokenServiceImpl() = default;
 
 void OneTimeTokenServiceImpl::GetRecentOneTimeTokens(Callback callback) {
