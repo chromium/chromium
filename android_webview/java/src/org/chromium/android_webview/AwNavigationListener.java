@@ -28,4 +28,6 @@ public interface AwNavigationListener {
     void onPageDOMContentLoadedEventFired(AwPage page);
 
     void onFirstContentfulPaint(AwPage page, long loadTimeUs);
+
+    void onPerformanceMark(AwPage page, String markName, long markNameMs);
 }

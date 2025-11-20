@@ -119,6 +119,7 @@ import org.chromium.content_public.browser.MessagePort;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.NavigationHistory;
+import org.chromium.content_public.browser.Page;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.SelectionPopupController;
@@ -4119,6 +4120,11 @@ public class AwContents implements SmartClipProvider {
     /** Returns the AwContents instance associated with |webContents|, or NULL */
     public static AwContents fromWebContents(WebContents webContents) {
         return AwContentsJni.get().fromWebContents(webContents);
+    }
+
+    @CalledByNative
+    private void onPerformanceMark(Page page, String markName, long markTimeMs) {
+        mNavigationClient.onPerformanceMark(page, markName, markTimeMs);
     }
 
     // -------------------------------------------------------------------------------------------

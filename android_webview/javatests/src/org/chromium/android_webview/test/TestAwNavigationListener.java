@@ -146,4 +146,8 @@ public class TestAwNavigationListener implements AwNavigationListener {
     public void onFirstContentfulPaint(AwPage page, long loadTimeUs) {
         mFirstContentfulPaintLoadTimes.add(loadTimeUs);
     }
+
+    // TODO: crbug.com/432696062 - Add test for Performance Mark
+    @Override
+    public void onPerformanceMark(AwPage page, String markName, long markNameMs) {}
 }

@@ -114,4 +114,8 @@ class SupportLibWebViewNavigationClientAdapter implements AwNavigationListener {
                 BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
                         new SupportLibWebViewPageAdapter(page)));
     }
+
+    // TODO: crbug.com/432696062 - Implement AndroidX methods
+    @Override
+    public void onPerformanceMark(AwPage page, String markName, long markNameMs) {}
 }

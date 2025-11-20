@@ -349,6 +349,10 @@ class AwContents : public FindHelper::Listener,
   // AwSafeBrowsingAllowlistSetObserver overrides
   void OnSafeBrowsingAllowListSet() override;
 
+  // AwWebPerformanceMetricsObserver related methods
+  void OnPerformanceMark(std::string mark_name,
+                         const base::TimeDelta& mark_time);
+
  private:
   // Geolocation API support
   void ShowGeolocationPrompt(const GURL& origin, PermissionCallback);

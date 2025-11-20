@@ -145,4 +145,8 @@ class SupportLibWebViewNavigationListenerAdapter implements AwNavigationListener
                                         new SupportLibWebViewPageAdapter(page)),
                                 loadTimeUs));
     }
+
+    // TODO: crbug.com/432696062 - Implement AndroidX methods
+    @Override
+    public void onPerformanceMark(AwPage page, String markName, long markNameMs) {}
 }

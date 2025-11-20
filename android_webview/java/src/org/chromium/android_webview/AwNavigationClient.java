@@ -138,6 +138,13 @@ public class AwNavigationClient implements Page.PageDeletionListener {
         }
     }
 
+    public void onPerformanceMark(Page page, String markName, long markTimeMs) {
+        AwPage awPage = getAwPageFor(page);
+        for (AwNavigationListener listener : mNavigationListeners) {
+            listener.onPerformanceMark(awPage, markName, markTimeMs);
+        }
+    }
+
     public AwNavigation getOrUpdateAwNavigationFor(NavigationHandle navigation) {
         WeakReference<AwNavigation> awNavigationRef = mNavigationMap.get(navigation);
         AwPage awPage =

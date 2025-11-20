@@ -5,6 +5,7 @@
 #include "android_webview/browser/page_load_metrics/page_load_metrics_initialize.h"
 
 #include "android_webview/browser/page_load_metrics/aw_gws_page_load_metrics_observer.h"
+#include "android_webview/browser/page_load_metrics/aw_web_performance_metrics_observer.h"
 #include "android_webview/browser/page_load_metrics/service_level_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/features.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
@@ -59,6 +60,7 @@ void PageLoadMetricsEmbedder::RegisterObservers(
   tracker->AddObserver(std::make_unique<GWSAbandonedPageLoadMetricsObserver>());
   tracker->AddObserver(std::make_unique<AwGWSPageLoadMetricsObserver>());
   tracker->AddObserver(std::make_unique<ServiceLevelPageLoadMetricsObserver>());
+  tracker->AddObserver(std::make_unique<AwWebPerformanceMetricsObserver>());
 }
 
 bool PageLoadMetricsEmbedder::IsNewTabPageUrl(const GURL& url) {
