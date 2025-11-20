@@ -24,7 +24,7 @@ class SupervisedUserVerificationPage
     : public security_interstitials::SecurityInterstitialPage {
  public:
   // The status of the interstitial used for metrics recording purposes.
-  enum class Status { SHOWN, REAUTH_STARTED, REAUTH_COMPLETED };
+  enum class Status { kShown, kReauthStarted, kReauthCompleted };
 
   // Whether the user is in a suitable auth state for this page to be shown.
   static bool ShouldShowPage(
