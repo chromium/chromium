@@ -1418,11 +1418,23 @@ Error SqlPersistentStore::Backend::TrimOverlappingBlobs(
                  dict.Add("end", end);
                });
 
+  const bool zero_length_write = offset == end;
+  if (zero_length_write) {
+    if (!truncate) {
+      // A zero-length, non-truncating write is a no-op.
+      return Error::kOk;
+    }
+    if (end == 0) {
+      // If the end is zero, there are no blobs to overlap with.
+      return Error::kOk;
+    }
+  }
+
   // First, delete all blobs that are fully contained within the new write
   // range.
   // If the write has zero length, no blobs can be fully contained within it, so
   // this can be skipped.
-  if (offset != end) {
+  if (!zero_length_write) {
     sql::Statement statement(db_.GetCachedStatement(
         SQL_FROM_HERE, GetQuery(Query::kTrimOverlappingBlobs_DeleteContained)));
     statement.BindInt64(0, res_id.value());
@@ -1445,9 +1457,7 @@ Error SqlPersistentStore::Backend::TrimOverlappingBlobs(
   //   [6, 9) vs [2, 6): Not hit.
   std::vector<int64_t> blob_ids_to_be_removed;
   std::vector<BufferWithStart> new_blobs;
-  // A zero-length, non-truncating write is a no-op. For all other writes, we
-  // must handle partially overlapping blobs.
-  if (!(offset == end && !truncate)) {
+  {
     sql::Statement statement(db_.GetCachedStatement(
         SQL_FROM_HERE,
         GetQuery(Query::kTrimOverlappingBlobs_SelectOverlapping)));

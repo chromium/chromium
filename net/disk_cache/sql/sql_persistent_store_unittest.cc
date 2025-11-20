@@ -2546,7 +2546,7 @@ TEST_F(SqlPersistentStoreTest, TruncateExistingBlobsInvalidDataRangeOverflow) {
   // This write will truncate the entry, triggering TruncateExistingBlobs,
   // which should detect the overflow.
   EXPECT_EQ(WriteEntryData(kKey, res_id, /*old_body_end=*/kInitialData.size(),
-                           /*offset=*/0, /*buffer=*/nullptr, /*buf_len=*/0,
+                           /*offset=*/1, /*buffer=*/nullptr, /*buf_len=*/0,
                            /*truncate=*/true),
             SqlPersistentStore::Error::kInvalidData);
 }
