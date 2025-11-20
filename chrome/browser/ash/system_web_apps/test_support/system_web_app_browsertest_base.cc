@@ -15,11 +15,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -146,10 +146,11 @@ GURL SystemWebAppBrowserTestBase::GetStartUrl() {
 
 size_t SystemWebAppBrowserTestBase::GetSystemWebAppBrowserCount(
     SystemWebAppType type) {
-  auto* browser_list = BrowserList::GetInstance();
-  return std::ranges::count_if(*browser_list, [&](Browser* browser) {
-    return ash::IsBrowserForSystemWebApp(browser, type);
-  });
+  auto browsers = ui_test_utils::FindMatchingBrowsers(
+      [type](BrowserWindowInterface* browser) {
+        return ash::IsBrowserForSystemWebApp(browser, type);
+      });
+  return browsers.size();
 }
 
 void SystemWebAppBrowserTestBase::SetSystemWebAppInstallation(

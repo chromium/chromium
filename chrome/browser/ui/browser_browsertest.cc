@@ -1421,12 +1421,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, RestorePinnedTabs) {
   ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
 
   // Find the new browser.
-  BrowserList* browsers = BrowserList::GetInstance();
-  auto new_browser_iter = std::ranges::find_if_not(
-      *browsers, [this](Browser* b) { return b == browser(); });
-  ASSERT_NE(browsers->end(), new_browser_iter);
-
-  Browser* new_browser = *new_browser_iter;
+  Browser* const new_browser = ui_test_utils::GetBrowserNotInSet({browser()});
 
   // We should get back an additional tab for the app, and another for the
   // default home page.

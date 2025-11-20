@@ -34,6 +34,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/prefs/pref_service.h"
@@ -120,10 +121,11 @@ std::string TestValueName(
 }
 
 size_t VisibleBrowserCount() {
-  auto* list = BrowserList::GetInstance();
-  return std::ranges::count_if(*list, [](Browser* browser) {
-    return browser && browser->window() && browser->window()->IsVisible();
-  });
+  auto visible_browsers =
+      ui_test_utils::FindMatchingBrowsers([](BrowserWindowInterface* browser) {
+        return browser->GetWindow() && browser->GetWindow()->IsVisible();
+      });
+  return visible_browsers.size();
 }
 
 }  // namespace

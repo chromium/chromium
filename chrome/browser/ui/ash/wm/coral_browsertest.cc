@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/ash/birch/birch_test_util.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
@@ -188,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, PRE_PostLoginLaunch) {
 // Launches a browser with the expected tabs when the post login coral chip is
 // clicked.
 IN_PROC_BROWSER_TEST_F(CoralBrowserTest, PostLoginLaunch) {
-  ASSERT_TRUE(BrowserList::GetInstance()->empty());
+  ASSERT_EQ(chrome::GetTotalBrowserCount(), 0u);
 
   Profile* profile = ProfileManager::GetActiveUserProfile();
 
@@ -211,11 +212,14 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, PostLoginLaunch) {
   // TODO(zxdan): These tabs and apps are currently hardcoded in ash for
   // `switches::kForceBirchFakeCoral`. Update to use a test coral provider
   // instead.
-  BrowserList* browsers = BrowserList::GetInstance();
-  ASSERT_EQ(browsers->size(), 4u);
+  ASSERT_EQ(chrome::GetTotalBrowserCount(), 4u);
+  const std::vector<BrowserWindowInterface*> browsers =
+      ui_test_utils::FindMatchingBrowsers(
+          [](BrowserWindowInterface* browser) { return true; });
   // Verify the chrome browser.
-  EXPECT_TRUE(std::ranges::any_of(*browsers, [](Browser* browser) {
-    TabStripModel* tab_strip_model = browser->tab_strip_model();
+  EXPECT_TRUE(std::ranges::any_of(browsers, [](BrowserWindowInterface*
+                                                   browser) {
+    TabStripModel* const tab_strip_model = browser->GetTabStripModel();
     return tab_strip_model->count() == 3 &&
            tab_strip_model->GetWebContentsAt(0)->GetVisibleURL() ==
                GURL("https://www.reddit.com/") &&
@@ -226,15 +230,16 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, PostLoginLaunch) {
   }));
 
   // Verify the PWA.
-  EXPECT_TRUE(std::ranges::any_of(*browsers, [](Browser* browser) {
-    if (browser->type() != Browser::TYPE_APP) {
-      return false;
-    }
-    TabStripModel* tab_strip_model = browser->tab_strip_model();
-    return tab_strip_model->count() == 1 &&
-           tab_strip_model->GetWebContentsAt(0)->GetVisibleURL() ==
-               GURL("https://www.nba.com/");
-  }));
+  EXPECT_TRUE(
+      std::ranges::any_of(browsers, [](BrowserWindowInterface* browser) {
+        if (browser->GetType() != BrowserWindowInterface::TYPE_APP) {
+          return false;
+        }
+        TabStripModel* const tab_strip_model = browser->GetTabStripModel();
+        return tab_strip_model->count() == 1 &&
+               tab_strip_model->GetWebContentsAt(0)->GetVisibleURL() ==
+                   GURL("https://www.nba.com/");
+      }));
 
   // Tests that the files and settings SWAs are launched and have their previous
   // session window bounds.

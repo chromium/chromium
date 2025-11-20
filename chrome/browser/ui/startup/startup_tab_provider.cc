@@ -24,17 +24,18 @@
 #include "chrome/browser/profile_resetter/triggered_profile_resetter_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/shell_integration.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/tabs/pinned_tab_codec.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/webui/settings/reset_settings_handler.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -99,11 +100,17 @@ bool StripGoogleChromeScheme(base::FilePath::StringViewType& arg) {
 
 // Attempts to find an existing, non-empty tabbed browser for this profile.
 bool ProfileHasOtherTabbedBrowser(Profile* profile) {
-  return std::ranges::any_of(
-      *BrowserList::GetInstance(), [profile](Browser* browser) {
-        return browser->profile() == profile && browser->is_type_normal() &&
-               !browser->tab_strip_model()->empty();
+  bool found = false;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [profile, &found](BrowserWindowInterface* browser) {
+        if (browser->GetProfile() == profile &&
+            browser->GetType() == BrowserWindowInterface::TYPE_NORMAL &&
+            !browser->GetTabStripModel()->empty()) {
+          found = true;
+        }
+        return !found;
       });
+  return found;
 }
 
 // Validates the URL whether it is allowed to be opened at launching. Dangerous
@@ -452,10 +459,9 @@ StartupTabProviderImpl::ParseTabFromCommandLineArg(
     if (url.is_valid()) {
       return {CommandLineTabsPresent::kYes, std::move(url)};
     }
-  }
-  // Otherwise, fall through to treating it as a URL; stripping off the
-  // `kGoogleChromeScheme` if present.
-    else if (!StripGoogleChromeScheme(arg) || !arg.empty()) {
+  } else if (!StripGoogleChromeScheme(arg) || !arg.empty()) {
+    // Otherwise, fall through to treating it as a URL; stripping off the
+    // `kGoogleChromeScheme` if present.
     // This will create a file URL or a regular URL.
     const base::FilePath arg_path(arg);
     GURL url(arg_path.MaybeAsASCII());
