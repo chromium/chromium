@@ -91,7 +91,7 @@ bssl::UniquePtr<EVP_PKEY> EVP_PKEYFromEcPoint(const EC_GROUP* group,
   return pkey;
 }
 
-std::vector<uint8_t> EvpToUncompressedEcForm(EVP_PKEY* key) {
+std::vector<uint8_t> EvpToUncompressedX962Point(EVP_PKEY* key) {
   OpenSSLErrStackTracer err_tracer(FROM_HERE);
 
   std::vector<uint8_t> ec_buffer(255);
@@ -221,8 +221,8 @@ std::vector<uint8_t> PrivateKey::ToSubjectPublicKeyInfo() const {
   return ExportEVPPublicKey(key_.get());
 }
 
-std::vector<uint8_t> PrivateKey::ToUncompressedForm() const {
-  return EvpToUncompressedEcForm(key_.get());
+std::vector<uint8_t> PrivateKey::ToUncompressedX962Point() const {
+  return EvpToUncompressedX962Point(key_.get());
 }
 
 std::array<uint8_t, 32> PrivateKey::ToEd25519PublicKey() const {
@@ -365,8 +365,8 @@ std::vector<uint8_t> PublicKey::ToSubjectPublicKeyInfo() const {
   return ExportEVPPublicKey(key_.get());
 }
 
-std::vector<uint8_t> PublicKey::ToUncompressedForm() const {
-  return EvpToUncompressedEcForm(key_.get());
+std::vector<uint8_t> PublicKey::ToUncompressedX962Point() const {
+  return EvpToUncompressedX962Point(key_.get());
 }
 
 std::vector<uint8_t> PublicKey::GetRsaExponent() const {

@@ -233,7 +233,7 @@ std::vector<uint8_t> VirtualFidoDevice::PrivateKey::Sign(
 
 std::vector<uint8_t> VirtualFidoDevice::PrivateKey::GetX962PublicKey() const {
   if (key_.IsEc()) {
-    return key_.ToUncompressedForm();
+    return key_.ToUncompressedX962Point();
   } else {
     NOTREACHED();
   }

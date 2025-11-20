@@ -515,9 +515,9 @@ void GCMEncryptionProviderTest::TestEncryptionRoundTrip(
   // Creating the public keys will be done asynchronously.
   base::RunLoop().RunUntilIdle();
 
-  std::string public_key(base::as_string_view(key->ToUncompressedForm()));
+  std::string public_key(base::as_string_view(key->ToUncompressedX962Point()));
   std::string server_public_key(
-      base::as_string_view(server_key->ToUncompressedForm()));
+      base::as_string_view(server_key->ToUncompressedX962Point()));
   ASSERT_GT(public_key.size(), 0u);
   ASSERT_GT(server_public_key.size(), 0u);
 
@@ -606,7 +606,7 @@ void GCMEncryptionProviderTest::TestEncryptionNoKeys(
   // Creating the public keys will be done asynchronously.
   base::RunLoop().RunUntilIdle();
 
-  std::string public_key(base::as_string_view(key->ToUncompressedForm()));
+  std::string public_key(base::as_string_view(key->ToUncompressedX962Point()));
 
   ASSERT_NO_FATAL_FAILURE(
       Encrypt(authorized_entity, public_key, auth_secret, kExampleMessage));

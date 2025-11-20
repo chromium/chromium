@@ -46,7 +46,7 @@ bool CreateEncryptedPayloadForTesting(std::string_view payload,
   size_t record_size;
   std::string ciphertext;
 
-  std::vector<uint8_t> public_key = key.ToUncompressedForm();
+  std::vector<uint8_t> public_key = key.ToUncompressedX962Point();
   if (!cryptographer.Encrypt(peer_public_key, base::as_string_view(public_key),
                              shared_secret, auth_secret, salt, payload,
                              &record_size, &ciphertext)) {

@@ -78,7 +78,7 @@ class CRYPTO_EXPORT PrivateKey {
 
   // Exports an EC public key in X9.62 uncompressed form. It is illegal to call
   // this on a non-EC PrivateKey.
-  std::vector<uint8_t> ToUncompressedForm() const;
+  std::vector<uint8_t> ToUncompressedX962Point() const;
 
   // Exports an Ed25519 public key in RFC 8032 format. It is illegal to call
   // this if !IsEd25519().
@@ -158,7 +158,7 @@ class CRYPTO_EXPORT PublicKey {
 
   // Exports an EC public key in X9.62 uncompressed form. It is illegal to call
   // this on a non-EC PublicKey.
-  std::vector<uint8_t> ToUncompressedForm() const;
+  std::vector<uint8_t> ToUncompressedX962Point() const;
 
   // Export the components (e, n) of an RSA public key, as big-endian integers.
   // It is illegal to call these on a non-RSA PublicKey.

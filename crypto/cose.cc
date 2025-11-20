@@ -89,7 +89,7 @@ std::vector<uint8_t> RsaToCoseKey(const EVP_PKEY* key) {
 std::vector<uint8_t> EcP256ToCoseKey(const keypair::PublicKey& key) {
   // COSE's non-standard public key encoding is the x and y halves of the
   // standard X9.62 uncompressed encoding: 04 || x || y.
-  std::vector<uint8_t> uncompressed = key.ToUncompressedForm();
+  std::vector<uint8_t> uncompressed = key.ToUncompressedX962Point();
   CHECK_EQ(uncompressed.size(), 1 + 2 * kEcP256FieldElementLength);
   auto [x, y] =
       base::span(uncompressed).subspan(1u).split_at(kEcP256FieldElementLength);

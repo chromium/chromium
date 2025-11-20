@@ -47,7 +47,7 @@ struct Keypair {
   // Generate a new random keypair.
   Keypair()
       : priv(crypto::keypair::PrivateKey::GenerateEcP256()),
-        pub(base::as_string_view(priv.ToUncompressedForm())) {}
+        pub(base::as_string_view(priv.ToUncompressedX962Point())) {}
 
   crypto::keypair::PrivateKey priv;
   std::string pub;

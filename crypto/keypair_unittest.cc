@@ -106,7 +106,7 @@ TEST(Keypair, PublicKeyPredicates) {
 
 TEST(Keypair, X962UncompressedForm) {
   auto expect_uncompressed_length = [](const PrivateKey& key, size_t len) {
-    auto uncompressed = key.ToUncompressedForm();
+    auto uncompressed = key.ToUncompressedX962Point();
     EXPECT_EQ(uncompressed.size(), len);
   };
 
@@ -123,7 +123,7 @@ TEST(Keypair, ImportUncompressed) {
     auto p256_priv = PrivateKey::GenerateEcP256();
     auto p256_pub = PublicKey::FromPrivateKey(p256_priv);
     auto p256_import =
-        PublicKey::FromEcP256Point(p256_priv.ToUncompressedForm());
+        PublicKey::FromEcP256Point(p256_priv.ToUncompressedX962Point());
     ASSERT_TRUE(p256_import);
     EXPECT_EQ(p256_pub.ToSubjectPublicKeyInfo(),
               p256_import->ToSubjectPublicKeyInfo());
@@ -133,7 +133,7 @@ TEST(Keypair, ImportUncompressed) {
     auto p384_priv = PrivateKey::GenerateEcP384();
     auto p384_pub = PublicKey::FromPrivateKey(p384_priv);
     auto p384_import =
-        PublicKey::FromEcP384Point(p384_priv.ToUncompressedForm());
+        PublicKey::FromEcP384Point(p384_priv.ToUncompressedX962Point());
     ASSERT_TRUE(p384_import);
     EXPECT_EQ(p384_pub.ToSubjectPublicKeyInfo(),
               p384_import->ToSubjectPublicKeyInfo());
@@ -143,7 +143,7 @@ TEST(Keypair, ImportUncompressed) {
     auto p521_priv = PrivateKey::GenerateEcP521();
     auto p521_pub = PublicKey::FromPrivateKey(p521_priv);
     auto p521_import =
-        PublicKey::FromEcP521Point(p521_priv.ToUncompressedForm());
+        PublicKey::FromEcP521Point(p521_priv.ToUncompressedX962Point());
     ASSERT_TRUE(p521_import);
     EXPECT_EQ(p521_pub.ToSubjectPublicKeyInfo(),
               p521_import->ToSubjectPublicKeyInfo());
