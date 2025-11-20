@@ -153,6 +153,10 @@ inline constexpr char kPrivacySandboxActivityTypeRecord2[] =
 inline constexpr char kPrivacySandboxAllowNoticeFor3PCBlockedTrial[] =
     "privacy_sandbox.allow_notice_for_3PC_blocked_trial";
 
+// Unsynced boolean that controls showing the Mode B rollback UI.
+inline constexpr char kShowRollbackUiModeB[] =
+    "tracking_protection.show_rollback_ui_mode_b";
+
 }  // namespace prefs
 
 namespace privacy_sandbox {

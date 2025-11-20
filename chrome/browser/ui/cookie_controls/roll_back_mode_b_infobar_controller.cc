@@ -11,7 +11,7 @@
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_manager.h"
 #include "components/prefs/pref_service.h"
-#include "components/privacy_sandbox/tracking_protection_prefs.h"
+#include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"

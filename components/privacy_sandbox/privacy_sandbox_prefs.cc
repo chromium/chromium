@@ -68,6 +68,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 #if BUILDFLAG(IS_ANDROID)
   registry->RegisterListPref(prefs::kPrivacySandboxActivityTypeRecord2);
 #endif
+  // TODO: b/462419925 - Deprecate this pref post-Mode B rollback.
+  registry->RegisterBooleanPref(prefs::kShowRollbackUiModeB, false);
   // Register prefs for tracking protection.
   tracking_protection::RegisterProfilePrefs(registry);
 }

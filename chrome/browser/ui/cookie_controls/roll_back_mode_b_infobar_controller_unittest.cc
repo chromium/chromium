@@ -9,7 +9,7 @@
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/prefs/pref_service.h"
-#include "components/privacy_sandbox/tracking_protection_prefs.h"
+#include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_navigation_handle.h"
 
