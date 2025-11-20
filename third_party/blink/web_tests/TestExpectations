@@ -3024,7 +3024,6 @@ crbug.com/355428699 external/wpt/scroll-to-text-fragment/find-range-from-text-di
 # `*-blink-rel` builders don't.
 crbug.com/626703 external/wpt/css/css-fonts/parsing/font-variant-invalid.html [ Crash Pass ]
 crbug.com/626703 external/wpt/html/dom/elements/global-attributes/dir-auto-form-associated.window.html [ Crash Failure ]
-crbug.com/626703 external/wpt/css/css-page/page-name-unnamed-trailing-001-print.html [ Crash Failure Timeout ]
 
 # This test is flaky on Linux only
 crbug.com/342630979 [ Linux ] external/wpt/css/css-page/background-image-only-for-print.html [ Failure Pass ]
@@ -5033,6 +5032,7 @@ crbug.com/1494858 external/wpt/css/css-page/page-name-flex-004-print.html [ Fail
 crbug.com/1494838 external/wpt/css/css-page/page-name-img-003-print.html [ Failure ]
 crbug.com/1494838 external/wpt/css/css-page/page-name-img-004-print.html [ Failure ]
 crbug.com/1494847 external/wpt/css/css-page/page-name-margin-001-print.html [ Failure ]
+crbug.com/462233640 external/wpt/css/css-page/page-name-unnamed-trailing-001-print.html [ Crash Failure Timeout ]
 crbug.com/1494863 external/wpt/css/css-page/page-name-zero-height-001-print.html [ Failure ]
 crbug.com/346088869 external/wpt/css/css-page/page-size-011-print.html [ Pass Timeout ]
 
