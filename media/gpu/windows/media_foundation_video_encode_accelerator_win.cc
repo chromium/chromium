@@ -747,6 +747,9 @@ void MediaFoundationVideoEncodeAccelerator::QueueInput(
     result.shared_image_token = frame->shared_image()->mailbox();
     pending_input_queue_.push_back(result);
     auto d3d_device = dxgi_device_manager_->GetDevice();
+    auto shared_d3d_device = command_buffer_helper_->GetSharedImageStub()
+                                 ->shared_context_state()
+                                 ->GetD3D11Device();
     if (!d3d_device) {
       NotifyErrorStatus({EncoderStatus::Codes::kSystemAPICallError,
                          "Failed to get D3D device manager"});
@@ -756,12 +759,12 @@ void MediaFoundationVideoEncodeAccelerator::QueueInput(
     gpu_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(
-            &GenerateSampleFromSharedImageVideoFrame, frame,
-            std::move(d3d_device), command_buffer_helper_,
+            &GenerateResourceFromSharedImageVideoFrame, frame,
+            d3d_device.Get() == shared_d3d_device.Get(), command_buffer_helper_,
             base::BindPostTask(
                 task_runner_,
                 base::BindOnce(&MediaFoundationVideoEncodeAccelerator::
-                                   OnSharedImageSampleAvailable,
+                                   OnSharedImageResourceAvailable,
                                weak_ptr_))));
     return;
   }
@@ -2888,9 +2891,11 @@ void MediaFoundationVideoEncodeAccelerator::OnCommandBufferHelperAvailable(
   }
 }
 
-void MediaFoundationVideoEncodeAccelerator::OnSharedImageSampleAvailable(
+void MediaFoundationVideoEncodeAccelerator::OnSharedImageResourceAvailable(
     scoped_refptr<VideoFrame> frame,
-    ComMFSample sample,
+    ComPtr<IMFSample> sample,
+    std::optional<base::win::ScopedHandle> texture_handle,
+    std::optional<bool> has_been_copied,
     HRESULT hrResult) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (FAILED(hrResult)) {
@@ -2899,6 +2904,36 @@ void MediaFoundationVideoEncodeAccelerator::OnSharedImageSampleAvailable(
     NotifyErrorStatus({EncoderStatus::Codes::kSystemAPICallError,
                        "Failed to obtain shared image for encoding"});
     return;
+  }
+
+  if (!sample) {
+    CHECK(texture_handle.has_value());
+    ComPtr<ID3D11Device> d3d_device = dxgi_device_manager_->GetDevice();
+    Microsoft::WRL::ComPtr<ID3D11Device1> d3d_device1;
+    auto hr = d3d_device.As(&d3d_device1);
+    CHECK(SUCCEEDED(hr));
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> input_texture;
+    hr = d3d_device1->OpenSharedResource1(texture_handle->Get(),
+                                          IID_PPV_ARGS(&input_texture));
+    if (FAILED(hr)) {
+      return NotifyErrorStatus({EncoderStatus::Codes::kSystemAPICallError,
+                                "Failed to open shared handle"});
+    }
+
+    // If this texture is going to be fed directly to the encoder (NV12), create
+    // a copy of it. Hardware encoders are not guaranteed to be done with the
+    // texture when ProcessInput is finished.
+    bool need_perform_copy =
+        !has_been_copied &&
+        ((frame->format() == PIXEL_FORMAT_NV12 &&
+          frame->visible_rect().size() == input_visible_size_) ||
+         !frame->visible_rect().origin().IsOrigin());
+    sample = CreateSampleFromTexture(d3d_device, frame, input_texture,
+                                     need_perform_copy);
+    if (!sample) {
+      return NotifyErrorStatus({EncoderStatus::Codes::kSystemAPICallError,
+                                "Failed to create MF sample on d3d11 texture"});
+    }
   }
 
   // If the encoding client quickly supplies multiple shared texture

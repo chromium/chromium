@@ -240,10 +240,14 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   void OnCommandBufferHelperAvailable(
       const GetCommandBufferHelperResult& result);
 
-  // Called when a shared image backed sample is available
-  void OnSharedImageSampleAvailable(scoped_refptr<VideoFrame> frame,
-                                    ComMFSample sample,
-                                    HRESULT hr);
+  // Called when a shared image backed resource is available.
+  // See `ResourceAvailableCB` in mf_helpers.h for parameter details.
+  void OnSharedImageResourceAvailable(
+      scoped_refptr<VideoFrame> frame,
+      Microsoft::WRL::ComPtr<IMFSample> sample,
+      std::optional<base::win::ScopedHandle> texture_handle,
+      std::optional<bool> has_been_copied,
+      HRESULT hr);
 
   bool InitMFVideoProcessor();
 

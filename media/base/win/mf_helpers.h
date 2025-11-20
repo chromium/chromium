@@ -209,6 +209,13 @@ CreateDecryptConfigFromSample(IMFSample* mf_sample,
                               const GUID& key_id,
                               std::unique_ptr<DecryptConfig>* decrypt_config);
 
+// Create a MF sample on provided d3d11 texture.
+MEDIA_EXPORT Microsoft::WRL::ComPtr<IMFSample> CreateSampleFromTexture(
+    Microsoft::WRL::ComPtr<ID3D11Device> device,
+    scoped_refptr<VideoFrame> frame,
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> input_texture,
+    bool need_perform_copy);
+
 // Converts `frame` into an IMFSample, using an underlying D3D texture,
 // reading back from the GPU, or copying the frame contents as necessary.
 MEDIA_EXPORT HRESULT GenerateSampleFromVideoFrame(
@@ -220,16 +227,45 @@ MEDIA_EXPORT HRESULT GenerateSampleFromVideoFrame(
     IMFSample** sample_out);
 
 class CommandBufferHelper;
-typedef base::OnceCallback<void(scoped_refptr<VideoFrame> frame,
-                                Microsoft::WRL::ComPtr<IMFSample>,
-                                HRESULT)>
-    SampleAvailableCB;
 
-MEDIA_EXPORT void GenerateSampleFromSharedImageVideoFrame(
+// Parameters:
+//   frame: The original video frame.
+//   sample: The generated IMFSample, or nullptr if a shared handle is needed.
+//   texture_handle: Optional shared texture handle for cross-device scenarios.
+//                   When the texture producer and consumer are on different
+//                   devices, a shared texture handle is created to enable
+//                   texture sharing across devices. If both are on the same
+//                   device, this will be std::nullopt and the IMFSample is
+//                   used directly instead.
+//   texture_has_been_copied: Optional boolean indicating whether the texture
+//                            has already been copied and the texture can be fed
+//                            to the encoder directly.
+//   hr: Indicating success or failure of the resource generation.
+typedef base::OnceCallback<void(
     scoped_refptr<VideoFrame> frame,
-    Microsoft::WRL::ComPtr<ID3D11Device> d3d_device,
+    Microsoft::WRL::ComPtr<IMFSample> sample,
+    std::optional<base::win::ScopedHandle> texture_handle,
+    std::optional<bool> texture_has_been_copied,
+    HRESULT hr)>
+    ResourceAvailableCB;
+
+// Generates a resource (IMFSample or shared texture handle) from a shared
+// image backed video frame.
+//
+// Parameters:
+//   frame: The original video frame.
+//   use_same_device: Whether the texture producer and consumer are on the same
+//                    D3D device. When true, generates an IMFSample directly;
+//                    when false, creates a shared handle to enable texture
+//                    sharing across devices.
+//   command_buffer_helper: Helper for accessing shared images.
+//   sample_available_cb: Callback invoked when the resource is ready. See
+//                        ResourceAvailableCB for detailed reference.
+MEDIA_EXPORT void GenerateResourceFromSharedImageVideoFrame(
+    scoped_refptr<VideoFrame> frame,
+    bool use_same_device,
     scoped_refptr<CommandBufferHelper> command_buffer_helper,
-    SampleAvailableCB sample_available_cb);
+    ResourceAvailableCB sample_available_cb);
 
 }  // namespace media
 
