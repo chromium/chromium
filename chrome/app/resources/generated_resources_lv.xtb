@@ -6372,7 +6372,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5398497406011404839">Paslēptās grāmatzīmes</translation>
 <translation id="5398572795982417028">Lapas atsauce ārpus diapazona, ierobežojums: <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">Palīdz rakstīt īsu tekstu tīmeklim, piemēram, atsauksmes.</translation>
-<translation id="5400068721524309244">Kad tiek kopīgotas cilnes, to lapu saturs un vietrāži URL tiek nosūtīti uz Google serveriem.</translation>
 <translation id="5400196580536813396">Nav atļauts meklēt vai izmantot jūsu ierīcei pieejamos printerus</translation>
 <translation id="5400836586163650660">Pelēka</translation>
 <translation id="5402367795255837559">Braila raksts</translation>
@@ -7710,7 +7709,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6336038146639916978"><ph name="MANAGER" /> atspējoja ADB atkļūdošanu. Tādēļ 24 stundu laikā tiks atiestatīta jūsu <ph name="DEVICE_TYPE" /> ierīce. Dublējiet visus failus, ko vēlaties paturēt.</translation>
 <translation id="6336194758029258346">Lietotnes valoda</translation>
 <translation id="6337543438445391085">Datos tik un tā var būt iekļauta personas informācija. Noteikti pārskatiet eksportētos failus.</translation>
-<translation id="6338554362382763574">Pārlūkošanas laikā varat ērti uzdot Gemini jautājumus par cilnēm, ko kopīgojat.</translation>
 <translation id="6338968693068997776">USB ierīces pievienošana</translation>
 <translation id="6339668969738228384">Izveidot profilu kontam <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Internet Printing Protocol (IPPS)</translation>
@@ -8332,7 +8330,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
     <ph name="BEGIN_PARAGRAPH2" />Šo pakalpojumu varat izslēgt iestatījumos.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Linux dublējums atcelts</translation>
 <translation id="6782067259631821405">Nederīgs PIN</translation>
-<translation id="6782219876520622071">Lai uzlabotu Gemini, pārskatītāji var skatīt sarunas par kopīgotajām cilnēm.</translation>
 <translation id="6783036716881942511">Vai aizmirst šo ierīci?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive iestatījumi</translation>
 <translation id="6784523122863989144">Profils tiek atbalstīts</translation>

@@ -6382,7 +6382,6 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5398497406011404839">Piilotetut kirjanmerkit</translation>
 <translation id="5398572795982417028">Sivuviittaus on rajojen ulkopuolella. Raja on <ph name="MAXIMUM_PAGE" />.</translation>
 <translation id="539882584649709174">Auttaa kirjoittamaan lyhyitä verkkosisältöjä, kuten arvosteluja.</translation>
-<translation id="5400068721524309244">Kun välilehtiä jaetaan, niiden sivusisältö ja URL-osoitteet lähetetään Googlelle</translation>
 <translation id="5400196580536813396">Tulostimien, joihin laitteella on pääsy, etsiminen tai käyttäminen kielletty</translation>
 <translation id="5400836586163650660">Harmaa</translation>
 <translation id="5402367795255837559">Pistekirjoitus</translation>
@@ -7723,7 +7722,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6336038146639916978"><ph name="MANAGER" /> on poistanut ADB-virheenkorjauksen käytöstä. <ph name="DEVICE_TYPE" /> nollataan 24 tunnin kuluttua. Varmuuskopioi kaikki tiedostot, jotka haluat säilyttää.</translation>
 <translation id="6336194758029258346">Sovelluksen kieli</translation>
 <translation id="6337543438445391085">Osa henkilökohtaisista tiedoista voi silti sisältyä dataan. Tarkista viedyt tiedostot.</translation>
-<translation id="6338554362382763574">Voit helposti esittää Geminille kysymyksiä jakamistasi välilehdistä selailun aikana</translation>
 <translation id="6338968693068997776">USB-laitteen lisääminen</translation>
 <translation id="6339668969738228384">Luo uusi profiili käyttäjälle <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Internet-tulostusprotokolla (IPPS)</translation>
@@ -8341,7 +8339,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
     <ph name="BEGIN_PARAGRAPH2" />Voit poistaa tämän palvelun käytöstä asetuksissa.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Linux-varmuuskopiointi peruutettu</translation>
 <translation id="6782067259631821405">Virheellinen PIN-koodi</translation>
-<translation id="6782219876520622071">Tarkastajat voivat nähdä keskustelut jaetuista välilehdistä Geminin kehittämiseksi</translation>
 <translation id="6783036716881942511">Unohda tämä laite?</translation>
 <translation id="6783667414610055871">Microsoft OneDriven asetukset</translation>
 <translation id="6784523122863989144">Profiilia tuetaan</translation>

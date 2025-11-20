@@ -6370,7 +6370,6 @@
 <translation id="5398497406011404839">Сакривени обележивачи</translation>
 <translation id="5398572795982417028">Превелика референца за странице, ограничење је <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">Помаже вам да пишете кратак текст за ствари на вебу, попут рецензија</translation>
-<translation id="5400068721524309244">Када се деле картице, њихов садржај и URL-ови страница се шаљу Google-у</translation>
 <translation id="5400196580536813396">Није им дозвољено да траже или користе штампаче доступне уређају</translation>
 <translation id="5400836586163650660">Сива</translation>
 <translation id="5402367795255837559">Брајева азбука</translation>
@@ -7711,7 +7710,6 @@
 <translation id="6336038146639916978"><ph name="MANAGER" /> је онемогућио ADB отклањање грешака. То ће ресетовати <ph name="DEVICE_TYPE" /> за 24 сата. Направите резервне копије свих фајлова које желите да задржите.</translation>
 <translation id="6336194758029258346">Језик апликације</translation>
 <translation id="6337543438445391085">Неки лични подаци и даље могу да буду уврштени у податке. Обавезно прегледајте извезене фајлове.</translation>
-<translation id="6338554362382763574">Док прегледате, можете лако да постављате Gemini-ју питања о картицама које делите</translation>
 <translation id="6338968693068997776">Додајте USB уређај</translation>
 <translation id="6339668969738228384">Отвори нови профил за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Интернет протокол за штампање (IPPS)</translation>
@@ -8333,7 +8331,6 @@
     <ph name="BEGIN_PARAGRAPH2" />Можете да искључите ову услугу у Подешавањима.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Прављење резервне копије за Linux је отказано</translation>
 <translation id="6782067259631821405">Неважећи PIN</translation>
-<translation id="6782219876520622071">Конверзације о дељеним картицама могу да виде особе које прегледају ради побољшања Gemini-ја</translation>
 <translation id="6783036716881942511">Желите да заборавите овај уређај?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive подешавања</translation>
 <translation id="6784523122863989144">Профил је подржан</translation>

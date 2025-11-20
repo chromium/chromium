@@ -52,7 +52,7 @@
 <translation id="11947597112837849">نشانی ایمیل</translation>
 <translation id="1197267115302279827">انتقال نشانک‌ها</translation>
 <translation id="1197761954713363183">برگ تأیید گذرکلید بسته شد</translation>
-<translation id="1197933394627598677">نشان دادن «حالت مطالعه»</translation>
+<translation id="1197933394627598677">نشان دادن «حالت خواندن»</translation>
 <translation id="1201402288615127009">بعدی</translation>
 <translation id="1202892408424955784">محصولات پیگیری‌شده</translation>
 <translation id="1204037785786432551">بارگیری پیوند</translation>
@@ -1462,7 +1462,7 @@
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{۱ بارگیری در انتظار}one{# بارگیری در انتظار}other{# بارگیری در انتظار}}</translation>
 <translation id="7230064152164845085">رفتن به حالت «ناشناس»</translation>
 <translation id="7237724030342645845">‏«مدیر گذرواژه Google» از کار افتاده است</translation>
-<translation id="7239496616545081903">پنهان کردن «حالت مطالعه»</translation>
+<translation id="7239496616545081903">پنهان کردن «حالت خواندن»</translation>
 <translation id="72415438529550637">پیشنهاد گذرواژه بسته شد.</translation>
 <translation id="7248671827512403053">برنامه کاربردی</translation>
 <translation id="7253951228444156601">درحال بررسی گذرواژه‌ها…</translation>
@@ -1818,7 +1818,7 @@
 <translation id="8723453889042591629">به‌سرعت این صفحه را ترجمه کنید. برای ویرایش این میان‌بر، لمس کنید و نگه دارید.</translation>
 <translation id="8725066075913043281">تلاش دوباره</translation>
 <translation id="8731268612289859741">کد امنیتی</translation>
-<translation id="8738163682604285902">می‌خواهید «حالت مطالعه» را مشاهده کنید؟</translation>
+<translation id="8738163682604285902">می‌خواهید «حالت خواندن» را مشاهده کنید؟</translation>
 <translation id="8746155870861185046">هم‌رسانی مورد برجسته</translation>
 <translation id="8748850008226585750">محتوا پنهان است</translation>
 <translation id="8754448020583829686">کپی کردن بدون پیوند</translation>

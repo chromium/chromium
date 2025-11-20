@@ -6388,7 +6388,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5398497406011404839">Skjulte bogmærker</translation>
 <translation id="5398572795982417028">Sidereferencen er ugyldig. Grænsen er <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">Hjælper dig med at skrive tekst i kort format til nettet, f.eks. anmeldelser</translation>
-<translation id="5400068721524309244">Når faner deles, sendes deres sideindhold og webadresser til Google</translation>
 <translation id="5400196580536813396">Har ikke tilladelse til at søge efter eller anvende printere, der er tilgængelige for din enhed</translation>
 <translation id="5400836586163650660">Grå</translation>
 <translation id="5402367795255837559">Braille</translation>
@@ -7729,7 +7728,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> har deaktiveret ADB-fejlretning. Dette medfører, at din <ph name="DEVICE_TYPE" /> nulstilles om 24 timer. Sikkerhedskopiér de filer, du vil beholde.</translation>
 <translation id="6336194758029258346">Appsprog</translation>
 <translation id="6337543438445391085">Visse personlige oplysninger medtages muligvis stadig i dataene. Sørg for at gennemgå de eksporterede filer.</translation>
-<translation id="6338554362382763574">Du kan nemt stille Gemini spørgsmål om de faner, du deler, mens du browser</translation>
 <translation id="6338968693068997776">Tilføj USB-enhed</translation>
 <translation id="6339668969738228384">Opret en ny profil for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Internet Printing Protocol (IPPS)</translation>
@@ -8349,7 +8347,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
     <ph name="BEGIN_PARAGRAPH2" />Du kan deaktivere denne tjeneste i Indstillinger.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Linux-sikkerhedskopieringen blev annulleret</translation>
 <translation id="6782067259631821405">Ugyldig pinkode</translation>
-<translation id="6782219876520622071">Samtaler om delte faner kan blive set af menneskelige kontrollanter for at forbedre Gemini</translation>
 <translation id="6783036716881942511">Skal denne enhed glemmes?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive-indstillinger</translation>
 <translation id="6784523122863989144">Profilen understøttes</translation>

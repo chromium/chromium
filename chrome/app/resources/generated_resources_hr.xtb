@@ -6373,7 +6373,6 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5398497406011404839">Skrivene oznake</translation>
 <translation id="5398572795982417028">Referenca na stranicu izvan je granica, a granica je <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">Pomaže vam napisati kratki tekst za objavljivanje na webu, primjerice recenzije</translation>
-<translation id="5400068721524309244">Kad se kartice dijele, njihov sadržaj i URL-ovi šalju se Googleu</translation>
 <translation id="5400196580536813396">Nije dopušteno tražiti ili upotrebljavati pisače dostupne vašem uređaju</translation>
 <translation id="5400836586163650660">Siva</translation>
 <translation id="5402367795255837559">Brajica</translation>
@@ -7711,7 +7710,6 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6336038146639916978">Domena <ph name="MANAGER" /> onemogućila je ADB otklanjanje pogrešaka. Zbog toga će se uređaj <ph name="DEVICE_TYPE" /> vratiti na zadano za 24 sata. Sigurnosno kopirajte sve datoteke koje želite zadržati.</translation>
 <translation id="6336194758029258346">Jezik aplikacije</translation>
 <translation id="6337543438445391085">Neki osobni podaci i dalje mogu biti uključeni u podatke. Svakako pregledajte izvezene datoteke.</translation>
-<translation id="6338554362382763574">Dok pregledavate, možete jednostavno Geminiju postaviti pitanja o karticama koje dijelite</translation>
 <translation id="6338968693068997776">Dodavanje USB uređaja</translation>
 <translation id="6339668969738228384">Izradi novi profil za <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Internet Printing Protocol (IPPS)</translation>
@@ -8333,7 +8331,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
     <ph name="BEGIN_PARAGRAPH2" />Tu uslugu možete isključiti u postavkama.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Otkazano je sigurnosno kopiranje Linuxa</translation>
 <translation id="6782067259631821405">Nevažeći PIN</translation>
-<translation id="6782219876520622071">Razgovore o dijeljenim karticama mogu vidjeti pregledavatelji radi poboljšanja Geminija</translation>
 <translation id="6783036716881942511">Želite li zaboraviti ovaj uređaj?</translation>
 <translation id="6783667414610055871">Postavke Microsoft OneDrivea</translation>
 <translation id="6784523122863989144">Profil je podržan</translation>

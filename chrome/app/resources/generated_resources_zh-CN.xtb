@@ -1814,7 +1814,7 @@
 <translation id="2234876718134438132">同步功能和 Google 服务</translation>
 <translation id="2235344399760031203">已阻止第三方 Cookie</translation>
 <translation id="2236949375853147973">我的活动记录</translation>
-<translation id="2236963250883149540">要从 Chrome 自动填充功能中移除工作地址吗？</translation>
+<translation id="2236963250883149540">要从 Chrome 自动填充中移除工作地址吗？</translation>
 <translation id="2238379619048995541">频率状态数据</translation>
 <translation id="2240582393605484605">仅保存在此设备上的数据将保留在现有资料中</translation>
 <translation id="2241053333139545397">读取和更改您在一些网站上的数据</translation>
@@ -2386,7 +2386,7 @@
 <translation id="2624142942574147739">此网页正在使用您的摄像头和麦克风。</translation>
 <translation id="2626799779920242286">请稍后重试。</translation>
 <translation id="2627424346328942291">无法分享</translation>
-<translation id="2628258844236035475">要从 Chrome 自动填充功能中移除住址吗？</translation>
+<translation id="2628258844236035475">要从 Chrome 自动填充中移除住址吗？</translation>
 <translation id="2628770867680720336">要启用 ADB 调试，您必须将此 Chromebook 恢复出厂设置。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2629227353894235473">开发 Android 应用</translation>
 <translation id="2629437048544561682">清除画布</translation>
@@ -6360,7 +6360,6 @@
 <translation id="5398497406011404839">隐藏的书签</translation>
 <translation id="5398572795982417028">页面引用超出范围，上限为 <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">帮助您在网络上撰写评价等简短文字</translation>
-<translation id="5400068721524309244">分享标签页时，系统会将标签页的网页内容和网址发送给 Google</translation>
 <translation id="5400196580536813396">不得查找或使用您的设备可访问的打印机</translation>
 <translation id="5400836586163650660">灰色</translation>
 <translation id="5402367795255837559">盲文</translation>
@@ -7698,7 +7697,6 @@
 <translation id="6336038146639916978"><ph name="MANAGER" /> 已停用 ADB 调试。这会导致您的 <ph name="DEVICE_TYPE" /> 在 24 小时后重置。请备份您想保留的所有文件。</translation>
 <translation id="6336194758029258346">应用语言</translation>
 <translation id="6337543438445391085">某些个人信息可能仍会包含在数据中。请务必查看导出的文件。</translation>
-<translation id="6338554362382763574">您可以在浏览时轻松询问 Gemini 有关您正在分享的标签页的问题</translation>
 <translation id="6338968693068997776">添加 USB 设备</translation>
 <translation id="6339668969738228384">为 <ph name="USER_EMAIL_ADDRESS" /> 创建新的个人资料</translation>
 <translation id="6340071272923955280">互联网打印协议 (IPPS)</translation>
@@ -8316,7 +8314,6 @@
     <ph name="BEGIN_PARAGRAPH2" />您可在“设置”中关闭此服务。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">已取消 Linux 备份</translation>
 <translation id="6782067259631821405">PIN 码无效</translation>
-<translation id="6782219876520622071">为改进 Gemini，人工审核员可能会查看有关所分享标签页的对话</translation>
 <translation id="6783036716881942511">取消保存此设备？</translation>
 <translation id="6783667414610055871">Microsoft OneDrive 设置</translation>
 <translation id="6784523122863989144">个人资料必须受支持</translation>
@@ -8410,7 +8407,7 @@
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{要移除该标签页并删除该分组吗？}=1{要移除这些标签页并删除该分组吗？}other{要移除这些标签页并删除这些分组吗？}}</translation>
 <translation id="6833479554815567477">此标签页已从“<ph name="GROUP_NAME" />”组中移除 - 该组包含<ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">均衡（推荐）</translation>
-<translation id="6835624277262316125">保留工作地址有助于您在各项 Google 服务中畅享更便利的服务，例如在 Google 地图中获得更相关的搜索结果和更精确的路线。您可以在 <ph name="BEGIN_LINK" />Google 账号 <ph name="USERNAME" /><ph name="END_LINK" /> 中修改或删除地址。</translation>
+<translation id="6835624277262316125">保留工作地址可方便您畅享各项 Google 服务，例如在 Google 地图中获得更精确的搜索结果和路线。您可在 <ph name="BEGIN_LINK" />Google 账号 <ph name="USERNAME" /><ph name="END_LINK" /> 中修改或删除地址。</translation>
 <translation id="6835762382653651563">请连接到互联网，以便更新您的<ph name="DEVICE_TYPE" />。</translation>
 <translation id="6838992358006915573">放大镜跟随 ChromeVox 焦点移动</translation>
 <translation id="6839916869147598086">登录发生变化</translation>
@@ -9786,7 +9783,7 @@
     向附近的设备显示为“<ph name="QUICK_START_DEVICE_DISPLAY_NAME" />”…</translation>
 <translation id="7786889348652477777">重新加载应用(&amp;R)</translation>
 <translation id="7787308148023287649">在其他屏幕上显示</translation>
-<translation id="7789895198197042595">保留住址有助于您在各项 Google 服务中畅享更便利的服务，例如在 Google 地图中获得更相关的搜索结果和更精确的路线。您可以在 <ph name="BEGIN_LINK" />Google 账号 <ph name="USERNAME" /><ph name="END_LINK" /> 中修改或删除地址。</translation>
+<translation id="7789895198197042595">保留住址可方便您畅享各项 Google 服务，例如在 Google 地图中获得更精确的搜索结果和路线。您可在 <ph name="BEGIN_LINK" />Google 账号 <ph name="USERNAME" /><ph name="END_LINK" /> 中修改或删除地址。</translation>
 <translation id="7791269138074599214">输入法</translation>
 <translation id="7791429245559955092">系统会将此应用安装到您当前使用的 Chrome 个人资料中</translation>
 <translation id="7791436592012979144">已启用反向滚动</translation>

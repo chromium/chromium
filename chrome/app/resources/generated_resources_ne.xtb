@@ -6372,7 +6372,6 @@
 <translation id="5398497406011404839">लुकाइएका बुकमार्कहरू</translation>
 <translation id="5398572795982417028">सीमा बाहिरको पृष्ठ सन्दर्भ, सीमा <ph name="MAXIMUM_PAGE" /> हो</translation>
 <translation id="539882584649709174">तपाईंलाई समीक्षा जस्ता वेबमा भएका कुराहरूका बारेमा छोटो टेक्स्ट लेख्न मद्दत गर्छ</translation>
-<translation id="5400068721524309244">ट्याबहरू सेयर गर्दा ती ट्याबमा भएका पेजका कन्टेन्ट र URL हरू Google मा पठाइन्छन्</translation>
 <translation id="5400196580536813396">तपाईंको डिभाइसमा एक्सेस गर्न मिल्ने प्रिन्टरहरू खोज्ने वा प्रयोग गर्ने अनुमति नदिइएका साइटहरू</translation>
 <translation id="5400836586163650660">खरानी रङ्ग</translation>
 <translation id="5402367795255837559">ब्रेल</translation>
@@ -7712,7 +7711,6 @@
 <translation id="6336038146639916978"><ph name="MANAGER" /> ले ADB डिबग प्रक्रिया अफ गर्नुभएको छ। परिणामस्वरूप, अबको २४ घन्टामा तपाईंको <ph name="DEVICE_TYPE" /> रिसेट हुने छ। आफूले सुरक्षित राख्न चाहेका सबै फाइलहरू ब्याकअप गर्नुहोस्।</translation>
 <translation id="6336194758029258346">एपको भाषा</translation>
 <translation id="6337543438445391085">केही व्यक्तिगत जानकारी अझै पनि यो डेटामा समावेश गरिन सक्छ। एक्स्पोर्ट गरिएका फाइलहरूको समीक्षा गर्न नभुल्नुहोला।</translation>
-<translation id="6338554362382763574">तपाईं ब्राउज गर्दै गर्दा Gemini लाई आफूले सेयर गरिरहेका ट्याबका बारेमा सजिलैसँग प्रश्नहरू सोध्न सक्नुहुन्छ</translation>
 <translation id="6338968693068997776">USB डिभाइस एट्याच गर्नुहोस्</translation>
 <translation id="6339668969738228384"><ph name="USER_EMAIL_ADDRESS" /> को नयाँ प्रोफाइल सिर्जना गर्नुहोस्</translation>
 <translation id="6340071272923955280">इन्टरनेट प्रिन्टिङ प्रोटोकोल (IPPS)</translation>
@@ -8330,7 +8328,6 @@
     <ph name="BEGIN_PARAGRAPH2" />तपाईं सेटिङमा गई यो सेवा अफ गर्न सक्नुहुन्छ।<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Linux को ब्याकअप रद्द गरियो</translation>
 <translation id="6782067259631821405">PIN अवैध छ</translation>
-<translation id="6782219876520622071">Gemini को गुणस्तर सुधार गर्ने प्रयोजनका लागि समीक्षकहरू साझा ट्याबका बारेमा गरिएका कुराकानी हेर्न सक्छन्</translation>
 <translation id="6783036716881942511">यो डिभाइस बिर्सने हो?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive का सेटिङ</translation>
 <translation id="6784523122863989144">प्रोफाइल प्रयोग गर्न मिल्ने हुनु पर्छ</translation>

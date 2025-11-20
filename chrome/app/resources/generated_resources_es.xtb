@@ -6371,7 +6371,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5398497406011404839">Marcadores ocultos</translation>
 <translation id="5398572795982417028">La referencia de página está fuera de los límites admitidos, el límite es <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">Te ayuda a escribir texto de formato corto para la Web, como reseñas.</translation>
-<translation id="5400068721524309244">Cuando se comparten pestañas, el contenido de sus páginas y las URLs se envían a Google</translation>
 <translation id="5400196580536813396">No pueden buscar ni usar impresoras a las que tu dispositivo tenga acceso</translation>
 <translation id="5400836586163650660">Gris</translation>
 <translation id="5402367795255837559">Braille</translation>
@@ -7712,7 +7711,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6336038146639916978"><ph name="MANAGER" /> ha inhabilitado la depuración ADB. Se restablecerá tu <ph name="DEVICE_TYPE" /> dentro de 24 horas. Haz copias de seguridad de los archivos que quieras conservar.</translation>
 <translation id="6336194758029258346">Idioma de la aplicación</translation>
 <translation id="6337543438445391085">Es posible que alguna información personal siga estando incluida en los datos. Revisa los archivos exportados.</translation>
-<translation id="6338554362382763574">Puedes hacer preguntas fácilmente a Gemini sobre las pestañas que compartes mientras navegas</translation>
 <translation id="6338968693068997776">Añadir dispositivo USB</translation>
 <translation id="6339668969738228384">Crear un perfil para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Protocolo de impresión en Internet (IPPS)</translation>
@@ -8330,7 +8328,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
     <ph name="BEGIN_PARAGRAPH2" />Puedes desactivar este servicio en Ajustes.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Copia de seguridad de Linux cancelada</translation>
 <translation id="6782067259631821405">PIN no válido</translation>
-<translation id="6782219876520622071">Puede que las conversaciones sobre pestañas compartidas las vean revisores humanos para mejorar Gemini</translation>
 <translation id="6783036716881942511">¿Olvidar este dispositivo?</translation>
 <translation id="6783667414610055871">Ajustes de Microsoft OneDrive</translation>
 <translation id="6784523122863989144">Perfil admitido</translation>
@@ -11931,7 +11928,7 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="930991362911221750">¿Permitir que <ph name="APP_NAME" /> vea esta pestaña?</translation>
 <translation id="931273044114601262">Se permite en este sitio</translation>
 <translation id="93140074055951850">Se han detenido las aplicaciones Android</translation>
-<translation id="932327136139879170">Página principal</translation>
+<translation id="932327136139879170">Casa</translation>
 <translation id="932508678520956232">No se ha podido iniciar la impresión.</translation>
 <translation id="933427034780221291">{NUM_FILES,plural, =1{Este archivo es demasiado grande para una comprobación de seguridad. Puedes subir archivos de hasta 50 MB.}other{Algunos de estos archivos son demasiado grandes para una comprobación de seguridad. Puedes subir archivos de hasta 50 MB.}}</translation>
 <translation id="93343527085570547">Accede a la <ph name="BEGIN_LINK1" />página de Ayuda Legal<ph name="END_LINK1" /> para solicitar cambios de contenido por motivos legales. Parte de la información del sistema y de la cuenta se enviará a Google, que la utilizará para solucionar problemas técnicos y mejorar sus servicios, de acuerdo con su <ph name="BEGIN_LINK2" />Política de Privacidad<ph name="END_LINK2" /> y <ph name="BEGIN_LINK3" />Términos del Servicio<ph name="END_LINK3" />.</translation>

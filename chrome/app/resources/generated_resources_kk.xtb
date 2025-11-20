@@ -6366,7 +6366,6 @@
 <translation id="5398497406011404839">Жасырын бетбелгілер</translation>
 <translation id="5398572795982417028">Беттің ауқымынан шығу анықтамасы, ең көбі: <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">Интернеттегі пікірлер сияқты қысқа мәтінді жазуға көмектеседі.</translation>
-<translation id="5400068721524309244">Қойындыларды бөліскен кезде, олардың бет контенті мен URL мекенжайлары Google-ға жіберіледі.</translation>
 <translation id="5400196580536813396">Құрылғыңызға қолжетімді принтерлерді іздеуге немесе пайдалануға рұқсаты жоқ</translation>
 <translation id="5400836586163650660">Сұр</translation>
 <translation id="5402367795255837559">Брайль</translation>
@@ -7704,7 +7703,6 @@
 <translation id="6336038146639916978"><ph name="MANAGER" /> сайты ADB түзетуін өшірді. <ph name="DEVICE_TYPE" /> құрылғыңыз 24 сағаттан кейін бастапқы күйіне қайтарылады. Қалдырғыңыз келетін файлдардың сақтық көшірмесін жасаңыз.</translation>
 <translation id="6336194758029258346">Қолданба тілі</translation>
 <translation id="6337543438445391085">Кейбір жеке ақпарат әлі де деректерге қосылуы мүмкін. Экспортталған файлдарды қарап шыққаныңызға көз жеткізіңіз.</translation>
-<translation id="6338554362382763574">Шолған кезде, Gemini-ға бөлісіп жатқан қойындылар туралы сұрақ қоюға болады.</translation>
 <translation id="6338968693068997776">USB құрылғысын енгізу</translation>
 <translation id="6339668969738228384"><ph name="USER_EMAIL_ADDRESS" /> үшін жаңа профиль жасау</translation>
 <translation id="6340071272923955280">Internet Printing Protocol (IPPS)</translation>
@@ -8322,7 +8320,6 @@
     <ph name="BEGIN_PARAGRAPH2" />Бұл қызметті "Параметрлер" бөлімінен өшіруге болады.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Linux контейнерінің сақтық көшірмесін жасаудан бас тартылды</translation>
 <translation id="6782067259631821405">PIN коды жарамсыз</translation>
-<translation id="6782219876520622071">Ортақ қойындылар туралы әңгімелерді Gemini-ды жақсарту үшін тексерушілер көруі мүмкін.</translation>
 <translation id="6783036716881942511">Бұл құрылғыны ұмыту керек пе?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive параметрлері</translation>
 <translation id="6784523122863989144">Профильге қолдау көрсетіледі.</translation>

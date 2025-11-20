@@ -6389,7 +6389,6 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5398497406011404839">Skriti zaznamki</translation>
 <translation id="5398572795982417028">Sklic na stran zunaj dovoljenega razpona, omejitev je <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">Pomaga vam napisati kratko besedilo za stvari v spletu, kot so mnenja</translation>
-<translation id="5400068721524309244">Ko so zavihki deljeni, se njihova vsebina strani in URL-ji pošljejo Googlu</translation>
 <translation id="5400196580536813396">Ni dovoljeno iskanje ali uporaba tiskalnikov, ki so dostopni v vaši napravi</translation>
 <translation id="5400836586163650660">Siva</translation>
 <translation id="5402367795255837559">Braillova pisava</translation>
@@ -7732,7 +7731,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6336038146639916978">Domena <ph name="MANAGER" /> je onemogočila most za odpravljanje težav s sistemom Android (ADB). S tem bo naprava <ph name="DEVICE_TYPE" /> v 24 urah ponastavljena. Varnostno kopirajte datoteke, ki jih želite obdržati.</translation>
 <translation id="6336194758029258346">Jezik aplikacije</translation>
 <translation id="6337543438445391085">Nekateri osebni podatki so morda še vedno vključeni v podatke. Preglejte izvožene datoteke.</translation>
-<translation id="6338554362382763574">Med brskanjem lahko Geminiju preprosto zastavljate vprašanja o zavihkih, ki jih delite</translation>
 <translation id="6338968693068997776">Dodajanje naprave USB</translation>
 <translation id="6339668969738228384">Ustvarjanje novega profila za uporabnika <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Internet Printing Protocol (IPPS)</translation>
@@ -8356,7 +8354,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
     <ph name="BEGIN_PARAGRAPH2" />To storitev lahko izklopite v nastavitvah.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Varnostno kopiranje vsebnika za Linux je bilo preklicano</translation>
 <translation id="6782067259631821405">Neveljavna koda PIN</translation>
-<translation id="6782219876520622071">Pogovore o deljenih zavihkih lahko vidijo pregledovalci zaradi izboljšanja Geminija</translation>
 <translation id="6783036716881942511">Ali želite pozabiti to napravo?</translation>
 <translation id="6783667414610055871">Nastavitve za Microsoft OneDrive</translation>
 <translation id="6784523122863989144">Profil je podprt.</translation>

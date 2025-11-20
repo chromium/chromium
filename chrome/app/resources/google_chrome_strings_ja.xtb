@@ -95,7 +95,7 @@
 <translation id="2091012649849228750">今後、Google Chrome のアップデートを受信するには、Windows 10 以降が必要となります。このパソコンでは Windows 8 が実行されています。</translation>
 <translation id="2094648590148273905">ChromeOS Flex 利用規約</translation>
 <translation id="2094919256425865063">今すぐ Chrome を終了しますか？</translation>
-<translation id="2096213354152647998">最近アクセスしていないため、Chrome で <ph name="PERMISSION" /> の権限を削除しました。</translation>
+<translation id="2096213354152647998">最近アクセスしていないため、Chrome で<ph name="PERMISSION" />の権限を削除しました。</translation>
 <translation id="2106831557840787829">ChromeOS Flex も <ph name="BEGIN_LINK_LINUX_OSS" />Linux 開発環境<ph name="END_LINK_LINUX_OSS" />も追加の<ph name="BEGIN_LINK_CROS_OSS" />オープンソース ソフトウェア<ph name="END_LINK_CROS_OSS" />によって実現しました。</translation>
 <translation id="2108778574543343055">Chrome のアプリ向けのバックグラウンドでの実行を無効にする</translation>
 <translation id="2120620239521071941">このデバイスから <ph name="ITEMS_COUNT" /> 件の項目を削除します。後でデータを取得するには、<ph name="USER_EMAIL" /> として Chrome にログインしてください。</translation>

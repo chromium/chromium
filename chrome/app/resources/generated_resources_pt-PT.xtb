@@ -4034,7 +4034,7 @@ Quer pará-lo?</translation>
 <translation id="3756578970075173856">Defina o PIN</translation>
 <translation id="3756806135608816820">Os sites podem pedir para procurar dispositivos Bluetooth</translation>
 <translation id="3757567010566591880">Desafixar da barra de ferramentas</translation>
-<translation id="3757645900890881944">Ferramentas de pesquisa</translation>
+<translation id="3757645900890881944">Ferramentas da Pesquisa</translation>
 <translation id="3757733214359997190">Não foram encontrados sites.</translation>
 <translation id="375841316537350618">A transferir o script de proxy...</translation>
 <translation id="3758887577462995665">Sugestão:</translation>
@@ -6374,7 +6374,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5398497406011404839">Marcadores ocultos</translation>
 <translation id="5398572795982417028">A referência da página está fora dos limites; o limite é <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">Ajuda a escrever texto de formato curto para itens na Web, como críticas</translation>
-<translation id="5400068721524309244">Quando os separadores são partilhados, os respetivos conteúdos das páginas e URLs são enviados para a Google</translation>
 <translation id="5400196580536813396">Sem autorização para procurar ou usar impressoras acessíveis ao seu dispositivo</translation>
 <translation id="5400836586163650660">Cinzento</translation>
 <translation id="5402367795255837559">Braille</translation>
@@ -7716,7 +7715,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> desativou a depuração do ADB. Esta ação vai repor o seu dispositivo <ph name="DEVICE_TYPE" /> dentro de 24 horas. Faça uma cópia de segurança dos ficheiros que quer manter.</translation>
 <translation id="6336194758029258346">Idioma da app</translation>
 <translation id="6337543438445391085">Algumas informações pessoais ainda podem ser incluídas nos dados. Certifique-se de que revê os ficheiros exportados.</translation>
-<translation id="6338554362382763574">Pode simplesmente fazer perguntas ao Gemini sobre os separadores que está a partilhar enquanto navega</translation>
 <translation id="6338968693068997776">Adicione um dispositivo USB</translation>
 <translation id="6339668969738228384">Criar um novo perfil para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Internet Printing Protocol (IPPS)</translation>
@@ -8334,7 +8332,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
     <ph name="BEGIN_PARAGRAPH2" />Pode desativar este serviço nas Definições.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Cópia de segurança do Linux cancelada</translation>
 <translation id="6782067259631821405">PIN inválido</translation>
-<translation id="6782219876520622071">As conversas sobre separadores partilhados podem ser vistas por revisores humanos para melhorar o Gemini</translation>
 <translation id="6783036716881942511">Esquecer este dispositivo?</translation>
 <translation id="6783667414610055871">Definições do Microsoft OneDrive</translation>
 <translation id="6784523122863989144">O perfil é suportado</translation>

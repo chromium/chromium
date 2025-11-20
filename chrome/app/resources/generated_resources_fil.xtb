@@ -6387,7 +6387,6 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5398497406011404839">Mga nakatagong bookmark</translation>
 <translation id="5398572795982417028">Lampas sa hangganan ang tinukoy na page, ang limitasyon ay <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">Tinutulungan kang magsulat ng short-form na text para sa mga bagay sa web, tulad ng mga review</translation>
-<translation id="5400068721524309244">Kapag na-share ang mga tab, ipapadala sa Google ang mga content ng page at URL ng mga ito</translation>
 <translation id="5400196580536813396">Hindi pinapayagang maghanap o gumamit ng mga printer na naa-access ng device mo</translation>
 <translation id="5400836586163650660">Grey</translation>
 <translation id="5402367795255837559">Braille</translation>
@@ -7728,7 +7727,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6336038146639916978">Na-disable ng <ph name="MANAGER" /> ang pag-debug ng ADB. Ire-reset nito ang iyong <ph name="DEVICE_TYPE" /> pagkalipas ng 24 na oras. I-back up ang anumang file na gusto mong panatilihin.</translation>
 <translation id="6336194758029258346">Wika ng app</translation>
 <translation id="6337543438445391085">Posibleng may ilang personal na impormasyon pa ring kasama sa data. Tiyaking suriin ang mga na-export na file.</translation>
-<translation id="6338554362382763574">Madali kang makakapagtanong sa Gemini tungkol sa mga tab na shine-share mo habang nagba-browse ka</translation>
 <translation id="6338968693068997776">Magdagdag ng USB device</translation>
 <translation id="6339668969738228384">Gumawa ng bagong profile para sa <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Internet Printing Protocol (IPPS)</translation>
@@ -8348,7 +8346,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
     <ph name="BEGIN_PARAGRAPH2" />Puwede mong i-off ang serbisyong ito sa Mga Setting.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Nakansela ang pag-back up ng Linux</translation>
 <translation id="6782067259631821405">Invalid ang PIN</translation>
-<translation id="6782219876520622071">Posibleng makita ng mga taong tagasuri ang mga pag-uusap tungkol sa mga naka-share na tab para mapahusay ang Gemini</translation>
 <translation id="6783036716881942511">Kalimutan ang device na ito?</translation>
 <translation id="6783667414610055871">Mga setting ng Microsoft OneDrive</translation>
 <translation id="6784523122863989144">Sinusuportahan ang profile</translation>

@@ -6387,7 +6387,6 @@
 <translation id="5398497406011404839">ਲੁਕੇ ਹੋਏ ਬੁੱਕਮਾਰਕ</translation>
 <translation id="5398572795982417028">ਵਿਵਰਜਿਤ ਪੰਨਾ ਸੰਦਰਭ, ਸੀਮਾ <ph name="MAXIMUM_PAGE" /> ਹੈ</translation>
 <translation id="539882584649709174">ਇਸ ਵਿਸ਼ੇਸ਼ਤਾ ਦੀ ਮਦਦ ਨਾਲ ਤੁਹਾਨੂੰ ਵੈੱਬ 'ਤੇ ਛੋਟੀ ਲਿਖਤ ਲਿਖਣ ਵਿੱਚ ਮਦਦ ਮਿਲਦੀ ਹੈ, ਜਿਵੇਂ ਕਿ ਸਮੀਖਿਆਵਾਂ</translation>
-<translation id="5400068721524309244">ਜਦੋਂ ਟੈਬਾਂ ਨੂੰ ਸਾਂਝਾ ਕੀਤਾ ਜਾਂਦਾ ਹੈ, ਤਾਂ ਉਨ੍ਹਾਂ ਦੀ ਪੰਨਾ ਸਮੱਗਰੀ ਅਤੇ URL Google ਨੂੰ ਭੇਜੇ ਜਾਂਦੇ ਹਨ</translation>
 <translation id="5400196580536813396">ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਲਈ ਪਹੁੰਚਯੋਗ ਪ੍ਰਿੰਟਰਾਂ ਦੀ ਖੋਜ ਕਰਨ ਜਾਂ ਉਨ੍ਹਾਂ ਨੂੰ ਵਰਤਣ ਦੀ ਆਗਿਆ ਨਹੀਂ ਹੈ</translation>
 <translation id="5400836586163650660">ਸਲੇਟੀ</translation>
 <translation id="5402367795255837559">ਬ੍ਰੇਲ</translation>
@@ -7728,7 +7727,6 @@
 <translation id="6336038146639916978"><ph name="MANAGER" /> ਨੇ ADB ਡੀਬੱਗਿੰਗ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਹੈ। ਇਸ ਨਾਲ ਤੁਹਾਡੀ <ph name="DEVICE_TYPE" /> 24 ਘੰਟਿਆਂ ਵਿੱਚ ਰੀਸੈੱਟ ਹੋ ਜਾਵੇਗੀ। ਉਹਨਾਂ ਫ਼ਾਈਲਾਂ ਦਾ ਬੈਕਅੱਪ ਲਓ ਜਿਨ੍ਹਾਂ ਨੂੰ ਤੁਸੀਂ ਰੱਖਣਾ ਚਾਹੁੰਦੇ ਹੋ।</translation>
 <translation id="6336194758029258346">ਐਪ ਦੀ ਭਾਸ਼ਾ</translation>
 <translation id="6337543438445391085">ਕੁਝ ਨਿੱਜੀ ਜਾਣਕਾਰੀ ਹਾਲੇ ਵੀ ਇਸ ਡਾਟੇ ਵਿੱਚ ਸ਼ਾਮਲ ਕੀਤੀ ਜਾ ਸਕਦੀ ਹੈ। ਆਯਾਤ ਕੀਤੀਆਂ ਫ਼ਾਈਲਾਂ ਦੀ ਸਮੀਖਿਆ ਕਰਨਾ ਪੱਕਾ ਕਰੋ।</translation>
-<translation id="6338554362382763574">ਬ੍ਰਾਊਜ਼ ਕਰਨ ਵੇਲੇ, ਤੁਸੀਂ Gemini ਤੋਂ ਤੁਹਾਡੇ ਵੱਲੋਂ ਸਾਂਝੀਆਂ ਕੀਤੀਆਂ ਜਾ ਰਹੀਆਂ ਟੈਬਾਂ ਬਾਰੇ ਆਸਾਨੀ ਨਾਲ ਸਵਾਲ ਪੁੱਛ ਸਕਦੇ ਹੋ</translation>
 <translation id="6338968693068997776">ਕੋਈ USB ਡੀਵਾਈਸ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="6339668969738228384"><ph name="USER_EMAIL_ADDRESS" /> ਲਈ ਇੱਕ ਨਵਾਂ ਪ੍ਰੋਫ਼ਾਈਲ ਬਣਾਓ</translation>
 <translation id="6340071272923955280">ਇੰਟਰਨੈੱਟ ਪ੍ਰਿੰਟਿੰਗ ਪ੍ਰੋਟੋਕੋਲ (IPPS)</translation>
@@ -8348,7 +8346,6 @@
     <ph name="BEGIN_PARAGRAPH2" />ਤੁਸੀਂ ਇਸ ਸੇਵਾ ਨੂੰ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ।<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Linux ਬੈਕਅੱਪ ਰੱਦ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="6782067259631821405">ਅਵੈਧ ਪਿੰਨ</translation>
-<translation id="6782219876520622071">ਸਾਂਝੀਆਂ ਕੀਤੀਆਂ ਟੈਬਾਂ ਬਾਰੇ ਗੱਲਾਂਬਾਤਾਂ ਨੂੰ Gemini ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ ਮਨੁੱਖੀ ਸਮੀਖਿਅਕਾਂ ਵੱਲੋਂ ਦੇਖਿਆ ਜਾ ਸਕਦਾ ਹੈ</translation>
 <translation id="6783036716881942511">ਕੀ ਇਸ ਡੀਵਾਈਸ ਨੂੰ ਭੁੱਲਣਾ ਹੈ?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive ਸੈਟਿੰਗਾਂ</translation>
 <translation id="6784523122863989144">ਪ੍ਰੋਫਾਈਲ ਸਮਰਥਿਤ ਹੈ</translation>

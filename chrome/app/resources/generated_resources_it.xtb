@@ -1482,7 +1482,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="199191324030140441">Disattiva Non disturbare</translation>
 <translation id="1992397118740194946">Non impostata</translation>
 <translation id="1994173015038366702">URL sito</translation>
-<translation id="1995916364271252349">Consente di stabilire quali informazioni possono essere usate e mostrate dai siti (posizione, videocamera, popup e non altro)</translation>
+<translation id="1995916364271252349">Consente di stabilire quali informazioni possono essere usate e mostrate dai siti (posizione, videocamera, popup e altro)</translation>
 <translation id="199610894463449797">{0,plural, =1{Chiudi questo profilo}other{Chiudi questo profilo (# finestre)}}</translation>
 <translation id="1997433994358798851">Chrome deve avere l'autorizzazione per utilizzare il Bluetooth per connettersi al dispositivo</translation>
 <translation id="1997616988432401742">I tuoi certificati</translation>
@@ -6372,7 +6372,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5398497406011404839">Preferiti nascosti</translation>
 <translation id="5398572795982417028">Riferimento pagina oltre i limiti. Il limite è <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">Ti aiuta a scrivere brevi testi per il web, come le recensioni</translation>
-<translation id="5400068721524309244">Quando le schede vengono condivise, i contenuti e gli URL delle pagine vengono inviati a Google</translation>
 <translation id="5400196580536813396">Non autorizzati a cercare o utilizzare stampanti accessibili al tuo dispositivo</translation>
 <translation id="5400836586163650660">Grigio</translation>
 <translation id="5402367795255837559">Braille</translation>
@@ -7710,7 +7709,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> ha disattivato il debug ADB. Tra 24 ore il tuo dispositivo <ph name="DEVICE_TYPE" /> verrà reimpostato. Effettua il backup di tutti i file che vuoi mantenere.</translation>
 <translation id="6336194758029258346">Lingua dell'app</translation>
 <translation id="6337543438445391085">Alcune informazioni personali potrebbero comunque essere incluse nei dati. Assicurati di rivedere i file esportati.</translation>
-<translation id="6338554362382763574">Puoi facilmente fare domande a Gemini sulle schede che stai condividendo mentre navighi</translation>
 <translation id="6338968693068997776">Aggiungi dispositivo USB</translation>
 <translation id="6339668969738228384">Crea un nuovo profilo per <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Protocollo di stampa Internet (IPPS)</translation>
@@ -8328,7 +8326,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
     <ph name="BEGIN_PARAGRAPH2" />Puoi disattivare questo servizio nelle Impostazioni.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Backup di Linux annullato</translation>
 <translation id="6782067259631821405">PIN non valido</translation>
-<translation id="6782219876520622071">Le conversazioni sulle schede condivise potrebbero essere visualizzate da revisori per migliorare Gemini</translation>
 <translation id="6783036716881942511">Rimuovere questo dispositivo?</translation>
 <translation id="6783667414610055871">Impostazioni di Microsoft OneDrive</translation>
 <translation id="6784523122863989144">Il profilo è supportato</translation>

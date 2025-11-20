@@ -5486,7 +5486,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4773122030389014189">Compartir el grupo de pestañas “<ph name="GROUP_NAME" />”</translation>
 <translation id="4773253008034797668">Puede conectarse a cualquier dispositivo de tu red local</translation>
 <translation id="477548766361111120">Permitir que la extensión lea y modifique este sitio</translation>
-<translation id="4775646243557794597">Se borró <ph name="TIME_PERIOD" /></translation>
+<translation id="4775646243557794597">Período borrado: <ph name="TIME_PERIOD" /></translation>
 <translation id="4776311127346151860">Se conectó <ph name="DEVICE_NAME" /></translation>
 <translation id="4776594120007763294">Si quieres agregar una página para leerla más tarde, haz clic en el botón</translation>
 <translation id="4777458362738635055">Otros usuarios de este dispositivo pueden usar esta red</translation>
@@ -6370,7 +6370,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5398497406011404839">Favoritos ocultos</translation>
 <translation id="5398572795982417028">Referencia de página fuera de los límites; el valor máximo es <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">Te ayuda a escribir texto breve para elementos de la Web, como opiniones</translation>
-<translation id="5400068721524309244">Cuando se comparten pestañas, se envían a Google las URLs y el contenido de las páginas</translation>
 <translation id="5400196580536813396">No puede buscar ni usar impresoras a las que pueda acceder tu dispositivo</translation>
 <translation id="5400836586163650660">Gris</translation>
 <translation id="5402367795255837559">Braille</translation>
@@ -7711,7 +7710,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> inhabilitó la depuración de ADB, por lo que se restablecerá el dispositivo <ph name="DEVICE_TYPE" /> dentro de 24 horas. Crea una copia de seguridad de los archivos que deseas conservar.</translation>
 <translation id="6336194758029258346">Idioma de la app</translation>
 <translation id="6337543438445391085">Es posible que aún se incluya información personal en los datos. Asegúrate de revisar los archivos exportados.</translation>
-<translation id="6338554362382763574">Puedes hacerle preguntas a Gemini fácilmente sobre las pestañas que estás compartiendo mientras navegas</translation>
 <translation id="6338968693068997776">Agregar un dispositivo USB</translation>
 <translation id="6339668969738228384">Crear un perfil nuevo para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Protocolo de impresión por Internet (IPPS)</translation>
@@ -8329,7 +8327,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
     <ph name="BEGIN_PARAGRAPH2" />Puedes desactivar este servicio en Configuración.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Se canceló la copia de seguridad de Linux</translation>
 <translation id="6782067259631821405">El PIN no es válido</translation>
-<translation id="6782219876520622071">Los revisores humanos pueden ver las conversaciones sobre pestañas compartidas para mejorar Gemini</translation>
 <translation id="6783036716881942511">¿Deseas olvidar este dispositivo?</translation>
 <translation id="6783667414610055871">Configuración de Microsoft OneDrive</translation>
 <translation id="6784523122863989144">El perfil es compatible</translation>
@@ -11930,7 +11927,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="930991362911221750">¿Deseas permitir que <ph name="APP_NAME" /> vea esta pestaña?</translation>
 <translation id="931273044114601262">Se permite en este sitio</translation>
 <translation id="93140074055951850">Se detuvieron las apps para Android</translation>
-<translation id="932327136139879170">Página principal</translation>
+<translation id="932327136139879170">Casa</translation>
 <translation id="932508678520956232">No se pudo iniciar la impresión.</translation>
 <translation id="933427034780221291">{NUM_FILES,plural, =1{Este archivo es demasiado grande para hacer un control de seguridad. Puedes subir archivos de hasta 50 MB.}other{Algunos archivos son demasiado grandes para hacer un control de seguridad. Puedes subir archivos de hasta 50 MB.}}</translation>
 <translation id="93343527085570547">Para solicitar cambios en el contenido por motivos legales, visita la <ph name="BEGIN_LINK1" />página de ayuda legal<ph name="END_LINK1" />. Es posible que se envíe a Google información sobre el sistema y la cuenta. Según lo establecido en nuestra <ph name="BEGIN_LINK2" />Política de Privacidad<ph name="END_LINK2" /> y las <ph name="BEGIN_LINK3" />Condiciones del Servicio<ph name="END_LINK3" />, la información que nos brindes se usará para solucionar problemas técnicos y mejorar nuestros servicios.</translation>

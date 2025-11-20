@@ -6387,7 +6387,6 @@
 <translation id="5398497406011404839">Сховані закладки</translation>
 <translation id="5398572795982417028">Сторінка поза діапазоном, максимальна кількість сторінок: <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">Допомагає писати короткі тексти в Інтернеті, наприклад відгуки</translation>
-<translation id="5400068721524309244">Коли ви надаєте доступ до вкладок, у Google надсилаються їх URL-адреси й увесь контент</translation>
 <translation id="5400196580536813396">Заборонено шукати чи використовувати принтери, доступні на вашому пристрої</translation>
 <translation id="5400836586163650660">Сірий</translation>
 <translation id="5402367795255837559">Команди Брайля</translation>
@@ -7725,7 +7724,6 @@
 <translation id="6336038146639916978">Адміністратор домену <ph name="MANAGER" /> вимкнув налагодження ADB. Тому через 24 години <ph name="DEVICE_TYPE" /> скине всі налаштування. Створіть резервні копії потрібних вам файлів.</translation>
 <translation id="6336194758029258346">Мова додатка</translation>
 <translation id="6337543438445391085">Ці дані все одно можуть містити деяку особисту інформацію. Перегляньте експортовані файли.</translation>
-<translation id="6338554362382763574">Ви можете легко запитувати Gemini про вкладки, до яких надаєте доступ, коли переглядаєте їх</translation>
 <translation id="6338968693068997776">Додати пристрій USB</translation>
 <translation id="6339668969738228384">Створити новий профіль для облікового запису <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Протокол друку через Інтернет (IPPS)</translation>
@@ -8349,7 +8347,6 @@
     <ph name="BEGIN_PARAGRAPH2" />Цей сервіс можна вимкнути в налаштуваннях.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Резервне копіювання Linux скасовано</translation>
 <translation id="6782067259631821405">Недійсний PIN-код</translation>
-<translation id="6782219876520622071">Спеціалісти можуть переглядати розмови про вкладки, до яких ви надаєте доступ, щоб покращувати Gemini</translation>
 <translation id="6783036716881942511">Забути цей пристрій?</translation>
 <translation id="6783667414610055871">Налаштування Microsoft OneDrive</translation>
 <translation id="6784523122863989144">Профіль підтримується</translation>

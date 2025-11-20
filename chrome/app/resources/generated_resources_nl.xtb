@@ -6368,7 +6368,6 @@ Zichtbaar als <ph name="DEVICE_TYPE" />…</translation>
 <translation id="5398497406011404839">Verborgen bookmarks</translation>
 <translation id="5398572795982417028">Paginaverwijzing valt buiten bereik, limiet is <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">Helpt je korte teksten te schrijven voor zaken op internet, zoals reviews</translation>
-<translation id="5400068721524309244">Wanneer tabbladen worden gedeeld, worden de bijbehorende paginacontent en URL's naar Google gestuurd</translation>
 <translation id="5400196580536813396">Geen toestemming om printers te zoeken of te gebruiken die toegankelijk zijn voor je apparaat</translation>
 <translation id="5400836586163650660">Grijs</translation>
 <translation id="5402367795255837559">Braille</translation>
@@ -7706,7 +7705,6 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> heeft ADB-foutopsporing uitgezet. Hierdoor wordt je <ph name="DEVICE_TYPE" /> over 24 uur gereset. Maak een back-up van de bestanden die je wilt houden.</translation>
 <translation id="6336194758029258346">App-taal</translation>
 <translation id="6337543438445391085">Bepaalde persoonlijke informatie kan nog steeds in de gegevens zijn opgenomen. Check de geëxporteerde bestanden.</translation>
-<translation id="6338554362382763574">Je kunt Gemini makkelijk vragen stellen over de tabbladen die je deelt terwijl je browst</translation>
 <translation id="6338968693068997776">USB-apparaat toevoegen</translation>
 <translation id="6339668969738228384">Een nieuw profiel maken voor <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Internetafdrukprotocol (IPPS)</translation>
@@ -8324,7 +8322,6 @@ Je hebt nog # gehackte wachtwoorden. Google Wachtwoordmanager raadt je aan deze 
     <ph name="BEGIN_PARAGRAPH2" />Je kunt deze service uitzetten via Instellingen.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Back-up voor Linux geannuleerd</translation>
 <translation id="6782067259631821405">Ongeldige pincode</translation>
-<translation id="6782219876520622071">Gesprekken over gedeelde tabbladen kunnen worden bekeken door menselijke reviewers om Gemini te verbeteren</translation>
 <translation id="6783036716881942511">Dit apparaat vergeten?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive-instellingen</translation>
 <translation id="6784523122863989144">Profiel wordt ondersteund</translation>

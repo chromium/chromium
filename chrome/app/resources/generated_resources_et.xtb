@@ -6377,7 +6377,6 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5398497406011404839">Peidetud järjehoidjad</translation>
 <translation id="5398572795982417028">Piiridest väljas olev leht, limiit on <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">Aitab kirjutada lühivormis teksti veebis leiduvatele asjadele, näiteks arvustusi</translation>
-<translation id="5400068721524309244">Vahelehtede jagamisel saadetakse nende lehtede sisu ja URL-id Google'ile</translation>
 <translation id="5400196580536813396">Ei lubata otsida ega kasutada printereid, mis on teie seadme puhul juurdepääsetavad</translation>
 <translation id="5400836586163650660">Hall</translation>
 <translation id="5402367795255837559">Braille</translation>
@@ -7718,7 +7717,6 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> keelas ADB silumise. See lähtestab 24 tunni jooksul teie seadme <ph name="DEVICE_TYPE" />. Varundage kõik failid, mille soovite säilitada.</translation>
 <translation id="6336194758029258346">Rakenduse keel</translation>
 <translation id="6337543438445391085">Need andmed võivad siiski sisaldada veidi teie isiklikke andmeid. Vaadake kindlasti eksporditud failid üle.</translation>
-<translation id="6338554362382763574">Saate sirvides hõlpsasti Geminilt jagatavate vahelehtede kohta küsida.</translation>
 <translation id="6338968693068997776">USB-seadme lisamine</translation>
 <translation id="6339668969738228384">Loo e-posti aadressile <ph name="USER_EMAIL_ADDRESS" /> uus profiil</translation>
 <translation id="6340071272923955280">Interneti prindiprotokoll (IPPS)</translation>
@@ -8336,7 +8334,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
     <ph name="BEGIN_PARAGRAPH2" />Selle teenuse saab välja lülitada menüüs Seaded.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Linuxi varundamine tühistati</translation>
 <translation id="6782067259631821405">Vale PIN-kood</translation>
-<translation id="6782219876520622071">Ülevaatajad võivad jagatud vahelehtede vestlusi Gemini täiustamise eesmärgil näha</translation>
 <translation id="6783036716881942511">Kas unustada see seade?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive'i seaded</translation>
 <translation id="6784523122863989144">Profiili ei toetata</translation>

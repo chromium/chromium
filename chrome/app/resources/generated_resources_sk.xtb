@@ -6373,7 +6373,6 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="5398497406011404839">Skryté záložky</translation>
 <translation id="5398572795982417028">Odkaz na stránku je mimo rozsahu, limit je <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">Pomôže vám napísať krátky text týkajúci sa obsahu na internete, napríklad recenzie</translation>
-<translation id="5400068721524309244">Pri zdieľaní kariet sa obsah ich stránok a webové adresy odosielajú Googlu</translation>
 <translation id="5400196580536813396">Nie je povolené vyhľadávať ani používať tlačiarne, ku ktorým má vaše zariadenie prístup</translation>
 <translation id="5400836586163650660">Sivá</translation>
 <translation id="5402367795255837559">Braillovo písmo</translation>
@@ -7714,7 +7713,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6336038146639916978">Doména <ph name="MANAGER" /> deaktivovala ladenie ADB. Vaše zariadenie <ph name="DEVICE_TYPE" /> sa o 24 hodín resetuje. Zálohujte všetky súbory, ktoré si chcete ponechať.</translation>
 <translation id="6336194758029258346">Jazyk aplikácie</translation>
 <translation id="6337543438445391085">V údajoch môžu byť stále zahrnuté niektoré osobné údaje. Nezabudnite skontrolovať exportované súbory.</translation>
-<translation id="6338554362382763574">Pri prehliadaní môžete Gemini jednoducho klásť otázky o kartách, ktoré zdieľate</translation>
 <translation id="6338968693068997776">Pridajte zariadenie USB</translation>
 <translation id="6339668969738228384">Vytvoriť nový profil pre používateľa <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Protokol IPP (IPPS)</translation>
@@ -8336,7 +8334,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
     <ph name="BEGIN_PARAGRAPH2" />Túto službu môžete vypnúť v Nastaveniach.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Záloha systému Linux bola zrušená</translation>
 <translation id="6782067259631821405">Neplatný kód PIN</translation>
-<translation id="6782219876520622071">Konverzácie o zdieľaných kartách si môžu prezerať kontrolóri, aby mohli zlepšovať Gemini</translation>
 <translation id="6783036716881942511">Chcete zabudnúť na toto zariadenie?</translation>
 <translation id="6783667414610055871">Nastavenia služby Microsoft OneDrive</translation>
 <translation id="6784523122863989144">Profil je podporovaný</translation>

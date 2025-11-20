@@ -6370,7 +6370,6 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5398497406011404839">Sakriveni obeleživači</translation>
 <translation id="5398572795982417028">Prevelika referenca za stranice, ograničenje je <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">Pomaže vam da pišete kratak tekst za stvari na vebu, poput recenzija</translation>
-<translation id="5400068721524309244">Kada se dele kartice, njihov sadržaj i URL-ovi stranica se šalju Google-u</translation>
 <translation id="5400196580536813396">Nije im dozvoljeno da traže ili koriste štampače dostupne uređaju</translation>
 <translation id="5400836586163650660">Siva</translation>
 <translation id="5402367795255837559">Brajeva azbuka</translation>
@@ -7711,7 +7710,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> je onemogućio ADB otklanjanje grešaka. To će resetovati <ph name="DEVICE_TYPE" /> za 24 sata. Napravite rezervne kopije svih fajlova koje želite da zadržite.</translation>
 <translation id="6336194758029258346">Jezik aplikacije</translation>
 <translation id="6337543438445391085">Neki lični podaci i dalje mogu da budu uvršteni u podatke. Obavezno pregledajte izvezene fajlove.</translation>
-<translation id="6338554362382763574">Dok pregledate, možete lako da postavljate Gemini-ju pitanja o karticama koje delite</translation>
 <translation id="6338968693068997776">Dodajte USB uređaj</translation>
 <translation id="6339668969738228384">Otvori novi profil za <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Internet protokol za štampanje (IPPS)</translation>
@@ -8333,7 +8331,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
     <ph name="BEGIN_PARAGRAPH2" />Možete da isključite ovu uslugu u Podešavanjima.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Pravljenje rezervne kopije za Linux je otkazano</translation>
 <translation id="6782067259631821405">Nevažeći PIN</translation>
-<translation id="6782219876520622071">Konverzacije o deljenim karticama mogu da vide osobe koje pregledaju radi poboljšanja Gemini-ja</translation>
 <translation id="6783036716881942511">Želite da zaboravite ovaj uređaj?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive podešavanja</translation>
 <translation id="6784523122863989144">Profil je podržan</translation>

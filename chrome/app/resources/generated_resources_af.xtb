@@ -6386,7 +6386,6 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5398497406011404839">Versteekte boekmerke</translation>
 <translation id="5398572795982417028">Bladsyverwysing is buite perke, limiet is <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">Help jou om kortvormteks te skryf vir dinge op die web, soos resensies</translation>
-<translation id="5400068721524309244">Wanneer oortjies gedeel word, word hul bladsyinhoud en URL’e na Google gestuur</translation>
 <translation id="5400196580536813396">Word nie toegelaat om drukkers wat vir jou toestel toeganklik is, te soek of te gebruik nie</translation>
 <translation id="5400836586163650660">Grys</translation>
 <translation id="5402367795255837559">Braille</translation>
@@ -7728,7 +7727,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> het ADB-ontfouting gedeaktiveer. Dit sal jou <ph name="DEVICE_TYPE" /> oor 24 uur terugstel. Rugsteun enige lêers wat jy wil hou.</translation>
 <translation id="6336194758029258346">Apptaal</translation>
 <translation id="6337543438445391085">Sommige persoonlike inligting kan steeds in die data ingesluit word. Maak seker dat u die uitgevoerde lêers hersien.</translation>
-<translation id="6338554362382763574">Jy kan maklik vir Gemini vrae vra oor die oortjies wat jy deel terwyl jy blaai</translation>
 <translation id="6338968693068997776">Voeg USB-toestel by</translation>
 <translation id="6339668969738228384">Skep 'n nuwe profiel vir <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Internetdrukkerprotokol (IPPS)</translation>
@@ -8346,7 +8344,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
     <ph name="BEGIN_PARAGRAPH2" />Jy kan hierdie diens in Instellings afskakel.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Linux-rugsteun is gekanselleer</translation>
 <translation id="6782067259631821405">Ongeldige PIN</translation>
-<translation id="6782219876520622071">Gesprekke oor gedeelde oortjies kan deur mense wat kontrolering uitvoer gesien word om Gemini te verbeter</translation>
 <translation id="6783036716881942511">Vergeet hierdie toestel?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive-instellings</translation>
 <translation id="6784523122863989144">Profiel word gesteun</translation>

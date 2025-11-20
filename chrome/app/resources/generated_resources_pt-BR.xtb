@@ -6387,7 +6387,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5398497406011404839">Favoritos ocultos</translation>
 <translation id="5398572795982417028">Referência de página fora do limite, que é <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">Ajuda você a escrever textos curtos para itens na Web, como avaliações</translation>
-<translation id="5400068721524309244">Quando as guias são compartilhadas, o conteúdo e os URLs das páginas são enviados ao Google</translation>
 <translation id="5400196580536813396">Sem permissão para procurar ou usar impressoras acessíveis ao dispositivo</translation>
 <translation id="5400836586163650660">Cinza</translation>
 <translation id="5402367795255837559">Braille</translation>
@@ -7729,7 +7728,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> desativou a depuração do adb. O <ph name="DEVICE_TYPE" /> será redefinido em 24 horas. Faça backup dos arquivos importantes para você.</translation>
 <translation id="6336194758029258346">Idioma do app</translation>
 <translation id="6337543438445391085">Algumas informações pessoais ainda podem ser incluídas nos dados. Verifique os arquivos exportados.</translation>
-<translation id="6338554362382763574">Faça perguntas ao Gemini sobre as guias que você está compartilhando enquanto navega</translation>
 <translation id="6338968693068997776">Adicione um dispositivo USB</translation>
 <translation id="6339668969738228384">Criar um novo perfil para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Protocolo de impressão via Internet (IPPS)</translation>
@@ -8349,7 +8347,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
     <ph name="BEGIN_PARAGRAPH2" />Você pode desativar esse serviço nas configurações.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Backup do Linux cancelado</translation>
 <translation id="6782067259631821405">PIN inválido</translation>
-<translation id="6782219876520622071">As conversas sobre guias compartilhadas podem ser vistas por revisores humanos para aprimorar o Gemini</translation>
 <translation id="6783036716881942511">Esquecer este dispositivo?</translation>
 <translation id="6783667414610055871">Configurações do Microsoft OneDrive</translation>
 <translation id="6784523122863989144">O perfil é compatível</translation>
@@ -11902,7 +11899,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="9180380851667544951">O site pode compartilhar sua tela</translation>
 <translation id="9180847522826713506">Para conferir sua senha ou adicionar uma observação sobre ela, clique no ícone de chave</translation>
 <translation id="9182556968660520230">Não permitir que os sites reproduzam conteúdo protegido</translation>
-<translation id="9183302530794969518">Documentos Google</translation>
+<translation id="9183302530794969518">Google Docs</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{App}one{# app}other{# apps}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{O administrador pode gravar sua tela com o app <ph name="APP0_NAME" />. Você não vai receber uma notificação quando a gravação começar.}=2{O administrador pode gravar sua tela com os apps <ph name="APP0_NAME" /> e <ph name="APP1_NAME" />. Você não vai receber uma notificação quando a gravação começar.}=3{O administrador pode gravar sua tela com os apps <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> e mais 1. Você não vai receber uma notificação quando a gravação começar.}one{O administrador pode gravar sua tela com os apps <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> e mais #. Você não vai receber uma notificação quando a gravação começar.}other{O administrador pode gravar sua tela com os apps <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> e mais #. Você não vai receber uma notificação quando a gravação começar.}}</translation>
 <translation id="9186963452600581158">Fazer login com a Conta do Google de uma criança</translation>

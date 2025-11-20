@@ -6386,7 +6386,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5398497406011404839">Hidden bookmarks</translation>
 <translation id="5398572795982417028">Out of bounds page reference, limit is <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">Helps you write short-form text for things on the web, like reviews</translation>
-<translation id="5400068721524309244">When tabs are shared, their page contents and URLs are sent to Google</translation>
 <translation id="5400196580536813396">Not allowed to look for or use printers that are accessible to your device</translation>
 <translation id="5400836586163650660">Grey</translation>
 <translation id="5402367795255837559">Braille</translation>
@@ -7727,7 +7726,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> has disabled ADB debugging. This will reset your <ph name="DEVICE_TYPE" /> in 24 hours. Back up any files that you'd like to keep.</translation>
 <translation id="6336194758029258346">App language</translation>
 <translation id="6337543438445391085">Some personal information may still be included in the data. Make sure to review the exported files.</translation>
-<translation id="6338554362382763574">You can easily ask Gemini questions about the tabs that you're sharing as you browse</translation>
 <translation id="6338968693068997776">Add USB device</translation>
 <translation id="6339668969738228384">Create a new profile for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Internet Printing Protocol (IPPS)</translation>
@@ -8345,7 +8343,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
     <ph name="BEGIN_PARAGRAPH2" />You can turn this service off in Settings.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Linux backup cancelled</translation>
 <translation id="6782067259631821405">Invalid PIN</translation>
-<translation id="6782219876520622071">Conversations about shared tabs may be seen by human reviewers to improve Gemini</translation>
 <translation id="6783036716881942511">Forget this device?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive settings</translation>
 <translation id="6784523122863989144">Profile is supported</translation>

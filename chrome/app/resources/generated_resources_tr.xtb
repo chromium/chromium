@@ -5003,7 +5003,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4415815425191869676">Her zaman etkin kalacak siteler</translation>
 <translation id="4416582610654027550">Geçerli bir URL yazın</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{Bu Sekmeyi Duraklat}other{Bu Sekmeleri Duraklat}}</translation>
-<translation id="4419287616181386201">Şifreler, kendi yönetim ayarlarından silinebilir.</translation>
+<translation id="4419287616181386201">Şifreler, kendi yönetim ayarlarından silinebilir</translation>
 <translation id="4421932172707401417">Yazma önerileri, istemlerinize ve web sayfasının içeriğine göre belirlenir.</translation>
 <translation id="4421932782753506458">Mırnav</translation>
 <translation id="4423376891418188461">Ayarları Geri Yükle</translation>
@@ -5654,7 +5654,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="4878718769565915065">Bu güvenlik anahtarına parmak izi ekleme işlemi başarısız oldu</translation>
 <translation id="4879491255372875719">Otomatik (varsayılan)</translation>
 <translation id="4880315242806573837">Kısa süre sonra artık güvenlik güncellemeleri almayacaksınız. Yeni Chromebook sürümüne geçin.</translation>
-<translation id="4880827082731008257">Geçmişte arayın</translation>
+<translation id="4880827082731008257">Arama geçmişi</translation>
 <translation id="4881685975363383806">Bir daha hatırlatma</translation>
 <translation id="4881695831933465202">Aç</translation>
 <translation id="4882312758060467256">Bu siteye erişimi var</translation>
@@ -6368,7 +6368,6 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5398497406011404839">Gizli yer işaretleri</translation>
 <translation id="5398572795982417028">Sınırların dışında sayfa referansı. Sınır: <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">Web'de yorum gibi kısa içerikleri yazmanıza yardımcı olur</translation>
-<translation id="5400068721524309244">Paylaşılan sekmelerin sayfa içerikleri ve URL'leri Google'a gönderilir.</translation>
 <translation id="5400196580536813396">Cihazınızın erişebildiği yazıcıları aramasına veya kullanmasına izin verilmeyenler</translation>
 <translation id="5400836586163650660">Gri</translation>
 <translation id="5402367795255837559">Braille</translation>
@@ -7710,7 +7709,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" />, ADB hata ayıklama işlevini devre dışı bıraktı. Bu işlem, 24 saat içinde <ph name="DEVICE_TYPE" /> cihazınızı sıfırlar. Saklamak istediğiniz dosyaları yedekleyin.</translation>
 <translation id="6336194758029258346">Uygulama dili</translation>
 <translation id="6337543438445391085">Bazı kişisel bilgiler yine de verilere eklenmiş olabilir. Dışa aktarılan dosyaları mutlaka inceleyin.</translation>
-<translation id="6338554362382763574">Göz atarken paylaştığınız sekmelerle ilgili Gemini'a kolayca soru sorabilirsiniz</translation>
 <translation id="6338968693068997776">USB cihazı ekleyin</translation>
 <translation id="6339668969738228384"><ph name="USER_EMAIL_ADDRESS" /> için yeni profil oluştur</translation>
 <translation id="6340071272923955280">İnternet Yazdırma Protokolü (IPPS)</translation>
@@ -8328,7 +8326,6 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
     <ph name="BEGIN_PARAGRAPH2" />Bu hizmeti Ayarlar'dan kapatabilirsiniz.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Linux yedeklemesi iptal edildi</translation>
 <translation id="6782067259631821405">Geçersiz PIN</translation>
-<translation id="6782219876520622071">Paylaşılan sekmelerle ilgili sohbetler, Gemini'ı iyileştirmek için inceleme uzmanları tarafından görüntülenebilir.</translation>
 <translation id="6783036716881942511">Bu cihaz unutulsun mu?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive ayarları</translation>
 <translation id="6784523122863989144">Profil destekleniyor</translation>
@@ -8998,7 +8995,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7250616558727237648">Dosya paylaştığınız cihaz yanıt vermedi. Lütfen tekrar deneyin.</translation>
 <translation id="725109152065019550">Maalesef, yöneticiniz hesabınızda harici depolama özelliğini devre dışı bıraktı.</translation>
 <translation id="7251635775446614726">Yöneticinizin mesajı: "<ph name="CUSTOM_MESSAGE" />"</translation>
-<translation id="7252424535852086046">Bu verileri silmek için yönetim ayarlarına gidin</translation>
+<translation id="7252424535852086046">Bu verileri silmek için kendi yönetim ayarlarına gidin</translation>
 <translation id="7253521419891527137">&amp;Daha Fazla Bilgi Edinin</translation>
 <translation id="7254951428499890870">"<ph name="APP_NAME" />" uygulamasını teşhis modunda başlatmak istediğinizden emin misiniz?</translation>
 <translation id="725497546968438223">Yer işareti klasörü düğmesi</translation>

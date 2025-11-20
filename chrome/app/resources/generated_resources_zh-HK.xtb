@@ -6378,7 +6378,6 @@
 <translation id="5398497406011404839">已隱藏的書籤</translation>
 <translation id="5398572795982417028">參照的網頁超出範圍限制 (<ph name="MAXIMUM_PAGE" />)</translation>
 <translation id="539882584649709174">協助在網絡上撰寫評論等短篇文字</translation>
-<translation id="5400068721524309244">共用分頁時，系統會將網頁內容和網址傳送給 Google</translation>
 <translation id="5400196580536813396">不得尋找或使用能存取你裝置的打印機</translation>
 <translation id="5400836586163650660">灰色</translation>
 <translation id="5402367795255837559">點字</translation>
@@ -7716,7 +7715,6 @@
 <translation id="6336038146639916978"><ph name="MANAGER" /> 已停用 ADB 偵錯。這會讓系統在 24 小時後重設您的 <ph name="DEVICE_TYPE" />。請備份您想保留的檔案。</translation>
 <translation id="6336194758029258346">應用程式語言</translation>
 <translation id="6337543438445391085">資料仍可能會包含部分個人資料，請務必檢查已匯出的檔案。</translation>
-<translation id="6338554362382763574">瀏覽網頁時，你可以輕鬆向 Gemini 詢問有關共用分頁的問題</translation>
 <translation id="6338968693068997776">新增 USB 裝置</translation>
 <translation id="6339668969738228384">為 <ph name="USER_EMAIL_ADDRESS" /> 建立新的個人檔案</translation>
 <translation id="6340071272923955280">Internet Printing Protocol (IPPS)</translation>
@@ -8334,7 +8332,6 @@
     <ph name="BEGIN_PARAGRAPH2" />您可在「設定」中關閉此服務。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">已取消 Linux 備份</translation>
 <translation id="6782067259631821405">PIN 無效</translation>
-<translation id="6782219876520622071">為提升 Gemini 品質，人手審查員可能會查看有關共用分頁的對話</translation>
 <translation id="6783036716881942511">要忘記此裝置嗎？</translation>
 <translation id="6783667414610055871">Microsoft OneDrive 設定</translation>
 <translation id="6784523122863989144">支援設定檔</translation>

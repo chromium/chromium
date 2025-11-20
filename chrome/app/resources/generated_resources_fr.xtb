@@ -1483,7 +1483,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="199191324030140441">Désactiver le mode "Ne pas déranger"</translation>
 <translation id="1992397118740194946">Non défini</translation>
 <translation id="1994173015038366702">URL du site</translation>
-<translation id="1995916364271252349">Permet de contrôler les informations que les sites peuvent utiliser et afficher (position, appareil photo, fenêtres pop-up et plus)</translation>
+<translation id="1995916364271252349">Permet de contrôler les informations que les sites peuvent utiliser et afficher (position, appareil photo, pop-ups et plus)</translation>
 <translation id="199610894463449797">{0,plural, =1{Fermer ce profil}one{Fermer ce profil (# fenêtre)}other{Fermer ce profil (# fenêtres)}}</translation>
 <translation id="1997433994358798851">Vous devez autoriser Chrome à utiliser le Bluetooth pour se connecter à votre appareil</translation>
 <translation id="1997616988432401742">Vos certificats</translation>
@@ -1786,7 +1786,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2209841631181508629">Pour continuer, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> partagera avec ce site <ph name="FIELDS_STRING" />. Consultez les <ph name="BEGIN_LINK" />Conditions d'utilisation<ph name="END_LINK" /> du site.</translation>
 <translation id="2210462644007531147">Impossible de procéder à l'installation</translation>
 <translation id="2211043920024403606">Informations sur le profil</translation>
-<translation id="221297410904507041">Supprimer l'historique et les cookies, vider le cache, etc.</translation>
+<translation id="221297410904507041">Supprimez l'historique et les cookies, videz le cache, etc.</translation>
 <translation id="2213410656650624348">Modéré</translation>
 <translation id="2214018885812055163">Dossiers partagés</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 ligne non affichée&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> ligne non affichée&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> lignes non affichées&gt;}}</translation>
@@ -5488,7 +5488,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4773122030389014189">Partager le groupe d'onglets "<ph name="GROUP_NAME" />"</translation>
 <translation id="4773253008034797668">Autorisés à se connecter à n'importe quel appareil sur votre réseau local</translation>
 <translation id="477548766361111120">Autoriser l'extension à lire et modifier ce site</translation>
-<translation id="4775646243557794597">Suppression réussie sur la période suivante : <ph name="TIME_PERIOD" /></translation>
+<translation id="4775646243557794597">Suppression réussie pour la période : <ph name="TIME_PERIOD" /></translation>
 <translation id="4776311127346151860"><ph name="DEVICE_NAME" /> a été connecté(e)</translation>
 <translation id="4776594120007763294">Pour ajouter une page à lire plus tard, cliquez sur le bouton</translation>
 <translation id="4777458362738635055">Les autres utilisateurs de cet appareil peuvent utiliser ce réseau</translation>
@@ -6370,7 +6370,6 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5398497406011404839">Favoris masqués</translation>
 <translation id="5398572795982417028">Plage de pages hors limites. Le nombre maximal de pages est <ph name="MAXIMUM_PAGE" />.</translation>
 <translation id="539882584649709174">Vous aide à rédiger de courts textes pour le Web, comme des avis</translation>
-<translation id="5400068721524309244">Lorsque des onglets sont partagés, le contenu de leurs pages et leurs URL sont envoyés à Google</translation>
 <translation id="5400196580536813396">Non autorisés à rechercher ou à utiliser des imprimantes accessibles à votre appareil</translation>
 <translation id="5400836586163650660">Gris</translation>
 <translation id="5402367795255837559">Braille</translation>
@@ -7712,7 +7711,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> a désactivé le débogage ADB. Votre <ph name="DEVICE_TYPE" /> sera donc réinitialisé dans 24 heures. Sauvegardez les fichiers que vous souhaitez conserver.</translation>
 <translation id="6336194758029258346">Langue de l'appli</translation>
 <translation id="6337543438445391085">Certaines informations personnelles peuvent encore figurer parmi les données. Vérifiez bien les fichiers exportés.</translation>
-<translation id="6338554362382763574">Vous pouvez facilement poser des questions à Gemini sur les onglets que vous partagez pendant que vous naviguez</translation>
 <translation id="6338968693068997776">Ajouter un appareil USB</translation>
 <translation id="6339668969738228384">Créer un profil pour <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Protocole d'impression Internet (IPPS)</translation>
@@ -8332,7 +8330,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
     <ph name="BEGIN_PARAGRAPH2" />Vous pouvez désactiver ce service dans les paramètres.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Sauvegarde Linux annulée</translation>
 <translation id="6782067259631821405">Code incorrect</translation>
-<translation id="6782219876520622071">Les conversations concernant les onglets partagés peuvent être consultées par des réviseurs humains afin d'améliorer Gemini</translation>
 <translation id="6783036716881942511">Supprimer cet appareil ?</translation>
 <translation id="6783667414610055871">Paramètres Microsoft OneDrive</translation>
 <translation id="6784523122863989144">Profil accepté</translation>
@@ -11934,7 +11931,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="930991362911221750">Autoriser <ph name="APP_NAME" /> à voir cet onglet ?</translation>
 <translation id="931273044114601262">Autorisée sur ce site</translation>
 <translation id="93140074055951850">Les applis Android ont été arrêtées</translation>
-<translation id="932327136139879170">Accueil</translation>
+<translation id="932327136139879170">Domicile</translation>
 <translation id="932508678520956232">Impossible de lancer l'impression.</translation>
 <translation id="933427034780221291">{NUM_FILES,plural, =1{Impossible de vérifier si ce fichier est sûr, car il est trop volumineux. Vous ne pouvez pas importer de fichiers de plus de 50 Mo.}one{Impossible de vérifier si ce fichier est sûr, car il est trop volumineux. Vous ne pouvez pas importer de fichiers de plus de 50 Mo.}other{Impossible de vérifier si ces fichiers sont sûrs, car certains sont trop volumineux. Vous ne pouvez pas importer de fichiers de plus de 50 Mo.}}</translation>
 <translation id="93343527085570547">Accédez à la <ph name="BEGIN_LINK1" />page d'aide concernant les demandes légales<ph name="END_LINK1" /> pour demander des modifications de contenu pour des raisons légales. Certaines informations système et relatives au compte peuvent être envoyées à Google. Nous utilisons les données que vous nous fournissez pour résoudre les problèmes techniques et pour améliorer nos services, conformément à nos <ph name="BEGIN_LINK2" />Règles de confidentialité<ph name="END_LINK2" /> et nos <ph name="BEGIN_LINK3" />Conditions d'utilisation<ph name="END_LINK3" />.</translation>
@@ -11981,7 +11978,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="958571289841636277">Passez à la page suivante ou précédente avec un geste de balayage</translation>
 <translation id="960987915827980018">Environ 1 heure restante</translation>
 <translation id="961010578115289982">Remplacer par la vue de gauche</translation>
-<translation id="961856697154696964">Supprimer les données de navigation</translation>
+<translation id="961856697154696964">Suppr. données navigation</translation>
 <translation id="962802172452141067">Arborescence de dossiers des favoris</translation>
 <translation id="963000966785016697">Rechercher l'image avec <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">Votre administrateur informatique a désactivé les bonus Chrome pour votre appareil.</translation>

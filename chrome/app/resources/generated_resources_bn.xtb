@@ -6387,7 +6387,6 @@
 <translation id="5398497406011404839">লুকানো বুকমার্ক</translation>
 <translation id="5398572795982417028">পৃষ্ঠা সীমার বাইরের উল্লেখ, সীমা হলো <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">ওয়েবে বিভিন্ন বিষয়ে আপনাকে স্বল্প দৈর্ঘ্যের টেক্সট লিখতে সাহায্য করে, যেমন রিভিউ</translation>
-<translation id="5400068721524309244">ট্যাব শেয়ার করা হলে, সেগুলির পৃষ্ঠার কন্টেন্ট ও URL Google-কে পাঠানো হয়</translation>
 <translation id="5400196580536813396">আপনার ডিভাইসে অ্যাক্সেস করা যাবে এমন প্রিন্টার শনাক্ত বা ব্যবহার করার অনুমতি নেই</translation>
 <translation id="5400836586163650660">ধূসর</translation>
 <translation id="5402367795255837559">ব্রেইল</translation>
@@ -7729,7 +7728,6 @@
 <translation id="6336038146639916978"><ph name="MANAGER" /> ADB ডিবাগিং বন্ধ করে দিয়েছে। এটি করলে ২৪ ঘণ্টায় আপনার <ph name="DEVICE_TYPE" /> রিসেট হয়ে যাবে। কোনও ফাইল রাখতে চাইলে, সেটির ব্যাক-আপ নিন।</translation>
 <translation id="6336194758029258346">অ্যাপের ভাষা</translation>
 <translation id="6337543438445391085">কিছু ব্যক্তিগত তথ্য এরপরেও ডেটায় যুক্ত করা হতে পারে। এক্সপোর্ট করা ফাইল পর্যালোচনা করেছেন কিনা তা ভালোভাবে দেখে নিন।</translation>
-<translation id="6338554362382763574">আপনি ব্রাউজ করার সময় সহজেই নিজের শেয়ার করা ট্যাব সম্পর্কে Gemini-কে প্রশ্ন জিজ্ঞাসা করতে পারেন</translation>
 <translation id="6338968693068997776">ইউএসবি ডিভাইস যোগ করুন</translation>
 <translation id="6339668969738228384"><ph name="USER_EMAIL_ADDRESS" /> এর জন্য একটি নতুন প্রোফাইল তৈরি করুন</translation>
 <translation id="6340071272923955280">ইন্টারনেট প্রিন্ট প্রোটোকল (IPPS)</translation>
@@ -8349,7 +8347,6 @@
     <ph name="BEGIN_PARAGRAPH2" />আপনি সেটিংস থেকে এই পরিষেবা বন্ধ করে দিতে পারেন।<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Linux ব্যাক-আপ বাতিল করা হয়েছে</translation>
 <translation id="6782067259631821405">ভুল পিন</translation>
-<translation id="6782219876520622071">Gemini উন্নত করতে শেয়ার করা ট্যাব সম্পর্কে কথোপকথন হিউম্যান রিভিউয়াররা দেখতে পারেন</translation>
 <translation id="6783036716881942511">এই ডিভাইসটিকে পুরোপুরি সরিয়ে দেবেন?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive সেটিংস</translation>
 <translation id="6784523122863989144">প্রোফাইল ব্যবহার করা যাবে</translation>

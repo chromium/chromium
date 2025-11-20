@@ -6373,7 +6373,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5398497406011404839">සඟවන ලද පිටුසන්</translation>
 <translation id="5398572795982417028">පිටු සීමාවෙන් පිටත යොමුව, සීමාව වන්නේ <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">ඔබට වෙබය මත සමාලෝචන වැනි දේවල් සඳහා කෙටි ආකාරයේ පෙළ ලිවීමට උදවු කරයි.</translation>
-<translation id="5400068721524309244">පටිති බෙදා ගත් විට, ඒවායේ පිටු අන්තර්ගතය සහ URL Google වෙත යවනු ලැබේ</translation>
 <translation id="5400196580536813396">ඔබේ උපාංගයට ප්‍රවේශ විය හැකි මුද්‍රක සෙවීමට හෝ භාවිතා කිරීමට ඉඩ නැත</translation>
 <translation id="5400836586163650660">අළු</translation>
 <translation id="5402367795255837559">බ්‍රේල්</translation>
@@ -7715,7 +7714,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6336038146639916978"><ph name="MANAGER" /> ADB නිදොස් කිරීම අබල කර ඇත. මෙය ඔබගේ <ph name="DEVICE_TYPE" /> පැය 24කින් යළි සකසනු ඇත. ඔබ තබා ගැනීමට කිනම් හෝ ගොනු උපස්ථ කරන්න</translation>
 <translation id="6336194758029258346">යෙදුම් භාෂාව</translation>
 <translation id="6337543438445391085">සමහර පුද්ගලික තොරතුරු තවමත් දත්තවල ඇතුළත් විය හැක. නිර්යාත කරන ලද ගොනු සමාලෝචනය කිරීමට වග බලා ගන්න.</translation>
-<translation id="6338554362382763574">ඔබ බ්‍රවුස් කරන විට ඔබ බෙදා ගන්නා පටිති පිළිබඳව ඔබට Gemini වෙතින් පහසුවෙන් ප්‍රශ්න ඇසිය හැක</translation>
 <translation id="6338968693068997776">USB උපාංගය එක් කරන්න</translation>
 <translation id="6339668969738228384"><ph name="USER_EMAIL_ADDRESS" /> සඳහා නව පැතිකඩක් තනන්න</translation>
 <translation id="6340071272923955280">අන්තර්ජාල මුද්‍රණ ප්‍රොටොකෝලය (IPPS)</translation>
@@ -8333,7 +8331,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
     <ph name="BEGIN_PARAGRAPH2" />ඔබට මෙය සැකසීම්වල ක්‍රියාවිරහිත කළ හැකිය.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">ලිනක්ස් උස්ථය අවලංගු කළා</translation>
 <translation id="6782067259631821405">වලංගු නොවන PIN අංකය</translation>
-<translation id="6782219876520622071">Gemini වැඩි දියුණු කිරීම සඳහා බෙදා ගත් පටිති පිළිබඳ සංවාද මානව සමාලෝචකයින් විසින් දැකිය හැක</translation>
 <translation id="6783036716881942511">මෙම උපාංගය අමතක කරන්න ද?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive සැකසීම්</translation>
 <translation id="6784523122863989144">පැතිකඩට සහාය දක්වයි</translation>

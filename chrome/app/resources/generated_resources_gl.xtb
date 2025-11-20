@@ -6375,7 +6375,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5398497406011404839">Marcadores ocultos</translation>
 <translation id="5398572795982417028">A referencia da páxina supera o límite, que é <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">Axúdache a escribir textos breves para usar na Web (como poden ser as recensións, por exemplo)</translation>
-<translation id="5400068721524309244">Cando se comparten as pestanas, envíanse a Google o contido das páxinas e os seus URL</translation>
 <translation id="5400196580536813396">Permiso denegado para buscar ou usar as impresoras ás que pode acceder o teu dispositivo</translation>
 <translation id="5400836586163650660">Gris</translation>
 <translation id="5402367795255837559">Braille</translation>
@@ -7713,7 +7712,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> desactivou a depuración de ADB. Esta acción restablecerá o dispositivo (<ph name="DEVICE_TYPE" />) en 24 horas. Crea copias de seguranza dos ficheiros que queiras conservar.</translation>
 <translation id="6336194758029258346">Idioma da aplicación</translation>
 <translation id="6337543438445391085">Aínda así, pode que algunha información persoal se inclúa nos datos. Asegúrate de revisar os ficheiros exportados.</translation>
-<translation id="6338554362382763574">Podes facerlle preguntas facilmente a Gemini sobre as pestanas que compartes mentres navegas</translation>
 <translation id="6338968693068997776">Engadir dispositivo USB</translation>
 <translation id="6339668969738228384">Crea un novo perfil para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Protocolo de impresión por Internet (IPPS)</translation>
@@ -8331,7 +8329,6 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
     <ph name="BEGIN_PARAGRAPH2" />Podes desactivar este servizo en Configuración.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Cancelouse a copia de seguranza de Linux</translation>
 <translation id="6782067259631821405">O PIN non é válido</translation>
-<translation id="6782219876520622071">O noso equipo pode revisar as conversas sobre as pestanas compartidas para mellorar Gemini</translation>
 <translation id="6783036716881942511">Queres que se esqueza este dispositivo?</translation>
 <translation id="6783667414610055871">Configuración de Microsoft OneDrive</translation>
 <translation id="6784523122863989144">O perfil é compatible</translation>

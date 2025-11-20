@@ -2877,7 +2877,7 @@
 <translation id="2946640296642327832">فعال کردن بلوتوث</translation>
 <translation id="2947281105969315778">‏برای هم‌رسانی کردن گروه‌های زبانه یا پیوستن به آن‌ها، باید بتوانید به سیستم Chrome وارد شوید</translation>
 <translation id="2947605845283690091">مرور وب باید سریع باشد اکنون چندلحظه برای<ph name="BEGIN_LINK" />بررسی افزونه‌هایتان<ph name="END_LINK" /> وقت بگذارید.</translation>
-<translation id="2948287943780377675">{FILE_COUNT,plural, =1{فایل را اینجا رها کنید}one{فایل‌ها را اینجا رها کنید}other{فایل‌ها را اینجا رها کنید}}</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{فایل را اینجا رها کنید}one{فایل را اینجا رها کنید}other{فایل‌ها را اینجا رها کنید}}</translation>
 <translation id="2948300991547862301">رفتن به <ph name="PAGE_TITLE" /></translation>
 <translation id="29488703364906173">مرورگر وب سریع، ساده و ایمن که برای وب مدرن طراحی شده است.</translation>
 <translation id="2950666755714083615">ثبت‌نام شوم</translation>
@@ -6383,7 +6383,6 @@
 <translation id="5398497406011404839">نشانک‌های پنهان</translation>
 <translation id="5398572795982417028">ارجاع صفحه بیش از حد مجاز است، حداکثر مجاز <ph name="MAXIMUM_PAGE" /> است</translation>
 <translation id="539882584649709174">به شما کمک می‌کند نوشتار کوتاهی برای موارد موجود در وب بنویسید، مثلاً مرورها</translation>
-<translation id="5400068721524309244">‏وقتی‌که زبان‌ها هم‌رسانی می‌شوند، محتوای صفحه و نشانی‌های وب آن‌ها به Google ارسال می‌شوند</translation>
 <translation id="5400196580536813396">اجازه ندارند چاپگرهای دردسترس دستگاهتان را جستجو کنند یا از آن‌ها استفاده کنند</translation>
 <translation id="5400836586163650660">خاکستری</translation>
 <translation id="5402367795255837559">بریل</translation>
@@ -7724,7 +7723,6 @@
 <translation id="6336038146639916978">‏<ph name="MANAGER" /> اشکال‌زدایی «پل اشکال‌زدایی Android» ‏(ADB) را غیرفعال کرده است. با این کار، <ph name="DEVICE_TYPE" /> ظرف ۲۴ ساعت بازنشانی خواهد شد. از فایل‌هایی که مایلید نگه دارید پشتیبان‌گیری کنید.</translation>
 <translation id="6336194758029258346">زبان برنامه</translation>
 <translation id="6337543438445391085">ممکن است مقداری اطلاعات شخصی همچنان در این داده‌ها وجود داشته باشد. حتماً فایل‌های صادرشده را مرور کنید.</translation>
-<translation id="6338554362382763574">‏هنگام مرور، می‌توانید به‌راحتی درباره زبانه‌هایی که هم‌رسانی می‌کنید از Gemini سؤال بپرسید</translation>
 <translation id="6338968693068997776">‏دستگاه USB اضافه کنید</translation>
 <translation id="6339668969738228384">ایجاد نمایه جدیدی برای <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">‏پروتکل چاپ اینترنتی (IPPS)</translation>
@@ -8344,7 +8342,6 @@
     <ph name="BEGIN_PARAGRAPH2" />می‌توانید این سرویس را در «تنظیمات خاموش» کنید.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">‏پشتیبان‌گیری Linux لغو شد</translation>
 <translation id="6782067259631821405">پین نامعتبر است</translation>
-<translation id="6782219876520622071">‏افراد بازبین ممکن است مکالمه‌های مربوط به زبانه‌های هم‌رسانی‌شده را برای بهبود دادن Gemini ببینند</translation>
 <translation id="6783036716881942511">این دستگاه فراموش شود؟</translation>
 <translation id="6783667414610055871">‏تنظیمات Microsoft OneDrive</translation>
 <translation id="6784523122863989144">نمایه پشتیبانی می‌شود</translation>

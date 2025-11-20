@@ -6389,7 +6389,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5398497406011404839">Paslėptos žymės</translation>
 <translation id="5398572795982417028">Puslapio už diapazono ribų nuoroda (apribojimas :<ph name="MAXIMUM_PAGE" />)</translation>
 <translation id="539882584649709174">Padeda sukurti trumpą žiniatinklio dalykų, pvz., apžvalgų, tekstą</translation>
-<translation id="5400068721524309244">Kai skirtukai bendrinami, jų puslapių turinys ir URL siunčiami „Google“</translation>
 <translation id="5400196580536813396">Neleidžiama ieškoti įrenginiui pasiekiamų spausdintuvų ar juos naudoti</translation>
 <translation id="5400836586163650660">Pilka spalva</translation>
 <translation id="5402367795255837559">Brailio rašmenys</translation>
@@ -7731,7 +7730,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="6336038146639916978"><ph name="MANAGER" /> išjungė ADB derinimą. „<ph name="DEVICE_TYPE" />“ bus iš naujo nustatytas po 24 val. Sukurkite visų norimų išsaugoti failų atsarginę kopiją.</translation>
 <translation id="6336194758029258346">Programos kalba</translation>
 <translation id="6337543438445391085">Tam tikra asmens informacija vis tiek gali būti įtraukta į duomenis. Būtinai peržiūrėkite eksportuotus failus.</translation>
-<translation id="6338554362382763574">Naršydami galite lengvai paklausti „Gemini“ apie bendrinamus skirtukus</translation>
 <translation id="6338968693068997776">USB įrenginio pridėjimas</translation>
 <translation id="6339668969738228384">Kurti naują <ph name="USER_EMAIL_ADDRESS" /> profilį</translation>
 <translation id="6340071272923955280">Spausdinimo internetu protokolas (IPPS)</translation>
@@ -8355,7 +8353,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
     <ph name="BEGIN_PARAGRAPH2" />Šią paslaugą galite išjungti skiltyje „Nustatymai“.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">„Linux“ atsarginės kopijos kūrimas atšauktas</translation>
 <translation id="6782067259631821405">Netinkamas PIN kodas</translation>
-<translation id="6782219876520622071">Pokalbius apie bendrinamus skirtukus gali peržiūrėti tikrinantys žmonės, siekdami patobulinti „Gemini“</translation>
 <translation id="6783036716881942511">Pamiršti šį įrenginį?</translation>
 <translation id="6783667414610055871">„Microsoft OneDrive“ nustatymai</translation>
 <translation id="6784523122863989144">Profilis palaikomas</translation>

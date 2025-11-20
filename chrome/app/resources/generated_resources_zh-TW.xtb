@@ -2394,7 +2394,7 @@
 <translation id="2624142942574147739">這個網頁正在存取你的攝影機和麥克風。</translation>
 <translation id="2626799779920242286">請稍後再試。</translation>
 <translation id="2627424346328942291">無法分享</translation>
-<translation id="2628258844236035475">要從 Chrome 自動填入功能中移除住家地址嗎？</translation>
+<translation id="2628258844236035475">要從 Chrome 自動填入內容移除住家地址嗎？</translation>
 <translation id="2628770867680720336">如要啟用 ADB 偵錯，必須將這部 Chromebook 恢復原廠設定。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2629227353894235473">開發 Android 應用程式</translation>
 <translation id="2629437048544561682">清除畫布</translation>
@@ -6364,7 +6364,6 @@
 <translation id="5398497406011404839">隱藏的書籤</translation>
 <translation id="5398572795982417028">參照的網頁超出範圍限制 (<ph name="MAXIMUM_PAGE" />)</translation>
 <translation id="539882584649709174">協助在網路上撰寫評論等簡短內容</translation>
-<translation id="5400068721524309244">分享分頁時，系統會將網頁內容和網址傳送給 Google</translation>
 <translation id="5400196580536813396">不得尋找或使用能存取你裝置的印表機</translation>
 <translation id="5400836586163650660">灰</translation>
 <translation id="5402367795255837559">點字</translation>
@@ -7701,7 +7700,6 @@
 <translation id="6336038146639916978"><ph name="MANAGER" /> 已停用 ADB 偵錯，這會讓系統在 24 小時後重設 <ph name="DEVICE_TYPE" />。請備份你要保留的檔案。</translation>
 <translation id="6336194758029258346">應用程式語言</translation>
 <translation id="6337543438445391085">資料仍可能會包含部分個人資訊，請務必檢查匯出的檔案。</translation>
-<translation id="6338554362382763574">瀏覽網頁時，可以輕鬆向 Gemini 詢問分享的分頁相關問題</translation>
 <translation id="6338968693068997776">新增 USB 裝置</translation>
 <translation id="6339668969738228384">為 <ph name="USER_EMAIL_ADDRESS" /> 建立新的個人資料</translation>
 <translation id="6340071272923955280">網際網路列印通訊協定 (IPPS)</translation>
@@ -8319,7 +8317,6 @@
     <ph name="BEGIN_PARAGRAPH2" />您可以在「設定」中關閉這項服務。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">已取消 Linux 備份作業</translation>
 <translation id="6782067259631821405">PIN 碼無效</translation>
-<translation id="6782219876520622071">為提升 Gemini 服務品質，人工審查員可能會查看分享的分頁相關對話</translation>
 <translation id="6783036716881942511">要刪除此裝置嗎？</translation>
 <translation id="6783667414610055871">Microsoft OneDrive 設定</translation>
 <translation id="6784523122863989144">支援設定檔</translation>

@@ -5469,7 +5469,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4773122030389014189">Udostępnij grupę kart „<ph name="GROUP_NAME" />”</translation>
 <translation id="4773253008034797668">Zezwolono na łączenie się z dowolnym urządzeniem w sieci lokalnej</translation>
 <translation id="477548766361111120">Zezwól rozszerzeniu na odczyt i zmianę tej witryny</translation>
-<translation id="4775646243557794597">Usunięto dane z <ph name="TIME_PERIOD" /></translation>
+<translation id="4775646243557794597">Usunięto dane z: <ph name="TIME_PERIOD" /></translation>
 <translation id="4776311127346151860">Urządzenie <ph name="DEVICE_NAME" /> zostało podłączone</translation>
 <translation id="4776594120007763294">Aby dodać stronę, którą chcesz przeczytać później, kliknij ten przycisk</translation>
 <translation id="4777458362738635055">Inni użytkownicy tego urządzenia mogą używać tej sieci</translation>
@@ -5637,7 +5637,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4878718769565915065">Nie udało się dodać odcisku do tego klucza bezpieczeństwa</translation>
 <translation id="4879491255372875719">Automatycznie (domyślnie)</translation>
 <translation id="4880315242806573837">Aktualizacje zabezpieczeń wkrótce się zakończą. Przejdź na nowego Chromebooka.</translation>
-<translation id="4880827082731008257">Przeszukaj historię</translation>
+<translation id="4880827082731008257">Historia wyszukiwania</translation>
 <translation id="4881685975363383806">Nie przypominaj mi następnym razem</translation>
 <translation id="4881695831933465202">Otwórz</translation>
 <translation id="4882312758060467256">Ma dostęp do tej strony</translation>
@@ -6351,7 +6351,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5398497406011404839">Ukryte zakładki</translation>
 <translation id="5398572795982417028">Odwołanie do strony spoza zakresu, limit to <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">Pomaga w pisaniu krótkich treści używanych w internecie, np. opinii</translation>
-<translation id="5400068721524309244">Gdy karty są udostępniane, ich zawartość i adresy URL są wysyłane do Google</translation>
 <translation id="5400196580536813396">Nie zezwolono na wyszukiwanie ani używanie drukarek dostępnych dla urządzenia</translation>
 <translation id="5400836586163650660">Szary</translation>
 <translation id="5402367795255837559">Pismo Braille'a</translation>
@@ -7691,7 +7690,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6336038146639916978">Domena <ph name="MANAGER" /> wyłączyła debugowanie ADB. W związku z tym za 24 godziny Twoje urządzenie <ph name="DEVICE_TYPE" /> zostanie zresetowane. Utwórz kopie zapasowe plików, które chcesz zachować.</translation>
 <translation id="6336194758029258346">Język aplikacji</translation>
 <translation id="6337543438445391085">Te dane nadal mogą zawierać niektóre dane osobowe. Pamiętaj, żeby przejrzeć wyeksportowane pliki.</translation>
-<translation id="6338554362382763574">Podczas przeglądania możesz łatwo zadawać Gemini pytania dotyczące udostępnianych kart</translation>
 <translation id="6338968693068997776">Dodaj urządzenie USB</translation>
 <translation id="6339668969738228384">Utwórz nowy profil dla adresu <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Internet Printing Protocol (IPPS)</translation>
@@ -8313,7 +8311,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
     <ph name="BEGIN_PARAGRAPH2" />Możesz wyłączyć tę usługę w Ustawieniach.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Tworzenie kopii zapasowej Linuksa zostało anulowane</translation>
 <translation id="6782067259631821405">Nieprawidłowy PIN</translation>
-<translation id="6782219876520622071">Rozmowy o udostępnionych kartach mogą być widoczne dla weryfikatorów pracujących nad ulepszaniem Gemini</translation>
 <translation id="6783036716881942511">Zapomnieć to urządzenie?</translation>
 <translation id="6783667414610055871">Ustawienia Microsoft OneDrive</translation>
 <translation id="6784523122863989144">Profil jest obsługiwany</translation>

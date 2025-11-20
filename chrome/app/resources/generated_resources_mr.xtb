@@ -6384,7 +6384,6 @@
 <translation id="5398497406011404839">लपवलेले बुकमार्क</translation>
 <translation id="5398572795982417028">निषिद्ध पेज संदर्भ, मर्यादा <ph name="MAXIMUM_PAGE" /> आहे</translation>
 <translation id="539882584649709174">वेबवर असलेल्या गोष्टींसाठी तुम्हाला परीक्षणांसारखा लघु स्वरूपातील मजकूर लिहिण्यास मदत करते</translation>
-<translation id="5400068721524309244">टॅब शेअर केले जातात, तेव्हा त्यांचे पेज आशय आणि URLs Google ला पाठवल्या जातात</translation>
 <translation id="5400196580536813396">तुमच्या डिव्हाइसवर अ‍ॅक्सेस करण्यायोग्य असलेली प्रिंटर शोधण्यास किंवा ती वापरण्यास अनुमती नाही</translation>
 <translation id="5400836586163650660">राखाडी</translation>
 <translation id="5402367795255837559">ब्रेल</translation>
@@ -7728,7 +7727,6 @@ I feel - विटांची इमारत</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> ने ADB डीबगिंग बंद केले आहे. यामुळे तुमचे <ph name="DEVICE_TYPE" /> २४ तासांमध्ये रीसेट होईल. तुम्हाला ठेवायच्या असलेल्या सर्व फाइलचा बॅकअप घ्या.</translation>
 <translation id="6336194758029258346">अ‍ॅपची भाषा</translation>
 <translation id="6337543438445391085">काही वैयक्तिक माहिती तरीही डेटामध्ये समाविष्ट असू शकते. एक्सपोर्ट केलेल्या फाइलचे पुनरावलोकन करण्याची खात्री करा.</translation>
-<translation id="6338554362382763574">तुम्ही ब्राउझ करत असताना Gemini ला तुम्ही शेअर करत असलेल्या टॅबबद्दल प्रश्न सहज विचारू शकता</translation>
 <translation id="6338968693068997776">USB डिव्हाइस जोडा</translation>
 <translation id="6339668969738228384"><ph name="USER_EMAIL_ADDRESS" /> साठी एक नवीन प्रोफाइल तयार करा</translation>
 <translation id="6340071272923955280">इंटरनेट प्रिंट प्रोटोकॉल (IPPS)</translation>
@@ -8346,7 +8344,6 @@ I feel - विटांची इमारत</translation>
     <ph name="BEGIN_PARAGRAPH2" />तुम्ही सेटिंग्ज मध्ये ही सेवा बंद करू शकता.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Linux बॅकअप रद्द केले</translation>
 <translation id="6782067259631821405">चुकीचा पिन</translation>
-<translation id="6782219876520622071">Gemini मध्ये सुधारणा करण्यासाठी शेअर केलेल्या टॅबबद्दलची संभाषणे मानवी परीक्षणकर्त्यांना दिसू शकतात</translation>
 <translation id="6783036716881942511">हे डिव्हाइस विसरायचे आहे का?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive सेटिंग्ज</translation>
 <translation id="6784523122863989144">प्रोफाइलला सपोर्ट नाही</translation>

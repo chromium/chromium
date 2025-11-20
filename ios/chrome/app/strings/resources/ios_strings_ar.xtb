@@ -38,7 +38,7 @@
 <translation id="1112015203684611006">تعذّرت الطباعة.</translation>
 <translation id="1118569444314402022">مرحبًا بك من جديد، "<ph name="USER_NAME" />"</translation>
 <translation id="1121850836842642159">الصور</translation>
-<translation id="1122068467107743258">عنوان العمل</translation>
+<translation id="1122068467107743258">العمل</translation>
 <translation id="1126696498560056882">إدارة الحسابات على هذا الجهاز</translation>
 <translation id="1126809382673880764">‏لا يوفّر لك هذا الوضع حماية من الإضافات أو عمليات التنزيل أو المواقع الإلكترونية الضارة. وستظل تستفيد من ميزة "التصفّح الآمن" عند توفّرها في خدمات Google الأخرى، مثل Gmail و"بحث Google".</translation>
 <translation id="1136104150802877429">عرض مراجعات المنتجات</translation>
@@ -1095,7 +1095,7 @@
 <translation id="5225388483876575107">A</translation>
 <translation id="5233638681132016545">علامة تبويب جديدة</translation>
 <translation id="5234094073825090254">{count,plural, =1{‏تم حفظ الإشارة المرجعية في حسابك على Google‏ ({email}).}zero{‏تم حفظ الإشارات المرجعية في حسابك على Google‏ ({email}).}two{‏تم حفظ الإشارتَين المرجعيّتَين في حسابك على Google‏ ({email}).}few{‏تم حفظ الإشارات المرجعية في حسابك على Google‏ ({email}).}many{‏تم حفظ الإشارات المرجعية في حسابك على Google‏ ({email}).}other{‏تم حفظ الإشارات المرجعية في حسابك على Google‏ ({email}).}}</translation>
-<translation id="5234764350956374838">تجاهل</translation>
+<translation id="5234764350956374838">إغلاق</translation>
 <translation id="5238596603078743134">‏بإمكان "<ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" />" حاليًا استخدام اسم المستخدم وكلمة المرور عند استخدام "مدير كلمات المرور في Google" لتسجيل الدخول إلى <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5241106044372754566">حساب "<ph name="NAME" />" (<ph name="EMAIL" />) الذي تديره مؤسستك هو الذي تم اختياره حاليًا. يُرجى اختيار حساب.</translation>
 <translation id="5242899254250321823">تغيير كلمة المرور على الموقع الإلكتروني</translation>
@@ -2183,7 +2183,7 @@
 <translation id="926455622548529175">تبديل وحذف</translation>
 <translation id="929748059769569925">النص المُحدَّد</translation>
 <translation id="932305336591073205">{count,plural, =1{إغلاق علامة التبويب}zero{إغلاق علامات التبويب}two{إغلاق علامتَي التبويب}few{إغلاق علامات التبويب}many{إغلاق علامات التبويب}other{إغلاق علامات التبويب}}</translation>
-<translation id="932327136139879170">عنوان المنزل</translation>
+<translation id="932327136139879170">المنزل</translation>
 <translation id="939472100615258482">الموقع الإلكتروني الحالي</translation>
 <translation id="939598580284253335">إدخال عبارة المرور</translation>
 <translation id="939736085109172342">مجلد جديد</translation>

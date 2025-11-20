@@ -1087,13 +1087,13 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1714644264617423774">Bật các tính năng hỗ trợ tiếp cận để dễ dàng sử dụng thiết bị của bạn. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="1716034099915639464">Xoá dữ liệu trang web và quyền của <ph name="SITE_NAME" />, cũng như ứng dụng đã cài đặt của trang web này?</translation>
 <translation id="171826447717908393">Ứng dụng web tách biệt (beta)</translation>
-<translation id="1718835860248848330">Một giờ qua</translation>
+<translation id="1718835860248848330">1 giờ qua</translation>
 <translation id="1719312230114180055">Lưu ý: Vân tay của bạn có thể kém an toàn hơn so với việc dùng mã PIN hoặc mật khẩu mạnh.</translation>
 <translation id="1720244237656138008">Trường phái ấn tượng</translation>
 <translation id="1720318856472900922">Xác thực Máy chủ TLS WWW</translation>
 <translation id="172123215662733643">Tìm hình ảnh bằng <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="1722460139690167654"><ph name="ENROLLMENT_DOMAIN" /> <ph name="BEGIN_LINK" />quản lý <ph name="DEVICE_TYPE" /><ph name="END_LINK" /> của bạn</translation>
-<translation id="1723824996674794290">Cửa sổ &amp;Mới</translation>
+<translation id="1723824996674794290">Cửa sổ &amp;mới</translation>
 <translation id="1724801751621173132">Chế độ nhập</translation>
 <translation id="1725585416709851618">Thử bật Google Drive trong phần Cài đặt, rồi chọn "Thử lại" hoặc chọn "Mở trong trình chỉnh sửa cơ bản" để sử dụng các tuỳ chọn xem và chỉnh sửa hạn chế.</translation>
 <translation id="1726503915437308071">Phông chữ nghiêng</translation>
@@ -1143,7 +1143,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1763046204212875858">Tạo các lối tắt cho ứng dụng</translation>
 <translation id="1763808908432309942">Mở trong một thẻ mới</translation>
 <translation id="1764226536771329714">beta</translation>
-<translation id="176587472219019965">Cửa sổ &amp;Mới</translation>
+<translation id="176587472219019965">Cửa sổ &amp;mới</translation>
 <translation id="1766575458646819543">Đã thoát chế độ toàn màn hình</translation>
 <translation id="1766957085594317166">Lưu mật khẩu vào Tài khoản Google của bạn một cách an toàn để bạn không phải nhập lại mật khẩu nữa</translation>
 <translation id="1767043563165955993">Dùng trong ứng dụng Android</translation>
@@ -5478,7 +5478,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="475088594373173692">Người dùng đầu tiên</translation>
 <translation id="4754590344707355551">Tăng cường trình duyệt bằng các tiện ích</translation>
 <translation id="4756378406049221019">Dừng/Tải lại</translation>
-<translation id="4756388243121344051">&amp;Lịch sử</translation>
+<translation id="4756388243121344051">&amp;Nhật ký</translation>
 <translation id="4756671452988984333">Chuyển văn bản thành âm thanh</translation>
 <translation id="4757654665487479524"><ph name="HEADING" />. <ph name="SUBHEADING" /></translation>
 <translation id="4759202969060787081">Không mở</translation>
@@ -6386,7 +6386,6 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5398497406011404839">Dấu trang đã ẩn</translation>
 <translation id="5398572795982417028">Vượt quá phạm vi trang, giới hạn là <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">Giúp bạn viết văn bản ngắn gọn cho các mục trên web, chẳng hạn như bài đánh giá</translation>
-<translation id="5400068721524309244">Khi các thẻ được chia sẻ, nội dung trang và URL của các thẻ đó sẽ được gửi đến Google</translation>
 <translation id="5400196580536813396">Không được phép tìm hoặc sử dụng máy in mà thiết bị của bạn có thể truy cập</translation>
 <translation id="5400836586163650660">Màu xám</translation>
 <translation id="5402367795255837559">Chữ nổi</translation>
@@ -6681,7 +6680,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5594899180331219722">Chọn tệp</translation>
 <translation id="5595307023264033512">Tổng bộ nhớ mà các trang web sử dụng: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">Chỉnh sửa địa chỉ</translation>
-<translation id="5596627076506792578">Tùy chọn khác</translation>
+<translation id="5596627076506792578">Tuỳ chọn khác</translation>
 <translation id="5596808802173376270">Có vấn đề với tệp khôi phục đã cung cấp – có thể là loại tệp không đúng cho máy khách Linux hiện tại. Hãy xem phần /var/log/messages để biết thêm thông tin.</translation>
 <translation id="5600348067066185292">Quá trình cài đặt chỉ mất vài bước đơn giản. Bạn sẽ được yêu cầu xác nhận một lần nữa trước khi hệ thống thực hiện các thay đổi trên máy tính của bạn.</translation>
 <translation id="5600706100022181951">Bản cập nhật sẽ được tải xuống bằng cách dùng <ph name="UPDATE_SIZE_MB" /> MB dữ liệu di động. Bạn có muốn tiếp tục không?</translation>
@@ -7727,7 +7726,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> đã tắt tùy chọn gỡ lỗi ADB. Thao tác này sẽ đặt lại <ph name="DEVICE_TYPE" /> của bạn sau 24 giờ nữa. Hãy sao lưu mọi tệp bạn muốn giữ lại.</translation>
 <translation id="6336194758029258346">Ngôn ngữ ứng dụng</translation>
 <translation id="6337543438445391085">Dữ liệu vẫn có thể chứa một số thông tin cá nhân. Bạn hãy nhớ kiểm tra các tệp đã xuất.</translation>
-<translation id="6338554362382763574">Bạn có thể dễ dàng hỏi Gemini về các thẻ mà bạn chia sẻ khi đang duyệt xem</translation>
 <translation id="6338968693068997776">Thêm thiết bị USB</translation>
 <translation id="6339668969738228384">Tạo hồ sơ mới cho <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Giao thức in qua Internet (IPPS)</translation>
@@ -8345,7 +8343,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
     <ph name="BEGIN_PARAGRAPH2" />Bạn có thể tắt dịch vụ này trong phần Cài đặt.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Đã hủy quá trình sao lưu Linux</translation>
 <translation id="6782067259631821405">Mã PIN không hợp lệ</translation>
-<translation id="6782219876520622071">Nhân viên đánh giá có thể xem các cuộc trò chuyện về thẻ được chia sẻ để cải thiện Gemini</translation>
 <translation id="6783036716881942511">Xoá thiết bị này?</translation>
 <translation id="6783667414610055871">Cài đặt Microsoft OneDrive</translation>
 <translation id="6784523122863989144">Hồ sơ không được hỗ trợ</translation>

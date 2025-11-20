@@ -6371,7 +6371,6 @@
 <translation id="5398497406011404839">چھپے ہوئے بُک مارکس</translation>
 <translation id="5398572795982417028">صفحہ کے حوالہ کی حدوں سے باہر، حد <ph name="MAXIMUM_PAGE" /> ہے</translation>
 <translation id="539882584649709174">ویب پر چیزوں کے لیے مختصر ٹیکسٹ لکھنے میں آپ کی مدد کرتی ہے، جیسے کہ جائزے</translation>
-<translation id="5400068721524309244">‏ٹیبز کا اشتراک کرنے پر، ان کے صفحہ کے مواد اور URLs کو Google کو بھیجا جاتا ہے</translation>
 <translation id="5400196580536813396">آپ کے آلہ تک قابل رسائی پرنٹرز کو تلاش کرنے یا انہیں استعمال کرنے کی اجازت نہیں ہے</translation>
 <translation id="5400836586163650660">خاکستری</translation>
 <translation id="5402367795255837559">بریل</translation>
@@ -7711,7 +7710,6 @@
 <translation id="6336038146639916978">‏<ph name="MANAGER" /> نے ADB ڈیبگنگ کو غیر فعال کر دیا ہے۔ یہ آپ کے <ph name="DEVICE_TYPE" /> کو 24 گھنٹوں میں ری سیٹ کر دے گا۔ کوئی بھی فائل کا بیک اپ لیں جسے آپ رکھنا چاہتے ہیں۔</translation>
 <translation id="6336194758029258346">ایپ کی زبان</translation>
 <translation id="6337543438445391085">کچھ ذاتی معلومات کو اب بھی ڈیٹا میں شامل کیا جا سکتا ہے۔ برآمد شدہ فائلوں کا جائزہ لینا یقینی بنائیں۔</translation>
-<translation id="6338554362382763574">‏براؤز کرتے وقت آپ آسانی سے اپنے اشتراک کردہ ٹیبز کے بارے میں Gemini سے سوالات پوچھ سکتے ہیں</translation>
 <translation id="6338968693068997776">‏USB آلہ شامل کریں</translation>
 <translation id="6339668969738228384"><ph name="USER_EMAIL_ADDRESS" /> کیلئے ایک نیا پروفائل بنائیں</translation>
 <translation id="6340071272923955280">‏انٹرنیٹ پرنٹنگ پروٹوکول (IPPS)</translation>
@@ -8329,7 +8327,6 @@
     <ph name="BEGIN_PARAGRAPH2" />آپ اس سروس کو ترتیبات میں جا کر آف کر سکتے ہیں۔<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">‏Linux کا بیک اپ منسوخ ہو گیا</translation>
 <translation id="6782067259631821405">‏غلط PIN</translation>
-<translation id="6782219876520622071">‏‫Gemini کو بہتر بنانے کے لیے مشترکہ ٹیبز کے بارے میں گفتگوئیں انسان جائزہ کاران دیکھ سکتے ہیں</translation>
 <translation id="6783036716881942511">اس آلے کو بھول جائیں؟</translation>
 <translation id="6783667414610055871">‏Microsoft OneDrive کی ترتیبات</translation>
 <translation id="6784523122863989144">پروفائل تعاون یافتہ ہے</translation>

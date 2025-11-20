@@ -298,7 +298,7 @@
 <translation id="1465457928007067810">Код IBAN сохранен в аккаунте Google.</translation>
 <translation id="1467432559032391204">Слева</translation>
 <translation id="1468653229182955856">Чтобы продолжить работу на сайте <ph name="TOP_ORIGIN" />, введите код <ph name="ONE_TIME_CODE" /> для фрейма <ph name="EMBEDDED_ORIGIN" />.</translation>
-<translation id="1472675084647422956">Показать больше...</translation>
+<translation id="1472675084647422956">Показать больше</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Добавьте ещё три слова или более, чтобы получить помощь с написанием.</translation>
 <translation id="147358896496811705">2A0</translation>
@@ -704,7 +704,7 @@
 <translation id="2154484045852737596">Изменение данных карты</translation>
 <translation id="2154739667870063220">Перезагрузить</translation>
 <translation id="2155260325161282517">5 x 7 дюймов</translation>
-<translation id="2156467141257470387">Вы можете использовать сохраненные адреса с любыми продуктами Google. Ваш текущий рабочий адрес не изменится. Он будет сохранен в вашем аккаунте Google (<ph name="ACCOUNT" />).</translation>
+<translation id="2156467141257470387">Сохраненные адреса можно использовать в разных продуктах Google. Ваш текущий рабочий адрес не изменится. Он будет сохранен в вашем аккаунте Google (<ph name="ACCOUNT" />).</translation>
 <translation id="2157640075051554492">Уведомления об отслеживаемых ценах</translation>
 <translation id="21613918653299710">Веб-галереи изображений</translation>
 <translation id="2161656808144014275">Текст</translation>
@@ -1233,7 +1233,7 @@
 <translation id="3027915437837548462">Изображение в формате SVG</translation>
 <translation id="3030331669969285614">Эти параметры блокируют или отменяют критическое изменение. Срок их действия ограничен.</translation>
 <translation id="3030542417256082866">Сохранить данные о транспортном средстве?</translation>
-<translation id="3033200136993730761">Когда указан домашний адрес, пользоваться сервисами Google удобнее: вы получаете более точные маршруты в Google Картах, подходящие результаты поиска и т. д. Вы можете изменить или удалить этот адрес в <ph name="BEGIN_LINK" />аккаунте Google <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
+<translation id="3033200136993730761">С домашним адресом сервисы Google становятся лучше: например, вы получаете более подходящие результаты в Поиске и маршруты в Картах. Настроить или удалить адрес можно <ph name="BEGIN_LINK" />в вашем аккаунте Google, <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
 <translation id="3034526003882782781">Изменение масштаба и прокрутка разрешены</translation>
 <translation id="3036894576201005614">Бытовая химия</translation>
 <translation id="3037177537145227281">Вы отслеживаете цену на этот товар</translation>
@@ -2376,7 +2376,7 @@
 <translation id="4877521229462766300">Разрешить встроенный контент</translation>
 <translation id="4879491255372875719">Автоматически (по умолчанию)</translation>
 <translation id="4880328155169081699">Изменить информацию об удостоверении личности?</translation>
-<translation id="4880827082731008257">Искать в истории</translation>
+<translation id="4880827082731008257">История поиска</translation>
 <translation id="4881695831933465202">Открыть</translation>
 <translation id="4881808915112408168">24 x 31,5 дюйма</translation>
 <translation id="4882314601499260499">Нет правил для пользователей. Чтобы добавить их, организация должна <ph name="LINK_BEGIN" />подтвердить ваш домен<ph name="LINK_END" />.</translation>
@@ -2978,7 +2978,7 @@
 <translation id="5898767305816764989">Кнопка "Нравится". Нажмите Ввод, чтобы рассказать, почему вам нравится <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" />.</translation>
 <translation id="5901630391730855834">Желтый</translation>
 <translation id="5903264686717710770">Заголовок:</translation>
-<translation id="5905671155741555195">Когда указан рабочий адрес, пользоваться сервисами Google удобнее: вы получаете более точные маршруты в Google Картах, подходящие результаты поиска и т. д. Вы можете изменить или удалить этот адрес в <ph name="BEGIN_LINK" />аккаунте Google <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
+<translation id="5905671155741555195">С рабочим адресом сервисы Google становятся лучше: например, вы получаете более подходящие результаты в Поиске и маршруты в Картах. Настроить или удалить адрес можно <ph name="BEGIN_LINK" />в вашем аккаунте Google, <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (данные синхронизируются)</translation>
 <translation id="5910140988253729859">Отменить автозаполнение</translation>
 <translation id="5911020115933784199">Списки событий</translation>
@@ -3029,7 +3029,7 @@
 <translation id="5984570616552610254">Влажность камеры</translation>
 <translation id="598637245381783098">Не удалось открыть Payments</translation>
 <translation id="5989320800837274978">Ни фиксированные прокси-серверы, ни URL PAC-скриптов не указаны.</translation>
-<translation id="5989917734461988169">Вы можете использовать сохраненные адреса с любыми продуктами Google. Ваш текущий домашний адрес не изменится. Он будет сохранен в вашем аккаунте Google (<ph name="ACCOUNT" />).</translation>
+<translation id="5989917734461988169">Сохраненные адреса можно использовать в разных продуктах Google. Ваш текущий домашний адрес не изменится. Он будет сохранен в вашем аккаунте Google (<ph name="ACCOUNT" />).</translation>
 <translation id="5992691462791905444">Укороченная фальцовка гармошкой</translation>
 <translation id="5992805036496113940">Посмотреть информацию, на основе которой вам показывается реклама</translation>
 <translation id="5995727681868049093">Настроить параметры конфиденциальности и безопасности в аккаунте Google</translation>
@@ -4860,7 +4860,7 @@
 <translation id="9004367719664099443">Сеанс VR запущен</translation>
 <translation id="9005998258318286617">Не удалось загрузить PDF-документ.</translation>
 <translation id="9008201768610948239">Пропустить</translation>
-<translation id="9011281744469077577">{COUNT,plural, =0{Нет сайтов.}=1{С одного сайта.}one{С # сайта.}few{С # сайтов.}many{С # сайтов.}other{С # сайта.}}</translation>
+<translation id="9011281744469077577">{COUNT,plural, =0{Нет сайтов}=1{С одного сайта}one{С # сайта}few{С # сайтов}many{С # сайтов}other{С # сайта}}</translation>
 <translation id="9014705027639070815">Посещаемые вами сайты могут запрашивать у Chrome информацию, которая помогает им оценивать эффективность рекламы. Chrome разрешает сайтам собирать определенные данные, например сведения о том, совершили ли вы покупку после посещения сайта.</translation>
 <translation id="9018120810758822233">Введите защитный код для карты "<ph name="CREDIT_CARD" />"</translation>
 <translation id="901834265349196618">электронная почта</translation>
@@ -4946,7 +4946,7 @@
 <translation id="9139318394846604261">Покупки</translation>
 <translation id="9140198744651252040">Chrome запрашивает использование отпечатка пальца, чтобы подтверждать автозаполнение паролей.</translation>
 <translation id="9141013498910525015">Управление адресами</translation>
-<translation id="9141435142213469335">Сохранить обновленный адрес</translation>
+<translation id="9141435142213469335">Добавить информацию в адрес</translation>
 <translation id="9141672681283222114">Дано разовое разрешение на использование дополненной реальности</translation>
 <translation id="9143898823728499852">Вы можете использовать для автозаполнения данные этой карты, потому что ваш аккаунт в сервисе "<ph name="CARD_ISSUER_NAME" />" связан с Google Pay.</translation>
 <translation id="9144951720726881238">Срок действия:</translation>
@@ -5042,7 +5042,7 @@
 <translation id="963734905955638680">В соответствии с законом вашей страны Chromium просит выбрать поисковую систему по умолчанию. Предложенные варианты популярны в вашем регионе. Они расположены в случайном порядке.</translation>
 <translation id="963837307749850257">Все пользователи</translation>
 <translation id="964050462028070434">Управление паролями и ключами доступа</translation>
-<translation id="969892804517981540">Официальная сборка</translation>
+<translation id="969892804517981540">официальная сборка</translation>
 <translation id="97054401902912338">Подробнее о фильтрах контента</translation>
 <translation id="973788791897303708">Эта группа вкладок заполнена</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Нет}=1{1 запись}one{# запись}few{# записи}many{# записей}other{# записи}}</translation>

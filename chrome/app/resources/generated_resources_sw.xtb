@@ -6381,7 +6381,6 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5398497406011404839">Alamisho zilizofichwa</translation>
 <translation id="5398572795982417028">Ukurasa wa kurejelea ambao hauruhusiwi kuingia, kikomo ni <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">Hukusaidia kuandika maandishi yenye muundo mfupi kwa vitu vilivyo kwenye wavuti, kama vile maoni</translation>
-<translation id="5400068721524309244">Unapotuma vichupo, URL na maudhui ya kurasa zake hutumwa kwenda Google</translation>
 <translation id="5400196580536813396">Hairuhusiwi kutafuta au kutumia printa zinazoweza kufikiwa na kifaa chako</translation>
 <translation id="5400836586163650660">Kijivu</translation>
 <translation id="5402367795255837559">Breli</translation>
@@ -7722,7 +7721,6 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> imezima utatuzi wa ADB. Hatua hii itarejesha mipangilio ambayo <ph name="DEVICE_TYPE" /> yako ilitoka nayo kiwandani, baada ya saa 24. Hifadhi nakala za faili zozote ambazo ungependa zisipotee.</translation>
 <translation id="6336194758029258346">Lugha ya programu</translation>
 <translation id="6337543438445391085">Baadhi ya taarifa binafsi huenda ikajumuishwa kwenye data. Hakikisha unakagua faili zilizohamishwa.</translation>
-<translation id="6338554362382763574">Unapovinjari, unaweza kuiuliza Gemini kwa urahisi maswali kuhusu vichupo unavyoruhusu vifikiwe</translation>
 <translation id="6338968693068997776">Weka kifaa cha USB</translation>
 <translation id="6339668969738228384">Unda wasifu mpya wa <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Itifaki ya Kuchapisha ya Intaneti (IPPS)</translation>
@@ -8340,7 +8338,6 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
     <ph name="BEGIN_PARAGRAPH2" />Unaweza kuzima huduma hii katika Mipangilio.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Imeghairi kuhifadhi rudufu ya Linux</translation>
 <translation id="6782067259631821405">PIN si Sahihi</translation>
-<translation id="6782219876520622071">Mazungumzo kuhusu vichupo vinavyotumiwa kwa pamoja yanaweza kuonwa na wahakiki wanadamu ili kuboresha Gemini</translation>
 <translation id="6783036716881942511">Ungependa kuondoa kifaa hiki</translation>
 <translation id="6783667414610055871">Mipangilio ya Microsoft OneDrive</translation>
 <translation id="6784523122863989144">Wasifu unaoweza kutumika</translation>

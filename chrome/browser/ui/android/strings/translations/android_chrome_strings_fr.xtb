@@ -28,7 +28,7 @@
 <translation id="1100066534610197918">Nouvel onglet dans un groupe</translation>
 <translation id="1103142993930332957">Aider à améliorer Chrome ?</translation>
 <translation id="1105960400813249514">Capture d'écran</translation>
-<translation id="1108214977745280468">Voir insights de la page</translation>
+<translation id="1108214977745280468">Voir les informations sur la page</translation>
 <translation id="1108938384783527433">Synchronisation de l'historique</translation>
 <translation id="1111673857033749125">Les favoris enregistrés sur vos autres appareils s'affichent ici.</translation>
 <translation id="1126696498560056882">Gérer les comptes sur cet appareil</translation>
@@ -859,7 +859,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="4769095993849849966">Nouveau nom de fichier</translation>
 <translation id="4769632191812288342">Vous bénéficiez de la protection standard</translation>
 <translation id="4773122030389014189">Partager le groupe d'onglets "<ph name="GROUP_NAME" />"</translation>
-<translation id="4775646243557794597">Suppression réussie sur la période suivante : <ph name="TIME_PERIOD" /></translation>
+<translation id="4775646243557794597">Suppression réussie pour la période : <ph name="TIME_PERIOD" /></translation>
 <translation id="4777866634702576038">Supprimer le groupe d'onglets ?</translation>
 <translation id="4778653490315793244">Rien à afficher pour le moment</translation>
 <translation id="4782929588435725897"><ph name="SEARCH_ENGINE" /> est votre moteur de recherche par défaut</translation>
@@ -1289,7 +1289,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6583199322650523874">Marquer la page actuelle en tant que favori</translation>
 <translation id="6588043302623806746">Utiliser un DNS sécurisé</translation>
 <translation id="6590471736817333463">Économisez jusqu'à 60 % de données mobiles</translation>
-<translation id="6593061639179217415">Version pour ordinateur</translation>
+<translation id="6593061639179217415">Version ordinateur</translation>
 <translation id="6594347733515723558">Options tri et affichage</translation>
 <translation id="6595046016124923392">Les images sont envoyées à Google afin de vous proposer de meilleures descriptions.</translation>
 <translation id="661266467055912436">Renforce votre sécurité et celle de tous les utilisateurs sur le Web.</translation>
@@ -1943,7 +1943,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="939598580284253335">Saisir la phrase secrète</translation>
 <translation id="945522503751344254">Envoyer un commentaire</translation>
 <translation id="95817756606698420">Chrome peut utiliser <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> pour les recherches effectuées en Chine. Vous pouvez modifier cette option dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
-<translation id="961856697154696964">Supprimer les données de navigation</translation>
+<translation id="961856697154696964">Suppr. données navigation</translation>
 <translation id="963246339335003378">Ouvrir le gestionnaire de tâches</translation>
 <translation id="966131775676567255">Suppression des données du compte…</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> minutes restantes</translation>

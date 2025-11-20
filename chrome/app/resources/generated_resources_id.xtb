@@ -6386,7 +6386,6 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5398497406011404839">Bookmark tersembunyi</translation>
 <translation id="5398572795982417028">Di luar referensi halaman batas, batasannya adalah <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">Membantu Anda menulis teks pendek untuk berbagai konten di web, seperti ulasan</translation>
-<translation id="5400068721524309244">Saat tab dibagikan, konten halaman dan URL-nya akan dikirim ke Google</translation>
 <translation id="5400196580536813396">Tidak diizinkan mencari atau menggunakan printer yang dapat diakses oleh perangkat Anda</translation>
 <translation id="5400836586163650660">Grey</translation>
 <translation id="5402367795255837559">Braille</translation>
@@ -7727,7 +7726,6 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> telah menonaktifkan proses debug ADB. Ini akan mereset <ph name="DEVICE_TYPE" /> Anda setelah 24 jam. Cadangkan file yang ingin Anda simpan.</translation>
 <translation id="6336194758029258346">Bahasa aplikasi</translation>
 <translation id="6337543438445391085">Beberapa informasi pribadi mungkin masih disertakan dalam data. Pastikan untuk meninjau file yang diekspor.</translation>
-<translation id="6338554362382763574">Anda dapat dengan mudah mengajukan pertanyaan kepada Gemini tentang tab yang Anda bagikan ketika menjelajah</translation>
 <translation id="6338968693068997776">Tambahkan perangkat USB</translation>
 <translation id="6339668969738228384">Buat profil baru untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Protokol Pencetakan Internet (IPPS)</translation>
@@ -8345,7 +8343,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
     <ph name="BEGIN_PARAGRAPH2" />Anda dapat menonaktifkan layanan ini di Setelan.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Backup Linux dibatalkan</translation>
 <translation id="6782067259631821405">PIN tidak valid</translation>
-<translation id="6782219876520622071">Percakapan tentang tab yang dibagikan dapat dilihat oleh petugas peninjau untuk meningkatkan kualitas Gemini</translation>
 <translation id="6783036716881942511">Lupakan perangkat ini?</translation>
 <translation id="6783667414610055871">Setelan Microsoft OneDrive</translation>
 <translation id="6784523122863989144">Profil didukung</translation>

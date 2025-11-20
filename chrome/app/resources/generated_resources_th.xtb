@@ -1362,7 +1362,7 @@
 <translation id="1918141783557917887">เ&amp;ล็กลง</translation>
 <translation id="1918281588461452432">ขณะที่คุณท่องเว็บ ระบบจะเข้ารหัสและบันทึกเนื้อหาในหน้าเว็บไว้ในอุปกรณ์ของคุณ</translation>
 <translation id="1918761619391445601">ปักหมุด <ph name="EXTENSION_NAME" /> แล้ว ดูตัวเลือกเพิ่มเติม</translation>
-<translation id="1919096511823372013">แทรกลิงก์ อีโมจิ และอื่นๆ คุณยังใช้ AI ของ Google เพื่อช่วยเขียนและสร้างรูปภาพได้ด้วย</translation>
+<translation id="1919096511823372013">แทรกลิงก์ อีโมจิ และอื่นๆ คุณยังใช้ Google AI เพื่อช่วยเขียนและสร้างรูปภาพได้ด้วย</translation>
 <translation id="1919872106782726755">หากต้องการตั้งค่าลายนิ้วมือ ให้บุตรหลานแตะเซ็นเซอร์ลายนิ้วมือที่มุมขวาบนของแป้นพิมพ์ ข้างปุ่มเปิด/ปิด ข้อมูลลายนิ้วมือของบุตรหลานจะจัดเก็บไว้อย่างปลอดภัยและอยู่ใน <ph name="DEVICE_TYPE" /> นี้เสมอ</translation>
 <translation id="192015196730532810">คุณสร้างกลุ่มแท็บของตัวเองได้</translation>
 <translation id="1920314570001095522">ไม่มีแท็บที่คล้ายกันให้จัดระเบียบ แต่คุณอาจชอบกลุ่มเหล่านี้</translation>
@@ -6369,7 +6369,6 @@
 <translation id="5398497406011404839">บุ๊กมาร์กที่ซ่อนอยู่</translation>
 <translation id="5398572795982417028">การอ้างอิงหน้าอยู่นอกขอบเขต จำกัดไว้ที่ <ph name="MAXIMUM_PAGE" /> หน้า</translation>
 <translation id="539882584649709174">ช่วยคุณเขียนข้อความแบบสั้นสำหรับสิ่งต่างๆ บนเว็บ เช่น รีวิว</translation>
-<translation id="5400068721524309244">เมื่อแชร์แท็บ ระบบจะส่งเนื้อหาและ URL ของหน้าเว็บไปยัง Google</translation>
 <translation id="5400196580536813396">ไม่ได้รับอนุญาตให้ค้นหาหรือใช้เครื่องพิมพ์ที่อุปกรณ์ของคุณเข้าถึงได้</translation>
 <translation id="5400836586163650660">สีเทา</translation>
 <translation id="5402367795255837559">เบรลล์</translation>
@@ -7646,7 +7645,7 @@
 <translation id="628726841779494414">จัดการเครื่องพิมพ์ของคุณในการตั้งค่าเครื่องพิมพ์</translation>
 <translation id="6287288864483377583">รองรับการนำเข้าใบรับรองฉบับเดียวเท่านั้น</translation>
 <translation id="6287828400772161253">โทรศัพท์ Android (<ph name="HOST_DEVICE_NAME" />)</translation>
-<translation id="6288559570252410796">ถามโหมด AI ของ Google</translation>
+<translation id="6288559570252410796">ถามโหมด Google AI</translation>
 <translation id="6290613030083731160">ไม่มีอุปกรณ์ที่กำลังแชร์อยู่ใกล้เคียง <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">กู้คืนไม่ได้เนื่องจากมีพื้นที่เก็บข้อมูลไม่เพียงพอ</translation>
 <translation id="6291741848715722067">รหัสยืนยัน</translation>
@@ -7707,7 +7706,6 @@
 <translation id="6336038146639916978"><ph name="MANAGER" /> ปิดใช้การแก้ไขข้อบกพร่อง ADB ซึ่งจะเป็นการรีเซ็ต <ph name="DEVICE_TYPE" /> ของคุณใน 24 ชั่วโมง โปรดสำรองข้อมูลไฟล์ที่ต้องการเก็บไว้</translation>
 <translation id="6336194758029258346">ภาษาของแอป</translation>
 <translation id="6337543438445391085">ข้อมูลส่วนบุคคลบางอย่างอาจยังรวมอยู่ในข้อมูลดังกล่าว โปรดอย่าลืมตรวจสอบไฟล์ที่ส่งออก</translation>
-<translation id="6338554362382763574">ให้คุณถามคำถามกับ Gemini เกี่ยวกับแท็บที่กำลังแชร์ได้อย่างง่ายดายขณะท่องเว็บ</translation>
 <translation id="6338968693068997776">เพิ่มอุปกรณ์ USB</translation>
 <translation id="6339668969738228384">สร้างโปรไฟล์ใหม่สำหรับ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">โปรโตคอลการพิมพ์ผ่านอินเทอร์เน็ต (IPPS)</translation>
@@ -8325,7 +8323,6 @@
     <ph name="BEGIN_PARAGRAPH2" />คุณปิดบริการนี้ได้ในการตั้งค่า<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">ยกเลิกการสำรองข้อมูล Linux แล้ว</translation>
 <translation id="6782067259631821405">PIN ไม่ถูกต้อง</translation>
-<translation id="6782219876520622071">เจ้าหน้าที่ตรวจสอบอาจเห็นการสนทนาเกี่ยวกับแท็บที่แชร์เพื่อนำไปใช้ปรับปรุง Gemini</translation>
 <translation id="6783036716881942511">เลิกจำอุปกรณ์นี้ใช่ไหม</translation>
 <translation id="6783667414610055871">การตั้งค่า Microsoft OneDrive</translation>
 <translation id="6784523122863989144">รองรับโปรไฟล์นี้</translation>
@@ -8419,7 +8416,7 @@
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{นําแท็บออกและลบกลุ่มใช่ไหม}=1{นําแท็บออกและลบกลุ่มใช่ไหม}other{นําแท็บออกและลบกลุ่มใช่ไหม}}</translation>
 <translation id="6833479554815567477">แท็บถูกนำออกจากกลุ่ม <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">สมดุล (แนะนำ)</translation>
-<translation id="6835624277262316125">ที่อยู่ที่ทำงานจะช่วยให้คุณทำสิ่งต่างๆ ให้เสร็จด้วยบริการของ Google ได้ เช่น ผลการค้นหาที่เกี่ยวข้องมากขึ้นและเส้นทางใน Google Maps คุณแก้ไขหรือลบที่อยู่ใน<ph name="BEGIN_LINK" />บัญชี Google <ph name="USERNAME" /><ph name="END_LINK" />ได้</translation>
+<translation id="6835624277262316125">ที่อยู่ที่ทำงานจะช่วยให้คุณทำสิ่งต่างๆ ให้เสร็จด้วยบริการของ Google ได้ เช่น ผลการค้นหาที่เกี่ยวข้องมากขึ้นและเส้นทางใน Google Maps คุณแก้ไขหรือลบที่อยู่ใน<ph name="BEGIN_LINK" />บัญชี Google ของคุณ (<ph name="USERNAME" />)<ph name="END_LINK" /> ได้</translation>
 <translation id="6835762382653651563">โปรดเชื่อมต่ออินเทอร์เน็ตเพื่ออัปเดต <ph name="DEVICE_TYPE" /></translation>
 <translation id="6838992358006915573">แว่นขยายตามโฟกัสของ ChromeVox</translation>
 <translation id="6839916869147598086">มีการเปลี่ยนแปลงการลงชื่อเข้าใช้</translation>
@@ -8839,7 +8836,7 @@
 <translation id="713122686776214250">เพิ่มห&amp;น้า...</translation>
 <translation id="7131431455372521159">เลิกเชื่อมต่อ TrackPoint ทั้งหมดแล้ว</translation>
 <translation id="7131896909366247105"><ph name="APP_NAME" /> กำลังรอ</translation>
-<translation id="7132886488919643383">ใช้ AI ของ Google เพื่อรับความช่วยเหลือในการอ่าน เขียน และสร้างสรรค์</translation>
+<translation id="7132886488919643383">ใช้ Google AI เพื่อรับความช่วยเหลือในการอ่าน เขียน และสร้างสรรค์</translation>
 <translation id="7134098520442464001">ทำให้ข้อความเล็กลง</translation>
 <translation id="7134951043985383439">ดาวน์โหลดไฟล์อันตรายแล้ว</translation>
 <translation id="7135729336746831607">เปิดบลูทูธไหม</translation>
@@ -9794,7 +9791,7 @@
     แสดงให้อุปกรณ์ที่อยู่ใกล้เคียงเห็นในชื่อ <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="7786889348652477777">โ&amp;หลดแอปซ้ำ</translation>
 <translation id="7787308148023287649">แสดงบนหน้าจออื่น</translation>
-<translation id="7789895198197042595">ที่อยู่บ้านจะช่วยให้คุณทำสิ่งต่างๆ ให้เสร็จด้วยบริการของ Google ได้ เช่น ผลการค้นหาที่เกี่ยวข้องมากขึ้นและเส้นทางใน Google Maps คุณแก้ไขหรือลบที่อยู่ใน<ph name="BEGIN_LINK" />บัญชี Google <ph name="USERNAME" /><ph name="END_LINK" />ได้</translation>
+<translation id="7789895198197042595">ที่อยู่บ้านจะช่วยให้คุณทำสิ่งต่างๆ ให้เสร็จด้วยบริการของ Google ได้ เช่น ผลการค้นหาที่เกี่ยวข้องมากขึ้นและเส้นทางใน Google Maps คุณแก้ไขหรือลบที่อยู่ใน<ph name="BEGIN_LINK" />บัญชี Google ของคุณ (<ph name="USERNAME" />)<ph name="END_LINK" /> ได้</translation>
 <translation id="7791269138074599214">วิธีการป้อนข้อมูล</translation>
 <translation id="7791429245559955092">แอปพลิเคชันนี้จะได้รับการติดตั้งในโปรไฟล์ Chrome ที่คุณใช้งานอยู่ในปัจจุบัน</translation>
 <translation id="7791436592012979144">เปิดใช้การเลื่อนแบบย้อนกลับอยู่</translation>

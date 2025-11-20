@@ -5647,7 +5647,7 @@
 <translation id="4878718769565915065">このセキュリティ キーにフィンガープリントを追加できませんでした</translation>
 <translation id="4879491255372875719">自動（デフォルト）</translation>
 <translation id="4880315242806573837">まもなくセキュリティ アップデートの提供が終了します。新しい Chromebook にアップグレードしましょう。</translation>
-<translation id="4880827082731008257">履歴を検索</translation>
+<translation id="4880827082731008257">検索履歴</translation>
 <translation id="4881685975363383806">次回表示しない</translation>
 <translation id="4881695831933465202">開く</translation>
 <translation id="4882312758060467256">このサイトへのアクセスが許可されています</translation>
@@ -6359,7 +6359,6 @@
 <translation id="5398497406011404839">非表示のブックマーク</translation>
 <translation id="5398572795982417028">範囲外のページを参照しています。上限は <ph name="MAXIMUM_PAGE" /> です。</translation>
 <translation id="539882584649709174">ウェブでのクチコミなどの短文の作成をサポートします</translation>
-<translation id="5400068721524309244">タブを共有すると、そのページのコンテンツと URL が Google に送信されます</translation>
 <translation id="5400196580536813396">デバイスにアクセスできるプリンタの検索と使用を許可しないサイト</translation>
 <translation id="5400836586163650660">グレー</translation>
 <translation id="5402367795255837559">点字</translation>
@@ -7699,7 +7698,6 @@
 <translation id="6336038146639916978"><ph name="MANAGER" /> により ADB デバッグが無効になりました。<ph name="DEVICE_TYPE" /> は 24 時間以内にリセットされます。必要なファイルがあればバックアップしてください。</translation>
 <translation id="6336194758029258346">アプリの言語</translation>
 <translation id="6337543438445391085">一部の個人情報が引き続きデータに含まれることがあります。エクスポートしたファイルをご確認ください。</translation>
-<translation id="6338554362382763574">ブラウジング中に共有しているタブについて Gemini に簡単に質問できます</translation>
 <translation id="6338968693068997776">USB デバイスの追加</translation>
 <translation id="6339668969738228384"><ph name="USER_EMAIL_ADDRESS" /> の新しいプロフィールを作成します</translation>
 <translation id="6340071272923955280">インターネット印刷プロトコル（IPPS）</translation>
@@ -8315,7 +8313,6 @@
 <translation id="6781658011335120230"><ph name="BEGIN_PARAGRAPH1" />アプリのデータとは、（デベロッパーの設定に基づいて）アプリが保存したデータのことで、連絡先、メッセージ、写真などのデータが含まれます。バックアップ データは、お子様のドライブの保存容量にはカウントされません。<ph name="END_PARAGRAPH1" /><ph name="BEGIN_PARAGRAPH2" />このサービスは [設定] で無効にできます。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Linux のバックアップがキャンセルされました</translation>
 <translation id="6782067259631821405">無効な PIN</translation>
-<translation id="6782219876520622071">共有タブに関するチャットの内容は、Gemini の改善のため、人間のレビュアーによって確認されることがあります</translation>
 <translation id="6783036716881942511">このデバイスを削除しますか？</translation>
 <translation id="6783667414610055871">Microsoft OneDrive の設定</translation>
 <translation id="6784523122863989144">プロファイルはサポートされています</translation>

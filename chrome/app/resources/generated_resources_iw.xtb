@@ -6386,7 +6386,6 @@
 <translation id="5398497406011404839">סימניות מוסתרות</translation>
 <translation id="5398572795982417028">התייחסות לדף מחוץ לטווח, המגבלה היא <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">התכונה הזו עוזרת לכתוב טקסט קצר לאינטרנט, למשל ביקורות.</translation>
-<translation id="5400068721524309244">‏בשיתוף כרטיסיות, התוכן של הדפים וכתובות ה-URL שלהם נשלחים אל Google</translation>
 <translation id="5400196580536813396">אין הרשאה לחפש מדפסות שלמכשיר יש גישה אליהן או להשתמש בהן</translation>
 <translation id="5400836586163650660">אפור</translation>
 <translation id="5402367795255837559">ברייל</translation>
@@ -7727,7 +7726,6 @@
 <translation id="6336038146639916978">‏ניפוי באגים באמצעות ADB הושבת על-ידי <ph name="MANAGER" />. פעולה זו תאפס את <ph name="DEVICE_TYPE" /> בתוך 24 שעות. כדאי לגבות קבצים שברצונך לשמור.</translation>
 <translation id="6336194758029258346">שפת האפליקציה</translation>
 <translation id="6337543438445391085">יכול להיות שפרטים אישיים מסוימים עדיין ייכללו בנתונים. חשוב לבדוק את הקבצים שיוצאו.</translation>
-<translation id="6338554362382763574">‏במהלך הגלישה, אפשר בקלות לשאול את Gemini שאלות על הכרטיסיות שמשתפים</translation>
 <translation id="6338968693068997776">‏הוספת התקן USB</translation>
 <translation id="6339668969738228384">יצירת פרופיל חדש בשביל <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">‏פרוטוקול הדפסה באינטרנט (IPPS)</translation>
@@ -8349,7 +8347,6 @@
     <ph name="BEGIN_PARAGRAPH2" />אפשר להשבית את השירות הזה ב'הגדרות'.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">‏גיבוי Linux נכשל</translation>
 <translation id="6782067259631821405">קוד אימות לא חוקי</translation>
-<translation id="6782219876520622071">‏יכול להיות שבודקים אנושיים יראו שיחות על כרטיסיות משותפות כדי לשפר את Gemini</translation>
 <translation id="6783036716881942511">להסיר את המכשיר הזה?</translation>
 <translation id="6783667414610055871">‏ההגדרות של Microsoft OneDrive</translation>
 <translation id="6784523122863989144">פרופיל נתמך</translation>

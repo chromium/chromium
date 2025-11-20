@@ -704,7 +704,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2154484045852737596">Modifier la carte</translation>
 <translation id="2154739667870063220">Redémarrer</translation>
 <translation id="2155260325161282517">5 x 7 pouces</translation>
-<translation id="2156467141257470387">Vous pouvez utiliser les adresses enregistrées dans différents produits Google. Votre adresse professionnelle ne sera pas modifiée. Elle sera enregistrée dans votre compte Google (<ph name="ACCOUNT" />).</translation>
+<translation id="2156467141257470387">Vous pouvez utiliser les adresses enregistrées dans les produits Google. Votre adresse professionnelle ne sera pas modifiée. Elle sera enregistrée dans votre compte Google (<ph name="ACCOUNT" />).</translation>
 <translation id="2157640075051554492">Notifications de suivi des prix</translation>
 <translation id="21613918653299710">Galeries d'images en ligne</translation>
 <translation id="2161656808144014275">Texte</translation>
@@ -3030,7 +3030,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5984570616552610254">Humidité de la chambre</translation>
 <translation id="598637245381783098">Impossible d'ouvrir l'application de paiement</translation>
 <translation id="5989320800837274978">Aucun serveur proxy déterminé ou URL de script .pac n'a été indiqué.</translation>
-<translation id="5989917734461988169">Vous pouvez utiliser les adresses enregistrées dans différents produits Google. L'adresse de votre domicile ne sera pas modifiée. Elle sera enregistrée dans votre compte Google (<ph name="ACCOUNT" />).</translation>
+<translation id="5989917734461988169">Vous pouvez utiliser les adresses enregistrées dans les produits Google. Votre adresse personnelle ne sera pas modifiée. Elle sera enregistrée dans votre compte Google (<ph name="ACCOUNT" />).</translation>
 <translation id="5992691462791905444">Technique de pli en Z</translation>
 <translation id="5992805036496113940">Voir les informations utilisées pour vous montrer des annonces</translation>
 <translation id="5995727681868049093">Gérez vos infos, la confidentialité de vos données et votre sécurité dans votre compte Google</translation>
@@ -5037,7 +5037,7 @@ Informations supplémentaires :
 <translation id="95676157383774931">Bouton du Mode IA, l'activer pour demander au Mode IA de Google</translation>
 <translation id="95721182352849470">Jaune 2</translation>
 <translation id="961663415146723894">Reliure en bas</translation>
-<translation id="961856697154696964">Supprimer les données de navigation</translation>
+<translation id="961856697154696964">Suppr. données navigation</translation>
 <translation id="961930410699694996">Accès à la position autorisé cette fois-ci</translation>
 <translation id="962484866189421427">Ce contenu peut essayer d'installer des applications trompeuses se faisant passer pour d'autres, ou de collecter des données afin de vous surveiller. <ph name="BEGIN_LINK" />Je souhaite y accéder malgré tout.<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">Conformément à la législation en vigueur dans votre région, Chromium vous demande de sélectionner un moteur de recherche par défaut. Ces moteurs de recherche populaires dans votre région sont affichés dans un ordre aléatoire.</translation>

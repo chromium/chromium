@@ -6372,7 +6372,6 @@
 <translation id="5398497406011404839">છુપાવેલા બુકમાર્ક</translation>
 <translation id="5398572795982417028">મર્યાદાની બહારનો પેજ રેફરન્સ, મર્યાદા <ph name="MAXIMUM_PAGE" /> છે</translation>
 <translation id="539882584649709174">વેબ પર રિવ્યૂ જેવી વસ્તુઓ માટે ટૂંકા પ્રકારની ટેક્સ્ટ લખવામાં તમારી સહાય કરે છે</translation>
-<translation id="5400068721524309244">જ્યારે ટૅબ શેર કરવામાં આવે છે, ત્યારે તેના પેજ કન્ટેન્ટ અને URLs Googleને મોકલવામાં આવે છે</translation>
 <translation id="5400196580536813396">તમારા ડિવાઇસ માટે ઍક્સેસિબલ હોય તેવા પ્રિન્ટર શોધવાની અથવા તેનો ઉપયોગ કરવાની મંજૂરી નથી</translation>
 <translation id="5400836586163650660">ગ્રે</translation>
 <translation id="5402367795255837559">બ્રેઇલ</translation>
@@ -7715,7 +7714,6 @@ USB ડિવાઇસ</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> દ્વારા ADB ડિબગીંગ બંધ કરાયું છે. આમ કરવાથી 24 કલાકમાં તમારું <ph name="DEVICE_TYPE" /> રીસેટ થશે. તમે રાખવા માગતા હો તેવી કોઈપણ ફાઇલોનું બૅકઅપ લો.</translation>
 <translation id="6336194758029258346">ઍપની ભાષા</translation>
 <translation id="6337543438445391085">ડેટામાં હજી પણ અમુક વ્યક્તિગત માહિતી શામેલ હોઈ શકે છે. નિકાસ કરવામાં આવેલી ફાઇલોનો રિવ્યૂ કરવાની ખાતરી કરો.</translation>
-<translation id="6338554362382763574">બ્રાઉઝ કરતી વખતે તમે જે ટૅબ શેર કરી રહ્યા હો, તેના વિશે Geminiને સરળતાથી પ્રશ્નો પૂછી શકો છો</translation>
 <translation id="6338968693068997776">USB ડિવાઇસ ઉમેરો</translation>
 <translation id="6339668969738228384"><ph name="USER_EMAIL_ADDRESS" /> માટે એક નવી પ્રોફાઇલ બનાવો</translation>
 <translation id="6340071272923955280">ઇન્ટરનેટ પ્રિંટિંગ પ્રોટોકોલ (IPPS)</translation>
@@ -8335,7 +8333,6 @@ USB ડિવાઇસ</translation>
     <ph name="BEGIN_PARAGRAPH2" />તમે આ સેવાને સેટિંગમાંથી બંધ કરી શકો છો.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Linuxનું બૅકઅપ રદ કર્યું</translation>
 <translation id="6782067259631821405">અમાન્ય પિન</translation>
-<translation id="6782219876520622071">Geminiને બહેતર બનાવવા માટે, શેર કરેલા ટૅબ વિશેની વાતચીતો માનવ રિવ્યૂઅર દ્વારા જોવામાં આવી શકે છે</translation>
 <translation id="6783036716881942511">આ ડિવાઇસને ભૂલી જઈએ?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive સેટિંગ</translation>
 <translation id="6784523122863989144">પ્રોફાઇલને સપોર્ટ આપવામાં આવે છે</translation>

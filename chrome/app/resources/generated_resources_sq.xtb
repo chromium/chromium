@@ -6367,7 +6367,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5398497406011404839">Faqeshënuesit e fshehur</translation>
 <translation id="5398572795982417028">Referenca e faqes jashtë kufijve, kufiri është <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">Të ndihmon të shkruash tekste të shkurtra për gjëra në ueb, si p.sh. komente</translation>
-<translation id="5400068721524309244">Kur ndahen skedat, përmbajtjet e faqeve dhe URL-të e tyre dërgohen te Google</translation>
 <translation id="5400196580536813396">Nuk lejohen të kërkojnë për printerët e qasshëm nga pajisja jote apo t'i përdorin ata</translation>
 <translation id="5400836586163650660">Gri</translation>
 <translation id="5402367795255837559">Braille</translation>
@@ -7708,7 +7707,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> ka çaktivizuar korrigjimin e ADB-së. Kjo do ta rivendosë pajisjen tënde <ph name="DEVICE_TYPE" /> brenda 24 orësh. Rezervo çdo skedar që dëshiron ta mbash.</translation>
 <translation id="6336194758029258346">Gjuha e aplikacionit</translation>
 <translation id="6337543438445391085">Disa informacione personale mund të përfshihen përsëri te të dhënat. Sigurohu që të rishikosh skedarët e eksportuar.</translation>
-<translation id="6338554362382763574">Mund t'i bësh me lehtësi pyetje Gemini për skedat që po ndan ndërsa shfleton</translation>
 <translation id="6338968693068997776">Shto një pajisje USB</translation>
 <translation id="6339668969738228384">Krijo një profil të ri për <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Protokolli i printimit në internet (IPPS)</translation>
@@ -8326,7 +8324,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
     <ph name="BEGIN_PARAGRAPH2" />Këtë shërbim mund ta çaktivizosh te "Cilësimet".<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Rezervimi i Linux u anulua</translation>
 <translation id="6782067259631821405">Kod PIN i pavlefshëm</translation>
-<translation id="6782219876520622071">Bisedat për skedat e ndara mund të shikohen nga shqyrtues njerëzorë për të përmirësuar Gemini</translation>
 <translation id="6783036716881942511">Të harrohet kjo pajisje?</translation>
 <translation id="6783667414610055871">Cilësimet e Microsoft OneDrive</translation>
 <translation id="6784523122863989144">Profili mbështetet</translation>

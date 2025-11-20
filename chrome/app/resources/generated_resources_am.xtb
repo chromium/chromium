@@ -6380,7 +6380,6 @@
 <translation id="5398497406011404839">የተደበቁ እልባቶች</translation>
 <translation id="5398572795982417028">ከወሰን ውጭ ያለ ገፅ ማጣቀሻ፣ ገደቡ <ph name="MAXIMUM_PAGE" /> ነው</translation>
 <translation id="539882584649709174">እንደ ግምገማዎች ያሉ በድር ላይ ላሉት ነገሮች የአጭር ቅጽ ጽሁፍ እንዲጽፉ ያግዝዎታል</translation>
-<translation id="5400068721524309244">ትሮች ሲጋሩ የገፅ ይዘቶቻቸው እና ዩአርኤሎቻቸው ወደ Google ይላካሉ</translation>
 <translation id="5400196580536813396">ለመሣሪያዎ ተደራሽ የሆኑ አታሚዎችን መፈለግ ወይም መጠቀም አይፈቀድም</translation>
 <translation id="5400836586163650660">ግራጫ</translation>
 <translation id="5402367795255837559">ብሬይል</translation>
@@ -7721,7 +7720,6 @@
 <translation id="6336038146639916978"><ph name="MANAGER" /> የADB ስህተት ማረሚያን አሰናክሏል። ይህ የእርስዎን <ph name="DEVICE_TYPE" /> በ24 ሰዓታት ውስጥ ዳግም ያስጀምረዋል። ለማቆየት የሚፈልጓቸውን ማናቸውም ፋይሎች ምትኬ ያስቀምጡላቸው።</translation>
 <translation id="6336194758029258346">የመተግበሪያ ቋንቋ</translation>
 <translation id="6337543438445391085">አንዳንድ የግል መረጃ አሁንም በውሂቡ ውስጥ ሊካተት ይችላል። ወደ ውጭ የተላኩትን ፋይሎች መገምገምዎን ያረጋግጡ።</translation>
-<translation id="6338554362382763574">በማሰስ ላይ ሳሉ ስለሚያጋሯቸው ትሮች Geminiን ጥያቄዎች መጠየቅ ይችላሉ።</translation>
 <translation id="6338968693068997776">የዩኤስቢ መሣሪያ አክል</translation>
 <translation id="6339668969738228384">ለ<ph name="USER_EMAIL_ADDRESS" /> አዲስ መገለጫ ይፈጠሩ</translation>
 <translation id="6340071272923955280">የበይነመረብ ህትመት ፕሮቶኮል (አይፒፒፒኤስ)</translation>
@@ -8341,7 +8339,6 @@
     <ph name="BEGIN_PARAGRAPH2" />ይህን አገልግሎት በቅንብሮች ውስጥ ማጥፋት ይችላሉ።<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">የLinux ምትኬ ተሰርዟል</translation>
 <translation id="6782067259631821405">ልክ ያልሆነ ፒን</translation>
-<translation id="6782219876520622071">Geminiን ለማሻሻል ስለ የተጋሩ ትሮች የሚደረጉ ውይይቶች በሰው ገምጋሚዎች ሊታዩ ይችላሉ</translation>
 <translation id="6783036716881942511">ይህ መሣሪያ ይረሳ?</translation>
 <translation id="6783667414610055871">የMicrosoft OneDrive ቅንብሮች</translation>
 <translation id="6784523122863989144">መገለጫ ይደገፋል</translation>

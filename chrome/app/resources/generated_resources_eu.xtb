@@ -6369,7 +6369,6 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="5398497406011404839">Ezkutatutako laster-markak</translation>
 <translation id="5398572795982417028">Orriaren erreferentziak muga gainditzen du. Muga <ph name="MAXIMUM_PAGE" /> da.</translation>
 <translation id="539882584649709174">Sareko edukian oinarritutako testu laburrak idazten laguntzen dizu; adibidez, iritziak</translation>
-<translation id="5400068721524309244">Fitxak partekatzen direnean, orrien edukia eta URLak Google-ra bidaltzen dira</translation>
 <translation id="5400196580536813396">Ez du baimenik gailuaren bidez atzi daitekeen inprimagailurik bilatzeko edo erabiltzeko</translation>
 <translation id="5400836586163650660">Grisa</translation>
 <translation id="5402367795255837559">Braillea</translation>
@@ -7707,7 +7706,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6336038146639916978"><ph name="MANAGER" /> domeinuak ADB arazketa desgaitu du. Ondorioz, <ph name="DEVICE_TYPE" /> gailua berrezarri egingo da 24 orduren buruan. Egin gorde nahi dituzun fitxategien babeskopiak.</translation>
 <translation id="6336194758029258346">Aplikazioaren hizkuntza</translation>
 <translation id="6337543438445391085">Baliteke datuetan informazio pertsonala sartzea. Berrikusi esportatutako fitxategiak.</translation>
-<translation id="6338554362382763574">Arakatzen duzun bitartean, partekatzen ari zaren fitxei buruzko galderak egin diezazkiokezu Gemini-ri erraz asko</translation>
 <translation id="6338968693068997776">Gehitu USB bidezko gailu bat</translation>
 <translation id="6339668969738228384">Sortu beste profil bat <ph name="USER_EMAIL_ADDRESS" /> helbiderako</translation>
 <translation id="6340071272923955280">Internet bidez inprimatzeko protokoloa (IPPS)</translation>
@@ -8325,7 +8323,6 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
     <ph name="BEGIN_PARAGRAPH2" />Ezarpenak atalean desaktiba dezakezu zerbitzu hori.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Bertan behera utzi da Linux-eko babeskopia</translation>
 <translation id="6782067259631821405">PIN kodeak ez du balio</translation>
-<translation id="6782219876520622071">Baliteke fitxa partekatuei buruzko elkarrizketak gizakiak diren berrikusleek ikustea, Gemini hobetzeko</translation>
 <translation id="6783036716881942511">Gailua ahaztu nahi duzu?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive-ren ezarpenak</translation>
 <translation id="6784523122863989144">Profila onartzen da</translation>

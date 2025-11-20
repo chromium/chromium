@@ -1249,7 +1249,7 @@
 <translation id="5791632441210678828">ปุ่มจัดเรียงสำหรับฟีดที่กำลังติดตาม</translation>
 <translation id="5803566855766646066">คุณแน่ใจไหมว่าต้องการทิ้งบัตรใบใหม่นี้</translation>
 <translation id="5804241973901381774">สิทธิ์</translation>
-<translation id="58081802114142635">กิจกรรมของคุณจะปรับปรุง AI ของ Google</translation>
+<translation id="58081802114142635">กิจกรรมของคุณจะปรับปรุง Google AI</translation>
 <translation id="5813223718099710537">เมื่อคุณใช้ฟีเจอร์นี้ ระบบจะส่งเนื้อหาและ URL ของหน้าเว็บไปยัง Google คุณปิดได้ทุกเมื่อในการตั้งค่า</translation>
 <translation id="5817176759448082654">การตรวจสอบรหัสผ่าน</translation>
 <translation id="5818161931099046557">แก้ไขในบัญชี Google</translation>
@@ -2140,7 +2140,7 @@
 <translation id="9066097352053395362">ซ่อน "แก้ไขบุ๊กมาร์ก"</translation>
 <translation id="9070824521421603770">คุณจะออกจากระบบ และแท็บจะปิดไป</translation>
 <translation id="9072837124205571418">กลุ่มแท็บจากอุปกรณ์ทั้งหมด</translation>
-<translation id="9075970015528364598">แชทจะได้รับการตรวจสอบและนำไปใช้เพื่อปรับปรุง AI ของ Google <ph name="LEARN_ABOUT_CHOICES" /> ระบบจะจัดเก็บ<ph name="INFO_ABOUT_LOCATION" />ไว้กับกิจกรรมของคุณด้วย</translation>
+<translation id="9075970015528364598">แชทจะได้รับการตรวจสอบและนำไปใช้เพื่อปรับปรุง Google AI <ph name="LEARN_ABOUT_CHOICES" /> ระบบจะจัดเก็บ<ph name="INFO_ABOUT_LOCATION" />ไว้กับกิจกรรมของคุณด้วย</translation>
 <translation id="9081058212938299310">อัปเดตรหัสผ่านของ <ph name="USERNAME" /> ไหม</translation>
 <translation id="9083838294503912307">เปิดการซิงค์เพื่อซิงค์และปรับเปลี่ยนข้อมูลตามความต้องการในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="9084367296493549256">{count,plural, =1{คุณมี {count} รหัสผ่านที่ไม่รัดกุมที่อาจทําให้การรักษาความปลอดภัยตกอยู่ในความเสี่ยง แก้ไขเลยเพื่อความปลอดภัย}other{คุณมี {count} รหัสผ่านที่ไม่รัดกุมที่อาจทําให้การรักษาความปลอดภัยตกอยู่ในความเสี่ยง แก้ไขเลยเพื่อความปลอดภัย}}</translation>
