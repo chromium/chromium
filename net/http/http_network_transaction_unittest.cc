@@ -28860,4 +28860,56 @@ TEST_P(HttpNetworkTransactionTest, EarlyHintsWithAltSvcHeader) {
             alternative_service_info_vector[0].alternative_service().host);
 }
 
+// If the proxy is not direct, we should see no additional capacity offered.
+TEST_P(HttpNetworkTransactionTest, ProxyAdditionalCapacity) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kTcpSocketPoolLimitRandomization,
+      {
+          {
+              "TcpSocketPoolLimitRandomizationBase",
+              "0.1",
+          },
+          {
+              "TcpSocketPoolLimitRandomizationCapacity",
+              "2",
+          },
+          {
+              "TcpSocketPoolLimitRandomizationMinimum",
+              "0.3",
+          },
+          {
+              "TcpSocketPoolLimitRandomizationNoise",
+              "0.4",
+          },
+      });
+  std::unique_ptr<HttpNetworkSession> session = CreateSession(&session_deps_);
+  EXPECT_EQ(session
+                ->GetSocketPool(HttpNetworkSession::NORMAL_SOCKET_POOL,
+                                ProxyChain::Direct())
+                ->AdditionalCapacityForTest(),
+            SocketPoolAdditionalCapacity::CreateForTest(0.1, 2, 0.3, 0.4));
+  EXPECT_EQ(session
+                ->GetSocketPool(HttpNetworkSession::WEBSOCKET_SOCKET_POOL,
+                                ProxyChain::Direct())
+                ->AdditionalCapacityForTest(),
+            SocketPoolAdditionalCapacity::CreateForTest(0.1, 2, 0.3, 0.4));
+  EXPECT_EQ(session
+                ->GetSocketPool(
+                    HttpNetworkSession::NORMAL_SOCKET_POOL,
+                    ProxyChain(ProxyServer::SCHEME_HTTPS,
+                               SameProxyWithDifferentSchemesProxyResolver::
+                                   ProxyHostPortPair()))
+                ->AdditionalCapacityForTest(),
+            SocketPoolAdditionalCapacity::CreateEmpty());
+  EXPECT_EQ(session
+                ->GetSocketPool(
+                    HttpNetworkSession::WEBSOCKET_SOCKET_POOL,
+                    ProxyChain(ProxyServer::SCHEME_HTTPS,
+                               SameProxyWithDifferentSchemesProxyResolver::
+                                   ProxyHostPortPair()))
+                ->AdditionalCapacityForTest(),
+            SocketPoolAdditionalCapacity::CreateEmpty());
+}
+
 }  // namespace net

@@ -16,9 +16,6 @@ namespace net {
 
 namespace {
 
-const SocketPoolAdditionalCapacity kEmptyPool =
-    SocketPoolAdditionalCapacity::CreateForTest(0.0, 0, 0.0, 0.0);
-
 // This should be kept in sync with the field trial config's default pool.
 const SocketPoolAdditionalCapacity kFieldTrialPool =
     SocketPoolAdditionalCapacity::CreateForTest(0.000001, 256, 0.01, 0.2);
@@ -27,7 +24,8 @@ TEST(SocketPoolAdditionalCapacityTest, CreateWithDisabledFeature) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
       features::kTcpSocketPoolLimitRandomization);
-  EXPECT_EQ(SocketPoolAdditionalCapacity::Create(), kEmptyPool);
+  EXPECT_EQ(SocketPoolAdditionalCapacity::Create(),
+            SocketPoolAdditionalCapacity::CreateEmpty());
 }
 
 TEST(SocketPoolAdditionalCapacityTest, CreateWithEnabledFeature) {
@@ -64,36 +62,39 @@ TEST(SocketPoolAdditionalCapacityTest, CreateForTest) {
 }
 
 TEST(SocketPoolAdditionalCapacityTest, InvalidCreation) {
+  const SocketPoolAdditionalCapacity empty_pool =
+      SocketPoolAdditionalCapacity::CreateEmpty();
+
   // base range
   EXPECT_EQ(SocketPoolAdditionalCapacity::CreateForTest(-0.1, 2, 0.3, 0.4),
-            kEmptyPool);
+            empty_pool);
   EXPECT_EQ(SocketPoolAdditionalCapacity::CreateForTest(1.1, 2, 0.3, 0.4),
-            kEmptyPool);
+            empty_pool);
   EXPECT_EQ(
       SocketPoolAdditionalCapacity::CreateForTest(std::nan(""), 2, 0.3, 0.4),
-      kEmptyPool);
+      empty_pool);
 
   // capacity range
   EXPECT_EQ(SocketPoolAdditionalCapacity::CreateForTest(0.1, 2000, 0.3, 0.4),
-            kEmptyPool);
+            empty_pool);
 
   // minimum range
   EXPECT_EQ(SocketPoolAdditionalCapacity::CreateForTest(0.1, 2, -0.3, 0.4),
-            kEmptyPool);
+            empty_pool);
   EXPECT_EQ(SocketPoolAdditionalCapacity::CreateForTest(0.1, 2, 1.3, 0.4),
-            kEmptyPool);
+            empty_pool);
   EXPECT_EQ(
       SocketPoolAdditionalCapacity::CreateForTest(0.1, 2, std::nan(""), 0.4),
-      kEmptyPool);
+      empty_pool);
 
   // noise range
   EXPECT_EQ(SocketPoolAdditionalCapacity::CreateForTest(0.1, 2, 0.3, -0.4),
-            kEmptyPool);
+            empty_pool);
   EXPECT_EQ(SocketPoolAdditionalCapacity::CreateForTest(0.1, 2, 0.3, 1.4),
-            kEmptyPool);
+            empty_pool);
   EXPECT_EQ(
       SocketPoolAdditionalCapacity::CreateForTest(0.1, 2, 0.3, std::nan("")),
-      kEmptyPool);
+      empty_pool);
 }
 
 TEST(SocketPoolAdditionalCapacityTest, NextStateBeforeAllocation) {
@@ -201,42 +202,45 @@ TEST(SocketPoolAdditionalCapacityTest, NextStateAfterRelease) {
 }
 
 TEST(SocketPoolAdditionalCapacityTest, EmptyPool) {
+  const SocketPoolAdditionalCapacity empty_pool =
+      SocketPoolAdditionalCapacity::CreateEmpty();
+
   // No sockets in use
   EXPECT_EQ(
       SocketPoolState::kUncapped,
-      kEmptyPool.NextStateBeforeAllocation(SocketPoolState::kUncapped, 0, 256));
+      empty_pool.NextStateBeforeAllocation(SocketPoolState::kUncapped, 0, 256));
   EXPECT_EQ(
       SocketPoolState::kUncapped,
-      kEmptyPool.NextStateAfterRelease(SocketPoolState::kUncapped, 0, 256));
-  EXPECT_EQ(SocketPoolState::kUncapped, kEmptyPool.NextStateBeforeAllocation(
+      empty_pool.NextStateAfterRelease(SocketPoolState::kUncapped, 0, 256));
+  EXPECT_EQ(SocketPoolState::kUncapped, empty_pool.NextStateBeforeAllocation(
                                             SocketPoolState::kCapped, 0, 256));
   EXPECT_EQ(SocketPoolState::kUncapped,
-            kEmptyPool.NextStateAfterRelease(SocketPoolState::kCapped, 0, 256));
+            empty_pool.NextStateAfterRelease(SocketPoolState::kCapped, 0, 256));
 
   // 50% of soft cap in use
   EXPECT_EQ(SocketPoolState::kUncapped,
-            kEmptyPool.NextStateBeforeAllocation(SocketPoolState::kUncapped,
+            empty_pool.NextStateBeforeAllocation(SocketPoolState::kUncapped,
                                                  128, 256));
   EXPECT_EQ(
       SocketPoolState::kUncapped,
-      kEmptyPool.NextStateAfterRelease(SocketPoolState::kUncapped, 128, 256));
+      empty_pool.NextStateAfterRelease(SocketPoolState::kUncapped, 128, 256));
   EXPECT_EQ(
       SocketPoolState::kUncapped,
-      kEmptyPool.NextStateBeforeAllocation(SocketPoolState::kCapped, 128, 256));
+      empty_pool.NextStateBeforeAllocation(SocketPoolState::kCapped, 128, 256));
   EXPECT_EQ(
       SocketPoolState::kUncapped,
-      kEmptyPool.NextStateAfterRelease(SocketPoolState::kCapped, 128, 256));
+      empty_pool.NextStateAfterRelease(SocketPoolState::kCapped, 128, 256));
 
   // 100% of soft cap in use
   EXPECT_EQ(SocketPoolState::kCapped,
-            kEmptyPool.NextStateBeforeAllocation(SocketPoolState::kUncapped,
+            empty_pool.NextStateBeforeAllocation(SocketPoolState::kUncapped,
                                                  256, 256));
   EXPECT_EQ(
       SocketPoolState::kCapped,
-      kEmptyPool.NextStateAfterRelease(SocketPoolState::kUncapped, 256, 256));
-  EXPECT_EQ(SocketPoolState::kCapped, kEmptyPool.NextStateBeforeAllocation(
+      empty_pool.NextStateAfterRelease(SocketPoolState::kUncapped, 256, 256));
+  EXPECT_EQ(SocketPoolState::kCapped, empty_pool.NextStateBeforeAllocation(
                                           SocketPoolState::kCapped, 256, 256));
-  EXPECT_EQ(SocketPoolState::kCapped, kEmptyPool.NextStateAfterRelease(
+  EXPECT_EQ(SocketPoolState::kCapped, empty_pool.NextStateAfterRelease(
                                           SocketPoolState::kCapped, 256, 256));
 }
 

@@ -41,6 +41,10 @@ SocketPoolAdditionalCapacity SocketPoolAdditionalCapacity::Create() {
   return SocketPoolAdditionalCapacity();
 }
 
+SocketPoolAdditionalCapacity SocketPoolAdditionalCapacity::CreateEmpty() {
+  return SocketPoolAdditionalCapacity();
+}
+
 // static
 SocketPoolAdditionalCapacity SocketPoolAdditionalCapacity::CreateForTest(
     double base,

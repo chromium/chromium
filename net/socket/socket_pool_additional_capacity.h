@@ -30,6 +30,9 @@ class NET_EXPORT_PRIVATE SocketPoolAdditionalCapacity {
   // This initializes using values from kTcpSocketPoolLimitRandomization.
   static SocketPoolAdditionalCapacity Create();
 
+  // This initializes an empty pool that contains no capacity.
+  static SocketPoolAdditionalCapacity CreateEmpty();
+
   static SocketPoolAdditionalCapacity CreateForTest(double base,
                                                     size_t capacity,
                                                     double minimum,

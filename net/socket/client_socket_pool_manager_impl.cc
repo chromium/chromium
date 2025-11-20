@@ -66,6 +66,8 @@ ClientSocketPool* ClientSocketPoolManagerImpl::GetSocketPool(
 
   size_t sockets_per_proxy_chain;
   size_t sockets_per_group;
+  SocketPoolAdditionalCapacity additional_capacity =
+      SocketPoolAdditionalCapacity::Create();
   if (proxy_chain.is_direct()) {
     sockets_per_proxy_chain = socket_soft_cap_per_pool(pool_type_);
     sockets_per_group = max_sockets_per_group(pool_type_);
@@ -73,6 +75,7 @@ ClientSocketPool* ClientSocketPoolManagerImpl::GetSocketPool(
     sockets_per_proxy_chain = max_sockets_per_proxy_chain(pool_type_);
     sockets_per_group =
         std::min(sockets_per_proxy_chain, max_sockets_per_group(pool_type_));
+    additional_capacity = SocketPoolAdditionalCapacity::CreateEmpty();
   }
 
   std::unique_ptr<ClientSocketPool> new_pool;
@@ -81,12 +84,11 @@ ClientSocketPool* ClientSocketPoolManagerImpl::GetSocketPool(
   if (pool_type_ == HttpNetworkSession::WEBSOCKET_SOCKET_POOL &&
       proxy_chain.is_direct()) {
     new_pool = std::make_unique<WebSocketTransportClientSocketPool>(
-        sockets_per_proxy_chain, SocketPoolAdditionalCapacity::Create(),
-        proxy_chain, &websocket_common_connect_job_params_);
+        sockets_per_proxy_chain, additional_capacity, proxy_chain,
+        &websocket_common_connect_job_params_);
   } else {
     new_pool = std::make_unique<TransportClientSocketPool>(
-        sockets_per_proxy_chain, sockets_per_group,
-        SocketPoolAdditionalCapacity::Create(),
+        sockets_per_proxy_chain, sockets_per_group, additional_capacity,
         unused_idle_socket_timeout(pool_type_), proxy_chain,
         pool_type_ == HttpNetworkSession::WEBSOCKET_SOCKET_POOL,
         &common_connect_job_params_, cleanup_on_ip_address_change_);
