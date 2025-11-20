@@ -107,8 +107,10 @@ const CGFloat kCloseButtonAlpha = 0.6f;
   [_inputViewController.view
       setContentHuggingPriority:UILayoutPriorityRequired
                         forAxis:UILayoutConstraintAxisVertical];
+  // Allow compression on the input view to limit it's height in the available
+  // space (between the keyboard and the top of the view).
   [_inputViewController.view
-      setContentCompressionResistancePriority:UILayoutPriorityRequired
+      setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh
                                       forAxis:UILayoutConstraintAxisVertical];
 
   [self setupConstraints];
@@ -159,6 +161,9 @@ const CGFloat kCloseButtonAlpha = 0.6f;
         [_inputViewController.view.bottomAnchor
             constraintEqualToAnchor:self.view.keyboardLayoutGuide.topAnchor
                            constant:-kInputPlatePadding],
+        [_inputViewController.view.topAnchor
+            constraintGreaterThanOrEqualToAnchor:_closeButton.bottomAnchor
+                                        constant:kInputPlatePadding],
       ]];
       break;
     case ComposeboxInputPlatePosition::kTop:
@@ -183,6 +188,10 @@ const CGFloat kCloseButtonAlpha = 0.6f;
         [_inputViewController.view.topAnchor
             constraintEqualToAnchor:safeAreaGuide.topAnchor
                            constant:kInputPlatePadding],
+        [_inputViewController.view.bottomAnchor
+            constraintLessThanOrEqualToAnchor:self.view.keyboardLayoutGuide
+                                                  .topAnchor
+                                     constant:-kInputPlatePadding],
       ]];
       break;
     case ComposeboxInputPlatePosition::kMissing:

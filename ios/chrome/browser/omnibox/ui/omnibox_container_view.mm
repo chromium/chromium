@@ -54,8 +54,6 @@ const CGFloat kLeadingImageTrailingMarginAIM = 11;
 
 /// Space between the clear button and the edge of the omnibox.
 const CGFloat kTextInputViewClearButtonTrailingOffset = 4;
-/// The maximum number of lines for the text view before it starts scrolling.
-const int kMaxLines = 3;
 
 /// Clear button inset on all sides.
 const CGFloat kClearButtonInset = 4.0f;
@@ -71,6 +69,17 @@ bool UseTextView(OmniboxPresentationContext presentation_context) {
     return YES;
   }
   return NO;
+}
+
+/// The maxium number of lines for the multiline omnibox before it starts
+/// scrolling in the presentation context.
+int MaxNumberOfLines(OmniboxPresentationContext presentation_context) {
+  if (presentation_context == OmniboxPresentationContext::kComposebox) {
+    return 5;
+  }
+  // Lower as the other presentation context don't cap the height of the text
+  // view.
+  return 3;
 }
 
 /// Creates and configures the leading image view.
@@ -179,6 +188,12 @@ UIButton* CreateClearButton() {
   CGFloat _lastKnownTextViewWidth;
   // Whether to hide the leading image.
   BOOL _hideLeadingImage;
+  // The last computed ideal height of the text view, before being constrained
+  // by the container's bounds.
+  CGFloat _lastComputedIdealHeight;
+  // The last computed intrinsic height, used by the `intrinsicContentSize`
+  // property.
+  CGFloat _currentIntrinsicHeight;
 }
 
 @synthesize heightDelegate = _heightDelegate;
@@ -261,6 +276,7 @@ UIButton* CreateClearButton() {
     _lastKnownTextViewWidth = _textView.bounds.size.width;
     [self updateTextViewHeight];
   }
+  [self updateTextViewLayout];
 }
 
 - (void)setLeadingImage:(UIImage*)image
@@ -343,16 +359,18 @@ UIButton* CreateClearButton() {
   return _textInputView;
 }
 
+#pragma mark - Private
+
+/// Updates the text view intrinsic content height and clip autocomplete text.
 - (void)updateTextViewHeight {
   if (!_textView) {
     return;
   }
 
-  // Recalculate textView height and update it to clip and scroll if necessary.
+  // Computes user text height.
   CGFloat verticalPadding =
       _textView.textContainerInset.top + _textView.textContainerInset.bottom;
   CGFloat singleLineHeight = [self singleLineHeight];
-  CGFloat maxHeight = (singleLineHeight * kMaxLines) + verticalPadding;
 
   // Calculate the height of the user text.
   NSAttributedString* userText = _textView.attributedUserText;
@@ -377,8 +395,8 @@ UIButton* CreateClearButton() {
   if (!userTextHeight) {
     userTextHeight = singleLineHeight;
   }
-  CGFloat newHeight = ceilf(userTextHeight + verticalPadding);
 
+  // Records the number of lines and update it in the text view.
   NSInteger numberOfLines = round(userTextHeight / singleLineHeight);
   [self.metricsRecorder setNumberOfLines:numberOfLines];
   _textView.textContainer.maximumNumberOfLines = numberOfLines;
@@ -386,16 +404,38 @@ UIButton* CreateClearButton() {
       [self lineBreakModeForUserText:userText];
   [self updateLastLineClipping:defaultLineBreakMode];
 
-  newHeight = MIN(newHeight, maxHeight);
+  // Limit the number of lines and update intrinsic size.
+  _lastComputedIdealHeight = ceilf(userTextHeight + verticalPadding);
+  CGFloat maxHeightFromLines =
+      (singleLineHeight * MaxNumberOfLines(_presentationContext)) +
+      verticalPadding;
+  CGFloat intrinsicHeight = MIN(_lastComputedIdealHeight, maxHeightFromLines);
+
   if (!_textInputHeightConstraint) {
     _textInputHeightConstraint =
-        [_textView.heightAnchor constraintEqualToConstant:newHeight];
+        [_textView.heightAnchor constraintEqualToConstant:intrinsicHeight];
+    // Lower priority as the height is capped by the available height set by the
+    // embedder.
+    _textInputHeightConstraint.priority = UILayoutPriorityDefaultHigh + 1;
     _textInputHeightConstraint.active = YES;
   } else {
-    _textInputHeightConstraint.constant = newHeight;
+    _textInputHeightConstraint.constant = intrinsicHeight;
   }
-  _textView.scrollEnabled = userTextHeight > maxHeight;
-  [self.heightDelegate textFieldViewContaining:self didChangeHeight:newHeight];
+
+  if (_currentIntrinsicHeight != intrinsicHeight) {
+    _currentIntrinsicHeight = intrinsicHeight;
+    [self.heightDelegate textFieldViewContaining:self
+                                 didChangeHeight:intrinsicHeight];
+  }
+}
+
+/// Updates the text view layout.
+- (void)updateTextViewLayout {
+  if (!_textView) {
+    return;
+  }
+
+  _textView.scrollEnabled = _lastComputedIdealHeight > self.bounds.size.height;
 }
 
 /// Updates the paragraph style to clip the last line.
