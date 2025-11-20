@@ -881,6 +881,14 @@ void CanvasResourceProviderSharedImage::ExternalCanvasDrawHelper(
   }
 }
 
+scoped_refptr<StaticBitmapImage>
+CanvasResourceProviderSharedImage::DoExternalDrawAndSnapshot(
+    base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback,
+    ImageOrientation orientation /*= ImageOrientationEnum::kDefault*/) {
+  ExternalCanvasDrawHelper(draw_callback);
+  return Snapshot(orientation);
+}
+
 scoped_refptr<StaticBitmapImage> CanvasResourceProviderSharedImage::Snapshot(
     ImageOrientation orientation) {
   TRACE_EVENT0("blink", "CanvasResourceProviderSharedImage::Snapshot");
