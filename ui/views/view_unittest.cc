@@ -5459,6 +5459,131 @@ TEST_F(ViewLayerTest, LayerClipRectChanged) {
   EXPECT_EQ(v1_layer->clip_rect(), v1_observer.GetLastClipRectAndReset());
 }
 
+TEST_F(ViewLayerTest, SetClipLayerToVisibleBounds) {
+  View* content_view = widget()->SetContentsView(std::make_unique<View>());
+
+  content_view->SetBoundsRect({100, 100});
+
+  std::unique_ptr<ui::Layer> v1_region_layer = std::make_unique<ui::Layer>();
+  v1_region_layer->SetBounds({80, 80});
+
+  // Create an intermediate container so that the origin of `v1` will be
+  // different from the origin of the `v1_layer`.
+  View* container = content_view->AddChildView(std::make_unique<View>());
+  container->SetBoundsRect({10, 10, 90, 90});
+
+  View* v1 = container->AddChildView(std::make_unique<View>());
+  v1->SetBoundsRect({100, 100});
+  v1->SetPaintToLayer();
+  v1->AddLayerToRegion(v1_region_layer.get(), LayerRegion::kAbove);
+  auto* v1_layer = v1->layer();
+  ASSERT_TRUE(v1_layer);
+  v1_layer->SetName("v1");
+
+  // Place v1 at the bottom right corner of v1.
+  View* v2 = v1->AddChildView(std::make_unique<View>());
+  v2->SetBoundsRect({50, 50, 50, 50});
+  v2->SetPaintToLayer();
+  auto* v2_layer = v2->layer();
+  ASSERT_TRUE(v2_layer);
+  v2_layer->SetName("v2");
+
+  EXPECT_TRUE(v1_layer->clip_rect().IsEmpty());
+  EXPECT_TRUE(v1_region_layer->clip_rect().IsEmpty());
+  EXPECT_TRUE(v2_layer->clip_rect().IsEmpty());
+
+  {
+    // View's visible bounds won't affect the layer's clip bounds
+    // by default.
+    constexpr gfx::Rect kClipBounds(10, 10, 10, 10);
+    v1_layer->SetClipRect(kClipBounds);
+    v1_region_layer->SetClipRect(kClipBounds);
+    v1->SetBoundsRect({110, 110});
+    EXPECT_EQ(v1_layer->clip_rect(), kClipBounds);
+    EXPECT_EQ(v1_region_layer->clip_rect(), kClipBounds);
+    EXPECT_TRUE(v2_layer->clip_rect().IsEmpty());
+  }
+
+  v1->SetClipLayerToVisibleBounds(true);
+  {
+    // Layer is Fully Visible Bounds.
+    constexpr gfx::Rect kFullyVisibleBounds(90, 90);
+    EXPECT_EQ(v1_layer->clip_rect(), kFullyVisibleBounds);
+    EXPECT_EQ(v1_region_layer->clip_rect(), kFullyVisibleBounds);
+    EXPECT_TRUE(v2_layer->clip_rect().IsEmpty());
+
+    // Now enable clipping on v2. v2 is partially visible.
+    v2->SetClipLayerToVisibleBounds(true);
+    EXPECT_EQ(v2_layer->clip_rect(), gfx::Rect(40, 40));
+  }
+
+  v1->SetBoundsRect({65, 0, 50, 50});
+  // Move v1 so that layer's are partially visible.
+  {
+    constexpr gfx::Rect kPartiallyVisibleBounds(25, 50);
+    EXPECT_EQ(v1_layer->clip_rect(), kPartiallyVisibleBounds);
+    EXPECT_EQ(v1_region_layer->clip_rect(), kPartiallyVisibleBounds);
+
+    // v2 is completely invisible.
+    EXPECT_FALSE(v2_layer->clip_rect().IsEmpty());
+    EXPECT_FALSE(v2->GetLocalBounds().Intersects(v2_layer->clip_rect()));
+  }
+
+  v1->SetBoundsRect({100, 0, 50, 50});
+  // Move v1 so that it's outside of the container. All layes must be invisible.
+  EXPECT_FALSE(v1_layer->clip_rect().IsEmpty());
+  EXPECT_FALSE(v1->GetLocalBounds().Intersects(v1_layer->clip_rect()));
+  EXPECT_FALSE(v1_region_layer->clip_rect().IsEmpty());
+  EXPECT_FALSE(v1->GetLocalBounds().Intersects(v1_region_layer->clip_rect()));
+  EXPECT_FALSE(v2_layer->clip_rect().IsEmpty());
+  EXPECT_FALSE(v2->GetLocalBounds().Intersects(v2_layer->clip_rect()));
+
+  v1->SetBoundsRect({90, 90});
+  // Move v1 back so that v1 layers are fully visible but v2 is partially
+  // visible.
+  EXPECT_TRUE(v1_layer->clip_rect().IsEmpty());
+  EXPECT_TRUE(v1_region_layer->clip_rect().IsEmpty());
+  EXPECT_FALSE(v2_layer->clip_rect().IsEmpty());
+  EXPECT_EQ(v2_layer->clip_rect(), gfx::Rect(40, 40));
+
+  // Shrink the parent.
+  // v1 is partially visible and v2 is completely invisible.
+  {
+    constexpr gfx::Rect kParentBounds(40, 30);
+    container->SetBoundsRect(kParentBounds);
+    EXPECT_EQ(v1_layer->clip_rect(), kParentBounds);
+    EXPECT_EQ(v1_region_layer->clip_rect(), kParentBounds);
+    EXPECT_FALSE(v2_layer->clip_rect().IsEmpty());
+    EXPECT_FALSE(v2->GetLocalBounds().Intersects(v2_layer->clip_rect()));
+  }
+
+  // Enlarge the parent so that v1 layers are fully visible, v2 is partially
+  // still visible.
+  container->SetBoundsRect({90, 90});
+  EXPECT_TRUE(v1_layer->clip_rect().IsEmpty());
+  EXPECT_TRUE(v1_region_layer->clip_rect().IsEmpty());
+  EXPECT_EQ(v2_layer->clip_rect(), gfx::Rect(40, 40));
+
+  {
+    // Make sure that disabling the flag will remove the clipping.
+    constexpr gfx::Rect kParentBounds(40, 30);
+    container->SetBoundsRect(kParentBounds);
+    EXPECT_EQ(v1_layer->clip_rect(), kParentBounds);
+    EXPECT_EQ(v1_region_layer->clip_rect(), kParentBounds);
+
+    v1->SetClipLayerToVisibleBounds(false);
+
+    EXPECT_TRUE(v1_layer->clip_rect().IsEmpty());
+    EXPECT_TRUE(v1_region_layer->clip_rect().IsEmpty());
+    EXPECT_FALSE(v2_layer->clip_rect().IsEmpty());
+
+    v2->SetClipLayerToVisibleBounds(false);
+    EXPECT_TRUE(v2_layer->clip_rect().IsEmpty());
+  }
+
+  v1->RemoveLayerFromRegions(v1_region_layer.get());
+}
+
 // Make sure layers are positioned correctly in RTL.
 TEST_F(ViewLayerTest, BoundInRTL) {
   base::test::ScopedRestoreICUDefaultLocale scoped_locale_("he");

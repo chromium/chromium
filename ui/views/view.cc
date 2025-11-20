@@ -464,15 +464,15 @@ void View::SetBoundsRect(const gfx::Rect& bounds) {
     LayoutImmediately();
   }
 
-  if (GetNeedsNotificationWhenVisibleBoundsChange()) {
-    OnVisibleBoundsChanged();
+  if (GetNeedsNotificationWhenVisibleBoundsChangeImpl()) {
+    OnVisibleBoundsChangedImpl();
   }
 
   // Notify interested Views that visible bounds within the root view may have
   // changed.
   if (descendants_to_notify_) {
     for (views::View* i : *descendants_to_notify_) {
-      i->OnVisibleBoundsChanged();
+      i->OnVisibleBoundsChangedImpl();
     }
   }
 
@@ -870,6 +870,26 @@ std::unique_ptr<ui::Layer> View::RecreateLayer() {
     widget->LayerTreeChanged();
   }
   return old_layer;
+}
+
+void View::SetClipLayerToVisibleBounds(bool clip_layer) {
+  if (clip_layer_to_visible_bounds_ == clip_layer) {
+    return;
+  }
+  bool remove_layer_clip = clip_layer_to_visible_bounds_;
+  auto* widget = GetWidget();
+  // Register / Unregister to visible bounds notification only when the view is
+  // already added to the widget.  Otherwise this will registered when added to
+  // the widget.
+  if (!clip_layer && widget) {
+    UnregisterForVisibleBoundsNotification();
+  }
+  clip_layer_to_visible_bounds_ = clip_layer;
+  if (clip_layer_to_visible_bounds_ && widget) {
+    RegisterForVisibleBoundsNotification();
+  }
+
+  UpdateLayerClipForVisibleBounds(remove_layer_clip);
 }
 
 // RTL positioning -------------------------------------------------------------
@@ -2659,6 +2679,53 @@ void View::SetLayerParent(ui::Layer* parent_layer) {
   }
 }
 
+bool View::GetNeedsNotificationWhenVisibleBoundsChangeImpl() const {
+  return clip_layer_to_visible_bounds_ ||
+         GetNeedsNotificationWhenVisibleBoundsChange();
+}
+
+void View::OnVisibleBoundsChangedImpl() {
+  OnVisibleBoundsChanged();
+
+  if (!clip_layer_to_visible_bounds_) {
+    return;
+  }
+  UpdateLayerClipForVisibleBounds(/*remove_layer_clip=*/false);
+}
+
+void View::UpdateLayerClipForVisibleBounds(bool remove_layer_clip) {
+  if (!layer()) {
+    return;
+  }
+
+  std::optional<gfx::Rect> clip_bounds = GetVisibleBounds();
+  if (remove_layer_clip || clip_bounds == GetLocalBounds()) {
+    clip_bounds.reset();
+  }
+
+  auto apply_clip_bounds = [](ui::Layer* layer,
+                              std::optional<gfx::Rect>& clip_bounds) {
+    if (!clip_bounds) {
+      layer->SetClipRect({});
+    } else if (clip_bounds->IsEmpty()) {
+      // If the visible bounds is empty, that means the layer should be
+      // invisible. However, setting an empty clip rect reset means 'no
+      // clipping', and we cannot use `SetVisible` as a client may change this
+      // value. Use the clip bounds that never intersect with the layer to make
+      // this invisible.
+      constexpr gfx::Rect kOutOfBounds(-2, -2, 1, 1);
+      layer->SetClipRect(kOutOfBounds);
+    } else {
+      layer->SetClipRect(*clip_bounds);
+    }
+  };
+  apply_clip_bounds(layer(), clip_bounds);
+
+  for (ui::Layer* layer : GetLayersInOrder(ViewLayer::kExclude)) {
+    apply_clip_bounds(layer, clip_bounds);
+  }
+}
+
 void View::ReorderChildLayers(ui::Layer* parent_layer) {
   if (layer() && layer() != parent_layer) {
     DCHECK_EQ(parent_layer, layer()->parent());
@@ -3252,7 +3319,6 @@ void View::PropagateAddNotifications(const ViewHierarchyChangedDetails& details,
   // their parents as accelerators registered later take priority over those
   // registered earlier.
   RegisterPendingAccelerators();
-
   {
     internal::ScopedChildrenLock lock(this);
     for (views::View* child : children_) {
@@ -3341,7 +3407,7 @@ void View::SnapLayerToPixelBoundary(const LayerOffsetData& offset_data) {
 
 // static
 void View::RegisterChildrenForVisibleBoundsNotification(View* view) {
-  if (view->GetNeedsNotificationWhenVisibleBoundsChange()) {
+  if (view->GetNeedsNotificationWhenVisibleBoundsChangeImpl()) {
     view->RegisterForVisibleBoundsNotification();
   }
   for (View* child : view->children_) {
@@ -3351,7 +3417,7 @@ void View::RegisterChildrenForVisibleBoundsNotification(View* view) {
 
 // static
 void View::UnregisterChildrenForVisibleBoundsNotification(View* view) {
-  if (view->GetNeedsNotificationWhenVisibleBoundsChange()) {
+  if (view->GetNeedsNotificationWhenVisibleBoundsChangeImpl()) {
     view->UnregisterForVisibleBoundsNotification();
   }
   for (View* child : view->children_) {
@@ -3363,7 +3429,6 @@ void View::RegisterForVisibleBoundsNotification() {
   if (registered_for_visible_bounds_notification_) {
     return;
   }
-
   registered_for_visible_bounds_notification_ = true;
   for (View* ancestor = parent_; ancestor; ancestor = ancestor->parent_) {
     ancestor->AddDescendantToNotify(this);

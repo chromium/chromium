@@ -111,6 +111,7 @@ void GlicView::UpdateBackgroundColor() {
   SetBackground(views::CreateLayerBasedRoundedBackground(
       background_color.value_or(kColorGlicBackground), background_radii_));
   background()->SetInternalName("GlicView/background");
+  SetClipLayerToVisibleBounds(true);
 
   if (views::Widget* widget = GetWidget(); explicit_background && widget) {
     // Set the native widget background color if needed.

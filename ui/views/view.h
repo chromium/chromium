@@ -804,6 +804,11 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Overridden from ui::LayerOwner:
   std::unique_ptr<ui::Layer> RecreateLayer() override;
 
+  // When set to true, the layer will be masked to the view's visible bounds.
+  // A client should not modify the layer's `clip_rect`, which will be updated
+  // by the view.
+  void SetClipLayerToVisibleBounds(bool clip_layer);
+
   // RTL positioning -----------------------------------------------------------
 
   // Methods for accessing the bounds and position of the view, relative to its
@@ -2303,6 +2308,18 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // parent in the correct order.
   void SetLayerParent(ui::Layer* parent_layer);
 
+  // Returns true if this view is interested in VisibleBoundsChange event.
+  bool GetNeedsNotificationWhenVisibleBoundsChangeImpl() const;
+
+  // Performs tasks that are needed when visible bounds are changed. Internally
+  // this will call subclasses `OnVisibleBoundsChanged()` first.
+  void OnVisibleBoundsChangedImpl();
+
+  // Apply or remove the clip rect so that the layer's visible area matches
+  // views visible bounds. When `remove_layer_clip` is true, this will remove
+  // the clip rect regardless of the visible bounds.
+  void UpdateLayerClipForVisibleBounds(bool remove_layer_clip);
+
   // Layout --------------------------------------------------------------------
 
   // Returns whether a layout is deferred to a layout manager, either the
@@ -2595,6 +2612,9 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // If painting to a layer |mask_layer_| will mask the current layer and all
   // child layers to within the |clip_path_|.
   std::unique_ptr<views::ViewMaskLayer> mask_layer_;
+
+  // When true, the layer will be clipped to view's visible bounds.
+  bool clip_layer_to_visible_bounds_ = false;
 
   // Accelerators --------------------------------------------------------------
 
