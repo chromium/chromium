@@ -32,8 +32,10 @@ def error(*args, **kwargs):
 def run_siso_query(output_dir, file_path):
   """Queries siso for the command that generates the given file."""
   cmd = ['siso', 'query', 'commands', '-C', output_dir, file_path]
-  result = subprocess.run(cmd, capture_output=True, text=True, check=True)
-  command = result.stdout.strip().splitlines()[-1]
+  result = subprocess.run(cmd, capture_output=True, check=True)
+  # Split the lines before decoding because this can output invalid utf-8, but
+  # we only care about the last line being valid.
+  command = result.stdout.splitlines()[-1].decode('utf-8').strip()
   return f'cd {output_dir} && {command}'
 
 
@@ -101,6 +103,7 @@ if __name__ == '__main__':
       '-f',
       dest='file',
       help='Path to the file to build, relative to the output directory',
+      required=True,
   )
   parser.add_argument(
       '--config',
