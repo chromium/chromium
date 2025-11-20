@@ -288,20 +288,47 @@ No modifications.
         }
     }
 
+    void runLicenseDownloadWithRetries(ChromiumDepGraph.DependencyDescription dependency,
+                                       ChromiumDepGraph.LicenseSpec license,
+                                       File destFile) {
+        int maxAttempts = 3
+        long[] delays = [5000L, 30000L] // 5 seconds, 30 seconds
+
+        for (int attempt = 0; attempt < maxAttempts; attempt++) {
+            try {
+                downloadFile(dependency.id, license.url, destFile)
+
+                if (destFile.text.contains('<html')) {
+                    String snippet = destFile.text.length() < 100 ? destFile.text : destFile.text.substring(0, 100);
+                    throw new RuntimeException("Found HTML in LICENSE file at ${license.url}.\n"
+                            + "Please add an override to ChromiumDepGraph.groovy for ${dependency.id}.\n"
+                            + "First part was: ${snippet}")
+                }
+                return
+            } catch (Exception e) {
+                if (attempt < maxAttempts - 1) {
+                    println("ERROR: Download failed for ${license.url} on attempt ${attempt + 1}: ${e.getMessage()}. Retrying in ${delays[attempt]}ms...")
+                    Thread.sleep(delays[attempt])
+                } else {
+                    throw e;
+                }
+            }
+        }
+    }
+
     void downloadLicenses(ChromiumDepGraph.DependencyDescription dependency,
-                                 ExecutorService downloadExecutor,
-                                 List<Future> downloadTasks) {
+                          ExecutorService downloadExecutor,
+                          List<Future> downloadTasks) {
         for (int i = 0; i < dependency.licenses.size(); ++i) {
             ChromiumDepGraph.LicenseSpec license = dependency.licenses[i]
+
+            // Download only if path is missing and URL exists.
             if (!license.path?.trim() && license.url?.trim()) {
                 String destFileSuffix = (dependency.licenses.size() > 1) ? "${i + 1}.tmp" : ''
                 File destFile = project.file("${dependency.directoryPath}/LICENSE${destFileSuffix}")
+
                 downloadTasks.add(downloadExecutor.submit {
-                    downloadFile(dependency.id, license.url, destFile)
-                    if (destFile.text.contains('<html')) {
-                        throw new RuntimeException("Found HTML in LICENSE file at ${license.url}. "
-                                + "Please add an override to ChromiumDepGraph.groovy for ${dependency.id}.")
-                    }
+                    runLicenseDownloadWithRetries(dependency, license, destFile)
                 })
             }
         }
