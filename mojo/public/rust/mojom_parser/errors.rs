@@ -33,7 +33,7 @@ pub enum ParsingErrorType {
     /// wouldn't be aligned)
     InvalidPointer { value: u64 },
     /// Indicates that a nested field wasn't at the pointed-to location
-    WrongPointer { expected_offset: usize, actual_offset: usize },
+    WrongPointer { name: String, expected_offset: usize, actual_offset: usize },
     /// Indicates a size (as encoded in a struct/array header) was either too
     /// small, too large to fit into a usize, or not divisible by 8.
     InvalidSize { value: u32 },
@@ -71,12 +71,13 @@ impl ParsingError {
 
     pub fn wrong_pointer(
         offset: usize,
+        name: String,
         expected_offset: usize,
         actual_offset: usize,
     ) -> ParsingError {
         ParsingError {
             offset,
-            ty: ParsingErrorType::WrongPointer { expected_offset, actual_offset },
+            ty: ParsingErrorType::WrongPointer { name, expected_offset, actual_offset },
         }
     }
 
@@ -133,10 +134,10 @@ impl std::fmt::Display for ParsingError {
                     write!(f, "Pointer value {value} doesn't fit into 32 bits.")
                 }
             }
-            ParsingErrorType::WrongPointer { expected_offset, actual_offset } => {
+            ParsingErrorType::WrongPointer { name, expected_offset, actual_offset } => {
                 write!(
                     f,
-                    "Expected to find a nested field at {expected_offset} bytes from the \
+                    "Expected to find nested field {name} at {expected_offset} bytes from the \
                      beginning of the struct, but it was actually at {actual_offset} bytes."
                 )
             }

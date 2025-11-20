@@ -12,14 +12,8 @@ use std::collections::HashMap;
 // FOR_RELEASE: The current AST is dead simple: standard recursive data
 // structures. We'll probably need an intermediate one as well to represent data
 // on the wire, since it doesn't quite match the MojomValue structure (e.g.
-// packed bitfields). For a more optimized version, we should look into:
-// - Flat ASTs (using a single vector instead of a nested recursive structure
-// - Mapping between these and rust types that are created by the bindings
-//   generator
-// - Some way to mark fields that doesn't rely on using strings to tag them.
-// - For example, using fixed-length arrays indexed by by the field's ordinal.
-//   This is much less intuitive, though, so it should wait until we're certain
-//   things are already working.
+// packed bitfields). For a more optimized version, we could look into
+// flat ASTs (using a single vector instead of a nested recursive structure).
 
 /// Representation of a type that can appear in a .mojom file.
 ///
@@ -42,7 +36,9 @@ pub enum MojomType {
     String,
     Enum { is_valid: Predicate<u32> },
     Union { variants: HashMap<u32, MojomType> },
-    Struct { fields: Vec<(String, MojomType)> },
+    // `field_names` is only for debugging; it should have the same
+    // length as `fields`
+    Struct { field_names: Vec<String>, fields: Vec<MojomType> },
     // Mojom has separate sized/unsized array types; we could have two variants here, but
     // rust's type system can't enforce that the length is correct so there's little point.
     Array { element_type: Box<MojomType>, num_elements: Option<usize> },
@@ -67,7 +63,7 @@ pub enum MojomValue {
     String(String),
     Enum(u32),
     Union(u32, Box<MojomValue>),
-    Struct(Vec<(String, MojomValue)>),
+    Struct(Vec<String>, Vec<MojomValue>),
     // Invariant: all MojomValues in the array are the same type.
     Array(Vec<MojomValue>),
 }
@@ -132,7 +128,7 @@ pub enum PackedLeafType {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum PackedStructuredType {
-    Struct { packed_field_types: Vec<(String, MojomWireType)> },
+    Struct { packed_field_names: Vec<String>, packed_field_types: Vec<MojomWireType> },
     Array { element_type: Box<MojomWireType>, array_type: PackedArrayType },
     Union { variants: HashMap<u32, MojomWireType> },
 }

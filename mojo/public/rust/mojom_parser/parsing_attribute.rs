@@ -58,8 +58,8 @@ fn derive_mojomparse_struct(
     let to_mojom_value_fields: Vec<proc_macro2::TokenStream> = struct_fields
         .iter()
         .map(|field| {
-            let name = field.ident.as_ref().unwrap();
-            let name_str = name.to_string();
+            let name = &field.ident;
+            let name_str = field.ident.as_ref().unwrap().to_string();
             quote! { (#name_str.to_string(), value.#name.into()) }
         })
         .collect();
@@ -69,7 +69,7 @@ fn derive_mojomparse_struct(
     let from_mojom_value_fields: Vec<proc_macro2::TokenStream> = struct_fields
         .iter()
         .map(|field| {
-            let name = field.ident.as_ref().unwrap();
+            let name = &field.ident;
             quote! { #name: #name.try_into()? }
         })
         .collect();
@@ -86,19 +86,21 @@ fn derive_mojomparse_struct(
 
             impl MojomParse for #name {
                 fn mojom_type() -> MojomType {
-                    let fields : Vec<(String, MojomType)> = vec![
+                    let (field_names, fields) : (Vec<String>, Vec<MojomType>) = vec![
                         #(#mojom_type_fields),*
-                    ];
-                    MojomType::Struct { fields }
+                    ]
+                    .into_iter().unzip();
+                    MojomType::Struct { field_names, fields }
                 }
             }
 
             impl From<#name> for MojomValue {
                 fn from(value: #name) -> MojomValue {
-                    let fields : Vec<(String, MojomValue)> = vec![
+                    let (field_names, fields) : (Vec<String>, Vec<MojomValue>) = vec![
                         #(#to_mojom_value_fields),*
-                    ];
-                    MojomValue::Struct ( fields )
+                    ]
+                    .into_iter().unzip();
+                    MojomValue::Struct ( field_names, fields )
                 }
             }
 
@@ -107,9 +109,7 @@ fn derive_mojomparse_struct(
 
                 fn try_from(value : MojomValue) -> ::anyhow::Result<Self> {
                     // FOR_RELEASE: Don't clone here
-                    if let MojomValue::Struct(fields) = value.clone() {
-                        // Drop the strings, we don't care about them here
-                        let fields : Vec<MojomValue> = fields.into_iter().map(|field| field.1).collect();
+                    if let MojomValue::Struct(_field_names, fields) = value.clone() {
                         // Try to extract all the field values at once
                         let fields : [MojomValue; #num_fields] = fields.try_into()
                         .or(Err(::anyhow::anyhow!(
