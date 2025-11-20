@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <vector>
 
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
@@ -160,6 +161,14 @@ class CRYPTO_EXPORT UnexportableKeyProvider {
 class CRYPTO_EXPORT StatefulUnexportableKeyProvider
     : public UnexportableKeyProvider {
  public:
+  // `GetAllSigningKeysSlowly()` returns all previously stored keys matching
+  // `Config` or nullopt in case of failures.
+  //
+  // This can sometimes block, and therefore must not be called from the UI
+  // thread.
+  virtual std::optional<std::vector<std::unique_ptr<UnexportableSigningKey>>>
+  GetAllSigningKeysSlowly() = 0;
+
   // Deletes all state associated with a given signing key. Returns true on
   // successful deletion, false otherwise. This can sometimes block, and
   // therefore must not be called from the UI thread.

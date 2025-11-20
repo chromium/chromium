@@ -26,6 +26,7 @@
 #include "base/logging.h"
 #include "base/memory/scoped_policy.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notimplemented.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
@@ -314,6 +315,13 @@ UnexportableKeyProviderMac::FromWrappedSigningKeySlowly(
 StatefulUnexportableKeyProvider*
 UnexportableKeyProviderMac::AsStatefulUnexportableKeyProvider() {
   return this;
+}
+
+std::optional<std::vector<std::unique_ptr<UnexportableSigningKey>>>
+UnexportableKeyProviderMac::GetAllSigningKeysSlowly() {
+  // TODO(crbug.com/455539044): Implement this.
+  NOTIMPLEMENTED();
+  return std::nullopt;
 }
 
 bool UnexportableKeyProviderMac::DeleteSigningKeySlowly(

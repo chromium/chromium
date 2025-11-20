@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/containers/to_vector.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "crypto/signature_verifier.h"
 #include "crypto/unexportable_key.h"
@@ -58,6 +59,12 @@ class MockTrackingUnexportableKeyProvider
   }
 
   // StatefulUnexportableKeyProvider:
+  std::optional<std::vector<std::unique_ptr<UnexportableSigningKey>>>
+  GetAllSigningKeysSlowly() override {
+    return base::ToVector(keys_, [&](const std::vector<uint8_t>& key) {
+      return FromWrappedSigningKeySlowly(key);
+    });
+  }
   bool DeleteSigningKeySlowly(base::span<const uint8_t> wrapped_key) override {
     if (StatefulUnexportableKeyProvider* stateful_key_provider =
             key_provider_->AsStatefulUnexportableKeyProvider()) {
