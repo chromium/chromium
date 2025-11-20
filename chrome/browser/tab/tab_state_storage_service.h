@@ -98,7 +98,6 @@ class TabStateStorageService : public KeyedService,
 
   // Storage ids need to be unique across tabs and collections, but the handles
   // do not have this guarantee. Track them separately.
-  StorageId next_storage_id_ = 1;
   absl::flat_hash_map<int32_t, StorageId> tab_handle_to_storage_id_;
   absl::flat_hash_map<int32_t, StorageId> collection_handle_to_storage_id_;
 

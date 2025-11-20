@@ -57,8 +57,8 @@ base::android::ScopedJavaLocalRef<jobject> CreateLoadedTabState(
         reinterpret_cast<long>(web_contents_state_bytes_ptr);
   }
 
-  base::Token tab_group_token(tab_state.tab_group_id_high(),
-                              tab_state.tab_group_id_low());
+  const tabs_pb::Token& tab_group_id = tab_state.tab_group_id();
+  base::Token tab_group_token(tab_group_id.high(), tab_group_id.low());
   base::android::ScopedJavaLocalRef<jobject> j_tab_group_id;
   if (!tab_group_token.is_zero()) {
     j_tab_group_id = base::android::TokenAndroid::Create(env, tab_group_token);

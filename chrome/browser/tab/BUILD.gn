@@ -254,6 +254,7 @@ source_set("impl") {
     "collection_storage_observer.cc",
     "collection_storage_package.cc",
     "storage_collection_synchronizer.cc",
+    "storage_id.cc",
     "storage_loaded_data.cc",
     "storage_restore_orchestrator.cc",
     "tab_group_collection_data.cc",

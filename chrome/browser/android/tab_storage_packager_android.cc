@@ -98,7 +98,10 @@ MapAndConsumeUnmappedTabStripCollectionStorageData(
   tabs_pb::TabStripCollectionState state = unmapped_data->TakeState();
   TabAndroid* active_tab = unmapped_data->active_tab();
   if (active_tab) {
-    state.set_active_tab_storage_id(mapping.GetStorageId(active_tab));
+    tabs_pb::Token* active_tab_storage_id =
+        state.mutable_active_tab_storage_id();
+    StorageIdToTokenProto(mapping.GetStorageId(active_tab),
+                          active_tab_storage_id);
   }
   delete unmapped_data;
   return std::make_unique<TabStripCollectionStorageData>(std::move(state));

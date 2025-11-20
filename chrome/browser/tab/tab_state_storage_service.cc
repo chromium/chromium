@@ -9,10 +9,13 @@
 
 #include "base/token.h"
 #include "chrome/browser/tab/payload.h"
+#include "chrome/browser/tab/protocol/children.pb.h"
 #include "chrome/browser/tab/protocol/tab_state.pb.h"
 #include "chrome/browser/tab/protocol/tab_strip_collection_state.pb.h"
+#include "chrome/browser/tab/protocol/token.pb.h"
 #include "chrome/browser/tab/restore_id_associator.h"
 #include "chrome/browser/tab/restore_id_associator_builder.h"
+#include "chrome/browser/tab/storage_id.h"
 #include "chrome/browser/tab/storage_package.h"
 #include "chrome/browser/tab/tab_group_collection_data.h"
 #include "chrome/browser/tab/tab_state_storage_updater_builder.h"
@@ -30,14 +33,15 @@ namespace {
 template <typename T>
 StorageId GetOrCreateStorageId(
     T* object,
-    absl::flat_hash_map<int32_t, StorageId>& handle_map,
-    StorageId& next_storage_id) {
+    absl::flat_hash_map<int32_t, StorageId>& handle_map) {
   int32_t handle_id = object->GetHandle().raw_value();
-  auto [it, inserted] = handle_map.try_emplace(handle_id, next_storage_id);
-  if (inserted) {
-    next_storage_id++;
+  auto it = handle_map.find(handle_id);
+  if (it != handle_map.end()) {
+    return it->second;
   }
-  return it->second;
+  StorageId storage_id = StorageId::Create();
+  handle_map[handle_id] = storage_id;
+  return storage_id;
 }
 
 // Adds a save children operation to the builder.
@@ -134,13 +138,13 @@ TabStateStorageService::~TabStateStorageService() = default;
 
 StorageId TabStateStorageService::GetStorageId(
     const TabCollection* collection) {
-  return ::tabs::GetOrCreateStorageId(
-      collection, collection_handle_to_storage_id_, next_storage_id_);
+  return ::tabs::GetOrCreateStorageId(collection,
+                                      collection_handle_to_storage_id_);
 }
 
 StorageId TabStateStorageService::GetStorageId(const TabInterface* tab) {
-  return ::tabs::GetOrCreateStorageId(
-      tab_canonicalizer_.Run(tab), tab_handle_to_storage_id_, next_storage_id_);
+  return ::tabs::GetOrCreateStorageId(tab_canonicalizer_.Run(tab),
+                                      tab_handle_to_storage_id_);
 }
 
 void TabStateStorageService::Save(const TabInterface* tab) {
@@ -256,9 +260,7 @@ void TabStateStorageService::OnAllNodesLoaded(LoadDataCallback callback,
   absl::flat_hash_map<StorageId, std::vector<StorageId>> children_map;
   std::vector<std::unique_ptr<TabGroupCollectionData>> loaded_groups;
 
-  StorageId max_storage_id = 0;
   for (auto& entry : entries) {
-    max_storage_id = std::max(max_storage_id, entry.id);
     if (entry.type == TabStorageType::kTab) {
       tabs_pb::TabState tab_state;
       if (tab_state.ParseFromArray(entry.payload.data(),
@@ -280,7 +282,8 @@ void TabStateStorageService::OnAllNodesLoaded(LoadDataCallback callback,
         if (tab_strip_state.ParseFromArray(entry.payload.data(),
                                            entry.payload.size())) {
           if (tab_strip_state.has_active_tab_storage_id()) {
-            active_tab_storage_id = tab_strip_state.active_tab_storage_id();
+            active_tab_storage_id = StorageIdFromTokenProto(
+                tab_strip_state.active_tab_storage_id());
           }
         }
       }
@@ -288,10 +291,12 @@ void TabStateStorageService::OnAllNodesLoaded(LoadDataCallback callback,
       if (children.ParseFromArray(entry.children.data(),
                                   entry.children.size())) {
         builder->RegisterCollection(entry.id, entry.type, children);
-        const auto& storage_ids = children.storage_id();
-        children_map.emplace(
-            entry.id,
-            std::vector<StorageId>(storage_ids.begin(), storage_ids.end()));
+        std::vector<StorageId> storage_ids_vector;
+        storage_ids_vector.reserve(children.storage_id_size());
+        for (const auto& storage_id : children.storage_id()) {
+          storage_ids_vector.push_back(StorageIdFromTokenProto(storage_id));
+        }
+        children_map.emplace(entry.id, std::move(storage_ids_vector));
       }
 
       if (entry.type == TabStorageType::kGroup) {
@@ -304,7 +309,6 @@ void TabStateStorageService::OnAllNodesLoaded(LoadDataCallback callback,
       }
     }
   }
-  next_storage_id_ = max_storage_id + 1;
 
   std::vector<LoadedTabState> loaded_tabs;
   loaded_tabs.reserve(loaded_tabs_map.size());

@@ -5,6 +5,8 @@
 #include "chrome/browser/android/restore_id_associator_builder_android.h"
 
 #include "chrome/browser/android/restore_id_associator_android.h"
+#include "chrome/browser/tab/protocol/token.pb.h"
+#include "chrome/browser/tab/storage_id.h"
 #include "chrome/browser/tab/tab_storage_type.h"
 
 namespace tabs {
@@ -27,8 +29,8 @@ void RestoreIdAssociatorBuilderAndroid::RegisterCollection(
   state_->id_to_parent_id.reserve(children.storage_id_size());
 
   // Build a mapping of children IDs to parent IDs;
-  for (const auto& child_id : children.storage_id()) {
-    state_->id_to_parent_id[child_id] = storage_id;
+  for (const tabs_pb::Token& child_id : children.storage_id()) {
+    state_->id_to_parent_id[StorageIdFromTokenProto(child_id)] = storage_id;
   }
 
   if (type == TabStorageType::kPinned) {

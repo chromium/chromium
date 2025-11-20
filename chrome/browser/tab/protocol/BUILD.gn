@@ -13,6 +13,7 @@ proto_library("protocol") {
     "tab_group_collection_state.proto",
     "tab_state.proto",
     "tab_strip_collection_state.proto",
+    "token.proto",
   ]
 }
 
@@ -24,5 +25,6 @@ proto_java_library("proto_java") {
     "tab_group_collection_state.proto",
     "tab_state.proto",
     "tab_strip_collection_state.proto",
+    "token.proto",
   ]
 }

@@ -8,6 +8,8 @@ option optimize_for = LITE_RUNTIME;
 package tabs_pb;
 option java_package = "org.chromium.chrome.browser.tabs.proto";
 
+import "chrome/browser/tab/protocol/token.proto";
+
 // Stores the state of a TabStripCollection.
 message TabStripCollectionState {
   // Contains information about the window associated with this collection.
@@ -19,5 +21,5 @@ message TabStripCollectionState {
   optional int32 tab_model_type = 2;
 
   // The storage id of the active tab in the tab strip.
-  optional int32 active_tab_storage_id = 3;
+  optional Token active_tab_storage_id = 3;
 }

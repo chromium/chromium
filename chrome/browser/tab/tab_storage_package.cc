@@ -5,6 +5,7 @@
 #include "chrome/browser/tab/tab_storage_package.h"
 
 #include "chrome/browser/tab/protocol/tab_state.pb.h"
+#include "chrome/browser/tab/protocol/token.pb.h"
 
 namespace tabs {
 
@@ -46,8 +47,9 @@ std::vector<uint8_t> TabStoragePackage::SerializePayload() const {
         android_package->tab_has_sensitive_content_);
   }
   tab_state.set_user_agent(user_agent_);
-  tab_state.set_tab_group_id_high(tab_group_id_.high());
-  tab_state.set_tab_group_id_low(tab_group_id_.low());
+  tabs_pb::Token* tab_group_id = tab_state.mutable_tab_group_id();
+  tab_group_id->set_high(tab_group_id_.high());
+  tab_group_id->set_low(tab_group_id_.low());
   tab_state.set_is_pinned(is_pinned_);
 
   std::vector<uint8_t> payload_vec(tab_state.ByteSizeLong());

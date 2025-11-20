@@ -22,10 +22,10 @@ namespace {
 using OpenTransaction = TabStateStorageDatabase::OpenTransaction;
 
 // Update log:
-// ??-08-2025, Version 1 (pre-launch): Initial version of the database schema.
-// 11-11-2025, Version 2 (pre-launch): Add window_tag and is_off_the_record
-// columns to the nodes table.
-const int kCurrentVersionNumber = 2;
+// ??-08-2025, Version 1: Initial version of the database schema.
+// 11-11-2025, Version 2: Add window_tag and is_off_the_record columns.
+// 19-11-2025, Version 3: Change storage id type from int to blob and use token.
+const int kCurrentVersionNumber = 3;
 
 // The last version of the database schema that is compatible with the current
 // version. Any changes made to the database schema that would break
@@ -37,7 +37,7 @@ const int kCurrentVersionNumber = 2;
 // significant enough time (O(years)) have passed that there is no longer a
 // reasonable expectation that out-of-date users would be able to restore their
 // session.
-const int kCompatibleVersionNumber = 2;
+const int kCompatibleVersionNumber = 3;
 
 static_assert(
     kCurrentVersionNumber >= kCompatibleVersionNumber,
@@ -55,7 +55,7 @@ bool CreateSchema(sql::Database* db, sql::MetaTable* meta_table) {
 
   static constexpr char kCreateTabSchemaSql[] =
       "CREATE TABLE IF NOT EXISTS nodes("
-      "id INTEGER PRIMARY KEY NOT NULL,"
+      "id BLOB PRIMARY KEY NOT NULL,"
       "window_tag TEXT NOT NULL,"
       "is_off_the_record INTEGER NOT NULL,"
       "type INTEGER NOT NULL,"
@@ -225,7 +225,7 @@ bool TabStateStorageDatabase::SaveNode(OpenTransaction* transaction,
   sql::Statement write_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kInsertNodeSql));
 
-  write_statement.BindInt(0, id);
+  write_statement.BindBlob(0, StorageIdToBlob(id));
   write_statement.BindString(1, window_tag);
   write_statement.BindInt(2, static_cast<int>(is_off_the_record));
   write_statement.BindInt(3, static_cast<int>(type));
@@ -252,7 +252,7 @@ bool TabStateStorageDatabase::SaveNodePayload(OpenTransaction* transaction,
       db_->GetCachedStatement(SQL_FROM_HERE, kUpdatePayloadSql));
 
   write_statement.BindBlob(0, std::move(payload));
-  write_statement.BindInt(1, id);
+  write_statement.BindBlob(1, StorageIdToBlob(id));
 
   return write_statement.Run();
 }
@@ -274,7 +274,7 @@ bool TabStateStorageDatabase::SaveNodeChildren(OpenTransaction* transaction,
       db_->GetCachedStatement(SQL_FROM_HERE, kUpdateChildrenSql));
 
   write_statement.BindBlob(0, std::move(children));
-  write_statement.BindInt(1, id);
+  write_statement.BindBlob(1, StorageIdToBlob(id));
 
   return write_statement.Run();
 }
@@ -293,7 +293,7 @@ bool TabStateStorageDatabase::RemoveNode(OpenTransaction* transaction,
   sql::Statement write_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kDeleteNodeSql));
 
-  write_statement.BindInt(0, id);
+  write_statement.BindBlob(0, StorageIdToBlob(id));
   return write_statement.Run();
 }
 
@@ -350,7 +350,7 @@ std::vector<NodeState> TabStateStorageDatabase::LoadAllNodes(
   select_statement.BindInt(1, static_cast<int>(is_off_the_record));
   while (select_statement.Step()) {
     entries.emplace_back(
-        select_statement.ColumnInt(0),
+        StorageIdFromBlob(select_statement.ColumnBlob(0)),
         static_cast<TabStorageType>(select_statement.ColumnInt(1)),
         select_statement.ColumnBlobAsVector(2),
         select_statement.ColumnBlobAsVector(3));

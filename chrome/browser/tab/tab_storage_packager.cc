@@ -17,6 +17,8 @@
 #include "chrome/browser/tab/protocol/children.pb.h"
 #include "chrome/browser/tab/protocol/split_collection_state.pb.h"
 #include "chrome/browser/tab/protocol/tab_group_collection_state.pb.h"
+#include "chrome/browser/tab/protocol/token.pb.h"
+#include "chrome/browser/tab/storage_id.h"
 #include "chrome/browser/tab/storage_id_mapping.h"
 #include "chrome/browser/tab/storage_package.h"
 #include "chrome/browser/tab/tab_group_collection_data.h"
@@ -37,11 +39,13 @@ class ChildProcessor : public DirectChildWalker::Processor {
       : children_proto_(children_proto), mapping_(mapping) {}
 
   void ProcessTab(const TabInterface* tab) override {
-    children_proto_->add_storage_id(mapping_->GetStorageId(tab));
+    tabs_pb::Token* token = children_proto_->add_storage_id();
+    StorageIdToTokenProto(mapping_->GetStorageId(tab), token);
   }
 
   void ProcessCollection(const TabCollection* collection) override {
-    children_proto_->add_storage_id(mapping_->GetStorageId(collection));
+    tabs_pb::Token* token = children_proto_->add_storage_id();
+    StorageIdToTokenProto(mapping_->GetStorageId(collection), token);
   }
 
  private:
