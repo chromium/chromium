@@ -1,6 +1,6 @@
 {
-  "version": "74.30",
-  "log_list_timestamp": "2025-11-19T12:52:36Z",
+  "version": "75.1",
+  "log_list_timestamp": "2025-11-20T12:53:20Z",
   "operators": [
     {
       "name": "Google",
@@ -184,8 +184,8 @@
           "url": "https://ct.cloudflare.com/logs/nimbus2027/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2025-09-05T00:00:00Z"
+            "usable": {
+              "timestamp": "2025-11-15T00:00:00Z"
             }
           },
           "temporal_interval": {
