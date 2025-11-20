@@ -7,3 +7,4 @@
 #include "ui/base/interaction/element_identifier.h"
 
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kSidePanelBoundsAnimation);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kShadowOverlayOpacityAnimation);

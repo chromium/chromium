@@ -10,4 +10,7 @@
 // Maps to the side panel bounds animation when it is opened or closed.
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kSidePanelBoundsAnimation);
 
+// Maps to the shadow elevations opacity value when the side panel is opened.
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kShadowOverlayOpacityAnimation);
+
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_ANIMATION_IDS_H_

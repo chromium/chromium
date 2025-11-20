@@ -4793,6 +4793,7 @@ static_library("ui") {
       "//services/screen_ai/buildflags",
       "//ui/base:ozone_buildflags",
       "//ui/base/dragdrop:types",
+      "//ui/compositor_extra",
       "//ui/gfx/geometry",
       "//ui/lottie",
       "//ui/views:buildflags",

@@ -6,11 +6,15 @@
 
 #include <memory>
 
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_background.h"
+#include "chrome/browser/ui/views/side_panel/side_panel.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_animation_ids.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor_extra/shadow.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/layout/layout_provider.h"
@@ -149,10 +153,19 @@ class ShadowOverlayView::ShadowBox : public views::View {
 
       view_shadow_ = std::make_unique<views::ViewShadow>(this, elevation);
       view_shadow_->SetRoundedCornerRadius(rounded_corner_radius);
+      view_shadow_->shadow()->shadow_layer()->SetOpacity(0.0f);
     } else {
       view_shadow_.reset();
       DestroyLayer();
     }
+  }
+
+  void SetShadowOpacity(double opacity) {
+    if (!view_shadow_) {
+      return;
+    }
+
+    view_shadow_->shadow()->shadow_layer()->SetOpacity(opacity);
   }
 
  private:
@@ -167,7 +180,8 @@ using ShadowBox = ShadowOverlayView::ShadowBox;
 BEGIN_METADATA(ShadowBox)
 END_METADATA
 
-ShadowOverlayView::ShadowOverlayView(BrowserView& browser_view) {
+ShadowOverlayView::ShadowOverlayView(BrowserView& browser_view)
+    : browser_view_(browser_view) {
   SetCanProcessEventsWithinSubtree(false);
   top_leading_corner_ = AddChildView(std::make_unique<CornerView>(
       CornerView::Corner::kTopLeading, browser_view));
@@ -194,6 +208,28 @@ void ShadowOverlayView::VisibilityChanged(View* starting_from, bool visible) {
   if (starting_from == this) {
     shadow_box_->SetShadowVisible(visible);
   }
+}
+
+void ShadowOverlayView::AddedToWidget() {
+  side_panel_observer_.Observe(browser_view_->toolbar_height_side_panel());
+  side_panel_observer_.GetSource()->animation_coordinator()->AddObserver(
+      kShadowOverlayOpacityAnimation, this);
+}
+
+void ShadowOverlayView::RemovedFromWidget() {
+  if (side_panel_observer_.IsObserving()) {
+    side_panel_observer_.GetSource()->animation_coordinator()->RemoveObserver(
+        kShadowOverlayOpacityAnimation, this);
+    side_panel_observer_.Reset();
+  }
+}
+
+void ShadowOverlayView::OnViewIsDeleting(views::View* observed_view) {
+  CHECK(observed_view == side_panel_observer_.GetSource());
+
+  side_panel_observer_.GetSource()->animation_coordinator()->RemoveObserver(
+      kShadowOverlayOpacityAnimation, this);
+  side_panel_observer_.Reset();
 }
 
 views::ProposedLayout ShadowOverlayView::CalculateProposedLayout(
@@ -245,6 +281,24 @@ views::ProposedLayout ShadowOverlayView::CalculateProposedLayout(
   layout.child_layouts.push_back(bottom_trailing);
 
   return layout;
+}
+
+void ShadowOverlayView::OnAnimationSequenceProgressed(
+    const SidePanelAnimationCoordinator::SidePanelAnimationId& animation_id,
+    double animation_value) {
+  CHECK_EQ(kShadowOverlayOpacityAnimation, animation_id);
+
+  shadow_box_->SetShadowOpacity(animation_value);
+}
+
+void ShadowOverlayView::OnAnimationSequenceEnded(
+    const SidePanelAnimationCoordinator::SidePanelAnimationId& animation_id) {
+  CHECK_EQ(kShadowOverlayOpacityAnimation, animation_id);
+
+  // If we finish in the open state, the animation should be at 100%. If we
+  // finish in the close state, the ShadowBox's shadow is removed entirely so
+  // this line is a no-op.
+  shadow_box_->SetShadowOpacity(1.0f);
 }
 
 BEGIN_METADATA(ShadowOverlayView)
