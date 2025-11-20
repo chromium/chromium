@@ -1125,8 +1125,7 @@ TEST_F(DownloadTargetDeterminerTest, DefaultVirtual) {
 }
 
 #if BUILDFLAG(ENABLE_PLUGINS)
-TEST_F(DownloadTargetDeterminerTest,
-       DetermineIfHandledSafelyHelperSynchronous) {
+TEST_F(DownloadTargetDeterminerTest, DetermineIfHandledSafelyHelper) {
   const char16_t kPluginName[] = u"PDF";
   const char kPdfMimeType[] = "application/pdf";
   const char kPdfFileType[] = "pdf";
@@ -1151,9 +1150,8 @@ TEST_F(DownloadTargetDeterminerTest,
   std::unique_ptr<download::MockDownloadItem> item =
       CreateActiveDownloadItem(1, download_test_case);
 
-  EXPECT_TRUE(
-      DownloadTargetDeterminer::DetermineIfHandledSafelyHelperSynchronous(
-          item.get(), base::FilePath(), kPdfMimeType));
+  EXPECT_TRUE(DownloadTargetDeterminer::DetermineIfHandledSafelyHelper(
+      item.get(), base::FilePath(), kPdfMimeType));
 }
 #endif
 

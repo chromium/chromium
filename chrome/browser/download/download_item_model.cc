@@ -452,9 +452,8 @@ bool DownloadItemModel::ShouldPreferOpeningInBrowser() {
     base::FilePath path = GetTargetFilePath();
     std::string mime_type = GetMimeType();
     DetermineAndSetShouldPreferOpeningInBrowser(
-        path,
-        DownloadTargetDeterminer::DetermineIfHandledSafelyHelperSynchronous(
-            download_, path, mime_type));
+        path, DownloadTargetDeterminer::DetermineIfHandledSafelyHelper(
+                  download_, path, mime_type));
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
   return data->should_prefer_opening_in_browser_.value_or(false);
