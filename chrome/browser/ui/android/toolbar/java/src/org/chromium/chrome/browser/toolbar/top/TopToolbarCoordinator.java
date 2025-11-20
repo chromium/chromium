@@ -873,24 +873,25 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
             return;
         }
 
-        // In Android view, tab strip and toolbar lives together in control container. The toolbar
-        // applies a top margin so it can leave enough space for the tab strip to show.
-        int tabStripHeight = getTabStripHeight();
-
         // In compositor, the position of the toolbar depends on the capture. As for Oct 2025, the
         // capture includes everything in control container, including the top margin, which
         // represents the size of the tab strip.
-        // To place the toolbar at its desired position, we have to subtract the top margin
-        // from layerYOffset.
+        // To place the toolbar at its desired position, we have to subtract the diffs of the
+        // capture and the toolbar, in order to put the toolbar at the desired yOffset.
         if (mOverlayCoordinator != null) {
-            mOverlayCoordinator.setYOffset(layerYOffset - tabStripHeight);
+            int captureHeight = mControlContainer.getToolbarCaptureHeight();
+            int diff =
+                    captureHeight
+                            - mControlContainer.getToolbarHeight()
+                            - mControlContainer.getToolbarHairlineHeight();
+            mOverlayCoordinator.setYOffset(layerYOffset - diff);
         }
 
         // Skip the layout params in non-resting position to avoid trigger layout during browser
         // controls reposition.
         if (reachRestingPosition) {
             MarginLayoutParams lp = (MarginLayoutParams) mToolbarLayout.getLayoutParams();
-            lp.topMargin = tabStripHeight;
+            lp.topMargin = getTabStripHeight();
             mToolbarLayout.setLayoutParams(lp);
         }
     }

@@ -67,6 +67,7 @@ import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.Sw
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
+import org.chromium.ui.resources.Resource;
 import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
 import org.chromium.ui.util.TokenHolder;
 import org.chromium.ui.widget.OptimizedFrameLayout;
@@ -93,6 +94,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
 
     private boolean mIsAppInUnfocusedDesktopWindow;
     private int mToolbarLayoutHeight;
+    private final Rect mToolbarCaptureSize = new Rect();
 
     private View mToolbarHairline;
     private ViewGroup mToolbarView;
@@ -100,6 +102,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     private @Nullable View mLocationBarView;
     private final ObserverList<TouchEventObserver> mTouchEventObservers = new ObserverList<>();
     private final Callback<Boolean> mOnXrSpaceModeChanged = this::onXrSpaceModeChanged;
+    private final Callback<Resource> mOnResourceCaptureCallback = this::onToolbarCaptureUpdated;
     private @Nullable ObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
     private @Nullable ObservableSupplierImpl<Integer> mHeightChangedSupplier;
     private ToolbarDataProvider mToolbarDataProvider;
@@ -472,6 +475,11 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
             lp.topMargin = mToolbar.getTabStripHeight() + mToolbarLayoutHeight;
             mToolbarHairline.setLayoutParams(lp);
         }
+
+        assert mToolbarContainer.getResourceAdapter() != null;
+        mToolbarContainer
+                .getResourceAdapter()
+                .addOnResourceReadyCallback(mOnResourceCaptureCallback);
     }
 
     @Override
@@ -972,6 +980,14 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
      */
     private boolean isToolbarContainerFullyVisible() {
         return mToolbarContainer.getVisibility() == VISIBLE;
+    }
+
+    private void onToolbarCaptureUpdated(Resource toolbarCaptureResource) {
+        mToolbarCaptureSize.set(toolbarCaptureResource.getBitmapSize());
+    }
+
+    int getToolbarCaptureHeight() {
+        return mToolbarCaptureSize.height();
     }
 
     private class SwipeGestureListenerImpl extends SwipeGestureListener {
