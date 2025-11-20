@@ -9893,3 +9893,7 @@ crbug.com/455803699 [ Mac ] accessibility/scroll-window-sends-notification.html 
 crbug.com/455803699 [ Mac ] http/tests/accessibility/slow-document-load.html [ Pass Failure ]
 crbug.com/455696391 [ Mac ] virtual/view-transition-wide-gamut/inspector-protocol/css/css-get-styles-for-view-transition.js [ Pass Failure ]
 crbug.com/455808926 [ Linux ] images/color-profile-image-object-fit.html [ Pass Failure ]
+
+# Branch gardener 2025-11-20
+crbug.com/455696391 [ Mac ] virtual/threaded/inspector-protocol/css/css-get-styles-for-view-transition.js [ Failure Pass ]
+crbug.com/455696391 [ Mac ] virtual/view-transition-mpa-serialization/inspector-protocol/css/css-get-styles-for-view-transition.js [ Failure Pass ]
