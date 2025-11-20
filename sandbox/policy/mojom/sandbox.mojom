@@ -92,9 +92,8 @@ enum Sandbox {
   // |kXrCompositing| hosts XR Device Service on Windows.
   [EnableIf=is_win] kXrCompositing,
 
-  // Allows LPAC capabilities for WinHttp. This only needs internet access,
-  // policy access, and service access.
-  [EnableIf=is_win] kWindowsSystemProxyResolver,
+  // Allows access to OS system proxy resolver APIs.
+  [EnableIf=is_win] kProxyResolver,
 
   // Used to protect processes that perform hardware video decode acceleration.
   // Currently uses the same policy as the GPU process sandbox. Warm-up does

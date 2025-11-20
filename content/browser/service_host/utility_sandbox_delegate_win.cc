@@ -246,7 +246,7 @@ bool UtilitySandboxedProcessLauncherDelegate::GetAppContainerId(
     case sandbox::mojom::Sandbox::kMediaFoundationCdm:
     case sandbox::mojom::Sandbox::kNetwork:
     case sandbox::mojom::Sandbox::kOnDeviceModelExecution:
-    case sandbox::mojom::Sandbox::kWindowsSystemProxyResolver:
+    case sandbox::mojom::Sandbox::kProxyResolver:
     case sandbox::mojom::Sandbox::kXrCompositing:
       *appcontainer_id = UtilityAppContainerId(cmd_line_);
       return true;
@@ -342,7 +342,7 @@ bool UtilitySandboxedProcessLauncherDelegate::InitializeConfig(
     }
   }
 
-  if (sandbox_type_ == sandbox::mojom::Sandbox::kWindowsSystemProxyResolver) {
+  if (sandbox_type_ == sandbox::mojom::Sandbox::kProxyResolver) {
     // LPAC sandbox is enabled, so do not use a restricted token.
     auto result = config->SetTokenLevel(sandbox::USER_UNPROTECTED,
                                         sandbox::USER_UNPROTECTED);

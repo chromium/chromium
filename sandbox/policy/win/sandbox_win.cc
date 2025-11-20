@@ -351,7 +351,7 @@ std::wstring GetAppContainerProfileName(const std::string& appcontainer_id,
     case Sandbox::kPrintCompositor:
       sandbox_base_name = std::string("cr.sb.prnc");
       break;
-    case Sandbox::kWindowsSystemProxyResolver:
+    case Sandbox::kProxyResolver:
       sandbox_base_name = std::string("cr.sb.pxy");
       break;
     default:
@@ -387,7 +387,7 @@ ResultCode SetupAppContainerProfile(AppContainer* container,
       !(sandbox_type == Sandbox::kPrintCompositor &&
         base::FeatureList::IsEnabled(
             sandbox::policy::features::kPrintCompositorLPAC)) &&
-      sandbox_type != Sandbox::kWindowsSystemProxyResolver) {
+      sandbox_type != Sandbox::kProxyResolver) {
     return SBOX_ERROR_UNSUPPORTED;
   }
 
@@ -447,7 +447,7 @@ ResultCode SetupAppContainerProfile(AppContainer* container,
     container->SetEnableLowPrivilegeAppContainer(true);
   }
 
-  if (sandbox_type == Sandbox::kWindowsSystemProxyResolver) {
+  if (sandbox_type == Sandbox::kProxyResolver) {
     container->AddCapability(base::win::WellKnownCapability::kInternetClient);
     container->AddCapability(kLpacServicesManagement);
     container->AddCapability(kLpacEnterprisePolicyChangeNotifications);
@@ -808,8 +808,9 @@ bool SandboxWin::IsAppContainerEnabledForSandbox(
         sandbox::policy::features::kPrintCompositorLPAC);
   }
 
-  if (sandbox_type == Sandbox::kWindowsSystemProxyResolver)
+  if (sandbox_type == Sandbox::kProxyResolver) {
     return true;
+  }
 
   return false;
 }
@@ -1087,8 +1088,8 @@ std::string SandboxWin::GetSandboxTypeInEnglish(
       return "Service With Jit";
     case Sandbox::kIconReader:
       return "Icon Reader";
-    case Sandbox::kWindowsSystemProxyResolver:
-      return "Windows System Proxy Resolver";
+    case Sandbox::kProxyResolver:
+      return "Proxy Resolver";
   }
   NOTREACHED();
 }

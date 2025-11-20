@@ -45,7 +45,7 @@ constexpr char kPdfConversionSandbox[] = "pdf_conversion";
 constexpr char kXrCompositingSandbox[] = "xr_compositing";
 constexpr char kIconReaderSandbox[] = "icon_reader";
 constexpr char kMediaFoundationCdmSandbox[] = "mf_cdm";
-constexpr char kWindowsSystemProxyResolverSandbox[] = "proxy_resolver_win";
+constexpr char kProxyResolverSandbox[] = "proxy_resolver";
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_MAC)
@@ -133,7 +133,7 @@ void SetCommandLineFlagsForSandboxType(base::CommandLine* command_line,
     case Sandbox::kPdfConversion:
     case Sandbox::kIconReader:
     case Sandbox::kMediaFoundationCdm:
-    case Sandbox::kWindowsSystemProxyResolver:
+    case Sandbox::kProxyResolver:
 #endif  // BUILDFLAG(IS_WIN)
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     case Sandbox::kShapeDetection:
@@ -265,8 +265,8 @@ std::string StringFromUtilitySandboxType(Sandbox sandbox_type) {
       return kIconReaderSandbox;
     case Sandbox::kMediaFoundationCdm:
       return kMediaFoundationCdmSandbox;
-    case Sandbox::kWindowsSystemProxyResolver:
-      return kWindowsSystemProxyResolverSandbox;
+    case Sandbox::kProxyResolver:
+      return kProxyResolverSandbox;
 #endif  // BUILDFLAG(IS_WIN)
 #if BUILDFLAG(IS_MAC)
     case Sandbox::kMirroring:
@@ -353,8 +353,8 @@ sandbox::mojom::Sandbox UtilitySandboxTypeFromString(
   if (sandbox_string == kMediaFoundationCdmSandbox) {
     return Sandbox::kMediaFoundationCdm;
   }
-  if (sandbox_string == kWindowsSystemProxyResolverSandbox) {
-    return Sandbox::kWindowsSystemProxyResolver;
+  if (sandbox_string == kProxyResolverSandbox) {
+    return Sandbox::kProxyResolver;
   }
 #endif
 #if BUILDFLAG(IS_MAC)

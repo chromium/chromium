@@ -298,7 +298,7 @@ TEST_F(SandboxWinTest, AppContainerCheckProfile) {
         kLpacIdentityServices, kLpacCryptoServices, kLpacChromeInstallFiles,
         kRegistryRead},
        {}},
-      {sandbox::mojom::Sandbox::kWindowsSystemProxyResolver,
+      {sandbox::mojom::Sandbox::kProxyResolver,
        L"S-1-15-2-1733900417-1595997880-1847635518-1308794714-877418578-"
        L"3685220290-3324296907",
        true,

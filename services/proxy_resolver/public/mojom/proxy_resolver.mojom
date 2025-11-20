@@ -121,7 +121,7 @@ struct SystemProxyResolutionStatus {
   [EnableIf=is_win] WinHttpStatus? win_http_status;
 };
 
-[EnableIf=is_win, ServiceSandbox=sandbox.mojom.Sandbox.kWindowsSystemProxyResolver]
+[EnableIf=is_win, ServiceSandbox=sandbox.mojom.Sandbox.kProxyResolver]
 // Implemented in the Windows utility process to proxy WinHTTP lookups and
 // invoked from the network service (or Chrome) when --use-system-proxy-resolver
 // is enabled so that proxy resolution happens with the OS configuration.
