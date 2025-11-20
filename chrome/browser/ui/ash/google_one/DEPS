@@ -10,7 +10,6 @@ include_rules = [
   # Existing dependencies within //chrome. There is an active effort to
   # refactor ash codes in //chrome to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
-  "+chrome/browser/ash/login/test",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/settings",
   "+chrome/browser/feature_engagement",
@@ -22,8 +21,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  # TODO(crbug.com/385152937): Check if the test can be removed.
   "google_one_offer_iph_tab_helper_browsertest\\.cc": [
-    "+chrome/browser/ash/scalable_iph/customizable_test_env_browser_test_base.h",
+    "+chrome/browser/ash/login/test",
   ]
 }

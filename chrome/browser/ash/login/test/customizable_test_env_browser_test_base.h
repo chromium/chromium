@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_SCALABLE_IPH_CUSTOMIZABLE_TEST_ENV_BROWSER_TEST_BASE_H_
-#define CHROME_BROWSER_ASH_SCALABLE_IPH_CUSTOMIZABLE_TEST_ENV_BROWSER_TEST_BASE_H_
+#ifndef CHROME_BROWSER_ASH_LOGIN_TEST_CUSTOMIZABLE_TEST_ENV_BROWSER_TEST_BASE_H_
+#define CHROME_BROWSER_ASH_LOGIN_TEST_CUSTOMIZABLE_TEST_ENV_BROWSER_TEST_BASE_H_
 
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/guest_session_mixin.h"
@@ -74,4 +74,4 @@ class CustomizableTestEnvBrowserTestBase
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_SCALABLE_IPH_CUSTOMIZABLE_TEST_ENV_BROWSER_TEST_BASE_H_
+#endif  // CHROME_BROWSER_ASH_LOGIN_TEST_CUSTOMIZABLE_TEST_ENV_BROWSER_TEST_BASE_H_

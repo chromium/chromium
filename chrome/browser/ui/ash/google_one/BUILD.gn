@@ -43,7 +43,6 @@ source_set("browser_tests") {
     "//base",
     "//chrome/browser",
     "//chrome/browser/ash/login/test:test_support",
-    "//chrome/browser/ash/scalable_iph:test_support",
     "//chrome/browser/ash/settings",
     "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/profiles:profile",
