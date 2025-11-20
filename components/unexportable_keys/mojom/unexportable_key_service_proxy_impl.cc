@@ -9,6 +9,7 @@
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/mojom/unexportable_key_service.mojom-data-view.h"
 #include "components/unexportable_keys/mojom/unexportable_key_service.mojom.h"
+#include "components/unexportable_keys/unexportable_key_id.h"
 #include "crypto/signature_verifier.h"
 #include "crypto/unexportable_key.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
@@ -74,4 +75,17 @@ void unexportable_keys::UnexportableKeyServiceProxyImpl::GenerateSigningKey(
           .Then(std::move(callback)));
 }
 
+void unexportable_keys::UnexportableKeyServiceProxyImpl::FromWrappedSigningKey(
+    const std::vector<uint8_t>& wrapped_key,
+    BackgroundTaskPriority priority,
+    FromWrappedSigningKeyCallback callback) {
+  if (wrapped_key.size() > kMaxWrappedKeySize) {
+    receiver_.ReportBadMessage("wrapped key size too long");
+    return;
+  }
+  unexportable_key_service_->FromWrappedSigningKeySlowlyAsync(
+      wrapped_key, priority,
+      base::BindOnce(PopulateNewKeyData, std::ref(*unexportable_key_service_))
+          .Then(std::move(callback)));
+}
 }  // namespace unexportable_keys

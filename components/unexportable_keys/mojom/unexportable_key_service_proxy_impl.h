@@ -5,6 +5,9 @@
 #ifndef COMPONENTS_UNEXPORTABLE_KEYS_MOJOM_UNEXPORTABLE_KEY_SERVICE_PROXY_IMPL_H_
 #define COMPONENTS_UNEXPORTABLE_KEYS_MOJOM_UNEXPORTABLE_KEY_SERVICE_PROXY_IMPL_H_
 
+#include <cstdint>
+#include <limits>
+
 #include "components/unexportable_keys/mojom/unexportable_key_service.mojom.h"
 #include "components/unexportable_keys/unexportable_key_service_impl.h"
 #include "crypto/signature_verifier.h"
@@ -12,6 +15,9 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 
 namespace unexportable_keys {
+
+inline constexpr size_t kMaxWrappedKeySize =
+    3 * std::numeric_limits<uint16_t>::max();
 
 // An implementation of the `mojom::UnexportableKeyService` Mojo interface.
 //
@@ -43,6 +49,10 @@ class UnexportableKeyServiceProxyImpl : public mojom::UnexportableKeyService {
           acceptable_algorithms,
       BackgroundTaskPriority priority,
       GenerateSigningKeyCallback callback) override;
+
+  void FromWrappedSigningKey(const std::vector<uint8_t>& wrapped_key,
+                             BackgroundTaskPriority priority,
+                             FromWrappedSigningKeyCallback callback) override;
 
  private:
   mojo::Receiver<mojom::UnexportableKeyService> receiver_;

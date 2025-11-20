@@ -8,6 +8,7 @@
 #include "base/unguessable_token.h"
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/mojom/unexportable_key_service.mojom.h"
+#include "components/unexportable_keys/service_error.h"
 #include "crypto/signature_verifier.h"
 #include "crypto/unexportable_key.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"

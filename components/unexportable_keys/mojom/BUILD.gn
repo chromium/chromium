@@ -75,6 +75,7 @@ source_set("unit_tests") {
     "//components/unexportable_keys:test_support",
     "//crypto:test_support",
     "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/test_support:test_utils",
     "//testing/gtest",
   ]
 }
