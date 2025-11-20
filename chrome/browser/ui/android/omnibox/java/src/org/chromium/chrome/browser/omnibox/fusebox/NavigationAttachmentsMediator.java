@@ -70,16 +70,10 @@ public class NavigationAttachmentsMediator {
     private final ObservableSupplierImpl<@AutocompleteRequestType Integer>
             mAutocompleteRequestTypeSupplier;
     private final ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
+    private final ObservableSupplierImpl<Boolean> mOnCompactModeChangedSupplier;
     private final Callback<@AutocompleteRequestType Integer> mOnAutocompleteRequestTypeChanged =
             this::onAutocompleteRequestTypeChanged;
-
-    private void onAutocompleteRequestTypeChanged(@AutocompleteRequestType Integer type) {
-        mModel.set(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE, type);
-        boolean tabInputsEnabled = type != AutocompleteRequestType.IMAGE_GENERATION;
-        mModel.set(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_ENABLED, tabInputsEnabled);
-        // TODO(https://www.crbug.com/456274957): Also set enabled on select tabs
-        // button.
-    }
+    private boolean mUseCompactUi;
 
     NavigationAttachmentsMediator(
             Context context,
@@ -90,7 +84,8 @@ public class NavigationAttachmentsMediator {
             ObservableSupplierImpl<@AutocompleteRequestType Integer>
                     autocompleteRequestTypeSupplier,
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
-            ComposeBoxQueryControllerBridge composeBoxQueryControllerBridge) {
+            ComposeBoxQueryControllerBridge composeBoxQueryControllerBridge,
+            ObservableSupplierImpl<Boolean> onCompactModeChangedSupplier) {
         mContext = context;
         mWindowAndroid = windowAndroid;
         mPermissionDelegate = windowAndroid;
@@ -100,6 +95,7 @@ public class NavigationAttachmentsMediator {
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mAutocompleteRequestTypeSupplier = autocompleteRequestTypeSupplier;
         mComposeBoxQueryControllerBridge = composeBoxQueryControllerBridge;
+        mOnCompactModeChangedSupplier = onCompactModeChangedSupplier;
 
         mAutocompleteRequestTypeSupplier.addObserver(mOnAutocompleteRequestTypeChanged);
 
@@ -195,9 +191,7 @@ public class NavigationAttachmentsMediator {
      */
     void setToolbarVisible(boolean visible) {
         mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_TOOLBAR_VISIBLE, visible);
-        mModel.set(
-                NavigationAttachmentsProperties.COMPACT_UI,
-                OmniboxFeatures.sCompactFusebox.getValue());
+        setUseCompactUi(OmniboxFeatures.sCompactFusebox.getValue());
     }
 
     public void setAutocompleteRequestTypeChangeable(boolean isChangeable) {
@@ -352,6 +346,17 @@ public class NavigationAttachmentsMediator {
                         }
                     });
         }
+    }
+
+    private void onAutocompleteRequestTypeChanged(@AutocompleteRequestType Integer type) {
+        setUseCompactUi(
+                type == AutocompleteRequestType.SEARCH
+                        && OmniboxFeatures.sCompactFusebox.getValue());
+        mModel.set(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE, type);
+        boolean tabInputsEnabled = type != AutocompleteRequestType.IMAGE_GENERATION;
+        mModel.set(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_ENABLED, tabInputsEnabled);
+        // TODO(https://www.crbug.com/456274957): Also set enabled on select tabs
+        // button.
     }
 
     @VisibleForTesting
@@ -530,5 +535,12 @@ public class NavigationAttachmentsMediator {
             tokens.add(attachment.getToken());
         }
         return tokens;
+    }
+
+    void setUseCompactUi(boolean useCompactUi) {
+        if (mUseCompactUi == useCompactUi) return;
+        mUseCompactUi = useCompactUi;
+        mOnCompactModeChangedSupplier.set(mUseCompactUi);
+        mModel.set(NavigationAttachmentsProperties.COMPACT_UI, useCompactUi);
     }
 }

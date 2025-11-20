@@ -2030,6 +2030,17 @@ public class ToolbarPhone extends ToolbarLayout
                 || mNtpSearchBoxTranslation.y < 0f;
     }
 
+    @Override
+    public void setRequestFixedHeight(boolean requestFixedHeight) {
+        if (requestFixedHeight) {
+            ViewGroup.LayoutParams layoutParams = getLayoutParams();
+            layoutParams.height = getHeight();
+            setLayoutParams(layoutParams);
+        } else {
+            updateLayoutParamsForMultiline();
+        }
+    }
+
     private void populateUrlExpansionAnimatorSet(List<Animator> animators) {
         TraceEvent.begin("ToolbarPhone.populateUrlFocusingAnimatorSet");
         Animator animator = ObjectAnimator.ofFloat(this, mUrlFocusChangeFractionProperty, 1f);
@@ -2160,13 +2171,7 @@ public class ToolbarPhone extends ToolbarLayout
         //   dimension).
         if (OmniboxFeatures.allowMultilineEditField()
                 || ChromeFeatureList.sAndroidBottomToolbarV2.isEnabled()) {
-            var params = getLayoutParams();
-            params.height =
-                    hasFocus
-                            ? LayoutParams.WRAP_CONTENT
-                            : getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow)
-                                    + mTopPaddingForEdgeToEdgeNtp;
-            setLayoutParams(params);
+            updateLayoutParamsForMultiline();
         }
 
         if (ChromeFeatureList.sAndroidBottomToolbarV2.isEnabled()) {
@@ -2191,6 +2196,16 @@ public class ToolbarPhone extends ToolbarLayout
         tabSwitcherButtonCoordinator.getContainerView().setClickable(!hasFocus);
         mHomeButtonDisplay.setClickable(!hasFocus);
         triggerUrlFocusAnimation(hasFocus);
+    }
+
+    private void updateLayoutParamsForMultiline() {
+        var params = getLayoutParams();
+        params.height =
+                urlHasFocus()
+                        ? LayoutParams.WRAP_CONTENT
+                        : getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow)
+                                + mTopPaddingForEdgeToEdgeNtp;
+        setLayoutParams(params);
     }
 
     private boolean animatingSuggestionsListOnNtp() {

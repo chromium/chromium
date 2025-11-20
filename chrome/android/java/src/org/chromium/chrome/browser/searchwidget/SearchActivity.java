@@ -56,6 +56,7 @@ import org.chromium.chrome.browser.metrics.StartupMetricsTracker;
 import org.chromium.chrome.browser.metrics.UmaActivityObserver;
 import org.chromium.chrome.browser.omnibox.BackKeyBehaviorDelegate;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
+import org.chromium.chrome.browser.omnibox.LocationBarEmbedder;
 import org.chromium.chrome.browser.omnibox.LocationBarEmbedderUiOverrides;
 import org.chromium.chrome.browser.omnibox.OmniboxActionDelegateImpl;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
@@ -372,6 +373,7 @@ public class SearchActivity extends AsyncInitializationActivity
                         backPressManager,
                         /* omniboxSuggestionsDropdownScrollListener= */ null,
                         /* tabModelSelectorSupplier= */ new ObservableSupplierImpl<>(),
+                        new LocationBarEmbedder() {},
                         mLocationBarUiOverrides,
                         findViewById(R.id.control_container),
                         /* bottomWindowPaddingSupplier */ () -> 0,

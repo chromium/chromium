@@ -25,6 +25,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/omnibox/LocationBarCoordinatorPhone.java",
     "java/src/org/chromium/chrome/browser/omnibox/LocationBarCoordinatorTablet.java",
     "java/src/org/chromium/chrome/browser/omnibox/LocationBarDataProvider.java",
+    "java/src/org/chromium/chrome/browser/omnibox/LocationBarEmbedder.java",
     "java/src/org/chromium/chrome/browser/omnibox/LocationBarEmbedderUiOverrides.java",
     "java/src/org/chromium/chrome/browser/omnibox/LocationBarLayout.java",
     "java/src/org/chromium/chrome/browser/omnibox/LocationBarMediator.java",
