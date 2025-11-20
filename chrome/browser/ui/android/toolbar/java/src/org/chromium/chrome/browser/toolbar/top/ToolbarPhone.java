@@ -2376,12 +2376,19 @@ public class ToolbarPhone extends ToolbarLayout
             if (locationBarStartColor != null
                     && locationBarEndColor != null
                     && locationBarBackgroundGradientDrawable != null) {
-                animatorList.add(
-                        ObjectAnimator.ofArgb(
-                                locationBarBackgroundGradientDrawable,
-                                "color",
-                                (int) locationBarStartColor,
-                                (int) locationBarEndColor));
+                ValueAnimator animator = ValueAnimator.ofFloat(0, 1);
+                animator.addUpdateListener(
+                        valueAnimator -> {
+                            float fraction = valueAnimator.getAnimatedFraction();
+                            @ColorInt
+                            int newColor =
+                                    ColorUtils.blendColorsMultiply(
+                                            (int) locationBarStartColor,
+                                            (int) locationBarEndColor,
+                                            fraction);
+                            locationBarBackgroundGradientDrawable.setColor(newColor);
+                        });
+                animatorList.add(animator);
             }
 
             Object locationBarStartCornerRadius =
