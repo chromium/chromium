@@ -1090,6 +1090,9 @@ void PdfViewWebPlugin::OnRendererPreferencesUpdated(
           .Set("type", "rendererPreferencesUpdated")
           .Set("caretBrowsingEnabled", preferences.caret_browsing_enabled));
   engine_->SetCaretBrowsingEnabled(preferences.caret_browsing_enabled);
+  // Blink interval can be set to 0 to make the caret not blink.
+  engine_->SetCaretBlinkInterval(preferences.caret_blink_interval.value_or(
+      PdfCaret::kDefaultBlinkInterval));
 }
 
 void PdfViewWebPlugin::ProposeDocumentLayout(const DocumentLayout& layout) {

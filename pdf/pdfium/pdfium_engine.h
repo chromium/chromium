@@ -87,10 +87,6 @@ struct WebPrintParams;
 }  // namespace blink
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
-namespace base {
-class TimeDelta;
-}  // namespace base
-
 namespace ink {
 class Stroke;
 }  // namespace ink
@@ -608,6 +604,10 @@ class PDFiumEngine : public DocumentLoader::Client,
   // text run. If there is no visible text, the caret will not move. Virtual to
   // support testing.
   virtual void SetCaretBrowsingEnabled(bool enabled);
+
+  // Sets the blink interval for the caret. No-op if the caret was never
+  // initialized. Virtual to support testing.
+  virtual void SetCaretBlinkInterval(base::TimeDelta interval);
 
  private:
   // This is a base class for shared functions and data needed for change

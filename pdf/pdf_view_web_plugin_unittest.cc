@@ -1854,18 +1854,32 @@ TEST_F(PdfViewWebPluginTest, OnRendererPreferencesUpdated) {
                      .Set("type", "rendererPreferencesUpdated")
                      .Set("caretBrowsingEnabled", false);
 
-  EXPECT_CALL(*engine_ptr_, SetCaretBrowsingEnabled(false));
+  InSequence seq;
+
   EXPECT_CALL(*client_ptr_, PostMessage(Eq(std::ref(message))));
+  EXPECT_CALL(*engine_ptr_, SetCaretBrowsingEnabled(false));
+  EXPECT_CALL(*engine_ptr_,
+              SetCaretBlinkInterval(PdfCaret::kDefaultBlinkInterval));
 
   blink::RendererPreferences prefs;
   plugin_->OnRendererPreferencesUpdated(prefs);
 
   message.Set("caretBrowsingEnabled", true);
 
-  EXPECT_CALL(*engine_ptr_, SetCaretBrowsingEnabled(true));
   EXPECT_CALL(*client_ptr_, PostMessage(Eq(std::ref(message))));
+  EXPECT_CALL(*engine_ptr_, SetCaretBrowsingEnabled(true));
+  constexpr base::TimeDelta kBlinkInterval = base::Milliseconds(300);
+  EXPECT_CALL(*engine_ptr_, SetCaretBlinkInterval(kBlinkInterval));
 
   prefs.caret_browsing_enabled = true;
+  prefs.caret_blink_interval = kBlinkInterval;
+  plugin_->OnRendererPreferencesUpdated(prefs);
+
+  EXPECT_CALL(*client_ptr_, PostMessage(Eq(std::ref(message))));
+  EXPECT_CALL(*engine_ptr_, SetCaretBrowsingEnabled(true));
+  EXPECT_CALL(*engine_ptr_, SetCaretBlinkInterval(base::TimeDelta()));
+
+  prefs.caret_blink_interval = base::TimeDelta();
   plugin_->OnRendererPreferencesUpdated(prefs);
 }
 

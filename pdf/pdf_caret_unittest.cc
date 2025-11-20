@@ -375,6 +375,17 @@ TEST_F(PdfCaretTest, SetBlinkIntervalWhileVisible) {
 
   GetPdfTestTaskEnvironment().FastForwardBy(kBlinkInterval);
   TestDrawCaretFails(kTestChar0Caret);
+
+  GetPdfTestTaskEnvironment().FastForwardBy(kBlinkInterval - kOneMs);
+  TestDrawCaretFails(kTestChar0Caret);
+
+  // Set to the same blink interval. Should not reset the blink timer.
+  caret().SetBlinkInterval(kBlinkInterval);
+
+  TestDrawCaretFails(kTestChar0Caret);
+
+  GetPdfTestTaskEnvironment().FastForwardBy(kOneMs);
+  TestDrawCaret(kTestChar0Caret);
 }
 
 TEST_F(PdfCaretTest, SetBlinkIntervalNegative) {

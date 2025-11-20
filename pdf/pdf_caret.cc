@@ -95,7 +95,7 @@ void PdfCaret::SetVisible(bool visible) {
 }
 
 void PdfCaret::SetBlinkInterval(base::TimeDelta interval) {
-  if (interval.is_negative()) {
+  if (interval.is_negative() || blink_interval_ == interval) {
     return;
   }
 

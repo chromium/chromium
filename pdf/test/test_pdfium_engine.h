@@ -181,6 +181,8 @@ class TestPDFiumEngine : public PDFiumEngine {
 
   MOCK_METHOD(void, SetCaretBrowsingEnabled, (bool), (override));
 
+  MOCK_METHOD(void, SetCaretBlinkInterval, (base::TimeDelta), (override));
+
  protected:
   std::vector<DocumentAttachmentInfo>& doc_attachment_info_list() {
     return doc_attachment_info_list_;

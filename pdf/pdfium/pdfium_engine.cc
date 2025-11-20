@@ -1231,7 +1231,6 @@ void PDFiumEngine::SetCaretBrowsingEnabled(bool enabled) {
     caret_->SetVisible(has_focus_);
   }
 
-  // TODO(crbug.com/427778119): Set caret blink interval.
   caret_->SetEnabled(enabled);
 
   if (enabled) {
@@ -1245,6 +1244,12 @@ void PDFiumEngine::SetCaretBrowsingEnabled(bool enabled) {
         break;
       }
     }
+  }
+}
+
+void PDFiumEngine::SetCaretBlinkInterval(base::TimeDelta interval) {
+  if (caret_) {
+    caret_->SetBlinkInterval(interval);
   }
 }
 
