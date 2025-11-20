@@ -70,7 +70,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.ntp.cards.SignInPromo;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
-import org.chromium.chrome.browser.ntp_customization.theme.NtpBackgroundImageView;
+import org.chromium.chrome.browser.ntp_customization.theme.NtpBackgroundImageCoordinator;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
@@ -123,9 +123,10 @@ import java.util.function.Supplier;
 public class FeedSurfaceCoordinatorTest {
     private static final @SurfaceType int SURFACE_TYPE = SurfaceType.NEW_TAB_PAGE;
     private static final long SURFACE_CREATION_TIME_NS = 1234L;
-    @Mock private NtpBackgroundImageView mBackgroundImageView;
     private BackgroundImageInfo mBackgroundImageInfo;
     private Bitmap mBitmap;
+
+    @Mock private NtpBackgroundImageCoordinator mBackgroundImageCoordinator;
 
     private static class TestLifecycleManager extends FeedSurfaceLifecycleManager {
         public TestLifecycleManager(Activity activity, FeedSurfaceCoordinator coordinator) {
@@ -515,14 +516,14 @@ public class FeedSurfaceCoordinatorTest {
     @Test
     @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testSetBackground_withImageFromDisk_delegatesToView() {
-        mCoordinator.setBackgroundImageViewForTesting(mBackgroundImageView);
+        mCoordinator.setBackgroundImageCoordinatorForTesting(mBackgroundImageCoordinator);
         NtpCustomizationConfigManager configManager = NtpCustomizationConfigManager.getInstance();
         configManager.setBackgroundImageTypeForTesting(CHROME_COLOR);
 
         configManager.onBackgroundChanged(mBitmap, mBackgroundImageInfo);
 
         // Verifies the coordinator delegates the setBackground call to the custom view.
-        verify(mBackgroundImageView)
+        verify(mBackgroundImageCoordinator)
                 .setBackground(eq(mBitmap), eq(mBackgroundImageInfo), eq(IMAGE_FROM_DISK));
     }
 

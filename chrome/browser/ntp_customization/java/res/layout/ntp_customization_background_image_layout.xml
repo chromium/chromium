@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ntp_customization_background_image_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- The background image which takes the full height of FrameLayout. -->
+    <ImageView
+        android:id="@+id/image_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:importantForAccessibility="no"/>
+
+    <!-- The gradient overlay with fixed height at the top. -->
+    <View
+        android:id="@+id/gradient_view"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/ntp_customization_gradient_toolbar_height"
+        android:layout_gravity="top"
+        android:background="@drawable/ntp_customized_background_image_gradient_overlay" />
+</FrameLayout>

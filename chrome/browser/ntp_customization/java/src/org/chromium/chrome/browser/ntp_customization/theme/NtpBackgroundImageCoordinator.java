@@ -13,41 +13,77 @@ import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-import androidx.annotation.VisibleForTesting;
+import androidx.annotation.ColorInt;
 import androidx.window.layout.WindowMetrics;
 import androidx.window.layout.WindowMetricsCalculator;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
+import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.CropImageUtils;
 import org.chromium.components.browser_ui.widget.displaystyle.DisplayStyleObserver;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
+import org.chromium.ui.LayoutInflaterUtils;
+import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /**
- * An ImageView that displays the New Tab Page background. This view handles different types of
- * background images and applies the correct scaling and transformation.
+ * Coordinator for the NTP background image. It handles an ImageView which displays the New Tab Page
+ * background, and handles different types of background images and applies the correct scaling and
+ * transformation.
  */
 @NullMarked
-public class NtpBackgroundImageView extends ImageView {
+public class NtpBackgroundImageCoordinator {
     private final Context mContext;
     private final UiConfig mUiConfig;
     private final DisplayStyleObserver mDisplayStyleObserver;
+    private final PropertyModel mPropertyModel;
+
     private int mBackgroundImageType;
     private @Nullable Bitmap mOriginalBitmap;
     private @Nullable BackgroundImageInfo mBackgroundImageInfo;
 
-    public NtpBackgroundImageView(Context context, UiConfig uiConfig) {
-        super(context);
+    /**
+     * @param context The application context.
+     * @param rootView The root view to attach to.
+     * @param uiConfig The {@link UiConfig} instance.
+     * @param backgroundColor The background color to set on the image view.
+     */
+    public NtpBackgroundImageCoordinator(
+            Context context, ViewGroup rootView, UiConfig uiConfig, @ColorInt int backgroundColor) {
         mContext = context;
         mUiConfig = uiConfig;
         mDisplayStyleObserver = (newDisplayStyle) -> setImageBackgroundWithMatrices();
         mUiConfig.addObserver(mDisplayStyleObserver);
+
+        FrameLayout backgroundImageLayout =
+                (FrameLayout)
+                        LayoutInflaterUtils.inflate(
+                                mContext, R.layout.ntp_customization_background_image_layout, null);
+
+        mPropertyModel = new PropertyModel(NtpBackgroundImageProperties.ALL_KEYS);
+        PropertyModelChangeProcessor.create(
+                mPropertyModel, backgroundImageLayout, NtpBackgroundImageLayoutViewBinder::bind);
+
+        // Applies an opaque background color to prevent any views underneath from being visible.
+        mPropertyModel.set(NtpBackgroundImageProperties.BACKGROUND_COLOR, backgroundColor);
+        rootView.addView(backgroundImageLayout);
     }
 
+    /**
+     * Sets the background image, utilizing the matrix to control its scaling and positioning.
+     *
+     * @param originalBitmap The original bitmap of the background image without applying any
+     *     matrix.
+     * @param backgroundImageInfo The {@link BackgroundImageInfo} instance to apply on the bitmap.
+     * @param backgroundType The the background image type.
+     */
     public void setBackground(
             Bitmap originalBitmap,
             @Nullable BackgroundImageInfo backgroundImageInfo,
@@ -57,14 +93,17 @@ public class NtpBackgroundImageView extends ImageView {
 
         switch (backgroundType) {
             case THEME_COLLECTION:
-                setScaleType(ImageView.ScaleType.CENTER_CROP);
-                setImageBitmap(originalBitmap);
+                mPropertyModel.set(
+                        NtpBackgroundImageProperties.IMAGE_SCALE_TYPE,
+                        ImageView.ScaleType.CENTER_CROP);
+                mPropertyModel.set(NtpBackgroundImageProperties.BACKGROUND_IMAGE, originalBitmap);
                 break;
 
             case IMAGE_FROM_DISK:
                 mBackgroundImageInfo = backgroundImageInfo;
-                setScaleType(ImageView.ScaleType.MATRIX);
-                setImageBitmap(originalBitmap);
+                mPropertyModel.set(
+                        NtpBackgroundImageProperties.IMAGE_SCALE_TYPE, ImageView.ScaleType.MATRIX);
+                mPropertyModel.set(NtpBackgroundImageProperties.BACKGROUND_IMAGE, originalBitmap);
                 setImageBackgroundWithMatrices();
                 break;
 
@@ -73,8 +112,20 @@ public class NtpBackgroundImageView extends ImageView {
         }
     }
 
-    @VisibleForTesting
-    void setImageBackgroundWithMatrices() {
+    /** Clears the background image. */
+    public void clearBackground() {
+        mPropertyModel.set(NtpBackgroundImageProperties.BACKGROUND_IMAGE, null);
+    }
+
+    /**
+     * Performs final cleanup of the background image layout, including the removal of all
+     * registered observers.
+     */
+    public void destroy() {
+        mUiConfig.removeObserver(mDisplayStyleObserver);
+    }
+
+    private void setImageBackgroundWithMatrices() {
         if (mBackgroundImageType != IMAGE_FROM_DISK
                 || mOriginalBitmap == null
                 || mBackgroundImageInfo == null) return;
@@ -83,7 +134,7 @@ public class NtpBackgroundImageView extends ImageView {
                 getValidatedMatrixForCurrentWindowSize(
                         (Activity) mContext, mBackgroundImageInfo, mOriginalBitmap);
 
-        this.setImageMatrix(matrixToApply);
+        mPropertyModel.set(NtpBackgroundImageProperties.IMAGE_MATRIX, matrixToApply);
     }
 
     private Matrix getValidatedMatrixForCurrentWindowSize(
@@ -110,7 +161,7 @@ public class NtpBackgroundImageView extends ImageView {
         return new Point(bounds.width(), bounds.height());
     }
 
-    public void destroy() {
-        mUiConfig.removeObserver(mDisplayStyleObserver);
+    public PropertyModel getPropertyModelForTesting() {
+        return mPropertyModel;
     }
 }

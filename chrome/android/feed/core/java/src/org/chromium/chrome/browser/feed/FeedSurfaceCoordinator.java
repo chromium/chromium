@@ -63,7 +63,7 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinatorFactory;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
-import org.chromium.chrome.browser.ntp_customization.theme.NtpBackgroundImageView;
+import org.chromium.chrome.browser.ntp_customization.theme.NtpBackgroundImageCoordinator;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -135,7 +135,6 @@ public class FeedSurfaceCoordinator
 
     private FeedSurfaceMediator mMediator;
     private final boolean mIsNtpCustomizationV2Enabled;
-    private @Nullable NtpBackgroundImageView mBackgroundImageView;
     private final UiConfig mUiConfig;
     private final FrameLayout mRootView;
     private boolean mIsActive;
@@ -188,6 +187,7 @@ public class FeedSurfaceCoordinator
     private final boolean mIsNewTabPageCustomizationEnabled;
     private @Nullable ImageButton mNtpCustomizationButton;
     private @Nullable NtpCustomizationConfigManager mNtpCustomizationConfigManager;
+    private @Nullable NtpBackgroundImageCoordinator mNtpBackgroundImageCoordinator;
     private NtpCustomizationConfigManager.@Nullable HomepageStateListener mHomepageStateListener;
 
     /** Provides the additional capabilities needed for the container view. */
@@ -484,7 +484,9 @@ public class FeedSurfaceCoordinator
 
         mIsNtpCustomizationV2Enabled = ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled();
         if (mIsNewTabPageCustomizationEnabled) {
-            addBackgroundImageView();
+            mNtpBackgroundImageCoordinator =
+                    new NtpBackgroundImageCoordinator(
+                            mActivity, mRootView, mUiConfig, mDefaultBackgroundColor);
         }
 
         // Pull-to-refresh set up.
@@ -709,19 +711,6 @@ public class FeedSurfaceCoordinator
         }
     }
 
-    private void addBackgroundImageView() {
-        mBackgroundImageView = new NtpBackgroundImageView(mActivity, mUiConfig);
-        FrameLayout.LayoutParams backgroundLayoutParams =
-                new FrameLayout.LayoutParams(
-                        FrameLayout.LayoutParams.MATCH_PARENT,
-                        FrameLayout.LayoutParams.MATCH_PARENT);
-        mBackgroundImageView.setLayoutParams(backgroundLayoutParams);
-
-        // Applies an opaque background color to prevent any views underneath from being visible.
-        mBackgroundImageView.setBackgroundColor(mDefaultBackgroundColor);
-        mRootView.addView(mBackgroundImageView);
-    }
-
     // Sets the background image for the embedder NTP.
     private void setBackground(
             Bitmap originalBitmap,
@@ -732,7 +721,7 @@ public class FeedSurfaceCoordinator
         }
 
         mRecyclerView.setBackgroundColor(Color.TRANSPARENT);
-        assumeNonNull(mBackgroundImageView)
+        assumeNonNull(mNtpBackgroundImageCoordinator)
                 .setBackground(originalBitmap, backgroundImageInfo, backgroundType);
     }
 
@@ -743,8 +732,8 @@ public class FeedSurfaceCoordinator
      */
     private void setBackgroundColor(@ColorInt int backgroundColor) {
         mRecyclerView.setBackgroundColor(backgroundColor);
-        if (mBackgroundImageView != null) {
-            mBackgroundImageView.setImageBitmap(null);
+        if (mNtpBackgroundImageCoordinator != null) {
+            mNtpBackgroundImageCoordinator.clearBackground();
         }
 
         if (mNtpHeader != null) {
@@ -876,8 +865,8 @@ public class FeedSurfaceCoordinator
             mNtpCustomizationConfigManager.removeListener(mHomepageStateListener);
             mHomepageStateListener = null;
         }
-        if (mBackgroundImageView != null) {
-            mBackgroundImageView.destroy();
+        if (mNtpBackgroundImageCoordinator != null) {
+            mNtpBackgroundImageCoordinator.destroy();
         }
     }
 
@@ -1522,7 +1511,8 @@ public class FeedSurfaceCoordinator
         return mRootView;
     }
 
-    public void setBackgroundImageViewForTesting(NtpBackgroundImageView backgroundImageView) {
-        mBackgroundImageView = backgroundImageView;
+    public void setBackgroundImageCoordinatorForTesting(
+            NtpBackgroundImageCoordinator backgroundImageCoordinator) {
+        mNtpBackgroundImageCoordinator = backgroundImageCoordinator;
     }
 }
