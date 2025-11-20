@@ -18,6 +18,10 @@
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "url/gurl.h"
 
+namespace ash {
+class BrowserDelegate;
+}
+
 namespace content {
 class WebContents;
 }
@@ -82,7 +86,7 @@ class AppShortcutShelfItemController : public ash::ShelfItemDelegate,
   // browsers results based on their corresponding windows.
   std::vector<raw_ptr<content::WebContents, VectorExperimental>>
   GetAppWebContents(const ItemFilterPredicate& filter_predicate);
-  std::vector<raw_ptr<Browser, VectorExperimental>> GetAppBrowsers(
+  std::vector<raw_ptr<ash::BrowserDelegate, VectorExperimental>> GetAppBrowsers(
       const ItemFilterPredicate& filter_predicate);
 
   // If an owned item is already active, this function advances to the next item
