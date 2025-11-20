@@ -257,6 +257,17 @@ public class NavigationAttachmentsViewBinderUnitTest {
     }
 
     @Test
+    public void reanchorViewsForCompactFusebox_compactModeNotSearch() {
+        configureFusebox(Variant.COMPACT, AutocompleteRequestType.AI_MODE);
+        NavigationAttachmentsViewBinder.reanchorViewsForCompactFusebox(mModel, mViewHolder);
+
+        var lp = (ConstraintLayout.LayoutParams) mViewHolder.addButton.getLayoutParams();
+        assertEquals(ConstraintSet.UNSET, lp.topToTop);
+        assertEquals(R.id.url_bar, lp.topToBottom);
+        assertEquals(ConstraintSet.PARENT_ID, lp.bottomToBottom);
+    }
+
+    @Test
     public void reanchorViewsForCompactFusebox_notCompactMode() {
         configureFusebox(Variant.DEFAULT, AutocompleteRequestType.SEARCH);
         NavigationAttachmentsViewBinder.reanchorViewsForCompactFusebox(mModel, mViewHolder);

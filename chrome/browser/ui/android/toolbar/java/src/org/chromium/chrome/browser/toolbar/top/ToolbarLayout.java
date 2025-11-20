@@ -34,7 +34,6 @@ import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsV
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
-import org.chromium.chrome.browser.omnibox.LocationBarEmbedder;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -77,7 +76,7 @@ import java.util.function.Supplier;
  */
 @NullMarked
 public abstract class ToolbarLayout extends FrameLayout
-        implements Destroyable, TintObserver, ThemeColorObserver, LocationBarEmbedder {
+        implements Destroyable, TintObserver, ThemeColorObserver {
     private @Nullable ToolbarColorObserver mToolbarColorObserver;
 
     private final int[] mTempPosition = new int[2];

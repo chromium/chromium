@@ -59,8 +59,6 @@ public class NavigationAttachmentsCoordinator
     private @Nullable ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
     private boolean mDefaultSearchEngineIsGoogle = true;
     private TemplateUrlService mTemplateUrlService;
-    private final ObservableSupplierImpl<Boolean> mOnCompactModeChangedSupplier =
-            new ObservableSupplierImpl<>(false);
 
     public NavigationAttachmentsCoordinator(
             Context context,
@@ -147,8 +145,7 @@ public class NavigationAttachmentsCoordinator
                         mModelList,
                         mAutocompleteRequestTypeSupplier,
                         mTabModelSelectorSupplier,
-                        mComposeBoxQueryControllerBridge,
-                        mOnCompactModeChangedSupplier);
+                        mComposeBoxQueryControllerBridge);
     }
 
     public void destroy() {
@@ -264,10 +261,8 @@ public class NavigationAttachmentsCoordinator
      * @param isWrapping true if text is wrapping (should show expanded UI), false for compact UI
      */
     public void onFuseboxTextWrappingChanged(boolean isWrapping) {
-        // We only care about url bar wrapping state when compact variant is enabled. Guard against
-        // entering compact mode when the variant is disabled by returning early.
-        if (mMediator == null || !OmniboxFeatures.sCompactFusebox.getValue()) return;
-        mMediator.setUseCompactUi(!isWrapping);
+        if (mMediator == null) return;
+        mModel.set(NavigationAttachmentsProperties.COMPACT_UI, !isWrapping);
     }
 
     /**
@@ -293,13 +288,5 @@ public class NavigationAttachmentsCoordinator
     public void notifyOmniboxSessionEnded(boolean userDidNavigate) {
         FuseboxMetrics.notifyOmniboxSessionEnded(
                 userDidNavigate, mAutocompleteRequestTypeSupplier.get());
-    }
-
-    /**
-     * Registers a callback notified when the compactness of the fusebox changes. This callback will
-     * only fire if the compact mode variant is enabled and the compactness state changes.
-     */
-    public ObservableSupplier<Boolean> getOnCompactModeChangedSupplier() {
-        return mOnCompactModeChangedSupplier;
     }
 }

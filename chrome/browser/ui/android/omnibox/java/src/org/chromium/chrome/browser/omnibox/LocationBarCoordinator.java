@@ -11,10 +11,6 @@ import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
-import android.transition.ChangeBounds;
-import android.transition.Transition;
-import android.transition.TransitionListenerAdapter;
-import android.transition.TransitionManager;
 import android.view.ActionMode;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -97,7 +93,6 @@ import java.util.function.Supplier;
 public class LocationBarCoordinator
         implements LocationBar, NativeInitObserver, AutocompleteDelegate {
 
-    private static final long COMPACT_MODE_ANIMATION_DURATION_MS = 200;
     private final DeferredIMEWindowInsetApplicationCallback
             mDeferredIMEWindowInsetApplicationCallback;
 
@@ -112,7 +107,6 @@ public class LocationBarCoordinator
     private LocationBarLayout mLocationBarLayout;
     private @Nullable SubCoordinator mSubCoordinator;
     private @Nullable ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
-    private final LocationBarEmbedder mLocationBarEmbedder;
     private final @Nullable BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final boolean mIsToolbarPositionCustomizationEnabled;
     private UrlBarCoordinator mUrlCoordinator;
@@ -212,7 +206,6 @@ public class LocationBarCoordinator
             @Nullable OmniboxSuggestionsDropdownScrollListener
                     omniboxSuggestionsDropdownScrollListener,
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
-            LocationBarEmbedder locationBarEmbedder,
             LocationBarEmbedderUiOverrides uiOverrides,
             @Nullable View baseChromeLayout,
             Supplier<Integer> bottomWindowPaddingSupplier,
@@ -225,7 +218,6 @@ public class LocationBarCoordinator
         mLocationBarLayout = (LocationBarLayout) locationBarLayout;
         mWindowAndroid = windowAndroid;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
-        mLocationBarEmbedder = locationBarEmbedder;
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mIsToolbarPositionCustomizationEnabled = isToolbarPositionCustomizationEnabled;
         mActivityLifecycleDispatcher.register(this);
@@ -266,9 +258,6 @@ public class LocationBarCoordinator
                         tabModelSelectorSupplier,
                         templateUrlServiceSupplier,
                         autocompleteRequestTypeSupplier);
-        mNavigationAttachmentsCoordinator
-                .getOnCompactModeChangedSupplier()
-                .addObserver(this::onCompactModeChange);
 
         mPageZoomIndicatorCoordinator =
                 pageZoomManager != null
@@ -822,31 +811,6 @@ public class LocationBarCoordinator
             mNavigationAttachmentsCoordinator.onFuseboxTextWrappingChanged(isWrapping);
         }
         mLocationBarMediator.updateButtonVisibility();
-    }
-
-    private void onCompactModeChange(boolean toCompactMode) {
-        if (!mUrlCoordinator.hasFocus()) return;
-        ChangeBounds changeBounds = new ChangeBounds();
-        changeBounds
-                .setDuration(COMPACT_MODE_ANIMATION_DURATION_MS)
-                .addTarget(mLocationBarLayout)
-                .addTarget(mLocationBarLayout.findViewById(R.id.location_bar_attachments_add));
-        if (toCompactMode) {
-            mLocationBarEmbedder.setRequestFixedHeight(true);
-            changeBounds.addListener(
-                    new TransitionListenerAdapter() {
-                        @Override
-                        public void onTransitionCancel(Transition transition) {
-                            onTransitionEnd(transition);
-                        }
-
-                        @Override
-                        public void onTransitionEnd(Transition transition) {
-                            mLocationBarEmbedder.setRequestFixedHeight(false);
-                        }
-                    });
-        }
-        TransitionManager.beginDelayedTransition(mLocationBarLayout, changeBounds);
     }
 
     /**
