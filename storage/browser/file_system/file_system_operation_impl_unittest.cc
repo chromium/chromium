@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "storage/browser/file_system/file_system_operation_impl.h"
 
 #include <stddef.h>
@@ -16,6 +11,7 @@
 #include <string>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -846,7 +842,7 @@ TEST_F(FileSystemOperationImplTest, TestCopyInForeignFileSuccess) {
   EXPECT_EQ(data_size,
             base::ReadFile(PlatformPath("dest/file"), buffer, data_size));
   for (int i = 0; i < data_size; ++i)
-    EXPECT_EQ(test_data.at(i), buffer[i]);
+    UNSAFE_TODO(EXPECT_EQ(test_data.at(i), buffer[i]));
 }
 
 TEST_F(FileSystemOperationImplTest, TestCopyInForeignFileFailureByQuota) {
@@ -1105,9 +1101,9 @@ TEST_F(FileSystemOperationImplTest, TestTruncate) {
   EXPECT_EQ(length, base::ReadFile(platform_path, data, length));
   for (int i = 0; i < length; ++i) {
     if (i < static_cast<int>(test_data.size())) {
-      EXPECT_EQ(test_data.at(i), data[i]);
+      UNSAFE_TODO(EXPECT_EQ(test_data.at(i), data[i]));
     } else {
-      EXPECT_EQ(0, data[i]);
+      UNSAFE_TODO(EXPECT_EQ(0, data[i]));
     }
   }
 
@@ -1122,7 +1118,7 @@ TEST_F(FileSystemOperationImplTest, TestTruncate) {
   EXPECT_EQ(length, GetFileSize("file"));
   EXPECT_EQ(length, base::ReadFile(platform_path, data, length));
   for (int i = 0; i < length; ++i)
-    EXPECT_EQ(test_data.at(i), data[i]);
+    UNSAFE_TODO(EXPECT_EQ(test_data.at(i), data[i]));
 
   // Truncate is not a 'read' access.  (Here expected access count is 1
   // since we made 1 read access for GetMetadata.)

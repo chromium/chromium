@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "storage/browser/blob/blob_memory_controller.h"
 
 #include <algorithm>
@@ -15,6 +10,7 @@
 
 #include "base/byte_count.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/small_map.h"
 #include "base/feature_list.h"
@@ -246,9 +242,9 @@ std::pair<FileCreationInfo, int64_t> CreateFileAndWriteItems(
     size_t length = item.size();
     size_t bytes_left = length;
     while (bytes_left > 0) {
-      bytes_written = file.WriteAtCurrentPos(
+      bytes_written = UNSAFE_TODO(file.WriteAtCurrentPos(
           reinterpret_cast<const char*>(item.data() + (length - bytes_left)),
-          base::saturated_cast<int>(bytes_left));
+          base::saturated_cast<int>(bytes_left)));
       if (bytes_written < 0)
         break;
       DCHECK_LE(static_cast<size_t>(bytes_written), bytes_left);
