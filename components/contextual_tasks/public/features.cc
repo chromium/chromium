@@ -52,8 +52,8 @@ const base::FeatureParam<EntryPointOption> kShowEntryPoint(
     EntryPointOption::kNoEntryPoint,
     &kEntryPointOptions);
 
-const base::FeatureParam<bool> kTaskScopedSidpePanel(&kContextualTasksContext,
-                                                     "TaskScopedSidpePanel",
+const base::FeatureParam<bool> kTaskScopedSidePanel(&kContextualTasksContext,
+                                                     "TaskScopedSidePanel",
                                                      true);
 
 const base::FeatureParam<bool> kEnableLensInContextualTasks(

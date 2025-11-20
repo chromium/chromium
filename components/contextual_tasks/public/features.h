@@ -39,7 +39,7 @@ extern const base::FeatureParam<double> kMinMultiSignalScore;
 // changed to another task for one tab, all tabs associated with the former task
 // will become associated with the new task. When set to false, task change in
 // the side panel only affects the current tab.
-extern const base::FeatureParam<bool> kTaskScopedSidpePanel;
+extern const base::FeatureParam<bool> kTaskScopedSidePanel;
 
 // Returns the base URL for the AI page.
 extern std::string GetContextualTasksAiPageUrl();

@@ -305,7 +305,7 @@ void ContextualTasksUiService::OnTaskChangedInPanel(
       tab_strip_model->GetActiveWebContents();
   SessionID active_id = SessionTabHelper::IdForTab(active_contents);
 
-  if (kTaskScopedSidpePanel.Get()) {
+  if (kTaskScopedSidePanel.Get()) {
     // If the current tab is associated with any task, change associations for
     // all tabs associated with that task.
     std::optional<ContextualTask> current_task =
