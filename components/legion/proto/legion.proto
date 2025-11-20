@@ -48,6 +48,10 @@ enum FeatureName {
 }
 
 message GenerateContentRequest {
+  // This field is meant for fast prototyping and will only be respected when
+  // the feature name is FEATURE_NAME_DEMO_GEMINI_GENERATE_CONTENT.
+  string model = 1;
+
   repeated Content contents = 2;
 }
 

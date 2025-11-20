@@ -144,6 +144,10 @@ void Client::SendTextRequest(proto::FeatureName feature_name,
                              const std::string& text,
                              OnTextRequestCompletedCallback callback) {
   proto::GenerateContentRequest request;
+  if (feature_name ==
+      proto::FeatureName::FEATURE_NAME_DEMO_GEMINI_GENERATE_CONTENT) {
+    request.set_model("dev_v3xs");
+  }
   auto* content = request.add_contents();
   content->set_role("user");
   auto* part = content->add_parts();
