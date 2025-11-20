@@ -162,6 +162,8 @@ class PageEmbeddingsService
 
   const raw_ptr<passage_embeddings::Embedder> embedder_;
 
+  raw_ptr<page_content_annotations::PageContentExtractionService>
+      page_content_extraction_service_;
   base::ScopedObservation<
       page_content_annotations::PageContentExtractionService,
       PageEmbeddingsService>

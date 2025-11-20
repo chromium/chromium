@@ -29,6 +29,7 @@ source_set("contextual_tasks") {
   if (!is_android) {
     public_deps += [
       ":mojo_bindings",
+      "//chrome/browser/passage_embeddings",
       "//components/passage_embeddings:passage_embeddings_types",
     ]
   }

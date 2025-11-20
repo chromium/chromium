@@ -161,7 +161,9 @@ ContextualTasksContextService::ContextualTasksContextService(
       embedder_(embedder),
       optimization_guide_keyed_service_(optimization_guide_keyed_service),
       tick_clock_(base::DefaultTickClock::GetInstance()) {
-  scoped_observation_.Observe(embedder_metadata_provider_);
+  scoped_embedder_metadata_provider_observation_.Observe(
+      embedder_metadata_provider_);
+  scoped_page_embeddings_service_observation_.Observe(page_embeddings_service_);
 }
 
 ContextualTasksContextService::~ContextualTasksContextService() = default;
@@ -207,6 +209,11 @@ void ContextualTasksContextService::GetRelevantTabsForQuery(
 void ContextualTasksContextService::EmbedderMetadataUpdated(
     passage_embeddings::EmbedderMetadata metadata) {
   is_embedder_available_ = metadata.IsValid();
+}
+
+passage_embeddings::PageEmbeddingsService::Priority
+ContextualTasksContextService::GetDefaultPriority() const {
+  return passage_embeddings::PageEmbeddingsService::Priority::kBackground;
 }
 
 void ContextualTasksContextService::OnQueryEmbeddingReady(

@@ -15,6 +15,7 @@
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_types.mojom.h"
+#include "chrome/browser/passage_embeddings/page_embeddings_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/passage_embeddings/passage_embeddings_types.h"
 
@@ -58,7 +59,8 @@ struct TabSelectionOptions {
 // A service used to determine the relevant context for a given task.
 class ContextualTasksContextService
     : public KeyedService,
-      public passage_embeddings::EmbedderMetadataObserver {
+      public passage_embeddings::EmbedderMetadataObserver,
+      public passage_embeddings::PageEmbeddingsService::Observer {
  public:
   ContextualTasksContextService(
       Profile* profile,
@@ -84,6 +86,10 @@ class ContextualTasksContextService
   // EmbedderMetadataObserver:
   void EmbedderMetadataUpdated(
       passage_embeddings::EmbedderMetadata metadata) override;
+
+  // passage_embeddings::PageEmbeddingsService::Observer:
+  passage_embeddings::PageEmbeddingsService::Priority GetDefaultPriority()
+      const override;
 
   // Callback invoked when the embedding for `query` is ready.
   void OnQueryEmbeddingReady(
@@ -137,7 +143,10 @@ class ContextualTasksContextService
 
   base::ScopedObservation<passage_embeddings::EmbedderMetadataProvider,
                           passage_embeddings::EmbedderMetadataObserver>
-      scoped_observation_{this};
+      scoped_embedder_metadata_provider_observation_{this};
+  base::ScopedObservation<passage_embeddings::PageEmbeddingsService,
+                          passage_embeddings::PageEmbeddingsService::Observer>
+      scoped_page_embeddings_service_observation_{this};
 
   base::WeakPtrFactory<ContextualTasksContextService> weak_ptr_factory_{this};
 };
