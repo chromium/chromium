@@ -19,6 +19,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -1158,6 +1159,13 @@ public class ToolbarManager
                     mActivity
                             .getResources()
                             .getDimensionPixelSize(R.dimen.toolbar_progress_bar_increased_height);
+            progressBarStub.setLayoutParams(progressBarParams);
+        }
+
+        if (ChromeFeatureList.sAndroidAnimatedProgressBarInBrowser.isEnabled()) {
+            CoordinatorLayout.LayoutParams progressBarParams =
+                    (CoordinatorLayout.LayoutParams) progressBarStub.getLayoutParams();
+            progressBarParams.gravity = Gravity.BOTTOM;
             progressBarStub.setLayoutParams(progressBarParams);
         }
 
@@ -2388,14 +2396,18 @@ public class ToolbarManager
                     if (ChromeFeatureList.sAndroidAnimatedProgressBarInBrowser.isEnabled()) {
                         // TODO(peilinwang) update these calculations and move them to the stackers
                         // when the progress bar gets decoupled from the toolbar and when top
-                        // stacker is complete.
+                        // stacker is complete. Note: the hairline is a TopControlsLayer, but is not
+                        // integrated with the TopControlsStacker yet, which is why we have to
+                        // explicitly account for its height after calling getHeightFromLayerToX.
                         int toolbarPosition = mToolbarPositionSupplier.get();
+                        int hairlineHeight = mToolbarHairline.getHeight();
                         if (toolbarPosition == ControlsPosition.TOP) {
                             yOffset =
                                     mTopControlsStacker.getHeightFromLayerToTop(
                                                     TopControlType.PROGRESS_BAR)
                                             - mTopControlsStacker.getHeightFromLayerToTop(
-                                                    TopControlType.TOOLBAR);
+                                                    TopControlType.TOOLBAR)
+                                            + hairlineHeight;
                         } else if (toolbarPosition == ControlsPosition.BOTTOM) {
                             yOffset =
                                     -(mBottomControlsStacker.getHeightFromLayerToBottom(
@@ -2403,7 +2415,8 @@ public class ToolbarManager
                                                     - mBottomControlsStacker
                                                             .getHeightFromLayerToBottom(
                                                                     LayerType.BOTTOM_TOOLBAR))
-                                            - mProgressBarContainer.getHeight();
+                                            - mProgressBarContainer.getHeight()
+                                            - hairlineHeight;
                         }
                     }
                     drawingInfo.progressBarRect.offset(0, yOffset);
