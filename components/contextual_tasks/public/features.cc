@@ -40,10 +40,6 @@ const base::FeatureParam<bool> kOnlyUseTitlesForSimilarity(
     "ContextualTasksContextOnlyUseTitles",
     false);
 
-const base::FeatureParam<bool> kTaskScopedSidpePanel(&kContextualTasksContext,
-                                                     "TaskScopedSidpePanel",
-                                                     true);
-
 constexpr base::FeatureParam<EntryPointOption>::Option kEntryPointOptions[] = {
     {EntryPointOption::kNoEntryPoint, "no-entry-point"},
     {EntryPointOption::kPageActionRevisit, "page-action-revisit"},
@@ -56,6 +52,15 @@ const base::FeatureParam<EntryPointOption> kShowEntryPoint(
     EntryPointOption::kNoEntryPoint,
     &kEntryPointOptions);
 
+const base::FeatureParam<bool> kTaskScopedSidpePanel(&kContextualTasksContext,
+                                                     "TaskScopedSidpePanel",
+                                                     true);
+
+const base::FeatureParam<bool> kEnableLensInContextualTasks(
+    &kContextualTasksContext,
+    "EnableLensInContextualTasks",
+    true);
+
 std::string GetContextualTasksAiPageUrl() {
   return kContextualTasksAiPageUrl.Get();
 }
@@ -63,6 +68,11 @@ std::string GetContextualTasksAiPageUrl() {
 std::vector<std::string> GetContextualTasksSignInDomains() {
   return base::SplitString(kContextualTasksSignInDomains.Get(), ",",
                            base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+}
+
+bool GetEnableLensInContextualTasks() {
+  return base::FeatureList::IsEnabled(kContextualTasks) &&
+         kEnableLensInContextualTasks.Get();
 }
 
 namespace flag_descriptions {
