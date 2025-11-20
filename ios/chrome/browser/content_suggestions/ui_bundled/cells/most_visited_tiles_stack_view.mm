@@ -32,15 +32,6 @@
   return self;
 }
 
-#pragma mark - MostVisitedTilesStackViewConsumer
-
-- (void)updateWithConfig:(MostVisitedTilesConfig*)config {
-  for (UIView* subview in self.arrangedSubviews) {
-    [subview removeFromSuperview];
-  }
-  [self populateStackViewWithTiles:config];
-}
-
 #pragma mark - Private
 
 - (void)populateStackViewWithTiles:(MostVisitedTilesConfig*)config {

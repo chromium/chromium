@@ -7,15 +7,12 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/most_visited_tiles_stack_view_consumer.h"
-
 @protocol MagicStackModuleContentViewDelegate;
 @class MostVisitedTilesConfig;
 
 // Implementation for the Most Visited Tiles so that its model can directly
 // update it.
-@interface MostVisitedTilesStackView
-    : UIStackView <MostVisitedTilesStackViewConsumer>
+@interface MostVisitedTilesStackView : UIStackView
 
 // Initializes it with `config`, `contentViewDelegate` and `spacing` between
 // each tile.
