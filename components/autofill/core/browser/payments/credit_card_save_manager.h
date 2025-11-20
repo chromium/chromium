@@ -362,6 +362,10 @@ class CreditCardSaveManager {
   PaymentsDataManager& payments_data_manager();
   const PaymentsDataManager& payments_data_manager() const;
 
+  payments::PaymentsAutofillClient& payments_autofill_client() {
+    return *client_->GetPaymentsAutofillClient();
+  }
+
   const raw_ref<AutofillClient> client_;
 
   // The credit card to be saved if local credit card or local or server CVC
