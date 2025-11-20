@@ -64,8 +64,8 @@ export class PageManager {
 
   /**
    * Shows the default page.
-   * @param updateHistory If we should update the history after
-   *     showing the page (defaults to true).
+   * @param updateHistory If we should update the history after showing the page
+   *     (defaults to true).
    */
   showDefaultPage(updateHistory?: boolean) {
     assert(
@@ -77,11 +77,11 @@ export class PageManager {
   /**
    * Shows a registered page.
    * @param pageName Page name.
-   * @param updateHistory If we should update the history after
-   *     showing the page (defaults to true).
-   * @param propertyBag An optional bag of properties including
-   *     replaceState (if history state should be replaced instead of pushed).
-   *     hash (a hash state to attach to the page).
+   * @param updateHistory If we should update the history after showing the page
+   *     (defaults to true).
+   * @param propertyBag An optional bag of properties including replaceState (if
+   *     history state should be replaced instead of pushed). hash (a hash state
+   *     to attach to the page).
    */
   showPageByName(pageName: string, updateHistory: boolean = true, propertyBag: {
     replaceState?: boolean,
@@ -184,8 +184,7 @@ export class PageManager {
    * subpage nesting.
    * @param potentialAncestor Potential ancestor.
    * @param potentialDescendent Potential descendent.
-   * @return True if |potentialDescendent| is nested under
-   *     |potentialAncestor|.
+   * @return True if |potentialDescendent| is nested under |potentialAncestor|.
    */
   isAncestorOfPage(potentialAncestor: Page, potentialDescendent: Page):
       boolean {
@@ -219,7 +218,6 @@ export class PageManager {
 
   /**
    * Returns the topmost visible page.
-   * @private
    */
   private getTopmostVisiblePage(): Page|null {
     for (const page of this.registeredPages.values()) {
@@ -234,7 +232,6 @@ export class PageManager {
   /**
    * Updates the title to the title of the current page, or of the topmost
    * visible page with a non-empty title.
-   * @private
    */
   private updateTitle_() {
     let page = this.getTopmostVisiblePage();
@@ -252,9 +249,8 @@ export class PageManager {
   /**
    * Constructs a new path to push onto the history stack, using observers
    * to update the history.
-   * @param replace If true, handlers should replace the current
-   *     history event rather than create new ones.
-   * @private
+   * @param replace If true, handlers should replace the current history event
+   *     rather than create new ones.
    */
   private updateHistoryState_(replace: boolean) {
     if (this.isDialog) {

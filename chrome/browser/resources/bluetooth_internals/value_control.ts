@@ -179,8 +179,6 @@ export class Value {
  * as defined by the |ValueDataType| array. Values must be written
  * in these formats. Read and write capability is controlled by a
  * 'properties' bitfield provided by the characteristic.
- * @constructor
- * @extends {HTMLDivElement}
  */
 export class ValueControlElement extends CustomElement {
   static get is() {
@@ -396,3 +394,9 @@ export class ValueControlElement extends CustomElement {
 }
 
 customElements.define('value-control', ValueControlElement);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'value-control': ValueControlElement;
+  }
+}

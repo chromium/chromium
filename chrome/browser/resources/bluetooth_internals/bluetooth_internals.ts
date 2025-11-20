@@ -86,7 +86,7 @@ function removeDeviceDetailsPage(address: string) {
   // Inform the devices page that the user is inspecting this device.
   // This will update the links in the device table.
   devicesPage!.setInspecting(
-      deviceDetailsPage.deviceInfo, false /* isInspecting */);
+      deviceDetailsPage.deviceInfo, /*isInspecting=*/ false);
 
   pageManager.unregister(deviceDetailsPage);
 }
@@ -125,7 +125,7 @@ function makeDeviceDetailsPage(deviceInfo: DeviceInfo): DeviceDetailsPage {
 
   // Inform the devices page that the user is inspecting this device.
   // This will update the links in the device table.
-  devicesPage!.setInspecting(deviceInfo, true /* isInspecting */);
+  devicesPage!.setInspecting(deviceInfo, /*isInspecting=*/ true);
   pageManager.register(deviceDetailsPage);
 
   sidebarObj!.addItem({
@@ -429,8 +429,8 @@ export function initializeViews(
  * Check if the system has all the needed system permissions for using
  * bluetooth.
  * @param bluetoothInternalsHandler Mojo remote handler.
- * @param successCallback The callback to be called when the system
- *     has the permissions for using bluetooth.
+ * @param successCallback The callback to be called when the system has the
+ *     permissions for using bluetooth.
  */
 export async function checkSystemPermissions(
     bluetoothInternalsHandler: BluetoothInternalsHandlerRemote,

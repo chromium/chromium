@@ -145,3 +145,9 @@ export class CharacteristicListItemElement extends CustomElement {
 
 customElements.define(
     'characteristic-list-item', CharacteristicListItemElement);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'characteristic-list-item': CharacteristicListItemElement;
+  }
+}

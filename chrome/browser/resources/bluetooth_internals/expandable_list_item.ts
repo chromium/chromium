@@ -31,3 +31,9 @@ export class ExpandableListItemElement extends CustomElement {
 }
 
 customElements.define('expandable-list-item', ExpandableListItemElement);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'expandable-list-item': ExpandableListItemElement;
+  }
+}

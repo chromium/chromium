@@ -20,8 +20,8 @@ interface SnackbarOptions {
   action?: () => void;
 }
 
-/** @type {number} */ const SHOW_DURATION = 5000;
-/** @type {number} */ const TRANSITION_DURATION = 225;
+const SHOW_DURATION = 5000;
+const TRANSITION_DURATION = 225;
 
 /**
  * Enum of Snackbar types. Used by Snackbar to determine the styling for the
@@ -169,6 +169,12 @@ class BluetoothSnackbarElement extends CustomElement {
 
 customElements.define('bluetooth-snackbar', BluetoothSnackbarElement);
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'bluetooth-snackbar': BluetoothSnackbarElement;
+  }
+}
+
 let current: BluetoothSnackbarElement|null = null;
 
 const queue: BluetoothSnackbarElement[] = [];
@@ -197,11 +203,10 @@ export function getSnackbarStateForTest() {
  * Creates a Snackbar and shows it if one is not showing already. If a
  * Snackbar is already active, the next Snackbar is queued.
  * @param message The message to display in the Snackbar.
- * @param type A string determining the Snackbar type: info,
- *     success, warning, error. If not provided, info type is used.
+ * @param type A string determining the Snackbar type: info, success, warning,
+ *     error. If not provided, info type is used.
  * @param actionText The text to display for the action link.
- * @param action A function to be called when the user
- *     presses the action link.
+ * @param action A function to be called when the user presses the action link.
  */
 export function showSnackbar(
     message: string, type?: SnackbarType, actionText?: string,
@@ -212,8 +217,7 @@ export function showSnackbar(
     actionText: actionText,
     action: action,
   };
-  const newSnackbar =
-      document.createElement('bluetooth-snackbar') as BluetoothSnackbarElement;
+  const newSnackbar = document.createElement('bluetooth-snackbar');
   newSnackbar.initialize(options);
 
   if (current) {

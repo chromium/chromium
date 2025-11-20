@@ -26,8 +26,10 @@ export enum ConnectionStatus {
  */
 export class DeviceCollection extends EventTarget {
   private array_: DeviceInfo[];
-  // Keep track of MAC addresses which were previously found via scan, but
-  // are no longer being advertised or nearby. Used to inform isRemoved().
+  /**
+   * Keep track of MAC addresses which were previously found via scan, but are
+   * no longer being advertised or nearby. Used to inform isRemoved().
+   */
   private removedDevices_: Record<string, boolean> = {};
 
   /**

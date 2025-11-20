@@ -36,8 +36,7 @@ export class AdapterPage extends Page {
   constructor() {
     super('adapter', 'Adapter', 'adapter');
 
-    this.adapterFieldSet =
-        document.createElement('object-fieldset') as ObjectFieldsetElement;
+    this.adapterFieldSet = document.createElement('object-fieldset');
     this.adapterFieldSet.toggleAttribute('show-all', true);
     this.adapterFieldSet.dataset['nameMap'] = JSON.stringify(PROPERTY_NAMES);
     this.pageDiv.appendChild(this.adapterFieldSet);

@@ -224,3 +224,9 @@ export class DeviceTableElement extends CustomElement {
 }
 
 customElements.define('device-table', DeviceTableElement);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'device-table': DeviceTableElement;
+  }
+}

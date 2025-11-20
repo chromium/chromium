@@ -91,3 +91,9 @@ export class ObjectFieldsetElement extends CustomElement {
 }
 
 customElements.define('object-fieldset', ObjectFieldsetElement);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'object-fieldset': ObjectFieldsetElement;
+  }
+}

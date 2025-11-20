@@ -13,7 +13,6 @@ build_webui("build") {
     "menu.svg",
   ]
 
-  # TODO(crbug.com/40848285): Migrate to TypeScript.
   web_component_files = [
     "characteristic_list_item.ts",
     "descriptor_list_item.ts",

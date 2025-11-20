@@ -57,18 +57,16 @@ export class DeviceDetailsPage extends Page {
 
     this.deviceInfo = deviceInfo;
 
-    this.deviceFieldSet_ =
-        document.createElement('object-fieldset') as ObjectFieldsetElement;
+    this.deviceFieldSet_ = document.createElement('object-fieldset');
     this.deviceFieldSet_.toggleAttribute('show-all', true);
     this.deviceFieldSet_.dataset['nameMap'] = JSON.stringify(PROPERTY_NAMES);
 
-    this.serviceList_ =
-        document.createElement('service-list') as ServiceListElement;
+    this.serviceList_ = document.createElement('service-list');
 
     this.pageDiv.appendChild(document.importNode(
         getRequiredElement<HTMLTemplateElement>('device-details-template')
             .content,
-        true /* deep */));
+        /*deep=*/ true));
 
     this.pageDiv.querySelector('.device-details')!.appendChild(
         this.deviceFieldSet_);

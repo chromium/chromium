@@ -25,8 +25,7 @@ export class CharacteristicListElement extends
   }
 
   createItem(data: CharacteristicInfo): CharacteristicListItemElement {
-    const item = document.createElement('characteristic-list-item') as
-        CharacteristicListItemElement;
+    const item = document.createElement('characteristic-list-item');
     assert(this.deviceAddress_);
     assert(this.serviceId_);
     item.initialize(data, this.deviceAddress_, this.serviceId_);
@@ -69,3 +68,9 @@ export class CharacteristicListElement extends
 }
 
 customElements.define('characteristic-list', CharacteristicListElement);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'characteristic-list': CharacteristicListElement;
+  }
+}

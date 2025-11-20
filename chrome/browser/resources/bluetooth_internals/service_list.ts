@@ -35,8 +35,7 @@ export class ServiceListElement extends ExpandableListElement<ServiceInfo> {
   }
 
   override createItem(data: ServiceInfo): ServiceListItemElement {
-    const item =
-        document.createElement('service-list-item') as ServiceListItemElement;
+    const item = document.createElement('service-list-item');
     assert(this.deviceAddress_);
     item.initialize(data, this.deviceAddress_);
     return item;
@@ -78,3 +77,9 @@ export class ServiceListElement extends ExpandableListElement<ServiceInfo> {
 }
 
 customElements.define('service-list', ServiceListElement);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'service-list': ServiceListElement;
+  }
+}

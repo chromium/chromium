@@ -50,13 +50,17 @@ export class Page extends EventTarget {
   tab: HTMLElement|null = null;
   lastFocusedElement: HTMLElement|null = null;
   hash: string = '';
-  // The parent page of this page; or null for root pages.
+  /** The parent page of this page; or null for root pages. */
   parentPage: Page|null = null;
-  // The section on the parent page that is associated with this page. Can be
-  // null.
+  /**
+   * The section on the parent page that is associated with this page. Can be
+   * null.
+   */
   associatedSection: Element|null = null;
-  // An array of controls that are associated with this page. The first control
-  // should be located on a root page.
+  /**
+   * An array of controls that are associated with this page. The first control
+   * should be located on a root page.
+   */
   associatedControls: Element[]|null = null;
 
   /**
@@ -100,8 +104,8 @@ export class Page extends EventTarget {
   /**
    * Updates the hash of the current page. If the page is topmost, the history
    * state is updated.
-   * @param hash The new hash value. Like location.hash, this
-   *     should include the leading '#' if not empty.
+   * @param hash The new hash value. Like location.hash, this should include the
+   *     leading '#' if not empty.
    */
   setHash(hash: string) {
     if (this.hash === hash) {

@@ -162,9 +162,6 @@ def validateJavaScriptAllowed(source_dir, out_dir, platform):
 
   # Specific exceptions for directories that are still migrating to TS.
   migrating_directories = [
-      # TODO(crbug.com/40848285): Migrate bluetooth-internals to TypeScript and
-      # remove exception.
-      'chrome/browser/resources/bluetooth_internals',
       # TODO(crbug.com/41484340): Migrate to TypeScript.
       'chrome/browser/resources/device_log',
       # TODO(crbug.com/385341235): Migrate inspect to TypeScript.

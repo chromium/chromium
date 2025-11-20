@@ -7,7 +7,6 @@ import {getRequiredElement} from 'chrome://resources/js/util.js';
 import type {BluetoothBtsnoopRemote, BluetoothInternalsHandlerRemote, DebugLogsChangeHandlerRemote} from './bluetooth_internals.mojom-webui.js';
 import {Page} from './page.js';
 
-/** @const {string} */
 const LOGS_NOT_SUPPORTED_STRING = 'Debug logs not supported';
 
 /**
@@ -118,7 +117,7 @@ export class DebugLogPage extends Page {
 
     this.pageDiv.appendChild(document.importNode(
         getRequiredElement<HTMLTemplateElement>('btsnoop-template').content,
-        true /* deep */));
+        /*deep=*/ true));
     this.setUpBtmonButton();
   }
 }

@@ -78,3 +78,9 @@ export class ServiceListItemElement extends CustomElement {
 }
 
 customElements.define('service-list-item', ServiceListItemElement);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'service-list-item': ServiceListItemElement;
+  }
+}

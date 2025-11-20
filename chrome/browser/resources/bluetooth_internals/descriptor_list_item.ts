@@ -69,3 +69,9 @@ export class DescriptorListItemElement extends CustomElement {
 }
 
 customElements.define('descriptor-list-item', DescriptorListItemElement);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'descriptor-list-item': DescriptorListItemElement;
+  }
+}

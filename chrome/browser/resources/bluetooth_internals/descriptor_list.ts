@@ -34,8 +34,7 @@ export class DescriptorListElement extends
   }
 
   createItem(data: DescriptorInfo): DescriptorListItemElement {
-    const item = document.createElement('descriptor-list-item') as
-        DescriptorListItemElement;
+    const item = document.createElement('descriptor-list-item');
     assert(this.deviceAddress_);
     assert(this.serviceId_);
     assert(this.characteristicId_);
@@ -82,3 +81,9 @@ export class DescriptorListElement extends
 }
 
 customElements.define('descriptor-list', DescriptorListElement);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'descriptor-list': DescriptorListElement;
+  }
+}
