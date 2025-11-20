@@ -1,9 +1,0 @@
-{
-  metadata: {
-    namespace: "media_capabilities_names",
-  },
-
-  data: [
-    "codecs",
-  ],
-}

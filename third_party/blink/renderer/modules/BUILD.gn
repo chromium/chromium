@@ -298,7 +298,6 @@ group("make_modules_generated") {
     ":make_modules_generated_event_names",
     ":make_modules_generated_event_target_names",
     ":make_modules_generated_indexed_db_names",
-    ":make_modules_generated_media_capabilities_names",
     "//components/payments/mojom:mojom_blink_headers",
     "//components/schema_org/common:mojom_blink_headers",
     "//components/services/filesystem/public/mojom:mojom_blink_headers",
@@ -373,12 +372,6 @@ make_names("make_modules_generated_indexed_db_names") {
   deps = []  # Don't use default deps (otherwise it will be circular).
 }
 
-make_names("make_modules_generated_media_capabilities_names") {
-  in_files = [ "media_capabilities/media_capabilities_names.json5" ]
-  output_dir = blink_modules_output_dir
-  deps = []  # Don't use default deps (otherwise it will be circular).
-}
-
 blink_modules_sources("modules_generated") {
   # Targets from above that generate outputs that need to be compiled.
   # All sources declared as outputs from these targets will be compiled
@@ -388,7 +381,6 @@ blink_modules_sources("modules_generated") {
     ":make_modules_generated_event_names",
     ":make_modules_generated_event_target_names",
     ":make_modules_generated_indexed_db_names",
-    ":make_modules_generated_media_capabilities_names",
   ]
 
   sources = []
