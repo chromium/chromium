@@ -217,12 +217,6 @@ void CaptureFileFinalized(
       base::BindOnce(base::IgnoreResult(&base::DeleteFile), original_path));
 }
 
-base::ScopedTempDir CreateTempDir() {
-  base::ScopedTempDir temp_dir;
-  CHECK(temp_dir.CreateUniqueTempDir());
-  return temp_dir;
-}
-
 std::vector<unsigned char> EncodeImage(const gfx::Image& image,
                                        std::string& content_type,
                                        lens::mojom::ImageFormat& image_format) {
@@ -405,24 +399,9 @@ ChromeCaptureModeDelegate::ChromeCaptureModeDelegate(
       application_locale_storage_(CHECK_DEREF(application_locale_storage)) {
   DCHECK_EQ(g_instance, nullptr);
   g_instance = this;
-
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()}, base::BindOnce(&CreateTempDir),
-      base::BindOnce(&ChromeCaptureModeDelegate::SetOdfsTempDir,
-                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 ChromeCaptureModeDelegate::~ChromeCaptureModeDelegate() {
-  base::ThreadPool::PostTask(FROM_HERE,
-                             {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-                              base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-                             base::BindOnce(
-                                 [](base::ScopedTempDir) {
-                                   // No-op other than running
-                                   // the base::ScopedTempDir
-                                   // destructor.
-                                 },
-                                 std::move(odfs_temp_dir_)));
   DCHECK_EQ(g_instance, this);
   g_instance = nullptr;
 }
@@ -718,8 +697,8 @@ void ChromeCaptureModeDelegate::FinalizeSavedFile(
     const gfx::Image& thumbnail,
     bool for_video) {
   auto* profile = ProfileManager::GetActiveUserProfile();
-  if (!odfs_temp_dir_.GetPath().empty() &&
-      odfs_temp_dir_.GetPath().IsParent(path) && profile) {
+  if (!odfs_temp_dir_.path().empty() && odfs_temp_dir_.path().IsParent(path) &&
+      profile) {
     // Passing the notification to the callback so that it's destructed once
     // file upload finishes.
     auto notification =
@@ -744,16 +723,16 @@ void ChromeCaptureModeDelegate::FinalizeSavedFile(
 
 base::FilePath ChromeCaptureModeDelegate::RedirectFilePath(
     const base::FilePath& path) {
-  if (odfs_temp_dir_.GetPath().empty()) {
+  if (odfs_temp_dir_.path().empty()) {
     return path;
   }
   base::FilePath odfs_path = GetOneDriveVirtualPath();
   if (!odfs_path.empty() && path.DirName() == odfs_path) {
-    return odfs_temp_dir_.GetPath().Append(path.BaseName());
+    return odfs_temp_dir_.path().Append(path.BaseName());
   }
   if (!odfs_path.empty() && odfs_path.IsParent(path)) {
     base::FilePath ret = path;
-    if (odfs_path.AppendRelativePath(odfs_temp_dir_.GetPath(), &ret)) {
+    if (odfs_path.AppendRelativePath(odfs_temp_dir_.path(), &ret)) {
       return ret;
     }
   }
@@ -867,11 +846,6 @@ void ChromeCaptureModeDelegate::OnGetDriveQuotaUsage(
   }
 
   std::move(callback).Run(usage->free_cloud_bytes);
-}
-
-void ChromeCaptureModeDelegate::SetOdfsTempDir(base::ScopedTempDir temp_dir) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  odfs_temp_dir_ = std::move(temp_dir);
 }
 
 void ChromeCaptureModeDelegate::OnOcrServiceInitialized(bool is_successful) {

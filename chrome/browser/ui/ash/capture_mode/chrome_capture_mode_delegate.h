@@ -12,11 +12,11 @@
 #include "ash/public/cpp/capture_mode/capture_mode_delegate.h"
 #include "base/cancelable_callback.h"
 #include "base/files/file_path.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "chrome/browser/ash/policy/skyvault/waitable_scoped_temp_dir.h"
 #include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
 #include "chrome/browser/lens/core/mojom/lens.mojom.h"
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
@@ -161,9 +161,6 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
                             drive::FileError error,
                             drivefs::mojom::QuotaUsagePtr usage);
 
-  // Called back once temporary directory for OneDrive is created.
-  void SetOdfsTempDir(base::ScopedTempDir temp_dir);
-
   // Called back by the OCR service after it is initialized.
   void OnOcrServiceInitialized(bool is_successful);
 
@@ -252,7 +249,7 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
 
   // Temporary directory to which files will be redirected before being uploaded
   // to OneDrive cloud. Created and destructed asynchronously.
-  base::ScopedTempDir odfs_temp_dir_;
+  const WaitableScopedTempDir odfs_temp_dir_;
 
   // OCR used to detect text in a selected capture region.
   scoped_refptr<screen_ai::OpticalCharacterRecognizer>
