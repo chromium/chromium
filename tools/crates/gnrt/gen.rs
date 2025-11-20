@@ -309,7 +309,12 @@ fn generate_for_third_party(args: GenCommandArgs, paths: &paths::ChromiumPaths) 
     for (dir, build_file) in &all_build_files {
         let build_file_path = dir.join("BUILD.gn");
         render_handlebars(&handlebars, &build_file_template_path, &build_file, &build_file_path)?;
-        format_build_file(&build_file_path)?;
+        if let Err(err) = format_build_file(&build_file_path) {
+            log::warn!(
+                "Ignoring the following `gn format` failure: {err}. \
+                 Please format the generated file(s) manually."
+            );
+        }
     }
     Ok(())
 }
