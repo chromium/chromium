@@ -11,4 +11,5 @@
 ../../../../build/util/lib/proto/time_consumption.py
 ../../../../fuchsia_web/av_testing/server.py
 ../../../../fuchsia_web/av_testing/video_analyzer.py
+common.py
 openscreen_cast_performance_test.py

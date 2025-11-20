@@ -4,6 +4,13 @@
 
 import("//build/config/python.gni")
 
+python_library("common") {
+  testonly = true
+  data = [
+    "common.py",
+  ]
+}
+
 python_library("videostack_performance_test") {
   testonly = true
   pydeps_file = "videostack_performance_test.pydeps"
@@ -14,6 +21,7 @@ python_library("videostack_performance_test") {
     "//fuchsia_web/av_testing/video.html",
     "//build/fuchsia/test/repeating_log.py",
   ]
+  deps = [ ":common" ]
 }
 
 python_library("openscreen_cast_performance_test") {
@@ -26,4 +34,5 @@ python_library("openscreen_cast_performance_test") {
     "//fuchsia_web/av_testing/video.html",
     "//build/fuchsia/test/repeating_log.py",
   ]
+  deps = [ ":common" ]
 }
