@@ -53,7 +53,10 @@ BASE_FEATURE(kPdfXfaSupport, base::FEATURE_DISABLED_BY_DEFAULT);
 // need for the ListFamilies() IPC call and improves PDF load performance on
 // Linux and ChromeOS. Version 2 makes PDFium call MapFont() directly for each
 // font request rather than searching a pre-built font list.
-BASE_FEATURE(kPdfiumPerRequestFontMatching, base::FEATURE_DISABLED_BY_DEFAULT);
+//
+// TODO(crbug.com/462403025): Remove this flag and the code that exists only to
+// support the version 1 font mapping interface, once this safely rolls out.
+BASE_FEATURE(kPdfiumPerRequestFontMatching, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
