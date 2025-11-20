@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
@@ -27,6 +28,7 @@
 #include "components/autofill/core/browser/ui/autofill_external_delegate.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "components/autofill/core/common/aliases.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_test_api.h"
@@ -250,6 +252,34 @@ IN_PROC_BROWSER_TEST_F(ChromeAutofillClientBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "Autofill.PaymentMethodsSettingsPage.VisitReferrer",
       autofill_metrics::AutofillSettingsReferrer::kFillingFlowDropdown, 2);
+}
+
+class ChromeAutofillClientYourSavedInfoTest
+    : public ChromeAutofillClientBrowserTest {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    ChromeAutofillClientBrowserTest::SetUpInProcessBrowserTestFixture();
+    feature_list_.InitAndEnableFeature(
+        autofill::features::kYourSavedInfoSettingsPage);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ChromeAutofillClientYourSavedInfoTest,
+                       ShowAutofillSettings_NavigatesToYourSavedInfo) {
+  base::HistogramTester histogram_tester;
+  client()->ShowAutofillSettings(SuggestionType::kManageAutofillAi);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.YourSavedInfoSettingsPage.VisitReferrer",
+      autofill_metrics::AutofillSettingsReferrer::kFillingFlowDropdown, 1);
+  content::WebContents* active_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_EQ(
+      active_contents->GetVisibleURL(),
+      GURL(std::string("chrome://settings/") + chrome::kYourSavedInfoSubPage));
 }
 
 }  // namespace

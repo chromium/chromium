@@ -41,6 +41,7 @@
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/sessions/core/tab_restore_service.h"
@@ -651,6 +652,34 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestCompare,
 
   EXPECT_FALSE(browser()->command_controller()->IsCommandEnabled(
       IDC_ADD_TO_COMPARISON_TABLE_MENU));
+}
+
+// Tests for Your saved info submenu.
+class BrowserCommandControllerBrowserTestYourSavedInfo
+    : public BrowserCommandControllerBrowserTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      autofill::features::kYourSavedInfoSettingsPage};
+};
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestYourSavedInfo,
+                       ExecuteShowIdentityDocs) {
+  EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_SHOW_IDENTITY_DOCS));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WaitForLoadStop(web_contents);
+  EXPECT_EQ(web_contents->GetURL().possibly_invalid_spec(),
+            "chrome://settings/identityDocs");
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestYourSavedInfo,
+                       ExecuteShowTravel) {
+  EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_SHOW_TRAVEL));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WaitForLoadStop(web_contents);
+  EXPECT_EQ(web_contents->GetURL().possibly_invalid_spec(),
+            "chrome://settings/travel");
 }
 
 #if BUILDFLAG(ENABLE_GLIC)
