@@ -49,13 +49,14 @@ class MEDIA_EXPORT RenditionGroup : public base::RefCounted<RenditionGroup> {
       base::PassKey<MultivariantPlaylist>,
       XMediaTag tag,
       const GURL& playlist_uri,
-      RenditionTrackId rendition_unique_id);
+      RenditionTrackId unique_id);
 
   // Adds the "virtual" rendition created from the required default URL in a
   // VariantStream. The label, ID, and name are all "default".
   RenditionTrack MakeImplicitRendition(base::PassKey<MultivariantPlaylist>,
+                                       MediaType type,
                                        const GURL& default_rendition_uri,
-                                       RenditionTrackId rendition_unique_id);
+                                       RenditionTrackId unique_id);
 
   // Given a rendition track, try to find the track in this group which best
   // matches it's characteristics. If the provided rendition is a member of

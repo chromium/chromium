@@ -231,7 +231,8 @@ MultivariantPlaylist::Parse(std::string_view source,
             base::PassKey<MultivariantPlaylist>{}, "DEFAULT");
     RenditionGroup::RenditionTrack implicit_rendition =
         video_renditions->MakeImplicitRendition(
-            {}, variant_uri, rendition_id_generator.GenerateNextId());
+            {}, MediaType::kVideo, variant_uri,
+            rendition_id_generator.GenerateNextId());
 
     variants.emplace_back(
         std::move(variant_uri), inf_tag->bandwidth, inf_tag->average_bandwidth,
