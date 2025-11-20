@@ -42,7 +42,8 @@ void OmniboxPopupAimPresenter::OnWidgetActivationChanged(views::Widget* widget,
   // menu is an child widget so this popup widget is still considered active. We
   // will not hide the popup.
   if (!active && controller_->popup_state_manager()->popup_state() ==
-                     OmniboxPopupState::kAim) {
+                     OmniboxPopupState::kAim &&
+                    !location_bar_view()->in_popup_state_transition()) {
     controller_->popup_state_manager()->SetPopupState(OmniboxPopupState::kNone);
   }
 }

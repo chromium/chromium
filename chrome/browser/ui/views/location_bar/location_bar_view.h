@@ -137,6 +137,8 @@ class LocationBarView
   // Initializes the LocationBarView.
   void Init();
 
+  bool in_popup_state_transition() const { return in_popup_state_transition_; }
+
   // True if this instance has been initialized by calling Init, which can only
   // be called when the receiving instance is attached to a view container.
   bool IsInitialized() const;
