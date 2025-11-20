@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 """Generates Rust source files from a mojom.Module."""
 
+import sys
+
 import mojom.generate.generator as generator
 import mojom.generate.module as mojom
 from mojom.generate.template_expander import UseJinja
@@ -28,7 +30,7 @@ _mojom_primitive_type_to_rust_type = {
 def _MojomTypeToRustType(ty: mojom.Kind) -> str:
   '''Return the name of the input type in rust syntax'''
   # FOR_RELEASE: We don't support nested enums yet
-  if mojom.IsStructKind(ty) or mojom.IsEnumKind(ty):
+  if mojom.IsStructKind(ty) or mojom.IsEnumKind(ty) or mojom.IsUnionKind(ty):
     return ty.name
 
   if mojom.IsArrayKind(ty):
@@ -39,8 +41,10 @@ def _MojomTypeToRustType(ty: mojom.Kind) -> str:
       return f"Vec<{elt_ty}>"
 
   if ty not in _mojom_primitive_type_to_rust_type:
-    raise NotImplemented(
-        f"Mojom type {ty} is not supported by the rust bindings")
+    # Raising from a jinja2 call won't display the error message
+    print(f"Mojom type {ty} is either undefined, "
+          "or not supported by the rust bindings")
+    sys.exit(1)
 
   return _mojom_primitive_type_to_rust_type[ty]
 

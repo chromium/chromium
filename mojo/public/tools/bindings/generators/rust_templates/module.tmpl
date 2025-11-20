@@ -1,4 +1,5 @@
 {%- from "enum.tmpl" import declare_enum -%}
+{%- from "union.tmpl" import declare_union -%}
 {%- from "struct.tmpl" import declare_struct -%}
 {%- from "interface.tmpl" import declare_interface -%}
 
@@ -16,6 +17,10 @@ use mojom_parser::*;
 
 {%- for enum in module.enums %}
 {{declare_enum(enum.name, enum)}}
+{% endfor %}
+
+{%- for union in module.unions %}
+{{declare_union(union.name, union)}}
 {% endfor %}
 
 {%- for struct in module.structs %}

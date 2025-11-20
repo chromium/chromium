@@ -1,0 +1,10 @@
+{% macro declare_union(name, union) -%}
+
+#[derive(Debug, PartialEq, Clone, MojomParse)]
+pub enum {{name}} {
+{%- for field in union.fields %}
+  {{field.name}}({{field.kind|to_rust_type}}),
+{%- endfor %}
+}
+
+{%- endmacro -%}
