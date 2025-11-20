@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/common/buildflags.h"
@@ -33,9 +32,6 @@ struct WebPluginInfo;
 // This class lives on the UI thread.
 class CONTENT_EXPORT PluginService {
  public:
-  using GetPluginsCallback =
-      base::OnceCallback<void(const std::vector<WebPluginInfo>&)>;
-
   // Returns the PluginService singleton.
   static PluginService* GetInstance();
 
@@ -69,10 +65,6 @@ class CONTENT_EXPORT PluginService {
   // cached data in the plugin list.
   virtual std::optional<WebPluginInfo> GetPluginInfoByPathForTesting(
       const base::FilePath& plugin_path) = 0;
-
-  // Asynchronously loads plugins if necessary and then calls back to the
-  // provided function on the calling sequence on completion.
-  virtual void GetPluginsAsync(GetPluginsCallback callback) = 0;
 
   // Synchronously loads plugins if necessary and returns the list of plugin
   // infos. This does not block and is safe to call on the UI thread.

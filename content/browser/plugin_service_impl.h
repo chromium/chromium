@@ -46,7 +46,6 @@ class CONTENT_EXPORT PluginServiceImpl : public PluginService {
                      WebPluginInfo* info) override;
   std::optional<WebPluginInfo> GetPluginInfoByPathForTesting(
       const base::FilePath& plugin_path) override;
-  void GetPluginsAsync(GetPluginsCallback callback) override;
   const std::vector<WebPluginInfo>& GetPlugins() override;
   void SetFilter(PluginServiceFilter* filter) override;
   PluginServiceFilter* GetFilter() override;
