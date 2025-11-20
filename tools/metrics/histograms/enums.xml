@@ -15754,6 +15754,7 @@ from previous Chrome versions.
   <int value="561951500" label="GlobalMediaControlsCastStartStop:enabled"/>
   <int value="562111126" label="SidePanelBorder:enabled"/>
   <int value="562185887" label="PasswordSuggestionBottomSheetV2:enabled"/>
+  <int value="562277078" label="AppBrowserUseNewLayout:enabled"/>
   <int value="562635337" label="EcheSWACheckAndroidNetworkInfo:disabled"/>
   <int value="562699771" label="AndroidBookmarkBar:enabled"/>
   <int value="562979188" label="DesktopIOSPromotion:enabled"/>
@@ -19309,6 +19310,7 @@ from previous Chrome versions.
   <int value="1796592669" label="InstalledAppsInCbd:disabled"/>
   <int value="1797002314" label="HatsUseNewHistograms:enabled"/>
   <int value="1797226735" label="ImageServiceSuggestPoweredImages:enabled"/>
+  <int value="1797761235" label="AppBrowserUseNewLayout:disabled"/>
   <int value="1798055501" label="WebAppDedupeInstallUrls:enabled"/>
   <int value="1798347197"
       label="ContextualSuggestionsIPHReverseScroll:disabled"/>

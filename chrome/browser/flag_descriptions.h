@@ -3857,6 +3857,13 @@ inline constexpr char kScrollableTabStripName[] = "Tab Scrolling";
 inline constexpr char kScrollableTabStripDescription[] =
     "Enables tab strip to scroll left and right when full.";
 
+inline constexpr char kAppBrowserUseNewLayoutId[] =
+    "app-browser-use-new-layout";
+inline constexpr char kAppBrowserUseNewLayoutName[] =
+    "App Browser Use New Layout";
+inline constexpr char kAppBrowserUseNewLayoutDescription[] =
+    "Use the new App Browser Layout. Visually nothing should change.";
+
 inline constexpr char kTabbedBrowserUseNewLayoutId[] =
     "tabbed-browser-use-new-layout";
 inline constexpr char kTabbedBrowserUseNewLayoutName[] =

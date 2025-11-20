@@ -221,6 +221,8 @@ bool IsSideBySideKeyboardShortcutEnabled();
 
 BASE_DECLARE_FEATURE(kSideBySideFocusClearing);
 
+BASE_DECLARE_FEATURE(kAppBrowserUseNewLayout);
+
 BASE_DECLARE_FEATURE(kTabbedBrowserUseNewLayout);
 
 BASE_DECLARE_FEATURE(kTabDuplicateMetrics);

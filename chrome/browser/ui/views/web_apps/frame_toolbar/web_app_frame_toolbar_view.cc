@@ -234,6 +234,20 @@ gfx::Rect WebAppFrameToolbarView::LayoutInContainer(gfx::Rect available_space) {
   return center_bounds;
 }
 
+gfx::Rect WebAppFrameToolbarView::GetCenterContainerForSize(
+    const gfx::Size& available_size) const {
+  // This value should be cached from/for the current size so amortizes to zero
+  // cost.
+  const auto layout = static_cast<const views::FlexLayout*>(GetLayoutManager())
+                          ->GetProposedLayout(available_size);
+  for (const auto& child : layout.child_layouts) {
+    if (child.child_view == center_container_) {
+      return child.visible ? child.bounds : gfx::Rect();
+    }
+  }
+  return gfx::Rect();
+}
+
 void WebAppFrameToolbarView::LayoutForWindowControlsOverlay(
     gfx::Rect available_space) {
   DCHECK(!left_container_);

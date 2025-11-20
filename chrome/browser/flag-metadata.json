@@ -520,6 +520,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "app-browser-use-new-layout",
+    "owners": [ "dfried@chromium.org", "top-chrome-desktop-ui@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "app-launch-automation",
     "owners": [ "dandersson@chromium.org", "janetmac@chromium.org" ],
     "expiry_milestone": 123

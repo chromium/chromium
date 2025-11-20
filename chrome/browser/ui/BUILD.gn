@@ -3849,6 +3849,8 @@ static_library("ui") {
       "views/frame/immersive_mode_controller_factory_views.cc",
       "views/frame/immersive_mode_controller_stub.cc",
       "views/frame/immersive_mode_controller_stub.h",
+      "views/frame/layout/browser_view_app_layout_impl.cc",
+      "views/frame/layout/browser_view_app_layout_impl.h",
       "views/frame/layout/browser_view_layout.cc",
       "views/frame/layout/browser_view_layout.h",
       "views/frame/layout/browser_view_layout_delegate.h",

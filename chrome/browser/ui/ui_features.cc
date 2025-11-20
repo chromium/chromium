@@ -313,6 +313,8 @@ bool IsSideBySideKeyboardShortcutEnabled() {
 
 BASE_FEATURE(kSideBySideFocusClearing, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAppBrowserUseNewLayout, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kTabbedBrowserUseNewLayout, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabDuplicateMetrics, base::FEATURE_ENABLED_BY_DEFAULT);

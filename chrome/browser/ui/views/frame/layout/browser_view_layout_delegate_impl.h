@@ -23,6 +23,7 @@ class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegate {
 
   bool ShouldDrawTabStrip() const override;
   bool ShouldDrawVerticalTabStrip() const override;
+  bool ShouldDrawWebAppFrameToolbar() const override;
   bool GetBorderlessModeEnabled() const override;
   gfx::Rect GetBoundsForTabStripRegionInBrowserView() const override;
   gfx::Rect GetBoundsForToolbarInVerticalTabBrowserView() const override;

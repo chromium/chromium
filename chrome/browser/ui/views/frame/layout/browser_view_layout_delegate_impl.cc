@@ -37,6 +37,11 @@ bool BrowserViewLayoutDelegateImpl::ShouldDrawVerticalTabStrip() const {
              ->ShouldDisplayVerticalTabs();
 }
 
+bool BrowserViewLayoutDelegateImpl::ShouldDrawWebAppFrameToolbar() const {
+  return !GetBorderlessModeEnabled() &&
+         GetFrameView()->ShouldShowWebAppFrameToolbar();
+}
+
 bool BrowserViewLayoutDelegateImpl::GetBorderlessModeEnabled() const {
   return browser_view_->IsBorderlessModeEnabled();
 }

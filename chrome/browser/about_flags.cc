@@ -13476,6 +13476,10 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
+    {flag_descriptions::kAppBrowserUseNewLayoutId,
+     flag_descriptions::kAppBrowserUseNewLayoutName,
+     flag_descriptions::kAppBrowserUseNewLayoutDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kAppBrowserUseNewLayout)},
     {flag_descriptions::kTabbedBrowserUseNewLayoutId,
      flag_descriptions::kTabbedBrowserUseNewLayoutName,
      flag_descriptions::kTabbedBrowserUseNewLayoutDescription, kOsDesktop,

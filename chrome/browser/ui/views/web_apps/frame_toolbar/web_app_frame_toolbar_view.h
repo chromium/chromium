@@ -64,6 +64,11 @@ class WebAppFrameToolbarView : public views::AccessiblePaneView,
                                         int available_height);
   gfx::Rect LayoutInContainer(gfx::Rect available_space);
 
+  // Determines how big the center container would be in a toolbar of
+  // `available_size` - this is the space in which elements like the title can
+  // be laid out.
+  gfx::Rect GetCenterContainerForSize(const gfx::Size& available_size) const;
+
   // Sets own bounds within the available_space.
   void LayoutForWindowControlsOverlay(gfx::Rect available_space);
 
