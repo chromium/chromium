@@ -116,8 +116,8 @@ v8::Local<v8::Module> ModuleRecordResolverImpl::Resolve(
   // <spec step="9">Assert: resolved module script's record is not null.</spec>
   DCHECK(module_script);
   if (module_script->IsWasmModuleRecord()) {
-    exception_state.ThrowSyntaxError(module_request.specifier +
-                                     kWasmImportInEvaluationPhaseError);
+    exception_state.ThrowSyntaxError(
+        StrCat({module_request.specifier, kWasmImportInEvaluationPhaseError}));
     return v8::Local<v8::Module>();
   }
   v8::Local<v8::Module> record = module_script->V8Module();
@@ -139,8 +139,8 @@ v8::Local<v8::WasmModuleObject> ModuleRecordResolverImpl::ResolveSource(
   // <spec step="9">Assert: resolved module script's record is not null.</spec>
   DCHECK(module_script);
   if (!module_script->IsWasmModuleRecord()) {
-    exception_state.ThrowSyntaxError(module_request.specifier +
-                                     kNonWasmImportInSourcePhaseError);
+    exception_state.ThrowSyntaxError(
+        StrCat({module_request.specifier, kNonWasmImportInSourcePhaseError}));
     return v8::Local<v8::WasmModuleObject>();
   }
   v8::Local<v8::WasmModuleObject> module_source = module_script->WasmModule();

@@ -33,8 +33,8 @@ ScriptValue ModuleImportMeta::Resolve::Call(ScriptState* script_state,
 
   if (!result.IsValid()) {
     V8ThrowException::ThrowTypeError(
-        isolate, "Failed to resolve module specifier " + specifier + ": " +
-                     failure_reason);
+        isolate, StrCat({"Failed to resolve module specifier ", specifier, ": ",
+                         failure_reason}));
   }
 
   return ScriptValue(

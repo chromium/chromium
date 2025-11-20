@@ -261,7 +261,8 @@ bool IsValidClassicScriptTypeAndLanguage(const String& type,
     // <spec step="8">... Otherwise, el has a non-empty language attribute; let
     // the script block's type string be the concatenation of "text/" and the
     // value of el's language attribute.</spec>
-    if (MIMETypeRegistry::IsSupportedJavaScriptMIMEType("text/" + language)) {
+    if (MIMETypeRegistry::IsSupportedJavaScriptMIMEType(
+            StrCat({"text/", language}))) {
       return true;
     }
   } else if (type.empty()) {
