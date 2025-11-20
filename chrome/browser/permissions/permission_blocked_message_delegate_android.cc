@@ -29,44 +29,11 @@ PermissionBlockedMessageDelegate::PermissionBlockedMessageDelegate(
     : content::WebContentsObserver(web_contents),
       web_contents_(web_contents),
       delegate_(std::move(delegate)) {
-  message_ = std::make_unique<messages::MessageWrapper>(
-      messages::MessageIdentifier::PERMISSION_BLOCKED,
-      base::BindOnce(
-          &PermissionBlockedMessageDelegate::HandlePrimaryActionClick,
-          base::Unretained(this)),
-      base::BindOnce(&PermissionBlockedMessageDelegate::HandleDismissCallback,
-                     base::Unretained(this)));
-  const ContentSettingsType content_setting_type =
-      delegate_->GetContentSettingsType();
-  int title = 0;
-  int icon = 0;
-  switch (content_setting_type) {
-    case ContentSettingsType::NOTIFICATIONS:
-      title = IDS_NOTIFICATION_QUIET_PERMISSION_INFOBAR_TITLE;
-      icon = IDR_ANDROID_INFOBAR_NOTIFICATIONS_OFF;
-      break;
-    case ContentSettingsType::GEOLOCATION:
-    case ContentSettingsType::GEOLOCATION_WITH_OPTIONS:
-      title = IDS_LOCATION_QUIET_PERMISSION_MESSAGE_UI_TITLE;
-      icon = IDR_ANDROID_MESSAGE_LOCATION_OFF;
-      break;
-    default:
-      NOTREACHED();
+  if (delegate_->ShouldUseQuietUI()) {
+    InitializeQuietUI();
+  } else {
+    InitializeLoudUI();
   }
-  message_->SetTitle(l10n_util::GetStringUTF16(title));
-
-  // IDS_OK: notification will still be blocked if primary button is clicked.
-  message_->SetPrimaryButtonText(l10n_util::GetStringUTF16(IDS_OK));
-  message_->SetIconResourceId(ResourceMapper::MapToJavaDrawableId(icon));
-  message_->SetSecondaryIconResourceId(
-      ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_MESSAGE_SETTINGS));
-
-  message_->SetSecondaryActionCallback(
-      base::BindRepeating(&PermissionBlockedMessageDelegate::HandleManageClick,
-                          base::Unretained(this)));
-  messages::MessageDispatcherBridge::Get()->EnqueueMessage(
-      message_.get(), web_contents_, messages::MessageScopeType::NAVIGATION,
-      messages::MessagePriority::kNormal);
 }
 
 PermissionBlockedMessageDelegate::~PermissionBlockedMessageDelegate() {
@@ -143,8 +110,81 @@ void PermissionBlockedMessageDelegate::OnWebContentsFocused(
   }
 }
 
-void PermissionBlockedMessageDelegate::HandlePrimaryActionClick() {
-  DCHECK(delegate_->ShouldUseQuietUI());
+void PermissionBlockedMessageDelegate::InitializeLoudUI() {
+  message_ = std::make_unique<messages::MessageWrapper>(
+      messages::MessageIdentifier::PERMISSION_PROMPT_LOUD,
+      base::BindOnce(
+          &PermissionBlockedMessageDelegate::HandleLoudPrimaryActionClick,
+          base::Unretained(this)),
+      base::BindOnce(
+          &PermissionBlockedMessageDelegate::HandleLoudDismissCallback,
+          base::Unretained(this)));
+
+  message_->SetTitle(
+      l10n_util::GetStringUTF16(IDS_NOTIFICATION_TITLE_MESSAGE_UI));
+
+  const std::vector<base::WeakPtr<permissions::PermissionRequest>>& requests =
+      delegate_->permission_prompt()->Requests();
+
+  std::u16string requesting_origin_string_formatted =
+      url_formatter::FormatUrlForSecurityDisplay(
+          requests[0].get()->requesting_origin(),
+          url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
+
+  message_->SetDescription(
+      l10n_util::GetStringFUTF16(IDS_NOTIFICATION_DESCRIPTION_MESSAGE_UI,
+                                 requesting_origin_string_formatted));
+  message_->SetPrimaryButtonText(
+      l10n_util::GetStringUTF16(IDS_NOTIFICATION_CTA_MESSAGE_UI));
+
+  messages::MessageDispatcherBridge::Get()->EnqueueMessage(
+      message_.get(), web_contents_, messages::MessageScopeType::NAVIGATION,
+      messages::MessagePriority::kNormal);
+}
+
+void PermissionBlockedMessageDelegate::InitializeQuietUI() {
+  message_ = std::make_unique<messages::MessageWrapper>(
+      messages::MessageIdentifier::PERMISSION_BLOCKED,
+      base::BindOnce(
+          &PermissionBlockedMessageDelegate::HandleQuietPrimaryActionClick,
+          base::Unretained(this)),
+      base::BindOnce(
+          &PermissionBlockedMessageDelegate::HandleQuietDismissCallback,
+          base::Unretained(this)));
+  const ContentSettingsType content_setting_type =
+      delegate_->GetContentSettingsType();
+  int title = 0;
+  int icon = 0;
+  switch (content_setting_type) {
+    case ContentSettingsType::NOTIFICATIONS:
+      title = IDS_NOTIFICATION_QUIET_PERMISSION_INFOBAR_TITLE;
+      icon = IDR_ANDROID_INFOBAR_NOTIFICATIONS_OFF;
+      break;
+    case ContentSettingsType::GEOLOCATION:
+    case ContentSettingsType::GEOLOCATION_WITH_OPTIONS:
+      title = IDS_LOCATION_QUIET_PERMISSION_MESSAGE_UI_TITLE;
+      icon = IDR_ANDROID_MESSAGE_LOCATION_OFF;
+      break;
+    default:
+      NOTREACHED();
+  }
+  message_->SetTitle(l10n_util::GetStringUTF16(title));
+
+  // IDS_OK: notification will still be blocked if primary button is clicked.
+  message_->SetPrimaryButtonText(l10n_util::GetStringUTF16(IDS_OK));
+  message_->SetIconResourceId(ResourceMapper::MapToJavaDrawableId(icon));
+  message_->SetSecondaryIconResourceId(
+      ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_MESSAGE_SETTINGS));
+
+  message_->SetSecondaryActionCallback(
+      base::BindRepeating(&PermissionBlockedMessageDelegate::HandleManageClick,
+                          base::Unretained(this)));
+  messages::MessageDispatcherBridge::Get()->EnqueueMessage(
+      message_.get(), web_contents_, messages::MessageScopeType::NAVIGATION,
+      messages::MessagePriority::kNormal);
+}
+
+void PermissionBlockedMessageDelegate::HandleQuietPrimaryActionClick() {
   delegate_->Deny();
 }
 
@@ -157,7 +197,7 @@ void PermissionBlockedMessageDelegate::HandleManageClick() {
       message_.get(), messages::DismissReason::SECONDARY_ACTION);
 }
 
-void PermissionBlockedMessageDelegate::HandleDismissCallback(
+void PermissionBlockedMessageDelegate::HandleQuietDismissCallback(
     messages::DismissReason reason) {
   message_.reset();
 
@@ -174,6 +214,15 @@ void PermissionBlockedMessageDelegate::HandleDismissCallback(
   }
   // Other un-tracked actions will be recorded as "Ignored" by
   // |permission_prompt_|.
+}
+
+void PermissionBlockedMessageDelegate::HandleLoudPrimaryActionClick() {
+  // TODO(http://crbug.com/458351800): Open PageInfo.
+}
+
+void PermissionBlockedMessageDelegate::HandleLoudDismissCallback(
+    messages::DismissReason reason) {
+  // TODO(http://crbug.com/458351800): Add logic for dismiss.
 }
 
 void PermissionBlockedMessageDelegate::DismissInternal() {

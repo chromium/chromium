@@ -364,6 +364,8 @@ public class MessagesMetrics {
                 return "ReloadPage";
             case MessageIdentifier.MULTI_INSTANCE_CREATION_LIMIT:
                 return "MultiInstanceCreationLimit";
+            case MessageIdentifier.PERMISSION_PROMPT_LOUD:
+                return "PermissionPromptLoud";
             default:
                 return "Unknown";
         }

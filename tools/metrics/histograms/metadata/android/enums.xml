@@ -1335,6 +1335,7 @@ chromium-metrics-reviews@google.com.
   <int value="63" label="ModeBRollbackMessage"/>
   <int value="64" label="ReloadPage"/>
   <int value="65" label="MultiInstanceCreationLimit"/>
+  <int value="66" label="PermissionPromptLoud"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/messages/android/message_enums.h:MessageIdentifier) -->

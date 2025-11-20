@@ -263,6 +263,10 @@ enum class PermissionPromptDisposition {
 
   // Only used on macOS, a native OS provided permission prompt.
   MAC_OS_PROMPT = 14,
+
+  // Only used on Android, a message bubble near top of the screen and below the
+  // location bar. This is a flavor of MESSAGE_UI that is used for loud prompts.
+  MESSAGE_UI_LOUD = 15,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/permissions/histograms.xml:PromptDisposition)
 

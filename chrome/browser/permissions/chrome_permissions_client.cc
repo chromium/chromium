@@ -92,6 +92,7 @@
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/permissions/permission_blocked_message_delegate_android.h"
 #include "chrome/browser/permissions/permission_update_message_controller_android.h"
+#include "components/permissions/android/permissions_android_feature_map.h"
 #include "components/permissions/permission_request_manager.h"
 #else
 #include "chrome/browser/ui/browser.h"
@@ -703,7 +704,12 @@ ChromePermissionsClient::MaybeCreateMessageUI(
     content::WebContents* web_contents,
     ContentSettingsType type,
     base::WeakPtr<permissions::PermissionPromptAndroid> prompt) {
-  if (ShouldUseQuietUI(web_contents, type)) {
+  if (ShouldUseQuietUI(web_contents, type) ||
+      // The quiet UI is enabled for both Notifications and Geolocation but the
+      // Loud Clapper supports only Notifications.
+      (type == ContentSettingsType::NOTIFICATIONS &&
+       base::FeatureList::IsEnabled(
+           permissions::kPermissionsAndroidClapperLoud))) {
     auto delegate =
         std::make_unique<PermissionBlockedMessageDelegate::Delegate>(
             std::move(prompt));

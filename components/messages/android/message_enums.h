@@ -153,6 +153,7 @@ enum class MessageIdentifier {
   MODE_B_ROLLBACK_MESSAGE = 63,
   RELOAD_PAGE = 64,
   MULTI_INSTANCE_CREATION_LIMIT = 65,
+  PERMISSION_PROMPT_LOUD = 66,
   // Insert new values before this line.
   COUNT
 };
