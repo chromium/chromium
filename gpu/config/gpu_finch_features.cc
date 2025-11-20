@@ -221,8 +221,6 @@ const base::FeatureParam<bool> kWebGPUSpontaneousWireServer{
 const base::FeatureParam<std::string> kWGSLUnsafeFeatures{
     &kWebGPUService, "UnsafeWGSLFeatures", ""};
 
-BASE_FEATURE(kWebGPUUseVulkanMemoryModel, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kWebGPUEnableRangeAnalysisForRobustness,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

@@ -913,9 +913,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 GpuFeatures.WEB_GPU_ENABLE_RANGE_ANALYSIS_FOR_ROBUSTNESS,
                 "Use range analysis to remove unnecessary bounds checks"),
-        Flag.baseFeature(
-                GpuFeatures.WEB_GPU_USE_VULKAN_MEMORY_MODEL,
-                "Use the Vulkan Memory Model from WebGPU when available"),
         Flag.baseFeature("RunBeforeUnloadClosureOnStackInvestigation"),
         Flag.baseFeature(NetworkServiceFeatures.SHARED_STORAGE_API, "Enable Shared Storage API."),
         Flag.baseFeature(BlinkFeatures.FENCED_FRAMES, "Enable Fenced Frames HTML Element."),

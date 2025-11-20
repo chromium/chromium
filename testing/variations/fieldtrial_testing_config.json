@@ -27075,23 +27075,6 @@
             ]
         }
     ],
-    "WebGPUUseVulkanMemoryModel": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WebGPUUseVulkanMemoryModel"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebOtpBackendAuto": [
         {
             "platforms": [
