@@ -55,6 +55,8 @@ GURL GetFreURL(Profile* profile) {
   std::string theme_value = use_dark_mode ? "dark" : "light";
   url = net::AppendOrReplaceQueryParameter(url, "theme", theme_value);
 
+  url = MaybeAddMultiInstanceParameter(url);
+
   // Localize to Chrome UI language.
   return GetLocalizedGuestURL(url);
 }
