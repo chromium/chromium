@@ -686,6 +686,7 @@ bool WebPageReplayServerWrapper::Start(
                          .AppendASCII("automation_helper.js")
                          .value())
           .c_str()));
+  args.push_back("--no_archive_certificates");
 
   // Specify the capture file.
   args.push_back(base::StringPrintf(
