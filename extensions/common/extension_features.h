@@ -301,6 +301,12 @@ BASE_DECLARE_FEATURE(kEnableShouldShowPromotion);
 // Allowing them to retrieve certificate information from web requests.
 BASE_DECLARE_FEATURE(kWebRequestSecurityInfo);
 
+// When enabled, filtered webRequest event listeners for service worker-based
+// extensions are persisted to ExtensionPrefs. This allows the browser to know
+// about the listeners before starting the extension service worker (e.g. on
+// browser startup).
+BASE_DECLARE_FEATURE(kWebRequestPersistFilteredEvents);
+
 }  // namespace extensions_features
 
 #endif  // EXTENSIONS_COMMON_EXTENSION_FEATURES_H_

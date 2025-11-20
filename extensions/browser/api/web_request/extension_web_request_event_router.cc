@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/fixed_flat_map.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -44,6 +45,7 @@
 #include "extensions/browser/api_activity_monitor.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_navigation_registry.h"
+#include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/process_map.h"
@@ -52,6 +54,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/web_request/web_request_activity_log_constants.h"
 #include "extensions/common/error_utils.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 
@@ -500,9 +503,9 @@ class CrossContextData {
       std::map<content::BrowserContext*,
                raw_ptr<content::BrowserContext, CtnExperimental>>;
 
-  // For each each on-the-record context that has an off-the-record context,
-  // this bi-map contains an entry for both contexts where the value is the
-  // other context.
+  // For each on-the-record context that has an off-the-record context, this
+  // bi-map contains an entry for both contexts where the value is the other
+  // context.
   CrossContextMap cross_context_data_;
 };
 
@@ -511,6 +514,9 @@ void ClearCrossContextData(content::BrowserContext* browser_context) {
 }
 
 }  // namespace
+
+const char WebRequestEventRouter::kFilteredLazyListeners[] =
+    "web_request.filtered_lazy_listeners";
 
 WebRequestEventRouter::WebRequestEventRouter(content::BrowserContext* context)
     : browser_context_(context) {}
@@ -1919,8 +1925,9 @@ bool WebRequestEventRouter::AddEventListener(
   // lazy context where it was shut down and then respawned. This can only
   // happen for service worker listeners.
   bool is_reactivated = false;
-  if (service_worker_version_id !=
-      blink::mojom::kInvalidServiceWorkerVersionId) {
+  bool is_service_worker_listener =
+      service_worker_version_id != blink::mojom::kInvalidServiceWorkerVersionId;
+  if (is_service_worker_listener) {
     auto& listeners = data_[browser_context_id].inactive_listeners[event_name];
     // Search for any listener with the same sub-event name.
     // NOTE: The sub-event name will be the same for any listener registered in
@@ -1944,6 +1951,11 @@ bool WebRequestEventRouter::AddEventListener(
   // extra headers count.
   if (!is_reactivated && listener->HasExtraHeaders()) {
     IncrementExtraHeadersListenerCount(browser_context);
+  }
+
+  // If this is a new listener, add it to the list of persisted listeners.
+  if (is_service_worker_listener && !is_reactivated) {
+    AddPersistedLazyListener(browser_context, extension_id, *listener);
   }
 
   data_[browser_context_id].active_listeners[event_name].push_back(
@@ -2046,8 +2058,15 @@ void WebRequestEventRouter::RemoveLazyListener(
   // must either be active *or* inactive.
   DCHECK_LE(removed_listeners.size(), 2u);
 
+  std::set<content::BrowserContext*> contexts_to_update;
   for (const auto& listener : removed_listeners) {
+    contexts_to_update.insert(listener->id.browser_context.get());
     CleanUpForListener(*listener, ListenerUpdateType::kRemove);
+  }
+
+  // Update the list of persisted listeners for each relevant context.
+  for (content::BrowserContext* context : contexts_to_update) {
+    RemovePersistedLazyListener(context, extension_id, sub_event_name);
   }
 }
 
@@ -2081,6 +2100,11 @@ void WebRequestEventRouter::UpdateActiveListener(
           blink::mojom::kInvalidServiceWorkerVersionId;
       listener->id.render_process_id = -1;
       data.inactive_listeners[event_name].push_back(std::move(listener));
+    } else if (update_type == ListenerUpdateType::kRemove) {
+      // Service worker listeners should always be removed via
+      // `RemoveLazyListener`.
+      DCHECK_EQ(service_worker_version_id,
+                blink::mojom::kInvalidServiceWorkerVersionId);
     }
   }
 }
@@ -2110,6 +2134,69 @@ void WebRequestEventRouter::CleanUpForListener(const EventListener& listener,
       DecrementExtraHeadersListenerCount(listener.id.browser_context);
     }
     helpers::ClearCacheOnNavigation();
+  }
+}
+
+void WebRequestEventRouter::AddPersistedLazyListener(
+    content::BrowserContext* browser_context,
+    const ExtensionId& extension_id,
+    const EventListener& listener) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!base::FeatureList::IsEnabled(
+          extensions_features::kWebRequestPersistFilteredEvents)) {
+    return;
+  }
+
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context);
+  const base::Value::List* existing_listeners =
+      prefs->ReadPrefAsList(extension_id, kFilteredLazyListeners);
+
+  base::Value::List new_listeners;
+  if (existing_listeners) {
+    new_listeners = existing_listeners->Clone();
+  }
+
+  new_listeners.Append(listener.ToLazyValue());
+  prefs->UpdateExtensionPref(extension_id, kFilteredLazyListeners,
+                             base::Value(std::move(new_listeners)));
+}
+
+void WebRequestEventRouter::RemovePersistedLazyListener(
+    content::BrowserContext* browser_context,
+    const ExtensionId& extension_id,
+    const std::string& sub_event_name) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!base::FeatureList::IsEnabled(
+          extensions_features::kWebRequestPersistFilteredEvents)) {
+    return;
+  }
+
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context);
+  const base::Value::List* existing_listeners =
+      prefs->ReadPrefAsList(extension_id, kFilteredLazyListeners);
+  if (!existing_listeners) {
+    return;
+  }
+
+  // Remove the listener(s) with the matching sub-event name.
+  base::Value::List new_listeners = existing_listeners->Clone();
+  new_listeners.EraseIf([&](const base::Value& entry) {
+    if (!entry.is_dict()) {
+      return false;
+    }
+    const std::string* name =
+        entry.GetDict().FindString(kListenerSubEventNameKey);
+    return name && *name == sub_event_name;
+  });
+
+  if (new_listeners.empty()) {
+    // If there's no registered listeners, clear the pref.
+    prefs->UpdateExtensionPref(extension_id, kFilteredLazyListeners,
+                               std::nullopt);
+  } else {
+    // Otherwise, persist the remaining listeners.
+    prefs->UpdateExtensionPref(extension_id, kFilteredLazyListeners,
+                               base::Value(std::move(new_listeners)));
   }
 }
 
@@ -2230,6 +2317,94 @@ void WebRequestEventRouter::DecrementExtraHeadersListenerCount(
 void WebRequestEventRouter::OnBrowserContextShutdown(
     content::BrowserContext* browser_context) {
   data_.erase(GetBrowserContextID(browser_context));
+}
+
+void WebRequestEventRouter::LoadPersistedLazyListeners(
+    content::BrowserContext* browser_context,
+    const ExtensionId& extension_id) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context);
+  if (!base::FeatureList::IsEnabled(
+          extensions_features::kWebRequestPersistFilteredEvents)) {
+    // If the feature was disabled, clean up redundant preferences.
+    prefs->UpdateExtensionPref(extension_id, kFilteredLazyListeners,
+                               std::nullopt);
+    return;
+  }
+
+  // If there's already listeners registered for this extension, somehow
+  // its context has already been executed, and we don't need to load
+  // the listeners from the prefs.
+  BrowserContextData& data = data_[GetBrowserContextID(browser_context)];
+  for (const auto* listener_map :
+       {&data.active_listeners, &data.inactive_listeners}) {
+    for (const auto& [event_name, listeners] : *listener_map) {
+      for (const auto& listener : listeners) {
+        if (listener->id.extension_id == extension_id) {
+          // TODO(crbug.com/448893426): remove these for loops if we can verify
+          // this never happens.
+          base::debug::DumpWithoutCrashing();
+          return;
+        }
+      }
+    }
+  }
+
+  const base::Value::List* persisted_listeners =
+      prefs->ReadPrefAsList(extension_id, kFilteredLazyListeners);
+  if (!persisted_listeners) {
+    return;
+  }
+
+  // Load all listeners or none at all. If the list is corrupted for any reason,
+  // the listeners are unlikely to work as intended.
+  bool failed = false;
+  base::flat_map<std::string, std::unique_ptr<EventListener>> loaded_listeners;
+  for (const base::Value& listener_value : *persisted_listeners) {
+    if (!listener_value.is_dict()) {
+      LOG(WARNING) << "Failed to load persisted webRequest listener for "
+                   << extension_id << ": not a dict";
+      failed = true;
+      break;
+    }
+
+    std::string error;
+    std::unique_ptr<EventListener> listener = EventListener::InitFromLazyValue(
+        listener_value.GetDict(), extension_id, browser_context, &error);
+    if (!listener) {
+      LOG(WARNING) << "Failed to load persisted webRequest listener for "
+                   << extension_id << ": " << error;
+      failed = true;
+      break;
+    }
+
+    auto [_, inserted] = loaded_listeners.emplace(listener->id.sub_event_name,
+                                                  std::move(listener));
+    if (!inserted) {
+      LOG(WARNING) << "Failed to load persisted webRequest listener for "
+                   << extension_id << ": duplicated sub event name";
+      failed = true;
+      break;
+    }
+  }
+
+  // If the list was corrupted, clear it from the prefs.
+  if (failed) {
+    prefs->UpdateExtensionPref(extension_id, kFilteredLazyListeners,
+                               std::nullopt);
+    return;
+  }
+
+  // If we are here, all listeners were loaded successfully. Register them.
+  for (auto& [sub_event_name, listener] : loaded_listeners) {
+    if (listener->HasExtraHeaders()) {
+      IncrementExtraHeadersListenerCount(browser_context);
+    }
+    std::string event_name =
+        EventRouter::GetBaseEventName(listener->id.sub_event_name);
+    data.inactive_listeners[event_name].push_back(std::move(listener));
+  }
 }
 
 size_t WebRequestEventRouter::GetListenerCountForTesting(

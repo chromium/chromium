@@ -8,6 +8,7 @@
 #include <memory>
 #include <set>
 
+#include "base/auto_reset.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
@@ -333,6 +334,11 @@ class ExtensionRegistrar : public KeyedService, public ProcessManagerObserver {
   // Simulates an extension being greylisted for tests.
   void GreylistExtensionForTest(const std::string& extension_id,
                                 const BitMapBlocklistState& state);
+
+  // Disables the automatic spin-up of lazy contexts. This should only be used
+  // in tests.
+  [[nodiscard]]
+  static base::AutoReset<bool> DisableLazyContextSpinupForTest();
 
   // Deactivates the extension, adding its id to the list of terminated
   // extensions.

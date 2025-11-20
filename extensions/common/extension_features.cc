@@ -179,4 +179,7 @@ BASE_FEATURE(kRuntimeOnMessageWebExtensionPolyfillSupport,
 
 BASE_FEATURE(kEnableShouldShowPromotion, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kWebRequestPersistFilteredEvents,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace extensions_features
