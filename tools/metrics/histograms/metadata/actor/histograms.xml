@@ -320,6 +320,38 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Actor.RendererPageStability.TimeFromMonitoringToNetworkAndMainThreadIdle"
+    units="ms" expires_after="2026-08-11">
+  <owner>linnan@google.com</owner>
+  <owner>bokan@google.com</owner>
+  <owner>chrome-synapse-team@google.com</owner>
+  <summary>
+    The time from when active monitoring starts (kStartMonitoring state) until
+    both the network and main thread are idle. This is recorded regardless of
+    whether the overall stability check completes due to this condition or
+    another. This provides an unbiased measurement for analyzing page quiescence
+    performance. Not recorded when the stability check is aborted because the
+    render frame was destroyed or timeout.
+  </summary>
+</histogram>
+
+<histogram
+    name="Actor.RendererPageStability.TimeFromMonitoringToPaintStability"
+    units="ms" expires_after="2026-08-11">
+  <owner>linnan@google.com</owner>
+  <owner>bokan@google.com</owner>
+  <owner>chrome-synapse-team@google.com</owner>
+  <summary>
+    The time from when active monitoring starts (kStartMonitoring state) until
+    paint stability is reached. This is recorded regardless of whether the
+    overall stability check completes due to this condition or another. This
+    provides an unbiased measurement for analyzing paint stability performance.
+    Not recorded when the stability check is aborted because the render frame
+    was destroyed or timeout.
+  </summary>
+</histogram>
+
 <histogram name="Actor.RendererPageStability.TimeFromMonitoringToStable"
     units="ms" expires_after="2026-08-11">
   <owner>linnan@google.com</owner>

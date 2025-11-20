@@ -2,10 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <stddef.h>
+
+#include <string_view>
+#include <vector>
+
+#include "base/containers/flat_set.h"
+#include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/test/test_timeouts.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/actor/tools/page_stability_test_util.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/page_stability_metrics_common.h"
@@ -25,6 +35,61 @@ namespace {
 using ::base::test::TestFuture;
 using ::content::ExecJs;
 
+// Waits until all histograms in the provided list are recorded, or until a
+// timeout is reached. Returns the number of unique histograms from the input
+// list that were successfully found before the timeout.
+[[nodiscard]] size_t WaitForHistograms(
+    base::HistogramTester& histogram_tester,
+    const std::vector<std::string_view>& histogram_names) {
+  base::RunLoop run_loop;
+
+  base::flat_set<std::string_view> found_histograms;
+
+  // This timer will fire if we wait too long. It will quit the RunLoop.
+  base::OneShotTimer timeout_timer;
+  timeout_timer.Start(FROM_HERE, TestTimeouts::action_timeout(),
+                      run_loop.QuitClosure());
+
+  // This timer will poll repeatedly, looking for the histograms.
+  base::RepeatingTimer poll_timer;
+  poll_timer.Start(
+      FROM_HERE, TestTimeouts::tiny_timeout(),
+      base::BindLambdaForTesting([&]() {
+        metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+
+        for (const auto& name : histogram_names) {
+          // If we haven't found this histogram yet, check for it.
+          if (!found_histograms.contains(name) &&
+              !histogram_tester.GetAllSamples(name).empty()) {
+            found_histograms.insert(name);
+          }
+        }
+
+        if (found_histograms.size() == histogram_names.size()) {
+          timeout_timer.Stop();
+          poll_timer.Stop();
+          run_loop.Quit();
+        }
+      }));
+
+  run_loop.Run();
+
+  return found_histograms.size();
+}
+
+[[nodiscard]] bool EnsureHistogramsRecorded(
+    base::HistogramTester& histogram_tester,
+    const std::vector<std::string_view>& histogram_names) {
+  return WaitForHistograms(histogram_tester, histogram_names) ==
+         histogram_names.size();
+}
+
+[[nodiscard]] bool EnsureHistogramsNotRecorded(
+    base::HistogramTester& histogram_tester,
+    const std::vector<std::string_view>& histogram_names) {
+  return WaitForHistograms(histogram_tester, histogram_names) == 0u;
+}
+
 }  // namespace
 
 class PageStabilityMetricsTest : public PageStabilityTest {
@@ -33,7 +98,9 @@ class PageStabilityMetricsTest : public PageStabilityTest {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         ::features::kGlicActor,
         {// Do not use min wait.
-         {::features::kGlicActorPageStabilityMinWait.name, "0ms"}});
+         {::features::kGlicActorPageStabilityMinWait.name, "0ms"},
+         {::features::kActorPaintStabilitySubsequentPaintTimeout.name,
+          "100ms"}});
   }
 
   PageStabilityMetricsTest(const PageStabilityMetricsTest&) = delete;
@@ -84,6 +151,23 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, NetworkAndMainThreadIdle) {
       kActorRendererPageStabilityTimeFromMonitoringToStableMetricName, 1);
   histogram_tester.ExpectTotalCount(
       kActorRendererPageStabilityTotalTimeToRenderFrameGoingAwayMetricName, 0);
+  histogram_tester.ExpectTotalCount(
+      kActorRendererPageStabilityTimeFromMonitoringToNetworkAndMainThreadIdleMetricName,
+      1);
+
+  // Now verify that paint stability metric was still recorded when paint
+  // stability was reached after callback invocation.
+  histogram_tester.ExpectTotalCount(
+      kActorRendererPageStabilityTimeFromMonitoringToPaintStabilityMetricName,
+      0);
+
+  content::SimulateMouseClickOrTapElementWithId(web_contents(), "btnPaint");
+  ASSERT_TRUE(EnsureHistogramsRecorded(
+      histogram_tester,
+      {kActorRendererPageStabilityTimeFromMonitoringToPaintStabilityMetricName}));
+  histogram_tester.ExpectTotalCount(
+      kActorRendererPageStabilityTimeFromMonitoringToPaintStabilityMetricName,
+      1);
 }
 
 IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, Paint) {
@@ -125,6 +209,23 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, Paint) {
       kActorRendererPageStabilityTimeFromMonitoringToStableMetricName, 1);
   histogram_tester.ExpectTotalCount(
       kActorRendererPageStabilityTotalTimeToRenderFrameGoingAwayMetricName, 0);
+  histogram_tester.ExpectTotalCount(
+      kActorRendererPageStabilityTimeFromMonitoringToPaintStabilityMetricName,
+      1);
+
+  // Now verify that network/main thread metric was still recorded when the
+  // network/main thread became idle after callback invocation.
+  histogram_tester.ExpectTotalCount(
+      kActorRendererPageStabilityTimeFromMonitoringToNetworkAndMainThreadIdleMetricName,
+      0);
+
+  Respond("NETWORK DONE");
+  ASSERT_TRUE(EnsureHistogramsRecorded(
+      histogram_tester,
+      {kActorRendererPageStabilityTimeFromMonitoringToNetworkAndMainThreadIdleMetricName}));
+  histogram_tester.ExpectTotalCount(
+      kActorRendererPageStabilityTimeFromMonitoringToNetworkAndMainThreadIdleMetricName,
+      1);
 }
 
 IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, Timeout) {
@@ -159,6 +260,29 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, Timeout) {
       kActorRendererPageStabilityTimeFromMonitoringToStableMetricName, 0);
   histogram_tester.ExpectTotalCount(
       kActorRendererPageStabilityTotalTimeToRenderFrameGoingAwayMetricName, 0);
+  histogram_tester.ExpectTotalCount(
+      kActorRendererPageStabilityTimeFromMonitoringToPaintStabilityMetricName,
+      0);
+  histogram_tester.ExpectTotalCount(
+      kActorRendererPageStabilityTimeFromMonitoringToNetworkAndMainThreadIdleMetricName,
+      0);
+
+  // Verify that paint stability and network/main thread metrics were not
+  // recorded when the stabilicy check completed after callback invocation due
+  // to timeout.
+  content::SimulateMouseClickOrTapElementWithId(web_contents(), "btnPaint");
+  Respond("NETWORK DONE");
+
+  ASSERT_TRUE(EnsureHistogramsNotRecorded(
+      histogram_tester,
+      {kActorRendererPageStabilityTimeFromMonitoringToPaintStabilityMetricName,
+       kActorRendererPageStabilityTimeFromMonitoringToNetworkAndMainThreadIdleMetricName}));
+  histogram_tester.ExpectTotalCount(
+      kActorRendererPageStabilityTimeFromMonitoringToPaintStabilityMetricName,
+      0);
+  histogram_tester.ExpectTotalCount(
+      kActorRendererPageStabilityTimeFromMonitoringToNetworkAndMainThreadIdleMetricName,
+      0);
 }
 
 IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, RenderFrameGoingAway) {
@@ -204,6 +328,12 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, RenderFrameGoingAway) {
       kActorRendererPageStabilityTimeFromMonitoringToStableMetricName, 0);
   histogram_tester.ExpectTotalCount(
       kActorRendererPageStabilityTotalTimeToRenderFrameGoingAwayMetricName, 1);
+  histogram_tester.ExpectTotalCount(
+      kActorRendererPageStabilityTimeFromMonitoringToPaintStabilityMetricName,
+      0);
+  histogram_tester.ExpectTotalCount(
+      kActorRendererPageStabilityTimeFromMonitoringToNetworkAndMainThreadIdleMetricName,
+      0);
 }
 
 IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, MojoDisconnected) {
@@ -243,6 +373,80 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, MojoDisconnected) {
       kActorRendererPageStabilityTimeFromMonitoringToStableMetricName, 0);
   histogram_tester.ExpectTotalCount(
       kActorRendererPageStabilityTotalTimeToRenderFrameGoingAwayMetricName, 0);
+
+  // Verify that paint stability and network/main thread metrics were still
+  // recorded when the stabilicy check completed after mojo disconnection.
+  content::SimulateMouseClickOrTapElementWithId(web_contents(), "btnPaint");
+  Respond("NETWORK DONE");
+
+  ASSERT_TRUE(EnsureHistogramsRecorded(
+      histogram_tester,
+      {kActorRendererPageStabilityTimeFromMonitoringToPaintStabilityMetricName,
+       kActorRendererPageStabilityTimeFromMonitoringToNetworkAndMainThreadIdleMetricName}));
+  histogram_tester.ExpectTotalCount(
+      kActorRendererPageStabilityTimeFromMonitoringToPaintStabilityMetricName,
+      1);
+  histogram_tester.ExpectTotalCount(
+      kActorRendererPageStabilityTimeFromMonitoringToNetworkAndMainThreadIdleMetricName,
+      1);
+}
+
+IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, MojoDisconnectedAndTimeout) {
+  base::HistogramTester histogram_tester;
+
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GetPageStabilityTestURL()));
+
+  mojo::Remote<mojom::PageStabilityMonitor> monitor =
+      CreatePageStabilityMonitor();
+
+  ASSERT_EQ(GetOutputText(), "INITIAL");
+  InitiateNetworkRequest();
+
+  TestFuture<void> result;
+  monitor->NotifyWhenStable(/*observation_delay=*/base::TimeDelta(),
+                            result.GetCallback());
+
+  // The fetch hasn't resolved yet, the monitor should still be waiting on
+  // network fetches to resolve.
+  ASSERT_EQ(GetOutputText(), "INITIAL");
+  EXPECT_FALSE(result.IsReady());
+
+  monitor.reset();
+  Sleep(base::Milliseconds(100));
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+
+  histogram_tester.ExpectUniqueSample(
+      kActorRendererPageStabilityOutcomeMetricName,
+      PageStabilityOutcome::kMojoDisconnected,
+      /*expected_bucket_count=*/1);
+
+  histogram_tester.ExpectTotalCount(
+      kActorRendererPageStabilityTotalTimeToStableMetricName, 0);
+  histogram_tester.ExpectTotalCount(
+      kActorRendererPageStabilityTimeFromMonitoringToStableMetricName, 0);
+  histogram_tester.ExpectTotalCount(
+      kActorRendererPageStabilityTotalTimeToRenderFrameGoingAwayMetricName, 0);
+
+  // Wait until timeout.
+  Sleep(features::kGlicActorPageStabilityTimeout.Get());
+
+  // Verify that paint stability and network/main thread metrics were not
+  // recorded after timeout.
+  content::SimulateMouseClickOrTapElementWithId(web_contents(), "btnPaint");
+  Respond("NETWORK DONE");
+
+  ASSERT_TRUE(EnsureHistogramsNotRecorded(
+      histogram_tester,
+      {kActorRendererPageStabilityTimeFromMonitoringToPaintStabilityMetricName,
+       kActorRendererPageStabilityTimeFromMonitoringToNetworkAndMainThreadIdleMetricName}));
+  histogram_tester.ExpectTotalCount(
+      kActorRendererPageStabilityTimeFromMonitoringToPaintStabilityMetricName,
+      0);
+  histogram_tester.ExpectTotalCount(
+      kActorRendererPageStabilityTimeFromMonitoringToNetworkAndMainThreadIdleMetricName,
+      0);
 }
 
 class PageStabilityMetricsMinWaitTest : public PageStabilityTest {
@@ -287,8 +491,19 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsMinWaitTest,
   EXPECT_FALSE(result.IsReady());
 
   Respond("NETWORK DONE");
+  ASSERT_TRUE(EnsureHistogramsRecorded(
+      histogram_tester,
+      {kActorRendererPageStabilityTimeFromMonitoringToNetworkAndMainThreadIdleMetricName}));
+  histogram_tester.ExpectTotalCount(
+      kActorRendererPageStabilityTimeFromMonitoringToNetworkAndMainThreadIdleMetricName,
+      1);
+  ASSERT_FALSE(result.IsReady());
+
+  // Verify that paint stability metric was still recorded when paint stability
+  // was reached while waiting for minimum wait.
+  content::SimulateMouseClickOrTapElementWithId(web_contents(), "btnPaint");
+
   ASSERT_TRUE(result.Wait());
-  ASSERT_EQ(GetOutputText(), "NETWORK DONE");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
@@ -303,6 +518,9 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsMinWaitTest,
       kActorRendererPageStabilityTimeFromMonitoringToStableMetricName, 1);
   histogram_tester.ExpectTotalCount(
       kActorRendererPageStabilityTotalTimeToRenderFrameGoingAwayMetricName, 0);
+  histogram_tester.ExpectTotalCount(
+      kActorRendererPageStabilityTimeFromMonitoringToPaintStabilityMetricName,
+      1);
 }
 
 IN_PROC_BROWSER_TEST_F(PageStabilityMetricsMinWaitTest, PaintDelayed) {
@@ -328,8 +546,19 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsMinWaitTest, PaintDelayed) {
 
   content::SimulateMouseClickOrTapElementWithId(web_contents(), "btnPaint");
 
+  ASSERT_TRUE(EnsureHistogramsRecorded(
+      histogram_tester,
+      {kActorRendererPageStabilityTimeFromMonitoringToPaintStabilityMetricName}));
+  histogram_tester.ExpectTotalCount(
+      kActorRendererPageStabilityTimeFromMonitoringToPaintStabilityMetricName,
+      1);
+  ASSERT_FALSE(result.IsReady());
+
+  // Verify tht the network/main thread metric was still recorded when the
+  // network/main thread became idle while waiting for minimum wait.
+  Respond("NETWORK DONE");
+
   ASSERT_TRUE(result.Wait());
-  ASSERT_EQ(GetOutputText(), "PAINT");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
@@ -344,6 +573,9 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsMinWaitTest, PaintDelayed) {
       kActorRendererPageStabilityTimeFromMonitoringToStableMetricName, 1);
   histogram_tester.ExpectTotalCount(
       kActorRendererPageStabilityTotalTimeToRenderFrameGoingAwayMetricName, 0);
+  histogram_tester.ExpectTotalCount(
+      kActorRendererPageStabilityTimeFromMonitoringToNetworkAndMainThreadIdleMetricName,
+      1);
 }
 
 }  // namespace actor

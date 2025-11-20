@@ -30,6 +30,11 @@ extern const char
     kActorRendererPageStabilityTotalTimeToRenderFrameGoingAwayMetricName[];
 extern const char
     kActorRendererPageStabilityTimeFromMonitoringToStableMetricName[];
+extern char const
+    kActorRendererPageStabilityTimeFromMonitoringToPaintStabilityMetricName[];
+extern char const
+    kActorRendererPageStabilityTimeFromMonitoringToNetworkAndMainThreadIdleMetricName
+        [];
 
 }  // namespace actor
 

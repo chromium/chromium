@@ -19,4 +19,13 @@ const char
 const char kActorRendererPageStabilityTimeFromMonitoringToStableMetricName[] =
     "Actor.RendererPageStability.TimeFromMonitoringToStable";
 
+const char
+    kActorRendererPageStabilityTimeFromMonitoringToPaintStabilityMetricName[] =
+        "Actor.RendererPageStability.TimeFromMonitoringToPaintStability";
+
+const char
+    kActorRendererPageStabilityTimeFromMonitoringToNetworkAndMainThreadIdleMetricName
+        [] = "Actor.RendererPageStability."
+             "TimeFromMonitoringToNetworkAndMainThreadIdle";
+
 }  // namespace actor

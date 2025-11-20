@@ -146,8 +146,15 @@ class PageStabilityMonitor : public content::RenderFrameObserver,
   void OnPaintStabilityReached();
   void OnRenderFrameGoingAway();
   void OnMojoDisconnected();
+  void OnTimeout();
 
-  void Cleanup();
+  // TODO(linnan): Consider introducing a NetworkAndMainThreadStabilityMonitor.
+  void OnNetworkIdle();
+  void OnMainThreadIdle(base::TimeTicks);
+  void WaitForMainThreadIdle();
+
+  void StopMonitoring();
+  void Teardown();
 
   // The number of active network requests at the time this object was
   // initialized. Used to compare to the number of requests after monitoring
@@ -191,13 +198,9 @@ class PageStabilityMonitor : public content::RenderFrameObserver,
 
   std::unique_ptr<PageStabilityMetrics> metrics_;
 
-  // The main thread may be idle and move to `kMaybeDelayCallback` while the
-  // task to move to `kPaintStabilityReached` is in queue.
-  // Cancel the task to avoid this race condition when
-  // kGlicActorPageStabilityMinWait is enabled.
-  base::DelayedTaskHandle paint_stability_delayed_handle_;
-
   bool render_frame_did_go_away_ = false;
+
+  bool monitoring_complete_ = false;
 
   mojo::Receiver<mojom::PageStabilityMonitor> receiver_{this};
 

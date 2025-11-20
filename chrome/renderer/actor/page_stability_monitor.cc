@@ -84,7 +84,7 @@ PageStabilityMonitor::~PageStabilityMonitor() {
 
   // If we have a callback, ensure it replies now.
   OnRenderFrameGoingAway();
-  Cleanup();
+  Teardown();
 }
 
 void PageStabilityMonitor::NotifyWhenStable(base::TimeDelta observation_delay,
@@ -107,7 +107,11 @@ void PageStabilityMonitor::NotifyWhenStable(base::TimeDelta observation_delay,
     paint_stability_monitor_->Start();
   }
 
-  PostMoveToStateClosure(State::kTimeout, GetTimeoutDelay()).Run();
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&PageStabilityMonitor::OnTimeout,
+                     weak_ptr_factory_.GetWeakPtr()),
+      GetTimeoutDelay());
 
   MoveToState(State::kMonitorStartDelay);
 }
@@ -232,19 +236,14 @@ void PageStabilityMonitor::MoveToState(State new_state) {
     }
     case State::kWaitForNetworkIdle: {
       network_idle_callback_.Reset(
-          MoveToStateClosure(State::kWaitForMainThreadIdle));
+          base::BindOnce(&PageStabilityMonitor::OnNetworkIdle,
+                         weak_ptr_factory_.GetWeakPtr()));
       render_frame()->GetWebFrame()->RequestNetworkIdleCallback(
           network_idle_callback_.callback());
       break;
     }
     case State::kWaitForMainThreadIdle: {
-      main_thread_idle_callback_.Reset(base::BindOnce(
-          [](base::OnceClosure callback, base::TimeTicks unused_deadline) {
-            std::move(callback).Run();
-          },
-          MoveToStateClosure(State::kMainThreadIdle)));
-      render_frame()->GetWebFrame()->PostIdleTask(
-          FROM_HERE, main_thread_idle_callback_.callback());
+      WaitForMainThreadIdle();
       break;
     }
     case State::kMainThreadIdle: {
@@ -256,13 +255,6 @@ void PageStabilityMonitor::MoveToState(State new_state) {
       break;
     }
     case State::kMaybeDelayCallback: {
-      // Ensure we release the network and main thread idle callback slots.
-      network_idle_callback_.Cancel();
-      main_thread_idle_callback_.Cancel();
-
-      paint_stability_monitor_.reset();
-      paint_stability_delayed_handle_.CancelTask();
-
       base::TimeDelta min_wait_time = GetMinWait();
 
       base::TimeDelta callback_invoke_delay;
@@ -298,6 +290,8 @@ void PageStabilityMonitor::MoveToState(State new_state) {
     }
     case State::kRenderFrameGoingAway: {
       CHECK(render_frame_did_go_away_);
+      StopMonitoring();
+
       MoveToState(State::kInvokeCallback);
       break;
     }
@@ -315,19 +309,21 @@ void PageStabilityMonitor::MoveToState(State new_state) {
       break;
     case State::kDone: {
       // As we may not destroy PageStabilityMonitor, clean up here.
-      Cleanup();
+      Teardown();
       break;
     }
   }
 }
 
-void PageStabilityMonitor::Cleanup() {
+void PageStabilityMonitor::StopMonitoring() {
   network_idle_callback_.Cancel();
   main_thread_idle_callback_.Cancel();
+  paint_stability_monitor_.reset();
+}
+
+void PageStabilityMonitor::Teardown() {
   start_monitoring_delayed_handle_.CancelTask();
   receiver_.reset();
-  paint_stability_monitor_.reset();
-  paint_stability_delayed_handle_.CancelTask();
   journal_entry_.reset();
 }
 
@@ -363,12 +359,20 @@ PageStabilityMonitor::PostCancelableMoveToStateClosure(State new_state,
 }
 
 void PageStabilityMonitor::OnPaintStabilityReached() {
-  // Do this in a separate task since this callback can be called synchronously
-  // when registered.
-  // TODO(bokan): It'd be better for PaintStabilityMonitor to post the reply in
-  // this case.
-  paint_stability_delayed_handle_ =
-      PostCancelableMoveToStateClosure(State::kPaintStabilityReached).Run();
+  paint_stability_monitor_.reset();
+
+  CHECK(metrics_);
+  metrics_->OnPaintStabilityReached();
+
+  if (!monitoring_complete_) {
+    monitoring_complete_ = true;
+
+    // Do this in a separate task since this callback can be called
+    // synchronously when registered.
+    // TODO(bokan): It'd be better for PaintStabilityMonitor to post the reply
+    // in this case.
+    PostMoveToStateClosure(State::kPaintStabilityReached).Run();
+  }
 }
 
 void PageStabilityMonitor::OnRenderFrameGoingAway() {
@@ -380,6 +384,37 @@ void PageStabilityMonitor::OnRenderFrameGoingAway() {
   }
 
   MoveToState(State::kRenderFrameGoingAway);
+}
+
+void PageStabilityMonitor::OnTimeout() {
+  StopMonitoring();
+  MoveToState(State::kTimeout);
+}
+
+void PageStabilityMonitor::OnNetworkIdle() {
+  if (!monitoring_complete_) {
+    MoveToState(State::kWaitForMainThreadIdle);
+    return;
+  }
+
+  WaitForMainThreadIdle();
+}
+
+void PageStabilityMonitor::OnMainThreadIdle(base::TimeTicks) {
+  CHECK(metrics_);
+  metrics_->OnMainThreadIdle();
+
+  if (!monitoring_complete_) {
+    monitoring_complete_ = true;
+    MoveToState(State::kMainThreadIdle);
+  }
+}
+
+void PageStabilityMonitor::WaitForMainThreadIdle() {
+  main_thread_idle_callback_.Reset(base::BindOnce(
+      &PageStabilityMonitor::OnMainThreadIdle, weak_ptr_factory_.GetWeakPtr()));
+  render_frame()->GetWebFrame()->PostIdleTask(
+      FROM_HERE, main_thread_idle_callback_.callback());
 }
 
 void PageStabilityMonitor::DCheckStateTransition(State old_state,

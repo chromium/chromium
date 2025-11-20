@@ -4,6 +4,7 @@
 
 #include "chrome/renderer/actor/page_stability_metrics.h"
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -76,6 +77,20 @@ void PageStabilityMetrics::WillMoveToState(PageStabilityMonitor::State state) {
       RecordTimingMetrics();
       break;
   }
+}
+
+void PageStabilityMetrics::OnMainThreadIdle() {
+  CHECK(!start_monitoring_time_.is_null());
+  base::UmaHistogramTimes(
+      kActorRendererPageStabilityTimeFromMonitoringToNetworkAndMainThreadIdleMetricName,
+      base::TimeTicks::Now() - start_monitoring_time_);
+}
+
+void PageStabilityMetrics::OnPaintStabilityReached() {
+  CHECK(!start_monitoring_time_.is_null());
+  base::UmaHistogramTimes(
+      kActorRendererPageStabilityTimeFromMonitoringToPaintStabilityMetricName,
+      base::TimeTicks::Now() - start_monitoring_time_);
 }
 
 void PageStabilityMetrics::RecordTimingMetrics() {
