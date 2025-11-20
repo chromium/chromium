@@ -162,6 +162,9 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
   };
 
  private:
+  // Responds to Lens signal indicating that the backend is done processing the
+  // attachment and can serve up-to-date suggestions.
+  void OnLensSignalsReady();
 
   // AutocompleteController::Observer implementation.
   void OnResultChanged(AutocompleteController* controller,
@@ -210,13 +213,11 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
 
   // The ComposeBoxQueryController instance related to the same input session.
   // This may and often will be unset.
-  raw_ptr<const ComposeboxQueryControllerBridge>
-      composebox_query_controller_bridge_;
+  raw_ptr<ComposeboxQueryControllerBridge> composebox_query_controller_bridge_;
 
   // Factory used to create asynchronously invoked callbacks.
   // Retained throughout the lifetime of the AutocompleteControllerAndroid.
-  const base::WeakPtrFactory<AutocompleteControllerAndroid> weak_ptr_factory_{
-      this};
+  base::WeakPtrFactory<AutocompleteControllerAndroid> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_ANDROID_OMNIBOX_AUTOCOMPLETE_CONTROLLER_ANDROID_H_

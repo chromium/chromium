@@ -492,6 +492,11 @@ void AutocompleteControllerAndroid::SetComposeboxQueryControllerBridge(
   composebox_query_controller_bridge_ =
       reinterpret_cast<ComposeboxQueryControllerBridge*>(
           composebox_controller_ptr);
+  if (composebox_query_controller_bridge_) {
+    composebox_query_controller_bridge_->SetLensSignalsReadyObserver(
+        base::BindRepeating(&AutocompleteControllerAndroid::OnLensSignalsReady,
+                            weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void AutocompleteControllerAndroid::SetVoiceMatches(
@@ -560,6 +565,22 @@ ScopedJavaLocalRef<jobject> AutocompleteControllerAndroid::GetJavaObject()
 }
 
 AutocompleteControllerAndroid::~AutocompleteControllerAndroid() = default;
+
+void AutocompleteControllerAndroid::OnLensSignalsReady() {
+  // This method may only be called once the ComposeboxQueryController is
+  // notified that the Lens service is done processing inputs.
+  if (input_.IsZeroSuggest()) {
+    // Abort pending asynchronous suggestion updates.
+    if (!autocomplete_controller_->done()) {
+      autocomplete_controller_->Stop(AutocompleteStopReason::kClobbered);
+    }
+    // Fresh ZPS can only be served once we ensure the Lens signals are
+    // correctly applied to the suggest request.
+    input_.set_lens_overlay_suggest_inputs(
+        composebox_query_controller_bridge_->GetLensOverlaySuggestInputs());
+    autocomplete_controller_->Start(input_);
+  }
+}
 
 void AutocompleteControllerAndroid::OnResultChanged(
     AutocompleteController* controller,

@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/android/jni_string.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/contextual_search/internal/composebox_query_controller.h"
@@ -63,6 +64,12 @@ class ComposeboxQueryControllerBridge
       const std::optional<contextual_search::FileUploadErrorType>& error_type)
       override;
 
+  // Install/clear the callback to be notified when the Lens is done processing
+  // attachments and is ready to serve fresh suggestions.
+  void SetLensSignalsReadyObserver(base::RepeatingCallback<void()> callback) {
+    lens_signals_ready_callback_ = std::move(callback);
+  }
+
  private:
   void OnGetTabPageContext(
       JNIEnv* env,
@@ -78,6 +85,7 @@ class ComposeboxQueryControllerBridge
 
   raw_ptr<Profile> profile_;
   std::unique_ptr<ComposeboxQueryController> query_controller_;
+  base::RepeatingCallback<void()> lens_signals_ready_callback_;
   base::WeakPtrFactory<ComposeboxQueryControllerBridge> weak_ptr_factory_{this};
 };
 

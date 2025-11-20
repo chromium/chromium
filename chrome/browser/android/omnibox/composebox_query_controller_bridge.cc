@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/common/channel_info.h"
+#include "components/contextual_search/contextual_search_types.h"
 #include "components/lens/contextual_input.h"
 #include "components/lens/lens_bitmap_processing.h"
 #include "components/lens/lens_url_utils.h"
@@ -238,7 +239,14 @@ void ComposeboxQueryControllerBridge::OnFileUploadStatusChanged(
     const base::UnguessableToken& file_token,
     lens::MimeType mime_type,
     contextual_search::FileUploadStatus file_upload_status,
-    const std::optional<contextual_search::FileUploadErrorType>& error_type) {}
+    const std::optional<contextual_search::FileUploadErrorType>& error_type) {
+  if (file_upload_status ==
+      contextual_search::FileUploadStatus::kProcessingSuggestSignalsReady) {
+    if (lens_signals_ready_callback_) {
+      lens_signals_ready_callback_.Run();
+    }
+  }
+}
 
 void ComposeboxQueryControllerBridge::OnGetTabPageContext(
     JNIEnv* env,
