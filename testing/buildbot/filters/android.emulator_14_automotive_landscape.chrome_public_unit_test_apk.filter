@@ -1,0 +1,6 @@
+# crbug.com/462297674
+-org.chromium.chrome.browser.ui.appmenu.AppMenuTest.testShowAppMenu_AnchorTop
+
+# crbug.com/462299211
+-org.chromium.components.browser_ui.widget.DualControlLayoutTest.testInflation
+
