@@ -28,6 +28,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.browser.firstrun.FirstRunActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.locale.LocaleManager;
@@ -169,6 +170,9 @@ public class SearchWidgetProviderTest {
 
     @Test
     @SmallTest
+    @DisableIf.Build(
+            supported_abis_includes = "arm64-v8a",
+            message = "Flaky, https://crbug.com/431007457")
     @CommandLineFlags.Remove(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
     public void testUpdateCachedEngineNameBeforeFirstRun() throws ExecutionException {
         Assert.assertFalse(
