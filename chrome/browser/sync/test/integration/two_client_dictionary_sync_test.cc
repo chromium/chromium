@@ -116,39 +116,26 @@ IN_PROC_BROWSER_TEST_F(TwoClientDictionarySyncTest, Limit) {
   LoadDictionaries();
   ASSERT_TRUE(DictionaryChecker(/*expected_words=*/{}).Wait());
 
-  // Disable client #1 before client #0 starts adding anything.
-  ASSERT_TRUE(GetClient(1)->DisableSyncForAllDatatypes());
-
   // Pick a size between 1/2 and 1/3 of kMaxSyncableDictionaryWords. This will
   // allow the test to verify that while we crossed the limit the client not
   // actively making changes is still recieving sync updates but stops exactly
   // on the limit.
-  size_t chunk_size = kMaxSyncableDictionaryWords * 2 / 5;
+  const size_t chunk_size = kMaxSyncableDictionaryWords * 2 / 5;
 
+  // Add `chunk_size` words to client #0 and wait for client #1 to receive them.
   ASSERT_TRUE(AddWords(0, chunk_size, "foo-0-"));
   ASSERT_EQ(chunk_size, GetDictionarySize(0));
 
-  // We must wait for the server here. This test was originally an n-client test
-  // where n-1 clients waited to have the same state. We cannot do that on 2
-  // clients because one needs to be disconnected during this process, because
-  // part of what we're testing is that when it comes online it pulls remote
-  // changes before pushing local changes, with the limit in mind. So we check
-  // the server count here to make sure client #0 is done pushing its changes
-  // out. In there real world there's a race condition here, if multiple clients
-  // are adding words simultaneously then we're go over the limit slightly,
-  // though we'd expect this to be relatively small.
   ASSERT_TRUE(
       ServerCountMatchStatusChecker(syncer::DICTIONARY, chunk_size).Wait());
+  ASSERT_TRUE(NumDictionaryEntriesChecker(1, chunk_size).Wait());
 
+  // Now add 2x `chunk_size` words to client #1, this will cause the count of
+  // words on client #1 to exceed the limit. Out of which only words up till the
+  // limit will be uploaded to the server.
   ASSERT_TRUE(AddWords(1, 2 * chunk_size, "foo-1-"));
-  ASSERT_EQ(2 * chunk_size, GetDictionarySize(1));
+  ASSERT_EQ(3 * chunk_size, GetDictionarySize(1));
 
-  // Client #1 should first pull remote changes, apply them, without capping at
-  // any sort of limit. This will cause client #1 to have 3 * chunk_size. When
-  // client #1 then tries to commit changes, that is when it obeys the limit
-  // and will cause client #0 to only see the limit worth of words.
-  ASSERT_TRUE(GetClient(1)->EnableSyncForRegisteredDatatypes());
-  ASSERT_TRUE(NumDictionaryEntriesChecker(1, 3 * chunk_size).Wait());
   ASSERT_TRUE(ServerCountMatchStatusChecker(syncer::DICTIONARY,
                                             kMaxSyncableDictionaryWords)
                   .Wait());
