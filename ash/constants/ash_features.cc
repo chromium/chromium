@@ -1054,10 +1054,6 @@ BASE_FEATURE(kHelpAppOnboardingRevamp, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kHelpAppOpensInsteadOfReleaseNotesNotification,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enable showing the welcome tips page in the help app. This feature
-// is dependent on the 'ScalableIph' feature being enabled as well.
-BASE_FEATURE(kHelpAppWelcomeTips, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables a warning about connecting to hidden WiFi networks.
 // https://crbug.com/903908
 BASE_FEATURE(kHiddenNetworkWarning, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1770,9 +1766,6 @@ BASE_FEATURE(kResetAudioSelectionImprovementPref,
 // If enabled, will reset all shortcut customizations on startup.
 BASE_FEATURE(kResetShortcutCustomizations, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables ChromeOS scalable IPH.
-BASE_FEATURE(kScalableIph, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Set all ScalableIph client side config to tracking only config.
 BASE_FEATURE(kScalableIphTrackingOnly, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -2276,11 +2269,6 @@ BASE_FEATURE(kFwupdDeveloperMode, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool AreDesksTemplatesEnabled() {
   return base::FeatureList::IsEnabled(kDesksTemplates);
-}
-
-bool AreHelpAppWelcomeTipsEnabled() {
-  return base::FeatureList::IsEnabled(kHelpAppWelcomeTips) &&
-         base::FeatureList::IsEnabled(kScalableIph);
 }
 
 bool ArePromiseIconsForWebAppsEnabled() {
@@ -3287,10 +3275,6 @@ bool IsResetShortcutCustomizationsEnabled() {
 
 bool IsSameAppWindowCycleEnabled() {
   return base::FeatureList::IsEnabled(kSameAppWindowCycle);
-}
-
-bool IsScalableIphEnabled() {
-  return base::FeatureList::IsEnabled(kScalableIph);
 }
 
 bool IsScalableIphTrackingOnlyEnabled() {

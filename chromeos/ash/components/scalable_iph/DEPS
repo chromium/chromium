@@ -1,7 +1,0 @@
-include_rules = [
-  "+ash/constants/ash_features.h",
-  "+chromeos/ash/components/browser_context_helper",
-  "+components/feature_engagement/public",
-  "+components/keyed_service/content",
-  "+components/keyed_service/core",
-]

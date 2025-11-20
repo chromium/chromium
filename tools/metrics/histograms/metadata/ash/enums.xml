@@ -1760,7 +1760,7 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="17"
       label="Video Conference Tray Speak On Mute Opt In Confirmation
              (deprecated 09/2023)"/>
-  <int value="18" label="Scalable IPH Bubble"/>
+  <int value="18" label="Scalable IPH Bubble (deprecated 11/2025)"/>
   <int value="19"
       label="Video Conference Tray Camera And Microphone Use While Disabled"/>
   <int value="20" label="Multitask Menu Clamshell"/>

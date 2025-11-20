@@ -6,7 +6,6 @@ import("//ash/ambient/resources/resources.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/ui.gni")
 import("//chromeos/ash/components/assistant/ambient.gni")
-import("//chromeos/ash/components/scalable_iph/scalable_iph.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//testing/test.gni")
 import("//tools/grit/repack.gni")
@@ -3403,8 +3402,6 @@ component("ash") {
     "//chromeos/ash/components/peripheral_notification",
     "//chromeos/ash/components/phonehub",
     "//chromeos/ash/components/policy",
-    "//chromeos/ash/components/scalable_iph:buildflags",
-    "//chromeos/ash/components/scalable_iph:constants",
     "//chromeos/ash/components/settings",
     "//chromeos/ash/components/specialized_features",
     "//chromeos/ash/components/string_matching",
@@ -4626,7 +4623,6 @@ test("ash_unittests") {
     "//chromeos/ash/components/osauth/test_support",
     "//chromeos/ash/components/phonehub:test_support",
     "//chromeos/ash/components/policy",
-    "//chromeos/ash/components/scalable_iph:constants",
     "//chromeos/ash/components/settings",
     "//chromeos/ash/components/system",
     "//chromeos/ash/experiences/arc:notification_test_support",

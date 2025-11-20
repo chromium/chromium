@@ -21469,7 +21469,7 @@ Called by update_net_error_codes.py.-->
   <int value="170" label="Geolocation Switch"/>
   <int value="171" label="Multi Capture On Login"/>
   <int value="172" label="Floating Workspace"/>
-  <int value="173" label="Scalable IPH"/>
+  <int value="173" label="(deprecated) Scalable IPH"/>
   <int value="174" label="(deprecated) After Update Notification"/>
   <int value="175" label="Sub Apps Uninstall"/>
   <int value="176" label="Network Carrier Unlock"/>

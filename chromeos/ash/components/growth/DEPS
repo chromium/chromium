@@ -2,7 +2,7 @@ include_rules = [
   "+base",
   "+chromeos/ash/components/demo_mode",
   "+chromeos/ash/components/channel",
-  "+chromeos/ash/components/scalable_iph",
+  "+chromeos/ash/components/scalable_iph/buildflags.h",
   "+components/feature_engagement/public",
   "+components/prefs",
   "+components/user_manager",
