@@ -265,6 +265,15 @@
     "expiry_milestone": 150
   },
   {
+    "name": "android-caret-browsing",
+    "owners": [
+      "lokeric@google.com",
+      "mschillaci@google.com",
+      "clank-large-form-factors@google.com"
+    ],
+    "expiry_milestone": 149
+  },
+  {
     "name": "android-composeplate",
     "owners": [ "hanxi@chromium.org", "pnoland@chromium.org", "clank-start@google.com"],
     "expiry_milestone": 150

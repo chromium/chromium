@@ -4913,6 +4913,10 @@ inline constexpr char kAndroidAutoMintedTWADescription[] =
     "Android package instead of a server-minted WebAPK. This feature "
     "additionally requires WebApp Mainline module enabled.";
 
+inline constexpr char kAndroidCaretBrowsingName[] = "Enable Caret Browsing.";
+inline constexpr char kAndroidCaretBrowsingDescription[] =
+    "Allows users to interact with a webpage using a keyboard.";
+
 inline constexpr char kAndroidComposeplateName[] =
     "Enable composeplate on New Tab Page";
 inline constexpr char kAndroidComposeplateDescription[] =

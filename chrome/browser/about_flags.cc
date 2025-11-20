@@ -13577,6 +13577,11 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::kAutofillEnableNewFopDisplayAndroid)},
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+    {"android-caret-browsing", flag_descriptions::kAndroidCaretBrowsingName,
+     flag_descriptions::kAndroidCaretBrowsingDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kAndroidCaretBrowsing)},
+#endif
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
