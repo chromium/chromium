@@ -13,6 +13,8 @@ source_set("coordinator") {
     "composebox_input_plate_coordinator.mm",
     "composebox_input_plate_mediator.h",
     "composebox_input_plate_mediator.mm",
+    "composebox_metrics_recorder.h",
+    "composebox_metrics_recorder.mm",
     "composebox_navigation_mediator.h",
     "composebox_navigation_mediator.mm",
     "composebox_omnibox_client.h",

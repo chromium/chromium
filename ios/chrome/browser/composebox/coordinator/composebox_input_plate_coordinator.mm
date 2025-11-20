@@ -14,6 +14,7 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_entrypoint.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_input_plate_mediator.h"
+#import "ios/chrome/browser/composebox/coordinator/composebox_metrics_recorder.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_omnibox_client.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_tab_picker_coordinator.h"
 #import "ios/chrome/browser/composebox/public/composebox_theme.h"
@@ -92,6 +93,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   std::unique_ptr<LocationBarModel> _locationBarModel;
   ComposeboxTabPickerCoordinator* _tabPickerCoordinator;
   ComposeboxTheme* _theme;
+  ComposeboxMetricsRecorder* _metricsRecorder;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
@@ -106,6 +108,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
     _query = query;
     _URLLoader = URLLoader;
     _theme = theme;
+    _metricsRecorder = [[ComposeboxMetricsRecorder alloc] init];
   }
   return self;
 }
