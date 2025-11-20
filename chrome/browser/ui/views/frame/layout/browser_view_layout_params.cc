@@ -74,6 +74,16 @@ void BrowserLayoutParams::Inset(const gfx::Insets& insets) {
   }
 }
 
+void BrowserLayoutParams::SetTop(int top) {
+  Inset(gfx::Insets::TLBR(top - visual_client_area.y(), 0, 0, 0));
+}
+
+void BrowserLayoutParams::InsetHorizontal(int amount, bool leading) {
+  amount = std::min(amount, visual_client_area.width());
+  Inset(leading ? gfx::Insets::TLBR(0, amount, 0, 0)
+                : gfx::Insets::TLBR(0, 0, 0, amount));
+}
+
 std::ostream& operator<<(std::ostream& os,
                          const BrowserLayoutExclusionArea& exclusion) {
   os << exclusion.content.ToString() << " +h: " << exclusion.horizontal_padding

@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout.h"
+#include "chrome/browser/ui/views/frame/layout/browser_view_layout_impl_common.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout_params.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/layout/flex_layout_types.h"
@@ -19,42 +20,25 @@ namespace views {
 class View;
 }
 
-// New browser layout implementation.
-//
-// This may not work for browsers that are not normal, tabbed browsers;
-// `BrowserViewLayoutImplOld` should still be used for other browser types.
-class BrowserViewLayoutImpl : public BrowserViewLayout {
+// Provides a specialized layout implementation for normal tabbed browsers.
+// Should not be used for other types of browsers.
+class BrowserViewLayoutImpl : public BrowserViewLayoutImplCommon {
  public:
   BrowserViewLayoutImpl(std::unique_ptr<BrowserViewLayoutDelegate> delegate,
                         Browser* browser,
                         BrowserViewLayoutViews views);
   ~BrowserViewLayoutImpl() override;
 
-  // BrowserViewLayout overrides:
-  void Layout(views::View* host) override;
+ protected:
+  // BrowserViewLayoutImplCommon:
   gfx::Size GetMinimumSize(const views::View* host) const override;
-  int GetMinWebContentsWidthForTesting() const override;
-
- private:
-  // Hierarchical version of views::ProposedLayout that will allow us to run
-  // calculations without actually applying the layout.
-  struct ProposedLayout;
   ProposedLayout CalculateProposedLayout(
-      const BrowserLayoutParams& params) const;
-
-  // Lay out the top container of the browser. Returns the bounds calculated.
+      const BrowserLayoutParams& params) const override;
   gfx::Rect CalculateTopContainerLayout(ProposedLayout& layout,
                                         BrowserLayoutParams params,
-                                        bool needs_exclusion) const;
+                                        bool needs_exclusion) const override;
 
-  // When the top container is floating, it needs to have its layout applied
-  // separately.
-  void MaybeLayoutTopContainerOverlay(const BrowserLayoutParams& params);
-
-  // Applies additional clipping and other visual adjustments required to avoid
-  // rendering bugs.
-  void DoPostLayoutVisualAdjustments();
-
+ private:
   // Returns the minimum size of all toolbar-height content except the toolbar-
   // height side panel.
   gfx::Size GetMinimumMainAreaSize() const;
@@ -74,16 +58,6 @@ class BrowserViewLayoutImpl : public BrowserViewLayout {
     kMultiContents
   };
   TopSeparatorType GetTopSeparatorType() const;
-
-  // Gets the top of the dialog anchoring area, in local coordinates.
-  int GetDialogTop(const ProposedLayout& layout) const;
-
-  // Gets the bottom of the dialog anchoring area, in local coordinates.
-  int GetDialogBottom(const ProposedLayout& layout) const;
-
-  // BrowserViewLayout overrides:
-  gfx::Point GetDialogPosition(const gfx::Size& dialog_size) const override;
-  gfx::Size GetMaximumDialogSize() const override;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_LAYOUT_BROWSER_VIEW_LAYOUT_IMPL_H_

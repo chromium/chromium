@@ -102,6 +102,13 @@ struct BrowserLayoutParams {
   // Applies `insets` to the contents area, in-place.
   void Inset(const gfx::Insets& insets);
 
+  // Moves the top of the visual client area down to `top`.
+  void SetTop(int top);
+
+  // Insets by `amount` on either the `leading` or (if false) trailing edge, to
+  // a minimum of zero width.
+  void InsetHorizontal(int amount, bool leading);
+
   // Returns a new set of params after applying `insets` to the
   // `visual_client_area`; the coordinate system is not changed.
   [[nodiscard]] BrowserLayoutParams WithInsets(const gfx::Insets& insets) const;
