@@ -214,6 +214,8 @@ result.links = linksArray;
               completionCallback:
                   (base::OnceCallback<void(PageContextWrapperCallbackResponse)>)
                       completionCallback {
+  CHECK(webState);
+
   self = [super init];
   if (self) {
     _asyncTasksToComplete = 0;
@@ -664,6 +666,10 @@ result.links = linksArray;
 // Updates the snapshot for the given WebState, and executes the `barrier`
 // callback when finished.
 - (void)updateSnapshotWithBarrier:(base::RepeatingClosure)barrier {
+  if (!_webState) {
+    barrier.Run();
+    return;
+  }
   __weak PageContextWrapper* weakSelf = self;
   SnapshotTabHelper::FromWebState(_webState.get())
       ->UpdateSnapshotWithCallback(^(UIImage* image) {
@@ -681,6 +687,8 @@ result.links = linksArray;
   if (_webState) {
     SnapshotTabHelper::FromWebState(_webState.get())
         ->UpdateSnapshotWithCallback(callback);
+  } else {
+    callback(nil);
   }
 }
 

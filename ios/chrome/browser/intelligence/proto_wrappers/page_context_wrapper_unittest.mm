@@ -100,7 +100,7 @@ class FakeWebStateForFailureTest : public web::FakeWebState {
 
 struct PrintToStringParamName {
   std::string operator()(const testing::TestParamInfo<bool>& info) const {
-    return info.param ? "WithFeatureEnabled" : "WithFeatureDisabled";
+    return info.param ? "NewRefactoredVersion" : "OldVersion";
   }
 };
 
@@ -1182,6 +1182,81 @@ TEST_P(PageContextWrapperTest,
   const auto& iframe_b_text_node = iframe_b_root_node.children_nodes(0);
   EXPECT_EQ(iframe_b_text_node.content_attributes().text_data().text_content(),
             "Child frame cross-origin text B");
+}
+
+// Tests that the wrapper correctly handles a destroyed WebState during a forced
+// snapshot update.
+TEST_P(PageContextWrapperTest,
+       PopulatePageContext_WebStateDestroyedDuringForcedSnapshot) {
+  base::RunLoop run_loop;
+  PageContextWrapperCallbackResponse captured_response;
+
+  PageContextWrapper* wrapper = [[PageContextWrapper alloc]
+        initWithWebState:web_state()
+      completionCallback:base::BindOnce(
+                             [](base::RunLoop* run_loop,
+                                PageContextWrapperCallbackResponse*
+                                    out_response,
+                                PageContextWrapperCallbackResponse response) {
+                               *out_response = std::move(response);
+                               run_loop->Quit();
+                             },
+                             &run_loop, &captured_response)];
+
+  wrapper.shouldGetSnapshot = YES;
+  wrapper.shouldForceUpdateMissingSnapshots = YES;
+
+  // Simulate a snapshot failure, which will trigger a forced update.
+  snapshot_delegate_.canTakeSnapshot = NO;
+
+  // Make the web_state hidden to trigger the async snapshot retrieval path.
+  web_state()->WasHidden();
+
+  [wrapper populatePageContextFieldsAsync];
+
+  // Destroy the web state after the async work has started.
+  web_state_.reset();
+
+  run_loop.Run();
+
+  // Verify that the callback was called with a generic error because the
+  // WebState was destroyed during the operation.
+  ASSERT_FALSE(captured_response.has_value());
+  EXPECT_EQ(captured_response.error(), PageContextWrapperError::kGenericError);
+}
+
+// Tests that the wrapper correctly handles a destroyed WebState.
+TEST_P(PageContextWrapperTest, PopulatePageContext_WebStateDestroyed) {
+  base::RunLoop run_loop;
+  PageContextWrapperCallbackResponse captured_response;
+
+  PageContextWrapper* wrapper = [[PageContextWrapper alloc]
+        initWithWebState:web_state()
+      completionCallback:base::BindOnce(
+                             [](base::RunLoop* run_loop,
+                                PageContextWrapperCallbackResponse*
+                                    out_response,
+                                PageContextWrapperCallbackResponse response) {
+                               *out_response = std::move(response);
+                               run_loop->Quit();
+                             },
+                             &run_loop, &captured_response)];
+
+  wrapper.shouldGetSnapshot = YES;
+  wrapper.shouldGetAnnotatedPageContent = YES;
+  wrapper.shouldGetInnerText = YES;
+  wrapper.shouldGetFullPagePDF = YES;
+
+  // Destroy the web state after initializing the wrapper.
+  web_state_.reset();
+
+  [wrapper populatePageContextFieldsAsync];
+  run_loop.Run();
+
+  // Verify that the callback was called with a generic error because the
+  // WebState was destroyed.
+  ASSERT_FALSE(captured_response.has_value());
+  EXPECT_EQ(captured_response.error(), PageContextWrapperError::kGenericError);
 }
 
 INSTANTIATE_TEST_SUITE_P(,
