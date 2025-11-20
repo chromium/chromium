@@ -267,6 +267,17 @@ public class MultiWindowUtils implements ActivityStateListener {
         // Automotive is currently restricted to a single window.
         if (DeviceInfo.isAutomotive()) return false;
 
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow()
+                && activity instanceof ChromeTabbedActivity) {
+            @SupportedProfileType
+            int supportedProfileType = ((ChromeTabbedActivity) activity).getSupportedProfileType();
+            int instanceCount =
+                    supportedProfileType == SupportedProfileType.OFF_THE_RECORD
+                            ? getIncognitoInstanceCount(/* activeOnly= */ true)
+                            : getInstanceCountWithFallback(PersistedInstanceType.ACTIVE);
+            return instanceCount > 1;
+        }
+
         return getOpenInOtherWindowActivity(activity) != null;
     }
 

@@ -280,9 +280,14 @@ public abstract class MultiInstanceManager {
      * @param loadUrlParams The url to open.
      * @param parentTabId The ID of the parent tab.
      * @param preferNew Whether we should prioritize launching the tab in a new window.
+     * @param instanceType The {@link PersistedInstanceType} that will be used to determine the type
+     *     of window the URL can be opened in.
      */
-    public void openUrlInSelectedWindow(
-            LoadUrlParams loadUrlParams, int parentTabId, boolean preferNew) {
+    public void openUrlInOtherWindow(
+            LoadUrlParams loadUrlParams,
+            int parentTabId,
+            boolean preferNew,
+            @PersistedInstanceType int instanceType) {
         // not implemented
     }
 
@@ -428,24 +433,26 @@ public abstract class MultiInstanceManager {
 
     // The instance types are defined as bit flags, so they can be or-ed to reflect
     // more than one value. Or-ed values should be validated at points of access.
-    @IntDef({
-        PersistedInstanceType.ANY,
-        PersistedInstanceType.ACTIVE,
-        PersistedInstanceType.INACTIVE,
-        PersistedInstanceType.OFF_THE_RECORD
-    })
+    @IntDef(
+            flag = true,
+            value = {
+                PersistedInstanceType.ANY,
+                PersistedInstanceType.ACTIVE,
+                PersistedInstanceType.INACTIVE,
+                PersistedInstanceType.OFF_THE_RECORD
+            })
     @Retention(RetentionPolicy.SOURCE)
     public @interface PersistedInstanceType {
         // Represents any instance not bound by any specific type.
         int ANY = 0;
 
         // Represents an active instance that is associated with a live task.
-        int ACTIVE = 1;
+        int ACTIVE = 1 << 0;
 
         // Represents an inactive instance that is not associated with a live task.
-        int INACTIVE = 2;
+        int INACTIVE = 1 << 1;
 
         // Represents an instance for an incognito-only window.
-        int OFF_THE_RECORD = 4;
+        int OFF_THE_RECORD = 1 << 2;
     }
 }

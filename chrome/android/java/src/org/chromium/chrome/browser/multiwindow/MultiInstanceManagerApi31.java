@@ -278,13 +278,28 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
      *   <li>The target selector dialog will be presented to the user to pick a target window to
      *       open the URL in.
      * </ul>
+     *
+     * @param loadUrlParams The url to open.
+     * @param parentTabId The ID of the parent tab.
+     * @param preferNew Whether we should prioritize launching the tab in a new window.
+     * @param instanceType The {@link PersistedInstanceType} that will be used to determine the type
+     *     of window the URL can be opened in.
      */
     @Override
     // TODO (crbug.com/460800897): Update conditional logic for opening URLs in other windows.
-    public void openUrlInSelectedWindow(
-            LoadUrlParams loadUrlParams, int parentTabId, boolean preferNew) {
-        if (MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ANY) == 1
-                || preferNew) {
+    public void openUrlInOtherWindow(
+            LoadUrlParams loadUrlParams,
+            int parentTabId,
+            boolean preferNew,
+            @PersistedInstanceType int instanceType) {
+        boolean incognitoInstance = (instanceType & PersistedInstanceType.OFF_THE_RECORD) != 0;
+        boolean needsActive = (instanceType & PersistedInstanceType.ACTIVE) != 0;
+        // Check the number of instances that the url is able to move into.
+        int instanceCount =
+                incognitoInstance
+                        ? MultiWindowUtils.getIncognitoInstanceCount(/* activeOnly= */ needsActive)
+                        : MultiWindowUtils.getInstanceCountWithFallback(instanceType);
+        if (instanceCount <= 1 || preferNew) {
             if (preferNew
                     && mMaxInstances
                             <= MultiWindowUtils.getInstanceCountWithFallback(
@@ -296,8 +311,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
             }
 
             ChromeAsyncTabLauncher chromeAsyncTabLauncher =
-                    new ChromeAsyncTabLauncher(
-                            ((ChromeTabbedActivity) mActivity).isIncognitoWindow());
+                    new ChromeAsyncTabLauncher(incognitoInstance);
             // TODO(crbug.com/458761856): Determine the correct NewWindowAppSource instead of assume
             // its always NewWindowAppSource.OTHER.
             chromeAsyncTabLauncher.launchTabInOtherWindow(
@@ -329,7 +343,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                             NewWindowAppSource.OTHER,
                             preferNew);
                 },
-                getInstanceInfo(),
+                getInstanceInfo(instanceType),
                 R.string.contextmenu_open_in_other_window);
     }
 

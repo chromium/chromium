@@ -657,7 +657,7 @@ public class LocationBarMediatorTest {
                         .build());
 
         verify(mMultiInstanceManager)
-                .openUrlInSelectedWindow(mLoadUrlParamsCaptor.capture(), anyInt(), eq(true));
+                .openUrlInOtherWindow(mLoadUrlParamsCaptor.capture(), anyInt(), eq(true), anyInt());
         assertEquals(TEST_URL, mLoadUrlParamsCaptor.getValue().getUrl());
         assertEquals(
                 PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR,
