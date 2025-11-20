@@ -78,10 +78,7 @@ void ConnectMojoImpl(
   auto endpoint = [&]() -> std::optional<mojo::PlatformChannelEndpoint> {
     Microsoft::WRL::ComPtr<IUnknown> result =
         DialUpdateService(scope, is_internal_service);
-
-    // TODO(crbug.com/456542123): Fix `ipc_unittest.cc` to work if
-    // `DialUpdateService` fails even once.
-    if (tries >= 1 && !result) {
+    if (!result) {
       return std::nullopt;
     }
 

@@ -37,6 +37,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
 
+#if BUILDFLAG(IS_WIN)
+#include <wrl/module.h>
+#endif  // BUILDFLAG(IS_WIN)
+
 namespace updater {
 
 class UpdaterIPCTestCase : public testing::Test {
@@ -379,6 +383,12 @@ TEST_F(UpdaterIPCTestCase, AllRpcsComplete) {
             std::move(callback).Run(UpdateService::Result::kInstallFailed);
           });
 
+#if BUILDFLAG(IS_WIN)
+  ASSERT_HRESULT_SUCCEEDED(
+      Microsoft::WRL::Module<Microsoft::WRL::OutOfProc>::GetModule()
+          .RegisterObjects(L"ActiveUser"));
+#endif  // BUILDFLAG(IS_WIN)
+
   // Create a stub and wait for the endpoint to be created before launching the
   // client process.
   base::RunLoop run_loop;
@@ -391,6 +401,12 @@ TEST_F(UpdaterIPCTestCase, AllRpcsComplete) {
       kClientProcessName, base::GetMultiProcessTestChildBaseCommandLine(),
       /*options=*/{});
   EXPECT_EQ(WaitForProcessExit(child_process), 0);
+
+#if BUILDFLAG(IS_WIN)
+  EXPECT_HRESULT_SUCCEEDED(
+      Microsoft::WRL::Module<Microsoft::WRL::OutOfProc>::GetModule()
+          .UnregisterObjects());
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 MULTIPROCESS_TEST_MAIN(UpdateServiceClient) {
@@ -537,6 +553,12 @@ TEST_F(UpdaterIPCInternalTestCase, AllIpcsComplete) {
   EXPECT_CALL(on_ipc_callback, Run(FakeUpdateServiceInternal::FuncTag::kRun));
   EXPECT_CALL(on_ipc_callback, Run(FakeUpdateServiceInternal::FuncTag::kHello));
 
+#if BUILDFLAG(IS_WIN)
+  ASSERT_HRESULT_SUCCEEDED(
+      Microsoft::WRL::Module<Microsoft::WRL::OutOfProc>::GetModule()
+          .RegisterObjects(L"InternalUser"));
+#endif  // BUILDFLAG(IS_WIN)
+
   auto service_stub = std::make_unique<UpdateServiceInternalStub>(
       base::MakeRefCounted<FakeUpdateServiceInternal>(on_ipc_callback.Get()),
       UpdaterScope::kUser, base::DoNothing(), base::DoNothing());
@@ -545,6 +567,12 @@ TEST_F(UpdaterIPCInternalTestCase, AllIpcsComplete) {
       kClientProcessName, base::GetMultiProcessTestChildBaseCommandLine(),
       /*options=*/{});
   EXPECT_EQ(WaitForProcessExit(child_process), 0);
+
+#if BUILDFLAG(IS_WIN)
+  EXPECT_HRESULT_SUCCEEDED(
+      Microsoft::WRL::Module<Microsoft::WRL::OutOfProc>::GetModule()
+          .UnregisterObjects());
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 MULTIPROCESS_TEST_MAIN(UpdateServiceInternalClient) {

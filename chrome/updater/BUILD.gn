@@ -1007,6 +1007,12 @@ if (is_win || is_mac || is_linux) {
         "win/updater_tests.rc",
       ]
 
+      configs -= [ "//build/config/win:winver" ]
+      configs += [
+        "//chrome/updater/app/server/win:winver",
+        "//chrome/updater/win:wrl_strict",
+      ]
+
       deps += [
         "app/server/win:updater_idl",
         "app/server/win:updater_internal_idl",
