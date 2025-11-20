@@ -44,6 +44,7 @@ message LegionResponse {
 enum FeatureName {
   FEATURE_NAME_UNSPECIFIED = 0;
   FEATURE_NAME_DEMO_GEMINI_GENERATE_CONTENT = 3;
+  FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION = 700;
 }
 
 message GenerateContentRequest {
