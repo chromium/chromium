@@ -395,10 +395,7 @@ const NSInteger kErrorUserDismissedUpdateGPMPinFlow = -105;
 
   __weak __typeof(self) weakSelf = self;
   UIAlertAction* exportAction = [UIAlertAction
-      actionWithTitle:(CredentialExchangeEnabled()
-                           ? l10n_util::GetNSString(
-                                 IDS_IOS_EXPORT_PASSWORDS_AND_PASSKEYS)
-                           : l10n_util::GetNSString(IDS_IOS_EXPORT_PASSWORDS))
+      actionWithTitle:l10n_util::GetNSString(IDS_IOS_EXPORT_PASSWORDS)
                 style:UIAlertActionStyleDefault
               handler:^(UIAlertAction* action) {
                 [weakSelf onStartExportFlowConfirmed];
