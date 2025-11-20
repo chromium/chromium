@@ -224,4 +224,8 @@ bool IsImageContextMenuGeminiEntryPointEnabled();
 BASE_DECLARE_FEATURE(kGeminiEligibilityAblation);
 bool IsGeminiEligibilityAblationEnabled();
 
+// Feature flag for Gemini Live.
+BASE_DECLARE_FEATURE(kGeminiLive);
+bool IsGeminiLiveEnabled();
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_FEATURES_FEATURES_H_

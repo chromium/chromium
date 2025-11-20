@@ -5496,6 +5496,11 @@
     "expiry_milestone": 148
   },
   {
+    "name": "gemini-live",
+    "owners": [ "adamta@google.com", "bling-alchemy-eng@google.com" ],
+    "expiry_milestone": 155
+  },
+  {
     "name": "gemini-loading-state-redesign",
     "owners": [ "adamta@google.com", "bling-alchemy-eng@google.com" ],
     "expiry_milestone": 148

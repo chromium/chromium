@@ -389,6 +389,9 @@ extern const char kGeminiImmediateOverlayDescription[];
 extern const char kGeminiLatencyImprovementName[];
 extern const char kGeminiLatencyImprovementDescription[];
 
+extern const char kGeminiLiveName[];
+extern const char kGeminiLiveDescription[];
+
 extern const char kGeminiLoadingStateRedesignName[];
 extern const char kGeminiLoadingStateRedesignDescription[];
 

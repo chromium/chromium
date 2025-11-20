@@ -649,6 +649,9 @@ const char kGeminiLatencyImprovementName[] = "GeminiLatencyImprovement";
 const char kGeminiLatencyImprovementDescription[] =
     "Enables the latency improvements for Gemini.";
 
+const char kGeminiLiveName[] = "GeminiLive";
+const char kGeminiLiveDescription[] = "Enables Gemini Live.";
+
 const char kGeminiLoadingStateRedesignName[] = "GeminiLoadingStateRedesign";
 const char kGeminiLoadingStateRedesignDescription[] =
     "Enables the redesigned UI for the floaty's loading state.";

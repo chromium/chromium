@@ -285,3 +285,9 @@ BASE_FEATURE(kGeminiEligibilityAblation, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsGeminiEligibilityAblationEnabled() {
   return base::FeatureList::IsEnabled(kGeminiEligibilityAblation);
 }
+
+BASE_FEATURE(kGeminiLive, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsGeminiLiveEnabled() {
+  return base::FeatureList::IsEnabled(kGeminiLive);
+}
