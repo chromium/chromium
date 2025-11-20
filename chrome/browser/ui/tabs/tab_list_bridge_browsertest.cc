@@ -516,3 +516,47 @@ IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, AddTabsToGroup) {
   EXPECT_EQ("0g0 2g0 1g0",
             GetTabStripStateString(tab_strip_model, /*annotate_groups=*/true));
 }
+
+IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, Ungroup) {
+  // Create three tabs.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("about:blank"), WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  ASSERT_TRUE(tab_strip_model);
+
+  // Set the WebContents ID for all three tabs to their respective indices.
+  SetID(tab_strip_model->GetWebContentsAt(0), 0);
+  SetID(tab_strip_model->GetWebContentsAt(1), 1);
+  SetID(tab_strip_model->GetWebContentsAt(2), 2);
+
+  TabListInterface* tab_list_interface = TabListInterface::From(browser());
+  ASSERT_TRUE(tab_list_interface);
+
+  // Add the three tabs to a group.
+  auto group_id = tab_list_interface->AddTabsToGroup(
+      /*group_id=*/std::nullopt, {tab_list_interface->GetTab(0)->GetHandle(),
+                                  tab_list_interface->GetTab(1)->GetHandle(),
+                                  tab_list_interface->GetTab(2)->GetHandle()});
+  EXPECT_TRUE(group_id.has_value());
+  EXPECT_EQ("0g0 1g0 2g0",
+            GetTabStripStateString(tab_strip_model, /*annotate_groups=*/true));
+
+  // Ungroup the tab with WebContents ID 1. Note that the tab shifts to the
+  // right so the group can remain contiguous.
+  tab_list_interface->Ungroup({tab_list_interface->GetTab(1)->GetHandle()});
+  EXPECT_EQ("0g0 2g0 1",
+            GetTabStripStateString(tab_strip_model, /*annotate_groups=*/true));
+
+  // Ungroup the remaining two tabs.
+  tab_list_interface->Ungroup({tab_list_interface->GetTab(1)->GetHandle(),
+                               tab_list_interface->GetTab(0)->GetHandle()});
+  EXPECT_EQ("0 2 1",
+            GetTabStripStateString(tab_strip_model, /*annotate_groups=*/true));
+}

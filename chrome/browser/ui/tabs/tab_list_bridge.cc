@@ -184,7 +184,21 @@ std::optional<tab_groups::TabGroupId> TabListBridge::AddTabsToGroup(
   return tab_strip_->AddToNewGroup(std::move(tab_indices));
 }
 
-void TabListBridge::Ungroup(const std::set<tabs::TabHandle>& tabs) {}
+void TabListBridge::Ungroup(const std::set<tabs::TabHandle>& tabs) {
+  std::vector<int> tab_indices;
+  tab_indices.reserve(tabs.size());
+
+  for (const auto& tab_handle : tabs) {
+    auto index = tab_strip_->GetIndexOfTab(tab_handle.Get());
+    CHECK_NE(index, TabStripModel::kNoTab)
+        << "Trying to remove a non-existent tab from a group.";
+
+    tab_indices.push_back(index);
+  }
+
+  std::sort(tab_indices.begin(), tab_indices.end());
+  tab_strip_->RemoveFromGroup(tab_indices);
+}
 
 void TabListBridge::MoveGroupTo(tab_groups::TabGroupId group_id, int index) {}
 
