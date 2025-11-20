@@ -62,6 +62,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/table_layout.h"
+#include "ui/views/layout/table_layout_view.h"
 #include "ui/views/metadata/view_factory_internal.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -378,48 +379,7 @@ void ExtensionInstallDialogView::VisibilityChanged(views::View* starting_from,
 }
 
 void ExtensionInstallDialogView::AddedToWidget() {
-  auto title_container = std::make_unique<views::View>();
-
-  views::TableLayout* layout =
-      title_container->SetLayoutManager(std::make_unique<views::TableLayout>());
-  constexpr int icon_size = extension_misc::EXTENSION_ICON_SMALL;
-  layout->AddColumn(views::LayoutAlignment::kCenter,
-                    views::LayoutAlignment::kStart,
-                    views::TableLayout::kFixedSize,
-                    views::TableLayout::ColumnSize::kFixed, icon_size, 0);
-
-  // Equalize padding on the left and the right of the icon.
-  ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
-  layout->AddPaddingColumn(
-      views::TableLayout::kFixedSize,
-      provider->GetInsetsMetric(views::INSETS_DIALOG).left());
-  // Set a resize weight so that the title label will be expanded to the
-  // available width.
-  layout->AddColumn(views::LayoutAlignment::kStretch,
-                    views::LayoutAlignment::kStart, 1.0f,
-                    views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
-
-  // Scale down to icon size, but allow smaller icons (don't scale up).
-  const gfx::ImageSkia* image = prompt_->icon().ToImageSkia();
-  auto icon = std::make_unique<views::ImageView>();
-  gfx::Size size(image->width(), image->height());
-  size.SetToMin(gfx::Size(icon_size, icon_size));
-  icon->SetImageSize(size);
-  icon->SetImage(ui::ImageModel::FromImageSkia(*image));
-
-  layout->AddRows(1, views::TableLayout::kFixedSize);
-  title_container->AddChildView(std::move(icon));
-
-  if (prompt_->has_webstore_data()) {
-    std::unique_ptr<views::BoxLayoutView> webstore_data_container =
-        CreateWebstoreDataContainer();
-    title_container->AddChildView(std::move(webstore_data_container));
-  } else {
-    auto title_label = std::make_unique<TitleLabelWrapper>(
-        views::BubbleFrameView::CreateDefaultTitleLabel(title_));
-    title_container->AddChildView(std::move(title_label));
-  }
-
+  auto title_container = CreateTitleContainer();
   GetBubbleFrameView()->SetTitleView(std::move(title_container));
 
   picture_in_picture_input_protector_ =
@@ -630,8 +590,50 @@ ExtensionInstallDialogView::CreateExtensionInfoContainer(
       .Build();
 }
 
-std::unique_ptr<views::BoxLayoutView>
-ExtensionInstallDialogView::CreateWebstoreDataContainer() {
+std::unique_ptr<views::TableLayoutView>
+ExtensionInstallDialogView::CreateTitleContainer() {
+  ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
+  constexpr int icon_size = extension_misc::EXTENSION_ICON_SMALL;
+
+  auto title_container =
+      views::Builder<views::TableLayoutView>()
+          .AddColumn(views::LayoutAlignment::kCenter,
+                     views::LayoutAlignment::kStart,
+                     views::TableLayout::kFixedSize,
+                     views::TableLayout::ColumnSize::kFixed, icon_size, 0)
+          // Equalize padding on the left and the right of the icon.
+          .AddPaddingColumn(
+              views::TableLayout::kFixedSize,
+              provider->GetInsetsMetric(views::INSETS_DIALOG).left())
+          // Set a resize weight so that the message label will be expanded to
+          // the available width.
+          .AddColumn(views::LayoutAlignment::kStretch,
+                     views::LayoutAlignment::kStart, 1.0,
+                     views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+          .AddRows(1, views::TableLayout::kFixedSize, 0);
+
+  // Scale down to icon size, but allow smaller icons (don't scale up).
+  const gfx::ImageSkia* image = prompt_->icon().ToImageSkia();
+  gfx::Size size(image->width(), image->height());
+  size.SetToMin(gfx::Size(icon_size, icon_size));
+  title_container.AddChild(views::Builder<views::ImageView>()
+                               .SetImage(ui::ImageModel::FromImageSkia(*image))
+                               .SetImageSize(size));
+
+  if (prompt_->has_webstore_data()) {
+    title_container.AddChild(CreateWebstoreDataBuilder());
+  } else {
+    title_container.AddChild(
+        views::Builder<TitleLabelWrapper>(std::make_unique<TitleLabelWrapper>(
+            views::BubbleFrameView::CreateDefaultTitleLabel(
+                prompt_->GetDialogTitle()))));
+  }
+
+  return std::move(title_container).Build();
+}
+
+views::Builder<views::BoxLayoutView>
+ExtensionInstallDialogView::CreateWebstoreDataBuilder() {
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
 
   // Title
@@ -686,8 +688,7 @@ ExtensionInstallDialogView::CreateWebstoreDataContainer() {
       .SetBetweenChildSpacing(
           provider->GetDistanceMetric(DISTANCE_RELATED_CONTROL_VERTICAL_SMALL))
       .AddChildren(title_label_builder, rating_container_builder,
-                   user_count_builder)
-      .Build();
+                   user_count_builder);
 }
 
 void ExtensionInstallDialogView::ContentsChanged(
