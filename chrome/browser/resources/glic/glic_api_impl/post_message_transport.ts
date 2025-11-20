@@ -211,7 +211,7 @@ export class PostMessageRequestReceiver extends MessageLogger {
   constructor(
       private embeddedOrigin: string, senderId: string,
       private postMessageSender: PostMessageSender,
-      private handler: PostMessageRequestHandler, logPrefix: string) {
+      public handler: PostMessageRequestHandler, logPrefix: string) {
     super(senderId, logPrefix);
     const handlerFunction = this.onMessage.bind(this);
     window.addEventListener('message', handlerFunction);

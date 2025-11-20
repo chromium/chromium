@@ -9,7 +9,7 @@ import type {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
 
 import type {BrowserProxyImpl} from './browser_proxy.js';
 import type {Subscriber} from './glic_api/glic_api.js';
-import {DetailedWebClientState, GlicApiHost, WebClientState} from './glic_api_impl/glic_api_host.js';
+import {DetailedWebClientState, GlicApiCommunicator, GlicApiHost, WebClientState} from './glic_api_impl/glic_api_host.js';
 import type {ApiHostEmbedder} from './glic_api_impl/glic_api_host.js';
 import {ObservableValue} from './observable.js';
 import type {ObservableValueReadOnly} from './observable.js';
@@ -115,6 +115,7 @@ type ChromeEventFunctionType<T> =
 export class WebviewController {
   webview: chrome.webviewTag.WebView;
   private host?: GlicApiHost;
+  private communicator?: GlicApiCommunicator;
   private hostSubscriber?: Subscriber;
   private onDestroy: Array<() => void> = [];
   private eventTracker = new EventTracker();
@@ -212,6 +213,10 @@ export class WebviewController {
       this.host.destroy();
       this.host = undefined;
     }
+    if (this.communicator) {
+      this.communicator.destroy();
+      this.communicator = undefined;
+    }
     this.webClientState.assignAndSignal(webClientState);
   }
 
@@ -303,9 +308,10 @@ export class WebviewController {
 
     const origin = new URL(url).origin;
     if (this.webview.contentWindow && origin !== 'null') {
+      this.communicator =
+          new GlicApiCommunicator(origin, this.webview.contentWindow);
       this.host = new GlicApiHost(
-          this.browserProxy, this.webview.contentWindow, origin,
-          this.hostEmbedder);
+          this.browserProxy, this.communicator, this.hostEmbedder);
       this.hostSubscriber = this.host.getWebClientState().subscribe(state => {
         if (state === WebClientState.RESPONSIVE) {
           this.persistentState.onClientReady();
@@ -343,9 +349,7 @@ export class WebviewController {
   }
 
   private contentLoaded() {
-    if (this.host) {
-      this.host.contentLoaded();
-    }
+    this.communicator?.contentLoaded();
   }
 
   private onNewWindowEvent(event: chrome.webviewTag.NewWindowEvent) {

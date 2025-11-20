@@ -6,7 +6,7 @@
 // Communicates with the web client side in
 // glic_api_host/glic_api_impl.ts.
 
-import {assertNotReached} from '//resources/js/assert.js';
+import {assert, assertNotReached} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {TimeDelta} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
@@ -1346,6 +1346,99 @@ class HostMessageHandler implements HostMessageHandlerInterface {
   }
 }
 
+// Sets up communication with the client.
+// This is separate from GlicApiHost to allow us to detect the client page
+// before our host is really ready to connect.
+export class GlicApiCommunicator implements PostMessageRequestHandler {
+  private senderId = newSenderId();
+  readonly postMessageReceiver: PostMessageRequestReceiver;
+  readonly postMessageSender: PostMessageRequestSender;
+  private bootstrapPingIntervalId: number|undefined;
+  private loggingEnabled = loadTimeData.getBoolean('loggingEnabled');
+  private host?: GlicApiHost;
+  private hostPromise = Promise.withResolvers<GlicApiHost>();
+
+  constructor(
+      private embeddedOrigin: string, private windowProxy: WindowProxy) {
+    this.postMessageReceiver = new PostMessageRequestReceiver(
+        embeddedOrigin, this.senderId, windowProxy, this, 'glic_api_host');
+    this.postMessageReceiver.setLoggingEnabled(this.loggingEnabled);
+    this.postMessageSender = new PostMessageRequestSender(
+        windowProxy, embeddedOrigin, this.senderId, 'glic_api_host');
+    this.postMessageSender.setLoggingEnabled(this.loggingEnabled);
+
+    this.bootstrapPingIntervalId =
+        window.setInterval(this.bootstrapPing.bind(this), 50);
+    this.bootstrapPing();
+  }
+
+  destroy() {
+    window.clearInterval(this.bootstrapPingIntervalId);
+    this.postMessageReceiver.destroy();
+    this.postMessageSender.destroy();
+  }
+
+  // Should be called only once.
+  setHost(host: GlicApiHost) {
+    assert(!this.host);
+    this.host = host;
+    this.hostPromise.resolve(host);
+  }
+
+  // Called when the webview page is loaded.
+  contentLoaded() {
+    // Send the ping message one more time. At this point, the webview should
+    // be able to handle the message, if it hasn't already.
+    this.bootstrapPing();
+    this.stopBootstrapPing();
+  }
+
+  // PostMessageRequestHandler impl.
+  handleRawRequest(type: string, payload: any, extras: ResponseExtras):
+      Promise<{payload: any}|undefined> {
+    this.stopBootstrapPing();
+
+    if (type === 'glicBrowserWebClientCreated') {
+      return this.hostPromise.promise.then(h => {
+        // Pass message handling to the host, only after bootstrapping
+        // is done.
+        this.postMessageReceiver.handler = h;
+        return h.handleRawRequest(type, payload, extras);
+      });
+    } else {
+      return Promise.resolve(undefined);
+    }
+  }
+  // Just ignore message callbacks before the host is connected.
+  onRequestReceived(_type: string): void {}
+  onRequestHandlerException(_type: string): void {}
+  onRequestCompleted(_type: string): void {}
+
+  private stopBootstrapPing() {
+    if (this.bootstrapPingIntervalId !== undefined) {
+      window.clearInterval(this.bootstrapPingIntervalId);
+      this.bootstrapPingIntervalId = undefined;
+    }
+  }
+
+  // Sends a message to the webview which is required to initialize the client.
+  // Because we don't know when the client will be ready to receive this
+  // message, we start sending this every 50ms as soon as navigation commits on
+  // the webview, and stop sending this when the page loads, or we receive a
+  // request from the client.
+  private bootstrapPing() {
+    if (this.bootstrapPingIntervalId === undefined) {
+      return;
+    }
+    this.windowProxy.postMessage(
+        {
+          type: 'glic-bootstrap',
+          glicApiSource: loadTimeData.getString('glicGuestAPISource'),
+        },
+        this.embeddedOrigin);
+  }
+}
+
 /**
  * The host side of the Glic API.
  *
@@ -1353,14 +1446,11 @@ class HostMessageHandler implements HostMessageHandlerInterface {
  * the browser (over Mojo).
  */
 export class GlicApiHost implements PostMessageRequestHandler {
-  private senderId = newSenderId();
   private messageHandler: HostMessageHandler;
-  private readonly postMessageReceiver: PostMessageRequestReceiver;
   sender: GatedSender;
   private enableApiActivationGating = true;
   panelIsActive = false;
   private handler: WebClientHandlerRemote;
-  private bootstrapPingIntervalId: number|undefined;
   private webClientErrorTimer: OneShotTimer;
   private webClientState =
       ObservableValue.withValue<WebClientState>(WebClientState.UNINITIALIZED);
@@ -1376,15 +1466,9 @@ export class GlicApiHost implements PostMessageRequestHandler {
   captureRegionObserver?: CaptureRegionObserverImpl;
 
   constructor(
-      private browserProxy: BrowserProxy, private windowProxy: WindowProxy,
-      private embeddedOrigin: string, embedder: ApiHostEmbedder) {
-    this.postMessageReceiver = new PostMessageRequestReceiver(
-        embeddedOrigin, this.senderId, windowProxy, this, 'glic_api_host');
-    this.postMessageReceiver.setLoggingEnabled(this.loggingEnabled);
-    const ungatedSender = new PostMessageRequestSender(
-        windowProxy, embeddedOrigin, this.senderId, 'glic_api_host');
-    ungatedSender.setLoggingEnabled(this.loggingEnabled);
-    this.sender = new GatedSender(ungatedSender);
+      private browserProxy: BrowserProxy, communicator: GlicApiCommunicator,
+      embedder: ApiHostEmbedder) {
+    this.sender = new GatedSender(communicator.postMessageSender);
     this.handler = new WebClientHandlerRemote();
     this.handler.onConnectionError.addListener(() => {
       if (this.webClientState.getCurrentValue() !== WebClientState.ERROR) {
@@ -1402,19 +1486,14 @@ export class GlicApiHost implements PostMessageRequestHandler {
     this.webClientErrorTimer = new OneShotTimer(
         loadTimeData.getInteger('clientUnresponsiveUiMaxTimeMs'));
 
-    this.bootstrapPingIntervalId =
-        window.setInterval(this.bootstrapPing.bind(this), 50);
-    this.bootstrapPing();
+    communicator.setHost(this);
   }
 
   destroy() {
     this.webClientState = ObservableValue.withValue<WebClientState>(
         WebClientState.ERROR);  // Final state
-    window.clearInterval(this.bootstrapPingIntervalId);
     this.webClientErrorTimer.reset();
-    this.postMessageReceiver.destroy();
     this.messageHandler.destroy();
-    this.sender.destroy();
     this.pinCandidatesObserver?.disconnectFromSource();
     this.captureRegionObserver?.destroy();
   }
@@ -1441,14 +1520,6 @@ export class GlicApiHost implements PostMessageRequestHandler {
 
   shouldGateRequests(): boolean {
     return !this.panelIsActive && this.enableApiActivationGating;
-  }
-
-  // Called when the webview page is loaded.
-  contentLoaded() {
-    // Send the ping message one more time. At this point, the webview should
-    // be able to handle the message, if it hasn't already.
-    this.bootstrapPing();
-    this.stopBootstrapPing();
   }
 
   waitingOnPanelWillOpen() {
@@ -1509,30 +1580,6 @@ export class GlicApiHost implements PostMessageRequestHandler {
 
   getDetailedWebClientState(): DetailedWebClientState {
     return this.detailedWebClientState;
-  }
-
-  // Sends a message to the webview which is required to initialize the client.
-  // Because we don't know when the client will be ready to receive this
-  // message, we start sending this every 50ms as soon as navigation commits on
-  // the webview, and stop sending this when the page loads, or we receive a
-  // request from the client.
-  bootstrapPing() {
-    if (this.bootstrapPingIntervalId === undefined) {
-      return;
-    }
-    this.windowProxy.postMessage(
-        {
-          type: 'glic-bootstrap',
-          glicApiSource: loadTimeData.getString('glicGuestAPISource'),
-        },
-        this.embeddedOrigin);
-  }
-
-  stopBootstrapPing() {
-    if (this.bootstrapPingIntervalId !== undefined) {
-      window.clearInterval(this.bootstrapPingIntervalId);
-      this.bootstrapPingIntervalId = undefined;
-    }
   }
 
   async responsiveCheckLoop() {
@@ -1670,7 +1717,6 @@ export class GlicApiHost implements PostMessageRequestHandler {
       this.detailedWebClientState =
           DetailedWebClientState.WEB_CLIENT_NOT_CREATED;
     }
-    this.stopBootstrapPing();
 
     let response;
     if (this.shouldGateRequests() &&
@@ -1782,10 +1828,6 @@ export class GatedSender {
   // This is an escape hatch which should be used sparingly.
   getRawSender(): PostMessageRequestSender {
     return this.sender;
-  }
-
-  destroy() {
-    this.sender.destroy();
   }
 
   setGating(shouldGateRequests: boolean): void {
