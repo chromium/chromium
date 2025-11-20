@@ -228,7 +228,8 @@ void GeminiPrototypeOmniboxServiceIOS::OnPrefetchPageContextRetrieved(
 
 void GeminiPrototypeOmniboxServiceIOS::OnPrefetchSuggestionReceived(
     const GURL& url,
-    const std::string& response_string) {
+    const std::string& response_string,
+    mojo_base::ProtoWrapper logging_data) {
   std::u16string suggestion = base::UTF8ToUTF16(response_string);
   cached_suggestion_url_ = url;
   cached_suggestion_ = suggestion;

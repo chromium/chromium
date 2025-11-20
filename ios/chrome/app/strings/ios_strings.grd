@@ -374,6 +374,9 @@
       <message name="IDS_IOS_AI_PROTOTYPING_MODEL_PICKER" translateable="false" desc="Model picker button text for the AI prototyping menu [Length: unlimited].">
         Choose A Model (unspecified uses the default)
       </message>
+      <message name="IDS_IOS_AI_PROTOTYPING_MQLS_SWITCH" translateable="false" desc="Switch indicating whether logs is uploaded to Chrome Model Quality Logging Service (MQLS) server [Length: unlimited].">
+        Upload to MQLS
+      </message>
       <message name="IDS_IOS_AI_PROTOTYPING_ON_DEVICE_SUBMIT" translateable="false" desc="On device submit button text for AI prototyping menu [Length: unlimited].">
         On Device Submit
       </message>

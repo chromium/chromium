@@ -74,7 +74,8 @@ class GeminiPrototypeOmniboxServiceIOS : public GeminiPrototypeOmniboxService,
 
   // Callback for when the prefetched suggestion has been received.
   void OnPrefetchSuggestionReceived(const GURL& url,
-                                    const std::string& response_string);
+                                    const std::string& response_string,
+                                    mojo_base::ProtoWrapper logging_data);
 
   raw_ptr<ProfileIOS> profile_;
   // The active WebState this service is observing.

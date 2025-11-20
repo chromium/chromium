@@ -134,6 +134,12 @@ class OptimizationGuideService
     return optimization_guide_logger_.get();
   }
 
+  // Getter for model quality logs uploader service.
+  optimization_guide::ModelQualityLogsUploaderService*
+  GetModelQualityLogsUploaderService() {
+    return model_quality_logs_uploader_service_.get();
+  }
+
   // Adds hints for a URL with provided metadata to the optimization guide. For
   // testing purposes only. This will flush any callbacks for `url` that were
   // registered via `CanApplyOptimization`. If no applicable callbacks were

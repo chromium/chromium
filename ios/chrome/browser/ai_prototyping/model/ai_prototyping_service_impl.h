@@ -48,8 +48,16 @@ class AIPrototypingServiceImpl : public mojom::AIPrototypingService {
   std::unique_ptr<optimization_guide::OnDeviceSession> on_device_session_;
 #endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 
-  // Handles the response from a server-hosted query execution.
-  std::string OnServerModelExecuteResponse(
+  // Model execution completed callback.
+  void OnExecuteModelWithLoggingCallback(
+      ExecuteServerQueryCallback query_callback,
+      optimization_guide::OptimizationGuideModelExecutionResult
+          execution_result,
+      std::unique_ptr<optimization_guide::proto::BlingPrototypingLoggingData>
+          logging_data);
+
+  // Processes the response from a server-hosted query execution.
+  std::string ProcessServerModelExecuteResponse(
       optimization_guide::OptimizationGuideModelExecutionResult result);
 
   // Service used to execute LLM queries.

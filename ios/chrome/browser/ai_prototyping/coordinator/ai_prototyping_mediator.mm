@@ -76,6 +76,9 @@
 
   // The freeform feature's PageContext wrapper.
   PageContextWrapper* _pageContextWrapper;
+
+  // Whether to upload data to MQLS.
+  BOOL _enableMQLSUpload;
 }
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
@@ -133,10 +136,13 @@
 - (void)executeFreeformServerQuery:(NSString*)query
                 systemInstructions:(NSString*)systemInstructions
                 includePageContext:(BOOL)includePageContext
+                      uploadToMQLS:(BOOL)uploadToMQLS
                        temperature:(float)temperature
                              model:
                                  (optimization_guide::proto::
                                       BlingPrototypingRequest_ModelEnum)model {
+  _enableMQLSUpload = uploadToMQLS;
+
   optimization_guide::proto::BlingPrototypingRequest request;
 
   // Set the whitespace-trimmed query on the request.
@@ -161,14 +167,14 @@
   request.set_model_enum(model);
 
   __weak __typeof(self) weakSelf = self;
-  base::OnceCallback<void(const std::string&)> handle_response_callback =
-      base::BindOnce(^void(const std::string& response_string) {
-        if (weakSelf) {
-          [weakSelf.consumer
-              updateQueryResult:base::SysUTF8ToNSString(response_string)
-                     forFeature:AIPrototypingFeature::kFreeform];
-        }
-      });
+  base::OnceCallback<void(const std::string&, ::mojo_base::ProtoWrapper)>
+      handle_response_callback =
+          base::BindOnce(^void(const std::string& response_string,
+                               ::mojo_base::ProtoWrapper logging_data) {
+            [weakSelf
+                handleFreeformServerQueryResponse:std::move(response_string)
+                                  withLoggingData:std::move(logging_data)];
+          });
 
   // Execute the query immediately and early return if `includePageContext` is
   // false.
@@ -323,17 +329,29 @@
   freeform_request.set_allocated_page_context(page_context.release());
 
   __weak __typeof(self) weakSelf = self;
-  base::OnceCallback<void(const std::string&)> handle_response_callback =
-      base::BindOnce(^void(const std::string& response_string) {
-        [weakSelf.consumer
-            updateQueryResult:base::SysUTF8ToNSString(response_string)
-                   forFeature:AIPrototypingFeature::kFreeform];
-      });
+  base::OnceCallback<void(const std::string&, ::mojo_base::ProtoWrapper)>
+      handle_response_callback =
+          base::BindOnce(^void(const std::string& response_string,
+                               ::mojo_base::ProtoWrapper logging_data) {
+            [weakSelf
+                handleFreeformServerQueryResponse:std::move(response_string)
+                                  withLoggingData:std::move(logging_data)];
+          });
 
   ::mojo_base::ProtoWrapper proto_wrapper =
       mojo_base::ProtoWrapper(freeform_request);
   _ai_prototyping_service->ExecuteServerQuery(
       std::move(proto_wrapper), std::move(handle_response_callback));
+}
+
+- (void)handleFreeformServerQueryResponse:(const std::string&)response_string
+                          withLoggingData:
+                              (::mojo_base::ProtoWrapper)logging_data {
+  [self.consumer updateQueryResult:base::SysUTF8ToNSString(response_string)
+                        forFeature:AIPrototypingFeature::kFreeform];
+  if (_enableMQLSUpload) {
+    [self uploadLoggingDataToMQLS:std::move(logging_data)];
+  }
 }
 
 // Handles the Enhanced Calendar by outputting the response proto or an error
@@ -438,6 +456,35 @@
   }
 
   return result;
+}
+
+- (void)uploadLoggingDataToMQLS:(::mojo_base::ProtoWrapper)logging_data {
+  // If MQLS toggle is not enabled, ignore the data.
+  OptimizationGuideService* optimization_guide_service =
+      OptimizationGuideServiceFactory::GetForProfile(
+          ProfileIOS::FromBrowserState(
+              _webStateList->GetActiveWebState()->GetBrowserState()));
+  if (!optimization_guide_service) {
+    return;
+  }
+  auto* mqls_service =
+      optimization_guide_service->GetModelQualityLogsUploaderService();
+  if (!mqls_service) {
+    return;
+  }
+  if (!logging_data.As<optimization_guide::proto::BlingPrototypingLoggingData>()
+           .has_value()) {
+    return;
+  }
+  optimization_guide::proto::BlingPrototypingLoggingData proto_logging_data =
+      logging_data.As<optimization_guide::proto::BlingPrototypingLoggingData>()
+          .value();
+  std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry =
+      std::make_unique<optimization_guide::ModelQualityLogEntry>(
+          mqls_service->GetWeakPtr());
+  *log_entry->log_ai_data_request()->mutable_bling_prototyping() =
+      proto_logging_data;
+  optimization_guide::ModelQualityLogEntry::Upload(std::move(log_entry));
 }
 
 @end

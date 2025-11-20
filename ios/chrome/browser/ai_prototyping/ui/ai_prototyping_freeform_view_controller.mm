@@ -28,6 +28,7 @@ using optimization_guide::proto::BlingPrototypingRequest_ModelEnum_Name;
   UITextField* _systemInstructionsField;
   UITextField* _queryField;
   UISwitch* _includePageContextSwitch;
+  UISwitch* _uploadMQLSSwitch;
   UISlider* _temperatureSlider;
   UILabel* _temperatureLabel;
   UITextView* _responseContainer;
@@ -96,6 +97,24 @@ using optimization_guide::proto::BlingPrototypingRequest_ModelEnum_Name;
   switchContainer.axis = UILayoutConstraintAxisHorizontal;
   switchContainer.spacing = kButtonStackViewSpacing;
   switchContainer.alignment = UIStackViewAlignmentCenter;
+
+  // MQLS upload switch.
+  _uploadMQLSSwitch = [[UISwitch alloc] init];
+  _uploadMQLSSwitch.translatesAutoresizingMaskIntoConstraints = NO;
+  _uploadMQLSSwitch.on = NO;
+
+  UILabel* uploadMQLSSwitchLabel = [[UILabel alloc] init];
+  uploadMQLSSwitchLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  uploadMQLSSwitchLabel.numberOfLines = 0;
+  uploadMQLSSwitchLabel.text =
+      l10n_util::GetNSString(IDS_IOS_AI_PROTOTYPING_MQLS_SWITCH);
+
+  UIStackView* uploadMQLSSwitchContainer = [[UIStackView alloc]
+      initWithArrangedSubviews:@[ _uploadMQLSSwitch, uploadMQLSSwitchLabel ]];
+  uploadMQLSSwitchContainer.translatesAutoresizingMaskIntoConstraints = NO;
+  uploadMQLSSwitchContainer.axis = UILayoutConstraintAxisHorizontal;
+  uploadMQLSSwitchContainer.spacing = kButtonStackViewSpacing;
+  uploadMQLSSwitchContainer.alignment = UIStackViewAlignmentCenter;
 
   // Temperature slider.
   _temperatureSlider = [[UISlider alloc] init];
@@ -192,8 +211,8 @@ using optimization_guide::proto::BlingPrototypingRequest_ModelEnum_Name;
 
   UIStackView* stackView = [[UIStackView alloc] initWithArrangedSubviews:@[
     label, systemInstructionsFieldContainer, queryFieldContainer,
-    _modelPickerButton, switchContainer, temperatureContainer, buttonStackView,
-    _responseContainer
+    _modelPickerButton, switchContainer, uploadMQLSSwitchContainer,
+    temperatureContainer, buttonStackView, _responseContainer
   ]];
   stackView.translatesAutoresizingMaskIntoConstraints = NO;
   stackView.axis = UILayoutConstraintAxisVertical;
@@ -244,6 +263,7 @@ using optimization_guide::proto::BlingPrototypingRequest_ModelEnum_Name;
   [self.mutator executeFreeformServerQuery:_queryField.text
                         systemInstructions:_systemInstructionsField.text
                         includePageContext:_includePageContextSwitch.isOn
+                              uploadToMQLS:_uploadMQLSSwitch.isOn
                                temperature:_temperatureSlider.value
                                      model:_currentModelPicked];
 }
