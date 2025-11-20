@@ -435,7 +435,12 @@ int UpdaterMain(int argc, const char* const* argv) {
           << ", System uptime (seconds): "
           << base::SysInfo::Uptime().InSeconds()
           << ", parent pid: " << parent_pid;
+
 #if BUILDFLAG(IS_WIN)
+  const HResultOr<std::wstring> cmd_line = GetCommandLineForPid(parent_pid);
+  if (cmd_line.has_value()) {
+    VLOG(1) << "Parent process command line: " << *cmd_line;
+  }
   EnsureEnoughMemory();
   RecordCpuFeaturesForCrash();  // TODO(crbug.com/441591130): remove when fixed.
 #endif                          // IS_WIN
