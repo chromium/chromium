@@ -30,7 +30,7 @@ class ContextSharingBorderViewController {
   // Returns whether the currently shown UI is in side panel mode.
   // For contextual tasks, it will be always true. For glic, it will return
   // GlicEnabling::IsMultiInstanceEnabled.
-  virtual bool IsMultiInstanceMode() const = 0;
+  virtual bool IsSidePanelOpen() const = 0;
 };
 
 }  // namespace glic

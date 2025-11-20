@@ -50,7 +50,7 @@ class ContextSharingBorderViewControllerImpl
                   ContentsWebView* contents_web_view,
                   Browser* browser) override;
   ContentsWebView* contents_web_view() override;
-  bool IsMultiInstanceMode() const override;
+  bool IsSidePanelOpen() const override;
 
  private:
   // Called when the focused tab changes with the focused tab data object.

@@ -285,8 +285,7 @@ gfx::RoundedCornersF ContextSharingBorderView::GetContentBorderRadius() const {
   // If GlicMultiInstance is enabled, have all corners be rounded.
   // TODO(https://crbug.com/457452232): Update rounded corner radiuses for
   // different OS's.
-  // TODO(crbug.com/462446138): Rename this to IsSidePanelOpen.
-  if (controller_->IsMultiInstanceMode()) {
+  if (controller_->IsSidePanelOpen()) {
     return gfx::RoundedCornersF(kCornerRadius, kCornerRadius, kCornerRadius,
                                 kCornerRadius);
   }
