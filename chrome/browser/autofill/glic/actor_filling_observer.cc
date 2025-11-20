@@ -34,19 +34,11 @@ ActorFillingObserver::ActorFillingObserver(
   // If `remaining_field_ids_` is empty, this will stop the observation and
   // execute `callback_`.
   FinalizeIfComplete();
+  UpdateTimeout();
 }
 
 ActorFillingObserver::~ActorFillingObserver() {
-  if (callback_) {
-    // TODO(crbug.com/455788947): Consider introducing a different type of
-    // error.
-    // TODO(crbug.com/455788947): Consider not sending an error if some
-    // fields were filled.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback_),
-                       base::unexpected(ActorFormFillingError::kNoForm)));
-  }
+  Reset();
 }
 
 std::optional<bool> ActorFillingObserver::IsCreditCardFetchOngoing() const {
@@ -77,14 +69,17 @@ void ActorFillingObserver::OnFillOrPreviewForm(
 void ActorFillingObserver::OnCreditCardFetchStarted(CreditCardAccessManager&,
                                                     const CreditCard&) {
   ++ongoing_credit_card_fetches_;
+  UpdateTimeout();
 }
 void ActorFillingObserver::OnCreditCardFetchSucceeded(CreditCardAccessManager&,
                                                       const CreditCard&) {
   DecreaseOngoingCreditCardFetches();
+  UpdateTimeout();
 }
 void ActorFillingObserver::OnCreditCardFetchFailed(CreditCardAccessManager&,
                                                    const CreditCard*) {
   DecreaseOngoingCreditCardFetches();
+  UpdateTimeout();
 }
 
 void ActorFillingObserver::DecreaseOngoingCreditCardFetches() {
@@ -103,8 +98,35 @@ void ActorFillingObserver::FinalizeIfComplete() {
   }
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback_), base::ok()));
+  Reset();
+}
+
+void ActorFillingObserver::Reset() {
   autofill_managers_observation_.Reset();
   credit_card_access_managers_observation_.Reset();
+  ongoing_credit_card_fetches_ = 0;
+  if (callback_) {
+    // TODO(crbug.com/455788947): Consider introducing a different type of
+    // error.
+    // TODO(crbug.com/455788947): Consider not sending an error if some
+    // fields were filled.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback_),
+                       base::unexpected(ActorFormFillingError::kNoForm)));
+  }
+}
+
+void ActorFillingObserver::UpdateTimeout() {
+  if (IsCreditCardFetchOngoing().value_or(false)) {
+    timeout_timer_.Stop();
+    return;
+  }
+  if (!timeout_timer_.IsRunning()) {
+    timeout_timer_.Start(FROM_HERE, GetFillingTimeout(),
+                         base::BindRepeating(&ActorFillingObserver::Reset,
+                                             base::Unretained(this)));
+  }
 }
 
 }  // namespace autofill

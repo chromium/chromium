@@ -419,16 +419,14 @@ void ActorFormFillingServiceImpl::FillSuggestions(
     }
   }
 
-  // TODO(crbug.com/455788947): Adjust time-out for filling that requires
-  // re-auth.
-  constexpr base::TimeDelta kFillingTimeout = base::Seconds(3);
-  // Create a filling observer and keep it around for `kFillingTimeout`.
+  // Create a filling observer and keep it around until the maximum timeout is
+  // reached.
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce([](auto) {}, std::make_unique<ActorFillingObserver>(
                                       autofill_manager.client(), all_field_ids,
                                       std::move(callback))),
-      kFillingTimeout);
+      ActorFillingObserver::GetMaximumTimeout());
 
   // Fill.
   for (const auto [selection, form_datas_for_suggestion] :

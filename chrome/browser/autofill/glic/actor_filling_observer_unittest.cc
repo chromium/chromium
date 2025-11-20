@@ -7,6 +7,7 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
@@ -53,8 +54,13 @@ class ActorFillingObserverTest : public ::testing::Test,
     return *autofill_manager(index).GetCreditCardAccessManager();
   }
 
+  void FastForwardBy(base::TimeDelta delta) {
+    task_environment_.FastForwardBy(delta);
+  }
+
  private:
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   test::AutofillUnitTestEnvironment autofill_unit_test_environment_;
 };
 
@@ -182,6 +188,66 @@ TEST_F(ActorFillingObserverTest, CreditCardFetch) {
       &AutofillManager::Observer::OnFillOrPreviewForm, MakeFormGlobalId(),
       mojom::ActionPersistence::kFill, field_ids, AddProfile());
   EXPECT_EQ(observer.IsCreditCardFetchOngoing(), std::nullopt);
+}
+
+// Tests that the filling observer times out after `GetFillingTimeout()` if no
+// credit card fetch is ongoing.
+TEST_F(ActorFillingObserverTest, FillingTimeout) {
+  Future future;
+
+  ActorFillingObserver observer(
+      autofill_client(),
+      /*field_ids=*/base::span_from_ref(MakeFieldGlobalId()),
+      future.GetCallback());
+
+  ASSERT_GT(ActorFillingObserver::GetFillingTimeout(), base::Milliseconds(1));
+  EXPECT_FALSE(future.IsReady());
+
+  FastForwardBy(ActorFillingObserver::GetFillingTimeout() -
+                base::Milliseconds(1));
+  EXPECT_FALSE(future.IsReady());
+
+  FastForwardBy(base::Milliseconds(1));
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_THAT(future.Get(), ErrorIs(ActorFormFillingError::kNoForm));
+}
+
+// Tests that no timeout happens while a credit card fetch is ongoing. After
+// fetch success/failure, the timeout is restarted.
+TEST_F(ActorFillingObserverTest, FillingTimeoutWithCreditCardFetch) {
+  CreateAutofillDriver();
+
+  using Observer = CreditCardAccessManager::Observer;
+  Future future;
+  CreditCard card;
+  ActorFillingObserver observer(
+      autofill_client(),
+      /*field_ids=*/base::span_from_ref(MakeFieldGlobalId()),
+      future.GetCallback());
+
+  ASSERT_GT(ActorFillingObserver::GetFillingTimeout(), base::Milliseconds(1));
+  FastForwardBy(ActorFillingObserver::GetFillingTimeout() -
+                base::Milliseconds(1));
+  EXPECT_FALSE(future.IsReady());
+
+  // The start of the fetch stops all timeouts.
+  test_api(credit_card_access_manager(1))
+      .NotifyObservers(&Observer::OnCreditCardFetchStarted, card);
+  EXPECT_FALSE(future.IsReady());
+  FastForwardBy(base::Milliseconds(1));
+  EXPECT_FALSE(future.IsReady());
+  FastForwardBy(2 * ActorFillingObserver::GetFillingTimeout());
+  EXPECT_FALSE(future.IsReady());
+
+  // The fetch completion (successful or not) restarts the timer.
+  test_api(credit_card_access_manager(1))
+      .NotifyObservers(&Observer::OnCreditCardFetchFailed, &card);
+  FastForwardBy(ActorFillingObserver::GetFillingTimeout() -
+                base::Milliseconds(1));
+  EXPECT_FALSE(future.IsReady());
+  FastForwardBy(base::Milliseconds(1));
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_THAT(future.Get(), ErrorIs(ActorFormFillingError::kNoForm));
 }
 
 }  // namespace

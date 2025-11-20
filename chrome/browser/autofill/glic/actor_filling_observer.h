@@ -9,6 +9,8 @@
 
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "base/types/expected.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
@@ -40,6 +42,13 @@ class ActorFillingObserver final : public AutofillManager::Observer,
                        Callback callback);
   ~ActorFillingObserver() override;
 
+  // The maximum amount of time to wait for a fill to happen if no credit card
+  // fetch is ongoing.
+  static base::TimeDelta GetFillingTimeout() { return base::Seconds(2); }
+
+  // The maximum amount of time for which this filling observer should exist.
+  static base::TimeDelta GetMaximumTimeout() { return base::Minutes(1); }
+
   // Returns whether there is least one credit card fetch that was started and
   // that has not yet finished while this observer is active.
   // Returns `std::nullopt` if the observer if all fills have completed and
@@ -69,6 +78,16 @@ class ActorFillingObserver final : public AutofillManager::Observer,
   // remaining field ids. Otherwise does nothing.
   void FinalizeIfComplete();
 
+  // Stops all observations and runs `callback_` with an error if it is not
+  // null.
+  void Reset();
+
+  // Updates `timeout_timer_` as follows:
+  // - If a credit card fetch is ongoing, stops the timer.
+  // - Otherwise starts a timer for resetting `this` (unless one is already
+  // running).
+  void UpdateTimeout();
+
   // The fields that have not yet been filled.
   absl::flat_hash_set<FieldGlobalId> remaining_field_ids_;
 
@@ -84,6 +103,9 @@ class ActorFillingObserver final : public AutofillManager::Observer,
 
   // The number of currently ongoing credit card fetches.
   size_t ongoing_credit_card_fetches_ = 0;
+
+  // A timer that resets `this` when triggered.
+  base::OneShotTimer timeout_timer_;
 };
 
 }  // namespace autofill

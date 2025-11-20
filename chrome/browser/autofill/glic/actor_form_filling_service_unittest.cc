@@ -8,8 +8,10 @@
 
 #include "base/check_deref.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
+#include "chrome/browser/autofill/glic/actor_filling_observer.h"
 #include "chrome/browser/autofill/glic/actor_form_filling_service_impl.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
@@ -21,6 +23,9 @@
 #include "components/autofill/content/browser/test_content_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/glic/actor_form_filling_types.h"
+#include "components/autofill/core/browser/payments/credit_card_access_manager.h"
+#include "components/autofill/core/browser/payments/credit_card_access_manager_test_api.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
@@ -130,9 +135,56 @@ class RecordingTestContentAutofillDriver : public TestContentAutofillDriver {
   absl::flat_hash_map<FieldGlobalId, std::u16string> last_filled_values_;
 };
 
+// A simple `CreditCardAccessManager` test class that allows intercepting the
+// `FetchCreditCard` request.
+class TestCreditCardAccessManager : public CreditCardAccessManager {
+ public:
+  explicit TestCreditCardAccessManager(BrowserAutofillManager* manager)
+      : CreditCardAccessManager(manager) {}
+  ~TestCreditCardAccessManager() override = default;
+
+  void PrepareToFetchCreditCard() override {}
+
+  void FetchCreditCard(const CreditCard*,
+                       OnCreditCardFetchedCallback callback) override {
+    callback_ = std::move(callback);
+  }
+
+  [[nodiscard]] bool RunCreditCardFetchedCallback(const CreditCard& card) {
+    if (!callback_) {
+      return false;
+    }
+    std::move(callback_).Run(card);
+    return true;
+  }
+
+ private:
+  OnCreditCardFetchedCallback callback_;
+};
+
+// A `TestBrowserAutofillManager` with a custom `CreditCardAccessManager`.
+class TestBrowserAutofillManagerWithTestCCAM
+    : public TestBrowserAutofillManager {
+ public:
+  explicit TestBrowserAutofillManagerWithTestCCAM(AutofillDriver* driver)
+      : TestBrowserAutofillManager(driver) {
+    test_api(*this).set_credit_card_access_manager(
+        std::make_unique<TestCreditCardAccessManager>(this));
+  }
+  ~TestBrowserAutofillManagerWithTestCCAM() override = default;
+
+  void Reset() override {
+    TestBrowserAutofillManager::Reset();
+    test_api(*this).set_credit_card_access_manager(
+        std::make_unique<TestCreditCardAccessManager>(this));
+  }
+};
+
 class ActorFormFillingServiceTest : public ChromeRenderViewHostTestHarness {
  public:
-  ActorFormFillingServiceTest() = default;
+  ActorFormFillingServiceTest()
+      : ChromeRenderViewHostTestHarness(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
@@ -140,8 +192,6 @@ class ActorFormFillingServiceTest : public ChromeRenderViewHostTestHarness {
     NavigateAndCommit(GURL("about:blank"));
     client().GetPersonalDataManager().address_data_manager().AddProfile(
         GetProfile1());
-    client().GetPersonalDataManager().payments_data_manager().AddCreditCard(
-        GetCreditCard1());
   }
 
   FormData SeeForm(test::FormDescription form_description) {
@@ -152,8 +202,18 @@ class ActorFormFillingServiceTest : public ChromeRenderViewHostTestHarness {
   }
 
  protected:
-  AutofillClient& client() {
+  TestContentAutofillClient& client() {
     return CHECK_DEREF(autofill_client_injector_[web_contents()]);
+  }
+  TestCreditCardAccessManager& credit_card_access_manager() {
+    return CHECK_DEREF(static_cast<TestCreditCardAccessManager*>(
+        manager().GetCreditCardAccessManager()));
+  }
+  payments::TestPaymentsAutofillClient& payments_client() {
+    return CHECK_DEREF(client().GetPaymentsAutofillClient());
+  }
+  PaymentsDataManager& payments_data_manager() {
+    return client().GetPersonalDataManager().payments_data_manager();
   }
   RecordingTestContentAutofillDriver& driver() {
     return CHECK_DEREF(autofill_driver_injector_[web_contents()]);
@@ -164,11 +224,8 @@ class ActorFormFillingServiceTest : public ChromeRenderViewHostTestHarness {
   ActorFormFillingService& service() { return service_; }
   tabs::TabInterface& tab() { return mock_tab; }
 
-  // Returns the test data available in `AddressDataManager`.
+  // Returns an address that is available in `AddressDataManager`.
   AutofillProfile GetProfile1() { return test::GetFullProfile(); }
-
-  // Returns the test data available in `PaymentsDataManager`.
-  CreditCard GetCreditCard1() { return test::GetCreditCard(); }
 
  private:
   test::AutofillUnitTestEnvironment autofill_test_environment_;
@@ -177,7 +234,7 @@ class ActorFormFillingServiceTest : public ChromeRenderViewHostTestHarness {
       autofill_client_injector_;
   TestAutofillDriverInjector<RecordingTestContentAutofillDriver>
       autofill_driver_injector_;
-  TestAutofillManagerInjector<TestBrowserAutofillManager>
+  TestAutofillManagerInjector<TestBrowserAutofillManagerWithTestCCAM>
       autofill_manager_injector_;
   ActorFormFillingServiceImpl service_;
 };
@@ -276,6 +333,8 @@ TEST_F(ActorFormFillingServiceTest, SplitAddressForm) {
 // Tests that a suggestion generation and filling work with simple credit card
 // forms.
 TEST_F(ActorFormFillingServiceTest, SimpleCreditCardForm) {
+  const CreditCard card = test::GetCreditCard();
+  payments_data_manager().AddCreditCard(card);
   FormData form =
       SeeForm({.fields = {{.server_type = CREDIT_CARD_NAME_FULL},
                           {.server_type = CREDIT_CARD_NUMBER},
@@ -295,11 +354,103 @@ TEST_F(ActorFormFillingServiceTest, SimpleCreditCardForm) {
   service().FillSuggestions(
       tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
       fill_future.GetCallback());
+  ASSERT_TRUE(credit_card_access_manager().RunCreditCardFetchedCallback(card));
   EXPECT_THAT(fill_future.Get(), HasValue());
   EXPECT_THAT(driver().last_filled_values(),
-              Contains(std::pair(
-                  form.fields()[0].global_id(),
-                  GetFillValue(GetCreditCard1(), CREDIT_CARD_NAME_FULL))));
+              Contains(std::pair(form.fields()[0].global_id(),
+                                 GetFillValue(card, CREDIT_CARD_NAME_FULL))));
+}
+
+// Tests that filling a credit card after fetching it from the server works.
+TEST_F(ActorFormFillingServiceTest, FillAfterFetchingServerCard) {
+  const CreditCard card = test::GetMaskedServerCard();
+  payments_data_manager().AddCreditCard(card);
+  FormData form =
+      SeeForm({.fields = {{.server_type = CREDIT_CARD_NAME_FULL},
+                          {.server_type = CREDIT_CARD_NUMBER},
+                          {.server_type = CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR}}});
+
+  GetSuggestionsFuture future;
+  service().GetSuggestions(
+      tab(), {CreditCardFillRequest({form.fields()[0].global_id()})},
+      future.GetCallback());
+  EXPECT_THAT(future.Get(),
+              ValueIs(ElementsAre(IsActorFormFillingRequest(
+                  ActorFormFillingRequest::RequestedData::
+                      FormFillingRequest_RequestedData_CREDIT_CARD))));
+
+  std::vector<ActorFormFillingRequest> requests = future.Take().value();
+  FillSuggestionsFuture fill_future;
+  service().FillSuggestions(
+      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
+      fill_future.GetCallback());
+
+  ASSERT_GT(ActorFillingObserver::GetMaximumTimeout(), base::Seconds(2));
+  task_environment()->FastForwardBy(base::Seconds(1));
+  EXPECT_FALSE(fill_future.IsReady());
+
+  // Now we notify observers that a credit card fetch was started.
+  using Observer = CreditCardAccessManager::Observer;
+  test_api(credit_card_access_manager())
+      .NotifyObservers(&Observer::OnCreditCardFetchStarted, card);
+  task_environment()->FastForwardBy(ActorFillingObserver::GetMaximumTimeout() -
+                                    base::Seconds(2));
+  EXPECT_FALSE(fill_future.IsReady());
+
+  // Simulate successful fetching.
+  ASSERT_TRUE(credit_card_access_manager().RunCreditCardFetchedCallback(card));
+  test_api(credit_card_access_manager())
+      .NotifyObservers(&Observer::OnCreditCardFetchSucceeded, card);
+
+  task_environment()->FastForwardBy(base::Seconds(1));
+  EXPECT_TRUE(fill_future.IsReady());
+  EXPECT_THAT(fill_future.Get(), HasValue());
+  EXPECT_THAT(driver().last_filled_values(),
+              Contains(std::pair(form.fields()[0].global_id(),
+                                 GetFillValue(card, CREDIT_CARD_NAME_FULL))));
+}
+
+// Tests that even if a credit card fetch is ongoing, there is a timeout if
+// fills do not complete after a minute.
+TEST_F(ActorFormFillingServiceTest, TimeoutWithFetching) {
+  const CreditCard card = test::GetMaskedServerCard();
+  payments_data_manager().AddCreditCard(card);
+  FormData form =
+      SeeForm({.fields = {{.server_type = CREDIT_CARD_NAME_FULL},
+                          {.server_type = CREDIT_CARD_NUMBER},
+                          {.server_type = CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR}}});
+
+  GetSuggestionsFuture future;
+  service().GetSuggestions(
+      tab(), {CreditCardFillRequest({form.fields()[0].global_id()})},
+      future.GetCallback());
+  EXPECT_THAT(future.Get(),
+              ValueIs(ElementsAre(IsActorFormFillingRequest(
+                  ActorFormFillingRequest::RequestedData::
+                      FormFillingRequest_RequestedData_CREDIT_CARD))));
+
+  std::vector<ActorFormFillingRequest> requests = future.Take().value();
+  FillSuggestionsFuture fill_future;
+  service().FillSuggestions(
+      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
+      fill_future.GetCallback());
+
+  ASSERT_GT(ActorFillingObserver::GetMaximumTimeout(), base::Seconds(2));
+  task_environment()->FastForwardBy(base::Seconds(1));
+  EXPECT_FALSE(fill_future.IsReady());
+
+  // Now we notify observers that a credit card fetch was started.
+  test_api(credit_card_access_manager())
+      .NotifyObservers(
+          &CreditCardAccessManager::Observer::OnCreditCardFetchStarted, card);
+  task_environment()->FastForwardBy(ActorFillingObserver::GetMaximumTimeout() -
+                                    base::Seconds(2));
+  EXPECT_FALSE(fill_future.IsReady());
+
+  task_environment()->FastForwardBy(base::Seconds(1));
+  EXPECT_TRUE(fill_future.IsReady());
+  EXPECT_THAT(fill_future.Get(), ErrorIs(ActorFormFillingError::kNoForm));
+  EXPECT_THAT(driver().last_filled_values(), IsEmpty());
 }
 
 // Tests that a `kOther` error is returned if an invalid suggestion id is passed
