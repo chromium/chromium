@@ -327,4 +327,18 @@ bool IsLastInSector(const SectorFormat& format, int index);
 
 }  // namespace updater::tagging::internal
 
+namespace base {
+// We prefer bit-wise copying converting struct objects to span of bytes. Please
+// see
+// https://source.chromium.org/chromium/chromium/src/+/main:base/containers/span.h?q=kCanSafelyConvertToByteSpan
+// for more details.
+template <>
+inline constexpr bool
+    kCanSafelyConvertToByteSpan<::updater::tagging::internal::MSIDirEntry> =
+        true;
+template <>
+inline constexpr bool
+    kCanSafelyConvertToByteSpan<::updater::tagging::internal::MSIHeader> = true;
+}  // namespace base
+
 #endif  // CHROME_UPDATER_CERTIFICATE_TAG_INTERNAL_H_
