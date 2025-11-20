@@ -250,7 +250,7 @@
 <translation id="3003189754374775221">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />%, conectar</translation>
 <translation id="3003633581067744647">Mudar para a visualização de miniaturas</translation>
 <translation id="3016566519832145558">Atenção: esses arquivos são temporários e podem ser excluídos automaticamente para liberar espaço em disco.</translation>
-<translation id="3029114385395636667">Ative o Documentos Google off-line para usar o Documentos, Planilhas e Apresentações off-line.</translation>
+<translation id="3029114385395636667">Ative o Google Docs off-line para usar o Documentos, Planilhas e Apresentações off-line.</translation>
 <translation id="303198083543495566">Região geográfica</translation>
 <translation id="3044404008258011032">Para restaurar esses itens, arraste-os para uma nova pasta fora da lixeira. A pasta original "<ph name="PARENT_FOLDER_NAME" />" foi excluída.</translation>
 <translation id="3047197340186497470">Chinês (dayi)</translation>
@@ -1073,7 +1073,7 @@
 <translation id="9171921933192916600">Pessoa que ama ler</translation>
 <translation id="9172592259078059678">Guzerate (transliteração)</translation>
 <translation id="9173120999827300720">Inglês (EUA) com teclado internacional</translation>
-<translation id="9183302530794969518">Documentos Google</translation>
+<translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">Cazaque</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> itens extraídos.</translation>
 <translation id="9213073329713032541">Instalação iniciada.</translation>

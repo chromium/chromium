@@ -5475,7 +5475,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4773122030389014189">Compartir el grupo de pestañas “<ph name="GROUP_NAME" />”</translation>
 <translation id="4773253008034797668">Puede conectarse a cualquier dispositivo de tu red local</translation>
 <translation id="477548766361111120">Permitir que la extensión lea y modifique este sitio</translation>
-<translation id="4775646243557794597">Se borró <ph name="TIME_PERIOD" /></translation>
+<translation id="4775646243557794597">Período borrado: <ph name="TIME_PERIOD" /></translation>
 <translation id="4776311127346151860">Se conectó <ph name="DEVICE_NAME" /></translation>
 <translation id="4776594120007763294">Si quieres agregar una página para leerla más tarde, haz clic en el botón</translation>
 <translation id="4777458362738635055">Otros usuarios de este dispositivo pueden usar esta red</translation>
