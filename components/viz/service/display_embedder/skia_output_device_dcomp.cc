@@ -39,6 +39,11 @@
 namespace viz {
 
 namespace {
+// With DirectComposition, resize surface based on root render pass size to
+// avoid gutter which shows stale pixels.
+BASE_FEATURE(kDirectCompositionResizeBasedOnRootSurface,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 base::TimeTicks g_last_reshape_failure = base::TimeTicks();
 
 NOINLINE void CheckForLoopFailures() {
@@ -155,6 +160,8 @@ SkiaOutputDeviceDComp::SkiaOutputDeviceDComp(
   capabilities_.renderer_allocates_images = true;
   capabilities_.supports_viewporter = presenter_->SupportsViewporter();
   capabilities_.supports_non_backed_solid_color_overlays = true;
+  capabilities_.resize_based_on_root_surface =
+      base::FeatureList::IsEnabled(kDirectCompositionResizeBasedOnRootSurface);
 
   DCHECK(context_state_);
   DCHECK(context_state_->gr_context() ||
