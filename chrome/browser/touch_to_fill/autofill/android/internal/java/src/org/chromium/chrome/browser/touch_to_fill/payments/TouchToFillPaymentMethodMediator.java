@@ -563,16 +563,18 @@ class TouchToFillPaymentMethodMediator {
         }
         if (mModel.get(CURRENT_SCREEN) == PROGRESS_SCREEN) {
             assert bnplSuggestion != null;
-            if (isAmountSupportedByAnyIssuer) {
+            if (extractedAmount != null) {
                 assert !bnplIssuerContexts.isEmpty();
-                bnplSuggestion.getPaymentsPayload().setExtractedAmount(extractedAmount);
+                bnplSuggestion
+                        .getPaymentsPayload()
+                        .setExtractedAmount(isAmountSupportedByAnyIssuer ? extractedAmount : null);
                 showBnplIssuers(bnplIssuerContexts);
             } else {
                 // TODO(crbug.com/438784412): If the amount exists but is not supported by any
-                // issuer, we still need to show the BNPL issuer screen with gray out issuers.
-                // Also, we need to ensure the BNPL chip on the Home page is disabled when the user
-                // uses the back button to go to the home screen.
-                // If the amount is null, we need to show the error screen.
+                // issuer, we still need to gray out BNPL suggestion on the home screen.
+                showErrorScreen(
+                        mContext.getString(R.string.autofill_bnpl_error_dialog_title),
+                        mContext.getString(R.string.autofill_bnpl_temporary_error_description));
             }
         } else {
             // `bnplModel` holds the properties needed to render the BNPL chip on the bottom sheet.

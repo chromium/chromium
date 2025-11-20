@@ -1350,6 +1350,61 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
     }
 
     @Test
+    public void testOnPurchaseAmountExtractedWithUnsupportedAmountOnProgressScreen()
+            throws TimeoutException {
+        long extractedAmount = 5L;
+        mCoordinator.showPaymentMethods(
+                List.of(VISA_SUGGESTION, BNPL_SUGGESTION), /* shouldShowScanCreditCard= */ false);
+        assertNull(BNPL_SUGGESTION.getPaymentsPayload().getExtractedAmount());
+        mCoordinator.getMediatorForTesting().showProgressScreen();
+        assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(PROGRESS_SCREEN));
+        assertThat(mTouchToFillPaymentMethodModel.get(VISIBLE), is(true));
+
+        mCoordinator.onPurchaseAmountExtracted(
+                List.of(BNPL_ISSUER_CONTEXT_INELIGIBLE_CHECKOUT_AMOUNT_TOO_LOW),
+                extractedAmount,
+                /* isAmountSupportedByAnyIssuer= */ false);
+
+        assertThat(
+                mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN),
+                is(BNPL_ISSUER_SELECTION_SCREEN));
+        assertThat(mTouchToFillPaymentMethodModel.get(VISIBLE), is(true));
+        ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
+        assertThat(getModelsOfType(itemList, BNPL_ISSUER).size(), is(1));
+        assertBnplIssuerContextModelMatches(
+                itemList, BNPL_ISSUER_CONTEXT_INELIGIBLE_CHECKOUT_AMOUNT_TOO_LOW);
+        assertNull(BNPL_SUGGESTION.getPaymentsPayload().getExtractedAmount());
+    }
+
+    @Test
+    public void testOnPurchaseAmountExtractedWithInvalidAmountOnProgressScreen()
+            throws TimeoutException {
+        mCoordinator.showPaymentMethods(
+                List.of(VISA_SUGGESTION, BNPL_SUGGESTION), /* shouldShowScanCreditCard= */ false);
+        assertNull(BNPL_SUGGESTION.getPaymentsPayload().getExtractedAmount());
+        mCoordinator.getMediatorForTesting().showProgressScreen();
+        assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(PROGRESS_SCREEN));
+        assertThat(mTouchToFillPaymentMethodModel.get(VISIBLE), is(true));
+
+        mCoordinator.onPurchaseAmountExtracted(
+                Collections.emptyList(), null, /* isAmountSupportedByAnyIssuer= */ false);
+
+        assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(ERROR_SCREEN));
+        assertThat(mTouchToFillPaymentMethodModel.get(VISIBLE), is(true));
+        ModelList sheetItems = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
+        assertThat(
+                sheetItems.get(0).model.get(TITLE_STRING),
+                is(
+                        ContextUtils.getApplicationContext()
+                                .getString(R.string.autofill_bnpl_error_dialog_title)));
+        assertThat(
+                sheetItems.get(1).model.get(ERROR_DESCRIPTION_STRING),
+                is(
+                        ContextUtils.getApplicationContext()
+                                .getString(R.string.autofill_bnpl_temporary_error_description)));
+    }
+
+    @Test
     public void testShowBnplIssuerTos() throws TimeoutException {
         mCoordinator.showBnplIssuerTos(BNPL_ISSUER_TOS_DETAIL);
 
