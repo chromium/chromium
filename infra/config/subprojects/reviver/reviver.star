@@ -41,6 +41,9 @@ defaults.set(
     cores = 8,
     os = os.LINUX_DEFAULT,
     list_view = "reviver",
+    experiments = {
+        "chromium_tests.resultdb_module": 100,
+    },
     service_account = "reviver-builder@chops-service-accounts.iam.gserviceaccount.com",
 )
 
