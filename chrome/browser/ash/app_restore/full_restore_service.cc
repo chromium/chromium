@@ -267,8 +267,6 @@ void FullRestoreService::Init(bool& show_notification) {
     if (!HasRestorePref(prefs))
       SetDefaultRestorePrefIfNecessary(prefs);
 
-    // TODO(crbug.com/388309832): Determine if we should show a notification for
-    // crashes if always or never restore setting is set for forest.
     if (!IsAskEveryTime(prefs)) {
       return;
     }
