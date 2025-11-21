@@ -151,9 +151,8 @@ bool ShouldLogStorageMetrics(PrefService* pref_service) {
   const base::Time last_logged =
       pref_service->GetTime(prefs::kLastApplicationStorageMetricsLogTime);
 
-  return last_logged == base::Time() ||
-         base::Time::Now() - last_logged <
-             kMinimumTimeBetweenDocumentsSizeLogging;
+  return base::Time::Now() - last_logged >=
+         kMinimumTimeBetweenDocumentsSizeLogging;
 }
 #endif
 
