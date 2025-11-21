@@ -57,22 +57,15 @@ const WebString& GetWebString() {
   return *web_string;
 }
 
-struct FormIssue {
-  FormIssue(GenericIssueErrorType type, int node, blink::WebString attribute)
-      : issue_type(type),
-        violating_node(node),
-        violating_node_attribute(attribute) {}
-  FormIssue(GenericIssueErrorType type, int node)
-      : issue_type(type), violating_node(node) {}
+using EmitCallback =
+    base::FunctionRef<void(const WebDocument& document,
+                           GenericIssueErrorType issue_type,
+                           int violating_node,
+                           WebString violating_node_attribute)>;
 
-  GenericIssueErrorType issue_type;
-  int violating_node;
-  blink::WebString violating_node_attribute;
-};
-
-void MaybeAppendLabelWithoutControlDevtoolsIssue(
-    WebLabelElement label,
-    std::vector<FormIssue>& form_issues) {
+void EmitLabelWithoutControlDevtoolsIssue(const WebDocument& document,
+                                          WebLabelElement label,
+                                          EmitCallback emit) {
   if (label.CorrespondingControl()) {
     return;
   }
@@ -80,15 +73,15 @@ void MaybeAppendLabelWithoutControlDevtoolsIssue(
   const WebString& for_attr = GetWebString<kFor>();
   if (!label.HasAttribute(for_attr)) {
     // Label has neither for attribute nor a control element was found.
-    form_issues.emplace_back(
-        GenericIssueErrorType::kFormLabelHasNeitherForNorNestedInputError,
-        label.GetDomNodeId());
+    emit(document,
+         GenericIssueErrorType::kFormLabelHasNeitherForNorNestedInputError,
+         label.GetDomNodeId(), {});
   }
 }
 
-void MaybeAppendAriaLabelledByDevtoolsIssue(
-    const WebElement& element,
-    std::vector<FormIssue>& form_issues) {
+void EmitAriaLabelledByDevtoolsIssue(const WebDocument& document,
+                                     const WebElement& element,
+                                     EmitCallback emit) {
   const WebString& aria_label_attr = GetWebString<kAriaLabelledBy>();
   if (std::ranges::any_of(
           base::SplitStringPiece(element.GetAttribute(aria_label_attr).Utf16(),
@@ -97,21 +90,22 @@ void MaybeAppendAriaLabelledByDevtoolsIssue(
           [&](const auto& id) {
             return !element.GetDocument().GetElementById(WebString(id));
           })) {
-    form_issues.emplace_back(
-        GenericIssueErrorType::kFormAriaLabelledByToNonExistingIdError,
-        element.GetDomNodeId(), aria_label_attr);
+    emit(document,
+         GenericIssueErrorType::kFormAriaLabelledByToNonExistingIdError,
+         element.GetDomNodeId(), aria_label_attr);
   }
 }
 
-void MaybeAppendInputWithEmptyIdAndNameDevtoolsIssue(
+void EmitInputWithEmptyIdAndNameDevtoolsIssue(
+    const WebDocument& document,
     const WebFormControlElement& element,
-    std::vector<FormIssue>& form_issues) {
+    EmitCallback emit) {
   const WebString& name_attr = GetWebString<kName>();
   if (element.GetAttribute(name_attr).IsEmpty() &&
       element.GetIdAttribute().IsEmpty()) {
-    form_issues.emplace_back(
-        GenericIssueErrorType::kFormEmptyIdAndNameAttributesForInputError,
-        element.GetDomNodeId());
+    emit(document,
+         GenericIssueErrorType::kFormEmptyIdAndNameAttributesForInputError,
+         element.GetDomNodeId(), {});
   }
 }
 
@@ -123,9 +117,10 @@ int GetShadowHostDOMNodeId(const WebFormControlElement& element) {
   return host.GetDomNodeId();
 }
 
-void MaybeAppendDuplicateIdForInputDevtoolsIssue(
+void EmitDuplicateIdForInputDevtoolsIssue(
+    const WebDocument& document,
     std::vector<WebFormControlElement> elements,
-    std::vector<FormIssue>& form_issues) {
+    EmitCallback emit) {
   const WebString& id_attr = GetWebString<kId>();
 
   std::erase_if(elements, [](const WebFormControlElement& element) {
@@ -148,41 +143,39 @@ void MaybeAppendDuplicateIdForInputDevtoolsIssue(
             })) != elements.end();
        it++) {
     if (previous_violating_node != it->GetDomNodeId()) {
-      form_issues.emplace_back(
-          GenericIssueErrorType::kFormDuplicateIdForInputError,
-          it->GetDomNodeId(), id_attr);
+      emit(document, GenericIssueErrorType::kFormDuplicateIdForInputError,
+           it->GetDomNodeId(), id_attr);
     }
-    form_issues.emplace_back(
-        GenericIssueErrorType::kFormDuplicateIdForInputError,
-        std::next(it)->GetDomNodeId(), id_attr);
+    emit(document, GenericIssueErrorType::kFormDuplicateIdForInputError,
+         std::next(it)->GetDomNodeId(), id_attr);
     previous_violating_node = std::next(it)->GetDomNodeId();
   }
 }
 
-void MaybeAppendAutocompleteAttributeDevtoolsIssue(
-    const WebElement& element,
-    std::vector<FormIssue>& form_issues) {
+void EmitAutocompleteAttributeDevtoolsIssue(const WebDocument& document,
+                                            const WebElement& element,
+                                            EmitCallback emit) {
   const WebString& autocomplete_attr = GetWebString<kAutocomplete>();
   std::string autocomplete_attribute =
       form_util::GetAutocompleteAttribute(element);
   if (element.HasAttribute(autocomplete_attr) &&
       autocomplete_attribute.empty()) {
-    form_issues.emplace_back(
-        GenericIssueErrorType::kFormAutocompleteAttributeEmptyError,
-        element.GetDomNodeId(), autocomplete_attr);
+    emit(document, GenericIssueErrorType::kFormAutocompleteAttributeEmptyError,
+         element.GetDomNodeId(), autocomplete_attr);
   }
 
   if (IsAutocompleteTypeWrongButWellIntended(autocomplete_attribute)) {
-    form_issues.emplace_back(
-        GenericIssueErrorType::
-            kFormInputHasWrongButWellIntendedAutocompleteValueError,
-        element.GetDomNodeId(), autocomplete_attr);
+    emit(document,
+         GenericIssueErrorType::
+             kFormInputHasWrongButWellIntendedAutocompleteValueError,
+         element.GetDomNodeId(), autocomplete_attr);
   }
 }
 
-void MaybeAppendInputAssignedAutocompleteValueToIdOrNameAttributesDevtoolsIssue(
+void EmitInputAssignedAutocompleteValueToIdOrNameAttributesDevtoolsIssue(
+    const WebDocument& document,
     const WebFormControlElement& element,
-    std::vector<FormIssue>& form_issues) {
+    EmitCallback emit) {
   const WebString& autocomplete_attr = GetWebString<kAutocomplete>();
   if (element.HasAttribute(autocomplete_attr)) {
     return;
@@ -214,17 +207,18 @@ void MaybeAppendInputAssignedAutocompleteValueToIdOrNameAttributesDevtoolsIssue(
   if (name_attr_matches_autocomplete || id_attr_matches_autocomplete) {
     WebString attribute_with_autocomplete_value =
         id_attr_matches_autocomplete ? GetWebString<kId>() : name_attr;
-    form_issues.emplace_back(
-        GenericIssueErrorType::
-            kFormInputAssignedAutocompleteValueToIdOrNameAttributeError,
-        element.GetDomNodeId(), attribute_with_autocomplete_value);
+    emit(document,
+         GenericIssueErrorType::
+             kFormInputAssignedAutocompleteValueToIdOrNameAttributeError,
+         element.GetDomNodeId(), attribute_with_autocomplete_value);
 
     return;
   }
 }
 
-void AppendFormIssuesInternal(std::vector<WebFormControlElement> elements,
-                              std::vector<FormIssue>& form_issues) {
+void EmitFormControlIssues(const WebDocument& document,
+                           std::vector<WebFormControlElement> elements,
+                           EmitCallback emit) {
   if (elements.size() == 0) {
     return;
   }
@@ -236,37 +230,27 @@ void AppendFormIssuesInternal(std::vector<WebFormControlElement> elements,
 
   for (WebElement item = labels.FirstItem(); item; item = labels.NextItem()) {
     WebLabelElement label = item.To<WebLabelElement>();
-    MaybeAppendLabelWithoutControlDevtoolsIssue(label, form_issues);
+    EmitLabelWithoutControlDevtoolsIssue(document, label, emit);
   }
 
   for (const WebFormControlElement& element : elements) {
-    MaybeAppendAriaLabelledByDevtoolsIssue(element, form_issues);
-    MaybeAppendAutocompleteAttributeDevtoolsIssue(element, form_issues);
-    MaybeAppendInputWithEmptyIdAndNameDevtoolsIssue(element, form_issues);
-    MaybeAppendInputAssignedAutocompleteValueToIdOrNameAttributesDevtoolsIssue(
-        element, form_issues);
+    EmitAriaLabelledByDevtoolsIssue(document, element, emit);
+    EmitAutocompleteAttributeDevtoolsIssue(document, element, emit);
+    EmitInputWithEmptyIdAndNameDevtoolsIssue(document, element, emit);
+    EmitInputAssignedAutocompleteValueToIdOrNameAttributesDevtoolsIssue(
+        document, element, emit);
   }
 
-  MaybeAppendDuplicateIdForInputDevtoolsIssue(std::move(elements), form_issues);
-}
-
-// Looks for form issues in `control_elements`, e.g., inputs with duplicate ids
-// and returns a vector that is the union of `form_issues` and the new issues
-// found.
-std::vector<FormIssue> GetFormIssues(
-    std::vector<WebFormControlElement> control_elements,
-    std::vector<FormIssue> form_issues) {
-  AppendFormIssuesInternal(std::move(control_elements), form_issues);
-  return form_issues;
+  EmitDuplicateIdForInputDevtoolsIssue(document, std::move(elements), emit);
 }
 
 // Checks for issues with the "for" attribute on <label> elements. This needs to
 // be called after label extraction. Similar to `GetFormIssues` it returns a
 // vector that is the union of `form_issues` and the new issues found.
-std::vector<FormIssue> CheckForLabelsWithIncorrectForAttribute(
+void CheckForLabelsWithIncorrectForAttribute(
     const WebDocument& document,
     base::span<const FormFieldData> fields,
-    std::vector<FormIssue> form_issues) {
+    EmitCallback emit) {
   const WebString& for_attr = GetWebString<kFor>();
   const WebString& label_attr = GetWebString<kLabel>();
 
@@ -289,20 +273,19 @@ std::vector<FormIssue> CheckForLabelsWithIncorrectForAttribute(
       // Add a DevTools issue informing the developer that the `label`'s for-
       // attribute is pointing to the name of a field, even though the ID
       // should be used.
-      form_issues.emplace_back(GenericIssueErrorType::kFormLabelForNameError,
-                               label.GetDomNodeId(), for_attr);
+      emit(document, GenericIssueErrorType::kFormLabelForNameError,
+           label.GetDomNodeId(), for_attr);
     } else {
       // Label has for attribute but no labellable element whose id OR name
       // matches it.
       // This issue is not emitted in case an element has a name that matches
       // it, in this case we emit kFormLabelForNameError to educate developers
       // that labels should be linked to element ids.
-      form_issues.emplace_back(
-          GenericIssueErrorType::kFormLabelForMatchesNonExistingIdError,
-          label.GetDomNodeId(), for_attr);
+      emit(document,
+           GenericIssueErrorType::kFormLabelForMatchesNonExistingIdError,
+           label.GetDomNodeId(), for_attr);
     }
   }
-  return form_issues;
 }
 
 }  // namespace
@@ -316,37 +299,37 @@ void EmitToDevTools(const WebDocument& document,
   frame.AddGenericIssue(issue_type, violating_node, violating_node_attribute);
 }
 
-void EmitFormIssues(
-    const WebDocument& document,
-    base::span<const FormData> forms,
-    base::FunctionRef<void(const blink::WebDocument& document,
-                           GenericIssueErrorType issue_type,
-                           int violating_node,
-                           WebString violating_node_attribute)> emit) {
-  std::vector<FormIssue> form_issues;
+void EmitFormIssues(const WebDocument& document,
+                    base::span<const FormData> forms,
+                    EmitCallback emit) {
+  size_t counter = 0;
+  auto emit_limited = [&emit, &counter](const WebDocument& document,
+                                        GenericIssueErrorType issue_type,
+                                        int violating_node,
+                                        WebString violating_node_attribute) {
+    if (++counter > kMaxNumberOfDevtoolsIssuesEmitted) {
+      return;
+    }
+    emit(document, issue_type, violating_node, violating_node_attribute);
+  };
+
   // Get issues from forms input elements.
   for (const WebFormElement& form_element : document.GetTopLevelForms()) {
-    form_issues = GetFormIssues(
+    EmitFormControlIssues(
+        document,
         form_util::GetOwnedAutofillableFormControls(document, form_element),
-        std::move(form_issues));
+        emit_limited);
   }
   // Get issues from input elements that belong to no form.
-  form_issues = GetFormIssues(
+  EmitFormControlIssues(
+      document,
       form_util::GetOwnedAutofillableFormControls(document, WebFormElement()),
-      std::move(form_issues));
+      emit_limited);
   // Look for fields that after parsed were found to have labels incorrectly
   // used.
   for (const FormData& form : forms) {
-    form_issues = CheckForLabelsWithIncorrectForAttribute(
-        document, form.fields(), std::move(form_issues));
-  }
-  if (form_issues.size() > kMaxNumberOfDevtoolsIssuesEmitted) {
-    form_issues.erase(form_issues.begin() + kMaxNumberOfDevtoolsIssuesEmitted,
-                      form_issues.end());
-  }
-  for (const FormIssue& form_issue : form_issues) {
-    emit(document, form_issue.issue_type, form_issue.violating_node,
-         form_issue.violating_node_attribute);
+    CheckForLabelsWithIncorrectForAttribute(document, form.fields(),
+                                            emit_limited);
   }
 }
 
