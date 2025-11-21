@@ -5,6 +5,7 @@
 #include "components/signin/internal/identity_manager/oauth_multilogin_helper.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
@@ -109,6 +110,14 @@ const char kMultiloginSuccessResponseTwoCookies[] =
              "maxAge":63070000
            }
          ]
+       }
+      )";
+
+const char kMultiloginSuccessResponseNoCookies[] =
+    R"()]}'
+       {
+         "status": "OK",
+         "cookies":[]
        }
       )";
 
@@ -386,8 +395,7 @@ class OAuthMultiloginHelperTest
 
  protected:
   void OnOAuthMultiloginFinished(SetAccountsInCookieResult result) {
-    DCHECK(!callback_called_);
-    callback_called_ = true;
+    CHECK(!result_.has_value());
     result_ = result;
   }
 
@@ -422,8 +430,7 @@ class OAuthMultiloginHelperTest
   const CoreAccountId kAccountId2;
   base::test::TaskEnvironment task_environment_;
 
-  bool callback_called_ = false;
-  SetAccountsInCookieResult result_;
+  std::optional<SetAccountsInCookieResult> result_;
 
   TestingPrefServiceSimple pref_service_;
   MockCookieManager mock_cookie_manager_;
@@ -458,7 +465,7 @@ TEST_F(OAuthMultiloginHelperTest, Success) {
   token_service()->IssueAllTokensForAccount(kAccountId, success_response);
 
   // Multilogin call.
-  EXPECT_FALSE(callback_called_);
+  EXPECT_EQ(result_, std::nullopt);
   const network::ResourceRequest* multilogin_request = nullptr;
   ASSERT_TRUE(url_loader()->IsPending(multilogin_url(), &multilogin_request));
   EXPECT_EQ(multilogin_request->headers.GetHeader(kAuthorizationHeaderName),
@@ -471,8 +478,30 @@ TEST_F(OAuthMultiloginHelperTest, Success) {
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   url_loader()->AddResponse(multilogin_url(), kMultiloginSuccessResponse);
   EXPECT_FALSE(url_loader()->IsPending(multilogin_url()));
-  EXPECT_TRUE(callback_called_);
-  EXPECT_EQ(SetAccountsInCookieResult::kSuccess, result_);
+  EXPECT_EQ(result_, SetAccountsInCookieResult::kSuccess);
+}
+
+// Success, but the response does not contain any cookies.
+TEST_F(OAuthMultiloginHelperTest, SuccessWithNoCookies) {
+  token_service()->UpdateCredentials(kAccountId, "refresh_token");
+  CreateHelper({{kAccountId, kGaiaId}});
+
+  // Issue access token.
+  OAuth2AccessTokenConsumer::TokenResponse success_response;
+  success_response.access_token = kAccessToken;
+  token_service()->IssueAllTokensForAccount(kAccountId, success_response);
+
+  // Multilogin call.
+  EXPECT_EQ(result_, std::nullopt);
+  ASSERT_TRUE(url_loader()->IsPending(multilogin_url()));
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  EXPECT_CALL(*bound_session_delegate(), BeforeSetCookies);
+  EXPECT_CALL(*bound_session_delegate(), OnCookiesSet);
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+  url_loader()->AddResponse(multilogin_url(),
+                            kMultiloginSuccessResponseNoCookies);
+  EXPECT_FALSE(url_loader()->IsPending(multilogin_url()));
+  EXPECT_EQ(result_, SetAccountsInCookieResult::kSuccess);
 }
 
 TEST_F(OAuthMultiloginHelperTest, SuccessWithRefreshToken) {
@@ -490,7 +519,7 @@ TEST_F(OAuthMultiloginHelperTest, SuccessWithRefreshToken) {
       .WillOnce(RunSetCookieCallbackWithSuccess);
 
   // Multilogin call.
-  EXPECT_FALSE(callback_called_);
+  EXPECT_EQ(result_, std::nullopt);
   const network::ResourceRequest* multilogin_request = nullptr;
   ASSERT_TRUE(url_loader()->IsPending(multilogin_url(), &multilogin_request));
   EXPECT_EQ(multilogin_request->headers.GetHeader(kAuthorizationHeaderName),
@@ -503,8 +532,7 @@ TEST_F(OAuthMultiloginHelperTest, SuccessWithRefreshToken) {
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   url_loader()->AddResponse(multilogin_url(), kMultiloginSuccessResponse);
   EXPECT_FALSE(url_loader()->IsPending(multilogin_url()));
-  EXPECT_TRUE(callback_called_);
-  EXPECT_EQ(SetAccountsInCookieResult::kSuccess, result_);
+  EXPECT_EQ(result_, SetAccountsInCookieResult::kSuccess);
 }
 
 // Multilogin request for multiple accounts.
@@ -532,7 +560,7 @@ TEST_F(OAuthMultiloginHelperTest, MultipleAccounts) {
   token_service()->IssueAllTokensForAccount(kAccountId2, success_response_2);
 
   // Multilogin call.
-  EXPECT_FALSE(callback_called_);
+  EXPECT_EQ(result_, std::nullopt);
   const network::ResourceRequest* multilogin_request = nullptr;
   ASSERT_TRUE(url_loader()->IsPending(multilogin_url(), &multilogin_request));
   EXPECT_EQ(multilogin_request->headers.GetHeader(kAuthorizationHeaderName),
@@ -548,8 +576,7 @@ TEST_F(OAuthMultiloginHelperTest, MultipleAccounts) {
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   url_loader()->AddResponse(multilogin_url(), kMultiloginSuccessResponse);
   EXPECT_FALSE(url_loader()->IsPending(multilogin_url()));
-  EXPECT_TRUE(callback_called_);
-  EXPECT_EQ(SetAccountsInCookieResult::kSuccess, result_);
+  EXPECT_EQ(result_, SetAccountsInCookieResult::kSuccess);
 }
 
 // Multiple cookies in the multilogin response.
@@ -577,7 +604,7 @@ TEST_F(OAuthMultiloginHelperTest, MultipleCookies) {
   token_service()->IssueAllTokensForAccount(kAccountId, success_response);
 
   // Multilogin call.
-  EXPECT_FALSE(callback_called_);
+  EXPECT_EQ(result_, std::nullopt);
   EXPECT_TRUE(url_loader()->IsPending(multilogin_url()));
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   EXPECT_CALL(*bound_session_delegate(), BeforeSetCookies);
@@ -586,8 +613,7 @@ TEST_F(OAuthMultiloginHelperTest, MultipleCookies) {
   url_loader()->AddResponse(multilogin_url(),
                             kMultiloginSuccessResponseTwoCookies);
   EXPECT_FALSE(url_loader()->IsPending(multilogin_url()));
-  EXPECT_TRUE(callback_called_);
-  EXPECT_EQ(SetAccountsInCookieResult::kSuccess, result_);
+  EXPECT_EQ(result_, SetAccountsInCookieResult::kSuccess);
 }
 
 // Multiple cookies in the multilogin response.
@@ -616,7 +642,7 @@ TEST_F(OAuthMultiloginHelperTest, SuccessWithExternalCcResult) {
   token_service()->IssueAllTokensForAccount(kAccountId, success_response);
 
   // Multilogin call.
-  EXPECT_FALSE(callback_called_);
+  EXPECT_EQ(result_, std::nullopt);
   EXPECT_TRUE(
       url_loader()->IsPending(multilogin_url_with_external_cc_result()));
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -627,8 +653,7 @@ TEST_F(OAuthMultiloginHelperTest, SuccessWithExternalCcResult) {
                             kMultiloginSuccessResponseWithSecondaryDomain);
   EXPECT_FALSE(
       url_loader()->IsPending(multilogin_url_with_external_cc_result()));
-  EXPECT_TRUE(callback_called_);
-  EXPECT_EQ(SetAccountsInCookieResult::kSuccess, result_);
+  EXPECT_EQ(result_, SetAccountsInCookieResult::kSuccess);
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -737,8 +762,7 @@ TEST_F(OAuthMultiloginHelperTest, OneAccountAccessTokenFailure) {
   token_service()->IssueErrorForAllPendingRequestsForAccount(
       kAccountId,
       GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
-  EXPECT_TRUE(callback_called_);
-  EXPECT_EQ(SetAccountsInCookieResult::kPersistentError, result_);
+  EXPECT_EQ(result_, SetAccountsInCookieResult::kPersistentError);
 }
 
 // Retry on transient errors in the multilogin call.
@@ -768,7 +792,7 @@ TEST_F(OAuthMultiloginHelperTest, OneAccountTransientMultiloginError) {
   // Call is retried and succeeds.
   EXPECT_FALSE(url_loader()->IsPending(multilogin_url()));
   token_service()->IssueAllTokensForAccount(kAccountId, success_response);
-  EXPECT_FALSE(callback_called_);
+  EXPECT_EQ(result_, std::nullopt);
   EXPECT_TRUE(url_loader()->IsPending(multilogin_url()));
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   EXPECT_CALL(*bound_session_delegate(), BeforeSetCookies);
@@ -776,8 +800,7 @@ TEST_F(OAuthMultiloginHelperTest, OneAccountTransientMultiloginError) {
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   url_loader()->AddResponse(multilogin_url(), kMultiloginSuccessResponse);
   EXPECT_FALSE(url_loader()->IsPending(multilogin_url()));
-  EXPECT_TRUE(callback_called_);
-  EXPECT_EQ(SetAccountsInCookieResult::kSuccess, result_);
+  EXPECT_EQ(result_, SetAccountsInCookieResult::kSuccess);
 }
 
 // Stop retrying after too many transient errors in the multilogin call.
@@ -794,14 +817,13 @@ TEST_F(OAuthMultiloginHelperTest,
   for (int i = 0; i < kMaxFetcherRetries; ++i) {
     token_service()->IssueAllTokensForAccount(kAccountId, success_response);
     EXPECT_TRUE(url_loader()->IsPending(multilogin_url()));
-    EXPECT_FALSE(callback_called_);
+    EXPECT_EQ(result_, std::nullopt);
     url_loader()->SimulateResponseForPendingRequest(multilogin_url(),
                                                     kMultiloginRetryResponse);
   }
 
   // Failure after exceeding the maximum number of retries.
-  EXPECT_TRUE(callback_called_);
-  EXPECT_EQ(SetAccountsInCookieResult::kTransientError, result_);
+  EXPECT_EQ(result_, SetAccountsInCookieResult::kTransientError);
 }
 
 // Persistent error in the multilogin call.
@@ -815,12 +837,11 @@ TEST_F(OAuthMultiloginHelperTest, OneAccountPersistentMultiloginError) {
   token_service()->IssueAllTokensForAccount(kAccountId, success_response);
 
   // Multilogin call fails with persistent error.
-  EXPECT_FALSE(callback_called_);
+  EXPECT_EQ(result_, std::nullopt);
   EXPECT_TRUE(url_loader()->IsPending(multilogin_url()));
   url_loader()->AddResponse(multilogin_url(), "blah");  // Unexpected response.
   EXPECT_FALSE(url_loader()->IsPending(multilogin_url()));
-  EXPECT_TRUE(callback_called_);
-  EXPECT_EQ(SetAccountsInCookieResult::kPersistentError, result_);
+  EXPECT_EQ(result_, SetAccountsInCookieResult::kPersistentError);
 }
 
 // Retry on "invalid token" in the multilogin response.
@@ -848,12 +869,12 @@ TEST_F(OAuthMultiloginHelperTest, InvalidTokenError) {
 
   // Both tokens are retried.
   token_service()->IssueAllTokensForAccount(kAccountId, success_response);
-  EXPECT_FALSE(callback_called_);
+  EXPECT_EQ(result_, std::nullopt);
   EXPECT_FALSE(url_loader()->IsPending(multilogin_url()));
   token_service()->IssueAllTokensForAccount(kAccountId2, success_response);
 
   // Multilogin succeeds the second time.
-  EXPECT_FALSE(callback_called_);
+  EXPECT_EQ(result_, std::nullopt);
   EXPECT_TRUE(url_loader()->IsPending(multilogin_url()));
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   EXPECT_CALL(*bound_session_delegate(), BeforeSetCookies);
@@ -868,8 +889,7 @@ TEST_F(OAuthMultiloginHelperTest, InvalidTokenError) {
 
   url_loader()->AddResponse(multilogin_url(), kMultiloginSuccessResponse);
   EXPECT_FALSE(url_loader()->IsPending(multilogin_url()));
-  EXPECT_TRUE(callback_called_);
-  EXPECT_EQ(SetAccountsInCookieResult::kSuccess, result_);
+  EXPECT_EQ(result_, SetAccountsInCookieResult::kSuccess);
 }
 
 TEST_F(OAuthMultiloginHelperTest, InvalidTokenErrorWithRefreshTokens) {
@@ -895,8 +915,7 @@ TEST_F(OAuthMultiloginHelperTest, InvalidTokenErrorWithRefreshTokens) {
   EXPECT_FALSE(url_loader()->IsPending(multilogin_url()));
   EXPECT_NE(token_service()->GetAuthError(kAccountId),
             GoogleServiceAuthError::AuthErrorNone());
-  EXPECT_TRUE(callback_called_);
-  EXPECT_EQ(SetAccountsInCookieResult::kPersistentError, result_);
+  EXPECT_EQ(result_, SetAccountsInCookieResult::kPersistentError);
 }
 
 // Retry on "invalid token" in the multilogin response.
@@ -922,7 +941,7 @@ TEST_F(OAuthMultiloginHelperTest, InvalidTokenErrorMaxRetries) {
     EXPECT_FALSE(url_loader()->IsPending(multilogin_url()));
     token_service()->IssueAllTokensForAccount(kAccountId2, success_response_2);
 
-    EXPECT_FALSE(callback_called_);
+    EXPECT_EQ(result_, std::nullopt);
     EXPECT_TRUE(url_loader()->IsPending(multilogin_url()));
 
     url_loader()->SimulateResponseForPendingRequest(
@@ -931,8 +950,7 @@ TEST_F(OAuthMultiloginHelperTest, InvalidTokenErrorMaxRetries) {
 
   // The maximum number of retries is reached, fail.
   EXPECT_FALSE(url_loader()->IsPending(multilogin_url()));
-  EXPECT_TRUE(callback_called_);
-  EXPECT_EQ(SetAccountsInCookieResult::kTransientError, result_);
+  EXPECT_EQ(result_, SetAccountsInCookieResult::kTransientError);
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -955,7 +973,7 @@ TEST_F(OAuthMultiloginHelperTest, BoundTokenSuccessNoChallenge) {
       .WillOnce(RunSetCookieCallbackWithSuccess);
 
   // Multilogin call.
-  EXPECT_FALSE(callback_called_);
+  EXPECT_EQ(result_, std::nullopt);
   const network::ResourceRequest* multilogin_request = nullptr;
   ASSERT_TRUE(url_loader()->IsPending(multilogin_url(), &multilogin_request));
   EXPECT_EQ(multilogin_request->headers.GetHeader(kAuthorizationHeaderName),
@@ -967,8 +985,7 @@ TEST_F(OAuthMultiloginHelperTest, BoundTokenSuccessNoChallenge) {
   EXPECT_CALL(*bound_session_delegate(), OnCookiesSet);
   url_loader()->AddResponse(multilogin_url(), kMultiloginSuccessResponse);
   EXPECT_FALSE(url_loader()->IsPending(multilogin_url()));
-  EXPECT_TRUE(callback_called_);
-  EXPECT_EQ(SetAccountsInCookieResult::kSuccess, result_);
+  EXPECT_EQ(result_, SetAccountsInCookieResult::kSuccess);
 }
 
 TEST_F(OAuthMultiloginHelperTest, BoundTokenSuccessNoBoundSessionDelegate) {
@@ -1009,7 +1026,7 @@ TEST_F(OAuthMultiloginHelperTest, BoundTokenSuccessWithChallenge) {
   CreateHelper({{kAccountId, kGaiaId}});
 
   // First Multilogin call returns a token binding challenge.
-  EXPECT_FALSE(callback_called_);
+  EXPECT_EQ(result_, std::nullopt);
   const network::ResourceRequest* multilogin_request = nullptr;
   ASSERT_TRUE(url_loader()->IsPending(multilogin_url(), &multilogin_request));
   EXPECT_EQ(multilogin_request->headers.GetHeader(kAuthorizationHeaderName),
@@ -1025,7 +1042,7 @@ TEST_F(OAuthMultiloginHelperTest, BoundTokenSuccessWithChallenge) {
       net::HTTP_BAD_REQUEST);
 
   // The second Multilogin request should be issued shortly after this.
-  EXPECT_FALSE(callback_called_);
+  EXPECT_EQ(result_, std::nullopt);
   ASSERT_TRUE(url_loader()->IsPending(multilogin_url(), &multilogin_request));
   EXPECT_EQ(multilogin_request->headers.GetHeader(kAuthorizationHeaderName),
             CreateMultiOAuthAuthorizationHeader({
@@ -1047,8 +1064,7 @@ TEST_F(OAuthMultiloginHelperTest, BoundTokenSuccessWithChallenge) {
   url_loader()->SimulateResponseForPendingRequest(multilogin_url(),
                                                   kMultiloginSuccessResponse);
   EXPECT_FALSE(url_loader()->IsPending(multilogin_url()));
-  EXPECT_TRUE(callback_called_);
-  EXPECT_EQ(SetAccountsInCookieResult::kSuccess, result_);
+  EXPECT_EQ(result_, SetAccountsInCookieResult::kSuccess);
 }
 
 TEST_F(OAuthMultiloginHelperTest,
@@ -1100,8 +1116,7 @@ TEST_F(OAuthMultiloginHelperTest,
                          base64_encrypted_cookie);
   url_loader()->SimulateResponseForPendingRequest(multilogin_url(), response);
   EXPECT_FALSE(url_loader()->IsPending(multilogin_url()));
-  EXPECT_TRUE(callback_called_);
-  EXPECT_EQ(SetAccountsInCookieResult::kSuccess, result_);
+  EXPECT_EQ(result_, SetAccountsInCookieResult::kSuccess);
 }
 
 TEST_F(OAuthMultiloginHelperTest, BoundTokenFailureChallengedTwice) {
@@ -1114,7 +1129,7 @@ TEST_F(OAuthMultiloginHelperTest, BoundTokenFailureChallengedTwice) {
   CreateHelper({{kAccountId, kGaiaId}});
 
   // First Multilogin call returns a token binding challenge.
-  EXPECT_FALSE(callback_called_);
+  EXPECT_EQ(result_, std::nullopt);
   const network::ResourceRequest* multilogin_request = nullptr;
   ASSERT_TRUE(url_loader()->IsPending(multilogin_url(), &multilogin_request));
   EXPECT_EQ(multilogin_request->headers.GetHeader(kAuthorizationHeaderName),
@@ -1132,7 +1147,7 @@ TEST_F(OAuthMultiloginHelperTest, BoundTokenFailureChallengedTwice) {
   // The second Multilogin request should be issued shortly after this. The
   // refresh token should be invalidated after receiving the second challenge
   // for the same account.
-  EXPECT_FALSE(callback_called_);
+  EXPECT_EQ(result_, std::nullopt);
   ASSERT_TRUE(url_loader()->IsPending(multilogin_url(), &multilogin_request));
   EXPECT_EQ(multilogin_request->headers.GetHeader(kAuthorizationHeaderName),
             CreateMultiOAuthAuthorizationHeader({
@@ -1156,28 +1171,29 @@ TEST_F(OAuthMultiloginHelperTest, BoundTokenFailureChallengedTwice) {
   EXPECT_FALSE(url_loader()->IsPending(multilogin_url()));
   EXPECT_NE(token_service()->GetAuthError(kAccountId),
             GoogleServiceAuthError::AuthErrorNone());
-  EXPECT_TRUE(callback_called_);
-  EXPECT_EQ(SetAccountsInCookieResult::kPersistentError, result_);
+  EXPECT_EQ(result_, SetAccountsInCookieResult::kPersistentError);
 }
 
 TEST_F(OAuthMultiloginHelperTest, BoundSessionHelperCalled) {
   token_service()->UpdateCredentials(kAccountId, "refresh_token");
   CreateHelper({{kAccountId, kGaiaId}});
 
-  {
-    testing::InSequence seq;
-
-    EXPECT_CALL(*bound_session_delegate(), BeforeSetCookies(_));
-    EXPECT_CALL(
-        *cookie_manager(),
-        SetCanonicalCookie(CookieMatcher("SID", "SID_value", ".google.fr"),
-                           CookieSourceMatcher("google.fr"), _, _));
-    EXPECT_CALL(
-        *cookie_manager(),
-        SetCanonicalCookie(CookieMatcher("FOO", "FOO_value", ".google.com"),
-                           CookieSourceMatcher("google.com"), _, _));
-    EXPECT_CALL(*bound_session_delegate(), OnCookiesSet());
-  }
+  testing::Sequence s1, s2;
+  // `BeforeSetCookies()` must be called the first.
+  EXPECT_CALL(*bound_session_delegate(), BeforeSetCookies).InSequence(s1, s2);
+  // Cookies can be set in any order.
+  EXPECT_CALL(
+      *cookie_manager(),
+      SetCanonicalCookie(CookieMatcher("SID", "SID_value", ".google.fr"),
+                         CookieSourceMatcher("google.fr"), _, _))
+      .InSequence(s1);
+  EXPECT_CALL(
+      *cookie_manager(),
+      SetCanonicalCookie(CookieMatcher("FOO", "FOO_value", ".google.com"),
+                         CookieSourceMatcher("google.com"), _, _))
+      .InSequence(s2);
+  // `OnCookiesSet()` must be called the last.
+  EXPECT_CALL(*bound_session_delegate(), OnCookiesSet).InSequence(s1, s2);
 
   // Issue access token.
   OAuth2AccessTokenConsumer::TokenResponse success_response;
@@ -1188,10 +1204,8 @@ TEST_F(OAuthMultiloginHelperTest, BoundSessionHelperCalled) {
   EXPECT_TRUE(url_loader()->IsPending(multilogin_url()));
   url_loader()->AddResponse(multilogin_url(),
                             kMultiloginSuccessResponseTwoCookies);
-  // All set cookie calls must be sent before adding any mock expectation,
-  // otherwise the test will fail.
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(SetAccountsInCookieResult::kSuccess, result_);
+  EXPECT_FALSE(url_loader()->IsPending(multilogin_url()));
+  EXPECT_EQ(result_, SetAccountsInCookieResult::kSuccess);
 }
 
 class OAuthMultiloginHelperOAMLCookieBindingDisabledForPartitionTest

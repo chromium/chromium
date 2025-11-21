@@ -78,10 +78,8 @@ class OAuthMultiloginHelper : public GaiaAuthConsumer {
   // Starts setting parsed cookies in browser.
   void StartSettingCookies(const OAuthMultiloginResult& result);
 
-  // Callback for CookieManager::SetCanonicalCookie.
-  void OnCookieSet(const std::string& cookie_name,
-                   const std::string& cookie_domain,
-                   net::CookieAccessResult access_result);
+  // Invoked when all cookies has been set.
+  void OnCookiesSet(const std::vector<net::CookieAccessResult>& results);
 
   raw_ptr<SigninClient> signin_client_;
   raw_ptr<AccountsCookieMutator::PartitionDelegate> partition_delegate_;
@@ -112,10 +110,6 @@ class OAuthMultiloginHelper : public GaiaAuthConsumer {
   base::OnceCallback<void(SetAccountsInCookieResult)> callback_;
   std::unique_ptr<GaiaAuthFetcher> gaia_auth_fetcher_;
   std::unique_ptr<OAuthMultiloginTokenFetcher> token_fetcher_;
-
-  // List of pairs (cookie name and cookie domain) that have to be set in
-  // cookie jar.
-  std::set<std::pair<std::string, std::string>> cookies_to_set_;
 
   base::WeakPtrFactory<OAuthMultiloginHelper> weak_ptr_factory_{this};
 };

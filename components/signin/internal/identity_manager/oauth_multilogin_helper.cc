@@ -7,11 +7,12 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/barrier_callback.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/signin/internal/identity_manager/oauth_multilogin_token_fetcher.h"
@@ -29,9 +30,11 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth_multilogin_result.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace signin {
 
@@ -275,60 +278,54 @@ void OAuthMultiloginHelper::OnOAuthMultiloginFinished(
 
 void OAuthMultiloginHelper::StartSettingCookies(
     const OAuthMultiloginResult& result) {
-  DCHECK(cookies_to_set_.empty());
   network::mojom::CookieManager* cookie_manager =
       partition_delegate_->GetCookieManagerForPartition();
-  const std::vector<net::CanonicalCookie>& cookies = result.cookies();
+  net::CookieInclusionStatus default_cookie_inclusion_status;
+  default_cookie_inclusion_status.AddExclusionReason(
+      net::CookieInclusionStatus::ExclusionReason::EXCLUDE_UNKNOWN_ERROR);
 
-  for (const net::CanonicalCookie& cookie : cookies) {
-    cookies_to_set_.insert(std::make_pair(cookie.Name(), cookie.Domain()));
+  // Set only one cookie per (name, domain) pair.
+  absl::flat_hash_map<std::pair<std::string_view, std::string_view>,
+                      raw_ref<const net::CanonicalCookie>>
+      unique_cookies;
+  for (const net::CanonicalCookie& cookie : result.cookies()) {
+    unique_cookies.try_emplace({cookie.Name(), cookie.Domain()}, cookie);
   }
-  for (const net::CanonicalCookie& cookie : cookies) {
-    if (cookies_to_set_.find(std::make_pair(cookie.Name(), cookie.Domain())) !=
-        cookies_to_set_.end()) {
-      base::OnceCallback<void(net::CookieAccessResult)> callback =
-          base::BindOnce(&OAuthMultiloginHelper::OnCookieSet,
-                         weak_ptr_factory_.GetWeakPtr(), cookie.Name(),
-                         cookie.Domain());
-      net::CookieOptions options;
-      options.set_include_httponly();
-      // Permit it to set a SameSite cookie if it wants to.
-      options.set_same_site_cookie_context(
-          net::CookieOptions::SameSiteCookieContext::MakeInclusive());
-      net::CookieInclusionStatus cookie_inclusion_status;
-      cookie_inclusion_status.AddExclusionReason(
-          net::CookieInclusionStatus::ExclusionReason::EXCLUDE_UNKNOWN_ERROR);
-      cookie_manager->SetCanonicalCookie(
-          cookie, net::cookie_util::SimulatedCookieSource(cookie, "https"),
-          options,
-          mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-              std::move(callback),
-              net::CookieAccessResult(cookie_inclusion_status)));
-    } else {
-      LOG(ERROR) << "Duplicate cookie found: " << cookie.Name() << " "
-                 << cookie.Domain();
-    }
+
+  base::RepeatingCallback<void(net::CookieAccessResult)> barrier_callback =
+      base::BarrierCallback<net::CookieAccessResult>(
+          unique_cookies.size(),
+          base::BindOnce(&OAuthMultiloginHelper::OnCookiesSet,
+                         weak_ptr_factory_.GetWeakPtr()));
+  for (const auto& [_, cookie] : unique_cookies) {
+    net::CookieOptions options;
+    options.set_include_httponly();
+    // Permit it to set a SameSite cookie if it wants to.
+    options.set_same_site_cookie_context(
+        net::CookieOptions::SameSiteCookieContext::MakeInclusive());
+
+    cookie_manager->SetCanonicalCookie(
+        *cookie, net::cookie_util::SimulatedCookieSource(*cookie, "https"),
+        options,
+        mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+            base::OnceCallback<void(net::CookieAccessResult)>(barrier_callback),
+            net::CookieAccessResult(default_cookie_inclusion_status)));
   }
 }
 
-void OAuthMultiloginHelper::OnCookieSet(const std::string& cookie_name,
-                                        const std::string& cookie_domain,
-                                        net::CookieAccessResult access_result) {
-  cookies_to_set_.erase(std::make_pair(cookie_name, cookie_domain));
-  bool success = access_result.status.IsInclude();
-  if (!success) {
-    LOG(ERROR) << "Failed to set cookie " << cookie_name
-               << " for domain=" << cookie_domain << ".";
+void OAuthMultiloginHelper::OnCookiesSet(
+    const std::vector<net::CookieAccessResult>& results) {
+  for (const auto& result : results) {
+    base::UmaHistogramBoolean("Signin.SetCookieSuccess",
+                              result.status.IsInclude());
   }
-  UMA_HISTOGRAM_BOOLEAN("Signin.SetCookieSuccess", success);
-  if (cookies_to_set_.empty()) {
-    if (bound_session_delegate_ &&
-        partition_delegate_->CanBindCookiesForPartition()) {
-      bound_session_delegate_->OnCookiesSet();
-    }
-    std::move(callback_).Run(SetAccountsInCookieResult::kSuccess);
+
+  if (bound_session_delegate_ &&
+      partition_delegate_->CanBindCookiesForPartition()) {
+    bound_session_delegate_->OnCookiesSet();
   }
-  // Do not add anything below this line, because this may be deleted.
+  std::move(callback_).Run(SetAccountsInCookieResult::kSuccess);
+  // Do not add anything below this line, because `this` may be deleted.
 }
 
 }  // namespace signin
