@@ -18891,4 +18891,91 @@ TEST_P(ElasticOverscrollTest, ElasticOverscrollWithoutViewport) {
 }
 INSTANTIATE_COMMIT_TO_TREE_TEST_P(ElasticOverscrollTest);
 
+class OverscrollEffectTest : public LayerTreeHostImplTest {
+ public:
+  OverscrollEffectTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kOverscrollEffectOnNonRootScrollers);
+  }
+
+  void SetUp() override {
+    LayerTreeHostImplTest::SetUp();
+    // Common setup: 100x100 viewport, 200x200 content.
+    SetupViewportLayers(host_impl_->active_tree(), gfx::Size(100, 100),
+                        gfx::Size(100, 100), gfx::Size(200, 200));
+    host_impl_->active_tree()->PushPageScaleFromMainThread(1.f, 0.1f, 10.f);
+    host_impl_->active_tree()->UpdateDrawProperties(false, false);
+  }
+
+ protected:
+  void VerifyOverscrollBehavior(LayerImpl* layer) {
+    InputHandler& handler = GetInputHandler();
+    ScrollNode* scroll_node = GetScrollNode(layer);
+
+    // Scroll parameters
+    const gfx::Vector2dF delta(10, 10);
+    const gfx::Point hit_test_point(20, 20);
+
+    // Helper to run a scroll sequence and return the unused delta.
+    auto run_scroll = [&](const OverscrollBehavior& behavior) {
+      scroll_node->overscroll_behavior = behavior;
+
+      // Reset to the scroll boundary so any positive delta is "unused".
+      layer->SetCurrentScrollOffset(gfx::PointF(100, 100));
+
+      handler.ScrollBegin(BeginState(hit_test_point, gfx::Vector2dF(),
+                                     ui::ScrollInputType::kTouchscreen)
+                              .get(),
+                          ui::ScrollInputType::kTouchscreen);
+
+      auto result = handler.ScrollUpdate(
+          UpdateState(hit_test_point, delta, ui::ScrollInputType::kTouchscreen),
+          base::TimeDelta());
+
+      handler.ScrollEnd();
+      return result.unused_scroll_delta;
+    };
+
+    // Case 1: Auto (Default)
+    // Expectation: Full delta is reported as unused (bubbling allowed).
+    EXPECT_VECTOR2DF_EQ(
+        delta, run_scroll(OverscrollBehavior(OverscrollBehavior::Type::kAuto)));
+
+    // Case 2: None
+    // Expectation: Unused delta is clamped to zero (bubbling suppressed).
+    EXPECT_VECTOR2DF_EQ(
+        gfx::Vector2dF(0, 0),
+        run_scroll(OverscrollBehavior(OverscrollBehavior::Type::kNone)));
+
+    // Case 3: Mixed (None on X, Auto on Y)
+    // Expectation: X is clamped, Y is reported as unused.
+    EXPECT_VECTOR2DF_EQ(
+        gfx::Vector2dF(0, delta.y()),
+        run_scroll(OverscrollBehavior(OverscrollBehavior::Type::kNone,
+                                      OverscrollBehavior::Type::kAuto)));
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_COMMIT_TO_TREE_TEST_P(OverscrollEffectTest);
+
+TEST_P(OverscrollEffectTest, RespectsOverscrollBehaviorOnChild) {
+  LayerImpl* outer_scroll = OuterViewportScrollLayer();
+  LayerImpl* child = AddScrollableLayer(outer_scroll, gfx::Size(100, 100),
+                                        gfx::Size(200, 200));
+
+  // Position the child at (10, 10) so the hit_test_point (20, 20) targets it.
+  child->SetOffsetToTransformParent(gfx::Vector2dF(10, 10));
+  host_impl_->active_tree()->UpdateDrawProperties(false, false);
+
+  VerifyOverscrollBehavior(child);
+}
+
+TEST_P(OverscrollEffectTest, RespectsOverscrollBehaviorOnRoot) {
+  // The root layer covers the viewport, so it catches the hit test.
+  VerifyOverscrollBehavior(OuterViewportScrollLayer());
+}
+
 }  // namespace cc

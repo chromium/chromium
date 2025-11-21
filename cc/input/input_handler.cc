@@ -435,6 +435,18 @@ InputHandlerScrollResult InputHandler::ScrollUpdate(
     unused_scroll_delta = gfx::Vector2dF();
   }
 
+  // When overscroll effect on non-root scrollers is enabled,
+  // ensure overscroll-behaviour: none is respected.
+  if (base::FeatureList::IsEnabled(
+          ::features::kOverscrollEffectOnNonRootScrollers)) {
+    if (scroll_node.overscroll_behavior.x == OverscrollBehavior::Type::kNone) {
+      unused_scroll_delta.set_x(0.f);
+    }
+    if (scroll_node.overscroll_behavior.y == OverscrollBehavior::Type::kNone) {
+      unused_scroll_delta.set_y(0.f);
+    }
+  }
+
   bool did_scroll_top_controls =
       initial_top_controls_offset !=
       compositor_delegate_->GetBrowserControlsTopOffset();
