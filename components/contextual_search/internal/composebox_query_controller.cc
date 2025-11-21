@@ -41,6 +41,7 @@
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "third_party/lens_server_proto/lens_overlay_contextual_inputs.pb.h"
+#include "third_party/lens_server_proto/lens_overlay_interaction_request_metadata.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_payload.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_platform.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_request_id.pb.h"
@@ -110,6 +111,13 @@ ComposeboxQueryController::UploadRequest::~UploadRequest() = default;
 
 ComposeboxQueryController::FileInfo::FileInfo() = default;
 ComposeboxQueryController::FileInfo::~FileInfo() = default;
+
+ComposeboxQueryController::LensServerInteractionRequest::
+    LensServerInteractionRequest(
+        std::unique_ptr<lens::LensOverlayRequestId> request_id)
+    : request_id_(std::move(request_id)) {}
+ComposeboxQueryController::LensServerInteractionRequest::
+    ~LensServerInteractionRequest() = default;
 
 ComposeboxQueryController::CreateSearchUrlRequestInfo::
     CreateSearchUrlRequestInfo() = default;
@@ -196,6 +204,23 @@ bool MediaTypeHasImage(lens::LensOverlayRequestId::MediaType media_type) {
              lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE ||
          media_type == lens::LensOverlayRequestId::MEDIA_TYPE_PDF_AND_IMAGE;
 }
+
+// Returns the interaction type for the given media type.
+lens::LensOverlayInteractionRequestMetadata::Type MediaTypeToInteractionType(
+    lens::LensOverlayRequestId::MediaType media_type) {
+  switch (media_type) {
+    case lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE:
+    case lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE:
+      return lens::LensOverlayInteractionRequestMetadata::WEBPAGE_QUERY;
+    case lens::LensOverlayRequestId::MEDIA_TYPE_PDF:
+    case lens::LensOverlayRequestId::MEDIA_TYPE_PDF_AND_IMAGE:
+      return lens::LensOverlayInteractionRequestMetadata::PDF_QUERY;
+    default:
+      return lens::LensOverlayInteractionRequestMetadata::
+          CONTEXTUAL_SEARCH_QUERY;
+  }
+}
+
 }  // namespace
 
 ComposeboxQueryController::ComposeboxQueryController(
@@ -239,14 +264,6 @@ void ComposeboxQueryController::InitializeIfNeeded() {
   }
 }
 
-std::unique_ptr<lens::LensOverlayRequestId>
-ComposeboxQueryController::GetNextRequestId(
-    lens::RequestIdUpdateMode update_mode,
-    lens::MimeType mime_type,
-    lens::LensOverlayRequestId_MediaType media_type) {
-  return request_id_generator_.GetNextRequestId(update_mode, media_type);
-}
-
 lens::LensOverlayRequestId
 ComposeboxQueryController::GetRequestIdForViewportImage(
     const base::UnguessableToken& file_token) {
@@ -267,18 +284,9 @@ ComposeboxQueryController::GetRequestIdForViewportImage(
 
 GURL ComposeboxQueryController::CreateSearchUrl(
     std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info) {
+  latest_interaction_request_data_.reset();
   num_files_in_request_ = 0;
   if (!active_files_.empty() && cluster_info_.has_value()) {
-    // Get the encoded visual search interaction log data.
-    std::optional<std::string> encoded_visual_search_interaction_log_data =
-        GetEncodedVisualSearchInteractionLogData(
-            search_url_request_info->query_text);
-    if (encoded_visual_search_interaction_log_data.has_value()) {
-      search_url_request_info->additional_params.insert(
-          {kVisualSearchInteractionQueryParameterKey,
-           encoded_visual_search_interaction_log_data.value()});
-    }
-
     if (enable_multi_context_input_flow_) {
       std::unique_ptr<lens::LensOverlayContextualInputs> contextual_inputs =
           std::make_unique<lens::LensOverlayContextualInputs>();
@@ -303,6 +311,11 @@ GURL ComposeboxQueryController::CreateSearchUrl(
         }
       }
 
+      AddEncodedVisualSearchInteractionLogDataParam(
+          search_url_request_info->query_text,
+          search_url_request_info->lens_overlay_selection_type,
+          search_url_request_info->additional_params);
+      // Get the encoded visual search interaction log data.
       bool should_send_lns_surface =
           send_lns_surface_ &&
           (!suppress_lns_surface_param_if_no_image_ || has_image_upload);
@@ -327,6 +340,28 @@ GURL ComposeboxQueryController::CreateSearchUrl(
       if (IsValidFileUploadStatusForMultimodalRequest(
               last_file->upload_status)) {
         num_files_in_request_ = 1;
+
+        // Trigger the interaction request if needed.
+        // TODO(crbug.com/462509148): Determine how to support interaction
+        // requests for multi-context input flow.
+        if (search_url_request_info->lens_overlay_selection_type.has_value()) {
+          SendInteractionRequest(
+              request_id_generator_.GetNextRequestId(
+                  lens::RequestIdUpdateMode::kInteractionRequest,
+                  last_file->request_id_->media_type()),
+              search_url_request_info->query_text,
+              search_url_request_info->image_crop,
+              search_url_request_info->client_logs,
+              search_url_request_info->lens_overlay_selection_type);
+        }
+
+        // Get the encoded visual search interaction log data after triggering
+        // the interaction request if needed, so that interaction metadata
+        // is included.
+        AddEncodedVisualSearchInteractionLogDataParam(
+            search_url_request_info->query_text,
+            search_url_request_info->lens_overlay_selection_type,
+            search_url_request_info->additional_params);
         bool should_send_lns_surface =
             send_lns_surface_ &&
             (!suppress_lns_surface_param_if_no_image_ ||
@@ -653,6 +688,78 @@ void ComposeboxQueryController::ResetRequestClusterInfoState() {
 
   // Fetch new cluster info.
   FetchClusterInfo();
+}
+
+void ComposeboxQueryController::SendInteractionRequest(
+    std::unique_ptr<lens::LensOverlayRequestId> request_id,
+    std::string query_text,
+    std::optional<lens::ImageCrop> image_crop,
+    std::optional<lens::LensOverlayClientLogs> client_logs,
+    std::optional<lens::LensOverlaySelectionType> lens_overlay_selection_type) {
+  latest_interaction_request_data_ =
+      std::make_unique<LensServerInteractionRequest>(std::move(request_id));
+
+  // Start getting the OAuth headers for the interaction request.
+  latest_interaction_request_data_->interaction_access_token_fetcher_ =
+      CreateOAuthHeadersAndContinue(base::BindOnce(
+          &ComposeboxQueryController::OnInteractionRequestHeadersReady,
+          weak_ptr_factory_.GetWeakPtr()));
+
+  lens::LensOverlayServerRequest server_request;
+  if (client_logs.has_value()) {
+    server_request.mutable_client_logs()->CopyFrom(*client_logs);
+  }
+  // The request ID is guaranteed to exist since it is set in the constructor
+  // of latest_interaction_request_data_.
+  DCHECK(latest_interaction_request_data_->request_id_);
+
+  lens::LensOverlayRequestContext request_context;
+  request_context.mutable_request_id()->CopyFrom(
+      *latest_interaction_request_data_->request_id_);
+  request_context.mutable_client_context()->CopyFrom(CreateClientContext());
+  server_request.mutable_interaction_request()
+      ->mutable_request_context()
+      ->CopyFrom(request_context);
+
+  CHECK(image_crop.has_value() || !query_text.empty());
+  lens::LensOverlayInteractionRequestMetadata interaction_request_metadata;
+  if (image_crop.has_value()) {
+    // Add the region for region search and multimodal requests.
+    server_request.mutable_interaction_request()
+        ->mutable_image_crop()
+        ->CopyFrom(*image_crop);
+    interaction_request_metadata.set_type(
+        lens::LensOverlayInteractionRequestMetadata::REGION_SEARCH);
+    interaction_request_metadata.mutable_selection_metadata()
+        ->mutable_region()
+        ->mutable_region()
+        ->CopyFrom(*image_crop->mutable_zoomed_crop()->mutable_crop());
+
+    // Add the text, for multimodal requests.
+    if (!query_text.empty()) {
+      interaction_request_metadata.mutable_query_metadata()
+          ->mutable_text_query()
+          ->set_query(query_text);
+    }
+  } else if (!query_text.empty()) {
+    lens::LensOverlayRequestId::MediaType media_type =
+        latest_interaction_request_data_->request_id_->media_type();
+    lens::LensOverlayInteractionRequestMetadata::Type interaction_type =
+        MediaTypeToInteractionType(media_type);
+    // If there is only `query_text`, this is a contextual flow.
+    interaction_request_metadata.set_type(interaction_type);
+    interaction_request_metadata.mutable_query_metadata()
+        ->mutable_text_query()
+        ->set_query(query_text);
+  }
+
+  server_request.mutable_interaction_request()
+      ->mutable_interaction_request_metadata()
+      ->CopyFrom(interaction_request_metadata);
+  latest_interaction_request_data_->request_ =
+      std::make_unique<lens::LensOverlayServerRequest>(
+          std::move(server_request));
+  TrySendInteractionRequest();
 }
 
 void ComposeboxQueryController::FetchClusterInfo() {
@@ -1032,6 +1139,50 @@ void ComposeboxQueryController::SendUploadNetworkRequest(FileInfo* file_info,
       /*upload_progress_callback=*/base::DoNothing());
 }
 
+void ComposeboxQueryController::OnInteractionRequestHeadersReady(
+    std::vector<std::string> headers) {
+  if (latest_interaction_request_data_) {
+    latest_interaction_request_data_->request_headers_ =
+        std::make_unique<std::vector<std::string>>(headers);
+    TrySendInteractionRequest();
+  }
+}
+
+void ComposeboxQueryController::TrySendInteractionRequest() {
+  bool has_interaction_request = latest_interaction_request_data_ &&
+                                 latest_interaction_request_data_->request_;
+  bool has_cluster_info = cluster_info_.has_value();
+  bool has_request_headers = latest_interaction_request_data_ &&
+                             latest_interaction_request_data_->request_headers_;
+  bool has_not_sent_request = !latest_interaction_request_data_->request_sent_;
+  if (has_interaction_request && has_cluster_info && has_request_headers &&
+      has_not_sent_request) {
+    latest_interaction_request_data_->request_sent_ = true;
+    PerformFetchRequest(
+        latest_interaction_request_data_->request_.get(),
+        latest_interaction_request_data_->request_headers_.get(),
+        base::Milliseconds(
+            lens::features::GetLensOverlayPageContentRequestTimeoutMs()),
+        base::BindOnce(
+            &ComposeboxQueryController::OnInteractionEndpointFetcherCreated,
+            weak_ptr_factory_.GetWeakPtr()),
+        base::BindOnce(&ComposeboxQueryController::HandleInteractionResponse,
+                       weak_ptr_factory_.GetWeakPtr()),
+        /*upload_progress_callback=*/base::DoNothing());
+  }
+}
+
+void ComposeboxQueryController::OnInteractionEndpointFetcherCreated(
+    std::unique_ptr<EndpointFetcher> endpoint_fetcher) {
+  latest_interaction_request_data_->interaction_endpoint_fetcher_ =
+      std::move(endpoint_fetcher);
+}
+
+void ComposeboxQueryController::HandleInteractionResponse(
+    std::unique_ptr<EndpointResponse> response) {
+  latest_interaction_request_data_->interaction_endpoint_fetcher_.reset();
+}
+
 void ComposeboxQueryController::OnUploadEndpointFetcherCreated(
     const base::UnguessableToken& file_token,
     size_t request_index,
@@ -1178,15 +1329,16 @@ ComposeboxQueryController::suggest_inputs() const {
   return suggest_inputs_;
 }
 
-std::optional<std::string>
-ComposeboxQueryController::GetEncodedVisualSearchInteractionLogData(
-    const std::optional<std::string>& query_text) {
+void ComposeboxQueryController::AddEncodedVisualSearchInteractionLogDataParam(
+    const std::optional<std::string>& query_text,
+    std::optional<lens::LensOverlaySelectionType> lens_overlay_selection_type,
+    std::map<std::string, std::string>& url_params_map) {
   if (active_files_.empty()) {
-    return std::nullopt;
+    return;
   }
   const std::unique_ptr<FileInfo>& last_file = active_files_.rbegin()->second;
   if (!IsValidFileUploadStatusForMultimodalRequest(last_file->upload_status)) {
-    return std::nullopt;
+    return;
   }
 
   // Set the interaction data based on the last file request type.
@@ -1196,8 +1348,18 @@ ComposeboxQueryController::GetEncodedVisualSearchInteractionLogData(
   interaction_data.mutable_log_data()
       ->mutable_user_selection_data()
       ->set_selection_type(lens::MULTIMODAL_SEARCH);
+  if (lens_overlay_selection_type.has_value()) {
+    interaction_data.mutable_log_data()
+        ->mutable_user_selection_data()
+        ->set_selection_type(lens_overlay_selection_type.value());
+  }
   interaction_data.mutable_log_data()->set_client_platform(
       lens::CLIENT_PLATFORM_LENS_OVERLAY);
+
+  // A query that generates a url without an interaction request is a parent
+  // query.
+  // TODO(crbug.com/462506270): Set to false if this is not the first query.
+  interaction_data.mutable_log_data()->set_is_parent_query(true);
 
   if (query_text.has_value()) {
     interaction_data.mutable_text_select()->set_selected_texts(
@@ -1221,14 +1383,31 @@ ComposeboxQueryController::GetEncodedVisualSearchInteractionLogData(
       NOTREACHED();
   }
 
-  // Since there is only one query, it is always the parent query.
-  interaction_data.mutable_log_data()->set_is_parent_query(true);
+  auto media_type = last_file->request_id_->media_type();
+  bool use_full_region =
+      media_type == lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE ||
+      media_type == lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE ||
+      media_type == lens::LensOverlayRequestId::MEDIA_TYPE_PDF_AND_IMAGE;
+
+  // If there was an interaction request, then set the interaction data from
+  // the request.
+  if (latest_interaction_request_data_ &&
+      latest_interaction_request_data_->request_ &&
+      latest_interaction_request_data_->request_->has_interaction_request()) {
+    auto sent_interaction_request =
+        latest_interaction_request_data_->request_->interaction_request();
+    interaction_data.set_interaction_type(
+        sent_interaction_request.interaction_request_metadata().type());
+    if (sent_interaction_request.has_image_crop()) {
+      // The zoomed crop field should only be set if the object id is not set.
+      interaction_data.mutable_zoomed_crop()->CopyFrom(
+          sent_interaction_request.image_crop().zoomed_crop());
+      use_full_region = false;
+    }
+  }
 
   // Set the zoomed crop if there is an image associated with the request.
-  auto media_type = last_file->request_id_->media_type();
-  if (media_type == lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE ||
-      media_type == lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE ||
-      media_type == lens::LensOverlayRequestId::MEDIA_TYPE_PDF_AND_IMAGE) {
+  if (use_full_region) {
     interaction_data.mutable_zoomed_crop()->mutable_crop()->set_center_x(0.5f);
     interaction_data.mutable_zoomed_crop()->mutable_crop()->set_center_y(0.5f);
     interaction_data.mutable_zoomed_crop()->mutable_crop()->set_width(1);
@@ -1244,5 +1423,7 @@ ComposeboxQueryController::GetEncodedVisualSearchInteractionLogData(
   base::Base64UrlEncode(serialized_proto,
                         base::Base64UrlEncodePolicy::OMIT_PADDING,
                         &encoded_proto);
-  return encoded_proto;
+
+  url_params_map.insert(
+      {kVisualSearchInteractionQueryParameterKey, encoded_proto});
 }

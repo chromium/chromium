@@ -24,6 +24,7 @@ source_set("public") {
     "//components/version_info:channel",
     "//mojo/public/mojom/base",
     "//services/network/public/cpp",
+    "//third_party/lens_server_proto:lens_overlay_proto",
     "//url",
   ]
 }

@@ -54,6 +54,10 @@ class FakeVariationsClient : public variations::VariationsClient {
   variations::mojom::VariationsHeadersPtr GetVariationsHeaders() const override;
 };
 
+// Callback for when an endpoint fetcher is created.
+using EndpointFetcherCreatedCallback =
+    base::RepeatingCallback<void()>;
+
 namespace contextual_search {
 
 // Helper for testing features that use the ComposeboxQueryController.
@@ -126,10 +130,28 @@ class TestComposeboxQueryController : public ComposeboxQueryController {
     return std::make_optional(sent_upload_requests_[index]);
   }
 
+  // Gets the sent interaction request with the index from the end, e.g.
+  // recent_sent_interaction_request(0) will return the last sent interaction
+  // request.
+  std::optional<lens::LensOverlayServerRequest> recent_sent_interaction_request(
+      size_t index_from_end) const {
+    size_t index = sent_interaction_requests_.size() - index_from_end - 1;
+    if (index < 0 || index >= sent_interaction_requests_.size()) {
+      return std::nullopt;
+    }
+    return std::make_optional(sent_interaction_requests_[index]);
+  }
+
   // Gets the last sent upload request.
   std::optional<lens::LensOverlayServerRequest> last_sent_file_upload_request()
       const {
     return recent_sent_upload_request(0);
+  }
+
+  // Gets the last sent interaction request.
+  std::optional<lens::LensOverlayServerRequest> last_sent_interaction_request()
+      const {
+    return recent_sent_interaction_request(0);
   }
 
   // Gets the last sent cors exempt headers.
@@ -147,6 +169,12 @@ class TestComposeboxQueryController : public ComposeboxQueryController {
       const base::UnguessableToken& file_token) {
     return static_cast<const ComposeboxQueryController::FileInfo*>(
         ComposeboxQueryController::GetFileInfo(file_token));
+  }
+
+  // Adds a callback to be called when an endpoint fetcher is created.
+  void AddEndpointFetcherCreatedCallback(
+      EndpointFetcherCreatedCallback callback) {
+    on_endpoint_fetcher_created_callbacks_.push_back(std::move(callback));
   }
 
  protected:
@@ -186,6 +214,13 @@ class TestComposeboxQueryController : public ComposeboxQueryController {
 
   // The sent upload requests.
   std::vector<lens::LensOverlayServerRequest> sent_upload_requests_;
+
+  // The sent interaction requests.
+  std::vector<lens::LensOverlayServerRequest> sent_interaction_requests_;
+
+  // The endpoint fetcher created callbacks.
+  std::vector<EndpointFetcherCreatedCallback>
+      on_endpoint_fetcher_created_callbacks_;
 
   // The last sent cors exempt headers.
   std::vector<std::string> last_sent_cors_exempt_headers_;

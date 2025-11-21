@@ -13,6 +13,12 @@
 #include "base/observer_list_types.h"
 #include "components/contextual_search/contextual_search_types.h"
 #include "components/lens/lens_bitmap_processing.h"
+#include "third_party/lens_server_proto/lens_overlay_client_context.pb.h"
+#include "third_party/lens_server_proto/lens_overlay_cluster_info.pb.h"
+#include "third_party/lens_server_proto/lens_overlay_selection_type.pb.h"
+#include "third_party/lens_server_proto/lens_overlay_server.pb.h"
+#include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
+#include "third_party/lens_server_proto/lens_overlay_visual_search_interaction_data.pb.h"
 
 namespace base {
 class Time;
@@ -93,6 +99,19 @@ class ContextualSearchContextController {
 
     // Additional params to attach to the search url.
     std::map<std::string, std::string> additional_params;
+
+    // The selection type corresponding to the interaction.
+    std::optional<lens::LensOverlaySelectionType> lens_overlay_selection_type;
+
+    // The image crop corresponding to the interaction. This should only be set
+    // if the selection type is set for an interaction.
+    // TODO(crbug.com/462509452): Consider passing a OnceCallback that returns
+    // the image crop, so that it can be create asynchronously.
+    std::optional<lens::ImageCrop> image_crop;
+
+    // The client logs corresponding to the interaction. This should only be set
+    // if the selection type is set for an interaction.
+    std::optional<lens::LensOverlayClientLogs> client_logs;
   };
 
   virtual ~ContextualSearchContextController() = default;

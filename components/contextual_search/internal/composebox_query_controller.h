@@ -53,10 +53,14 @@ enum class Channel;
 class SkBitmap;
 #endif  // !BUILDFLAG(IS_IOS)
 
-// Callback type alias for the request body proto created.
+// Callback type alias for the file upload request body proto created.
 using RequestBodyProtoCreatedCallback = base::OnceCallback<void(
     lens::LensOverlayServerRequest,
     std::optional<contextual_search::FileUploadErrorType>)>;
+
+// Callback type alias for the interaction request body proto created.
+using InteractionRequestBodyProtoCreatedCallback =
+    base::OnceCallback<void(lens::LensOverlayServerRequest)>;
 
 // TODO(crbug.com/449970296): Rename this class.
 class ComposeboxQueryController
@@ -92,13 +96,6 @@ class ComposeboxQueryController
       const base::UnguessableToken& file_token) override;
   std::vector<const contextual_search::FileInfo*> GetFileInfoList() override;
   const lens::proto::LensOverlaySuggestInputs& suggest_inputs() const override;
-
-  // Returns the next request ID for the given update mode and media type.
-  // Updates the suggest inputs with the new request ID.
-  virtual std::unique_ptr<lens::LensOverlayRequestId> GetNextRequestId(
-      lens::RequestIdUpdateMode update_mode,
-      lens::MimeType mime_type,
-      lens::LensOverlayRequestId_MediaType media_type);
 
   // Returns a request id to use for the viewport image upload request for the
   // given file info, setting the viewport request id on the file info if it is
@@ -229,6 +226,16 @@ class ComposeboxQueryController
   // override.
   virtual void ResetRequestClusterInfoState();
 
+  // Sends an interaction request. Protected to allow tests
+  // to override.
+  virtual void SendInteractionRequest(
+      std::unique_ptr<lens::LensOverlayRequestId> request_id,
+      std::string query_text,
+      std::optional<lens::ImageCrop> image_crop,
+      std::optional<lens::LensOverlayClientLogs> client_logs,
+      std::optional<lens::LensOverlaySelectionType>
+          lens_overlay_selection_type);
+
   // The internal state of the query controller. Protected to allow tests to
   // access the state. Do not modify this state directly, use
   // SetQueryControllerState() instead.
@@ -247,6 +254,44 @@ class ComposeboxQueryController
   scoped_refptr<base::TaskRunner> create_request_task_runner_;
 
  private:
+  // Data class for constructing an interaction request to the Lens server.
+  struct LensServerInteractionRequest {
+   public:
+    explicit LensServerInteractionRequest(
+        std::unique_ptr<lens::LensOverlayRequestId> request_id);
+    ~LensServerInteractionRequest();
+
+    // Returns the sequence ID of the request this data belongs to. Used
+    // for cancelling any requests that have been superseded by another.
+    int sequence_id() const { return request_id_->sequence_id(); }
+
+    // The request ID for this request.
+    const std::unique_ptr<lens::LensOverlayRequestId> request_id_;
+
+    // The access token fetcher used for getting OAuth for the interaction
+    // upload request. Will be discarded after the OAuth headers are created.
+    std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
+        interaction_access_token_fetcher_;
+
+    // The endpoint fetcher used for the interaction request.
+    std::unique_ptr<endpoint_fetcher::EndpointFetcher>
+        interaction_endpoint_fetcher_;
+
+    // The request to be sent to the server. Must be set prior to making the
+    // request.
+    std::unique_ptr<lens::LensOverlayServerRequest> request_;
+
+    // The headers to attach to the request.
+    std::unique_ptr<std::vector<std::string>> request_headers_;
+
+    // A callback to run once the request has been sent. This is optional, but
+    // can be used to run some logic once the request has been sent.
+    std::optional<base::OnceClosure> request_sent_callback_;
+
+    // Whether or not the request has been sent.
+    bool request_sent_ = false;
+  };
+
   // Returns a mutable pointer to allow internal modifications.
   FileInfo* GetMutableFileInfo(const base::UnguessableToken& file_token);
 
@@ -332,6 +377,22 @@ class ComposeboxQueryController
   // Creates the endpoint fetcher and sends the upload network request.
   void SendUploadNetworkRequest(FileInfo* file_info, size_t request_index);
 
+  // Asynchronous handler for when the request headers for the interaction
+  // request are ready.
+  void OnInteractionRequestHeadersReady(std::vector<std::string> headers);
+
+  // Sends pending the interaction request if the request body, headers, and
+  // cluster info are ready.
+  void TrySendInteractionRequest();
+
+  // The callback for when the interaction request endpoint fetcher is created.
+  void OnInteractionEndpointFetcherCreated(
+      std::unique_ptr<endpoint_fetcher::EndpointFetcher> endpoint_fetcher);
+
+  // Handles the response from the interaction request.
+  void HandleInteractionResponse(
+      std::unique_ptr<endpoint_fetcher::EndpointResponse> response);
+
   // Callback for when an upload endpoint fetcher is created, storing it
   // updating the file info state.
   void OnUploadEndpointFetcherCreated(
@@ -356,10 +417,12 @@ class ComposeboxQueryController
       endpoint_fetcher::EndpointFetcherCallback response_received_callback,
       UploadProgressCallback upload_progress_callback = base::NullCallback());
 
-  // Creates the encoded visual search interaction log data to attach to search
-  // urls.
-  std::optional<std::string> GetEncodedVisualSearchInteractionLogData(
-      const std::optional<std::string>& query_text);
+  // Creates the encoded visual search interaction log data and attaches it to
+  // the url param list.
+  void AddEncodedVisualSearchInteractionLogDataParam(
+      const std::optional<std::string>& query_text,
+      std::optional<lens::LensOverlaySelectionType> lens_overlay_selection_type,
+      std::map<std::string, std::string>& url_params_map);
 
   // The last received cluster info.
   std::optional<lens::LensOverlayClusterInfo> cluster_info_ = std::nullopt;
@@ -421,6 +484,11 @@ class ComposeboxQueryController
   // Does nothing if `enable_multi_context_input_flow_` is false or if
   // `enable_viewport_images_` is false.
   bool use_separate_request_ids_for_multi_context_viewport_images_;
+
+  // The data for the interaction request in progress. Is null if no
+  // interaction request has been made.
+  std::unique_ptr<LensServerInteractionRequest>
+      latest_interaction_request_data_;
 
   lens::proto::LensOverlaySuggestInputs suggest_inputs_;
 
