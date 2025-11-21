@@ -149,8 +149,7 @@
   [_passkeyKeychainProviderBridge
       fetchSecurityDomainSecretForGaia:account.gaia.ToNSString()
                             credential:nil
-                               purpose:PasskeyKeychainProvider::
-                                           ReauthenticatePurpose::kEncrypt
+                               purpose:webauthn::ReauthenticatePurpose::kEncrypt
                             completion:^(
                                 NSArray<NSData*>* securityDomainSecrets) {
                               [weakSelf onSecurityDomainSecretsFetched:

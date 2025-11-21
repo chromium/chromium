@@ -17,13 +17,6 @@
 // Class to manage passkey vault keys.
 class PasskeyKeychainProvider {
  public:
-  // TODO(crbug.com/460485614): Remove these 4 type aliases once everything else
-  // uses the webauthn types directly.
-  using ReauthenticatePurpose = webauthn::ReauthenticatePurpose;
-  using SharedKey = webauthn::SharedKey;
-  using SharedKeyList = webauthn::SharedKeyList;
-  using KeysFetchedCallback = webauthn::KeysFetchedCallback;
-
   // Types for the different callbacks.
   using CheckEnrolledCallback = base::OnceCallback<void(BOOL, NSError*)>;
   using EnrollCallback = base::OnceCallback<void(NSError*)>;
