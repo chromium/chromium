@@ -314,6 +314,14 @@ CreateInputDataFromAnnotatedPageContent(
           ComposeboxQueryController::CreateSearchUrlRequestInfo>();
   search_url_request_info->query_text = base::SysNSStringToUTF8(text);
   search_url_request_info->query_start_time = base::Time::Now();
+  // Read the list of tokens from the fileinfo list in the contextual search
+  // controller.
+  // TODO(crbug.com/455843962): Rely on the contextual search session handle
+  // to track uploaded context tokens.
+  for (const contextual_search::FileInfo* file_info :
+       _composeboxQueryController->GetFileInfoList()) {
+    search_url_request_info->file_tokens.push_back(file_info->file_token);
+  }
   GURL URL = _composeboxQueryController->CreateSearchUrl(
       std::move(search_url_request_info));
   // TODO(crbug.com/40280872): Handle AIM enabled in the query controller.
@@ -826,7 +834,17 @@ CreateInputDataFromAnnotatedPageContent(
     return std::nullopt;
   }
 
-  return _composeboxQueryController->suggest_inputs();
+  auto tokens = std::vector<base::UnguessableToken>();
+
+  // Read the list of tokens from the fileinfo list in the contextual search
+  // controller.
+  // TODO(crbug.com/455843962): Rely on the contextual search session handle
+  // to track uploaded context tokens.
+  for (const contextual_search::FileInfo* file_info :
+       _composeboxQueryController->GetFileInfoList()) {
+    tokens.push_back(file_info->file_token);
+  }
+  return *_composeboxQueryController->CreateSuggestInputs(tokens);
 }
 
 - (BOOL)isAIModeEnabled {

@@ -97,6 +97,9 @@ class ContextualSearchContextController {
     // The type of search url to create.
     SearchUrlType search_url_type = SearchUrlType::kAim;
 
+    // The tokens of the contextual inputs to attach to the search url.
+    std::vector<base::UnguessableToken> file_tokens;
+
     // Additional params to attach to the search url.
     std::map<std::string, std::string> additional_params;
 
@@ -135,17 +138,13 @@ class ContextualSearchContextController {
       std::unique_ptr<lens::ContextualInputData> contextual_input_data,
       std::optional<lens::ImageEncodingOptions> image_options) = 0;
 
-  // Removes file from file cache.
   virtual bool DeleteFile(const base::UnguessableToken& file_token) = 0;
-
-  // Clear entire file cache.
   virtual void ClearFiles() = 0;
 
-  // Resets the suggest inputs, setting it to the suggest inputs for the
-  // last file if there is only one attached file remaining.
-  virtual void ResetSuggestInputs() = 0;
-
-  virtual int num_files_in_request() = 0;
+  // Creates the suggest inputs proto for the given attached context tokens.
+  virtual std::unique_ptr<lens::proto::LensOverlaySuggestInputs>
+  CreateSuggestInputs(
+      const std::vector<base::UnguessableToken>& attached_context_tokens) = 0;
 
   // Return the file from `active_files_` map or nullptr if not found.
   virtual const FileInfo* GetFileInfo(
@@ -153,9 +152,6 @@ class ContextualSearchContextController {
 
   // Return the file infos for all files in the request.
   virtual std::vector<const FileInfo*> GetFileInfoList() = 0;
-
-  virtual const lens::proto::LensOverlaySuggestInputs& suggest_inputs()
-      const = 0;
 };
 
 }  // namespace contextual_search

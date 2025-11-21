@@ -59,9 +59,10 @@ ContextualSearchSessionHandle::GetSuggestInputs() const {
     return std::nullopt;
   }
 
-  const auto& suggest_inputs = controller->suggest_inputs();
-  if (suggest_inputs.has_encoded_request_id()) {
-    return suggest_inputs;
+  const auto& suggest_inputs =
+      controller->CreateSuggestInputs(uploaded_context_tokens_);
+  if (suggest_inputs->has_encoded_request_id()) {
+    return *suggest_inputs.get();
   }
 
   return std::nullopt;
@@ -81,6 +82,7 @@ void ContextualSearchSessionHandle::AddFileContext(
     return;
   }
   base::UnguessableToken file_token = base::UnguessableToken::Create();
+  uploaded_context_tokens_.push_back(file_token);
 
   lens::MimeType mime_type;
 
@@ -109,10 +111,30 @@ void ContextualSearchSessionHandle::AddFileContext(
                                           std::move(image_options));
 }
 
+void ContextualSearchSessionHandle::AddTabContext(
+    int32_t tab_id,
+    AddTabContextCallback callback) {
+  // Create the file token and add it to the list of uploaded context tokens so
+  // that it is referenced in the search url.
+  base::UnguessableToken file_token = base::UnguessableToken::Create();
+  uploaded_context_tokens_.push_back(file_token);
+  // TODO(crbug.com/461869881): Store tab metadata in a list of attached tabs
+  // to be able to return the list of attached tabs.
+  std::move(callback).Run(file_token);
+}
+
 void ContextualSearchSessionHandle::StartTabContextUploadFlow(
     const base::UnguessableToken& file_token,
     std::unique_ptr<lens::ContextualInputData> contextual_input_data,
     std::optional<lens::ImageEncodingOptions> image_options) {
+  // Exit early if the file token is not in the list of uploaded context
+  // tokens, i.e. it was deleted before the upload flow could start.
+  auto it = std::find(uploaded_context_tokens_.begin(),
+                      uploaded_context_tokens_.end(), file_token);
+  if (it == uploaded_context_tokens_.end()) {
+    return;
+  }
+
   if (auto* controller = GetController()) {
     controller->StartFileUploadFlow(
         file_token, std::move(contextual_input_data), image_options);
@@ -121,9 +143,14 @@ void ContextualSearchSessionHandle::StartTabContextUploadFlow(
 
 bool ContextualSearchSessionHandle::DeleteFile(
     const base::UnguessableToken& file_token) {
-  // It is possible to receive a call to delete a context before that context
-  // has been created in the query controller. We queue all context tokens for
-  // deletion at query submission time.
+  // Remove the file token from the list of uploaded context tokens.
+  auto it = std::find(uploaded_context_tokens_.begin(),
+                      uploaded_context_tokens_.end(), file_token);
+  if (it != uploaded_context_tokens_.end()) {
+    uploaded_context_tokens_.erase(it);
+  }
+
+  // Also delete the file from the context controller if it exists.
   if (auto* context_controller = GetController()) {
     const contextual_search::FileInfo* file_info =
         context_controller->GetFileInfo(file_token);
@@ -148,6 +175,7 @@ bool ContextualSearchSessionHandle::DeleteFile(
 }
 
 void ContextualSearchSessionHandle::ClearFiles() {
+  uploaded_context_tokens_.clear();
   if (auto* controller = GetController()) {
     controller->ClearFiles();
   }
@@ -171,10 +199,16 @@ GURL ContextualSearchSessionHandle::CreateSearchUrl(
   std::string query_text = search_url_request_info->query_text;
   metrics_recorder->NotifySessionStateChanged(
       contextual_search::SessionState::kNavigationOccurred);
-  metrics_recorder->RecordQueryMetrics(
-      query_text.size(), context_controller->num_files_in_request());
+  metrics_recorder->RecordQueryMetrics(query_text.size(),
+                                       uploaded_context_tokens_.size());
+  search_url_request_info->file_tokens = uploaded_context_tokens_;
   return context_controller->CreateSearchUrl(
       std::move(search_url_request_info));
+}
+
+std::vector<base::UnguessableToken>
+ContextualSearchSessionHandle::GetUploadedContextTokens() const {
+  return uploaded_context_tokens_;
 }
 
 }  // namespace contextual_search

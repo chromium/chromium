@@ -295,6 +295,12 @@ void ContextualSearchboxHandler::AddFileContext(
 void ContextualSearchboxHandler::AddTabContext(int32_t tab_id,
                                                bool delay_upload,
                                                AddTabContextCallback callback) {
+  auto* contextual_session_handle = GetSessionHandle(web_contents_);
+  if (!contextual_session_handle) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
   // TODO(crbug.com/458050417): Move more of the tab context logic to
   // ContextualSessionHandle.
   const tabs::TabHandle handle = tabs::TabHandle(tab_id);
@@ -306,13 +312,42 @@ void ContextualSearchboxHandler::AddTabContext(int32_t tab_id,
 
   RecordTabClickedMetric(tab);
 
+  contextual_session_handle->AddTabContext(
+      tab_id,
+      base::BindOnce(&ContextualSearchboxHandler::OnAddTabContextTokenCreated,
+                     weak_ptr_factory_.GetWeakPtr(), tab_id, delay_upload,
+                     std::move(callback)));
+}
+
+std::vector<base::UnguessableToken>
+ContextualSearchboxHandler::GetUploadedContextTokens() {
+  auto* contextual_session_handle = GetSessionHandle(web_contents_);
+  if (contextual_session_handle) {
+    return contextual_session_handle->GetUploadedContextTokens();
+  }
+  return {};
+}
+
+void ContextualSearchboxHandler::OnAddTabContextTokenCreated(
+    int32_t tab_id,
+    bool delay_upload,
+    AddTabContextCallback callback,
+    const base::UnguessableToken& context_token) {
+  // TODO(crbug.com/458050417): Move more of the tab context logic to
+  // ContextualSessionHandle.
+  const tabs::TabHandle handle = tabs::TabHandle(tab_id);
+  tabs::TabInterface* const tab = handle.Get();
+  if (!tab) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
   lens::TabContextualizationController* tab_contextualization_controller =
       tab->GetTabFeatures()->tab_contextualization_controller();
-  auto token = base::UnguessableToken::Create();
-  tab_contextualization_controller->GetPageContext(
-      base::BindOnce(&ContextualSearchboxHandler::OnGetTabPageContext,
-                     weak_ptr_factory_.GetWeakPtr(), delay_upload, token));
-  std::move(callback).Run(token);
+  tab_contextualization_controller->GetPageContext(base::BindOnce(
+      &ContextualSearchboxHandler::OnGetTabPageContext,
+      weak_ptr_factory_.GetWeakPtr(), delay_upload, context_token));
+  std::move(callback).Run(context_token);
 }
 
 void ContextualSearchboxHandler::RecordTabClickedMetric(
@@ -329,69 +364,60 @@ void ContextualSearchboxHandler::RecordTabClickedMetric(
     return;
   }
 
-    auto* tab_strip_model = browser_window_interface->GetTabStripModel();
-    int tab_index = tab_strip_model->GetIndexOfTab(tab);
-    if (tab_index == TabStripModel::kNoTab) {
-      return;
+  auto* tab_strip_model = browser_window_interface->GetTabStripModel();
+  int tab_index = tab_strip_model->GetIndexOfTab(tab);
+  if (tab_index == TabStripModel::kNoTab) {
+    return;
+  }
+
+  TabRendererData current_tab_renderer_data =
+      TabRendererData::FromTabInModel(tab_strip_model, tab_index);
+  const std::u16string& current_title = current_tab_renderer_data.title;
+
+  int title_count = 0;
+  std::vector<std::pair<int, base::TimeTicks>> last_active_times;
+  for (int i = 0; i < tab_strip_model->count(); i++) {
+    TabRendererData tab_renderer_data =
+        TabRendererData::FromTabInModel(tab_strip_model, i);
+    if (tab_renderer_data.title == current_title) {
+      title_count++;
     }
 
-    TabRendererData current_tab_renderer_data =
-        TabRendererData::FromTabInModel(tab_strip_model, tab_index);
-    const std::u16string& current_title = current_tab_renderer_data.title;
-
-    int title_count = 0;
-    std::vector<std::pair<int, base::TimeTicks>> last_active_times;
-    for (int i = 0; i < tab_strip_model->count(); i++) {
-      TabRendererData tab_renderer_data =
-          TabRendererData::FromTabInModel(tab_strip_model, i);
-      if (tab_renderer_data.title == current_title) {
-        title_count++;
-      }
-
-      if (tab_renderer_data.tab_interface) {
-        last_active_times.emplace_back(
-            i, tab_renderer_data.tab_interface->GetContents()
-                   ->GetLastActiveTimeTicks());
-      }
+    if (tab_renderer_data.tab_interface) {
+      last_active_times.emplace_back(
+          i, tab_renderer_data.tab_interface->GetContents()
+                 ->GetLastActiveTimeTicks());
     }
-    if (title_count > 1) {
-      has_duplicate_title = true;
-    }
+  }
+  if (title_count > 1) {
+    has_duplicate_title = true;
+  }
 
-    std::vector<std::pair<int, base::TimeTicks>>
-        reverse_chron_last_active_times(last_active_times.begin(),
-                                        last_active_times.end());
-    std::sort(reverse_chron_last_active_times.begin(),
-              reverse_chron_last_active_times.end(),
-              [](const std::pair<int, base::TimeTicks>& a,
-                 const std::pair<int, base::TimeTicks>& b) {
-                return a.second > b.second;
-              });
-    std::optional<int> recency_ranking;
-    for (size_t i = 0; i < reverse_chron_last_active_times.size(); ++i) {
-      if (reverse_chron_last_active_times[i].first == tab_index) {
-        recency_ranking = i;
-        break;
-      }
+  std::vector<std::pair<int, base::TimeTicks>> reverse_chron_last_active_times(
+      last_active_times.begin(), last_active_times.end());
+  std::sort(reverse_chron_last_active_times.begin(),
+            reverse_chron_last_active_times.end(),
+            [](const std::pair<int, base::TimeTicks>& a,
+               const std::pair<int, base::TimeTicks>& b) {
+              return a.second > b.second;
+            });
+  std::optional<int> recency_ranking;
+  for (size_t i = 0; i < reverse_chron_last_active_times.size(); ++i) {
+    if (reverse_chron_last_active_times[i].first == tab_index) {
+      recency_ranking = i;
+      break;
     }
+  }
 
-    metrics_recorder->RecordTabClickedMetrics(has_duplicate_title,
-                                              recency_ranking);
+  metrics_recorder->RecordTabClickedMetrics(has_duplicate_title,
+                                            recency_ranking);
 }
 
 void ContextualSearchboxHandler::DeleteContext(
     const base::UnguessableToken& context_token) {
-  if (auto* contextual_session_handle = GetSessionHandle(web_contents_)) {
-    bool file_was_deleted =
-        contextual_session_handle->DeleteFile(context_token);
-    if (!file_was_deleted) {
-      // It is possible to receive a call to delete a context before that
-      // context has been created in the query controller. We queue all context
-      // tokens for deletion at query submission time.
-      // TODO(crbug.com/456471755): Transfer ownership of the attachments state
-      // to the ContextualSearchSessionHandle.
-      deleted_context_tokens_.insert(context_token);
-    }
+  auto* contextual_session_handle = GetSessionHandle(web_contents_);
+  if (contextual_session_handle) {
+    contextual_session_handle->DeleteFile(context_token);
   }
 
   // If the context token matches the cached tab context, we clear the snapshot.
@@ -502,9 +528,12 @@ void ContextualSearchboxHandler::OnGetTabPageContext(
     bool delay_upload,
     const base::UnguessableToken& context_token,
     std::unique_ptr<lens::ContextualInputData> page_content_data) {
-  if (deleted_context_tokens_.contains(context_token)) {
+  auto uploaded_context_tokens = GetUploadedContextTokens();
+  // Check if the context token is in the list of uploaded context tokens.
+  auto it = std::find(uploaded_context_tokens.begin(),
+                      uploaded_context_tokens.end(), context_token);
+  if (it == uploaded_context_tokens.end()) {
     // Tab was deleted before the file upload flow could start.
-    deleted_context_tokens_.erase(context_token);
     return;
   }
 

@@ -194,6 +194,14 @@ ComposeboxQueryControllerBridge::CreateSearchUrlRequestInfoFromUrl(GURL url) {
   search_url_request_info->additional_params =
       lens::GetParametersMapWithoutQuery(url);
   search_url_request_info->query_start_time = base::Time::Now();
+  // Read the list of tokens from the fileinfo map in the contextual search
+  // controller.
+  // TODO(crbug.com/455952553): Rely on the contextual search session handle
+  // to track uploaded context tokens.
+  for (const contextual_search::FileInfo* file_info :
+       query_controller_->GetFileInfoList()) {
+    search_url_request_info->file_tokens.push_back(file_info->file_token);
+  }
   return search_url_request_info;
 }
 
@@ -233,9 +241,18 @@ bool ComposeboxQueryControllerBridge::IsCreateImagesEligible(JNIEnv* env) {
   return aim_service && aim_service->IsCreateImagesEligible();
 }
 
-const lens::proto::LensOverlaySuggestInputs&
+lens::proto::LensOverlaySuggestInputs
 ComposeboxQueryControllerBridge::GetLensOverlaySuggestInputs() const {
-  return query_controller_->suggest_inputs();
+  auto tokens = std::vector<base::UnguessableToken>();
+  // Read the list of tokens from the fileinfo list in the contextual search
+  // controller.
+  // TODO(crbug.com/455843962): Rely on the contextual search session handle
+  // to track uploaded context tokens.
+  for (const contextual_search::FileInfo* file_info :
+       query_controller_->GetFileInfoList()) {
+    tokens.push_back(file_info->file_token);
+  }
+  return *query_controller_->CreateSuggestInputs(tokens);
 }
 
 void ComposeboxQueryControllerBridge::OnFileUploadStatusChanged(

@@ -53,8 +53,7 @@ class ComposeboxQueryControllerBridge
   bool IsPdfUploadEligible(JNIEnv* env);
   bool IsCreateImagesEligible(JNIEnv* env);
 
-  const lens::proto::LensOverlaySuggestInputs& GetLensOverlaySuggestInputs()
-      const;
+  lens::proto::LensOverlaySuggestInputs GetLensOverlaySuggestInputs() const;
 
   // ComposeboxQueryController::FileUploadStatusObserver:
   void OnFileUploadStatusChanged(

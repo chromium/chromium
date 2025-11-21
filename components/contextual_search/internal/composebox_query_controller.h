@@ -88,12 +88,12 @@ class ComposeboxQueryController
       std::optional<lens::ImageEncodingOptions> image_options) override;
   bool DeleteFile(const base::UnguessableToken& file_token) override;
   void ClearFiles() override;
-  void ResetSuggestInputs() override;
-  int num_files_in_request() override;
+  std::unique_ptr<lens::proto::LensOverlaySuggestInputs> CreateSuggestInputs(
+      const std::vector<base::UnguessableToken>& attached_context_tokens)
+      override;
   const contextual_search::FileInfo* GetFileInfo(
       const base::UnguessableToken& file_token) override;
   std::vector<const contextual_search::FileInfo*> GetFileInfoList() override;
-  const lens::proto::LensOverlaySuggestInputs& suggest_inputs() const override;
 
   // Returns a request id to use for the viewport image upload request for the
   // given file info, setting the viewport request id on the file info if it is
@@ -246,6 +246,9 @@ class ComposeboxQueryController
 
   // The map of active files, keyed by the file token.
   // Protected to allow tests to access the files.
+  // TODO(crbug.com/461865548): Determine if the query controller needs to send
+  // the active files from previously committed turns to the server for
+  // follow-up turns.
   std::map<base::UnguessableToken, std::unique_ptr<FileInfo>> active_files_;
 
   // Task runner used to create the file upload request proto asynchronously.
@@ -292,12 +295,6 @@ class ComposeboxQueryController
 
   // Returns a mutable pointer to allow internal modifications.
   FileInfo* GetMutableFileInfo(const base::UnguessableToken& file_token);
-
-  // Updates the internal suggest inputs state with the given file's request id.
-  // Updates the file upload status to kProcessingSuggestSignalsReady if the
-  // inputs are ready and the status is kProcessing.
-  void UpdateSuggestInputsForFileIfReady(
-      const base::UnguessableToken& file_token);
 
   // Fetches the OAuth headers and calls the callback with the headers. If the
   // OAuth cannot be retrieved (like if the user is not logged in), the callback
@@ -485,8 +482,6 @@ class ComposeboxQueryController
   // interaction request has been made.
   std::unique_ptr<LensServerInteractionRequest>
       latest_interaction_request_data_;
-
-  lens::proto::LensOverlaySuggestInputs suggest_inputs_;
 
   // The number of files that are sent in the AIM request.
   int num_files_in_request_ = 0;

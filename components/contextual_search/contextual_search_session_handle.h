@@ -31,6 +31,8 @@ using SessionId = base::UnguessableToken;
 class ContextualSearchService;
 using AddFileContextCallback =
     base::OnceCallback<void(const ::base::UnguessableToken&)>;
+using AddTabContextCallback =
+    base::OnceCallback<void(const ::base::UnguessableToken&)>;
 
 // RAII handle for managing the lifetime of a ComposeboxQueryController.
 class ContextualSearchSessionHandle {
@@ -68,6 +70,15 @@ class ContextualSearchSessionHandle {
                       std::optional<lens::ImageEncodingOptions> image_options,
                       AddFileContextCallback callback);
 
+  // Adds a tab context to the context controller, generating a token and adding
+  // it to the list of uploaded context tokens. A followup call to
+  // `StartTabContextUploadFlow`, using the token returned in the callback,
+  // is required to start the upload with the
+  // contextual input data.
+  // TODO(crbug.com/461869881): Pass more metadata than just the tab id for
+  //  being able to return the list of attached tabs.
+  void AddTabContext(int32_t tab_id, AddTabContextCallback callback);
+
   // Starts the tab context upload flow for the given file token using the
   // tab context stored in the contextual input data.
   void StartTabContextUploadFlow(
@@ -89,11 +100,27 @@ class ContextualSearchSessionHandle {
       std::unique_ptr<contextual_search::ContextualSearchContextController::
                           CreateSearchUrlRequestInfo> search_url_request_info);
 
+  // Returns the list of uploaded but not yet committed context tokens for this
+  // particular instance of the session.
+  std::vector<base::UnguessableToken> GetUploadedContextTokens() const;
+
+  // Returns the list of uploaded but not yet committed context tokens for this
+  // particular instance of the session, editable for testing.
+  std::vector<base::UnguessableToken>& GetUploadedContextTokensForTesting() {
+    return uploaded_context_tokens_;
+  }
+
  private:
   friend class ContextualSearchService;
 
   ContextualSearchSessionHandle(base::WeakPtr<ContextualSearchService> service,
                                 const SessionId& session_id);
+
+  // The list of uploaded but not yet committed context tokens for this
+  // particular instance of the session. This list is unique to this instance of
+  // the session handle, meaning that it is unique per instance of the
+  // contextual tasks ui.
+  std::vector<base::UnguessableToken> uploaded_context_tokens_;
 
   // The service that vended this handle. This is a weak pointer because a
   // handle may outlive the service.

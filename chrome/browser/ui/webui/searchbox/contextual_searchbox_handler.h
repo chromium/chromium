@@ -41,7 +41,7 @@ class ContextualTasksContextService;
 namespace lens {
 struct ContextualInputData;
 struct ImageEncodingOptions;
-}
+}  // namespace lens
 
 namespace tabs {
 class TabInterface;
@@ -117,6 +117,11 @@ class ContextualSearchboxHandler
     return context_input_data_;
   }
 
+  // For testing.
+  std::vector<base::UnguessableToken> GetUploadedContextTokensForTesting() {
+    return GetUploadedContextTokens();
+  }
+
  protected:
   void ComputeAndOpenQueryUrl(
       const std::string& query_text,
@@ -138,11 +143,14 @@ class ContextualSearchboxHandler
 
   contextual_search::ContextualSearchMetricsRecorder* GetMetricsRecorder();
 
-  std::set<base::UnguessableToken> deleted_context_tokens() {
-    return deleted_context_tokens_;
-  }
+  std::vector<base::UnguessableToken> GetUploadedContextTokens();
 
  private:
+  void OnAddTabContextTokenCreated(int32_t tab_id,
+                                   bool delay_upload,
+                                   AddTabContextCallback callback,
+                                   const base::UnguessableToken& context_token);
+
   void OnGetTabPageContext(
       bool delay_upload,
       const base::UnguessableToken& context_token,
@@ -169,7 +177,6 @@ class ContextualSearchboxHandler
 
   void RecordTabClickedMetric(tabs::TabInterface* const tab);
 
-  std::set<base::UnguessableToken> deleted_context_tokens_;
   raw_ptr<content::WebContents> web_contents_;
   std::optional<std::pair<base::UnguessableToken,
                           std::unique_ptr<lens::ContextualInputData>>>

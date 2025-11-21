@@ -286,15 +286,21 @@ GURL ComposeboxQueryController::CreateSearchUrl(
     std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info) {
   latest_interaction_request_data_.reset();
   num_files_in_request_ = 0;
-  if (!active_files_.empty() && cluster_info_.has_value()) {
+  if (!active_files_.empty() && cluster_info_.has_value() &&
+      !search_url_request_info->file_tokens.empty()) {
     if (enable_multi_context_input_flow_) {
       std::unique_ptr<lens::LensOverlayContextualInputs> contextual_inputs =
           std::make_unique<lens::LensOverlayContextualInputs>();
       bool has_image_upload = false;
-      for (const auto& [file_token, file_info] : active_files_) {
+      size_t num_valid_files = 0;
+      for (const auto& file_token : search_url_request_info->file_tokens) {
+        auto* file_info = GetMutableFileInfo(file_token);
+        if (!file_info) {
+          continue;
+        }
         if (IsValidFileUploadStatusForMultimodalRequest(
                 file_info->upload_status)) {
-          num_files_in_request_++;
+          num_valid_files++;
           auto* contextual_input = contextual_inputs->add_inputs();
           contextual_input->mutable_request_id()->CopyFrom(
               *file_info->request_id_);
@@ -311,36 +317,36 @@ GURL ComposeboxQueryController::CreateSearchUrl(
         }
       }
 
-      AddEncodedVisualSearchInteractionLogDataParam(
-          search_url_request_info->query_text,
-          search_url_request_info->lens_overlay_selection_type,
-          search_url_request_info->additional_params);
-      // Get the encoded visual search interaction log data.
-      bool should_send_lns_surface =
-          send_lns_surface_ &&
-          (!suppress_lns_surface_param_if_no_image_ || has_image_upload);
-      return GetUrlForMultimodalSearch(
-          template_url_service_,
-          /*is_aim_search=*/search_url_request_info->search_url_type ==
-              SearchUrlType::kAim,
-          omnibox::DESKTOP_CHROME_NTP_REALBOX_ENTRY_POINT,
-          search_url_request_info->query_start_time,
-          cluster_info_->search_session_id(), std::move(contextual_inputs),
-          should_send_lns_surface ? kLnsSurfaceParameterValue : std::string(),
-          base::UTF8ToUTF16(search_url_request_info->query_text),
-          std::move(search_url_request_info->additional_params));
+      if (num_valid_files > 0) {
+        AddEncodedVisualSearchInteractionLogDataParam(
+            search_url_request_info->query_text,
+            search_url_request_info->lens_overlay_selection_type,
+            search_url_request_info->additional_params);
+        // Get the encoded visual search interaction log data.
+        bool should_send_lns_surface =
+            send_lns_surface_ &&
+            (!suppress_lns_surface_param_if_no_image_ || has_image_upload);
+        return GetUrlForMultimodalSearch(
+            template_url_service_,
+            /*is_aim_search=*/search_url_request_info->search_url_type ==
+                SearchUrlType::kAim,
+            omnibox::DESKTOP_CHROME_NTP_REALBOX_ENTRY_POINT,
+            search_url_request_info->query_start_time,
+            cluster_info_->search_session_id(), std::move(contextual_inputs),
+            should_send_lns_surface ? kLnsSurfaceParameterValue : std::string(),
+            base::UTF8ToUTF16(search_url_request_info->query_text),
+            std::move(search_url_request_info->additional_params));
+      }
     } else {
       // When multi-context input flow is not enabled, only one file is
       // supported.
       // Use the last file uploaded to determine `vit` param.
       // TODO(crbug.com/446972028): Remove this once multi-context input flow is
       // fully supported.
-      const std::unique_ptr<FileInfo>& last_file =
-          active_files_.rbegin()->second;
-      if (IsValidFileUploadStatusForMultimodalRequest(
-              last_file->upload_status)) {
-        num_files_in_request_ = 1;
-
+      auto* last_file =
+          GetMutableFileInfo(search_url_request_info->file_tokens.back());
+      if (last_file && IsValidFileUploadStatusForMultimodalRequest(
+                           last_file->upload_status)) {
         // Trigger the interaction request if needed.
         // TODO(crbug.com/462509148): Determine how to support interaction
         // requests for multi-context input flow.
@@ -388,8 +394,8 @@ GURL ComposeboxQueryController::CreateSearchUrl(
   // text-only queries.
   DCHECK(search_url_request_info->search_url_type == SearchUrlType::kAim);
 
-  // Treat queries in which the cluster info has expired, or the last file is
-  // not valid, as unimodal text queries.
+  // Treat queries in which the cluster info has expired, or without valid
+  // contextual inputs, as unimodal text queries.
   // TODO(crbug.com/432125987): Handle file reupload after cluster info
   // expiration.
   return GetUrlForAim(template_url_service_,
@@ -455,11 +461,19 @@ void ComposeboxQueryController::StartFileUploadFlow(
   UpdateFileUploadStatus(file_token,
                          contextual_search::FileUploadStatus::kProcessing,
                          std::nullopt);
-  // Update the suggest inputs with the new request id and update the file
-  // status if suggest signals are ready. If the file upload later fails due to
+
+  // If the cluster info is available, update the file upload status to ready
+  // for suggest.
+  // If the file upload later fails due to
   // validation failures, the suggest response will be empty so it is safe to
   // kick off the suggestions fetch at this point.
-  ResetSuggestInputs();
+  if (cluster_info_.has_value()) {
+    // TODO(crbug.com/452401443): Listen for this new status from the webui.
+    UpdateFileUploadStatus(
+        file_token,
+        contextual_search::FileUploadStatus::kProcessingSuggestSignalsReady,
+        std::nullopt);
+  }
 
   // If the is_page_context_eligible is set to false, then fail early.
   if (contextual_input_data->is_page_context_eligible.has_value() &&
@@ -488,32 +502,6 @@ void ComposeboxQueryController::StartFileUploadFlow(
   // Async Flow 3: Creating the file and viewport upload request.
   CreateUploadRequestBodiesAndContinue(
       file_token, std::move(contextual_input_data), image_options);
-}
-
-void ComposeboxQueryController::ResetSuggestInputs() {
-  // Multiple file upload is not supported yet, once it is, the suggest
-  // inputs should instead be updated to reflect this file being deleted.
-  // Suggest inputs must be cleared so when autocomplete is queried again
-  // in the UI, contextual suggestions do not appear.
-  suggest_inputs_.Clear();
-
-  // If there is a single file remaining, update the suggest inputs to
-  // include that file.
-  if (active_files_.size() == 1) {
-    UpdateSuggestInputsForFileIfReady(active_files_.begin()->first);
-  }
-}
-
-bool ComposeboxQueryController::DeleteFile(
-    const base::UnguessableToken& file_token) {
-  bool deleted = !!active_files_.erase(file_token);
-  ResetSuggestInputs();
-  return deleted;
-}
-
-void ComposeboxQueryController::ClearFiles() {
-  active_files_.clear();
-  suggest_inputs_.Clear();
 }
 
 // static
@@ -588,38 +576,46 @@ lens::LensOverlayClientContext ComposeboxQueryController::CreateClientContext()
   return context;
 }
 
-void ComposeboxQueryController::UpdateSuggestInputsForFileIfReady(
+bool ComposeboxQueryController::DeleteFile(
     const base::UnguessableToken& file_token) {
-  auto* file_info = GetMutableFileInfo(file_token);
+  return !!active_files_.erase(file_token);
+}
+
+void ComposeboxQueryController::ClearFiles() {
+  active_files_.clear();
+}
+
+std::unique_ptr<lens::proto::LensOverlaySuggestInputs>
+ComposeboxQueryController::CreateSuggestInputs(
+    const std::vector<base::UnguessableToken>& attached_context_tokens) {
+  std::unique_ptr<lens::proto::LensOverlaySuggestInputs> suggest_inputs =
+      std::make_unique<lens::proto::LensOverlaySuggestInputs>();
+
+  // Only a single file is supported for suggest inputs.
+  if (attached_context_tokens.size() != 1) {
+    return suggest_inputs;
+  }
+  auto* file_info = GetMutableFileInfo(attached_context_tokens.at(0));
   if (!file_info) {
-    return;
+    return suggest_inputs;
   }
 
-  suggest_inputs_.set_encoded_request_id(
+  suggest_inputs->set_encoded_request_id(
       lens::Base64EncodeRequestId(*file_info->request_id_));
   // TODO(crbug.com/445777189): Support multi-context input id flow for
   // suggest.
-  suggest_inputs_.set_contextual_visual_input_type(
+  suggest_inputs->set_contextual_visual_input_type(
       lens::VitQueryParamValueForMediaType(
           file_info->request_id_->media_type()));
 
   // If the cluster info is already available, update the suggest inputs.
-  suggest_inputs_.set_send_gsession_vsrid_for_contextual_suggest(true);
+  suggest_inputs->set_send_gsession_vsrid_for_contextual_suggest(true);
   if (cluster_info_.has_value()) {
-    suggest_inputs_.set_search_session_id(
+    suggest_inputs->set_search_session_id(
         cluster_info_.value().search_session_id());
-
-    // If the file is still processing, update the file upload status to ready
-    // for suggest.
-    if (file_info->upload_status ==
-        contextual_search::FileUploadStatus::kProcessing) {
-      // TODO(crbug.com/452401443): Listen for this new status from the webui.
-      UpdateFileUploadStatus(
-          file_token,
-          contextual_search::FileUploadStatus::kProcessingSuggestSignalsReady,
-          std::nullopt);
-    }
   }
+
+  return suggest_inputs;
 }
 
 // TODO(crbug.com/424869589): Clean up code duplication with
@@ -651,8 +647,6 @@ void ComposeboxQueryController::ClearClusterInfo() {
   cluster_info_endpoint_fetcher_.reset();
   cluster_info_.reset();
   request_id_generator_.ResetRequestId();
-  num_files_in_request_ = 0;
-  suggest_inputs_.Clear();
 }
 
 void ComposeboxQueryController::ResetRequestClusterInfoState() {
@@ -840,11 +834,18 @@ void ComposeboxQueryController::HandleClusterInfoResponse(
   }
   SetQueryControllerState(QueryControllerState::kClusterInfoReceived);
 
-  // Update the suggest inputs with the new cluster info.
-  ResetSuggestInputs();
-
   // Iterate through any existing files and send the upload requests if ready.
   for (const auto& [file_token, file_info] : active_files_) {
+    // If the file is processing, set its state to suggest signals ready.
+    if (file_info->upload_status ==
+        contextual_search::FileUploadStatus::kProcessing) {
+      UpdateFileUploadStatus(
+          file_token,
+          contextual_search::FileUploadStatus::kProcessingSuggestSignalsReady,
+          std::nullopt);
+    }
+
+    // Trigger pending upload requests.
     for (size_t i = 0; i < file_info->upload_requests_.size(); ++i) {
       if (file_info->upload_requests_[i]->request_body) {
         SendUploadNetworkRequest(file_info.get(), i);
@@ -886,7 +887,6 @@ void ComposeboxQueryController::UpdateFileUploadStatus(
   }
   if (!IsValidFileUploadStatusForMultimodalRequest(status)) {
     active_files_.erase(file_token);
-    ResetSuggestInputs();
   } else {
     file_info->upload_status = status;
   }
@@ -1290,10 +1290,6 @@ void ComposeboxQueryController::PerformFetchRequest(
                           google_apis::GetAPIKey().c_str());
 }
 
-int ComposeboxQueryController::num_files_in_request() {
-  return num_files_in_request_;
-}
-
 const contextual_search::FileInfo* ComposeboxQueryController::GetFileInfo(
     const base::UnguessableToken& file_token) {
   return GetMutableFileInfo(file_token);
@@ -1317,11 +1313,6 @@ ComposeboxQueryController::GetMutableFileInfo(
     return nullptr;
   }
   return it->second.get();
-}
-
-const lens::proto::LensOverlaySuggestInputs&
-ComposeboxQueryController::suggest_inputs() const {
-  return suggest_inputs_;
 }
 
 void ComposeboxQueryController::AddEncodedVisualSearchInteractionLogDataParam(

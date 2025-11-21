@@ -102,10 +102,6 @@ class FakeContextualSearchboxHandler : public ContextualSearchboxHandler {
   contextual_search::ContextualSearchMetricsRecorder* GetMetricsRecorder() {
     return ContextualSearchboxHandler::GetMetricsRecorder();
   }
-
-  std::set<base::UnguessableToken> deleted_context_tokens() {
-    return ContextualSearchboxHandler::deleted_context_tokens();
-  }
 };
 }  // namespace
 
@@ -271,6 +267,8 @@ TEST_F(ContextualSearchboxHandlerTest, AddFile_Image) {
 TEST_F(ContextualSearchboxHandlerTest, ClearFiles) {
   EXPECT_CALL(query_controller(), ClearFiles);
   handler().ClearFiles();
+  auto uploaded_context_tokens = handler().GetUploadedContextTokensForTesting();
+  EXPECT_EQ(uploaded_context_tokens.size(), 0u);
 }
 
 TEST_F(ContextualSearchboxHandlerTest, SubmitQuery) {
@@ -361,9 +359,14 @@ TEST_F(ContextualSearchboxHandlerTest, SubmitQuery_DelayUpload) {
                                 &MockQueryController::InitializeIfNeededBase));
 
   // Set a cached tab context snapshot.
+  auto* contextual_search_web_contents_helper =
+      ContextualSearchWebContentsHelper::FromWebContents(web_contents());
+  auto token = base::UnguessableToken::Create();
+  contextual_search_web_contents_helper->session_handle()
+      ->GetUploadedContextTokensForTesting()
+      .push_back(token);
   handler().tab_context_snapshot_ =
-      std::make_pair(base::UnguessableToken::Create(),
-                     std::make_unique<lens::ContextualInputData>());
+      std::make_pair(token, std::make_unique<lens::ContextualInputData>());
   ASSERT_TRUE(handler().tab_context_snapshot_.has_value());
 
   // The file should be uploaded if there is a cached tab snapshot.
@@ -386,6 +389,7 @@ TEST_F(ContextualSearchboxHandlerTest, SubmitQuery_DelayUpload) {
           ComposeboxQueryController::CreateSearchUrlRequestInfo>();
   search_url_request_info->query_text = kQueryText;
   search_url_request_info->query_start_time = base::Time::Now();
+  search_url_request_info->file_tokens.push_back(token);
   GURL expected_url =
       query_controller().CreateSearchUrl(std::move(search_url_request_info));
   GURL actual_url =
@@ -609,9 +613,6 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, DeleteContext_DelayUpload) {
   mock_searchbox_page_.FlushForTesting();
 
   auto file_token = future.Get().value();
-  std::set<base::UnguessableToken> deleted_tokens =
-      handler().deleted_context_tokens();
-  EXPECT_EQ(deleted_tokens.size(), 0u);
   ASSERT_TRUE(handler().tab_context_snapshot_.has_value());
   ASSERT_EQ(file_token, handler().tab_context_snapshot_.value().first);
 
@@ -621,8 +622,6 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, DeleteContext_DelayUpload) {
   mock_searchbox_page_.FlushForTesting();
 
   // Assert
-  deleted_tokens = handler().deleted_context_tokens();
-  ASSERT_TRUE(deleted_tokens.contains(file_token));
   ASSERT_FALSE(handler().tab_context_snapshot_.has_value());
   ASSERT_FALSE(handler().context_input_data().has_value());
 }
