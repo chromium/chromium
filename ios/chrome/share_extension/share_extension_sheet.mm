@@ -195,12 +195,8 @@ CGFloat const kUpdatedMainViewCornerRadius = 32.0;
   _sharedURL = sharedURL;
   _sharedItemType = kURL;
   _primaryString =
-      [NSString stringWithFormat:
-                    @"%@ %@",
-                    NSLocalizedString(
-                        @"IDS_IOS_OPEN_IN_BUTTON_SHARE_EXTENSION",
-                        @"The label of theopen in button in share extension."),
-                    _appName];
+      NSLocalizedString(@"IDS_IOS_OPEN_IN_APP_SHARE_EXTENSION",
+                        @"The label of theopen in button in share extension.");
   _secondaryString = NSLocalizedString(
       @"IDS_IOS_MORE_OPTIONS_BUTTON_SHARE_EXTENSION",
       @"The label of the more options button in share extension.");
@@ -220,13 +216,9 @@ CGFloat const kUpdatedMainViewCornerRadius = 32.0;
   CHECK(!_sharedURL && !_sharedTitle && !_sharedText);
   _sharedImage = sharedImage;
   _sharedItemType = kImage;
-  _primaryString = [NSString
-      stringWithFormat:
-          @"%@ %@",
-          NSLocalizedString(
-              @"IDS_IOS_SEARCH_IN_BUTTON_SHARE_EXTENSION",
-              @"The label of the search in button in share extension."),
-          _appName];
+  _primaryString = NSLocalizedString(
+      @"IDS_IOS_SEARCH_IN_APP_BUTTON_SHARE_EXTENSION",
+      @"The label of the search in button in share extension.");
   _secondaryString = NSLocalizedString(
       @"IDS_IOS_SEARCH_IN_INCOGNITO_BUTTON_SHARE_EXTENSION",
       @"The label of the search in incognito button in share extension.");
@@ -236,13 +228,9 @@ CGFloat const kUpdatedMainViewCornerRadius = 32.0;
   CHECK(!_sharedURL && !_sharedTitle && !_sharedImage);
   _sharedText = sharedText;
   _sharedItemType = kText;
-  _primaryString = [NSString
-      stringWithFormat:
-          @"%@ %@",
-          NSLocalizedString(
-              @"IDS_IOS_SEARCH_IN_BUTTON_SHARE_EXTENSION",
-              @"The label of the search in button in share extension."),
-          _appName];
+  _primaryString = NSLocalizedString(
+      @"IDS_IOS_SEARCH_IN_APP_BUTTON_SHARE_EXTENSION",
+      @"The label of the search in button in share extension.");
   _secondaryString = NSLocalizedString(
       @"IDS_IOS_SEARCH_IN_INCOGNITO_BUTTON_SHARE_EXTENSION",
       @"The label of the search in incognito button in share extension.");

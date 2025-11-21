@@ -1298,8 +1298,14 @@
   "ios/chrome/share_extension/strings/ios_share_extension_strings.grd": {
     "messages": [1140],
   },
+  "ios/chrome/share_extension/strings/ios_share_extension_chromium_strings.grd": {
+    "messages": [1150],
+  },
   "ios/chrome/open_extension/strings/ios_open_extension_chromium_strings.grd": {
     "messages": [1160],
+  },
+  "ios/chrome/share_extension/strings/ios_share_extension_google_chrome_strings.grd": {
+    "messages": [1150],
   },
   "ios/chrome/open_extension/strings/ios_open_extension_google_chrome_strings.grd": {
     "messages": [1160],

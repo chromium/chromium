@@ -212,14 +212,8 @@
     <message name="IDS_IOS_OPEN_IN_BUTTON_SHARE_EXTENSION" desc="Label for the open in button in the share extension.">
         Open in
     </message>
-      <message name="IDS_IOS_OPEN_IN_CHROME_SHARE_EXTENSION" desc="Share extension button to open link in Chrome [Length: 30em]" meaning="Button title [Length: 30em]">
-        Open in Chrome
-      </message>
     <message name="IDS_IOS_OPEN_IN_INCOGNITO_BUTTON_SHARE_EXTENSION" desc="Label for the open in incognito button in the share extension.">
       Open in Incognito
-    </message>
-    <message name="IDS_IOS_SEARCH_IN_BUTTON_SHARE_EXTENSION" desc="Label for the search in button in the share extension.">
-        Search in
     </message>
     <message name="IDS_IOS_SEARCH_IN_INCOGNITO_BUTTON_SHARE_EXTENSION" desc="Label for the search in incognito button in the share extension.">
         Search in Incognito
