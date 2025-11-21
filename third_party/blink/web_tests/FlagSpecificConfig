@@ -17,6 +17,10 @@
     ]
   },
   {
+    "name": "content-extraction",
+    "args": ["--enable-blink-features=AIPageContentBuildOnLoadForTesting"]
+  },
+  {
     "name": "devtools-tab-target",
     "args": ["--content-shell-devtools-tab-target"]
   },

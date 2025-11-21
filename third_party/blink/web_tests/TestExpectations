@@ -9906,3 +9906,25 @@ crbug.com/462129672 [ Linux ] external/wpt/css/css-anchor-position/anchored-tran
 # Branch gardener 2025-11-20
 crbug.com/455696391 [ Mac ] virtual/threaded/inspector-protocol/css/css-get-styles-for-view-transition.js [ Failure Pass ]
 crbug.com/455696391 [ Mac ] virtual/view-transition-mpa-serialization/inspector-protocol/css/css-get-styles-for-view-transition.js [ Failure Pass ]
+
+# Short-lived expectations for --enable-blink-features=AIPageContentBuildOnLoadForTesting
+# Will be removed in follow-up CL with the fixes.
+# Crash in ValidateBoundingBoxes() where outer box should fit inside visible box:
+# Note that these must be marked as [ Crash Timeout ] because the renderer crash is presenting
+# as a test timeout to the content_shell.
+crbug.com/447125474 virtual/content-extraction/compositing/geometry/layer-due-to-layer-children-deep.html [ Crash Timeout ]
+crbug.com/447125474 virtual/content-extraction/compositing/iframes/content-visibility-hidden-frame.html [ Crash Timeout ]
+crbug.com/447125474 virtual/content-extraction/compositing/overflow/nested-render-surfaces-with-rotation.html [ Crash Timeout ]
+crbug.com/447125474 virtual/content-extraction/compositing/squashing/squash-transform-repainting-transformed-child.html [ Crash Timeout ]
+crbug.com/447125474 virtual/content-extraction/css3/filters/nested-filter.html [ Crash Timeout ]
+crbug.com/447125474 virtual/content-extraction/fast/dom/HTMLObjectElement/update-data.html [ Crash Timeout ]
+crbug.com/447125474 virtual/content-extraction/fast/dynamic/position-change-to-absolute-with-positioned-child-crash.html [ Crash Timeout ]
+crbug.com/447125474 virtual/content-extraction/fast/events/touch/touch-rect-assert-first-layer-special.html [ Crash Timeout ]
+crbug.com/447125474 virtual/content-extraction/fast/forms/datalist/input-appearance-range-with-transform.html [ Crash Timeout ]
+crbug.com/447125474 virtual/content-extraction/fast/sub-pixel/sub-pixel-accumulates-to-layers.html [ Crash Timeout ]
+crbug.com/447125474 virtual/content-extraction/fast/sub-pixel/transformed-iframe-copy-on-scroll.html [ Crash Timeout ]
+crbug.com/447125474 virtual/content-extraction/paint/invalidation/compositing/subpixel-offset-scaled-will-change-transform.html [ Crash Timeout ]
+crbug.com/447125474 virtual/content-extraction/paint/invalidation/transform/subpixel-offset-scaled-transform.html [ Crash Timeout ]
+crbug.com/447125474 virtual/content-extraction/transforms/rotate.html [ Crash Timeout ]
+crbug.com/447125474 virtual/content-extraction/transforms/3d/hit-testing/hover-rotated-with-children-negative-z.html [ Crash Timeout ]
+crbug.com/447125474 virtual/content-extraction/transforms/3d/point-mapping/3d-point-mapping-deep.html [ Crash Timeout ]

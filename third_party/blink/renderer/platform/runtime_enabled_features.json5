@@ -325,6 +325,16 @@
       status: "test",
       base_feature: "none",
     },
+    // Whether to automatically build an APC content_extraction tree on load.
+    // Only supported for DCHECK-enabled builds.
+    {
+      name: "AIPageContentBuildOnLoadForTesting",
+    },
+    // Whether to enforce geometry invariants in AIPageContentAgent.
+    {
+      name: "AIPageContentCheckGeometry",
+      status: "test"
+    },
     {
       name: "AIPageContentPaidContentAnnotation",
       status: "stable"

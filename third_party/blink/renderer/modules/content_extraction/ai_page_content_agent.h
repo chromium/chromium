@@ -41,6 +41,11 @@ class MODULES_EXPORT AIPageContentAgent final
       mojo::PendingReceiver<mojom::blink::AIPageContentAgent> receiver);
 
   static AIPageContentAgent* GetOrCreateForTesting(Document&);
+#if DCHECK_IS_ON()
+  // If enabled, the ContentNode tree will be automatically built on page load.
+  static void EnableAutomaticActionableExtractionOnPageLoadForTesting(
+      LocalFrame&);
+#endif
 
   AIPageContentAgent(base::PassKey<AIPageContentAgent>, LocalFrame&);
   AIPageContentAgent(const AIPageContentAgent&) = delete;
@@ -171,14 +176,21 @@ class MODULES_EXPORT AIPageContentAgent final
   };
 
   void Bind(mojo::PendingReceiver<mojom::blink::AIPageContentAgent> receiver);
+  void EnsureLifecycleObserverRegistered();
 
   Member<Document> document_;
   HeapMojoReceiverSet<mojom::blink::AIPageContentAgent, AIPageContentAgent>
       receiver_set_;
   // Already registered for lifetime notifications.
-  bool is_registered_ = false;
+  bool is_lifecycle_observer_registered_ = false;
   // Tasks to run when post lifecycle.
   Vector<base::OnceClosure> async_extraction_tasks_;
+
+#if DCHECK_IS_ON()
+  void MaybeRunAutomaticActionableExtraction();
+  // Should content extraction tree be built automatically on page load.
+  bool is_auto_actionable_extraction_pending_ = false;
+#endif
 };
 
 }  // namespace blink

@@ -1,0 +1,26 @@
+# tags: [ Android Fuchsia Linux Mac Mac12 Mac13 Mac13-arm64 Mac14 Mac14-arm64 Mac15 Mac15-arm64 Win Win10.20h2 Win11 Win11-arm64 ]
+# tags: [ Release Debug ]
+# results: [ Skip Crash Timeout Pass Failure Slow ]
+
+# Expectations for --enable-blink-features=AIPageContentBuildOnLoadForTesting
+
+# Crash in ValidateBoundingBoxes() where outer box should fit inside visible box:
+# Note that these must be marked as [ Crash Timeout ] because the renderer crash is presenting
+# as a test timeout to the content_shell
+crbug.com/447125474 compositing/geometry/layer-due-to-layer-children-deep.html [ Crash Timeout ]
+crbug.com/447125474 compositing/iframes/content-visibility-hidden-frame.html [ Crash Timeout ]
+crbug.com/447125474 compositing/overflow/nested-render-surfaces-with-rotation.html [ Crash Timeout ]
+crbug.com/447125474 compositing/squashing/squash-transform-repainting-transformed-child.html [ Crash Timeout ]
+crbug.com/447125474 css3/filters/nested-filter.html [ Crash Timeout ]
+crbug.com/447125474 fast/dom/HTMLObjectElement/update-data.html [ Crash Timeout ]
+crbug.com/447125474 fast/dynamic/position-change-to-absolute-with-positioned-child-crash.html [ Crash Timeout ]
+crbug.com/447125474 fast/events/touch/touch-rect-assert-first-layer-special.html [ Crash Timeout ]
+crbug.com/447125474 fast/forms/datalist/input-appearance-range-with-transform.html [ Crash Timeout ]
+crbug.com/447125474 fast/sub-pixel/sub-pixel-accumulates-to-layers.html [ Crash Timeout ]
+crbug.com/447125474 fast/sub-pixel/transformed-iframe-copy-on-scroll.html [ Crash Timeout ]
+crbug.com/447125474 paint/invalidation/compositing/subpixel-offset-scaled-will-change-transform.html [ Crash Timeout ]
+crbug.com/447125474 paint/invalidation/transform/subpixel-offset-scaled-transform.html [ Crash Timeout ]
+crbug.com/447125474 transforms/rotate.html [ Crash Timeout ]
+crbug.com/447125474 transforms/3d/hit-testing/hover-rotated-with-children-negative-z.html [ Crash Timeout ]
+crbug.com/447125474 transforms/3d/point-mapping/3d-point-mapping-deep.html [ Crash Timeout ]
+
