@@ -177,7 +177,6 @@ ci.builder(
     ),
     contact_team_email = "lexan@google.com",
     notifies = ["CFI Linux"],
-    siso_remote_jobs = siso.remote_jobs.DEFAULT,
 )
 
 ci.builder(
@@ -385,7 +384,6 @@ ci.builder(
         short_name = "rel",
     ),
     contact_team_email = "lexan@google.com",
-    siso_remote_jobs = min(siso.remote_jobs.HIGH_JOBS_FOR_CI, 400),
 )
 
 ci.builder(
@@ -430,7 +428,6 @@ ci.builder(
         short_name = "dbg",
     ),
     contact_team_email = "lexan@google.com",
-    siso_remote_jobs = min(siso.remote_jobs.HIGH_JOBS_FOR_CI, 400),
 )
 
 ci.builder(
@@ -487,7 +484,6 @@ ci.builder(
         short_name = "x64",
     ),
     contact_team_email = "lexan@google.com",
-    siso_remote_jobs = min(siso.remote_jobs.HIGH_JOBS_FOR_CI, 400),
 )
 
 ci.builder(
@@ -533,7 +529,6 @@ ci.builder(
         short_name = "x86",
     ),
     contact_team_email = "lexan@google.com",
-    siso_remote_jobs = min(siso.remote_jobs.HIGH_JOBS_FOR_CI, 400),
 )
 
 ci.builder(
@@ -580,7 +575,6 @@ ci.builder(
         short_name = "and",
     ),
     contact_team_email = "lexan@google.com",
-    siso_remote_jobs = min(siso.remote_jobs.HIGH_JOBS_FOR_CI, 400),
 )
 
 ci.builder(
@@ -627,7 +621,6 @@ ci.builder(
         short_name = "a64",
     ),
     contact_team_email = "lexan@google.com",
-    siso_remote_jobs = min(siso.remote_jobs.HIGH_JOBS_FOR_CI, 400),
 )
 
 ci.builder(
@@ -676,7 +669,6 @@ ci.builder(
         short_name = "off",
     ),
     contact_team_email = "lexan@google.com",
-    siso_remote_jobs = min(siso.remote_jobs.HIGH_JOBS_FOR_CI, 400),
 )
 
 ci.builder(
@@ -717,7 +709,6 @@ ci.builder(
         short_name = "rel",
     ),
     contact_team_email = "lexan@google.com",
-    siso_remote_jobs = min(siso.remote_jobs.HIGH_JOBS_FOR_CI, 400),
 )
 
 ci.builder(
@@ -758,7 +749,6 @@ ci.builder(
         short_name = "dbg",
     ),
     contact_team_email = "lexan@google.com",
-    siso_remote_jobs = min(siso.remote_jobs.HIGH_JOBS_FOR_CI, 400),
 )
 
 ci.builder(
@@ -850,7 +840,6 @@ ci.builder(
         ),
     ],
     contact_team_email = "lexan@google.com",
-    siso_remote_jobs = min(siso.remote_jobs.HIGH_JOBS_FOR_CI, 400),
 )
 
 ci.builder(
@@ -910,7 +899,6 @@ ci.builder(
         ),
     ],
     contact_team_email = "lexan@google.com",
-    siso_remote_jobs = min(siso.remote_jobs.HIGH_JOBS_FOR_CI, 400),
 )
 
 clang_tot_linux_builder(
@@ -954,7 +942,6 @@ clang_tot_linux_builder(
         ],
     ),
     short_name = "rel",
-    siso_remote_jobs = min(siso.remote_jobs.HIGH_JOBS_FOR_CI, 400),
 )
 
 clang_tot_linux_builder(
@@ -994,7 +981,7 @@ clang_tot_linux_builder(
         ],
     ),
     short_name = "dbg",
-    siso_remote_jobs = min(siso.remote_jobs.HIGH_JOBS_FOR_CI, 400),
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
 clang_tot_linux_builder(
@@ -1041,7 +1028,6 @@ clang_tot_linux_builder(
         ],
     ),
     short_name = "asn",
-    siso_remote_jobs = min(siso.remote_jobs.HIGH_JOBS_FOR_CI, 400),
 )
 
 clang_tot_linux_builder(
@@ -1089,7 +1075,6 @@ clang_tot_linux_builder(
     # Requires a large disk, so has a machine specifically devoted to it
     builderless = False,
     short_name = "fuz",
-    siso_remote_jobs = min(siso.remote_jobs.HIGH_JOBS_FOR_CI, 400),
 )
 
 clang_tot_linux_builder(
@@ -1108,7 +1093,6 @@ clang_tot_linux_builder(
     ),
     category = "ToT Code Coverage",
     short_name = "linux",
-    siso_remote_jobs = min(siso.remote_jobs.HIGH_JOBS_FOR_CI, 400),
 )
 
 clang_tot_linux_builder(
@@ -1192,7 +1176,6 @@ clang_tot_linux_builder(
         ],
     ),
     short_name = "pgo",
-    siso_remote_jobs = min(siso.remote_jobs.HIGH_JOBS_FOR_CI, 400),
 )
 
 clang_tot_linux_builder(
@@ -1233,7 +1216,6 @@ clang_tot_linux_builder(
         ],
     ),
     short_name = "tsn",
-    siso_remote_jobs = min(siso.remote_jobs.HIGH_JOBS_FOR_CI, 400),
 )
 
 clang_tot_linux_builder(
@@ -1274,7 +1256,6 @@ clang_tot_linux_builder(
         ],
     ),
     short_name = "usn",
-    siso_remote_jobs = min(siso.remote_jobs.HIGH_JOBS_FOR_CI, 400),
 )
 
 ci.builder(
@@ -2257,7 +2238,6 @@ ci.builder(
         short_name = "lin",
     ),
     contact_team_email = "lexan@google.com",
-    siso_remote_jobs = min(siso.remote_jobs.HIGH_JOBS_FOR_CI, 400),
 )
 
 ci.builder(

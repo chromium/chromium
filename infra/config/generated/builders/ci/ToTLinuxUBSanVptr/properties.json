@@ -57,8 +57,7 @@
     "enable_cloud_trace": true,
     "experiments": [],
     "metrics_project": "chromium-reclient-metrics",
-    "project": "rbe-chromium-trusted",
-    "remote_jobs": 400
+    "project": "rbe-chromium-trusted"
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],

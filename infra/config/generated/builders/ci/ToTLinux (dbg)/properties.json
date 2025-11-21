@@ -58,7 +58,7 @@
     "experiments": [],
     "metrics_project": "chromium-reclient-metrics",
     "project": "rbe-chromium-trusted",
-    "remote_jobs": 400
+    "remote_jobs": 500
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
