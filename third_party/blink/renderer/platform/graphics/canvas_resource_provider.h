@@ -336,6 +336,8 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   void ReleaseLockedImages();
 
+  void EnsureSkiaCanvas();
+
  private:
   friend class FlushForImageListener;
 
@@ -343,8 +345,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   size_t ComputeSurfaceSize() const;
   size_t GetSize() const override;
-
-  void EnsureSkiaCanvas();
 
   void Clear();
 
@@ -364,10 +364,11 @@ class PLATFORM_EXPORT CanvasResourceProvider
   SkAlphaType alpha_type_;
   gfx::ColorSpace color_space_;
   std::unique_ptr<CanvasImageProvider> canvas_image_provider_;
+
+ protected:
   std::unique_ptr<cc::SkiaPaintCanvas> skia_canvas_;
   raw_ptr<Delegate> delegate_ = nullptr;
 
- protected:
   // Recording accumulating draw ops. This pointer is always valid and safe to
   // dereference.
   std::unique_ptr<MemoryManagedPaintRecorder> recorder_;

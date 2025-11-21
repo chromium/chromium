@@ -179,7 +179,11 @@ CanvasResourceProviderBitmap::DoExternalDrawAndSnapshot(
     // recording and must fallback to raster printing instead of vectorial
     // printing.
     clear_frame_ = false;
-    RasterRecord(recorder_->ReleaseMainRecording());
+
+    EnsureSkiaCanvas();
+    skia_canvas_->drawPicture(recorder_->ReleaseMainRecording());
+    skgpu::ganesh::FlushAndSubmit(GetSkSurface());
+
     // Images are locked for the duration of the rasterization, in case they get
     // used multiple times. We can unlock them once the rasterization is
     // complete.
