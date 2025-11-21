@@ -3,6 +3,7 @@ include_rules = [
   "+components/optimization_guide/content/browser",
   "+components/pdf/browser",
   "+components/prefs",
+  "+components/sessions/core",
   "+components/signin/public/identity_manager",
   "+components/sync",
   "+components/sync_preferences",

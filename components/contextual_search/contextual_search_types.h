@@ -9,6 +9,8 @@
 
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "components/sessions/core/session_id.h"
+#include "third_party/lens_server_proto/lens_overlay_request_id.pb.h"
 #include "url/gurl.h"
 
 namespace lens {
@@ -88,6 +90,16 @@ struct FileInfo {
 
   // If populated, the url of the tab corresponding to this uploaded file.
   std::optional<GURL> tab_url;
+
+  // If populated, the title of the tab corresponding to this uploaded file.
+  std::optional<std::string> tab_title;
+
+  // If populated, the session id corresponding to the tab.
+  std::optional<SessionID> tab_session_id;
+
+  // The request ID for this request. Updated by the context
+  // controller when the file upload is started.
+  lens::LensOverlayRequestId request_id;
 };
 
 // LINT.IfChange(SubmissionType)

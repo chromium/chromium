@@ -144,8 +144,8 @@ class ComposeboxQueryController
     ~FileInfo() override;
 
     // Gets a pointer to the request ID for this request for testing.
-    lens::LensOverlayRequestId* GetRequestIdForTesting() const {
-      return request_id_.get();
+    lens::LensOverlayRequestId GetRequestIdForTesting() const {
+      return request_id;
     }
 
     // Gets a pointer to the viewport request ID for this request for testing.
@@ -156,9 +156,6 @@ class ComposeboxQueryController
    private:
     friend class ComposeboxQueryController;
     friend class ComposeboxQueryControllerIOS;
-
-    // The request ID for this request. Set by StartFileUploadFlow().
-    std::unique_ptr<lens::LensOverlayRequestId> request_id_;
 
     // The request ID for the viewport associated with this request, if it is
     // different from the request ID. Set by StartFileUploadFlow() when

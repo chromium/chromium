@@ -55,6 +55,7 @@ static_library("lens") {
     "//components/base32",
     "//components/lens:lens_mojo",
     "//components/lens/proto/v1:lens_latencies_metadata_proto",
+    "//components/sessions",
     "//components/signin/public/identity_manager",
     "//components/tabs:public",
     "//components/variations",

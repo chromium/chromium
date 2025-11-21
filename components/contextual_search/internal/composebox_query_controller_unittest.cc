@@ -574,29 +574,29 @@ TEST_F(ComposeboxQueryControllerTest, UploadImageFileRequestSuccess) {
   EXPECT_EQ(controller()
                 .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
-                ->sequence_id(),
+                .sequence_id(),
             1);
   EXPECT_EQ(controller()
                 .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
-                ->image_sequence_id(),
+                .image_sequence_id(),
             1);
   EXPECT_EQ(controller()
                 .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
-                ->long_context_id(),
+                .long_context_id(),
             0);
   // Check that the routing info is in the vsrid.
   EXPECT_EQ(controller()
                 .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
-                ->routing_info()
+                .routing_info()
                 .cell_address(),
             kTestCellAddress);
   EXPECT_EQ(controller()
                 .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
-                ->routing_info()
+                .routing_info()
                 .server_address(),
             kTestServerAddress);
 
@@ -663,17 +663,17 @@ TEST_F(ComposeboxQueryControllerTest, UploadPdfFileRequestSuccess) {
   EXPECT_EQ(controller()
                 .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
-                ->sequence_id(),
+                .sequence_id(),
             1);
   EXPECT_EQ(controller()
                 .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
-                ->image_sequence_id(),
+                .image_sequence_id(),
             0);
   EXPECT_EQ(controller()
                 .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
-                ->long_context_id(),
+                .long_context_id(),
             1);
   EXPECT_EQ(controller()
                 .last_sent_file_upload_request()
@@ -707,13 +707,13 @@ TEST_F(ComposeboxQueryControllerTest, UploadPdfFileRequestSuccess) {
   EXPECT_EQ(controller()
                 .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
-                ->routing_info()
+                .routing_info()
                 .cell_address(),
             kTestCellAddress);
   EXPECT_EQ(controller()
                 .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
-                ->routing_info()
+                .routing_info()
                 .server_address(),
             kTestServerAddress);
 }
@@ -796,17 +796,17 @@ TEST_F(ComposeboxQueryControllerTest, UploadPageContextPdfFileRequestSuccess) {
   EXPECT_EQ(controller()
                 .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
-                ->sequence_id(),
+                .sequence_id(),
             1);
   EXPECT_EQ(controller()
                 .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
-                ->image_sequence_id(),
+                .image_sequence_id(),
             0);
   EXPECT_EQ(controller()
                 .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
-                ->long_context_id(),
+                .long_context_id(),
             1);
   EXPECT_EQ(controller()
                 .last_sent_file_upload_request()
@@ -840,13 +840,13 @@ TEST_F(ComposeboxQueryControllerTest, UploadPageContextPdfFileRequestSuccess) {
   EXPECT_EQ(controller()
                 .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
-                ->routing_info()
+                .routing_info()
                 .cell_address(),
             kTestCellAddress);
   EXPECT_EQ(controller()
                 .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
-                ->routing_info()
+                .routing_info()
                 .server_address(),
             kTestServerAddress);
 }
@@ -1075,17 +1075,17 @@ TEST_F(ComposeboxQueryControllerTest,
   EXPECT_EQ(controller()
                 .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
-                ->sequence_id(),
+                .sequence_id(),
             1);
   EXPECT_EQ(controller()
                 .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
-                ->image_sequence_id(),
+                .image_sequence_id(),
             1);
   EXPECT_EQ(controller()
                 .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
-                ->long_context_id(),
+                .long_context_id(),
             1);
   EXPECT_EQ(file_upload_request->objects_request()
                 .request_context()
@@ -1245,17 +1245,17 @@ TEST_F(ComposeboxQueryControllerTest,
   EXPECT_EQ(controller()
                 .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
-                ->sequence_id(),
+                .sequence_id(),
             1);
   EXPECT_EQ(controller()
                 .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
-                ->image_sequence_id(),
+                .image_sequence_id(),
             1);
   EXPECT_EQ(controller()
                 .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
-                ->long_context_id(),
+                .long_context_id(),
             1);
   EXPECT_EQ(file_upload_request->objects_request()
                 .request_context()
@@ -2094,9 +2094,9 @@ TEST_F(ComposeboxQueryControllerTest, DeleteFile_Success) {
       controller().CreateSuggestInputs({first_file_token});
   EXPECT_EQ(
       first_suggest_inputs->encoded_request_id(),
-      lens::Base64EncodeRequestId(*controller()
-                                       .GetFileInfoForTesting(first_file_token)
-                                       ->GetRequestIdForTesting()));
+      lens::Base64EncodeRequestId(controller()
+                                      .GetFileInfoForTesting(first_file_token)
+                                      ->GetRequestIdForTesting()));
   EXPECT_EQ(first_suggest_inputs->contextual_visual_input_type(), "pdf");
 
   // Act: Start the second file upload flow.
@@ -2132,9 +2132,9 @@ TEST_F(ComposeboxQueryControllerTest, DeleteFile_Success) {
       controller().CreateSuggestInputs({first_file_token});
   EXPECT_EQ(
       third_suggest_inputs->encoded_request_id(),
-      lens::Base64EncodeRequestId(*controller()
-                                       .GetFileInfoForTesting(first_file_token)
-                                       ->GetRequestIdForTesting()));
+      lens::Base64EncodeRequestId(controller()
+                                      .GetFileInfoForTesting(first_file_token)
+                                      ->GetRequestIdForTesting()));
   EXPECT_EQ(third_suggest_inputs->contextual_visual_input_type(), "pdf");
 }
 
@@ -2309,32 +2309,32 @@ TEST_F(ComposeboxQueryControllerTest,
   EXPECT_EQ(controller()
                 .GetFileInfoForTesting(first_file_token)
                 ->GetRequestIdForTesting()
-                ->sequence_id(),
+                .sequence_id(),
             1);
   EXPECT_EQ(controller()
                 .GetFileInfoForTesting(second_file_token)
                 ->GetRequestIdForTesting()
-                ->sequence_id(),
+                .sequence_id(),
             1);
   EXPECT_EQ(controller()
                 .GetFileInfoForTesting(first_file_token)
                 ->GetRequestIdForTesting()
-                ->image_sequence_id(),
+                .image_sequence_id(),
             1);
   EXPECT_EQ(controller()
                 .GetFileInfoForTesting(second_file_token)
                 ->GetRequestIdForTesting()
-                ->image_sequence_id(),
+                .image_sequence_id(),
             1);
   EXPECT_EQ(controller()
                 .GetFileInfoForTesting(first_file_token)
                 ->GetRequestIdForTesting()
-                ->long_context_id(),
+                .long_context_id(),
             1);
   EXPECT_EQ(controller()
                 .GetFileInfoForTesting(second_file_token)
                 ->GetRequestIdForTesting()
-                ->long_context_id(),
+                .long_context_id(),
             1);
   EXPECT_EQ(first_file_upload_request->objects_request()
                 .request_context()
@@ -2430,19 +2430,19 @@ TEST_F(ComposeboxQueryControllerTest,
       controller()
           .GetFileInfoForTesting(first_file_token)
           ->GetRequestIdForTesting()
-          ->uuid();
+          .uuid();
   auto first_file_request_id =
-      *controller()
-           .GetFileInfoForTesting(first_contextual_input_is_first_file
-                                      ? first_file_token
-                                      : second_file_token)
-           ->GetRequestIdForTesting();
+      controller()
+          .GetFileInfoForTesting(first_contextual_input_is_first_file
+                                     ? first_file_token
+                                     : second_file_token)
+          ->GetRequestIdForTesting();
   auto second_file_request_id =
-      *controller()
-           .GetFileInfoForTesting(first_contextual_input_is_first_file
-                                      ? second_file_token
-                                      : first_file_token)
-           ->GetRequestIdForTesting();
+      controller()
+          .GetFileInfoForTesting(first_contextual_input_is_first_file
+                                     ? second_file_token
+                                     : first_file_token)
+          ->GetRequestIdForTesting();
 
   EXPECT_THAT(contextual_inputs.inputs(0).request_id(),
               EqualsProto(first_file_request_id));

@@ -18,6 +18,7 @@ source_set("public") {
     "//components/keyed_service/core",
     "//components/lens",
     "//components/lens/proto/server:proto",
+    "//components/sessions",
     "//components/search_engines",
     "//components/signin/public/identity_manager",
     "//components/variations",
