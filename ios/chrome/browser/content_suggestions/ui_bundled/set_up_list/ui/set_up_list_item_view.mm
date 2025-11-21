@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/set_up_list_item_view.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/ui/set_up_list_item_view.h"
 
 #import "base/feature_list.h"
 #import "base/notreached.h"
@@ -10,10 +10,10 @@
 #import "base/time/time.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_view_controller_audience.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/constants.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/set_up_list_item_icon.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/set_up_list_item_view+Testing.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/set_up_list_item_view_data.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/public/set_up_list_constants.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/ui/set_up_list_item_icon.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/ui/set_up_list_item_view+Testing.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/ui/set_up_list_item_view_data.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_item.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"

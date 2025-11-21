@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_SET_UP_LIST_SET_UP_LIST_TAP_DELEGATE_H_
-#define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_SET_UP_LIST_SET_UP_LIST_TAP_DELEGATE_H_
+#ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_SET_UP_LIST_UI_SET_UP_LIST_TAP_DELEGATE_H_
+#define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_SET_UP_LIST_UI_SET_UP_LIST_TAP_DELEGATE_H_
 
 enum class SetUpListItemType;
 
 // A delegate protocol to handler user events for the SetUpList
-@protocol SetUpListTapDelegate <NSObject>
+@protocol SetUpListTapDelegate
 
 // Called when a Set Up List item is selected by the user.
 - (void)didSelectSetUpListItem:(SetUpListItemType)type;
@@ -19,4 +19,4 @@ enum class SetUpListItemType;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_SET_UP_LIST_SET_UP_LIST_TAP_DELEGATE_H_
+#endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_SET_UP_LIST_UI_SET_UP_LIST_TAP_DELEGATE_H_

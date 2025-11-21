@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_SET_UP_LIST_SET_UP_LIST_ITEM_VIEW_H_
-#define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_SET_UP_LIST_SET_UP_LIST_ITEM_VIEW_H_
+#ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_SET_UP_LIST_UI_SET_UP_LIST_ITEM_VIEW_H_
+#define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_SET_UP_LIST_UI_SET_UP_LIST_ITEM_VIEW_H_
 
 #import <UIKit/UIKit.h>
 
 #import "base/ios/block_types.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/set_up_list_mediator.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/ui/set_up_list_consumer.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_updating.h"
 
 @protocol ContentSuggestionsViewControllerAudience;
@@ -48,4 +48,4 @@ enum class SetUpListItemType;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_SET_UP_LIST_SET_UP_LIST_ITEM_VIEW_H_
+#endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_SET_UP_LIST_UI_SET_UP_LIST_ITEM_VIEW_H_

@@ -19,7 +19,7 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_metrics_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_metrics_recorder.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/utils.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/public/set_up_list_utils.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/ui/shop_card_data.h"
 #import "ios/chrome/browser/favicon/ui_bundled/favicon_attributes_with_payload.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"

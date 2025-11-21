@@ -32,7 +32,7 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_consumer.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_ranking_model.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/placeholder_config.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/set_up_list_mediator.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/coordinator/set_up_list_mediator.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/shared/metrics/home_metrics.h"

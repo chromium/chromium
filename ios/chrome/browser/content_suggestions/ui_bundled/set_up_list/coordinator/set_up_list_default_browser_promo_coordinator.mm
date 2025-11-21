@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/set_up_list_default_browser_promo_coordinator.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/coordinator/set_up_list_default_browser_promo_coordinator.h"
 
 #import "base/ios/block_types.h"
 #import "base/memory/raw_ptr.h"
@@ -11,8 +11,8 @@
 #import "base/metrics/user_metrics_action.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/constants.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/set_up_list_default_browser_promo_coordinator_delegate.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/coordinator/set_up_list_default_browser_promo_coordinator_delegate.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/public/set_up_list_constants.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/first_run/ui_bundled/default_browser/default_browser_screen_view_controller.h"
@@ -23,9 +23,6 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-
-@interface SetUpListDefaultBrowserPromoCoordinator ()
-@end
 
 using base::RecordAction;
 using base::UmaHistogramEnumeration;

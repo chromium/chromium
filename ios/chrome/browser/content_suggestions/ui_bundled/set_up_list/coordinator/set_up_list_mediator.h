@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_SET_UP_LIST_SET_UP_LIST_MEDIATOR_H_
-#define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_SET_UP_LIST_SET_UP_LIST_MEDIATOR_H_
+#ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_SET_UP_LIST_COORDINATOR_SET_UP_LIST_MEDIATOR_H_
+#define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_SET_UP_LIST_COORDINATOR_SET_UP_LIST_MEDIATOR_H_
 
 #import <Foundation/Foundation.h>
 
@@ -11,7 +11,7 @@
 
 namespace signin {
 class IdentityManager;
-}
+}  // namespace signin
 
 @protocol ContentSuggestionsDelegate;
 @class ContentSuggestionsMetricsRecorder;
@@ -22,19 +22,7 @@ class PrefService;
 @class SetUpListItem;
 @class SetUpListItemViewData;
 
-// Interface for listening to events occurring in SetUpListMediator.
-@protocol SetUpListConsumer
-@optional
-// Indicates that a SetUpList task has been completed, and whether that resulted
-// in all tasks being `completed`. Calls the `completion` block when the
-// animation is finished.
-- (void)setUpListItemDidComplete:(SetUpListItem*)item
-               allItemsCompleted:(BOOL)completed
-                      completion:(ProceduralBlock)completion;
-
-@end
-
-// Audience for Set Up List events
+// Audience for Set Up List events.
 @protocol SetUpListMediatorAudience
 
 // Indicates that the Set Up List should be removed.
@@ -95,4 +83,4 @@ class PrefService;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_SET_UP_LIST_SET_UP_LIST_MEDIATOR_H_
+#endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_SET_UP_LIST_COORDINATOR_SET_UP_LIST_MEDIATOR_H_
