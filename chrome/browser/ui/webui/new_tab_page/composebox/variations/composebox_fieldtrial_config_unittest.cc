@@ -84,7 +84,7 @@ TEST_F(NtpComposeboxFieldTrialConfigTest,
   EXPECT_EQ(composebox.is_pdf_upload_enabled(), true);
 
   auto placeholder_config = composebox.placeholder_config();
-  EXPECT_EQ(placeholder_config.change_text_animation_interval_ms(), 4000u);
+  EXPECT_EQ(placeholder_config.change_text_animation_interval_ms(), 2000u);
   EXPECT_EQ(placeholder_config.fade_text_animation_duration_ms(), 250u);
   EXPECT_EQ(placeholder_config.placeholders().size(), 6);
 

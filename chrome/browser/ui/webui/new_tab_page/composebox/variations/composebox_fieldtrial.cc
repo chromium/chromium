@@ -70,7 +70,7 @@ omnibox::NTPComposeboxConfig GetNTPComposeboxConfig() {
   composebox->set_is_pdf_upload_enabled(true);
 
   auto* placeholder_config = composebox->mutable_placeholder_config();
-  placeholder_config->set_change_text_animation_interval_ms(4000);
+  placeholder_config->set_change_text_animation_interval_ms(2000);
   placeholder_config->set_fade_text_animation_duration_ms(250);
 
   placeholder_config->add_placeholders(
