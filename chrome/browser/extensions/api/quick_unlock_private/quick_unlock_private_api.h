@@ -200,6 +200,11 @@ class QuickUnlockPrivateGetCredentialRequirementsFunction
   ResponseAction Run() override;
 };
 
+// TODO(crbug.com/258481055): This particular Extension function isn't being
+// used in production code anymore, so it could in theory be removed, but
+// unfortunately it is still being used in one Autotest and one Tast test.
+// Those dependencies could be removed, but that requires additional work. See
+// the attached bug for more details.
 class QuickUnlockPrivateSetModesFunction : public ExtensionFunction {
  public:
   using QuickUnlockMode =
