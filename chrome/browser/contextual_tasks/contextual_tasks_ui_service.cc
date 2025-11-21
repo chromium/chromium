@@ -375,4 +375,49 @@ void ContextualTasksUiService::AssociateWebContentsToTask(
     context_controller_->AssociateTabWithTask(task_id, session_id);
   }
 }
+
+void ContextualTasksUiService::OnTabClickedFromSourcesMenu(
+    int32_t tab_id,
+    const GURL& url,
+    BrowserWindowInterface* browser) {
+  if (!browser) {
+    return;
+  }
+
+  if (!url.SchemeIsHTTPOrHTTPS()) {
+    // TODO(crbug.com/460614856): Handle PDF and other possible contexts.
+    return;
+  }
+
+  // Find the tab on the tab strip by the given tab ID. If found, switch to it.
+  // Chances are that the tab might have navigated by now, hence check the URL
+  // as well.
+  TabStripModel* tab_strip_model = browser->GetTabStripModel();
+  for (int i = 0; i < tab_strip_model->count(); ++i) {
+    content::WebContents* web_contents = tab_strip_model->GetWebContentsAt(i);
+    tabs::TabInterface* tab_interface =
+        tabs::TabInterface::GetFromContents(web_contents);
+    if (tab_interface && tab_interface->GetHandle().raw_value() == tab_id &&
+        web_contents->GetLastCommittedURL() == url) {
+      tab_strip_model->ActivateTabAt(i);
+      return;
+    }
+  }
+
+  // The tab with the given ID and URL wasn't found. Next, try finding a tab
+  // that matches the URL. If found, switch to it.
+  for (int i = 0; i < tab_strip_model->count(); ++i) {
+    content::WebContents* web_contents = tab_strip_model->GetWebContentsAt(i);
+    if (web_contents->GetLastCommittedURL() == url) {
+      tab_strip_model->ActivateTabAt(i);
+      return;
+    }
+  }
+
+  // The tab wasn't found. Open a new tab with the given URL to the end of the
+  // tab strip.
+  NavigateParams params(browser->GetProfile(), url, ui::PAGE_TRANSITION_LINK);
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  Navigate(&params);
+}
 }  // namespace contextual_tasks

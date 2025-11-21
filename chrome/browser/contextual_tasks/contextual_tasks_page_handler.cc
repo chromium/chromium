@@ -149,3 +149,19 @@ void ContextualTasksPageHandler::OnOAuthTokenReceived(
   }
   std::move(callback).Run(access_token_info.token);
 }
+
+void ContextualTasksPageHandler::GetAttachedTabs(
+    GetAttachedTabsCallback callback) {
+  std::vector<contextual_tasks::mojom::TabPtr> tabs;
+  // TODO(crbug.com/460614856): Query backend for attached tabs.
+  std::move(callback).Run(std::move(tabs));
+}
+
+void ContextualTasksPageHandler::OnTabClickedFromSourcesMenu(int32_t tab_id,
+                                                             const GURL& url) {
+  if (ui_service_) {
+    ui_service_->OnTabClickedFromSourcesMenu(
+        tab_id, url,
+        webui::GetBrowserWindowInterface(web_ui_->GetWebContents()));
+  }
+}

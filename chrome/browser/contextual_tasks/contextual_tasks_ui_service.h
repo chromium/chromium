@@ -8,6 +8,7 @@
 #include <map>
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "url/gurl.h"
@@ -103,6 +104,12 @@ class ContextualTasksUiService : public KeyedService {
   // Move the WebContents for the given task to a new tab.
   virtual void MoveTaskUiToToNewTab(const base::Uuid& task_id,
                                     BrowserWindowInterface* browser);
+
+  // Called when a tab in the sources menu is clicked. Switches to the tab or
+  // reopens the tab depending on whether the tab is already open on tab strip.
+  void OnTabClickedFromSourcesMenu(int32_t tab_id,
+                                   const GURL& url,
+                                   BrowserWindowInterface* browser);
 
  private:
   const raw_ptr<Profile> profile_;

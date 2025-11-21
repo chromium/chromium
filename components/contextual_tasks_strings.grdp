@@ -16,4 +16,7 @@
   <message name="IDS_CONTEXTUAL_TASKS_MENU_HELP" desc="The 'Help' option in the 3-dot menu.">
     Help
   </message>
+  <message name="IDS_CONTEXTUAL_TASKS_SOURCES_MENU_TABS_HEADER" desc="The 'Tabs' header in the sources menu.">
+    Tabs
+  </message>
 </grit-part>

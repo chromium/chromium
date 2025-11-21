@@ -32,6 +32,8 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
       'openHelpUi',
       'moveTaskUiToToNewTab',
       'getOAuthToken',
+      'getAttachedTabs',
+      'onTabClickedFromSourcesMenu',
     ]);
 
     this.url_ = {url};
@@ -95,6 +97,15 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
   getOAuthToken() {
     this.methodCalled('getOAuthToken');
     return Promise.resolve({oauthToken: 'fake_token'});
+  }
+
+  getAttachedTabs() {
+    this.methodCalled('getAttachedTabs');
+    return Promise.resolve({tabs: []});
+  }
+
+  onTabClickedFromSourcesMenu(tabId: number, url: Url) {
+    this.methodCalled('onTabClickedFromSourcesMenu', tabId, url);
   }
 }
 

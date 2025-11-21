@@ -60,6 +60,8 @@ class ContextualTasksPageHandler : public contextual_tasks::mojom::PageHandler {
   void OpenHelpUi() override;
   void MoveTaskUiToToNewTab() override;
   void GetOAuthToken(GetOAuthTokenCallback callback) override;
+  void GetAttachedTabs(GetAttachedTabsCallback callback) override;
+  void OnTabClickedFromSourcesMenu(int32_t tab_id, const GURL& url) override;
 
  private:
   void OnOAuthTokenReceived(GetOAuthTokenCallback callback,

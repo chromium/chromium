@@ -20,7 +20,8 @@ export function getHtml(this: ContextualTasksAppElement) {
         @open-in-new-tab-click="${this.onOpenInNewTabClick_}"
         @open-chrome-settings-click="${this.onOpenChromeSettingsClick_}"
         @my-activity-click="${this.onMyActivityClick_}"
-        @help-click="${this.onHelpClick_}">
+        @help-click="${this.onHelpClick_}"
+        @tab-click="${this.onTabClick_}">
       </top-toolbar>
   `}
   <webview id="threadFrame" src="${this.threadUrl_}"></webview>

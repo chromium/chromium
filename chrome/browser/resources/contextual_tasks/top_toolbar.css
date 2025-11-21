@@ -27,6 +27,34 @@
   align-items: center;
 }
 
+.tab-favicon {
+  width: 16px;
+  height: 16px;
+  margin-inline-end: 10px;
+  background-size: 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
 .dropdown-item cr-icon {
   padding-inline-end: 10px;
+}
+
+.header {
+  font-weight: bold;
+  padding: 8px 16px;
+}
+
+.tab-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.tab-title {
+  font-weight: 500;
+}
+
+.tab-url {
+  font-size: 0.875rem;
+  color: var(--cr-secondary-text-color);
 }

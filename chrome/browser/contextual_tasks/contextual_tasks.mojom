@@ -17,6 +17,19 @@ struct Thread {
   string title;
 };
 
+// Represents the visual information needed to display a single tab in the
+// sources menu.
+struct Tab {
+  // The unique identifier of the tab.
+  int32 tab_id;
+
+  // The title of the tab.
+  string title;
+
+  // The URL of the tab.
+  url.mojom.Url url;
+};
+
 // The interface that defines the webui (typescript/renderer) to browser process
 // communication channel. This is primarily used to notify the browser of user
 // actions on the page (e.g. UI changes or requests for new data).
@@ -63,6 +76,16 @@ interface PageHandler {
 
   // Gets an OAuth token for the search results for the signed-in user.
   GetOAuthToken() => (string oauth_token);
+
+  // Gets the list of tabs attached to the current task.
+  GetAttachedTabs() => (array<Tab> tabs);
+
+  // Called when a tab in the sources menu is clicked. This will first attempt
+  // to switch to a tab matching both the provided `tab_id` and `url`. If no
+  // such tab is found, it will then try to switch to a tab matching only the
+  // `url`. If still no matching tab is found, a new foreground tab will be
+  // opened with the provided `url`.
+  OnTabClickedFromSourcesMenu(int32 tab_id, url.mojom.Url url);
 };
 
 // The interface that defines the browser process to webui (typescript/renderer)
