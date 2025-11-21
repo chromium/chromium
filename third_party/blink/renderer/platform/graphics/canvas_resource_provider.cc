@@ -172,21 +172,14 @@ CanvasResourceProviderBitmap::DoExternalDrawAndSnapshot(
       GetRecorderHighEntropyCanvasOpTypes();
 
   if (recorder_->HasReleasableDrawOps()) {
-    FlushReason reason = FlushReason::kOther;
     ScopedRasterTimer timer(nullptr, *this,
                             always_enable_raster_timers_for_testing_);
-    bool want_to_print = (IsPrinting() && reason != FlushReason::kClear) ||
-                         reason == FlushReason::kPrinting ||
-                         reason == FlushReason::kCanvasPushFrameWhilePrinting;
-    bool preserve_recording = want_to_print && clear_frame_;
+    bool preserve_recording = IsPrinting() && clear_frame_;
 
     // If a previous flush rasterized some paint ops, we lost part of the
     // recording and must fallback to raster printing instead of vectorial
     // printing.
     clear_frame_ = false;
-    if (reason == FlushReason::kClear) {
-      clear_frame_ = true;
-    }
     cc::PaintRecord recording;
     recording = recorder_->ReleaseMainRecording();
     RasterRecord(recording);
