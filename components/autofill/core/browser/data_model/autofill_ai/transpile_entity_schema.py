@@ -16,36 +16,43 @@ import re
 import sys
 from entity_schema_parser import parse_entity_schema
 
+
 # For 'foo-bar' returns 'kFooBar', which is the conventional format of C++
 # constants.
 def name_to_constant(str):
   return 'k' + ''.join(
     re.sub(r'[^\w\s]', '', s.capitalize()) for s in str.split())
 
+
 # The enum constant's name of an entity type.
 def entity_name(entity, qualified = True):
   prefix = 'EntityTypeName::' if qualified else ''
   return prefix + name_to_constant(entity)
+
 
 # The enum constant's name of an attribute type.
 def attribute_name(entity, attribute, qualified = True):
   prefix = 'AttributeTypeName::' if qualified else ''
   return prefix + name_to_constant(entity +' '+ attribute)
 
+
 # Adds to list of unqualified enum constant values a `kMaxValue` constant.
 def add_kMaxValue(constants):
   constants = list(constants)
   return constants + ['kMaxValue = '+ constants[-1]]
+
 
 # An expression that creates a DenseSet of attribute types.
 def attribute_dense_set(entity, attributes):
   names = (attribute_name(entity, attribute) for attribute in attributes)
   return f'DenseSet<AttributeType>{{{", ".join((f"AttributeType({name})" for name in names))}}}'
 
+
 # An expression that creates an array of DenseSets of attribute types.
 def attribute_dense_set_array(entity, attributes_sets):
   dense_sets = [attribute_dense_set(entity, attributes) for attributes in attributes_sets]
   return f'std::array<DenseSet<AttributeType>, {len(dense_sets)}>{{{", ".join(dense_sets)}}}'
+
 
 # Generates entity and attribute type name enum definitions.
 def generate_cpp_enums(schema):
@@ -58,6 +65,7 @@ def generate_cpp_enums(schema):
   yield f'enum class EntityTypeName {{ {", ".join(add_kMaxValue(entities))} }};'
   yield ''
   yield f'enum class AttributeTypeName {{ {", ".join(add_kMaxValue(attributes))} }};'
+
 
 # Generates the function implementations.
 def generate_cpp_functions(schema):

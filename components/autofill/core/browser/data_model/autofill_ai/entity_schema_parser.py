@@ -8,8 +8,8 @@ See parse_entity_schema().
 """
 
 import collections
-import itertools
 import io
+import itertools
 import os
 import sys
 _FILE_PATH = os.path.dirname(os.path.realpath(__file__))
@@ -47,11 +47,14 @@ _CONSTRAINTS_KEYS = {
     'required fields',
 }
 
+
 class SchemaValidationError(Exception):
   """Base error for all parsing issues."""
+
   def __init__(self, entity, message):
     name = entity.get('name', '<unnamed>')
     super().__init__(f'Autofill AI schema: entity "{name}": {message}')
+
 
 def _resolve_shorthands(schema):
   """Resolves shorthands in the given schema.
@@ -89,6 +92,7 @@ def _resolve_shorthands(schema):
       if entity[lhs] == rhs and isinstance(entity[rhs], list):
         entity[lhs] = entity[rhs]
 
+
 def _validate_attributes(entity, attributes, allow_empty):
   """Validates a list of attributes of an entity.
 
@@ -101,8 +105,8 @@ def _validate_attributes(entity, attributes, allow_empty):
     Error messages.
   """
   if not isinstance(attributes, list):
-    errors.append('is not a list')
-  if attributes == [] and not allow_empty:
+    yield 'is not a list'
+  if not attributes and not allow_empty:
     yield f'is an empty list'
 
   duplicate_attributes = {
@@ -116,6 +120,7 @@ def _validate_attributes(entity, attributes, allow_empty):
   unknown_attributes = set(attributes) - set(entity['attributes'])
   for attribute in unknown_attributes:
     yield f'contains an unknown attribute "{attribute}"'
+
 
 def _validate_entity(entity):
   """Validates a single entity.
@@ -139,14 +144,14 @@ def _validate_entity(entity):
   if not isinstance(entity['name'], str):
     yield '"name": value is not a string'
 
-  if entity['name'] == '':
+  if not entity['name']:
     yield '"name": value is the empty string'
 
   known_attributes = set(entity['attributes'])
   for attribute in known_attributes:
     if not isinstance(attribute, str):
       yield f'attribute {attribute} is not a string'
-    if attribute == '':
+    if not attribute:
       yield f'attribute {attribute} is empty'
 
   yield from (
@@ -178,15 +183,16 @@ def _validate_entity(entity):
     yield '"read only": value is not a Boolean'
 
   if entity['read only']:
-    if entity['import constraints'] != []:
+    if entity['import constraints']:
       yield '"import constraints": value must be empty if "read only" is true'
-    if entity['merge constraints'] != []:
+    if entity['merge constraints']:
       yield '"merge constraints": value must be empty if "read only" is true'
-    if entity['strike keys'] != []:
+    if entity['strike keys']:
       yield '"strike keys": value must be empty if "read only" is true'
 
   if not isinstance(entity.get('experiment feature', ''), str):
     yield '"experiment feature": value is not a string'
+
 
 def _validate_schema(schema):
   """Validates all entities of a schema.
@@ -207,6 +213,7 @@ def _validate_schema(schema):
         'Multiple parsing errors', errors
     )
 
+
 def parse_entity_schema(path_to_schema_json):
   """Builds the Autofill AI entity schema.
 
@@ -223,7 +230,6 @@ def parse_entity_schema(path_to_schema_json):
     SchemaValidationError: The schema is invalid. May raise a group.
     OSError: The schema cannot be opened and decoded.
   """
-  schema = None
   with io.open(path_to_schema_json, 'r', encoding='utf-8') as input_handle:
     schema = json5.load(input_handle)
   _resolve_shorthands(schema)
