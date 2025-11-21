@@ -523,4 +523,5 @@ Refer to README.md for content description and update process.
  <item id="legion_client" added_in_milestone="142" content_hash_code="067a09ed" os_list="linux,windows,android,chromeos" file_path="components/legion/websocket_client.cc" />
  <item id="webrtc_rtc_transport" added_in_milestone="142" content_hash_code="0456b8fc" os_list="linux,windows,android,chromeos" file_path="third_party/blink/renderer/modules/peerconnection/rtc_transport/rtc_transport_dependencies.cc" />
  <item id="email_verification" added_in_milestone="143" content_hash_code="028efd71" os_list="linux,windows,android,chromeos" file_path="content/browser/webid/delegation/email_verifier_network_request_manager.cc" />
+ <item id="amount_extraction_model_execution" added_in_milestone="144" content_hash_code="05d4d2fd" os_list="linux,windows,android,chromeos" file_path="components/optimization_guide/core/model_execution/model_execution_fetcher_impl.cc" />
 </annotations>

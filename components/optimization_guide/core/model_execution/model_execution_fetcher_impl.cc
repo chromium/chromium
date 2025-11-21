@@ -264,8 +264,47 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
       // TODO(crbug.com/441680019): Add network traffic annotation.
       return MISSING_TRAFFIC_ANNOTATION;
     case ModelBasedCapabilityKey::kAmountExtraction:
-      // TODO(crbug.com/445712869): Add network traffic annotation.
-      return MISSING_TRAFFIC_ANNOTATION;
+      return net::DefineNetworkTrafficAnnotation(
+          "amount_extraction_model_execution",
+          R"(
+    semantics {
+      sender: "Amount Extraction"
+      description:
+        "Uses server-side AI model to extract the final checkout amount "
+        "from a web page to support features like Buy Now Pay Later (BNPL). "
+        "This helps improve the accuracy of amount extraction on checkout "
+        "pages."
+      trigger:
+        "User navigates to a checkout page on a supported merchant website "
+        "and selects bnpl option."
+      destination: GOOGLE_OWNED_SERVICE
+      data:
+        "The text content of the checkout page, which may include the page "
+        "URL, and user-input data in the checkout form."
+      internal {
+        contacts {
+          email: "chrome-intelligence-core@google.com"
+        }
+      }
+      user_data {
+        type: WEB_CONTENT
+        type: USER_CONTENT
+      }
+      last_reviewed: "2025-11-20"
+    }
+    policy {
+      cookies_allowed: NO
+      setting:
+        "You can enable or disable this feature via the 'Pay over time' toggle "
+        "in Chrome Settings > Autofill and Passwords > Payment methods. This "
+        "feature is enabled by default. It also requires "
+        "'Save and fill payment methods' to be enabled."
+      chrome_policy {
+        AutofillCreditCardEnabled {
+          AutofillCreditCardEnabled: false
+        }
+      }
+    })");
     case ModelBasedCapabilityKey::kIosSmartTabGrouping:
       // TODO(crbug.com/456457419): Add network traffic annotation.
       return MISSING_TRAFFIC_ANNOTATION;
