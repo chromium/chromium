@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/android/jni_bytebuffer.h"
+#include "base/base64.h"
 #include "base/containers/span.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -26,11 +27,13 @@
 #include "components/lens/tab_contextualization_controller.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/page_content_annotations/core/page_content_cache.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/url_util.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
+#include "ui/gfx/codec/png_codec.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
@@ -297,6 +300,18 @@ void ComposeboxQueryControllerBridge::OnGetPageContentFromCache(
     input_data->context_input->emplace_back(
         std::vector<uint8_t>(serialized_apc.begin(), serialized_apc.end()),
         lens::MimeType::kAnnotatedPageContent);
+  }
+
+  if (page_content_annotations::features::kPageContentCacheEnableScreenshot
+          .Get() &&
+      page_context->has_tab_screenshot()) {
+    const std::string& base64_string = page_context->tab_screenshot();
+    std::string png_data_string;
+
+    if (base::Base64Decode(base64_string, &png_data_string)) {
+      input_data->viewport_screenshot_bytes =
+          std::vector<uint8_t>(png_data_string.begin(), png_data_string.end());
+    }
   }
 
   OnGetTabPageContext(env, context_token, std::move(input_data));

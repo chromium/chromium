@@ -49,9 +49,7 @@ namespace version_info {
 enum class Channel;
 }  // namespace version_info
 
-#if !BUILDFLAG(IS_IOS)
 class SkBitmap;
-#endif  // !BUILDFLAG(IS_IOS)
 
 // Callback type alias for the file upload request body proto created.
 using RequestBodyProtoCreatedCallback = base::OnceCallback<void(
@@ -333,14 +331,12 @@ class ComposeboxQueryController
       contextual_search::FileUploadStatus status,
       std::optional<contextual_search::FileUploadErrorType> error_type);
 
-#if !BUILDFLAG(IS_IOS)
   // Handler for when the image from an image file upload is decoded. Creates
   // the request body proto and calls the callback with the request.
   void ProcessDecodedImageAndContinue(lens::LensOverlayRequestId request_id,
                                       const lens::ImageEncodingOptions& options,
                                       RequestBodyProtoCreatedCallback callback,
                                       const SkBitmap& bitmap);
-#endif  // !BUILDFLAG(IS_IOS)
 
   // Creates the request body protos for the file and viewport upload requests
   // and calls the callbacks with the request.

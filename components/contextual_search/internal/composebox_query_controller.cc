@@ -422,15 +422,14 @@ void ComposeboxQueryController::StartFileUploadFlow(
   DCHECK(inserted);
   FileInfo& current_file_info = *it->second;
 
-#if BUILDFLAG(IS_IOS)
-  bool has_viewport_screenshot =
+  bool has_viewport_bytes =
       enable_viewport_images_ &&
       contextual_input_data->viewport_screenshot_bytes.has_value();
-#else
-  bool has_viewport_screenshot =
+  bool has_viewport_bitmap =
       enable_viewport_images_ &&
       contextual_input_data->viewport_screenshot.has_value();
-#endif  // BUILDFLAG(IS_IOS)
+
+  bool has_viewport_screenshot = has_viewport_bitmap || has_viewport_bytes;
   // For the multi-context input flow, whether or not to use the _AND_IMAGE
   // media type depends on whether or not to use separate request ids for the
   // viewport image upload request.
@@ -893,12 +892,12 @@ void ComposeboxQueryController::UpdateFileUploadStatus(
   }
 }
 
-#if !BUILDFLAG(IS_IOS)
 void ComposeboxQueryController::ProcessDecodedImageAndContinue(
     lens::LensOverlayRequestId request_id,
     const lens::ImageEncodingOptions& image_options,
     RequestBodyProtoCreatedCallback callback,
     const SkBitmap& bitmap) {
+#if !BUILDFLAG(IS_IOS)
   scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs =
       base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
   if (bitmap.isNull() || bitmap.empty()) {
@@ -924,8 +923,8 @@ void ComposeboxQueryController::ProcessDecodedImageAndContinue(
                          CreateFileUploadRequestProtoWithImageDataAndContinue,
                      request_id, CreateClientContext(), ref_counted_logs,
                      std::move(callback)));
-}
 #endif  // !BUILDFLAG(IS_IOS)
+}
 
 void ComposeboxQueryController::CreateImageUploadRequest(
     lens::LensOverlayRequestId request_id,
@@ -957,7 +956,6 @@ void ComposeboxQueryController::CreateUploadRequestBodiesAndContinue(
   // If there is a viewport screenshot, create the viewport upload request body.
   // TODO(crbug.com/442685171): Pass the pdf page number to the viewport
   // upload request if available.
-#if BUILDFLAG(IS_IOS)
   if (enable_viewport_images_ &&
       contextual_input_data->viewport_screenshot_bytes.has_value()) {
     CHECK(image_options.has_value());
@@ -974,10 +972,8 @@ void ComposeboxQueryController::CreateUploadRequestBodiesAndContinue(
             base::BindOnce(&ComposeboxQueryController::OnUploadRequestBodyReady,
                            weak_ptr_factory_.GetWeakPtr(), file_token,
                            file_info->num_outstanding_network_requests_++)));
-  }
-#else
-  if (enable_viewport_images_ &&
-      contextual_input_data->viewport_screenshot.has_value()) {
+  } else if (enable_viewport_images_ &&
+             contextual_input_data->viewport_screenshot.has_value()) {
     CHECK(image_options.has_value());
     ProcessDecodedImageAndContinue(
         GetRequestIdForViewportImage(file_token), image_options.value(),
@@ -993,7 +989,6 @@ void ComposeboxQueryController::CreateUploadRequestBodiesAndContinue(
         // callback.
         std::move(*contextual_input_data->viewport_screenshot));
   }
-#endif  // !BUILDFLAG(IS_IOS)
 
   switch (file_info->mime_type) {
     case lens::MimeType::kPdf:
