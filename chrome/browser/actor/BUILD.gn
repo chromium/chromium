@@ -354,6 +354,7 @@ source_set("browser_tests") {
 
   if (enable_glic) {
     sources += [
+      "actor_functional_browsertest.cc",
       "actor_keyed_service_browsertest.cc",
       "actor_policy_checker_browsertest.cc",
       "execution_engine_browsertest.cc",
