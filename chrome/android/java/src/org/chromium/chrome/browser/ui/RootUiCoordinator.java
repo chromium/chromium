@@ -72,6 +72,7 @@ import org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerSuppl
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchObserver;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
+import org.chromium.chrome.browser.desktop_site.DesktopSiteUtils;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeBottomSheetManager;
@@ -135,7 +136,6 @@ import org.chromium.chrome.browser.share.qrcode.QrCodeDialog;
 import org.chromium.chrome.browser.share.scroll_capture.ScrollCaptureManager;
 import org.chromium.chrome.browser.tab.AccessibilityVisibilityHandler;
 import org.chromium.chrome.browser.tab.AutofillSessionLifetimeController;
-import org.chromium.chrome.browser.tab.RequestDesktopUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabLoadIfNeededCaller;
@@ -1294,7 +1294,7 @@ public class RootUiCoordinator
         }
 
         if (DeviceFormFactor.isWindowOnTablet(mWindowAndroid)
-                && RequestDesktopUtils.maybeDefaultEnableGlobalSetting(
+                && DesktopSiteUtils.maybeDefaultEnableGlobalSetting(
                         getPrimaryDisplaySizeInInches(), originalProfile, mActivity)) {
             // TODO(crbug.com/40856393): Remove this explicit load when this bug is addressed.
             if (mActivityTabProvider != null && mActivityTabProvider.get() != null) {
@@ -1304,7 +1304,7 @@ public class RootUiCoordinator
             }
         }
 
-        RequestDesktopUtils.maybeDefaultEnableWindowSetting(mActivity, originalProfile);
+        DesktopSiteUtils.maybeDefaultEnableWindowSetting(mActivity, originalProfile);
 
         initMerchantTrustSignals(originalProfile);
     }

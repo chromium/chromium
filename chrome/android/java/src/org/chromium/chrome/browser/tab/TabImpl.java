@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils;
 import org.chromium.chrome.browser.content.ContentUtils;
 import org.chromium.chrome.browser.content.WebContentsFactory;
+import org.chromium.chrome.browser.desktop_site.DesktopSiteUtils;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.NativePageAssassin;
@@ -2718,7 +2719,7 @@ class TabImpl implements Tab {
         }
 
         boolean shouldRequestDesktopSite =
-                RequestDesktopUtils.shouldOverrideDesktopSite(mProfile, url, getContext());
+                DesktopSiteUtils.shouldOverrideDesktopSite(mProfile, url, getContext());
 
         if (shouldRequestDesktopSite != currentRequestDesktopSite) {
             // The user is not forcing any mode and we determined that we need to

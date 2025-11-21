@@ -25,7 +25,6 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.page_info.SiteSettingsHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
@@ -197,7 +196,8 @@ public class DesktopSiteSettingsIphController {
                         profile, ContentSettingsType.REQUEST_DESKTOP_SITE);
         // Check whether the site has a site-level exception.
         boolean siteExceptionExists =
-                TabUtils.isDesktopSiteEnabled(profile, tab.getUrl()) != desktopSiteGloballyUsed;
+                DesktopSiteUtils.isDesktopSiteEnabled(profile, tab.getUrl())
+                        != desktopSiteGloballyUsed;
 
         // Show the message only when the site uses the mobile UA without a desktop site exception,
         // and desktop site is globally enabled, indicating that the window setting is in use.

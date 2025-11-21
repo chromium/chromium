@@ -32,19 +32,14 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.media.MediaCaptureDevicesDispatcherAndroid;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab.MediaState;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
-import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.util.AutomotiveUtils;
 import org.chromium.components.browser_ui.util.DimensionCompat;
-import org.chromium.components.content_settings.ContentSetting;
-import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroidManager;
 import org.chromium.ui.display.DisplayUtil;
-import org.chromium.url.GURL;
 
 /** Collection of utility methods that operates on Tab. */
 @NullMarked
@@ -135,47 +130,6 @@ public class TabUtils {
     public static boolean isUsingDesktopUserAgent(@Nullable WebContents webContents) {
         return webContents != null
                 && webContents.getNavigationController().getUseDesktopUserAgent();
-    }
-
-    /**
-     * Read Request Desktop Site ContentSettings.
-     *
-     * @param profile The profile used to retrieve ContentSettings.
-     * @param url The Url used to retrieve site level ContentSettings.
-     * @return Whether Request Desktop Site is enabled in ContentSettings.
-     */
-    public static boolean readRequestDesktopSiteContentSettings(
-            Profile profile, @Nullable GURL url) {
-        return url != null && TabUtils.isDesktopSiteEnabled(profile, url);
-    }
-
-    /**
-     * Check if Request Desktop Site ContentSettings is global setting.
-     * @param profile The profile used to retrieve ContentSettings.
-     * @param url The Url used to retrieve ContentSettings.
-     * @return Whether Request Desktop Site ContentSettings is global setting.
-     */
-    public static boolean isRequestDesktopSiteContentSettingsGlobal(
-            Profile profile, @Nullable GURL url) {
-        if (url == null) {
-            return true;
-        }
-        return WebsitePreferenceBridge.isContentSettingGlobal(
-                profile, ContentSettingsType.REQUEST_DESKTOP_SITE, url, url);
-    }
-
-    /**
-     * Check if Request Desktop Site global setting is enabled.
-     * @param profile The profile of the tab.
-     *        Content settings have separate storage for incognito profiles.
-     *        For site-specific exceptions the actual profile is needed.
-     * @param url The URL for the current web content.
-     * @return Whether the desktop site should be requested.
-     */
-    public static boolean isDesktopSiteEnabled(Profile profile, GURL url) {
-        return WebsitePreferenceBridge.getContentSetting(
-                        profile, ContentSettingsType.REQUEST_DESKTOP_SITE, url, url)
-                == ContentSetting.ALLOW;
     }
 
     /**
