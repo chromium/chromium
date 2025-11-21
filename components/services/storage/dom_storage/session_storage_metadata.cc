@@ -39,6 +39,25 @@ SessionStorageMetadata::MapData::MapData(int64_t map_number,
       storage_key_(std::move(storage_key)) {}
 SessionStorageMetadata::MapData::~MapData() = default;
 
+DomStorageDatabase::Metadata SessionStorageMetadata::ToDomStorageMetadata(
+    NamespaceEntry session) {
+  const std::map<blink::StorageKey,
+                 scoped_refptr<SessionStorageMetadata::MapData>>& session_maps =
+      session->second;
+
+  DomStorageDatabase::Metadata metadata;
+  for (const auto& [storage_key, map_data] : session_maps) {
+    metadata.map_metadata.push_back({
+        .map_locator{
+            /*session_id=*/session->first,
+            storage_key,
+            map_data->map_id(),
+        },
+    });
+  }
+  return metadata;
+}
+
 SessionStorageMetadata::SessionStorageMetadata() = default;
 
 SessionStorageMetadata::~SessionStorageMetadata() = default;
@@ -126,9 +145,7 @@ SessionStorageMetadata::RegisterNewMap(NamespaceEntry namespace_entry,
 
 void SessionStorageMetadata::RegisterShallowClonedNamespace(
     NamespaceEntry source_namespace,
-    NamespaceEntry destination_namespace,
-    std::vector<AsyncDomStorageDatabase::BatchDatabaseTask>* save_tasks) {
-  DCHECK(save_tasks);
+    NamespaceEntry destination_namespace) {
   std::map<blink::StorageKey, scoped_refptr<MapData>>& source_storage_keys =
       source_namespace->second;
   std::map<blink::StorageKey, scoped_refptr<MapData>>&
@@ -136,27 +153,13 @@ void SessionStorageMetadata::RegisterShallowClonedNamespace(
   DCHECK_EQ(0ul, destination_storage_keys.size())
       << "The destination already has data.";
 
-  std::vector<DomStorageDatabase::KeyValuePair> new_entries;
   for (const auto& storage_key_map_pair : source_storage_keys) {
     destination_storage_keys.emplace(
         std::piecewise_construct,
         std::forward_as_tuple(storage_key_map_pair.first),
         std::forward_as_tuple(storage_key_map_pair.second));
     storage_key_map_pair.second->IncReferenceCount();
-    new_entries.emplace_back(
-        SessionStorageLevelDB::CreateMapMetadataKey(
-            destination_namespace->first, storage_key_map_pair.first),
-        storage_key_map_pair.second->MapNumberAsBytes());
   }
-
-  save_tasks->push_back(base::BindOnce(
-      [](std::vector<DomStorageDatabase::KeyValuePair> new_entries,
-         DomStorageBatchOperationLevelDB& batch,
-         const DomStorageDatabaseLevelDB&) {
-        for (const auto& entry : new_entries)
-          batch.Put(entry.key, entry.value);
-      },
-      std::move(new_entries)));
 }
 
 void SessionStorageMetadata::DeleteNamespace(

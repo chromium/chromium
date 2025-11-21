@@ -239,16 +239,15 @@ void SessionStorageImpl::CloneNamespace(
         DCHECK_EQ(connection_state_, CONNECTION_FINISHED);
         // The namespace exists on disk but is not in-use, so do the appropriate
         // metadata operations to clone the namespace and set up the new object.
-        std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> save_tasks;
         auto source_namespace_entry =
             metadata_.GetOrCreateNamespaceEntry(clone_from_namespace_id);
         auto namespace_entry =
             metadata_.GetOrCreateNamespaceEntry(clone_to_namespace_id);
         metadata_.RegisterShallowClonedNamespace(source_namespace_entry,
-                                                 namespace_entry, &save_tasks);
+                                                 namespace_entry);
         if (database_) {
-          database_->RunBatchDatabaseTasks(
-              RunBatchTasksContext::kCloneNamespace, std::move(save_tasks),
+          database_->PutMetadata(
+              SessionStorageMetadata::ToDomStorageMetadata(namespace_entry),
               base::BindOnce(&SessionStorageImpl::OnCommitResult,
                              weak_ptr_factory_.GetWeakPtr()));
         }
@@ -654,8 +653,6 @@ void SessionStorageImpl::RegisterShallowClonedNamespace(
     SessionStorageMetadata::NamespaceEntry source_namespace_entry,
     const std::string& new_namespace_id,
     const SessionStorageNamespaceImpl::StorageKeyAreas& clone_from_areas) {
-  std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> save_tasks;
-
   bool found = false;
   auto it = namespaces_.find(new_namespace_id);
   if (it != namespaces_.end()) {
@@ -670,11 +667,11 @@ void SessionStorageImpl::RegisterShallowClonedNamespace(
   DCHECK_EQ(connection_state_, CONNECTION_FINISHED);
   auto namespace_entry = metadata_.GetOrCreateNamespaceEntry(new_namespace_id);
   metadata_.RegisterShallowClonedNamespace(source_namespace_entry,
-                                           namespace_entry, &save_tasks);
+                                           namespace_entry);
+
   if (database_) {
-    database_->RunBatchDatabaseTasks(
-        RunBatchTasksContext::kRegisterShallowClonedNamespace,
-        std::move(save_tasks),
+    database_->PutMetadata(
+        SessionStorageMetadata::ToDomStorageMetadata(namespace_entry),
         base::BindOnce(&SessionStorageImpl::OnCommitResult,
                        weak_ptr_factory_.GetWeakPtr()));
   }

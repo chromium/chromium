@@ -105,16 +105,14 @@ SessionStorageLevelDB::ReadAllMetadata() {
 }
 
 DbStatus SessionStorageLevelDB::PutMetadata(Metadata metadata) {
-  // Callers must update at least one map along with the next map ID.
-  CHECK_GT(metadata.map_metadata.size(), 0u);
-  CHECK(metadata.next_map_id.has_value());
-
   std::unique_ptr<DomStorageBatchOperationLevelDB> batch =
       leveldb_->CreateBatchOperation();
 
-  // Write the next map ID.
-  batch->Put(kNextMapIdKey,
-             base::as_byte_span(base::NumberToString(*metadata.next_map_id)));
+  // Write the next map ID when provided.
+  if (metadata.next_map_id) {
+    batch->Put(kNextMapIdKey,
+               base::as_byte_span(base::NumberToString(*metadata.next_map_id)));
+  }
 
   // Write the metadata for each map in `metadata.map_metadata`
   for (const MapMetadata& map_metadata : metadata.map_metadata) {

@@ -388,36 +388,45 @@ TEST_F(SessionStorageLevelDBTest, PutMetadataWithMultipleMaps) {
       kOtherFakeSessionId, kOtherFakeUrlStorageKey, kOtherFakeMapId + 1}});
 
   DbStatus status = session_storage_leveldb->PutMetadata(std::move(metadata));
-  EXPECT_TRUE(status.ok()) << status.ToString();
 
-  // Verify the contents in the database, which includes the "version" entry.
-  std::vector<DomStorageDatabase::KeyValuePair> all_entries;
-  status = session_storage_leveldb->GetLevelDB().GetPrefixed({}, &all_entries);
+  // Repeat database verification twice.  The second `PutMetadata()` adds empty
+  // metadata, which must not alter the database.
+  for (int i = 0; i < 2; ++i) {
+    EXPECT_TRUE(status.ok()) << status.ToString();
 
-  EXPECT_TRUE(status.ok()) << status.ToString();
-  ASSERT_EQ(all_entries.size(), 5u);
+    // Verify the contents in the database, which includes the "version" entry.
+    std::vector<DomStorageDatabase::KeyValuePair> all_entries;
+    status =
+        session_storage_leveldb->GetLevelDB().GetPrefixed({}, &all_entries);
 
-  EXPECT_EQ(all_entries[0].key,
-            SessionStorageLevelDB::CreateMapMetadataKey(
-                kOtherFakeSessionId, kOtherFakeUrlStorageKey));
-  EXPECT_EQ(all_entries[0].value,
-            base::as_byte_span(base::NumberToString(kOtherFakeMapId + 1)));
+    EXPECT_TRUE(status.ok()) << status.ToString();
+    ASSERT_EQ(all_entries.size(), 5u);
 
-  EXPECT_EQ(all_entries[1].key, SessionStorageLevelDB::CreateMapMetadataKey(
-                                    kFakeSessionId, kFakeUrlStorageKey));
-  EXPECT_EQ(all_entries[1].value,
-            base::as_byte_span(base::NumberToString(kFakeMapId)));
+    EXPECT_EQ(all_entries[0].key,
+              SessionStorageLevelDB::CreateMapMetadataKey(
+                  kOtherFakeSessionId, kOtherFakeUrlStorageKey));
+    EXPECT_EQ(all_entries[0].value,
+              base::as_byte_span(base::NumberToString(kOtherFakeMapId + 1)));
 
-  EXPECT_EQ(all_entries[2].key, SessionStorageLevelDB::CreateMapMetadataKey(
-                                    kFakeSessionId, kOtherFakeUrlStorageKey));
-  EXPECT_EQ(all_entries[2].value,
-            base::as_byte_span(base::NumberToString(kOtherFakeMapId)));
+    EXPECT_EQ(all_entries[1].key, SessionStorageLevelDB::CreateMapMetadataKey(
+                                      kFakeSessionId, kFakeUrlStorageKey));
+    EXPECT_EQ(all_entries[1].value,
+              base::as_byte_span(base::NumberToString(kFakeMapId)));
 
-  EXPECT_EQ(all_entries[3].key, ToBytes(kNextMapIdKey));
-  EXPECT_EQ(all_entries[3].value,
-            base::as_byte_span(base::NumberToString(kNextMapId)));
+    EXPECT_EQ(all_entries[2].key, SessionStorageLevelDB::CreateMapMetadataKey(
+                                      kFakeSessionId, kOtherFakeUrlStorageKey));
+    EXPECT_EQ(all_entries[2].value,
+              base::as_byte_span(base::NumberToString(kOtherFakeMapId)));
 
-  VerifyDatabaseVersionEntry(all_entries[4]);
+    EXPECT_EQ(all_entries[3].key, ToBytes(kNextMapIdKey));
+    EXPECT_EQ(all_entries[3].value,
+              base::as_byte_span(base::NumberToString(kNextMapId)));
+
+    VerifyDatabaseVersionEntry(all_entries[4]);
+
+    // Adding empty metadata must not modify the database.
+    status = session_storage_leveldb->PutMetadata(/*metadata=*/{});
+  }
 }
 
 }  // namespace storage

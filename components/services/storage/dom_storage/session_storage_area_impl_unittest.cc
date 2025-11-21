@@ -224,12 +224,13 @@ TEST_F(SessionStorageAreaImplTest, Cloning) {
       GetRegisterNewAreaMapCallback());
 
   // Perform a shallow clone.
-  std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> save_tasks;
+  SessionStorageMetadata::NamespaceEntry clone_entry =
+      metadata_.GetOrCreateNamespaceEntry(test_namespace_id2_);
   metadata_.RegisterShallowClonedNamespace(
-      metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_),
-      metadata_.GetOrCreateNamespaceEntry(test_namespace_id2_), &save_tasks);
-  leveldb_database_->RunBatchDatabaseTasks(
-      RunBatchTasksContext::kTest, std::move(save_tasks), base::DoNothing());
+      metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_), clone_entry);
+  leveldb_database_->PutMetadata(
+      SessionStorageMetadata::ToDomStorageMetadata(clone_entry),
+      base::DoNothing());
   auto ss_leveldb_impl2 = ss_leveldb_impl1->Clone(
       metadata_.GetOrCreateNamespaceEntry(test_namespace_id2_));
 
@@ -329,12 +330,13 @@ TEST_F(SessionStorageAreaImplTest, DeleteAllOnShared) {
       GetRegisterNewAreaMapCallback());
 
   // Perform a shallow clone.
-  std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> save_tasks;
+  SessionStorageMetadata::NamespaceEntry clone_entry =
+      metadata_.GetOrCreateNamespaceEntry(test_namespace_id2_);
   metadata_.RegisterShallowClonedNamespace(
-      metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_),
-      metadata_.GetOrCreateNamespaceEntry(test_namespace_id2_), &save_tasks);
-  leveldb_database_->RunBatchDatabaseTasks(
-      RunBatchTasksContext::kTest, std::move(save_tasks), base::DoNothing());
+      metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_), clone_entry);
+  leveldb_database_->PutMetadata(
+      SessionStorageMetadata::ToDomStorageMetadata(clone_entry),
+      base::DoNothing());
   auto ss_leveldb_impl2 = ss_leveldb_impl1->Clone(
       metadata_.GetOrCreateNamespaceEntry(test_namespace_id2_));
 
@@ -418,12 +420,13 @@ TEST_F(SessionStorageAreaImplTest, DeleteAllWithoutBindingOnShared) {
       GetRegisterNewAreaMapCallback());
 
   // Perform a shallow clone.
-  std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> save_tasks;
+  SessionStorageMetadata::NamespaceEntry clone_entry =
+      metadata_.GetOrCreateNamespaceEntry(test_namespace_id2_);
   metadata_.RegisterShallowClonedNamespace(
-      metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_),
-      metadata_.GetOrCreateNamespaceEntry(test_namespace_id2_), &save_tasks);
-  leveldb_database_->RunBatchDatabaseTasks(
-      RunBatchTasksContext::kTest, std::move(save_tasks), base::DoNothing());
+      metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_), clone_entry);
+  leveldb_database_->PutMetadata(
+      SessionStorageMetadata::ToDomStorageMetadata(clone_entry),
+      base::DoNothing());
   auto ss_leveldb_impl2 = ss_leveldb_impl1->Clone(
       metadata_.GetOrCreateNamespaceEntry(test_namespace_id2_));
 

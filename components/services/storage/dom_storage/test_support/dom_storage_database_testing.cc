@@ -130,6 +130,9 @@ void PutMetadataSync(AsyncDomStorageDatabase& database,
   base::test::TestFuture<DbStatus> status_future;
   database.PutMetadata(std::move(metadata), status_future.GetCallback());
 
+  // `SessionStorageNamespaceImplTest` requires `kNestableTasksAllowed`.
+  ASSERT_TRUE(status_future.Wait(base::RunLoop::Type::kNestableTasksAllowed));
+
   const DbStatus& status = status_future.Get();
   EXPECT_TRUE(status.ok()) << status.ToString();
 }

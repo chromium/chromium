@@ -21,6 +21,7 @@
 #include "components/services/storage/dom_storage/session_storage_data_map.h"
 #include "components/services/storage/dom_storage/session_storage_metadata.h"
 #include "components/services/storage/dom_storage/storage_area_test_util.h"
+#include "components/services/storage/dom_storage/test_support/dom_storage_database_testing.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "storage/common/database/db_status.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -62,14 +63,6 @@ class SessionStorageNamespaceImplTest
         test_namespace_id2_(
             base::Uuid::GenerateRandomV4().AsLowercaseString()) {}
   ~SessionStorageNamespaceImplTest() override = default;
-
-  void RunBatch(std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> tasks) {
-    base::RunLoop loop(base::RunLoop::Type::kNestableTasksAllowed);
-    database_->RunBatchDatabaseTasks(
-        RunBatchTasksContext::kTest, std::move(tasks),
-        base::BindLambdaForTesting([&](DbStatus) { loop.Quit(); }));
-    loop.Run();
-  }
 
   void SetUp() override {
     // Create an in-memory database that already has a namespace saved.
@@ -128,12 +121,13 @@ class SessionStorageNamespaceImplTest
       const std::string& destination_namespace,
       const SessionStorageNamespaceImpl::StorageKeyAreas& areas_to_clone)
       override {
-    std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> save_tasks;
     auto namespace_entry =
         metadata_.GetOrCreateNamespaceEntry(destination_namespace);
-    metadata_.RegisterShallowClonedNamespace(source_namespace, namespace_entry,
-                                             &save_tasks);
-    RunBatch(std::move(save_tasks));
+    metadata_.RegisterShallowClonedNamespace(source_namespace, namespace_entry);
+
+    ASSERT_NO_FATAL_FAILURE(PutMetadataSync(
+        *database_,
+        SessionStorageMetadata::ToDomStorageMetadata(namespace_entry)));
 
     auto it = namespaces_.find(destination_namespace);
     if (it == namespaces_.end()) {

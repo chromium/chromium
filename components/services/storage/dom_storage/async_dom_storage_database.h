@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SERVICES_STORAGE_DOM_STORAGE_ASYNC_DOM_STORAGE_DATABASE_H_
 #define COMPONENTS_SERVICES_STORAGE_DOM_STORAGE_ASYNC_DOM_STORAGE_DATABASE_H_
 
+#include <map>
 #include <memory>
 #include <optional>
 #include <set>
@@ -18,7 +19,9 @@
 #include "base/threading/sequence_bound.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
 #include "components/services/storage/dom_storage/leveldb/dom_storage_database_leveldb.h"
+#include "components/services/storage/dom_storage/session_storage_metadata.h"
 #include "storage/common/database/db_status.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace storage {
 

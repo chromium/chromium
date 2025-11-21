@@ -13,12 +13,13 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
-#include "components/services/storage/dom_storage/async_dom_storage_database.h"
 #include "components/services/storage/dom_storage/dom_storage_constants.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace storage {
+class DomStorageBatchOperationLevelDB;
+class DomStorageDatabaseLevelDB;
 
 // Holds the metadata information for a session storage database. This includes
 // logic for parsing and saving database content.
@@ -74,13 +75,21 @@ class SessionStorageMetadata {
                std::map<blink::StorageKey, scoped_refptr<MapData>>>;
   using NamespaceEntry = NamespaceStorageKeyMap::iterator;
 
+  // Populates the `DomStorageDatabase::Metadata::map_metadata` vector with the
+  // `session_id`, storage key, and map ID for each `MapData` in `session`.
+  static DomStorageDatabase::Metadata ToDomStorageMetadata(
+      NamespaceEntry session);
+
   SessionStorageMetadata();
   ~SessionStorageMetadata();
 
+  using BatchDatabaseTask =
+      base::OnceCallback<void(DomStorageBatchOperationLevelDB&,
+                              const DomStorageDatabaseLevelDB&)>;
+
   // Initializes a new test database, which clears the metadata and returns the
   // operations needed to save to disk.
-  std::vector<AsyncDomStorageDatabase::BatchDatabaseTask>
-  SetupNewDatabaseForTesting();
+  std::vector<BatchDatabaseTask> SetupNewDatabaseForTesting();
 
   // Populates `namespace_storage_key_map_` and sets `next_map_id_` using
   // `source`.
@@ -97,30 +106,25 @@ class SessionStorageMetadata {
   // Registers an StorageKey-map in the |destination_namespace| from every
   // StorageKey-map in the |source_namespace|. The |destination_namespace| must
   // have no StorageKey-maps. All maps in the destination namespace are the same
-  // maps as the source namespace. All database operations to save the namespace
-  // StorageKey metadata are put in |save_tasks|.
-  void RegisterShallowClonedNamespace(
-      NamespaceEntry source_namespace,
-      NamespaceEntry destination_namespace,
-      std::vector<AsyncDomStorageDatabase::BatchDatabaseTask>* save_tasks);
+  // maps as the source namespace.
+  void RegisterShallowClonedNamespace(NamespaceEntry source_namespace,
+                                      NamespaceEntry destination_namespace);
 
   // Deletes the given namespace and any maps that no longer have any
   // references. This will invalidate all NamespaceEntry objects for the
   // |namespace_id|, and can invalidate any MapData objects whose reference
   // count hits zero. Appends operations to |*save_tasks| which will commit the
   // deletions to disk if run.
-  void DeleteNamespace(
-      const std::string& namespace_id,
-      std::vector<AsyncDomStorageDatabase::BatchDatabaseTask>* save_tasks);
+  void DeleteNamespace(const std::string& namespace_id,
+                       std::vector<BatchDatabaseTask>* save_tasks);
 
   // This returns a BatchDatabaseTask to remove the metadata entry for this
   // namespace-StorageKey area. If the map at this entry isn't referenced by any
   // other area (refcount hits 0), then the task will also delete that map on
   // disk and invalidate that MapData.
-  void DeleteArea(
-      const std::string& namespace_id,
-      const blink::StorageKey& storage_key,
-      std::vector<AsyncDomStorageDatabase::BatchDatabaseTask>* save_tasks);
+  void DeleteArea(const std::string& namespace_id,
+                  const blink::StorageKey& storage_key,
+                  std::vector<BatchDatabaseTask>* save_tasks);
 
   NamespaceEntry GetOrCreateNamespaceEntry(const std::string& namespace_id);
 

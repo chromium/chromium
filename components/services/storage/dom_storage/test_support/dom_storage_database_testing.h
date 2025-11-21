@@ -5,11 +5,16 @@
 #ifndef COMPONENTS_SERVICES_STORAGE_DOM_STORAGE_TEST_SUPPORT_DOM_STORAGE_DATABASE_TESTING_H_
 #define COMPONENTS_SERVICES_STORAGE_DOM_STORAGE_TEST_SUPPORT_DOM_STORAGE_DATABASE_TESTING_H_
 
+#include <map>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
+#include "components/services/storage/dom_storage/session_storage_metadata.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace storage {
 class AsyncDomStorageDatabase;
@@ -39,7 +44,7 @@ void ReadAllMetadataSync(AsyncDomStorageDatabase& database,
                          DomStorageDatabase::Metadata* metadata_results);
 
 // A synchronous wrapper for
-// `AsyncDomStorageDatabase::PutMetadata()`.  Expects success.
+// `AsyncDomStorageDatabase::PutMetadata()`.  Asserts success.
 void PutMetadataSync(AsyncDomStorageDatabase& database,
                      DomStorageDatabase::Metadata metadata);
 

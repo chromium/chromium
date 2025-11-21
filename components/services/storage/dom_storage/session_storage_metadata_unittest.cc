@@ -220,12 +220,10 @@ TEST_F(SessionStorageMetadataTest, ShallowCopies) {
   auto ns1_entry = metadata.GetOrCreateNamespaceEntry(test_namespace1_id_);
   auto ns3_entry = metadata.GetOrCreateNamespaceEntry(test_namespace3_id_);
 
-  std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> tasks;
-  metadata.RegisterShallowClonedNamespace(ns1_entry, ns3_entry, &tasks);
+  metadata.RegisterShallowClonedNamespace(ns1_entry, ns3_entry);
 
-  DbStatus status;
-  RunBatch(std::move(tasks), base::BindOnce(&ErrorCallback, &status));
-  EXPECT_TRUE(status.ok());
+  ASSERT_NO_FATAL_FAILURE(PutMetadataSync(
+      *database_, SessionStorageMetadata::ToDomStorageMetadata(ns3_entry)));
 
   // Verify in-memory metadata is correct.
   EXPECT_EQ(StdStringToUint8Vector("map-1-"),
