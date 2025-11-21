@@ -96,6 +96,16 @@ public class UiUtils {
     }
 
     /**
+     * Checks whether the Recently Closed Tabs and Windows feature is enabled.
+     *
+     * @return {@code true} if the Recently Closed Tabs and Windows feature is enabled, {@code
+     *     false} otherwise.
+     */
+    public static boolean isRecentlyClosedTabsAndWindowsEnabled() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.RECENTLY_CLOSED_TABS_AND_WINDOWS);
+    }
+
+    /**
      * Checks whether the Android Open Incognito As Window feature is enabled.
      *
      * @deprecated Use {@link

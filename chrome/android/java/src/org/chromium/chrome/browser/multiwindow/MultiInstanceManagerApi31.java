@@ -1404,27 +1404,47 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
 
     @Override
     public void closeWindow(int instanceId, @CloseWindowAppSource int source) {
-        removeInstanceInfo(instanceId, source);
-        TabModelSelector selector =
-                TabWindowManagerSingleton.getInstance().getTabModelSelectorById(instanceId);
-        if (selector != null) {
-            // Commit all already pending tab closures to ensure that any in-flight closures
-            // complete and we don't get back-from-the-dead tabs.
-            selector.commitAllTabClosures();
+        if (!isSoftWindowClosure(source)) {
+            removeInstanceInfo(instanceId, source);
+            TabModelSelector selector =
+                    TabWindowManagerSingleton.getInstance().getTabModelSelectorById(instanceId);
+            if (selector != null) {
+                // Commit all already pending tab closures to ensure that any in-flight closures
+                // complete and we don't get back-from-the-dead tabs.
+                selector.commitAllTabClosures();
 
-            // Close all tabs as the window is closing. This ensures the tabs are added to the
-            // recent tabs page.
-            //
-            // TODO(crbug.com/40826734): This only works for windows with live activities. It is
-            // non-trivial to add recent tab entries without an active {@link Tab} instance.
-            TabClosureParams params =
-                    TabClosureParams.closeAllTabs().uponExit(true).hideTabGroups(true).build();
-            selector.getModel(true).getTabRemover().closeTabs(params, /* allowDialog= */ false);
-            selector.getModel(false).getTabRemover().closeTabs(params, /* allowDialog= */ false);
+                // Close all tabs as the window is closing. This ensures the tabs are added to the
+                // recent tabs page.
+                //
+                // TODO(crbug.com/40826734): This only works for windows with live activities. It is
+                // non-trivial to add recent tab entries without an active {@link Tab} instance.
+                TabClosureParams params =
+                        TabClosureParams.closeAllTabs().uponExit(true).hideTabGroups(true).build();
+                selector.getModel(true).getTabRemover().closeTabs(params, /* allowDialog= */ false);
+                selector.getModel(false)
+                        .getTabRemover()
+                        .closeTabs(params, /* allowDialog= */ false);
+            }
+            mTabModelOrchestratorSupplier.get().cleanupInstance(instanceId);
         }
-        mTabModelOrchestratorSupplier.get().cleanupInstance(instanceId);
         Activity activity = getActivityById(instanceId);
         if (activity != null) activity.finishAndRemoveTask();
+    }
+
+    /**
+     * Returns whether a window closure is considered a "soft closure," meaning the instance data
+     * should be preserved for later restoration via surfaces (like Recent Tabs) or keyboard
+     * shortcuts.
+     *
+     * <p>A soft closure means the window's {@link InstanceInfo} and {@link TabModel} data are
+     * persisted, even though the {@link Activity} and Android task will be removed via {@link
+     * Activity#finishAndRemoveTask()}.
+     *
+     * @param source The window closure source, from {@link CloseWindowAppSource}.
+     */
+    private boolean isSoftWindowClosure(@CloseWindowAppSource int source) {
+        return source == CloseWindowAppSource.WINDOW_MANAGER
+                && UiUtils.isRecentlyClosedTabsAndWindowsEnabled();
     }
 
     @VisibleForTesting

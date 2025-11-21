@@ -791,7 +791,8 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     @Test
-    public void testGetInstanceInfo_size() {
+    @DisableFeatures(ChromeFeatureList.RECENTLY_CLOSED_TABS_AND_WINDOWS)
+    public void testGetInstanceInfo_size_hardClosure() {
         assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
         assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask57));
         assertEquals(2, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask58));
@@ -810,6 +811,29 @@ public class MultiInstanceManagerApi31UnitTest {
         // Closing an instance removes the entry.
         mMultiInstanceManager.closeWindow(1, CloseWindowAppSource.OTHER);
         assertEquals(2, mMultiInstanceManager.getInstanceInfo().size());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.RECENTLY_CLOSED_TABS_AND_WINDOWS)
+    public void testGetInstanceInfo_size_softClosure() {
+        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
+        assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask57));
+        assertEquals(2, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask58));
+        mMultiInstanceManager.setAdjacentInstance(mActivityTask57);
+
+        assertEquals(3, mMultiInstanceManager.getInstanceInfo().size());
+
+        // Removing a task from recent screen doesn't affect instance info list.
+        removeTaskOnRecentsScreen(mActivityTask58);
+        assertEquals(3, mMultiInstanceManager.getInstanceInfo().size());
+
+        // Activity destroyed in the background due to memory constraint has no impact either.
+        softCloseInstance(mActivityTask57, TASK_ID_57);
+        assertEquals(3, mMultiInstanceManager.getInstanceInfo().size());
+
+        // Soft closing an instance does not remove the entry.
+        mMultiInstanceManager.closeWindow(1, CloseWindowAppSource.WINDOW_MANAGER);
+        assertEquals(3, mMultiInstanceManager.getInstanceInfo().size());
     }
 
     @Test

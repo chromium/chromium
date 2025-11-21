@@ -34,6 +34,8 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
@@ -182,6 +184,60 @@ public class MultiInstanceManagerApi31Test {
         verifyInstanceState(/* expectedActiveInstances= */ 2, /* expectedTotalInstances= */ 3);
         waitForMessage(
                 newActivity, MessageIdentifier.MULTI_INSTANCE_RESTORATION_ON_DOWNGRADED_LIMIT);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.RECENTLY_CLOSED_TABS_AND_WINDOWS)
+    public void closeWindowFromWindowManager_softClosure() {
+        // Set initial instance limit.
+        MultiWindowUtils.setMaxInstancesForTesting(5);
+
+        ChromeTabbedActivity firstActivity = mActivityTestRule.getActivity();
+        ChromeTabbedActivity[] otherActivities =
+                createNewWindows(
+                        firstActivity, /* numWindows= */ 2, /* addIncognitoExtras= */ false);
+
+        // Check initial state of instances.
+        verifyInstanceState(/* expectedActiveInstances= */ 3, /* expectedTotalInstances= */ 3);
+
+        // Close one window.
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mMultiInstanceManager.closeWindow(
+                                otherActivities[otherActivities.length - 1].getWindowIdForTesting(),
+                                CloseWindowAppSource.WINDOW_MANAGER));
+
+        // Check state of instances after one instance is closed - the closed window should become
+        // an inactive one.
+        verifyInstanceState(/* expectedActiveInstances= */ 2, /* expectedTotalInstances= */ 3);
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures(ChromeFeatureList.RECENTLY_CLOSED_TABS_AND_WINDOWS)
+    public void closeWindowFromWindowManager_hardClosure() {
+        // Set initial instance limit.
+        MultiWindowUtils.setMaxInstancesForTesting(5);
+
+        ChromeTabbedActivity firstActivity = mActivityTestRule.getActivity();
+        ChromeTabbedActivity[] otherActivities =
+                createNewWindows(
+                        firstActivity, /* numWindows= */ 2, /* addIncognitoExtras= */ false);
+
+        // Check initial state of instances.
+        verifyInstanceState(/* expectedActiveInstances= */ 3, /* expectedTotalInstances= */ 3);
+
+        // Close one window.
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mMultiInstanceManager.closeWindow(
+                                otherActivities[otherActivities.length - 1].getWindowIdForTesting(),
+                                CloseWindowAppSource.WINDOW_MANAGER));
+
+        // Check state of instances after one instance is closed - the window should be fully
+        // closed.
+        verifyInstanceState(/* expectedActiveInstances= */ 2, /* expectedTotalInstances= */ 2);
     }
 
     @Test
