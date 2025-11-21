@@ -5,15 +5,12 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_ACTION_CHIPS_ACTION_CHIPS_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_ACTION_CHIPS_ACTION_CHIPS_HANDLER_H_
 
-#include <vector>
-
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom-forward.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom.h"
-#include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips_generator.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/tab_id_generator.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/tab_readiness_checker.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
@@ -33,8 +30,8 @@ class ActionChipsHandler : public action_chips::mojom::ActionChipsHandler,
       mojo::PendingRemote<action_chips::mojom::Page> page,
       Profile* profile,
       content::WebUI* web_ui,
-      const TabReadinessChecker* checker,
-      std::unique_ptr<ActionChipsGenerator> action_chips_generator);
+      const TabIdGenerator* tab_id_generator,
+      const TabReadinessChecker* checker);
   ActionChipsHandler(const ActionChipsHandler&) = delete;
   ActionChipsHandler& operator=(const ActionChipsHandler&) = delete;
   ~ActionChipsHandler() override;
@@ -47,16 +44,12 @@ class ActionChipsHandler : public action_chips::mojom::ActionChipsHandler,
       const TabStripSelectionChange& selection) override;
 
  private:
-  void SendActionChipsToUi(
-      std::vector<action_chips::mojom::ActionChipPtr> chips);
-
   mojo::Receiver<action_chips::mojom::ActionChipsHandler> receiver_;
   mojo::Remote<action_chips::mojom::Page> page_;
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebUI> web_ui_;
+  raw_ptr<const TabIdGenerator> tab_id_generator_;
   raw_ptr<const TabReadinessChecker> tab_readiness_checker_;
-  std::unique_ptr<ActionChipsGenerator> action_chips_generator_;
-  base::WeakPtrFactory<ActionChipsHandler> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_ACTION_CHIPS_ACTION_CHIPS_HANDLER_H_

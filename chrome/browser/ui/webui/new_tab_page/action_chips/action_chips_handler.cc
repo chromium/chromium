@@ -7,7 +7,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -15,8 +14,8 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom-data-view.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom-forward.h"
-#include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips_generator.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/tab_id_generator.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/google/core/common/google_util.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/tabs/public/tab_interface.h"
@@ -35,6 +34,46 @@ using ::action_chips::mojom::ChipType;
 using ::action_chips::mojom::TabInfo;
 using ::action_chips::mojom::TabInfoPtr;
 using ::tabs::TabInterface;
+
+ActionChipPtr CreateRecentTabChip(TabInfoPtr tab) {
+  ActionChipPtr chip = ActionChip::New();
+  chip->type = ChipType::kRecentTab;
+  chip->title = tab->title;
+  chip->suggestion = l10n_util::GetStringUTF8(IDS_NTP_ACTION_CHIP_TAB_BODY_1);
+  chip->tab = std::move(tab);
+  return chip;
+}
+
+ActionChipPtr CreateDeepSearchChip() {
+  ActionChipPtr chip = ActionChip::New();
+  chip->type = ChipType::kDeepSearch;
+  chip->title =
+      l10n_util::GetStringUTF8(IDS_NTP_ACTION_CHIP_DEEP_SEARCH_HEADING);
+  chip->suggestion =
+      l10n_util::GetStringUTF8(IDS_NTP_ACTION_CHIP_DEEP_SEARCH_BODY);
+  return chip;
+}
+
+ActionChipPtr CreateImageCreationChip() {
+  ActionChipPtr chip = ActionChip::New();
+  chip->type = ChipType::kImage;
+  chip->title =
+      l10n_util::GetStringUTF8(IDS_NTP_ACTION_CHIP_CREATE_IMAGE_HEADING);
+  chip->suggestion =
+      l10n_util::GetStringUTF8(IDS_NTP_ACTION_CHIP_CREATE_IMAGE_BODY_1);
+  return chip;
+}
+
+TabInfoPtr CreateTabInfo(const TabIdGenerator& tab_id_generator,
+                         const TabInterface& tab) {
+  TabInfoPtr tab_info = action_chips::mojom::TabInfo::New();
+  tab_info->tab_id = tab_id_generator.GenerateTabHandleId(&tab);
+  content::WebContents& contents = *tab.GetContents();
+  tab_info->title = base::UTF16ToUTF8(contents.GetTitle());
+  tab_info->url = contents.GetLastCommittedURL();
+  tab_info->last_active_time = contents.GetLastActiveTime();
+  return tab_info;
+}
 
 /**
  * Helper method to check if a tab is invalid for the Recent Tab Action Chip:
@@ -95,14 +134,14 @@ ActionChipsHandler::ActionChipsHandler(
     mojo::PendingRemote<action_chips::mojom::Page> page,
     Profile* profile,
     content::WebUI* web_ui,
-    const TabReadinessChecker* checker,
-    std::unique_ptr<ActionChipsGenerator> action_chips_generator)
+    const TabIdGenerator* tab_id_generator,
+    const TabReadinessChecker* checker)
     : receiver_(this, std::move(receiver)),
       page_(std::move(page)),
       profile_(profile),
       web_ui_(web_ui),
-      tab_readiness_checker_(checker),
-      action_chips_generator_(std::move(action_chips_generator)) {
+      tab_id_generator_(tab_id_generator),
+      tab_readiness_checker_(checker) {
   content::WebContents* web_contents = web_ui_->GetWebContents();
   auto* browser_window_interface =
       webui::GetBrowserWindowInterface(web_contents);
@@ -117,16 +156,15 @@ void ActionChipsHandler::StartActionChipsRetrieval() {
   if (!page_.is_bound()) {
     return;
   }
-  action_chips_generator_->GenerateActionChips(
-      FindMostRecentTab(*web_ui_),
-      base::BindOnce(&ActionChipsHandler::SendActionChipsToUi,
-                     weak_factory_.GetWeakPtr()));
-}
-
-void ActionChipsHandler::SendActionChipsToUi(std::vector<ActionChipPtr> chips) {
-  if (!page_.is_bound()) {
-    return;
+  const TabInterface* tab = FindMostRecentTab(*web_ui_);
+  std::vector<ActionChipPtr> chips;
+  if (tab != nullptr) {
+    chips.push_back(
+        CreateRecentTabChip(CreateTabInfo(*this->tab_id_generator_, *tab)));
   }
+  chips.push_back(CreateDeepSearchChip());
+  chips.push_back(CreateImageCreationChip());
+
   RecordImpressionMetrics(chips);
 
   page_->OnActionChipsChanged(std::move(chips));
