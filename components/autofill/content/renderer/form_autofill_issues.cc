@@ -49,14 +49,6 @@ constexpr std::string_view kId = "id";
 constexpr std::string_view kLabel = "label";
 constexpr std::string_view kAutocomplete = "autocomplete";
 
-// Wrapper for frequently used WebString constants.
-template <const std::string_view& string>
-const WebString& GetWebString() {
-  static const base::NoDestructor<WebString> web_string(
-      WebString::FromUTF8(string));
-  return *web_string;
-}
-
 using EmitCallback =
     base::FunctionRef<void(const WebDocument& document,
                            GenericIssueErrorType issue_type,
@@ -70,7 +62,7 @@ void EmitLabelWithoutControlDevtoolsIssue(const WebDocument& document,
     return;
   }
 
-  const WebString& for_attr = GetWebString<kFor>();
+  const WebString for_attr = WebString::FromUTF8(kFor);
   if (!label.HasAttribute(for_attr)) {
     // Label has neither for attribute nor a control element was found.
     emit(document,
@@ -82,7 +74,7 @@ void EmitLabelWithoutControlDevtoolsIssue(const WebDocument& document,
 void EmitAriaLabelledByDevtoolsIssue(const WebDocument& document,
                                      const WebElement& element,
                                      EmitCallback emit) {
-  const WebString& aria_label_attr = GetWebString<kAriaLabelledBy>();
+  const WebString aria_label_attr = WebString::FromUTF8(kAriaLabelledBy);
   if (std::ranges::any_of(
           base::SplitStringPiece(element.GetAttribute(aria_label_attr).Utf16(),
                                  base::kWhitespaceUTF16, base::KEEP_WHITESPACE,
@@ -100,7 +92,7 @@ void EmitInputWithEmptyIdAndNameDevtoolsIssue(
     const WebDocument& document,
     const WebFormControlElement& element,
     EmitCallback emit) {
-  const WebString& name_attr = GetWebString<kName>();
+  const WebString name_attr = WebString::FromUTF8(kName);
   if (element.GetAttribute(name_attr).IsEmpty() &&
       element.GetIdAttribute().IsEmpty()) {
     emit(document,
@@ -121,7 +113,7 @@ void EmitDuplicateIdForInputDevtoolsIssue(
     const WebDocument& document,
     std::vector<WebFormControlElement> elements,
     EmitCallback emit) {
-  const WebString& id_attr = GetWebString<kId>();
+  const WebString id_attr = WebString::FromUTF8(kId);
 
   std::erase_if(elements, [](const WebFormControlElement& element) {
     return element.GetIdAttribute().IsEmpty();
@@ -155,7 +147,7 @@ void EmitDuplicateIdForInputDevtoolsIssue(
 void EmitAutocompleteAttributeDevtoolsIssue(const WebDocument& document,
                                             const WebElement& element,
                                             EmitCallback emit) {
-  const WebString& autocomplete_attr = GetWebString<kAutocomplete>();
+  const WebString autocomplete_attr = WebString::FromUTF8(kAutocomplete);
   std::string autocomplete_attribute =
       form_util::GetAutocompleteAttribute(element);
   if (element.HasAttribute(autocomplete_attr) &&
@@ -176,7 +168,7 @@ void EmitInputAssignedAutocompleteValueToIdOrNameAttributesDevtoolsIssue(
     const WebDocument& document,
     const WebFormControlElement& element,
     EmitCallback emit) {
-  const WebString& autocomplete_attr = GetWebString<kAutocomplete>();
+  const WebString autocomplete_attr = WebString::FromUTF8(kAutocomplete);
   if (element.HasAttribute(autocomplete_attr)) {
     return;
   }
@@ -196,7 +188,7 @@ void EmitInputAssignedAutocompleteValueToIdOrNameAttributesDevtoolsIssue(
                    HtmlFieldType::kUnrecognized;
       };
 
-  const WebString& name_attr = GetWebString<kName>();
+  const WebString name_attr = WebString::FromUTF8(kName);
   bool name_attr_matches_autocomplete =
       ParsedHtmlAttributeValueToAutocompleteHasFieldType(
           element.GetAttribute(name_attr).Utf8());
@@ -206,7 +198,7 @@ void EmitInputAssignedAutocompleteValueToIdOrNameAttributesDevtoolsIssue(
 
   if (name_attr_matches_autocomplete || id_attr_matches_autocomplete) {
     WebString attribute_with_autocomplete_value =
-        id_attr_matches_autocomplete ? GetWebString<kId>() : name_attr;
+        id_attr_matches_autocomplete ? WebString::FromUTF8(kId) : name_attr;
     emit(document,
          GenericIssueErrorType::
              kFormInputAssignedAutocompleteValueToIdOrNameAttributeError,
@@ -223,7 +215,7 @@ void EmitFormControlIssues(const WebDocument& document,
     return;
   }
 
-  const WebString& label_attr = GetWebString<kLabel>();
+  const WebString label_attr = WebString::FromUTF8(kLabel);
   WebElementCollection labels =
       elements[0].GetDocument().GetElementsByHTMLTagName(label_attr);
   CHECK(labels);
@@ -251,8 +243,8 @@ void CheckForLabelsWithIncorrectForAttribute(
     const WebDocument& document,
     base::span<const FormFieldData> fields,
     EmitCallback emit) {
-  const WebString& for_attr = GetWebString<kFor>();
-  const WebString& label_attr = GetWebString<kLabel>();
+  const WebString for_attr = WebString::FromUTF8(kFor);
+  const WebString label_attr = WebString::FromUTF8(kLabel);
 
   std::set<std::u16string> elements_whose_name_match_a_label_for_attr;
   for (const FormFieldData& field : fields) {
