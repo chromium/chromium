@@ -180,7 +180,11 @@ CanvasResourceProviderBitmap::DoExternalDrawAndSnapshot(
     // printing.
     clear_frame_ = false;
 
-    EnsureSkiaCanvas();
+    if (!skia_canvas_) {
+      skia_canvas_ = std::make_unique<cc::SkiaPaintCanvas>(
+          GetSkSurface()->getCanvas(), GetOrCreateCanvasImageProvider());
+    }
+
     skia_canvas_->drawPicture(recorder_->ReleaseMainRecording());
     skgpu::ganesh::FlushAndSubmit(GetSkSurface());
 
