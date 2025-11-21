@@ -769,12 +769,6 @@ void LogPasswordSuccessfulSubmissionIndicatorEvent(
 void LogPasswordAcceptedSaveUpdateSubmissionIndicatorEvent(
     autofill::mojom::SubmissionIndicatorEvent event);
 
-// Logs how many account-stored passwords are downloaded right after unlock.
-// This records all the downloaded passwords not just those available for
-// filling in a specific password form.
-void LogDownloadedPasswordsCountFromAccountStoreAfterUnlock(
-    int account_store_passwords_count);
-
 // Logs the result of a re-auth challenge in the password settings.
 void LogPasswordSettingsReauthResult(device_reauth::ReauthResult result);
 

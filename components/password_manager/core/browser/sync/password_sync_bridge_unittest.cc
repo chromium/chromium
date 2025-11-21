@@ -1554,36 +1554,6 @@ TEST_F(PasswordSyncBridgeTest, ShouldNotifyOnSyncDisableIfProfileStore) {
   bridge()->ApplyDisableSyncChanges(bridge()->CreateMetadataChangeList());
 }
 
-TEST_F(PasswordSyncBridgeAccountStoreTest,
-       ShouldReportDownloadedPasswordsIfAccountStore) {
-  ON_CALL(mock_processor(), IsTrackingMetadata()).WillByDefault(Return(true));
-
-  syncer::EntityChangeList entity_change_list;
-  entity_change_list.push_back(syncer::EntityChange::CreateAdd(
-      /*storage_key=*/"",
-      SpecificsToEntity(CreateSpecificsWithSignonRealm(kSignonRealm1))));
-  entity_change_list.push_back(syncer::EntityChange::CreateAdd(
-      /*storage_key=*/"",
-      SpecificsToEntity(CreateSpecificsWithSignonRealm(kSignonRealm2))));
-
-  sync_pb::PasswordSpecifics blocklisted_specifics;
-  sync_pb::PasswordSpecificsData* password_data =
-      blocklisted_specifics.mutable_client_only_encrypted_data();
-  password_data->set_origin("http://www.origin.com");
-  password_data->set_signon_realm(kSignonRealm3);
-  password_data->set_blacklisted(true);
-
-  entity_change_list.push_back(syncer::EntityChange::CreateAdd(
-      /*storage_key=*/"", SpecificsToEntity(blocklisted_specifics)));
-
-  base::HistogramTester histogram_tester;
-  std::optional<syncer::ModelError> error = bridge()->MergeFullSyncData(
-      bridge()->CreateMetadataChangeList(), std::move(entity_change_list));
-  ASSERT_FALSE(error);
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.AccountStoreCredentialsAfterOptIn", 2, 1);
-}
-
 TEST_F(PasswordSyncBridgeTest,
        ShouldAddRemoteInsecureCredentilasUponRemoteCreation) {
   ON_CALL(mock_processor(), IsTrackingMetadata()).WillByDefault(Return(true));

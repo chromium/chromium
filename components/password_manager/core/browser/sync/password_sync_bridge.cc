@@ -752,18 +752,6 @@ std::optional<syncer::ModelError> PasswordSyncBridge::MergeFullSyncData(
 
   metrics_util::LogPasswordSyncState(
       metrics_util::PasswordSyncState::kSyncingOk);
-  if (password_store_sync_->IsAccountStore()) {
-    int password_count = std::ranges::count_if(
-        entity_data,
-        [](const std::unique_ptr<syncer::EntityChange>& entity_change) {
-          return !entity_change->data()
-                      .specifics.password()
-                      .client_only_encrypted_data()
-                      .blacklisted();
-        });
-    metrics_util::LogDownloadedPasswordsCountFromAccountStoreAfterUnlock(
-        password_count);
-  }
 
   sync_enabled_or_disabled_cb_.Run();
   return std::nullopt;

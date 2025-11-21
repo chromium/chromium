@@ -579,16 +579,6 @@ chromium-metrics-reviews@google.com.
   <token key="UserSyncingType" variants="UserSyncingType"/>
 </histogram>
 
-<histogram name="PasswordManager.AccountStoreCredentialsAfterOptIn"
-    units="credentials" expires_after="2025-12-28">
-  <owner>treib@chromium.org</owner>
-  <owner>mamir@chromium.org</owner>
-  <summary>
-    Records how many non-blacklisting credentials are downloaded to the account
-    store after unlocking account store.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.AccountStoreVsProfileStore4.{DifferenceType}"
     units="accounts" expires_after="2026-02-22">
   <owner>mamir@chromium.org</owner>

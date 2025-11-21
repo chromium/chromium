@@ -364,13 +364,6 @@ void LogPasswordAcceptedSaveUpdateSubmissionIndicatorEvent(
       "PasswordManager.AcceptedSaveUpdateSubmissionIndicatorEvent", event);
 }
 
-void LogDownloadedPasswordsCountFromAccountStoreAfterUnlock(
-    int account_store_passwords_count) {
-  base::UmaHistogramCounts100(
-      "PasswordManager.AccountStoreCredentialsAfterOptIn",
-      account_store_passwords_count);
-}
-
 void LogPasswordSettingsReauthResult(device_reauth::ReauthResult result) {
   base::UmaHistogramEnumeration(
       "PasswordManager.ReauthToAccessPasswordInSettings", result);
