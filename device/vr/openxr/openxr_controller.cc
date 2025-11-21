@@ -108,6 +108,36 @@ std::optional<GamepadBuilder::ButtonData> GetAxisButtonData(
   return data;
 }
 
+const char* GetStringFromInteractionProfile(
+    mojom::OpenXrInteractionProfileType profile) {
+  switch (profile) {
+    case mojom::OpenXrInteractionProfileType::kInvalid:
+      return "invalid";
+    case mojom::OpenXrInteractionProfileType::kMicrosoftMotion:
+      return "microsoft-motion";
+    case mojom::OpenXrInteractionProfileType::kKHRSimple:
+      return "khr-simple";
+    case mojom::OpenXrInteractionProfileType::kOculusTouch:
+      return "oculus-touch";
+    case mojom::OpenXrInteractionProfileType::kValveIndex:
+      return "valve-index";
+    case mojom::OpenXrInteractionProfileType::kHTCVive:
+      return "htc-vive";
+    case mojom::OpenXrInteractionProfileType::kSamsungOdyssey:
+      return "samsung-odyssey";
+    case mojom::OpenXrInteractionProfileType::kHPReverbG2:
+      return "hp-reverb-g2";
+    case mojom::OpenXrInteractionProfileType::kHandSelectGrasp:
+      return "hand-select-grasp";
+    case mojom::OpenXrInteractionProfileType::kViveCosmos:
+      return "vive-cosmos";
+    case mojom::OpenXrInteractionProfileType::kExtHand:
+      return "ext-hand";
+    case mojom::OpenXrInteractionProfileType::kMetaHandAim:
+      return "meta-hand-aim";
+  }
+}
+
 }  // namespace
 
 OpenXrController::OpenXrController()
@@ -508,6 +538,8 @@ std::optional<Gamepad> OpenXrController::GetWebXRGamepad() const {
 }
 
 XrResult OpenXrController::UpdateInteractionProfile() {
+  mojom::OpenXrInteractionProfileType old_interaction_profile =
+      interaction_profile_;
   XrPath top_level_user_path;
 
   std::string top_level_user_path_string = GetTopLevelUserPath(type_);
@@ -538,6 +570,13 @@ XrResult OpenXrController::UpdateInteractionProfile() {
     description_->profiles = path_helper_->GetInputProfiles(
         interaction_profile_, hand_joints_enabled_);
   }
+
+  DVLOG(1) << __func__ << ": controller type=" << GetStringFromType(type_)
+           << ", old_interaction_profile="
+           << GetStringFromInteractionProfile(old_interaction_profile)
+           << ", new_interaction_profile="
+           << GetStringFromInteractionProfile(interaction_profile_)
+           << ", from_hand_tracker=" << IsCurrentProfileFromHandTracker();
   return XR_SUCCESS;
 }
 

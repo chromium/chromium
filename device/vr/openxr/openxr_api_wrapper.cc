@@ -658,6 +658,14 @@ XrResult OpenXrApiWrapper::InitSession(
   on_session_ended_callback_ = std::move(on_session_ended_callback);
   visibility_changed_callback_ = std::move(visibility_changed_callback);
 
+  // The input system uses the system name to help disambiguate certain sets of
+  // controllers, but we also log the system name/vendor id on debug builds.
+  XrSystemProperties system_properties = {XR_TYPE_SYSTEM_PROPERTIES};
+  RETURN_IF_XR_FAILED(
+      xrGetSystemProperties(instance_, system_, &system_properties));
+  DVLOG(1) << __func__ << " : Vendor Id: " << system_properties.vendorId
+           << " : System Name: " << system_properties.systemName;
+
   RETURN_IF_XR_FAILED(CreateSession());
   RETURN_IF_XR_FAILED(
       CreateSpace(XR_REFERENCE_SPACE_TYPE_LOCAL, &local_space_));
@@ -687,8 +695,8 @@ XrResult OpenXrApiWrapper::InitSession(
                      device::mojom::XRSessionFeature::HAND_INPUT);
 
   RETURN_IF_XR_FAILED(OpenXRInputHelper::CreateOpenXRInputHelper(
-      instance_, system_, extension_helper, session_, local_space_,
-      enable_hand_tracking, &input_helper_));
+      instance_, system_properties.systemName, extension_helper, session_,
+      local_space_, enable_hand_tracking, &input_helper_));
 
   // Make sure all of the objects we initialized are there.
   DCHECK(HasSession());

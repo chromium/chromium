@@ -24,7 +24,7 @@ class OpenXRInputHelper {
  public:
   static XrResult CreateOpenXRInputHelper(
       XrInstance instance,
-      XrSystemId system,
+      const std::string& system_name,
       const OpenXrExtensionHelper& extension_helper,
       XrSession session,
       XrSpace local_space,
@@ -63,7 +63,7 @@ class OpenXRInputHelper {
 
  private:
   XrResult Initialize(XrInstance instance,
-                      XrSystemId system,
+                      const std::string& system_name,
                       const OpenXrExtensionHelper& extension_helper);
 
   XrResult SyncActions(XrTime predicted_display_time);

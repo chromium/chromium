@@ -20,7 +20,7 @@ namespace device {
 
 XrResult OpenXRInputHelper::CreateOpenXRInputHelper(
     XrInstance instance,
-    XrSystemId system,
+    const std::string& system_name,
     const OpenXrExtensionHelper& extension_helper,
     XrSession session,
     XrSpace local_space,
@@ -31,7 +31,7 @@ XrResult OpenXRInputHelper::CreateOpenXRInputHelper(
                                           hand_input_enabled);
 
   RETURN_IF_XR_FAILED(
-      new_helper->Initialize(instance, system, extension_helper));
+      new_helper->Initialize(instance, system_name, extension_helper));
   *helper = std::move(new_helper);
   return XR_SUCCESS;
 }
@@ -57,9 +57,9 @@ bool OpenXRInputHelper::IsHandTrackingEnabled() const {
 
 XrResult OpenXRInputHelper::Initialize(
     XrInstance instance,
-    XrSystemId system,
+    const std::string& system_name,
     const OpenXrExtensionHelper& extension_helper) {
-  RETURN_IF_XR_FAILED(path_helper_->Initialize(instance, system));
+  RETURN_IF_XR_FAILED(path_helper_->Initialize(instance, system_name));
 
   // This map is used to store bindings for different kinds of interaction
   // profiles. This allows the runtime to choose a different input sources based
