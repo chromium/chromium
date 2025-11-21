@@ -34,7 +34,6 @@ TODO(dmurph): Possibly this table up into markdown-header section.
 | manifest_update_title | Site, Title |  | 88 | Implemented | The website updates it's manifest.json to change the 'title' | finnur@ |
 | manifest_update_colors | Site |  | 80 | Not Implemented | The website updates it's manifest.json to change the 'theme' color | P3 |
 | manifest_update_display | Site, Display |  | 116 | Implemented |  |  |
-| await_manifest_update | Site |  | 117 | WIP | Does any actions necessary (like closing browser windows) and blocks the execution of the test until the manifest has been updated for the given site. |  |
 | trigger_update_dialog_and_handle_response | UpdateDialogResponse |  | 184 | Implemented | Triggers the app update dialog and either accepts, cancels or ignores the dialog. | dibyapal@ |
 | |
 | # Run on OS Login |

@@ -227,7 +227,7 @@ struct StateSnapshot {
 };
 std::ostream& operator<<(std::ostream& os, const StateSnapshot& snapshot);
 
-class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
+class WebAppIntegrationTestDriver {
  public:
   class TestDelegate {
    public:
@@ -250,7 +250,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   };
 
   explicit WebAppIntegrationTestDriver(TestDelegate* delegate);
-  ~WebAppIntegrationTestDriver() override;
+  ~WebAppIntegrationTestDriver();
 
   // These functions are expected to be called by any test fixtures that use
   // this helper.
@@ -263,7 +263,6 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   // Actions are defined in chrome/test/webapps/data/actions.md
 
   // State change actions:
-  void AwaitManifestUpdate(Site site_mode);
   void CloseCustomToolbar();
   void ClosePwa();
   void MaybeClosePwa();
@@ -412,13 +411,6 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void CheckSiteLoadedInTab(Site site);
   void CheckMenuButtonPendingUpdate(MenuButtonState state);
 
- protected:
-  // WebAppInstallManagerObserver:
-  void OnWebAppManifestUpdated(const webapps::AppId& app_id) override;
-  void OnWebAppUninstalled(
-      const webapps::AppId& app_id,
-      webapps::WebappUninstallSource uninstall_source) override;
-
  private:
   // Must be called at the beginning of every state change action function.
   // Returns if the test should continue.
@@ -431,7 +423,9 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   // Must be called at the end of every state check action function.
   void AfterStateCheckAction();
 
-  void AwaitManifestSystemIdle();
+  // Wait for the manifest update to start after the site has been loaded and
+  // the manifest url loaded as well.
+  void AwaitManifestUpdateStartedPostNavigation();
 
   void HandleAppIdentityUpdateDialogResponse(
       UpdateDialogResponse response,
@@ -521,14 +515,6 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
 
   base::ScopedTempDir scoped_temp_dir_;
 
-  base::flat_set<webapps::AppId> previous_manifest_updates_;
-
-  // |waiting_for_update_*| variables are either all populated or all not
-  // populated. These signify that the test is currently waiting for the
-  // given |waiting_for_update_id_| to receive an update before continuing.
-  std::optional<webapps::AppId> waiting_for_update_id_;
-  std::unique_ptr<base::RunLoop> waiting_for_update_run_loop_;
-
   raw_ptr<TestDelegate> delegate_;
   // State snapshots, captured before and after "state change" actions are
   // executed, and inspected by "state check" actions to verify behavior.
@@ -552,12 +538,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   // all actions.
   bool in_tear_down_ = false;
 
-  bool is_performing_manifest_update_ = false;
-
   std::unique_ptr<views::NamedWidgetShownWaiter> app_id_update_dialog_waiter_;
-  base::ScopedObservation<web_app::WebAppInstallManager,
-                          web_app::WebAppInstallManagerObserver>
-      observation_{this};
   std::unique_ptr<OsIntegrationTestOverrideImpl::BlockingRegistration>
       override_registration_;
 

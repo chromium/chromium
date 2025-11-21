@@ -968,12 +968,6 @@ void WebAppIntegrationTestDriver::SetUp() {
 void WebAppIntegrationTestDriver::SetUpOnMainThread() {
   override_registration_ = OsIntegrationTestOverrideImpl::OverrideForTesting();
 
-  // Only support manifest updates on non-sync tests, as the current
-  // infrastructure here only supports listening on one profile.
-  if (!delegate_->IsSyncTest()) {
-    observation_.Observe(&provider()->install_manager());
-  }
-
   // Add chrome://webapps_integration_tests/ date source.
   auto root_path = base::PathService::CheckedGet(chrome::DIR_TEST_DATA);
   content::WebUIDataSource* data_source =
@@ -999,7 +993,6 @@ void WebAppIntegrationTestDriver::SetUpOnMainThread() {
 void WebAppIntegrationTestDriver::TearDownOnMainThread() {
   in_tear_down_ = true;
   LOG(INFO) << "TearDownOnMainThread: Start.";
-  observation_.Reset();
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (delegate_->IsSyncTest()) {
@@ -1108,35 +1101,10 @@ void WebAppIntegrationTestDriver::HandleAppIdentityUpdateDialogResponse(
       ASSERT_NE(nullptr, button);
       views::test::ButtonTestApi(button).NotifyClick(ui::test::TestEvent());
       destroyed_waiter.Wait();
-    }
-}
-
-void WebAppIntegrationTestDriver::AwaitManifestUpdate(Site site) {
-  if (!BeforeStateChangeAction(__FUNCTION__)) {
-    return;
   }
-  webapps::AppId app_id = GetAppIdBySiteMode(site);
-  const WebApp* web_app = provider()->registrar_unsafe().GetAppById(app_id);
-  // If the update resulted in an uninstall, then no need to wait.
-  if (web_app) {
-    if (!previous_manifest_updates_.contains(app_id)) {
-      waiting_for_update_id_ = app_id;
-      waiting_for_update_run_loop_ = std::make_unique<base::RunLoop>();
-      waiting_for_update_run_loop_->Run();
-      waiting_for_update_run_loop_.reset();
-    }
-
-    // Wait for the app's scope in the App Service app cache to be consistent
-    // with the app's scope in the web app database. Returns immediately if they
-    // are already consistent.
-    apps::WebAppScopeWaiter(profile(), app_id,
-                            provider()->registrar_unsafe().GetAppScope(app_id))
-        .Await();
-    post_update_start_urls_[site] =
-        provider()->registrar_unsafe().GetAppStartUrl(app_id);
-  }
-
-  AfterStateChangeAction();
+  // Wait for the pending update to be applied, or the uninstall command to
+  // finish running.
+  provider()->command_manager().AwaitAllCommandsCompleteForTesting();
 }
 
 void WebAppIntegrationTestDriver::CloseCustomToolbar() {
@@ -4001,56 +3969,15 @@ void WebAppIntegrationTestDriver::CheckMenuButtonPendingUpdate(
 
   ASSERT_NE(app_browser(), nullptr)
       << " manifest updates require the app browser to be launched!";
+  bool should_expect_expanded =
+      state == MenuButtonState::kExpandedUpdateAvailable;
+  MenuButtonUpdateListener(*app_browser(), should_expect_expanded).Await();
+
   BrowserView& app_browser_view = app_browser()->GetBrowserView();
   WebAppMenuButton* const menu_button = views::AsViewClass<WebAppMenuButton>(
       app_browser_view.toolbar_button_provider()->GetAppMenuButton());
-  EXPECT_EQ(state == MenuButtonState::kExpandedUpdateAvailable,
-            menu_button->IsLabelPresentAndVisible());
+  EXPECT_EQ(should_expect_expanded, menu_button->IsLabelPresentAndVisible());
   AfterStateCheckAction();
-}
-
-void WebAppIntegrationTestDriver::OnWebAppManifestUpdated(
-    const webapps::AppId& app_id) {
-  LOG(INFO) << "Manifest update received for " << app_id << ".";
-  CHECK(!delegate_->IsSyncTest())
-      << "Manifest update waiting only supported on non-sync tests.";
-
-  previous_manifest_updates_.insert(app_id);
-  if (waiting_for_update_id_ == app_id) {
-    CHECK(waiting_for_update_run_loop_);
-    waiting_for_update_run_loop_->Quit();
-    waiting_for_update_id_ = std::nullopt;
-    // The `BeforeState*Action()` methods check that the
-    // `after_state_change_action_state_` has not changed from the current
-    // state. This is great, except for the manifest update edge case, which can
-    // happen asynchronously outside of actions. In this case, re-grab the
-    // snapshot after the update.
-    if (executing_action_level_ == 0 && after_state_change_action_state_) {
-      after_state_change_action_state_ = ConstructStateSnapshot();
-    }
-  }
-}
-
-void WebAppIntegrationTestDriver::OnWebAppUninstalled(
-    const webapps::AppId& app_id,
-    webapps::WebappUninstallSource uninstall_source) {
-  if (!waiting_for_update_id_.has_value()) {
-    return;
-  }
-
-  if (waiting_for_update_id_.value() == app_id &&
-      waiting_for_update_run_loop_ != nullptr) {
-    waiting_for_update_run_loop_->Quit();
-    waiting_for_update_id_ = std::nullopt;
-    // The `BeforeState*Action()` methods check that the
-    // `after_state_change_action_state_` has not changed from the current
-    // state. This is great, except for the manifest update edge case, which can
-    // happen asynchronously outside of actions. In this case, re-grab the
-    // snapshot after the update.
-    if (executing_action_level_ == 0 && after_state_change_action_state_) {
-      after_state_change_action_state_ = ConstructStateSnapshot();
-    }
-  }
 }
 
 bool WebAppIntegrationTestDriver::BeforeStateChangeAction(
@@ -4125,7 +4052,6 @@ void WebAppIntegrationTestDriver::AfterStateChangeAction() {
   if (provider()) {
     provider()->command_manager().AwaitAllCommandsCompleteForTesting();
   }
-  AwaitManifestSystemIdle();
   web_app::test::CompletePageLoadForAllWebContents();
   after_state_change_action_state_ = ConstructStateSnapshot();
 }
@@ -4157,10 +4083,8 @@ void WebAppIntegrationTestDriver::AfterStateCheckAction() {
   ASSERT_EQ(*after_state_change_action_state_, *ConstructStateSnapshot());
 }
 
-void WebAppIntegrationTestDriver::AwaitManifestSystemIdle() {
-  if (!is_performing_manifest_update_ || !provider()) {
-    return;
-  }
+void WebAppIntegrationTestDriver::AwaitManifestUpdateStartedPostNavigation() {
+  CHECK(provider());
 
   // Wait till pending manifest update processes have finished loading the page
   // to start the manifest update.
@@ -4178,7 +4102,10 @@ void WebAppIntegrationTestDriver::AwaitManifestSystemIdle() {
         loop_for_load_finish.QuitClosure());
     loop_for_load_finish.Run();
   }
-  // Wait till all manifest update data fetch commands have completed.
+
+  // Wait till all manifest silent update command has completed. This will
+  // either cause an update to happen, or the pending update to be stored on the
+  // web app.
   command_manager.AwaitAllCommandsCompleteForTesting();
 }
 
@@ -4508,9 +4435,10 @@ void WebAppIntegrationTestDriver::ForceUpdateManifestContents(
   active_app_id_ = GetAppIdBySiteMode(site);
   EXPECT_TRUE(
       ui_test_utils::NavigateToURL(app_browser(), app_url_with_manifest_param));
+  AwaitManifestUpdateStartedPostNavigation();
   MenuButtonUpdateListener(*app_browser(), wait_for_pending_updates_to_arrive)
       .Await();
-  is_performing_manifest_update_ = true;
+  post_update_start_urls_[site] = app_url_with_manifest_param;
 }
 
 void WebAppIntegrationTestDriver::MaybeNavigateTabbedBrowserInScope(Site site) {
