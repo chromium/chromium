@@ -28,9 +28,7 @@ class OneTimeTokenCacheTest : public ::testing::Test {
 TEST_F(OneTimeTokenCacheTest, PurgeExpiredAndAdd_AddNewToken) {
   OneTimeToken token(OneTimeTokenType::kSmsOtp, "token1", base::Time::Now());
   EXPECT_TRUE(cache_.PurgeExpiredAndAdd(token));
-  const auto& tokens = cache_.PurgeExpiredAndGetCache();
-  ASSERT_EQ(1u, tokens.size());
-  EXPECT_EQ(token, tokens.front());
+  EXPECT_THAT(cache_.PurgeExpiredAndGetCache(), testing::ElementsAre(token));
 }
 
 // Ensure that a token is not added a second time.
@@ -39,8 +37,7 @@ TEST_F(OneTimeTokenCacheTest, PurgeExpiredAndAdd_AddExistingToken) {
   OneTimeToken token(OneTimeTokenType::kSmsOtp, "token1", now);
   EXPECT_TRUE(cache_.PurgeExpiredAndAdd(token));
   EXPECT_FALSE(cache_.PurgeExpiredAndAdd(token));
-  const auto& tokens = cache_.PurgeExpiredAndGetCache();
-  EXPECT_EQ(1u, tokens.size());
+  EXPECT_THAT(cache_.PurgeExpiredAndGetCache(), testing::ElementsAre(token));
 }
 
 // Ensure that a token is not added a second time, if everything but the
@@ -72,10 +69,7 @@ TEST_F(OneTimeTokenCacheTest, PurgeExpiredAndAdd_AddTokenAfterExpired) {
 
   OneTimeToken token2(OneTimeTokenType::kSmsOtp, "token2", base::Time::Now());
   EXPECT_TRUE(cache_.PurgeExpiredAndAdd(token2));
-
-  const auto& tokens = cache_.PurgeExpiredAndGetCache();
-  ASSERT_EQ(1u, tokens.size());
-  EXPECT_EQ(token2, tokens.front());
+  EXPECT_THAT(cache_.PurgeExpiredAndGetCache(), testing::ElementsAre(token2));
 }
 
 // Ensure that the PurgeExpiredAndGetCache works correctly on an empty cache.
@@ -94,11 +88,8 @@ TEST_F(OneTimeTokenCacheTest, PurgeExpiredAndGetCache_WithTokens) {
   OneTimeToken token2(OneTimeTokenType::kSmsOtp, "token2", base::Time::Now());
   cache_.PurgeExpiredAndAdd(token2);
 
-  const auto& tokens = cache_.PurgeExpiredAndGetCache();
-  ASSERT_EQ(2u, tokens.size());
-  // The most recent token goes to the end.
-  EXPECT_EQ(token1, tokens.front());
-  EXPECT_EQ(token2, tokens.back());
+  EXPECT_THAT(cache_.PurgeExpiredAndGetCache(),
+              testing::ElementsAre(token1, token2));
 }
 
 // Ensure that PurgeExpiredAndGetCache_WithTokens purges expired tokens.
@@ -112,9 +103,7 @@ TEST_F(OneTimeTokenCacheTest, PurgeExpiredAndGetCache_WithExpiredTokens) {
 
   task_environment_.FastForwardBy(base::Seconds(6));
 
-  const auto& tokens = cache_.PurgeExpiredAndGetCache();
-  ASSERT_EQ(1u, tokens.size());
-  EXPECT_EQ(token2, tokens.front());
+  EXPECT_THAT(cache_.PurgeExpiredAndGetCache(), testing::ElementsAre(token2));
 }
 
 // Ensure that tokens are sorted by time.
