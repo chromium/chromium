@@ -68,9 +68,10 @@ static unsigned ComputeMatchedPropertiesHash(const MatchResult& result) {
 CachedMatchedProperties::CachedMatchedProperties(
     const ComputedStyle* style,
     const ComputedStyle* parent_style,
+    const ComputedStyle* originating_element_style,
     const MatchedPropertiesVector& properties,
     unsigned clock)
-    : entries({Entry{style, parent_style, clock}}) {
+    : entries({Entry{style, parent_style, originating_element_style, clock}}) {
   matched_properties.ReserveInitialCapacity(properties.size());
   for (const auto& new_matched_properties : properties) {
     matched_properties.emplace_back(
@@ -144,11 +145,11 @@ const CachedMatchedProperties::Entry* MatchedPropertiesCache::Find(
                ->NonHighlightOriginatingElementDataEqual(
                    *entry.parent_computed_style) ||
           !originating_style.HighlightOriginatingElementDataEqual(
-              *entry.computed_style) ||
+              *entry.originating_element_computed_style) ||
           originating_style.DarkColorScheme() !=
-              entry.computed_style->DarkColorScheme() ||
+              entry.originating_element_computed_style->DarkColorScheme() ||
           originating_style.InsideLink() !=
-              entry.computed_style->InsideLink()) {
+              entry.originating_element_computed_style->InsideLink()) {
         continue;
       }
     } else {
@@ -256,17 +257,21 @@ void CachedMatchedProperties::RefreshKey(
   }
 }
 
-void MatchedPropertiesCache::Add(const Key& key,
-                                 const ComputedStyle* style,
-                                 const ComputedStyle* parent_style) {
+void MatchedPropertiesCache::Add(
+    const Key& key,
+    const ComputedStyle* style,
+    const ComputedStyle* parent_style,
+    const ComputedStyle* originating_element_style) {
   Member<CachedMatchedProperties>& cache_item =
       cache_.insert(key.hash_, nullptr).stored_value->value;
 
   if (!cache_item) {
     cache_item = MakeGarbageCollected<CachedMatchedProperties>(
-        style, parent_style, key.result_.GetMatchedProperties(), clock_++);
+        style, parent_style, originating_element_style,
+        key.result_.GetMatchedProperties(), clock_++);
   } else {
-    cache_item->entries.emplace_back(style, parent_style, clock_++);
+    cache_item->entries.emplace_back(style, parent_style,
+                                     originating_element_style, clock_++);
   }
   ++cache_entries_;
 }

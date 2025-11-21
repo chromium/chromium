@@ -1510,6 +1510,7 @@ void StyleResolver::InitStyle(Element& element,
                               const StyleRequest& style_request,
                               const ComputedStyle& source_for_noninherited,
                               const ComputedStyle* parent_style,
+                              const ComputedStyle* originating_element_style,
                               StyleResolverState& state) {
   if (state.IsForHighlight()) {
     // When resolving highlight styles, the spec requires that we default
@@ -1524,7 +1525,7 @@ void StyleResolver::InitStyle(Element& element,
     // resolution entirely.
     state.CreateNewClonedStyle(*parent_style);
     state.StyleBuilder().CopyHighlightPropertiesFrom(
-        *state.OriginatingElementStyle());
+        *originating_element_style);
   } else {
     state.CreateNewStyle(source_for_noninherited, *parent_style,
                          (!IsForPseudoElement(element, style_request) &&
@@ -1817,7 +1818,7 @@ void StyleResolver::ApplyBaseStyleNoCache(
   if (IsForPseudoElement(*element, style_request)) {
     if (!match_result.HasMatchedProperties()) {
       InitStyle(*element, style_request, *initial_style_, state.ParentStyle(),
-                state);
+                state.OriginatingElementStyle(), state);
       StyleAdjuster::AdjustComputedStyle(state, nullptr /* element */);
       state.SetHadNoMatchedProperties();
       return;
@@ -2726,10 +2727,11 @@ StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
     INCREMENT_STYLE_STATS_COUNTER(GetDocument().GetStyleEngine(),
                                   matched_property_cache_hit, 1);
 
-    const ComputedStyle* parent_style =
+    const ComputedStyle* style_to_clone =
         cached_matched_properties->computed_style.Get();
 
-    InitStyle(element, style_request, *parent_style, parent_style, state);
+    InitStyle(element, style_request, *style_to_clone, style_to_clone,
+              style_to_clone, state);
 
     if (cached_matched_properties->computed_style->CanAffectAnimations()) {
       // Need to set this flag from the cached ComputedStyle to make
@@ -2765,7 +2767,7 @@ StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
     // details.
     const ComputedStyle& initial_style = *initial_style_;
     InitStyle(element, style_request, initial_style, state.ParentStyle(),
-              state);
+              state.OriginatingElementStyle(), state);
 
     ExpandInheritedVisitedProperties(state);
 
@@ -2800,8 +2802,9 @@ void StyleResolver::MaybeAddToMatchedPropertiesCache(
   if (key.IsCacheable() && MatchedPropertiesCache::IsCacheable(state)) {
     INCREMENT_STYLE_STATS_COUNTER(GetDocument().GetStyleEngine(),
                                   matched_property_cache_added, 1);
-    matched_properties_cache_.Add(key, state.StyleBuilder().CloneStyle(),
-                                  state.ParentStyle());
+    matched_properties_cache_.Add(
+        key, state.StyleBuilder().CloneStyle(), state.ParentStyle(),
+        state.IsForHighlight() ? state.OriginatingElementStyle() : nullptr);
   }
 }
 

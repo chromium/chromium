@@ -302,6 +302,7 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
                  const StyleRequest&,
                  const ComputedStyle& source_for_noninherited,
                  const ComputedStyle* parent_style,
+                 const ComputedStyle* originating_element_style,
                  StyleResolverState& state);
 
   void ApplyBaseStyle(Element* element,
