@@ -75,6 +75,13 @@ public class MaterialSwitchWithText extends LinearLayout implements Checkable, O
     }
 
     @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        mTextView.setEnabled(enabled);
+        mSwitch.setEnabled(enabled);
+    }
+
+    @Override
     public void setChecked(boolean checked) {
         mSwitch.setChecked(checked);
     }
@@ -91,7 +98,7 @@ public class MaterialSwitchWithText extends LinearLayout implements Checkable, O
 
     @Override
     public void onClick(View view) {
-        toggle();
+        if (isEnabled()) toggle();
     }
 
     /**
