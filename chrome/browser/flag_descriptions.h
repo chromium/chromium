@@ -542,6 +542,12 @@ inline constexpr char kForceHistoryOptInScreenDescription[] =
     "If enabled, the history opt-in screen will be forced to show up even if "
     "the user declined history sync too recently or too often";
 
+inline constexpr char kFRESignInAlternativeSecondaryButtonTextName[] =
+    "Use alternative secondary button text on FRE sign-in promo screen";
+inline constexpr char kFRESignInAlternativeSecondaryButtonTextDescription[] =
+    "If enabled, the FRE sign-in promo will use the alternative secondary "
+    "button text.";
+
 inline constexpr char kFluidResizeName[] = "Enable AL device fluid resize";
 inline constexpr char kFluidResizeDescription[] =
     "Enable AL device fluid resize to improve UX.";

@@ -5400,6 +5400,14 @@
     "expiry_milestone": 146
   },
   {
+    "name": "fre-signin-alternative-secondary-button-text",
+    "owners": [
+      "lbarczynski@google.com",
+      "chrome-signin-team@google.com"
+    ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "freezing-on-energy-saver",
     "owners": [ "fdoray@chromium.org" ],
     "expiry_milestone": 134

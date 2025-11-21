@@ -32,6 +32,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kSmartEmailLineBreaking,
     &switches::kSupportWebSigninAddSession,
     &switches::kSkipRefreshTokenCheckInIdentityManager,
+    &switches::kFRESignInAlternativeSecondaryButtonText,
 };
 
 // static

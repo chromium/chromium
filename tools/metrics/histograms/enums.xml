@@ -11829,6 +11829,8 @@ from previous Chrome versions.
   <int value="-825514105" label="TimeOfDayDlc:enabled"/>
   <int value="-825312041" label="CastStreamingAv1:enabled"/>
   <int value="-825284137" label="EnableTouchscreenMappingExperience:disabled"/>
+  <int value="-824243751"
+      label="FRESignInAlternativeSecondaryButtonText:enabled"/>
   <int value="-824199802" label="ContextualSearchSimplifiedServer:enabled"/>
   <int value="-823394398" label="TargetEmbeddingLookalikes:enabled"/>
   <int value="-823165021" label="MaterialDesignUserMenu:enabled"/>
@@ -15805,6 +15807,8 @@ from previous Chrome versions.
   <int value="582187448" label="DontPrefetchLibraries:enabled"/>
   <int value="582299647"
       label="AndroidShowRestoreTabsPromoOnFREBypassedKillSwitch:enabled"/>
+  <int value="582569124"
+      label="FRESignInAlternativeSecondaryButtonText:disabled"/>
   <int value="582882261" label="ForceShowAppsCollections:disabled"/>
   <int value="583059655" label="TerminalAlternativeEmulator:enabled"/>
   <int value="583648374" label="AndroidWidgetFullscreenToast:disabled"/>
