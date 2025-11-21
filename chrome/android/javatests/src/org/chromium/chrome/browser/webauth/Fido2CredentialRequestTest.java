@@ -1854,30 +1854,6 @@ public class Fido2CredentialRequestTest {
     public void testGetAssertion_immediateInIncognito_notAllowedError() {
         mWebContents = new WebauthnTestUtils.MockIncognitoWebContents();
         WebauthnBrowserBridge mockedBrowserBridge = Mockito.mock(WebauthnBrowserBridge.class);
-        mAuthenticationContextProvider =
-                new AuthenticationContextProvider() {
-                    @Override
-                    public Context getContext() {
-                        return mContext;
-                    }
-
-                    @Override
-                    public RenderFrameHost getRenderFrameHost() {
-                        return mFrameHost;
-                    }
-
-                    @Override
-                    public FidoIntentSender getIntentSender() {
-                        return mIntentSender;
-                    }
-
-                    @Override
-                    public WebContents getWebContents() {
-                        return mWebContents;
-                    }
-                };
-        mRequest = new Fido2CredentialRequest(mAuthenticationContextProvider);
-        AuthenticatorImpl.overrideFido2CredentialRequestForTesting(mRequest);
         mRequest.overrideBrowserBridgeForTesting(mockedBrowserBridge);
 
         mRequestOptions.mediation = Mediation.IMMEDIATE;
