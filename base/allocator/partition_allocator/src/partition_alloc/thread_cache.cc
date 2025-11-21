@@ -725,7 +725,9 @@ void ThreadCache::FreeAfter(internal::FreelistEntry* head, size_t slot_size) {
 #else
     head = head->GetNextForThreadCache(slot_size);
 #endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
-    root_->RawFreeLocked(slot_start);
+    internal::SlotSpanMetadata* slot_span =
+        internal::SlotSpanMetadata::FromSlotStart(slot_start, root_);
+    root_->RawFreeLocked(slot_start, slot_span);
   }
 }
 

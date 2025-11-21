@@ -119,6 +119,8 @@ PA_ALWAYS_INLINE void DCheckIfManagedByPartitionAllocBRPPool(
 class PartitionRootEnumerator;
 #endif
 
+class BatchFreeQueue;
+
 }  // namespace internal
 
 // Bit flag constants used to purge memory.  See PartitionRoot::PurgeMemory.
@@ -966,7 +968,8 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
       PA_EXCLUSIVE_LOCKS_REQUIRED(internal::PartitionRootLock(this));
   void DecommitEmptySlotSpans()
       PA_EXCLUSIVE_LOCKS_REQUIRED(internal::PartitionRootLock(this));
-  PA_ALWAYS_INLINE void RawFreeLocked(internal::UntaggedSlotStart slot_start)
+  PA_ALWAYS_INLINE void RawFreeLocked(internal::UntaggedSlotStart slot_start,
+                                      SlotSpanMetadata* slot_span)
       PA_EXCLUSIVE_LOCKS_REQUIRED(internal::PartitionRootLock(this));
   ThreadCache* MaybeInitThreadCache()
       PA_LOCKS_EXCLUDED(thread_cache_construction_lock);
@@ -1009,6 +1012,7 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 #endif  // PA_CONFIG(USE_PARTITION_ROOT_ENUMERATOR)
 
   friend class ThreadCache;
+  friend class internal::BatchFreeQueue;
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   friend class internal::InSlotMetadata;
 #endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
@@ -1729,9 +1733,8 @@ PA_ALWAYS_INLINE void PartitionRoot::RawFreeWithThreadCache(
 }
 
 PA_ALWAYS_INLINE void PartitionRoot::RawFreeLocked(
-    internal::UntaggedSlotStart slot_start) {
-  SlotSpanMetadata* slot_span =
-      SlotSpanMetadata::FromSlotStart(slot_start, this);
+    internal::UntaggedSlotStart slot_start,
+    SlotSpanMetadata* slot_span) {
   // Direct-mapped deallocation releases then re-acquires the lock. The caller
   // may not expect that, but we never call this function on direct-mapped
   // allocations.

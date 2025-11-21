@@ -44,6 +44,72 @@ std::atomic_bool g_no_purge = false;
 
 }  // namespace
 
+// Utility class to process batched-free operation.
+class BatchFreeQueue {
+ public:
+  PA_ALWAYS_INLINE explicit BatchFreeQueue(PartitionRoot* root) : root_(root) {}
+  PA_ALWAYS_INLINE ~BatchFreeQueue() { Purge(); }
+
+  PA_ALWAYS_INLINE void Queue(UntaggedSlotStart slot_start) {
+    auto* slot_span = SlotSpanMetadata::FromSlotStart(slot_start, root_);
+
+    // Direct-mapped deallocation releases then re-acquires the lock. The caller
+    // may not expect that, but we never call this function on direct-mapped
+    // allocations.
+    PA_DCHECK(!root_->IsDirectMapped(slot_span));
+
+    Entry& entry = queue_[size_];
+    ++size_;
+
+    entry = {
+        .slot_start = slot_start,
+        .slot_span = slot_span,
+    };
+
+    if (size_ == kQueueSize) {
+      Purge();
+    }
+  }
+
+  PA_ALWAYS_INLINE void Purge() {
+    if (!size_) {
+      return;
+    }
+
+    for (size_t i = 0; i < size_; ++i) {
+      Entry& entry = queue_[i];
+
+      // Make sure that we fault *before* locking. See `PartitionRoot::RawFree`
+      // for detailed performance reasons.
+      auto* object = entry.slot_start.Tag().ToObject<volatile uintptr_t>();
+      *object = 0;
+
+      // Also we are going to write into |*slot_span|.
+      PA_PREFETCH_FOR_WRITE(entry.slot_span);
+    }
+
+    internal::ScopedGuard guard(internal::PartitionRootLock(root_));
+    do {
+      --size_;
+      Entry& entry = queue_[size_];
+
+      root_->RawFreeLocked(entry.slot_start, entry.slot_span);
+    } while (size_);
+  }
+
+ private:
+  struct Entry {
+    UntaggedSlotStart slot_start;
+    SlotSpanMetadata* slot_span;
+  };
+
+  PartitionRoot* const root_;
+  size_t size_ = 0;
+
+  constexpr static size_t kQueueSize = 16;
+  std::array<Entry, kQueueSize> queue_;
+};
+
 template <bool thread_bound>
 SchedulerLoopQuarantineBranch<thread_bound>::SchedulerLoopQuarantineBranch(
     PartitionRoot* allocator_root,
@@ -207,6 +273,8 @@ SchedulerLoopQuarantineBranch<thread_bound>::PurgeInternal(
   int64_t freed_count = 0;
   int64_t freed_size_in_bytes = 0;
 
+  BatchFreeQueue queue(allocator_root_);
+
   // Dequarantine some entries as required.
   while (target_size_in_bytes < branch_size_in_bytes_) {
     PA_DCHECK(!slots_.empty());
@@ -225,9 +293,7 @@ SchedulerLoopQuarantineBranch<thread_bound>::PurgeInternal(
       // Assuming that ThreadCache is not available as this is not thread-bound.
       // Going to `RawFree()` directly.
       slot_size = BucketIndexLookup::GetBucketSize(bucket_index);
-      auto* slot_span =
-          SlotSpanMetadata::FromSlotStart(slot_start.Untag(), allocator_root_);
-      allocator_root_->RawFree(slot_start, slot_span);
+      queue.Queue(slot_start.Untag());
     } else {
       // Unless during its destruction, we can assume ThreadCache is valid
       // because this branch is embedded inside ThreadCache.
@@ -258,11 +324,10 @@ SchedulerLoopQuarantineBranch<thread_bound>::PurgeInternal(
         // ThreadCache refused to take ownership of the allocation, hence we
         // free it.
         slot_size = BucketIndexLookup::GetBucketSize(bucket_index);
-        auto* slot_span = SlotSpanMetadata::FromSlotStart(slot_start.Untag(),
-                                                          allocator_root_);
-        size_t usable_size = allocator_root_->GetSlotUsableSize(slot_span);
+        const size_t usable_size =
+            allocator_root_->AdjustSizeForExtrasSubtract(slot_size);
         tcache_->RecordDeallocation(usable_size);
-        allocator_root_->RawFree(slot_start, slot_span);
+        queue.Queue(slot_start.Untag());
       }
     }
 
