@@ -15710,6 +15710,7 @@ from previous Chrome versions.
   <int value="544443920" label="QuickAnswers:disabled"/>
   <int value="544861921" label="IPH_AutofillCreditCardBenefit:disabled"/>
   <int value="545280747" label="ArchiveTabService:enabled"/>
+  <int value="545397625" label="GlicUseNonClient:enabled"/>
   <int value="545479177" label="VpnAppsOnFlex:enabled"/>
   <int value="546043947" label="ImplicitRootScroller:enabled"/>
   <int value="546464390" label="LiveCaption:enabled"/>
@@ -16196,6 +16197,7 @@ from previous Chrome versions.
   <int value="710700286" label="ImmersiveFullscreen:disabled"/>
   <int value="711424932" label="enable-cloud-print-xps"/>
   <int value="711627544" label="ImeSwitchCheckConnectionStatus:enabled"/>
+  <int value="712155532" label="GlicUseNonClient:disabled"/>
   <int value="713216521" label="NtpMostRelevantTabResumptionModule:disabled"/>
   <int value="713636081"
       label="CustomProfileStringsForSupervisedUsers:enabled"/>

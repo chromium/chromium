@@ -1413,6 +1413,10 @@ inline constexpr char kGlicUseToolbarHeightSidePanelName[] =
 inline constexpr char kGlicUseToolbarHeightSidePanelDescription[] =
     "Enables Glic to use the toolbar height side panel instead of content "
     "height side panel when enabled to use side panel";
+inline constexpr char kGlicUseNonClientName[] = "Glic Use NonClientView";
+inline constexpr char kGlicUseNonClientDescription[] =
+    "Renders the window using NonClientView/FrameView which grants the window "
+    "access to standard window management features on ChromeOS.";
 
 inline constexpr char kContextualSearchWithCredentialsForDebugName[] =
     "Contextual Search within credentials for debug";

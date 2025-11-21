@@ -11769,6 +11769,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kGlicUseToolbarHeightSidePanelName,
      flag_descriptions::kGlicUseToolbarHeightSidePanelDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kGlicUseToolbarHeightSidePanel)},
+#if BUILDFLAG(IS_CHROMEOS)
+    {"glic-use-non-client", flag_descriptions::kGlicUseNonClientName,
+     flag_descriptions::kGlicUseNonClientDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kGlicUseNonClient)},
+#endif  // BUILDFLAG(IS_CHROMEOS)
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 #if BUILDFLAG(IS_ANDROID)

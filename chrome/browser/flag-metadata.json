@@ -5696,6 +5696,14 @@
     "owners": [ "estalin@chromium.org", "//chrome/browser/glic/OWNERS" ],
     "expiry_milestone": 150
   },
+  { "name": "glic-use-non-client",
+    "owners": [
+      "zoraiznaeem@chromium.org",
+      "mwoj@google.com",
+      "oshima@chromium.org"
+    ],
+    "expiry_milestone": 150
+  },
   {
     "name": "glic-z-order-changes",
     "owners": [
