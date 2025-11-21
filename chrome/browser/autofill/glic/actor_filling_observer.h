@@ -44,10 +44,10 @@ class ActorFillingObserver final : public AutofillManager::Observer,
 
   // The maximum amount of time to wait for a fill to happen if no credit card
   // fetch is ongoing.
-  static base::TimeDelta GetFillingTimeout() { return base::Seconds(2); }
+  static base::TimeDelta GetFillingTimeout();
 
   // The maximum amount of time for which this filling observer should exist.
-  static base::TimeDelta GetMaximumTimeout() { return base::Minutes(1); }
+  static base::TimeDelta GetMaximumTimeout();
 
  private:
   // AutofillManager::Observer:

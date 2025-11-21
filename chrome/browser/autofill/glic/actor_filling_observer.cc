@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
+#include "chrome/common/chrome_features.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
 #include "components/autofill/core/browser/integrators/glic/actor_form_filling_types.h"
@@ -39,6 +40,16 @@ ActorFillingObserver::ActorFillingObserver(
 
 ActorFillingObserver::~ActorFillingObserver() {
   Reset();
+}
+
+// static
+base::TimeDelta ActorFillingObserver::GetFillingTimeout() {
+  return ::features::kGlicActorAutofillFillingTimeout.Get();
+}
+
+// static
+base::TimeDelta ActorFillingObserver::GetMaximumTimeout() {
+  return ::features::kGlicActorAutofillMaximumTimeout.Get();
 }
 
 std::optional<bool> ActorFillingObserver::IsCreditCardFetchOngoing() const {
