@@ -1730,20 +1730,22 @@ int InputMethodController::TextInputFlags() const {
 
   int flags = 0;
 
-  const AtomicString& autocomplete =
-      element->FastGetAttribute(html_names::kAutocompleteAttr);
-  if (autocomplete == keywords::kOn) {
-    flags |= kWebTextInputFlagAutocompleteOn;
-  } else if (autocomplete == keywords::kOff) {
-    flags |= kWebTextInputFlagAutocompleteOff;
+  if (const AtomicString& autocomplete =
+          element->FastGetAttribute(html_names::kAutocompleteAttr)) {
+    if (EqualIgnoringASCIICase(autocomplete, keywords::kOn)) {
+      flags |= kWebTextInputFlagAutocompleteOn;
+    } else if (EqualIgnoringASCIICase(autocomplete, keywords::kOff)) {
+      flags |= kWebTextInputFlagAutocompleteOff;
+    }
   }
 
-  const AtomicString& autocorrect =
-      element->FastGetAttribute(html_names::kAutocorrectAttr);
-  if (autocorrect == keywords::kOn) {
-    flags |= kWebTextInputFlagAutocorrectOn;
-  } else if (autocorrect == keywords::kOff) {
-    flags |= kWebTextInputFlagAutocorrectOff;
+  if (const AtomicString& autocorrect =
+          element->FastGetAttribute(html_names::kAutocorrectAttr)) {
+    if (EqualIgnoringASCIICase(autocorrect, keywords::kOn)) {
+      flags |= kWebTextInputFlagAutocorrectOn;
+    } else if (EqualIgnoringASCIICase(autocorrect, keywords::kOff)) {
+      flags |= kWebTextInputFlagAutocorrectOff;
+    }
   }
 
   SpellcheckAttributeState spellcheck = element->GetSpellcheckAttributeState();

@@ -48,6 +48,7 @@ class InputMethodControllerTest : public EditingTestBase {
   Element* InsertHTMLElement(const char* element_code, const char* element_id);
   void CreateHTMLWithCompositionInputEventListeners();
   void CreateHTMLWithCompositionEndEventListener(const SelectionType);
+  int TextInputFlags(const char* html);
 };
 
 Element* InputMethodControllerTest::InsertHTMLElement(const char* element_code,
@@ -126,6 +127,13 @@ void InputMethodControllerTest::CreateHTMLWithCompositionEndEventListener(
   GetDocument().body()->AppendChild(script);
   UpdateAllLifecyclePhasesForTest();
   editable->Focus();
+}
+
+int InputMethodControllerTest::TextInputFlags(const char* html) {
+  GetDocument().write(html);
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  To<Element>(GetDocument().body()->lastChild())->Focus();
+  return Controller().TextInputFlags();
 }
 
 TEST_F(InputMethodControllerTest, BackspaceFromEndOfInput) {
@@ -3588,6 +3596,30 @@ TEST_F(InputMethodControllerTest, AutocapitalizeTextInputFlags) {
     EXPECT_EQ(expected_flags,
               Controller().TextInputInfo().flags & autocapitalize_mask);
   }
+}
+
+TEST_F(InputMethodControllerTest, AutoCompleteTextInputFlags) {
+  constexpr int default_flags = kWebTextInputFlagAutocapitalizeSentences;
+  EXPECT_EQ(TextInputFlags("<input autocomplete=off>"),
+            kWebTextInputFlagAutocompleteOff | default_flags);
+  EXPECT_EQ(TextInputFlags("<input autocomplete=OFF>"),
+            kWebTextInputFlagAutocompleteOff | default_flags);
+  EXPECT_EQ(TextInputFlags("<input autocomplete=on>"),
+            kWebTextInputFlagAutocompleteOn | default_flags);
+  EXPECT_EQ(TextInputFlags("<input autocomplete=ON>"),
+            kWebTextInputFlagAutocompleteOn | default_flags);
+}
+
+TEST_F(InputMethodControllerTest, AutoCorrectTextInputFlags) {
+  constexpr int default_flags = kWebTextInputFlagAutocapitalizeSentences;
+  EXPECT_EQ(TextInputFlags("<input autocorrect=off>"),
+            kWebTextInputFlagAutocorrectOff | default_flags);
+  EXPECT_EQ(TextInputFlags("<input autocorrect=OFF>"),
+            kWebTextInputFlagAutocorrectOff | default_flags);
+  EXPECT_EQ(TextInputFlags("<input autocorrect=on>"),
+            kWebTextInputFlagAutocorrectOn | default_flags);
+  EXPECT_EQ(TextInputFlags("<input autocorrect=ON>"),
+            kWebTextInputFlagAutocorrectOn | default_flags);
 }
 
 TEST_F(InputMethodControllerTest, VerticalTextInputFlags) {
