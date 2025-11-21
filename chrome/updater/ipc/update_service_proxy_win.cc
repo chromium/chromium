@@ -32,6 +32,7 @@
 #include "chrome/updater/ipc/proxy_impl_base_win.h"
 #include "chrome/updater/ipc/update_service_proxy.h"
 #include "chrome/updater/registration_data.h"
+#include "chrome/updater/service_proxy_factory.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/win_constants.h"
