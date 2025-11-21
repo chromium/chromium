@@ -1199,6 +1199,8 @@ crbug.com/1066577 external/wpt/css/css-lists/counter-reset-reversed-list-item-st
 crbug.com/1066577 external/wpt/css/css-lists/counter-reset-reversed-not-list-item.html [ Failure ]
 crbug.com/1270480 external/wpt/css/css-lists/marker-webkit-text-fill-color.html [ Failure ]
 crbug.com/947844 external/wpt/css/css-lists/list-item-definition.html [ Failure ]
+crbug.com/40110559 external/wpt/css/css-lists/marker-counter.html [ Failure ]
+crbug.com/40110559 external/wpt/css/css-lists/marker-quotes.html [ Failure ]
 
 crbug.com/1330383 external/wpt/css/css-lists/counter-order-display-contents.html [ Failure ]
 crbug.com/1330383 external/wpt/css/css-lists/counter-slot-order-scoping.html [ Failure ]
@@ -3203,8 +3205,6 @@ crbug.com/41482962 external/wpt/svg/styling/css-linked-parameters/img-with-url-f
 crbug.com/418804914 virtual/close-watcher/external/wpt/close-watcher/iframes/dialog-same-origin-nn.html [ Skip Timeout ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/461903933 external/wpt/css/css-lists/marker-counter.html [ Failure ]
-crbug.com/461903933 external/wpt/css/css-lists/marker-quotes.html [ Failure ]
 crbug.com/461896331 [ Linux ] external/wpt/html/editing/dnd/interactiveelements/disabled_input_text_inside_draggable_element.html [ Timeout ]
 crbug.com/461896331 [ Win ] external/wpt/html/editing/dnd/interactiveelements/disabled_input_text_inside_draggable_element.html [ Crash Timeout ]
 crbug.com/461896331 [ Mac ] external/wpt/html/editing/dnd/interactiveelements/disabled_input_text_inside_draggable_element.html [ Timeout ]
