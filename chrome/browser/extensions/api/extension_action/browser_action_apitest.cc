@@ -128,9 +128,7 @@ class BrowserActionApiTest : public ExtensionApiTest {
   void ClickAction(const extensions::ExtensionId& extension_id) {
     ToolbarActionView* action_view =
         extensions_container()->GetViewForId(extension_id);
-    ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(),
-                         gfx::Point(), ui::EventTimeForNow(), 0, 0);
-    views::test::ButtonTestApi(action_view).NotifyClick(event);
+    views::test::ButtonTestApi(action_view).NotifyDefaultMouseClick();
   }
 
   ExtensionsToolbarContainer* extensions_container() {
