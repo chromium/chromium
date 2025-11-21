@@ -30,9 +30,11 @@ class EnterpriseCompanionServiceImpl : public EnterpriseCompanionService {
  public:
   EnterpriseCompanionServiceImpl(
       std::unique_ptr<DMClient> dm_client,
+      base::RepeatingClosure before_each_request,
       base::OnceClosure shutdown_callback,
       scoped_refptr<EnterpriseCompanionEventLogger> event_logger)
       : dm_client_(std::move(dm_client)),
+        before_each_request_(before_each_request),
         shutdown_callback_(std::move(shutdown_callback)),
         event_logger_(event_logger) {}
 
@@ -50,6 +52,7 @@ class EnterpriseCompanionServiceImpl : public EnterpriseCompanionService {
                      StatusCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     VLOG(1) << __func__;
+    before_each_request_.Run();
     dm_client_->RegisterPolicyAgent(
         event_logger_,
         base::BindOnce(&EnterpriseCompanionServiceImpl::OnRegistrationCompleted,
@@ -61,6 +64,7 @@ class EnterpriseCompanionServiceImpl : public EnterpriseCompanionService {
   SEQUENCE_CHECKER(sequence_checker_);
 
   std::unique_ptr<DMClient> dm_client_;
+  base::RepeatingClosure before_each_request_;
   base::OnceClosure shutdown_callback_;
   scoped_refptr<EnterpriseCompanionEventLogger> event_logger_;
 
@@ -86,10 +90,12 @@ class EnterpriseCompanionServiceImpl : public EnterpriseCompanionService {
 
 std::unique_ptr<EnterpriseCompanionService> CreateEnterpriseCompanionService(
     std::unique_ptr<DMClient> dm_client,
+    base::RepeatingClosure before_each_request,
     scoped_refptr<EnterpriseCompanionEventLogger> logger,
     base::OnceClosure shutdown_callback) {
   return std::make_unique<EnterpriseCompanionServiceImpl>(
-      std::move(dm_client), std::move(shutdown_callback), logger);
+      std::move(dm_client), before_each_request, std::move(shutdown_callback),
+      logger);
 }
 
 }  // namespace enterprise_companion

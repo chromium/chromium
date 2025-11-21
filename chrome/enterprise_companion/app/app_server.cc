@@ -10,6 +10,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "chrome/enterprise_companion/app/app.h"
 #include "chrome/enterprise_companion/dm_client.h"
@@ -65,27 +66,6 @@ class AppServer : public App {
   AppServer() {
 #if !BUILDFLAG(IS_MAC)
     net_thread_.StartWithOptions({base::MessagePumpType::IO, 0});
-#endif
-#if BUILDFLAG(IS_WIN)
-    // Try to impersonate the logged-in user for the lifetime of the net thread.
-    // Skip impersonation if the process is not running as the SYSTEM user,
-    // which should only be true in tests.
-    if (IsSystemProcess()) {
-      net_thread_.task_runner()->PostTask(
-          FROM_HERE, base::BindOnce([] {
-            updater::HResultOr<updater::ScopedKernelHANDLE> token =
-                updater::GetLoggedOnUserToken();
-            VLOG_IF(2, !token.has_value())
-                << __func__ << ": GetLoggedOnUserToken failed: " << std::hex
-                << token.error();
-            if (token.has_value()) {
-              if (!::ImpersonateLoggedOnUser(token->get())) {
-                VPLOG(1) << "Failed to impersonate logged on user. Networking "
-                            "may fail.";
-              }
-            }
-          }));
-    }
 #endif
   }
 
@@ -146,11 +126,55 @@ class AppServer : public App {
         network::SharedURLLoaderFactory::Create(
             std::move(pending_url_loader_factory));
 
+#if BUILDFLAG(IS_WIN)
+    base::RepeatingClosure before_each_request = base::BindRepeating(
+        [](scoped_refptr<base::SequencedTaskRunner> net_thread_task_runner) {
+          // Try to impersonate the logged-in user. Impersonation is attempted
+          // on every request and lasts for the lifetime of the net thread, or
+          // until a new request is received. Skip impersonation if the process
+          // is not running as the SYSTEM user, which should only be true in
+          // tests.
+          if (!IsSystemProcess()) {
+            return;
+          }
+          net_thread_task_runner->PostTask(
+              FROM_HERE, base::BindOnce([] {
+                // If the thread is already impersonating it is necessary to
+                // terminate impersonation before impersonating again, as the
+                // logged-in user could be different across attempts.
+                // Additionally, if the thread is impersonating a user that has
+                // logged off it is preferable to terminate the impersonation
+                // even if there is no other logged-in user to impersonate;
+                // else, the security context may be disconnected from
+                // environmental resources (including network credentials).
+                if (!::RevertToSelf()) {
+                  VPLOG(1) << "Failed to revert net thread impersonation";
+                }
+                updater::HResultOr<updater::ScopedKernelHANDLE> token =
+                    updater::GetLoggedOnUserToken();
+                VLOG_IF(2, !token.has_value())
+                    << __func__ << ": GetLoggedOnUserToken failed: " << std::hex
+                    << token.error();
+                if (token.has_value()) {
+                  if (!::ImpersonateLoggedOnUser(token->get())) {
+                    VPLOG(1)
+                        << "Failed to impersonate logged on user. Networking "
+                           "may fail.";
+                  }
+                }
+              }));
+        },
+        net_thread_.task_runner());
+#else
+    base::RepeatingClosure before_each_request = base::DoNothing();
+#endif
+
     VLOG(1) << "Launching Chrome Enterprise Companion App";
     stub_ =
         CreateEnterpriseCompanionServiceStub(CreateEnterpriseCompanionService(
             CreateDMClient(
                 GetDefaultCloudPolicyClientProvider(url_loader_factory)),
+            before_each_request,
             EnterpriseCompanionEventLogger::Create(url_loader_factory),
             base::BindOnce(&AppServer::Shutdown, weak_ptr_factory_.GetWeakPtr(),
                            EnterpriseCompanionStatus::Success())));
