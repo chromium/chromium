@@ -782,9 +782,6 @@ extern const base::FeatureParam<base::TimeDelta>
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<std::string>
     kHappinessTrackingSurveysForSecurityPageTriggerId;
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<bool>
-    kHappinessTrackingSurveysForSecurityPageRequireInteraction;
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

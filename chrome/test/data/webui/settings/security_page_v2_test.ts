@@ -7,8 +7,10 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import type {CrExpandButtonElement, SettingsSecurityPageV2Element} from 'chrome://settings/lazy_load.js';
 import {SafeBrowsingSetting, SecuritySettingsBundleSetting} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs} from 'chrome://settings/settings.js';
+import type {ControlledRadioButtonElement} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, HatsBrowserProxyImpl, Router, routes, SecurityPageV2Interaction} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isChildVisible, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -102,5 +104,141 @@ suite('Main', function() {
         page.getPref('generated.safe_browsing').value);
     assertFalse(isVisible(page.$.resetBundleToDefaultsButton));
   });
+});
 
+suite('SecurityPageV2HappinessTrackingSurveys', function() {
+  let testHatsBrowserProxy: TestHatsBrowserProxy;
+  let settingsPrefs: SettingsPrefsElement;
+  let page: SettingsSecurityPageV2Element;
+
+  suiteSetup(function() {
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(function() {
+    testHatsBrowserProxy = new TestHatsBrowserProxy();
+    HatsBrowserProxyImpl.setInstance(testHatsBrowserProxy);
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    page = document.createElement('settings-security-page-v2');
+    page.prefs = settingsPrefs.prefs;
+    document.body.appendChild(page);
+    // Set initial pref values for test predictability.
+    page.setPrefValue(
+        'generated.security_settings_bundle',
+        SecuritySettingsBundleSetting.STANDARD);
+    page.setPrefValue('generated.safe_browsing', SafeBrowsingSetting.ENHANCED);
+
+    // Navigate to the security route to trigger the setup logic in the
+    // component, which sets up the event listeners and initial state.
+    Router.getInstance().navigateTo(routes.SECURITY);
+    return flushTasks();
+  });
+
+  teardown(function() {
+    page.remove();
+    Router.getInstance().navigateTo(routes.BASIC);
+  });
+
+  test('SecurityPageV2_CallsHatsProxy', async function() {
+    const t1 = 10000;
+    testHatsBrowserProxy.setNow(t1);
+    window.dispatchEvent(new Event('focus'));
+
+    const t2 = 20000;
+    testHatsBrowserProxy.setNow(t2);
+    window.dispatchEvent(new Event('blur'));
+
+    const t3 = 50000;
+    testHatsBrowserProxy.setNow(t3);
+    window.dispatchEvent(new Event('focus'));
+
+    const t4 = 90000;
+    testHatsBrowserProxy.setNow(t4);
+
+
+    // Fire the beforeunload event to simulate closing the page.
+    window.dispatchEvent(new Event('beforeunload'));
+
+    const args =
+        await testHatsBrowserProxy.whenCalled('securityPageHatsRequest');
+
+    // Verify interactions.
+    assertEquals(0, args[0].length);
+
+    // Verify the safe browsing state on open.
+    assertEquals(SafeBrowsingSetting.ENHANCED, args[1]);
+
+    // Verify the time the user spent on the security page.
+    const expectedTotalTimeInFocus = (t2 - t1) + (t4 - t3);
+    assertEquals(expectedTotalTimeInFocus, args[2]);
+
+    // Verify the security bundle state on open.
+    assertEquals(SecuritySettingsBundleSetting.STANDARD, args[3]);
+  });
+
+  test('BeforeUnloadWithInteractions_CallsHatsProxy', async function() {
+    const t1 = 10000;
+    testHatsBrowserProxy.setNow(t1);
+    window.dispatchEvent(new Event('focus'));
+
+    const t2 = 20000;
+    testHatsBrowserProxy.setNow(t2);
+
+    // Interact with the Enhanced bundle radio button.
+    page.$.securitySettingsBundleEnhanced.click();
+    await flushTasks();
+
+    // Expand the Safe Browsing row.
+    const expandButton =
+        page.$.safeBrowsingRow.shadowRoot!.querySelector<CrExpandButtonElement>(
+            '#expandButton')!;
+    expandButton.click();
+    await flushTasks();
+    await microtasksFinished();
+
+    const radioGroup =
+        page.shadowRoot!.querySelector<HTMLElement>('#safeBrowsingRadioGroup');
+    assertTrue(!!radioGroup, 'Radio group element must be in the DOM.');
+    assertTrue(
+        isVisible(radioGroup),
+        'The radio group should be visible after expanding the row.');
+
+    // Proceed to click the Standard button.
+    const standardSafeBrowsingRadioButton =
+        radioGroup.querySelector<ControlledRadioButtonElement>(
+            'controlled-radio-button');
+    assertTrue(
+        !!standardSafeBrowsingRadioButton,
+        'Standard Safe Browsing radio button element should exist.');
+    standardSafeBrowsingRadioButton.click();
+    await flushTasks();
+
+    // Fire the beforeunload event to simulate closing the page.
+    window.dispatchEvent(new Event('beforeunload'));
+
+    const args =
+        await testHatsBrowserProxy.whenCalled('securityPageHatsRequest');
+
+    // Verify the interactions. Order doesn't matter, so check for
+    // presence and length.
+    const interactions = args[0] as SecurityPageV2Interaction[];
+    assertEquals(3, interactions.length);
+    assertTrue(interactions.includes(
+        SecurityPageV2Interaction.ENHANCED_BUNDLE_RADIO_BUTTON_CLICK));
+    assertTrue(interactions.includes(
+        SecurityPageV2Interaction.SAFE_BROWSING_ROW_EXPANDED));
+    assertTrue(interactions.includes(
+        SecurityPageV2Interaction.STANDARD_SAFE_BROWSING_RADIO_BUTTON_CLICK));
+
+    // Verify the safe browsing state on open.
+    assertEquals(SafeBrowsingSetting.ENHANCED, args[1]);
+
+    // Verify the time the user spent on the security page.
+    const expectedTotalTimeInFocus = t2 - t1;
+    assertEquals(expectedTotalTimeInFocus, args[2]);
+
+    // Verify the security bundle state on open.
+    assertEquals(SecuritySettingsBundleSetting.STANDARD, args[3]);
+  });
 });
