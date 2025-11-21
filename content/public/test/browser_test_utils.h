@@ -793,7 +793,8 @@ base::Value ListValueOf(Args&&... args) {
 // Each |arg| can be any type explicitly convertible to base::Value
 // (including int/string/std::string_view/char*/double/bool), or any type that
 // JsLiteralHelper is specialized for -- like URL and url::Origin, which emit
-// string literals. |args| can be a mix of different types.
+// string literals. Note that base::Value::Type::BINARY is not supported.
+// |args| can be a mix of different types.
 //
 // Example 1:
 //
