@@ -390,6 +390,19 @@
       status: "stable",
     },
     {
+      // Gates access to the tool use (function calling) enhancement for
+      // "AIPromptAPI". This feature alone does not expose any "AIPromptAPI"
+      // feature access.
+      name: "AIPromptAPIToolUse",
+      status: {
+        "Win": "experimental",
+        "Mac": "experimental",
+        "Linux": "experimental",
+        "ChromeOS": "experimental",
+        "default": "",
+      },
+    },
+    {
       name: "AIProofreadingAPI",
       status: {
         "Win": "experimental",

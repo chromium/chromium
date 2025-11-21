@@ -51,7 +51,10 @@ interface LanguageModel : EventTarget {
     CallWith=ScriptState,
     RaisesException
   ]
-  Promise<DOMString> prompt(
+  // When this object was created with LanguageModelToolDeclaration and
+  // expectedOutputs includes {type:"tool-call"}, this now yields a
+  // LanguageModelMessageContent sequence.
+  Promise<LanguageModelPromptResult> prompt(
     LanguageModelPrompt input,
     optional LanguageModelPromptOptions options = {}
   );
@@ -60,6 +63,9 @@ interface LanguageModel : EventTarget {
     CallWith=ScriptState,
     RaisesException
   ]
+  // When this object was created with LanguageModelToolDeclaration and
+  // expectedOutputs includes {type:"tool-call"}, this now yields a
+  // LanguageModelMessageContent dictionary sequence in chunks.
   ReadableStream promptStreaming(
     LanguageModelPrompt input,
     optional LanguageModelPromptOptions options = {}

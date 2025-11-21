@@ -10,6 +10,7 @@
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
@@ -36,7 +37,8 @@ void ThrowDocumentNotActiveException(ExceptionState& exception_state);
 void ThrowSessionDestroyedException(ExceptionState& exception_state);
 void ThrowAbortedException(ExceptionState& exception_state);
 
-void RejectPromiseWithInternalError(ScriptPromiseResolverBase* resolver);
+MODULES_EXPORT void RejectPromiseWithInternalError(
+    ScriptPromiseResolverBase* resolver);
 
 DOMException* CreateInternalErrorException();
 DOMException* CreateSessionDestroyedException();

@@ -207,10 +207,11 @@ ScriptPromise<IDLString> Translator::translate(
   auto pending_remote = CreateModelExecutionResponder(
       script_state, composite_signal, task_runner_,
       AIMetrics::AISessionType::kTranslator,
-      BindOnce(&ResolvePromiseOnCompletion, WrapPersistent(resolver)),
+      BindOnce(&ResolvePromiseOnCompletion<IDLString>,
+               WrapPersistent(resolver)),
       /*overflow_callback=*/base::DoNothingWithBoundArgs(WrapPersistent(this)),
-      BindOnce(&RejectPromiseOnError, WrapPersistent(resolver)),
-      BindOnce(&RejectPromiseOnAbort, WrapPersistent(resolver),
+      BindOnce(&RejectPromiseOnError<IDLString>, WrapPersistent(resolver)),
+      BindOnce(&RejectPromiseOnAbort<IDLString>, WrapPersistent(resolver),
                WrapPersistent(composite_signal), WrapPersistent(script_state)));
 
   // TODO(crbug.com/335374928): implement the error handling for the translation

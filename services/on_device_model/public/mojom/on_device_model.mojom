@@ -141,6 +141,10 @@ enum Token {
   kUser,
   // End a system/model/user section.
   [Default] kEnd,
+  // Prefix for tool call (function invocation by the model).
+  [MinVersion=1] kToolCall,
+  // Prefix for tool response (results from tool execution).
+  [MinVersion=1] kToolResponse,
 };
 
 // Holds the possible input types to the model. Note that if any of these input

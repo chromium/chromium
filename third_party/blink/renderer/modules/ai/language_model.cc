@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_message_content.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_language_model_message_value.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_language_model_prompt.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_languagemodelmessagecontentsequence_string.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -397,6 +398,10 @@ mojom::blink::AILanguageModelPromptRole LanguageModel::ConvertRoleToMojo(
       return mojom::blink::AILanguageModelPromptRole::kUser;
     case V8LanguageModelMessageRole::Enum::kAssistant:
       return mojom::blink::AILanguageModelPromptRole::kAssistant;
+    case V8LanguageModelMessageRole::Enum::kToolCall:
+      return mojom::blink::AILanguageModelPromptRole::kToolCall;
+    case V8LanguageModelMessageRole::Enum::kToolResponse:
+      return mojom::blink::AILanguageModelPromptRole::kToolResponse;
   }
   NOTREACHED();
 }
@@ -610,7 +615,7 @@ ScriptPromise<IDLNullable<LanguageModelParams>> LanguageModel::params(
   return promise;
 }
 
-ScriptPromise<IDLString> LanguageModel::prompt(
+ScriptPromise<V8LanguageModelPromptResult> LanguageModel::prompt(
     ScriptState* script_state,
     const V8LanguageModelPrompt* input,
     const LanguageModelPromptOptions* options,
@@ -623,7 +628,8 @@ ScriptPromise<IDLString> LanguageModel::prompt(
   }
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<V8LanguageModelPromptResult>>(
+          script_state);
   auto promise = resolver->Promise();
 
   // Use WrapPersistent() to make sure LanguageModel is not garbage collected
@@ -634,8 +640,10 @@ ScriptPromise<IDLString> LanguageModel::prompt(
       BindOnce(&LanguageModel::ResolvePromiseOnComplete, WrapPersistent(this),
                WrapPersistent(resolver)),
       BindRepeating(&LanguageModel::OnQuotaOverflow, WrapPersistent(this)),
-      BindOnce(&RejectPromiseOnError, WrapPersistent(resolver)),
-      BindOnce(&RejectPromiseOnAbort, WrapPersistent(resolver),
+      BindOnce(&RejectPromiseOnError<V8LanguageModelPromptResult>,
+               WrapPersistent(resolver)),
+      BindOnce(&RejectPromiseOnAbort<V8LanguageModelPromptResult>,
+               WrapPersistent(resolver),
                WrapPersistent(options->getSignalOr(nullptr)),
                WrapPersistent(script_state)));
 
@@ -911,7 +919,7 @@ void LanguageModel::destroy(ScriptState* script_state,
 }
 
 void LanguageModel::ResolvePromiseOnComplete(
-    ScriptPromiseResolver<IDLString>* resolver,
+    ScriptPromiseResolver<V8LanguageModelPromptResult>* resolver,
     const String& response,
     mojom::blink::ModelExecutionContextInfoPtr context_info) {
   resolver->Resolve(response);

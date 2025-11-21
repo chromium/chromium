@@ -34,7 +34,9 @@ class AIMetrics {
     kText = 0,
     kImage = 1,
     kAudio = 2,
-    kMaxValue = kAudio,
+    kToolCall = 3,
+    kToolResponse = 4,
+    kMaxValue = kToolResponse,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/ai/enums.xml:LanguageModelInputType)
 
@@ -43,7 +45,9 @@ class AIMetrics {
     kSystem = 0,
     kUser = 1,
     kAssistant = 2,
-    kMaxValue = kAssistant,
+    kToolCall = 3,
+    kToolResponse = 4,
+    kMaxValue = kToolResponse,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/ai/enums.xml:LanguageModelInputRole)
 

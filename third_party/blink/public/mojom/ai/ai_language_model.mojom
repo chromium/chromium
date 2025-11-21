@@ -54,13 +54,17 @@ enum AILanguageModelPromptRole {
   kSystem = 0,
   kUser = 1,
   kAssistant = 2,
+  kToolCall = 3,
+  kToolResponse = 4,
 };
 
-// The type of data for a given prompt. See LanguageModelPromptType in IDL.
+// The type of data for a given prompt. See LanguageModelMessageType in IDL.
 enum AILanguageModelPromptType {
   kText = 0,
   kImage = 1,
   kAudio = 2,
+  kToolCall = 3,
+  kToolResponse = 4,
 };
 
 // The expected data type and languages specified with session creation.

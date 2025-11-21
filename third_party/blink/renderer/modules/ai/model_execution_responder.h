@@ -11,10 +11,13 @@
 #include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
+#include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 
 namespace base {
@@ -23,7 +26,6 @@ class SequencedTaskRunner;
 
 namespace blink {
 
-class AbortSignal;
 class ReadableStream;
 class ScriptState;
 
@@ -66,22 +68,32 @@ ReadableStream* CreateEmptyReadableStream(
 
 // Resolves API execution promise directly with the full response on model
 // execution completion.
-MODULES_EXPORT
+template <typename T>
 void ResolvePromiseOnCompletion(
-    ScriptPromiseResolver<IDLString>* resolver,
+    ScriptPromiseResolver<T>* resolver,
     const String& response,
-    mojom::blink::ModelExecutionContextInfoPtr context_info);
+    mojom::blink::ModelExecutionContextInfoPtr context_info) {
+  resolver->Resolve(response);
+}
 
 // Rejects API execution promise when model execution is aborted.
-MODULES_EXPORT
-void RejectPromiseOnAbort(ScriptPromiseResolver<IDLString>* resolver,
+template <typename T>
+void RejectPromiseOnAbort(ScriptPromiseResolver<T>* resolver,
                           AbortSignal* signal,
-                          ScriptState* script_state);
+                          ScriptState* script_state) {
+  if (signal) {
+    resolver->Reject(signal->reason(script_state));
+  } else {
+    RejectPromiseWithInternalError(resolver);
+  }
+}
 
 // Rejects API execution promise on error during model execution.
-MODULES_EXPORT
-void RejectPromiseOnError(ScriptPromiseResolver<IDLString>* resolver,
-                          DOMException* exception);
+template <typename T>
+void RejectPromiseOnError(ScriptPromiseResolver<T>* resolver,
+                          DOMException* exception) {
+  resolver->Reject(exception);
+}
 
 }  // namespace blink
 

@@ -104,6 +104,8 @@ void LanguageModelCreateClient::Create(
   if (options_->hasExpectedInputs()) {
     expected_in = ToMojoExpectations(options_->expectedInputs());
     for (const auto& expected : expected_in) {
+      // TODO(crbug.com/422803232): reject when `expected` has tool types
+      // without AIPromptAPIToolUse runtime feature enabled.
       if (expected->type != mojom::blink::AILanguageModelPromptType::kText &&
           !RuntimeEnabledFeatures::AIPromptAPIMultimodalInputEnabled(
               GetExecutionContext())) {
@@ -118,6 +120,8 @@ void LanguageModelCreateClient::Create(
   if (options_->hasExpectedOutputs()) {
     expected_out = ToMojoExpectations(options_->expectedOutputs());
     for (const auto& expected : expected_out) {
+      // TODO(crbug.com/422803232): reject when `expected` has tool types
+      // without AIPromptAPIToolUse runtime feature enabled.
       if (expected->type != mojom::blink::AILanguageModelPromptType::kText) {
         GetResolver()->Reject(DOMException::Create(
             kExceptionMessageUnableToCreateSession,
@@ -145,6 +149,17 @@ void LanguageModelCreateClient::Create(
       GetResolver()->Reject(DOMException::Create(
           "initialPrompts cannot specify an assistant response prefix.",
           DOMException::GetErrorName(DOMExceptionCode::kSyntaxError)));
+      return;
+    }
+  }
+
+  if (options_->hasTools()) {
+    // Check if the AIPromptAPIToolUse feature is enabled.
+    if (!RuntimeEnabledFeatures::AIPromptAPIToolUseEnabled(
+            GetExecutionContext())) {
+      GetResolver()->Reject(DOMException::Create(
+          "Tool use feature is not enabled",
+          DOMException::GetErrorName(DOMExceptionCode::kNotSupportedError)));
       return;
     }
   }

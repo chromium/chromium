@@ -20,6 +20,10 @@ EnumTraits<on_device_model::mojom::Token, ml::Token>::ToMojom(ml::Token input) {
       return on_device_model::mojom::Token::kUser;
     case ml::Token::kEnd:
       return on_device_model::mojom::Token::kEnd;
+    case ml::Token::kToolCall:
+      return on_device_model::mojom::Token::kToolCall;
+    case ml::Token::kToolResponse:
+      return on_device_model::mojom::Token::kToolResponse;
   }
   NOTREACHED();
 }
@@ -40,6 +44,12 @@ bool EnumTraits<on_device_model::mojom::Token, ml::Token>::FromMojom(
       return true;
     case on_device_model::mojom::Token::kEnd:
       *output = ml::Token::kEnd;
+      return true;
+    case on_device_model::mojom::Token::kToolCall:
+      *output = ml::Token::kToolCall;
+      return true;
+    case on_device_model::mojom::Token::kToolResponse:
+      *output = ml::Token::kToolResponse;
       return true;
   }
   return false;

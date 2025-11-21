@@ -382,26 +382,4 @@ ReadableStream* CreateEmptyReadableStream(
   return readable_stream;
 }
 
-void ResolvePromiseOnCompletion(
-    ScriptPromiseResolver<IDLString>* resolver,
-    const String& response,
-    mojom::blink::ModelExecutionContextInfoPtr context_info) {
-  resolver->Resolve(response);
-}
-
-void RejectPromiseOnAbort(ScriptPromiseResolver<IDLString>* resolver,
-                          AbortSignal* signal,
-                          ScriptState* script_state) {
-  if (signal) {
-    resolver->Reject(signal->reason(script_state));
-  } else {
-    RejectPromiseWithInternalError(resolver);
-  }
-}
-
-void RejectPromiseOnError(ScriptPromiseResolver<IDLString>* resolver,
-                          DOMException* exception) {
-  resolver->Reject(exception);
-}
-
 }  // namespace blink

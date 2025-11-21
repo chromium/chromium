@@ -173,6 +173,10 @@ mojom::blink::AILanguageModelPromptType ToMojoInputType(
       return mojom::blink::AILanguageModelPromptType::kAudio;
     case V8LanguageModelMessageType::Enum::kImage:
       return mojom::blink::AILanguageModelPromptType::kImage;
+    case V8LanguageModelMessageType::Enum::kToolCall:
+      return mojom::blink::AILanguageModelPromptType::kToolCall;
+    case V8LanguageModelMessageType::Enum::kToolResponse:
+      return mojom::blink::AILanguageModelPromptType::kToolResponse;
   }
 }
 

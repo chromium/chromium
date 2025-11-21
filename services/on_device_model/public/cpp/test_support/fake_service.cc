@@ -46,6 +46,10 @@ std::string Placeholder(ml::Token token) {
       return "S";
     case ml::Token::kUser:
       return "U";
+    case ml::Token::kToolCall:
+      return "TC";
+    case ml::Token::kToolResponse:
+      return "TR";
   }
 }
 

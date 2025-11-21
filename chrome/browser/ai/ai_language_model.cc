@@ -55,6 +55,10 @@ ml::Token ConvertToToken(blink::mojom::AILanguageModelPromptRole role) {
       return ml::Token::kUser;
     case blink::mojom::AILanguageModelPromptRole::kAssistant:
       return ml::Token::kModel;
+    case blink::mojom::AILanguageModelPromptRole::kToolCall:
+      return ml::Token::kToolCall;
+    case blink::mojom::AILanguageModelPromptRole::kToolResponse:
+      return ml::Token::kToolResponse;
   }
 }
 

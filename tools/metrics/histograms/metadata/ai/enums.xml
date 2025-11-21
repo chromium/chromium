@@ -103,6 +103,8 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Text"/>
   <int value="1" label="Image"/>
   <int value="2" label="Audio"/>
+  <int value="3" label="ToolCall"/>
+  <int value="4" label="ToolResponse"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/renderer/modules/ai/ai_metrics.h:LanguageModelInputType) -->

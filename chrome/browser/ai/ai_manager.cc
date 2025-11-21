@@ -186,6 +186,10 @@ on_device_model::Capabilities GetExpectedCapabilities(
         case blink::mojom::AILanguageModelPromptType::kAudio:
           capabilities.Put(on_device_model::CapabilityFlags::kAudioInput);
           break;
+        case blink::mojom::AILanguageModelPromptType::kToolCall:
+        case blink::mojom::AILanguageModelPromptType::kToolResponse:
+          // TODO(crbug.com/422803232): Implement tool capabilities.
+          break;
       }
     }
   }

@@ -34,6 +34,10 @@ std::string PieceToString(const ml::InputPiece& piece) {
         return "User: ";
       case ml::Token::kEnd:
         return " End.";
+      case ml::Token::kToolCall:
+        return "ToolCall: ";
+      case ml::Token::kToolResponse:
+        return "ToolResponse: ";
     }
   }
   if (std::holds_alternative<SkBitmap>(piece)) {

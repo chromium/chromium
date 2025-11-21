@@ -354,6 +354,10 @@ std::string PlaceholderForToken(ml::Token token) {
       return "<user>";
     case ml::Token::kEnd:
       return "<end>";
+    case ml::Token::kToolCall:
+      return "<tool-call>";
+    case ml::Token::kToolResponse:
+      return "<tool-response>";
   }
 }
 

@@ -264,10 +264,11 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
     // Pass persistent refs to keep this instance alive during the response.
     auto pending_remote = CreateModelExecutionResponder(
         script_state, composite_signal, task_runner_, metric_session_type_,
-        BindOnce(&ResolvePromiseOnCompletion, WrapPersistent(resolver)),
+        BindOnce(&ResolvePromiseOnCompletion<IDLString>,
+                 WrapPersistent(resolver)),
         base::DoNothingWithBoundArgs(WrapPersistent(this)),
-        BindOnce(&RejectPromiseOnError, WrapPersistent(resolver)),
-        BindOnce(&RejectPromiseOnAbort, WrapPersistent(resolver),
+        BindOnce(&RejectPromiseOnError<IDLString>, WrapPersistent(resolver)),
+        BindOnce(&RejectPromiseOnAbort<IDLString>, WrapPersistent(resolver),
                  WrapPersistent(composite_signal),
                  WrapPersistent(script_state)));
     remoteExecute(trimmed_input, trimmed_context, std::move(pending_remote));

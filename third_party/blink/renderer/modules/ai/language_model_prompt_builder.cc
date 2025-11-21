@@ -444,6 +444,33 @@ void LanguageModelPromptBuilder::ProcessEntry(PendingEntry* pending_entry) {
           return;
       }
     }
+    case V8LanguageModelMessageType::Enum::kToolCall:
+      if (!content_value->IsLanguageModelToolCall()) {
+        Reject(DOMException::Create(
+            "The value must be a LanguageModelToolCall for type:'tool-call'",
+            DOMException::GetErrorName(DOMExceptionCode::kSyntaxError)));
+        return;
+      }
+      // TODO(crbug.com/422803232): Implement tool call handling.
+      Reject(DOMException::Create(
+          "Tool calls are not yet implemented",
+          DOMException::GetErrorName(DOMExceptionCode::kNotSupportedError)));
+      return;
+    case V8LanguageModelMessageType::Enum::kToolResponse:
+      // LanguageModelToolResponse is a union of ToolSuccess and ToolError.
+      if (!content_value->IsLanguageModelToolSuccess() &&
+          !content_value->IsLanguageModelToolError()) {
+        Reject(DOMException::Create(
+            "The value must be a LanguageModelToolSuccess or "
+            "LanguageModelToolError for type:'tool-response'",
+            DOMException::GetErrorName(DOMExceptionCode::kSyntaxError)));
+        return;
+      }
+      // TODO(crbug.com/422803232): Implement tool response handling.
+      Reject(DOMException::Create(
+          "Tool responses are not yet implemented",
+          DOMException::GetErrorName(DOMExceptionCode::kNotSupportedError)));
+      return;
   }
 }
 
