@@ -372,6 +372,16 @@
       <message name="IDS_LEARN_MORE" desc="Learn more text">
         Learn more
       </message>
+      <if expr="use_titlecase">
+        <message name="IDS_LEARN_MORE_MAYBE_TITLE_CASE" desc="Learn more text, displayed as a link. This is title-cased.">
+          Learn More
+        </message>
+      </if>
+      <if expr="not use_titlecase">
+        <message name="IDS_LEARN_MORE_MAYBE_TITLE_CASE" desc="Learn more text, displayed as a link.">
+          Learn more
+        </message>
+      </if>
       <message name="IDS_OK" desc="Used for OK on buttons">
         OK
       </message>

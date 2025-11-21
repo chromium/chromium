@@ -147,9 +147,8 @@ int GetSyncErrorButtonStringId(syncer::SyncService::UserActionableError error,
       return support_title_case ? IDS_SYNC_RELOGIN_BUTTON_MAYBE_TITLE_CASE
                                 : IDS_SYNC_RELOGIN_BUTTON;
     case syncer::SyncService::UserActionableError::kBookmarksLimitExceeded:
-      // TODO(crbug.com/452968646): Consider title casing the "Learn more"
-      // button label.
-      return IDS_LEARN_MORE;
+      return support_title_case ? IDS_LEARN_MORE_MAYBE_TITLE_CASE
+                                : IDS_LEARN_MORE;
   }
 }
 
