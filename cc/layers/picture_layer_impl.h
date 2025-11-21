@@ -418,6 +418,10 @@ class CC_EXPORT PictureLayerImpl
       AppendQuadsData* append_quads_data,
       viz::SharedQuadState* shared_quad_state,
       const Occlusion& scaled_occlusion) override;
+  TilingSetCoverageIterator<PictureLayerTiling> Cover(
+      const gfx::Rect& coverage_rect,
+      float coverage_scale,
+      float ideal_contents_scale);
 };
 
 }  // namespace cc

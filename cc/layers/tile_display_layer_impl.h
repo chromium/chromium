@@ -20,6 +20,7 @@
 #include "cc/tiles/tile_index.h"
 #include "cc/tiles/tile_priority.h"
 #include "cc/tiles/tiling_coverage_iterator.h"
+#include "cc/tiles/tiling_set_coverage_iterator.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
@@ -217,6 +218,9 @@ class CC_EXPORT TileDisplayLayerImpl : public TileBasedLayerImpl {
       AppendQuadsData* append_quads_data,
       viz::SharedQuadState* shared_quad_state,
       const Occlusion& scaled_occlusion) override;
+  TilingSetCoverageIterator<Tiling> Cover(const gfx::Rect& coverage_rect,
+                                          float coverage_scale,
+                                          float ideal_contents_scale);
 
   bool is_directly_composited_image_ = false;
   bool nearest_neighbor_ = false;

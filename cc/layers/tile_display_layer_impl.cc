@@ -16,7 +16,6 @@
 #include "cc/base/math_util.h"
 #include "cc/debug/debug_colors.h"
 #include "cc/layers/append_quads_data.h"
-#include "cc/tiles/tiling_set_coverage_iterator.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/quads/debug_border_draw_quad.h"
@@ -213,9 +212,8 @@ void TileDisplayLayerImpl::AppendQuadsSpecialization(
 
   // Append debug borders for the quads in this layer.
   if (ShowDebugBorders(DebugBorderType::LAYER)) {
-    for (auto iter = TilingSetCoverageIterator<Tiling>(
-             tilings_, shared_quad_state->visible_quad_layer_rect,
-             max_contents_scale, ideal_scale_key);
+    for (auto iter = Cover(shared_quad_state->visible_quad_layer_rect,
+                           max_contents_scale, ideal_scale_key);
          iter; ++iter) {
       SkColor4f color;
       float width;
@@ -262,9 +260,8 @@ void TileDisplayLayerImpl::AppendQuadsSpecialization(
   }
 
   // Append quads for the tiles in this layer.
-  for (auto iter = TilingSetCoverageIterator<Tiling>(
-           tilings_, shared_quad_state->visible_quad_layer_rect,
-           max_contents_scale, ideal_scale_key);
+  for (auto iter = Cover(shared_quad_state->visible_quad_layer_rect,
+                         max_contents_scale, ideal_scale_key);
        iter; ++iter) {
     const gfx::Rect geometry_rect = iter.geometry_rect();
     if (!scaled_recorded_bounds.Intersects(geometry_rect)) {
@@ -436,6 +433,14 @@ void TileDisplayLayerImpl::AppendQuadsForResourcelessSoftwareDraw(
   // and its handling is thus specific to the renderer-side PictureLayerImpl. It
   // should never be propagated to the Viz side.
   NOTREACHED();
+}
+
+TilingSetCoverageIterator<TileDisplayLayerImpl::Tiling>
+TileDisplayLayerImpl::Cover(const gfx::Rect& coverage_rect,
+                            float coverage_scale,
+                            float ideal_contents_scale) {
+  return TilingSetCoverageIterator<Tiling>(
+      tilings_, coverage_rect, coverage_scale, ideal_contents_scale);
 }
 
 }  // namespace cc

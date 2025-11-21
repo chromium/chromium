@@ -289,9 +289,8 @@ void PictureLayerImpl::AppendQuadsSpecialization(
   debug_border_rect.Offset(quad_offset);
 
   if (ShowDebugBorders(DebugBorderType::LAYER)) {
-    for (auto iter =
-             tilings_->Cover(shared_quad_state->visible_quad_layer_rect,
-                             max_contents_scale, ideal_contents_scale_key());
+    for (auto iter = Cover(shared_quad_state->visible_quad_layer_rect,
+                           max_contents_scale, ideal_contents_scale_key());
          iter; ++iter) {
       SkColor4f color;
       float width;
@@ -384,9 +383,8 @@ void PictureLayerImpl::AppendQuadsSpecialization(
   produced_tile_last_append_quads_ = false;
   gfx::Rect scaled_recorded_bounds = gfx::ScaleToEnclosingRect(
       raster_source_->recorded_bounds(), max_contents_scale);
-  for (auto iter =
-           tilings_->Cover(shared_quad_state->visible_quad_layer_rect,
-                           max_contents_scale, ideal_contents_scale_key());
+  for (auto iter = Cover(shared_quad_state->visible_quad_layer_rect,
+                         max_contents_scale, ideal_contents_scale_key());
        iter; ++iter) {
     gfx::Rect geometry_rect = iter.geometry_rect();
     if (!scaled_recorded_bounds.Intersects(geometry_rect)) {
@@ -2251,6 +2249,13 @@ float PictureLayerImpl::GetMaximumContentsScaleForUseInAppendQuads() {
   // the size of the layer. In that case, use scale 1 for more stable
   // to-screen-space mapping.
   return tilings_->num_tilings() ? MaximumTilingContentsScale() : 1.f;
+}
+
+TilingSetCoverageIterator<PictureLayerTiling> PictureLayerImpl::Cover(
+    const gfx::Rect& coverage_rect,
+    float coverage_scale,
+    float ideal_contents_scale) {
+  return tilings_->Cover(coverage_rect, coverage_scale, ideal_contents_scale);
 }
 
 }  // namespace cc
