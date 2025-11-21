@@ -2708,7 +2708,10 @@ StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
     const MatchResult& match_result) {
   Element& element = state.GetElement();
 
-  MatchedPropertiesCache::Key key(match_result);
+  MatchedPropertiesCache::Key key(
+      match_result, state.IsForHighlight()
+                        ? state.OriginatingElementStyle()->InheritedVariables()
+                        : state.ParentStyle()->InheritedVariables());
 
   bool can_use_cache = match_result.IsCacheable();
   // NOTE: Do not add anything here without also adding it to

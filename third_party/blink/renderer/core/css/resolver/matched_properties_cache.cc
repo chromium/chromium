@@ -88,9 +88,12 @@ void CachedMatchedProperties::Clear() {
 
 MatchedPropertiesCache::MatchedPropertiesCache() = default;
 
-MatchedPropertiesCache::Key::Key(const MatchResult& result)
+MatchedPropertiesCache::Key::Key(
+    const MatchResult& result,
+    const StyleInheritedVariables& inherited_variables)
     : Key(result,
-          result.IsCacheable() ? ComputeMatchedPropertiesHash(result)
+          result.IsCacheable() ? HashInts(ComputeMatchedPropertiesHash(result),
+                                          inherited_variables.GetHash())
                                : HashTraits<unsigned>::EmptyValue()) {}
 
 MatchedPropertiesCache::Key::Key(const MatchResult& result, unsigned hash)

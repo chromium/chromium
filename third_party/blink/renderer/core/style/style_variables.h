@@ -412,6 +412,8 @@ class CORE_EXPORT StyleVariables {
   bool IsEmpty() const;
   void CollectNames(HashSet<AtomicString>&) const;
 
+  unsigned GetHash() const { return HashInts(data_hash_, values_hash_); }
+
  private:
   // mutable so that operator== can deduplicate them.
   mutable Member<HashTrieNode<CSSVariableData>> data_root_;
