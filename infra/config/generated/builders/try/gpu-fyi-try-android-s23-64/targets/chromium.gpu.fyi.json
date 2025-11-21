@@ -190,7 +190,8 @@
           "--enforce-browser-version",
           "--jobs=1",
           "--compatibility-mode=dont-require-rooted-device",
-          "--initial-find-device-attempts=3"
+          "--initial-find-device-attempts=3",
+          "--do-not-store-tombstones"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -236,7 +237,8 @@
           "${buildername}",
           "--jobs=1",
           "--compatibility-mode=dont-require-rooted-device",
-          "--initial-find-device-attempts=3"
+          "--initial-find-device-attempts=3",
+          "--do-not-store-tombstones"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -283,7 +285,8 @@
           "--enforce-browser-version",
           "--jobs=1",
           "--compatibility-mode=dont-require-rooted-device",
-          "--initial-find-device-attempts=3"
+          "--initial-find-device-attempts=3",
+          "--do-not-store-tombstones"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -325,7 +328,8 @@
           "--enforce-browser-version",
           "--jobs=1",
           "--compatibility-mode=dont-require-rooted-device",
-          "--initial-find-device-attempts=3"
+          "--initial-find-device-attempts=3",
+          "--do-not-store-tombstones"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -371,7 +375,8 @@
           "0",
           "--jobs=1",
           "--compatibility-mode=dont-require-rooted-device",
-          "--initial-find-device-attempts=3"
+          "--initial-find-device-attempts=3",
+          "--do-not-store-tombstones"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -417,7 +422,8 @@
           "${buildername}",
           "--jobs=1",
           "--compatibility-mode=dont-require-rooted-device",
-          "--initial-find-device-attempts=3"
+          "--initial-find-device-attempts=3",
+          "--do-not-store-tombstones"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -465,7 +471,8 @@
           "--dont-restore-color-profile-after-test",
           "--jobs=1",
           "--compatibility-mode=dont-require-rooted-device",
-          "--initial-find-device-attempts=3"
+          "--initial-find-device-attempts=3",
+          "--do-not-store-tombstones"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -507,7 +514,8 @@
           "--enforce-browser-version",
           "--jobs=1",
           "--compatibility-mode=dont-require-rooted-device",
-          "--initial-find-device-attempts=3"
+          "--initial-find-device-attempts=3",
+          "--do-not-store-tombstones"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -550,7 +558,8 @@
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl1_conformance_android_runtimes.json",
           "--jobs=1",
           "--compatibility-mode=dont-require-rooted-device",
-          "--initial-find-device-attempts=3"
+          "--initial-find-device-attempts=3",
+          "--do-not-store-tombstones"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"

@@ -801,6 +801,12 @@
       },
     },
   },
+  'no_tombstones': {
+    'fail_if_unused': False,
+    'args': [
+      '--do-not-store-tombstones',
+    ],
+  },
   'non-gce': {
     'swarming': {
       'dimensions': {

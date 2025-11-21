@@ -646,35 +646,8 @@ ci.thin_tester(
             "has_native_resultdb_integration",
             "gpu_samsung_s23_stable",
             "limited_capacity_bot",
+            "no_tombstones",
         ],
-        per_test_modifications = {
-            # Work around failure to clear tombstones on non-rooted devices.
-            "angle_unittests": targets.mixin(
-                args = [
-                    "--do-not-store-tombstones",
-                ],
-            ),
-            "gl_tests_passthrough": targets.mixin(
-                args = [
-                    "--do-not-store-tombstones",
-                ],
-            ),
-            "gl_tests_validating": targets.mixin(
-                args = [
-                    "--do-not-store-tombstones",
-                ],
-            ),
-            "gl_unittests": targets.mixin(
-                args = [
-                    "--do-not-store-tombstones",
-                ],
-            ),
-            "gpu_unittests": targets.mixin(
-                args = [
-                    "--do-not-store-tombstones",
-                ],
-            ),
-        },
     ),
     targets_settings = targets.settings(
         browser_config = targets.browser_config.ANDROID_CHROMIUM,

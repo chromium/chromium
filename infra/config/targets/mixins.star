@@ -2249,6 +2249,16 @@ targets.mixin(
     ),
 )
 
+# Work around failure to clear tombstones on non-rooted devices. This mixin is
+# only valid for builders that only run GTest- and telemetry-based suites.
+targets.mixin(
+    name = "no_tombstones",
+    generate_pyl_entry = targets.IGNORE_UNUSED,
+    args = [
+        "--do-not-store-tombstones",
+    ],
+)
+
 targets.mixin(
     name = "nougat",
     generate_pyl_entry = False,
