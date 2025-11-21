@@ -580,31 +580,14 @@ void FileSystemAccessManagerImpl::ChooseEntries(
     return;
   }
 
-  // Renderer process should already check for user activation before sending
-  // IPC, but just to be sure double check here as well. This is not treated
-  // as a BadMessage because it is possible for the transient user activation
-  // to expire between the renderer side check and this check.
-  ContentBrowserClient* content_browser_client = GetContentClient()->browser();
-  WebContents* web_contents = WebContents::FromRenderFrameHost(rfh);
-  if (!rfh->HasTransientUserActivation() &&
-      content_browser_client
-          ->IsTransientActivationRequiredForShowFileOrDirectoryPicker(
-              web_contents)) {
-    std::move(callback).Run(
-        file_system_access_error::FromStatus(
-            FileSystemAccessStatus::kPermissionDenied,
-            "User activation is required to show a file picker."),
-        std::vector<blink::mojom::FileSystemAccessEntryPtr>());
-    return;
-  }
-
   // Consume user activation to address this issue: crbug.com/40059071
   // TODO(crbug.com/411125804): Consider moving this user activation check to
   // the renderer process or informing the renderer that it lost user
   // activation.
-  if (content_browser_client
+  if (GetContentClient()
+          ->browser()
           ->IsTransientActivationRequiredForShowFileOrDirectoryPicker(
-              web_contents)) {
+              WebContents::FromRenderFrameHost(rfh))) {
     FrameTreeNode::From(rfh)->UpdateUserActivationState(
         blink::mojom::UserActivationUpdateType::kConsumeTransientActivation,
         blink::mojom::UserActivationNotificationType::kNone);
