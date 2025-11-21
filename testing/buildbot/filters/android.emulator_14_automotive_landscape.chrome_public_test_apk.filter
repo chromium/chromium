@@ -29,3 +29,15 @@
 -org.chromium.chrome.browser.privacy_sandbox.TopicsFragmentTest.testPopulateTopicsList
 -org.chromium.chrome.browser.privacy_sandbox.TopicsFragmentTest.testTurnTopicsOnWhenTopicsListPopulated
 -org.chromium.chrome.browser.privacy_sandbox.TopicsFragmentTest.testUnblockTopicsAdTopicsContentParity
+
+# crbug.com/462792872
+-org.chromium.chrome.browser.ui.android.webid.AccountSelectionButtonModeIntegrationTest.*
+
+# crbug.com/462793241
+-org.chromium.chrome.browser.site_settings.SiteSettingsTest.shouldShowWildcardsInExceptionsOnThirdPartyCookiesPage
+-org.chromium.chrome.browser.site_settings.SiteSettingsTest.testBlockExceptionGroupStorageAccess
+-org.chromium.chrome.browser.site_settings.SiteSettingsTest.testExpectedExceptionsStorageAccess
+-org.chromium.chrome.browser.site_settings.SiteSettingsTest.testOnlyExpectedExceptionsThirdPartyCookies
+-org.chromium.chrome.browser.site_settings.SiteSettingsTest.testResetExceptionGroupStorageAccess
+-org.chromium.chrome.browser.site_settings.SiteSettingsTest.testSetAllowLocationEnabled
+-org.chromium.chrome.browser.site_settings.SiteSettingsTest.testSetAllowLocationEnabledWithToggle
