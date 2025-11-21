@@ -16,7 +16,6 @@
 #include "third_party/webrtc/p2p/base/ice_transport_internal.h"
 #include "third_party/webrtc/p2p/base/p2p_transport_channel.h"
 #include "third_party/webrtc/p2p/base/packet_transport_internal.h"
-#include "third_party/webrtc/rtc_base/third_party/sigslot/sigslot.h"
 
 namespace remoting::protocol {
 

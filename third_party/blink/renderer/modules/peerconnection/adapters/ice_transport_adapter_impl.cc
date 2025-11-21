@@ -106,8 +106,13 @@ void IceTransportAdapterImpl::SetupIceTransportChannel() {
           that->OnStateChanged(transport);
         }
       });
-  ice_transport_channel()->SignalNetworkRouteChanged.connect(
-      this, &IceTransportAdapterImpl::OnNetworkRouteChanged);
+  ice_transport_channel()->SubscribeNetworkRouteChanged(
+      this, [that = weak_factory_.GetWeakPtr()](
+                std::optional<webrtc::NetworkRoute> route) {
+        if (that) {
+          that->OnNetworkRouteChanged(route);
+        }
+      });
   ice_transport_channel()->SubscribeRoleConflict(
       [that = weak_factory_.GetWeakPtr()](
           webrtc::IceTransportInternal* transport) {

@@ -53,8 +53,7 @@ class ConstantScopedFakeClock : public webrtc::ClockInterface {
 
 }  // namespace
 
-class ChromiumSocketFactoryTest : public testing::Test,
-                                  public sigslot::has_slots<> {
+class ChromiumSocketFactoryTest : public testing::Test {
  public:
   void SetUp() override {
     socket_factory_ = std::make_unique<ChromiumPacketSocketFactory>(nullptr);

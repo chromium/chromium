@@ -16,8 +16,7 @@ namespace blink {
 
 // IceTransportAdapter implementation backed by the WebRTC PortAllocator /
 // P2PTransportChannel.
-class IceTransportAdapterImpl final : public IceTransportAdapter,
-                                      public sigslot::has_slots<> {
+class IceTransportAdapterImpl final : public IceTransportAdapter {
  public:
   // Create an IceTransportAdapter for an existing |ice_transport_channel|
   // object.
