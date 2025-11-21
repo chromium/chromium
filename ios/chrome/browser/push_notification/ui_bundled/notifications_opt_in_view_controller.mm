@@ -33,8 +33,6 @@ struct CellConfig {
 CGFloat const kTableViewCornerRadius = 10;
 // Table view separator inset.
 CGFloat const kTableViewSeparatorInset = 16.0;
-// Table view separator inset to use to hide the separator.
-CGFloat const kTableViewSeparatorInsetHide = 10000;
 // Space above the title.
 CGFloat const kSpaceAboveTitle = 20.0;
 // Accessibility identifier.
@@ -227,6 +225,8 @@ bool TooNarrowForBanner(UIView* view) {
   UITableView* tableView =
       [[UITableView alloc] initWithFrame:CGRectZero
                                    style:UITableViewStylePlain];
+  tableView.tableFooterView =
+      [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, CGFLOAT_MIN)];
   tableView.layer.cornerRadius = kTableViewCornerRadius;
   tableView.estimatedRowHeight = UITableViewAutomaticDimension;
   tableView.scrollEnabled = NO;
@@ -234,7 +234,8 @@ bool TooNarrowForBanner(UIView* view) {
   tableView.delegate = self;
   tableView.userInteractionEnabled = YES;
   tableView.translatesAutoresizingMaskIntoConstraints = NO;
-  tableView.separatorInset = UIEdgeInsetsZero;
+  tableView.separatorInset =
+      UIEdgeInsetsMake(0, kTableViewSeparatorInset, 0, 0);
   _tableViewHeightConstraint =
       [tableView.heightAnchor constraintEqualToConstant:0];
   _tableViewHeightConstraint.active = YES;
@@ -295,13 +296,6 @@ bool TooNarrowForBanner(UIView* view) {
   cell.contentConfiguration = configuration;
   cell.accessibilityIdentifier = config.accessibility_id;
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
-
-  // Make the separator invisible on the last row.
-  BOOL lastRow =
-      indexPath.row == [tableView numberOfRowsInSection:indexPath.section] - 1;
-  CGFloat separatorInset =
-      lastRow ? kTableViewSeparatorInsetHide : kTableViewSeparatorInset;
-  cell.separatorInset = UIEdgeInsetsMake(0.f, separatorInset, 0.f, 0.f);
 
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
   cell.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];

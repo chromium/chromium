@@ -76,14 +76,6 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
   return _tableView.frame.size.width;
 }
 
-- (UIEdgeInsets)separatorInsetForTableViewWidth:(CGFloat)tableViewWidth
-                                    atIndexPath:(NSIndexPath*)indexPath {
-  // Make separator invisible on last cell
-  CGFloat separatorLeftMargin =
-      [self isLastRow:indexPath] ? tableViewWidth : kTableViewHorizontalSpacing;
-  return UIEdgeInsetsMake(0.f, separatorLeftMargin, 0.f, 0.f);
-}
-
 - (UITableViewCellAccessoryType)accessoryType:(NSIndexPath*)indexPath {
   return ([self selectedRow] == indexPath.row)
              ? UITableViewCellAccessoryCheckmark
@@ -115,6 +107,11 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
 - (UITableView*)createTableView {
   _tableView = [[UITableView alloc] initWithFrame:CGRectZero
                                             style:UITableViewStylePlain];
+
+  _tableView.separatorInset =
+      UIEdgeInsetsMake(0, kTableViewHorizontalSpacing, 0, 0);
+  _tableView.tableFooterView =
+      [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, CGFLOAT_MIN)];
 
   _tableView.layer.cornerRadius = kTableViewCornerRadius;
   _tableView.estimatedRowHeight = kTableViewEstimatedRowHeight;

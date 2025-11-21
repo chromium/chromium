@@ -453,8 +453,6 @@ void LogSuggestionAcceptedMetrics(BOOL is_backup_suggestion,
   cell.accessibilityIdentifier = configuration.title;
 
   cell.accessibilityValue = [self cellAccessibilityValueAtIndexPath:indexPath];
-  cell.separatorInset = [self separatorInsetForTableViewWidth:tableViewWidth
-                                                  atIndexPath:indexPath];
   cell.accessoryType = [self accessoryType:indexPath];
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
 

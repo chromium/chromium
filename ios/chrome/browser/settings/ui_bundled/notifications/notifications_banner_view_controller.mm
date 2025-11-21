@@ -34,8 +34,6 @@ enum SectionIdentifier {
 };
 // Table view separator inset.
 CGFloat const kTableViewSeparatorInset = 16.0;
-// Table view separator inset to use to hide the separator.
-CGFloat const kTableViewSeparatorInsetHide = 10000;
 // Title's horizontal margin.
 CGFloat const kTitleHorizontalMargin = 25.0;
 // Constant for the content's width anchor.
@@ -301,13 +299,16 @@ bool TooNarrowForBanner(UIView* view) {
       [[UITableView alloc] initWithFrame:CGRectZero
                                    style:UITableViewStylePlain];
   tableView.layer.cornerRadius = kTableViewCornerRadius;
+  tableView.tableFooterView =
+      [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, CGFLOAT_MIN)];
   tableView.estimatedRowHeight = UITableViewAutomaticDimension;
   tableView.scrollEnabled = NO;
   tableView.showsVerticalScrollIndicator = NO;
   tableView.delegate = self;
   tableView.userInteractionEnabled = YES;
   tableView.translatesAutoresizingMaskIntoConstraints = NO;
-  tableView.separatorInset = UIEdgeInsetsZero;
+  tableView.separatorInset =
+      UIEdgeInsetsMake(0, kTableViewSeparatorInset, 0, 0);
   _tableViewHeightConstraint =
       [tableView.heightAnchor constraintEqualToConstant:0];
   _tableViewHeightConstraint.active = YES;
@@ -349,12 +350,6 @@ bool TooNarrowForBanner(UIView* view) {
   } else {
     cell = [self detailCellForTableView:tableView item:item];
   }
-  // Make the separator invisible on the last row.
-  BOOL lastRow =
-      indexPath.row == [tableView numberOfRowsInSection:indexPath.section] - 1;
-  CGFloat separatorInset =
-      lastRow ? kTableViewSeparatorInsetHide : kTableViewSeparatorInset;
-  cell.separatorInset = UIEdgeInsetsMake(0.f, separatorInset, 0.f, 0.f);
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
   return cell;

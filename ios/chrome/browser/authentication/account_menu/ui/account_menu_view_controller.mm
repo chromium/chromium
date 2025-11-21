@@ -46,11 +46,8 @@ constexpr CGFloat kErrorSymbolSize = 22.;
 // The height of the footer of sections, except for last section.
 constexpr CGFloat kFooterHeight = 16.;
 
-// The left separator inset between two secondary accounts.
-constexpr CGFloat kSecondaryAccountsLeftSeparatorInset = 16.;
-
-// The left separator inset between the last secondary account and Add Account.
-constexpr CGFloat kLastSecondaryAccountLeftSeparatorInset = 60.;
+// The left inset for the separators.
+constexpr CGFloat kSeparatorInset = 60.;
 
 // Per Apple guidelines, touch targets should be at least 44x44.
 constexpr CGFloat kMinimumTouchTargetSize = 44.0;
@@ -130,6 +127,9 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
       [[UITableView alloc] initWithFrame:CGRectZero
                                    style:UITableViewStyleInsetGrouped];
   UITableView* tableView = self.tableView;
+  tableView.separatorInset = UIEdgeInsetsMake(0., /*left=*/
+                                              kSeparatorInset, 0., 0.);
+
   tableView.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:tableView];
   [NSLayoutConstraint activateConstraints:@[
@@ -439,15 +439,6 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
     // user scrolls a lot, and scroll back.
     [self setActivityIndicator:cell];
   }
-  BOOL lastSecondaryIdentity =
-      (indexPath.row == [_accountMenuDataSource tableView:self.tableView
-                                    numberOfRowsInSection:indexPath.section] -
-                            2);
-  cell.separatorInset = UIEdgeInsetsMake(
-      0., /*left=*/
-      (lastSecondaryIdentity) ? kSecondaryAccountsLeftSeparatorInset
-                              : kLastSecondaryAccountLeftSeparatorInset,
-      0., 0.);
   return cell;
 }
 

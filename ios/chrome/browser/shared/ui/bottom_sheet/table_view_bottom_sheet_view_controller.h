@@ -27,10 +27,6 @@
 // Returns the width of the table view.
 - (CGFloat)tableViewWidth;
 
-// Returns the cell's separator inset for the provided index path.
-- (UIEdgeInsets)separatorInsetForTableViewWidth:(CGFloat)tableViewWidth
-                                    atIndexPath:(NSIndexPath*)indexPath;
-
 // Returns the cell's accessory type for the provided index path.
 - (UITableViewCellAccessoryType)accessoryType:(NSIndexPath*)indexPath;
 

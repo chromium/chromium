@@ -59,6 +59,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   [self.tableViewModel
       addSectionWithIdentifier:SectionIdentifierDataTypesHeader];
+  self.tableView.separatorInset =
+      UIEdgeInsetsMake(0.f, kTableViewSeparatorInset, 0.f, 0.f);
   TableViewTextHeaderFooterItem* headerItem =
       [[TableViewTextHeaderFooterItem alloc] initWithType:ItemTypeHeader];
   headerItem.subtitle = l10n_util::GetNSString(
@@ -82,17 +84,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
 
   return [super tableView:tableView heightForFooterInSection:section];
-}
-
-#pragma mark - UITableViewDataSource
-
-- (UITableViewCell*)tableView:(UITableView*)tableView
-        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  UITableViewCell* cell = [super tableView:tableView
-                     cellForRowAtIndexPath:indexPath];
-  cell.separatorInset =
-      UIEdgeInsetsMake(0.f, kTableViewSeparatorInset, 0.f, 0.f);
-  return cell;
 }
 
 #pragma mark - Private

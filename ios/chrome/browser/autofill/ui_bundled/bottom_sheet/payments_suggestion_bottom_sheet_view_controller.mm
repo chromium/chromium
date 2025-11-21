@@ -416,8 +416,6 @@ CGFloat const kTitleLogoHeight = 32;
       [NSString stringWithFormat:@"%@ %@", configuration.title,
                                  [self descriptionAtRow:indexPath.row]];
 
-  cell.separatorInset = [self separatorInsetForTableViewWidth:tableViewWidth
-                                                  atIndexPath:indexPath];
   cell.accessoryType = [self accessoryType:indexPath];
   return cell;
 }

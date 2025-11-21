@@ -103,6 +103,9 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   self.title = l10n_util::GetNSString(IDS_IOS_WHATS_NEW_TITLE);
   self.tableView.accessibilityIdentifier =
       [[self class] accessibilityIdentifier];
+  self.tableView.separatorInset = UIEdgeInsetsMake(
+      0, kTableViewHorizontalSpacing + kTableViewImagePadding + kCellIconWidth,
+      0, 0);
   self.tableView.estimatedRowHeight = kEstimatedTableViewRowHeight;
   self.tableView.rowHeight = UITableViewAutomaticDimension;
   self.tableView.estimatedSectionHeaderHeight = kEstimatedSectionHeaderHeight;
@@ -110,24 +113,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   self.tableView.sectionFooterHeight = kEstimatedsectionFooterHeight;
 }
 
-#pragma mark - UITableViewactionHandler
-
-- (UITableViewCell*)tableView:(UITableView*)tableView
-        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  UITableViewCell* cell = [super tableView:tableView
-                     cellForRowAtIndexPath:indexPath];
-  TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-
-  if (item.type == ItemTypeHeader) {
-    cell.separatorInset = UIEdgeInsetsMake(0.0f, 0.0f, 0.0f, CGFLOAT_MAX);
-  } else {
-    cell.separatorInset = UIEdgeInsetsMake(
-        0,
-        kTableViewHorizontalSpacing + kTableViewImagePadding + kCellIconWidth,
-        0, 0);
-  }
-  return cell;
-}
+#pragma mark - UITableViewDelegate
 
 - (NSIndexPath*)tableView:(UITableView*)tableView
     willSelectRowAtIndexPath:(NSIndexPath*)indexPath {

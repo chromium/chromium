@@ -306,8 +306,7 @@ CGFloat const kChromeLogoHeight = 22;
   cell.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
   cell.userInteractionEnabled = NO;
   cell.accessibilityIdentifier = _cardNameAndLastFourDigits;
-  cell.separatorInset = [self separatorInsetForTableViewWidth:tableViewWidth
-                                                  atIndexPath:indexPath];
+
   return cell;
 }
 

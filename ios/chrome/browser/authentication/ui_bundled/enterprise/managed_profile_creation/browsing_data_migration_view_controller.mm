@@ -23,8 +23,8 @@
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
-CGFloat constexpr kTableViewSeparatorInsetHide = 10000;
 CGFloat constexpr kSymbolImagePointSize = 17.;
+CGFloat constexpr kSeparatorInset = 60;
 
 // Section identifiers in the browsing data page table view.
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
@@ -61,6 +61,8 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 
 - (void)viewDidLoad {
   [super viewDidLoad];
+
+  self.tableView.separatorInset = UIEdgeInsetsMake(0, kSeparatorInset, 0, 0);
 
   self.view.accessibilityIdentifier =
       kBrowsingDataManagementScreenAccessibilityIdentifier;
@@ -152,8 +154,6 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   cell.backgroundColor = selected
                              ? [UIColor colorNamed:kBlueHaloColor]
                              : [UIColor colorNamed:kPrimaryBackgroundColor];
-  cell.separatorInset =
-      UIEdgeInsetsMake(0.f, kTableViewSeparatorInsetHide, 0.f, 0.f);
   cell.accessibilityIdentifier = accessibilityIdentifier;
 
   return cell;

@@ -235,12 +235,11 @@ constexpr CGFloat kTableViewHorizontalPadding = 6.0f;
                                    style:UITableViewStylePlain];
   tableView.translatesAutoresizingMaskIntoConstraints = NO;
   tableView.delegate = self;
-  tableView.separatorInsetReference = UITableViewSeparatorInsetFromCellEdges;
   tableView.showsVerticalScrollIndicator = NO;
   tableView.scrollEnabled = NO;
+  tableView.tableFooterView =
+      [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, CGFLOAT_MIN)];
 
-  // Remove separators for all but the last cell.
-  tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
   tableView.accessibilityIdentifier =
       @"WelcomeBackTableViewAccessibilityIdentifier";
 
@@ -283,14 +282,6 @@ constexpr CGFloat kTableViewHorizontalPadding = 6.0f;
   BestFeaturesCell* cell = DequeueTableViewCell<BestFeaturesCell>(tableView);
   [cell setBestFeaturesItem:itemIdentifier];
   cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-
-  // Removes the last cell separator.
-  NSInteger lastSectionIndex = [tableView numberOfSections] - 1;
-  NSInteger lastRowIndex =
-      [tableView numberOfRowsInSection:lastSectionIndex] - 1;
-  if (indexPath.section == lastSectionIndex && indexPath.row == lastRowIndex) {
-    cell.separatorInset = UIEdgeInsetsMake(0, 0, 0, CGFLOAT_MAX);
-  }
 
   return cell;
 }
