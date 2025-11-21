@@ -4,7 +4,9 @@
 
 #include "third_party/blink/renderer/core/script_tools/model_context.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_annotations_dict.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 

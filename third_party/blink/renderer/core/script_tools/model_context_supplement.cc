@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/script_tools/model_context_supplement.h"
 
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
 
 namespace blink {

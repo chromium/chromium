@@ -13,8 +13,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_tool_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_tool_registration_params.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 
 namespace blink {
 
