@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_ACTION_VIEW_MODEL_H_
 #define CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_ACTION_VIEW_MODEL_H_
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/commands/command_service.h"
@@ -74,7 +75,8 @@ class ExtensionActionViewModel
 
   // ToolbarActionViewModel:
   std::string GetId() const override;
-  void SetUpdateObserver(base::RepeatingClosure observer) override;
+  base::CallbackListSubscription RegisterUpdateObserver(
+      base::RepeatingClosure observer) override;
   ui::ImageModel GetIcon(content::WebContents* web_contents,
                          const gfx::Size& size) override;
   std::u16string GetActionName() const override;
@@ -156,8 +158,8 @@ class ExtensionActionViewModel
   // Returns the current web contents.
   content::WebContents* GetCurrentWebContents() const;
 
-  // Notifies the observer that the underlying data has been updated.
-  void NotifyObserver();
+  // Notifies observers that the underlying data has been updated.
+  void NotifyObservers();
 
   // extensions::ExtensionActionIconFactory::Observer:
   void OnIconUpdated() override;
@@ -202,8 +204,8 @@ class ExtensionActionViewModel
   // The context menu model for the extension.
   std::unique_ptr<extensions::ExtensionContextMenuModel> context_menu_model_;
 
-  // Our observer.
-  base::RepeatingClosure observer_;
+  // Our observers.
+  base::RepeatingClosureList observers_;
 
   // The delegate to handle platform-specific implementations.
   std::unique_ptr<ExtensionActionPlatformDelegate> platform_delegate_;

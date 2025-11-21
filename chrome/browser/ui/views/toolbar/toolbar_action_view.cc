@@ -63,7 +63,7 @@ ToolbarActionView::ToolbarActionView(ToolbarActionViewModel* view_model,
   SetShowInkDropWhenHotTracked(true);
   SetID(VIEW_ID_BROWSER_ACTION);
   SetProperty(views::kElementIdentifierKey, kToolbarActionViewElementId);
-  view_model_->SetUpdateObserver(base::BindRepeating(
+  model_subscription_ = view_model_->RegisterUpdateObserver(base::BindRepeating(
       &ToolbarActionView::UpdateState, base::Unretained(this)));
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
   set_drag_controller(delegate_);
@@ -86,7 +86,7 @@ ToolbarActionView::ToolbarActionView(ToolbarActionViewModel* view_model,
 
 ToolbarActionView::~ToolbarActionView() {
   set_context_menu_controller(nullptr);
-  view_model_->SetUpdateObserver(base::RepeatingClosure());
+  view_model_->HidePopup();
 }
 
 gfx::Rect ToolbarActionView::GetAnchorBoundsInScreen() const {

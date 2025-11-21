@@ -28,10 +28,10 @@ ExtensionsMenuButton::ExtensionsMenuButton(Browser* browser,
                                       base::Unretained(this)),
                   std::u16string()),
       browser_(browser),
-      model_(model) {
-  model_->SetUpdateObserver(base::BindRepeating(
-      &ExtensionsMenuButton::UpdateState, base::Unretained(this)));
-}
+      model_(model),
+      model_subscription_(model_->RegisterUpdateObserver(
+          base::BindRepeating(&ExtensionsMenuButton::UpdateState,
+                              base::Unretained(this)))) {}
 
 ExtensionsMenuButton::~ExtensionsMenuButton() = default;
 

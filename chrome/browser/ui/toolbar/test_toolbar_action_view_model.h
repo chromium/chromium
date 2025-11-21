@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_TOOLBAR_TEST_TOOLBAR_ACTION_VIEW_MODEL_H_
 #define CHROME_BROWSER_UI_TOOLBAR_TEST_TOOLBAR_ACTION_VIEW_MODEL_H_
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/extension_context_menu_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
@@ -23,7 +24,8 @@ class TestToolbarActionViewModel : public ToolbarActionViewModel {
 
   // ToolbarActionViewModel:
   std::string GetId() const override;
-  void SetUpdateObserver(base::RepeatingClosure observer) override;
+  base::CallbackListSubscription RegisterUpdateObserver(
+      base::RepeatingClosure observer) override;
   ui::ImageModel GetIcon(content::WebContents* web_contents,
                          const gfx::Size& size) override;
   std::u16string GetActionName() const override;
@@ -59,14 +61,14 @@ class TestToolbarActionViewModel : public ToolbarActionViewModel {
   int execute_action_count() const { return execute_action_count_; }
 
  private:
-  // Notifies the observer, if one exists.
-  void NotifyObserver();
+  // Notifies the observers.
+  void NotifyObservers();
 
   // The id of the controller.
   std::string id_;
 
-  // The observer of the view model, if one exists.
-  base::RepeatingClosure observer_;
+  // The observers of the view model.
+  base::RepeatingClosureList observers_;
 
   // Action name for the controller.
   std::u16string action_name_;

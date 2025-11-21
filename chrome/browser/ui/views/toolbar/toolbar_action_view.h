@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TOOLBAR_TOOLBAR_ACTION_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_TOOLBAR_TOOLBAR_ACTION_VIEW_H_
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/extensions/extension_context_menu_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_hover_card_controller.h"
@@ -148,6 +149,9 @@ class ToolbarActionView : public views::MenuButton,
   // This controller is responsible for showing the context menu for an
   // extension.
   std::unique_ptr<ExtensionContextMenuController> context_menu_controller_;
+
+  // The subscription to model updates.
+  base::CallbackListSubscription model_subscription_;
 
   base::WeakPtrFactory<ToolbarActionView> weak_factory_{this};
 };

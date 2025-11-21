@@ -201,15 +201,9 @@ std::string ExtensionActionViewModel::GetId() const {
   return extension_id_;
 }
 
-void ExtensionActionViewModel::SetUpdateObserver(
+base::CallbackListSubscription ExtensionActionViewModel::RegisterUpdateObserver(
     base::RepeatingClosure observer) {
-  DCHECK(observer.is_null() ^ observer_.is_null());
-  if (observer) {
-    observer_ = std::move(observer);
-  } else {
-    HidePopup();
-    observer_.Reset();
-  }
+  return observers_.Add(observer);
 }
 
 ui::ImageModel ExtensionActionViewModel::GetIcon(
@@ -450,12 +444,12 @@ void ExtensionActionViewModel::UnregisterCommand() {
 
 void ExtensionActionViewModel::DidFinishNavigation(
     content::NavigationHandle* handle) {
-  NotifyObserver();
+  NotifyObservers();
 }
 
 void ExtensionActionViewModel::OnActiveTabChanged(tabs::TabInterface* tab) {
   WebContentsObserver::Observe(GetCurrentWebContents());
-  NotifyObserver();
+  NotifyObservers();
 }
 
 void ExtensionActionViewModel::OnToolbarActionAdded(
@@ -469,7 +463,7 @@ void ExtensionActionViewModel::OnToolbarActionUpdated(
   if (action_id != extension_->id()) {
     return;
   }
-  NotifyObserver();
+  NotifyObservers();
 }
 
 void ExtensionActionViewModel::OnToolbarModelInitialized() {}
@@ -529,15 +523,15 @@ content::WebContents* ExtensionActionViewModel::GetCurrentWebContents() const {
   return tab->GetContents();
 }
 
-void ExtensionActionViewModel::NotifyObserver() {
-  if (!observer_ || !TabListInterface::From(browser_)->GetActiveTab()) {
+void ExtensionActionViewModel::NotifyObservers() {
+  if (!TabListInterface::From(browser_)->GetActiveTab()) {
     return;
   }
-  observer_.Run();
+  observers_.Notify();
 }
 
 void ExtensionActionViewModel::OnIconUpdated() {
-  NotifyObserver();
+  NotifyObservers();
 }
 
 extensions::SitePermissionsHelper::SiteInteraction

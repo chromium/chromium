@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/callback_list.h"
 #include "base/logging.h"
 #include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
@@ -41,11 +42,11 @@ class WebUIBrowserExtensionsContainer::ActionInfo {
              std::unique_ptr<ExtensionActionViewModel> model)
       : extensions_container_(extensions_container),
         browser_(browser),
-        model_(std::move(model)) {
-    model_->SetUpdateObserver(base::BindRepeating(
-        &WebUIBrowserExtensionsContainer::NotifyOfOneAction,
-        base::Unretained(extensions_container_), model_->GetId()));
-  }
+        model_(std::move(model)),
+        model_subscription_(model_->RegisterUpdateObserver(base::BindRepeating(
+            &WebUIBrowserExtensionsContainer::NotifyOfOneAction,
+            base::Unretained(extensions_container_),
+            model_->GetId()))) {}
 
   ui::TrackedElement* GetAnchor() {
     // TODO(webium): Use the proper button once TrackedElement supports
@@ -85,6 +86,7 @@ class WebUIBrowserExtensionsContainer::ActionInfo {
   const raw_ref<WebUIBrowserExtensionsContainer> extensions_container_;
   const raw_ref<Browser> browser_;
   std::unique_ptr<ExtensionActionViewModel> model_;
+  base::CallbackListSubscription model_subscription_;
 };
 
 // This is based on ExtensionContextMenuController.

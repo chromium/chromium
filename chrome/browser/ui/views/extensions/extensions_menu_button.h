@@ -8,6 +8,7 @@
 #include <memory>
 #include <string_view>
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
@@ -44,6 +45,9 @@ class ExtensionsMenuButton : public HoverButton {
 
   // Responsible for executing the extension's actions.
   const raw_ptr<ToolbarActionViewModel, DanglingUntriaged> model_;
+
+  // Subscription to model updates.
+  base::CallbackListSubscription model_subscription_;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */, ExtensionsMenuButton, HoverButton)

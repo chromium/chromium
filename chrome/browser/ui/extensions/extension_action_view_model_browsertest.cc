@@ -1229,25 +1229,6 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewModelFeatureRolloutBrowserTest,
   EXPECT_FALSE(model->IsEnabled(web_contents));
 }
 
-// A fake implementation of ExtensionActionPlatformDelegate that does nothing.
-class FakeExtensionActionPlatformDelegate
-    : public ExtensionActionPlatformDelegate {
- public:
-  void AttachToModel(ExtensionActionViewModel* model) override {}
-  void DetachFromModel() override {}
-  void RegisterCommand() override {}
-  void UnregisterCommand() override {}
-  bool IsShowingPopup() const override { return false; }
-  void HidePopup() override {}
-  gfx::NativeView GetPopupNativeView() override { return gfx::NativeView(); }
-  void TriggerPopup(std::unique_ptr<extensions::ExtensionViewHost> host,
-                    PopupShowAction show_action,
-                    bool by_user,
-                    ShowPopupCallback callback) override {}
-  void ShowContextMenuAsFallback() override {}
-  bool CloseOverflowMenuIfOpen() override { return false; }
-};
-
 // Ensures that the observer is called on navigation.
 IN_PROC_BROWSER_TEST_P(ExtensionActionViewModelFeatureRolloutBrowserTest,
                        ObserverCalledOnNavigation) {
@@ -1256,14 +1237,12 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewModelFeatureRolloutBrowserTest,
       CreateAndAddExtension("extension", extensions::ActionInfo::Type::kPage)
           ->id();
 
-  // Create ExtensionActionViewModel that is not associated with the
-  // lifetime of the view.
-  auto action = ExtensionActionViewModel::Create(
-      id, browser(), std::make_unique<FakeExtensionActionPlatformDelegate>());
-
   // Register an observer.
+  ExtensionActionViewModel* const model = GetViewModelForId(id);
+  ASSERT_TRUE(model);
+
   bool observer_called = false;
-  action->SetUpdateObserver(base::BindRepeating(
+  auto registration = model->RegisterUpdateObserver(base::BindRepeating(
       [](bool* observer_called) { *observer_called = true; },
       &observer_called));
 
@@ -1285,6 +1264,25 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewModelFeatureRolloutBrowserTest,
   EXPECT_TRUE(observer_called);
   observer_called = false;
 }
+
+// A fake implementation of ExtensionActionPlatformDelegate that does nothing.
+class FakeExtensionActionPlatformDelegate
+    : public ExtensionActionPlatformDelegate {
+ public:
+  void AttachToModel(ExtensionActionViewModel* model) override {}
+  void DetachFromModel() override {}
+  void RegisterCommand() override {}
+  void UnregisterCommand() override {}
+  bool IsShowingPopup() const override { return false; }
+  void HidePopup() override {}
+  gfx::NativeView GetPopupNativeView() override { return gfx::NativeView(); }
+  void TriggerPopup(std::unique_ptr<extensions::ExtensionViewHost> host,
+                    PopupShowAction show_action,
+                    bool by_user,
+                    ShowPopupCallback callback) override {}
+  void ShowContextMenuAsFallback() override {}
+  bool CloseOverflowMenuIfOpen() override { return false; }
+};
 
 // Ensures that calling methods for stale extensions does not cause crashes.
 IN_PROC_BROWSER_TEST_P(ExtensionActionViewModelFeatureRolloutBrowserTest,
