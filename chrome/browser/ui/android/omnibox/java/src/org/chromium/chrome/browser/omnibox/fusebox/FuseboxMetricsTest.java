@@ -21,8 +21,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 @RunWith(BaseRobolectricTestRunner.class)
 public class FuseboxMetricsTest {
 
-    private final PropertyModel mPropertyModel =
-            new PropertyModel(NavigationAttachmentsProperties.ALL_KEYS);
+    private final PropertyModel mPropertyModel = new PropertyModel(FuseboxProperties.ALL_KEYS);
 
     @Before
     public void setUp() {
@@ -71,9 +70,9 @@ public class FuseboxMetricsTest {
     @EnableFeatures(ChromeFeatureList.CHROME_ITEM_PICKER_UI)
     public void testNotifyAttachmentsPopupToggled_ShowPopup_AllButtonsVisible() {
 
-        mPropertyModel.set(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_VISIBLE, true);
-        mPropertyModel.set(NavigationAttachmentsProperties.POPUP_CLIPBOARD_BUTTON_VISIBLE, true);
-        mPropertyModel.set(NavigationAttachmentsProperties.POPUP_FILE_BUTTON_VISIBLE, true);
+        mPropertyModel.set(FuseboxProperties.CURRENT_TAB_BUTTON_VISIBLE, true);
+        mPropertyModel.set(FuseboxProperties.POPUP_CLIPBOARD_BUTTON_VISIBLE, true);
+        mPropertyModel.set(FuseboxProperties.POPUP_FILE_BUTTON_VISIBLE, true);
 
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -106,9 +105,9 @@ public class FuseboxMetricsTest {
     @Test
     @DisableFeatures(ChromeFeatureList.CHROME_ITEM_PICKER_UI)
     public void testNotifyAttachmentsPopupToggled_ShowPopup_SomeButtonsHidden() {
-        mPropertyModel.set(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_VISIBLE, false);
-        mPropertyModel.set(NavigationAttachmentsProperties.POPUP_CLIPBOARD_BUTTON_VISIBLE, false);
-        mPropertyModel.set(NavigationAttachmentsProperties.POPUP_FILE_BUTTON_VISIBLE, false);
+        mPropertyModel.set(FuseboxProperties.CURRENT_TAB_BUTTON_VISIBLE, false);
+        mPropertyModel.set(FuseboxProperties.POPUP_CLIPBOARD_BUTTON_VISIBLE, false);
+        mPropertyModel.set(FuseboxProperties.POPUP_FILE_BUTTON_VISIBLE, false);
 
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -165,9 +164,9 @@ public class FuseboxMetricsTest {
     public void testNotifyOmniboxSessionEnded_SessionStarted_Abandon_AttachmentsUsed() {
         FuseboxMetrics.notifyOmniboxSessionStarted();
 
-        mPropertyModel.set(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_VISIBLE, true);
-        mPropertyModel.set(NavigationAttachmentsProperties.POPUP_CLIPBOARD_BUTTON_VISIBLE, true);
-        mPropertyModel.set(NavigationAttachmentsProperties.POPUP_FILE_BUTTON_VISIBLE, true);
+        mPropertyModel.set(FuseboxProperties.CURRENT_TAB_BUTTON_VISIBLE, true);
+        mPropertyModel.set(FuseboxProperties.POPUP_CLIPBOARD_BUTTON_VISIBLE, true);
+        mPropertyModel.set(FuseboxProperties.POPUP_FILE_BUTTON_VISIBLE, true);
 
         var histogramWatcher =
                 HistogramWatcher.newBuilder()

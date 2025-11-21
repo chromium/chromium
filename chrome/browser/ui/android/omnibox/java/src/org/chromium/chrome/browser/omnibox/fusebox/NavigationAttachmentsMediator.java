@@ -99,31 +99,25 @@ public class NavigationAttachmentsMediator {
 
         mAutocompleteRequestTypeSupplier.addObserver(mOnAutocompleteRequestTypeChanged);
 
+        mModel.set(FuseboxProperties.BUTTON_ADD_CLICKED, this::onToggleAttachmentsPopup);
+        mModel.set(FuseboxProperties.POPUP_CAMERA_CLICKED, this::onCameraClicked);
+        mModel.set(FuseboxProperties.POPUP_GALLERY_CLICKED, this::onImagePickerClicked);
+        mModel.set(FuseboxProperties.POPUP_FILE_CLICKED, this::onFilePickerClicked);
+        mModel.set(FuseboxProperties.POPUP_CLIPBOARD_CLICKED, this::onClipboardClicked);
         mModel.set(
-                NavigationAttachmentsProperties.BUTTON_ADD_CLICKED, this::onToggleAttachmentsPopup);
-        mModel.set(NavigationAttachmentsProperties.POPUP_CAMERA_CLICKED, this::onCameraClicked);
-        mModel.set(
-                NavigationAttachmentsProperties.POPUP_GALLERY_CLICKED, this::onImagePickerClicked);
-        mModel.set(NavigationAttachmentsProperties.POPUP_FILE_CLICKED, this::onFilePickerClicked);
-        mModel.set(
-                NavigationAttachmentsProperties.POPUP_CLIPBOARD_CLICKED, this::onClipboardClicked);
-        mModel.set(
-                NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED,
+                FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED,
                 this::onRequestTypeButtonClicked);
         mModel.set(
-                NavigationAttachmentsProperties.POPUP_AI_MODE_CLICKED,
+                FuseboxProperties.POPUP_AI_MODE_CLICKED,
                 () -> activateAiMode(AiModeActivationSource.TOOL_MENU));
-        mModel.set(
-                NavigationAttachmentsProperties.POPUP_CREATE_IMAGE_CLICKED,
-                this::activateImageGeneration);
-        mModel.set(
-                NavigationAttachmentsProperties.POPUP_TAB_PICKER_CLICKED, this::onTabPickerClicked);
+        mModel.set(FuseboxProperties.POPUP_CREATE_IMAGE_CLICKED, this::activateImageGeneration);
+        mModel.set(FuseboxProperties.POPUP_TAB_PICKER_CLICKED, this::onTabPickerClicked);
 
         mModel.set(
-                NavigationAttachmentsProperties.POPUP_FILE_BUTTON_VISIBLE,
+                FuseboxProperties.POPUP_FILE_BUTTON_VISIBLE,
                 mComposeBoxQueryControllerBridge.isPdfUploadEligible());
         mModel.set(
-                NavigationAttachmentsProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE,
+                FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE,
                 mComposeBoxQueryControllerBridge.isCreateImagesEligible());
 
         mModelList.addObserver(
@@ -190,17 +184,16 @@ public class NavigationAttachmentsMediator {
      * @param visible Whether the toolbar should be visible.
      */
     void setToolbarVisible(boolean visible) {
-        mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_TOOLBAR_VISIBLE, visible);
+        mModel.set(FuseboxProperties.ATTACHMENTS_TOOLBAR_VISIBLE, visible);
         setUseCompactUi(OmniboxFeatures.sCompactFusebox.getValue());
     }
 
     public void setAutocompleteRequestTypeChangeable(boolean isChangeable) {
         // Don't take an action if the state isn't really changing.
-        if (mModel.get(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE)
-                == isChangeable) return;
+        if (mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE) == isChangeable)
+            return;
 
-        mModel.set(
-                NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE, isChangeable);
+        mModel.set(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE, isChangeable);
         if (!isChangeable) {
             activateSearchMode();
         }
@@ -230,7 +223,7 @@ public class NavigationAttachmentsMediator {
         } else {
             updateModelForCurrentTab();
             mModel.set(
-                    NavigationAttachmentsProperties.POPUP_CLIPBOARD_BUTTON_VISIBLE,
+                    FuseboxProperties.POPUP_CLIPBOARD_BUTTON_VISIBLE,
                     Clipboard.getInstance().hasImage());
             mPopup.show();
         }
@@ -240,7 +233,7 @@ public class NavigationAttachmentsMediator {
     private void updateModelForCurrentTab() {
         if (mTabModelSelectorSupplier.get() == null
                 || mTabModelSelectorSupplier.get().getCurrentTab() == null) {
-            mModel.set(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_VISIBLE, false);
+            mModel.set(FuseboxProperties.CURRENT_TAB_BUTTON_VISIBLE, false);
             return;
         }
 
@@ -259,15 +252,15 @@ public class NavigationAttachmentsMediator {
                                         .equals(UrlConstants.HTTPS_SCHEME));
 
         if (tabIsEligible) {
-            mModel.set(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_VISIBLE, true);
+            mModel.set(FuseboxProperties.CURRENT_TAB_BUTTON_VISIBLE, true);
             mModel.set(
-                    NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_CLICKED,
+                    FuseboxProperties.CURRENT_TAB_BUTTON_CLICKED,
                     () -> onAddCurrentTab(currentTab));
             mModel.set(
-                    NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_FAVICON,
+                    FuseboxProperties.CURRENT_TAB_BUTTON_FAVICON,
                     OmniboxResourceProvider.getFaviconBitmapForTab(currentTab));
         } else {
-            mModel.set(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_VISIBLE, false);
+            mModel.set(FuseboxProperties.CURRENT_TAB_BUTTON_VISIBLE, false);
         }
     }
 
@@ -282,9 +275,9 @@ public class NavigationAttachmentsMediator {
     }
 
     private void onAttachmentsChanged() {
-        mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE, !mModelList.isEmpty());
+        mModel.set(FuseboxProperties.ATTACHMENTS_VISIBLE, !mModelList.isEmpty());
         mModel.set(
-                NavigationAttachmentsProperties.POPUP_CREATE_IMAGE_BUTTON_ENABLED,
+                FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_ENABLED,
                 !attachmentsContainType(FuseboxAttachmentType.ATTACHMENT_TAB));
     }
 
@@ -352,9 +345,9 @@ public class NavigationAttachmentsMediator {
         setUseCompactUi(
                 type == AutocompleteRequestType.SEARCH
                         && OmniboxFeatures.sCompactFusebox.getValue());
-        mModel.set(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE, type);
+        mModel.set(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE, type);
         boolean tabInputsEnabled = type != AutocompleteRequestType.IMAGE_GENERATION;
-        mModel.set(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_ENABLED, tabInputsEnabled);
+        mModel.set(FuseboxProperties.CURRENT_TAB_BUTTON_ENABLED, tabInputsEnabled);
         // TODO(https://www.crbug.com/456274957): Also set enabled on select tabs
         // button.
     }
@@ -541,6 +534,6 @@ public class NavigationAttachmentsMediator {
         if (mUseCompactUi == useCompactUi) return;
         mUseCompactUi = useCompactUi;
         mOnCompactModeChangedSupplier.set(mUseCompactUi);
-        mModel.set(NavigationAttachmentsProperties.COMPACT_UI, useCompactUi);
+        mModel.set(FuseboxProperties.COMPACT_UI, useCompactUi);
     }
 }

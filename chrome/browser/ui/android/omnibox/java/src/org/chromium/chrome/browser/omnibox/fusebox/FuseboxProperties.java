@@ -14,9 +14,9 @@ import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
-/** The properties associated with the Navigation Attachments bar. */
+/** The properties associated with the Fusebox bar. */
 @NullMarked
-class NavigationAttachmentsProperties {
+class FuseboxProperties {
     /** The adapter for the attachments RecyclerView. */
     public static final WritableObjectPropertyKey<SimpleRecyclerViewAdapter> ADAPTER =
             new WritableObjectPropertyKey<>();

@@ -176,11 +176,11 @@ public class FuseboxMetrics {
             case FuseboxAttachmentButtonType.TAB_PICKER ->
                     ChromeFeatureList.sChromeItemPickerUi.isEnabled();
             case FuseboxAttachmentButtonType.CURRENT_TAB ->
-                    model.get(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_VISIBLE);
+                    model.get(FuseboxProperties.CURRENT_TAB_BUTTON_VISIBLE);
             case FuseboxAttachmentButtonType.CLIPBOARD ->
-                    model.get(NavigationAttachmentsProperties.POPUP_CLIPBOARD_BUTTON_VISIBLE);
+                    model.get(FuseboxProperties.POPUP_CLIPBOARD_BUTTON_VISIBLE);
             case FuseboxAttachmentButtonType.FILES ->
-                    model.get(NavigationAttachmentsProperties.POPUP_FILE_BUTTON_VISIBLE);
+                    model.get(FuseboxProperties.POPUP_FILE_BUTTON_VISIBLE);
             default -> false;
         };
     }

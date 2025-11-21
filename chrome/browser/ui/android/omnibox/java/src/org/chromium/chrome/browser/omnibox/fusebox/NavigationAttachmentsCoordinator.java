@@ -108,18 +108,15 @@ public class NavigationAttachmentsCoordinator
         mViewHolder.attachmentsView.setAdapter(adapter);
 
         mModel =
-                new PropertyModel.Builder(NavigationAttachmentsProperties.ALL_KEYS)
-                        .with(NavigationAttachmentsProperties.ADAPTER, adapter)
-                        .with(NavigationAttachmentsProperties.ATTACHMENTS_TOOLBAR_VISIBLE, false)
+                new PropertyModel.Builder(FuseboxProperties.ALL_KEYS)
+                        .with(FuseboxProperties.ADAPTER, adapter)
+                        .with(FuseboxProperties.ATTACHMENTS_TOOLBAR_VISIBLE, false)
                         .with(
-                                NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE,
+                                FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE,
                                 AutocompleteRequestType.SEARCH)
+                        .with(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE, false)
                         .with(
-                                NavigationAttachmentsProperties
-                                        .AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE,
-                                false)
-                        .with(
-                                NavigationAttachmentsProperties.SHOW_DEDICATED_MODE_BUTTON,
+                                FuseboxProperties.SHOW_DEDICATED_MODE_BUTTON,
                                 OmniboxFeatures.sShowDedicatedModeButton.getValue())
                         .build();
         PropertyModelChangeProcessor.create(mModel, mViewHolder, FuseboxViewBinder::bind);

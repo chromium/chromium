@@ -117,7 +117,7 @@ public class NavigationAttachmentsMediatorUnitTest {
 
         mContext = RuntimeEnvironment.application;
         mResources = mContext.getResources();
-        mModel = new PropertyModel(NavigationAttachmentsProperties.ALL_KEYS);
+        mModel = new PropertyModel(FuseboxProperties.ALL_KEYS);
 
         mViewHolder = new FuseboxViewHolder(viewGroup, mPopup);
         mAttachments = new FuseboxAttachmentModelList();
@@ -186,13 +186,13 @@ public class NavigationAttachmentsMediatorUnitTest {
 
     @Test
     public void initialState_toolbarIsHidden() {
-        assertFalse(mModel.get(NavigationAttachmentsProperties.ATTACHMENTS_TOOLBAR_VISIBLE));
+        assertFalse(mModel.get(FuseboxProperties.ATTACHMENTS_TOOLBAR_VISIBLE));
     }
 
     @Test
     public void onUrlFocusChange_toolbarVisibleWhenFocused() {
         mMediator.setToolbarVisible(true);
-        assertTrue(mModel.get(NavigationAttachmentsProperties.ATTACHMENTS_TOOLBAR_VISIBLE));
+        assertTrue(mModel.get(FuseboxProperties.ATTACHMENTS_TOOLBAR_VISIBLE));
     }
 
     @Test
@@ -200,21 +200,19 @@ public class NavigationAttachmentsMediatorUnitTest {
         // Show it first
         mMediator.setToolbarVisible(true);
         mMediator.setAutocompleteRequestTypeChangeable(true);
-        assertTrue(mModel.get(NavigationAttachmentsProperties.ATTACHMENTS_TOOLBAR_VISIBLE));
-        assertTrue(
-                mModel.get(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE));
+        assertTrue(mModel.get(FuseboxProperties.ATTACHMENTS_TOOLBAR_VISIBLE));
+        assertTrue(mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE));
 
         // Then hide it
         mMediator.setToolbarVisible(false);
         mMediator.setAutocompleteRequestTypeChangeable(false);
-        assertFalse(mModel.get(NavigationAttachmentsProperties.ATTACHMENTS_TOOLBAR_VISIBLE));
-        assertFalse(
-                mModel.get(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE));
+        assertFalse(mModel.get(FuseboxProperties.ATTACHMENTS_TOOLBAR_VISIBLE));
+        assertFalse(mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE));
     }
 
     @Test
     public void onAddButtonClicked_togglePopup() {
-        Runnable runnable = mModel.get(NavigationAttachmentsProperties.BUTTON_ADD_CLICKED);
+        Runnable runnable = mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED);
         assertNotNull(runnable);
 
         // Show popup.
@@ -230,7 +228,7 @@ public class NavigationAttachmentsMediatorUnitTest {
 
     @Test
     public void popupAddsTabs() {
-        assertFalse(mModel.get(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_VISIBLE));
+        assertFalse(mModel.get(FuseboxProperties.CURRENT_TAB_BUTTON_VISIBLE));
         doReturn(mTab1).when(mTabModelSelector).getCurrentTab();
         doReturn("Title1").when(mTab1).getTitle();
         doReturn(new GURL("https://www.google.com")).when(mTab1).getUrl();
@@ -245,18 +243,18 @@ public class NavigationAttachmentsMediatorUnitTest {
         doReturn(false).when(mPopup).isShowing();
 
         mMediator.onToggleAttachmentsPopup();
-        assertTrue(mModel.get(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_VISIBLE));
-        assertNonNull(mModel.get(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_FAVICON));
+        assertTrue(mModel.get(FuseboxProperties.CURRENT_TAB_BUTTON_VISIBLE));
+        assertNonNull(mModel.get(FuseboxProperties.CURRENT_TAB_BUTTON_FAVICON));
 
         doReturn(null).when(mTabFaviconFactory).apply(any());
         mMediator.onToggleAttachmentsPopup();
-        assertTrue(mModel.get(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_VISIBLE));
-        assertNull(mModel.get(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_FAVICON));
+        assertTrue(mModel.get(FuseboxProperties.CURRENT_TAB_BUTTON_VISIBLE));
+        assertNull(mModel.get(FuseboxProperties.CURRENT_TAB_BUTTON_FAVICON));
 
         doReturn(mBitmap).when(mTabFaviconFactory).apply(any());
         doReturn(mWebContents).when(mTab1).getWebContents();
         doReturn("token").when(mComposeBoxQueryControllerBridge).addTabContext(mTab1);
-        mModel.get(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_CLICKED).run();
+        mModel.get(FuseboxProperties.CURRENT_TAB_BUTTON_CLICKED).run();
         verify(mComposeBoxQueryControllerBridge).addTabContext(mTab1);
         assertEquals(
                 mBitmap,
@@ -264,7 +262,7 @@ public class NavigationAttachmentsMediatorUnitTest {
 
         doReturn(mTab2).when(mTabModelSelector).getCurrentTab();
         mMediator.onToggleAttachmentsPopup();
-        assertFalse(mModel.get(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_VISIBLE));
+        assertFalse(mModel.get(FuseboxProperties.CURRENT_TAB_BUTTON_VISIBLE));
     }
 
     @Test
@@ -296,7 +294,7 @@ public class NavigationAttachmentsMediatorUnitTest {
         byte[] byteArray = new byte[] {1, 2, 3};
         FuseboxAttachment attachment = FuseboxAttachment.forFile(null, "title", "image", byteArray);
         mMediator.uploadAndAddAttachment(attachment);
-        assertTrue(mModel.get(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE));
+        assertTrue(mModel.get(FuseboxProperties.ATTACHMENTS_VISIBLE));
         verify(mComposeBoxQueryControllerBridge).addFile("title", "image", byteArray);
     }
 
@@ -307,7 +305,7 @@ public class NavigationAttachmentsMediatorUnitTest {
         byte[] byteArray = new byte[] {1, 2, 3};
         FuseboxAttachment attachment = FuseboxAttachment.forFile(null, "title", "image", byteArray);
         mMediator.uploadAndAddAttachment(attachment);
-        assertFalse(mModel.get(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE));
+        assertFalse(mModel.get(FuseboxProperties.ATTACHMENTS_VISIBLE));
     }
 
     @Test
@@ -315,15 +313,15 @@ public class NavigationAttachmentsMediatorUnitTest {
         addAttachment("title");
 
         mMediator.activateAiMode(AiModeActivationSource.DEDICATED_BUTTON);
-        mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE, true);
+        mModel.set(FuseboxProperties.ATTACHMENTS_VISIBLE, true);
         assertEquals(
                 AutocompleteRequestType.AI_MODE,
-                (int) mModel.get(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE));
+                (int) mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE));
 
         mMediator.activateSearchMode();
         assertEquals(
                 AutocompleteRequestType.SEARCH,
-                (int) mModel.get(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE));
+                (int) mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE));
         assertEquals(0, mAttachments.size());
     }
 
@@ -333,7 +331,7 @@ public class NavigationAttachmentsMediatorUnitTest {
         verify(mComposeBoxQueryControllerBridge, never()).notifySessionStarted();
         assertEquals(
                 AutocompleteRequestType.AI_MODE,
-                (int) mModel.get(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE));
+                (int) mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE));
     }
 
     @Test
@@ -342,7 +340,7 @@ public class NavigationAttachmentsMediatorUnitTest {
         verify(mComposeBoxQueryControllerBridge, never()).notifySessionStarted();
         assertEquals(
                 AutocompleteRequestType.IMAGE_GENERATION,
-                (int) mModel.get(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE));
+                (int) mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE));
     }
 
     @Test
@@ -356,14 +354,14 @@ public class NavigationAttachmentsMediatorUnitTest {
         mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.SEARCH);
         ShadowLooper.idleMainLooper();
 
-        mModel.get(NavigationAttachmentsProperties.BUTTON_ADD_CLICKED).run();
-        assertTrue(mModel.get(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_VISIBLE));
-        assertTrue(mModel.get(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_ENABLED));
+        mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
+        assertTrue(mModel.get(FuseboxProperties.CURRENT_TAB_BUTTON_VISIBLE));
+        assertTrue(mModel.get(FuseboxProperties.CURRENT_TAB_BUTTON_ENABLED));
 
-        mModel.get(NavigationAttachmentsProperties.POPUP_CREATE_IMAGE_CLICKED).run();
-        mModel.get(NavigationAttachmentsProperties.BUTTON_ADD_CLICKED).run();
-        assertTrue(mModel.get(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_VISIBLE));
-        assertFalse(mModel.get(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_ENABLED));
+        mModel.get(FuseboxProperties.POPUP_CREATE_IMAGE_CLICKED).run();
+        mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
+        assertTrue(mModel.get(FuseboxProperties.CURRENT_TAB_BUTTON_VISIBLE));
+        assertFalse(mModel.get(FuseboxProperties.CURRENT_TAB_BUTTON_ENABLED));
     }
 
     @Test
@@ -420,54 +418,54 @@ public class NavigationAttachmentsMediatorUnitTest {
     public void onToggleAttachmentsPopup_clipboardHasImage_showsClipboardButton() {
         doReturn(true).when(mClipboard).hasImage();
         mMediator.onToggleAttachmentsPopup();
-        assertTrue(mModel.get(NavigationAttachmentsProperties.POPUP_CLIPBOARD_BUTTON_VISIBLE));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_CLIPBOARD_BUTTON_VISIBLE));
     }
 
     @Test
     public void onToggleAttachmentsPopup_clipboardDoesNotHaveImage_hidesClipboardButton() {
         doReturn(false).when(mClipboard).hasImage();
         mMediator.onToggleAttachmentsPopup();
-        assertFalse(mModel.get(NavigationAttachmentsProperties.POPUP_CLIPBOARD_BUTTON_VISIBLE));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_CLIPBOARD_BUTTON_VISIBLE));
     }
 
     @Test
     public void onToggleAttachmentsPopup_pdfUploadEligible_showsFileButton() {
         doReturn(true).when(mComposeBoxQueryControllerBridge).isPdfUploadEligible();
         recreateMediator();
-        assertTrue(mModel.get(NavigationAttachmentsProperties.POPUP_FILE_BUTTON_VISIBLE));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_FILE_BUTTON_VISIBLE));
     }
 
     @Test
     public void onToggleAttachmentsPopup_pdfUploadNotEligible_hidesFileButton() {
         doReturn(false).when(mComposeBoxQueryControllerBridge).isPdfUploadEligible();
         recreateMediator();
-        assertFalse(mModel.get(NavigationAttachmentsProperties.POPUP_FILE_BUTTON_VISIBLE));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_FILE_BUTTON_VISIBLE));
     }
 
     @Test
     public void onToggleAttachmentsPopup_createImagesEligible_showsCreateImageButton() {
         doReturn(true).when(mComposeBoxQueryControllerBridge).isCreateImagesEligible();
         recreateMediator();
-        assertTrue(mModel.get(NavigationAttachmentsProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE));
     }
 
     @Test
     public void onToggleAttachmentsPopup_createImagesNotEligible_hidesCreateImageButton() {
         doReturn(false).when(mComposeBoxQueryControllerBridge).isCreateImagesEligible();
         recreateMediator();
-        assertFalse(mModel.get(NavigationAttachmentsProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE));
     }
 
     @Test
     public void onImagePickerClicked_setsMimeType() {
-        mModel.get(NavigationAttachmentsProperties.POPUP_GALLERY_CLICKED).run();
+        mModel.get(FuseboxProperties.POPUP_GALLERY_CLICKED).run();
         verify(mWindowAndroid).showCancelableIntent(mIntentCaptor.capture(), any(), any());
         assertEquals(MimeTypeUtils.IMAGE_ANY_MIME_TYPE, mIntentCaptor.getValue().getType());
     }
 
     @Test
     public void onFilePickerClicked_setsMimeType() {
-        mModel.get(NavigationAttachmentsProperties.POPUP_FILE_CLICKED).run();
+        mModel.get(FuseboxProperties.POPUP_FILE_CLICKED).run();
         verify(mWindowAndroid).showCancelableIntent(mIntentCaptor.capture(), any(), any());
         assertEquals(MimeTypeUtils.PDF_MIME_TYPE, mIntentCaptor.getValue().getType());
     }
@@ -475,7 +473,7 @@ public class NavigationAttachmentsMediatorUnitTest {
     @Test
     public void autocompleteRequestTypeClicked_activatesSearchMode() {
         mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.AI_MODE);
-        mModel.get(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED).run();
+        mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED).run();
         assertEquals(AutocompleteRequestType.SEARCH, (int) mAutocompleteRequestTypeSupplier.get());
     }
 
@@ -565,18 +563,18 @@ public class NavigationAttachmentsMediatorUnitTest {
         doReturn(true).when(mTab1).isInitialized();
         doReturn(100L).when(mTab1).getTimestampMillis();
 
-        mModel.get(NavigationAttachmentsProperties.BUTTON_ADD_CLICKED).run();
-        assertTrue(mModel.get(NavigationAttachmentsProperties.POPUP_CREATE_IMAGE_BUTTON_ENABLED));
+        mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
+        assertTrue(mModel.get(FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_ENABLED));
 
-        mModel.get(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_CLICKED).run();
+        mModel.get(FuseboxProperties.CURRENT_TAB_BUTTON_CLICKED).run();
         assertEquals(1, mAttachments.size());
-        mModel.get(NavigationAttachmentsProperties.BUTTON_ADD_CLICKED).run();
-        assertFalse(mModel.get(NavigationAttachmentsProperties.POPUP_CREATE_IMAGE_BUTTON_ENABLED));
+        mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
+        assertFalse(mModel.get(FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_ENABLED));
 
         mAttachments.get(0).model.get(FuseboxAttachmentProperties.ON_REMOVE).run();
         assertEquals(0, mAttachments.size());
-        mModel.get(NavigationAttachmentsProperties.BUTTON_ADD_CLICKED).run();
-        assertTrue(mModel.get(NavigationAttachmentsProperties.POPUP_CREATE_IMAGE_BUTTON_ENABLED));
+        mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
+        assertTrue(mModel.get(FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_ENABLED));
     }
 
     @Test
@@ -587,19 +585,19 @@ public class NavigationAttachmentsMediatorUnitTest {
         mOnCompactModeChangedSupplier.addObserver(compactModeCallback);
 
         mMediator.setToolbarVisible(true);
-        assertTrue(mModel.get(NavigationAttachmentsProperties.COMPACT_UI));
+        assertTrue(mModel.get(FuseboxProperties.COMPACT_UI));
         assertTrue(mCompactModeEnabled);
 
         mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.AI_MODE);
-        assertFalse(mModel.get(NavigationAttachmentsProperties.COMPACT_UI));
+        assertFalse(mModel.get(FuseboxProperties.COMPACT_UI));
         assertFalse(mCompactModeEnabled);
 
         mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.SEARCH);
-        assertTrue(mModel.get(NavigationAttachmentsProperties.COMPACT_UI));
+        assertTrue(mModel.get(FuseboxProperties.COMPACT_UI));
         assertTrue(mCompactModeEnabled);
 
         mMediator.setUseCompactUi(false);
-        assertFalse(mModel.get(NavigationAttachmentsProperties.COMPACT_UI));
+        assertFalse(mModel.get(FuseboxProperties.COMPACT_UI));
         assertFalse(mCompactModeEnabled);
     }
 }

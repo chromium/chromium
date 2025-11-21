@@ -36,109 +36,95 @@ class FuseboxViewBinder {
      * @see PropertyModelChangeProcessor.ViewBinder#bind(Object, Object, Object)
      */
     public static void bind(PropertyModel model, FuseboxViewHolder view, PropertyKey propertyKey) {
-        if (propertyKey == NavigationAttachmentsProperties.ADAPTER) {
-            view.attachmentsView.setAdapter(model.get(NavigationAttachmentsProperties.ADAPTER));
-        } else if (propertyKey == NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE) {
+        if (propertyKey == FuseboxProperties.ADAPTER) {
+            view.attachmentsView.setAdapter(model.get(FuseboxProperties.ADAPTER));
+        } else if (propertyKey == FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE) {
             reanchorViewsForCompactFusebox(model, view);
             updateModeSelectorVisibility(model, view);
-        } else if (propertyKey == NavigationAttachmentsProperties.COMPACT_UI) {
+        } else if (propertyKey == FuseboxProperties.COMPACT_UI) {
             reanchorViewsForCompactFusebox(model, view);
-        } else if (propertyKey
-                == NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED) {
+        } else if (propertyKey == FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED) {
             view.requestType.setOnClickListener(
-                    v ->
-                            model.get(
-                                            NavigationAttachmentsProperties
-                                                    .AUTOCOMPLETE_REQUEST_TYPE_CLICKED)
-                                    .run());
-        } else if (propertyKey == NavigationAttachmentsProperties.POPUP_AI_MODE_CLICKED) {
+                    v -> model.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED).run());
+        } else if (propertyKey == FuseboxProperties.POPUP_AI_MODE_CLICKED) {
             view.popup.mAiModeButton.setOnClickListener(
-                    v -> model.get(NavigationAttachmentsProperties.POPUP_AI_MODE_CLICKED).run());
-        } else if (propertyKey == NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE) {
-            boolean visible = model.get(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE);
+                    v -> model.get(FuseboxProperties.POPUP_AI_MODE_CLICKED).run());
+        } else if (propertyKey == FuseboxProperties.ATTACHMENTS_VISIBLE) {
+            boolean visible = model.get(FuseboxProperties.ATTACHMENTS_VISIBLE);
             view.attachmentsView.setVisibility(visible ? View.VISIBLE : View.GONE);
-        } else if (propertyKey == NavigationAttachmentsProperties.ATTACHMENTS_TOOLBAR_VISIBLE) {
+        } else if (propertyKey == FuseboxProperties.ATTACHMENTS_TOOLBAR_VISIBLE) {
             view.addButton.setVisibility(
-                    model.get(NavigationAttachmentsProperties.ATTACHMENTS_TOOLBAR_VISIBLE)
+                    model.get(FuseboxProperties.ATTACHMENTS_TOOLBAR_VISIBLE)
                             ? View.VISIBLE
                             : View.GONE);
             updateModeSelectorVisibility(model, view);
-        } else if (propertyKey == NavigationAttachmentsProperties.BUTTON_ADD_CLICKED) {
+        } else if (propertyKey == FuseboxProperties.BUTTON_ADD_CLICKED) {
             view.addButton.setOnClickListener(
-                    v -> model.get(NavigationAttachmentsProperties.BUTTON_ADD_CLICKED).run());
-        } else if (propertyKey
-                == NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE) {
+                    v -> model.get(FuseboxProperties.BUTTON_ADD_CLICKED).run());
+        } else if (propertyKey == FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE) {
             updateModeSelectorVisibility(model, view);
-        } else if (propertyKey == NavigationAttachmentsProperties.POPUP_CAMERA_CLICKED) {
+        } else if (propertyKey == FuseboxProperties.POPUP_CAMERA_CLICKED) {
             view.popup.mCameraButton.setOnClickListener(
-                    v -> model.get(NavigationAttachmentsProperties.POPUP_CAMERA_CLICKED).run());
-        } else if (propertyKey == NavigationAttachmentsProperties.POPUP_CLIPBOARD_BUTTON_VISIBLE) {
+                    v -> model.get(FuseboxProperties.POPUP_CAMERA_CLICKED).run());
+        } else if (propertyKey == FuseboxProperties.POPUP_CLIPBOARD_BUTTON_VISIBLE) {
             view.popup.mClipboardButton.setVisibility(
-                    model.get(NavigationAttachmentsProperties.POPUP_CLIPBOARD_BUTTON_VISIBLE)
+                    model.get(FuseboxProperties.POPUP_CLIPBOARD_BUTTON_VISIBLE)
                             ? View.VISIBLE
                             : View.GONE);
-        } else if (propertyKey == NavigationAttachmentsProperties.POPUP_CLIPBOARD_CLICKED) {
+        } else if (propertyKey == FuseboxProperties.POPUP_CLIPBOARD_CLICKED) {
             view.popup.mClipboardButton.setOnClickListener(
-                    v -> model.get(NavigationAttachmentsProperties.POPUP_CLIPBOARD_CLICKED).run());
-        } else if (propertyKey
-                == NavigationAttachmentsProperties.POPUP_CREATE_IMAGE_BUTTON_ENABLED) {
+                    v -> model.get(FuseboxProperties.POPUP_CLIPBOARD_CLICKED).run());
+        } else if (propertyKey == FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_ENABLED) {
             view.popup.mCreateImageButton.setEnabled(
-                    model.get(NavigationAttachmentsProperties.POPUP_CREATE_IMAGE_BUTTON_ENABLED));
-        } else if (propertyKey
-                == NavigationAttachmentsProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE) {
+                    model.get(FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_ENABLED));
+        } else if (propertyKey == FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE) {
             // TODO(https://crbug.com/457465693): Set create image tool visibility.
-        } else if (propertyKey == NavigationAttachmentsProperties.POPUP_CREATE_IMAGE_CLICKED) {
+        } else if (propertyKey == FuseboxProperties.POPUP_CREATE_IMAGE_CLICKED) {
             view.popup.mCreateImageButton.setOnClickListener(
-                    v ->
-                            model.get(NavigationAttachmentsProperties.POPUP_CREATE_IMAGE_CLICKED)
-                                    .run());
-        } else if (propertyKey == NavigationAttachmentsProperties.POPUP_FILE_BUTTON_VISIBLE) {
+                    v -> model.get(FuseboxProperties.POPUP_CREATE_IMAGE_CLICKED).run());
+        } else if (propertyKey == FuseboxProperties.POPUP_FILE_BUTTON_VISIBLE) {
             view.popup.mFileButton.setVisibility(
-                    model.get(NavigationAttachmentsProperties.POPUP_FILE_BUTTON_VISIBLE)
+                    model.get(FuseboxProperties.POPUP_FILE_BUTTON_VISIBLE)
                             ? View.VISIBLE
                             : View.GONE);
-        } else if (propertyKey == NavigationAttachmentsProperties.POPUP_FILE_CLICKED) {
+        } else if (propertyKey == FuseboxProperties.POPUP_FILE_CLICKED) {
             view.popup.mFileButton.setOnClickListener(
-                    v -> model.get(NavigationAttachmentsProperties.POPUP_FILE_CLICKED).run());
-        } else if (propertyKey == NavigationAttachmentsProperties.POPUP_GALLERY_CLICKED) {
+                    v -> model.get(FuseboxProperties.POPUP_FILE_CLICKED).run());
+        } else if (propertyKey == FuseboxProperties.POPUP_GALLERY_CLICKED) {
             view.popup.mGalleryButton.setOnClickListener(
-                    v -> model.get(NavigationAttachmentsProperties.POPUP_GALLERY_CLICKED).run());
-        } else if (propertyKey == NavigationAttachmentsProperties.POPUP_TAB_PICKER_CLICKED) {
+                    v -> model.get(FuseboxProperties.POPUP_GALLERY_CLICKED).run());
+        } else if (propertyKey == FuseboxProperties.POPUP_TAB_PICKER_CLICKED) {
             view.popup.mTabButton.setOnClickListener(
-                    v -> model.get(NavigationAttachmentsProperties.POPUP_TAB_PICKER_CLICKED).run());
-        } else if (propertyKey == NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_CLICKED) {
+                    v -> model.get(FuseboxProperties.POPUP_TAB_PICKER_CLICKED).run());
+        } else if (propertyKey == FuseboxProperties.CURRENT_TAB_BUTTON_CLICKED) {
             view.popup.mAddCurrentTab.setOnClickListener(
-                    v ->
-                            model.get(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_CLICKED)
-                                    .run());
-        } else if (propertyKey == NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_ENABLED) {
+                    v -> model.get(FuseboxProperties.CURRENT_TAB_BUTTON_CLICKED).run());
+        } else if (propertyKey == FuseboxProperties.CURRENT_TAB_BUTTON_ENABLED) {
             view.popup.mAddCurrentTab.setEnabled(
-                    model.get(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_ENABLED));
-        } else if (propertyKey == NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_FAVICON) {
+                    model.get(FuseboxProperties.CURRENT_TAB_BUTTON_ENABLED));
+        } else if (propertyKey == FuseboxProperties.CURRENT_TAB_BUTTON_FAVICON) {
             updateForCurrentTabFavicon(
-                    model.get(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_FAVICON), view);
-        } else if (propertyKey == NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_VISIBLE) {
+                    model.get(FuseboxProperties.CURRENT_TAB_BUTTON_FAVICON), view);
+        } else if (propertyKey == FuseboxProperties.CURRENT_TAB_BUTTON_VISIBLE) {
             view.popup.mAddCurrentTab.setVisibility(
-                    model.get(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_VISIBLE)
+                    model.get(FuseboxProperties.CURRENT_TAB_BUTTON_VISIBLE)
                             ? View.VISIBLE
                             : View.GONE);
-        } else if (propertyKey == NavigationAttachmentsProperties.SHOW_DEDICATED_MODE_BUTTON) {
+        } else if (propertyKey == FuseboxProperties.SHOW_DEDICATED_MODE_BUTTON) {
             updateModeSelectorVisibility(model, view);
         }
     }
 
     static void updateModeSelectorVisibility(PropertyModel model, FuseboxViewHolder views) {
         boolean isRequestTypeChangeable =
-                model.get(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE);
-        boolean showFuseboxToolbar =
-                model.get(NavigationAttachmentsProperties.ATTACHMENTS_TOOLBAR_VISIBLE);
-        boolean showDedicatedModeButton =
-                model.get(NavigationAttachmentsProperties.SHOW_DEDICATED_MODE_BUTTON);
+                model.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE);
+        boolean showFuseboxToolbar = model.get(FuseboxProperties.ATTACHMENTS_TOOLBAR_VISIBLE);
+        boolean showDedicatedModeButton = model.get(FuseboxProperties.SHOW_DEDICATED_MODE_BUTTON);
         boolean isAiModeUsed =
-                model.get(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE)
+                model.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE)
                         == AutocompleteRequestType.AI_MODE;
         boolean isImageGenerationUsed =
-                model.get(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE)
+                model.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE)
                         == AutocompleteRequestType.IMAGE_GENERATION;
         boolean isCustomModeUsed = isAiModeUsed || isImageGenerationUsed;
         Context context = views.parentView.getContext();
@@ -196,8 +182,7 @@ class FuseboxViewBinder {
         boolean isAiModeButtonVisible = isRequestTypeChangeable && !showDedicatedModeButton;
         boolean isCreateImageButtonVisible =
                 isRequestTypeChangeable
-                        && model.get(
-                                NavigationAttachmentsProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE);
+                        && model.get(FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE);
         views.popup.mAiModeButton.setVisibility(isAiModeButtonVisible ? View.VISIBLE : View.GONE);
         views.popup.mCreateImageButton.setVisibility(
                 isCreateImageButtonVisible ? View.VISIBLE : View.GONE);
@@ -207,7 +192,7 @@ class FuseboxViewBinder {
     }
 
     static void reanchorViewsForCompactFusebox(PropertyModel model, FuseboxViewHolder views) {
-        boolean shouldShowCompactUi = model.get(NavigationAttachmentsProperties.COMPACT_UI);
+        boolean shouldShowCompactUi = model.get(FuseboxProperties.COMPACT_UI);
 
         int topToTop = shouldShowCompactUi ? R.id.url_bar : ConstraintSet.UNSET;
         int topToBottom = shouldShowCompactUi ? ConstraintSet.UNSET : R.id.url_bar;
