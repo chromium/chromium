@@ -1969,7 +1969,8 @@ TEST_F(URLCanonTest, ReplaceStandardUrl) {
     // Replace the path to 0 length string. By using 1 as the string address,
     // the test should get an access violation if it tries to dereference it.
     Replacements<char> r;
-    r.SetPath(reinterpret_cast<char*>(0x00000001), Component(0, 0));
+    r.SetPath(std::string_view(reinterpret_cast<char*>(0x00000001), 1u),
+              Component(0, 0));
     std::string out_str1;
     StdStringCanonOutput output1(&out_str1);
     Parsed new_parsed;
@@ -1980,7 +1981,8 @@ TEST_F(URLCanonTest, ReplaceStandardUrl) {
     EXPECT_STREQ("http://www.google.com/", out_str1.c_str());
 
     // Same with an "invalid" path.
-    r.SetPath(reinterpret_cast<char*>(0x00000001), Component());
+    r.SetPath(std::string_view(reinterpret_cast<char*>(0x00000001), 1u),
+              Component());
     std::string out_str2;
     StdStringCanonOutput output2(&out_str2);
     ReplaceStandardUrl(src, parsed, r,

@@ -501,14 +501,13 @@ bool DoResolveRelativeHost(std::string_view base_url,
   // Now we can just use the replacement function to replace all the necessary
   // parts of the old URL with the new one.
   Replacements<CHAR> replacements;
-  const CHAR* relative_url_ptr = relative_url.data();
-  replacements.SetUsername(relative_url_ptr, relative_parsed.username);
-  replacements.SetPassword(relative_url_ptr, relative_parsed.password);
-  replacements.SetHost(relative_url_ptr, relative_parsed.host);
-  replacements.SetPort(relative_url_ptr, relative_parsed.port);
-  replacements.SetPath(relative_url_ptr, relative_parsed.path);
-  replacements.SetQuery(relative_url_ptr, relative_parsed.query);
-  replacements.SetRef(relative_url_ptr, relative_parsed.ref);
+  replacements.SetUsername(relative_url, relative_parsed.username);
+  replacements.SetPassword(relative_url, relative_parsed.password);
+  replacements.SetHost(relative_url, relative_parsed.host);
+  replacements.SetPort(relative_url, relative_parsed.port);
+  replacements.SetPath(relative_url, relative_parsed.path);
+  replacements.SetQuery(relative_url, relative_parsed.query);
+  replacements.SetRef(relative_url, relative_parsed.ref);
 
   // Length() does not include the old scheme, so make sure to add it from the
   // base URL.

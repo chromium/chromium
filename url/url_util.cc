@@ -448,7 +448,7 @@ bool DoReplaceComponents(std::string_view spec,
     // much much less common than other types of replacements, like clearing the
     // ref).
     Replacements<CHAR> replacements_no_scheme = replacements;
-    replacements_no_scheme.SetScheme(NULL, Component());
+    replacements_no_scheme.SetSchemeUnchanged();
     // If the input URL has potentially dangling markup, set the flag on the
     // output too. Note that in some cases the replacement gets rid of the
     // potentially dangling markup, but this ok since the check will fail

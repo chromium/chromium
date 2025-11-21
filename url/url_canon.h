@@ -913,22 +913,26 @@ class Replacements {
       : sources_(spec.data()), components_(parsed) {}
 
   // Scheme
-  void SetScheme(const CHAR* s, const Component& comp) {
-    sources_.scheme = s;
+  void SetScheme(StringViewT s, const Component& comp) {
+    sources_.scheme = s.data();
     components_.scheme = comp;
   }
-  void SetSchemeStr(StringViewT str) { SetScheme(str.data(), Component(str)); }
+  void SetSchemeStr(StringViewT str) { SetScheme(str, Component(str)); }
   // Note: we don't have a ClearScheme since this doesn't make any sense.
+
+  // Indicates the scheme part won't be replaced.
+  void SetSchemeUnchanged() {
+    sources_.scheme = nullptr;
+    components_.scheme = Component();
+  }
   bool IsSchemeOverridden() const { return sources_.scheme != NULL; }
 
   // Username
-  void SetUsername(const CHAR* s, const Component& comp) {
-    sources_.username = s;
+  void SetUsername(StringViewT s, const Component& comp) {
+    sources_.username = s.data();
     components_.username = comp;
   }
-  void SetUsernameStr(StringViewT str) {
-    SetUsername(str.data(), Component(str));
-  }
+  void SetUsernameStr(StringViewT str) { SetUsername(str, Component(str)); }
   void ClearUsername() {
     sources_.username = Placeholder();
     components_.username = Component();
@@ -936,13 +940,11 @@ class Replacements {
   bool IsUsernameOverridden() const { return sources_.username != NULL; }
 
   // Password
-  void SetPassword(const CHAR* s, const Component& comp) {
-    sources_.password = s;
+  void SetPassword(StringViewT s, const Component& comp) {
+    sources_.password = s.data();
     components_.password = comp;
   }
-  void SetPasswordStr(StringViewT str) {
-    SetPassword(str.data(), Component(str));
-  }
+  void SetPasswordStr(StringViewT str) { SetPassword(str, Component(str)); }
   void ClearPassword() {
     sources_.password = Placeholder();
     components_.password = Component();
@@ -950,11 +952,11 @@ class Replacements {
   bool IsPasswordOverridden() const { return sources_.password != NULL; }
 
   // Host
-  void SetHost(const CHAR* s, const Component& comp) {
-    sources_.host = s;
+  void SetHost(StringViewT s, const Component& comp) {
+    sources_.host = s.data();
     components_.host = comp;
   }
-  void SetHostStr(StringViewT str) { SetHost(str.data(), Component(str)); }
+  void SetHostStr(StringViewT str) { SetHost(str, Component(str)); }
   void ClearHost() {
     sources_.host = Placeholder();
     components_.host = Component();
@@ -962,11 +964,11 @@ class Replacements {
   bool IsHostOverridden() const { return sources_.host != NULL; }
 
   // Port
-  void SetPort(const CHAR* s, const Component& comp) {
-    sources_.port = s;
+  void SetPort(StringViewT s, const Component& comp) {
+    sources_.port = s.data();
     components_.port = comp;
   }
-  void SetPortStr(StringViewT str) { SetPort(str.data(), Component(str)); }
+  void SetPortStr(StringViewT str) { SetPort(str, Component(str)); }
   void ClearPort() {
     sources_.port = Placeholder();
     components_.port = Component();
@@ -974,11 +976,11 @@ class Replacements {
   bool IsPortOverridden() const { return sources_.port != NULL; }
 
   // Path
-  void SetPath(const CHAR* s, const Component& comp) {
-    sources_.path = s;
+  void SetPath(StringViewT s, const Component& comp) {
+    sources_.path = s.data();
     components_.path = comp;
   }
-  void SetPathStr(StringViewT str) { SetPath(str.data(), Component(str)); }
+  void SetPathStr(StringViewT str) { SetPath(str, Component(str)); }
   void ClearPath() {
     sources_.path = Placeholder();
     components_.path = Component();
@@ -986,11 +988,11 @@ class Replacements {
   bool IsPathOverridden() const { return sources_.path != NULL; }
 
   // Query
-  void SetQuery(const CHAR* s, const Component& comp) {
-    sources_.query = s;
+  void SetQuery(StringViewT s, const Component& comp) {
+    sources_.query = s.data();
     components_.query = comp;
   }
-  void SetQueryStr(StringViewT str) { SetQuery(str.data(), Component(str)); }
+  void SetQueryStr(StringViewT str) { SetQuery(str, Component(str)); }
   void ClearQuery() {
     sources_.query = Placeholder();
     components_.query = Component();
@@ -998,11 +1000,11 @@ class Replacements {
   bool IsQueryOverridden() const { return sources_.query != NULL; }
 
   // Ref
-  void SetRef(const CHAR* s, const Component& comp) {
-    sources_.ref = s;
+  void SetRef(StringViewT s, const Component& comp) {
+    sources_.ref = s.data();
     components_.ref = comp;
   }
-  void SetRefStr(StringViewT str) { SetRef(str.data(), Component(str)); }
+  void SetRefStr(StringViewT str) { SetRef(str, Component(str)); }
   void ClearRef() {
     sources_.ref = Placeholder();
     components_.ref = Component();
