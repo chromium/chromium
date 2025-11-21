@@ -7,6 +7,7 @@
 
 #include <concepts>
 #include <optional>
+#include <type_traits>
 
 #include "base/check.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
@@ -52,10 +53,14 @@ namespace autofill {
 //   }
 template <typename Client = TestAutofillClient,
           typename Driver = TestAutofillDriver,
-          typename Manager = TestBrowserAutofillManager>
-  requires(std::derived_from<Client, TestAutofillClient> &&
-           std::derived_from<Driver, TestAutofillDriver> &&
-           std::derived_from<Manager, AutofillManager>)
+          typename Manager = TestBrowserAutofillManager,
+          typename PaymentsClient = std::remove_pointer_t<
+              decltype(std::declval<Client>().GetPaymentsAutofillClient())>>
+  requires(
+      std::derived_from<Client, TestAutofillClient> &&
+      std::derived_from<Driver, TestAutofillDriver> &&
+      std::derived_from<Manager, AutofillManager> &&
+      std::derived_from<PaymentsClient, payments::TestPaymentsAutofillClient>)
 class WithTestAutofillClientDriverManager {
  public:
   WithTestAutofillClientDriverManager() = default;
@@ -76,7 +81,7 @@ class WithTestAutofillClientDriverManager {
   // function.
   //
   // Usually called in the test fixture's constructor or SetUp().
-  // 
+  //
   // This method is virtual to allow tests to customize the client after it was
   // initialized but before it is used to construct AutofillDrivers and
   // AutofillManagers. Subclasses overwriting this method should always call the
@@ -110,6 +115,11 @@ class WithTestAutofillClientDriverManager {
     CHECK(client_) << "AutofillClient has not yet been initialized. Call "
                       "InitAutofillClient() to do so.";
     return *client_;
+  }
+
+  PaymentsClient& payments_autofill_client() {
+    return static_cast<PaymentsClient&>(
+        CHECK_DEREF(autofill_client().GetPaymentsAutofillClient()));
   }
 
   // See CreateAutofillDriver().

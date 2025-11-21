@@ -1170,7 +1170,8 @@ class BrowserAutofillManagerTest
     : public testing::Test,
       public WithTestAutofillClientDriverManager<NiceMock<MockAutofillClient>,
                                                  MockAutofillDriver,
-                                                 TestBrowserAutofillManager> {
+                                                 TestBrowserAutofillManager,
+                                                 MockPaymentsAutofillClient> {
  public:
   void SetUp() override {
     // Advance the mock clock to a fixed, arbitrary, somewhat recent date.
@@ -1189,7 +1190,8 @@ class BrowserAutofillManagerTest
     // Mandatory re-auth is required for credit card autofill on automotive, so
     // the authenticator response needs to be properly mocked.
 #if BUILDFLAG(IS_ANDROID)
-    payments_client().SetUpDeviceBiometricAuthenticatorSuccessOnAutomotive();
+    payments_autofill_client()
+        .SetUpDeviceBiometricAuthenticatorSuccessOnAutomotive();
 #endif
   }
 
@@ -1361,10 +1363,8 @@ class BrowserAutofillManagerTest
       const std::string& real_pan,
       bool is_virtual_card = false) {
     payments::FullCardRequest& full_card_request =
-        autofill_manager()
-            .client()
-            .GetPaymentsAutofillClient()
-            ->GetCvcAuthenticator()
+        payments_autofill_client()
+            .GetCvcAuthenticator()
             .full_card_request_for_testing();
 
     // Mock user response.
@@ -1385,10 +1385,8 @@ class BrowserAutofillManagerTest
   // Convenience method to cast the FullCardRequest into a CardUnmaskDelegate.
   CardUnmaskDelegate& full_card_unmask_delegate() {
     payments::FullCardRequest& full_card_request =
-        autofill_manager()
-            .client()
-            .GetPaymentsAutofillClient()
-            ->GetCvcAuthenticator()
+        payments_autofill_client()
+            .GetCvcAuthenticator()
             .full_card_request_for_testing();
     return static_cast<CardUnmaskDelegate&>(full_card_request);
   }
@@ -1418,11 +1416,6 @@ class BrowserAutofillManagerTest
   MockSingleFieldFillRouter& single_field_fill_router() {
     return static_cast<MockSingleFieldFillRouter&>(
         autofill_client().GetSingleFieldFillRouter());
-  }
-
-  MockPaymentsAutofillClient& payments_client() {
-    return static_cast<MockPaymentsAutofillClient&>(
-        *autofill_client().GetPaymentsAutofillClient());
   }
 
   TestPersonalDataManager& personal_data() {
@@ -1461,14 +1454,12 @@ class BrowserAutofillManagerTest
 
   MockIbanManager& iban_manager() {
     return *static_cast<MockIbanManager*>(
-        autofill_client().GetPaymentsAutofillClient()->GetIbanManager());
+        payments_autofill_client().GetIbanManager());
   }
 
   MockMerchantPromoCodeManager& merchant_promo_code_manager() {
     return *static_cast<MockMerchantPromoCodeManager*>(
-        autofill_client()
-            .GetPaymentsAutofillClient()
-            ->GetMerchantPromoCodeManager());
+        payments_autofill_client().GetMerchantPromoCodeManager());
   }
 
   MockAutocompleteHistoryManager& autocomplete_history_manager() {
@@ -2220,7 +2211,7 @@ TEST_F(BrowserAutofillManagerTest,
 
   // Disable Autofill.
   autofill_client().SetAutofillProfileEnabled(false);
-  payments_client().SetAutofillPaymentMethodsEnabled(false);
+  payments_autofill_client().SetAutofillPaymentMethodsEnabled(false);
 
   OnAskForValuesToFill(form, form.fields()[0]);
   EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
@@ -3391,7 +3382,7 @@ TEST_F(BrowserAutofillManagerTest,
 
   // Disable Autofill.
   autofill_client().SetAutofillProfileEnabled(false);
-  payments_client().SetAutofillPaymentMethodsEnabled(false);
+  payments_autofill_client().SetAutofillPaymentMethodsEnabled(false);
 
   // Verify that the amount extraction is not triggered.
   EXPECT_CALL(amount_extraction_manager(), TriggerCheckoutAmountExtraction)
@@ -3680,7 +3671,7 @@ TEST_F(BrowserAutofillManagerTest,
        OnFormsSeen_AutofillDisabledPasswordManagerEnabled) {
   // Set up our form data.
   FormData form = CreateTestAddressFormData();
-  payments_client().SetAutofillPaymentMethodsEnabled(false);
+  payments_autofill_client().SetAutofillPaymentMethodsEnabled(false);
   autofill_client().SetAutofillProfileEnabled(false);
   // If the password manager is enabled, that's enough to parse the form.
   EXPECT_CALL(crowdsourcing_manager(), StartQueryRequest).Times(AnyNumber());
@@ -3875,7 +3866,7 @@ TEST_F(BrowserAutofillManagerTest,
   const CreditCard local_card = test::GetCreditCard();
   EXPECT_CALL(cc_access_manager(), FetchCreditCard)
       .WillOnce(base::test::RunOnceCallback<1>(local_card));
-  EXPECT_CALL(payments_client(), OnCardDataAvailable).Times(0);
+  EXPECT_CALL(payments_autofill_client(), OnCardDataAvailable).Times(0);
 
   FormData form = CreateTestCreditCardFormData(/*is_https=*/true,
                                                /*use_month_type=*/false);
@@ -3890,7 +3881,7 @@ TEST_F(BrowserAutofillManagerTest,
   const CreditCard server_card = test::GetMaskedServerCard();
   EXPECT_CALL(cc_access_manager(), FetchCreditCard)
       .WillOnce(base::test::RunOnceCallback<1>(server_card));
-  EXPECT_CALL(payments_client(), OnCardDataAvailable).Times(0);
+  EXPECT_CALL(payments_autofill_client(), OnCardDataAvailable).Times(0);
 
   FormData form = CreateTestCreditCardFormData(/*is_https=*/true,
                                                /*use_month_type=*/false);
@@ -3907,7 +3898,7 @@ TEST_F(BrowserAutofillManagerTest,
   EXPECT_CALL(cc_access_manager(), FetchCreditCard)
       .WillOnce(base::test::RunOnceCallback<1>(filled_card));
   EXPECT_CALL(
-      payments_client(),
+      payments_autofill_client(),
       OnCardDataAvailable(
           AllOf(Field(&Options::masked_card_name,
                       filled_card.CardNameForAutofillDisplay()),
@@ -3936,7 +3927,7 @@ TEST_F(BrowserAutofillManagerTest, FillOrPreviewForm_CreditCard_Bnpl) {
   bnpl_virtual_card.set_is_bnpl_card(/*is_bnpl_card=*/true);
 
   TestPaymentsDataManager& test_paydm = static_cast<TestPaymentsDataManager&>(
-      payments_client().GetPaymentsDataManager());
+      payments_autofill_client().GetPaymentsDataManager());
   test_paydm.AddBnplIssuer(test::GetTestLinkedBnplIssuer());
 
   prefs::SetAutofillBnplEnabled(autofill_client().GetPrefs(), true);
@@ -3945,7 +3936,7 @@ TEST_F(BrowserAutofillManagerTest, FillOrPreviewForm_CreditCard_Bnpl) {
 
   using Options = FilledCardInformationBubbleOptions;
   EXPECT_CALL(
-      payments_client(),
+      payments_autofill_client(),
       OnCardDataAvailable(AllOf(
           Field(&Options::masked_card_name,
                 bnpl_virtual_card.CardNameForAutofillDisplay()),
@@ -3973,7 +3964,7 @@ TEST_F(BrowserAutofillManagerTest,
   EXPECT_CALL(cc_access_manager(), FetchCreditCard)
       .WillOnce(base::test::RunOnceCallback<1>(filled_card));
   EXPECT_CALL(
-      payments_client(),
+      payments_autofill_client(),
       OnCardDataAvailable(
           AllOf(Field(&Options::masked_card_name,
                       filled_card.CardNameForAutofillDisplay()),
@@ -4168,17 +4159,14 @@ TEST_F(BrowserAutofillManagerTest,
 }
 
 TEST_F(BrowserAutofillManagerTest, FormEvents_NotifiesSaveAndFillManager) {
-  EXPECT_CALL(
-      *autofill_client().GetPaymentsAutofillClient()->GetSaveAndFillManager(),
-      LogCreditCardFormFilled());
-  EXPECT_CALL(
-      *autofill_client().GetPaymentsAutofillClient()->GetSaveAndFillManager(),
-      LogCreditCardFormSubmitted());
-  EXPECT_CALL(
-      *autofill_client().GetPaymentsAutofillClient()->GetSaveAndFillManager(),
-      MaybeAddStrikeForSaveAndFill());
+  EXPECT_CALL(*payments_autofill_client().GetSaveAndFillManager(),
+              LogCreditCardFormFilled());
+  EXPECT_CALL(*payments_autofill_client().GetSaveAndFillManager(),
+              LogCreditCardFormSubmitted());
+  EXPECT_CALL(*payments_autofill_client().GetSaveAndFillManager(),
+              MaybeAddStrikeForSaveAndFill());
 
-  payments_client().SetAutofillPaymentMethodsEnabled(true);
+  payments_autofill_client().SetAutofillPaymentMethodsEnabled(true);
   FormData form =
       CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
   FormsSeen({form});
@@ -4199,9 +4187,8 @@ TEST_F(BrowserAutofillManagerTest, FormEvents_NotifiesSaveAndFillManager) {
 
 TEST_F(BrowserAutofillManagerTest,
        SaveAndFillSuggestionShownTwice_NotifiesManagerTwice) {
-  EXPECT_CALL(
-      *autofill_client().GetPaymentsAutofillClient()->GetSaveAndFillManager(),
-      OnSuggestionOffered())
+  EXPECT_CALL(*payments_autofill_client().GetSaveAndFillManager(),
+              OnSuggestionOffered())
       .Times(2);
 
   FormData form =
@@ -5031,7 +5018,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogIBANField) {
 // submissions are still received by the SingleFieldFillRouter.
 TEST_F(BrowserAutofillManagerTest, FormSubmittedAutocompleteEnabled) {
   autofill_client().SetAutofillProfileEnabled(false);
-  payments_client().SetAutofillPaymentMethodsEnabled(false);
+  payments_autofill_client().SetAutofillPaymentMethodsEnabled(false);
 
   // Set up our form data.
   FormData form = CreateTestAddressFormData();
@@ -5071,7 +5058,7 @@ TEST_F(BrowserAutofillManagerTest, ValuePatternsMetric) {
 TEST_F(BrowserAutofillManagerTest,
        SingleFieldFillSuggestions_SomeWhenAutofillDisabled) {
   autofill_client().SetAutofillProfileEnabled(false);
-  payments_client().SetAutofillPaymentMethodsEnabled(false);
+  payments_autofill_client().SetAutofillPaymentMethodsEnabled(false);
 
   // Set up our form data.
   FormData form = CreateTestAddressFormData();
@@ -5139,9 +5126,7 @@ class BrowserAutofillManagerTest_AutofillDisabled
     autofill_client().set_last_committed_primary_main_frame_url(
         GURL("http://example.test"));
     autofill_client().SetAutofillProfileEnabled(false);
-    autofill_client()
-        .GetPaymentsAutofillClient()
-        ->SetAutofillPaymentMethodsEnabled(false);
+    payments_autofill_client().SetAutofillPaymentMethodsEnabled(false);
   }
 };
 
@@ -5208,7 +5193,7 @@ TEST_F(
 TEST_F(BrowserAutofillManagerTest,
        SingleFieldFillSuggestions_NoneWhenSingleFieldFillConditionsNotMet) {
   autofill_client().SetAutofillProfileEnabled(false);
-  payments_client().SetAutofillPaymentMethodsEnabled(false);
+  payments_autofill_client().SetAutofillPaymentMethodsEnabled(false);
 
   // Set up our form data.
   FormData form = CreateTestAddressFormData();
@@ -6040,7 +6025,7 @@ TEST_F(BrowserAutofillManagerTest, ProfileDisabledDoesNotSuggest) {
 }
 
 TEST_F(BrowserAutofillManagerTest, CreditCardDisabledDoesNotSuggest) {
-  payments_client().SetAutofillPaymentMethodsEnabled(false);
+  payments_autofill_client().SetAutofillPaymentMethodsEnabled(false);
 
   // Set up our form data.
   FormData form =
@@ -6114,7 +6099,7 @@ TEST_F(BrowserAutofillManagerTest, ShouldUploadForm) {
 
   // Autofill disabled.
   autofill_client().SetAutofillProfileEnabled(false);
-  payments_client().SetAutofillPaymentMethodsEnabled(false);
+  payments_autofill_client().SetAutofillPaymentMethodsEnabled(false);
   EXPECT_FALSE(autofill_manager().ShouldUploadForm(FormStructure(form)));
 }
 
@@ -7406,7 +7391,7 @@ TEST_F(BrowserAutofillManagerTest, ShowNothingIfTouchToFillAlreadyShown) {
 // Test that 'Scan New Card' suggestion is shown based on whether autofill
 // credit card is enabled or disabled.
 TEST_F(BrowserAutofillManagerTest, ScanCreditCardBasedOnAutofillPreference) {
-  ON_CALL(payments_client(), HasCreditCardScanFeature())
+  ON_CALL(payments_autofill_client(), HasCreditCardScanFeature())
       .WillByDefault(Return(true));
 
   FormData form =
@@ -7419,12 +7404,12 @@ TEST_F(BrowserAutofillManagerTest, ScanCreditCardBasedOnAutofillPreference) {
   ASSERT_EQ(card_number_field.name(), u"cardnumber");
 
   // Test case where autofill is enabled.
-  payments_client().SetAutofillPaymentMethodsEnabled(true);
+  payments_autofill_client().SetAutofillPaymentMethodsEnabled(true);
   EXPECT_TRUE(test_api(autofill_manager())
                   .ShouldShowScanCreditCard(form_structure, card_number_field));
 
   // Test case where autofill is disabled.
-  payments_client().SetAutofillPaymentMethodsEnabled(false);
+  payments_autofill_client().SetAutofillPaymentMethodsEnabled(false);
   EXPECT_FALSE(
       test_api(autofill_manager())
           .ShouldShowScanCreditCard(form_structure, card_number_field));
@@ -7443,13 +7428,13 @@ TEST_F(BrowserAutofillManagerTest, ScanCreditCardBasedOnPlatformSupport) {
   ASSERT_EQ(card_number_field.name(), u"cardnumber");
 
   // Test case where device and platform support scanning credit cards.
-  ON_CALL(payments_client(), HasCreditCardScanFeature())
+  ON_CALL(payments_autofill_client(), HasCreditCardScanFeature())
       .WillByDefault(Return(true));
   EXPECT_TRUE(test_api(autofill_manager())
                   .ShouldShowScanCreditCard(form_structure, card_number_field));
 
   // Test case where device and platform do not support scanning credit cards.
-  ON_CALL(payments_client(), HasCreditCardScanFeature())
+  ON_CALL(payments_autofill_client(), HasCreditCardScanFeature())
       .WillByDefault(Return(false));
   EXPECT_FALSE(
       test_api(autofill_manager())
@@ -7459,7 +7444,7 @@ TEST_F(BrowserAutofillManagerTest, ScanCreditCardBasedOnPlatformSupport) {
 // Test that 'Scan New Card' suggestion is shown based on whether form field
 // chosen is a credit card number field.
 TEST_F(BrowserAutofillManagerTest, ScanCreditCardBasedOnCreditCardNumberField) {
-  ON_CALL(payments_client(), HasCreditCardScanFeature())
+  ON_CALL(payments_autofill_client(), HasCreditCardScanFeature())
       .WillByDefault(Return(true));
 
   FormData form =
@@ -7484,7 +7469,7 @@ TEST_F(BrowserAutofillManagerTest, ScanCreditCardBasedOnCreditCardNumberField) {
 // Test that 'Scan New Card' suggestion is shown based on whether the form is
 // secure.
 TEST_F(BrowserAutofillManagerTest, ScanCreditCardBasedOnIsFormSecure) {
-  ON_CALL(payments_client(), HasCreditCardScanFeature())
+  ON_CALL(payments_autofill_client(), HasCreditCardScanFeature())
       .WillByDefault(Return(true));
 
   // Test case for HTTP form.

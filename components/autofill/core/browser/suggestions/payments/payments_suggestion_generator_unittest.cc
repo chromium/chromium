@@ -239,7 +239,7 @@ class PaymentsSuggestionGeneratorTest
     autofill_client().SetPrefs(test::PrefServiceForTesting());
     payments_data().SetPrefService(autofill_client().GetPrefs());
     payments_data().SetSyncServiceForTest(&sync_service_);
-    autofill_client().GetPaymentsAutofillClient()->set_autofill_offer_manager(
+    payments_autofill_client().set_autofill_offer_manager(
         std::make_unique<AutofillOfferManager>(&autofill_client()
                                                     .GetPersonalDataManager()
                                                     .payments_data_manager()));
@@ -2664,9 +2664,8 @@ TEST_F(PaymentsSuggestionGeneratorTest,
   SetCreditCardUploadEnabledForTest(/*credit_card_upload_enabled=*/false);
 
   MockSaveAndFillManager& mock_save_and_fill_manager =
-      static_cast<MockSaveAndFillManager&>(*autofill_client()
-                                                .GetPaymentsAutofillClient()
-                                                ->GetSaveAndFillManager());
+      static_cast<MockSaveAndFillManager&>(
+          *payments_autofill_client().GetSaveAndFillManager());
 
   EXPECT_CALL(mock_save_and_fill_manager, ShouldBlockFeature())
       .WillOnce(testing::Return(false));
@@ -2703,9 +2702,8 @@ TEST_F(PaymentsSuggestionGeneratorTest,
   SetCreditCardUploadEnabledForTest(/*credit_card_upload_enabled=*/true);
 
   MockSaveAndFillManager& mock_save_and_fill_manager =
-      static_cast<MockSaveAndFillManager&>(*autofill_client()
-                                                .GetPaymentsAutofillClient()
-                                                ->GetSaveAndFillManager());
+      static_cast<MockSaveAndFillManager&>(
+          *payments_autofill_client().GetSaveAndFillManager());
 
   EXPECT_CALL(mock_save_and_fill_manager, ShouldBlockFeature())
       .WillOnce(testing::Return(false));
@@ -2759,9 +2757,8 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       features::kAutofillEnableSaveAndFill);
 
   MockSaveAndFillManager& mock_save_and_fill_manager =
-      static_cast<MockSaveAndFillManager&>(*autofill_client()
-                                                .GetPaymentsAutofillClient()
-                                                ->GetSaveAndFillManager());
+      static_cast<MockSaveAndFillManager&>(
+          *payments_autofill_client().GetSaveAndFillManager());
 
   EXPECT_CALL(mock_save_and_fill_manager,
               MaybeLogSaveAndFillSuggestionNotShownReason(
@@ -2790,9 +2787,8 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       features::kAutofillEnableSaveAndFill);
 
   MockSaveAndFillManager& mock_save_and_fill_manager =
-      static_cast<MockSaveAndFillManager&>(*autofill_client()
-                                                .GetPaymentsAutofillClient()
-                                                ->GetSaveAndFillManager());
+      static_cast<MockSaveAndFillManager&>(
+          *payments_autofill_client().GetSaveAndFillManager());
 
   EXPECT_CALL(mock_save_and_fill_manager,
               MaybeLogSaveAndFillSuggestionNotShownReason(
@@ -2819,9 +2815,8 @@ TEST_F(PaymentsSuggestionGeneratorTest,
   autofill_client().set_is_off_the_record(true);
 
   MockSaveAndFillManager& mock_save_and_fill_manager =
-      static_cast<MockSaveAndFillManager&>(*autofill_client()
-                                                .GetPaymentsAutofillClient()
-                                                ->GetSaveAndFillManager());
+      static_cast<MockSaveAndFillManager&>(
+          *payments_autofill_client().GetSaveAndFillManager());
 
   EXPECT_CALL(mock_save_and_fill_manager,
               MaybeLogSaveAndFillSuggestionNotShownReason(
@@ -2867,9 +2862,8 @@ TEST_F(PaymentsSuggestionGeneratorTest,
   SetCreditCardUploadEnabledForTest(/*credit_card_upload_enabled=*/true);
 
   MockSaveAndFillManager& mock_save_and_fill_manager =
-      static_cast<MockSaveAndFillManager&>(*autofill_client()
-                                                .GetPaymentsAutofillClient()
-                                                ->GetSaveAndFillManager());
+      static_cast<MockSaveAndFillManager&>(
+          *payments_autofill_client().GetSaveAndFillManager());
 
   EXPECT_CALL(mock_save_and_fill_manager, ShouldBlockFeature())
       .WillOnce(testing::Return(true));
@@ -2905,9 +2899,8 @@ TEST_F(PaymentsSuggestionGeneratorTest,
   SetCreditCardUploadEnabledForTest(/*credit_card_upload_enabled=*/true);
 
   MockSaveAndFillManager& mock_save_and_fill_manager =
-      static_cast<MockSaveAndFillManager&>(*autofill_client()
-                                                .GetPaymentsAutofillClient()
-                                                ->GetSaveAndFillManager());
+      static_cast<MockSaveAndFillManager&>(
+          *payments_autofill_client().GetSaveAndFillManager());
 
   EXPECT_CALL(mock_save_and_fill_manager, ShouldBlockFeature())
       .WillOnce(testing::Return(false));

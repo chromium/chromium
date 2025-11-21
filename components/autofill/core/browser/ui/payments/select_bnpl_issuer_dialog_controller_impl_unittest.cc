@@ -46,7 +46,7 @@ class SelectBnplIssuerDialogControllerImplTest
   void InitController() {
     InitAutofillClient();
     controller_ = std::make_unique<SelectBnplIssuerDialogControllerImpl>(
-        autofill_client().GetPaymentsAutofillClient());
+        &payments_autofill_client());
     controller_->ShowDialog(
         create_view_callback_.Get(), issuer_contexts_, /*app_locale=*/"en-US",
         selected_issuer_callback_.Get(), cancel_callback_.Get());

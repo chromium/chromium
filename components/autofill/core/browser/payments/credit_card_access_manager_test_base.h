@@ -199,10 +199,6 @@ class CreditCardAccessManagerTestBase
   TestCreditCardFidoAuthenticator& fido_authenticator();
 #endif
 
-  payments::TestPaymentsAutofillClient& payments_autofill_client() {
-    return *autofill_client().GetPaymentsAutofillClient();
-  }
-
   TestCreditCardOtpAuthenticator& otp_authenticator() {
     return static_cast<TestCreditCardOtpAuthenticator&>(
         *payments_autofill_client().GetOtpAuthenticator());

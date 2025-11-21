@@ -107,13 +107,10 @@ class CreditCardFidoAuthenticatorTest
     CreateAutofillDriver();
     autofill_driver().SetAuthenticator(new TestInternalAuthenticator());
 
-    autofill_client()
-        .GetPaymentsAutofillClient()
-        ->set_payments_network_interface(
-            std::make_unique<payments::TestPaymentsNetworkInterface>(
-                autofill_client().GetURLLoaderFactory(),
-                autofill_client().GetIdentityManager(),
-                &personal_data_manager()));
+    payments_autofill_client().set_payments_network_interface(
+        std::make_unique<payments::TestPaymentsNetworkInterface>(
+            autofill_client().GetURLLoaderFactory(),
+            autofill_client().GetIdentityManager(), &personal_data_manager()));
     autofill_client().set_test_strike_database(
         std::make_unique<TestStrikeDatabase>());
     fido_authenticator_ = std::make_unique<CreditCardFidoAuthenticator>(

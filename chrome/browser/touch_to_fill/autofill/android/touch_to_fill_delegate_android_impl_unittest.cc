@@ -208,7 +208,8 @@ class TouchToFillDelegateAndroidImplUnitTest
       public WithTestAutofillClientDriverManager<
           NiceMock<MockAutofillClient>,
           TestAutofillDriver,
-          NiceMock<MockBrowserAutofillManager>> {
+          NiceMock<MockBrowserAutofillManager>,
+          MockPaymentsAutofillClient> {
  public:
   TouchToFillDelegateAndroidImplUnitTest() {
     features_.InitWithFeatures(
@@ -320,11 +321,6 @@ class TouchToFillDelegateAndroidImplUnitTest
                                     form_, form_.fields()[0]));
     EXPECT_EQ(expected_success,
               touch_to_fill_delegate_->IsShowingTouchToFill());
-  }
-
-  MockPaymentsAutofillClient& payments_autofill_client() {
-    return *static_cast<MockPaymentsAutofillClient*>(
-        autofill_client().GetPaymentsAutofillClient());
   }
 
   FormData form_;

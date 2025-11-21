@@ -328,11 +328,6 @@ class AutofillMetricsBaseTest : public WithTestAutofillClientDriverManager<
     return *autofill_client().GetUkmRecorder();
   }
 
-  MockPaymentsAutofillClient& payments_autofill_client() {
-    return static_cast<MockPaymentsAutofillClient&>(
-        *autofill_client().GetPaymentsAutofillClient());
-  }
-
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   test::AutofillUnitTestEnvironment autofill_test_environment_;

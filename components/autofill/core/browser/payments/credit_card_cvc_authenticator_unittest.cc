@@ -84,13 +84,11 @@ class CreditCardCvcAuthenticatorTest
     InitAutofillClient();
     requester_ = std::make_unique<TestAuthenticationRequester>();
 
-    autofill_client()
-        .GetPaymentsAutofillClient()
-        ->set_payments_network_interface(
-            std::make_unique<payments::TestPaymentsNetworkInterface>(
-                autofill_client().GetURLLoaderFactory(),
-                autofill_client().GetIdentityManager(),
-                &autofill_client().GetPersonalDataManager()));
+    payments_autofill_client().set_payments_network_interface(
+        std::make_unique<payments::TestPaymentsNetworkInterface>(
+            autofill_client().GetURLLoaderFactory(),
+            autofill_client().GetIdentityManager(),
+            &autofill_client().GetPersonalDataManager()));
     cvc_authenticator_ =
         std::make_unique<CreditCardCvcAuthenticator>(&autofill_client());
   }
