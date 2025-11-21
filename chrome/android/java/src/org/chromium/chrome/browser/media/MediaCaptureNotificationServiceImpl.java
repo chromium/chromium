@@ -340,7 +340,12 @@ public class MediaCaptureNotificationServiceImpl extends SplitCompatService.Impl
     private void startOrUpdateForegroundService(
             int notificationId,
             NotificationWrapper notification,
-            Set<@MediaType Integer> mediaTypes) {
+            Set<@MediaType Integer> newMediaTypes) {
+        Set<@MediaType Integer> allMediaTypes = new HashSet<>(newMediaTypes);
+        for (Set<@MediaType Integer> types : mNotificationsType.values()) {
+            allMediaTypes.addAll(types);
+        }
+
         int foregroundServiceType = 0;
         if (ActivityCompat.checkSelfPermission(getService(), Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_GRANTED) {
@@ -350,11 +355,11 @@ public class MediaCaptureNotificationServiceImpl extends SplitCompatService.Impl
                 == PackageManager.PERMISSION_GRANTED) {
             foregroundServiceType |= ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE;
         }
-        if (mediaTypes.contains(MediaType.TAB_CAPTURE)) {
+        if (allMediaTypes.contains(MediaType.TAB_CAPTURE)) {
             foregroundServiceType |= ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK;
         }
-        if (mediaTypes.contains(MediaType.SCREEN_CAPTURE)
-                || mediaTypes.contains(MediaType.WINDOW_CAPTURE)) {
+        if (allMediaTypes.contains(MediaType.SCREEN_CAPTURE)
+                || allMediaTypes.contains(MediaType.WINDOW_CAPTURE)) {
             foregroundServiceType |= ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION;
         }
         ForegroundServiceUtils.getInstance()
@@ -480,17 +485,14 @@ public class MediaCaptureNotificationServiceImpl extends SplitCompatService.Impl
             Context context, int tabId, @Nullable WebContents webContents, GURL url) {
         // On desktop, we currently only use a single notification for all tabs and hang all
         // foreground services off that notification.
-        // TODO(crbug.com/352187279): If we open a new tab and capture, it will overwrite the
-        // media types and set the wrong foreground service on desktop. Instead, for desktop we
-        // should keep a running histogram of media type usage over all tabs.
         Set<@MediaType Integer> mediaTypes = getMediaTypes(webContents);
-        final int nofticationId = getNotificationIdFromTabId(tabId);
-        if (!shouldStartService(mediaTypes, nofticationId)) {
+        final int notificationId = getNotificationIdFromTabId(tabId);
+        if (!shouldStartService(mediaTypes, notificationId)) {
             return;
         }
         Intent intent = new Intent(context, MediaCaptureNotificationService.class);
         intent.setAction(ACTION_MEDIA_CAPTURE_UPDATE);
-        intent.putExtra(NOTIFICATION_ID_EXTRA, nofticationId);
+        intent.putExtra(NOTIFICATION_ID_EXTRA, notificationId);
         intent.putExtra(NOTIFICATION_MEDIA_URL_EXTRA, url.getSpec());
         intent.putIntegerArrayListExtra(NOTIFICATION_MEDIA_TYPE_EXTRA, new ArrayList<>(mediaTypes));
         Tab tab = TabWindowManagerSingleton.getInstance().getTabById(tabId);
