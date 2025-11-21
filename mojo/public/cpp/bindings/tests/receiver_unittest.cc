@@ -32,6 +32,7 @@
 #include "mojo/public/cpp/bindings/tests/bindings_test_base.h"
 #include "mojo/public/cpp/bindings/tests/receiver_unittest.test-mojom.h"
 #include "mojo/public/cpp/system/functions.h"
+#include "mojo/public/cpp/test_support/validation_errors_test_util.h"
 #include "mojo/public/interfaces/bindings/tests/ping_service.test-mojom.h"
 #include "mojo/public/interfaces/bindings/tests/sample_interfaces.test-mojom.h"
 #include "mojo/public/interfaces/bindings/tests/sample_service.test-mojom.h"

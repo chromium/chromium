@@ -10,6 +10,8 @@ static_library("test_utils") {
     "lib/test_support.cc",
     "lib/test_utils.cc",
     "test_utils.h",
+    "validation_errors_test_util.cc",
+    "validation_errors_test_util.h",
   ]
 
   deps = [

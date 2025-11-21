@@ -30,6 +30,7 @@
 #include "mojo/public/cpp/bindings/tests/validation_test_input_parser.h"
 #include "mojo/public/cpp/system/message.h"
 #include "mojo/public/cpp/test_support/test_support.h"
+#include "mojo/public/cpp/test_support/validation_errors_test_util.h"
 #include "mojo/public/interfaces/bindings/tests/validation_test_associated_interfaces.test-mojom.h"
 #include "mojo/public/interfaces/bindings/tests/validation_test_interfaces.test-mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
