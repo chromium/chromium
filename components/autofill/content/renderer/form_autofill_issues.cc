@@ -30,15 +30,12 @@ using blink::WebElement;
 using blink::WebElementCollection;
 using blink::WebFormControlElement;
 using blink::WebFormElement;
-using blink::WebInputElement;
 using blink::WebLabelElement;
 using blink::WebLocalFrame;
 using blink::WebString;
 using blink::mojom::GenericIssueErrorType;
 
 namespace autofill::form_issues {
-
-using form_util::IsAutofillableElement;
 
 namespace {
 
@@ -117,11 +114,10 @@ void MaybeAppendDuplicateIdForInputDevtoolsIssue(
     std::vector<FormIssue>& form_issues) {
   const WebString& id_attr = GetWebString<kId>();
 
-  // Create copies of |elements| with ids that can be modified
   std::vector<WebFormControlElement> elements_with_id_attr;
   elements_with_id_attr.reserve(elements.size());
   for (const auto& element : elements) {
-    if (IsAutofillableElement(element) && !element.GetIdAttribute().IsEmpty()) {
+    if (!element.GetIdAttribute().IsEmpty()) {
       elements_with_id_attr.push_back(element);
     }
   }
@@ -239,10 +235,6 @@ void AppendFormIssuesInternal(base::span<const WebFormControlElement> elements,
 
   MaybeAppendDuplicateIdForInputDevtoolsIssue(elements, form_issues);
   for (const WebFormControlElement& element : elements) {
-    if (!form_util::IsAutofillableElement(element)) {
-      continue;
-    }
-
     MaybeAppendAriaLabelledByDevtoolsIssue(element, form_issues);
     MaybeAppendAutocompleteAttributeDevtoolsIssue(element, form_issues);
     MaybeAppendInputWithEmptyIdAndNameDevtoolsIssue(element, form_issues);
@@ -261,9 +253,9 @@ std::vector<FormIssue> GetFormIssues(
   return form_issues;
 }
 
-// Method specific to find issues regarding label `for` attribute. This needs to
-// be called after label extraction. Similar to `GetFormIssues` it returns
-// a vector that is the union of `form_issues` and the new issues found.
+// Checks for issues with the "for" attribute on <label> elements. This needs to
+// be called after label extraction. Similar to `GetFormIssues` it returns a
+// vector that is the union of `form_issues` and the new issues found.
 std::vector<FormIssue> CheckForLabelsWithIncorrectForAttribute(
     const WebDocument& document,
     base::span<const FormFieldData> fields,
@@ -318,18 +310,18 @@ void MaybeEmitFormIssuesToDevtools(WebLocalFrame& web_local_frame,
   std::vector<FormIssue> form_issues;
   // Get issues from forms input elements.
   for (const WebFormElement& form_element : document.GetTopLevelForms()) {
-    form_issues = form_issues::GetFormIssues(
+    form_issues = GetFormIssues(
         form_util::GetOwnedAutofillableFormControls(document, form_element),
         std::move(form_issues));
   }
   // Get issues from input elements that belong to no form.
-  form_issues = form_issues::GetFormIssues(
+  form_issues = GetFormIssues(
       form_util::GetOwnedAutofillableFormControls(document, WebFormElement()),
       std::move(form_issues));
   // Look for fields that after parsed were found to have labels incorrectly
   // used.
   for (const FormData& form : forms) {
-    form_issues = form_issues::CheckForLabelsWithIncorrectForAttribute(
+    form_issues = CheckForLabelsWithIncorrectForAttribute(
         document, form.fields(), std::move(form_issues));
   }
   if (form_issues.size() > kMaxNumberOfDevtoolsIssuesEmitted) {
