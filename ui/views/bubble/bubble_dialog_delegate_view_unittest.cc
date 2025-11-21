@@ -19,6 +19,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/interaction/element_test_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
@@ -64,7 +65,7 @@ class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
   METADATA_HEADER(TestBubbleDialogDelegateView, BubbleDialogDelegateView)
 
  public:
-  explicit TestBubbleDialogDelegateView(View* anchor_view)
+  explicit TestBubbleDialogDelegateView(BubbleAnchor anchor_view)
       : BubbleDialogDelegateView(anchor_view,
                                  BubbleBorder::TOP_LEFT,
                                  BubbleBorder::NO_SHADOW,
@@ -1077,6 +1078,48 @@ TEST_F(BubbleDialogDelegateViewTest, AlertAccessibleEvent) {
       BubbleDialogDelegateView::CreateBubble(std::move(alert_bubble_delegate));
   alert_bubble_widget->Show();
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kAlert));
+}
+
+// Tests that GetAnchorRect() properly updates from a TrackedElement's
+// GetScreenBounds() when the element is set as the anchor.
+TEST_F(BubbleDialogDelegateViewTest, TrackedElementAnchorUpdates) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestElementId);
+
+  // Create an anchor widget with a tracked view.
+  std::unique_ptr<Widget> anchor_widget = CreateTestWidget(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  View* anchor_view = anchor_widget->GetContentsView();
+  anchor_view->SetProperty(kElementIdentifierKey, kTestElementId);
+
+  // Set initial bounds for the anchor view.
+  const gfx::Rect initial_bounds(100, 150, 50, 60);
+  anchor_view->SetBoundsRect(initial_bounds);
+  anchor_widget->Show();
+
+  // Get the TrackedElement for the view.
+  ui::TrackedElement* tracked_element =
+      ElementTrackerViews::GetInstance()->GetElementForView(anchor_view);
+  ASSERT_TRUE(tracked_element);
+
+  // Create a bubble anchored to the tracked element.
+  TestBubbleDialogDelegateView* bubble_delegate =
+      new TestBubbleDialogDelegateView(tracked_element);
+  bubble_delegate->set_close_on_deactivate(false);
+  Widget* bubble_widget =
+      BubbleDialogDelegateView::CreateBubble(bubble_delegate);
+  bubble_widget->Show();
+
+  // Verify the anchor rect matches the tracked element's screen bounds.
+  const gfx::Rect initial_screen_bounds = tracked_element->GetScreenBounds();
+  EXPECT_EQ(initial_screen_bounds, bubble_delegate->GetAnchorRect());
+
+  // Update the anchor view's bounds.
+  const gfx::Rect updated_bounds(200, 250, 70, 80);
+  anchor_view->SetBoundsRect(updated_bounds);
+
+  // Verify GetAnchorRect() returns the updated bounds.
+  const gfx::Rect updated_screen_bounds = tracked_element->GetScreenBounds();
+  EXPECT_EQ(updated_screen_bounds, bubble_delegate->GetAnchorRect());
 }
 
 // Anchoring Tests -------------------------------------------------------------

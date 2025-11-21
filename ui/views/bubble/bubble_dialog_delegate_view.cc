@@ -757,11 +757,13 @@ gfx::Rect BubbleDialogDelegate::GetAnchorRect() const {
   // TODO(tluk) eliminate the need for GetAnchorRect() to return an empty rect
   // if neither an |anchor_rect_| or an anchor view have been set.
   View* anchor_view = GetAnchorView();
-  if (!anchor_view) {
+  if (anchor_view) {
+    anchor_rect_ = anchor_view->GetAnchorBoundsInScreen();
+  } else if (anchor_tracked_element_) {
+    anchor_rect_ = anchor_tracked_element_->GetScreenBounds();
+  } else {
     return anchor_rect_.value_or(gfx::Rect());
   }
-
-  anchor_rect_ = anchor_view->GetAnchorBoundsInScreen();
 
 #if !BUILDFLAG(IS_MAC)
   // GetAnchorBoundsInScreen returns values that take anchor widget's
@@ -781,7 +783,7 @@ gfx::Rect BubbleDialogDelegate::GetAnchorRect() const {
   // Remove additional whitespace padding that was added to the view
   // so that anchor_rect centers on the anchor and not skewed by the whitespace
   BubbleFrameView* frame_view = GetBubbleFrameView();
-  if (frame_view && frame_view->GetDisplayVisibleArrow()) {
+  if (anchor_view && frame_view && frame_view->GetDisplayVisibleArrow()) {
     gfx::Insets* padding = anchor_view->GetProperty(kInternalPaddingKey);
     if (padding != nullptr) {
       anchor_rect_->Inset(*padding);
