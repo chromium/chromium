@@ -8,6 +8,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/files/file_path.h"
+#include "base/hash/hash.h"
 #include "chrome/browser/ntp_customization/jni_headers/NtpThemeBridge_jni.h"
 #include "chrome/browser/search/background/ntp_background_service_factory.h"
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
@@ -106,8 +107,10 @@ void NtpThemeBridge::OnCollectionInfoAvailable() {
         base::android::ConvertUTF8ToJavaString(env, collection.collection_name);
     ScopedJavaLocalRef<jobject> j_url =
         url::GURLAndroid::FromNativeGURL(env, collection.preview_image_url);
+    jint j_hash =
+        static_cast<jint>(base::PersistentHash(collection.collection_id));
     ScopedJavaLocalRef<jobject> j_collection =
-        Java_NtpThemeBridge_createCollection(env, j_id, j_label, j_url);
+        Java_NtpThemeBridge_createCollection(env, j_id, j_label, j_url, j_hash);
     j_collections.push_back(j_collection);
   }
 

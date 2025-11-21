@@ -145,11 +145,13 @@ public class NtpThemeBridge {
      * @param id The ID of the collection.
      * @param label The name of the collection.
      * @param previewImageUrl The URL of a preview image for the collection.
+     * @param hash The hash of collection ID.
      * @return A new {@link BackgroundCollection} object.
      */
     @CalledByNative
-    static BackgroundCollection createCollection(String id, String label, GURL previewImageUrl) {
-        return new BackgroundCollection(id, label, previewImageUrl);
+    static BackgroundCollection createCollection(
+            String id, String label, GURL previewImageUrl, int hash) {
+        return new BackgroundCollection(id, label, previewImageUrl, hash);
     }
 
     /**

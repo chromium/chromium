@@ -50,6 +50,14 @@ public class NtpCustomizationMetricsUtils {
     @VisibleForTesting
     static final String HISTOGRAM_THEME_TYPE = HISTOGRAM_NTP_CUSTOMIZATION_PREFIX + ".Theme.Type";
 
+    @VisibleForTesting
+    static final String HISTOGRAM_THEME_COLLECTION =
+            "NewTabPage.Customization.Theme.ThemeCollection";
+
+    @VisibleForTesting
+    static final String HISTOGRAM_THEME_COLLECTION_SHOW =
+            HISTOGRAM_THEME_COLLECTION + ".CollectionShow";
+
     /**
      * Records the type of theme selected for the New Tab Page background. This is logged once on
      * cold startup.
@@ -136,5 +144,15 @@ public class NtpCustomizationMetricsUtils {
                 HISTOGRAM_THEME_UPLOAD_IMAGE_PREVIEW_INTERACTIONS,
                 interactionType,
                 UploadImagePreviewCoordinator.PreviewInteractionType.NUM_ENTRIES);
+    }
+
+    /**
+     * Records the total number of impressions of each theme collection sub category shown,
+     * regardless of whether it has been shown previously.
+     *
+     * @param themeCollectionHash The hash of the collection ID.
+     */
+    public static void recordThemeCollectionShow(int themeCollectionHash) {
+        RecordHistogram.recordSparseHistogram(HISTOGRAM_THEME_COLLECTION_SHOW, themeCollectionHash);
     }
 }

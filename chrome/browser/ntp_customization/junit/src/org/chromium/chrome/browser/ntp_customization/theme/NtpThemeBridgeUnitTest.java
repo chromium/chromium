@@ -98,9 +98,9 @@ public class NtpThemeBridgeUnitTest {
 
         // Test with some items.
         BackgroundCollection collection1 =
-                new BackgroundCollection("id1", "label1", JUnitTestGURLs.URL_1);
+                new BackgroundCollection("id1", "label1", JUnitTestGURLs.URL_1, 123);
         BackgroundCollection collection2 =
-                new BackgroundCollection("id2", "label2", JUnitTestGURLs.URL_2);
+                new BackgroundCollection("id2", "label2", JUnitTestGURLs.URL_2, 456);
         Object[] collectionsWithData = new Object[] {collection1, collection2};
         mObjectArrayCallbackCaptor.getValue().onResult(collectionsWithData);
         verify(mBackgroundCollectionsCallback).onResult(eq(List.of(collection1, collection2)));
@@ -148,7 +148,8 @@ public class NtpThemeBridgeUnitTest {
         String id = "id";
         String label = "label";
         GURL url = JUnitTestGURLs.EXAMPLE_URL;
-        BackgroundCollection collection = NtpThemeBridge.createCollection(id, label, url);
+        int hash = 123; // Mock hash value for testing
+        BackgroundCollection collection = NtpThemeBridge.createCollection(id, label, url, hash);
         assertEquals(id, collection.id);
         assertEquals(label, collection.label);
         assertEquals(url, collection.previewImageUrl);

@@ -23,6 +23,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeBridge;
@@ -217,6 +218,7 @@ public class NtpThemeCollectionsCoordinator {
         BackgroundCollection collection = mThemeCollectionsList.get(position);
         String collectionId = collection.id;
         String themeCollectionTitle = collection.label;
+        int themeCollectionHash = collection.hash;
 
         @SheetState
         int currentBottomSheetState =
@@ -237,6 +239,7 @@ public class NtpThemeCollectionsCoordinator {
         }
 
         mBottomSheetDelegate.showBottomSheet(BottomSheetType.SINGLE_THEME_COLLECTION);
+        NtpCustomizationMetricsUtils.recordThemeCollectionShow(themeCollectionHash);
     }
 
     private void handleLearnMoreClick(View view) {

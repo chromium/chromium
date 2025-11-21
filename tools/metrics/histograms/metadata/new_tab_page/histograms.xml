@@ -446,6 +446,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.Customization.Theme.ThemeCollection.CollectionShow"
+    enum="NTPCollectionId" expires_after="2026-05-17">
+  <owner>hanxi@chromium.org</owner>
+  <owner>yyanting@google.com</owner>
+  <owner>clank-start@google.com</owner>
+  <summary>
+    Records the total number of impressions of the theme collection sub
+    categories shown in the New Tab Page customization. This histogram is logged
+    every time when the theme collection sub category is shown, regardless of
+    whether it has been shown before. This metric is logged on Android only.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.Customization.Theme.Type"
     enum="NtpBackgroundImageType" expires_after="2026-05-10">
   <owner>hanxi@chromium.org</owner>

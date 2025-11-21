@@ -43,6 +43,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType;
 import org.chromium.chrome.browser.ntp_customization.R;
@@ -63,6 +64,7 @@ public class NtpThemeCollectionsCoordinatorUnitTest {
 
     private static final String TEST_COLLECTION_ID = "Test Collection Id";
     private static final String TEST_COLLECTION_TITLE = "Test Collection";
+    private static final int TEST_COLLECTION_HASH = 123; // Mock hash value for testing
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -181,12 +183,17 @@ public class NtpThemeCollectionsCoordinatorUnitTest {
 
     @Test
     public void testHandleThemeCollectionClick() {
+        String histogramName = "NewTabPage.Customization.Theme.ThemeCollection.CollectionShow";
+
         // Populate mThemeCollectionsList in the coordinator.
         verify(mNtpThemeBridge).getBackgroundCollections(mCallbackCaptor.capture());
         List<BackgroundCollection> collections = new ArrayList<>();
         collections.add(
                 new BackgroundCollection(
-                        TEST_COLLECTION_ID, TEST_COLLECTION_TITLE, JUnitTestGURLs.EXAMPLE_URL));
+                        TEST_COLLECTION_ID,
+                        TEST_COLLECTION_TITLE,
+                        JUnitTestGURLs.EXAMPLE_URL,
+                        TEST_COLLECTION_HASH));
         mCallbackCaptor.getValue().onResult(collections);
         verify(mBottomSheetController).expandSheet();
 
@@ -206,13 +213,18 @@ public class NtpThemeCollectionsCoordinatorUnitTest {
         assertNull(mCoordinator.getNtpSingleThemeCollectionCoordinatorForTesting());
         when(mBottomSheetController.getSheetState())
                 .thenReturn(BottomSheetController.SheetState.FULL);
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(histogramName, TEST_COLLECTION_HASH);
         themeCollectionView.performClick();
         assertNotNull(mCoordinator.getNtpSingleThemeCollectionCoordinatorForTesting());
         verify(mBottomSheetDelegate).showBottomSheet(eq(BottomSheetType.SINGLE_THEME_COLLECTION));
+        histogramWatcher.assertExpected();
 
         // On second click, the existing single theme coordinator is updated and the sheet is shown.
         mCoordinator.setNtpSingleThemeCollectionCoordinatorForTesting(
                 mNtpSingleThemeCollectionCoordinator);
+        histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(histogramName, TEST_COLLECTION_HASH);
         themeCollectionView.performClick();
         verify(mNtpSingleThemeCollectionCoordinator)
                 .updateThemeCollection(
@@ -221,6 +233,7 @@ public class NtpThemeCollectionsCoordinatorUnitTest {
                         eq(BottomSheetController.SheetState.FULL));
         verify(mBottomSheetDelegate, times(2))
                 .showBottomSheet(eq(BottomSheetType.SINGLE_THEME_COLLECTION));
+        histogramWatcher.assertExpected();
     }
 
     @Test

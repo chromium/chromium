@@ -83,9 +83,9 @@ public class NtpThemeCollectionsAdapterUnitTest {
 
         mCollectionItems = new ArrayList<>();
         mCollectionItems.add(
-                new BackgroundCollection("id1", THEME_COLLECTION_TITLE, PREVIEW_IMAGE_URL));
+                new BackgroundCollection("id1", THEME_COLLECTION_TITLE, PREVIEW_IMAGE_URL, 123));
         mCollectionItems.add(
-                new BackgroundCollection("id2", "Another Collection", JUnitTestGURLs.URL_2));
+                new BackgroundCollection("id2", "Another Collection", JUnitTestGURLs.URL_2, 456));
 
         mImageItems = new ArrayList<>();
         mImageItems.add(

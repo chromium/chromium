@@ -22,9 +22,13 @@ public class BackgroundCollection {
     // URL to a preview image for the collection. Can point to untrusted content.
     public final GURL previewImageUrl;
 
-    public BackgroundCollection(String id, String label, GURL previewImageUrl) {
+    // Hash of collection id.
+    public final int hash;
+
+    public BackgroundCollection(String id, String label, GURL previewImageUrl, int hash) {
         this.id = id;
         this.label = label;
         this.previewImageUrl = previewImageUrl;
+        this.hash = hash;
     }
 }
