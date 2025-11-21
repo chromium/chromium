@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './calendar.js';
+import '../info_dialog.js';
 import '../module_header.js';
 
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';

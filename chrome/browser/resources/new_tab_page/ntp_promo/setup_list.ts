@@ -6,6 +6,7 @@ import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import './ntp_promo_icons.html.js';
 import './setup_list_item.js';
 import '../modules/icons.html.js';
+import '../modules/info_dialog.js';
 import '../modules/module_header.js';
 
 import {assert} from 'chrome://resources/js/assert.js';

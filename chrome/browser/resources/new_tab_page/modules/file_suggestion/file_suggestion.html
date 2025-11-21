@@ -3,12 +3,12 @@
     <a class="file" href="${item.itemUrl.url}" data-index="${index}"
         @click="${this.onFileClick_}" title="${item.title}">
       <div id="hover-layer"></div>
-      <icon-container class="icon-container">
+      <div class="icon-container">
         <img is="cr-auto-img"
-          class="file-icon"
-          draggable="false"
-          .autoSrc="${item.iconUrl.url}">
-      </icon-container>
+            class="file-icon"
+            draggable="false"
+            .autoSrc="${item.iconUrl.url}">
+      </div>
       <div class="file-info">
         <div class="file-title">${item.title}</div>
         <div class="file-description">${item.justificationText}</div>

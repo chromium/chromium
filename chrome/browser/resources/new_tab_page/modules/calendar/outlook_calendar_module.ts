@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './calendar.js';
+import '../info_dialog.js';
 import '../module_header.js';
 
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
