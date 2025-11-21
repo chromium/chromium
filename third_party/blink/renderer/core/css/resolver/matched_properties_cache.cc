@@ -127,53 +127,46 @@ const CachedMatchedProperties::Entry* MatchedPropertiesCache::Find(
        it2 != cache_item->entries.rend(); ++it2) {
     CachedMatchedProperties::Entry& entry = *it2;
 
-    if (!style_resolver_state.ParentStyle()
-             ->InheritedEqualIncludingInheritedVariables(
-                 *entry.parent_computed_style)) {
-      continue;
-    }
-
-    // If explicit inheritance is used, even normally non-inherited properties
-    // from the parent would influence the child's style. We don't track which
-    // properties are set to “inherit”, but we can still use the MPC entry
-    // if _all_ non-inherited properties from the two parents are the same
-    // (for instance because they are the very same parent).
-    if (entry.computed_style->HasExplicitInheritance() &&
-        style_resolver_state.ParentStyle() != entry.parent_computed_style &&
-        !style_resolver_state.ParentStyle()->NonInheritedEqual(
-            *entry.parent_computed_style)) {
-      continue;
-    }
-
     if (style_resolver_state.IsForHighlight()) {
       // For highlight pseudos, inherited _and_ non-inherited data
-      // comes from the parent, so non-inherited properties also
-      // need to match.
-      if (!style_resolver_state.ParentStyle()->NonInheritedEqual(
-              *entry.parent_computed_style)) {
-        continue;
-      }
-
-      // Finally, some properties come from the originating element,
-      // which is not the same as the parent element. We need to
-      // test those as well. Note that this check can be overly
-      // restrictive, since these properties were already tested earlier.
-      // E.g., if the parent element is in dark mode but the originating
-      // element is not, the style will always get rejected. This is
-      // obscure enough that we don't consider it a problem in practice;
-      // we'll get a false MPC miss but that's OK.
+      // comes from the parent, so both need to match.
+      //
+      // However, some properties come from the originating element,
+      // which is not the same as the parent element, so we need
+      // a special test for them.
       //
       // DarkColorScheme() is marked as custom_compare, and InsideLink()
       // is a special case (see comments in computed_style_extra_fields.json5),
       // so we need to add those comparisons manually.
       const ComputedStyle& originating_style =
           *style_resolver_state.OriginatingElementStyle();
-      if (!originating_style.HighlightOriginatingElementDataEqual(
+      if (!style_resolver_state.ParentStyle()
+               ->NonHighlightOriginatingElementDataEqual(
+                   *entry.parent_computed_style) ||
+          !originating_style.HighlightOriginatingElementDataEqual(
               *entry.computed_style) ||
           originating_style.DarkColorScheme() !=
               entry.computed_style->DarkColorScheme() ||
           originating_style.InsideLink() !=
               entry.computed_style->InsideLink()) {
+        continue;
+      }
+    } else {
+      if (!style_resolver_state.ParentStyle()
+               ->InheritedEqualIncludingInheritedVariables(
+                   *entry.parent_computed_style)) {
+        continue;
+      }
+
+      // If explicit inheritance is used, even normally non-inherited properties
+      // from the parent would influence the child's style. We don't track which
+      // properties are set to “inherit”, but we can still use the MPC entry
+      // if _all_ non-inherited properties from the two parents are the same
+      // (for instance because they are the very same parent).
+      if (entry.computed_style->HasExplicitInheritance() &&
+          style_resolver_state.ParentStyle() != entry.parent_computed_style &&
+          !style_resolver_state.ParentStyle()->NonInheritedEqual(
+              *entry.parent_computed_style)) {
         continue;
       }
     }

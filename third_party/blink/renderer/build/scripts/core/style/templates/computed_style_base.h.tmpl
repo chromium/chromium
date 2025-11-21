@@ -171,6 +171,16 @@ class ComputedStyleBase : public GarbageCollected<ComputedStyleBase> {
     );
   }
 
+  inline bool NonHighlightOriginatingElementDataEqual(const ComputedStyleBase& o) const {
+    return (
+        {{fieldwise_compare(computed_style, computed_style.all_fields
+            |selectattr("is_property")
+            |rejectattr("highlight_style_comes_from_originating_element")
+            |list
+          )|indent(8)}}
+    );
+  }
+
   // Equivalent to InheritedEqual() && InheritedVariablesEqual(),
   // but in one call and a bit faster.
   inline bool InheritedEqualIncludingInheritedVariables(const ComputedStyleBase& o) const {
