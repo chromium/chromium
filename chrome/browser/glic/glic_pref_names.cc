@@ -52,6 +52,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Boolean pref for the closed captioning setting.
   registry->RegisterBooleanPref(prefs::kGlicClosedCaptioningEnabled, false);
 
+  // Boolean pref for the daisy chain new tabs setting.
+  registry->RegisterBooleanPref(prefs::kGlicDaisyChainNewTabsEnabled, false);
+
   registry->RegisterIntegerPref(
       prefs::kGlicActuationOnWeb,
       base::to_underlying(GetGlicActuationOnWebPolicyState()));
