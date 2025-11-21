@@ -410,6 +410,7 @@ class WebAppBrowserFrameViewWinWindowControlsOverlayTest
     EXPECT_TRUE(future.Wait());
     content::TitleWatcher title_watcher(web_contents, u"ongeometrychange");
     std::ignore = title_watcher.WaitAndGetTitle();
+    browser_view_->GetWidget()->LayoutRootViewIfNecessary();
   }
 
   raw_ptr<BrowserView, AcrossTasksDanglingUntriaged> browser_view_ = nullptr;
