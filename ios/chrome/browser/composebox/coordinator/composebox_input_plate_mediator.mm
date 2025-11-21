@@ -256,6 +256,8 @@ CreateInputDataFromAnnotatedPageContent(
       canAttachCurrentTab) {
     [self attachCurrentTabContent];
   }
+
+  [self updateCompactModeIfNeeded];
 }
 
 - (void)processPDFFileURL:(GURL)PDFFileURL {
