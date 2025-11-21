@@ -18,6 +18,7 @@
 #include "content/public/test/browser_test_utils.h"
 
 using ::base::test::TestFuture;
+using ::optimization_guide::proto::ClickAction;
 using ::testing::Property;
 
 namespace actor {
@@ -205,6 +206,38 @@ IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest,
 
   StopActorTask(task_id, glic::mojom::ActorTaskStopReason::kTaskComplete);
 
+  EXPECT_EQ(ActorTask::State::kFinished, task_completion_state.Get())
+      << "Task " << task_id << " did not reach kFinished state.";
+}
+
+IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest, CreateTask_Click_StopTask) {
+  // Set up the initial page with a link to the target page.
+  const GURL initial_url = embedded_test_server()->GetURL("/actor/link.html");
+  const GURL target_url = embedded_test_server()->GetURL("/actor/blank.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), initial_url));
+  EXPECT_TRUE(content::ExecJs(web_contents(),
+                              content::JsReplace("setLink($1);", target_url)));
+
+  TaskId task_id = CreateTask();
+  EXPECT_NE(task_id, TaskId());
+
+  TestFuture<ActorTask::State> task_completion_state;
+  base::CallbackListSubscription subscription =
+      CreateTaskCompletetionSubscription(task_id, task_completion_state);
+
+  // Click link to navigate to target page.
+  std::optional<int> link_node_id =
+      content::GetDOMNodeId(*web_contents()->GetPrimaryMainFrame(), "#link");
+  optimization_guide::proto::Actions actions =
+      MakeClick(*web_contents()->GetPrimaryMainFrame(), link_node_id.value(),
+                ClickAction::LEFT, ClickAction::SINGLE);
+  actions.set_task_id(task_id.value());
+
+  EXPECT_THAT(PerformActions(actions),
+              HasResultCode(mojom::ActionResultCode::kOk));
+  EXPECT_EQ(target_url, web_contents()->GetURL());
+
+  StopActorTask(task_id, glic::mojom::ActorTaskStopReason::kTaskComplete);
   EXPECT_EQ(ActorTask::State::kFinished, task_completion_state.Get())
       << "Task " << task_id << " did not reach kFinished state.";
 }
