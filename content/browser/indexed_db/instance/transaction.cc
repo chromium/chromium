@@ -181,7 +181,6 @@ Transaction::~Transaction() {
   DCHECK(preemptive_task_queue_.empty());
   DCHECK_EQ(pending_preemptive_events_, 0);
   DCHECK(task_queue_.empty());
-  DCHECK(!processing_event_queue_);
 }
 
 void Transaction::BindReceiver(
@@ -1067,7 +1066,17 @@ Status Transaction::RunTasks() {
     backing_store_transaction_begun_ = true;
   }
 
-  base::AutoReset<bool> reset(&processing_event_queue_, true);
+  // `AutoReset` is not used because `this` may be destroyed before the end of
+  // this method.
+  base::ScopedClosureRunner reset(base::BindOnce(
+      [](base::WeakPtr<Transaction> txn) {
+        if (txn) {
+          txn->processing_event_queue_ = false;
+        }
+      },
+      ptr_factory_.GetWeakPtr()));
+  processing_event_queue_ = true;
+  base::WeakPtr<Transaction> weak_this = ptr_factory_.GetWeakPtr();
 
   bool run_preemptive_queue =
       !preemptive_task_queue_.empty() || pending_preemptive_events_ != 0;
@@ -1090,12 +1099,15 @@ Status Transaction::RunTasks() {
                   in_memory);
       }
     }
-    if (!run_preemptive_queue) {
+    if (weak_this && !run_preemptive_queue) {
       CHECK(diagnostics_.tasks_completed < diagnostics_.tasks_scheduled);
       ++diagnostics_.tasks_completed;
       NotifyOfIdbInternalsRelevantChange();
     }
+
     IDB_RETURN_IF_ERROR(result);
+    // If running the task destroyed `this`, `result` should have been an error.
+    CHECK(weak_this);
 
     run_preemptive_queue =
         !preemptive_task_queue_.empty() || pending_preemptive_events_ != 0;

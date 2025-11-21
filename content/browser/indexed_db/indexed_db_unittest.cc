@@ -76,6 +76,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/features.h"
 #include "net/base/schemeful_site.h"
 #include "storage/browser/test/mock_quota_manager.h"
@@ -877,6 +878,70 @@ TEST_P(IndexedDBTest, DISABLED_PutWithInvalidBlob) {
 
   // Close the connection to finish the test nicely.
   connection.reset();
+}
+
+// Regression test for crbug.com/461720662. When run under ASAN, the test
+// verifies that a Transaction can be destroyed inside `Transaction::RunTasks`
+// without causing UAF.
+TEST_P(IndexedDBTest, InvalidObjectStoreId) {
+  const int64_t kDBVersion = 1;
+  const int64_t kTransactionId = 1;
+  const int64_t kObjectStoreId = 10;
+  const int64_t kIndexId = 100;
+  const char16_t kObjectStoreName[] = u"os";
+  const char16_t kIndexName[] = u"index";
+
+  // Bind the IDBFactory.
+  mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
+      checker_remote;
+  mojo::Remote<blink::mojom::IDBFactory> bounded_factory_remote;
+  BucketContextHandle bucket_context_handle = CreateBucketHandle();
+  const BucketLocator& bucket_locator = bucket_context_handle->bucket_locator();
+  BindFactory(std::move(checker_remote),
+              bounded_factory_remote.BindNewPipeAndPassReceiver(),
+              ToBucketInfo(bucket_locator));
+
+  // Open connection.
+  std::unique_ptr<TestDatabaseConnection> connection;
+  mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending_database;
+  {
+    base::RunLoop loop;
+    connection = std::make_unique<TestDatabaseConnection>(
+        context()->IDBTaskRunner(), ToOrigin(kOrigin), kDatabaseName,
+        kDBVersion, kTransactionId);
+
+    EXPECT_CALL(
+        *connection->open_callbacks,
+        MockedUpgradeNeeded(IsAssociatedInterfacePtrInfoValid(true),
+                            IndexedDBDatabaseMetadata::NO_VERSION,
+                            blink::mojom::IDBDataLoss::None, std::string(), _))
+        .WillOnce(testing::DoAll(MoveArgPointee<0>(&pending_database),
+                                 QuitLoop(&loop)));
+
+    // Queue open request message.
+    connection->Open(bounded_factory_remote.get());
+    loop.Run();
+  }
+  EXPECT_TRUE(pending_database.is_valid());
+
+  {
+    mojo::test::BadMessageObserver bad_message_observer;
+    // Create object store and index.
+    connection->database.Bind(std::move(pending_database));
+    ASSERT_TRUE(connection->database.is_bound());
+    ASSERT_TRUE(connection->version_change_transaction.is_bound());
+
+    ASSERT_TRUE(connection->database.is_bound());
+    connection->version_change_transaction->CreateObjectStore(
+        kObjectStoreId, kObjectStoreName, blink::IndexedDBKeyPath(), false);
+    connection->database->CreateIndex(
+        kTransactionId, kObjectStoreId + 123,
+        blink::IndexedDBIndexMetadata(kIndexName, kIndexId,
+                                      blink::IndexedDBKeyPath(), false, false));
+
+    EXPECT_EQ("Invalid object_store_id or index_id.",
+              bad_message_observer.WaitForBadMessage());
+  }
 }
 
 TEST_P(IndexedDBTest, NotifyIndexedDBListChanged) {
