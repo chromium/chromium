@@ -325,8 +325,7 @@ void PageHandler::OnLogMessageAdded(
     int source_line,
     const std::string& message) {
   if (log_source ==
-          optimization_guide_common::mojom::LogSource::MODEL_EXECUTION ||
-      log_source == optimization_guide_common::mojom::LogSource::BUILT_IN_AI) {
+      optimization_guide_common::mojom::LogSource::MODEL_EXECUTION) {
     page_->OnLogMessageAdded(event_time, source_file, source_line, message);
   }
 }
