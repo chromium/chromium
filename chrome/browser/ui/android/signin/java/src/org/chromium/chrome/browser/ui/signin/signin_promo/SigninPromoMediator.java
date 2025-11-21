@@ -79,7 +79,17 @@ final class SigninPromoMediator
 
         mModel =
                 SigninPromoProperties.createModel(
-                        profileData, () -> {}, () -> {}, () -> {}, "", "", "", "", false, false);
+                        /* profileData= */ profileData,
+                        /* onPrimaryButtonClicked= */ () -> {},
+                        /* onSecondaryButtonClicked= */ () -> {},
+                        /* onDismissButtonClicked= */ () -> {},
+                        /* titleString= */ "",
+                        /* descriptionString= */ "",
+                        /* primaryButtonString= */ "",
+                        /* secondaryButtonString= */ "",
+                        /* shouldSuppressSecondaryButton= */ false,
+                        /* shouldHideDismissButton= */ false,
+                        /* shouldShowSignedInLayout= */ false);
         mMaxImpressionReached = mDelegate.isMaxImpressionsReached();
         mDelegate.refreshPromoState(visibleAccount);
         mShouldShowPromo = canShowPromo();

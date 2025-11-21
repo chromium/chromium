@@ -80,7 +80,8 @@ final class SigninPromoProperties {
             String primaryButtonString,
             String secondaryButtonString,
             boolean shouldSuppressSecondaryButton,
-            boolean shouldHideDismissButton) {
+            boolean shouldHideDismissButton,
+            boolean shouldShowSignedInLayout) {
         return new PropertyModel.Builder(ALL_KEYS)
                 .with(PROFILE_DATA, profileData)
                 .with(ON_PRIMARY_BUTTON_CLICKED, (unusedView) -> onPrimaryButtonClicked.run())
@@ -92,6 +93,7 @@ final class SigninPromoProperties {
                 .with(SECONDARY_BUTTON_TEXT, secondaryButtonString)
                 .with(SHOULD_HIDE_SECONDARY_BUTTON, shouldSuppressSecondaryButton)
                 .with(SHOULD_HIDE_DISMISS_BUTTON, shouldHideDismissButton)
+                .with(SHOULD_SHOW_SIGNED_IN_LAYOUT, shouldShowSignedInLayout)
                 .build();
     }
 }
