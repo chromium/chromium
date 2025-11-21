@@ -13,6 +13,9 @@ pub struct FormatOptions {
     pub toplevel_table_order: &'static [&'static str],
 }
 
+pub static GNRT_CONFIG_FORMAT_OPTIONS: FormatOptions =
+    FormatOptions { toplevel_table_order: &["gn", "resolve", "all-crates", "crate"] };
+
 pub fn format(doc: &mut DocumentMut, format_options: &FormatOptions) {
     // Sort top-level tables based on `format_options.toplevel_table_order`.
     let key_to_desired_position: HashMap<&'static str, usize> = format_options

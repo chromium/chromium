@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 use crate::config;
-use crate::crates::Epoch;
+use crate::crates::{self, Epoch};
 use crate::deps;
 use crate::inherit::{
     find_inherited_privilege_group, find_inherited_security_critical_flag,
@@ -11,6 +11,8 @@ use crate::inherit::{
 };
 use crate::paths::{self, get_build_dir_for_package, get_vendor_dir_for_package};
 use crate::readme::{self, ReadmeFile};
+use crate::toml_edit_utils;
+use crate::unsafe_code_detector;
 use crate::util::{
     create_dirs_if_needed, get_guppy_package_graph, init_handlebars,
     init_handlebars_with_template_paths, remove_checksums_from_lock, render_handlebars,
@@ -18,13 +20,14 @@ use crate::util::{
 };
 use crate::VendorCommandArgs;
 
-use anyhow::{format_err, Context, Result};
+use anyhow::{bail, format_err, Context, Result};
 use guppy::graph::PackageMetadata;
 use itertools::Itertools;
 
 use std::collections::{HashMap, HashSet};
 use std::ffi::OsString;
 use std::fs::File;
+use std::io::Write;
 use std::path::{Path, PathBuf};
 
 /// `fn vendor` implements handling of the `gnrt vendor` CLI command - this
@@ -40,6 +43,11 @@ use std::path::{Path, PathBuf};
 ///     - Using `cargo` / `guppy` (in offline mode) to resolve transitive
 ///       dependencies of `third_party/rust/chromium_crates_io/Cargo.toml`
 ///     - Generating `README.chromium` files
+///     - Editing `third_party/rust/chromium_crates_io/gnrt_config.toml` to
+///       ensure that all dependencies specify `allow_unsafe = ...` (this step
+///       is meant to streamline the import experience and unblock building
+///       unsafe code, but it is based on heuristics and may sometimes fail to
+///       determine correct settings)."#)]
 pub fn vendor(args: VendorCommandArgs, paths: &paths::ChromiumPaths) -> Result<()> {
     // Vendoring needs to work with real crates.io, not with our locally vendored
     // crates.
@@ -206,6 +214,9 @@ fn update_vendored_metadata(args: &VendorCommandArgs, paths: &paths::ChromiumPat
     remove_stale_build_directories(paths, all_readme_files.keys().cloned().collect())?;
     generate_readme_files(&config, paths, &all_readme_files, args.dump_template_input)?;
 
+    let dependencies = deps::collect_dependencies(&graph, &config.resolve.root, &config)?;
+    fill_allow_unsafe_settings(&config, paths, dependencies)?;
+
     Ok(())
 }
 
@@ -283,6 +294,94 @@ fn generate_readme_files(
     }
 
     Ok(())
+}
+
+/// Edits `//third_party/rust/chromium_crates_io/gnrt_config.toml` to ensure
+/// that `allow_unsafe` is provided for all dependencies.  See
+/// https://crbug.com/460814809 for the motivation behind this functionality.
+fn fill_allow_unsafe_settings(
+    config: &config::BuildConfig,
+    paths: &paths::ChromiumPaths,
+    deps: impl IntoIterator<Item = deps::Package>,
+) -> Result<()> {
+    use toml_edit::{DocumentMut, InlineTable, Item, Table, TableLike};
+    use toml_edit_utils::{format, GNRT_CONFIG_FORMAT_OPTIONS};
+
+    fn get_or_insert_table<'doc>(
+        parent: &'doc mut dyn TableLike,
+        key: &str,
+        new_table_inserter: impl Fn() -> Item,
+    ) -> &'doc mut dyn TableLike {
+        let item = parent.entry(key).or_insert_with(&new_table_inserter);
+        if !item.is_table_like() {
+            *item = new_table_inserter();
+        }
+        item.as_table_like_mut().unwrap()
+    }
+
+    let mut did_make_edits = false;
+    let mut doc = {
+        let input = std::fs::read_to_string(paths.third_party_config_file)?;
+        input.parse::<DocumentMut>()?
+    };
+
+    let new_table_fn = || Item::from(Table::new());
+    let new_inline_table_fn = || Item::from(InlineTable::new());
+    let top_table = get_or_insert_table(&mut doc as &mut Table, "crate", new_table_fn);
+    for package in deps.into_iter() {
+        // TODO(https://crbug.com/419104870): In the future an epoch-based `crate_key`
+        // may need to be consulted (in addition-to, or instead-of the `crate_key`
+        // below).
+        let crate_key = &package.package_name;
+        let crate_table = get_or_insert_table(top_table, crate_key, new_table_fn);
+        let extra_kv_table = get_or_insert_table(crate_table, "extra_kv", new_inline_table_fn);
+
+        extra_kv_table.entry("allow_unsafe").or_insert_with(|| {
+            did_make_edits = true;
+
+            // `unwrap_or` translates errors into `false`, because incorrect
+            // `allow_unsafe = false` will be auto-detected via build failures
+            // (unlike incorrect `allow_unsafe = true`).
+            does_package_contain_unsafe_code(config, &package).unwrap_or(false).into()
+        });
+    }
+
+    if did_make_edits {
+        format(&mut doc, &GNRT_CONFIG_FORMAT_OPTIONS);
+        write!(File::create(paths.third_party_config_file)?, "{doc}")?;
+    }
+
+    Ok(())
+}
+
+fn does_package_contain_unsafe_code(
+    config: &config::BuildConfig,
+    package: &deps::Package,
+) -> Result<bool> {
+    let (_, crate_files) =
+        crates::collect_crate_files(package, config, crates::IncludeCrateTargets::LibOnly)?;
+
+    crate_files
+        .sources
+        .iter()
+        .chain(crate_files.inputs.iter())
+        .chain(crate_files.build_script_sources.iter())
+        .chain(crate_files.build_script_inputs.iter())
+        .map(|path| does_file_contain_unsafe_code(path))
+        .fold_ok(false, |lhs, rhs| lhs || rhs)
+}
+
+fn does_file_contain_unsafe_code(path: &Path) -> Result<bool> {
+    // `path`-based checks are done first, because they are faster
+    // than `file_contents`-based checks.
+    let Some(path_as_str) = path.to_str() else { bail!("Non-UTF8 path: {}", path.display()) };
+    const FILENAME_SUBSTRINGS_TO_IGNORE: &[&str] = &["bench", "example", "fuzz", "test"];
+    if FILENAME_SUBSTRINGS_TO_IGNORE.iter().any(|pattern| path_as_str.contains(pattern)) {
+        return Ok(false);
+    }
+
+    let file_contents = std::fs::read_to_string(path)?;
+    Ok(unsafe_code_detector::contains_unsafe_code(&file_contents))
 }
 
 fn download_crate(

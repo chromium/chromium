@@ -19,3 +19,4 @@ pub mod target_triple {
     include!(concat!(env!("OUT_DIR"), "/target_triple.rs"));
 }
 pub mod toml_edit_utils;
+pub mod unsafe_code_detector;

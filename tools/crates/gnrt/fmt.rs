@@ -4,7 +4,7 @@
 
 use anyhow::Result;
 use gnrt_lib::paths;
-use gnrt_lib::toml_edit_utils::{self, FormatOptions};
+use gnrt_lib::toml_edit_utils::{self, FormatOptions, GNRT_CONFIG_FORMAT_OPTIONS};
 use std::fs::{self, File};
 use std::io::Write as _;
 use std::path::Path;
@@ -12,9 +12,7 @@ use toml_edit::DocumentMut;
 
 /// Implementation of `gnrt fmt ...` command.
 pub fn format(paths: &paths::ChromiumPaths) -> Result<()> {
-    let gnrt_config_toml_options =
-        FormatOptions { toplevel_table_order: &["gn", "resolve", "all-crates", "crate"] };
-    format_file(paths.third_party_config_file, &gnrt_config_toml_options)?;
+    format_file(paths.third_party_config_file, &GNRT_CONFIG_FORMAT_OPTIONS)?;
 
     let cargo_toml_options =
         FormatOptions { toplevel_table_order: &["package", "workspace", "dependencies", "patch"] };
