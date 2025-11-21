@@ -32,9 +32,7 @@ TextPaintTimingDetector::TextPaintTimingDetector(
     LocalFrameView* frame_view,
     PaintTimingDetector* paint_timing_detector)
     : frame_view_(frame_view),
-      ltp_manager_(MakeGarbageCollected<LargestTextPaintManager>(
-          frame_view,
-          paint_timing_detector)) {}
+      ltp_manager_(frame_view, paint_timing_detector) {}
 
 std::pair<TextRecord*, bool> LargestTextPaintManager::UpdateMetricsCandidate() {
   if (!largest_text_) {
@@ -170,9 +168,9 @@ void TextPaintTimingDetector::RecordAggregatedText(
   if (IgnorePaintTimingScope::IgnoreDepth() == 1) {
     if (IgnorePaintTimingScope::IsDocumentElementInvisible() &&
         IsRecordingLargestTextPaint()) {
-      ltp_manager_->MaybeUpdateLargestIgnoredText(aggregator, aggregated_size,
-                                                  aggregated_visual_rect,
-                                                  mapped_visual_rect);
+      ltp_manager_.MaybeUpdateLargestIgnoredText(aggregator, aggregated_size,
+                                                 aggregated_visual_rect,
+                                                 mapped_visual_rect);
     }
     return;
   }
@@ -212,9 +210,7 @@ void TextPaintTimingDetector::StopRecordingLargestTextPaint() {
 }
 
 void TextPaintTimingDetector::ReportLargestIgnoredText() {
-  if (!ltp_manager_)
-    return;
-  TextRecord* record = ltp_manager_->PopLargestIgnoredText();
+  TextRecord* record = ltp_manager_.PopLargestIgnoredText();
   // If the content has been removed, abort. It was never visible.
   if (!record || !record->GetNode() || !record->GetNode()->GetLayoutObject()) {
     return;
@@ -318,7 +314,7 @@ void TextPaintTimingDetector::AssignPaintTimeToQueuedRecords(
     if (record->WasImageOrTextRemovedWhilePending()) {
       CHECK(RuntimeEnabledFeatures::
                 PaintTimingRecordTimingForDetachedPaintedElementsEnabled());
-      if (is_needed_for_lcp && ltp_manager_ && record->RecordedSize() > 0u &&
+      if (is_needed_for_lcp && record->RecordedSize() > 0u &&
           (!largest_removed_text ||
            largest_removed_text->RecordedSize() < record->RecordedSize())) {
         largest_removed_text = record;
@@ -330,8 +326,8 @@ void TextPaintTimingDetector::AssignPaintTimeToQueuedRecords(
       text_element_timing_->OnTextObjectPainted(*record, paint_timing_info);
     }
 
-    if (is_needed_for_lcp && ltp_manager_ && (record->RecordedSize() > 0u)) {
-      ltp_manager_->MaybeUpdateLargestText(record);
+    if (is_needed_for_lcp && record->RecordedSize() > 0u) {
+      ltp_manager_.MaybeUpdateLargestText(record);
     }
   }
   texts_queued_for_paint_time_.RemoveAll(keys_to_be_removed);
@@ -339,7 +335,7 @@ void TextPaintTimingDetector::AssignPaintTimeToQueuedRecords(
   if (largest_removed_text) {
     // This might not end up affecting metrics, but it could, and it could be
     // emitted to performance timeline (depending on the largest image).
-    TextRecord* largest_text = ltp_manager_->LargestText();
+    TextRecord* largest_text = ltp_manager_.LargestText();
     if (!largest_text ||
         largest_text->RecordedSize() < largest_removed_text->RecordedSize()) {
       UseCounter::Count(frame_view_->GetFrame().DomWindow(),

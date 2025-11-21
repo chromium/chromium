@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/paint/timing/text_element_timing.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
@@ -25,8 +26,9 @@ class TextElementTiming;
 struct DOMPaintTimingInfo;
 class SoftNavigationContext;
 
-class CORE_EXPORT LargestTextPaintManager final
-    : public GarbageCollected<LargestTextPaintManager> {
+class CORE_EXPORT LargestTextPaintManager final {
+  DISALLOW_NEW();
+
  public:
   LargestTextPaintManager(LocalFrameView*, PaintTimingDetector*);
   LargestTextPaintManager(const LargestTextPaintManager&) = delete;
@@ -115,7 +117,7 @@ class CORE_EXPORT TextPaintTimingDetector final
     return recording_largest_text_paint_;
   }
   inline std::pair<TextRecord*, bool> UpdateMetricsCandidate() {
-    return ltp_manager_->UpdateMetricsCandidate();
+    return ltp_manager_.UpdateMetricsCandidate();
   }
   void ReportLargestIgnoredText();
   void Trace(Visitor*) const;
@@ -159,7 +161,7 @@ class CORE_EXPORT TextPaintTimingDetector final
   // initializing this class.
   Member<TextElementTiming> text_element_timing_;
 
-  Member<LargestTextPaintManager> ltp_manager_;
+  LargestTextPaintManager ltp_manager_;
   bool recording_largest_text_paint_ = true;
 
   // Used to decide which frame a record belongs to, monotonically increasing.

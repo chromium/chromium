@@ -87,7 +87,7 @@ class TextPaintTimingDetectorTest : public testing::Test {
   }
 
   LargestTextPaintManager& GetLargestTextPaintManager() {
-    return *GetTextPaintTimingDetector()->ltp_manager_;
+    return GetTextPaintTimingDetector()->ltp_manager_;
   }
 
   wtf_size_t CountRecordedSize() {
@@ -235,7 +235,7 @@ class TextPaintTimingDetectorTest : public testing::Test {
     return GetChildFrameView()
         .GetPaintTimingDetector()
         .GetTextPaintTimingDetector()
-        .ltp_manager_->LargestText();
+        .ltp_manager_.LargestText();
   }
 
   void SetFontSize(Element* font_element, uint16_t font_size) {
