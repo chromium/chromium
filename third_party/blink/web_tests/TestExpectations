@@ -9863,8 +9863,6 @@ crbug.com/453886244 [ Linux ] external/wpt/uievents/mouse/mouse_boundary_events_
 # Gardener 2025-10-22
 crbug.com/453916409 [ Mac12 ] wpt_internal/shared-worker/back-forward-cache/shared-worker-mixed-clients-eviction.tentative.window.html [ Crash Failure Pass Timeout ]
 
-crbug.com/456208218 external/wpt/css/css-view-transitions/scoped/rotation-on-scoped-element.html [ Failure ]
-
 # Gardener 2025-10-24
 crbug.com/447949347 [ Mac ] accessibility/scroll-window-horiz-sends-notification.html [ Pass Timeout ]
 
