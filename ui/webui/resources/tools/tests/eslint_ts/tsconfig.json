@@ -5,6 +5,7 @@
     "outDir": "tsc"
   },
   "files": [
+    "lazy_load.ts",
     "no_violations.ts",
     "with_violations.ts",
     "with_webui_plugin_lit_violations.ts",

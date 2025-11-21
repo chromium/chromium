@@ -264,22 +264,18 @@ const webComponentMissingDeps = ESLintUtils.RuleCreator.withoutDocs({
     messages: {
       missingImportStatement:
           'Missing explicit import statement for \'{{childName}}\' in the class definition file \'{{fileName}}\'.',
+      missingImportStatementWithLazyLoad:
+          'Missing explicit import statement for \'{{childName}}\' in the class definition file \'{{fileName}}\' or in \'{{lazyLoadFileName}}\'.',
     },
   },
   defaultOptions: [],
   create(context) {
-    const templateFilename = context.getFilename();
-    assert.ok(templateFilename.endsWith('.html.ts'));
-    const classDefinitionFilename =
-        templateFilename.replace(/\.html\.ts$/, '.ts');
-
-    function extractImportsUrlsFromFile(filepath) {
-      const contents = fs.readFileSync(filepath, 'utf-8');
+    function extractImportsUrlsFromFile(file) {
       const parser = context.languageOptions.parser;
       const parserOptions = context.languageOptions.parserOptions;
-      const ast = parser.parse(contents, {
+      const ast = parser.parse(file.text, {
         ...parserOptions,
-        filePath: filepath,
+        filePath: file.fileName,
       });
       return ast.body
           .filter(
@@ -287,6 +283,27 @@ const webComponentMissingDeps = ESLintUtils.RuleCreator.withoutDocs({
                   node.specifiers.length === 0)
           .map(node => node.source.value);
     }
+
+    const templateFilename = context.getFilename().replaceAll('\\', '/');
+    assert.ok(templateFilename.endsWith('.html.ts'));
+
+    const services = ESLintUtils.getParserServices(context);
+    const compilerOptions = services.program.getCompilerOptions();
+
+    const sourceFiles = services.program.getSourceFiles().filter(
+        f => f.fileName.startsWith(compilerOptions.rootDir + '/'));
+
+    // The file where imports are expected to exist.
+    const classDefinitionFile = sourceFiles.find(
+        f => (f.fileName === templateFilename.replace(/\.html\.ts$/, '.ts')) ||
+            null);
+
+    // The file where any intentionally omitted dependencies from the previous
+    // file are expected to exist. Only applicable to WebUIs that use lazy
+    // loading (as of this writing NTP and Settings only).
+    const lazyLoadFile =
+        sourceFiles.find(f => path.basename(f.fileName) === 'lazy_load.ts') ||
+        null;
 
     /*
      * Calculates a list of candidate filenames that could possibly host the
@@ -338,9 +355,15 @@ const webComponentMissingDeps = ESLintUtils.RuleCreator.withoutDocs({
         }
 
         // Compare tagNames against the list of imports.
+
+        // List of directly imported files.
+        assert.ok(classDefinitionFile !== null);
         const importedFilenames =
-            new Set(extractImportsUrlsFromFile(classDefinitionFilename)
+            new Set(extractImportsUrlsFromFile(classDefinitionFile)
                         .map(url => path.basename(url)));
+
+        // List of lazily imported files.
+        let lazyImportedFileNames = null;
 
         for (const tagName of tagNames) {
           const expectedImportedFilenames = getExpectedImportFilenames(tagName);
@@ -356,15 +379,41 @@ const webComponentMissingDeps = ESLintUtils.RuleCreator.withoutDocs({
             continue;
           }
 
+          if (lazyImportedFileNames === null && lazyLoadFile !== null) {
+            lazyImportedFileNames =
+                new Set(extractImportsUrlsFromFile(lazyLoadFile)
+                            .map(url => path.basename(url)));
+          }
+
+          if (lazyImportedFileNames !== null &&
+              lazyImportedFileNames.intersection(expectedImportedFilenames)
+                      .size > 0) {
+            // Handle case where the dependency is imported lazily (meaning in
+            // lazy_load.ts).
+            continue;
+          }
+
           // Report errors for each tagName that is not explicitly imported.
-          context.report({
-            node,
-            messageId: 'missingImportStatement',
-            data: {
-              childName: tagName,
-              fileName: path.basename(classDefinitionFilename),
-            },
-          });
+          if (lazyLoadFile === null) {
+            context.report({
+              node,
+              messageId: 'missingImportStatement',
+              data: {
+                childName: tagName,
+                fileName: path.basename(classDefinitionFile.fileName),
+              },
+            });
+          } else {
+            context.report({
+              node,
+              messageId: 'missingImportStatementWithLazyLoad',
+              data: {
+                childName: tagName,
+                fileName: path.basename(classDefinitionFile.fileName),
+                lazyLoadFileName: path.basename(lazyLoadFile.fileName),
+              },
+            });
+          }
         }
       },
     };

@@ -133,7 +133,8 @@ class EslintTsTest(unittest.TestCase):
         },
     ]
     for e in errors:
-      self.assertTrue(e in str(context.exception))
+      self.assertTrue(
+          e in str(context.exception), f'Didn\'t find expected error: {e}')
 
     # The following strings *should not* appear in the error output since the
     # referenced dependencies are imported.
@@ -153,9 +154,14 @@ class EslintTsTest(unittest.TestCase):
         _EXPECTED_ERROR % {
             'tagName': 'iron-list'
         },
+        # Imported via lazy_load.js (testing lazy loading detection).
+        _EXPECTED_ERROR % {
+            'tagName': 'foo-bar'
+        },
     ]
     for e in non_errors:
-      self.assertFalse(e in str(context.exception))
+      self.assertFalse(
+          e in str(context.exception), f'Found unexpected error: {e}')
 
 
 if __name__ == "__main__":

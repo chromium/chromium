@@ -15,5 +15,6 @@ export function getHtml(this: MyDummyElement) {
 <cr-expand-button></cr-expand-button>
 <some-other-button id="button3"></some-other-button>
 <iron-list></iron-list>
+<foo-bar></foo-bar>
 `;
 }
