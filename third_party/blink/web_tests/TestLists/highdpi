@@ -2,7 +2,6 @@ accessibility/click-event.html
 animations/3d/matrix-transform-type-animation.html
 animations/composition/background-position-composition.html
 animations/composition/clip-composition.html
-animations/composition/font-size-composition.html
 animations/cross-fade-webkit-mask-box-image.html
 animations/custom-properties/angle-type-interpolation.html
 animations/custom-properties/animate-high-priority.html
@@ -379,6 +378,7 @@ external/wpt/css/css-flexbox/order/order-with-column-reverse.html
 external/wpt/css/css-flexbox/parsing/flex-grow-invalid.html
 external/wpt/css/css-flexbox/relayout-align-items.html
 external/wpt/css/css-font-loading/fontfacesetloadevent-constructor.html
+external/wpt/css/css-fonts/animations/font-size-composition.html
 external/wpt/css/css-fonts/animations/system-fonts.html
 external/wpt/css/css-fonts/font-display/font-display.html
 external/wpt/css/css-fonts/font-variant-ligatures-02.html
