@@ -174,21 +174,17 @@ CanvasResourceProviderBitmap::DoExternalDrawAndSnapshot(
   if (recorder_->HasReleasableDrawOps()) {
     ScopedRasterTimer timer(nullptr, *this,
                             always_enable_raster_timers_for_testing_);
-    bool preserve_recording = IsPrinting() && clear_frame_;
 
     // If a previous flush rasterized some paint ops, we lost part of the
     // recording and must fallback to raster printing instead of vectorial
     // printing.
     clear_frame_ = false;
-    cc::PaintRecord recording;
-    recording = recorder_->ReleaseMainRecording();
-    RasterRecord(recording);
+    RasterRecord(recorder_->ReleaseMainRecording());
     // Images are locked for the duration of the rasterization, in case they get
     // used multiple times. We can unlock them once the rasterization is
     // complete.
     ReleaseLockedImages();
-    last_recording_ =
-        preserve_recording ? std::optional(recording) : std::nullopt;
+    last_recording_ = std::nullopt;
   }
 
   cc::PaintImage paint_image;
