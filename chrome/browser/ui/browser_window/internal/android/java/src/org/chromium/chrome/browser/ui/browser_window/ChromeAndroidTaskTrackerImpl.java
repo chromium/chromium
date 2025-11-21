@@ -21,7 +21,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.PendingTaskInfo;
 import org.chromium.ui.base.ActivityWindowAndroid;
-import org.chromium.ui.mojom.WindowShowState;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -127,9 +126,6 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
                     new PendingTaskInfo(pendingId, createParams, newWindowIntent, callback);
             var pendingTask = new ChromeAndroidTaskImpl(pendingTaskInfo);
             mPendingTasks.put(pendingId, pendingTask);
-
-            // Apply a non-default initial show state if needed.
-            setInitialShowState(pendingTask, createParams.getInitialShowState());
 
             // Launch the required Activity based on |createParams|.
             if (!sPausePendingTaskActivityCreationForTesting) {
@@ -336,23 +332,6 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
         }
 
         return nativeBrowserWindowPtrs;
-    }
-
-    private static void setInitialShowState(
-            ChromeAndroidTask pendingTask, @WindowShowState.EnumType int showState) {
-        switch (showState) {
-            case WindowShowState.MAXIMIZED:
-                pendingTask.maximize();
-                break;
-            case WindowShowState.MINIMIZED:
-            case WindowShowState.DEFAULT:
-            case WindowShowState.NORMAL:
-                // No pending action needed.
-                break;
-            default:
-                throw new UnsupportedOperationException(
-                        "Attempting to apply an unsupported initial show state.");
-        }
     }
 
     @GuardedBy("mTasksLock")

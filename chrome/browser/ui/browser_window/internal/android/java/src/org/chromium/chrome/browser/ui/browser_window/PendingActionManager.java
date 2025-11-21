@@ -216,7 +216,16 @@ final class PendingActionManager {
                 case WindowShowState.MINIMIZED:
                     requestGlobalOverrideAction(PendingAction.MINIMIZE);
                     break;
+                case WindowShowState.MAXIMIZED:
+                    requestGlobalOverrideAction(PendingAction.MAXIMIZE);
+                    break;
+                case WindowShowState.DEFAULT:
+                case WindowShowState.NORMAL:
+                    // No pending action needed.
+                    break;
                 default:
+                    throw new UnsupportedOperationException(
+                            "Attempting to apply an unsupported initial show state.");
             }
         }
     }
