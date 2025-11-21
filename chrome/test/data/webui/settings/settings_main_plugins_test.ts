@@ -76,7 +76,12 @@ suite('SettingsMain', function() {
       },
       // </if>
       {route: routes.ON_STARTUP, pluginTag: 'settings-on-startup-page'},
+      // <if expr="is_chromeos">
+      {route: routes.LANGUAGES, pluginTag: 'settings-languages-page-index-cros'},
+      // </if>
+      // <if expr="not is_chromeos">
       {route: routes.LANGUAGES, pluginTag: 'settings-languages-page-index'},
+      // </if>
       {route: routes.DOWNLOADS, pluginTag: 'settings-downloads-page'},
       {route: routes.ACCESSIBILITY, pluginTag: 'settings-a11y-page-index'},
       // <if expr="not is_chromeos">

@@ -19,7 +19,7 @@ import {getTemplate} from './languages_page_index_cros.html.js';
 export class SettingsLanguagesPageIndexElement extends PolymerElement implements
     SettingsPlugin {
   static get is() {
-    return 'settings-languages-page-index';
+    return 'settings-languages-page-index-cros';
   }
 
   static get template() {
@@ -40,7 +40,7 @@ export class SettingsLanguagesPageIndexElement extends PolymerElement implements
 
 declare global {
   interface HTMLElementTagNameMap {
-    'settings-languages-page-index': SettingsLanguagesPageIndexElement;
+    'settings-languages-page-index-cros': SettingsLanguagesPageIndexElement;
   }
 }
 

@@ -489,9 +489,6 @@ build_webui("build") {
     ts_extra_deps = [ "//ash/webui/common/resources:generate_definitions" ]
   }
 
-  # TODO(crbug.com/457866803): Enable the missing deps check once it supports
-  # UIs that use lazy loading.
-  eslint_enable_web_component_missing_deps = false
   webui_context_type = "trusted"
   optimize = optimize_webui
   if (optimize) {
