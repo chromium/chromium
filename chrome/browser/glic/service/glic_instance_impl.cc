@@ -59,6 +59,7 @@ BASE_FEATURE(kGlicBindOnPinFromFloatingUiDoesntShowSidePanel,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicRemoveBlankInstancesOnClose,
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicAlwaysBindOnPin, base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<base::TimeDelta> kRemoveBlankInstanceDelay{
     &kGlicRemoveBlankInstancesOnClose, "delay", base::Seconds(1)};
@@ -1046,7 +1047,13 @@ void GlicInstanceImpl::OnTabPinningStatusChanged(tabs::TabInterface* tab,
 
   helper->OnPinnedByInstance(id());
   auto instance_id = helper->GetInstanceId();
-  if (instance_id.has_value()) {
+  if (!base::FeatureList::IsEnabled(kGlicAlwaysBindOnPin) &&
+      instance_id.has_value()) {
+    return;
+  }
+
+  // Don't try to rebind/show if the tab is already bound to this instance.
+  if (instance_id == id()) {
     return;
   }
 
