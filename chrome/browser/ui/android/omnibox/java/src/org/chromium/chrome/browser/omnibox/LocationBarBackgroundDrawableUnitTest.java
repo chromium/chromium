@@ -72,10 +72,12 @@ public class LocationBarBackgroundDrawableUnitTest {
         InOrder inOrder = Mockito.inOrder(mCanvas);
         mDrawable.draw(mCanvas);
         verify(mGradientDrawable).draw(mCanvas);
-        inOrder.verify(mCanvas)
-                .drawPath(mDrawable.getPathForTesting(), mDrawable.getBlurPaintForTesting());
+        inOrder.verify(mCanvas).save();
+        inOrder.verify(mCanvas).clipPath(mDrawable.getPathForTesting());
         inOrder.verify(mCanvas)
                 .drawPath(mDrawable.getPathForTesting(), mDrawable.getPaintForTesting());
+        inOrder.verify(mCanvas)
+                .drawPath(mDrawable.getBlurPathForTesting(), mDrawable.getBlurPaintForTesting());
     }
 
     @Test

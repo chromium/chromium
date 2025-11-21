@@ -10,9 +10,9 @@ import android.animation.AnimatorSet;
 import android.animation.Keyframe;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
-import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.BlurMaskFilter;
+import android.graphics.BlurMaskFilter.Blur;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.Matrix;
@@ -33,6 +33,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.Px;
 
+import org.chromium.base.MathUtils;
 import org.chromium.build.annotations.NonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -58,9 +59,10 @@ public class LocationBarBackgroundDrawable extends Drawable {
         int RAINBOW = 1;
     }
 
-    private static final float GLIF_STARTING_ROTATION_DEGREES = 0f;
-    private static final float GLIF_ENDING_ROTATION_DEGREES = 160f;
+    private static final float GLIF_STARTING_ROTATION_DEGREES = 300f;
+    private static final float GLIF_ENDING_ROTATION_DEGREES = 450f;
     private static final long GLIF_ROTATION_DURATION_MS = 900;
+    private static final float GLIF_VERTICAL_SCALE = 0.7f;
     private static final PathInterpolator GLIF_ROTATION_INTERPOLATOR =
             new PathInterpolator(0.4f, 0f, 0.2f, 1f);
     private static final float MAX_BLUR_WIDTH_PERCENTAGE = 0.11f;
@@ -85,8 +87,15 @@ public class LocationBarBackgroundDrawable extends Drawable {
                                     mColors,
                                     mPositions);
                     mMatrix.reset();
-                    mMatrix.postRotate(
+                    mMatrix.setRotate(
                             rotation, mEffectiveBounds.centerX(), mEffectiveBounds.centerY());
+                    // Scaling stretches the gradient on the x axis to give a more even distribution
+                    // of the gradient as it circles around the box.
+                    mMatrix.postScale(
+                            1.0f,
+                            GLIF_VERTICAL_SCALE,
+                            mEffectiveBounds.centerX(),
+                            mEffectiveBounds.centerY());
                     mRainbowShader.setLocalMatrix(mMatrix);
                     mRainbowBorderPaint.setShader(mRainbowShader);
                     mRainbowBorderPaint.setAlpha((int) (255 * alphaPercent));
@@ -111,7 +120,7 @@ public class LocationBarBackgroundDrawable extends Drawable {
                     mBlurStrokePx = blurStrokePx;
                     mRainbowBorderBlurPaint.setStrokeWidth(mBlurStrokePx);
                     mRainbowBorderBlurPaint.setMaskFilter(
-                            new BlurMaskFilter(mBlurStrokePx, BlurMaskFilter.Blur.NORMAL));
+                            new BlurMaskFilter(mBlurStrokePx, Blur.NORMAL));
                     invalidateSelf();
                 }
 
@@ -125,6 +134,7 @@ public class LocationBarBackgroundDrawable extends Drawable {
     private final Paint mRainbowBorderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint mRainbowBorderBlurPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Path mRainbowPath = new Path();
+    private final Path mRainbowBlurPath = new Path();
     private final Rect mInsets = new Rect();
     private final Rect mEffectiveBounds = new Rect();
     private final int[] mColors;
@@ -199,9 +209,9 @@ public class LocationBarBackgroundDrawable extends Drawable {
         mBackgroundGradient = backgroundGradient;
         mCornerRadiusPx = cornerRadiusPx;
         mStrokePx = strokePx;
-        // Blur stroke width starts at 0, animates to full width, then back to 0. See keyframes
-        // below.
-        mBlurStrokePx = 0;
+        // Blur stroke width starts at effective 0 (can't be actually 0; BlurMaskFilter doesn't
+        // allow that), animates to full width, then back to 0. See keyframes below.
+        mBlurStrokePx = MathUtils.EPSILON;
         mColors = colors;
         mPositions = positions;
         mRainbowBorderPaint.setStyle(Style.STROKE);
@@ -214,13 +224,14 @@ public class LocationBarBackgroundDrawable extends Drawable {
                         mRotationProperty,
                         GLIF_STARTING_ROTATION_DEGREES,
                         GLIF_ENDING_ROTATION_DEGREES);
-        ValueAnimator blur =
-                ValueAnimator.ofPropertyValuesHolder(
+        ObjectAnimator blur =
+                ObjectAnimator.ofPropertyValuesHolder(
+                        this,
                         PropertyValuesHolder.ofKeyframe(
                                 mBlurProperty,
-                                Keyframe.ofFloat(0f, 0f),
+                                Keyframe.ofFloat(0f, MathUtils.EPSILON),
                                 Keyframe.ofFloat(MAX_BLUR_WIDTH_PERCENTAGE, blurStrokePx),
-                                Keyframe.ofFloat(1.0f, 0f)));
+                                Keyframe.ofFloat(1.0f, MathUtils.EPSILON)));
         mAnimator = new AnimatorSet();
         mAnimator.playTogether(List.of(rotation, blur));
         mAnimator.setInterpolator(GLIF_ROTATION_INTERPOLATOR);
@@ -257,6 +268,14 @@ public class LocationBarBackgroundDrawable extends Drawable {
         mRainbowPath.addRoundRect(
                 boundsAsFloatRect, mCornerRadiusPx, mCornerRadiusPx, Path.Direction.CW);
 
+        boundsAsFloatRect.inset(mStrokePx, mStrokePx);
+        mRainbowBlurPath.reset();
+        mRainbowBlurPath.addRoundRect(
+                boundsAsFloatRect,
+                mCornerRadiusPx - mStrokePx,
+                mCornerRadiusPx - mStrokePx,
+                Path.Direction.CW);
+
         // Rebuild shader centered on this view.
         mRainbowShader =
                 new SweepGradient(
@@ -273,8 +292,13 @@ public class LocationBarBackgroundDrawable extends Drawable {
         mBackgroundGradient.draw(canvas);
         switch (mHairlineBehavior) {
             case HairlineBehavior.RAINBOW:
-                canvas.drawPath(mRainbowPath, mRainbowBorderBlurPaint);
+                canvas.save();
+                // Clip anything outside the border path to avoid the blur path from drawing outside
+                // the border, which it would otherwise do.
+                canvas.clipPath(mRainbowPath);
                 canvas.drawPath(mRainbowPath, mRainbowBorderPaint);
+                canvas.drawPath(mRainbowBlurPath, mRainbowBorderBlurPaint);
+                canvas.restore();
                 break;
             case HairlineBehavior.NONE:
             default:
@@ -369,6 +393,10 @@ public class LocationBarBackgroundDrawable extends Drawable {
     @HairlineBehavior
     int getHairlineBehaviorForTesting() {
         return mHairlineBehavior;
+    }
+
+    Path getBlurPathForTesting() {
+        return mRainbowBlurPath;
     }
 
     Path getPathForTesting() {
