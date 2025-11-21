@@ -143,6 +143,8 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest,
   EXPECT_EQ(ui::Accelerator(ui::VKEY_G,
 #if BUILDFLAG(IS_MAC)
                             ui::EF_CONTROL_DOWN
+#elif BUILDFLAG(IS_CHROMEOS)
+                            ui::EF_COMMAND_DOWN
 #else
                             ui::EF_ALT_DOWN
 #endif
