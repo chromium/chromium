@@ -1181,6 +1181,7 @@ void BrowserProcessImpl::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(metrics::prefs::kMetricsReportingEnabled,
                                 GoogleUpdateSettings::GetCollectStatsConsent());
   registry->RegisterBooleanPref(prefs::kDevToolsRemoteDebuggingAllowed, true);
+  registry->RegisterBooleanPref(prefs::kDevToolsRemoteDebuggingEnabled, false);
 
 #if BUILDFLAG(IS_LINUX)
   os_crypt_async::SecretPortalKeyProvider::RegisterLocalPrefs(registry);

@@ -2520,6 +2520,16 @@ inline constexpr char kDevToolsLastOpenTimestamp[] =
 inline constexpr char kDevToolsRemoteDebuggingAllowed[] =
     "devtools.remote_debugging.allowed";
 
+// A boolean specifying whether remote debugging server was enabled by the user
+// through chrome://inspect.
+// The preference does not reflect the actual state of the remote debugging
+// server, it's intended to be used to determine whether the remote debugging
+// server should be started in the per-connection approval mode.
+// This preference is application-wide, not per-profile since the debugging
+// server is global.
+inline constexpr char kDevToolsRemoteDebuggingEnabled[] =
+    "devtools.remote_debugging.user-enabled";
+
 // Dictionary from background service to recording expiration time.
 inline constexpr char kDevToolsBackgroundServicesExpirationDict[] =
     "devtools.backgroundserviceexpiration";
