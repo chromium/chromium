@@ -607,8 +607,6 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
 
   mojom::SoftNavigationMetricsPtr soft_navigation_metrics_;
 
-  GURL potential_soft_navigation_url_;
-
   // Maps main-frame same-document navigations identified
   // by their token to their UKM source ids.
   std::map<base::UnguessableToken, ukm::SourceId>
