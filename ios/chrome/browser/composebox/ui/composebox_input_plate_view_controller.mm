@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/composebox/ui/composebox_input_item_cell.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_item_view.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_plate_mutator.h"
+#import "ios/chrome/browser/composebox/ui/composebox_metrics_recorder.h"
 #import "ios/chrome/browser/omnibox/ui/text_field_view_containing.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
@@ -333,6 +334,10 @@ const CGFloat kCloseIndicatorSize = 10.0f;
 
 - (void)aimButtonTapped {
   self.AIModeEnabled = !self.AIModeEnabled;
+  if (self.AIModeEnabled) {
+    [self.metricsRecorder
+        recordAiModeActivationSource:AiModeActivationSource::kDedicatedButton];
+  }
 }
 
 - (void)plusButtonTouchDown {
@@ -377,8 +382,12 @@ const CGFloat kCloseIndicatorSize = 10.0f;
   [self.delegate composeboxViewControllerDidTapAttachTabsButton:self];
 }
 
-- (void)handleAIMPressed {
+- (void)handleAIMTappedFromToolMenu {
   self.AIModeEnabled = !self.AIModeEnabled;
+  if (self.AIModeEnabled) {
+    [self.metricsRecorder
+        recordAiModeActivationSource:AiModeActivationSource::kToolMenu];
+  }
 }
 
 - (void)updateCarouselFade {
@@ -767,7 +776,7 @@ const CGFloat kCloseIndicatorSize = 10.0f;
                                                 kSymbolActionPointSize)
            identifier:nil
               handler:^(UIAction* action) {
-                [weakSelf handleAIMPressed];
+                [weakSelf handleAIMTappedFromToolMenu];
               }];
 
   if (self.AIModeEnabled) {

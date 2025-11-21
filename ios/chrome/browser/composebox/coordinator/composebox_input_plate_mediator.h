@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/omnibox/ui/text_field_view_containing.h"
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 
+@class ComposeboxMetricsRecorder;
 @protocol ComposeboxURLLoader;
 class ComposeboxQueryControllerIOS;
 class FaviconLoader;
@@ -43,6 +44,8 @@ class WebStateList;
 @property(nonatomic, weak) id<ComposeboxURLLoader> URLLoader;
 // The delegate for this mediator.
 @property(nonatomic, weak) id<ComposeboxInputPlateMediatorDelegate> delegate;
+// The metrics recorder of the composebox.
+@property(nonatomic, weak) ComposeboxMetricsRecorder* metricsRecorder;
 
 - (instancetype)
     initWithComposeboxQueryController:

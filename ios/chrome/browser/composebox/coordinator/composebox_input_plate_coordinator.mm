@@ -14,12 +14,12 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_entrypoint.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_input_plate_mediator.h"
-#import "ios/chrome/browser/composebox/coordinator/composebox_metrics_recorder.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_omnibox_client.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_tab_picker_coordinator.h"
 #import "ios/chrome/browser/composebox/public/composebox_theme.h"
 #import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_plate_view_controller.h"
+#import "ios/chrome/browser/composebox/ui/composebox_metrics_recorder.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/intelligence/persist_tab_context/model/persist_tab_context_browser_agent.h"
@@ -117,6 +117,12 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   _viewController =
       [[ComposeboxInputPlateViewController alloc] initWithTheme:_theme];
   _viewController.delegate = self;
+  _viewController.metricsRecorder = _metricsRecorder;
+
+  if (_entrypoint == ComposeboxEntrypoint::kNTPAIMButton) {
+    [_metricsRecorder
+        recordAiModeActivationSource:AiModeActivationSource::kNTPButton];
+  }
 
   _voiceSearchController =
       ios::provider::CreateVoiceSearchController(self.browser);
@@ -151,6 +157,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   _mediator.URLLoader = _URLLoader;
   _mediator.consumer = _viewController;
   _mediator.delegate = self;
+  _mediator.metricsRecorder = _metricsRecorder;
 
   _viewController.mutator = _mediator;
   _voiceSearchController.dispatcher = _mediator;
@@ -192,6 +199,8 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   if (_tabPickerCoordinator.started) {
     [_tabPickerCoordinator stop];
   }
+  [_metricsRecorder recordAttachmentButtonsUsageInSession];
+
   _viewController.mutator = nil;
   _viewController = nil;
   _picker = nil;
@@ -204,6 +213,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   [_omniboxCoordinator endEditing];
   [_omniboxCoordinator stop];
   _omniboxCoordinator = nil;
+  _metricsRecorder = nil;
 }
 
 - (UIViewController*)inputViewController {
@@ -253,6 +263,8 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 
 - (void)composeboxViewControllerDidTapGalleryButton:
     (ComposeboxInputPlateViewController*)composeboxViewController {
+  [_metricsRecorder
+      recordAttachmentButtonUsed:FuseboxAttachmentButtonType::kGallery];
   if (!_picker) {
     [self
         composeboxViewControllerMayShowGalleryPicker:composeboxViewController];
@@ -263,11 +275,14 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 
 - (void)composeboxViewControllerDidTapCameraButton:
     (ComposeboxInputPlateViewController*)composeboxViewController {
+  [_metricsRecorder
+      recordAttachmentButtonUsed:FuseboxAttachmentButtonType::kCamera];
   if (![UIImagePickerController
           isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
     // TODO(crbug.com/40280872): Show an error to the user.
     return;
   }
+
   UIImagePickerController* picker = [[UIImagePickerController alloc] init];
   picker.delegate = self;
   picker.sourceType = UIImagePickerControllerSourceTypeCamera;
@@ -289,6 +304,8 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 
 - (void)composeboxViewControllerDidTapFileButton:
     (ComposeboxInputPlateViewController*)composeboxViewController {
+  [_metricsRecorder
+      recordAttachmentButtonUsed:FuseboxAttachmentButtonType::kFiles];
   UIDocumentPickerViewController* picker =
       [[UIDocumentPickerViewController alloc]
           initForOpeningContentTypes:@[ UTTypePDF ]];
@@ -413,6 +430,9 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 #pragma mark - ComposeboxTabPickerCommands
 
 - (void)showComposeboxTabPicker {
+  [_metricsRecorder
+      recordAttachmentButtonUsed:FuseboxAttachmentButtonType::kTabPicker];
+
   _tabPickerCoordinator = [[ComposeboxTabPickerCoordinator alloc]
       initWithBaseViewController:_viewController
                          browser:self.browser];

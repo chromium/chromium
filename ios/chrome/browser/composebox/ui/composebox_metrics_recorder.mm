@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/composebox/coordinator/composebox_metrics_recorder.h"
+#import "ios/chrome/browser/composebox/ui/composebox_metrics_recorder.h"
+
+#import <set>
 
 #import "base/metrics/histogram_functions.h"
 
@@ -31,7 +33,10 @@ std::string GetStringForAttachmentType(
 
 }  // namespace
 
-@implementation ComposeboxMetricsRecorder
+@implementation ComposeboxMetricsRecorder {
+  // Set of attachment button types used in the current session.
+  std::set<int> _usedAttachmentButtonTypes;
+}
 
 - (void)recordAiModeActivationSource:(AiModeActivationSource)source {
   base::UmaHistogramEnumeration("Omnibox.MobileFusebox.AiModeActivationSource",
@@ -43,17 +48,21 @@ std::string GetStringForAttachmentType(
                                 buttonType);
 }
 
+- (void)recordAttachmentButtonsUsageInSession {
+  for (int i = 0; i <= static_cast<int>(FuseboxAttachmentButtonType::kMaxValue);
+       ++i) {
+    FuseboxAttachmentButtonType buttonType =
+        static_cast<FuseboxAttachmentButtonType>(i);
+    BOOL used =
+        _usedAttachmentButtonTypes.contains(static_cast<int>(buttonType));
+    [self recordAttachmentButtonUsedInSession:buttonType used:used];
+  }
+}
+
 - (void)recordAttachmentButtonUsed:(FuseboxAttachmentButtonType)buttonType {
   base::UmaHistogramEnumeration("Omnibox.MobileFusebox.AttachmentButtonUsed",
                                 buttonType);
-}
-
-- (void)recordAttachmentButtonUsedInSession:
-    (FuseboxAttachmentButtonType)buttonType {
-  std::string histogram_name =
-      "Omnibox.MobileFusebox.AttachmentButtonUsedInSession.";
-  histogram_name += GetStringForAttachmentType(buttonType);
-  base::UmaHistogramBoolean(histogram_name, true);
+  _usedAttachmentButtonTypes.insert(static_cast<int>(buttonType));
 }
 
 - (void)recordAttachmentsMenuShown:(BOOL)shown {
@@ -71,6 +80,17 @@ std::string GetStringForAttachmentType(
     (AutocompleteRequestType)requestType {
   base::UmaHistogramEnumeration(
       "Omnibox.MobileFusebox.AutocompleteRequestTypeAtNavigation", requestType);
+}
+
+#pragma mark - private
+
+- (void)recordAttachmentButtonUsedInSession:
+            (FuseboxAttachmentButtonType)buttonType
+                                       used:(BOOL)used {
+  std::string histogram_name =
+      "Omnibox.MobileFusebox.AttachmentButtonUsedInSession.";
+  histogram_name += GetStringForAttachmentType(buttonType);
+  base::UmaHistogramBoolean(histogram_name, used);
 }
 
 @end

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_COMPOSEBOX_COORDINATOR_COMPOSEBOX_METRICS_RECORDER_H_
-#define IOS_CHROME_BROWSER_COMPOSEBOX_COORDINATOR_COMPOSEBOX_METRICS_RECORDER_H_
+#ifndef IOS_CHROME_BROWSER_COMPOSEBOX_UI_COMPOSEBOX_METRICS_RECORDER_H_
+#define IOS_CHROME_BROWSER_COMPOSEBOX_UI_COMPOSEBOX_METRICS_RECORDER_H_
 
 #import <Foundation/Foundation.h>
 
@@ -50,10 +50,8 @@ enum class AutocompleteRequestType {
 // Records the type of attachment button used.
 - (void)recordAttachmentButtonUsed:(FuseboxAttachmentButtonType)buttonType;
 
-// Records that an attachment button of the given type was used in the current
-// session.
-- (void)recordAttachmentButtonUsedInSession:
-    (FuseboxAttachmentButtonType)buttonType;
+// Records the attachment buttons usage in the composebox session.
+- (void)recordAttachmentButtonsUsageInSession;
 
 // Records that the attachments popup was toggled.
 - (void)recordAttachmentsMenuShown:(BOOL)shown;
@@ -68,4 +66,4 @@ enum class AutocompleteRequestType {
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_COMPOSEBOX_COORDINATOR_COMPOSEBOX_METRICS_RECORDER_H_
+#endif  // IOS_CHROME_BROWSER_COMPOSEBOX_UI_COMPOSEBOX_METRICS_RECORDER_H_

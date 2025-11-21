@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/composebox/ui/composebox_input_plate_mutator.h"
 
 @protocol ComposeboxInputPlateMutator;
+@class ComposeboxMetricsRecorder;
 @class ComposeboxInputPlateViewController;
 @protocol TextFieldViewContaining;
 
@@ -60,6 +61,9 @@
 
 // The input plate view to be used in animations.
 @property(nonatomic, readonly) UIView* inputPlateViewForAnimation;
+
+// The metrics recorder of the composebox.
+@property(nonatomic, weak) ComposeboxMetricsRecorder* metricsRecorder;
 
 // Initializes a new instance with a given theme.
 - (instancetype)initWithTheme:(ComposeboxTheme*)theme;

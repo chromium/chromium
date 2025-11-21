@@ -38,6 +38,7 @@
 #import "ios/chrome/browser/composebox/coordinator/web_state_deferred_executor.h"
 #import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_item.h"
+#import "ios/chrome/browser/composebox/ui/composebox_metrics_recorder.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/intelligence/persist_tab_context/model/persist_tab_context_browser_agent.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
@@ -554,6 +555,9 @@ CreateInputDataFromAnnotatedPageContent(
     return;
   }
 
+  [self.metricsRecorder
+      recordAttachmentButtonUsed:FuseboxAttachmentButtonType::kCurrentTab];
+
   std::set<web::WebStateID> webStateIDs = [self webStateIDsForAttachedTabs];
   webStateIDs.insert(webState->GetUniqueIdentifier());
   [self attachSelectedTabsWithWebStateIDs:webStateIDs];
@@ -838,6 +842,12 @@ CreateInputDataFromAnnotatedPageContent(
     if (IsAimURL(destinationURL)) {
       [self.consumer setAIModeEnabled:YES];
     }
+    AutocompleteRequestType requestType =
+        _AIModeEnabled ? AutocompleteRequestType::kAIMode
+                       : AutocompleteRequestType::kSearch;
+    [self.metricsRecorder
+        recordAutocompleteRequestTypeAtNavigation:requestType];
+
     [self sendText:[NSString cr_fromString16:text]];
   } else {
     [self.URLLoader loadURL:destinationURL disposition:disposition];
@@ -878,7 +888,13 @@ CreateInputDataFromAnnotatedPageContent(
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   [self.consumer setItems:_items];
   [self updateOptionToAttachCurrentTab];
+
   if (_items.count > 0) {
+    if (!_AIModeEnabled) {
+      // AI mode is implicitly enabled by items attachment.
+      [self.metricsRecorder
+          recordAiModeActivationSource:AiModeActivationSource::kImplicit];
+    }
     [self.consumer setAIModeEnabled:YES];
   } else if (base::FeatureList::IsEnabled(
                  omnibox::kComposeboxUsesChromeComposeClient)) {
