@@ -394,6 +394,23 @@ chromium-metrics-reviews@google.com.
   <summary>How users add a new bookmark.</summary>
 </histogram>
 
+<histogram name="Bookmarks.IdsReassigned2.OnProfileLoad.{BookmarksFileType}"
+    enum="BooleanReassigned" expires_after="2026-05-20">
+  <owner>mastiz@chromium.org</owner>
+  <owner>arthurmilchior@chromium.org</owner>
+  <summary>
+    Logs whether or not bookmark node IDs were reassigned when loading the
+    {BookmarksFileType}. Recorded on profile load. Note that older versions of
+    the browser recorded this using a histogram without the &quot;2&quot; suffix
+    in the name, before such original histogram expired.
+  </summary>
+  <token key="BookmarksFileType">
+    <variant name="Account" summary="JSON file containing account bookmarks."/>
+    <variant name="LocalOrSyncable"
+        summary="JSON file containing local-or-syncable bookmarks."/>
+  </token>
+</histogram>
+
 <histogram name="Bookmarks.LaunchLocation" enum="BookmarkLaunchLocation"
     expires_after="2026-05-03">
   <owner>ianwen@chromium.org</owner>

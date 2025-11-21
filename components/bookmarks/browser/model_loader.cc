@@ -100,6 +100,11 @@ std::unique_ptr<BookmarkLoadDetails> LoadBookmarks(
                                   codec.ids_reassigned());
       details->set_required_recovery(details->required_recovery() ||
                                      codec.required_recovery());
+
+      // Record metrics that indicate whether or not IDs were reassigned for
+      // account bookmarks.
+      metrics::RecordIdsReassignedOnProfileLoad(
+          metrics::StorageFileForUma::kAccount, codec.ids_reassigned());
     } else {
       // In the failure case, it is still possible that sync metadata was
       // decoded, which includes legit scenarios like sync metadata indicating
@@ -129,6 +134,11 @@ std::unique_ptr<BookmarkLoadDetails> LoadBookmarks(
                                      codec.required_recovery());
       details->set_local_or_syncable_reassigned_ids_per_old_id(
           codec.release_reassigned_ids_per_old_id());
+
+      // Record metrics that indicate whether or not IDs were reassigned for
+      // local-or-syncable bookmarks.
+      metrics::RecordIdsReassignedOnProfileLoad(
+          metrics::StorageFileForUma::kLocalOrSyncable, codec.ids_reassigned());
     }
   }
 

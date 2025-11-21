@@ -95,6 +95,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "bookmark_model_bridge_observer_unittest.mm",
+    "bookmark_model_factory_unittest.cc",
     "bookmark_remover_helper_unittest.cc",
     "bookmarks_utils_unittest.mm",
   ]
