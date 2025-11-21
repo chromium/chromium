@@ -18,10 +18,6 @@ const CGFloat kSymbolContentSuggestionsPointSize = 22;
 
 }  // namespace
 
-const int kContentSuggestionsTilesHorizontalSpacingRegular = 19;
-
-const int kContentSuggestionsTilesHorizontalSpacingCompact = 5;
-
 NSString* TitleForCollectionShortcutType(NTPCollectionShortcutType type) {
   switch (type) {
     case NTPCollectionShortcutTypeBookmark:

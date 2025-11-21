@@ -73,6 +73,8 @@ source_set("most_visited_tiles") {
   sources = [
     "content_suggestions_tile_saver.h",
     "content_suggestions_tile_saver.mm",
+    "most_visited_tiles_collection_view.h",
+    "most_visited_tiles_collection_view.mm",
     "most_visited_tiles_config.h",
     "most_visited_tiles_config.mm",
     "most_visited_tiles_mediator.h",
@@ -168,6 +170,8 @@ source_set("constants") {
     "content_suggestions_cells_constants.mm",
     "content_suggestions_tile_constants.h",
     "content_suggestions_tile_constants.mm",
+    "content_suggestions_tile_layout_util.h",
+    "content_suggestions_tile_layout_util.mm",
   ]
 
   deps = [
