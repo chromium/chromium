@@ -95,6 +95,8 @@
   return self;
 }
 
+#pragma mark - UIContentView
+
 - (void)setConfiguration:(id<UIContentConfiguration>)config {
   if (![config isKindOfClass:ContentSuggestionsMostVisitedItem.class]) {
     return;

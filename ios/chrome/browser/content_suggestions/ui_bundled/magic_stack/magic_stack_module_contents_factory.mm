@@ -8,7 +8,8 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/app_bundle_promo/ui/app_bundle_promo_config.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/app_bundle_promo/ui/app_bundle_promo_view.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_shortcut_tile_view.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_tile_constants.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_tile_layout_util.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/most_visited_tiles_collection_view.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/most_visited_tiles_stack_view.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/multi_row_container_view.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/shortcuts_commands.h"
@@ -45,22 +46,8 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tips/ui/tips_module_consumer_source.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tips/ui/tips_module_state.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tips/ui/tips_module_view.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-
-namespace {
-
-// Returns the vertical spacing between columns of tiles under
-// `trait_collection`.
-CGFloat ContentSuggestionsTilesHorizontalSpacing(
-    UITraitCollection* trait_collection) {
-  return (trait_collection.horizontalSizeClass !=
-              UIUserInterfaceSizeClassCompact &&
-          trait_collection.verticalSizeClass != UIUserInterfaceSizeClassCompact)
-             ? kContentSuggestionsTilesHorizontalSpacingRegular
-             : kContentSuggestionsTilesHorizontalSpacingCompact;
-}
-
-}  // namespace
 
 @implementation MagicStackModuleContentsFactory
 
@@ -72,10 +59,14 @@ CGFloat ContentSuggestionsTilesHorizontalSpacing(
     case ContentSuggestionsModuleType::kMostVisited: {
       MostVisitedTilesConfig* mvtConfig =
           static_cast<MostVisitedTilesConfig*>(config);
+      if (IsContentSuggestionsCustomizable()) {
+        return
+            [[MostVisitedTilesCollectionView alloc] initWithConfig:mvtConfig];
+      }
       return [[MostVisitedTilesStackView alloc]
-               initWithConfig:mvtConfig
-                      spacing:ContentSuggestionsTilesHorizontalSpacing(
-                                  traitCollection)];
+          initWithConfig:mvtConfig
+                 spacing:ContentSuggestionsTilesHorizontalSpacing(
+                             traitCollection)];
     }
     case ContentSuggestionsModuleType::kShortcuts: {
       ShortcutsConfig* shortcutsConfig = static_cast<ShortcutsConfig*>(config);
