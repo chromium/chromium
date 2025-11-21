@@ -4764,7 +4764,11 @@ def make_property_entries_and_callback_defs(cg_context, attribute_entries,
         for member in members:
             is_context_dependent = member.exposure.is_context_dependent(
                 global_names)
+            runtime_enabled_features = False
             if isinstance(member, web_idl.OverloadGroup):
+                runtime_enabled_features = any(
+                  overload.exposure.runtime_enabled_features for overload in member
+                )
                 exposure_conditional = expr_or([
                     expr_from_exposure(overload.exposure,
                                        global_names=global_names,
@@ -4772,10 +4776,17 @@ def make_property_entries_and_callback_defs(cg_context, attribute_entries,
                     for overload in member
                 ])
             else:
+                runtime_enabled_features = bool(member.exposure.runtime_enabled_features)
                 exposure_conditional = expr_from_exposure(
                     member.exposure,
                     global_names=global_names,
                     may_use_feature_selector=True)
+
+            if runtime_enabled_features:
+              callback_def_nodes.accumulate(
+                  CodeGenAccumulator.require_include_headers([
+                      "third_party/blink/renderer/platform/runtime_enabled_features.h"
+                  ]))
 
             if "PerWorldBindings" in member.extended_attributes:
                 assert not isinstance(
@@ -6221,6 +6232,10 @@ def make_is_exposed(cg_context, function_name):
         is_exposed_def.body.append(
             FormatNode("return {};",
                        expr_from_exposure(class_like.exposure).to_text()))
+        is_exposed_def.accumulate(
+            CodeGenAccumulator.require_include_headers([
+                "third_party/blink/renderer/platform/runtime_enabled_features.h"
+            ]))
     else:
         is_exposed_def.body.append(TextNode("return false;"))
     return (is_exposed_decl, is_exposed_def)
