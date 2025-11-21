@@ -150,14 +150,16 @@
 
 :host-context(.focus-outline-visible) .tile a:focus,
 :host-context(.focus-outline-visible) #addShortcut:focus,
-:host-context(.focus-outline-visible) #showMore:focus {
+:host-context(.focus-outline-visible) #showMore:focus,
+:host-context(.focus-outline-visible) #showLess:focus {
   box-shadow: var(--most-visited-focus-shadow);
 }
 
 @media (forced-colors: active) {
   :host-context(.focus-outline-visible) .tile a:focus,
   :host-context(.focus-outline-visible) #addShortcut:focus,
-  :host-context(.focus-outline-visible) #showMore:focus {
+  :host-context(.focus-outline-visible) #showMore:focus,
+  :host-context(.focus-outline-visible) #showLess:focus {
     /* Use outline instead of box-shadow (which does not work) in Windows
         HCM. */
     outline: var(--cr-focus-outline-hcm);
@@ -177,6 +179,7 @@
 :host(:not([reordering_])) .tile:hover,
 :host(:not([reordering_])) #addShortcut:hover,
 :host(:not([reordering_])) #showMore:hover,
+:host(:not([reordering_])) #showLess:hover,
 .force-hover {
   background-color: var(--tile-hover-color);
 }
