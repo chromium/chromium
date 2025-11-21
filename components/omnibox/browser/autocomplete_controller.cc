@@ -1783,18 +1783,21 @@ void AutocompleteController::UpdateAssociatedKeywords(
     return;
   }
 
-  // The keyword matching the user's input.
-  std::u16string input_text_keyword = keyword_provider_->GetKeywordForText(
+  // In order to keep zero suggest UI minimal, zero suggest should never have
+  // attached keywords.
+  if (input_.IsZeroSuggest()) {
+    return;
+  }
+
+  // The `TemplateURL` matching the user's input.
+  const TemplateURL* input_turl = keyword_provider_->GetTemplateUrlForText(
       input_.text(), template_url_service_);
-  TemplateURL* input_text_keyword_turl =
-      template_url_service_->GetTemplateURLForKeyword(input_text_keyword);
 
   // Cache added keywords to avoid showing the tab-to-search hint for the same
   // keyword on different matches.
   std::set<std::u16string> added_keywords;
 
   auto add_keyword = [&](AutocompleteMatch& match,
-                         const std::u16string& keyword_text,
                          const std::u16string& keyword) {
     // There shouldn't be duplicate keywords.
     if (added_keywords.count(keyword)) {
@@ -1822,13 +1825,6 @@ void AutocompleteController::UpdateAssociatedKeywords(
   };
 
   for (AutocompleteMatch& match : *result) {
-    // In order to keep zero suggest UI minimal, zero suggest should never have
-    // attached keywords. The matches eligible for an associated keywords
-    // should be treated as URL suggestions.
-    if (input_.IsZeroSuggest()) {
-      return;
-    }
-
     // Clear any keyword the match may have from previous passes.
     match.associated_keyword = u"";
 
@@ -1847,34 +1843,28 @@ void AutocompleteController::UpdateAssociatedKeywords(
     // autocompletes to a different keyword, offer tab-to-search keyword hint
     // on the match, except for starter packed keywords or those featured by
     // policy.
-    if (!input_text_keyword.empty() &&
-        !added_keywords.count(input_text_keyword) &&
-        input_text_keyword_turl->starter_pack_id() == 0 &&
-        !input_text_keyword_turl->featured_by_policy()) {
-      add_keyword(match, input_text_keyword, input_text_keyword);
+    if (input_turl && !added_keywords.count(input_turl->keyword()) &&
+        !input_turl->starter_pack_id() && !input_turl->featured_by_policy()) {
+      add_keyword(match, input_turl->keyword());
       continue;
     }
 
-    // The keyword for the match text.
-    std::u16string match_text_keyword = keyword_provider_->GetKeywordForText(
+    // The `TemplateURL` for the match text.
+    const TemplateURL* match_turl = keyword_provider_->GetTemplateUrlForText(
         match.fill_into_edit, template_url_service_);
-    TemplateURL* match_text_keyword_turl =
-        template_url_service_->GetTemplateURLForKeyword(match_text_keyword);
 
     // Featured keyword matches should always have their corresponding keyword
     // or they won't work.
     if (AutocompleteMatch::IsFeaturedSearchType(match.type)) {
-      CHECK(!match_text_keyword.empty());
-      add_keyword(match, match.fill_into_edit, match_text_keyword);
+      CHECK(match_turl);
+      add_keyword(match, match_turl->keyword());
       continue;
     }
 
-    // Add keyword hints for non-FeaturedKeyword matches.
-    if (!match_text_keyword.empty() &&
-        !added_keywords.count(match_text_keyword) &&
-        match_text_keyword_turl->starter_pack_id() == 0 &&
-        !match_text_keyword_turl->featured_by_policy()) {
-      add_keyword(match, match.fill_into_edit, match_text_keyword);
+    // Add keyword hints for non-featured keyword matches.
+    if (match_turl && !added_keywords.count(match_turl->keyword()) &&
+        !match_turl->starter_pack_id() && !match_turl->featured_by_policy()) {
+      add_keyword(match, match_turl->keyword());
     }
   }
 }

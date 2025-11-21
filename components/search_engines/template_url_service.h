@@ -224,37 +224,37 @@ class TemplateURLService final : public WebDataServiceConsumer,
   const TemplateURL* GetTemplateURLForKeyword(
       const std::u16string& keyword) const;
 
-  // Returns that TemplateURL with the specified GUID, or NULL if not found.
+  // Returns that `TemplateURL` with the specified GUID, or NULL if not found.
   // The caller should not try to delete the returned pointer; the data store
   // retains ownership of it.
   TemplateURL* GetTemplateURLForGUID(const std::string& sync_guid);
   const TemplateURL* GetTemplateURLForGUID(const std::string& sync_guid) const;
 
-  // Returns the best TemplateURL found with a URL using the specified |host|,
+  // Returns the best `TemplateURL` found with a URL using the specified `host`,
   // or nullptr if there are no such TemplateURLs.
   TemplateURL* GetTemplateURLForHost(const std::string& host);
   const TemplateURL* GetTemplateURLForHost(const std::string& host) const;
 
-  // Returns the TemplateURL corresponding to |starter_pack_id|, if any.
+  // Returns the `TemplateURL` corresponding to `starter_pack_id`, if any.
   TemplateURL* FindStarterPackTemplateURL(int starter_pack_id);
 
-  // Returns the TemplateURL associated with |extension_id|, if any.
+  // Returns the `TemplateURL` associated with `extension_id`, if any.
   TemplateURL* FindTemplateURLForExtension(const std::string& extension_id,
                                            TemplateURL::Type type);
 
-  // Adds a new TemplateURL to this model.
+  // Adds a new `TemplateURL` to this model.
   //
   // This function guarantees that on return the model will not have two non-
   // extension TemplateURLs with the same keyword.  If that means that it cannot
   // add the provided argument, it will return null.  Otherwise it will return
   // the raw pointer to the TemplateURL.
   //
-  // Returns a raw pointer to |template_url| if the addition succeeded, or null
-  // on failure.  (Many callers need still need a raw pointer to the TemplateURL
+  // Returns a raw pointer to `template_url` if the addition succeeded, or null
+  // on failure. (Many callers still need a raw pointer to the `TemplateURL`
   // so they can access it later.)
   TemplateURL* Add(std::unique_ptr<TemplateURL> template_url);
 
-  // Like Add(), but overwrites the |template_url|'s values with the provided
+  // Like `Add()`, but overwrites the `template_url`'s values with the provided
   // ones.
   TemplateURL* AddWithOverrides(std::unique_ptr<TemplateURL> template_url,
                                 const std::u16string& short_name,
