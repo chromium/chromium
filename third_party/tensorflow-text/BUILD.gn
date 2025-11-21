@@ -14,7 +14,14 @@ config("tensorflow-text-config") {
 }
 
 config("tensorflow-text-flags") {
-  cflags = [ "-Wno-comment" ]
+  cflags = [
+    "-Wno-comment",
+
+    # Avoids an error pulling in a TFLite use of tsl::mutex. This is here
+    # rather than as a public config in TFLite's BUILD.gn to avoid propagating
+    # this disable into more Chrome code than is necessary.
+    "-Wno-deprecated-declarations",
+  ]
 }
 
 static_library("tensorflow-text") {
