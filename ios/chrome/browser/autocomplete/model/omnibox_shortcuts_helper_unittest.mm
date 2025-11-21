@@ -1,36 +1,30 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/omnibox/model/chrome_omnibox_client_ios.h"
+#import "ios/chrome/browser/autocomplete/model/omnibox_shortcuts_helper.h"
 
-#import "components/feature_engagement/public/tracker.h"
-#import "components/feature_engagement/test/test_tracker.h"
-#import "components/omnibox/browser/autocomplete_provider.h"
+#import "base/memory/scoped_refptr.h"
+#import "base/run_loop.h"
+#import "components/omnibox/browser/autocomplete_match.h"
 #import "components/omnibox/browser/fake_autocomplete_provider.h"
 #import "components/omnibox/browser/shortcuts_backend.h"
-#import "components/omnibox/common/omnibox_features.h"
 #import "ios/chrome/browser/autocomplete/model/shortcuts_backend_factory.h"
-#import "ios/chrome/browser/location_bar/model/test_web_location_bar.h"
-#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
-#import "ios/chrome/test/block_cleanup_test.h"
 #import "ios/testing/nserror_util.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
-#import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
-#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
-class ChromeOmniboxClientIOSTest
+class OmniboxShortcutsHelperTest
     : public PlatformTest,
       public ShortcutsBackend::ShortcutsBackendObserver {
  public:
-  ChromeOmniboxClientIOSTest() = default;
-  ChromeOmniboxClientIOSTest(const ChromeOmniboxClientIOSTest&) = delete;
-  ChromeOmniboxClientIOSTest& operator=(const ChromeOmniboxClientIOSTest&) =
+  OmniboxShortcutsHelperTest() = default;
+  OmniboxShortcutsHelperTest(const OmniboxShortcutsHelperTest&) = delete;
+  OmniboxShortcutsHelperTest& operator=(const OmniboxShortcutsHelperTest&) =
       delete;
 
   void SetUp() override;
@@ -60,11 +54,8 @@ class ChromeOmniboxClientIOSTest
  private:
   web::WebTaskEnvironment task_environment_;
 
-  std::unique_ptr<TestWebLocationBar> web_location_bar_;
   std::unique_ptr<TestProfileIOS> profile_;
-  std::unique_ptr<TestBrowser> browser_;
-  std::unique_ptr<feature_engagement::Tracker> tracker_;
-  std::unique_ptr<ChromeOmniboxClientIOS> chrome_omnibox_client_ios_;
+  std::unique_ptr<OmniboxShortcutsHelper> omnibox_shortcuts_helper_;
 
   std::unique_ptr<web::FakeWebState> web_state_;
   std::unique_ptr<web::FakeNavigationContext> navigation_context_;
@@ -73,9 +64,10 @@ class ChromeOmniboxClientIOSTest
 
   bool load_notified_ = false;
   bool changed_notified_ = false;
+  base::OnceClosure quit_closure_;
 };
 
-void ChromeOmniboxClientIOSTest::SetUp() {
+void OmniboxShortcutsHelperTest::SetUp() {
   PlatformTest::SetUp();
   load_notified_ = false;
   changed_notified_ = false;
@@ -84,77 +76,79 @@ void ChromeOmniboxClientIOSTest::SetUp() {
   builder.AddTestingFactory(ios::ShortcutsBackendFactory::GetInstance(),
                             ios::ShortcutsBackendFactory::GetDefaultFactory());
   profile_ = std::move(builder).Build();
-  web_location_bar_ = std::make_unique<TestWebLocationBar>();
-  browser_ = std::make_unique<TestBrowser>(profile_.get());
-  tracker_ = feature_engagement::CreateTestTracker();
-  chrome_omnibox_client_ios_ = std::make_unique<ChromeOmniboxClientIOS>(
-      web_location_bar_.get(), browser_.get(), tracker_.get());
-
-  web_state_ = std::make_unique<web::FakeWebState>();
-  web_location_bar_->SetWebState(web_state_.get());
-  navigation_context_ = std::make_unique<web::FakeNavigationContext>();
-  navigation_context_->SetPageTransition(ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
 
   shortcuts_backend_ =
       ios::ShortcutsBackendFactory::GetForProfile(profile_.get());
   ASSERT_TRUE(shortcuts_backend_.get());
   shortcuts_backend_->AddObserver(this);
+
+  omnibox_shortcuts_helper_ =
+      std::make_unique<OmniboxShortcutsHelper>(shortcuts_backend_.get());
+
+  web_state_ = std::make_unique<web::FakeWebState>();
+  navigation_context_ = std::make_unique<web::FakeNavigationContext>();
+  navigation_context_->SetPageTransition(ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
 }
 
-void ChromeOmniboxClientIOSTest::TearDown() {
+void OmniboxShortcutsHelperTest::TearDown() {
   PlatformTest::TearDown();
   shortcuts_backend_->RemoveObserver(this);
 }
 
-void ChromeOmniboxClientIOSTest::InitShortcutsBackend() {
+void OmniboxShortcutsHelperTest::InitShortcutsBackend() {
   ASSERT_TRUE(shortcuts_backend_);
   ASSERT_FALSE(load_notified_);
   ASSERT_FALSE(shortcuts_backend_->initialized());
+
+  base::RunLoop run_loop;
+  quit_closure_ = run_loop.QuitClosure();
   shortcuts_backend_->Init();
-  task_environment_.RunUntilIdle();
+  run_loop.Run();
+
   EXPECT_TRUE(load_notified_);
   EXPECT_TRUE(shortcuts_backend_->initialized());
 }
 
-void ChromeOmniboxClientIOSTest::OnShortcutsLoaded() {
+void OmniboxShortcutsHelperTest::OnShortcutsLoaded() {
   load_notified_ = true;
+  if (quit_closure_) {
+    std::move(quit_closure_).Run();
+  }
 }
 
-void ChromeOmniboxClientIOSTest::OnShortcutsChanged() {
+void OmniboxShortcutsHelperTest::OnShortcutsChanged() {
   changed_notified_ = true;
 }
 
-bool ChromeOmniboxClientIOSTest::ShortcutExists(
+bool OmniboxShortcutsHelperTest::ShortcutExists(
     const std::u16string& terms) const {
   return shortcuts_map().find(terms) != shortcuts_map().end();
 }
 
-void ChromeOmniboxClientIOSTest::UseAutocompleteMatch(
+void OmniboxShortcutsHelperTest::UseAutocompleteMatch(
     const std::u16string& input_text,
     const AutocompleteMatch& match) {
-  chrome_omnibox_client_ios_->OnAutocompleteAccept(
-      match.destination_url, match.post_content.get(),
-      WindowOpenDisposition::CURRENT_TAB, match.transition, match.type,
-      base::TimeTicks(), false, false, input_text, match, match);
+  omnibox_shortcuts_helper_->OnAutocompleteAccept(input_text, match,
+                                                  web_state_.get());
 }
 
-void ChromeOmniboxClientIOSTest::FinishCurrentNavigationSuccessfully() {
+void OmniboxShortcutsHelperTest::FinishCurrentNavigationSuccessfully() {
   navigation_context_->SetError(nil);
   web_state_->OnNavigationFinished(navigation_context_.get());
 }
 
-void ChromeOmniboxClientIOSTest::FailCurrentNavigation() {
+void OmniboxShortcutsHelperTest::FailCurrentNavigation() {
   navigation_context_->SetError(
       testing::NSErrorWithLocalizedDescription(@"error"));
   web_state_->OnNavigationFinished(navigation_context_.get());
 }
 
-void ChromeOmniboxClientIOSTest::RedirectNavigationWithBackButton() {
+void OmniboxShortcutsHelperTest::RedirectNavigationWithBackButton() {
   navigation_context_->SetPageTransition(ui::PAGE_TRANSITION_FORWARD_BACK);
 }
 
 // Tests that successful navigations are added to the shortcuts database.
-TEST_F(ChromeOmniboxClientIOSTest, SuccessfulNavigationAddsShortcut) {
+TEST_F(OmniboxShortcutsHelperTest, SuccessfulNavigationAddsShortcut) {
   InitShortcutsBackend();
 
   scoped_refptr<FakeAutocompleteProvider> bookmark_provider =
@@ -177,7 +171,7 @@ TEST_F(ChromeOmniboxClientIOSTest, SuccessfulNavigationAddsShortcut) {
 
 // Tests that unfinished navigations or failed navigations are not added in the
 // shortcuts database.
-TEST_F(ChromeOmniboxClientIOSTest, UnsuccessfulNavigationDontAddShortcut) {
+TEST_F(OmniboxShortcutsHelperTest, UnsuccessfulNavigationDontAddShortcut) {
   InitShortcutsBackend();
 
   scoped_refptr<FakeAutocompleteProvider> bookmark_provider =
@@ -216,7 +210,7 @@ TEST_F(ChromeOmniboxClientIOSTest, UnsuccessfulNavigationDontAddShortcut) {
 
 // Tests that non omnibox successful navigation are not added in the shortcuts
 // database.
-TEST_F(ChromeOmniboxClientIOSTest, SuccessfulNonOmniboxDontAddShortcut) {
+TEST_F(OmniboxShortcutsHelperTest, SuccessfulNonOmniboxDontAddShortcut) {
   InitShortcutsBackend();
 
   scoped_refptr<FakeAutocompleteProvider> bookmark_provider =

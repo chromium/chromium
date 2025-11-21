@@ -17,12 +17,13 @@
 #import "components/omnibox/browser/autocomplete_result.h"
 #import "components/omnibox/browser/location_bar_model.h"
 #import "components/omnibox/browser/omnibox_log.h"
-#import "components/omnibox/browser/shortcuts_backend.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_classifier_factory.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_provider_client_impl.h"
-#import "ios/chrome/browser/autocomplete/model/shortcuts_backend_factory.h"
+#import "ios/chrome/browser/autocomplete/model/autocomplete_service.h"
+#import "ios/chrome/browser/autocomplete/model/autocomplete_service_factory.h"
+#import "ios/chrome/browser/autocomplete/model/omnibox_shortcuts_helper.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_omnibox_client_delegate.h"
@@ -52,14 +53,11 @@ ComposeboxOmniboxClient::ComposeboxOmniboxClient(
       browser_(browser),
       profile_(browser->GetProfile()),
       engagement_tracker_(tracker),
-      web_state_tracker_(),
       delegate_(delegate) {
   CHECK(engagement_tracker_);
 }
 
-ComposeboxOmniboxClient::~ComposeboxOmniboxClient() {
-  web_state_tracker_.clear();
-}
+ComposeboxOmniboxClient::~ComposeboxOmniboxClient() {}
 
 std::unique_ptr<AutocompleteProviderClient>
 ComposeboxOmniboxClient::CreateAutocompleteProviderClient() {
@@ -314,15 +312,16 @@ void ComposeboxOmniboxClient::OnAutocompleteAccept(
     const std::u16string& text,
     const AutocompleteMatch& match,
     const AutocompleteMatch& alternative_nav_match) {
-  if (location_bar_->GetWebState()) {
-    web::WebState* web_state = location_bar_->GetWebState();
-    const int32_t web_state_id = web_state->GetUniqueIdentifier().identifier();
-    if (web_state_tracker_.find(web_state_id) == web_state_tracker_.end()) {
-      scoped_observations_.AddObservation(web_state);
-    }
-    const ShortcutElement shortcutElement{text, match};
-    web_state_tracker_.insert_or_assign(web_state_id, shortcutElement);
+  AutocompleteService* autocomplete_service =
+      AutocompleteServiceFactory::GetForProfile(profile_);
+  OmniboxShortcutsHelper* shortcuts_helper =
+      autocomplete_service->GetOmniboxShortcutsHelper(
+          OmniboxPresentationContext::kComposebox);
+  if (shortcuts_helper) {
+    shortcuts_helper->OnAutocompleteAccept(text, match,
+                                           location_bar_->GetWebState());
   }
+
   [delegate_ omniboxDidAcceptText:match.fill_into_edit
                    destinationURL:destination_url
                       disposition:disposition
@@ -331,28 +330,4 @@ void ComposeboxOmniboxClient::OnAutocompleteAccept(
 
 base::WeakPtr<OmniboxClient> ComposeboxOmniboxClient::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
-}
-
-void ComposeboxOmniboxClient::DidFinishNavigation(
-    web::WebState* web_state,
-    web::NavigationContext* navigation_context) {
-  const int32_t web_state_id = web_state->GetUniqueIdentifier().identifier();
-  ShortcutElement shortcut = web_state_tracker_.extract(web_state_id).mapped();
-  scoped_observations_.RemoveObservation(web_state);
-
-  scoped_refptr<ShortcutsBackend> shortcuts_backend =
-      ios::ShortcutsBackendFactory::GetForProfile(profile_);
-
-  // Add the shortcut if the navigation from the omnibox was successful.
-  if (!navigation_context->GetError() && shortcuts_backend &&
-      (navigation_context->GetPageTransition() &
-       ui::PAGE_TRANSITION_FROM_ADDRESS_BAR)) {
-    shortcuts_backend->AddOrUpdateShortcut(shortcut.text, shortcut.match);
-  }
-}
-
-void ComposeboxOmniboxClient::WebStateDestroyed(web::WebState* web_state) {
-  const int32_t web_state_id = web_state->GetUniqueIdentifier().identifier();
-  web_state_tracker_.erase(web_state_id);
-  scoped_observations_.RemoveObservation(web_state);
 }

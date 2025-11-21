@@ -17,18 +17,20 @@
 #import "components/omnibox/browser/autocomplete_result.h"
 #import "components/omnibox/browser/location_bar_model.h"
 #import "components/omnibox/browser/omnibox_log.h"
-#import "components/omnibox/browser/shortcuts_backend.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_classifier_factory.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_provider_client_impl.h"
-#import "ios/chrome/browser/autocomplete/model/shortcuts_backend_factory.h"
+#import "ios/chrome/browser/autocomplete/model/autocomplete_service.h"
+#import "ios/chrome/browser/autocomplete/model/autocomplete_service_factory.h"
+#import "ios/chrome/browser/autocomplete/model/omnibox_shortcuts_helper.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/https_upgrades/model/https_upgrade_service_factory.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
 #import "ios/chrome/browser/location_bar/model/web_location_bar.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_presentation_context.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/prerender/model/prerender_browser_agent.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
@@ -49,14 +51,11 @@ ChromeOmniboxClientIOS::ChromeOmniboxClientIOS(
     : location_bar_(location_bar),
       browser_(browser),
       profile_(browser->GetProfile()),
-      engagement_tracker_(tracker),
-      web_state_tracker_() {
+      engagement_tracker_(tracker) {
   CHECK(engagement_tracker_);
 }
 
-ChromeOmniboxClientIOS::~ChromeOmniboxClientIOS() {
-  web_state_tracker_.clear();
-}
+ChromeOmniboxClientIOS::~ChromeOmniboxClientIOS() {}
 
 std::unique_ptr<AutocompleteProviderClient>
 ChromeOmniboxClientIOS::CreateAutocompleteProviderClient() {
@@ -280,14 +279,14 @@ void ChromeOmniboxClientIOS::OnAutocompleteAccept(
     const std::u16string& text,
     const AutocompleteMatch& match,
     const AutocompleteMatch& alternative_nav_match) {
-  if (location_bar_->GetWebState()) {
-    web::WebState* web_state = location_bar_->GetWebState();
-    const int32_t web_state_id = web_state->GetUniqueIdentifier().identifier();
-    if (web_state_tracker_.find(web_state_id) == web_state_tracker_.end()) {
-      scoped_observations_.AddObservation(web_state);
-    }
-    const ShortcutElement shortcutElement{text, match};
-    web_state_tracker_.insert_or_assign(web_state_id, shortcutElement);
+  AutocompleteService* autocomplete_service =
+      AutocompleteServiceFactory::GetForProfile(profile_);
+  OmniboxShortcutsHelper* shortcuts_helper =
+      autocomplete_service->GetOmniboxShortcutsHelper(
+          OmniboxPresentationContext::kLocationBar);
+  if (shortcuts_helper) {
+    shortcuts_helper->OnAutocompleteAccept(text, match,
+                                           location_bar_->GetWebState());
   }
 
   location_bar_->OnNavigate(destination_url, post_content, disposition,
@@ -297,28 +296,4 @@ void ChromeOmniboxClientIOS::OnAutocompleteAccept(
 
 base::WeakPtr<OmniboxClient> ChromeOmniboxClientIOS::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
-}
-
-void ChromeOmniboxClientIOS::DidFinishNavigation(
-    web::WebState* web_state,
-    web::NavigationContext* navigation_context) {
-  const int32_t web_state_id = web_state->GetUniqueIdentifier().identifier();
-  ShortcutElement shortcut = web_state_tracker_.extract(web_state_id).mapped();
-  scoped_observations_.RemoveObservation(web_state);
-
-  scoped_refptr<ShortcutsBackend> shortcuts_backend =
-      ios::ShortcutsBackendFactory::GetForProfile(profile_);
-
-  // Add the shortcut if the navigation from the omnibox was successful.
-  if (!navigation_context->GetError() && shortcuts_backend &&
-      (navigation_context->GetPageTransition() &
-       ui::PAGE_TRANSITION_FROM_ADDRESS_BAR)) {
-    shortcuts_backend->AddOrUpdateShortcut(shortcut.text, shortcut.match);
-  }
-}
-
-void ChromeOmniboxClientIOS::WebStateDestroyed(web::WebState* web_state) {
-  const int32_t web_state_id = web_state->GetUniqueIdentifier().identifier();
-  web_state_tracker_.erase(web_state_id);
-  scoped_observations_.RemoveObservation(web_state);
 }

@@ -25,13 +25,7 @@ namespace feature_engagement {
 class Tracker;
 }
 
-namespace web {
-class NavigationContext;
-class WebState;
-}  // namespace web
-
-class ComposeboxOmniboxClient final : public OmniboxClient,
-                                      public web::WebStateObserver {
+class ComposeboxOmniboxClient final : public OmniboxClient {
  public:
   ComposeboxOmniboxClient(WebLocationBar* location_bar,
                           Browser* browser,
@@ -105,34 +99,16 @@ class ComposeboxOmniboxClient final : public OmniboxClient,
       const AutocompleteMatch& alternative_nav_match) override;
   base::WeakPtr<OmniboxClient> AsWeakPtr() override;
 
-  // web::WebStateObserver.
-  void DidFinishNavigation(web::WebState* web_state,
-                           web::NavigationContext* navigation_context) override;
-  void WebStateDestroyed(web::WebState* web_state) override;
-
   // Returns the LensOverlaySuggestInputs if available.
   std::optional<lens::proto::LensOverlaySuggestInputs>
   GetLensOverlaySuggestInputs() const override;
 
  private:
-  // Object associated with a web state id in `web_state_tracker_`. If the
-  // navigation succeeds, the shortcut is stored in the ShortcutsDatabase.
-  struct ShortcutElement {
-    std::u16string text;
-    AutocompleteMatch match;
-  };
   raw_ptr<WebLocationBar> location_bar_;
   raw_ptr<Browser> browser_;
   raw_ptr<ProfileIOS> profile_;
   AutocompleteSchemeClassifierImpl scheme_classifier_;
   raw_ptr<feature_engagement::Tracker> engagement_tracker_;
-  // Stores observed navigations from the omnibox. Items are removed once
-  // navigation finishes or when it's destroyed.
-  std::unordered_map<int32_t, ShortcutElement> web_state_tracker_;
-
-  // Automatically remove this observer from its host when destroyed.
-  base::ScopedMultiSourceObservation<web::WebState, web::WebStateObserver>
-      scoped_observations_{this};
 
   // Delegate which implement the ComposeboxOmniboxClientDelegate protocol
   // responsible for handling user actions, such as accepting an omnibox

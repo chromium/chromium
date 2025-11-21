@@ -99,7 +99,6 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "chrome_omnibox_client_ios_unittest.mm",
     "omnibox_autocomplete_controller_unittest.mm",
     "omnibox_text_controller_unittest.mm",
     "omnibox_text_model_unittest.mm",
