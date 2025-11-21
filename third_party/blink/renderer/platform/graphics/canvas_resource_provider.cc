@@ -180,13 +180,17 @@ CanvasResourceProviderBitmap::DoExternalDrawAndSnapshot(
     // printing.
     clear_frame_ = false;
 
+    if (!surface_) {
+      surface_ = CreateSkSurface();
+    }
+
     if (!skia_canvas_) {
       skia_canvas_ = std::make_unique<cc::SkiaPaintCanvas>(
-          GetSkSurface()->getCanvas(), GetOrCreateCanvasImageProvider());
+          surface_->getCanvas(), GetOrCreateCanvasImageProvider());
     }
 
     skia_canvas_->drawPicture(recorder_->ReleaseMainRecording());
-    skgpu::ganesh::FlushAndSubmit(GetSkSurface());
+    skgpu::ganesh::FlushAndSubmit(surface_);
 
     // Images are locked for the duration of the rasterization, in case they get
     // used multiple times. We can unlock them once the rasterization is
@@ -197,7 +201,7 @@ CanvasResourceProviderBitmap::DoExternalDrawAndSnapshot(
 
   cc::PaintImage paint_image;
 
-  auto sk_image = GetSkSurface()->makeImageSnapshot();
+  auto sk_image = surface_->makeImageSnapshot();
   if (sk_image) {
     auto last_snapshot_sk_image_id = snapshot_sk_image_id_;
     snapshot_sk_image_id_ = sk_image->uniqueID();
