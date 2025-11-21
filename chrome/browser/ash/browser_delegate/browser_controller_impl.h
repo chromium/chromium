@@ -37,6 +37,7 @@ class BrowserControllerImpl : public BrowserController,
                       base::FunctionRef<IterationDirective(BrowserDelegate&)>
                           callback) override;
   BrowserDelegate* GetBrowserForWindow(aura::Window* window) override;
+  BrowserDelegate* GetBrowserForTab(content::WebContents* contents) override;
   BrowserDelegate* FindWebApp(const AccountId& account_id,
                               webapps::AppId app_id,
                               BrowserType browser_type,

@@ -109,6 +109,11 @@ class BrowserController {
   // window, if any. This can be nullptr when the browser is shutting down.
   virtual BrowserDelegate* GetBrowserForWindow(aura::Window* window) = 0;
 
+  // Returns (the delegate for) the browser associated with the given tab, if
+  // any. This can be nullptr when the tab is in the process of being moved from
+  // one browser to another.
+  virtual BrowserDelegate* GetBrowserForTab(content::WebContents* contents) = 0;
+
   // Returns (the delegate for) the most recently activated web app browser
   // that matches the given parameters. Returns nullptr if there's none.
   // Url matching is done ignoring any references, and only if `url` is not

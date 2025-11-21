@@ -26,6 +26,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/account_id/account_id.h"
+#include "components/tabs/public/tab_interface.h"
 #include "ui/aura/window.h"
 
 namespace {
@@ -134,6 +135,14 @@ BrowserDelegate* BrowserControllerImpl::GetBrowserForWindow(
   BrowserView* browser_view =
       BrowserView::GetBrowserViewForNativeWindow(window);
   return GetDelegate(browser_view ? browser_view->browser() : nullptr);
+}
+
+BrowserDelegate* BrowserControllerImpl::GetBrowserForTab(
+    content::WebContents* contents) {
+  auto* tab = tabs::TabInterface::GetFromContents(contents);
+  return GetDelegate(
+      tab ? tab->GetBrowserWindowInterface()->GetBrowserForMigrationOnly()
+          : nullptr);
 }
 
 BrowserDelegate* BrowserControllerImpl::FindWebApp(const AccountId& account_id,
