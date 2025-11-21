@@ -1138,7 +1138,12 @@ class AutocompleteMediator
         postAutocompleteRequest(
                 () -> {
                     if (mAutocomplete != null) {
-                        mAutocomplete.startPrefetch(mAutocompleteInput, webContents);
+                        final AutocompleteInput input = new AutocompleteInput();
+                        input.setPageClassification(
+                                mDataProvider.getPageClassification(true));
+                        input.setPageUrl(mDataProvider.getCurrentGurl());
+                        input.setPageTitle(mDataProvider.getTitle());
+                        mAutocomplete.startPrefetch(input, webContents);
                     }
                 },
                 SCHEDULE_FOR_IMMEDIATE_EXECUTION);
