@@ -13,7 +13,6 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom.h"
 #include "components/soda/soda_util.h"
 #include "media/base/media_switches.h"
@@ -47,12 +46,12 @@ media::mojom::AvailabilityStatus GetOnDeviceSpeechRecognitionAvailabilityStatus(
     }
 
     // TODO(crbug.com/446260680): Use
-    // ModelBasedCapabilityKey::kOnDeviceSpeechRecognition.
+    // OnDeviceFeature::kOnDeviceSpeechRecognition.
     std::optional<optimization_guide::mojom::ModelUnavailableReason>
         unavailable_reason =
             optimization_guide::AvailabilityFromEligibilityReason(
                 service->GetOnDeviceModelEligibility(
-                    optimization_guide::ModelBasedCapabilityKey::kPromptApi));
+                    optimization_guide::mojom::OnDeviceFeature::kPromptApi));
     if (!unavailable_reason.has_value()) {
       return media::mojom::AvailabilityStatus::kAvailable;
     } else {

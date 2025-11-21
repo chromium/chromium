@@ -9,7 +9,6 @@
 #include "base/sequence_checker.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/delivery/optimization_target_model_observer.h"
-#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
@@ -51,7 +50,7 @@ class OnDeviceAssetManager final
   void StateChanged(const OnDeviceModelComponentState* state) override;
 
   // UsageTracker::Observer:
-  void OnDeviceEligibleFeatureFirstUsed(ModelBasedCapabilityKey feature) final;
+  void OnDeviceEligibleFeatureFirstUsed(mojom::OnDeviceFeature feature) final;
 
   raw_ref<PrefService> local_state_;
   raw_ref<UsageTracker> usage_tracker_;

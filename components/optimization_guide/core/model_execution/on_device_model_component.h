@@ -29,6 +29,7 @@
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/on_device_base_model_metadata.pb.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class PrefService;
@@ -42,7 +43,6 @@ namespace optimization_guide {
 inline constexpr std::string_view kOnDeviceModelCrxId =
     "fklghjjljmnfjoepjmlobpekiapffcja";
 
-enum class ModelBasedCapabilityKey;
 class UsageTracker;
 
 // Status of the on-device model.
@@ -300,7 +300,7 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
   void OnGenAILocalFoundationalModelEnterprisePolicyChanged();
 
   // UsageTracker::Observer:
-  void OnDeviceEligibleFeatureUsed(ModelBasedCapabilityKey feature) override;
+  void OnDeviceEligibleFeatureUsed(mojom::OnDeviceFeature feature) override;
 
   // Installs the component installer if it needs installed.
   void BeginUpdateRegistration();

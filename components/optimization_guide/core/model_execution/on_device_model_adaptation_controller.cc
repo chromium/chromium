@@ -8,10 +8,10 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/trace_event/trace_event.h"
 #include "base/types/optional_ref.h"
-#include "components/optimization_guide/core/model_execution/feature_keys.h"
-#include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
+#include "components/optimization_guide/core/model_execution/on_device_features.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
@@ -46,12 +46,10 @@ void OnAdaptationAssetsLoaded(
 }  // namespace
 
 OnDeviceModelAdaptationController::OnDeviceModelAdaptationController(
-    ModelBasedCapabilityKey feature,
+    mojom::OnDeviceFeature feature,
     base::WeakPtr<ModelController> controller,
     const on_device_model::AdaptationAssetPaths& asset_paths)
-    : feature_(feature), controller_(controller), asset_paths_(asset_paths) {
-  CHECK(features::internal::GetOptimizationTargetForCapability(feature_));
-}
+    : controller_(controller), asset_paths_(asset_paths) {}
 
 OnDeviceModelAdaptationController::~OnDeviceModelAdaptationController() =
     default;
@@ -59,7 +57,6 @@ OnDeviceModelAdaptationController::~OnDeviceModelAdaptationController() =
 mojo::Remote<on_device_model::mojom::OnDeviceModel>&
 OnDeviceModelAdaptationController::GetOrCreateRemote() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(features::internal::GetOptimizationTargetForCapability(feature_));
   if (!model_remote_) {
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock()},

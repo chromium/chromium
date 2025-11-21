@@ -44,8 +44,6 @@ BASE_FEATURE(kWallpaperSearchGraduated, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kModelExecutionCapabilityDisable,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kOnDeviceModelTestFeature, base::FEATURE_DISABLED_BY_DEFAULT);
-
 bool IsGraduatedFeature(UserVisibleFeatureKey feature) {
   bool is_graduated = false;
   switch (feature) {
@@ -109,58 +107,6 @@ bool ShouldEnableFeatureWhenMainToggleOn(UserVisibleFeatureKey feature_key) {
   return (GetFieldTrialParamByFeatureAsBool(
       *visibility_feature, "enable_feature_when_main_toggle_on",
       default_value));
-}
-
-// To enable on-device execution for a feature, update this to return a
-// non-null target.
-std::optional<proto::OptimizationTarget> GetOptimizationTargetForCapability(
-    ModelBasedCapabilityKey feature_key) {
-  switch (feature_key) {
-    case ModelBasedCapabilityKey::kCompose:
-      if (base::FeatureList::IsEnabled(kOptimizationGuideComposeOnDeviceEval)) {
-        return proto::OPTIMIZATION_TARGET_COMPOSE;
-      }
-      return std::nullopt;
-    case ModelBasedCapabilityKey::kTest:
-      if (base::FeatureList::IsEnabled(kOnDeviceModelTestFeature)) {
-        return proto::OPTIMIZATION_TARGET_MODEL_VALIDATION;
-      }
-      return std::nullopt;
-    case ModelBasedCapabilityKey::kPromptApi:
-      return proto::OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_PROMPT_API;
-    case ModelBasedCapabilityKey::kSummarize:
-      return proto::OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_SUMMARIZE;
-    case ModelBasedCapabilityKey::kHistorySearch:
-      return proto::OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_HISTORY_SEARCH;
-    case ModelBasedCapabilityKey::kHistoryQueryIntent:
-      return proto::
-          OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_HISTORY_QUERY_INTENT;
-    case ModelBasedCapabilityKey::kScamDetection:
-      return proto::OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_SCAM_DETECTION;
-    case ModelBasedCapabilityKey::kPermissionsAi:
-      return proto::OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_PERMISSIONS_AI;
-    case ModelBasedCapabilityKey::kWritingAssistanceApi:
-      return proto::
-          OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_WRITING_ASSISTANCE_API;
-    case ModelBasedCapabilityKey::kProofreaderApi:
-      return proto::OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_PROOFREADER_API;
-    case ModelBasedCapabilityKey::kOnDeviceSpeechRecognition:
-      return proto::
-          OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_ON_DEVICE_SPEECH_RECOGNITION;
-    // The below capabilities never support on-device execution.
-    case ModelBasedCapabilityKey::kFormsClassifications:
-    case ModelBasedCapabilityKey::kTabOrganization:
-    case ModelBasedCapabilityKey::kWallpaperSearch:
-    case ModelBasedCapabilityKey::kTextSafety:
-    case ModelBasedCapabilityKey::kBlingPrototyping:
-    case ModelBasedCapabilityKey::kPasswordChangeSubmission:
-    case ModelBasedCapabilityKey::kEnhancedCalendar:
-    case ModelBasedCapabilityKey::kZeroStateSuggestions:
-    case ModelBasedCapabilityKey::kWalletablePassExtraction:
-    case ModelBasedCapabilityKey::kAmountExtraction:
-    case ModelBasedCapabilityKey::kIosSmartTabGrouping:
-      return std::nullopt;
-  }
 }
 
 }  // namespace optimization_guide::features::internal

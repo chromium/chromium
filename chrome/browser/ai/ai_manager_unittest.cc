@@ -19,6 +19,7 @@
 #include "components/optimization_guide/core/model_execution/test/fake_model_broker.h"
 #include "components/optimization_guide/core/model_execution/test/mock_on_device_capability.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
@@ -171,8 +172,8 @@ TEST_F(AIManagerTest, CanCreateNotEnabled) {
 TEST_F(AIManagerTest, CanCreateSessionWithTextInputCapabilities) {
   base::MockCallback<blink::mojom::AIManager::CanCreateLanguageModelCallback>
       callback;
-  optimization_guide::ModelBasedCapabilityKey key =
-      optimization_guide::ModelBasedCapabilityKey::kPromptApi;
+  optimization_guide::mojom::OnDeviceFeature feature =
+      optimization_guide::mojom::OnDeviceFeature::kPromptApi;
   EXPECT_CALL(callback,
               Run(blink::mojom::ModelAvailabilityCheckResult::kAvailable))
       .Times(1);
@@ -180,12 +181,12 @@ TEST_F(AIManagerTest, CanCreateSessionWithTextInputCapabilities) {
                                 kUnavailableModelAdaptationNotAvailable))
       .Times(2);
   on_device_model::Capabilities capabilities;
-  ai_manager_->CanCreateSession(key, capabilities, callback.Get());
+  ai_manager_->CanCreateSession(feature, capabilities, callback.Get());
   capabilities.Put(on_device_model::CapabilityFlags::kImageInput);
-  ai_manager_->CanCreateSession(key, capabilities, callback.Get());
+  ai_manager_->CanCreateSession(feature, capabilities, callback.Get());
   capabilities.Clear();
   capabilities.Put(on_device_model::CapabilityFlags::kAudioInput);
-  ai_manager_->CanCreateSession(key, capabilities, callback.Get());
+  ai_manager_->CanCreateSession(feature, capabilities, callback.Get());
 }
 
 TEST_F(AIManagerTest, CanCreateSessionWithImageAndAudioInputCapabilities) {
@@ -199,17 +200,17 @@ TEST_F(AIManagerTest, CanCreateSessionWithImageAndAudioInputCapabilities) {
            on_device_model::CapabilityFlags::kAudioInput})));
   base::MockCallback<blink::mojom::AIManager::CanCreateLanguageModelCallback>
       callback;
-  optimization_guide::ModelBasedCapabilityKey key =
-      optimization_guide::ModelBasedCapabilityKey::kPromptApi;
+  optimization_guide::mojom::OnDeviceFeature feature =
+      optimization_guide::mojom::OnDeviceFeature::kPromptApi;
   EXPECT_CALL(callback,
               Run(blink::mojom::ModelAvailabilityCheckResult::kAvailable))
       .Times(3);
   on_device_model::Capabilities capabilities;
-  ai_manager_->CanCreateSession(key, capabilities, callback.Get());
+  ai_manager_->CanCreateSession(feature, capabilities, callback.Get());
   capabilities.Put(on_device_model::CapabilityFlags::kImageInput);
-  ai_manager_->CanCreateSession(key, capabilities, callback.Get());
+  ai_manager_->CanCreateSession(feature, capabilities, callback.Get());
   capabilities.Put(on_device_model::CapabilityFlags::kAudioInput);
-  ai_manager_->CanCreateSession(key, capabilities, callback.Get());
+  ai_manager_->CanCreateSession(feature, capabilities, callback.Get());
 }
 
 TEST_F(AIManagerTest, CanCreateEnterprisePolicyDisabled) {

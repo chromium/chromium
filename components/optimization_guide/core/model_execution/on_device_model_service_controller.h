@@ -23,7 +23,6 @@
 #include "base/types/optional_ref.h"
 #include "base/types/pass_key.h"
 #include "components/optimization_guide/core/delivery/model_info.h"
-#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_broker_impl.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
@@ -83,13 +82,13 @@ class OnDeviceModelServiceController final {
 
   // Whether an on-device session can be created for `feature`.
   OnDeviceModelEligibilityReason CanCreateSession(
-      ModelBasedCapabilityKey feature);
+      mojom::OnDeviceFeature feature);
 
   // Starts a session for `feature`. This will start the service and load the
   // model if it is not already loaded. The session will handle updating
   // context, executing input, and sending the response.
   std::unique_ptr<OnDeviceSession> CreateSession(
-      ModelBasedCapabilityKey feature,
+      mojom::OnDeviceFeature feature,
       base::WeakPtr<OptimizationGuideLogger> logger,
       const SessionConfigParams& config_params);
 
@@ -107,15 +106,15 @@ class OnDeviceModelServiceController final {
   void UpdateModel(std::unique_ptr<OnDeviceModelMetadata> model_metadata);
 
   // Updates the model adaptation for the feature.
-  void MaybeUpdateModelAdaptation(ModelBasedCapabilityKey feature,
+  void MaybeUpdateModelAdaptation(mojom::OnDeviceFeature feature,
                                   MaybeAdaptationMetadata adaptation_metadata);
 
   // Add/remove observers for notifying on-device model availability changes.
   void AddOnDeviceModelAvailabilityChangeObserver(
-      ModelBasedCapabilityKey feature,
+      mojom::OnDeviceFeature feature,
       OnDeviceModelAvailabilityObserver* observer);
   void RemoveOnDeviceModelAvailabilityChangeObserver(
-      ModelBasedCapabilityKey feature,
+      mojom::OnDeviceFeature feature,
       OnDeviceModelAvailabilityObserver* observer);
 
   // Calls `callback` with the capabilities of the current model.
@@ -126,7 +125,7 @@ class OnDeviceModelServiceController final {
   }
 
   // Retrieves the object storing the adaptation metadata for 'feature'.
-  MaybeAdaptationMetadata& GetFeatureMetadata(ModelBasedCapabilityKey feature);
+  MaybeAdaptationMetadata& GetFeatureMetadata(mojom::OnDeviceFeature feature);
 
   // Returns the selected performance hint.
   proto::OnDeviceModelPerformanceHint GetPerformanceHint();
@@ -141,11 +140,11 @@ class OnDeviceModelServiceController final {
 
  private:
   // A set of (references to) compatible, versioned dependencies that implement
-  // a ModelBasedCapability.
+  // a OnDeviceFeature.
   // e.g. "You can summarize with this model by building the prompt this way."
   class Solution final : public ModelBrokerImpl::Solution {
    public:
-    Solution(ModelBasedCapabilityKey feature,
+    Solution(mojom::OnDeviceFeature feature,
              scoped_refptr<const OnDeviceModelFeatureAdapter> adapter,
              base::WeakPtr<ModelController> model_controller,
              std::unique_ptr<SafetyChecker> safety_checker,
@@ -181,7 +180,7 @@ class OnDeviceModelServiceController final {
     void ReportHealthyCompletion() override;
 
     // What this is a solution for.
-    ModelBasedCapabilityKey feature_;
+    mojom::OnDeviceFeature feature_;
     // Describes how to implement this capability with these dependencies.
     scoped_refptr<const OnDeviceModelFeatureAdapter> adapter_;
     // The language model the adapter config is for.
@@ -219,10 +218,10 @@ class OnDeviceModelServiceController final {
     }
 
     base::WeakPtr<ModelController> GetOrCreateFeatureController(
-        ModelBasedCapabilityKey key,
+        mojom::OnDeviceFeature feature,
         const OnDeviceModelAdaptationMetadata& metadata);
 
-    void EraseController(ModelBasedCapabilityKey key);
+    void EraseController(mojom::OnDeviceFeature feature);
 
     void RequireAdaptationRank(uint32_t rank);
 
@@ -258,7 +257,7 @@ class OnDeviceModelServiceController final {
     std::vector<uint32_t> supported_adaptation_ranks_;
 
     // Controllers for adaptations that depend on this model.
-    std::map<ModelBasedCapabilityKey, OnDeviceModelAdaptationController>
+    std::map<mojom::OnDeviceFeature, OnDeviceModelAdaptationController>
         model_adaptation_controllers_;
 
     std::unique_ptr<OnDeviceModelValidator> model_validator_;
@@ -272,10 +271,10 @@ class OnDeviceModelServiceController final {
   void OnServiceDisconnected(on_device_model::ServiceDisconnectReason reason);
 
   // Constructs a solution using the currently available dependencies.
-  MaybeSolution GetSolution(ModelBasedCapabilityKey feature);
+  MaybeSolution GetSolution(mojom::OnDeviceFeature feature);
 
   void UpdateSolutionProviders();
-  void UpdateSolutionProvider(ModelBasedCapabilityKey feature);
+  void UpdateSolutionProvider(mojom::OnDeviceFeature feature);
 
   // This may be null in the destructor, otherwise non-null.
   std::unique_ptr<OnDeviceModelAccessController> access_controller_;

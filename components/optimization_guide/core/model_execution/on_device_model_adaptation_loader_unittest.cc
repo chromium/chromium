@@ -11,7 +11,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -19,10 +18,9 @@
 #include "components/optimization_guide/core/delivery/model_provider_registry.h"
 #include "components/optimization_guide/core/delivery/test_model_info_builder.h"
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
-#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_broker_state.h"
-#include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#include "components/optimization_guide/core/model_execution/on_device_features.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
 #include "components/optimization_guide/core/model_execution/performance_class.h"
@@ -33,6 +31,7 @@
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/on_device_base_model_metadata.pb.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -51,7 +50,7 @@ proto::OnDeviceBaseModelMetadata MatchingMetadata(
 
 class OnDeviceModelAdaptationLoaderTest : public testing::Test {
  public:
-  ModelBasedCapabilityKey feature() { return ModelBasedCapabilityKey::kTest; }
+  mojom::OnDeviceFeature feature() { return mojom::OnDeviceFeature::kTest; }
 
   proto::OptimizationTarget target() {
     return proto::OptimizationTarget::OPTIMIZATION_TARGET_MODEL_VALIDATION;
@@ -67,13 +66,11 @@ class OnDeviceModelAdaptationLoaderTest : public testing::Test {
   }
 
  protected:
-  void OnModelAdaptationLoaded(ModelBasedCapabilityKey feature,
+  void OnModelAdaptationLoaded(mojom::OnDeviceFeature feature,
                                MaybeAdaptationMetadata adaptation_metadata) {
     metadata_.MaybeUpdate(feature, std::move(adaptation_metadata));
   }
 
-  base::test::ScopedFeatureList feature_list_{
-      features::internal::kOnDeviceModelTestFeature};
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingPrefServiceSimple local_state_;

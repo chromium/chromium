@@ -14,12 +14,12 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
-#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
 #include "components/optimization_guide/core/model_execution/usage_tracker.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
@@ -111,15 +111,15 @@ class AdaptationMetadataMap final {
   AdaptationMetadataMap();
   ~AdaptationMetadataMap();
 
-  MaybeAdaptationMetadata& Get(ModelBasedCapabilityKey feature);
+  MaybeAdaptationMetadata& Get(mojom::OnDeviceFeature feature);
 
   // Updates the metadata if it has changed.
   // Returns whether the metadata was updated.
-  bool MaybeUpdate(ModelBasedCapabilityKey feature,
+  bool MaybeUpdate(mojom::OnDeviceFeature feature,
                    MaybeAdaptationMetadata metadata);
 
  private:
-  base::flat_map<ModelBasedCapabilityKey, MaybeAdaptationMetadata> metadata_;
+  base::flat_map<mojom::OnDeviceFeature, MaybeAdaptationMetadata> metadata_;
 };
 
 // Loads model adaptation assets for a particular feature. Performs adaptation
@@ -130,7 +130,7 @@ class OnDeviceModelAdaptationLoader final
  public:
   using OnLoadFn = base::RepeatingCallback<void(MaybeAdaptationMetadata)>;
 
-  OnDeviceModelAdaptationLoader(ModelBasedCapabilityKey feature,
+  OnDeviceModelAdaptationLoader(mojom::OnDeviceFeature feature,
                                 OptimizationGuideModelProvider& model_provider,
                                 OnLoadFn on_load_fn);
   ~OnDeviceModelAdaptationLoader() override;
@@ -155,7 +155,7 @@ class OnDeviceModelAdaptationLoader final
       optimization_guide::proto::OptimizationTarget optimization_target,
       base::optional_ref<const optimization_guide::ModelInfo> model_info) final;
 
-  ModelBasedCapabilityKey feature_;
+  mojom::OnDeviceFeature feature_;
   proto::OptimizationTarget target_;
 
   // Background thread where file processing should be performed.
@@ -172,7 +172,7 @@ class OnDeviceModelAdaptationLoader final
 class AdaptationLoaderMap final {
  public:
   // A method to call when a new asset is available.
-  using OnLoadFn = base::RepeatingCallback<void(ModelBasedCapabilityKey,
+  using OnLoadFn = base::RepeatingCallback<void(mojom::OnDeviceFeature,
                                                 MaybeAdaptationMetadata)>;
   AdaptationLoaderMap(OptimizationGuideModelProvider& provider,
                       OnLoadFn on_load_fn);
@@ -182,12 +182,12 @@ class AdaptationLoaderMap final {
 
   // Registers for adaptation model download, if the conditions are right.
   void MaybeRegisterModelDownload(
-      ModelBasedCapabilityKey feature,
+      mojom::OnDeviceFeature feature,
       base::optional_ref<const OnDeviceBaseModelSpec> state,
       bool was_feature_recently_used);
 
  private:
-  absl::flat_hash_map<ModelBasedCapabilityKey,
+  absl::flat_hash_map<mojom::OnDeviceFeature,
                       std::unique_ptr<OnDeviceModelAdaptationLoader>>
       loaders_;
 };

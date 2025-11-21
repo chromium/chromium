@@ -4,6 +4,8 @@
 
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
 
+#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
+
 namespace optimization_guide {
 
 std::ostream& operator<<(std::ostream& out,
@@ -106,18 +108,18 @@ OnDeviceCapability::OnDeviceCapability() = default;
 OnDeviceCapability::~OnDeviceCapability() = default;
 
 std::unique_ptr<OnDeviceSession> OnDeviceCapability::StartSession(
-    ModelBasedCapabilityKey feature,
+    mojom::OnDeviceFeature feature,
     const SessionConfigParams& config_params,
     base::WeakPtr<OptimizationGuideLogger> logger) {
   return nullptr;
 }
 
 void OnDeviceCapability::AddOnDeviceModelAvailabilityChangeObserver(
-    optimization_guide::ModelBasedCapabilityKey feature,
+    mojom::OnDeviceFeature feature,
     OnDeviceModelAvailabilityObserver* observer) {}
 
 void OnDeviceCapability::RemoveOnDeviceModelAvailabilityChangeObserver(
-    optimization_guide::ModelBasedCapabilityKey feature,
+    mojom::OnDeviceFeature feature,
     OnDeviceModelAvailabilityObserver* observer) {}
 
 on_device_model::Capabilities OnDeviceCapability::GetOnDeviceCapabilities() {
@@ -125,25 +127,24 @@ on_device_model::Capabilities OnDeviceCapability::GetOnDeviceCapabilities() {
 }
 
 OnDeviceModelEligibilityReason OnDeviceCapability::GetOnDeviceModelEligibility(
-    ModelBasedCapabilityKey feature) {
+    mojom::OnDeviceFeature feature) {
   return OnDeviceModelEligibilityReason::kFeatureNotEnabled;
 }
 
 void OnDeviceCapability::GetOnDeviceModelEligibilityAsync(
-    ModelBasedCapabilityKey feature,
+    mojom::OnDeviceFeature feature,
     const on_device_model::Capabilities& capabilities,
     base::OnceCallback<void(OnDeviceModelEligibilityReason)> callback) {
   std::move(callback).Run(OnDeviceModelEligibilityReason::kFeatureNotEnabled);
 }
 
 std::optional<SamplingParamsConfig> OnDeviceCapability::GetSamplingParamsConfig(
-    ModelBasedCapabilityKey feature) {
+    mojom::OnDeviceFeature feature) {
   return std::nullopt;
 }
 
 std::optional<const optimization_guide::proto::Any>
-OnDeviceCapability::GetFeatureMetadata(
-    optimization_guide::ModelBasedCapabilityKey feature) {
+OnDeviceCapability::GetFeatureMetadata(mojom::OnDeviceFeature feature) {
   return std::nullopt;
 }
 }  // namespace optimization_guide

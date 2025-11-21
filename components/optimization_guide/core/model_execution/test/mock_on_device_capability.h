@@ -9,6 +9,7 @@
 #include "base/functional/callback.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace optimization_guide {
@@ -22,31 +23,31 @@ class MockOnDeviceCapability : public OnDeviceCapability {
 
   MOCK_METHOD(std::unique_ptr<OnDeviceSession>,
               StartSession,
-              (ModelBasedCapabilityKey feature,
+              (mojom::OnDeviceFeature feature,
                const SessionConfigParams& config_params,
                base::WeakPtr<OptimizationGuideLogger> logger),
               (override));
 
   MOCK_METHOD(OnDeviceModelEligibilityReason,
               GetOnDeviceModelEligibility,
-              (ModelBasedCapabilityKey),
+              (mojom::OnDeviceFeature),
               (override));
 
   MOCK_METHOD(void,
               GetOnDeviceModelEligibilityAsync,
-              (ModelBasedCapabilityKey,
+              (mojom::OnDeviceFeature,
                const on_device_model::Capabilities&,
                base::OnceCallback<void(OnDeviceModelEligibilityReason)>),
               (override));
 
   MOCK_METHOD(std::optional<SamplingParamsConfig>,
               GetSamplingParamsConfig,
-              (ModelBasedCapabilityKey),
+              (mojom::OnDeviceFeature),
               (override));
 
-  MOCK_METHOD(std::optional<const optimization_guide::proto::Any>,
+  MOCK_METHOD(std::optional<const proto::Any>,
               GetFeatureMetadata,
-              (optimization_guide::ModelBasedCapabilityKey feature),
+              (mojom::OnDeviceFeature feature),
               (override));
 };
 
@@ -71,10 +72,7 @@ class MockSession : public OnDeviceSession {
   // This should be called *before* other ON_CALL statements.
   void Delegate(OnDeviceSession* impl);
 
-  MOCK_METHOD(const optimization_guide::TokenLimits&,
-              GetTokenLimits,
-              (),
-              (const, override));
+  MOCK_METHOD(const TokenLimits&, GetTokenLimits, (), (const, override));
   MOCK_METHOD(void,
               SetInput,
               (MultimodalMessage request, SetInputCallback callback));
@@ -108,10 +106,7 @@ class MockSession : public OnDeviceSession {
               GetContextSizeInTokens,
               (MultimodalMessageReadView request_metadata,
                OptimizationGuideModelSizeInTokenCallback callback));
-  MOCK_METHOD(const optimization_guide::SamplingParams,
-              GetSamplingParams,
-              (),
-              (const override));
+  MOCK_METHOD(const SamplingParams, GetSamplingParams, (), (const override));
   MOCK_METHOD(on_device_model::Capabilities,
               GetCapabilities,
               (),

@@ -9,9 +9,9 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
-#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/model_execution/on_device_context.h"
+#include "components/optimization_guide/core/model_execution/on_device_features.h"
 #include "components/optimization_guide/core/model_execution/safety_checker.h"
 #include "components/optimization_guide/core/model_execution/session_impl.h"
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
@@ -78,7 +78,7 @@ ModelClient::ModelClient(mojo::PendingRemote<mojom::ModelSolution> remote,
       model_versions_(
           *config->model_versions.As<proto::OnDeviceModelVersions>()),
       max_tokens_(config->max_tokens),
-      key_(ToModelBasedCapabilityKey(feature_adapter_->config().feature())) {
+      feature_(*ToOnDeviceFeature(feature_adapter_->config().feature())) {
   remote_.set_disconnect_handler(
       base::BindOnce(&ModelClient::OnDisconnect, base::Unretained(this)));
 }
@@ -106,7 +106,7 @@ std::unique_ptr<OnDeviceSession> ModelClient::CreateSession(
     opts.session_params.sampling_params =
         feature_adapter_->GetDefaultSamplingParams();
   }
-  return std::make_unique<SessionImpl>(key_, std::move(opts));
+  return std::make_unique<SessionImpl>(feature_, std::move(opts));
 }
 
 void ModelClient::OnDisconnect() {
@@ -181,27 +181,27 @@ ModelBrokerClient::ModelBrokerClient(
 ModelBrokerClient::~ModelBrokerClient() = default;
 
 ModelSubscriber& ModelBrokerClient::GetSubscriber(
-    mojom::ModelBasedCapabilityKey key) {
-  std::unique_ptr<ModelSubscriber>& ptr = subscribers_[key];
+    mojom::OnDeviceFeature feature) {
+  std::unique_ptr<ModelSubscriber>& ptr = subscribers_[feature];
   if (!ptr) {
     mojo::PendingRemote<mojom::ModelSubscriber> pending;
     ptr = std::make_unique<ModelSubscriber>(
         pending.InitWithNewPipeAndPassReceiver());
-    remote_->Subscribe(mojom::ModelSubscriptionOptions::New(key, true),
+    remote_->Subscribe(mojom::ModelSubscriptionOptions::New(feature, true),
                        std::move(pending));
   }
   return *ptr;
 }
 
-bool ModelBrokerClient::HasSubscriber(mojom::ModelBasedCapabilityKey key) {
-  return subscribers_.contains(key);
+bool ModelBrokerClient::HasSubscriber(mojom::OnDeviceFeature feature) {
+  return subscribers_.contains(feature);
 }
 
-void ModelBrokerClient::CreateSession(mojom::ModelBasedCapabilityKey key,
+void ModelBrokerClient::CreateSession(mojom::OnDeviceFeature feature,
                                       const SessionConfigParams& config_params,
                                       CreateSessionCallback callback) {
-  GetSubscriber(key).CreateSession(std::move(config_params),
-                                   std::move(callback), logger_);
+  GetSubscriber(feature).CreateSession(std::move(config_params),
+                                       std::move(callback), logger_);
 }
 
 }  // namespace optimization_guide

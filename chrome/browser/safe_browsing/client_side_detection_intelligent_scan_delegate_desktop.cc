@@ -9,6 +9,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/safe_browsing/client_side_detection_intelligent_scan_delegate_util.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -295,7 +296,7 @@ void ClientSideDetectionIntelligentScanDelegateDesktop::
     observing_on_device_model_availability_ = true;
     on_device_fetch_time_ = base::TimeTicks::Now();
     opt_guide_->AddOnDeviceModelAvailabilityChangeObserver(
-        optimization_guide::ModelBasedCapabilityKey::kScamDetection, this);
+        optimization_guide::mojom::OnDeviceFeature::kScamDetection, this);
   }
 }
 
@@ -309,7 +310,7 @@ void ClientSideDetectionIntelligentScanDelegateDesktop::
 
   observing_on_device_model_availability_ = false;
   opt_guide_->RemoveOnDeviceModelAvailabilityChangeObserver(
-      optimization_guide::ModelBasedCapabilityKey::kScamDetection, this);
+      optimization_guide::mojom::OnDeviceFeature::kScamDetection, this);
 }
 
 void ClientSideDetectionIntelligentScanDelegateDesktop::Shutdown() {
@@ -321,10 +322,10 @@ void ClientSideDetectionIntelligentScanDelegateDesktop::Shutdown() {
 
 void ClientSideDetectionIntelligentScanDelegateDesktop::
     OnDeviceModelAvailabilityChanged(
-        optimization_guide::ModelBasedCapabilityKey feature,
+        optimization_guide::mojom::OnDeviceFeature feature,
         optimization_guide::OnDeviceModelEligibilityReason reason) {
   if (!observing_on_device_model_availability_ ||
-      feature != optimization_guide::ModelBasedCapabilityKey::kScamDetection) {
+      feature != optimization_guide::mojom::OnDeviceFeature::kScamDetection) {
     return;
   }
 
@@ -350,7 +351,7 @@ void ClientSideDetectionIntelligentScanDelegateDesktop::
     LogOnDeviceModelEligibilityReason() {
   optimization_guide::OnDeviceModelEligibilityReason eligibility =
       opt_guide_->GetOnDeviceModelEligibility(
-          optimization_guide::ModelBasedCapabilityKey::kScamDetection);
+          optimization_guide::mojom::OnDeviceFeature::kScamDetection);
   base::UmaHistogramEnumeration(
       "SBClientPhishing.OnDeviceModelEligibilityReasonAtInquiryFailure",
       eligibility);
@@ -359,7 +360,7 @@ void ClientSideDetectionIntelligentScanDelegateDesktop::
 std::unique_ptr<optimization_guide::OnDeviceSession>
 ClientSideDetectionIntelligentScanDelegateDesktop::GetModelExecutorSession() {
   return opt_guide_->StartSession(
-      optimization_guide::ModelBasedCapabilityKey::kScamDetection,
+      optimization_guide::mojom::OnDeviceFeature::kScamDetection,
       ::optimization_guide::SessionConfigParams{}, nullptr);
 }
 }  // namespace safe_browsing

@@ -12,7 +12,6 @@
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
-#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
@@ -177,7 +176,7 @@ class OnDeviceModelAvailabilityObserver : public base::CheckedObserver {
   // Consumers should call `OnDeviceModelServiceController::CanCreateSession` to
   // check the initial (or current) model availability state.
   virtual void OnDeviceModelAvailabilityChanged(
-      ModelBasedCapabilityKey feature,
+      mojom::OnDeviceFeature feature,
       OnDeviceModelEligibilityReason reason) = 0;
 };
 
@@ -307,33 +306,33 @@ class OnDeviceCapability {
   // May return nullptr if model execution is not supported. This session should
   // not outlive OnDeviceCapability.
   virtual std::unique_ptr<OnDeviceSession> StartSession(
-      ModelBasedCapabilityKey feature,
+      mojom::OnDeviceFeature feature,
       const SessionConfigParams& config_params,
       base::WeakPtr<OptimizationGuideLogger> logger);
 
   // Observer for on-device model availability changes.
   virtual void AddOnDeviceModelAvailabilityChangeObserver(
-      optimization_guide::ModelBasedCapabilityKey feature,
+      mojom::OnDeviceFeature feature,
       OnDeviceModelAvailabilityObserver* observer);
   virtual void RemoveOnDeviceModelAvailabilityChangeObserver(
-      optimization_guide::ModelBasedCapabilityKey feature,
+      mojom::OnDeviceFeature feature,
       OnDeviceModelAvailabilityObserver* observer);
 
   // Returns the capabilities for the on-device model, or empty capabilities if
   // no model is available.
   virtual on_device_model::Capabilities GetOnDeviceCapabilities();
   virtual OnDeviceModelEligibilityReason GetOnDeviceModelEligibility(
-      ModelBasedCapabilityKey feature);
+      mojom::OnDeviceFeature feature);
   // Similar to above, but bumps the priority of related tasks such as computing
   // the performance class before returning the eligibility.
   virtual void GetOnDeviceModelEligibilityAsync(
-      ModelBasedCapabilityKey feature,
+      mojom::OnDeviceFeature feature,
       const on_device_model::Capabilities& capabilities,
       base::OnceCallback<void(OnDeviceModelEligibilityReason)> callback);
   virtual std::optional<SamplingParamsConfig> GetSamplingParamsConfig(
-      ModelBasedCapabilityKey feature);
+      mojom::OnDeviceFeature feature);
   virtual std::optional<const optimization_guide::proto::Any>
-  GetFeatureMetadata(optimization_guide::ModelBasedCapabilityKey feature);
+  GetFeatureMetadata(mojom::OnDeviceFeature feature);
 };
 
 }  // namespace optimization_guide

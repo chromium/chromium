@@ -12,6 +12,7 @@
 #include "base/unguessable_token.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
 #include "components/safe_browsing/content/browser/client_side_detection_host.h"
 
 class PrefService;
@@ -70,7 +71,7 @@ class ClientSideDetectionIntelligentScanDelegateDesktop
 
   // optimization_guide::OnDeviceModelAvailabilityObserver
   void OnDeviceModelAvailabilityChanged(
-      optimization_guide::ModelBasedCapabilityKey feature,
+      optimization_guide::mojom::OnDeviceFeature feature,
       optimization_guide::OnDeviceModelEligibilityReason reason) override;
 
   void NotifyOnDeviceModelAvailable();

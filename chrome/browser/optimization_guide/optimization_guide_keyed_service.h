@@ -155,30 +155,30 @@ class OptimizationGuideKeyedService
       mojo::PendingReceiver<optimization_guide::mojom::ModelBroker> receiver)
       override;
   std::unique_ptr<optimization_guide::OnDeviceSession> StartSession(
-      optimization_guide::ModelBasedCapabilityKey feature,
+      optimization_guide::mojom::OnDeviceFeature feature,
       const optimization_guide::SessionConfigParams& config_params,
       base::WeakPtr<OptimizationGuideLogger> logger) override;
   void AddOnDeviceModelAvailabilityChangeObserver(
-      optimization_guide::ModelBasedCapabilityKey feature,
+      optimization_guide::mojom::OnDeviceFeature feature,
       optimization_guide::OnDeviceModelAvailabilityObserver* observer) override;
   void RemoveOnDeviceModelAvailabilityChangeObserver(
-      optimization_guide::ModelBasedCapabilityKey feature,
+      optimization_guide::mojom::OnDeviceFeature feature,
       optimization_guide::OnDeviceModelAvailabilityObserver* observer) override;
   on_device_model::Capabilities GetOnDeviceCapabilities() override;
   optimization_guide::OnDeviceModelEligibilityReason
   GetOnDeviceModelEligibility(
-      optimization_guide::ModelBasedCapabilityKey feature) override;
+      optimization_guide::mojom::OnDeviceFeature feature) override;
   void GetOnDeviceModelEligibilityAsync(
-      optimization_guide::ModelBasedCapabilityKey feature,
+      optimization_guide::mojom::OnDeviceFeature feature,
       const on_device_model::Capabilities& capabilities,
       base::OnceCallback<
           void(optimization_guide::OnDeviceModelEligibilityReason)> callback)
       override;
   std::optional<optimization_guide::SamplingParamsConfig>
   GetSamplingParamsConfig(
-      optimization_guide::ModelBasedCapabilityKey feature) override;
+      optimization_guide::mojom::OnDeviceFeature feature) override;
   std::optional<const optimization_guide::proto::Any> GetFeatureMetadata(
-      optimization_guide::ModelBasedCapabilityKey feature) override;
+      optimization_guide::mojom::OnDeviceFeature feature) override;
 
   // Returns true if the `feature` should be currently enabled for this user.
   // Note that the return value here may not match the feature enable state on

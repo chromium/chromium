@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_macros_local.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
+#include "components/optimization_guide/core/model_execution/on_device_features.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 
 namespace optimization_guide {
@@ -46,8 +47,7 @@ void SafetyClient::MaybeUpdateSafetyModel(
 }
 
 base::expected<std::unique_ptr<SafetyChecker>, OnDeviceModelEligibilityReason>
-SafetyClient::MakeSafetyChecker(ModelBasedCapabilityKey feature,
-                                bool can_skip) {
+SafetyClient::MakeSafetyChecker(mojom::OnDeviceFeature feature, bool can_skip) {
   if (!features::ShouldUseTextSafetyClassifierModel() || can_skip) {
     // Construct a dummy checker that always passes all checks.
     return std::make_unique<SafetyChecker>(nullptr, SafetyConfig());

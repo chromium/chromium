@@ -14,6 +14,7 @@
 #include "components/optimization_guide/core/model_quality/model_execution_logging_wrappers.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/history_answer.pb.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
 
 namespace history_embeddings {
 
@@ -309,7 +310,7 @@ void MlAnswerer::ComputeAnswer(std::string query,
   // Start a session for each URL.
   for (const auto& url_and_passages : context.url_passages_map) {
     std::unique_ptr<Session> session = model_executor_->StartSession(
-        optimization_guide::ModelBasedCapabilityKey::kHistorySearch,
+        optimization_guide::mojom::OnDeviceFeature::kHistorySearch,
         session_config, nullptr);
     if (session == nullptr) {
       session_manager_->FinishAndResetSessions(AnswererResult(

@@ -13,16 +13,17 @@
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/token.h"
 #include "base/trace_event/trace_event.h"
 #include "base/uuid.h"
-#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
 #include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/model_execution/on_device_execution.h"
+#include "components/optimization_guide/core/model_execution/on_device_features.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
@@ -38,6 +39,7 @@
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
 #include "components/optimization_guide/proto/text_safety_model_metadata.pb.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 
@@ -49,18 +51,17 @@ using ModelExecutionError =
     OptimizationGuideModelExecutionError::ModelExecutionError;
 
 void LogSessionCreation(OptimizationGuideLogger* logger,
-                        ModelBasedCapabilityKey feature) {
+                        mojom::OnDeviceFeature feature) {
   if (logger && logger->ShouldEnableDebugLogs()) {
     OPTIMIZATION_GUIDE_LOGGER(
         optimization_guide_common::mojom::LogSource::MODEL_EXECUTION, logger)
-        << "Starting on-device session for "
-        << std::string(GetStringNameForModelExecutionFeature(feature));
+        << "Starting on-device session for " << base::ToString(feature);
   }
 }
 
 }  // namespace
 
-SessionImpl::SessionImpl(ModelBasedCapabilityKey feature,
+SessionImpl::SessionImpl(mojom::OnDeviceFeature feature,
                          OnDeviceOptions on_device_opts)
     : feature_(feature),
       // TODO(crbug.com/403383823): Get these from on_device_context_.
@@ -77,7 +78,7 @@ SessionImpl::SessionImpl(ModelBasedCapabilityKey feature,
   }
 }
 
-SessionImpl::SessionImpl(ModelBasedCapabilityKey feature,
+SessionImpl::SessionImpl(mojom::OnDeviceFeature feature,
                          const SamplingParams& sampling_params)
     : feature_(feature), sampling_params_(sampling_params) {}
 
@@ -97,7 +98,7 @@ void SessionImpl::SetInput(MultimodalMessage request,
   base::UmaHistogramEnumeration(
       base::StrCat(
           {"OptimizationGuide.ModelExecution.OnDeviceAddContextResult.",
-           GetStringNameForModelExecutionFeature(feature_)}),
+           GetVariantName(feature_)}),
       result);
 }
 
@@ -177,7 +178,7 @@ void SessionImpl::ExecuteModelWithResponseConstraint(
     base::UmaHistogramLongTimes(
         base::StrCat(
             {"OptimizationGuide.ModelExecution.ContextStartToExecutionTime.",
-             GetStringNameForModelExecutionFeature(feature_)}),
+             GetVariantName(feature_)}),
         context_start_to_execution);
     // Only interested in logging the first request after adding context.
     context_start_time_ = base::TimeTicks();

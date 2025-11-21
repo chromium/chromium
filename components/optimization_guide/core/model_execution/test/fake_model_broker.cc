@@ -7,14 +7,15 @@
 #include <memory>
 
 #include "base/types/expected.h"
-#include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#include "components/optimization_guide/core/model_execution/on_device_features.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #include "components/optimization_guide/core/model_execution/performance_class.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace optimization_guide {
@@ -22,7 +23,6 @@ namespace optimization_guide {
 ScopedModelBrokerFeatureList::ScopedModelBrokerFeatureList() {
   feature_list_.InitWithFeaturesAndParameters(
       {{features::kOptimizationGuideModelExecution, {}},
-       {features::internal::kOnDeviceModelTestFeature, {}},
        {features::kOptimizationGuideOnDeviceModel, {}},
        {features::kOnDeviceModelPerformanceParams,
         {{"compatible_on_device_performance_classes", "3,4,5,6"},
@@ -73,9 +73,8 @@ void FakeModelBroker::UpdateTarget(proto::OptimizationTarget target,
 }
 
 void FakeModelBroker::UpdateModelAdaptation(const FakeAdaptationAsset& asset) {
-  UpdateTarget(
-      *features::internal::GetOptimizationTargetForCapability(asset.feature()),
-      asset.model_info());
+  UpdateTarget(GetOptimizationTargetForFeature(asset.feature()),
+               asset.model_info());
 }
 
 void FakeModelBroker::UpdateSafetyModel(const FakeSafetyModelAsset& asset) {

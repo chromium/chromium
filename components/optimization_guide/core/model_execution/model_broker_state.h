@@ -14,6 +14,7 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #include "components/optimization_guide/core/model_execution/performance_class.h"
 #include "components/optimization_guide/core/model_execution/usage_tracker.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
 
 namespace optimization_guide {
 
@@ -50,31 +51,31 @@ class ModelBrokerState final : public OnDeviceCapability {
   void BindModelBroker(
       mojo::PendingReceiver<mojom::ModelBroker> receiver) override;
   std::unique_ptr<OnDeviceSession> StartSession(
-      ModelBasedCapabilityKey feature,
+      mojom::OnDeviceFeature feature,
       const SessionConfigParams& config_params,
       base::WeakPtr<OptimizationGuideLogger> logger) override;
   OnDeviceModelEligibilityReason GetOnDeviceModelEligibility(
-      ModelBasedCapabilityKey feature) override;
+      mojom::OnDeviceFeature feature) override;
   void GetOnDeviceModelEligibilityAsync(
-      ModelBasedCapabilityKey feature,
+      mojom::OnDeviceFeature feature,
       const on_device_model::Capabilities& capabilities,
       base::OnceCallback<void(OnDeviceModelEligibilityReason)> callback)
       override;
   std::optional<SamplingParamsConfig> GetSamplingParamsConfig(
-      ModelBasedCapabilityKey feature) override;
+      mojom::OnDeviceFeature feature) override;
   std::optional<const optimization_guide::proto::Any> GetFeatureMetadata(
-      optimization_guide::ModelBasedCapabilityKey feature) override;
+      mojom::OnDeviceFeature feature) override;
   void AddOnDeviceModelAvailabilityChangeObserver(
-      ModelBasedCapabilityKey feature,
+      mojom::OnDeviceFeature feature,
       OnDeviceModelAvailabilityObserver* observer) override;
   void RemoveOnDeviceModelAvailabilityChangeObserver(
-      ModelBasedCapabilityKey feature,
+      mojom::OnDeviceFeature feature,
       OnDeviceModelAvailabilityObserver* observer) override;
   on_device_model::Capabilities GetOnDeviceCapabilities() override;
 
  private:
   void FinishGetOnDeviceModelEligibility(
-      optimization_guide::ModelBasedCapabilityKey feature,
+      mojom::OnDeviceFeature feature,
       const on_device_model::Capabilities& capabilities,
       base::OnceCallback<
           void(optimization_guide::OnDeviceModelEligibilityReason)> callback);

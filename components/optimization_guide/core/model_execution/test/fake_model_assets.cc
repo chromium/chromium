@@ -10,7 +10,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "components/optimization_guide/core/delivery/test_model_info_builder.h"
-#include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/model_execution/on_device_features.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
@@ -18,6 +18,7 @@
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
 #include "services/on_device_model/public/cpp/test_support/fake_service.h"
 
 namespace optimization_guide {
@@ -97,7 +98,7 @@ proto::OnDeviceBaseModelMetadata FakeBaseModelAsset::DefaultSpec() {
 }
 
 FakeAdaptationAsset::FakeAdaptationAsset(FakeAdaptationAsset::Content&& content)
-    : feature_(ToModelBasedCapabilityKey(content.config.feature())) {
+    : feature_(*ToOnDeviceFeature(content.config.feature())) {
   CHECK(temp_dir_.CreateUniqueTempDir());
   base::FilePath config_path =
       temp_dir_.GetPath().Append(kOnDeviceModelExecutionConfigFile);

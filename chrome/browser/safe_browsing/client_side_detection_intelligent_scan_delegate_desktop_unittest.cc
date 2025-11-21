@@ -12,6 +12,7 @@
 #include "components/optimization_guide/core/model_execution/test/mock_on_device_capability.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/model_quality_metadata.pb.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
 #include "components/safe_browsing/content/browser/client_side_detection_host.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -61,7 +62,7 @@ class ClientSideDetectionIntelligentScanDelegateDesktopTest
     base::RunLoop run_loop_for_add_observer;
     EXPECT_CALL(mock_opt_guide_,
                 AddOnDeviceModelAvailabilityChangeObserver(_, _))
-        .WillOnce([&](optimization_guide::ModelBasedCapabilityKey feature,
+        .WillOnce([&](optimization_guide::mojom::OnDeviceFeature feature,
                       optimization_guide::OnDeviceModelAvailabilityObserver*
                           observer) {
           availability_observer = observer;
@@ -73,7 +74,7 @@ class ClientSideDetectionIntelligentScanDelegateDesktopTest
     CHECK(availability_observer);
 
     availability_observer->OnDeviceModelAvailabilityChanged(
-        optimization_guide::ModelBasedCapabilityKey::kScamDetection,
+        optimization_guide::mojom::OnDeviceFeature::kScamDetection,
         optimization_guide::OnDeviceModelEligibilityReason::kSuccess);
 
     ASSERT_TRUE(delegate_->IsOnDeviceModelAvailable(
@@ -84,7 +85,7 @@ class ClientSideDetectionIntelligentScanDelegateDesktopTest
     EnableOnDeviceModel();
     EXPECT_CALL(mock_opt_guide_, StartSession(_, _, _))
         .WillOnce(
-            [&](optimization_guide::ModelBasedCapabilityKey feature,
+            [&](optimization_guide::mojom::OnDeviceFeature feature,
                 const optimization_guide::SessionConfigParams& config_params,
                 base::WeakPtr<OptimizationGuideLogger> logger) {
               return std::make_unique<NiceMock<MockSession>>(&session_);
@@ -188,7 +189,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   base::RunLoop run_loop_for_add_observer;
   EXPECT_CALL(mock_opt_guide_, AddOnDeviceModelAvailabilityChangeObserver(_, _))
       .WillOnce(
-          [&](optimization_guide::ModelBasedCapabilityKey feature,
+          [&](optimization_guide::mojom::OnDeviceFeature feature,
               optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
             availability_observer = observer;
             run_loop_for_add_observer.Quit();
@@ -204,21 +205,21 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   // for all the possible waitable reasons, which should also not stop
   // observing.
   availability_observer->OnDeviceModelAvailabilityChanged(
-      optimization_guide::ModelBasedCapabilityKey::kScamDetection,
+      optimization_guide::mojom::OnDeviceFeature::kScamDetection,
       optimization_guide::OnDeviceModelEligibilityReason::
           kConfigNotAvailableForFeature);
 
   availability_observer->OnDeviceModelAvailabilityChanged(
-      optimization_guide::ModelBasedCapabilityKey::kScamDetection,
+      optimization_guide::mojom::OnDeviceFeature::kScamDetection,
       optimization_guide::OnDeviceModelEligibilityReason::kModelToBeInstalled);
 
   availability_observer->OnDeviceModelAvailabilityChanged(
-      optimization_guide::ModelBasedCapabilityKey::kScamDetection,
+      optimization_guide::mojom::OnDeviceFeature::kScamDetection,
       optimization_guide::OnDeviceModelEligibilityReason::
           kSafetyModelNotAvailable);
 
   availability_observer->OnDeviceModelAvailabilityChanged(
-      optimization_guide::ModelBasedCapabilityKey::kScamDetection,
+      optimization_guide::mojom::OnDeviceFeature::kScamDetection,
       optimization_guide::OnDeviceModelEligibilityReason::
           kLanguageDetectionModelNotAvailable);
 
@@ -230,7 +231,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
 
   // And then send `kSuccess` to the observer, which will log the histogram.
   availability_observer->OnDeviceModelAvailabilityChanged(
-      optimization_guide::ModelBasedCapabilityKey::kScamDetection,
+      optimization_guide::mojom::OnDeviceFeature::kScamDetection,
       optimization_guide::OnDeviceModelEligibilityReason::kSuccess);
 
   histogram_tester_.ExpectUniqueSample(
@@ -251,7 +252,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   testing::NiceMock<MockSession> session;
   EXPECT_CALL(mock_opt_guide_, StartSession(_, _, _))
       .WillOnce(
-          [&](optimization_guide::ModelBasedCapabilityKey feature,
+          [&](optimization_guide::mojom::OnDeviceFeature feature,
               const optimization_guide::SessionConfigParams& config_params,
               base::WeakPtr<OptimizationGuideLogger> logger) {
             return std::make_unique<NiceMock<MockSession>>(&session);
@@ -279,7 +280,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   base::RunLoop run_loop_for_add_observer;
   EXPECT_CALL(mock_opt_guide_, AddOnDeviceModelAvailabilityChangeObserver(_, _))
       .WillOnce(
-          [&](optimization_guide::ModelBasedCapabilityKey feature,
+          [&](optimization_guide::mojom::OnDeviceFeature feature,
               optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
             availability_observer = observer;
             run_loop_for_add_observer.Quit();
@@ -293,7 +294,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   // Now that the delegate is observing, send `kTooManyRecentCrashes`
   // to the observer, which is not a waitable reason.
   availability_observer->OnDeviceModelAvailabilityChanged(
-      optimization_guide::ModelBasedCapabilityKey::kScamDetection,
+      optimization_guide::mojom::OnDeviceFeature::kScamDetection,
       optimization_guide::OnDeviceModelEligibilityReason::
           kTooManyRecentCrashes);
 
@@ -311,7 +312,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   // The below function is called by the delegate when calling
   // IsOnDeviceModelAvailable but the on device model is not available yet.
   EXPECT_CALL(mock_opt_guide_, GetOnDeviceModelEligibility(_))
-      .WillOnce([&](optimization_guide::ModelBasedCapabilityKey feature) {
+      .WillOnce([&](optimization_guide::mojom::OnDeviceFeature feature) {
         return optimization_guide::OnDeviceModelEligibilityReason::
             kModelToBeInstalled;
       });
@@ -323,7 +324,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   base::RunLoop run_loop_for_add_observer;
   EXPECT_CALL(mock_opt_guide_, AddOnDeviceModelAvailabilityChangeObserver(_, _))
       .WillOnce(
-          [&](optimization_guide::ModelBasedCapabilityKey feature,
+          [&](optimization_guide::mojom::OnDeviceFeature feature,
               optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
             availability_observer = observer;
             run_loop_for_add_observer.Quit();
@@ -339,7 +340,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   // purpose of this test, we will never fulfill the request to notify the
   // service class that the model installation is successful.
   availability_observer->OnDeviceModelAvailabilityChanged(
-      optimization_guide::ModelBasedCapabilityKey::kScamDetection,
+      optimization_guide::mojom::OnDeviceFeature::kScamDetection,
       optimization_guide::OnDeviceModelEligibilityReason::
           kConfigNotAvailableForFeature);
 
@@ -370,7 +371,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
       1);
 
   availability_observer->OnDeviceModelAvailabilityChanged(
-      optimization_guide::ModelBasedCapabilityKey::kScamDetection,
+      optimization_guide::mojom::OnDeviceFeature::kScamDetection,
       optimization_guide::OnDeviceModelEligibilityReason::kSuccess);
 
   EXPECT_TRUE(delegate_->IsOnDeviceModelAvailable(
@@ -392,7 +393,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   base::RunLoop run_loop_for_add_observer;
   EXPECT_CALL(mock_opt_guide_, AddOnDeviceModelAvailabilityChangeObserver(_, _))
       .WillOnce(
-          [&](optimization_guide::ModelBasedCapabilityKey feature,
+          [&](optimization_guide::mojom::OnDeviceFeature feature,
               optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
             availability_observer = observer;
             run_loop_for_add_observer.Quit();
@@ -406,7 +407,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   SetEnhancedProtectionPrefForTests(&pref_service_, false);
 
   availability_observer->OnDeviceModelAvailabilityChanged(
-      optimization_guide::ModelBasedCapabilityKey::kScamDetection,
+      optimization_guide::mojom::OnDeviceFeature::kScamDetection,
       optimization_guide::OnDeviceModelEligibilityReason::kSuccess);
 
   // The delegate should not be available because we stopped listening to the
@@ -423,7 +424,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   base::RunLoop run_loop_for_add_observer;
   EXPECT_CALL(mock_opt_guide_, AddOnDeviceModelAvailabilityChangeObserver(_, _))
       .WillOnce(
-          [&](optimization_guide::ModelBasedCapabilityKey feature,
+          [&](optimization_guide::mojom::OnDeviceFeature feature,
               optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
             availability_observer = observer;
             run_loop_for_add_observer.Quit();
@@ -435,7 +436,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   CHECK(availability_observer);
 
   availability_observer->OnDeviceModelAvailabilityChanged(
-      optimization_guide::ModelBasedCapabilityKey::kScamDetection,
+      optimization_guide::mojom::OnDeviceFeature::kScamDetection,
       optimization_guide::OnDeviceModelEligibilityReason::kSuccess);
 
   EXPECT_TRUE(delegate_->IsOnDeviceModelAvailable(
@@ -450,7 +451,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   base::RunLoop run_loop_for_add_observer2;
   EXPECT_CALL(mock_opt_guide_, AddOnDeviceModelAvailabilityChangeObserver(_, _))
       .WillOnce(
-          [&](optimization_guide::ModelBasedCapabilityKey feature,
+          [&](optimization_guide::mojom::OnDeviceFeature feature,
               optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
             availability_observer = observer;
             run_loop_for_add_observer2.Quit();
@@ -461,7 +462,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   CHECK(availability_observer);
 
   availability_observer->OnDeviceModelAvailabilityChanged(
-      optimization_guide::ModelBasedCapabilityKey::kScamDetection,
+      optimization_guide::mojom::OnDeviceFeature::kScamDetection,
       optimization_guide::OnDeviceModelEligibilityReason::kSuccess);
 
   EXPECT_TRUE(delegate_->IsOnDeviceModelAvailable(
@@ -475,7 +476,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   base::RunLoop run_loop_for_add_observer;
   EXPECT_CALL(mock_opt_guide_, AddOnDeviceModelAvailabilityChangeObserver(_, _))
       .WillOnce(
-          [&](optimization_guide::ModelBasedCapabilityKey feature,
+          [&](optimization_guide::mojom::OnDeviceFeature feature,
               optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
             availability_observer = observer;
             run_loop_for_add_observer.Quit();
@@ -492,7 +493,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
       /*log_failed_eligibility_reason=*/true));
 
   availability_observer->OnDeviceModelAvailabilityChanged(
-      optimization_guide::ModelBasedCapabilityKey::kScamDetection,
+      optimization_guide::mojom::OnDeviceFeature::kScamDetection,
       optimization_guide::OnDeviceModelEligibilityReason::kSuccess);
 
   EXPECT_TRUE(delegate_->IsOnDeviceModelAvailable(
@@ -544,7 +545,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   // A second session can be created while the first one is still alive.
   EXPECT_CALL(mock_opt_guide_, StartSession(_, _, _))
       .WillOnce(
-          [&](optimization_guide::ModelBasedCapabilityKey feature,
+          [&](optimization_guide::mojom::OnDeviceFeature feature,
               const optimization_guide::SessionConfigParams& config_params,
               base::WeakPtr<OptimizationGuideLogger> logger) {
             return std::make_unique<NiceMock<MockSession>>(&session_);
@@ -565,7 +566,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
 
   EXPECT_CALL(mock_opt_guide_, StartSession(_, _, _))
       .WillOnce(
-          [&](optimization_guide::ModelBasedCapabilityKey feature,
+          [&](optimization_guide::mojom::OnDeviceFeature feature,
               const optimization_guide::SessionConfigParams& config_params,
               base::WeakPtr<OptimizationGuideLogger> logger) {
             return std::make_unique<NiceMock<MockSession>>(&session_);
@@ -579,7 +580,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   testing::NiceMock<MockSession> session2;
   EXPECT_CALL(mock_opt_guide_, StartSession(_, _, _))
       .WillOnce(
-          [&](optimization_guide::ModelBasedCapabilityKey feature,
+          [&](optimization_guide::mojom::OnDeviceFeature feature,
               const optimization_guide::SessionConfigParams& config_params,
               base::WeakPtr<OptimizationGuideLogger> logger) {
             return std::make_unique<NiceMock<MockSession>>(&session2);
@@ -618,7 +619,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
 
   EXPECT_CALL(mock_opt_guide_, StartSession(_, _, _))
       .WillOnce(
-          [&](optimization_guide::ModelBasedCapabilityKey feature,
+          [&](optimization_guide::mojom::OnDeviceFeature feature,
               const optimization_guide::SessionConfigParams& config_params,
               base::WeakPtr<OptimizationGuideLogger> logger) {
             return std::make_unique<NiceMock<MockSession>>(&session_);
@@ -632,7 +633,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   testing::NiceMock<MockSession> session2;
   EXPECT_CALL(mock_opt_guide_, StartSession(_, _, _))
       .WillOnce(
-          [&](optimization_guide::ModelBasedCapabilityKey feature,
+          [&](optimization_guide::mojom::OnDeviceFeature feature,
               const optimization_guide::SessionConfigParams& config_params,
               base::WeakPtr<OptimizationGuideLogger> logger) {
             return std::make_unique<NiceMock<MockSession>>(&session2);
@@ -849,7 +850,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   // Create a second session
   EXPECT_CALL(mock_opt_guide_, StartSession(_, _, _))
       .WillOnce(
-          [&](optimization_guide::ModelBasedCapabilityKey feature,
+          [&](optimization_guide::mojom::OnDeviceFeature feature,
               const optimization_guide::SessionConfigParams& config_params,
               base::WeakPtr<OptimizationGuideLogger> logger) {
             return std::make_unique<NiceMock<MockSession>>(&session_);

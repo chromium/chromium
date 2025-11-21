@@ -22,10 +22,9 @@
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
 #include "components/optimization_guide/core/delivery/model_util.h"
-#include "components/optimization_guide/core/model_execution/feature_keys.h"
-#include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
+#include "components/optimization_guide/core/model_execution/on_device_features.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_adaptation_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
@@ -90,7 +89,7 @@ void CloseFilesInBackground(on_device_model::ModelAssets assets) {
 }
 
 OnDeviceModelEligibilityReason GetBaseModelError(
-    ModelBasedCapabilityKey feature,
+    mojom::OnDeviceFeature feature,
     OnDeviceModelComponentStateManager* state_manager) {
   if (!state_manager) {
     return OnDeviceModelEligibilityReason::kModelNotEligible;
@@ -113,18 +112,18 @@ OnDeviceModelEligibilityReason GetBaseModelError(
       base::UmaHistogramEnumeration(
           base::StrCat({"OptimizationGuide.ModelExecution."
                         "OnDeviceModelToBeInstalledReason.",
-                        GetStringNameForModelExecutionFeature(feature)}),
+                        GetVariantName(feature)}),
           on_device_model_status);
       return OnDeviceModelEligibilityReason::kModelToBeInstalled;
   }
 }
 
-void LogEligibilityReason(ModelBasedCapabilityKey feature,
+void LogEligibilityReason(mojom::OnDeviceFeature feature,
                           OnDeviceModelEligibilityReason reason) {
   base::UmaHistogramEnumeration(
       base::StrCat(
           {"OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason.",
-           GetStringNameForModelExecutionFeature(feature)}),
+           GetVariantName(feature)}),
       reason);
 }
 
@@ -167,7 +166,7 @@ OnDeviceModelServiceController::OnDeviceModelServiceController(
 OnDeviceModelServiceController::~OnDeviceModelServiceController() = default;
 
 OnDeviceModelEligibilityReason OnDeviceModelServiceController::CanCreateSession(
-    ModelBasedCapabilityKey feature) {
+    mojom::OnDeviceFeature feature) {
   // Ensure an initial solution is computed to avoid giving kUnknown error.
   UpdateSolutionProvider(feature);
   return model_broker_impl_.GetSolutionProvider(feature).solution().error_or(
@@ -175,7 +174,7 @@ OnDeviceModelEligibilityReason OnDeviceModelServiceController::CanCreateSession(
 }
 
 std::unique_ptr<OnDeviceSession> OnDeviceModelServiceController::CreateSession(
-    ModelBasedCapabilityKey feature,
+    mojom::OnDeviceFeature feature,
     base::WeakPtr<OptimizationGuideLogger> logger,
     const SessionConfigParams& config_params) {
   // Ensure an initial solution is computed to avoid giving kUnknown error.
@@ -225,7 +224,7 @@ void OnDeviceModelServiceController::UpdateModel(
 }
 
 void OnDeviceModelServiceController::MaybeUpdateModelAdaptation(
-    ModelBasedCapabilityKey feature,
+    mojom::OnDeviceFeature feature,
     base::expected<OnDeviceModelAdaptationMetadata, AdaptationUnavailability>
         adaptation_metadata) {
   if (!adaptation_metadata_.MaybeUpdate(feature,
@@ -254,7 +253,7 @@ void OnDeviceModelServiceController::OnServiceDisconnected(
 }
 
 MaybeAdaptationMetadata& OnDeviceModelServiceController::GetFeatureMetadata(
-    ModelBasedCapabilityKey feature) {
+    mojom::OnDeviceFeature feature) {
   return adaptation_metadata_.Get(feature);
 }
 
@@ -269,17 +268,15 @@ OnDeviceModelServiceController::GetPerformanceHint() {
 }
 
 void OnDeviceModelServiceController::AddOnDeviceModelAvailabilityChangeObserver(
-    ModelBasedCapabilityKey feature,
+    mojom::OnDeviceFeature feature,
     OnDeviceModelAvailabilityObserver* observer) {
-  DCHECK(features::internal::GetOptimizationTargetForCapability(feature));
   model_broker_impl_.GetSolutionProvider(feature).AddObserver(observer);
 }
 
 void OnDeviceModelServiceController::
     RemoveOnDeviceModelAvailabilityChangeObserver(
-        ModelBasedCapabilityKey feature,
+        mojom::OnDeviceFeature feature,
         OnDeviceModelAvailabilityObserver* observer) {
-  DCHECK(features::internal::GetOptimizationTargetForCapability(feature));
   model_broker_impl_.GetSolutionProvider(feature).RemoveObserver(observer);
 }
 
@@ -292,11 +289,7 @@ OnDeviceModelServiceController::GetCapabilities() {
 }
 
 OnDeviceModelServiceController::MaybeSolution
-OnDeviceModelServiceController::GetSolution(ModelBasedCapabilityKey feature) {
-  if (!features::internal::GetOptimizationTargetForCapability(feature)) {
-    return base::unexpected(
-        OnDeviceModelEligibilityReason::kFeatureExecutionNotEnabled);
-  }
+OnDeviceModelServiceController::GetSolution(mojom::OnDeviceFeature feature) {
   auto error =
       GetBaseModelError(feature, on_device_component_state_manager_.get());
 
@@ -354,7 +347,7 @@ void OnDeviceModelServiceController::UpdateSolutionProviders() {
 }
 
 void OnDeviceModelServiceController::UpdateSolutionProvider(
-    ModelBasedCapabilityKey feature) {
+    mojom::OnDeviceFeature feature) {
   // Note: This always constructs the Solution, even if the provider was not
   // constructed yet, to update supported_adaptation_ranks_ on the base model.
   model_broker_impl_.GetSolutionProvider(feature).Update(GetSolution(feature));
@@ -412,7 +405,7 @@ void OnDeviceModelServiceController::BaseModelController::RequireAdaptationRank(
 
 base::WeakPtr<ModelController> OnDeviceModelServiceController::
     BaseModelController::GetOrCreateFeatureController(
-        ModelBasedCapabilityKey feature,
+        mojom::OnDeviceFeature feature,
         const OnDeviceModelAdaptationMetadata& metadata) {
   if (!metadata.asset_paths()) {
     has_direct_use_ = true;
@@ -432,7 +425,7 @@ base::WeakPtr<ModelController> OnDeviceModelServiceController::
 }
 
 void OnDeviceModelServiceController::BaseModelController::EraseController(
-    ModelBasedCapabilityKey feature) {
+    mojom::OnDeviceFeature feature) {
   auto it = model_adaptation_controllers_.find(feature);
   if (it != model_adaptation_controllers_.end()) {
     model_adaptation_controllers_.erase(it);
@@ -572,7 +565,7 @@ ModelController::ModelController() = default;
 ModelController::~ModelController() = default;
 
 OnDeviceModelServiceController::Solution::Solution(
-    ModelBasedCapabilityKey feature,
+    mojom::OnDeviceFeature feature,
     scoped_refptr<const OnDeviceModelFeatureAdapter> adapter,
     base::WeakPtr<ModelController> model_controller,
     std::unique_ptr<SafetyChecker> safety_checker,

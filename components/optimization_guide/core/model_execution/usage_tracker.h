@@ -9,12 +9,11 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/sequence_checker.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
 
 class PrefService;
 
 namespace optimization_guide {
-
-enum class ModelBasedCapabilityKey;
 
 // Tracks usage of on-device model eligible features.
 class UsageTracker {
@@ -23,12 +22,12 @@ class UsageTracker {
    public:
     // Called when on-device eligible `feature` was used.
     // TODO(holte): Update ComponentStateManager metrics and remove this.
-    virtual void OnDeviceEligibleFeatureUsed(ModelBasedCapabilityKey feature) {}
+    virtual void OnDeviceEligibleFeatureUsed(mojom::OnDeviceFeature feature) {}
 
     // Called when on-device eligible `feature` was used and that usage will
     // change the "was recently used" state from false to true.
     virtual void OnDeviceEligibleFeatureFirstUsed(
-        ModelBasedCapabilityKey feature) {}
+        mojom::OnDeviceFeature feature) {}
   };
 
   explicit UsageTracker(PrefService* local_state);
@@ -38,12 +37,12 @@ class UsageTracker {
   UsageTracker& operator=(const UsageTracker&) = delete;
 
   // Notifies the usage tracker that the `feature` was (attempted to be) used.
-  void OnDeviceEligibleFeatureUsed(ModelBasedCapabilityKey feature);
+  void OnDeviceEligibleFeatureUsed(mojom::OnDeviceFeature feature);
 
   // Returns true if `feature` was recently used and is an on-device eligible
   // feature.
   bool WasOnDeviceEligibleFeatureRecentlyUsed(
-      ModelBasedCapabilityKey feature) const;
+      mojom::OnDeviceFeature feature) const;
 
   // Returns whether any on-device eligible feature was recently used.
   bool WasAnyOnDeviceEligibleFeatureRecentlyUsed() const;

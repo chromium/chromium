@@ -71,6 +71,7 @@
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_prefs/user_prefs.h"
 #include "components/variations/service/variations_service.h"
@@ -433,7 +434,7 @@ void OptimizationGuideKeyedService::CanApplyOptimizationOnDemand(
 
 std::unique_ptr<optimization_guide::OnDeviceSession>
 OptimizationGuideKeyedService::StartSession(
-    optimization_guide::ModelBasedCapabilityKey feature,
+    optimization_guide::mojom::OnDeviceFeature feature,
     const optimization_guide::SessionConfigParams& config_params,
     base::WeakPtr<OptimizationGuideLogger> logger) {
   return GetGlobalState().on_device_capability().StartSession(
@@ -466,7 +467,7 @@ void OptimizationGuideKeyedService::ExecuteModel(
 }
 
 void OptimizationGuideKeyedService::AddOnDeviceModelAvailabilityChangeObserver(
-    optimization_guide::ModelBasedCapabilityKey feature,
+    optimization_guide::mojom::OnDeviceFeature feature,
     optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
   GetGlobalState()
       .on_device_capability()
@@ -475,7 +476,7 @@ void OptimizationGuideKeyedService::AddOnDeviceModelAvailabilityChangeObserver(
 
 void OptimizationGuideKeyedService::
     RemoveOnDeviceModelAvailabilityChangeObserver(
-        optimization_guide::ModelBasedCapabilityKey feature,
+        optimization_guide::mojom::OnDeviceFeature feature,
         optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
   GetGlobalState()
       .on_device_capability()
@@ -667,13 +668,13 @@ void OptimizationGuideKeyedService::
 
 optimization_guide::OnDeviceModelEligibilityReason
 OptimizationGuideKeyedService::GetOnDeviceModelEligibility(
-    optimization_guide::ModelBasedCapabilityKey feature) {
+    optimization_guide::mojom::OnDeviceFeature feature) {
   return GetGlobalState().on_device_capability().GetOnDeviceModelEligibility(
       feature);
 }
 
 void OptimizationGuideKeyedService::GetOnDeviceModelEligibilityAsync(
-    optimization_guide::ModelBasedCapabilityKey feature,
+    optimization_guide::mojom::OnDeviceFeature feature,
     const on_device_model::Capabilities& capabilities,
     base::OnceCallback<void(optimization_guide::OnDeviceModelEligibilityReason)>
         callback) {
@@ -683,13 +684,13 @@ void OptimizationGuideKeyedService::GetOnDeviceModelEligibilityAsync(
 
 std::optional<optimization_guide::SamplingParamsConfig>
 OptimizationGuideKeyedService::GetSamplingParamsConfig(
-    optimization_guide::ModelBasedCapabilityKey feature) {
+    optimization_guide::mojom::OnDeviceFeature feature) {
   return GetGlobalState().on_device_capability().GetSamplingParamsConfig(
       feature);
 }
 
 std::optional<const optimization_guide::proto::Any>
 OptimizationGuideKeyedService::GetFeatureMetadata(
-    optimization_guide::ModelBasedCapabilityKey feature) {
+    optimization_guide::mojom::OnDeviceFeature feature) {
   return GetGlobalState().on_device_capability().GetFeatureMetadata(feature);
 }

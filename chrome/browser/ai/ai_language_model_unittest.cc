@@ -36,6 +36,7 @@
 #include "components/optimization_guide/proto/features/prompt_api.pb.h"
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
 #include "components/update_client/update_client.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "services/on_device_model/public/cpp/capabilities.h"
@@ -258,7 +259,7 @@ class AILanguageModelTest : public AITestUtils::AITestBase {
     AITestUtils::AITestBase::SetupMockOptimizationGuideKeyedService();
     ON_CALL(*mock_optimization_guide_keyed_service_,
             GetSamplingParamsConfig(
-                optimization_guide::ModelBasedCapabilityKey::kPromptApi))
+                optimization_guide::mojom::OnDeviceFeature::kPromptApi))
         .WillByDefault([]() {
           return optimization_guide::SamplingParamsConfig{
               .default_top_k = kTestDefaultTopK,
@@ -266,7 +267,7 @@ class AILanguageModelTest : public AITestUtils::AITestBase {
         });
     ON_CALL(*mock_optimization_guide_keyed_service_,
             GetFeatureMetadata(
-                optimization_guide::ModelBasedCapabilityKey::kPromptApi))
+                optimization_guide::mojom::OnDeviceFeature::kPromptApi))
         .WillByDefault([&]() { return CreateConfig().feature_metadata(); });
     ON_CALL(*mock_optimization_guide_keyed_service_, GetOnDeviceCapabilities())
         .WillByDefault(Return(on_device_model::Capabilities(

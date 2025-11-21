@@ -12,19 +12,19 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "components/history_embeddings/intent_classifier.h"
-#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/history_query_intent.pb.h"
 #include "components/optimization_guide/proto/history_query_intent_model_metadata.pb.h"
 #include "components/optimization_guide/proto/model_quality_metadata.pb.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
 
 namespace history_embeddings {
 
 namespace {
 
-using ::optimization_guide::ModelBasedCapabilityKey;
 using ::optimization_guide::SessionConfigParams;
+using ::optimization_guide::mojom::OnDeviceFeature;
 using Session = ::optimization_guide::OnDeviceSession;
 
 using ::optimization_guide::ParsedAnyMetadata;
@@ -43,8 +43,7 @@ class MlIntentClassifier::Execution final {
                std::string query,
                ComputeQueryIntentCallback callback) {
     session_ = model_executor->StartSession(
-        ModelBasedCapabilityKey::kHistoryQueryIntent, SessionConfigParams{},
-        nullptr);
+        OnDeviceFeature::kHistoryQueryIntent, SessionConfigParams{}, nullptr);
     if (!session_) {
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,

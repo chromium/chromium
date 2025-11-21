@@ -143,8 +143,7 @@ void OnDeviceSpeechRecognitionEngine::CreateModelClientOnUI(
 
   if (core_->model_broker_client) {
     core_->model_broker_client
-        ->GetSubscriber(
-            optimization_guide::mojom::ModelBasedCapabilityKey::kPromptApi)
+        ->GetSubscriber(optimization_guide::mojom::OnDeviceFeature::kPromptApi)
         .WaitForClient(base::BindOnce(
             &OnDeviceSpeechRecognitionEngine::OnModelClientAvailable,
             weak_factory_.GetWeakPtr()));

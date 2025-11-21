@@ -136,8 +136,6 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
             }
           }
         })");
-    case ModelBasedCapabilityKey::kTextSafety:
-      // TODO: b/330346344 - Add traffic annotation.
     case ModelBasedCapabilityKey::kPasswordChangeSubmission:
       return net::DefineNetworkTrafficAnnotation(
           "password_change_submission_model_execution", R"(
@@ -309,14 +307,6 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
       // TODO(crbug.com/456457419): Add network traffic annotation.
       return MISSING_TRAFFIC_ANNOTATION;
     case ModelBasedCapabilityKey::kHistorySearch:
-    case ModelBasedCapabilityKey::kHistoryQueryIntent:
-    case ModelBasedCapabilityKey::kPromptApi:
-    case ModelBasedCapabilityKey::kScamDetection:
-    case ModelBasedCapabilityKey::kPermissionsAi:
-    case ModelBasedCapabilityKey::kSummarize:
-    case ModelBasedCapabilityKey::kWritingAssistanceApi:
-    case ModelBasedCapabilityKey::kProofreaderApi:
-    case ModelBasedCapabilityKey::kOnDeviceSpeechRecognition:
       // On-device only feature.
       NOTREACHED();
   }
@@ -347,22 +337,13 @@ bool IsAccessTokenRequiredForFeature(ModelBasedCapabilityKey feature) {
     case ModelBasedCapabilityKey::kTabOrganization:
     case ModelBasedCapabilityKey::kWallpaperSearch:
     case ModelBasedCapabilityKey::kTest:
-    case ModelBasedCapabilityKey::kTextSafety:
-    case ModelBasedCapabilityKey::kPromptApi:
     case ModelBasedCapabilityKey::kHistorySearch:
-    case ModelBasedCapabilityKey::kSummarize:
-    case ModelBasedCapabilityKey::kHistoryQueryIntent:
     case ModelBasedCapabilityKey::kBlingPrototyping:
     case ModelBasedCapabilityKey::kPasswordChangeSubmission:
-    case ModelBasedCapabilityKey::kScamDetection:
-    case ModelBasedCapabilityKey::kPermissionsAi:
-    case ModelBasedCapabilityKey::kProofreaderApi:
-    case ModelBasedCapabilityKey::kWritingAssistanceApi:
     case ModelBasedCapabilityKey::kEnhancedCalendar:
     case ModelBasedCapabilityKey::kZeroStateSuggestions:
     case ModelBasedCapabilityKey::kWalletablePassExtraction:
     case ModelBasedCapabilityKey::kAmountExtraction:
-    case ModelBasedCapabilityKey::kOnDeviceSpeechRecognition:
     case ModelBasedCapabilityKey::kIosSmartTabGrouping:
       return true;
     case ModelBasedCapabilityKey::kFormsClassifications:

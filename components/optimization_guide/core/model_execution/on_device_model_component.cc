@@ -28,6 +28,7 @@
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
@@ -363,7 +364,7 @@ void OnDeviceModelComponentStateManager::
 }
 
 void OnDeviceModelComponentStateManager::OnDeviceEligibleFeatureUsed(
-    ModelBasedCapabilityKey feature) {
+    mojom::OnDeviceFeature feature) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::UmaHistogramEnumeration(

@@ -48,6 +48,7 @@
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
@@ -239,7 +240,7 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
   }
 
   OnDeviceModelEligibilityReason GetOnDeviceModelEligibility(
-      ModelBasedCapabilityKey feature,
+      mojom::OnDeviceFeature feature,
       Profile* profile = nullptr) {
     return GetOptimizationGuideKeyedService(profile)
         ->GetOnDeviceModelEligibility(feature);
@@ -417,14 +418,14 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionDisabledBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ModelExecutionDisabledBrowserTest,
                        GetOnDeviceModelEligibilityExecutionDisabled) {
-  EXPECT_EQ(GetOnDeviceModelEligibility(ModelBasedCapabilityKey::kCompose),
+  EXPECT_EQ(GetOnDeviceModelEligibility(mojom::OnDeviceFeature::kCompose),
             OnDeviceModelEligibilityReason::kFeatureNotEnabled);
 }
 
 IN_PROC_BROWSER_TEST_F(
     ModelExecutionDisabledBrowserTest,
     GetOnDeviceModelEligibilityExecutionDisabledNullDebugReason) {
-  EXPECT_NE(GetOnDeviceModelEligibility(ModelBasedCapabilityKey::kCompose),
+  EXPECT_NE(GetOnDeviceModelEligibility(mojom::OnDeviceFeature::kCompose),
             OnDeviceModelEligibilityReason::kSuccess);
 }
 
@@ -440,14 +441,14 @@ class ModelExecutionEnabledOnDeviceDisabledBrowserTest
 
 IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledOnDeviceDisabledBrowserTest,
                        GetOnDeviceModelEligibilityOnDeviceDisabled) {
-  EXPECT_EQ(GetOnDeviceModelEligibility(ModelBasedCapabilityKey::kCompose),
+  EXPECT_EQ(GetOnDeviceModelEligibility(mojom::OnDeviceFeature::kCompose),
             OnDeviceModelEligibilityReason::kFeatureNotEnabled);
 }
 
 IN_PROC_BROWSER_TEST_F(
     ModelExecutionEnabledOnDeviceDisabledBrowserTest,
     GetOnDeviceModelEligibilityExecutionDisabledNullDebugReason) {
-  EXPECT_NE(GetOnDeviceModelEligibility(ModelBasedCapabilityKey::kCompose),
+  EXPECT_NE(GetOnDeviceModelEligibility(mojom::OnDeviceFeature::kCompose),
             OnDeviceModelEligibilityReason::kSuccess);
 }
 
@@ -664,7 +665,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
                        GetOnDeviceModelEligibilityExecutionDisabled) {
-  EXPECT_NE(GetOnDeviceModelEligibility(ModelBasedCapabilityKey::kCompose),
+  EXPECT_NE(GetOnDeviceModelEligibility(mojom::OnDeviceFeature::kCompose),
             OnDeviceModelEligibilityReason::kSuccess);
 }
 
@@ -704,7 +705,7 @@ class OnDeviceModelExecutionEnabledBrowserTest
 
   void SetUpLocalStatePrefService(PrefService* local_state) override {
     model_execution::prefs::RecordFeatureUsage(
-        local_state, ModelBasedCapabilityKey::kCompose);
+        local_state, mojom::OnDeviceFeature::kCompose);
     UpdatePerformanceClassPref(local_state,
                                OnDeviceModelPerformanceClass::kVeryHigh);
   }
@@ -740,7 +741,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceModelExecutionEnabledBrowserTest,
   SetUpProfileAssets();
 
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return GetOnDeviceModelEligibility(ModelBasedCapabilityKey::kCompose,
+    return GetOnDeviceModelEligibility(mojom::OnDeviceFeature::kCompose,
                                        nullptr) ==
            OnDeviceModelEligibilityReason::kSuccess;
   })) << "Timeout waiting for model to be marked eligible.";
@@ -754,7 +755,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceModelExecutionEnabledBrowserTest,
   SetUpProfileAssets();
 
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return GetOnDeviceModelEligibility(ModelBasedCapabilityKey::kCompose,
+    return GetOnDeviceModelEligibility(mojom::OnDeviceFeature::kCompose,
                                        otr_browser->profile()) ==
            OnDeviceModelEligibilityReason::kSuccess;
   })) << "Timeout waiting for model to be marked eligible.";
@@ -770,7 +771,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceModelExecutionEnabledBrowserTest,
   SetUpProfileAssets();
 
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return GetOnDeviceModelEligibility(ModelBasedCapabilityKey::kCompose,
+    return GetOnDeviceModelEligibility(mojom::OnDeviceFeature::kCompose,
                                        guest_browser->profile()) ==
            OnDeviceModelEligibilityReason::kSuccess;
   })) << "Timeout waiting for model to be marked eligible.";
@@ -783,14 +784,14 @@ IN_PROC_BROWSER_TEST_F(OnDeviceModelExecutionEnabledBrowserTest,
   SetUpProfileAssets();
 
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return GetOnDeviceModelEligibility(ModelBasedCapabilityKey::kCompose,
+    return GetOnDeviceModelEligibility(mojom::OnDeviceFeature::kCompose,
                                        nullptr) ==
            OnDeviceModelEligibilityReason::kSuccess;
   })) << "Timeout waiting for model to be marked eligible.";
 
   auto sampling_config =
       GetOptimizationGuideKeyedService()->GetSamplingParamsConfig(
-          ModelBasedCapabilityKey::kCompose);
+          mojom::OnDeviceFeature::kCompose);
 
   EXPECT_EQ(sampling_config->default_top_k, kTestDefaultTopK);
   EXPECT_EQ(sampling_config->default_temperature, kTestDefaultTemperature);

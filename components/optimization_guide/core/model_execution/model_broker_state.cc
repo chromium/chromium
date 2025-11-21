@@ -11,6 +11,7 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
 
 namespace optimization_guide {
 
@@ -48,7 +49,7 @@ void ModelBrokerState::BindModelBroker(
 }
 
 std::unique_ptr<OnDeviceSession> ModelBrokerState::StartSession(
-    ModelBasedCapabilityKey feature,
+    mojom::OnDeviceFeature feature,
     const SessionConfigParams& config_params,
     base::WeakPtr<OptimizationGuideLogger> logger) {
   if (!features::IsOnDeviceExecutionEnabled()) {
@@ -58,7 +59,7 @@ std::unique_ptr<OnDeviceSession> ModelBrokerState::StartSession(
 }
 
 OnDeviceModelEligibilityReason ModelBrokerState::GetOnDeviceModelEligibility(
-    ModelBasedCapabilityKey feature) {
+    mojom::OnDeviceFeature feature) {
   if (!features::IsOnDeviceExecutionEnabled()) {
     return OnDeviceModelEligibilityReason::kFeatureNotEnabled;
   }
@@ -66,7 +67,7 @@ OnDeviceModelEligibilityReason ModelBrokerState::GetOnDeviceModelEligibility(
 }
 
 void ModelBrokerState::GetOnDeviceModelEligibilityAsync(
-    ModelBasedCapabilityKey feature,
+    mojom::OnDeviceFeature feature,
     const on_device_model::Capabilities& capabilities,
     base::OnceCallback<void(OnDeviceModelEligibilityReason)> callback) {
   if (!features::IsOnDeviceExecutionEnabled()) {
@@ -80,8 +81,7 @@ void ModelBrokerState::GetOnDeviceModelEligibilityAsync(
 }
 
 std::optional<optimization_guide::SamplingParamsConfig>
-ModelBrokerState::GetSamplingParamsConfig(
-    optimization_guide::ModelBasedCapabilityKey feature) {
+ModelBrokerState::GetSamplingParamsConfig(mojom::OnDeviceFeature feature) {
   MaybeAdaptationMetadata metadata =
       service_controller_.GetFeatureMetadata(feature);
   if (!features::IsOnDeviceExecutionEnabled() || !metadata.has_value()) {
@@ -91,7 +91,7 @@ ModelBrokerState::GetSamplingParamsConfig(
 }
 
 std::optional<const proto::Any> ModelBrokerState::GetFeatureMetadata(
-    optimization_guide::ModelBasedCapabilityKey feature) {
+    mojom::OnDeviceFeature feature) {
   MaybeAdaptationMetadata metadata =
       service_controller_.GetFeatureMetadata(feature);
   if (!features::IsOnDeviceExecutionEnabled() || !metadata.has_value()) {
@@ -101,7 +101,7 @@ std::optional<const proto::Any> ModelBrokerState::GetFeatureMetadata(
 }
 
 void ModelBrokerState::FinishGetOnDeviceModelEligibility(
-    optimization_guide::ModelBasedCapabilityKey feature,
+    mojom::OnDeviceFeature feature,
     const on_device_model::Capabilities& capabilities,
     base::OnceCallback<void(optimization_guide::OnDeviceModelEligibilityReason)>
         callback) {
@@ -117,7 +117,7 @@ void ModelBrokerState::FinishGetOnDeviceModelEligibility(
 }
 
 void ModelBrokerState::AddOnDeviceModelAvailabilityChangeObserver(
-    ModelBasedCapabilityKey feature,
+    mojom::OnDeviceFeature feature,
     OnDeviceModelAvailabilityObserver* observer) {
   if (!features::IsOnDeviceExecutionEnabled()) {
     return;
@@ -127,7 +127,7 @@ void ModelBrokerState::AddOnDeviceModelAvailabilityChangeObserver(
 }
 
 void ModelBrokerState::RemoveOnDeviceModelAvailabilityChangeObserver(
-    ModelBasedCapabilityKey feature,
+    mojom::OnDeviceFeature feature,
     OnDeviceModelAvailabilityObserver* observer) {
   if (!features::IsOnDeviceExecutionEnabled()) {
     return;

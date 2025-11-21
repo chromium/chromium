@@ -18,6 +18,7 @@
 #include "chrome/browser/ai/ai_summarizer.h"
 #include "chrome/browser/ai/ai_utils.h"
 #include "components/component_updater/component_updater_service.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_observer.h"
@@ -107,7 +108,7 @@ class AIManager : public base::SupportsUserData::Data,
 
   // Check whether optimization guide supports the feature matching `capability`
   // and modalities specified by `capabilities`; yields a result to `callback`.
-  void CanCreateSession(optimization_guide::ModelBasedCapabilityKey capability,
+  void CanCreateSession(optimization_guide::mojom::OnDeviceFeature capability,
                         on_device_model::Capabilities capabilities,
                         CanCreateLanguageModelCallback callback);
 
@@ -139,7 +140,7 @@ class AIManager : public base::SupportsUserData::Data,
       content::RenderWidgetHost* widget_host) override;
 
   void FinishCanCreateSession(
-      optimization_guide::ModelBasedCapabilityKey capability,
+      optimization_guide::mojom::OnDeviceFeature capability,
       on_device_model::Capabilities capabilities,
       CanCreateLanguageModelCallback callback,
       optimization_guide::OnDeviceModelEligibilityReason eligibility);
@@ -185,8 +186,7 @@ class AIManager : public base::SupportsUserData::Data,
   bool did_log_unsupported_language_error_ = false;
 
   // Features that have attempted initialization in this session.
-  base::flat_set<optimization_guide::mojom::ModelBasedCapabilityKey>
-      tried_init_;
+  base::flat_set<optimization_guide::mojom::OnDeviceFeature> tried_init_;
 
   base::WeakPtrFactory<AIManager> weak_factory_{this};
 };

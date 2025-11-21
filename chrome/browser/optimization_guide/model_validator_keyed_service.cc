@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/model_execution/on_device_features.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_descriptors.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
@@ -28,6 +29,7 @@
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/optimization_guide/proto/model_validation.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 #include "components/optimization_guide/core/inference/model_validator.h"
@@ -183,7 +185,7 @@ void ModelValidatorKeyedService::PerformOnDeviceModelExecutionValidation(
   auto request = input->requests(0);
   auto request_copy =
       std::make_unique<optimization_guide::proto::ExecuteRequest>(request);
-  auto capability_key = ToModelBasedCapabilityKey(request.feature());
+  auto capability_key = *ToOnDeviceFeature(request.feature());
 
   auto eligibility =
       opt_guide_service->GetOnDeviceModelEligibility(capability_key);

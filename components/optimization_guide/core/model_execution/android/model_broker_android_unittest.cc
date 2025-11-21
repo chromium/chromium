@@ -10,8 +10,8 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/optimization_guide/core/delivery/model_provider_registry.h"
-#include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#include "components/optimization_guide/core/model_execution/on_device_features.h"
 #include "components/optimization_guide/core/model_execution/test/fake_model_assets.h"
 #include "components/optimization_guide/core/model_execution/test/fake_model_broker.h"
 #include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
@@ -34,7 +34,7 @@ proto::OnDeviceBaseModelMetadata MatchingMetadata(
 
 // TODO: crbug.com/442914748 - Support text safety.
 proto::OnDeviceModelExecutionFeatureConfig UnsafeFeatureConfig(
-    ModelBasedCapabilityKey feature) {
+    mojom::OnDeviceFeature feature) {
   proto::OnDeviceModelExecutionFeatureConfig cfg = SimpleTestFeatureConfig();
   cfg.set_feature(ToModelExecutionFeatureProto(feature));
   cfg.set_can_skip_text_safety(true);
@@ -47,7 +47,6 @@ class ModelBrokerAndroidFeatureList {
     feature_list_.InitWithFeaturesAndParameters(
         {
             {features::kOptimizationGuideModelExecution, {}},
-            {features::internal::kOnDeviceModelTestFeature, {}},
             {features::kOptimizationGuideOnDeviceModel, {}},
         },
         {features::kRequirePersistentModeForScamDetection});
@@ -62,13 +61,10 @@ class ModelBrokerAndroidFeatureDisabledList {
  public:
   ModelBrokerAndroidFeatureDisabledList() {
     feature_list_.InitWithFeaturesAndParameters(
-        {
-            {features::internal::kOnDeviceModelTestFeature, {}},
-        },
-        {
-            {features::kOptimizationGuideModelExecution},
-            {features::kOptimizationGuideOnDeviceModel},
-        });
+        {}, {
+                {features::kOptimizationGuideModelExecution},
+                {features::kOptimizationGuideOnDeviceModel},
+            });
   }
   ~ModelBrokerAndroidFeatureDisabledList() = default;
 
@@ -82,7 +78,6 @@ class RequirePersistentModeForScamDetectionEnabledFeatureList {
     feature_list_.InitWithFeaturesAndParameters(
         {
             {features::kOptimizationGuideModelExecution, {}},
-            {features::internal::kOnDeviceModelTestFeature, {}},
             {features::kOptimizationGuideOnDeviceModel, {}},
             {features::kRequirePersistentModeForScamDetection, {}},
         },
@@ -126,7 +121,7 @@ class ModelBrokerAndroidTest : public testing::Test {
 
   std::unique_ptr<OnDeviceSession> DownloadModelAndCreateSession(
       ModelBrokerClient& client,
-      mojom::ModelBasedCapabilityKey feature) {
+      mojom::OnDeviceFeature feature) {
     // Requesting the feature we've provided assets for should succeed.
     base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
     client.CreateSession(feature, SessionConfigParams{}, future.GetCallback());
@@ -151,11 +146,11 @@ class ModelBrokerAndroidTest : public testing::Test {
       "Test", "0.0.1", proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_UNSPECIFIED};
   on_device_model::OnDeviceModelBridgeNativeUnitTestHelper java_helper_;
   FakeAdaptationAsset test_asset_{{
-      .config = UnsafeFeatureConfig(ModelBasedCapabilityKey::kTest),
+      .config = UnsafeFeatureConfig(mojom::OnDeviceFeature::kTest),
       .metadata = MatchingMetadata(spec_),
   }};
   FakeAdaptationAsset scam_detection_asset_{{
-      .config = UnsafeFeatureConfig(ModelBasedCapabilityKey::kScamDetection),
+      .config = UnsafeFeatureConfig(mojom::OnDeviceFeature::kScamDetection),
       .metadata = MatchingMetadata(spec_),
   }};
 };
@@ -165,10 +160,10 @@ TEST_F(ModelBrokerAndroidTest, RequirePersistentModeForTest) {
   ModelBrokerClient client(BindAndPassRemote(), nullptr);
 
   base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
-  client.CreateSession(mojom::ModelBasedCapabilityKey::kTest,
-                       SessionConfigParams{}, future.GetCallback());
+  client.CreateSession(mojom::OnDeviceFeature::kTest, SessionConfigParams{},
+                       future.GetCallback());
   base::test::RunUntil([&]() {
-    return client.GetSubscriber(mojom::ModelBasedCapabilityKey::kTest)
+    return client.GetSubscriber(mojom::OnDeviceFeature::kTest)
                .unavailable_reason() ==
            mojom::ModelUnavailableReason::kPendingAssets;
   });
@@ -183,10 +178,10 @@ TEST_F(ModelBrokerAndroidTest, DoesNotRequirePersistentModeForScamDetection) {
   ModelBrokerClient client(BindAndPassRemote(), nullptr);
 
   base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
-  client.CreateSession(mojom::ModelBasedCapabilityKey::kScamDetection,
+  client.CreateSession(mojom::OnDeviceFeature::kScamDetection,
                        SessionConfigParams{}, future.GetCallback());
   base::test::RunUntil([&]() {
-    return client.GetSubscriber(mojom::ModelBasedCapabilityKey::kScamDetection)
+    return client.GetSubscriber(mojom::OnDeviceFeature::kScamDetection)
                .unavailable_reason() ==
            mojom::ModelUnavailableReason::kPendingAssets;
   });
@@ -202,15 +197,15 @@ TEST_F(ModelBrokerAndroidTest, PendingClient) {
   ModelBrokerClient client(BindAndPassRemote(), nullptr);
   // Requesting test feature, but assets not available.
   base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
-  client.CreateSession(mojom::ModelBasedCapabilityKey::kTest,
-                       SessionConfigParams{}, future.GetCallback());
+  client.CreateSession(mojom::OnDeviceFeature::kTest, SessionConfigParams{},
+                       future.GetCallback());
   base::test::RunUntil([&]() {
-    return client.GetSubscriber(mojom::ModelBasedCapabilityKey::kTest)
+    return client.GetSubscriber(mojom::OnDeviceFeature::kTest)
                .unavailable_reason() ==
            mojom::ModelUnavailableReason::kPendingAssets;
   });
   EXPECT_FALSE(future.IsReady());
-  EXPECT_TRUE(client.HasSubscriber(mojom::ModelBasedCapabilityKey::kTest));
+  EXPECT_TRUE(client.HasSubscriber(mojom::OnDeviceFeature::kTest));
 }
 
 // Verify that CreateSession and ExecuteModel works when the download succeeds.
@@ -218,8 +213,8 @@ TEST_F(ModelBrokerAndroidTest, ExecuteModel) {
   InstallTestFeatureConfig();
   ModelBrokerClient client(BindAndPassRemote(), nullptr);
 
-  auto session = DownloadModelAndCreateSession(
-      client, mojom::ModelBasedCapabilityKey::kTest);
+  auto session =
+      DownloadModelAndCreateSession(client, mojom::OnDeviceFeature::kTest);
   ASSERT_TRUE(session);
 
   proto::ExampleForTestingRequest context_request;
@@ -257,8 +252,8 @@ TEST_F(ModelBrokerAndroidTest, ExecuteModelAfterModelDisconnected) {
   InstallTestFeatureConfig();
   ModelBrokerClient client(BindAndPassRemote(), nullptr);
 
-  auto session = DownloadModelAndCreateSession(
-      client, mojom::ModelBasedCapabilityKey::kTest);
+  auto session =
+      DownloadModelAndCreateSession(client, mojom::OnDeviceFeature::kTest);
   ASSERT_TRUE(session);
 
   // Fast forward time to trigger idle timeout.
@@ -286,10 +281,10 @@ TEST_F(ModelBrokerAndroidTest, DownloadFailure) {
 
   // Requesting the feature we've provided assets for should fail.
   base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
-  client.CreateSession(mojom::ModelBasedCapabilityKey::kTest,
-                       SessionConfigParams{}, future.GetCallback());
+  client.CreateSession(mojom::OnDeviceFeature::kTest, SessionConfigParams{},
+                       future.GetCallback());
   base::test::RunUntil([&]() {
-    return client.GetSubscriber(mojom::ModelBasedCapabilityKey::kTest)
+    return client.GetSubscriber(mojom::OnDeviceFeature::kTest)
                .unavailable_reason() ==
            mojom::ModelUnavailableReason::kPendingAssets;
   });
@@ -297,7 +292,7 @@ TEST_F(ModelBrokerAndroidTest, DownloadFailure) {
       on_device_model::ModelDownloaderAndroid::DownloadFailureReason::
           kUnknownError);
   base::test::RunUntil([&]() {
-    return client.GetSubscriber(mojom::ModelBasedCapabilityKey::kTest)
+    return client.GetSubscriber(mojom::OnDeviceFeature::kTest)
                .unavailable_reason() ==
            mojom::ModelUnavailableReason::kNotSupported;
   });
@@ -316,10 +311,10 @@ TEST_F(ModelBrokerAndroidTest, EnterprisePolicyDisallowsModel) {
   ModelBrokerClient client(BindAndPassRemote(), nullptr);
 
   base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
-  client.CreateSession(mojom::ModelBasedCapabilityKey::kTest,
-                       SessionConfigParams{}, future.GetCallback());
+  client.CreateSession(mojom::OnDeviceFeature::kTest, SessionConfigParams{},
+                       future.GetCallback());
   base::test::RunUntil([&]() {
-    return client.GetSubscriber(mojom::ModelBasedCapabilityKey::kTest)
+    return client.GetSubscriber(mojom::OnDeviceFeature::kTest)
                .unavailable_reason() ==
            mojom::ModelUnavailableReason::kNotSupported;
   });
@@ -331,14 +326,14 @@ TEST_F(ModelBrokerAndroidTest, EnterprisePolicyDisallowsModel) {
 TEST_F(ModelBrokerAndroidTest, DownloadSuccessForAlreadyUsedFeature) {
   InstallTestFeatureConfig();
   model_execution::prefs::RecordFeatureUsage(&local_state_.local_state(),
-                                             ModelBasedCapabilityKey::kTest);
+                                             mojom::OnDeviceFeature::kTest);
   task_environment_.FastForwardBy(
       features::GetOnDeviceEligibleModelFeatureRecentUsePeriod() -
       base::Days(1));
 
   ModelBrokerClient client(BindAndPassRemote(), nullptr);
-  auto session = DownloadModelAndCreateSession(
-      client, mojom::ModelBasedCapabilityKey::kTest);
+  auto session =
+      DownloadModelAndCreateSession(client, mojom::OnDeviceFeature::kTest);
   ASSERT_TRUE(session);
 }
 
@@ -358,10 +353,10 @@ TEST_F(ModelBrokerAndroidRequirePersistentModeEnabledTest,
   ModelBrokerClient client(BindAndPassRemote(), nullptr);
 
   base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
-  client.CreateSession(mojom::ModelBasedCapabilityKey::kScamDetection,
+  client.CreateSession(mojom::OnDeviceFeature::kScamDetection,
                        SessionConfigParams{}, future.GetCallback());
   base::test::RunUntil([&]() {
-    return client.GetSubscriber(mojom::ModelBasedCapabilityKey::kScamDetection)
+    return client.GetSubscriber(mojom::OnDeviceFeature::kScamDetection)
                .unavailable_reason() ==
            mojom::ModelUnavailableReason::kPendingAssets;
   });
@@ -385,10 +380,10 @@ TEST_F(ModelBrokerAndroidFeatureDisabledTest, FeatureDisabled) {
   ModelBrokerClient client(BindAndPassRemote(), nullptr);
 
   base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
-  client.CreateSession(mojom::ModelBasedCapabilityKey::kTest,
-                       SessionConfigParams{}, future.GetCallback());
+  client.CreateSession(mojom::OnDeviceFeature::kTest, SessionConfigParams{},
+                       future.GetCallback());
   base::test::RunUntil([&]() {
-    return client.GetSubscriber(mojom::ModelBasedCapabilityKey::kTest)
+    return client.GetSubscriber(mojom::OnDeviceFeature::kTest)
                .unavailable_reason() ==
            mojom::ModelUnavailableReason::kNotSupported;
   });

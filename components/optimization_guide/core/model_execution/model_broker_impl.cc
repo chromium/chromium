@@ -7,8 +7,9 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/model_execution/on_device_features.h"
 #include "components/optimization_guide/core/model_execution/usage_tracker.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
 
 namespace optimization_guide {
 
@@ -25,31 +26,30 @@ void ModelBrokerImpl::BindBroker(
 }
 
 void ModelBrokerImpl::Subscribe(
-    mojom::ModelSubscriptionOptionsPtr opts,
+    mojom::ModelSubscriptionOptionsPtr options,
     mojo::PendingRemote<mojom::ModelSubscriber> subscriber) {
   ensure_init_callback_.Run(base::BindOnce(
       &ModelBrokerImpl::SubscribeInternal, weak_ptr_factory_.GetWeakPtr(),
-      std::move(opts), std::move(subscriber)));
+      std::move(options), std::move(subscriber)));
 }
 
 void ModelBrokerImpl::SubscribeInternal(
-    mojom::ModelSubscriptionOptionsPtr opts,
+    mojom::ModelSubscriptionOptionsPtr options,
     mojo::PendingRemote<mojom::ModelSubscriber> subscriber) {
-  auto feature = ToModelBasedCapabilityKey(opts->id);
-  if (opts->mark_used) {
-    usage_tracker_->OnDeviceEligibleFeatureUsed(feature);
+  if (options->mark_used) {
+    usage_tracker_->OnDeviceEligibleFeatureUsed(options->feature);
   }
-  GetSolutionProvider(feature).AddSubscriber(std::move(subscriber));
+  GetSolutionProvider(options->feature).AddSubscriber(std::move(subscriber));
 }
 
 ModelBrokerImpl::SolutionProvider& ModelBrokerImpl::GetSolutionProvider(
-    ModelBasedCapabilityKey feature) {
+    mojom::OnDeviceFeature feature) {
   return solution_providers_.emplace(feature, feature).first->second;
 }
 
-absl::flat_hash_set<ModelBasedCapabilityKey>
-ModelBrokerImpl::GetCapabilityKeys() const {
-  absl::flat_hash_set<ModelBasedCapabilityKey> keys;
+absl::flat_hash_set<mojom::OnDeviceFeature> ModelBrokerImpl::GetCapabilityKeys()
+    const {
+  absl::flat_hash_set<mojom::OnDeviceFeature> keys;
   for (const auto& [key, _] : solution_providers_) {
     keys.insert(key);
   }
@@ -60,7 +60,7 @@ ModelBrokerImpl::Solution::Solution() = default;
 ModelBrokerImpl::Solution::~Solution() = default;
 
 ModelBrokerImpl::SolutionProvider::SolutionProvider(
-    ModelBasedCapabilityKey feature)
+    mojom::OnDeviceFeature feature)
     : feature_(feature) {}
 
 ModelBrokerImpl::SolutionProvider::~SolutionProvider() = default;

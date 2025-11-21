@@ -31,6 +31,7 @@
 #include "components/optimization_guide/proto/features/tab_organization.pb.h"
 #include "components/optimization_guide/proto/substitution.pb.h"
 #include "components/optimization_guide/proto/text_safety_model_metadata.pb.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/on_device_model/public/cpp/service_client.h"
 #include "services/on_device_model/public/cpp/test_support/fake_service.h"
@@ -96,7 +97,7 @@ class SafetyClientFixture {
 
   std::unique_ptr<SafetyChecker> MakeSafetyChecker() {
     return safety_client_
-        .MakeSafetyChecker(ModelBasedCapabilityKey::kCompose, false)
+        .MakeSafetyChecker(mojom::OnDeviceFeature::kCompose, false)
         .value();
   }
 

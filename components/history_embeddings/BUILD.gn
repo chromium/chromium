@@ -37,6 +37,7 @@ static_library("history_embeddings") {
     "//components/keyed_service/core",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/optimization_guide/public/mojom",
     "//components/os_crypt/async/browser",
     "//components/page_content_annotations/core",
     "//components/passage_embeddings",

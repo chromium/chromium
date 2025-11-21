@@ -8,8 +8,8 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/optimization_guide/core/delivery/model_provider_registry.h"
-#include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#include "components/optimization_guide/core/model_execution/on_device_features.h"
 #include "components/optimization_guide/core/model_execution/test/fake_model_assets.h"
 #include "components/optimization_guide/core/model_execution/test/fake_model_broker.h"
 #include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
@@ -32,8 +32,8 @@ TEST(ModelBrokerClientTest, DisconnectedClient) {
   receiver.reset();
 
   base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
-  client.CreateSession(mojom::ModelBasedCapabilityKey::kTest,
-                       SessionConfigParams{}, future.GetCallback());
+  client.CreateSession(mojom::OnDeviceFeature::kTest, SessionConfigParams{},
+                       future.GetCallback());
 
   // A broker that is never connected should fail all CreateSession requests,
   // not leave the callbacks uncalled.
@@ -51,20 +51,20 @@ TEST(ModelBrokerClientTest, PendingClient) {
 
   ModelBrokerClient client(fake_broker.BindAndPassRemote(),
                            logger.GetWeakPtr());
-  EXPECT_FALSE(client.HasSubscriber(mojom::ModelBasedCapabilityKey::kTest));
+  EXPECT_FALSE(client.HasSubscriber(mojom::OnDeviceFeature::kTest));
 
   base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
   // Requesting test feature, but only compose has assets.
-  client.CreateSession(mojom::ModelBasedCapabilityKey::kTest,
-                       SessionConfigParams{}, future.GetCallback());
+  client.CreateSession(mojom::OnDeviceFeature::kTest, SessionConfigParams{},
+                       future.GetCallback());
 
   base::test::RunUntil([&]() {
-    return client.GetSubscriber(mojom::ModelBasedCapabilityKey::kTest)
+    return client.GetSubscriber(mojom::OnDeviceFeature::kTest)
                .unavailable_reason() ==
            mojom::ModelUnavailableReason::kPendingAssets;
   });
   EXPECT_FALSE(future.IsReady());
-  EXPECT_TRUE(client.HasSubscriber(mojom::ModelBasedCapabilityKey::kTest));
+  EXPECT_TRUE(client.HasSubscriber(mojom::OnDeviceFeature::kTest));
 }
 
 // Verify that CreateSession works when all the assets are provided.
@@ -88,8 +88,8 @@ TEST(ModelBrokerClientTest, ReadyWithSetupClient) {
   base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
 
   // Requesting the feature we've provided assets for should succeed.
-  client.CreateSession(mojom::ModelBasedCapabilityKey::kTest,
-                       SessionConfigParams{}, future.GetCallback());
+  client.CreateSession(mojom::OnDeviceFeature::kTest, SessionConfigParams{},
+                       future.GetCallback());
   ASSERT_TRUE(future.Take());
 }
 
@@ -113,7 +113,7 @@ TEST(ModelBrokerClientTest, UnavailableAdaptationRejectsSession) {
                                   logger.GetWeakPtr());
 
   base::test::TestFuture<std::unique_ptr<OnDeviceSession>> session_future;
-  broker_client.CreateSession(mojom::ModelBasedCapabilityKey::kTest,
+  broker_client.CreateSession(mojom::OnDeviceFeature::kTest,
                               SessionConfigParams{},
                               session_future.GetCallback());
 
@@ -126,8 +126,7 @@ TEST(ModelBrokerClientTest, UnavailableAdaptationRejectsSession) {
   // Provider removes the target when the server says no matching model is
   // available.
   broker.model_provider().RemoveModel(
-      *features::internal::GetOptimizationTargetForCapability(
-          ModelBasedCapabilityKey::kTest));
+      GetOptimizationTargetForFeature(mojom::OnDeviceFeature::kTest));
 
   // Session should resolve to unavailable.
   auto session = session_future.Take();

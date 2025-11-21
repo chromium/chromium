@@ -16,8 +16,8 @@
 #include "components/optimization_guide/core/delivery/model_provider_registry.h"
 #include "components/optimization_guide/core/delivery/test_model_info_builder.h"
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
-#include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#include "components/optimization_guide/core/model_execution/on_device_features.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
@@ -29,6 +29,7 @@
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -43,7 +44,7 @@ class OnDeviceAssetManagerTest : public testing::Test {
   OnDeviceAssetManagerTest() {
     // Mark a feature used so the base model component is registered.
     model_execution::prefs::RecordFeatureUsage(
-        &broker_.local_state(), ModelBasedCapabilityKey::kCompose);
+        &broker_.local_state(), mojom::OnDeviceFeature::kCompose);
   }
 
   void InstallBaseModel() {
@@ -203,7 +204,7 @@ TEST_F(OnDeviceAssetManagerTest, UpdateSafetyModel) {
 
     proto::TextSafetyModelMetadata model_metadata;
     model_metadata.add_feature_text_safety_configurations()->set_feature(
-        ToModelExecutionFeatureProto(ModelBasedCapabilityKey::kCompose));
+        ToModelExecutionFeatureProto(mojom::OnDeviceFeature::kCompose));
     std::unique_ptr<optimization_guide::ModelInfo> model_info =
         TestModelInfoBuilder()
             .SetVersion(40)
@@ -223,7 +224,7 @@ TEST_F(OnDeviceAssetManagerTest, UpdateSafetyModel) {
 
     proto::TextSafetyModelMetadata model_metadata;
     model_metadata.add_feature_text_safety_configurations()->set_feature(
-        ToModelExecutionFeatureProto(ModelBasedCapabilityKey::kCompose));
+        ToModelExecutionFeatureProto(mojom::OnDeviceFeature::kCompose));
     std::unique_ptr<optimization_guide::ModelInfo> model_info =
         TestModelInfoBuilder()
             .SetVersion(40)
@@ -263,11 +264,10 @@ TEST_F(OnDeviceAssetManagerTest,
       model_execution::prefs::localstate::kLastUsageByFeature);
   InstallBaseModel();
   CreateAssetManager();
-  auto target = *features::internal::GetOptimizationTargetForCapability(
-      ModelBasedCapabilityKey::kTest);
+  auto target = GetOptimizationTargetForFeature(mojom::OnDeviceFeature::kTest);
   EXPECT_FALSE(broker_.model_provider().IsRegistered(target));
   broker_.GetOrCreateBrokerState().usage_tracker().OnDeviceEligibleFeatureUsed(
-      ModelBasedCapabilityKey::kTest);
+      mojom::OnDeviceFeature::kTest);
   task_environment_.FastForwardBy(base::Seconds(1));
   EXPECT_TRUE(broker_.model_provider().IsRegistered(target));
 }

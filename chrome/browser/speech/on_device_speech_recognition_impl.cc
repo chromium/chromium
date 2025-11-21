@@ -31,8 +31,8 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/speech/on_device_speech_recognition_util.h"
-#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_broker_client.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
 #include "components/soda/soda_util.h"
 
 namespace {
@@ -229,11 +229,9 @@ void OnDeviceSpeechRecognitionImpl::InstallLanguageInternal(
     // Call `GetSubscriber()` to trigger the download and installation of
     // the model.
     // TODO(crbug.com/446260680): Use
-    // ModelBasedCapabilityKey::kOnDeviceSpeechRecognition.
+    // OnDeviceFeature::kOnDeviceSpeechRecognition.
     model_broker_client_
-        ->GetSubscriber(
-            static_cast<optimization_guide::mojom::ModelBasedCapabilityKey>(
-                optimization_guide::ModelBasedCapabilityKey::kPromptApi))
+        ->GetSubscriber(optimization_guide::mojom::OnDeviceFeature::kPromptApi)
         .WaitForClient(base::BindOnce(
             &OnDeviceSpeechRecognitionImpl::OnModelClientAvailable,
             weak_ptr_factory_.GetWeakPtr()));

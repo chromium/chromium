@@ -45,6 +45,7 @@
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
@@ -395,7 +396,7 @@ void AIManager::CanCreateLanguageModel(
     return;
   }
 
-  CanCreateSession(optimization_guide::ModelBasedCapabilityKey::kPromptApi,
+  CanCreateSession(optimization_guide::mojom::OnDeviceFeature::kPromptApi,
                    input_capabilities, std::move(callback));
 }
 
@@ -423,8 +424,7 @@ void AIManager::CreateLanguageModel(
     return;
   }
   model_broker_client_
-      ->GetSubscriber(
-          optimization_guide::mojom::ModelBasedCapabilityKey::kPromptApi)
+      ->GetSubscriber(optimization_guide::mojom::OnDeviceFeature::kPromptApi)
       .WaitForClient(base::BindOnce(&AIManager::CreateLanguageModelInternal,
                                     weak_factory_.GetWeakPtr(),
                                     std::move(client), std::move(options)));
@@ -494,8 +494,7 @@ void AIManager::CreateLanguageModelInternal(
 
   context_bound_object_set_.AddContextBoundObject(std::move(model));
 
-  tried_init_.insert(
-      optimization_guide::mojom::ModelBasedCapabilityKey::kPromptApi);
+  tried_init_.insert(optimization_guide::mojom::OnDeviceFeature::kPromptApi);
   // Eagerly initialize other features, now that one successfully initialized.
   MaybeTryEagerInit();
 }
@@ -514,7 +513,7 @@ void AIManager::CanCreateSummarizer(
                                 kUnavailableUnsupportedLanguage);
     return;
   }
-  CanCreateSession(optimization_guide::ModelBasedCapabilityKey::kSummarize,
+  CanCreateSession(optimization_guide::mojom::OnDeviceFeature::kSummarize,
                    on_device_model::Capabilities(), std::move(callback));
 }
 
@@ -554,10 +553,9 @@ void AIManager::CreateSummarizer(
           blink::mojom::AISummarizerCreateOptionsPtr>,
       weak_factory_.GetWeakPtr(), std::ref(context_bound_object_set_),
       std::move(options), std::move(initial_request), std::move(client));
-  tried_init_.insert(
-      optimization_guide::mojom::ModelBasedCapabilityKey::kSummarize);
+  tried_init_.insert(optimization_guide::mojom::OnDeviceFeature::kSummarize);
   model_broker_client_->CreateSession(
-      optimization_guide::mojom::ModelBasedCapabilityKey::kSummarize,
+      optimization_guide::mojom::OnDeviceFeature::kSummarize,
       ::optimization_guide::SessionConfigParams{}, std::move(callback));
 }
 
@@ -574,7 +572,7 @@ void AIManager::CanCreateProofreader(
                                 kUnavailableUnsupportedLanguage);
     return;
   }
-  CanCreateSession(optimization_guide::ModelBasedCapabilityKey::kProofreaderApi,
+  CanCreateSession(optimization_guide::mojom::OnDeviceFeature::kProofreaderApi,
                    on_device_model::Capabilities(), std::move(callback));
 }
 
@@ -610,9 +608,9 @@ void AIManager::CreateProofreader(
                      std::ref(context_bound_object_set_), std::move(options),
                      /*initial_request=*/std::nullopt, std::move(client));
   tried_init_.insert(
-      optimization_guide::mojom::ModelBasedCapabilityKey::kProofreaderApi);
+      optimization_guide::mojom::OnDeviceFeature::kProofreaderApi);
   model_broker_client_->CreateSession(
-      optimization_guide::mojom::ModelBasedCapabilityKey::kProofreaderApi,
+      optimization_guide::mojom::OnDeviceFeature::kProofreaderApi,
       ::optimization_guide::SessionConfigParams{}, std::move(callback));
 }
 
@@ -630,7 +628,7 @@ blink::mojom::AILanguageModelParamsPtr AIManager::GetLanguageModelParams() {
     return model_info;
   }
   auto sampling_params_config = service->GetSamplingParamsConfig(
-      optimization_guide::ModelBasedCapabilityKey::kPromptApi);
+      optimization_guide::mojom::OnDeviceFeature::kPromptApi);
 
   if (!sampling_params_config.has_value()) {
     return model_info;
@@ -642,7 +640,7 @@ blink::mojom::AILanguageModelParamsPtr AIManager::GetLanguageModelParams() {
       sampling_params_config->default_temperature;
 
   auto metadata = service->GetFeatureMetadata(
-      optimization_guide::ModelBasedCapabilityKey::kPromptApi);
+      optimization_guide::mojom::OnDeviceFeature::kPromptApi);
   if (metadata.has_value()) {
     auto parsed_metadata = AILanguageModel::ParseMetadata(metadata.value());
     if (parsed_metadata.has_max_sampling_params()) {
@@ -680,7 +678,7 @@ void AIManager::CanCreateWriter(blink::mojom::AIWriterCreateOptionsPtr options,
     return;
   }
   CanCreateSession(
-      optimization_guide::ModelBasedCapabilityKey::kWritingAssistanceApi,
+      optimization_guide::mojom::OnDeviceFeature::kWritingAssistanceApi,
       on_device_model::Capabilities(), std::move(callback));
 }
 
@@ -719,10 +717,10 @@ void AIManager::CreateWriter(
                                    blink::mojom::AIWriterCreateOptionsPtr>,
       weak_factory_.GetWeakPtr(), std::ref(context_bound_object_set_),
       std::move(options), std::move(initial_request), std::move(client));
-  tried_init_.insert(optimization_guide::mojom::ModelBasedCapabilityKey::
-                         kWritingAssistanceApi);
+  tried_init_.insert(
+      optimization_guide::mojom::OnDeviceFeature::kWritingAssistanceApi);
   model_broker_client_->CreateSession(
-      optimization_guide::mojom::ModelBasedCapabilityKey::kWritingAssistanceApi,
+      optimization_guide::mojom::OnDeviceFeature::kWritingAssistanceApi,
       ::optimization_guide::SessionConfigParams{}, std::move(callback));
 }
 
@@ -741,7 +739,7 @@ void AIManager::CanCreateRewriter(
     return;
   }
   CanCreateSession(
-      optimization_guide::ModelBasedCapabilityKey::kWritingAssistanceApi,
+      optimization_guide::mojom::OnDeviceFeature::kWritingAssistanceApi,
       on_device_model::Capabilities(), std::move(callback));
 }
 
@@ -780,15 +778,15 @@ void AIManager::CreateRewriter(
                                    blink::mojom::AIRewriterCreateOptionsPtr>,
       weak_factory_.GetWeakPtr(), std::ref(context_bound_object_set_),
       std::move(options), std::move(initial_request), std::move(client));
-  tried_init_.insert(optimization_guide::mojom::ModelBasedCapabilityKey::
-                         kWritingAssistanceApi);
+  tried_init_.insert(
+      optimization_guide::mojom::OnDeviceFeature::kWritingAssistanceApi);
   model_broker_client_->CreateSession(
-      optimization_guide::mojom::ModelBasedCapabilityKey::kWritingAssistanceApi,
+      optimization_guide::mojom::OnDeviceFeature::kWritingAssistanceApi,
       ::optimization_guide::SessionConfigParams{}, std::move(callback));
 }
 
 void AIManager::CanCreateSession(
-    optimization_guide::ModelBasedCapabilityKey capability,
+    optimization_guide::mojom::OnDeviceFeature capability,
     on_device_model::Capabilities capabilities,
     CanCreateLanguageModelCallback callback) {
   auto model_path =
@@ -824,7 +822,7 @@ void AIManager::CanCreateSession(
 }
 
 void AIManager::FinishCanCreateSession(
-    optimization_guide::ModelBasedCapabilityKey capability,
+    optimization_guide::mojom::OnDeviceFeature capability,
     on_device_model::Capabilities capabilities,
     CanCreateLanguageModelCallback callback,
     optimization_guide::OnDeviceModelEligibilityReason eligibility) {
@@ -931,18 +929,18 @@ void AIManager::MaybeTryEagerInit() {
   // and other features just need lightweight configuration downloads to become
   // readily available for usage on this device.
   AIContextBoundObjectSet empty(on_device_model::mojom::Priority::kBackground);
-  for (optimization_guide::mojom::ModelBasedCapabilityKey key :
-       {optimization_guide::mojom::ModelBasedCapabilityKey::kPromptApi,
-        optimization_guide::mojom::ModelBasedCapabilityKey::kSummarize,
-        optimization_guide::mojom::ModelBasedCapabilityKey::
-            kWritingAssistanceApi,
-        optimization_guide::mojom::ModelBasedCapabilityKey::kProofreaderApi}) {
+  for (optimization_guide::mojom::OnDeviceFeature feature :
+       {optimization_guide::mojom::OnDeviceFeature::kPromptApi,
+        optimization_guide::mojom::OnDeviceFeature::kSummarize,
+        optimization_guide::mojom::OnDeviceFeature::kWritingAssistanceApi,
+        optimization_guide::mojom::OnDeviceFeature::kProofreaderApi}) {
     // TODO(crbug.com/442015822): Gate on availability state.
     // TODO(crbug.com/447192715): Gate on runtime determined component size.
-    if (tried_init_.insert(key).second) {
+    if (tried_init_.insert(feature).second) {
       // TODO(crbug.com/447174556): Init features without creating sessions.
       model_broker_client_->CreateSession(
-          key, ::optimization_guide::SessionConfigParams{}, base::DoNothing());
+          feature, ::optimization_guide::SessionConfigParams{},
+          base::DoNothing());
     }
   }
 }

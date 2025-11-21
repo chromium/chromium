@@ -22,7 +22,7 @@
 namespace safe_browsing {
 
 namespace {
-using optimization_guide::mojom::ModelBasedCapabilityKey::kScamDetection;
+using optimization_guide::mojom::OnDeviceFeature::kScamDetection;
 }  // namespace
 
 class ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry {

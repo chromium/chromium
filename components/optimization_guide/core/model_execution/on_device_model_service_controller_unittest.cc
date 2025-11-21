@@ -26,14 +26,13 @@
 #include "build/build_config.h"
 #include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/optimization_guide/core/delivery/test_model_info_builder.h"
-#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_broker_client.h"
 #include "components/optimization_guide/core/model_execution/model_broker_state.h"
-#include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/model_execution/on_device_execution.h"
+#include "components/optimization_guide/core/model_execution/on_device_features.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_value_utils.h"
@@ -117,17 +116,17 @@ class FakeOnDeviceModelAvailabilityObserver
     : public OnDeviceModelAvailabilityObserver {
  public:
   explicit FakeOnDeviceModelAvailabilityObserver(
-      ModelBasedCapabilityKey expected_feature) {
+      mojom::OnDeviceFeature expected_feature) {
     expected_feature_ = expected_feature;
   }
 
   void OnDeviceModelAvailabilityChanged(
-      ModelBasedCapabilityKey feature,
+      mojom::OnDeviceFeature feature,
       OnDeviceModelEligibilityReason reason) override {
     EXPECT_EQ(expected_feature_, feature);
     reason_ = reason;
   }
-  ModelBasedCapabilityKey expected_feature_;
+  mojom::OnDeviceFeature expected_feature_;
   std::optional<OnDeviceModelEligibilityReason> reason_;
 };
 
@@ -141,7 +140,7 @@ std::string ConcatResponses(const std::vector<std::string>& responses) {
   return concat_responses;
 }
 
-constexpr auto kFeature = ModelBasedCapabilityKey::kCompose;
+constexpr auto kFeature = mojom::OnDeviceFeature::kCompose;
 
 class OnDeviceModelServiceControllerTest : public testing::Test {
  public:
@@ -163,9 +162,9 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
         {});
     // Mark a feature used so the model is eligible to install.
     model_execution::prefs::RecordFeatureUsage(
-        &broker_.local_state(), ModelBasedCapabilityKey::kCompose);
+        &broker_.local_state(), mojom::OnDeviceFeature::kCompose);
     model_execution::prefs::RecordFeatureUsage(&broker_.local_state(),
-                                               ModelBasedCapabilityKey::kTest);
+                                               mojom::OnDeviceFeature::kTest);
   }
 
   struct InitializeParams {
@@ -218,7 +217,7 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
                                                          logger_.GetWeakPtr());
   }
   std::unique_ptr<OnDeviceSession> CreateSession(
-      ModelBasedCapabilityKey feature,
+      mojom::OnDeviceFeature feature,
       const SessionConfigParams& params) {
     return broker_.GetOrCreateBrokerState().StartSession(feature, params,
                                                          logger_.GetWeakPtr());
@@ -459,10 +458,6 @@ TEST_F(OnDeviceModelServiceControllerTest, AdaptationModelExecutionSuccess) {
 // concurrently.
 TEST_F(OnDeviceModelServiceControllerTest,
        MultipleModelAdaptationExecutionSuccess) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{features::internal::kOnDeviceModelTestFeature, {}}}, {});
-
   FakeAdaptationAsset compose_asset({
       .config = SimpleComposeConfig(),
       .weight = 1015,
@@ -479,10 +474,10 @@ TEST_F(OnDeviceModelServiceControllerTest,
   });
 
   auto session_compose =
-      CreateSession(ModelBasedCapabilityKey::kCompose, SessionConfigParams{});
+      CreateSession(mojom::OnDeviceFeature::kCompose, SessionConfigParams{});
   ASSERT_TRUE(session_compose);
   auto session_test =
-      CreateSession(ModelBasedCapabilityKey::kTest, SessionConfigParams{});
+      CreateSession(mojom::OnDeviceFeature::kTest, SessionConfigParams{});
   ASSERT_TRUE(session_test);
 
   ResponseHolder compose_response;
@@ -515,10 +510,6 @@ TEST_F(OnDeviceModelServiceControllerTest,
 // A session using the base model should be able to execute concurrently
 // with one using and adaptation.
 TEST_F(OnDeviceModelServiceControllerTest, ModelAdaptationAndBaseModelSuccess) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{features::internal::kOnDeviceModelTestFeature, {}}}, {});
-
   FakeAdaptationAsset compose_asset({
       .config = SimpleComposeConfig(),
       .weight = 1015,
@@ -535,10 +526,10 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelAdaptationAndBaseModelSuccess) {
   });
 
   auto session_compose =
-      CreateSession(ModelBasedCapabilityKey::kCompose, SessionConfigParams{});
+      CreateSession(mojom::OnDeviceFeature::kCompose, SessionConfigParams{});
   ASSERT_TRUE(session_compose);
   auto session_test =
-      CreateSession(ModelBasedCapabilityKey::kTest, SessionConfigParams{});
+      CreateSession(mojom::OnDeviceFeature::kTest, SessionConfigParams{});
   ASSERT_TRUE(session_test);
 
   ResponseHolder compose_response;
@@ -566,34 +557,6 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelAdaptationAndBaseModelSuccess) {
                                   base::Seconds(1));
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(broker_.launcher().is_service_running());
-}
-
-TEST_F(OnDeviceModelServiceControllerTest,
-       SessionCreationFailsWhenExecutionNotEnabled) {
-  // Mark another feature used so registration still happens.
-  model_execution::prefs::RecordFeatureUsage(
-      &broker_.local_state(), ModelBasedCapabilityKey::kPromptApi);
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {}, {features::kOptimizationGuideComposeOnDeviceEval});
-
-  broker_.model_provider().UpdateModelImmediatelyForTesting(
-      proto::OPTIMIZATION_TARGET_COMPOSE,
-      std::make_unique<ModelInfo>(standard_assets_.compose.model_info()));
-  Initialize(InitializeParams{
-      .base_model_content = std::nullopt,
-      .safety = &standard_assets_.safety,
-      .language = &standard_assets_.language,
-  });
-
-  base::HistogramTester histogram_tester;
-  auto session =
-      CreateSession(ModelBasedCapabilityKey::kCompose, SessionConfigParams{});
-  EXPECT_FALSE(session);
-
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason.Compose",
-      OnDeviceModelEligibilityReason::kFeatureExecutionNotEnabled, 1);
 }
 
 // Without a base model available, sessions should fail to be created.
@@ -678,15 +641,11 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionBeforeAndAfterModelUpdate) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, SessionFailsForInvalidFeature) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::internal::kOnDeviceModelTestFeature);
-
   Initialize(standard_assets_);
   base::HistogramTester histogram_tester;
 
   EXPECT_FALSE(
-      CreateSession(ModelBasedCapabilityKey::kTest, SessionConfigParams{}));
+      CreateSession(mojom::OnDeviceFeature::kTest, SessionConfigParams{}));
 
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason."
@@ -700,7 +659,6 @@ TEST_F(OnDeviceModelServiceControllerTest, UpdatingSafetyModelEnablesModels) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
       {
-          {features::internal::kOnDeviceModelTestFeature, {}},
           {features::kTextSafetyClassifier,
            {{"on_device_retract_unsafe_content", "true"}}},
       },
@@ -717,11 +675,11 @@ TEST_F(OnDeviceModelServiceControllerTest, UpdatingSafetyModelEnablesModels) {
 
   // Compose capability can't start because it's missing safety model.
   EXPECT_FALSE(
-      CreateSession(ModelBasedCapabilityKey::kCompose, SessionConfigParams{}));
+      CreateSession(mojom::OnDeviceFeature::kCompose, SessionConfigParams{}));
 
   // Test capability starts because it doesn't require a safety model.
   auto test_session =
-      CreateSession(ModelBasedCapabilityKey::kTest, SessionConfigParams{});
+      CreateSession(mojom::OnDeviceFeature::kTest, SessionConfigParams{});
   EXPECT_TRUE(test_session);
 
   // Executing with test_session should force model to be loaded.
@@ -741,7 +699,7 @@ TEST_F(OnDeviceModelServiceControllerTest, UpdatingSafetyModelEnablesModels) {
   broker_.UpdateSafetyModel(safety_asset);
   task_environment_.RunUntilIdle();  // Wait for assets to be read from disk.
   auto compose_session =
-      CreateSession(ModelBasedCapabilityKey::kCompose, SessionConfigParams{});
+      CreateSession(mojom::OnDeviceFeature::kCompose, SessionConfigParams{});
   ASSERT_TRUE(compose_session);
 
   ResponseHolder compose_response;
@@ -2453,10 +2411,6 @@ TEST_F(OnDeviceModelServiceControllerTest, WaitUntilCompleteToCancel) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, TestAvailabilityObserver) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{features::internal::kOnDeviceModelTestFeature, {}}}, {});
-
   FakeAdaptationAsset test_asset_noweight({.config = UnsafeTestConfig()});
   Initialize({
       .base_model_content = std::nullopt,
@@ -2464,12 +2418,12 @@ TEST_F(OnDeviceModelServiceControllerTest, TestAvailabilityObserver) {
   });
 
   FakeOnDeviceModelAvailabilityObserver availability_observer_compose(
-      ModelBasedCapabilityKey::kCompose),
-      availability_observer_test(ModelBasedCapabilityKey::kTest);
+      mojom::OnDeviceFeature::kCompose),
+      availability_observer_test(mojom::OnDeviceFeature::kTest);
   broker_.GetOrCreateBrokerState().AddOnDeviceModelAvailabilityChangeObserver(
-      ModelBasedCapabilityKey::kCompose, &availability_observer_compose);
+      mojom::OnDeviceFeature::kCompose, &availability_observer_compose);
   broker_.GetOrCreateBrokerState().AddOnDeviceModelAvailabilityChangeObserver(
-      ModelBasedCapabilityKey::kTest, &availability_observer_test);
+      mojom::OnDeviceFeature::kTest, &availability_observer_test);
 
   broker_.InstallBaseModel(std::make_unique<FakeBaseModelAsset>());
   task_environment_.RunUntilIdle();
@@ -2611,14 +2565,14 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelValidationBlocksSession) {
   });
 
   EXPECT_EQ(broker_.GetOrCreateBrokerState().GetOnDeviceModelEligibility(
-                ModelBasedCapabilityKey::kCompose),
+                mojom::OnDeviceFeature::kCompose),
             OnDeviceModelEligibilityReason::kValidationFailed);
 
   broker_.InstallBaseModel(FakeBaseModelAsset::Content{
       .config = ExecutionConfigWithValidation(WillPassValidationConfig())});
   task_environment_.FastForwardBy(base::Seconds(30) + base::Milliseconds(1));
   EXPECT_EQ(broker_.GetOrCreateBrokerState().GetOnDeviceModelEligibility(
-                ModelBasedCapabilityKey::kCompose),
+                mojom::OnDeviceFeature::kCompose),
             OnDeviceModelEligibilityReason::kSuccess);
 }
 
@@ -2638,11 +2592,11 @@ TEST_F(OnDeviceModelServiceControllerTest,
       .adaptations = {&compose_asset},
   });
   EXPECT_EQ(broker_.GetOrCreateBrokerState().GetOnDeviceModelEligibility(
-                ModelBasedCapabilityKey::kCompose),
+                mojom::OnDeviceFeature::kCompose),
             OnDeviceModelEligibilityReason::kValidationPending);
   task_environment_.FastForwardBy(base::Seconds(30) + base::Milliseconds(1));
   EXPECT_EQ(broker_.GetOrCreateBrokerState().GetOnDeviceModelEligibility(
-                ModelBasedCapabilityKey::kCompose),
+                mojom::OnDeviceFeature::kCompose),
             OnDeviceModelEligibilityReason::kSuccess);
 }
 
@@ -2670,7 +2624,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
     ASSERT_TRUE(base::test::RunUntil([&] {
       OnDeviceModelEligibilityReason reason =
           broker_.GetOrCreateBrokerState().GetOnDeviceModelEligibility(
-              ModelBasedCapabilityKey::kCompose);
+              mojom::OnDeviceFeature::kCompose);
       return reason == OnDeviceModelEligibilityReason::kSuccess;
     }));
 
@@ -3092,7 +3046,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ImageExecutionSuccess) {
   using NestedProto = ::optimization_guide::proto::ExampleForTestingMessage;
   proto::OnDeviceModelExecutionFeatureConfig config;
   config.set_feature(
-      ToModelExecutionFeatureProto(ModelBasedCapabilityKey::kCompose));
+      ToModelExecutionFeatureProto(mojom::OnDeviceFeature::kCompose));
   auto& input_config = *config.mutable_input_config();
   input_config.set_request_base_name(
       proto::ExampleForTestingRequest().GetTypeName());
@@ -3176,8 +3130,8 @@ TEST_F(OnDeviceModelServiceControllerTest, KeepInputOnExtension) {
       .config =
           []() {
             proto::OnDeviceModelExecutionFeatureConfig config;
-            config.set_feature(ToModelExecutionFeatureProto(
-                ModelBasedCapabilityKey::kCompose));
+            config.set_feature(
+                ToModelExecutionFeatureProto(mojom::OnDeviceFeature::kCompose));
             *config.mutable_input_config() = TestInputConfig(
                 ForEachRepeated(FormatTestMessage()), EmptySubstitution());
             *config.mutable_output_config() = ResponseHolderOutputConfig();
@@ -3276,8 +3230,8 @@ TEST_F(OnDeviceModelServiceControllerTest, OmitEmptyInputs) {
       .config =
           []() {
             proto::OnDeviceModelExecutionFeatureConfig config;
-            config.set_feature(ToModelExecutionFeatureProto(
-                ModelBasedCapabilityKey::kCompose));
+            config.set_feature(
+                ToModelExecutionFeatureProto(mojom::OnDeviceFeature::kCompose));
             auto& input_config = *config.mutable_input_config();
             input_config.set_request_base_name(
                 proto::ExampleForTestingRequest().GetTypeName());
@@ -3520,7 +3474,7 @@ TEST_F(OnDeviceModelServiceControllerTest, Broker) {
                                   logger.GetWeakPtr());
 
   base::test::TestFuture<std::unique_ptr<OnDeviceSession>> session_future;
-  broker_client.CreateSession(mojom::ModelBasedCapabilityKey::kCompose,
+  broker_client.CreateSession(mojom::OnDeviceFeature::kCompose,
                               SessionConfigParams{},
                               session_future.GetCallback());
 
@@ -3550,7 +3504,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
   ModelBrokerClient broker_client(pending_broker.InitWithNewPipeAndPassRemote(),
                                   logger.GetWeakPtr());
   base::test::TestFuture<std::unique_ptr<OnDeviceSession>> session_future;
-  broker_client.CreateSession(mojom::ModelBasedCapabilityKey::kCompose,
+  broker_client.CreateSession(mojom::OnDeviceFeature::kCompose,
                               SessionConfigParams{},
                               session_future.GetCallback());
   broker_.GetOrCreateBrokerState().BindModelBroker(std::move(pending_broker));
@@ -3759,7 +3713,6 @@ TEST_F(OnDeviceModelServiceControllerTest, EvictModelForRankUpdate) {
       {
           {features::kOptimizationGuideOnDeviceModel,
            {{"allowed_adaptation_ranks", "1,32"}}},
-          {features::internal::kOnDeviceModelTestFeature, {}},
       },
       /*disabled_features=*/{});
   std::vector<uint32_t> initial_ranks = {1, 32};
