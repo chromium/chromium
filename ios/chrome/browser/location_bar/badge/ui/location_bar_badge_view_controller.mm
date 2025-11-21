@@ -617,7 +617,7 @@ const CGFloat kUnreadIndicatorViewHeight = 6.0;
   if ([_badgeConfig isContextualPanelEntrypointBadge]) {
     [self.contextualPanelEntryPointMutator entrypointTapped];
   } else {
-    [self.mutator badgeTapped:_badgeConfig.badgeType];
+    [self.mutator badgeTapped:_badgeConfig];
   }
 }
 

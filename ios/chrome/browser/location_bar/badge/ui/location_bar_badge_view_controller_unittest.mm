@@ -60,7 +60,7 @@ TEST_F(LocationBarBadgeViewControllerTest, BadgeTapped) {
       accessibilityLabel:@"Overflow"
               badgeImage:[[UIImage alloc] init]];
   [view_controller_ setBadgeConfig:config];
-  OCMExpect([mock_mutator_ badgeTapped:LocationBarBadgeType::kOverflow]);
+  OCMExpect([mock_mutator_ badgeTapped:config]);
   [view_controller_ userTappedBadge];
   EXPECT_OCMOCK_VERIFY(mock_mutator_);
 }

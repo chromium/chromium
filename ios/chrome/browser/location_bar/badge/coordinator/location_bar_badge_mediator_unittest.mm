@@ -18,6 +18,7 @@
 #import "components/signin/public/identity_manager/identity_test_utils.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service_factory.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/location_bar/badge/coordinator/location_bar_badge_mediator_delegate.h"
@@ -63,8 +64,9 @@ std::unique_ptr<KeyedService> CreateTestTracker(ProfileIOS* context) {
 class LocationBarBadgeMediatorTest : public PlatformTest {
  protected:
   LocationBarBadgeMediatorTest() {
-    scoped_feature_list.InitWithFeatures(
-        /*enabled_features=*/{kPageActionMenu},
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {/*enabled_features=*/{kPageActionMenu, {}},
+         {kAskGeminiChip, {{kAskGeminiChipPrepopulateFloaty, "true"}}}},
         /*disabled_features=*/{});
 
     // Set up test factories.
@@ -97,6 +99,7 @@ class LocationBarBadgeMediatorTest : public PlatformTest {
     // Create WebState to pass Gemini eligibility.
     std::unique_ptr<web::FakeWebState> web_state =
         std::make_unique<web::FakeWebState>();
+    BwgTabHelper::CreateForWebState(web_state.get());
     web_state->SetBrowserState(profile_.get());
     web_state->SetCurrentURL(GURL("https://www.google.com"));
     web_state->SetContentsMimeType("text/html");
@@ -177,16 +180,8 @@ class LocationBarBadgeMediatorTest : public PlatformTest {
   id mock_bwg_command_handler_;
   id mock_consumer_;
   id mock_delegate_;
-  base::test::ScopedFeatureList scoped_feature_list;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
-
-// Tests that the consumer is updated when the Ask Gemini chip is tapped.
-TEST_F(LocationBarBadgeMediatorTest, AskGeminiChipTapped) {
-  OCMExpect([mock_bwg_command_handler_
-      startBWGFlowWithEntryPoint:bwg::EntryPoint::OmniboxChip]);
-  [mediator_ badgeTapped:LocationBarBadgeType::kGeminiContextualCueChip];
-  EXPECT_OCMOCK_VERIFY(mock_bwg_command_handler_);
-}
 
 // Tests that the consumer is updated when the badge configuration is updated.
 TEST_F(LocationBarBadgeMediatorTest, TestBadgeUpdateRequest) {
@@ -269,8 +264,15 @@ TEST_F(LocationBarBadgeMediatorTest, TestGeminiChipTapped) {
   EXPECT_CALL(
       *mock_tracker_,
       NotifyEvent(feature_engagement::events::kIOSGeminiContextualCueChipUsed));
-  [mediator_ badgeTapped:LocationBarBadgeType::kGeminiContextualCueChip];
+  LocationBarBadgeConfiguration* config =
+      CreateBadgeConfiguration(LocationBarBadgeType::kGeminiContextualCueChip);
+  config.badgeText = kTestAccessibilityLabel;
+  [mediator_ badgeTapped:config];
   EXPECT_OCMOCK_VERIFY(mock_bwg_command_handler);
+
+  web::WebState* activeWebState = web_state_list_->GetActiveWebState();
+  BwgTabHelper* BWGTabHelper = BwgTabHelper::FromWebState(activeWebState);
+  ASSERT_TRUE(BWGTabHelper->GetContextualCueLabel().length != 0);
 }
 // Tests that the Gemini contextual cue chip is not shown if it was recently
 // displayed.

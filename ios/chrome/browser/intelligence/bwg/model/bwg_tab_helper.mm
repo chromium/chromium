@@ -206,6 +206,14 @@ void BwgTabHelper::SetPageLoadedCallback(base::OnceClosure callback) {
   page_loaded_callback_ = std::move(callback);
 }
 
+NSString* BwgTabHelper::GetContextualCueLabel() {
+  return contextual_cue_label_;
+}
+
+void BwgTabHelper::SetContextualCueLabel(NSString* cue_label) {
+  contextual_cue_label_ = cue_label;
+}
+
 bool BwgTabHelper::GetIsBwgSessionActiveInBackground() {
   return is_bwg_session_active_in_background_;
 }

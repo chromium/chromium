@@ -154,6 +154,7 @@ void BwgBrowserAgent::PresentBwgOverlayWithState(
       bwg_tab_helper->IsLastInteractionUrlDifferent();
   config.shouldShowSuggestionChips =
       bwg_tab_helper->ShouldShowSuggestionChips();
+  config.contextualCueChipLabel = bwg_tab_helper->GetContextualCueLabel();
 
   // Set the location permission state.
   // TODO(crbug.com/426207968): Populate with actual value.

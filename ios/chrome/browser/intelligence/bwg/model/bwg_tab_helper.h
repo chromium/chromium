@@ -99,6 +99,12 @@ class BwgTabHelper : public web::WebStateObserver,
   // Sets a callback to be run when the page has finished loading.
   void SetPageLoadedCallback(base::OnceClosure callback);
 
+  // Getter `contextual_cue_label_`.
+  NSString* GetContextualCueLabel();
+
+  // Setter for `contextual_cue_label_`.
+  void SetContextualCueLabel(NSString* cue_label);
+
   // WebStateObserver:
   void WasShown(web::WebState* web_state) override;
   void WasHidden(web::WebState* web_state) override;
@@ -227,6 +233,9 @@ class BwgTabHelper : public web::WebStateObserver,
 
   // Callback to be run when the page has finished loading.
   base::OnceClosure page_loaded_callback_;
+
+  // Contextual cue label generated for Gemini contextual cue metadata.
+  NSString* contextual_cue_label_;
 
   base::WeakPtrFactory<BwgTabHelper> weak_ptr_factory_{this};
 };

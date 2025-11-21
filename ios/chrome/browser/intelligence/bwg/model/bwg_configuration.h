@@ -83,6 +83,9 @@ class PageContext;
 // Whether the zero-state suggestion chips should be shown.
 @property(nonatomic, assign) BOOL shouldShowSuggestionChips;
 
+// Label displayed from a Gemini contextual cue chip.
+@property(nonatomic, copy) NSString* contextualCueChipLabel;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_BWG_CONFIGURATION_H_

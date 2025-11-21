@@ -12,6 +12,7 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/location_bar/badge/coordinator/location_bar_badge_mediator_delegate.h"
@@ -159,12 +160,19 @@ const int kTransitionTimeInSeconds = 2;
   [self.consumer highlightBadge:NO];
 }
 
-- (void)badgeTapped:(LocationBarBadgeType)badgeType {
+- (void)badgeTapped:(LocationBarBadgeConfiguration*)badgeConfig {
   // Cancel any pending transition timers since user interacted with the badge.
   [self resetTimersAndUIStateAnimated:YES];
 
-  switch (badgeType) {
+  switch (badgeConfig.badgeType) {
     case LocationBarBadgeType::kGeminiContextualCueChip:
+      if (IsAskGeminiChipPrepopulateFloatyEnabled()) {
+        BwgTabHelper* BWGTabHelper =
+            BwgTabHelper::FromWebState(_activeWebState);
+        if (BWGTabHelper) {
+          BWGTabHelper->SetContextualCueLabel(badgeConfig.badgeText);
+        }
+      }
       [self.BWGCommandHandler
           startBWGFlowWithEntryPoint:bwg::EntryPoint::OmniboxChip];
       _tracker->NotifyEvent(
