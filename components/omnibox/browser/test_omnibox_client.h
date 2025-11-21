@@ -89,6 +89,8 @@ class TestOmniboxClient final : public testing::NiceMock<OmniboxClient> {
   MOCK_METHOD(bookmarks::BookmarkModel*, GetBookmarkModel, ());
   MOCK_METHOD(PrefService*, GetPrefs, (), (override));
   MOCK_METHOD(const PrefService*, GetPrefs, (), (const, override));
+  MOCK_METHOD(bool, IsAimPopupEnabled, (), (const, override));
+  MOCK_METHOD(void, OpenUrl, (GURL), (override));
 
   base::WeakPtr<OmniboxClient> AsWeakPtr() override;
 
