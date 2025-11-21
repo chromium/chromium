@@ -37,7 +37,8 @@ enum class MediaStreamRequestResult2 {
   kStartTimeout = 18,
   kPermissionDeniedByUser = 19,
   kAudioDeviceSocketError = 20,
-  kMaxValue = kAudioDeviceSocketError
+  kMultiCaptureNotSupported = 21,
+  kMaxValue = kMultiCaptureNotSupported
 };
 
 MediaStreamRequestResult2 MapResultToResult2(
@@ -68,6 +69,8 @@ MediaStreamRequestResult2 MapResultToResult2(
       return MediaStreamRequestResult2::kTrackStartFailureAudio;
     case MediaStreamRequestResult::TRACK_START_FAILURE_VIDEO:
       return MediaStreamRequestResult2::kTrackStartFailureVideo;
+    case MediaStreamRequestResult::MULTI_CAPTURE_NOT_SUPPORTED:
+      return MediaStreamRequestResult2::kMultiCaptureNotSupported;
     case MediaStreamRequestResult::NOT_SUPPORTED:
       return MediaStreamRequestResult2::kNotSupported;
     case MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN:

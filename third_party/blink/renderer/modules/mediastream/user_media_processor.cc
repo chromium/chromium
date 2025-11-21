@@ -141,6 +141,8 @@ const char* MediaStreamRequestResultToString(MediaStreamRequestResult value) {
       return "TRACK_START_FAILURE_AUDIO";
     case MediaStreamRequestResult::TRACK_START_FAILURE_VIDEO:
       return "TRACK_START_FAILURE_VIDEO";
+    case MediaStreamRequestResult::MULTI_CAPTURE_NOT_SUPPORTED:
+      return "MULTI_CAPTURE_NOT_SUPPORTED";
     case MediaStreamRequestResult::NOT_SUPPORTED:
       return "NOT_SUPPORTED";
     case MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN:
@@ -351,6 +353,7 @@ String ErrorCodeToString(MediaStreamRequestResult result) {
       return "Could not start audio source";
     case MediaStreamRequestResult::TRACK_START_FAILURE_VIDEO:
       return "Could not start video source";
+    case MediaStreamRequestResult::MULTI_CAPTURE_NOT_SUPPORTED:
     case MediaStreamRequestResult::NOT_SUPPORTED:
       return "Not supported";
     case MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN:

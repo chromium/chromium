@@ -104,8 +104,7 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
       base::OnceCallback<void(MediaDeviceSaltAndOriginCallback)>
           get_salt_and_origin_cb,
       base::OnceCallback<void(GenerateStreamsUIThreadCheckResult)>
-          result_callback,
-      bool result);
+          result_callback);
 
   const mojo::Remote<blink::mojom::MediaStreamDeviceObserver>&
   GetMediaStreamDeviceObserver();

@@ -279,6 +279,8 @@ const char* RequestResultToString(
       return "PERMISSION_DENIED";
     case blink::mojom::MediaStreamRequestResult::PERMISSION_DISMISSED:
       return "PERMISSION_DISMISSED";
+    case blink::mojom::MediaStreamRequestResult::MULTI_CAPTURE_NOT_SUPPORTED:
+      return "MULTI_CAPTURE_NOT_SUPPORTED";
     case blink::mojom::MediaStreamRequestResult::INVALID_STATE:
       return "INVALID_STATE";
     case blink::mojom::MediaStreamRequestResult::NO_HARDWARE:
