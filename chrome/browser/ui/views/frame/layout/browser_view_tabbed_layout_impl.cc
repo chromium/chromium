@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/frame/layout/browser_view_layout_impl.h"
+#include "chrome/browser/ui/views/frame/layout/browser_view_tabbed_layout_impl.h"
 
 #include <algorithm>
 #include <memory>
@@ -35,7 +35,7 @@ static constexpr int kLoadingBarOffset =
 
 }  // namespace
 
-BrowserViewLayoutImpl::BrowserViewLayoutImpl(
+BrowserViewTabbedLayoutImpl::BrowserViewTabbedLayoutImpl(
     std::unique_ptr<BrowserViewLayoutDelegate> delegate,
     Browser* browser,
     BrowserViewLayoutViews views)
@@ -43,10 +43,10 @@ BrowserViewLayoutImpl::BrowserViewLayoutImpl(
                                   browser,
                                   std::move(views)) {}
 
-BrowserViewLayoutImpl::~BrowserViewLayoutImpl() = default;
+BrowserViewTabbedLayoutImpl::~BrowserViewTabbedLayoutImpl() = default;
 
-BrowserViewLayoutImpl::TopSeparatorType
-BrowserViewLayoutImpl::GetTopSeparatorType() const {
+BrowserViewTabbedLayoutImpl::TopSeparatorType
+BrowserViewTabbedLayoutImpl::GetTopSeparatorType() const {
   if (!delegate().IsToolbarVisible() && !delegate().IsBookmarkBarVisible()) {
     return TopSeparatorType::kNone;
   }
@@ -89,8 +89,8 @@ BrowserViewLayoutImpl::GetTopSeparatorType() const {
   return TopSeparatorType::kMultiContents;
 }
 
-std::pair<gfx::Size, gfx::Size> BrowserViewLayoutImpl::GetMinimumTabStripSize()
-    const {
+std::pair<gfx::Size, gfx::Size>
+BrowserViewTabbedLayoutImpl::GetMinimumTabStripSize() const {
   switch (GetTabStripType()) {
     case TabStripType::kHorizontal:
       return std::make_pair(gfx::Size(),
@@ -108,7 +108,7 @@ std::pair<gfx::Size, gfx::Size> BrowserViewLayoutImpl::GetMinimumTabStripSize()
   }
 }
 
-gfx::Size BrowserViewLayoutImpl::GetMinimumMainAreaSize() const {
+gfx::Size BrowserViewTabbedLayoutImpl::GetMinimumMainAreaSize() const {
   const gfx::Size toolbar_size = views().toolbar->GetMinimumSize();
   const gfx::Size bookmark_bar_size =
       (views().bookmark_bar && views().bookmark_bar->GetVisible())
@@ -134,8 +134,8 @@ gfx::Size BrowserViewLayoutImpl::GetMinimumMainAreaSize() const {
   return gfx::Size(width, height);
 }
 
-BrowserViewLayoutImpl::TabStripType BrowserViewLayoutImpl::GetTabStripType()
-    const {
+BrowserViewTabbedLayoutImpl::TabStripType
+BrowserViewTabbedLayoutImpl::GetTabStripType() const {
   if (views().webui_tab_strip && views().webui_tab_strip->GetVisible()) {
     return TabStripType::kWebUi;
   }
@@ -146,7 +146,8 @@ BrowserViewLayoutImpl::TabStripType BrowserViewLayoutImpl::GetTabStripType()
                                          : TabStripType::kNone;
 }
 
-gfx::Size BrowserViewLayoutImpl::GetMinimumSize(const views::View* host) const {
+gfx::Size BrowserViewTabbedLayoutImpl::GetMinimumSize(
+    const views::View* host) const {
   // This is a simplified version of the same method in
   // `BrowserViewLayoutImplOld` that assumes a standard browser.
   const auto [vertical_tabstrip_size, horizontal_tabstrip_size] =
@@ -183,8 +184,8 @@ gfx::Size BrowserViewLayoutImpl::GetMinimumSize(const views::View* host) const {
   return gfx::Size(min_width, min_height);
 }
 
-BrowserViewLayoutImpl::ProposedLayout
-BrowserViewLayoutImpl::CalculateProposedLayout(
+BrowserViewTabbedLayoutImpl::ProposedLayout
+BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
     const BrowserLayoutParams& browser_params) const {
   // TODO(https://crbug.com/453717426): Consider caching layouts of the same
   // size if no `InvalidateLayout()` has happened.
@@ -534,7 +535,7 @@ BrowserViewLayoutImpl::CalculateProposedLayout(
   return layout;
 }
 
-gfx::Rect BrowserViewLayoutImpl::CalculateTopContainerLayout(
+gfx::Rect BrowserViewTabbedLayoutImpl::CalculateTopContainerLayout(
     ProposedLayout& layout,
     BrowserLayoutParams params,
     bool needs_exclusion) const {

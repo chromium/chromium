@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_FRAME_LAYOUT_BROWSER_VIEW_LAYOUT_IMPL_H_
-#define CHROME_BROWSER_UI_VIEWS_FRAME_LAYOUT_BROWSER_VIEW_LAYOUT_IMPL_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_FRAME_LAYOUT_BROWSER_VIEW_TABBED_LAYOUT_IMPL_H_
+#define CHROME_BROWSER_UI_VIEWS_FRAME_LAYOUT_BROWSER_VIEW_TABBED_LAYOUT_IMPL_H_
 
 #include <optional>
 #include <utility>
@@ -22,12 +22,13 @@ class View;
 
 // Provides a specialized layout implementation for normal tabbed browsers.
 // Should not be used for other types of browsers.
-class BrowserViewLayoutImpl : public BrowserViewLayoutImplCommon {
+class BrowserViewTabbedLayoutImpl : public BrowserViewLayoutImplCommon {
  public:
-  BrowserViewLayoutImpl(std::unique_ptr<BrowserViewLayoutDelegate> delegate,
-                        Browser* browser,
-                        BrowserViewLayoutViews views);
-  ~BrowserViewLayoutImpl() override;
+  BrowserViewTabbedLayoutImpl(
+      std::unique_ptr<BrowserViewLayoutDelegate> delegate,
+      Browser* browser,
+      BrowserViewLayoutViews views);
+  ~BrowserViewTabbedLayoutImpl() override;
 
  protected:
   // BrowserViewLayoutImplCommon:
@@ -60,4 +61,4 @@ class BrowserViewLayoutImpl : public BrowserViewLayoutImplCommon {
   TopSeparatorType GetTopSeparatorType() const;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_FRAME_LAYOUT_BROWSER_VIEW_LAYOUT_IMPL_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_FRAME_LAYOUT_BROWSER_VIEW_TABBED_LAYOUT_IMPL_H_
