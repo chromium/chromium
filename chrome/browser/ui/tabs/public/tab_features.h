@@ -244,16 +244,6 @@ class TabFeatures {
     return memory_saver_chip_controller_.get();
   }
 
-  commerce::PriceInsightsPageActionViewController*
-  commerce_price_insights_page_action_view_controller() {
-    return commerce_price_insights_page_action_view_controller_.get();
-  }
-
-  commerce::DiscountsPageActionViewController*
-  commerce_discounts_page_action_view_controller() {
-    return commerce_discounts_page_action_view_controller_.get();
-  }
-
   LensOverlayController* lens_overlay_controller();
   const LensOverlayController* lens_overlay_controller() const;
 

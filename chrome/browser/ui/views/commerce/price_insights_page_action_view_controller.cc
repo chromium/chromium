@@ -11,19 +11,29 @@
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace commerce {
+
+DEFINE_USER_DATA(PriceInsightsPageActionViewController);
 
 PriceInsightsPageActionViewController::PriceInsightsPageActionViewController(
     tabs::TabInterface& tab_interface,
     page_actions::PageActionController& page_action_controller)
     : tab_interface_(tab_interface),
-      page_action_controller_(page_action_controller) {
+      page_action_controller_(page_action_controller),
+      scoped_unowned_user_data_(tab_interface.GetUnownedUserDataHost(), *this) {
   CHECK(IsPageActionMigrated(PageActionIconType::kPriceInsights));
 }
 
 PriceInsightsPageActionViewController::
     ~PriceInsightsPageActionViewController() = default;
+
+// static
+PriceInsightsPageActionViewController*
+PriceInsightsPageActionViewController::From(tabs::TabInterface& tab) {
+  return Get(tab.GetUnownedUserDataHost());
+}
 
 void PriceInsightsPageActionViewController::UpdatePageActionIcon(
     bool should_shown_icon,

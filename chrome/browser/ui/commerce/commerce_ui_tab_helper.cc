@@ -24,8 +24,10 @@
 #include "chrome/browser/ui/commerce/price_tracking_page_action_controller.h"
 #include "chrome/browser/ui/commerce/product_specifications_entry_point_controller.h"
 #include "chrome/browser/ui/commerce/product_specifications_page_action_controller.h"
+#include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/commerce/discounts_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/commerce/discounts_page_action_view_controller.h"
@@ -255,13 +257,10 @@ void CommerceUiTabHelper::TriggerUpdateForIconView() {
 
 void CommerceUiTabHelper::UpdatePriceInsightsIconView() {
   if (IsPageActionMigrated(PageActionIconType::kPriceInsights)) {
-    tab()
-        .GetTabFeatures()
-        ->commerce_price_insights_page_action_view_controller()
-        ->UpdatePageActionIcon(
-            ShouldShowPriceInsightsIconView(),
-            ShouldExpandPageActionIcon(PageActionIconType::kPriceInsights),
-            GetPriceInsightsIconLabelTypeForPage());
+    PriceInsightsPageActionViewController::From(tab())->UpdatePageActionIcon(
+        ShouldShowPriceInsightsIconView(),
+        ShouldExpandPageActionIcon(PageActionIconType::kPriceInsights),
+        GetPriceInsightsIconLabelTypeForPage());
     return;
   }
 
@@ -521,6 +520,10 @@ void CommerceUiTabHelper::UpdatePriceTrackingIconView() {
 }
 
 void CommerceUiTabHelper::UpdateProductSpecificationsIconView() {
+  // Product specification is being removed as part of the migration.
+  if (base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
+    return;
+  }
   UpdatePageActionIconView(PageActionIconType::kProductSpecifications);
 }
 
@@ -596,12 +599,9 @@ void CommerceUiTabHelper::ShowDiscountBubble(
 
 void CommerceUiTabHelper::UpdateDiscountsIconView() {
   if (IsPageActionMigrated(PageActionIconType::kDiscounts)) {
-    tab()
-        .GetTabFeatures()
-        ->commerce_discounts_page_action_view_controller()
-        ->UpdatePageIcon(
-            ShouldShowDiscountsIconView(),
-            ShouldExpandPageActionIcon(PageActionIconType::kDiscounts));
+    DiscountsPageActionViewController::From(tab())->UpdatePageIcon(
+        ShouldShowDiscountsIconView(),
+        ShouldExpandPageActionIcon(PageActionIconType::kDiscounts));
     return;
   }
 

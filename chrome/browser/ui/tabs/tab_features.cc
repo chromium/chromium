@@ -212,8 +212,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 
     if (IsPageActionMigrated(PageActionIconType::kPriceInsights)) {
       commerce_price_insights_page_action_view_controller_ =
-          std::make_unique<commerce::PriceInsightsPageActionViewController>(
-              tab, *page_action_controller_);
+          GetUserDataFactory()
+              .CreateInstance<commerce::PriceInsightsPageActionViewController>(
+                  tab, tab, *page_action_controller_);
     }
 
     if (IsPageActionMigrated(PageActionIconType::kManagePasswords)) {
@@ -367,8 +368,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   if (commerce_ui_tab_helper_) {
     if (IsPageActionMigrated(PageActionIconType::kDiscounts)) {
       commerce_discounts_page_action_view_controller_ =
-          std::make_unique<commerce::DiscountsPageActionViewController>(
-              tab, *page_action_controller_, *commerce_ui_tab_helper_);
+          GetUserDataFactory()
+              .CreateInstance<commerce::DiscountsPageActionViewController>(
+                  tab, tab, *page_action_controller_, *commerce_ui_tab_helper_);
     }
   }
 

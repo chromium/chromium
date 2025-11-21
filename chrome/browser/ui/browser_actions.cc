@@ -535,9 +535,11 @@ void BrowserActions::InitializeBrowserActions() {
                 auto* tab_features =
                     bwi->GetActiveTabInterface()->GetTabFeatures();
                 CHECK(tab_features);
-
-                tab_features->commerce_discounts_page_action_view_controller()
-                    ->MaybeShowBubble(/*from_user=*/true);
+                auto* page_action_controller =
+                    commerce::DiscountsPageActionViewController::From(
+                        *bwi->GetActiveTabInterface());
+                CHECK(page_action_controller);
+                page_action_controller->MaybeShowBubble(/*from_user=*/true);
 
                 auto* commerce_ui_tab_helper =
                     tab_features->commerce_ui_tab_helper();

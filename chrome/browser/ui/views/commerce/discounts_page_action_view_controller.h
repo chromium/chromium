@@ -10,6 +10,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/page_action/page_action_observer.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class ScopedWindowCallToAction;
 
@@ -30,6 +31,8 @@ class CommerceUiTabHelper;
 class DiscountsPageActionViewController final
     : public page_actions::PageActionObserver {
  public:
+  DECLARE_USER_DATA(DiscountsPageActionViewController);
+
   explicit DiscountsPageActionViewController(
       tabs::TabInterface& tab_interface,
       page_actions::PageActionController& page_action_controller,
@@ -41,6 +44,8 @@ class DiscountsPageActionViewController final
       const DiscountsPageActionViewController&) = delete;
 
   ~DiscountsPageActionViewController() override;
+
+  static DiscountsPageActionViewController* From(tabs::TabInterface& tab);
 
   // Updates icon/chip visibility based on the given argument. It do not handle
   // bubble display.
@@ -74,6 +79,9 @@ class DiscountsPageActionViewController final
   // label is expanded. Automatically clears when reset or when the controller
   // is destroyed.
   std::unique_ptr<ScopedWindowCallToAction> scoped_window_call_to_action_ptr_;
+
+  ui::ScopedUnownedUserData<DiscountsPageActionViewController>
+      scoped_unowned_user_data_;
 
   base::WeakPtrFactory<DiscountsPageActionViewController> weak_ptr_factory_{
       this};
