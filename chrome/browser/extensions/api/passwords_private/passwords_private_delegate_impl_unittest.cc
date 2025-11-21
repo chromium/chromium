@@ -56,6 +56,7 @@
 #include "chrome/browser/webauthn/enclave_manager.h"
 #include "chrome/browser/webauthn/enclave_manager_factory.h"
 #include "chrome/browser/webauthn/enclave_manager_interface.h"
+#include "chrome/browser/webauthn/mock_enclave_manager.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
 #include "chrome/common/extensions/api/passwords_private.h"
 #include "chrome/test/base/test_browser_window.h"
@@ -247,17 +248,6 @@ class MockPasswordManagerClient : public ChromePasswordManagerClient {
       : ChromePasswordManagerClient(web_contents) {}
 
   password_manager::MockPasswordFeatureManager mock_password_feature_manager_;
-};
-
-class MockEnclaveManager : public EnclaveManagerInterface {
- public:
-  MockEnclaveManager() = default;
-  ~MockEnclaveManager() override = default;
-  MockEnclaveManager(const MockEnclaveManager&) = delete;
-  MockEnclaveManager& operator=(const MockEnclaveManager&) = delete;
-
-  MOCK_METHOD(void, Unenroll, (Callback), (override));
-  MOCK_METHOD(bool, is_registered, (), (const override));
 };
 
 // static

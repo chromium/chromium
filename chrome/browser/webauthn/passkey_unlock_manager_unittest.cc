@@ -8,6 +8,10 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/webauthn/enclave_manager.h"
+#include "chrome/browser/webauthn/enclave_manager_factory.h"
+#include "chrome/browser/webauthn/enclave_manager_interface.h"
+#include "chrome/browser/webauthn/mock_enclave_manager.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
 #include "chrome/browser/webauthn/passkey_unlock_manager_factory.h"
 #include "chrome/test/base/testing_profile.h"
@@ -46,6 +50,8 @@ class MockPasskeyUnlockManagerObserver : public PasskeyUnlockManager::Observer {
   MOCK_METHOD(void, OnPasskeyUnlockManagerIsReady, (), (override));
 };
 
+using ::testing::_;
+
 class PasskeyUnlockManagerTest : public testing::Test {
  protected:
   void SetUp() override {
@@ -62,6 +68,12 @@ class PasskeyUnlockManagerTest : public testing::Test {
                                 -> std::unique_ptr<KeyedService> {
           return std::make_unique<syncer::TestSyncService>();
         }));
+    builder.AddTestingFactory(
+        EnclaveManagerFactory::GetInstance(),
+        base::BindRepeating(
+            [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
+              return std::make_unique<MockEnclaveManager>();
+            }));
     profile_ = builder.Build();
     observer_ = std::make_unique<
         testing::StrictMock<MockPasskeyUnlockManagerObserver>>();
@@ -107,7 +119,23 @@ class PasskeyUnlockManagerTest : public testing::Test {
     fake_provider_.emplace<crypto::ScopedNullUserVerifyingKeyProvider>();
   }
 
+  void ConfigureGpmPinToBe(
+      EnclaveManager::GpmPinAvailability pin_availability) {
+    MockEnclaveManager* enclave_manager_mock = static_cast<MockEnclaveManager*>(
+        EnclaveManagerFactory::GetForProfile(profile()));
+    ON_CALL(*enclave_manager_mock, CheckGpmPinAvailability(_))
+        .WillByDefault(
+            [pin_availability](
+                EnclaveManager::GpmPinAvailabilityCallback callback) {
+              std::move(callback).Run(pin_availability);
+            });
+  }
+
   void SetUpPasskeyUnlockManager() {
+    MockEnclaveManager* enclave_manager_mock = static_cast<MockEnclaveManager*>(
+        EnclaveManagerFactory::GetForProfile(profile_.get()));
+    EXPECT_CALL(*enclave_manager_mock, CheckGpmPinAvailability(_));
+
     passkey_unlock_manager_ =
         PasskeyUnlockManagerFactory::GetForProfile(profile_.get());
     passkey_unlock_manager_->AddObserver(observer_.get());
@@ -218,17 +246,34 @@ TEST_F(PasskeyUnlockManagerTest, ErrorUiHiddenWhenPasskeysNotSynced) {
 #if BUILDFLAG(IS_CHROMEOS)
 // On Chrome OS, AreUserVerifyingKeysSupported always returns true, thus this
 // test cannot establish its preconditions.
-#define MAYBE_ErrorUiHiddenWithoutUVKeys DISABLED_ErrorUiHiddenWithoutUVKeys
+#define MAYBE_ErrorUiHiddenWithoutUVKeysWithoutGpmPin \
+  DISABLED_ErrorUiHiddenWithoutUVKeysWithoutGpmPin
+#define MAYBE_ErrorUiVisibleWithoutUVKeysWithGpmPin \
+  DISABLED_ErrorUiVisibleWithoutUVKeysWithGpmPin
 #else
-#define MAYBE_ErrorUiHiddenWithoutUVKeys ErrorUiHiddenWithoutUVKeys
+#define MAYBE_ErrorUiHiddenWithoutUVKeysWithoutGpmPin \
+  ErrorUiHiddenWithoutUVKeysWithoutGpmPin
+#define MAYBE_ErrorUiVisibleWithoutUVKeysWithGpmPin \
+  ErrorUiVisibleWithoutUVKeysWithGpmPin
 #endif
 
-TEST_F(PasskeyUnlockManagerTest, MAYBE_ErrorUiHiddenWithoutUVKeys) {
+TEST_F(PasskeyUnlockManagerTest,
+       MAYBE_ErrorUiHiddenWithoutUVKeysWithoutGpmPin) {
   passkey_model()->AddNewPasskeyForTesting(CreatePasskey());
+  ConfigureGpmPinToBe(EnclaveManager::GpmPinAvailability::kGpmPinUnset);
   DisableUVKeySupport();
   SetUpPasskeyUnlockManager();
 
   EXPECT_FALSE(passkey_unlock_manager()->ShouldDisplayErrorUi());
+}
+
+TEST_F(PasskeyUnlockManagerTest, MAYBE_ErrorUiVisibleWithoutUVKeysWithGpmPin) {
+  passkey_model()->AddNewPasskeyForTesting(CreatePasskey());
+  ConfigureGpmPinToBe(EnclaveManager::GpmPinAvailability::kGpmPinSetAndUsable);
+  DisableUVKeySupport();
+  SetUpPasskeyUnlockManager();
+
+  EXPECT_TRUE(passkey_unlock_manager()->ShouldDisplayErrorUi());
 }
 
 TEST_F(PasskeyUnlockManagerTest, LogsPasskeyCountHistogramWithoutPasskeys) {

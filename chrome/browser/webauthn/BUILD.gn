@@ -161,6 +161,8 @@ if (!is_android) {
       "fake_recovery_key_store.h",
       "fake_security_domain_service.cc",
       "fake_security_domain_service.h",
+      "mock_enclave_manager.cc",
+      "mock_enclave_manager.h",
       "mock_local_credential_management.cc",
       "mock_local_credential_management.h",
       "test_util.cc",

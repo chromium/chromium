@@ -108,51 +108,6 @@ class EnclaveManager : public EnclaveManagerInterface {
 #endif  // BUILDFLAG(IS_MAC)
   struct StoreKeysArgs;
 
-  // An enum that expresses the outcome of the operation of storing the
-  // opportunistically retrieved keys.
-  enum class OutOfContextRecoveryOutcome {
-    // The key has been successfully stored and the device has been added to
-    // account.
-    kStoreKeysFromOpportunisticFlowSucceeded,
-    // There was a failure while adding the device to account.
-    kStoreKeysFromOpportunisticFlowFailed,
-    // The key has been ignored because the device has been already registered
-    // with the enclave.
-    kStoreKeysFromOpportunisticFlowIgnoredRedundant,
-    // The key has been ignored because neither system UV nor GPM PIN is
-    // available.
-    kStoreKeysFromOpportunisticFlowIgnoredNoUV,
-  };
-
-  class Observer : public base::CheckedObserver {
-   public:
-    // OnKeyStores is called when MagicArch provides keys to the EnclaveManager
-    // by calling `StoreKeys`.
-    virtual void OnKeysStored() {}
-
-    // `OnStateUpdated` is called from `EnclaveManager::Stopped()` - indicating
-    // that the state machine reached its final state (so the state of the
-    // enclave manager might be updated now, e.g. it might become ready).
-    virtual void OnStateUpdated() {}
-
-    // `OnOutOfContextRecoveryCompletion` informs observers about the outcome of
-    // the operation of storing the opportunistically retrieved keys.
-    virtual void OnOutOfContextRecoveryCompletion(
-        OutOfContextRecoveryOutcome outcome) {}
-  };
-
-  // An enum that expresses whether a GPM PIN is set on an account.
-  enum class GpmPinAvailability {
-    // The PIN is set but not usable (there are 0 remaining attempts for
-    // entering the pin).
-    kGpmPinSetButNotUsable,
-    // The PIN is set and usable (there are > 0 remaining attempts for entering
-    // the pin).
-    kGpmPinSetAndUsable,
-    // The PIN is unset.
-    kGpmPinUnset,
-  };
-
   struct UVKeyOptions {
     UVKeyOptions();
     UVKeyOptions(const UVKeyOptions&) = delete;
@@ -244,7 +199,7 @@ class EnclaveManager : public EnclaveManagerInterface {
   bool is_idle() const;
   // Returns true if the persistent state has been loaded from the disk. (Or
   // else the loading failed and an empty state is being used.)
-  bool is_loaded() const;
+  bool is_loaded() const override;
   // Returns true if the current user has been registered with the enclave.
   bool is_registered() const override;
   // Returns true if `StoreKeys` has been called and thus `AddDeviceToAccount`
@@ -253,14 +208,15 @@ class EnclaveManager : public EnclaveManagerInterface {
   // Returns true if the current user has joined the security domain and has one
   // or more wrapped security domain secrets available. (This implies
   // `is_registered`.)
-  bool is_ready() const;
+  bool is_ready() const override;
   // Returns the number of times that `StoreKeys` has been called.
   unsigned store_keys_count() const;
 
   // Load the persisted state from disk. Harmless to call if `is_loaded`.
   void Load(base::OnceClosure closure);
   // Preforms `Load` after the given delay,
-  void LoadAfterDelay(base::TimeDelta delay, base::OnceClosure closure);
+  void LoadAfterDelay(base::TimeDelta delay,
+                      base::OnceClosure closure) override;
   // Register with the enclave if not already registered.
   void RegisterIfNeeded(Callback callback);
   // Set up an account with a newly-created PIN.
@@ -384,8 +340,7 @@ class EnclaveManager : public EnclaveManagerInterface {
   };
   UvKeyState uv_key_state(bool platform_has_biometrics) const;
 
-  void CheckGpmPinAvailability(
-      base::OnceCallback<void(GpmPinAvailability)> callback);
+  void CheckGpmPinAvailability(GpmPinAvailabilityCallback callback) override;
 
   // Checks whether UserVerifyingKeyCreationCallback() is available to be
   // called, returning true if not. There should only be one key creation
@@ -409,8 +364,8 @@ class EnclaveManager : public EnclaveManagerInterface {
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher> GetAccessToken(
       base::OnceCallback<void(std::optional<std::string>)> callback);
 
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
 
   // This function is called by the MagicArch integration when the user
   // successfully completes recovery. It must be called either with a lock

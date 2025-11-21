@@ -10,6 +10,7 @@
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/webauthn/enclave_manager.h"
+#include "chrome/browser/webauthn/enclave_manager_interface.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/service/sync_service_observer.h"
 #include "components/webauthn/core/browser/passkey_model.h"
@@ -105,7 +106,7 @@ class PasskeyUnlockManager : public KeyedService,
 
   // Returns the EnclaveManager associated with the profile passed to the
   // constructor.
-  EnclaveManager* enclave_manager();
+  EnclaveManagerInterface* enclave_manager();
 
   // Returns the SyncService associated with the profile passed to the
   // constructor.
@@ -127,6 +128,8 @@ class PasskeyUnlockManager : public KeyedService,
 
   // Caches `has_gpm_pin_`.
   void AsynchronouslyCheckGpmPinAvailability();
+  void OnHaveGpmPinAvailability(
+      EnclaveManager::GpmPinAvailability gpm_pin_availability);
   // Caches `has_system_uv_`.
   void AsynchronouslyCheckSystemUVAvailability();
   // Callback for `AsynchronouslyCheckSystemUVAvailability`.
@@ -180,7 +183,7 @@ class PasskeyUnlockManager : public KeyedService,
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::ScopedObservation<EnclaveManager, EnclaveManager::Observer>
+  base::ScopedObservation<EnclaveManagerInterface, EnclaveManager::Observer>
       enclave_manager_observation_{this};
   base::ScopedObservation<PasskeyModel, PasskeyModel::Observer>
       passkey_model_observation_{this};

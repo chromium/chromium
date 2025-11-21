@@ -3736,7 +3736,7 @@ EnclaveManager::UvKeyState EnclaveManager::uv_key_state(
 }
 
 void EnclaveManager::CheckGpmPinAvailability(
-    base::OnceCallback<void(GpmPinAvailability)> callback) {
+    GpmPinAvailabilityCallback callback) {
   CoreAccountInfo account_info =
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   download_account_state_request_ =

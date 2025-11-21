@@ -16,7 +16,9 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/singleton_tabs.h"
+#include "chrome/browser/webauthn/enclave_manager.h"
 #include "chrome/browser/webauthn/enclave_manager_factory.h"
+#include "chrome/browser/webauthn/enclave_manager_interface.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/sync/service/sync_service.h"
@@ -29,8 +31,8 @@ namespace webauthn {
 // TODO(crbug.com/456454164): Don't pass the profile directly to the
 // constructor.
 PasskeyUnlockManager::PasskeyUnlockManager(Profile* profile) {
-  EnclaveManager* enclave_manager = static_cast<EnclaveManager*>(
-      EnclaveManagerFactory::GetForProfile(profile));
+  EnclaveManagerInterface* enclave_manager =
+      EnclaveManagerFactory::GetForProfile(profile);
   enclave_manager_observation_.Observe(enclave_manager);
   passkey_model_observation_.Observe(
       PasskeyModelFactory::GetForProfile(profile));
@@ -50,6 +52,7 @@ PasskeyUnlockManager::PasskeyUnlockManager(Profile* profile) {
   MaybeRecordDelayedPasskeyCountHistogram();
   UpdateSyncState();
   AsynchronouslyCheckSystemUVAvailability();
+  AsynchronouslyCheckGpmPinAvailability();
 }
 
 PasskeyUnlockManager::~PasskeyUnlockManager() = default;
@@ -162,7 +165,7 @@ PasskeyModel* PasskeyUnlockManager::passkey_model() {
   return passkey_model_observation_.GetSource();
 }
 
-EnclaveManager* PasskeyUnlockManager::enclave_manager() {
+EnclaveManagerInterface* PasskeyUnlockManager::enclave_manager() {
   return enclave_manager_observation_.GetSource();
 }
 
@@ -183,12 +186,20 @@ void PasskeyUnlockManager::UpdateSyncState() {
 }
 
 void PasskeyUnlockManager::AsynchronouslyCheckGpmPinAvailability() {
-  // TODO(crbug.com/449948649): Implement and call in the constructor.
-  NOTIMPLEMENTED();
+  enclave_manager()->CheckGpmPinAvailability(
+      base::BindOnce(&PasskeyUnlockManager::OnHaveGpmPinAvailability,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void PasskeyUnlockManager::OnHaveGpmPinAvailability(
+    EnclaveManager::GpmPinAvailability gpm_pin_availability) {
+  has_gpm_pin_ = gpm_pin_availability ==
+                 EnclaveManager::GpmPinAvailability::kGpmPinSetAndUsable;
+  ComputeShouldDisplayErrorUiAndNotifyObservers();
 }
 
 void PasskeyUnlockManager::AsynchronouslyCheckSystemUVAvailability() {
-  enclave_manager()->AreUserVerifyingKeysSupported(
+  EnclaveManager::AreUserVerifyingKeysSupported(
       base::BindOnce(&PasskeyUnlockManager::OnHaveSystemUVAvailability,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -206,12 +217,11 @@ std::optional<bool> PasskeyUnlockManager::ArePasskeysLocked() const {
 }
 
 std::optional<bool> PasskeyUnlockManager::ArePasskeysUnlockable() const {
-  if (!has_system_uv_.has_value()) {
+  if (!has_system_uv_.has_value() && !has_gpm_pin_.has_value()) {
     return std::nullopt;
   }
-  // TODO(crbug.com/450238902): Also check GPM PIN availability.
   // TODO(crbug.com/450551870): Check for more verification methods.
-  return has_system_uv_;
+  return has_system_uv_.value_or(false) || has_gpm_pin_.value_or(false);
 }
 
 void PasskeyUnlockManager::Shutdown() {
