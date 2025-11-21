@@ -8,6 +8,7 @@
 #import "base/strings/string_number_conversions.h"
 #import "components/version_info/version_info.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/icon_detail_view.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/icon_detail_view_configuration.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/icon_view.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/multi_row_container_view.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_module_content_view_delegate.h"
@@ -239,11 +240,6 @@ bool IsDefault(SafetyCheckState* state) {
 // and `layoutType`.
 - (IconDetailView*)iconDetailView:(SafetyCheckItemType)itemType
                        layoutType:(IconDetailViewLayoutType)layoutType {
-  NSString* symbolName = [self symbolNameForItemType:itemType];
-
-  // `kInfoCircleSymbol` is the only default symbol used within the Safety Check
-  // view(s).
-  BOOL usesDefaultSymbol = [symbolName isEqualToString:kInfoCircleSymbol];
 
   if (!IsNTPBackgroundCustomizationEnabled()) {
     // Determine the symbol color palette and symbol background color based on
@@ -259,27 +255,27 @@ bool IsDefault(SafetyCheckState* state) {
     }
   }
 
-  IconDetailView* view = [[IconDetailView alloc]
-                       initWithTitle:[self titleText:itemType]
-                         description:
-                             (layoutType == IconDetailViewLayoutType::kHero
-                                  ? [self descriptionText:itemType]
-                                  : [self compactDescriptionText:itemType])
-                          layoutType:layoutType
-                     backgroundImage:nil
-                          symbolName:symbolName
-                  symbolColorPalette:_symbolColorPalette
-               symbolBackgroundColor:_symbolBackgroundColor
-      symbolContainerBackgroundColor:_symbolContainerBackgroundColor
-                   usesDefaultSymbol:usesDefaultSymbol
-                       showCheckmark:(itemType == SafetyCheckItemType::kAllSafe)
-             accessibilityIdentifier:
-                 [self accessibilityIdentifierForItemType:itemType]];
+  NSString* symbolName = [self symbolNameForItemType:itemType];
 
+  IconDetailViewConfiguration* viewConfig = [IconDetailViewConfiguration
+      configurationWithTitleText:[self titleText:itemType]
+                 descriptionText:(layoutType == IconDetailViewLayoutType::kHero
+                                      ? [self descriptionText:itemType]
+                                      : [self
+                                            compactDescriptionText:itemType])];
+  viewConfig.symbolName = symbolName;
+  viewConfig.symbolColorPalette = _symbolColorPalette;
+  viewConfig.symbolBackgroundColor = _symbolBackgroundColor;
+  viewConfig.usesDefaultSymbol = [symbolName isEqualToString:kInfoCircleSymbol];
+  viewConfig.layoutType = layoutType;
+  viewConfig.showCheckmark = itemType == SafetyCheckItemType::kAllSafe;
+  viewConfig.accessibilityIdentifier =
+      [self accessibilityIdentifierForItemType:itemType];
+
+  IconDetailView* view =
+      [[IconDetailView alloc] initWithConfiguration:viewConfig];
   view.identifier = NameForSafetyCheckItemType(itemType);
-
   view.tapDelegate = self;
-
   return view;
 }
 

@@ -12,6 +12,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/icon_detail_view.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/icon_detail_view_configuration.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_module_content_view_delegate.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tips/ui/tips_module_audience.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tips/ui/tips_module_state.h"
@@ -245,7 +246,7 @@ std::optional<SymbolConfig> GetBadgeSymbolConfigForTip(TipIdentifier tip,
       GetBadgeSymbolConfigForTip(tip, hasProductImage);
 
   if (badgeSymbol.has_value()) {
-    SymbolConfig badgeConfig = badgeSymbol.value();
+    SymbolConfig badge = badgeSymbol.value();
 
     NSArray<UIColor*>* badgeColorPalette =
         hasProductImage ? nil : @[ [UIColor whiteColor] ];
@@ -262,51 +263,47 @@ std::optional<SymbolConfig> GetBadgeSymbolConfigForTip(TipIdentifier tip,
                           kProductImageBadgeBottomRightRadius};
     }
 
-    IconDetailView* view = [[IconDetailView alloc]
-                         initWithTitle:[self titleText:tip]
-                           description:[self descriptionText:tip]
-                            layoutType:IconDetailViewLayoutType::kHero
-                       backgroundImage:productImage
-                            symbolName:base::SysUTF8ToNSString(symbol.name)
-                    symbolColorPalette:[self symbolColorPalette:tip]
-                 symbolBackgroundColor:[self symbolBackgroundColor:tip]
-        symbolContainerBackgroundColor:_symbolContainerBackgroundColor
-                     usesDefaultSymbol:symbol.is_default_symbol
-                           symbolWidth:kSymbolWidth
-                         showCheckmark:NO
-                       badgeSymbolName:base::SysUTF8ToNSString(badgeConfig.name)
-                     badgeColorPalette:badgeColorPalette
-                      badgeShapeConfig:badgeShapeConfig
-                  badgeBackgroundColor:[self
-                                           badgeBackgroundColor:tip
-                                                hasProductImage:hasProductImage]
-                badgeUsesDefaultSymbol:badgeConfig.is_default_symbol
-               accessibilityIdentifier:[self accessibilityIdentifier:tip]];
+    IconDetailViewConfiguration* viewConfig = [IconDetailViewConfiguration
+        configurationWithTitleText:[self titleText:tip]
+                   descriptionText:[self descriptionText:tip]];
+    viewConfig.backgroundImage = productImage;
+    viewConfig.symbolName = base::SysUTF8ToNSString(symbol.name);
+    viewConfig.symbolColorPalette = [self symbolColorPalette:tip];
+    viewConfig.symbolBackgroundColor = [self symbolBackgroundColor:tip];
+    viewConfig.symbolContainerBackgroundColor = _symbolContainerBackgroundColor;
+    viewConfig.usesDefaultSymbol = symbol.is_default_symbol;
+    viewConfig.symbolWidth = kSymbolWidth;
 
+    viewConfig.badgeSymbolName = base::SysUTF8ToNSString(badge.name);
+    viewConfig.badgeColorPalette = badgeColorPalette;
+    viewConfig.badgeShapeConfig = badgeShapeConfig;
+    viewConfig.badgeBackgroundColor =
+        [self badgeBackgroundColor:tip hasProductImage:hasProductImage];
+    viewConfig.badgeUsesDefaultSymbol = badge.is_default_symbol;
+    viewConfig.accessibilityIdentifier = [self accessibilityIdentifier:tip];
+
+    IconDetailView* view =
+        [[IconDetailView alloc] initWithConfiguration:viewConfig];
     view.identifier = base::SysUTF8ToNSString(NameForTipIdentifier(tip));
-
     view.tapDelegate = self;
-
     return view;
   }
 
+  IconDetailViewConfiguration* viewConfig = [IconDetailViewConfiguration
+      configurationWithTitleText:[self titleText:tip]
+                 descriptionText:[self descriptionText:tip]];
+  viewConfig.backgroundImage = productImage;
+  viewConfig.symbolName = base::SysUTF8ToNSString(symbol.name);
+  viewConfig.symbolColorPalette = [self symbolColorPalette:tip];
+  viewConfig.symbolBackgroundColor = [self symbolBackgroundColor:tip];
+  viewConfig.symbolContainerBackgroundColor = _symbolContainerBackgroundColor;
+  viewConfig.usesDefaultSymbol = symbol.is_default_symbol;
+  viewConfig.accessibilityIdentifier = [self accessibilityIdentifier:tip];
+
   IconDetailView* view =
-      [[IconDetailView alloc] initWithTitle:[self titleText:tip]
-                                description:[self descriptionText:tip]
-                                 layoutType:IconDetailViewLayoutType::kHero
-                            backgroundImage:productImage
-                                 symbolName:base::SysUTF8ToNSString(symbol.name)
-                         symbolColorPalette:[self symbolColorPalette:tip]
-                      symbolBackgroundColor:[self symbolBackgroundColor:tip]
-             symbolContainerBackgroundColor:_symbolContainerBackgroundColor
-                          usesDefaultSymbol:symbol.is_default_symbol
-                              showCheckmark:NO
-                    accessibilityIdentifier:[self accessibilityIdentifier:tip]];
-
+      [[IconDetailView alloc] initWithConfiguration:viewConfig];
   view.identifier = base::SysUTF8ToNSString(NameForTipIdentifier(tip));
-
   view.tapDelegate = self;
-
   return view;
 }
 
