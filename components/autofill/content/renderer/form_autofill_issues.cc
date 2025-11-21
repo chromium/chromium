@@ -142,6 +142,7 @@ void MaybeAppendDuplicateIdForInputDevtoolsIssue(
            std::forward_as_tuple(b.GetIdAttribute(), GetShadowHostDOMNodeId(b));
   });
 
+  int previous_violating_node = 0;
   for (auto it = elements_with_id_attr.begin();
        (it = std::ranges::adjacent_find(
             it, elements_with_id_attr.end(),
@@ -150,13 +151,7 @@ void MaybeAppendDuplicateIdForInputDevtoolsIssue(
                      GetShadowHostDOMNodeId(a) == GetShadowHostDOMNodeId(b);
             })) != elements_with_id_attr.end();
        it++) {
-    bool current_element_not_added =
-        form_issues.empty() ||
-        form_issues.back().issue_type !=
-            GenericIssueErrorType::kFormDuplicateIdForInputError ||
-        form_issues.back().violating_node != it->GetDomNodeId();
-
-    if (current_element_not_added) {
+    if (previous_violating_node != it->GetDomNodeId()) {
       form_issues.emplace_back(
           GenericIssueErrorType::kFormDuplicateIdForInputError,
           it->GetDomNodeId(), id_attr);
@@ -164,6 +159,7 @@ void MaybeAppendDuplicateIdForInputDevtoolsIssue(
     form_issues.emplace_back(
         GenericIssueErrorType::kFormDuplicateIdForInputError,
         std::next(it)->GetDomNodeId(), id_attr);
+    previous_violating_node = std::next(it)->GetDomNodeId();
   }
 }
 
