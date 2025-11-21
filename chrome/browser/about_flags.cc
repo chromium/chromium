@@ -12970,13 +12970,6 @@ const FeatureEntry kFeatureEntries[] = {
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-#if BUILDFLAG(IS_ANDROID)
-    {"android-animated-progress-bar-in-viz",
-     flag_descriptions::kAndroidAnimatedProgressBarInVizName,
-     flag_descriptions::kAndroidAnimatedProgressBarInVizDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kAndroidAnimatedProgressBarInViz)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
 #if !BUILDFLAG(IS_ANDROID)
     {"enable-lens-overlay-force-empty-csb-query",
      flag_descriptions::kLensOverlayForceEmptyCsbQueryName,

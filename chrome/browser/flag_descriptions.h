@@ -4907,13 +4907,6 @@ inline constexpr char kAndroidAnimatedProgressBarInBrowserDescription[] =
     "Hides the android progress bar and enables animating load progress "
     "updates for the composited progress bar in slim.";
 
-inline constexpr char kAndroidAnimatedProgressBarInVizName[] =
-    "Animate composited progress bar in viz with OffsetTags and renderer "
-    "frames.";
-inline constexpr char kAndroidAnimatedProgressBarInVizDescription[] =
-    "Hides the android progress bar and enables animating load progress "
-    "updates for the composited progress bar in viz.";
-
 inline constexpr char kAndroidAudioDeviceListenerName[] =
     "Android Audio Device Listener";
 inline constexpr char kAndroidAudioDeviceListenerDescription[] =
