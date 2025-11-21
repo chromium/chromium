@@ -32,9 +32,17 @@ std::unique_ptr<KeyedService>
 PolicyBlocklistServiceFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
   PrefService* prefs = profile->GetPrefs();
+  auto url_blocklist_manager = std::make_unique<policy::URLBlocklistManager>(
+      prefs, policy::policy_prefs::kUrlBlocklist,
+      policy::policy_prefs::kUrlAllowlist);
+  std::unique_ptr<policy::URLBlocklistManager> incognito_url_blocklist_manager;
+  if (profile->IsOffTheRecord()) {
+    incognito_url_blocklist_manager =
+        std::make_unique<policy::URLBlocklistManager>(
+            prefs, policy::policy_prefs::kIncognitoModeBlocklist,
+            policy::policy_prefs::kIncognitoModeAllowlist);
+  }
   return std::make_unique<PolicyBlocklistService>(
-      std::make_unique<policy::URLBlocklistManager>(
-          prefs, policy::policy_prefs::kUrlBlocklist,
-          policy::policy_prefs::kUrlAllowlist),
-      prefs);
+      std::move(url_blocklist_manager),
+      std::move(incognito_url_blocklist_manager), prefs);
 }

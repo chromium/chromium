@@ -69,7 +69,17 @@ class AlwaysOnVpnPreConnectBlocklistSource : public policy::BlocklistSource {
 PolicyBlocklistService::PolicyBlocklistService(
     std::unique_ptr<policy::URLBlocklistManager> url_blocklist_manager,
     PrefService* user_prefs)
+    : PolicyBlocklistService(std::move(url_blocklist_manager),
+                             nullptr,
+                             user_prefs) {}
+PolicyBlocklistService::PolicyBlocklistService(
+    std::unique_ptr<policy::URLBlocklistManager> url_blocklist_manager,
+    std::unique_ptr<policy::URLBlocklistManager>
+        incognito_url_blocklist_manager,
+    PrefService* user_prefs)
     : url_blocklist_manager_(std::move(url_blocklist_manager)),
+      incognito_url_blocklist_manager_(
+          std::move(incognito_url_blocklist_manager)),
       user_prefs_(user_prefs) {
   CHECK(user_prefs_);
 }
@@ -78,6 +88,13 @@ PolicyBlocklistService::~PolicyBlocklistService() = default;
 
 policy::URLBlocklist::URLBlocklistState
 PolicyBlocklistService::GetURLBlocklistState(const GURL& url) const {
+  if (incognito_url_blocklist_manager_) {
+    const auto incognito_state =
+        incognito_url_blocklist_manager_->GetURLBlocklistState(url);
+    if (incognito_state != policy::URLBlocklist::URL_NEUTRAL_STATE) {
+      return incognito_state;
+    }
+  }
   return url_blocklist_manager_->GetURLBlocklistState(url);
 }
 

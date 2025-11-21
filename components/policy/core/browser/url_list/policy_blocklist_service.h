@@ -20,8 +20,15 @@
 // is used in Chrome.
 class POLICY_EXPORT PolicyBlocklistService : public KeyedService {
  public:
+  // Constructor to be used by embedders that don't support Incognito mode.
   PolicyBlocklistService(
       std::unique_ptr<policy::URLBlocklistManager> url_blocklist_manager,
+      PrefService* user_prefs);
+  // Constructor to be used by embedders that support Incognito mode.
+  PolicyBlocklistService(
+      std::unique_ptr<policy::URLBlocklistManager> url_blocklist_manager,
+      std::unique_ptr<policy::URLBlocklistManager>
+          incognito_url_blocklist_manager,
       PrefService* user_prefs);
 
   PolicyBlocklistService(const PolicyBlocklistService&) = delete;
@@ -41,7 +48,11 @@ class POLICY_EXPORT PolicyBlocklistService : public KeyedService {
 #endif
 
  private:
+  // `URLBlocklistManager` handling URLBlock(Allow)list policies
   std::unique_ptr<policy::URLBlocklistManager> url_blocklist_manager_;
+  // `URLBlocklistManager` handling IncognitoModeBlock(Allow)list policies
+  // should be set only if profile is in Incognito mode.
+  std::unique_ptr<policy::URLBlocklistManager> incognito_url_blocklist_manager_;
   raw_ptr<PrefService> user_prefs_;
 };
 
