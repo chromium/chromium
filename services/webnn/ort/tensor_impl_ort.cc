@@ -70,9 +70,8 @@ bool TensorImplOrt::ImportTensorImpl() {
   return false;
 }
 
-void TensorImplOrt::ExportTensorImpl(
-    std::unique_ptr<gpu::WebNNTensorRepresentation::ScopedAccess> access,
-    ExportTensorCallback callback) {
+void TensorImplOrt::ExportTensorImpl(ScopedAccessPtr access,
+                                     ExportTensorCallback callback) {
   NOTIMPLEMENTED();
 }
 

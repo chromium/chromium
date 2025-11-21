@@ -89,7 +89,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
       const blink::WebNNContextToken& handle);
 
   using WebNNContextImplPtr =
-      std::unique_ptr<WebNNContextImpl, WebNNContextImpl::TaskRunnerDeleter>;
+      std::unique_ptr<WebNNContextImpl, OnTaskRunnerDeleter>;
   using WebNNContextImplSet =
       base::flat_set<WebNNContextImplPtr, WebNNContextImpl::Comparator>;
 

@@ -218,8 +218,8 @@ void WebNNContextProviderImpl::CreateWebNNContext(
          base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
   }
 
-  WebNNContextImplPtr context_impl(
-      nullptr, WebNNContextImpl::TaskRunnerDeleter(owning_task_runner));
+  WebNNContextImplPtr context_impl(nullptr,
+                                   OnTaskRunnerDeleter(owning_task_runner));
   mojo::PendingRemote<mojom::WebNNContext> remote;
   auto receiver = remote.InitWithNewPipeAndPassReceiver();
 
@@ -417,7 +417,7 @@ void WebNNContextProviderImpl::DidEnsureWebNNExecutionProvidersReady(
     CreateWebNNContextCallback callback,
     base::flat_map<std::string, mojom::EpPackageInfoPtr> ep_package_info) {
   WebNNContextImplPtr context_impl(
-      nullptr, WebNNContextImpl::TaskRunnerDeleter(main_thread_task_runner_));
+      nullptr, OnTaskRunnerDeleter(main_thread_task_runner_));
 
   scoped_trace.AddStep("ort::Environment::GetInstance");
 

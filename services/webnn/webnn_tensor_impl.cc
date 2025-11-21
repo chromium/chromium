@@ -32,7 +32,7 @@ WebNNTensorImpl::WebNNTensorImpl(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
     base::WeakPtr<WebNNContextImpl> context,
     mojom::TensorInfoPtr tensor_info,
-    std::unique_ptr<gpu::WebNNTensorRepresentation> representation)
+    RepresentationPtr representation)
     : WebNNObjectImpl<mojom::WebNNTensor,
                       blink::WebNNTensorToken,
                       mojo::AssociatedReceiver<mojom::WebNNTensor>>(

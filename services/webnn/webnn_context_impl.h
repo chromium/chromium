@@ -61,32 +61,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   using CreateGraphImplCallback = base::OnceCallback<void(
       base::expected<scoped_refptr<WebNNGraphImpl>, mojom::ErrorPtr>)>;
 
-  struct COMPONENT_EXPORT(WEBNN_SERVICE) TaskRunnerDeleter {
-    explicit TaskRunnerDeleter(
-        scoped_refptr<base::SequencedTaskRunner> task_runner);
-    ~TaskRunnerDeleter();
-
-    TaskRunnerDeleter(TaskRunnerDeleter&&);
-    TaskRunnerDeleter& operator=(TaskRunnerDeleter&&);
-
-    // For compatibility with std:: deleters.
-    template <typename T>
-    void operator()(const T* ptr) {
-      if (!ptr) {
-        return;
-      }
-      if (task_runner_->RunsTasksInCurrentSequence()) {
-        delete ptr;
-      } else {
-        task_runner_->DeleteSoon(FROM_HERE, ptr);
-      }
-    }
-
-    scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  };
-
   using WebNNContextImplPtr =
-      std::unique_ptr<WebNNContextImpl, TaskRunnerDeleter>;
+      std::unique_ptr<WebNNContextImpl, OnTaskRunnerDeleter>;
 
   WebNNContextImpl(
       mojo::PendingReceiver<mojom::WebNNContext> receiver,
@@ -217,7 +193,15 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
     }
   };
 
+  // Exposes the task runner used to post tasks to the main thread.
+  // Used for shared image operations that must run on the main thread.
+  const scoped_refptr<base::SingleThreadTaskRunner>& main_task_runner() const {
+    return main_task_runner_;
+  }
+
  protected:
+  friend struct OnTaskRunnerDeleter;
+
   ~WebNNContextImpl() override;
 
   // mojom::WebNNContext
@@ -246,7 +230,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   CreateTensorFromSharedImageImpl(
       mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
       mojom::TensorInfoPtr tensor_info,
-      std::unique_ptr<gpu::WebNNTensorRepresentation> representation) = 0;
+      WebNNTensorImpl::RepresentationPtr representation) = 0;
 
 #if BUILDFLAG(IS_WIN)
   // Inform the provider that this context is lost so it can inform the renderer

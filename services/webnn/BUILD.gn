@@ -36,6 +36,8 @@ component("webnn_service") {
     "error.h",
     "scoped_sequence.cc",
     "scoped_sequence.h",
+    "sequence_deleter.cc",
+    "sequence_deleter.h",
     "webnn_constant_operand.cc",
     "webnn_constant_operand.h",
     "webnn_context_impl.cc",

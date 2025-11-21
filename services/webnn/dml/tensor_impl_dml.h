@@ -29,7 +29,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) TensorImplDml final
                 mojom::TensorInfoPtr tensor_info);
 
   TensorImplDml(mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
-                std::unique_ptr<gpu::WebNNTensorRepresentation> representation,
+                RepresentationPtr representation,
                 base::WeakPtr<WebNNContextImpl> context,
                 mojom::TensorInfoPtr tensor_info);
 
@@ -69,9 +69,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) TensorImplDml final
   void ReadTensorImpl(ReadTensorCallback callback) override;
   void WriteTensorImpl(mojo_base::BigBuffer src_buffer) override;
   bool ImportTensorImpl() override;
-  void ExportTensorImpl(
-      std::unique_ptr<gpu::WebNNTensorRepresentation::ScopedAccess> access,
-      ExportTensorCallback callback) override;
+  void ExportTensorImpl(ScopedAccessPtr access,
+                        ExportTensorCallback callback) override;
 
   // The D3D12 resource that holds the tensor data.
   // The buffer must always remain valid after creation and could outlive

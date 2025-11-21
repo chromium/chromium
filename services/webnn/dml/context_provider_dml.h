@@ -32,9 +32,8 @@ bool ShouldCreateDmlContext(const mojom::CreateContextOptions& options);
 // Create a WebNN context that satisfies the requested preferences in a
 // CreateContextOptions. This corresponds to the
 // ML.createContext(MLContextOptions) overload in the WebNN API.
-base::expected<
-    std::unique_ptr<WebNNContextImpl, WebNNContextImpl::TaskRunnerDeleter>,
-    mojom::ErrorPtr>
+base::expected<std::unique_ptr<WebNNContextImpl, OnTaskRunnerDeleter>,
+               mojom::ErrorPtr>
 CreateContextFromOptions(
     mojom::CreateContextOptionsPtr options,
     mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,

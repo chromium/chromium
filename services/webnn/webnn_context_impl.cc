@@ -37,19 +37,6 @@
 
 namespace webnn {
 
-WebNNContextImpl::TaskRunnerDeleter::TaskRunnerDeleter(
-    scoped_refptr<base::SequencedTaskRunner> task_runner)
-    : task_runner_(std::move(task_runner)) {}
-
-WebNNContextImpl::TaskRunnerDeleter::~TaskRunnerDeleter() = default;
-
-WebNNContextImpl::TaskRunnerDeleter::TaskRunnerDeleter(
-    WebNNContextImpl::TaskRunnerDeleter&&) = default;
-
-WebNNContextImpl::TaskRunnerDeleter&
-WebNNContextImpl::TaskRunnerDeleter::operator=(
-    WebNNContextImpl::TaskRunnerDeleter&&) = default;
-
 WebNNContextImpl::WebNNContextImpl(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
     base::WeakPtr<WebNNContextProviderImpl> context_provider,
@@ -308,36 +295,32 @@ void WebNNContextImpl::CreateTensorFromMailbox(mojom::TensorInfoPtr tensor_info,
   // Wait for the SharedImage to be created.
   WaitSyncToken(fence);
 
-  mojo::PendingAssociatedRemote<mojom::WebNNTensor> remote;
-  auto receiver = remote.InitWithNewEndpointAndPassReceiver();
-
   // Must be a scheduled task since this depends on shared image creation task.
   scheduler_task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](base::WeakPtr<WebNNContextImpl> self,
-             mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
-             mojom::TensorInfoPtr tensor_info, const gpu::Mailbox& mailbox,
-             CreateTensorCallback callback,
-             mojo::PendingAssociatedRemote<mojom::WebNNTensor> remote) {
-            if (!self) {
-              return;
-            }
-
+          [](WebNNContextImpl* self, mojom::TensorInfoPtr tensor_info,
+             const gpu::Mailbox& mailbox, CreateTensorCallback callback) {
             CHECK(self->shared_image_manager_);
 
             constexpr char kWebNNCreateTensorErrorMessage[] =
                 "Failed to create tensor.";
 
-            std::unique_ptr<gpu::WebNNTensorRepresentation> representation =
-                self->shared_image_manager_->ProduceWebNNTensor(
-                    mailbox, &self->memory_type_tracker_);
+            // Tensor will own the representation.
+            WebNNTensorImpl::RepresentationPtr representation(
+                self->shared_image_manager_
+                    ->ProduceWebNNTensor(mailbox, &self->memory_type_tracker_)
+                    .release(),
+                OnTaskRunnerDeleter(self->main_task_runner()));
             if (!representation) {
               std::move(callback).Run(ToError<mojom::CreateTensorResult>(
                   mojom::Error::Code::kUnknownError,
                   kWebNNCreateTensorErrorMessage));
               return;
             }
+
+            mojo::PendingAssociatedRemote<mojom::WebNNTensor> remote;
+            auto receiver = remote.InitWithNewEndpointAndPassReceiver();
 
             auto result = self->CreateTensorFromSharedImageImpl(
                 std::move(receiver), std::move(tensor_info),
@@ -361,8 +344,10 @@ void WebNNContextImpl::CreateTensorFromMailbox(mojom::TensorInfoPtr tensor_info,
                 mojom::CreateTensorResult::NewSuccess(std::move(success)));
             self->tensor_impls_.emplace(*std::move(result));
           },
-          AsWeakPtr(), std::move(receiver), std::move(tensor_info), mailbox,
-          std::move(callback), std::move(remote)));
+          // Safe to use base::Unretained because this context owns the sequence
+          // used by the task runner to run this task.
+          base::Unretained(this), std::move(tensor_info), mailbox,
+          std::move(callback)));
 }
 
 void WebNNContextImpl::RemoveWebNNTensorImpl(

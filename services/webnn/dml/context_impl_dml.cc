@@ -733,7 +733,7 @@ base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>
 ContextImplDml::CreateTensorFromSharedImageImpl(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
     mojom::TensorInfoPtr tensor_info,
-    std::unique_ptr<gpu::WebNNTensorRepresentation> representation) {
+    WebNNTensorImpl::RepresentationPtr representation) {
   // Validate D3D12 buffer size matches TensorInfo.
   // DML requires resources to be in multiple of 4 bytes.
   // https://learn.microsoft.com/en-us/windows/ai/directml/dml-helper-functions#dmlcalcbuffertensorsize

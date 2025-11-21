@@ -23,16 +23,16 @@ class API_AVAILABLE(macos(14.4)) ContextImplCoreml final
     : public WebNNContextImpl {
  public:
   // Constructs a new `ContextImplCoreml`.
-  static std::unique_ptr<WebNNContextImpl, WebNNContextImpl::TaskRunnerDeleter>
-  Create(mojo::PendingReceiver<mojom::WebNNContext> receiver,
-         base::WeakPtr<WebNNContextProviderImpl> context_provider,
-         mojom::CreateContextOptionsPtr options,
-         gpu::CommandBufferId command_buffer_id,
-         std::unique_ptr<ScopedSequence> sequence,
-         scoped_refptr<gpu::MemoryTracker> memory_tracker,
-         scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
-         gpu::SharedImageManager* shared_image_manager,
-         scoped_refptr<base::SingleThreadTaskRunner> main_task_runner);
+  static std::unique_ptr<WebNNContextImpl, OnTaskRunnerDeleter> Create(
+      mojo::PendingReceiver<mojom::WebNNContext> receiver,
+      base::WeakPtr<WebNNContextProviderImpl> context_provider,
+      mojom::CreateContextOptionsPtr options,
+      gpu::CommandBufferId command_buffer_id,
+      std::unique_ptr<ScopedSequence> sequence,
+      scoped_refptr<gpu::MemoryTracker> memory_tracker,
+      scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
+      gpu::SharedImageManager* shared_image_manager,
+      scoped_refptr<base::SingleThreadTaskRunner> main_task_runner);
 
   ContextImplCoreml(
       mojo::PendingReceiver<mojom::WebNNContext> receiver,
@@ -71,7 +71,7 @@ class API_AVAILABLE(macos(14.4)) ContextImplCoreml final
   CreateTensorFromSharedImageImpl(
       mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
       mojom::TensorInfoPtr tensor_info,
-      std::unique_ptr<gpu::WebNNTensorRepresentation> representation) override;
+      WebNNTensorImpl::RepresentationPtr representation) override;
 
   base::WeakPtrFactory<ContextImplCoreml> weak_factory_{this};
 };

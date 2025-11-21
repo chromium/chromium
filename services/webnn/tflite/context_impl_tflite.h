@@ -23,19 +23,19 @@ class ContextImplTflite final : public WebNNContextImpl {
  public:
   // Constructs a new `ContextImplTflite`. Must be called on
   // `owning_task_runner`.
-  static std::unique_ptr<WebNNContextImpl, WebNNContextImpl::TaskRunnerDeleter>
-  Create(mojo::PendingReceiver<mojom::WebNNContext> receiver,
-         base::WeakPtr<WebNNContextProviderImpl> context_provider,
-         mojom::CreateContextOptionsPtr options,
-         mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
-         mojo::ScopedDataPipeProducerHandle read_tensor_producer,
-         gpu::CommandBufferId command_buffer_id,
-         std::unique_ptr<ScopedSequence> sequence,
-         scoped_refptr<gpu::MemoryTracker> memory_tracker,
-         scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
-         gpu::SharedImageManager* shared_image_manager,
-         scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
-         ScopedTrace scoped_trace);
+  static std::unique_ptr<WebNNContextImpl, OnTaskRunnerDeleter> Create(
+      mojo::PendingReceiver<mojom::WebNNContext> receiver,
+      base::WeakPtr<WebNNContextProviderImpl> context_provider,
+      mojom::CreateContextOptionsPtr options,
+      mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
+      mojo::ScopedDataPipeProducerHandle read_tensor_producer,
+      gpu::CommandBufferId command_buffer_id,
+      std::unique_ptr<ScopedSequence> sequence,
+      scoped_refptr<gpu::MemoryTracker> memory_tracker,
+      scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
+      gpu::SharedImageManager* shared_image_manager,
+      scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
+      ScopedTrace scoped_trace);
 
   ContextImplTflite(
       mojo::PendingReceiver<mojom::WebNNContext> receiver,
@@ -76,7 +76,7 @@ class ContextImplTflite final : public WebNNContextImpl {
   CreateTensorFromSharedImageImpl(
       mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
       mojom::TensorInfoPtr tensor_info,
-      std::unique_ptr<gpu::WebNNTensorRepresentation> representation) override;
+      WebNNTensorImpl::RepresentationPtr representation) override;
 
   base::WeakPtrFactory<ContextImplTflite> weak_factory_{this};
 };

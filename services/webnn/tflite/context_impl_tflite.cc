@@ -18,7 +18,7 @@
 namespace webnn::tflite {
 
 // static
-std::unique_ptr<WebNNContextImpl, WebNNContextImpl::TaskRunnerDeleter>
+std::unique_ptr<WebNNContextImpl, OnTaskRunnerDeleter>
 ContextImplTflite::Create(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
     base::WeakPtr<WebNNContextProviderImpl> context_provider,
@@ -34,14 +34,14 @@ ContextImplTflite::Create(
     ScopedTrace scoped_trace) {
   DCHECK(owning_task_runner->RunsTasksInCurrentSequence());
   auto task_runner = owning_task_runner;
-  return std::unique_ptr<WebNNContextImpl, WebNNContextImpl::TaskRunnerDeleter>(
+  return std::unique_ptr<WebNNContextImpl, OnTaskRunnerDeleter>(
       new ContextImplTflite(
           std::move(receiver), std::move(context_provider), std::move(options),
           std::move(write_tensor_consumer), std::move(read_tensor_producer),
           command_buffer_id, std::move(sequence), std::move(memory_tracker),
           std::move(owning_task_runner), shared_image_manager,
           std::move(main_task_runner)),
-      WebNNContextImpl::TaskRunnerDeleter(std::move(task_runner)));
+      OnTaskRunnerDeleter(std::move(task_runner)));
 }
 
 ContextImplTflite::ContextImplTflite(
@@ -115,7 +115,7 @@ base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>
 ContextImplTflite::CreateTensorFromSharedImageImpl(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
     mojom::TensorInfoPtr tensor_info,
-    std::unique_ptr<gpu::WebNNTensorRepresentation> representation) {
+    WebNNTensorImpl::RepresentationPtr representation) {
   return base::unexpected(
       mojom::Error::New(mojom::Error::Code::kNotSupportedError,
                         "WebGPU Interop is not supported."));

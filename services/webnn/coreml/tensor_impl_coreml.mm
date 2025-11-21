@@ -180,7 +180,9 @@ TensorImplCoreml::Create(
           std::move(buffer_content));
   return base::MakeRefCounted<TensorImplCoreml>(
       std::move(receiver), std::move(context), std::move(tensor_info),
-      std::move(buffer_state), /*representation=*/nullptr,
+      std::move(buffer_state),
+      /*representation=*/
+      RepresentationPtr{nullptr, OnTaskRunnerDeleter(nullptr)},
       base::PassKey<TensorImplCoreml>());
 }
 
@@ -190,7 +192,7 @@ TensorImplCoreml::Create(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
     base::WeakPtr<WebNNContextImpl> context,
     mojom::TensorInfoPtr tensor_info,
-    std::unique_ptr<gpu::WebNNTensorRepresentation> representation) {
+    RepresentationPtr representation) {
   if (tensor_info->descriptor.data_type() != OperandDataType::kFloat16) {
     return base::unexpected(
         mojom::Error::New(mojom::Error::Code::kUnknownError,
@@ -257,7 +259,7 @@ TensorImplCoreml::TensorImplCoreml(
     base::WeakPtr<WebNNContextImpl> context,
     mojom::TensorInfoPtr tensor_info,
     scoped_refptr<QueueableResourceState<BufferContent>> buffer_state,
-    std::unique_ptr<gpu::WebNNTensorRepresentation> representation,
+    RepresentationPtr representation,
     base::PassKey<TensorImplCoreml> /*pass_key*/)
     : WebNNTensorImpl(std::move(receiver),
                       std::move(context),
@@ -356,7 +358,10 @@ TensorImplCoreml::GetBufferState() const {
 
 bool TensorImplCoreml::ImportTensorImpl() {
   CHECK(representation_);
-  representation_access_ = representation_->BeginScopedAccess();
+  // Tensor will own the access.
+  representation_access_ =
+      ScopedAccessPtr(representation_->BeginScopedAccess().release(),
+                      OnTaskRunnerDeleter(context_->main_task_runner()));
   if (!representation_access_) {
     return false;
   }
@@ -365,9 +370,8 @@ bool TensorImplCoreml::ImportTensorImpl() {
   return true;
 }
 
-void TensorImplCoreml::ExportTensorImpl(
-    std::unique_ptr<gpu::WebNNTensorRepresentation::ScopedAccess> access,
-    ExportTensorCallback callback) {
+void TensorImplCoreml::ExportTensorImpl(ScopedAccessPtr access,
+                                        ExportTensorCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
   // Take an exclusive lock to the buffer contents to wait for all existing
   // operations to finish.

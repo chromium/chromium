@@ -29,8 +29,7 @@ BASE_FEATURE(kUseDeviceTensor, base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace
 
 // static
-std::unique_ptr<WebNNContextImpl, WebNNContextImpl::TaskRunnerDeleter>
-ContextImplOrt::Create(
+std::unique_ptr<WebNNContextImpl, OnTaskRunnerDeleter> ContextImplOrt::Create(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
     base::WeakPtr<WebNNContextProviderImpl> context_provider,
     const EpWorkarounds& ep_workarounds,
@@ -48,16 +47,15 @@ ContextImplOrt::Create(
     ScopedTrace scoped_trace) {
   DCHECK(owning_task_runner->RunsTasksInCurrentSequence());
   auto task_runner = owning_task_runner;
-  std::unique_ptr<WebNNContextImpl, WebNNContextImpl::TaskRunnerDeleter>
-      context_impl(
-          new ContextImplOrt(
-              std::move(receiver), std::move(context_provider),
-              std::move(ep_workarounds), std::move(options), device_type,
-              std::move(write_tensor_consumer), std::move(read_tensor_producer),
-              std::move(env), command_buffer_id, std::move(sequence),
-              std::move(memory_tracker), std::move(owning_task_runner),
-              shared_image_manager, std::move(main_task_runner)),
-          WebNNContextImpl::TaskRunnerDeleter(std::move(task_runner)));
+  std::unique_ptr<WebNNContextImpl, OnTaskRunnerDeleter> context_impl(
+      new ContextImplOrt(
+          std::move(receiver), std::move(context_provider),
+          std::move(ep_workarounds), std::move(options), device_type,
+          std::move(write_tensor_consumer), std::move(read_tensor_producer),
+          std::move(env), command_buffer_id, std::move(sequence),
+          std::move(memory_tracker), std::move(owning_task_runner),
+          shared_image_manager, std::move(main_task_runner)),
+      OnTaskRunnerDeleter(std::move(task_runner)));
   return context_impl;
 }
 
@@ -415,7 +413,7 @@ base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>
 ContextImplOrt::CreateTensorFromSharedImageImpl(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
     mojom::TensorInfoPtr tensor_info,
-    std::unique_ptr<gpu::WebNNTensorRepresentation> representation) {
+    WebNNTensorImpl::RepresentationPtr representation) {
   return base::unexpected(
       mojom::Error::New(mojom::Error::Code::kNotSupportedError,
                         "WebGPU Interop is not supported."));

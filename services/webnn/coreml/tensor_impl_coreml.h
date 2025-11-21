@@ -34,14 +34,14 @@ class API_AVAILABLE(macos(12.3)) TensorImplCoreml final
       mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
       base::WeakPtr<WebNNContextImpl> context,
       mojom::TensorInfoPtr tensor_info,
-      std::unique_ptr<gpu::WebNNTensorRepresentation> representation);
+      RepresentationPtr representation);
 
   TensorImplCoreml(
       mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
       base::WeakPtr<WebNNContextImpl> context,
       mojom::TensorInfoPtr tensor_info,
       scoped_refptr<QueueableResourceState<BufferContent>> buffer_state,
-      std::unique_ptr<gpu::WebNNTensorRepresentation> representation,
+      RepresentationPtr representation,
       base::PassKey<TensorImplCoreml> pass_key);
 
   TensorImplCoreml(const TensorImplCoreml&) = delete;
@@ -51,9 +51,8 @@ class API_AVAILABLE(macos(12.3)) TensorImplCoreml final
   void ReadTensorImpl(mojom::WebNNTensor::ReadTensorCallback callback) override;
   void WriteTensorImpl(mojo_base::BigBuffer src_buffer) override;
   bool ImportTensorImpl() override;
-  void ExportTensorImpl(
-      std::unique_ptr<gpu::WebNNTensorRepresentation::ScopedAccess> access,
-      ExportTensorCallback callback) override;
+  void ExportTensorImpl(ScopedAccessPtr access,
+                        ExportTensorCallback callback) override;
 
   const scoped_refptr<QueueableResourceState<BufferContent>>& GetBufferState()
       const;

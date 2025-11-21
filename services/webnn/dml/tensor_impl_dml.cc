@@ -25,7 +25,7 @@ TensorImplDml::TensorImplDml(
 
 TensorImplDml::TensorImplDml(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
-    std::unique_ptr<gpu::WebNNTensorRepresentation> representation,
+    RepresentationPtr representation,
     base::WeakPtr<WebNNContextImpl> context,
     mojom::TensorInfoPtr tensor_info)
     : WebNNTensorImpl(std::move(receiver),
@@ -98,9 +98,8 @@ scoped_refptr<gfx::D3DSharedFence> TensorImplDml::EndAccessWebNN() {
       command_queue->submission_fence(), last_submission_fence_value_);
 }
 
-void TensorImplDml::ExportTensorImpl(
-    std::unique_ptr<gpu::WebNNTensorRepresentation::ScopedAccess> access,
-    ExportTensorCallback callback) {
+void TensorImplDml::ExportTensorImpl(ScopedAccessPtr access,
+                                     ExportTensorCallback callback) {
   CHECK(access);
 
   auto webnn_fence_to_wait_for = EndAccessWebNN();
@@ -113,7 +112,10 @@ void TensorImplDml::ExportTensorImpl(
 
 bool TensorImplDml::ImportTensorImpl() {
   CHECK(representation_);
-  auto access = representation_->BeginScopedAccess();
+  // Tensor will own the access.
+  auto access =
+      ScopedAccessPtr(representation_->BeginScopedAccess().release(),
+                      OnTaskRunnerDeleter(context_->main_task_runner()));
   if (!access) {
     return false;
   }

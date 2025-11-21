@@ -109,7 +109,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) ContextImplDml final
   CreateTensorFromSharedImageImpl(
       mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
       mojom::TensorInfoPtr tensor_info,
-      std::unique_ptr<gpu::WebNNTensorRepresentation> representation) override;
+      WebNNTensorImpl::RepresentationPtr representation) override;
 
   // Begins recording commands needed for context operations.
   // If recording failed, calling this function will recreate the recorder to
