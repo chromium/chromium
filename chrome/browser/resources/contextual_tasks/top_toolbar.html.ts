@@ -53,10 +53,6 @@ export function getHtml(this: TopToolbarElement) {
         $i18n{openInNewTab}
       </button>
       <hr>
-      <button class="dropdown-item" @click="${this.onOpenChromeSettingsClick_}">
-        <cr-icon icon="cr:settings_icon"></cr-icon>
-        $i18n{openChromeSettings}
-      </button>
       <!-- TODO(crbug.com/459817232): Provide G icon. -->
       <button class="dropdown-item" @click="${this.onMyActivityClick_}">
         <cr-icon icon="cr:history"></cr-icon>

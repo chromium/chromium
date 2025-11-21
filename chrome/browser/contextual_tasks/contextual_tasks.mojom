@@ -62,9 +62,6 @@ interface PageHandler {
   // shown in the side panel.
   IsShownInTab() => (bool is_in_tab);
 
-  // Opens the Chrome AI settings page in a new tab.
-  OpenChromeSettingsUi();
-
   // Opens the My Activity page in a new tab.
   OpenMyActivityUi();
 

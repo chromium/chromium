@@ -90,11 +90,6 @@ export class TopToolbarElement extends CrLitElement {
     this.fire('open-in-new-tab-click');
   }
 
-  protected onOpenChromeSettingsClick_() {
-    this.menu_?.get().close();
-    this.fire('open-chrome-settings-click');
-  }
-
   protected onMyActivityClick_() {
     this.menu_?.get().close();
     this.fire('my-activity-click');

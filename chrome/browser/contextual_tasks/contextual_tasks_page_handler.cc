@@ -26,7 +26,6 @@
 
 namespace {
 
-constexpr char kChromeSettingsAiModeUrl[] = "chrome://settings/ai/aimode";
 constexpr char kMyActivityUrl[] = "https://myactivity.google.com/myactivity";
 constexpr char kHelpUrl[] = "https://support.google.com/websearch/";
 
@@ -87,10 +86,6 @@ void ContextualTasksPageHandler::ShowThreadHistory(
 void ContextualTasksPageHandler::IsShownInTab(IsShownInTabCallback callback) {
   std::move(callback).Run(
       tabs::TabInterface::MaybeGetFromContents(web_ui_->GetWebContents()));
-}
-
-void ContextualTasksPageHandler::OpenChromeSettingsUi() {
-  OpenUrlInNewTab(&web_ui_.get(), GURL(kChromeSettingsAiModeUrl));
 }
 
 void ContextualTasksPageHandler::OpenMyActivityUi() {

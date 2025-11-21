@@ -7,9 +7,6 @@
   <message name="IDS_CONTEXTUAL_TASKS_MENU_OPEN_IN_NEW_TAB" desc="The 'Open in new tab' option in the 3-dot menu.">
     Open in new tab
   </message>
-  <message name="IDS_CONTEXTUAL_TASKS_MENU_OPEN_CHROME_SETTINGS" desc="The 'Open Chrome Settings' option in the 3-dot menu.">
-    Open Chrome Settings
-  </message>
   <message name="IDS_CONTEXTUAL_TASKS_MENU_MY_ACTIVITY" desc="The 'My Activity' option in the 3-dot menu.">
     My Activity
   </message>

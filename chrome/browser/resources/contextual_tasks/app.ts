@@ -77,10 +77,6 @@ export class ContextualTasksAppElement extends CrLitElement {
     this.browserProxy_.handler.moveTaskUiToToNewTab();
   }
 
-  protected onOpenChromeSettingsClick_() {
-    this.browserProxy_.handler.openChromeSettingsUi();
-  }
-
   protected onMyActivityClick_() {
     this.browserProxy_.handler.openMyActivityUi();
   }

@@ -89,7 +89,6 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
 
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"openInNewTab", IDS_CONTEXTUAL_TASKS_MENU_OPEN_IN_NEW_TAB},
-      {"openChromeSettings", IDS_CONTEXTUAL_TASKS_MENU_OPEN_CHROME_SETTINGS},
       {"myActivity", IDS_CONTEXTUAL_TASKS_MENU_MY_ACTIVITY},
       {"help", IDS_CONTEXTUAL_TASKS_MENU_HELP},
       {"sourcesMenuTabsHeader", IDS_CONTEXTUAL_TASKS_SOURCES_MENU_TABS_HEADER},

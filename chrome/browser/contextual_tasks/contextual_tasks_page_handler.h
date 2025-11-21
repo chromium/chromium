@@ -55,7 +55,6 @@ class ContextualTasksPageHandler : public contextual_tasks::mojom::PageHandler {
   void CloseSidePanel() override;
   void ShowThreadHistory(ShowThreadHistoryCallback callback) override;
   void IsShownInTab(IsShownInTabCallback callback) override;
-  void OpenChromeSettingsUi() override;
   void OpenMyActivityUi() override;
   void OpenHelpUi() override;
   void MoveTaskUiToToNewTab() override;

@@ -18,7 +18,6 @@ export function getHtml(this: ContextualTasksAppElement) {
         @new-thread-click="${this.onNewThreadClick_}"
         @thread-history-click="${this.onThreadHistoryClick_}"
         @open-in-new-tab-click="${this.onOpenInNewTabClick_}"
-        @open-chrome-settings-click="${this.onOpenChromeSettingsClick_}"
         @my-activity-click="${this.onMyActivityClick_}"
         @help-click="${this.onHelpClick_}"
         @tab-click="${this.onTabClick_}">
