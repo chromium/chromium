@@ -384,14 +384,13 @@ CreateInputDataFromAnnotatedPageContent(
         [self createInputItemForWebState:webState];
 
     if (IsComposeboxTabPickerCachedAPCEnabled()) {
-      [self attachWebStateContent:webState includeSnapshot:NO token:token];
+      [self attachWebStateContent:webState token:token];
       continue;
     }
 
     [_webStateDeferredExecutor webState:webState
                       executeOnceLoaded:^{
                         [weakSelf attachWebStateContent:webState
-                                        includeSnapshot:NO
                                                   token:token];
                       }];
   }
@@ -443,7 +442,6 @@ CreateInputDataFromAnnotatedPageContent(
 // The content can be fetched from the cache or computed on the fly. An optional
 // snapshot of the page can be included.
 - (void)attachWebStateContent:(web::WebState*)webState
-              includeSnapshot:(BOOL)includeSnapshot
                         token:(const base::UnguessableToken)token {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   __weak __typeof(self) weakSelf = self;
@@ -457,7 +455,6 @@ CreateInputDataFromAnnotatedPageContent(
           if (context.has_value()) {
             [weakSelf handlePageContextResponse:std::move(context.value())
                                        webState:weakWebState.get()
-                                includeSnapshot:NO
                                           token:token];
           }
         }));
@@ -471,13 +468,12 @@ CreateInputDataFromAnnotatedPageContent(
         if (response.has_value()) {
           [weakSelf handlePageContextResponse:std::move(response.value())
                                      webState:weakWebState.get()
-                              includeSnapshot:includeSnapshot
                                         token:token];
         }
       })];
 
   pageContextWrapper.shouldGetAnnotatedPageContent = YES;
-  pageContextWrapper.shouldGetSnapshot = includeSnapshot;
+  pageContextWrapper.shouldGetSnapshot = YES;
   [pageContextWrapper populatePageContextFieldsAsync];
 
   _pageContextWrappers[webState->GetUniqueIdentifier()] = pageContextWrapper;
@@ -489,7 +485,6 @@ CreateInputDataFromAnnotatedPageContent(
             (std::unique_ptr<optimization_guide::proto::PageContext>)
                 page_context
                          webState:(web::WebState*)webState
-                  includeSnapshot:(BOOL)includeSnapshot
                             token:(const base::UnguessableToken)token {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
 
@@ -504,7 +499,6 @@ CreateInputDataFromAnnotatedPageContent(
           base::WrapUnique(page_context->release_annotated_page_content()),
           webState);
 
-  if (includeSnapshot) {
     __weak __typeof(self) weakSelf = self;
     SnapshotTabHelper::FromWebState(webState)->RetrieveColorSnapshot(
         ^(UIImage* image) {
@@ -512,11 +506,6 @@ CreateInputDataFromAnnotatedPageContent(
                                    inputData:std::move(input_data)
                                        token:token];
         });
-
-    return;
-  }
-
-  [self startFileUploadFlowWithToken:token inputData:std::move(input_data)];
 }
 
 - (void)startFileUploadFlowWithToken:(const base::UnguessableToken)token
