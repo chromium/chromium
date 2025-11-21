@@ -27,7 +27,7 @@ import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ButtonCompat;
-import org.chromium.ui.widget.RippleBackgroundHelper;
+import org.chromium.ui.widget.RippleBackgroundHelper.BorderType;
 
 /** Binds the Fusebox properties to the view and component. */
 @NullMarked
@@ -40,7 +40,7 @@ class FuseboxViewBinder {
             view.attachmentsView.setAdapter(model.get(FuseboxProperties.ADAPTER));
         } else if (propertyKey == FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE) {
             reanchorViewsForCompactFusebox(model, view);
-            updateModeSelectorVisibility(model, view);
+            updateButtonsVisibilityAndStyling(model, view);
         } else if (propertyKey == FuseboxProperties.COMPACT_UI) {
             reanchorViewsForCompactFusebox(model, view);
         } else if (propertyKey == FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED) {
@@ -57,12 +57,12 @@ class FuseboxViewBinder {
                     model.get(FuseboxProperties.ATTACHMENTS_TOOLBAR_VISIBLE)
                             ? View.VISIBLE
                             : View.GONE);
-            updateModeSelectorVisibility(model, view);
+            updateButtonsVisibilityAndStyling(model, view);
         } else if (propertyKey == FuseboxProperties.BUTTON_ADD_CLICKED) {
             view.addButton.setOnClickListener(
                     v -> model.get(FuseboxProperties.BUTTON_ADD_CLICKED).run());
         } else if (propertyKey == FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE) {
-            updateModeSelectorVisibility(model, view);
+            updateButtonsVisibilityAndStyling(model, view);
         } else if (propertyKey == FuseboxProperties.POPUP_CAMERA_CLICKED) {
             view.popup.mCameraButton.setOnClickListener(
                     v -> model.get(FuseboxProperties.POPUP_CAMERA_CLICKED).run());
@@ -111,11 +111,11 @@ class FuseboxViewBinder {
                             ? View.VISIBLE
                             : View.GONE);
         } else if (propertyKey == FuseboxProperties.SHOW_DEDICATED_MODE_BUTTON) {
-            updateModeSelectorVisibility(model, view);
+            updateButtonsVisibilityAndStyling(model, view);
         }
     }
 
-    static void updateModeSelectorVisibility(PropertyModel model, FuseboxViewHolder views) {
+    static void updateButtonsVisibilityAndStyling(PropertyModel model, FuseboxViewHolder views) {
         boolean isRequestTypeChangeable =
                 model.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE);
         boolean showFuseboxToolbar = model.get(FuseboxProperties.ATTACHMENTS_TOOLBAR_VISIBLE);
@@ -126,55 +126,64 @@ class FuseboxViewBinder {
         boolean isImageGenerationUsed =
                 model.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE)
                         == AutocompleteRequestType.IMAGE_GENERATION;
-        boolean isCustomModeUsed = isAiModeUsed || isImageGenerationUsed;
+        boolean showTryAiModeHintInDedicatedModeButton =
+                OmniboxFeatures.sShowTryAiModeHintInDedicatedModeButton.getValue();
         Context context = views.parentView.getContext();
         Resources res = context.getResources();
 
         views.addButton.setVisibility(showFuseboxToolbar ? View.VISIBLE : View.GONE);
 
         ButtonCompat typeButton = views.requestType;
-        if (showFuseboxToolbar && (isCustomModeUsed || showDedicatedModeButton)) {
-            typeButton.setVisibility(View.VISIBLE);
-
+        if (showFuseboxToolbar
+                && (isAiModeUsed || isImageGenerationUsed || showDedicatedModeButton)) {
             final String text;
             final String description;
+            final ColorStateList buttonColor;
+            final @BorderType int borderStyle;
+            final Drawable startDrawable;
+            final Drawable endDrawable;
+            final ColorStateList drawableTint;
             if (isAiModeUsed) {
                 text = res.getString(R.string.ai_mode_entrypoint_label);
                 description = res.getString(R.string.accessibility_omnibox_reset_mode, text);
+                buttonColor = context.getColorStateList(R.color.gm3_baseline_surface_container);
+                borderStyle = BorderType.SOLID;
+                startDrawable = context.getDrawable(R.drawable.search_spark_black_24dp);
+                endDrawable = context.getDrawable(R.drawable.btn_close);
+                drawableTint = ColorStateList.valueOf(SemanticColorUtils.getColorPrimary(context));
             } else if (isImageGenerationUsed) {
                 text = res.getString(R.string.omnibox_create_image);
                 description = res.getString(R.string.accessibility_omnibox_reset_mode, text);
-            } else if (OmniboxFeatures.sShowTryAiModeHintInDedicatedModeButton.getValue()) {
+                buttonColor = context.getColorStateList(R.color.gm3_baseline_surface_container);
+                borderStyle = BorderType.SOLID;
+                startDrawable = context.getDrawable(R.drawable.create_image_24dp);
+                endDrawable = context.getDrawable(R.drawable.btn_close);
+                drawableTint = null;
+            } else if (showTryAiModeHintInDedicatedModeButton) {
                 text = res.getString(R.string.ai_mode_entrypoint_hint);
                 description = text;
+                buttonColor = context.getColorStateList(android.R.color.transparent);
+                borderStyle = BorderType.DASHED;
+                startDrawable = context.getDrawable(R.drawable.search_spark_black_24dp);
+                endDrawable = null;
+                drawableTint = ColorStateList.valueOf(SemanticColorUtils.getColorPrimary(context));
             } else /* dedicated button with aimode off, no hint text changes. */ {
                 text = res.getString(R.string.ai_mode_entrypoint_label);
                 description = res.getString(R.string.accessibility_omnibox_enable_ai_mode);
+                buttonColor = context.getColorStateList(android.R.color.transparent);
+                borderStyle = BorderType.DASHED;
+                startDrawable = context.getDrawable(R.drawable.search_spark_black_24dp);
+                endDrawable = null;
+                drawableTint = ColorStateList.valueOf(SemanticColorUtils.getColorPrimary(context));
             }
+            typeButton.setVisibility(View.VISIBLE);
             typeButton.setText(text);
             typeButton.setContentDescription(description);
-
-            typeButton.setButtonColor(
-                    isCustomModeUsed
-                            ? context.getColorStateList(R.color.gm3_baseline_surface_container)
-                            : context.getColorStateList(android.R.color.transparent));
-
-            typeButton.setBorderStyle(
-                    isCustomModeUsed
-                            ? RippleBackgroundHelper.BorderType.SOLID
-                            : RippleBackgroundHelper.BorderType.DASHED);
-
+            typeButton.setButtonColor(buttonColor);
+            typeButton.setBorderStyle(borderStyle);
             typeButton.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                    isImageGenerationUsed
-                            ? context.getDrawable(R.drawable.create_image_24dp)
-                            : context.getDrawable(R.drawable.search_spark_black_24dp),
-                    null,
-                    isCustomModeUsed ? context.getDrawable(R.drawable.btn_close) : null,
-                    null);
-            typeButton.setCompoundDrawableTintList(
-                    isImageGenerationUsed
-                            ? null
-                            : ColorStateList.valueOf(SemanticColorUtils.getColorPrimary(context)));
+                    startDrawable, null, endDrawable, null);
+            typeButton.setCompoundDrawableTintList(drawableTint);
         } else {
             typeButton.setVisibility(View.GONE);
         }
