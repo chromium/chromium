@@ -410,7 +410,9 @@ public class StripLayoutHelper
                     // Foreground the pinned/unpinned tab to start animation.
                     stripTab.setIsForegrounded(/* isForegrounded= */ true);
                     mTabDelegate.setIsTabNonDragReordering(
-                            stripTab, /* isNonDragReordering= */ true);
+                            stripTab,
+                            /* isNonDragReordering= */ !stripTab.getIsSelected()
+                                    && !stripTab.getIsMultiSelected());
                     List<Animator> pinnedAnimations =
                             computeAndUpdateTabWidth(
                                     /* animate= */ true, /* deferAnimations= */ true);
