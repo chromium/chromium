@@ -482,6 +482,7 @@ dependencies {
     compileLatest 'com.squareup.leakcanary:leakcanary-android:+'
     compileLatest 'com.squareup.leakcanary:leakcanary-android-core:+'
     compileLatest 'com.squareup.leakcanary:shark:+'
+    compileLatest 'com.squareup.leakcanary:shark-android:+'
     androidTestCompileLatest 'com.squareup.leakcanary:leakcanary-android-instrumentation:+'
     buildCompileLatest 'org.ow2.asm:asm:+'
     buildCompileLatest 'org.ow2.asm:asm-commons:+'

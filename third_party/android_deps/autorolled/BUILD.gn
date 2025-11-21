@@ -655,6 +655,19 @@ template("define_autorolled_targets") {
     }
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    java_prebuilt("com_squareup_leakcanary_shark_android_java") {
+      jar_path = "autorolled/cipd/libs/com_squareup_leakcanary_shark_android/shark-android.jar"
+      output_name = "com_squareup_leakcanary_shark_android"
+      supports_android = true
+      requires_android = true
+      enable_bytecode_checks = false
+      deps = [
+        "//third_party/android_deps:com_squareup_leakcanary_shark_java",
+        "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+      ]
+    }
+
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     java_prebuilt("com_squareup_okio_okio_jvm_java") {
       jar_path = "autorolled/cipd/libs/com_squareup_okio_okio_jvm/okio-jvm.jar"
       output_name = "com_squareup_okio_okio_jvm"
@@ -1638,26 +1651,6 @@ template("define_autorolled_targets") {
         "//third_party/android_deps:com_squareup_curtains_curtains_java",
         "//third_party/android_deps:com_squareup_leakcanary_leakcanary_android_utils_java",
         "//third_party/android_deps:com_squareup_leakcanary_shark_log_java",
-        "//third_party/kotlin_stdlib:kotlin_stdlib_java",
-      ]
-    }
-
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-    java_prebuilt("com_squareup_leakcanary_shark_android_java") {
-      jar_path = "autorolled/cipd/libs/com_squareup_leakcanary_shark_android/shark-android.jar"
-      output_name = "com_squareup_leakcanary_shark_android"
-      supports_android = true
-      requires_android = true
-      enable_bytecode_checks = false
-
-      # To remove visibility constraint, add this dependency to
-      # //third_party/android_deps/autorolled/build.gradle.
-      visibility = [
-        ":*",
-        "//third_party/androidx:*",
-      ]
-      deps = [
-        "//third_party/android_deps:com_squareup_leakcanary_shark_java",
         "//third_party/kotlin_stdlib:kotlin_stdlib_java",
       ]
     }
