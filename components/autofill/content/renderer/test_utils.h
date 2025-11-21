@@ -78,6 +78,12 @@ content::RenderFrame* GetIframeById(const blink::WebDocument& doc,
                                     std::string_view id,
                                     AllowNull allow_null = AllowNull(false));
 
+// Returns the WebDocument of the iframe with the given `id`.
+blink::WebDocument GetIframeDocumentById(
+    const blink::WebDocument& doc,
+    std::string_view id,
+    AllowNull allow_null = AllowNull(false));
+
 // Returns the FrameToken of the iframe element with the given |id|.
 FrameToken GetFrameToken(const blink::WebDocument& doc,
                          std::string_view id,

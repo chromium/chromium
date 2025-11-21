@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CONTENT_RENDERER_FORM_AUTOFILL_ISSUES_H_
 #define COMPONENTS_AUTOFILL_CONTENT_RENDERER_FORM_AUTOFILL_ISSUES_H_
 
-#include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/form_data.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "third_party/blink/public/platform/web_string.h"
 

@@ -53,7 +53,6 @@ using ::blink::WebElementCollection;
 using ::blink::WebFormControlElement;
 using ::blink::WebFormElement;
 using ::blink::WebInputElement;
-using ::blink::WebLocalFrame;
 using ::blink::WebNode;
 using ::blink::WebString;
 using ::testing::_;
