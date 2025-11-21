@@ -92,7 +92,7 @@ std::optional<ActorSuggestionWithFillData> GetActorCreditCardSuggestion(
     return std::nullopt;
   }
 
-  // TOOD(crbug.com/455788947): Add the network/card art icon to the
+  // TODO(crbug.com/455788947): Add the network/card art icon to the
   // ActorSuggestion.
   ActorSuggestion actor_suggestion;
   actor_suggestion.title = base::UTF16ToUTF8(suggestion.main_text.value);
