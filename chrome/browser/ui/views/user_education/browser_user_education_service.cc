@@ -1582,6 +1582,36 @@ void MaybeRegisterChromeFeaturePromos(
                                    "Triggered when Lens Overlay is used.")));
   }
 
+  // kIPHiOSEnhancedBrowsingDesktopFeature
+  if (MobilePromoOnDesktopTypeEnabled() ==
+      MobilePromoOnDesktopPromoType::kESBPromo) {
+    registry.RegisterFeature(std::move(
+        user_education::FeaturePromoSpecification::CreateForCustomUi(
+            feature_engagement::kIPHiOSEnhancedBrowsingDesktopFeature,
+            kToolbarAppMenuButtonElementId,
+            user_education::CreateCustomHelpBubbleViewFactoryCallback(
+                base::BindRepeating(&IOSPromoBubbleView::Create,
+                                    IOSPromoType::kEnhancedBrowsing)))
+            .SetPromoSubtype(user_education::FeaturePromoSpecification::
+                                 PromoSubtype::kActionableAlert)
+            .SetMetadata(144, "scottyoder@google.com",
+                         "Triggered when ESB is first enabled.")));
+  }
+
+  // kIPHiOSPasswordPromoDesktopFeature
+  if (MobilePromoOnDesktopTypeEnabled() ==
+      MobilePromoOnDesktopPromoType::kAutofillPromo) {
+    registry.RegisterFeature(
+        std::move(user_education::FeaturePromoSpecification::CreateForCustomUi(
+                      feature_engagement::kIPHiOSPasswordPromoDesktopFeature,
+                      kPasswordsOmniboxKeyIconElementId,
+                      user_education::CreateCustomHelpBubbleViewFactoryCallback(
+                          base::BindRepeating(&IOSPromoBubbleView::Create,
+                                              IOSPromoType::kPassword)))
+                      .SetMetadata(144, "scottyoder@google.com",
+                                   "Triggered when a password is saved.")));
+  }
+
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_COMPOSE)

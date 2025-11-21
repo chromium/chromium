@@ -53,6 +53,8 @@
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"
 #include "chrome/browser/ui/passwords/passwords_leak_dialog_delegate.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
+#include "chrome/browser/ui/promos/ios_promo_trigger_service.h"
+#include "chrome/browser/ui/promos/ios_promo_trigger_service_factory.h"
 #include "chrome/browser/ui/promos/ios_promos_utils.h"
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/browser/ui/singleton_tabs.h"
@@ -91,6 +93,7 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
+#include "components/sharing_message/features.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -1202,7 +1205,17 @@ void ManagePasswordsUIController::MaybeShowIOSPasswordPromo() {
     return;
   }
 
-  ios_promos_utils::VerifyIOSPromoEligibility(IOSPromoType::kPassword, browser);
+  if (MobilePromoOnDesktopTypeEnabled() ==
+      MobilePromoOnDesktopPromoType::kAutofillPromo) {
+    IOSPromoTriggerService* service =
+        IOSPromoTriggerServiceFactory::GetForProfile(browser->GetProfile());
+    if (service) {
+      service->NotifyPromoShouldBeShown(IOSPromoType::kPassword);
+    }
+  } else {
+    ios_promos_utils::VerifyIOSPromoEligibility(IOSPromoType::kPassword,
+                                                browser);
+  }
 }
 
 void ManagePasswordsUIController::RelaunchChrome() {

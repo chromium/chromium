@@ -11,7 +11,27 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/promos/ios_promo_trigger_service.h"
 #include "chrome/browser/ui/promos/ios_promo_trigger_service_factory.h"
-#include "chrome/browser/ui/promos/ios_promos_utils.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
+
+namespace {
+
+// Returns the feature associated with the given IOSPromoType.
+const base::Feature& FeatureForIOSPromoType(IOSPromoType promo_type) {
+  switch (promo_type) {
+    case IOSPromoType::kPassword:
+      return feature_engagement::kIPHiOSPasswordPromoDesktopFeature;
+    case IOSPromoType::kAddress:
+      return feature_engagement::kIPHiOSAddressPromoDesktopFeature;
+    case IOSPromoType::kPayment:
+      return feature_engagement::kIPHiOSPaymentPromoDesktopFeature;
+    case IOSPromoType::kEnhancedBrowsing:
+      return feature_engagement::kIPHiOSEnhancedBrowsingDesktopFeature;
+    case IOSPromoType::kLens:
+      return feature_engagement::kIPHiOSLensPromoDesktopFeature;
+  }
+}
+
+}  // namespace
 
 DEFINE_USER_DATA(IOSPromoController);
 
@@ -43,5 +63,10 @@ void IOSPromoController::OnPromoTriggered(IOSPromoType promo_type) {
     return;
   }
 
-  ios_promos_utils::VerifyIOSPromoEligibility(promo_type, browser_);
+  auto* user_education_interface =
+      BrowserUserEducationInterface::From(browser_);
+  if (user_education_interface) {
+    user_education_interface->MaybeShowFeaturePromo(
+        FeatureForIOSPromoType(promo_type));
+  }
 }

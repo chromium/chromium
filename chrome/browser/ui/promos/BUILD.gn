@@ -47,6 +47,7 @@ if (!is_android) {
       ":utils",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/user_education",
       "//chrome/browser/ui/views/frame",
       "//ui/base/unowned_user_data",
     ]
