@@ -558,8 +558,7 @@ void ClientTagBasedDataTypeProcessor::Put(
   CHECK(data) << DataTypeToDebugString(type_);
   CHECK(!data->is_deleted()) << DataTypeToDebugString(type_);
   CHECK(!data->specifics.has_encrypted()) << DataTypeToDebugString(type_);
-  // TODO(crbug.com/408182457): This check sometimes triggers.
-  DUMP_WILL_BE_CHECK(!storage_key.empty()) << DataTypeToDebugString(type_);
+  CHECK(!storage_key.empty()) << DataTypeToDebugString(type_);
   CHECK_EQ(type_, GetDataTypeFromSpecifics(data->specifics))
       << DataTypeToDebugString(type_);
 
@@ -602,10 +601,8 @@ void ClientTagBasedDataTypeProcessor::Put(
       // If the Put() call already included the client tag, let's verify that
       // it's consistent with the bridge's regular GetClientTag() function (if
       // supported by the bridge).
-      // TODO(crbug.com/408182457): This check sometimes triggers.
-      DUMP_WILL_BE_CHECK_EQ(
-          data->client_tag_hash,
-          ClientTagHash::FromUnhashed(type_, bridge_->GetClientTag(*data)));
+      CHECK_EQ(data->client_tag_hash, ClientTagHash::FromUnhashed(
+                                          type_, bridge_->GetClientTag(*data)));
     }
     // If another entity exists for the same client_tag_hash, it could be the
     // case that the bridge has deleted this entity but the tombstone hasn't
@@ -614,8 +611,7 @@ void ClientTagBasedDataTypeProcessor::Put(
     // entity.
     entity = entity_tracker_->GetEntityForTagHash(data->client_tag_hash);
     if (entity != nullptr) {
-      // TODO(crbug.com/408182457): This check sometimes triggers.
-      DUMP_WILL_BE_CHECK(storage_key != entity->storage_key());
+      CHECK(storage_key != entity->storage_key());
       if (!entity->metadata().is_deleted()) {
         // The bridge overrides an entity that is not deleted. This is
         // unexpected but the processor tolerates it. It is very likely a
