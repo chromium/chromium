@@ -97,6 +97,13 @@ struct CrossThreadCopier<Vector<T, inlineCapacity, Allocator>> {
 };
 
 template <wtf_size_t inlineCapacity, typename Allocator>
+struct CrossThreadCopier<Vector<AtomicString, inlineCapacity, Allocator>>
+    : public CrossThreadCopierPassThrough<
+          Vector<AtomicString, inlineCapacity, Allocator>> {
+  STATIC_ONLY(CrossThreadCopier);
+};
+
+template <wtf_size_t inlineCapacity, typename Allocator>
 struct CrossThreadCopier<Vector<String, inlineCapacity, Allocator>>
     : public CrossThreadCopierPassThrough<
           Vector<String, inlineCapacity, Allocator>> {

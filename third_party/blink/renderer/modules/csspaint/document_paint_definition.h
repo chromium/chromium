@@ -25,9 +25,9 @@ namespace blink {
 class MODULES_EXPORT DocumentPaintDefinition {
  public:
   explicit DocumentPaintDefinition(
-      const Vector<CSSPropertyID>& native_invalidation_properties,
-      const Vector<AtomicString>& custom_invalidation_properties,
-      const Vector<CSSSyntaxDefinition>& input_argument_types,
+      Vector<CSSPropertyID> native_invalidation_properties,
+      Vector<AtomicString> custom_invalidation_properties,
+      Vector<CSSSyntaxDefinition> input_argument_types,
       bool alpha);
   virtual ~DocumentPaintDefinition();
 
@@ -44,7 +44,7 @@ class MODULES_EXPORT DocumentPaintDefinition {
 
   bool RegisterAdditionalPaintDefinition(const CSSPaintDefinition&);
   bool RegisterAdditionalPaintDefinition(const Vector<CSSPropertyID>&,
-                                         const Vector<String>&,
+                                         const Vector<AtomicString>&,
                                          const Vector<CSSSyntaxDefinition>&,
                                          bool alpha);
 
