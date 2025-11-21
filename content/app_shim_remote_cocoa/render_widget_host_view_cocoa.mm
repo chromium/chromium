@@ -1765,8 +1765,9 @@ void ExtractUnderlines(NSAttributedString* string,
   // message, since it just means that a menu extra (on the "system status bar")
   // was activated; we'll get another |-windowDidResignKey| if we ever really
   // lose key window status.
-  if ([NSApp isActive] && ([NSApp keyWindow] == [self window]))
+  if ([NSApp isActive] && ([self window].isKeyWindow)) {
     return;
+  }
 
   _host->OnWindowIsKeyChanged(false);
   if (base::FeatureList::IsEnabled(
