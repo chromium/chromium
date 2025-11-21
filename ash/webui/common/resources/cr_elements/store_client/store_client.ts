@@ -31,7 +31,6 @@ export interface StoreClientInterface<S, A extends Action> {
 
   /**
    * Helper to dispatch an asynchronous action to the store.
-   * TODO(b/296440261) remove `dispatchAsync` in favor of promises.
    */
   dispatchAsync(action: DeferredAction<A>): void;
 
