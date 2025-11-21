@@ -47,7 +47,7 @@ const CGFloat kCarouselHeight = 44.0f;
 /// The height of the AIM mode button.
 const CGFloat kAIMButtonHeight = 36.0f;
 /// The width of the AIM mode button.
-const CGFloat kAIMButtonWidth = 94.0f;
+const CGFloat kAIMButtonWidth = 122.0f;
 /// The spacing for the horizontal buttons stack view.
 const CGFloat kButtonsCompactSpacing = 4.0f;
 const CGFloat kButtonsStackViewSpacing = 6.0f;
@@ -83,6 +83,9 @@ const CGFloat kCompactModeAnimationDuration = 0.1;
 
 /// The fade view width.
 const CGFloat kFadeViewWidth = 30.0f;
+
+/// The size of the close icon in the context indicator buttons.
+const CGFloat kCloseIndicatorSize = 10.0f;
 }  // namespace
 
 
@@ -122,6 +125,7 @@ const CGFloat kFadeViewWidth = 30.0f;
   UIView* _inputPlateContainerView;
   /// The button to toggle AI mode.
   UIButton* _aimButton;
+  UIImageView* _aimButtonXIndicator;
   /// The glow effect around the input plate container.
   UIView<GlowEffect>* _glowEffectView;
   /// The plus button.
@@ -518,17 +522,23 @@ const CGFloat kFadeViewWidth = 30.0f;
                                       attributes:attributes];
   config.attributedTitle = attributedTitle;
 
-  config.contentInsets = NSDirectionalEdgeInsetsMake(5, 8, 5, 8);
   config.imagePadding = 5;
+  config.background.backgroundColor = [UIColor colorNamed:kBlueHaloColor];
+  config.baseForegroundColor = [UIColor colorNamed:kBlue600Color];
+  config.background.backgroundColor = [UIColor colorNamed:kBlueHaloColor];
+  config.baseForegroundColor = [UIColor colorNamed:kBlue600Color];
   self.aimButtonWidthConstraint.constant = kAIMButtonWidth;
-
   _aimButton.layer.borderWidth = 0;
+
   if (self.AIModeEnabled) {
+    config.contentInsets = NSDirectionalEdgeInsetsMake(5, 8, 5, 22);
     config.background.backgroundColor = [UIColor colorNamed:kBlueHaloColor];
     config.baseForegroundColor = [UIColor colorNamed:kBlue600Color];
 
     _aimButton.hidden = NO;
+    [self setupXMarkInAIMButton];
   } else {
+    config.contentInsets = NSDirectionalEdgeInsetsMake(5, 8, 5, 8);
     config.background.backgroundColor =
         [UIColor colorNamed:kSecondaryBackgroundColor];
     config.baseForegroundColor = [UIColor colorNamed:kTextPrimaryColor];
@@ -538,9 +548,36 @@ const CGFloat kFadeViewWidth = 30.0f;
       _aimButton.layer.borderColor = [UIColor colorNamed:kGrey200Color].CGColor;
     }
 
+    [_aimButtonXIndicator removeFromSuperview];
+    _aimButtonXIndicator = nil;
+
     _aimButton.hidden = YES;
   }
+
   _aimButton.configuration = config;
+}
+
+- (void)setupXMarkInAIMButton {
+  if (_aimButtonXIndicator) {
+    return;
+  }
+  _aimButtonXIndicator = [[UIImageView alloc] init];
+  _aimButtonXIndicator.translatesAutoresizingMaskIntoConstraints = NO;
+  UIImageConfiguration* configuration = [UIImageSymbolConfiguration
+      configurationWithPointSize:kCloseIndicatorSize
+                          weight:UIImageSymbolWeightBold
+                           scale:UIImageSymbolScaleMedium];
+  _aimButtonXIndicator.image =
+      DefaultSymbolWithConfiguration(kXMarkSymbol, configuration);
+  [_aimButton addSubview:_aimButtonXIndicator];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [_aimButton.titleLabel.trailingAnchor
+        constraintEqualToAnchor:_aimButtonXIndicator.leadingAnchor
+                       constant:-4],
+    [_aimButton.titleLabel.centerYAnchor
+        constraintEqualToAnchor:_aimButtonXIndicator.centerYAnchor],
+  ]];
 }
 
 /// Creates an extended touch target button with the given image.
