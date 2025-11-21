@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_CUSTOMIZE_CHROME_CUSTOMIZE_TOOLBAR_CUSTOMIZE_TOOLBAR_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_CUSTOMIZE_CHROME_CUSTOMIZE_TOOLBAR_CUSTOMIZE_TOOLBAR_HANDLER_H_
 
+#include <string_view>
 #include <unordered_map>
 
 #include "base/callback_list.h"
@@ -50,10 +51,7 @@ class CustomizeToolbarHandler
   void OnActionsChanged() override;
 
  private:
-  void OnActionPinnedChanged(actions::ActionId id, bool pinned);
-  void OnShowHomeButtonChanged();
-  void OnShowForwardButtonChanged();
-  void OnPinSplitTabButtonChanged();
+  void OnActionPinnedChanged(actions::ActionId id, std::string_view pref);
   void OnActionItemChanged();
 
   PrefService* prefs() const;

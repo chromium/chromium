@@ -160,6 +160,7 @@ source_set("impl") {
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
     "//chrome/browser/ui/tabs/saved_tab_groups",
     "//chrome/browser/ui/user_education",
+    "//chrome/browser/ui/views/contextual_tasks",
     "//chrome/browser/ui/views/download",
     "//chrome/browser/ui/views/frame:toolbar_button_provider",
     "//chrome/browser/ui/views/page_action",

@@ -5,19 +5,28 @@
 assert(is_win || is_mac || is_linux || is_chromeos)
 
 source_set("contextual_tasks") {
-  sources = [ "contextual_tasks_page_action_controller.h" ]
+  sources = [
+    "contextual_tasks_button.h",
+    "contextual_tasks_page_action_controller.h",
+  ]
+
   public_deps = [
     "//chrome/browser/ui/views/page_action",
+    "//chrome/browser/ui/views/toolbar",
     "//components/contextual_tasks/public",
   ]
 }
 
 source_set("impl") {
-  sources = [ "contextual_tasks_page_action_controller.cc" ]
+  sources = [
+    "contextual_tasks_button.cc",
+    "contextual_tasks_page_action_controller.cc",
+  ]
 
   deps = [
     ":contextual_tasks",
     "//chrome/browser/contextual_tasks",
+    "//chrome/browser/contextual_tasks:ui",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/views/side_panel",
     "//components/contextual_tasks/public:feature_list",
@@ -28,7 +37,10 @@ source_set("impl") {
 source_set("interactive_ui_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  sources = [ "contextual_tasks_page_action_controller_interactive_ui_test.cc" ]
+  sources = [
+    "contextual_tasks_button_interactive_ui_test.cc",
+    "contextual_tasks_page_action_controller_interactive_ui_test.cc",
+  ]
   deps = [
     ":contextual_tasks",
     "//chrome/browser/contextual_tasks",

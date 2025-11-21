@@ -119,7 +119,8 @@ void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   registry->RegisterBooleanPref(prefs::kShowForwardButton, true,
                                 pref_registration_flags);
-
+  registry->RegisterBooleanPref(prefs::kPinContextualTaskButton, true,
+                                pref_registration_flags);
   registry->RegisterBooleanPref(prefs::kPinSplitTabButton, false,
                                 pref_registration_flags);
 

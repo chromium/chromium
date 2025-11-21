@@ -59,6 +59,7 @@ source_set("toolbar") {
       "//chrome/browser/ui/global_error",
       "//chrome/browser/ui/safety_hub",
       "//chrome/browser/upgrade_detector",
+      "//components/contextual_tasks/public:feature_list",
       "//components/favicon/core",
       "//components/prefs",
       "//components/tabs:public",

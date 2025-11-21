@@ -33,6 +33,7 @@ enum ActionId {
   kCopyLink,
   kTabSearch,
   kSplitTab,
+  kContextualTasks,
 };
 
 // Unique identifiers for categories the actions can belong to.

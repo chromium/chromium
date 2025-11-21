@@ -794,6 +794,7 @@ chromium-metrics-reviews@google.com.
   <int value="100366" label="iOSPromoReminder"/>
   <int value="100367" label="ClassManagementToolsOOBEAccessCountSetting"/>
   <int value="100368" label="ClassManagementToolsKioskReceiverCodes"/>
+  <int value="100369" label="PinContextualTaskButton"/>
 <!-- LINT.ThenChange(/chrome/browser/sync/prefs/chrome_syncable_prefs_database.cc:ChromeSyncablePref)-->
 
 <!-- LINT.IfChange(IosSyncablePref) -->

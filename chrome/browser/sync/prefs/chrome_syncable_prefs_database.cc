@@ -434,6 +434,7 @@ enum {
   kIOSPromoReminder = 100366,
   kClassManagementToolsOOBEAccessCountSetting = 100367,
   kClassManagementToolsKioskReceiverCodes = 100368,
+  kPinContextualTaskButton = 100369,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -588,6 +589,10 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::MergeBehavior::kNone}},
     {prefs::kShowForwardButton,
      {syncable_prefs_ids::kShowForwardButton, syncer::PREFERENCES,
+      sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {prefs::kPinContextualTaskButton,
+     {syncable_prefs_ids::kPinContextualTaskButton, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
     {prefs::kPinSplitTabButton,

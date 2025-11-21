@@ -51,6 +51,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
+#include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_button.h"
 #include "chrome/browser/ui/views/extensions/extension_popup.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
@@ -93,6 +94,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/send_tab_to_self/features.h"
@@ -400,6 +402,13 @@ void ToolbarView::Init() {
     std::unique_ptr<SplitTabsToolbarButton> split =
         std::make_unique<SplitTabsToolbarButton>(browser_);
     split_tabs_ = container_view_->AddChildView(std::move(split));
+  }
+
+  if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks) &&
+      (contextual_tasks::kShowEntryPoint.Get() ==
+       contextual_tasks::EntryPointOption::kToolbarPermanent)) {
+    container_view_->AddChildView(
+        std::make_unique<ContextualTasksButton>(browser_));
   }
 
   location_bar_ = container_view_->AddChildView(std::move(location_bar));

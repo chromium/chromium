@@ -1318,6 +1318,11 @@ inline constexpr char kShowForwardButton[] = "browser.show_forward_button";
 // toolbar.
 inline constexpr char kPinSplitTabButton[] = "browser.pin_split_tab_button";
 
+// A boolean pref set to true if the contextual task button should be pinned to
+// the toolbar.
+inline constexpr char kPinContextualTaskButton[] =
+    "browser.pin_contextual_task_button";
+
 // A boolean pref set to true if links/tabs can be dragged to create split tabs.
 inline constexpr char kSplitViewDragAndDropEnabled[] =
     "browser.split_view_drag_and_drop_enabled";
