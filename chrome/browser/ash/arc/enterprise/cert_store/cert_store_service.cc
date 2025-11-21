@@ -269,7 +269,6 @@ std::optional<CertDescription> BuildCertDescritionOnWorkerThread(
   crypto::ScopedSECItem sec_item_destroyer(id_item);
   std::string pkcs11_id(id_item->data, id_item->data + id_item->len);
 
-  // TODO(b/193784305) Try to avoid (some) key generation if possible.
   // Generate the placeholder RSA key that will be installed in ARC.
   auto placeholder_key = crypto::keypair::PrivateKey::GenerateRsa2048();
 
