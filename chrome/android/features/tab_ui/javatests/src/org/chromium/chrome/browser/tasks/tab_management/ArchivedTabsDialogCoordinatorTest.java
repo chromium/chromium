@@ -100,6 +100,7 @@ import org.chromium.components.tab_group_sync.VersioningMessageController;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.url.GURL;
 
 import java.io.IOException;
@@ -834,7 +835,8 @@ public class ArchivedTabsDialogCoordinatorTest {
 
     @Test
     @MediumTest
-    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    // Flaky in automotive, https://crbug.com/462785937
     @Feature({"RenderTest"})
     public void testIphMessageResizedOnTablet() throws IOException {
         ChromeTabbedActivity cta = mCtaTestRule.getActivity();
