@@ -34,6 +34,7 @@
 
 class OmniboxController;
 class OmniboxPopupView;
+class TemplateURL;
 namespace gfx {
 class Image;
 }
@@ -300,10 +301,9 @@ class OmniboxEditModel {
     return !is_keyword_hint_ && !keyword_.empty();
   }
 
-  // Accepts the current keyword hint as a keyword. It always returns true for
-  // caller convenience. |entry_method| indicates how the user entered
-  // keyword mode.
-  bool AcceptKeyword(
+  // Accepts the current keyword hint as a keyword. `entry_method` indicates how
+  // the user entered keyword mode.
+  void AcceptKeyword(
       metrics::OmniboxEventProto::KeywordModeEntryMethod entry_method);
 
   // Sets the current keyword to that of the given `template_url` and updates
@@ -379,9 +379,12 @@ class OmniboxEditModel {
   // the selections instead of down.
   void OnTabPressed(bool shift);
 
-  // Called when the user presses the space key without modifiers.
-  // Returns true if the space is handled in a special way, for example
-  // entering keyword mode on a match somewhere down the list.
+  // Called when the user presses the space key without modifiers. Handles the
+  // special keyword entry case where the user types '@bookmarks<space>'. Since
+  // instant keywords don't have hints and are never the default match, this
+  // need special treatment compared to when the user types
+  // 'youtube.com<space>', which is handled by
+  // `ShouldAcceptKeywordAfterInsertingSpaceAtEnd()`.
   bool OnSpacePressed();
 
   // Called when any relevant data changes.  This rolls together several
@@ -416,14 +419,13 @@ class OmniboxEditModel {
                                   const std::u16string& additional_text,
                                   const AutocompleteMatch& new_match);
 
-  // Called by the OmniboxView after something changes, with details about what
-  // state changes occurred.  Updates internal state, updates the popup if
-  // necessary, and returns true if any significant changes occurred.  Note that
-  // |text_change.text_differs| may be set even if |text_change.old_text| ==
-  // |text_change.new_text|, e.g. if we've just committed an IME composition.
-  //
-  // If |allow_keyword_ui_change| is false then the change should not affect
-  // keyword ui state, even if the text matches a keyword exactly. This value
+  // Called by the `OmniboxView` after something changes, with details about
+  // what state changes occurred. Updates internal state, updates the popup if
+  // necessary, and returns true if any significant changes occurred. Note that
+  // `text_change.text_differs` may be set even if `text_change.old_text` ==
+  // `text_change.new_text`, e.g. if we've just committed an IME composition.
+  // If `allow_keyword_ui_change` is false then the change should not affect
+  // keyword UI state, even if the text matches a keyword exactly. This value
   // may be false when the user is composing a text with an IME.
   bool OnAfterPossibleChange(const OmniboxView::StateChanges& state_changes,
                              bool allow_keyword_ui_change);
@@ -655,17 +657,19 @@ class OmniboxEditModel {
   // triggering is enabled, false otherwise.
   bool AllowKeywordSpaceTriggering() const;
 
-  // Accepts current keyword if the user just typed a space at the end of
-  // |new_text|.  This handles both of the following cases:
-  //   (assume "foo" is a keyword, | is the input caret, [] is selected text)
-  //   foo| -> foo |      (a space was appended to a keyword)
-  //   foo[bar] -> foo |  (a space replaced other text after a keyword)
-  // Returns true if the current keyword is accepted.
-  bool MaybeAcceptKeywordBySpace(const std::u16string& new_text);
+  // Whether the user just typed a space at the end of a keyword, with or
+  // without inline autocompletion:
+  // - youtube| -> youtube |       (a space was appended to a keyword)
+  // - youtube[.com] -> youtube |  (a space replaced other text after a keyword)
+  // Returns false when pressing space at the end of a keyword *prefix*:
+  // - youtub[e.com] -> youtub |
+  bool ShouldAcceptKeywordAfterInsertingSpaceAtEnd(
+      const std::u16string& new_text);
 
-  // Checks whether the user inserted a space into |old_text| and by doing so
-  // created a |new_text| that looks like "<keyword> <search phrase>".
-  bool CreatedKeywordSearchByInsertingSpaceInMiddle(
+  // Whether the user inserted a space into `old_text` and by doing so created a
+  // `new_text` that looks like "<keyword> <search phrase>":
+  // - youtube|query -> youtube |query
+  bool ShouldAcceptKeywordAfterInsertingSpaceInMiddle(
       const std::u16string& old_text,
       const std::u16string& new_text,
       size_t caret_position) const;
@@ -835,7 +839,7 @@ class OmniboxEditModel {
   // Indicates if the upcoming autocomplete search is allowed to be treated as
   // an exact keyword match.  If this is true then keyword mode will be
   // triggered automatically if the input is "<keyword> <search string>".  We
-  // allow this when CreatedKeywordSearchByInsertingSpaceInMiddle() is true.
+  // allow this when `ShouldAcceptKeywordAfterInsertingSpaceInMiddle()` is true.
   // This has no effect if we're already in keyword mode.
   bool allow_exact_keyword_match_ = false;
 
