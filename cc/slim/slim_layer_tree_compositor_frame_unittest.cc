@@ -1040,10 +1040,8 @@ TEST_F(SlimLayerTreeCompositorFrameTest, TextureLayerAppendQuads) {
     AppendResourcesToReturn(resources_to_return, frame);
   }
 
-  // The hold on the image is released when resources are returned.
-  texture_layer->ClearTexture();
-  EXPECT_EQ(shared_image_texture_layer_client.shared_image_refs(), 1);
-  frame_sink_->ReclaimResources(std::move(resources_to_return));
+  // The hold on the image is released when context is lost.
+  frame_sink_->OnContextLost();
   EXPECT_EQ(shared_image_texture_layer_client.shared_image_refs(), 0);
 }
 

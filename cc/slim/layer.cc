@@ -448,4 +448,6 @@ void Layer::NotifyPropertyChanged() {
   }
 }
 
+void Layer::ReleaseResources() {}
+
 }  // namespace cc::slim

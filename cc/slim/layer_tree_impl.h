@@ -185,6 +185,9 @@ class COMPONENT_EXPORT(CC_SLIM) LayerTreeImpl : public LayerTree,
   void ProcessDamageForRenderPass(viz::CompositorRenderPass& render_pass,
                                   FrameData& data);
 
+  void MaybeReleaseResources();
+  void ReleaseResourcesFromLayerAndChildren(Layer* layer);
+
   const raw_ptr<LayerTreeClient> client_;
   const uint32_t num_unneeded_begin_frame_before_stop_;
   const int min_occlusion_tracking_dimension_;

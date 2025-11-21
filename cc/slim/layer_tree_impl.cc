@@ -256,6 +256,7 @@ void LayerTreeImpl::SetFrameSink(std::unique_ptr<FrameSink> sink) {
 
 void LayerTreeImpl::ReleaseLayerTreeFrameSink() {
   DCHECK(!IsVisible());
+  MaybeReleaseResources();
   frame_sink_.reset();
   damage_from_previous_frame_.clear();
 }
@@ -374,6 +375,7 @@ void LayerTreeImpl::DidPresentCompositorFrame(
 
 void LayerTreeImpl::DidLoseLayerTreeFrameSink() {
   client_->DidLoseLayerTreeFrameSink();
+  MaybeReleaseResources();
   frame_sink_.reset();
   MaybeRequestFrameSink();
 }
@@ -1122,6 +1124,19 @@ void LayerTreeImpl::ProcessDamageForRenderPass(
   render_pass.damage_rect = damage;
   render_pass.has_damage_from_contributing_content =
       !render_pass.damage_rect.IsEmpty();
+}
+
+void LayerTreeImpl::MaybeReleaseResources() {
+  if (frame_sink_ && root_) {
+    ReleaseResourcesFromLayerAndChildren(root_.get());
+  }
+}
+
+void LayerTreeImpl::ReleaseResourcesFromLayerAndChildren(Layer* layer) {
+  layer->ReleaseResources();
+  for (auto& child : layer->children()) {
+    ReleaseResourcesFromLayerAndChildren(child.get());
+  }
 }
 
 }  // namespace cc::slim

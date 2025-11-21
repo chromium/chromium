@@ -279,6 +279,10 @@ class COMPONENT_EXPORT(CC_SLIM) Layer : public base::RefCounted<Layer> {
   void NotifySubtreeChanged();
   void NotifyPropertyChanged();
 
+  // Release resources held by this layer. Called when the output surface that
+  // rendered this layer was lost.
+  virtual void ReleaseResources();
+
  private:
   friend class base::RefCounted<Layer>;
 

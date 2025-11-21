@@ -35,12 +35,12 @@ class COMPONENT_EXPORT(CC_SLIM) TextureLayer : public Layer {
   // the layer to pull.
   void NotifyUpdatedResource();
 
-  // The client must call this method when the last resource provided is no
-  // longer available to draw.
-  void ClearTexture();
-
   // Layer overrides.
   void SetLayerTree(LayerTree* layer_tree) override;
+
+ protected:
+  // Layer overrides.
+  void ReleaseResources() override;
 
  private:
   class TransferableResourceHolder;
