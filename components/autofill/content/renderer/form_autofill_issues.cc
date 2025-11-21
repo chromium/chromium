@@ -124,32 +124,28 @@ int GetShadowHostDOMNodeId(const WebFormControlElement& element) {
 }
 
 void MaybeAppendDuplicateIdForInputDevtoolsIssue(
-    base::span<const WebFormControlElement> elements,
+    std::vector<WebFormControlElement> elements,
     std::vector<FormIssue>& form_issues) {
   const WebString& id_attr = GetWebString<kId>();
 
-  std::vector<WebFormControlElement> elements_with_id_attr;
-  elements_with_id_attr.reserve(elements.size());
-  for (const auto& element : elements) {
-    if (!element.GetIdAttribute().IsEmpty()) {
-      elements_with_id_attr.push_back(element);
-    }
-  }
-  std::ranges::sort(elements_with_id_attr, [](const WebFormControlElement& a,
-                                              const WebFormControlElement& b) {
+  std::erase_if(elements, [](const WebFormControlElement& element) {
+    return element.GetIdAttribute().IsEmpty();
+  });
+  std::ranges::sort(elements, [](const WebFormControlElement& a,
+                                 const WebFormControlElement& b) {
     return std::forward_as_tuple(a.GetIdAttribute(),
                                  GetShadowHostDOMNodeId(a)) <
            std::forward_as_tuple(b.GetIdAttribute(), GetShadowHostDOMNodeId(b));
   });
 
   int previous_violating_node = 0;
-  for (auto it = elements_with_id_attr.begin();
+  for (auto it = elements.begin();
        (it = std::ranges::adjacent_find(
-            it, elements_with_id_attr.end(),
+            it, elements.end(),
             [](const WebFormControlElement& a, const WebFormControlElement& b) {
               return a.GetIdAttribute() == b.GetIdAttribute() &&
                      GetShadowHostDOMNodeId(a) == GetShadowHostDOMNodeId(b);
-            })) != elements_with_id_attr.end();
+            })) != elements.end();
        it++) {
     if (previous_violating_node != it->GetDomNodeId()) {
       form_issues.emplace_back(
@@ -227,7 +223,7 @@ void MaybeAppendInputAssignedAutocompleteValueToIdOrNameAttributesDevtoolsIssue(
   }
 }
 
-void AppendFormIssuesInternal(base::span<const WebFormControlElement> elements,
+void AppendFormIssuesInternal(std::vector<WebFormControlElement> elements,
                               std::vector<FormIssue>& form_issues) {
   if (elements.size() == 0) {
     return;
@@ -243,7 +239,6 @@ void AppendFormIssuesInternal(base::span<const WebFormControlElement> elements,
     MaybeAppendLabelWithoutControlDevtoolsIssue(label, form_issues);
   }
 
-  MaybeAppendDuplicateIdForInputDevtoolsIssue(elements, form_issues);
   for (const WebFormControlElement& element : elements) {
     MaybeAppendAriaLabelledByDevtoolsIssue(element, form_issues);
     MaybeAppendAutocompleteAttributeDevtoolsIssue(element, form_issues);
@@ -251,15 +246,17 @@ void AppendFormIssuesInternal(base::span<const WebFormControlElement> elements,
     MaybeAppendInputAssignedAutocompleteValueToIdOrNameAttributesDevtoolsIssue(
         element, form_issues);
   }
+
+  MaybeAppendDuplicateIdForInputDevtoolsIssue(std::move(elements), form_issues);
 }
 
 // Looks for form issues in `control_elements`, e.g., inputs with duplicate ids
 // and returns a vector that is the union of `form_issues` and the new issues
 // found.
 std::vector<FormIssue> GetFormIssues(
-    base::span<const WebFormControlElement> control_elements,
+    std::vector<WebFormControlElement> control_elements,
     std::vector<FormIssue> form_issues) {
-  AppendFormIssuesInternal(control_elements, form_issues);
+  AppendFormIssuesInternal(std::move(control_elements), form_issues);
   return form_issues;
 }
 
