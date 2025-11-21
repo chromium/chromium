@@ -8952,8 +8952,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerSideBySideBrowserTest,
                   ->IsCapturingBackgroundImageForTesting());
 }
 
+// TODO(crbug.com/440147535): Flaky on multiple platforms.
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerSideBySideBrowserTest,
-                       SidePanelRoundedCornerRegularTab) {
+                       DISABLED_SidePanelRoundedCornerRegularTab) {
   WaitForPaint();
 
   // State should start in off.
