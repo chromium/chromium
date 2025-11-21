@@ -36,7 +36,7 @@ const CGFloat kPauseButtonBottomPadding = 14;
 const CGFloat kLensOverlayOnboaridingSymbolSize = 22;
 // The height of the invariant items of the dialog
 // (e.g. bottom action buttons, the padding).
-const CGFloat kDialogFixedItemsHeight = 160;
+const CGFloat kDialogFixedItemsHeight = 180;
 // The width of the dialog in regular display size.
 const CGFloat kDialogWidthInRegularDisplaySize = 540;
 
