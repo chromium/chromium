@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_HOST_LINUX_GNOME_LOCAL_INPUT_MONITOR_H_
-#define REMOTING_HOST_LINUX_GNOME_LOCAL_INPUT_MONITOR_H_
+#ifndef REMOTING_HOST_LINUX_PIPEWIRE_LOCAL_INPUT_MONITOR_H_
+#define REMOTING_HOST_LINUX_PIPEWIRE_LOCAL_INPUT_MONITOR_H_
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -13,13 +13,15 @@
 
 namespace remoting {
 
-class GnomeLocalInputMonitor : public LocalInputMonitor,
-                               public PipewireMouseCursorCapturer::Observer {
+class PipewireLocalInputMonitor : public LocalInputMonitor,
+                                  public PipewireMouseCursorCapturer::Observer {
  public:
-  explicit GnomeLocalInputMonitor(PipewireMouseCursorCapturer& cursor_capturer);
-  ~GnomeLocalInputMonitor() override;
-  GnomeLocalInputMonitor(const GnomeLocalInputMonitor&) = delete;
-  GnomeLocalInputMonitor& operator=(const GnomeLocalInputMonitor&) = delete;
+  explicit PipewireLocalInputMonitor(
+      PipewireMouseCursorCapturer& cursor_capturer);
+  ~PipewireLocalInputMonitor() override;
+  PipewireLocalInputMonitor(const PipewireLocalInputMonitor&) = delete;
+  PipewireLocalInputMonitor& operator=(const PipewireLocalInputMonitor&) =
+      delete;
 
   void StartMonitoringForClientSession(
       base::WeakPtr<ClientSessionControl> client_session_control) override;
@@ -37,4 +39,4 @@ class GnomeLocalInputMonitor : public LocalInputMonitor,
 
 }  // namespace remoting
 
-#endif  // REMOTING_HOST_LINUX_GNOME_LOCAL_INPUT_MONITOR_H_
+#endif  // REMOTING_HOST_LINUX_PIPEWIRE_LOCAL_INPUT_MONITOR_H_

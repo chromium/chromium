@@ -2,26 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/linux/gnome_local_input_monitor.h"
+#include "remoting/host/linux/pipewire_local_input_monitor.h"
 
 #include "remoting/host/client_session_control.h"
 #include "ui/events/types/event_type.h"
 
 namespace remoting {
 
-GnomeLocalInputMonitor::GnomeLocalInputMonitor(
+PipewireLocalInputMonitor::PipewireLocalInputMonitor(
     PipewireMouseCursorCapturer& cursor_capturer) {
   cursor_subscription_ = cursor_capturer.AddObserver(this);
 }
 
-GnomeLocalInputMonitor::~GnomeLocalInputMonitor() = default;
+PipewireLocalInputMonitor::~PipewireLocalInputMonitor() = default;
 
-void GnomeLocalInputMonitor::StartMonitoringForClientSession(
+void PipewireLocalInputMonitor::StartMonitoringForClientSession(
     base::WeakPtr<ClientSessionControl> client_session_control) {
   client_session_control_ = client_session_control;
 }
 
-void GnomeLocalInputMonitor::StartMonitoring(
+void PipewireLocalInputMonitor::StartMonitoring(
     PointerMoveCallback on_pointer_input,
     KeyPressedCallback on_keyboard_input,
     base::RepeatingClosure on_error) {
@@ -29,7 +29,7 @@ void GnomeLocalInputMonitor::StartMonitoring(
   on_pointer_input_ = std::move(on_pointer_input);
 }
 
-void GnomeLocalInputMonitor::OnCursorPositionChanged(
+void PipewireLocalInputMonitor::OnCursorPositionChanged(
     PipewireMouseCursorCapturer* capturer) {
   auto position = capturer->GetLatestGlobalCursorPosition();
   DCHECK(position);

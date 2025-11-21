@@ -107,9 +107,9 @@
 #include "base/types/expected.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/base/loggable.h"
+#include "remoting/host/linux/ei_input_injector.h"
+#include "remoting/host/linux/ei_keyboard_layout_monitor.h"
 #include "remoting/host/linux/ei_keymap.h"
-#include "remoting/host/linux/gnome_input_injector.h"
-#include "remoting/host/linux/gnome_keyboard_layout_monitor.h"
 #include "remoting/proto/event.pb.h"
 #include "third_party/libei/cipd/include/libei-1.0/libei.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
@@ -164,14 +164,14 @@ base::WeakPtr<EiSenderSession> EiSenderSession::GetWeakPtr() {
 }
 
 void EiSenderSession::SetKeyboardLayoutMonitor(
-    base::WeakPtr<GnomeKeyboardLayoutMonitor> monitor) {
+    base::WeakPtr<EiKeyboardLayoutMonitor> monitor) {
   keyboard_layout_monitor_ = monitor;
   keyboard_layout_monitor_->OnKeymapChanged(
       keyboards_.empty() ? nullptr : std::get<1>(keyboards_.back()).get());
 }
 
 void EiSenderSession::SetInputInjector(
-    base::WeakPtr<GnomeInputInjector> input_injector) {
+    base::WeakPtr<EiInputInjector> input_injector) {
   input_injector_ = input_injector;
   input_injector_->SetKeymap(
       keyboards_.empty() ? nullptr : std::get<1>(keyboards_.back())->GetWeakPtr());

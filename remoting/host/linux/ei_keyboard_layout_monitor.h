@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_HOST_LINUX_GNOME_KEYBOARD_LAYOUT_MONITOR_H_
-#define REMOTING_HOST_LINUX_GNOME_KEYBOARD_LAYOUT_MONITOR_H_
+#ifndef REMOTING_HOST_LINUX_EI_KEYBOARD_LAYOUT_MONITOR_H_
+#define REMOTING_HOST_LINUX_EI_KEYBOARD_LAYOUT_MONITOR_H_
 
 #include <xkbcommon/xkbcommon.h>
 
@@ -16,11 +16,11 @@ namespace remoting {
 
 class EiKeymap;
 
-class GnomeKeyboardLayoutMonitor : public KeyboardLayoutMonitor {
+class EiKeyboardLayoutMonitor : public KeyboardLayoutMonitor {
  public:
-  explicit GnomeKeyboardLayoutMonitor(
+  explicit EiKeyboardLayoutMonitor(
       base::RepeatingCallback<void(const protocol::KeyboardLayout&)> callback);
-  ~GnomeKeyboardLayoutMonitor() override;
+  ~EiKeyboardLayoutMonitor() override;
 
   // KeyboardLayoutMonitor interface
   void Start() override;
@@ -29,16 +29,16 @@ class GnomeKeyboardLayoutMonitor : public KeyboardLayoutMonitor {
   // empty layout.
   void OnKeymapChanged(EiKeymap* keymap);
 
-  base::WeakPtr<GnomeKeyboardLayoutMonitor> GetWeakPtr();
+  base::WeakPtr<EiKeyboardLayoutMonitor> GetWeakPtr();
 
  private:
   bool started_ = false;
   protocol::KeyboardLayout layout_proto_;
   base::RepeatingCallback<void(const protocol::KeyboardLayout&)> callback_;
 
-  base::WeakPtrFactory<GnomeKeyboardLayoutMonitor> weak_factory_{this};
+  base::WeakPtrFactory<EiKeyboardLayoutMonitor> weak_factory_{this};
 };
 
 }  // namespace remoting
 
-#endif  // REMOTING_HOST_LINUX_GNOME_KEYBOARD_LAYOUT_MONITOR_H_
+#endif  // REMOTING_HOST_LINUX_EI_KEYBOARD_LAYOUT_MONITOR_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/linux/gnome_keyboard_layout_monitor.h"
+#include "remoting/host/linux/ei_keyboard_layout_monitor.h"
 
 #include "base/logging.h"
 #include "base/strings/utf_string_conversion_utils.h"
@@ -13,18 +13,18 @@
 
 namespace remoting {
 
-GnomeKeyboardLayoutMonitor::GnomeKeyboardLayoutMonitor(
+EiKeyboardLayoutMonitor::EiKeyboardLayoutMonitor(
     base::RepeatingCallback<void(const protocol::KeyboardLayout&)> callback)
     : callback_(callback) {}
 
-GnomeKeyboardLayoutMonitor::~GnomeKeyboardLayoutMonitor() = default;
+EiKeyboardLayoutMonitor::~EiKeyboardLayoutMonitor() = default;
 
-void GnomeKeyboardLayoutMonitor::Start() {
+void EiKeyboardLayoutMonitor::Start() {
   started_ = true;
   callback_.Run(layout_proto_);
 }
 
-void GnomeKeyboardLayoutMonitor::OnKeymapChanged(EiKeymap* keymap) {
+void EiKeyboardLayoutMonitor::OnKeymapChanged(EiKeymap* keymap) {
   layout_proto_ =
       keymap ? keymap->GetLayoutProto() : protocol::KeyboardLayout();
   if (started_) {
@@ -32,8 +32,7 @@ void GnomeKeyboardLayoutMonitor::OnKeymapChanged(EiKeymap* keymap) {
   }
 }
 
-base::WeakPtr<GnomeKeyboardLayoutMonitor>
-GnomeKeyboardLayoutMonitor::GetWeakPtr() {
+base::WeakPtr<EiKeyboardLayoutMonitor> EiKeyboardLayoutMonitor::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 

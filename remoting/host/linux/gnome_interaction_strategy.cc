@@ -21,13 +21,14 @@
 #include "remoting/host/desktop_resizer_proxy.h"
 #include "remoting/host/input_monitor/local_input_monitor.h"
 #include "remoting/host/keyboard_layout_monitor.h"
+#include "remoting/host/linux/clipboard_gnome.h"
 #include "remoting/host/linux/curtain_mode_wayland.h"
+#include "remoting/host/linux/ei_input_injector.h"
+#include "remoting/host/linux/ei_keyboard_layout_monitor.h"
 #include "remoting/host/linux/gnome_action_executor.h"
 #include "remoting/host/linux/gnome_desktop_display_info_monitor.h"
-#include "remoting/host/linux/gnome_input_injector.h"
-#include "remoting/host/linux/gnome_keyboard_layout_monitor.h"
-#include "remoting/host/linux/gnome_local_input_monitor.h"
 #include "remoting/host/linux/pipewire_desktop_capturer.h"
+#include "remoting/host/linux/pipewire_local_input_monitor.h"
 #include "remoting/host/linux/pipewire_mouse_cursor_monitor.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 
@@ -81,11 +82,12 @@ std::unique_ptr<InputInjector> GnomeInteractionStrategy::CreateInputInjector() {
   // after the EI session is initialized.
   DCHECK(remote_desktop_session_->ei_session());
 
-  auto result = std::make_unique<GnomeInputInjector>(
+  auto result = std::make_unique<EiInputInjector>(
       remote_desktop_session_->ei_session(),
       remote_desktop_session_->capture_stream_manager(),
-      remote_desktop_session_->connection(),
-      remote_desktop_session_->session_path());
+      std::make_unique<ClipboardGnome>(
+          remote_desktop_session_->connection(),
+          remote_desktop_session_->session_path()));
   remote_desktop_session_->ei_session()->SetInputInjector(result->GetWeakPtr());
   return result;
 }
@@ -129,8 +131,7 @@ GnomeInteractionStrategy::CreateKeyboardLayoutMonitor(
     base::RepeatingCallback<void(const protocol::KeyboardLayout&)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto result =
-      std::make_unique<GnomeKeyboardLayoutMonitor>(std::move(callback));
+  auto result = std::make_unique<EiKeyboardLayoutMonitor>(std::move(callback));
   remote_desktop_session_->ei_session()->SetKeyboardLayoutMonitor(
       result->GetWeakPtr());
   return result;
@@ -156,7 +157,7 @@ GnomeInteractionStrategy::CreateLocalInputMonitor() {
 
   auto capturer = remote_desktop_session_->mouse_cursor_capturer();
   DCHECK(capturer);
-  return std::make_unique<GnomeLocalInputMonitor>(*capturer);
+  return std::make_unique<PipewireLocalInputMonitor>(*capturer);
 }
 
 std::unique_ptr<CurtainMode> GnomeInteractionStrategy::CreateCurtainMode(

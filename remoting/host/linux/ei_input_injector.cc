@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/linux/gnome_input_injector.h"
+#include "remoting/host/linux/ei_input_injector.h"
 
 #include "base/memory/weak_ptr.h"
 #include "base/notimplemented.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "remoting/base/logging.h"
+#include "remoting/host/clipboard.h"
 #include "remoting/host/linux/ei_keymap.h"
 #include "remoting/host/linux/ei_sender_session.h"
 #include "remoting/host/linux/pipewire_capture_stream.h"
@@ -15,31 +16,30 @@
 
 namespace remoting {
 
-GnomeInputInjector::GnomeInputInjector(
+EiInputInjector::EiInputInjector(
     base::WeakPtr<EiSenderSession> session,
-    base::WeakPtr<const GnomeCaptureStreamManager> stream_manager,
-    GDBusConnectionRef dbus_connection,
-    gvariant::ObjectPath session_path)
+    base::WeakPtr<const CaptureStreamManager> stream_manager,
+    std::unique_ptr<Clipboard> clipboard)
     : ei_session_(session),
       stream_manager_(stream_manager),
-      clipboard_(std::move(dbus_connection), std::move(session_path)) {}
+      clipboard_(std::move(clipboard)) {}
 
-GnomeInputInjector::~GnomeInputInjector() = default;
+EiInputInjector::~EiInputInjector() = default;
 
-base::WeakPtr<GnomeInputInjector> GnomeInputInjector::GetWeakPtr() {
+base::WeakPtr<EiInputInjector> EiInputInjector::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-void GnomeInputInjector::SetKeymap(base::WeakPtr<EiKeymap> keymap) {
+void EiInputInjector::SetKeymap(base::WeakPtr<EiKeymap> keymap) {
   keymap_ = keymap;
 }
 
-void GnomeInputInjector::Start(
+void EiInputInjector::Start(
     std::unique_ptr<protocol::ClipboardStub> client_clipboard) {
-  clipboard_.Start(std::move(client_clipboard));
+  clipboard_->Start(std::move(client_clipboard));
 }
 
-void GnomeInputInjector::InjectKeyEvent(const protocol::KeyEvent& event) {
+void EiInputInjector::InjectKeyEvent(const protocol::KeyEvent& event) {
   if (!ei_session_ || !keymap_) {
     return;
   }
@@ -69,7 +69,7 @@ void GnomeInputInjector::InjectKeyEvent(const protocol::KeyEvent& event) {
   }
 }
 
-void GnomeInputInjector::InjectTextEvent(const protocol::TextEvent& event) {
+void EiInputInjector::InjectTextEvent(const protocol::TextEvent& event) {
   if (!keymap_) {
     return;
   }
@@ -128,7 +128,7 @@ void GnomeInputInjector::InjectTextEvent(const protocol::TextEvent& event) {
   }
 }
 
-void GnomeInputInjector::InjectMouseEvent(const protocol::MouseEvent& event) {
+void EiInputInjector::InjectMouseEvent(const protocol::MouseEvent& event) {
   if (!ei_session_) {
     return;
   }
@@ -137,7 +137,7 @@ void GnomeInputInjector::InjectMouseEvent(const protocol::MouseEvent& event) {
       event.fractional_coordinate().has_x() &&
       event.fractional_coordinate().has_y()) {
     if (!stream_manager_) {
-      LOG(WARNING) << "GnomeCaptureStreamManager no longer exists.";
+      LOG(WARNING) << "CaptureStreamManager no longer exists.";
     } else {
       webrtc::ScreenId screen_id = event.fractional_coordinate().screen_id();
       base::WeakPtr<const CaptureStream> stream =
@@ -180,13 +180,13 @@ void GnomeInputInjector::InjectMouseEvent(const protocol::MouseEvent& event) {
   }
 }
 
-void GnomeInputInjector::InjectTouchEvent(const protocol::TouchEvent& event) {
+void EiInputInjector::InjectTouchEvent(const protocol::TouchEvent& event) {
   NOTIMPLEMENTED();
 }
 
-void GnomeInputInjector::InjectClipboardEvent(
+void EiInputInjector::InjectClipboardEvent(
     const protocol::ClipboardEvent& event) {
-  clipboard_.InjectClipboardEvent(event);
+  clipboard_->InjectClipboardEvent(event);
 }
 
 }  // namespace remoting
