@@ -69,10 +69,11 @@ ScopedDecodeTrace::ScopedDecodeTrace(const char* trace_name,
                                      const DecoderBuffer& buffer)
     : trace_name_(trace_name) {
   DCHECK(trace_name_);
-  TRACE_EVENT_BEGIN(
-      "media", perfetto::StaticString(trace_name_),
-      perfetto::Track::FromPointer(this), "decoder_buffer",
-      perfetto::DynamicString(buffer.AsHumanReadableString(/*verbose=*/true)));
+  std::string decoder_buffer_str =
+      buffer.AsHumanReadableString(/*verbose=*/true);
+  TRACE_EVENT_BEGIN("media", perfetto::StaticString(trace_name_),
+                    perfetto::Track::FromPointer(this), "decoder_buffer",
+                    perfetto::DynamicString(decoder_buffer_str));
 }
 
 ScopedDecodeTrace::ScopedDecodeTrace(const char* trace_name)
