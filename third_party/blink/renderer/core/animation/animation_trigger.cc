@@ -188,6 +188,17 @@ void AnimationTrigger::removeAnimation(Animation* animation) {
   DidRemoveAnimation(animation);
 }
 
+HeapVector<Member<Animation>> AnimationTrigger::getAnimations() {
+  HeapVector<Member<Animation>> animations;
+
+  for (auto& [animation, behaviors] : animation_behavior_map_) {
+    animations.push_back(animation);
+  }
+
+  std::sort(animations.begin(), animations.end(), Animation::CompareAnimations);
+  return animations;
+}
+
 bool AnimationTrigger::IsTimelineTrigger() const {
   return false;
 }

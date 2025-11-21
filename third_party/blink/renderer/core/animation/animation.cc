@@ -343,6 +343,14 @@ const double kScrollBoundaryTolerance = 0.5;
 
 }  // namespace
 
+// static
+bool Animation::CompareAnimations(const Member<Animation>& left,
+                                  const Member<Animation>& right) {
+  return HasLowerCompositeOrdering(
+      left.Get(), right.Get(),
+      Animation::CompareAnimationsOrdering::kTreeOrder);
+}
+
 Animation* Animation::Create(AnimationEffect* effect,
                              AnimationTimeline* timeline,
                              ExceptionState& exception_state) {

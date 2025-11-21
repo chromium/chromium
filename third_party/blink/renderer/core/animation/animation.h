@@ -365,6 +365,8 @@ class CORE_EXPORT Animation : public EventTarget,
 
   int CompositorGroup() const { return compositor_group_; }
 
+  static bool CompareAnimations(const Member<Animation>& left,
+                                const Member<Animation>& right);
   static bool HasLowerCompositeOrdering(
       const Animation* animation1,
       const Animation* animation2,

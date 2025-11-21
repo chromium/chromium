@@ -81,13 +81,6 @@ void UpdateAnimationTiming(
     timeline->ServiceAnimations(reason);
   document.GetWorkletAnimationController().UpdateAnimationTimings(reason);
 }
-
-bool CompareAnimations(const Member<Animation>& left,
-                       const Member<Animation>& right) {
-  return Animation::HasLowerCompositeOrdering(
-      left.Get(), right.Get(),
-      Animation::CompareAnimationsOrdering::kTreeOrder);
-}
 }  // namespace
 
 // static
@@ -239,7 +232,7 @@ HeapVector<Member<Animation>> DocumentAnimations::getAnimations(
   else
     GetAnimationsTargetingTreeScope(animations, tree_scope);
 
-  std::sort(animations.begin(), animations.end(), CompareAnimations);
+  std::sort(animations.begin(), animations.end(), Animation::CompareAnimations);
   return animations;
 }
 
@@ -327,7 +320,8 @@ void DocumentAnimations::RemoveReplacedAnimations(
 
     // By processing in decreasing order by priority, we can perform a single
     // pass for discovery of replaced properties.
-    std::sort(animations->begin(), animations->end(), CompareAnimations);
+    std::sort(animations->begin(), animations->end(),
+              Animation::CompareAnimations);
     PropertyHandleSet replaced_properties;
     for (auto anim_it = animations->rbegin(); anim_it != animations->rend();
          anim_it++) {

@@ -119,6 +119,7 @@ interface AnimationTrigger
     attribute @@toStringTag
     method addAnimation
     method constructor
+    method getAnimations
     method removeAnimation
 interface AsyncDisposableStack
     attribute @@toStringTag

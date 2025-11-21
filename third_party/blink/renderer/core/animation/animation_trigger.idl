@@ -24,4 +24,5 @@ enum AnimationTriggerBehavior {
 ] interface AnimationTrigger {
   [RaisesException] void addAnimation(Animation animation, AnimationTriggerBehavior activateBehavior, optional AnimationTriggerBehavior deactivateBehavior = "none");
   void removeAnimation(Animation animation);
+  sequence<Animation> getAnimations();
 };

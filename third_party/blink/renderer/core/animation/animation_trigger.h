@@ -38,6 +38,7 @@ class CORE_EXPORT AnimationTrigger : public ScriptWrappable {
                     V8AnimationTriggerBehavior deactivate_behavior,
                     ExceptionState& exception_state);
   void removeAnimation(Animation* animation);
+  HeapVector<Member<Animation>> getAnimations();
 
   virtual bool CanTrigger() const = 0;
   virtual bool IsTimelineTrigger() const;
