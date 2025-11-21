@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/legacy_table_view_cell.h"
 
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/chrome_content_view.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/chrome_main_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
@@ -70,6 +71,21 @@ const CGFloat kTableViewCustomSeparatorHeight = 0.5;
   self.accessibilityHint = nil;
   self.accessoryView = nil;
   self.accessibilityCustomActions = nil;
+}
+
+- (void)updateConfigurationUsingState:(UICellConfigurationState*)state {
+  if ([self.contentConfiguration
+          conformsToProtocol:@protocol(ChromeMainContentConfiguration)]) {
+    id<ChromeMainContentConfiguration> configuration =
+        static_cast<id<ChromeMainContentConfiguration>>(
+            self.contentConfiguration);
+    BOOL hasAccessoryView =
+        self.accessoryType != UITableViewCellAccessoryNone ||
+        self.accessoryView != nil;
+    [configuration setHasAccessoryView:hasAccessoryView];
+    self.contentConfiguration = configuration;
+  }
+  [super updateConfigurationUsingState:state];
 }
 
 #pragma mark - Accessibility

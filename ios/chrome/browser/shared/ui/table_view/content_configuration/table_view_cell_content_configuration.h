@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/chrome_main_content_configuration.h"
+
 @protocol ChromeContentConfiguration;
 @class TableViewCell;
 @class LegacyTableViewCell;
@@ -23,7 +25,8 @@
 // | +-----------+  Second Subtitle                  +-----------+ |
 // |                                                               |
 // +---------------------------------------------------------------+
-@interface TableViewCellContentConfiguration : NSObject <UIContentConfiguration>
+@interface TableViewCellContentConfiguration
+    : NSObject <ChromeMainContentConfiguration>
 
 // The updates to properties must be reflected in the copy method.
 // LINT.IfChange(Copy)
@@ -72,6 +75,11 @@
 
 // Custom accessibility label, overriding the default one.
 @property(nonatomic, copy) NSString* customAccessibilityLabel;
+
+// Whether this Content Configuration is displayed besides an accessory view.
+// Used to modifying the trailing constants. Its setter is part of the
+// ChromeMainContentConfiguration protocol.
+@property(nonatomic, assign) BOOL hasAccessoryView;
 
 // LINT.ThenChange(table_view_cell_content_configuration.mm:Copy)
 

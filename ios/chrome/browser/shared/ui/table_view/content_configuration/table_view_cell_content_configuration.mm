@@ -95,6 +95,7 @@
   copy.trailingTextColor = self.trailingTextColor;
   copy.trailingTextNumberOfLines = self.trailingTextNumberOfLines;
   copy.customAccessibilityLabel = self.customAccessibilityLabel;
+  copy.hasAccessoryView = self.hasAccessoryView;
   // LINT.ThenChange(table_view_cell_content_configuration.h:Copy)
   return copy;
 }

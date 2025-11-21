@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_cell.h"
 
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/chrome_content_view.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/chrome_main_content_configuration.h"
 
 @implementation TableViewCell
 
@@ -21,6 +22,21 @@
   self.accessibilityUserInputLabels = nil;
   self.accessoryView = nil;
   self.accessibilityCustomActions = nil;
+}
+
+- (void)updateConfigurationUsingState:(UICellConfigurationState*)state {
+  if ([self.contentConfiguration
+          conformsToProtocol:@protocol(ChromeMainContentConfiguration)]) {
+    id<ChromeMainContentConfiguration> configuration =
+        static_cast<id<ChromeMainContentConfiguration>>(
+            self.contentConfiguration);
+    BOOL hasAccessoryView =
+        self.accessoryType != UITableViewCellAccessoryNone ||
+        self.accessoryView != nil;
+    [configuration setHasAccessoryView:hasAccessoryView];
+    self.contentConfiguration = configuration;
+  }
+  [super updateConfigurationUsingState:state];
 }
 
 #pragma mark - Accessibility

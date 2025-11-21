@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"
 
+#import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -35,7 +36,9 @@ TEST_F(TableViewMultiDetailTextItemTest, TextLabels) {
   ASSERT_TRUE([contentConfiguration
       isMemberOfClass:TableViewCellContentConfiguration.class]);
 
-  TableViewCellContentConfiguration* configuration = contentConfiguration;
+  TableViewCellContentConfiguration* configuration =
+      base::apple::ObjCCast<TableViewCellContentConfiguration>(
+          contentConfiguration);
   EXPECT_NSEQ(mainText, configuration.title);
   EXPECT_NSEQ(leadingDetailText, configuration.subtitle);
   EXPECT_NSEQ(trailingDetailText, configuration.trailingText);

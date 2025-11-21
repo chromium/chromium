@@ -47,5 +47,6 @@ source_set("generic_content") {
   sources = [
     "chrome_content_configuration.h",
     "chrome_content_view.h",
+    "chrome_main_content_configuration.h",
   ]
 }

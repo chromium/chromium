@@ -19,6 +19,10 @@ constexpr CGFloat kTitleSubtitleToTrailingWidthRatio = 3;
 
 constexpr CGFloat kLabelVerticalSpacing = 5;
 
+// The margin for the trailing edge of the content view, when there is an
+// accessory view in the cell.
+constexpr CGFloat kTrailingMarginWithAccessory = 8;
+
 }  // namespace
 
 // Container for the title and subtitle labels. This container's intrinsic width
@@ -111,6 +115,9 @@ constexpr CGFloat kLabelVerticalSpacing = 5;
 
   // The main container.
   UIStackView* _mainStack;
+
+  // The constraint for the trailing edge of the main stack.
+  NSLayoutConstraint* _mainStackTrailingConstraint;
 }
 
 - (instancetype)initWithConfiguration:
@@ -162,6 +169,10 @@ constexpr CGFloat kLabelVerticalSpacing = 5;
 
 // Updates the elements based on a new configuration.
 - (void)applyConfiguration {
+  _mainStackTrailingConstraint.constant = _configuration.hasAccessoryView
+                                              ? kTrailingMarginWithAccessory
+                                              : kTableViewHorizontalSpacing;
+
   id<ChromeContentConfiguration> leadingConfiguration =
       _configuration.leadingConfiguration;
   BOOL isLeadingImageContentViewCompatible =
@@ -368,12 +379,14 @@ constexpr CGFloat kLabelVerticalSpacing = 5;
       [self.heightAnchor constraintEqualToConstant:kChromeTableViewCellHeight];
   height.priority = UILayoutPriorityDefaultLow;
 
+  _mainStackTrailingConstraint =
+      [self.trailingAnchor constraintEqualToAnchor:_mainStack.trailingAnchor];
+
   [NSLayoutConstraint activateConstraints:@[
     [self.centerYAnchor constraintEqualToAnchor:_mainStack.centerYAnchor],
     [self.leadingAnchor constraintEqualToAnchor:_mainStack.leadingAnchor
                                        constant:-kTableViewHorizontalSpacing],
-    [self.trailingAnchor constraintEqualToAnchor:_mainStack.trailingAnchor
-                                        constant:kTableViewHorizontalSpacing],
+    _mainStackTrailingConstraint,
     [self.heightAnchor
         constraintGreaterThanOrEqualToAnchor:_mainStack.heightAnchor
                                     constant:
