@@ -72,7 +72,8 @@ class PageContentExtractionService : public KeyedService,
 
   // Returns the cached APC for `page` and whether it is eligible for
   // server upload. Will return nullopt if not available.
-  std::optional<ExtractedPageContentResult>
+  // Virtual for testing.
+  virtual std::optional<ExtractedPageContentResult>
   GetExtractedPageContentAndEligibilityForPage(content::Page& page);
 
   // Called when a tab is closed.

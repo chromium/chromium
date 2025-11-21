@@ -89,6 +89,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContextualTasks.Context.RelevantButInvalidTabsCount"
+    units="count" expires_after="2026-03-22">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>abhayprakash@google.com</owner>
+  <summary>
+    Recorded every time a query is successfully made in the contextual tasks
+    framework, context was calculated successfully, and there was at least one
+    tab that would have otherwise been included but were discarded because they
+    were ineligible for server upload. Records the number of tabs that were
+    determined to be relevant to the query but were not valid for server upload.
+  </summary>
+</histogram>
+
 <histogram name="ContextualTasks.Context.RelevantTabsCount" units="count"
     expires_after="2026-03-22">
   <owner>sophiechang@chromium.org</owner>

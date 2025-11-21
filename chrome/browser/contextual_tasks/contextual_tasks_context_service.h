@@ -27,6 +27,10 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace page_content_annotations {
+class PageContentExtractionService;
+}  // namespace page_content_annotations
+
 namespace passage_embeddings {
 class Embedder;
 class EmbedderMetadataProvider;
@@ -67,7 +71,9 @@ class ContextualTasksContextService
       passage_embeddings::PageEmbeddingsService* page_embeddings_service,
       passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider,
       passage_embeddings::Embedder* embedder,
-      OptimizationGuideKeyedService* optimization_guide_keyed_service);
+      OptimizationGuideKeyedService* optimization_guide_keyed_service,
+      page_content_annotations::PageContentExtractionService*
+          page_content_extraction_service);
   ContextualTasksContextService(const ContextualTasksContextService&) = delete;
   ContextualTasksContextService operator=(
       const ContextualTasksContextService&) = delete;
@@ -129,6 +135,9 @@ class ContextualTasksContextService
   std::optional<base::TimeDelta> GetDurationSinceLastActive(
       content::WebContents* web_contents);
 
+  // Returns whether the tab should be added to the selection.
+  bool ShouldAddTabToSelection(content::WebContents* web_contents);
+
   // Whether the embedder is available.
   bool is_embedder_available_ = false;
 
@@ -139,6 +148,8 @@ class ContextualTasksContextService
       embedder_metadata_provider_;
   raw_ptr<passage_embeddings::Embedder> embedder_;
   raw_ptr<OptimizationGuideKeyedService> optimization_guide_keyed_service_;
+  raw_ptr<page_content_annotations::PageContentExtractionService>
+      page_content_extraction_service_;
   raw_ptr<const base::TickClock> tick_clock_;
 
   base::ScopedObservation<passage_embeddings::EmbedderMetadataProvider,

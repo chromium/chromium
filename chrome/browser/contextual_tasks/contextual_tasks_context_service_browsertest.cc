@@ -10,7 +10,9 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/page_content_annotations/page_content_extraction_service.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
+#include "chrome/browser/page_content_annotations/page_content_extraction_types.h"
 #include "chrome/browser/passage_embeddings/page_embeddings_service.h"
 #include "chrome/browser/passage_embeddings/page_embeddings_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -102,6 +104,20 @@ class MockPageEmbeddingsService
               (const override));
 };
 
+class MockPageContentExtractionService
+    : public page_content_annotations::PageContentExtractionService {
+ public:
+  MockPageContentExtractionService()
+      : PageContentExtractionService(nullptr, base::FilePath()) {}
+  ~MockPageContentExtractionService() override = default;
+
+  MOCK_METHOD(
+      std::optional<page_content_annotations::ExtractedPageContentResult>,
+      GetExtractedPageContentAndEligibilityForPage,
+      (content::Page & page),
+      (override));
+};
+
 class ContextualTasksContextServiceTest : public InProcessBrowserTest {
  public:
   ContextualTasksContextServiceTest() { InitializeFeatureList(); }
@@ -115,8 +131,7 @@ class ContextualTasksContextServiceTest : public InProcessBrowserTest {
         {{kContextualTasksContext,
           {{{"ContextualTasksContextOnlyUseTitles", "false"},
             {"ContextualTasksContextEmbeddingSimilarityScore", "0.8"},
-            {"ContextualTasksContextMinMultiSignalScore", "0.8"}}}},
-         {passage_embeddings::kPassageEmbedder, {}}},
+            {"ContextualTasksContextMinMultiSignalScore", "0.8"}}}}},
         /*disabled_features=*/{});
   }
 
@@ -135,6 +150,14 @@ class ContextualTasksContextServiceTest : public InProcessBrowserTest {
 
   void SetUpBrowserContextKeyedServices(
       content::BrowserContext* browser_context) override {
+    page_content_annotations::PageContentExtractionServiceFactory::GetInstance()
+        ->SetTestingFactoryAndUse(
+            browser_context,
+            base::BindRepeating([](content::BrowserContext* browser_context)
+                                    -> std::unique_ptr<KeyedService> {
+              return std::make_unique<
+                  testing::NiceMock<MockPageContentExtractionService>>();
+            }));
     passage_embeddings::PageEmbeddingsServiceFactory::GetInstance()
         ->SetTestingFactoryAndUse(
             browser_context,
@@ -157,13 +180,16 @@ class ContextualTasksContextServiceTest : public InProcessBrowserTest {
                    content::BrowserContext* context)
                     -> std::unique_ptr<KeyedService> {
                   Profile* profile = Profile::FromBrowserContext(context);
-                  auto service =
-                      std::make_unique<ContextualTasksContextService>(
-                          profile,
-                          passage_embeddings::PageEmbeddingsServiceFactory::
-                              GetForProfile(profile),
-                          embedder_metadata_provider, embedder,
-                          OptimizationGuideKeyedServiceFactory::GetForProfile(
+                  auto service = std::make_unique<
+                      ContextualTasksContextService>(
+                      profile,
+                      passage_embeddings::PageEmbeddingsServiceFactory::
+                          GetForProfile(profile),
+                      embedder_metadata_provider, embedder,
+                      OptimizationGuideKeyedServiceFactory::GetForProfile(
+                          profile),
+                      page_content_annotations::
+                          PageContentExtractionServiceFactory::GetForProfile(
                               profile));
                   service->SetClockForTesting(test_clock);
                   return service;
@@ -180,6 +206,12 @@ class ContextualTasksContextServiceTest : public InProcessBrowserTest {
     return static_cast<MockPageEmbeddingsService*>(
         passage_embeddings::PageEmbeddingsServiceFactory::GetForProfile(
             browser()->profile()));
+  }
+
+  MockPageContentExtractionService* page_content_extraction_service() {
+    return static_cast<MockPageContentExtractionService*>(
+        page_content_annotations::PageContentExtractionServiceFactory::
+            GetForProfile(browser()->profile()));
   }
 
   void NotifyEmbedderMetadata() {
@@ -330,6 +362,52 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, Success) {
       "ContextualTasks.Context.TabOverlapPercentage", 100, 1);
   histogram_tester.ExpectUniqueSample("ContextualTasks.Context.TabExcessCount",
                                       0, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
+                       SuccessButNotValidForServerUpload) {
+  base::HistogramTester histogram_tester;
+
+  NavigateToValidURL();
+
+  NotifyEmbedderMetadata();
+
+  std::vector<passage_embeddings::PassageEmbedding> fake_page_embeddings = {
+      // Not match.
+      {std::make_pair("passage 1",
+                      passage_embeddings::PassageType::kPageContent),
+       CreateFakeEmbedding(0.1f)},
+      // Match - active tab is added.
+      {std::make_pair("passage 2",
+                      passage_embeddings::PassageType::kPageContent),
+       CreateFakeEmbedding(1.0f)},
+      // Match - should be skipped.
+      {std::make_pair("passage 3",
+                      passage_embeddings::PassageType::kPageContent),
+       CreateFakeEmbedding(1.0f)}};
+  EXPECT_CALL(*page_embeddings_service(), GetEmbeddings(_))
+      .WillOnce(Return(fake_page_embeddings));
+  page_content_annotations::ExtractedPageContentResult result;
+  result.is_eligible_for_server_upload = false;
+  EXPECT_CALL(*page_content_extraction_service(),
+              GetExtractedPageContentAndEligibilityForPage)
+      .WillOnce(Return(result));
+
+  base::test::TestFuture<std::vector<content::WebContents*>> future;
+  service()->GetRelevantTabsForQuery(
+      /*options=*/{}, "some text",
+      /*explicit_urls=*/{}, future.GetCallback());
+  EXPECT_TRUE(future.Get().empty());
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.Context.RelevantTabsCount", 0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.Context.RelevantButInvalidTabsCount", 1, 1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.Context.ContextCalculationLatency", 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.Context.ContextDeterminationStatus",
+      ContextDeterminationStatus::kSuccess, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
@@ -537,8 +615,7 @@ class ContextualTasksContextServiceTitlesOnlyTest
   void InitializeFeatureList() override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{kContextualTasksContext,
-          {{{"ContextualTasksContextOnlyUseTitles", "true"}}}},
-         {passage_embeddings::kPassageEmbedder, {}}},
+          {{{"ContextualTasksContextOnlyUseTitles", "true"}}}}},
         /*disabled_features=*/{});
   }
 };

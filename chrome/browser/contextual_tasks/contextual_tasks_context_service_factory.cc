@@ -8,6 +8,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/browser/passage_embeddings/chrome_passage_embeddings_service_controller.h"
 #include "chrome/browser/passage_embeddings/page_embeddings_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -39,6 +40,8 @@ ContextualTasksContextServiceFactory::ContextualTasksContextServiceFactory()
               .Build()) {
   DependsOn(passage_embeddings::PageEmbeddingsServiceFactory::GetInstance());
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
+  DependsOn(page_content_annotations::PageContentExtractionServiceFactory::
+                GetInstance());
 }
 
 ContextualTasksContextServiceFactory::~ContextualTasksContextServiceFactory() =
@@ -67,7 +70,9 @@ ContextualTasksContextServiceFactory::BuildServiceInstanceForBrowserContext(
   return std::make_unique<ContextualTasksContextService>(
       profile, page_embeddings_service, passage_embeddings_service_controller,
       passage_embeddings_service_controller->GetEmbedder(),
-      OptimizationGuideKeyedServiceFactory::GetForProfile(profile));
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
+      page_content_annotations::PageContentExtractionServiceFactory::
+          GetForProfile(profile));
 }
 
 }  // namespace contextual_tasks

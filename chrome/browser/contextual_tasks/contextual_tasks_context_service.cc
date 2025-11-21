@@ -12,6 +12,8 @@
 #include "base/time/default_tick_clock.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_signal_utils.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/page_content_annotations/page_content_extraction_service.h"
+#include "chrome/browser/page_content_annotations/page_content_extraction_types.h"
 #include "chrome/browser/passage_embeddings/page_embeddings_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -154,12 +156,15 @@ ContextualTasksContextService::ContextualTasksContextService(
     passage_embeddings::PageEmbeddingsService* page_embeddings_service,
     passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider,
     passage_embeddings::Embedder* embedder,
-    OptimizationGuideKeyedService* optimization_guide_keyed_service)
+    OptimizationGuideKeyedService* optimization_guide_keyed_service,
+    page_content_annotations::PageContentExtractionService*
+        page_content_extraction_service)
     : profile_(profile),
       page_embeddings_service_(page_embeddings_service),
       embedder_metadata_provider_(embedder_metadata_provider),
       embedder_(embedder),
       optimization_guide_keyed_service_(optimization_guide_keyed_service),
+      page_content_extraction_service_(page_content_extraction_service),
       tick_clock_(base::DefaultTickClock::GetInstance()) {
   scoped_embedder_metadata_provider_observation_.Observe(
       embedder_metadata_provider_);
@@ -254,6 +259,25 @@ void ContextualTasksContextService::OnQueryEmbeddingReady(
   std::vector<content::WebContents*> all_tabs = GetAllTabsForProfile(profile_);
   std::vector<content::WebContents*> relevant_tabs =
       SelectRelevantTabs(query, options, query_embedding, all_tabs);
+  size_t initial_relevant_count = relevant_tabs.size();
+
+  // Remove tabs that are not eligible for server upload.
+  std::erase_if(relevant_tabs, [this](content::WebContents* web_contents) {
+    bool removed = !ShouldAddTabToSelection(web_contents);
+    if (removed) {
+      AUTO_CONTEXT_LOG(
+          base::StringPrintf("Removing %s from relevant set as it is not "
+                             "eligible for server upload",
+                             web_contents->GetLastCommittedURL().spec()));
+    }
+    return removed;
+  });
+
+  if (relevant_tabs.size() != initial_relevant_count) {
+    base::UmaHistogramCounts100(
+        "ContextualTasks.Context.RelevantButInvalidTabsCount",
+        initial_relevant_count - relevant_tabs.size());
+  }
 
   AUTO_CONTEXT_LOG(base::StringPrintf("Number of open tabs for query %s: %d",
                                       query, all_tabs.size()));
@@ -401,6 +425,22 @@ ContextualTasksContextService::GetDurationSinceLastActive(
     return time_elapsed;
   }
   return std::nullopt;
+}
+
+bool ContextualTasksContextService::ShouldAddTabToSelection(
+    content::WebContents* web_contents) {
+  if (!page_content_extraction_service_) {
+    // We don't know - err on the side of allowing the tab to be added.
+    return true;
+  }
+
+  std::optional<page_content_annotations::ExtractedPageContentResult>
+      extracted_page_content_result =
+          page_content_extraction_service_
+              ->GetExtractedPageContentAndEligibilityForPage(
+                  web_contents->GetPrimaryPage());
+  return !extracted_page_content_result ||
+         extracted_page_content_result->is_eligible_for_server_upload;
 }
 
 }  // namespace contextual_tasks
