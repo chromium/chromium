@@ -194,6 +194,9 @@ UIButton* CreateClearButton() {
   // The last computed intrinsic height, used by the `intrinsicContentSize`
   // property.
   CGFloat _currentIntrinsicHeight;
+  // Constraint determining whether the text input is constraint to the close
+  // button.
+  NSLayoutConstraint* _textInputToCloseButton;
 }
 
 @synthesize heightDelegate = _heightDelegate;
@@ -235,6 +238,15 @@ UIButton* CreateClearButton() {
       leadingImageLeadingOffset = kLeadingImageLeadingMarginAIM;
     }
 
+    _textInputToCloseButton = [_textInputView.trailingAnchor
+        constraintEqualToAnchor:self.clearButton.leadingAnchor];
+    _textInputToCloseButton.active = NO;
+
+    NSLayoutConstraint* textInputToContainerTrailing =
+        [_textInputView.trailingAnchor
+            constraintEqualToAnchor:self.trailingAnchor];
+    textInputToContainerTrailing.priority = UILayoutPriorityRequired - 1;
+
     [NSLayoutConstraint activateConstraints:@[
       [_leadingImageView.leadingAnchor
           constraintEqualToAnchor:self.leadingAnchor
@@ -248,8 +260,7 @@ UIButton* CreateClearButton() {
       [self.clearButton.trailingAnchor
           constraintEqualToAnchor:self.trailingAnchor
                          constant:-kTextInputViewClearButtonTrailingOffset],
-      [_textInputView.trailingAnchor
-          constraintEqualToAnchor:self.clearButton.leadingAnchor],
+      textInputToContainerTrailing
     ]];
 
     // Thumbnail image view.
@@ -357,6 +368,7 @@ UIButton* CreateClearButton() {
 
 - (void)setClearButtonHidden:(BOOL)isHidden {
   self.clearButton.hidden = isHidden;
+  _textInputToCloseButton.active = !isHidden;
 }
 
 - (id<OmniboxTextInput>)textInput {
