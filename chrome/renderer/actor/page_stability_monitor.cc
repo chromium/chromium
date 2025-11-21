@@ -4,6 +4,8 @@
 
 #include "chrome/renderer/actor/page_stability_monitor.h"
 
+#include <memory>
+
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/functional/callback.h"
@@ -17,19 +19,16 @@
 #include "chrome/common/actor/actor_logging.h"
 #include "chrome/common/actor/journal_details_builder.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/renderer/actor/network_and_main_thread_stability_monitor.h"
 #include "chrome/renderer/actor/page_stability_metrics.h"
 #include "chrome/renderer/actor/paint_stability_monitor.h"
 #include "chrome/renderer/actor/tool_base.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
-#include "third_party/blink/public/web/web_document.h"
-#include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 
 namespace actor {
 
-using ::blink::WebDocument;
-using ::blink::WebLocalFrame;
 using ::content::RenderFrame;
 using ::content::RenderFrameObserver;
 
@@ -65,17 +64,11 @@ PageStabilityMonitor::PageStabilityMonitor(content::RenderFrame& frame,
       paint_stability_monitor_(
           supports_paint_stability
               ? PaintStabilityMonitor::MaybeCreate(frame, task_id, journal)
-              : nullptr) {
-  CHECK(render_frame());
-  CHECK(render_frame()->GetWebFrame());
-  starting_request_count_ =
-      render_frame()->GetWebFrame()->GetDocument().ActiveResourceRequestCount();
-
-  journal_->Log(task_id_, "PageStability: Created",
-                JournalDetailsBuilder()
-                    .Add("requests_before", starting_request_count_)
-                    .Build());
-}
+              : nullptr),
+      network_and_main_thread_stability_monitor_(
+          std::make_unique<NetworkAndMainThreadStabilityMonitor>(frame,
+                                                                 task_id,
+                                                                 journal)) {}
 
 PageStabilityMonitor::~PageStabilityMonitor() {
   if (state_ == State::kDone) {
@@ -210,13 +203,6 @@ void PageStabilityMonitor::MoveToState(State new_state) {
     }
     case State::kStartMonitoring: {
       start_monitoring_time_ = base::TimeTicks::Now();
-      WebDocument document = render_frame()->GetWebFrame()->GetDocument();
-      int after_request_count = document.ActiveResourceRequestCount();
-      journal_entry_->Log(
-          "Network Requests",
-          JournalDetailsBuilder().Add("count", after_request_count).Build());
-
-      State next_state;
 
       // Race paint stability with network/thread stability, if paint
       // stability is supported.
@@ -225,28 +211,14 @@ void PageStabilityMonitor::MoveToState(State new_state) {
             base::BindOnce(&PageStabilityMonitor::OnPaintStabilityReached,
                            weak_ptr_factory_.GetWeakPtr()));
       }
-      if (after_request_count > starting_request_count_) {
-        next_state = State::kWaitForNetworkIdle;
-      } else {
-        next_state = State::kWaitForMainThreadIdle;
-      }
 
-      MoveToState(next_state);
-      break;
-    }
-    case State::kWaitForNetworkIdle: {
-      network_idle_callback_.Reset(
-          base::BindOnce(&PageStabilityMonitor::OnNetworkIdle,
+      CHECK(network_and_main_thread_stability_monitor_);
+      network_and_main_thread_stability_monitor_->WaitForStable(
+          base::BindOnce(&PageStabilityMonitor::OnNetworkAndMainThreadIdle,
                          weak_ptr_factory_.GetWeakPtr()));
-      render_frame()->GetWebFrame()->RequestNetworkIdleCallback(
-          network_idle_callback_.callback());
       break;
     }
-    case State::kWaitForMainThreadIdle: {
-      WaitForMainThreadIdle();
-      break;
-    }
-    case State::kMainThreadIdle: {
+    case State::kNetworkAndMainThreadIdle: {
       MoveToState(State::kMaybeDelayCallback);
       break;
     }
@@ -316,8 +288,7 @@ void PageStabilityMonitor::MoveToState(State new_state) {
 }
 
 void PageStabilityMonitor::StopMonitoring() {
-  network_idle_callback_.Cancel();
-  main_thread_idle_callback_.Cancel();
+  network_and_main_thread_stability_monitor_.reset();
   paint_stability_monitor_.reset();
 }
 
@@ -389,30 +360,14 @@ void PageStabilityMonitor::OnTimeout() {
   MoveToState(State::kTimeout);
 }
 
-void PageStabilityMonitor::OnNetworkIdle() {
-  if (!monitoring_complete_) {
-    MoveToState(State::kWaitForMainThreadIdle);
-    return;
-  }
-
-  WaitForMainThreadIdle();
-}
-
-void PageStabilityMonitor::OnMainThreadIdle(base::TimeTicks) {
+void PageStabilityMonitor::OnNetworkAndMainThreadIdle() {
   CHECK(metrics_);
-  metrics_->OnMainThreadIdle();
+  metrics_->OnNetworkAndMainThreadIdle();
 
   if (!monitoring_complete_) {
     monitoring_complete_ = true;
-    MoveToState(State::kMainThreadIdle);
+    MoveToState(State::kNetworkAndMainThreadIdle);
   }
-}
-
-void PageStabilityMonitor::WaitForMainThreadIdle() {
-  main_thread_idle_callback_.Reset(base::BindOnce(
-      &PageStabilityMonitor::OnMainThreadIdle, weak_ptr_factory_.GetWeakPtr()));
-  render_frame()->GetWebFrame()->PostIdleTask(
-      FROM_HERE, main_thread_idle_callback_.callback());
 }
 
 void PageStabilityMonitor::DCheckStateTransition(State old_state,
@@ -436,22 +391,12 @@ void PageStabilityMonitor::DCheckStateTransition(State old_state,
               State::kRenderFrameGoingAway,
               State::kMojoDisconnected}},
           {State::kStartMonitoring, {
-              State::kWaitForNetworkIdle,
-              State::kWaitForMainThreadIdle}},
-          {State::kWaitForNetworkIdle, {
-              State::kWaitForMainThreadIdle,
-              State::kPaintStabilityReached,
-              State::kTimeout,
-              State::kRenderFrameGoingAway,
-              State::kMojoDisconnected}},
-          {State::kWaitForMainThreadIdle, {
-              State::kMaybeDelayCallback,
               State::kPaintStabilityReached,
               State::kTimeout,
               State::kRenderFrameGoingAway,
               State::kMojoDisconnected,
-              State::kMainThreadIdle}},
-          {State::kMainThreadIdle, {
+              State::kNetworkAndMainThreadIdle}},
+          {State::kNetworkAndMainThreadIdle, {
               State::kMaybeDelayCallback}},
           {State::kTimeout, {
               State::kInvokeCallback}},
@@ -518,12 +463,8 @@ std::string_view PageStabilityMonitor::StateToString(State state) {
       return "WaitForNavigation";
     case State::kStartMonitoring:
       return "StartMonitoring";
-    case State::kWaitForNetworkIdle:
-      return "WaitForNetworkIdle";
-    case State::kMainThreadIdle:
-      return "MainThreadIdle";
-    case State::kWaitForMainThreadIdle:
-      return "WaitForMainThreadIdle";
+    case State::kNetworkAndMainThreadIdle:
+      return "NetworkAndMainThreadIdle";
     case State::kTimeout:
       return "Timeout";
     case State::kMaybeDelayCallback:

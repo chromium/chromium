@@ -20,7 +20,7 @@ class PageStabilityMetrics {
 
   void WillMoveToState(PageStabilityMonitor::State state);
 
-  void OnMainThreadIdle();
+  void OnNetworkAndMainThreadIdle();
 
   void OnPaintStabilityReached();
 

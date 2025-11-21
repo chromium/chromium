@@ -44,11 +44,7 @@ void PageStabilityMetrics::WillMoveToState(PageStabilityMonitor::State state) {
     case PageStabilityMonitor::State::kStartMonitoring:
       start_monitoring_time_ = base::TimeTicks::Now();
       break;
-    case PageStabilityMonitor::State::kWaitForNetworkIdle:
-      break;
-    case PageStabilityMonitor::State::kWaitForMainThreadIdle:
-      break;
-    case PageStabilityMonitor::State::kMainThreadIdle:
+    case PageStabilityMonitor::State::kNetworkAndMainThreadIdle:
       stability_outcome_ = PageStabilityOutcome::kNetworkAndMainThread;
       break;
     case PageStabilityMonitor::State::kTimeout:
@@ -89,7 +85,7 @@ void PageStabilityMetrics::WillMoveToState(PageStabilityMonitor::State state) {
   }
 }
 
-void PageStabilityMetrics::OnMainThreadIdle() {
+void PageStabilityMetrics::OnNetworkAndMainThreadIdle() {
   CHECK(!start_monitoring_time_.is_null());
   base::UmaHistogramTimes(
       kActorRendererPageStabilityTimeFromMonitoringToNetworkAndMainThreadIdleMetricName,

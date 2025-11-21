@@ -7,7 +7,6 @@
 
 #include <string_view>
 
-#include "base/cancelable_callback.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
@@ -27,6 +26,7 @@ class RenderFrame;
 namespace actor {
 
 class Journal;
+class NetworkAndMainThreadStabilityMonitor;
 class PageStabilityMetrics;
 class PaintStabilityMonitor;
 
@@ -82,14 +82,8 @@ class PageStabilityMonitor : public content::RenderFrameObserver,
     // Entry point into the state machine. Decides which state to start in.
     kStartMonitoring,
 
-    // Wait until all network requests complete.
-    kWaitForNetworkIdle,
-
-    // Wait until the main thread is settled.
-    kWaitForMainThreadIdle,
-
-    // The main thread is settled.
-    kMainThreadIdle,
+    // The network and main thread are settled.
+    kNetworkAndMainThreadIdle,
 
     // Timeout state - this just logs and and moves to invoke callback state.
     kTimeout,
@@ -144,31 +138,13 @@ class PageStabilityMonitor : public content::RenderFrameObserver,
   void DCheckStateTransition(State old_state, State new_state);
 
   void OnPaintStabilityReached();
+  void OnNetworkAndMainThreadIdle();
   void OnRenderFrameGoingAway();
   void OnMojoDisconnected();
   void OnTimeout();
 
-  // TODO(linnan): Consider introducing a NetworkAndMainThreadStabilityMonitor.
-  void OnNetworkIdle();
-  void OnMainThreadIdle(base::TimeTicks);
-  void WaitForMainThreadIdle();
-
   void StopMonitoring();
   void Teardown();
-
-  // The number of active network requests at the time this object was
-  // initialized. Used to compare to the number of requests after monitoring
-  // begins to determine if new network requests were started in that interval.
-  int starting_request_count_;
-
-  // Track the callback given to the RequestNetworkIdle method so that it can be
-  // canceled, the API supports only one request at a time.
-  base::CancelableOnceClosure network_idle_callback_;
-
-  // Track the callback given to the PostIdleTask method so that it can be
-  // canceled, the API supports only one request at a time.
-  base::CancelableOnceCallback<void(base::TimeTicks deadline)>
-      main_thread_idle_callback_;
 
   base::OnceClosure is_stable_callback_;
 
@@ -197,6 +173,10 @@ class PageStabilityMonitor : public content::RenderFrameObserver,
   // monitoring an unsupported interaction. This must be destroyed before
   // `journal_entry_` to avoid a dangling pointer.
   std::unique_ptr<PaintStabilityMonitor> paint_stability_monitor_;
+
+  // This must be destroyed before `journal_` to avoid a dangling pointer.
+  std::unique_ptr<NetworkAndMainThreadStabilityMonitor>
+      network_and_main_thread_stability_monitor_;
 
   bool render_frame_did_go_away_ = false;
 
