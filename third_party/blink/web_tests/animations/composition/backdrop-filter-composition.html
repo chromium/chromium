@@ -226,20 +226,20 @@ assertComposition({
   {at: 1.5, is: 'drop-shadow(85px 45px 10px rgb(255, 0, 255))'},
 ]);
 
-// grayscale; 1-based addition.
+// grayscale; simple addition
 assertComposition({
   property: 'backdrop-filter',
   underlying: 'grayscale(0.25)',
   accumulateFrom: 'grayscale(0.5)',
   accumulateTo: 'grayscale(1.5)',  // clamped to 1
 }, [
-  {at: -0.5, is: 'grayscale(0)'},
-  {at: 0, is: 'grayscale(0)'},
-  {at: 0.25, is: 'grayscale(0)'},
-  {at: 0.5, is: 'grayscale(0)'},
-  {at: 0.75, is: 'grayscale(0.125)'},
-  {at: 1, is: 'grayscale(0.25)'},
-  {at: 1.5, is: 'grayscale(0.5)'},
+  {at: -0.5, is: 'grayscale(0.5)'},
+  {at: 0, is: 'grayscale(0.75)'},
+  {at: 0.25, is: 'grayscale(0.875)'},
+  {at: 0.5, is: 'grayscale(1)'},
+  {at: 0.75, is: 'grayscale(1)'},
+  {at: 1, is: 'grayscale(1)'},
+  {at: 1.5, is: 'grayscale(1)'},
 ]);
 
 // hue-rotate; simple addition
@@ -258,20 +258,20 @@ assertComposition({
   {at: 1.5, is: 'hue-rotate(575deg)'},
 ]);
 
-// invert; 1-based addition.
+// invert; simple addition
 assertComposition({
   property: 'backdrop-filter',
   underlying: 'invert(0.25)',
   accumulateFrom: 'invert(0.5)',
   accumulateTo: 'invert(1.5)',  // clamped to 1
 }, [
-  {at: -0.5, is: 'invert(0)'},
-  {at: 0, is: 'invert(0)'},
-  {at: 0.25, is: 'invert(0)'},
-  {at: 0.5, is: 'invert(0)'},
-  {at: 0.75, is: 'invert(0.125)'},
-  {at: 1, is: 'invert(0.25)'},
-  {at: 1.5, is: 'invert(0.5)'},
+  {at: -0.5, is: 'invert(0.5)'},
+  {at: 0, is: 'invert(0.75)'},
+  {at: 0.25, is: 'invert(0.875)'},
+  {at: 0.5, is: 'invert(1)'},
+  {at: 0.75, is: 'invert(1)'},
+  {at: 1, is: 'invert(1)'},
+  {at: 1.5, is: 'invert(1)'},
 ]);
 
 // opacity; 1-based addition
@@ -306,20 +306,20 @@ assertComposition({
   {at: 1.5, is: 'saturate(1.25)'},
 ]);
 
-// sepia; 1-based addition
+// sepia; simple addition
 assertComposition({
   property: 'backdrop-filter',
   underlying: 'sepia(0.25)',
   accumulateFrom: 'sepia(0.5)',
   accumulateTo: 'sepia(1.5)',  // clamped to 1
 }, [
-  {at: -0.5, is: 'sepia(0)'},
-  {at: 0, is: 'sepia(0)'},
-  {at: 0.25, is: 'sepia(0)'},
-  {at: 0.5, is: 'sepia(0)'},
-  {at: 0.75, is: 'sepia(0.125)'},
-  {at: 1, is: 'sepia(0.25)'},
-  {at: 1.5, is: 'sepia(0.5)'},
+  {at: -0.5, is: 'sepia(0.5)'},
+  {at: 0, is: 'sepia(0.75)'},
+  {at: 0.25, is: 'sepia(0.875)'},
+  {at: 0.5, is: 'sepia(1)'},
+  {at: 0.75, is: 'sepia(1)'},
+  {at: 1, is: 'sepia(1)'},
+  {at: 1.5, is: 'sepia(1)'},
 ]);
 
 // url; cannot be accumulated

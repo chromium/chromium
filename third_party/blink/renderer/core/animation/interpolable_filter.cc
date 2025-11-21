@@ -280,11 +280,8 @@ void InterpolableFilter::Add(const InterpolableValue& other) {
   switch (type_) {
     case FilterOperation::OperationType::kBrightness:
     case FilterOperation::OperationType::kContrast:
-    case FilterOperation::OperationType::kGrayscale:
-    case FilterOperation::OperationType::kInvert:
     case FilterOperation::OperationType::kOpacity:
     case FilterOperation::OperationType::kSaturate:
-    case FilterOperation::OperationType::kSepia:
       value_->Add(*MakeGarbageCollected<InterpolableNumber>(-1));
       break;
     default:
