@@ -173,8 +173,8 @@ CanvasResourceProviderBitmap::DoExternalDrawAndSnapshot(
 
   if (recorder_->HasReleasableDrawOps()) {
     FlushReason reason = FlushReason::kOther;
-    ScopedRasterTimer timer(IsAccelerated() ? RasterInterface() : nullptr,
-                            *this, always_enable_raster_timers_for_testing_);
+    ScopedRasterTimer timer(nullptr, *this,
+                            always_enable_raster_timers_for_testing_);
     bool want_to_print = (IsPrinting() && reason != FlushReason::kClear) ||
                          reason == FlushReason::kPrinting ||
                          reason == FlushReason::kCanvasPushFrameWhilePrinting;
