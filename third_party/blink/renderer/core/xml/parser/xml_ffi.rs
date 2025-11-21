@@ -7,7 +7,7 @@ mod entities;
 use std::io::Cursor;
 use xml::{
     attribute::OwnedAttribute,
-    common::{Position, TextPosition, XmlVersion},
+    common::{Position, TextPosition},
     namespace::{Namespace, NS_XMLNS_URI, NS_XML_URI},
     reader::{
         EventReader as XmlEventReader,
@@ -85,12 +85,7 @@ fn process_next_event(read_state: &mut XmlReadState) {
             read_state.last_event_position = Some(read_state.event_reader.position());
             match event {
                 StartDocument { version, encoding, standalone } => {
-                    // TODO(drott): Replace with as_str()
-                    // compare https://github.com/kornelski/xml-rs/pull/54
-                    let version: &str = match version {
-                        XmlVersion::Version10 => "1.0",
-                        XmlVersion::Version11 => "1.1",
-                    };
+                    let version: &str = version.as_str();
 
                     let buffer = read_state.event_reader.source().get_ref();
                     let xml_declaration_view = read_state.last_event_position.and_then(|pos| {
