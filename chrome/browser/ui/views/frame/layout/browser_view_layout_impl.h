@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_FRAME_LAYOUT_BROWSER_VIEW_LAYOUT_IMPL_COMMON_H_
-#define CHROME_BROWSER_UI_VIEWS_FRAME_LAYOUT_BROWSER_VIEW_LAYOUT_IMPL_COMMON_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_FRAME_LAYOUT_BROWSER_VIEW_LAYOUT_IMPL_H_
+#define CHROME_BROWSER_UI_VIEWS_FRAME_LAYOUT_BROWSER_VIEW_LAYOUT_IMPL_H_
 
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout_params.h"
@@ -11,7 +11,7 @@
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/view.h"
 
-// Represents common functionality between tabbed browser and PWA layout when
+// Represents common functionality between browser layouts when flags such as
 // `features::kTabbedBrowserUseNewLayout` and
 // `features::kAppBrowserUseNewLayout` are enabled.
 //
@@ -20,13 +20,12 @@
 //
 // `BrowserViewLayoutImplOld` is still used for legacy apps, popups, and a
 // handful of other browser configurations.
-class BrowserViewLayoutImplCommon : public BrowserViewLayout {
+class BrowserViewLayoutImpl : public BrowserViewLayout {
  public:
-  BrowserViewLayoutImplCommon(
-      std::unique_ptr<BrowserViewLayoutDelegate> delegate,
-      Browser* browser,
-      BrowserViewLayoutViews views);
-  ~BrowserViewLayoutImplCommon() override;
+  BrowserViewLayoutImpl(std::unique_ptr<BrowserViewLayoutDelegate> delegate,
+                        Browser* browser,
+                        BrowserViewLayoutViews views);
+  ~BrowserViewLayoutImpl() override;
 
   // BrowserViewLayout:
   void Layout(views::View* host) override;
@@ -152,4 +151,4 @@ class BrowserViewLayoutImplCommon : public BrowserViewLayout {
   gfx::Size GetMaximumDialogSize() const override;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_FRAME_LAYOUT_BROWSER_VIEW_LAYOUT_IMPL_COMMON_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_FRAME_LAYOUT_BROWSER_VIEW_LAYOUT_IMPL_H_

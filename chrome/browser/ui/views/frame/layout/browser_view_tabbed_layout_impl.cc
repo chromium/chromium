@@ -39,9 +39,7 @@ BrowserViewTabbedLayoutImpl::BrowserViewTabbedLayoutImpl(
     std::unique_ptr<BrowserViewLayoutDelegate> delegate,
     Browser* browser,
     BrowserViewLayoutViews views)
-    : BrowserViewLayoutImplCommon(std::move(delegate),
-                                  browser,
-                                  std::move(views)) {}
+    : BrowserViewLayoutImpl(std::move(delegate), browser, std::move(views)) {}
 
 BrowserViewTabbedLayoutImpl::~BrowserViewTabbedLayoutImpl() = default;
 

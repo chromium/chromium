@@ -9,7 +9,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout_delegate.h"
-#include "chrome/browser/ui/views/frame/layout/browser_view_layout_impl_common.h"
+#include "chrome/browser/ui/views/frame/layout/browser_view_layout_impl.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout_params.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
@@ -70,9 +70,7 @@ BrowserViewAppLayoutImpl::BrowserViewAppLayoutImpl(
     std::unique_ptr<BrowserViewLayoutDelegate> delegate,
     Browser* browser,
     BrowserViewLayoutViews views)
-    : BrowserViewLayoutImplCommon(std::move(delegate),
-                                  browser,
-                                  std::move(views)) {}
+    : BrowserViewLayoutImpl(std::move(delegate), browser, std::move(views)) {}
 
 BrowserViewAppLayoutImpl::~BrowserViewAppLayoutImpl() = default;
 

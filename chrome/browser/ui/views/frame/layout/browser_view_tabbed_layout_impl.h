@@ -9,7 +9,7 @@
 #include <utility>
 
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout.h"
-#include "chrome/browser/ui/views/frame/layout/browser_view_layout_impl_common.h"
+#include "chrome/browser/ui/views/frame/layout/browser_view_layout_impl.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout_params.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/layout/flex_layout_types.h"
@@ -22,7 +22,7 @@ class View;
 
 // Provides a specialized layout implementation for normal tabbed browsers.
 // Should not be used for other types of browsers.
-class BrowserViewTabbedLayoutImpl : public BrowserViewLayoutImplCommon {
+class BrowserViewTabbedLayoutImpl : public BrowserViewLayoutImpl {
  public:
   BrowserViewTabbedLayoutImpl(
       std::unique_ptr<BrowserViewLayoutDelegate> delegate,

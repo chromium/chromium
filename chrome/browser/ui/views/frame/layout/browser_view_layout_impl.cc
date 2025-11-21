@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/frame/layout/browser_view_layout_impl_common.h"
+#include "chrome/browser/ui/views/frame/layout/browser_view_layout_impl.h"
 
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
@@ -12,20 +12,20 @@
 
 // Proposed layout implementation.
 
-BrowserViewLayoutImplCommon::ProposedLayout::ProposedLayout(
+BrowserViewLayoutImpl::ProposedLayout::ProposedLayout(
     const gfx::Rect& bounds_,
     std::optional<bool> visibility_)
     : bounds(bounds_), visibility(visibility_) {}
-BrowserViewLayoutImplCommon::ProposedLayout::ProposedLayout() = default;
-BrowserViewLayoutImplCommon::ProposedLayout::ProposedLayout(
+BrowserViewLayoutImpl::ProposedLayout::ProposedLayout() = default;
+BrowserViewLayoutImpl::ProposedLayout::ProposedLayout(
     ProposedLayout&&) noexcept = default;
-BrowserViewLayoutImplCommon::ProposedLayout&
-BrowserViewLayoutImplCommon::ProposedLayout::operator=(
-    ProposedLayout&&) noexcept = default;
-BrowserViewLayoutImplCommon::ProposedLayout::~ProposedLayout() = default;
+BrowserViewLayoutImpl::ProposedLayout&
+BrowserViewLayoutImpl::ProposedLayout::operator=(ProposedLayout&&) noexcept =
+    default;
+BrowserViewLayoutImpl::ProposedLayout::~ProposedLayout() = default;
 
-BrowserViewLayoutImplCommon::ProposedLayout&
-BrowserViewLayoutImplCommon::ProposedLayout::AddChild(
+BrowserViewLayoutImpl::ProposedLayout&
+BrowserViewLayoutImpl::ProposedLayout::AddChild(
     views::View* child,
     const gfx::Rect& bounds_,
     std::optional<bool> visibility_) {
@@ -36,8 +36,8 @@ BrowserViewLayoutImplCommon::ProposedLayout::AddChild(
   return emplace_result.first->second;
 }
 
-const BrowserViewLayoutImplCommon::ProposedLayout*
-BrowserViewLayoutImplCommon::ProposedLayout::GetLayoutFor(
+const BrowserViewLayoutImpl::ProposedLayout*
+BrowserViewLayoutImpl::ProposedLayout::GetLayoutFor(
     const views::View* descendant) const {
   for (const auto& child : children) {
     if (child.first == descendant) {
@@ -50,8 +50,7 @@ BrowserViewLayoutImplCommon::ProposedLayout::GetLayoutFor(
   return nullptr;
 }
 
-std::optional<gfx::Rect>
-BrowserViewLayoutImplCommon::ProposedLayout::GetBoundsFor(
+std::optional<gfx::Rect> BrowserViewLayoutImpl::ProposedLayout::GetBoundsFor(
     const views::View* descendant,
     const views::View* relative_to) const {
   const ProposedLayout* layout = GetLayoutFor(descendant);
@@ -64,7 +63,7 @@ BrowserViewLayoutImplCommon::ProposedLayout::GetBoundsFor(
                                           layout->bounds);
 }
 
-void BrowserViewLayoutImplCommon::ProposedLayout::ApplyLayout(
+void BrowserViewLayoutImpl::ProposedLayout::ApplyLayout(
     views::View* root,
     SetViewVisibility set_view_visibility) && {
   for (auto& child : root->children()) {
@@ -87,31 +86,30 @@ void BrowserViewLayoutImplCommon::ProposedLayout::ApplyLayout(
 
 // Common layout.
 
-BrowserViewLayoutImplCommon::BrowserViewLayoutImplCommon(
+BrowserViewLayoutImpl::BrowserViewLayoutImpl(
     std::unique_ptr<BrowserViewLayoutDelegate> delegate,
     Browser* browser,
     BrowserViewLayoutViews views)
     : BrowserViewLayout(std::move(delegate), browser, std::move(views)) {}
 
-BrowserViewLayoutImplCommon::~BrowserViewLayoutImplCommon() = default;
+BrowserViewLayoutImpl::~BrowserViewLayoutImpl() = default;
 
 // Static helpers.
 
 // static
-bool BrowserViewLayoutImplCommon::IsParentedTo(const views::View* child,
-                                               const views::View* parent) {
+bool BrowserViewLayoutImpl::IsParentedTo(const views::View* child,
+                                         const views::View* parent) {
   return child && parent && child->parent() == parent;
 }
 
 // static
-bool BrowserViewLayoutImplCommon::IsParentedToAndVisible(
-    const views::View* child,
-    const views::View* parent) {
+bool BrowserViewLayoutImpl::IsParentedToAndVisible(const views::View* child,
+                                                   const views::View* parent) {
   return IsParentedTo(child, parent) && child->GetVisible();
 }
 
 // static
-gfx::Rect BrowserViewLayoutImplCommon::GetBoundsWithExclusion(
+gfx::Rect BrowserViewLayoutImpl::GetBoundsWithExclusion(
     const BrowserLayoutParams& params,
     const views::View* view,
     int leading_margin,
@@ -138,7 +136,7 @@ gfx::Rect BrowserViewLayoutImplCommon::GetBoundsWithExclusion(
       /*height=*/height);
 }
 
-gfx::Rect BrowserViewLayoutImplCommon::GetTopContainerBoundsInParent(
+gfx::Rect BrowserViewLayoutImpl::GetTopContainerBoundsInParent(
     const gfx::Rect& local_bounds,
     const BrowserLayoutParams& parent_params) const {
   // Calculate the dimensions of the container.
@@ -172,13 +170,13 @@ gfx::Rect BrowserViewLayoutImplCommon::GetTopContainerBoundsInParent(
   return bounds;
 }
 
-int BrowserViewLayoutImplCommon::GetMinWebContentsWidthForTesting() const {
+int BrowserViewLayoutImpl::GetMinWebContentsWidthForTesting() const {
   return kContentsContainerMinimumWidth;
 }
 
 // Layout logic.
 
-void BrowserViewLayoutImplCommon::Layout(views::View* host) {
+void BrowserViewLayoutImpl::Layout(views::View* host) {
   const auto params = delegate().GetBrowserLayoutParams();
   if (params.IsEmpty()) {
     return;
@@ -247,8 +245,7 @@ void BrowserViewLayoutImplCommon::Layout(views::View* host) {
 
 // Dialog positioning.
 
-int BrowserViewLayoutImplCommon::GetDialogTop(
-    const ProposedLayout& layout) const {
+int BrowserViewLayoutImpl::GetDialogTop(const ProposedLayout& layout) const {
   const int kConstrainedWindowOverlap = 3;
   const auto* const browser_view = views().browser_view.get();
   if (const auto toolbar_rect =
@@ -258,8 +255,7 @@ int BrowserViewLayoutImplCommon::GetDialogTop(
   return kConstrainedWindowOverlap;
 }
 
-int BrowserViewLayoutImplCommon::GetDialogBottom(
-    const ProposedLayout& layout) const {
+int BrowserViewLayoutImpl::GetDialogBottom(const ProposedLayout& layout) const {
   const auto* const browser_view = views().browser_view.get();
   if (const auto contents_rect =
           layout.GetBoundsFor(views().contents_container, browser_view)) {
@@ -268,7 +264,7 @@ int BrowserViewLayoutImplCommon::GetDialogBottom(
   return browser_view->height();
 }
 
-gfx::Point BrowserViewLayoutImplCommon::GetDialogPosition(
+gfx::Point BrowserViewLayoutImpl::GetDialogPosition(
     const gfx::Size& dialog_size) const {
   const auto params = delegate().GetBrowserLayoutParams();
   if (params.IsEmpty()) {
@@ -291,7 +287,7 @@ gfx::Point BrowserViewLayoutImplCommon::GetDialogPosition(
   return gfx::Point(dialog_rect.origin());
 }
 
-gfx::Size BrowserViewLayoutImplCommon::GetMaximumDialogSize() const {
+gfx::Size BrowserViewLayoutImpl::GetMaximumDialogSize() const {
   const auto params = delegate().GetBrowserLayoutParams();
   if (params.IsEmpty()) {
     return gfx::Size();

@@ -9,13 +9,13 @@
 #include <optional>
 
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout_delegate.h"
-#include "chrome/browser/ui/views/frame/layout/browser_view_layout_impl_common.h"
+#include "chrome/browser/ui/views/frame/layout/browser_view_layout_impl.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/view.h"
 
 // Provides a specialized layout implementation for PWA browser windows.
 // Should not be used for other types of windows.
-class BrowserViewAppLayoutImpl : public BrowserViewLayoutImplCommon {
+class BrowserViewAppLayoutImpl : public BrowserViewLayoutImpl {
  public:
   BrowserViewAppLayoutImpl(std::unique_ptr<BrowserViewLayoutDelegate> delegate,
                            Browser* browser,
