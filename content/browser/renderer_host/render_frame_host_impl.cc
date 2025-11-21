@@ -1889,6 +1889,9 @@ class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
             ? ukm::kInvalidSourceId
             : frame.GetPageUkmSourceId());
 
+    result.network_restrictions_id_ =
+        frame.document_associated_data_->network_restrictions_id();
+
     result.cookie_setting_overrides_ =
         frame.document_associated_data_->cookie_setting_overrides();
 
@@ -1915,6 +1918,8 @@ class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
         navigation_request.BuildClientSecurityStateForCommittedDocument();
     result.ukm_source_id_ = ukm::SourceIdObj::FromInt64(
         navigation_request.GetNextPageUkmSourceId());
+    result.network_restrictions_id_ =
+        navigation_request.network_restrictions_id();
 
     // TODO(lukasza): Consider pushing the ok-vs-error differentiation into
     // NavigationRequest methods (e.g. into |isolation_info_for_subresources|
@@ -2051,6 +2056,10 @@ class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
     return cookie_setting_overrides_;
   }
 
+  const std::optional<base::UnguessableToken>& network_restrictions_id() const {
+    return network_restrictions_id_;
+  }
+
  private:
   // Private constructor - please go through the static For... methods.
   SubresourceLoaderFactoriesConfig() = default;
@@ -2066,6 +2075,7 @@ class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
       trust_token_redemption_policy_;
   ukm::SourceIdObj ukm_source_id_;
   net::CookieSettingOverrides cookie_setting_overrides_;
+  std::optional<base::UnguessableToken> network_restrictions_id_;
 };
 
 class PendingNavigation {
@@ -10753,15 +10763,12 @@ void RenderFrameHostImpl::DisableUntrustedNetworkInFencedFrame(
   // Register the nonce in the network service's data structure to deny network
   // access.
   CHECK(properties->partition_nonce().has_value());
-  StoragePartitionImpl* storage_partition = GetStoragePartition();
   // TODO(crbug.com/41488151): Audit all existing transient IsolationInfo
   // constructors to ensure that they are tagged with the relevant partition
   // nonce.
-  storage_partition->RevokeNetworkForNoncesInNetworkContext(
-      {
-          properties->partition_nonce()->GetValueIgnoringVisibility(),
-          GetPage().credentialless_iframes_nonce(),
-      },
+  GetStoragePartition()->RevokeNetworkForNoncesInNetworkContext(
+      {{properties->partition_nonce()->GetValueIgnoringVisibility(), {}},
+       {GetPage().credentialless_iframes_nonce(), {}}},
       base::BindOnce(
           &RenderFrameHostImpl::RevokeNetworkForNonceCallback,
           weak_ptr_factory_.GetWeakPtr(),
@@ -13757,7 +13764,7 @@ RenderFrameHostImpl::CreateURLLoaderFactoryParamsForMainWorld(
       config.GetDipReporter(), GetProcess(),
       config.trust_token_issuance_policy(),
       config.trust_token_redemption_policy(), config.cookie_setting_overrides(),
-      debug_tag);
+      config.network_restrictions_id(), debug_tag);
 }
 
 bool RenderFrameHostImpl::CreateNetworkServiceDefaultFactoryAndObserve(
@@ -15798,7 +15805,8 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
         navigation_request->navigation_confidence());
     document_associated_data_->set_devtools_navigation_token(
         navigation_request->devtools_navigation_token());
-
+    document_associated_data_->set_network_restrictions_id(
+        navigation_request->network_restrictions_id());
     // Stores fetch keepalive FactoryContext created before committing into
     // document-associated data, such that it can be referenced later when
     // DevTools tries to intercepts requests.

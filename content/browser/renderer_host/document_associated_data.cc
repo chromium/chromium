@@ -44,7 +44,9 @@ RenderFrameHostImpl* DocumentAssociatedData::GetDocumentFromToken(
 DocumentAssociatedData::DocumentAssociatedData(
     RenderFrameHostImpl& document,
     const blink::DocumentToken& token)
-    : token_(token), weak_factory_(&document) {
+    : token_(token),
+      network_restrictions_id_(std::nullopt),
+      weak_factory_(&document) {
   auto [_, inserted] = GetDocumentTokenMap().insert({token_, &document});
   CHECK(inserted);
 
@@ -80,6 +82,15 @@ DocumentAssociatedData::~DocumentAssociatedData() {
   // from RenderFrameHost interface while its page user data is being destroyed.
   if (owned_page_) {
     owned_page_->ClearAllUserData();
+  }
+
+  // Remove any network restrictions for this document from the network service
+  if (network_restrictions_id_.has_value()) {
+    StoragePartitionImpl* storage_partition =
+        GetWeakPtr()->GetStoragePartition();
+    storage_partition->ClearNoncesInNetworkContextAfterDelay({
+        network_restrictions_id_.value(),
+    });
   }
 
   // Last in case any DocumentService / DocumentUserData service destructors try

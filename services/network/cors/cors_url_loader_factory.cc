@@ -247,7 +247,8 @@ CorsURLLoaderFactory::CorsURLLoaderFactory(
       is_main_frame_origin_recently_accessed_(
           params->is_main_frame_origin_recently_accessed),
       origin_access_list_(origin_access_list),
-      owner_(owner) {
+      owner_(owner),
+      network_restrictions_id_(params->network_restrictions_id) {
   TRACE_EVENT("loading", "CorsURLLoaderFactory::CorsURLLoaderFactory",
               perfetto::Flow::FromPointer(this));
   DCHECK(context_);
@@ -429,6 +430,16 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
   if (isolation_info.has_value() && isolation_info->nonce().has_value() &&
       !context_->IsNetworkForNonceAndUrlAllowed(*isolation_info->nonce(),
                                                 resource_request.url)) {
+    mojo::Remote<mojom::URLLoaderClient>(std::move(client))
+        ->OnComplete(
+            URLLoaderCompletionStatus(net::ERR_NETWORK_ACCESS_REVOKED));
+    return;
+  }
+  if (network_restrictions_id_.has_value() &&
+      !context_->IsNetworkForNonceAndUrlAllowed(*network_restrictions_id_,
+                                                resource_request.url)) {
+    // TODO(crbug.com/447954811): Perhaps change to a new error code and
+    // add console messages.
     mojo::Remote<mojom::URLLoaderClient>(std::move(client))
         ->OnComplete(
             URLLoaderCompletionStatus(net::ERR_NETWORK_ACCESS_REVOKED));

@@ -28,7 +28,6 @@ class SharedDictionaryAccessObserver;
 }  // namespace network
 
 namespace content {
-
 class NavigationRequest;
 class RenderFrameHostImpl;
 class RenderProcessHost;
@@ -70,6 +69,7 @@ class URLLoaderFactoryParamsHelper {
       network::mojom::TrustTokenOperationPolicyVerdict
           trust_token_redemption_policy,
       net::CookieSettingOverrides cookie_setting_overrides,
+      const std::optional<base::UnguessableToken>& network_restrictions_id,
       std::string_view debug_tag);
 
   // Creates URLLoaderFactoryParams to be used by |isolated_world_origin| hosted

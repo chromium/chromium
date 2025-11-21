@@ -170,6 +170,7 @@ URLLoaderFactoryParamsHelper::CreateForFrame(
     network::mojom::TrustTokenOperationPolicyVerdict
         trust_token_redemption_policy,
     net::CookieSettingOverrides cookie_setting_overrides,
+    const std::optional<base::UnguessableToken>& network_restrictions_id,
     std::string_view debug_tag) {
   return CreateParams(
       process,
@@ -190,12 +191,7 @@ URLLoaderFactoryParamsHelper::CreateForFrame(
       frame->CreateDeviceBoundSessionObserver(), trust_token_issuance_policy,
       trust_token_redemption_policy, cookie_setting_overrides, debug_tag,
       /*require_cross_site_request_for_cookies=*/false,
-      /*is_for_service_worker=*/false,
-      /*network_restrictions_id=*/
-      frame->document_associated_data().token()->is_empty()
-          ? std::nullopt
-          : std::make_optional(
-                frame->document_associated_data().token().value()));
+      /*is_for_service_worker=*/false, network_restrictions_id);
 }
 
 // static

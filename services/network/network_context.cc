@@ -3501,10 +3501,18 @@ void NetworkContext::FlushMatchingCachedClientCert(
 }
 
 void NetworkContext::RevokeNetworkForNonces(
-    const std::vector<base::UnguessableToken>& nonces,
+    std::vector<mojom::NonceAndAllowlistedUrlsPtr> nonces_to_urls,
     RevokeNetworkForNoncesCallback callback) {
-  for (const auto& nonce : nonces) {
-    network_revocation_nonces_.insert(nonce);
+  for (auto& entry : nonces_to_urls) {
+    const base::UnguessableToken& nonce = entry->nonce;
+    const std::vector<GURL>& allowlisted_urls = entry->allowlisted_urls;
+
+    network_revocation_nonces_[nonce].insert(allowlisted_urls.begin(),
+                                             allowlisted_urls.end());
+
+    // CancelRequestsIfNonceMatchesAndUrlNotExempted is not needed for
+    // connection allowlist since there should not be any ongoing
+    // requests.
     const std::set<GURL>& exemptions = network_revocation_exemptions_[nonce];
     for (const auto& factory : url_loader_factories_) {
       factory->CancelRequestsIfNonceMatchesAndUrlNotExempted(nonce, exemptions);
@@ -3615,6 +3623,28 @@ bool NetworkContext::IsNetworkForNonceAndUrlAllowed(
   if (!network_revocation_nonces_.contains(nonce)) {
     return true;
   }
+
+  // For connection allowlist feature, network_revocation_nonces_ map contains
+  // the allowed URLs.
+  // Note that the network_revocation_exemptions_ check below which was added
+  // to enable fenced frames testing is orthogonal to this feature.
+  // If there are no allowlisted URLs then it is assumed that all network URLs
+  // are restricted (unless exempted for FF testing).
+  // TODO(crbug.com/447954811): Come back to this once we have more agreement on
+  // the mechanism. Ideally, these should be treated as URLPatterns. For now,
+  // we're just treating them as origins.
+  const std::set<GURL>& allowlisted_urls =
+      network_revocation_nonces_.find(nonce)->second;
+  CHECK(
+      base::FeatureList::IsEnabled(network::features::kConnectionAllowlists) ||
+      allowlisted_urls.empty());
+  url::Origin origin = url::Origin::Create(url);
+  for (const GURL& allowed_url : allowlisted_urls) {
+    if (origin.IsSameOriginWith(url::Origin::Create(allowed_url))) {
+      return true;
+    }
+  }
+
   // If network has been revoked for the nonce, but the url is exempted, it's
   // allowed.
   if (network_revocation_exemptions_.contains(nonce) &&

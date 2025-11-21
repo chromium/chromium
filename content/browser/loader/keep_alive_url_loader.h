@@ -91,6 +91,10 @@ class WeakDocumentPtr;
 // The lifetime of an instance is roughly equal to the lifetime of a keepalive
 // request, which may surpass the initiator renderer's lifetime.
 //
+// TODO(crbug.com/447954811): Consider if connection allowlists feature
+// requires special handling in this class or is the check for subresource
+// fetch in the URLLoaderFactory sufficient.
+//
 // * Design Doc:
 // https://docs.google.com/document/d/1ZzxMMBvpqn8VZBZKnb7Go8TWjnrGcXuLS_USwVVRUvY
 // * Mojo Connections:

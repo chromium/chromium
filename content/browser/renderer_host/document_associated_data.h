@@ -141,6 +141,18 @@ class DocumentAssociatedData : public base::SupportsUserData {
     devtools_navigation_token_ = devtools_navigation_token;
   }
 
+  // Sets the network restrictions id. Should only be called when the document
+  // is being committed. For more details see
+  // NavigationRequest::network_restrictions_id_
+  void set_network_restrictions_id(
+      std::optional<base::UnguessableToken> network_restrictions_id) {
+    network_restrictions_id_ = network_restrictions_id;
+  }
+
+  const std::optional<base::UnguessableToken>& network_restrictions_id() const {
+    return network_restrictions_id_;
+  }
+
   blink::mojom::ConfidenceLevel navigation_confidence() const {
     return confidence_level_;
   }
@@ -217,6 +229,7 @@ class DocumentAssociatedData : public base::SupportsUserData {
       services_;
   scoped_refptr<NavigationOrDocumentHandle> navigation_or_document_handle_;
   std::optional<base::UnguessableToken> devtools_navigation_token_;
+  std::optional<base::UnguessableToken> network_restrictions_id_;
   blink::mojom::ConfidenceLevel confidence_level_ =
       blink::mojom::ConfidenceLevel::kHigh;
   base::WeakPtr<KeepAliveURLLoaderService::FactoryContext>

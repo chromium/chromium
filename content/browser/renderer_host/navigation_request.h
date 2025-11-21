@@ -1701,6 +1701,15 @@ class CONTENT_EXPORT NavigationRequest
   // value will be returned.
   PrerenderHostId GetPrerenderHostId() const;
 
+  const std::optional<base::UnguessableToken>& network_restrictions_id() const {
+    return network_restrictions_id_;
+  }
+
+  void set_network_restrictions_id(
+      const base::UnguessableToken& network_restrictions_id) {
+    network_restrictions_id_ = network_restrictions_id;
+  }
+
   // Checks whether the navigation request contains active view transition
   // resources.
   bool HasViewTransitionResources() const {
@@ -3409,6 +3418,12 @@ class CONTENT_EXPORT NavigationRequest
   // (so we can't use item sequence number). The token is used for attributing
   // soft navigation metrics to the correct UKM Source ID.
   std::optional<base::UnguessableToken> same_document_metrics_token_;
+
+  // Connection-Allowlist feature: Id used to identify restrictions associated
+  // with this navigation. This is also passed to the network service and
+  // stored in the DocumentAssociatedData at commit. Only used for
+  // cross-document navigations.
+  std::optional<base::UnguessableToken> network_restrictions_id_;
 
   base::WeakPtrFactory<NavigationRequest> weak_factory_{this};
 };

@@ -1110,7 +1110,8 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
 
   // Revoke network access for the generated nonce.
   base::UnguessableToken nonce = base::UnguessableToken::Create();
-  partition->RevokeNetworkForNoncesInNetworkContext({nonce}, base::DoNothing());
+  partition->RevokeNetworkForNoncesInNetworkContext({{nonce, {}}},
+                                                    base::DoNothing());
 
   // Make a get request, which should be blocked.
   network::mojom::URLLoaderFactoryParamsPtr params =

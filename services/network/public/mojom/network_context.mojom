@@ -963,6 +963,13 @@ interface DurableMessageCollector {
       => (mojo_base.mojom.BigBuffer? message);
 };
 
+// If allowlisted_urls is empty then it falls back to the earlier use case of
+// all network revoked (only applicable to fenced frames).
+struct NonceAndAllowlistedUrls {
+  mojo_base.mojom.UnguessableToken nonce;
+  array<url.mojom.Url> allowlisted_urls;
+};
+
 // Represents a distinct context for making network requests, with its own
 // storage (e.g. cookies and cache).
 //
@@ -1762,15 +1769,26 @@ interface NetworkContext {
   // this function. This is because `RevokeNetworkForNoncesInNetworkContext`
   // replicates the nonces so that they can be restored in case of a
   // `NetworkService` crash.
-  // Register that all network requests with nonces in `nonces` as their
-  // partition nonce should be blocked. Used for fenced frames network
+  // TODO(crbug.com/447954811): Rename this function when connection-allowlist
+  // feature is beyond the prototype phase. Initially this name made sense
+  // since it was intended to revoke network access for fenced frames. But with
+  // the connection-allowlist feature it is extended to also add allowlisted
+  // URLs for iframes and top-level frames. Also rename the corresponding
+  // NetworkContext::network_revocation_nonces_ to network_restriction_nonces_.
+  // Used for the following scenarios:
+  // 1. Used for fenced frames network
   // revocation:
   // https://github.com/WICG/fenced-frame/blob/master/explainer/fenced_frames_with_local_unpartitioned_data_access.md#revoking-network-access
   // Each fenced frame tree primarily uses one "fenced frame nonce" for
   // requests that originate from it, but requests from credentialless iframes
   // within the fenced frame tree use a different "credentialless iframes
   // nonce". Currently these are the two nonces passed in `nonces`.
-  RevokeNetworkForNonces(array<mojo_base.mojom.UnguessableToken> nonces) => ();
+  //
+  // 2. Used for connection-allowlist (see
+  // https://github.com/WICG/connection-allowlists). Network from the
+  // URLLoaderfactory whose `network_restriction_id` matches `nonces` will only
+  // be allowed to `allowlisted_urls` and blocked otherwise.
+  RevokeNetworkForNonces(array<NonceAndAllowlistedUrls> nonces_to_urls) => ();
 
   // Clients should clear nonces tagged for network revocation using
   // `StoragePartitionImpl::ClearNoncesInNetworkContextAfterDelay` instead of

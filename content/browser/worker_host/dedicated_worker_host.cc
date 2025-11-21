@@ -619,6 +619,7 @@ DedicatedWorkerHost::CreateNetworkFactoryForSubresources(
                     kPotentiallyPermit
               : network::mojom::TrustTokenOperationPolicyVerdict::kForbid,
           ancestor_render_frame_host->GetCookieSettingOverrides(),
+          /*network_restrictions_id=*/std::nullopt,
           "DedicatedWorkerHost::CreateNetworkFactoryForSubresources");
 
   RenderFrameHost* frame = nullptr;

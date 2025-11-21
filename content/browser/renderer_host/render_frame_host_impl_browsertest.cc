@@ -9316,5 +9316,140 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostImplUrgentNavigationIPCBrowserTest,
 INSTANTIATE_TEST_SUITE_P(All,
                          RenderFrameHostImplUrgentNavigationIPCBrowserTest,
                          /*RenderDocumentEnabled()*/ testing::Bool());
+class RenderFrameHostImplConnectionAllowlistBrowserTest
+    : public RenderFrameHostImplBrowserTest {
+ public:
+  RenderFrameHostImplConnectionAllowlistBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        network::features::kConnectionAllowlists);
+  }
+
+ protected:
+  void SetUpOnMainThread() override {
+    url_loader_interceptor_ = std::make_unique<
+        URLLoaderInterceptor>(base::BindRepeating(
+        &RenderFrameHostImplConnectionAllowlistBrowserTest::InterceptURLRequest,
+        base::Unretained(this)));
+    RenderFrameHostImplBrowserTest::SetUpOnMainThread();
+  }
+
+  void TearDownOnMainThread() override {
+    url_loader_interceptor_.reset();
+    RenderFrameHostImplBrowserTest::TearDownOnMainThread();
+  }
+
+ private:
+  bool InterceptURLRequest(URLLoaderInterceptor::RequestParams* params) {
+    const std::string path = std::string(params->url_request.url.path());
+    if (path == "/title1.html") {
+      std::string headers = "HTTP/1.1 200 OK\nContent-Type: text/html\n";
+      // The special value is `(response-origin)` which is a keyword.
+      base::StrAppend(&headers, {"Connection-Allowlist: (response-origin)\n"});
+      std::string body = "<html>This is title1.html</html>";
+      URLLoaderInterceptor::WriteResponse(headers, body, params->client.get());
+      return true;
+    }
+    return false;
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<URLLoaderInterceptor> url_loader_interceptor_;
+};
+
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
+                       ConnectionAllowlist) {
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  WebContents* web_contents = shell()->web_contents();
+
+  GURL fetch_url(embedded_test_server()->GetURL("/cors-ok.txt"));
+  std::string fetch_resource = JsReplace(
+      "(async () => {"
+      "  let resp = (await fetch($1, { mode: 'cors', credential: 'omit'}));"
+      "  return resp.status; })();",
+      fetch_url);
+
+  EXPECT_EQ(200, EvalJs(web_contents->GetPrimaryMainFrame(), fetch_resource));
+
+  // now fetch a cross-origin resource. It should be disallowed.
+  GURL d_url = embedded_test_server()->GetURL("d.com", "/cors-ok.txt");
+  std::string cross_origin_fetch_resource = JsReplace(
+      "(async () => {"
+      "  let resp = (await fetch($1, { mode: 'cors', credential: 'omit'}));"
+      "  return resp.status; })();",
+      d_url);
+  ASSERT_FALSE(
+      ExecJs(web_contents->GetPrimaryMainFrame(), cross_origin_fetch_resource));
+
+  // Perform a same-origin cross-document navigation.
+  GURL same_origin_cross_document_url =
+      embedded_test_server()->GetURL("/title2.html");
+  EXPECT_TRUE(NavigateToURL(shell(), same_origin_cross_document_url));
+
+  // In the new document, attempt a cross-origin fetch. This should pass as it
+  // does not have the Connection-Allowlist header.
+  EXPECT_EQ(200, EvalJs(web_contents->GetPrimaryMainFrame(),
+                        cross_origin_fetch_resource));
+}
+
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
+                       EmptyIframeInjectedScriptFetch) {
+  GURL main_url = embedded_test_server()->GetURL("/title1.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  RenderFrameHostImpl* main_rfh = web_contents()->GetPrimaryMainFrame();
+
+  // Create an empty iframe
+  EXPECT_TRUE(ExecJs(main_rfh,
+                     "let child = document.createElement('iframe');"
+                     "document.body.appendChild(child);"));
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+
+  EXPECT_EQ(1U, main_rfh->child_count());
+  RenderFrameHostImpl* iframe = main_rfh->child_at(0)->current_frame_host();
+  EXPECT_TRUE(iframe->IsRenderFrameLive());
+
+  // Inject JavaScript into the iframe to fetch a cross-origin resource.
+  GURL d_url = embedded_test_server()->GetURL("d.com", "/cors-ok.txt");
+  std::string fetch_resource_in_iframe = JsReplace(
+      "(async () => {"
+      "  try {"
+      "    let resp = await fetch($1, { mode: 'cors', credential: 'omit'});"
+      "    domAutomationController.send(String(resp.status));"
+      "  } catch (e) {"
+      "    domAutomationController.send('Error: ' + e.message);"
+      "  }"
+      "})();",
+      d_url);
+
+  DOMMessageQueue message_queue(web_contents());
+  EXPECT_TRUE(ExecJs(iframe, fetch_resource_in_iframe));
+
+  std::string message;
+  EXPECT_TRUE(message_queue.WaitForMessage(&message));
+  // Expecting a network error or CORS error, so the status won't be 200.
+  // The exact error message might vary, so checking for a string that indicates
+  // failure.
+  EXPECT_THAT(message, testing::HasSubstr("\"Error:"));
+
+  // Inject JavaScript into the iframe to fetch a same-origin resource.
+  GURL same_origin_url = embedded_test_server()->GetURL("/cors-ok.txt");
+  std::string fetch_same_origin_resource_in_iframe = JsReplace(
+      "(async () => {"
+      "  try {"
+      "    let resp = await fetch($1, { mode: 'cors', credential: 'omit'});"
+      "    domAutomationController.send(String(resp.status));"
+      "  } catch (e) {"
+      "    domAutomationController.send('Error: ' + e.message);"
+      "  }"
+      "})();",
+      same_origin_url);
+
+  EXPECT_TRUE(ExecJs(iframe, fetch_same_origin_resource_in_iframe));
+
+  std::string same_origin_message;
+  EXPECT_TRUE(message_queue.WaitForMessage(&same_origin_message));
+  EXPECT_EQ("\"200\"", same_origin_message);
+}
 
 }  // namespace content

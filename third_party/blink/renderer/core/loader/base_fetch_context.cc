@@ -12,7 +12,6 @@
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/frame/connection_allowlist.h"
 #include "third_party/blink/renderer/core/frame/integrity_policy.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -325,12 +324,6 @@ BaseFetchContext::CanRequestInternal(
 
   if (url.PotentiallyDanglingMarkup() && url.ProtocolIsInHTTPFamily()) {
     CountDeprecation(WebFeature::kCanRequestURLHTTPContainingNewline);
-    return ResourceRequestBlockedReason::kOther;
-  }
-
-  if (ShouldBlockRequestViaConnectionAllowlist(GetExecutionContext(), url)) {
-    // TODO(447954811): Define a distinct blocked reason if we maintain this
-    // approach after discussion.
     return ResourceRequestBlockedReason::kOther;
   }
 

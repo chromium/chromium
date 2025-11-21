@@ -1270,14 +1270,25 @@ void StoragePartitionImpl::RegisterKeepAliveHandle(
 }
 
 void StoragePartitionImpl::RevokeNetworkForNoncesInNetworkContext(
-    const std::vector<base::UnguessableToken>& nonces,
-    network::mojom::NetworkContext::RevokeNetworkForNoncesCallback callback) {
-  GetNetworkContext()->RevokeNetworkForNonces(nonces, std::move(callback));
+    const std::map<base::UnguessableToken, std::set<GURL>>& nonces_to_urls,
+    base::OnceClosure callback) {
+  std::vector<network::mojom::NonceAndAllowlistedUrlsPtr> dest_vector;
+  for (const auto& pair : nonces_to_urls) {
+    // Create a new Mojo struct pointer for each map entry.
+    auto nonce_and_urls = network::mojom::NonceAndAllowlistedUrls::New();
+    nonce_and_urls->nonce = pair.first;
+    nonce_and_urls->allowlisted_urls.assign(pair.second.begin(),
+                                            pair.second.end());
+    dest_vector.push_back(std::move(nonce_and_urls));
+  }
+  GetNetworkContext()->RevokeNetworkForNonces(std::move(dest_vector),
+                                              std::move(callback));
 
-  // Save nonces in `StoragePartitionImpl`. When there is a crash of
-  // `NetworkService`, the network revocation nonces of `NetworkContext` will be
-  // restored using this.
-  network_revocation_nonces_.insert(std::begin(nonces), std::end(nonces));
+  // Save nonces and allowlisted URLs in `StoragePartitionImpl`. When there is a
+  // crash of `NetworkService`, the network revocation nonces of
+  // `NetworkContext` will be restored using this.
+  network_revocation_nonces_.insert(nonces_to_urls.begin(),
+                                    nonces_to_urls.end());
 }
 
 void StoragePartitionImpl::ClearNoncesInNetworkContextAfterDelay(
@@ -3659,14 +3670,20 @@ void StoragePartitionImpl::InitNetworkContext() {
       std::move(context_params));
   DCHECK(network_context_owner_->network_context);
 
-  // Restore the saved network revocation nonces. This allows fenced frames'
-  // untrusted network access states to be persisted in case of a
-  // `NetworkService` crash.
-  std::vector<base::UnguessableToken> nonces(
-      std::begin(network_revocation_nonces_),
-      std::end(network_revocation_nonces_));
+  // Restore the saved network revocation nonces. This allows network access
+  // states to be persisted in case of a `NetworkService` crash.
+  std::vector<network::mojom::NonceAndAllowlistedUrlsPtr> dest_vector;
+  for (const auto& pair : network_revocation_nonces_) {
+    // Create a new Mojo struct pointer for each map entry.
+    auto nonce_and_urls = network::mojom::NonceAndAllowlistedUrls::New();
+    nonce_and_urls->nonce = pair.first;
+    nonce_and_urls->allowlisted_urls.assign(pair.second.begin(),
+                                            pair.second.end());
+    dest_vector.push_back(std::move(nonce_and_urls));
+  }
+
   network_context_owner_->network_context->RevokeNetworkForNonces(
-      nonces, base::NullCallback());
+      std::move(dest_vector), base::NullCallback());
 
   network_context_client_receiver_.reset();
   network_context_owner_->network_context->SetClient(

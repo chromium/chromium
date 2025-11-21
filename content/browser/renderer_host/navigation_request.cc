@@ -86,6 +86,7 @@
 #include "content/browser/renderer_host/navigation_state_keep_alive.h"
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/navigator_delegate.h"
+#include "content/browser/renderer_host/network_restrictions_commit_deferring_condition.h"
 #include "content/browser/renderer_host/page_delegate.h"
 #include "content/browser/renderer_host/private_network_access_util.h"
 #include "content/browser/renderer_host/render_frame_host_csp_context.h"
@@ -1740,7 +1741,8 @@ NavigationRequest::NavigationRequest(
       has_ad_auction_headers_attribute_(frame_tree_node->ad_auction_headers()),
       request_method_(common_params_->method),
       prerender_host_id_(
-          GetPrerenderHostRegistry().GetPrerenderHostIdForNavigation(this)) {
+          GetPrerenderHostRegistry().GetPrerenderHostIdForNavigation(this)),
+      network_restrictions_id_(std::nullopt) {
   TRACE_EVENT("navigation", "NavigationRequest::NavigationRequest",
               perfetto::Flow::FromPointer(this), "navigation_request", this);
   CHECK(!common_params_->initiator_base_url ||
@@ -3389,7 +3391,8 @@ const blink::DocumentToken& NavigationRequest::GetDocumentToken() const {
 
 const PolicyContainerPolicies& NavigationRequest::GetPolicyContainerPolicies()
     const {
-  DCHECK_GE(state_, READY_TO_COMMIT);
+  DCHECK(state_ >= WILL_PROCESS_RESPONSE &&
+         policy_container_builder_->HasComputedPolicies());
 
   return policy_container_builder_->FinalPolicies();
 }
