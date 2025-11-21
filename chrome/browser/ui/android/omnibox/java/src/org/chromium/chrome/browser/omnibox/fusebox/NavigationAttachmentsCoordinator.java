@@ -101,7 +101,7 @@ public class NavigationAttachmentsCoordinator
         popupWindow.setOutsideTouchable(true);
         popupWindow.setAnimateFromAnchor(true);
 
-        var popup = new NavigationAttachmentsPopup(mContext, popupWindow, popupView);
+        var popup = new FuseboxPopup(mContext, popupWindow, popupView);
         mViewHolder = new FuseboxViewHolder(parent, popup);
 
         var adapter = new FuseboxAttachmentRecyclerViewAdapter(mModelList);

@@ -20,11 +20,11 @@ class FuseboxViewHolder {
     public final RecyclerView attachmentsView;
     public final ChromeImageView addButton;
     public final ChromeImageView settingsButton;
-    public final NavigationAttachmentsPopup popup;
+    public final FuseboxPopup popup;
     public final ButtonCompat requestType;
     public final ChromeImageView navigateButton;
 
-    FuseboxViewHolder(ConstraintLayout parent, NavigationAttachmentsPopup popup) {
+    FuseboxViewHolder(ConstraintLayout parent, FuseboxPopup popup) {
         parentView = parent;
         attachmentsView = parent.findViewById(R.id.location_bar_attachments);
         addButton = parent.findViewById(R.id.location_bar_attachments_add);

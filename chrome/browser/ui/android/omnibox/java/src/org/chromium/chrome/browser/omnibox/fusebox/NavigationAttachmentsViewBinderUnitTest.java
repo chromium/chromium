@@ -77,7 +77,7 @@ public class NavigationAttachmentsViewBinderUnitTest {
 
     private ActivityController<TestActivity> mActivityController;
     private FuseboxViewHolder mViewHolder;
-    private NavigationAttachmentsPopup mPopup;
+    private FuseboxPopup mPopup;
 
     @Before
     public void setUp() {
@@ -94,7 +94,7 @@ public class NavigationAttachmentsViewBinderUnitTest {
                                 .inflate(R.layout.fusebox_context_popup, /* root= */ null);
         doReturn(popupView).when(mPopupWindow).getContentView();
 
-        mPopup = new NavigationAttachmentsPopup(activity, mPopupWindow, popupView);
+        mPopup = new FuseboxPopup(activity, mPopupWindow, popupView);
         mViewHolder = new FuseboxViewHolder(parent, mPopup);
 
         // Initialize workable defaults.

@@ -76,7 +76,7 @@ public class NavigationAttachmentsMediatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private FuseboxViewHolder mViewHolder;
-    @Mock private NavigationAttachmentsPopup mPopup;
+    @Mock private FuseboxPopup mPopup;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
     @Mock private Clipboard mClipboard;

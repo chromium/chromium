@@ -64,7 +64,7 @@ public class NavigationAttachmentsMediator {
     private final WindowAndroid mWindowAndroid;
     private final AndroidPermissionDelegate mPermissionDelegate;
     private final PropertyModel mModel;
-    private final NavigationAttachmentsPopup mPopup;
+    private final FuseboxPopup mPopup;
     private final FuseboxAttachmentModelList mModelList;
     private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private final ObservableSupplierImpl<@AutocompleteRequestType Integer>

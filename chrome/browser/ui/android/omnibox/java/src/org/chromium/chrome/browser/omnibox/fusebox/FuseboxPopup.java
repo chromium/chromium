@@ -13,9 +13,9 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 
-/** A popup for the Navigation Attachments component. */
+/** A popup for the Fusebox component. */
 @NullMarked
-class NavigationAttachmentsPopup {
+class FuseboxPopup {
     private final AnchoredPopupWindow mPopupWindow;
     private final View mContentView;
     /* package */ final Button mAddCurrentTab;
@@ -28,7 +28,7 @@ class NavigationAttachmentsPopup {
     /* package */ final Button mCreateImageButton;
     /* package */ final View mRequestTypeDivider;
 
-    NavigationAttachmentsPopup(Context context, AnchoredPopupWindow popupWindow, View contentView) {
+    FuseboxPopup(Context context, AnchoredPopupWindow popupWindow, View contentView) {
         mPopupWindow = popupWindow;
         mContentView = contentView;
         // `match_parent` and `wrap_content` don't exactly work well in our case.
