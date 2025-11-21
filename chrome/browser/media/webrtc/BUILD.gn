@@ -172,6 +172,13 @@ source_set("webrtc") {
     "//ui/snapshot",
   ]
 
+  if (enable_extensions_core) {
+    sources += [
+      "tab_capture_access_handler.cc",
+      "tab_capture_access_handler.h",
+    ]
+  }
+
   if (!is_android) {
     sources += [
       "current_tab_desktop_media_list.cc",
@@ -184,8 +191,6 @@ source_set("webrtc") {
       "desktop_media_picker_utils.h",
       "media_stream_focus_delegate.cc",
       "media_stream_focus_delegate.h",
-      "tab_capture_access_handler.cc",
-      "tab_capture_access_handler.h",
       "tab_desktop_media_list.cc",
       "tab_desktop_media_list.h",
     ]

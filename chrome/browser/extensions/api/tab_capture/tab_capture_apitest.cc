@@ -18,11 +18,6 @@
 #include "chrome/browser/extensions/api/tab_capture/tab_capture_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/alert/tab_alert.h"
-#include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/browser/render_frame_host.h"
@@ -39,6 +34,14 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gl/gl_switches.h"
 #include "url/url_constants.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/alert/tab_alert.h"
+#include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#endif
 
 namespace extensions {
 
@@ -68,6 +71,7 @@ class TabCaptureApiTest : public ExtensionApiTest {
   }
 
  protected:
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   std::vector<tabs::TabAlert> GetTabAlertStatesForContents(
       content::WebContents* web_contents) {
     return tabs::TabAlertController::From(
@@ -79,15 +83,29 @@ class TabCaptureApiTest : public ExtensionApiTest {
     content::SimulateMouseClick(GetActiveWebContents(), 0,
                                 blink::WebMouseEvent::Button::kLeft);
   }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 };
 
+// A very simple test to verify chrome.tabCapture.capture() returns a media
+// stream. Does not rely on chrome.tabs, so can be run on all platforms.
+IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, StartTabCapture) {
+  AddExtensionToCommandLineAllowlist();
+  ASSERT_TRUE(RunExtensionTest("tab_capture/start_tab_capture",
+                               {.extension_url = "start_tab_capture.html"}))
+      << message_;
+}
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests API behaviors, including info queries, and constraints violations.
+// TODO(crbug.com/427298135): Port to desktop Android when chrome.tabs is more
+// fully supported.
 IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, ApiTests) {
   AddExtensionToCommandLineAllowlist();
   ASSERT_TRUE(RunExtensionTest("tab_capture/api_tests",
                                {.extension_url = "api_tests.html"}))
       << message_;
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Tests that tab capture video frames can be received in a VIDEO element.
 // TODO(crbug.com/216820236): This test is flaky.
@@ -180,10 +198,13 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, ActiveTabPermission) {
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests that fullscreen transitions during a tab capture session dispatch
 // events to the onStatusChange listener.  The test loads a page that toggles
 // fullscreen mode, using the Fullscreen Javascript API, in response to mouse
-// clicks.
+// clicks. The fullscreen API requires a user gesture.
+// TODO(crbug.com/427298135): Port to desktop Android. Currently times out
+// without useful stack or logs.
 IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, FullscreenEvents) {
   AddExtensionToCommandLineAllowlist();
 
@@ -208,6 +229,7 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, FullscreenEvents) {
   catcher.RestrictToBrowserContext(profile());
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, GrantForChromePages) {
   ExtensionTestMessageListener before_open_tab("ready1",
@@ -233,7 +255,10 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, GrantForChromePages) {
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests that a tab in incognito mode can be captured.
+// TODO(crbug.com/427298135): Port to desktop Android when incognito is better
+// supported in extensions tests.
 IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, CaptureInSplitIncognitoMode) {
   AddExtensionToCommandLineAllowlist();
   ASSERT_TRUE(RunExtensionTest(
@@ -242,6 +267,7 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, CaptureInSplitIncognitoMode) {
       {.allow_in_incognito = true}))
       << message_;
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, Constraints) {
   AddExtensionToCommandLineAllowlist();
@@ -250,6 +276,7 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, Constraints) {
       << message_;
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests that the tab indicator (in the tab strip) is shown during tab capture.
 // TODO(crbug.com/427298135): Port this to BrowserWindowInterface after
 // TabListInterfaceObserver supports TabChangedAt().
@@ -305,6 +332,7 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, TabIndicator) {
     observer.WaitForTabChange();
   }
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, MultipleExtensions) {
   ASSERT_TRUE(embedded_test_server()->Start());

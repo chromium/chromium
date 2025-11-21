@@ -80,10 +80,10 @@ class CaptureAccessHandlerBase : public MediaAccessHandler {
 
   using RequestsQueues = base::flat_map<content::WebContents*, RequestsQueue>;
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   static bool IsExtensionAllowedForScreenCapture(
       const extensions::Extension* extension);
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
   static bool IsBuiltInFeedbackUI(const GURL& origin);
 
