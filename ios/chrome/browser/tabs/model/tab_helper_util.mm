@@ -408,7 +408,7 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
   }
 
   attacher
-      .CreateDeferredWhen<PasskeyTabHelper>(
+      .CreateDeferredWhen<webauthn::PasskeyTabHelper>(
           attacher.IsForStandardNavigation() &&
           base::FeatureList::IsEnabled(kIOSPasskeyShim))
       .With([&]() { return IOSPasskeyModelFactory::GetForProfile(profile); },

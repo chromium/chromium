@@ -14,7 +14,17 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
-namespace {
+namespace webauthn {
+
+using PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::kCreateRequested;
+using PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::
+    kCreateResolvedGpm;
+using PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::
+    kCreateResolvedNonGpm;
+using PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::kGetRequested;
+using PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::kGetResolvedGpm;
+using PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::
+    kGetResolvedNonGpm;
 
 constexpr char kCredentialId[] = "credential_id";
 constexpr char kCredentialId2[] = "credential_id_2";
@@ -68,16 +78,14 @@ PasskeyTabHelper::AssertionRequestParams BuildAssertionRequestParams(
                                                   allow_credentials);
 }
 
-}  // namespace
-
 class FakeIOSPasskeyClient : public IOSPasskeyClient {
  public:
   FakeIOSPasskeyClient() = default;
   ~FakeIOSPasskeyClient() override = default;
 
   bool PerformUserVerification() override { return false; }
-  void FetchKeys(webauthn::ReauthenticatePurpose purpose,
-                 webauthn::KeysFetchedCallback callback) override {
+  void FetchKeys(ReauthenticatePurpose purpose,
+                 KeysFetchedCallback callback) override {
     if (!callback.is_null()) {
       std::move(callback).Run({});
     }
@@ -117,14 +125,13 @@ class PasskeyTabHelperTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
-  std::unique_ptr<webauthn::PasskeyModel> passkey_model_ =
-      std::make_unique<webauthn::TestPasskeyModel>();
+  std::unique_ptr<PasskeyModel> passkey_model_ =
+      std::make_unique<TestPasskeyModel>();
   web::FakeWebState fake_web_state_;
 };
 
 TEST_F(PasskeyTabHelperTest, LogsEventFromGetRequested) {
-  passkey_tab_helper()->LogEvent(
-      PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::kGetRequested);
+  passkey_tab_helper()->LogEvent(kGetRequested);
 
   constexpr int kGetRequestedBucket = 0;
   histogram_tester_.ExpectUniqueSample(
@@ -133,8 +140,7 @@ TEST_F(PasskeyTabHelperTest, LogsEventFromGetRequested) {
 }
 
 TEST_F(PasskeyTabHelperTest, LogsEventFromCreateRequested) {
-  passkey_tab_helper()->LogEvent(
-      PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::kCreateRequested);
+  passkey_tab_helper()->LogEvent(kCreateRequested);
 
   constexpr int kCreateRequestedBucket = 1;
   histogram_tester_.ExpectUniqueSample(
@@ -143,8 +149,7 @@ TEST_F(PasskeyTabHelperTest, LogsEventFromCreateRequested) {
 }
 
 TEST_F(PasskeyTabHelperTest, LogsGetResolvedEventGpmPasskey) {
-  passkey_tab_helper()->LogEvent(
-      PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::kGetResolvedGpm);
+  passkey_tab_helper()->LogEvent(kGetResolvedGpm);
 
   constexpr int kGetResolvedGpmBucket = 2;
   histogram_tester_.ExpectUniqueSample(
@@ -153,9 +158,7 @@ TEST_F(PasskeyTabHelperTest, LogsGetResolvedEventGpmPasskey) {
 }
 
 TEST_F(PasskeyTabHelperTest, LogsGetResolvedEventNonGpmPasskey) {
-  passkey_tab_helper()->LogEvent(
-      PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::
-          kGetResolvedNonGpm);
+  passkey_tab_helper()->LogEvent(kGetResolvedNonGpm);
 
   constexpr int kGetResolvedNonGpmBucket = 3;
   histogram_tester_.ExpectUniqueSample(
@@ -164,9 +167,7 @@ TEST_F(PasskeyTabHelperTest, LogsGetResolvedEventNonGpmPasskey) {
 }
 
 TEST_F(PasskeyTabHelperTest, LogsEventFromCreateResolvedGpm) {
-  passkey_tab_helper()->LogEvent(
-      PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::
-          kCreateResolvedGpm);
+  passkey_tab_helper()->LogEvent(kCreateResolvedGpm);
 
   constexpr int kCreateRequestedBucket = 4;
   histogram_tester_.ExpectUniqueSample(
@@ -175,9 +176,7 @@ TEST_F(PasskeyTabHelperTest, LogsEventFromCreateResolvedGpm) {
 }
 
 TEST_F(PasskeyTabHelperTest, LogsEventFromCreateResolvedNonGpm) {
-  passkey_tab_helper()->LogEvent(
-      PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::
-          kCreateResolvedNonGpm);
+  passkey_tab_helper()->LogEvent(kCreateResolvedNonGpm);
 
   constexpr int kCreateRequestedBucket = 5;
   histogram_tester_.ExpectUniqueSample(
@@ -251,3 +250,5 @@ TEST_F(PasskeyTabHelperTest, FilterPasskeys) {
       GetFilteredPasskeys(BuildAssertionRequestParams(allow_credentials));
   EXPECT_EQ(filtered_passkeys.size(), 2u);
 }
+
+}  // namespace webauthn

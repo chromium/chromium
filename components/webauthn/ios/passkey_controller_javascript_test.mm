@@ -13,7 +13,26 @@
 #import "testing/gtest_mac.h"
 #import "url/gurl.h"
 
-namespace {
+@interface PasskeyScriptMessageHandler : NSObject <WKScriptMessageHandler>
+@property(nonatomic, strong) WKScriptMessage* lastReceivedMessage;
+@end
+
+@implementation PasskeyScriptMessageHandler
+
+- (void)configureForWebView:(WKWebView*)webView {
+  [webView.configuration.userContentController
+      addScriptMessageHandler:self
+                         name:@"PasskeyInteractionHandler"];
+}
+
+- (void)userContentController:(WKUserContentController*)userContentController
+      didReceiveScriptMessage:(WKScriptMessage*)message {
+  self.lastReceivedMessage = message;
+}
+
+@end
+
+namespace webauthn {
 
 const char kNavigatorCredentialsCreateUrl[] = "/credentialsCreate";
 const char kNavigatorCredentialsGetUrl[] = "/credentialsGet";
@@ -47,27 +66,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   }
   return std::move(http_response);
 }
-
-}  // namespace
-
-@interface PasskeyScriptMessageHandler : NSObject <WKScriptMessageHandler>
-@property(nonatomic, strong) WKScriptMessage* lastReceivedMessage;
-@end
-
-@implementation PasskeyScriptMessageHandler
-
-- (void)configureForWebView:(WKWebView*)webView {
-  [webView.configuration.userContentController
-      addScriptMessageHandler:self
-                         name:@"PasskeyInteractionHandler"];
-}
-
-- (void)userContentController:(WKUserContentController*)userContentController
-      didReceiveScriptMessage:(WKScriptMessage*)message {
-  self.lastReceivedMessage = message;
-}
-
-@end
 
 // Test fixture for passkey_controller.ts.
 // TODO(crbug.com/369629469): Explore adding EG tests that verify original JS
@@ -202,3 +200,5 @@ TEST_F(PasskeyControllerJavaScriptTest,
 
   EXPECT_NSEQ(@"handleGetRequest", body[@"event"]);
 }
+
+}  // namespace webauthn

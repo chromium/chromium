@@ -15,6 +15,8 @@ namespace password_manager {
 class WebAuthnCredentialsDelegate;
 }
 
+namespace webauthn {
+
 // Virtual class which exposes the API required by the PasskeyTabHelper to
 // perform passkey related tasks.
 class IOSPasskeyClient {
@@ -26,8 +28,8 @@ class IOSPasskeyClient {
 
   // Fetches the keys for the provided purpose and calls the callback with the
   // fetched keys as input.
-  virtual void FetchKeys(webauthn::ReauthenticatePurpose purpose,
-                         webauthn::KeysFetchedCallback callback) = 0;
+  virtual void FetchKeys(ReauthenticatePurpose purpose,
+                         KeysFetchedCallback callback) = 0;
 
   // Shows the bottom sheet with passkey suggestions.
   virtual void ShowSuggestionBottomSheet() = 0;
@@ -43,5 +45,7 @@ class IOSPasskeyClient {
  protected:
   IOSPasskeyClient() = default;
 };
+
+}  // namespace webauthn
 
 #endif  // COMPONENTS_WEBAUTHN_IOS_IOS_PASSKEY_CLIENT_H_

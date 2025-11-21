@@ -25,6 +25,8 @@ namespace web {
 class WebFrame;
 }  // namespace web
 
+namespace webauthn {
+
 // Handles script messages received from PasskeyJavaScriptFeature related to
 // interactions with WebAuthn credentials and for now logs appropriate metrics.
 class PasskeyTabHelper : public web::WebStateObserver,
@@ -96,8 +98,8 @@ class PasskeyTabHelper : public web::WebStateObserver,
     // Returns the relying party identifier.
     const std::string& RpId() const;
 
-    // Converts `user_entity_` to webauthn::PasskeyModel::UserEntity.
-    webauthn::PasskeyModel::UserEntity UserEntity() const;
+    // Converts `user_entity_` to PasskeyModel::UserEntity.
+    PasskeyModel::UserEntity UserEntity() const;
 
     RequestParams request_params_;
 
@@ -131,7 +133,7 @@ class PasskeyTabHelper : public web::WebStateObserver,
   friend class PasskeyTabHelperTest;
 
   explicit PasskeyTabHelper(web::WebState* web_state,
-                            webauthn::PasskeyModel* passkey_model,
+                            PasskeyModel* passkey_model,
                             std::unique_ptr<IOSPasskeyClient> client);
 
   // Returns whether the passkey model contains a passkey from the
@@ -153,7 +155,7 @@ class PasskeyTabHelper : public web::WebStateObserver,
   // PasskeyJavaScriptFeature.
   void CompletePasskeyCreation(RegistrationRequestParams params,
                                std::string client_data_json,
-                               const webauthn::SharedKeyList& shared_key_list);
+                               const SharedKeyList& shared_key_list);
 
   // Adds a passkey to the passkey model while enabling the passkey creation
   // infobar to be displayed if possible.
@@ -169,7 +171,7 @@ class PasskeyTabHelper : public web::WebStateObserver,
   base::WeakPtr<PasskeyTabHelper> AsWeakPtr();
 
   // Provides access to stored WebAuthn credentials.
-  const raw_ref<webauthn::PasskeyModel> passkey_model_;
+  const raw_ref<PasskeyModel> passkey_model_;
 
   // The WebState with which this object is associated.
   base::WeakPtr<web::WebState> web_state_;
@@ -181,5 +183,7 @@ class PasskeyTabHelper : public web::WebStateObserver,
   // and we don't want to risk a UAF if that happens.
   base::WeakPtrFactory<PasskeyTabHelper> weak_factory_{this};
 };
+
+}  // namespace webauthn
 
 #endif  // COMPONENTS_WEBAUTHN_IOS_PASSKEY_TAB_HELPER_H_

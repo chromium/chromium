@@ -426,7 +426,7 @@ std::vector<web::JavaScriptFeature*> ChromeWebClient::GetJavaScriptFeatures(
       password_manager::PasswordManagerJavaScriptFeature::GetInstance());
 
   if (base::FeatureList::IsEnabled(kIOSPasskeyShim)) {
-    features.push_back(PasskeyJavaScriptFeature::GetInstance());
+    features.push_back(webauthn::PasskeyJavaScriptFeature::GetInstance());
   }
 
   features.push_back(LinkToTextJavaScriptFeature::GetInstance());

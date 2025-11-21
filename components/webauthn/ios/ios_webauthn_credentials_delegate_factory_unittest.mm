@@ -12,12 +12,10 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
-namespace {
+namespace webauthn {
 
 constexpr std::string kFrameId1 = "frame1";
 constexpr std::string kFrameId2 = "frame2";
-
-}  // namespace
 
 class IOSWebAuthnCredentialsDelegateFactoryTest : public PlatformTest {
  protected:
@@ -103,3 +101,5 @@ TEST_F(IOSWebAuthnCredentialsDelegateFactoryTest, DelegateDestroyedWithFrame) {
   EXPECT_TRUE(new_delegate);
   EXPECT_NE(old_delegate, new_delegate);
 }
+
+}  // namespace webauthn

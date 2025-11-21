@@ -10,6 +10,8 @@
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "ios/web/public/web_state.h"
 
+namespace webauthn {
+
 IOSWebAuthnCredentialsDelegateFactory::IOSWebAuthnCredentialsDelegateFactory(
     web::WebState* web_state)
     : web_state_(web_state) {
@@ -50,3 +52,5 @@ void IOSWebAuthnCredentialsDelegateFactory::WebFrameBecameUnavailable(
     const std::string& frame_id) {
   delegate_map_.erase(frame_id);
 }
+
+}  // namespace webauthn

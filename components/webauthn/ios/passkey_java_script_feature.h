@@ -8,6 +8,8 @@
 #import "base/no_destructor.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 
+namespace webauthn {
+
 // Communicates with the JavaScript file passkey_controller.ts, which contains
 // a shim of the navigator.credentials API.
 //
@@ -44,5 +46,7 @@ class PasskeyJavaScriptFeature : public web::JavaScriptFeature {
   void ScriptMessageReceived(web::WebState* web_state,
                              const web::ScriptMessage& message) override;
 };
+
+}  // namespace webauthn
 
 #endif  // COMPONENTS_WEBAUTHN_IOS_PASSKEY_JAVA_SCRIPT_FEATURE_H_

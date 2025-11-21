@@ -17,7 +17,7 @@
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
 
-namespace {
+namespace webauthn {
 
 constexpr char kWebAuthenticationIOSContentAreaEventHistogram[] =
     "WebAuthentication.IOS.ContentAreaEvent";
@@ -65,14 +65,13 @@ std::set<std::string> GetIdsFromDescriptors(
 // TODO(crbug.com/460485333): Merge this code with PerformPasskeyCreation.
 std::pair<sync_pb::WebauthnCredentialSpecifics, std::vector<uint8_t>>
 CreatePasskeyAndAttestationObject(
-    const webauthn::SharedKey& trusted_vault_key,
+    const SharedKey& trusted_vault_key,
     std::string_view rp_id,
-    const webauthn::PasskeyModel::UserEntity& user_entity,
-    const webauthn::passkey_model_utils::ExtensionInputData&
-        extension_input_data,
-    webauthn::passkey_model_utils::ExtensionOutputData* extension_output_data) {
+    const PasskeyModel::UserEntity& user_entity,
+    const passkey_model_utils::ExtensionInputData& extension_input_data,
+    passkey_model_utils::ExtensionOutputData* extension_output_data) {
   auto [passkey, public_key_spki_der] =
-      webauthn::passkey_model_utils::GeneratePasskeyAndEncryptSecrets(
+      passkey_model_utils::GeneratePasskeyAndEncryptSecrets(
           rp_id, user_entity, trusted_vault_key,
           /*trusted_vault_key_version=*/0, extension_input_data,
           extension_output_data);
@@ -80,12 +79,10 @@ CreatePasskeyAndAttestationObject(
   // TODO(crbug.com/460485333): use the real value for `did_complete_uv`.
   return {
       std::move(passkey),
-      webauthn::passkey_model_utils::MakeAttestationObjectForCreation(
+      passkey_model_utils::MakeAttestationObjectForCreation(
           rp_id, /*did_complete_uv=*/false,
           base::as_byte_span(passkey.credential_id()), public_key_spki_der)};
 }
-
-}  // namespace
 
 PasskeyTabHelper::RequestParams::RequestParams()
     : user_verification_(device::UserVerificationRequirement::kPreferred) {}
@@ -145,9 +142,9 @@ const std::string& PasskeyTabHelper::RegistrationRequestParams::RpId() const {
   return request_params_.rp_entity_.id;
 }
 
-webauthn::PasskeyModel::UserEntity
+PasskeyModel::UserEntity
 PasskeyTabHelper::RegistrationRequestParams::UserEntity() const {
-  return webauthn::PasskeyModel::UserEntity(
+  return PasskeyModel::UserEntity(
       user_entity_.id, user_entity_.name.has_value() ? *user_entity_.name : "",
       user_entity_.display_name.has_value() ? *user_entity_.display_name : "");
 }
@@ -214,7 +211,7 @@ bool PasskeyTabHelper::HasCredential(const std::string& rp_id,
 }
 
 PasskeyTabHelper::PasskeyTabHelper(web::WebState* web_state,
-                                   webauthn::PasskeyModel* passkey_model,
+                                   PasskeyModel* passkey_model,
                                    std::unique_ptr<IOSPasskeyClient> client)
     : passkey_model_(CHECK_DEREF(passkey_model)),
       web_state_(web_state->GetWeakPtr()),
@@ -292,9 +289,8 @@ void PasskeyTabHelper::StartPasskeyCreation(RegistrationRequestParams params) {
   }
 
   // TODO(crbug.com/460485333): Use proper top origin.
-  std::string client_data_json = webauthn::BuildClientDataJson(
-      {webauthn::ClientDataRequestType::kWebAuthnCreate,
-       web_frame->GetSecurityOrigin(),
+  std::string client_data_json = BuildClientDataJson(
+      {ClientDataRequestType::kWebAuthnCreate, web_frame->GetSecurityOrigin(),
        /*top_origin=*/url::Origin(), params.request_params_.challenge_,
        /*is_cross_origin_iframe=*/false},
       /*payment_json=*/std::nullopt);
@@ -304,7 +300,7 @@ void PasskeyTabHelper::StartPasskeyCreation(RegistrationRequestParams params) {
     return;
   }
 
-  client_->FetchKeys(webauthn::ReauthenticatePurpose::kEncrypt,
+  client_->FetchKeys(ReauthenticatePurpose::kEncrypt,
                      base::BindOnce(&PasskeyTabHelper::CompletePasskeyCreation,
                                     this->AsWeakPtr(), std::move(params),
                                     std::move(client_data_json)));
@@ -313,7 +309,7 @@ void PasskeyTabHelper::StartPasskeyCreation(RegistrationRequestParams params) {
 void PasskeyTabHelper::CompletePasskeyCreation(
     RegistrationRequestParams params,
     std::string client_data_json,
-    const webauthn::SharedKeyList& shared_key_list) {
+    const SharedKeyList& shared_key_list) {
   web::WebFrame* web_frame = GetWebFrame(params.request_params_);
   if (!web_frame) {
     return;
@@ -326,8 +322,8 @@ void PasskeyTabHelper::CompletePasskeyCreation(
   }
 
   // TODO(crbug.com/460485679) : Implement extension support.
-  webauthn::passkey_model_utils::ExtensionInputData extension_input_data;
-  webauthn::passkey_model_utils::ExtensionOutputData extension_output_data;
+  passkey_model_utils::ExtensionInputData extension_input_data;
+  passkey_model_utils::ExtensionOutputData extension_output_data;
 
   // Create passkey and attestation object.
   auto [passkey, attestation_object] = CreatePasskeyAndAttestationObject(
@@ -352,3 +348,5 @@ void PasskeyTabHelper::WebStateDestroyed(web::WebState* web_state) {
 base::WeakPtr<PasskeyTabHelper> PasskeyTabHelper::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
+
+}  // namespace webauthn

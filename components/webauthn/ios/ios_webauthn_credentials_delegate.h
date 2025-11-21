@@ -9,6 +9,8 @@
 #import "components/password_manager/core/browser/passkey_credential.h"
 #import "components/password_manager/core/browser/webauthn_credentials_delegate.h"
 
+namespace webauthn {
+
 // iOS implementation of WebAuthnCredentialsDelegate.
 class IOSWebAuthnCredentialsDelegate
     : public password_manager::WebAuthnCredentialsDelegate {
@@ -33,5 +35,7 @@ class IOSWebAuthnCredentialsDelegate
  private:
   base::WeakPtrFactory<IOSWebAuthnCredentialsDelegate> weak_ptr_factory_{this};
 };
+
+}  // namespace webauthn
 
 #endif  // COMPONENTS_WEBAUTHN_IOS_IOS_WEBAUTHN_CREDENTIALS_DELEGATE_H_

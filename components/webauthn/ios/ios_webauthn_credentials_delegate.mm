@@ -6,6 +6,8 @@
 
 #import "base/notimplemented.h"
 
+namespace webauthn {
+
 IOSWebAuthnCredentialsDelegate::IOSWebAuthnCredentialsDelegate() {}
 
 IOSWebAuthnCredentialsDelegate::~IOSWebAuthnCredentialsDelegate() = default;
@@ -60,3 +62,5 @@ base::WeakPtr<password_manager::WebAuthnCredentialsDelegate>
 IOSWebAuthnCredentialsDelegate::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
+
+}  // namespace webauthn

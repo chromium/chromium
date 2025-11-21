@@ -18,7 +18,17 @@
 #import "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 
-namespace {
+namespace webauthn {
+
+using PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::kCreateRequested;
+using PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::
+    kCreateResolvedGpm;
+using PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::
+    kCreateResolvedNonGpm;
+using PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::kGetRequested;
+using PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::kGetResolvedGpm;
+using PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::
+    kGetResolvedNonGpm;
 
 constexpr char kScriptName[] = "passkey_controller";
 constexpr char kHandlerName[] = "PasskeyInteractionHandler";
@@ -114,11 +124,9 @@ ExtractLogEventType(const std::string& event,
                     const base::Value::Dict& dict,
                     const PasskeyTabHelper& tab_helper) {
   if (event == kLogGetRequest) {
-    return PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::
-        kGetRequested;
+    return kGetRequested;
   } else if (event == kLogCreateRequest) {
-    return PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::
-        kCreateRequested;
+    return kCreateRequested;
   } else if (event == kLogGetResolved) {
     const std::string* credential_id = dict.FindString(kCredentialId);
     const std::string* rp_id = dict.FindString(kRpId);
@@ -126,11 +134,8 @@ ExtractLogEventType(const std::string& event,
       return std::nullopt;
     }
 
-    return tab_helper.HasCredential(*rp_id, *credential_id)
-               ? PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::
-                     kGetResolvedGpm
-               : PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::
-                     kGetResolvedNonGpm;
+    bool isGpm = tab_helper.HasCredential(*rp_id, *credential_id);
+    return isGpm ? kGetResolvedGpm : kGetResolvedNonGpm;
   } else if (event == kLogCreateResolved) {
     // Parameter for the "logCreateResolved" event.
     std::optional<bool> isGpm = dict.FindBool(kIsGpm);
@@ -138,10 +143,7 @@ ExtractLogEventType(const std::string& event,
       return std::nullopt;
     }
 
-    return *isGpm ? PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::
-                        kCreateResolvedGpm
-                  : PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent::
-                        kCreateResolvedNonGpm;
+    return *isGpm ? kCreateResolvedGpm : kCreateResolvedNonGpm;
   }
 
   return std::nullopt;
@@ -312,8 +314,6 @@ PasskeyTabHelper::RegistrationRequestParams ExtractRegistrationRequestParams(
       ExtractCredentials(dict.FindList(kExcludeCredentials)));
 }
 
-}  // namespace
-
 // static
 PasskeyJavaScriptFeature* PasskeyJavaScriptFeature::GetInstance() {
   static base::NoDestructor<PasskeyJavaScriptFeature> instance;
@@ -422,3 +422,5 @@ void PasskeyJavaScriptFeature::ScriptMessageReceived(
     passkey_tab_helper->LogEvent(*log_event_type);
   }
 }
+
+}  // namespace webauthn

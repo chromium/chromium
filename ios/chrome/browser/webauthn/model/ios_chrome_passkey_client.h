@@ -13,7 +13,7 @@ class WebState;
 }  // namespace web
 
 // Chrome side implementation of the IOSPasskeyClient interface.
-class IOSChromePasskeyClient : public IOSPasskeyClient {
+class IOSChromePasskeyClient : public webauthn::IOSPasskeyClient {
  public:
   IOSChromePasskeyClient(web::WebState* web_state);
   ~IOSChromePasskeyClient() override;

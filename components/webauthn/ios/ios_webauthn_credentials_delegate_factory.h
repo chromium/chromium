@@ -14,6 +14,8 @@ namespace web {
 class WebState;
 }  // namespace web
 
+namespace webauthn {
+
 // This factory creates and manages the lifecycle of
 // IOSWebAuthnCredentialsDelegate objects. There is one factory per WebState,
 // and it creates one delegate per WebFrame.
@@ -53,5 +55,7 @@ class IOSWebAuthnCredentialsDelegateFactory
 
   raw_ptr<web::WebState> web_state_;
 };
+
+}  // namespace webauthn
 
 #endif  // COMPONENTS_WEBAUTHN_IOS_IOS_WEBAUTHN_CREDENTIALS_DELEGATE_FACTORY_H_
