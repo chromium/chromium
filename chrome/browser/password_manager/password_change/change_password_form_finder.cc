@@ -8,6 +8,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -55,6 +56,19 @@ std::unique_ptr<Logger> GetLoggerIfAvailable(
   return nullptr;
 }
 
+password_manager::PasswordFormManager* LogPasswordFormDetectedMetric(
+    base::Time time_of_creation,
+    password_manager::PasswordFormManager* form_manager) {
+  base::UmaHistogramBoolean("PasswordManager.ChangePasswordFormDetected",
+                            form_manager);
+  if (form_manager) {
+    base::UmaHistogramMediumTimes(
+        "PasswordManager.ChangePasswordFormDetectionTime",
+        base::Time::Now() - time_of_creation);
+  }
+  return form_manager;
+}
+
 }  // namespace
 
 ChangePasswordFormFinder::ChangePasswordFormFinder(
@@ -65,8 +79,10 @@ ChangePasswordFormFinder::ChangePasswordFormFinder(
     : creation_time_(base::Time::Now()),
       web_contents_(web_contents),
       client_(client),
-      logs_uploader_(logs_uploader),
-      callback_(std::move(callback)) {
+      logs_uploader_(logs_uploader) {
+  // Record metrics if form has been detected and the time it took.
+  callback_ = base::BindOnce(&LogPasswordFormDetectedMetric, creation_time_)
+                  .Then(std::move(callback));
   CHECK(logs_uploader_);
   capture_annotated_page_content_ =
       base::BindOnce(&optimization_guide::GetAIPageContent, web_contents,

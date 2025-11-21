@@ -26,6 +26,9 @@ class WebContents;
 // Helper class which verifies whether password change was successful or not.
 class PasswordChangeSubmissionVerifier {
  public:
+  static char kPasswordChangeVerificationTimeHistogram[];
+  static char kSubmissionOutcomeHistogramName[];
+
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   //
@@ -48,9 +51,6 @@ class PasswordChangeSubmissionVerifier {
   // LINT.ThenChange(//tools/metrics/histograms/metadata/password/enums.xml:SubmissionOutcome)
 
   using FormSubmissionResultCallback = base::OnceCallback<void(bool)>;
-
-  static constexpr char kPasswordChangeVerificationTimeHistogram[] =
-      "PasswordManager.PasswordChangeVerificationTime";
 
   PasswordChangeSubmissionVerifier(content::WebContents* web_contents,
                                    ModelQualityLogsUploader* logs_uploader);

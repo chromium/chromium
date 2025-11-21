@@ -123,8 +123,10 @@ ChangePasswordFormFillingSubmissionHelper::
   // Record duration in case the something went wrong before the helper reached
   // Submit click.
   if (creation_time_) {
-    logs_uploader_->SetStepDuration(kSubmitFormFlowStep,
-                                    base::Time::Now() - creation_time_.value());
+    base::TimeDelta time_delta = base::Time::Now() - creation_time_.value();
+    base::UmaHistogramMediumTimes("PasswordManager.TimeSpentChangingPassword",
+                                  time_delta);
+    logs_uploader_->SetStepDuration(kSubmitFormFlowStep, time_delta);
   }
 }
 
@@ -371,8 +373,11 @@ void ChangePasswordFormFillingSubmissionHelper::OnExecutionResponseCallback(
   }
 
   CHECK(creation_time_);
-  logs_uploader_->SetStepDuration(kSubmitFormFlowStep,
-                                  base::Time::Now() - creation_time_.value());
+  base::TimeDelta time_delta = base::Time::Now() - creation_time_.value();
+  base::UmaHistogramMediumTimes("PasswordManager.TimeSpentChangingPassword",
+                                time_delta);
+  logs_uploader_->SetStepDuration(kSubmitFormFlowStep, time_delta);
+
   // Reset creation_time_ to avoid recording duration the second time in
   // destructor.
   creation_time_ = std::nullopt;

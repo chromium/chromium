@@ -46,6 +46,8 @@ class PasswordChangeUIControllerBrowserTest : public InProcessBrowserTest {
         ->AsDialogDelegate();
   }
 
+  PasswordChangeUIController* ui_controller() { return ui_controller_.get(); }
+
   views::MdTextButton* GetToastActionButton() {
     return ui_controller_->toast_view()->action_button();
   }
@@ -330,6 +332,19 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
   EXPECT_CALL(delegate_, Stop);
   views::test::ButtonTestApi clicker(GetToastCloseButton());
   clicker.NotifyClick(ui::test::TestEvent());
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
+                       ToastDisappearsWhenDialogIsShown) {
+  UpdateState(PasswordChangeDelegate::State::kWaitingForChangePasswordForm);
+
+  EXPECT_TRUE(ui_controller()->toast_view());
+  EXPECT_FALSE(ui_controller()->dialog_widget());
+
+  UpdateState(PasswordChangeDelegate::State::kChangePasswordFormNotFound);
+
+  EXPECT_FALSE(ui_controller()->toast_view());
+  EXPECT_TRUE(ui_controller()->dialog_widget());
 }
 
 }  // namespace

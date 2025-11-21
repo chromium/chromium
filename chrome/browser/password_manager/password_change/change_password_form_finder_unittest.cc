@@ -195,6 +195,7 @@ class ChangePasswordFormFinderTest : public ChromeRenderViewHostTestHarness {
 };
 
 TEST_F(ChangePasswordFormFinderTest, PasswordChangeFormFound) {
+  base::HistogramTester histogram_tester;
   auto form_manager = CreateFormManager();
   ModelQualityLogsUploader logs_uploader(web_contents(), GURL());
   base::MockOnceCallback<void(password_manager::PasswordFormManager*)>
@@ -212,6 +213,32 @@ TEST_F(ChangePasswordFormFinderTest, PasswordChangeFormFound) {
   static_cast<password_manager::PasswordFormManagerObserver*>(
       form_finder.form_waiter())
       ->OnPasswordFormParsed(form_manager.get());
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.ChangePasswordFormDetected", true, 1);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.ChangePasswordFormDetectionTime", 1);
+}
+
+TEST_F(ChangePasswordFormFinderTest, ChangePasswordFormNotDetected) {
+  base::HistogramTester histogram_tester;
+  ModelQualityLogsUploader logs_uploader(web_contents(), GURL());
+  base::MockOnceCallback<void(password_manager::PasswordFormManager*)>
+      completion_callback;
+  base::MockCallback<
+      base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>>
+      capture_annotated_page_content;
+  ChangePasswordFormFinder form_finder(
+      pass_key(), web_contents(), client(), &logs_uploader,
+      completion_callback.Get(), capture_annotated_page_content.Get());
+
+  EXPECT_CALL(completion_callback, Run(nullptr));
+  task_environment()->FastForwardBy(
+      ChangePasswordFormFinder::kFormWaitingTimeout);
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.ChangePasswordFormDetected", false, 1);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.ChangePasswordFormDetectionTime", 0);
 }
 
 TEST_F(ChangePasswordFormFinderTest,

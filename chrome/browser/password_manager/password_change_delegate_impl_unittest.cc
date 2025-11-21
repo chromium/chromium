@@ -84,6 +84,19 @@ class MockManagePasswordsUIController : public ManagePasswordsUIController {
               (override));
 };
 
+class MockPasswordChangeDelegateObserver
+    : public PasswordChangeDelegate::Observer {
+ public:
+  MOCK_METHOD(void,
+              OnStateChanged,
+              (PasswordChangeDelegate::State),
+              (override));
+  MOCK_METHOD(void,
+              OnPasswordChangeStopped,
+              (PasswordChangeDelegate*),
+              (override));
+};
+
 const ukm::mojom::UkmEntry* GetUkmEntry(
     const ukm::TestAutoSetUkmRecorder& test_ukm_recorder) {
   auto ukm_entries = test_ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
@@ -177,6 +190,7 @@ class PasswordChangeDelegateImplTest : public ChromeRenderViewHostTestHarness {
 };
 
 TEST_F(PasswordChangeDelegateImplTest, WaitingForAgreement) {
+  base::HistogramTester histogram_tester;
   CreateDelegate();
   EXPECT_EQ(
       prefs()->GetInteger(optimization_guide::prefs::GetSettingEnabledPrefName(
@@ -198,6 +212,10 @@ TEST_F(PasswordChangeDelegateImplTest, WaitingForAgreement) {
       static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
   EXPECT_EQ(delegate()->GetCurrentState(),
             PasswordChangeDelegate::State::kWaitingForChangePasswordForm);
+  ResetDelegate();
+
+  histogram_tester.ExpectTotalCount(
+      PasswordChangeDelegateImpl::kPasswordChangeTimeOverallHistogram, 1);
 }
 
 TEST_F(PasswordChangeDelegateImplTest, PasswordChangeFormNotFound) {
@@ -214,6 +232,7 @@ TEST_F(PasswordChangeDelegateImplTest, PasswordChangeFormNotFound) {
   EXPECT_EQ(delegate()->GetCurrentState(),
             PasswordChangeDelegate::State::kWaitingForChangePasswordForm);
 
+  FastForwardBy(base::Milliseconds(1234));
   static_cast<PasswordChangeDelegateImpl*>(delegate())
       ->form_finder()
       ->RespondWithFormNotFound();
@@ -229,6 +248,8 @@ TEST_F(PasswordChangeDelegateImplTest, PasswordChangeFormNotFound) {
       PasswordChangeDelegateImpl::kCoarseFinalPasswordChangeStatusHistogram,
       PasswordChangeDelegate::CoarseFinalPasswordChangeState::kFormNotDetected,
       /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      PasswordChangeDelegateImpl::kPasswordChangeTimeOverallHistogram, 1234, 1);
   ukm::TestUkmRecorder::ExpectEntryMetric(
       GetUkmEntry(test_ukm_recorder),
       UkmEntry::kCoarseFinalPasswordChangeStatusName,
@@ -394,4 +415,21 @@ TEST_F(PasswordChangeDelegateImplTest, LoginPasswordFormIsLogged) {
           .password_change_submission()
           .quality();
   EXPECT_TRUE(quality.has_login_form_data());
+}
+
+TEST_F(PasswordChangeDelegateImplTest, DelegateNotifiesObserver) {
+  CreateDelegate();
+
+  MockPasswordChangeDelegateObserver observer;
+  delegate()->AddObserver(&observer);
+
+  EXPECT_EQ(delegate()->GetCurrentState(),
+            PasswordChangeDelegate::State::kWaitingForAgreement);
+
+  EXPECT_CALL(
+      observer,
+      OnStateChanged(
+          PasswordChangeDelegate::State::kWaitingForChangePasswordForm));
+  delegate()->OnPrivacyNoticeAccepted();
+  delegate()->RemoveObserver(&observer);
 }

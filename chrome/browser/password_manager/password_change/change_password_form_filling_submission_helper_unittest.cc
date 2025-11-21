@@ -387,6 +387,8 @@ TEST_P(ChangePasswordFormFillingSubmissionHelperTest,
   EXPECT_EQ(presaved_generated_password_form.GetPasswordBackup(), kNewPassword);
 
   verifier.reset();
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.TimeSpentChangingPassword", 1534, 1);
   EXPECT_EQ(1534, logs_uploader()
                       ->GetFinalLog()
                       .password_change_submission()

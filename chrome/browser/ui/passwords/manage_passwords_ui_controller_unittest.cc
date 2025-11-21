@@ -2471,6 +2471,7 @@ TEST_P(ManagePasswordsUIControllerTest,
 }
 
 TEST_P(ManagePasswordsUIControllerTest, AutomatedPasswordChangeOffered) {
+  base::HistogramTester histogram_tester;
   PasswordChangeServiceFactory::GetInstance()->SetTestingFactory(
       profile(),
       base::BindLambdaForTesting([](content::BrowserContext* context)
@@ -2505,6 +2506,10 @@ TEST_P(ManagePasswordsUIControllerTest, AutomatedPasswordChangeOffered) {
           password_manager::HasChangePasswordUrl(true)),
       CreatePasswordForm(kExampleUrl, kExampleUsername, kExamplePassword),
       /*in_account_store=*/false));
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordChange.UserHasPasswordSavedOnAPCLaunch", true,
+      1);
 }
 
 TEST_P(ManagePasswordsUIControllerTest,

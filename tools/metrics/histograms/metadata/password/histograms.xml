@@ -1178,17 +1178,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.ChangingPasswordToast.TimeSpent" units="ms"
-    expires_after="2026-04-05">
-  <owner>rgod@google.com</owner>
-  <owner>vsemeniuk@google.com</owner>
-  <summary>
-    The time in milliseconds it takes to fill and submit the change password
-    form. The metric is recorded from the moment the form is found until the
-    flow produces an outcome.
-  </summary>
-</histogram>
-
 <histogram
     name="PasswordManager.ClassificationCorrectness.ConfirmationPassword"
     enum="PasswordManagerClassificationCorrectness" expires_after="2026-05-10">
@@ -2789,7 +2778,7 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.PasswordChangeTimeOverall" units="ms"
+<histogram name="PasswordManager.PasswordChangeTimeOverall2" units="ms"
     expires_after="2026-04-05">
   <owner>atsvirchkova@google.com</owner>
   <owner>vsemeniuk@google.com</owner>
@@ -4095,6 +4084,17 @@ useful for Chirp alerts (go/crca-alerts). -->
     The time between receiving saved credentials from the password store and
     predictions from the Autofill server. Recorded each time when predictions
     for a form are received.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.TimeSpentChangingPassword" units="ms"
+    expires_after="2026-04-05">
+  <owner>atsvirchkova@google.com</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    The time in milliseconds it takes to fill and submit the change password
+    form. The metric is recorded from the moment the form is found until the
+    flow produces an outcome.
   </summary>
 </histogram>
 

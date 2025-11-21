@@ -39,11 +39,10 @@ constexpr optimization_guide::proto::PasswordChangeRequest::FlowStep
     kSubmitVerification = optimization_guide::proto::PasswordChangeRequest::
         FlowStep::PasswordChangeRequest_FlowStep_VERIFY_SUBMISSION_STEP;
 
-constexpr char kSubmissionOutcomeHistogramName[] =
-    "PasswordManager.PasswordChangeSubmissionOutcome";
-
 void LogSubmissionOutcome(SubmissionOutcome outcome, ukm::SourceId ukm_id) {
-  base::UmaHistogramEnumeration(kSubmissionOutcomeHistogramName, outcome);
+  base::UmaHistogramEnumeration(
+      PasswordChangeSubmissionVerifier::kSubmissionOutcomeHistogramName,
+      outcome);
   ukm::builders::PasswordManager_PasswordChangeSubmissionOutcome(ukm_id)
       .SetPasswordChangeSubmissionOutcome(static_cast<int>(outcome))
       .Record(ukm::UkmRecorder::Get());
@@ -117,6 +116,11 @@ OptimizationGuideKeyedService* GetOptimizationService(
 }
 
 }  // namespace
+
+char PasswordChangeSubmissionVerifier::kPasswordChangeVerificationTimeHistogram
+    [] = "PasswordManager.PasswordChangeVerificationTime";
+char PasswordChangeSubmissionVerifier::kSubmissionOutcomeHistogramName[] =
+    "PasswordManager.PasswordChangeSubmissionOutcome";
 
 PasswordChangeSubmissionVerifier::PasswordChangeSubmissionVerifier(
     content::WebContents* web_contents,

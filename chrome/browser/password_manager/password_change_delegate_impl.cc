@@ -65,47 +65,6 @@ using QualityStatus = ModelQualityLogsUploader::QualityStatus;
 
 constexpr base::TimeDelta kToastDisplayTime = base::Seconds(8);
 
-constexpr char kLeakDialogTimeSpentHistogram[] =
-    "PasswordManager.PasswordChange.LeakDetectionDialog.TimeSpent";
-
-void LogPasswordFormDetectedMetric(bool form_detected,
-                                   base::TimeDelta time_delta) {
-  base::UmaHistogramBoolean("PasswordManager.ChangePasswordFormDetected",
-                            form_detected);
-  if (form_detected) {
-    base::UmaHistogramMediumTimes(
-        "PasswordManager.ChangePasswordFormDetectionTime", time_delta);
-  }
-}
-
-void LogLeakDialogTimeSpent(PasswordChangeDelegate::State state,
-                            base::TimeDelta time_delta) {
-  CHECK(state == PasswordChangeDelegate::State::kWaitingForAgreement ||
-        state == PasswordChangeDelegate::State::kOfferingPasswordChange);
-
-  std::string suffix =
-      state == PasswordChangeDelegate::State::kWaitingForAgreement
-          ? ".WithPrivacyNotice"
-          : ".WithoutPrivacyNotice";
-  base::UmaHistogramMediumTimes(
-      base::StrCat({kLeakDialogTimeSpentHistogram, suffix}), time_delta);
-}
-
-// Logs whether user had any passwords saved for the website where the change
-// password was offered.
-void LogPasswordSavedOnStart(content::WebContents* web_contents) {
-  CHECK(web_contents);
-  ManagePasswordsUIController* manage_passwords_ui_controller =
-      ManagePasswordsUIController::FromWebContents(web_contents);
-  if (!manage_passwords_ui_controller) {
-    return;
-  }
-
-  base::UmaHistogramBoolean(
-      "PasswordManager.PasswordChange.UserHasPasswordSavedOnAPCLaunch",
-      !manage_passwords_ui_controller->GetCurrentForms().empty());
-}
-
 std::u16string GeneratePassword(
     const password_manager::PasswordForm& form,
     password_manager::PasswordGenerationFrameHelper* generation_helper) {
@@ -241,6 +200,13 @@ void OnLeakDialogHidden(base::WeakPtr<PasswordsModelDelegate> model_delegate) {
 
 }  // namespace
 
+char PasswordChangeDelegateImpl::kFinalPasswordChangeStatusHistogram[] =
+    "PasswordManager.FinalPasswordChangeStatus";
+char PasswordChangeDelegateImpl::kCoarseFinalPasswordChangeStatusHistogram[] =
+    "PasswordManager.CoarseFinalPasswordChangeStatus";
+char PasswordChangeDelegateImpl::kPasswordChangeTimeOverallHistogram[] =
+    "PasswordManager.PasswordChangeTimeOverall2";
+
 PasswordChangeDelegateImpl::PasswordChangeDelegateImpl(
     GURL change_password_url,
     password_manager::PasswordForm credentials,
@@ -323,7 +289,6 @@ void PasswordChangeDelegateImpl::OnOtpNotFound() {
 
   UpdateState(IsPrivacyNoticeAcknowledged() ? State::kOfferingPasswordChange
                                             : State::kWaitingForAgreement);
-  leak_dialog_display_time_ = base::Time::Now();
 }
 
 PasswordChangeDelegateImpl::~PasswordChangeDelegateImpl() {
@@ -333,6 +298,8 @@ PasswordChangeDelegateImpl::~PasswordChangeDelegateImpl() {
   base::UmaHistogramEnumeration(kFinalPasswordChangeStatusHistogram,
                                 current_state_);
   if (current_state_ != State::kNoState) {
+    base::UmaHistogramMediumTimes(kPasswordChangeTimeOverallHistogram,
+                                  base::Time::Now() - flow_start_time_);
     base::UmaHistogramEnumeration(kCoarseFinalPasswordChangeStatusHistogram,
                                   GetCoarseState(current_state_));
     ukm::builders::PasswordManager_ChangeFlowOutcome(ukm_source_id_)
@@ -340,7 +307,7 @@ PasswordChangeDelegateImpl::~PasswordChangeDelegateImpl() {
             static_cast<int>(GetCoarseState(current_state_)))
         .Record(ukm::UkmRecorder::Get());
   }
-  if (auto logger = GetLoggerIfAvailable(executor())) {
+  if (auto logger = GetLoggerIfAvailable(originator_)) {
     logger->LogBoolean(
         BrowserSavePasswordProgressLogger::STRING_PASSWORD_CHANGE_FINISHED,
         current_state_ == State::kPasswordSuccessfullyChanged);
@@ -372,9 +339,6 @@ void PasswordChangeDelegateImpl::StartPasswordChangeFlow() {
                            STRING_AUTOMATED_PASSWORD_CHANGE_START_FLOW);
   }
   flow_start_time_ = base::Time::Now();
-  LogLeakDialogTimeSpent(current_state_,
-                         flow_start_time_ - leak_dialog_display_time_);
-  LogPasswordSavedOnStart(originator_);
   UpdateState(State::kWaitingForChangePasswordForm);
   logs_uploader_ = std::make_unique<ModelQualityLogsUploader>(
       originator_.get(), change_password_url_);
@@ -447,10 +411,6 @@ void PasswordChangeDelegateImpl::OnPasswordChangeFormFound(
     password_manager::PasswordFormManager* form_manager) {
   form_finder_.reset();
 
-  change_password_form_found_time_ = base::Time::Now();
-  LogPasswordFormDetectedMetric(
-      /*form_detected=*/form_manager,
-      change_password_form_found_time_ - flow_start_time_);
   if (!form_manager) {
     UpdateState(State::kChangePasswordFormNotFound);
     return;
@@ -705,11 +665,6 @@ void PasswordChangeDelegateImpl::OnChangeFormSubmissionVerified(bool result) {
   base::Time time_now = base::Time::Now();
   base::TimeDelta password_change_duration_overall =
       time_now - flow_start_time_;
-  base::UmaHistogramMediumTimes(
-      "PasswordManager.ChangingPasswordToast.TimeSpent",
-      time_now - change_password_form_found_time_);
-  base::UmaHistogramMediumTimes("PasswordManager.PasswordChangeTimeOverall",
-                                password_change_duration_overall);
 
   if (!result) {
     UpdateState(State::kPasswordChangeFailed);

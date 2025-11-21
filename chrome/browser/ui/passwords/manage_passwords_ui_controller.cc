@@ -528,6 +528,10 @@ void ManagePasswordsUIController::OnCredentialLeak(
       return;
     }
 
+    base::UmaHistogramBoolean(
+        "PasswordManager.PasswordChange.UserHasPasswordSavedOnAPCLaunch",
+        !GetCurrentForms().empty());
+
     password_change_service->OfferPasswordChangeUi(
         std::move(details.credentials), web_contents());
     UpdateBubbleAndIconVisibility();
