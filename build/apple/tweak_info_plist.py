@@ -189,6 +189,12 @@ def _RemoveBreakpadKeys(plist):
               'BreakpadSendAndExit', 'BreakpadSkipConfirm')
 
 
+def _IsValidBundleId(bundle_identifier):
+  # Based on apple developer documentation, see
+  # https://developer.apple.com/documentation/bundleresources/information-property-list/cfbundleidentifier
+  return re.match(r'^[0-9a-zA-Z-.]+$', bundle_identifier) is not None
+
+
 def _TagSuffixes():
   # Keep this list sorted in the order that tag suffix components are to
   # appear in a tag value. That is to say, it should be sorted per ASCII.
@@ -248,7 +254,7 @@ def _RemoveGTMKeys(plist):
 
 def _AddPrivilegedHelperId(plist, privileged_helper_id):
   plist['SMPrivilegedExecutables'] = {
-      privileged_helper_id: 'identifier ' + privileged_helper_id
+      privileged_helper_id: f'identifier "{privileged_helper_id}"'
   }
 
 
@@ -415,6 +421,9 @@ def Main(argv):
     if options.bundle_identifier is None:
       print('Use of Keystone requires the bundle id.', file=sys.stderr)
       return 1
+    if not _IsValidBundleId(options.bundle_identifier):
+      print(f'Invalid bundle id: {options.bundle_identifier}', file=sys.stderr)
+      return 1
     _AddKeystoneKeys(plist, options.bundle_identifier,
                      options.keystone_base_tag)
   else:
@@ -432,6 +441,10 @@ def Main(argv):
 
   # Add SMPrivilegedExecutables keys.
   if options.privileged_helper_id:
+    if not _IsValidBundleId(options.privileged_helper_id):
+      print(f'Invalid privileged helper id: {options.privileged_helper_id}',
+            file=sys.stderr)
+      return 1
     _AddPrivilegedHelperId(plist, options.privileged_helper_id)
   else:
     _RemovePrivilegedHelperId(plist)
