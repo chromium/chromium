@@ -1931,28 +1931,6 @@ bool GpuImageDecodeCache::ExceedsCacheLimits() const {
   return persistent_cache_.size() > items_limit;
 }
 
-void GpuImageDecodeCache::InsertTransferCacheEntry(
-    const ClientImageTransferCacheEntry& image_entry,
-    ImageData* image_data) {
-  DCHECK(image_data);
-  uint32_t size = image_entry.SerializedSize();
-  base::span<uint8_t> data =
-      context_->ContextSupport()->MapTransferCacheEntry(size);
-  if (!data.empty()) {
-    bool succeeded = image_entry.Serialize(data);
-    DCHECK(succeeded);
-    context_->ContextSupport()->UnmapAndCreateTransferCacheEntry(
-        image_entry.UnsafeType(), image_entry.Id());
-    image_data->upload.SetTransferCacheId(image_entry.Id());
-  } else {
-    // Transfer cache entry can fail due to a lost gpu context or failure
-    // to allocate shared memory.  Handle this gracefully.  Mark this
-    // image as "decode failed" so that we do not try to handle it again.
-    // If this was a lost context, we'll recreate this image decode cache.
-    image_data->decode.decode_failure = true;
-  }
-}
-
 bool GpuImageDecodeCache::NeedsDarkModeFilter(const DrawImage& draw_image,
                                               ImageData* image_data) {
   DCHECK(image_data);
@@ -2156,9 +2134,20 @@ void GpuImageDecodeCache::GenerateDarkModeFilter(const DrawImage& draw_image,
   if (image_data->decode.decode_failure)
     return;
 
+  sk_sp<ColorFilter> filter;
   const SkPixmap& pixmap = image_data->decode.pixmaps(AuxImage::kDefault)[0];
-  image_data->decode.dark_mode_color_filter_cache[draw_image.src_rect()] =
-      dark_mode_filter_->ApplyToImage(pixmap, draw_image.src_rect());
+  const SkIRect& src = draw_image.src_rect();
+
+  if (base::FeatureList::IsEnabled(features::kUnlockDuringGpuImageOperations)) {
+    // Release the lock while calling ApplyToImage as it can be expensive.
+    scoped_refptr<ImageData> image_data_ref(image_data);
+    base::AutoUnlock unlock(lock_);
+    filter = dark_mode_filter_->ApplyToImage(pixmap, src);
+  } else {
+    filter = dark_mode_filter_->ApplyToImage(pixmap, src);
+  }
+
+  image_data->decode.dark_mode_color_filter_cache[src] = std::move(filter);
 }
 
 void GpuImageDecodeCache::UploadImageIfNecessary(const DrawImage& draw_image,
@@ -2264,7 +2253,46 @@ void GpuImageDecodeCache::UploadImageIfNecessary(const DrawImage& draw_image,
                                           target_color_space);
   if (!image_entry.IsValid())
     return;
-  InsertTransferCacheEntry(image_entry, image_data);
+
+  scoped_refptr<ImageData> image_data_holder(image_data);
+  bool uploaded = false;
+  auto upload_image_entry_func = [&image_entry, &uploaded, this]() {
+    uint32_t size = image_entry.SerializedSize();
+    base::span<uint8_t> data =
+        context_->ContextSupport()->MapTransferCacheEntry(size);
+    if (!data.empty()) {
+      bool succeeded = image_entry.Serialize(data);
+      DCHECK(succeeded);
+      context_->ContextSupport()->UnmapAndCreateTransferCacheEntry(
+          image_entry.UnsafeType(), image_entry.Id());
+      uploaded = true;
+    }
+  };
+
+  if (base::FeatureList::IsEnabled(features::kUnlockDuringGpuImageOperations)) {
+    base::AutoUnlock unlock(lock_);
+    upload_image_entry_func();
+  } else {
+    upload_image_entry_func();
+  }
+
+  if (uploaded) {
+    // If we unlocked during the upload, another thread may have uploaded the
+    // image while we were working. If that happened, we should simply delete
+    // the entry we just created, as it is now redundant.
+    if (image_data->HasUploadedData()) {
+      context_->ContextSupport()->DeleteTransferCacheEntry(
+          image_entry.UnsafeType(), image_entry.Id());
+    } else {
+      image_data->upload.SetTransferCacheId(image_entry.Id());
+    }
+  } else {
+    // Transfer cache entry can fail due to a lost gpu context or failure
+    // to allocate shared memory.  Handle this gracefully.  Mark this
+    // image as "decode failed" so that we do not try to handle it again.
+    // If this was a lost context, we'll recreate this image decode cache.
+    image_data->decode.decode_failure = true;
+  }
 }
 
 scoped_refptr<GpuImageDecodeCache::ImageData>

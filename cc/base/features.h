@@ -286,6 +286,11 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kManualBeginFrame);
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(
     kDropMetricsFromNonProducedFramesOnlyIfTheyHadNoDamage);
 
+// When enabled, GpuImageDecodeCache will release its lock during the expensive
+// transfer cache entry serialization and upload steps, as well as during
+// raster dark mode filter generation.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kUnlockDuringGpuImageOperations);
+
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_

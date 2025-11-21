@@ -251,4 +251,7 @@ BASE_FEATURE(kManualBeginFrame, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kDropMetricsFromNonProducedFramesOnlyIfTheyHadNoDamage,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kUnlockDuringGpuImageOperations,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
