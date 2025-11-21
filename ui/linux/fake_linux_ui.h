@@ -44,7 +44,6 @@ class FakeLinuxUi : public LinuxUiAndTheme {
       ui::WindowButtonOrderObserver* observer) override;
   void RemoveWindowButtonOrderObserver(
       ui::WindowButtonOrderObserver* observer) override;
-  int GetWindowDragThresholdPx() const override;
   bool PrimaryPasteEnabled() const override;
   WindowFrameAction GetWindowFrameAction(
       WindowFrameActionSource source) override;

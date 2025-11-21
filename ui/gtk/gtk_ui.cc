@@ -641,13 +641,6 @@ ui::LinuxUi::WindowFrameAction GtkUi::GetWindowFrameAction(
   return window_frame_actions_[source];
 }
 
-int GtkUi::GetWindowDragThresholdPx() const {
-  gint threshold = kDefaultWindowDragThreshold;
-  g_object_get(gtk_settings_get_default(), "gtk-dnd-drag-threshold", &threshold,
-               nullptr);
-  return threshold;
-}
-
 bool GtkUi::PrimaryPasteEnabled() const {
   gboolean paste_enabled = false;
   g_object_get(gtk_settings_get_default(), "gtk-enable-primary-paste",

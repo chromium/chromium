@@ -84,10 +84,6 @@ LinuxUi::WindowFrameAction FakeLinuxUi::GetWindowFrameAction(
   return WindowFrameAction::kNone;
 }
 
-int FakeLinuxUi::GetWindowDragThresholdPx() const {
-  return kDefaultWindowDragThreshold;
-}
-
 bool FakeLinuxUi::PrimaryPasteEnabled() const {
   return true;
 }

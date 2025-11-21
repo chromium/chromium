@@ -63,10 +63,6 @@ enum class TextEditCommand;
 // project that wants to do linux desktop native rendering.
 class COMPONENT_EXPORT(LINUX_UI) LinuxUi {
  public:
-  // 8px is the default value in GTK for how far the mouse needs to move before
-  // a drag begins.
-  constexpr static int kDefaultWindowDragThreshold = 8;
-
   // Describes the window management actions that could be taken in response to
   // a middle click in the non client area.
   enum class WindowFrameAction {
@@ -209,13 +205,8 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi {
   virtual WindowFrameAction GetWindowFrameAction(
       WindowFrameActionSource source) = 0;
 
-  // The threshold for moving the mouse after pressing down in the non-client
-  // area after which a window drag is initiated.
-  virtual int GetWindowDragThresholdPx() const = 0;
-
   // Whether a middle mouse click should paste the primary clipboard contents.
   virtual bool PrimaryPasteEnabled() const = 0;
-
   // Returns the command line flags that should be copied to subprocesses
   // to have the same toolkit and version as this process.
   virtual std::vector<std::string> GetCmdLineFlagsForCopy() const = 0;

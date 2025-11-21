@@ -12,7 +12,6 @@
 #include "ui/base/hit_test.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/test/ui_controls.h"
-#include "ui/linux/linux_ui.h"
 #include "ui/platform_window/platform_window.h"
 #include "ui/platform_window/wm/wm_move_resize_handler.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -387,18 +386,6 @@ TEST_P(DesktopWindowTreeHostPlatformImplTestWithTouch, HitTest) {
       DispatchEvent(GenerateMouseEvent(ui::EventType::kMousePressed,
                                        pointer_location_in_px,
                                        ui::EF_LEFT_MOUSE_BUTTON));
-
-      if (hittest == HTCAPTION) {
-        // Window drag begins on drag (not press) after a mouse move threshold.
-        auto* linux_ui = ui::LinuxUi::instance();
-        const int threshold = linux_ui
-                                  ? linux_ui->GetWindowDragThresholdPx()
-                                  : ui::LinuxUi::kDefaultWindowDragThreshold;
-        expected_pointer_location_in_px.Offset(threshold, threshold);
-        DispatchEvent(GenerateMouseEvent(ui::EventType::kMouseDragged,
-                                         expected_pointer_location_in_px,
-                                         ui::EF_LEFT_MOUSE_BUTTON));
-      }
     }
 
     // The test expectation is based on the hit test component. If it is a

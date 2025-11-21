@@ -65,7 +65,6 @@ class QtUi : public ui::LinuxUiAndTheme, QtInterface::Delegate {
       ui::WindowButtonOrderObserver* observer) override;
   WindowFrameAction GetWindowFrameAction(
       WindowFrameActionSource source) override;
-  int GetWindowDragThresholdPx() const override;
   bool PrimaryPasteEnabled() const override;
   std::vector<std::string> GetCmdLineFlagsForCopy() const override;
 

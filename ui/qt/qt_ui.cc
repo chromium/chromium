@@ -350,13 +350,6 @@ QtUi::WindowFrameAction QtUi::GetWindowFrameAction(
   }
 }
 
-int QtUi::GetWindowDragThresholdPx() const {
-  // TODO(crbug.com/459840685): Qt supports both startDragDistance and
-  // startDragTime as thresholds:
-  // https://doc.qt.io/qt-6/qapplication.html#startDragDistance-prop.
-  return kDefaultWindowDragThreshold;
-}
-
 bool QtUi::PrimaryPasteEnabled() const {
   // Qt 6 does not have any setting that controls middle click behavior.
   return true;
