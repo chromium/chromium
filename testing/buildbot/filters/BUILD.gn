@@ -119,6 +119,7 @@ source_set("chrome_public_test_apk_filters") {
     "//testing/buildbot/filters/android.emulator_12l_landscape.chrome_public_test_apk.filter",
     "//testing/buildbot/filters/android.emulator_13.chrome_public_test_apk.filter",
     "//testing/buildbot/filters/android.emulator_14.chrome_public_test_apk.filter",
+    "//testing/buildbot/filters/android.emulator_14_automotive_landscape.chrome_public_test_apk.filter",
     "//testing/buildbot/filters/android.emulator_15_tablet_landscape.chrome_public_test_apk.filter",
     "//testing/buildbot/filters/android.emulator_15_tablet.chrome_public_test_apk.filter",
     "//testing/buildbot/filters/android.emulator_15.chrome_public_test_apk.filter",
