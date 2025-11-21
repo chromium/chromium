@@ -503,7 +503,7 @@ class PrintRenderFrameHelper
 
     // Called after a page gets rendered. |page_time| is how long the
     // rendering took.
-    void RenderedPreviewPage(const base::TimeDelta& page_time);
+    void RenderedPreviewPage(base::TimeDelta page_time);
 
     // Called after a preview document gets rendered by a PrintRenderer.
     // |document_time| is how long the rendering took.

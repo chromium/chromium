@@ -471,9 +471,9 @@ class PrintBackendServiceManager {
       mojo::Remote<printing::mojom::PrintBackendService>& service,
       bool sandboxed,
       const RemoteId& remote_id,
-      const base::TimeDelta& timeout);
+      base::TimeDelta timeout);
   void UpdateServiceIdleTimeoutByRemoteId(const RemoteId& remote_id,
-                                          const base::TimeDelta& timeout);
+                                          base::TimeDelta timeout);
 
   // Callback when predetermined idle timeout occurs indicating no in-flight
   // messages for a short period of time.  `sandboxed` is used to distinguish

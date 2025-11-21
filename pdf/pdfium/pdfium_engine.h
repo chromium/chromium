@@ -429,7 +429,7 @@ class PDFiumEngine : public DocumentLoader::Client,
   // unknown if unable to find any "V2" paths within `timeout`. Virtual to
   // support testing.
   virtual PDFLoadedWithV2InkAnnotations ContainsV2InkPath(
-      const base::TimeDelta& timeout) const;
+      base::TimeDelta timeout) const;
 
   // Loads "V2" Ink paths from a page in the PDF identified by `page_index`. The
   // `page_index` must be in bounds.

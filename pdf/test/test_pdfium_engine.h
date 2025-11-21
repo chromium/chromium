@@ -127,7 +127,7 @@ class TestPDFiumEngine : public PDFiumEngine {
 
   MOCK_METHOD(PDFLoadedWithV2InkAnnotations,
               ContainsV2InkPath,
-              (const base::TimeDelta&),
+              (base::TimeDelta),
               (const override));
 
   MOCK_METHOD((std::map<InkModeledShapeId, ink::PartitionedMesh>),

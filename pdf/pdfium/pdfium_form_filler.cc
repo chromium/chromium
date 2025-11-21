@@ -766,7 +766,7 @@ PDFiumFormFiller::GetEngineInIsolateScope(IPDF_JSPLATFORM* platform) {
       .GetEngineInIsolateScope();
 }
 
-int PDFiumFormFiller::SetTimer(const base::TimeDelta& delay,
+int PDFiumFormFiller::SetTimer(base::TimeDelta delay,
                                TimerCallback timer_func) {
   const int timer_id = ++g_last_timer_id;
   DCHECK(!base::Contains(timers_, timer_id));

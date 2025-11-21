@@ -5045,7 +5045,7 @@ void PDFiumEngine::DiscardStroke(int page_index, InkStrokeId id) {
 }
 
 PDFLoadedWithV2InkAnnotations PDFiumEngine::ContainsV2InkPath(
-    const base::TimeDelta& timeout) const {
+    base::TimeDelta timeout) const {
   base::TimeTicks start_time = base::TimeTicks::Now();
   for (const auto& page : pages_) {
     if (base::TimeTicks::Now() - start_time >= timeout) {

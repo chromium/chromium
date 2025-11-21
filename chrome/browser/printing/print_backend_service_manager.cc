@@ -1111,7 +1111,7 @@ void PrintBackendServiceManager::SetServiceIdleHandler(
     mojo::Remote<printing::mojom::PrintBackendService>& service,
     bool sandboxed,
     const RemoteId& remote_id,
-    const base::TimeDelta& timeout) {
+    base::TimeDelta timeout) {
   DVLOG(1) << "Updating idle timeout for "
            << (sandboxed ? "sandboxed" : "unsandboxed")
            << " print backend service id `" << remote_id << "` to " << timeout;
@@ -1130,7 +1130,7 @@ void PrintBackendServiceManager::SetServiceIdleHandler(
 
 void PrintBackendServiceManager::UpdateServiceIdleTimeoutByRemoteId(
     const RemoteId& remote_id,
-    const base::TimeDelta& timeout) {
+    base::TimeDelta timeout) {
   auto sandboxed_iter = sandboxed_remotes_bundles_.find(remote_id);
   if (sandboxed_iter != sandboxed_remotes_bundles_.end()) {
     RemotesBundle<mojom::SandboxedPrintBackendHost>* bundle =

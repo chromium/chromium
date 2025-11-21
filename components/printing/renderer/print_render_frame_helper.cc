@@ -2903,7 +2903,7 @@ bool PrintRenderFrameHelper::PrintPreviewContext::CreatePreviewDocument(
 }
 
 void PrintRenderFrameHelper::PrintPreviewContext::RenderedPreviewPage(
-    const base::TimeDelta& page_time) {
+    base::TimeDelta page_time) {
   DCHECK_EQ(State::kRendering, state_);
   document_render_time_ += page_time;
 }
