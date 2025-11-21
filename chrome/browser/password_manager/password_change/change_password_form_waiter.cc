@@ -32,20 +32,15 @@ PasswordFormCache* GetPasswordFormCache(
   return cache;
 }
 
-bool IsNewPasswordFieldVisible(
-    const password_manager::PasswordForm* parsed_form) {
-  CHECK(parsed_form);
-
-  const std::vector<autofill::FormFieldData>& fields =
-      parsed_form->form_data.fields();
-  if (parsed_form->new_password_element_renderer_id) {
-    auto field =
-        std::ranges::find(fields, parsed_form->new_password_element_renderer_id,
-                          &autofill::FormFieldData::renderer_id);
-    return field != fields.end() ? field->is_focusable() : false;
+bool FieldFocusable(autofill::FieldRendererId renderer_id,
+                    const autofill::FormData& form_data) {
+  const auto& fields = form_data.fields();
+  auto field = std::ranges::find(fields, renderer_id,
+                                 &autofill::FormFieldData::renderer_id);
+  if (field == fields.end()) {
+    return false;
   }
-  // No new password field found, this is not a password change form
-  return false;
+  return field->is_focusable();
 }
 
 bool IsLikelyChangePasswordForm(
@@ -73,7 +68,9 @@ bool IsLikelyChangePasswordForm(
   // If there is a username field, it can't be empty. Websites where username is
   // part of change password form usually have it prefilled.
   if (parsed_form->username_element_renderer_id &&
-      parsed_form->username_value.empty()) {
+      parsed_form->username_value.empty() &&
+      FieldFocusable(parsed_form->username_element_renderer_id,
+                     parsed_form->form_data)) {
     return false;
   }
 
@@ -226,7 +223,9 @@ void ChangePasswordFormWaiter::OnPasswordFormParsed(
   }
 
   if (ignore_hidden_forms_ &&
-      !IsNewPasswordFieldVisible(form_manager->GetParsedObservedForm())) {
+      !FieldFocusable(form_manager->GetParsedObservedForm()
+                          ->new_password_element_renderer_id,
+                      form_manager->GetParsedObservedForm()->form_data)) {
     return;
   }
 
