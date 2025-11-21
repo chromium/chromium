@@ -14,7 +14,6 @@
 namespace blink {
 class WebFormControlElement;
 class WebDocument;
-class WebLocalFrame;
 }  // namespace blink
 
 // Responsible for processing form issues that are emitted to devtools.
@@ -35,18 +34,34 @@ struct FormIssue {
   blink::WebString violating_node_attribute;
 };
 
-// Given a `render_frame` and a list of `FormData` associated with it, emits
-// the `FormIssue`(s) found.
-// `web_local_frame` is used to find the input elements in the document.
+// The default emitter used by EmitFormIssues().
+//
+// `EmitFormIssues(document, forms, &EmitToDevTools)` must be called only if
+// `document.GetFrame()->IsInspectorConnected()`.
+void EmitToDevTools(const blink::WebDocument& document,
+                    blink::mojom::GenericIssueErrorType issue_type,
+                    int violating_node,
+                    blink::WebString violating_node_attribute);
+
+// Emits DevTools issues about invalid or suboptimal forms (e.g., invalid
+// autocomplete attributes).
+//
 // `forms` contains information about the parsed `FormFieldData` which holds
 // label parsing details used to emit issues. See
 // `CheckForLabelsWithIncorrectForAttribute()`.
 //
+// `emit` is called for each found issue. It is a parameter for unit testing.
+//
 // TODO(crbug.com/40249826): Now that issues are only emitted when devtools is
 // open, consider re-extracting labels inside `EmitFormIssues()`
 // to avoid having to pass `forms`.
-void MaybeEmitFormIssuesToDevtools(blink::WebLocalFrame& web_local_frame,
-                                   base::span<const FormData> forms);
+void EmitFormIssues(
+    const blink::WebDocument& document,
+    base::span<const FormData> forms,
+    base::FunctionRef<void(const blink::WebDocument& document,
+                           blink::mojom::GenericIssueErrorType issue_type,
+                           int violating_node,
+                           blink::WebString violating_node_attribute)> emit);
 
 std::vector<FormIssue> GetFormIssuesForTesting(
     const std::vector<blink::WebFormControlElement>& control_elements,

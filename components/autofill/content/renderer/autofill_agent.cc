@@ -1731,10 +1731,9 @@ void AutofillAgent::ExtractFormsUnthrottled(
     }
     return;
   }
+
   FormCache::UpdateFormCacheResult cache =
       form_cache_.UpdateFormCache(field_data_manager(), timer_state);
-  form_issues::MaybeEmitFormIssuesToDevtools(*render_frame->GetWebFrame(),
-                                             cache.updated_forms);
   if (!cache.updated_forms.empty() || !cache.removed_forms.empty()) {
     if (auto* autofill_driver = unsafe_autofill_driver()) {
       autofill_driver->FormsSeen(cache.updated_forms,
@@ -1743,6 +1742,12 @@ void AutofillAgent::ExtractFormsUnthrottled(
   }
   if (!callback.is_null()) {
     std::move(callback).Run(/*success=*/true);
+  }
+
+  if (WebLocalFrame& frame = *render_frame->GetWebFrame();
+      frame.IsInspectorConnected()) {
+    form_issues::EmitFormIssues(frame.GetDocument(), cache.updated_forms,
+                                &form_issues::EmitToDevTools);
   }
 }
 

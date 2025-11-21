@@ -8,6 +8,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/containers/span.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
@@ -300,13 +301,22 @@ std::vector<FormIssue> CheckForLabelsWithIncorrectForAttribute(
 
 }  // namespace
 
-void MaybeEmitFormIssuesToDevtools(WebLocalFrame& web_local_frame,
-                                   base::span<const FormData> forms) {
-  // Only log the issues if devtools is connected.
-  if (!web_local_frame.IsInspectorConnected()) {
-    return;
-  }
-  WebDocument document = web_local_frame.GetDocument();
+void EmitToDevTools(const WebDocument& document,
+                    GenericIssueErrorType issue_type,
+                    int violating_node,
+                    WebString violating_node_attribute) {
+  WebLocalFrame& frame = CHECK_DEREF(document.GetFrame());
+  CHECK(frame.IsInspectorConnected());
+  frame.AddGenericIssue(issue_type, violating_node, violating_node_attribute);
+}
+
+void EmitFormIssues(
+    const WebDocument& document,
+    base::span<const FormData> forms,
+    base::FunctionRef<void(const blink::WebDocument& document,
+                           GenericIssueErrorType issue_type,
+                           int violating_node,
+                           WebString violating_node_attribute)> emit) {
   std::vector<FormIssue> form_issues;
   // Get issues from forms input elements.
   for (const WebFormElement& form_element : document.GetTopLevelForms()) {
@@ -329,9 +339,8 @@ void MaybeEmitFormIssuesToDevtools(WebLocalFrame& web_local_frame,
                       form_issues.end());
   }
   for (const FormIssue& form_issue : form_issues) {
-    web_local_frame.AddGenericIssue(form_issue.issue_type,
-                                    form_issue.violating_node,
-                                    form_issue.violating_node_attribute);
+    emit(document, form_issue.issue_type, form_issue.violating_node,
+         form_issue.violating_node_attribute);
   }
 }
 
