@@ -49,12 +49,6 @@ class ActorFillingObserver final : public AutofillManager::Observer,
   // The maximum amount of time for which this filling observer should exist.
   static base::TimeDelta GetMaximumTimeout() { return base::Minutes(1); }
 
-  // Returns whether there is least one credit card fetch that was started and
-  // that has not yet finished while this observer is active.
-  // Returns `std::nullopt` if the observer if all fills have completed and
-  // the observer has stopped observing credit card fetching.
-  std::optional<bool> IsCreditCardFetchOngoing() const;
-
  private:
   // AutofillManager::Observer:
   void OnFillOrPreviewForm(
@@ -77,6 +71,12 @@ class ActorFillingObserver final : public AutofillManager::Observer,
   // Calls callback and stops observing `AutofillManager`s if there are no
   // remaining field ids. Otherwise does nothing.
   void FinalizeIfComplete();
+
+  // Returns whether there is least one credit card fetch that was started and
+  // that has not yet finished while this observer is active.
+  // Returns `std::nullopt` if the observer if all fills have completed and
+  // the observer has stopped observing credit card fetching.
+  std::optional<bool> IsCreditCardFetchOngoing() const;
 
   // Stops all observations and runs `callback_` with an error if it is not
   // null.

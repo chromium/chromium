@@ -158,38 +158,6 @@ TEST_F(ActorFillingObserverTest, IncompleteMultiFieldFill) {
   EXPECT_THAT(future.Get(), ErrorIs(ActorFormFillingError::kNoForm));
 }
 
-TEST_F(ActorFillingObserverTest, CreditCardFetch) {
-  CreateAutofillDriver();
-  using Observer = CreditCardAccessManager::Observer;
-  std::vector<FieldGlobalId> field_ids = {MakeFieldGlobalId()};
-  CreditCard card;
-
-  ActorFillingObserver observer(autofill_client(), field_ids,
-                                base::DoNothing());
-  EXPECT_EQ(observer.IsCreditCardFetchOngoing(), false);
-
-  test_api(credit_card_access_manager(0))
-      .NotifyObservers(&Observer::OnCreditCardFetchStarted, card);
-  EXPECT_EQ(observer.IsCreditCardFetchOngoing(), true);
-
-  test_api(credit_card_access_manager(1))
-      .NotifyObservers(&Observer::OnCreditCardFetchStarted, card);
-  EXPECT_EQ(observer.IsCreditCardFetchOngoing(), true);
-
-  test_api(credit_card_access_manager(1))
-      .NotifyObservers(&Observer::OnCreditCardFetchSucceeded, card);
-  EXPECT_EQ(observer.IsCreditCardFetchOngoing(), true);
-
-  test_api(credit_card_access_manager(0))
-      .NotifyObservers(&Observer::OnCreditCardFetchFailed, &card);
-  EXPECT_EQ(observer.IsCreditCardFetchOngoing(), false);
-
-  autofill_manager().NotifyObservers(
-      &AutofillManager::Observer::OnFillOrPreviewForm, MakeFormGlobalId(),
-      mojom::ActionPersistence::kFill, field_ids, AddProfile());
-  EXPECT_EQ(observer.IsCreditCardFetchOngoing(), std::nullopt);
-}
-
 // Tests that the filling observer times out after `GetFillingTimeout()` if no
 // credit card fetch is ongoing.
 TEST_F(ActorFillingObserverTest, FillingTimeout) {
