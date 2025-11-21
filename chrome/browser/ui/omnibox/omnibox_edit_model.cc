@@ -1454,12 +1454,9 @@ bool OmniboxEditModel::OnAfterPossibleChange(
   // `allow_exact_keyword_match_` will be used by `StartAutocomplete()`, which
   // will be called by `view_->UpdatePopup()`; so after that returns we can
   // safely reset this flag.
-  // If entering keyword mode by space is disabled, do not set
-  // `allow_exact_keyword_match_`.
   allow_exact_keyword_match_ =
-      AllowKeywordSpaceTriggering() && state_changes.text_differs &&
-      allow_keyword_ui_change && !state_changes.just_deleted_text &&
-      no_selection &&
+      state_changes.text_differs && allow_keyword_ui_change &&
+      !state_changes.just_deleted_text && no_selection &&
       ShouldAcceptKeywordAfterInsertingSpaceInMiddle(
           *state_changes.old_text, user_text_,
           state_changes.new_selection.start());
@@ -2758,31 +2755,81 @@ bool OmniboxEditModel::ShouldAcceptKeywordAfterInsertingSpaceAtEnd(
     return false;
   }
 
-  size_t keyword_length = new_text.length() - 1;
-  return is_keyword_hint_ && keyword_.length() == keyword_length &&
-         IsSpaceCharForAcceptingKeyword(new_text[keyword_length]) &&
-         !new_text.compare(0, keyword_length, keyword_, 0, keyword_length);
+  // Check a keyword hint was being shown. If the text matches a keyword, a hint
+  // would have been shown. Even if this weren't the case, and the input matched
+  // a keyword without showing a hint, entering keyword mode in this case would
+  // be surprising.
+  if (!is_keyword_hint_) {
+    return false;
+  }
+
+  // Pasting a space shouldn't enter keyword mode. This isn't strictly necessary
+  // because `OnAfterPossibleChange()`, the only caller of
+  // `ShouldAcceptKeywordAfterInsertingSpaceAtEnd()`, doesn't make the call if
+  // there was a paste. But it'd be fragile to rely on that logic.
+  if (paste_state_ != PasteState::kNone) {
+    return false;
+  }
+
+  // `input` must end with space. Typing 'youtube' shouldn't enter
+  // keyword mode until the user types a final space.
+  if (!IsSpaceCharForAcceptingKeyword(new_text[new_text.length() - 1])) {
+    return false;
+  }
+
+  // Check the rest of the input matches `keyword`. This isn't necessary,
+  // `AutocompleteController` shouldn't show keyword hints on the default match
+  // for inputs like 'yout '. But that's not a guarantee.
+  if (new_text.substr(0, new_text.length() - 1) != keyword_) {
+    return false;
+  }
+
+  return true;
 }
 
 bool OmniboxEditModel::ShouldAcceptKeywordAfterInsertingSpaceInMiddle(
-    const std::u16string& old_text,
-    const std::u16string& new_text,
+    std::u16string_view old_text,
+    std::u16string_view new_text,
     size_t caret_position) const {
   DCHECK_GE(new_text.length(), caret_position);
-
-  // Check simple conditions first.
-  if (paste_state_ != PasteState::kNone || caret_position < 2 ||
-      old_text.length() < caret_position ||
-      new_text.length() == caret_position) {
+  // Check if the user has disabled space triggering.
+  if (!AllowKeywordSpaceTriggering()) {
     return false;
   }
+
+  // Unlike `ShouldAcceptKeywordAfterInsertingSpaceAtEnd()`, don't check a
+  // keyword hint was being shown. The input may have been 'youtube|query',
+  // which won't show a keyword hint, but space should still enter keyword mode.
+
+  // Pasting a space shouldn't enter keyword mode.
+  if (paste_state_ != PasteState::kNone) {
+    return false;
+  }
+
+  // Check a space was inserted in the middle of the input text. E.g.
+  // - 'youtube |query'  -> valid
+  // - ' |youtube'       -> invalid
+  // - 'youtube |'       -> invalid
+  // - 'youtube  |query' -> invalid
+  // Some of these are redundant with other checks below.
   size_t space_position = caret_position - 1;
-  if (!IsSpaceCharForAcceptingKeyword(new_text[space_position]) ||
-      base::IsUnicodeWhitespace(new_text[space_position - 1]) ||
-      new_text.compare(0, space_position, old_text, 0, space_position) ||
-      !new_text.compare(space_position, new_text.length() - space_position,
-                        old_text, space_position,
-                        old_text.length() - space_position)) {
+  if (caret_position < 2 || old_text.length() < caret_position ||
+      new_text.length() == caret_position ||
+      !IsSpaceCharForAcceptingKeyword(new_text[space_position]) ||
+      base::IsUnicodeWhitespace(new_text[space_position - 1])) {
+    return false;
+  }
+
+  // If the text preceding the space changed, then it's not a simple space
+  // insertion.
+  if (old_text.substr(0, space_position) !=
+      new_text.substr(0, space_position)) {
+    return false;
+  }
+
+  // Check if  the text was unchanged. E.g. old text was 'youtube[ ]query' and
+  // the user replaced the selected space with another space.
+  if (old_text == new_text) {
     return false;
   }
 

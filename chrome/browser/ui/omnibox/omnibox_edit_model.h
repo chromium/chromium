@@ -670,8 +670,8 @@ class OmniboxEditModel {
   // `new_text` that looks like "<keyword> <search phrase>":
   // - youtube|query -> youtube |query
   bool ShouldAcceptKeywordAfterInsertingSpaceInMiddle(
-      const std::u16string& old_text,
-      const std::u16string& new_text,
+      std::u16string_view old_text,
+      std::u16string_view new_text,
       size_t caret_position) const;
 
   // Checks if a given character is a valid space character for accepting
