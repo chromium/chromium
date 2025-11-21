@@ -525,6 +525,7 @@ public class FeedSurfaceCoordinatorTest {
         // Verifies the coordinator delegates the setBackground call to the custom view.
         verify(mBackgroundImageCoordinator)
                 .setBackground(eq(mBitmap), eq(mBackgroundImageInfo), eq(IMAGE_FROM_DISK));
+        configManager.resetForTesting();
     }
 
     @Test

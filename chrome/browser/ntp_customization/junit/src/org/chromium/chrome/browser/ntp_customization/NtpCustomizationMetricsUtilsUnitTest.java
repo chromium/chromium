@@ -136,6 +136,8 @@ public class NtpCustomizationMetricsUtilsUnitTest {
             NtpCustomizationMetricsUtils.recordNtpThemeType();
             histogramWatcher.assertExpected();
         }
+
+        NtpCustomizationUtils.resetSharedPreferenceForTesting();
     }
 
     @Test
