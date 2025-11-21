@@ -184,7 +184,7 @@
 <translation id="1118738876271697201">系统未能确定设备型号或序列号。</translation>
 <translation id="111897705806685148">使用另一部设备中的通行密钥</translation>
 <translation id="1119447706177454957">内部错误</translation>
-<translation id="1122068467107743258">工作单位</translation>
+<translation id="1122068467107743258">工作地点</translation>
 <translation id="1122198203221319518">工具(&amp;T)</translation>
 <translation id="1122242684574577509">身份验证失败。请点击此处访问当前所用 Wi-Fi 网络（“<ph name="NETWORK_ID" />”）的登录页面。</translation>
 <translation id="1122587596907914265">风格独特的壁纸</translation>
@@ -6434,7 +6434,7 @@
 <translation id="5452976525201205853"><ph name="LANGUAGE" />（可离线使用）</translation>
 <translation id="5453829744223920473">您的孩子可以像在课堂中一样使用所有学校应用、书签和资源。学校会设立基本规则。</translation>
 <translation id="5454166040603940656">提供方：<ph name="PROVIDER" /></translation>
-<translation id="5457082343331641453">添加到您的搜索内容中</translation>
+<translation id="5457082343331641453">添加更多搜索条件</translation>
 <translation id="5457113250005438886">无效</translation>
 <translation id="5457459357461771897">读取和删除您计算机上的照片、音乐和其他媒体</translation>
 <translation id="5458214261780477893">Dvorak</translation>

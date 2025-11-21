@@ -117,7 +117,7 @@
 <translation id="107022587824771715">Sugestie dotyczące grup kart są obecnie niedostępne. Możesz <ph name="BEGIN_LINK" />odświeżyć ją teraz<ph name="END_LINK" /> lub spróbować ponownie później.</translation>
 <translation id="1070357312245925724">Skrót nawigacji</translation>
 <translation id="1070705170564860382">Otworzę w alternatywnej przeglądarce za <ph name="COUNTDOWN_SECONDS" /> s</translation>
-<translation id="1071661533099313342">Oddziel widoki</translation>
+<translation id="1071661533099313342">Rozdziel widoki</translation>
 <translation id="1071917609930274619">Szyfrowanie danych</translation>
 <translation id="1072700771426194907">Wykryto urządzenie USB</translation>
 <translation id="107278043869924952">Oprócz hasła używaj też kodu PIN</translation>
@@ -7279,7 +7279,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="6066649679804058181">Przekształć grupę w folder zakładek</translation>
 <translation id="6066794465984119824">Hasz obrazu nie został skonfigurowany</translation>
 <translation id="6069464830445383022">Loguj się na Chromebooku, używając konta Google</translation>
-<translation id="6069799426896362048">Oddziel widoki</translation>
+<translation id="6069799426896362048">Rozdziel widoki</translation>
 <translation id="6071181508177083058">potwierdź hasło</translation>
 <translation id="6071576563962215370">System nie mógł ustanowić blokady atrybutów instalacyjnych urządzenia.</translation>
 <translation id="6071938745001252305">Zaoszczędzono <ph name="MEMORY_VALUE" /> pamięci</translation>
@@ -10400,7 +10400,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8225046344534779393">Sprawdź połączenie z internetem</translation>
 <translation id="8225265270453771718">Udostępnij okno aplikacji</translation>
 <translation id="8225516926291976401">Z Twojej lokalizacji mogą korzystać tylko usługi systemowe. Aplikacje i strony nadal jednak mogą ją rozpoznawać na podstawie Twojego adresu IP. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
-<translation id="8226222018808695353">Zabroniony</translation>
+<translation id="8226222018808695353">Dostęp zabroniony</translation>
 <translation id="8226619461731305576">Kolejka</translation>
 <translation id="8227119283605456246">Załącz plik</translation>
 <translation id="8227793900613581774">Włóż klucz bezpieczeństwa i dotknij go, aby go skonfigurować pod kątem aplikacji <ph name="APP_NAME" /></translation>

@@ -42,7 +42,7 @@
 <translation id="1126809382673880764">ਤੁਹਾਨੂੰ ਖਤਰਨਾਕ ਵੈੱਬਸਾਈਟਾਂ, ਡਾਊਨਲੋਡਾਂ ਅਤੇ ਐਕਸਟੈਂਸ਼ਨਾਂ ਤੋਂ ਸੁਰੱਖਿਅਤ ਨਹੀਂ ਰੱਖਿਆ ਜਾਂਦਾ। ਹੋਰ Google ਸੇਵਾਵਾਂ ਜਿਵੇਂ ਕਿ Gmail ਅਤੇ Search ਵਿੱਚ ਜਿੱਥੇ ਵੀ ਉਪਲਬਧ ਹੋਵੇ ਤੁਹਾਨੂੰ ਫਿਰ ਵੀ ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ ਸੁਰੱਖਿਆ ਪ੍ਰਾਪਤ ਹੋਵੇਗੀ।</translation>
 <translation id="1136104150802877429">ਉਤਪਾਦ ਦੀਆਂ ਸਮੀਖਿਆਵਾਂ ਦਿਖਾਓ</translation>
 <translation id="1142371195993008685"><ph name="FEATURE_NAME" /> ਲਈ ਸੂਚਨਾਵਾਂ ਬੰਦ ਕਰੋ</translation>
-<translation id="1147031633655575115"><ph name="USER" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਹੋ</translation>
+<translation id="1147031633655575115"><ph name="USER" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="1149401351239820326">ਮਿਆਦ ਸਮਾਪਤੀ ਦਾ ਮਹੀਨਾ</translation>
 <translation id="1150989369772528668">Calendar</translation>
 <translation id="1161663161838091892">ਜਾਰੀ ਰੱਖਣ ਲਈ ਟੈਬਾਂ ਅਤੇ ਇਤਿਹਾਸ ਨੂੰ ਸਿੰਕ ਕਰੋ</translation>
@@ -757,7 +757,7 @@
 <translation id="3967327056943561740">ਬੁੱਕਮਾਰਕ</translation>
 <translation id="3967822245660637423">ਡਾਊਨਲੋਡ ਪੂਰਾ ਹੋਇਆ</translation>
 <translation id="3973560090698854095">ਇਸ ਨਾਲ ਤੁਹਾਡੇ <ph name="USER_EMAIL" /> Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੇ ਪਤੇ ਮਿਟ ਜਾਂਦੇ ਹਨ।</translation>
-<translation id="398604237578616937"><ph name="USER_EMAIL" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਗਿਆ। ਖਾਤਾ ਮੀਨੂ ਖੋਲ੍ਹੋ।</translation>
+<translation id="398604237578616937"><ph name="USER_EMAIL" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਗਿਆ। ਇਸ ਬਟਨ ਨਾਲ ਖਾਤਾ ਮੀਨੂ ਖੁੱਲ੍ਹਦਾ ਹੈ।</translation>
 <translation id="3986739045730058129">ਟੈਬ 'ਤੇ ਜਾਓ</translation>
 <translation id="3992684624889376114">ਇਸ ਪੰਨੇ ਬਾਰੇ</translation>
 <translation id="3993594519743675442">ਰਿਮਾਈਂਡਰ ਸੈੱਟ ਕਰਨ ਦਾ ਵਿਕਲਪ ਲੁਕਾਓ</translation>
@@ -886,7 +886,7 @@
 <translation id="4474494258097106883">ਤੁਹਾਡੇ iPhone ਲਈ ਬਣਾਇਆ ਗਿਆ</translation>
 <translation id="4488754974567924717">ਪਾਸਵਰਡਾਂ ਨਾਲ ਛੇੜਛਾੜ ਹੋਣ 'ਤੇ, ਅਸੀਂ ਤੁਹਾਨੂੰ ਸੂਚਿਤ ਕਰਾਂਗੇ</translation>
 <translation id="4489536976005181779">{count,plural, =1{ਪੰਨੇ ਨੂੰ ਤੁਹਾਡੇ ਖਾਤੇ, {email} ਦੀ ਪੜ੍ਹਨ-ਸੂਚੀ ਵਿੱਚ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ}one{ਪੰਨੇ ਨੂੰ ਤੁਹਾਡੇ ਖਾਤੇ, {email} ਦੀ ਪੜ੍ਹਨ-ਸੂਚੀ ਵਿੱਚ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ}other{ਪੰਨਿਆਂ ਨੂੰ ਤੁਹਾਡੇ ਖਾਤੇ, {email} ਦੀ ਪੜ੍ਹਨ-ਸੂਚੀ ਵਿੱਚ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ}}</translation>
-<translation id="4493604894403585654">ਤੁਸੀਂ <ph name="USER_EMAIL" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਹੋਇਆ ਹੈ। ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾ ਕੇ ਕਦੇ ਵੀ ਸਿੰਕ ਕਰਨਾ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ। Google ਤੁਹਾਡੇ ਇਤਿਹਾਸ ਦੇ ਆਧਾਰ 'ਤੇ Search ਅਤੇ ਹੋਰ ਸੇਵਾਵਾਂ ਨੂੰ ਵਿਅਕਤੀਗਤ ਬਣਾ ਸਕਦਾ ਹੈ।</translation>
+<translation id="4493604894403585654">ਤੁਸੀਂ <ph name="USER_EMAIL" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਹੋਇਆ ਹੈ। ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾ ਕੇ ਕਿਸੇ ਵੀ ਵੇਲੇ ਸਿੰਕ ਕਰਨਾ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ। Google ਤੁਹਾਡੇ ਇਤਿਹਾਸ ਦੇ ਆਧਾਰ 'ਤੇ Search ਅਤੇ ਹੋਰ ਸੇਵਾਵਾਂ ਨੂੰ ਵਿਅਕਤੀਗਤ ਬਣਾ ਸਕਦਾ ਹੈ।</translation>
 <translation id="4502423230170890588">ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਹਟਾਓ</translation>
 <translation id="4508750114462689118">ਸਾਈਨ-ਇਨ ਪ੍ਰੋਮੋ ਬੰਦ ਕਰੋ</translation>
 <translation id="4509345063551561634">ਨਿਰਧਾਰਿਤ ਸਥਾਨ:</translation>
@@ -924,7 +924,7 @@
 <translation id="4641425577292284174">ਜਾਣੋ ਕਿ ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਰ ਦੀਆਂ ਸੈਟਿੰਗਾਂ ਸਭ ਤੋਂ ਸੁਰੱਖਿਅਤ ਹਨ ਜਾਂ ਨਹੀਂ ਜਾਂ ਕਿਸੇ ਚੀਜ਼ ਦੀ ਸਮੀਖਿਆ ਕਰਨ ਦੀ ਲੋੜ ਤਾਂ ਨਹੀਂ</translation>
 <translation id="4642472735733036929">ਕੀਮਤਾਂ ਦੀ ਟਰੈਕਿੰਗ ਨੂੰ ਰੋਕਿਆ ਗਿਆ</translation>
 <translation id="4645575059429386691">ਤੁਹਾਡੇ ਮਾਤਾ ਜਾਂ ਪਿਤਾ ਵੱਲੋਂ ਵਿਵਸਥਿਤ</translation>
-<translation id="4647758699119474035"><ph name="USER_NAME" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਗਿਆ। <ph name="USER_EMAIL" />. Google ਖਾਤੇ ਸੰਬੰਧੀ ਗੜਬੜ। ਖਾਤਾ ਮੀਨੂ ਖੋਲ੍ਹੋ।</translation>
+<translation id="4647758699119474035"><ph name="USER_NAME" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਗਿਆ। <ph name="USER_EMAIL" />. Google ਖਾਤੇ ਸੰਬੰਧੀ ਗੜਬੜ। ਇਸ ਬਟਨ ਨਾਲ ਖਾਤਾ ਮੀਨੂ ਖੁੱਲ੍ਹਦਾ ਹੈ।</translation>
 <translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" /> ਵਜੋਂ ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="4651927776207937667">{count,plural, =1{1 ਮਿੰਟ ਬਾਅਦ ਲੁਕਾਓ}one{{count} ਮਿੰਟ ਬਾਅਦ ਲੁਕਾਓ}other{{count} ਮਿੰਟਾਂ ਬਾਅਦ ਲੁਕਾਓ}}</translation>
 <translation id="4652817563047461855">ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡੇ ਪਾਸਵਰਡ ਸੁਰੱਖਿਅਤ ਹੋਣ, ਦੇਖੋ ਕਿ ਉਨ੍ਹਾਂ ਨਾਲ ਕਿਸੇ ਕਿਸਮ ਦੀ ਛੇੜਛਾੜ ਤਾਂ ਨਹੀਂ ਕੀਤੀ ਗਈ ਅਤੇ ਆਪਣੇ ਆਪ ਨੂੰ ਆਨਲਾਈਨ ਸੁਰੱਖਿਅਤ ਰੱਖਣ ਵਿੱਚ ਮਦਦ ਲਈ ਸਲਾਹ ਲਓ। <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
@@ -1005,7 +1005,7 @@
 <translation id="4895540042460820904">ਪਿਛਲੀ ਵਾਰ ਖੋਲ੍ਹਣ ਦਾ ਸਮਾਂ</translation>
 <translation id="4896467949657706481">ਟੈਬਾਂ ਬੰਦ ਹੋ ਗਈਆਂ ਸਨ; ਤੁਹਾਨੂੰ ਸਾਈਨ-ਆਊਟ ਹੋ ਗਏ ਸੀ</translation>
 <translation id="4913626501929406101">ਤੁਸੀਂ ਆਪਣੇ ਪਰਿਵਾਰ ਗਰੁੱਪ ਵਿੱਚ ਕਿਸੇ ਨਾਲ ਆਪਣੇ ਪਾਸਵਰਡ ਦੀ ਇੱਕ ਕਾਪੀ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਸਾਂਝਾ ਕਰ ਸਕਦੇ ਹੋ। <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
-<translation id="4917025507570489430">ਤੁਸੀਂ <ph name="USER_EMAIL" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਹੋਣ 'ਤੇ ਮੌਜੂਦਾ ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟੇ ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦੇ ਹੋ। ਤੁਹਾਡੀ ਸੰਸਥਾ ਇਸ ਡਾਟੇ ਨੂੰ ਦੇਖ ਸਕਦੀ ਹੈ।</translation>
+<translation id="4917025507570489430">ਤੁਸੀਂ <ph name="USER_EMAIL" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਹੋਣ 'ਤੇ, ਮੌਜੂਦਾ ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟੇ ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦੇ ਹੋ। ਤੁਹਾਡੀ ਸੰਸਥਾ ਇਸ ਡਾਟੇ ਨੂੰ ਦੇਖ ਸਕਦੀ ਹੈ।</translation>
 <translation id="4918086044614829423">ਸਵੀਕਾਰ ਕਰੋ</translation>
 <translation id="4930714375720679147">ਚਾਲੂ ਕਰੋ</translation>
 <translation id="4932733599132424254">ਤਾਰੀਖ</translation>
@@ -1159,7 +1159,7 @@
 <translation id="5548760955356983418">Handoff ਤੁਹਾਨੂੰ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਵੈੱਬਸਾਈਟ ਬ੍ਰਾਊਜ਼ ਕਰਨਾ ਸ਼ੁਰੂ ਕਰਨ ਅਤੇ ਫਿਰ ਆਸਾਨੀ ਨਾਲ ਤੁਹਾਡੇ Mac 'ਤੇ ਜਾਰੀ ਰੱਖਣ ਦਿੰਦਾ ਹੈ। ਮੌਜੂਦਾ ਖੁੱਲ੍ਹੀ ਵੈੱਬਸਾਈਟ ਤੁਹਾਡੇ Mac ਦੇ 'ਡੌਕ' ਵਿੱਚ ਦਿਖਾਈ ਦੇਵੇਗੀ।
 
 Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼ਨ ਵਿੱਚ ਚਾਲੂ ਕੀਤਾ ਜਾਣਾ ਚਾਹੀਦਾ ਹੈ ਅਤੇ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਨੂੰ ਓਹੀ iCloud ਖਾਤਾ ਵਰਤਣਾ ਚਾਹੀਦਾ ਹੈ।</translation>
-<translation id="5555008247722361784"><ph name="USER_EMAIL" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਗਿਆ। Google ਖਾਤੇ ਸੰਬੰਧੀ ਗੜਬੜ। ਖਾਤਾ ਮੀਨੂ ਖੋਲ੍ਹੋ।</translation>
+<translation id="5555008247722361784"><ph name="USER_EMAIL" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਗਿਆ। Google ਖਾਤੇ ਸੰਬੰਧੀ ਗੜਬੜ। ਇਸ ਬਟਨ ਨਾਲ ਖਾਤਾ ਮੀਨੂ ਖੁੱਲ੍ਹਦਾ ਹੈ।</translation>
 <translation id="5556459405103347317">ਰੀਲੋਡ ਕਰੋ</translation>
 <translation id="555749644339804659">ਪਾਸਵਰਡਾਂ ਦੀ ਜਾਂਚ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ…</translation>
 <translation id="5559567453458728487">ਵੈੱਬ 'ਤੇ ਮਿਲੀਆਂ ਮਾਪ ਇਕਾਈਆਂ ਨੂੰ ਰੂਪਾਂਤਰਿਤ ਕਰੋ</translation>

@@ -200,7 +200,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1129348283834595293">Viễn tưởng công nghệ cao</translation>
 <translation id="1129420403709586868">Xem ảnh và nội dung nghe nhìn trên điện thoại</translation>
 <translation id="1129850422003387628">Quản lý ứng dụng</translation>
-<translation id="1130116586186908674">Tạo chế độ xem chia đôi màn hình</translation>
+<translation id="1130116586186908674">Tạo chế độ xem màn hình chia đôi</translation>
 <translation id="1130430615924359526">{0,plural, =1{Đóng cửa sổ ẩn danh}other{Đóng cửa sổ ẩn danh (# cửa sổ)}}</translation>
 <translation id="113050636487300043">Chọn một tên và bảng màu để phân biệt giữa các hồ sơ</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – Thuộc nhóm <ph name="GROUP_NAME" /></translation>
@@ -7581,7 +7581,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6248988683584659830">Tìm chế độ cài đặt</translation>
 <translation id="6249200942125593849">Quản lý chế độ a11y</translation>
 <translation id="6250186368828697007">Khi bạn chia sẻ màn hình, thông tin chi tiết sẽ bị ẩn</translation>
-<translation id="6250887692313997958">Chọn một thẻ để thêm vào chế độ xem chia đôi màn hình</translation>
+<translation id="6250887692313997958">Chọn một thẻ để thêm vào chế độ màn hình chia đôi</translation>
 <translation id="6251870443722440887">Định danh GDI</translation>
 <translation id="6251924700383757765">Chính sách bảo mật</translation>
 <translation id="625369703868467034">Tình trạng mạng</translation>
@@ -10445,7 +10445,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8230134520748321204">Bạn có muốn lưu mật khẩu cho <ph name="ORIGIN" /> không?</translation>
 <translation id="8230326817897075865">Xoá <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="8230446983261649357">Không cho phép trang web hiển thị hình ảnh</translation>
-<translation id="8231438895476693774">Thêm thẻ vào chế độ xem phân tách mới</translation>
+<translation id="8231438895476693774">Thêm thẻ vào chế độ màn hình chia đôi mới</translation>
 <translation id="823226567613548870">xoá dữ liệu của bạn trong <ph name="BRAND" /></translation>
 <translation id="8233028084277069927">Mở ngay</translation>
 <translation id="8234795456569844941">Hãy giúp các kỹ sư của chúng tôi khắc phục sự cố này. Hãy cho chúng tôi biết điều gì đã xảy ra ngay trước khi bạn nhận được thông báo lỗi hồ sơ:</translation>

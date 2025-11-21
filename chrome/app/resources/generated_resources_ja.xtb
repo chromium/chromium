@@ -200,7 +200,7 @@
 <translation id="1129348283834595293">サイバーパンク</translation>
 <translation id="1129420403709586868">スマートフォンの写真とメディアを表示します</translation>
 <translation id="1129850422003387628">アプリの管理</translation>
-<translation id="1130116586186908674">分割表示を作成</translation>
+<translation id="1130116586186908674">分割ビューを作成</translation>
 <translation id="1130430615924359526">{0,plural, =1{シークレット モードを終了}other{シークレット モードを終了（# 個のウィンドウ）}}</translation>
 <translation id="113050636487300043">各プロフィールを区別できるように名前と色のテーマを選択してください</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - <ph name="GROUP_NAME" /> グループの一部</translation>
@@ -7552,7 +7552,7 @@
 <translation id="6248988683584659830">設定項目を検索</translation>
 <translation id="6249200942125593849">ユーザー補助設定の管理</translation>
 <translation id="6250186368828697007">画面の共有中は詳細が表示されません</translation>
-<translation id="6250887692313997958">分割表示に追加するタブを選択</translation>
+<translation id="6250887692313997958">分割ビューに追加するタブを選択</translation>
 <translation id="6251870443722440887">GDI ハンドル</translation>
 <translation id="6251924700383757765">プライバシー ポリシー</translation>
 <translation id="625369703868467034">ネットワークの健全性</translation>
@@ -10411,7 +10411,7 @@
 <translation id="8230134520748321204"><ph name="ORIGIN" /> のパスワードを保存しますか？</translation>
 <translation id="8230326817897075865"><ph name="CREDENTIAL_TYPE" /> を削除</translation>
 <translation id="8230446983261649357">サイトに画像の表示を許可しない</translation>
-<translation id="8231438895476693774">新しい分割表示にタブを追加</translation>
+<translation id="8231438895476693774">新しい分割ビューにタブを追加</translation>
 <translation id="823226567613548870"><ph name="BRAND" /> のデータを削除</translation>
 <translation id="8233028084277069927">開く</translation>
 <translation id="8234795456569844941">問題解決の手がかりとして、具体的にどのような操作を行ったときにプロフィール エラーのメッセージが表示されたかをお知らせください。</translation>
@@ -10424,7 +10424,7 @@
 <translation id="8239932336306009582">通知の送信を許可しないサイト</translation>
 <translation id="8241040075392580210">シェイディ</translation>
 <translation id="8241338426526905580">証明書がありません</translation>
-<translation id="8241650983304689286">新しい分割表示にタブを追加</translation>
+<translation id="8241650983304689286">新しい分割ビューにタブを追加</translation>
 <translation id="8241806945692107836">デバイスの設定を確認しています...</translation>
 <translation id="8241868517363889229">ブックマークの読み取りと変更</translation>
 <translation id="8242273718576931540">お使いのデバイスはこのネットワークに接続できません。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>

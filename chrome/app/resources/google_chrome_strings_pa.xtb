@@ -9,7 +9,7 @@
 <translation id="1028061813283459617">ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਡਾਟੇ ਨੂੰ ਰੱਖਿਅਤ ਰੱਖਦੇ ਹੋਏ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਮਿਟਾਉਣ ਲਈ, <ph name="BEGIN_LINK" />Chrome ਤੋਂ ਸਾਈਨ-ਆਊਟ ਕਰੋ<ph name="END_LINK" />।</translation>
 <translation id="1042270987544905725">Chrome ਦੀ ਸਾਈਨ-ਇਨ ਵਿੰਡੋ ਨੂੰ ਬੰਦ ਕਰਨ ਲਈ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="1051793555070215510">ਇਸ 1 ਮਿੰਟ ਦੇ ਸਰਵੇਖਣ ਨੂੰ ਭਰ ਕੇ ਇਨਕੋਗਨਿਟੋ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰੋ।</translation>
-<translation id="1059838145689930908">ਇਸ ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ <ph name="USER_EMAIL_ADDRESS" /> ਵਜੋਂ ਵਰਤਣ ਲਈ, Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
+<translation id="1059838145689930908">ਇਸ ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ <ph name="USER_EMAIL_ADDRESS" /> ਵਜੋਂ ਵਰਤਣ ਲਈ, Chrome 'ਤੇ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
 <translation id="1065672644894730302">ਤੁਹਾਡੀਆਂ ਤਰਜੀਹਾਂ ਪੜ੍ਹੀਆਂ ਨਹੀਂ ਜਾ ਸਕਦੀਆਂ।
 
 ਕੁਝ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਅਣਉਪਲਬਧ ਹੋ ਸਕਦੀਆਂ ਹਨ ਅਤੇੇ ਤਰਜੀਹਾਂ ਵਿੱਚ ਕੀਤੇ ਬਦਲਾਵ ਸੁਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤੇ ਜਾਣਗੇ।</translation>
@@ -243,7 +243,7 @@
 <translation id="3697952514309507634">ਹੋਰ Chrome ਪ੍ਰੋਫਾਈਲਾਂ</translation>
 <translation id="3703994572283698466">ChromeOS ਨੂੰ ਵਧੀਕ <ph name="BEGIN_LINK_CROS_OSS" />ਖੁੱਲ੍ਹੇ ਸਰੋਤ ਸਾਫ਼ਟਵੇਅਰ<ph name="END_LINK_CROS_OSS" /> ਕਰਕੇ ਸੰਭਵ ਬਣਾਇਆ ਗਿਆ ਹੈ, ਜਿਵੇਂ ਕਿ <ph name="BEGIN_LINK_LINUX_OSS" />Linux ਵਿਕਾਸ ਵਾਤਾਵਰਨ<ph name="END_LINK_LINUX_OSS" />।</translation>
 <translation id="3716540481907974026">ChromeOS Flex ਵਰਜਨ</translation>
-<translation id="3718181793972440140">ਇਸ ਨਾਲ ਇਸ ਡੀਵਾਈਸ ਤੋਂ 1 ਆਈਟਮ ਮਿਟਾ ਦਿੱਤੀ ਜਾਵੇਗੀ। ਬਾਅਦ ਵਿੱਚ ਆਪਣੇ ਡਾਟੇ ਨੂੰ ਮੁੜ-ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, Chrome 'ਤੇ <ph name="USER_EMAIL" /> ਵਜੋਂ ਸਾਈਨ ਇਨ ਕਰੋ।</translation>
+<translation id="3718181793972440140">ਇਸ ਨਾਲ ਇਸ ਡੀਵਾਈਸ ਤੋਂ 1 ਆਈਟਮ ਮਿਟਾ ਦਿੱਤੀ ਜਾਵੇਗੀ। ਬਾਅਦ ਵਿੱਚ ਆਪਣੇ ਡਾਟੇ ਨੂੰ ਮੁੜ-ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, Chrome 'ਤੇ <ph name="USER_EMAIL" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome ਸਿਫ਼ਾਰਸ਼ ਕਰਦਾ ਹੈ ਕਿ ਤੁਸੀਂ ਇਸਨੂੰ ਹਟਾ ਦਿਓ। <ph name="BEGIN_LINK" />ਸਮਰਥਿਤ ਐਕਸਟੈਂਸ਼ਨਾਂ ਬਾਰੇ ਹੋਰ ਜਾਣੋ<ph name="END_LINK" />}one{Chrome ਸਿਫ਼ਾਰਸ਼ ਕਰਦਾ ਹੈ ਕਿ ਤੁਸੀਂ ਇਸਨੂੰ ਹਟਾ ਦਿਓ। <ph name="BEGIN_LINK" />ਸਮਰਥਿਤ ਐਕਸਟੈਂਸ਼ਨਾਂ ਬਾਰੇ ਹੋਰ ਜਾਣੋ<ph name="END_LINK" />}other{Chrome ਸਿਫ਼ਾਰਸ਼ ਕਰਦਾ ਹੈ ਕਿ ਤੁਸੀਂ ਇਨ੍ਹਾਂ ਨੂੰ ਹਟਾ ਦਿਓ। <ph name="BEGIN_LINK" />ਸਮਰਥਿਤ ਐਕਸਟੈਂਸ਼ਨਾਂ ਬਾਰੇ ਹੋਰ ਜਾਣੋ<ph name="END_LINK" />}}</translation>
 <translation id="3756724684201900923">Chrome ਨੂੰ ਸਥਾਪਤ ਕਰਨ ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
@@ -312,7 +312,7 @@
 <translation id="4459234553906210702">ਵਿਗਿਆਪਨ ਮੁਲਾਂਕਣ ਉਨ੍ਹਾਂ ਸਾਈਟਾਂ ਨੂੰ Chrome ਤੋਂ ਜਾਣਕਾਰੀ ਦੀ ਬੇਨਤੀ ਕਰਨ ਦੀ ਆਗਿਆ ਦਿੰਦਾ ਹੈ ਜਿਨ੍ਹਾਂ 'ਤੇ ਤੁਸੀਂ ਜਾਂਦੇ ਹੋ, ਜਿਸ ਨਾਲ ਸਾਈਟ ਨੂੰ ਆਪਣੇ ਵਿਗਿਆਪਨਾਂ ਦੀ ਕਾਰਗੁਜ਼ਾਰੀ ਦਾ ਮੁਲਾਂਕਣ ਕਰਨ ਵਿੱਚ ਮਦਦ ਮਿਲਦੀ ਹੈ। ਵਿਗਿਆਪਨ ਮੁਲਾਂਕਣ ਸਾਈਟਾਂ ਵਿਚਕਾਰ ਜਿੰਨੀ ਸੰਭਵ ਹੋ ਸਕੇ ਓਨੀ ਘੱਟ ਜਾਣਕਾਰੀ ਟ੍ਰਾਂਸਫ਼ਰ ਕਰ ਕੇ ਕ੍ਰਾਸ-ਸਾਈਟ ਟਰੈਕਿੰਗ ਨੂੰ ਪ੍ਰਤਿਬੰਧਿਤ ਕਰਦਾ ਹੈ।</translation>
 <translation id="4493028449971051158">ਸਟਾਰਟ-ਅੱਪ ਸੰਬੰਧੀ ਗੜਬੜ: ਕਿਰਪਾ ਕਰਕੇ ਸਥਾਪਨਾਕਾਰ ਨੂੰ ਪ੍ਰਸ਼ਾਸਕ ਵਜੋਂ ਚਲਾਓ।</translation>
 <translation id="4501471624619070934">ਇਸ ਦੇਸ਼ ਵਿੱਚ ਪਹੁੰਚ ਪ੍ਰਤਿਬੰਧਿਤ ਹੋਣ ਕਾਰਨ ਸਥਾਪਤ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ।</translation>
-<translation id="4567424176335768812">ਤੁਸੀਂ <ph name="USER_EMAIL_ADDRESS" /> ਦੇ ਤੌਰ 'ਤੇ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਹੈ। ਹੁਣ ਤੁਸੀਂ ਆਪਣੇ ਸਾਰੇ ਸਾਈਨ-ਇਨ ਕੀਤੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣੇ ਬੁੱਕਮਾਰਕਾਂ, ਇਤਿਹਾਸ ਅਤੇ ਹੋਰ ਸੈਟਿੰਗਾਂ ਤੱਕ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰ ਸਕਦੇ ਹੋ।</translation>
+<translation id="4567424176335768812">ਤੁਸੀਂ <ph name="USER_EMAIL_ADDRESS" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਹੋਇਆ ਹੈ। ਹੁਣ ਤੁਸੀਂ ਆਪਣੇ ਸਾਰੇ ਸਾਈਨ-ਇਨ ਕੀਤੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣੇ ਬੁੱਕਮਾਰਕਾਂ, ਇਤਿਹਾਸ ਅਤੇ ਹੋਰ ਸੈਟਿੰਗਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="4571503333518166079">Chrome ਸੂਚਨਾ ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ</translation>
 <translation id="4592634244097223647">ਇਸ ਚਿੱਤਰ ਬਾਰੇ Google ਨੂੰ ਪੁੱਛੋ</translation>
 <translation id="459622048091363950">Chrome ਤੱਕ ਪਹੁੰਚ ਹੋਣ 'ਤੇ, ਵੈੱਬਸਾਈਟਾਂ ਤੁਹਾਨੂੰ ਪਹੁੰਚ ਲਈ ਪੁੱਛ ਸਕਣਗੀਆਂ।</translation>
@@ -556,7 +556,7 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="7339898014177206373">ਨਵੀਂ window</translation>
 <translation id="7352651011704765696">ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ</translation>
 <translation id="7386878009611068389">ਆਪਣੇ ਮਾਂ-ਪਿਓ ਦੀ ਚੋਣ ਵਾਲੇ ਵਿਕਲਪਾਂ ਨਾਲ ਆਨਲਾਈਨ ਸੁਰੱਖਿਅਤ ਰਹਿਣ ਲਈ, ਆਪਣੇ Chrome ਪ੍ਰੋਫਾਈਲ 'ਤੇ ਸਵਿੱਚ ਕਰੋ ਜਿੱਥੇ ਤੁਸੀਂ ਪਹਿਲਾਂ ਹੀ <ph name="USER_EMAIL_ADDRESS" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਹੋਇਆ ਹੈ</translation>
-<translation id="7398801000654795464">ਤੁਸੀਂ <ph name="USER_EMAIL_ADDRESS" /> ਵਜੋਂ Chrome 'ਤੇ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਸੀ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਸਾਈਨ-ਇਨ ਕਰਨ ਲਈ ਓਹੀ ਖਾਤਾ ਵਰਤੋ।</translation>
+<translation id="7398801000654795464">ਤੁਸੀਂ <ph name="USER_EMAIL_ADDRESS" /> ਵਜੋਂ Chrome 'ਤੇ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਹੋਇਆ ਸੀ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਸਾਈਨ-ਇਨ ਕਰਨ ਲਈ ਓਹੀ ਖਾਤਾ ਵਰਤੋ।</translation>
 <translation id="7412494426921990001">Chrome ਮੀਨੂ 'ਤੇ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="7419819959108735624">Google Lens ਨਾਲ ਖੋਜਣ ਲਈ ਕੁਝ ਵੀ ਚੁਣੋ</translation>
 <translation id="742463671275348370">{NUM_DEVICES,plural, =0{ਇੱਕ ਜਾਂ ਇੱਕ ਤੋਂ ਵੱਧ Chrome ਐਕਸਟੈਂਸ਼ਨਾਂ ਵੱਲੋਂ 1 USB ਡੀਵਾਈਸ ਤੱਕ ਪਹੁੰਚ ਕੀਤੀ ਜਾ ਰਹੀ ਸੀ}=1{ਇੱਕ ਜਾਂ ਇੱਕ ਤੋਂ ਵੱਧ Chrome ਐਕਸਟੈਂਸ਼ਨਾਂ ਵੱਲੋਂ 1 USB ਡੀਵਾਈਸ ਤੱਕ ਪਹੁੰਚ ਕੀਤੀ ਜਾ ਰਹੀ ਸੀ}other{ਇੱਕ ਜਾਂ ਇੱਕ ਤੋਂ ਵੱਧ Chrome ਐਕਸਟੈਂਸ਼ਨਾਂ ਵੱਲੋਂ # USB ਡੀਵਾਈਸਾਂ ਤੱਕ ਪਹੁੰਚ ਕੀਤੀ ਜਾ ਰਹੀ ਸੀ}}</translation>
