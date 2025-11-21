@@ -721,6 +721,7 @@
     "dawn-mac-x64-deps-rel": "try/dawn-mac-x64-deps-rel/gn-args.json",
     "dawn-try-linux-tsan-rel": "try/dawn-try-linux-tsan-rel/gn-args.json",
     "dawn-try-linux-x64-intel-uhd770-rel": "try/dawn-try-linux-x64-intel-uhd770-rel/gn-args.json",
+    "dawn-try-mac-amd-555x-rel": "try/dawn-try-mac-amd-555x-rel/gn-args.json",
     "dawn-try-mac-amd-exp": "try/dawn-try-mac-amd-exp/gn-args.json",
     "dawn-try-mac-arm64-deps-rel": "try/dawn-try-mac-arm64-deps-rel/gn-args.json",
     "dawn-try-mac-arm64-m2-exp": "try/dawn-try-mac-arm64-m2-exp/gn-args.json",
@@ -880,6 +881,7 @@
   },
   "tryserver.chromium.mac": {
     "gpu-fyi-try-mac-amd-pro-rel": "try/gpu-fyi-try-mac-amd-pro-rel/gn-args.json",
+    "gpu-fyi-try-mac-amd-retina-555x-rel": "try/gpu-fyi-try-mac-amd-retina-555x-rel/gn-args.json",
     "gpu-fyi-try-mac-amd-retina-asan": "try/gpu-fyi-try-mac-amd-retina-asan/gn-args.json",
     "gpu-fyi-try-mac-amd-retina-dbg": "try/gpu-fyi-try-mac-amd-retina-dbg/gn-args.json",
     "gpu-fyi-try-mac-amd-retina-exp": "try/gpu-fyi-try-mac-amd-retina-exp/gn-args.json",

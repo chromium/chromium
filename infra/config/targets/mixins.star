@@ -2141,6 +2141,26 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "mac_retina_amd_555x_gpu_stable",
+    # We always need this entry to be generated since it is used by
+    # //content/test/gpu/find_bad_machines.py.
+    generate_pyl_entry = targets.IGNORE_UNUSED,
+    swarming = targets.swarming(
+        dimensions = {
+            "cpu": "x86-64",
+            "gpu": "1002:67ef",
+            "hidpi": "1",
+            "os": "Mac-14.4.1",
+            "pool": "chromium.tests.gpu",
+            "display_attached": "1",
+        },
+    ),
+)
+
+# TODO(crbug.com/462477380): Switch this to the same as
+# mac_retina_amd_gpu_stable after ANGLE is switched to use
+# mac_retina_amd_555x_gpu_stable.
+targets.mixin(
     name = "mac_retina_amd_gpu_experimental",
     # We always need this entry to be generated since it is used by
     # //content/test/gpu/find_bad_machines.py.

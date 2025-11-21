@@ -42,6 +42,7 @@ ci/Dawn Mac x64 DEPS Release (AMD)
 ci/Dawn Mac x64 DEPS Release (Intel)
 ci/Dawn Mac x64 Experimental Release (AMD)
 ci/Dawn Mac x64 Experimental Release (Intel)
+ci/Dawn Mac x64 Release (AMD Radeon Pro 555X)
 ci/Dawn Mac x64 Release (AMD)
 ci/Dawn Mac x64 Release (Intel)
 ci/Dawn Win10 x64 ASAN Builder
@@ -118,6 +119,7 @@ ci/Mac FYI Release (Apple M1)
 ci/Mac FYI Release (Intel)
 ci/Mac FYI Retina ASAN (AMD)
 ci/Mac FYI Retina Debug (AMD)
+ci/Mac FYI Retina Release (AMD Radeon Pro 555X)
 ci/Mac FYI Retina Release (AMD)
 ci/Mac FYI Retina Release (Apple M2)
 ci/Mac FYI Retina Release (Apple M3)
@@ -172,6 +174,7 @@ try/dawn-mac-arm64-deps-rel
 try/dawn-mac-x64-deps-rel
 try/dawn-try-linux-tsan-rel
 try/dawn-try-linux-x64-intel-uhd770-rel
+try/dawn-try-mac-amd-555x-rel
 try/dawn-try-mac-amd-exp
 try/dawn-try-mac-arm64-deps-rel
 try/dawn-try-mac-arm64-m2-exp
@@ -217,6 +220,7 @@ try/gpu-fyi-try-linux-nvidia-tsn
 try/gpu-fyi-try-linux-wayland-amd-rel
 try/gpu-fyi-try-linux-wayland-intel-rel
 try/gpu-fyi-try-mac-amd-pro-rel
+try/gpu-fyi-try-mac-amd-retina-555x-rel
 try/gpu-fyi-try-mac-amd-retina-asan
 try/gpu-fyi-try-mac-amd-retina-dbg
 try/gpu-fyi-try-mac-amd-retina-exp

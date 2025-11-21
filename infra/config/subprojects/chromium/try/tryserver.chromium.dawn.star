@@ -592,6 +592,18 @@ try_.builder(
 )
 
 dawn_mac_builder(
+    name = "dawn-try-mac-amd-555x-rel",
+    mirrors = [
+        "ci/Dawn Mac x64 Builder",
+        "ci/Dawn Mac x64 Release (AMD Radeon Pro 555X)",
+    ],
+    gn_args = "ci/Dawn Mac x64 Builder",
+    test_presentation = resultdb.test_presentation(
+        grouping_keys = ["status", "v.test_suite", "v.gpu"],
+    ),
+)
+
+dawn_mac_builder(
     name = "dawn-try-mac-amd-exp",
     mirrors = [
         "ci/Dawn Mac x64 Builder",

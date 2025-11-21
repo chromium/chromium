@@ -43,6 +43,7 @@ MIXIN_GROUPS = {
         'mac_mini_intel_gpu_experimental',
         'mac_mini_intel_gpu_stable',
         'mac_pro_amd_gpu',
+        'mac_retina_amd_555x_gpu_stable',
         'mac_retina_amd_gpu_experimental',
         'mac_retina_amd_gpu_stable',
         'win10_amd_rx_5500_xt_stable',

@@ -743,6 +743,19 @@
       },
     },
   },
+  'mac_retina_amd_555x_gpu_stable': {
+    'fail_if_unused': False,
+    'swarming': {
+      'dimensions': {
+        'cpu': 'x86-64',
+        'gpu': '1002:67ef',
+        'hidpi': '1',
+        'os': 'Mac-14.4.1',
+        'pool': 'chromium.tests.gpu',
+        'display_attached': '1',
+      },
+    },
+  },
   'mac_retina_amd_gpu_experimental': {
     'fail_if_unused': False,
     'swarming': {

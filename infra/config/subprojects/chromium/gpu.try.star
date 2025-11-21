@@ -409,6 +409,15 @@ gpu_mac_builder(
 )
 
 gpu_mac_builder(
+    name = "gpu-fyi-try-mac-amd-retina-555x-rel",
+    mirrors = [
+        "ci/GPU FYI Mac Builder",
+        "ci/Mac FYI Retina Release (AMD Radeon Pro 555X)",
+    ],
+    gn_args = "ci/GPU FYI Mac Builder",
+)
+
+gpu_mac_builder(
     name = "gpu-fyi-try-mac-amd-retina-rel",
     mirrors = [
         "ci/GPU FYI Mac Builder",

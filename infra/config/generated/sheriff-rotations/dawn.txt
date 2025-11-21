@@ -29,6 +29,7 @@ ci/Dawn Mac x64 DEPS Release (AMD)
 ci/Dawn Mac x64 DEPS Release (Intel)
 ci/Dawn Mac x64 Experimental Release (AMD)
 ci/Dawn Mac x64 Experimental Release (Intel)
+ci/Dawn Mac x64 Release (AMD Radeon Pro 555X)
 ci/Dawn Mac x64 Release (AMD)
 ci/Dawn Mac x64 Release (Intel)
 ci/Dawn Win10 x64 ASAN Builder
