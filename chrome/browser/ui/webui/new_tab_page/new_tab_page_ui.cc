@@ -59,6 +59,7 @@
 #include "chrome/browser/ui/webui/cr_components/most_visited/most_visited_handler.h"
 #include "chrome/browser/ui/webui/customize_buttons/customize_buttons_handler.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
+#include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips_generator.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/tab_id_generator.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/tab_readiness_checker.h"
@@ -1228,7 +1229,8 @@ void NewTabPageUI::CreateActionChipsHandler(
     mojo::PendingRemote<action_chips::mojom::Page> page) {
   action_chips_handler_ = std::make_unique<ActionChipsHandler>(
       std::move(handler), std::move(page), profile_, web_ui(),
-      TabIdGeneratorImpl::Get(), TabReadinessCheckerImpl::Get());
+      TabReadinessCheckerImpl::Get(),
+      std::make_unique<ActionChipsGeneratorImpl>(TabIdGeneratorImpl::Get()));
 }
 
 // OnColorProviderChanged can be called during the destruction process and
