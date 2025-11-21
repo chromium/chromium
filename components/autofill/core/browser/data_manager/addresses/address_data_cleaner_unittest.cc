@@ -12,8 +12,10 @@
 #include "components/autofill/core/browser/data_manager/addresses/test_address_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile_test_api.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_quality/addresses/profile_token_quality.h"
 #include "components/autofill/core/browser/data_quality/addresses/profile_token_quality_test_api.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_utils/test_profiles.h"
@@ -370,6 +372,38 @@ TEST_F(AddressDataCleanerTest, Deduplicate_kAccountMerge) {
   EXPECT_THAT(test_adm_.GetProfiles(),
               testing::UnorderedPointwise(IsEqualForDeduplicationPurposes(),
                                           {expected}));
+}
+
+TEST_F(AddressDataCleanerTest, Deduplicate_kAccountNameEmailSubset) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillDeduplicateAccountAddresses};
+
+  AutofillProfile account_name_email_profile(AddressCountryCode("XX"));
+  account_name_email_profile.SetInfoWithVerificationStatus(
+      NAME_FULL, u"John Doe", "en-US", VerificationStatus::kUserVerified);
+  account_name_email_profile.SetInfoWithVerificationStatus(
+      EMAIL_ADDRESS, u"test@gmail.com", "en-US",
+      VerificationStatus::kUserVerified);
+  account_name_email_profile.FinalizeAfterImport();
+  test_api(account_name_email_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccountNameEmail);
+  test_adm_.AddProfile(account_name_email_profile);
+
+  AutofillProfile superset_profile = test::StandardProfile();
+  superset_profile.SetInfoWithVerificationStatus(
+      NAME_FULL, u"John Doe", "en-US", VerificationStatus::kUserVerified);
+  superset_profile.SetInfoWithVerificationStatus(
+      EMAIL_ADDRESS, u"test@gmail.com", "en-US",
+      VerificationStatus::kUserVerified);
+  superset_profile.FinalizeAfterImport();
+  test_api(superset_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccount);
+  test_adm_.AddProfile(superset_profile);
+
+  test_api(data_cleaner_).ApplyDeduplicationRoutine();
+  EXPECT_THAT(test_adm_.GetProfiles(),
+              testing::UnorderedPointwise(IsEqualForDeduplicationPurposes(),
+                                          {superset_profile}));
 }
 
 // TODO(crbug.com/357074792): This test is temporarily disabled. For the rollout
