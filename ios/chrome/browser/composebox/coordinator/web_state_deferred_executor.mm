@@ -57,11 +57,18 @@
   }
 
   [self observeWebState:webState];
+  [self forceRealizeWebState:webState];
 }
 
 #pragma mark - Private
 
 - (void)observeWebState:(web::WebState*)webState {
+  BOOL alreadyObserving =
+      _activeObservations.find(webState->GetUniqueIdentifier()) !=
+      _activeObservations.end();
+  if (alreadyObserving) {
+    return;
+  }
   webState->AddObserver(_webStateObserverBridge.get());
   _activeObservations[webState->GetUniqueIdentifier()] = webState->GetWeakPtr();
 }

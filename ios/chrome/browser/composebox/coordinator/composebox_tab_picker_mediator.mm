@@ -118,7 +118,6 @@
     if (webState && !webState->IsRealized()) {
       // If the web state is not realized, force it to realize in order to have
       // the latest content and updated snapshot.
-      webState->ForceRealized();
       __weak ComposeboxTabPickerMediator* weakSelf = self;
       [_webStateDeferredExecutor
                      webState:webState
