@@ -2000,6 +2000,7 @@ Called by update_net_error_codes.py.-->
   <int value="-603" label="FTP_TRANSFER_ABORTED"/>
   <int value="-602" label="FTP_SERVICE_UNAVAILABLE"/>
   <int value="-601" label="FTP_FAILED"/>
+  <int value="-508" label="HTTPENGINE_PROVIDER_IN_USE"/>
   <int value="-507"
       label="TRUST_TOKEN_OPERATION_SUCCESS_WITHOUT_SENDING_REQUEST"/>
   <int value="-506" label="TRUST_TOKEN_OPERATION_FAILED"/>
@@ -21216,6 +21217,7 @@ Called by update_net_error_codes.py.-->
   <int value="506" label="TRUST_TOKEN_OPERATION_FAILED"/>
   <int value="507"
       label="TRUST_TOKEN_OPERATION_SUCCESS_WITHOUT_SENDING_REQUEST"/>
+  <int value="508" label="HTTPENGINE_PROVIDER_IN_USE"/>
   <int value="601" label="FTP_FAILED"/>
   <int value="602" label="FTP_SERVICE_UNAVAILABLE"/>
   <int value="603" label="FTP_TRANSFER_ABORTED"/>

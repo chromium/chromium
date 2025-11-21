@@ -942,6 +942,29 @@ NET_ERROR(TRUST_TOKEN_OPERATION_FAILED, -506)
 // to a local provider (for "platform-provided" issuance).
 NET_ERROR(TRUST_TOKEN_OPERATION_SUCCESS_WITHOUT_SENDING_REQUEST, -507)
 
+// This is a placeholder value that should never be used within //net.
+//
+// When Cronet APIs are being backed by HttpEngine (i.e., HttpEngineProvider is
+// being used), org.chromium.net.NetworkException#getCronetInternalErrorCode is
+// not supported (android.net.http.NetworkException#getCronetInternalErrorCode
+// does not exist). In this scenario, getCronetInternalErrorCode will always
+// return this error. This is a first step towards the deprecation of
+// getCronetInternalErrorCode.
+//
+// Temporarily terminate, then restart, ITTT to avoid unsupported nesting.
+// LINT.ThenChange(
+//      //tools/metrics/histograms/enums.xml:HTTPResponseAndNetErrorCodes,
+//      //tools/metrics/histograms/enums.xml:NetErrorCodes,
+// )
+// LINT.IfChange(HTTPENGINE_PROVIDER_IN_USE)
+NET_ERROR(HTTPENGINE_PROVIDER_IN_USE, -508)
+// LINT.ThenChange(
+//      //components/cronet/android/java/src/org/chromium/net/impl/AndroidNetworkExceptionWrapper.java:HTTPENGINE_PROVIDER_IN_USE,
+//      //tools/metrics/histograms/enums.xml:HTTPResponseAndNetErrorCodes,
+//      //tools/metrics/histograms/enums.xml:NetErrorCodes,
+// )
+// LINT.IfChange
+
 // *** Code -600 is reserved (was FTP_PASV_COMMAND_FAILED). ***
 // *** Code -601 is reserved (was FTP_FAILED). ***
 // *** Code -602 is reserved (was FTP_SERVICE_UNAVAILABLE). ***
