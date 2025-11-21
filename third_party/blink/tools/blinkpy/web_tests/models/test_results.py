@@ -100,7 +100,9 @@ class TestResult(object):
         assert len(results) <= 2, (
             'single_test_runner.py incorrectly reported results %s for test %s'
             % (', '.join(results), test_name))
-        if len(results) == 2:
+        if self.device_failed:
+            self.type = ResultType.Timeout
+        elif len(results) == 2:
             assert results.issubset({ResultType.Timeout,
                                      ResultType.Failure,
                                      ResultType.Crash}), (

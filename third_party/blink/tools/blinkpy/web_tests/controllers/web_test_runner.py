@@ -239,19 +239,21 @@ class WebTestRunner(object):
         if not self._expectations:
             return
 
-        result.expected = self._expectations.get_expectations(
-            result.test_name).results
-        expectation_string = ' '.join(result.expected)
-
         if result.device_failed:
-            self._printer.print_finished_test(self._port, result, False,
-                                              expectation_string, 'Aborted')
-            return
+            status_displayed = 'Aborted'
+            # Device failures are always unexpected, so don't update the result
+            # from `TestExpectations`.
+            assert result.expected == {ResultType.Pass}, result.expected
+        else:
+            status_displayed = result.type
+            result.expected = self._expectations.get_expectations(
+                result.test_name).results
 
+        expectation_string = ' '.join(result.expected)
         test_run_results.add(result, self._test_is_slow(result.test_name))
         self._printer.print_finished_test(self._port, result,
                                           result.is_expected,
-                                          expectation_string, result.type)
+                                          expectation_string, status_displayed)
         self._interrupt_if_at_failure_limits(test_run_results)
 
     def handle(self, name, source, *args):

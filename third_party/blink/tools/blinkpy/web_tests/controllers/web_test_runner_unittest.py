@@ -49,6 +49,7 @@ from blinkpy.web_tests.models.test_run_results import (
 )
 from blinkpy.web_tests.models.test_input import TestInput
 from blinkpy.web_tests.models.test_results import TestResult
+from blinkpy.web_tests.models.typ_types import ResultType
 from blinkpy.web_tests.port.test import TestPort
 from blinkpy.web_tests.port.driver import DriverOutput
 
@@ -236,6 +237,29 @@ class WebTestRunnerTests(unittest.TestCase):
                 '', [True, TestResult(test_name='passes/text.html')])
             rdb.sink.assert_has_calls(
                 '', [True, TestResult(test_name='passes/images.html')])
+
+    def test_device_failures_are_sinked(self):
+        runner = self._runner()
+        runner._options.derived_batch_size = 1
+        runner._options.must_use_derived_batch_size = True
+        test_names = ['failures/expected/device_failure.html']
+        test_inputs = [
+            TestInput(test_name, timeout_ms=6000) for test_name in test_names
+        ]
+        with mock.patch.object(runner, '_test_result_sink') as rdb:
+            runner.run_tests(
+                TestExpectations(runner._port),
+                test_inputs,
+                tests_to_skip=[],
+                num_workers=1,
+                retry_attempt=0,
+            )
+
+        self.assertEqual(1, rdb.sink.call_count, rdb.sink.call_args_list)
+        (result, ), _kwargs = rdb.sink.call_args
+        self.assertTrue(result.device_failed)
+        self.assertEqual(ResultType.Timeout, result.type)
+        self.assertFalse(result.is_expected)
 
 
 class SharderTests(unittest.TestCase):

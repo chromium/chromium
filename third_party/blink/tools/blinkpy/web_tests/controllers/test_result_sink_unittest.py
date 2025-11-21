@@ -388,24 +388,6 @@ class TestResultSinkMessage(TestResultSinkTestBase):
             },
         )
 
-    def test_device_failure(self):
-        tr = test_results.TestResult(test_name='test-name')
-        tr.type = ResultType.Failure
-        tr.device_failed = True
-        sent_data = self.sink(True, tr)
-
-        # Device failure is treated as timeout.
-        self.assertEqual(sent_data['statusV2'], 'FAILED')
-        self.assertEqual(sent_data['failureReason'], {
-            'kind': 'TIMEOUT',
-        })
-        self.assertEqual(sent_data['frameworkExtensions'], {
-            'webTest': {
-                'isExpected': False,
-                'status': 'TIMEOUT',
-            },
-        })
-
     def test_timeout(self):
         tr = test_results.TestResult(test_name='test-name')
         tr.type = ResultType.Timeout

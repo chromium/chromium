@@ -310,24 +310,40 @@ class RunTest(unittest.TestCase, StreamTestingMixin):
     def test_device_failure(self):
         # Test that we handle a device going offline during a test properly.
         host = MockHost()
-        details, regular_output, _ = logging_run(
-            ['passes/text.html',
-             'failures/expected/device_failure.html',
-             '--ignore-default-expectations', '--order=none'], tests_included=True,
-            host=host)
+        args = [
+            'passes/text.html',
+            'failures/expected/device_failure.html',
+            'virtual/virtual_failures/failures/expected/device_failure.html',
+            '--ignore-default-expectations',
+            '--order=none',
+        ]
+        details, regular_output, _ = logging_run(args,
+                                                 tests_included=True,
+                                                 host=host)
         self.assertEqual(details.exit_code, exit_codes.EARLY_EXIT_STATUS)
         output = regular_output.getvalue()
         self.assertIn('failed unexpectedly (skipped due to early exit)', output)
         self.assertIn('worker/0 has failed', output)
+        self.assertIn('All workers have device failures. Exiting.', output)
+
         results = json.loads(
             host.filesystem.read_text_file(
                 '/tmp/layout-test-results/full_results.json'))
-        self.assertEqual(results['num_regressions'], 1)
+        self.assertEqual(results['num_regressions'], 2)
+        self.assertEqual(results['tests']['passes']['text.html']['actual'],
+                         'PASS')
+        # The first `device_failure.html` ran, so it's reported as an unexpected
+        # timeout.
         test_results = results['tests']['failures']['expected']['device_failure.html']
+        self.assertEqual(test_results['actual'], 'TIMEOUT')
+        self.assertTrue(test_results['is_regression'])
+        # The second `device_failure.html` was skipped because the only worker
+        # went offline.
+        test_results = results['tests']['virtual']['virtual_failures']
+        test_results = test_results['failures']['expected'][
+            'device_failure.html']
         self.assertEqual(test_results['actual'], 'SKIP')
-        self.assertEqual(test_results['is_regression'], True)
-        self.assertIn('All workers have device failures. Exiting.', output)
-        self.assertEqual(results['tests']['passes']['text.html']['actual'], 'PASS')
+        self.assertTrue(test_results['is_regression'])
 
     def test_keyboard_interrupt(self):
         # Note that this also tests running a test marked as SKIP if
