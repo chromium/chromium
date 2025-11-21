@@ -8321,6 +8321,14 @@ bool AXPlatformNodeWin::HasEventListenerForEvent(EVENTID event_id) {
   return fragment_root->HasEventListenerForEvent(event_id);
 }
 
+bool AXPlatformNodeWin::AlwaysFireUIAEvent(EVENTID event_id) {
+  // On reload we create a new RootWebArea before the UIA clients re-registers
+  // its UIA event listeners. Early AsyncContentLoaded events would be
+  // incorrectly suppressed, so always allow this event on the RootWebArea.
+  return GetRole() == ax::mojom::Role::kRootWebArea &&
+         event_id == UIA_AsyncContentLoadedEventId;
+}
+
 bool AXPlatformNodeWin::HasEventListenerForProperty(PROPERTYID property_id) {
   if (!base::FeatureList::IsEnabled(features::kUiaEventOptimization)) {
     return true;

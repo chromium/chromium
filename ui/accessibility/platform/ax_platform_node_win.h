@@ -1184,6 +1184,7 @@ class COMPONENT_EXPORT(AX_PLATFORM)
   // Clear the computed hypertext.
   void ResetComputedHypertext();
 
+  bool AlwaysFireUIAEvent(EVENTID event_id);
   bool HasEventListenerForEvent(EVENTID event_id);
   bool HasEventListenerForProperty(PROPERTYID property_id);
 

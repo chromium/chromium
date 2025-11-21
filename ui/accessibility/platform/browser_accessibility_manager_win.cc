@@ -709,7 +709,8 @@ void BrowserAccessibilityManagerWin::FireUiaAccessibilityEvent(
   }
 
   auto* provider = ToBrowserAccessibilityWin(node)->GetCOM();
-  if (!provider->HasEventListenerForEvent(uia_event)) {
+  if (!provider->AlwaysFireUIAEvent(uia_event) &&
+      !provider->HasEventListenerForEvent(uia_event)) {
     return;
   }
 
