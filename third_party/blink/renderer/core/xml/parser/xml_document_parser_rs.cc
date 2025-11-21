@@ -27,8 +27,6 @@
 
 #include "third_party/blink/renderer/core/xml/parser/xml_document_parser_rs.h"
 
-#include <re2/re2.h>
-
 #include "base/notimplemented.h"
 #include "base/strings/string_view_rust.h"
 #include "third_party/blink/renderer/core/dom/cdata_section.h"
@@ -86,58 +84,6 @@ String RustStrToWtfString(rust::Str str) {
 
 AtomicString RustStrToAtomicString(rust::Str str) {
   return AtomicString(RustStrToWtfString(str));
-}
-
-// TODO(https://crbug.com/441911594): Extracts name, public ID, and system ID
-// from an XML/HTML DOCTYPE declaration.
-// This is a workaround until we hopefully can add missing DOCTYPE
-// parsing functionality in upstream.
-// Doctypes with an internal subset are not supported. For those, extraction
-// will fail.
-void ExtractDoctypeParts(const std::string& doctype_string,
-                         std::string& name,
-                         std::string& public_id,
-                         std::string& system_id) {
-  // Clear the output strings first.
-  name.clear();
-  public_id.clear();
-  system_id.clear();
-
-  // 1. Regex for PUBLIC-style statement: Captures name, public id, system id.
-  const char* kPublicRe =
-      R"regex(^<!DOCTYPE\s+(\w+)\s+PUBLIC\s+"([^"]*)"\s+"([^"]*)"\s*>$)regex";
-
-  // 2. Regex for SYSTEM or simple statement, captures name and system id.
-  const char* kSystemRe =
-      R"regex(^<!DOCTYPE\s+(\w+)(?:\s+SYSTEM\s+"([^"]*)")?\s*(?:\[[^\]]*\])?\s*>$)regex";
-
-  re2::StringPiece input(doctype_string);
-
-  re2::StringPiece re2_name, re2_public_id, re2_system_id;
-
-  // Attempt to match PUBLIC style DOCTYPE.
-  if (RE2::FullMatch(input, kPublicRe, &re2_name, &re2_public_id,
-                     &re2_system_id)) {
-    // Group 1: Name, Group 2: Public ID (content), Group 3: System ID (content)
-    name = re2_name;
-    public_id = re2_public_id;
-    system_id = re2_system_id;
-    return;
-  }
-
-  // Attempt to match SYSTEM or simple style DOCTYPE (e.g., HTML5) ---
-  if (RE2::FullMatch(input, kSystemRe, &re2_name, &re2_system_id)) {
-    // Group 1: Name, Group 2: System ID (content, optional)
-    name = re2_name;
-    public_id.clear();
-
-    if (!re2_system_id.empty()) {
-      system_id = re2_system_id;
-    } else {
-      system_id.clear();
-    }
-    return;
-  }
 }
 
 bool HandleNamespaceAttributes(
@@ -617,22 +563,19 @@ void XMLDocumentParserRs::Comment(rust::Str comment) {
   current_node_->ParserAppendChild(comment_node);
 }
 
-void XMLDocumentParserRs::DocType(rust::Str full_doctype) {
+void XMLDocumentParserRs::DocType(rust::Str name_rs,
+                                  rust::Str public_id_rs,
+                                  rust::Str system_id_rs) {
   if (!UpdateLeafTextNode()) {
     return;
   }
 
-  std::string doctype_string = static_cast<std::string>(full_doctype);
-  std::string name;
-  std::string public_id;
-  std::string system_id;
-  // TODO(https://crbug.com/441911594): Regexp based doctype "matching"
-  // is a workaround as long as there is no grammar-based
-  // DocType parsing in upstream.
-  ExtractDoctypeParts(doctype_string, name, public_id, system_id);
+  String name = RustStrToWtfString(name_rs);
+  String public_id = RustStrToWtfString(public_id_rs);
+  String system_id = RustStrToWtfString(system_id_rs);
 
   // https://html.spec.whatwg.org/C/#parsing-xhtml-documents:named-character-references
-  if (MatchesXHTMLSubsetDTD(String(public_id))) {
+  if (MatchesXHTMLSubsetDTD(public_id)) {
     // TODO(https://crbug.com/441911594): It's unfortunate we have to define
     // all the entities statically again. Needs investigation if upstream
     // API could be changed to externalize entity parsing.
@@ -641,7 +584,7 @@ void XMLDocumentParserRs::DocType(rust::Str full_doctype) {
 
   if (GetDocument()) {
     GetDocument()->ParserAppendChild(MakeGarbageCollected<DocumentType>(
-        GetDocument(), String(name), String(public_id), String(system_id)));
+        GetDocument(), name, public_id, system_id));
   }
 }
 

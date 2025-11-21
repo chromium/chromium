@@ -32,7 +32,9 @@ class XmlCallbacks {
   virtual void Characters(rust::Str characters) = 0;
   virtual void CData(rust::Str data) = 0;
   virtual void Comment(rust::Str comment) = 0;
-  virtual void DocType(rust::Str full_doctype) = 0;
+  virtual void DocType(rust::Str name,
+                       rust::Str public_id,
+                       rust::Str system_id) = 0;
   virtual void EndDocument() = 0;
 };
 

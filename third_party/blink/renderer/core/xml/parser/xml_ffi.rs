@@ -182,8 +182,17 @@ fn process_next_event(read_state: &mut XmlReadState) {
                 EndDocument => {
                     read_state.parser_callbacks.as_mut().EndDocument();
                 }
-                Doctype { syntax } => {
-                    read_state.parser_callbacks.as_mut().DocType(&syntax);
+                Doctype { .. } => {
+                    // It's safe to unwrap here. `doctype_ids()` after a `Doctype`
+                    // event only fails if there's no doctype name, which would have
+                    // resulted in a parser error earlier.
+                    // See: https://github.com/kornelski/xml-rs/blob/main/src/reader/parser.rs#L162
+                    let ids = read_state.event_reader.doctype_ids().unwrap();
+                    read_state.parser_callbacks.as_mut().DocType(
+                        ids.name(),
+                        ids.public_id().unwrap_or(""),
+                        ids.system_id().unwrap_or(""),
+                    );
                 }
             }
         }
@@ -367,7 +376,7 @@ mod ffi {
         fn Characters(self: Pin<&mut XmlCallbacks>, characters: &str);
         fn CData(self: Pin<&mut XmlCallbacks>, data: &str);
         fn Comment(self: Pin<&mut XmlCallbacks>, comment: &str);
-        fn DocType(self: Pin<&mut XmlCallbacks>, full_doctype: &str);
+        fn DocType(self: Pin<&mut XmlCallbacks>, name: &str, public_id: &str, system_id: &str);
         fn EndDocument(self: Pin<&mut XmlCallbacks>);
     }
 

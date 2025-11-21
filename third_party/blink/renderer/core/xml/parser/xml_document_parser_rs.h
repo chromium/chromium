@@ -68,7 +68,9 @@ class XMLDocumentParserRs final : public ScriptableDocumentParser,
   void Characters(rust::Str characters) override;
   void CData(rust::Str data) override;
   void Comment(rust::Str data) override;
-  void DocType(rust::Str full_doctype) override;
+  void DocType(rust::Str name_rs,
+               rust::Str public_id_rs,
+               rust::Str system_id_rs) override;
   void EndDocument() override;
 
  private:
