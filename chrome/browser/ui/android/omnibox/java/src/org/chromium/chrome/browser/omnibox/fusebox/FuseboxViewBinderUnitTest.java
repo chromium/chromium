@@ -51,9 +51,9 @@ import org.chromium.ui.widget.AnchoredPopupWindow;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/** Unit tests for {@link NavigationAttachmentsViewBinder}. */
+/** Unit tests for {@link FuseboxViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class NavigationAttachmentsViewBinderUnitTest {
+public class FuseboxViewBinderUnitTest {
     @IntDef({
         Variant.DEFAULT,
         Variant.DEDICATED_BUTTON,
@@ -104,8 +104,7 @@ public class NavigationAttachmentsViewBinderUnitTest {
                 AutocompleteRequestType.SEARCH);
         mModel.set(NavigationAttachmentsProperties.SHOW_DEDICATED_MODE_BUTTON, false);
 
-        PropertyModelChangeProcessor.create(
-                mModel, mViewHolder, NavigationAttachmentsViewBinder::bind);
+        PropertyModelChangeProcessor.create(mModel, mViewHolder, FuseboxViewBinder::bind);
     }
 
     @After
@@ -212,7 +211,7 @@ public class NavigationAttachmentsViewBinderUnitTest {
     @Test
     public void updateModeSelectorVisibility_noParams() {
         configureFusebox(Variant.DEFAULT, AutocompleteRequestType.SEARCH);
-        NavigationAttachmentsViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
+        FuseboxViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
 
         // No button.
         assertEquals(View.GONE, mViewHolder.requestType.getVisibility());
@@ -221,7 +220,7 @@ public class NavigationAttachmentsViewBinderUnitTest {
     @Test
     public void updateModeSelectorVisibility_dedicatedButton() {
         configureFusebox(Variant.DEDICATED_BUTTON, AutocompleteRequestType.SEARCH);
-        NavigationAttachmentsViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
+        FuseboxViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
 
         assertEquals(View.VISIBLE, mViewHolder.requestType.getVisibility());
         assertEquals("AI Mode", mViewHolder.requestType.getText());
@@ -230,7 +229,7 @@ public class NavigationAttachmentsViewBinderUnitTest {
     @Test
     public void updateModeSelectorVisibility_dedicatedButtonWithHint_searchMode() {
         configureFusebox(Variant.DEDICATED_BUTTON_WITH_HINT, AutocompleteRequestType.SEARCH);
-        NavigationAttachmentsViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
+        FuseboxViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
 
         assertEquals(View.VISIBLE, mViewHolder.requestType.getVisibility());
         assertEquals("Try AI Mode", mViewHolder.requestType.getText());
@@ -239,7 +238,7 @@ public class NavigationAttachmentsViewBinderUnitTest {
     @Test
     public void updateModeSelectorVisibility_dedicatedButtonWithHint_aiMode() {
         configureFusebox(Variant.DEDICATED_BUTTON_WITH_HINT, AutocompleteRequestType.AI_MODE);
-        NavigationAttachmentsViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
+        FuseboxViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
 
         assertEquals(View.VISIBLE, mViewHolder.requestType.getVisibility());
         assertEquals("AI Mode", mViewHolder.requestType.getText());
@@ -248,7 +247,7 @@ public class NavigationAttachmentsViewBinderUnitTest {
     @Test
     public void reanchorViewsForCompactFusebox_compactModeSearch() {
         configureFusebox(Variant.COMPACT, AutocompleteRequestType.SEARCH);
-        NavigationAttachmentsViewBinder.reanchorViewsForCompactFusebox(mModel, mViewHolder);
+        FuseboxViewBinder.reanchorViewsForCompactFusebox(mModel, mViewHolder);
 
         var lp = (ConstraintLayout.LayoutParams) mViewHolder.addButton.getLayoutParams();
         assertEquals(R.id.url_bar, lp.topToTop);
@@ -259,7 +258,7 @@ public class NavigationAttachmentsViewBinderUnitTest {
     @Test
     public void reanchorViewsForCompactFusebox_notCompactMode() {
         configureFusebox(Variant.DEFAULT, AutocompleteRequestType.SEARCH);
-        NavigationAttachmentsViewBinder.reanchorViewsForCompactFusebox(mModel, mViewHolder);
+        FuseboxViewBinder.reanchorViewsForCompactFusebox(mModel, mViewHolder);
 
         var lp = (ConstraintLayout.LayoutParams) mViewHolder.addButton.getLayoutParams();
         assertEquals(ConstraintSet.UNSET, lp.topToTop);
@@ -281,13 +280,13 @@ public class NavigationAttachmentsViewBinderUnitTest {
         mModel.set(
                 NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE,
                 AutocompleteRequestType.IMAGE_GENERATION);
-        NavigationAttachmentsViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
+        FuseboxViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
         assertFalse(mPopup.mFileButton.isEnabled());
 
         mModel.set(
                 NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE,
                 AutocompleteRequestType.SEARCH);
-        NavigationAttachmentsViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
+        FuseboxViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
         assertTrue(mPopup.mFileButton.isEnabled());
     }
 
@@ -315,20 +314,20 @@ public class NavigationAttachmentsViewBinderUnitTest {
     public void aiModeButtonVisibility() {
         mModel.set(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE, false);
         mModel.set(NavigationAttachmentsProperties.SHOW_DEDICATED_MODE_BUTTON, true);
-        NavigationAttachmentsViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
+        FuseboxViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
         assertEquals(View.GONE, mPopup.mAiModeButton.getVisibility());
 
         mModel.set(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE, true);
-        NavigationAttachmentsViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
+        FuseboxViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
         assertEquals(View.GONE, mPopup.mAiModeButton.getVisibility());
 
         mModel.set(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE, false);
         mModel.set(NavigationAttachmentsProperties.SHOW_DEDICATED_MODE_BUTTON, false);
-        NavigationAttachmentsViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
+        FuseboxViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
         assertEquals(View.GONE, mPopup.mAiModeButton.getVisibility());
 
         mModel.set(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE, true);
-        NavigationAttachmentsViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
+        FuseboxViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
         assertEquals(View.VISIBLE, mPopup.mAiModeButton.getVisibility());
     }
 
@@ -336,27 +335,27 @@ public class NavigationAttachmentsViewBinderUnitTest {
     public void createImageButtonVisibility() {
         mModel.set(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE, false);
         mModel.set(NavigationAttachmentsProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE, false);
-        NavigationAttachmentsViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
+        FuseboxViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
         assertEquals(View.GONE, mPopup.mCreateImageButton.getVisibility());
 
         mModel.set(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE, true);
-        NavigationAttachmentsViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
+        FuseboxViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
         assertEquals(View.GONE, mPopup.mCreateImageButton.getVisibility());
 
         mModel.set(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE, false);
         mModel.set(NavigationAttachmentsProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE, true);
-        NavigationAttachmentsViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
+        FuseboxViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
         assertEquals(View.GONE, mPopup.mCreateImageButton.getVisibility());
 
         mModel.set(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE, true);
-        NavigationAttachmentsViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
+        FuseboxViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
         assertEquals(View.VISIBLE, mPopup.mCreateImageButton.getVisibility());
     }
 
     @Test
     public void requestTypeDividerVisibility() {
         mModel.set(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE, false);
-        NavigationAttachmentsViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
+        FuseboxViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
         assertEquals(View.GONE, mPopup.mRequestTypeDivider.getVisibility());
         assertEquals(View.GONE, mPopup.mAiModeButton.getVisibility());
         assertEquals(View.GONE, mPopup.mCreateImageButton.getVisibility());
@@ -364,27 +363,27 @@ public class NavigationAttachmentsViewBinderUnitTest {
         mModel.set(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE, true);
         mModel.set(NavigationAttachmentsProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE, false);
         mModel.set(NavigationAttachmentsProperties.SHOW_DEDICATED_MODE_BUTTON, true);
-        NavigationAttachmentsViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
+        FuseboxViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
         assertEquals(View.GONE, mPopup.mRequestTypeDivider.getVisibility());
         assertEquals(View.GONE, mPopup.mAiModeButton.getVisibility());
         assertEquals(View.GONE, mPopup.mCreateImageButton.getVisibility());
 
         mModel.set(NavigationAttachmentsProperties.SHOW_DEDICATED_MODE_BUTTON, false);
-        NavigationAttachmentsViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
+        FuseboxViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
         assertEquals(View.VISIBLE, mPopup.mRequestTypeDivider.getVisibility());
         assertEquals(View.VISIBLE, mPopup.mAiModeButton.getVisibility());
         assertEquals(View.GONE, mPopup.mCreateImageButton.getVisibility());
 
         mModel.set(NavigationAttachmentsProperties.SHOW_DEDICATED_MODE_BUTTON, true);
         mModel.set(NavigationAttachmentsProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE, true);
-        NavigationAttachmentsViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
+        FuseboxViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
         assertEquals(View.VISIBLE, mPopup.mRequestTypeDivider.getVisibility());
         assertEquals(View.GONE, mPopup.mAiModeButton.getVisibility());
         assertEquals(View.VISIBLE, mPopup.mCreateImageButton.getVisibility());
 
         mModel.set(NavigationAttachmentsProperties.SHOW_DEDICATED_MODE_BUTTON, false);
         mModel.set(NavigationAttachmentsProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE, true);
-        NavigationAttachmentsViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
+        FuseboxViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
         assertEquals(View.VISIBLE, mPopup.mRequestTypeDivider.getVisibility());
         assertEquals(View.VISIBLE, mPopup.mAiModeButton.getVisibility());
         assertEquals(View.VISIBLE, mPopup.mCreateImageButton.getVisibility());
@@ -403,7 +402,7 @@ public class NavigationAttachmentsViewBinderUnitTest {
         mModel.set(
                 NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE,
                 AutocompleteRequestType.IMAGE_GENERATION);
-        NavigationAttachmentsViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
+        FuseboxViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
         assertNotNull(mViewHolder.requestType.getCompoundDrawablesRelative()[0]);
         assertNull(mViewHolder.requestType.getCompoundDrawablesRelative()[1]);
         assertNotNull(mViewHolder.requestType.getCompoundDrawablesRelative()[2]);
@@ -413,7 +412,7 @@ public class NavigationAttachmentsViewBinderUnitTest {
         mModel.set(
                 NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE,
                 AutocompleteRequestType.AI_MODE);
-        NavigationAttachmentsViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
+        FuseboxViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
         assertNotNull(mViewHolder.requestType.getCompoundDrawablesRelative()[0]);
         assertNull(mViewHolder.requestType.getCompoundDrawablesRelative()[1]);
         assertNotNull(mViewHolder.requestType.getCompoundDrawablesRelative()[2]);

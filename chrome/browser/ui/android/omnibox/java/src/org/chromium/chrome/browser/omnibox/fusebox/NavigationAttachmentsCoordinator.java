@@ -122,8 +122,7 @@ public class NavigationAttachmentsCoordinator
                                 NavigationAttachmentsProperties.SHOW_DEDICATED_MODE_BUTTON,
                                 OmniboxFeatures.sShowDedicatedModeButton.getValue())
                         .build();
-        PropertyModelChangeProcessor.create(
-                mModel, mViewHolder, NavigationAttachmentsViewBinder::bind);
+        PropertyModelChangeProcessor.create(mModel, mViewHolder, FuseboxViewBinder::bind);
         new OneShotCallback<>(profileObservableSupplier, this::onProfileAvailable);
     }
 

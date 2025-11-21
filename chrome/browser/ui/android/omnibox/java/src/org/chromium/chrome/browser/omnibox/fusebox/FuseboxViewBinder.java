@@ -29,9 +29,9 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.RippleBackgroundHelper;
 
-/** Binds the Navigation Attachments properties to the view and component. */
+/** Binds the Fusebox properties to the view and component. */
 @NullMarked
-class NavigationAttachmentsViewBinder {
+class FuseboxViewBinder {
     /**
      * @see PropertyModelChangeProcessor.ViewBinder#bind(Object, Object, Object)
      */
