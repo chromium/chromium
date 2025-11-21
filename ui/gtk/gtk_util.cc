@@ -290,6 +290,15 @@ CairoSurface::CairoSurface(SkBitmap& bitmap)
           cairo_format_stride_for_width(CAIRO_FORMAT_ARGB32, bitmap.width()))),
       cairo_(cairo_create(surface_)) {}
 
+CairoSurface::CairoSurface(void* pixels, int width, int height)
+    : surface_(cairo_image_surface_create_for_data(
+          static_cast<unsigned char*>(pixels),
+          CAIRO_FORMAT_ARGB32,
+          width,
+          height,
+          cairo_format_stride_for_width(CAIRO_FORMAT_ARGB32, width))),
+      cairo_(cairo_create(surface_)) {}
+
 CairoSurface::CairoSurface(const gfx::Size& size)
     : surface_(cairo_image_surface_create(CAIRO_FORMAT_ARGB32,
                                           size.width(),
