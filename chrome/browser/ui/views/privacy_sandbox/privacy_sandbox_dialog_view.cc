@@ -16,8 +16,6 @@
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
-#include "chrome/browser/ui/views/privacy_sandbox/dialog_view_context.h"
-#include "chrome/browser/ui/webui/privacy_sandbox/base_dialog_ui.h"
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_dialog_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -119,36 +117,10 @@ void PrivacySandboxDialog::Show(Browser* browser,
   }
 }
 
-// static
-void PrivacySandboxDialog::Show(BrowserWindowInterface* browser,
-                                PrivacySandboxNotice notice) {
-  auto delegate = std::make_unique<PrivacySandboxDialogDelegate>(browser);
-  delegate->SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
-  delegate->SetModalType(ui::mojom::ModalType::kWindow);
-  delegate->SetShowCloseButton(false);
-  delegate->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
-
-  auto dialog_view =
-      PrivacySandboxDialogView::CreateDialogViewForPrivacySandboxNotice(browser,
-                                                                        notice);
-  delegate->SetContentsView(std::move(dialog_view));
-
-  constrained_window::CreateBrowserModalDialogViews(
-      std::move(delegate), browser->GetTabStripModel()
-                               ->GetActiveWebContents()
-                               ->GetTopLevelNativeWindow());
-}
-
 PrivacySandboxDialogView::PrivacySandboxDialogView(
     BrowserWindowInterface* browser)
     : web_view_(AddChildView(std::make_unique<WebView>(browser->GetProfile()))),
       browser_(browser) {
-  // Attach DialogViewContext to this WebContents. This identifies the
-  // WebContents as originating from the dialog and provides WebUI controllers
-  // with access to this view (as the BaseDialogUIDelegate) for native dialog
-  // operations.
-  privacy_sandbox::DialogViewContext::CreateForWebContents(
-      web_view_->GetWebContents(), *this);
   // Override the default zoom level for the Privacy Sandbox dialog. Its size
   // should align with native UI elements, rather than web content.
   auto* web_contents = web_view_->GetWebContents();
@@ -180,18 +152,6 @@ PrivacySandboxDialogView::CreateDialogViewForPromptType(
   return dialog_view;
 }
 
-// static
-std::unique_ptr<PrivacySandboxDialogView>
-PrivacySandboxDialogView::CreateDialogViewForPrivacySandboxNotice(
-    BrowserWindowInterface* browser,
-    PrivacySandboxNotice notice) {
-  // Sets content view
-  // Using `new` to access a non-public constructor.
-  auto dialog_view = base::WrapUnique(new PrivacySandboxDialogView(browser));
-  dialog_view->InitializeDialogUIForPrivacySandboxNotice(notice);
-  return dialog_view;
-}
-
 void PrivacySandboxDialogView::InitializeDialogUIForPromptType(
     PrivacySandboxService::PromptType prompt_type) {
   web_view_->LoadInitialURL(GetDialogURL(prompt_type));
@@ -210,13 +170,6 @@ void PrivacySandboxDialogView::InitializeDialogUIForPromptType(
 
       prompt_type);
 
-  SetUseDefaultFillLayout(true);
-}
-
-void PrivacySandboxDialogView::InitializeDialogUIForPrivacySandboxNotice(
-    PrivacySandboxNotice notice) {
-  notice_ = notice;
-  web_view_->LoadInitialURL(GURL(chrome::kChromeUIPrivacySandboxBaseDialogURL));
   SetUseDefaultFillLayout(true);
 }
 
@@ -257,10 +210,6 @@ void PrivacySandboxDialogView::ResizeNativeView(int height) {
       GetWidget(), browser_->GetWebContentsModalDialogHostForWindow());
 }
 
-PrivacySandboxNotice PrivacySandboxDialogView::GetPrivacySandboxNotice() {
-  return notice_;
-}
-
 void PrivacySandboxDialogView::ShowNativeView(
     base::OnceCallback<void()> view_shown_callback) {
   GetWidget()->Show();
@@ -282,11 +231,6 @@ void PrivacySandboxDialogView::OpenPrivacySandboxAdMeasurementSettings() {
 content::WebContents* PrivacySandboxDialogView::GetWebContentsForTesting() {
   CHECK(web_view_);
   return web_view_->GetWebContents();
-}
-
-void PrivacySandboxDialogView::SetPrivacySandboxNotice(
-    privacy_sandbox::notice::mojom::PrivacySandboxNotice notice) {
-  notice_ = notice;
 }
 
 BEGIN_METADATA(PrivacySandboxDialogView)

@@ -19,12 +19,6 @@ class PrivacySandboxDialog {
   // TODO(crbug.com/408016824): To be deprecated once V2 is migrated to.
   static void Show(Browser* browser,
                    PrivacySandboxService::PromptType prompt_type);
-
-  // Creates and shows a dialog for |browser| displaying the Privacy Sandbox
-  // notice or consent to the user. Specific implementations are responsible for
-  // altering the content as appropriate based on |notice|.
-  static void Show(BrowserWindowInterface* browser,
-                   privacy_sandbox::notice::mojom::PrivacySandboxNotice notice);
 };
 
 #endif  // CHROME_BROWSER_UI_PRIVACY_SANDBOX_PRIVACY_SANDBOX_PROMPT_H_

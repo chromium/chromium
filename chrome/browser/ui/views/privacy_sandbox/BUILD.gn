@@ -5,9 +5,9 @@
 assert(!is_android)
 
 source_set("privacy_sandbox") {
-  public = [ "dialog_view_context.h" ]
+  public = []
 
-  sources = [ "dialog_view_context.cc" ]
+  sources = []
 
   deps = [ "//content/public/browser" ]
 }

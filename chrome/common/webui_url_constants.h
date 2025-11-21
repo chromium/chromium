@@ -233,10 +233,6 @@ inline constexpr char kChromeUIPolicyURL[] = "chrome://policy/";
 inline constexpr char kChromeUIPredictorsHost[] = "predictors";
 inline constexpr char kChromeUIPrefsInternalsHost[] = "prefs-internals";
 inline constexpr char kChromeUIPrintURL[] = "chrome://print/";
-inline constexpr char kChromeUIPrivacySandboxBaseDialogURL[] =
-    "chrome://privacy-sandbox-base-dialog";
-inline constexpr char kChromeUIPrivacySandboxBaseDialogHost[] =
-    "privacy-sandbox-base-dialog";
 inline constexpr char kChromeUIPrivacySandboxDialogCombinedPath[] = "combined";
 inline constexpr char kChromeUIPrivacySandboxDialogHost[] =
     "privacy-sandbox-dialog";

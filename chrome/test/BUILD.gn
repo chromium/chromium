@@ -2998,10 +2998,6 @@ if (!is_android) {
     # c/b/ui/views/performance_controls/*browsertest.cc get componentized.
     deps += [ "//chrome/browser/ui/performance_controls/test_support" ]
 
-    # TODO(crbug.com/413315837): Remove this dependency when
-    # c/b/ui/views/privacy_sandbox/privacy_sandbox_dialog_view_browsertest.cc gets modularized.
-    deps += [ "//chrome/browser/privacy_sandbox/notice:factory" ]
-
     # TODO(crbug.com/437811373): Remove this dependency when
     # c/b/ui/passwords/password_change_ui_controller.h gets built from `//c/b/ui/passwords:passwords`.
     deps += [ "//chrome/browser/ui/passwords:impl" ]

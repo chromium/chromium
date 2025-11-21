@@ -246,10 +246,7 @@ source_set("browser_tests") {
   }
 
   if (!is_android) {
-    sources += [
-      "desktop_entrypoint_handlers_browsertest.cc",
-      "desktop_view_manager_browsertest.cc",
-    ]
+    sources += [ "desktop_entrypoint_handlers_browsertest.cc" ]
     deps += [
       ":desktop_view_manager",
       "//chrome/browser/sync",
