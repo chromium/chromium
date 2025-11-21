@@ -101,6 +101,73 @@ class MathMLAndAria : public DomScenarioDomainSpecification {
   }
 };
 
+class ValidTableAndAria : public DomScenarioDomainSpecification {
+ public:
+  fuzztest::Domain<QualifiedName> AnyTag() override { return AnyHtmlTag(); }
+  fuzztest::Domain<std::pair<QualifiedName, std::string>>
+  AnyAttributeNameValuePair() override {
+    return fuzztest::OneOf(AnyHtmlTableAttributeNameValuePair(),
+                           AnyAriaTableAttributeNameValuePair(),
+                           AnyAriaTableRoleNameValuePair());
+  }
+  fuzztest::Domain<std::string> AnyStyles() override {
+    return AnyCssDeclaration();
+  }
+  fuzztest::Domain<std::string> AnyText() override {
+    return fuzztest::PrintableAsciiString();
+  }
+  int GetMaxDomNodes() override { return GetPredefinedNodes()->size(); }
+  int GetMaxAttributesPerNode() override { return 3; }
+  fuzztest::Domain<QualifiedName> GetRootElementTag() override {
+    return fuzztest::Just<QualifiedName>(
+        html_names::TagToQualifiedName(html_names::HTMLTag::kBody));
+  }
+  std::optional<std::vector<NodeSpecification>> GetPredefinedNodes() override {
+    // Create the table during test execution, due to use of QualifiedName.
+    return std::vector<NodeSpecification>{
+        // <table> (parent: root) index 0.
+        {.tag = html_names::TagToQualifiedName(html_names::HTMLTag::kTable),
+         .initial_state = {.parent_index = kIndexOfRootElement}},
+        // <tr> (parent: table) index 1.
+        {.tag = html_names::TagToQualifiedName(html_names::HTMLTag::kTr),
+         .initial_state = {.parent_index = 0}},
+        // <th> (parent: tr) index 2.
+        {.tag = html_names::TagToQualifiedName(html_names::HTMLTag::kTh),
+         .initial_state = {.parent_index = 1, .text = "Header 1"}},
+        // <th> (parent: tr) index 3.
+        {.tag = html_names::TagToQualifiedName(html_names::HTMLTag::kTh),
+         .initial_state = {.parent_index = 1, .text = "Header 2"}},
+        // <th> (parent: tr) index 4.
+        {.tag = html_names::TagToQualifiedName(html_names::HTMLTag::kTh),
+         .initial_state = {.parent_index = 1, .text = "Header 3"}},
+        // <tr> (parent: table) index 5.
+        {.tag = html_names::TagToQualifiedName(html_names::HTMLTag::kTr),
+         .initial_state = {.parent_index = 0}},
+        // <td> (parent: tr) index 6.
+        {.tag = html_names::TagToQualifiedName(html_names::HTMLTag::kTd),
+         .initial_state = {.parent_index = 5, .text = "Cell 1"}},
+        // <td> (parent: tr) index 7.
+        {.tag = html_names::TagToQualifiedName(html_names::HTMLTag::kTd),
+         .initial_state = {.parent_index = 5, .text = "Cell 2"}},
+        // <td> (parent: tr) index 8.
+        {.tag = html_names::TagToQualifiedName(html_names::HTMLTag::kTd),
+         .initial_state = {.parent_index = 5, .text = "Cell 3"}},
+        // <tr> (parent: table) index 9.
+        {.tag = html_names::TagToQualifiedName(html_names::HTMLTag::kTr),
+         .initial_state = {.parent_index = 0}},
+        // <td> (parent: tr) index 10.
+        {.tag = html_names::TagToQualifiedName(html_names::HTMLTag::kTd),
+         .initial_state = {.parent_index = 9, .text = "Cell 1"}},
+        // <td> (parent: tr) index 11.
+        {.tag = html_names::TagToQualifiedName(html_names::HTMLTag::kTd),
+         .initial_state = {.parent_index = 9, .text = "Cell 2"}},
+        // <td> (parent: tr) index 12.
+        {.tag = html_names::TagToQualifiedName(html_names::HTMLTag::kTd),
+         .initial_state = {.parent_index = 9, .text = "Cell 3"}},
+    };
+  }
+};
+
 class AccessibilityDomScenarioRunner : public DomScenarioRunner {
  public:
   AccessibilityDomScenarioRunner() = default;
@@ -109,6 +176,7 @@ class AccessibilityDomScenarioRunner : public DomScenarioRunner {
   void CanvasFallbackContent(const DomScenario& input) { RunTest(input); }
   void SvgAndAria(const DomScenario& input) { RunTest(input); }
   void MathMLAndAria(const DomScenario& input) { RunTest(input); }
+  void ValidTableAndAria(const DomScenario& input) { RunTest(input); }
 
  protected:
   // Observer hooks to add accessibility tree printing.
@@ -135,5 +203,8 @@ FUZZ_TEST_F(AccessibilityDomScenarioRunner, SvgAndAria)
 
 FUZZ_TEST_F(AccessibilityDomScenarioRunner, MathMLAndAria)
     .WithDomains(BuildDomScenarios<MathMLAndAria>());
+
+FUZZ_TEST_F(AccessibilityDomScenarioRunner, ValidTableAndAria)
+    .WithDomains(BuildDomScenarios<ValidTableAndAria>());
 
 }  // namespace blink

@@ -68,6 +68,13 @@ class DomScenarioDomainSpecification {
   virtual fuzztest::Domain<std::string> AnyStylesheet() {
     return fuzztest::Just(std::string(""));
   }
+
+  // Optional predefined nodes - if provided, these will be used as the initial
+  // DOM structure instead of generating random nodes. Modifications will still
+  // be applied as usual.
+  virtual std::optional<std::vector<NodeSpecification>> GetPredefinedNodes() {
+    return std::nullopt;
+  }
 };
 
 // Domain building functions

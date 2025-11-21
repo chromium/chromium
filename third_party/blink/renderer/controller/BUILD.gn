@@ -196,6 +196,7 @@ test("blink_unittests") {
     "AccessibilityDomScenarioRunner.CanvasFallbackContent",
     "AccessibilityDomScenarioRunner.SvgAndAria",
     "AccessibilityDomScenarioRunner.MathMLAndAria",
+    "AccessibilityDomScenarioRunner.ValidTableAndAria",
     "HTMLDomScenarioRunner.HTML",
     "HTMLDomScenarioRunner.MathMLInHTML",
     "HTMLDomScenarioRunner.SVGInHTML",

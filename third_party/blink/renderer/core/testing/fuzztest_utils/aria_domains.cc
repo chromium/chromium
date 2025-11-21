@@ -100,6 +100,17 @@ fuzztest::Domain<QualifiedName> AnyAriaAttribute() {
       fuzztest::ElementOf<const QualifiedName*>(GetAllAriaAttributes()));
 }
 
+fuzztest::Domain<QualifiedName> AnyAriaTableAttribute() {
+  static const base::NoDestructor<std::vector<QualifiedName>> attributes([]() {
+    return std::vector(
+        {html_names::kAriaColcountAttr, html_names::kAriaColindexAttr,
+         html_names::kAriaColindextextAttr, html_names::kAriaColspanAttr,
+         html_names::kAriaRowcountAttr, html_names::kAriaRowindexAttr,
+         html_names::kAriaRowindextextAttr, html_names::kAriaRowspanAttr});
+  }());
+  return fuzztest::ElementOf(*attributes);
+}
+
 fuzztest::Domain<std::string> AnyPlausibleValueForAriaAttribute(
     const QualifiedName& attribute) {
   if (attribute == html_names::kRoleAttr) {
@@ -179,6 +190,31 @@ AnyAriaAttributeNameValuePair() {
             AnyValueForAriaAttribute(attribute));
       },
       AnyAriaAttribute());
+}
+
+fuzztest::Domain<std::pair<QualifiedName, std::string>>
+AnyAriaTableAttributeNameValuePair() {
+  return fuzztest::FlatMap(
+      [](const QualifiedName& attribute) {
+        return fuzztest::Map(
+            [attribute](std::string value) {
+              return std::pair(attribute, std::move(value));
+            },
+            AnyValueForAriaAttribute(attribute));
+      },
+      AnyAriaTableAttribute());
+}
+
+fuzztest::Domain<std::pair<QualifiedName, std::string>>
+AnyAriaTableRoleNameValuePair() {
+  static auto kTableRoles = std::to_array<std::string_view>(
+      {"table", "grid", "treegrid", "row", "rowgroup", "cell", "gridcell",
+       "columnheader", "rowheader", "none"});
+  return fuzztest::Map(
+      [](std::string_view role) {
+        return std::pair(html_names::kRoleAttr, std::string(role));
+      },
+      fuzztest::ElementOf(kTableRoles));
 }
 
 }  // namespace blink

@@ -36,6 +36,8 @@ functions, as well as support for other specifications, are encouraged.
   - `GetRootElementTag()` - root element type
   - `AnyStylesheet()` (optional) - the pool of possible stylesheets (defaults
     to empty string)
+  - `GetPredefinedNodes()` (optional) - provides a fixed initial DOM structure
+    instead of generating random nodes. Modifications are still fuzzed.
 - **`AnyDomScenarioForSpec()`** - Generates FuzzTest domains from specifications
 - **`DomScenarioRunner`** - Base class that executes `DomScenario` test cases
   by creating initial DOM, applying modifications, and calling

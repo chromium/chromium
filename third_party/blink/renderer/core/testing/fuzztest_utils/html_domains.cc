@@ -187,4 +187,25 @@ fuzztest::Domain<std::string> AnyValueForHtmlAttribute(
                          fuzztest::Arbitrary<std::string>());
 }
 
+fuzztest::Domain<const QualifiedName*> AnyHtmlTableAttribute() {
+  static const base::NoDestructor<std::vector<const QualifiedName*>>
+      kAttributes(std::vector<const QualifiedName*>{
+          &html_names::kScopeAttr, &html_names::kHeadersAttr,
+          &html_names::kColspanAttr, &html_names::kRowspanAttr});
+  return fuzztest::ElementOf<const QualifiedName*>(*kAttributes);
+}
+
+fuzztest::Domain<std::pair<QualifiedName, std::string>>
+AnyHtmlTableAttributeNameValuePair() {
+  return fuzztest::FlatMap(
+      [](const QualifiedName* attribute) {
+        return fuzztest::Map(
+            [attribute](std::string value) {
+              return std::make_pair(*attribute, std::move(value));
+            },
+            AnyValueForHtmlAttribute(*attribute));
+      },
+      AnyHtmlTableAttribute());
+}
+
 }  // namespace blink

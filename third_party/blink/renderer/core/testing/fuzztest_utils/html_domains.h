@@ -38,6 +38,13 @@ fuzztest::Domain<std::string> AnyValueForHtmlAttribute(
 fuzztest::Domain<std::pair<QualifiedName, std::string>>
 AnyHtmlAttributeNameValuePair();
 
+// Generates a table-specific HTML attribute (scope, headers, colspan, rowspan).
+fuzztest::Domain<const QualifiedName*> AnyHtmlTableAttribute();
+
+// Generates a (table-specific HTML attribute, value) pair.
+fuzztest::Domain<std::pair<QualifiedName, std::string>>
+AnyHtmlTableAttributeNameValuePair();
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_FUZZTEST_UTILS_HTML_DOMAINS_H_

@@ -29,6 +29,7 @@ fuzztest::Domain<std::string> AnyAriaOrientationValue();
 fuzztest::Domain<std::string> AnyAriaPressedValue();
 fuzztest::Domain<std::string> AnyAriaRelevantValue();
 fuzztest::Domain<std::string> AnyAriaSortValue();
+fuzztest::Domain<QualifiedName> AnyAriaTableAttribute();
 
 // Generates a value that is appropriate for the given ARIA attribute, using the
 // utilities above as well as those found in `fuzztest_domains_html.h`.
@@ -45,6 +46,14 @@ fuzztest::Domain<std::string> AnyValueForAriaAttribute(
 // Generates a (`AnyAriaAttribute()`, `AnyValueForAriaAttribute()`) pair.
 fuzztest::Domain<std::pair<QualifiedName, std::string>>
 AnyAriaAttributeNameValuePair();
+
+// Generates a (table-specific ARIA attribute, value) pair.
+fuzztest::Domain<std::pair<QualifiedName, std::string>>
+AnyAriaTableAttributeNameValuePair();
+
+// Generates a (role attribute, table-related role value) pair.
+fuzztest::Domain<std::pair<QualifiedName, std::string>>
+AnyAriaTableRoleNameValuePair();
 
 }  // namespace blink
 
