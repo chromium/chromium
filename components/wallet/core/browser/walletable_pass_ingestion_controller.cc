@@ -86,9 +86,11 @@ void WalletablePassIngestionController::ShowConsentBubble(
     const GURL& url,
     PassCategory pass_category) {
   // TODO(crbug.com/444147446): Check strike before showing the consent bubble.
-  client_->ShowWalletablePassConsentBubble(base::BindOnce(
-      &WalletablePassIngestionController::OnGetConsentBubbleResult,
-      weak_ptr_factory_.GetWeakPtr(), url, pass_category));
+  client_->ShowWalletablePassConsentBubble(
+      pass_category,
+      base::BindOnce(
+          &WalletablePassIngestionController::OnGetConsentBubbleResult,
+          weak_ptr_factory_.GetWeakPtr(), url, pass_category));
 }
 
 void WalletablePassIngestionController::OnGetConsentBubbleResult(

@@ -26,6 +26,8 @@
 namespace wallet {
 namespace {
 
+using enum optimization_guide::proto::PassCategory;
+
 constexpr int kBubbleWidth = 320;
 constexpr int kSubTitleBottomMargin = 16;
 
@@ -41,7 +43,8 @@ WalletablePassConsentBubbleView::WalletablePassConsentBubbleView(
     views::View* anchor_view,
     content::WebContents* web_contents,
     WalletablePassConsentBubbleController* controller)
-    : WalletablePassBubbleViewBase(anchor_view, web_contents, controller) {
+    : WalletablePassBubbleViewBase(anchor_view, web_contents, controller),
+      pass_category_(controller->pass_category()) {
   set_fixed_width(kBubbleWidth);
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
@@ -116,7 +119,7 @@ void WalletablePassConsentBubbleView::AddedToWidget() {
   // TODO(crbug.com/445826875): Replace with wallet-specific lottie image.
   std::unique_ptr<views::ImageView> image_view =
       std::make_unique<views::ImageView>(
-          bundle.GetThemedLottieImageNamed(IDR_AUTOFILL_SAVE_VEHICLE_LOTTIE));
+          bundle.GetThemedLottieImageNamed(GetHeaderImageResourceId()));
   image_view->GetViewAccessibility().SetIsInvisible(true);
 
   GetBubbleFrameView()->SetHeaderView(std::move(image_view));
@@ -125,6 +128,20 @@ void WalletablePassConsentBubbleView::AddedToWidget() {
   GetBubbleFrameView()->SetTitleView(
       autofill::CreateWalletBubbleTitleView(l10n_util::GetStringUTF16(
           IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_TITLE)));
+}
+
+int WalletablePassConsentBubbleView::GetHeaderImageResourceId() const {
+  switch (pass_category_) {
+    case PASS_CATEGORY_LOYALTY_CARD:
+      return IDR_WALLET_PASS_SAVE_LOYALTY_CARD_LOTTIE;
+    case PASS_CATEGORY_EVENT_PASS:
+      return IDR_WALLET_PASS_SAVE_EVENT_TICKET_LOTTIE;
+    case PASS_CATEGORY_UNSPECIFIED:
+    case PassCategory_INT_MIN_SENTINEL_DO_NOT_USE_:
+    case PassCategory_INT_MAX_SENTINEL_DO_NOT_USE_:
+      NOTREACHED() << "Not supported walletable pass category: "
+                   << pass_category_;
+  }
 }
 
 void WalletablePassConsentBubbleView::OnLearnMoreClicked() {

@@ -25,6 +25,7 @@ using optimization_guide::OptimizationGuideDecision::kTrue;
 using optimization_guide::proto::WALLETABLE_PASS_DETECTION_LOYALTY_ALLOWLIST;
 using optimization_guide::proto::WalletablePass;
 using testing::_;
+using testing::Eq;
 using testing::Return;
 using testing::WithArgs;
 using enum optimization_guide::proto::PassCategory;
@@ -45,7 +46,8 @@ class MockWalletablePassClient : public WalletablePassClient {
   MOCK_METHOD(
       void,
       ShowWalletablePassConsentBubble,
-      (WalletablePassClient::WalletablePassBubbleResultCallback callback),
+      (optimization_guide::proto::PassCategory pass_category,
+       WalletablePassClient::WalletablePassBubbleResultCallback callback),
       (override));
   MOCK_METHOD(
       void,
@@ -214,8 +216,9 @@ TEST_F(WalletablePassIngestionControllerTest,
 
   // Expect ShowWalletablePassConsentBubble to be called.
   WalletablePassClient::WalletablePassBubbleResultCallback consent_callback;
-  EXPECT_CALL(mock_client(), ShowWalletablePassConsentBubble(_))
-      .WillOnce(WithArgs<0>(
+  EXPECT_CALL(mock_client(), ShowWalletablePassConsentBubble(
+                                 Eq(PASS_CATEGORY_LOYALTY_CARD), _))
+      .WillOnce(WithArgs<1>(
           [&consent_callback](
               WalletablePassClient::WalletablePassBubbleResultCallback
                   callback) { consent_callback = std::move(callback); }));
@@ -249,8 +252,9 @@ TEST_F(WalletablePassIngestionControllerTest,
 
   // Expect ShowWalletablePassConsentBubble to be called.
   WalletablePassClient::WalletablePassBubbleResultCallback consent_callback;
-  EXPECT_CALL(mock_client(), ShowWalletablePassConsentBubble(_))
-      .WillOnce(WithArgs<0>(
+  EXPECT_CALL(mock_client(), ShowWalletablePassConsentBubble(
+                                 Eq(PASS_CATEGORY_LOYALTY_CARD), _))
+      .WillOnce(WithArgs<1>(
           [&consent_callback](
               WalletablePassClient::WalletablePassBubbleResultCallback
                   callback) { consent_callback = std::move(callback); }));
@@ -272,8 +276,9 @@ TEST_F(WalletablePassIngestionControllerTest,
 
   // Expect ShowWalletablePassConsentBubble to be called.
   WalletablePassClient::WalletablePassBubbleResultCallback consent_callback;
-  EXPECT_CALL(mock_client(), ShowWalletablePassConsentBubble(_))
-      .WillOnce(WithArgs<0>(
+  EXPECT_CALL(mock_client(), ShowWalletablePassConsentBubble(
+                                 Eq(PASS_CATEGORY_LOYALTY_CARD), _))
+      .WillOnce(WithArgs<1>(
           [&consent_callback](
               WalletablePassClient::WalletablePassBubbleResultCallback
                   callback) { consent_callback = std::move(callback); }));

@@ -6,6 +6,7 @@
 #define COMPONENTS_WALLET_CORE_BROWSER_WALLETABLE_PASS_CLIENT_H_
 
 #include "base/functional/callback.h"
+#include "components/optimization_guide/proto/features/walletable_pass_extraction.pb.h"
 
 namespace optimization_guide {
 class OptimizationGuideDecider;
@@ -53,6 +54,7 @@ class WalletablePassClient {
   virtual strike_database::StrikeDatabaseBase* GetStrikeDatabase() = 0;
 
   virtual void ShowWalletablePassConsentBubble(
+      optimization_guide::proto::PassCategory pass_category,
       WalletablePassBubbleResultCallback callback) = 0;
 
   virtual void ShowWalletablePassSaveBubble(

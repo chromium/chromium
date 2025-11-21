@@ -48,6 +48,7 @@ class ChromeWalletablePassClient : public WalletablePassClient {
   strike_database::StrikeDatabaseBase* GetStrikeDatabase() override;
 
   void ShowWalletablePassConsentBubble(
+      optimization_guide::proto::PassCategory pass_category,
       WalletablePassBubbleResultCallback callback) override;
   void ShowWalletablePassSaveBubble(
       const optimization_guide::proto::WalletablePass& pass,

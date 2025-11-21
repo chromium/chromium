@@ -37,12 +37,17 @@ class WalletablePassConsentBubbleController
   // Shows the consent bubble. `callback` will be run when the user makes a
   // decision.
   void SetUpAndShowConsentBubble(
+      optimization_guide::proto::PassCategory pass_category,
       WalletablePassClient::WalletablePassBubbleResultCallback callback);
+
+  optimization_guide::proto::PassCategory pass_category() const;
 
  protected:
   void ShowBubble() override;
 
  private:
+  std::optional<optimization_guide::proto::PassCategory> pass_category_;
+
   base::WeakPtrFactory<WalletablePassConsentBubbleController> weak_ptr_factory_{
       this};
 };

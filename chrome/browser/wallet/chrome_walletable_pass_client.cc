@@ -46,12 +46,14 @@ ChromeWalletablePassClient::GetStrikeDatabase() {
 }
 
 void ChromeWalletablePassClient::ShowWalletablePassConsentBubble(
+    optimization_guide::proto::PassCategory pass_category,
     WalletablePassBubbleResultCallback callback) {
   if (!consent_bubble_controller_) {
     consent_bubble_controller_ =
         std::make_unique<WalletablePassConsentBubbleController>(&tab_.get());
   }
-  consent_bubble_controller_->SetUpAndShowConsentBubble(std::move(callback));
+  consent_bubble_controller_->SetUpAndShowConsentBubble(pass_category,
+                                                        std::move(callback));
 }
 
 void ChromeWalletablePassClient::ShowWalletablePassSaveBubble(

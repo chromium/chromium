@@ -28,9 +28,17 @@ void WalletablePassConsentBubbleController::ShowBubble() {
 }
 
 void WalletablePassConsentBubbleController::SetUpAndShowConsentBubble(
+    optimization_guide::proto::PassCategory pass_category,
     WalletablePassClient::WalletablePassBubbleResultCallback callback) {
+  pass_category_ = pass_category;
   SetCallback(std::move(callback));
   QueueOrShowBubble();
+}
+
+optimization_guide::proto::PassCategory
+WalletablePassConsentBubbleController::pass_category() const {
+  CHECK(pass_category_.has_value());
+  return *pass_category_;
 }
 
 base::WeakPtr<autofill::BubbleControllerBase>

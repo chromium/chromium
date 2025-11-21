@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WALLET_WALLETABLE_PASS_CONSENT_BUBBLE_VIEW_H_
 
 #include "chrome/browser/ui/wallet/walletable_pass_bubble_view_base.h"
+#include "components/optimization_guide/proto/features/walletable_pass_extraction.pb.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace content {
@@ -39,7 +40,11 @@ class WalletablePassConsentBubbleView : public WalletablePassBubbleViewBase {
 
   std::unique_ptr<views::StyledLabel> GetSubtitleActionLabel();
 
+  int GetHeaderImageResourceId() const;
+
   void OnLearnMoreClicked();
+
+  optimization_guide::proto::PassCategory pass_category_;
 };
 
 }  // namespace wallet
