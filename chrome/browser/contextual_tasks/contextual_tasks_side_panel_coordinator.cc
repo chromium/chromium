@@ -154,12 +154,14 @@ void ContextualTasksSidePanelCoordinator::Show() {
   browser_window_->GetFeatures().side_panel_ui()->Show(
       SidePanelEntry::Key(SidePanelEntry::Id::kContextualTasks));
   UpdateOpenStateForCurrentTask(/*is_open=*/true);
+  UpdateForActiveTab();
 }
 
 void ContextualTasksSidePanelCoordinator::Close() {
   UpdateOpenStateForCurrentTask(/*is_open=*/false);
   browser_window_->GetFeatures().side_panel_ui()->Close(
       SidePanelEntry::PanelType::kToolbar);
+  Observe(nullptr);
 }
 
 bool ContextualTasksSidePanelCoordinator::IsSidePanelOpen() {
@@ -189,6 +191,16 @@ void ContextualTasksSidePanelCoordinator::TransferWebContentsFromTab(
     it->second->is_open = true;
   }
   UpdateWebContentsForActiveTab();
+}
+
+void ContextualTasksSidePanelCoordinator::PrimaryPageChanged(
+    content::Page& page) {
+  UpdateActiveTabContextStatus();
+}
+
+void ContextualTasksSidePanelCoordinator::TitleWasSet(
+    content::NavigationEntry* entry) {
+  UpdateActiveTabContextStatus();
 }
 
 content::WebContents*
@@ -319,6 +331,7 @@ void ContextualTasksSidePanelCoordinator::OnActiveTabChanged(
     BrowserWindowInterface* browser_interface) {
   UpdateWebContentsForActiveTab();
   UpdateSidePanelVisibility();
+  UpdateForActiveTab();
 }
 
 std::unique_ptr<views::View>
@@ -361,6 +374,7 @@ void ContextualTasksSidePanelCoordinator::Hide() {
   side_panel_ui->Close(SidePanelEntry::PanelType::kToolbar,
                        SidePanelEntryHideReason::kSidePanelClosed,
                        /*suppress_animations=*/true);
+  Observe(nullptr);
 }
 
 void ContextualTasksSidePanelCoordinator::Unhide() {
@@ -371,6 +385,49 @@ void ContextualTasksSidePanelCoordinator::Unhide() {
           /*tab_handle=*/std::nullopt,
           SidePanelEntry::Key(SidePanelEntry::Id::kContextualTasks)},
       /*open_trigger=*/std::nullopt, /*suppress_animations=*/true);
+  UpdateActiveTabContextStatus();
+  UpdateForActiveTab();
+}
+
+void ContextualTasksSidePanelCoordinator::UpdateForActiveTab() {
+  CHECK(browser_window_);
+
+  UpdateActiveTabContextStatus();
+
+  tabs::TabInterface* active_tab_interface =
+      browser_window_->GetActiveTabInterface();
+  if (!active_tab_interface) {
+    return;
+  }
+
+  content::WebContents* web_contents = active_tab_interface->GetContents();
+  if (web_contents) {
+    Observe(web_contents);
+  }
+}
+
+void ContextualTasksSidePanelCoordinator::UpdateActiveTabContextStatus() {
+  if (!web_view_) {
+    return;
+  }
+
+  if (!IsSidePanelOpenForContextualTask()) {
+    return;
+  }
+
+  content::WebContents* web_contents = web_view_->GetWebContents();
+  content::WebUI* web_ui = web_contents ? web_contents->GetWebUI() : nullptr;
+  ContextualTasksUI* contextual_tasks_ui = nullptr;
+  if (web_ui->GetController()) {
+    contextual_tasks_ui = web_ui->GetController()->GetAs<ContextualTasksUI>();
+  }
+
+  if (contextual_tasks_ui) {
+    // TODO(http://crbug.com/451688545): Get the TabContextStatus from
+    // `context_controller_`.
+    contextual_tasks_ui->OnActiveTabContextStatusChanged(
+        ContextualTasksUI::TabContextStatus::kNotUploaded);
+  }
 }
 
 void ContextualTasksSidePanelCoordinator::MaybeDetachWebContentsFromWebView(

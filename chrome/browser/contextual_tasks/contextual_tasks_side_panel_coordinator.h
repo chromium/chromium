@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BrowserWindowInterface;
@@ -32,7 +33,8 @@ class ContextualTasksContextController;
 class ContextualTasksUiService;
 class ContextualTasksWebView;
 
-class ContextualTasksSidePanelCoordinator {
+class ContextualTasksSidePanelCoordinator
+    : public content::WebContentsObserver {
  public:
   // A data structure to hold the cache and state of the side panel per thread.
   struct WebContentsCacheItem {
@@ -55,7 +57,7 @@ class ContextualTasksSidePanelCoordinator {
       const ContextualTasksSidePanelCoordinator&) = delete;
   ContextualTasksSidePanelCoordinator& operator=(
       const ContextualTasksSidePanelCoordinator&) = delete;
-  ~ContextualTasksSidePanelCoordinator();
+  ~ContextualTasksSidePanelCoordinator() override;
 
   static ContextualTasksSidePanelCoordinator* From(
       BrowserWindowInterface* window);
@@ -80,6 +82,10 @@ class ContextualTasksSidePanelCoordinator {
   void TransferWebContentsFromTab(
       const base::Uuid& task_id,
       std::unique_ptr<content::WebContents> web_contents);
+
+  // content::WebContentsObserver
+  void PrimaryPageChanged(content::Page& page) override;
+  void TitleWasSet(content::NavigationEntry* entry) override;
 
   content::WebContents* GetActiveWebContentsForTesting();
 
@@ -124,6 +130,12 @@ class ContextualTasksSidePanelCoordinator {
   // Called before a WebContents is moved or destroyed to make sure the side
   // panel does not attach to it any more.
   void MaybeDetachWebContentsFromWebView(content::WebContents* web_contents);
+
+  // Called when active tab has been updated.
+  void UpdateForActiveTab();
+
+  // Update the statucs of active tab context on the side panel.
+  void UpdateActiveTabContextStatus();
 
   // Browser window of the current side panel.
   const raw_ptr<BrowserWindowInterface> browser_window_ = nullptr;

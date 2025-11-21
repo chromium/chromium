@@ -12,6 +12,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/uuid.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_composebox_handler.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_internals.mojom.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_page_handler.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
@@ -86,6 +87,14 @@ class ContextualTasksUI : public TaskInfoDelegate,
     raw_ref<TaskInfoDelegate> task_info_delegate_;
   };
 
+  // Enum representing the upload status of tab context.
+  enum class TabContextStatus {
+    kNotUploaded,
+    kPendingUpload,
+    kUploaded,
+    kIgnored,
+  };
+
   explicit ContextualTasksUI(content::WebUI* web_ui);
   ContextualTasksUI(const ContextualTasksUI&) = delete;
   ContextualTasksUI& operator=(const ContextualTasksUI&) = delete;
@@ -152,6 +161,16 @@ class ContextualTasksUI : public TaskInfoDelegate,
   // Notify the UI that the WebContents has moved to or from the side panel or
   // tab.
   void OnSidePanelStateChanged();
+
+  // Called when the active tab has been changed, either a new page is loaded or
+  // a title change. This is only called when the of this class is rendered in
+  // the side panel.
+  void OnActiveTabContextStatusChanged(TabContextStatus status);
+
+  void SetComposeboxHandlerForTesting(
+      std::unique_ptr<ContextualTasksComposeboxHandler> handler) {
+    composebox_handler_ = std::move(handler);
+  }
 
  private:
   // A an observer specifically to watch for the creation of the hosted remote

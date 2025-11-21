@@ -16,8 +16,38 @@
 #include "components/contextual_tasks/public/features.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "content/public/test/web_contents_tester.h"
+
+using testing::Field;
+using testing::Mock;
+using testing::Pointee;
 
 namespace contextual_tasks {
+
+class MockContextualTasksComposeboxHandler
+    : public ContextualTasksComposeboxHandler {
+ public:
+  MockContextualTasksComposeboxHandler(
+      Profile* profile,
+      content::WebContents* web_contents,
+      mojo::PendingReceiver<composebox::mojom::PageHandler> pending_handler,
+      mojo::PendingRemote<composebox::mojom::Page> pending_page,
+      mojo::PendingReceiver<searchbox::mojom::PageHandler>
+          pending_searchbox_handler)
+      : ContextualTasksComposeboxHandler(profile,
+                                         web_contents,
+                                         std::move(pending_handler),
+                                         std::move(pending_page),
+                                         std::move(pending_searchbox_handler)) {
+  }
+  ~MockContextualTasksComposeboxHandler() override = default;
+
+  MOCK_METHOD(void,
+              UpdateSuggestedTabContext,
+              (searchbox::mojom::TabInfoPtr tab_info),
+              (override));
+};
 
 class ContextualTasksSidePanelCoordinatorInteractiveUiTest
     : public InteractiveBrowserTest {
@@ -59,6 +89,23 @@ class ContextualTasksSidePanelCoordinatorInteractiveUiTest
             browser()->tab_strip_model()->GetWebContentsAt(2)));
 
     browser()->GetFeatures().side_panel_ui()->DisableAnimationsForTesting();
+  }
+
+  void SetUpOnMainThread() override {
+    InteractiveBrowserTest::SetUpOnMainThread();
+  }
+
+  ContextualTasksUI* GetContextualTasksUI() {
+    ContextualTasksSidePanelCoordinator* coordinator =
+        ContextualTasksSidePanelCoordinator::From(browser());
+    content::WebContents* web_contents =
+        coordinator->GetActiveWebContentsForTesting();
+    if (!web_contents) {
+      return nullptr;
+    }
+    ContextualTasksUI* ui = static_cast<ContextualTasksUI*>(
+        web_contents->GetWebUI()->GetController());
+    return ui;
   }
 
  protected:
@@ -296,6 +343,74 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
         browser()->tab_strip_model()->ActivateTabAt(0);
         EXPECT_EQ(web_contents1, coordinator->GetActiveWebContentsForTesting());
         EXPECT_TRUE(coordinator->IsSidePanelOpen());
+      }));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
+                       UpdateActiveTabContextStatusOnTabSwitch) {
+  SetUpTasks();
+  ContextualTasksSidePanelCoordinator* coordinator =
+      ContextualTasksSidePanelCoordinator::From(browser());
+
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIAboutURL)));
+  coordinator->Show();
+  ContextualTasksUI* ui = GetContextualTasksUI();
+  mojo::PendingRemote<composebox::mojom::Page> composebox_page_remote;
+  mojo::PendingReceiver<composebox::mojom::Page> composebox_page_receiver =
+      composebox_page_remote.InitWithNewPipeAndPassReceiver();
+  mojo::PendingRemote<composebox::mojom::PageHandler> composebox_handler_remote;
+  mojo::PendingReceiver<composebox::mojom::PageHandler>
+      composebox_handler_receiver =
+          composebox_handler_remote.InitWithNewPipeAndPassReceiver();
+  mojo::PendingRemote<searchbox::mojom::Page> searchbox_page_remote;
+  mojo::PendingReceiver<searchbox::mojom::Page> searchbox_page_receiver =
+      searchbox_page_remote.InitWithNewPipeAndPassReceiver();
+  mojo::PendingRemote<searchbox::mojom::PageHandler> searchbox_handler_remote;
+  mojo::PendingReceiver<searchbox::mojom::PageHandler>
+      searchbox_handler_receiver =
+          searchbox_handler_remote.InitWithNewPipeAndPassReceiver();
+
+  auto mock_composebox_handler =
+      std::make_unique<testing::NiceMock<MockContextualTasksComposeboxHandler>>(
+          browser()->profile(),
+          browser()->tab_strip_model()->GetWebContentsAt(0),
+          std::move(composebox_handler_receiver),
+          std::move(composebox_page_remote),
+          std::move(searchbox_handler_receiver));
+  MockContextualTasksComposeboxHandler* mock_handler =
+      mock_composebox_handler.get();
+  ui->SetComposeboxHandlerForTesting(std::move(mock_composebox_handler));
+  coordinator->Close();
+
+  // Define expectations on the mock handler.
+  using TabInfo = searchbox::mojom::TabInfo;
+
+  // Expectations are set before running the sequence.
+  // This should trigger UpdateSuggestedTabContext with valid tab info.
+  EXPECT_CALL(*mock_handler,
+              UpdateSuggestedTabContext(Pointee(
+                  Field(&TabInfo::url, GURL(chrome::kChromeUIAboutURL)))))
+      .Times(1);
+
+  RunTestSequence(
+      // 1. Open side panel.
+      Do([&]() { coordinator->Show(); }),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId),
+      // Verify that `OnActiveTabContextStatusChanged` is called on the UI.
+      Check([&]() {
+        Mock::VerifyAndClearExpectations(mock_handler);
+        // Set next expectation.
+        EXPECT_CALL(*mock_handler,
+                    UpdateSuggestedTabContext(Pointee(Field(
+                        &TabInfo::url, GURL(chrome::kChromeUISettingsURL)))))
+            .Times(1);
+        return true;
+      }),
+      // 2. Switch tabs to another tab.
+      Do([&]() {
+        browser()->tab_strip_model()->ActivateTabAt(2);
+        ui->SetComposeboxHandlerForTesting(nullptr);
       }));
 }
 

@@ -56,3 +56,8 @@ ContextualTasksComposeboxHandler::ContextualTasksComposeboxHandler(
                                                              web_contents))) {}
 
 ContextualTasksComposeboxHandler::~ContextualTasksComposeboxHandler() = default;
+
+void ContextualTasksComposeboxHandler::UpdateSuggestedTabContext(
+    searchbox::mojom::TabInfoPtr tab_info) {
+  // TODO(http://crbug.com/451688545): Push the `tab_info` to ComposeBox UI.
+}

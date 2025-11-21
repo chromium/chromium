@@ -267,6 +267,40 @@ void ContextualTasksUI::OnSidePanelStateChanged() {
   page_->OnSidePanelStateChanged();
 }
 
+void ContextualTasksUI::OnActiveTabContextStatusChanged(
+    TabContextStatus status) {
+  if (!composebox_handler_) {
+    return;
+  }
+
+  if (status != TabContextStatus::kNotUploaded) {
+    composebox_handler_->UpdateSuggestedTabContext(nullptr);
+    return;
+  }
+
+  tabs::TabInterface* tab = GetBrowser()->GetActiveTabInterface();
+  if (!tab) {
+    composebox_handler_->UpdateSuggestedTabContext(nullptr);
+    return;
+  }
+
+  content::WebContents* web_contents = tab->GetContents();
+  GURL last_committed_url = web_contents->GetLastCommittedURL();
+
+  if (!last_committed_url.is_valid() || last_committed_url.is_empty()) {
+    composebox_handler_->UpdateSuggestedTabContext(nullptr);
+    return;
+  }
+
+  auto tab_data = searchbox::mojom::TabInfo::New();
+  tab_data->tab_id = tab->GetHandle().raw_value();
+  tab_data->title = base::UTF16ToUTF8(web_contents->GetTitle());
+  tab_data->url = last_committed_url;
+  tab_data->last_active = std::max(web_contents->GetLastActiveTimeTicks(),
+                                   web_contents->GetLastInteractionTimeTicks());
+  composebox_handler_->UpdateSuggestedTabContext(std::move(tab_data));
+}
+
 ContextualTasksUI::FrameNavObserver::FrameNavObserver(
     content::WebContents* web_contents,
     contextual_tasks::ContextualTasksUiService* ui_service,

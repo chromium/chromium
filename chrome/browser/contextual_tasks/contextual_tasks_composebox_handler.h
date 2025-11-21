@@ -27,6 +27,9 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler {
       mojo::PendingReceiver<searchbox::mojom::PageHandler>
           pending_searchbox_handler);
   ~ContextualTasksComposeboxHandler() override;
+
+  // Called to update the suggested tab context chip in the compose box.
+  virtual void UpdateSuggestedTabContext(searchbox::mojom::TabInfoPtr tab_info);
 };
 
 #endif  // CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_COMPOSEBOX_HANDLER_H_
