@@ -1,2 +1,11 @@
 # crbug.com/1515446
 -org.chromium.chrome.browser.webauth.Fido2CredentialRequestTest.*
+
+# crbug.com/462590301
+-org.chromium.chrome.browser.app.bookmarks.*
+
+# crbug.com/462592111
+-org.chromium.chrome.browser.compositor.overlays.strip.*
+
+# crbug.com/462595998
+-org.chromium.chrome.browser.incognito.IncognitoPermissionLeakageTest.testAllowPermissionDoNotLeakBetweenRegularAndIncognito__INCOGNITO_TAB_REGULAR_TAB
