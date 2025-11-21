@@ -17,6 +17,7 @@
 #include "remoting/host/linux/ei_sender_session.h"
 #include "remoting/host/linux/gdbus_connection_ref.h"
 #include "remoting/host/linux/gnome_capture_stream_manager.h"
+#include "remoting/host/linux/gnome_desktop_display_info_monitor.h"
 #include "remoting/host/linux/gnome_desktop_resizer.h"
 #include "remoting/host/linux/gnome_display_config_dbus_client.h"
 #include "remoting/host/linux/gnome_display_config_monitor.h"
@@ -155,7 +156,8 @@ class GnomeRemoteDesktopSession {
   GnomeCaptureStreamManager capture_stream_manager_
       GUARDED_BY_CONTEXT(sequence_checker_);
   PipewireMouseCursorCapturer mouse_cursor_capturer_ GUARDED_BY_CONTEXT(
-      sequence_checker_){display_config_monitor_.GetWeakPtr(),
+      sequence_checker_){std::make_unique<GnomeDesktopDisplayInfoMonitor>(
+                             display_config_monitor_.GetWeakPtr()),
                          capture_stream_manager_.GetWeakPtr()};
   GnomeDesktopResizer desktop_resizer_ GUARDED_BY_CONTEXT(sequence_checker_){
       capture_stream_manager_.GetWeakPtr(), display_config_client_.GetWeakPtr(),

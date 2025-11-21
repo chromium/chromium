@@ -86,11 +86,8 @@ void GnomeDesktopDisplayInfoMonitor::OnGnomeDisplayConfigReceived(
                          DesktopDisplayInfo::PixelType::PHYSICAL
                      ? current_mode->height
                      : (current_mode->height / monitor.scale);
-    // Ideally we should multiply the DPI with text-scaling-factor, but that
-    // causes the client to resize the display to the actual screen resolution
-    // at 1x scale when "High-DPI mode" is disabled.
-    // TODO: crbug.com/431816005 - fix this bug on the host and set the the DPI
-    // to `kDefaultDpi * monitor.scale * text_scaling_factor`.
+    // Note that we cannot multiply the DPI with text-scaling-factor, since it
+    // would mess up coordinate-related calculations.
     desktop_display_info_->AddDisplay(
         DisplayGeometry(GnomeDisplayConfig::GetScreenId(name), monitor.x,
                         monitor.y, width, height, kDefaultDpi * monitor.scale,

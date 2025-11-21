@@ -12,13 +12,12 @@
 
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/sequence_checker.h"
 #include "remoting/base/constants.h"
-#include "remoting/host/linux/gnome_display_config.h"
+#include "remoting/host/desktop_display_info.h"
 #include "remoting/host/linux/pipewire_capture_stream.h"
 #include "remoting/protocol/coordinate_conversion.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
@@ -31,14 +30,13 @@
 namespace remoting {
 
 PipewireMouseCursorCapturer::PipewireMouseCursorCapturer(
-    base::WeakPtr<GnomeDisplayConfigMonitor> display_config_monitor,
-    base::WeakPtr<CaptureStreamManager> stream_manager) {
-  if (display_config_monitor) {
-    // Display config is used to calculate monitor DPIs.
-    display_config_subscription_ = display_config_monitor->AddCallback(
-        base::BindRepeating(&PipewireMouseCursorCapturer::OnDisplayConfig,
-                            GetWeakPtr()),
-        /*call_with_current_config=*/true);
+    std::unique_ptr<DesktopDisplayInfoMonitor> display_info_monitor,
+    base::WeakPtr<CaptureStreamManager> stream_manager)
+    : display_info_monitor_(std::move(display_info_monitor)) {
+  if (display_info_monitor_) {
+    display_info_monitor_->AddCallback(base::BindRepeating(
+        &PipewireMouseCursorCapturer::OnDisplayInfo, GetWeakPtr()));
+    display_info_monitor_->Start();
   }
   if (stream_manager) {
     stream_manager_subscription_ = stream_manager->AddObserver(this);
@@ -130,8 +128,8 @@ void PipewireMouseCursorCapturer::OnCursorPositionChanged(
     CaptureStream* stream) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto cursor_position = stream->CaptureCursorPosition();
-  if (!cursor_position) {
+  auto physical_cursor_position = stream->CaptureCursorPosition();
+  if (!physical_cursor_position) {
     // This happens when the cursor moves out of the stream's virtual monitor.
     // The stream where the cursor moves into will call
     // OnCursorPositionChanged() with a non-null position. It is unsafe to set
@@ -146,12 +144,19 @@ void PipewireMouseCursorCapturer::OnCursorPositionChanged(
     return;
   }
   // Note that PipeWire returns cursor positions in physical pixels, so they
-  // need to be scaled to DIPs before adding the monitor offsets.
-  webrtc::DesktopVector new_global_cursor_position{
-      static_cast<int>(cursor_position->x() / monitor_it->second.scale +
-                       monitor_it->second.left),
-      static_cast<int>(cursor_position->y() / monitor_it->second.scale +
-                       monitor_it->second.top)};
+  // need to be scaled to DIPs if `pixel_type_` is LOGICAL.
+  double physical_size_multiplier =
+      pixel_type_ == DesktopDisplayInfo::PixelType::LOGICAL
+          ? monitor_it->second.scale
+          : 1.0;
+  webrtc::DesktopVector new_local_cursor_position{
+      static_cast<int>(physical_cursor_position->x() /
+                       physical_size_multiplier),
+      static_cast<int>(physical_cursor_position->y() /
+                       physical_size_multiplier)};
+  webrtc::DesktopVector new_global_cursor_position =
+      new_local_cursor_position.add(
+          {monitor_it->second.left, monitor_it->second.top});
   if (latest_global_cursor_position_ &&
       latest_global_cursor_position_->equals(new_global_cursor_position)) {
     // CaptureStream sometimes calls OnCursorPositionChanged() even if the
@@ -159,38 +164,38 @@ void PipewireMouseCursorCapturer::OnCursorPositionChanged(
     return;
   }
   latest_global_cursor_position_ = new_global_cursor_position;
+
+  // Fractional coordinates are always based on physical pixels.
+  webrtc::DesktopSize physical_size{
+      static_cast<int>(monitor_it->second.width * physical_size_multiplier),
+      static_cast<int>(monitor_it->second.height * physical_size_multiplier)};
   latest_fractional_cursor_position_ = protocol::ToFractionalCoordinate(
-      screen_id, {monitor_it->second.width, monitor_it->second.height},
-      *cursor_position);
+      screen_id, physical_size, *physical_cursor_position);
   observers_.Notify(&Observer::OnCursorPositionChanged, this);
 }
 
-void PipewireMouseCursorCapturer::OnDisplayConfig(
-    const GnomeDisplayConfig& config) {
+void PipewireMouseCursorCapturer::OnDisplayInfo() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto logical_config = config;
-  // Logical layout is used throughout the Gnome Wayland host. If `config` is
-  // physical, then `logical_config` is effectively re-layouted and will not
-  // match the actual layout, but since we consistently call
-  // SwitchLayoutMode(kLogical) throughout the code base, the coordinates will
-  // agree.
-  logical_config.SwitchLayoutMode(GnomeDisplayConfig::LayoutMode::kLogical);
+  const DesktopDisplayInfo* display_info =
+      display_info_monitor_->GetLatestDisplayInfo();
+  if (!display_info) {
+    return;
+  }
+
   monitors_.clear();
-  for (const auto& [name, monitor] : logical_config.monitors) {
-    const auto* current_mode = monitor.GetCurrentMode();
-    if (!current_mode) {
-      LOG(WARNING) << "Ignored monitor without current mode: " << name;
-      continue;
-    }
-    monitors_[GnomeDisplayConfig::GetScreenId(name)] = {
-        .scale = monitor.scale,
-        .left = monitor.x,
-        .top = monitor.y,
-        .width = current_mode->width,
-        .height = current_mode->height,
+  for (const auto& display : display_info->displays()) {
+    double scale = static_cast<double>(display.dpi) / kDefaultDpi;
+    monitors_[display.id] = {
+        .scale = scale,
+        .left = display.x,
+        .top = display.y,
+        .width = static_cast<int>(display.width),
+        .height = static_cast<int>(display.height),
     };
   }
+  pixel_type_ = display_info->pixel_type().value_or(
+      DesktopDisplayInfo::PixelType::PHYSICAL);
 }
 
 void PipewireMouseCursorCapturer::RemoveObserver(Observer* observer) {

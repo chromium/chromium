@@ -14,9 +14,10 @@
 #include "base/observer_list_types.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "remoting/host/desktop_display_info.h"
+#include "remoting/host/desktop_display_info_monitor.h"
 #include "remoting/host/linux/capture_stream.h"
 #include "remoting/host/linux/capture_stream_manager.h"
-#include "remoting/host/linux/gnome_display_config_monitor.h"
 #include "remoting/proto/coordinates.pb.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
@@ -41,7 +42,7 @@ class PipewireMouseCursorCapturer : public CaptureStreamManager::Observer,
   };
 
   explicit PipewireMouseCursorCapturer(
-      base::WeakPtr<GnomeDisplayConfigMonitor> display_config_monitor,
+      std::unique_ptr<DesktopDisplayInfoMonitor> display_info_monitor,
       base::WeakPtr<CaptureStreamManager> stream_manager);
   ~PipewireMouseCursorCapturer() override;
 
@@ -68,10 +69,8 @@ class PipewireMouseCursorCapturer : public CaptureStreamManager::Observer,
 
   struct MonitorInfo {
     double scale;
-    // These are in DIPs.
     int left;
     int top;
-    // These are in physical pixels.
     int width;
     int height;
   };
@@ -85,7 +84,7 @@ class PipewireMouseCursorCapturer : public CaptureStreamManager::Observer,
   void OnCursorShapeChanged(CaptureStream* stream) override;
   void OnCursorPositionChanged(CaptureStream* stream) override;
 
-  void OnDisplayConfig(const GnomeDisplayConfig& config);
+  void OnDisplayInfo();
   void RemoveObserver(Observer* observer);
 
   base::ObserverList<Observer> observers_ GUARDED_BY_CONTEXT(sequence_checker_);
@@ -99,13 +98,16 @@ class PipewireMouseCursorCapturer : public CaptureStreamManager::Observer,
   std::optional<protocol::FractionalCoordinate>
       latest_fractional_cursor_position_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  std::unique_ptr<GnomeDisplayConfigMonitor::Subscription>
-      display_config_subscription_ GUARDED_BY_CONTEXT(sequence_checker_);
+ private:
+  std::unique_ptr<DesktopDisplayInfoMonitor> display_info_monitor_
+      GUARDED_BY_CONTEXT(sequence_checker_);
   CaptureStreamManager::Observer::Subscription stream_manager_subscription_
       GUARDED_BY_CONTEXT(sequence_checker_);
   base::flat_map<webrtc::ScreenId, CaptureStream::CursorObserver::Subscription>
       stream_subscriptions_ GUARDED_BY_CONTEXT(sequence_checker_);
   base::flat_map<webrtc::ScreenId, MonitorInfo> monitors_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  DesktopDisplayInfo::PixelType pixel_type_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);

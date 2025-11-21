@@ -331,6 +331,7 @@ source_set("unit_tests") {
     "dbus_interfaces:interface_headers",
     "//dbus:dbus_test_service",
     "//remoting/host:common",
+    "//remoting/host:platform_interfaces",
     "//remoting/host:test_support",
     "//remoting/host/it2me:common",
     "//remoting/host/native_messaging",
