@@ -6,7 +6,7 @@ import 'chrome://new-tab-page/lazy_load.js';
 
 import {ActionChipsHandlerRemote, ChipType, PageCallbackRouter} from 'chrome://new-tab-page/action_chips.mojom-webui.js';
 import type {ActionChip, PageRemote, TabInfo} from 'chrome://new-tab-page/action_chips.mojom-webui.js';
-import {ActionChipsApiProxyImpl} from 'chrome://new-tab-page/lazy_load.js';
+import {ActionChipsApiProxyImpl, ActionChipsRetrievalState} from 'chrome://new-tab-page/lazy_load.js';
 import type {ActionChipsElement} from 'chrome://new-tab-page/lazy_load.js';
 import type {TabUpload} from 'chrome://resources/cr_components/composebox/common.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -208,10 +208,27 @@ suite('NewTabPageActionChipsTest', () => {
   });
 
   suite('startActionChipsRetrieval', () => {
-    test('Handler is called on load', async () => {
-      await initializeChips({});
-      assertEquals(1, handler.getCallCount('startActionChipsRetrieval'));
-    });
+    test(
+        'Handler is called on load and its completion fires an event',
+        async () => {
+          const events: ActionChipsRetrievalState[] = [];
+          const eventCollector = (e: any) => {
+            events.push(e.detail.state);
+          };
+          document.body.addEventListener(
+              'action-chips-retrieval-state-changed', eventCollector);
+          await initializeChips({});
+          assertEquals(1, handler.getCallCount('startActionChipsRetrieval'));
+          await microtasksFinished();
+          document.body.removeEventListener(
+              'action-chips-retrieval-state-changed', eventCollector);
+          assertDeepEquals(
+              [
+                ActionChipsRetrievalState.REQUESTED,
+                ActionChipsRetrievalState.UPDATED,
+              ],
+              events);
+        });
 
     test(
         'The number of chips is equal to the number of items in the response',

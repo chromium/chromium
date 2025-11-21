@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html} from '//resources/lit/v3_0/lit.rollup.js';
+import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {ContextMenuEntrypointElement} from './context_menu_entrypoint.js';
+import {type ContextMenuEntrypointElement, GlifAnimationState} from './context_menu_entrypoint.js';
 
 export function getHtml(this: ContextMenuEntrypointElement) {
   // clang-format off
@@ -15,7 +15,12 @@ export function getHtml(this: ContextMenuEntrypointElement) {
         ?disabled="${this.inputsDisabled}"
         title="${this.i18n('addContextTitle')}">
       <cr-icon id="entrypointIcon" icon="cr:add" slot="prefix-icon"></cr-icon>
-      <span id="description">${this.i18n('addContext')}</span>
+      <span id="description"
+        @animationend="${(e: AnimationEvent) => {
+          this.onAnimationEnd_(e, 'slide-in');
+        }}">
+          ${this.i18n('addContext')}
+      </span>
     </cr-button>` : html`
     <cr-icon-button id="entrypoint"
         class="ai-mode-button"
@@ -26,12 +31,18 @@ export function getHtml(this: ContextMenuEntrypointElement) {
         title="${this.i18n('addContextTitle')}">
     </cr-icon-button>`;
   return html`<!--_html_template_start_-->
-    ${this.ntpNextFeaturesEnabled ? html`
+    ${this.glifAnimationState !== GlifAnimationState.INELIGIBLE ? html`
     <div id="glowWrapper" class="glow-container">
       ${entrypointButton}
       <div class="aim-gradient-outer-blur aim-c"></div>
       <div class="aim-gradient-solid aim-c"></div>
-      <div class="aim-background aim-c"></div>
+      <div class="aim-background aim-c"
+        @animationend="${this.showContextMenuDescription
+          ? nothing
+          : (e: AnimationEvent) => {
+              this.onAnimationEnd_(e, 'background-fade');
+            }
+        }"></div>
     </div>
     ` : entrypointButton}
 

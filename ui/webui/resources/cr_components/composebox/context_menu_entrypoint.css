@@ -27,7 +27,7 @@
   --input-background: #fff;
   --input-foreground: #0a0a0a;
   --standard-curve: cubic-bezier(0.4, 0, 0.2, 1);
-  --text-animation-curve: cubic-bezier(0.38, 0.72, 0.00, 1.00);
+  --text-animation-curve: cubic-bezier(0.38, 0.72, 0, 1);
 }
 
 .glow-container {
@@ -54,7 +54,11 @@ cr-button#entrypoint.ai-mode-button {
   }
 }
 
-:host([ntp-next-features-enabled]) #description {
+:host([glif-animation-state="spinner-only"]) #description {
+  opacity: 0;
+}
+
+:host([glif-animation-state="started"]) #description {
   animation: slide-in 1000ms 820ms var(--text-animation-curve) forwards,
     fade-in 850ms 970ms var(--text-animation-curve) forwards;
   opacity: 0;
@@ -66,6 +70,14 @@ cr-button#entrypoint.ai-mode-button {
   z-index: 5;
 }
 
+/*
+  The current animation consists of three states:
+
+  1. ineligible state: The state where the animation is not enabled.
+  2. spinner-only state: The state where the spinner endlessly rotates.
+  3. started state: The state where the transition to the fourth state starts.
+  4. finished state: This is the end state, and no further animation is played.
+ */
 .aim-c {
   border-radius: 100%;
   inset: 0;
@@ -85,7 +97,7 @@ cr-button#entrypoint.ai-mode-button {
 .aim-gradient-solid:before {
   background: var(--glif-gradient);
   bottom: 0;
-  content: '';
+  content: "";
   height: 200%;
   left: 0;
   opacity: 0;
@@ -93,7 +105,6 @@ cr-button#entrypoint.ai-mode-button {
   right: 0;
   scale: 2 2;
   top: -50%;
-  transform: rotate(var(--rotation, 0deg));
 }
 
 .aim-gradient-outer-blur {
@@ -107,34 +118,74 @@ cr-button#entrypoint.ai-mode-button {
   opacity: 0.7;
 }
 
-:host([ntp-next-features-enabled]) .play .aim-gradient-outer-blur:before,
-:host([ntp-next-features-enabled]) .play .aim-gradient-solid:before {
-  animation: opacity-fade var(--duration) linear backwards,
-    rotate-gradient var(--duration) var(--standard-curve) backwards;
+@keyframes rotate-gradient {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-@keyframes opacity-fade {
-  00% {
-    opacity: 0;
-  }
-  30% {
+.aim-gradient-outer-blur,
+.aim-gradient-solid {
+  animation: rotate-gradient calc(var(--duration) / 1.5) var(--standard-curve)
+    infinite;
+}
+
+:host([glif-animation-state="finished"]) .aim-gradient-outer-blur,
+:host([glif-animation-state="ineligible"]) .aim-gradient-outer-blur,
+:host([glif-animation-state="finished"]) .aim-gradient-solid,
+:host([glif-animation-state="ineligible"]) .aim-gradient-solid {
+  animation-play-state: paused;
+  opacity: 0;
+}
+
+@keyframes fade-out-only {
+  0% {
     opacity: 1;
   }
+
   50% {
     opacity: 1;
   }
+
   100% {
     opacity: 0;
   }
 }
 
-@keyframes rotate-gradient {
+:host([glif-animation-state="started"]) .aim-gradient-outer-blur:before,
+:host([glif-animation-state="started"]) .aim-gradient-solid:before {
+  /* Start fully opaque before fading. */
+  opacity: 1;
+  animation: fade-out-only var(--duration) linear forwards;
+}
+
+@keyframes opacity-fade-in-and-stay {
   from {
-    transform: rotate(0deg);
+    opacity: 0;
   }
+
   to {
-    transform: rotate(540deg);
+    opacity: 1;
   }
+}
+
+:host([glif-animation-state="spinner-only"]) .aim-gradient-outer-blur:before,
+:host([glif-animation-state="spinner-only"]) .aim-gradient-solid:before {
+  animation: opacity-fade-in-and-stay 300ms linear forwards;
+}
+
+:host([glif-animation-state="finished"]) .aim-gradient-outer-blur:before,
+:host([glif-animation-state="finished"]) .aim-gradient-solid:before {
+  opacity: 0;
+}
+
+:host([glif-animation-state="spinner-only"]) .aim-background {
+  animation: opacity-fade-in-and-stay 300ms linear forwards;
+  background-color: var(--fulfillment-background);
 }
 
 .aim-background {
@@ -145,20 +196,23 @@ cr-button#entrypoint.ai-mode-button {
   position: absolute;
 }
 
-:host([ntp-next-features-enabled]) body .play .aim-background {
-  animation: background-fade var(--duration) linear backwards;
+:host([glif-animation-state="started"]) .aim-background {
+  animation: background-fade var(--duration) linear forwards;
+}
+
+:host([glif-animation-state="finished"]) .aim-background {
+  opacity: 0;
 }
 
 @keyframes background-fade {
   0% {
-    background: var(--input-background);
-  }
-  30% {
     background: var(--fulfillment-background);
   }
+
   50% {
     background: var(--fulfillment-background);
   }
+
   100% {
     background: var(--input-background);
   }
@@ -172,31 +226,37 @@ cr-button#entrypoint.ai-mode-button {
 
 @keyframes hover-background-delay {
   to {
-    --cr-hover-background-color:
-      var(--color-composebox-context-entrypoint-hover-background);
+    --cr-hover-background-color: var(
+      --color-composebox-context-entrypoint-hover-background
+    );
   }
 }
 
 #entrypoint {
-  --cr-button-disabled-text-color:
-      var(--color-composebox-context-entrypoint-text-disabled);
+  --cr-button-disabled-text-color: var(
+    --color-composebox-context-entrypoint-text-disabled
+  );
   --cr-button-text-color: var(--color-composebox-file-chip-text);
-  --cr-hover-background-color:
-      var(--color-composebox-context-entrypoint-hover-background);
+  --cr-hover-background-color: var(
+    --color-composebox-context-entrypoint-hover-background
+  );
   --cr-icon-button-margin-start: 6px;
   --icon-block-padding-small: 10px;
   border: initial;
   gap: 4px;
 }
 
-:host([ntp-next-features-enabled]) #entrypoint {
+:host(:not([glif-animation-state="ineligible"])) #entrypoint {
   --cr-hover-background-color: transparent;
   animation: hover-background-delay 0ms 1850ms linear forwards;
   --icon-block-padding-small: 8px;
 }
 
 #entrypoint:not([disabled]) {
-  --cr-icon-button-fill-color: var(--composebox-context-menu-entrypoint-button-color, --cr-button-text-color);
+  --cr-icon-button-fill-color: var(
+    --composebox-context-menu-entrypoint-button-color,
+    --cr-button-text-color
+  );
 }
 
 #description {
@@ -205,14 +265,14 @@ cr-button#entrypoint.ai-mode-button {
 }
 
 #menu {
-  --color-sys-divider:
-  var(--color-composebox-file-carousel-divider);
+  --color-sys-divider: var(--color-composebox-file-carousel-divider);
   --cr-action-menu-overflow: visible;
   --cr-menu-background-color: var(--color-composebox-background);
   --cr-menu-border-radius: 16px;
   --cr-primary-text-color: var(--color-composebox-file-chip-text);
-  --cr-hover-background-color:
-      var(--color-composebox-context-entrypoint-hover-background);
+  --cr-hover-background-color: var(
+    --color-composebox-context-entrypoint-hover-background
+  );
 }
 
 .suggestion-container {

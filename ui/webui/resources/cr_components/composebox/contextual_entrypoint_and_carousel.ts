@@ -21,7 +21,7 @@ import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import type {ComposeboxFile, ContextualUpload} from './common.js';
 import {FileUploadErrorType, FileUploadStatus} from './composebox_query.mojom-webui.js';
-import type {ContextMenuEntrypointElement} from './context_menu_entrypoint.js';
+import {type ContextMenuEntrypointElement, GlifAnimationState} from './context_menu_entrypoint.js';
 import {getCss} from './contextual_entrypoint_and_carousel.css.js';
 import {getHtml} from './contextual_entrypoint_and_carousel.html.js';
 import type {ComposeboxFileCarouselElement} from './file_carousel.js';
@@ -111,7 +111,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         reflect: true,
         type: Boolean,
       },
-      ntpNextFeaturesEnabled: {type: Boolean, reflect: true},
+      contextMenuGlifAnimationState: {type: String, reflect: true},
 
       // =========================================================================
       // Protected properties
@@ -156,7 +156,8 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   accessor tabSuggestions: TabInfo[] = [];
   accessor carouselOnTop_: boolean = false;
   accessor showVoiceSearch: boolean = false;
-  accessor ntpNextFeaturesEnabled: boolean = false;
+  accessor contextMenuGlifAnimationState: GlifAnimationState =
+      GlifAnimationState.INELIGIBLE;
 
   protected accessor attachmentFileTypes_: string =
       loadTimeData.getString('composeboxAttachmentFileTypes');
@@ -187,8 +188,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
 
   protected get shouldShowRecentTabChip_(): boolean {
     return !!this.recentTabForChip_ && this.showDropdown &&
-        this.showRecentTabChip_ && this.files_.size === 0 &&
-        !this.inToolMode_;
+        this.showRecentTabChip_ && this.files_.size === 0 && !this.inToolMode_;
   }
 
   private maxFileCount_: number =
@@ -211,16 +211,15 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       // don't want to disable the context menu entrypoint because the user
       // should still be able to use the tool within the context menu.
       const isCreateImageToolAvailableWithImages =
-          this.createImageModeEnabled_ &&
-          this.hasImageFiles() && this.files_.size === 1;
+          this.createImageModeEnabled_ && this.hasImageFiles() &&
+          this.files_.size === 1;
       // `inputsDisabled_` decides whether or not the context menu entrypoint is
       // shown to the user. Only set `inputsDisabled_` to true if
       // 1. The max number of files is reached, and the create image tool button
       //    is not available.
       // 2. The user has an image uploaded and is in create image mode.
-      this.inputsDisabled_ =
-          (this.files_.size >= this.maxFileCount_ &&
-           !isCreateImageToolAvailableWithImages) ||
+      this.inputsDisabled_ = (this.files_.size >= this.maxFileCount_ &&
+                              !isCreateImageToolAvailableWithImages) ||
           (this.hasImageFiles() && this.inCreateImageMode_);
       this.showFileCarousel_ = this.files_.size > 0;
       this.fire('on-context-files-changed', {files: this.files_.size});
@@ -241,7 +240,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       if ('tabId' in file) {
         // If the composebox is being initialized with tab context, we want to
         // keep the context menu open to allow for multi-tab selection.
-        if (this.contextMenuEnabled_ && !file.delayUpload)  {
+        if (this.contextMenuEnabled_ && !file.delayUpload) {
           this.$.contextEntrypoint.openMenuForMultiSelection();
         }
         this.addTabContext_(new CustomEvent('addTabContext', {
@@ -275,13 +274,15 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     let errorMessage = null;
     let file = this.files_.get(token);
     if (file) {
-      if ([FileUploadStatus.kValidationFailed,
-           FileUploadStatus.kUploadFailed,
-           FileUploadStatus.kUploadExpired].includes(status)) {
+      if ([
+            FileUploadStatus.kValidationFailed,
+            FileUploadStatus.kUploadFailed,
+            FileUploadStatus.kUploadExpired,
+          ].includes(status)) {
         this.files_.delete(token);
         if (file.tabId) {
           this.addedTabsIds_ = new Map([...this.addedTabsIds_.entries()].filter(
-            ([id, _]) => id !== file!.tabId));
+              ([id, _]) => id !== file!.tabId));
         }
         switch (status) {
           case FileUploadStatus.kValidationFailed:
@@ -319,9 +320,8 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     }
 
     this.files_ = new Map(undeletableFiles.map(file => [file.uuid, file]));
-    this.addedTabsIds_ = new Map(
-        undeletableFiles.filter(file => file.tabId)
-            .map(file => [file.tabId!, file.uuid]));
+    this.addedTabsIds_ = new Map(undeletableFiles.filter(file => file.tabId)
+                                     .map(file => [file.tabId!, file.uuid]));
   }
 
   resetModes() {
@@ -421,7 +421,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     const file = this.files_.get(e.detail.uuid);
     if (file?.tabId) {
       this.addedTabsIds_ = new Map([...this.addedTabsIds_.entries()].filter(
-            ([id, _]) => id !== file.tabId));
+          ([id, _]) => id !== file.tabId));
     }
 
     this.files_ = new Map([...this.files_.entries()].filter(
@@ -459,11 +459,11 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
 
     this.recordFileValidationMetric_(metric);
     this.fire('on-file-validation-error', {
-        errorMessage: this.i18n(errorMessage),
-      });
+      errorMessage: this.i18n(errorMessage),
+    });
   }
 
-protected processFiles_(files: FileList|null) {
+  protected processFiles_(files: FileList|null) {
     if (!files || files.length === 0) {
       return;
     }
@@ -482,13 +482,14 @@ protected processFiles_(files: FileList|null) {
         errorToDisplay = Math.max(errorToDisplay, sizeError);
         continue;
       }
-      // TODO(crbug.com/460228091): The current frontend check is broader than the
-      // backend's validation (e.g. allows SVGs). This can lead to a file
+      // TODO(crbug.com/460228091): The current frontend check is broader than
+      // the backend's validation (e.g. allows SVGs). This can lead to a file
       // reserving a slot here, only to be rejected by the backend later
       // resulting in fewer files uploaded as expected.
       // In the future, only reserve slots when the file upload is successful.
       if (!file.type.includes('pdf') && !file.type.includes('image')) {
-        errorToDisplay = Math.max(errorToDisplay, ProcessFilesError.INVALID_TYPE);
+        errorToDisplay =
+            Math.max(errorToDisplay, ProcessFilesError.INVALID_TYPE);
         continue;
       }
 
@@ -502,7 +503,6 @@ protected processFiles_(files: FileList|null) {
     }
 
     this.handleProcessFilesError_(errorToDisplay);
-
   }
 
   protected onFileChange_(e: Event) {
@@ -523,7 +523,10 @@ protected processFiles_(files: FileList|null) {
   }
 
   protected addTabContext_(e: CustomEvent<{
-      id: number, title: string, url: Url, delayUpload: boolean,
+    id: number,
+    title: string,
+    url: Url,
+    delayUpload: boolean,
   }>) {
     e.stopPropagation();
 

@@ -27,12 +27,18 @@ import {getHtml} from './context_menu_entrypoint.html.js';
 const MENU_WIDTH_PX = 190;
 /** The string value of the tall bottom context layout mode. */
 const TALL_BOTTOM_CONTEXT_LAYOUT_MODE = 'TallBottomContext';
-let glyphAnimationDone = false;
 
 export interface ContextMenuEntrypointElement {
   $: {
     menu: CrActionMenuElement,
   };
+}
+
+export enum GlifAnimationState {
+  INELIGIBLE = 'ineligible',
+  SPINNER_ONLY = 'spinner-only',
+  STARTED = 'started',
+  FINISHED = 'finished',
 }
 
 const ContextMenuEntrypointElementBase = I18nMixinLit(CrLitElement);
@@ -71,7 +77,7 @@ export class ContextMenuEntrypointElement extends
       tabSuggestions: {type: Array},
       entrypointName: {type: String},
       searchboxLayoutMode: {type: String},
-      ntpNextFeaturesEnabled: {type: Boolean, reflect: true},
+      glifAnimationState: {type: String, reflect: true},
 
       // =========================================================================
       // Protected properties
@@ -102,7 +108,8 @@ export class ContextMenuEntrypointElement extends
   accessor tabSuggestions: TabInfo[] = [];
   accessor entrypointName: string = '';
   accessor searchboxLayoutMode: string = '';
-  accessor ntpNextFeaturesEnabled: boolean = false;
+  accessor glifAnimationState: GlifAnimationState =
+      GlifAnimationState.INELIGIBLE;
 
   protected accessor enableMultiTabSelection_: boolean =
       loadTimeData.getBoolean('composeboxContextMenuEnableMultiTabSelection');
@@ -124,16 +131,6 @@ export class ContextMenuEntrypointElement extends
     if (this.enableMultiTabSelection_ &&
         this.searchboxLayoutMode !== TALL_BOTTOM_CONTEXT_LAYOUT_MODE) {
       this.showMenuAtEntrypoint_();
-    }
-  }
-
-  override firstUpdated(changedProperties: Map<string|number|symbol, unknown>):
-      void {
-    super.firstUpdated(changedProperties);
-    if (!glyphAnimationDone) {
-      this.shadowRoot.querySelector<HTMLElement>('#glowWrapper')
-          ?.classList.add('play');
-      glyphAnimationDone = true;
     }
   }
 
@@ -271,6 +268,12 @@ export class ContextMenuEntrypointElement extends
   protected onCreateImageClick_() {
     this.fire('create-image-click');
     this.$.menu.close();
+  }
+
+  protected onAnimationEnd_(e: AnimationEvent, animationName: string) {
+    if (e.animationName === animationName) {
+      this.glifAnimationState = GlifAnimationState.FINISHED;
+    }
   }
 
   private showMenuAtEntrypoint_() {

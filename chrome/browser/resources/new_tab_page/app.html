@@ -55,7 +55,7 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
         ?ntp-realbox-next-enabled="${this.ntpRealboxNextEnabled_}"
         ?cycling-placeholders="${this.searchboxCyclingPlaceholders_}"
         @searchbox-input-focus-changed="${this.onInputFocusChanged_}"
-        ?ntp-next-features-enabled="${this.ntpNextFeaturesEnabled_}">
+        context-menu-glif-animation-state="${this.contextMenuGlifAnimationState_}">
     </cr-searchbox>
     ${this.showComposebox_ ? html`
       <cr-composebox id="composebox"
@@ -75,7 +75,8 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
   ${this.lazyRender_
     && this.ntpNextFeaturesEnabled_ && this.isActionChipsVisible_ ? html`
     <ntp-action-chips
-        @action-chip-click="${this.openComposebox_}">
+        @action-chip-click="${this.openComposebox_}"
+        @action-chips-retrieval-state-changed="${this.onActionChipsRetrievalStateChanged_}">
     </ntp-action-chips>
   ` : ''}
   ${this.lazyRender_ ? html`

@@ -24,6 +24,25 @@ function recordClick(chipType: ChipType) {
 }
 
 /**
+ * The enum value sent as part of action-chips-retrieval-state-changed.
+ * The handler of the event should expect to receive UPDATED multiple times.
+ */
+export enum ActionChipsRetrievalState {
+  // The initial state. This is not sent as part of the event and can be used as
+  // the default value of a variable containing this enum.
+  INITIAL,
+  // The state used in an event firing when the first and only retrieval
+  // request is sent from this component.
+  REQUESTED,
+  // The state used in events firing when the action chips are updated by a call
+  // from the browser side.
+  UPDATED,
+}
+
+const kActionChipsRetrievalStateChangedEvent =
+    'action-chips-retrieval-state-changed';
+
+/**
  * The element for displaying Action Chips.
  */
 export class ActionChipsElement extends CrLitElement {
@@ -65,7 +84,7 @@ export class ActionChipsElement extends CrLitElement {
     }
   }
 
-  protected getId(chip: ActionChip): string|null {
+  protected getId_(chip: ActionChip): string|null {
     switch (chip.type) {
       case ChipType.kImage:
         return 'nano-banana';
@@ -91,8 +110,14 @@ export class ActionChipsElement extends CrLitElement {
         this.callbackRouter.onActionChipsChanged.addListener(
             (actionChips: ActionChip[]) => {
               this.actionChips_ = actionChips;
+              this.fire(
+                  kActionChipsRetrievalStateChangedEvent,
+                  {state: ActionChipsRetrievalState.UPDATED});
             });
     this.handler.startActionChipsRetrieval();
+    this.fire(
+        kActionChipsRetrievalStateChangedEvent,
+        {state: ActionChipsRetrievalState.REQUESTED});
   }
 
   override disconnectedCallback() {

@@ -12,6 +12,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import 'chrome://resources/cr_components/composebox/composebox.js';
 
+import {GlifAnimationState} from '//resources/cr_components/composebox/context_menu_entrypoint.js';
 import type {CustomizeButtonsElement} from 'chrome://new-tab-page/shared/customize_buttons/customize_buttons.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {ContextualUpload} from 'chrome://resources/cr_components/composebox/common.js';
@@ -33,6 +34,7 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 
+import {ActionChipsRetrievalState} from './action_chips/action_chips.js';
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import {BackgroundManager} from './background_manager.js';
@@ -313,6 +315,8 @@ export class AppElement extends AppElementBase {
        * Whether the scrim is shown in Realbox Next.
        */
       showScrim_: {type: Boolean, reflect: true},
+
+      contextMenuGlifAnimationState_: {type: String},
     };
   }
 
@@ -393,6 +397,9 @@ export class AppElement extends AppElementBase {
   protected accessor searchboxInputFocused_: boolean = false;
   protected accessor composeboxInputFocused_: boolean = false;
   protected accessor showScrim_: boolean = false;
+  protected accessor contextMenuGlifAnimationState_: GlifAnimationState =
+      this.ntpNextFeaturesEnabled_ ? GlifAnimationState.SPINNER_ONLY :
+                                     GlifAnimationState.INELIGIBLE;
 
   private callbackRouter_: PageCallbackRouter;
   private pageHandler_: PageHandlerRemote;
@@ -942,13 +949,13 @@ export class AppElement extends AppElementBase {
     ctrlKeyPressed = ctrlKeyPressed || e.metaKey;
     // </if>
     if (e.key === 'Escape' && this.showComposebox_) {
-        const composebox =
-            this.shadowRoot.querySelector<ComposeboxElement>('#composebox');
-        if (composebox) {
-          composebox.handleEscapeKeyLogic();
-          e.preventDefault();
-          return;
-        }
+      const composebox =
+          this.shadowRoot.querySelector<ComposeboxElement>('#composebox');
+      if (composebox) {
+        composebox.handleEscapeKeyLogic();
+        e.preventDefault();
+        return;
+      }
     }
     if (ctrlKeyPressed && e.code === 'Period' && e.shiftKey) {
       this.showVoiceSearchOverlay_ = true;
@@ -1325,6 +1332,21 @@ export class AppElement extends AppElementBase {
 
   protected onModulesShownToUserChanged_(e: CustomEvent<{value: boolean}>) {
     this.modulesShownToUser = e.detail.value;
+  }
+
+  protected onActionChipsRetrievalStateChanged_(
+      e: CustomEvent<{state: ActionChipsRetrievalState}>) {
+    const state = e.detail.state;
+    // Mapping of ActionChipsRetrievalState => GlifAnimationState:
+    // REQUESTED => SPINNER_ONLY
+    // UPDATED => STARTED (or FINISHED if cr_context_menu_entrypoint sets it)
+    // To avoid going back (or continuing) GlifAnimationState.STARTED, we stop
+    // updating the field when the current state is STARTED or FINISHED.
+    if ([GlifAnimationState.STARTED, GlifAnimationState.FINISHED].every(
+            s => s !== this.contextMenuGlifAnimationState_) &&
+        state === ActionChipsRetrievalState.UPDATED) {
+      this.contextMenuGlifAnimationState_ = GlifAnimationState.STARTED;
+    }
   }
 }
 

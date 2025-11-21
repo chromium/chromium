@@ -72,7 +72,7 @@ ${this.ntpRealboxNextEnabled ? html`
           ?show-dropdown="${this.dropdownIsVisible}"
           ?show-voice-search="${this.shouldShowVoiceSearch_}"
           searchbox-layout-mode="${this.searchboxLayoutMode}"
-          ?ntp-next-features-enabled="${this.ntpNextFeaturesEnabled}">
+          context-menu-glif-animation-state="${this.contextMenuGlifAnimationState}">
         <cr-searchbox-dropdown id="matches" part="searchbox-dropdown"
             exportparts="dropdown-content"
             role="listbox" .result="${this.result_}"
