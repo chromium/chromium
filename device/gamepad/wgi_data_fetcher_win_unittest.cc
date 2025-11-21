@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/gamepad/wgi_data_fetcher_win.h"
 
 #include <Windows.Gaming.Input.h>
@@ -18,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
@@ -308,11 +304,11 @@ class WgiDataFetcherWinTest : public DeviceServiceTestBase {
 
   void ReadGamepadHardwareBuffer(const GamepadHardwareBuffer* buffer,
                                  Gamepads* output) {
-    memset(output, 0, sizeof(Gamepads));
+    UNSAFE_TODO(memset(output, 0, sizeof(Gamepads)));
     int32_t version;
     do {
       version = buffer->seqlock.ReadBegin();
-      memcpy(output, &buffer->data, sizeof(Gamepads));
+      UNSAFE_TODO(memcpy(output, &buffer->data, sizeof(Gamepads)));
     } while (buffer->seqlock.ReadRetry(version));
   }
 

@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef DEVICE_FIDO_CBOR_EXTRACT_H_
 #define DEVICE_FIDO_CBOR_EXTRACT_H_
 
+#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
@@ -275,10 +271,10 @@ bool Extract(S* output,
                 "empty output structures are invalid, even if you just want to "
                 "check that maps exist, because the code unconditionally "
                 "indexes offset zero.");
-  base::span<const void*> outputs(reinterpret_cast<const void**>(output),
-                                  sizeof(S) / sizeof(void*));
-  base::span<const StepOrByte<void>> steps_void(
-      reinterpret_cast<const StepOrByte<void>*>(steps.data()), steps.size());
+  auto outputs = UNSAFE_TODO(base::span<const void*>(
+      reinterpret_cast<const void**>(output), sizeof(S) / sizeof(void*)));
+  auto steps_void = UNSAFE_TODO(base::span<const StepOrByte<void>>(
+      reinterpret_cast<const StepOrByte<void>*>(steps.data()), steps.size()));
   return internal::Extract(outputs, steps_void, map);
 }
 

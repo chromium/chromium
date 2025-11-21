@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/bluetooth/test/fake_gatt_characteristic_winrt.h"
 
 #include <string_view>
 #include <utility>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/win/async_operation.h"
@@ -229,7 +225,7 @@ HRESULT FakeGattCharacteristicWinrt::WriteValueWithResultAndOptionAsync(
   uint32_t size;
   base::win::GetPointerToBufferData(value, &data, &size);
   bluetooth_test_winrt_->OnFakeBluetoothCharacteristicWriteValue(
-      std::vector<uint8_t>(data, data + size));
+      std::vector<uint8_t>(data, UNSAFE_TODO(data + size)));
   auto async_op = Make<base::win::AsyncOperation<GattWriteResult*>>();
   DCHECK(!write_value_callback_);
   if (write_option == GattWriteOption_WriteWithResponse) {

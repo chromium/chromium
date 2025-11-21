@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/fido/mac/credential_metadata.h"
 
 #include <array>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -34,7 +30,8 @@ constexpr size_t kNonceLength = 12;
 std::vector<uint8_t> MakeAad(CredentialMetadata::Version version,
                              const std::string& rp_id) {
   std::vector<uint8_t> result = {static_cast<uint8_t>(version)};
-  result.insert(result.end(), rp_id.data(), rp_id.data() + rp_id.size());
+  result.insert(result.end(), rp_id.data(),
+                UNSAFE_TODO(rp_id.data() + rp_id.size()));
   return result;
 }
 
@@ -416,8 +413,8 @@ std::string EncodeRpId(const std::string& secret, const std::string& rp_id) {
   // Encrypt with a fixed nonce to make the result deterministic while still
   // allowing the RP ID to be recovered from the ciphertext later.
   static constexpr std::array<uint8_t, kNonceLength> fixed_zero_nonce = {};
-  base::span<const uint8_t> pt(reinterpret_cast<const uint8_t*>(rp_id.data()),
-                               rp_id.size());
+  base::span<const uint8_t> UNSAFE_TODO(
+      pt(reinterpret_cast<const uint8_t*>(rp_id.data()), rp_id.size()));
   // Using AES-GCM with a fixed nonce would break confidentiality, so this uses
   // AES-GCM-SIV instead.
   const std::vector<uint8_t> ct =
@@ -461,7 +458,7 @@ std::vector<uint8_t> SealLegacyCredentialIdForTestingOnly(
     result.push_back(static_cast<uint8_t>(version));
   }
   auto nonce_begin = result.insert(result.end(), 12, 0);
-  base::span<uint8_t> nonce(nonce_begin, result.end());
+  base::span<uint8_t> UNSAFE_TODO(nonce(nonce_begin, result.end()));
   crypto::RandBytes(nonce);
 
   // Only V1 includes the `is_resident` bit. `sign_counter_type=kTimestamp` was
@@ -482,7 +479,7 @@ std::vector<uint8_t> SealLegacyCredentialIdForTestingOnly(
 
   std::vector<uint8_t> aad;
   aad.push_back(static_cast<uint8_t>(version));
-  aad.insert(aad.end(), rp_id.data(), rp_id.data() + rp_id.size());
+  aad.insert(aad.end(), rp_id.data(), UNSAFE_TODO(rp_id.data() + rp_id.size()));
   const std::vector<uint8_t> ct =
       Cryptor(secret).Seal(Cryptor::Algorithm::kAes256Gcm, nonce, *pt, aad);
   result.insert(result.end(), ct.begin(), ct.end());

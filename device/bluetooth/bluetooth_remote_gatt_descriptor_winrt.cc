@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/bluetooth/bluetooth_remote_gatt_descriptor_winrt.h"
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -312,7 +308,7 @@ void BluetoothRemoteGattDescriptorWinrt::OnReadValue(
     return;
   }
 
-  value_.assign(data, data + length);
+  value_.assign(data, UNSAFE_TODO(data + length));
   std::move(pending_read_callback).Run(/*error_code=*/std::nullopt, value_);
 }
 

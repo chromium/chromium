@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/bluetooth/test/fake_gatt_descriptor_winrt.h"
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/win/async_operation.h"
 #include "base/win/winrt_storage_util.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
@@ -99,7 +95,7 @@ HRESULT FakeGattDescriptorWinrt::WriteValueWithResultAsync(
   uint32_t size;
   base::win::GetPointerToBufferData(value, &data, &size);
   bluetooth_test_winrt_->OnFakeBluetoothDescriptorWriteValue(
-      std::vector<uint8_t>(data, data + size));
+      std::vector<uint8_t>(data, UNSAFE_TODO(data + size)));
   auto async_op = Make<base::win::AsyncOperation<GattWriteResult*>>();
   DCHECK(!write_value_callback_);
   write_value_callback_ = async_op->callback();
