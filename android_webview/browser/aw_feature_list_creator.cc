@@ -13,7 +13,6 @@
 #include "android_webview/browser/aw_browser_context.h"
 #include "android_webview/browser/aw_browser_context_store.h"
 #include "android_webview/browser/aw_browser_process.h"
-#include "android_webview/browser/aw_feature_entries.h"
 #include "android_webview/browser/aw_metrics_service_client_delegate.h"
 #include "android_webview/browser/metrics/android_metrics_provider.h"
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
@@ -273,8 +272,8 @@ void AwFeatureListCreator::SetUpFieldTrials() {
   CacheSeedFreshness(seed_freshness_minutes);
 
   auto feature_list = std::make_unique<base::FeatureList>();
-  std::vector<std::string> variation_ids =
-      aw_feature_entries::RegisterEnabledFeatureEntries(feature_list.get());
+  // Experiment variation ids if any.
+  std::vector<std::string> variation_ids;
 
   auto* metrics_client = AwMetricsServiceClient::GetInstance();
   const base::CommandLine* command_line =

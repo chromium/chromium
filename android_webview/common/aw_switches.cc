@@ -64,11 +64,6 @@ const char kFinchSeedMinUpdatePeriod[] = "finch-seed-min-update-period";
 const char kWebViewEnableModernCookieSameSite[] =
     "webview-enable-modern-cookie-same-site";
 
-// Enables use selective image inversion to automatically darken page, it will
-// be used when WebView is in dark mode, but website doesn't provide dark style.
-const char kWebViewSelectiveImageInversionDarkening[] =
-    "webview-selective-image-inversion-darkening";
-
 // Enables FencedFrames. This also enables PrivacySandboxAdsAPIsOverride.
 const char kWebViewFencedFrames[] = "webview-fenced-frames";
 

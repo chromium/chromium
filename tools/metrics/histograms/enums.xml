@@ -18410,7 +18410,6 @@ from previous Chrome versions.
   <int value="1482245628" label="OmniboxNativeVoiceSuggestProvider:enabled"/>
   <int value="1482277613" label="GlanceablesTimeManagementTasksView:enabled"/>
   <int value="1482839038" label="AutofillCreditCardAuthentication:enabled"/>
-  <int value="1483827594" label="webview-selective-image-inversion-darkening"/>
   <int value="1483980996" label="MacSyscallSandbox:enabled"/>
   <int value="1486092162"
       label="AutofillEnableOffersInClankKeyboardAccessory:enabled"/>

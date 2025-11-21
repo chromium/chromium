@@ -75,8 +75,6 @@ source_set("browser") {
     "aw_download_manager_delegate.h",
     "aw_enterprise_authentication_app_link_manager.cc",
     "aw_enterprise_authentication_app_link_manager.h",
-    "aw_feature_entries.cc",
-    "aw_feature_entries.h",
     "aw_feature_list_creator.cc",
     "aw_feature_list_creator.h",
     "aw_field_trials.cc",

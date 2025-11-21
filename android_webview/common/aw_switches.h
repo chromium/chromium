@@ -20,7 +20,6 @@ extern const char kFinchSeedNoChargingRequirement[];
 extern const char kFinchSeedMinDownloadPeriod[];
 extern const char kFinchSeedMinUpdatePeriod[];
 extern const char kWebViewEnableModernCookieSameSite[];
-extern const char kWebViewSelectiveImageInversionDarkening[];
 extern const char kWebViewFencedFrames[];
 extern const char kWebViewForceDisable3pcs[];
 extern const char kWebViewForceCrashJava[];

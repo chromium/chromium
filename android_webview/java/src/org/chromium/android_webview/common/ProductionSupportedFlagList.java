@@ -343,11 +343,11 @@ public final class ProductionSupportedFlagList {
                 FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_FEATURE,
                 "When enabled, merchant bound virtual cards will be offered in the keyboard "
                         + "accessory."),
-        Flag.commandLine(
-                AwSwitches.WEBVIEW_SELECTIVE_IMAGE_INVERSION_DARKENING,
-                "Enables use selective image inversion to automatically darken page, it will be"
-                        + " used when WebView is in dark mode, but website doesn't provide dark"
-                        + " style."),
+        Flag.baseFeature(
+                BlinkFeatures.FORCE_WEB_CONTENTS_DARK_MODE,
+                "Enables force dark mode to automatically darken page, it will be"
+                         + " used when WebView is in dark mode, but website doesn't provide dark"
+                         + " style."),
         Flag.baseFeature(
                 ContentFeatures.VERIFY_DID_COMMIT_PARAMS,
                 "Enables reporting of browser and renderer navigation inconsistencies on"
