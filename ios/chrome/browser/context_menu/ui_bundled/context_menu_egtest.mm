@@ -31,6 +31,7 @@
 #import "ios/chrome/test/earl_grey/chrome_xcui_actions.h"
 #import "ios/chrome/test/earl_grey/scoped_block_popups_pref.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
+#import "ios/components/enterprise/data_controls/clipboard_enums.h"
 #import "ios/components/enterprise/data_controls/features.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
@@ -392,6 +393,7 @@ void RelaunchApp() {
 // Tests that selecting "Copy Image" from the context menu properly copies the
 // image in the pasteboard.
 - (void)testCopyImageIntoPasteboard {
+  [self setUpHistogramTester];
   [ChromeEarlGrey clearPasteboard];
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kLogoPagePath)];
   [ChromeEarlGrey waitForWebStateContainingText:kLogoPageText];
@@ -408,12 +410,30 @@ void RelaunchApp() {
 
   // Wait for the image to be copied.
   GREYAssertTrue([copyCondition waitWithTimeout:5], @"Copying image failed");
+
+  NSError* error = [MetricsAppInterface
+       expectCount:1
+         forBucket:static_cast<int>(
+                       data_controls::ClipboardSource::kCustomAction)
+      forHistogram:@"IOS.WebState.Clipboard.Copy.Source"];
+  if (error) {
+    GREYFail([error description]);
+  }
+  error =
+      [MetricsAppInterface expectCount:1
+                             forBucket:1  // true
+                          forHistogram:@"IOS.WebState.Clipboard.Copy.Outcome"];
+  if (error) {
+    GREYFail([error description]);
+  }
+
   [ChromeEarlGrey clearPasteboard];
 }
 
 // Tests that copying an image is blocked when the DataControlsRule policy is
 // set to do so.
 - (void)testCopyImageBlockedByPolicy {
+  [self setUpHistogramTester];
   [DataControlsAppInterface setBlockCopyRule];
 
   [ChromeEarlGrey clearPasteboard];
@@ -433,6 +453,23 @@ void RelaunchApp() {
   // Check that the image was not copied.
   GREYAssertFalse([ChromeEarlGrey pasteboardHasImages],
                   @"Image should not have been copied");
+
+  NSError* error = [MetricsAppInterface
+       expectCount:1
+         forBucket:static_cast<int>(
+                       data_controls::ClipboardSource::kCustomAction)
+      forHistogram:@"IOS.WebState.Clipboard.Copy.Source"];
+  if (error) {
+    GREYFail([error description]);
+  }
+  error =
+      [MetricsAppInterface expectCount:1
+                             forBucket:0  // false
+                          forHistogram:@"IOS.WebState.Clipboard.Copy.Outcome"];
+  if (error) {
+    GREYFail([error description]);
+  }
+
   [DataControlsAppInterface clearDataControlRules];
 }
 
@@ -495,6 +532,7 @@ void RelaunchApp() {
 // Tests that selecting "Copy Link" from the context menu properly copies the
 // link in the pasteboard.
 - (void)testCopyLink {
+  [self setUpHistogramTester];
   [ChromeEarlGrey clearPasteboard];
   const GURL initialURL = self.testServer->GetURL(kInitialPageUrl);
   [ChromeEarlGrey loadURL:initialURL];
@@ -514,12 +552,30 @@ void RelaunchApp() {
                     return [ChromeEarlGrey pasteboardURL] == destinationURL;
                   }];
   GREYAssertTrue([copyCondition waitWithTimeout:5], @"Copying link failed");
+
+  NSError* error = [MetricsAppInterface
+       expectCount:1
+         forBucket:static_cast<int>(
+                       data_controls::ClipboardSource::kCustomAction)
+      forHistogram:@"IOS.WebState.Clipboard.Copy.Source"];
+  if (error) {
+    GREYFail([error description]);
+  }
+  error =
+      [MetricsAppInterface expectCount:1
+                             forBucket:1  // true
+                          forHistogram:@"IOS.WebState.Clipboard.Copy.Outcome"];
+  if (error) {
+    GREYFail([error description]);
+  }
+
   [ChromeEarlGrey clearPasteboard];
 }
 
 // Tests that copying a link is blocked when the DataControlsRule policy is
 // set to do so.
 - (void)testCopyLinkBlockedByPolicy {
+  [self setUpHistogramTester];
   [DataControlsAppInterface setBlockCopyRule];
 
   [ChromeEarlGrey clearPasteboard];
@@ -541,6 +597,23 @@ void RelaunchApp() {
   // Check that the link was not copied.
   GREYAssertTrue([ChromeEarlGrey pasteboardURL].is_empty(),
                  @"Link should not have been copied");
+
+  NSError* error = [MetricsAppInterface
+       expectCount:1
+         forBucket:static_cast<int>(
+                       data_controls::ClipboardSource::kCustomAction)
+      forHistogram:@"IOS.WebState.Clipboard.Copy.Source"];
+  if (error) {
+    GREYFail([error description]);
+  }
+  error =
+      [MetricsAppInterface expectCount:1
+                             forBucket:0  // false
+                          forHistogram:@"IOS.WebState.Clipboard.Copy.Outcome"];
+  if (error) {
+    GREYFail([error description]);
+  }
+
   [DataControlsAppInterface clearDataControlRules];
 }
 

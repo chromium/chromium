@@ -18,5 +18,5 @@ include_rules = [
   "+ios/chrome/browser/text_selection/model/text_classifier_util.h",
   "+ios/chrome/browser/url_loading/model",
   "+ios/chrome/browser/web/model",
-  "+ios/components/enterprise/data_controls/features.h",
+  "+ios/components/enterprise/data_controls",
 ]
