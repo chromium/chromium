@@ -1198,6 +1198,9 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
             case UserActionableError.NEEDS_UPM_BACKEND_UPGRADE:
                 GmsUpdateLauncher.launch(getContext());
                 return;
+            case UserActionableError.BOOKMARKS_LIMIT_EXCEEDED:
+                SyncSettingsUtils.openBookmarkLimitHelpPage(getActivity());
+                return;
             case UserActionableError.NONE:
             default:
         }

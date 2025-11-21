@@ -336,6 +336,27 @@ public class SyncErrorMessageTest {
 
     @Test
     @LargeTest
+    public void testSyncErrorMessageShownForBookmarksLimitExceededForSignedInUsers()
+            throws Exception {
+        HistogramWatcher watchIdentityErrorMessageShownHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Sync.IdentityErrorMessage.BookmarkLimitReached",
+                        SyncSettingsUtils.ErrorUiAction.SHOWN);
+
+        // Sign in.
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+        mFakeSyncServiceImpl.setBookmarksLimitExceeded(true);
+        mSyncTestRule.loadUrl(UrlConstants.VERSION_URL);
+        verifyHasShownMessage();
+        watchIdentityErrorMessageShownHistogram.assertExpected();
+
+        // Resolving the error should dismiss the current message.
+        mFakeSyncServiceImpl.setBookmarksLimitExceeded(false);
+        verifyHasDismissedMessage();
+    }
+
+    @Test
+    @LargeTest
     public void testSyncErrorMessageNotShownWhenNoErrorForSignedInUsers() throws Exception {
         // Sign in.
         mSyncTestRule.setUpAccountAndSignInForTesting();
@@ -441,6 +462,35 @@ public class SyncErrorMessageTest {
         intended(
                 IntentMatchers.hasExtra(
                         SettingsActivity.EXTRA_SHOW_FRAGMENT, ManageSyncSettings.class.getName()));
+        Intents.release();
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @LargeTest
+    public void testActionForBookmarksLimitExceededForSignedInUsers() throws Exception {
+        SyncErrorMessage.setMessageDispatcherForTesting(null);
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Sync.IdentityErrorMessage.BookmarkLimitReached",
+                                SyncSettingsUtils.ErrorUiAction.SHOWN)
+                        .expectIntRecord(
+                                "Sync.IdentityErrorMessage.BookmarkLimitReached",
+                                SyncSettingsUtils.ErrorUiAction.BUTTON_CLICKED)
+                        .build();
+
+        // Sign in.
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+        mFakeSyncServiceImpl.setBookmarksLimitExceeded(true);
+        mSyncTestRule.loadUrl(UrlConstants.VERSION_URL);
+
+        Intents.init();
+        onViewWaiting(allOf(withText("Learn more"), isDisplayed())).perform(click());
+        intended(IntentMatchers.hasData(
+                "https://support.google.com/chrome/answer/165139"));
         Intents.release();
 
         histogramWatcher.assertExpected();

@@ -41,6 +41,7 @@ public class FakeSyncServiceImpl implements SyncService {
     private boolean mRequiresClientUpgrade;
     private boolean mHasUnrecoverableError;
     private boolean mRequiresUpmBackendUpgrade;
+    private boolean mBookmarksLimitExceeded;
     private GoogleServiceAuthError mAuthError =
             new GoogleServiceAuthError(GoogleServiceAuthErrorState.NONE);
     private Set<Integer> mTypesWithUnsyncedData = Set.of();
@@ -186,6 +187,15 @@ public class FakeSyncServiceImpl implements SyncService {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mRequiresUpmBackendUpgrade = requiresUpmBackendUpgrade;
+                    notifySyncStateChanged();
+                });
+    }
+
+    @AnyThread
+    public void setBookmarksLimitExceeded(boolean bookmarksLimitExceeded) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mBookmarksLimitExceeded = bookmarksLimitExceeded;
                     notifySyncStateChanged();
                 });
     }
@@ -351,6 +361,9 @@ public class FakeSyncServiceImpl implements SyncService {
         }
         if (mRequiresUpmBackendUpgrade) {
             return UserActionableError.NEEDS_UPM_BACKEND_UPGRADE;
+        }
+        if (mBookmarksLimitExceeded) {
+            return UserActionableError.BOOKMARKS_LIMIT_EXCEEDED;
         }
         return UserActionableError.NONE;
     }

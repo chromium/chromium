@@ -54,6 +54,8 @@ import java.lang.annotation.RetentionPolicy;
 @NullMarked
 public class SyncSettingsUtils {
     private static final String MY_ACCOUNT_URL = "https://myaccount.google.com/smartlink/home";
+    private static final String BOOKMARK_LIMIT_HELP_PAGE_URL =
+            "https://support.google.com/chrome/answer/165139";
     private static final String TAG = "SyncSettingsUtils";
 
     @IntDef({TitlePreference.FULL_NAME, TitlePreference.EMAIL})
@@ -136,6 +138,8 @@ public class SyncSettingsUtils {
                 return context.getString(R.string.hint_sync_settings_not_confirmed_description);
             case UserActionableError.NEEDS_UPM_BACKEND_UPGRADE:
                 return context.getString(R.string.sync_error_card_outdated_gms);
+            case UserActionableError.BOOKMARKS_LIMIT_EXCEEDED:
+                return context.getString(R.string.bookmark_sync_limit_error_description);
             case UserActionableError.NONE:
             default:
                 return null;
@@ -165,6 +169,8 @@ public class SyncSettingsUtils {
                 return context.getString(R.string.sync_needs_verification_title);
             case UserActionableError.NEEDS_UPM_BACKEND_UPGRADE:
                 return context.getString(R.string.sync_error_outdated_gms);
+            case UserActionableError.BOOKMARKS_LIMIT_EXCEEDED:
+                return context.getString(R.string.bookmark_sync_limit_error_title);
             case UserActionableError.NONE:
             default:
                 return null;
@@ -193,6 +199,8 @@ public class SyncSettingsUtils {
                 return context.getString(R.string.sync_promo_turn_on_sync);
             case UserActionableError.NEEDS_UPM_BACKEND_UPGRADE:
                 return context.getString(R.string.password_manager_outdated_gms_positive_button);
+            case UserActionableError.BOOKMARKS_LIMIT_EXCEEDED:
+                return context.getString(R.string.learn_more);
             case UserActionableError.NONE:
             default:
                 return null;
@@ -243,6 +251,8 @@ public class SyncSettingsUtils {
                 return context.getString(R.string.sync_needs_verification_title);
             case UserActionableError.NEEDS_UPM_BACKEND_UPGRADE:
                 return context.getString(R.string.sync_error_outdated_gms);
+            case UserActionableError.BOOKMARKS_LIMIT_EXCEEDED:
+                return context.getString(R.string.bookmark_sync_limit_error_title);
             case UserActionableError.NONE:
                 break;
         }
@@ -366,6 +376,17 @@ public class SyncSettingsUtils {
     public static void openGoogleMyAccount(Activity activity) {
         RecordUserAction.record("SyncPreferences_ManageGoogleAccountClicked");
         openCustomTabWithURL(activity, MY_ACCOUNT_URL);
+    }
+
+    /**
+     * Opens a help center article for the bookmark sync limit.
+     *
+     * @param activity The activity to use for starting the intent.
+     */
+    public static void openBookmarkLimitHelpPage(Activity activity) {
+        // TODO(crbug.com/452810753): Update the URL to the correct help center article and disable
+        // the error state.
+        openCustomTabWithURL(activity, BOOKMARK_LIMIT_HELP_PAGE_URL);
     }
 
     /**
@@ -560,6 +581,9 @@ public class SyncSettingsUtils {
                 return new ErrorCardDetails(
                         R.string.sync_error_card_outdated_gms,
                         R.string.password_manager_outdated_gms_positive_button);
+            case UserActionableError.BOOKMARKS_LIMIT_EXCEEDED:
+                return new ErrorCardDetails(
+                        R.string.bookmark_sync_limit_error_description, R.string.learn_more);
             case UserActionableError.UNRECOVERABLE_ERROR:
             case UserActionableError.NEEDS_SETTINGS_CONFIRMATION:
             case UserActionableError.NONE:
@@ -599,6 +623,8 @@ public class SyncSettingsUtils {
                 return ".UpmBackendOutdated";
             case UserActionableError.UNRECOVERABLE_ERROR:
                 return ".OtherErrors";
+            case UserActionableError.BOOKMARKS_LIMIT_EXCEEDED:
+                return ".BookmarkLimitReached";
             default:
                 assert false;
                 return "";

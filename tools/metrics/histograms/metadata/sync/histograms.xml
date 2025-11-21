@@ -116,6 +116,7 @@ chromium-metrics-reviews@google.com.
 
 <variants name="SyncErrorReason">
   <variant name=".AuthError" summary="Auth error."/>
+  <variant name=".BookmarkLimitReached" summary="Bookmark limit reached."/>
   <variant name=".ClientOutOfDate" summary="Client out of date."/>
   <variant name=".OtherErrors" summary="Other/unrecoverable sync errors."/>
   <variant name=".PassphraseRequired" summary="Passphrase required."/>

@@ -311,6 +311,36 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
 
     @Test
     @LargeTest
+    public void testIdentityErrorCardActionForBookmarksLimitExceededError() throws Exception {
+        final FakeSyncServiceImpl fakeSyncService =
+                (FakeSyncServiceImpl) mSyncTestRule.getSyncService();
+        fakeSyncService.setBookmarksLimitExceeded(true);
+
+        // Sign in and open settings.
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+
+        ManageSyncSettings fragment = startManageSyncPreferences();
+        onViewWaiting(allOf(is(fragment.getView()), isDisplayed()));
+
+        // The error card exists.
+        onView(withId(R.id.signin_settings_card)).check(matches(isDisplayed()));
+
+        Intents.init();
+        // Stub all external intents.
+        intending(IntentMatchers.anyIntent())
+                .respondWith(new ActivityResult(Activity.RESULT_OK, null));
+
+        // Mimic the user tapping on the error card's button.
+        onView(withId(R.id.signin_settings_card_button)).perform(click());
+
+        intended(
+                IntentMatchers.hasDataString(
+                        startsWith("https://support.google.com/chrome/answer/165139")));
+        Intents.release();
+    }
+
+    @Test
+    @LargeTest
     @Feature({"Sync"})
     public void testTrustedVaultKeyRetrievalForSignedInUsers() {
         // TODO(crbug.com/334124078): Simplify the test using FakeTrustedVaultClientBackend once the

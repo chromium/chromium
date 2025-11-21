@@ -244,6 +244,23 @@ public class IdentityErrorCardPreferenceTest {
 
     @Test
     @LargeTest
+    @Feature("RenderTest")
+    public void testIdentityErrorCardForBookmarksLimitExceeded() throws Exception {
+        mFakeSyncServiceImpl.setBookmarksLimitExceeded(true);
+        mSigninTestRule.addTestAccountThenSignin();
+
+        try (HistogramWatcher watchIdentityErrorCardShownHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Sync.IdentityErrorCard.BookmarkLimitReached",
+                        SyncSettingsUtils.ErrorUiAction.SHOWN)) {
+            mSettingsActivityTestRule.startSettingsActivity();
+        }
+        mRenderTestRule.render(
+                getIdentityErrorCardView(), "identity_error_card_bookmark_limit_reached");
+    }
+
+    @Test
+    @LargeTest
     public void testIdentityErrorCardNotShownForUnrecoverableErrors() throws Exception {
         mFakeSyncServiceImpl.setHasUnrecoverableError(true);
         mSigninTestRule.addTestAccountThenSignin();

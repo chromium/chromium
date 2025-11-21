@@ -2567,6 +2567,12 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_SYNC_ERROR_CARD_TITLE" desc="Title of the Sync Error Card. [CHAR_LIMIT=32]">
         Sync isn't working
       </message>
+      <message name="IDS_BOOKMARK_SYNC_LIMIT_ERROR_TITLE" desc="Title for the error when the user has too many bookmarks and sync is paused. [CHAR-LIMIT=50]">
+        Some bookmarks aren’t saved
+      </message>
+      <message name="IDS_BOOKMARK_SYNC_LIMIT_ERROR_DESCRIPTION" desc="Description for the error when the user has too many bookmarks and sync is paused.">
+        To save bookmarks in your account, delete your unused bookmarks
+      </message>
       <message name="IDS_PASSWORD_SYNC_ERROR_SUMMARY" desc="Short message shown in various UIs (e.g. Sync Error Card body) to inform that passwords can't be synced (due to missing trusted vault keys). [CHAR_LIMIT=32]">
         Password sync isn't working
       </message>
