@@ -506,6 +506,10 @@ const CGFloat kCloseIndicatorSize = 10.0f;
 /// Updates the AIM button taking into account if the button should be minimize
 /// or not or if the mode is enable or not.
 - (void)updateAIMButtonAppearance {
+  if (!_aimButton) {
+    return;
+  }
+
   UIButtonConfiguration* config =
       [UIButtonConfiguration plainButtonConfiguration];
 
@@ -525,8 +529,6 @@ const CGFloat kCloseIndicatorSize = 10.0f;
   config.imagePadding = 5;
   config.background.backgroundColor = [UIColor colorNamed:kBlueHaloColor];
   config.baseForegroundColor = [UIColor colorNamed:kBlue600Color];
-  config.background.backgroundColor = [UIColor colorNamed:kBlueHaloColor];
-  config.baseForegroundColor = [UIColor colorNamed:kBlue600Color];
   self.aimButtonWidthConstraint.constant = kAIMButtonWidth;
   _aimButton.layer.borderWidth = 0;
 
@@ -536,7 +538,6 @@ const CGFloat kCloseIndicatorSize = 10.0f;
     config.baseForegroundColor = [UIColor colorNamed:kBlue600Color];
 
     _aimButton.hidden = NO;
-    [self setupXMarkInAIMButton];
   } else {
     config.contentInsets = NSDirectionalEdgeInsetsMake(5, 8, 5, 8);
     config.background.backgroundColor =
@@ -548,19 +549,24 @@ const CGFloat kCloseIndicatorSize = 10.0f;
       _aimButton.layer.borderColor = [UIColor colorNamed:kGrey200Color].CGColor;
     }
 
-    [_aimButtonXIndicator removeFromSuperview];
-    _aimButtonXIndicator = nil;
-
     _aimButton.hidden = YES;
   }
 
   _aimButton.configuration = config;
+
+  // Setup the X mark only after the config was aplied, otherwise the
+  // constraints applied relative to the title label will be wrong for iOS 18.
+  if (self.AIModeEnabled) {
+    [self setupXMarkInAIMButton];
+  } else {
+    [_aimButtonXIndicator removeFromSuperview];
+    _aimButtonXIndicator = nil;
+  }
 }
 
 - (void)setupXMarkInAIMButton {
-  if (_aimButtonXIndicator) {
-    return;
-  }
+  [_aimButtonXIndicator removeFromSuperview];
+
   _aimButtonXIndicator = [[UIImageView alloc] init];
   _aimButtonXIndicator.translatesAutoresizingMaskIntoConstraints = NO;
   UIImageConfiguration* configuration = [UIImageSymbolConfiguration
