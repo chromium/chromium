@@ -167,4 +167,29 @@ IN_PROC_BROWSER_TEST_F(ChangeGaiaPasswordFactorTest,
   ASSERT_TRUE(auth_token.has_value());
 }
 
+// Checks that PasswordFactorEditor::UpdateOrSetOnlinePassword does not
+// reject insufficiently complex password, as it is on the online IdP
+// to enforce appropriate complexity.
+IN_PROC_BROWSER_TEST_F(AuthFactorConfigTestWithGaiaPassword,
+                       UpdateOnlinePasswordNoComplexityCheck) {
+  static const std::string kShortPassword = "short";
+
+  std::optional<std::string> auth_token = MakeAuthToken(test::kGaiaPassword);
+  ASSERT_TRUE(auth_token.has_value());
+  mojom::PasswordFactorEditor& password_editor =
+      GetPasswordFactorEditor(quick_unlock::QuickUnlockFactory::GetDelegate(),
+                              g_browser_process->local_state());
+
+  base::test::TestFuture<mojom::ConfigureResult> result;
+  password_editor.UpdateOrSetOnlinePassword(*auth_token, kShortPassword,
+                                            result.GetCallback());
+
+  ASSERT_NE(result.Get(), mojom::ConfigureResult::kFatalError);
+
+  // Since MakeAuthToken authenticates using the provided password, this will
+  // check that the new password works:
+  auth_token = MakeAuthToken(kShortPassword);
+  ASSERT_TRUE(auth_token.has_value());
+}
+
 }  // namespace ash::auth
