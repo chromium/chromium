@@ -234,10 +234,11 @@ bool TouchToFillPaymentMethodControllerImpl::ShowBnplIssuerTos(
       !view_->ShowBnplIssuerTos(
           *this,
           payments::BnplIssuerTosDetail(
-              /*header_icon_id=*/payments::AndroidBnplUiDelegate::
-                  GetDuoBrandedIconForBnplIssuer(
-                      bnpl_tos_model.issuer.issuer_id(),
-                      /*is_dark_mode=*/false),
+              bnpl_tos_model.issuer.issuer_id(),
+              /*header_icon_id=*/
+              payments::AndroidBnplUiDelegate::GetDuoBrandedIconForBnplIssuer(
+                  bnpl_tos_model.issuer.issuer_id(),
+                  /*is_dark_mode=*/false),
               /*header_icon_id_dark=*/
               payments::AndroidBnplUiDelegate::GetDuoBrandedIconForBnplIssuer(
                   bnpl_tos_model.issuer.issuer_id(),

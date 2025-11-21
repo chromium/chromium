@@ -37,8 +37,6 @@
 #include "components/autofill/android/payments_jni_headers/BnplIssuerContext_jni.h"
 #include "components/autofill/android/payments_jni_headers/BnplIssuerTosDetail_jni.h"
 
-using base::android::ConvertUTF16ToJavaString;
-
 namespace {
 
 static base::android::ScopedJavaLocalRef<jobject>
@@ -48,10 +46,13 @@ ConvertBnplIssuerTosDetailToJavaObject(
     const autofill::TouchToFillPaymentMethodViewController& controller,
     const autofill::payments::BnplIssuerTosDetail& bnpl_issuer_tos_detail) {
   return Java_BnplIssuerTosDetail_Constructor(
-      env, controller.GetJavaResourceId(bnpl_issuer_tos_detail.header_icon_id),
+      env,
+      std::string(
+          ConvertToBnplIssuerIdString(bnpl_issuer_tos_detail.issuer_id)),
+      controller.GetJavaResourceId(bnpl_issuer_tos_detail.header_icon_id),
       controller.GetJavaResourceId(bnpl_issuer_tos_detail.header_icon_id_dark),
       bnpl_issuer_tos_detail.is_linked_issuer,
-      ConvertUTF16ToJavaString(env, bnpl_issuer_tos_detail.issuer_name),
+      bnpl_issuer_tos_detail.issuer_name,
       autofill::LegalMessageLineAndroid::ConvertToJavaLinkedList(
           bnpl_issuer_tos_detail.legal_message_lines));
 }

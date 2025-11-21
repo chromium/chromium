@@ -461,6 +461,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
     private static final String LEGAL_MESSAGE_LINE = "legal message line";
     private static final BnplIssuerTosDetail BNPL_ISSUER_TOS_DETAIL =
             new BnplIssuerTosDetail(
+                    /* issuerId= */ "affirm",
                     /* headerIconDrawableId= */ R.drawable.bnpl_icon_generic,
                     /* headerIconDarkDrawableId= */ R.drawable.bnpl_icon_generic,
                     /* isLinkedIssuer= */ false,

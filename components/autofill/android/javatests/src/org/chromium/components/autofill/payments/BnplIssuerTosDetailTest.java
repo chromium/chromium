@@ -19,6 +19,7 @@ import java.util.Arrays;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class BnplIssuerTosDetailTest {
+    private static final String ISSUER_ID = "affirm";
     private static final String ISSUER_NAME = "Affirm";
     private static final LegalMessageLine LEGAL_MESSAGE_LINE =
             new LegalMessageLine("Legal message line");
@@ -27,12 +28,14 @@ public class BnplIssuerTosDetailTest {
     public void bnplIssuerTosDetail_constructor_setsProperties() {
         BnplIssuerTosDetail bnplIssuerTosDetail =
                 new BnplIssuerTosDetail(
+                        /* issuerId= */ ISSUER_ID,
                         /* headerIconDrawableId= */ R.drawable.bnpl_icon_generic,
                         /* headerIconDarkDrawableId= */ R.drawable.error_icon,
                         /* isLinkedIssuer= */ true,
                         /* issuerName= */ ISSUER_NAME,
                         Arrays.asList(LEGAL_MESSAGE_LINE));
 
+        assertThat(bnplIssuerTosDetail.getIssuerId(), equalTo(ISSUER_ID));
         assertThat(
                 bnplIssuerTosDetail.getHeaderIconDrawableId(),
                 equalTo(R.drawable.bnpl_icon_generic));

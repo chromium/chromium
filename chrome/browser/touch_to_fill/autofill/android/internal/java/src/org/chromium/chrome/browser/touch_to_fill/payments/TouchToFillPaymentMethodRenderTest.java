@@ -454,6 +454,7 @@ public class TouchToFillPaymentMethodRenderTest {
                     /* isEligible= */ false);
     private static final BnplIssuerTosDetail BNPL_ISSUER_TOS_DETAIL =
             new BnplIssuerTosDetail(
+                    /* issuerId= */ "affirm",
                     /* headerIconDrawableId= */ R.drawable.bnpl_icon_generic,
                     /* headerIconDarkDrawableId= */ R.drawable.bnpl_icon_generic,
                     /* isLinkedIssuer= */ true,

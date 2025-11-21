@@ -60,12 +60,14 @@ bool BnplIssuerContext::IsEligible() const {
 }
 
 BnplIssuerTosDetail::BnplIssuerTosDetail(
+    BnplIssuer::IssuerId issuer_id,
     int header_icon_id,
     int header_icon_id_dark,
     bool is_linked_issuer,
     std::u16string issuer_name,
     std::vector<LegalMessageLine> legal_message_lines)
-    : header_icon_id(header_icon_id),
+    : issuer_id(issuer_id),
+      header_icon_id(header_icon_id),
       header_icon_id_dark(header_icon_id_dark),
       is_linked_issuer(is_linked_issuer),
       issuer_name(std::move(issuer_name)),

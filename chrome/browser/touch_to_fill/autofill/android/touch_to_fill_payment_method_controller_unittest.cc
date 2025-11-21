@@ -544,7 +544,8 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
   EXPECT_CALL(*mock_view_,
               ShowBnplIssuerTos(
                   Ref(payment_method_controller()),
-                  FieldsAre(IDR_AUTOFILL_GOOGLE_PAY_AFFIRM,
+                  FieldsAre(BnplIssuer::IssuerId::kBnplAffirm,
+                            IDR_AUTOFILL_GOOGLE_PAY_AFFIRM,
                             IDR_AUTOFILL_GOOGLE_PAY_AFFIRM_DARK, true,
                             u"Affirm", bnpl_tos_model.legal_message_lines)));
   EXPECT_CALL(ttf_delegate(), SetCancelCallback);
@@ -571,10 +572,11 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
   // Test that the BNPL issuer ToS info have propagated to the view.
   EXPECT_CALL(
       *mock_view_,
-      ShowBnplIssuerTos(Ref(payment_method_controller()),
-                        FieldsAre(IDR_AUTOFILL_GOOGLE_PAY_ZIP,
-                                  IDR_AUTOFILL_GOOGLE_PAY_ZIP_DARK, false,
-                                  u"Zip", bnpl_tos_model.legal_message_lines)));
+      ShowBnplIssuerTos(
+          Ref(payment_method_controller()),
+          FieldsAre(BnplIssuer::IssuerId::kBnplZip, IDR_AUTOFILL_GOOGLE_PAY_ZIP,
+                    IDR_AUTOFILL_GOOGLE_PAY_ZIP_DARK, false, u"Zip",
+                    bnpl_tos_model.legal_message_lines)));
   EXPECT_CALL(ttf_delegate(), SetCancelCallback);
   EXPECT_CALL(ttf_delegate(), SetBnplTosAcceptCallback);
 

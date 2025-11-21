@@ -16,6 +16,8 @@ import java.util.List;
 /** Detailed BNPL issuer ToS to show in the BNPL issuer ToS bottonsheet. */
 @NullMarked
 public class BnplIssuerTosDetail {
+    /** Issuer that the ToS screen is being shown for. */
+    private final String mIssuerId;
 
     /** Icon id for the screen title. */
     private final @DrawableRes int mHeaderIconDrawableId;
@@ -35,6 +37,7 @@ public class BnplIssuerTosDetail {
     /**
      * Creates a new instance of the detailed card information.
      *
+     * @param issuerId Issuer that the ToS screen is being shown for.
      * @param headerIconDrawableId Icon id for the screen title.
      * @param headerIconDarkDrawableId Drak theme icon id for the screen title.
      * @param isLinkedIssuer True if the issuer is a linked issuer.
@@ -43,16 +46,22 @@ public class BnplIssuerTosDetail {
      */
     @CalledByNative
     public BnplIssuerTosDetail(
+            @JniType("std::string") String issuerId,
             @DrawableRes int headerIconDrawableId,
             @DrawableRes int headerIconDarkDrawableId,
             boolean isLinkedIssuer,
-            String issuerName,
+            @JniType("std::u16string") String issuerName,
             @JniType("std::vector") List<LegalMessageLine> legalMessageLines) {
+        mIssuerId = issuerId;
         mHeaderIconDrawableId = headerIconDrawableId;
         mHeaderIconDarkDrawableId = headerIconDarkDrawableId;
         mIsLinkedIssuer = isLinkedIssuer;
         mIssuerName = issuerName;
         mLegalMessageLines = legalMessageLines;
+    }
+
+    public String getIssuerId() {
+        return mIssuerId;
     }
 
     public @DrawableRes int getHeaderIconDrawableId() {

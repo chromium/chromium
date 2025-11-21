@@ -69,7 +69,8 @@ struct TextWithLink {
 // A struct containing a BNPL ToS info to be shown on the bottomsheet screen.
 struct BnplIssuerTosDetail {
  public:
-  BnplIssuerTosDetail(int header_icon_id,
+  BnplIssuerTosDetail(BnplIssuer::IssuerId issuer_id,
+                      int header_icon_id,
                       int header_icon_id_dark,
                       bool is_linked_issuer,
                       std::u16string issuer_name,
@@ -81,6 +82,9 @@ struct BnplIssuerTosDetail {
   ~BnplIssuerTosDetail();
   bool operator==(const BnplIssuerTosDetail&) const;
 
+  // Issuer that the ToS screen is being shown for.
+  BnplIssuer::IssuerId issuer_id;
+
   // Icon shown in the screen title.
   int header_icon_id;
 
@@ -90,7 +94,7 @@ struct BnplIssuerTosDetail {
   // True if the selected issuer is a linked issuer.
   bool is_linked_issuer;
 
-  // Sign-in/create account message.
+  // Display name of the BNPL issuer.
   std::u16string issuer_name;
 
   // Legal messages with links that are shown in screen footer.
