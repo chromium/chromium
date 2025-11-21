@@ -132,6 +132,7 @@ if (is_desktop) {
       "//base",
       "//base/test:test_support",
       "//components/unexportable_keys:test_support",
+      "//content/test:test_support",
       "//crypto",
       "//crypto:test_support",
       "//testing/gmock",

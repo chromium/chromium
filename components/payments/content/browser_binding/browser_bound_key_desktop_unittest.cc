@@ -8,7 +8,10 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/gtest_util.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/time/time.h"
 #include "components/unexportable_keys/mock_unexportable_key.h"
+#include "content/public/test/browser_task_environment.h"
 #include "crypto/cose.h"
 #include "crypto/test_support.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -16,6 +19,7 @@
 
 namespace {
 using crypto::SignatureVerifier;
+using testing::DoAll;
 using testing::Return;
 using unexportable_keys::MockUnexportableKey;
 
@@ -47,6 +51,10 @@ class BrowserBoundKeyDesktopTest : public ::testing::Test {
   BrowserBoundKeyDesktop* browser_bound_key() {
     return browser_bound_key_.get();
   }
+
+ protected:
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
  private:
   std::unique_ptr<BrowserBoundKeyDesktop> browser_bound_key_;
@@ -110,6 +118,32 @@ TEST_F(BrowserBoundKeyDesktopTest, GetPublicKeyAsCoseKey) {
       .WillRepeatedly(Return(public_key.ToSubjectPublicKeyInfo()));
   EXPECT_EQ(browser_bound_key()->GetPublicKeyAsCoseKey(),
             crypto::PublicKeyToCoseKey(public_key));
+}
+
+TEST_F(BrowserBoundKeyDesktopTest, Metrics_Sign) {
+  base::HistogramTester histogram_tester;
+  base::TimeDelta sign_latency = base::Microseconds(10);
+
+  const std::vector<uint8_t> signed_data = {
+      0, 1, 2, 3, 4,
+  };
+  const std::vector<uint8_t> client_data = {
+      5, 6, 7, 8, 9,
+  };
+
+  EXPECT_CALL(*key(),
+              SignSlowly(static_cast<base::span<const uint8_t>>(client_data)))
+      .WillRepeatedly(DoAll(
+          [this, &sign_latency] {
+            task_environment_.FastForwardBy(sign_latency);
+          },
+          Return(signed_data)));
+  browser_bound_key()->Sign(client_data);
+
+  histogram_tester.ExpectUniqueTimeSample(
+      "PaymentRequest.SecurePaymentConfirmation.BrowserBoundKey.SignLatency",
+      sign_latency,
+      /*expected_bucket_count=*/1);
 }
 
 }  // namespace payments

@@ -227,6 +227,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PaymentRequest.SecurePaymentConfirmation.BrowserBoundKey.SignLatency"
+    units="ms" expires_after="2026-11-01">
+  <owner>darwinyang@chromium.org</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <summary>
+    Records the latency of signing data with the browser bound key. This latency
+    is measured from the moment a key is about to sign data to when the key is
+    done signing.
+  </summary>
+</histogram>
+
+<histogram
     name="PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyInclusion"
     enum="SecurePaymentConfirmationBrowserBoundKeyInclusionResult"
     expires_after="2026-11-01">
@@ -251,6 +263,36 @@ chromium-metrics-reviews@google.com.
     Whether updating the browser bound key metadata was successful or not.
     Recorded after a browser bound key metadata update is attempted.
   </summary>
+</histogram>
+
+<histogram
+    name="PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStore.CreateKeyLatency"
+    units="ms" expires_after="2026-11-01">
+  <owner>darwinyang@chromium.org</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <summary>
+    Records the latency of creating the browser bound key. This latency is
+    measured from the moment a key is about to be created to when the key is
+    returned.
+  </summary>
+</histogram>
+
+<histogram
+    name="PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStore.GetKeyLatency.{GetKeyLatencyResult}"
+    units="ms" expires_after="2026-11-01">
+  <owner>darwinyang@chromium.org</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <summary>
+    Records the latency of getting the browser bound key. This latency is
+    measured from the moment a key is about to be retrieved to when the key is
+    returned.
+  </summary>
+  <token key="GetKeyLatencyResult">
+    <variant name="KeyFound"
+        summary="Labeled get key latency when a key is returned"/>
+    <variant name="KeyNotFound"
+        summary="Labeled get key latency when a key is not returned"/>
+  </token>
 </histogram>
 
 <histogram

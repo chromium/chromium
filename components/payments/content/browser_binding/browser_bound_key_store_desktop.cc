@@ -4,6 +4,10 @@
 
 #include "components/payments/content/browser_binding/browser_bound_key_store_desktop.h"
 
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
+#include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/payments/content/browser_binding/browser_bound_key.h"
 #include "components/payments/content/browser_binding/browser_bound_key_desktop.h"
 #include "crypto/signature_verifier.h"
@@ -11,6 +15,13 @@
 #include "device/fido/public_key_credential_params.h"
 
 namespace {
+
+constexpr char kGetKeyLatencyHistogramName[] =
+    "PaymentRequest.SecurePaymentConfirmation."
+    "BrowserBoundKeyStore.GetKeyLatency";
+constexpr char kCreateKeyLatencyHistogramName[] =
+    "PaymentRequest.SecurePaymentConfirmation."
+    "BrowserBoundKeyStore.CreateKeyLatency";
 
 #if BUILDFLAG(IS_MAC)
 constexpr char kApplicationTag[] = "secure-payment-confirmation";
@@ -49,13 +60,24 @@ BrowserBoundKeyStoreDesktop::GetOrCreateBrowserBoundKeyForCredentialId(
     return nullptr;
   }
 
+  base::ElapsedTimer get_key_timer;
   std::unique_ptr<crypto::UnexportableSigningKey> key =
       key_provider_->FromWrappedSigningKeySlowly(credential_id);
+  base::TimeDelta get_key_latency = get_key_timer.Elapsed();
   if (key) {
+    base::UmaHistogramTimes(
+        base::StrCat({kGetKeyLatencyHistogramName, ".KeyFound"}),
+        get_key_latency);
     return std::make_unique<BrowserBoundKeyDesktop>(std::move(key));
   }
+  // Note that if the key is found, there is an early return so we will only log
+  // the latency once.
+  base::UmaHistogramTimes(
+      base::StrCat({kGetKeyLatencyHistogramName, ".KeyNotFound"}),
+      get_key_latency);
 
   // No existing key, create a new one.
+  base::ElapsedTimer create_key_timer;
   std::vector<crypto::SignatureVerifier::SignatureAlgorithm> algorithms;
   algorithms.reserve(allowed_credentials.size());
   for (const auto& credential : allowed_credentials) {
@@ -74,6 +96,8 @@ BrowserBoundKeyStoreDesktop::GetOrCreateBrowserBoundKeyForCredentialId(
     }
   }
   key = key_provider_->GenerateSigningKeySlowly(algorithms);
+  base::UmaHistogramTimes(kCreateKeyLatencyHistogramName,
+                          create_key_timer.Elapsed());
   return std::make_unique<BrowserBoundKeyDesktop>(std::move(key));
 }
 

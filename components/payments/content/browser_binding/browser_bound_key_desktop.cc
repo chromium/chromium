@@ -8,10 +8,19 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/timer/elapsed_timer.h"
 #include "crypto/cose.h"
 #include "crypto/keypair.h"
 #include "crypto/signature_verifier.h"
 #include "crypto/unexportable_key.h"
+
+namespace {
+
+constexpr char kSignLatencyHistogramName[] =
+    "PaymentRequest.SecurePaymentConfirmation.BrowserBoundKey.SignLatency";
+
+}  // namespace
 
 namespace payments {
 
@@ -32,7 +41,10 @@ std::vector<uint8_t> BrowserBoundKeyDesktop::GetIdentifier() const {
 
 std::vector<uint8_t> BrowserBoundKeyDesktop::Sign(
     const std::vector<uint8_t>& client_data) {
-  return key_->SignSlowly(client_data).value_or(std::vector<uint8_t>());
+  base::ElapsedTimer sign_timer;
+  auto data = key_->SignSlowly(client_data).value_or(std::vector<uint8_t>());
+  base::UmaHistogramTimes(kSignLatencyHistogramName, sign_timer.Elapsed());
+  return data;
 }
 
 std::vector<uint8_t> BrowserBoundKeyDesktop::GetPublicKeyAsCoseKey() const {

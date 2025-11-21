@@ -5,10 +5,13 @@
 #include "components/payments/content/browser_binding/browser_bound_key_store_desktop.h"
 
 #include "base/test/gtest_util.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/time/time.h"
 #include "components/payments/content/browser_binding/browser_bound_key.h"
 #include "components/payments/content/browser_binding/browser_bound_key_desktop.h"
 #include "components/unexportable_keys/mock_unexportable_key.h"
 #include "components/unexportable_keys/mock_unexportable_key_provider.h"
+#include "content/public/test/browser_task_environment.h"
 #include "crypto/signature_verifier.h"
 #include "device/fido/public_key_credential_params.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -19,6 +22,7 @@ using crypto::SignatureVerifier;
 using device::CoseAlgorithmIdentifier;
 using device::PublicKeyCredentialParams;
 using testing::_;
+using testing::DoAll;
 using testing::IsNull;
 using testing::NotNull;
 using testing::Return;
@@ -54,6 +58,10 @@ class BrowserBoundKeyStoreDesktopTest : public ::testing::Test {
               .algorithm =
                   base::strict_cast<int32_t>(CoseAlgorithmIdentifier::kRs256)}};
 
+ protected:
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
  private:
   scoped_refptr<BrowserBoundKeyStore> key_store_;
   raw_ptr<MockUnexportableKeyProvider> key_provider_;
@@ -63,8 +71,8 @@ TEST_F(BrowserBoundKeyStoreDesktopTest,
        GetOrCreateBrowserBoundKeyForCredentialId_Get) {
   std::unique_ptr<MockUnexportableKey> key =
       std::make_unique<MockUnexportableKey>();
-  ON_CALL(*key, Algorithm())
-      .WillByDefault(
+  EXPECT_CALL(*key, Algorithm())
+      .WillRepeatedly(
           Return(SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256));
   MockUnexportableKey* key_ptr = key.get();
 
@@ -85,8 +93,8 @@ TEST_F(BrowserBoundKeyStoreDesktopTest,
        GetOrCreateBrowserBoundKeyForCredentialId_Create) {
   std::unique_ptr<MockUnexportableKey> key =
       std::make_unique<MockUnexportableKey>();
-  ON_CALL(*key, Algorithm())
-      .WillByDefault(
+  EXPECT_CALL(*key, Algorithm())
+      .WillRepeatedly(
           Return(SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256));
   const std::vector<crypto::SignatureVerifier::SignatureAlgorithm> algorithms =
       {SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
@@ -162,5 +170,93 @@ TEST_F(BrowserBoundKeyStoreDesktopTest,
   EXPECT_FALSE(key_store()->GetDeviceSupportsHardwareKeys());
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+TEST_F(BrowserBoundKeyStoreDesktopTest,
+       Metrics_GetOrCreateBrowserBoundKeyForCredentialId_Get) {
+  base::HistogramTester histogram_tester;
+  base::TimeDelta get_key_latency = base::Microseconds(10);
+
+  std::unique_ptr<MockUnexportableKey> key =
+      std::make_unique<MockUnexportableKey>();
+
+  EXPECT_CALL(*key, Algorithm())
+      .WillRepeatedly(
+          Return(SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256));
+  EXPECT_CALL(*key_provider(), FromWrappedSigningKeySlowly(
+                                   base::span<const uint8_t>(kCredentialId)))
+      .WillOnce(DoAll(
+          [this, &get_key_latency] {
+            task_environment_.FastForwardBy(get_key_latency);
+          },
+          Return(std::move(key))));
+
+  key_store()->GetOrCreateBrowserBoundKeyForCredentialId(kCredentialId,
+                                                         kAllowedCredentials);
+
+  histogram_tester.ExpectUniqueTimeSample(
+      "PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStore."
+      "GetKeyLatency.KeyFound",
+      get_key_latency,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStore."
+      "GetKeyLatency.KeyNotFound",
+      /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount(
+      "PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStore."
+      "CreateKeyLatency",
+      /*expected_count=*/0);
+}
+
+TEST_F(BrowserBoundKeyStoreDesktopTest,
+       Metrics_GetOrCreateBrowserBoundKeyForCredentialId_Create) {
+  base::HistogramTester histogram_tester;
+  base::TimeDelta get_key_latency = base::Microseconds(10);
+  base::TimeDelta create_key_latency = base::Microseconds(20);
+
+  const std::vector<crypto::SignatureVerifier::SignatureAlgorithm> algorithms =
+      {SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
+       SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256};
+  std::unique_ptr<MockUnexportableKey> key =
+      std::make_unique<MockUnexportableKey>();
+
+  EXPECT_CALL(*key, Algorithm())
+      .WillRepeatedly(
+          Return(SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256));
+  EXPECT_CALL(*key_provider(), FromWrappedSigningKeySlowly(
+                                   base::span<const uint8_t>(kCredentialId)))
+      .WillOnce(DoAll(
+          [this, &get_key_latency] {
+            task_environment_.FastForwardBy(get_key_latency);
+          },
+          Return(nullptr)));
+  EXPECT_CALL(
+      *key_provider(),
+      GenerateSigningKeySlowly(
+          base::span<const SignatureVerifier::SignatureAlgorithm>(algorithms)))
+      .WillOnce(DoAll(
+          [this, &create_key_latency] {
+            task_environment_.FastForwardBy(create_key_latency);
+          },
+          Return(std::move(key))));
+
+  key_store()->GetOrCreateBrowserBoundKeyForCredentialId(kCredentialId,
+                                                         kAllowedCredentials);
+
+  histogram_tester.ExpectUniqueTimeSample(
+      "PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStore."
+      "GetKeyLatency.KeyNotFound",
+      get_key_latency,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStore."
+      "CreateKeyLatency",
+      create_key_latency,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStore."
+      "GetKeyLatency.KeyFound",
+      /*expected_count=*/0);
+}
 
 }  // namespace payments
