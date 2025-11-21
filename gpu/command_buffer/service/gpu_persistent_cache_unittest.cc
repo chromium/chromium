@@ -5,11 +5,13 @@
 #include "gpu/command_buffer/service/gpu_persistent_cache.h"
 
 #include "base/barrier_closure.h"
+#include "base/containers/heap_array.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/trace_test_utils.h"
 #include "base/trace_event/trace_config.h"
@@ -33,29 +35,19 @@ class GpuPersistentCacheTest : public testing::Test {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     backend_storage_.emplace(persistent_cache::BackendType::kSqlite,
                              temp_dir_.GetPath());
-    ASSERT_OK_AND_ASSIGN(pending_backend_,
-                         backend_storage_->MakePendingBackend(
-                             base::FilePath(FILE_PATH_LITERAL("test"))));
   }
 
  protected:
-  persistent_cache::PendingBackend ShareBackend(GpuPersistentCache& cache) {
-    if (auto pending_backend = backend_storage_->ShareReadWriteConnection(
-            base::FilePath(FILE_PATH_LITERAL("test")),
-            cache.GetPersistentCacheForTesting());
-        pending_backend.has_value()) {
-      return *std::move(pending_backend);
-    }
-    ADD_FAILURE() << "Failed to share backend";
-    return {};
-  }
-
   static scoped_refptr<MemoryCache> MakeDefaultMemoryCache() {
     return base::MakeRefCounted<MemoryCache>(kDefaultMemoryCacheSizeForTesting);
   }
 
   void InitializeCache() {
-    cache_.InitializeCache(std::move(pending_backend_));
+    ASSERT_OK_AND_ASSIGN(auto pending_backend,
+                         backend_storage_->MakePendingBackend(
+                             base::FilePath(FILE_PATH_LITERAL("test")),
+                             /*single_connection=*/true));
+    cache_.InitializeCache(std::move(pending_backend));
   }
 
   void RunStoreAndLoadDataMultiThreaded(int num_threads);
@@ -64,7 +56,6 @@ class GpuPersistentCacheTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::ScopedTempDir temp_dir_;
   std::optional<persistent_cache::BackendStorage> backend_storage_;
-  persistent_cache::PendingBackend pending_backend_;
   GpuPersistentCache cache_{"Test", MakeDefaultMemoryCache()};
 };
 
@@ -258,18 +249,25 @@ TEST_F(GpuPersistentCacheTest, StoreAndLoadDataMultiThreadedWithSqlTrace) {
 }
 
 class GpuPersistentCacheAsyncTest : public GpuPersistentCacheTest {
- public:
-  void SetUp() override {
-    GpuPersistentCacheTest::SetUp();
+ protected:
+  std::unique_ptr<GpuPersistentCache> OpenAsyncCache(
+      size_t max_pending_bytes_to_write = std::numeric_limits<size_t>::max()) {
+    auto pending_backend = backend_storage_->MakePendingBackend(
+        base::FilePath(FILE_PATH_LITERAL("test")),
+        /*single_connection=*/true);
+    if (!pending_backend) {
+      ADD_FAILURE() << "Failed to make pending backend for test cache";
+      return nullptr;
+    }
+
     GpuPersistentCache::AsyncDiskWriteOpts options;
     options.task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
-    async_cache_ = std::make_unique<GpuPersistentCache>(
+    options.max_pending_bytes_to_write = max_pending_bytes_to_write;
+    auto async_cache = std::make_unique<GpuPersistentCache>(
         "TestAsync", MakeDefaultMemoryCache(), std::move(options));
-    async_cache_->InitializeCache(std::move(pending_backend_));
+    async_cache->InitializeCache(*std::move(pending_backend));
+    return async_cache;
   }
-
- protected:
-  std::unique_ptr<GpuPersistentCache> async_cache_;
 };
 
 // Tests that when an async task runner is used, the data is written to disk
@@ -279,34 +277,31 @@ TEST_F(GpuPersistentCacheAsyncTest, StoreAndLoadDataAsync) {
   const std::string key = "my_key";
   const std::string value = "my_value";
 
-  // Get a pending backend for a second connection to the cache.
-  persistent_cache::PendingBackend pending_backend =
-      ShareBackend(*async_cache_);
+  std::unique_ptr<GpuPersistentCache> async_cache = OpenAsyncCache();
+
+  base::HistogramTester histogram_tester;
 
   // Store data. This will be a delayed write.
-  async_cache_->StoreData(key.c_str(), key.size(), value.c_str(), value.size());
+  async_cache->StoreData(key.c_str(), key.size(), value.c_str(), value.size());
+
+  // No writes should have taken place yet.
+  histogram_tester.ExpectTotalCount("GPU.PersistentCache.TestAsync.Store", 0);
 
   // Destroy the cache. The posted write task will keep the underlying
   // DiskCache alive until it has run.
-  async_cache_.reset();
-
-  // To verify that the write is delayed, we can create a new cache that reads
-  // from the same files.
-  GpuPersistentCache read_cache("TestRead", MakeDefaultMemoryCache());
-  read_cache.InitializeCache(std::move(pending_backend));
-
-  // Immediately loading should fail.
-  std::vector<char> buffer(value.size());
-  size_t loaded_size = read_cache.LoadData(key.c_str(), key.size(),
-                                           buffer.data(), buffer.size());
-  EXPECT_EQ(loaded_size, 0u);
+  async_cache.reset();
 
   // Fast forward time to trigger the write.
   task_environment_.FastForwardBy(base::Seconds(2));
 
-  // Now loading should succeed.
-  loaded_size = read_cache.LoadData(key.c_str(), key.size(), buffer.data(),
-                                    buffer.size());
+  // Now the store should have taken place.
+  histogram_tester.ExpectTotalCount("GPU.PersistentCache.TestAsync.Store", 1);
+
+  // And the data should be in the cache.
+  async_cache = OpenAsyncCache();
+  auto buffer = base::HeapArray<char>::Uninit(value.size());
+  size_t loaded_size = async_cache->LoadData(key.c_str(), key.size(),
+                                             buffer.data(), buffer.size());
   EXPECT_EQ(loaded_size, value.size());
   EXPECT_EQ(std::string(buffer.begin(), buffer.end()), value);
 }
@@ -317,42 +312,40 @@ TEST_F(GpuPersistentCacheAsyncTest, StoreAndLoadDataAsync_IdleReschedule) {
   const std::string key = "my_key";
   const std::string value = "my_value";
 
-  // Get a pending backend for a second connection to the cache.
-  persistent_cache::PendingBackend pending_backend =
-      ShareBackend(*async_cache_);
+  std::unique_ptr<GpuPersistentCache> async_cache = OpenAsyncCache();
+
+  base::HistogramTester histogram_tester;
 
   // Store data. This will be a delayed write.
-  async_cache_->StoreData(key.c_str(), key.size(), value.c_str(), value.size());
+  async_cache->StoreData(key.c_str(), key.size(), value.c_str(), value.size());
 
   // Fast forward a bit, but less than the delay.
   task_environment_.FastForwardBy(base::Milliseconds(500));
 
   // Perform another operation to reset the idle timer.
   std::vector<char> dummy_buffer(1);
-  async_cache_->LoadData("some_other_key", 14, dummy_buffer.data(), 1);
+  async_cache->LoadData("some_other_key", 14, dummy_buffer.data(), 1);
 
-  // Fast forward past the original delay time. The write should not have
-  // happened yet because it was rescheduled.
+  // Fast forward past the original delay time.
   task_environment_.FastForwardBy(base::Seconds(1));
 
-  // Verify write has not happened by reading from a new cache instance.
-  // Destroy the original cache first.
-  async_cache_.reset();
-
-  GpuPersistentCache read_cache("TestRead", MakeDefaultMemoryCache());
-  read_cache.InitializeCache(std::move(pending_backend));
-
-  std::vector<char> buffer(value.size());
-  size_t loaded_size = read_cache.LoadData(key.c_str(), key.size(),
-                                           buffer.data(), buffer.size());
-  EXPECT_EQ(loaded_size, 0u);
+  // The write should not have happened yet because it was rescheduled.
+  histogram_tester.ExpectTotalCount("GPU.PersistentCache.TestAsync.Store", 0);
 
   // Fast forward again to let the rescheduled write complete.
   task_environment_.FastForwardBy(base::Seconds(1));
 
-  // Now it should be there.
-  loaded_size = read_cache.LoadData(key.c_str(), key.size(), buffer.data(),
-                                    buffer.size());
+  // The write should now have happened.
+  histogram_tester.ExpectTotalCount("GPU.PersistentCache.TestAsync.Store", 1);
+
+  // Destroy the cache.
+  async_cache.reset();
+
+  // And the data should be there.
+  async_cache = OpenAsyncCache();
+  auto buffer = base::HeapArray<char>::Uninit(value.size());
+  size_t loaded_size = async_cache->LoadData(key.c_str(), key.size(),
+                                             buffer.data(), buffer.size());
   EXPECT_EQ(loaded_size, value.size());
   EXPECT_EQ(std::string(buffer.begin(), buffer.end()), value);
 }
@@ -361,24 +354,18 @@ TEST_F(GpuPersistentCacheAsyncTest, StoreAndLoadDataAsync_IdleReschedule) {
 // first delay without being rescheduled.
 TEST_F(GpuPersistentCacheAsyncTest,
        StoreAndLoadDataAsync_ExceedMaxPendingBytes) {
-  // Get a pending backend for a second connection to the cache.
-  persistent_cache::PendingBackend pending_backend =
-      ShareBackend(*async_cache_);
-
-  // Recreate the cache with a pending byte limit.
-  GpuPersistentCache::AsyncDiskWriteOpts options;
-  options.task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
-  options.max_pending_bytes_to_write = 10;
-  async_cache_ = std::make_unique<GpuPersistentCache>(
-      "TestAsync", MakeDefaultMemoryCache(), std::move(options));
-  async_cache_->InitializeCache(std::move(pending_backend));
+  // Create the cache with a pending byte limit.
+  std::unique_ptr<GpuPersistentCache> async_cache =
+      OpenAsyncCache(/*max_pending_bytes_to_write=*/10);
 
   const std::string key = "my_key";
   const std::string value = "my_value_is_longer_than_10";
   ASSERT_GT(key.size() + value.size(), 10u);
 
+  base::HistogramTester histogram_tester;
+
   // Store data. This will be a delayed write.
-  async_cache_->StoreData(key.c_str(), key.size(), value.c_str(), value.size());
+  async_cache->StoreData(key.c_str(), key.size(), value.c_str(), value.size());
 
   // Fast forward a bit, but less than the delay.
   task_environment_.FastForwardBy(base::Milliseconds(500));
@@ -386,27 +373,26 @@ TEST_F(GpuPersistentCacheAsyncTest,
   // Perform another operation to reset the idle timer. This is to ensure that
   // the write is triggered by the pending bytes limit and not the idle timeout.
   std::vector<char> dummy_buffer(1);
-  async_cache_->LoadData("some_other_key", 14, dummy_buffer.data(), 1);
+  async_cache->LoadData("some_other_key", 14, dummy_buffer.data(), 1);
+
+  // The write should not have happened yet.
+  histogram_tester.ExpectTotalCount("GPU.PersistentCache.TestAsync.Store", 0);
 
   // Fast forward past the delay. The write should have happened because of the
   // pending bytes limit, even though the cache was not idle.
   task_environment_.FastForwardBy(base::Seconds(1));
 
-  // Get a pending backend for a second connection to the cache.
-  pending_backend = ShareBackend(*async_cache_);
+  // The write should have happened.
+  histogram_tester.ExpectTotalCount("GPU.PersistentCache.TestAsync.Store", 1);
 
   // Destroy the cache.
-  async_cache_.reset();
+  async_cache.reset();
 
-  // The write should have happened. We can verify this by creating a new cache
-  // that reads from the same files.
-  GpuPersistentCache read_cache("TestRead", MakeDefaultMemoryCache());
-  read_cache.InitializeCache(std::move(pending_backend));
-
-  // Now loading should succeed.
-  std::vector<char> buffer(value.size());
-  size_t loaded_size = read_cache.LoadData(key.c_str(), key.size(),
-                                           buffer.data(), buffer.size());
+  // Verify that the data was written by reopening and reading from the cache.
+  async_cache = OpenAsyncCache();
+  auto buffer = base::HeapArray<char>::Uninit(value.size());
+  size_t loaded_size = async_cache->LoadData(key.c_str(), key.size(),
+                                             buffer.data(), buffer.size());
   EXPECT_EQ(loaded_size, value.size());
   EXPECT_EQ(std::string(buffer.begin(), buffer.end()), value);
 }
@@ -439,9 +425,11 @@ TEST_F(GpuPersistentCacheTest, MemoryBackingSyncedToDisk) {
     cache.StoreData(key.c_str(), key.size(), value.c_str(), value.size());
 
     // Initialize the cache, the memory storage will be written to disk.
-    ASSERT_OK_AND_ASSIGN(auto pending_backend,
-                         backend_storage_->MakePendingBackend(base::FilePath(
-                             FILE_PATH_LITERAL("MemoryBackingSyncedToDisk"))));
+    ASSERT_OK_AND_ASSIGN(
+        auto pending_backend,
+        backend_storage_->MakePendingBackend(
+            base::FilePath(FILE_PATH_LITERAL("MemoryBackingSyncedToDisk")),
+            /*single_connection=*/true));
 
     cache.InitializeCache(std::move(pending_backend));
   }
@@ -449,9 +437,11 @@ TEST_F(GpuPersistentCacheTest, MemoryBackingSyncedToDisk) {
   // Reload the same persistent cache from disk
   {
     GpuPersistentCache cache{"Test", MakeDefaultMemoryCache()};
-    ASSERT_OK_AND_ASSIGN(auto pending_backend,
-                         backend_storage_->MakePendingBackend(base::FilePath(
-                             FILE_PATH_LITERAL("MemoryBackingSyncedToDisk"))));
+    ASSERT_OK_AND_ASSIGN(
+        auto pending_backend,
+        backend_storage_->MakePendingBackend(
+            base::FilePath(FILE_PATH_LITERAL("MemoryBackingSyncedToDisk")),
+            /*single_connection=*/true));
     cache.InitializeCache(std::move(pending_backend));
 
     // Check that the entry exists in the cache.
@@ -474,9 +464,11 @@ TEST_F(GpuPersistentCacheTest, ReOpenCacheFromFile) {
     scoped_refptr<MemoryCache> memory_cache =
         base::MakeRefCounted<MemoryCache>(1024);
     GpuPersistentCache cache{"Test", memory_cache};
-    ASSERT_OK_AND_ASSIGN(auto pending_backend,
-                         backend_storage_->MakePendingBackend(base::FilePath(
-                             FILE_PATH_LITERAL("ReOpenCacheFromFile"))));
+    ASSERT_OK_AND_ASSIGN(
+        auto pending_backend,
+        backend_storage_->MakePendingBackend(
+            base::FilePath(FILE_PATH_LITERAL("ReOpenCacheFromFile")),
+            /*single_connection=*/true));
     cache.InitializeCache(std::move(pending_backend));
 
     cache.StoreData(key.c_str(), key.size(), value.c_str(), value.size());
@@ -503,9 +495,11 @@ TEST_F(GpuPersistentCacheTest, ReOpenCacheFromFile) {
     scoped_refptr<MemoryCache> memory_cache =
         base::MakeRefCounted<MemoryCache>(1024);
     GpuPersistentCache cache{"Test", memory_cache};
-    ASSERT_OK_AND_ASSIGN(auto pending_backend,
-                         backend_storage_->MakePendingBackend(base::FilePath(
-                             FILE_PATH_LITERAL("ReOpenCacheFromFile"))));
+    ASSERT_OK_AND_ASSIGN(
+        auto pending_backend,
+        backend_storage_->MakePendingBackend(
+            base::FilePath(FILE_PATH_LITERAL("ReOpenCacheFromFile")),
+            /*single_connection=*/true));
     cache.InitializeCache(std::move(pending_backend));
 
     // Check that the entry exists in the persistent cache.

@@ -354,9 +354,9 @@ TEST_F(PersistentCacheCollectionTest, EvictWhileLockedDeletesFiles) {
   // Return the mock backend from the BackendStorage::Delegate when requested,
   // and remember the cache base name.
   base::FilePath saved_base_name;
-  EXPECT_CALL(*mock_delegate, MakeBackend(temp_dir_.GetPath(), _))
+  EXPECT_CALL(*mock_delegate, MakeBackend(temp_dir_.GetPath(), _, false))
       .WillOnce([&](const base::FilePath& directory,
-                    const base::FilePath& base_name) {
+                    const base::FilePath& base_name, bool single_connection) {
         saved_base_name = base_name;
         return (std::move(backend));
       });

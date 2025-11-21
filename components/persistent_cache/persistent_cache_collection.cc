@@ -226,7 +226,8 @@ PersistentCache* PersistentCacheCollection::GetOrCreateCache(
   // `cache_id` must not contain invalid characters.
   CHECK(!base_name.empty());
 
-  auto backend = backend_storage_.MakeBackend(base_name);
+  auto backend =
+      backend_storage_.MakeBackend(base_name, /*single_connection=*/false);
   if (!backend) {
     // Failed to open/create the backend's files or bind to them.
     return nullptr;

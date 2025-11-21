@@ -110,6 +110,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PersistentCache.Sqlite.LockError" enum="PlatformFileError"
+    expires_after="2026-11-06">
+  <owner>grt@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Reports the error recevied when locking a PersistentCache's primary database
+    file when opened for use by only a single connection.
+  </summary>
+</histogram>
+
+<histogram name="PersistentCache.Sqlite.{FileType}.CreateError"
+    enum="PlatformFileError" expires_after="2026-11-06">
+  <owner>grt@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Reports the error recevied when creating or opening a PersistentCache's
+    primary database file.
+  </summary>
+  <token key="FileType" variants="FileType"/>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

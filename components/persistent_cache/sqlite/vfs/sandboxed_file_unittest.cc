@@ -34,9 +34,30 @@ class SandboxedFileTest : public testing::Test {
         std::move(mapped_shared_lock));
   }
 
+  // A helper that takes ownership of a `SandboxedFile` and opens it for its
+  // lifetime.
+  class OpenedFile {
+   public:
+    explicit OpenedFile(std::unique_ptr<SandboxedFile> file)
+        : file_(std::move(file)) {
+      file_->OnFileOpened(
+          file_->TakeUnderlyingFile(SandboxedFile::FileType::kMainDb));
+    }
+    ~OpenedFile() { file_->Close(); }
+    SandboxedFile* operator->() { return file_.get(); }
+
+   private:
+    std::unique_ptr<SandboxedFile> file_;
+  };
+
+  OpenedFile CreateAndOpenEmptyFile(std::string_view file_name) {
+    return OpenedFile(CreateEmptyFile(std::string(file_name)));
+  }
+
   // Simulate an OpenFile from the VFS delegate.
   void OpenFile(SandboxedFile* file) {
-    file->OnFileOpened(file->TakeUnderlyingFile());
+    file->OnFileOpened(
+        file->TakeUnderlyingFile(SandboxedFile::FileType::kMainDb));
   }
 
   int ReadToBuffer(SandboxedFile* file, size_t offset) {
@@ -69,7 +90,8 @@ TEST_F(SandboxedFileTest, OpenClose) {
 
   OpenFile(file.get());
   EXPECT_TRUE(file->IsValid());
-  EXPECT_FALSE(file->TakeUnderlyingFile().IsValid());
+  EXPECT_FALSE(
+      file->TakeUnderlyingFile(SandboxedFile::FileType::kMainDb).IsValid());
 
   file->Close();
   EXPECT_FALSE(file->IsValid());
@@ -238,7 +260,7 @@ TEST_F(SandboxedFileTest, Truncate) {
 }
 
 TEST_F(SandboxedFileTest, LockBasics) {
-  std::unique_ptr<SandboxedFile> file = CreateEmptyFile("lock");
+  auto file = CreateAndOpenEmptyFile("lock");
   EXPECT_EQ(file->LockModeForTesting(), SQLITE_LOCK_NONE);
 
   EXPECT_EQ(file->Lock(SQLITE_LOCK_SHARED), SQLITE_OK);
@@ -258,7 +280,7 @@ TEST_F(SandboxedFileTest, LockBasics) {
 }
 
 TEST_F(SandboxedFileTest, AcquireSameLockLevel) {
-  std::unique_ptr<SandboxedFile> file = CreateEmptyFile("lock");
+  auto file = CreateAndOpenEmptyFile("lock");
 
   EXPECT_EQ(file->Lock(SQLITE_LOCK_SHARED), SQLITE_OK);
   EXPECT_EQ(file->LockModeForTesting(), SQLITE_LOCK_SHARED);
@@ -273,7 +295,7 @@ TEST_F(SandboxedFileTest, AcquireSameLockLevel) {
 }
 
 TEST_F(SandboxedFileTest, AcquireLowerLockLevel) {
-  std::unique_ptr<SandboxedFile> file = CreateEmptyFile("lock");
+  auto file = CreateAndOpenEmptyFile("lock");
 
   EXPECT_EQ(file->Lock(SQLITE_LOCK_SHARED), SQLITE_OK);
   EXPECT_EQ(file->LockModeForTesting(), SQLITE_LOCK_SHARED);
@@ -289,14 +311,14 @@ TEST_F(SandboxedFileTest, AcquireLowerLockLevel) {
 }
 
 TEST_F(SandboxedFileTest, UnlockWhenNone) {
-  std::unique_ptr<SandboxedFile> file = CreateEmptyFile("lock");
+  auto file = CreateAndOpenEmptyFile("lock");
 
   EXPECT_EQ(file->Unlock(SQLITE_LOCK_NONE), SQLITE_OK);
   EXPECT_EQ(file->LockModeForTesting(), SQLITE_LOCK_NONE);
 }
 
 TEST_F(SandboxedFileTest, UnlockToNone) {
-  std::unique_ptr<SandboxedFile> file = CreateEmptyFile("lock");
+  auto file = CreateAndOpenEmptyFile("lock");
 
   EXPECT_EQ(file->Lock(SQLITE_LOCK_SHARED), SQLITE_OK);
   EXPECT_EQ(file->LockModeForTesting(), SQLITE_LOCK_SHARED);
@@ -311,7 +333,7 @@ TEST_F(SandboxedFileTest, UnlockToNone) {
 }
 
 TEST_F(SandboxedFileTest, UnlockToShared) {
-  std::unique_ptr<SandboxedFile> file = CreateEmptyFile("lock");
+  auto file = CreateAndOpenEmptyFile("lock");
 
   EXPECT_EQ(file->Lock(SQLITE_LOCK_SHARED), SQLITE_OK);
   EXPECT_EQ(file->LockModeForTesting(), SQLITE_LOCK_SHARED);
@@ -326,11 +348,11 @@ TEST_F(SandboxedFileTest, UnlockToShared) {
 }
 
 TEST_F(SandboxedFileTest, MultipleLocks) {
-  std::unique_ptr<SandboxedFile> reader1 = CreateEmptyFile("multi-lock");
-  std::unique_ptr<SandboxedFile> reader2 = CreateEmptyFile("multi-lock");
-  std::unique_ptr<SandboxedFile> reader3 = CreateEmptyFile("multi-lock");
-  std::unique_ptr<SandboxedFile> writer1 = CreateEmptyFile("multi-lock");
-  std::unique_ptr<SandboxedFile> writer2 = CreateEmptyFile("multi-lock");
+  auto reader1 = CreateAndOpenEmptyFile("multi-lock");
+  auto reader2 = CreateAndOpenEmptyFile("multi-lock");
+  auto reader3 = CreateAndOpenEmptyFile("multi-lock");
+  auto writer1 = CreateAndOpenEmptyFile("multi-lock");
+  auto writer2 = CreateAndOpenEmptyFile("multi-lock");
 
   // Take SHARED lock for the first reader.
   EXPECT_EQ(reader1->Lock(SQLITE_LOCK_SHARED), SQLITE_OK);
@@ -406,7 +428,7 @@ TEST_F(SandboxedFileTest, MultipleLocks) {
 }
 
 TEST_F(SandboxedFileTest, LockHotJournal) {
-  std::unique_ptr<SandboxedFile> file = CreateEmptyFile("lock");
+  auto file = CreateAndOpenEmptyFile("lock");
 
   EXPECT_EQ(file->Lock(SQLITE_LOCK_SHARED), SQLITE_OK);
   EXPECT_EQ(file->LockModeForTesting(), SQLITE_LOCK_SHARED);

@@ -65,14 +65,19 @@ BackendStorage::BackendStorage(std::unique_ptr<Delegate> delegate,
 BackendStorage::~BackendStorage() = default;
 
 std::optional<PendingBackend> BackendStorage::MakePendingBackend(
-    const base::FilePath& base_name) {
-  return is_valid_ ? delegate_->MakePendingBackend(directory_, base_name)
+    const base::FilePath& base_name,
+    bool single_connection) {
+  return is_valid_ ? delegate_->MakePendingBackend(directory_, base_name,
+                                                   single_connection)
                    : std::nullopt;
 }
 
 std::unique_ptr<Backend> BackendStorage::MakeBackend(
-    const base::FilePath& base_name) {
-  return is_valid_ ? delegate_->MakeBackend(directory_, base_name) : nullptr;
+    const base::FilePath& base_name,
+    bool single_connection) {
+  return is_valid_
+             ? delegate_->MakeBackend(directory_, base_name, single_connection)
+             : nullptr;
 }
 
 std::optional<PendingBackend> BackendStorage::ShareReadOnlyConnection(

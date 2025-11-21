@@ -101,7 +101,9 @@ SqliteBackendImpl::SqliteBackendImpl(SqliteVfsFileSet vfs_file_set)
       db_(std::in_place,
           sql::DatabaseOptions()
               .set_read_only(vfs_file_set_.read_only())
-              .set_exclusive_locking(false)
+              // Set the database's locking_mode to EXCLUSIVE if the file set
+              // supports only a single connection to the database.
+              .set_exclusive_locking(vfs_file_set_.is_single_connection())
               .set_vfs_name_discouraged(
                   SqliteSandboxedVfsDelegate::kSqliteVfsName)
               // Prevent SQLite from trying to use mmap, as SandboxedVfs does

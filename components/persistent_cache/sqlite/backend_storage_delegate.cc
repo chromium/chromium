@@ -70,13 +70,22 @@ base::File DuplicateFile(const base::File& source_file,
 
 std::optional<PendingBackend> BackendStorageDelegate::MakePendingBackend(
     const base::FilePath& directory,
-    const base::FilePath& base_name) {
+    const base::FilePath& base_name,
+    bool single_connection) {
   PendingBackend pending_backend;
 
   uint32_t create_flags = base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_READ |
                           base::File::FLAG_WRITE |
                           base::File::FLAG_WIN_SHARE_DELETE |
                           base::File::FLAG_CAN_DELETE_ON_CLOSE;
+
+  if (single_connection) {
+    // If only a single connection is allowed, there is no need to allow others
+    // to open the files for reading or writing. Delete is always allowed so
+    // that the files can be deleted even while in-use.
+    create_flags |= base::File::FLAG_WIN_EXCLUSIVE_READ |
+                    base::File::FLAG_WIN_EXCLUSIVE_WRITE;
+  }
 
   // Make sure handles to these files are safe to pass to untrusted processes.
   create_flags = base::File::AddFlagsForPassingToUntrustedProcess(create_flags);
@@ -85,6 +94,10 @@ std::optional<PendingBackend> BackendStorageDelegate::MakePendingBackend(
       directory.Append(base_name).AddExtension(kDbFileExtension);
   pending_backend.sqlite_data.db_file = base::File(db_file_path, create_flags);
   if (!pending_backend.sqlite_data.db_file.IsValid()) {
+    base::UmaHistogramExactLinear(
+        "PersistentCache.Sqlite.DbFile.CreateError",
+        -pending_backend.sqlite_data.db_file.error_details(),
+        -base::File::FILE_ERROR_MAX);
     return std::nullopt;
   }
 
@@ -93,15 +106,20 @@ std::optional<PendingBackend> BackendStorageDelegate::MakePendingBackend(
   pending_backend.sqlite_data.journal_file =
       base::File(journal_file_path, create_flags);
   if (!pending_backend.sqlite_data.journal_file.IsValid()) {
+    base::UmaHistogramExactLinear(
+        "PersistentCache.Sqlite.JournalFile.CreateError",
+        -pending_backend.sqlite_data.journal_file.error_details(),
+        -base::File::FILE_ERROR_MAX);
     return std::nullopt;
   }
 
-  // TODO(crbug.com/377475540): Do not create the shared lock if the consumer
-  // only requires a single connection to the database.
-  pending_backend.sqlite_data.shared_lock =
-      base::UnsafeSharedMemoryRegion::Create(sizeof(SharedAtomicLock));
-  if (!pending_backend.sqlite_data.shared_lock.IsValid()) {
-    return std::nullopt;
+  if (!single_connection) {
+    // The shared lock is only needed if multiple connections are permitted.
+    pending_backend.sqlite_data.shared_lock =
+        base::UnsafeSharedMemoryRegion::Create(sizeof(SharedAtomicLock));
+    if (!pending_backend.sqlite_data.shared_lock.IsValid()) {
+      return std::nullopt;
+    }
   }
 
   pending_backend.read_write = true;
@@ -111,8 +129,10 @@ std::optional<PendingBackend> BackendStorageDelegate::MakePendingBackend(
 
 std::unique_ptr<Backend> BackendStorageDelegate::MakeBackend(
     const base::FilePath& directory,
-    const base::FilePath& base_name) {
-  if (auto pending_backend = MakePendingBackend(directory, base_name);
+    const base::FilePath& base_name,
+    bool single_connection) {
+  if (auto pending_backend =
+          MakePendingBackend(directory, base_name, single_connection);
       pending_backend.has_value()) {
     return SqliteBackendImpl::Bind(*std::move(pending_backend));
   }
@@ -173,6 +193,8 @@ std::optional<PendingBackend> BackendStorageDelegate::ShareConnection(
   const SqliteBackendImpl& sqlite_backend =
       static_cast<const SqliteBackendImpl&>(backend);
   const SqliteVfsFileSet& file_set = sqlite_backend.file_set();
+
+  CHECK(!file_set.is_single_connection());
 
   PendingBackend pending_backend;
 

@@ -17,10 +17,11 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) BackendStorageDelegate
   // BackendStorage::Delegate:
   std::optional<PendingBackend> MakePendingBackend(
       const base::FilePath& directory,
-      const base::FilePath& base_name) override;
-  std::unique_ptr<Backend> MakeBackend(
-      const base::FilePath& directory,
-      const base::FilePath& base_name) override;
+      const base::FilePath& base_name,
+      bool single_connection) override;
+  std::unique_ptr<Backend> MakeBackend(const base::FilePath& directory,
+                                       const base::FilePath& base_name,
+                                       bool single_connection) override;
   std::optional<PendingBackend> ShareReadOnlyConnection(
       const base::FilePath& directory,
       const base::FilePath& base_name,

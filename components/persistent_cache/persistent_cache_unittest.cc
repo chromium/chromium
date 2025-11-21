@@ -116,8 +116,9 @@ class PersistentCacheTest : public testing::Test,
   }
 
   // Returns the cache base name for a new cache and the new cache itself.
-  std::pair<base::FilePath, std::unique_ptr<PersistentCache>> OpenCache() {
-    auto [cache_name, pending_backend] = MakePendingBackend();
+  std::pair<base::FilePath, std::unique_ptr<PersistentCache>> OpenCache(
+      bool single_connection = false) {
+    auto [cache_name, pending_backend] = MakePendingBackend(single_connection);
     auto cache = PersistentCache::Bind(*std::move(pending_backend));
     if (!cache) {
       ADD_FAILURE() << "Failed to bind PersistentCache";
@@ -127,11 +128,12 @@ class PersistentCacheTest : public testing::Test,
   }
 
   // Returns the cache base name for a new cache and a pending backend for it.
-  std::pair<base::FilePath, std::optional<PendingBackend>>
-  MakePendingBackend() {
+  std::pair<base::FilePath, std::optional<PendingBackend>> MakePendingBackend(
+      bool single_connection) {
     auto cache_name = base::FilePath::FromASCII(
         base::StrCat({"Cache", base::NumberToString(next_backend_index_++)}));
-    auto pending_backend = backend_storage_->MakePendingBackend(cache_name);
+    auto pending_backend =
+        backend_storage_->MakePendingBackend(cache_name, single_connection);
     if (!pending_backend) {
       ADD_FAILURE() << "Failed to make PendingBackend";
       return {};
@@ -309,6 +311,7 @@ TEST_P(PersistentCacheTest, EphemeralCachesSharingParamsShareData) {
         auto pending_backend,
         backend_storage().ShareReadWriteConnection(cache_name, *main_cache));
     auto cache = PersistentCache::Bind(std::move(pending_backend));
+    ASSERT_TRUE(cache);
 
     // First run, setup.
     if (i == 0) {
@@ -337,6 +340,7 @@ TEST_P(PersistentCacheTest, LiveCachesSharingParamsShareData) {
         backend_storage().ShareReadWriteConnection(cache_name, *main_cache));
     caches.push_back(PersistentCache::Bind(std::move(pending_backend)));
     std::unique_ptr<PersistentCache>& cache = caches.back();
+    ASSERT_TRUE(cache);
 
     // First run, setup.
     if (i == 0) {
@@ -368,6 +372,7 @@ TEST_P(PersistentCacheTest, MultipleInstancesShareData) {
     // Create a new instance that will read from the original.
     caches.push_back(PersistentCache::Bind(std::move(pending_backend)));
     std::unique_ptr<PersistentCache>& ro_cache = caches.back();
+    ASSERT_TRUE(ro_cache);
 
     if (i == 0) {
       // The db is empty when the first client connects.
@@ -404,6 +409,7 @@ TEST_P(PersistentCacheTest, MultipleInstancesCanWriteData) {
     // Create a new instance that will read/write from/to the original.
     caches.push_back(PersistentCache::Bind(std::move(pending_backend)));
     std::unique_ptr<PersistentCache>& rw_cache = caches.back();
+    ASSERT_TRUE(rw_cache);
 
     // This new cache has access to all previous values.
     for (int j = 0; j < i; ++j) {
@@ -559,6 +565,8 @@ TEST_P(PersistentCacheTest, RecoveryFromTransientError) {
       SqliteBackendImpl::BindToFileSet(std::move(pending_reader)));
   auto reader_files = reader_vfs_file_set.GetFiles();
   auto reader_db_file = reader_files[0].second;
+  reader_db_file->OnFileOpened(
+      reader_db_file->TakeUnderlyingFile(SandboxedFile::FileType::kMainDb));
   ASSERT_EQ(reader_db_file->Lock(SQLITE_LOCK_SHARED), SQLITE_OK);
 
   // Held lock causes transient error.
@@ -569,6 +577,7 @@ TEST_P(PersistentCacheTest, RecoveryFromTransientError) {
   // Unlock works.
   ASSERT_EQ(reader_db_file->Unlock(SQLITE_LOCK_NONE), SQLITE_OK);
   ASSERT_EQ(reader_db_file->LockModeForTesting(), SQLITE_LOCK_NONE);
+  reader_db_file->Close();
 
   // Insert now succeeds.
   EXPECT_THAT(

@@ -107,6 +107,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//build:blink_buildflags",
     "//components/persistent_cache/mojom:unit_tests",
     "//sql",
     "//testing/gmock",

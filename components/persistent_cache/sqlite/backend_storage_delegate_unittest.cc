@@ -43,7 +43,9 @@ TEST_F(SqliteBackendStorageDelegateTest, GetBaseName) {
 
 TEST_F(SqliteBackendStorageDelegateTest, CreateAndDelete) {
   base::FilePath base_name = base::FilePath::FromASCII("base_name");
-  auto pending_backend = delegate().MakePendingBackend(temp_path(), base_name);
+  auto pending_backend =
+      delegate().MakePendingBackend(temp_path(), base_name,
+                                    /*single_connection=*/false);
   ASSERT_NE(pending_backend, std::nullopt);
   auto backend = SqliteBackendImpl::Bind(*std::move(pending_backend));
   ASSERT_NE(backend, nullptr);

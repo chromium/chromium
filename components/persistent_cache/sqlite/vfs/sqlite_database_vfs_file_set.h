@@ -48,6 +48,8 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteVfsFileSet {
     return shared_lock_;
   }
 
+  bool is_single_connection() const { return !shared_lock_.IsValid(); }
+
   // Marks the file as no longer suitable for use. Returns the state of the
   // shared db file lock at the moment of abandonment. Should only be used
   // through `Backend::Abandon()`.
@@ -56,6 +58,8 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteVfsFileSet {
  private:
   base::FilePath GetJournalVirtualFilePath() const;
 
+  // The shared lock is absent if the file set supports only a single
+  // connection.
   base::UnsafeSharedMemoryRegion shared_lock_;
   std::unique_ptr<SandboxedFile> db_file_;
   std::unique_ptr<SandboxedFile> journal_file_;

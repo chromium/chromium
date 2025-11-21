@@ -36,9 +36,9 @@ class PersistentCachePerftest : public testing::Test {
     backend_storage_.emplace(BackendType::kSqlite, temp_dir_.GetPath());
   }
 
-  std::unique_ptr<PersistentCache> CreateCache() {
-    if (auto pending_backend =
-            backend_storage_->MakePendingBackend(base::FilePath(kBaseName));
+  std::unique_ptr<PersistentCache> CreateCache(bool single_connection = false) {
+    if (auto pending_backend = backend_storage_->MakePendingBackend(
+            base::FilePath(kBaseName), single_connection);
         pending_backend.has_value()) {
       return PersistentCache::Bind(*std::move(pending_backend));
     }
@@ -154,6 +154,23 @@ TEST_F(PersistentCachePerftest, Insert) {
   ASSERT_EQ(success_count, kIterationCount);
 }
 
+TEST_F(PersistentCachePerftest, InsertSingleConnection) {
+  auto persistent_cache = CreateCache(/*single_connection=*/true);
+
+  static constexpr int kIterationCount = 1024;
+  std::vector<std::string> keys = GenerateKeys(kIterationCount);
+  base::HeapArray<uint8_t> value = MakeValue();
+
+  int success_count = 0;
+  RunAndTimeTest("InsertSingleConnection", kIterationCount, [&] {
+    success_count = std::ranges::count_if(
+        keys, [&cache = *persistent_cache, &value](const auto& key) {
+          return cache.Insert(key, value.as_span()).has_value();
+        });
+  });
+  ASSERT_EQ(success_count, kIterationCount);
+}
+
 TEST_F(PersistentCachePerftest, Find) {
   auto persistent_cache = CreateCache();
 
@@ -173,6 +190,35 @@ TEST_F(PersistentCachePerftest, Find) {
 
   int success_count = 0;
   RunAndTimeTest("Find", kIterationCount, [&] {
+    success_count = std::ranges::count_if(keys, [&cache = *persistent_cache](
+                                                    const auto& key) {
+      return cache
+          .Find(key, [](size_t content_size) { return base::span<uint8_t>(); })
+          .has_value();
+    });
+  });
+  ASSERT_EQ(success_count, kIterationCount);
+}
+
+TEST_F(PersistentCachePerftest, FindSingleConnection) {
+  auto persistent_cache = CreateCache(/*single_connection=*/true);
+
+  static constexpr int kIterationCount = 1024;
+  std::vector<std::string> keys = GenerateKeys(kIterationCount);
+  base::HeapArray<uint8_t> value = MakeValue();
+
+  // Fill the cache.
+  for (const std::string& key : keys) {
+    ASSERT_THAT(persistent_cache->Insert(key, value.as_span()),
+                base::test::HasValue());
+  }
+
+  // Shuffle the keys around to avoid taking advantage of file-system caching
+  // behavior.
+  base::RandomShuffle(keys.begin(), keys.end());
+
+  int success_count = 0;
+  RunAndTimeTest("FindSingleConnection", kIterationCount, [&] {
     success_count = std::ranges::count_if(keys, [&cache = *persistent_cache](
                                                     const auto& key) {
       return cache

@@ -11,5 +11,7 @@ import "mojo/public/mojom/base/shared_memory.mojom";
 struct PendingReadWriteBackend {
   mojo_base.mojom.File db_file;
   mojo_base.mojom.File journal_file;
-  mojo_base.mojom.UnsafeSharedMemoryRegion shared_lock;
+
+  // The shared lock is present if this backend supports multiple connections.
+  mojo_base.mojom.UnsafeSharedMemoryRegion? shared_lock;
 };

@@ -31,18 +31,26 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) BackendStorage {
    public:
     virtual ~Delegate() = default;
 
-    // Returns a backend named `base_name` supporting read/write access backed
-    // by one or more files in `directory`. Returns null in case of any error.
+    // Returns a new pending read-write backend named `base_name` within
+    // `directory`. If `single_connection` is true, the returned instance may be
+    // used to open only one `PersistentCache` -- connections to that cache
+    // cannot be shared. Returns no value in case of error (e.g., if the
+    // backend's files could not be opened or created).
     virtual std::optional<PendingBackend> MakePendingBackend(
         const base::FilePath& directory,
-        const base::FilePath& base_name) = 0;
+        const base::FilePath& base_name,
+        bool single_connection) = 0;
 
-    // Returns a new read-write backend named `base_name` within `directory`.
-    // Returns no value in case of error (e.g., if the backend's files could not
-    // be opened or created, or if the backend's storage is corrupt).
+    // Returns a new read-write backend named `base_name` within `directory`. If
+    // `single_connection` is true, the returned backend may be used by only one
+    // `PersistentCache` instance -- connections to it cannot be shared for use
+    // by other instances. Returns null in case of error (e.g., if the backend's
+    // files could not be opened or created, or if the backend's storage is
+    // corrupt).
     virtual std::unique_ptr<Backend> MakeBackend(
         const base::FilePath& directory,
-        const base::FilePath& base_name) = 0;
+        const base::FilePath& base_name,
+        bool single_connection) = 0;
 
     // Returns a pending backend for a read-only connection to the backend named
     // `base_name` within `directory`. This allows another party to bind to an
@@ -89,17 +97,22 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) BackendStorage {
   const base::FilePath& directory() const { return directory_; }
 
   // Returns a new pending read-write backend named `base_name` within the
-  // instance's directory. This allows a single read-write connection to be
-  // bound. Returns no value in case of error (e.g., if the backend's files
-  // could not be opened or created).
+  // instance's directory. If `single_connection` is true, the returned instance
+  // may be used to open only one `PersistentCache` -- connections to that cache
+  // cannot be shared. Returns no value in case of error (e.g., if the backend's
+  // files could not be opened or created).
   std::optional<PendingBackend> MakePendingBackend(
-      const base::FilePath& base_name);
+      const base::FilePath& base_name,
+      bool single_connection);
 
   // Returns a new read-write backend named `base_name` within the instance's
-  // directory. This allows a single read-write connection to be bound. Returns
-  // no value in case of error (e.g., if the backend's files could not be opened
-  // or created, or if the backend's storage is corrupt).
-  std::unique_ptr<Backend> MakeBackend(const base::FilePath& base_name);
+  // directory. If `single_connection` is true, the returned backend may be used
+  // by only one `PersistentCache` instance -- connections to it cannot be
+  // shared for use by other instances. Returns null in case of error (e.g., if
+  // the backend's files could not be opened or created, or the backend's
+  // storage is corrupt).
+  std::unique_ptr<Backend> MakeBackend(const base::FilePath& base_name,
+                                       bool single_connection);
 
   // Returns a pending backend for a read-only connection to the backend named
   // `base_name` within the instance's directory. This allows another party to

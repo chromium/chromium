@@ -35,9 +35,17 @@ SandboxedFile::SandboxedFile(
     : underlying_file_(std::move(file)),
       access_rights_(access_rights),
       mapped_shared_lock_(std::move(mapped_shared_lock)) {}
+
 SandboxedFile::~SandboxedFile() = default;
 
-base::File SandboxedFile::TakeUnderlyingFile() {
+base::File SandboxedFile::TakeUnderlyingFile(FileType file_type) {
+  // Lock the file via filesystem APIs if this is the main database file and its
+  // creator wishes this to be the only connection allowed.
+  if (file_type == FileType::kMainDb && is_single_connection() &&
+      !AcquireSingleConnectionlock()) {
+    return {};
+  }
+  file_type_ = file_type;
   return std::move(underlying_file_);
 }
 
@@ -58,6 +66,13 @@ base::File& SandboxedFile::GetFile() {
 int SandboxedFile::Close() {
   CHECK(IsValid());
   underlying_file_ = std::move(opened_file_);
+
+  // Unlock the file via filesystem APIs if this is the main database file and
+  // its creator wishes this to be the only connection allowed.
+  if (file_type_ == FileType::kMainDb && is_single_connection()) {
+    ReleaseSingleConnectionlock();
+  }
+  file_type_ = std::nullopt;
   return SQLITE_OK;
 }
 
@@ -228,12 +243,18 @@ int SandboxedFile::FileSize(sqlite3_int64* result_size) {
 //   see:
 //     https://source.chromium.org/chromium/chromium/src/+/main:third_party/sqlite/src/src/pager.c;l=5260;drc=65d0312c96cd23958372fac8940314c782a6b03c
 int SandboxedFile::Lock(int mode) {
+  CHECK(*file_type_ == FileType::kMainDb);
   // Ensures valid lock states are used (see: sqlite3OsLock(...) assertions).
   CHECK(mode == SQLITE_LOCK_SHARED || mode == SQLITE_LOCK_RESERVED ||
         mode == SQLITE_LOCK_EXCLUSIVE);
 
   // Do nothing if there is already a lock of this type or more restrictive.
   if (sqlite_lock_mode_ >= mode) {
+    return SQLITE_OK;
+  }
+
+  if (is_single_connection()) {
+    sqlite_lock_mode_ = mode;
     return SQLITE_OK;
   }
 
@@ -364,11 +385,18 @@ int SandboxedFile::Lock(int mode) {
 // the state never went to EXCLUSIVE. This can happen when a connection gives up
 // on trying to get an EXCLUSIVE lock.
 int SandboxedFile::Unlock(int mode) {
+  CHECK(*file_type_ == FileType::kMainDb);
+
   // Ensures valid lock states are used (see: sqlite3OsUnlock(...) assertions).
   CHECK(mode == SQLITE_LOCK_NONE || mode == SQLITE_LOCK_SHARED);
 
   // Do nothing if there is already a lock of this type or less restrictive.
   if (sqlite_lock_mode_ <= mode) {
+    return SQLITE_OK;
+  }
+
+  if (is_single_connection()) {
+    sqlite_lock_mode_ = mode;
     return SQLITE_OK;
   }
 
@@ -395,8 +423,13 @@ int SandboxedFile::Unlock(int mode) {
 }
 
 int SandboxedFile::CheckReservedLock(int* has_reserved_lock) {
-  uint32_t lock_snapshot = GetSharedAtomicLock().load();
-  *has_reserved_lock = (lock_snapshot & kReservedBit) != 0;
+  CHECK(*file_type_ == FileType::kMainDb);
+  if (is_single_connection()) {
+    *has_reserved_lock = sqlite_lock_mode_ >= SQLITE_LOCK_RESERVED;
+  } else {
+    uint32_t lock_snapshot = GetSharedAtomicLock().load();
+    *has_reserved_lock = (lock_snapshot & kReservedBit) != 0;
+  }
   return SQLITE_OK;
 }
 
@@ -448,6 +481,24 @@ int SandboxedFile::Unfetch(sqlite3_int64 offset, void* fetch_result) {
 SharedAtomicLock& SandboxedFile::GetSharedAtomicLock() {
   CHECK(mapped_shared_lock_.IsValid());
   return *mapped_shared_lock_.GetMemoryAs<SharedAtomicLock>();
+}
+
+bool SandboxedFile::AcquireSingleConnectionlock() {
+  CHECK(underlying_file_.IsValid());
+  const auto error = underlying_file_.Lock(base::File::LockMode::kExclusive);
+  if (error == base::File::FILE_OK) {
+    return true;
+  }
+
+  base::UmaHistogramExactLinear("PersistentCache.Sqlite.LockError", -error,
+                                -base::File::FILE_ERROR_MAX);
+
+  return false;
+}
+
+void SandboxedFile::ReleaseSingleConnectionlock() {
+  CHECK(underlying_file_.IsValid());
+  underlying_file_.Unlock();
 }
 
 }  // namespace persistent_cache

@@ -17,9 +17,15 @@ namespace persistent_cache {
 
 namespace {
 
+// boolean parameter is true for a single-connection backend, or false for a
+// multi-connection backend.
+using PersistentCacheMojomTraitsTest = testing::TestWithParam<bool>;
+
 // Tests that a read-write PendingBackend for the SQLite backend can be
 // deserialized..
-TEST(PersistentCacheMojomTraitsTest, ReadWrite) {
+TEST_P(PersistentCacheMojomTraitsTest, ReadWrite) {
+  const bool is_single_connection = GetParam();
+
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
@@ -33,16 +39,21 @@ TEST(PersistentCacheMojomTraitsTest, ReadWrite) {
       temp_dir.GetPath().Append(FILE_PATH_LITERAL("two")),
       base::File::FLAG_CREATE | base::File::FLAG_READ | base::File::FLAG_WRITE);
   ASSERT_TRUE(source.sqlite_data.journal_file.IsValid());
-  source.sqlite_data.shared_lock = base::UnsafeSharedMemoryRegion::Create(4);
-  ASSERT_TRUE(source.sqlite_data.shared_lock.IsValid());
+
+  if (!is_single_connection) {
+    source.sqlite_data.shared_lock = base::UnsafeSharedMemoryRegion::Create(4);
+    ASSERT_TRUE(source.sqlite_data.shared_lock.IsValid());
+  }
   source.read_write = true;
 
   // Remember the original handles.
   base::PlatformFile db_file = source.sqlite_data.db_file.GetPlatformFile();
   base::PlatformFile journal_file =
       source.sqlite_data.journal_file.GetPlatformFile();
-  base::subtle::PlatformSharedMemoryHandle shared_lock =
-      source.sqlite_data.shared_lock.GetPlatformHandle();
+  std::optional<base::subtle::PlatformSharedMemoryHandle> shared_lock;
+  if (!is_single_connection) {
+    shared_lock = source.sqlite_data.shared_lock.GetPlatformHandle();
+  }
 
   // Serialize and deserialize the pending backend.
   PendingBackend result;
@@ -59,13 +70,22 @@ TEST(PersistentCacheMojomTraitsTest, ReadWrite) {
   EXPECT_TRUE(result.sqlite_data.db_file.IsValid());
   EXPECT_TRUE(result.sqlite_data.journal_file.IsValid());
   EXPECT_TRUE(result.read_write);
-  EXPECT_TRUE(result.sqlite_data.shared_lock.IsValid());
+  EXPECT_EQ(result.sqlite_data.shared_lock.IsValid(), !is_single_connection);
 
   // And the handles should match.
   EXPECT_EQ(result.sqlite_data.db_file.GetPlatformFile(), db_file);
   EXPECT_EQ(result.sqlite_data.journal_file.GetPlatformFile(), journal_file);
-  EXPECT_EQ(result.sqlite_data.shared_lock.GetPlatformHandle(), shared_lock);
+  if (!is_single_connection) {
+    EXPECT_EQ(result.sqlite_data.shared_lock.GetPlatformHandle(), shared_lock);
+  }
 }
+
+INSTANTIATE_TEST_SUITE_P(MultiConnection,
+                         PersistentCacheMojomTraitsTest,
+                         testing::Values(false));
+INSTANTIATE_TEST_SUITE_P(SingleConnection,
+                         PersistentCacheMojomTraitsTest,
+                         testing::Values(true));
 
 }  // namespace
 

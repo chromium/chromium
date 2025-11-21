@@ -22,6 +22,33 @@ namespace {
 std::once_flag g_register_vfs_once_flag;
 SqliteSandboxedVfsDelegate* g_instance = nullptr;
 
+SandboxedFile::FileType GetFileType(int sqlite_requested_type) {
+  static constexpr int kTypeMask =
+      SQLITE_OPEN_MAIN_DB | SQLITE_OPEN_TEMP_DB | SQLITE_OPEN_TRANSIENT_DB |
+      SQLITE_OPEN_MAIN_JOURNAL | SQLITE_OPEN_TEMP_JOURNAL |
+      SQLITE_OPEN_SUBJOURNAL | SQLITE_OPEN_SUPER_JOURNAL | SQLITE_OPEN_WAL;
+
+  switch (sqlite_requested_type & kTypeMask) {
+    case SQLITE_OPEN_MAIN_DB:
+      return SandboxedFile::FileType::kMainDb;
+    case SQLITE_OPEN_TEMP_DB:
+      return SandboxedFile::FileType::kTempDb;
+    case SQLITE_OPEN_TRANSIENT_DB:
+      return SandboxedFile::FileType::kTransientDb;
+    case SQLITE_OPEN_MAIN_JOURNAL:
+      return SandboxedFile::FileType::kMainJournal;
+    case SQLITE_OPEN_TEMP_JOURNAL:
+      return SandboxedFile::FileType::kTempJournal;
+    case SQLITE_OPEN_SUBJOURNAL:
+      return SandboxedFile::FileType::kSubjournal;
+    case SQLITE_OPEN_SUPER_JOURNAL:
+      return SandboxedFile::FileType::kSuperJournal;
+    case SQLITE_OPEN_WAL:
+      return SandboxedFile::FileType::kWal;
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 SqliteSandboxedVfsDelegate::SqliteSandboxedVfsDelegate() {
@@ -62,9 +89,8 @@ sql::SandboxedVfsFile* SqliteSandboxedVfsDelegate::RetrieveSandboxedVfsFile(
   return it->second;
 }
 
-base::File SqliteSandboxedVfsDelegate::OpenFile(
-    const base::FilePath& file_path,
-    int /*sqlite_requested_flags*/) {
+base::File SqliteSandboxedVfsDelegate::OpenFile(const base::FilePath& file_path,
+                                                int sqlite_requested_flags) {
   base::AutoLock lock(files_map_lock_);
 
   // If `file_name` is missing in the mapping there is no file to return.
@@ -73,8 +99,14 @@ base::File SqliteSandboxedVfsDelegate::OpenFile(
     return base::File();
   }
 
+  auto file_type = GetFileType(sqlite_requested_flags);
+
+  // Only the main database and its rollback journal are supported.
+  CHECK(file_type == SandboxedFile::FileType::kMainDb ||
+        file_type == SandboxedFile::FileType::kMainJournal);
+
   // If `file_name` is found in the mapping return the associated file.
-  return it->second->TakeUnderlyingFile();
+  return it->second->TakeUnderlyingFile(file_type);
 }
 
 int SqliteSandboxedVfsDelegate::DeleteFile(const base::FilePath& file_path,

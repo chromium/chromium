@@ -39,10 +39,6 @@ struct StructTraits<persistent_cache::mojom::PendingReadWriteBackendDataView,
   static base::UnsafeSharedMemoryRegion shared_lock(
       persistent_cache::PendingBackend& pending_backend) {
     CHECK_EQ(pending_backend.read_write, true);
-    // `PendingReadWriteBackend::shared_lock` is not nullable, so it is not
-    // permissible to serialize `pending_backend` if it does not have a valid
-    // shared lock handle.
-    CHECK(pending_backend.sqlite_data.shared_lock.IsValid());
     return std::move(pending_backend.sqlite_data.shared_lock);
   }
 
