@@ -2145,10 +2145,6 @@ BASE_FEATURE(kSecPurposePrefetchHeaderRelPrefetch,
 BASE_FEATURE(kSendCnameAliasesToSubresourceFilterFromRenderer,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Experiment of the delay from navigation to starting an update of a service
-// worker's script.
-BASE_FEATURE(kServiceWorkerUpdateDelay, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, calling setInterval(..., 0) will not clamp to 1ms.
 // Tracking bug: https://crbug.com/402694.
 BASE_FEATURE(kSetIntervalWithoutClamp, base::FEATURE_ENABLED_BY_DEFAULT);

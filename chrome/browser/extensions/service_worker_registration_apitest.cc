@@ -766,7 +766,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRegistrationApiTest,
                        MAYBE_ModifyingLocalFilesForUnpackedExtensions) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   const double kUpdateDelayInMilliseconds =
-      content::ServiceWorkerContext::GetUpdateDelay().InMillisecondsF();
+      content::ServiceWorkerContext::kUpdateDelay.InMillisecondsF();
   // Assert that whatever our update delay is, it's less than 5 seconds. If it
   // were more, the test would risk timing out. If we ever need to exceed this
   // in practice, we could introduce a test setter for a different amount of

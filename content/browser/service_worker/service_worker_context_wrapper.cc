@@ -103,9 +103,6 @@ GetRunningInfoVersionStatusForStatus(
   }
 }
 
-const base::FeatureParam<int> kUpdateDelayParam{
-    &blink::features::kServiceWorkerUpdateDelay, "update_delay_in_ms", 1000};
-
 void DidFindRegistrationForStartActiveWorker(
     ServiceWorkerContextWrapper::StatusCallback callback,
     blink::ServiceWorkerStatusCode status,
@@ -255,11 +252,6 @@ void ServiceWorkerContext::RunTask(
   task_runner->PostTask(
       from_here,
       base::BindOnce(&RunOnceClosure, std::move(ref), std::move(task)));
-}
-
-// static
-base::TimeDelta ServiceWorkerContext::GetUpdateDelay() {
-  return base::Milliseconds(kUpdateDelayParam.Get());
 }
 
 ServiceWorkerContextWrapper::ServiceWorkerContextWrapper(
