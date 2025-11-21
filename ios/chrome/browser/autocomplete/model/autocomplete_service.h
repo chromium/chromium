@@ -41,6 +41,9 @@ class AutocompleteService : public KeyedService {
   OmniboxShortcutsHelper* GetOmniboxShortcutsHelper(
       OmniboxPresentationContext context);
 
+  // Removes AutocompleteController and Shortcuts helper for all context.
+  void RemoveServices();
+
  private:
   // Creates a new AutocompleteController.
   std::unique_ptr<AutocompleteController> CreateAutocompleteController();

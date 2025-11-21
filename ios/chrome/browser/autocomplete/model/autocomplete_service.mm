@@ -54,6 +54,11 @@ OmniboxShortcutsHelper* AutocompleteService::GetOmniboxShortcutsHelper(
   return helper_ptr;
 }
 
+void AutocompleteService::RemoveServices() {
+  controllers_.clear();
+  shortcuts_helpers_.clear();
+}
+
 std::unique_ptr<AutocompleteController>
 AutocompleteService::CreateAutocompleteController() {
   std::unique_ptr<AutocompleteProviderClient> provider_client =

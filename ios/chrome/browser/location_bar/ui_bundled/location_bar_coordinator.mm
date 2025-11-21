@@ -18,6 +18,8 @@
 #import "components/search_engines/util.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h"
+#import "ios/chrome/browser/autocomplete/model/autocomplete_service.h"
+#import "ios/chrome/browser/autocomplete/model/autocomplete_service_factory.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_button_factory.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_delegate.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_mediator.h"
@@ -446,6 +448,10 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 
   // The popup has to be destroyed before the location bar.
   [self.omniboxCoordinator stop];
+  // TODO(crbug.com/462700929): Cleanup the service's objects like when it was
+  // owned by the omnibox. Remove this workaround once the service can be safely
+  // cleaned up during shutdown.
+  AutocompleteServiceFactory::GetForProfile(self.profile)->RemoveServices();
   [self.badgeMediator disconnect];
   self.badgeMediator = nil;
   _locationBar.reset();
