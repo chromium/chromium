@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/test_future.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/process_dice_header_delegate_impl.h"
@@ -17,14 +18,16 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/primary_account_change_event.h"
+#include "components/signin/public/identity_manager/test_identity_manager_observer.h"
 #include "components/sync/base/features.h"
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
-#include "content/public/test/test_navigation_observer.h"
 #include "ui/base/interaction/state_observer.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
@@ -36,6 +39,9 @@ const InteractiveBrowserTest::DeepQuery kHistoryOptinAcceptButton = {
     "history-sync-optin-app", "#acceptButton"};
 const InteractiveBrowserTest::DeepQuery kHistoryOptinRejectButton = {
     "history-sync-optin-app", "#rejectButton"};
+
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSignoutDialogWebContentsId);
+
 }  // namespace
 
 class SyncSettingsInteractiveTest
@@ -72,65 +78,58 @@ class SyncSettingsInteractiveTest
     return state_change;
   }
 
-  auto ClickButton(ui::ElementIdentifier parent_element_id,
-                   DeepQuery button_query) {
-    return Steps(
-        ExecuteJsAt(parent_element_id, button_query, "e => e.click()"));
-  }
-
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(crbug.com/407795729): Fix and re-enable.
 IN_PROC_BROWSER_TEST_F(SyncSettingsInteractiveTest,
-                       DISABLED_PressingSignOutButtonsSignsOutUser) {
+                       PressingSignOutButtonsSignsOutUser) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTabContents);
 
   const DeepQuery turn_off_button_query = {"settings-ui",
                                            "settings-main",
                                            "settings-people-page-index",
-                                           "settings-people-page",
+                                           "settings-account-page",
                                            "settings-sync-account-control",
                                            "cr-button#signout-button"};
 
   const DeepQuery drop_down_query = {"settings-ui",
                                      "settings-main",
                                      "settings-people-page-index",
-                                     "settings-people-page",
+                                     "settings-account-page",
                                      "settings-sync-account-control",
                                      "cr-icon-button#dropdown-arrow"};
 
-  std::unique_ptr<content::TestNavigationObserver> observer;
-  auto url = GURL(chrome::kChromeUISignoutConfirmationURL);
-  observer = std::make_unique<content::TestNavigationObserver>(url);
-  observer->StartWatchingNewWebContents();
+  signin::MakeAccountAvailable(identity_manager(),
+                               identity_test_env()
+                                   ->CreateAccountAvailabilityOptionsBuilder()
+                                   .AsPrimary(signin::ConsentLevel::kSignin)
+                                   .WithCookie()
+                                   .Build("kTestEmail@gmail.com"));
+
+  signin::TestIdentityManagerObserver primary_account_observer(
+      identity_manager());
+  base::test::TestFuture<signin::PrimaryAccountChangeEvent>
+      primary_account_changed_future;
+  primary_account_observer.SetOnPrimaryAccountChangedCallback(
+      primary_account_changed_future.GetCallback());
 
   RunTestSequence(
-      Do([&]() {
-        identity_test_env()->MakePrimaryAccountAvailable(
-            "kTestEmail@email.com", signin::ConsentLevel::kSignin);
-      }),
       InstrumentTab(kFirstTabContents),
-      NavigateWebContents(kFirstTabContents, GURL(chrome::GetSettingsUrl(
-                                                 chrome::kSyncSetupSubPage))),
-      ExecuteJsAt(kFirstTabContents, drop_down_query,
-                  "e => e.visibility === \"hidden\""),
-      ClickButton(kFirstTabContents, turn_off_button_query));
+      NavigateWebContents(kFirstTabContents,
+                          GURL(chrome::kChromeUIAccountSettingsURL)),
+      EnsureNotVisible(kFirstTabContents, drop_down_query),
+      ClickElement(kFirstTabContents, turn_off_button_query),
+      WaitForShow(
+          SigninViewController::kSignoutConfirmationDialogViewElementId),
+      InstrumentNonTabWebView(
+          kSignoutDialogWebContentsId,
+          SigninViewController::kSignoutConfirmationDialogViewElementId),
+      ClickElement(kSignoutDialogWebContentsId,
+                   {"signout-confirmation-app", "cr-button#acceptButton"}));
 
-  if (observer.get()) {
-    observer->Wait();
-    auto* signin_view_controller =
-        browser()->GetFeatures().signin_view_controller();
-    CHECK(signin_view_controller->ShowsModalDialog());
-
-    auto* signout_ui = SignoutConfirmationUI::GetForTesting(
-        signin_view_controller->GetModalDialogWebContentsForTesting());
-    ASSERT_TRUE(signout_ui);
-    signout_ui->AcceptDialogForTesting();
-  }
-
-  ASSERT_FALSE(identity_manager()->HasPrimaryAccountWithRefreshToken(
+  EXPECT_TRUE(primary_account_changed_future.Wait());
+  EXPECT_FALSE(identity_manager()->HasPrimaryAccountWithRefreshToken(
       signin::ConsentLevel::kSignin));
 }
 
@@ -158,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(SyncSettingsInteractiveTest,
       WaitForStateChange(kTabId, UiElementHasAppeared(kSignInButton)),
       PollState(kTabCountState,
                 [&]() { return browser()->tab_strip_model()->count() == 2; }),
-      ClickButton(kTabId, kSignInButton), WaitForState(kTabCountState, true),
+      ClickElement(kTabId, kSignInButton), WaitForState(kTabCountState, true),
       StopObservingState(kTabCountState),
       InstrumentTab(kDiceSignInTabId, 1, browser()), Do([&]() {
         CoreAccountInfo account_info =
@@ -212,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(
       NavigateWebContents(kTabId, kAccountSettingsUrl),
       WaitForStateChange(kTabId, PageWithMatchingTitle("Settings")),
       WaitForStateChange(kTabId, UiElementHasAppeared(kContinueAsButton)),
-      ClickButton(kTabId, kContinueAsButton),
+      ClickElement(kTabId, kContinueAsButton),
       WaitForShow(SigninViewController::kHistorySyncOptinViewId),
       InstrumentNonTabWebView(kHistorySyncOptinDialogContentsId,
                               SigninViewController::kHistorySyncOptinViewId),
