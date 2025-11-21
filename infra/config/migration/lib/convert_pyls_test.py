@@ -3,6 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import dataclasses
 import datetime
 import pathlib
 import sys
@@ -18,40 +19,46 @@ from lib import pyl
 # return typing.Any to prevent type checkers from complaining about the general
 # typing.Value type being passed where a more specific type is expected without
 # having to specify a type or cast for each call
-def _to_pyl_value(value: object) -> typing.Any:
-  nodes = list(pyl.parse('test', repr(value)))
-  assert len(nodes) == 1 and isinstance(nodes[0], pyl.Value), (
-      f'{object!r} does not parse to a single pyl.Value, got {nodes}')
-  return nodes[0]
+def _to_pyl_value(value: str) -> typing.Any:
+  nodes = list(pyl.parse('test', value))
+  assert (all(isinstance(n, pyl.Comment) for n in nodes[:-1])
+          and isinstance(nodes[-1], pyl.Value)
+          ), f'{value!r} does not parse to a single pyl.Value, got {nodes}'
+  node = nodes[-1]
+  return dataclasses.replace(node, comments=tuple(nodes[:-1]))
 
 
 class ConvertPylsTest(unittest.TestCase):
 
   def test_convert_gn_isolate_map_pyl_success(self):
-    gn_isolate_map = {
-        "script_test": {
+    gn_isolate_map = textwrap.dedent("""\
+        {
+          # comment on isolate
+          "script_test": {
+            # comment on field
             "label": "//abc/def:script_test",
             "type": "script",
             "script": "//abc/def/script_test.py",
-        },
-        "compile_target": {
+          },
+          "compile_target": {
             "label": "//ghi/jkl:compile_target",
             "type": "additional_compile_target",
-        },
-        "script_test2": {
+          },
+          "script_test2": {
             "label": "//mno/pqr:script_test2",
             "type": "script",
             "script": "//mno/pqr/script_test2.py",
             "args": [
-                "--foo",
-                "--bar",
+              "--foo",
+              "--bar",
             ],
-        },
-        "non_script_test": {
+          },
+          "non_script_test": {
             "label": "//stu/vwx:non_script_test",
             "type": "console_test_launcher",
-        },
-    }
+          },
+        }
+        """)
 
     files = convert_pyls.convert_gn_isolate_map_pyl(
         _to_pyl_value(gn_isolate_map))
@@ -76,8 +83,10 @@ class ConvertPylsTest(unittest.TestCase):
 
         load("@chromium-luci//targets.star", "targets")
 
+        # comment on isolate
         targets.binaries.script(
           name = "script_test",
+          # comment on field
           label = "//abc/def:script_test",
           script = "//abc/def/script_test.py",
         )
@@ -121,23 +130,25 @@ class ConvertPylsTest(unittest.TestCase):
     self.assertEqual(compile_targets_star, expected_compile_targets_star)
 
   def test_isolate_missing_type(self):
-    gn_isolate_map = _to_pyl_value({
-        'test_isolate': {
-            'label': '//:test_label',
-        },
-    })
+    gn_isolate_map = _to_pyl_value(
+        repr({
+            'test_isolate': {
+                'label': '//:test_label',
+            },
+        }))
     with self.assertRaises(Exception) as caught:
       convert_pyls.convert_gn_isolate_map_pyl(gn_isolate_map)
     self.assertEqual(str(caught.exception),
                      'test:1:1: isolate test_isolate missing type')
 
   def test_args_for_compile_target(self):
-    gn_isolate_map = _to_pyl_value({
-        'test_isolate': {
-            'type': 'additional_compile_target',
-            'args': [],
-        },
-    })
+    gn_isolate_map = _to_pyl_value(
+        repr({
+            'test_isolate': {
+                'type': 'additional_compile_target',
+                'args': [],
+            },
+        }))
     with self.assertRaises(Exception) as caught:
       convert_pyls.convert_gn_isolate_map_pyl(gn_isolate_map)
     self.assertEqual(
@@ -147,12 +158,13 @@ class ConvertPylsTest(unittest.TestCase):
     )
 
   def test_script_for_non_script_type(self):
-    gn_isolate_map = _to_pyl_value({
-        'test_isolate': {
-            'type': 'executable',
-            'script': 'run.py'
-        },
-    })
+    gn_isolate_map = _to_pyl_value(
+        repr({
+            'test_isolate': {
+                'type': 'executable',
+                'script': 'run.py'
+            },
+        }))
     with self.assertRaises(Exception) as caught:
       convert_pyls.convert_gn_isolate_map_pyl(gn_isolate_map)
     self.assertEqual(
@@ -162,12 +174,13 @@ class ConvertPylsTest(unittest.TestCase):
     )
 
   def test_unhandled_key_in_isolate(self):
-    gn_isolate_map = _to_pyl_value({
-        'test_isolate': {
-            'type': 'executable',
-            'unknown_key': 'value'
-        },
-    })
+    gn_isolate_map = _to_pyl_value(
+        repr({
+            'test_isolate': {
+                'type': 'executable',
+                'unknown_key': 'value'
+            },
+        }))
     with self.assertRaises(Exception) as caught:
       convert_pyls.convert_gn_isolate_map_pyl(gn_isolate_map)
     self.assertEqual(str(caught.exception),

@@ -7,6 +7,7 @@ import collections.abc
 import datetime
 import typing
 
+from . import comments
 from . import pyl
 from . import starlark_conversions
 from . import values
@@ -75,34 +76,41 @@ def convert_gn_isolate_map_pyl(
 
     declaration = values.CallValueBuilder(function)
     # Comments will be attached to the declaration itself
-    declaration['name'] = starlark_conversions.convert_direct(isolate_name)
+    declaration['name'] = starlark_conversions.convert_direct(
+        isolate_name, include_comments=False)
 
     for key, value in isolate.items:
       match key.value:
         case 'type':
           # Already handled by choosing the function to call
-          pass
+          continue
 
         case 'args' | 'module_scheme':
           if is_compile_target:
             raise Exception((f'{key.start}: args specified for isolate'
                              f' "{isolate_name.value}"'
                              ' with type "additional_compile_target"'))
-          declaration[key.value] = starlark_conversions.convert_direct(value)
 
         case 'label':
-          declaration[key.value] = starlark_conversions.convert_direct(value)
+          pass
 
         case 'script':
           if isolate_type != 'script':
             raise Exception(
                 f'{key.start}: script specified for isolate "{isolate_name.value}"'
                 f' with non-"script" type "{isolate_type}"')
-          declaration[key.value] = starlark_conversions.convert_direct(value)
 
         case _:
           raise Exception(
               f'{key.start}: unhandled key in isolate: "{key.value}"')
+
+      converted_value = starlark_conversions.convert_direct(value)
+      assert not isinstance(converted_value, values.CommentedValue), (
+          f'{value.start} unexpected comment on value for key "{key.value}"')
+      converted_param = starlark_conversions.param_name(key)
+      declaration[converted_param] = converted_value
+
+    declaration = comments.comment(isolate_name, declaration)
 
     declarations_to_update = (compile_target_declarations
                               if is_compile_target else binary_declarations)

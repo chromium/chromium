@@ -258,6 +258,71 @@ class ValueBuildersTest(unittest.TestCase):
         builder.output(),
     )
 
+  def test_commented_value_with_string(self):
+    value = values.CommentedValue('my_value', ['# comment 1', '# comment 2'])
+    self.assertEqual(
+        '# comment 1\n# comment 2\nmy_value',
+        value.output(),
+    )
+
+  def test_commented_value_with_value_builder(self):
+    test_value_builder = TestValueBuilder()
+    test_value_builder.entries = ['x', 'y']
+    value = values.CommentedValue(test_value_builder, ['# a comment'])
+    self.assertEqual(
+        textwrap.dedent("""\
+            # a comment
+            <
+              x,
+              y,
+            >"""),
+        value.output(),
+    )
+
+  def test_commented_value_with_empty_value_builder(self):
+    test_value_builder = TestValueBuilder()
+    value = values.CommentedValue(test_value_builder, ['# a comment'])
+    self.assertIsNone(value.output())
+
+  def test_list_builder_with_commented_value(self):
+    builder = values.ListValueBuilder([
+        values.CommentedValue('foo', ['# comment']),
+        'bar',
+    ])
+    self.assertEqual(
+        textwrap.dedent("""\
+            [
+              # comment
+              foo,
+              bar,
+            ]"""),
+        builder.output(),
+    )
+
+  def test_dict_builder_with_comments(self):
+    key = values.CommentedValue("'foo'", ['# key comment'])
+    builder = values.DictValueBuilder({key: 'x'})
+    self.assertEqual(
+        textwrap.dedent("""\
+            {
+              # key comment
+              'foo': x,
+            }"""),
+        builder.output(),
+    )
+
+  def test_call_builder_with_comments(self):
+    key = values.CommentedValue('foo', ['# name comment'])
+    builder = values.CallValueBuilder('func', {key: 'x'})
+    self.assertEqual(
+        textwrap.dedent("""\
+            func(
+              # name comment
+              foo = x,
+            )"""),
+        builder.output(),
+    )
+
 
 if __name__ == '__main__':
   unittest.main()  # pragma: no cover

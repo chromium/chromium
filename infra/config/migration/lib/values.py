@@ -61,20 +61,12 @@ list_builder.output will be
   ]
 """
 
+from __future__ import annotations
+
 import abc
 import collections.abc
 import typing
 
-# A value that can be contained by another value. A string value will be output
-# as-is. A ValueBuilder may or may not produce output.
-Value: typing.TypeAlias = 'str | ValueBuilder'
-
-
-def to_output(value: Value) -> str | None:
-  """Get the output for a starlark value."""
-  if isinstance(value, ValueBuilder):
-    return value.output()
-  return value
 
 
 class ValueBuilder(abc.ABC):
@@ -105,6 +97,57 @@ class ValueBuilder(abc.ABC):
   @abc.abstractmethod
   def _output_stream(self, indent: str) -> typing.Iterable[str] | None:
     raise NotImplementedError()  # pragma: no cover
+
+
+# A value that can be contained by another value. A string value will be output
+# as-is. A ValueBuilder may or may not produce output.
+Value: typing.TypeAlias = str | ValueBuilder
+
+
+def to_output(value: Value | CommentedValue) -> str | None:
+  """Get the output for a starlark value."""
+  if isinstance(value, (ValueBuilder, CommentedValue)):
+    return value.output()
+  return value
+
+
+T = typing.TypeVar('T', bound=Value)
+
+
+class CommentedValue(typing.Generic[T]):
+  """A class for adding comments to a value."""
+
+  def __init__(self, value: T, comments: list[str]):
+    self._value = value
+    self._comments = comments
+
+  def output(self) -> str | None:
+    """Get the final output of the value.
+
+    Returns:
+      A string if the there is output associated with the value,
+      otherwise None.
+    """
+    output_stream = self._output_stream('')
+    if output_stream is None:
+      return None
+    return ''.join(output_stream)
+
+  def _output_stream(self, indent: str) -> typing.Iterable[str] | None:
+    if isinstance(self._value, ValueBuilder):
+      value_output = self._value._output_stream(indent)
+      if value_output is None:
+        return None
+    else:
+      value_output = [self._value]
+    output_stream = []
+    for comment in self._comments:
+      output_stream.extend([comment, '\n', indent])
+    output_stream.extend(value_output)
+    return output_stream
+
+
+MaybeCommentedValue: typing.TypeAlias = T | CommentedValue[T]
 
 
 class _CompoundValueBuilder(ValueBuilder):
@@ -180,7 +223,7 @@ class _CompoundValueBuilder(ValueBuilder):
 
   @staticmethod
   def _get_output_stream_for_contained_value(
-      contained_value: Value,
+      contained_value: Value | CommentedValue,
       indent: str,
   ) -> typing.Iterable[str] | None:
     """Get the text of a value.
@@ -194,7 +237,7 @@ class _CompoundValueBuilder(ValueBuilder):
       are entries that produce text, otherwise None. The elements of the
       iterable will be concatenated in the final string.
     """
-    if isinstance(contained_value, ValueBuilder):
+    if isinstance(contained_value, (ValueBuilder, CommentedValue)):
       return contained_value._output_stream(indent)
     return [contained_value]
 
@@ -208,9 +251,11 @@ class CallValueBuilder(_CompoundValueBuilder):
   parameters will appear in the output in the order they were added.
   """
 
+  ParamName: typing.TypeAlias = MaybeCommentedValue[str]
+
   def __init__(self,
                function: str,
-               params: collections.abc.Mapping[str, Value] | None = None,
+               params: collections.abc.Mapping[ParamName, Value] | None = None,
                *,
                elide_param: str | None = None,
                **kwargs):
@@ -227,7 +272,7 @@ class CallValueBuilder(_CompoundValueBuilder):
     self._params = dict(params or {})
     self._elide_param = elide_param
 
-  def __setitem__(self, param_name: str, param_value: Value) -> None:
+  def __setitem__(self, param_name: ParamName, param_value: Value) -> None:
     """Add an additional parameter to the call."""
     self._params[param_name] = param_value
 
@@ -267,7 +312,11 @@ class CallValueBuilder(_CompoundValueBuilder):
 
     def gen():
       for key, output_stream in param_output_streams.items():
-        yield f'{indent}{key} = '
+        yield indent
+        key_stream = self._get_output_stream_for_contained_value(key, indent)
+        assert key_stream
+        yield from key_stream
+        yield ' = '
         yield from output_stream
         yield ',\n'
 
@@ -281,8 +330,10 @@ class DictValueBuilder(_CompoundValueBuilder):
   in the order they were added.
   """
 
+  Key: typing.TypeAlias = MaybeCommentedValue[str]
+
   def __init__(self,
-               items: collections.abc.Mapping[str, Value] | None = None,
+               items: collections.abc.Mapping[Key, Value] | None = None,
                **kwargs):
     """Initialize the CallValueBuilder.
 
@@ -294,7 +345,7 @@ class DictValueBuilder(_CompoundValueBuilder):
     super().__init__(**kwargs)
     self._items = dict(items or {})
 
-  def __setitem__(self, key: str, value: Value) -> None:
+  def __setitem__(self, key: Key, value: Value) -> None:
     """Add an additional item to the dict."""
     self._items[key] = value
 
@@ -318,7 +369,11 @@ class DictValueBuilder(_CompoundValueBuilder):
 
     def gen():
       for key, output_stream in item_output_streams.items():
-        yield f'{indent}{key}: '
+        yield indent
+        key_stream = self._get_output_stream_for_contained_value(key, indent)
+        assert key_stream
+        yield from key_stream
+        yield ': '
         yield from output_stream
         yield ',\n'
 
@@ -332,9 +387,13 @@ class ListValueBuilder(_CompoundValueBuilder):
   appear in the order they were added.
   """
 
-  def __init__(self,
-               elements: collections.abc.Iterable[Value] | None = None,
-               **kwargs):
+  Element: typing.TypeAlias = MaybeCommentedValue[Value]
+
+  def __init__(
+      self,
+      elements: collections.abc.Iterable[MaybeCommentedValue[T]] | None = None,
+      **kwargs,
+  ):
     """Initialize the ListValueBuilder.
 
     Args:
@@ -343,9 +402,9 @@ class ListValueBuilder(_CompoundValueBuilder):
         before any elements added after initialization.
     """
     super().__init__(**kwargs)
-    self._elements = list(elements or [])
+    self._elements: list[ListValueBuilder.Element] = list(elements or [])
 
-  def append(self, value: Value) -> None:
+  def append(self, value: Element) -> None:
     """Add an additional element to the list."""
     self._elements.append(value)
 
