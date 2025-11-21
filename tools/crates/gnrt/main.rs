@@ -26,12 +26,16 @@ struct GnrtArgs {
 enum Command {
     #[command(about = "Add a new third-party crate dependency in //third_party/rust")]
     Add(AddCommandArgs),
+
     #[command(about = "Format chromium_crates_io/gnrt_config.toml and Cargo.toml")]
     Fmt,
+
     #[command(about = "Generate GN build rules from third_party/rust crates")]
     Gen(GenCommandArgs),
+
     #[command(about = "Update the Cargo.lock to newer versions for //third_party/rust")]
     Update(UpdateCommandArgs),
+
     #[command(about = "Download all third-party crate dependencies in //third_party/rust")]
     Vendor(VendorCommandArgs),
 }

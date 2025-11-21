@@ -36,7 +36,7 @@ pub struct ReadmeFile {
 /// written. The value is the contents of the README file, which can be
 /// consumed by a handlebars template.
 pub fn readme_files_from_packages<'a>(
-    deps: impl IntoIterator<Item = PackageMetadata<'a>>,
+    deps: impl IntoIterator<Item = &'a PackageMetadata<'a>>,
     paths: &paths::ChromiumPaths,
     extra_config: &BuildConfig,
     mut find_group: impl FnMut(&'a PackageId) -> Group,
@@ -68,7 +68,7 @@ pub fn readme_files_from_packages<'a>(
 }
 
 fn readme_file_from_package<'a>(
-    package: PackageMetadata<'a>,
+    package: &'a PackageMetadata<'a>,
     paths: &paths::ChromiumPaths,
     extra_config: &BuildConfig,
     find_group: &mut dyn FnMut(&'a PackageId) -> Group,

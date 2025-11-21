@@ -10,7 +10,7 @@ use crate::inherit::{
     find_inherited_shipped_flag,
 };
 use crate::paths::{self, get_build_dir_for_package, get_vendor_dir_for_package};
-use crate::readme;
+use crate::readme::{self, ReadmeFile};
 use crate::util::{
     create_dirs_if_needed, get_guppy_package_graph, init_handlebars,
     init_handlebars_with_template_paths, remove_checksums_from_lock, render_handlebars,
@@ -27,6 +27,19 @@ use std::ffi::OsString;
 use std::fs::File;
 use std::path::{Path, PathBuf};
 
+/// `fn vendor` implements handling of the `gnrt vendor` CLI command - this
+/// covers the following steps:
+///
+/// 1. Downloading missing dependencies from https://crates.io into
+///    `third_party/rust/chromium_crates_io/vendor/`
+///     - Using `cargo` / `guppy` (in online mode) to resolve transitive
+///       dependencies of `third_party/rust/chromium_crates_io/Cargo.toml`
+///     - Downloading and extracting crate sources
+///     - Applying patches from `third_party/rust/chromium_crates_io/patches/`
+/// 2. Generating additional Chromium metadata for all dependencies:
+///     - Using `cargo` / `guppy` (in offline mode) to resolve transitive
+///       dependencies of `third_party/rust/chromium_crates_io/Cargo.toml`
+///     - Generating `README.chromium` files
 pub fn vendor(args: VendorCommandArgs, paths: &paths::ChromiumPaths) -> Result<()> {
     // Vendoring needs to work with real crates.io, not with our locally vendored
     // crates.
@@ -147,13 +160,6 @@ fn update_vendored_metadata(args: &VendorCommandArgs, paths: &paths::ChromiumPat
     let config_file_path = paths.third_party_config_file;
     let config = config::BuildConfig::from_path(config_file_path)?;
 
-    // `unwrap` ok, because `BuildConfig::from_path` would have failed if there is
-    // no parent.
-    let third_party_dir = paths.third_party_config_file.parent().unwrap();
-    let readme_template_path = third_party_dir.join(&config.gn_config.readme_file_template);
-    let handlebars = init_handlebars_with_template_paths(&[&readme_template_path])
-        .context("init_handlebars for `README.chromium.hbs")?;
-
     // Fetch the package graph again based on the locally vendored crates, to ensure
     // that locally applied patches which impact the package graph are considered.
     // Although --offline is passed, this function also expects to be executed
@@ -168,26 +174,28 @@ fn update_vendored_metadata(args: &VendorCommandArgs, paths: &paths::ChromiumPat
         Err(_) => anyhow::bail!("cargo workspace must contain exactly one package"),
     }
     .id();
+    let used_packages = {
+        let guppy_resolved_package_ids: HashSet<deps::PackageId> =
+            deps::collect_dependencies(&graph, &config.resolve.root, &config)?
+                .iter()
+                .map(|p| p.into())
+                .collect();
+        graph
+            .packages()
+            .filter(|meta: &PackageMetadata| {
+                !config.resolve.remove_crates.contains(meta.name())
+                    && guppy_resolved_package_ids.contains(&meta.into())
+            })
+            .collect_vec()
+    };
 
     let find_group = |id| find_inherited_privilege_group(id, root, &graph, &config);
     let find_security_critical =
         |id| find_inherited_security_critical_flag(id, root, &graph, &config);
     let find_shipped = |id| find_inherited_shipped_flag(id, root, &graph, &config);
-
-    let guppy_resolved_package_ids: HashSet<deps::PackageId> =
-        deps::collect_dependencies(&graph, &config.resolve.root, &config)?
-            .iter()
-            .map(|p| p.into())
-            .collect();
-
-    let filter_removed = |meta: &PackageMetadata| {
-        !config.resolve.remove_crates.contains(meta.name())
-            && guppy_resolved_package_ids.contains(&meta.into())
-    };
-
     let all_readme_files: HashMap<PathBuf, readme::ReadmeFile> =
         readme::readme_files_from_packages(
-            graph.packages().filter(filter_removed),
+            used_packages.iter(),
             paths,
             &config,
             find_group,
@@ -195,8 +203,17 @@ fn update_vendored_metadata(args: &VendorCommandArgs, paths: &paths::ChromiumPat
             find_shipped,
         )?;
 
-    // Find any build dirs which don't correspond to vendored sources anymore,
-    // i.e. that are not present in `all_readme_files`.
+    remove_stale_build_directories(paths, all_readme_files.keys().cloned().collect())?;
+    generate_readme_files(&config, paths, &all_readme_files, args.dump_template_input)?;
+
+    Ok(())
+}
+
+/// Removes stale `//third_party/rust/<no_longer_needed_crate_dir>` directories.
+fn remove_stale_build_directories(
+    paths: &paths::ChromiumPaths,
+    used_dirs: HashSet<PathBuf>,
+) -> Result<()> {
     for crate_dir in std::fs::read_dir(paths.third_party)? {
         let crate_dir = crate_dir.context("crate_dir")?;
         if !crate_dir.metadata().context("crate_dir metadata")?.is_dir() {
@@ -207,7 +224,7 @@ fn update_vendored_metadata(args: &VendorCommandArgs, paths: &paths::ChromiumPat
             let epoch_dir = epoch_dir.context("epoch_dir")?;
 
             // There are vendored sources for the epoch dir, go to the next.
-            if all_readme_files.contains_key(&epoch_dir.path()) {
+            if used_dirs.contains(&epoch_dir.path()) {
                 continue;
             }
 
@@ -223,12 +240,29 @@ fn update_vendored_metadata(args: &VendorCommandArgs, paths: &paths::ChromiumPat
         }
     }
 
+    Ok(())
+}
+
+/// Generates `//third_party/rust/<crate>/<epoch>/README.chromium` files.
+fn generate_readme_files(
+    config: &config::BuildConfig,
+    paths: &paths::ChromiumPaths,
+    all_readme_files: &HashMap<PathBuf, ReadmeFile>,
+    dump_template_input: bool,
+) -> Result<()> {
+    // `unwrap` ok, because `BuildConfig::from_path` would have failed if there is
+    // no parent.
+    let third_party_dir = paths.third_party_config_file.parent().unwrap();
+    let readme_template_path = third_party_dir.join(&config.gn_config.readme_file_template);
+    let handlebars = init_handlebars_with_template_paths(&[&readme_template_path])
+        .context("init_handlebars for `README.chromium.hbs")?;
+
     for dir in all_readme_files.keys() {
         create_dirs_if_needed(dir).context(format!("dir: {}", dir.display()))?;
     }
 
-    if args.dump_template_input {
-        for (dir, readme_file) in &all_readme_files {
+    if dump_template_input {
+        for (dir, readme_file) in all_readme_files.iter() {
             serde_json::to_writer_pretty(
                 std::fs::File::create(dir.join("gnrt-template-input.json"))
                     .context("opening dump file")?,
@@ -239,7 +273,7 @@ fn update_vendored_metadata(args: &VendorCommandArgs, paths: &paths::ChromiumPat
         return Ok(());
     }
 
-    for (dir, readme_file) in &all_readme_files {
+    for (dir, readme_file) in all_readme_files {
         render_handlebars(
             &handlebars,
             &readme_template_path,

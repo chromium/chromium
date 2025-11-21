@@ -19,7 +19,13 @@ use std::process::{Command, Stdio};
 
 use anyhow::{ensure, format_err, Context, Result};
 
-/// Implementation of `gnrt gen ...` command.
+/// `fn generate` implements handling of the `gnrt gen` CLI command - this
+/// covers the following steps (for either `//build/rust/std` or for
+/// `//third_party/rust`):
+///
+/// 1. Using `cargo` / `guppy` (in offline mode) to resolve transitive
+///    dependencies of `Cargo.toml`
+/// 2. Generating all required `BUILD.gn` files
 pub fn generate(args: GenCommandArgs, paths: &paths::ChromiumPaths) -> Result<()> {
     if args.for_std.is_some() {
         generate_for_std(args, paths)
