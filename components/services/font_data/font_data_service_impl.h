@@ -87,7 +87,7 @@ class FontDataServiceImpl : public mojom::FontDataService {
   // null. This is a helper method that can be overridden for testing purposes.
   // The second member of the tuple is an ID that uniquely identifies a given
   // file on disk, even for multiple different file handles to that same file.
-  virtual std::tuple<base::File, size_t> GetFileHandle(SkTypeface& typeface);
+  virtual std::tuple<base::File, uint64_t> GetFileHandle(SkTypeface& typeface);
 
  private:
   // Checks the shared memory region cache and returns an index if found. On
@@ -95,7 +95,7 @@ class FontDataServiceImpl : public mojom::FontDataService {
   size_t GetOrCreateAssetIndex(std::unique_ptr<SkStreamAsset> asset);
 
   // Gets or generate an ID that uniquely represents `path`.
-  size_t GetUniqueFileId(base::FilePath path);
+  uint64_t GetUniqueFileId(base::FilePath path);
 
   // Prepares a MatchFamilyNameResult representing `typeface` that can be sent
   // over mojo from `MatchFamilyName*` calls.
@@ -140,7 +140,7 @@ class FontDataServiceImpl : public mojom::FontDataService {
   // cache (i.e., assets_).
   absl::flat_hash_map<intptr_t, size_t> address_to_asset_index_;
 
-  absl::flat_hash_map<base::FilePath, size_t> unique_path_ids_;
+  absl::flat_hash_map<base::FilePath, uint64_t> unique_path_ids_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

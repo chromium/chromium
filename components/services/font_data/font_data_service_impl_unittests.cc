@@ -27,7 +27,8 @@ class TestFontDataService : public FontDataServiceImpl {
   TestFontDataService(const TestFontDataService&) = delete;
   TestFontDataService& operator=(const TestFontDataService&) = delete;
 
-  std::tuple<base::File, size_t> GetFileHandle(SkTypeface& typeface) override {
+  std::tuple<base::File, uint64_t> GetFileHandle(
+      SkTypeface& typeface) override {
     if (use_memory_fallback_) {
       // Return an empty file handle to simulate the fallback.
       return {base::File(), 0UL};

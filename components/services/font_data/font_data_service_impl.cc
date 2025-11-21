@@ -113,7 +113,7 @@ void FontDataServiceImpl::BindReceiver(
   receivers_.Add(this, std::move(receiver));
 }
 
-std::tuple<base::File, size_t> FontDataServiceImpl::GetFileHandle(
+std::tuple<base::File, uint64_t> FontDataServiceImpl::GetFileHandle(
     SkTypeface& typeface) {
   SkString font_path;
   typeface.getResourceName(&font_path);
@@ -269,8 +269,8 @@ size_t FontDataServiceImpl::GetOrCreateAssetIndex(
   return asset_index;
 }
 
-size_t FontDataServiceImpl::GetUniqueFileId(base::FilePath path) {
-  size_t new_id = unique_path_ids_.size() + 1;
+uint64_t FontDataServiceImpl::GetUniqueFileId(base::FilePath path) {
+  uint64_t new_id = unique_path_ids_.size() + 1;
   auto [it, inserted] = unique_path_ids_.try_emplace(path, new_id);
   return it->second;
 }
@@ -306,7 +306,7 @@ FontDataServiceImpl::CreateMatchFamilyNameResult(sk_sp<SkTypeface> typeface) {
       // Try to share the font with a base::File. This is avoiding copy of the
       // content of the file.
       base::File font_file;
-      size_t font_file_unique_id;
+      uint64_t font_file_unique_id;
       std::tie(font_file, font_file_unique_id) = GetFileHandle(*typeface);
       if (font_file.IsValid()) {
         TRACE_EVENT("fonts", "FontDataServiceImpl - sharing file handle");
