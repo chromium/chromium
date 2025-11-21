@@ -193,14 +193,6 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
   NSInteger itemType =
       [_controller.tableViewModel itemTypeForIndexPath:indexPath];
-  if (itemType == AutofillProfileDetailsItemTypeFooter ||
-      itemType == AutofillProfileDetailsItemTypeError) {
-    if (_addressContext != SaveAddressContext::kEditingSavedAddress) {
-      cell.separatorInset =
-          UIEdgeInsetsMake(0, _controller.tableView.bounds.size.width, 0, 0);
-    }
-    return cell;
-  }
 
   if (itemType == AutofillProfileDetailsItemTypeSaveButton) {
     TableViewTextButtonCell* tableViewTextButtonCell =
@@ -232,9 +224,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
     if (itemType == AutofillProfileDetailsItemTypeCountrySelectionField) {
       [_delegate willSelectCountryWithCurrentlySelectedCountry:
                      [self countryFieldCurrentValue]];
-    } else if (itemType != AutofillProfileDetailsItemTypeFooter &&
-               itemType != AutofillProfileDetailsItemTypeError &&
-               [self isItemTypeTextEditCell:itemType]) {
+    } else if ([self isItemTypeTextEditCell:itemType]) {
       UITableViewCell* cell =
           [_controller.tableView cellForRowAtIndexPath:indexPath];
       TableViewTextEditCell* textFieldCell =
@@ -548,18 +538,6 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   } else if (_controller.tableView.editing) {
     item.editingAccessoryType = UITableViewCellAccessoryDisclosureIndicator;
   }
-  return item;
-}
-
-// Returns the footer element for the save/update prompts.
-- (TableViewItem*)footerItemForModalViewIfSaveOrUpdate:(BOOL)update {
-  CHECK(_addressContext != SaveAddressContext::kEditingSavedAddress);
-  TableViewMultiDetailTextItem* item = [[TableViewMultiDetailTextItem alloc]
-      initWithType:AutofillProfileDetailsItemTypeFooter];
-  item.leadingDetailText = l10n_util::GetNSStringF(
-      update ? IDS_IOS_SETTINGS_AUTOFILL_ACCOUNT_ADDRESS_FOOTER_TEXT
-             : IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_FOOTER,
-      base::SysNSStringToUTF16(_userEmail));
   return item;
 }
 
