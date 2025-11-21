@@ -10,6 +10,7 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
@@ -1727,9 +1728,13 @@ uint32_t GetPassthroughAudioFormats() {
     auto* command_line = base::CommandLine::ForCurrentProcess();
     uint32_t value = 0;
     if (command_line->HasSwitch(switches::kAudioCodecsFromEDID)) {
-      base::StringToUint(
-          command_line->GetSwitchValueASCII(switches::kAudioCodecsFromEDID),
-          &value);
+      const std::string switch_value =
+          command_line->GetSwitchValueASCII(switches::kAudioCodecsFromEDID);
+      if (!base::StringToUint(switch_value, &value)) {
+        LOG(WARNING) << "Invalid value for --audio-codecs-from-edid: "
+                     << switch_value << ". Falling back to 0.";
+        return 0u;
+      }
     }
     return value;
   }();
