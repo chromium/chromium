@@ -185,7 +185,7 @@ void DrmThread::CreateBuffer(gfx::AcceleratedWidget widget,
 void DrmThread::CreateBufferFromHandle(
     gfx::AcceleratedWidget widget,
     const gfx::Size& size,
-    gfx::BufferFormat format,
+    viz::SharedImageFormat format,
     gfx::NativePixmapHandle handle,
     std::unique_ptr<GbmBuffer>* out_buffer,
     scoped_refptr<DrmFramebuffer>* out_framebuffer) {
@@ -194,7 +194,7 @@ void DrmThread::CreateBufferFromHandle(
   DCHECK(drm);
 
   std::unique_ptr<GbmBuffer> buffer = drm->gbm_device()->CreateBufferFromHandle(
-      GetFourCCFormatFromBufferFormat(format), size, std::move(handle));
+      GetFourCCFormatFromSharedImageFormat(format), size, std::move(handle));
   if (!buffer)
     return;
 

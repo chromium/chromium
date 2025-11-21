@@ -100,7 +100,7 @@ class DrmThread : public base::Thread,
                     scoped_refptr<DrmFramebuffer>* framebuffer);
   void CreateBufferFromHandle(gfx::AcceleratedWidget widget,
                               const gfx::Size& size,
-                              gfx::BufferFormat format,
+                              viz::SharedImageFormat format,
                               gfx::NativePixmapHandle handle,
                               std::unique_ptr<GbmBuffer>* buffer,
                               scoped_refptr<DrmFramebuffer>* framebuffer);
