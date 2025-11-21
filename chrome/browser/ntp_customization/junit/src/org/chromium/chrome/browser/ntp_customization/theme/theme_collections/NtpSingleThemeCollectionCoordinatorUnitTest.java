@@ -43,6 +43,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeBridge;
@@ -64,9 +65,11 @@ public class NtpSingleThemeCollectionCoordinatorUnitTest {
 
     private static final String TEST_COLLECTION_ID = "Test Collection Id";
     private static final String TEST_COLLECTION_TITLE = "Test Collection";
+    private static final int TEST_COLLECTION_HASH_1 = 123; // Mock hash value for testing
     private static final String TEST_COLLECTION_TITLE_NEW = "Test Collection New";
     private static final String NEW_TEST_COLLECTION_ID = "New Test Collection Id";
     private static final String NEW_TEST_COLLECTION_TITLE = "New Test Collection";
+    private static final int TEST_COLLECTION_HASH_2 = 456; // Mock hash value for testing
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -101,6 +104,7 @@ public class NtpSingleThemeCollectionCoordinatorUnitTest {
                         mImageFetcher,
                         TEST_COLLECTION_ID,
                         TEST_COLLECTION_TITLE,
+                        TEST_COLLECTION_HASH_1,
                         SheetState.FULL);
 
         ArgumentCaptor<View> viewCaptor = ArgumentCaptor.forClass(View.class);
@@ -201,14 +205,17 @@ public class NtpSingleThemeCollectionCoordinatorUnitTest {
 
         // Title should not be updated with the same title.
         mCoordinator.updateThemeCollection(
-                TEST_COLLECTION_ID, TEST_COLLECTION_TITLE, SheetState.FULL);
+                TEST_COLLECTION_ID, TEST_COLLECTION_TITLE, TEST_COLLECTION_HASH_1, SheetState.FULL);
         // `getBackgroundImages` is called once in `setUp()`. No new call should be made.
         verify(mNtpThemeBridge, times(1)).getBackgroundImages(any(), any());
         verify(adapterSpy, times(0)).setItems(any());
 
         // Title should be updated with a new title.
         mCoordinator.updateThemeCollection(
-                NEW_TEST_COLLECTION_ID, NEW_TEST_COLLECTION_TITLE, SheetState.FULL);
+                NEW_TEST_COLLECTION_ID,
+                NEW_TEST_COLLECTION_TITLE,
+                TEST_COLLECTION_HASH_2,
+                SheetState.FULL);
         assertEquals(NEW_TEST_COLLECTION_TITLE, title.getText().toString());
         verify(mNtpThemeBridge)
                 .getBackgroundImages(eq(NEW_TEST_COLLECTION_ID), mCallbackCaptor.capture());
@@ -235,7 +242,10 @@ public class NtpSingleThemeCollectionCoordinatorUnitTest {
 
         // Case 2: previous bottom sheet state is HALF.
         mCoordinator.updateThemeCollection(
-                NEW_TEST_COLLECTION_ID, NEW_TEST_COLLECTION_TITLE, SheetState.HALF);
+                NEW_TEST_COLLECTION_ID,
+                NEW_TEST_COLLECTION_TITLE,
+                TEST_COLLECTION_HASH_2,
+                SheetState.HALF);
         verify(mNtpThemeBridge)
                 .getBackgroundImages(eq(NEW_TEST_COLLECTION_ID), mCallbackCaptor.capture());
         mCallbackCaptor.getValue().onResult(new ArrayList<>());
@@ -243,7 +253,7 @@ public class NtpSingleThemeCollectionCoordinatorUnitTest {
 
         // Case 3: previous bottom sheet state is not HALF and not initiative.
         mCoordinator.updateThemeCollection(
-                TEST_COLLECTION_ID, TEST_COLLECTION_TITLE, SheetState.FULL);
+                TEST_COLLECTION_ID, TEST_COLLECTION_TITLE, TEST_COLLECTION_HASH_1, SheetState.FULL);
         verify(mNtpThemeBridge, times(2))
                 .getBackgroundImages(eq(TEST_COLLECTION_ID), mCallbackCaptor.capture());
         mCallbackCaptor.getValue().onResult(new ArrayList<>());
@@ -279,8 +289,13 @@ public class NtpSingleThemeCollectionCoordinatorUnitTest {
         View themeCollectionView = recyclerView.getChildAt(0);
         assertNotNull(themeCollectionView);
 
+        String histogramName = "NewTabPage.Customization.Theme.ThemeCollection.CollectionSelected";
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(histogramName, TEST_COLLECTION_HASH_1);
+
         themeCollectionView.performClick();
         verify(mNtpThemeBridge).setCollectionTheme(eq(imageToClick));
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -343,7 +358,10 @@ public class NtpSingleThemeCollectionCoordinatorUnitTest {
         when(mNtpThemeBridge.getSelectedThemeCollectionId()).thenReturn(TEST_COLLECTION_ID);
         when(mNtpThemeBridge.getIsDailyRefreshEnabled()).thenReturn(true);
         mCoordinator.updateThemeCollection(
-                TEST_COLLECTION_ID, TEST_COLLECTION_TITLE_NEW, SheetState.FULL);
+                TEST_COLLECTION_ID,
+                TEST_COLLECTION_TITLE_NEW,
+                TEST_COLLECTION_HASH_1,
+                SheetState.FULL);
         assertTrue(
                 ((MaterialSwitchWithText)
                                 mBottomSheetView.findViewById(R.id.daily_update_switch_button))
@@ -352,7 +370,7 @@ public class NtpSingleThemeCollectionCoordinatorUnitTest {
         // Case 2: Daily refresh is disabled for the current collection.
         when(mNtpThemeBridge.getIsDailyRefreshEnabled()).thenReturn(false);
         mCoordinator.updateThemeCollection(
-                TEST_COLLECTION_ID, TEST_COLLECTION_TITLE, SheetState.FULL);
+                TEST_COLLECTION_ID, TEST_COLLECTION_TITLE, TEST_COLLECTION_HASH_1, SheetState.FULL);
         assertFalse(
                 ((MaterialSwitchWithText)
                                 mBottomSheetView.findViewById(R.id.daily_update_switch_button))
@@ -362,7 +380,10 @@ public class NtpSingleThemeCollectionCoordinatorUnitTest {
         when(mNtpThemeBridge.getSelectedThemeCollectionId()).thenReturn("another_id");
         when(mNtpThemeBridge.getIsDailyRefreshEnabled()).thenReturn(true);
         mCoordinator.updateThemeCollection(
-                TEST_COLLECTION_ID, TEST_COLLECTION_TITLE_NEW, SheetState.FULL);
+                TEST_COLLECTION_ID,
+                TEST_COLLECTION_TITLE_NEW,
+                TEST_COLLECTION_HASH_1,
+                SheetState.FULL);
         assertFalse(
                 ((MaterialSwitchWithText)
                                 mBottomSheetView.findViewById(R.id.daily_update_switch_button))

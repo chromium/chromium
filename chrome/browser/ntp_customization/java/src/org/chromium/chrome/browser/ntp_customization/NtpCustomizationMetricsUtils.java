@@ -58,6 +58,10 @@ public class NtpCustomizationMetricsUtils {
     static final String HISTOGRAM_THEME_COLLECTION_SHOW =
             HISTOGRAM_THEME_COLLECTION + ".CollectionShow";
 
+    @VisibleForTesting
+    static final String HISTOGRAM_THEME_COLLECTION_SELECTED =
+            HISTOGRAM_THEME_COLLECTION + ".CollectionSelected";
+
     /**
      * Records the type of theme selected for the New Tab Page background. This is logged once on
      * cold startup.
@@ -154,5 +158,18 @@ public class NtpCustomizationMetricsUtils {
      */
     public static void recordThemeCollectionShow(int themeCollectionHash) {
         RecordHistogram.recordSparseHistogram(HISTOGRAM_THEME_COLLECTION_SHOW, themeCollectionHash);
+    }
+
+    /**
+     * Records when a theme from a collection is selected. This is logged only for the first
+     * selection within a specific theme collection's view. Navigating to a different collection and
+     * making a selection will trigger a new record, but multiple selections within the same
+     * collection view will not.
+     *
+     * @param themeCollectionHash The hash of the collection ID.
+     */
+    public static void recordThemeCollectionSelected(int themeCollectionHash) {
+        RecordHistogram.recordSparseHistogram(
+                HISTOGRAM_THEME_COLLECTION_SELECTED, themeCollectionHash);
     }
 }

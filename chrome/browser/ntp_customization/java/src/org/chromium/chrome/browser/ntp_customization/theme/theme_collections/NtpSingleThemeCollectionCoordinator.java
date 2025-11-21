@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtils;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeBridge;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeBridge.ThemeCollectionSelectionListener;
@@ -46,6 +47,7 @@ public class NtpSingleThemeCollectionCoordinator {
 
     private String mThemeCollectionId;
     private String mThemeCollectionTitle;
+    private int mThemeCollectionHash;
     private final List<CollectionImage> mThemeCollectionImageList = new ArrayList<>();
     private final Context mContext;
     private final View mNtpSingleThemeCollectionBottomSheetView;
@@ -64,6 +66,7 @@ public class NtpSingleThemeCollectionCoordinator {
     private final int mSpacing;
     private boolean mHasDisplayedBefore;
     private int mScreenWidth;
+    private boolean mIsThemeCollectionSelected;
 
     /**
      * Constructor for the single theme collection coordinator.
@@ -84,6 +87,7 @@ public class NtpSingleThemeCollectionCoordinator {
             ImageFetcher imageFetcher,
             String collectionId,
             String themeCollectionTitle,
+            int themeCollectionHash,
             @SheetState int previousBottomSheetState) {
         mContext = context;
         mBottomSheetDelegate = delegate;
@@ -91,6 +95,7 @@ public class NtpSingleThemeCollectionCoordinator {
         mImageFetcher = imageFetcher;
         mThemeCollectionId = collectionId;
         mThemeCollectionTitle = themeCollectionTitle;
+        mThemeCollectionHash = themeCollectionHash;
 
         mItemMaxWidth =
                 context.getResources()
@@ -223,6 +228,7 @@ public class NtpSingleThemeCollectionCoordinator {
     void updateThemeCollection(
             String collectionId,
             String themeCollectionTitle,
+            int themeCollectionHash,
             @SheetState int previousBottomSheetState) {
         if (mThemeCollectionTitle.equals(themeCollectionTitle)) {
             return;
@@ -230,6 +236,8 @@ public class NtpSingleThemeCollectionCoordinator {
 
         mThemeCollectionId = collectionId;
         mThemeCollectionTitle = themeCollectionTitle;
+        mThemeCollectionHash = themeCollectionHash;
+        mIsThemeCollectionSelected = false;
 
         mTitle.setText(mThemeCollectionTitle);
         mDailyUpdateSwitchButton.setChecked(isDailyRefreshEnabledForCurrentCollection());
@@ -242,6 +250,10 @@ public class NtpSingleThemeCollectionCoordinator {
 
         CollectionImage image = mThemeCollectionImageList.get(position);
         mNtpThemeBridge.setCollectionTheme(image);
+        if (!mIsThemeCollectionSelected) {
+            NtpCustomizationMetricsUtils.recordThemeCollectionSelected(mThemeCollectionHash);
+            mIsThemeCollectionSelected = true;
+        }
     }
 
     private void handleLearnMoreClick(View view) {

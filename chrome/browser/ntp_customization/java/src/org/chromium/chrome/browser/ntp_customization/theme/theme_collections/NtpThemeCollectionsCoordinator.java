@@ -225,7 +225,10 @@ public class NtpThemeCollectionsCoordinator {
                 mBottomSheetDelegate.getBottomSheetController().getSheetState();
         if (mNtpSingleThemeCollectionCoordinator != null) {
             mNtpSingleThemeCollectionCoordinator.updateThemeCollection(
-                    collectionId, themeCollectionTitle, currentBottomSheetState);
+                    collectionId,
+                    themeCollectionTitle,
+                    themeCollectionHash,
+                    currentBottomSheetState);
         } else {
             mNtpSingleThemeCollectionCoordinator =
                     new NtpSingleThemeCollectionCoordinator(
@@ -235,6 +238,7 @@ public class NtpThemeCollectionsCoordinator {
                             mImageFetcher,
                             collectionId,
                             themeCollectionTitle,
+                            themeCollectionHash,
                             currentBottomSheetState);
         }
 

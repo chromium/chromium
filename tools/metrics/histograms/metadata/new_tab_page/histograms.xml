@@ -446,6 +446,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="NewTabPage.Customization.Theme.ThemeCollection.CollectionSelected"
+    enum="NTPCollectionId" expires_after="2026-05-17">
+  <owner>hanxi@chromium.org</owner>
+  <owner>yyanting@google.com</owner>
+  <owner>clank-start@google.com</owner>
+  <summary>
+    Records the total number of selections of the theme inside collection sub
+    category. This is logged only for the first selection within a specific
+    theme collection's view. Navigating to a different collection and making a
+    selection will trigger a new record, but multiple selections within the same
+    collection view will not. This metric is logged on Android only.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.Customization.Theme.ThemeCollection.CollectionShow"
     enum="NTPCollectionId" expires_after="2026-05-17">
   <owner>hanxi@chromium.org</owner>

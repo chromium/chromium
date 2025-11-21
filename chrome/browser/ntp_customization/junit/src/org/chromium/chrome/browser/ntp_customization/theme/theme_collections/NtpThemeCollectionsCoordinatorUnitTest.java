@@ -230,6 +230,7 @@ public class NtpThemeCollectionsCoordinatorUnitTest {
                 .updateThemeCollection(
                         eq(TEST_COLLECTION_ID),
                         eq(TEST_COLLECTION_TITLE),
+                        eq(TEST_COLLECTION_HASH),
                         eq(BottomSheetController.SheetState.FULL));
         verify(mBottomSheetDelegate, times(2))
                 .showBottomSheet(eq(BottomSheetType.SINGLE_THEME_COLLECTION));

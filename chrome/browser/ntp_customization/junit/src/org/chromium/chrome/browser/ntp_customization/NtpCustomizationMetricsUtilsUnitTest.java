@@ -148,4 +148,15 @@ public class NtpCustomizationMetricsUtilsUnitTest {
         NtpCustomizationMetricsUtils.recordThemeCollectionShow(themeCollectionHash);
         histogramWatcher.assertExpected();
     }
+
+    @Test
+    public void testRecordThemeCollectionSelected() {
+        String histogramName = "NewTabPage.Customization.Theme.ThemeCollection.CollectionSelected";
+        int themeCollectionHash = 123; // Mock hash value for testing
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(histogramName, themeCollectionHash);
+        NtpCustomizationMetricsUtils.recordThemeCollectionSelected(themeCollectionHash);
+        histogramWatcher.assertExpected();
+    }
 }
