@@ -49,7 +49,7 @@ enum class ContextDeterminationStatus {
 // Options to regulate tab selection behavior.
 struct TabSelectionOptions {
   mojom::TabSelectionMode tab_selection_mode =
-      mojom::TabSelectionMode::kEmbeddingsMatch;
+      mojom::TabSelectionMode::kMultiSignalScoring;
 
   // If set, only tabs with a model score of at least `min_model_score` will be
   // selected.
