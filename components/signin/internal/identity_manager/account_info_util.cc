@@ -52,42 +52,36 @@ std::optional<AccountInfo> AccountInfoFromUserInfo(
     return std::nullopt;
   }
 
-  AccountInfo account_info;
-  account_info.email = *email_value;
-  account_info.gaia = GaiaId(*gaia_id_value);
+  AccountInfo::Builder builder(GaiaId(*gaia_id_value), *email_value);
 
-  // All other fields are optional, some with default values.
-  const std::string* hosted_domain_value =
-      user_info.FindString(kHostedDomainKey);
-  if (hosted_domain_value && !hosted_domain_value->empty()) {
-    account_info.hosted_domain = *hosted_domain_value;
-  } else {
-    account_info.hosted_domain = kNoHostedDomainFound;
-  }
-
+  // The following fields remain "unknown" in `AccountInfo` if they are not set
+  // or empty in the `user_info`.
   const std::string* full_name_value = user_info.FindString(kFullNameKey);
-  if (full_name_value) {
-    account_info.full_name = *full_name_value;
+  if (full_name_value && !full_name_value->empty()) {
+    builder.SetFullName(*full_name_value);
   }
 
   const std::string* given_name_value = user_info.FindString(kGivenNameKey);
-  if (given_name_value) {
-    account_info.given_name = *given_name_value;
+  if (given_name_value && !given_name_value->empty()) {
+    builder.SetGivenName(*given_name_value);
   }
 
   const std::string* locale_value = user_info.FindString(kLocaleKey);
-  if (locale_value) {
-    account_info.locale = *locale_value;
+  if (locale_value && !locale_value->empty()) {
+    builder.SetLocale(*locale_value);
   }
+
+  // The following fields will be set as "empty" in `AccountInfo` if they are
+  // not set or empty in the `user_info`.
+  const std::string* hosted_domain_value =
+      user_info.FindString(kHostedDomainKey);
+  builder.SetHostedDomain(hosted_domain_value ? *hosted_domain_value
+                                              : std::string());
 
   const std::string* picture_url_value = user_info.FindString(kPictureUrlKey);
-  if (picture_url_value && !picture_url_value->empty()) {
-    account_info.picture_url = *picture_url_value;
-  } else {
-    account_info.picture_url = kNoPictureURLFound;
-  }
+  builder.SetAvatarUrl(picture_url_value ? *picture_url_value : std::string());
 
-  return account_info;
+  return builder.Build();
 }
 
 std::optional<AccountCapabilities> AccountCapabilitiesFromValue(

@@ -9,6 +9,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/gtest_prod_util.h"
 #include "build/build_config.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -56,6 +57,8 @@ struct CoreAccountInfo {
 // may only become available asynchronously, which is indicated by optional
 // return values.
 struct AccountInfo : public CoreAccountInfo {
+  class Builder;
+
   AccountInfo();
   ~AccountInfo();
 
@@ -179,6 +182,81 @@ struct AccountInfo : public CoreAccountInfo {
   signin::Tribool is_child_account = signin::Tribool::kUnknown;
   // Deprecated: Use GetLocale() instead.
   std::string locale;
+
+ private:
+  friend class Builder;
+};
+
+// Builder class for constructing AccountInfo objects.
+//
+// Setter methods do not allow setting unknown values. To keep an AccountInfo
+// class member in an unknown state, do not call a corresponding setter.
+class AccountInfo::Builder {
+ public:
+  // `gaia_id` and `email` must be non-empty.
+  Builder(const GaiaId& gaia_id, std::string_view email);
+
+  // Builders that allow augmenting an already existing object with extra
+  // values. Mostly useful for tests.
+  // Source objects must have non-empty `gaia_id` and `email`.
+  explicit Builder(const CoreAccountInfo& core_account_info);
+  explicit Builder(const AccountInfo& account_info);
+
+  Builder(const Builder&) = delete;
+  Builder& operator=(const Builder&) = delete;
+
+  Builder(Builder&& other) noexcept;
+  Builder& operator=(Builder&& other) noexcept;
+
+  ~Builder();
+
+  // `Builder` will be invalid after calling this.
+  AccountInfo Build();
+
+  // Setters for CoreAccountInfo members.
+  Builder& SetAccountId(const CoreAccountId& account_id);
+  Builder& SetIsUnderAdvancedProtection(bool is_under_advanced_protection);
+
+  // The following AccountInfo class members are never supposed to contain empty
+  // known values. Thus, these setters do not allow setting empty values.
+  //
+  // To keep a value unknown, do not call a corresponding setter.
+  Builder& SetFullName(std::string_view full_name);
+  Builder& SetGivenName(std::string_view given_name);
+  Builder& SetLastDownloadedAvatarUrlWithSize(
+      std::string_view avatar_url_with_size);
+  Builder& SetAvatarImage(const gfx::Image& avatar_image);
+  Builder& SetLocale(std::string_view locale);
+
+  // The following AccountInfo class members have well-defined empty values.
+  //
+  // To set an empty value, call a setter with an empty value.
+  //
+  // To keep a value unknown, do not call a corresponding setter.
+  Builder& SetHostedDomain(std::string_view hosted_domain);
+  Builder& SetAvatarUrl(std::string_view avatar_url);
+
+  Builder& SetLastAuthenticationAccessPoint(
+      signin_metrics::AccessPoint access_point);
+  Builder& SetIsChildAccount(signin::Tribool is_child_account);
+
+  Builder& UpdateAccountCapabilitiesWith(const AccountCapabilities& other);
+
+ private:
+  FRIEND_TEST_ALL_PREFIXES(AccountInfoTest, CreateWithPossiblyEmptyGaiaId);
+  friend class signin::AccountInfoSerializer;
+  // Default constructor is only available to support ongoing migrations.
+  // TODO(crbug.com/40268200): remove this after the migration is done.
+  Builder();
+  // Factory function that permits creating `AccountInfo` with an empty Gaia ID.
+  // It exists only to support an ongoing migration and shouldn't be used for
+  // other purposes.
+  // TODO(crbug.com/40268200): remove this after the migration is done.
+  static AccountInfo::Builder CreateWithPossiblyEmptyGaiaId(
+      const GaiaId& gaia_id,
+      std::string_view email);
+
+  AccountInfo account_info_;
 };
 
 bool operator==(const CoreAccountInfo& l, const CoreAccountInfo& r);

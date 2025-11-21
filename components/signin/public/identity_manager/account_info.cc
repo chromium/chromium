@@ -256,6 +256,130 @@ bool AccountInfo::CanHaveEmailAddressDisplayed() const {
              signin::Tribool::kUnknown;
 }
 
+AccountInfo::Builder::Builder(const GaiaId& gaia_id, std::string_view email) {
+  CHECK(!gaia_id.empty());
+  CHECK(!email.empty());
+  account_info_.gaia = gaia_id;
+  account_info_.email = std::string(email);
+}
+
+AccountInfo::Builder::Builder(const CoreAccountInfo& core_account_info) {
+  CHECK(!core_account_info.account_id.empty());
+  CHECK(!core_account_info.email.empty());
+  account_info_.account_id = core_account_info.account_id;
+  account_info_.gaia = core_account_info.gaia;
+  account_info_.email = core_account_info.email;
+  account_info_.is_under_advanced_protection =
+      core_account_info.is_under_advanced_protection;
+}
+
+AccountInfo::Builder::Builder(const AccountInfo& account_info)
+    : account_info_(account_info) {
+  CHECK(!account_info.account_id.empty());
+  CHECK(!account_info.email.empty());
+}
+
+AccountInfo::Builder::~Builder() = default;
+
+AccountInfo AccountInfo::Builder::Build() {
+  return std::move(account_info_);
+}
+
+AccountInfo::Builder& AccountInfo::Builder::SetAccountId(
+    const CoreAccountId& account_id) {
+  CHECK(!account_id.empty());
+  account_info_.account_id = account_id;
+  return *this;
+}
+
+AccountInfo::Builder& AccountInfo::Builder::SetIsUnderAdvancedProtection(
+    bool is_under_advanced_protection) {
+  account_info_.is_under_advanced_protection = is_under_advanced_protection;
+  return *this;
+}
+
+AccountInfo::Builder& AccountInfo::Builder::SetFullName(
+    std::string_view full_name_val) {
+  CHECK(!full_name_val.empty());
+  account_info_.full_name = std::string(full_name_val);
+  return *this;
+}
+
+AccountInfo::Builder& AccountInfo::Builder::SetGivenName(
+    std::string_view given_name_val) {
+  CHECK(!given_name_val.empty());
+  account_info_.given_name = std::string(given_name_val);
+  return *this;
+}
+
+AccountInfo::Builder& AccountInfo::Builder::SetLastDownloadedAvatarUrlWithSize(
+    std::string_view avatar_url_with_size) {
+  CHECK(!avatar_url_with_size.empty());
+  account_info_.last_downloaded_image_url_with_size =
+      std::string(avatar_url_with_size);
+  return *this;
+}
+
+AccountInfo::Builder& AccountInfo::Builder::SetAvatarImage(
+    const gfx::Image& avatar_image) {
+  CHECK(!avatar_image.IsEmpty());
+  account_info_.account_image = avatar_image;
+  return *this;
+}
+
+AccountInfo::Builder& AccountInfo::Builder::SetLocale(
+    std::string_view locale_val) {
+  CHECK(!locale_val.empty());
+  account_info_.locale = std::string(locale_val);
+  return *this;
+}
+
+AccountInfo::Builder& AccountInfo::Builder::SetHostedDomain(
+    std::string_view hosted_domain_val) {
+  account_info_.hosted_domain = hosted_domain_val.empty()
+                                    ? kNoHostedDomainFound
+                                    : std::string(hosted_domain_val);
+  return *this;
+}
+
+AccountInfo::Builder& AccountInfo::Builder::SetAvatarUrl(
+    std::string_view avatar_url) {
+  account_info_.picture_url =
+      avatar_url.empty() ? kNoPictureURLFound : std::string(avatar_url);
+  return *this;
+}
+
+AccountInfo::Builder& AccountInfo::Builder::SetLastAuthenticationAccessPoint(
+    signin_metrics::AccessPoint access_point_val) {
+  account_info_.access_point = access_point_val;
+  return *this;
+}
+
+AccountInfo::Builder& AccountInfo::Builder::SetIsChildAccount(
+    signin::Tribool is_child_account_val) {
+  account_info_.is_child_account = is_child_account_val;
+  return *this;
+}
+
+AccountInfo::Builder& AccountInfo::Builder::UpdateAccountCapabilitiesWith(
+    const AccountCapabilities& other) {
+  account_info_.capabilities.UpdateWith(other);
+  return *this;
+}
+
+AccountInfo::Builder::Builder() = default;
+
+// static
+AccountInfo::Builder AccountInfo::Builder::CreateWithPossiblyEmptyGaiaId(
+    const GaiaId& gaia_id,
+    std::string_view email) {
+  CHECK(!email.empty());
+  AccountInfo::Builder builder;
+  builder.account_info_.gaia = gaia_id;
+  builder.account_info_.email = email;
+  return builder;
+}
+
 bool operator==(const CoreAccountInfo& l, const CoreAccountInfo& r) {
   return l.account_id == r.account_id && l.gaia == r.gaia &&
          gaia::AreEmailsSame(l.email, r.email) &&

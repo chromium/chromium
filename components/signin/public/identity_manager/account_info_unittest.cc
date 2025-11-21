@@ -78,27 +78,28 @@ TEST_F(AccountInfoTest, UpdateWithDifferentAccountId) {
 // Tests that UpdateWith() doesn't update the fields that were already set
 // to the correct value.
 TEST_F(AccountInfoTest, UpdateWithNoModification) {
-  AccountInfo info;
-  info.gaia = GaiaId("test_id");
-  info.email = "test_id";
-  info.account_id = CoreAccountId::FromGaiaId(info.gaia);
-  info.is_child_account = signin::Tribool::kTrue;
-  info.is_under_advanced_protection = true;
-  info.locale = "en";
-  info.access_point = signin_metrics::AccessPoint::kSettings;
+  AccountInfo info =
+      AccountInfo::Builder(GaiaId("test_id"), "test@example.com")
+          .SetAccountId(CoreAccountId::FromGaiaId(GaiaId("test_id")))
+          .SetIsChildAccount(signin::Tribool::kTrue)
+          .SetIsUnderAdvancedProtection(true)
+          .SetLocale("en")
+          .SetLastAuthenticationAccessPoint(
+              signin_metrics::AccessPoint::kSettings)
+          .Build();
 
-  AccountInfo other;
-  other.gaia = GaiaId("test_id");
-  other.email = "test_id";
-  other.account_id = CoreAccountId::FromGaiaId(other.gaia);
+  AccountInfo other =
+      AccountInfo::Builder(GaiaId("test_id"), "test@example.com")
+          .SetAccountId(CoreAccountId::FromGaiaId(GaiaId("test_id")))
+          .SetIsUnderAdvancedProtection(false)
+          .SetLocale("en")
+          .Build();
   EXPECT_EQ(signin::Tribool::kUnknown, other.is_child_account);
   EXPECT_EQ(signin_metrics::AccessPoint::kUnknown, other.access_point);
-  other.is_under_advanced_protection = false;
-  other.locale = "en";
 
   EXPECT_FALSE(info.UpdateWith(other));
   EXPECT_EQ(GaiaId("test_id"), info.gaia);
-  EXPECT_EQ("test_id", info.email);
+  EXPECT_EQ("test@example.com", info.email);
   EXPECT_EQ("en", info.locale);
   EXPECT_EQ(signin_metrics::AccessPoint::kSettings, info.access_point);
   EXPECT_EQ(signin::Tribool::kTrue, info.is_child_account);
@@ -107,24 +108,28 @@ TEST_F(AccountInfoTest, UpdateWithNoModification) {
 
 // Tests that UpdateWith() correctly updates its fields that were not set.
 TEST_F(AccountInfoTest, UpdateWithSuccessfulUpdate) {
-  AccountInfo info;
-  info.gaia = GaiaId("test_id");
-  info.email = "test_id";
-  info.account_id = CoreAccountId::FromGaiaId(info.gaia);
+  AccountInfo info =
+      AccountInfo::Builder(GaiaId("test_id"), "test@example.com")
+          .SetAccountId(CoreAccountId::FromGaiaId(GaiaId("test_id")))
+          .Build();
 
-  AccountInfo other;
-  other.account_id = CoreAccountId::FromGaiaId(GaiaId("test_id"));
-  other.full_name = other.given_name = "test_name";
-  other.locale = "fr";
-  other.is_child_account = signin::Tribool::kTrue;
-  other.access_point = signin_metrics::AccessPoint::kSettings;
+  AccountInfo other =
+      AccountInfo::Builder(GaiaId("test_id"), "test@example.com")
+          .SetAccountId(CoreAccountId::FromGaiaId(GaiaId("test_id")))
+          .SetFullName("test_name")
+          .SetGivenName("test_name")
+          .SetLocale("fr")
+          .SetIsChildAccount(signin::Tribool::kTrue)
+          .SetLastAuthenticationAccessPoint(
+              signin_metrics::AccessPoint::kSettings)
+          .Build();
   AccountCapabilitiesTestMutator mutator(&other.capabilities);
   mutator.set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
       true);
 
   EXPECT_TRUE(info.UpdateWith(other));
   EXPECT_EQ(GaiaId("test_id"), info.gaia);
-  EXPECT_EQ("test_id", info.email);
+  EXPECT_EQ("test@example.com", info.email);
   EXPECT_EQ("test_name", info.full_name);
   EXPECT_EQ("test_name", info.given_name);
   EXPECT_EQ("fr", info.locale);
@@ -139,15 +144,17 @@ TEST_F(AccountInfoTest, UpdateWithSuccessfulUpdate) {
 // Tests that UpdateWith() sets default values for hosted_domain and
 // picture_url if the properties are unset.
 TEST_F(AccountInfoTest, UpdateWithDefaultValues) {
-  AccountInfo info;
-  info.gaia = GaiaId("test_id");
-  info.email = "test_id";
-  info.account_id = CoreAccountId::FromGaiaId(info.gaia);
+  AccountInfo info =
+      AccountInfo::Builder(GaiaId("test_id"), "test@example.com")
+          .SetAccountId(CoreAccountId::FromGaiaId(GaiaId("test_id")))
+          .Build();
 
-  AccountInfo other;
-  other.account_id = CoreAccountId::FromGaiaId(GaiaId("test_id"));
-  other.hosted_domain = kNoHostedDomainFound;
-  other.picture_url = kNoPictureURLFound;
+  AccountInfo other =
+      AccountInfo::Builder(GaiaId("test_id"), "test@example.com")
+          .SetAccountId(CoreAccountId::FromGaiaId(GaiaId("test_id")))
+          .SetHostedDomain(std::string())
+          .SetAvatarUrl(kNoPictureURLFound)
+          .Build();
 
   EXPECT_TRUE(info.UpdateWith(other));
   EXPECT_EQ(kNoHostedDomainFound, info.hosted_domain);
@@ -157,23 +164,38 @@ TEST_F(AccountInfoTest, UpdateWithDefaultValues) {
 // Tests that UpdateWith() ignores default values for hosted_domain and
 // picture_url if they are already set.
 TEST_F(AccountInfoTest, UpdateWithDefaultValuesNoOverride) {
-  AccountInfo info;
-  info.gaia = GaiaId("test_id");
-  info.email = "test_id";
-  info.account_id = CoreAccountId::FromGaiaId(info.gaia);
-  info.hosted_domain = "test_domain";
+  AccountInfo info =
+      AccountInfo::Builder(GaiaId("test_id"), "test@example.com")
+          .SetAccountId(CoreAccountId::FromGaiaId(GaiaId("test_id")))
+          .SetHostedDomain("test_domain")
+          .SetAvatarUrl("test_url")
+          .Build();
   AccountCapabilitiesTestMutator(&info.capabilities)
       .set_is_subject_to_enterprise_features(true);
-  info.picture_url = "test_url";
 
-  AccountInfo other;
-  other.account_id = CoreAccountId::FromGaiaId(GaiaId("test_id"));
-  other.hosted_domain = kNoHostedDomainFound;
-  other.picture_url = kNoPictureURLFound;
+  AccountInfo other =
+      AccountInfo::Builder(GaiaId("test_id"), "test@example.com")
+          .SetAccountId(CoreAccountId::FromGaiaId(GaiaId("test_id")))
+          .SetHostedDomain(std::string())
+          .SetAvatarUrl(kNoPictureURLFound)
+          .Build();
 
   EXPECT_FALSE(info.UpdateWith(other));
   EXPECT_EQ("test_domain", info.hosted_domain);
   EXPECT_EQ("test_url", info.picture_url);
+}
+
+TEST_F(AccountInfoTest, BuilderPopulatesCoreAccountInfoFields) {
+  AccountInfo info =
+      AccountInfo::Builder(GaiaId("test_id"), "test@example.com")
+          .SetAccountId(CoreAccountId::FromGaiaId(GaiaId("test_id")))
+          .SetIsUnderAdvancedProtection(true)
+          .Build();
+
+  EXPECT_EQ(info.gaia, GaiaId("test_id"));
+  EXPECT_EQ(info.email, "test@example.com");
+  EXPECT_EQ(info.account_id, CoreAccountId::FromGaiaId(GaiaId("test_id")));
+  EXPECT_TRUE(info.is_under_advanced_protection);
 }
 
 TEST_F(AccountInfoTest, GettersEmptyAccountInfo) {
@@ -194,19 +216,25 @@ TEST_F(AccountInfoTest, GettersEmptyAccountInfo) {
 }
 
 TEST_F(AccountInfoTest, GettersPopulatedAccountInfo) {
-  AccountInfo info;
-  info.full_name = "full_name";
-  info.given_name = "given_name";
-  info.hosted_domain = "hosted_domain";
-  info.picture_url = "picture_url";
-  info.last_downloaded_image_url_with_size = "picture_url_with_size";
-  info.account_image = gfx::test::CreateImage(/*size*/ 24);
-  info.access_point = signin_metrics::AccessPoint::kSettings;
-  AccountCapabilitiesTestMutator mutator(&info.capabilities);
+  AccountCapabilities capabilities;
+  AccountCapabilitiesTestMutator mutator(&capabilities);
   mutator.set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
       true);
-  info.is_child_account = signin::Tribool::kFalse;
-  info.locale = "fr";
+
+  AccountInfo info =
+      AccountInfo::Builder(GaiaId("test_id"), "test@example.com")
+          .SetFullName("full_name")
+          .SetGivenName("given_name")
+          .SetHostedDomain("hosted_domain")
+          .SetAvatarUrl("picture_url")
+          .SetLastDownloadedAvatarUrlWithSize("picture_url_with_size")
+          .SetAvatarImage(gfx::test::CreateImage(/*size*/ 24))
+          .SetLastAuthenticationAccessPoint(
+              signin_metrics::AccessPoint::kSettings)
+          .UpdateAccountCapabilitiesWith(capabilities)
+          .SetIsChildAccount(signin::Tribool::kFalse)
+          .SetLocale("fr")
+          .Build();
 
   EXPECT_EQ(info.GetFullName(), "full_name");
   EXPECT_EQ(info.GetGivenName(), "given_name");
@@ -224,10 +252,30 @@ TEST_F(AccountInfoTest, GettersPopulatedAccountInfo) {
 }
 
 TEST_F(AccountInfoTest, DeprecatedSentinelValues) {
-  AccountInfo info;
-  info.hosted_domain = kNoHostedDomainFound;
-  info.picture_url = kNoPictureURLFound;
+  AccountInfo info = AccountInfo::Builder(GaiaId("test_id"), "test@example.com")
+                         .SetHostedDomain(kNoHostedDomainFound)
+                         .SetAvatarUrl(kNoPictureURLFound)
+                         .Build();
 
   EXPECT_EQ(info.GetHostedDomain(), std::string());
   EXPECT_EQ(info.GetAvatarUrl(), std::string());
+}
+
+TEST_F(AccountInfoTest, EmptyTheSameAsDeprecatedSentinelValues) {
+  AccountInfo info = AccountInfo::Builder(GaiaId("test_id"), "test@example.com")
+                         .SetHostedDomain(std::string())
+                         .SetAvatarUrl(std::string())
+                         .Build();
+
+  EXPECT_EQ(info.GetHostedDomain(), std::string());
+  EXPECT_EQ(info.GetAvatarUrl(), std::string());
+}
+
+TEST_F(AccountInfoTest, CreateWithPossiblyEmptyGaiaId) {
+  AccountInfo info = AccountInfo::Builder::CreateWithPossiblyEmptyGaiaId(
+                         GaiaId(), "test@example.org")
+                         .Build();
+
+  EXPECT_TRUE(info.gaia.empty());
+  EXPECT_EQ(info.email, "test@example.org");
 }

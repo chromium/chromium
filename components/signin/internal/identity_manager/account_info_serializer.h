@@ -11,6 +11,7 @@
 
 struct AccountInfo;
 class AccountCapabilities;
+struct CoreAccountId;
 
 namespace signin {
 
@@ -33,12 +34,13 @@ class AccountInfoSerializer {
   static std::optional<AccountInfo> FromValue(const base::Value::Dict& dict);
 
  private:
-  // Deserializes `account_info` from `dict`. Does not read `account_id`.
-  static void DeserializeAccountInfoFromDict(const base::Value::Dict& dict,
-                                             AccountInfo& account_info);
+  // Deserializes `account_info` from `dict`. Does not read account ID from
+  // `dict` but sets `account_id` instead.
+  static std::optional<AccountInfo> DeserializeAccountInfoFromDict(
+      const base::Value::Dict& dict,
+      const CoreAccountId& account_id);
 
-  // Serializes `account_info` to `dict`. Does not write `account_id` or
-  // `last_downloaded_image_url_with_size`.
+  // Serializes `account_info` to `dict`. Does not write `account_id`.
   static void SerializeAccountInfoToDict(base::Value::Dict& dict,
                                          const AccountInfo& account_info);
 
