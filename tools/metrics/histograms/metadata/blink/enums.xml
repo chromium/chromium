@@ -6355,6 +6355,11 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5721" label="GetBBoxForElementWithZeroWidthOrHeight"/>
   <int value="5722" label="GetBBoxForNestedSVGElementWithZeroWidthOrHeight"/>
   <int value="5723" label="XMLExternalResourceLoadEntitiesOnly"/>
+  <int value="5724" label="V8Origin_IsSameOrigin_Method"/>
+  <int value="5725" label="V8Origin_IsSameSite_Method"/>
+  <int value="5726" label="V8Origin_From_Method"/>
+  <int value="5727" label="V8Origin_FromURL_Method"/>
+  <int value="5728" label="V8Origin_Parse_Method"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

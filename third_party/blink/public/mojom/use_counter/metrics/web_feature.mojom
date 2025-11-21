@@ -5037,6 +5037,11 @@ enum WebFeature {
   kGetBBoxForElementWithZeroWidthOrHeight = 5721,
   kGetBBoxForNestedSVGElementWithZeroWidthOrHeight = 5722,
   kXMLExternalResourceLoadEntitiesOnly = 5723,
+  kV8Origin_IsSameOrigin_Method = 5724,
+  kV8Origin_IsSameSite_Method = 5725,
+  kV8Origin_From_Method = 5726,
+  kV8Origin_FromURL_Method = 5727,
+  kV8Origin_Parse_Method = 5728,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra
