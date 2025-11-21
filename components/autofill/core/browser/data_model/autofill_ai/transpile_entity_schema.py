@@ -199,15 +199,6 @@ def generate_cpp_functions(schema):
   yield '  NOTREACHED();'
   yield '}'
   yield ''
-  yield 'bool EntityType::syncable() const {'
-  yield '  switch (name_) {'
-  for entity, syncable in ((entity['name'], entity['syncable']) for entity in schema):
-    yield f'    case {entity_name(entity)}:'
-    yield f'      return {"true" if syncable else "false"};'
-  yield '  }'
-  yield '  NOTREACHED();'
-  yield '}'
-  yield ''
   yield 'bool EntityType::enabled(base::optional_ref<const GeoIpCountryCode> country_code) const {'
   yield '  switch (name_) {'
   for entity in schema:

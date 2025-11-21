@@ -89,11 +89,6 @@ TEST(AutofillEntityTypeTest, DisambiguationOrder) {
   EXPECT_FALSE(lt(kPassportNumber, kPassportIssueDate));
 }
 
-TEST(AutofillEntityTypeTest, Syncable) {
-  using enum EntityTypeName;
-  EXPECT_FALSE(EntityType(kPassport).syncable());
-}
-
 TEST(AutofillEntityTypeTest, Disabled) {
   using enum EntityTypeName;
   EXPECT_TRUE(EntityType(kPassport).enabled());

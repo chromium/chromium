@@ -37,7 +37,6 @@ _REQUIRED_KEYS = {
     'merge constraints',
     'strike keys',
     'disambiguation order',
-    'syncable',
     'read only',
 }
 _OPTIONAL_KEYS = {'experiment feature', 'excluded geo-ips'}
@@ -175,11 +174,8 @@ def _validate_entity(entity):
           for msg in _validate_attributes(entity, constraint, allow_empty=False)
       )
 
-  if not isinstance(entity['syncable'], bool):
-    yield '"syncable": value is not a Boolean'
-
   if not isinstance(entity['read only'], bool):
-    yield '"syncable": value is not a Boolean'
+    yield '"read only": value is not a Boolean'
 
   if entity['read only']:
     if entity['import constraints'] != []:
