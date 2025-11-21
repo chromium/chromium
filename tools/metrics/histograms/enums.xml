@@ -12176,6 +12176,8 @@ from previous Chrome versions.
   <int value="-706106753" label="AutofillGranularFillingAvailable:disabled"/>
   <int value="-705746939" label="ChromeDuet:enabled"/>
   <int value="-705464246" label="ChromeCartDomBasedHeuristics:enabled"/>
+  <int value="-705262196"
+      label="OpenAllProfilesFromProfilePickerExperiment:disabled"/>
   <int value="-705212373" label="IncognitoNtpRevamp:disabled"/>
   <int value="-705069685" label="DropInputEventsWhilePaintHolding:enabled"/>
   <int value="-704459022" label="ContinuousSearch:enabled"/>
@@ -19391,6 +19393,8 @@ from previous Chrome versions.
   <int value="1820442907" label="CrostiniMultiContainer:disabled"/>
   <int value="1820445741" label="SwapAndroidShareHubRows:disabled"/>
   <int value="1820451991" label="enable-offline-auto-reload"/>
+  <int value="1821347358"
+      label="OpenAllProfilesFromProfilePickerExperiment:enabled"/>
   <int value="1821723343" label="disable-saml-signin"/>
   <int value="1822184614" label="DeviceBoundSessions:enabled"/>
   <int value="1822452137" label="ClipboardHistoryLongpress:enabled"/>

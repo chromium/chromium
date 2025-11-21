@@ -4089,6 +4089,12 @@ inline constexpr char kShowProfilePickerToAllUsersExperimentDescription[] =
     "As part of the Growth experiments, show the profile picker to users who "
     "only have one profile";
 
+inline constexpr char kOpenAllProfilesFromProfilePickerExperimentName[] =
+    "Add button to open all profiles from profile picker";
+inline constexpr char kOpenAllProfilesFromProfilePickerExperimentDescription[] =
+    "As part of the Growth experiments, add a button to open all profiles from "
+    "the profile picker.";
+
 inline constexpr char kBackdropFilterMirrorEdgeName[] =
     "Backdrop Filter Mirror Edge";
 inline constexpr char kBackdropFilterMirrorEdgeDescription[] =
