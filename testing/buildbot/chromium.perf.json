@@ -205,7 +205,7 @@
           "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 13
+          "shards": 11
         },
         "test": "performance_test_suite_android_trichrome_chrome_google_bundle",
         "trigger_script": {
@@ -251,7 +251,7 @@
           "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 20
+          "shards": 5
         },
         "test": "performance_webview_test_suite",
         "trigger_script": {
