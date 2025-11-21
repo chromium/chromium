@@ -221,6 +221,8 @@ class CC_EXPORT TileDisplayLayerImpl : public TileBasedLayerImpl {
   TilingSetCoverageIterator<Tiling> Cover(const gfx::Rect& coverage_rect,
                                           float coverage_scale,
                                           float ideal_contents_scale);
+  TilingResolution GetTilingResolutionForDebugBorders(
+      const Tiling* tiling) const;
 
   bool is_directly_composited_image_ = false;
   bool nearest_neighbor_ = false;

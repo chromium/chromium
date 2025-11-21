@@ -14,6 +14,12 @@ namespace cc {
 // and TileDisplayLayerImpl).
 class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
  public:
+  enum class TilingResolution {
+    kHigh,
+    kAboveHigh,
+    kBelowHigh,
+  };
+
   TileBasedLayerImpl(const TileBasedLayerImpl&) = delete;
   ~TileBasedLayerImpl() override;
 

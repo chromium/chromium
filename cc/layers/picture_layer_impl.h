@@ -422,6 +422,9 @@ class CC_EXPORT PictureLayerImpl
       const gfx::Rect& coverage_rect,
       float coverage_scale,
       float ideal_contents_scale);
+
+  TilingResolution GetTilingResolutionForDebugBorders(
+      const PictureLayerTiling* tiling) const;
 };
 
 }  // namespace cc

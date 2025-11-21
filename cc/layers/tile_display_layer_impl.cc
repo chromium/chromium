@@ -225,24 +225,23 @@ void TileDisplayLayerImpl::AppendQuadsSpecialization(
         } else if (mode == TileDrawInfo::OOM_MODE) {
           color = DebugColors::OOMTileBorderColor();
           width = DebugColors::OOMTileBorderWidth(device_scale_factor);
-        } else if (MathUtil::IsFloatNearlyTheSame(
-                       iter.CurrentTiling()->contents_scale_key(),
-                       ideal_scale_key)) {
-          // NOTE: The above check is not exactly the same computation as is
-          // used by PictureLayerImpl, as high resolution tiles within
-          // PictureLayerImpl use `raster_contents_scale_`, which is not
-          // necessarily the ideal scale. However, we don't have the former
-          // field here, so use the ideal scale as an approximation.
-          // TODO(crbug.com/450651370): Determine whether we want to fix this.
-          color = DebugColors::HighResTileBorderColor();
-          width = DebugColors::HighResTileBorderWidth(device_scale_factor);
-        } else if (iter.CurrentTiling()->contents_scale_key() >
-                   ideal_scale_key) {
-          color = DebugColors::AboveHighResTileBorderColor();
-          width = DebugColors::AboveHighResTileBorderWidth(device_scale_factor);
         } else {
-          color = DebugColors::BelowHighResTileBorderColor();
-          width = DebugColors::BelowHighResTileBorderWidth(device_scale_factor);
+          switch (GetTilingResolutionForDebugBorders(iter.CurrentTiling())) {
+            case TilingResolution::kHigh:
+              color = DebugColors::HighResTileBorderColor();
+              width = DebugColors::HighResTileBorderWidth(device_scale_factor);
+              break;
+            case TilingResolution::kAboveHigh:
+              color = DebugColors::AboveHighResTileBorderColor();
+              width =
+                  DebugColors::AboveHighResTileBorderWidth(device_scale_factor);
+              break;
+            case TilingResolution::kBelowHigh:
+              color = DebugColors::BelowHighResTileBorderColor();
+              width =
+                  DebugColors::BelowHighResTileBorderWidth(device_scale_factor);
+              break;
+          }
         }
       } else {
         color = DebugColors::MissingTileBorderColor();
@@ -441,6 +440,27 @@ TileDisplayLayerImpl::Cover(const gfx::Rect& coverage_rect,
                             float ideal_contents_scale) {
   return TilingSetCoverageIterator<Tiling>(
       tilings_, coverage_rect, coverage_scale, ideal_contents_scale);
+}
+
+TileBasedLayerImpl::TilingResolution
+TileDisplayLayerImpl::GetTilingResolutionForDebugBorders(
+    const TileDisplayLayerImpl::Tiling* tiling) const {
+  const auto ideal_scale = GetIdealContentsScale();
+  const float ideal_scale_key = std::max(ideal_scale.x(), ideal_scale.y());
+  if (MathUtil::IsFloatNearlyTheSame(tiling->contents_scale_key(),
+                                     ideal_scale_key)) {
+    // NOTE: The above check is not exactly the same computation as is
+    // used by PictureLayerImpl, as high resolution tiles within
+    // PictureLayerImpl use `raster_contents_scale_`, which is not
+    // necessarily the ideal scale. However, we don't have the former
+    // field here, so use the ideal scale as an approximation.
+    // TODO(crbug.com/450651370): Determine whether we want to fix this.
+    return TilingResolution::kHigh;
+  }
+  if (tiling->contents_scale_key() > ideal_scale_key) {
+    return TilingResolution::kAboveHigh;
+  }
+  return TilingResolution::kBelowHigh;
 }
 
 }  // namespace cc

@@ -302,16 +302,23 @@ void PictureLayerImpl::AppendQuadsSpecialization(
         } else if (mode == TileDrawInfo::OOM_MODE) {
           color = DebugColors::OOMTileBorderColor();
           width = DebugColors::OOMTileBorderWidth(device_scale_factor);
-        } else if (iter.CurrentTiling()->resolution() == HIGH_RESOLUTION) {
-          color = DebugColors::HighResTileBorderColor();
-          width = DebugColors::HighResTileBorderWidth(device_scale_factor);
-        } else if (iter.CurrentTiling()->contents_scale_key() >
-                   raster_contents_scale_key()) {
-          color = DebugColors::AboveHighResTileBorderColor();
-          width = DebugColors::AboveHighResTileBorderWidth(device_scale_factor);
         } else {
-          color = DebugColors::BelowHighResTileBorderColor();
-          width = DebugColors::BelowHighResTileBorderWidth(device_scale_factor);
+          switch (GetTilingResolutionForDebugBorders(iter.CurrentTiling())) {
+            case TilingResolution::kHigh:
+              color = DebugColors::HighResTileBorderColor();
+              width = DebugColors::HighResTileBorderWidth(device_scale_factor);
+              break;
+            case TilingResolution::kAboveHigh:
+              color = DebugColors::AboveHighResTileBorderColor();
+              width =
+                  DebugColors::AboveHighResTileBorderWidth(device_scale_factor);
+              break;
+            case TilingResolution::kBelowHigh:
+              color = DebugColors::BelowHighResTileBorderColor();
+              width =
+                  DebugColors::BelowHighResTileBorderWidth(device_scale_factor);
+              break;
+          }
         }
       } else {
         color = DebugColors::MissingTileBorderColor();
@@ -2249,6 +2256,18 @@ float PictureLayerImpl::GetMaximumContentsScaleForUseInAppendQuads() {
   // the size of the layer. In that case, use scale 1 for more stable
   // to-screen-space mapping.
   return tilings_->num_tilings() ? MaximumTilingContentsScale() : 1.f;
+}
+
+TileBasedLayerImpl::TilingResolution
+PictureLayerImpl::GetTilingResolutionForDebugBorders(
+    const PictureLayerTiling* tiling) const {
+  if (tiling->resolution() == HIGH_RESOLUTION) {
+    return TilingResolution::kHigh;
+  }
+  if (tiling->contents_scale_key() > raster_contents_scale_key()) {
+    return TilingResolution::kAboveHigh;
+  }
+  return TilingResolution::kBelowHigh;
 }
 
 TilingSetCoverageIterator<PictureLayerTiling> PictureLayerImpl::Cover(
