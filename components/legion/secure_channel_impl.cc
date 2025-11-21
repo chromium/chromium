@@ -62,6 +62,7 @@ bool SecureChannelImpl::Write(const Request& request) {
     case State::kPerformingAttestation:
     case State::kWaitingHandshakeMessage:
     case State::kPerformingHandshake:
+    case State::kVerifyingHandshake:
       // Request is queued and will be processed once the session is
       // established.
       break;
@@ -104,6 +105,7 @@ void SecureChannelImpl::OnResponseReceived(
         error_code = ErrorCode::kNetworkError;
         break;
       case State::kWaitingHandshakeMessage:
+      case State::kVerifyingHandshake:
       case State::kUninitialized:
       case State::kClosed:
         // Transport error in these states is unexpected because no requests
@@ -170,8 +172,20 @@ void SecureChannelImpl::OnHandshakeResponse(
 
   DCHECK_EQ(state_, State::kPerformingHandshake);
 
+  state_ = State::kVerifyingHandshake;
+
   // Step 4: Process Handshake Response
-  if (!secure_session_->ProcessHandshakeResponse(response)) {
+  secure_session_->ProcessHandshakeResponse(
+      response, base::BindOnce(&SecureChannelImpl::OnHandshakeVerification,
+                               weak_factory_.GetWeakPtr()));
+}
+
+void SecureChannelImpl::OnHandshakeVerification(bool handshake_verified) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  DCHECK_EQ(state_, State::kVerifyingHandshake);
+
+  if (!handshake_verified) {
     DLOG(ERROR) << "Failed to handle handshake response.";
     FailAllRequestsAndClose(ErrorCode::kHandshakeFailed);
     return;

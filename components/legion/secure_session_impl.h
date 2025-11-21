@@ -24,8 +24,9 @@ class SecureSessionImpl : public SecureSession {
   // SecureSession:
   void GetHandshakeMessage(
       SecureSession::GetHandshakeMessageOnceCallback callback) override;
-  bool ProcessHandshakeResponse(
-      const oak::session::v1::HandshakeResponse& response) override;
+  void ProcessHandshakeResponse(
+      const oak::session::v1::HandshakeResponse& response,
+      ProcessHandshakeResponseOnceCallback callback) override;
   std::optional<oak::session::v1::EncryptedMessage> Encrypt(
       const Request& data) override;
   std::optional<Response> Decrypt(
@@ -36,6 +37,11 @@ class SecureSessionImpl : public SecureSession {
   }
 
  private:
+  oak::session::v1::HandshakeRequest GetHandshakeMessageSync();
+
+  bool ProcessHandshakeResponseSync(
+      const oak::session::v1::HandshakeResponse& response);
+
   std::optional<Noise> noise_;
   bssl::UniquePtr<EC_KEY> ephemeral_key_;
   std::unique_ptr<Crypter> crypter_;

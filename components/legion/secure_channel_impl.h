@@ -47,6 +47,7 @@ class SecureChannelImpl : public SecureChannel {
     kPerformingAttestation,
     kWaitingHandshakeMessage,
     kPerformingHandshake,
+    kVerifyingHandshake,
     kEstablished,
     kClosed,
   };
@@ -68,6 +69,7 @@ class SecureChannelImpl : public SecureChannel {
   void OnHandshakeMessageReady(
       oak::session::v1::HandshakeRequest handshake_request);
   void OnHandshakeResponse(const oak::session::v1::HandshakeResponse& response);
+  void OnHandshakeVerification(bool handshake_verified);
   void OnEncryptedResponse(const oak::session::v1::EncryptedMessage& response);
 
   SEQUENCE_CHECKER(sequence_checker_);

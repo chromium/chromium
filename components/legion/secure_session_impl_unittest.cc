@@ -160,16 +160,22 @@ class ServerSecureSession {
 class SecureSessionImplTest : public ::testing::Test {
  protected:
   void PerformValidHandshake(ServerSecureSession& server_session) {
-    base::test::TestFuture<oak::session::v1::HandshakeRequest> future;
-    client_session_.GetHandshakeMessage(future.GetCallback());
-    auto client_handshake_request = future.Get();
+    auto client_handshake_request = [&]() {
+      base::test::TestFuture<oak::session::v1::HandshakeRequest> future;
+      client_session_.GetHandshakeMessage(future.GetCallback());
+      return future.Get();
+    }();
 
     auto server_handshake_response =
         server_session.ProcessHandshake(client_handshake_request);
     ASSERT_TRUE(server_handshake_response.has_value());
 
-    ASSERT_TRUE(client_session_.ProcessHandshakeResponse(
-        server_handshake_response.value()));
+    {
+      base::test::TestFuture<bool> future;
+      client_session_.ProcessHandshakeResponse(
+          server_handshake_response.value(), future.GetCallback());
+      ASSERT_TRUE(future.Get());
+    }
   }
 
   SecureSessionImpl client_session_;
@@ -220,9 +226,11 @@ TEST_F(SecureSessionImplTest, GetHandshakeMessageSucceeds) {
 TEST_F(SecureSessionImplTest, ProcessHandshakeResponseInvalidPeerKey) {
   // Though the result is not used, it's important to call GetHandshakeMessage()
   // before ProcessHandshakeResponse().
-  base::test::TestFuture<oak::session::v1::HandshakeRequest> future;
-  client_session_.GetHandshakeMessage(future.GetCallback());
-  ASSERT_TRUE(future.Wait());
+  {
+    base::test::TestFuture<oak::session::v1::HandshakeRequest> future;
+    client_session_.GetHandshakeMessage(future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+  }
 
   oak::session::v1::HandshakeResponse response;
   auto* noise_msg = response.mutable_noise_handshake_message();
@@ -230,15 +238,21 @@ TEST_F(SecureSessionImplTest, ProcessHandshakeResponseInvalidPeerKey) {
   noise_msg->set_ephemeral_public_key("invalid key", 11);
   noise_msg->set_ciphertext("some ciphertext");
 
-  EXPECT_FALSE(client_session_.ProcessHandshakeResponse(response));
+  {
+    base::test::TestFuture<bool> future;
+    client_session_.ProcessHandshakeResponse(response, future.GetCallback());
+    EXPECT_FALSE(future.Get());
+  }
 }
 
 TEST_F(SecureSessionImplTest, ProcessHandshakeResponseInvalidCiphertext) {
   // Though the result is not used, it's important to call GetHandshakeMessage()
   // before ProcessHandshakeResponse().
-  base::test::TestFuture<oak::session::v1::HandshakeRequest> future;
-  client_session_.GetHandshakeMessage(future.GetCallback());
-  ASSERT_TRUE(future.Wait());
+  {
+    base::test::TestFuture<oak::session::v1::HandshakeRequest> future;
+    client_session_.GetHandshakeMessage(future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+  }
 
   // Create a valid server response, but then corrupt the ciphertext.
   oak::session::v1::HandshakeResponse server_handshake_response;
@@ -250,8 +264,12 @@ TEST_F(SecureSessionImplTest, ProcessHandshakeResponseInvalidCiphertext) {
       server_e_pub_bytes, sizeof(server_e_pub_bytes));
   server_noise_msg->set_ciphertext("corrupted ciphertext");
 
-  EXPECT_FALSE(
-      client_session_.ProcessHandshakeResponse(server_handshake_response));
+  {
+    base::test::TestFuture<bool> future;
+    client_session_.ProcessHandshakeResponse(server_handshake_response,
+                                             future.GetCallback());
+    EXPECT_FALSE(future.Get());
+  }
 }
 
 TEST_F(SecureSessionImplTest, EncryptBeforeHandshake) {
@@ -270,15 +288,20 @@ TEST_F(SecureSessionImplTest, DecryptBeforeHandshake) {
 // Tests that ProcessHandshakeResponse fails if called before GetHandshakeMessage.
 TEST_F(SecureSessionImplTest, ProcessHandshakeResponseWithoutHandshake) {
   oak::session::v1::HandshakeResponse response;
-  EXPECT_FALSE(client_session_.ProcessHandshakeResponse(response));
+
+  base::test::TestFuture<bool> future;
+  client_session_.ProcessHandshakeResponse(response, future.GetCallback());
+  EXPECT_FALSE(future.Get());
 }
 
 // Tests that the handshake fails if the server's response includes a payload,
 // which is not allowed in the NN handshake pattern.
 TEST_F(SecureSessionImplTest, ProcessHandshakeResponseNonEmptyPlaintext) {
-  base::test::TestFuture<oak::session::v1::HandshakeRequest> future;
-  client_session_.GetHandshakeMessage(future.GetCallback());
-  auto client_handshake_request = future.Get();
+  auto client_handshake_request = [&]() {
+    base::test::TestFuture<oak::session::v1::HandshakeRequest> future;
+    client_session_.GetHandshakeMessage(future.GetCallback());
+    return future.Get();
+  }();
 
   ServerSecureSession server_session;
   // Generate a server response with a non-empty payload, which is invalid for
@@ -289,8 +312,12 @@ TEST_F(SecureSessionImplTest, ProcessHandshakeResponseNonEmptyPlaintext) {
 
   // The client should reject the response because the decrypted payload is not
   // empty.
-  EXPECT_FALSE(client_session_.ProcessHandshakeResponse(
-      server_handshake_response.value()));
+  {
+    base::test::TestFuture<bool> future;
+    client_session_.ProcessHandshakeResponse(server_handshake_response.value(),
+                                             future.GetCallback());
+    EXPECT_FALSE(future.Get());
+  }
 }
 
 }  // namespace

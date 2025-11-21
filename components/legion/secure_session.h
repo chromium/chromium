@@ -28,19 +28,24 @@ class SecureSession {
   using GetHandshakeMessageOnceCallback =
       base::OnceCallback<void(oak::session::v1::HandshakeRequest)>;
 
+  using ProcessHandshakeResponseOnceCallback = base::OnceCallback<void(bool)>;
+
   virtual ~SecureSession() = default;
 
   // Generates the initial handshake message.
-  // Returns std::nullopt on failure.
+  //
+  // Runs callback with `std::nullopt` on failure.
   virtual void GetHandshakeMessage(
       GetHandshakeMessageOnceCallback callback) = 0;
 
   // Processes the server's handshake response (e.g., keys).
   // This should be called after the initial handshake message has been sent
   // and a response has been received from the transport layer.
-  // Returns true on success.
-  virtual bool ProcessHandshakeResponse(
-      const oak::session::v1::HandshakeResponse& response) = 0;
+  //
+  // Runs callback with `true` on success.
+  virtual void ProcessHandshakeResponse(
+      const oak::session::v1::HandshakeResponse& response,
+      ProcessHandshakeResponseOnceCallback callback) = 0;
 
   // Encrypts the given data.
   // This should only be called after the handshake is complete.

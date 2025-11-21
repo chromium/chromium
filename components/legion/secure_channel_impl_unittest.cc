@@ -83,10 +83,20 @@ class FakeSecureSession : public SecureSession {
         base::BindOnce(std::move(callback), std::move(handshake_request)));
   }
 
-  // Returns true if response's ephemeral public key is NOT equal to
-  // `kInvalidPublicKey`.
-  bool ProcessHandshakeResponse(
-      const oak::session::v1::HandshakeResponse& response) override {
+  // Runs callback with `true` if response's ephemeral public key is NOT equal
+  // to `kInvalidPublicKey`.
+  void ProcessHandshakeResponse(
+      const oak::session::v1::HandshakeResponse& response,
+      SecureSession::ProcessHandshakeResponseOnceCallback callback) override {
+    bool result = ProcessHandshakeResponseSync(response);
+
+    auto task_runner = base::SequencedTaskRunner::GetCurrentDefault();
+    task_runner->PostTask(FROM_HERE,
+                          base::BindOnce(std::move(callback), result));
+  }
+
+  bool ProcessHandshakeResponseSync(
+      const oak::session::v1::HandshakeResponse& response) {
     if (response.has_noise_handshake_message()) {
       const auto& message = response.noise_handshake_message();
       if (message.ephemeral_public_key() == kInvalidPublicKey) {

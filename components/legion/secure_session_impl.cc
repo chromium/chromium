@@ -29,6 +29,24 @@ SecureSessionImpl::~SecureSessionImpl() = default;
 
 void SecureSessionImpl::GetHandshakeMessage(
     SecureSession::GetHandshakeMessageOnceCallback callback) {
+  oak::session::v1::HandshakeRequest result = GetHandshakeMessageSync();
+
+  auto task_runner = base::SequencedTaskRunner::GetCurrentDefault();
+  task_runner->PostTask(FROM_HERE,
+                        base::BindOnce(std::move(callback), std::move(result)));
+}
+
+void SecureSessionImpl::ProcessHandshakeResponse(
+    const oak::session::v1::HandshakeResponse& response,
+    SecureSession::ProcessHandshakeResponseOnceCallback callback) {
+  bool result = ProcessHandshakeResponseSync(response);
+
+  auto task_runner = base::SequencedTaskRunner::GetCurrentDefault();
+  task_runner->PostTask(FROM_HERE, base::BindOnce(std::move(callback), result));
+}
+
+oak::session::v1::HandshakeRequest
+SecureSessionImpl::GetHandshakeMessageSync() {
   noise_.emplace();
   noise_->Init(Noise::HandshakeType::kNN);
   uint8_t prologue[1];
@@ -55,14 +73,10 @@ void SecureSessionImpl::GetHandshakeMessage(
                                           sizeof(ephemeral_public_key_bytes));
   noise_message->set_ciphertext(ciphertext_request.data(),
                                 ciphertext_request.size());
-
-  auto task_runner = base::SequencedTaskRunner::GetCurrentDefault();
-  task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), std::move(handshake_request)));
+  return handshake_request;
 }
 
-bool SecureSessionImpl::ProcessHandshakeResponse(
+bool SecureSessionImpl::ProcessHandshakeResponseSync(
     const oak::session::v1::HandshakeResponse& response) {
   if (!noise_) {
     DLOG(ERROR) << "Handshake not initiated.";
