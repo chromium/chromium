@@ -39,15 +39,16 @@ bool GlicDelegatingSharingManagerBase::PinTabs(
 }
 
 bool GlicDelegatingSharingManagerBase::UnpinTabs(
-    base::span<const tabs::TabHandle> tab_handles) {
+    base::span<const tabs::TabHandle> tab_handles,
+    GlicUnpinTrigger trigger) {
   return sharing_manager_delegate_
-             ? sharing_manager_delegate_->UnpinTabs(tab_handles)
+             ? sharing_manager_delegate_->UnpinTabs(tab_handles, trigger)
              : false;
 }
 
-void GlicDelegatingSharingManagerBase::UnpinAllTabs() {
+void GlicDelegatingSharingManagerBase::UnpinAllTabs(GlicUnpinTrigger trigger) {
   if (sharing_manager_delegate_) {
-    sharing_manager_delegate_->UnpinAllTabs();
+    sharing_manager_delegate_->UnpinAllTabs(trigger);
   }
 }
 

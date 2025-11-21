@@ -124,13 +124,14 @@ bool GlicSharingManagerImpl::PinTabs(
 }
 
 bool GlicSharingManagerImpl::UnpinTabs(
-    base::span<const tabs::TabHandle> tab_handles) {
+    base::span<const tabs::TabHandle> tab_handles,
+    GlicUnpinTrigger trigger) {
   CHECK(base::FeatureList::IsEnabled(mojom::features::kGlicMultiTab));
-  return pinned_tab_manager()->UnpinTabs(tab_handles);
+  return pinned_tab_manager()->UnpinTabs(tab_handles, trigger);
 }
 
-void GlicSharingManagerImpl::UnpinAllTabs() {
-  pinned_tab_manager()->UnpinAllTabs();
+void GlicSharingManagerImpl::UnpinAllTabs(GlicUnpinTrigger trigger) {
+  pinned_tab_manager()->UnpinAllTabs(trigger);
 }
 
 int32_t GlicSharingManagerImpl::GetMaxPinnedTabs() const {

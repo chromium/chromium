@@ -192,10 +192,19 @@ class GlicSharingManager {
   // that either doesn't exist or is not pinned, it will be skipped and we will
   // similarly return false to indicate that the function was not fully
   // successful.
-  virtual bool UnpinTabs(base::span<const tabs::TabHandle> tab_handles) = 0;
+  virtual bool UnpinTabs(base::span<const tabs::TabHandle> tab_handles,
+                         GlicUnpinTrigger trigger) = 0;
+
+  // Forwarding overload for legacy calls. Calls UnpinTabs with kUnknown
+  // trigger.
+  bool UnpinTabs(base::span<const tabs::TabHandle> tab_handles);
 
   // Unpins all pinned tabs, if any.
-  virtual void UnpinAllTabs() = 0;
+  virtual void UnpinAllTabs(GlicUnpinTrigger trigger) = 0;
+
+  // Forwarding overload for legacy calls. Calls UnpinAllTabs with kUnknown
+  // trigger.
+  void UnpinAllTabs();
 
   // Gets the limit on the number of pinned tabs.
   virtual int32_t GetMaxPinnedTabs() const = 0;

@@ -310,7 +310,8 @@ bool GlicPinnedTabManager::PinTabs(
 }
 
 bool GlicPinnedTabManager::UnpinTabs(
-    base::span<const tabs::TabHandle> tab_handles) {
+    base::span<const tabs::TabHandle> tab_handles,
+    GlicUnpinTrigger trigger) {
   bool unpinning_fully_succeeded = true;
   for (const auto tab_handle : tab_handles) {
     auto* tab = tab_handle.Get();
@@ -327,12 +328,12 @@ bool GlicPinnedTabManager::UnpinTabs(
   return unpinning_fully_succeeded;
 }
 
-void GlicPinnedTabManager::UnpinAllTabs() {
+void GlicPinnedTabManager::UnpinAllTabs(GlicUnpinTrigger trigger) {
   std::vector<tabs::TabHandle> tabs_to_unpin;
   for (auto& entry : pinned_tabs_) {
     tabs_to_unpin.push_back(entry.tab_handle);
   }
-  UnpinTabs(tabs_to_unpin);
+  UnpinTabs(tabs_to_unpin, trigger);
 }
 
 const GlicPinnedTabManager::PinnedTabEntry*

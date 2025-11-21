@@ -11,6 +11,15 @@ bool GlicSharingManager::PinTabs(
   return PinTabs(tab_handles, GlicPinTrigger::kUnknown);
 }
 
+bool GlicSharingManager::UnpinTabs(
+    base::span<const tabs::TabHandle> tab_handles) {
+  return UnpinTabs(tab_handles, GlicUnpinTrigger::kUnknown);
+}
+
+void GlicSharingManager::UnpinAllTabs() {
+  UnpinAllTabs(GlicUnpinTrigger::kUnknown);
+}
+
 GlicPinEvent::GlicPinEvent(GlicPinTrigger trigger, base::TimeTicks timestamp)
     : trigger(trigger), timestamp(timestamp) {}
 

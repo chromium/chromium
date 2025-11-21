@@ -63,10 +63,11 @@ class GlicPinnedTabManager : public TabStripModelObserver {
   // that either doesn't exist or is not pinned, it will be skipped and we will
   // similarly return false to indicate that the function was not fully
   // successful.
-  bool UnpinTabs(base::span<const tabs::TabHandle> tab_handles);
+  bool UnpinTabs(base::span<const tabs::TabHandle> tab_handles,
+                 GlicUnpinTrigger trigger = GlicUnpinTrigger::kUnknown);
 
   // Unpins all pinned tabs.
-  void UnpinAllTabs();
+  void UnpinAllTabs(GlicUnpinTrigger trigger = GlicUnpinTrigger::kUnknown);
 
   // Sets the limit on the number of pinned tabs. Returns the effective number
   // of pinned tabs. Can differ due to supporting fewer tabs than requested or
