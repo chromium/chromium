@@ -411,6 +411,9 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                                 buildAccessibilityEvent(virtualViewId, eventType);
                         if (event == null) return false;
 
+                        // Invalidate cached state for the node that has changed.
+                        clearNodeInfoCacheForGivenId(virtualViewId);
+
                         requestSendAccessibilityEvent(event);
 
                         // Always send the ENTER and then the EXIT event, to match a
