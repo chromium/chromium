@@ -273,6 +273,11 @@ void PlayerCompositorDelegate::OnMemoryPressure(
   TRACE_EVENT1("paint_preview", "PlayerCompositorDelegate::OnMemoryPressure",
                "memory_pressure_level",
                static_cast<int>(memory_pressure_level));
+
+  if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_NONE) {
+    return;
+  }
+
   if (paint_preview_compositor_service_) {
     paint_preview_compositor_service_->OnMemoryPressure(memory_pressure_level);
   }

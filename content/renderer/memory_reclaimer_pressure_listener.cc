@@ -18,6 +18,10 @@ MemoryReclaimerPressureListener::~MemoryReclaimerPressureListener() = default;
 
 void MemoryReclaimerPressureListener::OnMemoryPressure(
     base::MemoryPressureLevel level) {
+  if (level == base::MEMORY_PRESSURE_LEVEL_NONE) {
+    return;
+  }
+
   ::partition_alloc::MemoryReclaimer::Instance()->ReclaimAll();
 }
 

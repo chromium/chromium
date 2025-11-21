@@ -436,6 +436,10 @@ void DOMStorageContextWrapper::RemoveNamespace(
 
 void DOMStorageContextWrapper::OnMemoryPressure(
     base::MemoryPressureLevel memory_pressure_level) {
+  if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_NONE) {
+    return;
+  }
+
   PurgeOption purge_option = PURGE_UNOPENED;
   if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
     purge_option = PURGE_AGGRESSIVE;

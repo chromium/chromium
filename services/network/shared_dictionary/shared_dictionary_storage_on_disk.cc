@@ -316,6 +316,11 @@ void SharedDictionaryStorageOnDisk::OnDictionaryDeleted(
 
 void SharedDictionaryStorageOnDisk::OnMemoryPressure(
     base::MemoryPressureLevel level) {
+  // TODO(pmonette): This doesn't handle NONE notifications for historical
+  // reasons. Fix this.
+  if (level == base::MEMORY_PRESSURE_LEVEL_NONE) {
+    return;
+  }
   memory_pressure_level_ = level;
 }
 

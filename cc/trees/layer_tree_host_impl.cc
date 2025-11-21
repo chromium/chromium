@@ -4194,6 +4194,10 @@ void LayerTreeHostImpl::ActivateStateForImages() {
 }
 
 void LayerTreeHostImpl::OnMemoryPressure(base::MemoryPressureLevel level) {
+  if (level == base::MEMORY_PRESSURE_LEVEL_NONE) {
+    return;
+  }
+
   if (settings_.trees_in_viz_in_viz_process) {
     return;
   }

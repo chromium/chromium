@@ -44,7 +44,6 @@ void MemoryPressureListenerRegistry::NotifyMemoryPressure(
   CHECK(
       !SingleThreadTaskRunner::HasMainThreadDefault() ||
       SingleThreadTaskRunner::GetMainThreadDefault()->BelongsToCurrentThread());
-  DCHECK_NE(memory_pressure_level, MEMORY_PRESSURE_LEVEL_NONE);
   TRACE_EVENT_INSTANT(
       trace_event::MemoryDumpManager::kTraceCategory,
       "MemoryPressureListener::NotifyMemoryPressure",

@@ -648,6 +648,10 @@ void DiscardableSharedMemoryManager::InvalidateMojoThreadWeakPtrs(
 
 void DiscardableSharedMemoryManager::OnMemoryPressure(
     base::MemoryPressureLevel memory_pressure_level) {
+  if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_NONE) {
+    return;
+  }
+
   memory_pressure_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(

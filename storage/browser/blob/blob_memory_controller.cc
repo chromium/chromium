@@ -985,6 +985,11 @@ void BlobMemoryController::OnEvictionComplete(
 
 void BlobMemoryController::OnMemoryPressure(
     base::MemoryPressureLevel memory_pressure_level) {
+  // Nothing to do if no pressure.
+  if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_NONE) {
+    return;
+  }
+
   // Under critical memory pressure the system is probably already swapping out
   // memory and making heavy use of IO. Adding to that is not desirable.
   // Furthermore, scheduling a task to write files to disk risks paging-in

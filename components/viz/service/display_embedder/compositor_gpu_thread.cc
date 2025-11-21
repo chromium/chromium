@@ -234,6 +234,10 @@ void CompositorGpuThread::OnMemoryPressure(
     base::MemoryPressureLevel memory_pressure_level) {
   DCHECK(task_runner()->BelongsToCurrentThread());
 
+  if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_NONE) {
+    return;
+  }
+
   // Context should be current for cache/memory cleanup.
   if (shared_context_state_ &&
       shared_context_state_->MakeCurrent(nullptr, /*needs_gl=*/true)) {

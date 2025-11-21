@@ -820,6 +820,10 @@ void GpuChannelManager::OnMemoryPressure(
     base::MemoryPressureLevel memory_pressure_level) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
+  if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_NONE) {
+    return;
+  }
+
   if (program_cache_)
     program_cache_->HandleMemoryPressure(memory_pressure_level);
 

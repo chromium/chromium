@@ -95,6 +95,10 @@ void FontGlobalContext::Init() {
 
 void FontGlobalContext::OnMemoryPressure(
     base::MemoryPressureLevel memory_pressure_level) {
+  if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_NONE) {
+    return;
+  }
+
   font_cache_.Invalidate();
   typeface_digest_cache_.Clear();
   postscript_name_digest_cache_.Clear();

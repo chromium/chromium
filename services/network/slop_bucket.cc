@@ -403,6 +403,9 @@ class SlopBucket::Manager : public base::MemoryPressureListener {
     if (disabled()) {
       return;
     }
+    if (level == base::MEMORY_PRESSURE_LEVEL_NONE) {
+      return;
+    }
     if (level >= configuration_.memory_pressure_disable_level()) {
       Disable(DisabledReason::kMemoryPressure);
       RecordDisabledReason();

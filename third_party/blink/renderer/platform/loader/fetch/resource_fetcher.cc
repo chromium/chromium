@@ -3293,6 +3293,10 @@ void ResourceFetcher::StartSpeculativeImageDecodes() {
 }
 
 void ResourceFetcher::OnMemoryPressure(base::MemoryPressureLevel level) {
+  if (level == base::MEMORY_PRESSURE_LEVEL_NONE) {
+    return;
+  }
+
   if (base::FeatureList::IsEnabled(
           features::kReleaseResourceStrongReferencesOnMemoryPressure)) {
     document_resource_strong_refs_.clear();
