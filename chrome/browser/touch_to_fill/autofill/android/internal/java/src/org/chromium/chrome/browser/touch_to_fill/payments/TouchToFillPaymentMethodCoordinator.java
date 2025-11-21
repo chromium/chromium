@@ -252,7 +252,7 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
                 .with(CURRENT_SCREEN, HOME_SCREEN)
                 .with(FOCUSED_VIEW_ID_FOR_ACCESSIBILITY, 0)
                 .with(SHEET_ITEMS, new ModelList())
-                .with(BACK_PRESS_HANDLER, mediator::showHomeScreen)
+                .with(BACK_PRESS_HANDLER, mediator::onBackButtonPressed)
                 .with(DISMISS_HANDLER, mediator::onDismissed)
                 .build();
     }

@@ -5582,6 +5582,38 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Autofill.TouchToFill.Bnpl.UserAction{ActionType}">
+  <owner>ferny@google.com</owner>
+  <owner>yishuil@google.com</owner>
+  <description>
+    User performed an action in the Touch To Fill (TTF) bottom sheet during a
+    Buy Now, Pay Later (BNPL) flow. {ActionType}
+  </description>
+  <token key="ActionType">
+    <variant name="" summary="aggregated"/>
+    <variant name=".IssuerSelectionScreen.AffirmLinkedSelected"
+        summary="Linked Affirm issuer selected."/>
+    <variant name=".IssuerSelectionScreen.AffirmUnlinkedSelected"
+        summary="Unlinked Affirm issuer selected."/>
+    <variant name=".IssuerSelectionScreen.BackButtonSelected"
+        summary="Back button selected."/>
+    <variant name=".IssuerSelectionScreen.Dismissed"
+        summary="Issuer selection screen dismissed."/>
+    <variant name=".IssuerSelectionScreen.KlarnaLinkedSelected"
+        summary="Linked Klarna issuer selected."/>
+    <variant name=".IssuerSelectionScreen.KlarnaUnlinkedSelected"
+        summary="Unlinked Klarna issuer selected."/>
+    <variant name=".IssuerSelectionScreen.SettingsLinkSelected"
+        summary="Settings link selected."/>
+    <variant name=".IssuerSelectionScreen.Shown"
+        summary="Issuer selection screen shown."/>
+    <variant name=".IssuerSelectionScreen.ZipLinkedSelected"
+        summary="Linked Zip issuer selected."/>
+    <variant name=".IssuerSelectionScreen.ZipUnlinkedSelected"
+        summary="Unlinked Zip issuer selected."/>
+  </token>
+</action>
+
 <action name="Autofill_BrandingTapped">
   <owner>ginnyhuang@chromium.org</owner>
   <description>

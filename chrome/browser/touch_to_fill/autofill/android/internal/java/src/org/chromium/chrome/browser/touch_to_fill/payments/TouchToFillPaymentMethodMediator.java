@@ -102,6 +102,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
 import org.chromium.chrome.browser.night_mode.GlobalNightModeStateProviderHolder;
@@ -214,22 +215,6 @@ class TouchToFillPaymentMethodMediator {
         int MAX_VALUE = DISMISS;
     }
 
-    /**
-     * The Buy Now, Pay Later (BNPL) issuers.
-     *
-     * <p>Entries should not be renumbered and numeric values should never be reused. Needs to stay
-     * in sync with BnplIssuerId in enums.xml.
-     */
-    @IntDef({BnplIssuer.AFFIRM, BnplIssuer.ZIP, BnplIssuer.AFTERPAY, BnplIssuer.KLARNA})
-    @Retention(RetentionPolicy.SOURCE)
-    @interface BnplIssuer {
-        int AFFIRM = 0;
-        int ZIP = 1;
-        int AFTERPAY = 2;
-        int KLARNA = 3;
-        int MAX_VALUE = KLARNA;
-    }
-
     @VisibleForTesting
     static final String TOUCH_TO_FILL_CREDIT_CARD_OUTCOME_HISTOGRAM =
             "Autofill.TouchToFill.CreditCard.Outcome2";
@@ -274,20 +259,54 @@ class TouchToFillPaymentMethodMediator {
             "Autofill.TouchToFill.LoyaltyCard.NumberOfAffiliatedLoyaltyCardsShown";
 
     @VisibleForTesting
-    static final String TOUCH_TO_FILL_BNPL_SELECT_ISSUER_SCREEN_LINKED_ISSUER_SELECTED =
-            "Autofill.TouchToFill.Bnpl.SelectIssuerScreen.LinkedIssuerSelected";
-
-    @VisibleForTesting
-    static final String TOUCH_TO_FILL_BNPL_SELECT_ISSUER_SCREEN_UNLINKED_ISSUER_SELECTED =
-            "Autofill.TouchToFill.Bnpl.SelectIssuerScreen.UnlinkedIssuerSelected";
-
-    @VisibleForTesting
     static final String TOUCH_TO_FILL_BNPL_SELECT_ISSUER_NUMBER_OF_ISSUERS_SHOWN =
             "Autofill.TouchToFill.Bnpl.SelectIssuerScreen.NumberOfIssuersShown";
 
+    // LINT.IfChange
+
+    // TODO(crbug.com/438785863): Add ToS, progress, and error screen user actions.
     @VisibleForTesting
-    static final String TOUCH_TO_FILL_BNPL_SELECT_ISSUER_SCREEN_SHOWN =
-            "Autofill.TouchToFill.Bnpl.SelectIssuerScreen.Shown";
+    static final String TOUCH_TO_FILL_BNPL_USER_ACTION = "Autofill.TouchToFill.Bnpl.UserAction";
+
+    @VisibleForTesting
+    static final String ISSUER_SELECTION_SCREEN_SHOWN = ".IssuerSelectionScreen.Shown";
+
+    @VisibleForTesting
+    static final String ISSUER_SELECTION_SCREEN_DISMISSED = ".IssuerSelectionScreen.Dismissed";
+
+    @VisibleForTesting
+    static final String ISSUER_SELECTION_SCREEN_AFFIRM_LINKED_SELECTED =
+            ".IssuerSelectionScreen.AffirmLinkedSelected";
+
+    @VisibleForTesting
+    static final String ISSUER_SELECTION_SCREEN_AFFIRM_UNLINKED_SELECTED =
+            ".IssuerSelectionScreen.AffirmUninkedSelected";
+
+    @VisibleForTesting
+    static final String ISSUER_SELECTION_SCREEN_KLARNA_LINKED_SELECTED =
+            ".IssuerSelectionScreen.KlarnaLinkedSelected";
+
+    @VisibleForTesting
+    static final String ISSUER_SELECTION_SCREEN_KLARNA_UNLINKED_SELECTED =
+            ".IssuerSelectionScreen.KlarnaUninkedSelected";
+
+    @VisibleForTesting
+    static final String ISSUER_SELECTION_SCREEN_ZIP_LINKED_SELECTED =
+            ".IssuerSelectionScreen.ZipLinkedSelected";
+
+    @VisibleForTesting
+    static final String ISSUER_SELECTION_SCREEN_ZIP_UNLINKED_SELECTED =
+            ".IssuerSelectionScreen.ZipUninkedSelected";
+
+    @VisibleForTesting
+    static final String ISSUER_SELECTION_SCREEN_BACK_BUTTON_SELECTED =
+            ".IssuerSelectionScreen.BackButtonSelected";
+
+    @VisibleForTesting
+    static final String ISSUER_SELECTION_SCREEN_SETTINGS_LINK_SELECTED =
+            ".IssuerSelectionScreen.SettingsLinkSelected";
+
+    // LINT.ThenChange(/tools/metrics/actions/actions.xml)
 
     // LINT.IfChange
     private static final String WALLET_LINK_TEXT = "wallet.google.com";
@@ -677,8 +696,7 @@ class TouchToFillPaymentMethodMediator {
         mModel.set(SHEET_ITEMS, sheetItems);
         mModel.set(VISIBLE, true);
 
-        RecordHistogram.recordBooleanHistogram(
-                TOUCH_TO_FILL_BNPL_SELECT_ISSUER_SCREEN_SHOWN, /* sample= */ true);
+        recordTouchToFillBnplUserAction(ISSUER_SELECTION_SCREEN_SHOWN);
         RecordHistogram.recordCount100Histogram(
                 TOUCH_TO_FILL_BNPL_SELECT_ISSUER_NUMBER_OF_ISSUERS_SHOWN,
                 mBnplIssuerContexts.size());
@@ -789,6 +807,8 @@ class TouchToFillPaymentMethodMediator {
         mModel.set(VISIBLE, visible);
     }
 
+    // TODO(crbug.com/461545861): Split logic by screen (e.g. BNPL_ISSUER_SELECTION_SCREEN) instead
+    // of the type of payment method set (e.g. mIbans).
     public void onDismissed(@StateChangeReason int reason) {
         // TODO(b/332193789): Add IBAN-related metrics.
         if (!mModel.get(VISIBLE)) return; // Dismiss only if not dismissed yet.
@@ -800,6 +820,9 @@ class TouchToFillPaymentMethodMediator {
         mDelegate.onDismissed(dismissedByUser);
         if (dismissedByUser) {
             if (mSuggestions != null) {
+                if (mModel.get(CURRENT_SCREEN) == BNPL_ISSUER_SELECTION_SCREEN) {
+                    recordTouchToFillBnplUserAction(ISSUER_SELECTION_SCREEN_DISMISSED);
+                }
                 RecordHistogram.recordEnumeratedHistogram(
                         TOUCH_TO_FILL_CREDIT_CARD_OUTCOME_HISTOGRAM,
                         TouchToFillCreditCardOutcome.DISMISS,
@@ -816,23 +839,17 @@ class TouchToFillPaymentMethodMediator {
         }
     }
 
-    void showHomeScreen() {
-        mModel.set(CURRENT_SCREEN, HOME_SCREEN);
-        if (mSuggestions != null) {
-            // TODO(crbug.com/438784993): Disable and grey out BNPL chip if no issuers are available
-            // for the transaction.
-            setPaymentMethodsHomeScreenItems();
-        } else if (mAffiliatedLoyaltyCards != null) {
-            mModel.set(FOCUSED_VIEW_ID_FOR_ACCESSIBILITY, R.id.all_loyalty_cards_item);
-            mModel.set(
-                    SHEET_ITEMS,
-                    getLoyaltyCardHomeScreenItems(
-                            mAffiliatedLoyaltyCards,
-                            mValuableImageFunction,
-                            /* firstTimeUsage= */ false));
-        } else {
-            assert false : "Unhandled home screen show";
+    /**
+     * Displays the home screen when the back button is pressed.
+     *
+     * <p>This method is called when the user presses the back button in the header of the bottom
+     * sheet.
+     */
+    public void onBackButtonPressed() {
+        if (mModel.get(CURRENT_SCREEN) == BNPL_ISSUER_SELECTION_SCREEN) {
+            recordTouchToFillBnplUserAction(ISSUER_SELECTION_SCREEN_BACK_BUTTON_SELECTED);
         }
+        showHomeScreen();
     }
 
     public void scanCreditCard() {
@@ -840,12 +857,15 @@ class TouchToFillPaymentMethodMediator {
         recordTouchToFillCreditCardOutcomeHistogram(TouchToFillCreditCardOutcome.SCAN_NEW_CARD);
     }
 
-    // TODO(crbug.com/430575808): Log `MANAGE_PAYMENTS` outcome metric for BNPL.
     public void showPaymentMethodSettings() {
         mDelegate.showPaymentMethodSettings();
         if (mSuggestions != null) {
-            recordTouchToFillCreditCardOutcomeHistogram(
-                    TouchToFillCreditCardOutcome.MANAGE_PAYMENTS);
+            if (mModel.get(CURRENT_SCREEN) == BNPL_ISSUER_SELECTION_SCREEN) {
+                recordTouchToFillBnplUserAction(ISSUER_SELECTION_SCREEN_SETTINGS_LINK_SELECTED);
+            } else {
+                recordTouchToFillCreditCardOutcomeHistogram(
+                        TouchToFillCreditCardOutcome.MANAGE_PAYMENTS);
+            }
         } else if (mIbans != null) {
             recordTouchToFillIbanOutcomeHistogram(TouchToFillIbanOutcome.MANAGE_PAYMENTS);
         }
@@ -878,6 +898,27 @@ class TouchToFillPaymentMethodMediator {
                         "<link>",
                         "</link>",
                         new ChromeClickableSpan(mContext, view -> openLink(mContext, WALLET_URL))));
+    }
+
+    // TODO(crbug.com/459842727): Split HOME_SCREEN into CREDIT_CARD_HOME_SCREEN,
+    // LOYALTY_CARD_HOME_SCREEN and IBAN_HOME_SCREEN.
+    private void showHomeScreen() {
+        mModel.set(CURRENT_SCREEN, HOME_SCREEN);
+        if (mSuggestions != null) {
+            // TODO(crbug.com/438784993): Disable and grey out BNPL chip if no issuers are available
+            // for the transaction.
+            setPaymentMethodsHomeScreenItems();
+        } else if (mAffiliatedLoyaltyCards != null) {
+            mModel.set(FOCUSED_VIEW_ID_FOR_ACCESSIBILITY, R.id.all_loyalty_cards_item);
+            mModel.set(
+                    SHEET_ITEMS,
+                    getLoyaltyCardHomeScreenItems(
+                            mAffiliatedLoyaltyCards,
+                            mValuableImageFunction,
+                            /* firstTimeUsage= */ false));
+        } else {
+            assert false : "Unhandled home screen show";
+        }
     }
 
     private void onSelectedCreditCard(AutofillSuggestion suggestion) {
@@ -939,15 +980,7 @@ class TouchToFillPaymentMethodMediator {
         showProgressScreen();
         mDelegate.onBnplIssuerSuggestionSelected(issuerId);
 
-        @BnplIssuer Integer issuer = getEnumFromBnplIssuerId(issuerId);
-        if (issuer != null) {
-            RecordHistogram.recordEnumeratedHistogram(
-                    isLinked
-                            ? TOUCH_TO_FILL_BNPL_SELECT_ISSUER_SCREEN_LINKED_ISSUER_SELECTED
-                            : TOUCH_TO_FILL_BNPL_SELECT_ISSUER_SCREEN_UNLINKED_ISSUER_SELECTED,
-                    issuer,
-                    BnplIssuer.MAX_VALUE);
-        }
+        recordTouchToFillBnplIssuerUserAction(issuerId, isLinked);
     }
 
     private void onErrorOkPressed() {
@@ -1177,7 +1210,7 @@ class TouchToFillPaymentMethodMediator {
                                 isBackButtonEnabled)
                         .with(
                                 BnplSelectionProgressHeaderProperties.BNPL_ON_BACK_BUTTON_CLICKED,
-                                () -> this.showHomeScreen());
+                                this::onBackButtonPressed);
         return new ListItem(
                 BNPL_SELECTION_PROGRESS_HEADER, bnplSelectionProgressHeaderBuilder.build());
     }
@@ -1283,19 +1316,34 @@ class TouchToFillPaymentMethodMediator {
                 TouchToFillIbanOutcome.MAX_VALUE);
     }
 
-    private static @Nullable @BnplIssuer Integer getEnumFromBnplIssuerId(String issuerId) {
+    private static void recordTouchToFillBnplIssuerUserAction(String issuerId, boolean isLinked) {
         switch (issuerId) {
             case "affirm":
-                return BnplIssuer.AFFIRM;
-            case "zip":
-                return BnplIssuer.ZIP;
-            case "afterpay":
-                return BnplIssuer.AFTERPAY;
+                recordTouchToFillBnplUserAction(
+                        isLinked
+                                ? ISSUER_SELECTION_SCREEN_AFFIRM_LINKED_SELECTED
+                                : ISSUER_SELECTION_SCREEN_AFFIRM_UNLINKED_SELECTED);
+                break;
             case "klarna":
-                return BnplIssuer.KLARNA;
+                recordTouchToFillBnplUserAction(
+                        isLinked
+                                ? ISSUER_SELECTION_SCREEN_KLARNA_LINKED_SELECTED
+                                : ISSUER_SELECTION_SCREEN_KLARNA_UNLINKED_SELECTED);
+                break;
+            case "zip":
+                recordTouchToFillBnplUserAction(
+                        isLinked
+                                ? ISSUER_SELECTION_SCREEN_ZIP_LINKED_SELECTED
+                                : ISSUER_SELECTION_SCREEN_ZIP_UNLINKED_SELECTED);
+                break;
+            default:
+                // Nothing is recorded for all other issuerId's.
+                break;
         }
-        assert false : "Unknown BNPL issuer ID: " + issuerId;
-        return null;
+    }
+
+    private static void recordTouchToFillBnplUserAction(String userAction) {
+        RecordUserAction.record(TOUCH_TO_FILL_BNPL_USER_ACTION + userAction);
     }
 
     void setInputProtectorForTesting(InputProtector inputProtector) {
