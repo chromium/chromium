@@ -181,7 +181,9 @@ CanvasResourceProviderBitmap::DoExternalDrawAndSnapshot(
     clear_frame_ = false;
 
     if (!surface_) {
-      surface_ = CreateSkSurface();
+      const auto info = GetSkImageInfo().makeAlphaType(kPremul_SkAlphaType);
+      const auto props = GetSkSurfaceProps();
+      surface_ = SkSurfaces::Raster(info, &props);
     }
 
     if (!skia_canvas_) {
