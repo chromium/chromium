@@ -255,7 +255,7 @@ search-animated-glow {
 }
 
 #input::placeholder {
-  color: var(--color-composebox-type-ahead);
+  color: var(--color-new-tab-page-common-input-placeholder);
 }
 
 #smartCompose {

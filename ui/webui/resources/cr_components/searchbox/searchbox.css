@@ -364,7 +364,7 @@ search-animated-glow {
 
 :host([ntp-realbox-next-enabled]) input::placeholder {
   font-size: 18px;
-  color: var(--color-composebox-type-ahead);
+  color: var(--color-new-tab-page-common-input-placeholder);
   font-weight: 400;
 }
 
