@@ -32,9 +32,7 @@ ConnectorUploadRequest::ConnectorUploadRequest(
       histogram_suffix_(histogram_suffix),
       callback_(std::move(callback)),
       url_loader_factory_(url_loader_factory),
-      traffic_annotation_(traffic_annotation) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-}
+      traffic_annotation_(traffic_annotation) {}
 
 ConnectorUploadRequest::ConnectorUploadRequest(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -55,9 +53,7 @@ ConnectorUploadRequest::ConnectorUploadRequest(
       histogram_suffix_(histogram_suffix),
       callback_(std::move(callback)),
       url_loader_factory_(url_loader_factory),
-      traffic_annotation_(traffic_annotation) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-}
+      traffic_annotation_(traffic_annotation) {}
 
 ConnectorUploadRequest::ConnectorUploadRequest(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -75,9 +71,7 @@ ConnectorUploadRequest::ConnectorUploadRequest(
       histogram_suffix_(histogram_suffix),
       callback_(std::move(callback)),
       url_loader_factory_(url_loader_factory),
-      traffic_annotation_(traffic_annotation) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-}
+      traffic_annotation_(traffic_annotation) {}
 
 ConnectorUploadRequest::~ConnectorUploadRequest() {
   // Take ownership of the file in `data_pipe_getter_` if there is one to close
