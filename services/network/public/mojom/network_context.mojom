@@ -944,6 +944,12 @@ struct URLLoaderFactoryParams {
 
   // If this is true, the request's main frame origin is recently accessed.
   bool is_main_frame_origin_recently_accessed = false;
+
+  // An unguessable token used to apply network restrictions to outgoing
+  // requests using this factory. The token is matched against the tokens in
+  // `NetworkContext::network_revocation_nonces_`.
+  // If no value is present, network restrictions will not be checked.
+  mojo_base.mojom.UnguessableToken? network_restrictions_id;
 };
 
 // Represents a Durable Message Collector instance tied to a throttling profile.
