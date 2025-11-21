@@ -64,31 +64,22 @@ class GtestFilter extends Filter {
     }
 
     /**
-     * Determines whether or not a test with the provided description should run based on the
-     * configured positive and negative regexes.
+     *  Determines whether or not a test with the provided description should
+     *  run based on the configured positive and negative regexes.
      *
-     * <p>A test should run if:
-     *
-     * <ul>
-     *   <li>it's just a class, OR
-     *   <li>it doesn't match any of the negative regexes, AND
-     *   <li>either:
-     *       <ul>
-     *         <li>there are no configured positive regexes, OR
-     *         <li>it matches at least one of the positive regexes.
-     *       </ul>
-     * </ul>
+     *  A test should run if:
+     *    - it's just a class, OR
+     *    - it doesn't match any of the negative regexes, AND
+     *    - either:
+     *      - there are no configured positive regexes, OR
+     *      - it matches at least one of the positive regexes.
      */
     @Override
     public boolean shouldRun(Description description) {
-        return shouldRun(description.getClassName(), description.getMethodName());
-    }
+        if (description.getMethodName() == null) return true;
 
-    public boolean shouldRun(String className, String methodName) {
-        if (methodName == null) return true;
-
-        String gtestSdkName = className + "." + methodName;
-        String gtestName = className + "." + methodName;
+        String gtestSdkName = description.getClassName() + "." + description.getMethodName();
+        String gtestName = description.getClassName() + "." + description.getMethodName();
         // Use regex to get test name without sdk appended to make filtering more intuitive.
         // Some tests may not have an sdk version.
         Matcher gtestNameMatcher = GTEST_NAME_REGEX.matcher(gtestName);
