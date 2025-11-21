@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAGMENT_DIRECTIVE_TEXT_DIRECTIVE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAGMENT_DIRECTIVE_TEXT_DIRECTIVE_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_selector.h"
 #include "third_party/blink/renderer/core/frame/selector_directive.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -19,7 +20,7 @@ class TextDirectiveOptions;
 // directives in the fragment.
 // See: https://github.com/WICG/scroll-to-text-fragment/issues/160
 // TODO(bokan): Update link once we have better public documentation.
-class TextDirective : public SelectorDirective {
+class CORE_EXPORT TextDirective : public SelectorDirective {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

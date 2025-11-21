@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_DIRECTIVE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_DIRECTIVE_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -17,7 +18,7 @@ class V8DirectiveType;
 // directive types.
 // See: https://github.com/WICG/scroll-to-text-fragment/issues/160
 // TODO(bokan): Update link once we have better public documentation.
-class Directive : public ScriptWrappable {
+class CORE_EXPORT Directive : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
