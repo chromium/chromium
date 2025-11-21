@@ -92,24 +92,11 @@ void ReportValidationErrorForMessage(mojo::Message* message,
                                      unsigned int method_ordinal,
                                      bool is_response);
 
-// This class may be used by tests to suppress validation error logging. This is
-// not thread-safe and must only be instantiated on the main thread with no
-// other threads using Mojo bindings at the time of construction or destruction.
-class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
-    ScopedSuppressValidationErrorLoggingForTests {
- public:
-  ScopedSuppressValidationErrorLoggingForTests();
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+bool GetIsValidationErrorLoggingSuppressedForTesting();
 
-  ScopedSuppressValidationErrorLoggingForTests(
-      const ScopedSuppressValidationErrorLoggingForTests&) = delete;
-  ScopedSuppressValidationErrorLoggingForTests& operator=(
-      const ScopedSuppressValidationErrorLoggingForTests&) = delete;
-
-  ~ScopedSuppressValidationErrorLoggingForTests();
-
- private:
-  const bool was_suppressed_;
-};
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+void SetIsValidationErrorLoggingSuppressedForTesting(bool suppress_logging);
 
 // Only used by validation tests and when there is only one thread doing message
 // validation.

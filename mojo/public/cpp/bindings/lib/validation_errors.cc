@@ -130,15 +130,12 @@ void ReportValidationErrorForMessage(mojo::Message* message,
   ReportValidationError(&validation_context, error);
 }
 
-ScopedSuppressValidationErrorLoggingForTests
-    ::ScopedSuppressValidationErrorLoggingForTests()
-    : was_suppressed_(g_suppress_logging) {
-  g_suppress_logging = true;
+bool GetIsValidationErrorLoggingSuppressedForTesting() {
+  return g_suppress_logging;
 }
 
-ScopedSuppressValidationErrorLoggingForTests
-    ::~ScopedSuppressValidationErrorLoggingForTests() {
-  g_suppress_logging = was_suppressed_;
+void SetIsValidationErrorLoggingSuppressedForTesting(bool suppress_logging) {
+  g_suppress_logging = suppress_logging;
 }
 
 ValidationErrorObserverForTesting::ValidationErrorObserverForTesting(

@@ -152,6 +152,7 @@ if (enable_mojom_fuzzer) {
       "//base/test:test_support",
       "//content/browser:for_content_tests",
       "//content/test:test_support",
+      "//mojo/public/tools/fuzzers:test_support",
       "//services/network:test_support",
       "//storage/browser:test_support",
       "//third_party/icu:icudata",
