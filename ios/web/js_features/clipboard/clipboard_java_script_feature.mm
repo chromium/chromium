@@ -5,7 +5,10 @@
 #import "ios/web/js_features/clipboard/clipboard_java_script_feature.h"
 
 #import "base/functional/bind.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/values.h"
+#import "ios/components/enterprise/data_controls/clipboard_enums.h"
+#import "ios/components/enterprise/data_controls/metrics_utils.h"
 #import "ios/web/js_features/clipboard/clipboard_constants.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 #import "ios/web/public/js_messaging/script_message.h"
@@ -17,6 +20,42 @@
 namespace {
 const char kClipboardScriptName[] = "clipboard";
 const char kPasteHandlerScriptName[] = "paste_handler";
+
+using data_controls::ClipboardAction;
+using data_controls::ClipboardSource;
+using data_controls::RecordClipboardOutcomeMetrics;
+using data_controls::RecordClipboardSourceMetrics;
+
+// Helper to convert a clipboard command string to a ClipboardAction.
+std::optional<ClipboardAction> GetActionFromCommand(
+    const std::string& command) {
+  if (command == web::kReadCommand) {
+    return ClipboardAction::kPaste;
+  }
+  if (command == web::kWriteCommand) {
+    return ClipboardAction::kCopy;
+  }
+  return std::nullopt;
+}
+
+// Helper to record the source metric for clipboard commands.
+void RecordClipboardSource(const std::string& command) {
+  std::optional<ClipboardAction> action = GetActionFromCommand(command);
+  if (!action) {
+    return;
+  }
+  RecordClipboardSourceMetrics(*action, ClipboardSource::kClipboardAPI);
+}
+
+// Helper to record the outcome metric for clipboard commands.
+void RecordClipboardOutcome(const std::string& command, bool allowed) {
+  std::optional<ClipboardAction> action = GetActionFromCommand(command);
+  if (!action) {
+    return;
+  }
+  RecordClipboardOutcomeMetrics(*action, allowed);
+}
+
 }  // namespace
 
 namespace web {
@@ -90,6 +129,7 @@ void ClipboardJavaScriptFeature::ScriptMessageReceived(
     if (!request_id_double) {
       return;
     }
+    RecordClipboardSource(*command);
     int request_id = static_cast<int>(*request_id_double);
     HandleClipboardRequest(web_state, web_frame, request_id, *command);
   }
@@ -102,7 +142,7 @@ void ClipboardJavaScriptFeature::HandleClipboardRequest(
     const std::string& command) {
   // Requests are allowed by default.
   if (!web_state->GetDelegate()) {
-    ResolveClipboardRequest(request_id, web_frame->AsWeakPtr(),
+    ResolveClipboardRequest(request_id, web_frame->AsWeakPtr(), command,
                             /* allowed= */ true);
     return;
   }
@@ -110,9 +150,10 @@ void ClipboardJavaScriptFeature::HandleClipboardRequest(
   // Request Clipboard access approval from the WebState's delegate.
   // It is safe to bind the callbacks to the singleton instance of
   // ClipboardJavaScriptFeature because it is never destroyed.
-  base::OnceCallback<void(bool)> callback = base::BindOnce(
-      &ClipboardJavaScriptFeature::ResolveClipboardRequest,
-      base::Unretained(GetInstance()), request_id, web_frame->AsWeakPtr());
+  base::OnceCallback<void(bool)> callback =
+      base::BindOnce(&ClipboardJavaScriptFeature::ResolveClipboardRequest,
+                     base::Unretained(GetInstance()), request_id,
+                     web_frame->AsWeakPtr(), command);
 
   // Clipboard write operations from JavaScript are evaluated by the same
   // policy framework as native "copy" actions. Similarly, "read" operations
@@ -129,7 +170,10 @@ void ClipboardJavaScriptFeature::HandleClipboardRequest(
 void ClipboardJavaScriptFeature::ResolveClipboardRequest(
     int request_id,
     base::WeakPtr<WebFrame> web_frame,
+    const std::string& command,
     bool allowed) {
+  RecordClipboardOutcome(command, allowed);
+
   if (!web_frame) {
     return;
   }

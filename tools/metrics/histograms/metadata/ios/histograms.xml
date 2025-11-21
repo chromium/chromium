@@ -7075,6 +7075,39 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.WebState.Clipboard.{Action}.Outcome" enum="BooleanAllowed"
+    expires_after="2026-05-01">
+  <owner>eic@google.com</owner>
+  <owner>mxlg@google.com</owner>
+  <owner>bling-enterprise@google.com</owner>
+  <summary>
+    Records the final outcome of an intercepted clipboard {Action}, indicating
+    whether the action was ultimately Allowed (true) or Blocked (false). Emitted
+    after a clipboard interception.
+  </summary>
+  <token key="Action">
+    <variant name="Copy"/>
+    <variant name="Cut"/>
+    <variant name="Paste"/>
+  </token>
+</histogram>
+
+<histogram name="IOS.WebState.Clipboard.{Action}.Source"
+    enum="IOSClipboardSource" expires_after="2026-05-01">
+  <owner>eic@google.com</owner>
+  <owner>mxlg@google.com</owner>
+  <owner>bling-enterprise@google.com</owner>
+  <summary>
+    The source of an intercepted clipboard {Action} operation in a WebState.
+    Emitted after a clipboard interception.
+  </summary>
+  <token key="Action">
+    <variant name="Copy"/>
+    <variant name="Cut"/>
+    <variant name="Paste"/>
+  </token>
+</histogram>
+
 <histogram name="IOS.WhatsNew.InstructionsShown" enum="WhatsNewType"
     expires_after="2026-01-30">
   <owner>cheickcisse@google.com</owner>

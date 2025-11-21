@@ -11,6 +11,7 @@ source_set("clipboard") {
     ":clipboard_js",
     ":paste_handler_js",
     "//base",
+    "//ios/components/enterprise/data_controls:metrics",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
   ]
@@ -47,6 +48,7 @@ source_set("unittests") {
   deps = [
     ":clipboard",
     "//base/test:test_support",
+    "//ios/components/enterprise/data_controls:metrics",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
     "//ios/web/public/js_messaging:web_view_js_utils",

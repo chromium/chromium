@@ -310,6 +310,16 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Open tabs"/>
 </enum>
 
+<!-- LINT.IfChange(IOSClipboardSource) -->
+
+<enum name="IOSClipboardSource">
+  <int value="0" label="EditMenu"/>
+  <int value="1" label="ClipboardAPI"/>
+  <int value="2" label="CustomAction"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/components/enterprise/data_controls/clipboard_enums.h:ClipboardSource) -->
+
 <enum name="iOSCredentialIdentityStoreErrorForReporting">
   <int value="0" label="Unknown Error"/>
   <int value="1" label="Internal Error"/>

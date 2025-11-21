@@ -49,9 +49,11 @@ class ClipboardJavaScriptFeature : public JavaScriptFeature {
   // Calls the JavaScript function `__gCrWeb.clipboard.resolveRequest` to settle
   // the promise for the given `request_id`.
   // `web_frame` is the frame where the script should be executed.
+  // `command` is the clipboard command ("read" or "write").
   // `allowed` indicates whether the clipboard operation was permitted.
   void ResolveClipboardRequest(int request_id,
                                base::WeakPtr<WebFrame> web_frame,
+                               const std::string& command,
                                bool allowed);
 };
 

@@ -9,6 +9,8 @@
 #import "base/apple/foundation_util.h"
 #import "base/memory/raw_ptr.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/metrics/histogram_tester.h"
+#import "ios/components/enterprise/data_controls/clipboard_enums.h"
 #import "ios/web/js_features/clipboard/clipboard_constants.h"
 #import "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
@@ -143,6 +145,7 @@ class ClipboardJavaScriptFeatureTest : public WebTestWithWebState {
 
   raw_ptr<ClipboardJavaScriptFeature> feature_;
   ClipboardFakeWebStateDelegate delegate_;
+  base::HistogramTester histogram_tester_;
 };
 
 // Tests that a "write" command is allowed when the delegate allows it.
@@ -157,6 +160,11 @@ TEST_F(ClipboardJavaScriptFeatureTest, WriteAllowed) {
   std::optional<bool> result = GetLastResultForRequestId(1);
   ASSERT_TRUE(result.has_value());
   EXPECT_TRUE(result.value());
+  histogram_tester_.ExpectUniqueSample(
+      "IOS.WebState.Clipboard.Copy.Source",
+      static_cast<int>(data_controls::ClipboardSource::kClipboardAPI), 1);
+  histogram_tester_.ExpectUniqueSample("IOS.WebState.Clipboard.Copy.Outcome",
+                                       true, 1);
 }
 
 // Tests that a "write" command is denied when the delegate denies it.
@@ -171,6 +179,11 @@ TEST_F(ClipboardJavaScriptFeatureTest, WriteDenied) {
   std::optional<bool> result = GetLastResultForRequestId(2);
   ASSERT_TRUE(result.has_value());
   EXPECT_FALSE(result.value());
+  histogram_tester_.ExpectUniqueSample(
+      "IOS.WebState.Clipboard.Copy.Source",
+      static_cast<int>(data_controls::ClipboardSource::kClipboardAPI), 1);
+  histogram_tester_.ExpectUniqueSample("IOS.WebState.Clipboard.Copy.Outcome",
+                                       false, 1);
 }
 
 // Tests that a "read" command is allowed when the delegate allows it.
@@ -185,6 +198,11 @@ TEST_F(ClipboardJavaScriptFeatureTest, ReadAllowed) {
   std::optional<bool> result = GetLastResultForRequestId(3);
   ASSERT_TRUE(result.has_value());
   EXPECT_TRUE(result.value());
+  histogram_tester_.ExpectUniqueSample(
+      "IOS.WebState.Clipboard.Paste.Source",
+      static_cast<int>(data_controls::ClipboardSource::kClipboardAPI), 1);
+  histogram_tester_.ExpectUniqueSample("IOS.WebState.Clipboard.Paste.Outcome",
+                                       true, 1);
 }
 
 // Tests that a "read" command is denied when the delegate denies it.
@@ -199,6 +217,9 @@ TEST_F(ClipboardJavaScriptFeatureTest, ReadDenied) {
   std::optional<bool> result = GetLastResultForRequestId(4);
   ASSERT_TRUE(result.has_value());
   EXPECT_FALSE(result.value());
+  histogram_tester_.ExpectUniqueSample(
+      "IOS.WebState.Clipboard.Paste.Source",
+      static_cast<int>(data_controls::ClipboardSource::kClipboardAPI), 1);
 }
 
 // Tests that commands are allowed if there is no delegate.

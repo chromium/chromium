@@ -10,3 +10,12 @@ source_set("features") {
 
   public_deps = [ "//base" ]
 }
+
+source_set("metrics") {
+  sources = [
+    "clipboard_enums.h",
+    "metrics_utils.cc",
+    "metrics_utils.h",
+  ]
+  deps = [ "//base" ]
+}

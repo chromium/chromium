@@ -83,6 +83,7 @@ source_set("web_view_internal_creation_util") {
   deps = [
     ":data_controls",
     "//base",
+    "//ios/components/enterprise/data_controls:metrics",
     "//ios/web/common",
     "//ios/web/common:user_agent",
     "//ios/web/public",
