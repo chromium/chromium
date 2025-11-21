@@ -31,9 +31,17 @@ source_set("eg2_tests") {
   testonly = true
   sources = [ "data_controls_egtest.mm" ]
   deps = [
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/enterprise/data_controls/test:eg_test_support+eg2",
+    "//ios/chrome/browser/reader_mode/model:features",
+    "//ios/chrome/browser/reader_mode/ui:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/components/enterprise/data_controls:features",
     "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/web/public/test:element_selector",
+    "//net:test_support",
+    "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
 }
