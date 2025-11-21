@@ -142,81 +142,75 @@ def run_performance_test(video_file: str, framerate: int, driver: webdriver):
                f'{common.SERVER_PORT}/video.html?file={video_file}')
     wait.until(ec.presence_of_element_located((By.ID, "video")))
 
-    try:
-        # pylint: disable=consider-using-with
-        rec_proc_local = subprocess.Popen(
-            host_recording_cmd,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True)
+    # pylint: disable=consider-using-with
+    rec_proc_local = subprocess.Popen(
+        host_recording_cmd,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True)
 
-        logging.info("ffmpeg recording process started. Waiting for 'Stream "
-                     "mapping:' confirmation...")
+    logging.info("ffmpeg recording process started. Waiting for 'Stream "
+                 "mapping:' confirmation...")
 
-        while True:
-            line = rec_proc_local.stderr.readline() # Use local variable
-            if line:
-                line = line.strip()
-                logging.info("FFMPEG STARTUP: %s", line)
-                if "Stream mapping:" in line:
-                    logging.info("Started recording.")
-                    break
+    while True:
+        line = rec_proc_local.stderr.readline() # Use local variable
+        if line:
+            line = line.strip()
+            logging.info("FFMPEG STARTUP: %s", line)
+            if "Stream mapping:" in line:
+                logging.info("Started recording.")
+                break
 
-        def _wait_js_condition(driver, element, condition: str) -> bool:
-            """Waits a condition on the element once a second for at most 30
-            seconds, returns True if the condition met."""
-            start = time.time()
-            while not driver.execute_script(f'return arguments[0].{condition};',
-                                            element):
-                if time.time() - start >= 30:
-                    return False
-                time.sleep(1)
-            return True
+    def _wait_js_condition(driver, element, condition: str) -> bool:
+        """Waits a condition on the element once a second for at most 30
+        seconds, returns True if the condition met."""
+        start = time.time()
+        while not driver.execute_script(f'return arguments[0].{condition};',
+                                        element):
+            if time.time() - start >= 30:
+                return False
+            time.sleep(1)
+        return True
 
-        video = driver.find_element(By.ID, 'video')
+    video = driver.find_element(By.ID, 'video')
 
-        with common.measures.time_consumption(video_file, 'video_perf', 'playback',
-                                       'loading'), \
-             RepeatingLog(f'Waiting for video {video_file} to be loaded.'):
-            if not _wait_js_condition(driver, video, 'readyState >= 2'):
-                logging.warning(
-                    '%s may never be loaded, still go ahead to play it.',
-                    video_file)
-                common.measures.average(video_file, 'video_perf', 'playback',
-                                 'failed_to_load').record(1)
+    with common.measures.time_consumption(video_file, 'video_perf', 'playback',
+                                   'loading'), \
+         RepeatingLog(f'Waiting for video {video_file} to be loaded.'):
+        if not _wait_js_condition(driver, video, 'readyState >= 2'):
+            logging.warning(
+                '%s may never be loaded, still go ahead to play it.',
+                video_file)
+            common.measures.average(video_file, 'video_perf', 'playback',
+                             'failed_to_load').record(1)
 
-        video.click()
-        logging.info("Started playing video.")
+    video.click()
+    logging.info("Started playing video.")
 
-        logging.info("Playing media for 30 seconds (script will then quit)...")
-        time.sleep(30)
+    logging.info("Playing media for 30 seconds (script will then quit)...")
+    time.sleep(30)
 
-        rec_proc_local.communicate()
-        logging.info("recording finished.")
+    rec_proc_local.communicate()
+    logging.info("recording finished.")
 
-        results = common.video_analyzer.from_original_video(
-            output_file, f"/usr/local/cipd/videostack_videos_30s/{video_file}")
+    results = common.video_analyzer.from_original_video(
+        output_file, f"/usr/local/cipd/videostack_videos_30s/{video_file}")
 
-        if not results:
-            raise RuntimeError("Missing video analyzer results. See log for "
-                               "further details.")
+    if not results:
+        raise RuntimeError("Missing video analyzer results. See log for "
+                           "further details.")
 
-        def record(key: str) -> None:
-            # If the video_analyzer does not generate any result, treat it as an
-            # error and use the default value to filter them out instead of
-            # failing the tests.
-            common.measures.average(video_file, 'video_perf', key).record(
-                results.get(key, common.FAIL_CODE))
+    def record(key: str) -> None:
+        # If the video_analyzer does not generate any result, treat it as an
+        # error and use the default value to filter them out instead of
+        # failing the tests.
+        common.measures.average(video_file, 'video_perf', key).record(
+            results.get(key, common.FAIL_CODE))
 
-        for metric in common.METRICS:
-            record(metric)
+    for metric in common.METRICS:
+        record(metric)
 
-        logging.warning('Video analysis result of %s: %s', video_file, results)
-
-    except Exception as e:
-        raise RuntimeError(f"Error during recording process: {e}\nCheck "
-                           "the chromedriver log on the remote laptop for "
-                           "more details.") from e
+    logging.warning('Video analysis result of %s: %s', video_file, results)
     return rec_proc_local
 
 def main():
@@ -266,6 +260,7 @@ def main():
                                                 driver)
             except Exception: # pylint: disable=broad-exception-caught
                 logging.exception("Error during video %s test", video['name'])
+                raise
             finally:
                 common.teardown_recording_process(rec_proc)
     finally:

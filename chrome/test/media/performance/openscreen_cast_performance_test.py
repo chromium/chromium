@@ -257,8 +257,10 @@ def run_performance_test(video_file: str, framerate: int,
 
         video = driver.find_element(By.ID, 'video')
 
-        with common.measures.time_consumption(video_file, 'video_perf', 'playback',
-                                       'loading'), \
+        with common.measures.time_consumption(video_file,
+                                              'video_perf',
+                                              'playback',
+                                              'loading'), \
              RepeatingLog(f'Waiting for video {video_file} to be loaded.'):
             if not _wait_js_condition(driver, video, 'readyState >= 2'):
                 logging.warning(
@@ -294,10 +296,6 @@ def run_performance_test(video_file: str, framerate: int,
             record(metric)
 
         logging.warning('Video analysis result of %s: %s', video_file, results)
-    except Exception as e:
-        raise RuntimeError(f"Error during CDP Cast command: {e}\nCheck "
-                           "the chromedriver log on the remote laptop for "
-                           "more details.") from e
     finally:
         if driver:
             if casting and args.receiver:
