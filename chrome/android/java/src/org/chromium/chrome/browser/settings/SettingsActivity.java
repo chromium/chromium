@@ -785,6 +785,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if (ChromeFeatureList.sSearchInSettings.isEnabled()) {
+            assert mSearchCoordinator != null;
+            assumeNonNull(mSearchCoordinator).hideHelpAndFeedbackIcon();
             return false;
         }
         // By default, every screen in Settings shows a "Help & feedback" menu item.

@@ -68,9 +68,6 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
         int OPENED = 3;
     }
 
-    /** Caches the current header panel width in px. */
-    private int mHeaderPanelWidthPx;
-
     /** Caches the view of the header panel. */
     private View mHeaderView;
 
@@ -247,7 +244,6 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
         if (headerWidth != params.width) {
             params.width = headerWidth;
             view.setLayoutParams(params);
-            mHeaderPanelWidthPx = headerWidth;
             menuLayoutUpdated = true;
         }
 
@@ -256,10 +252,6 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
                 o.onHeaderLayoutUpdated();
             }
         }
-    }
-
-    public int getHeaderPanelWidthPx() {
-        return mHeaderPanelWidthPx;
     }
 
     /** Returns whether the current layout is in two-pane mode. */
