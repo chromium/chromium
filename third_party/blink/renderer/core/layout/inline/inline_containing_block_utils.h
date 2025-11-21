@@ -9,9 +9,8 @@
 
 #include "third_party/blink/renderer/core/layout/geometry/logical_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
-#include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
 
@@ -37,10 +36,10 @@ class InlineContainingBlockUtils {
     bool is_hidden_for_paint;
   };
 
-  // It is safe to use Persistent here because this is used only on stack.
+  // This is only used on or by structures on the stack.
   using InlineContainingBlockMap =
-      HashMap<Persistent<const LayoutObject>,
-              std::optional<InlineContainingBlockGeometry>>;
+      HeapHashMap<Member<const LayoutObject>,
+                  std::optional<InlineContainingBlockGeometry>>;
 
   // Computes the geometry required for any inline containing blocks.
   // |inline_containing_block_map| is a map whose keys specify which objects we

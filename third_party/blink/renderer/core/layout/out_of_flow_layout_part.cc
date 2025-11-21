@@ -1039,6 +1039,9 @@ void OutOfFlowLayoutPart::ComputeInlineContainingBlocks(
 void OutOfFlowLayoutPart::ComputeInlineContainingBlocksForFragmentainer(
     const HeapVector<LogicalOofNodeForFragmentation>& descendants) {
   struct InlineContainingBlockInfo {
+    DISALLOW_NEW();
+
+   public:
     InlineContainingBlockUtils::InlineContainingBlockMap map;
     // The relative offset of the inline's containing block to the
     // fragmentation context root.
@@ -1046,10 +1049,12 @@ void OutOfFlowLayoutPart::ComputeInlineContainingBlocksForFragmentainer(
     // The offset of the containing block relative to the fragmentation context
     // root (not including any relative offset).
     LogicalOffset offset_to_fragmentation_context;
+
+    void Trace(Visitor* visitor) const { visitor->Trace(map); }
   };
 
   HeapHashMap<Member<const LayoutBox>, InlineContainingBlockInfo>
-      inline_containg_blocks;
+      inline_containing_blocks;
 
   // Collect the inline containers by shared containing block.
   for (auto& descendant : descendants) {
@@ -1062,8 +1067,8 @@ void OutOfFlowLayoutPart::ComputeInlineContainingBlocksForFragmentainer(
           inline_geometry = {};
       inline_geometry.relative_offset =
           descendant.inline_container.relative_offset;
-      auto it = inline_containg_blocks.find(containing_block);
-      if (it != inline_containg_blocks.end()) {
+      auto it = inline_containing_blocks.find(containing_block);
+      if (it != inline_containing_blocks.end()) {
         if (!it->value.map.Contains(descendant.inline_container.container)) {
           it->value.map.insert(descendant.inline_container.container.Get(),
                                inline_geometry);
@@ -1074,15 +1079,16 @@ void OutOfFlowLayoutPart::ComputeInlineContainingBlocksForFragmentainer(
       inline_containers.insert(descendant.inline_container.container.Get(),
                                inline_geometry);
       InlineContainingBlockInfo inline_info{
-          inline_containers, descendant.containing_block.RelativeOffset(),
+          std::move(inline_containers),
+          descendant.containing_block.RelativeOffset(),
           descendant.containing_block.Offset()};
-      inline_containg_blocks.insert(containing_block, inline_info);
+      inline_containing_blocks.insert(containing_block, inline_info);
     }
   }
 
-  for (auto& inline_containg_block : inline_containg_blocks) {
-    const LayoutBox* containing_block = inline_containg_block.key;
-    InlineContainingBlockInfo& inline_info = inline_containg_block.value;
+  for (auto& inline_containing_block : inline_containing_blocks) {
+    const LayoutBox* containing_block = inline_containing_block.key;
+    InlineContainingBlockInfo& inline_info = inline_containing_block.value;
 
     LogicalSize size(BoxInlineSize(*containing_block),
                      BoxTotalBlockSize(*containing_block));
