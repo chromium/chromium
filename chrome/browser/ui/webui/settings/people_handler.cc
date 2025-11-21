@@ -114,6 +114,13 @@ enum class TrustedVaultBannerState {
   kOptedIn = 2,
 };
 
+// LINT.IfChange(ChromeSigninAccessPoint)
+enum class ChromeSigninAccessPoint {
+  kSettings = 0,
+  kSettingsYourSavedInfo = 1,
+};
+// LINT.ThenChange(/chrome/browser/resources/settings_shared/people_page/sync_browser_proxy.ts:ChromeSigninAccessPoint)
+
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // This enum is used for metrics purposes only, it is aligned with
 // `ChromeSigninUserChoice` enum, with the exception of the
@@ -252,6 +259,16 @@ bool IsChangePrimaryAccountAllowed(Profile* profile, const std::string& email) {
   return gaia::AreEmailsSame(
       email,
       identity_manager->GetPrimaryAccountInfo(ConsentLevel::kSignin).email);
+}
+
+signin_metrics::AccessPoint GetAccessPoint(
+    ChromeSigninAccessPoint access_point) {
+  switch (access_point) {
+    case ChromeSigninAccessPoint::kSettings:
+      return signin_metrics::AccessPoint::kSettings;
+    case ChromeSigninAccessPoint::kSettingsYourSavedInfo:
+      return signin_metrics::AccessPoint::kSettingsYourSavedInfo;
+  }
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
@@ -801,13 +818,16 @@ void PeopleHandler::HandleTurnOffSync(const base::Value::List& args) {
 #if !BUILDFLAG(IS_CHROMEOS)
 void PeopleHandler::HandleStartSignin(const base::Value::List& args) {
   AllowJavascript();
+  CHECK_EQ(1U, args.size());
+  auto access_point =
+      GetAccessPoint(static_cast<ChromeSigninAccessPoint>(args[0].GetInt()));
 
   // Should only be called if the user is not already signed in, has a auth
   // error, or a unrecoverable sync error requiring re-auth.
   syncer::SyncService* service = GetSyncService();
   DCHECK(IsProfileAuthNeededOrHasErrors() ||
          (service && service->HasUnrecoverableError()));
-  DisplayGaiaLogin(signin_metrics::AccessPoint::kSettings);
+  DisplayGaiaLogin(access_point);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

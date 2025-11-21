@@ -201,13 +201,20 @@ export interface ChromeSigninUserChoiceInfo {
   signedInEmail: string;
 }
 
+// LINT.IfChange(ChromeSigninAccessPoint)
+export enum ChromeSigninAccessPoint {
+  SETTINGS = 0,
+  SETTINGS_YOUR_SAVED_INFO = 1,
+}
+// LINT.ThenChange(/chrome/browser/ui/webui/settings/people_handler.cc:ChromeSigninAccessPoint)
+
 export interface SyncBrowserProxy {
   // <if expr="not is_chromeos">
   /**
    * Starts the signin process for the user. Does nothing if the user is
    * already signed in.
    */
-  startSignIn(): void;
+  startSignIn(accessPoint: ChromeSigninAccessPoint): void;
 
   /**
    * Signs out the signed-in user.
@@ -349,8 +356,8 @@ export interface SyncBrowserProxy {
 
 export class SyncBrowserProxyImpl implements SyncBrowserProxy {
   // <if expr="not is_chromeos">
-  startSignIn() {
-    chrome.send('SyncSetupStartSignIn');
+  startSignIn(accessPoint: ChromeSigninAccessPoint) {
+    chrome.send('SyncSetupStartSignIn', [accessPoint]);
   }
 
   signOut(deleteProfile: boolean) {
