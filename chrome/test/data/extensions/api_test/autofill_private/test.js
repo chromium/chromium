@@ -1415,6 +1415,30 @@ var availableTests = [
 
     chrome.test.succeed();
   },
+
+  async function optIntoWalletablePassDetection() {
+    await chrome.autofillPrivate.setWalletablePassDetectionOptInStatus(true);
+    chrome.test.succeed();
+  },
+
+  async function optOutOfWalletablePassDetection() {
+    await chrome.autofillPrivate.setWalletablePassDetectionOptInStatus(false);
+    chrome.test.succeed();
+  },
+
+  async function verifyUserOptedIntoWalletablePassDetection() {
+    chrome.test.assertEq(
+        true,
+        await chrome.autofillPrivate.getWalletablePassDetectionOptInStatus());
+    chrome.test.succeed();
+  },
+
+  async function verifyUserOptedOutOfWalletablePassDetection() {
+    chrome.test.assertEq(
+        false,
+        await chrome.autofillPrivate.getWalletablePassDetectionOptInStatus());
+    chrome.test.succeed();
+  },
 ];
 
 /** @const */

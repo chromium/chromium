@@ -64,6 +64,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_branded_strings.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/wallet/core/browser/walletable_permission_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_registry.h"
@@ -1166,6 +1167,30 @@ AutofillPrivateSetAutofillAiOptInStatusFunction::Run() {
   return RespondNow(ArgumentList(
       api::autofill_private::SetAutofillAiOptInStatus::Results::Create(
           /*success=*/true)));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// AutofillPrivateGetWalletablePassDetectionOptInStatusFunction
+
+ExtensionFunction::ResponseAction
+AutofillPrivateGetWalletablePassDetectionOptInStatusFunction::Run() {
+  return RespondNow(WithArguments(wallet::GetWalletablePassDetectionOptInStatus(
+      autofill_client()->GetPrefs(), autofill_client()->GetIdentityManager())));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// AutofillPrivateSetWalletablePassDetectionOptInStatusFunction
+
+ExtensionFunction::ResponseAction
+AutofillPrivateSetWalletablePassDetectionOptInStatusFunction::Run() {
+  std::optional<autofill_private::SetWalletablePassDetectionOptInStatus::Params>
+      params = autofill_private::SetWalletablePassDetectionOptInStatus::Params::
+          Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+  wallet::SetWalletablePassDetectionOptInStatus(
+      autofill_client()->GetPrefs(), autofill_client()->GetIdentityManager(),
+      params->opted_in);
+  return RespondNow(NoArguments());
 }
 
 }  // namespace extensions

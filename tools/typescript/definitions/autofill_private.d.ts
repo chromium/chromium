@@ -329,6 +329,9 @@ declare global {
       export function getAutofillAiOptInStatus(): Promise<boolean>;
       export function setAutofillAiOptInStatus(optedIn: boolean):
           Promise<boolean>;
+      export function getWalletablePassDetectionOptInStatus(): Promise<boolean>;
+      export function setWalletablePassDetectionOptInStatus(optedIn: boolean):
+          Promise<void>;
       export const onPersonalDataChanged: ChromeEvent<
           (addresses: AddressEntry[], creditCards: CreditCardEntry[],
            ibans: IbanEntry[], payOverTimeIssuers: PayOverTimeIssuerEntry[],

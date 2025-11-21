@@ -43,6 +43,7 @@ source_set("autofill_private") {
     "//components/strings:components_strings_grit",
     "//components/sync/service",
     "//components/variations/service",
+    "//components/wallet/core/browser",
     "//extensions/browser",
     "//skia",
     "//third_party/libaddressinput:util",

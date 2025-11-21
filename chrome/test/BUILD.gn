@@ -5018,6 +5018,8 @@ if (!is_android) {
         "//components/media_router/browser:test_support",
         "//components/media_router/common:test_support",
         "//components/optimization_guide/optimization_guide_internals/webui",
+        "//components/wallet/core/common:features",
+        "//components/wallet/core/common:prefs",
         "//components/web_package",
         "//extensions/browser:test_support",
         "//extensions/browser/api:extensions_api_client",

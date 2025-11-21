@@ -2862,6 +2862,10 @@ Called by update_extension_histograms.py.-->
       label="ACCESSIBILITY_PRIVATE_PROCESSPENDINGSPOKENFEEDBACKEVENT"/>
   <int value="1950"
       label="ACCESSIBILITY_PRIVATE_ENABLESPOKENFEEDBACKMV3KEYHANDLING"/>
+  <int value="1951"
+      label="AUTOFILLPRIVATE_GETWALLETABLEPASSDETECTIONOPTINSTATUS"/>
+  <int value="1952"
+      label="AUTOFILLPRIVATE_SETWALLETABLEPASSDETECTIONOPTINSTATUS"/>
 </enum>
 
 <!-- LINT.ThenChange(//extensions/browser/extension_function_histogram_value.h:HistogramValue) -->

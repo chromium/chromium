@@ -472,6 +472,8 @@ namespace autofillPrivate {
       void(AttributeType[] attributeTypes);
   callback GetAutofillAiOptInStatusCallback = void(boolean optedIn);
   callback SetAutofillAiOptInStatusCallback = void(boolean success);
+  callback GetWalletablePassDetectionOptInStatusCallback = void(boolean optedIn);
+  callback SetWalletablePassDetectionOptInStatusCallback = void();
   callback GetPayOverTimeIssuerListCallback = void(PayOverTimeIssuerEntry[] entries);
 
   interface Functions {
@@ -624,6 +626,15 @@ namespace autofillPrivate {
     static void setAutofillAiOptInStatus(
       boolean optedIn,
       SetAutofillAiOptInStatusCallback callback);
+
+    // Gets the walletable pass detection opt-in status for the current user.
+    static void getWalletablePassDetectionOptInStatus(
+      GetWalletablePassDetectionOptInStatusCallback callback);
+
+    // Sets the walletable pass detection opt-in status for the current user.
+    static void setWalletablePassDetectionOptInStatus(
+      boolean optedIn,
+      SetWalletablePassDetectionOptInStatusCallback callback);
   };
 
   interface Events {
