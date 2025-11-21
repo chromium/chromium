@@ -28,6 +28,8 @@ constexpr base::TimeDelta kVeryBigLocalChangeNudgeDelay = kDefaultPollInterval;
 
 constexpr base::TimeDelta kDefaultLocalChangeNudgeDelayForSessions =
     base::Seconds(15);
+constexpr base::TimeDelta kDefaultLocalChangeNudgeDelayForSavedTabGroup =
+    base::Seconds(11);
 
 // Nudge delay for remote invalidations. Common to all data types.
 constexpr base::TimeDelta kRemoteInvalidationDelay = base::Milliseconds(250);
@@ -55,7 +57,7 @@ base::TimeDelta GetDefaultLocalChangeNudgeDelay(DataType data_type) {
       // and freshness.
       return kDefaultLocalChangeNudgeDelayForSessions;
     case SAVED_TAB_GROUP:
-      return syncer::kTabGroupsSaveCustomNudgeDelay.Get();
+      return kDefaultLocalChangeNudgeDelayForSavedTabGroup;
     case BOOKMARKS:
     case PREFERENCES:
     case PRODUCT_COMPARISON:

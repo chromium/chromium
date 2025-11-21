@@ -75,8 +75,6 @@ BASE_FEATURE(kSyncEnableContactInfoDataTypeForCustomPassphraseUsers,
 BASE_FEATURE(kSyncEnableContactInfoDataTypeForDasherUsers,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTabGroupsSaveNudgeDelay, base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSeparateLocalAndAccountSearchEngines,
 #if BUILDFLAG(IS_CHROMEOS)
              base::FEATURE_DISABLED_BY_DEFAULT
