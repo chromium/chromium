@@ -45,24 +45,33 @@ constexpr float kScrimOpacity = 0.8f;
 constexpr float kBlurAspectRatioThreshold = 0.1f;
 constexpr base::TimeDelta kAnimationDuration = base::Seconds(2);
 
-// A simple view that gains focus on click.
-class FocusableView : public views::View {
-  METADATA_HEADER(FocusableView, views::View)
+// A container for inactive glic view that
+// 1) gains focus on click.
+// 2) clips the layer tree to the visible bounds.
+class InactiveGlicViewContainer : public views::View {
+  METADATA_HEADER(InactiveGlicViewContainer, views::View)
  public:
-  explicit FocusableView(std::unique_ptr<views::View> child) {
-    SetFocusBehavior(FocusBehavior::ALWAYS);
+  InactiveGlicViewContainer() {
     SetLayoutManager(std::make_unique<views::FillLayout>());
-    AddChildView(std::move(child));
-  }
-  ~FocusableView() override = default;
+    SetPaintToLayer();
+    layer()->SetMasksToBounds(true);
+    SetClipLayerToVisibleBounds(true);
 
+    SetFocusBehavior(FocusBehavior::ALWAYS);
+    SetAccessibleRole(ax::mojom::Role::kPane);
+    SetAccessibleName(l10n_util::GetStringUTF16(IDS_GLIC_WINDOW_TITLE));
+  }
+
+  ~InactiveGlicViewContainer() override = default;
+
+  // views::View:
   bool OnMousePressed(const ui::MouseEvent& event) override {
     RequestFocus();
     return true;
   }
 };
 
-BEGIN_METADATA(FocusableView)
+BEGIN_METADATA(InactiveGlicViewContainer)
 END_METADATA
 
 BASE_FEATURE(kGlicBlurredInactiveViewCard, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -120,10 +129,7 @@ std::unique_ptr<views::View> InactiveViewController::CreateCardView() {
 }
 
 std::unique_ptr<views::View> InactiveViewController::CreateView() {
-  auto container = std::make_unique<views::View>();
-  container->SetLayoutManager(std::make_unique<views::FillLayout>());
-  container->SetPaintToLayer();
-  container->layer()->SetMasksToBounds(true);
+  auto container = std::make_unique<InactiveGlicViewContainer>();
 
   auto image_view = std::make_unique<views::ImageView>();
   image_view->SetPaintToLayer();
@@ -145,12 +151,7 @@ std::unique_ptr<views::View> InactiveViewController::CreateView() {
     container->AddChildView(std::move(card_container));
   }
 
-  auto focusable_view = std::make_unique<FocusableView>(std::move(container));
-  focusable_view->SetBackground(nullptr);
-  focusable_view->SetAccessibleRole(ax::mojom::Role::kPane);
-  focusable_view->SetAccessibleName(
-      l10n_util::GetStringUTF16(IDS_GLIC_WINDOW_TITLE));
-  return focusable_view;
+  return container;
 }
 
 void InactiveViewController::CaptureScreenshot(
