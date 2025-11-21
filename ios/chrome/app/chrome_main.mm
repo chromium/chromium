@@ -108,7 +108,10 @@ int ChromeMain(int argc, char* argv[]) {
   DumpSandboxIfRequested();
 #endif  // BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
 
-  tests_hook::WipeProfileIfRequested(argc, argv);
+  // SAFETY: according to the C++ standard, main() `argv` contains at least
+  // `argc` elements.
+  tests_hook::WipeProfileIfRequested(
+      UNSAFE_BUFFERS(base::span(argv, static_cast<size_t>(argc))));
 
   // Set NSUserDefaults keys to force pseudo-RTL if needed.
   SetTextDirectionIfPseudoRTLEnabled();

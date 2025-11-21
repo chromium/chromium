@@ -2,16 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // clang-format off
 #import "ios/chrome/app/tests_hook.h"
 // clang-format on
 
+#import <string_view>
+
 #import "base/command_line.h"
+#import "base/containers/contains.h"
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
 #import "base/logging.h"
@@ -377,16 +375,9 @@ void DeleteFilesRecursively(NSString* directoryPath) {
   }
 }
 
-void WipeProfileIfRequested(int argc, char* argv[]) {
-  const char kWipeArg[] = "-EGTestWipeProfile";
-  bool found = false;
-  for (int i = 0; i < argc; i++) {
-    if (strncmp(argv[i], kWipeArg, strlen(kWipeArg)) == 0) {
-      found = true;
-    }
-  }
-
-  if (!found) {
+void WipeProfileIfRequested(base::span<const char* const> args) {
+  static constexpr std::string_view kWipeArg = "-EGTestWipeProfile";
+  if (!base::Contains(args, kWipeArg)) {
     return;
   }
 

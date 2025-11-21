@@ -8,6 +8,8 @@
 #import <memory>
 #import <optional>
 
+#import "base/containers/span.h"
+
 class PrefService;
 class ProfileIOS;
 class ProfileOAuth2TokenServiceDelegate;
@@ -209,7 +211,7 @@ feature_engagement::FeatureActivation FETDemoModeOverride();
 // If the given argv contains `-EGTestWipeProfile`, deletes the
 // contents of the `Library` directory at the start of `main()`. This
 // simulates launching the application with a fresh profile.
-void WipeProfileIfRequested(int argc, char* argv[]);
+void WipeProfileIfRequested(base::span<const char* const> args);
 
 // Delay before which the "Turn on AutoFill" button shown in Password Settings
 // can be re-enabled. If the value is 0, the default value from Password
