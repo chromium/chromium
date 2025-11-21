@@ -1926,9 +1926,10 @@ chromium-metrics-reviews@google.com.
     failure reasons. The standard specification error names are in parenthesis.
   </summary>
   <token key="RequestType">
-    <variant name="GetAllScreensMedia" summary="GetAllScreensMedia"/>
-    <variant name="GetDisplayMedia" summary="GetDisplayMedia"/>
-    <variant name="GetUserMedia" summary="GetUserMedia"/>
+    <variant name="GetAllScreensMedia"/>
+    <variant name="GetDisplayMedia"/>
+    <variant name="GetUserMedia.DeviceCapture"/>
+    <variant name="GetUserMedia.Extension"/>
   </token>
 </histogram>
 

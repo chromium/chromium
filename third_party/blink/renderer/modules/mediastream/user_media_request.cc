@@ -706,6 +706,18 @@ UserMediaRequestType UserMediaRequest::MediaRequestType() const {
   return media_type_;
 }
 
+bool UserMediaRequest::IsGumExtensionRequest() const {
+  auto audio_type = AudioMediaStreamType();
+  auto video_type = VideoMediaStreamType();
+  if (audio_type == MediaStreamType::GUM_DESKTOP_AUDIO_CAPTURE ||
+      audio_type == MediaStreamType::GUM_TAB_AUDIO_CAPTURE ||
+      video_type == MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE ||
+      video_type == MediaStreamType::GUM_TAB_VIDEO_CAPTURE) {
+    return true;
+  }
+  return false;
+}
+
 bool UserMediaRequest::Audio() const {
   return !audio_.IsNull();
 }
@@ -726,13 +738,13 @@ MediaStreamType UserMediaRequest::AudioMediaStreamType() const {
   if (!Audio()) {
     return MediaStreamType::NO_SERVICE;
   }
-  if (MediaRequestType() == UserMediaRequestType::kDisplayMedia) {
+  auto media_type = MediaRequestType();
+  if (media_type == UserMediaRequestType::kDisplayMedia) {
     return MediaStreamType::DISPLAY_AUDIO_CAPTURE;
   }
-  if (MediaRequestType() == UserMediaRequestType::kAllScreensMedia) {
+  if (media_type != UserMediaRequestType::kUserMedia) {
     return MediaStreamType::NO_SERVICE;
   }
-  DCHECK_EQ(UserMediaRequestType::kUserMedia, MediaRequestType());
 
   // Check if this is a getUserMedia display capture.
   const MediaConstraints& constraints = AudioConstraints();
@@ -758,16 +770,19 @@ MediaStreamType UserMediaRequest::VideoMediaStreamType() const {
   if (!Video()) {
     return MediaStreamType::NO_SERVICE;
   }
-  if (MediaRequestType() == UserMediaRequestType::kDisplayMedia) {
+  auto media_type = MediaRequestType();
+  if (media_type == UserMediaRequestType::kDisplayMedia) {
     return should_prefer_current_tab()
                ? MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB
                : MediaStreamType::DISPLAY_VIDEO_CAPTURE;
   }
-  if (MediaRequestType() == UserMediaRequestType::kAllScreensMedia) {
+  if (media_type == UserMediaRequestType::kAllScreensMedia) {
     DCHECK(!should_prefer_current_tab());
     return MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET;
   }
-  DCHECK_EQ(UserMediaRequestType::kUserMedia, MediaRequestType());
+  if (media_type != UserMediaRequestType::kUserMedia) {
+    return MediaStreamType::NO_SERVICE;
+  }
 
   // Check if this is a getUserMedia display capture.
   const MediaConstraints& constraints = VideoConstraints();

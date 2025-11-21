@@ -85,14 +85,23 @@ void LogEchoCancellationMode(EchoCancellationMode mode) {
       "Media.MediaDevices.GetUserMedia.EchoCancellationMode", mode);
 }
 
-void UpdateRequestResult(UserMediaRequestType media_type,
+void UpdateRequestResult(UserMediaRequest* request,
                          MediaStreamRequestResult result) {
+  UserMediaRequestType media_type = request->MediaRequestType();
   switch (media_type) {
-    case UserMediaRequestType::kUserMedia:
-      base::UmaHistogramEnumeration(
-          "WebRTC.UserMediaRequest.GetUserMedia.Result", result,
-          mojom::blink::MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS);
-      return;
+    case UserMediaRequestType::kUserMedia: {
+      if (request->IsGumExtensionRequest()) {
+        base::UmaHistogramEnumeration(
+            "WebRTC.UserMediaRequest.GetUserMedia.Extension.Result", result,
+            mojom::blink::MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS);
+        return;
+      } else {
+        base::UmaHistogramEnumeration(
+            "WebRTC.UserMediaRequest.GetUserMedia.DeviceCapture.Result", result,
+            mojom::blink::MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS);
+        return;
+      }
+    }
     case UserMediaRequestType::kDisplayMedia:
       base::UmaHistogramEnumeration(
           "WebRTC.UserMediaRequest.GetDisplayMedia.Result", result,
@@ -2195,8 +2204,7 @@ void UserMediaProcessor::DelayedGetUserMediaRequestSucceeded(
       "DelayedGetUserMediaRequestSucceeded({request_id=%d}, {result=%s})",
       request_id,
       MediaStreamRequestResultToString(MediaStreamRequestResult::OK)));
-  UpdateRequestResult(user_media_request->MediaRequestType(),
-                      MediaStreamRequestResult::OK);
+  UpdateRequestResult(user_media_request, MediaStreamRequestResult::OK);
   DeleteUserMediaRequest(user_media_request);
   if (!user_media_request->IsTransferredTrackRequest()) {
     // For transferred tracks, user_media_request has already been resolved in
@@ -2236,7 +2244,7 @@ void UserMediaProcessor::DelayedGetUserMediaRequestFailed(
     MediaStreamRequestResult result,
     const String& constraint_name) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  UpdateRequestResult(user_media_request->MediaRequestType(), result);
+  UpdateRequestResult(user_media_request, result);
   SendLogMessage(base::StringPrintf(
       "DelayedGetUserMediaRequestFailed({request_id=%d}, {result=%s})",
       request_id, MediaStreamRequestResultToString(result)));
@@ -2379,7 +2387,7 @@ bool UserMediaProcessor::CancelRequest(UserMediaRequest* user_media_request) {
         // might cause issues.
         break;
     }
-    UpdateRequestResult(user_media_request->MediaRequestType(),
+    UpdateRequestResult(user_media_request,
                         MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN);
     return true;
   }
@@ -2400,8 +2408,7 @@ void UserMediaProcessor::StopAllProcessing() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (current_request_info_) {
     auto result = MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN;
-    UpdateRequestResult(current_request_info_->request()->MediaRequestType(),
-                        result);
+    UpdateRequestResult(current_request_info_->request(), result);
     switch (current_request_info_->state()) {
       case RequestInfo::State::kSentForGeneration:
         // Let the browser process know that the previously sent request must be

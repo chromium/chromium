@@ -126,6 +126,7 @@ class MODULES_EXPORT UserMediaRequest final
             const String& message);
 
   UserMediaRequestType MediaRequestType() const;
+  bool IsGumExtensionRequest() const;
   bool Audio() const;
   bool Video() const;
   MediaConstraints AudioConstraints() const;
