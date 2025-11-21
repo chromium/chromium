@@ -25,8 +25,6 @@ const char kInvalidContext[] = "Invalid context";
 namespace blink {
 
 WebViewAndroid& WebViewAndroid::From(ExecutionContext& execution_context) {
-  CHECK(!execution_context.IsContextDestroyed());
-
   WebViewAndroid* supplement = execution_context.GetWebViewAndroid();
 
   if (!supplement) {
