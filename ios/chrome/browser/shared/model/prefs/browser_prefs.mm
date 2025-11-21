@@ -1387,4 +1387,14 @@ void MigrateObsoleteUserDefault() {
 
   // Added 03/2025.
   [defaults removeObjectForKey:@"PreviousSessionInfoConnectedSceneSessionIDs"];
+
+  // Added 10/2025.
+  [defaults removeObjectForKey:@"TimestampTriggerCriteriaExperimentStarted"];
+  [defaults removeObjectForKey:@"AllTimestampsAppLaunchColdStart"];
+  [defaults removeObjectForKey:@"AllTimestampsAppLaunchWarmStart"];
+  [defaults removeObjectForKey:@"AllTimestampsAppLaunchIndirectStart"];
+  [defaults removeObjectForKey:@"AutofillUseCount"];
+  [defaults removeObjectForKey:@"SpecialTabUseCount"];
+  [defaults removeObjectForKey:@"OmniboxUseCount"];
+  [defaults removeObjectForKey:@"BookmarkUseCount"];
 }

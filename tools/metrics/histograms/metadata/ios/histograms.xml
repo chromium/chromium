@@ -1305,53 +1305,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.DefaultBrowserPromo.{PromoAction}.{PromoStat}"
-    units="count" expires_after="2025-12-07">
-  <owner>gayane@google.com</owner>
-  <owner>bling-mony-pod@google.com</owner>
-  <summary>
-    Logs all {PromoStat} metrics when the {PromoAction} action happens in a
-    default browser promo.
-  </summary>
-  <token key="PromoAction">
-    <variant name="Appear"/>
-    <variant name="Cancel"/>
-    <variant name="Dismiss"/>
-    <variant name="PrimaryAction"/>
-  </token>
-  <token key="PromoStat">
-    <variant name="ActiveDayCount"
-        summary="Represents number days user has been active within last
-                 valid period."/>
-    <variant name="AutofllUseCount"
-        summary="Represents number of times user used autofill suggestions."/>
-    <variant name="BookmarkUseCount"
-        summary="Represents number of times user used bookmarks or bookmark
-                 manager."/>
-    <variant name="ChromeColdStartCount"
-        summary="Represents number of time Chrome cold starts"/>
-    <variant name="ChromeIndirectStartCount"
-        summary="Represents number of time Chrome indirect (by widget or
-                 external url) starts"/>
-    <variant name="ChromeWarmStartCount"
-        summary="Represents number of time Chrome warm starts"/>
-    <variant name="LastPromoInteractionNumDays"
-        summary="Represents number of days since last default browser promo
-                 was displayed"/>
-    <variant name="OmniboxClipboardUseCount"
-        summary="Represents number of times user copy-pasted in omnibox."/>
-    <variant name="PasswordManagerUseCount"
-        summary="Represents number of times password manager features were
-                 used"/>
-    <variant name="PromoDisplayCount"
-        summary="Represents number of default browser promos displayed to the
-                 user"/>
-    <variant name="SpecialTabsUseCount"
-        summary="Represents number of time special tabs such as pinned or
-                 remote tabs were used"/>
-  </token>
-</histogram>
-
 <histogram name="IOS.DefaultBrowserSettingsPageUsage{Source}"
     enum="IOSDefaultBrowserSettingsPageUsage" expires_after="2026-04-12">
   <owner>gayane@google.com</owner>

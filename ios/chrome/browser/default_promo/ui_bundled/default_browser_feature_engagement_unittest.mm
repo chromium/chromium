@@ -411,45 +411,6 @@ TEST_F(DefaultBrowserFeatureEngagementTest,
   tracker->NotifyEvent("generic_default_browser_promo_trigger");
 }
 
-// Verify generic promo triggers without satisfying all conditions when in
-// experiment.
-TEST_F(DefaultBrowserFeatureEngagementTest,
-       GenericPromoTriggerCriteriaExperimentTest) {
-  feature_engagement::test::ScopedIphFeatureList list;
-  list.InitAndEnableFeatures(
-      {feature_engagement::kIPHiOSPromoGenericDefaultBrowserFeature,
-       feature_engagement::kDefaultBrowserTriggerCriteriaExperiment});
-  std::unique_ptr<feature_engagement::Tracker> tracker = CreateAndInitTracker();
-  tracker->NotifyEvent(feature_engagement::events::
-                           kDefaultBrowserPromoTriggerCriteriaConditionsMet);
-
-  // Promo shouldn't trigger because the group preconditions are not satistfied.
-  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
-      feature_engagement::kIPHiOSPromoGenericDefaultBrowserFeature));
-
-  // Make sure the group preconditions are satisfied.
-  SatisfyChromeOpenCondition(tracker.get());
-
-  // The promo should trigger because all the preconditions are now satisfied.
-  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
-      feature_engagement::kIPHiOSPromoGenericDefaultBrowserFeature));
-  tracker->Dismissed(
-      feature_engagement::kIPHiOSPromoGenericDefaultBrowserFeature);
-
-  // It shouldn't trigger the second time.
-  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
-      feature_engagement::kIPHiOSPromoGenericDefaultBrowserFeature));
-
-  // After a year and satisfying all the conditions again it still shouldn't
-  // trigger.
-  test_clock_.Advance(base::Days(366));
-  tracker->NotifyEvent("generic_default_browser_promo_conditions_met");
-  SatisfyChromeOpenCondition(tracker.get());
-
-  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
-      feature_engagement::kIPHiOSPromoGenericDefaultBrowserFeature));
-}
-
 // Test only one of the tailored promos will show.
 TEST_F(DefaultBrowserFeatureEngagementTest, TailoredDefaultBrowserGroupTest) {
   feature_engagement::test::ScopedIphFeatureList list;

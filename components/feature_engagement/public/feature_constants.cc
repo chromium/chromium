@@ -852,9 +852,6 @@ constexpr base::FeatureParam<int> kDefaultBrowserEligibilitySlidingWindowParam{
     /*name=*/"sliding-window-days",
     /*default_value=*/180};
 
-BASE_FEATURE(kDefaultBrowserTriggerCriteriaExperiment,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kIPHiOSAIHubNewBadge,
              "IPH_iOSAIHubNewBadge",
              base::FEATURE_ENABLED_BY_DEFAULT);

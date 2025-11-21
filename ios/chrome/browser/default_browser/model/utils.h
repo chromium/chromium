@@ -8,7 +8,6 @@
 #import <UIKit/UIKit.h>
 
 #import "base/feature_list.h"
-#import "ios/chrome/browser/default_browser/model/promo_statistics.h"
 
 namespace feature_engagement {
 class Tracker;
@@ -217,20 +216,6 @@ void RecordDefaultBrowserBlueDotFirstDisplay();
 bool ShouldTriggerDefaultBrowserHighlightFeature(
     feature_engagement::Tracker* tracker);
 
-// Returns true if client is in Default Browser promo trigger criteria
-// experiment.
-bool IsDefaultBrowserTriggerCriteraExperimentEnabled();
-
-// Sets trigger criteria experiment start timestamp to now.
-void SetTriggerCriteriaExperimentStartTimestamp();
-
-// Returns true if trigger criteria experiment has been started.
-bool HasTriggerCriteriaExperimentStarted();
-
-// Returns true if trigger criteria experiment has been started for at least 21
-// days.
-bool HasTriggerCriteriaExperimentStarted21days();
-
 // Returns true if the default browser promo generic tailored experiment is
 // enabled.
 bool IsDefaultBrowserPromoGenericTailoredTrainEnabled();
@@ -272,18 +257,6 @@ void LogUserInteractionWithNonModalPromo(
 
 // Logs that the user has interacted with the first run promo.
 void LogUserInteractionWithFirstRunPromo();
-
-// Logs in NSUserDefaults that user copy-pasted in the omnibox.
-void LogCopyPasteInOmniboxForCriteriaExperiment();
-
-// Logs in NSUserDefaults that user used bookmarks or bookmark manager.
-void LogBookmarkUseForCriteriaExperiment();
-
-// Logs in NSUserDefaults that user used autofill suggestions
-void LogAutofillUseForCriteriaExperiment();
-
-// Logs that the user has used remote tabs.
-void LogRemoteTabsUseForCriteriaExperiment();
 
 // Returns true if the last URL open is within the specified number of `days`
 // which would indicate Chrome is likely still the default browser. Returns
@@ -357,28 +330,8 @@ const base::Feature& GetFeatureForPromoReason(
 const std::string GetFeatureEventNameForPromoReason(
     NonModalDefaultBrowserPromoReason promo_reason);
 
-// Returns PromoStatistics object with all properties calculated.
-PromoStatistics* CalculatePromoStatistics();
-
-// Records given promo stats for given action into UMA histograms.
-void RecordPromoStatsToUMAForAction(PromoStatistics* promo_stats,
-                                    IOSDefaultBrowserPromoAction action);
-
-// Records given promo stats for "Appear" action into UMA histograms.
-void RecordPromoStatsToUMAForAppear(PromoStatistics* promo_stats);
-
 // Records stats related to promo display to UMA histograms.
 void RecordPromoDisplayStatsToUMA();
-
-// Logs browser launched for default browser promo trigger criteria experiment
-// stats to NSUserDefaults. `LogBrowserIndirectlylaunched` and
-// `LogBrowserLaunched` will have overlap.
-void LogBrowserLaunched(bool is_cold_start);
-
-// Log browser started indirectly(by widget or external url) for default browser
-// promo experiment stats to NSUserDefaults. `LogBrowserIndirectlylaunched` and
-// `LogBrowserLaunched` will have overlap.
-void LogBrowserIndirectlylaunched();
 
 // Migration to FET.
 

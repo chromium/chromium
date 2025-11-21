@@ -254,9 +254,6 @@ extern const char kDefaultBrowserPromoIpadInstructionsDescription[];
 extern const char kDefaultBrowserPromoPropensityModelName[];
 extern const char kDefaultBrowserPromoPropensityModelDescription[];
 
-extern const char kDefaultBrowserTriggerCriteriaExperimentName[];
-extern const char kDefaultBrowserTriggerCriteriaExperimentDescription[];
-
 extern const char kDetectMainThreadFreezeName[];
 extern const char kDetectMainThreadFreezeDescription[];
 

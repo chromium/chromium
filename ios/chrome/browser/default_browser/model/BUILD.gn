@@ -12,8 +12,6 @@ source_set("model") {
 
 source_set("utils") {
   sources = [
-    "promo_statistics.h",
-    "promo_statistics.mm",
     "utils.h",
     "utils.mm",
   ]

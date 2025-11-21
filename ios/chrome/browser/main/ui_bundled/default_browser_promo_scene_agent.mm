@@ -146,24 +146,6 @@
   }
 }
 
-- (void)maybeSetTriggerCriteriaExperimentStartTimestamp {
-  if (IsDefaultBrowserTriggerCriteraExperimentEnabled() &&
-      !HasTriggerCriteriaExperimentStarted()) {
-    SetTriggerCriteriaExperimentStartTimestamp();
-  }
-}
-
-- (void)maybeNotifyFETTriggerCriteriaExperimentConditionMet {
-  if (IsDefaultBrowserTriggerCriteraExperimentEnabled() &&
-      HasTriggerCriteriaExperimentStarted21days()) {
-    if (feature_engagement::Tracker* tracker = self.featureEngagementTracker) {
-      tracker->NotifyEvent(
-          feature_engagement::events::
-              kDefaultBrowserPromoTriggerCriteriaConditionsMet);
-    }
-  }
-}
-
 - (void)checkSegmentationBeforeUpdatingGenericPromoRegistration {
   segmentation_platform::PredictionOptions options;
   options.on_demand_execution = true;
@@ -355,8 +337,6 @@
   [self updateOffCyclePromoRegistration];
 
   [self notifyFETSigninStatus];
-  [self maybeSetTriggerCriteriaExperimentStartTimestamp];
-  [self maybeNotifyFETTriggerCriteriaExperimentConditionMet];
 }
 
 @end

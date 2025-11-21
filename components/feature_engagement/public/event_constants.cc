@@ -146,8 +146,6 @@ const char kMadeForIOSPromoTrigger[] = "made_for_ios_promo_trigger";
 const char kStaySafePromoTrigger[] = "stay_safe_promo_trigger";
 const char kTailoredDefaultBrowserPromosGroupTrigger[] =
     "tailored_default_browser_promos_group_trigger";
-const char kDefaultBrowserPromoTriggerCriteriaConditionsMet[] =
-    "default_browser_promo_trigger_criteria_conditions_met";
 const char kIOSContextualPanelSampleModelEntrypointUsed[] =
     "ios_contextual_panel_sample_model_entrypoint_used";
 const char kIOSContextualPanelPriceInsightsEntrypointUsed[] =

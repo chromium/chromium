@@ -12,12 +12,8 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 @protocol PromosManagerUIHandler;
-@class PromoStatistics;
 
 @interface DefaultBrowserGenericPromoCoordinator : ChromeCoordinator
-
-// Sets promo statistics object for testing.
-- (void)setPromoStatisticsForTesting:(PromoStatistics*)testPromoStats;
 
 // Handler for all actions of this coordinator.
 @property(nonatomic, weak) id<DefaultBrowserGenericPromoCommands> handler;

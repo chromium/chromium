@@ -158,9 +158,6 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
     return nil;
   }
 
-  // Log browser started indirectly for default browser promo experiment stats.
-  LogBrowserIndirectlylaunched();
-
   if ([completeURL.scheme isEqualToString:kWidgetKitSchemeChrome]) {
     UMA_HISTOGRAM_ENUMERATION(kUMAMobileSessionStartActionHistogram,
                               START_ACTION_WIDGET_KIT_COMMAND,

@@ -11,7 +11,6 @@
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/browser/default_browser/model/features.h"
-#import "ios/chrome/browser/default_browser/model/promo_statistics.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_promo/ui_bundled/default_browser_instructions_view_controller.h"
 #import "ios/chrome/browser/default_promo/ui_bundled/generic/default_browser_generic_promo_commands.h"
@@ -40,8 +39,6 @@ using base::UserMetricsAction;
   id<DefaultBrowserGenericPromoCommands> _defaultBrowserPromoHandler;
   // Feature engagement tracker reference.
   raw_ptr<feature_engagement::Tracker> _tracker;
-  // Contains all the stats that needs to be recorded for all promo actions.
-  PromoStatistics* _promoStats;
   // Only the first interaction is recorded to metrics.
   BOOL _firstInteractionRecorded;
   // The timestamp of the first primary button tap.
@@ -79,7 +76,6 @@ using base::UserMetricsAction;
   [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
   _viewController = nil;
   _mediator = nil;
-  _promoStats = nil;
 
   [super stop];
 }
@@ -99,10 +95,6 @@ using base::UserMetricsAction;
         IOSDefaultBrowserVideoPromoAction::kPrimaryActionTapped);
     RecordAction(UserMetricsAction(
         "IOS.DefaultBrowserVideoPromo.Fullscreen.OpenSettingsTapped"));
-    if (IsDefaultBrowserTriggerCriteraExperimentEnabled()) {
-      RecordPromoStatsToUMAForAction(
-          _promoStats, IOSDefaultBrowserPromoAction::kActionButton);
-    }
   }
   if (!IsPersistentDefaultBrowserPromoEnabled()) {
     [_handler hidePromo];
@@ -118,10 +110,6 @@ using base::UserMetricsAction;
         IOSDefaultBrowserVideoPromoAction::kSecondaryActionTapped);
     RecordAction(
         UserMetricsAction("IOS.DefaultBrowserVideoPromo.Fullscreen.Dismiss"));
-    if (IsDefaultBrowserTriggerCriteraExperimentEnabled()) {
-      RecordPromoStatsToUMAForAction(_promoStats,
-                                     IOSDefaultBrowserPromoAction::kCancel);
-    }
   }
   [self hidePromoAndRecordDismissal];
 }
@@ -160,10 +148,6 @@ using base::UserMetricsAction;
         IOSDefaultBrowserVideoPromoAction::kSwipeDown);
     RecordAction(
         UserMetricsAction("IOS.DefaultBrowserVideoPromo.Fullscreen.Dismiss"));
-    if (IsDefaultBrowserTriggerCriteraExperimentEnabled()) {
-      RecordPromoStatsToUMAForAction(_promoStats,
-                                     IOSDefaultBrowserPromoAction::kDismiss);
-    }
   }
   [self hidePromoAndRecordDismissal];
 }
@@ -180,10 +164,6 @@ using base::UserMetricsAction;
         IOSDefaultBrowserVideoPromoAction::kSwipeDown);
     RecordAction(
         UserMetricsAction("IOS.DefaultBrowserVideoPromo.Fullscreen.Dismiss"));
-    if (IsDefaultBrowserTriggerCriteraExperimentEnabled()) {
-      RecordPromoStatsToUMAForAction(_promoStats,
-                                     IOSDefaultBrowserPromoAction::kDismiss);
-    }
   }
   [self hidePromoAndRecordDismissal];
 }
@@ -228,18 +208,6 @@ using base::UserMetricsAction;
   // Record the current state before updating the local storage.
   RecordPromoDisplayStatsToUMA();
 
-  if (IsDefaultBrowserTriggerCriteraExperimentEnabled()) {
-    // `CalculatePromoStatistics` should be called before
-    // `LogFullscreenDefaultBrowserPromoDisplayed` which will modify storage
-    // data.
-    // Might already be set for testing.
-    if (!_promoStats) {
-      _promoStats = CalculatePromoStatistics();
-    }
-
-    RecordPromoStatsToUMAForAppear(_promoStats);
-  }
-
   LogFullscreenDefaultBrowserPromoDisplayed();
   RecordAction(UserMetricsAction("IOS.DefaultBrowserVideoPromo.Appear"));
   base::UmaHistogramEnumeration("IOS.DefaultBrowserPromo.Shown",
@@ -257,10 +225,6 @@ using base::UserMetricsAction;
                             base::Hours(4), 120);
   }
   [_handler hidePromo];
-}
-
-- (void)setPromoStatisticsForTesting:(PromoStatistics*)testPromoStats {
-  _promoStats = testPromoStats;
 }
 
 @end

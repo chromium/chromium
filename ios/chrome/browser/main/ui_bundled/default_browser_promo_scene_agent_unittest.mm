@@ -606,38 +606,6 @@ TEST_F(DefaultBrowserPromoSceneAgentTest,
 }
 
 TEST_F(DefaultBrowserPromoSceneAgentTest,
-       TestTriggerCriteriaExperiment_JustStarted) {
-  scoped_feature_list_.InitAndEnableFeature(
-      feature_engagement::kDefaultBrowserTriggerCriteriaExperiment);
-
-  // FET should not be notified when the experiment has just started.
-  EXPECT_CALL(*mock_tracker_,
-              NotifyEvent(feature_engagement::events::
-                              kDefaultBrowserPromoTriggerCriteriaConditionsMet))
-      .Times(0);
-  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
-  Mock::VerifyAndClearExpectations(mock_tracker_);
-}
-
-TEST_F(DefaultBrowserPromoSceneAgentTest,
-       TestTriggerCriteriaExperiment_AfterTwentyOneDays) {
-  scoped_feature_list_.InitAndEnableFeature(
-      feature_engagement::kDefaultBrowserTriggerCriteriaExperiment);
-  NSDate* over_twenty_one_days_ago =
-      (base::Time::Now() - base::Days(21) - base::Minutes(10)).ToNSDate();
-  SetObjectIntoStorageForKey(kTimestampTriggerCriteriaExperimentStarted,
-                             over_twenty_one_days_ago);
-
-  // FET should be notified after 21 days since the experiment started.
-  EXPECT_CALL(
-      *mock_tracker_,
-      NotifyEvent(feature_engagement::events::
-                      kDefaultBrowserPromoTriggerCriteriaConditionsMet));
-  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
-  Mock::VerifyAndClearExpectations(mock_tracker_);
-}
-
-TEST_F(DefaultBrowserPromoSceneAgentTest,
        TestDefaultBrowserOffCyclePromoRegistration) {
   scoped_feature_list_.InitAndEnableFeature(kIOSDefaultBrowserOffCyclePromo);
   if (IsDefaultBrowserOffCyclePromoEnabled()) {
