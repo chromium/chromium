@@ -65,6 +65,7 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.sync.DataType;
+import org.chromium.components.sync.UserActionableError;
 import org.chromium.google_apis.gaia.GoogleServiceAuthError;
 import org.chromium.google_apis.gaia.GoogleServiceAuthErrorState;
 
@@ -336,6 +337,15 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
         intended(
                 IntentMatchers.hasDataString(
                         startsWith("https://support.google.com/chrome/answer/165139")));
+
+        // The error card should be gone now.
+        onView(withId(R.id.signin_settings_card)).check(doesNotExist());
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertEquals(
+                            UserActionableError.NONE, fakeSyncService.getUserActionableError());
+                });
+
         Intents.release();
     }
 

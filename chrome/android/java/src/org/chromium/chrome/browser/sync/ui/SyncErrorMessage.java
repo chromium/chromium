@@ -394,7 +394,7 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener {
     }
 
     private void openBookmarkLimitHelpPage() {
-        SyncSettingsUtils.openBookmarkLimitHelpPage(mActivity);
+        SyncSettingsUtils.openBookmarkLimitHelpPage(mActivity, mSyncService);
     }
 
     private void openTrustedVaultKeyRetrievalActivity() {

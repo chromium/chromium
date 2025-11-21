@@ -379,13 +379,14 @@ public class SyncSettingsUtils {
     }
 
     /**
-     * Opens a help center article for the bookmark sync limit.
+     * Opens a help center article for the bookmark sync limit and acknowledges the error.
      *
      * @param activity The activity to use for starting the intent.
+     * @param profile The profile to acknowledge the error for.
      */
-    public static void openBookmarkLimitHelpPage(Activity activity) {
-        // TODO(crbug.com/452810753): Update the URL to the correct help center article and disable
-        // the error state.
+    public static void openBookmarkLimitHelpPage(Activity activity, SyncService syncService) {
+        assert syncService != null;
+        syncService.acknowledgeBookmarksLimitExceededError();
         openCustomTabWithURL(activity, BOOKMARK_LIMIT_HELP_PAGE_URL);
     }
 

@@ -394,6 +394,14 @@ public class FakeSyncServiceImpl implements SyncService {
     }
 
     @Override
+    public void acknowledgeBookmarksLimitExceededError() {
+        if (mBookmarksLimitExceeded) {
+            mBookmarksLimitExceeded = false;
+            notifySyncStateChanged();
+        }
+    }
+
+    @Override
     public boolean shouldOfferTrustedVaultOptIn() {
         return mDelegate.shouldOfferTrustedVaultOptIn();
     }

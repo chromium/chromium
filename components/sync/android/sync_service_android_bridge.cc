@@ -190,6 +190,11 @@ void SyncServiceAndroidBridge::OnSyncShutdown(SyncService* sync) {
   // destroy it shortly.
 }
 
+void SyncServiceAndroidBridge::AcknowledgeBookmarksLimitExceededError(
+    JNIEnv* env) {
+  native_sync_service_->AcknowledgeBookmarksLimitExceededError();
+}
+
 jboolean SyncServiceAndroidBridge::IsSyncFeatureEnabled(JNIEnv* env) {
   return native_sync_service_->IsSyncFeatureEnabled();
 }

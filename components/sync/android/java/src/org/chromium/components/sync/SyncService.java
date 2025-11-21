@@ -275,6 +275,12 @@ public interface SyncService {
     void markPassphrasePromptMutedForCurrentProductVersion();
 
     /**
+     * Acknowledges the bookmarks limit exceeded error. The error will not be shown to the user
+     * again.
+     */
+    void acknowledgeBookmarksLimitExceededError();
+
+    /**
      * @return Whether the user should be offered to opt in to trusted vault encryption.
      */
     boolean shouldOfferTrustedVaultOptIn();

@@ -351,8 +351,14 @@ public class SyncErrorMessageTest {
         watchIdentityErrorMessageShownHistogram.assertExpected();
 
         // Resolving the error should dismiss the current message.
-        mFakeSyncServiceImpl.setBookmarksLimitExceeded(false);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mFakeSyncServiceImpl.acknowledgeBookmarksLimitExceededError());
         verifyHasDismissedMessage();
+        Assert.assertEquals(
+                (long) UserActionableError.NONE,
+                (long)
+                        ThreadUtils.runOnUiThreadBlocking(
+                                () -> mFakeSyncServiceImpl.getUserActionableError()));
     }
 
     @Test
@@ -492,6 +498,13 @@ public class SyncErrorMessageTest {
         intended(IntentMatchers.hasData(
                 "https://support.google.com/chrome/answer/165139"));
         Intents.release();
+
+        Assert.assertEquals(
+                "The error should be resolved after the user clicks on the button.",
+                (long) UserActionableError.NONE,
+                (long)
+                        ThreadUtils.runOnUiThreadBlocking(
+                                () -> mFakeSyncServiceImpl.getUserActionableError()));
 
         histogramWatcher.assertExpected();
     }
