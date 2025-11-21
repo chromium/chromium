@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
@@ -691,9 +692,9 @@ class FileUploadDelegate::NextStepContext
     // Load into buffer.
     buffer.resize(
         size);  // Initialization is redundant, but std::string mandates it.
-    const int read_size =
-        UNSAFE_TODO(handle->Read(offset, buffer.data(), size));
-    if (read_size < 0) {
+    const std::optional<size_t> read_size =
+        handle->Read(offset, base::as_writable_byte_span(buffer));
+    if (!read_size) {
       base::UmaHistogramEnumeration(reporting::kUmaDataLossErrorReason,
                                     DataLossErrorReason::CANNOT_READ_FILE,
                                     DataLossErrorReason::MAX_VALUE);
@@ -711,7 +712,7 @@ class FileUploadDelegate::NextStepContext
                  base::StrCat({"Failed to read file=", origin_path,
                                " offset=", base::NumberToString(offset),
                                " size=", base::NumberToString(size),
-                               " read=", base::NumberToString(read_size)})));
+                               " read=", base::NumberToString(*read_size)})));
     }
     return buffer;
   }
