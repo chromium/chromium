@@ -176,8 +176,8 @@ bool CollectElementAttributes(
   while (attributes_next(attributes, local_name, ns, prefix, value)) {
     AtomicString attr_q_name =
         prefix.empty() ? RustStrToAtomicString(local_name)
-                       : AtomicString(RustStrToWtfString(prefix) + ":" +
-                                      RustStrToWtfString(local_name));
+                       : AtomicString(StrCat({RustStrToWtfString(prefix), ":",
+                                              RustStrToWtfString(local_name)}));
     AtomicString attr_ns = RustStrToAtomicString(ns);
     std::optional<QualifiedName> parsed_name =
         Element::ParseAttributeName(attr_ns, attr_q_name, exception_state);

@@ -424,7 +424,7 @@ static inline String ExpandedName(Node* node) {
   }
 
   return prefix.empty() ? ExpandedNameLocalPart(node)
-                        : prefix + ":" + ExpandedNameLocalPart(node);
+                        : StrCat({prefix, ":", ExpandedNameLocalPart(node)});
 }
 
 Value FunLocalName::Evaluate(EvaluationContext& context) const {

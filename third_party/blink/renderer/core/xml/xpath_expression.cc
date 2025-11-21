@@ -68,8 +68,8 @@ XPathResult* XPathExpression::evaluate(ExecutionContext* execution_context,
   if (!xpath::IsValidContextNode(context_node)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        "The node provided is '" + context_node->nodeName() +
-            "', which is not a valid context node type.");
+        StrCat({"The node provided is '", context_node->nodeName(),
+                "', which is not a valid context node type."}));
     return nullptr;
   }
 

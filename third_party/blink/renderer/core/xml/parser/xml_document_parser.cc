@@ -645,10 +645,10 @@ static bool ShouldAllowExternalLoad(const KURL& url) {
     // FIXME: This is copy/pasted. We should probably build console logging into
     // canRequest().
     if (!url.IsNull()) {
-      String message = "Unsafe attempt to load URL " + url.ElidedString() +
-                       " from frame with URL " +
-                       current_context->Url().ElidedString() +
-                       ". Domains, protocols and ports must match.\n";
+      String message = StrCat({"Unsafe attempt to load URL ",
+                               url.ElidedString(), " from frame with URL ",
+                               current_context->Url().ElidedString(),
+                               ". Domains, protocols and ports must match.\n"});
       current_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
           mojom::blink::ConsoleMessageSource::kSecurity,
           mojom::blink::ConsoleMessageLevel::kError, message));
@@ -1002,8 +1002,8 @@ static inline bool HandleElementAttributes(
         } else {
           exception_state.ThrowDOMException(
               DOMExceptionCode::kNamespaceError,
-              "Namespace prefix " + attr_prefix + " for attribute " +
-                  ToString(attr.localname) + " is not declared.");
+              StrCat({"Namespace prefix ", attr_prefix, " for attribute ",
+                      ToString(attr.localname), " is not declared."}));
           return false;
         }
       }
@@ -1881,7 +1881,7 @@ static void AttributesStartElementNsHandler(void* closure,
     String attr_prefix = ToString(attr.prefix);
     String attr_q_name = attr_prefix.empty()
                              ? attr_local_name
-                             : attr_prefix + ":" + attr_local_name;
+                             : StrCat({attr_prefix, ":", attr_local_name});
 
     state->attributes.Set(attr_q_name, ToString(attr.ValueSpan()));
   }
@@ -1897,7 +1897,8 @@ HashMap<String, String> ParseAttributes(const String& string, bool& attrs_ok) {
   sax.initialized = XML_SAX2_MAGIC;
   scoped_refptr<XMLParserContext> parser =
       XMLParserContext::CreateStringParser(&sax, &state);
-  String parse_string = "<?xml version=\"1.0\"?><attrs " + string + " />";
+  String parse_string =
+      StrCat({"<?xml version=\"1.0\"?><attrs ", string, " />"});
   ParseChunk(parser->Context(), parse_string);
   FinishParsing(parser->Context());
   attrs_ok = state.got_attributes;

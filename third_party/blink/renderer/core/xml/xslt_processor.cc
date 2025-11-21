@@ -48,17 +48,17 @@ static inline void TransformTextStringToXHTMLDocumentString(String& text) {
   text.Replace('&', "&amp;");
   text.Replace('<', "&lt;");
   text =
-      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-      "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" "
-      "\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n"
-      "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n"
-      "<head><title/></head>\n"
-      "<body>\n"
-      "<pre>" +
-      text +
-      "</pre>\n"
-      "</body>\n"
-      "</html>\n";
+      StrCat({"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+              "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" "
+              "\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n"
+              "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n"
+              "<head><title/></head>\n"
+              "<body>\n"
+              "<pre>",
+              text,
+              "</pre>\n"
+              "</body>\n"
+              "</html>\n"});
 }
 
 namespace {
@@ -183,7 +183,7 @@ Document* XSLTProcessor::CreateDocumentFromSource(
     document_->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kXml,
         mojom::blink::ConsoleMessageLevel::kWarning,
-        String("Document encoding not valid: ") + source_encoding));
+        StrCat({"Document encoding not valid: ", source_encoding})));
   }
   document->SetContent(document_source);
   return document;
