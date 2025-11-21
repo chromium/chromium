@@ -86,14 +86,8 @@ class CppChecker(object):
     dependee_status = results.DependeeStatus(filepath)
     ret_val = ''  # We'll collect the error messages in here
     last_include = 0
-    encoding = 'utf-8'
 
-    # TODO(crbug.com/458409084): This can be removed once unrar sources are UTF8
-    dir_path = os.path.relpath(os.path.dirname(filepath), self._root_dir)
-    if dir_path.startswith(os.path.join('third_party', 'unrar') + os.sep):
-        encoding = 'latin-1'
-
-    with open(filepath, encoding=encoding) as f:
+    with open(filepath, encoding='utf-8') as f:
       in_if0 = 0
       for line_num, line in enumerate(f):
         line = line.strip()
