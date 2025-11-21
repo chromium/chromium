@@ -1152,6 +1152,9 @@
       <message name="IDS_PAGE_ZOOM_FULLSCREEN_BUTTON_CONTENT_DESCRIPTION" desc="Content description for the fullscreen button in the zoom menu.">
         Fullscreen
       </message>
+      <message name="IDS_PAGE_ZOOM_POPUP_WINDOW_CONTENT_DESCRIPTION" desc="Content description for the zoom popup window shown when the user taps the zoom indicator.">
+        Popup zoom window
+      </message>
 
       <!-- Search resumption module strings -->
       <message name="IDS_SEARCH_RESUMPTION_MODULE_TITLE" desc="Title of the search resumption module on NTP or Start surface.">

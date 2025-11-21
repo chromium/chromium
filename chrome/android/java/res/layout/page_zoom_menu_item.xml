@@ -33,6 +33,7 @@ found in the LICENSE file.
 
     <TextView
         android:id="@+id/zoom_percentage"
+        android:accessibilityLiveRegion="polite"
         android:layout_width="@dimen/zoom_percentage_menu_item_width"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/zoom_percentage_menu_item_margin"

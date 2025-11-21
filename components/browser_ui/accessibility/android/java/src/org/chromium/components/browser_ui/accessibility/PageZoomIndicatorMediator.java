@@ -95,7 +95,7 @@ class PageZoomIndicatorMediator {
                         view,
                         ViewGroup.LayoutParams.WRAP_CONTENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT);
-        popupWindow.setFocusable(false);
+        popupWindow.setFocusable(true);
         popupWindow.setOutsideTouchable(true);
         popupWindow.setOnDismissListener(onDismissListener);
 
