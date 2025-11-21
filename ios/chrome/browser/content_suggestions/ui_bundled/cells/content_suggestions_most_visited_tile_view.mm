@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_most_visited_tile_view.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "components/favicon_base/fallback_icon_style.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_cells_constants.h"
@@ -37,17 +38,12 @@
 
 @implementation ContentSuggestionsMostVisitedTileView
 
+@synthesize configuration = _configuration;
+
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame
                      tileType:ContentSuggestionsTileType::kMostVisited];
   if (self) {
-    if (IsNTPBackgroundCustomizationEnabled()) {
-      [self applyBackgroundColors];
-    } else {
-      self.imageContainerView.backgroundColor =
-          [UIColor colorNamed:kGrey100Color];
-    }
-
     self.imageContainerView.layer.cornerRadius =
         kMagicStackImageContainerWidth / 2;
     self.imageContainerView.layer.masksToBounds = NO;
@@ -85,6 +81,7 @@
 
     [self addSubview:_faviconView];
     AddSameCenterConstraints(_faviconView, self.imageContainerView);
+    [self registerViewForTraitChanges];
   }
   return self;
 }
@@ -93,25 +90,60 @@
     (ContentSuggestionsMostVisitedItem*)config {
   self = [self initWithFrame:CGRectZero];
   if (self) {
-    if (!config) {
-      // If there is no config, then this is a placeholder tile.
-      self.titleLabel.backgroundColor = [UIColor colorNamed:kGrey100Color];
-    } else {
-      _config = config;
-      self.titleLabel.text = config.title;
-      self.accessibilityLabel = config.title;
-      _incognitoAvailable = config.incognitoAvailable;
-      [_faviconView configureWithAttributes:config.attributes];
-      _commandHandler = config.commandHandler;
-      self.isAccessibilityElement = YES;
-      self.accessibilityTraits = UIAccessibilityTraitButton;
-      self.accessibilityCustomActions = [self customActions];
+    [self setConfiguration:config];
+  }
+  return self;
+}
+
+- (void)setConfiguration:(id<UIContentConfiguration>)config {
+  if (![config isKindOfClass:ContentSuggestionsMostVisitedItem.class]) {
+    return;
+  }
+  ContentSuggestionsMostVisitedItem* item =
+      base::apple::ObjCCastStrict<ContentSuggestionsMostVisitedItem>(config);
+  BOOL hasPreviousItem = _configuration;
+  _configuration = [item copy];
+  // Update the layout according to `item`.
+  if (IsNTPBackgroundCustomizationEnabled()) {
+    [self applyBackgroundColors];
+  } else {
+    self.imageContainerView.backgroundColor =
+        [UIColor colorNamed:kGrey100Color];
+  }
+  self.titleLabel.text = item.title;
+  self.accessibilityLabel = item.title;
+  _incognitoAvailable = item.incognitoAvailable;
+  _commandHandler = item.commandHandler;
+  self.menuElementsProvider = item.menuElementsProvider;
+  self.isAccessibilityElement = item;
+  self.accessibilityTraits =
+      item ? UIAccessibilityTraitButton : UIAccessibilityTraitNone;
+  self.accessibilityCustomActions = item ? [self customActions] : @[];
+  if (item) {
+    [_faviconView configureWithAttributes:item.attributes];
+    if (!hasPreviousItem) {
       [self addInteraction:[[UIContextMenuInteraction alloc]
                                initWithDelegate:self]];
     }
-    [self registerViewForTraitChanges];
+  } else {
+    // If there is no config, then this is a placeholder tile.
+    self.titleLabel.backgroundColor = [UIColor colorNamed:kGrey100Color];
+    if (hasPreviousItem) {
+      for (id<UIInteraction> interaction in self.interactions) {
+        [self removeInteraction:interaction];
+      }
+    }
   }
-  return self;
+  // Update gesture recognizer.
+  if (self.tapRecognizer) {
+    [self removeGestureRecognizer:self.tapRecognizer];
+  }
+  UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]
+      initWithTarget:item.commandHandler
+              action:@selector(mostVisitedTileTapped:)];
+  self.tapRecognizer = tapRecognizer;
+  [self addGestureRecognizer:tapRecognizer];
+  tapRecognizer.enabled = YES;
 }
 
 #pragma mark - UIContextMenuInteractionDelegate
@@ -119,9 +151,9 @@
 - (UIContextMenuConfiguration*)contextMenuInteraction:
                                    (UIContextMenuInteraction*)interaction
                        configurationForMenuAtLocation:(CGPoint)location {
-  NSArray<UIMenuElement*>* elements =
-      [self.menuElementsProvider defaultContextMenuElementsForItem:self.config
-                                                          fromView:self];
+  NSArray<UIMenuElement*>* elements = [self.menuElementsProvider
+      defaultContextMenuElementsForItem:[self mostVisitedItem]
+                               fromView:self];
   UIContextMenuActionProvider actionProvider =
       ^(NSArray<UIMenuElement*>* suggestedActions) {
         return [UIMenu menuWithTitle:@"" children:elements];
@@ -184,21 +216,23 @@
 // Target for custom action.
 - (BOOL)openInNewTab {
   DCHECK(self.commandHandler);
-  [self.commandHandler openNewTabWithMostVisitedItem:self.config incognito:NO];
+  [self.commandHandler openNewTabWithMostVisitedItem:[self mostVisitedItem]
+                                           incognito:NO];
   return YES;
 }
 
 // Target for custom action.
 - (BOOL)openInNewIncognitoTab {
   DCHECK(self.commandHandler);
-  [self.commandHandler openNewTabWithMostVisitedItem:self.config incognito:YES];
+  [self.commandHandler openNewTabWithMostVisitedItem:[self mostVisitedItem]
+                                           incognito:YES];
   return YES;
 }
 
 // Target for custom action.
 - (BOOL)removeMostVisited {
   DCHECK(self.commandHandler);
-  [self.commandHandler removeMostVisited:self.config];
+  [self.commandHandler removeMostVisited:[self mostVisitedItem]];
   return YES;
 }
 
@@ -207,25 +241,26 @@
 - (void)applyBackgroundColors {
   NewTabPageColorPalette* colorPalette =
       [self.traitCollection objectForNewTabPageTrait];
-
   // Favicon monogram will only be applied if defaultBackgroundColor is set.
-  if (_config.attributes && _config.attributes.defaultBackgroundColor) {
+  ContentSuggestionsMostVisitedItem* configuration = [self mostVisitedItem];
+  if (configuration.attributes.defaultBackgroundColor) {
     if (colorPalette) {
       // If a color palette is available, apply its tint and background
       // colors to the attributes while preserving the other attributes.
-      _config.attributes = [FaviconAttributesWithPayload
-          attributesWithMonogram:_config.attributes.monogramString
+      configuration.attributes = [FaviconAttributesWithPayload
+          attributesWithMonogram:configuration.attributes.monogramString
                        textColor:colorPalette.secondaryCellColor
                  backgroundColor:colorPalette.monogramColor
-          defaultBackgroundColor:_config.attributes.defaultBackgroundColor];
+          defaultBackgroundColor:configuration.attributes
+                                     .defaultBackgroundColor];
     } else {
       // If no color palette is available, fall back to default icon style
       // colors.
       std::unique_ptr<favicon_base::FallbackIconStyle> default_icon_style =
           std::make_unique<favicon_base::FallbackIconStyle>();
 
-      _config.attributes = [FaviconAttributesWithPayload
-          attributesWithMonogram:_config.attributes.monogramString
+      configuration.attributes = [FaviconAttributesWithPayload
+          attributesWithMonogram:configuration.attributes.monogramString
                        textColor:skia::UIColorFromSkColor(
                                      default_icon_style->text_color)
                  backgroundColor:skia::UIColorFromSkColor(
@@ -236,7 +271,7 @@
   }
 
   // Update the favicon view with the new attributes.
-  [self.faviconView configureWithAttributes:_config.attributes];
+  [self.faviconView configureWithAttributes:configuration.attributes];
 
   if (colorPalette) {
     self.imageContainerView.backgroundColor = colorPalette.tertiaryColor;
@@ -247,6 +282,12 @@
 }
 
 #pragma mark - Private
+
+// Returns the `ContentSuggestionsMostVisitedItem` casted `self.configuration`.
+- (ContentSuggestionsMostVisitedItem*)mostVisitedItem {
+  return base::apple::ObjCCastStrict<ContentSuggestionsMostVisitedItem>(
+      self.configuration);
+}
 
 // Registers a list of UITraits to observe and invokes the
 // `applyBackgroundColors` function whenever one of the observed trait's values

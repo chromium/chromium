@@ -207,7 +207,7 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
       static_cast<ContentSuggestionsMostVisitedTileView*>(sender.view);
   ContentSuggestionsMostVisitedItem* mostVisitedItem =
       base::apple::ObjCCastStrict<ContentSuggestionsMostVisitedItem>(
-          mostVisitedView.config);
+          mostVisitedView.configuration);
 
   [self logMostVisitedOpening:mostVisitedItem atIndex:mostVisitedItem.index];
 

@@ -16,7 +16,7 @@ class GURL;
 @protocol MostVisitedTilesCommands;
 
 // Item containing a Most Visited suggestion.
-@interface ContentSuggestionsMostVisitedItem : NSObject
+@interface ContentSuggestionsMostVisitedItem : NSObject <UIContentConfiguration>
 
 // Text for the title and the accessibility label of the cell.
 @property(nonatomic, copy) NSString* title;
