@@ -47,10 +47,6 @@ declare_args() {
 
   # Allows googletest to pretty-print various absl types.
   gtest_enable_absl_printers = true
-
-  # Allow projects that wish to stay on C++17 to override Chromium's default.
-  # TODO(anglebug.com/330910097): evaluate removing this 2026-04-01
-  use_cxx17 = false
 }
 
 # Features used by //base/trace_event.

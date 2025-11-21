@@ -746,10 +746,7 @@ config("compiler") {
 
     cflags_c += [ "-std=${standard_prefix}11" ]
     if (is_clang) {
-      if (defined(use_cxx17) && use_cxx17) {
-        assert(!use_cxx23)
-        cflags_cc += [ "-std=${standard_prefix}++17" ]
-      } else if (use_cxx23) {
+      if (use_cxx23) {
         cflags_cc += [ "-std=${standard_prefix}++23" ]
       } else {
         cflags_cc += [ "-std=${standard_prefix}++20" ]
@@ -761,10 +758,7 @@ config("compiler") {
     }
   } else if (is_win) {
     cflags_c += [ "/std:c11" ]
-    if (defined(use_cxx17) && use_cxx17) {
-      assert(!use_cxx23)
-      cflags_cc += [ "/std:c++17" ]
-    } else if (use_cxx23) {
+    if (use_cxx23) {
       cflags_cc += [ "/std:c++23preview" ]
     } else {
       cflags_cc += [ "/std:c++20" ]
@@ -778,10 +772,7 @@ config("compiler") {
   } else {
     cflags_c += [ "-std=c11" ]
 
-    if (defined(use_cxx17) && use_cxx17) {
-      assert(!use_cxx23)
-      cflags_cc += [ "-std=c++17" ]
-    } else if (use_cxx23) {
+    if (use_cxx23) {
       cflags_cc += [ "-std=c++23" ]
     } else {
       cflags_cc += [ "-std=c++20" ]
