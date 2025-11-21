@@ -96,13 +96,13 @@ class MEDIA_EXPORT RenditionManager {
 
   // A nullopt means that no preference is set, and automatic selection will
   // take over.
-  void SetPreferredExtraRendition(std::optional<MediaTrack::Id> track_id);
-  void SetPreferredPrimaryRendition(std::optional<MediaTrack::Id> track_id);
+  void SetPreferredAudioRendition(std::optional<MediaTrack::Id> track_id);
+  void SetPreferredVideoRendition(std::optional<MediaTrack::Id> track_id);
 
   bool HasSelectableVariants() const { return !selectable_variants_.empty(); }
 
-  std::vector<MediaTrack> GetSelectablePrimaryRenditions() const;
-  std::vector<MediaTrack> GetSelectableExtraRenditions() const;
+  std::vector<MediaTrack> GetSelectableVideoRenditions() const;
+  std::vector<MediaTrack> GetSelectableAudioRenditions() const;
 
  private:
   const VariantStream* SelectBestVariant() const;

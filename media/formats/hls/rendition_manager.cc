@@ -212,7 +212,7 @@ void RenditionManager::Reselect(SelectedCallonce cb) {
   }
 }
 
-void RenditionManager::SetPreferredExtraRendition(
+void RenditionManager::SetPreferredAudioRendition(
     std::optional<MediaTrack::Id> track_id) {
   if (!active_variant_) {
     // Track ID's are only unique across a RenditionGroup - so if we don't have
@@ -237,7 +237,7 @@ void RenditionManager::SetPreferredExtraRendition(
   Reselect(base::BindOnce(reselect_cb_, AdaptationReason::kUserSelection));
 }
 
-void RenditionManager::SetPreferredPrimaryRendition(
+void RenditionManager::SetPreferredVideoRendition(
     std::optional<MediaTrack::Id> track_id) {
   // Primary (video) rendition selection is not supported.
   NOTREACHED();
@@ -264,15 +264,14 @@ void RenditionManager::SetAbrAlgorithmForTesting(
   abr_algorithm_ = std::move(abr_algorithm);
 }
 
-std::vector<MediaTrack> RenditionManager::GetSelectableExtraRenditions() const {
+std::vector<MediaTrack> RenditionManager::GetSelectableAudioRenditions() const {
   if (active_variant_) {
     return active_variant_->GetAudioRenditionGroup()->GetTracks();
   }
   return {};
 }
 
-std::vector<MediaTrack> RenditionManager::GetSelectablePrimaryRenditions()
-    const {
+std::vector<MediaTrack> RenditionManager::GetSelectableVideoRenditions() const {
   return selectable_variant_tracks_;
 }
 
