@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
@@ -21,6 +22,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations;
@@ -32,10 +34,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
@@ -117,7 +116,6 @@ public class LauncherShortcutTest {
 
     @Test
     @MediumTest
-    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     @ParameterAnnotations.UseMethodParameter(IncognitoParams.class)
     public void testLauncherShortcut(boolean incognito) throws Exception {
         int initialTabCount =
@@ -126,16 +124,34 @@ public class LauncherShortcutTest {
         Intent intent =
                 new Intent(
                         incognito
-                                ? LauncherShortcutActivity.ACTION_OPEN_NEW_INCOGNITO_TAB
+                                ? (IncognitoUtils.shouldOpenIncognitoAsWindow()
+                                        ? LauncherShortcutActivity.ACTION_OPEN_NEW_INCOGNITO_WINDOW
+                                        : LauncherShortcutActivity.ACTION_OPEN_NEW_INCOGNITO_TAB)
                                 : LauncherShortcutActivity.ACTION_OPEN_NEW_TAB);
         intent.setClass(mActivityTestRule.getActivity(), LauncherShortcutActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         InstrumentationRegistry.getInstrumentation().startActivitySync(intent);
-
+        if (incognito && IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            List<Activity> runningActivities = ApplicationStatus.getRunningActivities();
+            Assert.assertEquals(
+                    "Incorrect number of running activities.", 2, runningActivities.size());
+            Assert.assertTrue(
+                    "Running activities should contain a regular ChromeTabbedActivity.",
+                    runningActivities.stream()
+                            .anyMatch(
+                                    activity ->
+                                            activity instanceof ChromeTabbedActivity cta
+                                                    && !cta.isIncognitoWindow()));
+            Assert.assertTrue(
+                    "Running activities should contain an incognito ChromeTabbedActivity.",
+                    runningActivities.stream()
+                            .anyMatch(
+                                    activity ->
+                                            activity instanceof ChromeTabbedActivity cta
+                                                    && cta.isIncognitoWindow()));
+        } else {
         mTabAddedCallback.waitForCallback(0);
-
         // Verify NTP was created.
-
         Tab activityTab = mActivityTestRule.getActivityTab();
         Assert.assertEquals(
                 "Incorrect tab launch type.",
@@ -161,6 +177,7 @@ public class LauncherShortcutTest {
                 "Incorrect incognito tab count.",
                 incognito ? 1 : 0,
                 mActivityTestRule.tabsCount(true));
+        }
     }
 
     @Test
@@ -232,10 +249,10 @@ public class LauncherShortcutTest {
                 "Incorrect manifest shortcut id.", "new-tab-shortcut", shortcuts.get(0).getId());
     }
 
-    private void testDynamicShortcutsInternal(boolean newIncognitoWindowEnabled) {
+    private void testDynamicShortcutsInternal() {
         List<String> expectedLabels;
         int expectedSize;
-        if (newIncognitoWindowEnabled) {
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
             expectedLabels = Arrays.asList("New window", "New Incognito window");
             expectedSize = 2;
         } else {
@@ -278,26 +295,18 @@ public class LauncherShortcutTest {
 
     @Test
     @SmallTest
-    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testDynamicShortcuts() {
-        testDynamicShortcutsInternal(/* newIncognitoWindowEnabled= */ false);
+        testDynamicShortcutsInternal();
     }
 
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
-    public void testDynamicShortcuts_withNewIncognitoWindow() {
-        testDynamicShortcutsInternal(/* newIncognitoWindowEnabled= */ true);
-    }
-
-    private void testDynamicShortcuts_LanguageChangeInternal(boolean newIncognitoWindowEnabled) {
+    private void testDynamicShortcuts_LanguageChangeInternal() {
         IncognitoUtils.setEnabledForTesting(true);
         LauncherShortcutActivity.updateIncognitoShortcut(
                 mActivityTestRule.getActivity(), mActivityTestRule.getProfile(false));
 
         List<String> expectedLabels;
         int expectedSize;
-        if (newIncognitoWindowEnabled) {
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
             expectedLabels = Arrays.asList("New window", "New Incognito window");
             expectedSize = 2;
         } else {
@@ -334,15 +343,7 @@ public class LauncherShortcutTest {
 
     @Test
     @SmallTest
-    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testDynamicShortcuts_LanguageChange() {
-        testDynamicShortcuts_LanguageChangeInternal(/* newIncognitoWindowEnabled= */ false);
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
-    public void testDynamicShortcuts_LanguageChange_withNewIncognitoWindow() {
-        testDynamicShortcuts_LanguageChangeInternal(/* newIncognitoWindowEnabled= */ true);
+        testDynamicShortcuts_LanguageChangeInternal();
     }
 }
