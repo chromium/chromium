@@ -33,7 +33,20 @@ chromium-metrics-reviews@google.com.
     per-program filtering and analysis.
 
     Emitted through ProvideCurrentSessionData, when a UMA session record is
-    getting finalized.
+    getting finalized. Is output only based on the currently-loaded profiles,
+    and it is not output if there are zero currently-loaded profiles (context:
+    https://crrev.com/c/7168123).
+  </summary>
+</histogram>
+
+<histogram name="RegionalCapabilities.Debug.HasActiveRegionalProgram"
+    enum="Boolean" expires_after="2026-03-01">
+  <owner>dgn@chromium.org</owner>
+  <owner>chrome-regionalcapabilities@google.com</owner>
+  <summary>
+    Records whether there is any active regional program for any of the loaded
+    profiles. Recorded when a UMA session record is getting finalized. `false`
+    if there are no loaded profiles, `true` otherwise.
   </summary>
 </histogram>
 

@@ -53,8 +53,9 @@ class IOSRegionalCapabilitiesMetricsProviderTest : public PlatformTest {
 TEST_F(IOSRegionalCapabilitiesMetricsProviderTest, NoProfiles_Default) {
   metrics_provider_.ProvideCurrentSessionData(nullptr);
   histogram_tester_.ExpectUniqueSample(
-      "RegionalCapabilities.ActiveRegionalProgram2",
-      ActiveRegionalProgram::kDefault, 1);
+      "RegionalCapabilities.Debug.HasActiveRegionalProgram", false, 1);
+  histogram_tester_.ExpectTotalCount(
+      "RegionalCapabilities.ActiveRegionalProgram2", 0);
 }
 
 TEST_F(IOSRegionalCapabilitiesMetricsProviderTest, SingleWaffle_Waffle) {

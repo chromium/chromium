@@ -105,6 +105,12 @@ void RecordTriggeringFunnelStageDetails(
 
 void RecordActiveRegionalProgram(
     const absl::flat_hash_set<ActiveRegionalProgram> programs) {
+  base::UmaHistogramBoolean(
+      "RegionalCapabilities.Debug.HasActiveRegionalProgram", !programs.empty());
+  if (programs.empty()) {
+    return;
+  }
+
   auto non_default_programs(programs);
   non_default_programs.erase(ActiveRegionalProgram::kDefault);
 
