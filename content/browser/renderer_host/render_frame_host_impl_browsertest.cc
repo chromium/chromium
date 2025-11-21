@@ -9349,6 +9349,13 @@ class RenderFrameHostImplConnectionAllowlistBrowserTest
       URLLoaderInterceptor::WriteResponse(headers, body, params->client.get());
       return true;
     }
+    if (path == "/title3.html") {
+      std::string headers = "HTTP/1.1 200 OK\nContent-Type: text/html\n";
+      base::StrAppend(&headers, {"Connection-Allowlist: ()\n"});
+      std::string body = "<html>This is title3.html</html>";
+      URLLoaderInterceptor::WriteResponse(headers, body, params->client.get());
+      return true;
+    }
     return false;
   }
 
@@ -9450,6 +9457,33 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
   std::string same_origin_message;
   EXPECT_TRUE(message_queue.WaitForMessage(&same_origin_message));
   EXPECT_EQ("\"200\"", same_origin_message);
+}
+
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
+                       ConnectionAllowlistEmpty) {
+  GURL url(embedded_test_server()->GetURL("/title3.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  WebContents* web_contents = shell()->web_contents();
+
+  // now fetch same-origin and cross-origin resources, both should be
+  // disallowed.
+  GURL fetch_url(embedded_test_server()->GetURL("/cors-ok.txt"));
+  std::string fetch_resource = JsReplace(
+      "(async () => {"
+      "  let resp = (await fetch($1, { mode: 'cors', credential: 'omit'}));"
+      "  return resp.status; })();",
+      fetch_url);
+
+  ASSERT_FALSE(ExecJs(web_contents->GetPrimaryMainFrame(), fetch_resource));
+
+  GURL d_url = embedded_test_server()->GetURL("d.com", "/cors-ok.txt");
+  std::string cross_origin_fetch_resource = JsReplace(
+      "(async () => {"
+      "  let resp = (await fetch($1, { mode: 'cors', credential: 'omit'}));"
+      "  return resp.status; })();",
+      d_url);
+  ASSERT_FALSE(
+      ExecJs(web_contents->GetPrimaryMainFrame(), cross_origin_fetch_resource));
 }
 
 }  // namespace content
