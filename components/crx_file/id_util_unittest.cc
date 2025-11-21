@@ -6,9 +6,10 @@
 
 #include <stdint.h>
 
-#include <array>
+#include <type_traits>
 
 #include "base/files/file_path.h"
+#include "base/strings/string_view_util.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -33,20 +34,24 @@ constexpr auto kPublicKeyInfo = std::to_array<uint8_t>({
 }  // namespace
 
 TEST(IDUtilTest, GenerateID) {
-  std::string extension_id =
-      GenerateId(std::string(reinterpret_cast<const char*>(&kPublicKeyInfo[0]),
-                             std::size(kPublicKeyInfo)));
+  {
+    // Test span-based API.
+    std::string extension_id = GenerateId(kPublicKeyInfo);
+    EXPECT_EQ("melddjfinppjdikinhbgehiennejpfhp", extension_id);
+  }
 
-  EXPECT_EQ("melddjfinppjdikinhbgehiennejpfhp", extension_id);
-  EXPECT_EQ("daibjpdaanagajckigeiigphanababab",
-            GenerateIdFromHash(kPublicKeyInfo));
+  {
+    // Test string_view-based API.
+    std::string extension_id = GenerateId(base::as_string_view(kPublicKeyInfo));
+    EXPECT_EQ("melddjfinppjdikinhbgehiennejpfhp", extension_id);
 
-  EXPECT_EQ("jpignaibiiemhngfjkcpokkamffknabf", GenerateId("test"));
-  EXPECT_EQ("ncocknphbhhlhkikpnnlmbcnbgdempcd", GenerateId("_"));
+    EXPECT_EQ("jpignaibiiemhngfjkcpokkamffknabf", GenerateId("test"));
+    EXPECT_EQ("ncocknphbhhlhkikpnnlmbcnbgdempcd", GenerateId("_"));
 
-  EXPECT_EQ(
-      "jimneklojkjdibfkgiiophfhjhbdgcfi",
-      GenerateId("this_string_is_longer_than_a_single_sha256_hash_digest"));
+    EXPECT_EQ(
+        "jimneklojkjdibfkgiiophfhjhbdgcfi",
+        GenerateId("this_string_is_longer_than_a_single_sha256_hash_digest"));
+  }
 }
 
 TEST(IDUtilTest, GenerateIDFromHash) {

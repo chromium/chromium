@@ -22,9 +22,13 @@ namespace crx_file::id_util {
 // The number of bytes in a legal id.
 extern const size_t kIdSize;
 
-// Generates an extension ID from arbitrary input. The same input string will
+// Generates an extension ID from an input string. The same input string will
 // always generate the same output ID.
 std::string GenerateId(std::string_view input);
+
+// Generates an extension ID from arbitrary input. The same input will always
+// generate the same output ID.
+std::string GenerateId(base::span<const uint8_t> input);
 
 // Generates an ID from a HEX string. The same input string will always generate
 // the same output ID.

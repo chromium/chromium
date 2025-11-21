@@ -22,9 +22,9 @@ std::string GetPartitionDomain(const url::Origin& origin) {
   // Triple hashing is so cool! Next migration must introduce yet another step.
   // We add a prefix to `partition_domain` to distinguish from other users of
   // storage partitions.
-  return "i" + base::Base64Encode(crypto::hash::Sha256(
-                   (crx_file::id_util::GenerateId(base::as_string_view(
-                       crypto::hash::Sha256(origin.GetURL().spec()))))));
+  return "i" +
+         base::Base64Encode(crypto::hash::Sha256(crx_file::id_util::GenerateId(
+             crypto::hash::Sha256(origin.GetURL().spec()))));
 }
 
 }  // namespace

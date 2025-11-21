@@ -279,7 +279,7 @@ class ContentVerifierTest : public ExtensionBrowserTest {
     auto signing_key = crypto::keypair::PrivateKey::FromPrivateKeyInfo(
         base::as_byte_span(private_key_bytes));
     std::vector<uint8_t> public_key = signing_key->ToSubjectPublicKeyInfo();
-    return crx_file::id_util::GenerateId(base::as_string_view(public_key));
+    return crx_file::id_util::GenerateId(public_key);
   }
 
   // Creates a random signing key and sets |extension_id| according to it.
@@ -287,8 +287,7 @@ class ContentVerifierTest : public ExtensionBrowserTest {
       std::string& extension_id) {
     auto signing_key = crypto::keypair::PrivateKey::GenerateRsa2048();
     std::vector<uint8_t> public_key = signing_key.ToSubjectPublicKeyInfo();
-    extension_id =
-        crx_file::id_util::GenerateId(base::as_string_view(public_key));
+    extension_id = crx_file::id_util::GenerateId(public_key);
     return signing_key;
   }
 
