@@ -149,6 +149,7 @@ linux_memory_builder(
                 ],
             ),
             "linux-jammy",
+            "retry_only_failed_tests",
         ],
         per_test_modifications = {
             "accessibility_unittests": targets.mixin(
@@ -799,6 +800,7 @@ linux_memory_builder(
                 ],
             ),
             "linux-jammy",
+            "retry_only_failed_tests",
         ],
         per_test_modifications = {
             "blink_unittests": targets.mixin(

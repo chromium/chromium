@@ -20,6 +20,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -45,6 +46,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -70,6 +72,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -95,6 +98,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -120,6 +124,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -145,6 +150,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -170,6 +176,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -201,6 +208,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -226,6 +234,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -252,6 +261,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -277,6 +287,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -302,6 +313,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -327,6 +339,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -352,6 +365,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -377,6 +391,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -402,6 +417,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -427,6 +443,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -455,6 +472,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -480,6 +498,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -506,6 +525,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -535,6 +555,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -561,6 +582,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -587,6 +609,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -612,6 +635,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -637,6 +661,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -662,6 +687,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -687,6 +713,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -712,6 +739,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -737,6 +765,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -762,6 +791,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -787,6 +817,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -812,6 +843,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -837,6 +869,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -862,6 +895,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -887,6 +921,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -912,6 +947,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -937,6 +973,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -962,6 +999,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -987,6 +1025,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1012,6 +1051,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1037,6 +1077,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1062,6 +1103,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1087,6 +1129,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1113,6 +1156,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1139,6 +1183,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1164,6 +1209,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1189,6 +1235,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1214,6 +1261,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1240,6 +1288,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1265,6 +1314,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1290,6 +1340,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1315,6 +1366,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1340,6 +1392,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1365,6 +1418,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1391,6 +1445,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1416,6 +1471,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1441,6 +1497,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1466,6 +1523,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1492,6 +1550,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1518,6 +1577,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1544,6 +1604,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1569,6 +1630,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1594,6 +1656,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1619,6 +1682,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1644,6 +1708,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1669,6 +1734,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1694,6 +1760,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1721,6 +1788,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1752,6 +1820,7 @@
           "has_native_resultdb_integration": true
         },
         "results_handler": "layout tests",
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1783,6 +1852,7 @@
           "has_native_resultdb_integration": true
         },
         "results_handler": "layout tests",
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1808,6 +1878,7 @@
           "enable": true,
           "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1842,6 +1913,7 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1886,6 +1958,7 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1921,6 +1994,7 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -1956,6 +2030,7 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -2000,6 +2075,7 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",
@@ -2036,6 +2112,7 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "kvm": "1",

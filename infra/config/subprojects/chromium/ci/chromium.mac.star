@@ -588,6 +588,7 @@ ci.thin_tester(
         ],
         mixins = [
             "mac_15_vm_optional",
+            "retry_only_failed_tests",
         ],
         per_test_modifications = {
             # TODO(crbug.com/436628295): test fails on VM
@@ -1274,6 +1275,7 @@ ios_builder(
             "mac_default_arm64",
             "mac_toolchain",
             "out_dir_arg",
+            "retry_only_failed_tests",
             "xcode_26_main",
             "xctest",
         ],

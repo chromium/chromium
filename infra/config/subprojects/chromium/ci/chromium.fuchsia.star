@@ -309,6 +309,7 @@ ci.builder(
             "fuchsia-large-device-spec",
             "isolate_profile_data",
             "linux-jammy",
+            "retry_only_failed_tests",
             targets.mixin(
                 swarming = targets.swarming(
                     dimensions = {

@@ -310,6 +310,7 @@ ci.thin_tester(
         ],
         mixins = [
             "chromeos-generic-vm",
+            "retry_only_failed_tests",
         ],
     ),
     targets_settings = targets.settings(
@@ -828,6 +829,7 @@ ci.builder(
             "x86-64",
             "isolate_profile_data",
             "linux-jammy",
+            "retry_only_failed_tests",
         ],
         per_test_modifications = {
             "angle_unittests": targets.mixin(

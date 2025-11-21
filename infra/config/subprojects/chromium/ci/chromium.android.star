@@ -994,6 +994,7 @@ ci.builder(
             "emulator-8-cores",
             "has_native_resultdb_integration",
             "linux-jammy",
+            "retry_only_failed_tests",
             "x86-64",
         ],
     ),
