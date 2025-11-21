@@ -1031,6 +1031,14 @@ void SearchboxHandler::GetPlaceholderConfig(
         placeholders.emplace_back(l10n_util::GetStringUTF16(
             IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_WRITE));
         break;
+      case omnibox::NTPComposeboxConfig_PlaceholderConfig_Placeholder_IMAGE:
+        placeholders.emplace_back(l10n_util::GetStringUTF16(
+            IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_IMAGE));
+        break;
+      case omnibox::NTPComposeboxConfig_PlaceholderConfig_Placeholder_ASK_TAB:
+        placeholders.emplace_back(l10n_util::GetStringUTF16(
+            IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_TAB));
+        break;
       default:
         NOTREACHED();
     }

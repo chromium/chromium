@@ -86,7 +86,7 @@ TEST_F(NtpComposeboxFieldTrialConfigTest,
   auto placeholder_config = composebox.placeholder_config();
   EXPECT_EQ(placeholder_config.change_text_animation_interval_ms(), 4000u);
   EXPECT_EQ(placeholder_config.fade_text_animation_duration_ms(), 250u);
-  EXPECT_EQ(placeholder_config.placeholders().size(), 4);
+  EXPECT_EQ(placeholder_config.placeholders().size(), 6);
 
   histogram_tester.ExpectTotalCount(kConfigParamParseSuccessHistogram, 0);
 }

@@ -28,6 +28,8 @@ message NTPComposeboxConfig {
       RESEARCH = 3;
       TEACH = 4;
       WRITE = 5;
+      IMAGE = 6;
+      ASK_TAB = 7;
     }
     repeated Placeholder placeholders = 1;
     // How often the animation should repeat in milliseconds.

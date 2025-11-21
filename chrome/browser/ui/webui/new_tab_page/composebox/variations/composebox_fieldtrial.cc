@@ -78,9 +78,13 @@ omnibox::NTPComposeboxConfig GetNTPComposeboxConfig() {
   placeholder_config->add_placeholders(
       omnibox::NTPComposeboxConfig_PlaceholderConfig_Placeholder_PLAN);
   placeholder_config->add_placeholders(
+      omnibox::NTPComposeboxConfig_PlaceholderConfig_Placeholder_ASK_TAB);
+  placeholder_config->add_placeholders(
       omnibox::NTPComposeboxConfig_PlaceholderConfig_Placeholder_RESEARCH);
   placeholder_config->add_placeholders(
       omnibox::NTPComposeboxConfig_PlaceholderConfig_Placeholder_WRITE);
+  placeholder_config->add_placeholders(
+      omnibox::NTPComposeboxConfig_PlaceholderConfig_Placeholder_IMAGE);
 
   // Attempt to parse the config proto from the feature parameter if it is set.
   omnibox::NTPComposeboxConfig fieldtrial_config;
