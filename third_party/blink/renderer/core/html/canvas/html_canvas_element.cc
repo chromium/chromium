@@ -1252,9 +1252,6 @@ String HTMLCanvasElement::ToDataURLInternal(
       // Currently we only support three encoding types.
       NOTREACHED();
     }
-    TRACE_EVENT_INSTANT(
-        TRACE_DISABLED_BY_DEFAULT("identifiability.high_entropy_api"),
-        "CanvasReadback", "data_url", data_url.Utf8());
     return data_url;
   }
 

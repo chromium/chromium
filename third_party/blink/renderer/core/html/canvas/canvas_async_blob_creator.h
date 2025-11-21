@@ -142,8 +142,6 @@ class CORE_EXPORT CanvasAsyncBlobCreator
 
   void IdleTaskStartTimeoutEvent(double quality);
   void IdleTaskCompleteTimeoutEvent();
-
-  void TraceCanvasContent(Vector<unsigned char>* encoded_image);
 };
 
 }  // namespace blink

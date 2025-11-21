@@ -7,7 +7,6 @@
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -222,10 +221,6 @@ CanvasAsyncBlobCreator::CanvasAsyncBlobCreator(
 CanvasAsyncBlobCreator::~CanvasAsyncBlobCreator() = default;
 
 void CanvasAsyncBlobCreator::Dispose() {
-  TRACE_EVENT_INSTANT(
-      TRACE_DISABLED_BY_DEFAULT("identifiability.high_entropy_api"),
-      "CanvasReadback", perfetto::TerminatingFlow::FromPointer(this));
-
   // Eagerly let go of references to prevent retention of these
   // resources while any remaining posted tasks are queued.
   context_.Clear();
@@ -277,10 +272,6 @@ bool CanvasAsyncBlobCreator::EncodeImage(
 //  - For the in-thread case (2b), not stored anywhere, because encoding happens
 //    within this function.
 void CanvasAsyncBlobCreator::ScheduleAsyncBlobCreation(const double& quality) {
-  TRACE_EVENT_INSTANT(
-      TRACE_DISABLED_BY_DEFAULT("identifiability.high_entropy_api"),
-      "CanvasReadback", perfetto::Flow::FromPointer(this));
-
   if (!static_bitmap_image_loaded_) {
     context_->GetTaskRunner(TaskType::kCanvasBlobSerialization)
         ->PostTask(FROM_HERE,
@@ -461,23 +452,7 @@ void CanvasAsyncBlobCreator::CreateBlobAndReturnResult(
                                 base::TimeTicks::Now() - start_time_,
                                 image_->width(), image_->height());
 
-  TraceCanvasContent(&encoded_image);
   Dispose();
-}
-
-void CanvasAsyncBlobCreator::TraceCanvasContent(
-    Vector<unsigned char>* encoded_image) {
-  TRACE_EVENT_INSTANT(
-      TRACE_DISABLED_BY_DEFAULT("identifiability.high_entropy_api"),
-      "CanvasReadback", perfetto::Flow::FromPointer(this),
-      [&](perfetto::EventContext ctx) {
-        String data = "data:";
-        if (encoded_image) {
-          data = StrCat({data, ImageEncoderUtils::MimeTypeName(mime_type_),
-                         ";base64,", Base64Encode(*encoded_image)});
-        }
-        ctx.AddDebugAnnotation("data_url", data.Utf8());
-      });
 }
 
 void CanvasAsyncBlobCreator::CreateNullAndReturnResult() {
@@ -500,7 +475,6 @@ void CanvasAsyncBlobCreator::CreateNullAndReturnResult() {
                     DOMExceptionCode::kEncodingError,
                     "Encoding of the source image has failed."))));
   }
-  TraceCanvasContent(nullptr);
   // Avoid unwanted retention, see dispose().
   Dispose();
 }
