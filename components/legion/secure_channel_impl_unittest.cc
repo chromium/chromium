@@ -106,11 +106,21 @@ class FakeSecureSession : public SecureSession {
     return true;
   }
 
-  // Returns std::nullopt if message is equal to `kEncryptionMustFail`.
+  // Runs callback with `std::nullopt` if message is equal to
+  // `kEncryptionMustFail`.
   //
   // Otherwise adds "encrypted: " prefix to the message.
-  std::optional<oak::session::v1::EncryptedMessage> Encrypt(
-      const Request& message) override {
+  void Encrypt(const Request& message,
+               SecureSession::EncryptOnceCallback callback) override {
+    auto result = EncryptSync(message);
+
+    auto task_runner = base::SequencedTaskRunner::GetCurrentDefault();
+    task_runner->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
+  }
+
+  std::optional<oak::session::v1::EncryptedMessage> EncryptSync(
+      const Request& message) {
     std::string message_str = BytesToString(message);
     if (message_str == kEncryptionMustFail) {
       return std::nullopt;

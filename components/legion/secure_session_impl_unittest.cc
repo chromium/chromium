@@ -192,7 +192,12 @@ TEST_F(SecureSessionImplTest, HandshakeAndEncryptDecryptSucceeds) {
 
   // Test encryption and decryption from client to server.
   const Request client_plaintext = {1, 2, 3};
-  auto encrypted_from_client = client_session_.Encrypt(client_plaintext);
+  auto encrypted_from_client = [&]() {
+    base::test::TestFuture<std::optional<oak::session::v1::EncryptedMessage>>
+        future;
+    client_session_.Encrypt(client_plaintext, future.GetCallback());
+    return future.Get();
+  }();
   ASSERT_TRUE(encrypted_from_client.has_value());
 
   auto decrypted_by_server =
@@ -274,7 +279,12 @@ TEST_F(SecureSessionImplTest, ProcessHandshakeResponseInvalidCiphertext) {
 
 TEST_F(SecureSessionImplTest, EncryptBeforeHandshake) {
   const Request client_plaintext = {1, 2, 3};
-  auto encrypted = client_session_.Encrypt(client_plaintext);
+
+  base::test::TestFuture<std::optional<oak::session::v1::EncryptedMessage>>
+      future;
+  client_session_.Encrypt(client_plaintext, future.GetCallback());
+  auto encrypted = future.Get();
+
   EXPECT_FALSE(encrypted.has_value());
 }
 

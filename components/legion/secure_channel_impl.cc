@@ -53,7 +53,7 @@ bool SecureChannelImpl::Write(const Request& request) {
     return false;
   }
 
-  pending_requests_.emplace_back(request);
+  pending_encryption_requests_.push_back(request);
 
   switch (state_) {
     case State::kUninitialized:
@@ -69,7 +69,7 @@ bool SecureChannelImpl::Write(const Request& request) {
     case State::kEstablished:
       // The session is established. A new request is sent only if there is
       // no other request in flight.
-      ProcessPendingRequests();
+      ProcessPendingEncryptionRequests();
       break;
     case State::kClosed:
       // This case should not be reached because of the check at the top.
@@ -193,7 +193,7 @@ void SecureChannelImpl::OnHandshakeVerification(bool handshake_verified) {
   DVLOG(1) << "Handshake response handled successfully.";
 
   state_ = State::kEstablished;
-  ProcessPendingRequests();
+  ProcessPendingEncryptionRequests();
 }
 
 void SecureChannelImpl::OnEncryptedResponse(
@@ -213,20 +213,14 @@ void SecureChannelImpl::OnEncryptedResponse(
   CHECK(response_callback_);
   response_callback_.Run(base::ok(std::move(*decrypted_response)));
 
-  ProcessPendingRequests();
-}
-
-void SecureChannelImpl::FailAllRequests(ErrorCode error_code) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  pending_requests_.clear();
+  ProcessPendingEncryptionRequests();
 }
 
 void SecureChannelImpl::StartSessionEstablishment() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DCHECK_EQ(state_, State::kUninitialized);
-  DCHECK(!pending_requests_.empty());
+  DCHECK(!pending_encryption_requests_.empty());
 
   // Step 1: Get and Send Attestation Request
   std::optional<oak::session::v1::AttestRequest> attestation_req =
@@ -247,13 +241,15 @@ void SecureChannelImpl::StartSessionEstablishment() {
 void SecureChannelImpl::FailAllRequestsAndClose(ErrorCode error_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  FailAllRequests(error_code);
   state_ = State::kClosed;
+
+  pending_encryption_requests_.clear();
+
   CHECK(response_callback_);
   response_callback_.Run(base::unexpected(error_code));
 }
 
-void SecureChannelImpl::ProcessPendingRequests() {
+void SecureChannelImpl::ProcessPendingEncryptionRequests() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DCHECK_EQ(state_, State::kEstablished);
@@ -261,25 +257,34 @@ void SecureChannelImpl::ProcessPendingRequests() {
     return;
   }
 
-  while (!pending_requests_.empty()) {
+  while (!pending_encryption_requests_.empty()) {
     // Step 5: Encrypt and Send the original request
-    std::optional<oak::session::v1::EncryptedMessage> encrypted_request =
-        secure_session_->Encrypt(pending_requests_.front());
-
-    if (!encrypted_request.has_value()) {
-      DLOG(ERROR) << "Failed to encrypt request.";
-      FailAllRequestsAndClose(ErrorCode::kEncryptionFailed);
-      return;
-    }
-    DVLOG(1) << "Request encrypted successfully.";
-
-    pending_requests_.pop_front();
-
-    DVLOG(1) << "Sending encrypted request.";
-    oak::session::v1::SessionRequest request;
-    *request.mutable_encrypted_message() = std::move(encrypted_request.value());
-    Send(request);
+    secure_session_->Encrypt(
+        pending_encryption_requests_.front(),
+        base::BindOnce(&SecureChannelImpl::OnRequestEncrypted,
+                       weak_factory_.GetWeakPtr()));
+    pending_encryption_requests_.pop_front();
   }
+}
+
+void SecureChannelImpl::OnRequestEncrypted(
+    std::optional<oak::session::v1::EncryptedMessage> encrypted_request) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (state_ != State::kEstablished) {
+    return;
+  }
+
+  if (!encrypted_request.has_value()) {
+    DLOG(ERROR) << "Failed to encrypt request.";
+    FailAllRequestsAndClose(ErrorCode::kEncryptionFailed);
+    return;
+  }
+
+  DVLOG(1) << "Sending encrypted request.";
+  oak::session::v1::SessionRequest request;
+  *request.mutable_encrypted_message() = std::move(encrypted_request.value());
+  Send(request);
 }
 
 }  // namespace legion

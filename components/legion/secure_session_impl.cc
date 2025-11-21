@@ -29,7 +29,7 @@ SecureSessionImpl::~SecureSessionImpl() = default;
 
 void SecureSessionImpl::GetHandshakeMessage(
     SecureSession::GetHandshakeMessageOnceCallback callback) {
-  oak::session::v1::HandshakeRequest result = GetHandshakeMessageSync();
+  auto result = GetHandshakeMessageSync();
 
   auto task_runner = base::SequencedTaskRunner::GetCurrentDefault();
   task_runner->PostTask(FROM_HERE,
@@ -43,6 +43,15 @@ void SecureSessionImpl::ProcessHandshakeResponse(
 
   auto task_runner = base::SequencedTaskRunner::GetCurrentDefault();
   task_runner->PostTask(FROM_HERE, base::BindOnce(std::move(callback), result));
+}
+
+void SecureSessionImpl::Encrypt(const Request& data,
+                                EncryptOnceCallback callback) {
+  auto result = EncryptSync(data);
+
+  auto task_runner = base::SequencedTaskRunner::GetCurrentDefault();
+  task_runner->PostTask(FROM_HERE,
+                        base::BindOnce(std::move(callback), std::move(result)));
 }
 
 oak::session::v1::HandshakeRequest
@@ -122,8 +131,8 @@ bool SecureSessionImpl::ProcessHandshakeResponseSync(
   return true;
 }
 
-std::optional<oak::session::v1::EncryptedMessage> SecureSessionImpl::Encrypt(
-    const Request& data) {
+std::optional<oak::session::v1::EncryptedMessage>
+SecureSessionImpl::EncryptSync(const Request& data) {
   if (!crypter_) {
     DLOG(ERROR) << "Crypter not initialized. Handshake must be completed.";
     return std::nullopt;

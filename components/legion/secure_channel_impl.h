@@ -53,10 +53,11 @@ class SecureChannelImpl : public SecureChannel {
   };
 
   // Helper function to handle state transitions and errors.
-  void FailAllRequests(ErrorCode error_code);
   void FailAllRequestsAndClose(ErrorCode error_code);
   void StartSessionEstablishment();
-  void ProcessPendingRequests();
+  void ProcessPendingEncryptionRequests();
+  void OnRequestEncrypted(
+      std::optional<oak::session::v1::EncryptedMessage> encrypted_request);
 
   // Helpers to send and receive data that is converted to proto messages.
   void Send(const oak::session::v1::SessionRequest& request);
@@ -83,7 +84,8 @@ class SecureChannelImpl : public SecureChannel {
   State state_ GUARDED_BY_CONTEXT(sequence_checker_) = State::kUninitialized;
 
   ResponseCallback response_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
-  std::deque<Request> pending_requests_ GUARDED_BY_CONTEXT(sequence_checker_);
+  std::deque<Request> pending_encryption_requests_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtrFactory<SecureChannelImpl> weak_factory_
       GUARDED_BY_CONTEXT(sequence_checker_){this};

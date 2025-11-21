@@ -30,6 +30,9 @@ class SecureSession {
 
   using ProcessHandshakeResponseOnceCallback = base::OnceCallback<void(bool)>;
 
+  using EncryptOnceCallback = base::OnceCallback<void(
+      std::optional<oak::session::v1::EncryptedMessage>)>;
+
   virtual ~SecureSession() = default;
 
   // Generates the initial handshake message.
@@ -49,9 +52,9 @@ class SecureSession {
 
   // Encrypts the given data.
   // This should only be called after the handshake is complete.
-  // Returns std::nullopt on failure.
-  virtual std::optional<oak::session::v1::EncryptedMessage> Encrypt(
-      const Request& data) = 0;
+  //
+  // Runs callback with `std::nullopt` on failure.
+  virtual void Encrypt(const Request& data, EncryptOnceCallback callback) = 0;
 
   // Decrypts the given data.
   // This should only be called after the handshake is complete.
