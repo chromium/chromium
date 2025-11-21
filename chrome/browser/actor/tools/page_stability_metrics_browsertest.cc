@@ -174,7 +174,13 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, NetworkAndMainThreadIdle) {
       1);
 }
 
-IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, Paint) {
+// TODO(crbug.com/462631893): Re-enable this test on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_Paint DISABLED_Paint
+#else
+#define MAYBE_Paint Paint
+#endif
+IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, MAYBE_Paint) {
   base::HistogramTester histogram_tester;
 
   ASSERT_TRUE(
