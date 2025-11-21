@@ -47,9 +47,6 @@
 namespace syncer {
 namespace {
 
-BASE_FEATURE(kSyncClearMetadataOnEmptyStorageKeys,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // A kill switch for clearing metadata for full update data types if they have
 // any unsynced entities.
 BASE_FEATURE(kSyncClearMetadataOnUnsyncedEntitiesForFullUpdateTypes,
@@ -1509,13 +1506,11 @@ bool ClientTagBasedDataTypeProcessor::ShouldClearPersistedMetadata(
   }
 
   // Check that there are no empty/missing storage keys.
-  if (base::FeatureList::IsEnabled(kSyncClearMetadataOnEmptyStorageKeys)) {
-    for (const auto& [storage_key, _] : metadata_map) {
-      if (storage_key.empty()) {
-        base::UmaHistogramEnumeration("Sync.ClearMetadataDueToEmptyStorageKey",
-                                      DataTypeHistogramValue(type_));
-        return true;
-      }
+  for (const auto& [storage_key, _] : metadata_map) {
+    if (storage_key.empty()) {
+      base::UmaHistogramEnumeration("Sync.ClearMetadataDueToEmptyStorageKey",
+                                    DataTypeHistogramValue(type_));
+      return true;
     }
   }
 
