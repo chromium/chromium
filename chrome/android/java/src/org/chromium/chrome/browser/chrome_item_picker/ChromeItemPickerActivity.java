@@ -17,7 +17,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.SnackbarActivity;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
-import org.chromium.chrome.browser.omnibox.fusebox.NavigationAttachmentsMediator;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMediator;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorItemSelectionId;
@@ -85,7 +85,7 @@ public class ChromeItemPickerActivity extends SnackbarActivity {
 
         final Intent resultIntent = new Intent();
 
-        resultIntent.putExtra(NavigationAttachmentsMediator.EXTRA_ATTACHMENT_TAB_IDS, tabIds);
+        resultIntent.putExtra(FuseboxMediator.EXTRA_ATTACHMENT_TAB_IDS, tabIds);
         setResult(Activity.RESULT_OK, resultIntent);
         finish();
     }

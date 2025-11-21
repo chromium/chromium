@@ -72,7 +72,7 @@ public class NavigationAttachmentsCoordinatorUnitTest {
     @Mock private AutocompleteController.Natives mControllerJniMock;
     @Mock private ComposeBoxQueryControllerBridge.Natives mComposeboxController;
     @Mock private LocationBarDataProvider mLocationBarDataProvider;
-    @Mock private NavigationAttachmentsMediator mMediator;
+    @Mock private FuseboxMediator mMediator;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabModel mTabModel;
     @Mock private Bitmap mBitmap;
@@ -287,7 +287,7 @@ public class NavigationAttachmentsCoordinatorUnitTest {
         ShadowLooper.idleMainLooper();
 
         // Mock mediator with attachment tokens.
-        var mockMediator = mock(NavigationAttachmentsMediator.class);
+        var mockMediator = mock(FuseboxMediator.class);
         var testTokens = java.util.Arrays.asList("token1", "token2");
         doReturn(testTokens).when(mockMediator).getAttachmentTokens();
         mCoordinator.setMediatorForTesting(mockMediator);

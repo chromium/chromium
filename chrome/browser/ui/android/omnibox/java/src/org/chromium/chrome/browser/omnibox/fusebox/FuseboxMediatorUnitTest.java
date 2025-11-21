@@ -72,9 +72,9 @@ import org.chromium.url.GURL;
 import java.util.List;
 import java.util.function.Function;
 
-/** Unit tests for {@link NavigationAttachmentsMediator}. */
+/** Unit tests for {@link FuseboxMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class NavigationAttachmentsMediatorUnitTest {
+public class FuseboxMediatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private FuseboxViewHolder mViewHolder;
@@ -94,7 +94,7 @@ public class NavigationAttachmentsMediatorUnitTest {
     private Context mContext;
     private Resources mResources;
     private PropertyModel mModel;
-    private NavigationAttachmentsMediator mMediator;
+    private FuseboxMediator mMediator;
     private FuseboxAttachmentModelList mAttachments;
     private ObservableSupplierImpl<TabModelSelector> mTabModelSelectorSupplier;
     private ObservableSupplierImpl<@AutocompleteRequestType Integer>
@@ -124,7 +124,7 @@ public class NavigationAttachmentsMediatorUnitTest {
         mAttachments.setComposeBoxQueryControllerBridge(mComposeBoxQueryControllerBridge);
         mMediator =
                 spy(
-                        new NavigationAttachmentsMediator(
+                        new FuseboxMediator(
                                 mContext,
                                 mWindowAndroid,
                                 mModel,
@@ -150,7 +150,7 @@ public class NavigationAttachmentsMediatorUnitTest {
     /* Useful for testing logic in the mediator's constructor. */
     private void recreateMediator() {
         mMediator =
-                new NavigationAttachmentsMediator(
+                new FuseboxMediator(
                         mContext,
                         mWindowAndroid,
                         mModel,
@@ -367,8 +367,8 @@ public class NavigationAttachmentsMediatorUnitTest {
     @Test
     public void setToolbarVisible_noBridge_doesNothing() {
         // Create a mediator, but don't initialize the bridge.
-        NavigationAttachmentsMediator mediator =
-                new NavigationAttachmentsMediator(
+        FuseboxMediator mediator =
+                new FuseboxMediator(
                         mContext,
                         mWindowAndroid,
                         mModel,

@@ -55,7 +55,7 @@ public class NavigationAttachmentsCoordinator
     private final WindowAndroid mWindowAndroid;
     private final FuseboxAttachmentModelList mModelList = new FuseboxAttachmentModelList();
     private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
-    private @Nullable NavigationAttachmentsMediator mMediator;
+    private @Nullable FuseboxMediator mMediator;
     private @Nullable ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
     private boolean mDefaultSearchEngineIsGoogle = true;
     private TemplateUrlService mTemplateUrlService;
@@ -137,7 +137,7 @@ public class NavigationAttachmentsCoordinator
         mModelList.setComposeBoxQueryControllerBridge(mComposeBoxQueryControllerBridge);
 
         mMediator =
-                new NavigationAttachmentsMediator(
+                new FuseboxMediator(
                         mContext,
                         mWindowAndroid,
                         mModel,
@@ -241,11 +241,11 @@ public class NavigationAttachmentsCoordinator
         return mViewHolder;
     }
 
-    void setMediatorForTesting(NavigationAttachmentsMediator mediator) {
+    void setMediatorForTesting(FuseboxMediator mediator) {
         mMediator = mediator;
     }
 
-    @Nullable NavigationAttachmentsMediator getMediatorForTesting() {
+    @Nullable FuseboxMediator getMediatorForTesting() {
         return mMediator;
     }
 

@@ -53,9 +53,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/** Mediator for the Navigation Attachments component. */
+/** Mediator for the Fusebox component. */
 @NullMarked
-public class NavigationAttachmentsMediator {
+public class FuseboxMediator {
     // TODO(crbug.com/457825183): Supply this class name and extra string externally.
     private static final String CHROME_ITEM_PICKER_ACTIVITY_CLASS =
             "org.chromium.chrome.browser.chrome_item_picker.ChromeItemPickerActivity";
@@ -75,7 +75,7 @@ public class NavigationAttachmentsMediator {
             this::onAutocompleteRequestTypeChanged;
     private boolean mUseCompactUi;
 
-    NavigationAttachmentsMediator(
+    FuseboxMediator(
             Context context,
             WindowAndroid windowAndroid,
             PropertyModel model,
@@ -179,7 +179,7 @@ public class NavigationAttachmentsMediator {
     }
 
     /**
-     * Show or hide the navigation attachments toolbar.
+     * Show or hide the Fusebox toolbar.
      *
      * @param visible Whether the toolbar should be visible.
      */
@@ -489,7 +489,7 @@ public class NavigationAttachmentsMediator {
     }
 
     /**
-     * Add an attachment to the navigation attachments toolbar.
+     * Add an attachment to the Fusebox toolbar.
      *
      * @param attachmentDetails The details of the attachment to add.
      */
