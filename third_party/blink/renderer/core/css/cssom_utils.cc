@@ -212,7 +212,7 @@ CSSValueList* CSSOMUtils::ComputedValueForGridTemplateShorthand(
 }
 
 // static
-CSSValueList* CSSOMUtils::ComputedValueForMasonryShorthand(
+CSSValueList* CSSOMUtils::ComputedValueForGridLanesShorthand(
     const CSSValue* masonry_template_tracks_values,
     const CSSValue* template_area_values,
     const CSSValue* masonry_direction_values,

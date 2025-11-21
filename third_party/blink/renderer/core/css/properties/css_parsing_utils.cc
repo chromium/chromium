@@ -6499,7 +6499,7 @@ bool IsGridBreadthFixedSized(const CSSValue& value) {
 }
 
 bool IsGridTrackFixedSized(const CSSValue& value) {
-  // TODO(almaher): Do we want to update this defintion for Masonry?
+  // TODO(almaher): Do we want to update this definition for Grid Lanes?
   //
   // https://github.com/w3c/csswg-drafts/issues/12573
   auto* function = DynamicTo<CSSFunctionValue>(value);
@@ -6668,7 +6668,7 @@ bool ConsumeGridTrackRepeatFunction(
       }
       if (all_tracks_are_intrinsic_repeat_or_fixed_sized) {
         // Whether repeat(auto-fill, <intrinsic-track-size>) should be allowed,
-        // and if it should apply to both grid and masonry is still in
+        // and if it should apply to both grid and grid-lanes is still in
         // discussion in the CSSWG.
         //
         // TODO(almaher): Make adjustments once a resolution is made [1].
@@ -6867,7 +6867,7 @@ CSSValue* ConsumeGridLine(CSSParserTokenStream& stream,
 CSSValue* ConsumeGridTrackList(CSSParserTokenStream& stream,
                                const CSSParserContext& context,
                                TrackListType track_list_type,
-                               bool is_masonry_shorthand) {
+                               bool is_grid_lanes_shorthand) {
   bool allow_grid_line_names = track_list_type != TrackListType::kGridAuto;
   if (!allow_grid_line_names && stream.Peek().GetType() == kLeftBracketToken) {
     return nullptr;
@@ -6894,9 +6894,9 @@ CSSValue* ConsumeGridTrackList(CSSParserTokenStream& stream,
   auto IsRangeAtEnd = [](CSSParserTokenStream& stream) -> bool {
     return stream.AtEnd() || stream.Peek().GetType() == kDelimiterToken;
   };
-  auto HasMoreMasonryValues = [](CSSParserTokenStream& stream,
-                                 bool is_masonry_shorthand) -> bool {
-    return (is_masonry_shorthand &&
+  auto HasMoreGridLanesValues = [](CSSParserTokenStream& stream,
+                                   bool is_grid_lanes_shorthand) -> bool {
+    return (is_grid_lanes_shorthand &&
             IsMasonryDirectionOrFillKeyword(stream.Peek().Id()));
   };
 
@@ -6946,12 +6946,12 @@ CSSValue* ConsumeGridTrackList(CSSParserTokenStream& stream,
     if (is_subgrid_track_list && !did_append_line_names &&
         stream.Peek().FunctionId() != CSSValueID::kRepeat) {
       return (IsRangeAtEnd(stream) ||
-              HasMoreMasonryValues(stream, is_masonry_shorthand))
+              HasMoreGridLanesValues(stream, is_grid_lanes_shorthand))
                  ? values
                  : nullptr;
     }
   } while (!(IsRangeAtEnd(stream) ||
-             HasMoreMasonryValues(stream, is_masonry_shorthand)));
+             HasMoreGridLanesValues(stream, is_grid_lanes_shorthand)));
 
   return values;
 }
@@ -7033,17 +7033,17 @@ bool ParseGridTemplateAreasRow(const String& grid_row_names,
 
 CSSValue* ConsumeGridTemplatesRowsOrColumns(CSSParserTokenStream& stream,
                                             const CSSParserContext& context,
-                                            bool is_masonry_shorthand) {
+                                            bool is_grid_lanes_shorthand) {
   switch (stream.Peek().Id()) {
     case CSSValueID::kNone:
       return ConsumeIdent(stream);
     case CSSValueID::kSubgrid:
       return ConsumeGridTrackList(stream, context,
                                   TrackListType::kGridTemplateSubgrid,
-                                  is_masonry_shorthand);
+                                  is_grid_lanes_shorthand);
     default:
       return ConsumeGridTrackList(stream, context, TrackListType::kGridTemplate,
-                                  is_masonry_shorthand);
+                                  is_grid_lanes_shorthand);
   }
 }
 

@@ -68,9 +68,9 @@ class CSSOMUtils {
       const CSSValue* template_column_values,
       const CSSValue* template_area_values);
   // Returns a `CSSValueList` containing the computed value for
-  // the `masonry` shorthand, based on provided `masonry-template-tracks`,
+  // the `grid-lanes` shorthand, based on provided `masonry-template-tracks`,
   // `grid-template-areas`, `masonry-direction`, and `masonry-fill`.
-  static CSSValueList* ComputedValueForMasonryShorthand(
+  static CSSValueList* ComputedValueForGridLanesShorthand(
       const CSSValue* masonry_template_tracks_values,
       const CSSValue* template_area_values,
       const CSSValue* masonry_direction_values,

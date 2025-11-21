@@ -5107,7 +5107,7 @@ CSSValue* ComputedStyleUtils::ValueForFitText(const ComputedStyle& style,
   return list;
 }
 
-CSSValueList* ComputedStyleUtils::ValuesForMasonryShorthand(
+CSSValueList* ComputedStyleUtils::ValuesForGridLanesShorthand(
     const StylePropertyShorthand& shorthand,
     const ComputedStyle& style,
     const LayoutObject* layout_object,
@@ -5121,7 +5121,7 @@ CSSValueList* ComputedStyleUtils::ValuesForMasonryShorthand(
   // always refers to `grid-template-columns`.
   // Instead, we use `GetCSSPropertyGridTemplateColumns()` or
   // `GetCSSPropertyGridTemplateRows()` depending on the `masonry-direction`,
-  // since `grid-template-rows` is not listed in the `masonry` shorthand
+  // since `grid-template-rows` is not listed in the `grid-lanes` shorthand
   // property.
   const CSSValue* masonry_direction_values =
       shorthand.properties()[2]->CSSValueFromComputedStyle(
@@ -5139,7 +5139,7 @@ CSSValueList* ComputedStyleUtils::ValuesForMasonryShorthand(
           style, layout_object, allow_visited_style, value_phase);
   DCHECK(masonry_fill_values);
 
-  return CSSOMUtils::ComputedValueForMasonryShorthand(
+  return CSSOMUtils::ComputedValueForGridLanesShorthand(
       masonry_template_tracks_values, template_area_values,
       masonry_direction_values, masonry_fill_values);
 }

@@ -452,11 +452,12 @@ class CORE_EXPORT ComputedStyleUtils {
   static CSSValue* ValueForPositionArea(const blink::PositionArea&);
   static CSSValue* ValueForPositionTryFallbacks(const PositionTryFallbacks&);
   static CSSValue* ValueForFitText(const ComputedStyle&, const FitText&);
-  static CSSValueList* ValuesForMasonryShorthand(const StylePropertyShorthand&,
-                                                 const ComputedStyle&,
-                                                 const LayoutObject*,
-                                                 bool allow_visited_style,
-                                                 CSSValuePhase value_phase);
+  static CSSValueList* ValuesForGridLanesShorthand(
+      const StylePropertyShorthand&,
+      const ComputedStyle&,
+      const LayoutObject*,
+      bool allow_visited_style,
+      CSSValuePhase value_phase);
   static std::unique_ptr<CrossThreadStyleValue>
   CrossThreadStyleValueFromCSSStyleValue(CSSStyleValue* style_value);
 

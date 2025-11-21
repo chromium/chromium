@@ -8142,7 +8142,7 @@ Called by update_use_counter_css.py.-->
   <int value="876" label="timeline-trigger-exit-range-end"/>
   <int value="877" label="timeline-trigger-source"/>
   <int value="878" label="timeline-trigger"/>
-  <int value="879" label="masonry"/>
+  <int value="879" label="grid-lanes"/>
   <int value="880" label="continue"/>
   <int value="881" label="max-lines"/>
   <int value="882" label="block-ellipsis"/>

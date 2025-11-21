@@ -252,6 +252,7 @@ gridColumnEnd
 gridColumnGap
 gridColumnStart
 gridGap
+gridLanes
 gridRow
 gridRowEnd
 gridRowGap
@@ -325,7 +326,6 @@ maskPosition
 maskRepeat
 maskSize
 maskType
-masonry
 masonryDirection
 masonryFill
 masonryFlow
