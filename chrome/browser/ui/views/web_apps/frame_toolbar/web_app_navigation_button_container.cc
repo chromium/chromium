@@ -66,11 +66,6 @@ WebAppNavigationButtonContainer::WebAppNavigationButtonContainer(
           browser_),
       browser_));
   back_button_->set_tag(IDC_BACK);
-#if BUILDFLAG(IS_WIN)
-  back_button_->SetVectorIcons(vector_icons::kBackArrowChromeRefreshIcon,
-                               kBackArrowTouchIcon);
-#endif
-
   ConfigureWebAppToolbarButton(back_button_, toolbar_button_provider);
   views::SetHitTestComponent(back_button_, static_cast<int>(HTCLIENT));
   chrome::AddCommandObserver(browser_, IDC_BACK, this);
@@ -80,15 +75,6 @@ WebAppNavigationButtonContainer::WebAppNavigationButtonContainer(
     reload_button_ = AddChildView(std::make_unique<ReloadButton>(
         browser_->GetProfile(), browser_->command_controller()));
     reload_button_->set_tag(IDC_RELOAD);
-#if BUILDFLAG(IS_WIN)
-    reload_button_->SetVectorIconsForMode(
-        ReloadButton::Mode::kReload, vector_icons::kReloadChromeRefreshIcon,
-        kReloadTouchIcon);
-    reload_button_->SetVectorIconsForMode(ReloadButton::Mode::kStop,
-                                          kNavigateStopWindowsIcon,
-                                          kNavigateStopWindowsTouchIcon);
-#endif
-
     ConfigureWebAppToolbarButton(reload_button_, toolbar_button_provider);
     views::SetHitTestComponent(reload_button_, static_cast<int>(HTCLIENT));
     chrome::AddCommandObserver(browser_, IDC_RELOAD, this);
