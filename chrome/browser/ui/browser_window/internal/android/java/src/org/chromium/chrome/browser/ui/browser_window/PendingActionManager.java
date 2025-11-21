@@ -284,12 +284,18 @@ final class PendingActionManager {
     /**
      * Whether isMaximized will return true when the in-progress event is finished.
      *
+     * @param state The current state of task.
      * @return Null if there is no on-going events affecting the result at the current state. True
      *     when an event will make isMaximized true when finished; otherwise false.
      */
-    @Nullable Boolean isMaximizedFuture() {
+    @Nullable Boolean isMaximizedFuture(@State int state) {
         synchronized (mPendingActionsLock) {
-            return mIsMaximizedFuture;
+            if (state == State.PENDING_CREATE) {
+                return Boolean.TRUE.equals(mIsMaximizedFuture);
+            } else if (state == State.PENDING_UPDATE) {
+                return mIsMaximizedFuture;
+            }
+            return null;
         }
     }
 

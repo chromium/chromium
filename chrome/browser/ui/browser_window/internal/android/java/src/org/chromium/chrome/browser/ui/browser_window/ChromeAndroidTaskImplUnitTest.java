@@ -1419,7 +1419,9 @@ public class ChromeAndroidTaskImplUnitTest {
         assertEquals(
                 "Maximize should be pending after #maximize is triggered",
                 true,
-                chromeAndroidTask.getPendingActionManagerForTesting().isMaximizedFuture());
+                chromeAndroidTask
+                        .getPendingActionManagerForTesting()
+                        .isMaximizedFuture(chromeAndroidTask.getState()));
         assertTrue("isMaximized is true while pending", chromeAndroidTask.isMaximized());
         verify(apiDelegate).moveTaskToWithPromise(any(), anyInt(), any());
         assertEquals(
@@ -1433,7 +1435,9 @@ public class ChromeAndroidTaskImplUnitTest {
         // Assert
         Assert.assertNull(
                 "Maximize should be not pending after #maximize is finished",
-                chromeAndroidTask.getPendingActionManagerForTesting().isMaximizedFuture());
+                chromeAndroidTask
+                        .getPendingActionManagerForTesting()
+                        .isMaximizedFuture(chromeAndroidTask.getState()));
     }
 
     @Test

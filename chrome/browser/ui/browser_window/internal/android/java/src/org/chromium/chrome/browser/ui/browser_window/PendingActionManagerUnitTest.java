@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.ui.browser_window;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 import android.graphics.Rect;
 
@@ -468,9 +467,10 @@ public class PendingActionManagerUnitTest {
         mManager.requestMaximize(new Rect());
 
         // Assert.
-        assertTrue(
+        assertEquals(
                 "isMaximized should be true in the future when MAXIMIZE is in progress",
-                mManager.isMaximizedFuture());
+                true,
+                mManager.isMaximizedFuture(State.PENDING_UPDATE));
     }
 
     @Test

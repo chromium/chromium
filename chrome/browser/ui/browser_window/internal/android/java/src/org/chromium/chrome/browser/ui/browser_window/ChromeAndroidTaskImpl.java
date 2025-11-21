@@ -385,13 +385,9 @@ final class ChromeAndroidTaskImpl
             return false;
         }
 
-        if (mState.get() == State.PENDING_CREATE) {
-            return mPendingActionManager.isActionRequested(PendingAction.MAXIMIZE)
-                    || assumeNonNull(mPendingTaskInfo).mCreateParams.getInitialShowState()
-                            == WindowShowState.MAXIMIZED;
-        } else if (mState.get() == State.PENDING_UPDATE) {
-            Boolean isMaximized = mPendingActionManager.isMaximizedFuture();
-            if (isMaximized != null) return isMaximized;
+        @Nullable Boolean isMaximizedFuture = mPendingActionManager.isMaximizedFuture(mState.get());
+        if (isMaximizedFuture != null) {
+            return isMaximizedFuture;
         }
 
         synchronized (mActivityScopedObjectsLock) {
@@ -629,6 +625,8 @@ final class ChromeAndroidTaskImpl
             Log.w(TAG, "maximize() requires Android R+; does nothing");
             return;
         }
+
+        if (Boolean.TRUE.equals(mPendingActionManager.isMaximizedFuture(mState.get()))) return;
 
         if (mState.get() == State.PENDING_CREATE) {
             // TODO(crbug.com/459857984): remove empty bound and set a correct bound.
