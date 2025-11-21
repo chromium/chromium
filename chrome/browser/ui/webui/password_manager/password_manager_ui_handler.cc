@@ -58,9 +58,10 @@ void PasswordManagerUIHandler::GetActorLoginPermissions(
   for (const auto& site :
        GetSavedPasswordsPresenter()->GetActorLoginPermissions()) {
     auto url = password_manager::mojom::FormattedUrl::New(
-        /*human_readable_url=*/password_manager::GetShownOrigin(
-            url::Origin::Create(site.url)),
-        /*link=*/site.url.spec());
+        site.human_readable_name.empty()
+            ? password_manager::GetShownOrigin(url::Origin::Create(site.url))
+            : site.human_readable_name,
+        site.url.spec(), site.signon_realm);
     result.push_back(password_manager::mojom::ActorLoginPermission::New(
         std::move(url), base::UTF16ToUTF8(site.username)));
   }
@@ -71,8 +72,8 @@ void PasswordManagerUIHandler::RevokeActorLoginPermission(
     password_manager::mojom::ActorLoginPermissionPtr site) {
   GetSavedPasswordsPresenter()->RevokeActorLoginPermission(
       password_manager::ActorLoginPermission{
-          .url = GURL(site->url->link),
-          .username = base::UTF8ToUTF16(site->username)});
+          GURL(site->url->link), site->url->human_readable_url,
+          site->url->signon_realm, base::UTF8ToUTF16(site->username)});
 }
 
 void PasswordManagerUIHandler::ShowAddShortcutDialog() {

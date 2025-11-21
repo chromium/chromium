@@ -24,6 +24,8 @@ BASE_DECLARE_FEATURE(kActorLogin);
 BASE_DECLARE_FEATURE(kActorLoginFieldVisibilityCheck);
 BASE_DECLARE_FEATURE(kActorLoginFillingHeuristics);
 BASE_DECLARE_FEATURE(kActorLoginLocalClassificationModel);
+// Enables proper name formatting for android apps in settings
+BASE_DECLARE_FEATURE(kActorLoginPermissionsForAndroid);
 BASE_DECLARE_FEATURE(kActorLoginReauthTaskRefocus);
 // Enables logging quality for actor login.
 BASE_DECLARE_FEATURE(kActorLoginQualityLogs);

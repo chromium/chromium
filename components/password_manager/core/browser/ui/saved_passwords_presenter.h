@@ -185,8 +185,10 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
 
   // PasswordsProvider:
   std::vector<CredentialUIEntry> GetSavedCredentials() const override;
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   base::flat_set<ActorLoginPermission> GetActorLoginPermissions()
       const override;
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   // Returns a list of affiliated groups for the Password Manager.
   std::vector<AffiliatedGroup> GetAffiliatedGroups();
@@ -198,8 +200,10 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   // Returns a list of sites blocked by users for the Password Manager.
   std::vector<CredentialUIEntry> GetBlockedSites();
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Revokes actor login permission for all credentials matching the site.
   void RevokeActorLoginPermission(const ActorLoginPermission& site);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   // Returns PasswordForms corresponding to |credential|.
   std::vector<PasswordForm> GetCorrespondingPasswordForms(

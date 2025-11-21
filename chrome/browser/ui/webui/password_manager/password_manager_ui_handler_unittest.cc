@@ -97,6 +97,7 @@ class PasswordManagerUIHandlerUnitTest : public testing::Test {
                                  bool actor_login_approved) {
     PasswordForm form;
     form.url = url;
+    form.signon_realm = url.spec();
     form.username_value = username;
     form.actor_login_approved = actor_login_approved;
     form.in_store = PasswordForm::Store::kProfileStore;
@@ -182,7 +183,9 @@ TEST_F(PasswordManagerUIHandlerUnitTest,
 TEST_F(PasswordManagerUIHandlerUnitTest,
        RevokeActorLoginPermission_CallsPresenter) {
   auto site = mojom::ActorLoginPermission::New();
-  site->url = mojom::FormattedUrl::New("test.com", "https://test.com");
+  site->url = mojom::FormattedUrl::New(/*human_redable_url*/ "test.com",
+                                       /*link=*/"https://test.com",
+                                       /*signon_realm=*/"https://test.com/");
   site->username = "testuser";
   CreateAndSeedPasswordForm(GURL(site->url->link), u"testuser",
                             /*actor_login_approved=*/true);

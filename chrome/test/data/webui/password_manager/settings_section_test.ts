@@ -50,7 +50,14 @@ function assertBlockedSiteList(
  */
 function createActorLoginPermission(
     url: string, username: string): ActorLoginPermission {
-  return {url: {humanReadableUrl: url, link: `https://${url}`}, username};
+  return {
+    url: {
+      humanReadableUrl: url,
+      signonRealm: `https://${url}`,
+      link: `https://${url}`,
+    },
+    username,
+  };
 }
 
 suite('SettingsSectionTest', function() {
