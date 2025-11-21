@@ -189,6 +189,11 @@ class TabUnderlineViewUiTest : public test::InteractiveGlicTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kForcePrefersNoReducedMotion);
+
+    // This ensures that gpu rasterization (i.e hardware acceleration )is
+    // available regardless of device. (This is required for underline view to
+    // animate - See `AnimatedEffectView::ForceSimplifiedShader()`)
+    command_line->AppendSwitch(switches::kIgnoreGpuBlocklist);
     test::InteractiveGlicTest::SetUpCommandLine(command_line);
   }
 
@@ -275,13 +280,7 @@ class TabUnderlineViewUiTest : public test::InteractiveGlicTest {
 
 // Exercise the default user journey: toggles the underline animation and waits
 // for it to finish.
-// TODO(crbug.com/460833807): Re-enable the test in ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_SmokeTest DISABLED_SmokeTest
-#else
-#define MAYBE_SmokeTest SmokeTest
-#endif
-IN_PROC_BROWSER_TEST_F(TabUnderlineViewUiTest, MAYBE_SmokeTest) {
+IN_PROC_BROWSER_TEST_F(TabUnderlineViewUiTest, SmokeTest) {
   auto* underline = GetUnderlineOfActiveTab();
   ASSERT_TRUE(underline);
   TesterImpl* tester = static_cast<TesterImpl*>(underline->tester());
