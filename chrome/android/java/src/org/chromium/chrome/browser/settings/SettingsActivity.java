@@ -288,7 +288,11 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         if (ChromeFeatureList.sSearchInSettings.isEnabled()) {
             mSearchCoordinator =
                     new SettingsSearchCoordinator(
-                            this, this::getUseMultiColumn, mMultiColumnSettings, mItemDecorations);
+                            this,
+                            this::getUseMultiColumn,
+                            mMultiColumnSettings,
+                            mItemDecorations,
+                            mProfile);
             mSearchCoordinator.initializeSearchUi();
         }
 

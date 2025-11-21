@@ -418,6 +418,8 @@ chrome_java_resources = [
   "java/res/drawable/receipt_long.xml",
   "java/res/drawable/search_activity_bg.xml",
   "java/res/drawable/send_tab.xml",
+  "java/res/drawable/settings_no_match.xml",
+  "java/res/drawable/settings_zero_state.xml",
   "java/res/drawable/shared_clipboard_zero_state_dark.xml",
   "java/res/drawable/shared_clipboard_zero_state_light.xml",
   "java/res/drawable/sharing_more.xml",

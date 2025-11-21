@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.settings.search;
 
+import static org.chromium.base.CallbackUtils.emptyRunnable;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
@@ -39,6 +40,8 @@ import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.settings.MultiColumnSettings;
 import org.chromium.chrome.browser.settings.search.SettingsIndexData.SearchResults;
@@ -70,6 +73,7 @@ public class SettingsSearchCoordinator {
     private @Nullable final MultiColumnSettings mMultiColumnSettings;
     private final Map<Fragment, ContainmentItemDecoration> mItemDecorations;
     private final Handler mHandler = new Handler();
+    private final Profile mProfile;
     private @Nullable Fragment mResultsFragment;
     private @Nullable Runnable mSearchRunnable;
     private @Nullable Runnable mRemoveResultChildViewListener;
@@ -120,17 +124,21 @@ public class SettingsSearchCoordinator {
      * @param useMultiColumnSupplier Supplier telling us whether the multi-column mode is on
      * @param multiColumnSettings {@link MultiColumnSettings} Fragment. Can be {@code null} unless
      *     the multi-column settings feature is enabled.
+     * @param itemDecorations Containment style map used to apply the style to the highlighted item.
+     * @param profile User profile object.
      */
     public SettingsSearchCoordinator(
             AppCompatActivity activity,
             BooleanSupplier useMultiColumnSupplier,
             @Nullable MultiColumnSettings multiColumnSettings,
-            Map<Fragment, ContainmentItemDecoration> itemDecorations) {
+            Map<Fragment, ContainmentItemDecoration> itemDecorations,
+            Profile profile) {
         mActivity = activity;
         mUseMultiColumnSupplier = useMultiColumnSupplier;
         mMultiColumnSettings = multiColumnSettings;
         mFragmentState = FS_SETTINGS;
         mItemDecorations = itemDecorations;
+        mProfile = profile;
     }
 
     /** Initializes search UI, sets up listeners, backpress action handler, etc. */
@@ -321,10 +329,16 @@ public class SettingsSearchCoordinator {
         int viewId = getViewIdForSearchDisplay();
         var transaction = fragmentManager.beginTransaction();
         transaction.setReorderingAllowed(true);
-        transaction.replace(viewId, new EmptyFragment());
+        transaction.replace(
+                viewId, new EmptyFragment(R.drawable.settings_zero_state, emptyRunnable()));
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         if (addToBackStack) transaction.addToBackStack(null);
         transaction.commit();
+    }
+
+    private void openHelpCenter() {
+        HelpAndFeedbackLauncherImpl.getForProfile(mProfile)
+                .show(mActivity, mActivity.getString(R.string.help_context_settings), null);
     }
 
     /** Returns the view ID where search results will be displayed. */
@@ -451,7 +465,10 @@ public class SettingsSearchCoordinator {
         // TODO(jinsukkim): Group the results by their header.
 
         // Create a new instance of the fragment and pass the results
-        mResultsFragment = new SearchResultsPreferenceFragment(results, this::onResultSelected);
+        mResultsFragment =
+                results.getItems().size() > 0
+                        ? new SearchResultsPreferenceFragment(results, this::onResultSelected)
+                        : new EmptyFragment(R.drawable.settings_no_match, this::openHelpCenter);
 
         // Get the FragmentManager and replace the current fragment in the container
         FragmentManager fragmentManager = getSettingsFragmentManager();

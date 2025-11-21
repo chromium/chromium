@@ -225,6 +225,15 @@ CHAR_LIMIT guidelines:
       <message name="IDS_SEARCH_IN_SETTINGS_RESULTS" desc='Title text for settings search results page. [CHAR_LIMIT=32]'>
         Search results
       </message>
+      <message name="IDS_SEARCH_IN_SETTINGS_ZERO_STATE" desc='Guide message when search in settings starts or for an empty query. [CHAR_LIMIT=32]'>
+        Search for a setting
+      </message>
+      <message name="IDS_SEARCH_IN_SETTINGS_NO_MATCH" desc='Guide message when there is no match for search in settings. [CHAR_LIMIT=32]'>
+        No results found
+      </message>
+      <message name="IDS_SEARCH_IN_SETTINGS_HELP_CENTER" desc='Message suggesting user search help center when there is no match in search. [CHAR_LIMIT=32]'>
+        Try searching the help center
+      </message>
 
       <!-- Notification channels -->
       <message name="IDS_NOTIFICATION_CATEGORY_GROUP_GENERAL" desc='Subheading for "General" section of a list of notification categories. [CHAR_LIMIT=32]'>
