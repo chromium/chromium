@@ -275,7 +275,7 @@ public class NavigationAttachmentsMediator {
         if (mComposeBoxQueryControllerBridge == null) return;
         activateAiMode(AiModeActivationSource.IMPLICIT);
 
-        var attachment = FuseboxAttachment.forTab(tab);
+        var attachment = FuseboxAttachment.forTab(tab, mContext.getResources());
 
         // Use FuseboxModelList's add method which handles upload automatically
         mModelList.add(attachment);

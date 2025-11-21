@@ -7,12 +7,15 @@ package org.chromium.chrome.browser.omnibox.fusebox;
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.content.res.Resources;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -61,9 +64,14 @@ public final class FuseboxAttachment extends ListItem {
     }
 
     /** Creates a FuseboxAttachment for a tab. */
-    public static FuseboxAttachment forTab(Tab tab) {
+    public static FuseboxAttachment forTab(Tab tab, Resources res) {
         return new FuseboxAttachment(
-                FuseboxAttachmentType.ATTACHMENT_TAB, null, tab.getTitle(), "", new byte[0], tab);
+                FuseboxAttachmentType.ATTACHMENT_TAB,
+                new BitmapDrawable(res, OmniboxResourceProvider.getFaviconBitmapForTab(tab)),
+                tab.getTitle(),
+                "",
+                new byte[0],
+                tab);
     }
 
     /**

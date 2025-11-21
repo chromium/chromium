@@ -28,7 +28,9 @@ import static org.chromium.build.NullUtil.assertNonNull;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.view.LayoutInflater;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -90,6 +92,7 @@ public class NavigationAttachmentsMediatorUnitTest {
 
     private ActivityController<TestActivity> mActivityController;
     private Context mContext;
+    private Resources mResources;
     private PropertyModel mModel;
     private NavigationAttachmentsMediator mMediator;
     private FuseboxAttachmentModelList mAttachments;
@@ -113,6 +116,7 @@ public class NavigationAttachmentsMediatorUnitTest {
         LayoutInflater.from(activity).inflate(R.layout.fusebox_layout, viewGroup, true);
 
         mContext = RuntimeEnvironment.application;
+        mResources = mContext.getResources();
         mModel = new PropertyModel(NavigationAttachmentsProperties.ALL_KEYS);
 
         mViewHolder = new FuseboxViewHolder(viewGroup, mPopup);
@@ -170,7 +174,7 @@ public class NavigationAttachmentsMediatorUnitTest {
                 .thenReturn(null); // This will trigger addTabContextFromCache path
         when(mComposeBoxQueryControllerBridge.addTabContext(mockTab)).thenReturn(token);
         when(mComposeBoxQueryControllerBridge.addTabContextFromCache(0)).thenReturn(token);
-        mAttachments.add(FuseboxAttachment.forTab(mockTab));
+        mAttachments.add(FuseboxAttachment.forTab(mockTab, mResources));
     }
 
     @Test
@@ -249,10 +253,14 @@ public class NavigationAttachmentsMediatorUnitTest {
         assertTrue(mModel.get(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_VISIBLE));
         assertNull(mModel.get(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_FAVICON));
 
+        doReturn(mBitmap).when(mTabFaviconFactory).apply(any());
         doReturn(mWebContents).when(mTab1).getWebContents();
         doReturn("token").when(mComposeBoxQueryControllerBridge).addTabContext(mTab1);
         mModel.get(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_CLICKED).run();
         verify(mComposeBoxQueryControllerBridge).addTabContext(mTab1);
+        assertEquals(
+                mBitmap,
+                ((BitmapDrawable) ((FuseboxAttachment) mAttachments.get(0)).thumbnail).getBitmap());
 
         doReturn(mTab2).when(mTabModelSelector).getCurrentTab();
         mMediator.onToggleAttachmentsPopup();
