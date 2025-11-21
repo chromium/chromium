@@ -13,6 +13,8 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 #include "base/types/expected.h"
 #include "components/legion/attestation_handler.h"
 #include "components/legion/legion_common.h"
@@ -43,6 +45,7 @@ class SecureChannelImpl : public SecureChannel {
   enum class State {
     kUninitialized,
     kPerformingAttestation,
+    kWaitingHandshakeMessage,
     kPerformingHandshake,
     kEstablished,
     kClosed,
@@ -62,19 +65,26 @@ class SecureChannelImpl : public SecureChannel {
   // Callbacks for the asynchronous session establishment steps and for sending
   // encrypted requests.
   void OnAttestationResponse(const oak::session::v1::AttestResponse& response);
+  void OnHandshakeMessageReady(
+      oak::session::v1::HandshakeRequest handshake_request);
   void OnHandshakeResponse(const oak::session::v1::HandshakeResponse& response);
   void OnEncryptedResponse(const oak::session::v1::EncryptedMessage& response);
 
-  std::unique_ptr<Transport> transport_;
-  std::unique_ptr<SecureSession> secure_session_;
-  std::unique_ptr<AttestationHandler> attestation_handler_;
+  SEQUENCE_CHECKER(sequence_checker_);
 
-  State state_ = State::kUninitialized;
+  std::unique_ptr<Transport> transport_ GUARDED_BY_CONTEXT(sequence_checker_);
+  std::unique_ptr<SecureSession> secure_session_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  std::unique_ptr<AttestationHandler> attestation_handler_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
-  ResponseCallback response_callback_;
-  std::deque<Request> pending_requests_;
+  State state_ GUARDED_BY_CONTEXT(sequence_checker_) = State::kUninitialized;
 
-  base::WeakPtrFactory<SecureChannelImpl> weak_factory_{this};
+  ResponseCallback response_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
+  std::deque<Request> pending_requests_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  base::WeakPtrFactory<SecureChannelImpl> weak_factory_
+      GUARDED_BY_CONTEXT(sequence_checker_){this};
 };
 
 }  // namespace legion

@@ -7,6 +7,9 @@
 #include <memory>
 #include <vector>
 
+#include "base/functional/bind.h"
+#include "base/location.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/legion/attestation_handler.h"
@@ -17,28 +20,17 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/oak/chromium/proto/session/session.pb.h"
 #include "third_party/oak/chromium/proto/session/session.test.h"
-#include "components/legion/proto/legion.pb.h"
 
 namespace legion {
 
 namespace {
 
-Request CreateRequest(int32_t id) {
-  proto::LegionRequest legion_request;
-  legion_request.set_request_id(id);
-  Request request_data;
-  request_data.resize(legion_request.ByteSizeLong());
-  legion_request.SerializeToArray(request_data.data(), request_data.size());
-  return request_data;
+std::string BytesToString(const Request& bytes) {
+  return std::string(bytes.begin(), bytes.end());
 }
 
-Request CreateResponse(int32_t id) {
-  proto::LegionResponse legion_response;
-  legion_response.set_request_id(id);
-  Request response_data;
-  response_data.resize(legion_response.ByteSizeLong());
-  legion_response.SerializeToArray(response_data.data(), response_data.size());
-  return response_data;
+Request StringToBytes(const std::string& str) {
+  return Request(str.begin(), str.end());
 }
 
 using ::testing::_;
@@ -64,24 +56,83 @@ class MockTransport : public Transport {
               (override));
 };
 
-class MockSecureSession : public SecureSession {
+// Constants used to by FakeSecureSession.
+constexpr char kEncryptedPrefix[] = "encrypted: ";
+constexpr char kInvalidPublicKey[] = "invalid public key";
+constexpr char kEncryptionMustFail[] = "encrypt: must fail";
+constexpr char kDecryptionMustFail[] = "decrypt: must fail";
+
+class FakeSecureSession : public SecureSession {
  public:
-  MOCK_METHOD(oak::session::v1::HandshakeRequest,
-              GetHandshakeMessage,
-              (),
-              (override));
-  MOCK_METHOD(bool,
-              ProcessHandshakeResponse,
-              (const oak::session::v1::HandshakeResponse& response),
-              (override));
-  MOCK_METHOD(std::optional<oak::session::v1::EncryptedMessage>,
-              Encrypt,
-              (const Request& data),
-              (override));
-  MOCK_METHOD(std::optional<Request>,
-              Decrypt,
-              (const oak::session::v1::EncryptedMessage& data),
-              (override));
+  FakeSecureSession() = default;
+  ~FakeSecureSession() override = default;
+
+  FakeSecureSession(const FakeSecureSession&) = default;
+  FakeSecureSession& operator=(const FakeSecureSession&) = default;
+
+  FakeSecureSession(FakeSecureSession&&) = default;
+  FakeSecureSession& operator=(FakeSecureSession&&) = default;
+
+  void GetHandshakeMessage(
+      SecureSession::GetHandshakeMessageOnceCallback callback) override {
+    oak::session::v1::HandshakeRequest handshake_request;
+
+    auto task_runner = base::SequencedTaskRunner::GetCurrentDefault();
+    task_runner->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), std::move(handshake_request)));
+  }
+
+  // Returns true if response's ephemeral public key is NOT equal to
+  // `kInvalidPublicKey`.
+  bool ProcessHandshakeResponse(
+      const oak::session::v1::HandshakeResponse& response) override {
+    if (response.has_noise_handshake_message()) {
+      const auto& message = response.noise_handshake_message();
+      if (message.ephemeral_public_key() == kInvalidPublicKey) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  // Returns std::nullopt if message is equal to `kEncryptionMustFail`.
+  //
+  // Otherwise adds "encrypted: " prefix to the message.
+  std::optional<oak::session::v1::EncryptedMessage> Encrypt(
+      const Request& message) override {
+    std::string message_str = BytesToString(message);
+    if (message_str == kEncryptionMustFail) {
+      return std::nullopt;
+    }
+
+    CHECK(!message_str.starts_with(kEncryptedPrefix));
+    message_str = kEncryptedPrefix + message_str;
+
+    oak::session::v1::EncryptedMessage encrypted_message;
+    encrypted_message.set_ciphertext(message_str.data(), message_str.size());
+    return encrypted_message;
+  }
+
+  // Returns std::nullopt if message's ciphertext is equal to
+  // `kDecryptionMustFail`.
+  //
+  // Expects that message has "encrypted: " prefix and removes that prefix.
+  std::optional<Request> Decrypt(
+      const oak::session::v1::EncryptedMessage& message) override {
+    Request message_bytes(message.ciphertext().begin(),
+                          message.ciphertext().end());
+
+    std::string message_str = BytesToString(message_bytes);
+    if (message_str == kDecryptionMustFail) {
+      return std::nullopt;
+    }
+
+    CHECK(message_str.starts_with(kEncryptedPrefix));
+    message_str = message_str.substr(strlen(kEncryptedPrefix));
+
+    return Request(message_str.begin(), message_str.end());
+  }
 };
 
 class MockAttestationHandler : public AttestationHandler {
@@ -103,7 +154,7 @@ class SecureChannelImplTest : public ::testing::Test {
     transport_ = transport.get();
     EXPECT_CALL(*transport_, SetResponseCallback(_))
         .WillOnce(testing::SaveArg<0>(&response_callback_));
-    auto secure_session = std::make_unique<StrictMock<MockSecureSession>>();
+    auto secure_session = std::make_unique<FakeSecureSession>();
     secure_session_ = secure_session.get();
     auto attestation_handler =
         std::make_unique<StrictMock<MockAttestationHandler>>();
@@ -116,7 +167,6 @@ class SecureChannelImplTest : public ::testing::Test {
 
   void TearDown() override {
     testing::Mock::VerifyAndClearExpectations(transport_);
-    testing::Mock::VerifyAndClearExpectations(secure_session_);
     testing::Mock::VerifyAndClearExpectations(attestation_handler_);
   }
 
@@ -127,7 +177,7 @@ class SecureChannelImplTest : public ::testing::Test {
   std::unique_ptr<SecureChannelImpl> secure_channel_;
 
   raw_ptr<MockTransport> transport_;
-  raw_ptr<MockSecureSession> secure_session_;
+  raw_ptr<FakeSecureSession> secure_session_;
   raw_ptr<MockAttestationHandler> attestation_handler_;
   Transport::ResponseCallback response_callback_;
 };
@@ -150,8 +200,6 @@ void SecureChannelImplTest::SetUpHandshakeAndAttestation() {
   EXPECT_CALL(*attestation_handler_, VerifyAttestationResponse(_))
       .WillOnce(Return(true));
 
-  EXPECT_CALL(*secure_session_, GetHandshakeMessage())
-      .WillOnce(Return(expected_handshake_request.handshake_request()));
   EXPECT_CALL(*transport_,
               Send(EqualsSessionRequest(expected_handshake_request)))
       .WillOnce([&]() {
@@ -159,49 +207,38 @@ void SecureChannelImplTest::SetUpHandshakeAndAttestation() {
         response.mutable_handshake_response();
         response_callback_.Run(response);
       });
-
-  EXPECT_CALL(*secure_session_, ProcessHandshakeResponse(_))
-      .WillOnce(Return(true));
 }
 
 // Tests the successful establishment of a secure session and sending a single
 // request.
 TEST_F(SecureChannelImplTest, WriteAndEstablishSessionSucceeds) {
-  Request request_data = CreateRequest(1);
-  oak::session::v1::EncryptedMessage encrypted_request;
-  encrypted_request.set_ciphertext("encrypted_request");
-  Request decrypted_response = CreateResponse(1);
-  oak::session::v1::EncryptedMessage encrypted_response;
-  encrypted_response.set_ciphertext("encrypted_response");
-
   SetUpHandshakeAndAttestation();
 
-  EXPECT_CALL(*secure_session_, Encrypt(request_data))
-      .WillOnce(Return(encrypted_request));
-
   oak::session::v1::SessionRequest expected_session_request;
-  *expected_session_request.mutable_encrypted_message() = encrypted_request;
-
-  base::test::TestFuture<base::expected<Response, ErrorCode>> future;
-  secure_channel_->SetResponseCallback(future.GetRepeatingCallback());
+  {
+    oak::session::v1::EncryptedMessage encrypted_request;
+    encrypted_request.set_ciphertext("encrypted: secret request");
+    *expected_session_request.mutable_encrypted_message() = encrypted_request;
+  }
 
   EXPECT_CALL(*transport_, Send(EqualsSessionRequest(expected_session_request)))
       .WillOnce([&]() {
         oak::session::v1::SessionResponse response;
-        *response.mutable_encrypted_message() = encrypted_response;
+        {
+          oak::session::v1::EncryptedMessage encrypted_response;
+          encrypted_response.set_ciphertext("encrypted: secret response");
+          *response.mutable_encrypted_message() = encrypted_response;
+        }
         response_callback_.Run(response);
       });
-  EXPECT_CALL(*secure_session_,
-              Decrypt(testing::Property(
-                  &oak::session::v1::EncryptedMessage::ciphertext,
-                  "encrypted_response")))
-      .WillOnce(Return(decrypted_response));
 
-  EXPECT_TRUE(secure_channel_->Write(request_data));
+  base::test::TestFuture<base::expected<Response, ErrorCode>> future;
+  secure_channel_->SetResponseCallback(future.GetRepeatingCallback());
+  EXPECT_TRUE(secure_channel_->Write(StringToBytes("secret request")));
 
   const auto& result = future.Get();
   ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(result.value(), decrypted_response);
+  EXPECT_EQ(BytesToString(result.value()), "secret response");
 }
 
 // Tests that a closed channel is reported through the response callback.
@@ -211,7 +248,7 @@ TEST_F(SecureChannelImplTest, ChannelClosedIsReported) {
 
   base::test::TestFuture<base::expected<Response, ErrorCode>> future;
   secure_channel_->SetResponseCallback(future.GetRepeatingCallback());
-  EXPECT_TRUE(secure_channel_->Write(CreateRequest(1)));
+  EXPECT_TRUE(secure_channel_->Write(StringToBytes("secret request")));
 
   const auto& result = future.Get();
   ASSERT_FALSE(result.has_value());
@@ -221,7 +258,6 @@ TEST_F(SecureChannelImplTest, ChannelClosedIsReported) {
 // Tests the case where attestation verification fails, leading to a session
 // failure.
 TEST_F(SecureChannelImplTest, AttestationErrorFailsWrite) {
-  Request request_data = CreateRequest(1);
   oak::session::v1::SessionRequest expected_attestation_request;
   expected_attestation_request.mutable_attest_request();
   oak::session::v1::SessionResponse attestation_session_response;
@@ -239,7 +275,7 @@ TEST_F(SecureChannelImplTest, AttestationErrorFailsWrite) {
 
   base::test::TestFuture<base::expected<Response, ErrorCode>> future;
   secure_channel_->SetResponseCallback(future.GetRepeatingCallback());
-  EXPECT_TRUE(secure_channel_->Write(request_data));
+  EXPECT_TRUE(secure_channel_->Write(StringToBytes("secret request")));
 
   const auto& result = future.Get();
   ASSERT_FALSE(result.has_value());
@@ -249,7 +285,6 @@ TEST_F(SecureChannelImplTest, AttestationErrorFailsWrite) {
 // Tests a transport-level error during the attestation phase of session
 // establishment.
 TEST_F(SecureChannelImplTest, TransportErrorDuringAttestationFailsRequest) {
-  Request request_data = CreateRequest(1);
   oak::session::v1::SessionRequest expected_attestation_request;
   expected_attestation_request.mutable_attest_request();
 
@@ -269,7 +304,7 @@ TEST_F(SecureChannelImplTest, TransportErrorDuringAttestationFailsRequest) {
 
   base::test::TestFuture<base::expected<Response, ErrorCode>> future;
   secure_channel_->SetResponseCallback(future.GetRepeatingCallback());
-  EXPECT_TRUE(secure_channel_->Write(request_data));
+  EXPECT_TRUE(secure_channel_->Write(StringToBytes("secret request")));
 
   const auto& result = future.Get();
   ASSERT_FALSE(result.has_value());
@@ -301,8 +336,6 @@ TEST_F(SecureChannelImplTest, TransportErrorDuringHandshakeFailsRequest) {
   {
     oak::session::v1::SessionRequest expected_handshake_request;
     expected_handshake_request.mutable_handshake_request();
-    EXPECT_CALL(*secure_session_, GetHandshakeMessage())
-        .WillOnce(Return(expected_handshake_request.handshake_request()));
     EXPECT_CALL(*transport_,
                 Send(EqualsSessionRequest(expected_handshake_request)))
         .WillOnce([&]() {
@@ -316,10 +349,9 @@ TEST_F(SecureChannelImplTest, TransportErrorDuringHandshakeFailsRequest) {
         });
   }
 
-  Request request_data = CreateRequest(1);
   base::test::TestFuture<base::expected<Response, ErrorCode>> future;
   secure_channel_->SetResponseCallback(future.GetRepeatingCallback());
-  EXPECT_TRUE(secure_channel_->Write(request_data));
+  EXPECT_TRUE(secure_channel_->Write(StringToBytes("secret request")));
 
   const auto& result = future.Get();
   ASSERT_FALSE(result.has_value());
@@ -328,17 +360,14 @@ TEST_F(SecureChannelImplTest, TransportErrorDuringHandshakeFailsRequest) {
 
 // Tests a transport-level error after the session is established.
 TEST_F(SecureChannelImplTest, TransportErrorAfterSessionEstablished) {
-  Request request_data = CreateRequest(1);
-  oak::session::v1::EncryptedMessage encrypted_request;
-  encrypted_request.set_ciphertext("encrypted_request");
-
   SetUpHandshakeAndAttestation();
 
-  EXPECT_CALL(*secure_session_, Encrypt(request_data))
-      .WillOnce(Return(encrypted_request));
-
   oak::session::v1::SessionRequest expected_session_request;
-  *expected_session_request.mutable_encrypted_message() = encrypted_request;
+  {
+    oak::session::v1::EncryptedMessage encrypted_request;
+    encrypted_request.set_ciphertext("encrypted: secret request");
+    *expected_session_request.mutable_encrypted_message() = encrypted_request;
+  }
 
   EXPECT_CALL(*transport_, Send(EqualsSessionRequest(expected_session_request)))
       .WillOnce([&]() {
@@ -353,7 +382,7 @@ TEST_F(SecureChannelImplTest, TransportErrorAfterSessionEstablished) {
 
   base::test::TestFuture<base::expected<Response, ErrorCode>> future;
   secure_channel_->SetResponseCallback(future.GetRepeatingCallback());
-  EXPECT_TRUE(secure_channel_->Write(request_data));
+  EXPECT_TRUE(secure_channel_->Write(StringToBytes("secret request")));
 
   const auto& result = future.Get();
   ASSERT_FALSE(result.has_value());
@@ -367,7 +396,7 @@ TEST_F(SecureChannelImplTest, GetAttestationRequestFails) {
 
   base::test::TestFuture<base::expected<Response, ErrorCode>> future;
   secure_channel_->SetResponseCallback(future.GetRepeatingCallback());
-  EXPECT_TRUE(secure_channel_->Write(CreateRequest(1)));
+  EXPECT_TRUE(secure_channel_->Write(StringToBytes("secret request")));
 
   const auto& result = future.Get();
   ASSERT_FALSE(result.has_value());
@@ -382,8 +411,19 @@ TEST_F(SecureChannelImplTest, ProcessHandshakeResponseFails) {
   attestation_session_response.mutable_attest_response();
   oak::session::v1::SessionRequest expected_handshake_request;
   expected_handshake_request.mutable_handshake_request();
+
+  // Setting `kInvalidPublicKey` as an ephemeral public key will fail handshake
+  // on a client side.
   oak::session::v1::SessionResponse handshake_session_response;
-  handshake_session_response.mutable_handshake_response();
+  {
+    oak::session::v1::HandshakeResponse handshake_response;
+    auto* noise_handshake_message =
+        handshake_response.mutable_noise_handshake_message();
+    noise_handshake_message->set_ephemeral_public_key(kInvalidPublicKey);
+
+    *handshake_session_response.mutable_handshake_response() =
+        handshake_response;
+  }
 
   EXPECT_CALL(*attestation_handler_, GetAttestationRequest())
       .WillOnce(Return(expected_attestation_request.attest_request()));
@@ -394,19 +434,15 @@ TEST_F(SecureChannelImplTest, ProcessHandshakeResponseFails) {
       });
   EXPECT_CALL(*attestation_handler_, VerifyAttestationResponse(_))
       .WillOnce(Return(true));
-  EXPECT_CALL(*secure_session_, GetHandshakeMessage())
-      .WillOnce(Return(expected_handshake_request.handshake_request()));
   EXPECT_CALL(*transport_,
               Send(EqualsSessionRequest(expected_handshake_request)))
       .WillOnce([&]() {
         response_callback_.Run(handshake_session_response);
       });
-  EXPECT_CALL(*secure_session_, ProcessHandshakeResponse(_))
-      .WillOnce(Return(false));
 
   base::test::TestFuture<base::expected<Response, ErrorCode>> future;
   secure_channel_->SetResponseCallback(future.GetRepeatingCallback());
-  EXPECT_TRUE(secure_channel_->Write(CreateRequest(1)));
+  EXPECT_TRUE(secure_channel_->Write(StringToBytes("secret request")));
 
   const auto& result = future.Get();
   ASSERT_FALSE(result.has_value());
@@ -415,15 +451,11 @@ TEST_F(SecureChannelImplTest, ProcessHandshakeResponseFails) {
 
 // Tests a failure to encrypt a request after the session is established.
 TEST_F(SecureChannelImplTest, EncryptRequestFails) {
-  Request request_data = CreateRequest(1);
-
   SetUpHandshakeAndAttestation();
-  EXPECT_CALL(*secure_session_, Encrypt(request_data))
-      .WillOnce(Return(std::nullopt));
 
   base::test::TestFuture<base::expected<Response, ErrorCode>> future;
   secure_channel_->SetResponseCallback(future.GetRepeatingCallback());
-  EXPECT_TRUE(secure_channel_->Write(request_data));
+  EXPECT_TRUE(secure_channel_->Write(StringToBytes(kEncryptionMustFail)));
 
   const auto& result = future.Get();
   ASSERT_FALSE(result.has_value());
@@ -432,28 +464,29 @@ TEST_F(SecureChannelImplTest, EncryptRequestFails) {
 
 // Tests a failure to decrypt a response from the server.
 TEST_F(SecureChannelImplTest, DecryptResponseFails) {
-  Request request_data = CreateRequest(1);
-  oak::session::v1::EncryptedMessage encrypted_request;
-  encrypted_request.set_ciphertext("encrypted_request");
-
   SetUpHandshakeAndAttestation();
-  EXPECT_CALL(*secure_session_, Encrypt(request_data))
-      .WillOnce(Return(encrypted_request));
 
   oak::session::v1::SessionRequest expected_session_request;
-  *expected_session_request.mutable_encrypted_message() = encrypted_request;
+  {
+    oak::session::v1::EncryptedMessage encrypted_request;
+    encrypted_request.set_ciphertext("encrypted: secret request");
+    *expected_session_request.mutable_encrypted_message() = encrypted_request;
+  }
 
   EXPECT_CALL(*transport_, Send(EqualsSessionRequest(expected_session_request)))
       .WillOnce([&]() {
         oak::session::v1::SessionResponse response;
-        response.mutable_encrypted_message();
+        {
+          oak::session::v1::EncryptedMessage encrypted_response;
+          encrypted_response.set_ciphertext(kDecryptionMustFail);
+          *response.mutable_encrypted_message() = encrypted_response;
+        }
         response_callback_.Run(response);
       });
-  EXPECT_CALL(*secure_session_, Decrypt(_)).WillOnce(Return(std::nullopt));
 
   base::test::TestFuture<base::expected<Response, ErrorCode>> future;
   secure_channel_->SetResponseCallback(future.GetRepeatingCallback());
-  EXPECT_TRUE(secure_channel_->Write(request_data));
+  EXPECT_TRUE(secure_channel_->Write(StringToBytes("secret request")));
 
   const auto& result = future.Get();
   ASSERT_FALSE(result.has_value());
@@ -463,16 +496,14 @@ TEST_F(SecureChannelImplTest, DecryptResponseFails) {
 // Tests receiving an empty response from the server after session
 // establishment.
 TEST_F(SecureChannelImplTest, EmptyResponseFailsRequest) {
-  Request request_data = CreateRequest(1);
-  oak::session::v1::EncryptedMessage encrypted_request;
-  encrypted_request.set_ciphertext("encrypted_request");
-
   SetUpHandshakeAndAttestation();
-  EXPECT_CALL(*secure_session_, Encrypt(request_data))
-      .WillOnce(Return(encrypted_request));
 
   oak::session::v1::SessionRequest expected_session_request;
-  *expected_session_request.mutable_encrypted_message() = encrypted_request;
+  {
+    oak::session::v1::EncryptedMessage encrypted_request;
+    encrypted_request.set_ciphertext("encrypted: secret request");
+    *expected_session_request.mutable_encrypted_message() = encrypted_request;
+  }
 
   EXPECT_CALL(*transport_, Send(EqualsSessionRequest(expected_session_request)))
       .WillOnce([&]() {
@@ -482,7 +513,7 @@ TEST_F(SecureChannelImplTest, EmptyResponseFailsRequest) {
 
   base::test::TestFuture<base::expected<Response, ErrorCode>> future;
   secure_channel_->SetResponseCallback(future.GetRepeatingCallback());
-  EXPECT_TRUE(secure_channel_->Write(request_data));
+  EXPECT_TRUE(secure_channel_->Write(StringToBytes("secret request")));
 
   const auto& result = future.Get();
   ASSERT_FALSE(result.has_value());
@@ -498,11 +529,11 @@ TEST_F(SecureChannelImplTest, WriteInClosedState) {
   secure_channel_->SetResponseCallback(future.GetRepeatingCallback());
 
   // First write triggers the failure.
-  EXPECT_TRUE(secure_channel_->Write(CreateRequest(1)));
+  EXPECT_TRUE(secure_channel_->Write(StringToBytes("secret request")));
   ASSERT_FALSE(future.Get().has_value());
 
   // Second write should fail immediately.
-  EXPECT_FALSE(secure_channel_->Write(CreateRequest(2)));
+  EXPECT_FALSE(secure_channel_->Write(StringToBytes("secret request")));
 }
 
 }  // namespace

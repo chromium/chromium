@@ -4,6 +4,8 @@
 
 #include "components/legion/secure_session_impl.h"
 
+#include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/ecdh.h"
 #include "third_party/boringssl/src/include/openssl/nid.h"
@@ -158,7 +160,9 @@ class ServerSecureSession {
 class SecureSessionImplTest : public ::testing::Test {
  protected:
   void PerformValidHandshake(ServerSecureSession& server_session) {
-    auto client_handshake_request = client_session_.GetHandshakeMessage();
+    base::test::TestFuture<oak::session::v1::HandshakeRequest> future;
+    client_session_.GetHandshakeMessage(future.GetCallback());
+    auto client_handshake_request = future.Get();
 
     auto server_handshake_response =
         server_session.ProcessHandshake(client_handshake_request);
@@ -169,6 +173,9 @@ class SecureSessionImplTest : public ::testing::Test {
   }
 
   SecureSessionImpl client_session_;
+
+ private:
+  base::test::TaskEnvironment task_environment_;
 };
 
 // End-to-end test of the handshake and encryption/decryption in both
@@ -199,7 +206,10 @@ TEST_F(SecureSessionImplTest, HandshakeAndEncryptDecryptSucceeds) {
 }
 
 TEST_F(SecureSessionImplTest, GetHandshakeMessageSucceeds) {
-  auto request = client_session_.GetHandshakeMessage();
+  base::test::TestFuture<oak::session::v1::HandshakeRequest> future;
+  client_session_.GetHandshakeMessage(future.GetCallback());
+  auto request = future.Get();
+
   EXPECT_TRUE(request.has_noise_handshake_message());
 
   const auto& noise_msg = request.noise_handshake_message();
@@ -210,7 +220,9 @@ TEST_F(SecureSessionImplTest, GetHandshakeMessageSucceeds) {
 TEST_F(SecureSessionImplTest, ProcessHandshakeResponseInvalidPeerKey) {
   // Though the result is not used, it's important to call GetHandshakeMessage()
   // before ProcessHandshakeResponse().
-  client_session_.GetHandshakeMessage();
+  base::test::TestFuture<oak::session::v1::HandshakeRequest> future;
+  client_session_.GetHandshakeMessage(future.GetCallback());
+  ASSERT_TRUE(future.Wait());
 
   oak::session::v1::HandshakeResponse response;
   auto* noise_msg = response.mutable_noise_handshake_message();
@@ -224,7 +236,9 @@ TEST_F(SecureSessionImplTest, ProcessHandshakeResponseInvalidPeerKey) {
 TEST_F(SecureSessionImplTest, ProcessHandshakeResponseInvalidCiphertext) {
   // Though the result is not used, it's important to call GetHandshakeMessage()
   // before ProcessHandshakeResponse().
-  client_session_.GetHandshakeMessage();
+  base::test::TestFuture<oak::session::v1::HandshakeRequest> future;
+  client_session_.GetHandshakeMessage(future.GetCallback());
+  ASSERT_TRUE(future.Wait());
 
   // Create a valid server response, but then corrupt the ciphertext.
   oak::session::v1::HandshakeResponse server_handshake_response;
@@ -262,7 +276,9 @@ TEST_F(SecureSessionImplTest, ProcessHandshakeResponseWithoutHandshake) {
 // Tests that the handshake fails if the server's response includes a payload,
 // which is not allowed in the NN handshake pattern.
 TEST_F(SecureSessionImplTest, ProcessHandshakeResponseNonEmptyPlaintext) {
-  auto client_handshake_request = client_session_.GetHandshakeMessage();
+  base::test::TestFuture<oak::session::v1::HandshakeRequest> future;
+  client_session_.GetHandshakeMessage(future.GetCallback());
+  auto client_handshake_request = future.Get();
 
   ServerSecureSession server_session;
   // Generate a server response with a non-empty payload, which is invalid for

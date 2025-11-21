@@ -11,6 +11,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/sequence_checker.h"
 #include "base/types/expected.h"
 #include "components/legion/attestation_handler.h"
 #include "components/legion/legion_common.h"
@@ -39,10 +40,14 @@ SecureChannelImpl::SecureChannelImpl(
 SecureChannelImpl::~SecureChannelImpl() = default;
 
 void SecureChannelImpl::SetResponseCallback(ResponseCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   response_callback_ = std::move(callback);
 }
 
 bool SecureChannelImpl::Write(const Request& request) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (state_ == State::kClosed) {
     DLOG(ERROR) << "SecureChannel is closed.";
     return false;
@@ -55,6 +60,7 @@ bool SecureChannelImpl::Write(const Request& request) {
       StartSessionEstablishment();
       break;
     case State::kPerformingAttestation:
+    case State::kWaitingHandshakeMessage:
     case State::kPerformingHandshake:
       // Request is queued and will be processed once the session is
       // established.
@@ -73,12 +79,15 @@ bool SecureChannelImpl::Write(const Request& request) {
 
 void SecureChannelImpl::Send(
     const oak::session::v1::SessionRequest& session_request) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   transport_->Send(session_request);
 }
 
 void SecureChannelImpl::OnResponseReceived(
     base::expected<oak::session::v1::SessionResponse, Transport::TransportError>
         response) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (!response.has_value()) {
     DLOG(ERROR) << "Transport error: " << static_cast<int>(response.error())
                 << " in state: " << static_cast<int>(state_);
@@ -94,6 +103,7 @@ void SecureChannelImpl::OnResponseReceived(
       case State::kEstablished:
         error_code = ErrorCode::kNetworkError;
         break;
+      case State::kWaitingHandshakeMessage:
       case State::kUninitialized:
       case State::kClosed:
         // Transport error in these states is unexpected because no requests
@@ -121,6 +131,8 @@ void SecureChannelImpl::OnResponseReceived(
 
 void SecureChannelImpl::OnAttestationResponse(
     const oak::session::v1::AttestResponse& response) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   DCHECK_EQ(state_, State::kPerformingAttestation);
 
   // Step 2: Verify Attestation Response
@@ -131,10 +143,20 @@ void SecureChannelImpl::OnAttestationResponse(
   }
   DVLOG(1) << "Attestation verified successfully.";
 
-  state_ = SecureChannelImpl::State::kPerformingHandshake;
+  state_ = SecureChannelImpl::State::kWaitingHandshakeMessage;
+
   // Step 3: Get and Send Handshake Request
-  oak::session::v1::HandshakeRequest handshake_request =
-      secure_session_->GetHandshakeMessage();
+  secure_session_->GetHandshakeMessage(base::BindOnce(
+      &SecureChannelImpl::OnHandshakeMessageReady, weak_factory_.GetWeakPtr()));
+}
+
+void SecureChannelImpl::OnHandshakeMessageReady(
+    oak::session::v1::HandshakeRequest handshake_request) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  DCHECK_EQ(state_, State::kWaitingHandshakeMessage);
+
+  state_ = SecureChannelImpl::State::kPerformingHandshake;
 
   DVLOG(1) << "Sending handshake request.";
   oak::session::v1::SessionRequest request;
@@ -144,6 +166,8 @@ void SecureChannelImpl::OnAttestationResponse(
 
 void SecureChannelImpl::OnHandshakeResponse(
     const oak::session::v1::HandshakeResponse& response) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   DCHECK_EQ(state_, State::kPerformingHandshake);
 
   // Step 4: Process Handshake Response
@@ -160,6 +184,8 @@ void SecureChannelImpl::OnHandshakeResponse(
 
 void SecureChannelImpl::OnEncryptedResponse(
     const oak::session::v1::EncryptedMessage& response) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // Step 6: Decrypt the response
   std::optional<Request> decrypted_response =
       secure_session_->Decrypt(response);
@@ -177,10 +203,14 @@ void SecureChannelImpl::OnEncryptedResponse(
 }
 
 void SecureChannelImpl::FailAllRequests(ErrorCode error_code) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   pending_requests_.clear();
 }
 
 void SecureChannelImpl::StartSessionEstablishment() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   DCHECK_EQ(state_, State::kUninitialized);
   DCHECK(!pending_requests_.empty());
 
@@ -201,6 +231,8 @@ void SecureChannelImpl::StartSessionEstablishment() {
 }
 
 void SecureChannelImpl::FailAllRequestsAndClose(ErrorCode error_code) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   FailAllRequests(error_code);
   state_ = State::kClosed;
   CHECK(response_callback_);
@@ -208,6 +240,8 @@ void SecureChannelImpl::FailAllRequestsAndClose(ErrorCode error_code) {
 }
 
 void SecureChannelImpl::ProcessPendingRequests() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   DCHECK_EQ(state_, State::kEstablished);
   if (state_ != State::kEstablished) {
     return;

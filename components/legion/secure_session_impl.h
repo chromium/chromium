@@ -22,7 +22,8 @@ class SecureSessionImpl : public SecureSession {
   ~SecureSessionImpl() override;
 
   // SecureSession:
-  oak::session::v1::HandshakeRequest GetHandshakeMessage() override;
+  void GetHandshakeMessage(
+      SecureSession::GetHandshakeMessageOnceCallback callback) override;
   bool ProcessHandshakeResponse(
       const oak::session::v1::HandshakeResponse& response) override;
   std::optional<oak::session::v1::EncryptedMessage> Encrypt(

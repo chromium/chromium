@@ -4,9 +4,14 @@
 
 #include "components/legion/secure_session_impl.h"
 
+#include <utility>
+
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/logging.h"
+#include "base/task/sequenced_task_runner.h"
 #include "third_party/boringssl/src/include/openssl/ecdh.h"
 #include "third_party/boringssl/src/include/openssl/nid.h"
 #include "third_party/oak/chromium/proto/session/session.pb.h"
@@ -22,7 +27,8 @@ SecureSessionImpl::SecureSessionImpl() = default;
 
 SecureSessionImpl::~SecureSessionImpl() = default;
 
-oak::session::v1::HandshakeRequest SecureSessionImpl::GetHandshakeMessage() {
+void SecureSessionImpl::GetHandshakeMessage(
+    SecureSession::GetHandshakeMessageOnceCallback callback) {
   noise_.emplace();
   noise_->Init(Noise::HandshakeType::kNN);
   uint8_t prologue[1];
@@ -50,7 +56,10 @@ oak::session::v1::HandshakeRequest SecureSessionImpl::GetHandshakeMessage() {
   noise_message->set_ciphertext(ciphertext_request.data(),
                                 ciphertext_request.size());
 
-  return handshake_request;
+  auto task_runner = base::SequencedTaskRunner::GetCurrentDefault();
+  task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), std::move(handshake_request)));
 }
 
 bool SecureSessionImpl::ProcessHandshakeResponse(

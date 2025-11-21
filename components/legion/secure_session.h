@@ -9,6 +9,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "components/legion/legion_common.h"
 
 namespace oak::session::v1 {
@@ -24,10 +25,15 @@ namespace legion {
 // decryption.
 class SecureSession {
  public:
+  using GetHandshakeMessageOnceCallback =
+      base::OnceCallback<void(oak::session::v1::HandshakeRequest)>;
+
   virtual ~SecureSession() = default;
 
   // Generates the initial handshake message.
-  virtual oak::session::v1::HandshakeRequest GetHandshakeMessage() = 0;
+  // Returns std::nullopt on failure.
+  virtual void GetHandshakeMessage(
+      GetHandshakeMessageOnceCallback callback) = 0;
 
   // Processes the server's handshake response (e.g., keys).
   // This should be called after the initial handshake message has been sent
