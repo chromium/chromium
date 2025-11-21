@@ -123,8 +123,6 @@ export function makeStoreClientMixin<S, A extends Action>(
       }
 
       updateFromStore(): void {
-        // TODO(b/296282541) assert that store is initialized instead of
-        // performing a runtime check.
         if (this.getStore().isInitialized()) {
           this.onStateChanged(this.getStore().data);
         }
