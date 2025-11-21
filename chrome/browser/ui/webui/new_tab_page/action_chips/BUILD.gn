@@ -8,6 +8,8 @@ assert(!is_android)
 
 source_set("action_chips") {
   sources = [
+    "action_chips_generator.cc",
+    "action_chips_generator.h",
     "action_chips_handler.cc",
     "action_chips_handler.h",
     "tab_id_generator.cc",
@@ -42,6 +44,7 @@ mojom("mojo_bindings") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "action_chips_generator_unittest.cc",
     "action_chips_handler_unittest.cc",
     "action_chips_mojo_test_utils.cc",
     "action_chips_mojo_test_utils.h",
@@ -56,6 +59,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui:test_support",
     "//chrome/browser/ui/tabs:test_support",
     "//chrome/test:test_support",
+    "//components/tabs:test_support",
     "//components/variations",
     "//content/test:test_support",
     "//testing/gmock",

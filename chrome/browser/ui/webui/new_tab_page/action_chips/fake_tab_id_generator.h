@@ -12,6 +12,7 @@ class FakeTabIdGenerator : public TabIdGenerator {
  public:
   int32_t GenerateTabHandleId(
       const tabs::TabInterface* contents) const override;
+  static const FakeTabIdGenerator* Get();
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_ACTION_CHIPS_FAKE_TAB_ID_GENERATOR_H_
