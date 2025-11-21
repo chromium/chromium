@@ -8725,6 +8725,7 @@ from previous Chrome versions.
   <int value="-1913484012" label="IsNameEnabled:disabled"/>
   <int value="-1912999136" label="enable-automatic-password-saving:enabled"/>
   <int value="-1911918596" label="WebviewAccelerateSmallCanvases:disabled"/>
+  <int value="-1911659621" label="OverscrollEffectOnNonRootScrollers:enabled"/>
   <int value="-1911316813" label="BlockTabUnders:disabled"/>
   <int value="-1911212842"
       label="AutofillReplaceCachedWebElementsByRendererIds:enabled"/>
@@ -17035,6 +17036,7 @@ from previous Chrome versions.
   <int value="1009437086" label="AutofillEnableOfferNotification:disabled"/>
   <int value="1009596554" label="PWAsDefaultOfflinePage:enabled"/>
   <int value="1009713313" label="NtpChromeCartHistoryClusterCoexist:disabled"/>
+  <int value="1009837378" label="OverscrollEffectOnNonRootScrollers:disabled"/>
   <int value="1009976778" label="SidePanel:disabled"/>
   <int value="1010832751" label="VideoToolboxAv1Decoding:disabled"/>
   <int value="1011491959" label="PageInfoCookiesSubpage:enabled"/>

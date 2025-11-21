@@ -3353,6 +3353,12 @@ inline constexpr char kOverlayStrategiesOccludedAndUnoccluded[] =
     "Occluded and unoccluded buffers "
     "(single-fullscreen,single-on-top,underlay)";
 
+inline constexpr char kOverscrollEffectOnNonRootScrollersName[] =
+    "Overscroll effect on non-root scrollers";
+inline constexpr char kOverscrollEffectOnNonRootScrollersDescription[] =
+    "Enables elastic overscroll effect on scrollers other than the root "
+    "document (e.g. iframes and overflow areas).";
+
 inline constexpr char kOverscrollHistoryNavigationName[] =
     "Overscroll history navigation";
 inline constexpr char kOverscrollHistoryNavigationDescription[] =

@@ -8068,6 +8068,14 @@
     "expiry_milestone": -1
   },
   {
+    "name": "overscroll-effect-on-non-root-scrollers",
+    "owners": [
+      "freedebreuil@google.com",
+      "blink-interactions-team@google.com"
+    ],
+    "expiry_milestone": 170
+  },
+  {
     // This flag is used by ChromeOS for some accessibility users.
     // TODO(b/172341945): Fix this asap.
     "name": "overscroll-history-navigation",
