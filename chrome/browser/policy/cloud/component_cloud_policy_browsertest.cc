@@ -199,7 +199,7 @@ class ComponentCloudPolicyTest : public extensions::ExtensionBrowserTest {
     // the account id to the UserCloudPolicyValidator.
     signin::SetPrimaryAccount(
         IdentityManagerFactory::GetForProfile(browser()->profile()),
-        PolicyBuilder::kFakeUsername, signin::ConsentLevel::kSync);
+        PolicyBuilder::kFakeUsername, signin::ConsentLevel::kSignin);
 
     UserCloudPolicyManager* policy_manager =
         browser()->profile()->GetUserCloudPolicyManager();

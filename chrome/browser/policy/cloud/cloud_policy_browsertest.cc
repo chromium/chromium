@@ -243,7 +243,7 @@ class CloudPolicyTest : public PlatformBrowserTest,
     // the username to the UserCloudPolicyValidator.
     identity_test_env_ = std::make_unique<signin::IdentityTestEnvironment>();
     identity_test_env_->MakePrimaryAccountAvailable(
-        GetTestUser(), signin::ConsentLevel::kSync);
+        GetTestUser(), signin::ConsentLevel::kSignin);
 
     UserCloudPolicyManager* policy_manager =
         profile->GetUserCloudPolicyManager();
