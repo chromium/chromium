@@ -101,64 +101,10 @@ message EventPass {
   string issuer_name = 12 [features = { field_presence: EXPLICIT }];
 }
 
-message TransitTicket {
-  // The name of the issuer of the transit pass. The issuer is the name of the
-  // card issuer like "Clipper", whereas the agency is the name of the transit
-  // agency like "Caltrain".
-  string issuer_name = 1 [features = { field_presence: EXPLICIT }];
-
-  // The card number of the transit pass.
-  string card_number = 2 [features = { field_presence: EXPLICIT }];
-
-  // Expiration date of the transit pass.
-  string date_of_expiry = 3 [features = { field_presence: EXPLICIT }];
-
-  // The card verification code of the transit pass.
-  string card_verification_code = 4 [features = { field_presence: EXPLICIT }];
-
-  // The name of the transit pass holder.
-  string owner_name = 5 [features = { field_presence: EXPLICIT }];
-
-  // The name of the transit agency.
-  string agency_name = 6 [features = { field_presence: EXPLICIT }];
-
-  // Train or bus number of the ticket
-  string vehicle_number = 7 [features = { field_presence: EXPLICIT }];
-
-  // The seat number of the ticket.
-  string seat_number = 8 [features = { field_presence: EXPLICIT }];
-
-  // The carriage number of the ticket.
-  string carriage_number = 9 [features = { field_presence: EXPLICIT }];
-
-  // Platform of the ticket.
-  string platform = 10 [features = { field_presence: EXPLICIT }];
-
-  // The type of the ticket (e.g. "One-Way", "Round-Trip", "Monthly Pass")
-  string ticket_type = 11 [features = { field_presence: EXPLICIT }];
-
-  // How long the ticket is valid for (e.g. 1 hour, 24 hours, 1 week, etc.)
-  string validity_period = 12 [features = { field_presence: EXPLICIT }];
-
-  // The origin station or city of the ticket.
-  string origin = 13 [features = { field_presence: EXPLICIT }];
-
-  // The destination station or city of the ticket.
-  string destination = 14 [features = { field_presence: EXPLICIT }];
-
-  // The time of travel for the ticket.
-  string time_of_travel = 15 [features = { field_presence: EXPLICIT }];
-
-  // The date of travel for the ticket.
-  string date_of_travel = 16 [features = { field_presence: EXPLICIT }];
-}
-
 enum PassCategory {
   PASS_CATEGORY_UNSPECIFIED = 0;
 
   PASS_CATEGORY_LOYALTY_CARD = 1;
 
   PASS_CATEGORY_EVENT_PASS = 2;
-
-  PASS_CATEGORY_TRANSIT_TICKET = 3;
 }
