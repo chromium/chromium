@@ -225,6 +225,9 @@ message AnnotatedPageContent {
 
   // The rect of the viewport for the tab. i.e., screenshot dimensions.
   // Dimensions are in captured pixels.
+  // This coordinate system should be used for coordinate based browser actions.
+  // This uses device independent pixels, i.e., doesn't include the device
+  // scale factor while other dimensions in APC are based on that.
   BoundingRect viewport_geometry = 5 [features = { field_presence: EXPLICIT }];
 
   // The id of the tab that the page content was extracted from. Guaranteed to
@@ -1108,11 +1111,35 @@ message SiteEngagement {
 }
 
 // The coordinates of a point.
-// Next ID: 3
+// Next ID: 4
 message Coordinate {
   int32 x = 1 [features = { field_presence: EXPLICIT }];
 
   int32 y = 2 [features = { field_presence: EXPLICIT }];
+
+  // The type of the coordinate. If not specified, the coordinate is assumed to
+  // be relative to the viewport dimensions or screenshot dimensions depending
+  // on the context.
+  PixelType pixel_type = 3 [features = { field_presence: EXPLICIT }];
+
+  enum PixelType {
+    // The coordinate type is not specified. Assumed to be viewport.
+    PIXEL_TYPE_UNSPECIFIED = 0;
+
+    // Density independent pixels (DIPs).
+    // The coordinate is in DIPs which are independent of OS-level UI scaling.
+    // e.g., The coordinate is relative to the viewport dimensions set in APC.
+    PIXEL_TYPE_DIPS = 1;
+
+    // Physical pixels.
+    // The coordinate is provided in physical screen pixels. Values provided in
+    // physical pixels depend on UI scaling factor so must not be used when the
+    // scaling factor changes (e.g. APC generated, window moved to a higher
+    // density monitor; physical coordinate values must now be invalidated).
+    // e.g., The coordinate is relative to the dimensions of the annotated page
+    // content root node.
+    PIXEL_TYPE_PHYSICAL_PIXELS = 2;
+  }
 }
 
 // A meta tag
