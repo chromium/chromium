@@ -169,17 +169,6 @@
       chrome_status_feature: 5714245488476160,
     },
     {
-      name: "CSSValueAppearanceNonStandard",
-      message: "CSS appearance values  `inner-spin-button`, `media-slider`, `media-sliderthumb`, `media-volume-slider`, `media-volume-sliderthumb`, `push-button`, `searchfield-cancel-button`, `slider-horizontal`, `sliderthumb-horizontal`, `sliderthumb-vertical`, `square-button` are not standardized and will be removed.",
-      translation_note: "Warning displayed to developers to let them know the CSS appearance property values they used are deprecated and will be removed.",
-      web_features: [
-        "kCSSValueAppearanceNonStandard",
-      ],
-      chrome_status_feature: 5066630972833792,
-      milestone: 118,
-      obsolete_to_be_removed_after_milestone: 142,
-    },
-    {
       name: "CSSValueAppearanceSliderVertical",
       message: "CSS appearance value `slider-vertical` is not standardized and will be removed.",
       translation_note: "Warning displayed to developers to let them know the CSS appearance property value they used is not standard and will be removed.",
@@ -197,17 +186,6 @@
       ],
       chrome_status_feature: 5128825141198848,
       milestone: 119,
-    },
-    {
-      name: "EventPath",
-      message: "`Event.path` is deprecated and will be removed. Please use `Event.composedPath()` instead.",
-      translation_note: "Warning displayed to developers when the non-standard `Event.path` API is used to notify them that this API is deprecated.",
-      web_features: [
-        "kOBSOLETE_EventPath",
-      ],
-      chrome_status_feature: 5726124632965120,
-      milestone: 109,
-      obsolete_to_be_removed_after_milestone: 127,
     },
     {
       name: "Fledge",
@@ -297,37 +275,6 @@
         "kLocalCSSFileExtensionRejected",
       ],
       milestone: 64,
-    },
-    {
-      name: "MediaSourceAbortRemove",
-      message: "Using `SourceBuffer.abort()` to abort `remove()`'s asynchronous range removal is deprecated due to specification change. Support will be removed in the future. You should listen to the `updateend` event instead. `abort()` is intended to only abort an asynchronous media append or reset parser state.",
-      translation_note: "This is a deprecation warning to developers that occurs when the script attempts to use the Media Source Extensions API in a way that is no longer supported by the specification for the API. The usage that is problematic is when the script calls the `SourceBuffer.abort()` method at a time when there is still processing happening in response to a previous `SourceBuffer.remove()` call for the same SourceBuffer object. More precisely, we show this warning to developers when script calls the SourceBuffer abort() method while the asynchronous processing of a remove() call on that SourceBuffer is not yet complete. Early versions of the Media Source Extensions specification allowed such aborts, but standardization of the specification resulted in disallowing the aborts. The script should instead wait for the asynchronous remove() operation to complete, which is observable by listening for the associated 'updateend' event from the SourceBuffer. A note is also included in the warning, describing when abort() is meaningful and allowed by the specification for purposes other than interrupting a remove() operation's asynchronous steps. Those supported purposes include using abort() to interrupt processing that may still be happening in response to a previous appendBuffer() call on that SourceBuffer, or using abort() to clear the internal of any unprocessed data remaining from previous appendBuffer() calls. See https://www.w3.org/TR/media-source-2/#dom-sourcebuffer-abort for the currently specified behavior, which would throw an exception once the deprecated removal abort is no longer supported. See https://github.com/w3c/media-source/issues/19 for the discussion that led to the specification change.",
-      web_features: [
-        "kMediaSourceAbortRemove",
-      ],
-      chrome_status_feature: 6107495151960064,
-      obsolete_to_be_removed_after_milestone: 140,
-    },
-    {
-      name: "MediaSourceDurationTruncatingBuffered",
-      message: "Setting `MediaSource.duration` below the highest presentation timestamp of any buffered coded frames is deprecated due to specification change. Support for implicit removal of truncated buffered media will be removed in the future. You should instead perform explicit `remove(newDuration, oldDuration)` on all `sourceBuffers`, where `newDuration < oldDuration`.",
-      translation_note: "This is a deprecation warning to developers that occurs when the script attempts to use the Media Source Extensions API in a way that is no longer supported by the specification for the API. The usage that is problematic is when the script sets the duration attribute of a MediaSource object too low. The duration attribute of a MediaSource must be longer than the actual duration of any media (audio or video) already in the MediaSource. When set too low, the MediaSource must remove audio and video content that is beyond the time indicated by the new duration. Content removal that is caused by setting the duration attribute too low is no longer allowed by the specification. The message describes the minimum allowable duration value as the 'highest presentation timestamp of any buffered coded frames' as a more precise way of describing the duration of content already in the MediaSource: 'coded frames' are the specification's way of describing compressed audio frames or compressed video frames, and they each have a 'presentation timestamp' that describes precisely when that frame's playback occurs in the overall media presentation. Early versions of the Media Source Extensions specification allowed this to happen, but standardization of the specification resulted in disallowing this behavior. The underlying issue leading to this specification change was that setting the duration attribute should be synchronous, but setting it lower than the timestamp of something currently buffered would cause confusing removal of media between that new duration and the previous, larger, duration. The script should instead explicitly remove that range of media first, before lowering the duration. See https://www.w3.org/TR/media-source-2/#dom-mediasource-duration and https://www.w3.org/TR/media-source-2/#dom-mediasource-duration for the currently specified behavior, which would throw an exception once support is removed for deprecated implicit asynchronous range removal when duration is truncated. See both https://github.com/w3c/media-source/issues/20 and https://github.com/w3c/media-source/issues/26 for the discussion that led to the specification change.",
-      web_features: [
-        "kMediaSourceDurationTruncatingBuffered",
-      ],
-      chrome_status_feature: 6107495151960064,
-      obsolete_to_be_removed_after_milestone: 140,
-    },
-    {
-      name: "NonStandardDeclarativeShadowDOM",
-      message: "The older, non-standardized `shadowroot` attribute is deprecated, and will *no longer function* in M119. Please use the new, standardized `shadowrootmode` attribute instead.",
-      translation_note: "This warning is displayed when a site contains a `<template>` element with the `shadowroot` attribute.",
-      web_features: [
-        "kDeclarativeShadowRoot",
-      ],
-      chrome_status_feature: 6239658726391808,
-      milestone: 119,
-      obsolete_to_be_removed_after_milestone: 132,
     },
     {
       name: "NoSysexWebMIDIWithoutPermission",

@@ -1729,8 +1729,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="1425" label="TextAreaMinLength"/>
   <int value="1426" label="TopNavigationFromSubFrame"/>
   <int value="1427" label="PrefixedElementRequestFullscreenInShadow"/>
-  <int value="1428" label="MediaSourceAbortRemove"/>
-  <int value="1429" label="MediaSourceDurationTruncatingBuffered"/>
+  <int value="1428" label="OBSOLETE_MediaSourceAbortRemove"/>
+  <int value="1429" label="OBSOLETE_MediaSourceDurationTruncatingBuffered"/>
   <int value="1430" label="AudioContextCrossOriginIframe"/>
   <int value="1431" label="OBSOLETE_PointerEventSetCapture"/>
   <int value="1432" label="OBSOLETE_PointerEventDispatch"/>
@@ -3613,7 +3613,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3193" label="ThirdPartyCacheStorage"/>
   <int value="3194" label="ThirdPartyLocalStorage"/>
   <int value="3195" label="ThirdPartySessionStorage"/>
-  <int value="3196" label="DeclarativeShadowRoot"/>
+  <int value="3196" label="OBSOLETE_DeclarativeShadowRoot"/>
   <int value="3197" label="CrossOriginOpenerPolicySameOrigin"/>
   <int value="3198" label="CrossOriginOpenerPolicySameOriginAllowPopups"/>
   <int value="3199" label="CrossOriginEmbedderPolicyRequireCorp"/>
@@ -4897,7 +4897,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4413" label="ImageSet"/>
   <int value="4414" label="WindowCloseHistoryLengthOne"/>
   <int value="4415" label="OBSOLETE_CreateNSResolverWithNonElements"/>
-  <int value="4416" label="CSSValueAppearanceNonStandard"/>
+  <int value="4416" label="OBSOLETE_CSSValueAppearanceNonStandard"/>
   <int value="4417" label="OBSOLETE_CSSGetComputedAnimationDelayZero"/>
   <int value="4418" label="GetEffectTimingDelayZero"/>
   <int value="4419" label="Scrollend"/>

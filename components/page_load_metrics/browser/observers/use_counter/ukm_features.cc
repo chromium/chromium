@@ -140,7 +140,6 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kThirdPartyFileSystem,
           WebFeature::kThirdPartyIndexedDb,
           WebFeature::kThirdPartyCacheStorage,
-          WebFeature::kDeclarativeShadowRoot,
           WebFeature::kOverlayPopup,
           WebFeature::kOverlayPopupAd,
           WebFeature::kTrustTokenXhr,
