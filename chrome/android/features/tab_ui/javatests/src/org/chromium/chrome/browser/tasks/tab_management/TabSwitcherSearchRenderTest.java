@@ -49,6 +49,7 @@ import org.chromium.chrome.test.transit.testhtmls.NavigatePageStations;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.omnibox.OmniboxFeatureList;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -126,6 +127,8 @@ public class TabSwitcherSearchRenderTest {
     @Restriction(PHONE)
     @EnableFeatures({OmniboxFeatureList.ANDROID_HUB_SEARCH_TAB_GROUPS})
     public void testHubSearchBox_Phone() throws IOException {
+        OmniboxFeatures.sAndroidHubSearchEnableTabGroupStrings.setForTesting(true);
+
         RegularTabSwitcherStation tabSwitcher = mInitialPage.openRegularTabSwitcher();
 
         mRenderTestRule.render(tabSwitcher.viewHolderElement.value(), "hub_searchbox_phone");
@@ -197,6 +200,8 @@ public class TabSwitcherSearchRenderTest {
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testZeroPrefixSuggestions_ShownInRegular(boolean nightModeEnabled)
             throws IOException {
+        OmniboxFeatures.sAndroidHubSearchEnableTabGroupStrings.setForTesting(true);
+
         List<String> urlsToOpen = Arrays.asList("/chrome/test/data/android/test.html");
         TabSwitcherSearchStation searchStation =
                 Journeys.prepareRegularTabsWithWebPages(

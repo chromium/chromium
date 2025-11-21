@@ -88,6 +88,7 @@ import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.S
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.OmniboxFeatureList;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.PageTransition;
@@ -882,6 +883,8 @@ public class SearchActivityUnitTest {
     @Test
     @EnableFeatures({OmniboxFeatureList.ANDROID_HUB_SEARCH_TAB_GROUPS})
     public void finishNativeInitialization_setHubSearchBoxUrlBarElements_withTabGroups() {
+        OmniboxFeatures.sAndroidHubSearchEnableTabGroupStrings.setForTesting(true);
+
         LocationBarCoordinator locationBarCoordinator = mock(LocationBarCoordinator.class);
         UrlBarCoordinator urlBarCoordinator = mock(UrlBarCoordinator.class);
         StatusCoordinator statusCoordinator = mock(StatusCoordinator.class);

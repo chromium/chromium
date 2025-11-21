@@ -4846,9 +4846,14 @@ const FeatureEntry::FeatureVariation kCCTResetTimeoutVariations[] = {
 #if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kAndroidHubSearchTabGroupsPane[] = {
     {"enable_hub_search_tab_groups_pane", "true"}};
+const FeatureEntry::FeatureParam kAndroidHubSearchTabGroupStrings[] = {
+    {"enable_hub_search_tab_group_strings", "true"}};
 const FeatureEntry::FeatureVariation kAndroidHubSearchTabGroupsVariations[] = {
     {"on Tab Groups Pane", kAndroidHubSearchTabGroupsPane,
-     std::size(kAndroidHubSearchTabGroupsPane), nullptr}};
+     std::size(kAndroidHubSearchTabGroupsPane), nullptr},
+    {"with Tab Group Strings", kAndroidHubSearchTabGroupStrings,
+     std::size(kAndroidHubSearchTabGroupStrings), nullptr},
+};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)

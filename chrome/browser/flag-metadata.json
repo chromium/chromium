@@ -320,7 +320,7 @@
   {
     "name": "android-hub-search-tab-groups",
     "owners": [ "wylieb@google.com", "bjfong@google.com", "clank-tab-dev@google.com" ],
-    "expiry_milestone": 145
+    "expiry_milestone": 147
   },
   {
     "name": "android-no-surface-sync-for-browser-controls",

@@ -662,7 +662,7 @@ public class SearchActivity extends AsyncInitializationActivity
         boolean isIncognito = mSearchBoxDataProvider.isIncognitoBranded();
         @StringRes
         int regularHintTextRes =
-                OmniboxFeatures.sAndroidHubSearchTabGroups.isEnabled()
+                OmniboxFeatures.sAndroidHubSearchEnableTabGroupStrings.getValue()
                         ? R.string.hub_search_empty_hint_with_tab_groups
                         : R.string.hub_search_empty_hint;
         @StringRes

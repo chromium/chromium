@@ -560,7 +560,7 @@ public class HubToolbarView extends LinearLayout {
         Context context = getContext();
         @StringRes
         int regularEmptyHintRes =
-                OmniboxFeatures.sAndroidHubSearchTabGroups.isEnabled()
+                OmniboxFeatures.sAndroidHubSearchEnableTabGroupStrings.getValue()
                         ? R.string.hub_search_empty_hint_with_tab_groups
                         : R.string.hub_search_empty_hint;
         @StringRes

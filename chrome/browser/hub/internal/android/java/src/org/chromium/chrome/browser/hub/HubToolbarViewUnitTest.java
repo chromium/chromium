@@ -78,6 +78,7 @@ import org.chromium.chrome.browser.hub.HubToolbarProperties.PaneButtonLookup;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.omnibox.OmniboxFeatureList;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -451,6 +452,8 @@ public class HubToolbarViewUnitTest {
     @Test
     @EnableFeatures({OmniboxFeatureList.ANDROID_HUB_SEARCH_TAB_GROUPS})
     public void testUpdateIncognitoElementsWithTabGroups() {
+        OmniboxFeatures.sAndroidHubSearchEnableTabGroupStrings.setForTesting(true);
+
         mPropertyModel.set(IS_INCOGNITO, true);
         assertEquals(
                 mActivity.getString(R.string.hub_search_empty_hint_incognito),

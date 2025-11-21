@@ -216,6 +216,11 @@ public class OmniboxFeatures {
     public static final BooleanCachedFeatureParam sAndroidHubSearchEnableOnTabGroupsPane =
             newBooleanParam(sAndroidHubSearchTabGroups, "enable_hub_search_tab_groups_pane", true);
 
+    // This parameter enables the tab group string on the hub search box entrypoint.
+    public static final BooleanCachedFeatureParam sAndroidHubSearchEnableTabGroupStrings =
+            newBooleanParam(
+                    sAndroidHubSearchTabGroups, "enable_hub_search_tab_group_strings", false);
+
     // This parameter enables showing the switch-to-tab chip on large form factors.
     public static final BooleanCachedFeatureParam sOmniboxImprovementForLFFSwitchToTabChip =
             newBooleanParam(sOmniboxImprovementForLFF, "switch_to_tab_chip", false);
