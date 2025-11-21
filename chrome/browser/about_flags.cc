@@ -5140,6 +5140,21 @@ const FeatureEntry::FeatureVariation kAndroidDesktopZoomScalingVariations[] = {
      std::size(kAndroidDesktopZoomScalingFactorLarge), nullptr}};
 #endif  // BUILDFLAG(IS_ANDROID)
 
+const FeatureEntry::FeatureParam kContextualTaskPermanentButton[] = {
+    {"ContextualTasksEntryPoint", "toolbar-permanent"}};
+const FeatureEntry::FeatureParam kContextualTaskEphemeralButton[] = {
+    {"ContextualTasksEntryPoint", "toolbar-revisit"}};
+const FeatureEntry::FeatureParam kContextualTaskPageAction[] = {
+    {"ContextualTasksEntryPoint", "page-action-revisit"}};
+
+const FeatureEntry::FeatureVariation kContextualTaskEntryPointVariations[] = {
+    {"permanent toolbar button", kContextualTaskPermanentButton,
+     std::size(kContextualTaskPermanentButton), nullptr},
+    {"ephemeral toolbar button", kContextualTaskEphemeralButton,
+     std::size(kContextualTaskEphemeralButton), nullptr},
+    {"page action chip", kContextualTaskPageAction,
+     std::size(kContextualTaskPageAction), nullptr}};
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -13186,7 +13201,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"contextual-tasks",
      contextual_tasks::flag_descriptions::kContextualTasksName,
      contextual_tasks::flag_descriptions::kContextualTasksDescription,
-     kOsDesktop, FEATURE_VALUE_TYPE(contextual_tasks::kContextualTasks)},
+     kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(contextual_tasks::kContextualTasks,
+                                    kContextualTaskEntryPointVariations,
+                                    "ContextualTasks")},
 
     {"contextual-tasks-context",
      contextual_tasks::flag_descriptions::kContextualTasksContextName,
