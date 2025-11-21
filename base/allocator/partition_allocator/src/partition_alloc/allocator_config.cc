@@ -21,7 +21,7 @@ enum ExternalMetadataTrialGroupPercentage {
 };
 // Rather than doing percentage group based assignment, set all clients to
 // enabled when true.
-constexpr bool kDefaultEnableExternalMetadataTrial = false;
+constexpr bool kDefaultEnableExternalMetadataTrial = true;
 
 ExternalMetadataTrialGroup s_externalMetadataJoinedGroup =
     ExternalMetadataTrialGroup::kUndefined;
