@@ -1205,8 +1205,8 @@ void ManagePasswordsUIController::MaybeShowIOSPasswordPromo() {
     return;
   }
 
-  if (MobilePromoOnDesktopTypeEnabled() ==
-      MobilePromoOnDesktopPromoType::kAutofillPromo) {
+  if (MobilePromoOnDesktopTypeEnabled(
+          MobilePromoOnDesktopPromoType::kAutofillPromo)) {
     IOSPromoTriggerService* service =
         IOSPromoTriggerServiceFactory::GetForProfile(browser->GetProfile());
     if (service) {

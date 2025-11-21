@@ -453,8 +453,7 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
           std::make_unique<ChromeLabsCoordinator>(browser);
     }
 
-    if (MobilePromoOnDesktopTypeEnabled() !=
-        MobilePromoOnDesktopPromoType::kDisabled) {
+    if (MobilePromoOnDesktopEnabled()) {
       ios_promo_controller_ =
           GetUserDataFactory().CreateInstance<IOSPromoController>(*browser,
                                                                   browser);

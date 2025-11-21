@@ -1013,8 +1013,8 @@ void LensSearchController::OnPageContextUpdatedForZeroStateRequest(
 }
 
 void LensSearchController::MaybeShowMobilePromo() {
-  if (MobilePromoOnDesktopTypeEnabled() ==
-      MobilePromoOnDesktopPromoType::kLensPromo) {
+  if (MobilePromoOnDesktopTypeEnabled(
+          MobilePromoOnDesktopPromoType::kLensPromo)) {
     IOSPromoTriggerService* service =
         IOSPromoTriggerServiceFactory::GetForProfile(
             Profile::FromBrowserContext(

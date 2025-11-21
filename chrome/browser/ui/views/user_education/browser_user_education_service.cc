@@ -1568,8 +1568,8 @@ void MaybeRegisterChromeFeaturePromos(
                        "Triggered after user lands on chrome://history.")));
 
   // kIPHiOSLensPromoDesktopFeature
-  if (MobilePromoOnDesktopTypeEnabled() ==
-      MobilePromoOnDesktopPromoType::kLensPromo) {
+  if (MobilePromoOnDesktopTypeEnabled(
+          MobilePromoOnDesktopPromoType::kLensPromo)) {
     registry.RegisterFeature(
         std::move(user_education::FeaturePromoSpecification::CreateForCustomUi(
                       feature_engagement::kIPHiOSLensPromoDesktopFeature,
@@ -1583,8 +1583,8 @@ void MaybeRegisterChromeFeaturePromos(
   }
 
   // kIPHiOSEnhancedBrowsingDesktopFeature
-  if (MobilePromoOnDesktopTypeEnabled() ==
-      MobilePromoOnDesktopPromoType::kESBPromo) {
+  if (MobilePromoOnDesktopTypeEnabled(
+          MobilePromoOnDesktopPromoType::kESBPromo)) {
     registry.RegisterFeature(std::move(
         user_education::FeaturePromoSpecification::CreateForCustomUi(
             feature_engagement::kIPHiOSEnhancedBrowsingDesktopFeature,
@@ -1599,8 +1599,8 @@ void MaybeRegisterChromeFeaturePromos(
   }
 
   // kIPHiOSPasswordPromoDesktopFeature
-  if (MobilePromoOnDesktopTypeEnabled() ==
-      MobilePromoOnDesktopPromoType::kAutofillPromo) {
+  if (MobilePromoOnDesktopTypeEnabled(
+          MobilePromoOnDesktopPromoType::kAutofillPromo)) {
     registry.RegisterFeature(
         std::move(user_education::FeaturePromoSpecification::CreateForCustomUi(
                       feature_engagement::kIPHiOSPasswordPromoDesktopFeature,

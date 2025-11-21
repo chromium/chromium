@@ -11,8 +11,7 @@
 // static
 IOSPromoTriggerService* IOSPromoTriggerServiceFactory::GetForProfile(
     Profile* profile) {
-  if (MobilePromoOnDesktopTypeEnabled() ==
-      MobilePromoOnDesktopPromoType::kDisabled) {
+  if (!MobilePromoOnDesktopEnabled()) {
     return nullptr;
   }
   return static_cast<IOSPromoTriggerService*>(

@@ -387,8 +387,9 @@ std::unique_ptr<views::View> IOSPromoBubble::CreateButtonsView(
                   views::DistanceMetric::DISTANCE_RELATED_BUTTON_HORIZONTAL));
   button_container_builder.AddChild(decline_button);
 
-  if (MobilePromoOnDesktopTypeEnabled() !=
-      MobilePromoOnDesktopPromoType::kDisabled) {
+  // TODO(crbug.com/462698052): Remove once all the mobile-promo-on-desktop
+  // promos have been migrated to the user education service.
+  if (MobilePromoOnDesktopEnabled()) {
     auto accept_button_callback = base::BindRepeating(
         &IOSPromoBubble::IOSPromoBubbleDelegate::AcceptButtonClicked,
         base::Unretained(bubble_delegate), bubble_type);

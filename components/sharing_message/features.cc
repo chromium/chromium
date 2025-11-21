@@ -16,15 +16,27 @@ const char kMobilePromoOnDesktopPromoTypeParam[] =
 const char kMobilePromoOnDesktopNotificationParam[] =
     "mobile_promo_on_desktop_notification";
 
-MobilePromoOnDesktopPromoType MobilePromoOnDesktopTypeEnabled() {
-  if (!base::FeatureList::IsEnabled(
-          sync_preferences::features::kEnableCrossDevicePrefTracker) ||
-      !base::FeatureList::IsEnabled(kMobilePromoOnDesktop)) {
-    return MobilePromoOnDesktopPromoType::kDisabled;
+bool MobilePromoOnDesktopEnabled() {
+  return base::FeatureList::IsEnabled(
+             sync_preferences::features::kEnableCrossDevicePrefTracker) &&
+         base::FeatureList::IsEnabled(kMobilePromoOnDesktop);
+}
+
+bool MobilePromoOnDesktopTypeEnabled(MobilePromoOnDesktopPromoType type) {
+  if (!MobilePromoOnDesktopEnabled()) {
+    return false;
   }
-  return static_cast<MobilePromoOnDesktopPromoType>(
+
+  auto enabled_promo_type = static_cast<MobilePromoOnDesktopPromoType>(
       base::GetFieldTrialParamByFeatureAsInt(
-          kMobilePromoOnDesktop, kMobilePromoOnDesktopPromoTypeParam, 1));
+          kMobilePromoOnDesktop, kMobilePromoOnDesktopPromoTypeParam,
+          static_cast<int>(MobilePromoOnDesktopPromoType::kAllPromos)));
+
+  if (enabled_promo_type == MobilePromoOnDesktopPromoType::kAllPromos) {
+    return true;
+  }
+
+  return enabled_promo_type == type;
 }
 
 bool IsMobilePromoOnDesktopNotificationsEnabled() {

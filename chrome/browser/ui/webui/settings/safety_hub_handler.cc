@@ -835,8 +835,8 @@ void SafetyHubHandler::OnJavascriptDisallowed() {}
 
 void SafetyHubHandler::OnSafeBrowsingEnhancedChanged() {
   if (profile_->GetPrefs()->GetBoolean(prefs::kSafeBrowsingEnhanced) &&
-      MobilePromoOnDesktopTypeEnabled() ==
-          MobilePromoOnDesktopPromoType::kESBPromo) {
+      MobilePromoOnDesktopTypeEnabled(
+          MobilePromoOnDesktopPromoType::kESBPromo)) {
     IOSPromoTriggerService* service =
         IOSPromoTriggerServiceFactory::GetForProfile(profile_);
     if (service) {
