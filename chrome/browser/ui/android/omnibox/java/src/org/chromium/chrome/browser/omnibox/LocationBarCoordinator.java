@@ -44,7 +44,7 @@ import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinator;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.omnibox.LocationBarMediator.OmniboxUma;
-import org.chromium.chrome.browser.omnibox.fusebox.NavigationAttachmentsCoordinator;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator;
 import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator.PageInfoAction;
@@ -119,7 +119,7 @@ public class LocationBarCoordinator
     private UrlBarCoordinator mUrlCoordinator;
     private AutocompleteCoordinator mAutocompleteCoordinator;
     private StatusCoordinator mStatusCoordinator;
-    private NavigationAttachmentsCoordinator mNavigationAttachmentsCoordinator;
+    private FuseboxCoordinator mFuseboxCoordinator;
     private final WindowAndroid mWindowAndroid;
     private final Callback<Boolean> mTextWrappingListener;
     private LocationBarMediator mLocationBarMediator;
@@ -257,8 +257,8 @@ public class LocationBarCoordinator
         OmniboxResourceProvider.setTabFaviconFactory(tabFaviconFunction);
         ObservableSupplierImpl<@AutocompleteRequestType Integer> autocompleteRequestTypeSupplier =
                 new ObservableSupplierImpl<>(AutocompleteRequestType.SEARCH);
-        mNavigationAttachmentsCoordinator =
-                new NavigationAttachmentsCoordinator(
+        mFuseboxCoordinator =
+                new FuseboxCoordinator(
                         context,
                         windowAndroid,
                         mLocationBarLayout,
@@ -268,7 +268,7 @@ public class LocationBarCoordinator
                         templateUrlServiceSupplier,
                         autocompleteRequestTypeSupplier);
         if (OmniboxFeatures.sOmniboxMultimodalInput.isEnabled()) {
-            mNavigationAttachmentsCoordinator
+            mFuseboxCoordinator
                     .getOnCompactModeChangedSupplier()
                     .addObserver(this::onCompactModeChange);
         }
@@ -305,7 +305,7 @@ public class LocationBarCoordinator
                         modalDialogManagerSupplier,
                         autocompleteRequestTypeSupplier,
                         mPageZoomIndicatorCoordinator,
-                        mNavigationAttachmentsCoordinator,
+                        mFuseboxCoordinator,
                         multiInstanceManager);
         if (backPressManager != null) {
             backPressManager.addHandler(mLocationBarMediator, BackPressHandler.Type.LOCATION_BAR);
@@ -322,7 +322,7 @@ public class LocationBarCoordinator
                         isIncognito,
                         onLongClickListener);
 
-        // Set up text wrapping listener for NavigationAttachmentsCoordinator
+        // Set up text wrapping listener for FuseboxCoordinator
         mTextWrappingListener = this::onTextWrappingChanged;
         mUrlCoordinator.addTextWrappingChangeListener(mTextWrappingListener);
 
@@ -345,7 +345,7 @@ public class LocationBarCoordinator
                         uiOverrides.isForcedPhoneStyleOmnibox(),
                         windowAndroid,
                         mDeferredIMEWindowInsetApplicationCallback,
-                        mNavigationAttachmentsCoordinator);
+                        mFuseboxCoordinator);
         StatusView statusView = mLocationBarLayout.findViewById(R.id.location_bar_status);
         mStatusCoordinator =
                 new StatusCoordinator(
@@ -361,7 +361,7 @@ public class LocationBarCoordinator
                         browserControlsVisibilityDelegate);
         mLocationBarMediator.setCoordinators(
                 mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
-        mLocationBarMediator.addUrlFocusChangeListener(mNavigationAttachmentsCoordinator);
+        mLocationBarMediator.addUrlFocusChangeListener(mFuseboxCoordinator);
 
         mLocationBarMediator.addUrlFocusChangeListener(mAutocompleteCoordinator);
         mLocationBarMediator.addUrlFocusChangeListener(mUrlCoordinator);
@@ -496,9 +496,9 @@ public class LocationBarCoordinator
         mStatusCoordinator.destroy();
         mStatusCoordinator = null;
 
-        if (mNavigationAttachmentsCoordinator != null) {
-            mNavigationAttachmentsCoordinator.destroy();
-            mNavigationAttachmentsCoordinator = null;
+        if (mFuseboxCoordinator != null) {
+            mFuseboxCoordinator.destroy();
+            mFuseboxCoordinator = null;
         }
 
         mLocationBarLayout.destroy();
@@ -821,8 +821,8 @@ public class LocationBarCoordinator
     }
 
     private void onTextWrappingChanged(boolean isWrapping) {
-        if (mNavigationAttachmentsCoordinator != null) {
-            mNavigationAttachmentsCoordinator.onFuseboxTextWrappingChanged(isWrapping);
+        if (mFuseboxCoordinator != null) {
+            mFuseboxCoordinator.onFuseboxTextWrappingChanged(isWrapping);
         }
         mLocationBarMediator.updateButtonVisibility();
     }

@@ -42,10 +42,9 @@ import org.chromium.url.GURL;
 import java.util.Collections;
 import java.util.List;
 
-/** Coordinator for the Navigation Attachments component. */
+/** Coordinator for the Fusebox component. */
 @NullMarked
-public class NavigationAttachmentsCoordinator
-        implements UrlFocusChangeListener, TemplateUrlServiceObserver {
+public class FuseboxCoordinator implements UrlFocusChangeListener, TemplateUrlServiceObserver {
     private final @Nullable FuseboxViewHolder mViewHolder;
     private final @Nullable LocationBarDataProvider mLocationBarDataProvider;
     private final ObservableSupplierImpl<@AutocompleteRequestType Integer>
@@ -62,7 +61,7 @@ public class NavigationAttachmentsCoordinator
     private final ObservableSupplierImpl<Boolean> mOnCompactModeChangedSupplier =
             new ObservableSupplierImpl<>(false);
 
-    public NavigationAttachmentsCoordinator(
+    public FuseboxCoordinator(
             Context context,
             WindowAndroid windowAndroid,
             ConstraintLayout parent,

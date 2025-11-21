@@ -33,7 +33,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.omnibox.DeferredIMEWindowInsetApplicationCallback;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
-import org.chromium.chrome.browser.omnibox.fusebox.NavigationAttachmentsCoordinator;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.test.R;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -73,7 +73,7 @@ public class AutocompleteCoordinatorUnitTest {
     @Mock private ActivityLifecycleDispatcher mLifecycleDispatcher;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private DeferredIMEWindowInsetApplicationCallback mDeferredImeInsetCb;
-    @Mock private NavigationAttachmentsCoordinator mNavigationAttachmentsCoordinator;
+    @Mock private FuseboxCoordinator mFuseboxCoordinator;
     @Mock private OmniboxSuggestionsContainer mSuggestionsContainer;
     @Mock private ViewGroup mParentView;
 
@@ -91,7 +91,7 @@ public class AutocompleteCoordinatorUnitTest {
 
         lenient()
                 .doReturn(mAutocompleteRequestTypeSupplier)
-                .when(mNavigationAttachmentsCoordinator)
+                .when(mFuseboxCoordinator)
                 .getAutocompleteRequestTypeSupplier();
 
         mAutocompleteCoordinator =
@@ -113,7 +113,7 @@ public class AutocompleteCoordinatorUnitTest {
                         false,
                         mWindowAndroid,
                         mDeferredImeInsetCb,
-                        mNavigationAttachmentsCoordinator);
+                        mFuseboxCoordinator);
 
         mAutocompleteCoordinator.setSuggestionsContainerForTest(mSuggestionsContainer);
     }

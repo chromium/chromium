@@ -37,7 +37,7 @@ import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics.RefineActionUsage;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
-import org.chromium.chrome.browser.omnibox.fusebox.NavigationAttachmentsCoordinator;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator.OmniboxSuggestionsVisualStateObserver;
@@ -174,7 +174,7 @@ class AutocompleteMediator
 
     // Observer watching for changes to the visual state of the omnibox suggestions.
     private @Nullable OmniboxSuggestionsVisualStateObserver mOmniboxSuggestionsVisualStateObserver;
-    private final NavigationAttachmentsCoordinator mNavigationAttachmentsCoordinator;
+    private final FuseboxCoordinator mFuseboxCoordinator;
 
     AutocompleteMediator(
             Context context,
@@ -193,7 +193,7 @@ class AutocompleteMediator
             OmniboxSuggestionsDropdownEmbedder embedder,
             WindowAndroid windowAndroid,
             DeferredIMEWindowInsetApplicationCallback deferredIMEWindowInsetApplicationCallback,
-            NavigationAttachmentsCoordinator navigationAttachmentsCoordinator,
+            FuseboxCoordinator fuseboxCoordinator,
             boolean forcePhoneStyleOmnibox) {
         mContext = context;
         mDelegate = delegate;
@@ -203,7 +203,7 @@ class AutocompleteMediator
         mHandler = handler;
         mDataProvider = locationBarDataProvider;
         mBringTabGroupToFrontCallback = bringTabGroupToFrontCallback;
-        mNavigationAttachmentsCoordinator = navigationAttachmentsCoordinator;
+        mFuseboxCoordinator = fuseboxCoordinator;
         mSuggestionModels = mListPropertyModel.get(SuggestionListProperties.SUGGESTION_MODELS);
         mOmniboxActionDelegate = omniboxActionDelegate;
         mWindowAndroid = windowAndroid;
@@ -229,7 +229,7 @@ class AutocompleteMediator
 
         mAnimationDriver = initializeAnimationDriver();
 
-        mNavigationAttachmentsCoordinator
+        mFuseboxCoordinator
                 .getAutocompleteRequestTypeSupplier()
                 .addSyncObserver(mOnAutocompleteRequestTypeChanged);
 
@@ -272,7 +272,7 @@ class AutocompleteMediator
         if (mNativeInitialized) {
             OmniboxActionFactoryImpl.get().destroyNativeFactory();
         }
-        mNavigationAttachmentsCoordinator
+        mFuseboxCoordinator
                 .getAutocompleteRequestTypeSupplier()
                 .removeObserver(mOnAutocompleteRequestTypeChanged);
         mHandler.removeCallbacksAndMessages(null);
@@ -465,8 +465,7 @@ class AutocompleteMediator
             onTextChanged(
                     text, /* isOnFocusContext= */ OmniboxFeatures.shouldRetainOmniboxOnFocus());
         } else {
-            mNavigationAttachmentsCoordinator.notifyOmniboxSessionEnded(
-                    mOmniboxFocusResultedInNavigation);
+            mFuseboxCoordinator.notifyOmniboxSessionEnded(mOmniboxFocusResultedInNavigation);
             mDeferredIMEWindowInsetApplicationCallback.detach();
             stopMeasuringSuggestionRequestToUiModelTime();
             cancelAutocompleteRequests();
@@ -1067,13 +1066,10 @@ class AutocompleteMediator
             url = updateSuggestionUrlIfNeeded(suggestion, url);
 
             url =
-                    switch (mNavigationAttachmentsCoordinator
-                            .getAutocompleteRequestTypeSupplier()
-                            .get()) {
-                        case AutocompleteRequestType.AI_MODE ->
-                                mNavigationAttachmentsCoordinator.getAimUrl(url);
+                    switch (mFuseboxCoordinator.getAutocompleteRequestTypeSupplier().get()) {
+                        case AutocompleteRequestType.AI_MODE -> mFuseboxCoordinator.getAimUrl(url);
                         case AutocompleteRequestType.IMAGE_GENERATION ->
-                                mNavigationAttachmentsCoordinator.getImageGenerationUrl(url);
+                                mFuseboxCoordinator.getImageGenerationUrl(url);
                         default -> url;
                     };
 
@@ -1228,7 +1224,7 @@ class AutocompleteMediator
         mAutocompleteInput.setPageClassification(
                 mDataProvider.getPageClassification(/* prefetch= */ false));
         mAutocompleteInput.setRequestType(
-                mNavigationAttachmentsCoordinator.getAutocompleteRequestTypeSupplier().get());
+                mFuseboxCoordinator.getAutocompleteRequestTypeSupplier().get());
         mAutocompleteInput.setPageUrl(mDataProvider.getCurrentGurl());
         mAutocompleteInput.setPageTitle(mDataProvider.getTitle());
 

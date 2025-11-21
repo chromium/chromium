@@ -63,9 +63,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
-/** Unit tests for {@link NavigationAttachmentsCoordinator}. */
+/** Unit tests for {@link FuseboxCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class NavigationAttachmentsCoordinatorUnitTest {
+public class FuseboxCoordinatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private AutocompleteController mAutocompleteController;
@@ -81,7 +81,7 @@ public class NavigationAttachmentsCoordinatorUnitTest {
 
     private ActivityController<TestActivity> mActivityController;
     private WindowAndroid mWindowAndroid;
-    private NavigationAttachmentsCoordinator mCoordinator;
+    private FuseboxCoordinator mCoordinator;
 
     private final ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<TabModelSelector> mTabModelSelectorSupplier =
@@ -118,7 +118,7 @@ public class NavigationAttachmentsCoordinatorUnitTest {
                 .getPageClassification(anyBoolean());
 
         mCoordinator =
-                new NavigationAttachmentsCoordinator(
+                new FuseboxCoordinator(
                         activity,
                         mWindowAndroid,
                         parent,

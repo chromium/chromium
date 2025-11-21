@@ -64,7 +64,7 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
-import org.chromium.chrome.browser.omnibox.fusebox.NavigationAttachmentsCoordinator;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator;
 import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
@@ -234,7 +234,7 @@ class LocationBarMediator
     private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
     private final ObservableSupplier<@AutocompleteRequestType Integer>
             mAutocompleteRequestTypeSupplier;
-    private final NavigationAttachmentsCoordinator mNavigationAttachmentsCoordinator;
+    private final FuseboxCoordinator mFuseboxCoordinator;
     private final boolean mPersistEditingState;
 
     private final ButtonToolbarWidthConsumer mBookmarkButtonToolbarWidthConsumer;
@@ -265,12 +265,12 @@ class LocationBarMediator
             Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
             ObservableSupplier<@AutocompleteRequestType Integer> autocompleteRequestTypeSupplier,
             @Nullable PageZoomIndicatorCoordinator pageZoomIndicatorCoordinator,
-            NavigationAttachmentsCoordinator navigationAttachmentsCoordinator,
+            FuseboxCoordinator fuseboxCoordinator,
             @Nullable MultiInstanceManager multiInstanceManager) {
         mContext = context;
         mLocationBarLayout = locationBarLayout;
         mLocationBarDataProvider = locationBarDataProvider;
-        mNavigationAttachmentsCoordinator = navigationAttachmentsCoordinator;
+        mFuseboxCoordinator = fuseboxCoordinator;
         mLocationBarDataProvider.addObserver(this);
         mEmbedderUiOverrides = embedderUiOverrides;
         mOverrideUrlLoadingDelegate = overrideUrlLoadingDelegate;
@@ -630,7 +630,7 @@ class LocationBarMediator
         // need to communicate with other coordinators like this.
         String userText = mUrlCoordinator.getTextWithoutAutocomplete();
         mStatusCoordinator.onDefaultMatchClassified(
-                !NavigationAttachmentsCoordinator.isConventionalFulfillmentType(
+                !FuseboxCoordinator.isConventionalFulfillmentType(
                                 mAutocompleteRequestTypeSupplier.get())
                         ||
                         // Zero suggest is always considered Search.
@@ -1781,7 +1781,7 @@ class LocationBarMediator
         boolean urlHasFocus = mUrlHasFocus;
         if (shouldBeFocused) {
             if (requestType == AutocompleteRequestType.AI_MODE) {
-                mNavigationAttachmentsCoordinator.onAiModeActivatedFromNtp();
+                mFuseboxCoordinator.onAiModeActivatedFromNtp();
             }
             if (!urlHasFocus) {
                 recordOmniboxFocusReason(reason);

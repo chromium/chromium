@@ -38,7 +38,7 @@ public @interface AutocompleteRequestType {
     int IMAGE_GENERATION = 3;
 
     int COUNT = 4;
-    /* Note: account for new types in {@link NavigationAttachmentsCoordinator#doesRequestTypeOverrideUrlFulfillment}. */
+    /* Note: account for new types in {@link FuseboxCoordinator#isConventionalFulfillmentType}. */
 }
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:AutocompleteRequestType)

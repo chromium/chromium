@@ -60,7 +60,7 @@ import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
-import org.chromium.chrome.browser.omnibox.fusebox.NavigationAttachmentsCoordinator;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderProcessor;
 import org.chromium.chrome.browser.omnibox.test.R;
@@ -129,7 +129,7 @@ public class AutocompleteMediatorUnitTest {
     private @Mock AutocompleteCoordinator.OmniboxSuggestionsVisualStateObserver
             mVisualStateObserver;
     private @Mock DeferredIMEWindowInsetApplicationCallback mDeferredImeCallback;
-    private @Mock NavigationAttachmentsCoordinator mNavigationAttachmentsCoordinator;
+    private @Mock FuseboxCoordinator mFuseboxCoordinator;
     private @Captor ArgumentCaptor<OmniboxLoadUrlParams> mOmniboxLoadUrlParamsCaptor;
     private @Mock CachedZeroSuggestionsManager.OverridesForTesting
             mMockCachedZeroSuggestionsManager;
@@ -176,7 +176,7 @@ public class AutocompleteMediatorUnitTest {
 
         lenient()
                 .doReturn(mAutocompleteRequestTypeSupplier)
-                .when(mNavigationAttachmentsCoordinator)
+                .when(mFuseboxCoordinator)
                 .getAutocompleteRequestTypeSupplier();
 
         mMediator =
@@ -197,7 +197,7 @@ public class AutocompleteMediatorUnitTest {
                         mEmbedder,
                         mWindowAndroid,
                         mDeferredImeCallback,
-                        mNavigationAttachmentsCoordinator,
+                        mFuseboxCoordinator,
                         false);
         mMediator
                 .getDropdownItemViewInfoListBuilderForTest()
@@ -1633,7 +1633,7 @@ public class AutocompleteMediatorUnitTest {
         when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("test");
         mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.AI_MODE);
         GURL url = JUnitTestGURLs.BLUE_2;
-        when(mNavigationAttachmentsCoordinator.getAimUrl(any())).thenReturn(url);
+        when(mFuseboxCoordinator.getAimUrl(any())).thenReturn(url);
 
         AutocompleteMatch defaultMatch =
                 AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
@@ -1662,9 +1662,9 @@ public class AutocompleteMediatorUnitTest {
         when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("test");
         mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.IMAGE_GENERATION);
         GURL url1 = JUnitTestGURLs.BLUE_1;
-        when(mNavigationAttachmentsCoordinator.getAimUrl(any())).thenReturn(url1);
+        when(mFuseboxCoordinator.getAimUrl(any())).thenReturn(url1);
         GURL url2 = JUnitTestGURLs.BLUE_2;
-        when(mNavigationAttachmentsCoordinator.getImageGenerationUrl(any())).thenReturn(url2);
+        when(mFuseboxCoordinator.getImageGenerationUrl(any())).thenReturn(url2);
 
         AutocompleteMatch defaultMatch =
                 AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
