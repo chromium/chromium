@@ -640,7 +640,11 @@ void RenderWidgetHostViewChildFrame::GestureEventAck(
 }
 
 void RenderWidgetHostViewChildFrame::OnUnconfirmedTapConvertedToTap() {
-  NOTREACHED();
+  auto* root_view = GetRootView();
+  if (!root_view) {
+    return;
+  }
+  root_view->OnUnconfirmedTapConvertedToTap();
 }
 
 void RenderWidgetHostViewChildFrame::ForwardTouchpadZoomEventIfNecessary(

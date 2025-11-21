@@ -14042,6 +14042,53 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
             new_web_contents->GetPrimaryMainFrame()->GetProcess());
 }
 
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, GestureTapUnconfirmedOOPIF) {
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.com", "/page_with_iframe_and_double_tap_to_zoom.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  RenderFrameSubmissionObserver frame_observer(shell()->web_contents());
+
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+  RenderWidgetHostImpl* root_rwh =
+      root->current_frame_host()->GetRenderWidgetHost();
+  RenderWidgetHostViewBase* root_view =
+      static_cast<RenderWidgetHostViewBase*>(root_rwh->GetView());
+
+  FrameTreeNode* iframe_node = root->child_at(0);
+  GURL url_domain_b(
+      embedded_test_server()->GetURL("b.com", "/touch_action_pan_y.html"));
+  EXPECT_TRUE(NavigateToURLFromRenderer(iframe_node, url_domain_b));
+  WaitForHitTestData(iframe_node->current_frame_host());
+
+  gfx::Rect iframe_bounds =
+      iframe_node->current_frame_host()->GetView()->GetViewBounds();
+  float scale_factor =
+      frame_observer.LastRenderFrameMetadata().page_scale_factor;
+  gfx::PointF tap_pos(
+      std::ceil((iframe_bounds.x() - root_view->GetViewBounds().x() + 10) *
+                scale_factor),
+      std::ceil((iframe_bounds.y() - root_view->GetViewBounds().y() + 10) *
+                scale_factor));
+
+  SyntheticTapGestureParams params;
+  params.gesture_source_type = content::mojom::GestureSourceType::kTouchInput;
+  params.position = tap_pos;
+  params.duration_ms = 100;
+
+  auto run_loop = std::make_unique<base::RunLoop>();
+  root_rwh->QueueSyntheticGesture(
+      std::make_unique<SyntheticTapGesture>(params),
+      base::BindOnce([](base::RunLoop* run_loop,
+                        SyntheticGesture::Result result) { run_loop->Quit(); },
+                     run_loop.get()));
+
+  run_loop->Run();
+  // After the tap gesture has been completed, the timer should be gone.
+  EXPECT_FALSE(root_rwh->GetView()
+                   ->GetFilteredGestureProviderForTesting()
+                   ->HasPendingTapTimeoutForTesting());
+}
+
 // Tests that verify the feature disabling process reuse.
 class DisableProcessReusePolicyTest : public SitePerProcessBrowserTest {
  public:

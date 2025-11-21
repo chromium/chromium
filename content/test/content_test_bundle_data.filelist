@@ -8203,6 +8203,7 @@ data/page_with_data_iframe_and_allow.html
 data/page_with_frameset.html
 data/page_with_hidden_iframe.html
 data/page_with_iframe.html
+data/page_with_iframe_and_double_tap_to_zoom.html
 data/page_with_iframe_and_image.html
 data/page_with_iframe_and_link.html
 data/page_with_image.html
@@ -8793,6 +8794,7 @@ data/title1.html
 data/title2.html
 data/title3.html
 data/title4.html
+data/touch_action_pan_y.html
 data/touch_selection.html
 data/tree_parser_util.js
 data/unload.html
