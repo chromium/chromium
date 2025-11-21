@@ -1263,6 +1263,13 @@ bool SelectionController::HandlePasteGlobalSelection(
 
   if (!frame_->GetPage())
     return false;
+
+  // Do not paste if the user has opted out of middle-click pasting.
+  if (auto* settings = frame_->GetSettings();
+      settings && !settings->GetMiddleClickPasteAllowed()) {
+    return false;
+  }
+
   Frame* focus_frame =
       frame_->GetPage()->GetFocusController().FocusedOrMainFrame();
   // Do not paste here if the focus was moved somewhere else.
