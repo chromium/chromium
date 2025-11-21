@@ -199,6 +199,21 @@ class WindowsCreateFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("windows.create", WINDOWS_CREATE)
 
  private:
+  // Ensures the tab for the window is valid. Returns an error string, or the
+  // empty string if the tab is valid.
+  static std::string ValidateTab(WindowController* source_window,
+                                 Profile* window_profile,
+                                 Profile* calling_profile,
+                                 content::WebContents* web_contents,
+                                 bool is_locked_fullscreen,
+                                 const std::vector<GURL>& urls);
+
+  // Uses `create_data` to set the window position and size in `window_bounds`.
+  // Returns an error string, or the empty string if the bounds are valid.
+  static std::string SetWindowBounds(
+      const api::windows::Create::Params::CreateData& create_data,
+      gfx::Rect& window_bounds);
+
 #if BUILDFLAG(IS_CHROMEOS)
   void OnWindowCreatedAsynchronously(const SessionID& session_id);
 #endif  // BUILDFLAG(IS_CHROMEOS)

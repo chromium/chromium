@@ -318,45 +318,14 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
                                    &error)) {
       return RespondNow(Error(std::move(error)));
     }
-    if (!source_window) {
-      // The source window can be null for prerender tabs.
-      return RespondNow(Error(tabs_constants::kInvalidWindowStateError));
-    }
 
-    Browser* source_browser = source_window->GetBrowser();
-    if (!source_browser) {
-      return RespondNow(
-          Error(ExtensionTabUtil::kCanOnlyMoveTabsWithinNormalWindowsError));
+    // Validate the tab information. Return an error if it's not valid.
+    std::string tab_error =
+        ValidateTab(source_window, window_profile, calling_profile,
+                    web_contents, is_locked_fullscreen, urls);
+    if (!tab_error.empty()) {
+      return RespondNow(Error(std::move(tab_error)));
     }
-
-    if (web_app::AppBrowserController* controller =
-            source_browser->app_controller();
-        controller && controller->IsIsolatedWebApp()) {
-      return RespondNow(Error(kWindowCreateCannotMoveIwaTabError));
-    }
-
-    if (!ExtensionTabUtil::IsTabStripEditable()) {
-      return RespondNow(Error(ExtensionTabUtil::kTabStripNotEditableError));
-    }
-
-    if (source_window->profile() != window_profile) {
-      return RespondNow(
-          Error(ExtensionTabUtil::kCanOnlyMoveTabsWithinSameProfileError));
-    }
-
-    if (DevToolsWindow::IsDevToolsWindow(web_contents)) {
-      return RespondNow(Error(tabs_constants::kNotAllowedForDevToolsError));
-    }
-
-#if BUILDFLAG(IS_CHROMEOS)
-    // Tabs cannot be moved to the OnTask system web app. Only relevant for
-    // locked fullscreen on ChromeOS.
-    if (is_locked_fullscreen &&
-        ash::features::IsBocaOnTaskLockedQuizMigrationEnabled()) {
-      return RespondNow(
-          Error(ExtensionTabUtil::kCanOnlyMoveTabsWithinNormalWindowsError));
-    }
-#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   if (is_locked_fullscreen) {
@@ -419,37 +388,9 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
         gfx::Rect(), nullptr, &window_bounds, &ignored_show_state);
 
     // Update the window bounds based on the create parameters.
-    bool set_window_position = false;
-    bool set_window_size = false;
-    if (create_data->left) {
-      window_bounds.set_x(*create_data->left);
-      set_window_position = true;
-    }
-    if (create_data->top) {
-      window_bounds.set_y(*create_data->top);
-      set_window_position = true;
-    }
-    if (create_data->width) {
-      window_bounds.set_width(*create_data->width);
-      set_window_size = true;
-    }
-    if (create_data->height) {
-      window_bounds.set_height(*create_data->height);
-      set_window_size = true;
-    }
-
-    // If the extension specified the window size but no position, adjust the
-    // window to fit in the display.
-    if (!set_window_position && set_window_size) {
-      const display::Display& display =
-          display::Screen::Get()->GetDisplayMatching(window_bounds);
-      window_bounds.AdjustToFit(display.bounds());
-    }
-
-    // Immediately fail if the window bounds don't intersect the displays.
-    if ((set_window_position || set_window_size) &&
-        !tabs_internal::WindowBoundsIntersectDisplays(window_bounds)) {
-      return RespondNow(Error(tabs_constants::kInvalidWindowBoundsError));
+    std::string bounds_error = SetWindowBounds(*create_data, window_bounds);
+    if (!bounds_error.empty()) {
+      return RespondNow(Error(std::move(bounds_error)));
     }
 
     if (create_data->focused) {
@@ -669,6 +610,94 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
       WithArguments(ExtensionTabUtil::CreateWindowValueForExtension(
           *new_window, extension(), WindowController::kPopulateTabs,
           source_context_type())));
+}
+
+// static
+std::string WindowsCreateFunction::ValidateTab(
+    WindowController* source_window,
+    Profile* window_profile,
+    Profile* calling_profile,
+    content::WebContents* web_contents,
+    bool is_locked_fullscreen,
+    const std::vector<GURL>& urls) {
+  if (!source_window) {
+    // The source window can be null for prerender tabs.
+    return tabs_constants::kInvalidWindowStateError;
+  }
+
+  Browser* source_browser = source_window->GetBrowser();
+  if (!source_browser) {
+    return ExtensionTabUtil::kCanOnlyMoveTabsWithinNormalWindowsError;
+  }
+
+  if (web_app::AppBrowserController* controller =
+          source_browser->app_controller();
+      controller && controller->IsIsolatedWebApp()) {
+    return kWindowCreateCannotMoveIwaTabError;
+  }
+
+  if (!ExtensionTabUtil::IsTabStripEditable()) {
+    return ExtensionTabUtil::kTabStripNotEditableError;
+  }
+
+  if (source_window->profile() != window_profile) {
+    return ExtensionTabUtil::kCanOnlyMoveTabsWithinSameProfileError;
+  }
+
+  if (DevToolsWindow::IsDevToolsWindow(web_contents)) {
+    return tabs_constants::kNotAllowedForDevToolsError;
+  }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Tabs cannot be moved to the OnTask system web app. Only relevant for
+  // locked fullscreen on ChromeOS.
+  if (is_locked_fullscreen &&
+      ash::features::IsBocaOnTaskLockedQuizMigrationEnabled()) {
+    return ExtensionTabUtil::kCanOnlyMoveTabsWithinNormalWindowsError;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+  return std::string();  // No error.
+}
+
+// static
+std::string WindowsCreateFunction::SetWindowBounds(
+    const api::windows::Create::Params::CreateData& create_data,
+    gfx::Rect& window_bounds) {
+  bool set_window_position = false;
+  bool set_window_size = false;
+  if (create_data.left) {
+    window_bounds.set_x(*create_data.left);
+    set_window_position = true;
+  }
+  if (create_data.top) {
+    window_bounds.set_y(*create_data.top);
+    set_window_position = true;
+  }
+  if (create_data.width) {
+    window_bounds.set_width(*create_data.width);
+    set_window_size = true;
+  }
+  if (create_data.height) {
+    window_bounds.set_height(*create_data.height);
+    set_window_size = true;
+  }
+
+  // If the extension specified the window size but no position, adjust the
+  // window to fit in the display.
+  if (!set_window_position && set_window_size) {
+    const display::Display& display =
+        display::Screen::Get()->GetDisplayMatching(window_bounds);
+    window_bounds.AdjustToFit(display.bounds());
+  }
+
+  // Immediately fail if the window bounds don't intersect the displays.
+  if ((set_window_position || set_window_size) &&
+      !tabs_internal::WindowBoundsIntersectDisplays(window_bounds)) {
+    return tabs_constants::kInvalidWindowBoundsError;
+  }
+
+  return std::string();  // No error.
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
