@@ -319,7 +319,8 @@ void MaybeEmitFormIssuesToDevtools(WebLocalFrame& web_local_frame,
   // Get issues from forms input elements.
   for (const WebFormElement& form_element : document.GetTopLevelForms()) {
     form_issues = form_issues::GetFormIssues(
-        form_element.GetFormControlElements(), std::move(form_issues));
+        form_util::GetOwnedAutofillableFormControls(document, form_element),
+        std::move(form_issues));
   }
   // Get issues from input elements that belong to no form.
   form_issues = form_issues::GetFormIssues(
