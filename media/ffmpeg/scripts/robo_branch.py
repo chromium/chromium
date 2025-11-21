@@ -43,7 +43,7 @@ def CreateAndCheckoutDatedSushiBranch(cfg):
     branch_name = cfg.sushi_branch_prefix() + now.strftime("%Y-%m-%d-%H-%M-%S")
     shell.log("Creating dated branch %s" % branch_name)
     # Fetch the latest from origin
-    if cfg.Call(["git", "fetch", "origin", "--prune-tags"]):
+    if cfg.Call(["git", "fetch", "origin"]):
         raise Exception("Could not fetch from origin")
 
     # Create the named branch
@@ -182,7 +182,7 @@ def WriteConfigChangesFile(cfg):
     cfg.chdir_to_ffmpeg_home()
     deltas = config_flag_changes.get_config_flag_changes(cfg)
     flags_file = os.path.join(cfg.patches_dir_location(),
-                              "config_flag_changes.txt")
+        "config_flag_changes.txt")
     with open(flags_file, "w") as f:
         for delta in deltas:
             f.write(f'{delta}\n')
@@ -219,11 +219,8 @@ def PushToOriginWithoutReviewAndTrack(cfg):
         shell.log("Already have local tracking branch")
         return
     shell.log("Pushing merge to origin without review")
-    cfg.Call([
-        "git", "push", "origin",
-        cfg.sushi_branch_name(), "-o", "push-justification=b/1234", "-o",
-        "banned-words~skip"
-    ])
+    cfg.Call(["git", "push", "origin", cfg.sushi_branch_name(), "-o",
+              "push-justification=b/1234", "-o", "banned-words~skip"])
     shell.log("Setting tracking branch")
     cfg.Call([
         "git", "branch",
@@ -251,9 +248,7 @@ def IsCommitOnThisBranch(robo_configuration, commit_title):
     # Get all commit titles between us and origin/mastеr
     robo_configuration.chdir_to_ffmpeg_home()
     titles = shell.output_or_error([
-        "git",
-        "log",
-        "--format=%s",
+        "git", "log", "--format=%s",
         "origin/master..%s" % robo_configuration.branch_name()  # nocheck
     ])
     return commit_title in titles
@@ -316,7 +311,7 @@ def IsUploadedForReview(robo_configuration):
     """Check if the local branch is already uploaded."""
     robo_configuration.chdir_to_ffmpeg_home()
     if not HasGerritIssueNumber(robo_configuration):
-        shell.log("No Gerrit issue number exists.")
+        shell.log("No Gerrit issue number exsts.")
         return False
 
     if not IsWorkingDirectoryClean():
@@ -338,7 +333,7 @@ def IsUploadedForReviewAndLanded(robo_configuration):
         return False
     # Make sure we're up-to-date with origin, to fetch the (hopefully) landed
     # sushi branch.
-    if robo_configuration.Call(["git", "fetch", "origin", "--prune-tags"]):
+    if robo_configuration.Call(["git", "fetch", "origin"]):
         raise Exception("Could not fetch from origin")
 
     branch_name = robo_configuration.sushi_branch_name()
@@ -362,8 +357,7 @@ def UploadForReview(robo_configuration):
         raise Exception(
             "Sushi branch is already uploaded for review!  (try git cl web)")
     shell.log("Uploading sushi branch for review.")
-    robo_configuration.Call(
-        ["git", "cl", "upload", "-T", "-o", "banned-words~skip"])
+    robo_configuration.Call(["git", "cl", "upload", "-o", "banned-words~skip"])
 
 
 @RequiresCleanWorkingDirectory
@@ -375,7 +369,7 @@ def IsSushiMergedBackToOriginMasterAndPushed(robo_configuration):
   origin/sushi."""
     robo_configuration.chdir_to_ffmpeg_home()
 
-    if robo_configuration.Call(["git", "fetch", "origin", "--prune-tags"]):
+    if robo_configuration.Call(["git", "fetch", "origin"]):
         raise Exception("Could not fetch from origin")
 
     # Get the most recent common ancestor of upstream and local sushi.  If
@@ -427,8 +421,8 @@ def MergeBackToOriginMaster(robo_configuration):
     # Push the result of the merge (local sushi branch) back to origin/mastеr.
     shell.log("Pushing local merge back to origin/master")  # nocheck
     refspec = "%s:master" % robo_configuration.sushi_branch_name()  # nocheck
-    if robo_configuration.Call(
-        ["git", "push", "origin", refspec, "-o", "push-justification=b/0"]):
+    if robo_configuration.Call(["git", "push", "origin", refspec, "-o",
+                                "push-justification=b/0" ]):
         raise Exception("Could not push to 'origin %s'" % refspec)
 
     # TODO: should we move the local mastеr branch to origin/mastеr too?

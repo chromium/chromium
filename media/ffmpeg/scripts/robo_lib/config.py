@@ -1,13 +1,13 @@
 # Copyright 2024 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+
 """ Contains the global configuration object.
 """
 
 import os
 import platform
 import re
-import sys
 from . import shell
 from . import packages
 from . import errors
@@ -73,7 +73,8 @@ class RoboConfiguration:
         # Filename that we'll ask generate_gn.py to write git commands to.
         # TODO: Should this use script_directory, or stay with ffmpeg?  As long
         # as there's a .gitignore entry, either should be fine.
-        self._autorename_git_file = os.path.join(self.ffmpeg_home(), "scripts",
+        self._autorename_git_file = os.path.join(self.ffmpeg_home(),
+                                                 "scripts",
                                                  ".git_commands.sh")
 
     def chrome_src(self):
@@ -103,15 +104,14 @@ class RoboConfiguration:
         os.chdir(self.ffmpeg_src())
 
     def target_config_directory(self, arch, opsys, target):
-        return os.path.join(self.ffmpeg_home(), f'build.{arch}.{opsys}',
-                            target)
+        return os.path.join(self.ffmpeg_home(), f'build.{arch}.{opsys}', target)
 
     def patches_dir_location(self):
         return os.path.join(self.ffmpeg_home(), "chromium", "patches")
 
     def exported_configs_directory(self, arch, opsys, target):
-        return os.path.join(self.ffmpeg_home(), "chromium", "config", target,
-                            opsys, arch)
+        return os.path.join(
+            self.ffmpeg_home(), "chromium", "config", target, opsys, arch)
 
     def autorename_git_file(self):
         return self.get_script_path('git_commands.sh')
@@ -281,7 +281,8 @@ class RoboConfiguration:
         if os.system("makeinfo --version > /dev/null 2>&1") == 0:
             raise errors.UserInstructions(
                 "makeinfo is available and we don't need it, so please remove "
-                "it\nExample: sudo apt-get remove texinfo")
+                "it\nExample: sudo apt-get remove texinfo"
+            )
 
     def llvm_path(self):
         return self._llvm_path
@@ -320,22 +321,16 @@ class RoboConfiguration:
     prompting the user."""
         if self.log_shell_calls():
             cmd = args if kwargs.get("shell", False) else " ".join(args)
-            print(f"  Command: [{os.getcwd()}] {cmd}")
+            print(f"  About to run: [{os.getcwd()}] {cmd}")
             if self.prompt_on_call():
-                result = input("  Execute? [Y/s/n]: ").lower()
-                if result == "s":
-                    print("    Skipping step...")
-                    return None
-                if result == "n":
-                    print("    Exiting...")
-                    sys.exit(0)
-                return shell.check_run(args, **kwargs)
+                input("Press ENTER to continue, or interrupt the script: ")
+        return shell.check_run(args, **kwargs)
 
     def CheckCall(self, *args, **kwargs):
         if self.Call(*args, **kwargs):
             if "errmsg" in kwargs:
                 raise Exception(kwargs["errmsg"])
             arglist = list(args)
-            arglist += [f"{k}={v}" for k, v in kwargs.items()]
+            arglist += [f"{k}={v}" for k,v in kwargs.items()]
             joined_args = ", ".join(arglist)
             raise Exception(f"Call({joined_args})")
