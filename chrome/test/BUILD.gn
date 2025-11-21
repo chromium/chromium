@@ -2597,6 +2597,7 @@ if (!is_android) {
       "//chrome/browser/ui/views/toolbar:browser_tests",
       "//chrome/browser/ui/views/user_education",
       "//chrome/browser/ui/views/webid:test_support",
+      "//chrome/browser/ui/wallet",
       "//chrome/browser/ui/web_applications",
       "//chrome/browser/ui/web_applications:browser_tests",
       "//chrome/browser/ui/webauthn:browser_tests",
@@ -5219,6 +5220,7 @@ if (!is_android) {
         "../browser/ui/views/upgrade_notification_controller_browsertest.cc",
         "../browser/ui/views/user_education/help_bubble_factory_views_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_uninstall_dialog_browsertest.cc",
+        "../browser/ui/wallet/walletable_pass_save_bubble_view_browsertest.cc",
         "../browser/ui/web_applications/pwa_install_page_action_browsertest.cc",
       ]
       if (enable_dice_support) {

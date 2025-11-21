@@ -47,13 +47,6 @@ class AutofillAiImportDataBubbleView : public AutofillLocationBarBubble {
       const AutofillAiImportDataController::EntityAttributeUpdateDetails&
           detail);
 
-  // Creates a view containing an entity attribute value. This method
-  // also observes the created label. The observation is used to later
-  // optionally update the text alignment depending on the number of lines the
-  // rendered text has.
-  std::unique_ptr<views::View> GetAttributeValueView(
-      const AutofillAiImportDataController::EntityAttributeUpdateDetails&
-          detail);
 
   void OnDialogAccepted() const;
 

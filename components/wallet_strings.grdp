@@ -50,4 +50,28 @@
   <message name="IDS_WALLET_WALLETABLE_PASS_SAVE_DIALOG_SAVE_BUTTON" desc="Text displayed on the accept/ok button of the save dialog.">
     Save
   </message>
+
+  <message name="IDS_WALLET_WALLETABLE_PASS_LOYALTY_CARD_ISSUER_ATTRIBUTE_NAME" desc="Label for the issuer attribute of a loyalty card.">
+    Issuer
+  </message>
+
+  <message name="IDS_WALLET_WALLETABLE_PASS_LOYALTY_CARD_MEMBER_ID_ATTRIBUTE_NAME" desc="Label for the member id attribute of a loyalty card.">
+    Number
+  </message>
+
+  <message name="IDS_WALLET_WALLETABLE_PASS_EVENT_PASS_EVENT_NAME_ATTRIBUTE_NAME" desc="Label for the event name attribute of an event pass.">
+    Event Name
+  </message>
+
+  <message name="IDS_WALLET_WALLETABLE_PASS_EVENT_PASS_ISSUER_ATTRIBUTE_NAME" desc="Label for the issuer attribute of an event pass.">
+    Issuer
+  </message>
+
+  <message name="IDS_WALLET_WALLETABLE_PASS_EVENT_PASS_VENUE_ATTRIBUTE_NAME" desc="Label for the venue attribute of an event pass.">
+    Venue
+  </message>
+
+  <message name="IDS_WALLET_WALLETABLE_PASS_EVENT_PASS_DATE_ATTRIBUTE_NAME" desc="Label for the date attribute of an event pass.">
+    Date
+  </message>
 </grit-part>

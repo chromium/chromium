@@ -43,6 +43,11 @@ WalletablePassSaveBubbleController::pass() const {
   return *pass_;
 }
 
+base::WeakPtr<WalletablePassSaveBubbleController>
+WalletablePassSaveBubbleController::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 base::WeakPtr<autofill::BubbleControllerBase>
 WalletablePassSaveBubbleController::GetBubbleControllerBaseWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();

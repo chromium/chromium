@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WALLET_WALLETABLE_PASS_SAVE_BUBBLE_VIEW_H_
 #define CHROME_BROWSER_UI_WALLET_WALLETABLE_PASS_SAVE_BUBBLE_VIEW_H_
 
-#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/wallet/walletable_pass_bubble_view_base.h"
 #include "components/optimization_guide/proto/features/walletable_pass_extraction.pb.h"
@@ -41,13 +40,19 @@ class WalletablePassSaveBubbleView : public WalletablePassBubbleViewBase {
  private:
   std::unique_ptr<views::StyledLabel> GetSubtitleLabel();
 
+  std::unique_ptr<views::BoxLayoutView> GetAttributesView();
+
+  std::unique_ptr<views::BoxLayoutView> GetLoyaltyCardAttributesView();
+
+  std::unique_ptr<views::BoxLayoutView> GetEventPassAttributesView();
+
   int GetDialogTitleResourceId() const;
 
   int GetHeaderImageResourceId() const;
 
   void OnGoToWalletClicked();
 
-  const raw_ref<const optimization_guide::proto::WalletablePass> pass_;
+  base::WeakPtr<WalletablePassSaveBubbleController> controller_;
 };
 
 }  // namespace wallet

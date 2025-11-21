@@ -23,13 +23,18 @@
 
 namespace wallet {
 namespace {
-constexpr int kBubbleWidth = 320;
-constexpr int kSubTitleBottomMargin = 16;
 
-std::unique_ptr<views::BoxLayoutView> GetSubtitleContainer() {
+using enum optimization_guide::proto::WalletablePass::PassCase;
+using optimization_guide::proto::EventPass;
+using optimization_guide::proto::LoyaltyCard;
+
+std::unique_ptr<views::BoxLayoutView> GetAttributesContainer() {
   return views::Builder<views::BoxLayoutView>()
       .SetOrientation(views::BoxLayout::Orientation::kVertical)
-      .SetInsideBorderInsets(gfx::Insets::TLBR(0, 0, kSubTitleBottomMargin, 0))
+      .SetBetweenChildSpacing(ChromeLayoutProvider::Get()->GetDistanceMetric(
+          DISTANCE_CONTENT_LIST_VERTICAL_SINGLE))
+      .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
+      .SetAccessibleRole(ax::mojom::Role::kDescriptionList)
       .Build();
 }
 }  // namespace
@@ -39,10 +44,11 @@ WalletablePassSaveBubbleView::WalletablePassSaveBubbleView(
     content::WebContents* web_contents,
     WalletablePassSaveBubbleController* controller)
     : WalletablePassBubbleViewBase(anchor_view, web_contents, controller),
-      pass_(controller->pass()) {
-  set_fixed_width(kBubbleWidth);
+      controller_(controller->GetWeakPtr()) {
+  set_fixed_width(autofill::kAutofillAiBubbleWidth);
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
+  set_margins(autofill::GetAutofillAiBubbleInnerMargins());
   SetAccessibleTitle(l10n_util::GetStringUTF16(GetDialogTitleResourceId()));
 
   auto* main_content_wrapper =
@@ -52,10 +58,11 @@ WalletablePassSaveBubbleView::WalletablePassSaveBubbleView(
                        .Build());
 
   std::unique_ptr<views::BoxLayoutView> subtitle_container =
-      GetSubtitleContainer();
+      autofill::CreateAutofillAiBubbleSubtitleContainer();
   subtitle_container->AddChildView(GetSubtitleLabel());
   main_content_wrapper->AddChildView(std::move(subtitle_container));
-  // TODO(crbug.com/451833977): Add pass attributes to the bubble view.
+
+  AddChildView(GetAttributesView());
 
   SetShowCloseButton(true);
   SetButtonLabel(ui::mojom::DialogButton::kOk,
@@ -67,6 +74,71 @@ WalletablePassSaveBubbleView::WalletablePassSaveBubbleView(
 }
 
 WalletablePassSaveBubbleView::~WalletablePassSaveBubbleView() = default;
+
+std::unique_ptr<views::BoxLayoutView>
+WalletablePassSaveBubbleView::GetAttributesView() {
+  switch (controller_->pass().pass_case()) {
+    case kLoyaltyCard:
+      return GetLoyaltyCardAttributesView();
+    case kEventPass:
+      return GetEventPassAttributesView();
+    case PASS_NOT_SET:
+      NOTREACHED() << "Not supported walletable pass type: "
+                   << controller_->pass().pass_case();
+  }
+}
+
+std::unique_ptr<views::BoxLayoutView>
+WalletablePassSaveBubbleView::GetLoyaltyCardAttributesView() {
+  std::unique_ptr<views::BoxLayoutView> container = GetAttributesContainer();
+  LoyaltyCard loyalty_card = controller_->pass().loyalty_card();
+
+  if (loyalty_card.has_issuer_name()) {
+    container->AddChildView(autofill::CreateAutofillAiBubbleAttributeRow(
+        l10n_util::GetStringUTF16(
+            IDS_WALLET_WALLETABLE_PASS_LOYALTY_CARD_ISSUER_ATTRIBUTE_NAME),
+        base::UTF8ToUTF16(loyalty_card.issuer_name())));
+  }
+  if (loyalty_card.has_member_id()) {
+    container->AddChildView(autofill::CreateAutofillAiBubbleAttributeRow(
+        l10n_util::GetStringUTF16(
+            IDS_WALLET_WALLETABLE_PASS_LOYALTY_CARD_MEMBER_ID_ATTRIBUTE_NAME),
+        base::UTF8ToUTF16(loyalty_card.member_id())));
+  }
+  return container;
+}
+
+std::unique_ptr<views::BoxLayoutView>
+WalletablePassSaveBubbleView::GetEventPassAttributesView() {
+  std::unique_ptr<views::BoxLayoutView> container = GetAttributesContainer();
+  EventPass event_pass = controller_->pass().event_pass();
+
+  if (event_pass.has_event_name()) {
+    container->AddChildView(autofill::CreateAutofillAiBubbleAttributeRow(
+        l10n_util::GetStringUTF16(
+            IDS_WALLET_WALLETABLE_PASS_EVENT_PASS_EVENT_NAME_ATTRIBUTE_NAME),
+        base::UTF8ToUTF16(event_pass.event_name())));
+  }
+  if (event_pass.has_issuer_name()) {
+    container->AddChildView(autofill::CreateAutofillAiBubbleAttributeRow(
+        l10n_util::GetStringUTF16(
+            IDS_WALLET_WALLETABLE_PASS_EVENT_PASS_ISSUER_ATTRIBUTE_NAME),
+        base::UTF8ToUTF16(event_pass.issuer_name())));
+  }
+  if (event_pass.has_venue()) {
+    container->AddChildView(autofill::CreateAutofillAiBubbleAttributeRow(
+        l10n_util::GetStringUTF16(
+            IDS_WALLET_WALLETABLE_PASS_EVENT_PASS_VENUE_ATTRIBUTE_NAME),
+        base::UTF8ToUTF16(event_pass.venue())));
+  }
+  if (event_pass.has_event_start_date()) {
+    container->AddChildView(autofill::CreateAutofillAiBubbleAttributeRow(
+        l10n_util::GetStringUTF16(
+            IDS_WALLET_WALLETABLE_PASS_EVENT_PASS_DATE_ATTRIBUTE_NAME),
+        base::UTF8ToUTF16(event_pass.event_start_date())));
+  }
+  return container;
+}
 
 void WalletablePassSaveBubbleView::AddedToWidget() {
   // Set header view
@@ -110,26 +182,26 @@ WalletablePassSaveBubbleView::GetSubtitleLabel() {
 }
 
 int WalletablePassSaveBubbleView::GetDialogTitleResourceId() const {
-  switch (pass_->pass_case()) {
-    case optimization_guide::proto::WalletablePass::kLoyaltyCard:
+  switch (controller_->pass().pass_case()) {
+    case kLoyaltyCard:
       return IDS_WALLET_WALLETABLE_PASS_SAVE_LOYALTY_CARD_DIALOG_TITLE;
-    case optimization_guide::proto::WalletablePass::kEventPass:
+    case kEventPass:
       return IDS_WALLET_WALLETABLE_PASS_SAVE_EVENT_TICKET_DIALOG_TITLE;
-    case optimization_guide::proto::WalletablePass::PASS_NOT_SET:
+    case PASS_NOT_SET:
       NOTREACHED() << "Not supported walletable pass type: "
-                   << pass_->pass_case();
+                   << controller_->pass().pass_case();
   }
 }
 
 int WalletablePassSaveBubbleView::GetHeaderImageResourceId() const {
-  switch (pass_->pass_case()) {
-    case optimization_guide::proto::WalletablePass::kLoyaltyCard:
+  switch (controller_->pass().pass_case()) {
+    case kLoyaltyCard:
       return IDR_WALLET_PASS_SAVE_LOYALTY_CARD_LOTTIE;
-    case optimization_guide::proto::WalletablePass::kEventPass:
+    case kEventPass:
       return IDR_WALLET_PASS_SAVE_EVENT_TICKET_LOTTIE;
-    case optimization_guide::proto::WalletablePass::PASS_NOT_SET:
+    case PASS_NOT_SET:
       NOTREACHED() << "Not supported walletable pass type: "
-                   << pass_->pass_case();
+                   << controller_->pass().pass_case();
   }
 }
 

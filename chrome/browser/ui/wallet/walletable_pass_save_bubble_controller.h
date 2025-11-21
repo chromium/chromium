@@ -43,6 +43,8 @@ class WalletablePassSaveBubbleController
 
   const optimization_guide::proto::WalletablePass& pass() const;
 
+  base::WeakPtr<WalletablePassSaveBubbleController> GetWeakPtr();
+
  protected:
   void ShowBubble() override;
 
