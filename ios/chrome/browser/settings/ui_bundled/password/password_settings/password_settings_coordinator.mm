@@ -270,6 +270,11 @@ const NSInteger kErrorUserDismissedUpdateGPMPinFlow = -105;
   _passwordsInOtherAppsCoordinator.delegate = nil;
   _passwordsInOtherAppsCoordinator = nil;
 
+  if (@available(iOS 26, *)) {
+    [_credentialExportCoordinator stop];
+    _credentialExportCoordinator = nil;
+  }
+
   _passwordSettingsViewController.presentationDelegate = nil;
   _passwordSettingsViewController.delegate = nil;
   _passwordSettingsViewController = nil;
