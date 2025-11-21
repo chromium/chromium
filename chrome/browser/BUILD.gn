@@ -345,8 +345,6 @@ static_library("browser") {
     "component_updater/wasm_tts_engine_component_installer.h",
     "contextual_search/contextual_search_service_factory.cc",
     "contextual_search/contextual_search_service_factory.h",
-    "contextual_search/contextual_search_web_contents_helper.cc",
-    "contextual_search/contextual_search_web_contents_helper.h",
     "data_sharing/data_sharing_navigation_throttle.cc",
     "data_sharing/data_sharing_navigation_throttle.h",
     "data_sharing/data_sharing_navigation_utils.cc",

@@ -50,6 +50,7 @@ source_set("searchbox") {
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
     "//chrome/browser/autocomplete",
+    "//chrome/browser/contextual_search:web_contents_helper",
     "//chrome/browser/omnibox",
     "//chrome/browser/preloading/search_preload",
     "//chrome/browser/profiles:profile",
