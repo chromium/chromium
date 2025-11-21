@@ -66,7 +66,7 @@ void ViewAccessibilityUtils::Merge(const ui::AXNodeData& source,
     }
   }
 
-  destination.bool_attributes->Merge(*source.bool_attributes);
+  destination.bool_attributes.Append(source.bool_attributes);
 
   for (const auto& attr : source.intlist_attributes) {
     destination.AddIntListAttribute(attr.first, attr.second);
@@ -116,7 +116,7 @@ void ViewAccessibilityUtils::ValidateAttributesNotSet(
         << attributeErrorMessage(std::string(ui::ToString(attr.first)));
   }
 
-  new_data.bool_attributes->ForEach(
+  new_data.bool_attributes.ForEach(
       [&existing_data, &attributeErrorMessage](ax::mojom::BoolAttribute attr,
                                                bool value) {
         DCHECK(!existing_data.HasBoolAttribute(attr))

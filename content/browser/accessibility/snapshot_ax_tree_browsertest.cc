@@ -512,7 +512,7 @@ IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest,
   auto total_attribute_count = [](const ui::AXNodeData& node_data) {
     return node_data.string_attributes.size() +
            node_data.int_attributes.size() + node_data.float_attributes.size() +
-           node_data.bool_attributes->Size() +
+           node_data.bool_attributes.Size() +
            node_data.intlist_attributes.size() +
            node_data.stringlist_attributes.size() +
            node_data.html_attributes.size();

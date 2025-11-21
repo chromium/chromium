@@ -182,10 +182,10 @@ struct AX_BASE_EXPORT AXNodeData final {
   // can be returned as either std::string or std::u16string, for convenience.
 
   bool HasBoolAttribute(ax::mojom::BoolAttribute attribute) const {
-    return bool_attributes->Has(attribute);
+    return bool_attributes.Get(attribute).has_value();
   }
   bool GetBoolAttribute(ax::mojom::BoolAttribute attribute) const {
-    return bool_attributes->Get(attribute);
+    return bool_attributes.Get(attribute).value_or(false);
   }
   bool HasFloatAttribute(ax::mojom::FloatAttribute attribute) const {
     return float_attributes.Has(attribute);
@@ -239,7 +239,7 @@ struct AX_BASE_EXPORT AXNodeData final {
   //
 
   void AddBoolAttribute(ax::mojom::BoolAttribute attribute, bool value) {
-    bool_attributes->Set(attribute, value);
+    bool_attributes.Set(attribute, value);
   }
   void AddChildTreeId(const AXTreeID& tree_id);
   void AddIntAttribute(ax::mojom::IntAttribute attribute, int32_t value) {
@@ -268,7 +268,7 @@ struct AX_BASE_EXPORT AXNodeData final {
   //
 
   void RemoveBoolAttribute(ax::mojom::BoolAttribute attribute) {
-    bool_attributes->Remove(attribute);
+    bool_attributes.Unset(attribute);
   }
   void RemoveIntAttribute(ax::mojom::IntAttribute attribute) {
     int_attributes.Remove(attribute);
@@ -537,7 +537,7 @@ struct AX_BASE_EXPORT AXNodeData final {
   AXStringAttributes string_attributes;
   AXIntAttributes int_attributes;
   AXFloatAttributes float_attributes;
-  std::unique_ptr<AXBoolStore> bool_attributes;
+  AXBitset<ax::mojom::BoolAttribute> bool_attributes;
   AXIntListAttributes intlist_attributes;
   AXStringListAttributes stringlist_attributes;
   base::StringPairs html_attributes;

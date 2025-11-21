@@ -566,7 +566,7 @@ void PopulateAXNode(const ui::AXNodeData& source,
     dest_attr->set_bool_value(value);
   };
 
-  source.bool_attributes->ForEach(add_bool_attribute);
+  source.bool_attributes.ForEach(add_bool_attribute);
 
   for (const auto& attribute : source.intlist_attributes) {
     auto* destination_attribute = destination->add_attributes();

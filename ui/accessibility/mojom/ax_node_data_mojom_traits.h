@@ -44,19 +44,16 @@ struct StructTraits<ax::mojom::AXNodeDataDataView, ui::AXNodeData> {
   float_attributes(const ui::AXNodeData& p) {
     return p.float_attributes.container();
   }
+  // Return std::nullopt to prevent writing to the legacy `bool_attributes`
+  // field. The field remains in Mojom only for backward compatibility when
+  // reading.
   static std::optional<base::flat_map<ax::mojom::BoolAttribute, bool>>
   bool_attributes(const ui::AXNodeData& p) {
-    if (p.bool_attributes->IsBitset()) {
-      return std::nullopt;
-    }
-    return p.bool_attributes->GetVectorStore().container();
+    return std::nullopt;
   }
   static std::optional<ui::AXBitset<ax::mojom::BoolAttribute>>
   bool_attributes_data(const ui::AXNodeData& p) {
-    if (p.bool_attributes->IsBitset()) {
-      return p.bool_attributes->GetBitsetStore();
-    }
-    return std::nullopt;
+    return p.bool_attributes;
   }
   static const base::flat_map<ax::mojom::IntListAttribute,
                               std::vector<int32_t>>&

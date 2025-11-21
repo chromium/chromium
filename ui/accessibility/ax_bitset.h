@@ -33,7 +33,7 @@ class AXBitset {
   // Returns whether enum T at |value| is set to true, false or unset.
   std::optional<bool> Get(T enum_value) const {
     uint32_t index = static_cast<uint32_t>(enum_value);
-    uint32_t mask = 1ULL << index;
+    uint32_t mask = 1u << index;
     // Check if the value is set.
     if (set_bits_ & mask) {
       return values_ & mask;
@@ -44,7 +44,7 @@ class AXBitset {
   // Sets the enum T at |enum_value| to true or false.
   void Set(T enum_value, bool bool_value) {
     uint32_t index = static_cast<uint32_t>(enum_value);
-    uint32_t mask = 1ULL << index;
+    uint32_t mask = 1u << index;
     // Mark as set.
     set_bits_ |= mask;
     if (bool_value) {
@@ -58,7 +58,7 @@ class AXBitset {
 
   void Unset(T enum_value) {
     uint32_t index = static_cast<uint32_t>(enum_value);
-    uint32_t mask = 1ULL << index;
+    uint32_t mask = 1u << index;
     // Mark as not set.
     set_bits_ &= ~mask;
   }
@@ -81,7 +81,7 @@ class AXBitset {
       int index = std::countr_zero(remainder);
 
       T attribute = static_cast<T>(index);
-      uint32_t mask = 1ULL << index;
+      uint32_t mask = 1u << index;
       bool attribute_value = static_cast<bool>(values_ & mask);
 
       function(attribute, attribute_value);

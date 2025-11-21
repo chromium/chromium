@@ -404,13 +404,7 @@ void AXBitsetBoolStore::PopulateFromMap(
   bitset_ = temp_bitset;
 }
 
-AXNodeData::AXNodeData() : role(ax::mojom::Role::kUnknown) {
-  if (features::IsAccessibilityUseAXBitsetEnabled()) {
-    bool_attributes = std::make_unique<AXBitsetBoolStore>();
-  } else {
-    bool_attributes = std::make_unique<AXVectorBoolStore>();
-  }
-}
+AXNodeData::AXNodeData() : role(ax::mojom::Role::kUnknown) {}
 
 AXNodeData::~AXNodeData() = default;
 
@@ -422,9 +416,7 @@ AXNodeData::AXNodeData(const AXNodeData& other) {
   string_attributes = other.string_attributes;
   int_attributes = other.int_attributes;
   float_attributes = other.float_attributes;
-  if (other.bool_attributes) {
-    bool_attributes = other.bool_attributes->Clone();
-  }
+  bool_attributes = other.bool_attributes;
   intlist_attributes = other.intlist_attributes;
   stringlist_attributes = other.stringlist_attributes;
   html_attributes = other.html_attributes;
@@ -461,11 +453,7 @@ AXNodeData& AXNodeData::operator=(const AXNodeData& other) {
   string_attributes = other.string_attributes;
   int_attributes = other.int_attributes;
   float_attributes = other.float_attributes;
-  if (other.bool_attributes) {
-    bool_attributes = other.bool_attributes->Clone();
-  } else {
-    bool_attributes.reset();
-  }
+  bool_attributes = other.bool_attributes;
   intlist_attributes = other.intlist_attributes;
   stringlist_attributes = other.stringlist_attributes;
   html_attributes = other.html_attributes;
@@ -1786,7 +1774,7 @@ std::string AXNodeData::ToString(bool verbose) const {
     }
   };
 
-  bool_attributes->ForEach(process_bool_attribute);
+  bool_attributes.ForEach(process_bool_attribute);
 
   for (const std::pair<ax::mojom::IntListAttribute, std::vector<int32_t>>&
            intlist_attribute : intlist_attributes) {
@@ -1994,8 +1982,7 @@ void AXNodeData::AccumulateSize(
   node_data_size.float_attribute_size +=
       float_attributes.size() *
       (sizeof(ax::mojom::FloatAttribute) + sizeof(float));
-  node_data_size.bool_attribute_size +=
-      sizeof(bool_attributes) + bool_attributes->ObjectSize();
+  node_data_size.bool_attribute_size += sizeof(bool_attributes);
   node_data_size.child_ids_size = child_ids.size() * sizeof(int32_t);
 
   for (const auto& pair : string_attributes) {

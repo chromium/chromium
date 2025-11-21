@@ -53,14 +53,19 @@ bool StructTraits<ax::mojom::AXNodeDataDataView, ui::AXNodeData>::Read(
   if (!data.ReadBoolAttributesData(&bitset_from_mojo)) {
     return false;
   }
+
   if (bitset_from_mojo.has_value()) {
-    out->bool_attributes->PopulateFromBitset(bitset_from_mojo.value());
+    out->bool_attributes = bitset_from_mojo.value();
   } else {
     std::optional<base::flat_map<ax::mojom::BoolAttribute, bool>> map_from_mojo;
     if (!data.ReadBoolAttributes(&map_from_mojo)) {
       return false;
     }
-    out->bool_attributes->PopulateFromMap(map_from_mojo.value());
+    if (map_from_mojo.has_value()) {
+      for (const auto& [attr, value] : map_from_mojo.value()) {
+        out->bool_attributes.Set(attr, value);
+      }
+    }
   }
 
   auto& intlist_attributes = out->intlist_attributes.container();

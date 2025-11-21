@@ -2327,17 +2327,8 @@ void AXTree::NotifyNodeAttributesHaveBeenChanged(
                       new_bool);
   };
 
-  // Intentionally break the abstraction here to use a performance-optimized
-  // diffing algorithm.
-  if (old_data.bool_attributes->IsBitset()) {
-    CallIfAttributeValuesChanged(old_data.bool_attributes->GetBitsetStore(),
-                                 new_data.bool_attributes->GetBitsetStore(),
-                                 false, bool_callback);
-  } else {
-    CallIfAttributeValuesChanged(old_data.bool_attributes->GetVectorStore(),
-                                 new_data.bool_attributes->GetVectorStore(),
-                                 false, bool_callback);
-  }
+  CallIfAttributeValuesChanged(old_data.bool_attributes,
+                               new_data.bool_attributes, false, bool_callback);
 
   auto float_callback = [this, node](ax::mojom::FloatAttribute attr,
                                      const float& old_float,
