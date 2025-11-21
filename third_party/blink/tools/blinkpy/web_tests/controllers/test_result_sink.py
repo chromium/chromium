@@ -104,7 +104,6 @@ class TestResultSink:
 
         tags = [
             pair('test_name', result.test_name),
-            pair('web_tests_device_failed', str(result.device_failed)),
             # Used by `//third_party/blink/tools/run_slow_test_analyzer.py`.
             pair('web_tests_base_timeout',
                  str(int(self._port.timeout_ms() / 1000))),

@@ -128,10 +128,6 @@ class TestResultSinkMessage(TestResultSinkTestBase):
                 'value': 'test-name'
             },
             {
-                'key': 'web_tests_device_failed',
-                'value': 'False'
-            },
-            {
                 'key': 'web_tests_base_timeout',
                 'value': '6',
             },
@@ -180,10 +176,6 @@ class TestResultSinkMessage(TestResultSinkTestBase):
                 'value': 'test-name'
             },
             {
-                'key': 'web_tests_device_failed',
-                'value': 'False'
-            },
-            {
                 'key': 'web_tests_base_timeout',
                 'value': '6',
             },
@@ -219,10 +211,6 @@ class TestResultSinkMessage(TestResultSinkTestBase):
             {
                 'key': 'test_name',
                 'value': 'test-name'
-            },
-            {
-                'key': 'web_tests_device_failed',
-                'value': 'False'
             },
             {
                 'key': 'web_tests_base_timeout',
@@ -265,10 +253,6 @@ class TestResultSinkMessage(TestResultSinkTestBase):
             {
                 'key': 'test_name',
                 'value': 'test-name'
-            },
-            {
-                'key': 'web_tests_device_failed',
-                'value': 'False'
             },
             {
                 'key': 'web_tests_base_timeout',
@@ -319,10 +303,6 @@ class TestResultSinkMessage(TestResultSinkTestBase):
             {
                 'key': 'test_name',
                 'value': 'test-name'
-            },
-            {
-                'key': 'web_tests_device_failed',
-                'value': 'False'
             },
             {
                 'key': 'web_tests_base_timeout',
