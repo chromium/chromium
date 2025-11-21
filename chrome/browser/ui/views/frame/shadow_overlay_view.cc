@@ -153,7 +153,6 @@ class ShadowOverlayView::ShadowBox : public views::View {
 
       view_shadow_ = std::make_unique<views::ViewShadow>(this, elevation);
       view_shadow_->SetRoundedCornerRadius(rounded_corner_radius);
-      view_shadow_->shadow()->shadow_layer()->SetOpacity(0.0f);
     } else {
       view_shadow_.reset();
       DestroyLayer();
@@ -207,6 +206,15 @@ ShadowOverlayView::~ShadowOverlayView() = default;
 void ShadowOverlayView::VisibilityChanged(View* starting_from, bool visible) {
   if (starting_from == this) {
     shadow_box_->SetShadowVisible(visible);
+
+    // Ensure the opacity matches the current animation value in cases where the
+    // panel should not animate but is open such as swapping between tabs.
+    if (side_panel_observer_.IsObserving()) {
+      shadow_box_->SetShadowOpacity(
+          side_panel_observer_.GetSource()
+              ->animation_coordinator()
+              ->GetAnimationValueFor(kShadowOverlayOpacityAnimation));
+    }
   }
 }
 
