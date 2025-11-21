@@ -127,8 +127,9 @@ const CachedMatchedProperties::Entry* MatchedPropertiesCache::Find(
        it2 != cache_item->entries.rend(); ++it2) {
     CachedMatchedProperties::Entry& entry = *it2;
 
-    if (!style_resolver_state.ParentStyle()->InheritedDataShared(
-            *entry.parent_computed_style)) {
+    if (!style_resolver_state.ParentStyle()
+             ->InheritedEqualIncludingInheritedVariables(
+                 *entry.parent_computed_style)) {
       continue;
     }
 

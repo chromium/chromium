@@ -993,7 +993,7 @@ class ComputedStyle final : public ComputedStyleBase {
   bool NonInheritedEqual(const ComputedStyle&) const;
   inline bool IndependentInheritedEqual(const ComputedStyle&) const;
   inline bool NonIndependentInheritedEqual(const ComputedStyle&) const;
-  bool InheritedDataShared(const ComputedStyle&) const;
+  bool InheritedEqualIncludingInheritedVariables(const ComputedStyle&) const;
 
   bool HasChildDependentFlags() const { return ChildHasExplicitInheritance(); }
   void CopyChildDependentFlagsFrom(const ComputedStyle&) const;

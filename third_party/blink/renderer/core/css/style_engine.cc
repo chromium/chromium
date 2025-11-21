@@ -4415,12 +4415,22 @@ void StyleEngine::SetPageColorSchemes(const CSSValue* color_scheme) {
     return;
   }
 
+  ColorSchemeFlags page_color_schemes_old = page_color_schemes_;
   if (auto* value_list = DynamicTo<CSSValueList>(color_scheme)) {
     page_color_schemes_ = StyleBuilderConverter::ExtractColorSchemes(
         GetDocument(), *value_list, nullptr /* color_schemes */);
   } else {
     page_color_schemes_ =
         static_cast<ColorSchemeFlags>(ColorSchemeFlag::kNormal);
+  }
+  if (page_color_schemes_ != page_color_schemes_old) {
+    // Affects the color schemes available on the initial style
+    // (the color-scheme property), even if it doesn't affect
+    // _preferred_ color scheme (which would also force clearing
+    // the MPC, via UpdatePlatformColors()).
+    if (resolver_) {
+      resolver_->InvalidateMatchedPropertiesCache();
+    }
   }
   DCHECK(GetDocument().documentElement());
   // MarkAllElementsForStyleRecalc is necessary since the page color schemes

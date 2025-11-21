@@ -734,11 +734,12 @@ bool ComputedStyle::NonInheritedEqual(const ComputedStyle& other) const {
   return ComputedStyleBase::NonInheritedEqual(other);
 }
 
-bool ComputedStyle::InheritedDataShared(const ComputedStyle& other) const {
+bool ComputedStyle::InheritedEqualIncludingInheritedVariables(
+    const ComputedStyle& other) const {
   // We use a by-value check that is a bit more expensive than
-  // pointer comparison, but yields many more full MPC hits,
+  // pointer comparison, but yields many more MPC hits,
   // so it generally makes up for it.
-  return ComputedStyleBase::InheritedDataShared(other);
+  return ComputedStyleBase::InheritedEqualIncludingInheritedVariables(other);
 }
 
 StyleDifference ComputedStyle::VisualInvalidationDiff(

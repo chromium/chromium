@@ -1,5 +1,5 @@
 {% from 'templates/macros.tmpl' import license, print_if, source_files_for_generated_file %}
-{% from 'templates/fields/field.tmpl' import encode, getter_expression, setter_expression, declare_storage, fieldwise_compare, fieldwise_diff, fieldwise_pointer_compare_inherited, field_group_access_bit_name %}
+{% from 'templates/fields/field.tmpl' import encode, getter_expression, setter_expression, declare_storage, fieldwise_compare, fieldwise_diff, field_group_access_bit_name %}
 {% from 'templates/fields/group.tmpl' import declare_field_group_class %}
 {{license()}}
 
@@ -171,9 +171,15 @@ class ComputedStyleBase : public GarbageCollected<ComputedStyleBase> {
     );
   }
 
-  inline bool InheritedDataShared(const ComputedStyleBase& o) const {
+  // Equivalent to InheritedEqual() && InheritedVariablesEqual(),
+  // but in one call and a bit faster.
+  inline bool InheritedEqualIncludingInheritedVariables(const ComputedStyleBase& o) const {
     return (
-        {{fieldwise_pointer_compare_inherited(computed_style)|indent(8)}}
+        {{fieldwise_compare(computed_style, computed_style.all_fields
+            |selectattr("is_property")
+            |selectattr("is_inherited")
+            |list
+          )|indent(8)}}
     );
   }
 

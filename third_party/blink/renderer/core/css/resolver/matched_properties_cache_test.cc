@@ -240,11 +240,11 @@ TEST_F(MatchedPropertiesCacheTest, ColorSchemeDependency) {
   TestCache cache(GetDocument());
 
   auto builder = CreateStyleBuilder();
-  builder.SetDarkColorScheme(false);
+  builder.SetColorScheme({AtomicString("light")});
   const auto* parent_a = builder.TakeStyle();
 
   builder = CreateStyleBuilder();
-  builder.SetDarkColorScheme(true);
+  builder.SetColorScheme({AtomicString("dark")});
   const auto* parent_b = builder.TakeStyle();
 
   const auto& style_a = InitialStyle();
