@@ -453,6 +453,9 @@
       <message name="IDS_ACCESSIBILITY_TAB_GRID_DIALOG" desc="Accessibility string for Tab Grid Dialog view. This string is announced when the dialog with tab group is expanded and shown to screen.">
         Tab group expanded
       </message>
+      <message name="IDS_ACCESSIBILITY_TAB_GROUP_TITLE_FIELD" desc="The accessibility text to read when the tab group title field is focused.">
+        Tab group title <ph name="TITLE_OF_GROUP">%1$s<ex>Shopping cart</ex></ph>
+      </message>
 
       <!-- GTS Tab Group Suggestions strings -->
       <message name="IDS_TAB_GROUP_SUGGESTION_MESSAGE" desc="The message card title for tab group suggestions in the tab switcher.">
