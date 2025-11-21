@@ -481,6 +481,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/webauthn/mechanism_sorter.h:WebAuthnMechanismDeduplicatedType) -->
 
+<!-- LINT.IfChange(ErrorUIEventType) -->
+
+<enum name="WebAuthenticationPasskeyUnlockErrorUiEvent">
+  <int value="0" label="Avatar Error UI Displayed"/>
+  <int value="1" label="Avatar Error UI Hidden"/>
+  <int value="2" label="Avatar Button with Error UI Pressed"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/webauthn/passkey_unlock_manager.h:ErrorUIEventType) -->
+
 <enum name="WebAuthenticationPinRenewalEvent">
   <int value="0" label="Considered renewing the PIN"/>
   <int value="1" label="No PIN to renew"/>

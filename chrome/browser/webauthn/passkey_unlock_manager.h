@@ -38,6 +38,20 @@ class PasskeyUnlockManager : public KeyedService,
     kVerify,
   };
 
+  // LINT.IfChange
+  //
+  // Represents the type of event related to the passkey unlock error UI, such
+  // as displaying, hiding or interacting with the UI.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class ErrorUIEventType {
+    kAvatarUIDisplayed = 0,
+    kAvatarUIHidden = 1,
+    kAvatarButtonPressed = 2,
+    kMaxValue = kAvatarButtonPressed,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml)
+
   class Observer : public base::CheckedObserver {
    public:
     // Notifies the observer that state has changed.
@@ -81,6 +95,8 @@ class PasskeyUnlockManager : public KeyedService,
 
   // Used in tests to notify observers.
   void NotifyObserversForTesting();
+
+  static void RecordErrorUIEventType(ErrorUIEventType event_type);
 
  private:
   // Returns the PasskeyModel associated with the profile passed to the

@@ -3351,6 +3351,9 @@ class AvatarToolbarButtonPasskeyUnlockErrorBrowserTest
     return mock_passkey_unlock_manager_;
   }
 
+  static constexpr const char kPasskeyUnlockErrorUiEventHistogram[] =
+      "WebAuthentication.PasskeyUnlock.ErrorUi.Event";
+
  private:
   std::unique_ptr<KeyedService> CreateMockPasskeyUnlockManager(
       content::BrowserContext* context) {
@@ -3358,7 +3361,7 @@ class AvatarToolbarButtonPasskeyUnlockErrorBrowserTest
         std::make_unique<testing::NiceMock<MockPasskeyUnlockManager>>();
     mock_passkey_unlock_manager_ = passkey_unlock_manager.get();
     ON_CALL(*passkey_unlock_manager, ShouldDisplayErrorUi())
-        .WillByDefault(testing::Return(true));
+        .WillByDefault(testing::Return(false));
     return passkey_unlock_manager;
   }
 
@@ -3371,8 +3374,24 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonPasskeyUnlockErrorBrowserTest,
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
   SigninWithImageAndClearGreetingAndSyncPromo(avatar, u"test@gmail.com");
 
+  base::HistogramTester histogram_tester;
+  // Simulate the error appearing.
+  ON_CALL(*passkey_unlock_manager(), ShouldDisplayErrorUi())
+      .WillByDefault(testing::Return(true));
+  passkey_unlock_manager()->NotifyObserversForTesting();
+
   EXPECT_EQ(avatar->GetText(),
             l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_PASSKEYS_ERROR_VERIFY));
+  histogram_tester.ExpectBucketCount(
+      kPasskeyUnlockErrorUiEventHistogram,
+      webauthn::PasskeyUnlockManager::ErrorUIEventType::kAvatarUIDisplayed, 1);
+
+  // Click the avatar button.
+  Click(avatar);
+  histogram_tester.ExpectBucketCount(
+      kPasskeyUnlockErrorUiEventHistogram,
+      webauthn::PasskeyUnlockManager::ErrorUIEventType::kAvatarButtonPressed,
+      1);
 
   // Simulate the error disappearing.
   ON_CALL(*passkey_unlock_manager(), ShouldDisplayErrorUi())
@@ -3382,5 +3401,8 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonPasskeyUnlockErrorBrowserTest,
   passkey_unlock_manager()->NotifyObserversForTesting();
 
   EXPECT_EQ(avatar->GetText(), std::u16string());
+  histogram_tester.ExpectBucketCount(
+      kPasskeyUnlockErrorUiEventHistogram,
+      webauthn::PasskeyUnlockManager::ErrorUIEventType::kAvatarUIHidden, 1);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)

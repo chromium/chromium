@@ -889,9 +889,13 @@ class HistorySyncOptinCoordinator
       case ButtonState::kIncognitoProfile:
       case ButtonState::kGuestSession:
         break;
+      case ButtonState::kPasskeysLockedError:
+        webauthn::PasskeyUnlockManager::RecordErrorUIEventType(
+            webauthn::PasskeyUnlockManager::ErrorUIEventType::
+                kAvatarUIDisplayed);
+        [[fallthrough]];
       case ButtonState::kNormal:
       case ButtonState::kManagement:
-      case ButtonState::kPasskeysLockedError:
         CHECK(!collapse_timer_.IsRunning());
         break;
     }
@@ -904,6 +908,10 @@ class HistorySyncOptinCoordinator
         // state.
         Trigger();
         break;
+      case ButtonState::kPasskeysLockedError:
+        webauthn::PasskeyUnlockManager::RecordErrorUIEventType(
+            webauthn::PasskeyUnlockManager::ErrorUIEventType::kAvatarUIHidden);
+        break;
       case ButtonState::kOnSignin:
       case ButtonState::kIncognitoProfile:
       case ButtonState::kGuestSession:
@@ -915,7 +923,6 @@ class HistorySyncOptinCoordinator
       case ButtonState::kSigninPending:
       case ButtonState::kSyncPaused:
       case ButtonState::kUpgradeClientError:
-      case ButtonState::kPasskeysLockedError:
       case ButtonState::kPassphraseError:
       case ButtonState::kBookmarksLimitExceeded:
         break;

@@ -153,6 +153,11 @@ void PasskeyUnlockManager::NotifyObserversForTesting() {
   NotifyObservers();
 }
 
+void PasskeyUnlockManager::RecordErrorUIEventType(ErrorUIEventType event_type) {
+  base::UmaHistogramEnumeration("WebAuthentication.PasskeyUnlock.ErrorUi.Event",
+                                event_type);
+}
+
 PasskeyModel* PasskeyUnlockManager::passkey_model() {
   return passkey_model_observation_.GetSource();
 }

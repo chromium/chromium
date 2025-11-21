@@ -45,6 +45,8 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/webauthn/passkey_unlock_manager.h"
+#include "chrome/browser/webauthn/passkey_unlock_manager_factory.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -548,6 +550,18 @@ void AvatarToolbarButton::ButtonPressed(bool is_source_accelerator) {
         ->NotifyFeaturePromoFeatureUsed(
             feature_engagement::kIPHPasswordsSavePrimingPromoFeature,
             FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+  }
+
+  if (webauthn::PasskeyUnlockManager::IsPasskeyUnlockErrorUiEnabled()) {
+    webauthn::PasskeyUnlockManager* passkey_unlock_manager =
+        webauthn::PasskeyUnlockManagerFactory::GetForProfile(
+            browser_->profile());
+    if (passkey_unlock_manager &&
+        passkey_unlock_manager->ShouldDisplayErrorUi()) {
+      webauthn::PasskeyUnlockManager::RecordErrorUIEventType(
+          webauthn::PasskeyUnlockManager::ErrorUIEventType::
+              kAvatarButtonPressed);
+    }
   }
 #endif
 
