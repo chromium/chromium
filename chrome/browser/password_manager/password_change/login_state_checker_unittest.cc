@@ -293,11 +293,16 @@ TEST_F(LoginStateCheckerTest, CachesPageContentIfRequestInFlight) {
   // First request finishes with a failure.
   optimization_guide::OptimizationGuideModelExecutionResultCallback
       second_optimization_guide_callback;
+  base::RunLoop run_loop;
   EXPECT_CALL(*optimization_service(), ExecuteModel)
-      .WillOnce(MoveArg<3>(&second_optimization_guide_callback));
+      .WillOnce(
+          testing::DoAll(testing::Invoke(&run_loop, &base::RunLoop::Quit),
+                         MoveArg<3>(&second_optimization_guide_callback)));
   PostResponse<ResponseType::kFailure>(
       std::move(first_optimization_guide_callback));
   EXPECT_EQ(future.Take(), LoginCheckResult::kLoggedOut);
+  run_loop.Run();
+
   ASSERT_TRUE(second_optimization_guide_callback);
 
   // Second request should be processed now and succeed.
@@ -334,12 +339,17 @@ TEST_F(LoginStateCheckerTest, CachesOnlyLastPageContent) {
   // `ExecuteModel`.
   optimization_guide::OptimizationGuideModelExecutionResultCallback
       cached_optimization_guide_callback;
+  base::RunLoop run_loop;
   EXPECT_CALL(*optimization_service(), ExecuteModel)
       .Times(1)
-      .WillOnce(MoveArg<3>(&cached_optimization_guide_callback));
+      .WillOnce(
+          testing::DoAll(testing::Invoke(&run_loop, &base::RunLoop::Quit),
+                         MoveArg<3>(&cached_optimization_guide_callback)));
   PostResponse<ResponseType::kFailure>(
       std::move(initial_optimization_guide_callback));
   EXPECT_EQ(future.Take(), LoginCheckResult::kLoggedOut);
+  run_loop.Run();
+
   ASSERT_TRUE(cached_optimization_guide_callback);
 
   // The cached request is processed and succeeds.
@@ -372,11 +382,14 @@ TEST_F(LoginStateCheckerTest, NoRequestWithEmptyCachedPageContent) {
 
   // Model replies that the user is not logged in.
   // This triggers the cached request.
+  base::RunLoop run_loop;
   EXPECT_CALL(*optimization_service(), ExecuteModel)
-      .WillOnce(MoveArg<3>(&optimization_guide_callback_2));
+      .WillOnce(testing::DoAll(testing::Invoke(&run_loop, &base::RunLoop::Quit),
+                               MoveArg<3>(&optimization_guide_callback_2)));
   PostResponse<ResponseType::kFailure>(
       std::move(optimization_guide_callback_1));
   EXPECT_EQ(future.Take(), LoginCheckResult::kLoggedOut);
+  run_loop.Run();
   ASSERT_TRUE(optimization_guide_callback_2);
 
   // The cached request also fails with user not being logged in.
