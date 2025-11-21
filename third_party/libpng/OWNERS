@@ -1,8 +1,8 @@
 # Current owners - working on removing `libpng` dependency from `chrome`.
 #
 # TODO(https://crbug.com/443128323): Once the `chrome` => ... => `libpng`
-# dependency is removed, we should probably change the `OWNERS` (to ones owning
-# tests/tools that depend on `libpng`?).
+# dependency is removed, we should probably change the `OWNERS` (to owners of
+# //build/android or tests targets that depend on `libpng`?).
 fmalita@chromium.org # Skia
 lukasza@chromium.org # Chrome Security
 

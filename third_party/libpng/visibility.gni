@@ -4,30 +4,21 @@
 # through Skia's `SkPngRustDecoder`. No new entries should be added to this
 # list.
 
-# Chrome => ... => libpng dependencies.
-#
-# TODO(https://crbug.com/443128323): Stop exposing `libpng` to Chrome
-# (i.e. we should work on removing all entries on the list below).
-visibility = [
-  # Chrome => Skia => libpng dependency.
-  #
-  # TODO(https://crbug.com/381900683): Remove once Skia supports being
-  # built without `libpng`.
-  "//skia/*",
+import("//build/config/gclient_args.gni")
 
-  # Chrome => ... => freetype => libpng dependency.
-  #
-  # TODO(https://crbug.com/42271123): Remove this once `freetype` has been
-  # replaced with Fontations in PDFium and in other Chrome dependencies.
-  "//third_party/freetype:*",
+# Chrome does not (and should not) depend on `libpng`.
+visibility = []
 
-  # Chrome => PDFium => libpng dependency.
+# Dependency edges that are used in projects outside of Chromium that pull in
+# this directory (e.g. ones only needed in standalone PDFium builds).
+if (!build_with_chromium) {
+  # PDFium => libpng dependency (when `!pdf_enable_rust_png` or
+  # `!pdf_use_skia`).
   #
-  # TODO(https://crbug.com/444045690): Remove once PDFium => `libpng`
-  # dependency has been made optional.
-  "//third_party:png",  # In standalone PDFium
-  "//third_party/pdfium/third_party:png",  # In Chromium
-]
+  # TODO(https://crbug.com/458078747): Remove if/when PDFium stops supporting
+  # `libpng`.
+  visibility += [ "//third_party:png" ]
+}
 
 # Dependencies that do not really flow into Chrome binaries.
 visibility += [
