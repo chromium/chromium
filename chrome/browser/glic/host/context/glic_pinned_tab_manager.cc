@@ -30,6 +30,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
+#include "glic_pinned_tab_manager.h"
 #include "url/origin.h"
 
 namespace glic {
@@ -50,6 +51,12 @@ bool IsForeground(content::Visibility visibility) {
 }
 
 }  // namespace
+
+GlicPinnedTabContextEvent::GlicPinnedTabContextEvent(
+    GlicPinnedTabContextEventType type)
+    : type(type), timestamp(base::TimeTicks::Now()) {}
+
+GlicPinnedTabContextEvent::~GlicPinnedTabContextEvent() = default;
 
 class GlicPinnedTabManager::PinnedTabObserver
     : public content::WebContentsObserver {
@@ -363,6 +370,19 @@ GlicPinnedTabManager::GetPinnedTabEntry(tabs::TabHandle tab_handle) const {
   return &(*it);
 }
 
+GlicPinnedTabUsage* GlicPinnedTabManager::GetPinnedTabUsage(
+    tabs::TabHandle tab_handle) {
+  auto it = std::find_if(pinned_tabs_.begin(), pinned_tabs_.end(),
+                         [tab_handle](const PinnedTabEntry& entry) {
+                           return entry.tab_handle == tab_handle;
+                         });
+  if (it == pinned_tabs_.end()) {
+    return nullptr;
+  }
+
+  return &it->usage;
+}
+
 uint32_t GlicPinnedTabManager::SetMaxPinnedTabs(uint32_t max_pinned_tabs) {
   if (max_pinned_tabs < GetNumPinnedTabs()) {
     max_pinned_tabs = GetNumPinnedTabs();
@@ -405,6 +425,33 @@ void GlicPinnedTabManager::SubscribeToPinCandidates(
   pin_candidate_updater_->RequestUpdate();
   tab_strip_tracker_ = std::make_unique<BrowserTabStripTracker>(this, nullptr);
   tab_strip_tracker_->Init();
+}
+
+void GlicPinnedTabManager::OnPinnedTabContextEvent(
+    tabs::TabHandle tab_handle,
+    GlicPinnedTabContextEvent context_event) {
+  auto* pinned_usage = GetPinnedTabUsage(tab_handle);
+  if (!pinned_usage) {
+    return;
+  }
+  OnPinnedTabContextEvent(*pinned_usage, context_event);
+}
+
+void GlicPinnedTabManager::OnPinnedTabContextEvent(
+    GlicPinnedTabUsage& pinned_usage,
+    GlicPinnedTabContextEvent context_event) {
+  switch (context_event.type) {
+    case GlicPinnedTabContextEventType::kConversationTurnSubmitted:
+      pinned_usage.times_conversation_turn_submitted_while_pinned++;
+      break;
+  }
+}
+
+void GlicPinnedTabManager::OnAllPinnedTabsContextEvent(
+    GlicPinnedTabContextEvent context_event) {
+  for (auto& entry : pinned_tabs_) {
+    OnPinnedTabContextEvent(entry.usage, context_event);
+  }
 }
 
 void GlicPinnedTabManager::SendPinCandidatesUpdate() {

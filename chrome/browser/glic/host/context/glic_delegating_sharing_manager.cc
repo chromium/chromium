@@ -167,6 +167,12 @@ void GlicDelegatingSharingManagerBase::SubscribeToPinCandidates(
   NOTREACHED();
 }
 
+void GlicDelegatingSharingManagerBase::OnConversationTurnSubmitted() {
+  if (sharing_manager_delegate_) {
+    sharing_manager_delegate_->OnConversationTurnSubmitted();
+  }
+}
+
 base::WeakPtr<GlicSharingManager>
 GlicDelegatingSharingManagerBase::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();

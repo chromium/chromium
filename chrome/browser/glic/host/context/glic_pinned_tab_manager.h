@@ -22,6 +22,16 @@ class BrowserTabStripTracker;
 namespace glic {
 class GlicMetrics;
 
+enum class GlicPinnedTabContextEventType { kConversationTurnSubmitted };
+
+struct GlicPinnedTabContextEvent {
+  explicit GlicPinnedTabContextEvent(GlicPinnedTabContextEventType type);
+  ~GlicPinnedTabContextEvent();
+
+  GlicPinnedTabContextEventType type;
+  base::TimeTicks timestamp;
+};
+
 // Manages a collection of tabs that have been selected to be shared.
 class GlicPinnedTabManager : public TabStripModelObserver {
  public:
@@ -99,6 +109,13 @@ class GlicPinnedTabManager : public TabStripModelObserver {
       mojom::GetPinCandidatesOptionsPtr options,
       mojo::PendingRemote<mojom::PinCandidatesObserver> observer);
 
+  // Callback for tab context events.
+  void OnPinnedTabContextEvent(tabs::TabHandle tab_handle,
+                               GlicPinnedTabContextEvent context_event);
+
+  // Callback for tab context events impacting all currently pinned tabs.
+  void OnAllPinnedTabsContextEvent(GlicPinnedTabContextEvent context_event);
+
   // Visible for testing.
   virtual bool IsBrowserValidForSharing(BrowserWindowInterface* browser_window);
   // Visible for testing.
@@ -150,6 +167,9 @@ class GlicPinnedTabManager : public TabStripModelObserver {
   // Returns the entry corresponding to the given tab_handle, if it exists.
   const PinnedTabEntry* GetPinnedTabEntry(tabs::TabHandle tab_handle) const;
 
+  // Returns the pinned tab usage for a given tab_handle, if it exists.
+  GlicPinnedTabUsage* GetPinnedTabUsage(tabs::TabHandle tab_handle);
+
   // Returns true if the tab is in the pinned collection.
   bool IsTabPinned(int tab_id) const;
 
@@ -157,6 +177,10 @@ class GlicPinnedTabManager : public TabStripModelObserver {
   void OnTabWillClose(tabs::TabHandle tab_handles);
   void OnTabDataChanged(tabs::TabHandle tab_handle, TabDataChange);
   void OnTabChangedOrigin(tabs::TabHandle tab_handle);
+
+  // Callback for tab context events when we already have an entry.
+  void OnPinnedTabContextEvent(GlicPinnedTabUsage& pinned_usage,
+                               GlicPinnedTabContextEvent context_event);
 
   // List of callbacks to invoke when the collection of pinned tabs changes
   // (including changes to metadata).

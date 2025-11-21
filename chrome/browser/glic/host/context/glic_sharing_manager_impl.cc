@@ -17,6 +17,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/common/url_constants.h"
+#include "glic_pinned_tab_manager.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace glic {
@@ -291,6 +292,11 @@ void GlicSharingManagerImpl::SubscribeToPinCandidates(
     mojo::PendingRemote<mojom::PinCandidatesObserver> observer) {
   pinned_tab_manager()->SubscribeToPinCandidates(std::move(options),
                                                  std::move(observer));
+}
+
+void GlicSharingManagerImpl::OnConversationTurnSubmitted() {
+  pinned_tab_manager()->OnAllPinnedTabsContextEvent(GlicPinnedTabContextEvent(
+      GlicPinnedTabContextEventType::kConversationTurnSubmitted));
 }
 
 base::WeakPtr<GlicSharingManager> GlicSharingManagerImpl::GetWeakPtr() {

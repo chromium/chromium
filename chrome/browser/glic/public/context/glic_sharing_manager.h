@@ -246,6 +246,9 @@ class GlicSharingManager {
       mojom::GetPinCandidatesOptionsPtr options,
       mojo::PendingRemote<mojom::PinCandidatesObserver> observer) = 0;
 
+  // Callback for conversation turn submission.
+  virtual void OnConversationTurnSubmitted() = 0;
+
   virtual base::WeakPtr<GlicSharingManager> GetWeakPtr() = 0;
 };
 

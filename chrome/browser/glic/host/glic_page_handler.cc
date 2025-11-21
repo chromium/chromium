@@ -1360,6 +1360,9 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     if (auto* instance_metrics = host().instance_metrics()) {
       instance_metrics->OnUserInputSubmitted(mode);
     }
+
+    // TODO(crbug.com/462769104): move this to a non-metrics API.
+    sharing_manager().OnConversationTurnSubmitted();
   }
 
   void OnContextUploadStarted() override {
