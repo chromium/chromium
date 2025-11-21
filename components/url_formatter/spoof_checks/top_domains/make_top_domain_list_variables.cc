@@ -31,6 +31,7 @@
 #include "base/files/file_util.h"
 #include "base/i18n/icu_util.h"
 #include "base/logging.h"
+#include "base/logging/logging_settings.h"
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"

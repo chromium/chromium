@@ -18,6 +18,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/logging/logging_settings.h"
 #include "base/no_destructor.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"

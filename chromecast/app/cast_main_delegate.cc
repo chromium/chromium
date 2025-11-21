@@ -19,6 +19,7 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/logging/logging_settings.h"
 #include "base/metrics/field_trial.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"

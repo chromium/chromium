@@ -13,6 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/logging/logging_settings.h"
 #include "base/path_service.h"
 #include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"

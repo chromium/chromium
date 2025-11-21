@@ -7,6 +7,7 @@
 #import "base/apple/bundle_locations.h"
 #import "base/base_paths.h"
 #import "base/logging.h"
+#import "base/logging/logging_settings.h"
 #import "components/component_updater/component_updater_paths.h"
 
 // Dummy class used to locate the containing NSBundle.

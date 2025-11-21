@@ -5,7 +5,7 @@
 #ifndef CHROME_COMMON_LOGGING_CHROME_H_
 #define CHROME_COMMON_LOGGING_CHROME_H_
 
-#include "base/logging.h"
+#include "base/logging/logging_settings.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 

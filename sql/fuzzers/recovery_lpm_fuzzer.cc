@@ -32,6 +32,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/logging/log_severity.h"
+#include "base/logging/logging_settings.h"
 #include "base/strings/cstring_view.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"

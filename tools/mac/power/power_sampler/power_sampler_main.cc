@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <signal.h>
+
 #include <cstdio>
 #include <iostream>
 #include <memory>
@@ -11,6 +12,7 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/logging/logging_settings.h"
 #include "base/power_monitor/iopm_power_source_sampling_event_source.h"
 #include "base/power_monitor/timer_sampling_event_source.h"
 #include "base/process/process_handle.h"

@@ -6,6 +6,7 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/logging/logging_settings.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "chrome/enterprise_companion/crash_client.h"

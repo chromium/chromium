@@ -22,6 +22,7 @@
 #include "base/android/library_loader/library_loader_hooks.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
+#include "base/logging/logging_settings.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"

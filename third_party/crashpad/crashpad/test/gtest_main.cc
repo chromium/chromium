@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include "base/logging.h"
+#include "base/logging/logging_settings.h"
 #include "build/build_config.h"
 #include "gtest/gtest.h"
 #include "test/main_arguments.h"
