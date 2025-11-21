@@ -31,6 +31,9 @@
 // The delegate.
 @property(nonatomic, weak) id<ComposeboxViewControllerDelegate> delegate;
 
+// The close button.
+@property(nonatomic, readonly) UIButton* closeButton;
+
 // Adds the input view controller to this ViewController.
 - (void)addInputViewController:
     (ComposeboxInputPlateViewController*)inputViewController;

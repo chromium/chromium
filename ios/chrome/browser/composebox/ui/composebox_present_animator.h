@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/composebox/public/composebox_animation_base.h"
 #import "ios/chrome/browser/composebox/ui/composebox_animation_context_provider.h"
 
 // Animator for the custom presentation of the composebox.
@@ -17,7 +18,9 @@
 @property(nonatomic, assign) BOOL toggleOnAIM;
 
 - (instancetype)initWithContextProvider:
-    (id<ComposeboxAnimationContextProvider>)contextProvider;
+                    (id<ComposeboxAnimationContextProvider>)contextProvider
+                          animationBase:
+                              (id<ComposeboxAnimationBase>)animationBase;
 @end
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_UI_COMPOSEBOX_PRESENT_ANIMATOR_H_

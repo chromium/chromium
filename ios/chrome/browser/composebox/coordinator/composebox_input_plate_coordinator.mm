@@ -210,10 +210,6 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   return _viewController;
 }
 
-- (id<ComposeboxAnimationContextProvider>)contextProvider {
-  return _viewController;
-}
-
 #pragma mark - ComposeboxInputPlateViewControllerDelegate
 
 - (void)composeboxViewController:

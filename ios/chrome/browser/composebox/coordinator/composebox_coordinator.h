@@ -7,6 +7,7 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+@protocol ComposeboxAnimationBase;
 enum class ComposeboxEntrypoint;
 
 // Coordinator that contains the composebox, presenting it modally.
@@ -18,6 +19,8 @@ enum class ComposeboxEntrypoint;
                                    browser:(Browser*)browser
                                 entrypoint:(ComposeboxEntrypoint)entrypoint
                                      query:(NSString*)query
+                   composeboxAnimationBase:
+                       (id<ComposeboxAnimationBase>)composeboxAnimationBase
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

@@ -893,4 +893,8 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   [self cancelOmniboxEdit];
 }
 
+- (UIView*)locationBarSteadyViewVisualCopy {
+  return self.viewController.locationBarSteadyViewVisualCopy;
+}
+
 @end

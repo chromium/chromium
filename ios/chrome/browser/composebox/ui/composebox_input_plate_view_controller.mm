@@ -35,7 +35,7 @@ NSString* const kItemCellReuseIdentifier = @"ComposeboxInputItemCell";
 NSString* const kMainSectionIdentifier = @"MainSection";
 
 /// The corner radius for the input plate container.
-const CGFloat kInputPlateCornerRadius = 24.0f;
+const CGFloat kInputPlateCornerRadius = 22.0f;
 /// The shadow opacity for the input plate container.
 const float kInputPlateShadowOpacity = 0.2f;
 /// The shadow radius for the input plate container.
@@ -57,6 +57,7 @@ const CGFloat kShortcutsSpacingCompact = 16.0f;
 /// The spacing for the main vertical input plate stack view.
 const CGFloat kInputPlateStackViewSpacing = 10.0f;
 /// The vertical padding for the input plate stack view.
+const CGFloat kInputPlateStackViewVerticalCompactPadding = 6.0f;
 const CGFloat kInputPlateStackViewVerticalPadding = 10.0f;
 /// The leading padding for the input plate stack view.
 const CGFloat kInputPlateStackViewLeadingPadding = 10.0f;
@@ -148,6 +149,10 @@ const CGFloat kFadeViewWidth = 30.0f;
 
   // The favicon for the current tab.
   UIImage* _currentTabFavicon;
+
+  // Constraints for the dynamic padding of the input plate stack view.
+  NSLayoutConstraint* _topPaddingConstraint;
+  NSLayoutConstraint* _bottomPaddingConstraint;
 }
 
 /// ComposeboxAnimationContextProvider
@@ -184,11 +189,17 @@ const CGFloat kFadeViewWidth = 30.0f;
       [[UIStackView alloc] initWithArrangedSubviews:@[ _omniboxContainer ]];
   _inputPlateStackView.translatesAutoresizingMaskIntoConstraints = NO;
   [_inputPlateContainerView addSubview:_inputPlateStackView];
-  AddSameConstraintsWithInsets(
+
+  _bottomPaddingConstraint = [_inputPlateStackView.bottomAnchor
+      constraintEqualToAnchor:_inputPlateContainerView.bottomAnchor
+                     constant:-kInputPlateStackViewVerticalCompactPadding];
+  [NSLayoutConstraint activateConstraints:@[ _bottomPaddingConstraint ]];
+
+  AddSameConstraintsToSidesWithInsets(
       _inputPlateStackView, _inputPlateContainerView,
-      NSDirectionalEdgeInsetsMake(kInputPlateStackViewVerticalPadding,
-                                  kInputPlateStackViewLeadingPadding,
-                                  kInputPlateStackViewVerticalPadding,
+      (LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kTrailing),
+      NSDirectionalEdgeInsetsMake(kInputPlateStackViewVerticalCompactPadding,
+                                  kInputPlateStackViewLeadingPadding, 0,
                                   kInputPlateStackViewTrailingPadding));
 
   [self updateInputPlateStackViewAnimated:NO];
@@ -851,12 +862,16 @@ const CGFloat kFadeViewWidth = 30.0f;
                                  afterView:_plusButton];
     [_inputPlateStackView setCustomSpacing:kShortcutsSpacingCompact
                                  afterView:_micButton];
+    _bottomPaddingConstraint.constant =
+        -kInputPlateStackViewVerticalCompactPadding;
   } else {
     UIView* toolbarView = [self createToolbarView];
     [_inputPlateStackView insertArrangedSubview:_carouselContainer atIndex:0];
     [_inputPlateStackView addArrangedSubview:toolbarView];
     _inputPlateStackView.axis = UILayoutConstraintAxisVertical;
     _inputPlateStackView.spacing = kInputPlateStackViewSpacing;
+
+    _bottomPaddingConstraint.constant = -kInputPlateStackViewVerticalPadding;
   }
 }
 

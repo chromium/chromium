@@ -56,6 +56,9 @@
 @property(nonatomic, weak) id<AdaptiveToolbarViewControllerDelegate>
     adaptiveDelegate;
 
+// The view containing the location bar.
+- (UIView*)locationBarContainer;
+
 // Returns the tab grid button.
 - (ToolbarButton*)tabGridButton;
 

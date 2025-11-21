@@ -2656,7 +2656,8 @@ const char kChromeAppStoreUrl[] =
       initWithBaseViewController:self.viewController
                          browser:self.browser
                       entrypoint:entrypoint
-                           query:query];
+                           query:query
+         composeboxAnimationBase:_toolbarCoordinator];
   [_composeboxCoordinator start];
 }
 

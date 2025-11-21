@@ -609,4 +609,8 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
   }
 }
 
+- (UIView*)locationBarContainer {
+  return self.view.locationBarContainer;
+}
+
 @end

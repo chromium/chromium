@@ -8,7 +8,6 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 #import "ios/chrome/browser/shared/public/commands/composebox_tab_picker_commands.h"
 
-@protocol ComposeboxAnimationContextProvider;
 @class ComposeboxInputPlateViewController;
 enum class ComposeboxEntrypoint;
 @class ComposeboxTheme;
@@ -19,10 +18,6 @@ class Browser;
 // The coordinator for the compose box input plate.
 @interface ComposeboxInputPlateCoordinator
     : ChromeCoordinator <ComposeboxTabPickerCommands>
-
-// The context provider for the animations.
-@property(nonatomic, readonly) id<ComposeboxAnimationContextProvider>
-    contextProvider;
 
 // The view controller managed by this coordinator.
 @property(nonatomic, readonly)

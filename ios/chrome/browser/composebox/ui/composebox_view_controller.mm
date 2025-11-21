@@ -13,18 +13,15 @@
 namespace {
 /// The padding for the close button.
 const CGFloat kCloseButtonDefaultPadding = 16.0f;
-const CGFloat kCloseButtonTopAlignedPadding = 22.0f;
 /// The horizontal and bottom padding for the input plate container.
 const CGFloat kInputPlatePadding = 10.0f;
 /// The size for the close button.
-const CGFloat kCloseButtonSize = 30.0f;
+const CGFloat kCloseButtonSize = 34.0f;
 /// The alpha for the close button.
 const CGFloat kCloseButtonAlpha = 0.6f;
 }  // namespace
 
 @implementation ComposeboxViewController {
-  // Close button.
-  UIButton* _closeButton;
   // Container for the omnibox popup.
   UIView* _omniboxPopupContainer;
   // WebView for the SRP, when AI Mode Immersive SRP is enabled.
@@ -170,7 +167,7 @@ const CGFloat kCloseButtonAlpha = 0.6f;
       [_constraintsForCurrentPosition addObjectsFromArray:@[
         [_closeButton.topAnchor
             constraintEqualToAnchor:safeAreaGuide.topAnchor
-                           constant:kCloseButtonTopAlignedPadding],
+                           constant:kCloseButtonDefaultPadding],
         [_omniboxPopupContainer.topAnchor
             constraintEqualToAnchor:_inputViewController.view.bottomAnchor],
         [_omniboxPopupContainer.leadingAnchor

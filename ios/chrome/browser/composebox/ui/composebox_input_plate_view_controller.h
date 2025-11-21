@@ -49,8 +49,7 @@
 
 /// View controller for the composebox composebox.
 @interface ComposeboxInputPlateViewController
-    : UIViewController <ComposeboxAnimationContextProvider,
-                        ComposeboxInputPlateConsumer>
+    : UIViewController <ComposeboxInputPlateConsumer>
 
 @property(nonatomic, weak) id<ComposeboxInputPlateViewControllerDelegate>
     delegate;
@@ -59,11 +58,17 @@
 /// Height of the input view.
 @property(nonatomic, readonly) CGFloat inputHeight;
 
+// The input plate view to be used in animations.
+@property(nonatomic, readonly) UIView* inputPlateViewForAnimation;
+
 // Initializes a new instance with a given theme.
 - (instancetype)initWithTheme:(ComposeboxTheme*)theme;
 
 /// Sets the omnibox edit view.
 - (void)setEditView:(UIView<TextFieldViewContaining>*)editView;
+
+// Sets whether AI mode is enabled.
+- (void)setAIModeEnabled:(BOOL)AIModeEnabled;
 
 @end
 

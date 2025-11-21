@@ -83,6 +83,9 @@
 // Sets command dispatcher for page action menu entry point.
 - (void)setPageActionMenuEntryPointDispatcher;
 
+// Creates a visual copy of the location bar steady view.
+- (UIView*)locationBarSteadyViewVisualCopy;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_LOCATION_BAR_UI_BUNDLED_LOCATION_BAR_COORDINATOR_H_

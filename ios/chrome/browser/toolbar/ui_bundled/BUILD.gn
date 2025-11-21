@@ -51,6 +51,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/bubble/model",
     "//ios/chrome/browser/bubble/ui_bundled",
     "//ios/chrome/browser/collaboration/model/messaging",
+    "//ios/chrome/browser/composebox/public:animation",
     "//ios/chrome/browser/contextual_panel/model",
     "//ios/chrome/browser/contextual_panel/model:public",
     "//ios/chrome/browser/default_browser/model",

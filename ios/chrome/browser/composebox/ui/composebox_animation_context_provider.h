@@ -9,8 +9,12 @@
 
 // Provides the views needed for the custom dismissal animation.
 @protocol ComposeboxAnimationContextProvider
-// The input plate view to be animated downwards.
+
+// The input plate view to be animated.
 @property(nonatomic, readonly) UIView* inputPlateViewForAnimation;
+
+// The close button to be animated.
+@property(nonatomic, readonly) UIView* closeButtonForAnimation;
 
 // Sets whether AI mode is enabled.
 - (void)setAIModeEnabled:(BOOL)AIModeEnabled;

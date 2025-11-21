@@ -31,6 +31,7 @@ source_set("ui") {
     "//base",
     "//build:branding_buildflags",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/composebox/public:animation",
     "//ios/chrome/browser/composebox/public:theme",
     "//ios/chrome/browser/omnibox/ui:omnibox_internal",
     "//ios/chrome/browser/omnibox/ui/popup",
