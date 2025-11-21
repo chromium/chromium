@@ -16,7 +16,7 @@ typedef (CanvasRenderingContext2D or
     ImplementedAs=HTMLCanvasElementModule
 ] partial interface HTMLCanvasElement
 {
-    [CallWith=ScriptState, HighEntropy, MeasureAs=HTMLCanvasGetContext, RaisesException] RenderingContext? getContext(DOMString contextId, optional CanvasContextCreationAttributesModule attributes = {});
+    [CallWith=ScriptState, MeasureAs=HTMLCanvasGetContext, RaisesException] RenderingContext? getContext(DOMString contextId, optional CanvasContextCreationAttributesModule attributes = {});
 
     [CallWith=ScriptState,
      RaisesException, MeasureAs=OffscreenCanvas] OffscreenCanvas transferControlToOffscreen();

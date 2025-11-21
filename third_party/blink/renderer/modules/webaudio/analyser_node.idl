@@ -40,10 +40,10 @@
 
     // Copies the current frequency data into the passed array.
     // If the array has fewer elements than the frequencyBinCount, the excess elements will be dropped.
-    [HighEntropy, Measure] void getFloatFrequencyData(Float32Array array);
-    [HighEntropy, Measure] void getByteFrequencyData(Uint8Array array);
+    [Measure] void getFloatFrequencyData(Float32Array array);
+    [Measure] void getByteFrequencyData(Uint8Array array);
 
     // Real-time waveform data
-    [HighEntropy, Measure] void getFloatTimeDomainData(Float32Array array);
-    [HighEntropy, Measure] void getByteTimeDomainData(Uint8Array array);
+    [Measure] void getFloatTimeDomainData(Float32Array array);
+    [Measure] void getByteTimeDomainData(Uint8Array array);
 };

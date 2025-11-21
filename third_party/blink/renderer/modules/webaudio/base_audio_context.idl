@@ -18,7 +18,7 @@ callback DecodeSuccessCallback = void (AudioBuffer decodedData);
     ActiveScriptWrappable
 ] interface BaseAudioContext : EventTarget {
     readonly attribute AudioDestinationNode destination;
-    [HighEntropy=Direct, Measure] readonly attribute float sampleRate;
+    [Measure] readonly attribute float sampleRate;
     readonly attribute double currentTime;
     readonly attribute AudioListener listener;
     readonly attribute AudioContextState state;
@@ -35,10 +35,10 @@ callback DecodeSuccessCallback = void (AudioBuffer decodedData);
     [RaisesException, MeasureAs=AudioContextCreateConstantSource] ConstantSourceNode createConstantSource();
     [RaisesException, MeasureAs=AudioContextCreateConvolver] ConvolverNode createConvolver();
     [RaisesException, MeasureAs=AudioContextCreateDelay] DelayNode createDelay(optional double maxDelayTime);
-    [HighEntropy, RaisesException, MeasureAs=AudioContextCreateDynamicsCompressor] DynamicsCompressorNode createDynamicsCompressor();
+    [RaisesException, MeasureAs=AudioContextCreateDynamicsCompressor] DynamicsCompressorNode createDynamicsCompressor();
     [RaisesException, MeasureAs=AudioContextCreateGain] GainNode createGain();
     [RaisesException, MeasureAs=AudioContextCreateIIRFilter] IIRFilterNode createIIRFilter(sequence<double> feedForward, sequence<double> feedBack);
-    [HighEntropy, RaisesException, MeasureAs=AudioContextCreateOscillator] OscillatorNode createOscillator();
+    [RaisesException, MeasureAs=AudioContextCreateOscillator] OscillatorNode createOscillator();
     [RaisesException, MeasureAs=AudioContextCreatePannerAutomated] PannerNode createPanner();
     [RaisesException, MeasureAs=AudioContextCreatePeriodicWave] PeriodicWave createPeriodicWave(sequence<float> real, sequence<float> imag, optional PeriodicWaveConstraints constraints = {});
     [RaisesException, MeasureAs=AudioContextCreateScriptProcessor] ScriptProcessorNode createScriptProcessor(optional unsigned long bufferSize, optional unsigned long numberOfInputChannels, optional unsigned long numberOfOutputChannels);

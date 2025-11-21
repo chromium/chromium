@@ -39,9 +39,9 @@ dictionary AudioSinkOptions {
     Exposed=Window,
     ActiveScriptWrappable
 ] interface AudioContext : BaseAudioContext {
-    [HighEntropy, CallWith=ExecutionContext, RaisesException, Measure] constructor(optional AudioContextOptions contextOptions = {});
-    [HighEntropy=Direct, MeasureAs=AudioContextBaseLatency] readonly attribute double baseLatency;
-    [HighEntropy=Direct, MeasureAs=AudioContextOutputLatency] readonly attribute double outputLatency;
+    [CallWith=ExecutionContext, RaisesException, Measure] constructor(optional AudioContextOptions contextOptions = {});
+    [MeasureAs=AudioContextBaseLatency] readonly attribute double baseLatency;
+    [MeasureAs=AudioContextOutputLatency] readonly attribute double outputLatency;
     [MeasureAs=AudioContextSinkId, SecureContext] readonly attribute (DOMString or AudioSinkInfo) sinkId;
     [SecureContext] attribute EventHandler onsinkchange;
     attribute EventHandler onerror;

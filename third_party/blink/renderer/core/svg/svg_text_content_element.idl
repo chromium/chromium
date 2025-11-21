@@ -36,11 +36,11 @@ interface SVGTextContentElement : SVGGraphicsElement {
     readonly attribute SVGAnimatedEnumeration lengthAdjust;
 
     long getNumberOfChars();
-    [HighEntropy, Measure] float getComputedTextLength();
-    [HighEntropy, Measure, RaisesException] float getSubStringLength(unsigned long charnum, unsigned long nchars);
-    [HighEntropy, Measure, RaisesException] SVGPoint getStartPositionOfChar(unsigned long charnum);
-    [HighEntropy, Measure, RaisesException] SVGPoint getEndPositionOfChar(unsigned long charnum);
-    [HighEntropy, Measure, RaisesException] SVGRect getExtentOfChar(unsigned long charnum);
+    [Measure] float getComputedTextLength();
+    [Measure, RaisesException] float getSubStringLength(unsigned long charnum, unsigned long nchars);
+    [Measure, RaisesException] SVGPoint getStartPositionOfChar(unsigned long charnum);
+    [Measure, RaisesException] SVGPoint getEndPositionOfChar(unsigned long charnum);
+    [Measure, RaisesException] SVGRect getExtentOfChar(unsigned long charnum);
     [RaisesException] float getRotationOfChar(unsigned long charnum);
     long getCharNumAtPosition(optional DOMPointInit point = {});
     [RaisesException] void selectSubString(unsigned long charnum, unsigned long nchars);

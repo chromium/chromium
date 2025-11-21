@@ -33,10 +33,10 @@
 interface mixin NavigatorID {
     readonly attribute DOMString appCodeName; // constant "Mozilla"
     readonly attribute DOMString appName; // constant "Netscape"
-    [HighEntropy=Direct, MeasureAs=NavigatorAppVersion] readonly attribute DOMString appVersion;
-    [HighEntropy=Direct, MeasureAs=NavigatorPlatform] readonly attribute DOMString platform;
+    [MeasureAs=NavigatorAppVersion] readonly attribute DOMString appVersion;
+    [MeasureAs=NavigatorPlatform] readonly attribute DOMString platform;
     readonly attribute DOMString product; // constant "Gecko"
     // https://www.w3.org/Bugs/Public/show_bug.cgi?id=22555
     // boolean taintEnabled(); // constant false
-    [HighEntropy=Direct, MeasureAs=NavigatorUserAgent] readonly attribute DOMString userAgent;
+    [MeasureAs=NavigatorUserAgent] readonly attribute DOMString userAgent;
 };

@@ -8,10 +8,10 @@
     SecureContext,
     Exposed=Window
 ] interface BatteryManager : EventTarget {
-    [HighEntropy=Direct, Measure] readonly attribute boolean charging;
-    [HighEntropy, Measure] readonly attribute unrestricted double chargingTime;
-    [HighEntropy, Measure] readonly attribute unrestricted double dischargingTime;
-    [HighEntropy, Measure] readonly attribute double level;
+    [Measure] readonly attribute boolean charging;
+    [Measure] readonly attribute unrestricted double chargingTime;
+    [Measure] readonly attribute unrestricted double dischargingTime;
+    [Measure] readonly attribute double level;
 
     attribute EventHandler onchargingchange;
     attribute EventHandler onchargingtimechange;

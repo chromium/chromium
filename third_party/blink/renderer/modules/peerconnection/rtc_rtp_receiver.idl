@@ -12,7 +12,7 @@ interface RTCRtpReceiver {
     [RaisesException=Setter, Measure] attribute double? playoutDelayHint;
     // https://w3c.github.io/webrtc-extensions/#dom-rtcrtpreceiver-jitterbuffertarget
     [RaisesException=Setter, Measure, RuntimeEnabled=RTCJitterBufferTarget] attribute double? jitterBufferTarget;
-    [CallWith=ScriptState, HighEntropy, Measure] static RTCRtpCapabilities? getCapabilities(DOMString kind);
+    [CallWith=ScriptState, Measure] static RTCRtpCapabilities? getCapabilities(DOMString kind);
     RTCRtpReceiveParameters               getParameters();
     [CallWith=ScriptState, RaisesException] sequence<RTCRtpSynchronizationSource> getSynchronizationSources();
     [CallWith=ScriptState, RaisesException] sequence<RTCRtpContributingSource> getContributingSources();

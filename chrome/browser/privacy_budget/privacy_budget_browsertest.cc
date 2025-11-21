@@ -67,16 +67,6 @@ using testing::Key;
 using testing::Pair;
 using testing::UnorderedElementsAreArray;
 
-MATCHER_P(Type, type, "") {
-  return blink::IdentifiableSurface::FromMetricHash(arg).GetType() == type;
-}
-
-constexpr uint64_t HashFeature(const blink::mojom::WebFeature& feature) {
-  return blink::IdentifiableSurface::FromTypeAndToken(
-             blink::IdentifiableSurface::Type::kWebFeature, feature)
-      .ToUkmMetricHash();
-}
-
 class EnableRandomSampling {
  public:
   EnableRandomSampling()
@@ -103,60 +93,6 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestEnableRandomSampling,
   const auto* settings = blink::IdentifiabilityStudySettings::Get();
   EXPECT_TRUE(settings->IsActive());
 }
-
-IN_PROC_BROWSER_TEST_P(PrivacyBudgetBrowserTestWithTestRecorder,
-                       RecordingFeaturesCalledInWorker) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  content::DOMMessageQueue messages(web_contents());
-  base::RunLoop run_loop;
-
-  std::vector<uint64_t> expected_keys = {
-      HashFeature(blink::mojom::WebFeature::kNavigatorUserAgent),
-  };
-
-  // We wait for the expected metrics to be reported. Since some of the
-  // metrics are reported from the renderer process, this is the only reliable
-  // way to be sure we waited long enough.
-  auto quit_run_loop = [this, &expected_keys, &run_loop]() {
-    if (GetReportedSurfaceKeys(expected_keys).size() == expected_keys.size())
-      run_loop.Quit();
-  };
-  recorder().SetOnAddEntryCallback(ukm::builders::Identifiability::kEntryName,
-                                   base::BindLambdaForTesting(quit_run_loop));
-
-  ASSERT_TRUE(content::NavigateToURL(
-      web_contents(), embedded_test_server()->GetURL(FilePathXYZ())));
-
-  // The document calls a bunch of instrumented functions and sends a message
-  // back to the test. Receipt of the message indicates that the script
-  // successfully completed.
-  std::string done;
-  ASSERT_TRUE(messages.WaitForMessage(&done));
-
-  // Wait for the metrics to come down the pipe.
-  run_loop.Run();
-
-  // The previously registered callback will be invalid after the test class is
-  // destructed.
-  recorder().SetOnAddEntryCallback(ukm::builders::Identifiability::kEntryName,
-                                   {});
-
-  // Test succeeds if there is no timeout. However, let's recheck the metrics
-  // here, so that if there is a timeout we get an output of which metrics are
-  // missing.
-  EXPECT_THAT(GetReportedSurfaceKeys(expected_keys), expected_keys);
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    PrivacyBudgetBrowserTestWithTestRecorderParameterized,
-    PrivacyBudgetBrowserTestWithTestRecorder,
-    ::testing::Values("/privacy_budget/calls_dedicated_worker.html",
-// Shared workers are not supported on Android.
-#if !BUILDFLAG(IS_ANDROID)
-                      "/privacy_budget/calls_shared_worker.html",
-#endif
-                      "/privacy_budget/calls_service_worker.html"));
 
 namespace {
 

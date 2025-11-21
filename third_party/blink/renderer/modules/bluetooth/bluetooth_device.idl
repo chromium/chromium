@@ -25,7 +25,7 @@
   ] Promise<undefined> forget();
 
   readonly attribute DOMString id;
-  [HighEntropy=Direct, MeasureAs=BluetoothDeviceName] readonly attribute DOMString? name;
+  [MeasureAs=BluetoothDeviceName] readonly attribute DOMString? name;
   readonly attribute BluetoothRemoteGATTServer gatt;
   [RuntimeEnabled=WebBluetoothWatchAdvertisements] readonly attribute boolean watchingAdvertisements;
 

@@ -1409,61 +1409,6 @@ def _make_measure_web_feature_constant(cg_context):
     return "WebFeature::{}".format(name)
 
 
-def make_report_high_entropy(cg_context):
-    assert isinstance(cg_context, CodeGenContext)
-
-    ext_attrs = cg_context.logging_target.extended_attributes
-    if "HighEntropy" not in ext_attrs:
-        return None
-
-    node = SequenceNode([
-        TextNode("// [HighEntropy]"),
-        FormatNode(
-            "const Dactyloscoper::HighEntropyTracer"
-            "  high_entropy_tracer(\"{logging_id}\", ${info});",
-            logging_id=_make_bindings_logging_id(cg_context)),
-    ])
-    node.accumulate(
-        CodeGenAccumulator.require_include_headers([
-            "third_party/blink/renderer/core/frame/dactyloscoper.h",
-        ]))
-    return node
-
-
-def make_report_high_entropy_direct(cg_context):
-    assert isinstance(cg_context, CodeGenContext)
-
-    ext_attrs = cg_context.logging_target.extended_attributes
-    if not ext_attrs.value_of("HighEntropy") == "Direct":
-        return None
-    if cg_context.attribute_set:
-        return None
-
-    assert "Measure" in ext_attrs or "MeasureAs" in ext_attrs, "{}: {}".format(
-        cg_context.idl_location_and_name,
-        "[HighEntropy=Direct] must be specified with either [Measure] or "
-        "[MeasureAs].")
-
-    assert "MeasureAs" not in ext_attrs or not ext_attrs.value_of(
-        "MeasureAs").startswith("WebDXFeature::"), "{}: {}".format(
-            cg_context.idl_location_and_name,
-            "[HighEntropy=Direct] is not yet supported for a WebDXFeature "
-            "use counter.")
-
-    node = SequenceNode([
-        TextNode("// [HighEntropy=Direct]"),
-        FormatNode(
-            "Dactyloscoper::RecordDirectSurface("
-            "${current_execution_context}, {measure_constant}, "
-            "${return_value});",
-            measure_constant=_make_measure_web_feature_constant(cg_context)),
-    ])
-    node.accumulate(
-        CodeGenAccumulator.require_include_headers(
-            ["third_party/blink/renderer/core/frame/dactyloscoper.h"]))
-    return node
-
-
 def make_report_measure_as(cg_context):
     assert isinstance(cg_context, CodeGenContext)
 
@@ -1918,7 +1863,6 @@ def make_attribute_get_callback_def(cg_context, function_name):
         make_bindings_trace_event(cg_context),
         make_report_coop_access(cg_context),
         make_report_deprecate_as(cg_context),
-        make_report_high_entropy(cg_context),
         make_report_measure_as(cg_context),
         make_log_activity(cg_context),
         EmptyNode(),
@@ -1926,7 +1870,6 @@ def make_attribute_get_callback_def(cg_context, function_name):
         EmptyNode(),
         make_check_security_of_return_value(cg_context),
         make_v8_set_return_value(cg_context),
-        make_report_high_entropy_direct(cg_context),
         make_return_value_cache_update_value(cg_context),
     ])
     if cg_context.is_interceptor_returning_v8intercepted:
@@ -2053,7 +1996,6 @@ def make_attribute_set_callback_def(cg_context, function_name):
         make_runtime_call_timer_scope(cg_context),
         make_bindings_trace_event(cg_context),
         make_report_deprecate_as(cg_context),
-        make_report_high_entropy(cg_context),
         make_report_measure_as(cg_context),
         make_log_activity(cg_context),
         EmptyNode(),
@@ -2250,7 +2192,6 @@ def make_constructor_function_def(cg_context, function_name):
 
     body.extend([
         make_report_deprecate_as(cg_context),
-        make_report_high_entropy(cg_context),
         make_report_measure_as(cg_context),
         make_log_activity(cg_context),
         EmptyNode(),
@@ -2276,10 +2217,6 @@ def make_constructor_function_def(cg_context, function_name):
               "${return_value}->AssociateWithWrapper(${isolate}, "
               "${class_name}::GetWrapperTypeInfo(), ${v8_receiver});"))
         body.append(T("bindings::V8SetReturnValue(${info}, v8_wrapper);"))
-
-    body.extend([
-        make_report_high_entropy_direct(cg_context),
-    ])
 
     return func_def
 
@@ -2629,7 +2566,6 @@ def make_operation_function_def(cg_context, function_name):
         EmptyNode(),
         make_report_coop_access(cg_context),
         make_report_deprecate_as(cg_context),
-        make_report_high_entropy(cg_context),
         make_report_measure_as(cg_context),
         make_log_activity(cg_context),
         EmptyNode(),
@@ -2639,7 +2575,6 @@ def make_operation_function_def(cg_context, function_name):
         EmptyNode(),
         make_check_security_of_return_value(cg_context),
         make_v8_set_return_value(cg_context),
-        make_report_high_entropy_direct(cg_context),
     ])
 
     return func_def

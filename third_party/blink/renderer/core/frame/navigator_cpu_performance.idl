@@ -9,6 +9,6 @@
     SameObject,
     SecureContext
 ] partial interface Navigator {
-  [HighEntropy=Direct, MeasureAs=NavigatorCPUPerformance]
+  [MeasureAs=NavigatorCPUPerformance]
   readonly attribute unsigned short cpuPerformance;
 };

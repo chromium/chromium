@@ -96,10 +96,6 @@ def _build_supported_extended_attributes():
         E("Global", applicable_to=[T.INTERFACE], forms=[F.IDENT,
                                                         F.IDENT_LIST]),
         E("HasAsyncIteratorReturnAlgorithm", applicable_to=[T.ASYNC_ITERABLE]),
-        E("HighEntropy",
-          applicable_to=[T.ATTRIBUTE, T.CONSTRUCTOR, T.OPERATION],
-          forms=[F.NO_ARGS, F.IDENT],
-          values=["Direct"]),
         E("HTMLConstructor", applicable_to=[T.CONSTRUCTOR, T.INTERFACE]),
         E("ImplementedAs",
           applicable_to=[

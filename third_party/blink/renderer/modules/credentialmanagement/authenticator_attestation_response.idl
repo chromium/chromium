@@ -10,7 +10,7 @@
     Exposed=Window
 ] interface AuthenticatorAttestationResponse : AuthenticatorResponse {
     [SameObject] readonly attribute ArrayBuffer attestationObject;
-    [HighEntropy=Direct, Measure] sequence<DOMString> getTransports();
+    [Measure] sequence<DOMString> getTransports();
 
     ArrayBuffer getAuthenticatorData();
     [Measure] ArrayBuffer? getPublicKey();

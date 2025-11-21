@@ -19,5 +19,5 @@
     // Whether this device dispatches touch events for movement.  This is used to detect
     // mouse events which represent only an action that has already been handled  by
     // touch event handlers.
-    [HighEntropy=Direct, Measure] readonly attribute boolean firesTouchEvents;
+    [Measure] readonly attribute boolean firesTouchEvents;
 };

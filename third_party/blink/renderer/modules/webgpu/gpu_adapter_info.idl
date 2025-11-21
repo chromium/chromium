@@ -8,10 +8,10 @@
     Exposed=(Window, Worker),
     SecureContext
 ] interface GPUAdapterInfo {
-  [HighEntropy] readonly attribute DOMString vendor;
-  [HighEntropy] readonly attribute DOMString architecture;
-  [HighEntropy] readonly attribute DOMString device;
-  [HighEntropy] readonly attribute DOMString description;
+  readonly attribute DOMString vendor;
+  readonly attribute DOMString architecture;
+  readonly attribute DOMString device;
+  readonly attribute DOMString description;
   readonly attribute unsigned long subgroupMinSize;
   readonly attribute unsigned long subgroupMaxSize;
   readonly attribute boolean isFallbackAdapter;

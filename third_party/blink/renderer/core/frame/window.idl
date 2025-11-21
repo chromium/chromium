@@ -117,7 +117,7 @@
 
     // CSSOM View Module
     // https://drafts.csswg.org/cssom-view/#extensions-to-the-window-interface
-    [HighEntropy, Measure, NewObject] MediaQueryList matchMedia(DOMString query);
+    [Measure, NewObject] MediaQueryList matchMedia(DOMString query);
     [SameObject, Replaceable] readonly attribute Screen screen;
 
     // browsing context
@@ -127,14 +127,14 @@
     [MeasureAs=WindowResize, RaisesException] void resizeBy(long x, long y);
 
     // viewport
-    [HighEntropy=Direct, MeasureAs=WindowInnerWidth, Replaceable] readonly attribute long innerWidth;
-    [HighEntropy=Direct, MeasureAs=WindowInnerHeight, Replaceable] readonly attribute long innerHeight;
+    [MeasureAs=WindowInnerWidth, Replaceable] readonly attribute long innerWidth;
+    [MeasureAs=WindowInnerHeight, Replaceable] readonly attribute long innerHeight;
 
     // viewport scrolling
-    [HighEntropy=Direct, MeasureAs=WindowScrollX, Replaceable] readonly attribute double scrollX;
-    [HighEntropy=Direct, MeasureAs=WindowPageXOffset, Replaceable] readonly attribute double pageXOffset;
-    [HighEntropy=Direct, MeasureAs=WindowScrollY, Replaceable] readonly attribute double scrollY;
-    [HighEntropy=Direct, MeasureAs=WindowPageYOffset, Replaceable] readonly attribute double pageYOffset;
+    [MeasureAs=WindowScrollX, Replaceable] readonly attribute double scrollX;
+    [MeasureAs=WindowPageXOffset, Replaceable] readonly attribute double pageXOffset;
+    [MeasureAs=WindowScrollY, Replaceable] readonly attribute double scrollY;
+    [MeasureAs=WindowPageYOffset, Replaceable] readonly attribute double pageYOffset;
     [ImplementedAs=scrollTo, CallWith=ScriptState] Promise<undefined> scroll(optional ScrollToOptions options = {});
     [ImplementedAs=scrollTo, CallWith=ScriptState] Promise<undefined> scroll(unrestricted double x, unrestricted double y);
     [CallWith=ScriptState] Promise<undefined> scrollTo(optional ScrollToOptions options = {});
@@ -151,11 +151,11 @@
     [Replaceable, SameObject, RuntimeEnabled=ViewportSegments] readonly attribute Viewport viewport;
 
     // client
-    [HighEntropy=Direct, MeasureAs=WindowScreenX, Replaceable] readonly attribute long screenX;
-    [HighEntropy=Direct, MeasureAs=WindowScreenY, Replaceable] readonly attribute long screenY;
-    [HighEntropy=Direct, MeasureAs=WindowOuterWidth, Replaceable] readonly attribute long outerWidth;
-    [HighEntropy=Direct, MeasureAs=WindowOuterHeight, Replaceable] readonly attribute long outerHeight;
-    [HighEntropy=Direct, MeasureAs=WindowDevicePixelRatio, Replaceable] readonly attribute double devicePixelRatio;
+    [MeasureAs=WindowScreenX, Replaceable] readonly attribute long screenX;
+    [MeasureAs=WindowScreenY, Replaceable] readonly attribute long screenY;
+    [MeasureAs=WindowOuterWidth, Replaceable] readonly attribute long outerWidth;
+    [MeasureAs=WindowOuterHeight, Replaceable] readonly attribute long outerHeight;
+    [MeasureAs=WindowDevicePixelRatio, Replaceable] readonly attribute double devicePixelRatio;
 
     // Selection API
     // https://w3c.github.io/selection-api/#extensions-to-window-interface
@@ -173,7 +173,7 @@
     // This is the interface orientation in degrees. Some examples are:
     //  0 is straight up; -90 is when the device is rotated 90 clockwise;
     //  90 is when rotated counter clockwise.
-    [HighEntropy=Direct, MeasureAs=WindowOrientation, RuntimeEnabled=OrientationEvent] readonly attribute long orientation;
+    [MeasureAs=WindowOrientation, RuntimeEnabled=OrientationEvent] readonly attribute long orientation;
 
     // Event handler attribute for the pageswap event.
     [RuntimeEnabled=PageSwapEvent] attribute EventHandler onpageswap;
@@ -195,8 +195,8 @@
                                         optional boolean searchInFrames = false,
                                         optional boolean showDialog = false);
     [MeasureAs=WindowOffscreenBuffering, Replaceable, NotEnumerable] readonly attribute boolean offscreenBuffering;
-    [HighEntropy=Direct, MeasureAs=WindowScreenLeft, Replaceable] readonly attribute long screenLeft;
-    [HighEntropy=Direct, MeasureAs=WindowScreenTop, Replaceable] readonly attribute long screenTop;
+    [MeasureAs=WindowScreenLeft, Replaceable] readonly attribute long screenLeft;
+    [MeasureAs=WindowScreenTop, Replaceable] readonly attribute long screenTop;
     [RuntimeEnabled=WindowDefaultStatus,MeasureAs=WindowDefaultStatus] attribute DOMString defaultStatus;
     [RuntimeEnabled=WindowDefaultStatus,MeasureAs=WindowDefaultstatus, ImplementedAs=defaultStatus] attribute DOMString defaultstatus;
     [MeasureAs=StyleMedia] readonly attribute StyleMedia styleMedia;

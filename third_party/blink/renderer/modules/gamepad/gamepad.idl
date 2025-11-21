@@ -36,7 +36,7 @@ enum GamepadMappingType {
 [
     Exposed=Window
 ] interface Gamepad {
-    [HighEntropy=Direct, MeasureAs=GamepadId] readonly attribute DOMString id;
+    [MeasureAs=GamepadId] readonly attribute DOMString id;
     readonly attribute long index;
     readonly attribute boolean connected;
     readonly attribute DOMHighResTimeStamp timestamp;

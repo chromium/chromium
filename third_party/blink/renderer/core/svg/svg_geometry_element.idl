@@ -34,8 +34,8 @@
 interface SVGGeometryElement : SVGGraphicsElement {
     [SameObject] readonly attribute SVGAnimatedNumber pathLength;
 
-    [HighEntropy, Measure] boolean isPointInFill(optional DOMPointInit point = {});
-    [HighEntropy, Measure] boolean isPointInStroke(optional DOMPointInit point = {});
-    [HighEntropy, Measure, RaisesException] float getTotalLength();
-    [HighEntropy, Measure, RaisesException] SVGPoint getPointAtLength(float distance);
+    [Measure] boolean isPointInFill(optional DOMPointInit point = {});
+    [Measure] boolean isPointInStroke(optional DOMPointInit point = {});
+    [Measure, RaisesException] float getTotalLength();
+    [Measure, RaisesException] SVGPoint getPointAtLength(float distance);
 };

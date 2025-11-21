@@ -5,5 +5,5 @@
 // https://w3c.github.io/webdriver/#interface
 
 interface mixin NavigatorAutomationInformation {
-    [HighEntropy] readonly attribute boolean webdriver;
+    readonly attribute boolean webdriver;
 };

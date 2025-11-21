@@ -683,25 +683,6 @@ Usage: `[DeprecateAs]` can be specified on methods, attributes, and constants.
 
 For more documentation on deprecations, see [the documentation](https://chromium.googlesource.com/chromium/src/+/refs/heads/main/third_party/blink/renderer/core/frame/deprecation/README.md).
 
-### [HighEntropy]
-
-Summary: Denotes an API that exposes data that folks on the internet find useful for fingerprinting.
-
-Attributes and methods marked as `[HighEntropy]` are known to be practically useful for [identifying particular clients](https://dev.chromium.org/Home/chromium-security/client-identification-mechanisms) on the web today.
-Both methods and attribute/constant getters annotated with this attribute are wired up to [`Dactyloscoper::Record`](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/frame/dactyloscoper.h) for additional processing.
-
-```webidl
-[HighEntropy] attribute Node interestingAttribute;
-[HighEntropy] Node getInterestingNode();
-```
-
-Attributes and methods labeled with `[HighEntropy=Direct]` are simple surfaces which can be expressed as a sequence of bytes without any need for additional parsing logic.
-For now, this label is only supported for attribute getters, although the `[HighEntropy]` label is supported more broadly. Note that `[HighEntropy=Direct]` must be accompanied by either `[Measure]` or `[MeasureAs]`.
-
-```webidl
-[HighEntropy=Direct, MeasureAs=SimpleNamedAttribute] attribute unsigned long simpleNamedAttribute;
-```
-
 ### [ImplementedAs]
 
 Summary: `[ImplementedAs]` specifies a method name in Blink, if the method name in an IDL file and the method name in Blink are different.
