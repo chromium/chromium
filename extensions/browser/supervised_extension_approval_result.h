@@ -8,6 +8,7 @@
 namespace extensions {
 
 // Result of the supervised user extension approval flow.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.extensions.browser
 enum class SupervisedExtensionApprovalResult {
   kApproved,  // Extension installation was approved.
   kCanceled,  // Extension approval flow was canceled.
