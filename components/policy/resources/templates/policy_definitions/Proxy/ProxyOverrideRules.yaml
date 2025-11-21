@@ -6,6 +6,8 @@ desc: |-
 
   When the browser needs to decide what proxy to use, entries of the <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME">ProxyOverrideRules</ph> policy are evaluated in sequence until an entry has a match for at least one of the URL hosts in <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS">DestinationMatchers</ph> and if all entries in <ph name="PROXY_OVERRIDE_RULES_CONDITIONS">Conditions</ph> are met. The value in <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST">ProxyList</ph> will be used as a proxy for such a match. If no match is found, proxy settings will fall back to what is set in the <ph name="PROXY_SETTINGS_POLICY_NAME">ProxySettings</ph> policy.
 
+  The URL patterns supported by <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS">DestinationMatchers</ph> are documented at https://chromium.googlesource.com/chromium/src/+/HEAD/net/docs/proxy.md#proxy-config-url-patterns.
+
   The <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST">ProxyList</ph> field entries correspond to string values of PAC files such as:
     * DIRECT
     * PROXY host:port
