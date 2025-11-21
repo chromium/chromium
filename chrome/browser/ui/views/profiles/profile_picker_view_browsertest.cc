@@ -4087,10 +4087,10 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerToAllUsersBrowserTest,
   EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
 }
 
-class ProfilePickerWithReducedFrictionBrowserTest
+class ProfilePickerWithReducedFrictionRemoveSigninBrowserTest
     : public ProfilePickerCreationFlowBrowserTest {
  protected:
-  ProfilePickerWithReducedFrictionBrowserTest() {
+  ProfilePickerWithReducedFrictionRemoveSigninBrowserTest() {
     feature_list_.InitAndEnableFeatureWithParameters(
         switches::kProfileCreationFrictionReductionExperiment,
         {{"profile-creation-friction-reduction-variation",
@@ -4101,7 +4101,7 @@ class ProfilePickerWithReducedFrictionBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(ProfilePickerWithReducedFrictionBrowserTest,
+IN_PROC_BROWSER_TEST_F(ProfilePickerWithReducedFrictionRemoveSigninBrowserTest,
                        CreateLocalProfileWithoutSigninStep) {
   ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
   ASSERT_EQ(1u, g_browser_process->profile_manager()
@@ -4151,4 +4151,55 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerWithReducedFrictionBrowserTest,
                     .GetNumberOfProfiles());
   EXPECT_FALSE(
       new_browser->GetFeatures().signin_view_controller()->ShowsModalDialog());
+}
+
+class ProfilePickerWithReducedFrictionSkipCustomizationBrowserTest
+    : public ProfilePickerCreationFlowBrowserTest {
+ protected:
+  ProfilePickerWithReducedFrictionSkipCustomizationBrowserTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        switches::kProfileCreationFrictionReductionExperiment,
+        {{"profile-creation-friction-reduction-variation",
+          "skip-customize-profile-step"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ProfilePickerWithReducedFrictionSkipCustomizationBrowserTest,
+    CreateLocalProfileWithoutCustomizationStep) {
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
+  ASSERT_EQ(1u, g_browser_process->profile_manager()
+                    ->GetProfileAttributesStorage()
+                    .GetNumberOfProfiles());
+
+  content::TestNavigationObserver profile_customization_observer(
+      kLocalProfileCreationUrl);
+  profile_customization_observer.StartWatchingNewWebContents();
+  BrowserAddedWaiter waiter = BrowserAddedWaiter(2u);
+
+  ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+      ProfilePicker::EntryPoint::kProfileMenuAddNewProfile));
+  // Wait until webUI is fully initialized.
+  WaitForLoadStop(GURL("chrome://profile-picker/new-profile"));
+
+  // Simulate clicking the "Continue without an account" button.
+  CreateLocalProfile();
+
+  BrowserWindowInterface* const new_browser = waiter.Wait();
+  EXPECT_FALSE(
+      new_browser->GetFeatures().signin_view_controller()->ShowsModalDialog());
+
+  WaitForPickerClosed();
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(new_browser->GetProfile()->GetPath());
+  ASSERT_EQ("Person 1", base::UTF16ToUTF8(entry->GetLocalProfileName()));
+  ASSERT_FALSE(entry->IsEphemeral());
+  ASSERT_EQ(2u, g_browser_process->profile_manager()
+                    ->GetProfileAttributesStorage()
+                    .GetNumberOfProfiles());
 }

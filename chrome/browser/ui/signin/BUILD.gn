@@ -65,6 +65,7 @@ source_set("impl") {
     "//base",
     "//chrome/app:branded_strings",
     "//chrome/app:generated_resources",
+    "//chrome/browser:browser_process",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search",
     "//chrome/browser/search_engines",

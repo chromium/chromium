@@ -14,7 +14,9 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/browser.h"
@@ -28,6 +30,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
+#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -272,6 +275,24 @@ GURL GetSigninUrlForDiceSigninTab(
 
   return signin::GetAddAccountURLForDice(email_hint, continue_url);
 }
+
+void FinishProfileCreationWhenNoCustomizeProfileIsShown(
+    const raw_ref<Profile> profile,
+    bool is_local_profile_creation) {
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile->GetPath());
+  if (!is_local_profile_creation || !entry->IsOmitted()) {
+    return;
+  }
+
+  entry->SetIsOmitted(false);
+
+  if (!profile->GetPrefs()->GetBoolean(prefs::kForceEphemeralProfiles)) {
+    entry->SetIsEphemeral(false);
+  }
+}
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 }  // namespace
@@ -437,6 +458,16 @@ void SigninViewController::MaybeShowChromeSigninDialogForExtensions(
 void SigninViewController::ShowModalProfileCustomizationDialog(
     bool is_local_profile_creation) {
   CloseModalSignin();
+  if (base::FeatureList::IsEnabled(
+          switches::kProfileCreationFrictionReductionExperiment) &&
+      switches::kProfileCreationFrictionReductionVariation.Get() ==
+          switches::ProfileCreationFrictionReductionVariation::
+              kSkipCustomizeProfileStep) {
+    FinishProfileCreationWhenNoCustomizeProfileIsShown(
+        profile_, is_local_profile_creation);
+    return;
+  }
+
   dialog_ = std::make_unique<SigninModalDialogImpl>(
       SigninViewControllerDelegate::CreateProfileCustomizationDelegate(
           browser_->GetBrowserForMigrationOnly(), is_local_profile_creation,

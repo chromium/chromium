@@ -229,8 +229,9 @@ class SigninViewController {
                            CreateLocalProfile);
   FRIEND_TEST_ALL_PREFIXES(ProfilePickerCreationFlowBrowserTest,
                            CancelLocalProfileCreation);
-  FRIEND_TEST_ALL_PREFIXES(ProfilePickerWithReducedFrictionBrowserTest,
-                           CreateLocalProfileWithoutSigninStep);
+  FRIEND_TEST_ALL_PREFIXES(
+      ProfilePickerWithReducedFrictionRemoveSigninBrowserTest,
+      CreateLocalProfileWithoutSigninStep);
   FRIEND_TEST_ALL_PREFIXES(SyncSettingsInteractiveTest,
                            PressingSignOutButtonsSignsOutUser);
   friend class ChromeSignoutConfirmationPromptPixelTest;
