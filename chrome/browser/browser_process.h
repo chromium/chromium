@@ -250,11 +250,6 @@ class BrowserProcess {
   virtual subresource_filter::RulesetService*
   subresource_filter_ruleset_service() = 0;
 
-  // Returns the service providing versioned storage for rules used by the
-  // Fingerprinting Protection subresource filter.
-  virtual subresource_filter::RulesetService*
-  fingerprinting_protection_ruleset_service() = 0;
-
   // Returns the StartupData which owns any pre-created objects in //chrome
   // before the full browser starts.
   virtual StartupData* startup_data() = 0;

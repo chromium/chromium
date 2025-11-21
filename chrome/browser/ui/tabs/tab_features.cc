@@ -18,7 +18,6 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_helper.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_navigation_controller.h"
-#include "chrome/browser/fingerprinting_protection/chrome_fingerprinting_protection_web_contents_helper_factory.h"
 #include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
 #include "chrome/browser/loader/from_gws_navigation_and_keep_alive_request_observer.h"
 #include "chrome/browser/net/http_auth_cache_status.h"
@@ -403,15 +402,6 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   read_anything_side_panel_controller_ =
       std::make_unique<ReadAnythingSidePanelController>(
           &tab, side_panel_registry_.get());
-
-  if (fingerprinting_protection_filter::features::
-          IsFingerprintingProtectionEnabledForIncognitoState(
-              profile->IsIncognitoProfile())) {
-    CreateFingerprintingProtectionWebContentsHelper(
-        tab.GetContents(), profile->GetPrefs(),
-        HostContentSettingsMapFactory::GetForProfile(profile),
-        profile->IsIncognitoProfile());
-  }
 
   // Only create the IpProtectionStatus if the User Bypass feature is enabled.
   if (net::features::kIpPrivacyEnableUserBypass.Get()) {

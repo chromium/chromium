@@ -120,8 +120,6 @@
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/feature_engagement/public/pref_names.h"
-#include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_constants.h"
-#include "components/fingerprinting_protection_filter/common/prefs.h"
 #include "components/history_clusters/core/history_clusters_prefs.h"
 #include "components/image_fetcher/core/cache/image_cache.h"
 #include "components/invalidation/impl/per_user_topic_subscription_manager.h"
@@ -1077,6 +1075,19 @@ constexpr char kSessionRestorePrefChanged[] = "session.restore_pref_changed";
 
 constexpr char kLegacySyncSessionsGUID[] = "sync.session_sync_guid";
 
+const char kRefreshHeuristicBreakageException[] =
+    "fingerprinting_protection_filter.refresh_heuristic_breakage_exception_"
+    "sites";
+
+const char kFpfRulesetContent[] =
+    "fingerprinting_protection_filter.ruleset_version.content";
+
+const char kFpfRulesetFormat[] =
+    "fingerprinting_protection_filter.ruleset_version.format";
+
+const char kFpfRulesetChecksum[] =
+    "fingerprinting_protection_filter.ruleset_version.checksum";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1194,6 +1205,11 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   // Deprecated 09/2025.
   registry->RegisterBooleanPref(kRendererCodeIntegrityEnabledNeedsDeletion,
                                 false);
+
+  // Deprecated 11/2025.
+  registry->RegisterStringPref(kFpfRulesetContent, std::string());
+  registry->RegisterIntegerPref(kFpfRulesetFormat, 0);
+  registry->RegisterUint64Pref(kFpfRulesetChecksum, 0);
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -1531,6 +1547,9 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 10/2025.
   registry->RegisterStringPref(kLegacySyncSessionsGUID, std::string());
+
+  // Deprecated 11/2025.
+  registry->RegisterDictionaryPref(kRefreshHeuristicBreakageException);
 }
 
 }  // namespace
@@ -1612,10 +1631,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   SSLConfigServiceManager::RegisterPrefs(registry);
   subresource_filter::IndexedRulesetVersion::RegisterPrefs(
       registry, subresource_filter::kSafeBrowsingRulesetConfig.filter_tag);
-  subresource_filter::IndexedRulesetVersion::RegisterPrefs(
-      registry,
-      fingerprinting_protection_filter::kFingerprintingProtectionRulesetConfig
-          .filter_tag);
   SystemNetworkContextManager::RegisterPrefs(registry);
   tpcd::experiment::RegisterLocalStatePrefs(registry);
   tpcd::metadata::RegisterLocalStatePrefs(registry);
@@ -1877,7 +1892,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   enterprise_reporting::RegisterProfilePrefs(registry);
   dom_distiller::DistilledPagePrefs::RegisterProfilePrefs(registry);
   DownloadPrefs::RegisterProfilePrefs(registry);
-  fingerprinting_protection_filter::prefs::RegisterProfilePrefs(registry);
 #if BUILDFLAG(ENABLE_GLIC)
   glic::prefs::RegisterProfilePrefs(registry);
 #endif
@@ -2494,6 +2508,11 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   local_state->ClearPref(prefs::kDefaultBrowserFirstShownTime);
 #endif
 
+  // Added 11/2025
+  local_state->ClearPref(kFpfRulesetContent);
+  local_state->ClearPref(kFpfRulesetFormat);
+  local_state->ClearPref(kFpfRulesetChecksum);
+
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
 
@@ -2858,6 +2877,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 
   // Added 10/2025.
   profile_prefs->ClearPref(kLegacySyncSessionsGUID);
+
+  // Added 11/2025.
+  profile_prefs->ClearPref(kRefreshHeuristicBreakageException);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

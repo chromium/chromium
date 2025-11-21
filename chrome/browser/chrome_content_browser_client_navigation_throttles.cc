@@ -40,8 +40,6 @@
 #include "components/contextual_tasks/public/features.h"
 #include "components/dom_distiller/content/browser/distiller_page_web_contents.h"
 #include "components/error_page/content/browser/net_error_auto_reloader.h"
-#include "components/fingerprinting_protection_filter/browser/throttle_manager.h"
-#include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
 #include "components/guest_view/buildflags/buildflags.h"
 #include "components/history/content/browser/visited_link_navigation_throttle.h"
 #include "components/lens/lens_features.h"
@@ -371,15 +369,6 @@ void CreateAndAddChromeThrottlesForNavigation(
           subresource_filter::ContentSubresourceFilterThrottleManager::
               FromNavigationHandle(handle)) {
     throttle_manager->MaybeCreateAndAddNavigationThrottles(registry);
-  }
-
-  if (fingerprinting_protection_filter::features::
-          IsFingerprintingProtectionEnabledForIncognitoState(
-              profile ? profile->IsIncognitoProfile() : false)) {
-    if (auto* throttle_manager = fingerprinting_protection_filter::
-            ThrottleManager::FromNavigationHandle(handle)) {
-      throttle_manager->MaybeCreateAndAddNavigationThrottles(registry);
-    }
   }
 
   LookalikeUrlNavigationThrottle::MaybeCreateAndAdd(registry);

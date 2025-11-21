@@ -390,11 +390,6 @@ TestingBrowserProcess::subresource_filter_ruleset_service() {
   return subresource_filter_ruleset_service_.get();
 }
 
-subresource_filter::RulesetService*
-TestingBrowserProcess::fingerprinting_protection_ruleset_service() {
-  return fingerprinting_protection_ruleset_service_.get();
-}
-
 BrowserProcessPlatformPart* TestingBrowserProcess::platform_part() {
   return platform_part_.get();
 }
@@ -671,11 +666,6 @@ void TestingBrowserProcess::SetWebRtcLogUploader(
 void TestingBrowserProcess::SetRulesetService(
     std::unique_ptr<subresource_filter::RulesetService> ruleset_service) {
   subresource_filter_ruleset_service_.swap(ruleset_service);
-}
-
-void TestingBrowserProcess::SetFingerprintingProtectionRulesetService(
-    std::unique_ptr<subresource_filter::RulesetService> ruleset_service) {
-  fingerprinting_protection_ruleset_service_.swap(ruleset_service);
 }
 
 void TestingBrowserProcess::SetShuttingDown(bool is_shutting_down) {

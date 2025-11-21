@@ -294,7 +294,6 @@ static_library("ui") {
     "//chrome/browser/favicon",
     "//chrome/browser/feedback:feedback_impl",
     "//chrome/browser/file_system_access",
-    "//chrome/browser/fingerprinting_protection",
     "//chrome/browser/google",
     "//chrome/browser/history",
     "//chrome/browser/image_decoder",

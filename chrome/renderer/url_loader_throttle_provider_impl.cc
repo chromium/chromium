@@ -18,15 +18,9 @@
 #include "chrome/renderer/chrome_content_renderer_client.h"
 #include "chrome/renderer/chrome_render_frame_observer.h"
 #include "chrome/renderer/chrome_render_thread_observer.h"
-#include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
-#include "components/fingerprinting_protection_filter/renderer/renderer_agent.h"
-#include "components/fingerprinting_protection_filter/renderer/renderer_url_loader_throttle.h"
-#include "components/fingerprinting_protection_filter/renderer/unverified_ruleset_dealer.h"
 #include "components/no_state_prefetch/renderer/no_state_prefetch_helper.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/signin/public/base/signin_buildflags.h"
-#include "components/subresource_filter/core/common/first_party_origin.h"
-#include "components/subresource_filter/core/common/memory_mapped_ruleset.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/web_identity.h"
 #include "content/public/renderer/render_frame.h"
@@ -150,27 +144,11 @@ URLLoaderThrottleProviderImpl::URLLoaderThrottleProviderImpl(
           std::move(pending_extension_web_request_reporter)),
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
       main_thread_task_runner_(std::move(main_thread_task_runner)) {
-  if (main_thread_task_runner_ &&
-      main_thread_task_runner_->RunsTasksInCurrentSequence()) {
-    // This provider is being created on the main thread.
-    fingerprinting_protection_ruleset_ =
-        chrome_content_renderer_client_->GetFingerprintingProtectionRuleset();
-  }
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 URLLoaderThrottleProviderImpl::~URLLoaderThrottleProviderImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // TODO(https://crbug.com/437115067): Remove this once `MemoryMappedRuleset`
-  // lifetime guarantees are cleaned up.
-  if (main_thread_task_runner_ &&
-      !main_thread_task_runner_->RunsTasksInCurrentSequence()) {
-    // Ensure the ruleset is released on the correct sequence if it is not the
-    // current one.
-    main_thread_task_runner_->ReleaseSoon(
-        FROM_HERE, std::move(fingerprinting_protection_ruleset_));
-  }
 }
 
 std::unique_ptr<blink::URLLoaderThrottleProvider>
@@ -216,23 +194,6 @@ URLLoaderThrottleProviderImpl::CreateThrottles(
     throttles.emplace_back(std::move(throttle));
   }
 #endif
-  if (chrome_content_renderer_client_
-          ->IsContentBasedFingerprintingProtectionEnabled()) {
-    bool create_throttle =
-        !is_frame_resource &&
-        type_ == blink::URLLoaderThrottleProviderType::kFrame &&
-        local_frame_token.has_value() && fingerprinting_protection_ruleset_ &&
-        !net::SchemefulSite::IsSameSite(url::Origin::Create(request.url),
-                                        request.request_initiator.value());
-
-    if (create_throttle) {
-      throttles.emplace_back(
-          std::make_unique<
-              fingerprinting_protection_filter::RendererURLLoaderThrottle>(
-              main_thread_task_runner_, local_frame_token.value(),
-              fingerprinting_protection_ruleset_));
-    }
-  }
 
   if (type_ == blink::URLLoaderThrottleProviderType::kFrame &&
       !is_frame_resource && local_frame_token.has_value()) {

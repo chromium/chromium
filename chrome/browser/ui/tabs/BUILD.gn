@@ -517,7 +517,6 @@ if (!is_android) {
       "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/contextual_cueing",
       "//chrome/browser/favicon",
-      "//chrome/browser/fingerprinting_protection",
       "//chrome/browser/image_fetcher",
       "//chrome/browser/media/webrtc",
       "//chrome/browser/profiles",

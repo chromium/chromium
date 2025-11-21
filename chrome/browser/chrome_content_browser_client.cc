@@ -4782,12 +4782,6 @@ void ChromeContentBrowserClient::OverrideWebPreferences(
       base::FeatureList::IsEnabled(::features::kContextMenuEmptySpace);
 #endif
 
-  web_prefs->content_based_fingerprinting_protection_enabled =
-      fingerprinting_protection_filter::features::
-          IsFingerprintingProtectionEnabledForIncognitoState(
-              Profile::FromBrowserContext(web_contents->GetBrowserContext())
-                  ->IsIncognitoProfile());
-
   if (base::FeatureList::IsEnabled(::features::kDevToolsAiPromptApi) &&
       web_contents->GetVisibleURL().SchemeIs(content::kChromeDevToolsScheme)) {
     web_prefs->ai_prompt_api_enabled = true;

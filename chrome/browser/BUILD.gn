@@ -1888,7 +1888,6 @@ static_library("browser") {
     "//chrome/browser/feedback:feedback_impl",
     "//chrome/browser/file_system_access",
     "//chrome/browser/file_system_access:impl",
-    "//chrome/browser/fingerprinting_protection",
     "//chrome/browser/first_party_sets",
     "//chrome/browser/history",
     "//chrome/browser/image_decoder",

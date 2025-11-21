@@ -110,7 +110,6 @@ browser_exposed_mojom_targets = [
   "//components/download/public/common:interfaces",
   "//components/facilitated_payments/core/mojom:pix_code_validator_mojom",
   "//components/feed/mojom:mojo_bindings",
-  "//components/fingerprinting_protection_filter/mojom:mojom",
   "//components/global_media_controls/public/mojom:device_service",
   "//components/guest_contents/common:mojom",
   "//components/guest_view/common:mojom",

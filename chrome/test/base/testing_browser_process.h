@@ -122,8 +122,6 @@ class TestingBrowserProcess
   safe_browsing::SafeBrowsingService* safe_browsing_service() override;
   subresource_filter::RulesetService* subresource_filter_ruleset_service()
       override;
-  subresource_filter::RulesetService*
-  fingerprinting_protection_ruleset_service() override;
   BrowserProcessPlatformPart* platform_part() override;
 
   NotificationUIManager* notification_ui_manager() override;
@@ -184,8 +182,6 @@ class TestingBrowserProcess
   void SetVariationsService(variations::VariationsService* variations_service);
   void SetWebRtcLogUploader(std::unique_ptr<WebRtcLogUploader> uploader);
   void SetRulesetService(
-      std::unique_ptr<subresource_filter::RulesetService> ruleset_service);
-  void SetFingerprintingProtectionRulesetService(
       std::unique_ptr<subresource_filter::RulesetService> ruleset_service);
   void SetSharedURLLoaderFactory(
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
@@ -270,8 +266,6 @@ class TestingBrowserProcess
   scoped_refptr<safe_browsing::SafeBrowsingService> sb_service_;
   std::unique_ptr<subresource_filter::RulesetService>
       subresource_filter_ruleset_service_;
-  std::unique_ptr<subresource_filter::RulesetService>
-      fingerprinting_protection_ruleset_service_;
   std::unique_ptr<WebRtcLogUploader> webrtc_log_uploader_;
 
   std::unique_ptr<network_time::NetworkTimeTracker> network_time_tracker_;

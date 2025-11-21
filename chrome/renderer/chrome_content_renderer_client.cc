@@ -92,9 +92,6 @@
 #include "components/error_page/common/error.h"
 #include "components/error_page/common/localized_error.h"
 #include "components/feed/feed_feature_list.h"
-#include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
-#include "components/fingerprinting_protection_filter/renderer/renderer_agent.h"
-#include "components/fingerprinting_protection_filter/renderer/unverified_ruleset_dealer.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/guest_view/buildflags/buildflags.h"
 #include "components/heap_profiling/in_process/heap_profiler_controller.h"
@@ -122,7 +119,6 @@
 #include "components/subresource_filter/content/renderer/subresource_filter_agent.h"
 #include "components/subresource_filter/content/renderer/unverified_ruleset_dealer.h"
 #include "components/subresource_filter/core/common/common_features.h"
-#include "components/subresource_filter/core/common/memory_mapped_ruleset.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "components/variations/variations_switches.h"
 #include "components/version_info/version_info.h"
@@ -441,13 +437,6 @@ void ChromeContentRendererClient::RenderThreadStarted() {
   subresource_filter_ruleset_dealer_ =
       std::make_unique<subresource_filter::UnverifiedRulesetDealer>();
 
-  if (fingerprinting_protection_filter::features::
-          IsFingerprintingProtectionFeatureEnabled()) {
-    fingerprinting_protection_ruleset_dealer_ = std::make_unique<
-        fingerprinting_protection_filter::UnverifiedRulesetDealer>();
-    thread->AddObserver(fingerprinting_protection_ruleset_dealer_.get());
-  }
-
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   phishing_model_setter_ =
       std::make_unique<safe_browsing::PhishingModelSetterImpl>();
@@ -721,26 +710,6 @@ void ChromeContentRendererClient::RenderFrameCreated(
         new subresource_filter::SubresourceFilterAgent(
             render_frame, subresource_filter_ruleset_dealer_.get());
     subresource_filter_agent->Initialize();
-  }
-
-  if (!render_frame->IsInFencedFrameTree()) {
-    content_based_fingerprinting_protection_enabled_for_metrics_ =
-        render_frame->GetBlinkPreferences()
-            .content_based_fingerprinting_protection_enabled;
-  }
-  if (render_frame->IsMainFrame() && !render_frame->IsInFencedFrameTree()) {
-    // This web pref applies at the level of the current browser session and may
-    // change when settings are modified, so we copy the latest value every time
-    // a new top-level main frame is created for a new page.
-    content_based_fingerprinting_protection_enabled_ =
-        render_frame->GetBlinkPreferences()
-            .content_based_fingerprinting_protection_enabled;
-  }
-  if (content_based_fingerprinting_protection_enabled_ &&
-      fingerprinting_protection_ruleset_dealer_) {
-    auto* fingerprinting_protection_renderer_agent =
-        new fingerprinting_protection_filter::RendererAgent(render_frame);
-    fingerprinting_protection_renderer_agent->Initialize();
   }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -1666,27 +1635,6 @@ void ChromeContentRendererClient::AppendContentSecurityPolicy(
                   network::mojom::ContentSecurityPolicyType::kEnforce,
                   network::mojom::ContentSecurityPolicySource::kHTTP});
 #endif
-}
-
-bool ChromeContentRendererClient::
-    IsContentBasedFingerprintingProtectionEnabled() {
-  return content_based_fingerprinting_protection_enabled_;
-}
-
-bool ChromeContentRendererClient::
-    IsContentBasedFingerprintingProtectionEnabledForMetrics() {
-  return content_based_fingerprinting_protection_enabled_for_metrics_;
-}
-
-scoped_refptr<const subresource_filter::MemoryMappedRuleset>
-ChromeContentRendererClient::GetFingerprintingProtectionRuleset() {
-  if (fingerprinting_protection_ruleset_dealer_) {
-    // Returns nullptr if no ruleset file is available.
-    fingerprinting_protection_ruleset_ =
-        fingerprinting_protection_ruleset_dealer_->GetRuleset();
-    return fingerprinting_protection_ruleset_;
-  }
-  return nullptr;
 }
 
 std::unique_ptr<blink::WebLinkPreviewTriggerer>

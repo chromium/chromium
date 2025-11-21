@@ -169,7 +169,6 @@
 #include "chrome/browser/content_settings/request_desktop_site_web_contents_observer_android.h"
 #include "chrome/browser/facilitated_payments/ui/chrome_facilitated_payments_client.h"
 #include "chrome/browser/fast_checkout/fast_checkout_tab_helper.h"
-#include "chrome/browser/fingerprinting_protection/chrome_fingerprinting_protection_web_contents_helper_factory.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/loader/from_gws_navigation_and_keep_alive_request_tab_helper.h"
 #include "chrome/browser/plugins/plugin_observer_android.h"
@@ -363,15 +362,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
           sensitive_content::features::kSensitiveContent)) {
     sensitive_content::AndroidSensitiveContentClient::CreateForWebContents(
         web_contents, "SensitiveContent.Chrome.");
-  }
-
-  if (fingerprinting_protection_filter::features::
-          IsFingerprintingProtectionEnabledForIncognitoState(
-              profile->IsIncognitoProfile())) {
-    CreateFingerprintingProtectionWebContentsHelper(
-        web_contents, profile->GetPrefs(),
-        HostContentSettingsMapFactory::GetForProfile(profile),
-        profile->IsIncognitoProfile());
   }
 
   // Only create the IpProtectionStatus if the User Bypass feature is enabled.

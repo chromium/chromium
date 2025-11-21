@@ -201,8 +201,6 @@ class BrowserProcessImpl : public BrowserProcess,
 #endif
   subresource_filter::RulesetService* subresource_filter_ruleset_service()
       override;
-  subresource_filter::RulesetService*
-  fingerprinting_protection_ruleset_service() override;
 
   StartupData* startup_data() override;
 
@@ -384,10 +382,6 @@ class BrowserProcessImpl : public BrowserProcess,
   bool created_subresource_filter_ruleset_service_ = false;
   std::unique_ptr<subresource_filter::RulesetService>
       subresource_filter_ruleset_service_;
-
-  bool created_fingerprinting_protection_ruleset_service_ = false;
-  std::unique_ptr<subresource_filter::RulesetService>
-      fingerprinting_protection_ruleset_service_;
 
   bool shutting_down_ = false;
 

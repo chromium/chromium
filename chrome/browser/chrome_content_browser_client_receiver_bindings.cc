@@ -28,9 +28,6 @@
 #include "chrome/common/chrome_features.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/content_capture/browser/onscreen_content_provider.h"
-#include "components/fingerprinting_protection_filter/browser/throttle_manager.h"
-#include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
-#include "components/fingerprinting_protection_filter/mojom/fingerprinting_protection_filter.mojom.h"
 #include "components/metrics/call_stacks/call_stack_profile_collector.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
@@ -619,23 +616,6 @@ void ChromeContentBrowserClient::
       },
       &render_frame_host));
 
-  Profile* profile =
-      Profile::FromBrowserContext(render_frame_host.GetBrowserContext());
-  if (fingerprinting_protection_filter::features::
-          IsFingerprintingProtectionEnabledForIncognitoState(
-              profile ? profile->IsIncognitoProfile() : false)) {
-    associated_registry.AddInterface<
-        fingerprinting_protection_filter::mojom::FingerprintingProtectionHost>(
-        base::BindRepeating(
-            [](content::RenderFrameHost* render_frame_host,
-               mojo::PendingAssociatedReceiver<
-                   fingerprinting_protection_filter::mojom::
-                       FingerprintingProtectionHost> receiver) {
-              fingerprinting_protection_filter::ThrottleManager::BindReceiver(
-                  std::move(receiver), render_frame_host);
-            },
-            &render_frame_host));
-  }
   associated_registry
       .AddInterface<supervised_user::mojom::SupervisedUserCommands>(
           base::BindRepeating(

@@ -126,7 +126,6 @@ static_library("renderer") {
   defines = []
 
   public_deps = [
-    "//components/fingerprinting_protection_filter/renderer",
     "//components/signin/public/base:signin_buildflags",
     "//components/touch_to_search:buildflags",
   ]
@@ -157,7 +156,6 @@ static_library("renderer") {
     "//components/dom_distiller/content/renderer",
     "//components/feed:feature_list",
     "//components/feed/content/renderer:feed_renderer",
-    "//components/fingerprinting_protection_filter/browser",
     "//components/google/core/common",
     "//components/guest_view/buildflags",
     "//components/heap_profiling/in_process",
