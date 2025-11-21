@@ -163,6 +163,9 @@ class SafeBrowsingServiceImpl : public SafeBrowsingServiceInterface,
       content::BrowserContext* browser_context) override;
 
 #if BUILDFLAG(IS_ANDROID)
+  // This is currently only used for the chrome://safe-browsing UI.
+  // Prefer calling the GetReferringAppInfo static function in
+  // safe_browsing_referring_app_bridge_android.h instead.
   internal::ReferringAppInfo GetReferringAppInfo(
       content::WebContents* web_contents) override;
 #endif
