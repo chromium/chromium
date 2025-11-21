@@ -686,6 +686,34 @@ class A {}
         self._check(
             '@Config(minSdk=...) parameterizes tests across every SDK level')
 
+    @java("""
+import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+@NullMarked class MarkImportsAsUsed<T extends @Nullable Object> {}
+""")
+    def test_WrongNullable_AndroidX(self):
+        self._check('Use org.chromium.build.annotations.Nullable instead of ')
+
+    @java("""
+import javax.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+@NullMarked class MarkImportsAsUsed<T extends @Nullable Object> {}
+""")
+    def test_WrongNullable_JavaX(self):
+        self._check('Use org.chromium.build.annotations.Nullable instead of ')
+
+    @java("""
+import androidx.annotation.Nullable;
+class MarkImportsAsUsed<T extends @Nullable Object> {}
+""")
+    def test_WrongNullable_NonNullMarked(self):
+        self._check()
+
+    @java("""
+class MarkImportsAsUsed<T extends @NonNull Object> {}
+""")
+    def test_NonNull(self):
+        self._check('Values are @NonNull by default. Use @NonNull')
 
 if __name__ == '__main__':
     # Only Chromium Linux checkouts have a Java runtime.

@@ -284,6 +284,13 @@
       <property name="ignoreComments" value="true"/>
       <property name="message" value="Use an @IntDef / @StringDef / @LongDef / custom class rather than an enum. See https://chromium.googlesource.com/chromium/src/+/main/styleguide/java/java.md#Enums" />
     </module>
+    <module name="RegexpSinglelineJava">
+      <property name="id" value="NoNonNull"/>
+      <property name="severity" value="warning"/>
+      <property name="format" value="@NonNull\b"/>
+      <property name="ignoreComments" value="true"/>
+      <property name="message" value="Values are @NonNull by default. Use @NonNull only in the context of nullable generic parameters (ignore if this is the case)." />
+    </module>
   </module>
   <module name="RegexpMultiline">
     <property name="id" value="VisibleForTestingForTesting"/>
@@ -302,5 +309,11 @@
     <property name="severity" value="warning"/>
     <property name="format" value="@Config\([^)]*minSdk\s*="/>
     <property name="message" value="@Config(minSdk=...) parameterizes tests across every SDK level >= the given one. Use @Config(sdk=Build.VERSION_CODES.FOO) or @Config(sdk='{'Build.VERSION_CODES.A, Build.VERSION_CODES.B, ...})"/>
+  </module>
+  <module name="RegexpMultiline">
+    <property name="id" value="WrongNullable"/>
+    <property name="severity" value="warning"/>
+    <property name="format" value="import (javax|androidx).annotation.Nullable;[\s\S]*import org.chromium.build.annotations.NullMarked;"/>
+    <property name="message" value="Use org.chromium.build.annotations.Nullable instead of androidx / javax @Nullable."/>
   </module>
 </module>
