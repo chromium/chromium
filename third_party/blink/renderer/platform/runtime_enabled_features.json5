@@ -3828,7 +3828,7 @@
       public: true,
       base_feature_status: "enabled",
       copied_from_base_feature_if: "overridden",
-      implied_by: ["GeolocationElement", "InstallElement"],
+      implied_by: ["InstallElement"],
     },
     {
       name: "Permissions",

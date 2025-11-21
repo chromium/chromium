@@ -357,8 +357,10 @@ HTMLPermissionElement::HTMLPermissionElement(
       disable_reason_expire_timer_(
           this,
           &HTMLPermissionElement::DisableReasonExpireTimerFired) {
-  DCHECK(RuntimeEnabledFeatures::PermissionElementEnabled(
-      document.GetExecutionContext()));
+  CHECK(RuntimeEnabledFeatures::PermissionElementEnabled(
+            document.GetExecutionContext()) ||
+        RuntimeEnabledFeatures::GeolocationElementEnabled(
+            document.GetExecutionContext()));
   SetHasCustomStyleCallbacks();
   EnsureUserAgentShadowRoot();
   UseCounter::Count(document, WebFeature::kHTMLPermissionElement);

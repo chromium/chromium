@@ -237,7 +237,8 @@ void EmbeddedPermissionPromptBaseView::PrepareToClose() {
 
 PermissionElementPromptPosition
 EmbeddedPermissionPromptBaseView::GetPromptPosition() const {
-  CHECK(base::FeatureList::IsEnabled(blink::features::kPermissionElement));
+  CHECK(base::FeatureList::IsEnabled(blink::features::kPermissionElement) ||
+        base::FeatureList::IsEnabled(blink::features::kGeolocationElement));
   if (!base::FeatureList::IsEnabled(
           permissions::features::kPermissionElementPromptPositioning)) {
     return PermissionElementPromptPosition::kWindowMiddle;

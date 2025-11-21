@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
+#include "third_party/blink/renderer/core/html/html_geolocation_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/html_permission_element.h"
@@ -356,7 +357,10 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForElement(
 
   if (!permission_element_style_sheet_ && IsA<HTMLPermissionElement>(element)) {
     CHECK(RuntimeEnabledFeatures::PermissionElementEnabled(
-        element.GetExecutionContext()));
+              element.GetExecutionContext()) ||
+          (RuntimeEnabledFeatures::GeolocationElementEnabled(
+               element.GetExecutionContext()) &&
+           IsA<HTMLGeolocationElement>(element)));
     permission_element_style_sheet_ = ParseUASheet(
         UncompressResourceAsASCIIString(IDR_UASTYLE_PERMISSION_ELEMENT_CSS));
     AddRulesToDefaultStyleSheets(permission_element_style_sheet_,

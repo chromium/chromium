@@ -2750,7 +2750,9 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
     }
     case CSSSelector::kPseudoPermissionGranted: {
       CHECK(RuntimeEnabledFeatures::PermissionElementEnabled(
-          element.GetExecutionContext()));
+                element.GetExecutionContext()) ||
+            RuntimeEnabledFeatures::GeolocationElementEnabled(
+                element.GetExecutionContext()));
       auto* permission_element = DynamicTo<HTMLPermissionElement>(element);
       return permission_element && permission_element->granted();
     }
