@@ -22,6 +22,7 @@
 #include "components/proxy_config/proxy_config_dictionary.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "net/base/proxy_server.h"
+#include "net/base/proxy_string_util.h"
 #include "net/net_buildflags.h"
 #include "url/gurl.h"
 
@@ -124,21 +125,44 @@ bool AddProxyChain(const base::Value::Dict& value,
   //   "ProxyList": [ "HTTPS proxy.app:443", "DIRECT" ],
   //   ...
   // }
-  auto* proxy_chain_value = value.FindList("ProxyList");
-  if (!proxy_chain_value) {
+  //
+  // The entries of the list can have the PAC format as above, or a regular URL
+  // format of "scheme://host:port".
+  auto* proxy_list_value = value.FindList("ProxyList");
+  if (!proxy_list_value) {
     return false;
   }
 
-  std::vector<std::string> list_entries;
-  for (const auto& entry : *proxy_chain_value) {
+  // Invalid entries don't return false since it's possible the received policy
+  // is meant for a future version of Chrome, so they are just discarded.
+  for (const auto& entry : *proxy_list_value) {
     if (!entry.is_string()) {
       return false;
     }
-    list_entries.push_back(entry.GetString());
-  }
-  rule.proxy_list.SetFromPacString(base::JoinString(list_entries, ";"));
 
-  return true;
+    net::ProxyChain chain;
+    GURL url(entry.GetString());
+    if (url.is_valid()) {
+      net::ProxyServer::Scheme scheme =
+          net::GetSchemeFromUriScheme(url.scheme());
+      if (scheme == net::ProxyServer::SCHEME_INVALID) {
+        continue;
+      }
+      chain = net::ProxyChain::FromSchemeHostAndPort(scheme, url.host(),
+                                                     url.port());
+    } else {
+      chain = net::PacResultElementToProxyChain(entry.GetString());
+    }
+
+    if (chain.IsValid()) {
+      rule.proxy_list.AddProxyChain(std::move(chain));
+    }
+  }
+
+  // If none of the entries of `proxy_list_value` were valid, then the overall
+  // rule is not considered valid as it cannot be applied even if other fields
+  // are present.
+  return !rule.proxy_list.IsEmpty();
 }
 
 // Returns false if an unexpected value was found in the passed `value`.

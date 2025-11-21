@@ -12,7 +12,14 @@ desc: |-
     * DIRECT
     * PROXY host:port
     * HTTPS host:port
-  The first reachable entry will be used as a proxy.
+    * SOCKS4 host:port
+    * SOCKS5 host:port
+  Alternatively, URL-like proxy specifiers can be used directly to specify the proxy, for example:
+    * http://host:port
+    * https://host:port
+    * socks4://host:port
+    * socks5://host:port
+  The first reachable entry in the list will be used as a proxy. Invalid entries in the list are ignored.
 
   The <ph name="PROXY_OVERRIDE_RULES_CONDITIONS">Conditions</ph> field contains a list of conditions that must all be met for its override rule to be used to decide the proxy to use. If it is left unset, the entry will be used as long as at least one host in <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS">DestinationMatchers</ph> is matched.
 

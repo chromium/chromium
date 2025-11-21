@@ -659,6 +659,64 @@ TEST_F(PrefProxyConfigOverrideRulesTest, DynamicPolicy) {
                                       net::ProxyServer::SCHEME_HTTP));
 }
 
+TEST_F(PrefProxyConfigOverrideRulesTest, URLAndPacProxyList) {
+  InitConfigService(net::ProxyConfigService::CONFIG_VALID);
+
+  // The first two entries of the "ProxyList" are ignored due to not being valid
+  // PAC strings or URLs.
+  SetOverrideRules(
+      R"([
+             {
+                 "DestinationMatchers": [
+                     "https://some.app.com",
+                     "https://other.app.com",
+                 ],
+                 "ProxyList": [
+                     "proxy://bad.value",
+                     "some_random_bad_value",
+                     "HTTPS proxy.app:443",
+                     "https://other.app:344",
+                     "DIRECT",
+                 ],
+                 "Conditions": [
+                     {
+                         "DnsProbe": {
+                             "Host": "corp.ads",
+                             "Result": "resolves",
+                         },
+                     }
+                 ]
+             }
+         ])");
+
+  net::ProxyConfigWithAnnotation actual_config;
+  EXPECT_EQ(net::ProxyConfigService::CONFIG_VALID,
+            proxy_config_service_->GetLatestProxyConfig(&actual_config));
+
+  EXPECT_EQ(actual_config.value().proxy_override_rules().size(), 1u);
+
+  const auto& rule = actual_config.value().proxy_override_rules().at(0);
+  EXPECT_EQ(rule.destination_matchers.rules().size(), 2u);
+  EXPECT_EQ(rule.destination_matchers.rules().at(0)->ToString(),
+            "https://some.app.com");
+  EXPECT_EQ(rule.destination_matchers.rules().at(1)->ToString(),
+            "https://other.app.com");
+
+  EXPECT_EQ(rule.proxy_list.size(), 3u);
+  EXPECT_EQ(rule.proxy_list.AllChains().at(0),
+            net::PacResultElementToProxyChain("HTTPS proxy.app:443"));
+  EXPECT_EQ(rule.proxy_list.AllChains().at(1),
+            net::PacResultElementToProxyChain("HTTPS other.app:344"));
+  EXPECT_EQ(rule.proxy_list.AllChains().at(2),
+            net::PacResultElementToProxyChain("DIRECT"));
+
+  EXPECT_EQ(rule.dns_conditions.size(), 1u);
+  EXPECT_EQ(rule.dns_conditions.at(0).host,
+            url::SchemeHostPort(GURL("corp.ads")));
+  EXPECT_EQ(rule.dns_conditions.at(0).result,
+            net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::kResolves);
+}
+
 TEST_F(PrefProxyConfigOverrideRulesTest, NonListValues) {
   InitConfigService(net::ProxyConfigService::CONFIG_VALID);
   for (const char* value : {"1234", "false", "null", "\"abce\""}) {
