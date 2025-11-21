@@ -38,8 +38,6 @@ OmniboxAimPopupWebUIContent::OmniboxAimPopupWebUIContent(
 OmniboxAimPopupWebUIContent::~OmniboxAimPopupWebUIContent() = default;
 
 void OmniboxAimPopupWebUIContent::ShowUI() {
-  OmniboxPopupWebUIBaseContent::ShowUI();
-
   auto* web_contents = contents_wrapper()->web_contents();
   auto* browser_window = webui::GetBrowserWindowInterface(web_contents);
   auto* context_data = browser_window->GetFeatures().searchbox_context_data();
@@ -59,10 +57,22 @@ void OmniboxAimPopupWebUIContent::ShowUI() {
       omnibox_popup_ui->popup_aim_handler()->OnShow(std::move(context));
     }
   }
+
+  is_shown_ = true;
 }
 
 void OmniboxAimPopupWebUIContent::CloseUI() {
-  OmniboxPopupWebUIBaseContent::CloseUI();
+  // If the popup state is not shown, don't take any action. Closing the UI
+  // multiple times can result in incorrect state transitions from OnClose.
+  if (!is_shown_) {
+    return;
+  }
+
+  is_shown_ = false;
+
+  // Update the popup state manager that the aim popup is closing.
+  // LocationBarView is subscribed to state changes and will close the widget.
+  controller()->popup_state_manager()->SetPopupState(OmniboxPopupState::kNone);
 
   auto* webui_controller = contents_wrapper()->GetWebUIController();
   if (webui_controller) {
