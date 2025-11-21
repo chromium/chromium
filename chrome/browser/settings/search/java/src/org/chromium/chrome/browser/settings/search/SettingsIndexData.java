@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.settings.search;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.os.Bundle;
 import android.text.TextUtils;
 
@@ -66,7 +64,7 @@ public class SettingsIndexData {
         public final String key;
 
         /** Title of Preference/Fragment. */
-        public final String title;
+        public final @Nullable String title;
 
         /** Summary/description of Preference/Fragment. */
         public final @Nullable String summary;
@@ -92,7 +90,7 @@ public class SettingsIndexData {
         private Entry(
                 String id,
                 String key,
-                String title,
+                @Nullable String title,
                 @Nullable String header,
                 @Nullable String summary,
                 @Nullable String fragment,
@@ -119,7 +117,7 @@ public class SettingsIndexData {
         public static class Builder {
             private final String mId;
             private final String mKey;
-            private String mTitle;
+            private @Nullable String mTitle;
             private @Nullable String mHeader;
             private @Nullable String mSummary;
             private @Nullable String mFragment;
@@ -135,7 +133,7 @@ public class SettingsIndexData {
              * @param title The title of the preference.
              * @param parentFragment The class name of the fragment containing this preference.
              */
-            public Builder(String id, String key, String title, String parentFragment) {
+            public Builder(String id, String key, @Nullable String title, String parentFragment) {
                 mId = id;
                 mKey = key;
                 mTitle = title;
@@ -159,7 +157,7 @@ public class SettingsIndexData {
                 mParentFragment = original.parentFragment;
             }
 
-            public Builder setTitle(String title) {
+            public Builder setTitle(@Nullable String title) {
                 mTitle = title;
                 return this;
             }
@@ -453,8 +451,7 @@ public class SettingsIndexData {
         }
 
         for (Entry entry : mEntries.values()) {
-            assumeNonNull(entry.mTitleNormalized);
-            if (entry.mTitleNormalized.contains(query)) {
+            if (entry.mTitleNormalized != null && entry.mTitleNormalized.contains(query)) {
                 int score =
                         TextUtils.equals(entry.mTitleNormalized, query)
                                 ? EXACT_TITLE_MATCH

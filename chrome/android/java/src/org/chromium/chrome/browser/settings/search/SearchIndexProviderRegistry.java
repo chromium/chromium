@@ -28,5 +28,21 @@ public final class SearchIndexProviderRegistry {
                     org.chromium.chrome.browser.toolbar.adaptive.settings
                             .AdaptiveToolbarSettingsFragment.SEARCH_INDEX_DATA_PROVIDER,
                     org.chromium.chrome.browser.toolbar.settings.AddressBarSettingsFragment
+                            .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment
+                            .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.chrome.browser.contextualsearch.ContextualSearchSettingsFragment
+                            .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.chrome.browser.privacy.settings.DoNotTrackSettings
+                            .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.chrome.browser.homepage.settings.HomepageSettings
+                            .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.chrome.browser.about_settings.LegalInformationSettings
+                            .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.chrome.browser.sync.settings.PersonalizeGoogleServicesSettings
+                            .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.chrome.browser.privacy.secure_dns.SecureDnsSettings
+                            .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.chrome.browser.tasks.tab_management.TabArchiveSettingsFragment
                             .SEARCH_INDEX_DATA_PROVIDER);
 }

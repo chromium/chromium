@@ -19,6 +19,7 @@ found in the LICENSE file.
 
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="tab_archive_include_duplicate_tabs"
+        android:title="@string/archive_settings_archive_duplicate_tabs_title"
         android:summary="@string/archive_settings_archive_duplicate_tabs_summary"
         app:allowDividerAbove="true"/>
 

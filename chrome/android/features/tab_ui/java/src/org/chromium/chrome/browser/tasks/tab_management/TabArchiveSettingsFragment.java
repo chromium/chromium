@@ -14,6 +14,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
+import org.chromium.chrome.browser.settings.search.BaseSearchIndexProvider;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab.TabArchiveSettings.Observer;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
@@ -96,8 +97,6 @@ public class TabArchiveSettingsFragment extends ChromeBaseSettingsFragment {
         // Duplicate tabs switch.
         ChromeSwitchPreference enableArchiveDuplicateTabsSwitch =
                 (ChromeSwitchPreference) findPreference(PREF_TAB_ARCHIVE_INCLUDE_DUPLICATE_TABS);
-        enableArchiveDuplicateTabsSwitch.setTitle(
-                getString(R.string.archive_settings_archive_duplicate_tabs_title));
         enableArchiveDuplicateTabsSwitch.setEnabled(mArchiveSettings.getArchiveEnabled());
         enableArchiveDuplicateTabsSwitch.setChecked(
                 mArchiveSettings.isArchiveDuplicateTabsEnabled());
@@ -115,4 +114,8 @@ public class TabArchiveSettingsFragment extends ChromeBaseSettingsFragment {
     public @AnimationType int getAnimationType() {
         return AnimationType.PROPERTY;
     }
+
+    public static final BaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
+            new BaseSearchIndexProvider(
+                    TabArchiveSettingsFragment.class.getName(), R.xml.tab_archive_settings);
 }

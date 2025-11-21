@@ -32,6 +32,7 @@ if (is_android) {
       "//chrome/browser/preferences:java",
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/settings:java",
+      "//chrome/browser/settings:search_java",
       "//components/browser_ui/settings/android:java",
       "//components/browser_ui/widget/android:java",
       "//components/minidump_uploader:minidump_uploader_java",

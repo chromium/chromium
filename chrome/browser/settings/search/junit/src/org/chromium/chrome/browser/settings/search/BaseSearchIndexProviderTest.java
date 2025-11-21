@@ -128,16 +128,6 @@ public class BaseSearchIndexProviderTest {
                 themeEntry.parentFragment);
     }
 
-    // #updateDynamicPreferences populates these.
-    @Test
-    public void testInitPreferenceXml_skipsCustomTitlelessPreferences() {
-        mThemeSettingsProvider.initPreferenceXml(mContext, mIndexData);
-
-        assertTrue(
-                "Index should be empty for XMLs with only title-less custom views.",
-                mIndexData.getEntriesForTesting().isEmpty());
-    }
-
     @Test
     public void testProviderWithNoXml_doesNothing() {
         BaseSearchIndexProvider providerWithNoXml =
