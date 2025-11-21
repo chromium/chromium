@@ -444,7 +444,7 @@ class CORE_EXPORT CSSSelector {
   // Sets this CSSSelector to a :where() class with the specified argument.
   void SetWhere(CSSSelectorList*);
   void UpdatePseudoPage(const AtomicString&, const Document*);
-  static PseudoType NameToPseudoType(const AtomicString&,
+  static PseudoType NameToPseudoType(StringView,
                                      bool has_arguments,
                                      const Document* document);
   static PseudoId GetPseudoId(PseudoType);

@@ -729,12 +729,25 @@ constexpr static NameToPseudoStruct kPseudoTypeWithArgumentsMap[] = {
     {"where", CSSSelector::kPseudoWhere},
 };
 
+// TODO(sesse): This function should probably be gperf-generated, like
+// everything else converting strings to enums, instead of hand-coded.
 CSSSelector::PseudoType CSSSelector::NameToPseudoType(
-    const AtomicString& name,
+    StringView name,
     bool has_arguments,
     const Document* document) {
-  if (name.IsNull() || !name.Is8Bit()) {
+  if (name.IsNull()) {
     return CSSSelector::kPseudoUnknown;
+  }
+  if (!name.Is8Bit()) {
+    Vector<LChar, 50> latin1_name;
+    for (UChar ch : name.Span16()) {
+      if (ch > 0xFF) {
+        return CSSSelector::kPseudoUnknown;
+      }
+      latin1_name.push_back(ch);
+    }
+    return NameToPseudoType(StringView(base::span(latin1_name)), has_arguments,
+                            document);
   }
 
   const NameToPseudoStruct* pseudo_type_map;
@@ -755,7 +768,7 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
                          DCHECK(entry.string);
                          return std::string_view(entry.string) < latin1_name;
                        });
-  if (match == pseudo_type_map_end || match->string != name.GetString()) {
+  if (match == pseudo_type_map_end || match->string != name) {
     return CSSSelector::kPseudoUnknown;
   }
 
