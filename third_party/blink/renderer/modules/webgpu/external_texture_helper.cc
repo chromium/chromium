@@ -39,17 +39,6 @@ bool DrawVideoFrameIntoResourceProvider(
   CHECK(!raster_context_provider ||
         raster_context_provider->ContextCapabilities().gpu_rasterization);
 
-  // If the provider isn't accelerated, avoid GPU round trips to upload frame
-  // data from GpuMemoryBuffer backed frames which aren't mappable.
-  if (frame->HasMappableGpuBuffer() && !frame->IsMappable() &&
-      !resource_provider->IsAccelerated()) {
-    frame = media::ConvertToMemoryMappedFrame(std::move(frame));
-    if (!frame) {
-      DLOG(ERROR) << "Failed to map VideoFrame.";
-      return false;
-    }
-  }
-
   if (frame->HasSharedImage()) {
     if (!raster_context_provider) {
       DLOG(ERROR) << "Unable to process a texture backed VideoFrame w/o a "
