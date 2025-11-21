@@ -229,31 +229,14 @@ void BrowserViewAppLayoutImpl::CalculateTitlebarLayout(
                   full_toolbar_bounds.width(),
                   views().web_app_frame_toolbar->GetPreferredSize().width())
             : full_toolbar_bounds.width();
-    toolbar_rect = full_toolbar_bounds;
-    toolbar_rect.set_width(width);
-    if (overlay_controls_enabled) {
-      // Overlay comes before toolbar, while tabstrip comes after.
-      toolbar_rect.set_x(full_toolbar_bounds.right() - width);
-    } else {
-      // Do not move the available space downward when in overlay mode as the
-      // contents pane will need to render behind the overlay area.
-      params.SetTop(toolbar_rect.bottom());
-    }
+
+    // Overlay and tabstrip come before toolbar.
+    toolbar_rect =
+        gfx::Rect(full_toolbar_bounds.right() - width, full_toolbar_bounds.y(),
+                  width, full_toolbar_bounds.height());
   }
   layout.AddChild(views().web_app_frame_toolbar, toolbar_rect,
                   should_draw_toolbar);
-
-  // Update the overlay if present.
-  if (overlay_controls_enabled && should_draw_toolbar) {
-    // Unfortunately, the overlay is not a view in the same sense as the other
-    // views and must be updated separately.
-    overlay_rect_ =
-        gfx::Rect(full_toolbar_bounds.x(), full_toolbar_bounds.y(),
-                  full_toolbar_bounds.width() - toolbar_rect.width(),
-                  full_toolbar_bounds.height());
-  } else {
-    overlay_rect_ = std::nullopt;
-  }
 
   // Lay out title.
   if (views().web_app_window_title) {
@@ -291,18 +274,31 @@ void BrowserViewAppLayoutImpl::CalculateTitlebarLayout(
 
   // Lay out tabstrip if present.
   if (delegate().ShouldLayoutTabStrip()) {
-    // Ensure these are in the same coordinate system.
     CHECK_EQ(views().tab_strip_region_view->parent(),
-             views().web_app_frame_toolbar->parent());
-    gfx::Rect tab_strip_bounds;
-    if (tabstrip_enabled) {
-      tab_strip_bounds =
-          gfx::Rect(toolbar_rect.right(), full_toolbar_bounds.y(),
-                    full_toolbar_bounds.width() - toolbar_rect.width(),
-                    full_toolbar_bounds.bottom());
-    }
+             views().web_app_frame_toolbar->parent())
+        << "Always expect PWA toolbar and tabstrip to share the same "
+           "coordinate basis.";
+    const gfx::Rect tab_strip_bounds(
+        full_toolbar_bounds.x(), full_toolbar_bounds.y(),
+        full_toolbar_bounds.width() - toolbar_rect.width(),
+        full_toolbar_bounds.height());
     layout.AddChild(views().tab_strip_region_view, tab_strip_bounds,
                     tabstrip_enabled);
+  }
+
+  // Update the overlay if present.
+  if (overlay_controls_enabled && should_draw_toolbar) {
+    // Unfortunately, the overlay is not a view in the same sense as the other
+    // views and must be updated separately.
+    overlay_rect_ =
+        gfx::Rect(full_toolbar_bounds.x(), full_toolbar_bounds.y(),
+                  full_toolbar_bounds.width() - toolbar_rect.width(),
+                  full_toolbar_bounds.height());
+  } else {
+    // Move the available space downward when not in overlay mode (in overlay
+    // mode the contents pane will need to render behind the overlay area).
+    params.SetTop(full_toolbar_bounds.bottom());
+    overlay_rect_ = std::nullopt;
   }
 }
 
