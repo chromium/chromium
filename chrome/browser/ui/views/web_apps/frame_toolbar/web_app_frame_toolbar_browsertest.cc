@@ -427,10 +427,6 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, TitleHover) {
   EXPECT_EQ(nullptr, window_title);
   return;
 #else
-  WebAppNavigationButtonContainer* const toolbar_left_container =
-      helper()->web_app_frame_toolbar()->get_left_container_for_testing();
-  WebAppToolbarButtonContainer* const toolbar_right_container =
-      helper()->web_app_frame_toolbar()->get_right_container_for_testing();
 
   EXPECT_EQ(window_title->parent(), helper()->browser_view());
   window_title->SetText(std::u16string(30, 't'));
@@ -439,25 +435,33 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, TitleHover) {
   // which will get propagated to the frame view.
   helper()->root_view()->SetSize(gfx::Size(1000, 1000));
   EXPECT_GT(window_title->width(), 0);
-  const int original_title_gap = toolbar_right_container->x() -
-                                 toolbar_left_container->x() -
-                                 toolbar_left_container->width();
+
+  // Get the current amount of space available for laying out the title.
+  const int original_title_area_width =
+      helper()
+          ->web_app_frame_toolbar()
+          ->GetCenterContainerForSize(helper()->web_app_frame_toolbar()->size())
+          .width();
 
   // With a narrow window, we have insufficient space for the full title.
-  const int narrow_title_gap =
+  const int narrow_title_width =
       window_title
           ->GetPreferredSize(views::SizeBounds(window_title->width(), {}))
           .width() *
       3 / 4;
-  int narrow_width =
-      helper()->frame_view()->width() - original_title_gap + narrow_title_gap;
+  int narrow_width = helper()->frame_view()->width() -
+                     original_title_area_width + narrow_title_width;
 #if BUILDFLAG(IS_MAC)
-  // Increase width to allow for title padding.
-  // LINT.IfChange(mac_title_padding_width_fraction)
-  static constexpr double kTitlePaddingWidthFraction = 0.1;
-  // LINT.ThenChange(//chrome/browser/ui/views/frame/browser_frame_view_mac.mm:mac_title_padding_width_fraction)
-  narrow_width = base::checked_cast<int>(
-      std::ceil(narrow_width / (1 - 2 * kTitlePaddingWidthFraction)));
+  // The 10% adjustment is done from the window edge in the new layout and
+  // therefore will not affect this test.
+  if (!base::FeatureList::IsEnabled(features::kAppBrowserUseNewLayout)) {
+    // Increase width to allow for title padding.
+    // LINT.IfChange(mac_title_padding_width_fraction)
+    static constexpr double kTitlePaddingWidthFraction = 0.1;
+    // LINT.ThenChange(//chrome/browser/ui/views/frame/browser_frame_view_mac.mm:mac_title_padding_width_fraction)
+    narrow_width =
+        base::ClampCeil(narrow_width / (1 - 2 * kTitlePaddingWidthFraction));
+  }
 #endif
   helper()->root_view()->SetSize(gfx::Size(narrow_width, 1000));
 
