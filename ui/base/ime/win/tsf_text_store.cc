@@ -682,7 +682,7 @@ HRESULT TSFTextStore::RequestLock(DWORD lock_flags, HRESULT* result) {
 
   // if nothing has changed from input service, then only need to
   // compare our cache with latest textinputstate.
-  if (!edit_flag_) {
+  if (!edit_flag_ || is_cancel_composition_in_progress_) {
     ResetCacheAfterEditSession();
     CalculateTextandSelectionDiffAndNotifyIfNeeded();
     return S_OK;
@@ -1433,10 +1433,12 @@ bool TSFTextStore::CancelComposition() {
     return false;
 
   TRACE_EVENT0("ime", "TSFTextStore::CancelComposition");
-
+  is_cancel_composition_in_progress_ = true;
   ResetCompositionState();
 
-  return TerminateComposition();
+  bool result = TerminateComposition();
+  is_cancel_composition_in_progress_ = false;
+  return result;
 }
 
 bool TSFTextStore::ConfirmComposition() {

@@ -462,6 +462,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) TSFTextStore
   // Checks for re-entrancy while writing to text input client.
   bool is_tic_write_in_progress_ = false;
 
+  // Checks for re-entrancy while canceling composition.
+  bool is_cancel_composition_in_progress_ = false;
+
   // The type of current lock.
   //   0: No lock.
   //   TS_LF_READ: read-only lock.
