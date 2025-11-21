@@ -535,6 +535,10 @@ PasswordForm CreateFormForLeakCheck(const PasswordForm& pending_credentials,
       submitted_credentials.new_password_element_renderer_id;
   form.confirmation_password_element_renderer_id =
       submitted_credentials.confirmation_password_element_renderer_id;
+  // Take the url from the submitted form because the url from pendind
+  // credentials may be for the site where the stored password was saved
+  // originally.
+  form.url = submitted_credentials.url;
   return form;
 }
 
