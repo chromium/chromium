@@ -179,6 +179,7 @@ class Field(object):
         assert (self.is_property, self.is_inherited_flag).count(True) == 1, \
             'Field role has to be exactly one of: property, inherited_flag'
 
+        self.is_inherited = False
         if not self.is_inherited_flag:
             self.is_inherited = kwargs.pop('inherited')
             self.is_independent = kwargs.pop('independent')
