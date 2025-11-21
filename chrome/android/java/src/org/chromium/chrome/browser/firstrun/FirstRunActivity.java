@@ -809,8 +809,13 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     @Override
     public void recordLoadCompletedHistograms(
             @FullscreenSigninMediator.LoadPoint int slowestLoadPoint) {
+        // TODO: crbug.com/462005651 - Remove obsolete
+        // "MobileFre.FromLaunch.NativePolicyAndChildStatusLoaded" histogram.
         RecordHistogram.recordTimesHistogram(
                 "MobileFre.FromLaunch.NativePolicyAndChildStatusLoaded",
+                SystemClock.elapsedRealtime() - mIntentCreationElapsedRealtimeMs);
+        RecordHistogram.recordTimesHistogram(
+                "MobileFre.FromLaunch.InitialLoadCompleted",
                 SystemClock.elapsedRealtime() - mIntentCreationElapsedRealtimeMs);
         RecordHistogram.recordEnumeratedHistogram(
                 "MobileFre.SlowestLoadPoint",

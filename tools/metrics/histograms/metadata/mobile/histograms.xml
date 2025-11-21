@@ -1076,10 +1076,12 @@ chromium-metrics-reviews@google.com.
                  meaningful paint. Version V2 fixed an issue that previous
                  data was not recording the time duration from FRE launched"/>
     <variant name="FreCompleted" summary="the entire FRE is completed"/>
+    <variant name="InitialLoadCompleted"
+        summary="the initial load is completed"/>
     <variant name="NativeInitialized" summary="the native code is initialized"/>
     <variant name="NativePolicyAndChildStatusLoaded"
-        summary="the native code, policies and child account status are
-                 loaded"/>
+        summary="(Obsolete) The native code, policies and child account
+                 status are loaded"/>
     <variant name="PoliciesLoaded" summary="policies are loaded"/>
     <variant name="TosAccepted" summary="the ToS is accepted"/>
     <variant name="TriggerLayoutInflation"
